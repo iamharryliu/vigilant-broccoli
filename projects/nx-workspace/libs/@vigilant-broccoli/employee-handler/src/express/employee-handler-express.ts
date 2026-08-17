@@ -160,6 +160,14 @@ export const createEmployeeHandlerApp = (
   );
 
   api.get(
+    '/birthdays/sync',
+    asyncRoute(async (_req, res) => {
+      await EmployeeHandlerService.syncBirthdays(config);
+      res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
+    }),
+  );
+
+  api.get(
     '/postRetentionCleanup',
     asyncRoute(async (_req, res) => {
       await EmployeeHandlerService.postRetentionCleanup(config);

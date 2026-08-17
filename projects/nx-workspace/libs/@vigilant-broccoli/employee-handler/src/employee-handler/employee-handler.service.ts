@@ -1,4 +1,5 @@
 import { ActiveMaintenanceHandler } from './active-maintenance/active-maintenance.service';
+import { BirthdaySyncHandler } from './birthday-sync/birthday-sync.service';
 import { EmployeeHandlerConfig } from './employee-handler.models';
 import { OffboardHandler } from './offboard/offboard.service';
 import { OnboardHandler } from './onboard/onboard.service';
@@ -9,6 +10,7 @@ const serviceHandlers = {
   ...ActiveMaintenanceHandler,
   ...OffboardHandler,
   ...PostRetentionHandler,
+  ...BirthdaySyncHandler,
 };
 
 const handleInput = async (
