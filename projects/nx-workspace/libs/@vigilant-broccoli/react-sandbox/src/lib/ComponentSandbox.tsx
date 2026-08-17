@@ -2,7 +2,6 @@ import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { Theme } from '@radix-ui/themes';
 import {
   Blocks,
-  Circle,
   Eye,
   Menu,
   Moon,
@@ -336,7 +335,6 @@ const buildSidebarItems = ({
       isActive: group.items.some(entry => entry.id === selectedId),
       children: group.items.map(entry => ({
         label: entry.label,
-        icon: iconMode ? Circle : undefined,
         isActive: entry.id === selectedId,
         onClick: () => onSelect(entry.id),
       })),
