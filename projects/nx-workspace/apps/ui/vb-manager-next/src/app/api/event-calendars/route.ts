@@ -56,6 +56,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const normalizedSources = normalizeSources(sources);
+  if (!normalizedSources.ok) {
+    return NextResponse.json(
+      { error: normalizedSources.error },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
+    );
+  }
+
   try {
     const calendar = getCalendarAdminClient();
     const googleCalendarId = await createGoogleCalendar(calendar, {
@@ -73,7 +81,7 @@ export async function POST(request: NextRequest) {
       name: name.trim(),
       googleCalendarId,
       isPublic,
-      sources: normalizeSources(sources),
+      sources: normalizedSources.sources,
     });
 
     // Populate the new calendar straight away when it already has sources —
