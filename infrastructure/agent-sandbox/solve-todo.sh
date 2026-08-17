@@ -4,6 +4,35 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 IMAGE=vb-agent-sandbox
+# Must match the emit_pr_details() prefixes in solve-todo-runner.sh — the
+# container is --rm'd, so its tee'd stdout log is the only way its PR title
+# and summary reach the host.
+PR_TITLE_PREFIX='AGENT_PR_TITLE: '
+PR_SUMMARY_B64_PREFIX='AGENT_PR_SUMMARY_B64: '
+PR_DETAILS=""
+
+collect_pr_details() {
+  local log_file=$1 url title summary
+  url=$(grep -Eo 'https://github.com/[^ ]+/pull/[0-9]+' "$log_file" | tail -1 || true)
+  [ -n "$url" ] || return 0
+  title=$(grep -m1 "^${PR_TITLE_PREFIX}" "$log_file" | sed "s/^${PR_TITLE_PREFIX}//")
+  summary=$(grep -m1 "^${PR_SUMMARY_B64_PREFIX}" "$log_file" | sed "s/^${PR_SUMMARY_B64_PREFIX}//" | base64 -d 2>/dev/null || true)
+  PR_DETAILS+="### ${title:-$url}
+${url}
+
+${summary}
+
+"
+}
+
+write_pr_details_output() {
+  [ -n "${GITHUB_OUTPUT:-}" ] || return 0
+  {
+    echo "pr_details<<PR_DETAILS_EOF"
+    printf '%s' "$PR_DETAILS"
+    echo "PR_DETAILS_EOF"
+  } >>"$GITHUB_OUTPUT"
+}
 
 MODEL=sonnet
 PROMPT=""
@@ -84,7 +113,10 @@ if [ -n "$PROMPT" ]; then
     "$IMAGE" \
     bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/solve-todo-runner.sh" --prompt "$1"' _ "$PROMPT" \
     2>&1 | tee "$LOG_FILE"
-  exit "${PIPESTATUS[0]}"
+  STATUS="${PIPESTATUS[0]}"
+  collect_pr_details "$LOG_FILE"
+  write_pr_details_output
+  exit "$STATUS"
 fi
 
 LOG_DIR=$(mktemp -d /tmp/vb-solve.XXXXXX)
@@ -116,6 +148,7 @@ for i in "${!PIDS[@]}"; do
     PR_URL=$(grep -Eo 'https://github.com/[^ ]+/pull/[0-9]+' "$LOG_DIR/solve-${id}.log" | tail -1 || true)
     if [ -n "$PR_URL" ]; then
       echo "✓ TODO ${id}: $PR_URL"
+      collect_pr_details "$LOG_DIR/solve-${id}.log"
     else
       FAILED=1
       echo "✗ TODO ${id}: completed without opening a PR (see $LOG_DIR/solve-${id}.log)" >&2
@@ -126,4 +159,5 @@ for i in "${!PIDS[@]}"; do
   fi
 done
 
+write_pr_details_output
 exit $FAILED

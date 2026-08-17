@@ -28,6 +28,17 @@ REPO_DIR="$HOME/vigilant-broccoli"
 META_FILE=/tmp/solve-meta.json
 PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
 FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
+# Line prefixes solve-todo.sh greps out of the tee'd container log to surface
+# PR details in the completion email — the container is --rm'd, so stdout is
+# the only channel back to the host.
+PR_TITLE_PREFIX='AGENT_PR_TITLE: '
+PR_SUMMARY_B64_PREFIX='AGENT_PR_SUMMARY_B64: '
+
+emit_pr_details() {
+  local title=$1 summary=$2
+  echo "${PR_TITLE_PREFIX}${title}"
+  echo "${PR_SUMMARY_B64_PREFIX}$(printf '%s' "$summary" | base64 -w0)"
+}
 
 cd "$REPO_DIR"
 
@@ -127,6 +138,7 @@ BODY
 
   if PR_URL=$(gh pr create --draft --title "$SALVAGE_TITLE" --body "$SALVAGE_BODY" 2>&1); then
     echo "Salvaged partial work: $PR_URL" >&2
+    emit_pr_details "$SALVAGE_TITLE" "This agent run did not finish (exited with status ${exit_code}). This draft PR captures its partial, uncommitted work so it isn't lost." >&2
   else
     echo "Pushed salvage branch $BRANCH but failed to open a PR — open one manually." >&2
   fi
@@ -240,3 +252,4 @@ EOF
 )
 
 gh pr create --title "$PR_TITLE" --body "$PR_BODY"
+emit_pr_details "$PR_TITLE" "$PR_SUMMARY"

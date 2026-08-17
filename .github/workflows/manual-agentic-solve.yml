@@ -101,7 +101,26 @@ jobs:
           SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
           RESULT: ${{ steps.solve.outcome == 'success' && 'succeeded' || 'failed' }}
           RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          PR_DETAILS: ${{ steps.solve.outputs.pr_details }}
         run: |
+          PR_DETAILS_HTML="<p><em>No PR was opened.</em></p>"
+          if [ -n "$PR_DETAILS" ]; then
+            PR_DETAILS_HTML=$(python3 -c '
+import html, os, sys
+
+md = os.environ["PR_DETAILS"]
+out = []
+for block in md.split("### ")[1:]:
+    title, url, rest = block.split("\n", 2)
+    summary_html = html.escape(rest.strip("\n")).replace(chr(10), chr(60) + "br" + chr(62))
+    out.append(
+        f"<h3>{html.escape(title)}</h3>"
+        f"<p><a href=\"{html.escape(url)}\">{html.escape(url)}</a></p>"
+        f"<p>{summary_html}</p>"
+    )
+sys.stdout.write("".join(out))
+')
+          fi
           curl -s -o /dev/null -X POST http://127.0.0.1:3000/api/send-email \
             -H 'Content-Type: application/json' \
             -H "x-api-key: ${SHARED_APP_TOKEN}" \
@@ -109,5 +128,5 @@ jobs:
               --arg to 'harryliu1995@gmail.com' \
               --arg from 'Harry Liu <ci-agentic-solve@harryliu.dev>' \
               --arg subject "Agentic solve $RESULT" \
-              --arg html "<p>The agentic solve workflow $RESULT.</p><p><a href=\"$RUN_URL\">View run</a></p>" \
+              --arg html "<p>The agentic solve workflow $RESULT.</p><p><a href=\"$RUN_URL\">View run</a></p>$PR_DETAILS_HTML" \
               '{to: $to, from: $from, subject: $subject, html: $html}')"
