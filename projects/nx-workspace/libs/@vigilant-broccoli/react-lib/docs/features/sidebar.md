@@ -17,7 +17,8 @@
 ## Nested groups
 
 - An item with `children` renders as a toggle button + collapsible list, one group open at a time per nesting level (`openId` at the top level, a separate `openChildId` per parent for deeper nesting), keyed by `id` ?? `href` ?? `label`
-- `defaultOpenId` seeds the open group on mount **and re-applies whenever it changes** — a consumer that recomputes `defaultOpenId` from its own selection state (e.g. "open the group containing the active item") gets it re-expanded automatically without extra wiring
+- `defaultOpenId` only seeds/re-applies the open group **while the sidebar is already fully expanded** (`forceExpanded`: mobile drawer open, or icon-less always-expanded) — a collapsed desktop rail stays closed (on mount _and_ on any later `defaultOpenId` change) until hovered, so the active group never renders "open" (active styling and all) before the user interacts with it. `forceExpanded` is read inside the re-sync effect rather than listed as its dependency, so a drawer merely opening/closing (without `defaultOpenId` itself changing) can't retrigger it and stomp a manually-expanded _different_ group — see #471's regression test
+- Otherwise (fully expanded), a consumer that recomputes `defaultOpenId` from its own selection state (e.g. "open the group containing the active item") gets it re-expanded automatically without extra wiring
 - Group toggle buttons carry `aria-expanded`
 - Icon-less items/groups always show their label (no icon to fall back to when collapsed)
 
@@ -37,4 +38,4 @@
 ## Testing
 
 - `apps/ui/component-library` (react-sandbox's `ComponentSandbox`) is the canonical test surface for both icon-bearing and icon-less nav — its sidebar's `Settings` group has an `Icons: On/Off` toggle that switches every item's `icon` on/off at runtime, so both `canCollapse` branches are reachable from one app without needing a second demo/auth-bypass route
-- `apps/ui/component-library/e2e/sidebar.spec.ts` covers: icon-less always-expanded behavior, `defaultOpenId` reactivity, (with Icons toggled on) the narrow-viewport mouseleave guard, and the desktop hover-into-active-group behavior
+- `apps/ui/component-library/e2e/sidebar.spec.ts` covers: icon-less always-expanded behavior, `defaultOpenId` reactivity, (with Icons toggled on) the narrow-viewport mouseleave guard, the desktop hover-into-active-group behavior, and that a reload doesn't pre-expand the active group before the collapsed rail is hovered

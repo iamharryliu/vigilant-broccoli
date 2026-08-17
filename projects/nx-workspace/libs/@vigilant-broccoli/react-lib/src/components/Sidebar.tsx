@@ -212,11 +212,31 @@ export const Sidebar = ({
   onMobileClose,
   defaultOpenId = null,
 }: SidebarProps) => {
-  const [openId, setOpenId] = useState<string | null>(defaultOpenId);
+  const isMobileAware = mobileOpen !== undefined;
+  const canCollapse = items.some(hasIcon);
+  const forceExpanded = (isMobileAware && mobileOpen) || !canCollapse;
+
+  // Only seed the initial open group when the sidebar starts already fully
+  // expanded (mobile drawer open, or icon-less always-expanded). Otherwise a
+  // collapsed desktop rail would render internally "open" to the active
+  // group - active styling and all - before the user ever hovers it.
+  // onMouseEnter below is what opens it on demand instead.
+  const [openId, setOpenId] = useState<string | null>(
+    forceExpanded ? defaultOpenId : null,
+  );
   const [query, setQuery] = useState('');
 
+  // Re-syncs openId whenever defaultOpenId changes (e.g. a new search
+  // selection), but only while the sidebar is already fully expanded -
+  // forceExpanded is read here rather than listed as a dependency, so a
+  // collapsed desktop rail toggling in and out of hover (or a mobile drawer
+  // opening/closing) doesn't itself re-trigger this and stomp a manually
+  // expanded *different* group. This mirrors the useState initializer above,
+  // and matters on every mount too since effects always run at least once
+  // after the first render regardless of their dependency array.
   useEffect(() => {
-    if (defaultOpenId !== null) setOpenId(defaultOpenId);
+    if (defaultOpenId !== null && forceExpanded) setOpenId(defaultOpenId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultOpenId]);
 
   const flat = searchable ? flattenItems(items) : [];
@@ -226,9 +246,6 @@ export const Sidebar = ({
       : null;
 
   const isNarrowViewport = useIsNarrowViewport();
-  const isMobileAware = mobileOpen !== undefined;
-  const canCollapse = items.some(hasIcon);
-  const forceExpanded = (isMobileAware && mobileOpen) || !canCollapse;
   const widthClass = isMobileAware
     ? cn(
         MOBILE_WIDTH,

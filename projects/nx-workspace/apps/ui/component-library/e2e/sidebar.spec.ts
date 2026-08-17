@@ -161,4 +161,31 @@ test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)'
     await page.mouse.move(30, 200);
     await expect(componentsToggle).toHaveAttribute('aria-expanded', 'true');
   });
+
+  test('does not expand the active group on reload until the rail is hovered', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    const componentsToggle = page.getByRole('button', {
+      name: COMPONENTS_GROUP_LABEL,
+    });
+
+    // Icon mode persists via localStorage, so it survives the reload below.
+    await page.getByRole('button', { name: SETTINGS_GROUP_LABEL }).click();
+    await page.getByRole('button', { name: ICON_MODE_OFF_LABEL }).click();
+    await page.mouse.move(900, 400);
+
+    await page.reload();
+
+    // Before any hover: openId must NOT be pre-seeded from defaultOpenId
+    // here, or the active group (icons, active styling, and all) would
+    // render "open" while the rail is still collapsed to icon-width - see
+    // the forceExpanded-gated useState initializer in Sidebar.tsx.
+    await expect(componentsToggle).toHaveAttribute('aria-expanded', 'false');
+
+    // Hovering in still opens it on demand, same as the non-reload case.
+    await page.mouse.move(30, 200);
+    await expect(componentsToggle).toHaveAttribute('aria-expanded', 'true');
+  });
 });
