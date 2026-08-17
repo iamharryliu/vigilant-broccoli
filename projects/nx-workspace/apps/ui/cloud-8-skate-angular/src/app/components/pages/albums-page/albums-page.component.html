@@ -1,43 +1,43 @@
 <app-content-container>
   <section class="mb-8 reveal-up">
     @if (albums.length) {
-    <div class="grid grid-cols-2 gap-6 lg:grid-cols-3">
-      @for (album of albums; track trackAlbum($index, album)) {
-      <a
-        [routerLink]="[LINKS.ALBUMS.url.internal, album.slug]"
-        class="block reveal-up"
-      >
-        @if (album.coverImageUrl) {
-        <img
-          [src]="album.coverImageUrl"
-          [alt]="album.name"
-          class="aspect-square w-full object-cover"
-          loading="lazy"
-        />
-        } @else {
-        <div
-          class="flex aspect-square items-center justify-center bg-gray-100 text-gray-500"
-        >
-          No cover image
-        </div>
+      <div class="grid grid-cols-2 gap-6 lg:grid-cols-3">
+        @for (album of albums; track trackAlbum($index, album)) {
+          <a
+            [routerLink]="[LINKS.ALBUMS.url.internal, album.slug]"
+            class="block reveal-up"
+          >
+            @if (album.coverImageUrl) {
+              <img
+                [src]="album.coverImageUrl"
+                [alt]="album.name"
+                class="aspect-square w-full object-cover"
+                loading="lazy"
+              />
+            } @else {
+              <div
+                class="flex aspect-square items-center justify-center bg-gray-100 text-gray-500"
+              >
+                No cover image
+              </div>
+            }
+            <p class="mt-2 text-center text-base font-semibold text-gray-900">
+              {{ album.name }}
+            </p>
+            <p class="mt-1 text-center text-sm text-gray-500">
+              {{ album.date | date: 'MMMM d, y' }}
+            </p>
+          </a>
         }
-        <p class="mt-2 text-center text-base font-semibold text-gray-900">
-          {{ album.name }}
-        </p>
-        <p class="mt-1 text-center text-sm text-gray-500">
-          {{ album.date | date : 'MMMM d, y' }}
-        </p>
-      </a>
-      }
-    </div>
+      </div>
     } @else if (!isLoading) {
-    <div
-      class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm reveal-up"
-    >
-      <p class="text-base leading-7 text-gray-700">
-        Gallery content is not available right now.
-      </p>
-    </div>
+      <div
+        class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm reveal-up"
+      >
+        <p class="text-base leading-7 text-gray-700">
+          Gallery content is not available right now.
+        </p>
+      </div>
     }
   </section>
 </app-content-container>

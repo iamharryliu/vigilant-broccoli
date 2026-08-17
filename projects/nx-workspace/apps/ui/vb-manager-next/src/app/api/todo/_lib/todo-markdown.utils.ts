@@ -156,7 +156,11 @@ export const serializeTodoMarkdown = (
     }
 
     const section = sectionByHeading.get(heading);
-    output.push(...(section ? renderTableLines(section.rows) : lines.slice(headerIdx, cursor)));
+    output.push(
+      ...(section
+        ? renderTableLines(section.rows)
+        : lines.slice(headerIdx, cursor)),
+    );
     i = cursor;
   }
 

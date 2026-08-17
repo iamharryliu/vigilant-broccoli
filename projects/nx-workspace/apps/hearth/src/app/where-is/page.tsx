@@ -2,7 +2,13 @@
 
 import { Suspense, useState, useEffect } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { CRUDItemList, Input, Text, Badge, cn } from '@vigilant-broccoli/react-lib';
+import {
+  CRUDItemList,
+  Input,
+  Text,
+  Badge,
+  cn,
+} from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
@@ -243,9 +249,7 @@ function WhereIsPageContent() {
           itemId={selectedItemId}
           onClose={closeItemPanel}
           onUpdated={updated =>
-            setItems(prev =>
-              prev.map(i => (i.id === updated.id ? updated : i)),
-            )
+            setItems(prev => prev.map(i => (i.id === updated.id ? updated : i)))
           }
           onDeleted={id => {
             closeItemPanel();
