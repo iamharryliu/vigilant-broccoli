@@ -32,6 +32,7 @@ Per-event rules:
 - allDay: true if no specific time was given
 - If end is missing, default to start + 1 hour
 - Resolve relative dates ("Friday", "next week") against the current time: ${now.toISOString()}
+- recurrence: array of RFC 5545 RRULE strings (e.g. ["RRULE:FREQ=WEEKLY;BYDAY=TU"] for "every Tuesday"). Empty array if the event does not repeat
 - Do not invent events; only return what is actually present in the input.`;
 };
 

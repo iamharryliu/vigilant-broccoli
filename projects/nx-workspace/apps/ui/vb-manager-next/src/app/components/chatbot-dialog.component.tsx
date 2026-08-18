@@ -710,6 +710,7 @@ const serializeEventDraft = (event: EventDraft): string => {
     event.description ? `Description: ${event.description}` : null,
     event.allDay ? 'All day: yes' : null,
     event.timeZone ? `Timezone: ${event.timeZone}` : null,
+    event.recurrence?.length ? `Repeats: ${event.recurrence.join(', ')}` : null,
   ].filter(Boolean);
   return `${CALENDAR_DRAFT_MARKER}\n${parts.join('\n')}`;
 };
@@ -1183,6 +1184,7 @@ export const ChatbotPanel = ({
           timeZone: draft.timeZone,
           location: draft.location,
           allDay: draft.allDay,
+          recurrence: draft.recurrence,
         }),
       });
 
