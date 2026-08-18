@@ -114,6 +114,65 @@ async function vercelEnvAdd(
   }
 }
 
+async function listVercelEnvKeys(
+  projectId: string,
+  teamId: string,
+  token: string,
+  environment: string,
+): Promise<string[]> {
+  const res = await fetch(
+    `https://api.vercel.com/v9/projects/${projectId}/env?teamId=${teamId}`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!res.ok) {
+    console.warn(`⚠ Failed to list existing env vars: ${res.status}`);
+    return [];
+  }
+  const { envs } = (await res.json()) as {
+    envs: { key: string; target: string[] }[];
+  };
+  return envs.filter(e => e.target.includes(environment)).map(e => e.key);
+}
+
+async function vercelEnvRemove(
+  key: string,
+  environment: string,
+): Promise<boolean> {
+  try {
+    execSync(`npx vercel env rm ${key} ${environment} --yes`, {
+      stdio: 'pipe',
+      env: vercelEnv,
+    });
+    console.log(`✓ removed stale ${key}`);
+    return true;
+  } catch (e) {
+    console.error(`✗ ${key}: failed to remove`, (e as Error).message);
+    return false;
+  }
+}
+
+async function pruneStaleVercelEnvVars(
+  projectId: string,
+  teamId: string,
+  token: string,
+  environment: string,
+  expectedKeys: Set<string>,
+): Promise<void> {
+  const existingKeys = await listVercelEnvKeys(
+    projectId,
+    teamId,
+    token,
+    environment,
+  );
+  const staleKeys = existingKeys.filter(key => !expectedKeys.has(key));
+  if (!staleKeys.length) return;
+
+  console.log(
+    `\nRemoving ${staleKeys.length} stale env var(s): ${staleKeys.join(', ')}`,
+  );
+  await Promise.all(staleKeys.map(key => vercelEnvRemove(key, environment)));
+}
+
 function parseEnvKeys(filePath: string): string[] {
   if (!existsSync(filePath)) return [];
   return readFileSync(filePath, 'utf-8')
@@ -244,6 +303,14 @@ async function main() {
       vercelEnv.VERCEL_TOKEN,
     );
   }
+
+  await pruneStaleVercelEnvVars(
+    vercelEnv.VERCEL_PROJECT_ID,
+    vercelEnv.VERCEL_ORG_ID,
+    vercelEnv.VERCEL_TOKEN,
+    VERCEL_ENV,
+    new Set(Object.keys(allSecrets)),
+  );
 
   console.log('Deploying secrets...');
   const results = await Promise.all(
