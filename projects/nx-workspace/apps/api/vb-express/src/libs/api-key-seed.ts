@@ -1,7 +1,7 @@
 import { defaultKeyHasher } from '@better-auth/api-key';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { VB_EXPRESS_SERVICE } from '@vigilant-broccoli/common-js';
-import { API_KEY_MODEL, API_KEY_PERMISSION_RESOURCE, auth } from '../auth';
+import { API_KEY_MODEL, auth, buildServicePermissions } from '../auth';
 
 const SEED_ACCOUNT_EMAIL = 'harryliu1995@gmail.com';
 const SEED_KEY_NAME = 'legacy-shared';
@@ -12,25 +12,25 @@ export const syncLegacySharedApiKey = async () => {
   if (!seedValue) return;
   const hashedKey = await defaultKeyHasher(seedValue);
   const context = await auth.$context;
-  const permissions = {
-    [API_KEY_PERMISSION_RESOURCE]: Object.values(VB_EXPRESS_SERVICE),
-  };
-  // The apiKey model stores permissions as a JSON string, so this writes
-  // through the adapter directly rather than auth.api.updateApiKey, which
-  // requires a live session and isn't callable from this unauthenticated
-  // boot-time context.
-  const permissionsUpdate = { permissions: JSON.stringify(permissions) };
+  const permissions = buildServicePermissions(
+    Object.values(VB_EXPRESS_SERVICE),
+  );
+  // Writes through the adapter directly since auth.api.updateApiKey requires
+  // a live session, unavailable in this unauthenticated boot-time context.
+  const serializedPermissions = JSON.stringify(permissions);
 
   const existingByHash = (await context.adapter.findOne({
     model: API_KEY_MODEL,
     where: [{ field: 'key', value: hashedKey }],
-  })) as { id: string } | null;
+  })) as { id: string; permissions: string | null } | null;
   if (existingByHash) {
-    await context.adapter.update({
-      model: API_KEY_MODEL,
-      where: [{ field: 'id', value: existingByHash.id }],
-      update: permissionsUpdate,
-    });
+    if (existingByHash.permissions !== serializedPermissions) {
+      await context.adapter.update({
+        model: API_KEY_MODEL,
+        where: [{ field: 'id', value: existingByHash.id }],
+        update: { permissions: serializedPermissions },
+      });
+    }
     return;
   }
 
@@ -41,12 +41,17 @@ export const syncLegacySharedApiKey = async () => {
   const existingByName = (await context.adapter.findOne({
     model: API_KEY_MODEL,
     where: [{ field: 'name', value: SEED_KEY_NAME }],
-  })) as { id: string } | null;
+  })) as { id: string; permissions: string | null } | null;
   if (existingByName) {
     await context.adapter.update({
       model: API_KEY_MODEL,
       where: [{ field: 'id', value: existingByName.id }],
-      update: { ...seedKeyUpdate, ...permissionsUpdate },
+      update: {
+        ...seedKeyUpdate,
+        ...(existingByName.permissions !== serializedPermissions
+          ? { permissions: serializedPermissions }
+          : {}),
+      },
     });
     return;
   }
