@@ -4,18 +4,14 @@ STACKS=(Development Leisure Social Tools Utility)
 
 declare -a DEVELOPMENT_APPS=(
     "/Applications/Bruno.app"
-    "/Applications/Burp Suite Community Edition.app"
     "/Applications/DB Browser for SQLite.app"
     "/Applications/DBeaver.app"
     "/Applications/Docker.app"
     "/Applications/Godot.app"
     "/Applications/iTerm.app"
-    "/Applications/Postman.app"
     "/Applications/Visual Studio Code.app"
     "/Applications/VMware Fusion.app"
-    "/Applications/WireGuard.app"
     "/Applications/Wireshark.app"
-    "/Applications/Xcode.app"
 )
 
 declare -a LEISURE_APPS=(
@@ -27,7 +23,6 @@ declare -a LEISURE_APPS=(
 
 declare -a SOCIAL_APPS=(
     "/System/Applications/Contacts.app"
-    "/Applications/Discord.app"
     "/System/Applications/FaceTime.app"
     "/Applications/WeChat.app"
     "/Applications/WhatsApp.app"
@@ -37,9 +32,9 @@ declare -a TOOLS_APPS=(
     "/Applications/AltTab.app"
     "/Applications/AppCleaner.app"
     "/Applications/balenaEtcher.app"
-    "/Applications/Divvy.app"
     "/Applications/Dropzone 4.app"
     "/Applications/Handy.app"
+    "/Applications/Little Snitch.app"
     "/Applications/Raycast.app"
 )
 
@@ -52,7 +47,6 @@ declare -a UTILITY_APPS=(
     "/Applications/NordVPN.app"
     "/Applications/Safari.app"
     "/System/Applications/System Settings.app"
-    "/Applications/TeamViewer.app"
 )
 
 create_alias() {
@@ -85,8 +79,8 @@ create_stack() {
     echo "Creating $stack_name stack..."
     for app in "${apps[@]}"; do create_alias "$app" "$stack_dir"; done
 
-    dockutil --remove "$stack_name" 2>/dev/null
-    dockutil --add "$stack_dir" --sort name --display stack
+    dockutil --remove "$stack_name" --no-restart 2>/dev/null
+    dockutil --add "$stack_dir" --sort name --display stack --no-restart
 }
 
 rm -rf "$DOCK_STACKS_DIR"
