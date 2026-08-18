@@ -7,6 +7,7 @@ import {
   HeadObjectCommand,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { IBucketProvider, AwsBucketConfig, BucketFile } from '../bucket.models';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { promises as fs } from 'fs';
@@ -142,5 +143,32 @@ export class AwsBucketProvider implements IBucketProvider {
       chunks.push(Buffer.from(chunk));
     }
     return Buffer.concat(chunks);
+  }
+
+  async getUploadUrl(
+    destinationName: string,
+    contentType: string,
+    expiresInSeconds: number,
+  ): Promise<string> {
+    return getSignedUrl(
+      this.client,
+      new PutObjectCommand({
+        Bucket: this.bucketName,
+        Key: destinationName,
+        ContentType: contentType,
+      }),
+      { expiresIn: expiresInSeconds },
+    );
+  }
+
+  async getDownloadUrl(
+    fileName: string,
+    expiresInSeconds: number,
+  ): Promise<string> {
+    return getSignedUrl(
+      this.client,
+      new GetObjectCommand({ Bucket: this.bucketName, Key: fileName }),
+      { expiresIn: expiresInSeconds },
+    );
   }
 }
