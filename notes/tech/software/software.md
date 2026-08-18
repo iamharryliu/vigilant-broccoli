@@ -1,6 +1,7 @@
 # Software
 
 - [Software Lingo](./software-lingo.md)
+- [Software Timeline](./software-timeline.md)
 - [Software Breakdown](./general/software-breakdown.md)
 - [Software Roadmap](./software-roadmap.md)
 - [Dev Glossary](./dev-glossary.md)

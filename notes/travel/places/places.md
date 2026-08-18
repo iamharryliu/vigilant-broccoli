@@ -1,3 +1,7 @@
+# Places
+
+[City Comparison](./city-comparison.md)
+
 ## Places That I Have Been
 
 🇨🇦 Canada
@@ -14,3 +18,4 @@
 [Copenhagen](./Copenhagen/Denmark/Copenhagen.md)
 🇸🇮 Slovenia
 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland
+🇳🇴 Norway
