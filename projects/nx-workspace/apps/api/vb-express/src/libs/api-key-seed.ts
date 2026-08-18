@@ -15,18 +15,21 @@ export const syncLegacySharedApiKey = async () => {
   const permissions = {
     [API_KEY_PERMISSION_RESOURCE]: Object.values(VB_EXPRESS_SERVICE),
   };
+  // The apiKey model stores permissions as a JSON string, so this writes
+  // through the adapter directly rather than auth.api.updateApiKey, which
+  // requires a live session and isn't callable from this unauthenticated
+  // boot-time context.
+  const permissionsUpdate = { permissions: JSON.stringify(permissions) };
 
   const existingByHash = (await context.adapter.findOne({
     model: API_KEY_MODEL,
     where: [{ field: 'key', value: hashedKey }],
-  })) as { id: string; userId: string } | null;
+  })) as { id: string } | null;
   if (existingByHash) {
-    await auth.api.updateApiKey({
-      body: {
-        keyId: existingByHash.id,
-        userId: existingByHash.userId,
-        permissions,
-      },
+    await context.adapter.update({
+      model: API_KEY_MODEL,
+      where: [{ field: 'id', value: existingByHash.id }],
+      update: permissionsUpdate,
     });
     return;
   }
@@ -38,19 +41,12 @@ export const syncLegacySharedApiKey = async () => {
   const existingByName = (await context.adapter.findOne({
     model: API_KEY_MODEL,
     where: [{ field: 'name', value: SEED_KEY_NAME }],
-  })) as { id: string; userId: string } | null;
+  })) as { id: string } | null;
   if (existingByName) {
     await context.adapter.update({
       model: API_KEY_MODEL,
       where: [{ field: 'id', value: existingByName.id }],
-      update: seedKeyUpdate,
-    });
-    await auth.api.updateApiKey({
-      body: {
-        keyId: existingByName.id,
-        userId: existingByName.userId,
-        permissions,
-      },
+      update: { ...seedKeyUpdate, ...permissionsUpdate },
     });
     return;
   }
