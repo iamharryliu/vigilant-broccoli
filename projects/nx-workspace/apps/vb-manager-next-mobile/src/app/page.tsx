@@ -11,7 +11,7 @@ export default function HomePage() {
             Paste text or an image to create events
           </p>
         </header>
-        <div className="px-4 py-5 pb-24">
+        <div className="px-4 py-5">
           <CalendarInput />
         </div>
       </main>
