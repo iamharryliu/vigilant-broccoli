@@ -4,12 +4,14 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Calendar,
+  CalendarRange,
   ListChecks,
   ListTodo,
   Mic,
   ScanLine,
   NotebookPen,
   LogOut,
+  Sparkles,
 } from 'lucide-react';
 import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib';
 import { signOut } from '../providers/auth-provider';
@@ -24,14 +26,40 @@ const FOOTER_LABEL_COLLAPSIBLE =
   'w-0 opacity-0 group-hover/sidebar:w-auto group-hover/sidebar:flex-1 group-hover/sidebar:opacity-100';
 const FOOTER_LABEL_VISIBLE = 'flex-1 opacity-100';
 
+const AI_TOOLS_ID = 'ai-tools';
+
 const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
-  { href: '/', label: 'Calendar', icon: Calendar },
-  { href: '/tasks', label: 'Tasks', icon: ListChecks },
+  {
+    id: AI_TOOLS_ID,
+    label: 'AI Tools',
+    icon: Sparkles,
+    children: [
+      { href: '/', label: 'Create Calendar', icon: Calendar },
+      { href: '/tasks', label: 'Create Tasks', icon: ListChecks },
+    ],
+  },
   { href: '/task-list', label: 'My Tasks', icon: ListTodo },
   { href: '/transcribe', label: 'Transcribe', icon: Mic },
   { href: '/ocr', label: 'Scan', icon: ScanLine },
   { href: '/notepad', label: 'Notepad', icon: NotebookPen },
+  { href: '/event-calendars', label: 'Event Calendars', icon: CalendarRange },
 ];
+
+const withActiveState = (
+  item: Omit<SidebarCTA, 'isActive'>,
+  pathname: string,
+): SidebarCTA => ({
+  ...item,
+  isActive: pathname === item.href,
+  children: item.children?.map(child => withActiveState(child, pathname)),
+});
+
+const isGroupActive = (
+  item: Omit<SidebarCTA, 'isActive'>,
+  pathname: string,
+): boolean =>
+  item.href === pathname ||
+  (item.children?.some(child => isGroupActive(child, pathname)) ?? false);
 
 type AppSidebarProps = {
   mobileOpen: boolean;
@@ -41,10 +69,12 @@ type AppSidebarProps = {
 export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
   const pathname = usePathname();
 
-  const items: SidebarCTA[] = NAV_ITEMS.map(item => ({
-    ...item,
-    isActive: pathname === item.href,
-  }));
+  const items: SidebarCTA[] = NAV_ITEMS.map(item =>
+    withActiveState(item, pathname),
+  );
+  const aiTools = NAV_ITEMS.find(item => item.id === AI_TOOLS_ID);
+  const defaultOpenId =
+    aiTools && isGroupActive(aiTools, pathname) ? AI_TOOLS_ID : null;
 
   return (
     <Sidebar
@@ -53,6 +83,7 @@ export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
       className={SIDEBAR_POSITION}
       mobileOpen={mobileOpen}
       onMobileClose={onMobileClose}
+      defaultOpenId={defaultOpenId}
       footer={
         <button type="button" onClick={() => signOut()} className={FOOTER_ROW}>
           <span className="shrink-0">
