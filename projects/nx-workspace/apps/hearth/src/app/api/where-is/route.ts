@@ -61,28 +61,35 @@ export async function GET(request: NextRequest) {
 
   const { data: items } = await query;
 
-  const result = await Promise.all(
-    (items ?? []).map(async item => {
-      const sortedImages = (
-        item.where_is_images as { r2_key: string; sort_order: number }[]
-      ).sort((a, b) => a.sort_order - b.sort_order);
+  try {
+    const result = await Promise.all(
+      (items ?? []).map(async item => {
+        const sortedImages = (
+          item.where_is_images as { r2_key: string; sort_order: number }[]
+        ).sort((a, b) => a.sort_order - b.sort_order);
 
-      return {
-        id: item.id,
-        title: item.title,
-        description: item.description,
-        tags: item.tags,
-        homeId: item.home_id,
-        imageUrls: await Promise.all(
-          sortedImages.map(img => getImageUrl(img.r2_key)),
-        ),
-        imageKeys: sortedImages.map(img => img.r2_key),
-        createdAt: item.created_at,
-      };
-    }),
-  );
+        return {
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          tags: item.tags,
+          homeId: item.home_id,
+          imageUrls: await Promise.all(
+            sortedImages.map(img => getImageUrl(img.r2_key)),
+          ),
+          imageKeys: sortedImages.map(img => img.r2_key),
+          createdAt: item.created_at,
+        };
+      }),
+    );
 
-  return Response.json(id ? (result[0] ?? null) : result);
+    return Response.json(id ? (result[0] ?? null) : result);
+  } catch (e) {
+    return Response.json(
+      { error: (e as Error).message },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+  }
 }
 
 export async function POST(request: NextRequest) {

@@ -6,9 +6,9 @@ import {
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { ImageValidationError } from './image-processor';
 
-const BUCKET_API = `${getEnvironmentVariable('VB_STORAGE_SERVICE_URL')}/api/bucket`;
+const BUCKET_API = `${getEnvironmentVariable('VB_EXPRESS_URL')}/api/storage`;
 const API_HEADERS = {
-  [API_KEY_HEADER]: getEnvironmentVariable('SHARED_APP_TOKEN'),
+  [API_KEY_HEADER]: getEnvironmentVariable('VB_EXPRESS_API_KEY'),
 };
 
 const PROVIDER = 'cloudflare-r2';
