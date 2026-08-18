@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { execSync, execFileSync } from 'child_process';
 import { readFileSync, existsSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
@@ -139,7 +139,10 @@ async function vercelEnvRemove(
   environment: string,
 ): Promise<boolean> {
   try {
-    execSync(`npx vercel env rm ${key} ${environment} --yes`, {
+    // execFileSync (no shell) since key comes from the Vercel API rather
+    // than local trusted config — avoids building a shell command string
+    // out of a value from an external response.
+    execFileSync('npx', ['vercel', 'env', 'rm', key, environment, '--yes'], {
       stdio: 'pipe',
       env: vercelEnv,
     });
