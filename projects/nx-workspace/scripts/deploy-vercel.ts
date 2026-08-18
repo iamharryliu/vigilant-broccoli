@@ -173,7 +173,6 @@ async function main() {
         ...SUPABASE_PUBLIC_SECRETS,
         NEXT_PUBLIC_APP_URL: `https://${environment}-hearth.vercel.app/`,
         VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
-        VB_STORAGE_SERVICE_URL: `https://${environment}-storage-service.fly.dev`,
       },
       envExamplePath: 'apps/hearth/.env.local.example',
       settings: NX_VERCEL_SETTINGS('hearth', 'dist/apps/hearth/.next'),

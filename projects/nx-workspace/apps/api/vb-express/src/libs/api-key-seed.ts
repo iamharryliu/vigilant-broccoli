@@ -12,11 +12,25 @@ export const syncLegacySharedApiKey = async () => {
   if (!seedValue) return;
   const hashedKey = await defaultKeyHasher(seedValue);
   const context = await auth.$context;
-  const existingByHash = await context.adapter.findOne({
+  const permissions = {
+    [API_KEY_PERMISSION_RESOURCE]: Object.values(VB_EXPRESS_SERVICE),
+  };
+
+  const existingByHash = (await context.adapter.findOne({
     model: API_KEY_MODEL,
     where: [{ field: 'key', value: hashedKey }],
-  });
-  if (existingByHash) return;
+  })) as { id: string; userId: string } | null;
+  if (existingByHash) {
+    await auth.api.updateApiKey({
+      body: {
+        keyId: existingByHash.id,
+        userId: existingByHash.userId,
+        permissions,
+      },
+    });
+    return;
+  }
+
   const seedKeyUpdate = {
     key: hashedKey,
     start: seedValue.slice(0, KEY_START_LENGTH),
@@ -24,15 +38,23 @@ export const syncLegacySharedApiKey = async () => {
   const existingByName = (await context.adapter.findOne({
     model: API_KEY_MODEL,
     where: [{ field: 'name', value: SEED_KEY_NAME }],
-  })) as { id: string } | null;
+  })) as { id: string; userId: string } | null;
   if (existingByName) {
     await context.adapter.update({
       model: API_KEY_MODEL,
       where: [{ field: 'id', value: existingByName.id }],
       update: seedKeyUpdate,
     });
+    await auth.api.updateApiKey({
+      body: {
+        keyId: existingByName.id,
+        userId: existingByName.userId,
+        permissions,
+      },
+    });
     return;
   }
+
   const existingUser =
     await context.internalAdapter.findUserByEmail(SEED_ACCOUNT_EMAIL);
   const user =
@@ -43,13 +65,7 @@ export const syncLegacySharedApiKey = async () => {
       emailVerified: true,
     }));
   const createdKey = await auth.api.createApiKey({
-    body: {
-      name: SEED_KEY_NAME,
-      userId: user.id,
-      permissions: {
-        [API_KEY_PERMISSION_RESOURCE]: Object.values(VB_EXPRESS_SERVICE),
-      },
-    },
+    body: { name: SEED_KEY_NAME, userId: user.id, permissions },
   });
   await context.adapter.update({
     model: API_KEY_MODEL,
