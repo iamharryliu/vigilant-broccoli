@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --topbar-h: calc(3.5rem + env(safe-area-inset-top, 0px));
+  }
+}
+
 html {
   -webkit-text-size-adjust: 100%;
 }

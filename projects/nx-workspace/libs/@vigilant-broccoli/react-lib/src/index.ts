@@ -2,6 +2,7 @@ export * from './auth';
 export * from './calendar';
 export * from './components';
 export * from './hooks/useGeolocation';
+export * from './hooks/useNotepad';
 export * from './hooks/useThemeKeybind';
 export * from './i18n';
 export * from './leaderboard';

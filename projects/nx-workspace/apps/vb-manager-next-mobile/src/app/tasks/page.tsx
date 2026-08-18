@@ -11,7 +11,7 @@ export default function TasksPage() {
             Combine text and images to create tasks
           </p>
         </header>
-        <div className="px-4 py-5 pb-24">
+        <div className="px-4 py-5">
           <TasksInput />
         </div>
       </main>

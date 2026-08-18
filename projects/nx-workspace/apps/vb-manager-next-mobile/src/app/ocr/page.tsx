@@ -11,7 +11,7 @@ export default function OcrPage() {
             Take a picture, then copy the text
           </p>
         </header>
-        <div className="px-4 py-5 pb-24">
+        <div className="px-4 py-5">
           <OcrScanner />
         </div>
       </main>

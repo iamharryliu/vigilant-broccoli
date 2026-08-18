@@ -11,7 +11,7 @@ export default function TaskListPage() {
             View and manage your Google Tasks
           </p>
         </header>
-        <div className="px-4 py-5 pb-24">
+        <div className="px-4 py-5">
           <GoogleTaskList />
         </div>
       </main>
