@@ -206,20 +206,20 @@
     "url": "https://staging-vb-express.fly.dev/",
     "icon": "https://icons.duckduckgo.com/ip3/staging-vb-express.fly.dev.ico",
     "slug": "staging-service-manager",
-    "status": "down",
-    "uptime": "99.91%",
-    "uptimeDay": "99.99%",
-    "uptimeWeek": "99.52%",
-    "uptimeMonth": "99.89%",
-    "uptimeYear": "99.91%",
-    "time": 1062,
-    "timeDay": 18135,
-    "timeWeek": 4092,
-    "timeMonth": 1240,
-    "timeYear": 1062,
+    "status": "up",
+    "uptime": "99.24%",
+    "uptimeDay": "75.70%",
+    "uptimeWeek": "96.05%",
+    "uptimeMonth": "99.09%",
+    "uptimeYear": "99.24%",
+    "time": 1039,
+    "timeDay": 12141,
+    "timeWeek": 3698,
+    "timeMonth": 1208,
+    "timeYear": 1039,
     "dailyMinutesDown": {
       "2026-08-15": 49,
-      "2026-08-18": 0
+      "2026-08-18": 350
     }
   },
   {
