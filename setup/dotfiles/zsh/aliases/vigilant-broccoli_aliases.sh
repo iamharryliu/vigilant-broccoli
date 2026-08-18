@@ -86,4 +86,8 @@ vb-cheatsheet() {
     echo "vibecode [dir] [-n name]            Vibe coding layout (claude + lazygit + shells)"
     echo "newtmuxwindow <name> [dir]          Create named tmux window"
     echo "rmtmuxw <name>                      Kill named tmux window"
+    echo "=== Desktop Setup ==="
+    echo "setupdock                           Run setup_dock.sh"
+    echo "setupdockstacks                     Rebuild Dock Stacks folders (setup_dock_stacks.sh)"
+    echo "setupmac                            Run setup_macos_preferences.sh"
 }
