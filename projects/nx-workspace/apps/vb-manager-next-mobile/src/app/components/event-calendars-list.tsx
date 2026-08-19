@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { CalendarDays, CalendarRange, List } from 'lucide-react';
 import { CopyButton } from '@vigilant-broccoli/react-lib';
 import { buildAuthHeaders } from '../providers/auth-provider';
 
@@ -14,6 +15,16 @@ type EventCalendarLink = {
   name: string;
   url: string;
 };
+
+type CalendarViewMode = 'AGENDA' | 'WEEK' | 'MONTH';
+
+const CALENDAR_VIEWS: { mode: CalendarViewMode; label: string; Icon: typeof List }[] = [
+  { mode: 'AGENDA', label: 'Schedule', Icon: List },
+  { mode: 'WEEK', label: 'Week', Icon: CalendarRange },
+  { mode: 'MONTH', label: 'Month', Icon: CalendarDays },
+];
+
+const withViewMode = (url: string, mode: CalendarViewMode) => `${url}&mode=${mode}`;
 
 export const EventCalendarsList = () => {
   const [calendars, setCalendars] = useState<EventCalendarLink[] | null>(null);
@@ -65,7 +76,22 @@ export const EventCalendarsList = () => {
           >
             {calendar.name}
           </a>
-          <CopyButton text={calendar.url} />
+          <div className="flex items-center gap-1">
+            {CALENDAR_VIEWS.map(({ mode, label, Icon }) => (
+              <a
+                key={mode}
+                href={withViewMode(calendar.url, mode)}
+                target="_blank"
+                rel="noreferrer"
+                title={label}
+                aria-label={`Open ${calendar.name} in ${label} view`}
+                className="rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+              >
+                <Icon size={16} />
+              </a>
+            ))}
+            <CopyButton text={calendar.url} />
+          </div>
         </li>
       ))}
     </ul>
