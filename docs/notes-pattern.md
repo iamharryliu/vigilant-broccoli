@@ -6,6 +6,7 @@ Convention for `notes/` — a tree of Markdown notes linked by relative paths (n
 
 These apply repo-wide, regardless of topic:
 
+- `notes/` content must be agnostic to this repo — general reference material (tech concepts, product comparisons, how-tos) that would read the same in any project. Don't name this repo's apps, paths, or hostnames; repo-specific usage/decisions belong in `docs/` instead.
 - Links are relative Markdown links and must always include the `.md` extension — `[X](./foo)` (missing extension) is a broken link, not a shorthand.
 - Every note file must be reachable by clicking through from some index. An unlinked file is an orphan and should either be linked in or removed.
 - External links (YouTube, recipe sites, etc.) are fine mixed inline alongside internal links within an index.
