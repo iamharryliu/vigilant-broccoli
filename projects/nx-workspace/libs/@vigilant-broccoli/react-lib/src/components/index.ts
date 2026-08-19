@@ -31,6 +31,7 @@ export * from './DeleteIconButton';
 export * from './DocsExplorer';
 export * from './ServiceLinksTable';
 export * from './SocialSigninButton';
+export * from './GoogleSignInPage';
 export * from './GithubActionsBadges';
 export * from './StackedImages';
 export * from './CollapsibleList';
