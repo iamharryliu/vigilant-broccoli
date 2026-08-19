@@ -12,7 +12,7 @@ export const GoogleSignInPage = ({
   tagline,
   onSignIn,
 }: GoogleSignInPageProps) => (
-  <main className="min-h-screen flex items-center justify-center bg-gray-50">
+  <main className="min-h-dvh flex items-center justify-center bg-gray-50">
     <div className="w-full max-w-sm mx-4 rounded-2xl bg-white p-8 shadow-lg space-y-6">
       <div className="text-center space-y-2">
         <h1 className="text-2xl font-semibold text-gray-800">{appName}</h1>
