@@ -28,6 +28,8 @@ sites:
     url: https://staging-vb-express.fly.dev/
   - name: staging-whiteboard
     url: https://staging-whiteboard.vercel.app/
+  - name: staging-vb-manager-next-mobile
+    url: https://staging-vb-manager-next-mobile.vercel.app/login
   - name: production-findme
     url: https://production-findme.vercel.app/
   - name: production-hearth
@@ -36,6 +38,8 @@ sites:
     url: https://production-vb-express.fly.dev/
   - name: production-whiteboard
     url: https://production-whiteboard.vercel.app/
+  - name: production-vb-manager-next-mobile
+    url: https://production-vb-manager-next-mobile.vercel.app/login
 
 user-agent: upptime-vigilant-broccoli
 

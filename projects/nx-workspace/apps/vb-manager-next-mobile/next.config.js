@@ -16,7 +16,6 @@ const options = {
 const nextConfig = {
   nx: { ...options },
   distDir: '../../dist/apps/vb-manager-next-mobile/.next',
-  output: 'standalone',
 };
 const plugins = [
   // Add more Next.js plugins to this list if needed.
