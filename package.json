@@ -94,6 +94,7 @@
     "vb-manager-next:status": "cd projects/nx-workspace && nx run vb-manager-next:pm2:status",
     "deploy:local-services": "pnpm local:docker:up && pnpm vb-manager-next:reload",
     "health-check": "./projects/nx-workspace/scripts/shell/health-check.sh",
+    "dldjmusic": "./projects/nx-workspace/scripts/shell/run-spotify-to-mp3.sh --output \"$HOME/My Drive/DJ Music Library\" --filter mix --parallel 5",
     "gh:actions:deploy": "gh workflow run deploy --repo iamharryliu/vigilant-broccoli",
     "gh:actions:health-check": "gh workflow run ci-health-check --repo iamharryliu/vigilant-broccoli",
     "gh:actions:kill-services": "gh workflow run kill-services --repo iamharryliu/vigilant-broccoli",
