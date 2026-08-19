@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../../../libs/supabase';
-import { PAGE_MIN_HEIGHT } from '../../components/app-shell';
+import { PAGE_MIN_HEIGHT } from '../../components/app-shell.constants';
 
 export default function AuthCallbackPage() {
   const router = useRouter();

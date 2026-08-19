@@ -1,6 +1,6 @@
 import { TasksInput } from '../components/tasks-input';
 import { ProtectedRoute } from '../components/protected-route';
-import { PAGE_MIN_HEIGHT } from '../components/app-shell';
+import { PAGE_MIN_HEIGHT } from '../components/app-shell.constants';
 
 export default function TasksPage() {
   return (

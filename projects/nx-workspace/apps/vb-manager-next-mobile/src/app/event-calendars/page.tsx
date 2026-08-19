@@ -1,6 +1,6 @@
 import { EventCalendarsList } from '../components/event-calendars-list';
 import { ProtectedRoute } from '../components/protected-route';
-import { PAGE_MIN_HEIGHT } from '../components/app-shell';
+import { PAGE_MIN_HEIGHT } from '../components/app-shell.constants';
 
 export default function EventCalendarsPage() {
   return (
