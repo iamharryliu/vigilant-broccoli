@@ -60,17 +60,16 @@ export const MyCalendarView = () => {
       <button
         type="button"
         onClick={() => setCreateOpen(true)}
-        className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
+        className="flex w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
       >
         <CalendarPlus size={16} />
         Create Event
       </button>
 
-      <div className="h-full w-full overflow-hidden rounded-lg border border-gray-200">
+      <div className="w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200">
         <iframe
           src={buildCalendarUrl(CALENDAR_CONFIG)}
           className="h-full w-full dark:invert dark:hue-rotate-180"
-          style={{ minHeight: '70vh' }}
           title={CALENDAR_TITLE}
         />
       </div>
