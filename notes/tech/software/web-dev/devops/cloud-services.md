@@ -15,6 +15,8 @@ Comparison of managed/cloud hosting solutions by category, to guide picking a de
 - [Container Registry](#container-registry)
 - [VM / Compute](#vm--compute)
 - [CMS](#cms)
+- [Email](#email)
+- [APIs / Data](#apis--data)
 - [Security / Access](#security--access)
 
 ## Backend / API Hosting
@@ -93,6 +95,19 @@ Comparison of managed/cloud hosting solutions by category, to guide picking a de
 | Name   | Usage                                  | Free Tier                           | When to Use                                                                                  |
 | ------ | -------------------------------------- | ----------------------------------- | -------------------------------------------------------------------------------------------- |
 | Sanity | Hosted structured-content CMS + Studio | Free tier (1 project, usage-capped) | Default for structured content needs (e.g. `cloud8skate-sanity`) — avoids self-hosting a CMS |
+
+## Email
+
+| Name     | Usage                                       | Free Tier                                                                                                           | When to Use                                                              |
+| -------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Resend   | Transactional email API (REST + SMTP relay) | 3,000 emails/month, capped at 100/day; 1 domain; 1k contacts/month                                                  | Default for transactional email sending — used by `email-service`        |
+| SendGrid | Transactional/marketing email API (Twilio)  | 100 emails/day (~3k/mo), 100 marketing contacts — as of 2025 gated behind a 60-day trial, not a perpetual free tier | Not currently used; free tier is trial-limited, Resend preferred instead |
+
+## APIs / Data
+
+| Name                | Usage                                                                            | Free Tier                                                                                    | When to Use                                                                                     |
+| ------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Google Calendar API | Calendar read/write — per-user OAuth plus a service account in `vb-manager-next` | No billing tied to usage; default quota 1,000,000 queries/day/project, 500 queries/100s/user | Reading/writing calendar events, including scraped event calendars owned by the service account |
 
 ## Security / Access
 
