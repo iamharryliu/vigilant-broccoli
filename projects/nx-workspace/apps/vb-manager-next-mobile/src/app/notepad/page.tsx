@@ -1,6 +1,6 @@
 import { NotepadEditor } from '../components/notepad-editor';
 import { ProtectedRoute } from '../components/protected-route';
-import { PAGE_HEIGHT } from '../components/app-shell';
+import { PAGE_HEIGHT } from '../components/app-shell.constants';
 
 export default function NotepadPage() {
   return (

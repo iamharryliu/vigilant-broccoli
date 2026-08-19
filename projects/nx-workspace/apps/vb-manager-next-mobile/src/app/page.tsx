@@ -1,6 +1,6 @@
 import { MyCalendarView } from './components/my-calendar-view';
 import { ProtectedRoute } from './components/protected-route';
-import { PAGE_HEIGHT } from './components/app-shell';
+import { PAGE_HEIGHT } from './components/app-shell.constants';
 
 export default function HomePage() {
   return (

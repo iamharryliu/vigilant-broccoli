@@ -1,6 +1,6 @@
 import { VoiceTranscriber } from '../components/voice-transcriber';
 import { ProtectedRoute } from '../components/protected-route';
-import { PAGE_MIN_HEIGHT } from '../components/app-shell';
+import { PAGE_MIN_HEIGHT } from '../components/app-shell.constants';
 
 export default function TranscribePage() {
   return (
