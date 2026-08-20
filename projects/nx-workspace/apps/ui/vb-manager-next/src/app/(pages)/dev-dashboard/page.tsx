@@ -12,6 +12,7 @@ import { GithubPagesComponent } from '../../components/github-pages.component';
 import { PM2StatusComponent } from '../../components/pm2-status.component';
 import { PublicIpComponent } from '../../components/public-ip.component';
 import { TailscaleMachinesComponent } from '../../components/tailscale-machines.component';
+import { TerraformStatusComponent } from '../../components/terraform-status.component';
 import { WireguardStatusComponent } from '../../components/wireguard-status.component';
 import { WranglerPagesComponent } from '../../components/wrangler-pages.component';
 import { VercelAppsComponent } from '../../components/vercel-apps.component';
@@ -91,6 +92,7 @@ export default function Page() {
           <div className="flex flex-col gap-4">
             <GcloudAuthStatusComponent />
             <AwsManagementComponent />
+            <TerraformStatusComponent />
           </div>
           <div className="flex flex-col gap-4">
             <FlyIoAppsComponent />
