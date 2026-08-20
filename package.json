@@ -14,6 +14,7 @@
     "npm:login": "npm login",
     "fly:login": "flyctl auth login",
     "oracle:config": "vim ~/.oci/config",
+    "tf:init": "cd infrastructure/terraform && terraform init",
     "tf:plan": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform plan",
     "tf:import": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform import",
     "tf:apply": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform apply && cd ../.. && ./infrastructure/terraform/scripts/post-apply.sh",
