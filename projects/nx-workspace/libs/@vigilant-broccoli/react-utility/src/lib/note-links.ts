@@ -43,6 +43,18 @@ export const scrollToUrlHash = () => {
 // browser navigate to "#stack" replaces the current route hash instead of scrolling.
 const isInPageAnchor = (href: string): boolean => href.startsWith('#');
 
+// history.replaceState (not `location.hash =`) so the fragment lands in the address bar
+// without the browser's native instant scroll-to-fragment fighting the smooth scroll below,
+// and without emitting a hashchange a HashRouter consumer would otherwise react to.
+const setUrlHash = (id: string) => {
+  const { pathname, search } = window.location;
+  window.history.replaceState(
+    window.history.state,
+    '',
+    `${pathname}${search}#${id}`,
+  );
+};
+
 export const createNoteLinkClickHandler =
   (filePath: string, onNavigate?: (path: string) => void) =>
   (event: MouseEvent<HTMLElement>) => {
@@ -53,9 +65,13 @@ export const createNoteLinkClickHandler =
 
     if (isInPageAnchor(href)) {
       event.preventDefault();
-      document
-        .getElementById(href.slice(1))
-        ?.scrollIntoView({ behavior: 'smooth' });
+      const id = href.slice(1);
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      // Only apps that route via a `?file=` query param (DocsExplorer, signalled by
+      // onNavigate being passed) are safe to mirror the anchor into the URL — a bare
+      // HashRouter consumer (no onNavigate, e.g. pages-index's ReadmePage) uses the
+      // fragment as its route, so touching it there would still be wrong.
+      if (onNavigate) setUrlHash(id);
       return;
     }
 
