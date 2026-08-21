@@ -15,6 +15,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── git.harryliu.dev                      Gitea — OCI VM (A record, proxied + Cloudflare Access; web UI gated by owner email, git/CI over HTTPS via service token, git-SSH on :2222 direct)
 ├── code.harryliu.dev                     code-server — OCI VM (A record, proxied + Cloudflare Access; owner-email + non-identity CI service token for ci-health-check /healthz origin probes)
 ├── drive.harryliu.dev                    Seafile — AWS EC2 VM (A record, proxied + Cloudflare Access, owner-email only; kept off the OCI Ampere pool — its 50GB-per-boot-volume floor left no free-tier storage headroom for a 4th/5th OCI VM)
+├── images.harryliu.dev                   Immich — AWS EC2 VM (CNAME to cfargotunnel.com, proxied + Cloudflare Access owner-email only; reached via an outbound-only cloudflared tunnel like vault.harryliu.dev, not a direct A record like drive — no inbound 80/443 on the box at all)
 ├── socket.harryliu.dev                   Socket server — OCI RabbitMQ VM (A record, DNS-only)
 └── vault.harryliu.dev                    Vault — GCP vb-free-vm via cloudflared tunnel (CNAME, proxied + Cloudflare Access service token, CI-only)
 
