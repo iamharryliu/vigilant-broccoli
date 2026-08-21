@@ -2,14 +2,15 @@
 
 import { GoogleSignInPage } from '@vigilant-broccoli/react-lib';
 
-import { supabase } from '../../../libs/supabase';
+import { getSupabase } from '../../../libs/supabase';
 import { ROUTES } from '../../lib/routes';
 import { useTranslation } from '../i18n';
 
 export default function LoginPage() {
   const { t } = useTranslation();
 
-  const handleGoogleSignIn = () => {
+  const handleGoogleSignIn = async () => {
+    const supabase = await getSupabase();
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
