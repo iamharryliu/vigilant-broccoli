@@ -26,7 +26,7 @@ export function App() {
 
   return (
     <Theme>
-      <div className="h-screen p-2 sm:p-4 bg-white dark:bg-gray-900">
+      <div className="h-dvh p-2 sm:p-4 bg-white dark:bg-gray-900">
         <DocsViewer
           getStructure={fetchStructure}
           getContent={fetchContent}
