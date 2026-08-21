@@ -14,6 +14,11 @@ const SUPABASE_KEY_ENV = 'SUPABASE_PUBLISHABLE_KEY';
 const ERR_UNAUTHORIZED = 'Unauthorized';
 const ERR_SUPABASE_NOT_CONFIGURED = 'Supabase not configured';
 
+// Must stay public: the client fetches this to construct its Supabase
+// client in the first place (see libs/supabase.ts), before it can ever
+// have a session token to send here.
+const PUBLIC_API_PATH = '/api/config';
+
 const parseList = (raw: string | undefined): string[] =>
   (raw ?? '')
     .split(',')
@@ -39,6 +44,8 @@ const unauthorized = (): NextResponse =>
   );
 
 export const proxy = async (req: NextRequest): Promise<NextResponse> => {
+  if (req.nextUrl.pathname === PUBLIC_API_PATH) return NextResponse.next();
+
   const auth = req.headers.get(AUTHORIZATION_HEADER);
   if (!auth?.startsWith(BEARER_PREFIX)) return unauthorized();
   const token = auth.slice(BEARER_PREFIX.length);
