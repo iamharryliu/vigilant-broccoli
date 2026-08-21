@@ -35,7 +35,7 @@ export const resolveNoteLink = (
 export const scrollToUrlHash = () => {
   const hash = window.location.hash.slice(1);
   if (!hash) return;
-  document.getElementById(hash)?.scrollIntoView();
+  document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' });
 };
 
 // In-page heading anchors (e.g. a Table of Contents link to "#stack") must not fall through
@@ -53,7 +53,9 @@ export const createNoteLinkClickHandler =
 
     if (isInPageAnchor(href)) {
       event.preventDefault();
-      document.getElementById(href.slice(1))?.scrollIntoView();
+      document
+        .getElementById(href.slice(1))
+        ?.scrollIntoView({ behavior: 'smooth' });
       return;
     }
 
