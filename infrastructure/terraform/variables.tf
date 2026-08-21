@@ -102,6 +102,16 @@ variable "seafile_admin_email" {
   default = "harryliu1995@gmail.com"
 }
 
+variable "immich_domain" {
+  type    = string
+  default = "images.harryliu.dev"
+}
+
+variable "immich_allowed_emails" {
+  type    = list(string)
+  default = ["harryliu1995@gmail.com"]
+}
+
 variable "vault_domain" {
   type    = string
   default = "vault.harryliu.dev"

@@ -44,6 +44,14 @@ output "aws_seafile_url" {
   value = "https://${var.seafile_domain}"
 }
 
+output "aws_immich_public_ip" {
+  value = aws_eip.immich.public_ip
+}
+
+output "aws_immich_url" {
+  value = "https://${var.immich_domain}"
+}
+
 output "journal_url" {
   value = "https://${var.journal_domain}"
 }
