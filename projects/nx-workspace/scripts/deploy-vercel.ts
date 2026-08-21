@@ -221,6 +221,16 @@ async function main() {
       'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
   };
 
+  // employee-handler-ui reads these unprefixed (see libs/supabase.ts) so its
+  // Docker image isn't locked to one Supabase project at build time — same
+  // values, different key names than the other apps below, which still read
+  // process.env.NEXT_PUBLIC_SUPABASE_* directly in client bundles.
+  const EMPLOYEE_HANDLER_UI_SUPABASE_SECRETS = {
+    SUPABASE_URL: SUPABASE_PUBLIC_SECRETS.NEXT_PUBLIC_SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY:
+      SUPABASE_PUBLIC_SECRETS.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  };
+
   const NX_VERCEL_SETTINGS = (nxProject: string, outputDirectory: string) => ({
     framework: 'nextjs',
     rootDirectory: 'projects/nx-workspace',
@@ -240,7 +250,7 @@ async function main() {
       settings: NX_VERCEL_SETTINGS('hearth', 'dist/apps/hearth/.next'),
     },
     'employee-handler-ui': {
-      hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
+      hardcodedSecrets: { ...EMPLOYEE_HANDLER_UI_SUPABASE_SECRETS },
       envExamplePath: 'apps/ui/employee-handler-ui/.env.example',
       settings: NX_VERCEL_SETTINGS(
         'employee-handler-ui',
