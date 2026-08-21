@@ -23,4 +23,4 @@ Mobile-friendly dashboard for managing personal tasks and calendars.
 - Cloud services
   - Supabase
   - Google Workspace APIs
-  - Fly.io
+  - Vercel

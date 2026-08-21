@@ -6,7 +6,7 @@ Decision-making map for LLM agents: how apps are built, tested, deployed, and do
 
 - **New API service** → `apps/api/*`, Fastify via `@vigilant-broccoli/fastify`, deployed to fly.io. Read [fly-service-pattern.md](./api/deployment/fly-service-pattern.md) first and copy one of its reference apps (build shape × image delivery).
 - **New static UI app** → `apps/ui/*`, Vite + React, deployed to Cloudflare Pages — read [cloudflare-pages-deploy-pattern.md](./ui/deployment/cloudflare-pages-deploy-pattern.md) first (wrangler target trio, per-env config, custom domains via Terraform). App-side requirements (cards, i18n): [ui-app-pattern.md](./ui/ui-app-pattern.md).
-- **Next.js apps** are exceptions, each with its own deploy: `hearth`/`findme`/`whiteboard`/`employee-handler-ui` (Vercel — read [vercel-deploy-pattern.md](./ui/deployment/vercel-deploy-pattern.md) first), `vb-manager-next` (PM2 on the VM, no nx `deploy` target).
+- **Next.js apps** are exceptions, each with its own deploy: `hearth`/`findme`/`whiteboard`/`employee-handler-ui`/`vb-manager-next-mobile` (Vercel — read [vercel-deploy-pattern.md](./ui/deployment/vercel-deploy-pattern.md) first), `vb-manager-next` (PM2 on the VM, no nx `deploy` target).
 - **Shared code** → `libs/@vigilant-broccoli/*`. Check before writing new code: `common-js` (HTTP consts), `common-node` (`getEnvironmentVariable`, http utils), `react-lib` (components, `createI18n`), `fastify`/`express`/`next-lib`.
 - **Local serve with secrets**: the `serve` target wraps `serve:no-vault` with `scripts/fetch-secrets.ts` + `NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt`. Top-level module init must never require live secrets or network (rule and rationale in [fly-service-pattern.md](./api/deployment/fly-service-pattern.md)).
 

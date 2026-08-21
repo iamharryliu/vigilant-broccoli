@@ -11,6 +11,7 @@
 - [Google Cloud](./google-cloud.md)
 - [AWS](./aws/aws.md)
 - [Cloudflare](./cloudflare.md)
+- [Vercel](./vercel.md)
 
 ## Devops Tools
 
