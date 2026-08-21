@@ -22,7 +22,7 @@
       "options": {
         "cwd": "apps/ui/employee-handler-ui",
         "tty": false,
-        "command": "NEXT_PUBLIC_SUPABASE_URL=https://jrdosjjgmsoodpjmjqxx.supabase.co NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0 next build --webpack"
+        "command": "next build --webpack"
       },
       "configurations": {
         "development": {}
@@ -31,7 +31,7 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NEXT_PUBLIC_SUPABASE_URL=https://jrdosjjgmsoodpjmjqxx.supabase.co NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0 nx run employee-handler-ui:serve:dev"
+        "command": "SUPABASE_URL=https://jrdosjjgmsoodpjmjqxx.supabase.co SUPABASE_PUBLISHABLE_KEY=sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0 nx run employee-handler-ui:serve:dev"
       }
     },
     "serve:mock:e2e": {
