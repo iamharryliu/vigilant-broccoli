@@ -265,6 +265,17 @@ async function main() {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
       settings: NX_VERCEL_SETTINGS('whiteboard', 'dist/apps/whiteboard/.next'),
     },
+    'vb-manager-next-mobile': {
+      hardcodedSecrets: {
+        ...SUPABASE_PUBLIC_SECRETS,
+        VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
+      },
+      envExamplePath: 'apps/vb-manager-next-mobile/.env.example',
+      settings: NX_VERCEL_SETTINGS(
+        'vb-manager-next-mobile',
+        'dist/apps/vb-manager-next-mobile/.next',
+      ),
+    },
   };
 
   const config = projectConfigs[projectName];
