@@ -142,12 +142,16 @@ cask "godot"
 cask "google-chrome"
 # Client for the Google Drive storage service
 cask "google-drive"
+# Desktop automation application
+cask "hammerspoon"
 # Speech to text application
 cask "handy"
 # Tool to optimise images to a smaller size
 cask "imageoptim"
 # Terminal emulator as alternative to Apple's Terminal app
 cask "iterm2"
+# Keyboard customiser
+cask "karabiner-elements"
 # Host-based application firewall
 cask "little-snitch"
 # VPN client for secure internet access and private browsing

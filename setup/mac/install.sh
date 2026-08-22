@@ -12,9 +12,17 @@ if ask "Symlink dotfiles?"; then
     create_symlink "$ZSH_DOTFILES_DIR/.rc.zsh" "$HOME/.zshrc"
     create_symlink "$ZSH_DOTFILES_DIR/.aliases.mac.zsh" "$HOME/.zsh_aliases"
     create_symlink "$WORKSPACES_DIR" "$HOME/Workspaces"
+    create_symlink "$DOTFILES_DIR/macos/hammerspoon" "$HOME/.hammerspoon"
+    mkdir -p "$HOME/.config/karabiner"
+    create_symlink "$DOTFILES_DIR/macos/karabiner/karabiner.json" "$HOME/.config/karabiner/karabiner.json"
     source $HOME/.zshrc
 fi
 
+
+if ask "Setup Hammerspoon Python helper (cross-space window owner lookups)?"; then
+    python3 -m venv "$HOME/.hammerspoon-venv"
+    "$HOME/.hammerspoon-venv/bin/pip" install --quiet pyobjc-framework-Quartz
+fi
 
 if ask "Setup macOS preferences?"; then
     chmod +x "$MAC_SETUP_DIR/setup_macos_preferences.sh"
