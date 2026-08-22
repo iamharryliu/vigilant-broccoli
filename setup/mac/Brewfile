@@ -1,5 +1,6 @@
 tap "cormacrelf/tap"
 tap "hashicorp/tap"
+tap "smudge/smudge"
 tap "teamookla/speedtest"
 # Codec library for encoding and decoding AV1 video streams
 brew "aom"
@@ -57,6 +58,8 @@ brew "mysql"
 brew "neovim"
 # No Nonsense Neovim Client in Rust
 brew "neovide"
+# A CLI for configuring 'Night Shift' on macOS
+brew "smudge/smudge/nightlight"
 # Port scanning utility for large networks
 brew "nmap"
 # Open-source, cross-platform JavaScript runtime environment
