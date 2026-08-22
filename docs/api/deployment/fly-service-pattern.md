@@ -53,6 +53,13 @@ Wiring: pruned `smoke` depends on `prune`; bundled `smoke` depends on `build`. `
 - `grace_period = '30s'` is required to cover cold-start under `auto_stop_machines = 'stop'`.
 - Failed checks on a new machine abort the deploy and keep the previous machine running — don't skip the `[[http_service.checks]]` block.
 
+## Machine count
+
+Each service runs **1 machine** per environment (`fly scale count 1 -a <app>`), set imperatively — `fly.toml`'s
+`min_machines_running = 0` only bounds autoscaling, it does not fix a count. `flyctl deploy` preserves whatever
+count currently exists, so a manual `fly scale count N` persists across deploys until someone changes it again.
+If you bump an app to more than 1 for redundancy, note it here so it doesn't get silently scaled back down.
+
 ## Secrets
 
 Declare in `projects/nx-workspace/scripts/secrets-mapping.config.ts`. The service's `.env.example` is the key list: `deploy-flyio-secrets.ts` parses it, pulls those keys from the service's Vault path, and pushes them with `flyctl secrets set`. `nx deploy:secrets <svc>` creates the fly app first if it doesn't exist yet (`flyctl apps create`); `deploy` depends on `deploy:secrets`, so a first deploy to a brand-new app works end-to-end (volumes declared in `[mounts]` are auto-created on first deploy).
