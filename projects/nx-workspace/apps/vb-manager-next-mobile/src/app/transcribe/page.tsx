@@ -1,16 +1,11 @@
 import { VoiceTranscriber } from '../components/voice-transcriber';
 import { ProtectedRoute } from '../components/protected-route';
+import { PAGE_MIN_HEIGHT } from '../components/app-shell.constants';
 
 export default function TranscribePage() {
   return (
     <ProtectedRoute>
-      <main className="min-h-screen bg-gray-50">
-        <header className="bg-white border-b border-gray-100 px-4 py-4 safe-top">
-          <h1 className="text-lg font-semibold text-gray-800">Transcribe</h1>
-          <p className="text-xs text-gray-500 mt-0.5">
-            Record speech, then copy the text
-          </p>
-        </header>
+      <main className={`${PAGE_MIN_HEIGHT} bg-gray-50`}>
         <div className="px-4 py-5">
           <VoiceTranscriber />
         </div>

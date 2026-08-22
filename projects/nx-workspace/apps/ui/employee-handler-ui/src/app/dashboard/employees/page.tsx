@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
   Checkbox,
@@ -29,7 +28,6 @@ const RECOVER_ENDPOINT = '/api/recover';
 const POST_RETENTION_ENDPOINT = '/api/postRetentionCleanup';
 const SYNC_ENDPOINT = '/api/sync';
 
-const TAB_QUERY_KEY = 'tab';
 const TAB_INCOMING = 'incoming';
 const TAB_ACTIVE = 'active';
 const TAB_INACTIVE = 'inactive';
@@ -191,10 +189,8 @@ const requireEmail = (email: string, errorMessage: string) => {
 };
 
 export default function EmployeesPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const { t } = useTranslation();
-  const tab = searchParams.get(TAB_QUERY_KEY) ?? TAB_ACTIVE;
+  const [tab, setTab] = useState(TAB_ACTIVE);
   const { running, run } = useAction();
 
   const incoming = useEmployeesTab(INCOMING_ENDPOINT);
@@ -237,11 +233,7 @@ export default function EmployeesPage() {
     inactive.data.map(e => e.email),
   );
 
-  const onTabChange = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set(TAB_QUERY_KEY, value);
-    router.replace(`?${params.toString()}`);
-  };
+  const onTabChange = (value: string) => setTab(value);
 
   const offboardOne = (email: string) => {
     if (!requireEmail(email, t('EMPLOYEES.ERROR.NO_EMAILS'))) return;

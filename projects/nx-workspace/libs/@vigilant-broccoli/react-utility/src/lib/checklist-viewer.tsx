@@ -16,7 +16,7 @@ const COPY = {
 } as const;
 
 const CLS = {
-  ROOT: 'w-full h-full overflow-auto',
+  ROOT: 'w-full',
   PROSE: 'prose dark:prose-invert max-w-none px-4 sm:px-6 py-4',
   HEADER:
     'flex items-center gap-1 not-prose mb-4 pb-2 border-b border-gray-200 dark:border-gray-700',

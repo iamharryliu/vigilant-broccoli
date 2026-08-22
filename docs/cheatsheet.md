@@ -57,6 +57,14 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   seafile:reset               Rebuild containers + volumes (fresh environment)
   seafile:replace             Replace the VM via terraform (fresh host)
 
+🖼️  IMMICH
+  immich:open                 Open images.harryliu.dev
+  immich:ssh                  SSH into Immich VM
+  immich:logs                 Follow Immich server container logs
+  immich:logs:cloud-init      Follow VM provisioning log
+  immich:reset                Rebuild containers + volumes (fresh environment)
+  immich:replace              Replace the VM via terraform (fresh host)
+
 🖥️  GCP VM
   gcp:vm:image:build          Build GCP VM Packer image (init + build)
   gcp:vm:ssh                  SSH into GCP VM via IAP
@@ -102,6 +110,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   vb-manager-next:status      Show PM2 process status
   deploy:local-services       Bring up local Docker services + reload vb-manager-next
   health-check                Run health check script
+  dldjmusic                   Download DJ music from Spotify playlists (secrets pulled from Vault)
 
 🤖 AGENTIC — DEV SANDBOX (attended; you drive the persistent container)
   agentic:dev-sandbox:up      Fetch tokens from Vault into the current shell session (never written to disk), then build + start contained Claude sandbox
