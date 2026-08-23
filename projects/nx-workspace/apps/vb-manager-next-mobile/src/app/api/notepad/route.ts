@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { requireAuth } from '../../../../libs/api-auth';
 import { supabaseAdmin } from '../../../../libs/supabase-admin';
 
@@ -18,7 +19,10 @@ export async function GET(request: NextRequest) {
     .single();
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
   }
 
   return NextResponse.json({
@@ -31,16 +35,41 @@ export async function POST(request: NextRequest) {
   const auth = await requireAuth(request);
   if (auth instanceof NextResponse) return auth;
 
-  const { content } = await request.json();
+  const { content, baseUpdatedAt } = await request.json();
   const updatedAt = new Date().toISOString();
 
-  const { error } = await supabaseAdmin
+  const { data, error } = await supabaseAdmin
     .from(NOTEPAD_TABLE)
     .update({ content, updated_at: updatedAt })
-    .eq('id', NOTEPAD_ID);
+    .eq('id', NOTEPAD_ID)
+    .eq('updated_at', baseUpdatedAt)
+    .select('content, updated_at');
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: error.message },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+  }
+
+  if (!data || data.length === 0) {
+    const { data: latest, error: latestError } = await supabaseAdmin
+      .from(NOTEPAD_TABLE)
+      .select('content, updated_at')
+      .eq('id', NOTEPAD_ID)
+      .single();
+
+    if (latestError) {
+      return NextResponse.json(
+        { error: latestError.message },
+        { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+      );
+    }
+
+    return NextResponse.json(
+      { content: latest.content ?? '', updatedAt: latest.updated_at },
+      { status: HTTP_STATUS_CODES.CONFLICT },
+    );
   }
 
   return NextResponse.json({ success: true, updatedAt });
