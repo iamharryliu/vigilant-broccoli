@@ -3,9 +3,10 @@
 import {
   useNotepad as useSyncedNotepad,
   NotepadState,
+  SupabaseBroadcastLike,
 } from '@vigilant-broccoli/react-lib';
 import { supabase } from '../../../libs/supabase';
-import { buildAuthHeaders } from '../providers/auth-provider';
+import { buildAuthHeaders, useAuth } from '../providers/auth-provider';
 
 const authFetch = async (
   input: RequestInfo | URL,
@@ -16,5 +17,11 @@ const authFetch = async (
   return fetch(input, { ...init, headers: { ...headers, ...init.headers } });
 };
 
-export const useNotepad = (): NotepadState =>
-  useSyncedNotepad({ supabase, authFetch });
+export const useNotepad = (): NotepadState => {
+  const session = useAuth();
+  return useSyncedNotepad({
+    supabase: supabase as unknown as SupabaseBroadcastLike,
+    authFetch,
+    userId: session?.user.id ?? '',
+  });
+};
