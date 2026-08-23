@@ -58,8 +58,6 @@ brew "mysql"
 brew "neovim"
 # No Nonsense Neovim Client in Rust
 brew "neovide"
-# A CLI for configuring 'Night Shift' on macOS
-brew "smudge/smudge/nightlight"
 # Port scanning utility for large networks
 brew "nmap"
 # Open-source, cross-platform JavaScript runtime environment
@@ -112,6 +110,8 @@ brew "wireguard-tools"
 brew "yazi"
 # Fish-like fast/unobtrusive autosuggestions for zsh
 brew "zsh-autosuggestions"
+# A CLI for configuring 'Night Shift' on macOS 🌕🌖🌗🌘🌑
+brew "smudge/smudge/nightlight", trusted: true
 # Enable Windows-like alt-tab
 cask "alt-tab"
 # Application uninstaller
