@@ -85,6 +85,8 @@
 - Lund Tea
 - Butter Knife
 - Cheese Slicer
+- hjortron jam
+- Dala horses
 
 ## Sustainability
 
