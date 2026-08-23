@@ -12,6 +12,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 
 ⚙️  SETUP
   local:install:machine-setup Run machine setup installer (mac/linux)
+  local:start-mission-control-helper  Open Hammerspoon and Karabiner-Elements (fallback if login items fail)
   format                      Format all files with Prettier
   format:commit               Format given files with Prettier (pass paths)
   cloud:login                 Check GCP/AWS/GitHub/npm/Fly login status, login where needed
