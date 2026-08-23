@@ -11,10 +11,13 @@ result = {}
 for window in window_list:
     window_id = window.get("kCGWindowNumber")
     if window_id in wanted_ids:
+        if window.get("kCGWindowLayer") != 0:
+            continue
+        if window.get("kCGWindowAlpha", 1.0) <= 0:
+            continue
         bounds = window.get("kCGWindowBounds", {})
         result[window_id] = {
             "pid": window.get("kCGWindowOwnerPID"),
-            "name": window.get("kCGWindowOwnerName"),
             "x": bounds.get("X"),
             "y": bounds.get("Y"),
             "w": bounds.get("Width"),

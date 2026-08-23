@@ -43,7 +43,7 @@ local function windowIdToInfo(spaces)
   local decoded = hs.json.decode(out)
   local map = {}
   for wid, info in pairs(decoded or {}) do
-    if info.name ~= "Window Server" and info.w and info.h and info.w > 0 and info.h > 0 then
+    if info.w and info.h and info.w > 0 and info.h > 0 then
       map[tonumber(wid)] = {
         pid = info.pid,
         bounds = {x = info.x, y = info.y, w = info.w, h = info.h},
@@ -79,16 +79,36 @@ local function windowSnapshot(wid)
 end
 
 local previewCanvas = nil
+local hyperWatcher = nil
+
+local function stopHyperWatcher()
+  if hyperWatcher then
+    hyperWatcher:stop()
+    hyperWatcher = nil
+  end
+end
 
 local function closePreview()
+  stopHyperWatcher()
   if previewCanvas then
     previewCanvas:delete()
     previewCanvas = nil
   end
 end
 
+local function closePreviewOnHyperRelease()
+  stopHyperWatcher()
+  hyperWatcher = hs.eventtap.new({hs.eventtap.event.types.flagsChanged}, function(e)
+    local flags = e:getFlags()
+    if not (flags.cmd and flags.ctrl and flags.alt and flags.shift) then
+      closePreview()
+    end
+    return false
+  end)
+  hyperWatcher:start()
+end
+
 local function showGridPreview(activeIndex, spaces, holdSeconds)
-  closePreview()
   local rows = math.ceil(#spaces / gridCols)
   local width = gridCols * cellW + cellPad * (gridCols + 1)
   local height = rows * cellH + cellPad * (rows + 1)
@@ -96,8 +116,12 @@ local function showGridPreview(activeIndex, spaces, holdSeconds)
   local x = screenFrame.x + (screenFrame.w - width) / 2
   local y = screenFrame.y + (screenFrame.h - height) / 2
 
-  previewCanvas = hs.canvas.new({x = x, y = y, w = width, h = height})
-  previewCanvas:appendElements({
+  local elements = {}
+  local function addElement(el)
+    table.insert(elements, el)
+  end
+
+  addElement({
     type = "rectangle",
     action = "fill",
     fillColor = {red = 0, green = 0, blue = 0, alpha = 0.75},
@@ -113,7 +137,7 @@ local function showGridPreview(activeIndex, spaces, holdSeconds)
     local cy = cellPad + row * (cellH + cellPad)
     local isActive = (i == activeIndex)
 
-    previewCanvas:appendElements({
+    addElement({
       type = "rectangle",
       action = "fill",
       fillColor = {white = 0.15, alpha = 1},
@@ -140,7 +164,7 @@ local function showGridPreview(activeIndex, spaces, holdSeconds)
     local deskY = deskAreaY + (deskAreaH - deskH) / 2
 
     if #windows > 0 then
-      previewCanvas:appendElements({
+      addElement({
         type = "rectangle",
         action = "fill",
         fillColor = {white = 0.05, alpha = 1},
@@ -158,28 +182,28 @@ local function showGridPreview(activeIndex, spaces, holdSeconds)
       local icon = hs.image.imageFromAppBundle(win.app:bundleID())
 
       if snapshot then
-        previewCanvas:appendElements({
+        addElement({
           type = "image",
           image = snapshot,
           frame = {x = wx, y = wy, w = ww, h = wh},
         })
         if icon and math.min(ww, wh) > 24 then
           local badgeSize = 14
-          previewCanvas:appendElements({
+          addElement({
             type = "image",
             image = icon,
             frame = {x = wx + ww - badgeSize - 2, y = wy + wh - badgeSize - 2, w = badgeSize, h = badgeSize},
           })
         end
       elseif icon then
-        previewCanvas:appendElements({
+        addElement({
           type = "rectangle",
           action = "fill",
           fillColor = {white = 0.1, alpha = 1},
           frame = {x = wx, y = wy, w = ww, h = wh},
         })
         local iconBoxSize = math.min(ww, wh, 24)
-        previewCanvas:appendElements({
+        addElement({
           type = "image",
           image = icon,
           frame = {x = wx + (ww - iconBoxSize) / 2, y = wy + (wh - iconBoxSize) / 2, w = iconBoxSize, h = iconBoxSize},
@@ -187,7 +211,7 @@ local function showGridPreview(activeIndex, spaces, holdSeconds)
       end
     end
     if #windows == 0 then
-      previewCanvas:appendElements({
+      addElement({
         type = "text",
         text = "empty",
         textColor = {white = 0.5, alpha = 1},
@@ -197,7 +221,7 @@ local function showGridPreview(activeIndex, spaces, holdSeconds)
       })
     end
 
-    previewCanvas:appendElements({
+    addElement({
       type = "rectangle",
       action = "stroke",
       strokeColor = isActive and {red = 0.3, green = 0.7, blue = 1, alpha = 1} or {white = 0.4, alpha = 1},
@@ -207,7 +231,7 @@ local function showGridPreview(activeIndex, spaces, holdSeconds)
       roundedRectRadii = {xRadius = 8, yRadius = 8},
     })
 
-    previewCanvas:appendElements({
+    addElement({
       type = "text",
       text = "space " .. i,
       textColor = {white = 1, alpha = 1},
@@ -217,7 +241,16 @@ local function showGridPreview(activeIndex, spaces, holdSeconds)
     })
   end
 
+  if previewCanvas then
+    previewCanvas:frame({x = x, y = y, w = width, h = height})
+  else
+    previewCanvas = hs.canvas.new({x = x, y = y, w = width, h = height})
+    previewCanvas:behavior(hs.canvas.windowBehaviors.canJoinAllSpaces + hs.canvas.windowBehaviors.stationary)
+    previewCanvas:level(hs.canvas.windowLevels.overlay)
+  end
+  previewCanvas:replaceElements(elements)
   previewCanvas:show()
+  previewCanvas:orderAbove()
   if holdSeconds then
     hs.timer.doAfter(holdSeconds, closePreview)
   end
@@ -232,7 +265,8 @@ local function moveGrid(dRow, dCol)
   local newIndex = (row + dRow) * gridCols + newCol + 1
   if newIndex < 1 or newIndex > #spaces then return end
   hs.spaces.gotoSpace(spaces[newIndex])
-  showGridPreview(newIndex, spaces, 1.2)
+  showGridPreview(newIndex, spaces, nil)
+  closePreviewOnHyperRelease()
 end
 
 hs.hotkey.bind(hyper, "Left", function() moveGrid(0, -1) end)
@@ -245,7 +279,8 @@ for i = 1, 9 do
     local _, spaces = currentIndex()
     if spaces[i] then
       hs.spaces.gotoSpace(spaces[i])
-      showGridPreview(i, spaces, 1.2)
+      showGridPreview(i, spaces, nil)
+      closePreviewOnHyperRelease()
     end
   end)
 end
