@@ -3,7 +3,8 @@ require("hs.ipc")
 local hyper = {"ctrl", "alt", "cmd", "shift"}
 local gridCols = 3
 local cellW, cellH, cellPad = 200, 125, 10
-local iconSize = 36
+local snapshotExpirySeconds = 6
+local maxWindowsPerCell = 8
 
 local function screenUUID()
   return hs.screen.mainScreen():getUUID()
@@ -26,7 +27,7 @@ local function spaceWindowIDs(spaceID)
   return (ok and windows) or {}
 end
 
-local function windowIdToPid(spaces)
+local function windowIdToInfo(spaces)
   local ids = {}
   for _, spaceID in ipairs(spaces) do
     for _, wid in ipairs(spaceWindowIDs(spaceID)) do
@@ -42,25 +43,39 @@ local function windowIdToPid(spaces)
   local decoded = hs.json.decode(out)
   local map = {}
   for wid, info in pairs(decoded or {}) do
-    if info.name ~= "Window Server" then
-      map[tonumber(wid)] = info.pid
+    if info.name ~= "Window Server" and info.w and info.h and info.w > 0 and info.h > 0 then
+      map[tonumber(wid)] = {
+        pid = info.pid,
+        bounds = {x = info.x, y = info.y, w = info.w, h = info.h},
+      }
     end
   end
   return map
 end
 
-local function spaceApps(spaceID, idToPid)
-  local seen, apps = {}, {}
+local function spaceWindows(spaceID, idToInfo)
+  local windows = {}
   for _, wid in ipairs(spaceWindowIDs(spaceID)) do
-    local pid = idToPid[wid]
-    local app = pid and hs.application.applicationForPID(pid)
-    local bundleID = app and app:bundleID()
-    if bundleID and not seen[bundleID] then
-      seen[bundleID] = true
-      table.insert(apps, app)
+    local info = idToInfo[wid]
+    local app = info and hs.application.applicationForPID(info.pid)
+    if app then
+      table.insert(windows, {id = wid, app = app, bounds = info.bounds})
     end
   end
-  return apps
+  return windows
+end
+
+local snapshotCache = {}
+
+local function windowSnapshot(wid)
+  local now = hs.timer.secondsSinceEpoch()
+  local cached = snapshotCache[wid]
+  if cached and cached.time + snapshotExpirySeconds > now then
+    return cached.image
+  end
+  local image = hs.window.snapshotForID(wid)
+  snapshotCache[wid] = {image = image, time = now}
+  return image
 end
 
 local previewCanvas = nil
@@ -89,7 +104,7 @@ local function showGridPreview(activeIndex, spaces, holdSeconds)
     roundedRectRadii = {xRadius = 14, yRadius = 14},
   })
 
-  local idToPid = windowIdToPid(spaces)
+  local idToInfo = windowIdToInfo(spaces)
 
   for i, spaceID in ipairs(spaces) do
     local row = math.floor((i - 1) / gridCols)
@@ -106,22 +121,72 @@ local function showGridPreview(activeIndex, spaces, holdSeconds)
       roundedRectRadii = {xRadius = 8, yRadius = 8},
     })
 
-    local apps = spaceApps(spaceID, idToPid)
-    local shown = math.min(#apps, 4)
-    local iconsWidth = shown * iconSize + math.max(0, shown - 1) * 8
-    local iconStartX = cx + (cellW - iconsWidth) / 2
-    local iconY = cy + (cellH - 20 - iconSize) / 2
-    for a = 1, shown do
-      local icon = hs.image.imageFromAppBundle(apps[a]:bundleID())
-      if icon then
+    local windows = spaceWindows(spaceID, idToInfo)
+
+    -- Keep the largest (main content) windows when a space is over the cap;
+    -- draw largest-first so smaller/foreground windows layer on top.
+    table.sort(windows, function(a, b)
+      return (a.bounds.w * a.bounds.h) > (b.bounds.w * b.bounds.h)
+    end)
+    while #windows > maxWindowsPerCell do
+      table.remove(windows)
+    end
+
+    local deskAreaX, deskAreaY = cx + 6, cy + 6
+    local deskAreaW, deskAreaH = cellW - 12, cellH - 32
+    local scale = math.min(deskAreaW / screenFrame.w, deskAreaH / screenFrame.h)
+    local deskW, deskH = screenFrame.w * scale, screenFrame.h * scale
+    local deskX = deskAreaX + (deskAreaW - deskW) / 2
+    local deskY = deskAreaY + (deskAreaH - deskH) / 2
+
+    if #windows > 0 then
+      previewCanvas:appendElements({
+        type = "rectangle",
+        action = "fill",
+        fillColor = {white = 0.05, alpha = 1},
+        frame = {x = deskX, y = deskY, w = deskW, h = deskH},
+        roundedRectRadii = {xRadius = 4, yRadius = 4},
+      })
+    end
+
+    for _, win in ipairs(windows) do
+      local wx = deskX + (win.bounds.x - screenFrame.x) * scale
+      local wy = deskY + (win.bounds.y - screenFrame.y) * scale
+      local ww = win.bounds.w * scale
+      local wh = win.bounds.h * scale
+      local snapshot = windowSnapshot(win.id)
+      local icon = hs.image.imageFromAppBundle(win.app:bundleID())
+
+      if snapshot then
+        previewCanvas:appendElements({
+          type = "image",
+          image = snapshot,
+          frame = {x = wx, y = wy, w = ww, h = wh},
+        })
+        if icon and math.min(ww, wh) > 24 then
+          local badgeSize = 14
+          previewCanvas:appendElements({
+            type = "image",
+            image = icon,
+            frame = {x = wx + ww - badgeSize - 2, y = wy + wh - badgeSize - 2, w = badgeSize, h = badgeSize},
+          })
+        end
+      elseif icon then
+        previewCanvas:appendElements({
+          type = "rectangle",
+          action = "fill",
+          fillColor = {white = 0.1, alpha = 1},
+          frame = {x = wx, y = wy, w = ww, h = wh},
+        })
+        local iconBoxSize = math.min(ww, wh, 24)
         previewCanvas:appendElements({
           type = "image",
           image = icon,
-          frame = {x = iconStartX + (a - 1) * (iconSize + 8), y = iconY, w = iconSize, h = iconSize},
+          frame = {x = wx + (ww - iconBoxSize) / 2, y = wy + (wh - iconBoxSize) / 2, w = iconBoxSize, h = iconBoxSize},
         })
       end
     end
-    if #apps == 0 then
+    if #windows == 0 then
       previewCanvas:appendElements({
         type = "text",
         text = "empty",
