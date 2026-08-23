@@ -19,6 +19,19 @@ if ask "Symlink dotfiles?"; then
 fi
 
 
+if ask "Add Hammerspoon and Karabiner-Elements as login items?"; then
+    osascript <<EOF
+tell application "System Events"
+    if not (exists login item "Hammerspoon") then
+        make login item at end with properties {path:"/Applications/Hammerspoon.app", hidden:false}
+    end if
+    if not (exists login item "Karabiner-Elements") then
+        make login item at end with properties {path:"/Applications/Karabiner-Elements.app", hidden:false}
+    end if
+end tell
+EOF
+fi
+
 if ask "Setup Hammerspoon Python helper (cross-space window owner lookups)?"; then
     python3 -m venv "$HOME/.hammerspoon-venv"
     "$HOME/.hammerspoon-venv/bin/pip" install --quiet pyobjc-framework-Quartz
