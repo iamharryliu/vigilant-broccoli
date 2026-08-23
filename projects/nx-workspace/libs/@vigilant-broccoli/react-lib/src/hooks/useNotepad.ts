@@ -25,6 +25,10 @@ export interface NotepadState {
   isSaving: boolean;
   isLoading: boolean;
   lastSaved: Date | null;
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 }
 
 export interface UseNotepadOptions {
@@ -166,5 +170,9 @@ export const useNotepad = ({
     isSaving,
     isLoading,
     lastSaved,
+    undo: room.undo,
+    redo: room.redo,
+    canUndo: room.canUndo,
+    canRedo: room.canRedo,
   };
 };
