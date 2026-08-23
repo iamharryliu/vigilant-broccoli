@@ -18,13 +18,14 @@ Comparison of managed/cloud hosting solutions by category, to guide picking a de
 - [Email](#email)
 - [APIs / Data](#apis--data)
 - [Security / Access](#security--access)
+- [AI App Builders](#ai-app-builders)
 
 ## Backend / API Hosting
 
 | Name               | Usage                                                       | Free Tier                                      | When to Use                                                                                |
 | ------------------ | ----------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------ |
 | Fly.io             | Deploys Docker containers as Firecracker VMs close to users | Limited free allowance, no perpetual free tier | Long-running containerized services needing WebSockets or a persistent process             |
-| Render             | Docker/native runtime PaaS, managed Postgres/Redis add-ons  | Free web services (spin down on idle)          | Simple API + managed DB in one place without touching Terraform                            |
+| [Render](./render.md) | Docker/native runtime PaaS, managed Postgres/Redis add-ons | Free web services (spin down on idle), see [render.md](./render.md#free-tier) | Simple API + managed DB in one place without touching Terraform                            |
 | Cloudflare Workers | V8 isolate serverless functions, runs on Cloudflare's edge  | Generous free tier (100k req/day)              | Latency-sensitive, stateless, short-lived request handlers; not for long-lived connections |
 | Google Cloud Run   | Serverless containers, scale to zero                        | Free tier (2M req/month)                       | Need GCP-native integration (Secret Manager, IAM) alongside container flexibility          |
 
@@ -34,8 +35,8 @@ Comparison of managed/cloud hosting solutions by category, to guide picking a de
 | ---------------- | ------------------------------------------------------------------------------ | ------------------------------------------------ | -------------------------------------------------------------------------------------------- |
 | Cloudflare Pages | Static site hosting + Pages Functions, deployed via wrangler                   | Unlimited sites/requests, generous build minutes | Static SPA hosting (Vite/React, etc.) needing fast global CDN delivery                       |
 | GitHub Pages     | Static hosting straight from a repo/branch                                     | Free for public repos                            | Simple static hosting, no build infra needed beyond Actions                                  |
-| Vercel           | Git-integrated hosting with first-class Next.js support (ISR, edge middleware) | Free hobby tier, usage caps                      | Next.js apps needing SSR/ISR — Cloudflare Pages doesn't run Next.js server features natively |
-| Netlify          | Static hosting + serverless functions, similar to Cloudflare Pages             | Free tier with build-minute/bandwidth caps       | Alternative to Cloudflare Pages if forms/identity add-ons are needed                         |
+| [Vercel](./vercel.md) | Git-integrated hosting with first-class Next.js support (ISR, edge middleware) | Free hobby tier, usage caps                      | Next.js apps needing SSR/ISR — Cloudflare Pages doesn't run Next.js server features natively |
+| [Netlify](./netlify.md) | Static hosting + serverless functions, similar to Cloudflare Pages           | Free tier with build-minute/bandwidth caps, see [netlify.md](./netlify.md#free-tier) | Alternative to Cloudflare Pages if forms/identity add-ons are needed                         |
 
 ## Database Hosting
 
@@ -116,3 +117,9 @@ Comparison of managed/cloud hosting solutions by category, to guide picking a de
 | Cloudflare Access | Zero-trust reverse-proxy auth in front of Cloudflare-proxied origins (identity login or service tokens) | Free for up to 50 users                     | Gating web UIs on a public hostname without exposing them directly                     |
 | Cloudflare Tunnel | Outbound-only tunnel exposing a local service publicly without opening inbound ports                    | Free (self-hosted `cloudflared` daemon)     | Exposing a VM-local service behind Cloudflare Access without a public IP/firewall rule |
 | Tailscale         | Mesh VPN (WireGuard-based) with automatic peer discovery/ACLs, hosted control plane                     | Free tier (up to 100 devices, personal use) | Ad hoc mesh access across many devices/services without managing keys/routes by hand   |
+
+## AI App Builders
+
+| Name                  | Usage                                                                          | Free Tier                                                          | When to Use                                                            |
+| ---------------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| [Lovable](./lovable.md) | Generates and hosts full-stack web apps from prompts, optional Supabase-backed backend | 5 daily credits (30/month cap), see [lovable.md](./lovable.md#free-tier) | Fast prompt-driven prototyping without hand-rolling boilerplate scaffolding |
