@@ -7,6 +7,7 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { useWhiteboardRoom } from '../whiteboard/useWhiteboardRoom';
 import type { SupabaseBroadcastLike } from '../whiteboard/supabase-broadcast.types';
+import type { WhiteboardCursor } from '../whiteboard/whiteboard-room.types';
 
 const SAVE_DEBOUNCE_MS = 1000;
 const BOOTSTRAP_WAIT_MS = 700;
@@ -29,6 +30,9 @@ export interface NotepadState {
   redo: () => void;
   canUndo: boolean;
   canRedo: boolean;
+  cursors: WhiteboardCursor[];
+  setCursorPosition: (x: number | null, y: number | null) => void;
+  setTextCursorIndex: (index: number | null) => void;
 }
 
 export interface UseNotepadOptions {
@@ -38,6 +42,8 @@ export interface UseNotepadOptions {
     init?: RequestInit,
   ) => Promise<Response>;
   userId: string;
+  username?: string;
+  channelName?: string;
   apiPath?: string;
   storageKey?: string;
 }
@@ -46,13 +52,15 @@ export const useNotepad = ({
   supabase,
   authFetch,
   userId,
+  username = userId,
+  channelName = NOTEPAD_ROOM_CHANNEL,
   apiPath = DEFAULT_API_PATH,
   storageKey = DEFAULT_STORAGE_KEY,
 }: UseNotepadOptions): NotepadState => {
   // The room keeps every currently-connected device's Y.Text merged live via
   // Supabase broadcast, so simultaneous edits from different devices combine
   // instead of one overwriting the other.
-  const room = useWhiteboardRoom(supabase, NOTEPAD_ROOM_CHANNEL, userId, userId);
+  const room = useWhiteboardRoom(supabase, channelName, userId, username);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -112,13 +120,18 @@ export const useNotepad = ({
     [authFetch, apiPath, writeCache],
   );
 
-  // One-time bootstrap: give any already-connected peer a moment to answer
-  // with the live document over the broadcast room before we seed it from
-  // the last durably-saved snapshot — seeding too early would insert stale
-  // text alongside a peer's incoming state instead of joining it.
+  // One-time-per-notepad bootstrap: give any already-connected peer a moment
+  // to answer with the live document over the broadcast room before we seed
+  // it from the last durably-saved snapshot — seeding too early would insert
+  // stale text alongside a peer's incoming state instead of joining it. Reruns
+  // when apiPath/channelName change (e.g. switching boards) since that's a
+  // different notepad, not just a re-render.
   useEffect(() => {
     if (!userId) return;
     let cancelled = false;
+    hasBootstrapped.current = false;
+    updatedAt.current = null;
+    setIsLoading(true);
 
     authFetch(apiPath)
       .then(res => (res.ok ? res.json() : Promise.reject(res)))
@@ -150,7 +163,7 @@ export const useNotepad = ({
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId]);
+  }, [userId, apiPath, channelName]);
 
   useEffect(() => {
     if (!hasBootstrapped.current) return;
@@ -174,5 +187,8 @@ export const useNotepad = ({
     redo: room.redo,
     canUndo: room.canUndo,
     canRedo: room.canRedo,
+    cursors: room.cursors,
+    setCursorPosition: room.setCursorPosition,
+    setTextCursorIndex: room.setTextCursorIndex,
   };
 };
