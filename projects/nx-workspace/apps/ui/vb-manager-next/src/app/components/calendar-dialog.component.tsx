@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Dialog } from '@radix-ui/themes';
 import {
   buildCalendarUrl,
@@ -11,12 +12,15 @@ import { VisuallyHidden } from '@vigilant-broccoli/react-lib';
 const BIRTHDAYS_CALENDAR =
   'f61b08e940f7c4fb8becf0d419c8c09f7e0c46d6d03343637aef5837c766a09b@group.calendar.google.com';
 
-const CALENDAR_CONFIG: CalendarConfig = {
+// Matches the `md` breakpoint used elsewhere in the app (e.g. Sidebar's
+// narrow-viewport check) so "mobile" means the same thing everywhere.
+const MOBILE_VIEWPORT_QUERY = '(max-width: 767px)';
+
+const BASE_CALENDAR_CONFIG: Omit<CalendarConfig, 'mode'> = {
   height: 600,
   wkst: 2,
   ctz: GOOGLE_CALENDAR.TIMEZONE.COPENHAGEN,
   showPrint: 0,
-  mode: 'MONTH',
   title: 'Personal Calendar',
   ownerCalendars: [
     {
@@ -54,6 +58,17 @@ interface CalendarDialogProps {
 }
 
 export const CalendarDialog = ({ open, onOpenChange }: CalendarDialogProps) => {
+  // Recomputed only when the dialog transitions open/closed — not on every
+  // resize — so resizing the window while the calendar is open doesn't
+  // reload the iframe and lose whatever view the user navigated to.
+  const calendarConfig = useMemo<CalendarConfig>(() => {
+    const isMobile =
+      typeof window !== 'undefined' &&
+      window.matchMedia(MOBILE_VIEWPORT_QUERY).matches;
+    return { ...BASE_CALENDAR_CONFIG, mode: isMobile ? 'AGENDA' : 'MONTH' };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Content
@@ -70,7 +85,7 @@ export const CalendarDialog = ({ open, onOpenChange }: CalendarDialogProps) => {
         </VisuallyHidden>
         <iframe
           tabIndex={-1}
-          src={buildCalendarUrl(CALENDAR_CONFIG)}
+          src={buildCalendarUrl(calendarConfig)}
           className="dark:invert dark:hue-rotate-180"
           style={{
             width: '100%',
