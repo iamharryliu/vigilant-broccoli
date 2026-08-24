@@ -11,6 +11,7 @@
 - [Development](#development)
   - [Commands](#commands)
 - [Stack](#stack)
+- [CI Actions](#ci-actions)
 - [CI Status](#ci-status)
 - [Click here](https://iamharryliu.github.io/vigilant-broccoli/) for more.
 
@@ -55,6 +56,46 @@ pnpm local:install:machine-setup
 | **UI**                         | [d3-force](https://d3js.org/d3-force), [dnd-kit](https://dndkit.com), [Font Awesome](https://fontawesome.com), [framer-motion](https://motion.dev), [FullCalendar](https://fullcalendar.io), [fuse.js](https://www.fusejs.io), [Leaflet](https://leafletjs.com) / [react-leaflet](https://react-leaflet.js.org), [lucide-react](https://lucide.dev), [marked](https://marked.js.org), [Radix Themes](https://www.radix-ui.com/themes), [react-markdown](https://github.com/remarkjs/react-markdown), [React Router](https://reactrouter.com), [recharts](https://recharts.org), [styled-components](https://styled-components.com), [Tailwind CSS](https://tailwindcss.com) |
 | **Utility Libraries**          | [github-slugger](https://github.com/Flet/github-slugger), [isomorphic-dompurify](https://github.com/kkomelin/isomorphic-dompurify), [tesseract.js](https://tesseract.projectnaptha.com), [Zod](https://zod.dev)                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | **Weather**                    | [OpenWeatherMap](https://openweathermap.org)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+
+## CI Actions
+
+| Workflow                                   | Trigger                                              | Purpose                                                                              |
+| ------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `ci-health-check`                           | daily schedule, `deploy-fanout`, manual                | Pings deployed service health endpoints.                                              |
+| `ci-pr-check`                                | pull requests to `main`                                | Runs lint/build/test checks against pull requests.                                    |
+| `ci-rotate-secrets`                          | manual                                                 | Rotates repo secrets and re-deploys affected environments.                            |
+| `cron-backup`                                | push to `main` (backup paths)                          | Backs up the repo.                                                                     |
+| `cron-cleanup-workflow-runs`                 | push to `main` (workflow paths)                        | Deletes old GitHub Actions workflow runs.                                             |
+| `cron-deploy-journal`                        | push to `main` (journal paths)                         | Deploys the journal app.                                                              |
+| `cron-upptime`                               | hourly schedule, manual                                | Runs Upptime status checks.                                                           |
+| `cron-upptime-response-time`                 | daily schedule, manual                                 | Records Upptime response-time graphs.                                                 |
+| `deploy`                                     | push to `main`/`production` (app/service paths)        | Builds and deploys apps/services, then fans out `deploy-fanout` to follower workflows.|
+| `deploy-docs-md`                             | push to `main` (`docs/` paths)                         | Publishes `docs/` markdown to GitHub Pages.                                           |
+| `deploy-github-profile`                      | push to `main` (profile paths)                         | Syncs the GitHub profile README.                                                      |
+| `manual-agentic-solve`                       | manual                                                 | Runs headless Claude Code in the sandbox container to solve a task and open a PR.     |
+| `manual-agentic-update-pr`                   | manual                                                 | Runs headless Claude Code in the sandbox container to apply a follow-up change to an existing PR. |
+| `manual-deploy-app`                          | manual                                                 | Deploys a single app/service by name.                                                 |
+| `manual-kill-services`                       | manual                                                 | Kills running PM2-managed services.                                                   |
+| `manual-replace-code-server`                 | manual                                                 | Replaces the code-server instance, optionally rotating its password.                  |
+| `manual-run-tests`                           | manual                                                 | Dispatches the e2e/security/smoke test suites on demand.                              |
+| `notify-complete`                            | `deploy-fanout`                                        | Sends a deploy-completion notification.                                               |
+| `test-e2e-email-subscription-service`        | weekly schedule, manual                                | End-to-end tests for the email subscription service.                                  |
+| `test-e2e-llm`                                | weekly schedule, manual                                | End-to-end tests for LLM integrations.                                                |
+| `test-e2e-rabbitmq`                           | `deploy-fanout`, manual                                | End-to-end tests for RabbitMQ.                                                        |
+| `test-e2e-socket-server-socketio`             | weekly schedule, manual                                | End-to-end tests for the Socket.IO socket server.                                     |
+| `test-e2e-storage-service`                    | weekly schedule, manual                                | End-to-end tests for the storage service.                                             |
+| `test-e2e-twilio`                             | `deploy-fanout`, manual                                | End-to-end tests for Twilio.                                                          |
+| `test-security-api`                           | daily schedule, manual                                 | Security tests for the API.                                                           |
+| `test-security-cloudflare-access`             | daily schedule, push to `infrastructure/terraform/**`  | Security tests validating Cloudflare Access.                                          |
+| `test-security-email`                         | daily schedule, manual                                 | Security tests for email delivery.                                                    |
+| `test-security-email-subscription-service`    | daily schedule, manual                                 | Security tests for the email subscription service.                                    |
+| `test-security-llm`                           | daily schedule, manual                                 | Security tests for LLM integrations.                                                  |
+| `test-security-private-network-exposure`      | daily schedule, manual                                 | Security tests checking for private network exposure.                                 |
+| `test-security-socket-server`                 | daily schedule, manual                                 | Security tests for the socket server.                                                 |
+| `test-security-storage-service`               | daily schedule, manual                                 | Security tests for the storage service.                                               |
+| `test-smoke-email-service`                    | weekly schedule, manual                                | Smoke tests for the email service.                                                    |
+| `test-smoke-gcp-secret-manager`               | daily schedule, manual                                 | Smoke tests for GCP Secret Manager.                                                   |
+| `test-smoke-vault-service`                    | daily schedule, manual                                 | Smoke tests for the Vault service.                                                    |
 
 ## CI Status
 
