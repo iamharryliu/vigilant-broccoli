@@ -7,6 +7,20 @@
 - [Driving in Sweden](./driving-in-sweden.md)
 - [Swedish](../../../learn/language-learning/swedish/swedish.md)
 
+## Table of Contents
+
+- [Utility](#utility)
+- [Food & Drink](#food--drink)
+- [Stores](#stores)
+- [Activity](#activity)
+- [Accommodation](#accommodation)
+- [Swedish Migration](#swedish-migration)
+- [Finance](#finance)
+- [Leaning Swedish](#leaning-swedish)
+- [Souvenirs/Gifts](#souvenirsgifts)
+- [Sustainability](#sustainability)
+- [Fun Facts](#fun-facts)
+
 ## Utility
 
 ### Emergency Services
@@ -77,16 +91,21 @@
 
 ## Souvenirs/Gifts
 
-- [Kebab Sauce](https://schysstkak.se/het-kebabsas)
-- [Snus](https://sv.wikipedia.org/wiki/Snus) - Can be found in grocery/convenient stores.
-- Max Sauce
-- Kebab Sauce
-- Swedish Candies
-- Lund Tea
-- Butter Knife
-- Cheese Slicer
-- hjortron jam
-- Dala horses
+- Teaspinner from [Designtorget](https://designtorget.se/)
+- Souvenir shops
+  - Dala horse keychains/coasters/figurines
+- Kitchen
+  - butter knife
+  - cheese slicer
+  - Wettex wipes
+- Consumables
+  - Chocolate from [Malmö Chokladfabrik](https://malmochokladfabrik.se/)
+  - candies
+  - Lund tea
+  - cloudberry/hjortron jam
+  - [Schysst Kebab Sauce] (https://schysstkak.se/het-kebabsas)
+  - Max Sauce
+  - [Snus](https://sv.wikipedia.org/wiki/Snus) - Can be found in grocery/convenient stores.
 
 ## Sustainability
 
@@ -94,4 +113,5 @@
 
 ## Fun Facts
 
+- [Louisa Ulrika of Prussia, the mother of first Afican man in Sweden](https://en.wikipedia.org/wiki/Louisa_Ulrika_of_Prussia)
 - [Gustav Badin, the first African man in Sweden](https://en.wikipedia.org/wiki/Gustav_Badin)

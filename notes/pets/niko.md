@@ -1,10 +1,9 @@
 # Niko 🐶
 
-## Behaviour
+## Daytime Behaviors
 
-- Usually sleeps during the midday time, usually likes to sleep under the sofa
+- Usually sleeps during midday and loves to sleep under a sofa/table/bed or in a cool room.
 - Nighttime he is a light sleeper and usually moves between different spots that he likes during the night.
-- Scared/dislikes kids.
 
 ## Feeding
 
