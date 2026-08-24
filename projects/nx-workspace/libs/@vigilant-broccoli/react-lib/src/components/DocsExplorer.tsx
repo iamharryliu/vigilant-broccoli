@@ -563,7 +563,7 @@ export const DocsExplorer = ({
         >
           {showGraph && renderGraph ? (
             <div className="relative w-full h-full">
-              <div className="absolute top-2 left-2 z-10 md:hidden">
+              <div className="absolute top-2 left-2 z-10 md:!hidden">
                 <IconButton
                   variant="ghost"
                   icon="arrow-left"
@@ -665,10 +665,10 @@ export const DocsExplorer = ({
                     >
                       {COPY.COPY_MARKDOWN}
                     </DropdownMenu.Item>
-                    <DropdownMenu.Separator className="md:hidden" />
+                    <DropdownMenu.Separator className="md:!hidden" />
                     <DropdownMenu.Item
                       onSelect={showSidebarOnMobile}
-                      className="md:hidden"
+                      className="md:!hidden"
                     >
                       {COPY.BACK_TO_FILES}
                     </DropdownMenu.Item>
