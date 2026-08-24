@@ -2,6 +2,7 @@
 
 import { Sidebar, SidebarCTA, useTheme } from '@vigilant-broccoli/react-lib';
 import { signInWithGoogle, signOut, useAuth } from '../../../libs/auth';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   MessageCircle,
   Mail,
@@ -14,9 +15,12 @@ import {
   LogOut,
   LogIn,
   Bell,
+  Settings,
 } from 'lucide-react';
 import { NotificationRecord } from '../hooks/useNotificationHistory';
 import { NotificationsDialog } from './notifications-dialog.component';
+
+const SETTINGS_PATH = '/settings';
 
 const LIGHT = 'light';
 const DARK_MODE_LABEL = 'Dark mode';
@@ -65,6 +69,8 @@ export const RightSidebar = ({
 }: Props) => {
   const { appearance, toggleTheme } = useTheme();
   const session = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
   const isLight = appearance === LIGHT;
   const themeLabel = isLight ? DARK_MODE_LABEL : LIGHT_MODE_LABEL;
   const BellIcon = () => <BellIconWithBadge unreadCount={unreadCount} />;
@@ -118,6 +124,13 @@ export const RightSidebar = ({
       icon: isLight ? Moon : Sun,
       title: themeLabel + THEME_SHORTCUT,
       onClick: toggleTheme,
+    },
+    {
+      label: 'Settings',
+      icon: Settings,
+      title: 'Settings',
+      onClick: () => router.push(SETTINGS_PATH),
+      isActive: pathname === SETTINGS_PATH,
     },
     ...(session
       ? [

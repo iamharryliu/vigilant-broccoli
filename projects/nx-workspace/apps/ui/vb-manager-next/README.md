@@ -41,3 +41,7 @@ Management dashboard app.
   - OpenAI API
   - OpenWeatherMap
   - Self-hosted (PM2)
+
+## Agent Context
+
+- Keyboard shortcuts cheatsheet (Settings page, see [docs/features/settings.md](./docs/features/settings.md)): when adding, changing, or removing a global keyboard shortcut in `src/app/(pages)/layout.tsx` (`processKeyboardInput`), update `KEYBOARD_SHORTCUTS_MARKDOWN` in `src/app/content/keyboard-shortcuts.md.ts` to match.

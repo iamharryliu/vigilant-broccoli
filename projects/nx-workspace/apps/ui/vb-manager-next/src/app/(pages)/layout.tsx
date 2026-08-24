@@ -11,6 +11,7 @@ import { APP_ROUTE } from '../app.const';
 import { useTheme, useThemeKeybind } from '@vigilant-broccoli/react-lib';
 import { FloatingIslandComponent } from '../components/floating-island.component';
 import { RightSidebar } from '../components/right-sidebar.component';
+import { ShortcutsOverlay } from '../components/shortcuts-overlay.component';
 import { useDeployNotifications } from '../hooks/useDeployNotifications';
 import { useNotificationHistory } from '../hooks/useNotificationHistory';
 import { useBrowserNotifications } from '../hooks/useBrowserNotifications';
@@ -24,6 +25,7 @@ type ExtendedNavRoute = {
 };
 
 const IGNORED_TAGS = ['INPUT', 'TEXTAREA', 'SELECT'];
+const SHORTCUTS_OVERLAY_KEY_CODE = 'Slash';
 
 const isIgnoredInputElement = (target: EventTarget | null): boolean => {
   return target instanceof Element && IGNORED_TAGS.includes(target.tagName);
@@ -133,6 +135,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [weatherDialogOpen, setWeatherDialogOpen] = useState(false);
   const [pomodoroDialogOpen, setPomodoroDialogOpen] = useState(false);
   const [utilitiesDialogOpen, setUtilitiesDialogOpen] = useState(false);
+  const [shortcutsOverlayOpen, setShortcutsOverlayOpen] = useState(false);
 
   const allRoutes = Object.values(APP_ROUTE) as ExtendedNavRoute[];
   const dropdownRoutes = allRoutes.filter(
@@ -146,6 +149,16 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.code === SHORTCUTS_OVERLAY_KEY_CODE &&
+        e.shiftKey &&
+        !shouldIgnoreKeystroke(e)
+      ) {
+        e.preventDefault();
+        setShortcutsOverlayOpen(true);
+        return;
+      }
+
       handleKeyboardShortcut(e, {
         setSearchDialogOpen,
         setEmailDialogOpen,
@@ -158,8 +171,28 @@ export default function Layout({ children }: { children: ReactNode }) {
       });
     };
 
+    // Keyed off e.code (physical key) rather than e.key so the overlay
+    // still closes correctly no matter which key - Shift or / - is
+    // released first, since e.key would otherwise flip between "?" and
+    // "/" depending on Shift's state at release time.
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.code === SHORTCUTS_OVERLAY_KEY_CODE) {
+        setShortcutsOverlayOpen(false);
+      }
+    };
+
+    // Closes the overlay if focus leaves the window mid-hold (e.g. alt-tab),
+    // since no keyup fires in that case.
+    const handleBlur = () => setShortcutsOverlayOpen(false);
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('blur', handleBlur);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('blur', handleBlur);
+    };
   }, []);
 
   return (
@@ -225,6 +258,7 @@ export default function Layout({ children }: { children: ReactNode }) {
             />
           </div>
         </div>
+        <ShortcutsOverlay open={shortcutsOverlayOpen} />
         <div style={{ display: 'none' }} aria-hidden="true">
           <FloatingIslandComponent
             searchDialogOpen={searchDialogOpen}
