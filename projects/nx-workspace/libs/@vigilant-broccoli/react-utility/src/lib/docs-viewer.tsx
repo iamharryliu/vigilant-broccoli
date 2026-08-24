@@ -82,6 +82,23 @@ const COPY = {
 const depthLabel = (value: number) => `${value} hop${value > 1 ? 's' : ''}`;
 
 const AGGREGATE_KEY_PREFIX = 'aggregate:';
+const HEADING_RE = /^#\s+(.+)$/m;
+
+const titleFromPath = (path: string) =>
+  path.split('/').pop()?.replace(/\.md$/i, '') ?? path;
+
+function DocumentTitleSync({
+  content,
+  fallback,
+}: {
+  content: string;
+  fallback: string;
+}) {
+  useEffect(() => {
+    document.title = HEADING_RE.exec(content)?.[1]?.trim() || fallback;
+  }, [content, fallback]);
+  return null;
+}
 
 export interface DocsViewerProps {
   getStructure: () => Promise<DocsNode[]>;
@@ -338,6 +355,10 @@ export function DocsViewer({
 
     return (
       <div className="flex flex-col h-full">
+        <DocumentTitleSync
+          content={content}
+          fallback={isAggregate ? contentKey : titleFromPath(contentKey)}
+        />
         <div className="flex-1 min-h-0">
           {viewMode === VIEW_MODE.CHECKLIST ? (
             <ChecklistViewer
