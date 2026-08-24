@@ -98,6 +98,7 @@
   - butter knife
   - cheese slicer
   - Wettex wipes
+  - Swedish whisks
 - Consumables
   - Chocolate from [Malmö Chokladfabrik](https://malmochokladfabrik.se/)
   - candies
