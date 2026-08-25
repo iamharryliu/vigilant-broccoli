@@ -20,6 +20,8 @@ type TaskList = { id: string; title: string };
 
 const STORAGE_KEY = 'google-tasks-selected-list-id';
 
+const TASK_VIEW = { ACTIVE: 'active', COMPLETED: 'completed' } as const;
+
 const fetchTaskLists = async (): Promise<TaskList[]> => {
   const res = await fetch('/api/tasks/lists', {
     method: 'POST',
@@ -34,18 +36,22 @@ const fetchTaskLists = async (): Promise<TaskList[]> => {
   return data.lists ?? [];
 };
 
-const fetchTasks = async (taskListId: string): Promise<Task[]> => {
+const fetchTasks = async (
+  taskListId: string,
+  showCompleted: boolean,
+): Promise<Task[]> => {
   const res = await fetch('/api/tasks/items', {
     method: 'POST',
     headers: await buildAuthHeaders({ includeGoogleToken: true, json: true }),
-    body: JSON.stringify({ taskListId }),
+    body: JSON.stringify({ taskListId, showCompleted }),
   });
   const data = await res.json();
   if (data.error === GOOGLE_TOKEN_EXPIRED) {
     await signOutDueToExpiredToken();
     return [];
   }
-  return data.tasks ?? [];
+  const tasks: Task[] = data.tasks ?? [];
+  return showCompleted ? tasks.filter(t => t.status === 'completed') : tasks;
 };
 
 const updateTask = async (
@@ -87,6 +93,7 @@ export const GoogleTaskList = () => {
   const [googleToken, setGoogleToken] = useState<string | null>(null);
   const [taskLists, setTaskLists] = useState<TaskList[]>([]);
   const [selectedListId, setSelectedListId] = useState<string>('@default');
+  const [showCompleted, setShowCompleted] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -104,27 +111,26 @@ export const GoogleTaskList = () => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) setSelectedListId(stored);
 
-    fetchTaskLists().then(lists => {
-      setTaskLists(lists);
-      if (!stored && lists.length) setSelectedListId(lists[0].id ?? '@default');
-    });
+    fetchTaskLists().then(setTaskLists);
   }, []);
 
   useEffect(() => {
     if (!googleToken) return;
     setLoading(true);
-    fetchTasks(selectedListId)
+    fetchTasks(selectedListId, showCompleted)
       .then(setTasks)
       .finally(() => setLoading(false));
     localStorage.setItem(STORAGE_KEY, selectedListId);
-  }, [googleToken, selectedListId]);
+  }, [googleToken, selectedListId, showCompleted]);
 
   const handleToggleComplete = async (task: Task) => {
-    if (!googleToken || task.status === 'completed') return;
+    if (!googleToken) return;
+    const nextStatus =
+      task.status === 'completed' ? 'needsAction' : 'completed';
     setTasks(prev =>
-      prev.map(t => (t.id === task.id ? { ...t, status: 'completed' } : t)),
+      prev.map(t => (t.id === task.id ? { ...t, status: nextStatus } : t)),
     );
-    await updateTask(selectedListId, task.id, { status: 'completed' });
+    await updateTask(selectedListId, task.id, { status: nextStatus });
     setTasks(prev => prev.filter(t => t.id !== task.id));
   };
 
@@ -173,6 +179,15 @@ export const GoogleTaskList = () => {
         </select>
       )}
 
+      <select
+        value={showCompleted ? TASK_VIEW.COMPLETED : TASK_VIEW.ACTIVE}
+        onChange={e => setShowCompleted(e.target.value === TASK_VIEW.COMPLETED)}
+        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+      >
+        <option value={TASK_VIEW.ACTIVE}>To do</option>
+        <option value={TASK_VIEW.COMPLETED}>Completed</option>
+      </select>
+
       {loading ? (
         <div className="space-y-2">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -186,7 +201,9 @@ export const GoogleTaskList = () => {
         <div className="space-y-1">
           {tasks.length === 0 && (
             <p className="text-sm text-gray-400 py-4 text-center">
-              No tasks in {selectedListName}
+              {showCompleted
+                ? `No completed tasks in ${selectedListName}`
+                : `No tasks in ${selectedListName}`}
             </p>
           )}
           {tasks.map(task => (
@@ -196,7 +213,11 @@ export const GoogleTaskList = () => {
             >
               <button
                 onClick={() => handleToggleComplete(task)}
-                className="w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0 hover:border-blue-400 transition-colors"
+                className={`w-5 h-5 rounded-full border-2 flex-shrink-0 transition-colors ${
+                  task.status === 'completed'
+                    ? 'bg-blue-500 border-blue-500'
+                    : 'border-gray-300 hover:border-blue-400'
+                }`}
               />
               {editingId === task.id ? (
                 <input
@@ -231,7 +252,7 @@ export const GoogleTaskList = () => {
         </div>
       )}
 
-      {showAddTask ? (
+      {showCompleted ? null : showAddTask ? (
         <div className="flex gap-2">
           <input
             value={newTaskTitle}

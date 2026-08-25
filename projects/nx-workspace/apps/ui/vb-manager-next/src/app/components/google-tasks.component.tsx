@@ -90,6 +90,20 @@ const SORT_MODE_LABELS: Record<SortMode, string> = {
   [SORT_MODE.DATE_CREATED_OLDEST]: 'Date Created (Oldest)',
 };
 
+const TASK_VIEW_MODE = {
+  ACTIVE: 'active',
+  COMPLETED: 'completed',
+} as const;
+
+type TaskViewMode = (typeof TASK_VIEW_MODE)[keyof typeof TASK_VIEW_MODE];
+
+const TASK_VIEW_MODE_OPTIONS = Object.values(TASK_VIEW_MODE);
+
+const TASK_VIEW_MODE_LABELS: Record<TaskViewMode, string> = {
+  [TASK_VIEW_MODE.ACTIVE]: 'To do',
+  [TASK_VIEW_MODE.COMPLETED]: 'Completed',
+};
+
 const STORAGE_KEY_SELECTED_TASK_LIST = 'google-tasks-selected-list-id';
 
 const TASKS_TITLE = 'Tasks';
@@ -149,7 +163,7 @@ const handleApiError = (err: unknown, fallbackMsg: string): string => {
   return message;
 };
 
-const useTasks = (taskListId: string) => {
+const useTasks = (taskListId: string, showCompleted = false) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -159,7 +173,7 @@ const useTasks = (taskListId: string) => {
     setError(null);
     try {
       const response = await authFetch(
-        `${API_ENDPOINTS.TASKS}?taskListId=${taskListId}`,
+        `${API_ENDPOINTS.TASKS}?taskListId=${taskListId}${showCompleted ? '&showCompleted=true' : ''}`,
       );
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to fetch tasks');
@@ -207,12 +221,14 @@ const useTasks = (taskListId: string) => {
   const toggleTaskComplete = async (task: Task) => {
     if (task.isRemoving) return;
 
-    if (task.status === 'completed') return;
+    const originalStatus = task.status;
+    const nextStatus =
+      originalStatus === 'completed' ? 'needsAction' : 'completed';
 
-    // Optimistically mark complete and keep item visible while request is in-flight.
+    // Optimistically flip status and keep item visible while request is in-flight.
     setTasks(prevTasks =>
       prevTasks.map(t =>
-        t.id === task.id ? { ...t, status: 'completed', isRemoving: true } : t,
+        t.id === task.id ? { ...t, status: nextStatus, isRemoving: true } : t,
       ),
     );
 
@@ -223,18 +239,18 @@ const useTasks = (taskListId: string) => {
         body: JSON.stringify({
           taskListId,
           taskId: task.id,
-          status: 'completed',
+          status: nextStatus,
         }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to update task');
       setTasks(prevTasks => prevTasks.filter(t => t.id !== task.id));
     } catch (err) {
-      // If the server call fails, revert the task to unchecked.
+      // If the server call fails, revert the task to its original status.
       setTasks(prevTasks =>
         prevTasks.map(t =>
           t.id === task.id
-            ? { ...t, status: 'needsAction', isRemoving: false }
+            ? { ...t, status: originalStatus, isRemoving: false }
             : t,
         ),
       );
@@ -548,6 +564,8 @@ const TaskHeader = memo(
     sortMode,
     onSortChange,
     showSelector,
+    viewMode,
+    onViewModeChange,
   }: {
     taskLists: TaskList[];
     selectedTaskListId: string;
@@ -555,6 +573,8 @@ const TaskHeader = memo(
     sortMode: SortMode;
     onSortChange: (value: SortMode) => void;
     showSelector: boolean;
+    viewMode: TaskViewMode;
+    onViewModeChange: (value: TaskViewMode) => void;
   }) => {
     const selectedTaskList = taskLists.find(
       list => list.id === selectedTaskListId,
@@ -585,9 +605,6 @@ const TaskHeader = memo(
         </div>
         {showSelector && taskLists.length > 0 && (
           <div className="flex gap-2 items-center">
-            <Text size="2" color="gray">
-              List:
-            </Text>
             <Select
               selectedOption={taskLists.find(l => l.id === selectedTaskListId)}
               setValue={list => onTaskListChange(list.id)}
@@ -595,6 +612,19 @@ const TaskHeader = memo(
               optionIdenfifier="id"
               optionDisplayKey="title"
               placeholder="Select task list..."
+              triggerClassName="w-full"
+            />
+          </div>
+        )}
+        {showSelector && (
+          <div className="flex gap-2 items-center">
+            <Select
+              selectedOption={viewMode}
+              setValue={onViewModeChange}
+              options={TASK_VIEW_MODE_OPTIONS}
+              displayMapper={TASK_VIEW_MODE_LABELS}
+              placeholder="View..."
+              triggerClassName="w-full"
             />
           </div>
         )}
@@ -678,7 +708,7 @@ const AddTaskForm = memo(
     if (!showAddTask) {
       return (
         <div className="flex gap-2 items-center">
-          <Button onClick={onShowForm} variant="secondary">
+          <Button onClick={onShowForm} variant="secondary" className="flex-1">
             + Add Task
           </Button>
           <SpeechToTextButton
@@ -733,12 +763,18 @@ const AddTaskForm = memo(
 
 AddTaskForm.displayName = 'AddTaskForm';
 
-const getDisplayTasks = (tasks: Task[]) =>
-  tasks.filter(t => t.status !== 'completed' || t.isRemoving);
+const getDisplayTasks = (tasks: Task[], showCompleted: boolean) =>
+  showCompleted
+    ? tasks.filter(t => t.status === 'completed' || t.isRemoving)
+    : tasks.filter(t => t.status !== 'completed' || t.isRemoving);
 
-const areDisplayTasksEqual = (prevTasks: Task[], nextTasks: Task[]) => {
-  const prev = getDisplayTasks(prevTasks);
-  const next = getDisplayTasks(nextTasks);
+const areDisplayTasksEqual = (
+  prevTasks: Task[],
+  nextTasks: Task[],
+  showCompleted: boolean,
+) => {
+  const prev = getDisplayTasks(prevTasks, showCompleted);
+  const next = getDisplayTasks(nextTasks, showCompleted);
   if (prev.length !== next.length) return false;
   return prev.every(
     (t, i) =>
@@ -800,6 +836,7 @@ const TaskList = memo(
     taskListId,
     dragOverTask,
     sortMode,
+    showCompleted,
   }: {
     loading: boolean;
     error: string | null;
@@ -815,6 +852,7 @@ const TaskList = memo(
     taskListId?: string;
     dragOverTask?: DragOverTask | null;
     sortMode?: SortMode;
+    showCompleted?: boolean;
   }) => {
     const { setNodeRef, isOver } = useDroppable({
       id: taskListId || 'default',
@@ -841,12 +879,12 @@ const TaskList = memo(
       );
     }
 
-    const activeTasks = tasks.filter(
-      t => t.status !== 'completed' || t.isRemoving,
-    );
+    const activeTasks = getDisplayTasks(tasks, !!showCompleted);
 
     const showPlaceholder =
-      dragOverTask && !activeTasks.some(t => t.id === dragOverTask.id);
+      !showCompleted &&
+      dragOverTask &&
+      !activeTasks.some(t => t.id === dragOverTask.id);
 
     const sortableIds: string[] = activeTasks.map(t => t.id);
     if (showPlaceholder)
@@ -868,7 +906,7 @@ const TaskList = memo(
           <div className="flex flex-col gap-2">
             {activeTasks.length === 0 && !showPlaceholder && (
               <Text size="2" color="gray">
-                No tasks to display
+                {showCompleted ? 'No completed tasks' : 'No tasks to display'}
               </Text>
             )}
             {activeTasks.map(task => (
@@ -883,7 +921,7 @@ const TaskList = memo(
                 onSaveEdit={onSaveEdit}
                 onCancelEdit={onCancelEdit}
                 isNew={task.isNew}
-                enableDragDrop={enableDragDrop}
+                enableDragDrop={enableDragDrop && !showCompleted}
                 taskListId={taskListId}
                 sortMode={sortMode}
               />
@@ -907,11 +945,16 @@ const TaskList = memo(
       prevProps.editingTaskId !== nextProps.editingTaskId ||
       prevProps.editingTaskTitle !== nextProps.editingTaskTitle ||
       prevProps.dragOverTask?.id !== nextProps.dragOverTask?.id ||
-      prevProps.sortMode !== nextProps.sortMode;
+      prevProps.sortMode !== nextProps.sortMode ||
+      prevProps.showCompleted !== nextProps.showCompleted;
 
     if (scalarChanged) return false;
 
-    return areDisplayTasksEqual(prevProps.tasks, nextProps.tasks);
+    return areDisplayTasksEqual(
+      prevProps.tasks,
+      nextProps.tasks,
+      !!nextProps.showCompleted,
+    );
   },
 );
 
@@ -1004,6 +1047,9 @@ export const GoogleTasksComponent = ({
 
   const taskListId = propTaskListId || selectedTaskListId;
 
+  const [viewMode, setViewMode] = useState<TaskViewMode>(TASK_VIEW_MODE.ACTIVE);
+  const showCompletedView = viewMode === TASK_VIEW_MODE.COMPLETED;
+
   const {
     tasks,
     loading,
@@ -1014,7 +1060,7 @@ export const GoogleTasksComponent = ({
     updateTask,
     moveTask,
     setTasks,
-  } = useTasks(taskListId);
+  } = useTasks(taskListId, showCompletedView);
   const isControlledSort = controlledSortMode !== undefined;
   const [localSortMode, setLocalSortMode] = useSortModeStorage(
     taskListId,
@@ -1056,7 +1102,7 @@ export const GoogleTasksComponent = ({
 
   useEffect(() => {
     if (status === 'authenticated') fetchTasks();
-  }, [status, taskListId, refreshTrigger]);
+  }, [status, taskListId, refreshTrigger, showCompletedView]);
 
   const hasGoogleAuthError =
     titleAuthError ||
@@ -1206,21 +1252,25 @@ export const GoogleTasksComponent = ({
           sortMode={sortMode}
           onSortChange={handleSortChange}
           showSelector={showSelector && !propTaskListId}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
         />
 
-        <AddTaskForm
-          showAddTask={showAddTask}
-          newTaskTitle={newTaskTitle}
-          onTitleChange={setNewTaskTitle}
-          onSubmit={handleCreateTask}
-          onCancel={handleCancelAddTask}
-          onShowForm={() => setShowAddTask(true)}
-          isLoading={isCreatingTask}
-          voiceRecording={voiceRecording}
-          voiceProcessing={voiceProcessing}
-          voiceError={voiceError}
-          onVoiceToggle={toggleVoice}
-        />
+        {!showCompletedView && (
+          <AddTaskForm
+            showAddTask={showAddTask}
+            newTaskTitle={newTaskTitle}
+            onTitleChange={setNewTaskTitle}
+            onSubmit={handleCreateTask}
+            onCancel={handleCancelAddTask}
+            onShowForm={() => setShowAddTask(true)}
+            isLoading={isCreatingTask}
+            voiceRecording={voiceRecording}
+            voiceProcessing={voiceProcessing}
+            voiceError={voiceError}
+            onVoiceToggle={toggleVoice}
+          />
+        )}
 
         <div className="flex-1 overflow-y-auto min-h-0 px-2 -mx-2">
           <TaskList
@@ -1238,6 +1288,7 @@ export const GoogleTasksComponent = ({
             taskListId={taskListId}
             dragOverTask={dragOverTask}
             sortMode={sortMode}
+            showCompleted={showCompletedView}
           />
         </div>
       </div>

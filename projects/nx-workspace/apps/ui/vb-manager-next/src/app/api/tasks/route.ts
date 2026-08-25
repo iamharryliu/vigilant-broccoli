@@ -15,7 +15,9 @@ export async function GET(req: NextRequest) {
   try {
     const accessToken = await getGoogleAccessTokenForRequest(req);
     const taskListId = req.nextUrl.searchParams.get('taskListId') ?? '@default';
-    const tasks = await listTasks(accessToken, taskListId);
+    const showCompleted =
+      req.nextUrl.searchParams.get('showCompleted') === 'true';
+    const tasks = await listTasks(accessToken, taskListId, showCompleted);
     return NextResponse.json({ success: true, tasks });
   } catch (error) {
     if (isExpiredError(error)) {

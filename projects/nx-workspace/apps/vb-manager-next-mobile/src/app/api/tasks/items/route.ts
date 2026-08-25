@@ -14,9 +14,14 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json();
   const taskListId = body.taskListId ?? '@default';
+  const showCompleted = body.showCompleted === true;
 
   try {
-    const tasks = await listTasks(auth.googleToken as string, taskListId);
+    const tasks = await listTasks(
+      auth.googleToken as string,
+      taskListId,
+      showCompleted,
+    );
     return NextResponse.json({ tasks });
   } catch (error) {
     if (isExpiredError(error)) {
