@@ -1,59 +1,134 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dialog } from '@radix-ui/themes';
 import { CalendarPlus } from 'lucide-react';
-import {
-  buildCalendarUrl,
-  CalendarConfig,
-  GOOGLE_CALENDAR,
-} from '@vigilant-broccoli/common-browser';
+import { GOOGLE_CALENDAR } from '@vigilant-broccoli/common-browser';
 import { VisuallyHidden } from '@vigilant-broccoli/react-lib';
 import { CalendarInput } from './calendar-input';
+import {
+  buildAuthHeaders,
+  signOutDueToExpiredToken,
+} from '../providers/auth-provider';
 
 const BIRTHDAYS_CALENDAR =
   'f61b08e940f7c4fb8becf0d419c8c09f7e0c46d6d03343637aef5837c766a09b@group.calendar.google.com';
-const CALENDAR_TITLE = 'Personal Calendar';
 
-const CALENDAR_CONFIG: CalendarConfig = {
-  height: 600,
-  wkst: 2,
-  ctz: GOOGLE_CALENDAR.TIMEZONE.COPENHAGEN,
-  showPrint: 0,
-  mode: 'AGENDA',
-  title: CALENDAR_TITLE,
-  ownerCalendars: [
-    {
-      email: GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL,
-      color: GOOGLE_CALENDAR.CALENDAR_COLOR.GREEN,
-    },
-    {
-      email: GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK,
-      color: GOOGLE_CALENDAR.CALENDAR_COLOR.RED,
-    },
-  ],
-  sharedCalendars: [
-    {
-      id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.COUNTRY_CALENDAR.SWEDEN,
-      color: GOOGLE_CALENDAR.CALENDAR_COLOR.PURPLE,
-    },
-    {
-      id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.PHASES_OF_THE_MOON,
-      color: GOOGLE_CALENDAR.CALENDAR_COLOR.DARK_PINK,
-    },
-    {
-      id: BIRTHDAYS_CALENDAR,
-      color: GOOGLE_CALENDAR.CALENDAR_COLOR.BLUE,
-    },
-    {
-      id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.H_AND_K,
-      color: GOOGLE_CALENDAR.CALENDAR_COLOR.PINK,
-    },
-  ],
+const CALENDAR_SOURCES: { id: string; color: string; label: string }[] = [
+  {
+    id: GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL,
+    color: GOOGLE_CALENDAR.CALENDAR_COLOR.GREEN,
+    label: 'Personal',
+  },
+  {
+    id: GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK,
+    color: GOOGLE_CALENDAR.CALENDAR_COLOR.RED,
+    label: 'Work',
+  },
+  {
+    id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.COUNTRY_CALENDAR.SWEDEN,
+    color: GOOGLE_CALENDAR.CALENDAR_COLOR.PURPLE,
+    label: 'Sweden holidays',
+  },
+  {
+    id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.PHASES_OF_THE_MOON,
+    color: GOOGLE_CALENDAR.CALENDAR_COLOR.DARK_PINK,
+    label: 'Moon phases',
+  },
+  {
+    id: BIRTHDAYS_CALENDAR,
+    color: GOOGLE_CALENDAR.CALENDAR_COLOR.BLUE,
+    label: 'Birthdays',
+  },
+  {
+    id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.H_AND_K,
+    color: GOOGLE_CALENDAR.CALENDAR_COLOR.PINK,
+    label: 'H&K',
+  },
+];
+
+const CALENDAR_COLOR_BY_ID = new Map(
+  CALENDAR_SOURCES.map(source => [source.id, source.color.replace('%23', '#')]),
+);
+
+const EVENTS_API = '/api/calendar/events';
+const LOADING_MESSAGE = 'Loading…';
+const EMPTY_MESSAGE = 'No upcoming events.';
+const FETCH_ERROR = 'Failed to load calendar events.';
+
+interface CalendarEvent {
+  id: string;
+  calendarId: string;
+  summary: string;
+  start: string;
+  end: string;
+  allDay: boolean;
+  htmlLink?: string;
+}
+
+const eventsApiUrl = () => {
+  const params = new URLSearchParams();
+  CALENDAR_SOURCES.forEach(source => params.append('calendarId', source.id));
+  return `${EVENTS_API}?${params.toString()}`;
+};
+
+const formatEventTime = (event: CalendarEvent) => {
+  const start = new Date(event.start);
+  if (event.allDay) {
+    return start.toLocaleDateString(undefined, {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    });
+  }
+  return start.toLocaleString(undefined, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
 };
 
 export const MyCalendarView = () => {
   const [createOpen, setCreateOpen] = useState(false);
+  const [events, setEvents] = useState<CalendarEvent[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    setError(null);
+
+    const load = async () => {
+      const headers = await buildAuthHeaders({ includeGoogleToken: true });
+      const res = await fetch(eventsApiUrl(), { headers });
+      if (res.status === 401) {
+        await signOutDueToExpiredToken();
+        return null;
+      }
+      if (!res.ok) throw res;
+      return res.json();
+    };
+
+    load()
+      .then(data => {
+        if (cancelled || !data) return;
+        setEvents(data.events ?? []);
+      })
+      .catch(() => {
+        if (!cancelled) setError(FETCH_ERROR);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [refreshKey]);
+
+  const handleCreateOpenChange = (open: boolean) => {
+    setCreateOpen(open);
+    if (!open) setRefreshKey(key => key + 1);
+  };
 
   return (
     <div className="flex h-full w-full flex-col gap-3">
@@ -66,15 +141,47 @@ export const MyCalendarView = () => {
         Create Event
       </button>
 
-      <div className="w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200">
-        <iframe
-          src={buildCalendarUrl(CALENDAR_CONFIG)}
-          className="h-full w-full dark:invert dark:hue-rotate-180"
-          title={CALENDAR_TITLE}
-        />
+      <div className="w-full min-h-0 flex-1 overflow-y-auto rounded-lg border border-gray-200">
+        {error && <p className="p-4 text-sm text-red-600">{error}</p>}
+        {!error && events === null && (
+          <p className="p-4 text-sm text-gray-500">{LOADING_MESSAGE}</p>
+        )}
+        {!error && events !== null && events.length === 0 && (
+          <p className="p-4 text-sm text-gray-500">{EMPTY_MESSAGE}</p>
+        )}
+        {!error && events !== null && events.length > 0 && (
+          <ul className="divide-y divide-gray-100">
+            {events.map(event => (
+              <li key={`${event.calendarId}-${event.id}`}>
+                <a
+                  href={event.htmlLink ?? '#'}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
+                >
+                  <span
+                    className="h-2.5 w-2.5 shrink-0 rounded-full"
+                    style={{
+                      backgroundColor:
+                        CALENDAR_COLOR_BY_ID.get(event.calendarId) ?? '#9ca3af',
+                    }}
+                  />
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span className="truncate text-sm font-medium text-gray-900">
+                      {event.summary}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {formatEventTime(event)}
+                    </span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
-      <Dialog.Root open={createOpen} onOpenChange={setCreateOpen}>
+      <Dialog.Root open={createOpen} onOpenChange={handleCreateOpenChange}>
         <Dialog.Content
           style={{
             maxWidth: '95vw',
