@@ -1,10 +1,12 @@
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+/// <reference path="../types/speech-recognition.d.ts" />
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { API_ENDPOINTS } from '../constants/api-endpoints';
-import { AUDIO_MIME_TYPE, AUDIO_FILENAME } from '../constants/audio';
-import { authFetch } from '../../../libs/auth';
 
+const SPEECH_TO_TEXT_ENDPOINT = '/api/speech-to-text';
+const AUDIO_MIME_TYPE = 'audio/webm';
+const AUDIO_FILENAME = 'recording.webm';
 const SPEECH_LANG = 'en-US';
 const ERROR_TRANSCRIBE = 'Failed to transcribe audio';
 const ERROR_MICROPHONE = 'Failed to access microphone';
@@ -14,16 +16,21 @@ const ERROR_RECOGNITION_UNSUPPORTED =
 const ERROR_NO_SPEECH = 'no-speech';
 
 interface UseSpeechToTextOptions {
+  authFetch: (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ) => Promise<Response>;
   onTranscriptComplete?: (transcript: string) => void;
   onTranscriptUpdate?: (transcript: string) => void;
   streaming?: boolean;
 }
 
 export const useSpeechToText = ({
+  authFetch,
   onTranscriptComplete,
   onTranscriptUpdate,
   streaming = false,
-}: UseSpeechToTextOptions = {}) => {
+}: UseSpeechToTextOptions) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -88,31 +95,34 @@ export const useSpeechToText = ({
     recognitionRef.current = recognition;
   }, [streaming]);
 
-  const transcribeAudio = useCallback(async (audioBlob: Blob) => {
-    setIsProcessing(true);
-    setError(null);
+  const transcribeAudio = useCallback(
+    async (audioBlob: Blob) => {
+      setIsProcessing(true);
+      setError(null);
 
-    const formData = new FormData();
-    formData.append('audio', audioBlob, AUDIO_FILENAME);
+      const formData = new FormData();
+      formData.append('audio', audioBlob, AUDIO_FILENAME);
 
-    const response = await authFetch(API_ENDPOINTS.SPEECH_TO_TEXT, {
-      method: 'POST',
-      body: formData,
-    });
+      const response = await authFetch(SPEECH_TO_TEXT_ENDPOINT, {
+        method: 'POST',
+        body: formData,
+      });
 
-    if (!response.ok) {
-      const errorData = await response
-        .json()
-        .catch(() => ({ error: ERROR_TRANSCRIBE }));
-      setError(errorData.error || ERROR_TRANSCRIBE);
+      if (!response.ok) {
+        const errorData = await response
+          .json()
+          .catch(() => ({ error: ERROR_TRANSCRIBE }));
+        setError(errorData.error || ERROR_TRANSCRIBE);
+        setIsProcessing(false);
+        return;
+      }
+
+      const data = await response.json();
       setIsProcessing(false);
-      return;
-    }
-
-    const data = await response.json();
-    setIsProcessing(false);
-    onTranscriptCompleteRef.current?.(data.transcript);
-  }, []);
+      onTranscriptCompleteRef.current?.(data.transcript);
+    },
+    [authFetch],
+  );
 
   const startRecording = useCallback(async () => {
     setError(null);

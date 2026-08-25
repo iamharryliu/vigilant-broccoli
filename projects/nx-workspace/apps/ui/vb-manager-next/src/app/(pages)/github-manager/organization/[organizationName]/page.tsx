@@ -13,10 +13,6 @@ import { AlertCircle, Plus } from 'lucide-react';
 import { authFetch } from '../../../../../../libs/auth';
 
 import {
-  CardSkeleton,
-  Skeleton,
-} from '../../../../components/skeleton.component';
-import {
   Avatar,
   Badge,
   Button,
@@ -26,9 +22,11 @@ import {
   CalloutIcon,
   CalloutText,
   CardContainer,
+  CardSkeleton,
   EllipsisCTA,
   Input,
   SearchInput,
+  Skeleton,
   StatusCardList,
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,

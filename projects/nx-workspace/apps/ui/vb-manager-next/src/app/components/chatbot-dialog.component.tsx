@@ -11,11 +11,12 @@ import {
   IconButton,
   ScrollArea,
   Select,
+  SpeechToTextToggleButton,
   Textarea,
   UserAvatar,
   Text,
+  useSpeechToText,
 } from '@vigilant-broccoli/react-lib';
-import { SpeechToTextButton } from './llm/SpeechToTextButton';
 import {
   LLM_MODEL,
   LLM_MODELS,
@@ -23,7 +24,6 @@ import {
   modelSupportsImageInput,
   modelSupportsImageOutput,
 } from '@vigilant-broccoli/common-js';
-import { useSpeechToText } from '../hooks/useSpeechToText';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
 import {
   EventDraft,
@@ -575,7 +575,7 @@ const InputControls = ({
       disabled={isStreaming || isRecording}
       aria-label="Upload image"
     />
-    <SpeechToTextButton
+    <SpeechToTextToggleButton
       isRecording={isRecording}
       isDisabled={isStreaming || isProcessing}
       onToggle={onToggleRecording}
@@ -814,6 +814,7 @@ export const ChatbotPanel = ({
     error: transcriptionError,
     toggleRecording,
   } = useSpeechToText({
+    authFetch,
     streaming: true,
     onTranscriptUpdate: transcript => {
       setInput(transcript);

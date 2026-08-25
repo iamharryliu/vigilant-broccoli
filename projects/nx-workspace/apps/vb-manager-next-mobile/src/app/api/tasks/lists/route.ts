@@ -8,13 +8,13 @@ import { requireAuth } from '../../../../../libs/api-auth';
 
 export const runtime = 'nodejs';
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   const auth = await requireAuth(request, { requireGoogleToken: true });
   if (auth instanceof NextResponse) return auth;
 
   try {
-    const lists = await listTaskLists(auth.googleToken as string);
-    return NextResponse.json({ lists });
+    const taskLists = await listTaskLists(auth.googleToken as string);
+    return NextResponse.json({ taskLists });
   } catch (error) {
     if (isExpiredError(error)) {
       return NextResponse.json(
