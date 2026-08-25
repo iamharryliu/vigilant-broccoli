@@ -1,10 +1,5 @@
 # Niko 🐶
 
-## Daytime Behaviors
-
-- Usually sleeps during midday and loves to sleep under a sofa/table/bed or in a cool room.
-- Nighttime he is a light sleeper and usually moves between different spots that he likes during the night.
-
 ## Feeding
 
 - Dry food/kibble - Pure Sensitive Turkey and Rice, Fill up plastic Mera cup and pour about half 2x a day. Niko asks for more during the day if he is hungry.
@@ -16,6 +11,11 @@
   - Cheese
   - Carrots
   - Dried fishes
+
+## Daytime Behaviors
+
+- Usually sleeps during midday and loves to sleep under a sofa/table/bed or in a cool room.
+- Nighttime he is a light sleeper and usually moves between different spots that he likes during the night.
 
 ## Walks
 
@@ -35,3 +35,8 @@
 
 - Weight
   - June 12: 10.5kg
+
+## Loves
+
+- playing with cardboard
+- playing with toilet paper rolls
