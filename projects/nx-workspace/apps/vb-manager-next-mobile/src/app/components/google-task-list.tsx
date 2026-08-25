@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { CollapsibleList } from '@vigilant-broccoli/react-lib';
 import {
   buildAuthHeaders,
   getGoogleToken,
@@ -13,14 +14,13 @@ type Task = {
   title: string;
   notes?: string;
   due?: string;
+  updated?: string;
   status: 'needsAction' | 'completed';
 };
 
 type TaskList = { id: string; title: string };
 
 const STORAGE_KEY = 'google-tasks-selected-list-id';
-
-const TASK_VIEW = { ACTIVE: 'active', COMPLETED: 'completed' } as const;
 
 const fetchTaskLists = async (): Promise<TaskList[]> => {
   const res = await fetch('/api/tasks/lists', {
@@ -36,22 +36,18 @@ const fetchTaskLists = async (): Promise<TaskList[]> => {
   return data.lists ?? [];
 };
 
-const fetchTasks = async (
-  taskListId: string,
-  showCompleted: boolean,
-): Promise<Task[]> => {
+const fetchTasks = async (taskListId: string): Promise<Task[]> => {
   const res = await fetch('/api/tasks/items', {
     method: 'POST',
     headers: await buildAuthHeaders({ includeGoogleToken: true, json: true }),
-    body: JSON.stringify({ taskListId, showCompleted }),
+    body: JSON.stringify({ taskListId }),
   });
   const data = await res.json();
   if (data.error === GOOGLE_TOKEN_EXPIRED) {
     await signOutDueToExpiredToken();
     return [];
   }
-  const tasks: Task[] = data.tasks ?? [];
-  return showCompleted ? tasks.filter(t => t.status === 'completed') : tasks;
+  return data.tasks ?? [];
 };
 
 const updateTask = async (
@@ -93,7 +89,6 @@ export const GoogleTaskList = () => {
   const [googleToken, setGoogleToken] = useState<string | null>(null);
   const [taskLists, setTaskLists] = useState<TaskList[]>([]);
   const [selectedListId, setSelectedListId] = useState<string>('@default');
-  const [showCompleted, setShowCompleted] = useState(false);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -117,11 +112,11 @@ export const GoogleTaskList = () => {
   useEffect(() => {
     if (!googleToken) return;
     setLoading(true);
-    fetchTasks(selectedListId, showCompleted)
+    fetchTasks(selectedListId)
       .then(setTasks)
       .finally(() => setLoading(false));
     localStorage.setItem(STORAGE_KEY, selectedListId);
-  }, [googleToken, selectedListId, showCompleted]);
+  }, [googleToken, selectedListId]);
 
   const handleToggleComplete = async (task: Task) => {
     if (!googleToken) return;
@@ -131,7 +126,13 @@ export const GoogleTaskList = () => {
       prev.map(t => (t.id === task.id ? { ...t, status: nextStatus } : t)),
     );
     await updateTask(selectedListId, task.id, { status: nextStatus });
-    setTasks(prev => prev.filter(t => t.id !== task.id));
+    setTasks(prev =>
+      prev.map(t =>
+        t.id === task.id
+          ? { ...t, status: nextStatus, updated: new Date().toISOString() }
+          : t,
+      ),
+    );
   };
 
   const handleSaveEdit = async () => {
@@ -161,6 +162,55 @@ export const GoogleTaskList = () => {
   const selectedListName =
     taskLists.find(l => l.id === selectedListId)?.title ?? 'Tasks';
 
+  const activeTasks = tasks.filter(t => t.status !== 'completed');
+  const completedTasks = tasks
+    .filter(t => t.status === 'completed')
+    .sort((a, b) => (b.updated ?? '').localeCompare(a.updated ?? ''));
+
+  const renderTaskRow = (task: Task) => (
+    <div
+      key={task.id}
+      className="flex items-center gap-3 px-3 py-2.5 bg-white rounded-xl border border-gray-100"
+    >
+      <button
+        onClick={() => handleToggleComplete(task)}
+        className={`w-5 h-5 rounded-full border-2 flex-shrink-0 transition-colors ${
+          task.status === 'completed'
+            ? 'bg-blue-500 border-blue-500'
+            : 'border-gray-300 hover:border-blue-400'
+        }`}
+      />
+      {editingId === task.id ? (
+        <input
+          value={editingTitle}
+          onChange={e => setEditingTitle(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === 'Enter') handleSaveEdit();
+            else if (e.key === 'Escape') setEditingId(null);
+          }}
+          onBlur={handleSaveEdit}
+          autoFocus
+          className="flex-1 text-sm border-b border-blue-300 focus:outline-none bg-transparent"
+        />
+      ) : (
+        <span
+          className={`flex-1 text-sm cursor-pointer ${task.status === 'completed' ? 'line-through text-gray-400' : 'text-gray-800'}`}
+          onClick={() => {
+            setEditingId(task.id);
+            setEditingTitle(task.title);
+          }}
+        >
+          {task.title}
+        </span>
+      )}
+      {task.due && (
+        <span className="text-xs text-blue-400 flex-shrink-0">
+          {new Date(task.due).toLocaleDateString()}
+        </span>
+      )}
+    </div>
+  );
+
   if (!googleToken) return null;
 
   return (
@@ -179,15 +229,6 @@ export const GoogleTaskList = () => {
         </select>
       )}
 
-      <select
-        value={showCompleted ? TASK_VIEW.COMPLETED : TASK_VIEW.ACTIVE}
-        onChange={e => setShowCompleted(e.target.value === TASK_VIEW.COMPLETED)}
-        className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
-      >
-        <option value={TASK_VIEW.ACTIVE}>To do</option>
-        <option value={TASK_VIEW.COMPLETED}>Completed</option>
-      </select>
-
       {loading ? (
         <div className="space-y-2">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -199,60 +240,33 @@ export const GoogleTaskList = () => {
         </div>
       ) : (
         <div className="space-y-1">
-          {tasks.length === 0 && (
+          {activeTasks.length === 0 && (
             <p className="text-sm text-gray-400 py-4 text-center">
-              {showCompleted
-                ? `No completed tasks in ${selectedListName}`
-                : `No tasks in ${selectedListName}`}
+              No tasks in {selectedListName}
             </p>
           )}
-          {tasks.map(task => (
-            <div
-              key={task.id}
-              className="flex items-center gap-3 px-3 py-2.5 bg-white rounded-xl border border-gray-100"
-            >
-              <button
-                onClick={() => handleToggleComplete(task)}
-                className={`w-5 h-5 rounded-full border-2 flex-shrink-0 transition-colors ${
-                  task.status === 'completed'
-                    ? 'bg-blue-500 border-blue-500'
-                    : 'border-gray-300 hover:border-blue-400'
-                }`}
-              />
-              {editingId === task.id ? (
-                <input
-                  value={editingTitle}
-                  onChange={e => setEditingTitle(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') handleSaveEdit();
-                    else if (e.key === 'Escape') setEditingId(null);
-                  }}
-                  onBlur={handleSaveEdit}
-                  autoFocus
-                  className="flex-1 text-sm border-b border-blue-300 focus:outline-none bg-transparent"
-                />
-              ) : (
-                <span
-                  className="flex-1 text-sm text-gray-800 cursor-pointer"
-                  onClick={() => {
-                    setEditingId(task.id);
-                    setEditingTitle(task.title);
-                  }}
-                >
-                  {task.title}
-                </span>
-              )}
-              {task.due && (
-                <span className="text-xs text-blue-400 flex-shrink-0">
-                  {new Date(task.due).toLocaleDateString()}
-                </span>
-              )}
-            </div>
-          ))}
+          {activeTasks.map(renderTaskRow)}
         </div>
       )}
 
-      {showCompleted ? null : showAddTask ? (
+      {!loading && completedTasks.length > 0 && (
+        <CollapsibleList
+          storageKeyPrefix={`google-tasks-${selectedListId}`}
+          items={[
+            {
+              id: `${selectedListId}-completed`,
+              title: `Completed (${completedTasks.length})`,
+              content: (
+                <div className="space-y-1">
+                  {completedTasks.map(renderTaskRow)}
+                </div>
+              ),
+            },
+          ]}
+        />
+      )}
+
+      {showAddTask ? (
         <div className="flex gap-2">
           <input
             value={newTaskTitle}
