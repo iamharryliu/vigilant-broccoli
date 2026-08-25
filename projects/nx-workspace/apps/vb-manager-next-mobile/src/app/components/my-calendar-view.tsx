@@ -136,22 +136,45 @@ const expandMultiDayEvent = (event: CalendarEvent): CalendarEvent[] => {
   });
 };
 
+const ALL_DAY_LABEL = 'All day';
+const TODAY_LABEL = 'Today';
+
 const formatEventTime = (event: CalendarEvent) => {
-  const start = new Date(event.start);
-  if (event.allDay) {
-    return start.toLocaleDateString(undefined, {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-    });
-  }
-  return start.toLocaleString(undefined, {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
+  if (event.allDay) return ALL_DAY_LABEL;
+  return new Date(event.start).toLocaleTimeString(undefined, {
     hour: 'numeric',
     minute: '2-digit',
   });
+};
+
+const isSameDay = (a: Date, b: Date) => dateOnly(a).getTime() === dateOnly(b).getTime();
+
+const formatDateHeading = (date: Date) => {
+  if (isSameDay(date, new Date())) return TODAY_LABEL;
+  return date.toLocaleDateString(undefined, {
+    weekday: 'long',
+    month: 'short',
+    day: 'numeric',
+  });
+};
+
+interface EventDayGroup {
+  key: string;
+  date: Date;
+  events: CalendarEvent[];
+}
+
+const groupEventsByDay = (events: CalendarEvent[]): EventDayGroup[] => {
+  const groups = new Map<string, CalendarEvent[]>();
+  events.forEach(event => {
+    const key = dateOnly(new Date(event.start)).toISOString();
+    const group = groups.get(key);
+    if (group) group.push(event);
+    else groups.set(key, [event]);
+  });
+  return Array.from(groups.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([key, dayEvents]) => ({ key, date: new Date(key), events: dayEvents }));
 };
 
 const useIsMobileBrowser = () => {
@@ -171,12 +194,14 @@ export const MyCalendarView = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const isMobile = useIsMobileBrowser();
 
-  const agendaEvents = useMemo(
+  const agendaGroups = useMemo(
     () =>
       events &&
-      events
-        .flatMap(expandMultiDayEvent)
-        .sort((a, b) => a.start.localeCompare(b.start)),
+      groupEventsByDay(
+        events
+          .flatMap(expandMultiDayEvent)
+          .sort((a, b) => a.start.localeCompare(b.start)),
+      ),
     [events],
   );
 
@@ -240,42 +265,49 @@ export const MyCalendarView = () => {
       {isMobile === true && (
         <div className="w-full min-h-0 flex-1 overflow-y-auto rounded-lg border border-gray-200">
           {error && <p className="p-4 text-sm text-red-600">{error}</p>}
-          {!error && agendaEvents === null && (
+          {!error && agendaGroups === null && (
             <p className="p-4 text-sm text-gray-500">{LOADING_MESSAGE}</p>
           )}
-          {!error && agendaEvents !== null && agendaEvents.length === 0 && (
+          {!error && agendaGroups !== null && agendaGroups.length === 0 && (
             <p className="p-4 text-sm text-gray-500">{EMPTY_MESSAGE}</p>
           )}
-          {!error && agendaEvents !== null && agendaEvents.length > 0 && (
-            <ul className="divide-y divide-gray-100">
-              {agendaEvents.map(event => (
-                <li key={`${event.calendarId}-${event.id}`}>
-                  <a
-                    href={event.htmlLink ?? '#'}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
-                  >
-                    <span
-                      className="h-2.5 w-2.5 shrink-0 rounded-full"
-                      style={{
-                        backgroundColor:
-                          CALENDAR_COLOR_BY_ID.get(event.calendarId) ?? '#9ca3af',
-                      }}
-                    />
-                    <span className="flex min-w-0 flex-1 flex-col">
-                      <span className="truncate text-sm font-medium text-gray-900">
-                        {event.summary}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {formatEventTime(event)}
-                      </span>
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )}
+          {!error &&
+            agendaGroups !== null &&
+            agendaGroups.map(group => (
+              <div key={group.key}>
+                <p className="sticky top-0 bg-gray-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                  {formatDateHeading(group.date)}
+                </p>
+                <ul className="divide-y divide-gray-100">
+                  {group.events.map(event => (
+                    <li key={`${event.calendarId}-${event.id}`}>
+                      <a
+                        href={event.htmlLink ?? '#'}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
+                      >
+                        <span
+                          className="h-2.5 w-2.5 shrink-0 rounded-full"
+                          style={{
+                            backgroundColor:
+                              CALENDAR_COLOR_BY_ID.get(event.calendarId) ?? '#9ca3af',
+                          }}
+                        />
+                        <span className="flex min-w-0 flex-1 flex-col">
+                          <span className="truncate text-sm font-medium text-gray-900">
+                            {event.summary}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {formatEventTime(event)}
+                          </span>
+                        </span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
         </div>
       )}
 
