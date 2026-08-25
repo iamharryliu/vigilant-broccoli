@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+/// <reference path="../types/speech-recognition.d.ts" />
 'use client';
 
 import { useState, useRef, useCallback, useEffect } from 'react';
