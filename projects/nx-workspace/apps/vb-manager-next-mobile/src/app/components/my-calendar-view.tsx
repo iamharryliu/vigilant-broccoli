@@ -3,7 +3,11 @@
 import { useEffect, useState } from 'react';
 import { Dialog } from '@radix-ui/themes';
 import { CalendarPlus } from 'lucide-react';
-import { GOOGLE_CALENDAR } from '@vigilant-broccoli/common-browser';
+import {
+  buildCalendarUrl,
+  CalendarConfig,
+  GOOGLE_CALENDAR,
+} from '@vigilant-broccoli/common-browser';
 import { VisuallyHidden } from '@vigilant-broccoli/react-lib';
 import { CalendarInput } from './calendar-input';
 import {
@@ -13,43 +17,73 @@ import {
 
 const BIRTHDAYS_CALENDAR =
   'f61b08e940f7c4fb8becf0d419c8c09f7e0c46d6d03343637aef5837c766a09b@group.calendar.google.com';
+const CALENDAR_TITLE = 'Personal Calendar';
 
-const CALENDAR_SOURCES: { id: string; color: string; label: string }[] = [
+const CALENDAR_SOURCES: {
+  id: string;
+  color: string;
+  label: string;
+  kind: 'owner' | 'shared';
+}[] = [
   {
     id: GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL,
     color: GOOGLE_CALENDAR.CALENDAR_COLOR.GREEN,
     label: 'Personal',
+    kind: 'owner',
   },
   {
     id: GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK,
     color: GOOGLE_CALENDAR.CALENDAR_COLOR.RED,
     label: 'Work',
+    kind: 'owner',
   },
   {
     id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.COUNTRY_CALENDAR.SWEDEN,
     color: GOOGLE_CALENDAR.CALENDAR_COLOR.PURPLE,
     label: 'Sweden holidays',
+    kind: 'shared',
   },
   {
     id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.PHASES_OF_THE_MOON,
     color: GOOGLE_CALENDAR.CALENDAR_COLOR.DARK_PINK,
     label: 'Moon phases',
+    kind: 'shared',
   },
   {
     id: BIRTHDAYS_CALENDAR,
     color: GOOGLE_CALENDAR.CALENDAR_COLOR.BLUE,
     label: 'Birthdays',
+    kind: 'shared',
   },
   {
     id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.H_AND_K,
     color: GOOGLE_CALENDAR.CALENDAR_COLOR.PINK,
     label: 'H&K',
+    kind: 'shared',
   },
 ];
+
+const CALENDAR_CONFIG: CalendarConfig = {
+  height: 600,
+  wkst: 2,
+  ctz: GOOGLE_CALENDAR.TIMEZONE.COPENHAGEN,
+  showPrint: 0,
+  mode: 'AGENDA',
+  title: CALENDAR_TITLE,
+  ownerCalendars: CALENDAR_SOURCES.filter(source => source.kind === 'owner').map(
+    source => ({ email: source.id, color: source.color }),
+  ),
+  sharedCalendars: CALENDAR_SOURCES.filter(source => source.kind === 'shared').map(
+    source => ({ id: source.id, color: source.color }),
+  ),
+};
 
 const CALENDAR_COLOR_BY_ID = new Map(
   CALENDAR_SOURCES.map(source => [source.id, decodeURIComponent(source.color)]),
 );
+
+const MOBILE_USER_AGENT_REGEX =
+  /Android|iPhone|iPad|iPod|IEMobile|BlackBerry|Opera Mini/i;
 
 const EVENTS_API = '/api/calendar/events';
 const LOADING_MESSAGE = 'Loading…';
@@ -90,13 +124,26 @@ const formatEventTime = (event: CalendarEvent) => {
   });
 };
 
+const useIsMobileBrowser = () => {
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    setIsMobile(MOBILE_USER_AGENT_REGEX.test(navigator.userAgent));
+  }, []);
+
+  return isMobile;
+};
+
 export const MyCalendarView = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const [events, setEvents] = useState<CalendarEvent[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const isMobile = useIsMobileBrowser();
 
   useEffect(() => {
+    if (!isMobile) return;
+
     let cancelled = false;
     setError(null);
 
@@ -123,7 +170,7 @@ export const MyCalendarView = () => {
     return () => {
       cancelled = true;
     };
-  }, [refreshKey]);
+  }, [isMobile, refreshKey]);
 
   const handleCreateOpenChange = (open: boolean) => {
     setCreateOpen(open);
@@ -141,45 +188,57 @@ export const MyCalendarView = () => {
         Create Event
       </button>
 
-      <div className="w-full min-h-0 flex-1 overflow-y-auto rounded-lg border border-gray-200">
-        {error && <p className="p-4 text-sm text-red-600">{error}</p>}
-        {!error && events === null && (
-          <p className="p-4 text-sm text-gray-500">{LOADING_MESSAGE}</p>
-        )}
-        {!error && events !== null && events.length === 0 && (
-          <p className="p-4 text-sm text-gray-500">{EMPTY_MESSAGE}</p>
-        )}
-        {!error && events !== null && events.length > 0 && (
-          <ul className="divide-y divide-gray-100">
-            {events.map(event => (
-              <li key={`${event.calendarId}-${event.id}`}>
-                <a
-                  href={event.htmlLink ?? '#'}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
-                >
-                  <span
-                    className="h-2.5 w-2.5 shrink-0 rounded-full"
-                    style={{
-                      backgroundColor:
-                        CALENDAR_COLOR_BY_ID.get(event.calendarId) ?? '#9ca3af',
-                    }}
-                  />
-                  <span className="flex min-w-0 flex-1 flex-col">
-                    <span className="truncate text-sm font-medium text-gray-900">
-                      {event.summary}
+      {isMobile === false && (
+        <div className="w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200">
+          <iframe
+            src={buildCalendarUrl(CALENDAR_CONFIG)}
+            className="h-full w-full dark:invert dark:hue-rotate-180"
+            title={CALENDAR_TITLE}
+          />
+        </div>
+      )}
+
+      {isMobile === true && (
+        <div className="w-full min-h-0 flex-1 overflow-y-auto rounded-lg border border-gray-200">
+          {error && <p className="p-4 text-sm text-red-600">{error}</p>}
+          {!error && events === null && (
+            <p className="p-4 text-sm text-gray-500">{LOADING_MESSAGE}</p>
+          )}
+          {!error && events !== null && events.length === 0 && (
+            <p className="p-4 text-sm text-gray-500">{EMPTY_MESSAGE}</p>
+          )}
+          {!error && events !== null && events.length > 0 && (
+            <ul className="divide-y divide-gray-100">
+              {events.map(event => (
+                <li key={`${event.calendarId}-${event.id}`}>
+                  <a
+                    href={event.htmlLink ?? '#'}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
+                  >
+                    <span
+                      className="h-2.5 w-2.5 shrink-0 rounded-full"
+                      style={{
+                        backgroundColor:
+                          CALENDAR_COLOR_BY_ID.get(event.calendarId) ?? '#9ca3af',
+                      }}
+                    />
+                    <span className="flex min-w-0 flex-1 flex-col">
+                      <span className="truncate text-sm font-medium text-gray-900">
+                        {event.summary}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {formatEventTime(event)}
+                      </span>
                     </span>
-                    <span className="text-xs text-gray-500">
-                      {formatEventTime(event)}
-                    </span>
-                  </span>
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
 
       <Dialog.Root open={createOpen} onOpenChange={handleCreateOpenChange}>
         <Dialog.Content
