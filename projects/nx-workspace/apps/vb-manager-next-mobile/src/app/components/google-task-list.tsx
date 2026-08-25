@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { CollapsibleList } from '@vigilant-broccoli/react-lib';
 import {
   buildAuthHeaders,
   getGoogleToken,
@@ -13,6 +14,7 @@ type Task = {
   title: string;
   notes?: string;
   due?: string;
+  updated?: string;
   status: 'needsAction' | 'completed';
 };
 
@@ -104,10 +106,7 @@ export const GoogleTaskList = () => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) setSelectedListId(stored);
 
-    fetchTaskLists().then(lists => {
-      setTaskLists(lists);
-      if (!stored && lists.length) setSelectedListId(lists[0].id ?? '@default');
-    });
+    fetchTaskLists().then(setTaskLists);
   }, []);
 
   useEffect(() => {
@@ -120,12 +119,20 @@ export const GoogleTaskList = () => {
   }, [googleToken, selectedListId]);
 
   const handleToggleComplete = async (task: Task) => {
-    if (!googleToken || task.status === 'completed') return;
+    if (!googleToken) return;
+    const nextStatus =
+      task.status === 'completed' ? 'needsAction' : 'completed';
     setTasks(prev =>
-      prev.map(t => (t.id === task.id ? { ...t, status: 'completed' } : t)),
+      prev.map(t => (t.id === task.id ? { ...t, status: nextStatus } : t)),
     );
-    await updateTask(selectedListId, task.id, { status: 'completed' });
-    setTasks(prev => prev.filter(t => t.id !== task.id));
+    await updateTask(selectedListId, task.id, { status: nextStatus });
+    setTasks(prev =>
+      prev.map(t =>
+        t.id === task.id
+          ? { ...t, status: nextStatus, updated: new Date().toISOString() }
+          : t,
+      ),
+    );
   };
 
   const handleSaveEdit = async () => {
@@ -154,6 +161,55 @@ export const GoogleTaskList = () => {
 
   const selectedListName =
     taskLists.find(l => l.id === selectedListId)?.title ?? 'Tasks';
+
+  const activeTasks = tasks.filter(t => t.status !== 'completed');
+  const completedTasks = tasks
+    .filter(t => t.status === 'completed')
+    .sort((a, b) => (b.updated ?? '').localeCompare(a.updated ?? ''));
+
+  const renderTaskRow = (task: Task) => (
+    <div
+      key={task.id}
+      className="flex items-center gap-3 px-3 py-2.5 bg-white rounded-xl border border-gray-100"
+    >
+      <button
+        onClick={() => handleToggleComplete(task)}
+        className={`w-5 h-5 rounded-full border-2 flex-shrink-0 transition-colors ${
+          task.status === 'completed'
+            ? 'bg-blue-500 border-blue-500'
+            : 'border-gray-300 hover:border-blue-400'
+        }`}
+      />
+      {editingId === task.id ? (
+        <input
+          value={editingTitle}
+          onChange={e => setEditingTitle(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === 'Enter') handleSaveEdit();
+            else if (e.key === 'Escape') setEditingId(null);
+          }}
+          onBlur={handleSaveEdit}
+          autoFocus
+          className="flex-1 text-sm border-b border-blue-300 focus:outline-none bg-transparent"
+        />
+      ) : (
+        <span
+          className={`flex-1 text-sm cursor-pointer ${task.status === 'completed' ? 'line-through text-gray-400' : 'text-gray-800'}`}
+          onClick={() => {
+            setEditingId(task.id);
+            setEditingTitle(task.title);
+          }}
+        >
+          {task.title}
+        </span>
+      )}
+      {task.due && (
+        <span className="text-xs text-blue-400 flex-shrink-0">
+          {new Date(task.due).toLocaleDateString()}
+        </span>
+      )}
+    </div>
+  );
 
   if (!googleToken) return null;
 
@@ -184,51 +240,30 @@ export const GoogleTaskList = () => {
         </div>
       ) : (
         <div className="space-y-1">
-          {tasks.length === 0 && (
+          {activeTasks.length === 0 && (
             <p className="text-sm text-gray-400 py-4 text-center">
               No tasks in {selectedListName}
             </p>
           )}
-          {tasks.map(task => (
-            <div
-              key={task.id}
-              className="flex items-center gap-3 px-3 py-2.5 bg-white rounded-xl border border-gray-100"
-            >
-              <button
-                onClick={() => handleToggleComplete(task)}
-                className="w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0 hover:border-blue-400 transition-colors"
-              />
-              {editingId === task.id ? (
-                <input
-                  value={editingTitle}
-                  onChange={e => setEditingTitle(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === 'Enter') handleSaveEdit();
-                    else if (e.key === 'Escape') setEditingId(null);
-                  }}
-                  onBlur={handleSaveEdit}
-                  autoFocus
-                  className="flex-1 text-sm border-b border-blue-300 focus:outline-none bg-transparent"
-                />
-              ) : (
-                <span
-                  className="flex-1 text-sm text-gray-800 cursor-pointer"
-                  onClick={() => {
-                    setEditingId(task.id);
-                    setEditingTitle(task.title);
-                  }}
-                >
-                  {task.title}
-                </span>
-              )}
-              {task.due && (
-                <span className="text-xs text-blue-400 flex-shrink-0">
-                  {new Date(task.due).toLocaleDateString()}
-                </span>
-              )}
-            </div>
-          ))}
+          {activeTasks.map(renderTaskRow)}
         </div>
+      )}
+
+      {!loading && completedTasks.length > 0 && (
+        <CollapsibleList
+          storageKeyPrefix={`google-tasks-${selectedListId}`}
+          items={[
+            {
+              id: `${selectedListId}-completed`,
+              title: `Completed (${completedTasks.length})`,
+              content: (
+                <div className="space-y-1">
+                  {completedTasks.map(renderTaskRow)}
+                </div>
+              ),
+            },
+          ]}
+        />
       )}
 
       {showAddTask ? (

@@ -4,6 +4,7 @@ import { Card } from '@radix-ui/themes';
 import {
   Button,
   Checkbox,
+  CollapsibleList,
   Input,
   Select,
   Text,
@@ -207,12 +208,14 @@ const useTasks = (taskListId: string) => {
   const toggleTaskComplete = async (task: Task) => {
     if (task.isRemoving) return;
 
-    if (task.status === 'completed') return;
+    const originalStatus = task.status;
+    const nextStatus =
+      originalStatus === 'completed' ? 'needsAction' : 'completed';
 
-    // Optimistically mark complete and keep item visible while request is in-flight.
+    // Optimistically flip status and keep item visible while request is in-flight.
     setTasks(prevTasks =>
       prevTasks.map(t =>
-        t.id === task.id ? { ...t, status: 'completed', isRemoving: true } : t,
+        t.id === task.id ? { ...t, status: nextStatus, isRemoving: true } : t,
       ),
     );
 
@@ -223,18 +226,29 @@ const useTasks = (taskListId: string) => {
         body: JSON.stringify({
           taskListId,
           taskId: task.id,
-          status: 'completed',
+          status: nextStatus,
         }),
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to update task');
-      setTasks(prevTasks => prevTasks.filter(t => t.id !== task.id));
-    } catch (err) {
-      // If the server call fails, revert the task to unchecked.
       setTasks(prevTasks =>
         prevTasks.map(t =>
           t.id === task.id
-            ? { ...t, status: 'needsAction', isRemoving: false }
+            ? {
+                ...t,
+                status: nextStatus,
+                isRemoving: false,
+                updated: data.task?.updated ?? new Date().toISOString(),
+              }
+            : t,
+        ),
+      );
+    } catch (err) {
+      // If the server call fails, revert the task to its original status.
+      setTasks(prevTasks =>
+        prevTasks.map(t =>
+          t.id === task.id
+            ? { ...t, status: originalStatus, isRemoving: false }
             : t,
         ),
       );
@@ -585,9 +599,6 @@ const TaskHeader = memo(
         </div>
         {showSelector && taskLists.length > 0 && (
           <div className="flex gap-2 items-center">
-            <Text size="2" color="gray">
-              List:
-            </Text>
             <Select
               selectedOption={taskLists.find(l => l.id === selectedTaskListId)}
               setValue={list => onTaskListChange(list.id)}
@@ -595,6 +606,7 @@ const TaskHeader = memo(
               optionIdenfifier="id"
               optionDisplayKey="title"
               placeholder="Select task list..."
+              triggerClassName="w-full"
             />
           </div>
         )}
@@ -678,7 +690,7 @@ const AddTaskForm = memo(
     if (!showAddTask) {
       return (
         <div className="flex gap-2 items-center">
-          <Button onClick={onShowForm} variant="secondary">
+          <Button onClick={onShowForm} variant="secondary" className="flex-1">
             + Add Task
           </Button>
           <SpeechToTextButton
@@ -733,20 +745,13 @@ const AddTaskForm = memo(
 
 AddTaskForm.displayName = 'AddTaskForm';
 
-const getDisplayTasks = (tasks: Task[]) =>
+const getActiveTasks = (tasks: Task[]) =>
   tasks.filter(t => t.status !== 'completed' || t.isRemoving);
 
-const areDisplayTasksEqual = (prevTasks: Task[], nextTasks: Task[]) => {
-  const prev = getDisplayTasks(prevTasks);
-  const next = getDisplayTasks(nextTasks);
-  if (prev.length !== next.length) return false;
-  return prev.every(
-    (t, i) =>
-      t.id === next[i].id &&
-      t.isNew === next[i].isNew &&
-      t.isRemoving === next[i].isRemoving,
-  );
-};
+const getCompletedTasks = (tasks: Task[]) =>
+  tasks
+    .filter(t => t.status === 'completed' && !t.isRemoving)
+    .sort((a, b) => (b.updated ?? '').localeCompare(a.updated ?? ''));
 
 const PLACEHOLDER_PREFIX = 'placeholder-';
 
@@ -841,9 +846,8 @@ const TaskList = memo(
       );
     }
 
-    const activeTasks = tasks.filter(
-      t => t.status !== 'completed' || t.isRemoving,
-    );
+    const activeTasks = getActiveTasks(tasks);
+    const completedTasks = getCompletedTasks(tasks);
 
     const showPlaceholder =
       dragOverTask && !activeTasks.some(t => t.id === dragOverTask.id);
@@ -855,6 +859,24 @@ const TaskList = memo(
     const highlightClass = isOver
       ? 'bg-blue-100 dark:bg-blue-900 ring-2 ring-blue-400 ring-inset'
       : '';
+
+    const renderTaskItem = (task: Task, draggable: boolean) => (
+      <TaskItem
+        key={task.id}
+        task={task}
+        isEditing={editingTaskId === task.id}
+        editingTitle={editingTaskTitle}
+        onToggleComplete={onToggleComplete}
+        onStartEdit={onStartEdit}
+        onEditChange={onEditChange}
+        onSaveEdit={onSaveEdit}
+        onCancelEdit={onCancelEdit}
+        isNew={task.isNew}
+        enableDragDrop={draggable}
+        taskListId={taskListId}
+        sortMode={sortMode}
+      />
+    );
 
     return (
       <div
@@ -871,23 +893,7 @@ const TaskList = memo(
                 No tasks to display
               </Text>
             )}
-            {activeTasks.map(task => (
-              <TaskItem
-                key={task.id}
-                task={task}
-                isEditing={editingTaskId === task.id}
-                editingTitle={editingTaskTitle}
-                onToggleComplete={onToggleComplete}
-                onStartEdit={onStartEdit}
-                onEditChange={onEditChange}
-                onSaveEdit={onSaveEdit}
-                onCancelEdit={onCancelEdit}
-                isNew={task.isNew}
-                enableDragDrop={enableDragDrop}
-                taskListId={taskListId}
-                sortMode={sortMode}
-              />
-            ))}
+            {activeTasks.map(task => renderTaskItem(task, !!enableDragDrop))}
             {showPlaceholder && (
               <TaskPlaceholder
                 id={dragOverTask.id}
@@ -897,21 +903,24 @@ const TaskList = memo(
             )}
           </div>
         </SortableContext>
+        {completedTasks.length > 0 && (
+          <CollapsibleList
+            storageKeyPrefix={`google-tasks-${taskListId ?? 'default'}`}
+            items={[
+              {
+                id: `${taskListId ?? 'default'}-completed`,
+                title: `Completed (${completedTasks.length})`,
+                content: (
+                  <div className="flex flex-col gap-2">
+                    {completedTasks.map(task => renderTaskItem(task, false))}
+                  </div>
+                ),
+              },
+            ]}
+          />
+        )}
       </div>
     );
-  },
-  (prevProps, nextProps) => {
-    const scalarChanged =
-      prevProps.loading !== nextProps.loading ||
-      prevProps.error !== nextProps.error ||
-      prevProps.editingTaskId !== nextProps.editingTaskId ||
-      prevProps.editingTaskTitle !== nextProps.editingTaskTitle ||
-      prevProps.dragOverTask?.id !== nextProps.dragOverTask?.id ||
-      prevProps.sortMode !== nextProps.sortMode;
-
-    if (scalarChanged) return false;
-
-    return areDisplayTasksEqual(prevProps.tasks, nextProps.tasks);
   },
 );
 
@@ -1164,9 +1173,7 @@ export const GoogleTasksComponent = ({
 
       if (!over || active.id === over.id) return;
 
-      const activeTasks = sortedTasks.filter(
-        t => t.status !== 'completed' || t.isRemoving,
-      );
+      const activeTasks = getActiveTasks(sortedTasks);
       const activeIndex = activeTasks.findIndex(t => t.id === active.id);
       const overIndex = activeTasks.findIndex(t => t.id === over.id);
 

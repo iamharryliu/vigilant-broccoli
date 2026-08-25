@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   const taskListId = body.taskListId ?? '@default';
 
   try {
-    const tasks = await listTasks(auth.googleToken as string, taskListId);
+    const tasks = await listTasks(auth.googleToken as string, taskListId, true);
     return NextResponse.json({ tasks });
   } catch (error) {
     if (isExpiredError(error)) {
