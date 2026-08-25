@@ -9,9 +9,9 @@ import {
   StatusCardList,
   StatusCardListItem,
   Text,
+  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
-import { CardSkeleton } from './skeleton.component';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';

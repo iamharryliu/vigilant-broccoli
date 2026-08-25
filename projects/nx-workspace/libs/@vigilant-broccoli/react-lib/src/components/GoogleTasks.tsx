@@ -1,21 +1,13 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Card } from '@radix-ui/themes';
-import {
-  Button,
-  Checkbox,
-  CollapsibleList,
-  Input,
-  Select,
-  Text,
-} from '@vigilant-broccoli/react-lib';
+import { Button } from './Button';
+import { Checkbox } from './Checkbox';
+import { CollapsibleList } from './CollapsibleList';
+import { Input } from './Input';
+import { Select } from './Select';
+import { Text } from './Text';
 import { useEffect, useState, useCallback, memo, useMemo } from 'react';
-import {
-  authFetch,
-  signInWithGoogle,
-  useAuthStatus,
-  useGoogleToken,
-} from '../../../libs/auth';
 import {
   useDroppable,
   DndContext,
@@ -29,11 +21,15 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { DragHandleDots2Icon } from '@radix-ui/react-icons';
-import { CardSkeleton } from './skeleton.component';
-import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { CardSkeleton } from './Skeleton';
 import { getCommitType } from '../utils/commit-type.utils';
 import { useSpeechToText } from '../hooks/useSpeechToText';
-import { SpeechToTextButton } from './llm/SpeechToTextButton';
+import { SpeechToTextToggleButton } from './SpeechToTextToggleButton';
+
+const TASKS_ENDPOINT = '/api/tasks';
+const TASKS_LISTS_ENDPOINT = '/api/tasks/lists';
+const TASKS_MOVE_ENDPOINT = '/api/tasks/move';
+const TASKS_PARSE_TEXT_ENDPOINT = '/api/tasks/parse-text';
 
 const ANIMATION_STYLES = `
   @keyframes slideInAndFadeIn {
@@ -66,6 +62,19 @@ interface Task {
 interface TaskList {
   id: string;
   title: string;
+}
+
+export interface GoogleTasksAuthAdapter {
+  authFetch: (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ) => Promise<Response>;
+  useAuthStatus: () => 'loading' | 'authenticated' | 'unauthenticated';
+  useGoogleToken: () => {
+    googleToken: string | null;
+    clearGoogleToken: () => void;
+  };
+  signInWithGoogle: () => Promise<void>;
 }
 
 type EisenhowerQuadrant = 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'none';
@@ -150,7 +159,10 @@ const handleApiError = (err: unknown, fallbackMsg: string): string => {
   return message;
 };
 
-const useTasks = (taskListId: string) => {
+const useTasks = (
+  taskListId: string,
+  authFetch: GoogleTasksAuthAdapter['authFetch'],
+) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -160,7 +172,7 @@ const useTasks = (taskListId: string) => {
     setError(null);
     try {
       const response = await authFetch(
-        `${API_ENDPOINTS.TASKS}?taskListId=${taskListId}`,
+        `${TASKS_ENDPOINT}?taskListId=${taskListId}`,
       );
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to fetch tasks');
@@ -175,7 +187,7 @@ const useTasks = (taskListId: string) => {
   const createTask = async (title: string) => {
     if (!title.trim()) return;
     try {
-      const response = await authFetch(API_ENDPOINTS.TASKS, {
+      const response = await authFetch(TASKS_ENDPOINT, {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ taskListId, title }),
@@ -220,7 +232,7 @@ const useTasks = (taskListId: string) => {
     );
 
     try {
-      const response = await authFetch(API_ENDPOINTS.TASKS, {
+      const response = await authFetch(TASKS_ENDPOINT, {
         method: HTTP_METHOD.PATCH,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({
@@ -259,7 +271,7 @@ const useTasks = (taskListId: string) => {
   const updateTask = async (taskId: string, title: string) => {
     if (!title.trim()) return;
     try {
-      const response = await authFetch(API_ENDPOINTS.TASKS, {
+      const response = await authFetch(TASKS_ENDPOINT, {
         method: HTTP_METHOD.PATCH,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({ taskListId, taskId, title }),
@@ -276,7 +288,7 @@ const useTasks = (taskListId: string) => {
 
   const moveTask = async (taskId: string, previousTaskId: string | null) => {
     try {
-      const response = await authFetch(API_ENDPOINTS.TASKS_MOVE, {
+      const response = await authFetch(TASKS_MOVE_ENDPOINT, {
         method: HTTP_METHOD.POST,
         headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
         body: JSON.stringify({
@@ -308,7 +320,10 @@ const useTasks = (taskListId: string) => {
   };
 };
 
-const useTaskLists = (status: string) => {
+const useTaskLists = (
+  status: string,
+  authFetch: GoogleTasksAuthAdapter['authFetch'],
+) => {
   const [taskLists, setTaskLists] = useState<TaskList[]>([]);
   const [authError, setAuthError] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -323,7 +338,7 @@ const useTaskLists = (status: string) => {
 
     const fetchTaskLists = async () => {
       try {
-        const response = await authFetch(API_ENDPOINTS.TASKS_LISTS);
+        const response = await authFetch(TASKS_LISTS_ENDPOINT);
         const data = await response.json();
 
         if (response.status === 401) {
@@ -342,7 +357,7 @@ const useTaskLists = (status: string) => {
       }
     };
     fetchTaskLists();
-  }, [status]);
+  }, [status, authFetch]);
 
   return { taskLists, authError, loading };
 };
@@ -619,7 +634,10 @@ TaskHeader.displayName = 'TaskHeader';
 
 const VOICE_PARSE_ERROR = 'Failed to extract tasks from voice input';
 
-const useVoiceAddTasks = (createTasks: (titles: string[]) => Promise<void>) => {
+const useVoiceAddTasks = (
+  createTasks: (titles: string[]) => Promise<void>,
+  authFetch: GoogleTasksAuthAdapter['authFetch'],
+) => {
   const [isParsing, setIsParsing] = useState(false);
   const [voiceError, setVoiceError] = useState<string | null>(null);
 
@@ -629,7 +647,7 @@ const useVoiceAddTasks = (createTasks: (titles: string[]) => Promise<void>) => {
       setIsParsing(true);
       setVoiceError(null);
       try {
-        const res = await authFetch(API_ENDPOINTS.TASKS_PARSE_TEXT, {
+        const res = await authFetch(TASKS_PARSE_TEXT_ENDPOINT, {
           method: HTTP_METHOD.POST,
           headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
           body: JSON.stringify({ transcript }),
@@ -646,11 +664,11 @@ const useVoiceAddTasks = (createTasks: (titles: string[]) => Promise<void>) => {
         setIsParsing(false);
       }
     },
-    [createTasks],
+    [createTasks, authFetch],
   );
 
   const { isRecording, isProcessing, error, toggleRecording } = useSpeechToText(
-    { onTranscriptComplete: handleTranscript },
+    { authFetch, onTranscriptComplete: handleTranscript },
   );
 
   return {
@@ -693,7 +711,7 @@ const AddTaskForm = memo(
           <Button onClick={onShowForm} variant="secondary" className="flex-1">
             + Add Task
           </Button>
-          <SpeechToTextButton
+          <SpeechToTextToggleButton
             isRecording={voiceRecording}
             isProcessing={voiceProcessing}
             isDisabled={isLoading}
@@ -726,7 +744,7 @@ const AddTaskForm = memo(
             disabled={isLoading}
             autoFocus
           />
-          <SpeechToTextButton
+          <SpeechToTextToggleButton
             isRecording={voiceRecording}
             isProcessing={voiceProcessing}
             isDisabled={isLoading}
@@ -926,51 +944,55 @@ const TaskList = memo(
 
 TaskList.displayName = 'TaskList';
 
-const UnauthenticatedView = memo(() => (
-  <Card className="w-full">
-    <div className="flex flex-col gap-3 p-4">
-      <div className="flex justify-between items-center">
-        <Text size="5" weight="bold">
-          {TASKS_TITLE}
+const UnauthenticatedView = memo(
+  ({ signInWithGoogle }: { signInWithGoogle: () => Promise<void> }) => (
+    <Card className="w-full">
+      <div className="flex flex-col gap-3 p-4">
+        <div className="flex justify-between items-center">
+          <Text size="5" weight="bold">
+            {TASKS_TITLE}
+          </Text>
+          <Button
+            onClick={async () => {
+              await signInWithGoogle();
+            }}
+          >
+            {SIGN_IN_GOOGLE_LABEL}
+          </Button>
+        </div>
+        <Text size="2" color="gray">
+          {SIGN_IN_GOOGLE_DESCRIPTION}
         </Text>
-        <Button
-          onClick={async () => {
-            await signInWithGoogle();
-          }}
-        >
-          {SIGN_IN_GOOGLE_LABEL}
-        </Button>
       </div>
-      <Text size="2" color="gray">
-        {SIGN_IN_GOOGLE_DESCRIPTION}
-      </Text>
-    </div>
-  </Card>
-));
+    </Card>
+  ),
+);
 
 UnauthenticatedView.displayName = 'UnauthenticatedView';
 
-const GoogleReconnectView = memo(() => (
-  <Card className="w-full">
-    <div className="flex flex-col gap-3 p-4">
-      <div className="flex justify-between items-center">
-        <Text size="5" weight="bold">
-          {TASKS_TITLE}
+const GoogleReconnectView = memo(
+  ({ signInWithGoogle }: { signInWithGoogle: () => Promise<void> }) => (
+    <Card className="w-full">
+      <div className="flex flex-col gap-3 p-4">
+        <div className="flex justify-between items-center">
+          <Text size="5" weight="bold">
+            {TASKS_TITLE}
+          </Text>
+          <Button
+            onClick={async () => {
+              await signInWithGoogle();
+            }}
+          >
+            {RECONNECT_GOOGLE_LABEL}
+          </Button>
+        </div>
+        <Text size="2" color="gray">
+          {RECONNECT_GOOGLE_DESCRIPTION}
         </Text>
-        <Button
-          onClick={async () => {
-            await signInWithGoogle();
-          }}
-        >
-          {RECONNECT_GOOGLE_LABEL}
-        </Button>
       </div>
-      <Text size="2" color="gray">
-        {RECONNECT_GOOGLE_DESCRIPTION}
-      </Text>
-    </div>
-  </Card>
-));
+    </Card>
+  ),
+);
 
 GoogleReconnectView.displayName = 'GoogleReconnectView';
 
@@ -981,6 +1003,7 @@ interface DragOverTask {
 
 // eslint-disable-next-line complexity
 export const GoogleTasksComponent = ({
+  auth,
   taskListId: propTaskListId,
   showSelector = true,
   enableDragDrop = false,
@@ -989,7 +1012,9 @@ export const GoogleTasksComponent = ({
   dragOverTask,
   sortMode: controlledSortMode,
   onSortModeChange,
+  wrapInCard = true,
 }: {
+  auth: GoogleTasksAuthAdapter;
   taskListId?: string;
   showSelector?: boolean;
   enableDragDrop?: boolean;
@@ -998,10 +1023,15 @@ export const GoogleTasksComponent = ({
   dragOverTask?: DragOverTask | null;
   sortMode?: SortMode;
   onSortModeChange?: (taskListId: string, sortMode: SortMode) => void;
-} = {}) => {
+  wrapInCard?: boolean;
+}) => {
+  const { authFetch, useAuthStatus, useGoogleToken, signInWithGoogle } = auth;
   const status = useAuthStatus();
   const { clearGoogleToken } = useGoogleToken();
-  const { taskLists, authError: titleAuthError } = useTaskLists(status);
+  const { taskLists, authError: titleAuthError } = useTaskLists(
+    status,
+    authFetch,
+  );
 
   const [selectedTaskListId, setSelectedTaskListId] = useState<string>(() => {
     if (propTaskListId) return propTaskListId;
@@ -1023,7 +1053,7 @@ export const GoogleTasksComponent = ({
     updateTask,
     moveTask,
     setTasks,
-  } = useTasks(taskListId);
+  } = useTasks(taskListId, authFetch);
   const isControlledSort = controlledSortMode !== undefined;
   const [localSortMode, setLocalSortMode] = useSortModeStorage(
     taskListId,
@@ -1065,6 +1095,7 @@ export const GoogleTasksComponent = ({
 
   useEffect(() => {
     if (status === 'authenticated') fetchTasks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, taskListId, refreshTrigger]);
 
   const hasGoogleAuthError =
@@ -1119,7 +1150,7 @@ export const GoogleTasksComponent = ({
     isProcessing: voiceProcessing,
     error: voiceError,
     toggleRecording: toggleVoice,
-  } = useVoiceAddTasks(createTasksFromVoice);
+  } = useVoiceAddTasks(createTasksFromVoice, authFetch);
 
   const handleStartEdit = useCallback((task: Task) => {
     setEditingTaskId(task.id);
@@ -1198,57 +1229,63 @@ export const GoogleTasksComponent = ({
   );
 
   if (status === 'loading') return <CardSkeleton showTitleSkeleton rows={5} />;
-  if (status === 'unauthenticated') return <UnauthenticatedView />;
-  if (hasGoogleAuthError) return <GoogleReconnectView />;
+  if (status === 'unauthenticated')
+    return <UnauthenticatedView signInWithGoogle={signInWithGoogle} />;
+  if (hasGoogleAuthError)
+    return <GoogleReconnectView signInWithGoogle={signInWithGoogle} />;
 
   const isDragDropEnabled = sortMode === SORT_MODE.DEFAULT;
 
-  const content = (
-    <Card className="w-full h-full flex flex-col overflow-hidden">
-      <div className="flex flex-col gap-3 p-4 h-full">
-        <TaskHeader
-          taskLists={taskLists}
-          selectedTaskListId={taskListId}
-          onTaskListChange={handleTaskListChange}
+  const body = (
+    <div className="flex flex-col gap-3 p-4 h-full">
+      <TaskHeader
+        taskLists={taskLists}
+        selectedTaskListId={taskListId}
+        onTaskListChange={handleTaskListChange}
+        sortMode={sortMode}
+        onSortChange={handleSortChange}
+        showSelector={showSelector && !propTaskListId}
+      />
+
+      <AddTaskForm
+        showAddTask={showAddTask}
+        newTaskTitle={newTaskTitle}
+        onTitleChange={setNewTaskTitle}
+        onSubmit={handleCreateTask}
+        onCancel={handleCancelAddTask}
+        onShowForm={() => setShowAddTask(true)}
+        isLoading={isCreatingTask}
+        voiceRecording={voiceRecording}
+        voiceProcessing={voiceProcessing}
+        voiceError={voiceError}
+        onVoiceToggle={toggleVoice}
+      />
+
+      <div className="flex-1 overflow-y-auto min-h-0 px-2 -mx-2">
+        <TaskList
+          loading={loading}
+          error={error}
+          tasks={sortedTasks}
+          editingTaskId={editingTaskId}
+          editingTaskTitle={editingTaskTitle}
+          onToggleComplete={toggleTaskComplete}
+          onStartEdit={handleStartEdit}
+          onEditChange={handleEditChange}
+          onSaveEdit={handleSaveEdit}
+          onCancelEdit={handleCancelEdit}
+          enableDragDrop={isDragDropEnabled || enableDragDrop}
+          taskListId={taskListId}
+          dragOverTask={dragOverTask}
           sortMode={sortMode}
-          onSortChange={handleSortChange}
-          showSelector={showSelector && !propTaskListId}
         />
-
-        <AddTaskForm
-          showAddTask={showAddTask}
-          newTaskTitle={newTaskTitle}
-          onTitleChange={setNewTaskTitle}
-          onSubmit={handleCreateTask}
-          onCancel={handleCancelAddTask}
-          onShowForm={() => setShowAddTask(true)}
-          isLoading={isCreatingTask}
-          voiceRecording={voiceRecording}
-          voiceProcessing={voiceProcessing}
-          voiceError={voiceError}
-          onVoiceToggle={toggleVoice}
-        />
-
-        <div className="flex-1 overflow-y-auto min-h-0 px-2 -mx-2">
-          <TaskList
-            loading={loading}
-            error={error}
-            tasks={sortedTasks}
-            editingTaskId={editingTaskId}
-            editingTaskTitle={editingTaskTitle}
-            onToggleComplete={toggleTaskComplete}
-            onStartEdit={handleStartEdit}
-            onEditChange={handleEditChange}
-            onSaveEdit={handleSaveEdit}
-            onCancelEdit={handleCancelEdit}
-            enableDragDrop={isDragDropEnabled || enableDragDrop}
-            taskListId={taskListId}
-            dragOverTask={dragOverTask}
-            sortMode={sortMode}
-          />
-        </div>
       </div>
-    </Card>
+    </div>
+  );
+
+  const content = wrapInCard ? (
+    <Card className="w-full h-full flex flex-col overflow-hidden">{body}</Card>
+  ) : (
+    body
   );
 
   if (disableInternalDndContext) {

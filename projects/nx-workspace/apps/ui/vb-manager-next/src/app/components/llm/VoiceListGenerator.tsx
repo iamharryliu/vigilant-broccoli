@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Text } from '@vigilant-broccoli/react-lib';
+import { Text, SpeechToTextToggleButton } from '@vigilant-broccoli/react-lib';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { AUDIO_MIME_TYPE, AUDIO_FILENAME } from '../../constants/audio';
-import { SpeechToTextButton } from './SpeechToTextButton';
 import { authFetch } from '../../../../libs/auth';
 
 const ERROR_GENERATE_LIST = 'Failed to generate list.';
@@ -70,7 +69,7 @@ export const VoiceListGenerator = () => {
       </Text>
 
       <div className="flex gap-3 items-center">
-        <SpeechToTextButton
+        <SpeechToTextToggleButton
           isRecording={isRecording}
           onToggle={startRecording}
           onStopComplete={stopAndProcess}

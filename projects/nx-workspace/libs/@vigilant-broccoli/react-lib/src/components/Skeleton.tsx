@@ -1,5 +1,5 @@
 import { Card } from '@radix-ui/themes';
-import { Text } from '@vigilant-broccoli/react-lib';
+import { Text } from './Text';
 
 export const Skeleton = ({ className = '' }: { className?: string }) => (
   <div

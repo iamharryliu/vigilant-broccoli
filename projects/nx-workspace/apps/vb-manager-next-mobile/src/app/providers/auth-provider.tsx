@@ -1,6 +1,12 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '../../../libs/supabase';
 import { isAllowedEmail } from '../../../libs/auth-policy';
@@ -13,6 +19,8 @@ import {
 } from '@vigilant-broccoli/common-js';
 
 const GOOGLE_TOKEN_KEY = 'google_provider_token';
+const GOOGLE_CALENDAR_TASKS_SCOPES =
+  'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/tasks';
 
 const AuthContext = createContext<Session | null>(null);
 
@@ -48,6 +56,51 @@ export const signOut = async () => {
 };
 
 export const signOutDueToExpiredToken = signOut;
+
+export const signInWithGoogle = async () => {
+  await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`,
+      scopes: GOOGLE_CALENDAR_TASKS_SCOPES,
+    },
+  });
+};
+
+export const authFetch = async (
+  input: RequestInfo | URL,
+  init: RequestInit = {},
+): Promise<Response> => {
+  const hasJsonBody = typeof init.body === 'string';
+  const headers = await buildAuthHeaders({
+    includeGoogleToken: true,
+    json: hasJsonBody,
+  });
+  return fetch(input, { ...init, headers: { ...headers, ...init.headers } });
+};
+
+export const useAuthStatus = ():
+  | 'loading'
+  | 'authenticated'
+  | 'unauthenticated' => {
+  const session = useAuth();
+  return session ? 'authenticated' : 'unauthenticated';
+};
+
+export const useGoogleToken = () => {
+  const [googleToken, setGoogleToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    setGoogleToken(getGoogleToken());
+  }, []);
+
+  const clearGoogleToken = useCallback(() => {
+    sessionStorage.removeItem(GOOGLE_TOKEN_KEY);
+    setGoogleToken(null);
+  }, []);
+
+  return { googleToken, clearGoogleToken };
+};
 
 export default function AuthProvider({
   children,

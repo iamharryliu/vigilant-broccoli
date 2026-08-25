@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { SpeechToTextButton as BaseSpeechToTextButton } from '@vigilant-broccoli/react-lib';
+import { SpeechToTextButton as BaseSpeechToTextButton } from './SpeechToTextButton';
 
-interface SpeechToTextButtonProps {
+interface SpeechToTextToggleButtonProps {
   isRecording: boolean;
   isDisabled?: boolean;
   isProcessing?: boolean;
@@ -11,13 +11,13 @@ interface SpeechToTextButtonProps {
   onStopComplete?: () => Promise<void>;
 }
 
-export const SpeechToTextButton = ({
+export const SpeechToTextToggleButton = ({
   isRecording,
   isDisabled = false,
   isProcessing: externalProcessing = false,
   onToggle,
   onStopComplete,
-}: SpeechToTextButtonProps) => {
+}: SpeechToTextToggleButtonProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [localRecording, setLocalRecording] = useState(false);
 
