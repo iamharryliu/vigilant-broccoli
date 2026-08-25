@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Dialog } from '@radix-ui/themes';
 import { CalendarPlus } from 'lucide-react';
 import {
@@ -106,6 +106,36 @@ const eventsApiUrl = () => {
   return `${EVENTS_API}?${params.toString()}`;
 };
 
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+const dateOnly = (date: Date) =>
+  new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+const daySpan = (event: CalendarEvent) => {
+  const startDay = dateOnly(new Date(event.start));
+  const endDay = dateOnly(new Date(event.end));
+  const days = Math.round((endDay.getTime() - startDay.getTime()) / MS_PER_DAY);
+  return event.allDay ? days : days + 1;
+};
+
+const expandMultiDayEvent = (event: CalendarEvent): CalendarEvent[] => {
+  const span = daySpan(event);
+  if (span <= 1) return [event];
+
+  const startDay = dateOnly(new Date(event.start));
+  return Array.from({ length: span }, (_, index) => {
+    const occurrenceDate = new Date(startDay);
+    occurrenceDate.setDate(occurrenceDate.getDate() + index);
+    return {
+      ...event,
+      id: `${event.id}-day${index + 1}`,
+      summary: `${event.summary} (Day ${index + 1}/${span})`,
+      start: occurrenceDate.toISOString(),
+      allDay: true,
+    };
+  });
+};
+
 const formatEventTime = (event: CalendarEvent) => {
   const start = new Date(event.start);
   if (event.allDay) {
@@ -140,6 +170,15 @@ export const MyCalendarView = () => {
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const isMobile = useIsMobileBrowser();
+
+  const agendaEvents = useMemo(
+    () =>
+      events &&
+      events
+        .flatMap(expandMultiDayEvent)
+        .sort((a, b) => a.start.localeCompare(b.start)),
+    [events],
+  );
 
   useEffect(() => {
     if (!isMobile) return;
@@ -201,15 +240,15 @@ export const MyCalendarView = () => {
       {isMobile === true && (
         <div className="w-full min-h-0 flex-1 overflow-y-auto rounded-lg border border-gray-200">
           {error && <p className="p-4 text-sm text-red-600">{error}</p>}
-          {!error && events === null && (
+          {!error && agendaEvents === null && (
             <p className="p-4 text-sm text-gray-500">{LOADING_MESSAGE}</p>
           )}
-          {!error && events !== null && events.length === 0 && (
+          {!error && agendaEvents !== null && agendaEvents.length === 0 && (
             <p className="p-4 text-sm text-gray-500">{EMPTY_MESSAGE}</p>
           )}
-          {!error && events !== null && events.length > 0 && (
+          {!error && agendaEvents !== null && agendaEvents.length > 0 && (
             <ul className="divide-y divide-gray-100">
-              {events.map(event => (
+              {agendaEvents.map(event => (
                 <li key={`${event.calendarId}-${event.id}`}>
                   <a
                     href={event.htmlLink ?? '#'}
