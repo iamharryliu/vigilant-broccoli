@@ -48,7 +48,7 @@ const CALENDAR_SOURCES: { id: string; color: string; label: string }[] = [
 ];
 
 const CALENDAR_COLOR_BY_ID = new Map(
-  CALENDAR_SOURCES.map(source => [source.id, source.color.replace('%23', '#')]),
+  CALENDAR_SOURCES.map(source => [source.id, decodeURIComponent(source.color)]),
 );
 
 const EVENTS_API = '/api/calendar/events';
