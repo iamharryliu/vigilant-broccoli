@@ -1,5 +1,14 @@
 # Niko 🐶
 
+## Table of Contents
+
+- [Feeding](#feeding)
+- [Daytime Behaviors](#daytime-behaviors)
+- [Walks](#walks)
+- [What to watch out for](#what-to-watch-out-for)
+- [Loves](#loves)
+- [Health](#health)
+
 ## Feeding
 
 - Dry food/kibble - Pure Sensitive Turkey and Rice, Fill up plastic Mera cup and pour about half 2x a day. Niko asks for more during the day if he is hungry.
@@ -31,12 +40,12 @@
 - He does not like walking over metal manhole covers and avoids them like fire.
 - His zoomies usually activates in open grass areas and will run around you in circles until he tires out.
 
-## Health
-
-- Weight
-  - June 12: 10.5kg
-
 ## Loves
 
 - playing with cardboard
 - playing with toilet paper rolls
+
+## Health
+
+- Weight
+  - June 12: 10.5kg
