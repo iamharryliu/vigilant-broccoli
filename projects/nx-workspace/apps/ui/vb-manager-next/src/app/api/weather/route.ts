@@ -5,6 +5,8 @@ import { OpenWeatherService } from '@vigilant-broccoli/common-node';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+const CACHE_DURATION_MS = 10 * 60 * 1000;
+
 interface CurrentWeatherResponse {
   main: {
     temp: number;
@@ -14,6 +16,16 @@ interface CurrentWeatherResponse {
   }>;
   timezone: number;
 }
+
+interface WeatherResponsePayload {
+  current: CurrentWeatherResponse;
+  forecast: unknown;
+}
+
+const weatherCache = new Map<
+  string,
+  { payload: WeatherResponsePayload; timestamp: number }
+>();
 
 // GET - Fetch weather data for a location
 export async function GET(request: NextRequest) {
@@ -28,6 +40,12 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const cacheKey = `${lat},${lon}`;
+  const cached = weatherCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION_MS) {
+    return NextResponse.json({ success: true, ...cached.payload });
+  }
+
   try {
     const location = { latitude: lat, longitude: lon };
 
@@ -40,11 +58,13 @@ export async function GET(request: NextRequest) {
       OpenWeatherService.getForecast(location, 40, 'metric'), // Get more forecast data for processing
     ]);
 
-    return NextResponse.json({
-      success: true,
+    const payload: WeatherResponsePayload = {
       current,
       forecast: forecast.weatherData,
-    });
+    };
+    weatherCache.set(cacheKey, { payload, timestamp: Date.now() });
+
+    return NextResponse.json({ success: true, ...payload });
   } catch (error) {
     console.error('Error fetching weather data:', error);
     return NextResponse.json(
