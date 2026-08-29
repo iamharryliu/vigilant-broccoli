@@ -14,21 +14,30 @@ let cachedSpeeds = {
   timestamp: 0,
 };
 
+let inFlightSpeedTest: Promise<void> | null = null;
+
+async function runSpeedTest(): Promise<void> {
+  try {
+    const { stdout: speedtestOutput } = await execAsync('speedtest');
+
+    cachedSpeeds = {
+      download: speedtestOutput.match(DOWNLOAD_REGEX)?.[1] ?? NOT_AVAILABLE,
+      upload: speedtestOutput.match(UPLOAD_REGEX)?.[1] ?? NOT_AVAILABLE,
+      timestamp: Date.now(),
+    };
+  } catch (error) {
+    console.error('Speedtest error:', error);
+  }
+}
+
 export async function GET() {
   const now = Date.now();
 
   if (now - cachedSpeeds.timestamp >= CACHE_DURATION) {
-    try {
-      const { stdout: speedtestOutput } = await execAsync('speedtest');
-
-      cachedSpeeds = {
-        download: speedtestOutput.match(DOWNLOAD_REGEX)?.[1] ?? NOT_AVAILABLE,
-        upload: speedtestOutput.match(UPLOAD_REGEX)?.[1] ?? NOT_AVAILABLE,
-        timestamp: now,
-      };
-    } catch (error) {
-      console.error('Speedtest error:', error);
-    }
+    inFlightSpeedTest ??= runSpeedTest().finally(() => {
+      inFlightSpeedTest = null;
+    });
+    await inFlightSpeedTest;
   }
 
   return Response.json({
