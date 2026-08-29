@@ -1,6 +1,7 @@
 # Places
 
 [City Comparison](./city-comparison.md)
+[Geography](./geography.md)
 
 ## Places That I Have Been
 
