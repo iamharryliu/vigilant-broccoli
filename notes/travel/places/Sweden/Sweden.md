@@ -107,6 +107,9 @@
   - [Schysst Kebab Sauce] (https://schysstkak.se/het-kebabsas)
   - Max Sauce
   - [Snus](https://sv.wikipedia.org/wiki/Snus) - Can be found in grocery/convenient stores.
+  - Sommarblandning from [https://maps.app.goo.gl/kUKPZbcxV9pbmBLa7]
+  - [Nordic Gastronomy](https://nordgastro.com/)
+  - [A.C. Perchs Thehandel](https://perchs.dk/)
 
 ## Sustainability
 
