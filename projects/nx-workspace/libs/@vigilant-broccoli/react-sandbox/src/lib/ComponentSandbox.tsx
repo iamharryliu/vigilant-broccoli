@@ -41,6 +41,7 @@ import { ToasterDemo } from './demos/ToasterDemo';
 import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
 import { GroupLeaderboardDemo } from './demos/GroupLeaderboardDemo';
 import { EmptyLeaderboardDemo } from './demos/EmptyLeaderboardDemo';
+import { NotepadDemo } from './demos/NotepadDemo';
 import { ScrollTimelineDemo } from './demos/ScrollTimelineDemo';
 
 const CRUD_STORAGE_KEYS = {
@@ -196,6 +197,12 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Group Leaderboard',
     category: CATEGORY.COMPONENTS,
     content: <GroupLeaderboardDemo />,
+  },
+  {
+    id: 'notepad',
+    label: 'Notepad',
+    category: CATEGORY.COMPONENTS,
+    content: <NotepadDemo />,
   },
   {
     id: 'scroll-timeline',
