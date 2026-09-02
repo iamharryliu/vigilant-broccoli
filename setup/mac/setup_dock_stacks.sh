@@ -34,7 +34,6 @@ declare -a TOOLS_APPS=(
     "/Applications/balenaEtcher.app"
     "/Applications/Dropzone 4.app"
     "/Applications/Handy.app"
-    "/Applications/Little Snitch.app"
     "/Applications/Raycast.app"
 )
 
