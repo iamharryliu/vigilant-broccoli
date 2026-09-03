@@ -82,6 +82,14 @@ variable "code_server_domain" {
   default = "code.harryliu.dev"
 }
 
+# Built and pushed by .github/workflows/deploy-code-server-image.yml, which
+# also publishes an immutable sha-<commit> tag -- set this to one of those to
+# pin the VM to a known build or roll back.
+variable "code_server_image" {
+  type    = string
+  default = "iamharryliu/vb-code-server:latest"
+}
+
 variable "code_server_allowed_emails" {
   type    = list(string)
   default = ["harryliu1995@gmail.com"]
