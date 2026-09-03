@@ -2,8 +2,7 @@
 
 ## Free Tier
 
-Docker Hub, personal (free) account — hosts `iamharryliu/vb-code-server`, built by
-`deploy-code-server-image`:
+Docker Hub, personal (free) account:
 
 | Resource             | Free allowance            |
 | -------------------- | ------------------------- |
@@ -12,9 +11,10 @@ Docker Hub, personal (free) account — hosts `iamharryliu/vb-code-server`, buil
 | Authenticated pulls  | 200 per 6 hours           |
 | Anonymous pulls      | 100 per 6 hours, per IPv4 |
 
-The code-server VM pulls without logging in, so it spends the anonymous
-allowance — fine for an image fetched once per VM recreate, but it means the
-Docker Hub repo has to stay **public** or cloud-init can't pull it.
+Anonymous pulls are metered per IPv4, so unauthenticated hosts behind one
+egress IP share that allowance; `docker login` moves a puller onto the larger
+per-account limit. Only one private repository is free, so an image that has to
+be pulled without credentials belongs in a public repository.
 
 ```
 sudo systemctl start docker         # Start Docker daemon
