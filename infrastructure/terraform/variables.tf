@@ -130,11 +130,6 @@ variable "socket_server_domain" {
   default = "socket.harryliu.dev"
 }
 
-variable "journal_domain" {
-  type    = string
-  default = "journal.harryliu.dev"
-}
-
 variable "nx_cache_domain" {
   type    = string
   default = "nx-cache.harryliu.dev"
@@ -145,23 +140,6 @@ variable "nx_cache_domain" {
 variable "nx_cache_r2_ttl_seconds" {
   type    = number
   default = 604800
-}
-
-variable "journal_pages_project" {
-  type    = string
-  default = "staging-journal"
-}
-
-# Kept separate from the project name: Cloudflare appends a suffix when
-# <project>.pages.dev is taken globally (the old `journal` project got journal-d64).
-variable "journal_pages_subdomain" {
-  type    = string
-  default = "staging-journal.pages.dev"
-}
-
-variable "journal_allowed_emails" {
-  type    = list(string)
-  default = ["harryliu1995@gmail.com"]
 }
 
 variable "docs_domain" {
