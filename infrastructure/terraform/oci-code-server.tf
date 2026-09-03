@@ -109,6 +109,7 @@ resource "oci_core_instance" "code_server" {
     ssh_authorized_keys = var.ssh_public_key
     user_data = base64encode(templatefile("${path.module}/cloud-init-code-server.yaml", {
       code_server_domain      = var.code_server_domain
+      code_server_image       = var.code_server_image
       code_server_password    = random_password.code_server_password.result
       code_server_origin_cert = cloudflare_origin_ca_certificate.code_server.certificate
       code_server_origin_key  = tls_private_key.code_server_origin.private_key_pem

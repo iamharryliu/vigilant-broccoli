@@ -24,33 +24,17 @@ write_files:
     content: |
       ${indent(6, code_server_origin_key)}
 
-  - path: /opt/code-server/custom-init/10-install-tools.sh
+  - path: /opt/code-server/custom-init/10-sync-repo.sh
     permissions: '0755'
     content: |
       #!/bin/bash
       set -e
-      export DEBIAN_FRONTEND=noninteractive
 
-      apt-get update
-      apt-get install -y curl git gnupg ca-certificates
-      usermod -s /bin/bash abc
-
-      if ! command -v node >/dev/null; then
-        curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
-        apt-get install -y nodejs
-      fi
-
-      if ! command -v gcloud >/dev/null; then
-        curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
-        echo 'deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main' > /etc/apt/sources.list.d/google-cloud-sdk.list
-        apt-get update
-        apt-get install -y google-cloud-cli
-      fi
-
-      if ! command -v claude >/dev/null; then
-        npm install -g @anthropic-ai/claude-code
-      fi
-
+      # The toolchain (apt packages, Node, google-cloud-cli, claude-code) is
+      # baked into the image -- see infrastructure/code-server/Dockerfile.
+      # Installing it here instead meant re-downloading ~1GB into the image
+      # filesystem on every container recreate. What is left runs per start
+      # because it targets the persistent /config volume, and is cheap.
       if [ ! -d /config/vigilant-broccoli ]; then
         git clone https://github.com/iamharryliu/vigilant-broccoli.git /config/vigilant-broccoli
         chown -R abc:abc /config/vigilant-broccoli
@@ -58,9 +42,6 @@ write_files:
         HOME=/config s6-setuidgid abc git -C /config/vigilant-broccoli pull --ff-only || true
       fi
 
-      if [ -f /config/vigilant-broccoli/setup/linux/apt-packages.txt ]; then
-        xargs apt-get install -y < /config/vigilant-broccoli/setup/linux/apt-packages.txt
-      fi
       if [ -f /config/vigilant-broccoli/setup/linux/install.sh ]; then
         HOME=/config s6-setuidgid abc bash /config/vigilant-broccoli/setup/linux/install.sh -y
       fi
@@ -69,7 +50,7 @@ write_files:
     content: |
       services:
         code-server:
-          image: lscr.io/linuxserver/code-server:latest
+          image: ${code_server_image}
           container_name: code-server
           restart: unless-stopped
           environment:
