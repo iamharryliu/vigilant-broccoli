@@ -54,9 +54,9 @@ jobs:
           done
           wait
           sleep 3
-      - uses: upptime/uptime-monitor@4fec88256b5917a2ed07a088df6e205869b424d6 # v1.43.13
+      - uses: upptime/uptime-monitor@a9df8681951501693cbd6bea9c84df24bbf94210 # v1.43.16
         with:
           command: 'response-time'
-      - uses: upptime/uptime-monitor@4fec88256b5917a2ed07a088df6e205869b424d6 # v1.43.13
+      - uses: upptime/uptime-monitor@a9df8681951501693cbd6bea9c84df24bbf94210 # v1.43.16
         with:
           command: 'summary'
