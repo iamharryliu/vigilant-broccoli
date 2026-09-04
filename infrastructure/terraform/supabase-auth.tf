@@ -109,6 +109,6 @@ resource "supabase_settings" "vb_auth" {
       }
     }
     fileSizeLimit    = 52428800
-    migrationVersion = "object-versioning-core"
+    migrationVersion = "fix-search-by-timestamp-sqli"
   })
 }
