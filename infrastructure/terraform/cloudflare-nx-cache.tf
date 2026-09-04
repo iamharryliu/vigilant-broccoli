@@ -83,7 +83,7 @@ resource "cloudflare_workers_script" "nx_cache" {
 }
 
 # Cloudflare provisions and manages the DNS record for a Workers custom domain
-# itself — unlike the Pages sites in this repo (cloudflare-journal.tf etc.),
+# itself — unlike the Pages sites in this repo (cloudflare-docs.tf etc.),
 # which each own an explicit cloudflare_dns_record.
 resource "cloudflare_workers_custom_domain" "nx_cache" {
   account_id = var.cloudflare_account_id

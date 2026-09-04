@@ -52,10 +52,6 @@ output "aws_immich_url" {
   value = "https://${var.immich_domain}"
 }
 
-output "journal_url" {
-  value = "https://${var.journal_domain}"
-}
-
 output "docs_url" {
   value = "https://${var.docs_domain}"
 }
