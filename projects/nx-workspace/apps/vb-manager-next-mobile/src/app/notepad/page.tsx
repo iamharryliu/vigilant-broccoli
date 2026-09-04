@@ -1,6 +1,11 @@
 import { NotepadEditor } from '../components/notepad-editor';
 import { ProtectedRoute } from '../components/protected-route';
 import { PAGE_HEIGHT } from '../components/app-shell.constants';
+import { PAGE_TITLE } from '../app.const';
+
+export const metadata = {
+  title: PAGE_TITLE.NOTEPAD,
+};
 
 export default function NotepadPage() {
   return (

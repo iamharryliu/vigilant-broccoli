@@ -15,6 +15,7 @@ import {
   CalendarEventFormData,
 } from './calendar/components/CalendarEventForm';
 import { WhiteboardEditor } from './whiteboard/components/WhiteboardEditor';
+import { PAGE_TITLES, usePageTitle } from '../lib/page-title';
 
 type ModalState =
   | { type: 'create'; start: string; end: string; allDay: boolean }
@@ -25,6 +26,7 @@ const EVENTS_ENDPOINT = '/api/calendar/events';
 const JSON_CONTENT_TYPE_HEADER = { 'Content-Type': 'application/json' };
 
 export default function HomePage() {
+  usePageTitle(PAGE_TITLES.HOME);
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
   const [events, setEvents] = useState<CalendarEvent[]>([]);

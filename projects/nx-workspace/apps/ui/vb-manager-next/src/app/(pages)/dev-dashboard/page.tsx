@@ -22,6 +22,8 @@ import { OutboundConnectionsComponent } from '../../components/outbound-connecti
 import { TextToolsPage } from '../../components/pages/TextToolsPage';
 import { ApiKeysComponent } from '../../components/api-keys.component';
 import { TodoListComponent } from '../../components/todo-list.component';
+import { APP_ROUTE } from '../../app.const';
+import { usePageTitle } from '../../use-page-title';
 
 const TAB = {
   LOCAL: 'local',
@@ -42,6 +44,7 @@ const isTab = (value: string | null): value is Tab =>
   Object.values(TAB).includes(value as Tab);
 
 export default function Page() {
+  usePageTitle(APP_ROUTE.DEV_DASHBOARD.title);
   const [activeTab, setActiveTab] = useState<Tab>(TAB.LOCAL);
 
   useEffect(() => {

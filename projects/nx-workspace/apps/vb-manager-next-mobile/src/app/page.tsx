@@ -1,6 +1,11 @@
 import { MyCalendarView } from './components/my-calendar-view';
 import { ProtectedRoute } from './components/protected-route';
 import { PAGE_HEIGHT } from './components/app-shell.constants';
+import { PAGE_TITLE } from './app.const';
+
+export const metadata = {
+  title: PAGE_TITLE.HOME,
+};
 
 export default function HomePage() {
   return (

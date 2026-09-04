@@ -7,6 +7,7 @@ import { Text, Badge } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../providers/auth-provider';
 import { LeisureActivity } from '../../../lib/types';
 import { ROUTES } from '../../../lib/routes';
+import { PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
 
 const CATEGORY_COLORS: Record<string, string> = {
   Movies: 'blue',
@@ -23,6 +24,7 @@ export default function LeisureDetailPage() {
   const { id } = useParams<{ id: string }>();
   const session = useAuth();
   const [activity, setActivity] = useState<LeisureActivity | null>(null);
+  usePageTitle(activity?.title ?? PAGE_TITLES.LEISURE_DETAIL);
 
   useEffect(() => {
     if (!session?.access_token) return;

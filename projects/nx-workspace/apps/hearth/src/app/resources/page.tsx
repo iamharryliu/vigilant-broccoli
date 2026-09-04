@@ -18,6 +18,7 @@ import {
 } from './components/ResourceBookingForm';
 import { ResourceFormData } from './components/ResourceForm';
 import { toDateLocal } from '../../lib/date-utils';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 type BookingModal =
   | { type: 'create'; startDate: string; endDate: string }
@@ -43,6 +44,7 @@ const bookingToCalendarEvent = (
 });
 
 export default function ResourcesPage() {
+  usePageTitle(PAGE_TITLES.RESOURCES);
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
   const [resources, setResources] = useState<Resource[]>([]);

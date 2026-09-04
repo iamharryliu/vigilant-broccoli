@@ -2,11 +2,13 @@
 
 import { GoogleSignInPage } from '@vigilant-broccoli/react-lib';
 import { supabase } from '../../../libs/supabase';
+import { APP_NAME, PAGE_TITLE } from '../app.const';
+import { usePageTitle } from '../use-page-title';
 
-const APP_NAME = 'Small Business';
 const APP_TAGLINE = 'Sign in to continue';
 
 export default function LoginPage() {
+  usePageTitle(PAGE_TITLE.LOGIN);
   const handleGoogleSignIn = () => {
     supabase.auth.signInWithOAuth({
       provider: 'google',

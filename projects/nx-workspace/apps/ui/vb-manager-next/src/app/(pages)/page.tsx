@@ -7,6 +7,8 @@ import {
   CalendarConfig,
   GOOGLE_CALENDAR,
 } from '@vigilant-broccoli/common-browser';
+import { APP_ROUTE } from '../app.const';
+import { usePageTitle } from '../use-page-title';
 
 const BIRTHDAYS_CALENDAR =
   'f61b08e940f7c4fb8becf0d419c8c09f7e0c46d6d03343637aef5837c766a09b@group.calendar.google.com';
@@ -49,6 +51,8 @@ const CALENDAR_CONFIG: CalendarConfig = {
 };
 
 export default function Page() {
+  usePageTitle(APP_ROUTE.INDEX.title);
+
   return (
     <div className="grid grid-cols-2 gap-4 h-full overflow-hidden">
       <div className="flex flex-col h-full gap-4 min-h-0">

@@ -9,6 +9,7 @@ import { HomeDetailView } from '../homes/components/HomeDetailView';
 import { HomeCreateForm } from '../homes/components/HomeCreateForm';
 import { supabase } from '../../../libs/supabase';
 import { IS_DEV } from '../app.consts';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 const EXPORT_OPTIONS = [
   { key: 'where-is', label: 'Where Is' },
@@ -34,6 +35,7 @@ const CLEAR_OPTIONS = [
 type ClearKey = (typeof CLEAR_OPTIONS)[number]['key'];
 
 export default function SettingsPage() {
+  usePageTitle(PAGE_TITLES.SETTINGS);
   const session = useAuth();
   const { homes, selectedHomeId } = useHome();
   const selectedHome = homes.find(h => h.id === selectedHomeId);

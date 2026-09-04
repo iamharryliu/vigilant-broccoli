@@ -3,8 +3,12 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSupabase } from '../../../../libs/supabase';
+import { usePageTitle } from '../../use-page-title';
+import { useTranslation } from '../../i18n';
 
 export default function AuthCallbackPage() {
+  const { t } = useTranslation();
+  usePageTitle(t('PAGE_TITLE.AUTH_CALLBACK'));
   const router = useRouter();
 
   useEffect(() => {

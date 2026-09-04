@@ -12,6 +12,7 @@ import {
   Text,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 interface Chore {
   id: string;
@@ -241,6 +242,7 @@ const EMPTY_FORM = {
 };
 
 export default function ChoresPage() {
+  usePageTitle(PAGE_TITLES.CHORES);
   const [mounted, setMounted] = useState(false);
   const [chores, setChores] = useLocalStorage<Chore[]>('chores', []);
   const [todos, setTodos] = useState<Todo[]>([]);

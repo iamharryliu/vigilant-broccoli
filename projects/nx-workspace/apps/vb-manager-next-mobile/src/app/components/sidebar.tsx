@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib';
 import { signOut } from '../providers/auth-provider';
+import { PAGE_TITLE } from '../app.const';
 
 const SIDEBAR_POSITION = 'peer fixed top-0 left-0 bottom-0 z-30';
 
@@ -26,13 +27,17 @@ const FOOTER_LABEL_COLLAPSIBLE =
 const FOOTER_LABEL_VISIBLE = 'flex-1 opacity-100';
 
 const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
-  { href: '/', label: 'My Calendar', icon: CalendarDays },
-  { href: '/tasks', label: 'Create Tasks', icon: ListChecks },
-  { href: '/task-list', label: 'My Tasks', icon: ListTodo },
-  { href: '/transcribe', label: 'Transcribe', icon: Mic },
-  { href: '/ocr', label: 'Scan', icon: ScanLine },
-  { href: '/notepad', label: 'Notepad', icon: StickyNote },
-  { href: '/event-calendars', label: 'Event Calendars', icon: CalendarRange },
+  { href: '/', label: PAGE_TITLE.HOME, icon: CalendarDays },
+  { href: '/tasks', label: PAGE_TITLE.TASKS, icon: ListChecks },
+  { href: '/task-list', label: PAGE_TITLE.TASK_LIST, icon: ListTodo },
+  { href: '/transcribe', label: PAGE_TITLE.TRANSCRIBE, icon: Mic },
+  { href: '/ocr', label: PAGE_TITLE.OCR, icon: ScanLine },
+  { href: '/notepad', label: PAGE_TITLE.NOTEPAD, icon: StickyNote },
+  {
+    href: '/event-calendars',
+    label: PAGE_TITLE.EVENT_CALENDARS,
+    icon: CalendarRange,
+  },
 ];
 
 type AppSidebarProps = {

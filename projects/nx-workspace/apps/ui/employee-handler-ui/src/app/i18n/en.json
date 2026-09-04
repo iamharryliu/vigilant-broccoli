@@ -9,6 +9,10 @@
     "SIGNATURES": "Signatures",
     "SETTINGS": "Settings"
   },
+  "PAGE_TITLE": {
+    "LOGIN": "Sign In",
+    "AUTH_CALLBACK": "Signing In"
+  },
   "SIDEBAR": {
     "LIGHT_MODE": "Light mode",
     "DARK_MODE": "Dark mode",

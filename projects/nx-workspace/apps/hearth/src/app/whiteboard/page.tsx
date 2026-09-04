@@ -3,8 +3,10 @@
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { WhiteboardEditor } from './components/WhiteboardEditor';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 export default function WhiteboardPage() {
+  usePageTitle(PAGE_TITLES.WHITEBOARD);
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
   const token = session?.access_token ?? '';
