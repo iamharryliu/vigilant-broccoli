@@ -23,6 +23,15 @@ All user-facing copy goes through the shared `createI18n` from `@vigilant-brocco
 - Not translatable copy (stays inline): styling strings (Tailwind classes, CSS values), icon glyphs, storage keys, library config (e.g. Leaflet attribution).
 - Reference implementations (`src/app/i18n/index.ts`): `hearth`, `findme`, `whiteboard`, `employee-handler-ui`, `pages-index`.
 
+## Page titles (required)
+
+Every route-level page sets a document title of `<Page> | <App>`, so browser tabs, history, and bookmarks identify the page rather than just the app.
+
+- The shared primitive is `useDocumentTitle` from `@vigilant-broccoli/react-lib`; each app wraps it in a local `usePageTitle` that appends the app name (e.g. `apps/hearth/src/lib/page-title.ts`).
+- Titles come from the app's existing page-name source — i18n keys where the app has them (`employee-handler-ui`, `pages-index`), otherwise a `PAGE_TITLE`/`APP_ROUTE` const module.
+- Next.js server-component pages use `export const metadata` instead, with a `title.template` on the root layout (`vb-manager-next-mobile`).
+- Detail pages title themselves after the record they render (doc name, project title, org name), falling back to a generic label while loading.
+
 ## pages-index card (required)
 
 Every UI application appears as a card under "UI Apps" in `apps/ui/pages-index/src/app/pages/UiPage.tsx` (the GitHub Pages "UI" page).
@@ -36,4 +45,5 @@ Every UI application appears as a card under "UI Apps" in `apps/ui/pages-index/s
 
 1. Project under `apps/ui/*` (or `apps/*` for Next.js), deploy targets per the destination's pattern doc.
 2. i18n wired via `createI18n` (above).
-3. UI Apps card in `UiPage.tsx`.
+3. Per-page document titles via `usePageTitle` (above).
+4. UI Apps card in `UiPage.tsx`.

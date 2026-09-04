@@ -5,8 +5,10 @@ import { useParams, useRouter } from 'next/navigation';
 import { ROUTES } from '../../../lib/routes';
 import { useIsMobile } from '../../../lib/use-is-mobile';
 import { WhereIsDetail } from '../where-is-detail';
+import { PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
 
 export default function WhereIsDetailPage() {
+  usePageTitle(PAGE_TITLES.WHERE_IS_DETAIL);
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const isMobile = useIsMobile();

@@ -23,6 +23,7 @@ import { KitchenEvents } from './KitchenEvents';
 import { KitchenEventCalendar } from './KitchenEventCalendar';
 import { FoodChatPanel } from './FoodChatPanel';
 import { RecipeList } from './RecipeList';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 const PLANNER_TAB = 'planner';
 const RECIPES_TAB = 'recipes';
@@ -189,6 +190,7 @@ function FoodPlannerContent() {
 }
 
 export default function FoodPlannerPage() {
+  usePageTitle(PAGE_TITLES.FOOD_PLANNER);
   return (
     <I18nProvider>
       <Suspense fallback={null}>

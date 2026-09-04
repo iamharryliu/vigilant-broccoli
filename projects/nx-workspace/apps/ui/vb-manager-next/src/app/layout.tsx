@@ -6,6 +6,7 @@ import './global.css';
 import { ThemeProvider, useTheme } from '@vigilant-broccoli/react-lib';
 import { Toaster } from '@vigilant-broccoli/react-lib/toaster';
 import { AuthProvider } from '../../libs/auth';
+import { APP_NAME } from './app.const';
 
 function ThemeWrapper({ children }: { children: React.ReactNode }) {
   const { appearance } = useTheme();
@@ -25,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>vb-manager-next</title>
+        <title>{APP_NAME}</title>
       </head>
       <body>
         <AuthProvider>

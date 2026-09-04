@@ -33,6 +33,7 @@ import {
   Heading,
   Text,
 } from '@vigilant-broccoli/react-lib';
+import { usePageTitle } from '../../../../use-page-title';
 
 const ORG_MEMBER_API = '/api/github/organization-members';
 
@@ -55,6 +56,7 @@ export default function Page({
   params: Promise<{ organizationName: string }>;
 }) {
   const { organizationName } = use(params);
+  usePageTitle(organizationName);
   const [meta, setMeta] = useState<OrgMeta>();
   const [members, setMembers] = useState<GithubOrgMember[]>();
   const [repositories, setRepositories] = useState<GithubOrgRepository[]>();

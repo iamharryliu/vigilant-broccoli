@@ -2,8 +2,8 @@
 
 import { GoogleSignInPage } from '@vigilant-broccoli/react-lib';
 import { signInWithGoogle } from '../providers/auth-provider';
+import { APP_NAME } from '../app.const';
 
-const APP_NAME = 'VB Manager';
 const APP_TAGLINE = 'Sign in to manage your calendar';
 
 export default function LoginPage() {

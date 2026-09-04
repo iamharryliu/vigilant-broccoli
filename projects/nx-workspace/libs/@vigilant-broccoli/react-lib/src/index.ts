@@ -1,6 +1,7 @@
 export * from './auth';
 export * from './calendar';
 export * from './components';
+export * from './hooks/useDocumentTitle';
 export * from './hooks/useGeolocation';
 export * from './hooks/useNotepad';
 export * from './hooks/useSpeechToText';

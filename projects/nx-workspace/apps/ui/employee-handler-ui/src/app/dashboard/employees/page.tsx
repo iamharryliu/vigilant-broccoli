@@ -18,6 +18,7 @@ import { Card, DropdownMenu } from '@radix-ui/themes';
 import { authFetchOk, postEmails } from '../../../lib/api-helpers';
 import { useAction } from '../../../lib/use-action';
 import { useTranslation } from '../../i18n';
+import { usePageTitle } from '../../use-page-title';
 
 const INCOMING_ENDPOINT = '/api/employees/incoming';
 const ACTIVE_ENDPOINT = '/api/employees/active';
@@ -190,6 +191,7 @@ const requireEmail = (email: string, errorMessage: string) => {
 
 export default function EmployeesPage() {
   const { t } = useTranslation();
+  usePageTitle(t('NAV.EMPLOYEES'));
   const [tab, setTab] = useState(TAB_ACTIVE);
   const { running, run } = useAction();
 

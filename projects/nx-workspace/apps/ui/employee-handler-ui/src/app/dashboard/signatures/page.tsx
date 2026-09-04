@@ -20,6 +20,7 @@ import {
 import { authFetchOk, errorMessage } from '../../../lib/api-helpers';
 import { useAction } from '../../../lib/use-action';
 import { useTranslation } from '../../i18n';
+import { usePageTitle } from '../../use-page-title';
 
 const PAGE_CONTAINER = 'max-w-3xl mx-auto p-8 space-y-6';
 
@@ -158,6 +159,9 @@ const SignaturesTabs = () => {
 };
 
 export default function SignaturesPage() {
+  const { t } = useTranslation();
+  usePageTitle(t('NAV.SIGNATURES'));
+
   return (
     <div className={PAGE_CONTAINER}>
       <Suspense>

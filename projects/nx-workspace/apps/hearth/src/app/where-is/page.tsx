@@ -21,6 +21,7 @@ import {
 } from './where-is-form';
 import { uploadPreviewImages } from './upload-images';
 import { WhereIsDetailPanel } from './where-is-detail-panel';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 const WHERE_IS_ENDPOINT = '/api/where-is';
 
@@ -262,6 +263,7 @@ function WhereIsPageContent() {
 }
 
 export default function WhereIsPage() {
+  usePageTitle(PAGE_TITLES.WHERE_IS);
   return (
     <Suspense fallback={null}>
       <WhereIsPageContent />

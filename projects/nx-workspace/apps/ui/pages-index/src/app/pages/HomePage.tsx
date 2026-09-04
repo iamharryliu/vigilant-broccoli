@@ -2,11 +2,13 @@ import { Activity, GitBranch, Globe, LayoutGrid, Server } from 'lucide-react';
 import { useTranslation } from '../i18n';
 import { CardLink } from '../components/CardLink';
 import { CardGrid } from '../components/CardGrid';
+import { useDocumentTitle } from '@vigilant-broccoli/react-lib';
 
 const ICON_CLASS = 'h-5 w-5 shrink-0';
 
 export function HomePage() {
   const { t } = useTranslation();
+  useDocumentTitle(t('HOME.TITLE'));
 
   return (
     <main className="mx-auto max-w-3xl px-4 sm:px-6 pt-6 pb-16">

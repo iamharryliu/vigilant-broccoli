@@ -17,6 +17,7 @@ import {
   parseDate,
   computeRange,
 } from './absences.utils';
+import { usePageTitle } from '../../use-page-title';
 
 const ABSENCES_ENDPOINT = '/api/absences';
 const PAGE_CONTAINER = 'max-w-6xl mx-auto p-8 space-y-4';
@@ -62,6 +63,7 @@ const seriesVar = (slot: number) => `var(--vb-series-${slot + 1})`;
 
 export default function AbsencesPage() {
   const { t } = useTranslation();
+  usePageTitle(t('NAV.ABSENCES'));
   const { appearance } = useTheme();
   const [absences, setAbsences] = useState<EmployeeAbsence[]>([]);
   const [loading, setLoading] = useState(true);

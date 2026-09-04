@@ -3,6 +3,7 @@
 import { Card } from '@radix-ui/themes';
 import { Select, Heading, Text } from '@vigilant-broccoli/react-lib';
 import { LOCALES, useI18n, useTranslation } from '../../i18n';
+import { usePageTitle } from '../../use-page-title';
 
 const PAGE_CONTAINER = 'max-w-5xl mx-auto p-8 space-y-6';
 const LANGUAGE_SELECT_CLASS = 'w-64';
@@ -11,6 +12,7 @@ type LanguageOption = { id: string; label: string };
 
 export default function SettingsPage() {
   const { t } = useTranslation();
+  usePageTitle(t('NAV.SETTINGS'));
   const { locale, setLocale } = useI18n();
 
   const languageOptions: LanguageOption[] = [
