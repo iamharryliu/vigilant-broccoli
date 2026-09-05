@@ -1,6 +1,7 @@
 # Places
 
 [City Comparison](./city-comparison.md)
+[Toronto vs. Malmö vs. Copenhagen](./toronto-malmo-copenhagen.md)
 [Geography](./geography.md)
 
 ## Places That I Have Been
