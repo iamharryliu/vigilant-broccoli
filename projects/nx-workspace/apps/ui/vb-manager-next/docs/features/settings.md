@@ -4,7 +4,13 @@
 
 - Accessible via the "Settings" item in the right sidebar (above Sign In/Out)
 - Route: `/settings`
-- Currently contains a single section: the keyboard shortcuts cheatsheet
+- Contains a dark mode toggle button and the keyboard shortcuts cheatsheet
+
+## Dark Mode Toggle
+
+- Button at the top of the settings page, using `useTheme()` from `@vigilant-broccoli/react-lib`
+- Label/icon flip between "Dark mode" (Moon icon) and "Light mode" (Sun icon) depending on `appearance`
+- The `d` global keyboard shortcut (`src/app/(pages)/layout.tsx`) still toggles the same theme state independently of this button
 
 ## Keyboard Shortcuts Cheatsheet
 
@@ -24,7 +30,7 @@
 
 - Sidebar entry: `src/app/components/right-sidebar.component.tsx` (`Settings` icon, routes to `/settings`)
 - Route: `src/app/(pages)/settings/page.tsx`
-- Page: `src/app/components/pages/SettingsPage.tsx`
+- Page: `src/app/components/pages/SettingsPage.tsx` (dark mode toggle + keyboard shortcuts cheatsheet)
 - Overlay: `src/app/components/shortcuts-overlay.component.tsx`
 - Overlay keybinding: `src/app/(pages)/layout.tsx`
 - Shortcuts content: `src/app/content/keyboard-shortcuts.md.ts`
