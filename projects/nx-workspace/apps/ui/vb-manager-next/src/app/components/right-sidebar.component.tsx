@@ -1,14 +1,12 @@
 'use client';
 
-import { Sidebar, SidebarCTA, useTheme } from '@vigilant-broccoli/react-lib';
+import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib';
 import { signInWithGoogle, signOut, useAuth } from '../../../libs/auth';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   MessageCircle,
   Mail,
   Search,
-  Moon,
-  Sun,
   Calendar,
   StickyNote,
   Timer,
@@ -22,10 +20,6 @@ import { NotificationsDialog } from './notifications-dialog.component';
 
 const SETTINGS_PATH = '/settings';
 
-const LIGHT = 'light';
-const DARK_MODE_LABEL = 'Dark mode';
-const LIGHT_MODE_LABEL = 'Light mode';
-const THEME_SHORTCUT = ' (D)';
 const UNREAD_MAX = 9;
 const UNREAD_MAX_LABEL = '9+';
 
@@ -67,12 +61,9 @@ export const RightSidebar = ({
   notifications,
   onClearNotifications,
 }: Props) => {
-  const { appearance, toggleTheme } = useTheme();
   const session = useAuth();
   const router = useRouter();
   const pathname = usePathname();
-  const isLight = appearance === LIGHT;
-  const themeLabel = isLight ? DARK_MODE_LABEL : LIGHT_MODE_LABEL;
   const BellIcon = () => <BellIconWithBadge unreadCount={unreadCount} />;
 
   const items: SidebarCTA[] = [
@@ -118,12 +109,6 @@ export const RightSidebar = ({
       icon: Search,
       title: 'Search (/)',
       onClick: () => setSearchDialogOpen(true),
-    },
-    {
-      label: themeLabel,
-      icon: isLight ? Moon : Sun,
-      title: themeLabel + THEME_SHORTCUT,
-      onClick: toggleTheme,
     },
     {
       label: 'Settings',
