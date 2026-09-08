@@ -1,10 +1,12 @@
 import './global.css';
+import '@radix-ui/themes/styles.css';
 import AuthProvider from './providers/auth-provider';
-import { BottomNav } from './components/bottom-nav';
-import { SignOutButton } from './components/sign-out-button';
+import { AppShell } from './components/app-shell';
+import { ThemeWrapper } from './components/theme-wrapper';
+import { APP_NAME } from './app.const';
 
 export const metadata = {
-  title: 'VB Manager',
+  title: { default: APP_NAME, template: `%s | ${APP_NAME}` },
   description: 'VB Manager Mobile',
 };
 
@@ -23,9 +25,9 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-gray-50">
         <AuthProvider>
-          <SignOutButton />
-          {children}
-          <BottomNav />
+          <ThemeWrapper>
+            <AppShell>{children}</AppShell>
+          </ThemeWrapper>
         </AuthProvider>
       </body>
     </html>

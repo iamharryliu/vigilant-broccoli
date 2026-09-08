@@ -1,9 +1,13 @@
 'use client';
 
-import { Textarea, Text } from '@vigilant-broccoli/react-lib';
+import {
+  Textarea,
+  Text,
+  SpeechToTextToggleButton,
+  useSpeechToText,
+} from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
-import { useSpeechToText } from '../../hooks/useSpeechToText';
-import { SpeechToTextButton } from './SpeechToTextButton';
+import { authFetch } from '../../../../libs/auth';
 
 const PLACEHOLDER_STREAMING = 'Click the microphone to start recording...';
 const PLACEHOLDER_COMPLETE =
@@ -30,8 +34,9 @@ export const SpeechToText = ({
 
   const { isRecording, isProcessing, error, toggleRecording } = useSpeechToText(
     isStreaming
-      ? { streaming: true, onTranscriptUpdate: update }
+      ? { authFetch, streaming: true, onTranscriptUpdate: update }
       : {
+          authFetch,
           onTranscriptComplete: text => {
             const updated = transcript ? `${transcript} ${text}` : text;
             update(updated);
@@ -42,7 +47,7 @@ export const SpeechToText = ({
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-2 items-center">
-        <SpeechToTextButton
+        <SpeechToTextToggleButton
           isRecording={isRecording}
           isProcessing={isProcessing}
           onToggle={toggleRecording}

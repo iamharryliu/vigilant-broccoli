@@ -20,6 +20,7 @@ export const calendarParseSchema = {
             'end',
             'timeZone',
             'allDay',
+            'recurrence',
           ],
           properties: {
             summary: { type: 'string' },
@@ -29,6 +30,7 @@ export const calendarParseSchema = {
             end: { type: 'string' },
             timeZone: { type: 'string' },
             allDay: { type: 'boolean' },
+            recurrence: { type: 'array', items: { type: 'string' } },
           },
         },
       },

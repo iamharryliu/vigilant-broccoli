@@ -84,6 +84,9 @@ export async function POST(req: NextRequest) {
     const calendarId = body.calendarId || 'primary';
     const timeZone = body.timeZone || 'America/New_York';
 
+    const recurrence: string[] | undefined =
+      body.recurrence?.length > 0 ? body.recurrence : undefined;
+
     const event = body.allDay
       ? {
           summary: body.summary,
@@ -91,6 +94,7 @@ export async function POST(req: NextRequest) {
           location: body.location,
           start: { date: body.start },
           end: { date: body.end || body.start },
+          recurrence,
         }
       : {
           summary: body.summary,
@@ -98,6 +102,7 @@ export async function POST(req: NextRequest) {
           location: body.location,
           start: { dateTime: body.start, timeZone },
           end: { dateTime: body.end, timeZone },
+          recurrence,
         };
 
     const response = await calendar.events.insert({

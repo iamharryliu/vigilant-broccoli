@@ -12,6 +12,7 @@ import { GithubPagesComponent } from '../../components/github-pages.component';
 import { PM2StatusComponent } from '../../components/pm2-status.component';
 import { PublicIpComponent } from '../../components/public-ip.component';
 import { TailscaleMachinesComponent } from '../../components/tailscale-machines.component';
+import { TerraformStatusComponent } from '../../components/terraform-status.component';
 import { WireguardStatusComponent } from '../../components/wireguard-status.component';
 import { WranglerPagesComponent } from '../../components/wrangler-pages.component';
 import { VercelAppsComponent } from '../../components/vercel-apps.component';
@@ -21,6 +22,8 @@ import { OutboundConnectionsComponent } from '../../components/outbound-connecti
 import { TextToolsPage } from '../../components/pages/TextToolsPage';
 import { ApiKeysComponent } from '../../components/api-keys.component';
 import { TodoListComponent } from '../../components/todo-list.component';
+import { APP_ROUTE } from '../../app.const';
+import { usePageTitle } from '../../use-page-title';
 
 const TAB = {
   LOCAL: 'local',
@@ -41,6 +44,7 @@ const isTab = (value: string | null): value is Tab =>
   Object.values(TAB).includes(value as Tab);
 
 export default function Page() {
+  usePageTitle(APP_ROUTE.DEV_DASHBOARD.title);
   const [activeTab, setActiveTab] = useState<Tab>(TAB.LOCAL);
 
   useEffect(() => {
@@ -91,6 +95,7 @@ export default function Page() {
           <div className="flex flex-col gap-4">
             <GcloudAuthStatusComponent />
             <AwsManagementComponent />
+            <TerraformStatusComponent />
           </div>
           <div className="flex flex-col gap-4">
             <FlyIoAppsComponent />

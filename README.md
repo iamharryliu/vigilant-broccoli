@@ -9,9 +9,9 @@
 ## Table of Contents
 
 - [Development](#development)
-- [Commands](#commands)
-- [CI Status](#ci-status)
+  - [Commands](#commands)
 - [Stack](#stack)
+- [CI Actions](#ci-actions)
 - [Click here](https://iamharryliu.github.io/vigilant-broccoli/) for more.
 
 ## Development
@@ -25,174 +25,73 @@ pnpm cheatsheet
 pnpm local:install:machine-setup
 ```
 
-## CI Status
-
-[![ci-health-check](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-health-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-health-check.yml)\
-[![ci-pr-check](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-pr-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-pr-check.yml)\
-[![ci-rotate-secrets](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-rotate-secrets.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-rotate-secrets.yml)\
-[![cron-backup](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-backup.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-backup.yml)\
-[![cron-cleanup-workflow-runs](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-cleanup-workflow-runs.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-cleanup-workflow-runs.yml)\
-[![cron-deploy-journal](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-deploy-journal.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-deploy-journal.yml)\
-[![cron-upptime](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml)\
-[![cron-upptime-response-time](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml)\
-[![deploy](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml)\
-[![deploy-docs-md](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-docs-md.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-docs-md.yml)\
-[![deploy-github-profile](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml)\
-[![manual-agentic-solve](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-agentic-solve.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-agentic-solve.yml)\
-[![manual-deploy-app](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml)\
-[![manual-kill-services](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-kill-services.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-kill-services.yml)\
-[![manual-replace-code-server](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-replace-code-server.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-replace-code-server.yml)\
-[![manual-run-tests](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-run-tests.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-run-tests.yml)\
-[![notify-complete](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/notify-complete.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/notify-complete.yml)\
-[![test-e2e-email-subscription-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-email-subscription-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-email-subscription-service.yml)\
-[![test-e2e-llm](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-llm.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-llm.yml)\
-[![test-e2e-rabbitmq](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-rabbitmq.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-rabbitmq.yml)\
-[![test-e2e-socket-server-socketio](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-socket-server-socketio.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-socket-server-socketio.yml)\
-[![test-e2e-storage-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-storage-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-storage-service.yml)\
-[![test-e2e-twilio](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-twilio.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-twilio.yml)\
-[![test-security-api](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-api.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-api.yml)\
-[![test-security-cloudflare-access](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-cloudflare-access.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-cloudflare-access.yml)\
-[![test-security-llm](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-llm.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-llm.yml)\
-[![test-security-socket-server](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-socket-server.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-socket-server.yml)\
-[![test-security-storage-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-storage-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-storage-service.yml)\
-[![test-smoke-email-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-email-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-email-service.yml)\
-[![test-smoke-gcp-secret-manager](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-gcp-secret-manager.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-gcp-secret-manager.yml)\
-[![test-smoke-vault-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-vault-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-vault-service.yml)
-
 ## Stack
 
-- Cloud Providers
-  - Google Cloud Platform
-  - Oracle Cloud Infrastructure
-  - Cloudflare
-  - Vercel
-  - Fly.io
-  - AWS
-  - GitHub
-- Infrastructure as Code
-  - Terraform
-  - Packer
-- Containers / Orchestration
-  - Docker
-  - Docker Compose
-- Networking
-  - Caddy
-  - Nginx
-  - Tailscale
-  - WireGuard
-  - cloudflared
-- Secrets Management
-  - HashiCorp Vault
-  - Google Secret Manager
-  - Bitwarden
-- Process Management
-  - PM2
-- Monitoring / Observability
-  - Grafana
-  - Loki
-  - Promtail
-  - Upptime
-- Self-Hosted Services
-  - Gitea
-  - code-server
-  - Immich
-  - Adminer
-  - Watchtower
-  - Claude Code
-- CI/CD
-  - GitHub Actions
-- Databases
-  - PostgreSQL
-  - SQLite
-  - MongoDB
-- Caching / Messaging
-  - Redis
-  - RabbitMQ
-- CMS
-  - Sanity
-- Backend as a Service
-  - Supabase
-- Object Storage
-  - AWS S3
-  - Google Cloud Storage
-  - Cloudflare R2
-- Auth
-  - Better Auth
-- AI / LLM
-  - Anthropic
-  - OpenAI
-  - DeepSeek
-  - xAI (Grok)
-  - Google Gemini
-- Payments
-  - Stripe
-- Communications
-  - Slack
-  - Twilio
-  - Resend
-- Third-Party APIs
-  - Google OAuth
-  - Google Workspace APIs (Tasks, Calendar)
-  - Google Analytics
-  - Google reCAPTCHA
-  - OpenWeatherMap
-  - ElevenLabs
-- Container Registry
-  - Docker Hub
-- Package Registries
-  - npm
-- Package Managers
-  - pnpm
-- Monorepo Tooling
-  - Nx
-- Languages
-  - TypeScript
-  - JavaScript
-  - Bash / Shell
-  - Python
-  - HCL (Terraform)
-  - YAML
-- Build Tools
-  - Vite
-  - Webpack
-  - esbuild
-  - SWC
-  - Rollup
-  - Next.js
-  - Angular CLI
-  - Sanity CLI
-- Backend Frameworks
-  - Fastify
-  - Express
-  - Socket.IO
-  - Slack Bolt
-- Frontend Frameworks
-  - React
-  - Next.js
-  - Angular
-- Styling
-  - Tailwind CSS
-  - Font Awesome
-- UI Libraries
-  - Radix Themes
-  - lucide-react
-  - Leaflet / react-leaflet
-  - recharts
-  - FullCalendar
-  - React Router
-  - dnd-kit
-  - react-markdown
-  - fuse.js
-  - styled-components
-  - marked
-- Utility Libraries
-  - Zod
-  - Nodemailer
-  - isomorphic-dompurify
-- Testing
-  - Vitest
-  - Jest
-  - Playwright
-- Linting / Formatting
-  - ESLint
-  - Prettier
+| Category                       | Tools                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Agentic Coding Tools**       | [Claude Code](https://claude.com/claude-code), [Codex](https://openai.com/codex/), [Gemini CLI](https://github.com/google-gemini/gemini-cli)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **AI / LLM**                   | [Anthropic](https://www.anthropic.com), [DeepSeek](https://www.deepseek.com), [ElevenLabs](https://elevenlabs.io), [Google Gemini](https://gemini.google.com), [Ollama](https://ollama.com), [OpenAI](https://openai.com), [xAI](https://x.ai) (Grok)                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| **Auth**                       | [Better Auth](https://www.better-auth.com), [Google OAuth](https://developers.google.com/identity/protocols/oauth2), [Supabase Auth](https://supabase.com/auth)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Build Tools**                | [Angular CLI](https://angular.dev/tools/cli), [esbuild](https://esbuild.github.io), [Next.js](https://nextjs.org), [Rollup](https://rollupjs.org), [Sanity CLI](https://www.sanity.io/docs/cli), [SWC](https://swc.rs), [Vite](https://vitejs.dev), [Webpack](https://webpack.js.org)                                                                                                                                                                                                                                                                                                                                                                                       |
+| **Caching / Messaging**        | [RabbitMQ](https://www.rabbitmq.com), [Redis](https://redis.io)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **CI/CD**                      | [Docker](https://www.docker.com), [Docker Compose](https://docs.docker.com/compose/), [Docker Hub](https://hub.docker.com), [Git](https://git-scm.com), [Gitea](https://about.gitea.com), [GitHub](https://github.com), [GitHub Actions](https://github.com/features/actions), [npm](https://www.npmjs.com), [PM2](https://pm2.keymetrics.io), [Watchtower](https://containrrr.dev/watchtower/)                                                                                                                                                                                                                                                                             |
+| **Cloud Providers**            | [AWS](https://aws.amazon.com), [Cloudflare](https://www.cloudflare.com), [Cloudflare Workers](https://workers.cloudflare.com), [Fly.io](https://fly.io), [Google Cloud Platform](https://cloud.google.com), [Oracle Cloud Infrastructure](https://www.oracle.com/cloud/), [Supabase](https://supabase.com), [Vercel](https://vercel.com)                                                                                                                                                                                                                                                                                                                                    |
+| **CMS**                        | [Sanity](https://www.sanity.io)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Communications**             | [Nodemailer](https://nodemailer.com), [Resend](https://resend.com), [Slack](https://slack.com), [Twilio](https://www.twilio.com)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **Databases**                  | [Adminer](https://www.adminer.org), [MongoDB](https://www.mongodb.com), [PostgreSQL](https://www.postgresql.org), [SQLite](https://www.sqlite.org), [Supabase DB](https://supabase.com/database)                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **Development**                | [code-server](https://github.com/coder/code-server), [Hammerspoon](https://www.hammerspoon.org), [Karabiner-Elements](https://karabiner-elements.pqrs.org), [Neovide](https://neovide.dev), [Neovim](https://neovim.io), [Vim](https://www.vim.org), [VS Code](https://code.visualstudio.com)                                                                                                                                                                                                                                                                                                                                                                               |
+| **File Management**            | [Immich](https://immich.app), [Seafile](https://www.seafile.com)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| **Frameworks**                 | [Angular](https://angular.dev), [Express](https://expressjs.com), [Fastify](https://fastify.dev), [Next.js](https://nextjs.org), [React](https://react.dev), [Slack Bolt](https://slack.dev/bolt-js/), [Socket.IO](https://socket.io), [Yjs](https://yjs.dev)                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **Infra & Repo Tooling**       | [ESLint](https://eslint.org), [Nx](https://nx.dev), [Packer](https://www.packer.io), [pnpm](https://pnpm.io), [Prettier](https://prettier.io), [Terraform](https://www.terraform.io)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **Languages**                  | [Bash](https://www.gnu.org/software/bash/) / Shell, [HCL](https://github.com/hashicorp/hcl) (Terraform), [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript), [Python](https://www.python.org), [TypeScript](https://www.typescriptlang.org), [YAML](https://yaml.org)                                                                                                                                                                                                                                                                                                                                                                                    |
+| **Monitoring / Observability** | [Google Analytics](https://marketingplatform.google.com/about/analytics/), [Grafana](https://grafana.com), [Loki](https://grafana.com/oss/loki/), [Promtail](https://grafana.com/docs/loki/latest/send-data/promtail/), [Upptime](https://upptime.js.org)                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| **Networking**                 | [Caddy](https://caddyserver.com), [cloudflared](https://github.com/cloudflare/cloudflared), [Nginx](https://nginx.org), [Tailscale](https://tailscale.com), [WireGuard](https://www.wireguard.com)                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **Object Storage**             | [AWS S3](https://aws.amazon.com/s3/), [Cloudflare R2](https://www.cloudflare.com/developer-platform/products/r2/), [Google Cloud Storage](https://cloud.google.com/storage)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **Payments**                   | [Stripe](https://stripe.com)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| **Productivity Management**    | [Google Workspace APIs](https://developers.google.com/workspace) (Tasks, Calendar)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| **Secrets Management**         | [Bitwarden](https://bitwarden.com), [Google Secret Manager](https://cloud.google.com/secret-manager), [HashiCorp Vault](https://www.vaultproject.io)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| **Security**                   | [Google reCAPTCHA](https://www.google.com/recaptcha/about/)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| **Testing**                    | [Jest](https://jestjs.io), [Playwright](https://playwright.dev), [Vitest](https://vitest.dev)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **UI**                         | [d3-force](https://d3js.org/d3-force), [dnd-kit](https://dndkit.com), [Font Awesome](https://fontawesome.com), [framer-motion](https://motion.dev), [FullCalendar](https://fullcalendar.io), [fuse.js](https://www.fusejs.io), [Leaflet](https://leafletjs.com) / [react-leaflet](https://react-leaflet.js.org), [lucide-react](https://lucide.dev), [marked](https://marked.js.org), [Radix Themes](https://www.radix-ui.com/themes), [react-markdown](https://github.com/remarkjs/react-markdown), [React Router](https://reactrouter.com), [recharts](https://recharts.org), [styled-components](https://styled-components.com), [Tailwind CSS](https://tailwindcss.com) |
+| **Utility Libraries**          | [github-slugger](https://github.com/Flet/github-slugger), [isomorphic-dompurify](https://github.com/kkomelin/isomorphic-dompurify), [tesseract.js](https://tesseract.projectnaptha.com), [Zod](https://zod.dev)                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **Weather**                    | [OpenWeatherMap](https://openweathermap.org)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+
+## CI Actions
+
+| Workflow                                   | Trigger                                               | Purpose                                                                                           | Status                                                                                                                                                                                                                                                                                    |
+| ------------------------------------------ | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ci-health-check`                          | daily schedule, `deploy-fanout`, manual               | Pings deployed service health endpoints.                                                          | [![ci-health-check](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-health-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-health-check.yml)                                                                            |
+| `ci-pr-check`                              | pull requests to `main`                               | Runs lint/build/test checks against pull requests.                                                | [![ci-pr-check](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-pr-check.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-pr-check.yml)                                                                                        |
+| `ci-rotate-secrets`                        | manual                                                | Rotates repo secrets and re-deploys affected environments.                                        | [![ci-rotate-secrets](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-rotate-secrets.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/ci-rotate-secrets.yml)                                                                      |
+| `cron-backup`                              | push to `main` (backup paths)                         | Backs up the repo.                                                                                | [![cron-backup](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-backup.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-backup.yml)                                                                                        |
+| `cron-cleanup-workflow-runs`               | push to `main` (workflow paths)                       | Deletes old GitHub Actions workflow runs.                                                         | [![cron-cleanup-workflow-runs](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-cleanup-workflow-runs.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-cleanup-workflow-runs.yml)                                           |
+| `cron-upptime`                             | hourly schedule, manual                               | Runs Upptime status checks.                                                                       | [![cron-upptime](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime.yml)                                                                                     |
+| `cron-upptime-response-time`               | daily schedule, manual                                | Records Upptime response-time graphs.                                                             | [![cron-upptime-response-time](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/cron-upptime-response-time.yml)                                           |
+| `deploy`                                   | push to `main`/`production` (app/service paths)       | Builds and deploys apps/services, then fans out `deploy-fanout` to follower workflows.            | [![deploy](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy.yml)                                                                                                       |
+| `deploy-code-server-image`                 | push to `main` (code-server image paths), manual      | Builds and pushes the derived code-server image to Docker Hub.                                    | [![deploy-code-server-image](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-code-server-image.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-code-server-image.yml)                                                 |
+| `deploy-docs-md`                           | push to `main` (`docs/` paths)                        | Publishes `docs/` markdown to GitHub Pages.                                                       | [![deploy-docs-md](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-docs-md.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-docs-md.yml)                                                                               |
+| `deploy-github-profile`                    | push to `main` (profile paths)                        | Syncs the GitHub profile README.                                                                  | [![deploy-github-profile](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/deploy-github-profile.yml)                                                          |
+| `manual-agentic-solve`                     | manual                                                | Runs headless Claude Code in the sandbox container to solve a task and open a PR.                 | [![manual-agentic-solve](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-agentic-solve.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-agentic-solve.yml)                                                             |
+| `manual-agentic-update-pr`                 | manual                                                | Runs headless Claude Code in the sandbox container to apply a follow-up change to an existing PR. | [![manual-agentic-update-pr](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-agentic-update-pr.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-agentic-update-pr.yml)                                                 |
+| `manual-deploy-app`                        | manual                                                | Deploys a single app/service by name.                                                             | [![manual-deploy-app](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-deploy-app.yml)                                                                      |
+| `manual-kill-services`                     | manual                                                | Kills running PM2-managed services.                                                               | [![manual-kill-services](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-kill-services.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-kill-services.yml)                                                             |
+| `manual-replace-code-server`               | manual                                                | Replaces the code-server instance, optionally rotating its password.                              | [![manual-replace-code-server](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-replace-code-server.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-replace-code-server.yml)                                           |
+| `manual-run-tests`                         | manual                                                | Dispatches the e2e/security/smoke test suites on demand.                                          | [![manual-run-tests](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-run-tests.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-run-tests.yml)                                                                         |
+| `notify-complete`                          | `deploy-fanout`                                       | Sends a deploy-completion notification.                                                           | [![notify-complete](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/notify-complete.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/notify-complete.yml)                                                                            |
+| `test-e2e-email-subscription-service`      | weekly schedule, manual                               | End-to-end tests for the email subscription service.                                              | [![test-e2e-email-subscription-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-email-subscription-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-email-subscription-service.yml)                |
+| `test-e2e-llm`                             | weekly schedule, manual                               | End-to-end tests for LLM integrations.                                                            | [![test-e2e-llm](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-llm.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-llm.yml)                                                                                     |
+| `test-e2e-rabbitmq`                        | `deploy-fanout`, manual                               | End-to-end tests for RabbitMQ.                                                                    | [![test-e2e-rabbitmq](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-rabbitmq.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-rabbitmq.yml)                                                                      |
+| `test-e2e-socket-server-socketio`          | weekly schedule, manual                               | End-to-end tests for the Socket.IO socket server.                                                 | [![test-e2e-socket-server-socketio](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-socket-server-socketio.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-socket-server-socketio.yml)                            |
+| `test-e2e-storage-service`                 | weekly schedule, manual                               | End-to-end tests for the storage service.                                                         | [![test-e2e-storage-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-storage-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-storage-service.yml)                                                 |
+| `test-e2e-twilio`                          | `deploy-fanout`, manual                               | End-to-end tests for Twilio.                                                                      | [![test-e2e-twilio](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-twilio.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-e2e-twilio.yml)                                                                            |
+| `test-security-api`                        | daily schedule, manual                                | Security tests for the API.                                                                       | [![test-security-api](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-api.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-api.yml)                                                                      |
+| `test-security-cloudflare-access`          | daily schedule, push to `infrastructure/terraform/**` | Security tests validating Cloudflare Access.                                                      | [![test-security-cloudflare-access](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-cloudflare-access.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-cloudflare-access.yml)                            |
+| `test-security-email`                      | daily schedule, manual                                | Security tests for email delivery.                                                                | [![test-security-email](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-email.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-email.yml)                                                                |
+| `test-security-email-subscription-service` | daily schedule, manual                                | Security tests for the email subscription service.                                                | [![test-security-email-subscription-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-email-subscription-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-email-subscription-service.yml) |
+| `test-security-llm`                        | daily schedule, manual                                | Security tests for LLM integrations.                                                              | [![test-security-llm](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-llm.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-llm.yml)                                                                      |
+| `test-security-private-network-exposure`   | daily schedule, manual                                | Security tests checking for private network exposure.                                             | [![test-security-private-network-exposure](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-private-network-exposure.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-private-network-exposure.yml)       |
+| `test-security-socket-server`              | daily schedule, manual                                | Security tests for the socket server.                                                             | [![test-security-socket-server](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-socket-server.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-socket-server.yml)                                        |
+| `test-security-storage-service`            | daily schedule, manual                                | Security tests for the storage service.                                                           | [![test-security-storage-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-storage-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-security-storage-service.yml)                                  |
+| `test-smoke-email-service`                 | weekly schedule, manual                               | Smoke tests for the email service.                                                                | [![test-smoke-email-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-email-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-email-service.yml)                                                 |
+| `test-smoke-gcp-secret-manager`            | daily schedule, manual                                | Smoke tests for GCP Secret Manager.                                                               | [![test-smoke-gcp-secret-manager](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-gcp-secret-manager.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-gcp-secret-manager.yml)                                  |
+| `test-smoke-vault-service`                 | daily schedule, manual                                | Smoke tests for the Vault service.                                                                | [![test-smoke-vault-service](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-vault-service.yml/badge.svg)](https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/test-smoke-vault-service.yml)                                                 |

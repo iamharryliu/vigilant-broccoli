@@ -1,5 +1,21 @@
 # Docker
 
+## Free Tier
+
+Docker Hub, personal (free) account:
+
+| Resource             | Free allowance            |
+| -------------------- | ------------------------- |
+| Public repositories  | Unlimited                 |
+| Private repositories | 1                         |
+| Authenticated pulls  | 200 per 6 hours           |
+| Anonymous pulls      | 100 per 6 hours, per IPv4 |
+
+Anonymous pulls are metered per IPv4, so unauthenticated hosts behind one
+egress IP share that allowance; `docker login` moves a puller onto the larger
+per-account limit. Only one private repository is free, so an image that has to
+be pulled without credentials belongs in a public repository.
+
 ```
 sudo systemctl start docker         # Start Docker daemon
 sudo systemctl status docker        # Show Docker service status (running/stopped, logs, uptime, errors)

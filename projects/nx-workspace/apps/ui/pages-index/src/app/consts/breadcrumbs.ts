@@ -18,7 +18,7 @@ const BREADCRUMB_TREE: Record<string, BreadcrumbNode> = {
   '/status': { labelKey: 'STATUS_PAGE.TITLE', parent: '/' },
   '/open-source': { labelKey: 'OPEN_SOURCE_PAGE.TITLE', parent: '/' },
   '/open-source/github': {
-    labelKey: 'OPEN_SOURCE_PAGE.GITHUB.TITLE',
+    labelKey: 'GITHUB_REPOS_PAGE.TITLE',
     parent: '/open-source',
   },
   '/open-source/docker': {

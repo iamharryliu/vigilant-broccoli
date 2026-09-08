@@ -34,11 +34,5 @@ export function ApiServicesPage() {
     },
   ];
 
-  return (
-    <CardListPage
-      title={t('API_SERVICES_PAGE.TITLE')}
-      description={t('API_SERVICES_PAGE.DESCRIPTION')}
-      items={items}
-    />
-  );
+  return <CardListPage title={t('API_SERVICES_PAGE.TITLE')} items={items} />;
 }

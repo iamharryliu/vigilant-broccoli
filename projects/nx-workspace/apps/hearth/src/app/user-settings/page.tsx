@@ -5,8 +5,10 @@ import { useState } from 'react';
 import { Button, Input, Text } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { supabase } from '../../../libs/supabase';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 export default function UserSettingsPage() {
+  usePageTitle(PAGE_TITLES.USER_SETTINGS);
   const session = useAuth();
   const [displayName, setDisplayName] = useState(
     (session?.user.user_metadata?.display_name as string) ?? '',

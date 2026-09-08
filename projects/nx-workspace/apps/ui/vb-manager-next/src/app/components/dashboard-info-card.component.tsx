@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ClockComponent } from './clock.component';
 import { useWeather, getWeatherIcon } from '../hooks/useWeather';
-import { Skeleton } from './skeleton.component';
+import { Skeleton } from '@vigilant-broccoli/react-lib';
 import { WeatherDialog } from './weather-dialog.component';
 
 const DIVIDER_STYLE = {

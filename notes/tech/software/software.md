@@ -1,6 +1,7 @@
 # Software
 
 - [Software Lingo](./software-lingo.md)
+- [Software Timeline](./software-timeline.md)
 - [Software Breakdown](./general/software-breakdown.md)
 - [Software Roadmap](./software-roadmap.md)
 - [Dev Glossary](./dev-glossary.md)
@@ -33,6 +34,7 @@
   - [Authentication](./software-breakdown/authentication.md)
   - [Communication](./software-breakdown/communication.md)
 - Testing
+  - [Test Types](./testing/test-types.md)
   - [Behavioral Driven Development](./testing/bdd.md)
 - [Software Nuances](./general/software-nuances.md)
 - [One-off Fixes](./general/one-off-fixes.md)

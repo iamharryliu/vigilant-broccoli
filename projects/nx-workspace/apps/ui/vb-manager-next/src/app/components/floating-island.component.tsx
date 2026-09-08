@@ -18,7 +18,7 @@ import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component
 import { ClockComponent } from './clock.component';
 import { useDrag } from '../hooks/useDrag';
 import { useWeather, getWeatherIcon } from '../hooks/useWeather';
-import { Skeleton } from './skeleton.component';
+import { Skeleton } from '@vigilant-broccoli/react-lib';
 import { authFetch } from '../../../libs/auth';
 
 interface ChatSuggestion {

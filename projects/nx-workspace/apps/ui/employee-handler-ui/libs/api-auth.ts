@@ -12,8 +12,8 @@ const ERROR_INVALID_SESSION = 'Invalid session';
 const ERROR_MISSING_GOOGLE_TOKEN = 'Missing google token';
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY as string,
+  process.env.SUPABASE_URL as string,
+  process.env.SUPABASE_PUBLISHABLE_KEY as string,
 );
 
 const unauthorized = (message: string) =>

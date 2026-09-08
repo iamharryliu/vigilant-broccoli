@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { supabase } from '../../../../libs/supabase';
 import { ROUTES } from '../../../lib/routes';
+import { PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
 
 export default function SignUpPage() {
+  usePageTitle(PAGE_TITLES.SIGNUP);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');

@@ -17,6 +17,7 @@ import { DOC_CATEGORIES, DocCategory, HomeDoc } from '../../lib/types';
 import { HomeDocForm, HomeDocFormData } from './components/HomeDocForm';
 import { uploadFormFiles } from './upload-files';
 import { ROUTES } from '../../lib/routes';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 const CATEGORY_COLORS: Record<DocCategory, string> = {
   Insurance: 'blue',
@@ -44,6 +45,7 @@ const formatBytes = (bytes: number) => {
 type ModalState = { type: 'create' } | { type: 'edit'; doc: HomeDoc } | null;
 
 export default function DocsPage() {
+  usePageTitle(PAGE_TITLES.DOCS);
   const router = useRouter();
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();

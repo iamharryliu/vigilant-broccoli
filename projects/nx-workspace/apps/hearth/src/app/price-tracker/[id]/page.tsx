@@ -17,6 +17,7 @@ import {
 import { useAuth } from '../../providers/auth-provider';
 import { PriceItem } from '../../../lib/types';
 import { ROUTES } from '../../../lib/routes';
+import { PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
 
 const formatPrice = (price: number) =>
   new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD' }).format(
@@ -40,6 +41,7 @@ export default function PriceTrackerDetailPage() {
   const { id } = useParams<{ id: string }>();
   const session = useAuth();
   const [item, setItem] = useState<PriceItem | null>(null);
+  usePageTitle(item?.name ?? PAGE_TITLES.PRICE_TRACKER_DETAIL);
 
   useEffect(() => {
     if (!session?.access_token) return;

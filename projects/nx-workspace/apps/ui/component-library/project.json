@@ -48,6 +48,12 @@
         "spa": true
       }
     },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --config=apps/ui/component-library/e2e/playwright.config.ts"
+      }
+    },
     "deploy-github-pages": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],

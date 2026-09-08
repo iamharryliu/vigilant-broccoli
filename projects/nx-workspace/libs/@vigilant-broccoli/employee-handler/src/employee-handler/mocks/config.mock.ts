@@ -1,4 +1,7 @@
-import { EmployeeHandlerConfig } from '../employee-handler.models';
+import {
+  EmployeeAbsence,
+  EmployeeHandlerConfig,
+} from '../employee-handler.models';
 import { SignatureTemplate } from '../signature-templates/signature-templates.store';
 
 const COMPANY_DOMAIN = 'company.com';
@@ -210,6 +213,58 @@ const extractEmail = (input: unknown): string | null => {
   return null;
 };
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+const isoDate = (d: Date): string => d.toISOString().slice(0, 10);
+const addDays = (d: Date, n: number): Date =>
+  new Date(d.getTime() + n * DAY_MS);
+
+const ABSENCE_TYPES: string[] = [
+  'Vacation',
+  'Sick Leave',
+  'Parental Leave',
+  'Unpaid Leave',
+  'Conference',
+];
+
+// Fixed offsets (days relative to "today") so the mock always shows a mix of
+// past, ongoing and upcoming absences no matter when it's viewed.
+const MOCK_ABSENCE_SLOTS: {
+  startOffset: number;
+  lengthDays: number;
+  typeIndex: number;
+}[] = [
+  { startOffset: -40, lengthDays: 5, typeIndex: 0 },
+  { startOffset: -18, lengthDays: 1, typeIndex: 1 },
+  { startOffset: -3, lengthDays: 9, typeIndex: 0 },
+  { startOffset: 10, lengthDays: 2, typeIndex: 4 },
+  { startOffset: 25, lengthDays: 14, typeIndex: 2 },
+  { startOffset: 50, lengthDays: 1, typeIndex: 1 },
+];
+
+const generateMockAbsences = (employees: MockEmployee[]): EmployeeAbsence[] => {
+  const today = new Date();
+  const absences: EmployeeAbsence[] = [];
+  employees.forEach((employee, employeeIndex) => {
+    // Not every employee has recent/upcoming absences — skip roughly a third.
+    if (employeeIndex % 3 === 2) return;
+    MOCK_ABSENCE_SLOTS.forEach((slot, slotIndex) => {
+      // Spread slots across employees instead of giving everyone every slot.
+      if ((employeeIndex + slotIndex) % 3 !== 0) return;
+      const start = addDays(today, slot.startOffset + employeeIndex);
+      const end = addDays(start, slot.lengthDays - 1);
+      absences.push({
+        id: `${employee.email}-${slotIndex}`,
+        employeeEmail: employee.email,
+        employeeName: `${employee.firstName} ${employee.lastName}`.trim(),
+        type: pick(ABSENCE_TYPES, slot.typeIndex),
+        startDate: isoDate(start),
+        endDate: isoDate(end),
+      });
+    });
+  });
+  return absences;
+};
+
 export const EMPLOYEE_HANDLER_CONFIG_MOCK: EmployeeHandlerConfig = {
   onboardUtilities: {
     fetchIncomingEmployees: async () => listByStatus(incomingEmails),
@@ -268,6 +323,9 @@ export const EMPLOYEE_HANDLER_CONFIG_MOCK: EmployeeHandlerConfig = {
       }
       console.log('Post-retention cleanup purged:', purged.join(', '));
     },
+  },
+  absenceUtilities: {
+    fetchAbsences: async () => generateMockAbsences(listByStatus(activeEmails)),
   },
   customFunctions: {
     customFunctionExample: async (...args) => {

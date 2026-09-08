@@ -6,7 +6,6 @@ import { WhiteboardEditor } from '../whiteboard/components/WhiteboardEditor';
 
 const BOARD_KEY = 'kitchen';
 const PLACEHOLDER = 'Shared kitchen notes...';
-const CURSOR_CHANNEL_PREFIX = 'home-kitchen-notes-cursors-';
 
 export function KitchenNotes() {
   const session = useAuth();
@@ -23,7 +22,6 @@ export function KitchenNotes() {
       username={session.user.email ?? session.user.id}
       boardKey={BOARD_KEY}
       placeholder={PLACEHOLDER}
-      cursorChannelPrefix={CURSOR_CHANNEL_PREFIX}
       style={{ height: '100%' }}
     />
   );

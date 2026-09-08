@@ -1,27 +1,25 @@
 'use client';
 
-import { Sidebar, SidebarCTA, useTheme } from '@vigilant-broccoli/react-lib';
+import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib';
 import { signInWithGoogle, signOut, useAuth } from '../../../libs/auth';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   MessageCircle,
   Mail,
   Search,
-  Moon,
-  Sun,
   Calendar,
   StickyNote,
   Timer,
   LogOut,
   LogIn,
   Bell,
+  Settings,
 } from 'lucide-react';
 import { NotificationRecord } from '../hooks/useNotificationHistory';
 import { NotificationsDialog } from './notifications-dialog.component';
 
-const LIGHT = 'light';
-const DARK_MODE_LABEL = 'Dark mode';
-const LIGHT_MODE_LABEL = 'Light mode';
-const THEME_SHORTCUT = ' (D)';
+const SETTINGS_PATH = '/settings';
+
 const UNREAD_MAX = 9;
 const UNREAD_MAX_LABEL = '9+';
 
@@ -63,10 +61,9 @@ export const RightSidebar = ({
   notifications,
   onClearNotifications,
 }: Props) => {
-  const { appearance, toggleTheme } = useTheme();
   const session = useAuth();
-  const isLight = appearance === LIGHT;
-  const themeLabel = isLight ? DARK_MODE_LABEL : LIGHT_MODE_LABEL;
+  const router = useRouter();
+  const pathname = usePathname();
   const BellIcon = () => <BellIconWithBadge unreadCount={unreadCount} />;
 
   const items: SidebarCTA[] = [
@@ -114,10 +111,11 @@ export const RightSidebar = ({
       onClick: () => setSearchDialogOpen(true),
     },
     {
-      label: themeLabel,
-      icon: isLight ? Moon : Sun,
-      title: themeLabel + THEME_SHORTCUT,
-      onClick: toggleTheme,
+      label: 'Settings',
+      icon: Settings,
+      title: 'Settings',
+      onClick: () => router.push(SETTINGS_PATH),
+      isActive: pathname === SETTINGS_PATH,
     },
     ...(session
       ? [

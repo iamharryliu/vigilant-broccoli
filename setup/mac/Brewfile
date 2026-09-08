@@ -1,5 +1,6 @@
 tap "cormacrelf/tap"
 tap "hashicorp/tap"
+tap "smudge/smudge"
 tap "teamookla/speedtest"
 # Codec library for encoding and decoding AV1 video streams
 brew "aom"
@@ -109,6 +110,8 @@ brew "wireguard-tools"
 brew "yazi"
 # Fish-like fast/unobtrusive autosuggestions for zsh
 brew "zsh-autosuggestions"
+# A CLI for configuring 'Night Shift' on macOS 🌕🌖🌗🌘🌑
+brew "smudge/smudge/nightlight", trusted: true
 # Enable Windows-like alt-tab
 cask "alt-tab"
 # Application uninstaller
@@ -142,14 +145,16 @@ cask "godot"
 cask "google-chrome"
 # Client for the Google Drive storage service
 cask "google-drive"
+# Desktop automation application
+cask "hammerspoon"
 # Speech to text application
 cask "handy"
 # Tool to optimise images to a smaller size
 cask "imageoptim"
 # Terminal emulator as alternative to Apple's Terminal app
 cask "iterm2"
-# Host-based application firewall
-cask "little-snitch"
+# Keyboard customiser
+cask "karabiner-elements"
 # VPN client for secure internet access and private browsing
 cask "nordvpn"
 # Retro video game emulation

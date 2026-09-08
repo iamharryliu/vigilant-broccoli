@@ -19,6 +19,7 @@ import {
 import { HomeProjectList } from './components/HomeProjectList';
 import { HomeProjectCalendarDropForm } from './components/HomeProjectCalendarDropForm';
 import { HomeProjectFormData } from './components/HomeProjectForm';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 type PendingDrop = CalendarEventFormData & { projectId?: string };
 
@@ -28,6 +29,7 @@ type CalendarModal =
   | null;
 
 export default function ProjectsPage() {
+  usePageTitle(PAGE_TITLES.PROJECTS);
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
   const [projects, setProjects] = useState<HomeProject[]>([]);

@@ -10,7 +10,7 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
-import { MockRecipe } from './recipes.consts';
+import { Recipe } from './recipes.types';
 
 const GROCERY_ENDPOINT = '/api/grocery';
 const EXTRACT_ENDPOINT = '/api/food-planner/extract-ingredients';
@@ -21,7 +21,7 @@ type IngredientItem = {
 };
 
 type Props = {
-  recipe: MockRecipe | null;
+  recipe: Recipe | null;
   onClose: () => void;
   onAdded: () => void;
 };

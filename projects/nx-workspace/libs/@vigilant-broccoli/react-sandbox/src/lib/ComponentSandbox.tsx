@@ -1,9 +1,17 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { Theme } from '@radix-ui/themes';
-import Fuse from 'fuse.js';
-import { Search } from 'lucide-react';
 import {
-  DarkModeIconButton,
+  Blocks,
+  Eye,
+  Menu,
+  Moon,
+  Settings as SettingsIcon,
+  Sun,
+  Wrench,
+} from 'lucide-react';
+import {
+  Sidebar,
+  SidebarCTA,
   Switch,
   Heading,
   Text,
@@ -50,12 +58,26 @@ const CRUD_SWITCH_LABEL = {
 const DEFAULT_TITLE = 'Component Sandbox';
 const DEFAULT_SUBTITLE =
   'Interactive component showcase and testing playground';
+const SELECTED_ID_STORAGE_KEY = 'component-sandbox-selected-id';
+const ICON_MODE_STORAGE_KEY = 'component-sandbox-icon-mode';
+
+const SETTINGS_LABEL = {
+  GROUP: 'Settings',
+  DARK_MODE_ON: 'Light Mode',
+  DARK_MODE_OFF: 'Dark Mode',
+  ICON_MODE_ON: 'Icons: On',
+  ICON_MODE_OFF: 'Icons: Off',
+} as const;
 
 const CATEGORY = {
   COMPONENTS: 'Components',
   UTILITIES: 'Utilities',
 } as const;
 type Category = (typeof CATEGORY)[keyof typeof CATEGORY];
+const CATEGORY_ICON = {
+  [CATEGORY.COMPONENTS]: Blocks,
+  [CATEGORY.UTILITIES]: Wrench,
+} as const;
 
 interface SandboxEntry {
   id: string;
@@ -271,7 +293,23 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
 ];
 
 const ALL_ENTRIES: SandboxEntry[] = [...COMPONENT_ENTRIES, ...UTILITY_ENTRIES];
-const FUSE_OPTIONS = { keys: ['label'], threshold: 0.3 };
+
+const SIDEBAR_POSITION_CLASS = 'fixed top-0 left-0 bottom-0 z-30 peer';
+const CONTENT_WRAPPER_BASE_CLASS =
+  'h-full overflow-y-auto pt-12 md:pt-0 pl-0 transition-[padding] duration-200';
+// In icon mode the sidebar itself collapses to an icon rail and only
+// expands to full width on hover (see canCollapse in Sidebar.tsx) - the
+// content needs the matching peer-hover pair to shift with it instead of
+// staying padded for the expanded width. Icon-less mode has no rail to
+// collapse to (the sidebar is always full width), so the content stays
+// statically padded to match.
+const CONTENT_WRAPPER_COLLAPSIBLE_CLASS = 'md:pl-14 md:peer-hover:pl-48';
+const CONTENT_WRAPPER_FIXED_CLASS = 'md:pl-48';
+const TOPBAR_CLASS =
+  'md:hidden fixed top-0 left-0 right-0 z-10 flex h-12 items-center gap-3 border-b border-gray-200 bg-white px-4 dark:border-gray-800 dark:bg-gray-950';
+const MENU_BUTTON_CLASS =
+  'cursor-pointer rounded-md p-1 text-gray-500 hover:bg-gray-50 hover:text-black dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white';
+const OPEN_MENU_LABEL = 'Open menu';
 
 export interface ComponentSandboxProps {
   title?: string;
@@ -279,77 +317,99 @@ export interface ComponentSandboxProps {
   wrapInTheme?: boolean;
 }
 
-interface SandboxSidebarProps {
-  query: string;
-  onQueryChange: (v: string) => void;
+type BuildSidebarItemsArgs = {
   entries: SandboxEntry[];
   selectedId: string;
   onSelect: (id: string) => void;
-}
+  iconMode: boolean;
+};
 
-const SandboxSidebar = ({
-  query,
-  onQueryChange,
+const buildSidebarItems = ({
   entries,
   selectedId,
   onSelect,
-}: SandboxSidebarProps) => {
-  const groups = useMemo(
-    () =>
-      Object.values(CATEGORY)
-        .map(category => ({
-          category,
-          items: entries.filter(entry => entry.category === category),
-        }))
-        .filter(group => group.items.length > 0),
-    [entries],
-  );
+  iconMode,
+}: BuildSidebarItemsArgs): SidebarCTA[] =>
+  Object.values(CATEGORY)
+    .map(category => ({
+      category,
+      items: entries.filter(entry => entry.category === category),
+    }))
+    .filter(group => group.items.length > 0)
+    .map(group => ({
+      id: group.category,
+      label: group.category,
+      icon: iconMode ? CATEGORY_ICON[group.category] : undefined,
+      isActive: group.items.some(entry => entry.id === selectedId),
+      children: group.items.map(entry => ({
+        label: entry.label,
+        isActive: entry.id === selectedId,
+        onClick: () => onSelect(entry.id),
+      })),
+    }));
 
-  return (
-    <nav className="w-64 shrink-0 h-full border-r border-gray-300 dark:border-gray-700 flex flex-col">
-      <div className="p-3 border-b border-gray-300 dark:border-gray-700">
-        <div className="flex items-center gap-2 rounded-md border border-gray-300 dark:border-gray-700 px-2 py-1.5">
-          <Search className="h-4 w-4 text-gray-400 shrink-0" />
-          <input
-            type="text"
-            value={query}
-            onChange={e => onQueryChange(e.target.value)}
-            placeholder="Search components..."
-            className="w-full bg-transparent outline-none text-sm placeholder-gray-400 dark:text-white"
-          />
-        </div>
-      </div>
-      <div className="flex-1 overflow-y-auto p-2">
-        {groups.length === 0 && (
-          <Text color="gray" size="2" className="block px-2 py-4">
-            No components found
-          </Text>
-        )}
-        {groups.map(group => (
-          <div key={group.category} className="mb-4">
-            <div className="px-2 pb-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
-              {group.category}
-            </div>
-            {group.items.map(entry => (
-              <button
-                key={entry.id}
-                type="button"
-                onClick={() => onSelect(entry.id)}
-                className={`w-full text-left text-sm rounded-md px-2 py-1.5 transition-colors ${
-                  entry.id === selectedId
-                    ? 'font-medium text-black bg-gray-100 dark:text-white dark:bg-gray-800'
-                    : 'text-gray-500 dark:text-gray-400 hover:text-black hover:bg-gray-50 dark:hover:text-white dark:hover:bg-gray-800'
-                }`}
-              >
-                {entry.label}
-              </button>
-            ))}
-          </div>
-        ))}
-      </div>
-    </nav>
-  );
+type BuildSettingsGroupArgs = {
+  dark: boolean;
+  onToggleDark?: () => void;
+  iconMode: boolean;
+  onToggleIconMode: () => void;
 };
+
+// Kept separate from buildSidebarItems - these are app-chrome toggles, not
+// browsable demo content. Icons here are still gated by iconMode (not always
+// on) so toggling it off leaves every item in the sidebar icon-less, which
+// is what canCollapse/forceExpanded in Sidebar.tsx keys off of.
+const buildSettingsGroup = ({
+  dark,
+  onToggleDark,
+  iconMode,
+  onToggleIconMode,
+}: BuildSettingsGroupArgs): SidebarCTA => ({
+  id: 'settings',
+  label: SETTINGS_LABEL.GROUP,
+  icon: iconMode ? SettingsIcon : undefined,
+  children: [
+    ...(onToggleDark
+      ? [
+          {
+            label: dark
+              ? SETTINGS_LABEL.DARK_MODE_ON
+              : SETTINGS_LABEL.DARK_MODE_OFF,
+            icon: iconMode ? (dark ? Sun : Moon) : undefined,
+            onClick: onToggleDark,
+          },
+        ]
+      : []),
+    {
+      label: iconMode
+        ? SETTINGS_LABEL.ICON_MODE_ON
+        : SETTINGS_LABEL.ICON_MODE_OFF,
+      icon: iconMode ? Eye : undefined,
+      onClick: onToggleIconMode,
+    },
+  ],
+});
+
+interface SandboxTopbarProps {
+  title: string;
+  onMenuClick: () => void;
+}
+
+const SandboxTopbar = ({ title, onMenuClick }: SandboxTopbarProps) => (
+  <header className={TOPBAR_CLASS}>
+    <button
+      type="button"
+      aria-label={OPEN_MENU_LABEL}
+      onClick={onMenuClick}
+      className={MENU_BUTTON_CLASS}
+    >
+      <Menu size={20} />
+    </button>
+    <Text weight="medium" size="3">
+      {title}
+    </Text>
+  </header>
+);
 
 interface SandboxBodyProps {
   title: string;
@@ -359,6 +419,16 @@ interface SandboxBodyProps {
   showThemeToggle: boolean;
 }
 
+const readStoredSelectedId = () => {
+  const saved = localStorage.getItem(SELECTED_ID_STORAGE_KEY);
+  return ALL_ENTRIES.some(entry => entry.id === saved)
+    ? (saved as string)
+    : ALL_ENTRIES[0].id;
+};
+
+const readStoredIconMode = () =>
+  localStorage.getItem(ICON_MODE_STORAGE_KEY) === 'true';
+
 const SandboxBody = ({
   title,
   subtitle,
@@ -366,36 +436,59 @@ const SandboxBody = ({
   setDark,
   showThemeToggle,
 }: SandboxBodyProps) => {
-  const [query, setQuery] = useState('');
-  const [selectedId, setSelectedId] = useState(ALL_ENTRIES[0].id);
-  const fuse = useMemo(() => new Fuse(ALL_ENTRIES, FUSE_OPTIONS), []);
-
-  const filteredEntries = query.trim()
-    ? fuse.search(query.trim()).map(result => result.item)
-    : ALL_ENTRIES;
+  const [selectedId, setSelectedId] = useState(readStoredSelectedId);
+  const [iconMode, setIconMode] = useState(readStoredIconMode);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const selectedEntry =
     ALL_ENTRIES.find(entry => entry.id === selectedId) ?? ALL_ENTRIES[0];
 
-  return (
-    <div className="flex h-full">
-      <SandboxSidebar
-        query={query}
-        onQueryChange={setQuery}
-        entries={filteredEntries}
-        selectedId={selectedId}
-        onSelect={id => {
+  const items = useMemo(
+    () => [
+      ...buildSidebarItems({
+        entries: ALL_ENTRIES,
+        selectedId,
+        onSelect: id => {
           setSelectedId(id);
-          setQuery('');
-        }}
+          localStorage.setItem(SELECTED_ID_STORAGE_KEY, id);
+          setSidebarOpen(false);
+        },
+        iconMode,
+      }),
+      buildSettingsGroup({
+        dark,
+        onToggleDark: showThemeToggle ? () => setDark(!dark) : undefined,
+        iconMode,
+        onToggleIconMode: () => {
+          const next = !iconMode;
+          setIconMode(next);
+          localStorage.setItem(ICON_MODE_STORAGE_KEY, String(next));
+        },
+      }),
+    ],
+    [selectedId, iconMode, dark, showThemeToggle, setDark],
+  );
+
+  return (
+    <div className="h-full">
+      <Sidebar
+        items={items}
+        searchable
+        className={SIDEBAR_POSITION_CLASS}
+        mobileOpen={sidebarOpen}
+        onMobileClose={() => setSidebarOpen(false)}
+        defaultOpenId={selectedEntry.category}
       />
-      <div className="flex-1 h-full overflow-y-auto">
+      <SandboxTopbar
+        title={title}
+        onMenuClick={() => setSidebarOpen(open => !open)}
+      />
+      <div
+        className={`${CONTENT_WRAPPER_BASE_CLASS} ${iconMode ? CONTENT_WRAPPER_COLLAPSIBLE_CLASS : CONTENT_WRAPPER_FIXED_CLASS}`}
+      >
         <div className="p-6 max-w-4xl">
-          <div className="flex justify-between items-center mb-2">
-            <Heading size="8">{title}</Heading>
-            {showThemeToggle && (
-              <DarkModeIconButton dark={dark} onToggle={setDark} />
-            )}
-          </div>
+          <Heading size="8" mb="2">
+            {title}
+          </Heading>
           <Text color="gray" size="4" mb="6">
             {subtitle}
           </Text>

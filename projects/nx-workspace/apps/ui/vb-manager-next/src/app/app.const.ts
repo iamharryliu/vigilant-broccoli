@@ -46,6 +46,14 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
   },
 };
 
+export const APP_NAME = 'VB Manager';
+
+export const PAGE_TITLE = {
+  SETTINGS: 'Settings',
+  LOGIN: 'Login',
+  AUTH_CALLBACK: 'Signing In',
+} as const;
+
 const APP_ROUTE_SUBGROUP = 'vb-manager-next';
 
 export const VIGILANT_BROCCOLI_ROOT_PATH = '~/vigilant-broccoli';

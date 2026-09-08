@@ -69,6 +69,7 @@ alias pushdeps="depsdump && cdvb && git add $MAC_SETUP_DIR/Brewfile $MAC_SETUP_D
 
 # Desktop Setup
 alias setupdock=". $MAC_SETUP_DIR/setup_dock.sh"
+alias setupdockstacks=". $MAC_SETUP_DIR/setup_dock_stacks.sh"
 alias setupmac=". $MAC_SETUP_DIR/setup_macos_preferences.sh"
 alias toggledarkmode='osascript -e "tell application \"System Events\" to tell appearance preferences to set dark mode to not dark mode"'
 alias changewallpaper="$MAC_SETUP_DIR/change_wallpaper.sh"

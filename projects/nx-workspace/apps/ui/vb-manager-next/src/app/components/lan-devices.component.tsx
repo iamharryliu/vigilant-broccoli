@@ -8,9 +8,9 @@ import {
   StatusCardList,
   StatusCardListItem,
   Text,
+  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
 import { useCallback, useEffect, useState } from 'react';
-import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { DEVICE_TYPE } from '../constants/network-monitor';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';

@@ -2,6 +2,7 @@
 
 - [Bread](./bread/bread.md)
 - [Eggs](./eggs.md)
+- [Food Explained](./food-explained.md)
 - [Grains](./grains.md)
 - [Noodles](./noodles.md)
 - [Pasta](./pasta.md)

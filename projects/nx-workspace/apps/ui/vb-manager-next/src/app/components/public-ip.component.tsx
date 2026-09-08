@@ -6,10 +6,10 @@ import {
   MonospaceText,
   Select,
   Text,
+  Skeleton,
 } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
-import { Skeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
 import { usePollingInterval } from '../hooks/usePollingInterval';

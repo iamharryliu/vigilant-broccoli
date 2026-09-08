@@ -4,6 +4,7 @@ import { use } from 'react';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '../../../lib/routes';
 import { HomeDetailView } from '../components/HomeDetailView';
+import { PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
 
 export default function HomeDetailPage({
   params,
@@ -11,6 +12,7 @@ export default function HomeDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  usePageTitle(PAGE_TITLES.HOME_DETAIL);
   const router = useRouter();
 
   return (

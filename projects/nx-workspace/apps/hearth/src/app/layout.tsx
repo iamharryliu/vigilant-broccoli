@@ -1,3 +1,4 @@
+import type { Viewport } from 'next';
 import '@radix-ui/themes/styles.css';
 import './global.css';
 import AuthProvider from './providers/auth-provider';
@@ -8,6 +9,10 @@ import { RootThemeWrapper } from './components/RootThemeWrapper';
 export const metadata = {
   title: 'Hearth',
   description: 'Shared life for homes, communes, and communities.',
+};
+
+export const viewport: Viewport = {
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({

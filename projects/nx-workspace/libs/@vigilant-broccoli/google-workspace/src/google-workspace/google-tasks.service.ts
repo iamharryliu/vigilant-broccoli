@@ -31,11 +31,13 @@ export const listTaskLists = async (
 export const listTasks = async (
   accessToken: string,
   taskListId = '@default',
+  showCompleted = false,
 ): Promise<GoogleTask[]> => {
   const client = createClient(accessToken);
   const res = await client.tasks.list({
     tasklist: taskListId,
-    showCompleted: false,
+    showCompleted,
+    showHidden: showCompleted,
     maxResults: 100,
   });
   return (res.data.items ?? [])

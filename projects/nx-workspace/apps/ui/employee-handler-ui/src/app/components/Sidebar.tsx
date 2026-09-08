@@ -8,7 +8,7 @@ import {
   SidebarCTA,
   useTheme,
 } from '@vigilant-broccoli/react-lib';
-import { supabase } from '../../../libs/supabase';
+import { getSupabase } from '../../../libs/supabase';
 import { NAV_LINKS } from '../app.consts';
 import { useTranslation } from '../i18n';
 
@@ -37,7 +37,8 @@ export default function Sidebar() {
   const logoutItem: SidebarCTA = {
     label: t('SIDEBAR.LOGOUT'),
     icon: LogOut,
-    onClick: () => {
+    onClick: async () => {
+      const supabase = await getSupabase();
       supabase.auth.signOut();
     },
   };

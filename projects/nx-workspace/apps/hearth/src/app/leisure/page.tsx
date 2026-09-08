@@ -19,6 +19,7 @@ import {
 import { LeisureList } from './components/LeisureList';
 import { LeisureCalendarDropForm } from './components/LeisureCalendarDropForm';
 import { LeisureActivityFormData } from './components/LeisureActivityForm';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 type PendingDrop = CalendarEventFormData & { leisureId?: string };
 
@@ -28,6 +29,7 @@ type CalendarModal =
   | null;
 
 export default function LeisurePage() {
+  usePageTitle(PAGE_TITLES.LEISURE);
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
   const [activities, setActivities] = useState<LeisureActivity[]>([]);

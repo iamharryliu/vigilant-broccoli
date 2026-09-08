@@ -4,6 +4,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import type { DateClickArg } from '@fullcalendar/interaction';
 import type {
   DateSelectArg,
   DatesSetArg,
@@ -57,6 +58,19 @@ export function CalendarView({
     onSelectSlot(arg.startStr, arg.endStr, arg.allDay);
   };
 
+  // Touch devices require a long press before `select` fires, so a plain tap
+  // never opens the modal on mobile. `dateClick` fires on any tap/click that
+  // isn't a drag, so use it as the slot-selection trigger for a single date.
+  const handleDateClick = (arg: DateClickArg) => {
+    const end = new Date(arg.date);
+    if (arg.allDay) {
+      end.setDate(end.getDate() + 1);
+    } else {
+      end.setHours(end.getHours() + 1);
+    }
+    onSelectSlot(arg.date.toISOString(), end.toISOString(), arg.allDay);
+  };
+
   const handleDatesSet = (arg: DatesSetArg) => {
     onRangeChange?.(arg.startStr, arg.endStr);
   };
@@ -94,6 +108,7 @@ export function CalendarView({
       dayMaxEvents
       events={events.map(toFullCalendarEvent)}
       select={handleSelect}
+      dateClick={handleDateClick}
       eventClick={handleEventClick}
       eventDrop={handleEventDrop}
       eventReceive={onEventReceive}

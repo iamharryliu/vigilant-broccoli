@@ -7,10 +7,10 @@ import type {
 
 const STRUCTURE_URL = 'structure.json';
 const GRAPH_URL = 'graph.json';
+const SEARCH_INDEX_URL = 'search-index.json';
 const NOTES_DIR = 'notes';
 const NODE_TYPE_FILE = 'file';
 const PATH_SEP = '/';
-const CONTENT_FETCH_CONCURRENCY = 8;
 const EXCERPT_CONTEXT_CHARS = 100;
 const FILENAME_FUSE_OPTIONS = {
   keys: ['name', 'path'],
@@ -21,6 +21,10 @@ const FILENAME_FUSE_OPTIONS = {
 interface FlatFile {
   name: string;
   path: string;
+}
+
+interface SearchIndexEntry extends FlatFile {
+  content: string;
 }
 
 let treeCache: DocsNode[] | null = null;
@@ -67,23 +71,11 @@ const fetchAllFileContents = (): Promise<Map<string, string>> => {
   if (contentCachePromise) return contentCachePromise;
 
   contentCachePromise = (async () => {
-    if (!flatFilesCache) await fetchStructure();
-    const files = flatFilesCache ?? [];
-    const cache = new Map<string, string>();
-    const queue = [...files];
-
-    const worker = async () => {
-      for (let file = queue.shift(); file; file = queue.shift()) {
-        try {
-          cache.set(file.path, await fetchContent(file.path));
-        } catch {
-          // skip files that fail to fetch; they're just absent from content search
-        }
-      }
-    };
-
-    await Promise.all(
-      Array.from({ length: CONTENT_FETCH_CONCURRENCY }, worker),
+    const res = await fetch(SEARCH_INDEX_URL);
+    if (!res.ok) throw new Error('Failed to load search index');
+    const entries: SearchIndexEntry[] = await res.json();
+    const cache = new Map<string, string>(
+      entries.map(entry => [entry.path, entry.content]),
     );
     contentCache = cache;
     return cache;

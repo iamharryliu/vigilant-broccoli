@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* GitHub Actions status badges in README.md render as one paragraph of
+   hard-line-break-separated <img>s; the typography plugin's default 2em
+   img margin doesn't push the following <br> line, so badges collide. */
+.prose img[src$='badge.svg'] {
+  display: inline-block;
+  margin: 0.25rem 0.5rem 0.25rem 0;
+  vertical-align: middle;
+}

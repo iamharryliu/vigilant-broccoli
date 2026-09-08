@@ -82,6 +82,14 @@ variable "code_server_domain" {
   default = "code.harryliu.dev"
 }
 
+# Built and pushed by .github/workflows/deploy-code-server-image.yml, which
+# also publishes an immutable sha-<commit> tag -- set this to one of those to
+# pin the VM to a known build or roll back.
+variable "code_server_image" {
+  type    = string
+  default = "iamharryliu/vb-code-server:latest"
+}
+
 variable "code_server_allowed_emails" {
   type    = list(string)
   default = ["harryliu1995@gmail.com"]
@@ -102,6 +110,16 @@ variable "seafile_admin_email" {
   default = "harryliu1995@gmail.com"
 }
 
+variable "immich_domain" {
+  type    = string
+  default = "images.harryliu.dev"
+}
+
+variable "immich_allowed_emails" {
+  type    = list(string)
+  default = ["harryliu1995@gmail.com"]
+}
+
 variable "vault_domain" {
   type    = string
   default = "vault.harryliu.dev"
@@ -110,11 +128,6 @@ variable "vault_domain" {
 variable "socket_server_domain" {
   type    = string
   default = "socket.harryliu.dev"
-}
-
-variable "journal_domain" {
-  type    = string
-  default = "journal.harryliu.dev"
 }
 
 variable "nx_cache_domain" {
@@ -127,23 +140,6 @@ variable "nx_cache_domain" {
 variable "nx_cache_r2_ttl_seconds" {
   type    = number
   default = 604800
-}
-
-variable "journal_pages_project" {
-  type    = string
-  default = "staging-journal"
-}
-
-# Kept separate from the project name: Cloudflare appends a suffix when
-# <project>.pages.dev is taken globally (the old `journal` project got journal-d64).
-variable "journal_pages_subdomain" {
-  type    = string
-  default = "staging-journal.pages.dev"
-}
-
-variable "journal_allowed_emails" {
-  type    = list(string)
-  default = ["harryliu1995@gmail.com"]
 }
 
 variable "docs_domain" {

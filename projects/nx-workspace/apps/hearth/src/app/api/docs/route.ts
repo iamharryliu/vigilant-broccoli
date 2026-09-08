@@ -92,8 +92,15 @@ export async function GET(req: NextRequest) {
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
 
-  const mapped = await Promise.all((data ?? []).map(toDoc));
-  return Response.json(id ? (mapped[0] ?? null) : mapped);
+  try {
+    const mapped = await Promise.all((data ?? []).map(toDoc));
+    return Response.json(id ? (mapped[0] ?? null) : mapped);
+  } catch (e) {
+    return Response.json(
+      { error: (e as Error).message },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+  }
 }
 
 export async function POST(req: NextRequest) {

@@ -15,6 +15,7 @@
   - [Learning](./learning.md)
 - **Fashion/Clothing**
   - [Product Care](./product-care.md)
+  - [Textile Patterns](./textile-patterns.md)
   - [Layering Explained (The 3 Layer System)](https://www.youtube.com/watch?v=eXr2iPeMLfs)
   - [How to Roll Up Your Pants | GQ](https://www.youtube.com/watch?v=45IBKWJyJ1A)
 - **Proficiency**

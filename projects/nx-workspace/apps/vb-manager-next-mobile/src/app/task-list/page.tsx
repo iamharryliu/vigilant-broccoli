@@ -1,18 +1,18 @@
-import { GoogleTaskList } from '../components/google-task-list';
+import { GoogleTasksView } from '../components/google-tasks-view';
 import { ProtectedRoute } from '../components/protected-route';
+import { PAGE_MIN_HEIGHT } from '../components/app-shell.constants';
+import { PAGE_TITLE } from '../app.const';
+
+export const metadata = {
+  title: PAGE_TITLE.TASK_LIST,
+};
 
 export default function TaskListPage() {
   return (
     <ProtectedRoute>
-      <main className="min-h-screen bg-gray-50">
-        <header className="bg-white border-b border-gray-100 px-4 py-4 safe-top">
-          <h1 className="text-lg font-semibold text-gray-800">Task List</h1>
-          <p className="text-xs text-gray-500 mt-0.5">
-            View and manage your Google Tasks
-          </p>
-        </header>
-        <div className="px-4 py-5 pb-24">
-          <GoogleTaskList />
+      <main className={`${PAGE_MIN_HEIGHT} bg-gray-50`}>
+        <div className="px-4 py-5">
+          <GoogleTasksView />
         </div>
       </main>
     </ProtectedRoute>

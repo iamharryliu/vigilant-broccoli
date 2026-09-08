@@ -74,7 +74,7 @@ alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell
 # alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell/backup-repo.sh && rsync -av --delete --exclude=".*" ~/resilio-sync/backup/ ~/My\ Drive/resilio-backup/'
 
 # Hobby Code
-alias dldjmusic="cd $REPO_DIR/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py --output '$HOME/My Drive/DJ Music Library' --filter 'mix' --parallel 5"
+alias dldjmusic="$NX_DIR/scripts/shell/run-spotify-to-mp3.sh --output '$HOME/My Drive/DJ Music Library' --filter mix --parallel 5"
 
 # Docker
 alias dockercleanup="$REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh"
@@ -86,4 +86,8 @@ vb-cheatsheet() {
     echo "vibecode [dir] [-n name]            Vibe coding layout (claude + lazygit + shells)"
     echo "newtmuxwindow <name> [dir]          Create named tmux window"
     echo "rmtmuxw <name>                      Kill named tmux window"
+    echo "=== Desktop Setup ==="
+    echo "setupdock                           Run setup_dock.sh"
+    echo "setupdockstacks                     Rebuild Dock Stacks folders (setup_dock_stacks.sh)"
+    echo "setupmac                            Run setup_macos_preferences.sh"
 }

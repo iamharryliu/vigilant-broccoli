@@ -1,0 +1,22 @@
+# Test Types
+
+| Test Type        | Description                                                                                                       | Best Used For                                                                    |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| A/B              | Compares two variants of a feature against real users to measure impact.                                          | Making data-driven product decisions.                                            |
+| Acceptance (UAT) | Validates the software against business/user requirements, often performed by stakeholders.                       | Confirming the product meets user needs before sign-off.                         |
+| Accessibility    | Checks that the application is usable by people with disabilities (screen readers, keyboard nav, contrast, etc.). | Meeting a11y standards (e.g. WCAG) and ensuring inclusive UX.                    |
+| Canary           | Rolls a change out to a small subset of real traffic/users before a full release.                                 | Detecting regressions in production with limited blast radius.                   |
+| Chaos            | Deliberately injects failures (e.g. killing services, network partitions) into a system.                          | Validating resilience and fault tolerance in production-like environments.       |
+| Contract         | Verifies that the interface between two services (e.g. API request/response shape) matches an agreed contract.    | Catching breaking changes between independently deployed services.               |
+| End-to-End (E2E) | Simulates real user workflows through the entire application stack, from UI to backend.                           | Confirming complete user journeys work as intended.                              |
+| Exploratory      | Unscripted, ad hoc testing driven by tester intuition and domain knowledge.                                       | Finding edge cases and usability issues that scripted tests miss.                |
+| Integration      | Verifies that multiple components or services work correctly together (e.g. a service and a database).            | Catching issues at the boundaries between modules or systems.                    |
+| Load             | Tests system behavior under expected or peak concurrent usage.                                                    | Validating performance and stability under normal-to-high traffic.               |
+| Mutation         | Introduces small code changes ("mutants") to check whether the existing test suite catches them.                  | Measuring the effectiveness/quality of a test suite.                             |
+| Regression       | Re-runs existing tests after a change to confirm previously working functionality still works.                    | Preventing new changes from breaking existing behavior.                          |
+| Sanity           | A narrow, focused check that a specific bug fix or new change works as expected, without a full regression pass.  | Quickly validating a recent code change or hotfix.                               |
+| Security         | Probes for vulnerabilities (injection, auth bypass, data exposure, etc.).                                         | Identifying exploitable weaknesses before attackers do.                          |
+| Smoke            | A quick, shallow pass over the most critical functionality to confirm a build isn't fundamentally broken.         | Gatekeeping a new build/deploy before investing in deeper testing.               |
+| Stress           | Pushes the system beyond normal capacity to find its breaking point.                                              | Understanding failure modes and capacity limits.                                 |
+| System           | Tests the fully integrated application as a whole against its overall requirements.                               | Validating end-to-end functional and non-functional requirements before release. |
+| Unit             | Verifies a single function, method, or class in isolation, typically with dependencies mocked/stubbed.            | Catching logic bugs early, fast feedback during development.                     |

@@ -67,6 +67,10 @@ export const auth = betterAuth({
 export const API_KEY_PERMISSION_RESOURCE = 'services';
 export const API_KEY_MODEL = 'apikey';
 
+export const buildServicePermissions = (services: string[]) => ({
+  [API_KEY_PERMISSION_RESOURCE]: services,
+});
+
 export const verifyApiKey = async (key: string) => {
   const { valid } = await auth.api.verifyApiKey({ body: { key } });
   return valid;
@@ -75,7 +79,7 @@ export const verifyApiKey = async (key: string) => {
 export const createServiceVerifier =
   (services: string[]) => async (key: string) => {
     const { valid } = await auth.api.verifyApiKey({
-      body: { key, permissions: { [API_KEY_PERMISSION_RESOURCE]: services } },
+      body: { key, permissions: buildServicePermissions(services) },
     });
     return valid;
   };

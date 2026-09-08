@@ -2,18 +2,33 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '../../../../libs/supabase';
+import { getSupabase } from '../../../../libs/supabase';
+import { usePageTitle } from '../../use-page-title';
+import { useTranslation } from '../../i18n';
 
 export default function AuthCallbackPage() {
+  const { t } = useTranslation();
+  usePageTitle(t('PAGE_TITLE.AUTH_CALLBACK'));
   const router = useRouter();
 
   useEffect(() => {
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      router.push(session ? '/' : '/login');
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+
+    getSupabase().then(supabase => {
+      if (cancelled) return;
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        router.push(session ? '/' : '/login');
+      });
+      unsubscribe = () => subscription.unsubscribe();
     });
-    return () => subscription.unsubscribe();
+
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, [router]);
 
   return (

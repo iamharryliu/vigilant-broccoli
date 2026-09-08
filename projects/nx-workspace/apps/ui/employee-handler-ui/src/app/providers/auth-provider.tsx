@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { supabase } from '../../../libs/supabase';
+import { getSupabase } from '../../../libs/supabase';
 import {
   AUTHORIZATION_HEADER,
   BEARER_PREFIX,
@@ -20,6 +20,7 @@ export const useAuth = () => useContext(AuthContext);
 export const getGoogleToken = () => localStorage.getItem(GOOGLE_TOKEN_KEY);
 
 export const getSupabaseAccessToken = async () => {
+  const supabase = await getSupabase();
   const { data } = await supabase.auth.getSession();
   return data.session?.access_token ?? null;
 };
@@ -43,6 +44,7 @@ export const buildAuthHeaders = async (options?: {
 
 export const signOutDueToExpiredToken = async () => {
   localStorage.removeItem(GOOGLE_TOKEN_KEY);
+  const supabase = await getSupabase();
   await supabase.auth.signOut();
 };
 
@@ -54,18 +56,31 @@ export default function AuthProvider({
   const [session, setSession] = useState<Session | null | undefined>(undefined);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.provider_token) {
-        localStorage.setItem(GOOGLE_TOKEN_KEY, session.provider_token);
-      }
-      setSession(session);
+    getSupabase().then(supabase => {
+      if (cancelled) return;
+
+      supabase.auth.getSession().then(({ data }) => {
+        if (!cancelled) setSession(data.session);
+      });
+
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (session?.provider_token) {
+          localStorage.setItem(GOOGLE_TOKEN_KEY, session.provider_token);
+        }
+        setSession(session);
+      });
+      unsubscribe = () => subscription.unsubscribe();
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, []);
 
   if (session === undefined) return null;

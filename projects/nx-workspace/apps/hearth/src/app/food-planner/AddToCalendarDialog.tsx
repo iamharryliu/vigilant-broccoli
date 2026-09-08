@@ -8,7 +8,7 @@ import {
   CalendarEventForm,
   type CalendarEventFormData,
 } from '../calendar/components/CalendarEventForm';
-import { MockRecipe } from './recipes.consts';
+import { Recipe } from './recipes.types';
 
 const CALENDAR_EVENTS_ENDPOINT = '/api/calendar/events';
 const EVENT_DEFAULT_DURATION_MS = 60 * 60 * 1000;
@@ -17,7 +17,7 @@ const RECIPE_PARAM = 'recipe';
 const RECIPES_TAB_VALUE = 'recipes';
 const DIALOG_TITLE = 'Add to Calendar';
 
-const buildRecipeBacklink = (recipe: MockRecipe): string => {
+const buildRecipeBacklink = (recipe: Recipe): string => {
   const url = new URL('/food-planner', window.location.origin);
   url.searchParams.set(TAB_PARAM, RECIPES_TAB_VALUE);
   url.searchParams.set(RECIPE_PARAM, recipe.id);
@@ -25,7 +25,7 @@ const buildRecipeBacklink = (recipe: MockRecipe): string => {
 };
 
 type Props = {
-  recipe: MockRecipe | null;
+  recipe: Recipe | null;
   onClose: () => void;
   onAdded: () => void;
 };

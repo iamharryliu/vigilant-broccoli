@@ -5,8 +5,10 @@ import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { HouseholdRule } from '../../lib/types';
 import { HouseholdRuleList } from './components/HouseholdRuleList';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 export default function HouseholdRulesPage() {
+  usePageTitle(PAGE_TITLES.HOUSEHOLD_RULES);
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
   const [rules, setRules] = useState<HouseholdRule[]>([]);

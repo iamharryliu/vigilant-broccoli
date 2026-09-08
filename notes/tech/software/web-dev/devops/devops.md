@@ -11,6 +11,10 @@
 - [Google Cloud](./google-cloud.md)
 - [AWS](./aws/aws.md)
 - [Cloudflare](./cloudflare.md)
+- [Vercel](./vercel.md)
+- [Netlify](./netlify.md)
+- [Render](./render.md)
+- [Lovable](./lovable.md)
 
 ## Devops Tools
 

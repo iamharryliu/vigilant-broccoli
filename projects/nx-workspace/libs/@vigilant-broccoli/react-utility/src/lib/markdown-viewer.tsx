@@ -4,7 +4,7 @@ import { createHeadingRenderer, marked } from './markdown-config';
 import { createNoteLinkClickHandler, scrollToUrlHash } from './note-links';
 
 const CLS = {
-  ROOT: 'w-full h-full overflow-auto',
+  ROOT: 'w-full',
   PROSE: 'prose dark:prose-invert max-w-none px-4 sm:px-6 py-4',
   EDITOR_WRAP: 'flex flex-col h-full',
   TOOLBAR:

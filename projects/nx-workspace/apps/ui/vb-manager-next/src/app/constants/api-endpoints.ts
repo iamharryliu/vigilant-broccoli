@@ -33,6 +33,9 @@ export const API_ENDPOINTS = {
   WRANGLER_PAGES: '/api/wrangler/pages',
   WRANGLER_LOGIN: '/api/wrangler/login',
 
+  // Terraform
+  TERRAFORM_STATUS: '/api/terraform/status',
+
   // GitHub
   GITHUB_PAGES: '/api/github/pages',
 

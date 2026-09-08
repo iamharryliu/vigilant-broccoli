@@ -1,3 +1,9 @@
+# Places
+
+[City Comparison](./city-comparison.md)
+[Toronto vs. Malmö vs. Copenhagen](./toronto-malmo-copenhagen.md)
+[Geography](./geography.md)
+
 ## Places That I Have Been
 
 🇨🇦 Canada
@@ -14,3 +20,4 @@
 [Copenhagen](./Copenhagen/Denmark/Copenhagen.md)
 🇸🇮 Slovenia
 🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland
+🇳🇴 Norway

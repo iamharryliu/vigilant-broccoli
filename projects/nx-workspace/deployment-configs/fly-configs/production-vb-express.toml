@@ -8,6 +8,7 @@ primary_region = 'yyz'
   HOST = '0.0.0.0'
   EMAIL_SERVICE_URL = 'http://production-vb-email-service.flycast'
   LLM_SERVICE_URL = 'http://production-llm-service.flycast'
+  STORAGE_SERVICE_URL = 'http://production-storage-service.flycast'
   DATABASE_PATH = '/data/vb-express.sqlite'
   BETTER_AUTH_URL = 'https://production-vb-express.fly.dev'
 

@@ -7,6 +7,7 @@ import { Text, Badge } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../providers/auth-provider';
 import { HomeDoc } from '../../../lib/types';
 import { ROUTES } from '../../../lib/routes';
+import { PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
 
 const FILE_ICONS: Record<string, string> = {
   'application/pdf': '📄',
@@ -24,6 +25,7 @@ export default function DocDetailPage() {
   const { id } = useParams<{ id: string }>();
   const session = useAuth();
   const [doc, setDoc] = useState<HomeDoc | null>(null);
+  usePageTitle(doc?.name ?? PAGE_TITLES.DOC_DETAIL);
 
   useEffect(() => {
     if (!session?.access_token) return;

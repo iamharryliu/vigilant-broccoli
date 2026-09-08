@@ -1,18 +1,18 @@
-import { CalendarInput } from './components/calendar-input';
+import { MyCalendarView } from './components/my-calendar-view';
 import { ProtectedRoute } from './components/protected-route';
+import { PAGE_HEIGHT } from './components/app-shell.constants';
+import { PAGE_TITLE } from './app.const';
+
+export const metadata = {
+  title: PAGE_TITLE.HOME,
+};
 
 export default function HomePage() {
   return (
     <ProtectedRoute>
-      <main className="min-h-screen bg-gray-50">
-        <header className="bg-white border-b border-gray-100 px-4 py-4 safe-top">
-          <h1 className="text-lg font-semibold text-gray-800">Calendar</h1>
-          <p className="text-xs text-gray-500 mt-0.5">
-            Paste text or an image to create events
-          </p>
-        </header>
-        <div className="px-4 py-5 pb-24">
-          <CalendarInput />
+      <main className={`flex ${PAGE_HEIGHT} flex-col bg-gray-50`}>
+        <div className="flex min-h-0 flex-1 flex-col px-4 py-5">
+          <MyCalendarView />
         </div>
       </main>
     </ProtectedRoute>

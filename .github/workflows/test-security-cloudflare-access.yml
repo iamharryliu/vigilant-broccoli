@@ -29,9 +29,6 @@ jobs:
           - name: vault
             hostname: vault.harryliu.dev
             origin_ip_secret: ''
-          - name: journal
-            hostname: journal.harryliu.dev,staging-journal.pages.dev
-            origin_ip_secret: ''
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7

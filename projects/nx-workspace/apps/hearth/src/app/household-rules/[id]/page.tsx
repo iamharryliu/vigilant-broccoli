@@ -7,11 +7,13 @@ import { Text } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../providers/auth-provider';
 import { HouseholdRule } from '../../../lib/types';
 import { ROUTES } from '../../../lib/routes';
+import { PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
 
 export default function HouseholdRuleDetailPage() {
   const { id } = useParams<{ id: string }>();
   const session = useAuth();
   const [rule, setRule] = useState<HouseholdRule | null>(null);
+  usePageTitle(rule?.name ?? PAGE_TITLES.HOUSEHOLD_RULE_DETAIL);
 
   useEffect(() => {
     if (!session?.access_token) return;

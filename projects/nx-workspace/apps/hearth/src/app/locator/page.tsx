@@ -5,6 +5,7 @@ import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { I18nProvider, useTranslation } from '../i18n';
 import { LocatorApp } from './components/LocatorApp';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 function LocatorContent() {
   const { t } = useTranslation();
@@ -31,6 +32,7 @@ function LocatorContent() {
 }
 
 export default function LocatorPage() {
+  usePageTitle(PAGE_TITLES.LOCATOR);
   return (
     <I18nProvider>
       <LocatorContent />

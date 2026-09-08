@@ -23,6 +23,8 @@ const REQUEST_STATE_EVENT = 'request-state';
 const YJS_TEXT_NAME = 'content';
 const REMOTE_UPDATE_ORIGIN = 'remote';
 const CURSOR_CHANNEL_SUFFIX = ':cursors';
+const STACK_ITEM_ADDED_EVENT = 'stack-item-added';
+const STACK_ITEM_POPPED_EVENT = 'stack-item-popped';
 
 const SUBSCRIBE_STATUS = {
   SUBSCRIBED: 'SUBSCRIBED',
@@ -101,9 +103,12 @@ export function useWhiteboardRoom(
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
     CONNECTION_STATUS.CONNECTING,
   );
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
   const channelRef = useRef<BroadcastPresenceChannel | null>(null);
   const usernameRef = useRef<string>(username);
   const docRef = useRef<Y.Doc | null>(null);
+  const undoManagerRef = useRef<Y.UndoManager | null>(null);
 
   const { cursors, setCursorPosition, setTextCursorIndex } = useCursorPresence(
     supabase,
@@ -122,6 +127,18 @@ export function useWhiteboardRoom(
     const doc = new Y.Doc();
     const yText = doc.getText(YJS_TEXT_NAME);
     docRef.current = doc;
+
+    // Tracks only this client's own edits (origin `null`, the default for
+    // local transactions) — remote peers' updates are applied with
+    // REMOTE_UPDATE_ORIGIN below, so undo never reverts someone else's text.
+    const undoManager = new Y.UndoManager(yText);
+    undoManagerRef.current = undoManager;
+    const handleUndoStackChange = () => {
+      setCanUndo(undoManager.undoStack.length > 0);
+      setCanRedo(undoManager.redoStack.length > 0);
+    };
+    undoManager.on(STACK_ITEM_ADDED_EVENT, handleUndoStackChange);
+    undoManager.on(STACK_ITEM_POPPED_EVENT, handleUndoStackChange);
 
     const channel = supabase.channel(channelName, {
       config: { presence: { key: userId }, broadcast: { self: false } },
@@ -197,9 +214,15 @@ export function useWhiteboardRoom(
       channelRef.current = null;
       yText.unobserve(handleTextChange);
       doc.off('update', handleDocUpdate);
+      undoManager.off(STACK_ITEM_ADDED_EVENT, handleUndoStackChange);
+      undoManager.off(STACK_ITEM_POPPED_EVENT, handleUndoStackChange);
+      undoManager.destroy();
+      undoManagerRef.current = null;
       doc.destroy();
       docRef.current = null;
       setContentState('');
+      setCanUndo(false);
+      setCanRedo(false);
     };
   }, [supabase, channelName, userId]);
 
@@ -207,6 +230,14 @@ export function useWhiteboardRoom(
     const doc = docRef.current;
     if (!doc) return;
     applyTextDiff(doc.getText(YJS_TEXT_NAME), next);
+  }, []);
+
+  const undo = useCallback(() => {
+    undoManagerRef.current?.undo();
+  }, []);
+
+  const redo = useCallback(() => {
+    undoManagerRef.current?.redo();
   }, []);
 
   return {
@@ -217,5 +248,9 @@ export function useWhiteboardRoom(
     setCursorPosition,
     setTextCursorIndex,
     connectionStatus,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   };
 }

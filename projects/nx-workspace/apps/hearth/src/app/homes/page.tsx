@@ -9,6 +9,7 @@ import { Button } from '@vigilant-broccoli/react-lib';
 import { supabase } from '../../../libs/supabase';
 import { useAuth } from '../providers/auth-provider';
 import { Home } from '../../lib/types';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 const DEFAULT_HOME: Home = { id: 0, name: '', description: '' };
 
@@ -67,6 +68,7 @@ const HomeListItem = ({ item }: { item: Home }) => (
 );
 
 export default function HomesPage() {
+  usePageTitle(PAGE_TITLES.HOMES);
   const router = useRouter();
   const session = useAuth();
   const [ownedHomes, setOwnedHomes] = useState<Home[]>([]);

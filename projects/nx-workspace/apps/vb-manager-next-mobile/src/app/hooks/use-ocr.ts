@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { preprocessForOcr } from '../utils/image.utils';
 
 export type OcrStatus = 'idle' | 'processing' | 'done';
 
@@ -19,7 +20,10 @@ export const useOcr = () => {
     setProgress(0);
     setError(null);
     try {
-      const { createWorker } = await import('tesseract.js');
+      const [{ createWorker }, processedImage] = await Promise.all([
+        import('tesseract.js'),
+        preprocessForOcr(image),
+      ]);
       const worker = await createWorker(LANG, undefined, {
         logger: message => {
           if (message.status === STATUS_RECOGNIZING) {
@@ -29,7 +33,7 @@ export const useOcr = () => {
       });
       const {
         data: { text: recognizedText },
-      } = await worker.recognize(image);
+      } = await worker.recognize(processedImage);
       await worker.terminate();
       setText(recognizedText.trim());
       setStatus('done');

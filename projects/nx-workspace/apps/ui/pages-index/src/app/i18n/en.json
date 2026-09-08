@@ -19,12 +19,11 @@
     },
     "API_SERVICES": {
       "TITLE": "API Services",
-      "DESCRIPTION": "API docs and service health."
+      "DESCRIPTION": "Swagger docs for internal services."
     }
   },
   "WEB_APPLICATIONS_PAGE": {
     "TITLE": "Web Applications",
-    "DESCRIPTION": "Deployed apps and demos.",
     "SECTION_APPS": "Apps",
     "SECTION_DEMO": "Demo",
     "HARRY_LIU": {
@@ -54,8 +53,6 @@
   },
   "STATUS_PAGE": {
     "TITLE": "Status",
-    "DESCRIPTION_PREFIX": "Service health via",
-    "UPPTIME": "Upptime",
     "LOADING_SERVICES": "Loading status…",
     "NO_SERVICES": "No services configured.",
     "GITHUB_ACTIONS": "GitHub Actions",
@@ -70,10 +67,9 @@
   },
   "OPEN_SOURCE_PAGE": {
     "TITLE": "Open Source",
-    "DESCRIPTION": "GitHub, Docker Hub, and npm packages.",
     "GITHUB": {
       "TITLE": "GitHub",
-      "DESCRIPTION": "vigilant-broccoli repository."
+      "DESCRIPTION": "iamharryliu GitHub repositories."
     },
     "DOCKER_HUB": {
       "TITLE": "Docker Hub",
@@ -85,6 +81,7 @@
     }
   },
   "README_PAGE": {
+    "README_LABEL": "README",
     "VIEW_ON_GITHUB": "View on GitHub",
     "VIEW_ON_NPM": "View on npm",
     "VIEW_ON_DOCKER_HUB": "View on Docker Hub",
@@ -92,9 +89,15 @@
     "ERROR": "Failed to load README: {message}",
     "NOT_FOUND": "Unknown item."
   },
+  "GITHUB_REPOS_PAGE": {
+    "TITLE": "GitHub",
+    "VIGILANT_BROCCOLI": {
+      "TITLE": "vigilant-broccoli",
+      "DESCRIPTION": "Monorepo of apps, libraries, notes, and infrastructure."
+    }
+  },
   "DOCKER_IMAGES_PAGE": {
     "TITLE": "Docker Hub",
-    "DESCRIPTION": "iamharryliu Docker images.",
     "BUCKET_SERVICE": {
       "TITLE": "bucket-service",
       "DESCRIPTION": "Object storage proxy across multiple bucket providers."
@@ -122,7 +125,6 @@
   },
   "NPM_PACKAGES_PAGE": {
     "TITLE": "npm Packages",
-    "DESCRIPTION": "Published @vigilant-broccoli packages.",
     "REACT_LIB": {
       "TITLE": "react-lib",
       "DESCRIPTION": "Shared React component library."
@@ -142,7 +144,6 @@
   },
   "API_SERVICES_PAGE": {
     "TITLE": "API Services",
-    "DESCRIPTION": "Swagger documentation for services deployed on Fly.io.",
     "EMAIL_SERVICE": {
       "TITLE": "Email Service",
       "DESCRIPTION": "staging-vb-email-service.flycast — private"
