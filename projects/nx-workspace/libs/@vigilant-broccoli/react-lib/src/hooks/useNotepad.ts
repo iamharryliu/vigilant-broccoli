@@ -46,6 +46,11 @@ export interface UseNotepadOptions {
   channelName?: string;
   apiPath?: string;
   storageKey?: string;
+  // Signed-in JWT. When set, the broadcast room is joined as a private,
+  // RLS-authorized channel; the persisted content is already gated by the
+  // /api/notepad table policy, and this closes the same gap on the live
+  // sync channel. Omit only for a genuinely public notepad.
+  accessToken?: string | null;
 }
 
 export const useNotepad = ({
@@ -56,11 +61,18 @@ export const useNotepad = ({
   channelName = NOTEPAD_ROOM_CHANNEL,
   apiPath = DEFAULT_API_PATH,
   storageKey = DEFAULT_STORAGE_KEY,
+  accessToken,
 }: UseNotepadOptions): NotepadState => {
   // The room keeps every currently-connected device's Y.Text merged live via
   // Supabase broadcast, so simultaneous edits from different devices combine
   // instead of one overwriting the other.
-  const room = useWhiteboardRoom(supabase, channelName, userId, username);
+  const room = useWhiteboardRoom(
+    supabase,
+    channelName,
+    userId,
+    username,
+    accessToken,
+  );
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
