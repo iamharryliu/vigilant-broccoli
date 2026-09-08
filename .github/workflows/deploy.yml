@@ -188,6 +188,7 @@ jobs:
             kv/data/secrets DOCKERHUB_TOKEN | DOCKERHUB_TOKEN ;
             kv/data/secrets SANITY_AUTH_TOKEN | SANITY_AUTH_TOKEN ;
             kv/data/secrets NX_CACHE_WRITE_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
+            kv/data/secrets SUPABASE_DB_PASSWORD | SUPABASE_DB_PASSWORD ;
 
       - name: Fetch Cloudflare Access service token from Secret Manager
         id: cf-access
@@ -207,6 +208,25 @@ jobs:
 
       - uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # 1.6
         if: steps.check.outputs.has_deployments == 'true'
+
+      # Apply schema changes to the shared Supabase project before any app
+      # deploys, so a deploy never ships code expecting a table/policy that
+      # isn't there yet. Discovers every apps/**/supabase/migrations folder and
+      # applies them in one global order; migrate.ts is idempotent (skips rows
+      # already in schema_migrations), so this is a cheap no-op when nothing is
+      # pending. Runs against the pooler over the public internet with the DB
+      # password — no Vault/WireGuard tunnel needed beyond fetching the secret.
+      - name: Apply Supabase migrations
+        if: steps.check.outputs.has_deployments == 'true'
+        working-directory: ./projects/nx-workspace
+        env:
+          SUPABASE_DB_PASSWORD: ${{ env.SUPABASE_DB_PASSWORD }}
+        run: |
+          DIRS=$(find apps -type d -path '*/supabase/migrations' \
+            | sed 's/^/--migrations-dir=/' | tr '\n' ' ')
+          if [ -z "$DIRS" ]; then echo "no migration dirs found"; exit 0; fi
+          echo "migrating: $DIRS"
+          node --import tsx scripts/migrate.ts $DIRS
 
       - name: Deploy affected apps
         if: steps.check.outputs.has_deployments == 'true'
