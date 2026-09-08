@@ -12,6 +12,7 @@ import { LLMSimplePromptTester } from '../llm/LLMPromptTester';
 import { RecipeScraperDemo } from '../llm/RecipeScraperDemo';
 import { QRCodeGenerator } from '../demos/QRCodeGenerator';
 import { LiveLocationsDemo } from '../demos/LiveLocationsDemo';
+import { NotepadEditorDemo } from '../demos/NotepadEditorDemo';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
@@ -26,6 +27,11 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
     id: 'live-locations',
     title: 'Live User Locations',
     content: <LiveLocationsDemo />,
+  },
+  {
+    id: 'notepad-editor',
+    title: 'Notepad Editor (VSCode-style editing)',
+    content: <NotepadEditorDemo />,
   },
   {
     id: 'qr-code-generator',
