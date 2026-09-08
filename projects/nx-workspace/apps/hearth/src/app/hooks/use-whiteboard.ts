@@ -44,5 +44,6 @@ export const useWhiteboard = (
     channelName: `${ROOM_CHANNEL_PREFIX}${homeId}-${boardKey}`,
     apiPath: `${WHITEBOARD_API}?homeId=${homeId}&boardKey=${boardKey}`,
     storageKey: `${STORAGE_KEY_PREFIX}${homeId}:${boardKey}`,
+    accessToken: token,
   });
 };

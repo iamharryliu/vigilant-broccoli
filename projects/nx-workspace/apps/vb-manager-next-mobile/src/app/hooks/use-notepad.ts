@@ -23,5 +23,6 @@ export const useNotepad = (): NotepadState => {
     supabase: supabase as unknown as SupabaseBroadcastLike,
     authFetch,
     userId: session?.user.id ?? '',
+    accessToken: session?.access_token ?? null,
   });
 };

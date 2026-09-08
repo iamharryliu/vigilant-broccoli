@@ -97,7 +97,14 @@ export function useWhiteboardRoom(
   channelName: string,
   userId: string,
   username: string,
+  // When provided, this room and its cursor sub-channel are joined as private
+  // and the connection is authenticated with this JWT. Omit for anonymous
+  // (public) rooms such as the standalone whiteboard app.
+  accessToken?: string | null,
 ): WhiteboardRoomState {
+  const isPrivate = Boolean(accessToken);
+  const tokenRef = useRef<string | null | undefined>(accessToken);
+  tokenRef.current = accessToken;
   const [content, setContentState] = useState('');
   const [members, setMembers] = useState<WhiteboardMember[]>([]);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
@@ -115,7 +122,15 @@ export function useWhiteboardRoom(
     `${channelName}${CURSOR_CHANNEL_SUFFIX}`,
     userId,
     username,
+    accessToken,
   );
+
+  // Keep the socket's JWT fresh across refreshes without rebuilding the room
+  // (which would reset the live Y.Doc). The initial subscribe is gated on the
+  // token; this re-auths the existing connection in place.
+  useEffect(() => {
+    if (isPrivate && accessToken) void supabase.realtime?.setAuth(accessToken);
+  }, [supabase, accessToken, isPrivate]);
 
   useEffect(() => {
     usernameRef.current = username;
@@ -123,6 +138,9 @@ export function useWhiteboardRoom(
 
   useEffect(() => {
     if (!userId || !channelName) return;
+    // Private rooms need the JWT on the socket before the join is authorized.
+    if (isPrivate && !tokenRef.current) return;
+    if (isPrivate) void supabase.realtime?.setAuth(tokenRef.current);
 
     const doc = new Y.Doc();
     const yText = doc.getText(YJS_TEXT_NAME);
@@ -141,7 +159,11 @@ export function useWhiteboardRoom(
     undoManager.on(STACK_ITEM_POPPED_EVENT, handleUndoStackChange);
 
     const channel = supabase.channel(channelName, {
-      config: { presence: { key: userId }, broadcast: { self: false } },
+      config: {
+        presence: { key: userId },
+        broadcast: { self: false },
+        private: isPrivate,
+      },
     });
 
     const handleTextChange = () => setContentState(yText.toString());
@@ -224,7 +246,9 @@ export function useWhiteboardRoom(
       setCanUndo(false);
       setCanRedo(false);
     };
-  }, [supabase, channelName, userId]);
+    // token intentionally excluded: read via tokenRef and refreshed by the
+    // setAuth effect above, so a rotation re-auths without resetting the doc.
+  }, [supabase, channelName, userId, isPrivate]);
 
   const setContent = useCallback((next: string) => {
     const doc = docRef.current;
