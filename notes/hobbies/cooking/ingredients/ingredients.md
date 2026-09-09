@@ -14,6 +14,7 @@
 - [Garlic Confit](./sauce-recipes/garlic-confit.md)
 - [Mayo](./sauce-recipes/mayo.md)
 - [Roux](./sauce-recipes/roux.md)
+- [Soy Sauce](./sauce-recipes/soy-sauce.md)
 
 ## Stocks
 
