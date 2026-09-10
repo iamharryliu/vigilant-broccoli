@@ -76,8 +76,6 @@ jobs:
       matrix:
         environment: ${{ fromJSON(github.event_name == 'repository_dispatch' && format('["{0}"]', github.event.client_payload.environment) || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
     name: ${{ matrix.environment }} calendar-parse
-    env:
-      VB_EXPRESS_URL: http://127.0.0.1:3000
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -88,15 +86,13 @@ jobs:
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets VB_EXPRESS_API_KEY | VB_EXPRESS_API_KEY ;
-            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
 
-      - uses: ./.github/actions/fly-private-tunnel
-        with:
-          app: ${{ matrix.environment }}-vb-express
-
+      # vb-express is public — it has no `privateOnly` flag in
+      # scripts/secrets-mapping.config.ts, so it keeps a public IP and has no
+      # flycast address to tunnel to, unlike the llm-service job above.
       - name: Run calendar parse e2e tests
         env:
-          VB_EXPRESS_URL: ${{ env.VB_EXPRESS_URL }}
+          VB_EXPRESS_URL: https://${{ matrix.environment }}-vb-express.fly.dev
           VB_EXPRESS_API_KEY: ${{ env.VB_EXPRESS_API_KEY }}
         run: |
           chmod +x scripts/shell/test-calendar-parse-e2e.sh
