@@ -1,10 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ClockComponent } from './clock.component';
-import { useWeather, getWeatherIcon } from '../hooks/useWeather';
+import {
+  useWeather,
+  getWeatherIcon,
+  getOrderedSunEvents,
+  formatSunTime,
+} from '../hooks/useWeather';
 import { Skeleton } from '@vigilant-broccoli/react-lib';
 import { WeatherDialog } from './weather-dialog.component';
+
+const CLOCK_TIME_SIZE = '6';
+
+const SUN_TICK_MS = 60 * 1000;
 
 const DIVIDER_STYLE = {
   width: '1px',
@@ -15,6 +24,12 @@ const DIVIDER_STYLE = {
 export const DashboardInfoCard = () => {
   const { weatherData, loading: weatherLoading } = useWeather();
   const [weatherDialogOpen, setWeatherDialogOpen] = useState(false);
+  const [nowMs, setNowMs] = useState(() => Date.now());
+
+  useEffect(() => {
+    const interval = setInterval(() => setNowMs(Date.now()), SUN_TICK_MS);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -34,7 +49,7 @@ export const DashboardInfoCard = () => {
         }}
       >
         <div style={{ minWidth: 'max-content' }}>
-          <ClockComponent type="time" />
+          <ClockComponent type="time" timeSize={CLOCK_TIME_SIZE} />
         </div>
 
         <div style={DIVIDER_STYLE} />
@@ -99,6 +114,42 @@ export const DashboardInfoCard = () => {
                 </span>
               </div>
             </>
+          )}
+        </div>
+
+        <div style={DIVIDER_STYLE} />
+
+        <div
+          style={{
+            minWidth: 'max-content',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.35rem',
+          }}
+        >
+          {weatherLoading || !weatherData[0] ? (
+            <>
+              <Skeleton className="h-3.5 w-24" />
+              <Skeleton className="h-3.5 w-24" />
+            </>
+          ) : (
+            getOrderedSunEvents(weatherData[0].sun, nowMs).map(event => (
+              <span
+                key={event.label}
+                style={{
+                  fontSize: '0.8rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                }}
+              >
+                <span>{event.icon}</span>
+                <span style={{ color: 'var(--gray-9)' }}>{event.label}</span>
+                <span style={{ fontWeight: 600 }}>
+                  {formatSunTime(event.ts, weatherData[0].timezone)}
+                </span>
+              </span>
+            ))
           )}
         </div>
       </div>

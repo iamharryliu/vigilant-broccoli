@@ -4,6 +4,17 @@ import { useState, useEffect } from 'react';
 import { DATE_CONST } from '@vigilant-broccoli/common-js';
 import { authFetch } from '../../../libs/auth';
 
+export interface SunTimes {
+  sunrise: number;
+  sunset: number;
+}
+
+export interface SunEvent {
+  label: string;
+  icon: string;
+  ts: number;
+}
+
 export interface WeatherData {
   city: string;
   timezone: number;
@@ -11,6 +22,7 @@ export interface WeatherData {
     temp: number;
     icon: string;
   };
+  sun: SunTimes;
   forecast: Array<{
     day: string;
     tempHigh: number;
@@ -20,6 +32,16 @@ export interface WeatherData {
 }
 
 const CITIES = [{ name: 'Malm\u00f6', lat: 55.605, lon: 13.0038 }];
+
+const SECONDS_PER_DAY = 86400;
+const MS_PER_SECOND = 1000;
+const TIME_START_INDEX = 11;
+const TIME_END_INDEX = 16;
+
+const SUNRISE_LABEL = 'Sunrise';
+const SUNSET_LABEL = 'Sunset';
+const SUNRISE_ICON = '\ud83c\udf05';
+const SUNSET_ICON = '\ud83c\udf07';
 
 const WEATHER_ICON_MAP: Record<string, string> = {
   '01d': '\u2600\ufe0f',
@@ -44,6 +66,35 @@ const WEATHER_ICON_MAP: Record<string, string> = {
 
 export const getWeatherIcon = (iconCode: string): string =>
   WEATHER_ICON_MAP[iconCode] || '\u2601\ufe0f';
+
+// The API reports today's sun times only, so an event that already passed is
+// rolled forward a day to approximate the next occurrence.
+const nextOccurrence = (ts: number, nowSeconds: number): number =>
+  ts > nowSeconds ? ts : ts + SECONDS_PER_DAY;
+
+export const getOrderedSunEvents = (
+  { sunrise, sunset }: SunTimes,
+  nowMs: number,
+): SunEvent[] => {
+  const nowSeconds = Math.floor(nowMs / MS_PER_SECOND);
+  return [
+    {
+      label: SUNRISE_LABEL,
+      icon: SUNRISE_ICON,
+      ts: nextOccurrence(sunrise, nowSeconds),
+    },
+    {
+      label: SUNSET_LABEL,
+      icon: SUNSET_ICON,
+      ts: nextOccurrence(sunset, nowSeconds),
+    },
+  ].sort((a, b) => a.ts - b.ts);
+};
+
+export const formatSunTime = (ts: number, timezoneOffset: number): string =>
+  new Date((ts + timezoneOffset) * MS_PER_SECOND)
+    .toISOString()
+    .slice(TIME_START_INDEX, TIME_END_INDEX);
 
 const getDayName = (dateStr: string): string => {
   const date = new Date(dateStr);
@@ -99,6 +150,10 @@ export const useWeather = () => {
             now: {
               temp: Math.round(current.main.temp),
               icon: current.weather[0].icon,
+            },
+            sun: {
+              sunrise: current.sys.sunrise,
+              sunset: current.sys.sunset,
             },
             forecast: forecastDays,
           };
