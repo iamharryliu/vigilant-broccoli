@@ -552,3 +552,26 @@ export const ELEVENLABS_LINK = {
     URL: 'https://elevenlabs.io/app/api/api-keys',
   },
 } as const;
+
+export const PROTON_LINK = {
+  MAIL: {
+    NAME: 'Proton Mail',
+    URL: 'https://mail.proton.me/u/0/inbox',
+  },
+  CALENDAR: {
+    NAME: 'Proton Calendar',
+    URL: 'https://calendar.proton.me/u/0',
+  },
+  DRIVE: {
+    NAME: 'Proton Drive',
+    URL: 'https://drive.proton.me/u/0',
+  },
+  PASS: {
+    NAME: 'Proton Pass',
+    URL: 'https://pass.proton.me/u/0',
+  },
+  ACCOUNT: {
+    NAME: 'Proton Account',
+    URL: 'https://account.proton.me/u/0/mail/dashboard',
+  },
+} as const;
