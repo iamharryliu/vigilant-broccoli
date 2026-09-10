@@ -925,6 +925,9 @@ importers:
       '@vigilant-broccoli/common-node':
         specifier: workspace:*
         version: link:../../libs/@vigilant-broccoli/common-node
+      '@vigilant-broccoli/llm-schemas':
+        specifier: workspace:*
+        version: link:../../libs/@vigilant-broccoli/llm-schemas
       '@vigilant-broccoli/react-lib':
         specifier: workspace:*
         version: link:../../libs/@vigilant-broccoli/react-lib

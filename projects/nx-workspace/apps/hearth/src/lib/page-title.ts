@@ -32,6 +32,8 @@ export const PAGE_TITLES = {
   LOCATOR: 'Find Members',
   PRICE_TRACKER: 'Price Tracker',
   PRICE_TRACKER_DETAIL: 'Tracked Item',
+  RECEIPTS: 'Receipt Tracker',
+  RECEIPT_DETAIL: 'Receipt',
   PROJECTS: 'Projects',
   PROJECT_DETAIL: 'Project',
   RESOURCES: 'Resources',
