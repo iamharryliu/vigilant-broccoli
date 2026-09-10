@@ -23,6 +23,12 @@ const buildSystemPrompt = (timeZone: string) => {
 
 Return JSON matching the schema: { "events": [ ... ] }. Include one entry per distinct event. If no event is present, return an empty array.
 
+Multi-event rules:
+- A single page often describes more than one event. Extract every one of them, including sessions described only in body prose, in a trailing paragraph, or under a heading aimed at a different audience.
+- Sessions that differ in start/end time, age limit, target audience, or format are distinct events even when they share a title, venue and date range. Never merge them into one entry and never drop the secondary one.
+- When the input lists many individual occurrences of the same session (an "all dates" / "alla tillfällen" style list), return ONE recurring event with an RRULE covering them, not one entry per occurrence. Set start/end from the first occurrence and add UNTIL for the last.
+- Input may be in any language. Keep the event name in its original language.
+
 Per-event rules:
 - summary: short event title (required, never empty)
 - description: any extra context, or empty string
@@ -32,7 +38,8 @@ Per-event rules:
 - allDay: true if no specific time was given
 - If end is missing, default to start + 1 hour
 - Resolve relative dates ("Friday", "next week") against the current time: ${now.toISOString()}
-- recurrence: array of RFC 5545 RRULE strings (e.g. ["RRULE:FREQ=WEEKLY;BYDAY=TU"] for "every Tuesday"). Empty array if the event does not repeat
+- recurrence: array of RFC 5545 RRULE strings (e.g. ["RRULE:FREQ=WEEKLY;BYDAY=TU"] for "every Tuesday"). Include UNTIL when the input gives an end date (e.g. ["RRULE:FREQ=WEEKLY;BYDAY=SA;UNTIL=20261031T235959Z"]). Empty array if the event does not repeat
+- When the input gives a date without a year, infer the year from the current time so the date is the next upcoming one
 - Do not invent events; only return what is actually present in the input.`;
 };
 
@@ -51,8 +58,8 @@ const calendarRoutes: FastifyPluginAsync = async app => {
     }
 
     const userPrompt = text?.trim()
-      ? `Extract the calendar event from the following content:\n\n${text.trim()}`
-      : 'Extract the calendar event from the attached image(s).';
+      ? `Extract all calendar events from the following content:\n\n${text.trim()}`
+      : 'Extract all calendar events from the attached image(s).';
 
     const { outputs } = await callLlm<{ outputs: CalendarParseResult[] }>({
       userPrompt,
