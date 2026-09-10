@@ -1158,6 +1158,12 @@ const UTILITY_LINKS = [
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
+  {
+    label: UTILITY_URL.MALMO_BY_BIKE.NAME,
+    target: UTILITY_URL.MALMO_BY_BIKE.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
 ];
 
 const CAREER_LINKS = [

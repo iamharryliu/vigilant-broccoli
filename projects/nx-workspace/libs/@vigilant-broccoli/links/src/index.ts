@@ -106,6 +106,10 @@ export const UTILITY_URL = {
     NAME: 'Spotify Family',
     URL: 'https://www.spotify.com/us/account/family/',
   },
+  MALMO_BY_BIKE: {
+    NAME: 'Malmö by Bike',
+    URL: 'https://www.malmobybike.se/en/userzone',
+  },
 } as const;
 
 export const OPENAI_LINK = {
