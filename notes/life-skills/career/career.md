@@ -3,7 +3,7 @@
 ## Profile
 
 - [LinkedIn](https://www.linkedin.com/)
-- [Resume](https://harryliu.dev/assets/resume.pdf)
+- [Resume](https://harryliu.dev/resume)
 - [Github README](https://github.com/iamharryliu)
 
 ## Job Hunting
