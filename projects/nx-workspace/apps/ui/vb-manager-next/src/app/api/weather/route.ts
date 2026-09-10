@@ -14,10 +14,6 @@ interface CurrentWeatherResponse {
   weather: Array<{
     icon: string;
   }>;
-  sys: {
-    sunrise: number;
-    sunset: number;
-  };
   timezone: number;
 }
 

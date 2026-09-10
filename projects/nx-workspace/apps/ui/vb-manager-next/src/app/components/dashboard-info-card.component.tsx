@@ -133,7 +133,7 @@ export const DashboardInfoCard = () => {
               <Skeleton className="h-3.5 w-24" />
             </>
           ) : (
-            getOrderedSunEvents(weatherData[0].sun, nowMs).map(event => (
+            getOrderedSunEvents(weatherData[0].location, nowMs).map(event => (
               <span
                 key={event.label}
                 style={{
