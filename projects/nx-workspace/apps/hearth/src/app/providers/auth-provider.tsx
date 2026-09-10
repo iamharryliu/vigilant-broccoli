@@ -31,6 +31,29 @@ export default function AuthProvider({
     return () => subscription.unsubscribe();
   }, []);
 
+  // Every consumer reads the access token out of this context, so a stale
+  // snapshot 401s the whole app. supabase-js pauses its refresh timer while a
+  // tab is hidden, so a tab left idle past the token's ~1h lifetime wakes up
+  // holding a dead token. getSession refreshes an expired one, and re-running
+  // it whenever the tab regains focus repairs the context before the user can
+  // click anything.
+  useEffect(() => {
+    const refresh = async () => {
+      const { data } = await supabase.auth.getSession();
+      setSession(data.session);
+    };
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') refresh();
+    };
+
+    document.addEventListener('visibilitychange', onVisibilityChange);
+    window.addEventListener('focus', refresh);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      window.removeEventListener('focus', refresh);
+    };
+  }, []);
+
   return (
     <AuthContext.Provider value={session}>{children}</AuthContext.Provider>
   );

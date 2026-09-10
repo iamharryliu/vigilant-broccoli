@@ -3,6 +3,11 @@
 import { useRef, useState } from 'react';
 
 import { Button, Checkbox, Text } from '@vigilant-broccoli/react-lib';
+import {
+  CONTENT_TYPE_HEADER,
+  HTTP_METHOD,
+  JSON_CONTENT_TYPE,
+} from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { HomeDetailView } from '../homes/components/HomeDetailView';
@@ -10,6 +15,14 @@ import { HomeCreateForm } from '../homes/components/HomeCreateForm';
 import { supabase } from '../../../libs/supabase';
 import { IS_DEV } from '../app.consts';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
+import {
+  DEFAULT_RENAME_LANGUAGE,
+  RENAME_ENABLED_KEY,
+  RENAME_LANGUAGE_KEY,
+  RENAME_LANGUAGES,
+} from '../../lib/types';
+
+const USER_API = '/api/user';
 
 const EXPORT_OPTIONS = [
   { key: 'where-is', label: 'Where Is' },
@@ -37,7 +50,7 @@ type ClearKey = (typeof CLEAR_OPTIONS)[number]['key'];
 export default function SettingsPage() {
   usePageTitle(PAGE_TITLES.SETTINGS);
   const session = useAuth();
-  const { homes, selectedHomeId } = useHome();
+  const { homes, selectedHomeId, refreshHomes } = useHome();
   const selectedHome = homes.find(h => h.id === selectedHomeId);
 
   const [selected, setSelected] = useState<Set<ExportKey>>(new Set());
@@ -54,6 +67,27 @@ export default function SettingsPage() {
   const [seedResults, setSeedResults] = useState<Record<string, string> | null>(
     null,
   );
+
+  const metadata = session?.user.user_metadata ?? {};
+  const [renameEnabled, setRenameEnabled] = useState(
+    (metadata[RENAME_ENABLED_KEY] as boolean) ?? false,
+  );
+  const [renameLanguage, setRenameLanguage] = useState(
+    (metadata[RENAME_LANGUAGE_KEY] as string) ?? DEFAULT_RENAME_LANGUAGE,
+  );
+
+  const patchUser = async (body: Record<string, unknown>) => {
+    if (!session?.access_token) return;
+    await fetch(USER_API, {
+      method: HTTP_METHOD.PATCH,
+      headers: {
+        [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE,
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify(body),
+    });
+    await supabase.auth.refreshSession();
+  };
 
   const toggle = (key: ExportKey) =>
     setSelected(prev => {
@@ -156,7 +190,7 @@ export default function SettingsPage() {
     await supabase
       .from('homes')
       .insert({ name, description, user_id: session?.user.id });
-    window.location.reload();
+    await refreshHomes();
   };
 
   return (
@@ -171,6 +205,54 @@ export default function SettingsPage() {
         ) : (
           <HomeCreateForm onSubmit={handleCreateHome} />
         )}
+      </section>
+
+      <section className="space-y-3">
+        <Text size="3" weight="medium">
+          Receipts
+        </Text>
+        <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
+          <div className="flex items-center justify-between px-4 py-3 gap-4">
+            <div>
+              <Text size="2" as="p">
+                Suggest item renames
+              </Text>
+              <Text size="1" color="gray">
+                Scanned items are renamed to their everyday name. The printed
+                name is kept and can be restored per item.
+              </Text>
+            </div>
+            <input
+              type="checkbox"
+              checked={renameEnabled}
+              onChange={e => {
+                setRenameEnabled(e.target.checked);
+                patchUser({ renameEnabled: e.target.checked });
+              }}
+              className="shrink-0 cursor-pointer"
+            />
+          </div>
+          <div className="flex items-center justify-between px-4 py-3 gap-4">
+            <Text size="2" color="gray" className="shrink-0">
+              Rename to
+            </Text>
+            <select
+              value={renameLanguage}
+              onChange={e => {
+                setRenameLanguage(e.target.value);
+                patchUser({ renameLanguage: e.target.value });
+              }}
+              disabled={!renameEnabled}
+              className="h-9 px-2 rounded border border-gray-200 dark:border-gray-700 bg-transparent text-sm disabled:opacity-50"
+            >
+              {RENAME_LANGUAGES.map(language => (
+                <option key={language} value={language}>
+                  {language}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </section>
 
       <section className="space-y-3">
