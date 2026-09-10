@@ -8,6 +8,7 @@
 - [Types of Moves](#types-of-moves)
 - [Types of Turns](#types-of-turns)
 - [Positions](#positions)
+- [Position Transitions](#position-transitions)
 - [Variations](#variations)
 - [Good Dancing](#good-dancing)
 - [For Later](#for-later)
@@ -58,6 +59,30 @@
 | Shadow                 | Follow directly in front of or beside the lead, both facing the same direction and moving together.                    |
 | Titanic/Presentation   | Follow in front of the lead with both arms opened wide out to the sides, or extended out to one side to showcase them. |
 | Wrap/Cuddle/Sweetheart | Follow in front of the lead, both facing the same way, arms wrapped across the follow's front.                         |
+
+## Position Transitions
+
+```mermaid
+flowchart LR
+
+OPEN[Open]
+SWEETHEART[Wrap/Cuddle/Sweetheart]
+HAMMERLOCK[Hammerlock]
+TITANIC[Titanic/Presentation]
+LEFT_OVER_RIGHT[Left over Right]
+RIGHT_OVER_LEFT[Right over Left]
+
+SWEETHEART<-->OPEN
+OPEN<-->HAMMERLOCK
+TITANIC<-->LEFT_OVER_RIGHT
+LEFT_OVER_RIGHT<-->SWEETHEART
+TITANIC<-->RIGHT_OVER_LEFT
+RIGHT_OVER_LEFT<-->SWEETHEART
+```
+
+- Open is the hub — sweetheart unwinds back out to open, and open winds into hammerlock by taking one arm behind the follow's back.
+- Titanic is the wide-armed midpoint: crossing the arms from there enters either left over right or right over left, and continuing the cross closes into the wrap.
+- Every edge runs both ways, so any entry also reads as an exit by reversing the arm path.
 
 ## Variations
 
