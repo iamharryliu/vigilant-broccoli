@@ -36,6 +36,7 @@ export * from './lib/jsonplaceholder/jsonplaceholder.types';
 export * from './lib/utils/env.utils';
 export * from './lib/utils/string.utils';
 export * from './lib/utils/date.utils';
+export * from './lib/utils/solar.utils';
 
 export const DATE_CONST = {
   DAY: [

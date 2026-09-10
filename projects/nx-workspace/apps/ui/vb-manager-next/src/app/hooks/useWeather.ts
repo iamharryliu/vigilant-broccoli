@@ -1,8 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DATE_CONST } from '@vigilant-broccoli/common-js';
+import {
+  DATE_CONST,
+  getSunTimes,
+  Location,
+  SunTimes,
+} from '@vigilant-broccoli/common-js';
 import { authFetch } from '../../../libs/auth';
+
+export interface SunEvent {
+  label: string;
+  icon: string;
+  ts: number;
+}
 
 export interface WeatherData {
   city: string;
@@ -11,6 +22,7 @@ export interface WeatherData {
     temp: number;
     icon: string;
   };
+  location: Location;
   forecast: Array<{
     day: string;
     tempHigh: number;
@@ -20,6 +32,17 @@ export interface WeatherData {
 }
 
 const CITIES = [{ name: 'Malm\u00f6', lat: 55.605, lon: 13.0038 }];
+
+const MS_PER_DAY = 86400000;
+const MS_PER_SECOND = 1000;
+const SUN_EVENT_DAY_OFFSETS = [-1, 0, 1];
+const TIME_START_INDEX = 11;
+const TIME_END_INDEX = 16;
+
+const SUNRISE_LABEL = 'Sunrise';
+const SUNSET_LABEL = 'Sunset';
+const SUNRISE_ICON = '\ud83c\udf05';
+const SUNSET_ICON = '\ud83c\udf07';
 
 const WEATHER_ICON_MAP: Record<string, string> = {
   '01d': '\u2600\ufe0f',
@@ -44,6 +67,46 @@ const WEATHER_ICON_MAP: Record<string, string> = {
 
 export const getWeatherIcon = (iconCode: string): string =>
   WEATHER_ICON_MAP[iconCode] || '\u2601\ufe0f';
+
+const nextEventTime = (
+  location: Location,
+  nowMs: number,
+  pick: (times: SunTimes) => Date | null,
+): number | null => {
+  for (const dayOffset of SUN_EVENT_DAY_OFFSETS) {
+    const time = pick(
+      getSunTimes(location, new Date(nowMs + dayOffset * MS_PER_DAY)),
+    );
+    if (time && time.getTime() > nowMs) {
+      return time.getTime();
+    }
+  }
+  return null;
+};
+
+export const getOrderedSunEvents = (
+  location: Location,
+  nowMs: number,
+): SunEvent[] =>
+  [
+    {
+      label: SUNRISE_LABEL,
+      icon: SUNRISE_ICON,
+      ts: nextEventTime(location, nowMs, times => times.sunrise),
+    },
+    {
+      label: SUNSET_LABEL,
+      icon: SUNSET_ICON,
+      ts: nextEventTime(location, nowMs, times => times.sunset),
+    },
+  ]
+    .filter((event): event is SunEvent => event.ts !== null)
+    .sort((a, b) => a.ts - b.ts);
+
+export const formatSunTime = (ts: number, timezoneOffset: number): string =>
+  new Date(ts + timezoneOffset * MS_PER_SECOND)
+    .toISOString()
+    .slice(TIME_START_INDEX, TIME_END_INDEX);
 
 const getDayName = (dateStr: string): string => {
   const date = new Date(dateStr);
@@ -100,6 +163,7 @@ export const useWeather = () => {
               temp: Math.round(current.main.temp),
               icon: current.weather[0].icon,
             },
+            location: { latitude: city.lat, longitude: city.lon },
             forecast: forecastDays,
           };
         });
