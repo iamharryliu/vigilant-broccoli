@@ -23,10 +23,10 @@ type SnapshotFetcher = (
   dailyCount: number,
 ) => Promise<WeatherSnapshot>;
 
-const PROVIDER_FETCHERS: Record<WeatherProvider, SnapshotFetcher> = {
-  [WEATHER_PROVIDER.OPEN_METEO]: fetchOpenMeteoSnapshot,
-  [WEATHER_PROVIDER.OPENWEATHER]: fetchOpenWeatherSnapshot,
-};
+const getProviderFetcher = (provider: WeatherProvider): SnapshotFetcher =>
+  provider === WEATHER_PROVIDER.OPENWEATHER
+    ? fetchOpenWeatherSnapshot
+    : fetchOpenMeteoSnapshot;
 
 /**
  * Explicit option wins, then the WEATHER_PROVIDER env var, then the default.
@@ -52,7 +52,11 @@ const getWeather = async (
   } = options;
 
   try {
-    return await PROVIDER_FETCHERS[provider](location, hourlyCount, dailyCount);
+    return await getProviderFetcher(provider)(
+      location,
+      hourlyCount,
+      dailyCount,
+    );
   } catch (err) {
     logger.error(`Failed to fetch weather from ${provider}`, err);
     throw err;

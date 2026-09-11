@@ -45,10 +45,10 @@ const TIMEZONE_PARAM = 'auto';
 /**
  * WMO 4677 code groups, as documented by Open-Meteo.
  */
-const WMO_CODE_CONDITIONS: Array<{
+const WMO_CODE_CONDITIONS = (): Array<{
   codes: number[];
   condition: WeatherCondition;
-}> = [
+}> => [
   { codes: [0], condition: WEATHER_CONDITION.CLEAR },
   { codes: [1, 2], condition: WEATHER_CONDITION.PARTLY_CLOUDY },
   { codes: [3], condition: WEATHER_CONDITION.CLOUDY },
@@ -65,14 +65,21 @@ const WMO_CODE_CONDITIONS: Array<{
   { codes: [95, 96, 99], condition: WEATHER_CONDITION.THUNDERSTORM },
 ];
 
-const WMO_CODE_MAP = new Map<number, WeatherCondition>(
-  WMO_CODE_CONDITIONS.flatMap(({ codes, condition }) =>
-    codes.map(code => [code, condition] as [number, WeatherCondition]),
-  ),
-);
+let wmoCodeMap: Map<number, WeatherCondition> | null = null;
+
+const getWmoCodeMap = (): Map<number, WeatherCondition> => {
+  if (!wmoCodeMap) {
+    wmoCodeMap = new Map(
+      WMO_CODE_CONDITIONS().flatMap(({ codes, condition }) =>
+        codes.map(code => [code, condition] as [number, WeatherCondition]),
+      ),
+    );
+  }
+  return wmoCodeMap;
+};
 
 const toConditionFromWmoCode = (code: number): WeatherCondition =>
-  WMO_CODE_MAP.get(code) ?? WEATHER_CONDITION.CLOUDY;
+  getWmoCodeMap().get(code) ?? WEATHER_CONDITION.CLOUDY;
 
 /**
  * Open-Meteo returns local wall-clock stamps without an offset when

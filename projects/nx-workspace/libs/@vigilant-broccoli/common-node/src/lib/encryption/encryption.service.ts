@@ -1,6 +1,6 @@
 import crypto, { Cipheriv, Decipheriv } from 'crypto';
 import { logger } from '../logging/logger.service';
-import { getEnvironmentVariable } from '../../index';
+import { getEnvironmentVariable } from '../utils';
 
 export class EncryptionService {
   cipher: Cipheriv;

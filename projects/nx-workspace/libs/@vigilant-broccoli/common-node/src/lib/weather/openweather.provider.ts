@@ -52,10 +52,10 @@ const FORECAST_PATH = 'forecast';
 const CONDITION_ID_CLEAR = 800;
 const CONDITION_ID_PARTLY_CLOUDY_MAX = 802;
 
-const CONDITION_GROUP_MAP: Array<{
+const CONDITION_GROUPS = (): Array<{
   matches: (id: number) => boolean;
   condition: WeatherCondition;
-}> = [
+}> => [
   {
     matches: id => id >= 200 && id < 300,
     condition: WEATHER_CONDITION.THUNDERSTORM,
@@ -78,8 +78,19 @@ const CONDITION_GROUP_MAP: Array<{
   },
 ];
 
+type ConditionGroup = ReturnType<typeof CONDITION_GROUPS>;
+
+let conditionGroups: ConditionGroup | null = null;
+
+const getConditionGroups = (): ConditionGroup => {
+  if (!conditionGroups) {
+    conditionGroups = CONDITION_GROUPS();
+  }
+  return conditionGroups;
+};
+
 const toConditionFromOpenWeatherId = (id: number): WeatherCondition =>
-  CONDITION_GROUP_MAP.find(group => group.matches(id))?.condition ??
+  getConditionGroups().find(group => group.matches(id))?.condition ??
   WEATHER_CONDITION.CLOUDY;
 
 const isDayIcon = (icon: string): boolean => icon.endsWith(DAY_ICON_SUFFIX);
