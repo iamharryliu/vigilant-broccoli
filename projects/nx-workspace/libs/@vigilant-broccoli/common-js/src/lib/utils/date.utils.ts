@@ -18,7 +18,26 @@ export function getISOWeekNumber(date: Date = new Date()): number {
   const yearStart = new Date(targetDate.getFullYear(), 0, 1);
 
   // Calculate full weeks to nearest Thursday
-  const weekNo = Math.ceil((((targetDate.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  const weekNo = Math.ceil(
+    ((targetDate.getTime() - yearStart.getTime()) / 86400000 + 1) / 7,
+  );
 
   return weekNo;
+}
+
+const MS_PER_SECOND = 1000;
+const TIME_START_INDEX = 11;
+const TIME_END_INDEX = 16;
+
+/**
+ * Format an absolute timestamp as "HH:mm" at the given UTC offset, without
+ * depending on the runtime's own timezone.
+ */
+export function formatLocalTime(
+  timestampMs: number,
+  offsetSeconds: number,
+): string {
+  return new Date(timestampMs + offsetSeconds * MS_PER_SECOND)
+    .toISOString()
+    .slice(TIME_START_INDEX, TIME_END_INDEX);
 }

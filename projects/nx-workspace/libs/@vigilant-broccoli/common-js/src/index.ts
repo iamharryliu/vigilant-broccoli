@@ -38,6 +38,9 @@ export * from './lib/utils/string.utils';
 export * from './lib/utils/date.utils';
 export * from './lib/utils/solar.utils';
 
+// Weather
+export * from './lib/weather/weather.model';
+
 export const DATE_CONST = {
   DAY: [
     'Sunday',

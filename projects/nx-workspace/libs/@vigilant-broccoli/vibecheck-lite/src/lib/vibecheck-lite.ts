@@ -1,5 +1,12 @@
-import { Location, LLM_MODEL } from '@vigilant-broccoli/common-js';
-import { OpenWeatherService } from '@vigilant-broccoli/common-node';
+import {
+  formatLocalTime,
+  Location,
+  LLM_MODEL,
+  WEATHER_CONDITION_LABEL,
+  WeatherProvider,
+  WeatherSnapshot,
+} from '@vigilant-broccoli/common-js';
+import { WeatherService } from '@vigilant-broccoli/common-node';
 import { LLMService } from '@vigilant-broccoli/llm-tools';
 import {
   vibecheckOutfitSchema,
@@ -8,44 +15,67 @@ import {
 
 type OutfitRecommendation = VibecheckOutfitResult;
 
+const FORECAST_COUNT = 4;
+const SECONDS_PER_HOUR = 3600;
+
+interface ForecastEntry {
+  localTime: string;
+  temperature: number;
+  weather: string;
+}
+
 // Helper function to get weather data for outfit recommendation
 async function getWeatherDataForOutfitRecommendation(
   location: Location,
-): Promise<{ weatherData: any; timezoneOffset: number }> {
-  return OpenWeatherService.getForecast(location, 4);
+  provider?: WeatherProvider,
+): Promise<WeatherSnapshot> {
+  return WeatherService.getWeather(location, {
+    ...(provider ? { provider } : {}),
+    hourlyCount: FORECAST_COUNT,
+  });
+}
+
+// The snapshot is already local-time and Celsius, so the model is handed
+// finished values rather than being asked to convert them.
+function toForecastEntries(snapshot: WeatherSnapshot): ForecastEntry[] {
+  return snapshot.hourly.map(entry => ({
+    localTime: formatLocalTime(
+      entry.timestampMs,
+      snapshot.timezoneOffsetSeconds,
+    ),
+    temperature: Math.round(entry.temperatureC),
+    weather: WEATHER_CONDITION_LABEL[entry.condition],
+  }));
 }
 
 // Helper function to build prompt structure
-function buildPromptStructured(
-  requestData: any,
-  timezoneOffset: number,
-): { systemPrompt: string; userPrompt: string } {
-  const timezoneOffsetHours = timezoneOffset / 3600;
+function buildPromptStructured(snapshot: WeatherSnapshot): {
+  systemPrompt: string;
+  userPrompt: string;
+} {
+  const timezoneOffsetHours = snapshot.timezoneOffsetSeconds / SECONDS_PER_HOUR;
   const timezoneString =
     timezoneOffsetHours >= 0
       ? `UTC+${timezoneOffsetHours}`
       : `UTC${timezoneOffsetHours}`;
 
   const systemPrompt = `You are a fashion assistant that recommends complete outfits based on weather data.
-The user will provide weather forecast data in JSON format for 4 different times.
+The user will provide weather forecast data in JSON format for ${FORECAST_COUNT} different times.
 Each forecast includes:
-- "dt_txt": timestamp in UTC format
-- "temp": temperature in Kelvin (K)
-- "weather": weather conditions (array with objects containing description)
+- "localTime": local time formatted as "HH:mm"
+- "temperature": temperature in Celsius (°C)
+- "weather": weather description
 
-Your task:
-1. Convert timestamps from UTC to local time (timezone offset: ${timezoneOffsetHours} hours from UTC)
-2. Convert temperature from Kelvin to Celsius (round to nearest integer)
-3. Recommend a complete outfit for each time period
+Your task is to recommend a complete outfit for each time period.
 
 Return a JSON object with an array of recommendations, each containing:
-- localTime: formatted as "HH:mm ${timezoneString}"
-- temperature: number in Celsius
-- weather: weather description
+- localTime: the provided local time, formatted as "HH:mm ${timezoneString}"
+- temperature: the provided temperature in Celsius
+- weather: the provided weather description
 - recommendation: detailed outfit recommendation with specific clothing items`;
 
   const userPrompt = `Please analyze this weather forecast data and provide outfit recommendations:\n\n${JSON.stringify(
-    requestData,
+    toForecastEntries(snapshot),
     null,
     2,
   )}`;
@@ -75,12 +105,8 @@ async function* streamFormattedText(text: string): AsyncIterable<string> {
 
 // Main function to get outfit recommendation
 async function getOutfitRecommendation(location: Location): Promise<string> {
-  const { weatherData, timezoneOffset } =
-    await getWeatherDataForOutfitRecommendation(location);
-  const { systemPrompt, userPrompt } = buildPromptStructured(
-    weatherData,
-    timezoneOffset,
-  );
+  const snapshot = await getWeatherDataForOutfitRecommendation(location);
+  const { systemPrompt, userPrompt } = buildPromptStructured(snapshot);
   const result = await LLMService.prompt<OutfitRecommendation>({
     prompt: {
       systemPrompt,
@@ -101,12 +127,8 @@ async function getOutfitRecommendation(location: Location): Promise<string> {
 async function getOutfitRecommendationStream(
   location: Location,
 ): Promise<AsyncIterable<string>> {
-  const { weatherData, timezoneOffset } =
-    await getWeatherDataForOutfitRecommendation(location);
-  const { systemPrompt, userPrompt } = buildPromptStructured(
-    weatherData,
-    timezoneOffset,
-  );
+  const snapshot = await getWeatherDataForOutfitRecommendation(location);
+  const { systemPrompt, userPrompt } = buildPromptStructured(snapshot);
 
   // Get structured data first
   const result = await LLMService.prompt<OutfitRecommendation>({

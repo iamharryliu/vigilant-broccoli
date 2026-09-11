@@ -23,7 +23,7 @@ export * from './lib/encryption/encryption.utils';
 // Google Recaptcha
 export * from './lib/recaptcha/recaptcha.service';
 // Weather
-export * from './lib/weather/openweather.service';
+export * from './lib/weather/weather.service';
 // Audio
 export * from './lib/audio/audio.service';
 // QR Code

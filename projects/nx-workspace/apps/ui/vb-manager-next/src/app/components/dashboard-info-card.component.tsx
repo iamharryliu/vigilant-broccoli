@@ -2,12 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { ClockComponent } from './clock.component';
-import {
-  useWeather,
-  getWeatherIcon,
-  getOrderedSunEvents,
-  formatSunTime,
-} from '../hooks/useWeather';
+import { useWeather, getOrderedSunEvents } from '../hooks/useWeather';
+import { formatLocalTime } from '@vigilant-broccoli/common-js';
 import { Skeleton } from '@vigilant-broccoli/react-lib';
 import { WeatherDialog } from './weather-dialog.component';
 
@@ -103,7 +99,7 @@ export const DashboardInfoCard = () => {
           ) : (
             <>
               <span style={{ fontSize: '1.5rem' }}>
-                {getWeatherIcon(weatherData[0].now.icon)}
+                {weatherData[0].now.icon}
               </span>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>
@@ -146,7 +142,7 @@ export const DashboardInfoCard = () => {
                 <span>{event.icon}</span>
                 <span style={{ color: 'var(--gray-9)' }}>{event.label}</span>
                 <span style={{ fontWeight: 600 }}>
-                  {formatSunTime(event.ts, weatherData[0].timezone)}
+                  {formatLocalTime(event.ts, weatherData[0].timezone)}
                 </span>
               </span>
             ))

@@ -1,0 +1,49 @@
+name: test-e2e-weather
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: 'Weather provider to test'
+        type: choice
+        default: all
+        options:
+          - all
+          - open-meteo
+          - openweather
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test-weather-service:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        provider: ${{ fromJSON(inputs.provider && inputs.provider != 'all' && format('["{0}"]', inputs.provider) || '["open-meteo", "openweather"]') }}
+    name: ${{ matrix.provider }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: ./.github/actions/setup-nx-workspace
+
+      # Open-Meteo needs no credential at all; the key only gates the
+      # openweather leg, which skips itself when it is absent.
+      - name: Import Secrets from Vault
+        if: matrix.provider == 'openweather'
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets OPENWEATHER_API_KEY | OPENWEATHER_API_KEY ;
+
+      - name: Run weather e2e tests (${{ matrix.provider }})
+        working-directory: ./projects/nx-workspace
+        env:
+          OPENWEATHER_API_KEY: ${{ env.OPENWEATHER_API_KEY }}
+        run: pnpm exec tsx scripts/test-weather-e2e.ts ${{ matrix.provider }}
