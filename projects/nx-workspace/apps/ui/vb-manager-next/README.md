@@ -39,7 +39,8 @@ Management dashboard app.
   - Stripe
   - Tailscale
   - OpenAI API
-  - OpenWeatherMap
+  - Open-Meteo (default weather provider)
+  - OpenWeatherMap (alternate weather provider)
   - Self-hosted (PM2)
 
 ## Agent Context

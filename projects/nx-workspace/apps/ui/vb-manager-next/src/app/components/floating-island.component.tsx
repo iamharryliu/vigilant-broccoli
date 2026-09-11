@@ -17,7 +17,7 @@ import {
 import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
 import { ClockComponent } from './clock.component';
 import { useDrag } from '../hooks/useDrag';
-import { useWeather, getWeatherIcon } from '../hooks/useWeather';
+import { useWeather } from '../hooks/useWeather';
 import { Skeleton } from '@vigilant-broccoli/react-lib';
 import { authFetch } from '../../../libs/auth';
 
@@ -337,7 +337,7 @@ export const FloatingIslandComponent = ({
           ) : (
             <>
               <span style={{ fontSize: '1.5rem' }}>
-                {getWeatherIcon(weatherData[0].now.icon)}
+                {weatherData[0].now.icon}
               </span>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>
