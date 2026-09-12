@@ -24,7 +24,7 @@ jobs:
       - name: Check for nx-workspace changes
         id: check
         run: |
-          NX_WORKSPACE_PATHS='^(projects/nx-workspace/|\.github/(workflows/ci-pr-check\.yml|actions/setup-nx-workspace/))'
+          NX_WORKSPACE_PATHS='^(projects/nx-workspace/|\.nvmrc$|\.github/(workflows/ci-pr-check\.yml|actions/setup-nx-workspace/))'
           if git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | grep -qE "$NX_WORKSPACE_PATHS"; then
             echo "nx-workspace-changed=true" >> "$GITHUB_OUTPUT"
           else

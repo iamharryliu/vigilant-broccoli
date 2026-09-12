@@ -24,6 +24,7 @@ jobs:
   test-llm-service:
     if: ${{ github.event_name != 'repository_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true') }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -71,6 +72,7 @@ jobs:
   test-calendar-parse:
     if: ${{ github.event_name != 'repository_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true') }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
