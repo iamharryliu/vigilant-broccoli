@@ -6,7 +6,7 @@ on:
     paths:
       - .github/workflows/cron-backup.yml
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '40 1 * * *'
   workflow_dispatch:
 
 permissions:
@@ -14,9 +14,14 @@ permissions:
   contents: read
   id-token: write
 
+concurrency:
+  group: cron-backup
+  cancel-in-progress: false
+
 jobs:
   backup-vb-repo:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
@@ -47,6 +52,7 @@ jobs:
 
   backup-gitea:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -103,6 +109,7 @@ jobs:
 
   backup-mongodb:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -159,6 +166,7 @@ jobs:
 
   backup-supabase:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
