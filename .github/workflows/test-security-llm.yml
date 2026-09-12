@@ -2,7 +2,7 @@ name: test-security-llm
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '15 1 * * *'
   workflow_dispatch:
     inputs:
       environment:
