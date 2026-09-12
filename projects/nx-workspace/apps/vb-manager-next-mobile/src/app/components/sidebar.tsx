@@ -2,9 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import {
   CalendarDays,
   CalendarRange,
+  Link2,
   ListChecks,
   ListTodo,
   Mic,
@@ -12,9 +14,16 @@ import {
   StickyNote,
   LogOut,
 } from 'lucide-react';
-import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib';
+import {
+  QuickLinksDialog,
+  Sidebar,
+  SidebarCTA,
+} from '@vigilant-broccoli/react-lib';
 import { signOut } from '../providers/auth-provider';
 import { PAGE_TITLE } from '../app.const';
+import { QUICK_LINKS } from '../constants/quick-links';
+
+const QUICK_LINKS_LABEL = 'Quick Links';
 
 const SIDEBAR_POSITION = 'peer fixed top-0 left-0 bottom-0 z-30';
 
@@ -47,31 +56,53 @@ type AppSidebarProps = {
 
 export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
   const pathname = usePathname();
+  const [quickLinksOpen, setQuickLinksOpen] = useState(false);
 
-  const items: SidebarCTA[] = NAV_ITEMS.map(item => ({
-    ...item,
-    isActive: pathname === item.href,
-  }));
+  const items: SidebarCTA[] = [
+    ...NAV_ITEMS.map(item => ({
+      ...item,
+      isActive: pathname === item.href,
+    })),
+    {
+      label: QUICK_LINKS_LABEL,
+      icon: Link2,
+      onClick: () => {
+        setQuickLinksOpen(true);
+        onMobileClose();
+      },
+    },
+  ];
 
   return (
-    <Sidebar
-      items={items}
-      LinkComponent={Link}
-      className={SIDEBAR_POSITION}
-      mobileOpen={mobileOpen}
-      onMobileClose={onMobileClose}
-      footer={
-        <button type="button" onClick={() => signOut()} className={FOOTER_ROW}>
-          <span className="shrink-0">
-            <LogOut size={18} />
-          </span>
-          <span
-            className={`${FOOTER_LABEL_BASE} ${mobileOpen ? FOOTER_LABEL_VISIBLE : FOOTER_LABEL_COLLAPSIBLE}`}
+    <>
+      <QuickLinksDialog
+        links={QUICK_LINKS}
+        open={quickLinksOpen}
+        onOpenChange={setQuickLinksOpen}
+      />
+      <Sidebar
+        items={items}
+        LinkComponent={Link}
+        className={SIDEBAR_POSITION}
+        mobileOpen={mobileOpen}
+        onMobileClose={onMobileClose}
+        footer={
+          <button
+            type="button"
+            onClick={() => signOut()}
+            className={FOOTER_ROW}
           >
-            Sign out
-          </span>
-        </button>
-      }
-    />
+            <span className="shrink-0">
+              <LogOut size={18} />
+            </span>
+            <span
+              className={`${FOOTER_LABEL_BASE} ${mobileOpen ? FOOTER_LABEL_VISIBLE : FOOTER_LABEL_COLLAPSIBLE}`}
+            >
+              Sign out
+            </span>
+          </button>
+        }
+      />
+    </>
   );
 };

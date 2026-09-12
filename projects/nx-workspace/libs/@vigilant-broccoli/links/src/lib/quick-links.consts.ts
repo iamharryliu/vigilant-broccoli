@@ -1,4 +1,4 @@
-import { OPEN_TYPE, type OpenType } from '@vigilant-broccoli/common-js';
+import { OPEN_TYPE, type QuickLink } from '@vigilant-broccoli/common-js';
 import {
   ANTHROPIC_LINK,
   CLAUDE_LINK,
@@ -1343,13 +1343,7 @@ const UI_APP_LINKS = [
   },
 ];
 
-export type QuickLink = {
-  label: string;
-  target: string;
-  type: OpenType;
-  subgroup: string;
-  args?: string;
-};
+export type { QuickLink };
 
 export const EXTERNAL_QUICK_LINKS: QuickLink[] = [
   ...UI_APP_LINKS,
