@@ -42,6 +42,7 @@ import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
 import { GroupLeaderboardDemo } from './demos/GroupLeaderboardDemo';
 import { EmptyLeaderboardDemo } from './demos/EmptyLeaderboardDemo';
 import { NotepadDemo } from './demos/NotepadDemo';
+import { QuickLinksDemo } from './demos/QuickLinksDemo';
 import { ScrollTimelineDemo } from './demos/ScrollTimelineDemo';
 
 const CRUD_STORAGE_KEYS = {
@@ -203,6 +204,12 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Notepad',
     category: CATEGORY.COMPONENTS,
     content: <NotepadDemo />,
+  },
+  {
+    id: 'quick-links',
+    label: 'Quick Links',
+    category: CATEGORY.COMPONENTS,
+    content: <QuickLinksDemo />,
   },
   {
     id: 'scroll-timeline',
