@@ -6,7 +6,7 @@ on:
     paths:
       - .github/workflows/cron-backup.yml
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '40 1 * * *'
   workflow_dispatch:
 
 permissions:
