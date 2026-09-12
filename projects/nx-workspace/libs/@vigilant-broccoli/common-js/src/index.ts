@@ -21,6 +21,14 @@ export const OPEN_TYPE = {
 
 export type OpenType = (typeof OPEN_TYPE)[keyof typeof OPEN_TYPE];
 
+export type QuickLink = {
+  label: string;
+  target: string;
+  type: OpenType;
+  subgroup?: string;
+  args?: string;
+};
+
 // Audio
 export * from './lib/audio/audio.consts';
 
