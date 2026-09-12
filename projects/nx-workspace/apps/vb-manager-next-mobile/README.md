@@ -19,7 +19,7 @@ Mobile-friendly dashboard for managing personal tasks and calendars.
   - `common-js`
   - `common-node`
   - `google-workspace`
-  - `personal-common-js`
+  - `links`
   - `react-lib`
 - Cloud services
   - Supabase

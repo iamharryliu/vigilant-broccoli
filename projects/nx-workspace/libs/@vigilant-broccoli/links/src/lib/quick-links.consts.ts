@@ -20,13 +20,13 @@ import {
   TERRAFORM_LINK,
   TWILIO_LINK,
   UTILITY_URL,
-} from '@vigilant-broccoli/links';
+} from './links.consts';
 import {
   JOURNAL_PATH,
   MAC_OS_APP,
   PERSONAL_URL,
   VB_REPO_PATH,
-} from './personal.const';
+} from '@vigilant-broccoli/personal-common-js';
 
 const LINK_GROUP_SUBGROUP = {
   UTILITY: 'Utility',
@@ -1343,7 +1343,9 @@ const UI_APP_LINKS = [
   },
 ];
 
-export const PERSONAL_QUICK_LINKS: QuickLink[] = [
+export type { QuickLink };
+
+export const EXTERNAL_QUICK_LINKS: QuickLink[] = [
   ...UI_APP_LINKS,
   ...VB_LINKS,
   ...DEV_LINKS,
