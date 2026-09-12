@@ -4,11 +4,13 @@ Run the standard git workflow to ship the current changes: branch, commit, push,
 2. Pick a commit type for the change: `feat`, `fix`, `ci`, `chore`, `docs`, `refactor`, `enhancement`, `security`, or `infrastructure` (match existing usage in `git log` — don't invent a new type unless nothing fits).
 3. Determine the target branch:
    - If the conversation already checked out or discussed a specific non-main branch for these changes (e.g. a PR branch fetched via `gh pr checkout` earlier in the session), commit there directly — do not create a new branch.
-   - Otherwise, if currently on `main` (or another shared base branch), create a new branch from it named `<committype>/<short-kebab-case-description>` (e.g. `fix/rabbitmq-secret-rotation`, `feat/hearth-food-planner-page`).
+   - Otherwise, if currently on `main` (or another shared base branch), refresh the base first — `git fetch origin main` then `git pull --ff-only origin main` — so the new branch starts from current `main` rather than a stale local copy, and create a branch from it named `<committype>/<short-kebab-case-description>` (e.g. `fix/rabbitmq-secret-rotation`, `feat/hearth-food-planner-page`). If the fast-forward fails, `main` has diverged locally; stop and report rather than merging.
+   - If committing to an existing branch, note how far behind it is (`git rev-list --count HEAD..origin/main` after a fetch) — step 5 syncs it before pushing.
 4. Commit the staged changes with a message in the form `<committype>(<scope>): <Message>.` — scope is the affected app/service/lib name (e.g. `hearth`, `github-actions`, `vb-manager-next`) and is omitted when the change isn't scoped to one; the message is capitalized, concise, focused on why not what, and ends with a period. End the commit message with the `Co-Authored-By:` trailer specified by the environment for the model authoring the commit — do not hardcode a model name here, since it changes as models are released.
-5. Push the branch. If it already tracks a remote (e.g. an existing PR branch reused per step 3), a plain `git push` suffices; otherwise push with `-u origin <branch>`.
-6. If an open PR already exists for this branch (`gh pr view <branch>`), skip creating a new one — the push in step 5 updates it. Otherwise open a PR with `gh pr create`, using a HEREDOC body with a `## Summary` (bullet points) and `## Test plan` (checklist) section, ending with the Claude Code footer.
-7. Return the PR URL.
-8. Switch back to the original branch so any other in-progress work there is undisturbed.
+5. Bring the branch up to date with `main` before publishing, so the PR opens mergeable instead of stale: run `/sync-main` (or equivalently `git fetch origin main` then `git merge --no-edit origin/main`). Merge, never rebase — force-pushing is forbidden below. Resolve any conflicts now, while they are small; if a conflict needs the user's judgement, stop and ask rather than guessing.
+6. Push the branch. If it already tracks a remote (e.g. an existing PR branch reused per step 3), a plain `git push` suffices; otherwise push with `-u origin <branch>`.
+7. If an open PR already exists for this branch (`gh pr view <branch>`), skip creating a new one — the push in step 6 updates it. Otherwise open a PR with `gh pr create`, using a HEREDOC body with a `## Summary` (bullet points) and `## Test plan` (checklist) section, ending with the Claude Code footer.
+8. Return the PR URL.
+9. Switch back to the original branch so any other in-progress work there is undisturbed.
 
 Follow this repo's git safety conventions: never force-push, never skip hooks, never amend existing commits, and never push/commit/open a PR unless this command was explicitly invoked.
