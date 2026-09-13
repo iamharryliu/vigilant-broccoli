@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { OPEN_TYPE, type QuickLink } from '@vigilant-broccoli/common-js';
-import { Button, QuickLinksDialog, Text } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  QuickLinksDialog,
+  QuickLinksPanel,
+  Text,
+  type ShellExecuteHandler,
+} from '@vigilant-broccoli/react-lib';
 import { toast, Toaster } from '@vigilant-broccoli/react-lib/toaster';
 import {
   CLAUDE_LINK,
@@ -10,9 +16,11 @@ import {
   UTILITY_URL,
 } from '@vigilant-broccoli/links';
 
-const OPEN_BUTTON_LABEL = 'Open Quick Links';
-const HINT =
+const OPEN_BUTTON_LABEL = 'Open Quick Links (dialog)';
+const DIALOG_HINT =
   'Fuzzy search the links, Enter opens the best match, arrow keys move between results and the icon button toggles grouping.';
+const INLINE_HEADING = 'In-page (no dialog)';
+const INLINE_HINT = 'Same panel, rendered directly on the page.';
 const SHELL_TOAST_PREFIX = 'Shell execute';
 
 const DEMO_SUBGROUP = {
@@ -93,21 +101,39 @@ const DEMO_LINKS: QuickLink[] = [
 export const QuickLinksDemo = () => {
   const [open, setOpen] = useState(false);
 
+  const handleShellExecute: ShellExecuteHandler = (type, target) => {
+    toast.info(`${SHELL_TOAST_PREFIX}: ${type} - ${target}`);
+  };
+
   return (
-    <div className="flex flex-col gap-3 items-start">
+    <div className="flex flex-col gap-6 items-start w-full">
       <Toaster richColors />
-      <Text size="2" color="gray">
-        {HINT}
-      </Text>
-      <Button onClick={() => setOpen(true)}>{OPEN_BUTTON_LABEL}</Button>
-      <QuickLinksDialog
-        links={DEMO_LINKS}
-        open={open}
-        onOpenChange={setOpen}
-        onShellExecute={(type, target) => {
-          toast.info(`${SHELL_TOAST_PREFIX}: ${type} - ${target}`);
-        }}
-      />
+
+      <div className="flex flex-col gap-3 items-start">
+        <Text size="2" color="gray">
+          {DIALOG_HINT}
+        </Text>
+        <Button onClick={() => setOpen(true)}>{OPEN_BUTTON_LABEL}</Button>
+        <QuickLinksDialog
+          links={DEMO_LINKS}
+          open={open}
+          onOpenChange={setOpen}
+          onShellExecute={handleShellExecute}
+        />
+      </div>
+
+      <div className="flex flex-col gap-3 items-start w-full">
+        <Text size="3" weight="medium">
+          {INLINE_HEADING}
+        </Text>
+        <Text size="2" color="gray">
+          {INLINE_HINT}
+        </Text>
+        <QuickLinksPanel
+          links={DEMO_LINKS}
+          onShellExecute={handleShellExecute}
+        />
+      </div>
     </div>
   );
 };
