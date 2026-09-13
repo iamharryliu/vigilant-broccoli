@@ -14,6 +14,7 @@
     - Diving
   - [Learning](./learning.md)
 - **Fashion/Clothing**
+  - [Clothing](./clothing.md)
   - [Product Care](./product-care.md)
   - [Textile Patterns](./textile-patterns.md)
   - [Layering Explained (The 3 Layer System)](https://www.youtube.com/watch?v=eXr2iPeMLfs)

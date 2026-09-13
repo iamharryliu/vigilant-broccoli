@@ -1,22 +1,21 @@
 # Ingredients
 
-- [Crutons](./crutons.md)
-- [Flour](./flour.md)
-- [Kidney Beans](./kidney-beans.md)
-- [Rice](./rice.md)
-- [Vegetarian Alternatives](./vegetarian-ingredient-alternatives.md)
-
-## Spices and Herbs
-
-- [Italian Seasoning](./spices-and-herbs/italian-seasoning.md)
-
-## Sauces
-
-- [Garlic Confit](./sauce-recipes/garlic-confit.md)
-- [Mayo](./sauce-recipes/mayo.md)
-- [Roux](./sauce-recipes/roux.md)
-- [Soy Sauce](./sauce-recipes/soy-sauce.md)
-
-## Stocks
-
-- [Vegetable Stock](./stock-recipes/vegetable-stock.md)
+- **Produce**
+  - [Potatoes](./potatoes.md)
+- **Preparations**
+  - **Sauces**
+    - [Garlic Confit](./sauce-recipes/garlic-confit.md)
+    - [Mayo](./sauce-recipes/mayo.md)
+    - [Roux](./sauce-recipes/roux.md)
+    - [Soy Sauce](./sauce-recipes/soy-sauce.md)
+  - **Stocks**
+    - [Cooking Stock](./stock-recipes/cooking-stock.md)
+- **Pantry Staples**
+  - [Crutons](./crutons.md)
+  - [Flour](./flour.md)
+  - [Kidney Beans](./kidney-beans.md)
+  - [Rice](./rice.md)
+- **Seasonings**
+  - [Italian Seasoning](./spices-and-herbs/italian-seasoning.md)
+- **Substitutes**
+  - [Vegetarian Alternatives](./vegetarian-ingredient-alternatives.md)
