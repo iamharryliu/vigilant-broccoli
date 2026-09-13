@@ -1,8 +1,16 @@
 # Kitchen Tools
 
+## Table of Contents
+
+- [Knives](#knives)
+- [Cutting Boards](#cutting-boards)
+  - [Wooden Cutting Boards](#wooden-cutting-boards)
+- [Air Fryer](#air-fryer)
+  - [Usage Tips](#usage-tips)
+
 ## Knives
 
-- [Kitchen Knife Management](./kitchen-knife-management.md)
+- [Kitchen Knives](./kitchen-knives.md)
 
 ## Cutting Boards
 
