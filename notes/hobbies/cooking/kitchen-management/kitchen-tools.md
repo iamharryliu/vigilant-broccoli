@@ -2,8 +2,7 @@
 
 ## Knives
 
-- [Knife Parts](https://ca.pinterest.com/search/pins/?q=knife%20parts)
-- [Types of Knives](https://ca.pinterest.com/search/pins/?q=types%20of%20kitchen%20knives)
+- [Kitchen Knife Management](./kitchen-knife-management.md)
 
 ## Cutting Boards
 
