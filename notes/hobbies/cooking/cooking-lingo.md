@@ -108,10 +108,11 @@
 
 ## French Food Lingo
 
-| Term         | Description                                                                                                                                                                                             |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Béchamel** | One of the French mother sauces, made by whisking milk into a butter-and-flour roux and simmering until thickened. Used as the base for dishes like lasagna, gratins, and mac and cheese.               |
-| **Mirepoix** | A base of diced onion, celery, and carrot (traditionally in a 2:1:1 ratio), cooked in butter or oil to release their flavors, forming the aromatic foundation for many French sauces, soups, and stews. |
+| Term         | Description                                                                                                                                                                                                                       |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Béchamel** | One of the French mother sauces, made by whisking milk into a butter-and-flour roux and simmering until thickened. Used as the base for dishes like lasagna, gratins, and mac and cheese.                                         |
+| **Mirepoix** | A base of diced onion, celery, and carrot (traditionally in a 2:1:1 ratio), cooked in butter or oil to release their flavors, forming the aromatic foundation for many French sauces, soups, and stews.                           |
+| **Terroir**  | A French gastronomy term for the complete natural environment—soil, climate, terrain, and local farming practices—in which a food or wine is produced, believed to give it a distinctive character unique to that specific place. |
 
 ---
 
