@@ -59,5 +59,5 @@ Ordered high starch to low — the single property that predicts most behaviour 
 
 ## See Also
 
-- [Potato Recipes](../../recipes/potato-recipes/potato-recipes.md)
-- [Vegetables](../../food-notes/vegetables.md) — cooking times by density
+- [Potato Recipes](../recipes/potato-recipes/potato-recipes.md)
+- [Vegetables](../food-notes/vegetables.md) — cooking times by density
