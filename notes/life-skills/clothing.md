@@ -10,6 +10,7 @@
 
 - [Clothing History](./clothing-history.md) — where individual garments came from and how they became everyday wear.
 - [Textile Patterns](./textile-patterns.md) — fabric pattern/print names and what defines each.
+- [Textile Textures](./textile-textures.md) — fabric texture/weave names and what defines each.
 
 ## Care
 
