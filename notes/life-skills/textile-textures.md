@@ -1,8 +1,0 @@
-# Textile Textures
-
-Common fabric texture/weave names (tactile surface structure, not print or color), what defines each, and a reference image.
-
-| Texture        | Image                                                                                                                                                                                     | Description                                                                                                                                    |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Seersucker** | ![Seersucker](https://commons.wikimedia.org/wiki/Special:FilePath/Seersucker01closeup.JPG?width=250)                                                                                        | Woven with alternating slack- and tight-tension warp threads, puckering some stripes while leaving others flat; the puckering holds fabric off the skin, making it popular for warm-weather suiting. |
-| **Waffle**     | ![Waffle Weave](https://commons.wikimedia.org/wiki/Special:FilePath/Knitted%20Waffle%20fabric.jpg?width=250)                                                                                | Grid of raised, honeycomb-like squares formed by a float weave (long floats crossing short ones); the pockets of trapped air add warmth, common in thermal underlayers and waffle-knit henleys. |
