@@ -47,6 +47,15 @@ KEY_MAP=(
   "TF_GITHUB_TOKEN:GITHUB_TOKEN"
   "SUPABASE_ACCESS_TOKEN:SUPABASE_ACCESS_TOKEN"
   "GOOGLE_AUTH_PROVIDER_CLIENT_SECRET:TF_VAR_supabase_google_client_secret"
+  "TF_AWS_ACCESS_KEY_ID:AWS_ACCESS_KEY_ID"
+  "TF_AWS_SECRET_ACCESS_KEY:AWS_SECRET_ACCESS_KEY"
+)
+
+# Warn rather than exit: exiting would withhold every other export too, leaving
+# the cloudflare/github/supabase providers unconfigured over a missing AWS key.
+WARN_IF_MISSING_KEYS=(
+  "TF_AWS_ACCESS_KEY_ID"
+  "TF_AWS_SECRET_ACCESS_KEY"
 )
 
 for mapping in "${KEY_MAP[@]}"; do
@@ -55,5 +64,9 @@ for mapping in "${KEY_MAP[@]}"; do
   VALUE=$(echo "$SECRETS" | jq -r --arg key "$VAULT_KEY" '.[$key] // empty')
   if [ -n "$VALUE" ]; then
     echo "export ${ENV_VAR}=\"${VALUE}\""
+  elif [[ " ${WARN_IF_MISSING_KEYS[*]} " == *" ${VAULT_KEY} "* ]]; then
+    # Otherwise the aws provider quietly falls back to whatever is left in
+    # ~/.aws -- usually an expired SSO cache, which fails mid-plan instead of here.
+    echo "Warning: ${VAULT_KEY} missing from the Bitwarden note — the aws provider will fall back to ~/.aws. Add it to Vault, then re-run backup-secrets.sh." >&2
   fi
 done
