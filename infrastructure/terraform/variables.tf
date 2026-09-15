@@ -13,6 +13,36 @@ variable "aws_region" {
   default = "eu-north-1"
 }
 
+# Left null so the provider falls through to the standard credential chain and
+# picks up the AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY that load-vault-tf-env.sh
+# exports for the `terraform-testing` IAM user -- no `aws sso login` before
+# `tf:apply`. That user is created and permissioned by hand in the IAM console,
+# not managed here, same as the Cloudflare/GitHub/Supabase provider credentials.
+# Set TF_VAR_aws_profile=AdministratorAccess-841376026547 to fall back to SSO
+# (e.g. to re-mint those keys after they're revoked).
+variable "aws_profile" {
+  type    = string
+  default = null
+}
+
+# Boot image for the Seafile and Immich VMs. Pinned rather than resolved via a
+# `most_recent = true` aws_ami data source: that made every Canonical Jammy
+# release turn a routine `tf:plan` into a two-service rebuild, and it made
+# `pnpm seafile:replace` / `immich:replace` jump to an unreviewed image at the
+# exact moment you're replacing a VM to debug something else. Same reasoning as
+# code_server_image below. Both VMs keep their data on separate EBS volumes, so
+# bumping this is a deliberate rebuild, not a data migration.
+#
+# Find the current Canonical build:
+#   aws ec2 describe-images --owners 099720109477 --region eu-north-1 \
+#     --filters 'Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*' \
+#               'Name=virtualization-type,Values=hvm' \
+#     --query 'sort_by(Images, &CreationDate)[-1].[ImageId,Name]' --output text
+variable "ubuntu_ami" {
+  type    = string
+  default = "ami-0a852fb2d1e35922f"
+}
+
 variable "github_owner" {
   description = "GitHub repository owner"
   type        = string

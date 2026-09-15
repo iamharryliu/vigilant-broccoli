@@ -15,6 +15,7 @@ import {
   StickyNote,
   MessageCircle,
   Home,
+  Receipt,
 } from 'lucide-react';
 import { ROUTES } from '../lib/routes';
 
@@ -76,6 +77,7 @@ export const NAV_LINKS: NavLink[] = [
     ],
   },
   { label: 'Where Is', href: ROUTES.WHERE_IS, icon: PackageSearch },
+  { label: 'Receipt Tracker', href: ROUTES.RECEIPTS, icon: Receipt },
   {
     label: 'Food Planner',
     href: ROUTES.FOOD_PLANNER,

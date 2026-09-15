@@ -242,7 +242,9 @@ export function QuickLinksPanel({
           variant="secondary"
           onClick={() => setIsGrouped(!isGrouped)}
           title={
-            isGrouped ? GROUP_TOGGLE_TITLE.GROUPED : GROUP_TOGGLE_TITLE.UNGROUPED
+            isGrouped
+              ? GROUP_TOGGLE_TITLE.GROUPED
+              : GROUP_TOGGLE_TITLE.UNGROUPED
           }
         >
           {isGrouped ? <ListBulletIcon /> : <DashboardIcon />}
@@ -267,6 +269,8 @@ export function QuickLinksPanel({
       ) : (
         <div
           style={{
+            flex: 1,
+            minHeight: 0,
             overflowY: 'auto',
             overflowX: 'hidden',
           }}
