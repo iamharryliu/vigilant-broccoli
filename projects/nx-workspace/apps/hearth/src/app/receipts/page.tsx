@@ -181,7 +181,7 @@ export default function ReceiptsPage() {
 
   return (
     <div className="max-w-3xl mx-auto p-2 sm:p-6 space-y-4">
-      {scanning ? (
+      {scanning && (
         <ReceiptScanner
           homeId={selectedHomeId}
           userId={session?.user.id ?? ''}
@@ -191,10 +191,6 @@ export default function ReceiptsPage() {
           }}
           onCancel={() => setScanning(false)}
         />
-      ) : (
-        <Button onClick={() => setScanning(true)}>
-          <Plus size={15} /> Add Receipt
-        </Button>
       )}
 
       <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700">
@@ -242,6 +238,9 @@ export default function ReceiptsPage() {
 
       {!loaded ? null : tab === TAB.RECEIPTS ? (
         <div className="space-y-2">
+          <Button onClick={() => setScanning(true)}>
+            <Plus size={15} /> Add Receipt
+          </Button>
           {filteredReceipts.length === 0 ? (
             <Text size="2" color="gray">
               No receipts yet. Add one to get started.

@@ -6,6 +6,8 @@ export const RECEIPTS_API = {
   UPLOAD_URL: '/api/receipts/upload-url',
 } as const;
 
+export const AS_PRINTED = 'as printed';
+
 export const DEFAULT_CURRENCY = 'CAD';
 
 export const CURRENCIES = ['CAD', 'SEK', 'EUR', 'USD', 'GBP', 'DKK', 'NOK'];
