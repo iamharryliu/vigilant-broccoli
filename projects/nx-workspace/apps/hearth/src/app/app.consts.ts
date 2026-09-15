@@ -48,6 +48,7 @@ const DEV_FEATURES_LINK: NavLink = {
       icon: Wrench,
       children: [
         { label: 'Docs', href: ROUTES.DOCS },
+        { label: 'Receipt Tracker', href: ROUTES.RECEIPTS },
         { label: 'Price Tracker', href: ROUTES.PRICE_TRACKER },
       ],
     },

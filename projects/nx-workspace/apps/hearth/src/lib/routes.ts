@@ -24,6 +24,8 @@ export const ROUTES = {
   WHITEBOARD: '/whiteboard',
   PRICE_TRACKER: '/price-tracker',
   PRICE_TRACKER_DETAIL: (id: string) => `/price-tracker/${id}`,
+  RECEIPTS: '/receipts',
+  RECEIPTS_DETAIL: (id: string) => `/receipts/${id}`,
   CHORES: '/chores',
   GROCERY: '/grocery',
   KITCHEN_CHORES: '/kitchen-chores',
