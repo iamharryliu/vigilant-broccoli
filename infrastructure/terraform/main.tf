@@ -65,7 +65,7 @@ provider "oci" {
 
 provider "aws" {
   region  = var.aws_region
-  profile = "AdministratorAccess-841376026547"
+  profile = var.aws_profile
 }
 
 # Reads SUPABASE_ACCESS_TOKEN from env (personal access token from

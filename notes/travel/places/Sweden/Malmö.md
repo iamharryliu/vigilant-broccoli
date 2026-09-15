@@ -83,6 +83,16 @@
   - [Beach Vibes Social](https://www.facebook.com/groups/2897144393858138/events)
   - [Malmö Latin Social](https://www.instagram.com/malmo_latin_social/)
   - [Salsa Thursdays at Vaganza Beachgarden](https://www.salsavida.com/event/sweden/malmo/salsa-thursdays-at-vaganza-beachgarden/)
+  - Bathing
+    - [Water Quality at Beaches and Bathing Spots](https://malmo.se/Uppleva-och-gora/Bada-och-simma/Strander-och-badplatser/Badvattenkvalitet.html)
+    - Bath House
+      - [Ribersborgs Kallbadhus](https://www.ribersborgskallbadhus.se/)
+      - [Sibbarp Kallbadhus](https://www.sibbarpkallbadhus.se/)
+    - Swimming Locations
+      - [Location 1](https://maps.app.goo.gl/3enbwb1cxqAnkgdC7)
+      - [Location 2](https://maps.app.goo.gl/vvjMDaawDtTM5Zj9A)
+      - [Location 3](https://maps.app.goo.gl/NTzFjbNawEhRj2qV6)
+      - [Location 4](https://maps.app.goo.gl/o5g7rDqK5bc87RWS7)
 - [Folkets Park](https://malmo.se/Folkets-Park)
 - [Lund](https://lund.se/)
 - [Malmö Live](https://malmolive.se/program)

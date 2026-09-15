@@ -15,9 +15,14 @@ permissions:
 env:
   PROFILE_REPO: git@github.com:iamharryliu/iamharryliu.git
 
+concurrency:
+  group: deploy-github-profile
+  cancel-in-progress: true
+
 jobs:
   sync-profile-readme:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 

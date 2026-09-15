@@ -1,37 +1,43 @@
 # Stir Fry Recipes
 
-- [How to Stir Fry Any Vegetable - Three Basic Flavors and Recipes (蒜蓉炒西兰花/姜汁炒芥兰/虾酱炒通心菜)](https://www.youtube.com/watch?v=a-Yu8qOAEYQ)
+## Table of Contents
+
+- [Technique](#technique)
+- [Vegetable Choices](#vegetable-choices)
+- [Recipe 1](#recipe-1)
+  - [Ingredients](#ingredients)
+  - [References](#references)
+- [Recipe 2](#recipe-2)
+  - [Ingredients](#ingredients-1)
+  - [Instructions](#instructions)
+  - [References](#references-1)
+- [References](#references-2)
 
 ## Technique
 
-- Use high heat.
-- Cook stems first, then leaves.
-- Add salt once vegetables have cooked down, then add garlic.
-- Sauce: oyster sauce, soy sauce.
-- Deglaze with Shaoxing wine.
-- Add a cornstarch slurry for a glossy finish.
+- Prep
+  - Pat the vegetables dry — surface water steams instead of searing.
+  - Preheat the pan until it just smokes, then add a high-smoke-point oil (peanut, canola, avocado — not olive or butter).
+- Cook
+  - Use high heat throughout, and don't crowd the pan — cook in batches and combine at the end.
+  - Cook stems first, then leaves.
+  - Add salt once vegetables have cooked down, then add garlic — garlic and ginger burn in about 30 seconds at wok heat, so they go in late, not with the oil.
+  - Deglaze with Shaoxing wine poured down the side of the pan, not into the middle, so it vaporizes instead of cooling the food.
+- Finish
+  - Stir fry sauce: oyster sauce, soy sauce.
+  - Add a cornstarch slurry off the heat or on low, stirred into simmering liquid — in a ripping-hot pan it clumps.
+  - Finish off the heat with sesame oil, scallions, or vinegar — heat kills their aroma.
 
 ## Vegetable Choices
 
-- Firm / longer-cooking vegetables
-  Carrots
-  Bok choy
-  Red and green bell peppers
-  Zucchini
-  Broccoli
-  Baby corn
-  Onions
-- Soft / moisture-heavy vegetables
-  Yellow squash
-  Cabbage
-  Mushrooms
-- Tender but crisp vegetables
-  - Green Beans
-  - Snap peas
-- Topping
-  - Scallions
-  - Garlic
-  - Ginger
+See [Density Order](../food-notes/vegetables.md#-density-order-densest--most-tender) in [Vegetable Cooking Reference by Density](../food-notes/vegetables.md) for cook times and pan order.
+
+| Category              | Vegetables                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------ |
+| Firm / longer-cooking | Baby corn, bok choy, broccoli, carrots, onions, red and green bell peppers, zucchini |
+| Soft / moisture-heavy | Cabbage, mushrooms, yellow squash                                                    |
+| Tender but crisp      | Green beans, snap peas                                                               |
+| Topping               | Garlic, ginger, scallions                                                            |
 
 ## Recipe 1
 
@@ -85,3 +91,7 @@
 ### References
 
 - [Stir Fry Reel by LifebyMikeG](https://www.youtube.com/shorts/un5GQ_Hc-Tg)
+
+## References
+
+- [How to Stir Fry Any Vegetable - Three Basic Flavors and Recipes (蒜蓉炒西兰花/姜汁炒芥兰/虾酱炒通心菜)](https://www.youtube.com/watch?v=a-Yu8qOAEYQ)

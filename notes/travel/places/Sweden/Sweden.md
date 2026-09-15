@@ -30,6 +30,7 @@
 ### Communication
 
 - [Comviq Fastpris Mini Plan](https://www.comviq.se/kontantkort)
+- [Hallon](https://www.hallon.se/)
 - Telia
   - Text _surfmängd_ to **4466** for remaining data usage.
 

@@ -1,15 +1,21 @@
 'use client';
 
-import { Text } from '@vigilant-broccoli/react-lib';
+import { Text, TextProps } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { DATE_CONST, getISOWeekNumber } from '@vigilant-broccoli/common-js';
 import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
 
+const DEFAULT_TIME_SIZE: TextProps['size'] = '8';
+
 interface ClockBlockProps {
   type: 'time' | 'info';
+  timeSize?: TextProps['size'];
 }
 
-export const ClockComponent = ({ type = 'time' }: ClockBlockProps) => {
+export const ClockComponent = ({
+  type = 'time',
+  timeSize = DEFAULT_TIME_SIZE,
+}: ClockBlockProps) => {
   const [currentTime, setCurrentTime] = useState('');
   const [currentDate, setCurrentDate] = useState('');
   const [dayOfWeek, setDayOfWeek] = useState('');
@@ -54,7 +60,7 @@ export const ClockComponent = ({ type = 'time' }: ClockBlockProps) => {
 
   if (type === 'time') {
     return (
-      <Text size="8" weight="bold" className="font-mono">
+      <Text size={timeSize} weight="bold" className="font-mono">
         {currentTime}
       </Text>
     );

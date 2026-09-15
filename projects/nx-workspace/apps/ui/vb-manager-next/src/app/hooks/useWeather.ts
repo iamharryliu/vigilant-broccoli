@@ -1,56 +1,114 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DATE_CONST } from '@vigilant-broccoli/common-js';
+import {
+  DATE_CONST,
+  getSunTimes,
+  getWeatherIcon,
+  Location,
+  SunTimes,
+  WeatherProvider,
+  WeatherSnapshot,
+} from '@vigilant-broccoli/common-js';
 import { authFetch } from '../../../libs/auth';
+
+export interface SunEvent {
+  label: string;
+  icon: string;
+  ts: number;
+}
+
+export interface ForecastDay {
+  day: string;
+  tempHigh: number;
+  tempLow: number;
+  icon: string;
+}
 
 export interface WeatherData {
   city: string;
+  provider: WeatherProvider;
   timezone: number;
   now: {
     temp: number;
     icon: string;
   };
-  forecast: Array<{
-    day: string;
-    tempHigh: number;
-    tempLow: number;
-    icon: string;
-  }>;
+  location: Location;
+  forecast: ForecastDay[];
 }
 
-const CITIES = [{ name: 'Malm\u00f6', lat: 55.605, lon: 13.0038 }];
+const CITIES = [{ name: 'Malmö', lat: 55.605, lon: 13.0038 }];
 
-const WEATHER_ICON_MAP: Record<string, string> = {
-  '01d': '\u2600\ufe0f',
-  '01n': '\ud83c\udf19',
-  '02d': '\ud83c\udf24\ufe0f',
-  '02n': '\u2601\ufe0f',
-  '03d': '\u2601\ufe0f',
-  '03n': '\u2601\ufe0f',
-  '04d': '\u2601\ufe0f',
-  '04n': '\u2601\ufe0f',
-  '09d': '\ud83c\udf27\ufe0f',
-  '09n': '\ud83c\udf27\ufe0f',
-  '10d': '\ud83c\udf26\ufe0f',
-  '10n': '\ud83c\udf27\ufe0f',
-  '11d': '\u26c8\ufe0f',
-  '11n': '\u26c8\ufe0f',
-  '13d': '\u2744\ufe0f',
-  '13n': '\u2744\ufe0f',
-  '50d': '\ud83c\udf2b\ufe0f',
-  '50n': '\ud83c\udf2b\ufe0f',
+const MS_PER_DAY = 86400000;
+const SUN_EVENT_DAY_OFFSETS = [-1, 0, 1];
+const FORECAST_DAY_COUNT = 2;
+
+const SUNRISE_LABEL = 'Sunrise';
+const SUNSET_LABEL = 'Sunset';
+const SUNRISE_ICON = '🌅';
+const SUNSET_ICON = '🌇';
+
+const nextEventTime = (
+  location: Location,
+  nowMs: number,
+  pick: (times: SunTimes) => Date | null,
+): number | null => {
+  for (const dayOffset of SUN_EVENT_DAY_OFFSETS) {
+    const time = pick(
+      getSunTimes(location, new Date(nowMs + dayOffset * MS_PER_DAY)),
+    );
+    if (time && time.getTime() > nowMs) {
+      return time.getTime();
+    }
+  }
+  return null;
 };
 
-export const getWeatherIcon = (iconCode: string): string =>
-  WEATHER_ICON_MAP[iconCode] || '\u2601\ufe0f';
+export const getOrderedSunEvents = (
+  location: Location,
+  nowMs: number,
+): SunEvent[] =>
+  [
+    {
+      label: SUNRISE_LABEL,
+      icon: SUNRISE_ICON,
+      ts: nextEventTime(location, nowMs, times => times.sunrise),
+    },
+    {
+      label: SUNSET_LABEL,
+      icon: SUNSET_ICON,
+      ts: nextEventTime(location, nowMs, times => times.sunset),
+    },
+  ]
+    .filter((event): event is SunEvent => event.ts !== null)
+    .sort((a, b) => a.ts - b.ts);
 
 const getDayName = (dateStr: string): string => {
   const date = new Date(dateStr);
   return DATE_CONST.DAY[date.getDay()];
 };
 
-export const useWeather = () => {
+const toWeatherData = (
+  city: (typeof CITIES)[number],
+  snapshot: WeatherSnapshot,
+): WeatherData => ({
+  city: city.name,
+  provider: snapshot.provider,
+  timezone: snapshot.timezoneOffsetSeconds,
+  now: {
+    temp: Math.round(snapshot.current.temperatureC),
+    icon: getWeatherIcon(snapshot.current.condition, snapshot.current.isDay),
+  },
+  location: { latitude: city.lat, longitude: city.lon },
+  forecast: snapshot.daily.slice(0, FORECAST_DAY_COUNT).map(day => ({
+    day: getDayName(day.date),
+    tempHigh: Math.round(day.tempMaxC),
+    tempLow: Math.round(day.tempMinC),
+    icon: getWeatherIcon(day.condition),
+  })),
+});
+
+export const useWeather = (provider?: WeatherProvider) => {
   const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -59,49 +117,19 @@ export const useWeather = () => {
     const fetchWeather = async () => {
       try {
         const weatherPromises = CITIES.map(async city => {
-          const response = await authFetch(
-            `/api/weather?lat=${city.lat}&lon=${city.lon}`,
-          );
+          const params = new URLSearchParams({
+            lat: String(city.lat),
+            lon: String(city.lon),
+            ...(provider ? { provider } : {}),
+          });
+          const response = await authFetch(`/api/weather?${params}`);
 
           if (!response.ok) {
             throw new Error('Failed to fetch weather data');
           }
 
-          const { current, forecast } = await response.json();
-
-          const dailyForecasts: Record<
-            string,
-            { temps: number[]; icons: string[] }
-          > = {};
-
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          forecast.forEach((item: any) => {
-            const date = item.dt_txt.split(' ')[0];
-            if (!dailyForecasts[date]) {
-              dailyForecasts[date] = { temps: [], icons: [] };
-            }
-            dailyForecasts[date].temps.push(item.main.temp);
-            dailyForecasts[date].icons.push(item.weather[0].icon);
-          });
-
-          const forecastDays = Object.entries(dailyForecasts)
-            .slice(0, 2)
-            .map(([date, data]) => ({
-              day: getDayName(date),
-              tempHigh: Math.round(Math.max(...data.temps)),
-              tempLow: Math.round(Math.min(...data.temps)),
-              icon: data.icons[Math.floor(data.icons.length / 2)],
-            }));
-
-          return {
-            city: city.name,
-            timezone: current.timezone,
-            now: {
-              temp: Math.round(current.main.temp),
-              icon: current.weather[0].icon,
-            },
-            forecast: forecastDays,
-          };
+          const { weather } = await response.json();
+          return toWeatherData(city, weather as WeatherSnapshot);
         });
 
         const data = await Promise.all(weatherPromises);
@@ -115,7 +143,7 @@ export const useWeather = () => {
     };
 
     fetchWeather();
-  }, []);
+  }, [provider]);
 
   return { weatherData, loading, error };
 };

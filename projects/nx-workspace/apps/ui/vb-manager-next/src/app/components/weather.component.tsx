@@ -2,138 +2,46 @@
 
 import { Text } from '@vigilant-broccoli/react-lib';
 import { Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { DATE_CONST } from '@vigilant-broccoli/common-js';
-import { authFetch } from '../../../libs/auth';
+import { useState } from 'react';
+import {
+  WEATHER_PROVIDER,
+  WEATHER_PROVIDERS,
+  WeatherProvider,
+} from '@vigilant-broccoli/common-js';
+import { useWeather } from '../hooks/useWeather';
 
-interface WeatherData {
-  city: string;
-  timezone: number;
-  now: {
-    temp: number;
-    icon: string;
-  };
-  forecast: Array<{
-    day: string;
-    tempHigh: number;
-    tempLow: number;
-    icon: string;
-  }>;
-}
+const MS_PER_MINUTE = 60000;
+const MS_PER_SECOND = 1000;
+const TIME_PAD_LENGTH = 2;
+const TIME_PAD_CHAR = '0';
 
-const CITIES = [
-  { name: 'MALMÖ', lat: 55.605, lon: 13.0038 },
-  // { name: 'COPENHAGEN', lat: 55.6761, lon: 12.5683 },
-  // { name: 'TORONTO', lat: 43.6532, lon: -79.3832 },
-];
+const PROVIDER_LABEL: Record<WeatherProvider, string> = {
+  [WEATHER_PROVIDER.OPEN_METEO]: 'Open-Meteo',
+  [WEATHER_PROVIDER.OPENWEATHER]: 'OpenWeather',
+};
 
 const getCurrentTime = (timezoneOffset: number): string => {
   const now = new Date();
-  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-  const cityTime = new Date(utc + timezoneOffset * 1000);
+  const utc = now.getTime() + now.getTimezoneOffset() * MS_PER_MINUTE;
+  const cityTime = new Date(utc + timezoneOffset * MS_PER_SECOND);
 
-  const hours = cityTime.getHours().toString().padStart(2, '0');
-  const minutes = cityTime.getMinutes().toString().padStart(2, '0');
+  const hours = cityTime
+    .getHours()
+    .toString()
+    .padStart(TIME_PAD_LENGTH, TIME_PAD_CHAR);
+  const minutes = cityTime
+    .getMinutes()
+    .toString()
+    .padStart(TIME_PAD_LENGTH, TIME_PAD_CHAR);
 
   return `${hours}:${minutes}`;
 };
 
-const getWeatherIcon = (iconCode: string): string => {
-  const iconMap: Record<string, string> = {
-    '01d': '☀️',
-    '01n': '🌙',
-    '02d': '🌤️',
-    '02n': '☁️',
-    '03d': '☁️',
-    '03n': '☁️',
-    '04d': '☁️',
-    '04n': '☁️',
-    '09d': '🌧️',
-    '09n': '🌧️',
-    '10d': '🌦️',
-    '10n': '🌧️',
-    '11d': '⛈️',
-    '11n': '⛈️',
-    '13d': '❄️',
-    '13n': '❄️',
-    '50d': '🌫️',
-    '50n': '🌫️',
-  };
-  return iconMap[iconCode] || '☁️';
-};
-
-const getDayName = (dateStr: string): string => {
-  const date = new Date(dateStr);
-  const days = DATE_CONST.DAY;
-  return days[date.getDay()];
-};
-
 export const WeatherComponent = () => {
-  const [weatherData, setWeatherData] = useState<WeatherData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchWeather = async () => {
-      try {
-        const weatherPromises = CITIES.map(async city => {
-          const response = await authFetch(
-            `/api/weather?lat=${city.lat}&lon=${city.lon}`,
-          );
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch weather data');
-          }
-
-          const { current, forecast } = await response.json();
-
-          const dailyForecasts: Record<
-            string,
-            { temps: number[]; icons: string[] }
-          > = {};
-
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          forecast.forEach((item: any) => {
-            const date = item.dt_txt.split(' ')[0];
-            if (!dailyForecasts[date]) {
-              dailyForecasts[date] = { temps: [], icons: [] };
-            }
-            dailyForecasts[date].temps.push(item.main.temp);
-            dailyForecasts[date].icons.push(item.weather[0].icon);
-          });
-
-          const forecastDays = Object.entries(dailyForecasts)
-            .slice(0, 2)
-            .map(([date, data]) => ({
-              day: getDayName(date),
-              tempHigh: Math.round(Math.max(...data.temps)),
-              tempLow: Math.round(Math.min(...data.temps)),
-              icon: data.icons[Math.floor(data.icons.length / 2)],
-            }));
-
-          return {
-            city: city.name,
-            timezone: current.timezone,
-            now: {
-              temp: Math.round(current.main.temp),
-              icon: current.weather[0].icon,
-            },
-            forecast: forecastDays,
-          };
-        });
-
-        const data = await Promise.all(weatherPromises);
-        setWeatherData(data);
-        setLoading(false);
-      } catch (err) {
-        setError('Failed to fetch weather data');
-        setLoading(false);
-        console.error('Weather fetch error:', err);
-      }
-    };
-
-    fetchWeather();
-  }, []);
+  const [provider, setProvider] = useState<WeatherProvider>(
+    WEATHER_PROVIDER.OPEN_METEO,
+  );
+  const { weatherData, loading, error } = useWeather(provider);
 
   if (loading) {
     return (
@@ -166,9 +74,7 @@ export const WeatherComponent = () => {
                 <Text size="1" className="mb-2 text-gray-600">
                   Now
                 </Text>
-                <div className="text-3xl mb-2">
-                  {getWeatherIcon(cityWeather.now.icon)}
-                </div>
+                <div className="text-3xl mb-2">{cityWeather.now.icon}</div>
                 <Text size="3" weight="bold">
                   {cityWeather.now.temp}°C
                 </Text>
@@ -179,9 +85,7 @@ export const WeatherComponent = () => {
                   <Text size="1" className="mb-2 text-gray-600">
                     {day.day}
                   </Text>
-                  <div className="text-3xl mb-2">
-                    {getWeatherIcon(day.icon)}
-                  </div>
+                  <div className="text-3xl mb-2">{day.icon}</div>
                   <Text size="3" weight="bold">
                     {day.tempHigh}°C{' '}
                     <Text size="2" color="gray">
@@ -194,6 +98,26 @@ export const WeatherComponent = () => {
           </div>
         );
       })}
+
+      <div className="flex items-center gap-2">
+        <Text size="1" className="text-gray-500">
+          Source
+        </Text>
+        {WEATHER_PROVIDERS.map(option => (
+          <button
+            key={option}
+            type="button"
+            onClick={() => setProvider(option)}
+            className={
+              option === provider
+                ? 'text-xs font-semibold underline'
+                : 'text-xs text-gray-500'
+            }
+          >
+            {PROVIDER_LABEL[option]}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };

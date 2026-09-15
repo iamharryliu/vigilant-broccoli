@@ -13,9 +13,14 @@ permissions:
   contents: read
   id-token: write
 
+concurrency:
+  group: replace-code-server
+  cancel-in-progress: false
+
 jobs:
   replace-code-server:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -33,6 +38,8 @@ jobs:
             kv/data/secrets OCI_CONFIG | OCI_CONFIG ;
             kv/data/secrets OCI_PRIVATE_KEY | OCI_PRIVATE_KEY ;
             kv/data/secrets GOOGLE_AUTH_PROVIDER_CLIENT_SECRET | TF_VAR_supabase_google_client_secret ;
+            kv/data/secrets TF_AWS_ACCESS_KEY_ID | AWS_ACCESS_KEY_ID ;
+            kv/data/secrets TF_AWS_SECRET_ACCESS_KEY | AWS_SECRET_ACCESS_KEY ;
 
       - name: Write OCI credentials
         run: |

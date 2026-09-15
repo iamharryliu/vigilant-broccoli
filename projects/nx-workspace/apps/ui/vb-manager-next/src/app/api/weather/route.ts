@@ -1,37 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { OpenWeatherService } from '@vigilant-broccoli/common-node';
+import {
+  HTTP_STATUS_CODES,
+  isWeatherProvider,
+  WeatherProvider,
+  WeatherSnapshot,
+} from '@vigilant-broccoli/common-js';
+import { WeatherService } from '@vigilant-broccoli/common-node';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const CACHE_DURATION_MS = 10 * 60 * 1000;
+const HOURLY_COUNT = 8;
+const DAILY_COUNT = 5;
 
-interface CurrentWeatherResponse {
-  main: {
-    temp: number;
-  };
-  weather: Array<{
-    icon: string;
-  }>;
-  timezone: number;
-}
-
-interface WeatherResponsePayload {
-  current: CurrentWeatherResponse;
-  forecast: unknown;
-}
+const LAT_PARAM = 'lat';
+const LON_PARAM = 'lon';
+const PROVIDER_PARAM = 'provider';
 
 const weatherCache = new Map<
   string,
-  { payload: WeatherResponsePayload; timestamp: number }
+  { snapshot: WeatherSnapshot; timestamp: number }
 >();
 
-// GET - Fetch weather data for a location
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const lat = Number(searchParams.get('lat'));
-  const lon = Number(searchParams.get('lon'));
+  const lat = Number(searchParams.get(LAT_PARAM));
+  const lon = Number(searchParams.get(LON_PARAM));
 
   if (!lat || !lon) {
     return NextResponse.json(
@@ -40,31 +35,38 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const cacheKey = `${lat},${lon}`;
+  const requestedProvider = searchParams.get(PROVIDER_PARAM);
+
+  if (requestedProvider && !isWeatherProvider(requestedProvider)) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: `Unknown weather provider ${requestedProvider}`,
+      },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
+    );
+  }
+
+  const provider = requestedProvider as WeatherProvider | null;
+  const cacheKey = `${lat},${lon},${provider ?? ''}`;
   const cached = weatherCache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CACHE_DURATION_MS) {
-    return NextResponse.json({ success: true, ...cached.payload });
+    return NextResponse.json({ success: true, weather: cached.snapshot });
   }
 
   try {
-    const location = { latitude: lat, longitude: lon };
+    const snapshot = await WeatherService.getWeather(
+      { latitude: lat, longitude: lon },
+      {
+        ...(provider ? { provider } : {}),
+        hourlyCount: HOURLY_COUNT,
+        dailyCount: DAILY_COUNT,
+      },
+    );
 
-    // Fetch both current weather and forecast in parallel with metric units
-    const [current, forecast] = await Promise.all([
-      OpenWeatherService.getCurrentWeather(
-        location,
-        'metric',
-      ) as Promise<CurrentWeatherResponse>,
-      OpenWeatherService.getForecast(location, 40, 'metric'), // Get more forecast data for processing
-    ]);
+    weatherCache.set(cacheKey, { snapshot, timestamp: Date.now() });
 
-    const payload: WeatherResponsePayload = {
-      current,
-      forecast: forecast.weatherData,
-    };
-    weatherCache.set(cacheKey, { payload, timestamp: Date.now() });
-
-    return NextResponse.json({ success: true, ...payload });
+    return NextResponse.json({ success: true, weather: snapshot });
   } catch (error) {
     console.error('Error fetching weather data:', error);
     return NextResponse.json(

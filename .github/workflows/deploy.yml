@@ -167,11 +167,11 @@ jobs:
 
       - name: Set up QEMU
         if: steps.check.outputs.has_deployments == 'true'
-        uses: docker/setup-qemu-action@96fe6ef7f33517b61c61be40b68a1882f3264fb8 # v4
+        uses: docker/setup-qemu-action@1f40c72289eff860ee54a304f1438e3cff362e0a # v4
 
       - name: Set up Docker Buildx
         if: steps.check.outputs.has_deployments == 'true'
-        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4
 
       - name: Import Secrets from Vault
         if: steps.check.outputs.has_deployments == 'true'
@@ -320,7 +320,7 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         if: steps.check.outputs.has_deployments == 'true'
-        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
         with:
           artifact_name: github-pages-${{ github.run_attempt }}
 
