@@ -108,7 +108,10 @@ resource "supabase_settings" "vb_auth" {
         maxIndexes = 5
       }
     }
-    fileSizeLimit    = 52428800
-    migrationVersion = "fix-search-by-timestamp-sqli"
+    fileSizeLimit = 52428800
+    # Supabase advances this as it migrates the storage service, so apply fails
+    # with "inconsistent result after apply" until it is synced to the live
+    # value. Read the value out of the error and paste it here.
+    migrationVersion = "objects-null-version-index"
   })
 }
