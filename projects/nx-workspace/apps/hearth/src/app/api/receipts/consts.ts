@@ -4,6 +4,7 @@ export const ERROR_STAGE = {
   HEARTH_AUTH: 'hearth-auth',
   VB_EXPRESS_STORAGE: 'vb-express-storage',
   VB_EXPRESS_LLM: 'vb-express-llm',
+  DUPLICATE: 'duplicate-receipt',
 } as const;
 
 export const ERROR_SESSION_REJECTED =

@@ -18,6 +18,7 @@ import {
   ImageValidationError,
 } from './image-processor';
 import { MAX_IMAGE_SIZE_BYTES } from './limits';
+import { ERROR_STAGE } from './consts';
 
 export const runtime = 'nodejs';
 
@@ -33,6 +34,9 @@ const TABLE = {
 
 const ERROR_MISSING_ID = 'Missing id.';
 const ERROR_CREATE_FAILED = 'Failed to create receipt.';
+const ERROR_DUPLICATE =
+  'A receipt from this company for the same date and total already exists.';
+const CREATE_RECEIPT_RPC = 'create_receipt';
 const RECEIPT_IMAGES_SELECT =
   '*, receipt_merchants(id, name, address), receipt_items(*), receipt_images(*), receipt_taxes(*)';
 
@@ -162,51 +166,40 @@ const resolveMerchantId = async (
   return (created?.id ?? null) as string | null;
 };
 
-// Keeps the existing Price Tracker fed from receipt scans: every line item
-// resolves to a price_items row for the home, and each scan appends a
-// price_entries observation at unit price so history stays comparable.
-const linkPriceItem = async (
+interface DuplicateCandidate {
+  merchantName: string | null;
+  purchasedAt: string;
+  total: number | null;
+}
+
+const findDuplicate = async (
   supabase: SupabaseClient,
-  item: ReceiptItemInput,
-  merchantName: string | null,
-  purchasedAt: string,
-  homeId: number,
-  userId: string,
+  candidate: DuplicateCandidate & { homeId: number },
 ) => {
-  const { data: existing } = await supabase
-    .from(TABLE.PRICE_ITEMS)
-    .select('id')
-    .eq('home_id', homeId)
-    .ilike('name', item.name.trim())
-    .limit(1)
-    .maybeSingle();
+  if (candidate.total === null) return null;
 
-  const priceItemId =
-    (existing?.id as string | undefined) ??
-    ((
-      await supabase
-        .from(TABLE.PRICE_ITEMS)
-        .insert({
-          name: item.name.trim(),
-          category: item.category,
-          unit: item.unit,
-          home_id: homeId,
-          user_id: userId,
-        })
-        .select('id')
-        .single()
-    ).data?.id as string | undefined);
+  const { data } = await supabase
+    .from(TABLE.RECEIPTS)
+    .select('id, purchased_at, total, receipt_merchants(name)')
+    .eq('home_id', candidate.homeId)
+    .eq('purchased_at', candidate.purchasedAt)
+    .eq('total', candidate.total);
 
-  if (!priceItemId) return null;
+  const wanted = normalizeName(candidate.merchantName ?? '');
+  const match = (data ?? []).find(
+    row =>
+      normalizeName(
+        (row.receipt_merchants as { name?: string } | null)?.name ?? '',
+      ) === wanted,
+  );
 
-  await supabase.from(TABLE.PRICE_ENTRIES).insert({
-    item_id: priceItemId,
-    price: item.unitPrice ?? item.totalPrice,
-    store: merchantName,
-    purchased_at: purchasedAt,
-  });
-
-  return priceItemId;
+  return match
+    ? {
+        id: match.id as string,
+        purchasedAt: match.purchased_at as string,
+        total: match.total === null ? null : Number(match.total),
+      }
+    : null;
 };
 
 const saveStagedImages = async (
@@ -275,22 +268,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const supabase = createServerClient(getBearerToken(request));
-  const {
-    merchantName,
-    merchantAddress,
-    purchasedAt,
-    currency,
-    taxInclusive,
-    subtotal,
-    tax,
-    total,
-    notes,
-    items,
-    taxes,
-    images,
-    homeId,
-    userId,
-  } = (await request.json()) as {
+  const body = (await request.json()) as {
     merchantName: string | null;
     merchantAddress: string | null;
     purchasedAt: string;
@@ -305,84 +283,58 @@ export async function POST(request: NextRequest) {
     images: StagedImageRef[];
     homeId: number;
     userId: string;
+    idempotencyKey: string | null;
+    allowDuplicate?: boolean;
   };
 
-  const merchantId = await resolveMerchantId(
-    supabase,
-    merchantName,
-    merchantAddress,
-    homeId,
-    userId,
-  );
+  // A re-scan of the same paper receipt would otherwise silently double-count
+  // price history, so an existing match is surfaced for the user to confirm
+  // rather than rejected outright — two identical purchases in a day are real.
+  if (!body.allowDuplicate) {
+    const duplicate = await findDuplicate(supabase, body);
+    if (duplicate) {
+      return Response.json(
+        { error: ERROR_DUPLICATE, stage: ERROR_STAGE.DUPLICATE, duplicate },
+        { status: HTTP_STATUS_CODES.CONFLICT },
+      );
+    }
+  }
 
-  const { data: receipt, error: receiptError } = await supabase
-    .from(TABLE.RECEIPTS)
-    .insert({
-      merchant_id: merchantId,
-      purchased_at: purchasedAt,
-      currency,
-      tax_inclusive: taxInclusive,
-      subtotal,
-      tax,
-      total,
-      notes: notes || null,
-      home_id: homeId,
-      user_id: userId,
-    })
-    .select('id')
-    .single();
+  // One call, one transaction: merchant upsert, receipt, line items, taxes,
+  // price-item upsert and price entries. Replaces ~3 round trips per line item
+  // that could also leave a half-written receipt behind on failure.
+  const { data: receiptId, error } = await supabase.rpc(CREATE_RECEIPT_RPC, {
+    payload: {
+      merchantName: body.merchantName,
+      merchantAddress: body.merchantAddress,
+      purchasedAt: body.purchasedAt,
+      currency: body.currency,
+      taxInclusive: body.taxInclusive,
+      subtotal: body.subtotal,
+      tax: body.tax,
+      total: body.total,
+      notes: body.notes,
+      items: body.items,
+      taxes: body.taxes ?? [],
+      homeId: body.homeId,
+      userId: body.userId,
+      idempotencyKey: body.idempotencyKey,
+    },
+  });
 
-  if (receiptError || !receipt) {
+  if (error || !receiptId) {
     return Response.json(
-      { error: receiptError?.message ?? ERROR_CREATE_FAILED },
+      { error: error?.message ?? ERROR_CREATE_FAILED },
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
 
-  const priceItemIds = await Promise.all(
-    items.map(item =>
-      linkPriceItem(supabase, item, merchantName, purchasedAt, homeId, userId),
-    ),
-  );
-
-  const { error: itemsError } = await supabase.from(TABLE.ITEMS).insert(
-    items.map((item, index) => ({
-      receipt_id: receipt.id,
-      price_item_id: priceItemIds[index],
-      name: item.name,
-      original_name: item.originalName ?? item.name,
-      category: item.category,
-      unit: item.unit,
-      quantity: item.quantity,
-      unit_price: item.unitPrice,
-      total_price: item.totalPrice,
-      line_order: index,
-    })),
-  );
-
-  if (itemsError) {
-    return Response.json(
-      { error: itemsError.message },
-      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
-    );
-  }
-
-  if (taxes?.length) {
-    await supabase.from(TABLE.TAXES).insert(
-      taxes.map(t => ({
-        receipt_id: receipt.id,
-        rate: t.rate,
-        tax_amount: t.taxAmount,
-        net_amount: t.netAmount,
-        gross_amount: t.grossAmount,
-      })),
-    );
-  }
-
-  if (images?.length) {
+  // Outside the transaction on purpose — R2 is not transactional, and a receipt
+  // that saved without its photo is recoverable.
+  if (body.images?.length) {
     try {
-      validateImageCount(images);
-      await saveStagedImages(supabase, receipt.id, images, 0);
+      validateImageCount(body.images);
+      await saveStagedImages(supabase, receiptId as string, body.images, 0);
     } catch (e) {
       if (e instanceof ImageValidationError) {
         return Response.json(
@@ -394,7 +346,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  return Response.json({ success: true, id: receipt.id });
+  return Response.json({ success: true, id: receiptId });
 }
 
 export async function PATCH(request: NextRequest) {

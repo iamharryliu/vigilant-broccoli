@@ -12,7 +12,11 @@ import {
   DialogTitle,
   Text,
 } from '@vigilant-broccoli/react-lib';
-import { CONTENT_TYPE_HEADER, HTTP_METHOD } from '@vigilant-broccoli/common-js';
+import {
+  CONTENT_TYPE_HEADER,
+  HTTP_METHOD,
+  HTTP_STATUS_CODES,
+} from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useJsonAuthHeaders } from '../hooks/use-auth-headers';
 import {
@@ -53,6 +57,8 @@ const CHOOSE_PHOTO_LABEL = 'Choose Receipt Photo';
 const REPLACE_PHOTO_LABEL = 'Replace Photo';
 const ADD_RECEIPT_TITLE = 'Add Receipt';
 const CONFIRM_RECEIPT_TITLE = 'Confirm Receipt';
+const SAVE_RECEIPT_LABEL = 'Save Receipt';
+const SAVE_ANYWAY_LABEL = 'Save Anyway';
 const EDIT_ITEM_TITLE = 'Edit Item';
 const RECEIPT_DETAILS_TITLE = 'Receipt Details';
 
@@ -248,7 +254,11 @@ export default function ReceiptScanner({
   const [editingItem, setEditingItem] = useState<DraftItem | null>(null);
   const [editingDetails, setEditingDetails] = useState<Draft | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [duplicatePrompt, setDuplicatePrompt] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  // Stable for this capture session, so a retried or double-clicked save
+  // resolves to the receipt it already created instead of inserting a second.
+  const idempotencyKey = useRef(crypto.randomUUID());
   const jsonHeaders = useJsonAuthHeaders();
 
   const isConfirming = step === 'confirm' || step === 'saving';
@@ -415,11 +425,12 @@ export default function ReceiptScanner({
     }));
   };
 
-  const handleSave = async () => {
+  const handleSave = async (allowDuplicate = false) => {
     const items = draft.items.filter(item => item.name.trim());
     if (!items.length) return;
 
     setStep('saving');
+    setError(null);
     const { net, tax, total } = computeTotals(
       items,
       draft.taxes,
@@ -444,11 +455,14 @@ export default function ReceiptScanner({
         images: staged,
         homeId,
         userId,
+        idempotencyKey: idempotencyKey.current,
+        allowDuplicate,
       }),
     });
 
     if (!res.ok) {
       setError(await errorFrom(res, ERROR_SAVE));
+      setDuplicatePrompt(res.status === HTTP_STATUS_CODES.CONFLICT);
       setStep('confirm');
       return;
     }
@@ -696,12 +710,16 @@ export default function ReceiptScanner({
                   Cancel
                 </Button>
                 <Button
-                  onClick={handleSave}
+                  onClick={() => handleSave(duplicatePrompt)}
                   disabled={
                     step === 'saving' || !draft.items.some(i => i.name.trim())
                   }
                 >
-                  {step === 'saving' ? 'Saving...' : 'Save Receipt'}
+                  {step === 'saving'
+                    ? 'Saving...'
+                    : duplicatePrompt
+                      ? SAVE_ANYWAY_LABEL
+                      : SAVE_RECEIPT_LABEL}
                 </Button>
               </>
             ),
