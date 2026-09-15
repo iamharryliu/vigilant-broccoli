@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import {
   createServerClient,
   createAdminClient,
+  getBearerToken,
 } from '../../../../../../libs/supabase-server';
 import {
   HTTP_STATUS_CODES,
@@ -39,14 +40,55 @@ async function isHomeAdmin(homeId: string, userId: string): Promise<boolean> {
   return data?.role === 'HOME_ADMIN';
 }
 
+// The owner lookup below reads through the service-role client (bypasses RLS),
+// so the route must gate on home membership itself — otherwise anyone could
+// walk the sequential home ids and harvest each owner's email. Checked with the
+// admin client because is_home_owner()/is_home_member() only resolve inside RLS.
+async function isHomeMemberOrOwner(
+  homeId: string,
+  userId: string,
+): Promise<boolean> {
+  const admin = createAdminClient();
+  const [{ data: ownedHome }, { data: membership }] = await Promise.all([
+    admin
+      .from('homes')
+      .select('id')
+      .eq('id', homeId)
+      .eq('user_id', userId)
+      .maybeSingle(),
+    admin
+      .from('home_members')
+      .select('id')
+      .eq('home_id', homeId)
+      .eq('user_id', userId)
+      .eq('status', 'accepted')
+      .maybeSingle(),
+  ]);
+  return Boolean(ownedHome || membership);
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
-  const accessToken =
-    request.headers.get('authorization')?.replace('Bearer ', '') ?? '';
-  const supabase = createServerClient(accessToken);
+  const token = getBearerToken(request);
+  const supabase = createServerClient(token);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return Response.json(
+      { error: 'Unauthorized' },
+      { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+    );
+  }
+  if (!(await isHomeMemberOrOwner(id, user.id))) {
+    return Response.json(
+      { error: 'Forbidden' },
+      { status: HTTP_STATUS_CODES.FORBIDDEN },
+    );
+  }
   const admin = createAdminClient();
 
   const [{ data: home }, { data: members, error }] = await Promise.all([
