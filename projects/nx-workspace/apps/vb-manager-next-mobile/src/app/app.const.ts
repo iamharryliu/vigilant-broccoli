@@ -8,7 +8,6 @@ export const PAGE_TITLE = {
   OCR: 'Scan',
   NOTEPAD: 'Notepad',
   EVENT_CALENDARS: 'Event Calendars',
-  QUICK_LINKS: 'Quick Links',
   LOGIN: 'Login',
   AUTH_CALLBACK: 'Signing In',
 } as const;
