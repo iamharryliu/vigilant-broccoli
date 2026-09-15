@@ -1,4 +1,4 @@
-# Commit Audit — 2026-06-08 → 2026-09-08
+# Commit Audit — 2026-06-08 → 2026-09-15
 
 Rolling audit of the last three months of commits, looking for severe issues introduced by that
 work. Findings are ordered by severity. Each entry names the commit that introduced the behaviour
@@ -8,6 +8,7 @@ Passes so far, oldest window last:
 
 | Pass | Window                  | Non-Upptime commits | Added  |
 | ---- | ----------------------- | ------------------- | ------ |
+| 6    | 2026-09-08 → 2026-09-15 | 47                  | E1     |
 | 5    | 2026-08-23 → 2026-09-08 | 47                  | D1     |
 | 5    | 2026-06-08 → 2026-07-14 | 297 (back-fill)     | D2, D3 |
 | 4    | 2026-08-19 → 2026-08-23 | 29                  | C1     |
@@ -22,9 +23,11 @@ plumbing), most of it since superseded; it was reviewed by filtering to commits 
 routes, migrations, auth, Terraform and workflows rather than read commit-by-commit, so it is
 covered less exhaustively than the app-feature windows above.
 
-Pass 5 also re-verified every open finding against `main` at 2026-09-08 — see
-[Re-verification](#re-verification--2026-09-08). All of A3–A8, B1, B2 and C1 are still open, with
-no partial mitigations landed.
+Pass 6 re-verified every open finding against `main` at 2026-09-15 — see
+[Re-verification](#re-verification--2026-09-15). D1 shipped (#564); D2 has a fix in review (#598);
+everything else is unchanged. Pass 6's own window (last week) landed the hearth receipt tracker
+(#567) plus two dependency-RCE patches (#589, #590) — covered under
+[Follow-up — 2026-09-08 → 2026-09-15](#follow-up--2026-09-08--2026-09-15).
 
 Relevant context for severity: `hearth` is deployed publicly (`staging-hearth.vercel.app`,
 `production-hearth.vercel.app`) with **open self-serve signup**
@@ -33,22 +36,23 @@ Relevant context for severity: `hearth` is deployed publicly (`staging-hearth.ve
 
 ## Summary
 
-| ID  | Severity | Status | Area             | Issue                                                                                              |
-| --- | -------- | ------ | ---------------- | -------------------------------------------------------------------------------------------------- |
-| A1  | Critical | Fixed  | hearth           | Arbitrary R2 object read + delete via client-supplied staged key                                   |
-| A2  | High     | Fixed  | hearth           | Presigned-download hardening for home docs is defeated by the bucket's public `r2.dev` hostname    |
-| A3  | High     | Open   | vb-express       | SSRF in `POST /api/recipe/scrape` reaches Fly 6PN private-only services                            |
-| B1  | High     | Open   | bucket-service   | `bucketName` accepted from the caller with no allowlist, now fronting private home-docs/where-is   |
-| D1  | High     | Open   | react-lib        | Supabase Realtime rooms are public channels, so CRDT sync bypasses the RLS on the same data        |
-| D2  | High     | Open   | hearth           | `GET /api/homes/[id]/members` discloses the home owner's email with no authentication              |
-| A4  | Medium   | Open   | hearth           | Presigned uploads are unbounded in size and never garbage-collected                                |
-| A5  | Medium   | Open   | hearth           | Home-invite acceptance trigger now swallows every error silently                                   |
-| A6  | Medium   | Open   | hearth           | LLM-backed routes have no rate limit or budget guard                                               |
-| B2  | Medium   | Open   | employee-handler | Unescaped employee name interpolated into a shell command in the new birthday-sync Calendar target |
-| C1  | Medium   | Open   | nx-workspace     | Vercel env-var prune deletes a live production secret whenever its Vault fetch fails               |
-| A7  | Low      | Open   | vb-manager-next  | TODO.md serializer can silently delete rows it failed to parse                                     |
-| A8  | Low      | Open   | hearth           | `getBearerToken` strips `Bearer ` by substring replace, not by prefix                              |
-| D3  | Low      | Open   | ci               | `manual-deploy-app.yml` interpolates a dispatch input straight into a `run:` block                 |
+| ID  | Severity | Status    | Area             | Issue                                                                                              |
+| --- | -------- | --------- | ---------------- | -------------------------------------------------------------------------------------------------- |
+| A1  | Critical | Fixed     | hearth           | Arbitrary R2 object read + delete via client-supplied staged key                                   |
+| A2  | High     | Fixed     | hearth           | Presigned-download hardening for home docs is defeated by the bucket's public `r2.dev` hostname    |
+| A3  | High     | Open      | vb-express       | SSRF in `POST /api/recipe/scrape` reaches Fly 6PN private-only services                            |
+| B1  | High     | Open      | bucket-service   | `bucketName` accepted from the caller with no allowlist, now fronting private home-docs/where-is   |
+| D1  | High     | Fixed     | react-lib        | Supabase Realtime rooms are public channels, so CRDT sync bypasses the RLS on the same data        |
+| D2  | High     | In review | hearth           | `GET /api/homes/[id]/members` discloses the home owner's email with no authentication              |
+| A4  | Medium   | Open      | hearth           | Presigned uploads are unbounded in size and never garbage-collected                                |
+| A5  | Medium   | Open      | hearth           | Home-invite acceptance trigger now swallows every error silently                                   |
+| A6  | Medium   | Open      | hearth           | LLM-backed routes have no rate limit or budget guard                                               |
+| B2  | Medium   | Open      | employee-handler | Unescaped employee name interpolated into a shell command in the new birthday-sync Calendar target |
+| C1  | Medium   | Open      | nx-workspace     | Vercel env-var prune deletes a live production secret whenever its Vault fetch fails               |
+| A7  | Low      | Open      | vb-manager-next  | TODO.md serializer can silently delete rows it failed to parse                                     |
+| A8  | Low      | Open      | hearth           | `getBearerToken` strips `Bearer ` by substring replace, not by prefix (one instance fixed by #598) |
+| D3  | Low      | Open      | ci               | `manual-deploy-app.yml` interpolates a dispatch input straight into a `run:` block                 |
+| E1  | Low      | Open      | hearth           | Receipt staging R2 keys share one prefix with no per-user namespace or ownership check             |
 
 ---
 
@@ -286,8 +290,14 @@ empty, rather than treating a fetch failure the same as an intentional removal.
 Fifth pass. Covers the 47 non-Upptime commits landed since the review above, plus a back-fill of the
 297 landed 2026-06-08 → 2026-07-14 now that the window is a rolling three months.
 
-## D1 — Supabase Realtime rooms are public channels, so CRDT sync bypasses the RLS on the same data (High, open)
+## D1 — Supabase Realtime rooms are public channels, so CRDT sync bypasses the RLS on the same data (High, fixed)
 
+- Fixed: `1aeb3e957` — _security(realtime): Authorize the notepad and whiteboard sync channels._ (#564,
+  2026-09-08). The shared room hooks now join with `private: true` + `realtime.setAuth` when given a
+  JWT, and `realtime.messages` policies authorize `notepad-room` (allowed account) and
+  `whiteboard-room-<homeId>-*` (home members); the anonymous-by-design apps stay public. Reproduced
+  live before the fix (an anonymous client with only the publishable key was admitted to every
+  channel), read-only.
 - Introduced: `f5df720a4` — _feat: Implement whiteboard._ (2026-07-04, back-fill window) established
   the room; `e13ad2a27` — _feat(react-lib): Sync the notepad live across devices via a shared Yjs CRDT
   room_ (#518, 2026-08-23) moved the notepad onto it; `c1828361a` — _feat(hearth): Switch the shared
@@ -328,8 +338,12 @@ and add `realtime.messages` policies authorizing each topic — `notepad-room` t
 `whiteboard-room-<homeId>-<boardKey>` via `is_home_member`/`is_home_owner` parsed from
 `realtime.topic()`. Tracked as `24be3b` in `TODO.md`.
 
-## D2 — `GET /api/homes/[id]/members` discloses the home owner's email with no authentication (High, open)
+## D2 — `GET /api/homes/[id]/members` discloses the home owner's email with no authentication (High, fix in review)
 
+- Fix in review: #598 — _security(hearth): Gate the home-members GET behind membership._ Resolves the
+  caller, returns 401 if absent and 403 unless they own or are an accepted member of the home, before
+  the service-role owner lookup; also switches the route to `getBearerToken` (closing A8 for this
+  route).
 - Introduced: `0f4509fe2` — _chore: rename next-demo->hearth_ (2026-06-28)
 - File: `apps/hearth/src/app/api/homes/[id]/members/route.ts:42-90`
 
@@ -365,6 +379,58 @@ a hex-pattern validation on `ids`).
 Suggested fix: pass both inputs through `env:` and reference them as `"$PROJECT"` / `"$ENVIRONMENT"`.
 
 ---
+
+## Follow-up — 2026-09-08 → 2026-09-15
+
+Sixth pass. Covers the 47 non-Upptime commits landed since the review above. Fixes that landed:
+
+- **D1 fixed** by #564 (`1aeb3e957`) — see the D1 entry above.
+- **Two dependency RCEs found and patched in-window**, both version bumps with no lingering exposure:
+  `6bbd9fd0c` — _security(next): Patch the critical unauthenticated RCE advisories._ (#589), and
+  `b1234fc34` — _security(hearth): Patch the libheif RCE reachable through sharp uploads._ (#590).
+- **A receipt-tracker RLS bug fixed same-day.** `feat(hearth): …receipt tracker…` (#567, `d9a8fc7a2`)
+  originally inserted `price_entries` in the same statement as the CTE that upserts `price_items`, so
+  the just-upserted product was invisible to the `price_entries` RLS check and the insert was rejected;
+  `20260915000036_fix_receipt_price_entry_rls.sql` split the writes so each sees the prior statement's
+  rows. Caught before it reached a release the audit would have flagged as broken.
+
+The receipt tracker (#567) is the main new surface. It **applies the prior lessons well**: upload keys
+are generated server-side (`crypto.randomUUID`), `assertStagedKey` gates every `readImage`/`deleteImage`
+(`apps/hearth/src/app/api/receipts/route.ts:70,211`) — the A1 fix — every route checks auth, and RLS was
+actively debugged. Two existing findings now also cover it, and one new low-severity gap:
+
+- **A4 now also covers `receipts/staging`.** `createImageUploadUrl` (`receipts/r2.ts:96`) signs only key
+  - mimeType; the declared `size` is zod-validated but never bound into the presigned PUT, and there is
+    still no lifecycle rule GC-ing the staging prefix in the shared `home-docs` bucket.
+- **A6 now also covers `/api/receipts/analyze`.** It's bounded per call (`images` capped at
+  `MAX_IMAGES_PER_RECEIPT`) but has no per-user rate limit, so under hearth's open signup it's another
+  cost-amplification path against the LLM spend behind `VB_EXPRESS_API_KEY`.
+
+## E1 — Receipt staging keys are not namespaced per user (Low, open)
+
+- Introduced: `d9a8fc7a2` — _feat(hearth): Add a relational receipt tracker…_ (#567, 2026-09-09)
+- Files: `apps/hearth/src/app/api/receipts/r2.ts:33`, `.../receipts/upload-url/route.ts:61`,
+  `.../receipts/route.ts:70`, `.../receipts/analyze/route.ts:90`
+
+Staged upload keys are `receipts/staging/<uuid>` — one shared prefix for all users, with no user id in
+the path. `assertStagedKey` only checks the `receipts/staging` prefix, not ownership, and
+`/api/receipts/analyze` accepts an array of staging keys from the caller and feeds the referenced images
+to the LLM. So a user who learns another user's staged key could have its image analysed and receive the
+extracted contents. Reachability is gated only by the key being an unguessable `crypto.randomUUID`, and
+staged objects are transient — hence Low — but there is no ownership boundary behind that randomness.
+
+Suggested fix: namespace staging keys as `receipts/staging/<userId>/<uuid>` and have `assertStagedKey`
+(and the analyze route) require the authenticated user's id in the prefix, so a key is only usable by
+the user who staged it.
+
+---
+
+## Re-verification — 2026-09-15
+
+Every still-open finding was re-checked against `main` at 2026-09-15; all hold, evidence unchanged from
+the table below except where noted. **D1 is now fixed** (#564, on `main`). **D2 has a fix in review**
+(#598) but is still open on `main`. A3, A4, A5, A6, A7, A8, B1, B2, C1, D3 remain open exactly as
+recorded. A4 and A6 additionally now apply to the receipt tracker (above). New this pass: E1.
 
 ## Re-verification — 2026-09-08
 
