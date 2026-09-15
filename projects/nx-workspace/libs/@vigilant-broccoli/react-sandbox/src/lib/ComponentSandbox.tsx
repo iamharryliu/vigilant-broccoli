@@ -41,7 +41,10 @@ import { ToasterDemo } from './demos/ToasterDemo';
 import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
 import { GroupLeaderboardDemo } from './demos/GroupLeaderboardDemo';
 import { EmptyLeaderboardDemo } from './demos/EmptyLeaderboardDemo';
+import { NotepadDemo } from './demos/NotepadDemo';
+import { QuickLinksDemo } from './demos/QuickLinksDemo';
 import { ScrollTimelineDemo } from './demos/ScrollTimelineDemo';
+import { TasksDemo } from './demos/TasksDemo';
 
 const CRUD_STORAGE_KEYS = {
   IS_CARDS: 'component-sandbox-crud-is-cards',
@@ -55,9 +58,6 @@ const CRUD_SWITCH_LABEL = {
   FULL_WIDTH_IMAGE: 'Full-width image',
 } as const;
 
-const DEFAULT_TITLE = 'Component Sandbox';
-const DEFAULT_SUBTITLE =
-  'Interactive component showcase and testing playground';
 const SELECTED_ID_STORAGE_KEY = 'component-sandbox-selected-id';
 const ICON_MODE_STORAGE_KEY = 'component-sandbox-icon-mode';
 
@@ -279,10 +279,28 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     content: <CurrencyConverterUtilityContent />,
   },
   {
+    id: 'notepad',
+    label: 'Notepad',
+    category: CATEGORY.UTILITIES,
+    content: <NotepadDemo />,
+  },
+  {
+    id: 'quick-links',
+    label: 'Quick Links',
+    category: CATEGORY.UTILITIES,
+    content: <QuickLinksDemo />,
+  },
+  {
     id: 'stopwatch',
     label: 'Stopwatch',
     category: CATEGORY.UTILITIES,
     content: <StopwatchUtilityContent />,
+  },
+  {
+    id: 'tasks',
+    label: 'Tasks',
+    category: CATEGORY.UTILITIES,
+    content: <TasksDemo />,
   },
   {
     id: 'timer',
@@ -412,8 +430,8 @@ const SandboxTopbar = ({ title, onMenuClick }: SandboxTopbarProps) => (
 );
 
 interface SandboxBodyProps {
-  title: string;
-  subtitle: string;
+  title?: string;
+  subtitle?: string;
   dark: boolean;
   setDark: (v: boolean) => void;
   showThemeToggle: boolean;
@@ -479,19 +497,23 @@ const SandboxBody = ({
         defaultOpenId={selectedEntry.category}
       />
       <SandboxTopbar
-        title={title}
+        title={title ?? selectedEntry.label}
         onMenuClick={() => setSidebarOpen(open => !open)}
       />
       <div
         className={`${CONTENT_WRAPPER_BASE_CLASS} ${iconMode ? CONTENT_WRAPPER_COLLAPSIBLE_CLASS : CONTENT_WRAPPER_FIXED_CLASS}`}
       >
         <div className="p-6 max-w-4xl">
-          <Heading size="8" mb="2">
-            {title}
-          </Heading>
-          <Text color="gray" size="4" mb="6">
-            {subtitle}
-          </Text>
+          {title && (
+            <Heading size="8" mb="2">
+              {title}
+            </Heading>
+          )}
+          {subtitle && (
+            <Text color="gray" size="4" mb="6">
+              {subtitle}
+            </Text>
+          )}
           <Heading size="5" mb="4" className="block">
             {selectedEntry.label}
           </Heading>
@@ -503,8 +525,8 @@ const SandboxBody = ({
 };
 
 export function ComponentSandbox({
-  title = DEFAULT_TITLE,
-  subtitle = DEFAULT_SUBTITLE,
+  title,
+  subtitle,
   wrapInTheme = false,
 }: ComponentSandboxProps): ReactNode {
   const [dark, setDark] = useState(false);

@@ -1,18 +1,3 @@
-data "aws_ami" "ubuntu" {
-  most_recent = true
-  owners      = ["099720109477"] # Canonical
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-}
-
 resource "aws_security_group" "seafile" {
   name        = "seafile-sg"
   description = "Seafile VM: SSH open, 80/443 restricted to Cloudflare so Access cannot be bypassed via direct IP"
@@ -79,9 +64,9 @@ resource "random_password" "seafile_redis_password" {
 }
 
 # Seafile's files/DB live here, not on the boot disk, so they survive VM
-# replacement (AMI updates force a new instance whenever Canonical publishes a
-# new Ubuntu 22.04 build — see data.aws_ami.ubuntu). cloud-init formats it only
-# on first use, so re-provisioning reattaches existing data intact.
+# replacement (bumping var.ubuntu_ami forces a new instance, as does
+# `pnpm seafile:replace`). cloud-init formats it only on first use, so
+# re-provisioning reattaches existing data intact.
 resource "aws_ebs_volume" "seafile_data" {
   availability_zone = "eu-north-1a"
   size              = 30
@@ -100,7 +85,7 @@ resource "aws_volume_attachment" "seafile_data" {
 }
 
 resource "aws_instance" "seafile" {
-  ami                    = data.aws_ami.ubuntu.id
+  ami                    = var.ubuntu_ami
   instance_type          = "t3.medium"
   vpc_security_group_ids = [aws_security_group.seafile.id]
 

@@ -3,21 +3,6 @@
 # pattern (aws-seafile.tf) — no inbound 80/443 rule is needed at all, so the
 # security group only opens SSH.
 
-data "aws_ami" "immich" {
-  most_recent = true
-  owners      = ["099720109477"] # Canonical
-
-  filter {
-    name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
-  }
-
-  filter {
-    name   = "virtualization-type"
-    values = ["hvm"]
-  }
-}
-
 resource "aws_security_group" "immich" {
   name        = "immich-sg"
   description = "Immich VM: SSH only, the app is reachable solely through the outbound cloudflared tunnel, no inbound 80/443"
@@ -47,9 +32,9 @@ resource "random_password" "immich_db_password" {
 }
 
 # Immich's library/DB live here, not on the boot disk, so they survive VM
-# replacement (AMI updates force a new instance whenever Canonical publishes a
-# new Ubuntu 22.04 build — see data.aws_ami.immich). cloud-init formats it only
-# on first use, so re-provisioning reattaches existing data intact.
+# replacement (bumping var.ubuntu_ami forces a new instance, as does
+# `pnpm immich:replace`). cloud-init formats it only on first use, so
+# re-provisioning reattaches existing data intact.
 resource "aws_ebs_volume" "immich_data" {
   availability_zone = "eu-north-1a"
   size              = 100
@@ -68,7 +53,7 @@ resource "aws_volume_attachment" "immich_data" {
 }
 
 resource "aws_instance" "immich" {
-  ami                    = data.aws_ami.immich.id
+  ami                    = var.ubuntu_ami
   instance_type          = "t3.medium"
   vpc_security_group_ids = [aws_security_group.immich.id]
 

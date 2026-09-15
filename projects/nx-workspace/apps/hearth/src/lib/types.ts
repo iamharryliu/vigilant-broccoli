@@ -2,6 +2,7 @@ export type Home = {
   id: number;
   name: string;
   description: string;
+  isOwner?: boolean;
 };
 
 export const HOME_ROLE = {
@@ -231,6 +232,82 @@ export interface PriceItem {
   unit: string | null;
   homeId: number;
   entries: PriceEntry[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const RECEIPT_CATEGORIES = [
+  'Produce',
+  'Dairy',
+  'Meat',
+  'Bakery',
+  'Frozen',
+  'Beverages',
+  'Snacks',
+  'Household',
+  'Personal Care',
+  'Other',
+] as const;
+
+export type ReceiptCategory = (typeof RECEIPT_CATEGORIES)[number];
+
+export const DEFAULT_RENAME_LANGUAGE = 'English';
+
+export const RENAME_LANGUAGES = [
+  'English',
+  'Swedish',
+  'French',
+  'German',
+  'Spanish',
+  'Italian',
+  'Danish',
+  'Norwegian',
+  'Simplified Chinese',
+] as const;
+
+// Persisted on the Supabase user, so the preference follows the account rather
+// than the browser.
+export const RENAME_ENABLED_KEY = 'receipt_rename_enabled';
+export const RENAME_LANGUAGE_KEY = 'receipt_rename_language';
+
+export interface ReceiptItem {
+  id: string;
+  name: string;
+  originalName: string | null;
+  category: string | null;
+  unit: string | null;
+  quantity: number;
+  unitPrice: number | null;
+  totalPrice: number;
+  priceItemId: string | null;
+  lineOrder: number;
+}
+
+export interface ReceiptTax {
+  id: string;
+  rate: number;
+  taxAmount: number | null;
+  netAmount: number | null;
+  grossAmount: number | null;
+}
+
+export interface Receipt {
+  id: string;
+  homeId: number;
+  merchantId: string | null;
+  merchantName: string | null;
+  merchantAddress: string | null;
+  purchasedAt: string;
+  currency: string;
+  taxInclusive: boolean;
+  subtotal: number | null;
+  tax: number | null;
+  total: number | null;
+  notes: string | null;
+  items: ReceiptItem[];
+  taxes: ReceiptTax[];
+  imageKeys: string[];
+  imageUrls: string[];
   createdAt: string;
   updatedAt: string;
 }

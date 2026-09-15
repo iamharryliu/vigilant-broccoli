@@ -23,6 +23,15 @@ const SETTINGS_PATH = '/settings';
 const UNREAD_MAX = 9;
 const UNREAD_MAX_LABEL = '9+';
 
+const PANEL_BASE_CLASSES =
+  'border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex flex-col overflow-hidden transition-[width,opacity] duration-300 ease-in-out motion-reduce:transition-none';
+const PANEL_OPEN_CLASSES = 'w-72 opacity-100';
+const PANEL_CLOSED_CLASSES = 'w-0 opacity-0 border-l-0';
+const PANEL_CONTENT_BASE_CLASSES =
+  'w-72 h-full shrink-0 transition-transform duration-300 ease-in-out motion-reduce:transition-none';
+const PANEL_CONTENT_OPEN_CLASSES = 'translate-x-0';
+const PANEL_CONTENT_CLOSED_CLASSES = 'translate-x-full';
+
 const BellIconWithBadge = ({ unreadCount }: { unreadCount: number }) => (
   <span className="relative inline-flex">
     <Bell size={18} />
@@ -138,14 +147,20 @@ export const RightSidebar = ({
 
   return (
     <div className="flex h-full">
-      {notificationsOpen && (
-        <div className="w-72 border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex flex-col overflow-hidden">
+      <div
+        className={`${PANEL_BASE_CLASSES} ${notificationsOpen ? PANEL_OPEN_CLASSES : PANEL_CLOSED_CLASSES}`}
+        aria-hidden={!notificationsOpen}
+        inert={!notificationsOpen}
+      >
+        <div
+          className={`${PANEL_CONTENT_BASE_CLASSES} ${notificationsOpen ? PANEL_CONTENT_OPEN_CLASSES : PANEL_CONTENT_CLOSED_CLASSES}`}
+        >
           <NotificationsDialog
             notifications={notifications}
             onClear={onClearNotifications}
           />
         </div>
-      )}
+      </div>
       <Sidebar items={items} side="right" align="space-evenly" />
     </div>
   );

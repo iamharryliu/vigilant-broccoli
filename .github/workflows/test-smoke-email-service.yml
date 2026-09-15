@@ -2,7 +2,7 @@ name: test-smoke-email-service
 
 on:
   schedule:
-    - cron: '0 0 * * 0'
+    - cron: '25 5 * * 0'
   workflow_dispatch:
     inputs:
       environment:
@@ -24,6 +24,7 @@ jobs:
   test-email-service:
     if: ${{ github.event_name != 'repository_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true') }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:

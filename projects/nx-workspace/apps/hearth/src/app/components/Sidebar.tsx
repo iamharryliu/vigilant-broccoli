@@ -2,13 +2,17 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { House } from 'lucide-react';
 import {
   Sidebar as SharedSidebar,
   SidebarCTA,
 } from '@vigilant-broccoli/react-lib';
 import { NAV_LINKS, NavLink } from '../app.consts';
+import { useHome } from '../providers/home-provider';
 import { useIsMobile } from '../../lib/use-is-mobile';
 import { ROUTES } from '../../lib/routes';
+
+const NO_HOME_LABEL = 'No home selected';
 
 const SIDEBAR_POSITION = 'peer fixed top-0 left-0 bottom-0 z-30';
 
@@ -45,14 +49,24 @@ type SidebarProps = {
 export default function Sidebar({ mobileOpen, onMobileClose }: SidebarProps) {
   const pathname = usePathname();
   const isMobile = useIsMobile();
+  const { homes, selectedHomeId } = useHome();
 
   const items: SidebarCTA[] = NAV_LINKS.map(link =>
     toSidebarCTA(link, pathname, isMobile),
   );
 
+  // Every nav destination reads the active home from the provider, so naming it
+  // here is what makes the sidebar's scope visible rather than implicit.
+  const selectedHome = homes.find(home => home.id === selectedHomeId);
+
   return (
     <SharedSidebar
       items={items}
+      branding={{
+        label: selectedHome?.name ?? NO_HOME_LABEL,
+        icon: House,
+        href: ROUTES.SETTINGS,
+      }}
       LinkComponent={Link}
       searchable
       className={SIDEBAR_POSITION}

@@ -2,7 +2,7 @@ name: test-e2e-llm
 
 on:
   schedule:
-    - cron: '0 0 * * 0'
+    - cron: '25 4 * * 0'
   workflow_dispatch:
     inputs:
       environment:
@@ -24,6 +24,7 @@ jobs:
   test-llm-service:
     if: ${{ github.event_name != 'repository_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true') }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -67,3 +68,34 @@ jobs:
         run: |
           chmod +x scripts/shell/test-llm-e2e.sh
           scripts/shell/test-llm-e2e.sh
+
+  test-calendar-parse:
+    if: ${{ github.event_name != 'repository_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJSON(github.event_name == 'repository_dispatch' && format('["{0}"]', github.event.client_payload.environment) || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
+    name: ${{ matrix.environment }} calendar-parse
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets VB_EXPRESS_API_KEY | VB_EXPRESS_API_KEY ;
+
+      # vb-express is public — it has no `privateOnly` flag in
+      # scripts/secrets-mapping.config.ts, so it keeps a public IP and has no
+      # flycast address to tunnel to, unlike the llm-service job above.
+      - name: Run calendar parse e2e tests
+        env:
+          VB_EXPRESS_URL: https://${{ matrix.environment }}-vb-express.fly.dev
+          VB_EXPRESS_API_KEY: ${{ env.VB_EXPRESS_API_KEY }}
+        run: |
+          chmod +x scripts/shell/test-calendar-parse-e2e.sh
+          scripts/shell/test-calendar-parse-e2e.sh

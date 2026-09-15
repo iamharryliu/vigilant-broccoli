@@ -28,8 +28,21 @@ export interface SupabaseBroadcastLike {
   channel(
     name: string,
     opts: {
-      config: { presence: { key: string }; broadcast: { self: boolean } };
+      config: {
+        presence: { key: string };
+        broadcast: { self: boolean };
+        // Set for RLS-backed rooms (notepad, hearth whiteboards) so Supabase
+        // enforces realtime.messages policies on the channel. Left unset for
+        // the anonymous-by-design apps (standalone whiteboard, findme), which
+        // stay public — Supabase only checks RLS on private channels.
+        private?: boolean;
+      };
     },
   ): BroadcastPresenceChannel;
   removeChannel(channel: BroadcastPresenceChannel): void;
+  // Present on the real SupabaseClient; used to hand the connection the
+  // signed-in JWT before joining a private channel, and to refresh it.
+  realtime?: {
+    setAuth(token?: string | null): void | Promise<unknown>;
+  };
 }

@@ -1,6 +1,15 @@
-# Textile Patterns
+# Textiles
 
-Common fabric pattern/print names, what defines each, and a reference image.
+Common fabric names — printed/woven patterns and tactile textures — what defines each, and a reference image.
+
+## Table of Contents
+
+- [Patterns](#patterns)
+- [Textures](#textures)
+
+## Patterns
+
+Pattern/print names (motif and color layout, regardless of surface feel).
 
 | Pattern             | Image                                                                                                                                                                                                                                                                                                                                                                        | Description                                                                                                                                                 |
 | ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -18,3 +27,12 @@ Common fabric pattern/print names, what defines each, and a reference image.
 | **Polka Dot**       | ![Polka Dot](https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Polka_dots.svg/250px-Polka_dots.svg.png)                                                                                                                                                                                                                                                              | Regularly spaced, equally sized filled circles on a contrasting background.                                                                                 |
 | **Tartan / Plaid**  | ![Tartan](https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Three_tartans.jpg/250px-Three_tartans.jpg)                                                                                                                                                                                                                                                               | Criss-crossed horizontal and vertical bands of multiple colors forming repeating rectangular blocks; specific tartans are tied to Scottish clans.           |
 | **Toile (de Jouy)** | ![Toile](https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Handkerchief.jpg/250px-Handkerchief.jpg)                                                                                                                                                                                                                                                                  | Single-color detailed pastoral/scenic illustrations printed repeatedly on an off-white background, originating in Jouy-en-Josas, France.                    |
+
+## Textures
+
+Texture/weave names (tactile surface structure, not print or color).
+
+| Texture        | Image                                                                                                        | Description                                                                                                                                                                                          |
+| -------------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Seersucker** | ![Seersucker](https://commons.wikimedia.org/wiki/Special:FilePath/Seersucker01closeup.JPG?width=250)         | Woven with alternating slack- and tight-tension warp threads, puckering some stripes while leaving others flat; the puckering holds fabric off the skin, making it popular for warm-weather suiting. |
+| **Waffle**     | ![Waffle Weave](https://commons.wikimedia.org/wiki/Special:FilePath/Knitted%20Waffle%20fabric.jpg?width=250) | Grid of raised, honeycomb-like squares formed by a float weave (long floats crossing short ones); the pockets of trapped air add warmth, common in thermal underlayers and waffle-knit henleys.      |

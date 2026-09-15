@@ -7,6 +7,7 @@
 - [Food Science & Components](#food-science--components)
 - [Ingredients & Food Products](#ingredients--food-products)
 - [Kitchen](#kitchen)
+- [Culinary Culture](#culinary-culture)
 - [Asian Food Lingo](#asian-food-lingo)
 - [French Food Lingo](#french-food-lingo)
 - [Italian Food Lingo](#italian-food-lingo)
@@ -85,6 +86,14 @@
 | **French Top** | A thick, flat steel plate set over a burner (or ring of burners) on a range, heated most in the center and cooler toward the edges. Lets cooks slide pots between heat zones instead of adjusting a dial, useful for simmering multiple sauces at once. |
 | **Pantry**     | A room, closet, or cupboard used to store food, dry goods, and cooking supplies. A well-stocked pantry (oils, vinegars, grains, canned goods, spices) provides shelf-stable staples for cooking without a dedicated grocery trip.                       |
 | **Stage**      | An unpaid or low-paid trial period (pronounced "stahzh," from French for "internship") where a cook works a shift or series of shifts in a professional kitchen to learn techniques, prove their skills, or be evaluated for a job.                     |
+
+---
+
+## Culinary Culture
+
+| Term           | Description                                                                                                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Gastronomy** | The study and practice of food as culture — how ingredients, cooking, and eating relate to a region's history, customs, and identity. Broader than cooking itself, covering why a cuisine eats what it eats. |
 
 ---
 

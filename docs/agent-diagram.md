@@ -55,6 +55,7 @@ flowchart TD
             CMD_RND_NOTE["rnd-note.md"]
             CMD_AUDIT_NOTE["audit-note.md"]
             CMD_SHIP_PR["ship-pr.md"]
+            CMD_SYNC_MAIN["sync-main.md"]
             CMD_UPDATE_FEATURE_DOCS["update-feature-documentation.md"]
             CMD_UPDATE_READMES["update-readmes.md"]
         end
@@ -67,6 +68,8 @@ flowchart TD
     CLAUDECODE -->|invoked as /update-readmes| APP_README
     CLAUDECODE -->|invoked as /create-todo-task| CLAUDE
     CLAUDECODE -->|/create-todo-task<br/>writes a table row| TODO
+    CLAUDECODE -->|invoked as /sync-main| GIT
+    CLAUDECODE -->|/ship-pr syncs via /sync-main| GIT
     CLAUDECODE -->|invoked as /audit-note| AUDIT_TPL
     CLAUDECODE -->|invoked as /rnd-note| RND_TPL
     CLAUDECODE -.->|reads for conventions| CLAUDE
@@ -77,4 +80,4 @@ flowchart TD
 - **`CLAUDE.md`** is the entry point every agent reads first. Its Doc Map links out to the docs under `docs/` that own each topic (dev tooling, CI, app development, git, networking, secrets, nuances, cleanup checklist) — including this diagram itself. It also points at two living records that agents keep current as work lands: `TODO.md` and `docs/learning-timeline.md`.
 - **This diagram is generated content, not source of truth** — `CLAUDE.md`'s Doc Map is authoritative. Whenever a Doc Map entry is added/removed, `docs/` gains or loses a doc, or skills/commands are rewired, update this file's mermaid graph and bullets to match in the same change.
 - **`docs/`** is a graph, not a flat list: top-level docs (e.g. `APP_DEVELOPMENT.md`) route to more specific pattern docs (`repo-patterns.md`, `ui-app-pattern.md`, `fly-service-pattern.md`), which in turn cite each other for narrower concerns (secrets, deploy destinations).
-- **Skills** (Claude Code commands) live as markdown files in `setup/dotfiles/.claude/commands/` and `setup/dotfiles/.claude/skills/`, symlinked into `~/.claude/commands` and `~/.claude/skills` by `setup/common/symlinks.sh`. `skills/` currently holds only a `.gitkeep` — every entry today is a command. They are a separate discovery mechanism from the Doc Map — Claude Code surfaces them as `/slash-commands` — but their instructions explicitly point back into `CLAUDE.md` and `docs/` (e.g. `/create-todo-task` reads `CLAUDE.md` for constraints and writes a priority-ordered row into the relevant `TODO.md` section table — a format also parsed by `infrastructure/agent-sandbox/solve-todo*.sh`, `/update-readmes` follows `docs/app-readme-pattern.md`, `/audit-note` and `/rnd-note` treat their `docs/audit`/`docs/rnd` templates as the source of truth for note structure).
+- **Skills** (Claude Code commands) live as markdown files in `setup/dotfiles/.claude/commands/` and `setup/dotfiles/.claude/skills/`, symlinked into `~/.claude/commands` and `~/.claude/skills` by `setup/common/symlinks.sh`. `skills/` currently holds only a `.gitkeep` — every entry today is a command. They are a separate discovery mechanism from the Doc Map — Claude Code surfaces them as `/slash-commands` — but their instructions explicitly point back into `CLAUDE.md` and `docs/` (e.g. `/create-todo-task` reads `CLAUDE.md` for constraints and writes a priority-ordered row into the relevant `TODO.md` section table — a format also parsed by `infrastructure/agent-sandbox/solve-todo*.sh`, `/update-readmes` follows `docs/app-readme-pattern.md`, `/audit-note` and `/rnd-note` treat their `docs/audit`/`docs/rnd` templates as the source of truth for note structure, `/sync-main` and `/ship-pr` implement the merge-don't-rebase sync policy documented in `GIT.md`).

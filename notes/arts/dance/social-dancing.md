@@ -1,17 +1,26 @@
 # Social Dancing
 
-- [Salsa](./salsa.md)
-- [Bachata](./bachata.md)
-
 ## Contents
 
+- [Latin Social Dancing](#latin-social-dancing)
+- [Personal Notes](#personal-notes)
 - [Exercises](#exercises)
 - [Types of Moves](#types-of-moves)
 - [Types of Turns](#types-of-turns)
 - [Positions](#positions)
+- [Position Transitions](#position-transitions)
 - [Variations](#variations)
 - [Good Dancing](#good-dancing)
 - [For Later](#for-later)
+
+## Latin Social Dancing
+
+- [Salsa](./salsa.md)
+- [Bachata](./bachata.md)
+
+## Personal Notes
+
+- [Personal Dance Notes](./personal-dance-notes.md)
 
 ## Exercises
 
@@ -37,15 +46,43 @@
 
 ## Positions
 
-| Name                   | Image                                                                                        |
-| ---------------------- | -------------------------------------------------------------------------------------------- |
-| Closed                 | [Google Images](https://www.google.com/search?tbm=isch&q=social%20dance%20closed%20position) |
-| Crossbody              | [Google Images](https://www.google.com/search?tbm=isch&q=social%20dance%20crossbody)         |
-| Hammerlock             | [Google Images](https://www.google.com/search?tbm=isch&q=social%20dance%20hammerlock)        |
-| Open                   | [Google Images](https://www.google.com/search?tbm=isch&q=social%20dance%20open%20position)   |
-| Shadow                 | [Google Images](https://www.google.com/search?tbm=isch&q=social%20dance%20shadow%20position) |
-| Titanic/Presentation   | [Google Images](https://www.google.com/search?tbm=isch&q=social%20dance%20titanic)           |
-| Wrap/Cuddle/Sweetheart | [Google Images](https://www.google.com/search?tbm=isch&q=social%20dance%20wrap)              |
+| Name                   | Description                                                                                                            |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Breakback              | Both partners step back away from each other on a hand connection, building stretch to launch the next move.           |
+| Closed                 | Lead's right hand on the follow's back, follow's left hand on the lead's shoulder, free hands joined.                  |
+| Crossbody              | Lead opens the slot and the follow travels across to the opposite side.                                                |
+| Hammerlock             | One or both of the follow's arms wrapped behind their own back and held by the lead.                                   |
+| Handshake hold         | Right-to-right hand connection like a handshake; entry point for hook turns and wraps.                                 |
+| Left over right        | Both hands joined with the left arm crossed over the right; sets the unwinding direction.                              |
+| Open                   | Facing each other at arm's length, connected only through the hands; the default frame for turn patterns.              |
+| Right over left        | Both hands joined with the right arm crossed over the left; the mirror of the above.                                   |
+| Shadow                 | Follow directly in front of or beside the lead, both facing the same direction and moving together.                    |
+| Titanic/Presentation   | Follow in front of the lead with both arms opened wide out to the sides, or extended out to one side to showcase them. |
+| Wrap/Cuddle/Sweetheart | Follow in front of the lead, both facing the same way, arms wrapped across the follow's front.                         |
+
+## Position Transitions
+
+```mermaid
+flowchart LR
+
+OPEN[Open]
+SWEETHEART[Wrap/Cuddle/Sweetheart]
+HAMMERLOCK[Hammerlock]
+TITANIC[Titanic/Presentation]
+LEFT_OVER_RIGHT[Left over Right]
+RIGHT_OVER_LEFT[Right over Left]
+
+SWEETHEART<-->OPEN
+OPEN<-->HAMMERLOCK
+TITANIC<-->LEFT_OVER_RIGHT
+LEFT_OVER_RIGHT<-->SWEETHEART
+TITANIC<-->RIGHT_OVER_LEFT
+RIGHT_OVER_LEFT<-->SWEETHEART
+```
+
+- Open is the hub — sweetheart unwinds back out to open, and open winds into hammerlock by taking one arm behind the follow's back.
+- Titanic is the wide-armed midpoint: crossing the arms from there enters either left over right or right over left, and continuing the cross closes into the wrap.
+- Every edge runs both ways, so any entry also reads as an exit by reversing the arm path.
 
 ## Variations
 

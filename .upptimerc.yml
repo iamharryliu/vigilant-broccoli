@@ -4,6 +4,8 @@ repo: vigilant-broccoli
 sites:
   - name: harryliu.dev
     url: https://harryliu.dev/
+  - name: harryliu.dev-resume
+    url: https://harryliu.dev/resume
   - name: git.harryliu.dev
     url: https://git.harryliu.dev/
   - name: docs.harryliu.dev

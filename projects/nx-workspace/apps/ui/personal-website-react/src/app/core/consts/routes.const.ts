@@ -113,8 +113,9 @@ const CLOUD8SKATE_IG: Link = {
   url: { external: URLS.CLOUD8SKATE_IG },
   text: 'Cloud 8 Skate Instagram',
 };
+const RESUME_PATH = '/resume';
 const RESUME: Link = {
-  url: { external: `${ENVIRONMENT.APP_URL}/assets/resume.pdf` },
+  url: { external: externalUrl(RESUME_PATH) },
   text: 'Resume',
 };
 

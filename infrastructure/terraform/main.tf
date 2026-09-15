@@ -65,7 +65,7 @@ provider "oci" {
 
 provider "aws" {
   region  = var.aws_region
-  profile = "AdministratorAccess-841376026547"
+  profile = var.aws_profile
 }
 
 # Reads SUPABASE_ACCESS_TOKEN from env (personal access token from
@@ -75,6 +75,9 @@ provider "supabase" {}
 locals {
   oci_config       = file("~/.oci/config")
   oci_tenancy_ocid = regex("tenancy=(ocid1\\.tenancy\\.[^\n]+)", local.oci_config)[0]
+
+  # A staged upload is consumed within one request, so a day is generous.
+  r2_staging_expiry_seconds = 86400
 
   hearth_r2_cors_origins = [
     "http://localhost:3000",
@@ -666,10 +669,56 @@ resource "cloudflare_r2_bucket_cors" "home_docs" {
   ]
 }
 
+# Browser uploads land on a staging key first, and the server only deletes them
+# once it has copied them to their final key. Abandoning an upload — closing the
+# tab, a crash, cancelling the form after the AI parse — leaves the staged
+# object behind forever, so expire anything left under the staging prefixes.
+resource "cloudflare_r2_bucket_lifecycle" "home_docs" {
+  account_id  = var.cloudflare_account_id
+  bucket_name = cloudflare_r2_bucket.home_docs.name
+
+  rules = [
+    {
+      id      = "expire-abandoned-receipt-staging"
+      enabled = true
+      conditions = {
+        prefix = "receipts/staging/"
+      }
+      delete_objects_transition = {
+        condition = {
+          type    = "Age"
+          max_age = local.r2_staging_expiry_seconds
+        }
+      }
+    }
+  ]
+}
+
 resource "cloudflare_r2_bucket" "where_is" {
   account_id = var.cloudflare_account_id
   name       = "where-is"
   location   = "ENAM"
+}
+
+resource "cloudflare_r2_bucket_lifecycle" "where_is" {
+  account_id  = var.cloudflare_account_id
+  bucket_name = cloudflare_r2_bucket.where_is.name
+
+  rules = [
+    {
+      id      = "expire-abandoned-where-is-staging"
+      enabled = true
+      conditions = {
+        prefix = "staging/where-is/"
+      }
+      delete_objects_transition = {
+        condition = {
+          type    = "Age"
+          max_age = local.r2_staging_expiry_seconds
+        }
+      }
+    }
+  ]
 }
 
 resource "cloudflare_r2_bucket_cors" "where_is" {
