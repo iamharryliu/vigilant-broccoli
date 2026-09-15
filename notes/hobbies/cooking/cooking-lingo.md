@@ -7,6 +7,7 @@
 - [Food Science & Components](#food-science--components)
 - [Ingredients & Food Products](#ingredients--food-products)
 - [Kitchen](#kitchen)
+- [Culinary Culture](#culinary-culture)
 - [Asian Food Lingo](#asian-food-lingo)
 - [French Food Lingo](#french-food-lingo)
 - [Italian Food Lingo](#italian-food-lingo)
@@ -88,6 +89,14 @@
 
 ---
 
+## Culinary Culture
+
+| Term           | Description                                                                                                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Gastronomy** | The study and practice of food as culture — how ingredients, cooking, and eating relate to a region's history, customs, and identity. Broader than cooking itself, covering why a cuisine eats what it eats. |
+
+---
+
 ## Asian Food Lingo
 
 | Term                              | Description                                                                                                                                                                                                                                                                                                     |
@@ -108,11 +117,10 @@
 
 ## French Food Lingo
 
-| Term         | Description                                                                                                                                                                                                                       |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Béchamel** | One of the French mother sauces, made by whisking milk into a butter-and-flour roux and simmering until thickened. Used as the base for dishes like lasagna, gratins, and mac and cheese.                                         |
-| **Mirepoix** | A base of diced onion, celery, and carrot (traditionally in a 2:1:1 ratio), cooked in butter or oil to release their flavors, forming the aromatic foundation for many French sauces, soups, and stews.                           |
-| **Terroir**  | A French gastronomy term for the complete natural environment—soil, climate, terrain, and local farming practices—in which a food or wine is produced, believed to give it a distinctive character unique to that specific place. |
+| Term         | Description                                                                                                                                                                                             |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Béchamel** | One of the French mother sauces, made by whisking milk into a butter-and-flour roux and simmering until thickened. Used as the base for dishes like lasagna, gratins, and mac and cheese.               |
+| **Mirepoix** | A base of diced onion, celery, and carrot (traditionally in a 2:1:1 ratio), cooked in butter or oil to release their flavors, forming the aromatic foundation for many French sauces, soups, and stews. |
 
 ---
 
