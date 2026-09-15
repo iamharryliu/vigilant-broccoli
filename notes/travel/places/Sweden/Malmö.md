@@ -8,11 +8,14 @@
   - [Emergency Services](#emergency-services)
   - [Postal Services](#postal-services)
 - [Food & Drink](#food--drink)
+  - [Coffee](#coffee)
 - [Stores](#stores)
   - [Secondhand](#secondhand)
   - [Pharmacy](#pharmacy)
   - [Grocery](#grocery)
+  - [Home](#home)
 - [Activities](#activities)
+- [Entertainment](#entertainment)
 - [Events](#events)
 - [Waste Management](#waste-management)
 - [Dog Friendly Spaces](#dog-friendly-spaces)
@@ -53,6 +56,15 @@
 - [Dessert Spots](https://maps.app.goo.gl/1UqRzLEPdfzoYgJE6)
 - [Work Cafes](https://maps.app.goo.gl/eXVHPQRZgcNGekeV8)
 
+### Coffee
+
+| Cafe                                                    | Description                                                         |
+| ------------------------------------------------------- | ------------------------------------------------------------------- |
+| [Lilla Kafferosteriet](https://lillakafferosteriet.se/) | Roastery and cafe in a courtyard off Baltzarsgatan in Gamla Väster. |
+| [Love Coffee Roasters](https://lovecoffee.se/)          | Local roaster with cafes around Malmö.                              |
+| [Solde Kafferosteri](https://solde.se/)                 | Specialty roaster with cafes at Davidshall and Västra Hamnen.       |
+| [Noir Kaffekultur](https://noirkaffekultur.se/)         | Specialty coffee bar in the city centre.                            |
+
 ## Stores
 
 ### Secondhand
@@ -74,6 +86,27 @@
 - [Coop](https://www.coop.se/)
 - [Willys](https://www.willys.se/)
 - [Hemköp](https://www.hemkop.se/)
+
+### Home
+
+| Store                                             | Description                                                                         |
+| ------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| [IKEA](https://www.ikea.com/se/sv/)               | Flat-pack furniture and home goods; the Malmö store is in Svågertorp.               |
+| [Clas Ohlson](https://www.clasohlson.com/se/)     | Hardware, electronics and household basics; small-format stores in the city centre. |
+| [Biltema](https://www.biltema.se/)                | Car parts, tools, and cheap home/garden goods.                                      |
+| [Jula](https://www.jula.se/)                      | Tools, hardware, and home improvement at discount prices.                           |
+| [Bauhaus](https://www.bauhaus.se/)                | Full-size builders merchant and DIY warehouse.                                      |
+| [Hornbach](https://www.hornbach.se/)              | DIY warehouse with a large timber and building-materials yard.                      |
+| [Byggmax](https://www.byggmax.se/)                | Drive-in lumber yard and building materials; no-frills pricing.                     |
+| [Beijer Byggmaterial](https://www.beijerbygg.se/) | Building materials aimed at trades, open to consumers.                              |
+| [Jem & Fix](https://www.jemfix.se/)               | Small-format DIY and hardware chain.                                                |
+| [Rusta](https://www.rusta.com/se/)                | Cheap homeware, storage, textiles, and seasonal goods.                              |
+| [Granit](https://www.granit.com/)                 | Minimalist storage and home organisation.                                           |
+| [Lagerhaus](https://www.lagerhaus.se/)            | Interior decor, kitchenware, and gifts.                                             |
+| [Åhléns](https://www.ahlens.se/)                  | Department store with a home and kitchen section.                                   |
+| [Designtorget](https://designtorget.se/)          | Swedish design objects and small homeware — see [Souvenirs/Gifts](#souvenirsgifts). |
+| [Plantagen](https://www.plantagen.se/)            | Plants, garden supplies, and pots.                                                  |
+| [Blomsterlandet](https://www.blomsterlandet.se/)  | Garden centre and plant nursery.                                                    |
 
 ## Activities
 
@@ -117,6 +150,21 @@
     - [Latin Dance Events](https://www.facebook.com/groups/klubbkalenderlatin/events)
 - Tech
   - [Goto 10 Events](https://www.goto10.se/event/)
+
+## Entertainment
+
+| Venue                                          | Description                                                                              |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| [Tivoli Gardens](https://www.tivoli.dk/en)     | Historic amusement park in central Copenhagen, ~35 min over the Öresund bridge by train. |
+| [Liseberg](https://www.liseberg.com/)          | Sweden's largest amusement park, in Gothenburg — ~3 h by train from Malmö.               |
+| [Bakken](https://www.bakken.dk/)               | The world's oldest amusement park, in Klampenborg north of Copenhagen; free entry.       |
+| [Folkets Park](https://malmo.se/Folkets-Park)  | Malmö's old pleasure garden with a small funfair, mini golf, and open-air stages.        |
+| [Malmö Arena](https://www.malmoarena.com/)     | Large arena for concerts, hockey, and touring shows.                                     |
+| [Malmö Live](https://malmolive.se/program)     | Concert hall and congress centre.                                                        |
+| [Malmö Opera](https://www.malmoopera.se/)      | Opera and musical theatre.                                                               |
+| [Filmstaden Malmö](https://www.filmstaden.se/) | Main cinema chain in Sweden.                                                             |
+| [Panora](https://www.panora.se/)               | Independent arthouse cinema at Möllevången.                                              |
+| [Aq-va-kul](https://aqvakul.malmo.se/)         | Public swimming and water park.                                                          |
 
 ## Events
 
