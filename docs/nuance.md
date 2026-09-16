@@ -81,3 +81,25 @@ function fails to resolve `sharp` at runtime.
 
 Keep `sharp` in the root `dependencies`, even though nothing at the root
 imports it directly.
+
+## A partial `observability` block on `cloudflare_workers_script` replans forever
+
+In `cloudflare/cloudflare` 5.x, the nested attributes under
+`cloudflare_workers_script.observability` — `head_sampling_rate`, `logs`, and
+`traces` — are `optional` but **not** `computed` (only `logs.persist`,
+`traces.persist` and `traces.propagation_policy` are). So a config that sets
+only `observability = { enabled = true }` means "these are null", while the
+Cloudflare API always returns its own defaults (`head_sampling_rate = 1`,
+`logs` enabled with invocation logs and persistence, `traces` disabled).
+Refresh writes those defaults into state, Terraform compares them against the
+config's nulls, and every plan proposes the same update-in-place.
+
+It isn't a cosmetic diff: because the change lands on the script resource
+itself, every computed attribute (`etag`, `handlers`, `modified_on`,
+`has_modules`, …) goes to `known after apply`, so each `pnpm tf:apply`
+re-uploads the Worker. Applying never settles it — the next plan shows the
+same diff.
+
+Fix is to spell the object out in full so it matches what the API returns, as
+`cloudflare-nx-cache.tf` now does for `nx-cache`. Any future
+`cloudflare_workers_script` in this repo needs the same treatment.
