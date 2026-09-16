@@ -42,7 +42,7 @@ export const PERSONAL_SITE_LINK = {
   },
   RESUME: {
     NAME: 'Resume',
-    URL: 'https://harryliu.dev/assets/HarryLiu-Resume.pdf',
+    URL: 'https://harryliu.dev/resume',
   },
 } as const;
 
