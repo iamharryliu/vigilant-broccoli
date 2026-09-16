@@ -92,7 +92,22 @@ droplocalbranches() {
   done <<< "$branches_to_delete"
 }
 
-alias dropremotebranches='git branch -r | grep -v "origin/main" | sed "s/origin\///" | xargs -I {} git push origin --delete {} && git fetch -p'
+dropremotebranches() {
+  local branches_to_delete
+  branches_to_delete=$(git branch -r | grep -v "origin/main" | sed "s/origin\///")
+
+  if [[ -z "$branches_to_delete" ]]; then
+    echo "No remote branches to delete (origin/main is safe)."
+    return 0
+  fi
+
+  echo "$branches_to_delete"
+  if ask "Are you sure you want to delete these remote branches?"; then
+    echo "$branches_to_delete" | xargs -I {} git push origin --delete {} && git fetch -p
+  else
+    echo "Remote branch deletion canceled."
+  fi
+}
 
 # Checkout Aliases
 alias gco='git checkout'
