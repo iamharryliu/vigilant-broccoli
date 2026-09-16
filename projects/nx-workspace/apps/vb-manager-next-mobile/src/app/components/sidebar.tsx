@@ -6,6 +6,7 @@ import { useState } from 'react';
 import {
   CalendarDays,
   CalendarRange,
+  ClipboardList,
   Link2,
   ListChecks,
   ListTodo,
@@ -47,6 +48,7 @@ const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
     label: PAGE_TITLE.EVENT_CALENDARS,
     icon: CalendarRange,
   },
+  { href: '/pastebin', label: PAGE_TITLE.PASTEBIN, icon: ClipboardList },
 ];
 
 type AppSidebarProps = {

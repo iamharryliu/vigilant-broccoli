@@ -29,6 +29,16 @@ export type QuickLink = {
   args?: string;
 };
 
+export type PastebinEntry = {
+  label: string;
+  value: string;
+};
+
+export type PastebinGroup = {
+  name: string;
+  entries: PastebinEntry[];
+};
+
 // Audio
 export * from './lib/audio/audio.consts';
 
