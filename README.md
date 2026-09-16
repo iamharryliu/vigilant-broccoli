@@ -18,7 +18,7 @@
 
 ### Commands
 
-View [cheatsheet](./docs/cheatsheet.md) for useful infra-level CLI commands.
+View [cheatsheet](./docs/cheatsheet.md) for useful infra-level CLI commands, and [alias cheatsheet](./docs/cheatsheet-aliases.md) for the shell aliases from `setup/dotfiles/`.
 
 ```
 pnpm cheatsheet
