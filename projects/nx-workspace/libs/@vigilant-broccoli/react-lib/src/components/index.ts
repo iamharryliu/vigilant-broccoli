@@ -17,6 +17,7 @@ export * from './MultiSelect';
 export * from './CopyButton';
 export * from './DownloadButton';
 export * from './CopyPastable';
+export * from './Pastebin';
 export * from './Select';
 export * from './CRUDListManagement';
 export * from './ConversionForm';
