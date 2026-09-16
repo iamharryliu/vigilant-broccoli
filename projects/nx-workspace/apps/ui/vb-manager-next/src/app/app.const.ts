@@ -40,6 +40,10 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Career',
     path: '/career',
   },
+  PASTEBIN: {
+    title: 'Pastebin',
+    path: '/pastebin',
+  },
 };
 
 export const NOTEPAD_ROUTE: ExtendedNavRoute = {
