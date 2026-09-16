@@ -12,7 +12,6 @@ Mobile-friendly dashboard for managing personal tasks and calendars.
 - Framework - Next.js (React)
 - Build Tool - Next.js
 - External libs
-  - jsQR
   - Zod
   - Tesseract.js
 - Internal libs
@@ -22,6 +21,7 @@ Mobile-friendly dashboard for managing personal tasks and calendars.
   - `google-workspace`
   - `links`
   - `react-lib`
+  - `react-utility`
 - Cloud services
   - Supabase
   - Google Workspace APIs

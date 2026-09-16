@@ -3,8 +3,9 @@ import type { QRCode } from 'jsqr';
 const DECODE_TARGET_SIDES = [1000, 2000, 500];
 const INVERSION_ATTEMPTS = 'attemptBoth';
 const OPENABLE_PROTOCOLS = ['http:', 'https:'];
-const BARE_DOMAIN_PATTERN = /^[\w-]+(\.[\w-]+)+(\/\S*)?$/;
+const BARE_DOMAIN_PATTERN = /^([\w-]+\.)+[a-z]{2,}(:\d+)?([/?#]\S*)?$/i;
 const HTTPS_PREFIX = 'https://';
+const ERROR_UNREADABLE_IMAGE = 'Unreadable image';
 
 const loadImage = (file: File): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
@@ -16,7 +17,7 @@ const loadImage = (file: File): Promise<HTMLImageElement> =>
     };
     image.onerror = () => {
       URL.revokeObjectURL(objectUrl);
-      reject(new Error('Unreadable image'));
+      reject(new Error(ERROR_UNREADABLE_IMAGE));
     };
     image.src = objectUrl;
   });

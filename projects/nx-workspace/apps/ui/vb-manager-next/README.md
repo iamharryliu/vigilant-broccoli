@@ -10,6 +10,7 @@ Management dashboard app.
 - External libs
   - Radix Themes + Tailwind CSS, lucide-react icons
   - dnd-kit (drag-and-drop)
+  - jsQR (QR code decoding)
   - Leaflet / react-leaflet, react-markdown, fuse.js
   - Socket.IO client (chat demo)
 - Internal libs
