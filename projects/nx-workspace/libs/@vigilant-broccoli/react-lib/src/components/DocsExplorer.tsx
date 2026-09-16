@@ -4,7 +4,6 @@ import { Card, DropdownMenu } from '@radix-ui/themes';
 import { IconButton } from './IconButton';
 import { InputGroup, InputGroupAddon, InputGroupInput } from './Input';
 import {
-  ChevronDown,
   ChevronRight,
   File,
   FileText,
@@ -36,6 +35,12 @@ const NODE_TYPE_DIRECTORY = 'directory';
 const MATCH_TYPE_FILENAME = 'filename';
 const INDENT_PX = 16;
 const INDENT_BASE_PX = 8;
+const CHEVRON_CLS =
+  'w-4 h-4 flex-shrink-0 transition-transform duration-200 ease-out';
+const SUBTREE_CLS =
+  'grid transition-[grid-template-rows] duration-200 ease-out';
+const SUBTREE_ROWS_EXPANDED = 'grid-rows-[1fr]';
+const SUBTREE_ROWS_COLLAPSED = 'grid-rows-[0fr]';
 const LEADING_HEADING_RE = /^#\s[^\n]*\n+/;
 const ALL_HEADINGS_RE = /^#{1,6}\s[^\n]*\n+/gm;
 const AGGREGATE_SEPARATOR = '\n\n---\n\n';
@@ -774,15 +779,23 @@ const FileTreeNode = ({
     ? selectedPath.startsWith(`${node.path}/`) || selectedPath === node.path
     : false;
   const [isExpanded, setIsExpanded] = useState(false);
+  const [hasExpanded, setHasExpanded] = useState(false);
   const isSelected = selectedPath === node.path;
 
+  const expand = (next: boolean) => {
+    if (next) setHasExpanded(true);
+    setIsExpanded(next);
+  };
+
   useEffect(() => {
-    if (shouldBeExpanded) setIsExpanded(true);
+    if (!shouldBeExpanded) return;
+    setHasExpanded(true);
+    setIsExpanded(true);
   }, [shouldBeExpanded]);
 
   const handleClick = () => {
     if (node.type === NODE_TYPE_DIRECTORY) {
-      setIsExpanded(prev => !prev);
+      expand(!isExpanded);
     } else if (multiSelectMode) {
       onToggleSelect(node.path);
     } else {
@@ -801,11 +814,9 @@ const FileTreeNode = ({
       >
         {node.type === NODE_TYPE_DIRECTORY ? (
           <>
-            {isExpanded ? (
-              <ChevronDown className="w-4 h-4 flex-shrink-0" />
-            ) : (
-              <ChevronRight className="w-4 h-4 flex-shrink-0" />
-            )}
+            <ChevronRight
+              className={`${CHEVRON_CLS} ${isExpanded ? 'rotate-90' : ''}`}
+            />
             <Folder className="w-4 h-4 flex-shrink-0" />
           </>
         ) : (
@@ -825,20 +836,27 @@ const FileTreeNode = ({
         <span className="text-sm truncate">{node.name}</span>
       </div>
 
-      {node.type === NODE_TYPE_DIRECTORY && isExpanded && node.children && (
-        <div>
-          {node.children.map(child => (
-            <FileTreeNode
-              key={child.path}
-              node={child}
-              onFileSelect={onFileSelect}
-              selectedPath={selectedPath}
-              selectedPaths={selectedPaths}
-              onToggleSelect={onToggleSelect}
-              multiSelectMode={multiSelectMode}
-              depth={depth + 1}
-            />
-          ))}
+      {node.type === NODE_TYPE_DIRECTORY && node.children && (
+        <div
+          className={`${SUBTREE_CLS} ${
+            isExpanded ? SUBTREE_ROWS_EXPANDED : SUBTREE_ROWS_COLLAPSED
+          }`}
+        >
+          <div className="overflow-hidden">
+            {hasExpanded &&
+              node.children.map(child => (
+                <FileTreeNode
+                  key={child.path}
+                  node={child}
+                  onFileSelect={onFileSelect}
+                  selectedPath={selectedPath}
+                  selectedPaths={selectedPaths}
+                  onToggleSelect={onToggleSelect}
+                  multiSelectMode={multiSelectMode}
+                  depth={depth + 1}
+                />
+              ))}
+          </div>
         </div>
       )}
     </div>
