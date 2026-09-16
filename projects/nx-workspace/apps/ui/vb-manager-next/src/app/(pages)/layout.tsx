@@ -247,7 +247,6 @@ export default function Layout({ children }: { children: ReactNode }) {
               setChatbotDialogOpen={setChatbotDialogOpen}
               setEmailDialogOpen={setEmailDialogOpen}
               setCalendarDialogOpen={setCalendarDialogOpen}
-              setNotepadDialogOpen={setNotepadDialogOpen}
               setPomodoroDialogOpen={setPomodoroDialogOpen}
               setSearchDialogOpen={setSearchDialogOpen}
               notificationsOpen={notificationsOpen}

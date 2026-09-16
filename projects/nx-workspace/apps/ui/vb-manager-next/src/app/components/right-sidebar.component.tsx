@@ -8,7 +8,6 @@ import {
   Mail,
   Search,
   Calendar,
-  StickyNote,
   Timer,
   LogOut,
   LogIn,
@@ -47,7 +46,6 @@ type Props = {
   setChatbotDialogOpen: (open: boolean) => void;
   setEmailDialogOpen: (open: boolean) => void;
   setCalendarDialogOpen: (open: boolean) => void;
-  setNotepadDialogOpen: (open: boolean) => void;
   setPomodoroDialogOpen: (open: boolean) => void;
   setSearchDialogOpen: (open: boolean) => void;
   notificationsOpen: boolean;
@@ -61,7 +59,6 @@ export const RightSidebar = ({
   setChatbotDialogOpen,
   setEmailDialogOpen,
   setCalendarDialogOpen,
-  setNotepadDialogOpen,
   setPomodoroDialogOpen,
   setSearchDialogOpen,
   notificationsOpen,
@@ -100,12 +97,6 @@ export const RightSidebar = ({
       icon: Calendar,
       title: 'Calendar (Shift+C)',
       onClick: () => setCalendarDialogOpen(true),
-    },
-    {
-      label: 'Notepad',
-      icon: StickyNote,
-      title: 'Notepad (N)',
-      onClick: () => setNotepadDialogOpen(true),
     },
     {
       label: 'Pomodoro',
