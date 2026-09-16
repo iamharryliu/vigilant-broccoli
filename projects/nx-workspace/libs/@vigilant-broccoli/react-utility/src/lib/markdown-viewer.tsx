@@ -5,7 +5,8 @@ import { createNoteLinkClickHandler, scrollToUrlHash } from './note-links';
 
 const CLS = {
   ROOT: 'w-full',
-  PROSE: 'prose dark:prose-invert max-w-none px-4 sm:px-6 py-4',
+  PROSE:
+    'prose dark:prose-invert max-w-none px-4 sm:px-6 py-4 prose-th:align-middle prose-td:align-middle',
   EDITOR_WRAP: 'flex flex-col h-full',
   TOOLBAR:
     'flex items-center justify-end gap-2 px-4 sm:px-6 py-2 border-b border-gray-200 dark:border-gray-700',
