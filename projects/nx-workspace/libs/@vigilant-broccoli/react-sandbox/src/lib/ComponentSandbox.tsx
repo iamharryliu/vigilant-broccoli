@@ -30,6 +30,7 @@ import { ButtonDemo } from './demos/ButtonDemo';
 import { CollapsibleListItemDemo } from './demos/CollapsibleListItemDemo';
 import { CRUDListNoImagesDemo } from './demos/CRUDListNoImagesDemo';
 import { CRUDListWithImagesDemo } from './demos/CRUDListWithImagesDemo';
+import { DocsExplorerDemo } from './demos/DocsExplorerDemo';
 import { SelectDemo } from './demos/SelectDemo';
 import { ErrorDemo } from './demos/ErrorDemo';
 import { GithubActionsBadgesDemo } from './demos/GithubActionsBadgesDemo';
@@ -277,6 +278,12 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     label: 'Currency Converter',
     category: CATEGORY.UTILITIES,
     content: <CurrencyConverterUtilityContent />,
+  },
+  {
+    id: 'docs-explorer',
+    label: 'Docs Explorer',
+    category: CATEGORY.UTILITIES,
+    content: <DocsExplorerDemo />,
   },
   {
     id: 'notepad',
