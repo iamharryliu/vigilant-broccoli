@@ -1,7 +1,6 @@
 'use client';
 
 import { Card, DropdownMenu } from '@radix-ui/themes';
-import { Badge } from './Badge';
 import { IconButton } from './IconButton';
 import { InputGroup, InputGroupAddon, InputGroupInput } from './Input';
 import {
@@ -882,13 +881,6 @@ const SearchResultList = ({
               <span className="text-sm font-medium truncate">
                 <HighlightMatch text={result.name} query={query} />
               </span>
-              <Badge
-                size="1"
-                color={isFilename ? 'blue' : 'green'}
-                className="ml-auto flex-shrink-0"
-              >
-                {isFilename ? 'Name' : 'Content'}
-              </Badge>
             </div>
             <div className="text-xs text-gray-600 dark:text-gray-400 pl-6 truncate">
               {result.path}
