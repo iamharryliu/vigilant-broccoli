@@ -21,6 +21,7 @@ Mobile-friendly dashboard for managing personal tasks and calendars.
   - `google-workspace`
   - `links`
   - `react-lib`
+  - `react-utility`
 - Cloud services
   - Supabase
   - Google Workspace APIs
