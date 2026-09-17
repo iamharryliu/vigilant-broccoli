@@ -68,10 +68,12 @@ jobs:
       # Installing the whole Brewfile would take far longer than it's worth;
       # resolving every entry catches what actually breaks a new machine —
       # a formula or cask that was renamed, deprecated, or removed upstream.
+      # Third-party taps are trusted as well as tapped: Homebrew refuses to
+      # load a cask from an untrusted tap, so resolution fails without it.
       - name: Resolve every Brewfile entry
         run: |
           set -euo pipefail
           BREWFILE=setup/mac/Brewfile
-          brew bundle list --file "$BREWFILE" --tap | xargs -I{} brew tap {}
+          brew bundle list --file "$BREWFILE" --tap | xargs -I{} sh -c 'brew tap "$1" && brew trust "$1"' _ {}
           brew bundle list --file "$BREWFILE" --formula | xargs brew info --formula --json=v2 > /dev/null
           brew bundle list --file "$BREWFILE" --cask | xargs brew info --cask --json=v2 > /dev/null
