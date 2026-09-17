@@ -8,10 +8,6 @@ type ExtendedNavRoute = {
 };
 
 export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
-  INDEX: {
-    title: 'Home',
-    path: '/',
-  },
   CHATBOT: {
     title: 'Chatbot',
     path: '/chatbot',
@@ -40,6 +36,10 @@ export const NOTEPAD_ROUTE: ExtendedNavRoute = {
 };
 
 export const SIDEBAR_ROUTE = {
+  INDEX: {
+    title: 'Home',
+    path: '/',
+  },
   KANBAN: {
     title: 'Kanban',
     path: '/kanban',
