@@ -13,6 +13,7 @@ import {
   LogIn,
   Bell,
   Settings,
+  House,
   SquareKanban,
   LayoutDashboard,
   ClipboardList,
@@ -24,6 +25,7 @@ import { SIDEBAR_ROUTE } from '../app.const';
 const SETTINGS_PATH = '/settings';
 
 const SIDEBAR_ROUTE_ITEMS = [
+  { route: SIDEBAR_ROUTE.INDEX, icon: House },
   { route: SIDEBAR_ROUTE.KANBAN, icon: SquareKanban },
   { route: SIDEBAR_ROUTE.DEV_DASHBOARD, icon: LayoutDashboard },
   { route: SIDEBAR_ROUTE.PASTEBIN, icon: ClipboardList },
