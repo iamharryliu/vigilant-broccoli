@@ -2,6 +2,7 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 import { I18nProvider } from './i18n';
 import { HomePage } from './pages/HomePage';
 import { StatusPage } from './pages/StatusPage';
+import { RepoTimelinePage } from './pages/RepoTimelinePage';
 import { OpenSourcePage } from './pages/OpenSourcePage';
 import { GithubReposPage } from './pages/GithubReposPage';
 import { GithubReadmePage } from './pages/GithubReadmePage';
@@ -21,6 +22,7 @@ export function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/status" element={<StatusPage />} />
+            <Route path="/repo-timeline" element={<RepoTimelinePage />} />
             <Route path="/open-source" element={<OpenSourcePage />} />
             <Route path="/open-source/github" element={<GithubReposPage />} />
             <Route
