@@ -32,6 +32,15 @@ export const detectEventSourceType = (url: string): EventSourceType | null =>
   EVENT_SOURCE_TYPES.find(type => SOURCE_TYPE_URL_PATTERN[type].test(url)) ??
   null;
 
+// Stored as the language name since the sync's LLM prompt consumes it as-is.
+export const EVENT_LANGUAGE = {
+  ENGLISH: 'English',
+  SWEDISH: 'Swedish',
+  DANISH: 'Danish',
+} as const;
+
+export const EVENT_LANGUAGES: string[] = Object.values(EVENT_LANGUAGE);
+
 export interface EventCalendarSource {
   url: string;
   sourceType: EventSourceType;
@@ -42,6 +51,7 @@ export interface EventCalendar {
   name: string;
   googleCalendarId: string;
   isPublic: boolean;
+  language?: string;
   sources: EventCalendarSource[];
   createdAt: string;
   updatedAt: string;

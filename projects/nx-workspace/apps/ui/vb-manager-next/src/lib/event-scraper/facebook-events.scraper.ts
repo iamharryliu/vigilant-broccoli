@@ -65,6 +65,10 @@ const DATE_TIME_PATTERN =
   /^[A-Za-z]+,\s+[A-Za-z]+\s+\d{1,2}(,\s*\d{4})?\s+at\s+\d{1,2}:\d{2}\s*[AP]M/;
 const PRIVACY_LINE_PATTERN = /^(Public|Private|Friends)\b.*·/;
 const LOCATION_ARIA_LABEL = 'Location information for this event';
+// Listing cards don't reliably put the event name on a fixed line (a page's
+// /events tab can yield UI text like "More"), but the detail page's og:title
+// is always the event name.
+const OG_TITLE_SELECTOR = 'meta[property="og:title"]';
 
 export const NO_CHROME_COOKIES_ERROR =
   'No Chrome cookies found — sign in to Facebook in Chrome and retry';
@@ -255,6 +259,7 @@ const extractEventDetails = (page: Page) =>
       locationAriaLabel,
       seeLessText,
       minDetailTextLength,
+      ogTitleSelector,
     }) => {
       const dateTimePattern = new RegExp(dateTimePatternSource);
       const privacyLinePattern = new RegExp(privacyLinePatternSource);
@@ -285,7 +290,13 @@ const extractEventDetails = (page: Page) =>
         .filter(Boolean)
         .join(', ');
 
-      return { dateTime, location, description };
+      const title =
+        document
+          .querySelector(ogTitleSelector)
+          ?.getAttribute('content')
+          ?.trim() || undefined;
+
+      return { title, dateTime, location, description };
     },
     {
       dateTimePatternSource: DATE_TIME_PATTERN.source,
@@ -293,6 +304,7 @@ const extractEventDetails = (page: Page) =>
       locationAriaLabel: LOCATION_ARIA_LABEL,
       seeLessText: SEE_LESS_TEXT,
       minDetailTextLength: MIN_DETAIL_TEXT_LENGTH,
+      ogTitleSelector: OG_TITLE_SELECTOR,
     },
   );
 
@@ -303,6 +315,7 @@ const enrichEventWithDetails = async (
   await page.goto(event.url, { waitUntil: NAV_WAIT_UNTIL });
 
   let details: {
+    title?: string;
     dateTime?: string;
     location?: string;
     description?: string;
@@ -315,7 +328,7 @@ const enrichEventWithDetails = async (
 
   return {
     id: event.id,
-    title: event.title,
+    title: details.title ?? event.title,
     dateTime: details.dateTime ?? event.when,
     location: details.location,
     description: details.description,

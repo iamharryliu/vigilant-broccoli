@@ -13,6 +13,9 @@ import {
   setGoogleCalendarPublic,
 } from '../../../../lib/google-calendar-admin';
 import { normalizeSources } from '../sources';
+import { EVENT_LANGUAGES } from '../../../constants/event-calendars';
+
+const UNSUPPORTED_LANGUAGE_ERROR = `Language must be one of: ${EVENT_LANGUAGES.join(', ')}`;
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -47,7 +50,14 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
   const existing = await getEventCalendar(id);
   if (!existing) return notFound();
 
-  const { name, isPublic, sources } = await request.json();
+  const { name, isPublic, language, sources } = await request.json();
+
+  if (language && !EVENT_LANGUAGES.includes(language)) {
+    return NextResponse.json(
+      { error: UNSUPPORTED_LANGUAGE_ERROR },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
+    );
+  }
 
   const normalizedSources = sources ? normalizeSources(sources) : undefined;
   if (normalizedSources && !normalizedSources.ok) {
@@ -80,6 +90,7 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
       calendar: await updateEventCalendar(id, {
         name: name?.trim(),
         isPublic,
+        language,
         sources: normalizedSources?.ok ? normalizedSources.sources : undefined,
       }),
     });
