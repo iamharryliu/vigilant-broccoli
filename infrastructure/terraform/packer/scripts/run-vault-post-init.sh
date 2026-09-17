@@ -82,6 +82,11 @@ path \"${VAULT_KV_PATH}/data/test\" {
 }
 POLICY
 
+# ref is bound alongside repository: without it any job in the repo -- including
+# a pull_request run of a branch-edited workflow, which the agent-sandbox /
+# code-server GitHub App can push -- could read every deploy secret. main and
+# production are the only refs whose workflows legitimately consume this role
+# (deploy.yml runs on both); workflow_dispatch runs must be dispatched on main.
 echo 'Creating role ${VAULT_ROLE_NAME}...'
 vault write auth/jwt/role/${VAULT_ROLE_NAME} - <<ROLE
 {
@@ -89,7 +94,8 @@ vault write auth/jwt/role/${VAULT_ROLE_NAME} - <<ROLE
   \"user_claim\": \"actor\",
   \"bound_claims_type\": \"glob\",
   \"bound_claims\": {
-    \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\"
+    \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
+    \"ref\": [\"refs/heads/main\", \"refs/heads/production\"]
   },
   \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
   \"policies\": [\"${VAULT_POLICY_NAME}\"],
@@ -105,7 +111,7 @@ vault write auth/jwt/role/${VAULT_ROTATE_ROLE_NAME} - <<ROLE
   \"bound_claims_type\": \"glob\",
   \"bound_claims\": {
     \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
-    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/ci-rotate-secrets.yml@*\"
+    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/ci-rotate-secrets.yml@refs/heads/main\"
   },
   \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
   \"policies\": [\"${VAULT_ROTATE_POLICY_NAME}\"],
@@ -160,7 +166,7 @@ vault write auth/jwt/role/${VAULT_CODE_SERVER_ROLE_NAME} - <<ROLE
   \"bound_claims_type\": \"glob\",
   \"bound_claims\": {
     \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
-    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/manual-replace-code-server.yml@*\"
+    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/manual-replace-code-server.yml@refs/heads/main\"
   },
   \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
   \"policies\": [\"${VAULT_CODE_SERVER_POLICY_NAME}\"],
