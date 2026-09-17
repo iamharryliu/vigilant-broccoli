@@ -46,6 +46,19 @@ write_files:
         HOME=/config s6-setuidgid abc bash /config/vigilant-broccoli/setup/linux/install.sh -y
       fi
 
+      # Same shape as the agent sandbox entrypoint: git pushes through gh, which
+      # the image's gh wrapper feeds the App installation token that the
+      # manual-refresh-code-server-github-token workflow drops in /run/secrets.
+      HOME=/config s6-setuidgid abc git -C /config/vigilant-broccoli config credential.helper '!gh auth git-credential'
+
+      CLAUDE_STATE=/config/.claude.json
+      if [ -f "$CLAUDE_STATE" ]; then
+        jq '.hasCompletedOnboarding = true | .bypassPermissionsModeAccepted = true' "$CLAUDE_STATE" > "$CLAUDE_STATE.tmp" && mv "$CLAUDE_STATE.tmp" "$CLAUDE_STATE"
+      else
+        echo '{"hasCompletedOnboarding": true, "bypassPermissionsModeAccepted": true}' > "$CLAUDE_STATE"
+      fi
+      chown abc:abc "$CLAUDE_STATE"
+
   - path: /opt/code-server/docker-compose.yml
     content: |
       services:
@@ -60,9 +73,12 @@ write_files:
             PASSWORD: ${code_server_password}
             SUDO_PASSWORD: ${code_server_password}
             DEFAULT_WORKSPACE: /config/vigilant-broccoli
+            CLAUDE_CODE_OAUTH_TOKEN: "${claude_code_oauth_token}"
+            GH_TOKEN_FILE: /run/secrets/gh-token.json
           volumes:
             - code_server_config:/config
             - /opt/code-server/custom-init:/custom-cont-init.d:ro
+            - /opt/code-server/secrets:/run/secrets:ro
         caddy:
           image: caddy:2-alpine
           container_name: caddy
@@ -86,4 +102,7 @@ runcmd:
   - systemctl enable docker
   - systemctl start docker
   - usermod -aG docker ubuntu
+  # Owned by uid 1000 (the container's abc user, PUID above) so gh-token can
+  # read what manual-refresh-code-server-github-token.yml drops here.
+  - install -d -m 0700 -o 1000 -g 1000 /opt/code-server/secrets
   - docker compose -f /opt/code-server/docker-compose.yml up -d

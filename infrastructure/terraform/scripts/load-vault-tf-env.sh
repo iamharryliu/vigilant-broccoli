@@ -49,13 +49,17 @@ KEY_MAP=(
   "GOOGLE_AUTH_PROVIDER_CLIENT_SECRET:TF_VAR_supabase_google_client_secret"
   "TF_AWS_ACCESS_KEY_ID:AWS_ACCESS_KEY_ID"
   "TF_AWS_SECRET_ACCESS_KEY:AWS_SECRET_ACCESS_KEY"
+  "CLAUDE_CODE_OAUTH_TOKEN:TF_VAR_claude_code_oauth_token"
 )
 
 # Warn rather than exit: exiting would withhold every other export too, leaving
 # the cloudflare/github/supabase providers unconfigured over a missing AWS key.
+# CLAUDE_CODE_OAUTH_TOKEN defaults to "" in variables.tf, so a missing value
+# builds a code-server VM whose claude needs a login instead of failing the plan.
 WARN_IF_MISSING_KEYS=(
   "TF_AWS_ACCESS_KEY_ID"
   "TF_AWS_SECRET_ACCESS_KEY"
+  "CLAUDE_CODE_OAUTH_TOKEN"
 )
 
 for mapping in "${KEY_MAP[@]}"; do
@@ -67,6 +71,6 @@ for mapping in "${KEY_MAP[@]}"; do
   elif [[ " ${WARN_IF_MISSING_KEYS[*]} " == *" ${VAULT_KEY} "* ]]; then
     # Otherwise the aws provider quietly falls back to whatever is left in
     # ~/.aws -- usually an expired SSO cache, which fails mid-plan instead of here.
-    echo "Warning: ${VAULT_KEY} missing from the Bitwarden note — the aws provider will fall back to ~/.aws. Add it to Vault, then re-run backup-secrets.sh." >&2
+    echo "Warning: ${VAULT_KEY} missing from the Bitwarden note — its consumer (aws provider or code-server's claude) will run unauthenticated. Add it to Vault, then re-run backup-secrets.sh." >&2
   fi
 done
