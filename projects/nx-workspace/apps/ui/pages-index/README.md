@@ -19,6 +19,7 @@
 
 - `/` — Home
   - `/status` — Status (service health grouped by Production / Staging / Personal Apps, GitHub Actions badges)
+  - `/repo-timeline` — Repo Timeline (lines of code, commits, PRs merged, lines added/deleted per day / month / year, shown as a horizontally scrollable bar chart or as react-lib's `ScrollTimeline` — the latter lazy-loads Radix Themes CSS; data is `public/repo-timeline.json`, generated from `git log --numstat` by the `generate-repo-timeline` target (`scripts/generate-repo-timeline.ts`, lockfiles and >100K-line single-file changes excluded) and copied into `_site` on each Pages deploy)
   - `/open-source` — Open Source
     - GitHub → `/open-source/github` (README fetched from `raw.githubusercontent.com`, links out to the repo)
     - Docker Hub → `/open-source/docker` (list of `iamharryliu/*` images)

@@ -18,6 +18,7 @@ export interface ScrollTimelineProps {
   valueLabel?: string;
   formatValue?: (value: number) => string;
   height?: number;
+  fill?: boolean;
   animationDurationMs?: number;
   activeLinePosition?: number;
   className?: string;
@@ -95,15 +96,17 @@ function ScrollTimelineValueCard({
 }) {
   return (
     <Card>
-      <div className="flex flex-col items-center gap-1 p-6">
-        {valueLabel && (
-          <Text size="2" color="gray">
-            {valueLabel}
+      <div className="flex items-baseline justify-between gap-3 px-3 py-2">
+        <div className="flex items-baseline gap-2">
+          <Text size="6" weight="bold" className="tabular-nums">
+            {displayValue}
           </Text>
-        )}
-        <Text size="8" weight="bold" className="tabular-nums">
-          {displayValue}
-        </Text>
+          {valueLabel && (
+            <Text size="1" color="gray">
+              {valueLabel}
+            </Text>
+          )}
+        </div>
         {activeEntry && (
           <Text size="2" color="gray">
             {activeEntry.label}
@@ -161,6 +164,7 @@ export function ScrollTimeline({
   valueLabel,
   formatValue = defaultFormatValue,
   height = DEFAULT_HEIGHT,
+  fill = false,
   animationDurationMs = DEFAULT_ANIMATION_DURATION_MS,
   activeLinePosition = DEFAULT_ACTIVE_LINE_POSITION,
   className,
@@ -186,7 +190,9 @@ export function ScrollTimeline({
   if (entries.length === 0) return null;
 
   return (
-    <div className={cn('flex flex-col gap-4', className)}>
+    <div
+      className={cn('flex flex-col gap-2', fill && 'min-h-0 flex-1', className)}
+    >
       <ScrollTimelineValueCard
         valueLabel={valueLabel}
         displayValue={formatValue(animatedValue)}
@@ -195,8 +201,8 @@ export function ScrollTimeline({
 
       <div
         ref={containerRef}
-        className="overflow-y-auto pr-2"
-        style={{ height }}
+        className={cn('overflow-y-auto pr-2', fill && 'min-h-0 flex-1')}
+        style={fill ? undefined : { height }}
       >
         {entries.map((entry, index) => (
           <ScrollTimelineRow
@@ -209,7 +215,12 @@ export function ScrollTimeline({
         ))}
         <div
           aria-hidden
-          style={{ height: height * (1 - activeLinePosition) }}
+          className="shrink-0"
+          style={{
+            height: fill
+              ? `${(1 - activeLinePosition) * 100}%`
+              : height * (1 - activeLinePosition),
+          }}
         />
       </div>
     </div>
