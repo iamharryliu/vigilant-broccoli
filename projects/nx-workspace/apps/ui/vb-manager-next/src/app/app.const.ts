@@ -16,14 +16,6 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Chatbot',
     path: '/chatbot',
   },
-  KANBAN: {
-    title: 'Kanban',
-    path: '/kanban',
-  },
-  DEV_DASHBOARD: {
-    title: 'Dev Dashboard',
-    path: '/dev-dashboard',
-  },
   EVENT_CALENDARS: {
     title: 'Event Calendars',
     path: '/event-calendars',
@@ -40,16 +32,27 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Career',
     path: '/career',
   },
-  PASTEBIN: {
-    title: 'Pastebin',
-    path: '/pastebin',
-  },
 };
 
 export const NOTEPAD_ROUTE: ExtendedNavRoute = {
   title: 'Notepad',
   path: '/notepad',
 };
+
+export const SIDEBAR_ROUTE = {
+  KANBAN: {
+    title: 'Kanban',
+    path: '/kanban',
+  },
+  DEV_DASHBOARD: {
+    title: 'Dev Dashboard',
+    path: '/dev-dashboard',
+  },
+  PASTEBIN: {
+    title: 'Pastebin',
+    path: '/pastebin',
+  },
+} satisfies Record<string, ExtendedNavRoute>;
 
 export const APP_NAME = 'VB Manager';
 
@@ -63,10 +66,13 @@ const APP_ROUTE_SUBGROUP = 'vb-manager-next';
 
 export const VIGILANT_BROCCOLI_ROOT_PATH = '~/vigilant-broccoli';
 
-export const APP_ROUTE_QUICK_LINKS = [
-  ...Object.values(APP_ROUTE),
-  NOTEPAD_ROUTE,
-].flatMap(route => {
+export const APP_ROUTE_QUICK_LINKS = (
+  [
+    ...Object.values(APP_ROUTE),
+    ...Object.values(SIDEBAR_ROUTE),
+    NOTEPAD_ROUTE,
+  ] as ExtendedNavRoute[]
+).flatMap(route => {
   if (route.children) {
     return route.children.map(child => ({
       label: child.title,
