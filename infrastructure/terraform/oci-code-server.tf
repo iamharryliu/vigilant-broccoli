@@ -106,13 +106,17 @@ resource "oci_core_instance" "code_server" {
   }
 
   metadata = {
-    ssh_authorized_keys = var.ssh_public_key
+    # The CI key (same as the Gitea/socket VMs) lets
+    # manual-refresh-code-server-github-token.yml SSH in to drop a 1-hour
+    # GitHub App token, so the App's private key never reaches this VM.
+    ssh_authorized_keys = "${var.ssh_public_key}${tls_private_key.oci_vm_ci_ssh.public_key_openssh}"
     user_data = base64encode(templatefile("${path.module}/cloud-init-code-server.yaml", {
       code_server_domain      = var.code_server_domain
       code_server_image       = var.code_server_image
       code_server_password    = random_password.code_server_password.result
       code_server_origin_cert = cloudflare_origin_ca_certificate.code_server.certificate
       code_server_origin_key  = tls_private_key.code_server_origin.private_key_pem
+      claude_code_oauth_token = var.claude_code_oauth_token
     }))
   }
 }
