@@ -2,6 +2,7 @@ import { getCalendarAdminClient } from '../google-calendar-admin';
 import { getEventCalendar, recordSyncResult } from '../event-calendars.db';
 import { scrapeFacebookEvents, ScrapedEvent } from './facebook-events.scraper';
 import { syncEventsToCalendar } from './google-calendar.sync';
+import { localizeEvents } from './event-localizer';
 import { EVENT_SOURCE_TYPE } from '../../app/constants/event-calendars';
 
 export const SYNC_STATE = {
@@ -76,11 +77,19 @@ const runSync = async (calendarId: string) => {
       ...new Map(scraped.map(event => [event.id, event])).values(),
     ];
 
+    setStatus(
+      `Writing titles and descriptions for ${uniqueEvents.length} events`,
+    );
+    const localizedEvents = await localizeEvents(
+      uniqueEvents,
+      eventCalendar.language,
+    );
+
     setStatus(`Syncing ${uniqueEvents.length} events to Google Calendar`);
     const result = await syncEventsToCalendar(
       getCalendarAdminClient(),
       eventCalendar.googleCalendarId,
-      uniqueEvents,
+      localizedEvents,
     );
 
     const message =
