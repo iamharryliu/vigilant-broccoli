@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { LucideIcon } from 'lucide-react';
 import { cn } from '@vigilant-broccoli/react-lib';
 import { useTranslation } from '../i18n';
 import { PageHeader } from '../components/PageHeader';
@@ -12,14 +13,11 @@ import {
   TIMELINE_GRANULARITY_OPTIONS,
   TIMELINE_METRIC,
   TIMELINE_METRIC_OPTIONS,
-  TIMELINE_ORDER,
-  TIMELINE_ORDER_OPTIONS,
   TIMELINE_VIEW,
   TIMELINE_VIEW_OPTIONS,
   TimelineBucket,
   TimelineGranularity,
   TimelineMetric,
-  TimelineOrder,
   TimelineView,
   buildTimeline,
   toMonthNumber,
@@ -31,7 +29,8 @@ const RepoScrollTimeline = lazy(
   () => import('../components/RepoScrollTimeline'),
 );
 
-const CHART_HEIGHT = 240;
+const ICON_CLASS = 'h-4 w-4 shrink-0';
+const AXIS_LABEL_ROW_CLASS = 'mt-2 h-4 shrink-0';
 const PERIOD_START = '01';
 const PERIOD_START_SUFFIX = `-${PERIOD_START}`;
 const UTC = 'UTC';
@@ -92,7 +91,12 @@ const toAxisLabel = (
 interface SegmentedControlProps<T extends string> {
   labelKey: DotPaths<typeof en>;
   value: T;
-  options: { value: T; labelKey: DotPaths<typeof en> }[];
+  options: {
+    value: T;
+    labelKey: DotPaths<typeof en>;
+    shortLabelKey?: DotPaths<typeof en>;
+    Icon?: LucideIcon;
+  }[];
   onChange: (value: T) => void;
 }
 
@@ -105,38 +109,42 @@ function SegmentedControl<T extends string>({
   const { t } = useTranslation();
   const label = t(labelKey);
   return (
-    <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-1">
-      {options.map(option => (
-        <button
-          key={option.value}
-          type="button"
-          role="radio"
-          aria-checked={option.value === value}
-          onClick={() => onChange(option.value)}
-          className={cn(
-            'rounded-md border px-3 py-1 text-sm transition',
-            option.value === value
-              ? 'border-gray-900 bg-gray-900 text-white dark:border-gray-100 dark:bg-gray-100 dark:text-gray-900'
-              : 'border-gray-200 bg-white text-gray-700 hover:border-gray-400 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-500',
-          )}
-        >
-          {t(option.labelKey)}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function StatTile({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-3">
-      <p className="text-xs text-gray-500 dark:text-gray-400">{label}</p>
-      <p
-        className="mt-1 text-xl font-semibold"
-        title={NUMBER_FORMAT.format(value)}
-      >
-        {COMPACT_FORMAT.format(value)}
-      </p>
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className="flex w-fit rounded-lg border border-gray-200 bg-white p-0.5 dark:border-gray-700 dark:bg-gray-800"
+    >
+      {options.map(option => {
+        const optionLabel = t(option.labelKey);
+        return (
+          <button
+            key={option.value}
+            type="button"
+            role="radio"
+            aria-checked={option.value === value}
+            aria-label={optionLabel}
+            onClick={() => onChange(option.value)}
+            className={cn(
+              'flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition sm:px-3 sm:py-1.5 sm:text-sm',
+              option.value === value
+                ? 'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900'
+                : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100',
+            )}
+          >
+            {option.Icon && <option.Icon className={ICON_CLASS} />}
+            {option.shortLabelKey && (
+              <span className="sm:hidden">{t(option.shortLabelKey)}</span>
+            )}
+            <span
+              className={cn(
+                (option.Icon || option.shortLabelKey) && 'hidden sm:inline',
+              )}
+            >
+              {optionLabel}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -167,29 +175,31 @@ function TimelineChart({
   }, [buckets]);
 
   return (
-    <div className="flex rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 pt-6 pb-4 pr-4">
+    <div className="flex min-h-0 flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 pt-6 pb-4 pr-2 sm:pr-4">
       <div
-        className="relative w-12 shrink-0 text-[10px] text-gray-500 dark:text-gray-400"
-        style={{ height: CHART_HEIGHT }}
+        className="flex w-9 shrink-0 flex-col text-[10px] text-gray-500 dark:text-gray-400 sm:w-12"
         aria-hidden
       >
-        {ticks.map(tick => (
-          <span
-            key={tick}
-            className="absolute right-2 translate-y-1/2 tabular-nums"
-            style={{ bottom: `${(tick / scaleMax) * 100}%` }}
-          >
-            {COMPACT_FORMAT.format(tick)}
-          </span>
-        ))}
+        <div className="relative min-h-0 flex-1">
+          {ticks.map(tick => (
+            <span
+              key={tick}
+              className="absolute right-1.5 translate-y-1/2 tabular-nums sm:right-2"
+              style={{ bottom: `${(tick / scaleMax) * 100}%` }}
+            >
+              {COMPACT_FORMAT.format(tick)}
+            </span>
+          ))}
+        </div>
+        <div className={AXIS_LABEL_ROW_CLASS} />
       </div>
 
-      <div ref={scrollRef} className="min-w-0 flex-1 overflow-x-auto pb-2">
+      <div ref={scrollRef} className="min-w-0 flex-1 overflow-x-auto">
         <div
-          className="relative"
+          className="flex h-full flex-col"
           style={{ width: buckets.length * slot, minWidth: '100%' }}
         >
-          <div className="relative" style={{ height: CHART_HEIGHT }}>
+          <div className="relative min-h-0 flex-1">
             {ticks.map(tick => (
               <div
                 key={tick}
@@ -227,7 +237,12 @@ function TimelineChart({
             </div>
           </div>
 
-          <div className="relative mt-2 h-4 text-[10px] text-gray-500 dark:text-gray-400">
+          <div
+            className={cn(
+              AXIS_LABEL_ROW_CLASS,
+              'relative text-[10px] text-gray-500 dark:text-gray-400',
+            )}
+          >
             {buckets.map((bucket, index) => {
               const label = toAxisLabel(bucket.key, index, granularity);
               if (!label) return null;
@@ -271,13 +286,13 @@ function GraphView({
   const active = buckets[activeIndex];
 
   return (
-    <>
+    <div className="flex min-h-0 flex-1 flex-col">
       {active && (
         <div className="mb-3" aria-live="polite">
           <p className="text-sm text-gray-500 dark:text-gray-400">
             {metricLabel} · {formatPeriod(active.key, granularity)}
           </p>
-          <p className="text-3xl font-semibold tabular-nums">
+          <p className="text-2xl font-semibold tabular-nums sm:text-3xl">
             {NUMBER_FORMAT.format(active[metric])}
           </p>
         </div>
@@ -289,7 +304,7 @@ function GraphView({
         activeIndex={activeIndex}
         onActiveIndexChange={setActiveIndex}
       />
-    </>
+    </div>
   );
 }
 
@@ -300,54 +315,41 @@ function ListView({
   granularity,
 }: TimelineViewProps) {
   const { t } = useTranslation();
-  const [order, setOrder] = useState<TimelineOrder>(
-    TIMELINE_ORDER.NEWEST_FIRST,
+
+  const entries = useMemo(
+    () =>
+      buckets
+        .filter(bucket => bucket.periodCommits > 0)
+        .map(bucket => ({
+          id: bucket.key,
+          label: formatPeriod(bucket.key, granularity),
+          sublabel: t('REPO_TIMELINE_PAGE.ENTRY_SUMMARY', {
+            commits: NUMBER_FORMAT.format(bucket.periodCommits),
+            pullRequests: NUMBER_FORMAT.format(bucket.periodPullRequests),
+            added: NUMBER_FORMAT.format(bucket.linesAdded),
+            deleted: NUMBER_FORMAT.format(bucket.linesDeleted),
+          }),
+          value: bucket[metric],
+        }))
+        .reverse(),
+    [buckets, granularity, metric, t],
   );
 
-  const entries = useMemo(() => {
-    const chronological = buckets
-      .filter(bucket => bucket.commits > 0)
-      .map(bucket => ({
-        id: bucket.key,
-        label: formatPeriod(bucket.key, granularity),
-        sublabel: t('REPO_TIMELINE_PAGE.ENTRY_SUMMARY', {
-          commits: NUMBER_FORMAT.format(bucket.commits),
-          pullRequests: NUMBER_FORMAT.format(bucket.pullRequests),
-          added: NUMBER_FORMAT.format(bucket.linesAdded),
-          deleted: NUMBER_FORMAT.format(bucket.linesDeleted),
-        }),
-        value: bucket[metric],
-      }));
-    return order === TIMELINE_ORDER.NEWEST_FIRST
-      ? chronological.reverse()
-      : chronological;
-  }, [buckets, granularity, metric, order]);
-
   return (
-    <>
-      <div className="mb-4">
-        <SegmentedControl
-          labelKey="REPO_TIMELINE_PAGE.ORDER_LABEL"
-          value={order}
-          onChange={setOrder}
-          options={TIMELINE_ORDER_OPTIONS}
-        />
-      </div>
-      <Suspense
-        fallback={
-          <p className="text-sm text-gray-400">
-            {t('REPO_TIMELINE_PAGE.LOADING')}
-          </p>
-        }
-      >
-        <RepoScrollTimeline
-          key={`${granularity}-${order}`}
-          entries={entries}
-          valueLabel={metricLabel}
-          formatValue={formatTimelineValue}
-        />
-      </Suspense>
-    </>
+    <Suspense
+      fallback={
+        <p className="text-sm text-gray-400">
+          {t('REPO_TIMELINE_PAGE.LOADING')}
+        </p>
+      }
+    >
+      <RepoScrollTimeline
+        key={granularity}
+        entries={entries}
+        valueLabel={metricLabel}
+        formatValue={formatTimelineValue}
+      />
+    </Suspense>
   );
 }
 
@@ -387,18 +389,6 @@ export function RepoTimelinePage() {
     [data, granularity],
   );
 
-  const totals = useMemo(
-    () =>
-      buckets.reduce(
-        (acc, b) => ({
-          commits: acc.commits + b.commits,
-          pullRequests: acc.pullRequests + b.pullRequests,
-        }),
-        { commits: 0, pullRequests: 0 },
-      ),
-    [buckets],
-  );
-
   const metricOption =
     TIMELINE_METRIC_OPTIONS.find(option => option.value === metric) ??
     TIMELINE_METRIC_OPTIONS[0];
@@ -406,7 +396,7 @@ export function RepoTimelinePage() {
   const viewProps = { buckets, metric, metricLabel, granularity };
 
   return (
-    <main className="mx-auto max-w-3xl px-4 sm:px-6 pt-6 pb-16">
+    <main className="mx-auto flex h-[100dvh] max-w-3xl flex-col overflow-hidden px-3 sm:px-6 pt-6 pb-4">
       <PageHeader title={t('REPO_TIMELINE_PAGE.TITLE')} />
 
       {error && <p className="text-sm text-red-500">{error}</p>}
@@ -418,22 +408,7 @@ export function RepoTimelinePage() {
 
       {data && (
         <>
-          <div className="mb-6 grid grid-cols-3 gap-3">
-            <StatTile
-              label={t('REPO_TIMELINE_PAGE.METRIC_LINES_OF_CODE')}
-              value={buckets[buckets.length - 1]?.linesOfCode ?? 0}
-            />
-            <StatTile
-              label={t('REPO_TIMELINE_PAGE.METRIC_COMMITS')}
-              value={totals.commits}
-            />
-            <StatTile
-              label={t('REPO_TIMELINE_PAGE.METRIC_PULL_REQUESTS')}
-              value={totals.pullRequests}
-            />
-          </div>
-
-          <div className="mb-4 flex flex-col gap-2">
+          <div className="mb-4 flex shrink-0 flex-wrap items-center justify-between gap-2">
             <SegmentedControl
               labelKey="REPO_TIMELINE_PAGE.VIEW_LABEL"
               value={view}

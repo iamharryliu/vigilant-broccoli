@@ -1,3 +1,4 @@
+import { ChartColumn, History, LucideIcon } from 'lucide-react';
 import { DotPaths } from '@vigilant-broccoli/react-lib';
 import en from '../i18n/en.json';
 
@@ -9,8 +10,6 @@ export const TIMELINE_METRIC = {
   LINES_OF_CODE: 'linesOfCode',
   COMMITS: 'commits',
   PULL_REQUESTS: 'pullRequests',
-  LINES_ADDED: 'linesAdded',
-  LINES_DELETED: 'linesDeleted',
 } as const;
 export type TimelineMetric =
   (typeof TIMELINE_METRIC)[keyof typeof TIMELINE_METRIC];
@@ -32,32 +31,17 @@ export type TimelineView = (typeof TIMELINE_VIEW)[keyof typeof TIMELINE_VIEW];
 export const TIMELINE_VIEW_OPTIONS: {
   value: TimelineView;
   labelKey: TranslationKey;
+  Icon: LucideIcon;
 }[] = [
-  { value: TIMELINE_VIEW.GRAPH, labelKey: 'REPO_TIMELINE_PAGE.VIEW_GRAPH' },
+  {
+    value: TIMELINE_VIEW.GRAPH,
+    labelKey: 'REPO_TIMELINE_PAGE.VIEW_GRAPH',
+    Icon: ChartColumn,
+  },
   {
     value: TIMELINE_VIEW.TIMELINE,
     labelKey: 'REPO_TIMELINE_PAGE.VIEW_TIMELINE',
-  },
-];
-
-export const TIMELINE_ORDER = {
-  NEWEST_FIRST: 'newest',
-  OLDEST_FIRST: 'oldest',
-} as const;
-export type TimelineOrder =
-  (typeof TIMELINE_ORDER)[keyof typeof TIMELINE_ORDER];
-
-export const TIMELINE_ORDER_OPTIONS: {
-  value: TimelineOrder;
-  labelKey: TranslationKey;
-}[] = [
-  {
-    value: TIMELINE_ORDER.NEWEST_FIRST,
-    labelKey: 'REPO_TIMELINE_PAGE.ORDER_NEWEST',
-  },
-  {
-    value: TIMELINE_ORDER.OLDEST_FIRST,
-    labelKey: 'REPO_TIMELINE_PAGE.ORDER_OLDEST',
+    Icon: History,
   },
 ];
 
@@ -77,31 +61,27 @@ export const TIMELINE_METRIC_OPTIONS: {
     value: TIMELINE_METRIC.PULL_REQUESTS,
     labelKey: 'REPO_TIMELINE_PAGE.METRIC_PULL_REQUESTS',
   },
-  {
-    value: TIMELINE_METRIC.LINES_ADDED,
-    labelKey: 'REPO_TIMELINE_PAGE.METRIC_LINES_ADDED',
-  },
-  {
-    value: TIMELINE_METRIC.LINES_DELETED,
-    labelKey: 'REPO_TIMELINE_PAGE.METRIC_LINES_DELETED',
-  },
 ];
 
 export const TIMELINE_GRANULARITY_OPTIONS: {
   value: TimelineGranularity;
   labelKey: TranslationKey;
+  shortLabelKey: TranslationKey;
 }[] = [
   {
     value: TIMELINE_GRANULARITY.DAY,
     labelKey: 'REPO_TIMELINE_PAGE.GRANULARITY_DAY',
+    shortLabelKey: 'REPO_TIMELINE_PAGE.GRANULARITY_DAY_SHORT',
   },
   {
     value: TIMELINE_GRANULARITY.MONTH,
     labelKey: 'REPO_TIMELINE_PAGE.GRANULARITY_MONTH',
+    shortLabelKey: 'REPO_TIMELINE_PAGE.GRANULARITY_MONTH_SHORT',
   },
   {
     value: TIMELINE_GRANULARITY.YEAR,
     labelKey: 'REPO_TIMELINE_PAGE.GRANULARITY_YEAR',
+    shortLabelKey: 'REPO_TIMELINE_PAGE.GRANULARITY_YEAR_SHORT',
   },
 ];
 
@@ -121,9 +101,11 @@ export interface TimelineBucket {
   key: string;
   commits: number;
   pullRequests: number;
+  linesOfCode: number;
+  periodCommits: number;
+  periodPullRequests: number;
   linesAdded: number;
   linesDeleted: number;
-  linesOfCode: number;
 }
 
 export const DAY_KEY_LENGTH = 10;
@@ -167,6 +149,8 @@ export const buildTimeline = (
 
   const buckets: TimelineBucket[] = [];
   let linesOfCode = 0;
+  let commitTotal = 0;
+  let pullRequestTotal = 0;
 
   listDayKeys(data.days[0][0], lastDay).forEach(dayKey => {
     const key = toBucketKey(dayKey, granularity);
@@ -174,11 +158,13 @@ export const buildTimeline = (
     if (!bucket || bucket.key !== key) {
       bucket = {
         key,
-        commits: 0,
-        pullRequests: 0,
+        commits: commitTotal,
+        pullRequests: pullRequestTotal,
+        linesOfCode,
+        periodCommits: 0,
+        periodPullRequests: 0,
         linesAdded: 0,
         linesDeleted: 0,
-        linesOfCode,
       };
       buckets.push(bucket);
     }
@@ -186,11 +172,15 @@ export const buildTimeline = (
     const day = statsByDay.get(dayKey);
     if (!day) return;
     const [, commits, pullRequests, added, deleted] = day;
-    bucket.commits += commits;
-    bucket.pullRequests += pullRequests;
+    bucket.periodCommits += commits;
+    bucket.periodPullRequests += pullRequests;
     bucket.linesAdded += added;
     bucket.linesDeleted += deleted;
+    commitTotal += commits;
+    pullRequestTotal += pullRequests;
     linesOfCode += added - deleted;
+    bucket.commits = commitTotal;
+    bucket.pullRequests = pullRequestTotal;
     bucket.linesOfCode = linesOfCode;
   });
 

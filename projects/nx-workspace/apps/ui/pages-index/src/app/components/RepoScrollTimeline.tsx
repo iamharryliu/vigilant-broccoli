@@ -8,7 +8,6 @@ import {
 
 const DARK_SCHEME_QUERY = '(prefers-color-scheme: dark)';
 const APPEARANCE = { LIGHT: 'light', DARK: 'dark' } as const;
-const TIMELINE_HEIGHT = 480;
 
 const usePrefersDark = () => {
   const [prefersDark, setPrefersDark] = useState(
@@ -40,8 +39,9 @@ export default function RepoScrollTimeline(props: RepoScrollTimelineProps) {
       appearance={prefersDark ? APPEARANCE.DARK : APPEARANCE.LIGHT}
       hasBackground={false}
       accentColor="sky"
+      className="flex min-h-0 flex-1 flex-col"
     >
-      <ScrollTimeline {...props} height={TIMELINE_HEIGHT} />
+      <ScrollTimeline {...props} fill compact />
     </Theme>
   );
 }
