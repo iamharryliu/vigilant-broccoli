@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { GithubActionsBadges } from '@vigilant-broccoli/react-lib';
+import { DotPaths, GithubActionsBadges } from '@vigilant-broccoli/react-lib';
 import { useTranslation } from '../i18n';
+import en from '../i18n/en.json';
 import { PageHeader } from '../components/PageHeader';
 import { SectionHeading } from '../components/SectionHeading';
 import { REPO_URL, toRawGithubUrl } from '../consts/repo';
@@ -59,7 +60,7 @@ const STATUS_GROUP_ORDER: StatusGroup[] = [
   STATUS_GROUP.PERSONAL,
 ];
 
-const STATUS_GROUP_LABEL_KEY: Record<StatusGroup, string> = {
+const STATUS_GROUP_LABEL_KEY: Record<StatusGroup, DotPaths<typeof en>> = {
   [STATUS_GROUP.PRODUCTION]: 'STATUS_PAGE.GROUP_PRODUCTION',
   [STATUS_GROUP.STAGING]: 'STATUS_PAGE.GROUP_STAGING',
   [STATUS_GROUP.PERSONAL]: 'STATUS_PAGE.GROUP_PERSONAL',
