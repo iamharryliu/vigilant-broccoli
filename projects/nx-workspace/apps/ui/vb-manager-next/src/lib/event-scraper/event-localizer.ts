@@ -11,25 +11,28 @@ import { ScrapedEvent } from './facebook-events.scraper';
 
 const LOCALIZE_CONCURRENCY = 5;
 const VENUE_SEPARATOR = ' @ ';
+const PLACE_PART_SEPARATOR = ', ';
 const SOURCE_LANGUAGE_FALLBACK =
   'the same language the source event is written in';
 
 const SYSTEM_PROMPT = `You write Google Calendar entries for events scraped from Facebook.
-Return a JSON object with "title", "venue", and "description".
+Return a JSON object with "title", "venue", "city", and "description".
 - "title": the event's real name, concise, taken from the scraped title and description. Scraped titles can be UI text (e.g. "More", "Details") or a date — ignore those and name the event from the description instead. No dates, venue, emojis, or surrounding quotes.
 - "venue": the short name of the place it's held (e.g. a bar, studio, or hall name), from the location or description. Not a bare city, country, or street address. Empty string if no venue is named.
+- "city": the city the event takes place in, from the location or description (e.g. "Copenhagen"). Only the city name, no country. Empty string if it cannot be determined.
 - "description": the event description faithfully translated, keeping every practical detail (schedule, prices, addresses, links, contacts). Plain text, no markdown. Empty string if there is no description.
-Write both fields in the requested language.`;
+Write every field in the requested language.`;
 
 const LOCALIZE_SCHEMA = {
   name: 'calendar_event_text',
   schema: {
     type: 'object',
     additionalProperties: false,
-    required: ['title', 'venue', 'description'],
+    required: ['title', 'venue', 'city', 'description'],
     properties: {
       title: { type: 'string' },
       venue: { type: 'string' },
+      city: { type: 'string' },
       description: { type: 'string' },
     },
   },
@@ -38,6 +41,7 @@ const LOCALIZE_SCHEMA = {
 interface LocalizedText {
   title: string;
   venue: string;
+  city: string;
   description: string;
 }
 
@@ -77,10 +81,12 @@ const localizeEvent = async (
   const { outputs } = (await response.json()) as { outputs: LocalizedText[] };
   const [localized] = outputs ?? [];
   const title = localized?.title?.trim() || event.title;
-  const venue = localized?.venue?.trim();
+  const place = [localized?.venue?.trim(), localized?.city?.trim()]
+    .filter(Boolean)
+    .join(PLACE_PART_SEPARATOR);
   return {
     ...event,
-    title: venue ? `${title}${VENUE_SEPARATOR}${venue}` : title,
+    title: place ? `${title}${VENUE_SEPARATOR}${place}` : title,
     description: localized?.description?.trim() || event.description,
   };
 };
