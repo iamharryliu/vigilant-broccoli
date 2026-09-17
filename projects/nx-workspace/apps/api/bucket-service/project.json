@@ -41,11 +41,22 @@
     "prune-lockfile": {
       "dependsOn": ["build"],
       "cache": true,
-      "inputs": ["default", "{projectRoot}/package.json"],
+      "inputs": [
+        "default",
+        "{projectRoot}/package.json",
+        "{workspaceRoot}/pnpm-workspace.yaml",
+        "{workspaceRoot}/package.json",
+        {
+          "runtime": "node -e \"try{console.log('pnpm major '+require('child_process').execSync('pnpm --version',{stdio:['ignore','pipe','ignore']}).toString().trim().split('.')[0])}catch{console.log('pnpm major unavailable')}\""
+        }
+      ],
       "executor": "@nx/js:prune-lockfile",
       "outputs": [
         "{workspaceRoot}/dist/bucket-service/package.json",
-        "{workspaceRoot}/dist/bucket-service/pnpm-lock.yaml"
+        "{workspaceRoot}/dist/bucket-service/pnpm-lock.yaml",
+        "{workspaceRoot}/dist/bucket-service/pnpm-workspace.yaml",
+        "{workspaceRoot}/dist/bucket-service/patches",
+        "{workspaceRoot}/dist/bucket-service/local_path_modules"
       ],
       "options": {
         "buildTarget": "build"
