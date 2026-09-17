@@ -1,0 +1,243 @@
+name: test-smoke-backup-restore
+
+on:
+  schedule:
+    - cron: '40 5 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: test-smoke-backup-restore
+  cancel-in-progress: true
+
+env:
+  BACKUP_BUCKET: gs://vigilant-broccoli-backup
+  MAX_BACKUP_AGE_DAYS: '2'
+
+jobs:
+  # cron-backup writing a file every night proves nothing about whether that
+  # file still restores — these jobs restore each dump into a throwaway
+  # container and check the data actually arrives.
+  verify-backup-freshness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      - name: Check every backup is recent
+        run: |
+          set -euo pipefail
+          FAIL=0
+          for PATTERN in 'repo-backup-*.zip' 'gitea-backup-*.zip' 'mongodb-backup-*.gz' 'supabase-backup-*.sql.gz'; do
+            LATEST=$(gcloud storage ls "${BACKUP_BUCKET}/${PATTERN}" | sort | tail -1)
+            STAMP=$(echo "$LATEST" | grep -oE '[0-9]{4}-[0-9]{2}-[0-9]{2}')
+            AGE=$(( ( $(date -u +%s) - $(date -u -d "$STAMP" +%s) ) / 86400 ))
+            echo "$PATTERN -> $LATEST (${AGE}d old)"
+            if [ "$AGE" -gt "$MAX_BACKUP_AGE_DAYS" ]; then
+              echo "::error::${PATTERN} is ${AGE} days old (max ${MAX_BACKUP_AGE_DAYS})"
+              FAIL=1
+            fi
+          done
+          exit $FAIL
+
+  verify-repo-backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      - name: Restore the repo archive
+        run: |
+          set -euo pipefail
+          LATEST=$(gcloud storage ls "${BACKUP_BUCKET}/repo-backup-*.zip" | sort | tail -1)
+          gcloud storage cp "$LATEST" repo-backup.zip
+          unzip -tq repo-backup.zip
+          unzip -q repo-backup.zip -d restored
+          ROOT=$(find restored -maxdepth 1 -mindepth 1 -type d)
+          for FILE in CLAUDE.md README.md TODO.md package.json infrastructure/terraform/main.tf; do
+            [ -s "$ROOT/$FILE" ] || { echo "::error::$FILE missing from the repo backup"; exit 1; }
+          done
+
+  verify-gitea-backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      # Mirrors what restore-gitea.sh copies onto the VM: the SQLite database
+      # in data/ and the bare repos under repos/. A dump whose database is
+      # corrupt or whose repos are unreadable would restore into a broken
+      # Gitea, which is exactly what this catches.
+      - name: Restore the Gitea dump
+        run: |
+          set -euo pipefail
+          LATEST=$(gcloud storage ls "${BACKUP_BUCKET}/gitea-backup-*.zip" | sort | tail -1)
+          gcloud storage cp "$LATEST" gitea-dump.zip
+          unzip -tq gitea-dump.zip
+          unzip -q gitea-dump.zip -d dump
+          [ -f dump/data/gitea.db ] || { echo "::error::data/gitea.db missing from the dump"; exit 1; }
+
+          INTEGRITY=$(sqlite3 dump/data/gitea.db 'PRAGMA integrity_check;')
+          [ "$INTEGRITY" = "ok" ] || { echo "::error::gitea.db integrity check: $INTEGRITY"; exit 1; }
+
+          REPO_ROWS=$(sqlite3 dump/data/gitea.db 'SELECT count(*) FROM repository;')
+          [ "$REPO_ROWS" -ge 1 ] || { echo "::error::no repositories in the restored database"; exit 1; }
+          echo "repository rows: $REPO_ROWS"
+
+          FAIL=0
+          while IFS='|' read -r OWNER NAME; do
+            REPO_DIR="dump/repos/${OWNER}/${NAME}.git"
+            if [ ! -d "$REPO_DIR" ]; then
+              echo "::error::${OWNER}/${NAME} is in the database but has no bare repo in the dump"
+              FAIL=1
+              continue
+            fi
+            git -C "$REPO_DIR" fsck --connectivity-only --no-progress || FAIL=1
+          done < <(sqlite3 dump/data/gitea.db 'SELECT lower(owner_name), lower_name FROM repository;')
+          exit $FAIL
+
+  verify-mongodb-backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      - name: Cache mongodb-database-tools
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: mongodb-tools.deb
+          key: mongodb-database-tools-100.10.0-ubuntu2204-x86_64
+
+      - name: Install mongodb-database-tools
+        run: |
+          set -euo pipefail
+          [ -f mongodb-tools.deb ] || curl -sL -o mongodb-tools.deb https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.10.0.deb
+          sudo dpkg -i mongodb-tools.deb
+
+      - name: Restore into a throwaway MongoDB
+        env:
+          MONGODB_DB: vb-manager
+        run: |
+          set -euo pipefail
+          docker run -d --name mongo-restore-test -p 27017:27017 mongo:8 > /dev/null
+          for _ in $(seq 1 30); do
+            docker exec mongo-restore-test mongosh --quiet --eval 'db.runCommand({ ping: 1 })' > /dev/null 2>&1 && break
+            sleep 2
+          done
+
+          LATEST=$(gcloud storage ls "${BACKUP_BUCKET}/mongodb-backup-*.gz" | sort | tail -1)
+          gcloud storage cp "$LATEST" mongodb-backup.gz
+          mongorestore --uri=mongodb://localhost:27017 --archive=mongodb-backup.gz --gzip --drop 2>&1 | tee restore.log
+
+          FAILED=$(grep -oE '[0-9]+ document\(s\) failed to restore' restore.log | tail -1 | grep -oE '^[0-9]+' || echo 0)
+          RESTORED=$(grep -oE '[0-9]+ document\(s\) restored successfully' restore.log | tail -1 | grep -oE '^[0-9]+' || echo 0)
+          echo "restored=$RESTORED failed=$FAILED"
+          [ "$FAILED" -eq 0 ] || { echo "::error::mongorestore failed on $FAILED documents"; exit 1; }
+          [ "$RESTORED" -gt 0 ] || { echo "::error::the dump restored no documents"; exit 1; }
+
+          docker exec mongo-restore-test mongosh --quiet "$MONGODB_DB" --eval \
+            'db.getCollectionNames().forEach(c => print(c + ": " + db.getCollection(c).countDocuments()))'
+
+      - name: Stop the throwaway MongoDB
+        if: always()
+        run: docker rm -f mongo-restore-test > /dev/null 2>&1 || true
+
+  verify-supabase-backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3
+
+      # The dump goes into stock postgres, not a Supabase image: the roles it
+      # grants to are created up front, and everything Supabase-specific
+      # (auth/storage/extension objects) is allowed to fail. What's verified is
+      # the part a restore exists for — every public table in the dump comes
+      # back with exactly the row count the dump carries.
+      - name: Restore into a throwaway PostgreSQL
+        env:
+          PGPASSWORD: postgres
+          PGHOST: localhost
+          PGUSER: postgres
+          PGDATABASE: postgres
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client
+          docker run -d --name pg-restore-test -e POSTGRES_PASSWORD=postgres -p 5432:5432 postgres:17 > /dev/null
+          for _ in $(seq 1 30); do
+            pg_isready -h localhost -q && break
+            sleep 2
+          done
+
+          for ROLE in anon authenticated service_role authenticator dashboard_user pgbouncer supabase_admin supabase_auth_admin supabase_storage_admin supabase_realtime_admin supabase_read_only_user; do
+            psql -qtAc "DO \$\$ BEGIN CREATE ROLE ${ROLE} NOLOGIN; EXCEPTION WHEN duplicate_object THEN NULL; END \$\$;"
+          done
+
+          LATEST=$(gcloud storage ls "${BACKUP_BUCKET}/supabase-backup-*.sql.gz" | sort | tail -1)
+          gcloud storage cp "$LATEST" supabase-backup.sql.gz
+          gunzip -c supabase-backup.sql.gz > dump.sql
+          psql -q -v ON_ERROR_STOP=0 -f dump.sql > /dev/null 2> restore.log || true
+          echo "psql reported $(grep -c '^ERROR' restore.log || true) errors (Supabase-specific objects are expected to fail here)"
+
+          awk '
+            $1 == "COPY" && $2 ~ /^public\./ { table = substr($2, 8); gsub(/"/, "", table); rows = 0; inblock = 1; next }
+            inblock && $0 == "\\." { print table "\t" rows; inblock = 0; next }
+            inblock { rows++ }
+          ' dump.sql > expected.tsv
+          [ -s expected.tsv ] || { echo "::error::no public COPY blocks found in the dump"; exit 1; }
+
+          FAIL=0
+          TOTAL=0
+          while IFS=$'\t' read -r TABLE EXPECTED; do
+            ACTUAL=$(psql -qtAc "SELECT count(*) FROM public.\"${TABLE}\"" 2> /dev/null || echo missing)
+            if [ "$ACTUAL" != "$EXPECTED" ]; then
+              echo "::error::public.${TABLE}: dump has ${EXPECTED} rows, restore has ${ACTUAL}"
+              FAIL=1
+            fi
+            TOTAL=$((TOTAL + EXPECTED))
+          done < expected.tsv
+          echo "verified $(wc -l < expected.tsv) public tables, ${TOTAL} rows"
+          [ "$TOTAL" -gt 0 ] || { echo "::error::every public table in the dump is empty"; exit 1; }
+          exit $FAIL
+
+      - name: Stop the throwaway PostgreSQL
+        if: always()
+        run: docker rm -f pg-restore-test > /dev/null 2>&1 || true

@@ -11,7 +11,9 @@ source $SETUP_DIR/common/symlinks.sh
 
 if [ "$1" = "-y" ]; then
     ask() { return 0; }
-elif ask "Install apt packages?"; then
+fi
+
+if ask "Install apt packages?"; then
     sudo apt-get update && xargs sudo apt-get install -y < "$REPO_ROOT/setup/linux/apt-packages.txt"
 fi
 
