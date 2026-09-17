@@ -41,7 +41,7 @@ export default function RepoScrollTimeline(props: RepoScrollTimelineProps) {
       accentColor="sky"
       className="flex min-h-0 flex-1 flex-col"
     >
-      <ScrollTimeline {...props} fill compact />
+      <ScrollTimeline {...props} fill />
     </Theme>
   );
 }
