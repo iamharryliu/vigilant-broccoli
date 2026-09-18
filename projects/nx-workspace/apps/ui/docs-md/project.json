@@ -9,7 +9,7 @@
       "executor": "@nx/eslint:lint"
     },
     "build-snapshot": {
-      "command": "node apps/ui/docs-md/scripts/build-snapshot.mjs ../../notes apps/ui/docs-md/public"
+      "command": "node scripts/build-docs-snapshot.mjs apps/ui/docs-md/snapshot.config.json"
     },
     "build": {
       "dependsOn": ["^build", "build-snapshot"],

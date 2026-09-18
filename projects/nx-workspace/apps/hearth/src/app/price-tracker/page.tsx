@@ -15,6 +15,7 @@ import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { PriceItem } from '../../lib/types';
 import { ROUTES } from '../../lib/routes';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 type ParsedLineItem = {
   name: string;
@@ -504,6 +505,7 @@ const PriceItemForm = ({
 };
 
 export default function PriceTrackerPage() {
+  usePageTitle(PAGE_TITLES.PRICE_TRACKER);
   const router = useRouter();
   const session = useAuth();
   const { selectedHomeId } = useHome();

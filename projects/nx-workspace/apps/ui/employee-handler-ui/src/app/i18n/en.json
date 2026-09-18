@@ -5,8 +5,13 @@
   },
   "NAV": {
     "EMPLOYEES": "Employees",
+    "ABSENCES": "Absences",
     "SIGNATURES": "Signatures",
     "SETTINGS": "Settings"
+  },
+  "PAGE_TITLE": {
+    "LOGIN": "Sign In",
+    "AUTH_CALLBACK": "Signing In"
   },
   "SIDEBAR": {
     "LIGHT_MODE": "Light mode",
@@ -72,6 +77,24 @@
     "ERROR": {
       "NO_EMAILS": "Please enter valid email addresses",
       "LOAD_FAILED": "Failed to load employees"
+    }
+  },
+  "ABSENCES": {
+    "SUBTITLE": "Every active employee's recent and upcoming absences.",
+    "SUMMARY": "{employees} employees · {absences} absences",
+    "EMPTY": "No absences",
+    "TODAY": "Today",
+    "ROW_META": "{count} absences",
+    "TABLE_VIEW": "Table view (all absences)",
+    "COL": {
+      "EMPLOYEE": "Employee",
+      "TYPE": "Type",
+      "START": "Start",
+      "END": "End",
+      "DAYS": "Days"
+    },
+    "ERROR": {
+      "LOAD_FAILED": "Failed to load absences"
     }
   },
   "SIGNATURES": {

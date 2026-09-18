@@ -56,19 +56,16 @@ export const TasksInput = () => {
     const load = async () => {
       try {
         const r = await fetch('/api/tasks/lists', {
-          method: 'POST',
           headers: await buildAuthHeaders({
             includeGoogleToken: true,
-            json: true,
           }),
-          body: JSON.stringify({}),
         });
         const data = await r.json();
         if (data.error === GOOGLE_TOKEN_EXPIRED) {
           await signOutDueToExpiredToken();
           return;
         }
-        const lists: TaskList[] = data.lists ?? [];
+        const lists: TaskList[] = data.taskLists ?? [];
         setTaskLists(lists);
         if (lists.length) setSelectedListId(lists[0].id ?? '');
         setListsLoaded(true);

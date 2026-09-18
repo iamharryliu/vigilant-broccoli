@@ -10,6 +10,7 @@ Management dashboard app.
 - External libs
   - Radix Themes + Tailwind CSS, lucide-react icons
   - dnd-kit (drag-and-drop)
+  - jsQR (QR code decoding)
   - Leaflet / react-leaflet, react-markdown, fuse.js
   - Socket.IO client (chat demo)
 - Internal libs
@@ -39,5 +40,10 @@ Management dashboard app.
   - Stripe
   - Tailscale
   - OpenAI API
-  - OpenWeatherMap
+  - Open-Meteo (default weather provider)
+  - OpenWeatherMap (alternate weather provider)
   - Self-hosted (PM2)
+
+## Agent Context
+
+- Keyboard shortcuts cheatsheet (Settings page, see [docs/features/settings.md](./docs/features/settings.md)): when adding, changing, or removing a global keyboard shortcut in `src/app/(pages)/layout.tsx` (`processKeyboardInput`), update `KEYBOARD_SHORTCUTS_MARKDOWN` in `src/app/content/keyboard-shortcuts.md.ts` to match.

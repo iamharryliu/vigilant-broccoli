@@ -6,7 +6,6 @@ Reference apps:
 
 - `cloud-8-skate-angular` — full staging + production pair, plus sitemap generation before deploy.
 - `personal-website-react` — React variant with the same staging + production pair.
-- `journal` — deliberately single-environment: Access-gated private content deployed from Gitea by `cron-deploy-journal`; a second pages.dev alias would need Access coverage first.
 - `docs-md` — staging-only.
 
 ## The wrangler target trio (per environment)
@@ -15,7 +14,7 @@ Reference apps:
 - `prune-deployments` — `scripts/prune-wrangler-deployments.ts <project> 10`: keeps the newest 10 deployments, deletes the rest (Pages accumulates one deployment per push otherwise).
 - `deploy` — `wrangler pages deploy <dist dir> --project-name <project>`, `dependsOn` the build and the two targets above.
 
-Project names are environment-prefixed (`staging-journal`, `production-cloud-8-skate-angular`); production mirrors the trio as `:production` target variants. Each app also carries a `manual-deploy` target (same command as `deploy`) — `manual-deploy-app.yml` dispatches whichever target name is chosen via `nx run-many -t $DEPLOY_TARGET`.
+Project names are environment-prefixed (`staging-docs-md`, `production-cloud-8-skate-angular`); production mirrors the trio as `:production` target variants. Each app also carries a `manual-deploy` target (same command as `deploy`) — `manual-deploy-app.yml` dispatches whichever target name is chosen via `nx run-many -t $DEPLOY_TARGET`.
 
 ## Per-environment build config
 
@@ -23,7 +22,7 @@ Project names are environment-prefixed (`staging-journal`, `production-cloud-8-s
 
 ## Custom domains (Terraform)
 
-Terraform owns the `cloudflare_pages_domain` attachment and its DNS record — one `cloudflare-<site>.tf` per site in `infrastructure/terraform/`. `cloudflare-cloud8skate.tf` is the plain pattern; `cloudflare-journal.tf` adds Cloudflare Access gating of the `*.pages.dev` aliases, required for private content. Custom domains are environment-less: attached to whichever environment's project serves live traffic (today the `staging-*` projects). Public URLs per domain: [network-management.md](../../infrastructure/network-management.md).
+Terraform owns the `cloudflare_pages_domain` attachment and its DNS record — one `cloudflare-<site>.tf` per site in `infrastructure/terraform/`. `cloudflare-cloud8skate.tf` is the plain pattern. Private content is deliberately not served from Pages at all — it stays on the self-hosted Gitea VM behind Access, since a Pages deploy would copy it onto a CI runner and Cloudflare storage. Custom domains are environment-less: attached to whichever environment's project serves live traffic (today the `staging-*` projects). Public URLs per domain: [network-management.md](../../infrastructure/network-management.md).
 
 ## New app checklist (Cloudflare-side)
 

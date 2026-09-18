@@ -1,3 +1,7 @@
+---
+description: Create or update the slim docs/features note under the affected app for this conversation's changes.
+---
+
 Update or create a docs/features/this-feature.md to reflect changes in this conversation. Feature docs should live under the most relevant application's directory (e.g. `apps/my-app/docs/features/`), not at the workspace root.
 
 Keep it as slim as possible:

@@ -1,14 +1,18 @@
-Run the standard git workflow to ship the current changes: branch, commit, push, and open a PR.
+---
+description: Branch, commit, sync with main, push, and open a PR for files edited in this session.
+---
 
-1. Check `git status` and `git diff` (staged and unstaged) to see what's changed. Stage only the files created or edited during this session (via this conversation's own Write/Edit/Bash calls) — never `git add -A` or `git add .`, and never stage files that were already modified/untracked before this session started, even if they look related. If unsure whether a file was touched this session, leave it unstaged and ask rather than guessing from the diff content.
-2. Pick a commit type for the change: `feat`, `fix`, `ci`, `chore`, `docs`, `refactor`, `enhancement`, `security`, or `infrastructure` (match existing usage in `git log` — don't invent a new type unless nothing fits).
-3. Determine the target branch:
-   - If the conversation already checked out or discussed a specific non-main branch for these changes (e.g. a PR branch fetched via `gh pr checkout` earlier in the session), commit there directly — do not create a new branch.
-   - Otherwise, if currently on `main` (or another shared base branch), create a new branch from it named `<committype>/<short-kebab-case-description>` (e.g. `fix/rabbitmq-secret-rotation`, `feat/hearth-food-planner-page`).
-4. Commit the staged changes with a message in the form `<committype>(<scope>): <Message>.` — scope is the affected app/service/lib name (e.g. `hearth`, `github-actions`, `vb-manager-next`) and is omitted when the change isn't scoped to one; the message is capitalized, concise, focused on why not what, and ends with a period. End the commit message with the `Co-Authored-By:` trailer specified by the environment for the model authoring the commit — do not hardcode a model name here, since it changes as models are released.
-5. Push the branch. If it already tracks a remote (e.g. an existing PR branch reused per step 3), a plain `git push` suffices; otherwise push with `-u origin <branch>`.
-6. If an open PR already exists for this branch (`gh pr view <branch>`), skip creating a new one — the push in step 5 updates it. Otherwise open a PR with `gh pr create`, using a HEREDOC body with a `## Summary` (bullet points) and `## Test plan` (checklist) section, ending with the Claude Code footer.
+Run the standard git workflow to ship the current changes: branch, commit, push, and open a PR. The rules for staging, branch names, commit types and messages, the PR body, and git safety are the `## Conventions` section of `docs/GIT.md` — read it first and follow it exactly.
+
+1. Check `git status` and `git diff` (staged and unstaged). Stage only the files this session created or edited, per the staging rule; if unsure whether a file was touched this session, leave it unstaged and ask rather than guessing from the diff.
+2. Determine the target branch:
+   - If the conversation already checked out or discussed a specific non-main branch for these changes (e.g. a PR branch fetched via `gh pr checkout`), commit there directly — do not create a new branch.
+   - Otherwise refresh the base first — `git fetch origin main` then `git pull --ff-only origin main` — and create a branch from it named per the convention. If the fast-forward fails, `main` has diverged locally; stop and report rather than merging.
+3. Commit the staged changes with a message in the conventional format, ending with the environment's `Co-Authored-By:` trailer.
+4. Run `/sync-main` so the PR opens mergeable instead of stale. Resolve conflicts now, while they are small; if one needs the user's judgement, stop and ask.
+5. Push: `git push -u origin <branch>` for a new branch, plain `git push` if it already tracks a remote.
+6. If an open PR already exists for this branch (`gh pr view <branch>`), the push updated it. Otherwise open one with `gh pr create`, passing the body as a HEREDOC in the conventional format.
 7. Return the PR URL.
 8. Switch back to the original branch so any other in-progress work there is undisturbed.
 
-Follow this repo's git safety conventions: never force-push, never skip hooks, never amend existing commits, and never push/commit/open a PR unless this command was explicitly invoked.
+Never commit, push, or open a PR unless this command was explicitly invoked.

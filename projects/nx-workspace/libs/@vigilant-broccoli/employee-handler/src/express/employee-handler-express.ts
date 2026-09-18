@@ -79,6 +79,14 @@ export const createEmployeeHandlerApp = (
   );
 
   api.get(
+    '/absences',
+    asyncRoute(async (_req, res) => {
+      const absences = await config.absenceUtilities.fetchAbsences();
+      res.json({ absences });
+    }),
+  );
+
+  api.get(
     '/onboard',
     asyncRoute(async (_req, res) => {
       await EmployeeHandlerService.onboardIncomingEmployees(config);
@@ -147,6 +155,22 @@ export const createEmployeeHandlerApp = (
     '/sync',
     asyncRoute(async (_req, res) => {
       await EmployeeHandlerService.syncData(config);
+      res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
+    }),
+  );
+
+  api.get(
+    '/birthdays/sync',
+    asyncRoute(async (_req, res) => {
+      await EmployeeHandlerService.syncBirthdays(config);
+      res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
+    }),
+  );
+
+  api.get(
+    '/leaves/sync',
+    asyncRoute(async (_req, res) => {
+      await EmployeeHandlerService.syncLeaves(config);
       res.status(HTTP_STATUS_CODES.NO_CONTENT).end();
     }),
   );

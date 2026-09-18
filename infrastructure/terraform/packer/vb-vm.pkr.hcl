@@ -60,7 +60,7 @@ source "googlecompute" "vb-vm" {
 
   image_name        = "${var.image_family}-{{timestamp}}"
   image_family      = var.image_family
-  image_description = "Vigilant Broccoli VM image with Vault + Docker + WireGuard - Built at {{isotime}}"
+  image_description = "Vigilant Broccoli VM image with Vault + WireGuard - Built at {{isotime}}"
 
   image_labels = {
     managed_by = "packer"

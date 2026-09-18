@@ -51,7 +51,5 @@ function flyrssh() {
 # Postgres
 alias flysqlconn='flyctl postgres connect --app'
 alias flysqlproxy='flyctl proxy 5432 --app'
-alias connectsql='flyctl postgres connect --app testsql'
-alias servesql='flyctl proxy 5432 --app testsql'
 # Token
 alias flycreatetoken='flyctl tokens create deploy --app'

@@ -2,7 +2,7 @@ name: cron-upptime-response-time
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '25 0 * * *'
   workflow_dispatch:
   repository_dispatch:
     types: [response_time]
@@ -19,6 +19,7 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -54,9 +55,9 @@ jobs:
           done
           wait
           sleep 3
-      - uses: upptime/uptime-monitor@4fec88256b5917a2ed07a088df6e205869b424d6 # v1.43.13
+      - uses: upptime/uptime-monitor@2e53e7570ad597ccf3f251d43502846a042165d2 # v1.44.0
         with:
           command: 'response-time'
-      - uses: upptime/uptime-monitor@4fec88256b5917a2ed07a088df6e205869b424d6 # v1.43.13
+      - uses: upptime/uptime-monitor@2e53e7570ad597ccf3f251d43502846a042165d2 # v1.44.0
         with:
           command: 'summary'

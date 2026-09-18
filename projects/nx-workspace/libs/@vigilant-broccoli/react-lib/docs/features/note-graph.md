@@ -5,12 +5,12 @@
 ## Enabling
 
 - `DocsViewer` shows a graph toggle (sidebar, waypoints icon) only when given the optional `getGraph()` prop; without it there is no graph
-- `docs-md` app wires `getGraph` to `fetchGraph` (`graph.json`); `vb-manager-next`'s docs route does not, so it has no graph toggle
+- `docs-md` and `pages-index`'s Claude Context page wire `getGraph` to `createDocsSnapshotSource().fetchGraph` (`graph.json`); `vb-manager-next`'s docs route does not, so it has no graph toggle
 - `DocsExplorer` takes `renderGraph(navigate)`; `DocsViewer` injects `GraphView` through it — react-lib can't import react-utility (would cycle), so the graph component is passed in rather than imported
 
 ## Data (`graph.json`)
 
-- Generated at build time by `apps/ui/docs-md/scripts/build-snapshot.mjs`, alongside `structure.json`; gitignored (build artifact)
+- Generated at build time by `scripts/build-docs-snapshot.mjs` from a per-app JSON config (`root`, `outDir`, `sources`, optional `linkFallbacks` that rewrite links leaving the snapshot to absolute URLs), alongside `structure.json` and `search-index.json`; gitignored (build artifact). `react-utility`'s `createDocsSnapshotSource(baseUrl)` is the matching client reader
 - Shape `{ nodes: [{ id, name, group }], links: [{ source, target }] }` — `id`/`source`/`target` are note paths, `group` is the top-level folder
 - Edges are markdown links resolved against known note paths (same resolution as in-note link clicks, plus a `.md`-extension fallback); external/hash links, self-links, and duplicate edges are dropped
 - Built entirely at snapshot time — no note content is parsed in the browser

@@ -23,6 +23,24 @@ export const OPEN_TYPE = {
 
 export type OpenType = (typeof OPEN_TYPE)[keyof typeof OPEN_TYPE];
 
+export type QuickLink = {
+  label: string;
+  target: string;
+  type: OpenType;
+  subgroup?: string;
+  args?: string;
+};
+
+export type PastebinEntry = {
+  label: string;
+  value: string;
+};
+
+export type PastebinGroup = {
+  name: string;
+  entries: PastebinEntry[];
+};
+
 // Audio
 export * from './lib/audio/audio.consts';
 
@@ -38,6 +56,10 @@ export * from './lib/jsonplaceholder/jsonplaceholder.types';
 export * from './lib/utils/env.utils';
 export * from './lib/utils/string.utils';
 export * from './lib/utils/date.utils';
+export * from './lib/utils/solar.utils';
+
+// Weather
+export * from './lib/weather/weather.model';
 
 export const DATE_CONST = {
   DAY: [

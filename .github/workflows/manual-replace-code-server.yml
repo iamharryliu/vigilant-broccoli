@@ -13,9 +13,14 @@ permissions:
   contents: read
   id-token: write
 
+concurrency:
+  group: replace-code-server
+  cancel-in-progress: false
+
 jobs:
   replace-code-server:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -33,6 +38,9 @@ jobs:
             kv/data/secrets OCI_CONFIG | OCI_CONFIG ;
             kv/data/secrets OCI_PRIVATE_KEY | OCI_PRIVATE_KEY ;
             kv/data/secrets GOOGLE_AUTH_PROVIDER_CLIENT_SECRET | TF_VAR_supabase_google_client_secret ;
+            kv/data/secrets TF_AWS_ACCESS_KEY_ID | AWS_ACCESS_KEY_ID ;
+            kv/data/secrets TF_AWS_SECRET_ACCESS_KEY | AWS_SECRET_ACCESS_KEY ;
+            kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | TF_VAR_claude_code_oauth_token ;
 
       - name: Write OCI credentials
         run: |
@@ -43,9 +51,10 @@ jobs:
           chmod 600 ~/.oci/config ~/.oci/oci_api_key.pem
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
-          terraform_wrapper: false
+          version: 2026.9.10
+          install_args: terraform
 
       - name: Replace code-server VM
         run: |

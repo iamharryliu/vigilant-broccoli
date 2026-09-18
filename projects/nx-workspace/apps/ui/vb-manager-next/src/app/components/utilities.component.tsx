@@ -12,6 +12,7 @@ import {
   CalculatorUtilityContent,
   CookingConversionsUtilityContent,
   CurrencyConverterUtilityContent,
+  QrReaderUtilityContent,
   StopwatchUtilityContent,
   TimerUtilityContent,
 } from '@vigilant-broccoli/react-utility';
@@ -41,6 +42,11 @@ const UTILITY_ITEMS: CollapsibleListItemConfig[] = [
     id: 'dj-music',
     title: 'DJ Music',
     content: <DjMusicUtilityContent />,
+  },
+  {
+    id: 'qr-reader',
+    title: 'QR Reader',
+    content: <QrReaderUtilityContent uploadOnly />,
   },
   {
     id: 'stopwatch',

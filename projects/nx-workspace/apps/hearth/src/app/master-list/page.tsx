@@ -25,8 +25,10 @@ import { HomeProjectFormData } from '../projects/components/HomeProjectForm';
 import { ResourceList } from '../resources/components/ResourceList';
 import { ResourceFormData } from '../resources/components/ResourceForm';
 import { HouseholdRuleList } from '../household-rules/components/HouseholdRuleList';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 export default function MasterListPage() {
+  usePageTitle(PAGE_TITLES.MASTER_LIST);
   const router = useRouter();
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();

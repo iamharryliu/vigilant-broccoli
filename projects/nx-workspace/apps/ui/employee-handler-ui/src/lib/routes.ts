@@ -4,6 +4,7 @@ export const ROUTES = {
   AUTH_CALLBACK: '/auth/callback',
   DASHBOARD: '/dashboard',
   EMPLOYEES: '/dashboard/employees',
+  ABSENCES: '/dashboard/absences',
   SIGNATURES: '/dashboard/signatures',
   SETTINGS: '/dashboard/settings',
 } as const;

@@ -1,5 +1,23 @@
 # Travel Packlist
 
+## Table of Contents
+
+- [Tips](#tips)
+- [Essentials](#essentials)
+- [Outing](#outing)
+- [Utility](#utility)
+- [Footwear](#footwear)
+- [Nice to have](#nice-to-have)
+  - [Leisure](#leisure)
+
+## Tips
+
+- Travel with a field jacket that has multiple accessible pockets.
+- Wireless headphone jack.
+- Easy shoes
+- Portable duffel bag.
+- Front open carry-on.
+
 ## Essentials
 
 - Phone

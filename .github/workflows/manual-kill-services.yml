@@ -16,6 +16,7 @@ jobs:
   kill:
     if: ${{ github.event.inputs.confirm == 'kill' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -31,7 +32,7 @@ jobs:
 
       - name: Destroy Fly app machines
         run: |
-          for app in staging-vb-express staging-vb-email-service staging-vb-manager-next-mobile; do
+          for app in staging-vb-express staging-vb-email-service; do
             echo "Destroying machines for $app..."
             flyctl machine list --app $app --json \
               | jq -r '.[].id' \

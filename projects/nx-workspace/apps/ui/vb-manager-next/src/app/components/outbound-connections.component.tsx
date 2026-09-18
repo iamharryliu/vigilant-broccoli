@@ -6,9 +6,9 @@ import {
   StatusCardList,
   StatusCardListItem,
   Text,
+  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
-import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import {
   CONNECTION_SCOPE,

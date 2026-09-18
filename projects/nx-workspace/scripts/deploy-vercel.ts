@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { execSync, execFileSync } from 'child_process';
 import { readFileSync, existsSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
@@ -114,6 +114,68 @@ async function vercelEnvAdd(
   }
 }
 
+async function listVercelEnvKeys(
+  projectId: string,
+  teamId: string,
+  token: string,
+  environment: string,
+): Promise<string[]> {
+  const res = await fetch(
+    `https://api.vercel.com/v9/projects/${projectId}/env?teamId=${teamId}`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!res.ok) {
+    console.warn(`⚠ Failed to list existing env vars: ${res.status}`);
+    return [];
+  }
+  const { envs } = (await res.json()) as {
+    envs: { key: string; target: string[] }[];
+  };
+  return envs.filter(e => e.target.includes(environment)).map(e => e.key);
+}
+
+async function vercelEnvRemove(
+  key: string,
+  environment: string,
+): Promise<boolean> {
+  try {
+    // execFileSync (no shell) since key comes from the Vercel API rather
+    // than local trusted config — avoids building a shell command string
+    // out of a value from an external response.
+    execFileSync('npx', ['vercel', 'env', 'rm', key, environment, '--yes'], {
+      stdio: 'pipe',
+      env: vercelEnv,
+    });
+    console.log(`✓ removed stale ${key}`);
+    return true;
+  } catch (e) {
+    console.error(`✗ ${key}: failed to remove`, (e as Error).message);
+    return false;
+  }
+}
+
+async function pruneStaleVercelEnvVars(
+  projectId: string,
+  teamId: string,
+  token: string,
+  environment: string,
+  expectedKeys: Set<string>,
+): Promise<void> {
+  const existingKeys = await listVercelEnvKeys(
+    projectId,
+    teamId,
+    token,
+    environment,
+  );
+  const staleKeys = existingKeys.filter(key => !expectedKeys.has(key));
+  if (!staleKeys.length) return;
+
+  console.log(
+    `\nRemoving ${staleKeys.length} stale env var(s): ${staleKeys.join(', ')}`,
+  );
+  await Promise.all(staleKeys.map(key => vercelEnvRemove(key, environment)));
+}
+
 function parseEnvKeys(filePath: string): string[] {
   if (!existsSync(filePath)) return [];
   return readFileSync(filePath, 'utf-8')
@@ -159,6 +221,16 @@ async function main() {
       'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
   };
 
+  // employee-handler-ui reads these unprefixed (see libs/supabase.ts) so its
+  // Docker image isn't locked to one Supabase project at build time — same
+  // values, different key names than the other apps below, which still read
+  // process.env.NEXT_PUBLIC_SUPABASE_* directly in client bundles.
+  const EMPLOYEE_HANDLER_UI_SUPABASE_SECRETS = {
+    SUPABASE_URL: SUPABASE_PUBLIC_SECRETS.NEXT_PUBLIC_SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY:
+      SUPABASE_PUBLIC_SECRETS.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+  };
+
   const NX_VERCEL_SETTINGS = (nxProject: string, outputDirectory: string) => ({
     framework: 'nextjs',
     rootDirectory: 'projects/nx-workspace',
@@ -178,7 +250,7 @@ async function main() {
       settings: NX_VERCEL_SETTINGS('hearth', 'dist/apps/hearth/.next'),
     },
     'employee-handler-ui': {
-      hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
+      hardcodedSecrets: { ...EMPLOYEE_HANDLER_UI_SUPABASE_SECRETS },
       envExamplePath: 'apps/ui/employee-handler-ui/.env.example',
       settings: NX_VERCEL_SETTINGS(
         'employee-handler-ui',
@@ -192,6 +264,17 @@ async function main() {
     whiteboard: {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
       settings: NX_VERCEL_SETTINGS('whiteboard', 'dist/apps/whiteboard/.next'),
+    },
+    'vb-manager-next-mobile': {
+      hardcodedSecrets: {
+        ...SUPABASE_PUBLIC_SECRETS,
+        VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
+      },
+      envExamplePath: 'apps/vb-manager-next-mobile/.env.example',
+      settings: NX_VERCEL_SETTINGS(
+        'vb-manager-next-mobile',
+        'dist/apps/vb-manager-next-mobile/.next',
+      ),
     },
   };
 
@@ -244,6 +327,14 @@ async function main() {
       vercelEnv.VERCEL_TOKEN,
     );
   }
+
+  await pruneStaleVercelEnvVars(
+    vercelEnv.VERCEL_PROJECT_ID,
+    vercelEnv.VERCEL_ORG_ID,
+    vercelEnv.VERCEL_TOKEN,
+    VERCEL_ENV,
+    new Set(Object.keys(allSecrets)),
+  );
 
   console.log('Deploying secrets...');
   const results = await Promise.all(

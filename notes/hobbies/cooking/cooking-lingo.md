@@ -7,6 +7,7 @@
 - [Food Science & Components](#food-science--components)
 - [Ingredients & Food Products](#ingredients--food-products)
 - [Kitchen](#kitchen)
+- [Culinary Culture](#culinary-culture)
 - [Asian Food Lingo](#asian-food-lingo)
 - [French Food Lingo](#french-food-lingo)
 - [Italian Food Lingo](#italian-food-lingo)
@@ -80,11 +81,24 @@
 
 ## Kitchen
 
-| Term           | Description                                                                                                                                                                                                                                             |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **French Top** | A thick, flat steel plate set over a burner (or ring of burners) on a range, heated most in the center and cooler toward the edges. Lets cooks slide pots between heat zones instead of adjusting a dial, useful for simmering multiple sauces at once. |
-| **Pantry**     | A room, closet, or cupboard used to store food, dry goods, and cooking supplies. A well-stocked pantry (oils, vinegars, grains, canned goods, spices) provides shelf-stable staples for cooking without a dedicated grocery trip.                       |
-| **Stage**      | An unpaid or low-paid trial period (pronounced "stahzh," from French for "internship") where a cook works a shift or series of shifts in a professional kitchen to learn techniques, prove their skills, or be evaluated for a job.                     |
+| Term              | Description                                                                                                                                                                                                                                                                                                                                   |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Aversion**      | A guest's non-medical dislike of an ingredient, called out on the ticket so the line leaves it out. Kept distinct from an allergy: an aversion is a preference the dish is cooked around, while an allergy triggers safety protocol — fresh pans, clean boards, and a separate pickup.                                                        |
+| **Breaking Down** | Two kitchen uses. Butchery: cutting a whole animal, fish, or primal into usable portions (e.g. breaking down a chicken into breasts, thighs, wings, and bones for stock). End of shift: tearing down a station after service — wrapping and storing mise en place, emptying the lowboy, and cleaning surfaces so the next shift starts fresh. |
+| **Covers**        | The number of guests served during a service, counted per person rather than per table (a four-top is four covers). Used to forecast prep, staff the line, and measure how busy a night was, e.g. "we did 200 covers tonight."                                                                                                                |
+| **Family Meal**   | The staff meal served to the whole team, usually just before service. Often cooked by a junior cook from trim, surplus, and leftover prep, making it both a way to reduce waste and a low-stakes chance to show creativity to the chefs.                                                                                                      |
+| **French Top**    | A thick, flat steel plate set over a burner (or ring of burners) on a range, heated most in the center and cooler toward the edges. Lets cooks slide pots between heat zones instead of adjusting a dial, useful for simmering multiple sauces at once.                                                                                       |
+| **Pantry**        | A room, closet, or cupboard used to store food, dry goods, and cooking supplies. A well-stocked pantry (oils, vinegars, grains, canned goods, spices) provides shelf-stable staples for cooking without a dedicated grocery trip.                                                                                                             |
+| **Project**       | A long or multi-step prep task that runs alongside a cook's regular station prep — stocks, terrines, charcuterie, ferments, or a new dish in development. Often handed out when a cook has downtime, or taken on to learn a technique beyond their station.                                                                                   |
+| **Stage**         | An unpaid or low-paid trial period (pronounced "stahzh," from French for "internship") where a cook works a shift or series of shifts in a professional kitchen to learn techniques, prove their skills, or be evaluated for a job.                                                                                                           |
+
+---
+
+## Culinary Culture
+
+| Term           | Description                                                                                                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Gastronomy** | The study and practice of food as culture — how ingredients, cooking, and eating relate to a region's history, customs, and identity. Broader than cooking itself, covering why a cuisine eats what it eats. |
 
 ---
 

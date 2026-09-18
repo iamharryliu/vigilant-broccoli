@@ -1,12 +1,13 @@
 import { useMemo } from 'react';
 import { Theme } from '@radix-ui/themes';
-import { DocsViewer, FILE_PARAM } from '@vigilant-broccoli/react-utility';
 import {
-  fetchStructure,
-  fetchContent,
-  searchDocs,
-  fetchGraph,
-} from './github-docs';
+  createDocsSnapshotSource,
+  DocsViewer,
+  FILE_PARAM,
+} from '@vigilant-broccoli/react-utility';
+
+const { fetchStructure, fetchContent, fetchGraph, searchDocs } =
+  createDocsSnapshotSource();
 
 const getFileParam = () =>
   new URLSearchParams(window.location.search).get(FILE_PARAM);
@@ -26,7 +27,7 @@ export function App() {
 
   return (
     <Theme>
-      <div className="h-screen p-2 sm:p-4 bg-white dark:bg-gray-900">
+      <div className="h-dvh p-2 sm:p-4 bg-white dark:bg-gray-900">
         <DocsViewer
           getStructure={fetchStructure}
           getContent={fetchContent}

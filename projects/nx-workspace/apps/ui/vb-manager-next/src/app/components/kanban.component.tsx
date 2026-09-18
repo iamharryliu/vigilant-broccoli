@@ -5,13 +5,22 @@ import {
   Button,
   CloseButton,
   EllipsisCTA,
+  GoogleTasksComponent,
   Input,
   Select,
+  Skeleton,
+  SortMode,
+  SORT_MODE,
   Text,
 } from '@vigilant-broccoli/react-lib';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { useEffect, useState, useCallback } from 'react';
-import { authFetch, signInWithGoogle, useAuthStatus } from '../../../libs/auth';
+import {
+  authFetch,
+  signInWithGoogle,
+  useAuthStatus,
+  useGoogleToken,
+} from '../../../libs/auth';
 import {
   DndContext,
   DragOverlay,
@@ -36,12 +45,6 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import {
-  GoogleTasksComponent,
-  SortMode,
-  SORT_MODE,
-} from './google-tasks.component';
-import { Skeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 
@@ -506,6 +509,7 @@ const SortableLane = ({
       </div>
       <div className="flex-1 overflow-y-auto min-h-0">
         <GoogleTasksComponent
+          auth={{ authFetch, useAuthStatus, useGoogleToken, signInWithGoogle }}
           taskListId={lane.taskListId}
           showSelector={false}
           enableDragDrop={true}

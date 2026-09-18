@@ -1,5 +1,6 @@
 'use client';
 import { Card } from '@radix-ui/themes';
+import { RefreshCw } from 'lucide-react';
 import {
   Badge,
   Button,
@@ -10,6 +11,7 @@ import {
   CRUDItemList,
   DeleteItemConfirmationDialog,
   Input,
+  Select,
   Switch,
   Text,
 } from '@vigilant-broccoli/react-lib';
@@ -20,8 +22,8 @@ import { authFetch } from '../../../libs/auth';
 import { supabase } from '../../lib/supabase';
 import {
   detectEventSourceType,
+  EVENT_LANGUAGES,
   EVENT_SOURCE_TYPE,
-  EVENT_SOURCE_TYPE_LABEL,
   EventCalendar,
   UntrackedCalendar,
   buildGoogleCalendarUrl,
@@ -33,7 +35,6 @@ const UPDATE_ERROR = 'Failed to update calendar';
 const DELETE_ERROR = 'Failed to delete calendar';
 const LOADING_MESSAGE = 'Loading…';
 const EMPTY_MESSAGE = 'No event calendars yet.';
-const UNKNOWN_SOURCE_LABEL = 'Unrecognized URL';
 const SYNC_ERROR = 'Failed to start sync';
 const UNTRACKED_FETCH_ERROR = 'Failed to load untracked calendars';
 const UNTRACKED_DELETE_ERROR = 'Failed to delete calendar';
@@ -47,6 +48,9 @@ const UNTRACKED_DESCRIPTION =
   'Owned by the calendar service account but not managed here — typically left behind by a deleted row. Deleting one removes it and all of its events for good.';
 const UNTRACKED_UNAVAILABLE =
   'Google returns no calendar list for this service account, so calendars it owns outside this page cannot be listed. Calendars managed here are unaffected.';
+const SYNC_NOW_LABEL = 'Sync now';
+const LAST_SYNCED_LABEL = 'Last synced';
+const PUBLIC_LABEL = 'Public';
 const SYNC_POLL_INTERVAL_MS = 3000;
 const SYNC_RUNNING = 'running';
 const CALENDARS_CHANNEL = 'event-calendars-changes';
@@ -55,6 +59,8 @@ const PUBLIC_SCHEMA = 'public';
 const CALENDARS_TABLE = 'event_calendars';
 const SOURCES_TABLE = 'event_calendar_sources';
 const ADD_SOURCE_LABEL = 'Add URL';
+const LANGUAGE_LABEL = 'Event language';
+const LANGUAGE_PLACEHOLDER = "Keep each event's own language";
 const REMOVE_SOURCE_LABEL = 'Remove';
 const SOURCE_URL_PLACEHOLDER =
   'facebook.com/groups/<id>/events or facebook.com/<page>/events';
@@ -81,6 +87,7 @@ const CREATE_FORM_DEFAULT_VALUES: EventCalendar = {
   name: '',
   googleCalendarId: '',
   isPublic: false,
+  language: '',
   sources: [],
   createdAt: '',
   updatedAt: '',
@@ -110,6 +117,12 @@ const formatRelativeTime = (iso: string) => {
   if (elapsed < DAY_MS) return `${Math.floor(elapsed / HOUR_MS)}h ago`;
   return `${Math.floor(elapsed / DAY_MS)}d ago`;
 };
+
+const HTTP_PROTOCOL_PATTERN = /^https?:\/\//i;
+const HTTPS_PREFIX = 'https://';
+
+const toExternalUrl = (url: string) =>
+  HTTP_PROTOCOL_PATTERN.test(url) ? url : `${HTTPS_PREFIX}${url}`;
 
 const urlsToSources = (urls: string[]) =>
   urls
@@ -177,6 +190,7 @@ export const EventCalendarsComponent = () => {
       body: JSON.stringify({
         name: item.name,
         isPublic: item.isPublic,
+        language: item.language,
         sources: item.sources,
       }),
     });
@@ -193,7 +207,11 @@ export const EventCalendarsComponent = () => {
       {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: item.name, sources: item.sources }),
+        body: JSON.stringify({
+          name: item.name,
+          language: item.language,
+          sources: item.sources,
+        }),
       },
     );
     if (!response.ok) {
@@ -346,10 +364,38 @@ export const EventCalendarsComponent = () => {
       <div className="flex flex-col gap-1">
         <div className="flex flex-wrap items-center gap-2">
           <Text weight="medium">{item.name}</Text>
-          <Badge color={item.isPublic ? 'green' : 'gray'} size="1">
-            {item.isPublic ? 'public' : 'private'}
-          </Badge>
+          {item.language && (
+            <Badge color="blue" size="1">
+              {item.language}
+            </Badge>
+          )}
         </div>
+        <div className="flex flex-col gap-1">
+          {item.sources.length ? (
+            item.sources.map(source => (
+              <div
+                key={source.url}
+                className="flex flex-wrap items-center gap-2"
+              >
+                <a
+                  href={toExternalUrl(source.url)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+                >
+                  {source.url}
+                </a>
+                <CopyButton text={source.url} />
+              </div>
+            ))
+          ) : (
+            <Text size="1" color="gray">
+              No source URLs configured.
+            </Text>
+          )}
+        </div>
+      </div>
+      <div className="flex flex-wrap items-center gap-6">
         <div className="flex items-center gap-2">
           <a
             href={buildGoogleCalendarUrl(item.googleCalendarId)}
@@ -361,62 +407,32 @@ export const EventCalendarsComponent = () => {
           </a>
           <CopyButton text={buildGoogleCalendarUrl(item.googleCalendarId)} />
         </div>
-        <div className="flex flex-col gap-1">
-          {item.sources.length ? (
-            item.sources.map(source => (
-              <div
-                key={source.url}
-                className="flex flex-wrap items-center gap-2"
-              >
-                <Badge size="1">
-                  {EVENT_SOURCE_TYPE_LABEL[source.sourceType] ??
-                    UNKNOWN_SOURCE_LABEL}
-                </Badge>
-                <Text size="1" color="gray">
-                  {source.url}
-                </Text>
-              </div>
-            ))
-          ) : (
-            <Text size="1" color="gray">
-              No source URLs configured.
-            </Text>
-          )}
-        </div>
-      </div>
-      <div className="flex flex-col items-end gap-2">
-        <div className="flex flex-col items-center gap-1">
+        {syncStatuses[item.id]?.lastSyncedAt && (
           <Text size="1" color="gray">
-            Public
+            {LAST_SYNCED_LABEL}{' '}
+            {formatRelativeTime(syncStatuses[item.id].lastSyncedAt as string)}
           </Text>
-          <Switch
-            checked={item.isPublic}
-            onCheckedChange={checked => requestTogglePublic(item, checked)}
-          />
-        </div>
+        )}
         <Button
           variant="secondary"
+          size="icon"
+          title={SYNC_NOW_LABEL}
+          aria-label={SYNC_NOW_LABEL}
           onClick={() => startSync(item.id)}
           loading={syncStatuses[item.id]?.state === SYNC_RUNNING}
           disabled={!item.sources.length}
         >
-          Sync now
+          <RefreshCw className="h-4 w-4" />
         </Button>
-        {syncStatuses[item.id] && (
-          <div className="flex flex-col items-end gap-1">
-            <Text size="1" color="gray">
-              {syncStatuses[item.id].message}
-            </Text>
-            {syncStatuses[item.id].lastSyncedAt && (
-              <Text size="1" color="gray">
-                Last synced{' '}
-                {formatRelativeTime(
-                  syncStatuses[item.id].lastSyncedAt as string,
-                )}
-              </Text>
-            )}
+        <Text size="1" color="gray" as="label">
+          <div className="flex items-center gap-2">
+            {PUBLIC_LABEL}
+            <Switch
+              checked={item.isPublic}
+              onCheckedChange={checked => requestTogglePublic(item, checked)}
+            />
           </div>
-        )}
+        </Text>
       </div>
     </div>
   );
@@ -520,7 +536,10 @@ const EventCalendarForm = ({
   initialFormValues,
   submitHandler,
 }: CRUDFormProps<EventCalendar>) => {
-  const [item, setItem] = useState(initialFormValues);
+  const [item, setItem] = useState({
+    ...initialFormValues,
+    language: initialFormValues.language ?? '',
+  });
   const [sourceUrls, setSourceUrls] = useState<string[]>(
     initialFormValues.sources.map(source => source.url),
   );
@@ -565,6 +584,16 @@ const EventCalendarForm = ({
         placeholder="Calendar name (e.g. Malmö Latin Dance Events)"
         value={item.name}
         onChange={event => setItem({ ...item, name: event.target.value })}
+      />
+      <Text size="1" color="gray">
+        {LANGUAGE_LABEL}
+      </Text>
+      <Select
+        options={EVENT_LANGUAGES}
+        selectedOption={item.language || undefined}
+        setValue={language => setItem({ ...item, language })}
+        placeholder={LANGUAGE_PLACEHOLDER}
+        triggerClassName="w-full"
       />
       <Text size="1" color="gray">
         Source URLs

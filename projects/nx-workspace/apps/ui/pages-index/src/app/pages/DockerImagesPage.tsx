@@ -60,11 +60,5 @@ export function DockerImagesPage() {
     },
   ];
 
-  return (
-    <CardListPage
-      title={t('DOCKER_IMAGES_PAGE.TITLE')}
-      description={t('DOCKER_IMAGES_PAGE.DESCRIPTION')}
-      items={items}
-    />
-  );
+  return <CardListPage title={t('DOCKER_IMAGES_PAGE.TITLE')} items={items} />;
 }

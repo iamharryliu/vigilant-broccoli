@@ -15,6 +15,7 @@ import {
   CalendarEventForm,
   CalendarEventFormData,
 } from '../../../calendar/components/CalendarEventForm';
+import { PAGE_TITLES, usePageTitle } from '../../../../lib/page-title';
 
 type ModalState =
   | { type: 'create'; start: string; end: string; allDay: boolean }
@@ -27,6 +28,7 @@ export default function HomeCalendarPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  usePageTitle(PAGE_TITLES.HOME_CALENDAR);
   const homeId = Number(id);
   const router = useRouter();
   const session = useAuth();

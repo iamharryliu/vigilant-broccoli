@@ -44,8 +44,12 @@ output "aws_seafile_url" {
   value = "https://${var.seafile_domain}"
 }
 
-output "journal_url" {
-  value = "https://${var.journal_domain}"
+output "aws_immich_public_ip" {
+  value = aws_eip.immich.public_ip
+}
+
+output "aws_immich_url" {
+  value = "https://${var.immich_domain}"
 }
 
 output "docs_url" {
@@ -66,4 +70,14 @@ output "github_actions_pr_check_workload_identity_provider" {
 
 output "github_actions_pr_check_service_account_email" {
   value = google_service_account.github_actions_pr_check.email
+}
+
+# Pasted literally into cron-terraform-drift.yml's vault-secrets step, same
+# reasoning as the github_actions_pr_check_* outputs above.
+output "github_actions_tf_drift_workload_identity_provider" {
+  value = google_iam_workload_identity_pool_provider.github_tf_drift.name
+}
+
+output "github_actions_tf_drift_service_account_email" {
+  value = google_service_account.github_actions_tf_drift.email
 }

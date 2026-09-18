@@ -77,13 +77,31 @@ resource "cloudflare_workers_script" "nx_cache" {
     },
   ]
 
+  # Spelled out in full because the provider treats these nested attributes as
+  # optional-but-not-computed: leaving them unset means "null", while Cloudflare
+  # always returns its defaults, so a short `{ enabled = true }` block replans
+  # (and re-uploads the Worker) on every apply.
   observability = {
-    enabled = true
+    enabled            = true
+    head_sampling_rate = 1
+
+    logs = {
+      enabled            = true
+      head_sampling_rate = 1
+      invocation_logs    = true
+      persist            = true
+    }
+
+    traces = {
+      enabled            = false
+      head_sampling_rate = 1
+      persist            = true
+    }
   }
 }
 
 # Cloudflare provisions and manages the DNS record for a Workers custom domain
-# itself — unlike the Pages sites in this repo (cloudflare-journal.tf etc.),
+# itself — unlike the Pages sites in this repo (cloudflare-docs.tf etc.),
 # which each own an explicit cloudflare_dns_record.
 resource "cloudflare_workers_custom_domain" "nx_cache" {
   account_id = var.cloudflare_account_id

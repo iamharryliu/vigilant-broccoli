@@ -16,6 +16,7 @@ interface EventCalendarRow {
   name: string;
   google_calendar_id: string;
   is_public: boolean;
+  language: string | null;
   created_at: string;
   updated_at: string;
   last_synced_at: string | null;
@@ -47,6 +48,7 @@ const toEventCalendar = (
   name: row.name,
   googleCalendarId: row.google_calendar_id,
   isPublic: row.is_public,
+  language: row.language ?? undefined,
   sources,
   createdAt: row.created_at,
   updatedAt: row.updated_at,
@@ -136,11 +138,13 @@ export const insertEventCalendar = async ({
   name,
   googleCalendarId,
   isPublic,
+  language,
   sources,
 }: {
   name: string;
   googleCalendarId: string;
   isPublic: boolean;
+  language?: string;
   sources: EventCalendarSource[];
 }): Promise<EventCalendar> => {
   const id = randomUUID();
@@ -152,6 +156,7 @@ export const insertEventCalendar = async ({
       name,
       google_calendar_id: googleCalendarId,
       is_public: isPublic,
+      ...(language && { language }),
       created_at: now,
       updated_at: now,
     }),
@@ -164,6 +169,7 @@ export const insertEventCalendar = async ({
     name,
     googleCalendarId,
     isPublic,
+    language,
     sources,
     createdAt: now,
     updatedAt: now,
@@ -175,6 +181,7 @@ export const updateEventCalendar = async (
   updates: {
     name?: string;
     isPublic?: boolean;
+    language?: string;
     sources?: EventCalendarSource[];
   },
 ): Promise<EventCalendar | null> => {
@@ -187,6 +194,10 @@ export const updateEventCalendar = async (
       .update({
         name: updates.name ?? existing.name,
         is_public: updates.isPublic ?? existing.isPublic,
+        ...(updates.language !== undefined &&
+          (updates.language || undefined) !== existing.language && {
+            language: updates.language || null,
+          }),
         updated_at: new Date().toISOString(),
       })
       .eq('id', id),

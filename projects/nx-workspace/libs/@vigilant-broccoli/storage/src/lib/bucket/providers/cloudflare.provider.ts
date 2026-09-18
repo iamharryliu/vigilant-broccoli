@@ -9,6 +9,7 @@ import {
   HeadBucketCommand,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import {
   IBucketProvider,
   CloudflareBucketConfig,
@@ -187,5 +188,34 @@ export class CloudflareBucketProvider implements IBucketProvider {
       chunks.push(Buffer.from(chunk));
     }
     return Buffer.concat(chunks);
+  }
+
+  async getUploadUrl(
+    destinationName: string,
+    contentType: string,
+    expiresInSeconds: number,
+  ): Promise<string> {
+    await this.ensureBucketExists();
+    return getSignedUrl(
+      this.client,
+      new PutObjectCommand({
+        Bucket: this.bucketName,
+        Key: destinationName,
+        ContentType: contentType,
+      }),
+      { expiresIn: expiresInSeconds },
+    );
+  }
+
+  async getDownloadUrl(
+    fileName: string,
+    expiresInSeconds: number,
+  ): Promise<string> {
+    await this.ensureBucketExists();
+    return getSignedUrl(
+      this.client,
+      new GetObjectCommand({ Bucket: this.bucketName, Key: fileName }),
+      { expiresIn: expiresInSeconds },
+    );
   }
 }

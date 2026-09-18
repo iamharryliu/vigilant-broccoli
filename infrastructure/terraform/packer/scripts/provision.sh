@@ -25,12 +25,6 @@ apt-get install -y \
   openssl \
   wireguard
 
-echo "Installing Docker..."
-curl -fsSL https://get.docker.com -o /tmp/get-docker.sh
-sh /tmp/get-docker.sh
-systemctl enable docker
-systemctl start docker
-
 echo "Installing Vault ${VAULT_VERSION}..."
 curl -fsSL "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" -o /tmp/vault.zip
 unzip -o /tmp/vault.zip -d /usr/local/bin/

@@ -2,7 +2,9 @@ import { HashRouter, Route, Routes } from 'react-router-dom';
 import { I18nProvider } from './i18n';
 import { HomePage } from './pages/HomePage';
 import { StatusPage } from './pages/StatusPage';
+import { RepoTimelinePage } from './pages/RepoTimelinePage';
 import { OpenSourcePage } from './pages/OpenSourcePage';
+import { GithubReposPage } from './pages/GithubReposPage';
 import { GithubReadmePage } from './pages/GithubReadmePage';
 import { DockerImagesPage } from './pages/DockerImagesPage';
 import { DockerImageReadmePage } from './pages/DockerImageReadmePage';
@@ -11,6 +13,7 @@ import { NpmPackageReadmePage } from './pages/NpmPackageReadmePage';
 import { WebApplicationsPage } from './pages/WebApplicationsPage';
 import { ApiServicesPage } from './pages/ApiServicesPage';
 import { ApiServiceDocsPage } from './pages/ApiServiceDocsPage';
+import { ClaudeContextPage } from './pages/ClaudeContextPage';
 
 export function App() {
   return (
@@ -20,8 +23,13 @@ export function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/status" element={<StatusPage />} />
+            <Route path="/repo-timeline" element={<RepoTimelinePage />} />
             <Route path="/open-source" element={<OpenSourcePage />} />
-            <Route path="/open-source/github" element={<GithubReadmePage />} />
+            <Route path="/open-source/github" element={<GithubReposPage />} />
+            <Route
+              path="/open-source/github/:repo"
+              element={<GithubReadmePage />}
+            />
             <Route path="/open-source/docker" element={<DockerImagesPage />} />
             <Route
               path="/open-source/docker/:image"
@@ -38,6 +46,7 @@ export function App() {
               path="/api-services/:service"
               element={<ApiServiceDocsPage />}
             />
+            <Route path="/claude-context" element={<ClaudeContextPage />} />
           </Routes>
         </HashRouter>
       </div>

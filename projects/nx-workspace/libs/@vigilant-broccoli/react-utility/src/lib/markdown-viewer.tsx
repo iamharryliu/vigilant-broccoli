@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
 import { createHeadingRenderer, marked } from './markdown-config';
-import { createNoteLinkClickHandler, scrollToUrlHash } from './note-links';
+import {
+  createNoteLinkClickHandler,
+  scrollToUrlHash,
+  type NoteHashSync,
+} from './note-links';
 
 const CLS = {
-  ROOT: 'w-full h-full overflow-auto',
-  PROSE: 'prose dark:prose-invert max-w-none px-4 sm:px-6 py-4',
+  ROOT: 'w-full',
+  PROSE:
+    'prose dark:prose-invert max-w-none px-4 sm:px-6 py-4 prose-th:align-middle prose-td:align-middle',
   EDITOR_WRAP: 'flex flex-col h-full',
   TOOLBAR:
     'flex items-center justify-end gap-2 px-4 sm:px-6 py-2 border-b border-gray-200 dark:border-gray-700',
@@ -32,6 +37,7 @@ interface MarkdownViewerProps {
   saveContent?: (path: string, content: string) => Promise<void>;
   editTrigger?: number;
   onNavigate?: (path: string) => void;
+  hashSync?: NoteHashSync;
 }
 
 export function MarkdownViewer({
@@ -40,6 +46,7 @@ export function MarkdownViewer({
   saveContent,
   editTrigger,
   onNavigate,
+  hashSync,
 }: MarkdownViewerProps) {
   const [html, setHtml] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -57,8 +64,8 @@ export function MarkdownViewer({
   }, [content]);
 
   useEffect(() => {
-    if (html) scrollToUrlHash();
-  }, [html]);
+    if (html) scrollToUrlHash(hashSync);
+  }, [html, hashSync]);
 
   const canEdit = Boolean(saveContent && filePath);
 
@@ -135,7 +142,11 @@ export function MarkdownViewer({
       <div
         className={CLS.PROSE}
         dangerouslySetInnerHTML={{ __html: html }}
-        onClick={createNoteLinkClickHandler(filePath ?? '', onNavigate)}
+        onClick={createNoteLinkClickHandler(
+          filePath ?? '',
+          onNavigate,
+          hashSync,
+        )}
       />
     </div>
   );

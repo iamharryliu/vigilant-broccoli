@@ -11,11 +11,12 @@ import {
   IconButton,
   ScrollArea,
   Select,
+  SpeechToTextToggleButton,
   Textarea,
   UserAvatar,
   Text,
+  useSpeechToText,
 } from '@vigilant-broccoli/react-lib';
-import { SpeechToTextButton } from './llm/SpeechToTextButton';
 import {
   LLM_MODEL,
   LLM_MODELS,
@@ -23,7 +24,6 @@ import {
   modelSupportsImageInput,
   modelSupportsImageOutput,
 } from '@vigilant-broccoli/common-js';
-import { useSpeechToText } from '../hooks/useSpeechToText';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
 import {
   EventDraft,
@@ -575,7 +575,7 @@ const InputControls = ({
       disabled={isStreaming || isRecording}
       aria-label="Upload image"
     />
-    <SpeechToTextButton
+    <SpeechToTextToggleButton
       isRecording={isRecording}
       isDisabled={isStreaming || isProcessing}
       onToggle={onToggleRecording}
@@ -710,6 +710,7 @@ const serializeEventDraft = (event: EventDraft): string => {
     event.description ? `Description: ${event.description}` : null,
     event.allDay ? 'All day: yes' : null,
     event.timeZone ? `Timezone: ${event.timeZone}` : null,
+    event.recurrence?.length ? `Repeats: ${event.recurrence.join(', ')}` : null,
   ].filter(Boolean);
   return `${CALENDAR_DRAFT_MARKER}\n${parts.join('\n')}`;
 };
@@ -813,6 +814,7 @@ export const ChatbotPanel = ({
     error: transcriptionError,
     toggleRecording,
   } = useSpeechToText({
+    authFetch,
     streaming: true,
     onTranscriptUpdate: transcript => {
       setInput(transcript);
@@ -1183,6 +1185,7 @@ export const ChatbotPanel = ({
           timeZone: draft.timeZone,
           location: draft.location,
           allDay: draft.allDay,
+          recurrence: draft.recurrence,
         }),
       });
 

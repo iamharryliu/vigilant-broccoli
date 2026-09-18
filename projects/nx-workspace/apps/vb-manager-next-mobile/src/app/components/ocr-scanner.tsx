@@ -13,8 +13,7 @@ const LABEL_SCAN_ANOTHER = 'Scan another';
 const LABEL_NO_TEXT_FOUND = 'No text found in the image.';
 
 export const OcrScanner = () => {
-  const { status, progress, text, error, recognize, reset, setText } =
-    useOcr();
+  const { status, progress, text, error, recognize, reset, setText } = useOcr();
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [copyLabel, setCopyLabel] = useState(COPY_IDLE);
 

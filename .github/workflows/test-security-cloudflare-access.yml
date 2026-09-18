@@ -2,7 +2,7 @@ name: test-security-cloudflare-access
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '45 0 * * *'
   workflow_dispatch:
   push:
     branches: [main]
@@ -16,6 +16,7 @@ permissions:
 jobs:
   security-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
@@ -28,9 +29,6 @@ jobs:
             origin_ip_secret: CODE_SERVER_VM_IP
           - name: vault
             hostname: vault.harryliu.dev
-            origin_ip_secret: ''
-          - name: journal
-            hostname: journal.harryliu.dev,staging-journal.pages.dev
             origin_ip_secret: ''
     steps:
       - name: Checkout code

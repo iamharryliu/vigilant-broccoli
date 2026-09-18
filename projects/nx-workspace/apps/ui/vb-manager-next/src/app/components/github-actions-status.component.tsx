@@ -3,10 +3,10 @@
 import {
   CardContainer,
   GithubActionsBadges,
+  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
 
 import { useState } from 'react';
-import { CardSkeleton } from './skeleton.component';
 
 export const GithubRepoActionStatusBadges = ({
   repoUrl,

@@ -12,8 +12,8 @@ import {
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
   Text,
+  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
-import { CardSkeleton } from './skeleton.component';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertCircle, ChevronRight, Users } from 'lucide-react';

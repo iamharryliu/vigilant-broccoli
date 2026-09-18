@@ -10,9 +10,10 @@ const EMPTY_TEXT = 'No kitchen events yet';
 
 type Props = {
   refreshSignal?: number;
+  className?: string;
 };
 
-export function KitchenEvents({ refreshSignal }: Props) {
+export function KitchenEvents({ refreshSignal, className }: Props) {
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
@@ -40,6 +41,7 @@ export function KitchenEvents({ refreshSignal }: Props) {
     <CalendarListView
       events={events}
       loading={isLoading}
+      className={className}
       emptyContent={
         <Text size="2" color="gray">
           {EMPTY_TEXT}

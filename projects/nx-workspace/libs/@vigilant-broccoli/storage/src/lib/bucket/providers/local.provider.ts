@@ -10,6 +10,8 @@ import {
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 const DEFAULT_BUCKET_PATH = 'storage-buckets';
+const ERROR_PRESIGNED_URLS_UNSUPPORTED =
+  'LocalBucketProvider does not support presigned URLs';
 
 export class LocalBucketProvider implements IBucketProvider {
   private bucketPath: string;
@@ -78,6 +80,14 @@ export class LocalBucketProvider implements IBucketProvider {
   async read(fileName: string): Promise<Buffer> {
     const filePath = this.resolveContainedPath(fileName);
     return await fs.readFile(filePath);
+  }
+
+  async getUploadUrl(): Promise<string> {
+    throw new Error(ERROR_PRESIGNED_URLS_UNSUPPORTED);
+  }
+
+  async getDownloadUrl(): Promise<string> {
+    throw new Error(ERROR_PRESIGNED_URLS_UNSUPPORTED);
   }
 
   private resolveContainedPath(fileName: string): string {

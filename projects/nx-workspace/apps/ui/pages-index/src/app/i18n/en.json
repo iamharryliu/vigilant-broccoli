@@ -5,6 +5,10 @@
       "TITLE": "Status",
       "DESCRIPTION": "Live health of deployed services and applications."
     },
+    "REPO_TIMELINE": {
+      "TITLE": "Repo Timeline",
+      "DESCRIPTION": "Lines of code, commits, and PRs over time."
+    },
     "OPEN_SOURCE": {
       "TITLE": "Open Source",
       "DESCRIPTION": "GitHub, Docker Hub, and npm packages."
@@ -19,12 +23,19 @@
     },
     "API_SERVICES": {
       "TITLE": "API Services",
-      "DESCRIPTION": "API docs and service health."
+      "DESCRIPTION": "Swagger docs for internal services."
+    },
+    "CLAUDE_CONTEXT": {
+      "TITLE": "Claude Context",
+      "DESCRIPTION": "How CLAUDE.md, docs, and skills link together."
     }
+  },
+  "CLAUDE_CONTEXT_PAGE": {
+    "TITLE": "Claude Context",
+    "LOADING": "Loading viewer…"
   },
   "WEB_APPLICATIONS_PAGE": {
     "TITLE": "Web Applications",
-    "DESCRIPTION": "Deployed apps and demos.",
     "SECTION_APPS": "Apps",
     "SECTION_DEMO": "Demo",
     "HARRY_LIU": {
@@ -54,8 +65,6 @@
   },
   "STATUS_PAGE": {
     "TITLE": "Status",
-    "DESCRIPTION_PREFIX": "Service health via",
-    "UPPTIME": "Upptime",
     "LOADING_SERVICES": "Loading status…",
     "NO_SERVICES": "No services configured.",
     "GITHUB_ACTIONS": "GitHub Actions",
@@ -68,12 +77,31 @@
     "GROUP_STAGING": "Staging",
     "GROUP_PERSONAL": "Personal Apps"
   },
+  "REPO_TIMELINE_PAGE": {
+    "TITLE": "Repo Timeline",
+    "LOADING": "Loading timeline…",
+    "ERROR": "Failed to load timeline: {message}",
+    "VIEW_LABEL": "View",
+    "VIEW_GRAPH": "Graph",
+    "VIEW_TIMELINE": "Timeline",
+    "METRIC_LABEL": "Metric",
+    "GRANULARITY_LABEL": "Timeline",
+    "METRIC_LINES_OF_CODE": "Lines",
+    "METRIC_COMMITS": "Commits",
+    "METRIC_PULL_REQUESTS": "PRs",
+    "GRANULARITY_DAY": "Day",
+    "GRANULARITY_MONTH": "Month",
+    "GRANULARITY_YEAR": "Year",
+    "GRANULARITY_DAY_SHORT": "D",
+    "GRANULARITY_MONTH_SHORT": "M",
+    "GRANULARITY_YEAR_SHORT": "Y",
+    "ENTRY_SUMMARY": "{commits} commits · {pullRequests} PRs · +{added} / −{deleted}"
+  },
   "OPEN_SOURCE_PAGE": {
     "TITLE": "Open Source",
-    "DESCRIPTION": "GitHub, Docker Hub, and npm packages.",
     "GITHUB": {
       "TITLE": "GitHub",
-      "DESCRIPTION": "vigilant-broccoli repository."
+      "DESCRIPTION": "iamharryliu GitHub repositories."
     },
     "DOCKER_HUB": {
       "TITLE": "Docker Hub",
@@ -85,6 +113,7 @@
     }
   },
   "README_PAGE": {
+    "README_LABEL": "README",
     "VIEW_ON_GITHUB": "View on GitHub",
     "VIEW_ON_NPM": "View on npm",
     "VIEW_ON_DOCKER_HUB": "View on Docker Hub",
@@ -92,9 +121,15 @@
     "ERROR": "Failed to load README: {message}",
     "NOT_FOUND": "Unknown item."
   },
+  "GITHUB_REPOS_PAGE": {
+    "TITLE": "GitHub",
+    "VIGILANT_BROCCOLI": {
+      "TITLE": "vigilant-broccoli",
+      "DESCRIPTION": "Monorepo of apps, libraries, notes, and infrastructure."
+    }
+  },
   "DOCKER_IMAGES_PAGE": {
     "TITLE": "Docker Hub",
-    "DESCRIPTION": "iamharryliu Docker images.",
     "BUCKET_SERVICE": {
       "TITLE": "bucket-service",
       "DESCRIPTION": "Object storage proxy across multiple bucket providers."
@@ -122,7 +157,6 @@
   },
   "NPM_PACKAGES_PAGE": {
     "TITLE": "npm Packages",
-    "DESCRIPTION": "Published @vigilant-broccoli packages.",
     "REACT_LIB": {
       "TITLE": "react-lib",
       "DESCRIPTION": "Shared React component library."
@@ -142,7 +176,6 @@
   },
   "API_SERVICES_PAGE": {
     "TITLE": "API Services",
-    "DESCRIPTION": "Swagger documentation for services deployed on Fly.io.",
     "EMAIL_SERVICE": {
       "TITLE": "Email Service",
       "DESCRIPTION": "staging-vb-email-service.flycast — private"

@@ -4,11 +4,8 @@ import { CSSProperties, useRef } from 'react';
 import {
   PeerCaretsOverlay,
   PeerCursorsOverlay,
-  SupabaseBroadcastLike,
   SyncedTextEditor,
-  useCursorPresence,
 } from '@vigilant-broccoli/react-lib';
-import { supabase } from '../../../../libs/supabase';
 import { useWhiteboard } from '../../hooks/use-whiteboard';
 
 interface WhiteboardEditorProps {
@@ -18,12 +15,10 @@ interface WhiteboardEditorProps {
   username: string;
   boardKey?: string;
   placeholder?: string;
-  cursorChannelPrefix?: string;
   style?: CSSProperties;
 }
 
 const DEFAULT_PLACEHOLDER = 'Shared family notes...';
-const DEFAULT_CURSOR_CHANNEL_PREFIX = 'home-whiteboard-cursors-';
 const CURSOR_SEND_INTERVAL_MS = 60;
 
 export function WhiteboardEditor({
@@ -33,21 +28,18 @@ export function WhiteboardEditor({
   username,
   boardKey,
   placeholder = DEFAULT_PLACEHOLDER,
-  cursorChannelPrefix = DEFAULT_CURSOR_CHANNEL_PREFIX,
   style,
 }: WhiteboardEditorProps) {
-  const { content, setContent, isLoading } = useWhiteboard(
-    homeId,
-    token,
-    boardKey,
-  );
-
-  const { cursors, setCursorPosition, setTextCursorIndex } = useCursorPresence(
-    supabase as unknown as SupabaseBroadcastLike,
-    `${cursorChannelPrefix}${homeId}`,
-    userId,
-    username,
-  );
+  const {
+    content,
+    setContent,
+    isLoading,
+    undo,
+    redo,
+    cursors,
+    setCursorPosition,
+    setTextCursorIndex,
+  } = useWhiteboard(homeId, token, userId, username, boardKey);
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lastCursorSentAtRef = useRef(0);
@@ -91,6 +83,8 @@ export function WhiteboardEditor({
       onTextareaBlur={handleTextareaBlur}
       onBoardMouseMove={handleBoardMouseMove}
       onBoardMouseLeave={handleBoardMouseLeave}
+      onUndo={undo}
+      onRedo={redo}
       overlay={
         <>
           <PeerCaretsOverlay

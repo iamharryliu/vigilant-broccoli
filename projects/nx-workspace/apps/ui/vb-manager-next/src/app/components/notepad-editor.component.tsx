@@ -9,13 +9,15 @@ interface NotepadEditorProps {
 }
 
 export const NotepadEditorComponent = ({ style }: NotepadEditorProps) => {
-  const { content, setContent, isLoading } = useNotepad();
+  const { content, setContent, isLoading, undo, redo } = useNotepad();
 
   return (
     <SyncedTextEditor
       content={content}
       onChange={setContent}
       isLoading={isLoading}
+      onUndo={undo}
+      onRedo={redo}
       style={style}
     />
   );

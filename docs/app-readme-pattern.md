@@ -100,4 +100,4 @@ Example (`infrastructure/terraform`):
 
 ## Aggregate
 
-The root `README.md` carries a `## Table of Contents` and a `## Stack` section — the repo-wide roll-up of everything above, written as grouped nested bullets (category → items). After refreshing individual READMEs, reconcile it so every technology that appears in any app, publishable-lib, or infrastructure README is represented there.
+The root `README.md` carries a `## Table of Contents` and a `## Stack` section — the repo-wide roll-up of everything above, written as a two-column table (`Category | Tools`), one row per category, categories and tools each sorted alphabetically, tool names linked to their homepage where one exists. After refreshing individual READMEs, reconcile it so every technology that appears in any app, publishable-lib, or infrastructure README is represented there.

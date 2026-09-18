@@ -1,3 +1,5 @@
+export const WHERE_IS_ITEM_PARAM = 'item';
+
 export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
@@ -5,6 +7,8 @@ export const ROUTES = {
   HOMES: '/homes',
   WHERE_IS: '/where-is',
   WHERE_IS_DETAIL: (id: string) => `/where-is/${id}`,
+  WHERE_IS_DASHBOARD_ITEM: (id: string) =>
+    `/where-is?${WHERE_IS_ITEM_PARAM}=${id}`,
   LOCATOR: '/locator',
   AUTH_CALLBACK: '/auth/callback',
   CALENDAR: '/calendar',
@@ -20,6 +24,8 @@ export const ROUTES = {
   WHITEBOARD: '/whiteboard',
   PRICE_TRACKER: '/price-tracker',
   PRICE_TRACKER_DETAIL: (id: string) => `/price-tracker/${id}`,
+  RECEIPTS: '/receipts',
+  RECEIPTS_DETAIL: (id: string) => `/receipts/${id}`,
   CHORES: '/chores',
   GROCERY: '/grocery',
   KITCHEN_CHORES: '/kitchen-chores',

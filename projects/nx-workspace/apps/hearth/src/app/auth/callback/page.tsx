@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '../../../../libs/supabase';
 import { ROUTES } from '../../../lib/routes';
 import { GOOGLE_TOKEN_STORAGE_KEY } from '../../hooks/use-google-token';
+import { PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
 
 function AuthCallbackContent() {
   const router = useRouter();
@@ -27,6 +28,7 @@ function AuthCallbackContent() {
 }
 
 export default function AuthCallbackPage() {
+  usePageTitle(PAGE_TITLES.AUTH_CALLBACK);
   return (
     <Suspense fallback={<p>Signing you in...</p>}>
       <AuthCallbackContent />

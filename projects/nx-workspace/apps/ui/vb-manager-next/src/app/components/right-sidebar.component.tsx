@@ -1,29 +1,57 @@
 'use client';
 
-import { Sidebar, SidebarCTA, useTheme } from '@vigilant-broccoli/react-lib';
+import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib';
 import { signInWithGoogle, signOut, useAuth } from '../../../libs/auth';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   MessageCircle,
   Mail,
   Search,
-  Moon,
-  Sun,
   Calendar,
-  StickyNote,
   Timer,
   LogOut,
   LogIn,
   Bell,
+  Settings,
+  House,
+  SquareKanban,
+  LayoutDashboard,
+  ClipboardList,
+  MessageSquare,
+  CalendarDays,
+  Languages,
+  FlaskConical,
+  Briefcase,
 } from 'lucide-react';
 import { NotificationRecord } from '../hooks/useNotificationHistory';
 import { NotificationsDialog } from './notifications-dialog.component';
+import { SIDEBAR_ROUTE } from '../app.const';
 
-const LIGHT = 'light';
-const DARK_MODE_LABEL = 'Dark mode';
-const LIGHT_MODE_LABEL = 'Light mode';
-const THEME_SHORTCUT = ' (D)';
+const SETTINGS_PATH = '/settings';
+
+const SIDEBAR_ROUTE_ITEMS = [
+  { route: SIDEBAR_ROUTE.INDEX, icon: House },
+  { route: SIDEBAR_ROUTE.KANBAN, icon: SquareKanban },
+  { route: SIDEBAR_ROUTE.DEV_DASHBOARD, icon: LayoutDashboard },
+  { route: SIDEBAR_ROUTE.PASTEBIN, icon: ClipboardList },
+  { route: SIDEBAR_ROUTE.CHATBOT, icon: MessageSquare },
+  { route: SIDEBAR_ROUTE.EVENT_CALENDARS, icon: CalendarDays },
+  { route: SIDEBAR_ROUTE.LANGUAGE_LEARNING, icon: Languages },
+  { route: SIDEBAR_ROUTE.FEATURE_SANDBOX, icon: FlaskConical },
+  { route: SIDEBAR_ROUTE.CAREER, icon: Briefcase },
+];
+
 const UNREAD_MAX = 9;
 const UNREAD_MAX_LABEL = '9+';
+
+const PANEL_BASE_CLASSES =
+  'border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex flex-col overflow-hidden transition-[width,opacity] duration-300 ease-in-out motion-reduce:transition-none';
+const PANEL_OPEN_CLASSES = 'w-72 opacity-100';
+const PANEL_CLOSED_CLASSES = 'w-0 opacity-0 border-l-0';
+const PANEL_CONTENT_BASE_CLASSES =
+  'w-72 h-full shrink-0 transition-transform duration-300 ease-in-out motion-reduce:transition-none';
+const PANEL_CONTENT_OPEN_CLASSES = 'translate-x-0';
+const PANEL_CONTENT_CLOSED_CLASSES = 'translate-x-full';
 
 const BellIconWithBadge = ({ unreadCount }: { unreadCount: number }) => (
   <span className="relative inline-flex">
@@ -40,7 +68,6 @@ type Props = {
   setChatbotDialogOpen: (open: boolean) => void;
   setEmailDialogOpen: (open: boolean) => void;
   setCalendarDialogOpen: (open: boolean) => void;
-  setNotepadDialogOpen: (open: boolean) => void;
   setPomodoroDialogOpen: (open: boolean) => void;
   setSearchDialogOpen: (open: boolean) => void;
   notificationsOpen: boolean;
@@ -54,7 +81,6 @@ export const RightSidebar = ({
   setChatbotDialogOpen,
   setEmailDialogOpen,
   setCalendarDialogOpen,
-  setNotepadDialogOpen,
   setPomodoroDialogOpen,
   setSearchDialogOpen,
   notificationsOpen,
@@ -63,10 +89,9 @@ export const RightSidebar = ({
   notifications,
   onClearNotifications,
 }: Props) => {
-  const { appearance, toggleTheme } = useTheme();
   const session = useAuth();
-  const isLight = appearance === LIGHT;
-  const themeLabel = isLight ? DARK_MODE_LABEL : LIGHT_MODE_LABEL;
+  const router = useRouter();
+  const pathname = usePathname();
   const BellIcon = () => <BellIconWithBadge unreadCount={unreadCount} />;
 
   const items: SidebarCTA[] = [
@@ -77,6 +102,13 @@ export const RightSidebar = ({
       onClick: () => setNotificationsOpen(!notificationsOpen),
       isActive: notificationsOpen,
     },
+    ...SIDEBAR_ROUTE_ITEMS.map(({ route, icon }) => ({
+      label: route.title,
+      icon,
+      title: route.title,
+      onClick: () => router.push(route.path),
+      isActive: pathname === route.path,
+    })),
     {
       label: 'Jarvis',
       icon: MessageCircle,
@@ -96,12 +128,6 @@ export const RightSidebar = ({
       onClick: () => setCalendarDialogOpen(true),
     },
     {
-      label: 'Notepad',
-      icon: StickyNote,
-      title: 'Notepad (N)',
-      onClick: () => setNotepadDialogOpen(true),
-    },
-    {
       label: 'Pomodoro',
       icon: Timer,
       title: 'Pomodoro (Shift+P)',
@@ -114,10 +140,11 @@ export const RightSidebar = ({
       onClick: () => setSearchDialogOpen(true),
     },
     {
-      label: themeLabel,
-      icon: isLight ? Moon : Sun,
-      title: themeLabel + THEME_SHORTCUT,
-      onClick: toggleTheme,
+      label: 'Settings',
+      icon: Settings,
+      title: 'Settings',
+      onClick: () => router.push(SETTINGS_PATH),
+      isActive: pathname === SETTINGS_PATH,
     },
     ...(session
       ? [
@@ -140,14 +167,20 @@ export const RightSidebar = ({
 
   return (
     <div className="flex h-full">
-      {notificationsOpen && (
-        <div className="w-72 border-l border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 flex flex-col overflow-hidden">
+      <div
+        className={`${PANEL_BASE_CLASSES} ${notificationsOpen ? PANEL_OPEN_CLASSES : PANEL_CLOSED_CLASSES}`}
+        aria-hidden={!notificationsOpen}
+        inert={!notificationsOpen}
+      >
+        <div
+          className={`${PANEL_CONTENT_BASE_CLASSES} ${notificationsOpen ? PANEL_CONTENT_OPEN_CLASSES : PANEL_CONTENT_CLOSED_CLASSES}`}
+        >
           <NotificationsDialog
             notifications={notifications}
             onClear={onClearNotifications}
           />
         </div>
-      )}
+      </div>
       <Sidebar items={items} side="right" align="space-evenly" />
     </div>
   );

@@ -1,0 +1,79 @@
+name: test-smoke-machine-setup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - setup/**
+      - .github/workflows/test-smoke-machine-setup.yml
+  schedule:
+    - cron: '20 4 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-smoke-machine-setup-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Run the Linux setup script
+        run: ./setup/linux/install.sh -y
+
+      - name: Verify apt packages installed
+        run: xargs -a setup/linux/apt-packages.txt -I{} dpkg -s {} > /dev/null
+
+      - name: Verify dotfile symlinks resolve
+        run: |
+          set -euo pipefail
+          for link in .gitconfig .tmux.conf .vimrc .config/nvim .claude/commands .claude/skills shell-aliases shell-scripts; do
+            [ -L "$HOME/$link" ] || { echo "$link is not a symlink"; exit 1; }
+            [ -e "$HOME/$link" ] || { echo "$link points at nothing"; exit 1; }
+          done
+
+      # The rc chain is what a fresh login shell sources; a missing file or an
+      # alias file that only exists on macOS would break every new shell.
+      - name: Verify the rc chain sources cleanly
+        run: |
+          set -euo pipefail
+          bash -c 'source "$HOME/vigilant-broccoli/setup/dotfiles/bash/.rc.bash"' 2> rc-stderr.log
+          [ -s rc-stderr.log ] && { echo "sourcing .rc.bash wrote to stderr:"; cat rc-stderr.log; exit 1; }
+          rm -f rc-stderr.log
+
+      - name: Verify a second run stays idempotent
+        run: |
+          set -euo pipefail
+          ./setup/linux/install.sh -y
+          HOOKS=$(grep -cxF 'source $HOME/vigilant-broccoli/setup/dotfiles/bash/.rc.bash' "$HOME/.bashrc")
+          [ "$HOOKS" -eq 1 ] || { echo "rc hook appended $HOOKS times"; exit 1; }
+
+  macos-brewfile:
+    runs-on: macos-latest
+    timeout-minutes: 20
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      HOMEBREW_NO_ENV_HINTS: '1'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      # Installing the whole Brewfile would take far longer than it's worth;
+      # resolving every entry catches what actually breaks a new machine —
+      # a formula or cask that was renamed, deprecated, or removed upstream.
+      # Third-party taps are trusted as well as tapped: Homebrew refuses to
+      # load a cask from an untrusted tap, so resolution fails without it.
+      - name: Resolve every Brewfile entry
+        run: |
+          set -euo pipefail
+          BREWFILE=setup/mac/Brewfile
+          brew bundle list --file "$BREWFILE" --tap | xargs -I{} sh -c 'brew tap "$1" && brew trust "$1"' _ {}
+          brew bundle list --file "$BREWFILE" --formula | xargs brew info --formula --json=v2 > /dev/null
+          brew bundle list --file "$BREWFILE" --cask | xargs brew info --cask --json=v2 > /dev/null

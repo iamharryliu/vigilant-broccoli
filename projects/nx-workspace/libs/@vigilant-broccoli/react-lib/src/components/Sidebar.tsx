@@ -1,10 +1,17 @@
 'use client';
 
-import { ComponentType, ReactNode, useState, MouseEvent } from 'react';
+import {
+  ComponentType,
+  ReactNode,
+  useEffect,
+  useState,
+  MouseEvent,
+} from 'react';
 import { ChevronDown, ChevronRight, Search } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 export type SidebarCTA = {
+  id?: string;
   label: string;
   icon?: ComponentType<{ size?: number | string }>;
   href?: string;
@@ -37,6 +44,7 @@ export type SidebarProps = {
   className?: string;
   mobileOpen?: boolean;
   onMobileClose?: () => void;
+  defaultOpenId?: string | null;
 };
 
 const ICON_SIZE = 18;
@@ -44,6 +52,7 @@ const CHEVRON_SIZE = 14;
 const BRANDING_HEIGHT = 'h-[49px]';
 const COLLAPSED_WIDTH = 'w-14';
 const EXPANDED_WIDTH = 'hover:w-48';
+const EXPANDED_FIXED_WIDTH = 'w-48';
 
 const MOBILE_WIDTH = 'max-md:w-64';
 const MOBILE_OPEN_TRANSFORM = 'max-md:translate-x-0';
@@ -51,20 +60,24 @@ const MOBILE_CLOSED_TRANSFORM = 'max-md:-translate-x-full';
 const MD_VISIBLE_TRANSFORM = 'md:translate-x-0';
 const MD_COLLAPSED_WIDTH = 'md:w-14';
 const MD_EXPANDED_WIDTH = 'md:hover:w-48';
-const MOBILE_BACKDROP =
-  'fixed inset-0 z-20 bg-black/50 md:hidden';
+const MD_EXPANDED_FIXED_WIDTH = 'md:w-48';
+const MOBILE_BACKDROP = 'fixed inset-0 z-20 bg-black/50 md:hidden';
+const NARROW_VIEWPORT_QUERY = '(max-width: 767px)';
 
 const BORDER_COLOR = 'border-gray-200 dark:border-gray-800';
 const SURFACE_BG = 'bg-white dark:bg-gray-950';
 const TEXT_MUTED = 'text-gray-500 dark:text-gray-400';
-const TEXT_MUTED_HOVER = 'hover:text-black hover:bg-gray-50 dark:hover:text-white dark:hover:bg-gray-800';
+const TEXT_MUTED_HOVER =
+  'hover:text-black hover:bg-gray-50 dark:hover:text-white dark:hover:bg-gray-800';
 
 const ROW_BASE =
   'text-sm rounded-md transition-colors flex items-center gap-3 px-2 py-2 w-full text-left';
-const ROW_ACTIVE = 'font-medium text-black bg-gray-100 dark:text-white dark:bg-gray-800';
+const ROW_ACTIVE =
+  'font-medium text-black bg-gray-100 dark:text-white dark:bg-gray-800';
 const ROW_INACTIVE = `${TEXT_MUTED} ${TEXT_MUTED_HOVER}`;
 
-const LABEL_BASE = 'whitespace-nowrap overflow-hidden transition-all duration-150';
+const LABEL_BASE =
+  'whitespace-nowrap overflow-hidden transition-all duration-150';
 const LABEL_COLLAPSIBLE =
   'w-0 opacity-0 group-hover/sidebar:w-auto group-hover/sidebar:flex-1 group-hover/sidebar:opacity-100';
 const LABEL_VISIBLE = 'flex-1 opacity-100';
@@ -73,6 +86,20 @@ const LABEL_HIDDEN = 'hidden';
 const labelClassFor = (expandable: boolean) =>
   expandable ? LABEL_COLLAPSIBLE : LABEL_HIDDEN;
 
+const useIsNarrowViewport = () => {
+  const [isNarrow, setIsNarrow] = useState(false);
+
+  useEffect(() => {
+    const mql = window.matchMedia(NARROW_VIEWPORT_QUERY);
+    const update = () => setIsNarrow(mql.matches);
+    update();
+    mql.addEventListener('change', update);
+    return () => mql.removeEventListener('change', update);
+  }, []);
+
+  return isNarrow;
+};
+
 const flattenItems = (items: SidebarCTA[]): SidebarCTA[] =>
   items.flatMap(item =>
     item.children && item.children.length > 0
@@ -80,11 +107,15 @@ const flattenItems = (items: SidebarCTA[]): SidebarCTA[] =>
       : [item],
   );
 
+const hasIcon = (item: SidebarCTA): boolean =>
+  Boolean(item.icon) || (item.children?.some(hasIcon) ?? false);
+
 type PolymorphicRowProps = {
   href?: string;
   title?: string;
   className: string;
   onClick?: (e: MouseEvent<HTMLElement>) => void;
+  onMouseEnter?: () => void;
   LinkComponent?: LinkComponent;
   children: ReactNode;
 };
@@ -94,6 +125,7 @@ const PolymorphicRow = ({
   title,
   className,
   onClick,
+  onMouseEnter,
   LinkComponent,
   children,
 }: PolymorphicRowProps) => {
@@ -104,6 +136,7 @@ const PolymorphicRow = ({
         title={title}
         className={className}
         onClick={onClick}
+        onMouseEnter={onMouseEnter}
       >
         {children}
       </LinkComponent>
@@ -111,13 +144,25 @@ const PolymorphicRow = ({
   }
   if (href) {
     return (
-      <a href={href} title={title} className={className} onClick={onClick}>
+      <a
+        href={href}
+        title={title}
+        className={className}
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+      >
         {children}
       </a>
     );
   }
   return (
-    <button type="button" title={title} className={className} onClick={onClick}>
+    <button
+      type="button"
+      title={title}
+      className={className}
+      onClick={onClick}
+      onMouseEnter={onMouseEnter}
+    >
       {children}
     </button>
   );
@@ -128,6 +173,7 @@ type ItemRowProps = {
   labelClassName: string;
   LinkComponent?: LinkComponent;
   onClickExtra?: () => void;
+  onMouseEnter?: () => void;
   className?: string;
 };
 
@@ -136,6 +182,7 @@ const ItemRow = ({
   labelClassName,
   LinkComponent,
   onClickExtra,
+  onMouseEnter,
   className,
 }: ItemRowProps) => {
   const Icon = item.icon;
@@ -148,8 +195,13 @@ const ItemRow = ({
     <PolymorphicRow
       href={item.href}
       title={item.title}
-      className={cn(ROW_BASE, item.isActive ? ROW_ACTIVE : ROW_INACTIVE, className)}
+      className={cn(
+        ROW_BASE,
+        item.isActive ? ROW_ACTIVE : ROW_INACTIVE,
+        className,
+      )}
       onClick={handleClick}
+      onMouseEnter={onMouseEnter}
       LinkComponent={LinkComponent}
     >
       {Icon && (
@@ -157,7 +209,9 @@ const ItemRow = ({
           <Icon size={ICON_SIZE} />
         </span>
       )}
-      <span className={cn(LABEL_BASE, labelClassName)}>{item.label}</span>
+      <span className={cn(LABEL_BASE, Icon ? labelClassName : LABEL_VISIBLE)}>
+        {item.label}
+      </span>
     </PolymorphicRow>
   );
 };
@@ -174,9 +228,34 @@ export const Sidebar = ({
   className,
   mobileOpen,
   onMobileClose,
+  defaultOpenId = null,
 }: SidebarProps) => {
-  const [openId, setOpenId] = useState<string | null>(null);
+  const isMobileAware = mobileOpen !== undefined;
+  const canCollapse = items.some(hasIcon);
+  const forceExpanded = (isMobileAware && mobileOpen) || !canCollapse;
+
+  // Only seed the initial open group when the sidebar starts already fully
+  // expanded (mobile drawer open, or icon-less always-expanded). Otherwise a
+  // collapsed desktop rail would render internally "open" to the active
+  // group - active styling and all - before the user ever hovers it.
+  // onMouseEnter below is what opens it on demand instead.
+  const [openId, setOpenId] = useState<string | null>(
+    forceExpanded ? defaultOpenId : null,
+  );
   const [query, setQuery] = useState('');
+
+  // Re-syncs openId whenever defaultOpenId changes (e.g. a new search
+  // selection), but only while the sidebar is already fully expanded -
+  // forceExpanded is read here rather than listed as a dependency, so a
+  // collapsed desktop rail toggling in and out of hover (or a mobile drawer
+  // opening/closing) doesn't itself re-trigger this and stomp a manually
+  // expanded *different* group. This mirrors the useState initializer above,
+  // and matters on every mount too since effects always run at least once
+  // after the first render regardless of their dependency array.
+  useEffect(() => {
+    if (defaultOpenId !== null && forceExpanded) setOpenId(defaultOpenId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultOpenId]);
 
   const flat = searchable ? flattenItems(items) : [];
   const results =
@@ -184,17 +263,18 @@ export const Sidebar = ({
       ? flat.filter(p => p.label.toLowerCase().includes(query.toLowerCase()))
       : null;
 
-  const isMobileAware = mobileOpen !== undefined;
-  const forceExpanded = isMobileAware && mobileOpen;
+  const isNarrowViewport = useIsNarrowViewport();
   const widthClass = isMobileAware
     ? cn(
         MOBILE_WIDTH,
         mobileOpen ? MOBILE_OPEN_TRANSFORM : MOBILE_CLOSED_TRANSFORM,
         MD_VISIBLE_TRANSFORM,
-        MD_COLLAPSED_WIDTH,
-        expandable && MD_EXPANDED_WIDTH,
+        canCollapse ? MD_COLLAPSED_WIDTH : MD_EXPANDED_FIXED_WIDTH,
+        canCollapse && expandable && MD_EXPANDED_WIDTH,
       )
-    : cn(COLLAPSED_WIDTH, expandable && EXPANDED_WIDTH);
+    : canCollapse
+      ? cn(COLLAPSED_WIDTH, expandable && EXPANDED_WIDTH)
+      : EXPANDED_FIXED_WIDTH;
   const collapsibleLabelClass = forceExpanded
     ? LABEL_VISIBLE
     : labelClassFor(expandable);
@@ -222,6 +302,7 @@ export const Sidebar = ({
           className,
         )}
         onMouseLeave={() => {
+          if (forceExpanded || (isMobileAware && isNarrowViewport)) return;
           setOpenId(null);
           setQuery('');
         }}
@@ -242,7 +323,12 @@ export const Sidebar = ({
           )}
         >
           {searchable && (
-            <div className={cn('flex items-center gap-3 px-2 py-2 rounded-md', ROW_INACTIVE)}>
+            <div
+              className={cn(
+                'flex items-center gap-3 px-2 py-2 rounded-md',
+                ROW_INACTIVE,
+              )}
+            >
               <span className="shrink-0">
                 <Search size={ICON_SIZE} />
               </span>
@@ -280,7 +366,15 @@ export const Sidebar = ({
             )
           ) : (
             items.map((item, idx) => {
-              const itemKey = item.href ?? `${item.label}-${idx}`;
+              const itemKey = item.id ?? item.href ?? `${item.label}-${idx}`;
+              // On a collapsed desktop rail, hovering a group should open
+              // *that* group - not whatever the active selection's group is
+              // - and hovering a plain (non-group) row should close
+              // whichever group was previously open, since attention has
+              // moved elsewhere. Mobile drawers and always-expanded
+              // (icon-less) sidebars have no hover-collapse concept, so this
+              // is a no-op there.
+              const canHoverSwitch = !forceExpanded && !isNarrowViewport;
               if (item.children && item.children.length > 0) {
                 const isOpen = openId === itemKey;
                 return (
@@ -291,6 +385,9 @@ export const Sidebar = ({
                     expandable={expandable}
                     LinkComponent={LinkComponent}
                     onToggle={() => setOpenId(isOpen ? null : itemKey)}
+                    onMouseEnter={
+                      canHoverSwitch ? () => setOpenId(itemKey) : undefined
+                    }
                     onNavigate={onMobileClose}
                     forceExpanded={forceExpanded}
                   />
@@ -303,6 +400,9 @@ export const Sidebar = ({
                   labelClassName={itemLabelClass}
                   LinkComponent={LinkComponent}
                   onClickExtra={onMobileClose}
+                  onMouseEnter={
+                    canHoverSwitch ? () => setOpenId(null) : undefined
+                  }
                 />
               );
             })
@@ -386,6 +486,7 @@ type NestedItemProps = {
   expandable: boolean;
   LinkComponent?: LinkComponent;
   onToggle: () => void;
+  onMouseEnter?: () => void;
   onNavigate?: () => void;
   forceExpanded?: boolean;
 };
@@ -396,6 +497,7 @@ const NestedItem = ({
   expandable,
   LinkComponent,
   onToggle,
+  onMouseEnter,
   onNavigate,
   forceExpanded = false,
 }: NestedItemProps) => {
@@ -403,11 +505,11 @@ const NestedItem = ({
   const Icon = item.icon;
   const labelClass = cn(
     'whitespace-nowrap overflow-hidden text-left transition-all duration-150',
-    forceExpanded ? LABEL_VISIBLE : labelClassFor(expandable),
+    !Icon || forceExpanded ? LABEL_VISIBLE : labelClassFor(expandable),
   );
   const chevronClass = cn(
     'shrink-0 transition-opacity duration-150',
-    forceExpanded
+    !Icon || forceExpanded
       ? 'opacity-100'
       : expandable
         ? 'opacity-0 group-hover/sidebar:opacity-100'
@@ -419,7 +521,9 @@ const NestedItem = ({
       <button
         type="button"
         onClick={onToggle}
+        onMouseEnter={onMouseEnter}
         title={item.title}
+        aria-expanded={isOpen}
         className={cn(ROW_BASE, item.isActive ? ROW_ACTIVE : ROW_INACTIVE)}
       >
         {Icon && (
@@ -445,7 +549,8 @@ const NestedItem = ({
         <div className="overflow-hidden">
           <div className="flex flex-col gap-1 mt-1 ml-3 pb-1">
             {item.children?.map((child, idx) => {
-              const childKey = child.href ?? `${child.label}-${idx}`;
+              const childKey =
+                child.id ?? child.href ?? `${child.label}-${idx}`;
               if (child.children && child.children.length > 0) {
                 return (
                   <NestedItem

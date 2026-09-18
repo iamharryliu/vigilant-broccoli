@@ -2,10 +2,10 @@
 
 - [Bread](./bread/bread.md)
 - [Eggs](./eggs.md)
+- [Food Explained](./food-explained.md)
 - [Grains](./grains.md)
 - [Noodles](./noodles.md)
 - [Pasta](./pasta.md)
-- [Pasta Shapes](./pasta-shapes.md)
 - [Pizza](./pizza.md)
 - [Sandwiches](./sandwiches.md)
 - [Soups](./soups.md)

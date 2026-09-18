@@ -1,15 +1,11 @@
 'use client';
 
-import { GoogleSigninButton } from '@vigilant-broccoli/react-lib';
+import { GoogleSignInPage } from '@vigilant-broccoli/react-lib';
 import { signInWithGoogle } from '../../../libs/auth';
+import { APP_NAME, PAGE_TITLE } from '../app.const';
+import { usePageTitle } from '../use-page-title';
 
 export default function LoginPage() {
-  return (
-    <main className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-sm space-y-6">
-        <h1 className="text-2xl font-bold text-center">Sign in</h1>
-        <GoogleSigninButton onClick={signInWithGoogle} />
-      </div>
-    </main>
-  );
+  usePageTitle(PAGE_TITLE.LOGIN);
+  return <GoogleSignInPage appName={APP_NAME} onSignIn={signInWithGoogle} />;
 }

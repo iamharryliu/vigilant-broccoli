@@ -58,6 +58,24 @@ else
   exit 1
 fi
 
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+  REQUEST_SOURCE="GitHub Actions (manual-agentic-solve workflow)"
+else
+  REQUEST_SOURCE="Local CLI (pnpm agentic:task:solve)"
+fi
+if [ "$MODE" = id ]; then
+  REQUEST_TRIGGER="TODO id \`${ID}\`"
+else
+  REQUEST_TRIGGER='--prompt'
+fi
+REQUEST_BODY=$(cat <<REQ
+- **Source:** ${REQUEST_SOURCE}
+- **Trigger:** ${REQUEST_TRIGGER}
+
+${TASK}
+REQ
+)
+
 git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"
@@ -97,9 +115,9 @@ salvage_on_failure() {
 
 This agent run did not finish (exited with status ${exit_code}). This draft PR captures its partial, uncommitted work so it isn't lost.
 
-Original task:
+## Request
 
-${TASK}
+$REQUEST_BODY
 
 To continue, run: \`pnpm agentic:pr:update <PR#> "finish the task"\`
 
@@ -109,6 +127,11 @@ BODY
 
   if PR_URL=$(gh pr create --draft --title "$SALVAGE_TITLE" --body "$SALVAGE_BODY" 2>&1); then
     echo "Salvaged partial work: $PR_URL" >&2
+    echo "$PR_URL"
+    printf 'PR_TITLE::%s\n' "$SALVAGE_TITLE"
+    echo 'PR_SUMMARY_BEGIN'
+    echo "This agent run did not finish (exited with status ${exit_code}); partial work was pushed as a draft PR."
+    echo 'PR_SUMMARY_END'
   else
     echo "Pushed salvage branch $BRANCH but failed to open a PR — open one manually." >&2
   fi
@@ -213,8 +236,17 @@ $PR_SUMMARY
 
 $PR_TEST_PLAN
 
+## Request
+
+$REQUEST_BODY
+
 $PR_FOOTER
 EOF
 )
 
-gh pr create --title "$PR_TITLE" --body "$PR_BODY"
+PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
+echo "$PR_URL"
+printf 'PR_TITLE::%s\n' "$PR_TITLE"
+echo 'PR_SUMMARY_BEGIN'
+printf '%s\n' "$PR_SUMMARY"
+echo 'PR_SUMMARY_END'

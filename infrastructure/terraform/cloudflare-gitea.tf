@@ -1,7 +1,9 @@
 # git.harryliu.dev — Gitea on the OCI VM, proxied through Cloudflare and gated
 # by Zero Trust Access. Two policies: owner email (browser web UI) and a
-# non-identity service token so git-over-HTTPS and CI (cron-deploy-journal's
-# /api/v1 archive pull) keep working. Git-over-SSH on :2222 bypasses Access and
+# non-identity service token so git-over-HTTPS and CI (ci-health-check's origin
+# probe, rotate-gitea-token.sh's /api/v1 verification) keep working. The private
+# journal notes are read through this web UI rather than mirrored to a Pages
+# site, so they never leave the VM. Git-over-SSH on :2222 bypasses Access and
 # stays direct — humans use SSH, CI uses the HTTPS service token.
 #
 # The origin can't use ACME behind the proxy (HTTP-01 can't complete), so Caddy

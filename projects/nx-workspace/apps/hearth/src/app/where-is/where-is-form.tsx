@@ -40,6 +40,7 @@ export type WhereIsFormValues = {
   tags: string[];
   images: PreviewImage[];
   imageUrls?: string[];
+  imageKeys?: string[];
 };
 
 const REMOVE_BTN_CLASS =
@@ -84,12 +85,12 @@ const resizeImageFile = async (file: File): Promise<PreviewImage> => {
 const ImageGrid = ({
   imageUrls,
   previews,
-  onRemoveUrl,
+  onRemoveExisting,
   onRemovePreview,
 }: {
   imageUrls: string[];
   previews: PreviewImage[];
-  onRemoveUrl: (url: string) => void;
+  onRemoveExisting: (index: number) => void;
   onRemovePreview: (index: number) => void;
 }) => (
   <div className="flex gap-2 flex-wrap">
@@ -100,7 +101,10 @@ const ImageGrid = ({
           alt={`image ${i + 1}`}
           className="h-24 w-24 object-cover rounded"
         />
-        <button onClick={() => onRemoveUrl(url)} className={REMOVE_BTN_CLASS}>
+        <button
+          onClick={() => onRemoveExisting(i)}
+          className={REMOVE_BTN_CLASS}
+        >
           ✕
         </button>
       </div>
@@ -137,6 +141,9 @@ export const WhereIsFormComponent = ({
   );
   const [imageUrls, setImageUrls] = useState<string[]>(
     initialFormValues.imageUrls ?? [],
+  );
+  const [imageKeys, setImageKeys] = useState<string[]>(
+    initialFormValues.imageKeys ?? [],
   );
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzed, setAnalyzed] = useState(false);
@@ -241,6 +248,7 @@ export const WhereIsFormComponent = ({
           tags,
           images: previews,
           imageUrls,
+          imageKeys,
         },
         formType,
       );
@@ -312,7 +320,10 @@ export const WhereIsFormComponent = ({
       <ImageGrid
         imageUrls={imageUrls}
         previews={previews}
-        onRemoveUrl={url => setImageUrls(prev => prev.filter(u => u !== url))}
+        onRemoveExisting={i => {
+          setImageUrls(prev => prev.filter((_, j) => j !== i));
+          setImageKeys(prev => prev.filter((_, j) => j !== i));
+        }}
         onRemovePreview={i =>
           setPreviews(prev => prev.filter((_, j) => j !== i))
         }

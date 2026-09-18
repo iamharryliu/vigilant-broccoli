@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { GithubActionsBadges } from '@vigilant-broccoli/react-lib';
+import { DotPaths, GithubActionsBadges } from '@vigilant-broccoli/react-lib';
 import { useTranslation } from '../i18n';
+import en from '../i18n/en.json';
 import { PageHeader } from '../components/PageHeader';
 import { SectionHeading } from '../components/SectionHeading';
 import { REPO_URL, toRawGithubUrl } from '../consts/repo';
@@ -59,7 +60,7 @@ const STATUS_GROUP_ORDER: StatusGroup[] = [
   STATUS_GROUP.PERSONAL,
 ];
 
-const STATUS_GROUP_LABEL_KEY: Record<StatusGroup, string> = {
+const STATUS_GROUP_LABEL_KEY: Record<StatusGroup, DotPaths<typeof en>> = {
   [STATUS_GROUP.PRODUCTION]: 'STATUS_PAGE.GROUP_PRODUCTION',
   [STATUS_GROUP.STAGING]: 'STATUS_PAGE.GROUP_STAGING',
   [STATUS_GROUP.PERSONAL]: 'STATUS_PAGE.GROUP_PERSONAL',
@@ -153,23 +154,10 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
   return (
     <main className="mx-auto max-w-2xl px-4 py-6">
       <header className="mb-4">
-        <PageHeader
-          title={t('STATUS_PAGE.TITLE')}
-          description={
-            <>
-              {t('STATUS_PAGE.DESCRIPTION_PREFIX')}{' '}
-              <a
-                href="https://upptime.js.org"
-                className="underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {t('STATUS_PAGE.UPPTIME')}
-              </a>
-              . {updated && <span>{updated}</span>}
-            </>
-          }
-        />
+        <PageHeader title={t('STATUS_PAGE.TITLE')} />
+        {updated && (
+          <p className="mt-2 text-gray-600 dark:text-gray-400">{updated}</p>
+        )}
       </header>
 
       {servicesError && (

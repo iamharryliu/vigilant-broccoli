@@ -10,6 +10,10 @@
 - [Eisenhower Decision Matrix](./productivity-frameworks/eisenhower-decision-matrix.md)
 - [3/3/3 Rule](./productivity-frameworks/3-3-3-rule.md)
 
+## Guides
+
+- [Online Meeting Prep](./online-meeting-prep.md)
+
 ## Tech
 
 - Tab Management

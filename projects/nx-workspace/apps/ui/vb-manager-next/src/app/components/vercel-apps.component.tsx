@@ -7,10 +7,10 @@ import {
   StatusCardList,
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
+  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
 import { VERCEL_LINK } from '@vigilant-broccoli/links';
 import { useState } from 'react';
-import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
 import { usePollingInterval } from '../hooks/usePollingInterval';

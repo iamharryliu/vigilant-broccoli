@@ -9,9 +9,11 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   npm:packages                Open npm packages page
   cheatsheet                  Print this cheatsheet
   cheatsheet:tmux-nvim        Print the tmux/nvim keybinding cheatsheet
+  cheatsheet:aliases          Print the shell alias cheatsheet
 
 ⚙️  SETUP
   local:install:machine-setup Run machine setup installer (mac/linux)
+  local:start-mission-control-helper  Open Hammerspoon and Karabiner-Elements (fallback if login items fail)
   format                      Format all files with Prettier
   format:commit               Format given files with Prettier (pass paths)
   cloud:login                 Check GCP/AWS/GitHub/npm/Fly login status, login where needed
@@ -56,6 +58,14 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   seafile:logs:cloud-init     Follow VM provisioning log
   seafile:reset               Rebuild containers + volumes (fresh environment)
   seafile:replace             Replace the VM via terraform (fresh host)
+
+🖼️  IMMICH
+  immich:open                 Open images.harryliu.dev
+  immich:ssh                  SSH into Immich VM
+  immich:logs                 Follow Immich server container logs
+  immich:logs:cloud-init      Follow VM provisioning log
+  immich:reset                Rebuild containers + volumes (fresh environment)
+  immich:replace              Replace the VM via terraform (fresh host)
 
 🖥️  GCP VM
   gcp:vm:image:build          Build GCP VM Packer image (init + build)
@@ -102,6 +112,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   vb-manager-next:status      Show PM2 process status
   deploy:local-services       Bring up local Docker services + reload vb-manager-next
   health-check                Run health check script
+  dldjmusic                   Download DJ music from Spotify playlists (secrets pulled from Vault)
 
 🤖 AGENTIC — DEV SANDBOX (attended; you drive the persistent container)
   agentic:dev-sandbox:up      Fetch tokens from Vault into the current shell session (never written to disk), then build + start contained Claude sandbox
@@ -132,6 +143,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   gh:actions:rotate-secrets   Trigger ci-rotate-secrets workflow
   gh:actions:run-tests        Trigger all post-deploy test workflows
   gh:actions:replace-code-server  Trigger code-server VM replace workflow
+  gh:actions:refresh-code-server-github-token  Mint a 1-hour GitHub App token and drop it on the code-server VM
   gh:actions:security-cloudflare-access  Trigger Cloudflare Access security check workflow
 
 🔍 AUDIT

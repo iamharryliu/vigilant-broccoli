@@ -13,10 +13,14 @@ if ! command -v mkcert &> /dev/null; then
     brew install mkcert
 fi
 
-echo "Generating SSL certificates for *.vigilant-broccoli.app..."
-mkcert -cert-file "$CERT_DIR/app.crt" \
-       -key-file "$CERT_DIR/app.key" \
-       "*.vigilant-broccoli.app" \
-       vigilant-broccoli.app
+if [ -f "$CERT_DIR/app.crt" ] && [ -f "$CERT_DIR/app.key" ]; then
+    echo "Certificates already exist, skipping."
+else
+    echo "Generating SSL certificates for *.vigilant-broccoli.app..."
+    mkcert -cert-file "$CERT_DIR/app.crt" \
+           -key-file "$CERT_DIR/app.key" \
+           "*.vigilant-broccoli.app" \
+           vigilant-broccoli.app
 
-echo "Certificates generated successfully!"
+    echo "Certificates generated successfully!"
+fi

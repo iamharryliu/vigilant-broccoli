@@ -7,8 +7,11 @@ import { SubscribeWidget } from './components/subscribe-widget';
 import { SubscriptionsManager } from './components/subscriptions-manager';
 import { NotifyDemo } from './components/notify-demo';
 import type { Service, Subscription } from './types/subscription.types';
+import { PAGE_TITLE } from './app.const';
+import { usePageTitle } from './use-page-title';
 
 export default function Page() {
+  usePageTitle(PAGE_TITLE.HOME);
   const [services, setServices] = useState<Service[]>([]);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
 
@@ -42,7 +45,7 @@ export default function Page() {
     <ProtectedRoute>
       <main className="min-h-screen bg-gray-50 p-6">
         <h1 className="text-2xl font-semibold text-gray-800 mb-8">
-          Subscription Manager
+          {PAGE_TITLE.HOME}
         </h1>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
           <ServicesManager
