@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server';
 import {
   createServerClient,
+  getBearerToken,
   createAdminClient,
 } from '../../../../libs/supabase-server';
 import {
@@ -12,7 +13,7 @@ import {
 export const runtime = 'nodejs';
 
 export async function PATCH(req: NextRequest) {
-  const token = req.headers.get('Authorization')?.replace('Bearer ', '');
+  const token = getBearerToken(req);
   if (!token) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { displayName, renameEnabled, renameLanguage } = await req.json();

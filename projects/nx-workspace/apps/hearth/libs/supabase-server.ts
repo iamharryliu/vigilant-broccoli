@@ -4,8 +4,12 @@ import {
   BEARER_PREFIX,
 } from '@vigilant-broccoli/common-js';
 
-export const getBearerToken = (request: Request) =>
-  request.headers.get(AUTHORIZATION_HEADER)?.replace(BEARER_PREFIX, '') ?? '';
+export const getBearerToken = (request: Request) => {
+  const header = request.headers.get(AUTHORIZATION_HEADER) ?? '';
+  return header.startsWith(BEARER_PREFIX)
+    ? header.slice(BEARER_PREFIX.length)
+    : '';
+};
 
 export const createServerClient = (accessToken: string) =>
   createClient(
