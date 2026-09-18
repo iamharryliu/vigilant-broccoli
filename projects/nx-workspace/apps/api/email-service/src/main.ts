@@ -1,3 +1,4 @@
+import { checkServerIdentity, type PeerCertificate } from 'node:tls';
 import Fastify from 'fastify';
 import amqplib, { ConfirmChannel } from 'amqplib';
 import {
@@ -25,20 +26,21 @@ const RABBITMQ_CA_CERT = process.env.RABBITMQ_CA_CERT;
 const RECONNECT_DELAY_MS = 5000;
 const MAX_DELIVERY_ATTEMPTS = 5;
 const RETRY_COUNT_HEADER = 'x-retry-count';
+const RABBITMQ_TLS_SERVER_NAME = 'rabbitmq';
 
 const RABBITMQ_SOCKET_OPTIONS = RABBITMQ_CA_CERT
   ? {
       ca: [Buffer.from(RABBITMQ_CA_CERT, 'base64')],
-      checkServerIdentity: () => undefined,
+      checkServerIdentity: (_host: string, cert: PeerCertificate) =>
+        checkServerIdentity(RABBITMQ_TLS_SERVER_NAME, cert),
     }
   : undefined;
 
 const emailService = new EmailService({ provider: 'resend' });
 
-let publishChannel: ConfirmChannel | null = null;
+let publishChannel: Promise<ConfirmChannel> | null = null;
 
-const getPublishChannel = async (): Promise<ConfirmChannel> => {
-  if (publishChannel) return publishChannel;
+const connectPublishChannel = async (): Promise<ConfirmChannel> => {
   const connection = await amqplib.connect(
     RABBITMQ_CONNECTION_STRING!,
     RABBITMQ_SOCKET_OPTIONS,
@@ -53,8 +55,23 @@ const getPublishChannel = async (): Promise<ConfirmChannel> => {
     );
     publishChannel = null;
   });
-  publishChannel = await connection.createConfirmChannel();
-  await publishChannel.assertQueue(QUEUE.EMAIL, { durable: true });
+  try {
+    const channel = await connection.createConfirmChannel();
+    await channel.assertQueue(QUEUE.EMAIL, { durable: true });
+    return channel;
+  } catch (err) {
+    await connection.close().catch(() => undefined);
+    throw err;
+  }
+};
+
+const getPublishChannel = (): Promise<ConfirmChannel> => {
+  if (!publishChannel) {
+    publishChannel = connectPublishChannel().catch(err => {
+      publishChannel = null;
+      throw err;
+    });
+  }
   return publishChannel;
 };
 
