@@ -1,5 +1,7 @@
 export * from './lib/node-environment/node-environment.consts';
 export * from './lib/http/http.consts';
+export * from './lib/honeypot/honeypot.consts';
+export * from './lib/honeypot/honeypot.utils';
 export * from './lib/location/location.model';
 export * from './lib/services/services.consts';
 export * from './lib/socket/socket.consts';
