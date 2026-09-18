@@ -4,6 +4,14 @@ source ~/.zsh_aliases
 
 export PATH="/opt/homebrew/bin:$PATH"
 
+if command -v mise >/dev/null; then
+    if [ "$IS_CRON" = "true" ]; then
+        eval "$(mise activate zsh --shims)"
+    else
+        eval "$(mise activate zsh)"
+    fi
+fi
+
 if [ "$IS_CRON" != "true" ]; then
     setopt interactive_comments
     # Setting zsh-autosuggestions for Apple Silicon (M series

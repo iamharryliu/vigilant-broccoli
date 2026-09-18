@@ -51,6 +51,8 @@ brew "lazygit"
 brew "libass"
 # C library of Git core methods that is re-entrant and linkable
 brew "libgit2"
+# Polyglot tool version manager
+brew "mise"
 # Simple tool to make locally trusted development certificates
 brew "mkcert"
 # Open source relational database management system
@@ -61,12 +63,8 @@ brew "neovim"
 brew "neovide"
 # Port scanning utility for large networks
 brew "nmap"
-# Open-source, cross-platform JavaScript runtime environment
-brew "node@22", link: true
 # Libraries for security-enabled client and server applications
 brew "nss"
-# Manage multiple Node.js versions
-brew "nvm"
 # Create, run, and share large language models (LLMs)
 brew "ollama", restart_service: :changed
 # Pinentry for GPG on Mac
