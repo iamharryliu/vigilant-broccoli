@@ -89,9 +89,16 @@ resource "github_repository_ruleset" "main" {
     bypass_mode = "always"
   }
 
+  # `update` restricts every ref update on main -- including merging a PR --
+  # to the bypass actors above. Without it the agent-sandbox/code-server App
+  # (Contents RW, which is also the permission that merges PRs) could push a
+  # branch, open a PR and merge it itself; there are no required reviews or
+  # status checks to slow that down. The App has no bypass, so it can only ever
+  # get as far as an open PR. You merge as admin, which bypasses the rule.
   rules {
     deletion         = true
     non_fast_forward = true
+    update           = true
 
     pull_request {
       required_approving_review_count = 0
@@ -124,8 +131,8 @@ resource "github_repository_ruleset" "production" {
   }
 
   rules {
-    deletion          = true
+    deletion         = true
     non_fast_forward = true
-    update            = true
+    update           = true
   }
 }
