@@ -39,6 +39,7 @@ sync_secrets_to_vault() {
   local code_server_ip
   local nx_cache_write_token
   local nx_cache_read_token
+  local loki_push_password
 
   ca_cert=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_self_signed_cert" and .name == "rabbitmq_ca") | .instances[0].attributes.cert_pem' 2>/dev/null || echo "")
   rabbitmq_ip=$(echo "$state_json" | jq -r '.resources[] | select(.type == "oci_core_instance" and .name == "rabbitmq") | .instances[0].attributes.public_ip' 2>/dev/null || echo "")
@@ -58,6 +59,7 @@ sync_secrets_to_vault() {
   code_server_ip=$(echo "$state_json" | jq -r '.resources[] | select(.type == "oci_core_instance" and .name == "code_server") | .instances[0].attributes.public_ip' 2>/dev/null || echo "")
   nx_cache_write_token=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "nx_cache_write_token") | .instances[0].attributes.result' 2>/dev/null || echo "")
   nx_cache_read_token=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "nx_cache_read_token") | .instances[0].attributes.result' 2>/dev/null || echo "")
+  loki_push_password=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "loki_push_password") | .instances[0].attributes.result' 2>/dev/null || echo "")
 
   if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$google_calendar_sa_credentials" ] || [ -z "$code_server_password" ] || [ -z "$ci_ssh_private_key" ] || [ -z "$gitea_cf_access_client_id" ] || [ -z "$gitea_cf_access_client_secret" ] || [ -z "$gitea_ip" ] || [ -z "$code_server_cf_access_client_id" ] || [ -z "$code_server_cf_access_client_secret" ] || [ -z "$code_server_ip" ]; then
     echo "Warning: Some secrets not found in Terraform state. Skipping Vault sync."
@@ -134,6 +136,13 @@ sync_secrets_to_vault() {
     nx_cache_write_patch_arg='NX_CACHE_WRITE_TOKEN="$NX_CACHE_WRITE_TOKEN"'
   fi
 
+  # Same optional treatment as the nx-cache tokens: absent until
+  # aws-grafana.tf has been applied. Consumed by `pnpm logs:shipper:deploy`.
+  local loki_push_patch_arg=""
+  if [ -n "$loki_push_password" ]; then
+    loki_push_patch_arg='LOKI_PUSH_PASSWORD="$LOKI_PUSH_PASSWORD"'
+  fi
+
   local nx_cache_read_put_cmd=""
   if [ -n "$nx_cache_read_token" ]; then
     nx_cache_read_put_cmd='vault kv put kv/ci-pr-check NX_CACHE_READ_TOKEN="$NX_CACHE_READ_TOKEN"'
@@ -168,7 +177,8 @@ if vault kv get kv/secrets >/dev/null 2>&1; then
     CODE_SERVER_CF_ACCESS_CLIENT_ID="$CODE_SERVER_CF_ACCESS_CLIENT_ID" \
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
     CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
-    '"${nx_cache_write_patch_arg}"'
+    '"${nx_cache_write_patch_arg}"' \
+    '"${loki_push_patch_arg}"'
 else
   vault kv put kv/secrets \
     RABBITMQ_CA_CERT="$CA_CERT_B64" \
@@ -185,7 +195,8 @@ else
     CODE_SERVER_CF_ACCESS_CLIENT_ID="$CODE_SERVER_CF_ACCESS_CLIENT_ID" \
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
     CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
-    '"${nx_cache_write_patch_arg}"'
+    '"${nx_cache_write_patch_arg}"' \
+    '"${loki_push_patch_arg}"'
 fi
 
 '"${nx_cache_read_put_cmd}"'
@@ -202,6 +213,9 @@ echo "Secrets synced to Vault"
   fi
   if [ -n "$nx_cache_read_token" ]; then
     nx_cache_secret_args+=(NX_CACHE_READ_TOKEN "$nx_cache_read_token")
+  fi
+  if [ -n "$loki_push_password" ]; then
+    nx_cache_secret_args+=(LOKI_PUSH_PASSWORD "$loki_push_password")
   fi
 
   gcloud_ssh_secrets "${vm_name}" "${vm_zone}" "$vault_script" \
@@ -226,6 +240,11 @@ echo "Secrets synced to Vault"
     echo "✓ Synced NX_CACHE_WRITE_TOKEN to kv/data/secrets"
   else
     echo "Warning: NX_CACHE_WRITE_TOKEN not found in Terraform state — apply cloudflare-nx-cache.tf, then rerun pnpm tf:post-apply."
+  fi
+  if [ -n "$loki_push_password" ]; then
+    echo "✓ Synced LOKI_PUSH_PASSWORD to kv/data/secrets"
+  else
+    echo "Warning: LOKI_PUSH_PASSWORD not found in Terraform state — apply aws-grafana.tf, then rerun pnpm tf:post-apply."
   fi
   if [ -n "$nx_cache_read_token" ]; then
     echo "✓ Synced NX_CACHE_READ_TOKEN to kv/data/ci-pr-check (isolated path for github-actions-pr-check-role)"

@@ -67,6 +67,21 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   immich:reset                Rebuild containers + volumes (fresh environment)
   immich:replace              Replace the VM via terraform (fresh host)
 
+📈 GRAFANA (observability VM)
+  grafana:open                Open grafana.harryliu.dev
+  grafana:password            Copy Grafana admin password to clipboard
+  grafana:ssh                 SSH into Grafana/Loki VM
+  grafana:logs                Follow Grafana container logs
+  grafana:logs:loki           Follow Loki container logs
+  grafana:logs:cloud-init     Follow VM provisioning log
+  grafana:reset               Rebuild containers + volumes (fresh environment)
+  grafana:replace             Replace the VM via terraform (fresh host)
+
+🚚 LOG SHIPPER (fly -> loki)
+  logs:shipper:deploy         Create/update the fly log-shipper app (secrets from Vault)
+  logs:shipper:status         Show the log-shipper app status
+  logs:shipper:logs           Follow the log-shipper app logs
+
 🖥️  GCP VM
   gcp:vm:image:build          Build GCP VM Packer image (init + build)
   gcp:vm:ssh                  SSH into GCP VM via IAP

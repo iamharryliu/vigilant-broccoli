@@ -8,7 +8,7 @@
   - Anycast IPv6: free, unlimited.
   - Flycast (private IPv6, `fly ips allocate-v6 --private`): free — private-only apps cost nothing in IP terms.
   - Dedicated IPv4: $2/mo — the only IP that costs money, so release it when an app goes private.
-- Machines: `shared-cpu-1x` 256MB ≈ $0.0028/hr (~$2.02/mo if always on). `auto_stop_machines = 'stop'` with `min_machines_running = 0` is what keeps idle services near $0.
+- Machines: `shared-cpu-1x` 256MB ≈ $0.0028/hr (~$2.02/mo if always on). `auto_stop_machines = 'stop'` with `min_machines_running = 0` is what keeps idle services near $0. A long-lived subscriber such as a log shipper can't auto-stop, so budget the full ~$2/mo for it and deploy it with `--ha=false` so there is one machine, not two.
 - Volumes: $0.15/GB/mo provisioned (billed hourly). Snapshots $0.08/GB/mo, first 10GB/mo free.
 - Bandwidth: inbound and same-region transfer free; North America/Europe egress $0.02/GB. Service-to-service calls over flycast stay on the private network and skip egress billing.
 

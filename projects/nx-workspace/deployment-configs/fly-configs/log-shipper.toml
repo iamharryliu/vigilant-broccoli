@@ -1,0 +1,31 @@
+# Org-wide log forwarder: superfly/fly-log-shipper (Vector) subscribes to the
+# Fly NATS log stream for every app in the org and pushes to Loki on the
+# observability VM (aws-grafana.tf). One app covers staging and production;
+# the Loki label fly_app_name tells them apart. Deployed by
+# `pnpm logs:shipper:deploy`, which stages ACCESS_TOKEN / LOKI_PASSWORD from
+# Vault first. No public IPs: it only dials out.
+app = 'log-shipper'
+primary_region = 'yyz'
+
+[build]
+  image = 'flyio/log-shipper:latest'
+
+[env]
+  ORG = 'personal'
+  SUBJECT = 'logs.>'
+  LOKI_URL = 'https://loki.harryliu.dev'
+  LOKI_USERNAME = 'fly-log-shipper'
+
+# Vector's API port, kept private; no ports block so fly never allocates a
+# public edge for it.
+[[services]]
+  internal_port = 8686
+  protocol = 'tcp'
+  processes = ['app']
+  http_checks = []
+  script_checks = []
+
+[[vm]]
+  memory = '256mb'
+  cpus = 1
+  memory_mb = 256

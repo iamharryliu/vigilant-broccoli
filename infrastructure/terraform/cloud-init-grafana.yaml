@@ -1,0 +1,431 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+ssh_authorized_keys:
+  - ${grafana_ssh_keys[0]}
+  - ${grafana_ssh_keys[1]}
+
+packages:
+  - docker.io
+  - docker-compose-v2
+
+write_files:
+  - path: /opt/observability/docker-compose.yml
+    permissions: '0600'
+    content: |
+      services:
+        grafana:
+          image: grafana/grafana:latest
+          container_name: grafana
+          restart: unless-stopped
+          environment:
+            GF_SECURITY_ADMIN_USER: admin
+            GF_SECURITY_ADMIN_PASSWORD: ${grafana_admin_password}
+            GF_SERVER_ROOT_URL: https://${grafana_domain}
+            GF_USERS_ALLOW_SIGN_UP: "false"
+            GF_ANALYTICS_REPORTING_ENABLED: "false"
+            GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+          volumes:
+            - /mnt/observability/grafana:/var/lib/grafana
+            - /opt/observability/grafana/provisioning:/etc/grafana/provisioning:ro
+          depends_on:
+            - loki
+        loki:
+          image: grafana/loki:latest
+          container_name: loki
+          restart: unless-stopped
+          command: -config.file=/etc/loki/loki.yml
+          volumes:
+            - /opt/observability/loki/loki.yml:/etc/loki/loki.yml:ro
+            - /mnt/observability/loki:/loki
+        loki-gateway:
+          image: nginx:alpine
+          container_name: loki-gateway
+          restart: unless-stopped
+          volumes:
+            - /opt/observability/nginx/loki.conf:/etc/nginx/conf.d/default.conf:ro
+            - /opt/observability/nginx/htpasswd:/etc/nginx/htpasswd:ro
+          depends_on:
+            - loki
+        alloy:
+          image: grafana/alloy:latest
+          container_name: alloy
+          restart: unless-stopped
+          user: root
+          command: run /etc/alloy/config.alloy --storage.path=/var/lib/alloy/data
+          volumes:
+            - /opt/observability/alloy/config.alloy:/etc/alloy/config.alloy:ro
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - alloy-data:/var/lib/alloy/data
+          depends_on:
+            - loki
+        cloudflared:
+          image: cloudflare/cloudflared:latest
+          container_name: cloudflared
+          restart: unless-stopped
+          command: tunnel run
+          environment:
+            TUNNEL_TOKEN: ${grafana_cloudflared_token}
+          depends_on:
+            - grafana
+            - loki-gateway
+      volumes:
+        alloy-data:
+
+  - path: /opt/observability/loki/loki.yml
+    permissions: '0644'
+    content: |
+      auth_enabled: false
+
+      server:
+        http_listen_port: 3100
+
+      analytics:
+        reporting_enabled: false
+
+      common:
+        path_prefix: /loki
+        storage:
+          filesystem:
+            chunks_directory: /loki/chunks
+            rules_directory: /loki/rules
+        replication_factor: 1
+        ring:
+          kvstore:
+            store: inmemory
+
+      schema_config:
+        configs:
+          - from: 2024-01-01
+            store: tsdb
+            object_store: filesystem
+            schema: v13
+            index:
+              prefix: index_
+              period: 24h
+
+      limits_config:
+        retention_period: 720h
+
+      compactor:
+        working_directory: /loki/compactor
+        compaction_interval: 10m
+        retention_enabled: true
+        retention_delete_delay: 2h
+        retention_delete_worker_count: 150
+        delete_request_store: filesystem
+
+  - path: /opt/observability/nginx/loki.conf
+    permissions: '0644'
+    content: |
+      server {
+        listen 80;
+        client_max_body_size 32m;
+
+        location = /loki/api/v1/push {
+          auth_basic "loki";
+          auth_basic_user_file /etc/nginx/htpasswd;
+          proxy_pass http://loki:3100;
+          proxy_set_header Host $host;
+        }
+
+        location = /ready {
+          proxy_pass http://loki:3100;
+        }
+
+        location / {
+          return 404;
+        }
+      }
+
+  - path: /opt/observability/alloy/config.alloy
+    permissions: '0644'
+    content: |
+      discovery.docker "containers" {
+        host = "unix:///var/run/docker.sock"
+      }
+
+      discovery.relabel "containers" {
+        targets = discovery.docker.containers.targets
+
+        rule {
+          source_labels = ["__meta_docker_container_name"]
+          regex         = "/(.*)"
+          target_label  = "container"
+        }
+      }
+
+      loki.source.docker "containers" {
+        host       = "unix:///var/run/docker.sock"
+        targets    = discovery.relabel.containers.output
+        labels     = { host = "grafana-vm", job = "docker" }
+        forward_to = [loki.write.local.receiver]
+      }
+
+      loki.write "local" {
+        endpoint {
+          url = "http://loki:3100/loki/api/v1/push"
+        }
+      }
+
+  - path: /opt/observability/grafana/provisioning/datasources/loki.yml
+    permissions: '0644'
+    content: |
+      apiVersion: 1
+
+      datasources:
+        - name: Loki
+          uid: loki
+          type: loki
+          access: proxy
+          url: http://loki:3100
+          isDefault: true
+          editable: false
+
+  - path: /opt/observability/grafana/provisioning/dashboards/dashboards.yml
+    permissions: '0644'
+    content: |
+      apiVersion: 1
+
+      providers:
+        - name: provisioned
+          type: file
+          disableDeletion: true
+          options:
+            path: /etc/grafana/provisioning/dashboards/json
+
+  - path: /opt/observability/grafana/provisioning/dashboards/json/honeypot.json
+    permissions: '0644'
+    content: |
+      {
+        "uid": "honeypot",
+        "title": "Honeypot",
+        "tags": ["security", "fly"],
+        "timezone": "browser",
+        "schemaVersion": 39,
+        "refresh": "1m",
+        "time": { "from": "now-7d", "to": "now" },
+        "templating": {
+          "list": [
+            {
+              "name": "app",
+              "label": "Fly app",
+              "type": "query",
+              "datasource": { "type": "loki", "uid": "loki" },
+              "query": { "label": "fly_app_name", "type": 1 },
+              "refresh": 2,
+              "multi": true,
+              "includeAll": true,
+              "allValue": ".+",
+              "current": { "text": "All", "value": "$__all" }
+            }
+          ]
+        },
+        "panels": [
+          {
+            "id": 1,
+            "type": "stat",
+            "title": "Honeypot hits in range",
+            "gridPos": { "x": 0, "y": 0, "w": 8, "h": 5 },
+            "datasource": { "type": "loki", "uid": "loki" },
+            "targets": [
+              {
+                "refId": "A",
+                "queryType": "instant",
+                "expr": "sum(count_over_time({fly_app_name=~\"$app\"} |= \"honeypot_triggered\" [$__range]))"
+              }
+            ],
+            "options": {
+              "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+              "colorMode": "value",
+              "graphMode": "none",
+              "textMode": "value"
+            },
+            "fieldConfig": {
+              "defaults": {
+                "unit": "short",
+                "noValue": "0",
+                "color": { "mode": "thresholds" },
+                "thresholds": {
+                  "mode": "absolute",
+                  "steps": [
+                    { "color": "green", "value": null },
+                    { "color": "orange", "value": 1 },
+                    { "color": "red", "value": 50 }
+                  ]
+                }
+              },
+              "overrides": []
+            }
+          },
+          {
+            "id": 2,
+            "type": "stat",
+            "title": "Contact submissions accepted in range",
+            "gridPos": { "x": 8, "y": 0, "w": 8, "h": 5 },
+            "datasource": { "type": "loki", "uid": "loki" },
+            "targets": [
+              {
+                "refId": "A",
+                "queryType": "instant",
+                "expr": "sum(count_over_time({fly_app_name=~\"$app\"} | json | path=\"/contact/send-message\" | status=\"200\" [$__range]))"
+              }
+            ],
+            "options": {
+              "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+              "colorMode": "value",
+              "graphMode": "none",
+              "textMode": "value"
+            },
+            "fieldConfig": {
+              "defaults": { "unit": "short", "noValue": "0", "color": { "mode": "fixed", "fixedColor": "blue" } },
+              "overrides": []
+            }
+          },
+          {
+            "id": 3,
+            "type": "stat",
+            "title": "Contact submissions rejected (403) in range",
+            "gridPos": { "x": 16, "y": 0, "w": 8, "h": 5 },
+            "datasource": { "type": "loki", "uid": "loki" },
+            "targets": [
+              {
+                "refId": "A",
+                "queryType": "instant",
+                "expr": "sum(count_over_time({fly_app_name=~\"$app\"} | json | path=\"/contact/send-message\" | status=\"403\" [$__range]))"
+              }
+            ],
+            "options": {
+              "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+              "colorMode": "value",
+              "graphMode": "none",
+              "textMode": "value"
+            },
+            "fieldConfig": {
+              "defaults": { "unit": "short", "noValue": "0", "color": { "mode": "fixed", "fixedColor": "orange" } },
+              "overrides": []
+            }
+          },
+          {
+            "id": 4,
+            "type": "timeseries",
+            "title": "Honeypot hits over time",
+            "gridPos": { "x": 0, "y": 5, "w": 24, "h": 8 },
+            "datasource": { "type": "loki", "uid": "loki" },
+            "targets": [
+              {
+                "refId": "A",
+                "expr": "sum by (fly_app_name) (count_over_time({fly_app_name=~\"$app\"} |= \"honeypot_triggered\" [$__auto]))",
+                "legendFormat": "{{fly_app_name}}"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "short",
+                "custom": { "drawStyle": "bars", "fillOpacity": 80, "lineWidth": 1 }
+              },
+              "overrides": []
+            },
+            "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } }
+          },
+          {
+            "id": 5,
+            "type": "timeseries",
+            "title": "/contact/send-message responses by status",
+            "gridPos": { "x": 0, "y": 13, "w": 24, "h": 8 },
+            "datasource": { "type": "loki", "uid": "loki" },
+            "targets": [
+              {
+                "refId": "A",
+                "expr": "sum by (status) (count_over_time({fly_app_name=~\"$app\"} | json | path=\"/contact/send-message\" [$__auto]))",
+                "legendFormat": "{{status}}"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "unit": "short",
+                "custom": { "drawStyle": "bars", "fillOpacity": 80, "lineWidth": 1, "stacking": { "mode": "normal" } }
+              },
+              "overrides": []
+            },
+            "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } }
+          },
+          {
+            "id": 6,
+            "type": "logs",
+            "title": "Honeypot log lines",
+            "gridPos": { "x": 0, "y": 21, "w": 24, "h": 12 },
+            "datasource": { "type": "loki", "uid": "loki" },
+            "targets": [
+              {
+                "refId": "A",
+                "expr": "{fly_app_name=~\"$app\"} |= \"honeypot_triggered\""
+              }
+            ],
+            "options": {
+              "showTime": true,
+              "wrapLogMessage": true,
+              "sortOrder": "Descending",
+              "dedupStrategy": "none",
+              "enableLogDetails": true
+            }
+          }
+        ]
+      }
+
+  - path: /opt/observability/mount-data-and-start.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      # Single script (not separate runcmd entries) so `set -e` aborts before
+      # `docker compose up` if the data volume never mounts — otherwise Loki
+      # and Grafana would silently write to the ephemeral boot disk.
+      set -euo pipefail
+
+      mkdir -p /mnt/observability
+
+      ROOT_DISK=$(lsblk -no PKNAME "$(findmnt -no SOURCE /)" | head -1)
+      DATA_DEV=""
+      for i in $(seq 1 12); do
+        for d in $(lsblk -dno NAME --nodeps -e7); do
+          [ "$d" = "$ROOT_DISK" ] && continue
+          DATA_DEV="/dev/$d"
+          break
+        done
+        [ -n "$DATA_DEV" ] && break
+        sleep 5
+      done
+      if [ -z "$DATA_DEV" ]; then
+        echo "observability: no data disk found after 60s, aborting boot" >&2
+        exit 1
+      fi
+
+      blkid "$DATA_DEV" || mkfs.ext4 -F "$DATA_DEV"
+      DATA_UUID=$(blkid -s UUID -o value "$DATA_DEV")
+      grep -q "$DATA_UUID" /etc/fstab || echo "UUID=$DATA_UUID /mnt/observability ext4 defaults,_netdev,nofail 0 2" >> /etc/fstab
+
+      mount /mnt/observability
+      if ! findmnt -M /mnt/observability >/dev/null; then
+        echo "observability: /mnt/observability failed to mount, aborting before compose up" >&2
+        exit 1
+      fi
+
+      # Container uids: grafana runs as 472, loki as 10001.
+      mkdir -p /mnt/observability/grafana /mnt/observability/loki
+      chown -R 472:472 /mnt/observability/grafana
+      chown -R 10001:10001 /mnt/observability/loki
+
+      # htpasswd is derived here rather than in Terraform: a bcrypt() call in
+      # HCL re-salts on every plan, which would churn user_data and replace
+      # the VM on each apply.
+      printf '%s:%s\n' '${loki_push_user}' "$(openssl passwd -apr1 '${loki_push_password}')" > /opt/observability/nginx/htpasswd
+      chmod 0644 /opt/observability/nginx/htpasswd
+
+      docker compose -f /opt/observability/docker-compose.yml up -d
+
+runcmd:
+  - systemctl enable docker
+  - systemctl start docker
+  - usermod -aG docker ubuntu
+  - /opt/observability/mount-data-and-start.sh

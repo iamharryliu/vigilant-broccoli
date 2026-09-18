@@ -159,6 +159,35 @@ variable "immich_allowed_emails" {
   default = ["harryliu1995@gmail.com"]
 }
 
+variable "grafana_domain" {
+  type    = string
+  default = "grafana.harryliu.dev"
+}
+
+# Loki push endpoint for machine clients (Fly log shipper); same tunnel and VM
+# as Grafana, gated by nginx basic auth instead of Cloudflare Access.
+variable "loki_domain" {
+  type    = string
+  default = "loki.harryliu.dev"
+}
+
+variable "loki_push_user" {
+  type    = string
+  default = "fly-log-shipper"
+}
+
+variable "grafana_allowed_emails" {
+  type    = list(string)
+  default = ["harryliu1995@gmail.com"]
+}
+
+# t3.small (2 GB) is the floor for Grafana + Loki + Alloy + cloudflared; a
+# t3.micro fits the 12-month free tier but swaps under Loki compaction.
+variable "grafana_instance_type" {
+  type    = string
+  default = "t3.small"
+}
+
 variable "vault_domain" {
   type    = string
   default = "vault.harryliu.dev"
