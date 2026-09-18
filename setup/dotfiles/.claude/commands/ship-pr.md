@@ -1,3 +1,7 @@
+---
+description: Branch, commit, sync with main, push, and open a PR for files edited in this session.
+---
+
 Run the standard git workflow to ship the current changes: branch, commit, push, and open a PR.
 
 1. Check `git status` and `git diff` (staged and unstaged) to see what's changed. Stage only the files created or edited during this session (via this conversation's own Write/Edit/Bash calls) — never `git add -A` or `git add .`, and never stage files that were already modified/untracked before this session started, even if they look related. If unsure whether a file was touched this session, leave it unstaged and ask rather than guessing from the diff content.

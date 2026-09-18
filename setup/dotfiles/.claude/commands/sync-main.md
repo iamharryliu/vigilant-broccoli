@@ -1,3 +1,7 @@
+---
+description: Merge origin/main into the current branch (or fast-forward main) without pushing.
+---
+
 Bring the current branch up to date with `origin/main` so work doesn't drift into a stale branch or a pile-up of merge conflicts.
 
 1. Fetch without touching the working tree: `git fetch origin main`.
