@@ -24,6 +24,7 @@ export * from './ConversionForm';
 export * from './Button';
 export * from './ButtonList';
 export * from './Callout';
+export * from './Card';
 export * from './IconButton';
 export * from './CardContainer';
 export * from './Checkbox';

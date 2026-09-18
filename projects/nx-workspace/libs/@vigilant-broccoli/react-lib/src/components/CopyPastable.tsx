@@ -1,4 +1,4 @@
-import { Card } from '@radix-ui/themes';
+import { Card } from './Card';
 import { CopyButton } from './CopyButton';
 import { ScrollArea } from './ScrollArea';
 
