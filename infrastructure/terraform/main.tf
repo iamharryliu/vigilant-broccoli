@@ -517,12 +517,21 @@ resource "google_storage_bucket" "backup" {
   force_destroy = false
 
   versioning {
-    enabled = true
+    enabled = false
   }
 
   lifecycle_rule {
     condition {
       age = 90
+    }
+    action {
+      type = "Delete"
+    }
+  }
+
+  lifecycle_rule {
+    condition {
+      days_since_noncurrent_time = 7
     }
     action {
       type = "Delete"
