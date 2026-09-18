@@ -62,6 +62,7 @@ if ask "Setup git hooks?"; then
 fi
 
 if ask "Install Node Packages?"; then
+    mise use --global node@lts
     npminit
 fi
 

@@ -1,3 +1,7 @@
+---
+description: Refresh every README.md against docs/app-readme-pattern.md and the current code.
+---
+
 Review and refresh every `README.md` in the repo to match `docs/app-readme-pattern.md`:
 
 - Apps under `projects/nx-workspace/apps/*` — follow the app pattern.

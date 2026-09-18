@@ -7,3 +7,5 @@ fi
 if [ -f ~/shell-aliases/work-aliases.sh ]; then
     source ~/shell-aliases/work-aliases.sh
 fi
+
+command -v mise >/dev/null && eval "$(mise activate bash)"

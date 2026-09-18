@@ -1,3 +1,8 @@
+---
+description: Audit the repo for a scope and write a findings note under docs/audit/ from the audit template.
+argument-hint: <scope>
+---
+
 Audit the codebase for the scope in the arguments (or in this conversation) and write a concise findings note under `docs/audit/`.
 
 1. Read `docs/audit/audit-template.md` and follow its template and rules **exactly** — that file is the source of truth for the note's structure, format, and brevity.
