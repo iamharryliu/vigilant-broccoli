@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server';
-import { createServerClient } from '../../../../../libs/supabase-server';
+import {
+  createServerClient,
+  getBearerToken,
+} from '../../../../../libs/supabase-server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { uploadImage } from '../../where-is/r2';
 
@@ -24,8 +27,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const accessToken =
-    request.headers.get('authorization')?.replace('Bearer ', '') ?? '';
+  const accessToken = getBearerToken(request);
   const supabase = createServerClient(accessToken);
 
   const {
