@@ -44,6 +44,10 @@ resource "google_iam_workload_identity_pool_provider" "github_tf_drift" {
     "attribute.actor"      = "assertion.actor"
     "attribute.repository" = "assertion.repository"
     "attribute.aud"        = "assertion.aud"
+    # Mapped so the SA binding below can key on it. The shared 'github' and
+    # pr-check providers don't map this claim, so a token from either can
+    # never match that binding even though all three share one pool.
+    "attribute.job_workflow_ref" = "assertion.job_workflow_ref"
   }
 
   attribute_condition = "assertion.repository == '${var.github_owner}/${var.github_repo}' && assertion.job_workflow_ref == '${var.github_owner}/${var.github_repo}/.github/workflows/cron-terraform-drift.yml@refs/heads/main'"
@@ -53,10 +57,15 @@ resource "google_iam_workload_identity_pool_provider" "github_tf_drift" {
   }
 }
 
+# Bound to the drift workflow's job_workflow_ref rather than the repository:
+# GCP has no provider-scoped principal set, and a repository-wide binding
+# would let any workflow in the repo presenting the broader 'github' provider
+# impersonate this SA. Only the github_tf_drift provider maps this attribute,
+# and its attribute_condition already pins it to this exact value.
 resource "google_service_account_iam_member" "github_actions_tf_drift_workload_identity" {
   service_account_id = google_service_account.github_actions_tf_drift.name
   role               = "roles/iam.workloadIdentityUser"
-  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.github_actions.workload_identity_pool_id}/attribute.repository/${var.github_owner}/${var.github_repo}"
+  member             = "principalSet://iam.googleapis.com/projects/${data.google_project.project.number}/locations/global/workloadIdentityPools/${google_iam_workload_identity_pool.github_actions.workload_identity_pool_id}/attribute.job_workflow_ref/${var.github_owner}/${var.github_repo}/.github/workflows/cron-terraform-drift.yml@refs/heads/main"
 }
 
 resource "google_project_iam_member" "github_actions_tf_drift_project_read" {
