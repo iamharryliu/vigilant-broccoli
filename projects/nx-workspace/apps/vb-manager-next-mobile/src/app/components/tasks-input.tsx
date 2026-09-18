@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import {
   buildAuthHeaders,
   getGoogleToken,
-  signOutDueToExpiredToken,
+  reconnectGoogle,
 } from '../providers/auth-provider';
 import { GOOGLE_TOKEN_EXPIRED } from '../../../libs/api-errors';
 import { useVoiceInput } from '../hooks/use-voice-input';
@@ -45,7 +45,7 @@ export const TasksInput = () => {
   useEffect(() => {
     const token = getGoogleToken();
     if (!token) {
-      signOutDueToExpiredToken();
+      reconnectGoogle();
       return;
     }
     setGoogleToken(token);
@@ -62,7 +62,7 @@ export const TasksInput = () => {
         });
         const data = await r.json();
         if (data.error === GOOGLE_TOKEN_EXPIRED) {
-          await signOutDueToExpiredToken();
+          await reconnectGoogle();
           return;
         }
         const lists: TaskList[] = data.taskLists ?? [];
@@ -149,7 +149,7 @@ export const TasksInput = () => {
     if (!res.ok) {
       const data = await res.json();
       if (data.error === GOOGLE_TOKEN_EXPIRED) {
-        await signOutDueToExpiredToken();
+        await reconnectGoogle();
         return;
       }
       setError('Failed to create tasks.');
