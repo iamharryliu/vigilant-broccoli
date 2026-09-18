@@ -365,6 +365,7 @@ export function DocsViewer({
               content={content}
               filePath={contentKey}
               onNavigate={navigate}
+              hashSync={urlSync}
             />
           ) : (
             <MarkdownViewer
@@ -373,6 +374,7 @@ export function DocsViewer({
               saveContent={isAggregate ? undefined : saveContent}
               editTrigger={editTrigger}
               onNavigate={navigate}
+              hashSync={urlSync}
             />
           )}
         </div>

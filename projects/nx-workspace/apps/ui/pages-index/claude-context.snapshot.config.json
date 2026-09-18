@@ -1,0 +1,18 @@
+{
+  "root": "../../../../..",
+  "outDir": "public/claude-context",
+  "sources": [
+    "CLAUDE.md",
+    "TODO.md",
+    "docs",
+    "setup/dotfiles/.claude",
+    { "path": ".", "filename": "CLAUDE.md" }
+  ],
+  "linkFallbacks": [
+    { "prefix": "notes/", "base": "https://docs.harryliu.dev/?file=" },
+    {
+      "prefix": "",
+      "base": "https://github.com/iamharryliu/vigilant-broccoli/blob/main/"
+    }
+  ]
+}

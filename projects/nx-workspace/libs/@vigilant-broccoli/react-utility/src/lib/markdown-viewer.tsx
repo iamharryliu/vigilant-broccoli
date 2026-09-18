@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
 import { createHeadingRenderer, marked } from './markdown-config';
-import { createNoteLinkClickHandler, scrollToUrlHash } from './note-links';
+import {
+  createNoteLinkClickHandler,
+  scrollToUrlHash,
+  type NoteHashSync,
+} from './note-links';
 
 const CLS = {
   ROOT: 'w-full',
@@ -33,6 +37,7 @@ interface MarkdownViewerProps {
   saveContent?: (path: string, content: string) => Promise<void>;
   editTrigger?: number;
   onNavigate?: (path: string) => void;
+  hashSync?: NoteHashSync;
 }
 
 export function MarkdownViewer({
@@ -41,6 +46,7 @@ export function MarkdownViewer({
   saveContent,
   editTrigger,
   onNavigate,
+  hashSync,
 }: MarkdownViewerProps) {
   const [html, setHtml] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -58,8 +64,8 @@ export function MarkdownViewer({
   }, [content]);
 
   useEffect(() => {
-    if (html) scrollToUrlHash();
-  }, [html]);
+    if (html) scrollToUrlHash(hashSync);
+  }, [html, hashSync]);
 
   const canEdit = Boolean(saveContent && filePath);
 
@@ -136,7 +142,11 @@ export function MarkdownViewer({
       <div
         className={CLS.PROSE}
         dangerouslySetInnerHTML={{ __html: html }}
-        onClick={createNoteLinkClickHandler(filePath ?? '', onNavigate)}
+        onClick={createNoteLinkClickHandler(
+          filePath ?? '',
+          onNavigate,
+          hashSync,
+        )}
       />
     </div>
   );

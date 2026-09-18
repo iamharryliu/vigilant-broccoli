@@ -9,9 +9,10 @@
   - Tailwind CSS (+ `@tailwindcss/typography` for rendered READMEs)
   - React Router
   - lucide-react
+  - Radix Themes (lazy-loaded by the Repo Timeline list view and the Claude Context page)
 - Internal libs
   - `react-lib`
-  - `react-utility` (`MarkdownViewer` — marked + DOMPurify)
+  - `react-utility` (`MarkdownViewer` — marked + DOMPurify; `DocsViewer` + `createDocsSnapshotSource` for the Claude Context page)
 - Cloud services
   - GitHub Pages
 
@@ -31,8 +32,10 @@
     - Demo → Employee Handler
   - `/api-services` — API Services
     - `/api-services/:service` — Swagger UI rendered in-app against a spec published at build time to `public/openapi/<service>.json` by the `generate-openapi` target (`scripts/generate-openapi-specs.ts`). All four services (llm-service, bucket-service, email-service, email-subscription-service) are private-only Fly apps, so their own `/docs` is unreachable from the internet — this page is the only way to browse them. Swagger UI itself loads from a pinned jsDelivr CDN rather than bundling `swagger-ui-dist`.
+  - `/claude-context` — Claude Context (react-utility's `DocsViewer` — file tree, search, link graph — over a build-time snapshot of the agent context: root `CLAUDE.md`, `TODO.md`, `docs/**`, `setup/dotfiles/.claude/**`, and every other `CLAUDE.md`. Sources are listed in `claude-context.snapshot.config.json`; `scripts/build-docs-snapshot.mjs` writes `public/claude-context/` (gitignored) via the `build-claude-context-snapshot` target and it is copied into `_site` on each Pages deploy. Links to files outside the snapshot are rewritten to `docs.harryliu.dev` for `notes/` and to the GitHub blob URL for everything else. Selected file and heading anchor live inside the hash route — `#/claude-context?file=<path>#<heading>` — since `HashRouter` owns the window fragment)
   - UI → `./react-component-library/` (external)
 
 ## Agent Context
 
 - When adding, removing, or changing a route, card link, or external destination, update the `## Page Navigation` section above so it stays in sync with `src/app/app.tsx`, `src/app/consts/breadcrumbs.ts`, and the home-page cards.
+- When a new kind of agent-context file appears in the repo (a new place `CLAUDE.md` points at, a new skills/commands directory), add it to `claude-context.snapshot.config.json` `sources` and to the matching `paths`/`CLAUDE_CONTEXT_CHANGED` patterns in `.github/workflows/deploy.yml` so the Claude Context page picks it up and redeploys on change.

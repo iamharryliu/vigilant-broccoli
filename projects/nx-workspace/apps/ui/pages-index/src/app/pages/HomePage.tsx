@@ -1,5 +1,6 @@
 import {
   Activity,
+  Bot,
   ChartColumn,
   GitBranch,
   Globe,
@@ -67,6 +68,15 @@ export function HomePage() {
             title={t('HOME.API_SERVICES.TITLE')}
             description={t('HOME.API_SERVICES.DESCRIPTION')}
             icon={<Server className={ICON_CLASS} />}
+          />
+        </li>
+        <li>
+          <CardLink
+            route
+            href="/claude-context"
+            title={t('HOME.CLAUDE_CONTEXT.TITLE')}
+            description={t('HOME.CLAUDE_CONTEXT.DESCRIPTION')}
+            icon={<Bot className={ICON_CLASS} />}
           />
         </li>
         <li>
