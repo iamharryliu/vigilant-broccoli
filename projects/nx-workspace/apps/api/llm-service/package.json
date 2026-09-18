@@ -11,7 +11,7 @@
     "@vigilant-broccoli/fastify": "workspace:*",
     "@vigilant-broccoli/llm-tools": "workspace:*",
     "archiver": "^7.0.1",
-    "fastify": "^5.10.0",
+    "fastify": "^5.12.5",
     "fastify-plugin": "^5.1.0",
     "openai": "^4.104.0",
     "qrcode": "*",
