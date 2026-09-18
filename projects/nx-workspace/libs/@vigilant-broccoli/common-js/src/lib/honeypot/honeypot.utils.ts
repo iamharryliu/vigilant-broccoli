@@ -1,2 +1,2 @@
-export const isHoneypotTriggered = (value?: string): boolean =>
-  Boolean(value?.trim());
+export const isHoneypotTriggered = (value: unknown): boolean =>
+  typeof value === 'string' ? value.trim().length > 0 : value != null;
