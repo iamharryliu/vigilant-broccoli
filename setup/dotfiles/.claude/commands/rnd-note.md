@@ -1,3 +1,8 @@
+---
+description: Research a question and write an R&D note under docs/rnd/ from the R&D template.
+argument-hint: <question>
+---
+
 Research the question in the arguments (or in this conversation) and write a concise R&D note under `docs/rnd/`.
 
 1. Read `docs/rnd/rnd-template.md` and follow its template and rules **exactly** — that file is the source of truth for the note's structure, format, and brevity.

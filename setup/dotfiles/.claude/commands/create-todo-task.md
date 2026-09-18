@@ -1,3 +1,8 @@
+---
+description: Research a feature, fix, or migration and add one well-cited row to the repo root TODO.md.
+argument-hint: <task description>
+---
+
 Create a well-researched task entry in the repo root `TODO.md` for the feature, fix, or migration described in the arguments (or in this conversation).
 
 1. Read `TODO.md` to learn its structure: a Table of Contents, then one section per category (`## Security`, `## Performance`, `## Maintenance`, `## Feature Enhancements`, `## Not so serious`). Each section is a markdown table with the columns `ID | Priority | Description | Recommended Fix`, and rows are ordered by priority (`P1` highest → `P2` → `P3`, then `NA`).
