@@ -47,4 +47,4 @@ Always Free, per month. Cloud Storage and Compute Engine only qualify in `us-wes
 - Compute Engine: one `e2-micro` instance, 30 GB standard persistent disk, 5 GB snapshot storage.
 - Secret Manager (no region restriction): 6 active secret versions, 10,000 access operations.
 
-`gs://vigilant-broccoli-backup` lives in `us-central1`, and `cron-backup.yml` writes four dated dumps a night and prunes to the last 7, so operation counts stay far under the free quotas; total bytes stored is the limit to watch.
+`gs://vigilant-broccoli-backup` lives in `us-central1`, and `cron-backup.yml` writes four dated dumps a night and prunes to the last 7, so operation counts stay far under the free quotas; total bytes stored is the limit to watch. Object versioning is off on the bucket, so a prune frees the bytes immediately instead of leaving a noncurrent copy behind until the 90-day age rule expires it.
