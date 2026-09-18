@@ -12,6 +12,7 @@
     - [Cooking Stock](./stock-recipes/cooking-stock.md)
 - **Dairy**
   - [Cheese](./cheese.md)
+  - [Milk](./milk.md)
 - **Pantry Staples**
   - [Crutons](./crutons.md)
   - [Flour](./flour.md)

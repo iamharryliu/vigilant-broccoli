@@ -1,6 +1,6 @@
 # Cheese
 
-Cheese is milk curdled with acid or rennet, drained of whey, then salted and usually aged. The longer it ages the less moisture it holds, which is what moves a cheese from fresh and spreadable to hard and gratable, and concentrates its flavor along the way.
+Cheese is [milk](./milk.md) curdled with acid or rennet, drained of whey, then salted and usually aged. The longer it ages the less moisture it holds, which is what moves a cheese from fresh and spreadable to hard and gratable, and concentrates its flavor along the way.
 
 | Cheese              | Milk        | Origin        | Family       | Texture                       | Flavor                          | Common Uses                                  |
 | ------------------- | ----------- | ------------- | ------------ | ----------------------------- | ------------------------------- | -------------------------------------------- |
