@@ -30,7 +30,7 @@ Where state lives, per app:
 | Gitea (`git.harryliu.dev`) | journal, strandbaden repos                                              | Self-hosted on OCI                                                                    |
 | R2 bucket `nx-cache`       | Nx self-hosted remote cache (`nx-cache.harryliu.dev` Cloudflare Worker) | Not app data — 7-day lifecycle-expired build cache, exempt from the backup rule below |
 
-Backups: `cron-backup.yml` runs nightly, one job per store (repo zip, Gitea repos, mongodump, pg_dump) into `gs://vigilant-broccoli-backup`, keeping the last 7. **A new persistent store must get a backup job there.**
+Backups: `cron-backup.yml` runs nightly, one job per store (repo zip, Gitea repos, mongodump, pg_dump) into `gs://vigilant-broccoli-backup`, keeping the last 7. **A new persistent store must get a backup job there**, and a matching restore job in `test-smoke-backup-restore.yml`, which weekly restores each dump into a throwaway container and fails on a stale or unrestorable backup.
 
 ## Local Dev Environment
 
