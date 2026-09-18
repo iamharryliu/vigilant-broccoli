@@ -2,6 +2,7 @@ tap "cormacrelf/tap"
 tap "hashicorp/tap"
 tap "smudge/smudge"
 tap "teamookla/speedtest"
+tap "terraform-linters/tap"
 # Codec library for encoding and decoding AV1 video streams
 brew "aom"
 # Official Amazon AWS command-line interface
@@ -94,8 +95,6 @@ brew "ripgrep"
 brew "speedtest-cli"
 # OCR (Optical Character Recognition) engine
 brew "tesseract"
-# Linter for Terraform files
-brew "tflint"
 # Terminal multiplexer
 brew "tmux"
 # Display directories as trees (with optional color/HTML output)
@@ -173,10 +172,10 @@ cask "spotify"
 cask "steam"
 # Mesh VPN based on WireGuard
 cask "tailscale-app"
+# Pluggable Terraform linter
+cask "terraform-linters/tap/tflint", trusted: true
 # Open-source code editor
 cask "visual-studio-code"
-# Create, manage, and run virtual machines
-cask "vmware-fusion"
 # Free messaging and calling application
 cask "wechat"
 # Native desktop client for WhatsApp

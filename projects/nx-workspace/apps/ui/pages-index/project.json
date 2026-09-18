@@ -23,8 +23,15 @@
         "command": "tsx scripts/generate-openapi-specs.ts"
       }
     },
+    "generate-repo-timeline": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "tsx scripts/generate-repo-timeline.ts"
+      }
+    },
     "build": {
-      "dependsOn": ["generate-openapi"],
+      "dependsOn": ["generate-openapi", "generate-repo-timeline"],
       "outputs": [
         "{projectRoot}/{options.outDir}",
         "{workspaceRoot}/dist/pages-index"
@@ -43,7 +50,7 @@
       }
     },
     "serve": {
-      "dependsOn": ["generate-openapi"],
+      "dependsOn": ["generate-openapi", "generate-repo-timeline"],
       "defaultConfiguration": "development",
       "configurations": {
         "development": {},
@@ -56,7 +63,8 @@
       "options": {
         "commands": [
           "mkdir -p ../../../_site",
-          "cp -R ../../../dist/pages-index/. ../../../_site/"
+          "cp -R ../../../dist/pages-index/. ../../../_site/",
+          "cp public/repo-timeline.json ../../../_site/repo-timeline.json"
         ],
         "parallel": false,
         "cwd": "{projectRoot}"
