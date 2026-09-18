@@ -1,12 +1,16 @@
 'use client';
 
-import { Card, Tooltip } from '@radix-ui/themes';
+import { Card } from '@radix-ui/themes';
 import {
   CopyButton,
   MonospaceText,
   Select,
   Text,
   Skeleton,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
@@ -269,17 +273,23 @@ export const PublicIpComponent = () => {
               optionDisplayKey="label"
               triggerClassName="w-[100px]"
             />
-            <Tooltip
-              content={
-                SECRET_TYPE_OPTIONS.find(o => o.value === secretType)?.tooltip
-              }
-            >
-              <InfoCircledIcon
-                width="16"
-                height="16"
-                style={{ cursor: 'help', color: 'var(--gray-10)' }}
-              />
-            </Tooltip>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoCircledIcon
+                    width="16"
+                    height="16"
+                    style={{ cursor: 'help', color: 'var(--gray-10)' }}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  {
+                    SECRET_TYPE_OPTIONS.find(o => o.value === secretType)
+                      ?.tooltip
+                  }
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
           <CopyButton
             disabled={loading}
