@@ -11,6 +11,7 @@ import {
   ListChecks,
   ListTodo,
   Mic,
+  QrCode,
   ScanLine,
   StickyNote,
   LogOut,
@@ -42,6 +43,7 @@ const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
   { href: '/task-list', label: PAGE_TITLE.TASK_LIST, icon: ListTodo },
   { href: '/transcribe', label: PAGE_TITLE.TRANSCRIBE, icon: Mic },
   { href: '/ocr', label: PAGE_TITLE.OCR, icon: ScanLine },
+  { href: '/qr', label: PAGE_TITLE.QR, icon: QrCode },
   { href: '/notepad', label: PAGE_TITLE.NOTEPAD, icon: StickyNote },
   {
     href: '/event-calendars',

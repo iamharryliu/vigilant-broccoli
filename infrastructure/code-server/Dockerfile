@@ -26,6 +26,7 @@ RUN apt-get update \
     git \
     gnupg \
     ca-certificates \
+    openssl \
   && xargs apt-get install -y --no-install-recommends < /tmp/apt-packages.txt \
   && rm -f /tmp/apt-packages.txt \
   && rm -rf /var/lib/apt/lists/*
@@ -42,8 +43,25 @@ RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg \
   && apt-get install -y --no-install-recommends google-cloud-cli \
   && rm -rf /var/lib/apt/lists/*
 
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg -o /usr/share/keyrings/githubcli-archive-keyring.gpg \
+  && echo 'deb [signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main' \
+    > /etc/apt/sources.list.d/github-cli.list \
+  && apt-get update \
+  && apt-get install -y --no-install-recommends gh \
+  && rm -rf /var/lib/apt/lists/*
+
 RUN npm install -g @anthropic-ai/claude-code \
   && npm cache clean --force
+
+# GitHub access reuses the agent sandbox's GitHub App (Contents + Pull requests
+# + Workflows RW, no ruleset bypass on main, so it can push branches and open
+# PRs) without its private key ever reaching this VM: the
+# manual-refresh-code-server-github-token workflow mints a 1-hour installation
+# token in CI and drops it in /run/secrets/gh-token.json, gh-token reads it,
+# and the gh wrapper shadows /usr/bin/gh so `gh` and git's
+# `gh auth git-credential` helper carry it.
+COPY infrastructure/code-server/gh-token.sh /usr/local/bin/gh-token
+COPY infrastructure/code-server/gh-wrapper.sh /usr/local/bin/gh
 
 # Gives the abc service account a usable login shell in the code-server
 # terminal; carried over from the old custom-init script.

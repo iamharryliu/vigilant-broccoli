@@ -143,6 +143,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   gh:actions:rotate-secrets   Trigger ci-rotate-secrets workflow
   gh:actions:run-tests        Trigger all post-deploy test workflows
   gh:actions:replace-code-server  Trigger code-server VM replace workflow
+  gh:actions:refresh-code-server-github-token  Mint a 1-hour GitHub App token and drop it on the code-server VM
   gh:actions:security-cloudflare-access  Trigger Cloudflare Access security check workflow
 
 🔍 AUDIT

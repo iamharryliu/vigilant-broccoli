@@ -9,7 +9,7 @@ BACKUP_BUCKET="gs://vigilant-broccoli-backup"
 # Source: a local path, a gs:// URI, or nothing (latest gitea-backup-*.zip in GCS).
 SOURCE="$1"
 if [ -z "$SOURCE" ]; then
-  SOURCE=$(gsutil ls "${BACKUP_BUCKET}/gitea-backup-*.zip" | sort | tail -1)
+  SOURCE=$(gcloud storage ls "${BACKUP_BUCKET}/gitea-backup-*.zip" | sort | tail -1)
   echo "Using latest backup: ${SOURCE}"
 fi
 
@@ -18,7 +18,7 @@ case "$SOURCE" in
     DUMP_ZIP=$(mktemp -t gitea-dump.XXXXXX.zip)
     trap 'rm -f "$DUMP_ZIP"' EXIT
     echo "Downloading ${SOURCE}..."
-    gsutil cp "$SOURCE" "$DUMP_ZIP"
+    gcloud storage cp "$SOURCE" "$DUMP_ZIP"
     ;;
   *)
     DUMP_ZIP="$SOURCE"

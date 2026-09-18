@@ -71,3 +71,13 @@ output "github_actions_pr_check_workload_identity_provider" {
 output "github_actions_pr_check_service_account_email" {
   value = google_service_account.github_actions_pr_check.email
 }
+
+# Pasted literally into cron-terraform-drift.yml's vault-secrets step, same
+# reasoning as the github_actions_pr_check_* outputs above.
+output "github_actions_tf_drift_workload_identity_provider" {
+  value = google_iam_workload_identity_pool_provider.github_tf_drift.name
+}
+
+output "github_actions_tf_drift_service_account_email" {
+  value = google_service_account.github_actions_tf_drift.email
+}

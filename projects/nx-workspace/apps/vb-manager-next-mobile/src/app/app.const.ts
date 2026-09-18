@@ -6,6 +6,7 @@ export const PAGE_TITLE = {
   TASK_LIST: 'My Tasks',
   TRANSCRIBE: 'Transcribe',
   OCR: 'Scan',
+  QR: 'QR Reader',
   NOTEPAD: 'Notepad',
   EVENT_CALENDARS: 'Event Calendars',
   PASTEBIN: 'Pastebin',

@@ -2,6 +2,17 @@
 
 - Never commit or push unless explicitly instructed to.
 
+## Conventions
+
+`/ship-pr` and `/sync-main` implement these; change the rule here first, then the command.
+
+- **Staging**: stage only the files created or edited in the current session — never `git add -A` or `git add .`, and never files that were already modified or untracked before the session began, even if they look related.
+- **Branch names**: `<committype>/<short-kebab-case-description>` (e.g. `fix/rabbitmq-secret-rotation`, `feat/hearth-food-planner-page`), cut from a freshly fetched `main`.
+- **Commit types**: `feat`, `fix`, `ci`, `chore`, `docs`, `refactor`, `enhancement`, `security`, `infrastructure` — match existing usage in `git log`; don't invent a new type unless nothing fits.
+- **Commit messages**: `<committype>(<scope>): <Message>.` — scope is the affected app/service/lib (e.g. `hearth`, `github-actions`, `vb-manager-next`) and is omitted when the change isn't scoped to one; the message is capitalized, concise, focused on why not what, and ends with a period. Agent-authored commits end with the `Co-Authored-By:` trailer the environment specifies for the authoring model — never a hardcoded model name.
+- **PR body**: a `## Summary` section (bullets) and a `## Test plan` section (checklist), ending with the Claude Code footer. If the branch already has an open PR, push to it rather than opening a second.
+- **Safety**: never force-push, never skip hooks, never amend existing commits.
+
 ## Staying Current With `main`
 
 Branches here are short-lived and PRs land as **squash merges**, so the cheapest way to avoid conflicts is to close the gap with `main` early and often rather than at review time.
@@ -14,8 +25,8 @@ Branches here are short-lived and PRs land as **squash merges**, so the cheapest
 
 ## Git Management
 
-- `main` is protected by a Terraform-managed **repository ruleset** (`infrastructure/terraform/github.tf`), not classic branch protection. PRs are required; a direct push is rejected with `GH006`/`GH013`.
-- Two bypass actors: repo admins (`RepositoryRole` 5, matching the old `enforce_admins = false`) and a dedicated GitHub App used only by the upptime crons (`Integration`, App ID in `var.upptime_gh_app_id`). `GITHUB_TOKEN` (the ambient per-job bot token) has no bypass — a bot identity can't hold a collaborator role, and the built-in "GitHub Actions" integration can't be a bypass actor on a user-owned repo (no owner organization). A GitHub App you create and install directly on the repo doesn't have that restriction. The agent sandbox's GitHub App is deliberately **not** a bypass actor — it goes through PRs, unlike the upptime app.
+- `main` is protected by a Terraform-managed **repository ruleset** (`infrastructure/terraform/github.tf`), not classic branch protection. PRs are required and, via the `update` rule, only bypass actors can move `main` at all — so a direct push is rejected with `GH006`/`GH013`, and a PR can only be merged by an admin, never by the agent-sandbox/code-server GitHub App even though it holds Contents write.
+- Two bypass actors: repo admins (`RepositoryRole` 5, matching the old `enforce_admins = false`) and a dedicated GitHub App used only by the upptime crons (`Integration`, App ID in `var.upptime_gh_app_id`). `GITHUB_TOKEN` (the ambient per-job bot token) has no bypass — a bot identity can't hold a collaborator role, and the built-in "GitHub Actions" integration can't be a bypass actor on a user-owned repo (no owner organization). A GitHub App you create and install directly on the repo doesn't have that restriction. The agent sandbox's GitHub App (Contents + Pull requests + Workflows RW; the code-server VM uses it too, via 1-hour tokens a workflow delivers) is deliberately **not** a bypass actor — it goes through PRs, unlike the upptime app. Note GitHub has no permission that allows pushing branches but not merging PRs (both need Contents write), so the ruleset is what keeps that app off `main`.
 - The upptime app is scoped to Contents + Issues RW only — nothing else. Workflows mint a short-lived (~1h) installation token per run via `infrastructure/agent-sandbox/mint-github-app-token.sh`. The App ID is public (hardcoded in `variables.tf` and the two `cron-upptime*.yml` workflows, like the other non-secret IDs); only the private key (`UPPTIME_GH_APP_PRIVATE_KEY`) lives in Vault. Never reuse the broader Terraform/agent-sandbox GitHub credentials for a push-to-main use case — a long-lived, broadly-scoped token sitting in a job for a third-party action to read is a real credential-exposure surface; a purpose-built, narrowly-scoped, auto-expiring one bounds the blast radius if it ever leaks.
 - Change protection by editing `github.tf` and running `pnpm tf:apply`, never in the GitHub UI (see [CI.md](./CI.md)). A workflow that commits _conditionally_ can report success while blocked, so verify a bot commit actually lands rather than trusting a green run.
 - `google-github-actions/auth` writes a `gha-creds-*.json` file into the job's working directory. It's gitignored, but any tool that does a blanket `git add .` (e.g. Upptime's commit step) will happily stage it if it isn't. Check `.gitignore` covers this before adding any workflow that both authenticates via WIF and auto-commits.

@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tokens consumed by react-lib components (e.g. ScrollTimeline) */
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --primary: 199 89% 48%;
+    --border: 220 13% 91%;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background: 215 28% 17%;
+      --primary: 198 93% 60%;
+      --border: 217 19% 27%;
+    }
+  }
+}
+
 /* GitHub Actions status badges in README.md render as one paragraph of
    hard-line-break-separated <img>s; the typography plugin's default 2em
    img margin doesn't push the following <br> line, so badges collide. */

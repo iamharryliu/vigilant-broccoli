@@ -12,7 +12,7 @@ on:
   push:
     branches: [main]
     paths:
-      - infrastructure/code-server/Dockerfile
+      - infrastructure/code-server/**
       - setup/linux/apt-packages.txt
       - .github/workflows/deploy-code-server-image.yml
   workflow_dispatch:

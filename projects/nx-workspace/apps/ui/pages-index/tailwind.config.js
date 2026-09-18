@@ -28,7 +28,13 @@ module.exports = {
     ),
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        background: 'hsl(var(--background))',
+        primary: 'hsl(var(--primary))',
+        border: 'hsl(var(--border))',
+      },
+    },
   },
   plugins: [require('@tailwindcss/typography')],
 };

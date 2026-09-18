@@ -1,12 +1,13 @@
 import { useMemo } from 'react';
 import { Theme } from '@radix-ui/themes';
-import { DocsViewer, FILE_PARAM } from '@vigilant-broccoli/react-utility';
 import {
-  fetchStructure,
-  fetchContent,
-  searchDocs,
-  fetchGraph,
-} from './github-docs';
+  createDocsSnapshotSource,
+  DocsViewer,
+  FILE_PARAM,
+} from '@vigilant-broccoli/react-utility';
+
+const { fetchStructure, fetchContent, fetchGraph, searchDocs } =
+  createDocsSnapshotSource();
 
 const getFileParam = () =>
   new URLSearchParams(window.location.search).get(FILE_PARAM);

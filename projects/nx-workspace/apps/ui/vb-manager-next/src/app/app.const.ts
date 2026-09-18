@@ -7,14 +7,15 @@ type ExtendedNavRoute = {
   children?: NextNavRoute[];
 };
 
-export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
+export const NOTEPAD_ROUTE: ExtendedNavRoute = {
+  title: 'Notepad',
+  path: '/notepad',
+};
+
+export const SIDEBAR_ROUTE = {
   INDEX: {
     title: 'Home',
     path: '/',
-  },
-  CHATBOT: {
-    title: 'Chatbot',
-    path: '/chatbot',
   },
   KANBAN: {
     title: 'Kanban',
@@ -24,13 +25,17 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Dev Dashboard',
     path: '/dev-dashboard',
   },
+  PASTEBIN: {
+    title: 'Pastebin',
+    path: '/pastebin',
+  },
+  CHATBOT: {
+    title: 'Chatbot',
+    path: '/chatbot',
+  },
   EVENT_CALENDARS: {
     title: 'Event Calendars',
     path: '/event-calendars',
-  },
-  NOTEPAD: {
-    title: 'Notepad',
-    path: '/notepad',
   },
   LANGUAGE_LEARNING: {
     title: 'Language Learning',
@@ -44,11 +49,7 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Career',
     path: '/career',
   },
-  PASTEBIN: {
-    title: 'Pastebin',
-    path: '/pastebin',
-  },
-};
+} satisfies Record<string, ExtendedNavRoute>;
 
 export const APP_NAME = 'VB Manager';
 
@@ -62,7 +63,9 @@ const APP_ROUTE_SUBGROUP = 'vb-manager-next';
 
 export const VIGILANT_BROCCOLI_ROOT_PATH = '~/vigilant-broccoli';
 
-export const APP_ROUTE_QUICK_LINKS = Object.values(APP_ROUTE).flatMap(route => {
+export const APP_ROUTE_QUICK_LINKS = (
+  [...Object.values(SIDEBAR_ROUTE), NOTEPAD_ROUTE] as ExtendedNavRoute[]
+).flatMap(route => {
   if (route.children) {
     return route.children.map(child => ({
       label: child.title,
