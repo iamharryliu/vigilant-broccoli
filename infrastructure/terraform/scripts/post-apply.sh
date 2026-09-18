@@ -214,8 +214,10 @@ echo "Secrets synced to Vault"
   if [ -n "$nx_cache_read_token" ]; then
     nx_cache_secret_args+=(NX_CACHE_READ_TOKEN "$nx_cache_read_token")
   fi
+
+  local loki_push_secret_args=()
   if [ -n "$loki_push_password" ]; then
-    nx_cache_secret_args+=(LOKI_PUSH_PASSWORD "$loki_push_password")
+    loki_push_secret_args+=(LOKI_PUSH_PASSWORD "$loki_push_password")
   fi
 
   gcloud_ssh_secrets "${vm_name}" "${vm_zone}" "$vault_script" \
@@ -234,7 +236,8 @@ echo "Secrets synced to Vault"
     CODE_SERVER_CF_ACCESS_CLIENT_ID "$code_server_cf_access_client_id" \
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET "$code_server_cf_access_client_secret" \
     CODE_SERVER_IP "$code_server_ip" \
-    "${nx_cache_secret_args[@]}"
+    "${nx_cache_secret_args[@]}" \
+    "${loki_push_secret_args[@]}"
   echo "✓ Synced RABBITMQ_CA_CERT, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, GOOGLE_CALENDAR_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP to kv/data/secrets (RABBITMQ_CONNECTION_STRING synced only when broker holds the Terraform password — see above; SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
   if [ -n "$nx_cache_write_token" ]; then
     echo "✓ Synced NX_CACHE_WRITE_TOKEN to kv/data/secrets"
