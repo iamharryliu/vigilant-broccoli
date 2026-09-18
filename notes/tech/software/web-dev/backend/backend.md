@@ -27,21 +27,21 @@
 
 - sent with every HTTP request to the domain they belong to, including both the main domain and subdomains, making them suitable for maintaining user sessions across different pages or subdomains
 - used for session management, user authentication, and tracking user preferences across different pages or subdomains
-- vulnerable to [CSRF](../network-security/network-security.md#types-of-attacks)
+- vulnerable to [CSRF](../network-security/cyber-attack-types.md)
 
 #### Local Storage
 
 - can only be cleared by user or web app
 - accessible from all pages within stored domain
 - used for storing larger amounts of data that need to persist across sessions, such as user settings or cached data
-- vulnerable to [XSS](../network-security/network-security.md#types-of-attacks)
+- vulnerable to [XSS](../network-security/cyber-attack-types.md)
 
 #### Session Storage
 
 - stored for duration of page session, cleared when user closes the tab or browser
 - accessible from all pages within stored domain
 - userd for storing temporary data that should be cleared when the user leaves the page
-- vulnerable to [XSS](../network-security/network-security.md#types-of-attacks)
+- vulnerable to [XSS](../network-security/cyber-attack-types.md)
 
 ### Session Cookies
 

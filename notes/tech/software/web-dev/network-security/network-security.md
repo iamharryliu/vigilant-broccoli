@@ -8,7 +8,7 @@
 - [General Guidelines](#general-guidelines)
 - [Types of Authentication](#types-of-authentication)
 - [Types of Vulnerabilities](#types-of-vulnerabilities)
-- [Types of Attacks](#types-of-attacks)
+- [Cyber Attack Types](./cyber-attack-types.md)
 - [IP Addresses](./ip-address.md)
 - [Network Tools](./network-tools.md)
 - [Security Hardening](./security-hardening.md)
@@ -55,22 +55,6 @@
 | Logs              | Sensitive data leaked into logs, or missing/tampered logs that hide malicious activity.         |
 | Request Endpoints | Unauthenticated, unvalidated, or over-exposed API/HTTP endpoints that widen the attack surface. |
 | People            | Human factors — weak passwords, social engineering, insider mistakes — the hardest to patch.    |
-
-## Types of Attacks
-
-| Type of Attack                     | Description                                                                                                                                                                           | Methods to Prevent                                                                                                             |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| Timing Attack                      | Infers secrets by measuring how long an operation takes (e.g. char-by-char string comparison).                                                                                        | Constant-time comparison functions, avoid early-exit on secret comparisons, add uniform response time                          |
-| Brute Force / Password Cracking    | Systematically guesses credentials; effective on short or low-entropy passwords.                                                                                                      | Strong password policy, rate limiting, account lockout, MFA, slow hashing (bcrypt/argon2)                                      |
-| Distributed Denial of Service      | Floods a service with traffic from many sources to exhaust resources and cause downtime.                                                                                              | Firewall, rate limiting, CDN, traffic monitoring, blacklist/whitelist, autoscaling                                             |
-| SQL Injection                      | Injects malicious SQL through unsanitized input to read or modify the database.                                                                                                       | Parameterized queries / prepared statements, ORM, input validation, least-privilege DB accounts                                |
-| Cross-Site Scripting (XSS)         | Injects malicious scripts into pages viewed by other users to steal data or hijack sessions.                                                                                          | Output encoding/escaping, Content Security Policy (CSP), sanitize input, `HttpOnly` cookies                                    |
-| Cross-Site Request Forgery (CSRF)  | Tricks a logged-in user's browser into sending an unwanted request to a site they're authenticated on — works because cookies are sent automatically with every request to that site. | Anti-CSRF tokens, `SameSite` cookies, verify `Origin`/`Referer` headers                                                        |
-| Server-Side Request Forgery (SSRF) | Tricks a server into making a request on the attacker's behalf to somewhere it shouldn't reach, like an internal-only service or a cloud metadata endpoint.                           | Block/allowlist outbound destinations, reject private/internal IP ranges (re-check after DNS resolution), network segmentation |
-| Man-in-the-Middle (MITM)           | Intercepts or alters traffic between two parties who believe they are communicating directly.                                                                                         | TLS/HTTPS everywhere, certificate pinning, HSTS, avoid untrusted networks                                                      |
-| Phishing / Social Engineering      | Manipulates people into revealing credentials or secrets via deceptive messages or sites.                                                                                             | Security awareness training, MFA, email filtering, domain verification (SPF/DKIM/DMARC)                                        |
-| Replay Attack                      | Captures and re-sends valid requests/tokens to gain unauthorized access.                                                                                                              | Nonces, timestamps, short-lived tokens, idempotency keys                                                                       |
-| Privilege Escalation               | Exploits flaws to gain higher access than granted.                                                                                                                                    | Least privilege, patch management, input validation, audit logging                                                             |
 
 ## References
 
