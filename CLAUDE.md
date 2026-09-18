@@ -2,25 +2,25 @@
 
 ## Doc Map
 
-- [Agent Context Map](./docs/agent-diagram.md) — mermaid diagram of how this Doc Map, `docs/`, and skills/commands relate; update it whenever an agent-related change lands (Doc Map entries added/removed, `docs/` structure changed, or skills/commands added/removed/rewired) — e.g. #167
-- [Dev Tooling](./docs/DEV_TOOLING.md) — root `package.json` CLI scripts (SSH, logs, deploys, resets, service management) + cheatsheet; read first before adding or changing root scripts
+- [Agent Context Map](./docs/agent-diagram.md) — how this Doc Map, `docs/`, and skills/commands relate; update it in the same change whenever any of those change
+- [Dev Tooling](./docs/DEV_TOOLING.md) — root `package.json` CLI scripts and cheatsheet; read first before adding or changing root scripts
 - [CI](./docs/CI.md) — read first before touching workflows, monitoring, or IaC
   - GitHub Actions — action pinning, README badges, cron dispatch, workflow secrets
   - Upptime — status checks for deployed services
   - Terraform — IaC in `infrastructure/terraform/`
-- [App Development](./docs/APP_DEVELOPMENT.md) — shared HTTP consts, env var access, auth, dependency pinning, npm publishing; read first before app work
+- [App Development](./docs/APP_DEVELOPMENT.md) — shared consts, env vars, auth, dependency pinning, npm publishing; read first before app work
   - [repo-patterns.md](./docs/repo-patterns.md) — decision map for adding/changing an app, workflow, or deploy: which existing pattern to copy
   - UI — [docs/ui/](./docs/ui/) (`ui-app-pattern.md`, `auth/*`, `deployment/*`)
   - API — [docs/api/](./docs/api/) (`deployment/fly-service-pattern.md`)
 - [Git](./docs/GIT.md) — read first before committing or pushing
-- [notes-pattern.md](./docs/notes-pattern.md) — read first before adding/editing files under `notes/`: universal link hygiene, plus per-topic conventions (e.g. cooking, lingo files) under `docs/notes/`
-- [learning-timeline.md](./docs/learning-timeline.md) — month-by-month `Date (YYYY-MM) | Learned` table of what was being learned, software and otherwise; when work lands that introduces a topic the current month's row doesn't already cover, add or extend that row (one row per month, short and generic — "learned React", "improved sourdough baking by…", not implementation detail)
-- [network-management.md](./docs/infrastructure/network-management.md) — read first before changing DNS records, domains/subdomains, proxying, tunnels, or VPN
-- [secret-management.md](./docs/infrastructure/secret-management.md) — read first before adding a secret or a local `.env`/`.tfvars` file; secrets live in Vault/GCP Secret Manager (avoid local secret files), non-secret IDs are hardcoded in Terraform
-- [nuance.md](./docs/nuance.md) — non-obvious bugs and quirks discovered in this repo; check before debugging something that looks like it shouldn't happen
-- [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md) — cleanup checklist for `/refactor-code-cleanup`; unattended `agentic:task:solve` runs must apply it before finishing
-- [TODO.md](./TODO.md) — repo audit backlog; its section/row format is defined in [todo-pattern.md](./docs/todo-pattern.md)
-- [todo-pattern.md](./docs/todo-pattern.md) — read first before adding or editing a `TODO.md` row; single source for its sections, columns, priorities, and the id contract parsed by `infrastructure/agent-sandbox/solve-todo*.sh` and followed by `/create-todo-task`
+- [notes-pattern.md](./docs/notes-pattern.md) — read first before adding or editing files under `notes/`; per-topic conventions live under `docs/notes/`
+- [learning-timeline.md](./docs/learning-timeline.md) — month-by-month record of what was being learned; extend the current month's row when work lands that introduces a new topic
+- [network-management.md](./docs/infrastructure/network-management.md) — read first before changing DNS, domains, proxying, tunnels, or VPN
+- [secret-management.md](./docs/infrastructure/secret-management.md) — read first before adding a secret or a local `.env`/`.tfvars` file
+- [nuance.md](./docs/nuance.md) — non-obvious bugs and quirks in this repo; check before debugging something that looks impossible
+- [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md) — cleanup checklist behind `/refactor-code-cleanup` and unattended `agentic:task:solve` runs
+- [TODO.md](./TODO.md) — repo audit backlog
+- [todo-pattern.md](./docs/todo-pattern.md) — read first before adding or editing a `TODO.md` row; single source for its format and the id contract the sandbox scripts parse
 - Coding Conventions — this file
 - Folder Structure — this file
 
