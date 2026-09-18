@@ -1,0 +1,72 @@
+name: manual-refresh-code-server-github-token
+
+# Mints a fresh 1-hour installation token from the agent sandbox's GitHub App
+# and drops it on the code-server VM -- the CI twin of
+# `pnpm agentic:dev-sandbox:refresh-github-token`. The App's private key never
+# leaves this job: the VM only ever holds the short-lived token, which the
+# container's gh wrapper reads from /run/secrets/gh-token.json. Re-run it
+# whenever `git push` / `gh` in code-server report the token has expired.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: refresh-code-server-github-token
+  cancel-in-progress: false
+
+jobs:
+  refresh-token:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+            kv/data/secrets OCI_VM_SSH_KEY | OCI_VM_SSH_KEY ;
+            kv/data/secrets CODE_SERVER_VM_IP | CODE_SERVER_VM_IP ;
+
+      - name: Mint installation token
+        env:
+          AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
+          AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          PEM_FILE=$(mktemp)
+          echo "$AGENT_GH_APP_PRIVATE_KEY" | base64 -d > "$PEM_FILE"
+          TOKEN=$(./infrastructure/agent-sandbox/mint-github-app-token.sh "$AGENT_GH_APP_ID" "$PEM_FILE")
+          rm -f "$PEM_FILE"
+          echo "::add-mask::$TOKEN"
+          echo "GH_APP_TOKEN=$TOKEN" >> "$GITHUB_ENV"
+
+      # The token is piped straight into `install` on the VM so it never appears
+      # in a command line or the job log. The secrets directory (not the file)
+      # is bind-mounted into the container, so replacing the file is visible
+      # immediately without a container restart.
+      - name: Deliver token to the code-server VM
+        env:
+          GH_APP_TOKEN: ${{ env.GH_APP_TOKEN }}
+          OCI_VM_SSH_KEY: ${{ env.OCI_VM_SSH_KEY }}
+          CODE_SERVER_VM_IP: ${{ env.CODE_SERVER_VM_IP }}
+        run: |
+          set -euo pipefail
+          # Ensure a trailing newline — the stored key lacks one and OpenSSL/libcrypto rejects it.
+          { printf '%s' "$OCI_VM_SSH_KEY" | base64 -d; echo; } > ssh_key
+          chmod 600 ssh_key
+          EXPIRES_AT=$(( $(date +%s) + 3600 ))
+          jq -n --arg token "$GH_APP_TOKEN" --argjson expires_at "$EXPIRES_AT" '{token: $token, expires_at: $expires_at}' \
+            | ssh -i ssh_key -o StrictHostKeyChecking=accept-new -o ConnectTimeout=15 "ubuntu@${CODE_SERVER_VM_IP}" \
+              'sudo install -m 0600 -o 1000 -g 1000 /dev/stdin /opt/code-server/secrets/gh-token.json'
+          rm -f ssh_key
+          echo "Delivered a GitHub App token to code-server, valid until $(date -u -d "@${EXPIRES_AT}" +%FT%TZ)"

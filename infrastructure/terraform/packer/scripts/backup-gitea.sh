@@ -27,6 +27,6 @@ scp $SSH_OPTS "${GITEA_SSH}:/tmp/gitea-dump.zip" "$OUT"
 ssh $SSH_OPTS "$GITEA_SSH" 'sudo rm -f /tmp/gitea-dump.zip'
 
 case "$DEST" in
-  gs://*) gsutil cp "$OUT" "$DEST" && echo "✓ Uploaded to ${DEST}" ;;
+  gs://*) gcloud storage cp "$OUT" "$DEST" && echo "✓ Uploaded to ${DEST}" ;;
   *) echo "✓ Saved ${DEST}" ;;
 esac

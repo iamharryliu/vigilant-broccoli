@@ -11,8 +11,14 @@ source $SETUP_DIR/common/symlinks.sh
 
 if [ "$1" = "-y" ]; then
     ask() { return 0; }
-elif ask "Install apt packages?"; then
-    sudo apt-get update && xargs sudo apt-get install -y < "$REPO_ROOT/setup/linux/apt-packages.txt"
+fi
+
+if ask "Install apt packages?"; then
+    if [ "$1" = "-y" ] && ! sudo -n true 2>/dev/null; then
+        echo "Skipping apt packages: -y is non-interactive and sudo needs a password here (container images bake them in)"
+    else
+        sudo apt-get update && xargs sudo apt-get install -y < "$REPO_ROOT/setup/linux/apt-packages.txt"
+    fi
 fi
 
 if ask "Symlink dotfiles?"; then

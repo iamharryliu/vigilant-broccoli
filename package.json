@@ -49,6 +49,7 @@
     "immich:replace": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform apply -replace=aws_instance.immich && ssh-keygen -R $(terraform output -raw aws_immich_public_ip)",
     "immich:reset": "./scripts/shell/oci-ssh.sh aws_immich_public_ip 'cd /opt/immich && sudo docker compose down -v && sudo docker compose up -d'",
     "gh:actions:replace-code-server": "gh workflow run manual-replace-code-server --repo iamharryliu/vigilant-broccoli",
+    "gh:actions:refresh-code-server-github-token": "gh workflow run manual-refresh-code-server-github-token --repo iamharryliu/vigilant-broccoli",
     "gcp:vm:ssh": "gcloud compute ssh vb-free-vm --zone=us-central1-a --tunnel-through-iap",
     "gcp:vm:status": "gcloud compute instances describe vb-free-vm --zone=us-central1-a --format='value(status)'",
     "gcp:vm:stop": "gcloud compute instances stop vb-free-vm --zone=us-central1-a",

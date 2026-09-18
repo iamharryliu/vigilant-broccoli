@@ -40,6 +40,7 @@ jobs:
             kv/data/secrets GOOGLE_AUTH_PROVIDER_CLIENT_SECRET | TF_VAR_supabase_google_client_secret ;
             kv/data/secrets TF_AWS_ACCESS_KEY_ID | AWS_ACCESS_KEY_ID ;
             kv/data/secrets TF_AWS_SECRET_ACCESS_KEY | AWS_SECRET_ACCESS_KEY ;
+            kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | TF_VAR_claude_code_oauth_token ;
 
       - name: Write OCI credentials
         run: |

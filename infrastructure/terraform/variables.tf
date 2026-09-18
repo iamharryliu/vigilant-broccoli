@@ -125,6 +125,15 @@ variable "code_server_allowed_emails" {
   default = ["harryliu1995@gmail.com"]
 }
 
+# The same `claude setup-token` OAuth token the agent sandbox uses, so Claude
+# Code in the code-server terminal needs no interactive login. Set via
+# TF_VAR_claude_code_oauth_token from Vault's CLAUDE_CODE_OAUTH_TOKEN.
+variable "claude_code_oauth_token" {
+  type      = string
+  sensitive = true
+  default   = ""
+}
+
 variable "seafile_domain" {
   type    = string
   default = "drive.harryliu.dev"

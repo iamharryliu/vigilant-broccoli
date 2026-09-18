@@ -5,6 +5,10 @@
       "TITLE": "Status",
       "DESCRIPTION": "Live health of deployed services and applications."
     },
+    "REPO_TIMELINE": {
+      "TITLE": "Repo Timeline",
+      "DESCRIPTION": "Lines of code, commits, and PRs over time."
+    },
     "OPEN_SOURCE": {
       "TITLE": "Open Source",
       "DESCRIPTION": "GitHub, Docker Hub, and npm packages."
@@ -64,6 +68,26 @@
     "GROUP_PRODUCTION": "Production",
     "GROUP_STAGING": "Staging",
     "GROUP_PERSONAL": "Personal Apps"
+  },
+  "REPO_TIMELINE_PAGE": {
+    "TITLE": "Repo Timeline",
+    "LOADING": "Loading timeline…",
+    "ERROR": "Failed to load timeline: {message}",
+    "VIEW_LABEL": "View",
+    "VIEW_GRAPH": "Graph",
+    "VIEW_TIMELINE": "Timeline",
+    "METRIC_LABEL": "Metric",
+    "GRANULARITY_LABEL": "Timeline",
+    "METRIC_LINES_OF_CODE": "Lines",
+    "METRIC_COMMITS": "Commits",
+    "METRIC_PULL_REQUESTS": "PRs",
+    "GRANULARITY_DAY": "Day",
+    "GRANULARITY_MONTH": "Month",
+    "GRANULARITY_YEAR": "Year",
+    "GRANULARITY_DAY_SHORT": "D",
+    "GRANULARITY_MONTH_SHORT": "M",
+    "GRANULARITY_YEAR_SHORT": "Y",
+    "ENTRY_SUMMARY": "{commits} commits · {pullRequests} PRs · +{added} / −{deleted}"
   },
   "OPEN_SOURCE_PAGE": {
     "TITLE": "Open Source",

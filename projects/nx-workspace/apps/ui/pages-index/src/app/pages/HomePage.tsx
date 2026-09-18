@@ -1,4 +1,11 @@
-import { Activity, GitBranch, Globe, LayoutGrid, Server } from 'lucide-react';
+import {
+  Activity,
+  ChartColumn,
+  GitBranch,
+  Globe,
+  LayoutGrid,
+  Server,
+} from 'lucide-react';
 import { useTranslation } from '../i18n';
 import { CardLink } from '../components/CardLink';
 import { CardGrid } from '../components/CardGrid';
@@ -24,6 +31,15 @@ export function HomePage() {
             title={t('HOME.STATUS.TITLE')}
             description={t('HOME.STATUS.DESCRIPTION')}
             icon={<Activity className={ICON_CLASS} />}
+          />
+        </li>
+        <li>
+          <CardLink
+            route
+            href="/repo-timeline"
+            title={t('HOME.REPO_TIMELINE.TITLE')}
+            description={t('HOME.REPO_TIMELINE.DESCRIPTION')}
+            icon={<ChartColumn className={ICON_CLASS} />}
           />
         </li>
         <li>

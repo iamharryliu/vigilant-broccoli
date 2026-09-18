@@ -11,6 +11,7 @@ import {
   setGoogleCalendarPublic,
 } from '../../../lib/google-calendar-admin';
 import { normalizeSources } from './sources';
+import { EVENT_LANGUAGES } from '../../constants/event-calendars';
 import { startSync } from '../../../lib/event-scraper/sync-runner';
 
 export const runtime = 'nodejs';
@@ -18,6 +19,7 @@ export const dynamic = 'force-dynamic';
 
 const CALENDAR_TIME_ZONE = 'Europe/Stockholm';
 const NAME_REQUIRED_ERROR = 'Calendar name is required';
+const UNSUPPORTED_LANGUAGE_ERROR = `Language must be one of: ${EVENT_LANGUAGES.join(', ')}`;
 
 const unauthorized = () =>
   NextResponse.json(
@@ -48,10 +50,22 @@ export async function POST(request: NextRequest) {
   const userEmail = await getUserEmail(request);
   if (!userEmail) return unauthorized();
 
-  const { name, isPublic = false, sources = [] } = await request.json();
+  const {
+    name,
+    isPublic = false,
+    language,
+    sources = [],
+  } = await request.json();
   if (!name?.trim()) {
     return NextResponse.json(
       { error: NAME_REQUIRED_ERROR },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
+    );
+  }
+
+  if (language && !EVENT_LANGUAGES.includes(language)) {
+    return NextResponse.json(
+      { error: UNSUPPORTED_LANGUAGE_ERROR },
       { status: HTTP_STATUS_CODES.BAD_REQUEST },
     );
   }
@@ -81,6 +95,7 @@ export async function POST(request: NextRequest) {
       name: name.trim(),
       googleCalendarId,
       isPublic,
+      language: language || undefined,
       sources: normalizedSources.sources,
     });
 

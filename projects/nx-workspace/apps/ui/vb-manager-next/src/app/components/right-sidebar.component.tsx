@@ -13,11 +13,33 @@ import {
   LogIn,
   Bell,
   Settings,
+  House,
+  SquareKanban,
+  LayoutDashboard,
+  ClipboardList,
+  MessageSquare,
+  CalendarDays,
+  Languages,
+  FlaskConical,
+  Briefcase,
 } from 'lucide-react';
 import { NotificationRecord } from '../hooks/useNotificationHistory';
 import { NotificationsDialog } from './notifications-dialog.component';
+import { SIDEBAR_ROUTE } from '../app.const';
 
 const SETTINGS_PATH = '/settings';
+
+const SIDEBAR_ROUTE_ITEMS = [
+  { route: SIDEBAR_ROUTE.INDEX, icon: House },
+  { route: SIDEBAR_ROUTE.KANBAN, icon: SquareKanban },
+  { route: SIDEBAR_ROUTE.DEV_DASHBOARD, icon: LayoutDashboard },
+  { route: SIDEBAR_ROUTE.PASTEBIN, icon: ClipboardList },
+  { route: SIDEBAR_ROUTE.CHATBOT, icon: MessageSquare },
+  { route: SIDEBAR_ROUTE.EVENT_CALENDARS, icon: CalendarDays },
+  { route: SIDEBAR_ROUTE.LANGUAGE_LEARNING, icon: Languages },
+  { route: SIDEBAR_ROUTE.FEATURE_SANDBOX, icon: FlaskConical },
+  { route: SIDEBAR_ROUTE.CAREER, icon: Briefcase },
+];
 
 const UNREAD_MAX = 9;
 const UNREAD_MAX_LABEL = '9+';
@@ -80,6 +102,13 @@ export const RightSidebar = ({
       onClick: () => setNotificationsOpen(!notificationsOpen),
       isActive: notificationsOpen,
     },
+    ...SIDEBAR_ROUTE_ITEMS.map(({ route, icon }) => ({
+      label: route.title,
+      icon,
+      title: route.title,
+      onClick: () => router.push(route.path),
+      isActive: pathname === route.path,
+    })),
     {
       label: 'Jarvis',
       icon: MessageCircle,
