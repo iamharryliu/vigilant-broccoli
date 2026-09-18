@@ -6,6 +6,12 @@ on:
     paths:
       - 'projects/nx-workspace/**'
       - '.github/workflows/deploy.yml'
+      # Claude-context snapshot sources rendered by pages-index (see its claude-context.snapshot.config.json)
+      - 'CLAUDE.md'
+      - 'TODO.md'
+      - 'docs/**'
+      - 'setup/dotfiles/.claude/**'
+      - '**/CLAUDE.md'
   workflow_dispatch:
     inputs:
       environment:
@@ -267,8 +273,10 @@ jobs:
         run: |
           CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
           DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
+          # Sources of the pages-index Claude-context snapshot live outside the nx workspace, so nx affected can't see them
+          CLAUDE_CONTEXT_CHANGED=$(echo "$CHANGED_FILES" | grep -cE "^(CLAUDE\.md|TODO\.md|docs/|setup/dotfiles/\.claude/)|/CLAUDE\.md$" || true)
 
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 || "$CLAUDE_CONTEXT_CHANGED" -gt 0 ]]; then
             echo "has_deployments=true" >> $GITHUB_OUTPUT
           else
             AFFECTED=$(pnpm exec nx show projects --affected --withTarget=deploy-github-pages --base=$NX_BASE --head=$NX_HEAD)

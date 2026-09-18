@@ -110,6 +110,10 @@ export interface NoteGraph {
 export interface DocsExplorerUrlSync {
   get: () => string | null;
   set: (path: string) => void;
+  // Heading-anchor accessors for hosts whose URL fragment is already taken
+  // (e.g. a HashRouter route); default to window.location.hash when omitted.
+  getHash?: () => string;
+  setHash?: (hash: string) => void;
 }
 
 export interface ViewModeOption {
@@ -289,7 +293,10 @@ export const DocsExplorer = ({
       // link) — plain path selections (tree, search, initial URL sync) leave
       // whatever's already in the URL alone, so a direct load of `?file=...#foo`
       // isn't clobbered by the initial mount echoing the file back into the URL.
-      if (hash !== undefined) window.location.hash = hash;
+      if (hash !== undefined) {
+        if (urlSync?.setHash) urlSync.setHash(hash);
+        else window.location.hash = hash;
+      }
       setSelectedPaths([]);
       setSelectedPath(path);
       setMobilePanel('content');

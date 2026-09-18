@@ -1,0 +1,5 @@
+{
+  "root": "../../../../../notes",
+  "outDir": "public",
+  "sources": ["."]
+}

@@ -30,8 +30,19 @@
         "command": "tsx scripts/generate-repo-timeline.ts"
       }
     },
+    "build-claude-context-snapshot": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "command": "node scripts/build-docs-snapshot.mjs apps/ui/pages-index/claude-context.snapshot.config.json"
+      }
+    },
     "build": {
-      "dependsOn": ["generate-openapi", "generate-repo-timeline"],
+      "dependsOn": [
+        "generate-openapi",
+        "generate-repo-timeline",
+        "build-claude-context-snapshot"
+      ],
       "outputs": [
         "{projectRoot}/{options.outDir}",
         "{workspaceRoot}/dist/pages-index"
@@ -50,7 +61,11 @@
       }
     },
     "serve": {
-      "dependsOn": ["generate-openapi", "generate-repo-timeline"],
+      "dependsOn": [
+        "generate-openapi",
+        "generate-repo-timeline",
+        "build-claude-context-snapshot"
+      ],
       "defaultConfiguration": "development",
       "configurations": {
         "development": {},
@@ -64,7 +79,8 @@
         "commands": [
           "mkdir -p ../../../_site",
           "cp -R ../../../dist/pages-index/. ../../../_site/",
-          "cp public/repo-timeline.json ../../../_site/repo-timeline.json"
+          "cp public/repo-timeline.json ../../../_site/repo-timeline.json",
+          "cp -R public/claude-context ../../../_site/claude-context"
         ],
         "parallel": false,
         "cwd": "{projectRoot}"

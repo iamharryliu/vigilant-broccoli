@@ -24,7 +24,15 @@
     "API_SERVICES": {
       "TITLE": "API Services",
       "DESCRIPTION": "Swagger docs for internal services."
+    },
+    "CLAUDE_CONTEXT": {
+      "TITLE": "Claude Context",
+      "DESCRIPTION": "How CLAUDE.md, docs, and skills link together."
     }
+  },
+  "CLAUDE_CONTEXT_PAGE": {
+    "TITLE": "Claude Context",
+    "LOADING": "Loading viewer…"
   },
   "WEB_APPLICATIONS_PAGE": {
     "TITLE": "Web Applications",
