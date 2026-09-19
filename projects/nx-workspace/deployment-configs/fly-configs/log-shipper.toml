@@ -4,7 +4,10 @@
 # the Loki label fly_app_name tells them apart. Deployed by
 # `pnpm logs:shipper:deploy`, which stages ACCESS_TOKEN / LOKI_PASSWORD from
 # Vault first. No public IPs: it only dials out.
-app = 'log-shipper'
+#
+# `vb-log-shipper`, not `log-shipper`: fly app names are globally unique
+# across all of Fly.io, and the bare name is already held by someone else.
+app = 'vb-log-shipper'
 primary_region = 'yyz'
 
 [build]
@@ -16,14 +19,11 @@ primary_region = 'yyz'
   LOKI_URL = 'https://loki.harryliu.dev'
   LOKI_USERNAME = 'fly-log-shipper'
 
-# Vector's API port, kept private; no ports block so fly never allocates a
-# public edge for it.
-[[services]]
-  internal_port = 8686
-  protocol = 'tcp'
-  processes = ['app']
-  http_checks = []
-  script_checks = []
+# No [[services]] block at all. The shipper only dials out (NATS in from Fly's
+# log stream, HTTPS out to Loki), so it needs no ingress; declaring a service
+# with no ports both trips fly's deprecation check and makes it allocate a
+# public shared v4 and dedicated v6 on first deploy. Vector's API on 8686 stays
+# reachable over 6PN for debugging without any public edge.
 
 [[vm]]
   memory = '256mb'

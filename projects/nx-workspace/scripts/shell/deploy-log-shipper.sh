@@ -5,7 +5,7 @@
 # in a file or in the pnpm script text.
 set -euo pipefail
 
-APP_NAME="log-shipper"
+APP_NAME="vb-log-shipper"
 FLY_ORG="personal"
 CONFIG="deployment-configs/fly-configs/log-shipper.toml"
 
@@ -24,3 +24,12 @@ flyctl secrets set --app "$APP_NAME" --stage \
 
 # --ha=false: one subscriber is enough and a second would double-ship.
 flyctl deploy --config "$CONFIG" --app "$APP_NAME" --ha=false
+
+# Reconcile ingress to none, after the deploy rather than before: some flyctl
+# versions allocate a public IP during deploy. Nothing dials this app, so any
+# address it holds is unused surface. Mirrors the privateOnly handling in
+# deploy-flyio-secrets.ts, except this app needs no private ingress either.
+for ip in $(flyctl ips list --app "$APP_NAME" --json | jq -r '.[].Address'); do
+  echo "Releasing unused ingress $ip from $APP_NAME..."
+  flyctl ips release "$ip" --app "$APP_NAME"
+done

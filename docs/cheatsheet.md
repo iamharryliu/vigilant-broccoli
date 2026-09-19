@@ -78,9 +78,9 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   grafana:replace             Replace the VM via terraform (fresh host)
 
 🚚 LOG SHIPPER (fly -> loki)
-  logs:shipper:deploy         Create/update the fly log-shipper app (secrets from Vault)
-  logs:shipper:status         Show the log-shipper app status
-  logs:shipper:logs           Follow the log-shipper app logs
+  logs:shipper:deploy         Create/update the vb-log-shipper fly app (secrets from Vault)
+  logs:shipper:status         Show the vb-log-shipper app status
+  logs:shipper:logs           Follow the vb-log-shipper app logs
 
 🖥️  GCP VM
   gcp:vm:image:build          Build GCP VM Packer image (init + build)
