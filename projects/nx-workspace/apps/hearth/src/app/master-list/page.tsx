@@ -2,8 +2,13 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Tabs } from '@radix-ui/themes';
-import { Text } from '@vigilant-broccoli/react-lib';
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import {
@@ -227,17 +232,17 @@ export default function MasterListPage() {
         Master List
       </Text>
 
-      <Tabs.Root defaultValue="leisure">
-        <Tabs.List>
-          <Tabs.Trigger value="leisure">Leisure</Tabs.Trigger>
-          <Tabs.Trigger value="meals">Meals</Tabs.Trigger>
-          <Tabs.Trigger value="projects">Projects</Tabs.Trigger>
-          <Tabs.Trigger value="resources">Resources</Tabs.Trigger>
-          <Tabs.Trigger value="rules">Household Rules</Tabs.Trigger>
-        </Tabs.List>
+      <Tabs defaultValue="leisure">
+        <TabsList>
+          <TabsTrigger value="leisure">Leisure</TabsTrigger>
+          <TabsTrigger value="meals">Meals</TabsTrigger>
+          <TabsTrigger value="projects">Projects</TabsTrigger>
+          <TabsTrigger value="resources">Resources</TabsTrigger>
+          <TabsTrigger value="rules">Household Rules</TabsTrigger>
+        </TabsList>
 
         <div className="pt-4">
-          <Tabs.Content value="leisure">
+          <TabsContent value="leisure">
             <LeisureList
               activities={activities}
               calendarEvents={calendarEvents}
@@ -247,9 +252,9 @@ export default function MasterListPage() {
               hideDragHint
               onItemClick={a => router.push(ROUTES.LEISURE_DETAIL(a.id))}
             />
-          </Tabs.Content>
+          </TabsContent>
 
-          <Tabs.Content value="meals">
+          <TabsContent value="meals">
             <MealList
               meals={meals}
               calendarEvents={calendarEvents}
@@ -259,9 +264,9 @@ export default function MasterListPage() {
               hideDragHint
               onItemClick={m => router.push(ROUTES.MEALS_DETAIL(m.id))}
             />
-          </Tabs.Content>
+          </TabsContent>
 
-          <Tabs.Content value="projects">
+          <TabsContent value="projects">
             <HomeProjectList
               projects={projects}
               calendarEvents={calendarEvents}
@@ -271,9 +276,9 @@ export default function MasterListPage() {
               hideDragHint
               onItemClick={p => router.push(ROUTES.PROJECTS_DETAIL(p.id))}
             />
-          </Tabs.Content>
+          </TabsContent>
 
-          <Tabs.Content value="resources">
+          <TabsContent value="resources">
             <ResourceList
               resources={resources}
               bookings={bookings}
@@ -283,9 +288,9 @@ export default function MasterListPage() {
               hideDragHint
               onItemClick={r => router.push(ROUTES.RESOURCES_DETAIL(r.id))}
             />
-          </Tabs.Content>
+          </TabsContent>
 
-          <Tabs.Content value="rules">
+          <TabsContent value="rules">
             {homeId && (
               <HouseholdRuleList
                 rules={rules}
@@ -296,9 +301,9 @@ export default function MasterListPage() {
                 onDelete={handleRuleDelete}
               />
             )}
-          </Tabs.Content>
+          </TabsContent>
         </div>
-      </Tabs.Root>
+      </Tabs>
     </div>
   );
 }
