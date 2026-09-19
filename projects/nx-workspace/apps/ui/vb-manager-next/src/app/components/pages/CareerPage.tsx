@@ -1,9 +1,15 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Button, Textarea } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  Textarea,
+} from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
-import { Tabs } from '@radix-ui/themes';
 import { DownloadIcon } from '@radix-ui/react-icons';
 import { ResumeViewComponent } from '../resume-view.component';
 import { ResumeChatPanel } from '../resume-chat-panel.component';
@@ -110,22 +116,22 @@ export const CareerPage = () => {
     <div className="flex flex-col h-full print:block">
       <div className="flex flex-1 min-h-0 print:block">
         <div className="flex-1 min-w-0 print:hidden">
-          <Tabs.Root
+          <Tabs
             value={activeTab}
             onValueChange={value => setActiveTab(value as EditorTab)}
             className="h-full flex flex-col"
           >
             <div className="flex items-center justify-between">
-              <Tabs.List>
-                <Tabs.Trigger value={EDITOR_TAB.JSON}>Edit JSON</Tabs.Trigger>
-                <Tabs.Trigger value={EDITOR_TAB.AI}>AI Chat</Tabs.Trigger>
-              </Tabs.List>
+              <TabsList>
+                <TabsTrigger value={EDITOR_TAB.JSON}>Edit JSON</TabsTrigger>
+                <TabsTrigger value={EDITOR_TAB.AI}>AI Chat</TabsTrigger>
+              </TabsList>
               <Button onClick={handleDownloadPdf} disabled={!!jsonError}>
                 <DownloadIcon /> Download PDF
               </Button>
             </div>
 
-            <Tabs.Content
+            <TabsContent
               value={EDITOR_TAB.JSON}
               className="pt-3 flex-1 min-h-0"
             >
@@ -140,15 +146,15 @@ export const CareerPage = () => {
                   <p className="text-xs text-red-600 mt-1">{jsonError}</p>
                 )}
               </div>
-            </Tabs.Content>
+            </TabsContent>
 
-            <Tabs.Content value={EDITOR_TAB.AI} className="pt-3 flex-1 min-h-0">
+            <TabsContent value={EDITOR_TAB.AI} className="pt-3 flex-1 min-h-0">
               <ResumeChatPanel
                 resume={resume}
                 onApplyResume={handleApplyResume}
               />
-            </Tabs.Content>
-          </Tabs.Root>
+            </TabsContent>
+          </Tabs>
         </div>
 
         <div className="shrink-0 overflow-y-auto print:overflow-visible print:w-full">

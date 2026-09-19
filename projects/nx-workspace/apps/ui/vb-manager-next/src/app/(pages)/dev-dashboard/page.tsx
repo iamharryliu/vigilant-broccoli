@@ -1,7 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Tabs } from '@radix-ui/themes';
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+} from '@vigilant-broccoli/react-lib';
 import { AwsManagementComponent } from '../../components/aws-management.component';
 import { DockerStatusComponent } from '../../components/docker-status.component';
 import { FlyIoAppsComponent } from '../../components/flyio-apps.component';
@@ -59,20 +64,20 @@ export default function Page() {
   };
 
   return (
-    <Tabs.Root
+    <Tabs
       value={activeTab}
       onValueChange={handleTabChange}
       className="h-full flex flex-col"
     >
-      <Tabs.List>
-        <Tabs.Trigger value={TAB.LOCAL}>Local Service</Tabs.Trigger>
-        <Tabs.Trigger value={TAB.CLOUD}>Cloud Services</Tabs.Trigger>
-        <Tabs.Trigger value={TAB.NETWORK}>Network Tools</Tabs.Trigger>
-        <Tabs.Trigger value={TAB.TEXT_TOOLS}>Text Tools</Tabs.Trigger>
-        <Tabs.Trigger value={TAB.API_KEYS}>API Keys</Tabs.Trigger>
-        <Tabs.Trigger value={TAB.TODO}>TODO.md</Tabs.Trigger>
-      </Tabs.List>
-      <Tabs.Content value={TAB.LOCAL} className="pt-4 flex-1 min-h-0">
+      <TabsList>
+        <TabsTrigger value={TAB.LOCAL}>Local Service</TabsTrigger>
+        <TabsTrigger value={TAB.CLOUD}>Cloud Services</TabsTrigger>
+        <TabsTrigger value={TAB.NETWORK}>Network Tools</TabsTrigger>
+        <TabsTrigger value={TAB.TEXT_TOOLS}>Text Tools</TabsTrigger>
+        <TabsTrigger value={TAB.API_KEYS}>API Keys</TabsTrigger>
+        <TabsTrigger value={TAB.TODO}>TODO.md</TabsTrigger>
+      </TabsList>
+      <TabsContent value={TAB.LOCAL} className="pt-4 flex-1 min-h-0">
         <div className="grid grid-cols-4 gap-4">
           <div className="flex flex-col gap-4">
             <PublicIpComponent />
@@ -89,8 +94,8 @@ export default function Page() {
             <PM2StatusComponent />
           </div>
         </div>
-      </Tabs.Content>
-      <Tabs.Content value={TAB.CLOUD} className="pt-4 flex-1 min-h-0">
+      </TabsContent>
+      <TabsContent value={TAB.CLOUD} className="pt-4 flex-1 min-h-0">
         <div className="grid grid-cols-4 gap-4">
           <div className="flex flex-col gap-4">
             <GcloudAuthStatusComponent />
@@ -110,8 +115,8 @@ export default function Page() {
             <GithubRepoActionStatusBadges repoUrl={REPO_URL} />
           </div>
         </div>
-      </Tabs.Content>
-      <Tabs.Content value={TAB.NETWORK} className="pt-4 flex-1 min-h-0">
+      </TabsContent>
+      <TabsContent value={TAB.NETWORK} className="pt-4 flex-1 min-h-0">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="flex flex-col gap-4">
             <LanDevicesComponent />
@@ -123,19 +128,19 @@ export default function Page() {
             <LocalServicesComponent />
           </div>
         </div>
-      </Tabs.Content>
-      <Tabs.Content value={TAB.TEXT_TOOLS} className="pt-4 flex-1 min-h-0">
+      </TabsContent>
+      <TabsContent value={TAB.TEXT_TOOLS} className="pt-4 flex-1 min-h-0">
         <TextToolsPage />
-      </Tabs.Content>
-      <Tabs.Content value={TAB.API_KEYS} className="pt-4 flex-1 min-h-0">
+      </TabsContent>
+      <TabsContent value={TAB.API_KEYS} className="pt-4 flex-1 min-h-0">
         <ApiKeysComponent />
-      </Tabs.Content>
-      <Tabs.Content
+      </TabsContent>
+      <TabsContent
         value={TAB.TODO}
         className="pt-4 flex-1 min-h-0 overflow-y-auto"
       >
         <TodoListComponent />
-      </Tabs.Content>
-    </Tabs.Root>
+      </TabsContent>
+    </Tabs>
   );
 }
