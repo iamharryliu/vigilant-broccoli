@@ -85,7 +85,17 @@ resource "aws_instance" "grafana" {
   # (see the matching note in aws-immich.tf).
   user_data_replace_on_change = true
 
-  user_data = base64encode(templatefile("${path.module}/cloud-init-grafana.yaml", {
+  # base64gzip + user_data_base64, unlike the plain base64encode + user_data
+  # the other VMs use: this cloud-init carries a provisioned dashboard and is
+  # ~19KB, past EC2's 16KB user_data ceiling. cloud-init detects the gzip magic
+  # bytes and decompresses, and `user_data_base64` is the documented attribute
+  # for already-encoded binary payloads. base64gzip is deterministic (it zeroes
+  # the gzip mtime), so this does not churn the VM on every apply.
+  #
+  # The ceiling is only enforced at apply: user_data depends on the tunnel
+  # token, which is unknown at plan time, so `terraform plan` cannot catch an
+  # oversized payload here. Check the rendered size when editing this file.
+  user_data_base64 = base64gzip(templatefile("${path.module}/cloud-init-grafana.yaml", {
     grafana_ssh_keys          = split("\n", trimspace(var.ssh_public_key))
     grafana_domain            = var.grafana_domain
     grafana_admin_password    = random_password.grafana_admin_password.result
