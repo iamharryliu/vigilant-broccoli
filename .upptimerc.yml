@@ -16,6 +16,8 @@ sites:
     url: https://drive.harryliu.dev/
   - name: nx-cache.harryliu.dev
     url: https://nx-cache.harryliu.dev/health
+  - name: observability-vm
+    url: https://loki.harryliu.dev/health
   - name: staging-cloud8skate.com
     url: https://cloud8skate.com/
   - name: production-cloud8skate

@@ -52,6 +52,18 @@ output "aws_immich_url" {
   value = "https://${var.immich_domain}"
 }
 
+output "aws_grafana_public_ip" {
+  value = aws_eip.grafana.public_ip
+}
+
+output "aws_grafana_url" {
+  value = "https://${var.grafana_domain}"
+}
+
+output "loki_push_url" {
+  value = "https://${var.loki_domain}/loki/api/v1/push"
+}
+
 output "docs_url" {
   value = "https://${var.docs_domain}"
 }
