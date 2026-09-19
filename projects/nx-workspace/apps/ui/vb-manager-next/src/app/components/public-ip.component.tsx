@@ -1,7 +1,7 @@
 'use client';
 
-import { Card } from '@radix-ui/themes';
 import {
+  Card,
   CopyButton,
   MonospaceText,
   Select,

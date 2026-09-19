@@ -1,4 +1,4 @@
-import { Card } from '@radix-ui/themes';
+import { Card } from './Card';
 import { Text } from './Text';
 import { ReactNode } from 'react';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode, useEffect, useRef, useState } from 'react';
-import { Card } from '@radix-ui/themes';
+import { Card } from './Card';
 import { Text } from './Text';
 import { useAnimatedNumber } from '../leaderboard/useAnimatedNumber';
 import { cn } from '../utils/cn';

@@ -1,6 +1,7 @@
 'use client';
 
-import { Card, DropdownMenu } from '@radix-ui/themes';
+import { DropdownMenu } from '@radix-ui/themes';
+import { Card } from './Card';
 import { IconButton } from './IconButton';
 import { InputGroup, InputGroupAddon, InputGroupInput } from './Input';
 import {

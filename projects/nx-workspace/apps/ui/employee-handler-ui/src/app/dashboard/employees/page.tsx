@@ -14,7 +14,8 @@ import {
   Text,
 } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
-import { Card, DropdownMenu } from '@radix-ui/themes';
+import { Card } from '@vigilant-broccoli/react-lib';
+import { DropdownMenu } from '@radix-ui/themes';
 import { authFetchOk, postEmails } from '../../../lib/api-helpers';
 import { useAction } from '../../../lib/use-action';
 import { useTranslation } from '../../i18n';
