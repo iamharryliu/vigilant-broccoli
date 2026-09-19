@@ -19,8 +19,6 @@ const REPO_BLOB_URL =
   'https://github.com/iamharryliu/vigilant-broccoli/blob/main/';
 
 const COPY = {
-  INTRO:
-    'The docs explorer is the file-tree + search shell behind docs.harryliu.dev. It is not mounted here - it needs a notes tree to browse - so this page links to the live site and shows what it looks like there.',
   VISIT: 'Open docs.harryliu.dev',
   SCREENSHOTS: 'Screenshots',
   SCREENSHOTS_HINT:
@@ -77,10 +75,6 @@ export const DocsExplorerDemo = () => {
 
   return (
     <div className="flex flex-col gap-6 w-full">
-      <Text size="2" color="gray">
-        {COPY.INTRO}
-      </Text>
-
       <a
         href={DOCS_URL}
         target="_blank"

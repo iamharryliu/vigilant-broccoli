@@ -139,3 +139,52 @@ export const getSunTimes = (
     sunset: atMinutes(solarNoonMinutes + MINUTES_PER_DEGREE * hourAngle),
   };
 };
+
+export const SUN_EVENT = {
+  SUNRISE: 'Sunrise',
+  SUNSET: 'Sunset',
+} as const;
+
+export type SunEventKind = (typeof SUN_EVENT)[keyof typeof SUN_EVENT];
+
+export interface SunEvent {
+  label: SunEventKind;
+  ts: number;
+}
+
+// Yesterday covers a sunset that is still ahead in a far-west timezone, and
+// tomorrow covers the hours after today's last event.
+const SUN_EVENT_DAY_OFFSETS = [-1, 0, 1];
+
+const nextEventTime = (
+  location: Location,
+  nowMs: number,
+  pick: (times: SunTimes) => Date | null,
+): number | null => {
+  for (const dayOffset of SUN_EVENT_DAY_OFFSETS) {
+    const time = pick(
+      getSunTimes(location, new Date(nowMs + dayOffset * MS_PER_DAY)),
+    );
+    if (time && time.getTime() > nowMs) {
+      return time.getTime();
+    }
+  }
+  return null;
+};
+
+export const getOrderedSunEvents = (
+  location: Location,
+  nowMs: number,
+): SunEvent[] =>
+  [
+    {
+      label: SUN_EVENT.SUNRISE,
+      ts: nextEventTime(location, nowMs, times => times.sunrise),
+    },
+    {
+      label: SUN_EVENT.SUNSET,
+      ts: nextEventTime(location, nowMs, times => times.sunset),
+    },
+  ]
+    .filter((event): event is SunEvent => event.ts !== null)
+    .sort((a, b) => a.ts - b.ts);
