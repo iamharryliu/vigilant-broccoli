@@ -23,6 +23,7 @@
 - [Kubernetes](./kubernetes.md)
 - [Nx](./nx.md)
 - [Hashicorp Vault](./hashicorp-vault.md)
+- [Loki + Grafana](./loki-grafana.md)
 - [Automation](./automation/automation.md)
 - [Deployment](./deployment/deployment.md)
 

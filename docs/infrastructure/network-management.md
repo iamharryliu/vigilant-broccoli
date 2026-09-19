@@ -15,6 +15,8 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── code.harryliu.dev                     code-server — OCI VM (A record, proxied + Cloudflare Access; owner-email + non-identity CI service token for ci-health-check /healthz origin probes)
 ├── drive.harryliu.dev                    Seafile — AWS EC2 VM (A record, proxied + Cloudflare Access, owner-email only; kept off the OCI Ampere pool — its 50GB-per-boot-volume floor left no free-tier storage headroom for a 4th/5th OCI VM)
 ├── images.harryliu.dev                   Immich — AWS EC2 VM (CNAME to cfargotunnel.com, proxied + Cloudflare Access owner-email only; reached via an outbound-only cloudflared tunnel like vault.harryliu.dev, not a direct A record like drive — no inbound 80/443 on the box at all)
+├── grafana.harryliu.dev                  Grafana — AWS EC2 observability VM (`aws-grafana.tf`; CNAME to cfargotunnel.com, proxied + Cloudflare Access owner-email only; same tunnel pattern as images)
+├── loki.harryliu.dev                     Loki push endpoint — same VM and tunnel as grafana (CNAME, proxied, **no Access app**: nginx basic auth on `/loki/api/v1/push`, unauthenticated `/health` (VM liveness, polled by Upptime) and `/ready`, everything else 404; client is the `vb-log-shipper` fly app. Access is not usable here — the shipper is Vector, whose Loki sink supports only basic/bearer auth, not the `CF-Access-Client-Id`/`Secret` header pair)
 ├── socket.harryliu.dev                   Socket server — OCI RabbitMQ VM (A record, DNS-only)
 └── vault.harryliu.dev                    Vault — GCP vb-free-vm via cloudflared tunnel (CNAME, proxied + Cloudflare Access service token, CI-only)
 
@@ -23,7 +25,8 @@ cloud8skate.com                           Cloudflare Pages `staging-cloud-8-skat
 
 fly.dev                                   Fly.io API services (production apps created on first production dispatch)
 ├── staging-vb-express.fly.dev                    VB Express (staging)
-└── production-vb-express.fly.dev                 VB Express (production)
+├── production-vb-express.fly.dev                 VB Express (production)
+└── vb-log-shipper                                Fly log shipper (no hostname, no public IP — outbound only: Fly NATS log stream → https://loki.harryliu.dev)
 
 vercel.app                                Vercel (production projects created on first production dispatch)
 ├── staging-hearth.vercel.app                 Hearth (staging)
