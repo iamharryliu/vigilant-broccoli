@@ -46,6 +46,7 @@ write_files:
           volumes:
             - /opt/observability/nginx/loki.conf:/etc/nginx/conf.d/default.conf:ro
             - /opt/observability/nginx/htpasswd:/etc/nginx/htpasswd:ro
+            - /opt/observability/health:/var/www/health:ro
           depends_on:
             - loki
         alloy:
@@ -57,6 +58,7 @@ write_files:
           volumes:
             - /opt/observability/alloy/config.alloy:/etc/alloy/config.alloy:ro
             - /var/run/docker.sock:/var/run/docker.sock:ro
+            - /var/log:/var/log:ro
             - alloy-data:/var/lib/alloy/data
           depends_on:
             - loki
@@ -72,6 +74,17 @@ write_files:
             - loki-gateway
       volumes:
         alloy-data:
+
+  - path: /etc/docker/daemon.json
+    permissions: '0644'
+    content: |
+      {
+        "log-driver": "json-file",
+        "log-opts": {
+          "max-size": "50m",
+          "max-file": "3"
+        }
+      }
 
   - path: /opt/observability/loki/loki.yml
     permissions: '0644'
@@ -107,6 +120,14 @@ write_files:
 
       limits_config:
         retention_period: 720h
+        # Bounds a runaway producer (or an injected-log flood through the
+        # push endpoint) so it can't fill the data volume before the health
+        # check notices. Far above this stack's real volume.
+        ingestion_rate_mb: 8
+        ingestion_burst_size_mb: 16
+        max_global_streams_per_user: 10000
+        reject_old_samples: true
+        reject_old_samples_max_age: 168h
 
       compactor:
         working_directory: /loki/compactor
@@ -123,15 +144,33 @@ write_files:
         listen 80;
         client_max_body_size 32m;
 
+        # Resolve the loki container at request time via Docker's embedded DNS
+        # rather than at startup. A literal proxy_pass upstream makes nginx
+        # refuse to boot while loki is down, which would take /health offline
+        # in exactly the situation it exists to report.
+        resolver 127.0.0.11 valid=10s ipv6=off;
+
         location = /loki/api/v1/push {
           auth_basic "loki";
           auth_basic_user_file /etc/nginx/htpasswd;
-          proxy_pass http://loki:3100;
+          set $loki_upstream loki;
+          proxy_pass http://$loki_upstream:3100$request_uri;
           proxy_set_header Host $host;
         }
 
         location = /ready {
-          proxy_pass http://loki:3100;
+          set $loki_upstream loki;
+          proxy_pass http://$loki_upstream:3100$request_uri;
+        }
+
+        # Liveness for the whole VM, written by observability-health.sh:
+        # 200 while disk headroom is fine and every container is running,
+        # 503 otherwise. Unauthenticated so Upptime can poll it; it exposes
+        # only that one bit.
+        location = /health {
+          root /var/www/health;
+          default_type text/plain;
+          try_files /ok =503;
         }
 
         location / {
@@ -160,6 +199,18 @@ write_files:
         host       = "unix:///var/run/docker.sock"
         targets    = discovery.relabel.containers.output
         labels     = { host = "grafana-vm", job = "docker" }
+        forward_to = [loki.write.local.receiver]
+      }
+
+      local.file_match "vmlogs" {
+        path_targets = [
+          { __path__ = "/var/log/observability-health.log", host = "grafana-vm", job = "health" },
+          { __path__ = "/var/log/cloud-init-output.log", host = "grafana-vm", job = "cloud-init" },
+        ]
+      }
+
+      loki.source.file "vmlogs" {
+        targets    = local.file_match.vmlogs.targets
         forward_to = [loki.write.local.receiver]
       }
 
@@ -374,6 +425,86 @@ write_files:
         ]
       }
 
+  - path: /opt/observability/observability-health.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      # Liveness for the whole stack, surfaced by nginx at /health and polled
+      # by Upptime. Deliberately independent of Grafana and Loki: a full disk
+      # is exactly what breaks those two, so an alert that queries them would
+      # go quiet at the moment it matters.
+      set -uo pipefail
+
+      DISK_THRESHOLD_PCT=80
+      HEALTH_DIR=/opt/observability/health
+      LOG_FILE=/var/log/observability-health.log
+      CONTAINERS="grafana loki loki-gateway alloy cloudflared"
+
+      # df -P + awk rather than GNU-only --output=pcent, so the same script
+      # can be exercised outside Ubuntu.
+      pct_used() {
+        df -P "$1" 2>/dev/null | awk 'NR==2 {gsub("%","",$5); print $5}'
+      }
+
+      # A df that returns nothing (mount gone, disk wedged) must count as a
+      # problem: treating it as 0% would report healthy at the exact moment
+      # the volume is broken.
+      check_disk() {
+        case "$2" in
+          ''|*[!0-9]*) problems="$problems $1-unreadable" ;;
+          *) [ "$2" -ge "$DISK_THRESHOLD_PCT" ] && problems="$problems $1-$2-pct" ;;
+        esac
+        return 0
+      }
+
+      root_pct=$(pct_used /)
+      data_pct=$(pct_used /mnt/observability)
+
+      problems=""
+      check_disk root-disk "$root_pct"
+      check_disk data-disk "$data_pct"
+
+      for c in $CONTAINERS; do
+        running=$(docker inspect -f '{{.State.Running}}' "$c" 2>/dev/null || echo false)
+        [ "$running" = "true" ] || problems="$problems $c-down"
+      done
+
+      mkdir -p "$HEALTH_DIR"
+      if [ -z "$problems" ]; then
+        echo ok > "$HEALTH_DIR/ok"
+        status=ok
+      else
+        rm -f "$HEALTH_DIR/ok"
+        status=degraded
+      fi
+
+      echo "ts=$(date -u +%Y-%m-%dT%H:%M:%SZ) status=$status root_used_pct=$root_pct data_used_pct=$data_pct problems=\"$problems\"" >> "$LOG_FILE"
+
+  - path: /etc/systemd/system/observability-health.service
+    permissions: '0644'
+    content: |
+      [Unit]
+      Description=Observability stack health marker
+      After=docker.service
+
+      [Service]
+      Type=oneshot
+      ExecStart=/opt/observability/observability-health.sh
+
+  - path: /etc/systemd/system/observability-health.timer
+    permissions: '0644'
+    content: |
+      [Unit]
+      Description=Run the observability health check every 5 minutes
+
+      [Timer]
+      OnBootSec=2min
+      OnUnitActiveSec=5min
+      Unit=observability-health.service
+
+      [Install]
+      WantedBy=timers.target
+
   - path: /opt/observability/mount-data-and-start.sh
     permissions: '0755'
     content: |
@@ -422,10 +553,16 @@ write_files:
       printf '%s:%s\n' '${loki_push_user}' "$(openssl passwd -apr1 '${loki_push_password}')" > /opt/observability/nginx/htpasswd
       chmod 0644 /opt/observability/nginx/htpasswd
 
+      mkdir -p /opt/observability/health
+      touch /var/log/observability-health.log
+
       docker compose -f /opt/observability/docker-compose.yml up -d
 
 runcmd:
   - systemctl enable docker
-  - systemctl start docker
+  # restart, not start: the package install may already have started dockerd
+  # before /etc/docker/daemon.json landed, and a no-op start wouldn't apply it.
+  - systemctl restart docker
   - usermod -aG docker ubuntu
   - /opt/observability/mount-data-and-start.sh
+  - systemctl enable --now observability-health.timer

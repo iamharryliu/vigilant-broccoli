@@ -52,6 +52,9 @@ rate({container="nginx"} |= "error" [5m])                                       
 - Basic auth via `htpasswd`: `openssl passwd -apr1` produces a hash nginx accepts without installing `apache2-utils`. Generating the hash in Terraform (`bcrypt()`) re-salts every plan and churns anything that embeds it.
 - The Vector Loki sink used by fly-log-shipper only supports basic auth, so an identity-aware proxy that expects custom headers (Cloudflare Access service tokens, for instance) cannot sit in front of the push URL.
 - Provisioned dashboards are read-only in the UI unless `allowUiUpdates: true`; edit the JSON at the source instead.
+- A full disk takes Loki and Grafana down together, so an alert that queries Loki to report low disk space goes silent exactly when it fires. Check disk from outside the stack — a timer writing a marker file that a web server turns into a health status works, and any external uptime monitor can then poll it.
+- Bound the inflow as well as watching the outflow: `limits_config.ingestion_rate_mb`, `ingestion_burst_size_mb` and `max_global_streams_per_user` stop one looping producer filling the volume. Container logs land on the host's root disk, not Loki's, so set `log-opts.max-size`/`max-file` in `/etc/docker/daemon.json` too.
+- An nginx `proxy_pass` to a literal container name is resolved at startup, so nginx refuses to boot while that container is down. Use `resolver 127.0.0.11` with the host in a variable to defer resolution to request time, so a status endpoint on the same server stays reachable when the backend is not.
 
 ## References
 
