@@ -218,7 +218,17 @@ export const DashboardInfoCardUtilityContent = ({
       return [];
     }
 
-    return [
+    const sunTiles: StatTile[] = getOrderedSunEvents(location, nowMs).map(
+      event => ({
+        key: event.label,
+        icon: <TileIcon icon={SUN_EVENT_LUCIDE_ICON[event.label]} />,
+        value: formatLocalTime(event.ts, timezoneOffsetSeconds),
+        label: event.label,
+        title: event.label,
+      }),
+    );
+
+    const leftTiles: StatTile[] = [
       {
         key: WEATHER_TILE_TITLE,
         icon: <TileIcon icon={weatherLucideIcon(weather)} />,
@@ -227,13 +237,6 @@ export const DashboardInfoCardUtilityContent = ({
         title: WEATHER_TILE_TITLE,
         onClick: onWeatherClick,
       },
-      ...getOrderedSunEvents(location, nowMs).map(event => ({
-        key: event.label,
-        icon: <TileIcon icon={SUN_EVENT_LUCIDE_ICON[event.label]} />,
-        value: formatLocalTime(event.ts, timezoneOffsetSeconds),
-        label: event.label,
-        title: event.label,
-      })),
       {
         key: MOON_TILE_KEY,
         icon: moonPhase.icon,
@@ -244,6 +247,10 @@ export const DashboardInfoCardUtilityContent = ({
         )} illuminated`,
       },
     ];
+
+    return leftTiles.flatMap((leftTile, row) =>
+      [leftTile, sunTiles[row]].filter(Boolean),
+    );
   }, [
     weather,
     location,
