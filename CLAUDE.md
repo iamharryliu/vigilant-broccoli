@@ -29,11 +29,8 @@
 
 - Prefer functional programming patterns over OOP.
 - Avoid excessive try/catch blocks; only add error handling when explicitly needed.
-- Avoid comments and blocks, only if really necessary do inline comments.
 - Avoid string literals, prefer having consts.
 - Do not write tests unless explicitly asked.
-- Do not write markdown reports, summaries, or documentation unless explicitly asked.
-- Keep responses brief and concise — one sentence per update, no unnecessary narration.
 - If a PR touches files for a cloud service, or introduces/changes usage of one, add or update a `## Free Tier` section in that service's notes/docs file documenting its free tier limits (e.g. [github-actions.md](./notes/tech/software/web-dev/devops/automation/github-actions.md)).
 - Before working on an app or directory, check its `README.md` for an `## Agent Context` section and follow any upkeep instructions it lists (e.g. keeping a Page Navigation section in sync with the routes).
 
