@@ -1,0 +1,83 @@
+---
+- name: Install the Tailscale apt signing key
+  ansible.builtin.get_url:
+    url: '{{ tailscale_apt_key_url }}'
+    dest: '{{ tailscale_apt_keyring_path }}'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Add the Tailscale apt repository
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [signed-by={{ tailscale_apt_keyring_path }}]
+      {{ tailscale_apt_repo_url }} {{ ansible_facts.distribution_release }} main
+    filename: tailscale
+    state: present
+
+- name: Install Tailscale
+  ansible.builtin.apt:
+    name: tailscale
+    state: present
+    update_cache: true
+
+- name: Enable tailscaled at boot
+  ansible.builtin.service:
+    name: tailscaled
+    enabled: true
+    state: started
+
+- name: Check whether the node is already on the tailnet
+  ansible.builtin.command: tailscale status --json
+  register: tailscale_status
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Set the tailnet enrolment flag
+  ansible.builtin.set_fact:
+    tailscale_connected: >-
+      {{ tailscale_status.rc == 0
+         and (tailscale_status.stdout | from_json).BackendState == 'Running' }}
+
+- name: Require an auth key when the node still needs enrolling
+  ansible.builtin.assert:
+    that:
+      - ts_authkey | default('', true) | length > 0
+    fail_msg: >-
+      This host is not on the tailnet yet and TS_AUTHKEY is unset. Run the
+      playbook through provision.sh (pnpm jellyfin:provision), which loads the
+      reusable auth key from Vault, or export TS_AUTHKEY yourself.
+    quiet: true
+  when: not tailscale_connected
+
+# `tailscale up --auth-key file:` instead of passing the key as an argument:
+# argv is world-readable through /proc on the Pi. /run is tmpfs, so the key
+# never touches the SD card, and it is removed either way.
+- name: Enrol the node in the tailnet
+  when: not tailscale_connected
+  block:
+    - name: Stage the auth key in tmpfs
+      ansible.builtin.copy:
+        content: '{{ ts_authkey }}'
+        dest: '{{ tailscale_authkey_path }}'
+        owner: root
+        group: root
+        mode: '0600'
+      no_log: true
+
+    - name: Bring the node up
+      ansible.builtin.command:
+        argv:
+          - tailscale
+          - up
+          - --auth-key
+          - 'file:{{ tailscale_authkey_path }}'
+          - --hostname
+          - '{{ tailscale_hostname }}'
+      changed_when: true
+  always:
+    - name: Drop the staged auth key
+      ansible.builtin.file:
+        path: '{{ tailscale_authkey_path }}'
+        state: absent

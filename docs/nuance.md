@@ -132,3 +132,21 @@ Both are now aligned with `react-lib`: the Google token lives in
 `localStorage`, and `reconnectGoogle` clears only that token before
 re-requesting consent. Any other hand-rolled copy of this provider (e.g.
 `employee-handler-ui`) still needs the same treatment.
+
+## Jellyfin on the homelab Pi refuses to start when the media drive is missing
+
+`docker compose up` reporting
+`bind source path does not exist: /mnt/media/library`, or
+`jellyfin-compose.service` failing with `Unit … has a bad unit file setting`
+about a mount, is the design working. The external drive's fstab entry carries
+`nofail` so the Pi still boots without it, and the container's media bind mount
+sets `bind.create_host_path: false` while the unit declares
+`RequiresMountsFor=/mnt/media`.
+
+Without those two, Docker would create an empty `/mnt/media/library` on the
+boot device and Jellyfin would start with an empty library — which looks
+exactly like the media having been deleted, and is far harder to diagnose after
+the fact than a service that declined to start. Check `findmnt /mnt/media` and
+the drive's cabling/power first; `lsblk -f` shows whether the UUID in
+`inventory/host_vars/<host>.yml` still matches. Details in
+[jellyfin-pi.md](./infrastructure/jellyfin-pi.md).

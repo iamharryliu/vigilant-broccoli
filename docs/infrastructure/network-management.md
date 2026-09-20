@@ -46,6 +46,23 @@ github.io                                 GitHub Pages
 └── iamharryliu.github.io/vigilant-broccoli   Pages index (pages-index/)
 ```
 
+## Tailnet
+
+Private mesh (Tailscale, `echidna-rohu.ts.net`) — WireGuard between the owner's
+own devices, addressed by MagicDNS. Nothing here has a DNS record in the table
+above, no port is forwarded on the home router, and none of it is reachable
+from the internet. It is not a replacement for the cloudflared + Access pattern:
+that one is for services a browser should reach from anywhere, this one is for
+services only the owner's devices need.
+
+```
+jellyfin-pi.echidna-rohu.ts.net:8096   Jellyfin — Raspberry Pi on the home LAN (`infrastructure/jellyfin-pi/`, Ansible-provisioned, no Terraform). MagicDNS only. On Access-gated tunnels instead of the tailnet, the native clients (Android TV, iOS, Kodi) could not log in — the same constraint that put loki.harryliu.dev on basic auth. The node enrols non-interactively with the reusable `TAILSCALE_AUTH_KEY` from Vault; see [jellyfin-pi.md](./jellyfin-pi.md)
+```
+
+`vb-manager-next`'s dev dashboard lists the tailnet's machines through the
+Tailscale API (`TAILSCALE_API_KEY`), so what is currently enrolled is visible
+there rather than only in the admin console.
+
 ## Private-only Fly.io services
 
 Reachable only over Fly's private 6PN network via a flycast address — no public IPv4/IPv6 allocated, so the `fly.dev` hostname resolves to nothing reachable. Each app has a private ingress IPv6 and `[http_service].force_https = false`, so the flycast edge serves the internal port over plain HTTP on port 80 (a `.internal` direct-machine dial would hit the app's IPv4-only `0.0.0.0` bind and reset; flycast routes through fly-proxy, which also auto-starts stopped machines).

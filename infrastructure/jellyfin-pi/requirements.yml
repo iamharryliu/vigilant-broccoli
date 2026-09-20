@@ -1,0 +1,6 @@
+---
+# Installed by provision.sh before every run.
+collections:
+  # mount (fstab by UUID) and authorized_key.
+  - name: ansible.posix
+    version: '>=1.5.4'

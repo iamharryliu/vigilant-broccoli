@@ -7,6 +7,7 @@ Comparison of self-hosted/local solutions by category — software you run and o
 - [VPN / Private Networking](#vpn--private-networking)
 - [Reverse Proxy / Web Server](#reverse-proxy--web-server)
 - [Containers / Orchestration](#containers--orchestration)
+- [Configuration Management](#configuration-management)
 - [Process Management](#process-management)
 - [Secrets Management](#secrets-management)
 - [Monitoring / Observability](#monitoring--observability)
@@ -34,6 +35,12 @@ Comparison of self-hosted/local solutions by category — software you run and o
 | Docker         | Container runtime                                             | Free (self-hosted, open source) | Default packaging/runtime for any self-hosted or deployed service                              |
 | Docker Compose | Multi-container orchestration on a single host                | Free (self-hosted, open source) | VM stacks with multiple related containers (e.g. `infrastructure/local/docker-compose.yml`)    |
 | Watchtower     | Auto-updates running containers by polling for new image tags | Free (self-hosted, open source) | Keeping self-hosted containers (Gitea, code-server, RabbitMQ) current without manual redeploys |
+
+## Configuration Management
+
+| Name                    | Usage                                                                         | Free Tier                                                                   | When to Use                                                                                             |
+| ----------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| [Ansible](./ansible.md) | Agentless, push-based configuration management over SSH; idempotent playbooks | Free (`ansible-core`, open source; Automation Platform is the paid product) | Long-lived hosts that must converge on re-run — bare metal and anything with no create-time provisioner |
 
 ## Process Management
 
@@ -71,6 +78,7 @@ Comparison of self-hosted/local solutions by category — software you run and o
 | Forejo      | Self-hosted Git service, community fork of Gitea | Free (self-hosted, open source) | Alternative to Gitea if community governance matters more than upstream feature velocity; not currently used |
 | code-server | VS Code in the browser, self-hosted              | Free (self-hosted, open source) | Remote dev environment on a VM, gated behind Cloudflare Access                                               |
 | Immich      | Self-hosted photo/video backup                   | Free (self-hosted, open source) | Private media backup without a third-party cloud photo service                                               |
+| Jellyfin    | Self-hosted media server (movies, shows, music)  | Free (self-hosted, open source) | Streaming an owned media library to native clients, with no per-seat cost and no account with a vendor       |
 | Adminer     | Lightweight web DB admin UI                      | Free (self-hosted, open source) | Ad hoc inspection of self-hosted Postgres/MySQL without installing a desktop client                          |
 
 ## Databases (Self-Hosted)

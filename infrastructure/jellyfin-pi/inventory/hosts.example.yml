@@ -1,0 +1,10 @@
+---
+# Copy to inventory/hosts.yml (gitignored) and fill in the Pi's address.
+# Before Tailscale is up, ansible_host is the Pi's LAN address; after the
+# first run it can become the MagicDNS name (jellyfin-pi.<tailnet>.ts.net) so
+# the playbook keeps working off-LAN.
+jellyfin_pi:
+  hosts:
+    jellyfin-pi:
+      ansible_host: 192.168.1.50
+      ansible_user: admin-user-created-during-imager-flash

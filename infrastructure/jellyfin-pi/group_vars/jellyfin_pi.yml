@@ -1,0 +1,83 @@
+---
+# Non-secret defaults for the Jellyfin Pi. Anything host-specific (drive UUID,
+# SSH keys, timezone, addresses) belongs in inventory/host_vars/<host>.yml,
+# which is gitignored — see inventory/host_vars/jellyfin-pi.example.yml.
+
+# --- Base OS ---------------------------------------------------------------
+pi_hostname: jellyfin-pi
+pi_timezone: Etc/UTC
+pi_base_packages:
+  - ca-certificates
+  - curl
+  - gnupg
+  - git
+  - jq
+  - rsync
+  - htop
+  - smartmontools
+  - unattended-upgrades
+  - apt-listchanges
+# Security updates only — Docker's and Tailscale's apt repos are deliberately
+# left out of the origins pattern so a media server never reboots into an
+# untested container runtime on its own.
+pi_unattended_upgrades_automatic_reboot: true
+pi_unattended_upgrades_reboot_time: '04:00'
+
+# --- Service user ----------------------------------------------------------
+# The uid/gid are pinned, not system-assigned: they are baked into the file
+# ownership on the external media drive, so a replacement Pi must recreate the
+# same numbers or every existing file lands with a stale owner. Never change
+# these without chown -R on the drive.
+jellyfin_service_user: jellyfin
+jellyfin_service_group: jellyfin
+jellyfin_uid: 2000
+jellyfin_gid: 2000
+
+# --- SSH hardening ---------------------------------------------------------
+ssh_allow_users:
+  - '{{ ansible_user }}'
+ssh_permit_root_login: 'no'
+ssh_password_authentication: 'no'
+ssh_max_auth_tries: 3
+
+# --- External media drive --------------------------------------------------
+# media_drive_uuid has no default on purpose — it is per-drive and asserted in
+# tasks/preflight.yml.
+media_mount_point: /mnt/media
+media_fs_type: ext4
+# nofail + a device timeout so a missing drive degrades to "Jellyfin does not
+# start" instead of "the Pi drops to an emergency shell over SSH".
+media_mount_options: defaults,noatime,nofail,x-systemd.device-timeout=30s
+media_library_subdir: library
+media_library_dir: '{{ media_mount_point }}/{{ media_library_subdir }}'
+
+# --- Docker ----------------------------------------------------------------
+docker_apt_key_url: https://download.docker.com/linux/debian/gpg
+docker_apt_keyring_path: /etc/apt/keyrings/docker.asc
+docker_apt_repo_url: https://download.docker.com/linux/debian
+docker_packages:
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - docker-buildx-plugin
+  - docker-compose-plugin
+# Same rotation limits as infrastructure/local/docker-daemon-config.json.
+docker_log_max_size: 10m
+docker_log_max_file: '3'
+
+# --- Tailscale -------------------------------------------------------------
+tailscale_apt_key_url: https://pkgs.tailscale.com/stable/debian/bookworm.noarmor.gpg
+tailscale_apt_keyring_path: /usr/share/keyrings/tailscale-archive-keyring.gpg
+tailscale_apt_repo_url: https://pkgs.tailscale.com/stable/debian
+tailscale_hostname: '{{ pi_hostname }}'
+# Non-secret identifier, like the account/zone ids in variables.tf.
+tailnet_domain: echidna-rohu.ts.net
+tailscale_authkey_path: /run/tailscale-authkey
+
+# --- Jellyfin --------------------------------------------------------------
+jellyfin_stack_dir: /opt/jellyfin
+jellyfin_config_dir: /opt/jellyfin/config
+jellyfin_cache_dir: /var/cache/jellyfin
+jellyfin_port: 8096
+jellyfin_service_name: jellyfin-compose.service
+jellyfin_published_server_url: 'http://{{ tailscale_hostname }}.{{ tailnet_domain }}:{{ jellyfin_port }}'

@@ -17,6 +17,7 @@
 - [notes-pattern.md](./docs/notes-pattern.md) — read first before adding or editing files under `notes/`; per-topic conventions live under `docs/notes/`
 - [learning-timeline.md](./docs/learning-timeline.md) — month-by-month record of what was being learned; extend the current month's row when work lands that introduces a new topic
 - [network-management.md](./docs/infrastructure/network-management.md) — read first before changing DNS, domains, proxying, tunnels, or VPN
+- [jellyfin-pi.md](./docs/infrastructure/jellyfin-pi.md) — the Ansible-provisioned homelab Pi running Jellyfin; read first before provisioning or changing hardware on the LAN (there is no Terraform for it)
 - [secret-management.md](./docs/infrastructure/secret-management.md) — read first before adding a secret or a local `.env`/`.tfvars` file
 - [nuance.md](./docs/nuance.md) — non-obvious bugs and quirks in this repo; check before debugging something that looks impossible
 - [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md) — cleanup checklist behind `/refactor-code-cleanup` and unattended `agentic:task:solve` runs

@@ -1,0 +1,8 @@
+# Managed by infrastructure/jellyfin-pi/playbook.yml — edits are overwritten.
+PermitRootLogin {{ ssh_permit_root_login }}
+PasswordAuthentication {{ ssh_password_authentication }}
+KbdInteractiveAuthentication no
+PermitEmptyPasswords no
+MaxAuthTries {{ ssh_max_auth_tries }}
+X11Forwarding no
+AllowUsers {{ ssh_allow_users | join(' ') }}

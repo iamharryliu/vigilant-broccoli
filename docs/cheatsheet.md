@@ -77,6 +77,17 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   grafana:reset               Rebuild containers + volumes (fresh environment)
   grafana:replace             Replace the VM via terraform (fresh host)
 
+🎬 JELLYFIN (homelab Pi)
+  jellyfin:provision          Run the Ansible playbook against the Pi (extra args pass through, e.g. --tags jellyfin)
+  jellyfin:provision:check    Dry-run the playbook (--check --diff)
+  jellyfin:ssh                SSH into the Pi using the inventory address
+  jellyfin:open               Open the Jellyfin web UI
+  jellyfin:status             Show the compose unit and container status
+  jellyfin:logs               Follow Jellyfin container logs
+  jellyfin:docker:up          Start the Jellyfin stack
+  jellyfin:docker:down        Stop the Jellyfin stack
+  jellyfin:docker:restart     Restart the Jellyfin stack
+
 🚚 LOG SHIPPER (fly -> loki)
   logs:shipper:deploy         Create/update the vb-log-shipper fly app (secrets from Vault)
   logs:shipper:status         Show the vb-log-shipper app status

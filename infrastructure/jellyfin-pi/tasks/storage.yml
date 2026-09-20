@@ -1,0 +1,37 @@
+---
+- name: Ensure the media mount point exists
+  ansible.builtin.file:
+    path: '{{ media_mount_point }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+# By UUID, never by /dev/sdX: the kernel hands out device names in probe
+# order, so a reboot with a second disk attached can swap them.
+- name: Mount the external media drive by UUID via fstab
+  ansible.posix.mount:
+    path: '{{ media_mount_point }}'
+    src: 'UUID={{ media_drive_uuid }}'
+    fstype: '{{ media_fs_type }}'
+    opts: '{{ media_mount_options }}'
+    state: mounted
+
+- name: Confirm the mount point is backed by the external drive
+  ansible.builtin.command: findmnt --noheadings --output SOURCE --mountpoint {{ media_mount_point }}
+  register: media_mount_source
+  changed_when: false
+  check_mode: false
+  # A dry run never performs the mount above, so it cannot assert the result.
+  failed_when: media_mount_source.rc != 0 and not ansible_check_mode
+
+- name: Ensure the library directory exists on the drive
+  ansible.builtin.file:
+    path: '{{ media_library_dir }}'
+    state: directory
+    owner: '{{ jellyfin_service_user }}'
+    group: '{{ jellyfin_service_group }}'
+    # Group-writable so a media-adding user added to the jellyfin group can
+    # drop files in without sudo. Not recursive — the playbook never rewrites
+    # ownership of media already on the drive.
+    mode: '0775'

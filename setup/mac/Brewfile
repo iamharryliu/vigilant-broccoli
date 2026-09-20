@@ -3,6 +3,8 @@ tap "hashicorp/tap"
 tap "smudge/smudge"
 tap "teamookla/speedtest"
 tap "terraform-linters/tap"
+# Automate deployment, configuration, and upgrading
+brew "ansible"
 # Codec library for encoding and decoding AV1 video streams
 brew "aom"
 # Official Amazon AWS command-line interface

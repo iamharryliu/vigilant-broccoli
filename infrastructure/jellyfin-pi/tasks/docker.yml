@@ -1,0 +1,60 @@
+---
+- name: Ensure the apt keyring directory exists
+  ansible.builtin.file:
+    path: '{{ docker_apt_keyring_path | dirname }}'
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Install the Docker apt signing key
+  ansible.builtin.get_url:
+    url: '{{ docker_apt_key_url }}'
+    dest: '{{ docker_apt_keyring_path }}'
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Read the dpkg architecture
+  ansible.builtin.command: dpkg --print-architecture
+  register: dpkg_architecture
+  changed_when: false
+  check_mode: false
+
+# Raspberry Pi OS reports ID=debian in /etc/os-release, so Docker's Debian
+# repo is the right one — there is no Raspberry Pi OS channel.
+- name: Add the Docker apt repository
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [arch={{ dpkg_architecture.stdout }} signed-by={{ docker_apt_keyring_path }}]
+      {{ docker_apt_repo_url }} {{ ansible_facts.distribution_release }} stable
+    filename: docker
+    state: present
+
+- name: Install Docker Engine and the Compose plugin
+  ansible.builtin.apt:
+    name: '{{ docker_packages }}'
+    state: present
+    update_cache: true
+
+- name: Cap container log growth
+  ansible.builtin.template:
+    src: docker-daemon.json.j2
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart docker
+
+- name: Enable Docker at boot
+  ansible.builtin.service:
+    name: docker
+    enabled: true
+    state: started
+
+# So `pnpm jellyfin:logs` and friends work without sudo.
+- name: Let the operator account drive Docker
+  ansible.builtin.user:
+    name: '{{ ansible_user }}'
+    groups: docker
+    append: true

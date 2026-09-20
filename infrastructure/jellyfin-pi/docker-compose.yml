@@ -1,0 +1,36 @@
+name: jellyfin
+
+# Deployed to the Pi at /opt/jellyfin/docker-compose.yml by the Ansible
+# playbook, which renders the .env beside it. Started and stopped through
+# jellyfin-compose.service, not by hand, so the media mount is always ordered
+# before the container.
+services:
+  jellyfin:
+    container_name: jellyfin
+    image: jellyfin/jellyfin:10.10.7
+    # Host networking is what Jellyfin's own docs recommend: DLNA and the
+    # client auto-discovery broadcasts do not survive a bridge NAT, and it puts
+    # the server on the Pi's LAN and tailnet addresses with no port juggling.
+    network_mode: host
+    user: '${JELLYFIN_UID}:${JELLYFIN_GID}'
+    volumes:
+      - type: bind
+        source: ${JELLYFIN_CONFIG_DIR}
+        target: /config
+      - type: bind
+        source: ${JELLYFIN_CACHE_DIR}
+        target: /cache
+      - type: bind
+        source: ${JELLYFIN_MEDIA_DIR}
+        target: /media
+        read_only: true
+        bind:
+          # Without this, an unmounted media drive makes Docker helpfully
+          # create an empty /mnt/media/library on the SD card and Jellyfin
+          # starts with an empty library that looks like data loss. Failing to
+          # start is the better outcome.
+          create_host_path: false
+    environment:
+      JELLYFIN_PublishedServerUrl: ${JELLYFIN_PUBLISHED_SERVER_URL}
+      TZ: ${TZ}
+    restart: unless-stopped

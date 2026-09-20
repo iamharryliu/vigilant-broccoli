@@ -1,0 +1,55 @@
+---
+- name: Set the hostname
+  ansible.builtin.hostname:
+    name: '{{ pi_hostname }}'
+
+- name: Keep /etc/hosts in step with the hostname
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.1\.1\s'
+    line: "127.0.1.1\t{{ pi_hostname }}"
+    state: present
+
+- name: Read the current timezone
+  ansible.builtin.command: timedatectl show --property=Timezone --value
+  register: pi_current_timezone
+  changed_when: false
+  # Read-only, so let it run under --check too — otherwise the next task has no
+  # stdout to compare against and a dry run errors out.
+  check_mode: false
+
+# timedatectl rather than community.general.timezone so the playbook needs
+# only the one collection in requirements.yml.
+- name: Set the timezone
+  ansible.builtin.command: timedatectl set-timezone {{ pi_timezone }}
+  when: pi_current_timezone.stdout != pi_timezone
+  changed_when: true
+
+- name: Install base packages
+  ansible.builtin.apt:
+    name: '{{ pi_base_packages }}'
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Enable unattended security upgrades
+  ansible.builtin.template:
+    src: 20auto-upgrades.j2
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Restrict unattended upgrades to security origins
+  ansible.builtin.template:
+    src: 52unattended-upgrades-local.j2
+    dest: /etc/apt/apt.conf.d/52unattended-upgrades-local
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable the unattended-upgrades timer
+  ansible.builtin.service:
+    name: unattended-upgrades
+    enabled: true
+    state: started
