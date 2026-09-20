@@ -3,9 +3,23 @@
 import { Text } from './Text';
 import { useEffect, useState } from 'react';
 
+const WORKFLOWS_PER_PAGE = 100;
+const FIRST_PAGE = 1;
+
+type Workflow = {
+  name: string;
+  html_url: string;
+  badge_url: string;
+};
+
+type WorkflowsPage = {
+  total_count?: number;
+  workflows?: Workflow[];
+};
+
 type Badge = {
   alt: string;
-  href: string;
+  href: string | null;
   src: string;
 };
 
@@ -40,16 +54,36 @@ function mapRepoUrlToWorkflowsApi(url: string): string {
   return `https://api.github.com/repos/${owner}/${repo}/actions/workflows`;
 }
 
+async function getWorkflowsPage(
+  apiUrl: string,
+  page: number,
+): Promise<WorkflowsPage> {
+  const res = await fetch(
+    `${apiUrl}?per_page=${WORKFLOWS_PER_PAGE}&page=${page}`,
+  );
+  return res.json();
+}
+
 async function getBadges(repoUrl: string): Promise<Badge[]> {
-  const res = await fetch(mapRepoUrlToWorkflowsApi(repoUrl));
-  const data = await res.json();
-  return data.workflows
-    .map((wf: any) => ({
+  const apiUrl = mapRepoUrlToWorkflowsApi(repoUrl);
+  const firstPage = await getWorkflowsPage(apiUrl, FIRST_PAGE);
+  const remainingPageCount = Math.max(
+    Math.ceil((firstPage.total_count ?? 0) / WORKFLOWS_PER_PAGE) - 1,
+    0,
+  );
+  const remainingPages = await Promise.all(
+    Array.from({ length: remainingPageCount }, (_, i) =>
+      getWorkflowsPage(apiUrl, FIRST_PAGE + i + 1),
+    ),
+  );
+  return [firstPage, ...remainingPages]
+    .flatMap(data => data.workflows ?? [])
+    .map(wf => ({
       alt: wf.name,
       href: toActionsWorkflowUrl(wf.html_url),
       src: wf.badge_url,
     }))
-    .sort((a: Badge, b: Badge) => a.alt.localeCompare(b.alt));
+    .sort((a, b) => a.alt.localeCompare(b.alt));
 }
 
 export const GithubActionsBadges = ({
