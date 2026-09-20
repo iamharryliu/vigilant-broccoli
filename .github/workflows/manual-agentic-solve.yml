@@ -33,16 +33,35 @@ on:
           - 'on'
           - 'off'
 
-concurrency:
-  group: manual-agentic-solve-${{ inputs.ids || inputs.prompt }}
-  cancel-in-progress: true
-
 permissions:
   contents: read
   id-token: write
 
 jobs:
+  # GitHub rejects a run whose concurrency group exceeds 400 characters, and a
+  # free-text prompt blows past that on its own, so the group is keyed on a hash
+  # of the inputs instead. Hashing needs a step, and only job-level concurrency
+  # can read `needs`, hence the split.
+  key:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      group: ${{ steps.hash.outputs.group }}
+    steps:
+      - name: Hash dispatch inputs
+        id: hash
+        env:
+          IDS: ${{ inputs.ids }}
+          PROMPT: ${{ inputs.prompt }}
+        run: |
+          set -euo pipefail
+          echo "group=$(printf '%s' "${IDS:-$PROMPT}" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+
   solve:
+    needs: key
+    concurrency:
+      group: manual-agentic-solve-${{ needs.key.outputs.group }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:

@@ -1,10 +1,12 @@
 import { NextRequest } from 'next/server';
-import { createServerClient } from '../../../../../libs/supabase-server';
+import {
+  createServerClient,
+  getBearerToken,
+} from '../../../../../libs/supabase-server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
 export async function GET(request: NextRequest) {
-  const accessToken =
-    request.headers.get('authorization')?.replace('Bearer ', '') ?? '';
+  const accessToken = getBearerToken(request);
   const supabase = createServerClient(accessToken);
 
   const {

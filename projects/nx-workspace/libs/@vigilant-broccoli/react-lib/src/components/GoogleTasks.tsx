@@ -1,6 +1,6 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
-import { Card } from '@radix-ui/themes';
+import { Card } from './Card';
 import { Button } from './Button';
 import { Checkbox } from './Checkbox';
 import { CollapsibleList } from './CollapsibleList';

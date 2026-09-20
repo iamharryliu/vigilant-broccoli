@@ -1,7 +1,6 @@
 'use client';
 
-import { Card } from '@radix-ui/themes';
-import { Select, Heading, Text } from '@vigilant-broccoli/react-lib';
+import { Card, Select, Heading, Text } from '@vigilant-broccoli/react-lib';
 import { LOCALES, useI18n, useTranslation } from '../../i18n';
 import { usePageTitle } from '../../use-page-title';
 

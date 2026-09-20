@@ -4,7 +4,8 @@ import { ChatDemo } from '../demos/ChatDemo';
 import { NotificationsDemo } from '../demos/NotificationsDemo';
 import { StorageDemo } from '../demos/StorageDemo';
 import { StripeDemo } from '../demos/StripeDemo';
-import { MessagingPage } from './MessagingPage';
+import { TextMessageForm } from './TextMessageForm';
+import { EmailMessageForm } from '../EmailMessageForm';
 import { SpeechToText } from '../llm/SpeechToText';
 import { VoiceListGenerator } from '../llm/VoiceListGenerator';
 import { TextToSpeechVoices } from '../llm/TextToSpeechVoices';
@@ -80,9 +81,14 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
     content: <StripeDemo />,
   },
   {
-    id: 'messaging',
-    title: 'Messaging Demo',
-    content: <MessagingPage />,
+    id: 'send-email-message',
+    title: 'Send Email Message',
+    content: <EmailMessageForm />,
+  },
+  {
+    id: 'send-text-message',
+    title: 'Send Text Message',
+    content: <TextMessageForm />,
   },
   {
     id: 'chat',

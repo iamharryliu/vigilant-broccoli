@@ -1,5 +1,7 @@
 export * from './lib/node-environment/node-environment.consts';
 export * from './lib/http/http.consts';
+export * from './lib/honeypot/honeypot.consts';
+export * from './lib/honeypot/honeypot.utils';
 export * from './lib/location/location.model';
 export * from './lib/services/services.consts';
 export * from './lib/socket/socket.consts';
@@ -55,6 +57,7 @@ export * from './lib/utils/env.utils';
 export * from './lib/utils/string.utils';
 export * from './lib/utils/date.utils';
 export * from './lib/utils/solar.utils';
+export * from './lib/utils/lunar.utils';
 
 // Weather
 export * from './lib/weather/weather.model';

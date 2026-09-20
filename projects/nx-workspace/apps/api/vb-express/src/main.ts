@@ -25,6 +25,7 @@ import {
   createApiKeyPlugin,
   createCorsOptions,
   createDocsPlugin,
+  honeypotPlugin,
   pingPlugin,
   recaptchaPlugin,
   requestLoggerPlugin,
@@ -83,6 +84,7 @@ const buildApp = async () => {
   await app.register(authRoutes);
   await app.register(
     async scope => {
+      await scope.register(honeypotPlugin);
       await scope.register(recaptchaPlugin);
       await scope.register(contactRoutes);
     },

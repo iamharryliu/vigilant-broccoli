@@ -12,7 +12,7 @@ import { VisuallyHidden } from '@vigilant-broccoli/react-lib';
 import { CalendarInput } from './calendar-input';
 import {
   buildAuthHeaders,
-  signOutDueToExpiredToken,
+  reconnectGoogle,
 } from '../providers/auth-provider';
 
 const BIRTHDAYS_CALENDAR =
@@ -215,7 +215,7 @@ export const MyCalendarView = () => {
       const headers = await buildAuthHeaders({ includeGoogleToken: true });
       const res = await fetch(eventsApiUrl(), { headers });
       if (res.status === 401) {
-        await signOutDueToExpiredToken();
+        await reconnectGoogle();
         return null;
       }
       if (!res.ok) throw res;

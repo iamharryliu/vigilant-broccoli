@@ -1,24 +1,25 @@
-# Board Games
+# Jaipur
 
-# Root
+## Table of Contents
 
-- [How to Play Root](https://www.youtube.com/watch?v=G08TDwBbV7o)
-- [Root in about 3 minutes](https://www.youtube.com/watch?v=U9zFqRQ11qI)
+- [Goal](#goal)
+- [Setup](#setup)
+- [Goods](#goods)
+- [On Your Turn](#on-your-turn)
+  - [1. Take Goods](#1-take-goods)
+  - [2. Take All Camels](#2-take-all-camels)
+  - [3. Trade](#3-trade)
+  - [4. Sell Goods](#4-sell-goods)
+- [Round End](#round-end)
+- [Scoring](#scoring)
+- [Winning The Game](#winning-the-game)
+- [Quick Tips](#quick-tips)
 
-## Nimmt 6
-
-- Players simultaneously play one card face down, then reveal
-- Cards are added to the four rows in ascending order
-- If a card can't fit in any row (higher than all row ends), player takes a row and its cards count as penalty points
-- After 10 rounds, fewest penalty points wins
-
-## Jaipur
-
-### Goal
+## Goal
 
 Earn more points than your opponent by trading goods efficiently across 2 rounds. Win a round by having the most points when 3 good token stacks are empty or the deck runs out.
 
-### Setup
+## Setup
 
 - 2 players
 - Shuffle all cards together.
@@ -30,13 +31,13 @@ Earn more points than your opponent by trading goods efficiently across 2 rounds
 - Sort goods tokens by type in descending value.
 - Place bonus tokens for selling 3, 4, and 5 goods separately.
 
-### Goods
+## Goods
 
 - Expensive goods: diamond, gold, silver
 - Cheap goods: cloth, spice, leather
 - Camels are not sold; they help with trading and can score a herd bonus.
 
-### On Your Turn
+## On Your Turn
 
 Do exactly 1 action:
 
@@ -81,25 +82,25 @@ Bonus tokens:
 - Sell 4 cards: take 1 random 4-card bonus token.
 - Sell 5 or more cards: take 1 random 5-card bonus token.
 
-### Round End
+## Round End
 
 The round ends immediately if either happens:
 
 - 3 types of goods tokens are empty
 - The draw deck is empty and the market cannot be refilled
 
-### Scoring
+## Scoring
 
 - Add points from all goods tokens collected.
 - Add points from bonus tokens.
 - The player with more camels in their herd gets the camel bonus token.
 - Higher total wins the round and takes a Seal of Excellence.
 
-### Winning The Game
+## Winning The Game
 
 - The game ends when 1 player has 2 Seals of Excellence.
 
-### Quick Tips
+## Quick Tips
 
 - Taking camels can set up bigger trades later.
 - Selling cheap goods early can deny your opponent tempo.

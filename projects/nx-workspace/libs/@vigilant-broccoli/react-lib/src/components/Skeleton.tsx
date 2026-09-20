@@ -1,4 +1,4 @@
-import { Card } from '@radix-ui/themes';
+import { Card } from './Card';
 import { Text } from './Text';
 
 export const Skeleton = ({ className = '' }: { className?: string }) => (

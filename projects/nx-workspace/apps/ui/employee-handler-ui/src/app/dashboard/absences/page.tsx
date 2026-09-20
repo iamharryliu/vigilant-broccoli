@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
-import { Card } from '@radix-ui/themes';
-import { Text, useTheme } from '@vigilant-broccoli/react-lib';
+import { Card, Text, useTheme } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import type { EmployeeAbsence } from '@vigilant-broccoli/employee-handler';
 import { authFetchOk } from '../../../lib/api-helpers';

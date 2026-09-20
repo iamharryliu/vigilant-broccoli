@@ -1,11 +1,11 @@
 'use client';
-import { Card } from '@radix-ui/themes';
 import { RefreshCw } from 'lucide-react';
 import {
   Badge,
   Button,
   Callout,
   CalloutText,
+  Card,
   CopyButton,
   CRUDFormProps,
   CRUDItemList,

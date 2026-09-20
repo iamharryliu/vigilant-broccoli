@@ -2,6 +2,29 @@
 
 - Never commit or push unless explicitly instructed to.
 
+## Conventions
+
+`/ship-pr` and `/sync-main` implement these; change the rule here first, then the command.
+
+- **Staging**: stage only the files created or edited in the current session — never `git add -A` or `git add .`, and never files that were already modified or untracked before the session began, even if they look related.
+- **Branch names**: `<committype>/<short-kebab-case-description>` (e.g. `fix/rabbitmq-secret-rotation`, `feat/hearth-food-planner-page`), cut from a freshly fetched `main`.
+- **Commit types**: `feat`, `fix`, `ci`, `chore`, `docs`, `refactor`, `enhancement`, `security`, `infrastructure` — match existing usage in `git log`; don't invent a new type unless nothing fits.
+- **Commit messages**: `<committype>(<scope>): <Message>.` — scope is the affected app/service/lib (e.g. `hearth`, `github-actions`, `vb-manager-next`) and is omitted when the change isn't scoped to one; the message is capitalized, concise, focused on why not what, and ends with a period. Agent-authored commits end with the `Co-Authored-By:` trailer the environment specifies for the authoring model — never a hardcoded model name.
+- **PR body**: a `## Summary` section (bullets) and a `## Test plan` section (checklist), ending with the Claude Code footer. If the branch already has an open PR, push to it rather than opening a second.
+- **Safety**: never force-push, never skip hooks, never amend existing commits.
+- **Shared worktree**: more than one Claude session can be attached to this checkout — check for peers before touching shared git state. See [Concurrent Claude Sessions](#concurrent-claude-sessions).
+
+## Concurrent Claude Sessions
+
+Several Claude Code sessions can be attached to this one working tree at the same time (separate tmux panes on the same checkout). The index, `HEAD`, and the stash are **shared** between them, so a routine `/ship-pr` can sweep up — or throw away — another session's in-flight work.
+
+- **Check before touching shared git state.** Run `ListAgents` before branching, staging, committing, stashing, or switching branches. Peer sessions on this machine are listed by name, and that name is the address for `SendMessage`.
+- **Announce, then get the ack.** Tell each peer what you are about to do and which paths you own, and ask it to hold git operations and file writes until you say otherwise. `notify_when_idle: true` subscribes you to a one-shot notice when it next goes quiet. Message it again once the push lands so it can resume.
+- **The index is shared, so commit by pathspec.** A peer's `git add`/`git mv` is already staged in the same index, and a bare `git commit` takes it along. Use `git commit -m "<message>" -- <your paths>` — the pathspec after `--` commits those files from the working tree and leaves every other index entry untouched. This is the one case where not staging first is the correct move.
+- **Never stash in a shared tree.** `git stash push -u` takes everyone's uncommitted work with it, and `/sync-main` step 3 does exactly that whenever the tree is dirty. On a shared checkout, commit your own paths first and sync a clean branch instead.
+- **A branch switch is global.** `git checkout -b` moves `HEAD` for every session on the tree. Uncommitted changes carry across and survive, but return to the original branch when you are done (`/ship-pr` step 9) so peers find the tree where they left it.
+- **Genuinely parallel work belongs in its own worktree.** `git worktree add` gives a session its own index and `HEAD`, and none of the above applies.
+
 ## Staying Current With `main`
 
 Branches here are short-lived and PRs land as **squash merges**, so the cheapest way to avoid conflicts is to close the gap with `main` early and often rather than at review time.

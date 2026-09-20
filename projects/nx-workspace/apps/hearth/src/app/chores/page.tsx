@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, Table, Dialog } from '@radix-ui/themes';
+import { Table, Dialog } from '@radix-ui/themes';
 import {
   Badge,
   Button,
+  Card,
   Checkbox,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Input,
@@ -377,7 +378,7 @@ export default function ChoresPage() {
                 {Object.entries(grouped).map(([choreId, choreTodos]) => {
                   const first = choreTodos[0];
                   return (
-                    <Card key={choreId} variant="surface">
+                    <Card key={choreId}>
                       <div className="flex justify-between items-center gap-4">
                         <div className="flex gap-2 items-center grow">
                           <Text size="3" weight="medium">
