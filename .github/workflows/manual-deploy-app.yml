@@ -90,9 +90,11 @@ jobs:
           VAULT_ADDR: https://vault.harryliu.dev
           CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
+          DEPLOY_ENVIRONMENT: ${{ github.event.inputs.environment }}
+          DEPLOY_PROJECT: ${{ github.event.inputs.project }}
         run: |
           DEPLOY_TARGET="deploy"
-          if [[ "${{ github.event.inputs.environment }}" == "production" ]]; then
+          if [[ "$DEPLOY_ENVIRONMENT" == "production" ]]; then
             DEPLOY_TARGET="deploy:production"
           fi
-          pnpm exec nx run-many -t $DEPLOY_TARGET --projects="${{ github.event.inputs.project }}"
+          pnpm exec nx run-many -t "$DEPLOY_TARGET" --projects="$DEPLOY_PROJECT"
