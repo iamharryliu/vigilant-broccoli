@@ -2,6 +2,17 @@
 
 - Never commit or push unless explicitly instructed to.
 
+## Conventions
+
+`/ship-pr` and `/sync-main` implement these; change the rule here first, then the command.
+
+- **Staging**: stage only the files created or edited in the current session — never `git add -A` or `git add .`, and never files that were already modified or untracked before the session began, even if they look related.
+- **Branch names**: `<committype>/<short-kebab-case-description>` (e.g. `fix/rabbitmq-secret-rotation`, `feat/hearth-food-planner-page`), cut from a freshly fetched `main`.
+- **Commit types**: `feat`, `fix`, `ci`, `chore`, `docs`, `refactor`, `enhancement`, `security`, `infrastructure` — match existing usage in `git log`; don't invent a new type unless nothing fits.
+- **Commit messages**: `<committype>(<scope>): <Message>.` — scope is the affected app/service/lib (e.g. `hearth`, `github-actions`, `vb-manager-next`) and is omitted when the change isn't scoped to one; the message is capitalized, concise, focused on why not what, and ends with a period. Agent-authored commits end with the `Co-Authored-By:` trailer the environment specifies for the authoring model — never a hardcoded model name.
+- **PR body**: a `## Summary` section (bullets) and a `## Test plan` section (checklist), ending with the Claude Code footer. If the branch already has an open PR, push to it rather than opening a second.
+- **Safety**: never force-push, never skip hooks, never amend existing commits.
+
 ## Staying Current With `main`
 
 Branches here are short-lived and PRs land as **squash merges**, so the cheapest way to avoid conflicts is to close the gap with `main` early and often rather than at review time.

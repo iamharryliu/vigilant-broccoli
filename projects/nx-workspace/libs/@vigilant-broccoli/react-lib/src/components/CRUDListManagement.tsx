@@ -6,7 +6,8 @@ import {
   SetStateAction,
   useState,
 } from 'react';
-import { AlertDialog, Card, Dialog, DropdownMenu } from '@radix-ui/themes';
+import { AlertDialog, Dialog, DropdownMenu } from '@radix-ui/themes';
+import { Card } from './Card';
 import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 import { Button } from './Button';
 import { Heading } from './Heading';

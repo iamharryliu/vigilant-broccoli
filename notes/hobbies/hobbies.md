@@ -2,7 +2,7 @@
 
 - [Aquarium](./aquarium/aquarium.md)
 - [Bird Watching](./bird-watching.md)
-- [Board Games](./board-games.md)
+- [Board Games](./board-games/board-games.md)
 - [Chess](./chess/chess.md)
 - [Content Creation Workflow](./content-creation-workflow.md)
 - [Cooking](./cooking/cooking.md)

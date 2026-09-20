@@ -51,9 +51,10 @@ jobs:
           chmod 600 ~/.oci/config ~/.oci/oci_api_key.pem
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4
+        uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
-          terraform_wrapper: false
+          version: 2026.9.10
+          install_args: terraform
 
       - name: Replace code-server VM
         run: |

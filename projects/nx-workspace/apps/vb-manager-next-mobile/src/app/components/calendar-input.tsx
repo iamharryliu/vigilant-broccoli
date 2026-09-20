@@ -10,7 +10,7 @@ import {
 } from './event-draft-card';
 import {
   buildAuthHeaders,
-  signOutDueToExpiredToken,
+  reconnectGoogle,
 } from '../providers/auth-provider';
 import { useVoiceInput } from '../hooks/use-voice-input';
 
@@ -115,7 +115,7 @@ export const CalendarInput = () => {
 
     if (!res.ok) {
       if (res.status === 401) {
-        await signOutDueToExpiredToken();
+        await reconnectGoogle();
         return;
       }
       setEventStates(prev =>

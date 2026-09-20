@@ -11,11 +11,11 @@ import { PomodoroDialog } from './pomodoro-dialog.component';
 import { UtilitiesDialog } from './utilities-dialog.component';
 import {
   AlarmEngine,
+  ClockComponent,
   PomodoroEngine,
   TimerEngine,
 } from '@vigilant-broccoli/react-utility';
 import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
-import { ClockComponent } from './clock.component';
 import { useDrag } from '../hooks/useDrag';
 import { useWeather } from '../hooks/useWeather';
 import { Skeleton } from '@vigilant-broccoli/react-lib';

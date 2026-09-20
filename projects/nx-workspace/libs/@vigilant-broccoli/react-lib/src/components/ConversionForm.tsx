@@ -1,4 +1,4 @@
-import { Card } from '@radix-ui/themes';
+import { Card } from './Card';
 import { Heading } from './Heading';
 import { useCallback, useState } from 'react';
 import { CopyPastable } from './CopyPastable';

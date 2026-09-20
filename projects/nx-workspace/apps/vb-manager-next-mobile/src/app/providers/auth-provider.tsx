@@ -26,7 +26,9 @@ const AuthContext = createContext<Session | null>(null);
 
 export const useAuth = () => useContext(AuthContext);
 
-export const getGoogleToken = () => sessionStorage.getItem(GOOGLE_TOKEN_KEY);
+export const getGoogleToken = () => localStorage.getItem(GOOGLE_TOKEN_KEY);
+
+export const clearGoogleToken = () => localStorage.removeItem(GOOGLE_TOKEN_KEY);
 
 export const getSupabaseAccessToken = async () => {
   const { data } = await supabase.auth.getSession();
@@ -51,11 +53,9 @@ export const buildAuthHeaders = async (options?: {
 };
 
 export const signOut = async () => {
-  sessionStorage.removeItem(GOOGLE_TOKEN_KEY);
+  clearGoogleToken();
   await supabase.auth.signOut();
 };
-
-export const signOutDueToExpiredToken = signOut;
 
 export const signInWithGoogle = async () => {
   await supabase.auth.signInWithOAuth({
@@ -65,6 +65,11 @@ export const signInWithGoogle = async () => {
       scopes: GOOGLE_CALENDAR_TASKS_SCOPES,
     },
   });
+};
+
+export const reconnectGoogle = async () => {
+  clearGoogleToken();
+  await signInWithGoogle();
 };
 
 export const authFetch = async (
@@ -94,12 +99,12 @@ export const useGoogleToken = () => {
     setGoogleToken(getGoogleToken());
   }, []);
 
-  const clearGoogleToken = useCallback(() => {
-    sessionStorage.removeItem(GOOGLE_TOKEN_KEY);
+  const clear = useCallback(() => {
+    clearGoogleToken();
     setGoogleToken(null);
   }, []);
 
-  return { googleToken, clearGoogleToken };
+  return { googleToken, clearGoogleToken: clear };
 };
 
 export default function AuthProvider({
@@ -112,7 +117,7 @@ export default function AuthProvider({
   useEffect(() => {
     const applySession = (next: Session | null) => {
       if (next && !isAllowedEmail(next.user.email)) {
-        sessionStorage.removeItem(GOOGLE_TOKEN_KEY);
+        clearGoogleToken();
         supabase.auth.signOut();
         setSession(null);
         return;
@@ -126,7 +131,7 @@ export default function AuthProvider({
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.provider_token) {
-        sessionStorage.setItem(GOOGLE_TOKEN_KEY, session.provider_token);
+        localStorage.setItem(GOOGLE_TOKEN_KEY, session.provider_token);
       }
       applySession(session);
     });

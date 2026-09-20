@@ -1,3 +1,4 @@
+import { HONEYPOT_FIELD_NAME } from '@vigilant-broccoli/common-js';
 import { createSwaggerSpec } from '@vigilant-broccoli/fastify';
 
 const SERVICE_TITLE = 'vb-express';
@@ -93,7 +94,7 @@ export const swaggerSpec = createSwaggerSpec({
     },
     '/contact/send-message': {
       post: {
-        summary: 'Contact form (recaptcha-protected, no API key)',
+        summary: 'Contact form (honeypot + recaptcha protected, no API key)',
         security: [],
         requestBody: jsonBody({
           type: 'object',
@@ -104,11 +105,15 @@ export const swaggerSpec = createSwaggerSpec({
             message: { type: 'string' },
             appName: { type: 'string' },
             recaptchaToken: { type: 'string' },
+            [HONEYPOT_FIELD_NAME]: {
+              type: 'string',
+              description: 'Honeypot spam trap; must be omitted or empty',
+            },
           },
         }),
         responses: {
           '200': { description: 'Emails queued' },
-          '403': { description: 'Recaptcha rejected' },
+          '403': { description: 'Honeypot triggered or recaptcha rejected' },
           '500': { description: 'Email service failure' },
         },
       },

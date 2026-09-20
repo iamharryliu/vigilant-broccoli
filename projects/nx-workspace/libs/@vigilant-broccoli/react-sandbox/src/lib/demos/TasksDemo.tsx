@@ -315,9 +315,6 @@ const CONTROL_LABEL = {
   RESET: 'Reset mock data',
 } as const;
 
-const SANDBOX_HINT =
-  'Runs the shared tasks component against an in-memory tasks API with simulated latency. Voice input calls the mocked transcription and parse endpoints.';
-
 export const TasksDemo = () => {
   const [scenario, setScenario] = useState<Scenario>(SCENARIO.SIGNED_IN);
   const [showSelector, setShowSelector] = useState(true);
@@ -383,9 +380,6 @@ export const TasksDemo = () => {
 
   return (
     <div className="space-y-6">
-      <Text size="2" color="gray">
-        {SANDBOX_HINT}
-      </Text>
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex items-center gap-2">
           <Text size="2">{CONTROL_LABEL.SCENARIO}</Text>

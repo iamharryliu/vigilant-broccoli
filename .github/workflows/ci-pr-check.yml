@@ -123,9 +123,10 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:
-          python-version: '3.13'
+          version: 2026.9.10
+          install_args: python
 
       # pre-commit/action@v3.0.1 (its latest release) pins actions/cache@v4 by
       # a mutable tag, which resolves to a Node 20 action and triggers the
@@ -138,7 +139,7 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/pre-commit
-          key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+          key: pre-commit-3|${{ hashFiles('mise.toml') }}|${{ hashFiles('.pre-commit-config.yaml') }}
 
       # nvim-tmux-config-smoketest (see .pre-commit-config.yaml) needs a real nvim binary;
       # tmux is already preinstalled on this image.
