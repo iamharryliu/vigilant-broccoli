@@ -181,7 +181,6 @@ export default function Layout({ children }: { children: ReactNode }) {
           <div className="print:hidden">
             <RightSidebar
               setChatbotDialogOpen={setChatbotDialogOpen}
-              setCalendarDialogOpen={setCalendarDialogOpen}
               setPomodoroDialogOpen={setPomodoroDialogOpen}
               setSearchDialogOpen={setSearchDialogOpen}
               notificationsOpen={notificationsOpen}

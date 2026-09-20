@@ -6,7 +6,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   MessageCircle,
   Search,
-  Calendar,
   Timer,
   LogOut,
   LogIn,
@@ -65,7 +64,6 @@ const BellIconWithBadge = ({ unreadCount }: { unreadCount: number }) => (
 
 type Props = {
   setChatbotDialogOpen: (open: boolean) => void;
-  setCalendarDialogOpen: (open: boolean) => void;
   setPomodoroDialogOpen: (open: boolean) => void;
   setSearchDialogOpen: (open: boolean) => void;
   notificationsOpen: boolean;
@@ -77,7 +75,6 @@ type Props = {
 
 export const RightSidebar = ({
   setChatbotDialogOpen,
-  setCalendarDialogOpen,
   setPomodoroDialogOpen,
   setSearchDialogOpen,
   notificationsOpen,
@@ -111,12 +108,6 @@ export const RightSidebar = ({
       icon: MessageCircle,
       title: 'Jarvis (C)',
       onClick: () => setChatbotDialogOpen(true),
-    },
-    {
-      label: 'Calendar',
-      icon: Calendar,
-      title: 'Calendar (Shift+C)',
-      onClick: () => setCalendarDialogOpen(true),
     },
     {
       label: 'Pomodoro',
