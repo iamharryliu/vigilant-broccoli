@@ -5,7 +5,6 @@ import { signInWithGoogle, signOut, useAuth } from '../../../libs/auth';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   MessageCircle,
-  Mail,
   Search,
   Calendar,
   Timer,
@@ -66,7 +65,6 @@ const BellIconWithBadge = ({ unreadCount }: { unreadCount: number }) => (
 
 type Props = {
   setChatbotDialogOpen: (open: boolean) => void;
-  setEmailDialogOpen: (open: boolean) => void;
   setCalendarDialogOpen: (open: boolean) => void;
   setPomodoroDialogOpen: (open: boolean) => void;
   setSearchDialogOpen: (open: boolean) => void;
@@ -79,7 +77,6 @@ type Props = {
 
 export const RightSidebar = ({
   setChatbotDialogOpen,
-  setEmailDialogOpen,
   setCalendarDialogOpen,
   setPomodoroDialogOpen,
   setSearchDialogOpen,
@@ -114,12 +111,6 @@ export const RightSidebar = ({
       icon: MessageCircle,
       title: 'Jarvis (C)',
       onClick: () => setChatbotDialogOpen(true),
-    },
-    {
-      label: 'Email',
-      icon: Mail,
-      title: 'Email (M)',
-      onClick: () => setEmailDialogOpen(true),
     },
     {
       label: 'Calendar',
