@@ -6,6 +6,7 @@ source "${SCRIPT_DIR}/../../../config.sh"
 source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
 SOCKET_SERVER_HOST="socket.harryliu.dev"
+SOCKET_SERVER_COMPOSE_FILE="/opt/socket-server/docker-compose.yml"
 
 # CI mode (VAULT_ADDR set by the rotate-secrets workflow): SHARED_APP_TOKEN is
 # read fresh from Vault through the Cloudflare Access tunnel, the VM is reached
@@ -59,26 +60,40 @@ SSH_OPTS="-i $SSH_KEY_FILE -o StrictHostKeyChecking=accept-new -o ConnectTimeout
 
 ssh-keygen -R "$OCI_VM_HOST" >/dev/null 2>&1 || true
 
-echo "Waiting for socket-server VM (${OCI_VM_HOST}) to be ready..."
+# Gate on cloud-init being done, not just on the compose file existing: the file
+# and a running dockerd both predate cloud-init's own `docker compose up -d`, so
+# a weaker probe races it into the same project. See docs/nuance.md.
+CLOUD_INIT_DONE_PATTERN='^status: (done|degraded done)'
+READY_ATTEMPTS=60
+READY_SLEEP_SECONDS=10
+
+echo "Waiting for cloud-init to finish on socket-server VM (${OCI_VM_HOST})..."
 READY=false
-for i in $(seq 1 30); do
-  if ssh $SSH_OPTS "ubuntu@${OCI_VM_HOST}" 'test -f /opt/socket-server/docker-compose.yml && sudo docker info >/dev/null 2>&1' 2>/dev/null; then
+for i in $(seq 1 $READY_ATTEMPTS); do
+  if ssh $SSH_OPTS "ubuntu@${OCI_VM_HOST}" "
+      sudo cloud-init status 2>/dev/null | grep -qE '${CLOUD_INIT_DONE_PATTERN}' \
+        && test -f ${SOCKET_SERVER_COMPOSE_FILE} \
+        && sudo docker info >/dev/null 2>&1" 2>/dev/null; then
     READY=true
     break
   fi
-  sleep 10
+  sleep $READY_SLEEP_SECONDS
 done
 
 if [ "$READY" != true ]; then
-  echo "socket-server VM (${OCI_VM_HOST}) not ready after 5m — last SSH attempt:" >&2
-  ssh $SSH_OPTS "ubuntu@${OCI_VM_HOST}" 'test -f /opt/socket-server/docker-compose.yml && sudo docker info >/dev/null 2>&1' >&2 || true
+  echo "socket-server VM (${OCI_VM_HOST}) not ready after $((READY_ATTEMPTS * READY_SLEEP_SECONDS / 60))m — cloud-init status:" >&2
+  ssh $SSH_OPTS "ubuntu@${OCI_VM_HOST}" "
+    sudo cloud-init status --long 2>&1
+    test -f ${SOCKET_SERVER_COMPOSE_FILE} || echo 'compose file missing'
+    sudo docker info >/dev/null 2>&1 || echo 'docker not ready'" >&2 || true
   exit 1
 fi
 
 echo "Updating SENDER_TOKEN on socket-server VM (${OCI_VM_HOST})..."
 printf '%s' "$SHARED_APP_TOKEN" | ssh $SSH_OPTS "ubuntu@${OCI_VM_HOST}" '
+COMPOSE_FILE='"${SOCKET_SERVER_COMPOSE_FILE}"'
 NEW_TOKEN=$(cat)
-sudo sed -i "s/SENDER_TOKEN: .*/SENDER_TOKEN: $NEW_TOKEN/" /opt/socket-server/docker-compose.yml
-sudo docker compose -f /opt/socket-server/docker-compose.yml up -d
+sudo sed -i "s/SENDER_TOKEN: .*/SENDER_TOKEN: $NEW_TOKEN/" "$COMPOSE_FILE"
+sudo docker compose -f "$COMPOSE_FILE" up -d
 '
 echo "SENDER_TOKEN synced with Vault."
