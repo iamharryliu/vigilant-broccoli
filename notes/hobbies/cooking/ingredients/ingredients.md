@@ -10,6 +10,7 @@
     - [Soy Sauce](./sauce-recipes/soy-sauce.md)
   - **Stocks**
     - [Cooking Stock](./stock-recipes/cooking-stock.md)
+    - [Master Stock](./stock-recipes/master-stock.md)
 - **Dairy**
   - [Cheese](./cheese.md)
   - [Milk](./milk.md)
