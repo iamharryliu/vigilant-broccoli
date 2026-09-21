@@ -34,23 +34,26 @@ if [ -z "$PROMPT" ] && [ ${#IDS[@]} -eq 0 ]; then
   exit 1
 fi
 
-# Pulls the PR_TITLE::/PR_SUMMARY_BEGIN.../PR_SUMMARY_END markers a runner log
-# printed after `gh pr create` and appends them to $2 for the CI email step.
+# Pulls the PR_TITLE::/PR_URL::/PR_SUMMARY_*/PR_DIFF_* markers a runner log
+# printed after `gh pr create` and appends one JSON record per solve to $2,
+# which the CI email step renders into a styled diff. JSON Lines keeps the diff
+# intact — it carries newlines, markdown and HTML metacharacters that no flat
+# text format survives.
 write_pr_details() {
   local log_file=$1 out_file=$2 label=${3:-}
-  local title url summary
+  local title url summary diff
   title=$(grep -m1 '^PR_TITLE::' "$log_file" 2>/dev/null | sed 's/^PR_TITLE:://' || true)
   [ -n "$title" ] || return 0
-  url=$(grep -Eo 'https://github.com/[^ ]+/pull/[0-9]+' "$log_file" | tail -1 || true)
+  url=$(grep -m1 '^PR_URL::' "$log_file" 2>/dev/null | sed 's/^PR_URL:://' || true)
   summary=$(awk '/^PR_SUMMARY_BEGIN$/{f=1;next} /^PR_SUMMARY_END$/{f=0} f' "$log_file")
-  {
-    if [ -n "$label" ]; then echo "### ${label}: ${title}"; else echo "### ${title}"; fi
-    echo
-    echo "$summary"
-    echo
-    [ -n "$url" ] && echo "$url"
-    echo
-  } >> "$out_file"
+  diff=$(awk '/^PR_DIFF_BEGIN$/{f=1;next} /^PR_DIFF_END$/{f=0} f' "$log_file")
+  jq -nc \
+    --arg label "$label" \
+    --arg title "$title" \
+    --arg url "$url" \
+    --arg summary "$summary" \
+    --arg diff "$diff" \
+    '{label: $label, title: $title, url: $url, summary: $summary, diff: $diff}' >> "$out_file"
 }
 
 if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
@@ -104,9 +107,9 @@ if [ -n "$PROMPT" ]; then
     bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/solve-todo-runner.sh" --prompt "$1"' _ "$PROMPT" \
     2>&1 | tee "$LOG_FILE"
   STATUS="${PIPESTATUS[0]}"
-  write_pr_details "$LOG_FILE" "$LOG_DIR/pr-details.md"
-  if [ -n "${GITHUB_OUTPUT:-}" ] && [ -f "$LOG_DIR/pr-details.md" ]; then
-    echo "pr_details_file=$LOG_DIR/pr-details.md" >> "$GITHUB_OUTPUT"
+  write_pr_details "$LOG_FILE" "$LOG_DIR/pr-details.jsonl"
+  if [ -n "${GITHUB_OUTPUT:-}" ] && [ -f "$LOG_DIR/pr-details.jsonl" ]; then
+    echo "pr_details_file=$LOG_DIR/pr-details.jsonl" >> "$GITHUB_OUTPUT"
   fi
   exit "$STATUS"
 fi
@@ -137,10 +140,13 @@ FAILED=0
 for i in "${!PIDS[@]}"; do
   id=${IDS[$i]}
   if wait "${PIDS[$i]}"; then
-    PR_URL=$(grep -Eo 'https://github.com/[^ ]+/pull/[0-9]+' "$LOG_DIR/solve-${id}.log" | tail -1 || true)
+    # Anchored to the marker, not a loose URL match: the log now carries the
+    # branch diff too, and a solve that adds a PR link to a note would otherwise
+    # look like the PR this run opened.
+    PR_URL=$(grep -m1 '^PR_URL::' "$LOG_DIR/solve-${id}.log" 2>/dev/null | sed 's/^PR_URL:://' || true)
     if [ -n "$PR_URL" ]; then
       echo "✓ TODO ${id}: $PR_URL"
-      write_pr_details "$LOG_DIR/solve-${id}.log" "$LOG_DIR/pr-details.md" "$id"
+      write_pr_details "$LOG_DIR/solve-${id}.log" "$LOG_DIR/pr-details.jsonl" "$id"
     else
       FAILED=1
       echo "✗ TODO ${id}: completed without opening a PR (see $LOG_DIR/solve-${id}.log)" >&2
@@ -148,12 +154,12 @@ for i in "${!PIDS[@]}"; do
   else
     FAILED=1
     echo "✗ TODO ${id} failed (see $LOG_DIR/solve-${id}.log)" >&2
-    write_pr_details "$LOG_DIR/solve-${id}.log" "$LOG_DIR/pr-details.md" "$id (salvage)"
+    write_pr_details "$LOG_DIR/solve-${id}.log" "$LOG_DIR/pr-details.jsonl" "$id (salvage)"
   fi
 done
 
-if [ -n "${GITHUB_OUTPUT:-}" ] && [ -f "$LOG_DIR/pr-details.md" ]; then
-  echo "pr_details_file=$LOG_DIR/pr-details.md" >> "$GITHUB_OUTPUT"
+if [ -n "${GITHUB_OUTPUT:-}" ] && [ -f "$LOG_DIR/pr-details.jsonl" ]; then
+  echo "pr_details_file=$LOG_DIR/pr-details.jsonl" >> "$GITHUB_OUTPUT"
 fi
 
 exit $FAILED
