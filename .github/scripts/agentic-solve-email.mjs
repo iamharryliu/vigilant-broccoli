@@ -28,6 +28,10 @@ const SUCCEEDED = 'succeeded';
 const MAX_DIFF_ROWS = 300;
 const MAX_DIFF_HTML_CHARS = 45000;
 const MAX_TEXT_DIFF_CHARS = 8000;
+// A row budget alone doesn't bound the message: a single diff line is
+// arbitrarily long (a minified asset, an SVG, a lockfile — this repo already
+// has 900-character lines), and 300 of those would clip the email on their own.
+const MAX_LINE_CHARS = 400;
 
 const MONO_FONT = 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
 // Single-quoted family names on purpose: these stacks are emitted inside
@@ -193,11 +197,15 @@ const renderRow = row => {
     return `<tr><td class="${cls}" colspan="3" bgcolor="${bg}"><pre style="margin:0">${escapeHtml(row.text)}</pre></td></tr>`;
   }
   const { body, gutter, marker } = ROW_STYLE[row.kind];
+  const text =
+    row.text.length > MAX_LINE_CHARS
+      ? `${row.text.slice(0, MAX_LINE_CHARS)} …`
+      : row.text;
   return (
     `<tr>` +
     `<td class="vb-n" bgcolor="${gutter}">${row.oldLn ?? ''}</td>` +
     `<td class="vb-n" bgcolor="${gutter}">${row.newLn ?? ''}</td>` +
-    `<td class="vb-c" bgcolor="${body}"><pre style="margin:0">${escapeHtml(marker + row.text)}</pre></td>` +
+    `<td class="vb-c" bgcolor="${body}"><pre style="margin:0">${escapeHtml(marker + text)}</pre></td>` +
     `</tr>`
   );
 };
@@ -209,8 +217,22 @@ const renderStat = (additions, deletions) =>
     : `<span class="vb-add" style="color:${COLOR.success};">+${additions}</span> ` +
       `<span class="vb-del" style="color:${COLOR.failure};">&minus;${deletions}</span>`;
 
-const renderFile = (file, rowBudget) => {
-  const rows = file.rows.slice(0, rowBudget);
+const renderFile = (file, budget) => {
+  // Rows are drawn one at a time against the shared budget: checking it only
+  // between files lets a single long file (a minified bundle is one hunk of
+  // very long lines) blow the whole size cap on its own.
+  const rows = [];
+  while (
+    rows.length < file.rows.length &&
+    budget.rows > 0 &&
+    budget.chars > 0
+  ) {
+    const html = renderRow(file.rows[rows.length]);
+    budget.rows -= 1;
+    budget.chars -= html.length;
+    rows.push(html);
+  }
+
   const clipped = file.rows.length - rows.length;
   const clippedNote = clipped
     ? `<tr><td class="vb-c vb-meta" colspan="3" bgcolor="${COLOR.surface}"><pre style="margin:0">… ${clipped} more line${clipped === 1 ? '' : 's'} not shown</pre></td></tr>`
@@ -223,7 +245,7 @@ const renderFile = (file, rowBudget) => {
     `</div>` +
     `<table class="vb-diff" cellpadding="0" cellspacing="0" border="0" width="100%">` +
     `<colgroup><col width="50" style="width:50px;"><col width="50" style="width:50px;"><col></colgroup>` +
-    rows.map(renderRow).join('') +
+    rows.join('') +
     clippedNote +
     `</table>` +
     `</div>`
@@ -255,10 +277,7 @@ const renderDiff = (diff, budget) => {
       omitted += 1;
       continue;
     }
-    const html = renderFile(file, budget.rows);
-    rendered.push(html);
-    budget.chars -= html.length;
-    budget.rows -= Math.min(file.rows.length, budget.rows);
+    rendered.push(renderFile(file, budget));
   }
 
   const omittedNote = omitted
@@ -324,21 +343,16 @@ const renderHtml = entries => {
 };
 
 const renderText = entries => {
+  let remaining = MAX_TEXT_DIFF_CHARS;
   const blocks = entries.map(entry => {
     const heading = entry.label
       ? `${entry.label}: ${entry.title}`
       : entry.title;
     const diff = entry.diff ?? '';
-    const clipped =
-      diff.length > MAX_TEXT_DIFF_CHARS ? '\n… diff truncated …' : '';
-    return [
-      heading,
-      entry.url,
-      '',
-      entry.summary,
-      '',
-      diff.slice(0, MAX_TEXT_DIFF_CHARS) + clipped,
-    ]
+    const shown = diff.slice(0, Math.max(remaining, 0));
+    remaining -= shown.length;
+    const clipped = shown.length < diff.length ? '\n… diff truncated …' : '';
+    return [heading, entry.url, '', entry.summary, '', shown + clipped]
       .filter(Boolean)
       .join('\n');
   });
