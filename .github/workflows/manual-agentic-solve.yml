@@ -43,7 +43,7 @@ jobs:
   # of the inputs instead. Hashing needs a step, and only job-level concurrency
   # can read `needs`, hence the split.
   key:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     outputs:
       group: ${{ steps.hash.outputs.group }}
@@ -62,7 +62,7 @@ jobs:
     concurrency:
       group: manual-agentic-solve-${{ needs.key.outputs.group }}
       cancel-in-progress: true
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
       - name: Checkout
