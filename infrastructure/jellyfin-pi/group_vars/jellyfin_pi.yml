@@ -17,6 +17,11 @@ pi_base_packages:
   - smartmontools
   - unattended-upgrades
   - apt-listchanges
+  # deb822_repository parses and writes .sources files through python3-debian
+  # and refuses to run without it. Installed here, in the base step, because
+  # the Docker and Tailscale repositories are both declared with that module
+  # later in the same run.
+  - python3-debian
 # Security updates only — Docker's and Tailscale's apt repos are deliberately
 # left out of the origins pattern so a media server never reboots into an
 # untested container runtime on its own.
