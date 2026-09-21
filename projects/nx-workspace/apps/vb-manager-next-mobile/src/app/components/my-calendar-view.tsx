@@ -263,7 +263,7 @@ export const MyCalendarView = () => {
       )}
 
       {isMobile === true && (
-        <div className="w-full min-h-0 flex-1 overflow-y-auto rounded-lg border border-gray-200">
+        <div className="w-full rounded-lg border border-gray-200">
           {error && <p className="p-4 text-sm text-red-600">{error}</p>}
           {!error && agendaGroups === null && (
             <p className="p-4 text-sm text-gray-500">{LOADING_MESSAGE}</p>
@@ -275,7 +275,7 @@ export const MyCalendarView = () => {
             agendaGroups !== null &&
             agendaGroups.map(group => (
               <div key={group.key}>
-                <p className="sticky top-0 bg-gray-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">
+                <p className="sticky top-[var(--topbar-h)] z-10 bg-gray-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 md:top-0">
                   {formatDateHeading(group.date)}
                 </p>
                 <ul className="divide-y divide-gray-100">

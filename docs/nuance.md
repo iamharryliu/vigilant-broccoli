@@ -175,3 +175,27 @@ Guard optional activations with `if command -v x; then ... fi` (the form
 on a zero status. The same trap applies to any rc file: a non-zero exit leaks
 into `$?` at the start of every shell and aborts any `set -e` script that
 sources it.
+
+## Sticky headings punch holes in a mobile overlay scrollbar
+
+`vb-manager-next-mobile`'s phone agenda (`src/app/components/my-calendar-view.tsx`)
+used to be its own scroll container (`overflow-y-auto`) with one
+`position: sticky` date heading per day group. On phones the scrollbar is an
+_overlay_ scrollbar — it is painted over the content inside the scroller's own
+box rather than in a reserved gutter. Chromium paints positioned/composited
+descendants of a scroller above that overlay layer, so every sticky heading
+(not just the one currently stuck) erased the slice of the thumb sitting behind
+it. The result looked like the scrollbar itself was dashed: one gap per day
+group, visible only while scrolling, and impossible to explain from the CSS of
+the scrollbar because nothing in the repo styles scrollbars at all.
+
+The fix is structural, not cosmetic: the phone agenda no longer scrolls itself.
+The page grows (`PAGE_HEIGHT_MOBILE_SCROLL` in
+`src/app/components/app-shell.constants.ts`) and the document scrolls, which
+moves the overlay scrollbar out to the viewport edge — outside the card, so no
+sticky heading can overlap it. The headings keep sticking, now against the
+document, which is why their offset is `top-[var(--topbar-h)]` (clearing the
+fixed topbar) instead of `top-0`.
+
+Any other phone surface that combines a nested `overflow-y-auto` with sticky
+section headers will reproduce this. Prefer letting the page scroll.
