@@ -47,7 +47,7 @@ env:
 
 jobs:
   notify-start:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     continue-on-error: true
     timeout-minutes: 5
     steps:
@@ -71,7 +71,7 @@ jobs:
           shared_app_token: ${{ env.SHARED_APP_TOKEN }}
 
   gitleaks:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -85,7 +85,7 @@ jobs:
   deploy-npm-packages:
     needs: gitleaks
     if: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) == 'production' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     outputs:
       has_packages: ${{ steps.check.outputs.has_packages }}
@@ -135,7 +135,7 @@ jobs:
 
   deploy-apps:
     needs: gitleaks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     outputs:
       has_deployments: ${{ steps.check.outputs.has_deployments }}
@@ -250,7 +250,7 @@ jobs:
   deploy-github-pages:
     needs: gitleaks
     if: ${{ github.ref_name == 'main' && !inputs.skip_pages }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     environment:
       name: github-pages
@@ -335,7 +335,7 @@ jobs:
   notify-followers:
     needs: [gitleaks, deploy-npm-packages, deploy-apps, deploy-github-pages]
     if: always()
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
       actions: write
