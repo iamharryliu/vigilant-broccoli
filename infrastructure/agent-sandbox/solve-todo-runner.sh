@@ -80,6 +80,16 @@ git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"
 
+# The sandbox container is --rm'd as soon as the run ends, so the only way the
+# calling script can report the diff is to print it to stdout (tee'd to the run
+# log) between markers. Diff body lines are always prefixed (' ', '+', '-', '\'),
+# so a bare marker can never appear inside the payload.
+emit_pr_diff() {
+  echo 'PR_DIFF_BEGIN'
+  git --no-pager diff --no-color --no-ext-diff "$BASE_SHA" HEAD
+  echo 'PR_DIFF_END'
+}
+
 salvage_on_failure() {
   local exit_code=$?
   trap - EXIT
@@ -129,9 +139,11 @@ BODY
     echo "Salvaged partial work: $PR_URL" >&2
     echo "$PR_URL"
     printf 'PR_TITLE::%s\n' "$SALVAGE_TITLE"
+    printf 'PR_URL::%s\n' "$PR_URL"
     echo 'PR_SUMMARY_BEGIN'
     echo "This agent run did not finish (exited with status ${exit_code}); partial work was pushed as a draft PR."
     echo 'PR_SUMMARY_END'
+    emit_pr_diff
   else
     echo "Pushed salvage branch $BRANCH but failed to open a PR — open one manually." >&2
   fi
@@ -247,6 +259,8 @@ EOF
 PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
 echo "$PR_URL"
 printf 'PR_TITLE::%s\n' "$PR_TITLE"
+printf 'PR_URL::%s\n' "$PR_URL"
 echo 'PR_SUMMARY_BEGIN'
 printf '%s\n' "$PR_SUMMARY"
 echo 'PR_SUMMARY_END'
+emit_pr_diff

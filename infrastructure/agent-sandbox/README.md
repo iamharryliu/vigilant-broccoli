@@ -17,6 +17,9 @@ mints the installation token itself.
 
 - Dispatch: `gh workflow run manual-agentic-solve.yml -f ids="<id> <id>"` (or `-f prompt="<task>"`), with optional
   `-f model=` and `-f firewall=off`.
+- Notification: the workflow emails the outcome with each PR's title, summary, link and full diff, rendered as a
+  GitHub-style patch. `solve-todo-runner.sh` prints the diff between `PR_DIFF_BEGIN`/`PR_DIFF_END` markers, `solve-todo.sh`
+  collects the markers into a JSON Lines file, and `.github/scripts/agentic-solve-email.mjs` renders and sends it.
 
 ## Stack
 
