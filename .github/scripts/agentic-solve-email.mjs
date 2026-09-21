@@ -332,7 +332,10 @@ const renderHtml = entries => {
   const resultColor = RESULT === SUCCEEDED ? COLOR.success : COLOR.failure;
   return (
     STYLESHEET +
-    `<div style="max-width:900px;margin:0 auto;padding:16px;background:#ffffff;">` +
+    // Full width, not a centred max-width column: the mail client's reading
+    // pane is already the column, and capping it there just left dead gutters
+    // down both sides while wrapping diff lines that had room to fit.
+    `<div style="padding:16px;background:#ffffff;">` +
     `<p style="margin:0 0 20px 0;font-family:${SANS_FONT};font-size:15px;color:${COLOR.text};">` +
     `The agentic solve workflow <strong style="color:${resultColor};">${escapeHtml(RESULT)}</strong>.</p>` +
     entries.map(entry => renderEntry(entry, budget)).join('') +
