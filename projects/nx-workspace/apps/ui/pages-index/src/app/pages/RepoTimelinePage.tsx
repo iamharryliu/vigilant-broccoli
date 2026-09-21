@@ -5,6 +5,7 @@ import { useTranslation } from '../i18n';
 import { PageHeader } from '../components/PageHeader';
 import { DotPaths } from '@vigilant-broccoli/react-lib';
 import en from '../i18n/en.json';
+import { FULL_HEIGHT_PAGE_CLASS } from '../consts/layout';
 import {
   DAY_KEY_LENGTH,
   REPO_TIMELINE_URL,
@@ -396,7 +397,7 @@ export function RepoTimelinePage() {
   const viewProps = { buckets, metric, metricLabel, granularity };
 
   return (
-    <main className="mx-auto flex h-[100dvh] max-w-3xl flex-col overflow-hidden px-3 sm:px-6 pt-6 pb-4">
+    <main className={FULL_HEIGHT_PAGE_CLASS}>
       <PageHeader title={t('REPO_TIMELINE_PAGE.TITLE')} />
 
       {error && <p className="text-sm text-red-500">{error}</p>}

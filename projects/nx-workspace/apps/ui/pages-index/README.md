@@ -37,5 +37,6 @@
 
 ## Agent Context
 
+- Page shells share one container width and gutter through `src/app/consts/layout.ts` (`PAGE_CLASS`, `FULL_HEIGHT_PAGE_CLASS`, `WIDE_FULL_HEIGHT_PAGE_CLASS`). A new page uses one of those rather than its own `max-w-*`/`px-*` combination, so the content column does not shift between routes.
 - When adding, removing, or changing a route, card link, or external destination, update the `## Page Navigation` section above so it stays in sync with `src/app/app.tsx`, `src/app/consts/breadcrumbs.ts`, and the home-page cards.
 - When a new kind of agent-context file appears in the repo (a new place `CLAUDE.md` points at, a new skills/commands directory), add it to `claude-context.snapshot.config.json` `sources` and to the matching `paths`/`CLAUDE_CONTEXT_CHANGED` patterns in `.github/workflows/deploy.yml` so the Claude Context page picks it up and redeploys on change.
