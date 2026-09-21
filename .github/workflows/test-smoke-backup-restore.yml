@@ -22,7 +22,7 @@ jobs:
   # file still restores — these jobs restore each dump into a throwaway
   # container and check the data actually arrives.
   verify-backup-freshness:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Authenticate to Google Cloud
@@ -51,7 +51,7 @@ jobs:
           exit $FAIL
 
   verify-repo-backup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - name: Authenticate to Google Cloud
@@ -76,7 +76,7 @@ jobs:
           done
 
   verify-gitea-backup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - name: Authenticate to Google Cloud
@@ -121,7 +121,7 @@ jobs:
           exit $FAIL
 
   verify-mongodb-backup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Authenticate to Google Cloud
@@ -174,7 +174,7 @@ jobs:
         run: docker rm -f mongo-restore-test > /dev/null 2>&1 || true
 
   verify-supabase-backup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Authenticate to Google Cloud

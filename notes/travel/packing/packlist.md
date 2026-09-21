@@ -24,6 +24,7 @@
 - Wallet
 - Keys
 - [Digital Packlist](./digital-packlist.md)
+- [Light EDC](./light-edc.md)
 
 ## Outing
 

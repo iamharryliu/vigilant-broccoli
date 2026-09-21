@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   linux-setup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - name: Checkout
@@ -44,8 +44,12 @@ jobs:
       - name: Verify the rc chain sources cleanly
         run: |
           set -euo pipefail
-          bash -c 'source "$HOME/vigilant-broccoli/setup/dotfiles/bash/.rc.bash"' 2> rc-stderr.log
+          STATUS=0
+          bash -c 'source "$HOME/vigilant-broccoli/setup/dotfiles/bash/.rc.bash"' 2> rc-stderr.log || STATUS=$?
           [ -s rc-stderr.log ] && { echo "sourcing .rc.bash wrote to stderr:"; cat rc-stderr.log; exit 1; }
+          # A non-zero status is a failure of its own: it leaks into $? at the
+          # start of every shell and aborts any `set -e` script that sources it.
+          [ "$STATUS" -eq 0 ] || { echo "sourcing .rc.bash exited $STATUS"; exit 1; }
           rm -f rc-stderr.log
 
       - name: Verify a second run stays idempotent

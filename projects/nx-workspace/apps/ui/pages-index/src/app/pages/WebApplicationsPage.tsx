@@ -3,12 +3,13 @@ import { PageHeader } from '../components/PageHeader';
 import { SectionHeading } from '../components/SectionHeading';
 import { CardLink } from '../components/CardLink';
 import { CardGrid } from '../components/CardGrid';
+import { PAGE_CLASS } from '../consts/layout';
 
 export function WebApplicationsPage() {
   const { t } = useTranslation();
 
   return (
-    <main className="mx-auto max-w-3xl px-4 sm:px-6 pt-6 pb-16">
+    <main className={PAGE_CLASS}>
       <PageHeader title={t('WEB_APPLICATIONS_PAGE.TITLE')} />
 
       <section className="mb-12">

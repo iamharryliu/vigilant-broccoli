@@ -133,12 +133,55 @@ Both are now aligned with `react-lib`: the Google token lives in
 re-requesting consent. Any other hand-rolled copy of this provider (e.g.
 `employee-handler-ui`) still needs the same treatment.
 
+## A double-quoted font family silently kills the whole `style="..."` attribute
+
+`.github/scripts/agentic-solve-email.mjs` builds email HTML by string
+concatenation, and the sans stack was written the way every CSS snippet on the
+web writes it:
+
+```js
+const SANS_FONT =
+  '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif';
+```
+
+Interpolated into `style="font-family:${SANS_FONT};..."`, the `"` before
+`Segoe` closes the attribute. Everything after it — the font size, the colours,
+the margins — becomes stray attributes the parser discards, so the element
+renders with browser defaults. The symptom is bizarre: headings and body text
+come out in a serif face while the class-styled parts of the same document look
+fine, and nothing in the CSS is wrong. There is no error anywhere; the HTML is
+still well-formed enough to parse.
+
+Any family name needing quotes (`'Segoe UI'`, `'SF Mono'`, `'Helvetica Neue'`)
+must use single quotes when the stack can land inside a double-quoted HTML
+attribute. Single quotes are equally valid CSS, so the same constant stays
+usable in a `<style>` block.
+
+## A trailing `cmd && ...` in an rc file makes sourcing it return non-zero
+
+`.rc.bash` ended with `command -v mise >/dev/null && eval "$(mise activate
+bash)"`. On a machine without mise (every Linux box — mise is only in the mac
+`Brewfile`) the `command -v` fails, so the last statement of the file returns
+1, and therefore so does `source .rc.bash`. Nothing is printed; the file did
+exactly what it was told.
+
+That broke `test-smoke-machine-setup`'s "Verify the rc chain sources cleanly"
+step, whose whole point is to source the file under `set -e`. The failure was
+opaque: because stderr was redirected to a log the step only inspects _after_
+the source, `set -e` aborted first and the step failed with no output at all.
+
+Guard optional activations with `if command -v x; then ... fi` (the form
+`.rc.zsh` already uses) rather than an `&&` one-liner, so the file always ends
+on a zero status. The same trap applies to any rc file: a non-zero exit leaks
+into `$?` at the start of every shell and aborts any `set -e` script that
+sources it.
+
 ## Sticky headings punch holes in a mobile overlay scrollbar
 
 `vb-manager-next-mobile`'s phone agenda (`src/app/components/my-calendar-view.tsx`)
 used to be its own scroll container (`overflow-y-auto`) with one
 `position: sticky` date heading per day group. On phones the scrollbar is an
-*overlay* scrollbar — it is painted over the content inside the scroller's own
+_overlay_ scrollbar — it is painted over the content inside the scroller's own
 box rather than in a reserved gutter. Chromium paints positioned/composited
 descendants of a scroller above that overlay layer, so every sticky heading
 (not just the one currently stuck) erased the slice of the thumb sitting behind
