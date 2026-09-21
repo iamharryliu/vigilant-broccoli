@@ -1,5 +1,6 @@
 # Social
 
+- [Gift Giving](./gift-giving.md)
 - [Party Planning](./party-planning.md)
 - [Social Medias](./social-medias.md)
 - Love Languages
