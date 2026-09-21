@@ -35,3 +35,15 @@
     # drop files in without sudo. Not recursive — the playbook never rewrites
     # ownership of media already on the drive.
     mode: '0775'
+  when: media_fs_type not in media_non_posix_fs_types
+
+# A drive formatted exFAT/vFAT/NTFS (common when the same drive is also loaded
+# from a Mac or Windows box) has no Unix ownership to set: every file reports
+# the uid/gid/umask given in the mount options. Setting owner or mode here
+# fails outright on some kernels and reports changed on every run on others,
+# so the directory is created and nothing else is asserted about it.
+- name: Ensure the library directory exists on a non-POSIX drive
+  ansible.builtin.file:
+    path: '{{ media_library_dir }}'
+    state: directory
+  when: media_fs_type in media_non_posix_fs_types

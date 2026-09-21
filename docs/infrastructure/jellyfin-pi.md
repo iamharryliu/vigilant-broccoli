@@ -67,10 +67,20 @@ one more node costs nothing.
 
 Hardware:
 
-- Raspberry Pi 4 or 5 (arm64), 4GB+, on Ethernet. Jellyfin on a Pi is a
-  direct-play server: the Pi 5 has no hardware video encoder and the playbook
-  deliberately maps no `/dev/dri` device, so anything that needs transcoding is
-  CPU-bound. Keep the library in formats the clients play natively.
+- A Raspberry Pi (arm64) on Ethernet. **Provisioned and verified on a Pi 3
+  Model B+ Rev 1.3 (1GB RAM, Debian 13 trixie);** a Pi 4 or 5 with 4GB+ is
+  comfortably better. Jellyfin on a Pi is a direct-play server: no Pi has a
+  video encoder Jellyfin can use and the playbook deliberately maps no
+  `/dev/dri` device, so anything needing transcoding is CPU-bound. Keep the
+  library in formats the clients play natively.
+- On a 3B+ specifically, mind two hardware limits. Its 1GB of RAM leaves
+  roughly 600MB free with Jellyfin running, so the library database is the
+  constraint rather than playback; and Ethernet and every USB port share one
+  USB 2.0 bus, capping the media drive and the network at a combined ~250Mbit.
+  One or two direct-play streams are fine. Several are not.
+- Ethernet, not Wi-Fi. Beyond the shared-bus limit, Raspberry Pi OS ships the
+  Wi-Fi radio rfkill-soft-blocked until a WLAN country is set, which is an easy
+  trap on a headless box (see [nuance.md](../nuance.md)).
 - A reliable boot device (SD card or, better, USB SSD) for the OS, config and
   cache.
 - An external USB drive for the media library, already partitioned and
@@ -154,6 +164,27 @@ tailnet yet, so routine converge runs work with Vault unreachable.
    customisation set the hostname (`jellyfin-pi`), create the admin user, paste
    your SSH public key, and enable SSH with public-key auth only. Prefer
    Ethernet over Wi-Fi.
+
+   **Use Imager's customisation rather than hand-writing config onto the boot
+   partition.** Imager knows which first-boot mechanism the image it just wrote
+   actually consumes; that mechanism has changed twice and is not what older
+   guides describe. If you must do it by hand on a card already flashed, the
+   two files that work on current images are Pi-native and independent of
+   cloud-init:
+
+   - `/boot/firmware/userconf.txt` containing `username:<sha512crypt hash>`
+     (`openssl passwd -6`) — consumed by `userconf-pi`, which creates the
+     account and deletes the file.
+   - An empty `/boot/firmware/ssh` — consumed by `sshswitch.service`, which
+     enables and starts `sshd`.
+
+   Do **not** reach for `custom.toml` or hand-edited `user-data` on the boot
+   partition. `custom.toml` is a Bookworm-era mechanism that current images
+   ignore outright, and the shipped cloud-init seed has a defect that makes
+   edits to it silently do nothing — see [nuance.md](../nuance.md). Both
+   failure modes present identically: the Pi boots, answers ping, and has no
+   user account.
+
 2. **Boot and find it.** `ssh <admin-user>@jellyfin-pi.local` (mDNS) or the
    address from the router's DHCP table. Connect once to accept the host key —
    Ansible will not prompt for it.
@@ -161,6 +192,16 @@ tailnet yet, so routine converge runs work with Vault unreachable.
    drive, partition and format it first (destroys everything on it):
    `sudo mkfs.ext4 -L media /dev/sda1`. For a drive that already holds media —
    the replacement-Pi case — do not format; just note the `UUID`.
+
+   Keeping the drive **exFAT** is a legitimate choice, and is what the verified
+   host runs: it lets you load media by plugging the drive into a Mac or
+   Windows machine, which ext4 does not. The cost is that exFAT has no Unix
+   ownership, so `media_mount_options` must carry `uid=`/`gid=` matching
+   `jellyfin_uid`/`jellyfin_gid` or the container cannot read the library. Set
+   `media_fs_type: exfat` and the playbook skips the ownership tasks that
+   cannot apply (`media_non_posix_fs_types` in `group_vars/`). Install
+   `exfatprogs` on the Pi if `mount` reports an unknown filesystem type.
+
 4. **Fill in the inventory.**
    ```bash
    cd infrastructure/jellyfin-pi

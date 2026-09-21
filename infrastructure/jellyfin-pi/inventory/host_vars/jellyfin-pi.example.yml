@@ -10,6 +10,13 @@ media_drive_uuid: 00000000-0000-0000-0000-000000000000
 # Must match the drive's existing filesystem; the playbook never formats.
 media_fs_type: ext4
 
+# For a drive kept exFAT so it can also be loaded from a Mac or Windows box,
+# set the type and carry the ownership in the mount options instead - exFAT has
+# no Unix permissions, so uid/gid must match jellyfin_uid/jellyfin_gid or the
+# container cannot read the library:
+# media_fs_type: exfat
+# media_mount_options: defaults,nofail,uid=2000,gid=2000,umask=0022,x-systemd.device-timeout=30s
+
 # Public keys allowed to SSH in as ansible_user. Password auth is disabled in
 # the same run, so an empty list would lock the host out — preflight asserts it.
 ssh_authorized_keys:

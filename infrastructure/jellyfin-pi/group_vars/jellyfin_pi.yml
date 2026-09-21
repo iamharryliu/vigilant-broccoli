@@ -45,6 +45,14 @@ ssh_max_auth_tries: 3
 # tasks/preflight.yml.
 media_mount_point: /mnt/media
 media_fs_type: ext4
+# exFAT/vFAT/NTFS carry no Unix ownership. On those, uid/gid/umask come from
+# the mount options and chown/chmod on the library directory would either fail
+# or report changed on every run, breaking convergence.
+media_non_posix_fs_types:
+  - exfat
+  - vfat
+  - ntfs
+  - ntfs3
 # nofail + a device timeout so a missing drive degrades to "Jellyfin does not
 # start" instead of "the Pi drops to an emergency shell over SSH".
 media_mount_options: defaults,noatime,nofail,x-systemd.device-timeout=30s
@@ -66,7 +74,9 @@ docker_log_max_size: 10m
 docker_log_max_file: '3'
 
 # --- Tailscale -------------------------------------------------------------
-tailscale_apt_key_url: https://pkgs.tailscale.com/stable/debian/bookworm.noarmor.gpg
+# Codename must match the running OS - a bookworm keyring on a trixie host
+# installs a repo apt will not resolve.
+tailscale_apt_key_url: 'https://pkgs.tailscale.com/stable/debian/{{ ansible_distribution_release }}.noarmor.gpg'
 tailscale_apt_keyring_path: /usr/share/keyrings/tailscale-archive-keyring.gpg
 tailscale_apt_repo_url: https://pkgs.tailscale.com/stable/debian
 tailscale_hostname: '{{ pi_hostname }}'
