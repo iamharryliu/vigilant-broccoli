@@ -3,6 +3,7 @@ import { ExternalLink } from 'lucide-react';
 import { MarkdownViewer } from '@vigilant-broccoli/react-utility';
 import { useTranslation } from '../i18n';
 import { PageHeader } from './PageHeader';
+import { PAGE_CLASS } from '../consts/layout';
 
 export const PARSE_KIND = {
   TEXT: 'text',
@@ -73,7 +74,7 @@ export function ReadmePage({
   }, [source?.url, source?.parseKind]);
 
   return (
-    <main className="mx-auto max-w-3xl px-4 sm:px-6 pt-6 pb-16">
+    <main className={PAGE_CLASS}>
       <PageHeader title={title} />
 
       {!source && notFoundMessage && (

@@ -223,3 +223,46 @@ Any family name needing quotes (`'Segoe UI'`, `'SF Mono'`, `'Helvetica Neue'`)
 must use single quotes when the stack can land inside a double-quoted HTML
 attribute. Single quotes are equally valid CSS, so the same constant stays
 usable in a `<style>` block.
+
+## A trailing `cmd && ...` in an rc file makes sourcing it return non-zero
+
+`.rc.bash` ended with `command -v mise >/dev/null && eval "$(mise activate
+bash)"`. On a machine without mise (every Linux box — mise is only in the mac
+`Brewfile`) the `command -v` fails, so the last statement of the file returns
+1, and therefore so does `source .rc.bash`. Nothing is printed; the file did
+exactly what it was told.
+
+That broke `test-smoke-machine-setup`'s "Verify the rc chain sources cleanly"
+step, whose whole point is to source the file under `set -e`. The failure was
+opaque: because stderr was redirected to a log the step only inspects _after_
+the source, `set -e` aborted first and the step failed with no output at all.
+
+Guard optional activations with `if command -v x; then ... fi` (the form
+`.rc.zsh` already uses) rather than an `&&` one-liner, so the file always ends
+on a zero status. The same trap applies to any rc file: a non-zero exit leaks
+into `$?` at the start of every shell and aborts any `set -e` script that
+sources it.
+
+## Sticky headings punch holes in a mobile overlay scrollbar
+
+`vb-manager-next-mobile`'s phone agenda (`src/app/components/my-calendar-view.tsx`)
+used to be its own scroll container (`overflow-y-auto`) with one
+`position: sticky` date heading per day group. On phones the scrollbar is an
+_overlay_ scrollbar — it is painted over the content inside the scroller's own
+box rather than in a reserved gutter. Chromium paints positioned/composited
+descendants of a scroller above that overlay layer, so every sticky heading
+(not just the one currently stuck) erased the slice of the thumb sitting behind
+it. The result looked like the scrollbar itself was dashed: one gap per day
+group, visible only while scrolling, and impossible to explain from the CSS of
+the scrollbar because nothing in the repo styles scrollbars at all.
+
+The fix is structural, not cosmetic: the phone agenda no longer scrolls itself.
+The page grows (`PAGE_HEIGHT_MOBILE_SCROLL` in
+`src/app/components/app-shell.constants.ts`) and the document scrolls, which
+moves the overlay scrollbar out to the viewport edge — outside the card, so no
+sticky heading can overlap it. The headings keep sticking, now against the
+document, which is why their offset is `top-[var(--topbar-h)]` (clearing the
+fixed topbar) instead of `top-0`.
+
+Any other phone surface that combines a nested `overflow-y-auto` with sticky
+section headers will reproduce this. Prefer letting the page scroll.
