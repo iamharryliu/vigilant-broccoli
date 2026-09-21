@@ -5,6 +5,7 @@ import en from '../i18n/en.json';
 import { PageHeader } from '../components/PageHeader';
 import { SectionHeading } from '../components/SectionHeading';
 import { REPO_URL, toRawGithubUrl } from '../consts/repo';
+import { PAGE_CLASS } from '../consts/layout';
 
 const SUMMARY_URL = toRawGithubUrl('history/summary.json');
 const HISTORY_URL = `${REPO_URL}/tree/main/history`;
@@ -152,7 +153,7 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
   }, []);
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-6">
+    <main className={PAGE_CLASS}>
       <header className="mb-4">
         <PageHeader title={t('STATUS_PAGE.TITLE')} />
         {updated && (

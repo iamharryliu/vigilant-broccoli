@@ -11,6 +11,7 @@ import { useTranslation } from '../i18n';
 import { CardLink } from '../components/CardLink';
 import { CardGrid } from '../components/CardGrid';
 import { useDocumentTitle } from '@vigilant-broccoli/react-lib';
+import { PAGE_CLASS } from '../consts/layout';
 
 const ICON_CLASS = 'h-5 w-5 shrink-0';
 
@@ -19,7 +20,7 @@ export function HomePage() {
   useDocumentTitle(t('HOME.TITLE'));
 
   return (
-    <main className="mx-auto max-w-3xl px-4 sm:px-6 pt-6 pb-16">
+    <main className={PAGE_CLASS}>
       <header className="mb-6">
         <h1 className="text-3xl font-bold tracking-tight">{t('HOME.TITLE')}</h1>
       </header>
