@@ -6,6 +6,17 @@
     owner: root
     group: root
     mode: '0755'
+  when: media_fs_type not in media_non_posix_fs_types
+
+# Once a non-POSIX drive is mounted here, this path *is* the exFAT/vFAT root,
+# whose ownership comes from the mount options and cannot be chowned - the
+# module fails outright on a re-run. Creating the directory is all that is
+# needed; the mount below owns everything about its permissions.
+- name: Ensure the media mount point exists (non-POSIX drive)
+  ansible.builtin.file:
+    path: '{{ media_mount_point }}'
+    state: directory
+  when: media_fs_type in media_non_posix_fs_types
 
 # By UUID, never by /dev/sdX: the kernel hands out device names in probe
 # order, so a reboot with a second disk attached can swap them.

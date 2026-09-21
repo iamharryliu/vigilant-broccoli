@@ -53,3 +53,9 @@
     name: unattended-upgrades
     enabled: true
     state: started
+  # On a host that does not have the package yet, --check only simulates the
+  # install above, so the unit genuinely does not exist and this errors out,
+  # aborting the whole dry run. A real run installs first and this succeeds.
+  # Tolerating it in check mode only is what lets --check reach the tasks that
+  # matter (storage, docker, the stack itself).
+  ignore_errors: '{{ ansible_check_mode }}'

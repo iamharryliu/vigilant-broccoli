@@ -9,10 +9,21 @@
     owner: '{{ jellyfin_service_user }}'
     group: '{{ jellyfin_service_group }}'
     mode: '0750'
+  # Recursive because the uid the container runs as is configuration, not a
+  # constant: changing jellyfin_uid (or adopting a config tree written by a
+  # differently-numbered user) leaves every file inside owned by the old uid
+  # while the directory itself looks correct. Jellyfin then crash-loops on
+  # "SQLite Error 8: attempt to write a readonly database", which points at
+  # the database rather than at ownership and is genuinely hard to read.
+  recurse: true
   loop:
     - '{{ jellyfin_stack_dir }}'
     - '{{ jellyfin_config_dir }}'
     - '{{ jellyfin_cache_dir }}'
+  # --check only simulates the service-user creation in tasks/user.yml, so the
+  # chown here has no such user to resolve and errors on a host this playbook
+  # has not provisioned yet. Real runs create the user first.
+  ignore_errors: '{{ ansible_check_mode }}'
 
 - name: Install the Jellyfin compose file
   ansible.builtin.copy:
@@ -50,3 +61,8 @@
     enabled: true
     state: started
     daemon_reload: true
+  # The unit file above is only written for real outside check mode, so on a
+  # not-yet-provisioned host systemd has nothing to enable here. Real runs
+  # install the unit first. Without this,  can never
+  # report a clean run on a fresh Pi.
+  ignore_errors: '{{ ansible_check_mode }}'

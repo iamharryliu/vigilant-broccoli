@@ -27,6 +27,9 @@
         name: '{{ jellyfin_service_name }}'
         state: restarted
         daemon_reload: true
+      # In check mode the unit was never actually written, so this handler has
+      # no service to restart on a host the playbook has not provisioned yet.
+      ignore_errors: '{{ ansible_check_mode }}'
 
   tasks:
     - name: Preflight
