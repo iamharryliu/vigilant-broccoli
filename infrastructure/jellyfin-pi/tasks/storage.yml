@@ -1,22 +1,14 @@
 ---
+# Ownership is omitted on a non-POSIX drive: once it is mounted, this path *is*
+# the exFAT/vFAT root, whose ownership comes from the mount options and cannot
+# be chowned - the module fails outright on a re-run.
 - name: Ensure the media mount point exists
   ansible.builtin.file:
     path: '{{ media_mount_point }}'
     state: directory
-    owner: root
-    group: root
-    mode: '0755'
-  when: media_fs_type not in media_non_posix_fs_types
-
-# Once a non-POSIX drive is mounted here, this path *is* the exFAT/vFAT root,
-# whose ownership comes from the mount options and cannot be chowned - the
-# module fails outright on a re-run. Creating the directory is all that is
-# needed; the mount below owns everything about its permissions.
-- name: Ensure the media mount point exists (non-POSIX drive)
-  ansible.builtin.file:
-    path: '{{ media_mount_point }}'
-    state: directory
-  when: media_fs_type in media_non_posix_fs_types
+    owner: "{{ 'root' if media_fs_posix else omit }}"
+    group: "{{ 'root' if media_fs_posix else omit }}"
+    mode: "{{ '0755' if media_fs_posix else omit }}"
 
 # By UUID, never by /dev/sdX: the kernel hands out device names in probe
 # order, so a reboot with a second disk attached can swap them.
@@ -36,25 +28,16 @@
   # A dry run never performs the mount above, so it cannot assert the result.
   failed_when: media_mount_source.rc != 0 and not ansible_check_mode
 
+# Mode is group-writable so a media-adding user in the jellyfin group can drop
+# files in without sudo, and never recursive - the playbook does not rewrite
+# ownership of media already on the drive. All of it is omitted on a non-POSIX
+# drive, where every file reports the uid/gid/umask from the mount options
+# instead: setting owner or mode there fails on some kernels and reports
+# changed on every run on others.
 - name: Ensure the library directory exists on the drive
   ansible.builtin.file:
     path: '{{ media_library_dir }}'
     state: directory
-    owner: '{{ jellyfin_service_user }}'
-    group: '{{ jellyfin_service_group }}'
-    # Group-writable so a media-adding user added to the jellyfin group can
-    # drop files in without sudo. Not recursive — the playbook never rewrites
-    # ownership of media already on the drive.
-    mode: '0775'
-  when: media_fs_type not in media_non_posix_fs_types
-
-# A drive formatted exFAT/vFAT/NTFS (common when the same drive is also loaded
-# from a Mac or Windows box) has no Unix ownership to set: every file reports
-# the uid/gid/umask given in the mount options. Setting owner or mode here
-# fails outright on some kernels and reports changed on every run on others,
-# so the directory is created and nothing else is asserted about it.
-- name: Ensure the library directory exists on a non-POSIX drive
-  ansible.builtin.file:
-    path: '{{ media_library_dir }}'
-    state: directory
-  when: media_fs_type in media_non_posix_fs_types
+    owner: "{{ jellyfin_service_user if media_fs_posix else omit }}"
+    group: "{{ jellyfin_service_group if media_fs_posix else omit }}"
+    mode: "{{ '0775' if media_fs_posix else omit }}"

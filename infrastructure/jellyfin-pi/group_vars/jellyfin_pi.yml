@@ -53,6 +53,9 @@ media_non_posix_fs_types:
   - vfat
   - ntfs
   - ntfs3
+# Derived once here rather than repeating the membership test at every task
+# that has to decide whether ownership is a thing this drive can express.
+media_fs_posix: '{{ media_fs_type not in media_non_posix_fs_types }}'
 # nofail + a device timeout so a missing drive degrades to "Jellyfin does not
 # start" instead of "the Pi drops to an emergency shell over SSH".
 media_mount_options: defaults,noatime,nofail,x-systemd.device-timeout=30s
