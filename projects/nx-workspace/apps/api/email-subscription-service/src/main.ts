@@ -1,3 +1,4 @@
+import { checkServerIdentity, type PeerCertificate } from 'node:tls';
 import Fastify from 'fastify';
 import amqplib, { ConfirmChannel } from 'amqplib';
 import { createClient } from '@supabase/supabase-js';
@@ -44,11 +45,13 @@ const ERROR_FAILED_SAVE_SUBSCRIPTION = 'Failed to save subscription';
 const ERROR_FAILED_REMOVE_SUBSCRIPTION = 'Failed to remove subscription';
 const ERROR_FAILED_FETCH_SUBSCRIBERS = 'Failed to fetch subscribers';
 const ERROR_EMAIL_SERVICE_REQUEST_FAILED = 'Email service request failed';
+const RABBITMQ_TLS_SERVER_NAME = 'rabbitmq';
 
 const RABBITMQ_SOCKET_OPTIONS = RABBITMQ_CA_CERT
   ? {
       ca: [Buffer.from(RABBITMQ_CA_CERT, 'base64')],
-      checkServerIdentity: () => undefined,
+      checkServerIdentity: (_host: string, cert: PeerCertificate) =>
+        checkServerIdentity(RABBITMQ_TLS_SERVER_NAME, cert),
     }
   : undefined;
 
@@ -57,10 +60,9 @@ const supabase = createClient(
   process.env.SUPABASE_SECRET_KEY as string,
 );
 
-let publishChannel: ConfirmChannel | null = null;
+let publishChannel: Promise<ConfirmChannel> | null = null;
 
-const getPublishChannel = async (): Promise<ConfirmChannel> => {
-  if (publishChannel) return publishChannel;
+const connectPublishChannel = async (): Promise<ConfirmChannel> => {
   const connection = await amqplib.connect(
     RABBITMQ_CONNECTION_STRING!,
     RABBITMQ_SOCKET_OPTIONS,
@@ -75,8 +77,23 @@ const getPublishChannel = async (): Promise<ConfirmChannel> => {
     );
     publishChannel = null;
   });
-  publishChannel = await connection.createConfirmChannel();
-  await publishChannel.assertQueue(QUEUE.EMAIL_SUBSCRIPTION, { durable: true });
+  try {
+    const channel = await connection.createConfirmChannel();
+    await channel.assertQueue(QUEUE.EMAIL_SUBSCRIPTION, { durable: true });
+    return channel;
+  } catch (err) {
+    await connection.close().catch(() => undefined);
+    throw err;
+  }
+};
+
+const getPublishChannel = (): Promise<ConfirmChannel> => {
+  if (!publishChannel) {
+    publishChannel = connectPublishChannel().catch(err => {
+      publishChannel = null;
+      throw err;
+    });
+  }
   return publishChannel;
 };
 
