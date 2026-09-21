@@ -266,3 +266,44 @@ fixed topbar) instead of `top-0`.
 
 Any other phone surface that combines a nested `overflow-y-auto` with sticky
 section headers will reproduce this. Prefer letting the page scroll.
+
+## A replaced OCI VM dies on `container name "/watchtower" is already in use`
+
+`pnpm tf:apply` that replaces `oci_core_instance.rabbitmq` — any change to its
+`metadata.user_data`, since that forces replacement — can fail in the
+`post-apply` step with a Docker name conflict on `/watchtower`, and sometimes
+on `caddy` or `socket-server-socketio` instead depending on who wins.
+
+The VM hosts two compose projects: the broker (`/opt/rabbitmq`) and the
+socket-server stack (`/opt/socket-server`, which is where `watchtower` lives).
+`post-apply.sh`'s `sync_socket_server` calls
+`packer/scripts/sync-socket-server-token.sh`, which SSHes in, rewrites
+`SENDER_TOKEN`, and runs `docker compose -f /opt/socket-server/docker-compose.yml
+up -d`. Its readiness probe used to be `test -f <that compose file> && sudo
+docker info` — and both of those go true early in `cloud-init`, because
+`write_files` writes the compose file before anything runs and `runcmd`'s
+`systemctl start docker` is several steps ahead of `runcmd`'s own `docker
+compose up -d` at the end. So the script and cloud-init ran `up -d` against the
+same project concurrently. Each service there sets an explicit
+`container_name:`, which compose cannot namespace per-project, so the loser of
+the race aborts on the name instead of adopting the container.
+
+It stayed hidden because the VM is normally long-lived: cloud-init finished
+months earlier, so the sync script's `up -d` was a no-op. Only an actual
+instance replacement puts the two on the same clock — first seen when tightening
+the RabbitMQ TLS key to `0600` changed `user_data`.
+
+The quieter half of the same race is worse than the loud one. `runcmd` rewrites
+`DOCKER_API_VERSION_PLACEHOLDER` in that compose file one line before it brings
+the stack up, so a sync script that wins can create `watchtower` with the
+literal placeholder as its `DOCKER_API_VERSION`. That container starts, stays
+up, and silently never talks to the Docker API again — socket-server images
+just stop auto-updating, with nothing in the apply output to connect it back.
+
+The gate now waits for `cloud-init status` to report `done` (or `degraded
+done`) before touching compose. If this resurfaces, check, in order:
+`cloud-init status --long`, `grep DOCKER_API_VERSION
+/opt/socket-server/docker-compose.yml`, and `sudo docker inspect watchtower
+--format '{{.Config.Env}}'`. Recovery is `sudo docker compose -f
+/opt/socket-server/docker-compose.yml up -d --force-recreate` once cloud-init
+is done, then a rerun of `pnpm tf:post-apply`, which is idempotent.
