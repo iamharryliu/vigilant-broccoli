@@ -58,6 +58,7 @@
 - Keep the stock relatively unsalted so it can be seasoned per dish later.
 - Whole spices beat ground spices — use whole peppercorns, and go light on paprika.
 - Leftover vegetables work as the base; the tables above are a starting point rather than a fixed recipe.
+- For a seasoned, reusable braising liquid rather than a neutral stock, see [master stock](./master-stock.md).
 
 ## References
 

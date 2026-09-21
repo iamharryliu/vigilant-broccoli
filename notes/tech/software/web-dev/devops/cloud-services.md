@@ -73,9 +73,9 @@ Comparison of managed/cloud hosting solutions by category, to guide picking a de
 
 ## IaC State Backend
 
-| Name                            | Usage                                          | Free Tier                 | When to Use                                                             |
-| ------------------------------- | ---------------------------------------------- | ------------------------- | ----------------------------------------------------------------------- |
-| HCP Terraform (Terraform Cloud) | Remote Terraform state storage + run execution | Free tier (up to 5 users) | Default remote backend for Terraform — avoids local state drift/locking |
+| Name                            | Usage                                          | Free Tier                                                                  | When to Use                                                             |
+| ------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| HCP Terraform (Terraform Cloud) | Remote Terraform state storage + run execution | Free tier (up to 500 managed resources, unlimited users, 1 concurrent run) | Default remote backend for Terraform — avoids local state drift/locking |
 
 ## Container Registry
 
