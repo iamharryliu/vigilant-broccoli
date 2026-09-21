@@ -21,7 +21,7 @@ write_files:
       management.ssl.keyfile    = /etc/rabbitmq/certs/server.key
 
   - path: /opt/rabbitmq/certs/server.key
-    permissions: '0644'
+    permissions: '0600'
     content: |
       ${indent(6, rabbitmq_tls_key)}
 
@@ -125,6 +125,8 @@ runcmd:
   - systemctl start docker
   - usermod -aG docker ubuntu
   - 'DOCKER_API=$(docker version --format "{{.Server.APIVersion}}") && sed -i "s/DOCKER_API_VERSION_PLACEHOLDER/$DOCKER_API/" /opt/socket-server/docker-compose.yml'
+  # rabbitmq:3-management-alpine drops to uid 100 (rabbitmq), which must own the 0600 key
+  - chown 100:100 /opt/rabbitmq/certs/server.key
   - docker compose -f /opt/rabbitmq/docker-compose.yml up -d
   - docker compose -f /opt/socket-server/docker-compose.yml up -d
   - sleep 15
