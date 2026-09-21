@@ -1,0 +1,51 @@
+name: manual-agentic-solve-smoke
+
+# One-click smoke test for the agentic solve pipeline: dispatches
+# `manual-agentic-solve` with a canned, deliberately tiny prompt so the whole
+# chain (sandbox container -> headless Claude Code -> commit -> push -> PR ->
+# notification email) can be exercised without typing a prompt or burning a real
+# TODO id. The PR it opens is disposable — close it once the email looks right.
+#
+# The prompt rewrites one line of .github/agentic-smoke.md, so the resulting
+# diff carries both an added and a removed row and the email's diff rendering is
+# actually covered.
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: 'Claude model to run the smoke test with.'
+        type: choice
+        default: haiku
+        options:
+          - haiku
+          - sonnet
+          - opus
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: manual-agentic-solve-smoke
+  cancel-in-progress: true
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch manual-agentic-solve
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MODEL: ${{ inputs.model }}
+          PROMPT: 'In .github/agentic-smoke.md, replace the "Last smoke test:" line with the current UTC date and time. Change nothing else.'
+        run: |
+          set -euo pipefail
+          gh workflow run manual-agentic-solve.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref "$GITHUB_REF_NAME" \
+            -f prompt="$PROMPT" \
+            -f model="$MODEL"
+          echo "Dispatched manual-agentic-solve (model: $MODEL)."
+          echo "Watch it at https://github.com/$GITHUB_REPOSITORY/actions/workflows/manual-agentic-solve.yml"
