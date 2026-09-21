@@ -20,6 +20,33 @@
     opts: '{{ media_mount_options }}'
     state: mounted
 
+- name: Read the live mount options
+  ansible.builtin.command: findmnt --noheadings --output OPTIONS --mountpoint {{ media_mount_point }}
+  register: media_live_options
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+# ansible.posix.mount with state: mounted rewrites fstab but will not remount a
+# filesystem that is already mounted, so changed options take effect only after
+# a reboot - the run reports success while the live mount still differs from
+# what was just declared. Only uid/gid are compared: they are what the
+# container's access depends on, and they appear verbatim in findmnt output,
+# unlike umask which the kernel expands into fmask and dmask.
+- name: Remount the media drive when its options have drifted from fstab
+  ansible.posix.mount:
+    path: '{{ media_mount_point }}'
+    src: 'UUID={{ media_drive_uuid }}'
+    fstype: '{{ media_fs_type }}'
+    opts: '{{ media_mount_options }}'
+    state: remounted
+  when:
+    - media_identity_options | length > 0
+    - media_identity_options | difference(media_live_option_list) | length > 0
+  vars:
+    media_identity_options: "{{ media_mount_options | split(',') | select('match', '^(uid|gid)=') | list }}"
+    media_live_option_list: "{{ media_live_options.stdout | default('') | split(',') | map('trim') | list }}"
+
 - name: Confirm the mount point is backed by the external drive
   ansible.builtin.command: findmnt --noheadings --output SOURCE --mountpoint {{ media_mount_point }}
   register: media_mount_source

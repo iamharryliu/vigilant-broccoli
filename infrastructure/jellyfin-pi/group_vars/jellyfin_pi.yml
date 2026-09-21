@@ -20,6 +20,14 @@ pi_base_packages:
 # Security updates only — Docker's and Tailscale's apt repos are deliberately
 # left out of the origins pattern so a media server never reboots into an
 # untested container runtime on its own.
+# Empty disables the step. Raspberry Pi OS ships the Wi-Fi radio rfkill
+# soft-blocked until a WLAN regulatory domain is set, so a headless Pi with no
+# country configured has a working driver and an unusable radio.
+pi_wifi_country: ''
+# Jellyfin refuses to start with less than 2GiB free and its metadata and cache
+# only grow, so provisioning stops short of a boot device that cannot sustain
+# it rather than letting the service fail mysteriously weeks later.
+pi_min_free_gib: 3
 pi_unattended_upgrades_automatic_reboot: true
 pi_unattended_upgrades_reboot_time: '04:00'
 

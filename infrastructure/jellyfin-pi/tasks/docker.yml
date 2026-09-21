@@ -24,12 +24,23 @@
 # Raspberry Pi OS reports ID=debian in /etc/os-release, so Docker's Debian
 # repo is the right one — there is no Raspberry Pi OS channel.
 - name: Add the Docker apt repository
-  ansible.builtin.apt_repository:
-    repo: >-
-      deb [arch={{ dpkg_architecture.stdout }} signed-by={{ docker_apt_keyring_path }}]
-      {{ docker_apt_repo_url }} {{ ansible_facts.distribution_release }} stable
-    filename: docker
+  ansible.builtin.deb822_repository:
+    name: docker
+    types: [deb]
+    uris: '{{ docker_apt_repo_url }}'
+    suites: '{{ ansible_facts.distribution_release }}'
+    components: [stable]
+    architectures: '{{ dpkg_architecture.stdout }}'
+    signed_by: '{{ docker_apt_keyring_path }}'
     state: present
+
+# deb822_repository writes docker.sources; the one-line docker.list left by the
+# older apt_repository module would otherwise stay behind and apt would read
+# the same repository twice.
+- name: Remove the legacy one-line Docker apt source
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/docker.list
+    state: absent
 
 - name: Install Docker Engine and the Compose plugin
   ansible.builtin.apt:

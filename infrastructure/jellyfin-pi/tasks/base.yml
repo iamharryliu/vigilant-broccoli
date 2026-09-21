@@ -59,3 +59,21 @@
   # Tolerating it in check mode only is what lets --check reach the tasks that
   # matter (storage, docker, the stack itself).
   ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Read the configured WLAN country
+  ansible.builtin.command: raspi-config nonint get_wifi_country
+  register: pi_wifi_country_current
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  when: pi_wifi_country | length > 0
+
+# Without this the radio stays rfkill soft-blocked: wlan0 reports state
+# "unavailable", nmcli shows WIFI disabled, and a scan returns nothing on
+# hardware whose driver loaded perfectly.
+- name: Set the WLAN regulatory domain
+  ansible.builtin.command: raspi-config nonint do_wifi_country {{ pi_wifi_country }}
+  when:
+    - pi_wifi_country | length > 0
+    - (pi_wifi_country_current.stdout | default('') | trim) != pi_wifi_country
+  changed_when: true

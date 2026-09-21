@@ -9,6 +9,7 @@ Docker Compose, provisioned with Ansible from
 - [Why Ansible and not Terraform](#why-ansible-and-not-terraform)
 - [Why Tailscale for remote access](#why-tailscale-for-remote-access)
 - [Prerequisites](#prerequisites)
+- [The provisioned host](#the-provisioned-host)
 - [On-disk layout](#on-disk-layout)
 - [Variables and secrets](#variables-and-secrets)
 - [From scratch](#from-scratch)
@@ -82,7 +83,13 @@ Hardware:
   Wi-Fi radio rfkill-soft-blocked until a WLAN country is set, which is an easy
   trap on a headless box (see [nuance.md](../nuance.md)).
 - A reliable boot device (SD card or, better, USB SSD) for the OS, config and
-  cache.
+  cache. **Size it at 32GB or more.** Jellyfin refuses to start when its data
+  path has less than 2GiB free, and the Docker image alone is ~1.3GB: a 8GB
+  card leaves no headroom, and the failure arrives weeks later as a service
+  that crash-loops with `SQLite Error 8` or
+  `insufficient free space ... Available: 2GiB, Required: 2GiB` rather than as
+  anything that looks like a disk problem. `tasks/preflight.yml` now refuses to
+  provision below `pi_min_free_gib` (3GiB) for this reason.
 - An external USB drive for the media library, already partitioned and
   formatted (the playbook never formats — see [From scratch](#from-scratch)).
   Self-powered drives are worth it; a bus-powered drive browning out mid-write
@@ -97,6 +104,31 @@ Software:
   or `pipx install ansible-core`), `jq`, and `gcloud` logged in for the Vault
   fetch. Collections come from `requirements.yml`, installed by `provision.sh`
   on every run.
+
+## The provisioned host
+
+The inventory is gitignored, so these values live only on the operator's
+laptop. None of them are secrets — per
+[secret-management.md](./secret-management.md), non-secret identifiers are
+recorded rather than routed through Vault — so they are written down here to
+keep rebuilding independent of any one machine. The Tailscale auth key is the
+only real secret and stays in Vault.
+
+| Value                 | Current                                                                     | Where it goes           |
+| --------------------- | --------------------------------------------------------------------------- | ----------------------- |
+| Board                 | Raspberry Pi 3 Model B+ Rev 1.3, Debian 13 trixie arm64                     | —                       |
+| `ansible_host`        | `192.168.0.11` (DHCP lease)                                                 | `inventory/hosts.yml`   |
+| `ansible_user`        | `hliu`                                                                      | `inventory/hosts.yml`   |
+| Ethernet MAC          | `b8:27:eb:23:4d:e0`                                                         | router DHCP reservation |
+| `media_drive_uuid`    | `6628-EBD7` (Kingston DataTraveler 3.0, 29.2GB)                             | `host_vars/`            |
+| `media_fs_type`       | `exfat`                                                                     | `host_vars/`            |
+| `media_mount_options` | `defaults,nofail,uid=2000,gid=2000,umask=0022,x-systemd.device-timeout=30s` | `host_vars/`            |
+| `pi_timezone`         | `Europe/Stockholm`                                                          | `host_vars/`            |
+| `ssh_authorized_keys` | the operator's `id_ed25519.pub`                                             | `host_vars/`            |
+
+The address is a DHCP lease and every client hardcodes it, so **reserve it on
+the router against the MAC above**. Without that, the lease eventually moves
+and every TV, phone and browser bookmark breaks at once.
 
 ## On-disk layout
 
@@ -210,7 +242,28 @@ tailnet yet, so routine converge runs work with Vault unreachable.
    ```
    Set `ansible_host`/`ansible_user` in the first and `media_drive_uuid`,
    `ssh_authorized_keys`, `pi_timezone` in the second. Both are gitignored.
-5. **Put the auth key in Vault** if it is not there yet (see above).
+5. **Put the auth key in Vault** if it is not there yet (see above), or skip
+   Tailscale entirely:
+
+   ```bash
+   pnpm jellyfin:provision -- --skip-tags tailscale
+   ```
+
+   Enrolment is the only step that needs a secret, so skipping it makes the
+   run self-contained. Two consequences, both easy to miss:
+
+   - The host is reachable on the LAN only. Nothing is exposed to the internet
+     either way, so this is a reduction in reach, not in security.
+   - `jellyfin_published_server_url` defaults to the tailnet MagicDNS name,
+     which now resolves nowhere. Jellyfin hands that URL to clients as its own
+     address, so **Chromecast casting fails and native clients can stumble on
+     discovery** while the web UI works fine — a confusing pairing. Override it
+     in `host_vars` with the LAN address:
+
+     ```yaml
+     jellyfin_published_server_url: 'http://192.168.0.11:8096'
+     ```
+
 6. **Dry run, then provision.**
    ```bash
    pnpm jellyfin:provision:check   # --check --diff, changes nothing
@@ -243,9 +296,38 @@ the setup wizard the first time only:
 3. Leave remote access at its default. Do not forward a port on the router:
    remote access is the tailnet, and `JELLYFIN_PublishedServerUrl` already
    points clients at the MagicDNS name.
-4. Add media by copying into `/mnt/media/library/...` (the directory is
-   group-writable by `jellyfin`; add yourself to that group or use `sudo`), then
-   trigger a library scan.
+4. Add media by copying into `/mnt/media/library/...`, then **trigger a library
+   scan** — Dashboard → Libraries → Scan All Libraries.
+
+   The scan is not optional. A USB drive delivers no inotify events, so
+   Jellyfin's real-time monitoring never sees new files there; without a scan
+   the library stays empty and everything looks broken while the file sits
+   correctly on disk.
+
+   On an ext4 drive the library directory is group-writable by `jellyfin`, so
+   add yourself to that group or use `sudo`. On an exFAT drive there is no such
+   group to join — write access comes from the `uid`/`gid` mount options, so
+   copy as that uid or via `sudo`. Either way `rsync -a` **fails on exFAT**: it
+   tries to preserve ownership the filesystem cannot express, and does so after
+   transferring the data, so a long copy ends in
+   `chown ... Operation not permitted` and exit 23. Use:
+
+   ```bash
+   rsync -rh --no-owner --no-group --no-perms --rsync-path="sudo rsync" \
+     "local/Film (2019).mkv" "pi:/mnt/media/library/movies/Film (2019)/"
+   ```
+
+   Name files `Title (Year).ext`, one folder per title, or metadata matching
+   silently returns nothing.
+
+5. **Casting has a constraint worth knowing before you fight it.** The web
+   client's Cast button lists other Jellyfin sessions and Google Cast devices.
+   Google Cast needs a secure context — over plain `http://` on a LAN address
+   no cast targets are discovered at all, and no amount of configuration
+   changes that without putting a real certificate in front of Jellyfin. The
+   workable paths are the Jellyfin app on the TV (which then appears as a
+   session target in the web UI, no HTTPS involved) or the mobile apps, which
+   use the native Cast SDK rather than the browser one.
 
 The wizard only appears once — the answers land in `/opt/jellyfin/config`, which
 survives every re-provision.

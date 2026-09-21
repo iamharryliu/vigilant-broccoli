@@ -8,12 +8,19 @@
     mode: '0644'
 
 - name: Add the Tailscale apt repository
-  ansible.builtin.apt_repository:
-    repo: >-
-      deb [signed-by={{ tailscale_apt_keyring_path }}]
-      {{ tailscale_apt_repo_url }} {{ ansible_facts.distribution_release }} main
-    filename: tailscale
+  ansible.builtin.deb822_repository:
+    name: tailscale
+    types: [deb]
+    uris: '{{ tailscale_apt_repo_url }}'
+    suites: '{{ ansible_facts.distribution_release }}'
+    components: [main]
+    signed_by: '{{ tailscale_apt_keyring_path }}'
     state: present
+
+- name: Remove the legacy one-line Tailscale apt source
+  ansible.builtin.file:
+    path: /etc/apt/sources.list.d/tailscale.list
+    state: absent
 
 - name: Install Tailscale
   ansible.builtin.apt:
