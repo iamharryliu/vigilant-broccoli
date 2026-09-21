@@ -1,0 +1,78 @@
+---
+# Config and cache stay on the Pi's internal storage: they are small, rebuilt
+# from the library on demand, and keeping them off the external drive means a
+# drive swap never drags a stale server identity along with it.
+# The stack directory holds root-owned files (the compose file and .env), so it
+# is never chowned recursively - doing so fights the copy/template tasks below
+# and the pair flip-flop forever, restarting Jellyfin on every run.
+- name: Create the Jellyfin stack directory
+  ansible.builtin.file:
+    path: '{{ jellyfin_stack_dir }}'
+    state: directory
+    owner: '{{ jellyfin_service_user }}'
+    group: '{{ jellyfin_service_group }}'
+    mode: '0750'
+
+- name: Create the Jellyfin state directories
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: directory
+    owner: '{{ jellyfin_service_user }}'
+    group: '{{ jellyfin_service_group }}'
+    mode: '0750'
+    # Recursive, unlike the stack directory: these hold data the container
+    # writes as jellyfin_uid. That uid is configuration, not a constant, so a
+    # tree written by a different one leaves every file owned by the old uid
+    # while the directory itself looks correct. Jellyfin then crash-loops on
+    # "SQLite Error 8: attempt to write a readonly database", which points at
+    # the database rather than at ownership and is genuinely hard to read.
+    recurse: true
+  loop:
+    - '{{ jellyfin_config_dir }}'
+    - '{{ jellyfin_cache_dir }}'
+  # --check only simulates the service-user creation in tasks/user.yml, so the
+  # chown here has no such user to resolve and errors on a host this playbook
+  # has not provisioned yet. Real runs create the user first.
+  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Install the Jellyfin compose file
+  ansible.builtin.copy:
+    src: docker-compose.yml
+    dest: '{{ jellyfin_stack_dir }}/docker-compose.yml'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart jellyfin
+
+# The compose file is host-agnostic; everything host-shaped (uids, paths,
+# timezone, published URL) arrives through this .env, which compose reads
+# automatically from the working directory.
+- name: Render the compose environment
+  ansible.builtin.template:
+    src: jellyfin.env.j2
+    dest: '{{ jellyfin_stack_dir }}/.env'
+    owner: root
+    group: root
+    mode: '0640'
+  notify: Restart jellyfin
+
+- name: Install the Jellyfin systemd unit
+  ansible.builtin.template:
+    src: jellyfin-compose.service.j2
+    dest: '/etc/systemd/system/{{ jellyfin_service_name }}'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart jellyfin
+
+- name: Enable Jellyfin at boot
+  ansible.builtin.systemd_service:
+    name: '{{ jellyfin_service_name }}'
+    enabled: true
+    state: started
+    daemon_reload: true
+  # The unit file above is only written for real outside check mode, so on a
+  # not-yet-provisioned host systemd has nothing to enable here. Real runs
+  # install the unit first. Without this,  can never
+  # report a clean run on a fresh Pi.
+  ignore_errors: '{{ ansible_check_mode }}'

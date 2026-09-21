@@ -1,0 +1,37 @@
+---
+- name: Fail early on an unexpected OS
+  ansible.builtin.assert:
+    that:
+      - ansible_facts.os_family == 'Debian'
+      - ansible_facts.architecture == 'aarch64'
+    fail_msg: >-
+      This playbook targets Raspberry Pi OS (64-bit), which reports
+      os_family=Debian and architecture=aarch64. Got
+      {{ ansible_facts.os_family }}/{{ ansible_facts.architecture }}.
+    quiet: true
+
+- name: Require the per-host values that have no safe default
+  ansible.builtin.assert:
+    that:
+      - media_drive_uuid | default('', true) | length > 0
+      - media_drive_uuid != '00000000-0000-0000-0000-000000000000'
+      - ssh_authorized_keys | default([], true) | length > 0
+    fail_msg: >-
+      media_drive_uuid and ssh_authorized_keys must be set for this host. Copy
+      inventory/host_vars/jellyfin-pi.example.yml to
+      inventory/host_vars/{{ inventory_hostname }}.yml and fill it in — the SSH
+      keys especially, since this run disables password authentication.
+    quiet: true
+
+- name: Require enough free space on the boot device
+  ansible.builtin.assert:
+    that:
+      - pi_root_free_gib | float >= pi_min_free_gib | float
+    fail_msg: >-
+      / has {{ pi_root_free_gib }}GiB free but {{ pi_min_free_gib }}GiB is
+      required. Jellyfin refuses to start below 2GiB, and its metadata and
+      transcode cache grow from there, so a boot device this full will fail at
+      runtime rather than here. Use a larger card or reclaim space first.
+    quiet: true
+  vars:
+    pi_root_free_gib: "{{ ((ansible_facts.mounts | selectattr('mount', 'equalto', '/') | first).size_available / 1073741824) | round(1) }}"

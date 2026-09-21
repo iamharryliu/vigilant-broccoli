@@ -13,6 +13,7 @@ flowchart TD
         APP_DEV["APP_DEVELOPMENT.md"]
         GIT["GIT.md"]
         NETWORK["infrastructure/network-management.md"]
+        JELLYFIN_PI["infrastructure/jellyfin-pi.md"]
         NUANCE["nuance.md"]
         REPO_PATTERNS["repo-patterns.md"]
         REPO_OPS["repo-operations.md"]
@@ -32,6 +33,7 @@ flowchart TD
     CLAUDE --> APP_DEV
     CLAUDE --> GIT
     CLAUDE --> NETWORK
+    CLAUDE --> JELLYFIN_PI
     CLAUDE --> SECRETS
     CLAUDE --> NUANCE
     CLAUDE --> REFACTOR
@@ -49,6 +51,9 @@ flowchart TD
     APP_DEV --> FLY_PATTERN
     REPO_PATTERNS --> FLY_PATTERN
     REPO_PATTERNS --> REPO_OPS
+    REPO_OPS --> JELLYFIN_PI
+    JELLYFIN_PI --> NETWORK
+    JELLYFIN_PI --> SECRETS
 
     subgraph SKILLS["setup/dotfiles/.claude"]
         subgraph COMMANDS["Commands"]

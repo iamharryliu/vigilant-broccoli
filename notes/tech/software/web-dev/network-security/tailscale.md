@@ -28,19 +28,19 @@ Mesh VPN built on [WireGuard](./wireguard.md) — devices in a _tailnet_ connect
 
 ## Concepts
 
-| Term           | Description                                                                                   |
-| -------------- | --------------------------------------------------------------------------------------------- |
-| ACL            | JSON policy file in the admin console defining which devices/users may reach which ports.     |
-| Auth Key       | Pre-generated key for non-interactive enrolment (servers, CI, containers); can be ephemeral.  |
-| DERP           | Tailscale-hosted relay used when two peers cannot establish a direct connection.              |
-| Exit Node      | Device that routes a peer's full internet traffic, like a traditional VPN egress.             |
-| Ephemeral Node | Device that removes itself from the tailnet once it goes offline — for short-lived workloads. |
-| Funnel         | Exposes a Serve endpoint to the public internet over HTTPS.                                   |
-| MagicDNS       | Resolves devices by hostname (`host.tailnet-name.ts.net`) without manual DNS.                 |
-| Serve          | Publishes a local port/path to other devices in the tailnet over HTTPS.                       |
-| Subnet Router  | Device advertising a LAN CIDR so peers reach non-Tailscale hosts behind it.                   |
-| Tailnet        | The private mesh network belonging to one account or organization.                            |
-| Taildrop       | Direct file transfer between devices in the tailnet.                                          |
+| Term           | Description                                                                                                                                     |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| ACL            | JSON policy file in the admin console defining which devices/users may reach which ports.                                                       |
+| Auth Key       | Pre-generated key for non-interactive enrolment (servers, CI, containers); reusable or single-use, optionally ephemeral, and capped at 90 days. |
+| DERP           | Tailscale-hosted relay used when two peers cannot establish a direct connection.                                                                |
+| Exit Node      | Device that routes a peer's full internet traffic, like a traditional VPN egress.                                                               |
+| Ephemeral Node | Device that removes itself from the tailnet once it goes offline — for short-lived workloads.                                                   |
+| Funnel         | Exposes a Serve endpoint to the public internet over HTTPS.                                                                                     |
+| MagicDNS       | Resolves devices by hostname (`host.tailnet-name.ts.net`) without manual DNS.                                                                   |
+| Serve          | Publishes a local port/path to other devices in the tailnet over HTTPS.                                                                         |
+| Subnet Router  | Device advertising a LAN CIDR so peers reach non-Tailscale hosts behind it.                                                                     |
+| Tailnet        | The private mesh network belonging to one account or organization.                                                                              |
+| Taildrop       | Direct file transfer between devices in the tailnet.                                                                                            |
 
 ## Install
 

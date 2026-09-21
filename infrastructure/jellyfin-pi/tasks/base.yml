@@ -1,0 +1,79 @@
+---
+- name: Set the hostname
+  ansible.builtin.hostname:
+    name: '{{ pi_hostname }}'
+
+- name: Keep /etc/hosts in step with the hostname
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.1\.1\s'
+    line: "127.0.1.1\t{{ pi_hostname }}"
+    state: present
+
+- name: Read the current timezone
+  ansible.builtin.command: timedatectl show --property=Timezone --value
+  register: pi_current_timezone
+  changed_when: false
+  # Read-only, so let it run under --check too — otherwise the next task has no
+  # stdout to compare against and a dry run errors out.
+  check_mode: false
+
+# timedatectl rather than community.general.timezone so the playbook needs
+# only the one collection in requirements.yml.
+- name: Set the timezone
+  ansible.builtin.command: timedatectl set-timezone {{ pi_timezone }}
+  when: pi_current_timezone.stdout != pi_timezone
+  changed_when: true
+
+- name: Install base packages
+  ansible.builtin.apt:
+    name: '{{ pi_base_packages }}'
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Enable unattended security upgrades
+  ansible.builtin.template:
+    src: 20auto-upgrades.j2
+    dest: /etc/apt/apt.conf.d/20auto-upgrades
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Restrict unattended upgrades to security origins
+  ansible.builtin.template:
+    src: 52unattended-upgrades-local.j2
+    dest: /etc/apt/apt.conf.d/52unattended-upgrades-local
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Enable the unattended-upgrades timer
+  ansible.builtin.service:
+    name: unattended-upgrades
+    enabled: true
+    state: started
+  # On a host that does not have the package yet, --check only simulates the
+  # install above, so the unit genuinely does not exist and this errors out,
+  # aborting the whole dry run. A real run installs first and this succeeds.
+  # Tolerating it in check mode only is what lets --check reach the tasks that
+  # matter (storage, docker, the stack itself).
+  ignore_errors: '{{ ansible_check_mode }}'
+
+- name: Read the configured WLAN country
+  ansible.builtin.command: raspi-config nonint get_wifi_country
+  register: pi_wifi_country_current
+  changed_when: false
+  failed_when: false
+  check_mode: false
+  when: pi_wifi_country | length > 0
+
+# Without this the radio stays rfkill soft-blocked: wlan0 reports state
+# "unavailable", nmcli shows WIFI disabled, and a scan returns nothing on
+# hardware whose driver loaded perfectly.
+- name: Set the WLAN regulatory domain
+  ansible.builtin.command: raspi-config nonint do_wifi_country {{ pi_wifi_country }}
+  when:
+    - pi_wifi_country | length > 0
+    - (pi_wifi_country_current.stdout | default('') | trim) != pi_wifi_country
+  changed_when: true

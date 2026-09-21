@@ -1,0 +1,21 @@
+---
+- name: Create the Jellyfin service group
+  ansible.builtin.group:
+    name: '{{ jellyfin_service_group }}'
+    gid: '{{ jellyfin_gid }}'
+    system: true
+    state: present
+
+# No login shell and no home: this account exists to own the config, cache and
+# library files and to be the uid the container runs as — nothing ever logs in
+# as it.
+- name: Create the Jellyfin service user
+  ansible.builtin.user:
+    name: '{{ jellyfin_service_user }}'
+    uid: '{{ jellyfin_uid }}'
+    group: '{{ jellyfin_service_group }}'
+    system: true
+    shell: /usr/sbin/nologin
+    create_home: false
+    home: '{{ jellyfin_stack_dir }}'
+    state: present
