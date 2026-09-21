@@ -2,6 +2,17 @@
 # Config and cache stay on the Pi's internal storage: they are small, rebuilt
 # from the library on demand, and keeping them off the external drive means a
 # drive swap never drags a stale server identity along with it.
+# The stack directory holds root-owned files (the compose file and .env), so it
+# is never chowned recursively - doing so fights the copy/template tasks below
+# and the pair flip-flop forever, restarting Jellyfin on every run.
+- name: Create the Jellyfin stack directory
+  ansible.builtin.file:
+    path: '{{ jellyfin_stack_dir }}'
+    state: directory
+    owner: '{{ jellyfin_service_user }}'
+    group: '{{ jellyfin_service_group }}'
+    mode: '0750'
+
 - name: Create the Jellyfin state directories
   ansible.builtin.file:
     path: '{{ item }}'
@@ -9,15 +20,14 @@
     owner: '{{ jellyfin_service_user }}'
     group: '{{ jellyfin_service_group }}'
     mode: '0750'
-  # Recursive because the uid the container runs as is configuration, not a
-  # constant: changing jellyfin_uid (or adopting a config tree written by a
-  # differently-numbered user) leaves every file inside owned by the old uid
-  # while the directory itself looks correct. Jellyfin then crash-loops on
-  # "SQLite Error 8: attempt to write a readonly database", which points at
-  # the database rather than at ownership and is genuinely hard to read.
-  recurse: true
+    # Recursive, unlike the stack directory: these hold data the container
+    # writes as jellyfin_uid. That uid is configuration, not a constant, so a
+    # tree written by a different one leaves every file owned by the old uid
+    # while the directory itself looks correct. Jellyfin then crash-loops on
+    # "SQLite Error 8: attempt to write a readonly database", which points at
+    # the database rather than at ownership and is genuinely hard to read.
+    recurse: true
   loop:
-    - '{{ jellyfin_stack_dir }}'
     - '{{ jellyfin_config_dir }}'
     - '{{ jellyfin_cache_dir }}'
   # --check only simulates the service-user creation in tasks/user.yml, so the
