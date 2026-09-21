@@ -34,13 +34,17 @@ export const GithubActionsBadgeLink = ({ badge }: { badge: Badge }) => (
   </a>
 );
 
-function toActionsWorkflowUrl(blobUrl: string): string | null {
-  const url = new URL(blobUrl);
+function toActionsWorkflowUrl(htmlUrl: string): string | null {
+  const url = new URL(htmlUrl);
   if (url.hostname !== 'github.com') return null;
   const parts = url.pathname.split('/').filter(Boolean);
-  if (parts.length < 7) return null;
-  const [owner, repo, blobKeyword, , ...rest] = parts;
-  if (blobKeyword !== 'blob') return null;
+  if (parts.length < 3) return null;
+  const [, , keyword] = parts;
+  // Dynamic workflows (Dependabot, CodeQL default setup) already have an
+  // `/actions/workflows/...` html_url with no `.github/workflows` blob to parse.
+  if (keyword === 'actions') return htmlUrl;
+  if (keyword !== 'blob' || parts.length < 7) return null;
+  const [owner, repo, , , ...rest] = parts;
   const dotgithubIdx = rest.indexOf('.github');
   if (dotgithubIdx === -1 || rest[dotgithubIdx + 1] !== 'workflows')
     return null;
