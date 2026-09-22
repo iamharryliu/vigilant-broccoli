@@ -45,16 +45,50 @@ echo "Restoring (stops Gitea, replaces data + repos + config, restarts)..."
 # /mnt/gitea-data/git/repositories. The SQLite gitea.db in data/ is used as-is.
 ssh $SSH_OPTS "$GITEA_SSH" 'bash -s' <<'REMOTE'
 set -e
+LIVE_REPOS=/mnt/gitea-data/git/repositories
+PRIOR_REPOS="${LIVE_REPOS}.prerestore.$(date -u +%Y%m%d%H%M%S)"
+
 sudo docker stop gitea
 sudo rm -rf /tmp/gitea-restore && sudo mkdir -p /tmp/gitea-restore
 sudo python3 -m zipfile -e /tmp/gitea-dump.zip /tmp/gitea-restore
 
-sudo rm -rf /mnt/gitea-data/git/repositories
-sudo mkdir -p /mnt/gitea-data/git/repositories /mnt/gitea-data/gitea/conf
-sudo cp -a /tmp/gitea-restore/repos/. /mnt/gitea-data/git/repositories/
-sudo cp -a /tmp/gitea-restore/data/. /mnt/gitea-data/gitea/
-sudo cp -a /tmp/gitea-restore/app.ini /mnt/gitea-data/gitea/conf/app.ini
+# A corrupt zip fails the extract above, but one that extracts cleanly can still
+# be the wrong shape — a dump taken with --skip-repository, or a layout change in
+# a future Gitea. The live tree is the only other copy of these repos, so every
+# piece is checked before anything live is touched.
+for required in repos data app.ini; do
+  if [ ! -e "/tmp/gitea-restore/${required}" ]; then
+    echo "Dump is missing ${required} — refusing to restore." >&2
+    exit 1
+  fi
+done
+if [ -z "$(sudo ls -A /tmp/gitea-restore/repos)" ]; then
+  echo "Dump carries no repositories — refusing to restore." >&2
+  exit 1
+fi
 
+# Moved aside rather than deleted, and dropped only once the copy lands, so a
+# failure part-way through leaves the previous repositories recoverable.
+if [ -d "$LIVE_REPOS" ]; then
+  sudo mv "$LIVE_REPOS" "$PRIOR_REPOS"
+fi
+sudo mkdir -p "$LIVE_REPOS" /mnt/gitea-data/gitea/conf
+if ! sudo cp -a /tmp/gitea-restore/repos/. "$LIVE_REPOS"/; then
+  echo "Repository copy failed — rolling back." >&2
+  sudo rm -rf "$LIVE_REPOS"
+  if [ -d "$PRIOR_REPOS" ]; then
+    sudo mv "$PRIOR_REPOS" "$LIVE_REPOS"
+  fi
+  exit 1
+fi
+if ! sudo cp -a /tmp/gitea-restore/data/. /mnt/gitea-data/gitea/ ||
+  ! sudo cp -a /tmp/gitea-restore/app.ini /mnt/gitea-data/gitea/conf/app.ini; then
+  echo "Data/config copy failed. Previous repositories kept at ${PRIOR_REPOS}." >&2
+  exit 1
+fi
+
+# Before the chown so it doesn't walk the old tree as well.
+sudo rm -rf "$PRIOR_REPOS"
 sudo chown -R 1000:1000 /mnt/gitea-data
 sudo rm -rf /tmp/gitea-restore /tmp/gitea-dump.zip
 sudo docker start gitea
