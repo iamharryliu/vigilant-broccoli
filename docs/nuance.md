@@ -332,3 +332,16 @@ failed fetch without ever reaching the default-board-creation/persist path.
 Any other client-side hydration flow that falls back to "create and save a
 default" needs to make the same distinction between a failed load and a
 confirmed-empty one.
+
+## A `react-lib` component renders unstyled in an app that never scanned it
+
+Tailwind only generates classes it finds in its `content` globs, and each
+app's `tailwind.config.js` lists the internal libs it scans by hand. When
+`personal-website-react` started using `react-lib`'s `Sidebar`, the lib's
+glob was never added, so every class that only appears inside the lib
+(`max-md:-translate-x-full`, `max-md:w-64`, `md:w-14`, ...) was missing from
+the CSS. Classes the app happened to use elsewhere still worked, so the
+sidebar half-rendered: on mobile it sat on-screen over the page instead of
+sliding off-canvas and blocked the menu button. Nothing fails at build or
+lint time. Whenever an app starts importing a new internal UI lib, add that
+lib's `src/**` glob to the app's Tailwind `content`.
