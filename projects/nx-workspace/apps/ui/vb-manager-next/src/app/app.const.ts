@@ -41,10 +41,6 @@ export const SIDEBAR_ROUTE = {
     title: 'Language Learning',
     path: '/language-learning',
   },
-  FEATURE_SANDBOX: {
-    title: 'Feature Sandbox',
-    path: '/feature-sandbox',
-  },
   CAREER: {
     title: 'Career',
     path: '/career',
