@@ -12,6 +12,7 @@
 - Internal libs
   - `common-browser`
   - `personal-common-js`
+  - `react-lib`
   - `resume`
 - Cloud services
   - Cloudflare Pages
