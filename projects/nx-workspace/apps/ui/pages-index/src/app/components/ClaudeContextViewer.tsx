@@ -54,7 +54,7 @@ export default function ClaudeContextViewer() {
       appearance={appearance}
       hasBackground={false}
       accentColor="sky"
-      className="flex min-h-0 flex-1 flex-col"
+      className="flex !min-h-0 flex-1 flex-col"
     >
       <DocsViewer
         getStructure={fetchStructure}
