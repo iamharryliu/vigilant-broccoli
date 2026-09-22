@@ -307,3 +307,28 @@ done`) before touching compose. If this resurfaces, check, in order:
 --format '{{.Config.Env}}'`. Recovery is `sudo docker compose -f
 /opt/socket-server/docker-compose.yml up -d --force-recreate` once cloud-init
 is done, then a rerun of `pnpm tf:post-apply`, which is idempotent.
+
+## A failed kanban board fetch used to look like a brand-new account
+
+`vb-manager-next`'s kanban board (`src/app/components/kanban.component.tsx`,
+`useBoards`) persists boards to MongoDB per `userEmail`
+(`src/app/api/kanban/db.ts`). `fetchKanbanState` used to return `null` for
+_any_ non-OK HTTP response from `GET /api/kanban/boards` — collapsing a real
+error (an expired/invalid auth token, a transient failure in
+`getUserEmail`'s `supabase.auth.getUser(token)` call, a Mongo connection
+blip) into the exact same value as "this user has never saved a board."
+
+`hydrate()` treated that value as license to fall through its full
+first-time-user path: check `localStorage` (empty, since existing users'
+local boards were already migrated and cleared), find nothing, then create a
+default empty board and immediately `PUT` it — upserting over the real saved
+document. One transient GET failure was enough to permanently wipe a user's
+boards on the very next write, with no merge or backup: `saveKanbanState`
+does a plain `$set` upsert.
+
+Fixed by making `fetchKanbanState` return a tagged result
+(`{ ok: true, state } | { ok: false }`) so `hydrate()` can bail out on a
+failed fetch without ever reaching the default-board-creation/persist path.
+Any other client-side hydration flow that falls back to "create and save a
+default" needs to make the same distinction between a failed load and a
+confirmed-empty one.
