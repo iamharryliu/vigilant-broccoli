@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Table } from '@radix-ui/themes';
 import {
   Callout,
@@ -44,6 +44,16 @@ const RUN_ERROR = 'Failed to trigger agentic solve workflow';
 const RUN_TITLE = 'Run agentic solve';
 const LOADING_MESSAGE = 'Loading TODO.md…';
 const CELL_TEXT_CLASS = 'text-xs';
+const TABLE_OF_CONTENTS_TITLE = 'Table of Contents';
+const NON_SLUG_CHARS_RE = /[^a-z0-9]+/g;
+const EDGE_DASHES_RE = /^-+|-+$/g;
+
+const slugify = (heading: string) =>
+  heading
+    .toLowerCase()
+    .trim()
+    .replace(NON_SLUG_CHARS_RE, '-')
+    .replace(EDGE_DASHES_RE, '');
 
 const generateRowId = () => crypto.randomUUID().replace(/-/g, '').slice(0, 6);
 
@@ -60,6 +70,13 @@ export const TodoListComponent = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingCell, setEditingCell] = useState<string | null>(null);
+  const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  const scrollToSection = (heading: string) =>
+    sectionRefs.current[heading]?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
 
   useEffect(() => {
     const fetchTodo = async () => {
@@ -147,8 +164,36 @@ export const TodoListComponent = () => {
           <CalloutText>{error}</CalloutText>
         </Callout>
       )}
+      {sections.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <Heading size="3">{TABLE_OF_CONTENTS_TITLE}</Heading>
+          <ul className="list-disc pl-5">
+            {sections.map(section => (
+              <li key={section.heading}>
+                <a
+                  href={`#${slugify(section.heading)}`}
+                  onClick={event => {
+                    event.preventDefault();
+                    scrollToSection(section.heading);
+                  }}
+                  className="text-sm text-primary underline underline-offset-4"
+                >
+                  {section.heading}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {sections.map(section => (
-        <div key={section.heading} className="flex flex-col gap-2">
+        <div
+          key={section.heading}
+          id={slugify(section.heading)}
+          ref={element => {
+            sectionRefs.current[section.heading] = element;
+          }}
+          className="flex flex-col gap-2"
+        >
           <Heading size="3">{section.heading}</Heading>
           <div className="overflow-x-auto">
             <Table.Root variant="surface">
