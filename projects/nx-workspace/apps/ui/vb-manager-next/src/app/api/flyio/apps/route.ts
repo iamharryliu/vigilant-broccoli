@@ -1,35 +1,21 @@
 import { NextResponse } from 'next/server';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import { FlyioCommand } from '@vigilant-broccoli/ci';
-
-const execAsync = promisify(exec);
-
-const AUTH_ERROR_STRINGS = ['no access token', 'not logged in', 'unauthorized'];
-
-interface FlyApp {
-  name: string;
-  status: string;
-}
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { FlyioService } from '@vigilant-broccoli/devops-cli';
 
 export async function GET() {
   try {
-    const { stdout } = await execAsync(FlyioCommand.listApps);
-    const apps = JSON.parse(stdout);
-    const formattedApps: FlyApp[] = apps.map(
-      (app: { Name: string; Status: string }) => ({
-        name: app.Name,
-        status: app.Status,
-      }),
-    );
-    return NextResponse.json({ success: true, apps: formattedApps });
+    const apps = await FlyioService.listApps();
+    return NextResponse.json({ success: true, apps });
   } catch (error) {
     console.error('Error fetching Fly.io apps:', error);
-    const stderr = (error as { stderr?: string }).stderr ?? '';
-    const authRequired = AUTH_ERROR_STRINGS.some(s => stderr.includes(s));
+    const authRequired = FlyioService.isAuthError(error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch Fly.io apps', authRequired },
-      { status: authRequired ? 401 : 500 },
+      {
+        status: authRequired
+          ? HTTP_STATUS_CODES.UNAUTHORIZED
+          : HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      },
     );
   }
 }

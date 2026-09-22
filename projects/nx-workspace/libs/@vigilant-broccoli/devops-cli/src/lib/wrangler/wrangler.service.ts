@@ -1,4 +1,5 @@
 import { ShellUtils } from '@vigilant-broccoli/common-node';
+import { runCli, runCliJson, startDetachedCli } from '../cli/cli.utils';
 
 interface WranglerProject {
   name: string;
@@ -14,6 +15,7 @@ interface WranglerDeploymentJson {
   Id: string;
 }
 
+const WRANGLER_CLI = 'wrangler';
 const LOG_PREFIX = '[wrangler]';
 const MAX_STALE_BATCHES = 3;
 const DEFAULT_KEEP_DEPLOYMENTS = 10;
@@ -21,41 +23,48 @@ const DELETE_CONCURRENCY = 4;
 const BATCH_DELAY_MS = 2000;
 
 const WranglerCommand = {
-  login: 'wrangler login',
-  listPagesProjects: 'wrangler pages project list --json',
-  listDeployments: (projectName: string) =>
-    `wrangler pages deployment list --project-name ${projectName} --json`,
-  deletePagesProject: (projectName: string) =>
-    `wrangler pages project delete ${projectName} --yes`,
+  login: ['login'],
+  listPagesProjects: ['pages', 'project', 'list', '--json'],
+  listDeployments: (projectName: string) => [
+    'pages',
+    'deployment',
+    'list',
+    '--project-name',
+    projectName,
+    '--json',
+  ],
+  deletePagesProject: (projectName: string) => [
+    'pages',
+    'project',
+    'delete',
+    projectName,
+    '--yes',
+  ],
   deleteDeploymentsBatch: (projectName: string, ids: string[]) =>
     `printf '%s\\n' ${ids.join(' ')}` +
-    ` | xargs -P ${DELETE_CONCURRENCY} -I {} sh -c 'wrangler pages deployment delete {} --project-name ${projectName} --force 2>&1 || true'`,
+    ` | xargs -P ${DELETE_CONCURRENCY} -I {} sh -c '${WRANGLER_CLI} pages deployment delete {} --project-name ${projectName} --force 2>&1 || true'`,
 };
 
 const sleep = (ms: number): Promise<void> =>
   new Promise(resolve => setTimeout(resolve, ms));
 
 async function listPagesProjects(): Promise<WranglerProject[]> {
-  const output = await ShellUtils.runShellCommand(
+  const parsed = await runCliJson<WranglerProjectJson[] | null>(
+    WRANGLER_CLI,
     WranglerCommand.listPagesProjects,
-    true,
   );
-  const parsed: WranglerProjectJson[] = JSON.parse((output as string) || '[]');
-  return parsed.map(p => ({
+  return (parsed ?? []).map(p => ({
     name: p['Project Name'],
     domains: p['Project Domains'].split(',').map(d => d.trim()),
   }));
 }
 
 async function listDeploymentIds(projectName: string): Promise<string[]> {
-  const output = await ShellUtils.runShellCommand(
+  const parsed = await runCliJson<WranglerDeploymentJson[] | null>(
+    WRANGLER_CLI,
     WranglerCommand.listDeployments(projectName),
-    true,
   );
-  const parsed: WranglerDeploymentJson[] = JSON.parse(
-    (output as string) || '[]',
-  );
-  return parsed.map(deployment => deployment.Id);
+  return (parsed ?? []).map(deployment => deployment.Id);
 }
 
 async function pruneDeployments(
@@ -112,14 +121,12 @@ async function deleteAllDeployments(projectName: string): Promise<void> {
 async function deletePagesProject(projectName: string): Promise<void> {
   console.log(`${LOG_PREFIX} deleting project ${projectName}`);
   await deleteAllDeployments(projectName);
-  await ShellUtils.runShellCommand(
-    WranglerCommand.deletePagesProject(projectName),
-  );
+  await runCli(WRANGLER_CLI, WranglerCommand.deletePagesProject(projectName));
   console.log(`${LOG_PREFIX} project ${projectName} deleted`);
 }
 
-async function login(): Promise<void> {
-  await ShellUtils.runShellCommand(WranglerCommand.login);
+function login(): void {
+  startDetachedCli(WRANGLER_CLI, WranglerCommand.login);
 }
 
 export const WranglerService = {

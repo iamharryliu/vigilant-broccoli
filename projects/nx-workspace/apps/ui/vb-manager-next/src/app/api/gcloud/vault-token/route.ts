@@ -1,17 +1,10 @@
 import { NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-
-const execAsync = promisify(exec);
-
-const GCP_PROJECT = 'vigilant-broccoli';
-const VAULT_TOKEN_SECRET = 'VB_VM_VAULT_ROOT_TOKEN';
-const COPY_VAULT_TOKEN_COMMAND = `gcloud secrets versions access latest --secret=${VAULT_TOKEN_SECRET} --project=${GCP_PROJECT} | pbcopy`;
+import { GcloudService } from '@vigilant-broccoli/devops-cli';
 
 export async function POST() {
   try {
-    await execAsync(COPY_VAULT_TOKEN_COMMAND);
+    await GcloudService.copyVaultTokenToClipboard();
 
     return NextResponse.json({ success: true });
   } catch (error) {

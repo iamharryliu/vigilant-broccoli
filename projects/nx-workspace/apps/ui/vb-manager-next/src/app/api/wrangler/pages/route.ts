@@ -1,4 +1,4 @@
-import { WranglerService } from '@vigilant-broccoli/ci';
+import { WranglerService } from '@vigilant-broccoli/devops-cli';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { NextResponse } from 'next/server';
 

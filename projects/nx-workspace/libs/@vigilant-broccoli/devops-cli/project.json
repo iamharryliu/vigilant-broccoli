@@ -1,0 +1,23 @@
+{
+  "name": "@vigilant-broccoli/devops-cli",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@vigilant-broccoli/devops-cli/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/@vigilant-broccoli/devops-cli",
+        "tsConfig": "libs/@vigilant-broccoli/devops-cli/tsconfig.lib.json",
+        "packageJson": "libs/@vigilant-broccoli/devops-cli/package.json",
+        "main": "libs/@vigilant-broccoli/devops-cli/src/index.ts",
+        "assets": ["libs/@vigilant-broccoli/devops-cli/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
