@@ -26,6 +26,7 @@ export const PAGE_TITLES = {
   GROCERY: 'Grocery List',
   KITCHEN_CHORES: 'Kitchen Chores',
   KITCHEN_NOTES: 'Kitchen Notes',
+  KITCHEN_PROJECTS: 'Kitchen Projects',
   MEAL_DETAIL: 'Meal',
   LEISURE: 'Leisure',
   LEISURE_DETAIL: 'Leisure Activity',

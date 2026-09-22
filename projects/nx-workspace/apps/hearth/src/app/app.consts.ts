@@ -16,6 +16,7 @@ import {
   MessageCircle,
   Home,
   Receipt,
+  Timer,
 } from 'lucide-react';
 import { ROUTES } from '../lib/routes';
 
@@ -87,6 +88,11 @@ export const NAV_LINKS: NavLink[] = [
       { label: 'Grocery List', href: ROUTES.GROCERY, icon: ShoppingCart },
       { label: 'Kitchen Chores', href: ROUTES.KITCHEN_CHORES, icon: Sparkles },
       { label: 'Kitchen Notes', href: ROUTES.KITCHEN_NOTES, icon: StickyNote },
+      {
+        label: 'Kitchen Projects',
+        href: ROUTES.KITCHEN_PROJECTS,
+        icon: Timer,
+      },
       { label: 'Kitchen Events', href: ROUTES.FOOD_CALENDAR, icon: Calendar },
       { label: 'Food Assistant', href: ROUTES.FOOD_CHAT, icon: MessageCircle },
     ],

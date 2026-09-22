@@ -122,6 +122,46 @@ export interface ChecklistItem {
   updatedAt: string;
 }
 
+export const KITCHEN_PROJECT_KINDS = [
+  'FERMENT',
+  'PROOF',
+  'MARINATE',
+  'THAW',
+  'COMPONENT',
+] as const;
+
+export type KitchenProjectKind = (typeof KITCHEN_PROJECT_KINDS)[number];
+
+export const KITCHEN_PROJECT_LOCATIONS = [
+  'COUNTER',
+  'FRIDGE',
+  'FREEZER',
+  'PANTRY',
+] as const;
+
+export type KitchenProjectLocation = (typeof KITCHEN_PROJECT_LOCATIONS)[number];
+
+export const KITCHEN_PROJECT_RESOLUTIONS = ['USED', 'DISCARDED'] as const;
+
+export type KitchenProjectResolution =
+  (typeof KITCHEN_PROJECT_RESOLUTIONS)[number];
+
+export interface KitchenProjectItem {
+  id: string;
+  name: string;
+  kind: KitchenProjectKind;
+  location: KitchenProjectLocation;
+  notes: string | null;
+  startedAt: string;
+  readyAt: string | null;
+  useByAt: string | null;
+  resolution: KitchenProjectResolution | null;
+  resolvedAt: string | null;
+  homeId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface WhereIsItem {
   id: string;
   title: string;
