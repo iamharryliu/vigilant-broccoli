@@ -77,7 +77,7 @@ export default function Page() {
         <TabsTrigger value={TAB.NETWORK}>Network Tools</TabsTrigger>
         <TabsTrigger value={TAB.TEXT_TOOLS}>Text Tools</TabsTrigger>
         <TabsTrigger value={TAB.API_KEYS}>API Keys</TabsTrigger>
-        <TabsTrigger value={TAB.TODO}>TODO.md</TabsTrigger>
+        <TabsTrigger value={TAB.TODO}>Todo</TabsTrigger>
         <TabsTrigger value={TAB.FEATURE_SANDBOX}>Feature Sandbox</TabsTrigger>
       </TabsList>
       <TabsContent value={TAB.LOCAL} className="pt-4 flex-1 min-h-0">
