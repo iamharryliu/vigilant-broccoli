@@ -15,7 +15,6 @@ type Attachment = {
   path?: string;
 };
 
-export interface EjsTemplate {
-  path: string;
-  data?: Record<string, string>;
+export interface EmailTemplateData {
+  text: string;
 }

@@ -1,5 +1,4 @@
-import path from 'path';
-import { EjsTemplate } from './email.models';
+import { EmailTemplateData } from './email.models';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
 export function getDefaultEmailRequest() {
@@ -11,9 +10,6 @@ export function getDefaultEmailRequest() {
   };
 }
 
-export const DEFAULT_EJS_TEMPLATE: EjsTemplate = {
-  path: path.resolve(__dirname, './assets/default.ejs'),
-  data: {
-    text: 'default text',
-  },
+export const DEFAULT_TEMPLATE_DATA: EmailTemplateData = {
+  text: 'default text',
 };
