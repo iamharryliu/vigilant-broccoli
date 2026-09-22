@@ -5,9 +5,15 @@
       "RECIPES": "Recipes",
       "CALENDAR": "Kitchen Events"
     },
+    "LIST_TABS": {
+      "GROCERY": "Grocery",
+      "KITCHEN_CHORES": "Chores",
+      "KITCHEN_PROJECTS": "Projects"
+    },
     "COLUMNS": {
       "GROCERY": "Grocery List",
       "KITCHEN_CHORES": "Kitchen Chores",
+      "KITCHEN_PROJECTS": "Kitchen Projects",
       "FOOD_CHAT": "Food Assistant"
     }
   },

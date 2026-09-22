@@ -19,6 +19,7 @@ import { TopbarSlot } from '../providers/topbar-slot-provider';
 import { GroceryList } from '../grocery/GroceryList';
 import { KitchenChoresList } from '../kitchen-chores/KitchenChoresList';
 import { KitchenNotes } from '../kitchen-notes/KitchenNotes';
+import { KitchenProjectsList } from '../kitchen-projects/KitchenProjectsList';
 import { KitchenEvents } from './KitchenEvents';
 import { KitchenEventCalendar } from './KitchenEventCalendar';
 import { FoodChatPanel } from './FoodChatPanel';
@@ -30,6 +31,15 @@ const RECIPES_TAB = 'recipes';
 const CALENDAR_TAB = 'calendar';
 const TABS = [PLANNER_TAB, RECIPES_TAB, CALENDAR_TAB];
 const TAB_STORAGE_KEY = 'food-planner:active-tab';
+const GROCERY_LIST_TAB = 'grocery';
+const KITCHEN_CHORES_LIST_TAB = 'kitchen-chores';
+const KITCHEN_PROJECTS_LIST_TAB = 'kitchen-projects';
+const LIST_TABS = [
+  GROCERY_LIST_TAB,
+  KITCHEN_CHORES_LIST_TAB,
+  KITCHEN_PROJECTS_LIST_TAB,
+];
+const LIST_TAB_STORAGE_KEY = 'food-planner:active-list-tab';
 const TAB_PARAM = 'tab';
 const FOOD_CHAT_PARAM = 'foodChat';
 const FOOD_CHAT_OPEN_VALUE = '1';
@@ -46,6 +56,7 @@ function FoodPlannerContent() {
   );
   const [groceryRefresh, setGroceryRefresh] = useState(0);
   const [calendarRefresh, setCalendarRefresh] = useState(0);
+  const [activeListTab, setActiveListTab] = useState(GROCERY_LIST_TAB);
 
   const chatOpen = searchParams.get(FOOD_CHAT_PARAM) === FOOD_CHAT_OPEN_VALUE;
 
@@ -75,9 +86,19 @@ function FoodPlannerContent() {
     if (stored && TABS.includes(stored)) setActiveTab(stored);
   }, [tabParam]);
 
+  useEffect(() => {
+    const stored = localStorage.getItem(LIST_TAB_STORAGE_KEY);
+    if (stored && LIST_TABS.includes(stored)) setActiveListTab(stored);
+  }, []);
+
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     localStorage.setItem(TAB_STORAGE_KEY, value);
+  };
+
+  const handleListTabChange = (value: string) => {
+    setActiveListTab(value);
+    localStorage.setItem(LIST_TAB_STORAGE_KEY, value);
   };
 
   const tabTriggers = (
@@ -119,17 +140,49 @@ function FoodPlannerContent() {
           className="md:mt-0 lg:h-[calc(100dvh_-_var(--topbar-h)_-_4rem)]"
         >
           <div className="grid h-full grid-cols-1 items-stretch gap-6 lg:min-h-0 lg:grid-cols-3">
-            <div className="flex min-h-0 flex-col gap-6 lg:overflow-y-auto">
-              <CardContainer title={t('FOOD_PLANNER.COLUMNS.GROCERY')}>
-                <GroceryList
-                  refreshSignal={groceryRefresh}
-                  onCalendarEventAdded={bumpCalendar}
-                />
-              </CardContainer>
+            <div className="flex min-h-0 flex-col lg:overflow-y-auto">
+              <Tabs
+                value={activeListTab}
+                onValueChange={handleListTabChange}
+                className="flex w-full flex-col"
+              >
+                <TabsList className="self-start">
+                  <TabsTrigger value={GROCERY_LIST_TAB}>
+                    {t('FOOD_PLANNER.LIST_TABS.GROCERY')}
+                  </TabsTrigger>
+                  <TabsTrigger value={KITCHEN_CHORES_LIST_TAB}>
+                    {t('FOOD_PLANNER.LIST_TABS.KITCHEN_CHORES')}
+                  </TabsTrigger>
+                  <TabsTrigger value={KITCHEN_PROJECTS_LIST_TAB}>
+                    {t('FOOD_PLANNER.LIST_TABS.KITCHEN_PROJECTS')}
+                  </TabsTrigger>
+                </TabsList>
 
-              <CardContainer title={t('FOOD_PLANNER.COLUMNS.KITCHEN_CHORES')}>
-                <KitchenChoresList onCalendarEventAdded={bumpCalendar} />
-              </CardContainer>
+                <TabsContent value={GROCERY_LIST_TAB}>
+                  <CardContainer title={t('FOOD_PLANNER.COLUMNS.GROCERY')}>
+                    <GroceryList
+                      refreshSignal={groceryRefresh}
+                      onCalendarEventAdded={bumpCalendar}
+                    />
+                  </CardContainer>
+                </TabsContent>
+
+                <TabsContent value={KITCHEN_CHORES_LIST_TAB}>
+                  <CardContainer
+                    title={t('FOOD_PLANNER.COLUMNS.KITCHEN_CHORES')}
+                  >
+                    <KitchenChoresList onCalendarEventAdded={bumpCalendar} />
+                  </CardContainer>
+                </TabsContent>
+
+                <TabsContent value={KITCHEN_PROJECTS_LIST_TAB}>
+                  <CardContainer
+                    title={t('FOOD_PLANNER.COLUMNS.KITCHEN_PROJECTS')}
+                  >
+                    <KitchenProjectsList />
+                  </CardContainer>
+                </TabsContent>
+              </Tabs>
             </div>
 
             <div className="h-96 min-h-0 lg:h-full">

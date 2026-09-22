@@ -30,6 +30,7 @@ export const ROUTES = {
   GROCERY: '/grocery',
   KITCHEN_CHORES: '/kitchen-chores',
   KITCHEN_NOTES: '/kitchen-notes',
+  KITCHEN_PROJECTS: '/kitchen-projects',
   PROJECTS: '/projects',
   PROJECTS_DETAIL: (id: string) => `/projects/${id}`,
   MEALS_DETAIL: (id: string) => `/meals/${id}`,
