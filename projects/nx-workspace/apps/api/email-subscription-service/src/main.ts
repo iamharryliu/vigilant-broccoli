@@ -61,21 +61,31 @@ const supabase = createClient(
 );
 
 let publishChannel: Promise<ConfirmChannel> | null = null;
+let publishGeneration = 0;
 
-const connectPublishChannel = async (): Promise<ConfirmChannel> => {
+const connectPublishChannel = async (
+  generation: number,
+): Promise<ConfirmChannel> => {
   const connection = await amqplib.connect(
     RABBITMQ_CONNECTION_STRING!,
     RABBITMQ_SOCKET_OPTIONS,
   );
+  // Only the generation that still owns the cached entry may clear it. amqplib
+  // emits 'error' then 'close', so a request landing between the two installs a
+  // replacement — an unguarded handler from the superseded connection would drop
+  // that replacement and leave its connection open with nothing holding it.
+  const invalidate = () => {
+    if (generation === publishGeneration) publishChannel = null;
+  };
   connection.on('error', err => {
     console.error('RabbitMQ producer connection error:', err.message);
-    publishChannel = null;
+    invalidate();
   });
   connection.on('close', () => {
     console.warn(
       'RabbitMQ producer connection closed, will reconnect on next request',
     );
-    publishChannel = null;
+    invalidate();
   });
   try {
     const channel = await connection.createConfirmChannel();
@@ -89,8 +99,9 @@ const connectPublishChannel = async (): Promise<ConfirmChannel> => {
 
 const getPublishChannel = (): Promise<ConfirmChannel> => {
   if (!publishChannel) {
-    publishChannel = connectPublishChannel().catch(err => {
-      publishChannel = null;
+    const generation = ++publishGeneration;
+    publishChannel = connectPublishChannel(generation).catch(err => {
+      if (generation === publishGeneration) publishChannel = null;
       throw err;
     });
   }
