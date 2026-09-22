@@ -16,7 +16,6 @@ const options = {
 const nextConfig = {
   nx: { ...options },
   distDir: '../../dist/apps/whiteboard/.next',
-  // `next dev` otherwise writes AGENTS.md/CLAUDE.md into the app on every run.
   agentRules: false,
 };
 const plugins = [withNx];

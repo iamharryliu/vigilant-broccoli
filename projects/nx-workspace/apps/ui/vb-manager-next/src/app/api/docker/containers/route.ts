@@ -37,7 +37,6 @@ interface StandaloneContainer {
   ports: string;
 }
 
-// Parse Docker status string to determine container state
 function parseContainerState(
   status: string,
 ):
@@ -75,7 +74,6 @@ function extractLocalPorts(portsString: string): string {
     })
     .filter(port => port);
 
-  // Remove duplicates and join with comma
   return [...new Set(ports)].join(', ');
 }
 
@@ -107,7 +105,6 @@ export async function GET() {
         const state = parseContainerState(status);
         const ports = extractLocalPorts(portsRaw);
 
-        // Group by compose project if it exists
         if (project) {
           if (!projectMap.has(project)) {
             projectMap.set(project, {
@@ -121,7 +118,6 @@ export async function GET() {
           if (service) projectData.services.set(service, ports);
           projectData.count++;
         } else {
-          // Standalone container (not part of compose)
           standaloneContainers.push({
             id,
             name,
@@ -132,10 +128,8 @@ export async function GET() {
         }
       });
 
-    // Convert project map to array
     const projects: DockerProject[] = Array.from(projectMap.entries()).map(
       ([name, data]) => {
-        // Determine overall project state
         let projectState: 'running' | 'paused' | 'exited' | 'mixed' = 'exited';
         if (data.states.has('running') && data.states.size === 1) {
           projectState = 'running';

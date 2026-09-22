@@ -61,7 +61,6 @@ const entries: { price: number; store: string; purchased_at: string }[] = [
 ];
 
 async function seed() {
-  // Clear existing entries for this item
   const { error: deleteError } = await supabase
     .from('price_entries')
     .delete()

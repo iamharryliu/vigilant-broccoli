@@ -108,7 +108,6 @@ const URLS = {
   },
 } as Record<string, ServiceUrl>;
 
-// Helper component for table cells with links
 const TableLinkCell = ({ url, label }: { url?: string; label: string }) => {
   if (!url) {
     return (

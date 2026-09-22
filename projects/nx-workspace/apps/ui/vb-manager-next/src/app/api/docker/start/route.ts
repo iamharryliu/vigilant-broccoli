@@ -28,7 +28,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Start container or compose project
     if (projectName) {
       // For compose projects, we need to find the directory and run docker-compose up
       // For now, we'll start all containers with the project label
@@ -53,7 +52,6 @@ export async function POST(request: Request) {
         );
       }
 
-      // Start all containers in the project
       await execFileAsync('docker', ['start', ...containerIds]);
 
       return NextResponse.json({
@@ -61,7 +59,6 @@ export async function POST(request: Request) {
         message: `Started ${containerIds.length} container(s) for project: ${projectName}`,
       });
     } else if (containerId) {
-      // Start a single container
       await execFileAsync('docker', ['start', String(containerId)]);
 
       return NextResponse.json({

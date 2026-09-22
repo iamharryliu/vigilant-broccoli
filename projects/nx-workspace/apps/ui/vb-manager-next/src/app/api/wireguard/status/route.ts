@@ -17,7 +17,6 @@ interface WireguardStatus {
   connections: WireguardConnection[];
 }
 
-// Extract IP address from WireGuard config file
 async function extractAddressFromConfig(configPath: string): Promise<string> {
   try {
     const configContent = await readFile(configPath, 'utf-8');
@@ -31,7 +30,6 @@ async function extractAddressFromConfig(configPath: string): Promise<string> {
   return '';
 }
 
-// Find interface by IP address and check if it's active
 async function findActiveInterface(
   address: string,
 ): Promise<{ interfaceName: string; isActive: boolean }> {
@@ -40,7 +38,6 @@ async function findActiveInterface(
   }
 
   try {
-    // Check all utun interfaces for matching IP
     const { stdout: ifconfigOutput } = await execAsync(
       `ifconfig | grep -B1 "inet ${address} " | grep "^utun" | awk '{print $1}' | tr -d ':'`,
     );
@@ -48,7 +45,6 @@ async function findActiveInterface(
     const matchingIface = ifconfigOutput.trim();
 
     if (matchingIface) {
-      // Check if interface is UP and RUNNING
       const { stdout: flagsOutput } = await execAsync(
         `ifconfig ${matchingIface} | grep "flags="`,
       );
@@ -64,7 +60,6 @@ async function findActiveInterface(
   return { interfaceName: '', isActive: false };
 }
 
-// Process a single WireGuard config file
 async function processConfigFile(
   configFile: string,
 ): Promise<WireguardConnection> {
@@ -83,7 +78,6 @@ async function processConfigFile(
 
 export async function GET() {
   try {
-    // Get list of WireGuard configurations
     const { stdout: configsOutput } = await execAsync(
       'ls -1 /opt/homebrew/etc/wireguard/*.conf 2>/dev/null || echo ""',
     );

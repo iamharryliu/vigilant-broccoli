@@ -26,7 +26,6 @@ export type ServiceUrl = {
   API_MANAGEMENT?: string;
 };
 
-// Helper component for table cells with links
 const TableLinkCell = ({ url, label }: { url?: string; label: string }) => {
   if (!url) {
     return (

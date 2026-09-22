@@ -60,23 +60,18 @@ export const LLMSimplePromptTester = () => {
 
   const handleOutputTypeChange = (newOutputType: OutputType) => {
     setOutputType(newOutputType);
-    // Clear selected models when switching output type
     setSelectedModels([]);
   };
 
-  // Filter models based on output type and image input
   const availableModels = LLM_MODELS.filter(m => {
     if (selectedModels.includes(m)) return false;
 
-    // Filter by output type
     if (outputType === 'image') {
       if (!modelSupportsImageOutput(m)) return false;
     } else {
-      // For text output, exclude image generation models
       if (modelSupportsImageOutput(m)) return false;
     }
 
-    // If images are uploaded, only show models that support image input
     if (uploadedImages.length > 0 && !modelSupportsImageInput(m)) {
       return false;
     }
@@ -98,7 +93,6 @@ export const LLMSimplePromptTester = () => {
       const imagePromise = new Promise<UploadedImage>(resolve => {
         reader.onload = e => {
           const base64 = e.target?.result as string;
-          // Remove the data URL prefix to get just the base64 string
           const base64Data = base64.split(',')[1];
           resolve({
             name: file.name,
@@ -114,7 +108,6 @@ export const LLMSimplePromptTester = () => {
     const updatedImages = [...uploadedImages, ...newImages];
     setUploadedImages(updatedImages);
 
-    // Remove selected models that don't support image input
     if (updatedImages.length > 0) {
       setSelectedModels(selectedModels.filter(m => modelSupportsImageInput(m)));
     }
