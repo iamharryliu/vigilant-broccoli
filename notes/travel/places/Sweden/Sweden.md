@@ -11,6 +11,7 @@
 
 - [Utility](#utility)
 - [Food & Drink](#food--drink)
+  - [Coffee](#coffee)
 - [Stores](#stores)
 - [Activity](#activity)
 - [Accommodation](#accommodation)
@@ -42,6 +43,12 @@
 - [Drink Spots](https://maps.app.goo.gl/qWopvXmCnxn3WXxR8)
 - [Dessert Spots](https://maps.app.goo.gl/1UqRzLEPdfzoYgJE6)
 - [Work Cafes](https://maps.app.goo.gl/eXVHPQRZgcNGekeV8)
+
+### Coffee
+
+| Cafe                                             | Description                                                                               |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| [Lykke Kaffegårdar](https://www.lykkegardar.se/) | Stockholm-based roastery growing, roasting, and selling coffee direct from its own farms. |
 
 ### Services
 

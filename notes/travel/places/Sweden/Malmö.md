@@ -139,6 +139,8 @@
   - Love Dance Academy - A salsa/bachata dance school.
 - Physical Activity
   - [Art of Roll](https://www.artofroll.com/)
+  - Brazilian Jiu Jitsu
+    - [Art of Roll Calendar](https://www.artofroll.com/wp-content/uploads/2025/05/Art-of-Roll-Calendar.html)
   - Skating
     - [Malmö Ice Flyers](https://malmoiceflyers.se/)
     - [Dance Skate Malmö](https://www.instagram.com/danceskatemalmo?igsh=eGdkMWdyeWoxZHZj)
