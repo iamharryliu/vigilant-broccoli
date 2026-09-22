@@ -10,7 +10,7 @@ import Sidebar from './Sidebar';
 
 const PUBLIC_ROUTES = [ROUTES.LOGIN, ROUTES.SIGNUP, ROUTES.AUTH_CALLBACK];
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const session = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -54,7 +54,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <TopbarSlotProvider>
+    <>
       <Sidebar
         mobileOpen={sidebarOpen}
         onMobileClose={() => setSidebarOpen(false)}
@@ -63,6 +63,19 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="pt-[var(--topbar-h)] pl-0 md:pl-14 md:peer-hover:pl-48 transition-[padding] duration-200">
         {children}
       </div>
+    </>
+  );
+}
+
+/**
+ * The slot provider wraps every branch, not just the authenticated one: pages
+ * render their topbar tabs through `TopbarSlot` before auth resolves, and a
+ * missing provider throws instead of simply rendering nothing.
+ */
+export default function AppLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <TopbarSlotProvider>
+      <AppLayoutContent>{children}</AppLayoutContent>
     </TopbarSlotProvider>
   );
 }
