@@ -977,15 +977,6 @@ importers:
         specifier: '*'
         version: 19.2.7
 
-  libs/@vigilant-broccoli/ci:
-    dependencies:
-      '@vigilant-broccoli/common-node':
-        specifier: workspace:*
-        version: link:../common-node
-      tslib:
-        specifier: ^2.3.0
-        version: 2.8.1
-
   libs/@vigilant-broccoli/common-browser:
     dependencies:
       '@vigilant-broccoli/common-js':
@@ -1014,6 +1005,15 @@ importers:
 
   libs/@vigilant-broccoli/deployment:
     dependencies:
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  libs/@vigilant-broccoli/devops-cli:
+    dependencies:
+      '@vigilant-broccoli/common-node':
+        specifier: workspace:*
+        version: link:../common-node
       tslib:
         specifier: ^2.3.0
         version: 2.8.1

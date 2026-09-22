@@ -1,34 +1,38 @@
 import { NextResponse } from 'next/server';
-import { spawn, exec } from 'child_process';
-import { promisify } from 'util';
-import { FlyioCommand } from '@vigilant-broccoli/ci';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import {
+  FLYIO_LOGIN_FAILURE,
+  FlyioLoginFailure,
+  FlyioService,
+} from '@vigilant-broccoli/devops-cli';
 
-const execAsync = promisify(exec);
-
-const WAIT_FOR_AUTH_ATTEMPTS = 10;
-const WAIT_FOR_AUTH_INTERVAL_MS = 500;
-
-const waitForAuth = async (): Promise<void> => {
-  for (let i = 0; i < WAIT_FOR_AUTH_ATTEMPTS; i++) {
-    try {
-      await execAsync(FlyioCommand.authToken);
-      return;
-    } catch {
-      await new Promise(resolve =>
-        setTimeout(resolve, WAIT_FOR_AUTH_INTERVAL_MS),
-      );
-    }
-  }
-  throw new Error('Auth token not available after login');
+const LOGIN_ERROR_MESSAGES: Record<FlyioLoginFailure, string> = {
+  [FLYIO_LOGIN_FAILURE.failed]: 'Fly.io login failed',
+  [FLYIO_LOGIN_FAILURE.timedOut]:
+    'Fly.io login timed out waiting for the browser sign-in',
+  [FLYIO_LOGIN_FAILURE.tokenMissing]:
+    'Fly.io login finished but no token was written',
 };
 
 export async function POST() {
-  await new Promise<void>((resolve, reject) => {
-    const [cmd, ...args] = FlyioCommand.authLogin.split(' ');
-    const child = spawn(cmd, args, { stdio: 'ignore' });
-    child.on('close', code => (code === 0 ? resolve() : reject(code)));
-    child.on('error', reject);
-  });
-  await waitForAuth();
-  return NextResponse.json({ success: true });
+  try {
+    const { success, failure, authUrl } = await FlyioService.login();
+
+    if (!success && failure) {
+      return NextResponse.json(
+        { success: false, error: LOGIN_ERROR_MESSAGES[failure], authUrl },
+        { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+      );
+    }
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error logging in to Fly.io:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: LOGIN_ERROR_MESSAGES[FLYIO_LOGIN_FAILURE.failed],
+      },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+  }
 }

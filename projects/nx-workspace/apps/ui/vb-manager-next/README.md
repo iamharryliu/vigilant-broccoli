@@ -14,11 +14,11 @@ Management dashboard app.
   - Leaflet / react-leaflet, react-markdown, fuse.js
   - Socket.IO client (chat demo)
 - Internal libs
-  - `ci`
   - `common-browser`
   - `common-js`
   - `common-node`
   - `deployment`
+  - `devops-cli`
   - `github-workspace`
   - `github-workspace-js`
   - `google-workspace`
