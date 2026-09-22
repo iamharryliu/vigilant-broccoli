@@ -86,6 +86,17 @@
         "ensure-cf-project:production",
         "prune-deployments:production"
       ]
+    },
+    "ensure-cf-project:preview": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw preview-harryliu-dev-react || npx wrangler pages project create preview-harryliu-dev-react --production-branch main"
+    },
+    "prune-deployments:preview": {
+      "command": "npx tsx scripts/prune-wrangler-preview-deployments.ts preview-harryliu-dev-react",
+      "dependsOn": ["ensure-cf-project:preview"]
+    },
+    "deploy:preview": {
+      "command": "npx wrangler pages deploy dist/apps/ui/personal-website-react --project-name preview-harryliu-dev-react --branch \"$PREVIEW_BRANCH\"",
+      "dependsOn": ["build", "ensure-cf-project:preview"]
     }
   }
 }

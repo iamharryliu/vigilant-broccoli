@@ -28,6 +28,7 @@ npx wrangler delete [name of worker]
 - Tunnels (`cloudflared`): free, no bandwidth cap; an outbound-only tunnel replaces every inbound firewall rule on the origin.
 - Zero Trust Access: free for up to 50 users (email OTP, identity providers, service tokens included) — enough to gate every self-hosted admin UI behind an owner-email policy.
 - Workers: 100k requests/day; Pages: 500 builds/month, unlimited bandwidth.
+- Pages branch previews: wrangler direct uploads with `--branch` get a free `<branch>.<project>.pages.dev` alias; deployments pile up one per push, which is why the preview projects are pruned to one deployment per live branch.
 
 ## References
 

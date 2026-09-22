@@ -85,6 +85,17 @@
         "parallel": false,
         "cwd": "{projectRoot}"
       }
+    },
+    "ensure-cf-project:preview": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw preview-pages-index || npx wrangler pages project create preview-pages-index --production-branch main"
+    },
+    "prune-deployments:preview": {
+      "command": "npx tsx scripts/prune-wrangler-preview-deployments.ts preview-pages-index",
+      "dependsOn": ["ensure-cf-project:preview"]
+    },
+    "deploy:preview": {
+      "command": "npx wrangler pages deploy dist/pages-index --project-name preview-pages-index --branch \"$PREVIEW_BRANCH\"",
+      "dependsOn": ["build", "ensure-cf-project:preview"]
     }
   }
 }
