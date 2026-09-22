@@ -15,7 +15,7 @@ module.exports = {
     '../../../libs/@vigilant-broccoli/github-workspace-js/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/next-lib/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/react-sandbox/src/**/*.{tsx,ts,jsx,js,html}',
-    '../../../libs/@vigilant-broccoli/ci/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/devops-cli/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/github-workspace/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/llm-schemas/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/vibecheck-lite/src/**/*.{tsx,ts,jsx,js,html}',

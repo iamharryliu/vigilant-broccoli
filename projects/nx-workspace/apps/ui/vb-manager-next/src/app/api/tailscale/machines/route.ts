@@ -1,10 +1,7 @@
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { exec } from 'child_process';
+import { TailscaleService } from '@vigilant-broccoli/devops-cli';
 import { NextResponse } from 'next/server';
-import { promisify } from 'util';
-
-const execAsync = promisify(exec);
 
 const TAILNET = 'echidna-rohu.ts.net';
 const TAILSCALE_API_BASE = 'https://api.tailscale.com/api/v2';
@@ -13,7 +10,6 @@ const NOT_AVAILABLE = 'N/A';
 const ENV_KEY = 'TAILSCALE_API_KEY';
 const ERR_NOT_CONFIGURED = `${ENV_KEY} not configured`;
 const ERR_FETCH_FAILED = 'Failed to fetch Tailscale machines';
-const TAILSCALE_IP_CMD = 'tailscale ip -4';
 
 interface TailscaleDevice {
   id: string;
@@ -42,19 +38,6 @@ interface TailscaleMachine {
 
 const isOnline = (lastSeen: string): boolean =>
   Date.now() - new Date(lastSeen).getTime() < ONLINE_THRESHOLD_MS;
-
-const getLocalTailscaleIps = async (): Promise<string[]> => {
-  try {
-    const { stdout } = await execAsync(TAILSCALE_IP_CMD);
-    return stdout
-      .trim()
-      .split('\n')
-      .map(s => s.trim())
-      .filter(Boolean);
-  } catch {
-    return [];
-  }
-};
 
 const toMachine = (
   d: TailscaleDevice,
@@ -100,7 +83,7 @@ export async function GET() {
 
     const [data, localIps] = await Promise.all([
       response.json() as Promise<{ devices: TailscaleDevice[] }>,
-      getLocalTailscaleIps(),
+      TailscaleService.getLocalIps(),
     ]);
     const machines = (data.devices ?? [])
       .map(d => toMachine(d, localIps))
