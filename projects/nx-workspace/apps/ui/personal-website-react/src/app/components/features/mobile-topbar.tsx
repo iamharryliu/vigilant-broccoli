@@ -8,7 +8,7 @@ type Props = {
 
 export function MobileTopbar({ onMenuClick }: Props) {
   return (
-    <header className="md:hidden fixed top-0 left-0 right-0 z-20 flex h-[var(--topbar-h)] items-center gap-3 border-b border-gray-100 bg-white pl-4 pr-4 dark:border-gray-800 dark:bg-zinc-900">
+    <header className="lg:hidden fixed top-0 left-0 right-0 z-20 flex h-[var(--topbar-h)] items-center gap-3 border-b border-gray-100 bg-white pl-4 pr-4 dark:border-gray-800 dark:bg-zinc-900">
       <button
         type="button"
         aria-label="Open menu"

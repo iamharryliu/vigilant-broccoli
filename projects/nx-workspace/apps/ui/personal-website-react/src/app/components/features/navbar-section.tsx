@@ -10,7 +10,7 @@ const linkClass =
 
 export function NavbarSection() {
   return (
-    <nav className="hidden md:block sticky top-0 bg-inherit transition-opacity duration-500">
+    <nav className="hidden lg:block sticky top-0 bg-inherit transition-opacity duration-500">
       <div className="flex items-center h-16 ml-6 space-x-6">
         {NAV_LINKS.map(link => (
           <NavLink

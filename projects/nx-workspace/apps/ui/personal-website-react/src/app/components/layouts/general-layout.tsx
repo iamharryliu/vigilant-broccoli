@@ -33,7 +33,7 @@ export function GeneralLayout({ children }: { children: ReactNode }) {
       />
       <MobileTopbar onMenuClick={() => setSidebarOpen(open => !open)} />
       <div className="lg:flex">
-        <div className="h-min lg:h-screen w-full lg:w-2/5 border-r-2 pt-[calc(var(--topbar-h)+1rem)] md:pt-16 lg:pt-24 relative">
+        <div className="h-min lg:h-screen w-full lg:w-2/5 border-r-2 pt-[calc(var(--topbar-h)+1rem)] lg:pt-24 relative">
           <div className="flex items-center h-fit lg:h-5/6">
             <div className="w-full">
               <div className="mb-6">
@@ -78,7 +78,7 @@ export function GeneralLayout({ children }: { children: ReactNode }) {
             </div>
           </div>
         </div>
-        <div className="lg:h-screen lg:overflow-y-scroll w-full lg:w-3/5 relative pt-[calc(var(--topbar-h)+1rem)] md:pt-0">
+        <div className="lg:h-screen lg:overflow-y-scroll w-full lg:w-3/5 relative pt-[calc(var(--topbar-h)+1rem)] lg:pt-0">
           <NavbarSection />
           {children}
         </div>
