@@ -120,11 +120,15 @@ const createDefaultBoard = (): Board => ({
   lanes: [],
 });
 
-const fetchKanbanState = async (): Promise<KanbanState | null> => {
+type KanbanFetchResult =
+  | { ok: true; state: KanbanState | null }
+  | { ok: false };
+
+const fetchKanbanState = async (): Promise<KanbanFetchResult> => {
   const response = await authFetch(API_ENDPOINTS.KANBAN_BOARDS);
-  if (!response.ok) return null;
+  if (!response.ok) return { ok: false };
   const data = await response.json();
-  return data.state ?? null;
+  return { ok: true, state: data.state ?? null };
 };
 
 const persistKanbanState = async (state: KanbanState): Promise<boolean> => {
@@ -186,10 +190,17 @@ const useBoards = (isAuthenticated: boolean) => {
 
     let cancelled = false;
     const hydrate = async () => {
-      const remoteState = await fetchKanbanState();
+      const result = await fetchKanbanState();
+      if (cancelled) return;
 
+      // A failed fetch must never be treated as "no boards exist yet" — doing
+      // so used to fall through to creating and persisting a default board,
+      // silently overwriting real saved boards on a transient auth/network
+      // error (see docs/nuance.md).
+      if (!result.ok) return;
+
+      const remoteState = result.state;
       if (remoteState && remoteState.boards.length > 0) {
-        if (cancelled) return;
         setBoards(remoteState.boards);
         setActiveBoardId(remoteState.activeBoardId || remoteState.boards[0].id);
         setSortModes(remoteState.sortModes ?? {});
