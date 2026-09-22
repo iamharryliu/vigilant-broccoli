@@ -4,7 +4,9 @@ import { Calendar, Mail, User } from 'lucide-react';
 import { Sidebar, type SidebarCTA } from '@vigilant-broccoli/react-lib';
 import { LINKS } from '../../core/consts/routes.const';
 
-const SIDEBAR_POSITION = 'peer fixed top-0 left-0 bottom-0 z-30';
+// Mobile-only drawer: at md+ the horizontal NavbarSection is the nav, so the
+// aside is display:none rather than react-lib's default md+ icon rail.
+const SIDEBAR_POSITION = 'md:hidden fixed top-0 left-0 bottom-0 z-30';
 
 const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
   {
