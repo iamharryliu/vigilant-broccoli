@@ -1,10 +1,10 @@
 import nodemailer from 'nodemailer';
-import ejs from 'ejs';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { Resend } from 'resend';
-import { DEFAULT_EJS_TEMPLATE, getDefaultEmailRequest } from './email.consts';
+import { DEFAULT_TEMPLATE_DATA, getDefaultEmailRequest } from './email.consts';
 import { logger, getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { Email } from './email.models';
+import { renderDefaultEmailTemplate } from './email.utils';
 
 type EmailProvider = 'smtp' | 'resend';
 
@@ -87,11 +87,11 @@ export class EmailService {
     }
   }
 
-  async sendEjsEmail(
+  async sendDefaultTemplateEmail(
     request: Email = getDefaultEmailRequest(),
-    template = DEFAULT_EJS_TEMPLATE,
+    data = DEFAULT_TEMPLATE_DATA,
   ): Promise<void> {
-    const html = await ejs.renderFile(template.path, template.data);
+    const html = renderDefaultEmailTemplate(data);
     return this.sendEmail({ ...request, html });
   }
 }
