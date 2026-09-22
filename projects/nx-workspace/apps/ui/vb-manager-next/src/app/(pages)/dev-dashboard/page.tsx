@@ -25,6 +25,7 @@ import { LocalServicesComponent } from '../../components/local-services.componen
 import { LanDevicesComponent } from '../../components/lan-devices.component';
 import { OutboundConnectionsComponent } from '../../components/outbound-connections.component';
 import { TextToolsPage } from '../../components/pages/TextToolsPage';
+import { FeatureSandboxPage } from '../../components/pages/FeatureSandboxPage';
 import { ApiKeysComponent } from '../../components/api-keys.component';
 import { TodoListComponent } from '../../components/todo-list.component';
 import { SIDEBAR_ROUTE } from '../../app.const';
@@ -37,6 +38,7 @@ const TAB = {
   TEXT_TOOLS: 'text-tools',
   API_KEYS: 'api-keys',
   TODO: 'todo',
+  FEATURE_SANDBOX: 'feature-sandbox',
 } as const;
 
 type Tab = (typeof TAB)[keyof typeof TAB];
@@ -76,6 +78,7 @@ export default function Page() {
         <TabsTrigger value={TAB.TEXT_TOOLS}>Text Tools</TabsTrigger>
         <TabsTrigger value={TAB.API_KEYS}>API Keys</TabsTrigger>
         <TabsTrigger value={TAB.TODO}>TODO.md</TabsTrigger>
+        <TabsTrigger value={TAB.FEATURE_SANDBOX}>Feature Sandbox</TabsTrigger>
       </TabsList>
       <TabsContent value={TAB.LOCAL} className="pt-4 flex-1 min-h-0">
         <div className="grid grid-cols-4 gap-4">
@@ -140,6 +143,12 @@ export default function Page() {
         className="pt-4 flex-1 min-h-0 overflow-y-auto"
       >
         <TodoListComponent />
+      </TabsContent>
+      <TabsContent
+        value={TAB.FEATURE_SANDBOX}
+        className="pt-4 flex-1 min-h-0 overflow-y-auto"
+      >
+        <FeatureSandboxPage />
       </TabsContent>
     </Tabs>
   );

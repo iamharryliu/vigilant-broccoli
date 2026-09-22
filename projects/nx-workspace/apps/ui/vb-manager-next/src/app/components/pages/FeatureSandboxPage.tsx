@@ -17,8 +17,6 @@ import { NotepadEditorDemo } from '../demos/NotepadEditorDemo';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
-  Heading,
-  Text,
 } from '@vigilant-broccoli/react-lib';
 
 const STORAGE_KEY = 'feature-sandbox';
@@ -104,19 +102,11 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
 
 export function FeatureSandboxPage() {
   return (
-    <div className="w-full min-h-screen">
-      <div className="p-6 max-w-4xl mx-auto">
-        <Heading size="8" mb="2">
-          Feature Sandbox
-        </Heading>
-        <Text color="gray" size="4" mb="6">
-          Interactive feature demonstrations and testing playground
-        </Text>
-        <CollapsibleList
-          items={FEATURE_SECTIONS}
-          storageKeyPrefix={STORAGE_KEY}
-        />
-      </div>
+    <div className="max-w-4xl mx-auto">
+      <CollapsibleList
+        items={FEATURE_SECTIONS}
+        storageKeyPrefix={STORAGE_KEY}
+      />
     </div>
   );
 }
