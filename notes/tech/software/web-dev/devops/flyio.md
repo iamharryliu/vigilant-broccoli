@@ -137,6 +137,7 @@ cron
 
 - Make sure you have set all environment variables before deploying.
 - `flyctl auth login` exits 1 with `requires an interactive terminal` when stdin is not a TTY, so it cannot be shelled out to from a server process directly. Wrap it in `script` to allocate a pty (`script -q /dev/null flyctl auth login` on macOS, `script -qec "flyctl auth login" /dev/null` on Linux). `script` itself runs `tcgetattr` on its own stdin, so that stdin must be `/dev/null` rather than a pipe, otherwise it fails with `Operation not supported on socket`.
+- In this repo that pty wrapper is `runCliInPty` in `@vigilant-broccoli/devops-cli`; reach for it rather than `runCliToCompletion` for any CLI that insists on a terminal.
 - For genuinely headless use, set `FLY_API_TOKEN` to a token from `fly tokens create` instead of logging in.
 
 ## References
