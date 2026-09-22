@@ -16,6 +16,11 @@ export interface CliOptions {
 const MAX_OUTPUT_BYTES = 10 * 1024 * 1024;
 const CLIPBOARD_CLI = 'pbcopy';
 const EXIT_CODE_SUCCESS = 0;
+const PTY_CLI = 'script';
+const ANSI_ESCAPE_PATTERN = new RegExp(
+  `${String.fromCharCode(27)}\\[[0-9;]*m`,
+  'g',
+);
 
 export const runCli = async (
   cli: string,
@@ -84,6 +89,66 @@ export const runCliToCompletion = (
         ? resolve()
         : reject(new Error(`${cli} exited with code ${code}`)),
     );
+  });
+
+export interface PtyResult {
+  output: string;
+  failed: boolean;
+  timedOut: boolean;
+}
+
+// `script` differs between platforms: BSD takes the typescript file first and
+// the command as argv, GNU takes -c with the command as one string.
+const buildPtyArgs = (cli: string, args: readonly string[]): string[] =>
+  process.platform === 'darwin'
+    ? ['-q', '/dev/null', cli, ...args]
+    : ['-qec', [cli, ...args].join(' '), '/dev/null'];
+
+export const stripAnsi = (value: string): string =>
+  value.replace(ANSI_ESCAPE_PATTERN, '');
+
+// Some CLIs refuse to start a browser sign-in unless stdin is a terminal
+// (flyctl: "requires an interactive terminal"), so `script` allocates a pty.
+// stdin must be 'ignore': BSD `script` runs tcgetattr on its own stdin and
+// dies with "Operation not supported on socket" when node hands it a pipe.
+// Output is captured rather than discarded because these CLIs print the
+// sign-in URL there, the only fallback when the browser doesn't auto-open.
+export const runCliInPty = (
+  cli: string,
+  args: readonly string[],
+  { timeoutMs }: CliOptions = {},
+): Promise<PtyResult> =>
+  new Promise((resolve, reject) => {
+    const child = spawn(PTY_CLI, buildPtyArgs(cli, args), {
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+
+    let output = '';
+    let timedOut = false;
+    const capture = (chunk: Buffer) => (output += chunk.toString());
+    child.stdout.on('data', capture);
+    child.stderr.on('data', capture);
+
+    const timer =
+      timeoutMs === undefined
+        ? undefined
+        : setTimeout(() => {
+            timedOut = true;
+            child.kill();
+          }, timeoutMs);
+
+    child.on('close', code => {
+      clearTimeout(timer);
+      resolve({
+        output: stripAnsi(output),
+        failed: code !== EXIT_CODE_SUCCESS,
+        timedOut,
+      });
+    });
+    child.on('error', error => {
+      clearTimeout(timer);
+      reject(error);
+    });
   });
 
 // Browser-based CLI logins outlive the request that started them.
