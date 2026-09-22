@@ -91,6 +91,7 @@
     "secret-rotation:resend": "./infrastructure/terraform/packer/scripts/rotate-resend-key.sh",
     "secret-rotation:rabbitmq": "./infrastructure/terraform/packer/scripts/rotate-rabbitmq-password.sh",
     "secret-rotation:twilio": "./infrastructure/terraform/packer/scripts/rotate-twilio-token.sh",
+    "secret-rotation:oci": "./infrastructure/terraform/packer/scripts/rotate-oci-api-key.sh",
     "secret-rotation:calendar-sa": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform apply -replace=google_service_account_key.google_calendar_manager && cd ../.. && ./infrastructure/terraform/scripts/post-apply.sh && pnpm vb-manager-next:reload",
     "local:install:machine-setup": "if [ \"$(uname)\" = Darwin ]; then zsh -c 'source setup/mac/install.sh'; else bash setup/linux/install.sh; fi",
     "local:start-mission-control-helper": "open -a Hammerspoon && open -a Karabiner-Elements",

@@ -14,7 +14,9 @@ Every rotator follows **mint → verify → store → revoke**: mint the new cre
 
 ### `OCI_CONFIG` / `OCI_PRIVATE_KEY` — self-succession
 
-`openssl genrsa` → `oci iam user api-key upload` (authed by the current key) → update fingerprint + key in Vault → verify `oci iam user get` → delete old key. OCI allows 3 keys per user, so the overlap window is safe.
+Drafted as `pnpm secret-rotation:oci` (`packer/scripts/rotate-oci-api-key.sh`), **not yet run against the live tenancy and not yet wired into `ci-rotate-secrets.yml`** — do a local run first, then add the workflow step plus the two keys to that workflow's `vault-secrets` import list.
+
+`openssl genrsa` → upload the public key (signed by the current key) → patch fingerprint + key into Vault → verify → delete the predecessors. OCI allows 3 keys per user, so the overlap window is safe. Two details the script exists to get right: the rotation writes **two** Vault fields that must land together (`OCI_CONFIG` carries the `fingerprint=` line identifying the key in `OCI_PRIVATE_KEY`), and it signs its own requests — there is no `oci` CLI dependency, since OCI has no token endpoint and every call is a draft-cavage HTTP signature that `openssl` can produce directly.
 
 ## Manual only (no mint API)
 
