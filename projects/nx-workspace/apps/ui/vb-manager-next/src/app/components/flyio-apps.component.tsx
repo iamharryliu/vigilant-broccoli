@@ -30,7 +30,16 @@ interface FlyAppsResponse {
   authRequired?: boolean;
 }
 
+interface FlyLoginResponse {
+  success: boolean;
+  error?: string;
+  authUrl?: string | null;
+}
+
 const FETCH_ERROR_MSG = 'Failed to fetch Fly.io apps';
+const LOGIN_ERROR_MSG = 'Fly.io login failed';
+const LOGIN_PENDING_MSG =
+  'Finish the sign-in in the browser tab that just opened.';
 const FLY_BASE = 'https://fly.io/apps';
 const POLL_INTERVAL_MS = 60000;
 
@@ -82,6 +91,8 @@ export const FlyIoAppsComponent = () => {
   const [error, setError] = useState<string | null>(null);
   const [authRequired, setAuthRequired] = useState(false);
   const [loggingIn, setLoggingIn] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [authUrl, setAuthUrl] = useState<string | null>(null);
 
   const fetchFlyApps = async () => {
     try {
@@ -107,8 +118,24 @@ export const FlyIoAppsComponent = () => {
 
   const handleLogin = async () => {
     setLoggingIn(true);
-    await authFetch(API_ENDPOINTS.FLYIO_AUTH_LOGIN, { method: 'POST' });
-    setLoggingIn(false);
+    setLoginError(null);
+    setAuthUrl(null);
+    try {
+      const response = await authFetch(API_ENDPOINTS.FLYIO_AUTH_LOGIN, {
+        method: 'POST',
+      });
+      const data: FlyLoginResponse = await response.json();
+      if (!data.success) {
+        setLoginError(data.error || LOGIN_ERROR_MSG);
+        setAuthUrl(data.authUrl ?? null);
+        return;
+      }
+    } catch {
+      setLoginError(LOGIN_ERROR_MSG);
+      return;
+    } finally {
+      setLoggingIn(false);
+    }
     setLoading(true);
     await fetchFlyApps();
   };
@@ -128,6 +155,26 @@ export const FlyIoAppsComponent = () => {
             >
               Login to Fly.io
             </Button>
+            {loggingIn && (
+              <Text size="1" color="gray">
+                {LOGIN_PENDING_MSG}
+              </Text>
+            )}
+            {loginError && (
+              <Text size="1" color="red">
+                {loginError}
+              </Text>
+            )}
+            {authUrl && (
+              <Button
+                variant="secondary"
+                onClick={() =>
+                  window.open(authUrl, '_blank', WINDOW_OPEN_FEATURES)
+                }
+              >
+                Open sign-in page
+              </Button>
+            )}
           </div>
         ) : (
           <Badge color="red">{error}</Badge>
