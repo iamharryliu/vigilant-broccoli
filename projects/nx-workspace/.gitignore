@@ -74,3 +74,6 @@ test-results/
 package-lock.json
 
 .nx/migrate-runs
+
+# One-shot LLM migration prompts written by `nx migrate`
+tools/ai-migrations/
