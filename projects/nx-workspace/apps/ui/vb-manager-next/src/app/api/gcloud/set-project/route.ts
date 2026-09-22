@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+// Plain ids plus the `domain.com:project` form legacy domain-scoped projects use.
+const GCLOUD_PROJECT_ID_PATTERN = /^[\w.:-]+$/;
 
 export async function POST(request: Request) {
   try {
@@ -16,7 +18,19 @@ export async function POST(request: Request) {
       );
     }
 
-    await execAsync(`gcloud config set project ${projectId}`);
+    if (!GCLOUD_PROJECT_ID_PATTERN.test(String(projectId))) {
+      return NextResponse.json(
+        { error: 'projectId is invalid' },
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
+      );
+    }
+
+    await execFileAsync('gcloud', [
+      'config',
+      'set',
+      'project',
+      String(projectId),
+    ]);
 
     return NextResponse.json({ success: true, projectId });
   } catch (error) {
