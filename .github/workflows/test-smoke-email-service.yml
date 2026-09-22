@@ -56,7 +56,7 @@ jobs:
             -X POST ${{ env.SERVICE_URL }}/api/queue-emails \
             -H 'Content-Type: application/json' \
             -H "x-api-key: ${SHARED_APP_TOKEN}" \
-            -d '[{"from":"Harry Liu <ci-test@harryliu.dev>","to":"harryliu1995@gmail.com","subject":"ci-test: Email Service Test","html":"<p>Automated test from GitHub Actions.</p>"}]')
+            -d '[{"from":"CI Smoke Test <ci-test@harryliu.dev>","to":"harryliu1995@gmail.com","subject":"ci-test: Email Service Test","html":"<p>Automated test from GitHub Actions.</p>"}]')
           echo "Response status: $STATUS"
           cat /tmp/response.json
           if [ "$STATUS" = "200" ]; then

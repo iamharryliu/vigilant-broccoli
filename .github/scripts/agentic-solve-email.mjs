@@ -11,7 +11,7 @@ const EMAIL_URL =
   process.env.EMAIL_URL ?? 'http://127.0.0.1:3000/api/send-email';
 const EMAIL_TO = process.env.EMAIL_TO ?? 'harryliu1995@gmail.com';
 const EMAIL_FROM =
-  process.env.EMAIL_FROM ?? 'Harry Liu <ci-agentic-solve@harryliu.dev>';
+  process.env.EMAIL_FROM ?? 'Agentic Solve <ci-agentic-solve@harryliu.dev>';
 const API_KEY_HEADER = 'x-api-key';
 const CONTENT_TYPE_HEADER = 'Content-Type';
 const JSON_CONTENT_TYPE = 'application/json';
