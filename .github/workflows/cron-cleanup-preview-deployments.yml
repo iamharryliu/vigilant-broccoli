@@ -1,0 +1,44 @@
+name: cron-cleanup-preview-deployments
+
+# `delete` cleans up as soon as a branch goes away; the daily sweep catches
+# deletions that never fired the event (bulk deletes, a failed run).
+on:
+  delete:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/cron-cleanup-preview-deployments.yml
+  schedule:
+    - cron: '45 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: cron-cleanup-preview-deployments
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    if: github.event_name != 'delete' || github.event.ref_type == 'branch'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: ./.github/actions/setup-nx-workspace
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
+            kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
+
+      - name: Delete deployments of removed branches
+        working-directory: ./projects/nx-workspace
+        run: pnpm exec nx run-many -t prune-deployments:preview

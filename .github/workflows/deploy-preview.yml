@@ -1,0 +1,91 @@
+name: deploy-preview
+
+# Branch pushes, not pull_request: the shared WIF provider rejects
+# pull_request events (main.tf attribute_condition), and only collaborators
+# can push branches here.
+on:
+  push:
+    branches-ignore: ['main', 'production']
+    paths:
+      - 'projects/nx-workspace/**'
+      - '.github/workflows/deploy-preview.yml'
+      # Snapshot sources rendered by pages-index (claude-context) and docs-md (notes)
+      - 'CLAUDE.md'
+      - 'TODO.md'
+      - 'docs/**'
+      - 'setup/dotfiles/.claude/**'
+      - '**/CLAUDE.md'
+      - 'notes/**'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-preview-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    # Dependabot pushes get no OIDC token, so the Vault import would fail.
+    if: github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup-nx-workspace
+
+      - name: Check which previews are needed
+        id: check
+        working-directory: ./projects/nx-workspace
+        run: |
+          CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
+          WORKFLOW_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy-preview\.yml$" || true)
+          # Snapshot sources live outside the nx workspace, so nx affected can't see them
+          CLAUDE_CONTEXT_CHANGED=$(echo "$CHANGED_FILES" | grep -cE "^(CLAUDE\.md|TODO\.md|docs/|setup/dotfiles/\.claude/)|/CLAUDE\.md$" || true)
+          NOTES_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^notes/" || true)
+
+          if [[ "$WORKFLOW_CHANGED" -gt 0 ]]; then
+            PROJECTS=$(pnpm exec nx show projects --withTarget=deploy:preview)
+          else
+            PROJECTS=$(pnpm exec nx show projects --affected --withTarget=deploy:preview --base=$NX_BASE --head=$NX_HEAD)
+            if [[ "$CLAUDE_CONTEXT_CHANGED" -gt 0 ]]; then
+              PROJECTS=$(printf '%s\npages-index' "$PROJECTS")
+            fi
+            if [[ "$NOTES_CHANGED" -gt 0 ]]; then
+              PROJECTS=$(printf '%s\ndocs-md' "$PROJECTS")
+            fi
+          fi
+
+          echo "projects=$(echo "$PROJECTS" | sed '/^$/d' | sort -u | paste -sd, -)" >> $GITHUB_OUTPUT
+
+      - name: Import Secrets from Vault
+        if: steps.check.outputs.projects != ''
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
+            kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
+
+      # --skip-nx-cache: VITE_BASE_PATH isn't a build input, so a cached main
+      # build staged for GitHub Pages (base /vigilant-broccoli/) would otherwise
+      # be served from the preview's root.
+      - name: Deploy previews
+        if: steps.check.outputs.projects != ''
+        working-directory: ./projects/nx-workspace
+        env:
+          PREVIEW_BRANCH: ${{ github.ref_name }}
+        run: |
+          pnpm exec nx run-many -t deploy:preview --projects="${{ steps.check.outputs.projects }}" --skip-nx-cache | tee deploy.log
+          echo "## Preview deployments" >> $GITHUB_STEP_SUMMARY
+          grep -o 'alias URL: https://[^ ]*' deploy.log | sed 's/^alias URL: /- /' | sort -u >> $GITHUB_STEP_SUMMARY || true
+
+      - name: Prune superseded preview deployments
+        if: steps.check.outputs.projects != ''
+        working-directory: ./projects/nx-workspace
+        run: pnpm exec nx run-many -t prune-deployments:preview --projects="${{ steps.check.outputs.projects }}"
