@@ -16,6 +16,8 @@ const options = {
 const nextConfig = {
   nx: { ...options },
   distDir: '../../../dist/apps/ui/employee-handler-ui/.next',
+  // `next dev` otherwise writes AGENTS.md/CLAUDE.md into the app on every run.
+  agentRules: false,
   output: 'standalone',
   async redirects() {
     return [

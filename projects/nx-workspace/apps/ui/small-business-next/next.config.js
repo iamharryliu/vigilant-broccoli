@@ -18,6 +18,8 @@ const nextConfig = {
   // See: https://nx.dev/recipes/next/next-config-setup
   nx: { ...options },
   distDir: '../../../dist/apps/ui/small-business-next/.next',
+  // `next dev` otherwise writes AGENTS.md/CLAUDE.md into the app on every run.
+  agentRules: false,
 };
 const plugins = [
   // Add more Next.js plugins to this list if needed.
