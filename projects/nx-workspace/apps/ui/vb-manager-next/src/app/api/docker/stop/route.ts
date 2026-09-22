@@ -28,9 +28,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Stop container or compose project
     if (projectName) {
-      // For compose projects, find and stop all containers with the project label
       const { stdout } = await execFileAsync('docker', [
         'ps',
         '-a',
@@ -52,7 +50,6 @@ export async function POST(request: Request) {
         );
       }
 
-      // Stop all containers in the project
       await execFileAsync('docker', ['stop', ...containerIds]);
 
       return NextResponse.json({
@@ -60,7 +57,6 @@ export async function POST(request: Request) {
         message: `Stopped ${containerIds.length} container(s) for project: ${projectName}`,
       });
     } else if (containerId) {
-      // Stop a single container
       await execFileAsync('docker', ['stop', String(containerId)]);
 
       return NextResponse.json({

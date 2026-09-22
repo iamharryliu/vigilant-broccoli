@@ -52,7 +52,6 @@ export class CloudflareBucketProvider implements IBucketProvider {
     });
   }
 
-  // Ensure bucket exists, create if it doesn't
   private async ensureBucketExists(): Promise<void> {
     if (this.bucketInitialized) {
       return;
@@ -68,7 +67,6 @@ export class CloudflareBucketProvider implements IBucketProvider {
     } catch (error) {
       const err = error as { name?: string; Code?: string };
       if (err.name === 'NotFound' || err.Code === 'NoSuchBucket') {
-        // Bucket doesn't exist, create it
         await this.client.send(
           new CreateBucketCommand({
             Bucket: this.bucketName,

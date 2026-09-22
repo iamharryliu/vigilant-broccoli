@@ -79,7 +79,6 @@ export interface GoogleTasksAuthAdapter {
 
 type EisenhowerQuadrant = 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'none';
 
-// Sort mode constants
 export const SORT_MODE = {
   DEFAULT: 'default',
   EISENHOWER: 'eisenhower',

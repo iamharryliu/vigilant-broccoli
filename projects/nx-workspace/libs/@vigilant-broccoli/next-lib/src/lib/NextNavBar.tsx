@@ -18,7 +18,6 @@ export const NextNavBar = ({
   isDark?: boolean;
 }) => {
   const pathname = usePathname();
-  // Background colors that follow dark mode
   const bgColor = isDark ? 'var(--gray-2)' : 'var(--gray-1)';
 
   return (

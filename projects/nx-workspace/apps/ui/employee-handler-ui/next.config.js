@@ -16,7 +16,6 @@ const options = {
 const nextConfig = {
   nx: { ...options },
   distDir: '../../../dist/apps/ui/employee-handler-ui/.next',
-  // `next dev` otherwise writes AGENTS.md/CLAUDE.md into the app on every run.
   agentRules: false,
   output: 'standalone',
   async redirects() {
@@ -29,8 +28,5 @@ const nextConfig = {
     ];
   },
 };
-const plugins = [
-  // Add more Next.js plugins to this list if needed.
-  withNx,
-];
+const plugins = [withNx];
 module.exports = composePlugins(...plugins)(nextConfig);

@@ -24,7 +24,6 @@ interface ForecastEntry {
   weather: string;
 }
 
-// Helper function to get weather data for outfit recommendation
 async function getWeatherDataForOutfitRecommendation(
   location: Location,
   provider?: WeatherProvider,
@@ -48,7 +47,6 @@ function toForecastEntries(snapshot: WeatherSnapshot): ForecastEntry[] {
   }));
 }
 
-// Helper function to build prompt structure
 function buildPromptStructured(snapshot: WeatherSnapshot): {
   systemPrompt: string;
   userPrompt: string;
@@ -83,7 +81,6 @@ Return a JSON object with an array of recommendations, each containing:
   return { systemPrompt, userPrompt };
 }
 
-// Helper function to format recommendation
 function formatRecommendation(data: OutfitRecommendation): string {
   return data.recommendations
     .map(rec => {
@@ -92,18 +89,14 @@ function formatRecommendation(data: OutfitRecommendation): string {
     .join('\n\n');
 }
 
-// Helper function to stream formatted text
 async function* streamFormattedText(text: string): AsyncIterable<string> {
-  // Stream the text in chunks for better UX
   const chunkSize = 10; // characters per chunk
   for (let i = 0; i < text.length; i += chunkSize) {
     yield text.slice(i, i + chunkSize);
-    // Small delay to simulate streaming effect
     await new Promise(resolve => setTimeout(resolve, 20));
   }
 }
 
-// Main function to get outfit recommendation
 async function getOutfitRecommendation(location: Location): Promise<string> {
   const snapshot = await getWeatherDataForOutfitRecommendation(location);
   const { systemPrompt, userPrompt } = buildPromptStructured(snapshot);
@@ -123,14 +116,12 @@ async function getOutfitRecommendation(location: Location): Promise<string> {
   return formatRecommendation(result.data);
 }
 
-// Main function to get outfit recommendation as a stream
 async function getOutfitRecommendationStream(
   location: Location,
 ): Promise<AsyncIterable<string>> {
   const snapshot = await getWeatherDataForOutfitRecommendation(location);
   const { systemPrompt, userPrompt } = buildPromptStructured(snapshot);
 
-  // Get structured data first
   const result = await LLMService.prompt<OutfitRecommendation>({
     prompt: {
       systemPrompt,
@@ -144,12 +135,10 @@ async function getOutfitRecommendationStream(
     },
   });
 
-  // Format and stream it
   const formatted = formatRecommendation(result.data);
   return streamFormattedText(formatted);
 }
 
-// Const object with all functions
 export const VibecheckLite = {
   getOutfitRecommendation,
   getOutfitRecommendationStream,

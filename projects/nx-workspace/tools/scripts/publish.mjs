@@ -24,7 +24,6 @@ function invariant(condition, message) {
 // Default "tag" to "next" so we won't publish the "latest" tag by accident.
 const [, , name, version, tag = 'next'] = process.argv;
 
-// A simple SemVer validation to validate the version
 const validVersion = /^\d+\.\d+\.\d+(-\w+\.\d+)?/;
 invariant(
   version && validVersion.test(version),
@@ -47,7 +46,6 @@ invariant(
 
 process.chdir(outputPath);
 
-// Updating the version in "package.json" before publishing
 try {
   const json = JSON.parse(readFileSync(`package.json`).toString());
   json.version = version;
@@ -56,5 +54,4 @@ try {
   console.error(`Error reading package.json file from library build output.`);
 }
 
-// Execute "npm publish" to publish
 execSync(`npm publish --access public --tag ${tag}`);
