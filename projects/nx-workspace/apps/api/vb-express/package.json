@@ -24,7 +24,6 @@
     "qrcode": "*",
     "resend": "*",
     "tslib": "*",
-    "twilio": "*",
-    "winston": "*"
+    "twilio": "*"
   }
 }
