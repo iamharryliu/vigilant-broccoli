@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { exec } from 'child_process';
+import { execFile } from 'child_process';
 import { promisify } from 'util';
 
-const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
+// gcloud accounts are email addresses, service accounts included.
+const GCLOUD_ACCOUNT_PATTERN = /^[\w.+-]+@[\w.-]+$/;
 
 export async function POST(request: Request) {
   try {
@@ -16,7 +18,19 @@ export async function POST(request: Request) {
       );
     }
 
-    await execAsync(`gcloud config set account ${account}`);
+    if (!GCLOUD_ACCOUNT_PATTERN.test(String(account))) {
+      return NextResponse.json(
+        { error: 'account is invalid' },
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
+      );
+    }
+
+    await execFileAsync('gcloud', [
+      'config',
+      'set',
+      'account',
+      String(account),
+    ]);
 
     return NextResponse.json({ success: true, account });
   } catch (error) {
