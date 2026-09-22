@@ -10,7 +10,9 @@ const escapeHtml = (text: string): string =>
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 
-export const renderDefaultEmailTemplate = ({ text }: EmailTemplateData): string =>
+export const renderDefaultEmailTemplate = ({
+  text,
+}: EmailTemplateData): string =>
   `<h1>Default Email Template</h1>\n<pre>${escapeHtml(text)}</pre>`;
 
 const getGmailTransportOptions = (

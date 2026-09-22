@@ -5,7 +5,6 @@
     "@vigilant-broccoli/common-js": "workspace:*",
     "archiver": "^7.0.1",
     "tslib": "^2.3.0",
-    "winston": "^3.11.0",
     "qrcode": "^1.5.4"
   },
   "publishConfig": {
