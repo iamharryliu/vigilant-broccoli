@@ -27,6 +27,8 @@ const nextConfig = {
   // See: https://nx.dev/recipes/next/next-config-setup
   nx: { ...options },
   distDir: '../../../dist/apps/ui/vb-manager-next/.next',
+  // `next dev` otherwise writes AGENTS.md/CLAUDE.md into the app on every run.
+  agentRules: false,
   serverExternalPackages: ['socket.io-client', 'better-sqlite3'],
   webpack: (config, { isServer }) => {
     if (isServer) {

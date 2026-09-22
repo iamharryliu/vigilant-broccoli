@@ -16,6 +16,8 @@ const options = {
 const nextConfig = {
   nx: { ...options },
   distDir: '../../dist/apps/hearth/.next',
+  // `next dev` otherwise writes AGENTS.md/CLAUDE.md into the app on every run.
+  agentRules: false,
   transpilePackages: [
     '@fullcalendar/core',
     '@fullcalendar/react',

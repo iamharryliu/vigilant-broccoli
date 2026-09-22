@@ -16,6 +16,8 @@ const options = {
 const nextConfig = {
   nx: { ...options },
   distDir: '../../dist/apps/findme/.next',
+  // `next dev` otherwise writes AGENTS.md/CLAUDE.md into the app on every run.
+  agentRules: false,
 };
 const plugins = [withNx];
 module.exports = composePlugins(...plugins)(nextConfig);
