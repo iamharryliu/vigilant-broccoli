@@ -4,6 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
 source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
+source "${SCRIPT_DIR}/../../../lib/oci-local-config.sh"
 
 OCI_API_VERSION="20160918"
 OCI_CONTENT_TYPE="application/json"
@@ -104,12 +105,8 @@ content-length: ${#body}"
     "https://${OCI_IDENTITY_HOST}${path}"
 }
 
-delete_keys_except() {
-  local keep="$1" keys="$2" key_file="$3" signing_fingerprint="$4" stale
-  for stale in $(jq -r --arg keep "$keep" '.[] | select(.fingerprint != $keep) | .fingerprint' <<< "$keys"); do
-    echo "Deleting key (fingerprint: ${stale})..."
-    oci_request delete "${API_KEYS_PATH}/${stale}" "$key_file" "$signing_fingerprint" "" > /dev/null
-  done
+list_fingerprints() {
+  jq -r --arg skip "$2" '.[] | select(.fingerprint != $skip) | "  \(.fingerprint) (created \(.timeCreated))"' <<< "$1"
 }
 
 echo "Listing current API keys..."
@@ -117,11 +114,13 @@ EXISTING_KEYS=$(oci_request get "${API_KEYS_PATH}" "${CURRENT_KEY_FILE}" "${CURR
 EXISTING_COUNT=$(jq 'length' <<< "$EXISTING_KEYS")
 echo "Found ${EXISTING_COUNT} key(s), active fingerprint ${CURRENT_FINGERPRINT}"
 
-# A user may hold at most 3 API keys, so a leftover from a half-finished run
-# would make the upload below fail; drop everything but the live key first.
+# Stop rather than prune: OCI keys carry no name, so a key this script did not
+# mint is indistinguishable from an operator's working credential.
 if [ "$EXISTING_COUNT" -ge "$OCI_MAX_KEYS_PER_USER" ]; then
-  echo "At the ${OCI_MAX_KEYS_PER_USER}-key limit; pruning stale keys to make room..."
-  delete_keys_except "$CURRENT_FINGERPRINT" "$EXISTING_KEYS" "${CURRENT_KEY_FILE}" "$CURRENT_FINGERPRINT"
+  echo "ERROR: user holds ${EXISTING_COUNT} keys and OCI allows ${OCI_MAX_KEYS_PER_USER} — no room to mint a successor."
+  echo "Delete one yourself, then re-run. Keys other than the active one:"
+  list_fingerprints "$EXISTING_KEYS" "$CURRENT_FINGERPRINT"
+  exit 1
 fi
 
 echo "Minting successor key..."
@@ -191,9 +190,16 @@ else
       "${VAULT_ADDR}/v1/${VAULT_KV_PATH}/data/secrets"
 fi
 
-echo "Deleting all other API keys (single-key policy)..."
-REMAINING_KEYS=$(oci_request get "${API_KEYS_PATH}" "${NEW_KEY_FILE}" "${NEW_FINGERPRINT}" "")
-delete_keys_except "$NEW_FINGERPRINT" "$REMAINING_KEYS" "${NEW_KEY_FILE}" "$NEW_FINGERPRINT"
+write_oci_local_config "$NEW_CONFIG" "$NEW_PRIVATE_KEY"
 
-REMAINING=$(oci_request get "${API_KEYS_PATH}" "${NEW_KEY_FILE}" "${NEW_FINGERPRINT}" "" | jq 'length')
-echo "✓ OCI API key rotated successfully (${REMAINING} key active)"
+echo "Revoking the superseded key (${CURRENT_FINGERPRINT})..."
+oci_request delete "${API_KEYS_PATH}/${CURRENT_FINGERPRINT}" "${NEW_KEY_FILE}" "${NEW_FINGERPRINT}" "" > /dev/null
+
+REMAINING_KEYS=$(oci_request get "${API_KEYS_PATH}" "${NEW_KEY_FILE}" "${NEW_FINGERPRINT}" "")
+UNMANAGED=$(list_fingerprints "$REMAINING_KEYS" "$NEW_FINGERPRINT")
+if [ -n "$UNMANAGED" ]; then
+  echo "Left in place — this script only revokes the key it replaced:"
+  echo "$UNMANAGED"
+fi
+
+echo "✓ OCI API key rotated successfully (now ${NEW_FINGERPRINT})"
