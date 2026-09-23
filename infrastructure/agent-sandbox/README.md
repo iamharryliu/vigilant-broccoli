@@ -23,6 +23,18 @@ mints the installation token itself.
   GitHub-style patch. `solve-todo-runner.sh` prints the diff between `PR_DIFF_BEGIN`/`PR_DIFF_END` markers, `solve-todo.sh`
   collects the markers into a JSON Lines file, and `.github/scripts/agentic-solve-email.mjs` renders and sends it.
 
+## Auditing the backlog
+
+`pnpm agentic:task:audit [sections]` runs `audit-todo.sh`, the counterpart to `create-todo.sh`: instead of adding a row it
+re-verifies the ones already there against the current tree, deleting rows whose problem is genuinely fixed and correcting
+rows whose paths, line numbers, counts or scope have drifted. `cron-agentic-todo-audit` runs the same script weekly.
+
+- Dispatch: `gh workflow run cron-agentic-todo-audit.yml` (optional `-f scope="Security Performance"`, `-f model=`, `-f firewall=off`).
+- A clean audit opens no PR — `audit-todo-runner.sh` prints `AUDIT_CLEAN` and exits 0 rather than raising an empty PR.
+- The runner refuses to commit if an id disappeared without being reported as resolved, if an id was added or renumbered,
+  or if any file other than `TODO.md` changed. Ids are the handle `pnpm agentic:task:solve <id>` resolves, so a table
+  rewrite that quietly drops one is treated as a failure, not a diff to review.
+
 ## Stack
 
 - Language - Bash

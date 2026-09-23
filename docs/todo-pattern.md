@@ -1,6 +1,6 @@
 # TODO.md Pattern
 
-Source of truth for the shape of the repo root `TODO.md`. `/create-todo-task`, `infrastructure/agent-sandbox/create-todo-runner.sh`, and the `solve-todo*.sh` parsers all follow this file — change the format here first, then the consumers.
+Source of truth for the shape of the repo root `TODO.md`. `/create-todo-task`, `infrastructure/agent-sandbox/create-todo-runner.sh`, `audit-todo-runner.sh`, and the `solve-todo*.sh` parsers all follow this file — change the format here first, then the consumers.
 
 ## Structure
 
@@ -21,3 +21,11 @@ Source of truth for the shape of the repo root `TODO.md`. `/create-todo-task`, `
 ## Machine-Read Contract
 
 `infrastructure/agent-sandbox/solve-todo.sh` and `solve-todo-runner.sh` locate, extract, and remove an item by matching `^| <id> |` at the start of its row (`<br>` is expanded to newlines and `\|` unescaped on extraction). Keep the id in the leading cell and the row on one line, or `pnpm agentic:task:solve <id>` cannot find it.
+
+`audit-todo-runner.sh` diffs the same `^| <id> |` match before and after its run and aborts rather than committing if an id vanished without being reported resolved, or if one was added or renumbered. An id is a permanent handle: correct a row in place, never reissue it.
+
+## Staleness
+
+Rows describe the tree at the moment they were written, so they rot as the code moves — a renamed file, a shifted line number, a count that grew, a claim whose scope narrowed. `pnpm agentic:task:audit` (weekly via `cron-agentic-todo-audit`) re-verifies rows against the current tree and opens a PR that deletes the resolved ones and corrects the drifted ones. It never adds rows; a new problem found while auditing belongs to `/create-todo-task`.
+
+When correcting a row by hand, the same rule applies: a cited file that is missing is usually evidence the code moved, not that the problem is fixed — search by basename and symbol before deleting a row. Note that `projects/nx-workspace/apps/ui/pages-index/public/claude-context/` holds a build-time copy of `TODO.md`; it is gitignored and regenerated, so never edit it.
