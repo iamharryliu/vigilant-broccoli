@@ -96,6 +96,18 @@ To serve two harnesses at once, keep one real file per directory under the
 neutral name and symlink the harness-specific name beside it, so the content
 lives once.
 
+Only prose is written this way; code keeps concrete names. The runner scripts
+under `infrastructure/agent-sandbox/` invoke `claude -p` directly and read a
+`CLAUDE_CODE_OAUTH_TOKEN` from Vault, as do the workflows that dispatch them.
+That is correct — abstracting a literal binary and a literal secret key would
+buy the appearance of portability while the code still runs one vendor's CLI.
+
+So a harness migration is two jobs of very different size. Renaming the files
+above is the small one. The sandbox is the large one: six `*-runner.sh` scripts
+shell out to `claude -p`, and `CLAUDE_CODE_OAUTH_TOKEN` spans those scripts and
+the workflows that dispatch them. Budget for it separately — nothing in this
+section covers it.
+
 If a harness turns out to load only a root file and not nested ones, the
 convention degrades rather than breaks: the root file still carries the rule
 and the `grep` that finds every directory holding nuances, so an agent can get
