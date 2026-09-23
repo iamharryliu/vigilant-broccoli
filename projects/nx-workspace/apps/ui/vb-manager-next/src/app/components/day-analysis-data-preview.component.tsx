@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { GOOGLE_CALENDAR } from '@vigilant-broccoli/common-browser';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch, useAuthStatus } from '../../../libs/auth';
 import {
@@ -59,8 +60,8 @@ interface DayAnalysisData {
 
 const PERSONAL_TASK_LIST_ID = '@default';
 const WORK_TASK_LIST_ID = 'cXJUTkpUQzZ6bTBpQjNybA';
-const PERSONAL_CALENDAR_ID = 'harryliu1995@gmail.com';
-const WORK_CALENDAR_ID = 'harry.liu@elva11.se';
+const PERSONAL_CALENDAR_ID = GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL;
+const WORK_CALENDAR_ID = GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK;
 const MALMO_COORDINATES = { lat: 55.605, lon: 13.0038 };
 const LOCATION_NAME = 'Malmö';
 
