@@ -14,21 +14,14 @@ Every rotator follows **mint → verify → store → revoke**: mint the new cre
 
 ### `OCI_CONFIG` / `OCI_PRIVATE_KEY` — self-succession
 
-`pnpm secret-rotation:oci` (`packer/scripts/rotate-oci-api-key.sh`). All four calls it makes — list, mint, verify, revoke — are verified against the live tenancy. **Not yet completed end to end** (the first attempt failed on the verification window, since fixed) **and not yet wired into `ci-rotate-secrets.yml`.**
+`pnpm secret-rotation:oci` (`packer/scripts/rotate-oci-api-key.sh`) — written, not finished.
 
-**A new key takes ~5 minutes to become usable.** Measured at 307s in this tenancy: the upload returns immediately and the key lists as `ACTIVE`, but every request signed with it returns `401 NotAuthenticated` until it syncs to the identity domain. There is no state field to poll — `lifecycleState` reads `ACTIVE` the whole time — so the request itself is the only readiness signal, and polling early neither helps nor hurts. The verification window is therefore `180s + 30 × 15s` ≈ 10 minutes, roughly 2x the observed time.
+- All four API calls are verified against the live tenancy: list, mint, verify, revoke. The failure path is verified too — an aborted run left Vault unpatched, the old key active, and no orphan.
+- **No clean end-to-end run yet.** The first attempt failed on a verification window that was two orders of magnitude too short; see [nuance.md](../nuance.md) for why a new key is unusable for ~5 minutes while reporting `ACTIVE`.
+- **Not wired into `ci-rotate-secrets.yml`.** When it is, it needs its **own job**: the `rotate` job is `timeout-minutes: 20` and already runs five rotators, and this one can block for ten minutes waiting on propagation.
+- Still owed: a row in the rotation table in [secret-management.md](./secret-management.md).
 
-That has a consequence for wiring this into CI: the `rotate` job is `timeout-minutes: 20` and already runs five rotators, so a step that can block for 10 minutes needs its own job rather than a sixth step in that one.
-
-`openssl genrsa` → upload the public key (signed by the current key) → verify → patch fingerprint + key into Vault → revoke the superseded key. Three things the script exists to get right:
-
-- **Both Vault fields are patched in one call.** `OCI_CONFIG` carries the `fingerprint=` line identifying the key in `OCI_PRIVATE_KEY`; a config left pointing at the previous fingerprint authenticates nothing.
-- **It signs its own requests.** There is no `oci` CLI dependency: OCI has no token endpoint, every call is a draft-cavage HTTP signature, and `openssl` produces one directly.
-- **It revokes only the key it replaced.** OCI API keys carry no name, so a key this script did not mint is indistinguishable from an operator's working credential — the same convention as the Gitea and HCP Terraform rotators, which report unmanaged tokens and leave them alone. At the 3-key-per-user cap it stops and lists the keys rather than pruning to make room.
-
-Rotation also has to reach the operator's laptop, which the other rotators never do: Terraform's `oci` provider reads `~/.oci/config` off disk (`main.tf`'s `config_file_profile = "DEFAULT"`) and, unlike every other provider, is not fed by `load-vault-tf-env.sh` — so a rotation the local files don't know about breaks every `tf:*` command with a 401. `lib/oci-local-config.sh` refreshes them: the rotator calls it directly after patching Vault, `post-apply.sh` calls it on both of its paths, and `pnpm oci:config:sync-local` is the standalone recovery command after a rotation that ran in CI. It only ever updates an existing `~/.oci/config` and no-ops under `CI`, so it cannot plant a tenancy-admin key on a host that never had one.
-
-Worth noting for later: the key belongs to `harryliu1995@gmail.com`, a member of `Administrators`, so it grants full control of the tenancy. OCI keys take their permissions from the user and cannot be scoped, so narrowing this means a separate IAM user in a scoped group — a bigger job than the rotator, and the same theme as TODO `21290b`/`306cc4`.
+The key belongs to `harryliu1995@gmail.com`, a member of `Administrators`, so it grants full control of the tenancy. OCI keys take their permissions from the user and cannot be scoped, so narrowing this means a separate IAM user in a scoped group — a bigger job than the rotator, and the same theme as TODO `21290b`/`306cc4`.
 
 ## Manual only (no mint API)
 
