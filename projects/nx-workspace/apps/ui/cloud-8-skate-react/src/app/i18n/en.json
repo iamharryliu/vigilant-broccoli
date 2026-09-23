@@ -1,0 +1,131 @@
+{
+  "APP": {
+    "NAME": "Cloud8Skate",
+    "LOGO_ALT": "Cloud8Skate logo",
+    "HOME_LINK_LABEL": "Cloud8Skate home"
+  },
+  "NAV": {
+    "HOME": "Cloud8",
+    "WAIVER": "Waiver",
+    "CALENDAR": "Calendar",
+    "GALLERY": "Gallery",
+    "PLAYLISTS": "Playlists",
+    "FAQ": "FAQ",
+    "TOGGLE_MENU": "Toggle navigation menu"
+  },
+  "LINKS": {
+    "CLOUD_8_SKATE_IG": "Cloud8Skate Instagram"
+  },
+  "HOME": {
+    "TITLE": "Cloud8",
+    "TAGLINE": "Our heads are in the clouds.",
+    "HERO_LABEL": "Hero section",
+    "QUICK_NAV_LABEL": "Quick navigation",
+    "WAIVER": "Waiver",
+    "CALENDAR": "Calendar",
+    "INSTAGRAM": "Instagram",
+    "SCROLL_NEXT": "Scroll to next section",
+    "SCROLL_TOP": "Scroll back to top"
+  },
+  "CALENDAR": {
+    "TITLE": "Calendar",
+    "DESCRIPTION": "Upcoming Cloud8 sessions, meetups, and skate events.",
+    "EMBED_TITLE": "Cloud8 Skate Events"
+  },
+  "CONTACT": {
+    "HEADER": "Message Us!",
+    "NAME_LABEL": "Name:",
+    "EMAIL_LABEL": "Email:",
+    "MESSAGE_LABEL": "Message:",
+    "INVALID_EMAIL": "Please enter a valid email address.",
+    "SUBMIT": "Submit",
+    "SUBMITTED": "Message received! I'll get back to you soon.",
+    "SOCIAL_MEDIAS": "Social Medias",
+    "NETWORK_ERROR": "Couldn't reach the server. Check your connection and try again.",
+    "SERVER_ERROR": "Something went wrong sending your message. Please try again."
+  },
+  "FAQ": {
+    "TITLE": "FAQ",
+    "UNAVAILABLE": "FAQ content is not available right now."
+  },
+  "PLAYLISTS": {
+    "TITLE": "Playlists",
+    "CURATED_BY": "Curated by {curator}",
+    "UNAVAILABLE": "Playlist content is not available right now."
+  },
+  "GALLERY": {
+    "UNAVAILABLE": "Gallery content is not available right now.",
+    "ALBUM_UNAVAILABLE": "Gallery album content is not available right now.",
+    "NO_COVER": "No cover image",
+    "IMAGE_ALT_FALLBACK": "Cloud8Skate event photo"
+  },
+  "WAIVER": {
+    "TITLE": "Waiver",
+    "DESCRIPTION": "All participants must review the waiver before joining any Cloud8Skate city skate event.",
+    "VIEW": "View Waiver"
+  },
+  "NOT_FOUND": {
+    "CODE": "404",
+    "MESSAGE": "The page you're looking for doesn't exist.",
+    "GO_HOME": "Go Home"
+  },
+  "MARKDOWN": {
+    "LOAD_ERROR": "Failed to load content."
+  },
+  "SEO": {
+    "HOME": {
+      "TITLE": "Toronto Skating Community",
+      "DESCRIPTION": "Cloud8 is a Toronto-based skating collective passionate about inline skating, rollerblading, rollerskating, and ice skating. Join us at The Bentway or College Park!",
+      "KEYWORDS": "Toronto skating, inline skating Toronto, rollerblading Toronto, roller skating Toronto, ice skating Toronto, Cloud8, skating community, The Bentway, College Park skating"
+    },
+    "CALENDAR": {
+      "TITLE": "Calendar",
+      "DESCRIPTION": "Cloud8Skate event calendar. Find upcoming skating events, meetups, and sessions in Toronto at The Bentway and College Park.",
+      "KEYWORDS": "Toronto skating events, skating calendar Toronto, skating meetups, Cloud8 events"
+    },
+    "CONTACT": {
+      "TITLE": "Contact",
+      "DESCRIPTION": "Get in touch with Cloud8Skate. Contact us for skating events, meetups, and general inquiries about our Toronto skating community.",
+      "KEYWORDS": "contact Cloud8, Toronto skating contact, skating meetup Toronto"
+    },
+    "FAQ": {
+      "TITLE": "FAQ",
+      "DESCRIPTION": "Frequently asked questions about Cloud8Skate, skating in Toronto, equipment, locations, and our skating community events.",
+      "KEYWORDS": "skating FAQ, Toronto skating questions, inline skating help"
+    },
+    "MORE": {
+      "TITLE": "More Info",
+      "DESCRIPTION": "Useful information for skating in Toronto. Find skate rinks, skateparks, shops, and local skating resources.",
+      "KEYWORDS": "Toronto skate rinks, Toronto skateparks, skate shops Toronto, skating resources"
+    },
+    "PLAYLISTS": {
+      "TITLE": "Playlists",
+      "DESCRIPTION": "Cloud8Skate music playlists for skating. Listen to our curated playlists perfect for inline skating and roller skating sessions.",
+      "KEYWORDS": "skating music, skating playlists, Cloud8 music, skating songs"
+    },
+    "TERMINOLOGY": {
+      "TITLE": "Skate Terminology",
+      "DESCRIPTION": "Learn skating terminology and slang. A comprehensive guide to inline skating, rollerblading, and roller skating terms used by the Cloud8 community.",
+      "KEYWORDS": "skating terms, inline skating terminology, rollerblading slang, skating dictionary"
+    },
+    "WAIVER": {
+      "TITLE": "Waiver",
+      "DESCRIPTION": "Review the Cloud8Skate waiver before joining any city skate event.",
+      "KEYWORDS": "skating waiver, city skate waiver, Cloud8Skate event waiver, Toronto skating"
+    },
+    "GALLERY": {
+      "TITLE": "Gallery",
+      "DESCRIPTION": "Cloud8Skate photo albums. View photos from our Toronto skating sessions, events, and meetups at The Bentway and College Park.",
+      "KEYWORDS": "Cloud8 photos, Toronto skating photos, skating pictures, Cloud8 events"
+    },
+    "ALBUM": {
+      "TITLE": "Gallery Album",
+      "DESCRIPTION": "Cloud8Skate gallery album: {name}. View photos from our Toronto skating sessions and events.",
+      "KEYWORDS": "Cloud8 gallery, Toronto skating photos, Cloud8 album"
+    },
+    "NOT_FOUND": {
+      "TITLE": "Page Not Found",
+      "DESCRIPTION": "The page you are looking for does not exist."
+    }
+  }
+}
