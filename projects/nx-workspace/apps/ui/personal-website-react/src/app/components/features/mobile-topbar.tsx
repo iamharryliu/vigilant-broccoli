@@ -1,7 +1,7 @@
 import { Menu, Moon, Sun } from 'lucide-react';
 import { DARK_MODE_LABELS, useTheme } from '../../core/services/theme-context';
 
-const SITE_TITLE = 'design by harry';
+const SITE_TITLE = 'harryliu.dev';
 
 const ICON_SIZE = 20;
 

@@ -57,7 +57,7 @@ function SeoUpdater() {
     const meta = findRouteMeta(location.pathname);
     const title = meta?.title ?? 'home';
     const description = meta?.description ?? DEFAULT_DESCRIPTION;
-    const fullTitle = `design by harry - ${title}`;
+    const fullTitle = `harryliu.dev - ${title}`;
     const url = `${ENVIRONMENT.APP_URL}${location.pathname}${location.search}`;
 
     document.title = fullTitle;
