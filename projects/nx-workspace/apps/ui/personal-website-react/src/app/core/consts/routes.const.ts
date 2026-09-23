@@ -1,5 +1,5 @@
 import { ENVIRONMENT } from '../../../environments/environment';
-import { URLS } from './urls.const';
+import { EMAIL_ADDRESS, URLS } from './urls.const';
 
 export const DEFAULT_DESCRIPTION =
   'Harry Liu - Software developer, designer, and creator. Explore my portfolio and projects.';
@@ -91,6 +91,7 @@ const LINK_TREE: Link = {
   },
   text: 'Links',
 };
+const EMAIL: Link = { url: { external: URLS.EMAIL }, text: EMAIL_ADDRESS };
 const LINKEDIN: Link = { url: { external: URLS.LINKEDIN }, text: 'LinkedIn' };
 const GITHUB: Link = { url: { external: URLS.GITHUB }, text: 'Github' };
 const PERSONAL_INSTAGRAM: Link = {
@@ -125,6 +126,7 @@ export const LINKS = {
   CALENDAR_PAGE,
   CONTACT_PAGE,
   LINK_TREE,
+  EMAIL,
   LINKEDIN,
   GITHUB,
   PERSONAL_INSTAGRAM,

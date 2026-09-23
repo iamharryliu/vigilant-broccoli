@@ -1,15 +1,6 @@
 import { useState, type ReactNode } from 'react';
-import {
-  Github,
-  Linkedin,
-  Mail,
-  Link as LinkIcon,
-  Calendar,
-  Sun,
-  Moon,
-} from 'lucide-react';
+import { Mail, Link as LinkIcon, Calendar } from 'lucide-react';
 import { LINKS } from '../../core/consts/routes.const';
-import { DARK_MODE_LABELS, useTheme } from '../../core/services/theme-context';
 import { SidebarNav } from '../features/sidebar-nav';
 import { MobileTopbar } from '../features/mobile-topbar';
 import { NavbarSection } from '../features/navbar-section';
@@ -17,7 +8,6 @@ import { ProfileCard } from '../features/profile-card';
 import { IconActionLink } from '../global/icon-action-link';
 
 export function GeneralLayout({ children }: { children: ReactNode }) {
-  const { isDark, toggleDarkMode } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -36,26 +26,9 @@ export function GeneralLayout({ children }: { children: ReactNode }) {
               </div>
               <div className="flex justify-center space-x-4">
                 <IconActionLink
-                  href="https://github.com/iamharryliu"
-                  icon={Github}
-                  label="GitHub"
-                  variant="brand"
-                />
-                <IconActionLink
-                  href="https://www.linkedin.com/in/iamharryliu/"
-                  icon={Linkedin}
-                  label="LinkedIn"
-                  variant="brand"
-                />
-                <IconActionLink
                   to={LINKS.CONTACT_PAGE.url.internal ?? '/'}
                   icon={Mail}
                   label="Contact"
-                />
-                <IconActionLink
-                  href={LINKS.LINK_TREE.url.external ?? '/'}
-                  icon={LinkIcon}
-                  label="Link tree"
                 />
                 <IconActionLink
                   to={LINKS.CALENDAR_PAGE.url.internal ?? '/'}
@@ -63,11 +36,9 @@ export function GeneralLayout({ children }: { children: ReactNode }) {
                   label="Calendar"
                 />
                 <IconActionLink
-                  icon={isDark ? Sun : Moon}
-                  label={
-                    isDark ? DARK_MODE_LABELS.toLight : DARK_MODE_LABELS.toDark
-                  }
-                  onClick={toggleDarkMode}
+                  href={LINKS.LINK_TREE.url.external ?? '/'}
+                  icon={LinkIcon}
+                  label="Link tree"
                 />
               </div>
             </div>

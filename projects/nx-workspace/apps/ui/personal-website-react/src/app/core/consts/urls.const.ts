@@ -1,4 +1,7 @@
+export const EMAIL_ADDRESS = 'harryliu1995@gmail.com';
+
 export const URLS = {
+  EMAIL: `mailto:${EMAIL_ADDRESS}`,
   LINKEDIN: 'https://www.linkedin.com/in/iamharryliu/',
   GITHUB: 'https://github.com/iamharryliu',
   PERSONAL_IG: 'https://www.instagram.com/prettydamntired/',
