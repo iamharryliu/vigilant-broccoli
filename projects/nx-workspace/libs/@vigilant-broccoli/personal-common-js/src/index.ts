@@ -64,6 +64,8 @@ export const PERSONAL_URL = {
 
 export const EMAIL_ADDRESS = 'harryliu1995@gmail.com';
 
+export const SENDER_EMAIL_ADDRESS = 'contact@harryliu.dev';
+
 export const EMAIL_LINK = {
   NAME: EMAIL_ADDRESS,
   URL: `mailto:${EMAIL_ADDRESS}`,
