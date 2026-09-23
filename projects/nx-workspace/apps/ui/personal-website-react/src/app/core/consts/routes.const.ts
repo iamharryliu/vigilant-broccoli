@@ -28,12 +28,6 @@ export const INDEX_ROUTE: RouteMeta = {
   description: DEFAULT_DESCRIPTION,
 };
 
-export const CAREER_ROUTE: RouteMeta = {
-  path: '/career',
-  title: 'career',
-  description: "Harry Liu's career experience and work history.",
-};
-
 export const ABOUT_ROUTE: RouteMeta = {
   path: '/about',
   title: 'about',
@@ -153,7 +147,6 @@ export const LINKS = {
 export const ROUTES: RouteMeta[] = [
   INDEX_ROUTE,
   ABOUT_ROUTE,
-  CAREER_ROUTE,
   CONTACT_ROUTE,
   LINK_TREE_ROUTE,
   CALENDAR_ROUTE,
