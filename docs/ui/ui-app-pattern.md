@@ -4,7 +4,7 @@ What every UI app in this workspace must have, and the shared building blocks to
 
 ## Where UI apps live
 
-- Static UIs → `apps/ui/*`, Vite + React for new apps (`cloud-8-skate-angular` is a legacy Angular exception) → Cloudflare Pages.
+- Static UIs → `apps/ui/*`, Vite + React for new apps (`cloud-8-skate-angular` is a legacy Angular exception, superseded by its React rewrite `cloud-8-skate-react` once `cloud8skate.com` is cut over) → Cloudflare Pages.
 - Next.js apps → `apps/*` (`hearth`, `findme`, `whiteboard`) or `apps/ui/*` (`employee-handler-ui`) → Vercel. `vb-manager-next` is the exception: PM2 on the VM, no nx `deploy` target.
 - GitHub Pages hosts the `pages-index` landing site and `component-library`.
 

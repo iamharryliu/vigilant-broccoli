@@ -1,0 +1,88 @@
+{
+  "name": "cloud-8-skate-react",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/cloud-8-skate-react/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "build": {
+      "outputs": [
+        "{projectRoot}/{options.outDir}",
+        "{workspaceRoot}/dist/apps/ui/cloud-8-skate-react"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "outDir": "../../../dist/apps/ui/cloud-8-skate-react"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        },
+        "production-env": {
+          "mode": "production",
+          "fileReplacements": [
+            {
+              "replace": "apps/ui/cloud-8-skate-react/src/environments/environment.ts",
+              "with": "apps/ui/cloud-8-skate-react/src/environments/environment.production.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "defaultConfiguration": "development",
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "preview": {
+      "defaultConfiguration": "development"
+    },
+    "generate-sitemap": {
+      "command": "node apps/ui/cloud-8-skate-react/scripts/generate-sitemap.mjs",
+      "dependsOn": ["build"]
+    },
+    "ensure-cf-project": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw staging-cloud-8-skate-react || npx wrangler pages project create staging-cloud-8-skate-react --production-branch main"
+    },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-cloud-8-skate-react 10"
+    },
+    "deploy": {
+      "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-react --project-name staging-cloud-8-skate-react",
+      "dependsOn": [
+        "generate-sitemap",
+        "ensure-cf-project",
+        "prune-deployments"
+      ]
+    },
+    "manual-deploy": {
+      "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-react --project-name staging-cloud-8-skate-react",
+      "dependsOn": [
+        "generate-sitemap",
+        "ensure-cf-project",
+        "prune-deployments"
+      ]
+    },
+    "ensure-cf-project:production": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-cloud-8-skate-react || npx wrangler pages project create production-cloud-8-skate-react --production-branch main"
+    },
+    "prune-deployments:production": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts production-cloud-8-skate-react 10"
+    },
+    "deploy:production": {
+      "command": "npx nx build cloud-8-skate-react --configuration=production-env && node apps/ui/cloud-8-skate-react/scripts/generate-sitemap.mjs && npx wrangler pages deploy dist/apps/ui/cloud-8-skate-react --project-name production-cloud-8-skate-react",
+      "dependsOn": [
+        "ensure-cf-project:production",
+        "prune-deployments:production"
+      ]
+    }
+  }
+}
