@@ -2,7 +2,7 @@
 
 ## Pattern
 
-Every rotator follows **mint → verify → store → revoke**: mint the new credential at source, verify it read-only, write it to Vault (`vault kv patch`), and only then revoke predecessors. Vault never holds a dead credential, and any failure aborts with the old credential still valid. Propagation is two-track: CI/workflows read Vault fresh per run (free), running apps get secrets at deploy time — which is why `secret-rotation:all` ends by dispatching the `rotate-secrets` workflow (full redeploy).
+Every rotator follows **mint → verify → store → revoke**: mint the new credential at source, verify it read-only, write it to Vault (`vault kv patch`), and only then revoke predecessors. Vault never holds a dead credential, and any failure aborts with the old credential still valid. Propagation is two-track: CI/workflows read Vault fresh per run (free), running apps get secrets at deploy time — which is why `secret-rotation:all` dispatches the `rotate-secrets` workflow (full redeploy).
 
 ## Keys still to automate
 
@@ -11,14 +11,6 @@ Every rotator follows **mint → verify → store → revoke**: mint the new cre
 - Wrangler cannot manage API tokens (no command, and its OAuth session lacks the scope) — only the dashboard or REST API, and rolling via API requires a credential with _API Tokens: Edit_.
 - **Decision pending**: dedicated roller token in Vault (fully unattended, but a mint-capable credential at rest) vs **paste-assisted script** (preferred: script opens the dashboard token pages, you roll/create and paste values, script verifies via the token verify endpoint, patches Vault, dispatches deploy).
 - R2 facts: access key ID = token ID; secret access key = SHA-256 of the token value; the dashboard shows both on creation. Deploy token can be rolled in place (instant cutover is fine — CI-only consumer). R2 should be two-phase (create new token, delete old after redeploy) because `bucket-service`/`hearth` hold the creds until deployed.
-
-### `OCI_CONFIG` / `OCI_PRIVATE_KEY` — self-succession
-
-Implemented and local-only — see its row in [secret-management.md](./secret-management.md).
-
-Outstanding: one clean end-to-end `pnpm secret-rotation:oci` run. Every call has been verified against the live tenancy individually, the abort path included, but the full sequence has not completed once.
-
-The key belongs to `harryliu1995@gmail.com`, a member of `Administrators`, so it grants full control of the tenancy. OCI keys take their permissions from the user and cannot be scoped, so narrowing this means a separate IAM user in a scoped group — a bigger job than the rotator, and the same theme as TODO `21290b`/`306cc4`.
 
 ## Manual only (no mint API)
 
