@@ -90,7 +90,7 @@ the migration is mechanical, not a redesign:
 - Update the `filename` key in
   `projects/nx-workspace/apps/ui/pages-index/claude-context.snapshot.config.json`,
   which selects these files for the Claude Context site.
-- Reword the references here and in [agent-diagram.md](./agent-diagram.md).
+- Reword the references here and in [CLAUDE.md's Agent Context Map](../CLAUDE.md#agent-context-map).
 
 To serve two harnesses at once, keep one real file per directory under the
 neutral name and symlink the harness-specific name beside it, so the content
