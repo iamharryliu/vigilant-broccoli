@@ -1,5 +1,11 @@
 # CLAUDE
 
+## Table of Contents
+
+- [Doc Map](#doc-map)
+- [Coding Conventions](#coding-conventions)
+- [Folder Structure](#folder-structure)
+
 ## Doc Map
 
 - [Agent Context Map](./docs/agent-diagram.md) — how this Doc Map, `docs/`, and skills/commands relate; update it in the same change whenever any of those change
@@ -19,7 +25,7 @@
 - [network-management.md](./docs/infrastructure/network-management.md) — read first before changing DNS, domains, proxying, tunnels, or VPN
 - [jellyfin-pi.md](./docs/infrastructure/jellyfin-pi.md) — the Ansible-provisioned homelab Pi running Jellyfin; read first before provisioning or changing hardware on the LAN (there is no Terraform for it)
 - [secret-management.md](./docs/infrastructure/secret-management.md) — read first before adding a secret or a local `.env`/`.tfvars` file
-- [nuance.md](./docs/nuance.md) — non-obvious bugs and quirks in this repo; check before debugging something that looks impossible
+- [nuance-pattern.md](./docs/nuance-pattern.md) — read first before recording a nuance or editing a directory-scoped `CLAUDE.md`; a nuance lives in the `## Nuances` section of the deepest directory it affects, and a repo-wide one in this file's own `## Nuances`
 - [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md) — cleanup checklist behind `/refactor-code-cleanup` and unattended `agentic:task:solve` runs
 - [TODO.md](./TODO.md) — repo audit backlog
 - [todo-pattern.md](./docs/todo-pattern.md) — read first before adding or editing a `TODO.md` row; single source for its format and the id contract the sandbox scripts parse
@@ -35,6 +41,7 @@
 - Comments have to earn their place. Write one only when it says something the code cannot: why a non-obvious approach was chosen, an external constraint or API quirk, a gotcha, or a worked example. Never add one that restates the next line (`// Get the last part after slash`), labels a block with its own code's words (`// Helper function to ...`, `// Start a single container`), or explains a self-describing config flag (`agentRules: false`) — that rationale goes in the commit message or the relevant `docs/` page, not the file. Two exceptions: keep a comment that is the sole body of an otherwise-empty block (an intentional empty `catch`), and leave `TODO`/`FIXME`/lint-directive comments alone. Generator scaffolding (`// Add more Next.js plugins to this list if needed.`) is noise — delete it when you touch the file.
 - If a PR touches files for a cloud service, or introduces/changes usage of one, add or update a `## Free Tier` section in that service's notes/docs file documenting its free tier limits (e.g. [github-actions.md](./notes/tech/software/web-dev/devops/automation/github-actions.md)).
 - Before working on an app or directory, check its `README.md` for an `## Agent Context` section and follow any upkeep instructions it lists (e.g. keeping a Page Navigation section in sync with the routes).
+- A directory that records non-obvious traps carries them as a `## Nuances` section of its own `CLAUDE.md`, which loads automatically when you work in that subtree. Read the entry covering the surface you are about to touch before writing the code, not after something breaks. `grep -rl '^## Nuances' --include=CLAUDE.md .` lists every directory that has one.
 
 ## Folder Structure
 

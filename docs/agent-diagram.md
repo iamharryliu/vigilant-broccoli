@@ -5,6 +5,7 @@ How `CLAUDE.md`, `docs/`, and Claude Code skills/commands relate for an agent wo
 ```mermaid
 flowchart TD
     CLAUDE["CLAUDE.md<br/>(repo root)"]
+    SCOPED_CLAUDE["CLAUDE.md<br/>(per app / lib / infra component)<br/>Nuances section, auto-loaded in its subtree"]
     TODO["TODO.md<br/>(repo root)<br/>per-section priority tables"]
 
     subgraph DOCS["docs/"]
@@ -14,7 +15,7 @@ flowchart TD
         GIT["GIT.md"]
         NETWORK["infrastructure/network-management.md"]
         JELLYFIN_PI["infrastructure/jellyfin-pi.md"]
-        NUANCE["nuance.md"]
+        NUANCE_PATTERN["nuance-pattern.md"]
         REPO_PATTERNS["repo-patterns.md"]
         REPO_OPS["repo-operations.md"]
         APP_README["app-readme-pattern.md"]
@@ -35,7 +36,8 @@ flowchart TD
     CLAUDE --> NETWORK
     CLAUDE --> JELLYFIN_PI
     CLAUDE --> SECRETS
-    CLAUDE --> NUANCE
+    CLAUDE --> NUANCE_PATTERN
+    NUANCE_PATTERN --> SCOPED_CLAUDE
     CLAUDE --> REFACTOR
     CLAUDE --> TODO
     CLAUDE --> TODO_PATTERN
@@ -87,8 +89,9 @@ flowchart TD
 
 ## How it fits together
 
-- **`CLAUDE.md`** is the entry point every agent reads first. Its Doc Map links out to the docs under `docs/` that own each topic (dev tooling, CI, app development, git, networking, secrets, nuances, cleanup checklist, TODO format) — including this diagram itself. It also points at two living records that agents keep current as work lands: `TODO.md` and `docs/learning-timeline.md`.
+- **`CLAUDE.md`** is the entry point every agent reads first. Its Doc Map links out to the docs under `docs/` that own each topic (dev tooling, CI, app development, git, networking, secrets, nuance convention, cleanup checklist, TODO format) — including this diagram itself. It also points at two living records that agents keep current as work lands: `TODO.md` and `docs/learning-timeline.md`.
 - **This diagram is generated content, not source of truth** — `CLAUDE.md`'s Doc Map is authoritative. Whenever a Doc Map entry is added/removed, `docs/` gains or loses a doc, or skills/commands are rewired, update this file's mermaid graph and bullets to match in the same change.
 - **Browse it rendered**: the GitHub Pages site's Claude Context page (`/#/claude-context` on `iamharryliu.github.io/vigilant-broccoli`, source `projects/nx-workspace/apps/ui/pages-index`) snapshots every file in this diagram at build time and renders the actual markdown link graph between them — file tree, search, and an Obsidian-style graph view. Which files it includes is configured in that app's `claude-context.snapshot.config.json`.
+- **Nuances live with the code they trap**: a quirk is recorded in the `## Nuances` section of the `CLAUDE.md` at the deepest directory it affects (next to that component's `README.md`), because `CLAUDE.md` is the one filename the harness loads on its own when work happens in that subtree — discovery costs nothing and needs no instruction to be followed. A nuance spanning top-level directories goes in the repo-root `CLAUDE.md`'s own `## Nuances`, which is the same rule rather than an exception. There is no index: `grep -rl '^## Nuances' --include=CLAUDE.md .` derives the list, so nothing can drift out of sync. `docs/nuance-pattern.md` is the source of truth for scope, file shape, and entry shape; adding a nuance is two writes, both in the file you are already editing. `pages-index`'s snapshot picks up any `CLAUDE.md` in the repo with no config change.
 - **`docs/`** is a graph, not a flat list: top-level docs (e.g. `APP_DEVELOPMENT.md`) route to more specific pattern docs (`repo-patterns.md`, `ui-app-pattern.md`, `fly-service-pattern.md`), which in turn cite each other for narrower concerns (secrets, deploy destinations).
 - **Skills** (Claude Code commands) live as markdown files in `setup/dotfiles/.claude/commands/` and `setup/dotfiles/.claude/skills/`, symlinked into `~/.claude/commands` and `~/.claude/skills` by `setup/common/symlinks.sh`. Each command file opens with `description:` frontmatter (one sentence, shown in the skill picker) and `argument-hint:` when it takes arguments; the body is the instruction. `skills/` currently holds only a `.gitkeep` — every entry today is a command. They are a separate discovery mechanism from the Doc Map — Claude Code surfaces them as `/slash-commands` — but their instructions explicitly point back into `CLAUDE.md` and `docs/` (e.g. `/create-todo-task` follows `docs/todo-pattern.md` — the single source for the `TODO.md` row format, also parsed by `infrastructure/agent-sandbox/solve-todo*.sh` — and writes a priority-ordered row into the relevant section table, `/update-readmes` follows `docs/app-readme-pattern.md`, `/audit-note` and `/rnd-note` treat their `docs/audit`/`docs/rnd` templates as the source of truth for note structure, `/sync-main` and `/ship-pr` implement the merge-don't-rebase sync policy documented in `GIT.md`, and both `/refactor-code-cleanup` and `/ship-pr`'s pre-staging diff review apply `docs/refactor-code-cleanup.md`, which in turn defers to `CLAUDE.md`'s comment rule).
