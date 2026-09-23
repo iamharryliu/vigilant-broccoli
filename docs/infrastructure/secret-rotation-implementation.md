@@ -14,7 +14,11 @@ Every rotator follows **mint → verify → store → revoke**: mint the new cre
 
 ### `OCI_CONFIG` / `OCI_PRIVATE_KEY` — self-succession
 
-`pnpm secret-rotation:oci` (`packer/scripts/rotate-oci-api-key.sh`). **Not yet run end to end against the live tenancy and not yet wired into `ci-rotate-secrets.yml`** — do a local run first, then add the workflow step plus the two keys to that workflow's `vault-secrets` import list. The read paths (`GET /users/{id}`, `GET .../apiKeys`) are verified against the live API; `POST` and `DELETE` are not.
+`pnpm secret-rotation:oci` (`packer/scripts/rotate-oci-api-key.sh`). All four calls it makes — list, mint, verify, revoke — are verified against the live tenancy. **Not yet completed end to end** (the first attempt failed on the verification window, since fixed) **and not yet wired into `ci-rotate-secrets.yml`.**
+
+**A new key takes ~5 minutes to become usable.** Measured at 307s in this tenancy: the upload returns immediately and the key lists as `ACTIVE`, but every request signed with it returns `401 NotAuthenticated` until it syncs to the identity domain. There is no state field to poll — `lifecycleState` reads `ACTIVE` the whole time — so the request itself is the only readiness signal, and polling early neither helps nor hurts. The verification window is therefore `180s + 30 × 15s` ≈ 10 minutes, roughly 2x the observed time.
+
+That has a consequence for wiring this into CI: the `rotate` job is `timeout-minutes: 20` and already runs five rotators, so a step that can block for 10 minutes needs its own job rather than a sixth step in that one.
 
 `openssl genrsa` → upload the public key (signed by the current key) → verify → patch fingerprint + key into Vault → revoke the superseded key. Three things the script exists to get right:
 

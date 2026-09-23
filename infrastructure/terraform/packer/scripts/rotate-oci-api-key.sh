@@ -10,8 +10,9 @@ OCI_API_VERSION="20160918"
 OCI_CONTENT_TYPE="application/json"
 OCI_KEY_BITS=2048
 OCI_MAX_KEYS_PER_USER=3
-VERIFY_ATTEMPTS=6
-VERIFY_DELAY_SECONDS=5
+VERIFY_INITIAL_DELAY_SECONDS=180
+VERIFY_ATTEMPTS=30
+VERIFY_DELAY_SECONDS=15
 
 WORK_DIR=$(umask 077 && mktemp -d)
 trap 'rm -rf "${WORK_DIR}"' EXIT
@@ -98,7 +99,7 @@ content-length: ${#body}"
 
   signature=$(printf '%s' "$signing_string" | openssl dgst -sha256 -sign "${key_file}" | openssl base64 -A)
 
-  curl -sf -X "$(tr '[:lower:]' '[:upper:]' <<< "$method")" \
+  curl -sSf -X "$(tr '[:lower:]' '[:upper:]' <<< "$method")" \
     -H "Date: ${date_header}" \
     -H "Authorization: Signature version=\"1\",keyId=\"${OCI_TENANCY}/${OCI_USER}/${fingerprint}\",algorithm=\"rsa-sha256\",headers=\"${signed_headers}\",signature=\"${signature}\"" \
     "${body_args[@]}" \
@@ -139,21 +140,28 @@ if [ "$UPLOADED_FINGERPRINT" != "$NEW_FINGERPRINT" ]; then
   exit 1
 fi
 
-# A freshly uploaded key is rejected for a few seconds before IAM has it
-# everywhere, so a single 401 here is not yet a failure.
+# A new key is listed ACTIVE immediately but returns 401 NotAuthenticated until
+# it syncs to the identity domain: measured at 307s in this tenancy, so the
+# window is ~2x that and the first check waits rather than making 12 pointless
+# requests. There is no state field to poll — lifecycleState is ACTIVE the
+# whole time — so the request itself is the only readiness signal.
 echo "Verifying new key (fingerprint: ${NEW_FINGERPRINT})..."
+echo "  settling for ${VERIFY_INITIAL_DELAY_SECONDS}s before the first check..."
+sleep "${VERIFY_INITIAL_DELAY_SECONDS}"
 VERIFIED=""
+VERIFY_ERROR=""
 for ATTEMPT in $(seq 1 "${VERIFY_ATTEMPTS}"); do
-  if oci_request get "${OCI_USER_PATH}" "${NEW_KEY_FILE}" "${NEW_FINGERPRINT}" "" > /dev/null 2>&1; then
+  if VERIFY_ERROR=$(oci_request get "${OCI_USER_PATH}" "${NEW_KEY_FILE}" "${NEW_FINGERPRINT}" "" 2>&1 >/dev/null); then
     VERIFIED=1
     break
   fi
-  echo "  attempt ${ATTEMPT}/${VERIFY_ATTEMPTS} not accepted yet, retrying in ${VERIFY_DELAY_SECONDS}s..."
+  echo "  attempt ${ATTEMPT}/${VERIFY_ATTEMPTS}: ${VERIFY_ERROR:-no detail}; retrying in ${VERIFY_DELAY_SECONDS}s..."
   sleep "${VERIFY_DELAY_SECONDS}"
 done
 
 if [ -z "$VERIFIED" ]; then
-  echo "ERROR: New key failed verification; old key left untouched"
+  echo "ERROR: New key failed verification after $((VERIFY_INITIAL_DELAY_SECONDS + VERIFY_ATTEMPTS * VERIFY_DELAY_SECONDS))s: ${VERIFY_ERROR:-no detail}"
+  echo "Old key left untouched; removing the unusable successor."
   oci_request delete "${API_KEYS_PATH}/${NEW_FINGERPRINT}" "${CURRENT_KEY_FILE}" "${CURRENT_FINGERPRINT}" "" > /dev/null || true
   exit 1
 fi
