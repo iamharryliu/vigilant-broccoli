@@ -12,6 +12,11 @@ const THEME_STORAGE_KEY = 'theme';
 const DARK = 'dark';
 const LIGHT = 'light';
 
+export const DARK_MODE_LABELS = {
+  toLight: 'Switch to light mode',
+  toDark: 'Switch to dark mode',
+} as const;
+
 type Theme = typeof DARK | typeof LIGHT;
 
 type ThemeContextValue = {
