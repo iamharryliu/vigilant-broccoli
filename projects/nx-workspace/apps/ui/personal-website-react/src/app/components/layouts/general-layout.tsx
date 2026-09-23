@@ -9,17 +9,12 @@ import {
   Moon,
 } from 'lucide-react';
 import { LINKS } from '../../core/consts/routes.const';
-import { useTheme } from '../../core/services/theme-context';
+import { DARK_MODE_LABELS, useTheme } from '../../core/services/theme-context';
 import { SidebarNav } from '../features/sidebar-nav';
 import { MobileTopbar } from '../features/mobile-topbar';
 import { NavbarSection } from '../features/navbar-section';
 import { ProfileCard } from '../features/profile-card';
 import { IconActionLink } from '../global/icon-action-link';
-
-const DARK_MODE_LABELS = {
-  toLight: 'Switch to light mode',
-  toDark: 'Switch to dark mode',
-} as const;
 
 export function GeneralLayout({ children }: { children: ReactNode }) {
   const { isDark, toggleDarkMode } = useTheme();
@@ -33,8 +28,8 @@ export function GeneralLayout({ children }: { children: ReactNode }) {
       />
       <MobileTopbar onMenuClick={() => setSidebarOpen(open => !open)} />
       <div className="lg:flex">
-        <div className="h-min lg:h-screen w-full lg:w-2/5 border-r-2 pt-[calc(var(--topbar-h)+1rem)] lg:pt-24 relative">
-          <div className="flex items-center h-fit lg:h-5/6">
+        <div className="hidden lg:block lg:h-screen lg:w-2/5 border-r-2 lg:pt-24 relative">
+          <div className="flex items-center h-5/6">
             <div className="w-full">
               <div className="mb-6">
                 <ProfileCard />
