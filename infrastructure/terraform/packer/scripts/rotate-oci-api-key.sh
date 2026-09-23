@@ -17,30 +17,22 @@ VERIFY_DELAY_SECONDS=15
 WORK_DIR=$(umask 077 && mktemp -d)
 trap 'rm -rf "${WORK_DIR}"' EXIT
 
-# CI mode (VAULT_ADDR set by the rotate-secrets workflow): current credentials
-# and VAULT_TOKEN come from the vault-secrets action, Vault is reached through
-# the Cloudflare Access tunnel. Local mode: both go through gcloud + IAP SSH.
-if [ -z "$VAULT_ADDR" ]; then
-  echo "Fetching root token from Secret Manager..."
-  VAULT_TOKEN=$(gcloud secrets versions access latest \
-    --secret=VB_VM_VAULT_ROOT_TOKEN \
-    --project="${GCP_PROJECT}")
+echo "Fetching root token from Secret Manager..."
+VAULT_TOKEN=$(gcloud secrets versions access latest \
+  --secret=VB_VM_VAULT_ROOT_TOKEN \
+  --project="${GCP_PROJECT}")
 
-  echo "Reading current OCI credentials from Vault..."
-  # Both fields are multi-line, so they come back base64-encoded rather than
-  # as bare `KEY=value` lines the way the single-line rotators read theirs.
-  CREDS=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
+echo "Reading current OCI credentials from Vault..."
+# Both fields are multi-line, so they come back base64-encoded rather than as
+# bare `KEY=value` lines the way the single-line rotators read theirs.
+CREDS=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
 echo "CONFIG=$(vault kv get -field=OCI_CONFIG '"${VAULT_KV_PATH}"'/secrets | base64 -w 0)"
 echo "KEY=$(vault kv get -field=OCI_PRIVATE_KEY '"${VAULT_KV_PATH}"'/secrets | base64 -w 0)"
 ' VAULT_TOKEN "$VAULT_TOKEN" 2>/dev/null)
-  CURRENT_CONFIG=$(sed -n 's/^CONFIG=//p' <<< "$CREDS" | tr -d '[:space:]' | base64 -d)
-  CURRENT_PRIVATE_KEY=$(sed -n 's/^KEY=//p' <<< "$CREDS" | tr -d '[:space:]' | base64 -d)
-else
-  CURRENT_CONFIG="$OCI_CONFIG"
-  CURRENT_PRIVATE_KEY="$OCI_PRIVATE_KEY"
-fi
+CURRENT_CONFIG=$(sed -n 's/^CONFIG=//p' <<< "$CREDS" | tr -d '[:space:]' | base64 -d)
+CURRENT_PRIVATE_KEY=$(sed -n 's/^KEY=//p' <<< "$CREDS" | tr -d '[:space:]' | base64 -d)
 
 if [ -z "$CURRENT_CONFIG" ] || [ -z "$CURRENT_PRIVATE_KEY" ]; then
   echo "ERROR: current OCI credentials not available"
@@ -177,26 +169,12 @@ fi
 NEW_PRIVATE_KEY=$(cat "${NEW_KEY_FILE}")
 
 echo "Updating Vault with new config and key..."
-if [ -z "$VAULT_ADDR" ]; then
-  gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
+gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
 
 vault kv patch '"${VAULT_KV_PATH}"'/secrets OCI_CONFIG="$NEW_CONFIG" OCI_PRIVATE_KEY="$NEW_PRIVATE_KEY"
 ' VAULT_TOKEN "$VAULT_TOKEN" NEW_CONFIG "$NEW_CONFIG" NEW_PRIVATE_KEY "$NEW_PRIVATE_KEY"
-else
-  # Built with jq rather than an inline -d string: both values are multi-line
-  # PEM/INI blobs that have to reach Vault with their newlines escaped.
-  jq -nc --arg config "$NEW_CONFIG" --arg key "$NEW_PRIVATE_KEY" \
-    '{data: {OCI_CONFIG: $config, OCI_PRIVATE_KEY: $key}}' \
-    | curl -sf -o /dev/null \
-      -H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" \
-      -H "CF-Access-Client-Secret: ${CF_ACCESS_CLIENT_SECRET}" \
-      -H "X-Vault-Token: ${VAULT_TOKEN}" \
-      -X PATCH -H "Content-Type: application/merge-patch+json" \
-      --data-binary @- \
-      "${VAULT_ADDR}/v1/${VAULT_KV_PATH}/data/secrets"
-fi
 
 write_oci_local_config "$NEW_CONFIG" "$NEW_PRIVATE_KEY"
 

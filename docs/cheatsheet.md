@@ -112,7 +112,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   gcp:vm:vault:set-secrets    Set secrets in Vault
 
 🔑 SECRETS
-  secret-rotation:all         Run all scripted rotations, then dispatch ci-rotate-secrets workflow
+  secret-rotation:all         Run the local rotations, dispatch ci-rotate-secrets, then rotate the OCI key
   secret-rotation:flyio       Rotate Fly.io token
   secret-rotation:gitea       Rotate Gitea CI token (scoped read:repository)
   secret-rotation:profile-deploy-key  Rotate profile repo deploy key, store in Vault
@@ -120,7 +120,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   secret-rotation:resend      Rotate Resend API key (single-key swap, pushes to fly app)
   secret-rotation:rabbitmq    Rotate RabbitMQ password, push connection string to fly consumers
   secret-rotation:twilio      Rotate Twilio auth token (two-phase secondary-token promotion)
-  secret-rotation:oci         Rotate the OCI API key (self-succession); refreshes ~/.oci locally
+  secret-rotation:oci         Rotate the OCI API key (local-only); refreshes ~/.oci, ~5min propagation wait
   secret-rotation:calendar-sa  Replace the Google Calendar service-account key, sync it to Vault, reload vb-manager-next
 
 🐳 LOCAL

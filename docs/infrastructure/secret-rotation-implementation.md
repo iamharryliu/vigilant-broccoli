@@ -14,12 +14,9 @@ Every rotator follows **mint → verify → store → revoke**: mint the new cre
 
 ### `OCI_CONFIG` / `OCI_PRIVATE_KEY` — self-succession
 
-`pnpm secret-rotation:oci` (`packer/scripts/rotate-oci-api-key.sh`) — written, not finished.
+Implemented and local-only — see its row in [secret-management.md](./secret-management.md).
 
-- All four API calls are verified against the live tenancy: list, mint, verify, revoke. The failure path is verified too — an aborted run left Vault unpatched, the old key active, and no orphan.
-- **No clean end-to-end run yet.** The first attempt failed on a verification window that was two orders of magnitude too short; see [nuance.md](../nuance.md) for why a new key is unusable for ~5 minutes while reporting `ACTIVE`.
-- **Not wired into `ci-rotate-secrets.yml`.** When it is, it needs its **own job**: the `rotate` job is `timeout-minutes: 20` and already runs five rotators, and this one can block for ten minutes waiting on propagation.
-- Still owed: a row in the rotation table in [secret-management.md](./secret-management.md).
+Outstanding: one clean end-to-end `pnpm secret-rotation:oci` run. Every call has been verified against the live tenancy individually, the abort path included, but the full sequence has not completed once.
 
 The key belongs to `harryliu1995@gmail.com`, a member of `Administrators`, so it grants full control of the tenancy. OCI keys take their permissions from the user and cannot be scoped, so narrowing this means a separate IAM user in a scoped group — a bigger job than the rotator, and the same theme as TODO `21290b`/`306cc4`.
 
