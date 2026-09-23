@@ -62,6 +62,47 @@ export const PERSONAL_URL = {
   },
 } as const;
 
+export const EMAIL_ADDRESS = 'harryliu1995@gmail.com';
+
+export const EMAIL_LINK = {
+  NAME: EMAIL_ADDRESS,
+  URL: `mailto:${EMAIL_ADDRESS}`,
+} as const;
+
+export const SOCIAL_LINK = {
+  LINKEDIN: {
+    NAME: 'LinkedIn',
+    URL: 'https://www.linkedin.com/in/iamharryliu/',
+  },
+  GITHUB: {
+    NAME: 'GitHub',
+    URL: 'https://github.com/iamharryliu',
+  },
+  INSTAGRAM_PRETTYDAMNTIRED: {
+    NAME: 'Instagram - prettydamntired',
+    URL: 'https://www.instagram.com/prettydamntired/',
+  },
+  INSTAGRAM_TORONTOCITYSKATE: {
+    NAME: 'Instagram - torontocityskate',
+    URL: 'https://www.instagram.com/torontocityskate/',
+  },
+  INSTAGRAM_HARRYSELLSSHIT: {
+    NAME: 'Instagram - harrysellsshit',
+    URL: 'https://www.instagram.com/harrysellsshit/',
+  },
+  INSTAGRAM_CLOUD8SKATE: {
+    NAME: 'Instagram - cloud8skate',
+    URL: 'https://www.instagram.com/cloud8skate/',
+  },
+} as const;
+
+export const COMMUNITY_LINK = {
+  CLOUD8SKATE: {
+    NAME: 'Cloud 8 Skate',
+    URL: 'https://cloud8skate.com/',
+  },
+} as const;
+
 export const MAC_OS_APP = {
   CHROME: {
     NAME: 'Google Chrome',

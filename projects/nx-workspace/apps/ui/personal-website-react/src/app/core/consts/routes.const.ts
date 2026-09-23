@@ -1,5 +1,9 @@
+import {
+  COMMUNITY_LINK,
+  EMAIL_LINK,
+  SOCIAL_LINK,
+} from '@vigilant-broccoli/personal-common-js';
 import { ENVIRONMENT } from '../../../environments/environment';
-import { EMAIL_ADDRESS, URLS } from './urls.const';
 
 export const DEFAULT_DESCRIPTION =
   'Harry Liu - Software developer, designer, and creator. Explore my portfolio and projects.';
@@ -91,27 +95,36 @@ const LINK_TREE: Link = {
   },
   text: 'Links',
 };
-const EMAIL: Link = { url: { external: URLS.EMAIL }, text: EMAIL_ADDRESS };
-const LINKEDIN: Link = { url: { external: URLS.LINKEDIN }, text: 'LinkedIn' };
-const GITHUB: Link = { url: { external: URLS.GITHUB }, text: 'Github' };
+const EMAIL: Link = {
+  url: { external: EMAIL_LINK.URL },
+  text: EMAIL_LINK.NAME,
+};
+const LINKEDIN: Link = {
+  url: { external: SOCIAL_LINK.LINKEDIN.URL },
+  text: 'LinkedIn',
+};
+const GITHUB: Link = {
+  url: { external: SOCIAL_LINK.GITHUB.URL },
+  text: 'Github',
+};
 const PERSONAL_INSTAGRAM: Link = {
-  url: { external: URLS.PERSONAL_IG },
+  url: { external: SOCIAL_LINK.INSTAGRAM_PRETTYDAMNTIRED.URL },
   text: 'Personal Instagram',
 };
 const SECONDHAND_STORE_IG: Link = {
-  url: { external: URLS.SECONDHAND_STORE_IG },
+  url: { external: SOCIAL_LINK.INSTAGRAM_HARRYSELLSSHIT.URL },
   text: 'Secondhand Store harrysellsshit',
 };
 const SKATE_IG: Link = {
-  url: { external: URLS.SKATE_IG },
+  url: { external: SOCIAL_LINK.INSTAGRAM_TORONTOCITYSKATE.URL },
   text: 'Toronto City Skate',
 };
 const CLOUD8SKATE: Link = {
-  url: { external: URLS.CLOUD8SKATE },
+  url: { external: COMMUNITY_LINK.CLOUD8SKATE.URL },
   text: 'Cloud 8 Skate',
 };
 const CLOUD8SKATE_IG: Link = {
-  url: { external: URLS.CLOUD8SKATE_IG },
+  url: { external: SOCIAL_LINK.INSTAGRAM_CLOUD8SKATE.URL },
   text: 'Cloud 8 Skate Instagram',
 };
 const RESUME_PATH = '/resume';
