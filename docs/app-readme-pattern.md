@@ -75,7 +75,7 @@ Each component under `infrastructure/*` (e.g. `terraform`, `local`, `agent-sandb
 
 Same rules as apps: single-value groups written inline, the rest nested; classify by nature; omit a group only when there is genuinely nothing for it. Derive everything from `*.tf` provider/resource blocks, `docker-compose.yml`, `Dockerfile`, and scripts — so a newly added Terraform provider or compose service shows up.
 
-Networking and Observability only apply to components that actually have externally reachable services or a curated logging story — most infra components omit both and carry only Stack. When a component has its own directory-scoped `CLAUDE.md` (e.g. `infrastructure/local/CLAUDE.md`), that file is the authority on which of these sections apply to it and how to curate them.
+Networking and Observability only apply to components that actually have externally reachable services or a curated logging story — most infra components omit both and carry only Stack. When a component has its own directory-scoped `CLAUDE.md` (e.g. `infrastructure/local/CLAUDE.md`), that file is the authority on which of these sections apply to it and how to curate them. Its `## Nuances` section is not README guidance — that records traps per [nuance-pattern.md](./nuance-pattern.md) and `/update-readmes` neither reads nor rewrites it.
 
 Example (`infrastructure/terraform`):
 
