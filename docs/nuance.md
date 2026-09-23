@@ -345,3 +345,23 @@ sidebar half-rendered: on mobile it sat on-screen over the page instead of
 sliding off-canvas and blocked the menu button. Nothing fails at build or
 lint time. Whenever an app starts importing a new internal UI lib, add that
 lib's `src/**` glob to the app's Tailwind `content`.
+
+## A new OCI API key returns 401 for ~5 minutes while reporting `ACTIVE`
+
+`POST /20160918/users/{id}/apiKeys` returns the uploaded key immediately, with
+the fingerprint you computed locally and `lifecycleState: ACTIVE`. Listing the
+user's keys shows it as `ACTIVE` too. But every request _signed_ with it gets
+`401 NotAuthenticated` until it finishes syncing to the identity domain —
+measured at 307s in this tenancy, with the state field reading `ACTIVE` for the
+entire window.
+
+So there is nothing to poll except the signed request itself: no state
+transition ever happens, because the resource is created active and only the
+authentication path lags. Polling early is harmless — it neither delays nor
+accelerates acceptance — so the only correct strategy is a long retry window.
+`packer/scripts/rotate-oci-api-key.sh` waits 180s, then retries for another
+450s.
+
+Worth knowing when debugging: a rotation that fails "verification" here is
+almost always this, not a signing bug. Check by re-signing the same request a
+few minutes later before suspecting the signature.
