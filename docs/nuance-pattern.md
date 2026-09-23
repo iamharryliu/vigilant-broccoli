@@ -29,10 +29,13 @@ the directory an agent is working in still reaches them, because every
 `CLAUDE.md` on the path into that directory is loaded — which is why the
 Tailwind `content` trap that bit one app lives at the workspace root.
 
-`CLAUDE.md` is the vehicle because it is the one filename the agent harness
-loads on its own when work happens in that subtree. A separate `NUANCE.md`
-would only be found by an agent that already went looking, which is the
-opposite of what a nuance needs.
+The vehicle is whatever file the agent harness loads on its own when work
+happens in a subtree — `CLAUDE.md` in this repo today. That automatic load is
+the entire mechanism: a file the harness has no reason to open (a `NUANCE.md`,
+say) is found only by an agent that already went looking, which is the opposite
+of what a nuance needs. If that filename ever changes, see
+[Harness portability](#harness-portability) — nothing about the design depends
+on the name itself.
 
 There is no separate index. The list of directories carrying nuances is
 derivable, so it is derived rather than maintained:
@@ -66,6 +69,38 @@ the same exemption [notes-pattern.md](./notes-pattern.md) makes for notes.
 created when there is something to say — there is no empty-file placeholder.
 It is not part of [app-readme-pattern.md](./app-readme-pattern.md): READMEs
 describe the stack, `CLAUDE.md` records traps and conventions.
+
+## Harness portability
+
+The design depends on two behaviours of the agent harness, neither of which is
+the filename:
+
+1. A **conventional file** in a directory is loaded without anyone asking for
+   it.
+2. That load is **nested** — the file for the directory being worked in, not
+   only the one at the repo root.
+
+Claude Code provides both through `CLAUDE.md`, which is why that is the file
+here. Other harnesses use other names (`AGENTS.md` is the closest thing to a
+vendor-neutral convention, and is what Codex reads). Should this repo move,
+the migration is mechanical, not a redesign:
+
+- Rename the per-directory files, and the root one with them.
+- Update the `--include` glob in the root file's nuance convention line.
+- Update the `filename` key in
+  `projects/nx-workspace/apps/ui/pages-index/claude-context.snapshot.config.json`,
+  which selects these files for the Claude Context site.
+- Reword the references here and in [agent-diagram.md](./agent-diagram.md).
+
+To serve two harnesses at once, keep one real file per directory under the
+neutral name and symlink the harness-specific name beside it, so the content
+lives once.
+
+If a harness turns out to load only a root file and not nested ones, the
+convention degrades rather than breaks: the root file still carries the rule
+and the `grep` that finds every directory holding nuances, so an agent can get
+there in one command instead of automatically. Keeping that line in the root
+file is what makes the fallback work — it is not merely a convenience.
 
 ## Entry shape
 
