@@ -3,34 +3,159 @@
 ## Table of Contents
 
 - [Doc Map](#doc-map)
+- [Dev Tooling](#dev-tooling)
+  - [Root Scripts Conventions](#root-scripts-conventions)
+  - [Toolchain](#toolchain)
+- [CI](#ci)
+  - [GitHub Actions](#github-actions)
+  - [Database migrations](#database-migrations)
+  - [Upptime](#upptime)
+  - [Terraform](#terraform)
+- [App Development](#app-development)
+  - [UI](#ui)
+  - [API](#api)
+  - [Documentation](#documentation)
+- [Git](#git)
+  - [Conventions](#conventions)
+  - [Concurrent Claude Sessions](#concurrent-claude-sessions)
+  - [Staying Current With `main`](#staying-current-with-main)
+  - [Git Management](#git-management)
 - [Coding Conventions](#coding-conventions)
 - [Folder Structure](#folder-structure)
 
 ## Doc Map
 
-- [Agent Context Map](./docs/agent-diagram.md) — how this Doc Map, `docs/`, and skills/commands relate; update it in the same change whenever any of those change
-- [Dev Tooling](./docs/DEV_TOOLING.md) — root `package.json` CLI scripts and cheatsheet; read first before adding or changing root scripts
-- [CI](./docs/CI.md) — read first before touching workflows, monitoring, or IaC
-  - GitHub Actions — action pinning, README badges, cron dispatch, workflow secrets
-  - Upptime — status checks for deployed services
-  - Terraform — IaC in `infrastructure/terraform/`
-- [App Development](./docs/APP_DEVELOPMENT.md) — shared consts, env vars, auth, dependency pinning, npm publishing; read first before app work
-  - [repo-patterns.md](./docs/repo-patterns.md) — decision map for adding/changing an app, workflow, or deploy: which existing pattern to copy
-  - UI — [docs/ui/](./docs/ui/) (`ui-app-pattern.md`, `auth/*`, `deployment/*`)
-  - API — [docs/api/](./docs/api/) (`deployment/fly-service-pattern.md`)
-- [Git](./docs/GIT.md) — read first before committing or pushing
-  - Concurrent Claude Sessions — `ListAgents` before branching, staging, committing, or stashing; the index, `HEAD`, and the stash are shared across sessions on one worktree
-- [notes-pattern.md](./docs/notes-pattern.md) — read first before adding or editing files under `notes/`; per-topic conventions live under `docs/notes/`
-- [learning-timeline.md](./docs/learning-timeline.md) — month-by-month record of what was being learned; extend the current month's row when work lands that introduces a new topic
-- [network-management.md](./docs/infrastructure/network-management.md) — read first before changing DNS, domains, proxying, tunnels, or VPN
-- [jellyfin-pi.md](./docs/infrastructure/jellyfin-pi.md) — the Ansible-provisioned homelab Pi running Jellyfin; read first before provisioning or changing hardware on the LAN (there is no Terraform for it)
-- [secret-management.md](./docs/infrastructure/secret-management.md) — read first before adding a secret or a local `.env`/`.tfvars` file
-- [nuance-pattern.md](./docs/nuance-pattern.md) — read first before recording a nuance or editing a directory-scoped `CLAUDE.md`; a nuance lives in the `## Nuances` section of the deepest directory it affects, and a repo-wide one in this file's own `## Nuances`
-- [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md) — cleanup checklist behind `/refactor-code-cleanup` and unattended `agentic:task:solve` runs
-- [TODO.md](./TODO.md) — repo audit backlog
-- [todo-pattern.md](./docs/todo-pattern.md) — read first before adding or editing a `TODO.md` row; single source for its format and the id contract the sandbox scripts parse
-- Coding Conventions — this file
-- Folder Structure — this file
+| Doc                                                                  | Description                                                                                                                                                                                                         |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Agent Context Map](./docs/agent-diagram.md)                         | How this Doc Map, `docs/`, and skills/commands relate; update it in the same change whenever any of those change                                                                                                    |
+| [repo-patterns.md](./docs/repo-patterns.md)                          | Decision map for adding/changing an app, workflow, or deploy: which existing pattern to copy                                                                                                                        |
+| UI — [docs/app-development/ui/](./docs/app-development/ui/)          | `ui-app-pattern.md`, `auth/*`, `deployment/*`                                                                                                                                                                       |
+| API — [docs/app-development/api/](./docs/app-development/api/)       | `deployment/fly-service-pattern.md`                                                                                                                                                                                 |
+| [app-readme-pattern.md](./docs/app-readme-pattern.md)                | The format every app/publishing lib's `README.md` follows; read first before adding or updating one                                                                                                                 |
+| [repo-operations.md](./docs/repo-operations.md)                      | Terraform resource inventory and operations reference for `infrastructure/terraform/`                                                                                                                               |
+| [notes-pattern.md](./docs/notes-pattern.md)                          | Read first before adding or editing files under `notes/`; per-topic conventions live under `docs/notes/`                                                                                                            |
+| [learning-timeline.md](./docs/learning-timeline.md)                  | Month-by-month record of what was being learned; extend the current month's row when work lands that introduces a new topic                                                                                         |
+| [network-management.md](./docs/infrastructure/network-management.md) | Read first before changing DNS, domains, proxying, tunnels, or VPN                                                                                                                                                  |
+| [jellyfin-pi.md](./docs/infrastructure/jellyfin-pi.md)               | The Ansible-provisioned homelab Pi running Jellyfin; read first before provisioning or changing hardware on the LAN (there is no Terraform for it)                                                                  |
+| [secret-management.md](./docs/infrastructure/secret-management.md)   | Read first before adding a secret or a local `.env`/`.tfvars` file                                                                                                                                                  |
+| [nuance-pattern.md](./docs/nuance-pattern.md)                        | Read first before recording a nuance or editing a directory-scoped `CLAUDE.md`; a nuance lives in the `## Nuances` section of the deepest directory it affects, and a repo-wide one in this file's own `## Nuances` |
+| [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md)          | Cleanup checklist behind `/refactor-code-cleanup` and unattended `agentic:task:solve` runs                                                                                                                          |
+| [TODO.md](./TODO.md)                                                 | Repo audit backlog                                                                                                                                                                                                  |
+| [todo-pattern.md](./docs/todo-pattern.md)                            | Read first before adding or editing a `TODO.md` row; single source for its format and the id contract the sandbox scripts parse                                                                                     | T   |
+
+## Dev Tooling
+
+### Root Scripts Conventions
+
+- Useful infra-level CLI commands (SSH, logs, deploys, resets, service management) should be added as scripts in the root `package.json`.
+- The cheatsheet (`docs/cheatsheet.md`, linked from the README, printed via `scripts/shell/cheatsheet.sh` / `pnpm run cheatsheet`) must reflect the root `package.json` scripts — update it when adding, renaming, or removing scripts. `docs/cheatsheet.md` is the source of truth; `cheatsheet.sh` only prints its fenced code block and must not be edited to add content directly.
+- The alias cheatsheet (`docs/cheatsheet-aliases.md`, printed via `scripts/shell/cheatsheet-aliases.sh` / `pnpm run cheatsheet:aliases`, and by the `cheatsheet` shell function in `setup/dotfiles/zsh/aliases/vigilant-broccoli_aliases.sh`) must reflect the aliases and functions under `setup/dotfiles/` — update it when adding, renaming, or removing one. Same rule as above: the markdown is the source of truth and the `.sh` only prints its fenced code block.
+
+### Toolchain
+
+- Tool versions are pinned in the root `mise.toml` (Node via `.nvmrc`); `mise install` from the repo root installs them and `mise activate` in `.rc.zsh`/`.rc.bash` puts them on `PATH` inside the repo. Bump a version there rather than in Homebrew — see [CI](#ci) for how workflows read the same file.
+
+## CI
+
+### GitHub Actions
+
+- Always use Node.js 24-compatible action versions to avoid deprecation warnings (GitHub is deprecating the Node 20 runtime — a Node 20 action still runs but logs a warning on every job). Before pinning or bumping any action, verify its `action.yml` declares `runs.using: 'node24'` at the target SHA (`gh api "repos/OWNER/REPO/contents/action.yml?ref=SHA" --jq '.content' | base64 -d | grep using`); pin to the full commit SHA with a trailing `# vN` version comment. When adding an action already used elsewhere, copy its SHA from an existing workflow — the workflows are the source of truth for current pins. When bumping an action that appears in more than one workflow (or in `.github/actions/*`), bump every occurrence together so pins stay uniform.
+- The README `## CI Actions` table's `Status` column (a status badge per workflow) must reflect the workflows in `.github/workflows/` — add/rename/remove a row, in alphabetical order by workflow name, when a workflow is added, renamed, or removed. Its `Manual` column (`Yes`/`No`) reflects whether the workflow's `on:` block has `workflow_dispatch:`, and its `Cron` column (`daily`/`hourly`/`weekly`/`—`) reflects the frequency of its `schedule:` trigger, if any — keep both in sync with the workflow file whenever its triggers change.
+- Cron-triggered workflows (`cron-*.yml`) must also be dispatchable on demand — include `workflow_dispatch:` alongside their `schedule:` trigger.
+- Post-deploy followers (health-check, notify-complete, e2e/smoke/security suites) trigger on `repository_dispatch: types: [deploy-fanout]`, not `workflow_run` — `deploy.yml`'s `notify-followers` job fires that event once per invocation (including once per environment when called from `ci-rotate-secrets`) with a `client_payload` of `conclusion`, `deployed`, `environment`, `run_id`, `run_url`, `started_at`, `commit_message`. `workflow_run` doesn't fire for reusable `workflow_call` invocations, so it can't reliably signal "a deploy just finished" here. Gate any new follower job on `github.event.client_payload.conclusion == 'success'`, and add `&& github.event.client_payload.deployed == 'true'` if the job does real infra round trips (skip that half for cheap jobs like notifications that should still report a no-op success). Don't add a `workflow_run` trigger for `deploy`/`ci-rotate-secrets` — it never fires for the reusable `workflow_call` path, so `deploy-fanout` is the only reliable post-deploy signal. A suite can carry both its daily `cron` and the gated `deploy-fanout` trigger for periodic + immediate-post-deploy coverage (see the `test-security-*` suites, which run daily and re-check right after a real deploy; the `deployed == 'true'` gate keeps no-op deploys from firing them). `test-security-cloudflare-access` is the exception — it stays on `cron` + `terraform/**` push, since it validates infra (Cloudflare Access), not app deploys.
+- **Runner images are pinned, not `ubuntu-latest`.** Every job runs on `ubuntu-24.04`. GitHub annotates every single job that says `ubuntu-latest` with a migration notice ("The ubuntu-latest label will migrate to Ubuntu 26 beginning October 19, 2026"), which is the only annotation this repo's runs produce — and an unpinned label turns that migration into a surprise breakage on someone else's schedule. Pinning matches how everything else here is versioned (action SHAs, `.nvmrc`, `mise.toml`) and makes the move to Ubuntu 26 a deliberate, reviewable change. Bump every occurrence together so the runners stay uniform.
+- **Every job carries a `timeout-minutes`.** GitHub's default is 360 minutes, so one hung network call (a scale-to-zero service that never wakes, an SSH that stalls) can burn six hours of the free-tier budget before the runner gives up. Sizing follows observed runtime with generous headroom: `10` for the e2e/smoke/security suites and health checks (all finish in well under a minute), `15`–`20` for profile/upptime publishes and secret rotation, `30` for the backup jobs and `manual-replace-code-server` (data dumps and VM replacement legitimately run long).
+- **Mutating workflows carry a `concurrency` group** so two runs can't interleave on the same resource — `cancel-in-progress: false` for anything that must not be interrupted midway (`rotate-secrets`, `cron-backup`, `deploy-code-server-image`, `replace-code-server`), `true` only where the work is idempotent and the newest run supersedes the old (`deploy-github-profile`, `ci-pr-check`). Never interpolate a free-text `workflow_dispatch` input straight into the group — GitHub rejects the run outright ("Concurrency group name must be less than 400 characters", failing in seconds with no jobs and no logs) once the evaluated group passes 400 characters. Workflow-level `concurrency` can only read the `github`/`inputs`/`vars` contexts, so hash the inputs in a small `key` job and key a job-level group on `needs.key.outputs.group` instead — `manual-agentic-solve` is the pattern.
+- **Stagger `schedule:` crons; never schedule on the hour.** GitHub delays or silently drops scheduled runs queued at high-contention times, and the top of the hour — midnight UTC above all — is the worst of them. The daily suites are spread across `00:15`–`02:30` and the weekly ones across Sunday `04:10`–`05:40`, each on a distinct off-the-hour minute. When adding a scheduled workflow, pick a free minute rather than copying `0 0 * * *` from a neighbour.
+- **Node version comes from `.nvmrc` at the repo root**, referenced as `node-version-file: .nvmrc` in every `actions/setup-node` step. Bump Node in that one file — don't reintroduce a hardcoded `node-version:` anywhere. Locally, mise reads the same `.nvmrc` (`idiomatic_version_file_enable_tools` in `mise.toml`), so the shell matches CI instead of whatever Homebrew linked.
+- **Every other toolchain version comes from `mise.toml`** (Python, Terraform, Packer). Workflows install them with `jdx/mise-action` and an `install_args` naming only the tools that job needs (e.g. `install_args: terraform`) — don't reintroduce `actions/setup-python` with a hardcoded `python-version:` or `hashicorp/setup-terraform` with an unpinned version. pnpm stays pinned by `packageManager` in `package.json` and Go by `go.mod`, so neither is duplicated in `mise.toml`.
+- **A backup only counts once a restore of it has been verified.** `test-smoke-backup-restore` runs weekly: it checks every `gs://vigilant-broccoli-backup` prefix has a dump no older than two days (a silently failing nightly job looks identical to a working one otherwise), then restores each into a throwaway container — the Gitea SQLite database plus a `git fsck` of every bare repo it references, `mongorestore` into a `mongo` container, and the Supabase `pg_dump` into a stock `postgres` container where every `public` table's row count must match the dump exactly. Supabase-specific objects (auth/storage schemas, extensions) are allowed to fail there; the roles the dump grants to are created up front. Add a job here when a new store gets a `cron-backup` job.
+- **Machine setup is CI-tested too.** `test-smoke-machine-setup` runs `setup/linux/install.sh -y` on a clean runner (apt packages, dotfile symlinks, the rc chain sourcing without stderr, and a second run staying idempotent), and resolves every Brewfile formula/cask on macOS so a renamed or removed upstream package surfaces before a new machine needs it. It doesn't install the Brewfile — that would cost far more runner time than the failure it catches.
+- **`manual-agentic-solve-smoke` is the one-click test for that pipeline.** It dispatches `manual-agentic-solve` (via `gh workflow run` with `github.token` and `actions: write` — the same pattern `deploy.yml` uses for `deploy-fanout`) with a canned prompt that rewrites one line of `.github/agentic-smoke.md`. That keeps the test diff to a single changed line while still covering both an added and a removed row in the email, which a new-file change would not. It opens a real, disposable PR — close it once the email looks right. Defaults to `haiku` since the point is the plumbing, not the reasoning.
+- **`manual-agentic-solve` emails the run's diff.** The sandbox container is `--rm`'d the moment a solve ends, so `solve-todo-runner.sh` prints the branch diff to stdout between `PR_DIFF_BEGIN`/`PR_DIFF_END` markers (alongside `PR_TITLE::`, `PR_URL::` and `PR_SUMMARY_*`); `solve-todo.sh` parses them out of the run log into a JSON Lines file and `.github/scripts/agentic-solve-email.mjs` renders it as a GitHub-style patch. Read the PR URL from the `PR_URL::` marker, never by grepping the log for a pull URL — the log now carries the diff, so a solve that adds a PR link to a note would match. Keep the email under Gmail's ~102KB clip threshold — past it Gmail hides the tail, including the "View run" link — which is what the shared row/byte budget in that script exists for. Per-row inline CSS alone triples the size, so the repeated styling lives in a `<style>` block with `bgcolor` + `<pre>` fallbacks for clients that drop it.
+- Never introduce a new GitHub Actions repo secret, and remove unused ones. The only required repo secrets are `GCP_SERVICE_ACCOUNT` and `GCP_WORKLOAD_IDENTITY_PROVIDER` (used for Workload Identity Federation to GCP). Any other credential a workflow needs must come from GCP Secret Manager via `google-github-actions/get-secretmanager-secrets`, or from Vault via `.github/actions/vault-secrets` — not a new repo secret. A workflow that must push directly to `main` (bypassing `GITHUB_TOKEN`, which has no ruleset bypass — see [Git](#git)) should mint a short-lived installation token from a dedicated, minimally-scoped GitHub App, not reuse a broader long-lived PAT — see the upptime crons for the pattern. The secret inventory lives in [secret-management.md](./docs/infrastructure/secret-management.md).
+
+### Database migrations
+
+- The one shared Supabase project is migrated by `projects/nx-workspace/scripts/migrate.ts`, which applies every `.sql` under the `--migrations-dir` folders it's given, tracking applied files in a `schema_migrations` table (idempotent — re-running skips what's already applied). It accepts multiple `--migrations-dir` flags and applies the union in one global filename order, so a migration in one app's folder that depends on an object created earlier in another's still runs after it.
+- `deploy.yml`'s `deploy-apps` job runs it (step "Apply Supabase migrations") **before** deploying any app, auto-discovering every `apps/**/supabase/migrations` folder, so a deploy never ships code expecting a table/policy that isn't there yet. It needs `SUPABASE_DB_PASSWORD` from Vault (already imported in that job). New migration folders are picked up automatically — no workflow edit needed.
+- The per-app `serve` targets still run `migrate.ts` for their own folder on `nx serve`, so local dev applies pending migrations against the shared project too. That remains the way to apply a migration that hasn't merged yet; on merge, `deploy.yml` is the authoritative apply.
+- Migration filenames must be unique across all folders (they share one `schema_migrations` keyed by filename) — `migrate.ts` aborts on a collision.
+
+### Upptime
+
+- Every deployed service — apps and self-hosted infrastructure alike (e.g. Gitea, code-server) — must have an Upptime status check: add its public URL to `sites` in the root `.upptimerc.yml`. Services without a public URL (e.g. `vb-manager-next` served locally via PM2, RabbitMQ reachable only inside the VM network) are exempt and covered by `ci-health-check` instead.
+
+### Terraform
+
+- Infrastructure-as-code lives in `infrastructure/terraform/`, driven by the `pnpm tf:*` scripts — resource inventory and operations in [repo-operations.md](./docs/repo-operations.md). Never change Terraform-managed provider config in a provider dashboard — the next apply reverts it.
+- `cron-terraform-drift` runs `terraform plan -detailed-exitcode -lock=false` daily and fails when config, state, and the real infrastructure disagree — a dashboard edit, a merged-but-unapplied change, or a resource deleted out of band. Applies stay local (`pnpm tf:apply`); the workflow only reads. It authenticates to GCP as the read-only `github-actions-tf-drift` SA (`github-actions-tf-drift.tf`), whose WIF provider accepts only this workflow on `main`. The repo is public, so the plan body is never printed — the job summary lists changed addresses and actions only. When it goes red, run `pnpm tf:plan` locally for the full diff. A new Google resource type the SA can't read (a 403 during refresh) needs a read role added there, not a wider shared SA.
+
+## App Development
+
+- For HTTP-related literals (methods, headers, status codes, common header names), prefer the shared consts in `libs/@vigilant-broccoli/common-js/src/lib/http/http.consts.ts` (`HTTP_METHOD`, `HTTP_HEADERS`, `HTTP_STATUS_CODES`, etc.) over defining local equivalents.
+- For personal identity links and contact details (social profiles, the personal email address, community sites), prefer the shared consts in `libs/@vigilant-broccoli/personal-common-js/src/index.ts` (`SOCIAL_LINK`, `EMAIL_ADDRESS`, `SENDER_EMAIL_ADDRESS`, `EMAIL_LINK`, `COMMUNITY_LINK`, `PERSONAL_URL`) over hardcoding them per app — several apps surface the same profiles, and a moved account should only need one edit. Keep them out of `@vigilant-broccoli/links`, whose ops registry (cloud account ids, dashboard URLs) must never be imported into a public client bundle. Auth allowlists and API-key seed identities stay literal on purpose — they happen to equal the contact address today, and importing it would make a change of contact address silently move who can log in. Google Calendar ids live in `GOOGLE_CALENDAR.CALENDAR_EMAIL` in `@vigilant-broccoli/common-browser`.
+- For accessing environment variables server-side, prefer `getEnvironmentVariable` from `@vigilant-broccoli/common-node` over `process.env` directly. Exception: `NEXT_PUBLIC_` vars accessed client-side must use `process.env.NEXT_PUBLIC_*` direct property access — Next.js can only statically inline them at build time with direct access, not through a wrapper function.
+- Never declare a dependency as `"*"` (or an exact/stale pin that differs from root) in a lib/app `package.json` for a package already pinned in the workspace root `package.json` — mirror the root's caret range instead. pnpm only re-resolves an importer when its own specifier changes, so a `"*"` copy can silently drift to a different resolved version once root is bumped, surfacing as a confusing type error (e.g. two `fastify` versions producing incompatible `FastifyInstance` types) instead of an obvious version mismatch; matching caret ranges let pnpm dedupe to one resolved version. Do NOT use `overrides` in `pnpm-workspace.yaml` to force versions for packages consumed by the fly services — it breaks their pruned installs (rationale in [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-pattern.md)).
+- A `libs/@vigilant-broccoli/*` lib publishes to npm iff its `project.json` defines a `publish-package` target — `publishConfig` in `package.json` alone does nothing. Before adding or changing npm publishing, follow the npm package publishing steps in [repo-patterns.md](./docs/repo-patterns.md) (reference libs, target wiring, `NPM_TOKEN` requirements, first-publish constraints).
+
+### UI
+
+- For UI applications, read [ui-app-pattern.md](./docs/app-development/ui/ui-app-pattern.md) first — it owns the binding UI requirements (prefer `@vigilant-broccoli/react-lib` shared components over hand-rolling, i18n via the shared `createI18n` for all user-facing copy, user-facing auth via `createSupabaseAuth`, a card on the pages-index "UI Apps" page) and routes to the per-destination deploy and auth pattern docs alongside it.
+
+### API
+
+- For anything touching fly.io services in `apps/api/*` (adding/modifying a service, smoke targets, fly configs, image delivery), read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-pattern.md) first.
+- Every fly.io service in `apps/api/*` exposes Swagger docs at `/docs` via `createDocsPlugin` from `@vigilant-broccoli/fastify`, with its OpenAPI spec built by `createSwaggerSpec` in the service's `src/libs/swagger.ts` (`src/swagger.ts` in the email services). When adding, removing, or changing a service's routes (paths, methods, request/response shapes, auth), update that swagger spec in the same change.
+
+### Documentation
+
+- Each app under `apps/*`, and each `libs/@vigilant-broccoli/*` lib that publishes to npm, carries a `README.md` following [app-readme-pattern.md](./docs/app-readme-pattern.md) (title, one-line purpose, `## Stack`); keep it in sync with the code — in particular, add or remove a deploy destination (Docker Hub, npm, Fly.io, Vercel, …) under Cloud services in the same change that wires or unwires it. Run `/update-readmes` to review and refresh them all.
+
+## Git
+
+- Never commit or push unless explicitly instructed to.
+
+### Conventions
+
+`/ship-pr` and `/sync-main` implement these; change the rule here first, then the command.
+
+- **Staging**: stage only the files created or edited in the current session — never `git add -A` or `git add .`, and never files that were already modified or untracked before the session began, even if they look related.
+- **Branch names**: `<committype>/<short-kebab-case-description>` (e.g. `fix/rabbitmq-secret-rotation`, `feat/hearth-food-planner-page`), cut from a freshly fetched `main`.
+- **Commit types**: `feat`, `fix`, `ci`, `chore`, `docs`, `refactor`, `enhancement`, `security`, `infrastructure` — match existing usage in `git log`; don't invent a new type unless nothing fits.
+- **Commit messages**: `<committype>(<scope>): <Message>.` — scope is the affected app/service/lib (e.g. `hearth`, `github-actions`, `vb-manager-next`) and is omitted when the change isn't scoped to one; the message is capitalized, concise, focused on why not what, and ends with a period. Agent-authored commits end with the `Co-Authored-By:` trailer the environment specifies for the authoring model — never a hardcoded model name.
+- **PR body**: a `## Summary` section (bullets) and a `## Test plan` section (checklist), ending with the Claude Code footer. If the branch already has an open PR, push to it rather than opening a second.
+- **Safety**: never force-push, never skip hooks, never amend existing commits.
+- **Shared worktree**: more than one Claude session can be attached to this checkout — check for peers before touching shared git state. See [Concurrent Claude Sessions](#concurrent-claude-sessions).
+
+### Concurrent Claude Sessions
+
+Several Claude Code sessions can be attached to this one working tree at the same time (separate tmux panes on the same checkout). The index, `HEAD`, and the stash are **shared** between them, so a routine `/ship-pr` can sweep up — or throw away — another session's in-flight work.
+
+- **Check before touching shared git state.** Run `ListAgents` before branching, staging, committing, stashing, or switching branches. Peer sessions on this machine are listed by name, and that name is the address for `SendMessage`.
+- **Announce, then get the ack.** Tell each peer what you are about to do and which paths you own, and ask it to hold git operations and file writes until you say otherwise. `notify_when_idle: true` subscribes you to a one-shot notice when it next goes quiet. Message it again once the push lands so it can resume.
+- **The index is shared, so commit by pathspec.** A peer's `git add`/`git mv` is already staged in the same index, and a bare `git commit` takes it along. Use `git commit -m "<message>" -- <your paths>` — the pathspec after `--` commits those files from the working tree and leaves every other index entry untouched. This is the one case where not staging first is the correct move.
+- **Never stash in a shared tree.** `git stash push -u` takes everyone's uncommitted work with it, and `/sync-main` step 3 does exactly that whenever the tree is dirty. On a shared checkout, commit your own paths first and sync a clean branch instead.
+- **A branch switch is global.** `git checkout -b` moves `HEAD` for every session on the tree. Uncommitted changes carry across and survive, but return to the original branch when you are done (`/ship-pr` step 9) so peers find the tree where they left it.
+- **Genuinely parallel work belongs in its own worktree.** `git worktree add` gives a session its own index and `HEAD`, and none of the above applies.
+
+### Staying Current With `main`
+
+Branches here are short-lived and PRs land as **squash merges**, so the cheapest way to avoid conflicts is to close the gap with `main` early and often rather than at review time.
+
+- **Sync at the three natural checkpoints**: when starting work (branch from a freshly fetched `main`, never a stale local one), before pushing, and any time `main` moves while a branch is open. `/sync-main` does this; `/ship-pr` calls it at branch creation and again before the push.
+- **Merge, don't rebase.** A rebase of an already-pushed branch can only be published with a force-push, which is forbidden here. `git merge --no-edit origin/main` is the supported move — the squash merge at PR time means these merge commits never reach `main`'s history, so there is no history-tidiness cost.
+- **Check drift with `git rev-list --left-right --count origin/main...HEAD`** — left is what the branch is missing, right is what it adds. A left number in the dozens on a branch open more than a day is the signal to sync now.
+- **`git pull --ff-only` on `main`.** If it refuses, `main` has local commits that never went through a PR — that is a state to report, not to paper over with a merge. `pull.rebase=false` is already set locally.
+- **Enable `git rerere`** (`git config rerere.enabled true`): git records how a conflict was resolved and replays that resolution automatically the next time the same conflict appears. It pays for itself when a long-lived branch re-merges `main` repeatedly.
+
+### Git Management
+
+- `main` is protected by a Terraform-managed **repository ruleset** (`infrastructure/terraform/github.tf`), not classic branch protection. PRs are required and, via the `update` rule, only bypass actors can move `main` at all — so a direct push is rejected with `GH006`/`GH013`, and a PR can only be merged by an admin, never by the agent-sandbox/code-server GitHub App even though it holds Contents write.
+- Two bypass actors: repo admins (`RepositoryRole` 5, matching the old `enforce_admins = false`) and a dedicated GitHub App used only by the upptime crons (`Integration`, App ID in `var.upptime_gh_app_id`). `GITHUB_TOKEN` (the ambient per-job bot token) has no bypass — a bot identity can't hold a collaborator role, and the built-in "GitHub Actions" integration can't be a bypass actor on a user-owned repo (no owner organization). A GitHub App you create and install directly on the repo doesn't have that restriction. The agent sandbox's GitHub App (Contents + Pull requests + Workflows RW; the code-server VM uses it too, via 1-hour tokens a workflow delivers) is deliberately **not** a bypass actor — it goes through PRs, unlike the upptime app. Note GitHub has no permission that allows pushing branches but not merging PRs (both need Contents write), so the ruleset is what keeps that app off `main`.
+- The upptime app is scoped to Contents + Issues RW only — nothing else. Workflows mint a short-lived (~1h) installation token per run via `infrastructure/agent-sandbox/mint-github-app-token.sh`. The App ID is public (hardcoded in `variables.tf` and the two `cron-upptime*.yml` workflows, like the other non-secret IDs); only the private key (`UPPTIME_GH_APP_PRIVATE_KEY`) lives in Vault. Never reuse the broader Terraform/agent-sandbox GitHub credentials for a push-to-main use case — a long-lived, broadly-scoped token sitting in a job for a third-party action to read is a real credential-exposure surface; a purpose-built, narrowly-scoped, auto-expiring one bounds the blast radius if it ever leaks.
+- Change protection by editing `github.tf` and running `pnpm tf:apply`, never in the GitHub UI (see [CI](#ci)). A workflow that commits _conditionally_ can report success while blocked, so verify a bot commit actually lands rather than trusting a green run.
+- `google-github-actions/auth` writes a `gha-creds-*.json` file into the job's working directory. It's gitignored, but any tool that does a blanket `git add .` (e.g. Upptime's commit step) will happily stage it if it isn't. Check `.gitignore` covers this before adding any workflow that both authenticates via WIF and auto-commits.
 
 ## Coding Conventions
 

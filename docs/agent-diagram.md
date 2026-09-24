@@ -4,15 +4,11 @@ How `CLAUDE.md`, `docs/`, and Claude Code skills/commands relate for an agent wo
 
 ```mermaid
 flowchart TD
-    CLAUDE["CLAUDE.md<br/>(repo root)"]
+    CLAUDE["CLAUDE.md<br/>(repo root)<br/>Dev Tooling, CI, App Development,<br/>Git sections"]
     SCOPED_CLAUDE["CLAUDE.md<br/>(per app / lib / infra component)<br/>Nuances section, auto-loaded in its subtree"]
     TODO["TODO.md<br/>(repo root)<br/>per-section priority tables"]
 
     subgraph DOCS["docs/"]
-        DEV_TOOLING["DEV_TOOLING.md"]
-        CI["CI.md"]
-        APP_DEV["APP_DEVELOPMENT.md"]
-        GIT["GIT.md"]
         NETWORK["infrastructure/network-management.md"]
         JELLYFIN_PI["infrastructure/jellyfin-pi.md"]
         NUANCE_PATTERN["nuance-pattern.md"]
@@ -29,10 +25,6 @@ flowchart TD
         RND_TPL["rnd/rnd-template.md"]
     end
 
-    CLAUDE --> DEV_TOOLING
-    CLAUDE --> CI
-    CLAUDE --> APP_DEV
-    CLAUDE --> GIT
     CLAUDE --> NETWORK
     CLAUDE --> JELLYFIN_PI
     CLAUDE --> SECRETS
@@ -43,14 +35,12 @@ flowchart TD
     CLAUDE --> TODO_PATTERN
     TODO_PATTERN --> TODO
     CLAUDE --> TIMELINE
+    CLAUDE --> REPO_OPS
+    CLAUDE --> REPO_PATTERNS
+    CLAUDE --> APP_README
+    CLAUDE --> UI_PATTERN
+    CLAUDE --> FLY_PATTERN
 
-    CI --> REPO_OPS
-    CI --> SECRETS
-    GIT --> CI
-    APP_DEV --> REPO_PATTERNS
-    APP_DEV --> APP_README
-    APP_DEV --> UI_PATTERN
-    APP_DEV --> FLY_PATTERN
     REPO_PATTERNS --> FLY_PATTERN
     REPO_PATTERNS --> REPO_OPS
     REPO_OPS --> JELLYFIN_PI
@@ -90,8 +80,8 @@ flowchart TD
     CLAUDECODE -->|invoked as /update-readmes| APP_README
     CLAUDECODE -->|invoked as /create-todo-task| TODO_PATTERN
     CLAUDECODE -->|/create-todo-task<br/>writes a table row| TODO
-    CLAUDECODE -->|invoked as /sync-main| GIT
-    CLAUDECODE -->|/ship-pr syncs via /sync-main| GIT
+    CLAUDECODE -->|invoked as /sync-main| CLAUDE
+    CLAUDECODE -->|/ship-pr syncs via /sync-main| CLAUDE
     CLAUDECODE -->|invoked as /refactor-code-cleanup| REFACTOR
     CLAUDECODE -->|/ship-pr screens its own diff| REFACTOR
     CLAUDECODE -->|invoked as /audit-note| AUDIT_TPL
@@ -101,10 +91,10 @@ flowchart TD
 
 ## How it fits together
 
-- **`CLAUDE.md`** is the entry point every agent reads first. Its Doc Map links out to the docs under `docs/` that own each topic (dev tooling, CI, app development, git, networking, secrets, nuance convention, cleanup checklist, TODO format) — including this diagram itself. It also points at two living records that agents keep current as work lands: `TODO.md` and `docs/learning-timeline.md`.
-- **This diagram is generated content, not source of truth** — `CLAUDE.md`'s Doc Map is authoritative. Whenever a Doc Map entry is added/removed, `docs/` gains or loses a doc, or skills/commands are rewired, update this file's mermaid graph and bullets to match in the same change.
+- **`CLAUDE.md`** is the entry point every agent reads first. Dev Tooling, CI, App Development, and Git live as sections in the file itself rather than as separate docs — see its own Doc Map. Its Doc Map also links out to the more specific docs under `docs/` (networking, secrets, nuance convention, cleanup checklist, TODO format) — including this diagram itself. It also points at two living records that agents keep current as work lands: `TODO.md` and `docs/learning-timeline.md`.
+- **This diagram is generated content, not source of truth** — `CLAUDE.md`'s Doc Map is authoritative. Whenever a Doc Map entry is added/removed, `docs/` gains or loses a doc, a section is folded into or split out of `CLAUDE.md`, or skills/commands are rewired, update this file's mermaid graph and bullets to match in the same change.
 - **Browse it rendered**: the GitHub Pages site's Claude Context page (`/#/claude-context` on `iamharryliu.github.io/vigilant-broccoli`, source `projects/nx-workspace/apps/ui/pages-index`) snapshots every file in this diagram at build time and renders the actual markdown link graph between them — file tree, search, and an Obsidian-style graph view. Which files it includes is configured in that app's `claude-context.snapshot.config.json`.
 - **Nuances live with the code they trap**: a quirk is recorded in the `## Nuances` section of the `CLAUDE.md` at the deepest directory it affects (next to that component's `README.md`), because that is the file the agent harness loads on its own when work happens in that subtree — discovery costs nothing and needs no instruction to be followed, and the design carries over to any harness with the same convention under a different filename. A nuance spanning top-level directories goes in the repo-root `CLAUDE.md`'s own `## Nuances`, which is the same rule rather than an exception. There is no index: `grep -rl '^## Nuances' --include=CLAUDE.md .` derives the list, so nothing can drift out of sync. `docs/nuance-pattern.md` is the source of truth for scope, file shape, and entry shape; adding a nuance is two writes, both in the file you are already editing. `pages-index`'s snapshot picks up any `CLAUDE.md` in the repo with no config change.
 - **`TODO.md` has four writers, and `docs/todo-pattern.md` governs all of them**: `/create-todo-task` interactively, and three unattended sandbox dispatches — `agentic:task:create` adds a row, `agentic:task:solve` removes one it has implemented, and `agentic:task:audit` (weekly, via `cron-agentic-todo-audit`) re-verifies the rows already there, deleting the resolved and correcting the drifted. Only the audit reads the backlog as a whole; it is the one that keeps rows from quietly citing files that have since moved. None of them may reissue a 6-hex id — that id is the handle `solve-todo*.sh` matches on, so the audit runner aborts its own commit if one disappears unexplained or changes.
-- **`docs/`** is a graph, not a flat list: top-level docs (e.g. `APP_DEVELOPMENT.md`) route to more specific pattern docs (`repo-patterns.md`, `ui-app-pattern.md`, `fly-service-pattern.md`), which in turn cite each other for narrower concerns (secrets, deploy destinations).
-- **Skills** (Claude Code commands) live as markdown files in `setup/dotfiles/.claude/commands/` and `setup/dotfiles/.claude/skills/`, symlinked into `~/.claude/commands` and `~/.claude/skills` by `setup/common/symlinks.sh`. Each command file opens with `description:` frontmatter (one sentence, shown in the skill picker) and `argument-hint:` when it takes arguments; the body is the instruction. `skills/` currently holds only a `.gitkeep` — every entry today is a command. They are a separate discovery mechanism from the Doc Map — Claude Code surfaces them as `/slash-commands` — but their instructions explicitly point back into `CLAUDE.md` and `docs/` (e.g. `/create-todo-task` follows `docs/todo-pattern.md` — the single source for the `TODO.md` row format, also parsed by `infrastructure/agent-sandbox/solve-todo*.sh` — and writes a priority-ordered row into the relevant section table, `/update-readmes` follows `docs/app-readme-pattern.md`, `/audit-note` and `/rnd-note` treat their `docs/audit`/`docs/rnd` templates as the source of truth for note structure, `/sync-main` and `/ship-pr` implement the merge-don't-rebase sync policy documented in `GIT.md`, and both `/refactor-code-cleanup` and `/ship-pr`'s pre-staging diff review apply `docs/refactor-code-cleanup.md`, which in turn defers to `CLAUDE.md`'s comment rule).
+- **`docs/`** is a graph, not a flat list: `CLAUDE.md` routes to more specific pattern docs (`repo-patterns.md`, `ui-app-pattern.md`, `fly-service-pattern.md`), which in turn cite each other for narrower concerns (secrets, deploy destinations).
+- **Skills** (Claude Code commands) live as markdown files in `setup/dotfiles/.claude/commands/` and `setup/dotfiles/.claude/skills/`, symlinked into `~/.claude/commands` and `~/.claude/skills` by `setup/common/symlinks.sh`. Each command file opens with `description:` frontmatter (one sentence, shown in the skill picker) and `argument-hint:` when it takes arguments; the body is the instruction. `skills/` currently holds only a `.gitkeep` — every entry today is a command. They are a separate discovery mechanism from the Doc Map — Claude Code surfaces them as `/slash-commands` — but their instructions explicitly point back into `CLAUDE.md` and `docs/` (e.g. `/create-todo-task` follows `docs/todo-pattern.md` — the single source for the `TODO.md` row format, also parsed by `infrastructure/agent-sandbox/solve-todo*.sh` — and writes a priority-ordered row into the relevant section table, `/update-readmes` follows `docs/app-readme-pattern.md`, `/audit-note` and `/rnd-note` treat their `docs/audit`/`docs/rnd` templates as the source of truth for note structure, `/sync-main` and `/ship-pr` implement the merge-don't-rebase sync policy documented in `CLAUDE.md`'s Git section, and both `/refactor-code-cleanup` and `/ship-pr`'s pre-staging diff review apply `docs/refactor-code-cleanup.md`, which in turn defers to `CLAUDE.md`'s comment rule).
