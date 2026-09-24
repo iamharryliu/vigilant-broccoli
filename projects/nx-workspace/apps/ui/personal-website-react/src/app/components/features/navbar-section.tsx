@@ -1,10 +1,16 @@
 import { NavLink } from 'react-router-dom';
-import { Moon, Sun } from 'lucide-react';
+import { Calendar, Mail, Moon, Sun, User } from 'lucide-react';
 import { LINKS } from '../../core/consts/routes.const';
 import { DARK_MODE_LABELS, useTheme } from '../../core/services/theme-context';
 import { IconActionLink } from '../global/icon-action-link';
 
-const NAV_LINKS = [LINKS.ABOUT_PAGE, LINKS.CALENDAR_PAGE, LINKS.CONTACT_PAGE];
+const NAV_LINKS = [
+  { ...LINKS.ABOUT_PAGE, icon: User },
+  { ...LINKS.CALENDAR_PAGE, icon: Calendar },
+  { ...LINKS.CONTACT_PAGE, icon: Mail },
+];
+
+const NAV_ICON_SIZE = 16;
 
 const activeClass = 'text-blue-600 dark:text-blue-400 font-semibold';
 
@@ -26,7 +32,10 @@ export function NavbarSection() {
                 isActive ? `${linkClass} ${activeClass}` : linkClass
               }
             >
-              {link.text}
+              <span className="flex items-center gap-1.5">
+                <link.icon size={NAV_ICON_SIZE} />
+                {link.text}
+              </span>
             </NavLink>
           ))}
         </div>
