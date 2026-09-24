@@ -130,8 +130,13 @@
 - [Lund](https://lund.se/)
 - [Malmö Live](https://malmolive.se/program)
 - Inline Skating
-  - [Friday Night Skate Copenhagen](https://www.instagram.com/fnscph/)
+  - FNS Copenhagen
+    - [FNS Copenhagen Facebook](https://www.facebook.com/FNSCPH/events)
+    - [FNS Copenhagen Instagram](https://www.instagram.com/fnscph/)
   - [Malmö City Skaters](https://www.malmocityskaters.se/)
+- Latin Social Dancing
+  - [Klubbkalender LATIN Salsa Bachata etc Klubb Fest Malmö Lund Helsingborg](https://www.facebook.com/groups/532372383132088)
+  - [Salsa & Bachata in Copenhagen](https://www.facebook.com/groups/salsacph/events)
 - Salsa Places
   - Aldonya - A salsa/bachata dance school.
   - [United Dance Studio](https://www.uniteddancestudios.se/) - A salsa/bachata dance school.
