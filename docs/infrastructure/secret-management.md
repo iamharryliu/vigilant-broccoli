@@ -1,5 +1,7 @@
 # Secret Management
 
+Source of truth for where every credential lives, how CI and local tooling reach it, and how it is rotated. Credentials sit in tiers ordered by blast radius — the Google account owning the GCP project, then GCP Secret Manager (Tier 0, the root of trust), then Vault at `kv/data/secrets` for everything below it — and because each tier grants access to everything under it, that ordering is also the rotation priority.
+
 ## Table of Contents
 
 - [Local config files](#local-config-files)
