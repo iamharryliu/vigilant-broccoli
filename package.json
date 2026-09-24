@@ -150,7 +150,7 @@
   "homepage": "https://github.com/iamharryliu/vigilant-broccoli#readme",
   "devDependencies": {
     "lint-staged": "^17.5.1",
-    "prettier": "^3.9.6"
+    "prettier": "^3.9.8"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,html,css,scss,md}": [
