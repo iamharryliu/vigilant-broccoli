@@ -20,7 +20,7 @@ Each app under `projects/nx-workspace/apps/*`, and each `libs/@vigilant-broccoli
   - **Build Tool** — the bundler/builder, e.g. Vite, Next.js, esbuild, webpack
   - **External libs** — other third-party npm packages: UI libs, SDKs, tooling
   - **Internal libs** — the `@vigilant-broccoli/*` VB libs it consumes
-  - **Cloud services** — hosted/managed platforms and external APIs it deploys to or calls (e.g. Vercel, Cloudflare Pages, Fly.io, Docker Hub, npm, Supabase, Sanity, AWS S3, Stripe). Always reflect the deploy destination here: a `libs/@vigilant-broccoli/*` lib with a `publish-package` target lists `npm`; an `apps/api/*` service shipped via the Docker Hub roundtrip (`deploy-container` target — see [fly-service-pattern.md](./api/deployment/fly-service-pattern.md)) lists `Docker Hub`.
+  - **Cloud services** — hosted/managed platforms and external APIs it deploys to or calls (e.g. Vercel, Cloudflare Pages, Fly.io, Docker Hub, npm, Supabase, Sanity, AWS S3, Stripe). Always reflect the deploy destination here: a `libs/@vigilant-broccoli/*` lib with a `publish-package` target lists `npm`; an `apps/api/*` service shipped via the Docker Hub roundtrip (`deploy-container` target — see [fly-service-pattern.md](./app-development/api/deployment/fly-service-pattern.md)) lists `Docker Hub`.
 
 Language, Framework, and Build Tool each hold a single value, written inline (`- Language - TypeScript`). External libs, Internal libs, and Cloud services are nested bullet lists.
 

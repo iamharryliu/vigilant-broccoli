@@ -4,37 +4,44 @@
 
 - [Doc Map](#doc-map)
 - [Dev Tooling](#dev-tooling)
+  - [Root Scripts Conventions](#root-scripts-conventions)
+  - [Toolchain](#toolchain)
 - [CI](#ci)
+  - [GitHub Actions](#github-actions)
+  - [Database migrations](#database-migrations)
+  - [Upptime](#upptime)
+  - [Terraform](#terraform)
 - [App Development](#app-development)
+  - [UI](#ui)
+  - [API](#api)
+  - [Documentation](#documentation)
 - [Git](#git)
+  - [Conventions](#conventions)
+  - [Concurrent Claude Sessions](#concurrent-claude-sessions)
+  - [Staying Current With `main`](#staying-current-with-main)
+  - [Git Management](#git-management)
 - [Coding Conventions](#coding-conventions)
 - [Folder Structure](#folder-structure)
 
 ## Doc Map
 
-- [Agent Context Map](./docs/agent-diagram.md) — how this Doc Map, `docs/`, and skills/commands relate; update it in the same change whenever any of those change
-- [Dev Tooling](#dev-tooling) — root `package.json` CLI scripts and cheatsheet; read first before adding or changing root scripts
-- [CI](#ci) — read first before touching workflows, monitoring, or IaC
-  - GitHub Actions — action pinning, README badges, cron dispatch, workflow secrets
-  - Upptime — status checks for deployed services
-  - Terraform — IaC in `infrastructure/terraform/`
-- [App Development](#app-development) — shared consts, env vars, auth, dependency pinning, npm publishing; read first before app work
-  - [repo-patterns.md](./docs/repo-patterns.md) — decision map for adding/changing an app, workflow, or deploy: which existing pattern to copy
-  - UI — [docs/ui/](./docs/ui/) (`ui-app-pattern.md`, `auth/*`, `deployment/*`)
-  - API — [docs/api/](./docs/api/) (`deployment/fly-service-pattern.md`)
-- [Git](#git) — read first before committing or pushing
-  - [Concurrent Claude Sessions](#concurrent-claude-sessions) — `ListAgents` before branching, staging, committing, or stashing; the index, `HEAD`, and the stash are shared across sessions on one worktree
-- [notes-pattern.md](./docs/notes-pattern.md) — read first before adding or editing files under `notes/`; per-topic conventions live under `docs/notes/`
-- [learning-timeline.md](./docs/learning-timeline.md) — month-by-month record of what was being learned; extend the current month's row when work lands that introduces a new topic
-- [network-management.md](./docs/infrastructure/network-management.md) — read first before changing DNS, domains, proxying, tunnels, or VPN
-- [jellyfin-pi.md](./docs/infrastructure/jellyfin-pi.md) — the Ansible-provisioned homelab Pi running Jellyfin; read first before provisioning or changing hardware on the LAN (there is no Terraform for it)
-- [secret-management.md](./docs/infrastructure/secret-management.md) — read first before adding a secret or a local `.env`/`.tfvars` file
-- [nuance-pattern.md](./docs/nuance-pattern.md) — read first before recording a nuance or editing a directory-scoped `CLAUDE.md`; a nuance lives in the `## Nuances` section of the deepest directory it affects, and a repo-wide one in this file's own `## Nuances`
-- [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md) — cleanup checklist behind `/refactor-code-cleanup` and unattended `agentic:task:solve` runs
-- [TODO.md](./TODO.md) — repo audit backlog
-- [todo-pattern.md](./docs/todo-pattern.md) — read first before adding or editing a `TODO.md` row; single source for its format and the id contract the sandbox scripts parse
-- Coding Conventions — this file
-- Folder Structure — this file
+| Doc                                                                  | Description                                                                                                                                                                                                         |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Agent Context Map](./docs/agent-diagram.md)                         | How this Doc Map, `docs/`, and skills/commands relate; update it in the same change whenever any of those change                                                                                                    |
+| [repo-patterns.md](./docs/repo-patterns.md)                          | Decision map for adding/changing an app, workflow, or deploy: which existing pattern to copy                                                                                                                        |
+| UI — [docs/app-development/ui/](./docs/app-development/ui/)          | `ui-app-pattern.md`, `auth/*`, `deployment/*`                                                                                                                                                                       |
+| API — [docs/app-development/api/](./docs/app-development/api/)       | `deployment/fly-service-pattern.md`                                                                                                                                                                                 |
+| [app-readme-pattern.md](./docs/app-readme-pattern.md)                | The format every app/publishing lib's `README.md` follows; read first before adding or updating one                                                                                                                 |
+| [repo-operations.md](./docs/repo-operations.md)                      | Terraform resource inventory and operations reference for `infrastructure/terraform/`                                                                                                                               |
+| [notes-pattern.md](./docs/notes-pattern.md)                          | Read first before adding or editing files under `notes/`; per-topic conventions live under `docs/notes/`                                                                                                            |
+| [learning-timeline.md](./docs/learning-timeline.md)                  | Month-by-month record of what was being learned; extend the current month's row when work lands that introduces a new topic                                                                                         |
+| [network-management.md](./docs/infrastructure/network-management.md) | Read first before changing DNS, domains, proxying, tunnels, or VPN                                                                                                                                                  |
+| [jellyfin-pi.md](./docs/infrastructure/jellyfin-pi.md)               | The Ansible-provisioned homelab Pi running Jellyfin; read first before provisioning or changing hardware on the LAN (there is no Terraform for it)                                                                  |
+| [secret-management.md](./docs/infrastructure/secret-management.md)   | Read first before adding a secret or a local `.env`/`.tfvars` file                                                                                                                                                  |
+| [nuance-pattern.md](./docs/nuance-pattern.md)                        | Read first before recording a nuance or editing a directory-scoped `CLAUDE.md`; a nuance lives in the `## Nuances` section of the deepest directory it affects, and a repo-wide one in this file's own `## Nuances` |
+| [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md)          | Cleanup checklist behind `/refactor-code-cleanup` and unattended `agentic:task:solve` runs                                                                                                                          |
+| [TODO.md](./TODO.md)                                                 | Repo audit backlog                                                                                                                                                                                                  |
+| [todo-pattern.md](./docs/todo-pattern.md)                            | Read first before adding or editing a `TODO.md` row; single source for its format and the id contract the sandbox scripts parse                                                                                     | T   |
 
 ## Dev Tooling
 
@@ -89,18 +96,21 @@
 - For HTTP-related literals (methods, headers, status codes, common header names), prefer the shared consts in `libs/@vigilant-broccoli/common-js/src/lib/http/http.consts.ts` (`HTTP_METHOD`, `HTTP_HEADERS`, `HTTP_STATUS_CODES`, etc.) over defining local equivalents.
 - For personal identity links and contact details (social profiles, the personal email address, community sites), prefer the shared consts in `libs/@vigilant-broccoli/personal-common-js/src/index.ts` (`SOCIAL_LINK`, `EMAIL_ADDRESS`, `SENDER_EMAIL_ADDRESS`, `EMAIL_LINK`, `COMMUNITY_LINK`, `PERSONAL_URL`) over hardcoding them per app — several apps surface the same profiles, and a moved account should only need one edit. Keep them out of `@vigilant-broccoli/links`, whose ops registry (cloud account ids, dashboard URLs) must never be imported into a public client bundle. Auth allowlists and API-key seed identities stay literal on purpose — they happen to equal the contact address today, and importing it would make a change of contact address silently move who can log in. Google Calendar ids live in `GOOGLE_CALENDAR.CALENDAR_EMAIL` in `@vigilant-broccoli/common-browser`.
 - For accessing environment variables server-side, prefer `getEnvironmentVariable` from `@vigilant-broccoli/common-node` over `process.env` directly. Exception: `NEXT_PUBLIC_` vars accessed client-side must use `process.env.NEXT_PUBLIC_*` direct property access — Next.js can only statically inline them at build time with direct access, not through a wrapper function.
-- Never declare a dependency as `"*"` (or an exact/stale pin that differs from root) in a lib/app `package.json` for a package already pinned in the workspace root `package.json` — mirror the root's caret range instead. pnpm only re-resolves an importer when its own specifier changes, so a `"*"` copy can silently drift to a different resolved version once root is bumped, surfacing as a confusing type error (e.g. two `fastify` versions producing incompatible `FastifyInstance` types) instead of an obvious version mismatch; matching caret ranges let pnpm dedupe to one resolved version. Do NOT use `overrides` in `pnpm-workspace.yaml` to force versions for packages consumed by the fly services — it breaks their pruned installs (rationale in [fly-service-pattern.md](./docs/api/deployment/fly-service-pattern.md)).
+- Never declare a dependency as `"*"` (or an exact/stale pin that differs from root) in a lib/app `package.json` for a package already pinned in the workspace root `package.json` — mirror the root's caret range instead. pnpm only re-resolves an importer when its own specifier changes, so a `"*"` copy can silently drift to a different resolved version once root is bumped, surfacing as a confusing type error (e.g. two `fastify` versions producing incompatible `FastifyInstance` types) instead of an obvious version mismatch; matching caret ranges let pnpm dedupe to one resolved version. Do NOT use `overrides` in `pnpm-workspace.yaml` to force versions for packages consumed by the fly services — it breaks their pruned installs (rationale in [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-pattern.md)).
 - A `libs/@vigilant-broccoli/*` lib publishes to npm iff its `project.json` defines a `publish-package` target — `publishConfig` in `package.json` alone does nothing. Before adding or changing npm publishing, follow the npm package publishing steps in [repo-patterns.md](./docs/repo-patterns.md) (reference libs, target wiring, `NPM_TOKEN` requirements, first-publish constraints).
-- Each app under `apps/*`, and each `libs/@vigilant-broccoli/*` lib that publishes to npm, carries a `README.md` following [app-readme-pattern.md](./docs/app-readme-pattern.md) (title, one-line purpose, `## Stack`); keep it in sync with the code — in particular, add or remove a deploy destination (Docker Hub, npm, Fly.io, Vercel, …) under Cloud services in the same change that wires or unwires it. Run `/update-readmes` to review and refresh them all.
 
 ### UI
 
-- For UI applications, read [ui-app-pattern.md](./docs/ui/ui-app-pattern.md) first — it owns the binding UI requirements (prefer `@vigilant-broccoli/react-lib` shared components over hand-rolling, i18n via the shared `createI18n` for all user-facing copy, user-facing auth via `createSupabaseAuth`, a card on the pages-index "UI Apps" page) and routes to the per-destination deploy and auth pattern docs alongside it.
+- For UI applications, read [ui-app-pattern.md](./docs/app-development/ui/ui-app-pattern.md) first — it owns the binding UI requirements (prefer `@vigilant-broccoli/react-lib` shared components over hand-rolling, i18n via the shared `createI18n` for all user-facing copy, user-facing auth via `createSupabaseAuth`, a card on the pages-index "UI Apps" page) and routes to the per-destination deploy and auth pattern docs alongside it.
 
 ### API
 
-- For anything touching fly.io services in `apps/api/*` (adding/modifying a service, smoke targets, fly configs, image delivery), read [fly-service-pattern.md](./docs/api/deployment/fly-service-pattern.md) first.
+- For anything touching fly.io services in `apps/api/*` (adding/modifying a service, smoke targets, fly configs, image delivery), read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-pattern.md) first.
 - Every fly.io service in `apps/api/*` exposes Swagger docs at `/docs` via `createDocsPlugin` from `@vigilant-broccoli/fastify`, with its OpenAPI spec built by `createSwaggerSpec` in the service's `src/libs/swagger.ts` (`src/swagger.ts` in the email services). When adding, removing, or changing a service's routes (paths, methods, request/response shapes, auth), update that swagger spec in the same change.
+
+### Documentation
+
+- Each app under `apps/*`, and each `libs/@vigilant-broccoli/*` lib that publishes to npm, carries a `README.md` following [app-readme-pattern.md](./docs/app-readme-pattern.md) (title, one-line purpose, `## Stack`); keep it in sync with the code — in particular, add or remove a deploy destination (Docker Hub, npm, Fly.io, Vercel, …) under Cloud services in the same change that wires or unwires it. Run `/update-readmes` to review and refresh them all.
 
 ## Git
 

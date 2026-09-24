@@ -30,7 +30,7 @@ reverse:
 - `signOutDueToExpiredToken` was a plain alias for `signOut`, so any 401 from a
   Google-backed route (`tasks-input`, `calendar-input`, `my-calendar-view`)
   tore down the whole Supabase session — the exact failure the
-  [supabase auth pattern](../../../../docs/ui/auth/supabase-auth-pattern.md) warns about, and
+  [supabase auth pattern](../../../../docs/app-development/ui/auth/supabase-auth-pattern.md) warns about, and
   why the session looked ~1 hour long. Meanwhile `/task-list` renders
   `GoogleTasksComponent` from `react-lib`, which does the right thing (clear
   only the Google token, prompt re-consent), so the two surfaces behaved
