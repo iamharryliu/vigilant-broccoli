@@ -96,12 +96,27 @@ export const SOCIAL_LINK = {
     NAME: 'Instagram - cloud8skate',
     URL: 'https://www.instagram.com/cloud8skate/',
   },
+  INSTAGRAM_MALMOURBANSKATE: {
+    NAME: 'Instagram - malmourbanskate',
+    URL: 'https://www.instagram.com/malmourbanskate/',
+  },
+  INSTAGRAM_HUSTLEMALMO: {
+    NAME: 'Instagram - hustlemalmo',
+    URL: 'https://www.instagram.com/hustlemalmo/',
+  },
 } as const;
 
 export const COMMUNITY_LINK = {
   CLOUD8SKATE: {
     NAME: 'Cloud 8 Skate',
     URL: 'https://cloud8skate.com/',
+  },
+} as const;
+
+export const PROJECT_LINK = {
+  SOFTWARE_PROJECTS: {
+    NAME: 'Software Projects',
+    URL: 'https://iamharryliu.github.io/vigilant-broccoli/',
   },
 } as const;
 

@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { Mail, Link as LinkIcon, Calendar } from 'lucide-react';
+import { Mail, Calendar } from 'lucide-react';
 import { LINKS } from '../../core/consts/routes.const';
 import { SidebarNav } from '../features/sidebar-nav';
 import { MobileTopbar } from '../features/mobile-topbar';
@@ -34,11 +34,6 @@ export function GeneralLayout({ children }: { children: ReactNode }) {
                   to={LINKS.CALENDAR_PAGE.url.internal ?? '/'}
                   icon={Calendar}
                   label="Calendar"
-                />
-                <IconActionLink
-                  href={LINKS.LINK_TREE.url.external ?? '/'}
-                  icon={LinkIcon}
-                  label="Link tree"
                 />
               </div>
             </div>

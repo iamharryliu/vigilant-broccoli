@@ -1,6 +1,7 @@
 import {
   COMMUNITY_LINK,
   EMAIL_LINK,
+  PROJECT_LINK,
   SOCIAL_LINK,
 } from '@vigilant-broccoli/personal-common-js';
 import { ENVIRONMENT } from '../../../environments/environment';
@@ -82,13 +83,6 @@ const CALENDAR_PAGE: Link = {
   },
   text: 'Calendar',
 };
-const LINK_TREE: Link = {
-  url: {
-    internal: LINK_TREE_ROUTE.path,
-    external: externalUrl(LINK_TREE_ROUTE.path),
-  },
-  text: 'Links',
-};
 const EMAIL: Link = {
   url: { external: EMAIL_LINK.URL },
   text: EMAIL_LINK.NAME,
@@ -121,10 +115,22 @@ const CLOUD8SKATE_IG: Link = {
   url: { external: SOCIAL_LINK.INSTAGRAM_CLOUD8SKATE.URL },
   text: 'Cloud 8 Skate Instagram',
 };
+const MALMOURBANSKATE_IG: Link = {
+  url: { external: SOCIAL_LINK.INSTAGRAM_MALMOURBANSKATE.URL },
+  text: 'Malmo Urban Skate',
+};
+const HUSTLEMALMO_IG: Link = {
+  url: { external: SOCIAL_LINK.INSTAGRAM_HUSTLEMALMO.URL },
+  text: 'Hustle Malmo',
+};
 const RESUME_PATH = '/resume';
 const RESUME: Link = {
   url: { external: externalUrl(RESUME_PATH) },
   text: 'Resume',
+};
+const SOFTWARE_PROJECTS: Link = {
+  url: { external: PROJECT_LINK.SOFTWARE_PROJECTS.URL },
+  text: PROJECT_LINK.SOFTWARE_PROJECTS.NAME,
 };
 
 export const LINKS = {
@@ -132,7 +138,6 @@ export const LINKS = {
   ABOUT_PAGE,
   CALENDAR_PAGE,
   CONTACT_PAGE,
-  LINK_TREE,
   EMAIL,
   LINKEDIN,
   GITHUB,
@@ -141,7 +146,10 @@ export const LINKS = {
   SKATE_IG,
   CLOUD8SKATE,
   CLOUD8SKATE_IG,
+  MALMOURBANSKATE_IG,
+  HUSTLEMALMO_IG,
   RESUME,
+  SOFTWARE_PROJECTS,
 };
 
 export const ROUTES: RouteMeta[] = [
