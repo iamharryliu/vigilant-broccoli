@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from 'react';
-import { Mail, Calendar } from 'lucide-react';
+import { Mail, Calendar, User } from 'lucide-react';
 import { LINKS } from '../../core/consts/routes.const';
 import { SidebarNav } from '../features/sidebar-nav';
 import { MobileTopbar } from '../features/mobile-topbar';
@@ -26,14 +26,19 @@ export function GeneralLayout({ children }: { children: ReactNode }) {
               </div>
               <div className="flex justify-center space-x-4">
                 <IconActionLink
-                  to={LINKS.CONTACT_PAGE.url.internal ?? '/'}
-                  icon={Mail}
-                  label="Contact"
+                  to={LINKS.ABOUT_PAGE.url.internal ?? '/'}
+                  icon={User}
+                  label="User"
                 />
                 <IconActionLink
                   to={LINKS.CALENDAR_PAGE.url.internal ?? '/'}
                   icon={Calendar}
                   label="Calendar"
+                />
+                <IconActionLink
+                  to={LINKS.CONTACT_PAGE.url.internal ?? '/'}
+                  icon={Mail}
+                  label="Contact"
                 />
               </div>
             </div>
