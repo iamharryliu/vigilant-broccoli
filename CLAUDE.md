@@ -9,7 +9,6 @@
 - [CI](#ci)
   - [GitHub Actions](#github-actions)
   - [Database migrations](#database-migrations)
-  - [Upptime](#upptime)
   - [Terraform](#terraform)
 - [App Development](#app-development)
   - [UI](#ui)
@@ -30,11 +29,11 @@ Every doc listed here — and this file — carries a `## Table of Contents` imm
 | Doc                                                                  | Description                                                                                                                                                                                                                                                       |
 | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [Dev Tooling](#dev-tooling)                                          | This file — root `package.json` CLI scripts and the cheatsheets; read first before adding or changing a root script                                                                                                                                               |
-| [CI](#ci)                                                            | This file — read first before touching workflows, migrations, monitoring, or IaC                                                                                                                                                                                  |
+| [CI](#ci)                                                            | This file — read first before touching workflows, migrations, or IaC                                                                                                                                                                                              |
 | [App Development](#app-development)                                  | This file — shared consts, env vars, dependency pinning, npm publishing; read first before app work                                                                                                                                                               |
 | [Git](#git)                                                          | This file — read first before committing or pushing. [Concurrent Claude Sessions](#concurrent-claude-sessions): run `ListAgents` before branching, staging, committing, or stashing — the index, `HEAD`, and the stash are shared across sessions on one worktree |
 | [Agent Context Map](./docs/agent-diagram.md)                         | How this Doc Map, `docs/`, and skills/commands relate; update it in the same change whenever any of those change                                                                                                                                                  |
-| [app-development.md](./docs/app-development/app-development.md)      | Decision map for adding an app, lib, or deploy destination: where it goes and which existing pattern to copy                                                                                                                                                      |
+| [app-development.md](./docs/app-development/app-development.md)      | Decision map for adding an app, lib, or deploy destination: where it goes, which existing pattern to copy, and its testing and Upptime gates                                                                                                                      |
 | UI — [docs/app-development/ui/](./docs/app-development/ui/)          | `ui-app-pattern.md`, `auth/*`, `deployment/*`                                                                                                                                                                                                                     |
 | API — [docs/app-development/api/](./docs/app-development/api/)       | `deployment/fly-service-pattern.md`                                                                                                                                                                                                                               |
 | [app-readme-pattern.md](./docs/app-readme-pattern.md)                | The format every app/publishing lib's `README.md` follows; read first before adding or updating one                                                                                                                                                               |
@@ -88,10 +87,6 @@ Every doc listed here — and this file — carries a `## Table of Contents` imm
 - `deploy.yml`'s `deploy-apps` job runs it (step "Apply Supabase migrations") **before** deploying any app, auto-discovering every `apps/**/supabase/migrations` folder, so a deploy never ships code expecting a table/policy that isn't there yet. It needs `SUPABASE_DB_PASSWORD` from Vault (already imported in that job). New migration folders are picked up automatically — no workflow edit needed.
 - The per-app `serve` targets still run `migrate.ts` for their own folder on `nx serve`, so local dev applies pending migrations against the shared project too. That remains the way to apply a migration that hasn't merged yet; on merge, `deploy.yml` is the authoritative apply.
 - Migration filenames must be unique across all folders (they share one `schema_migrations` keyed by filename) — `migrate.ts` aborts on a collision.
-
-### Upptime
-
-- Every deployed service — apps and self-hosted infrastructure alike (e.g. Gitea, code-server) — must have an Upptime status check: add its public URL to `sites` in the root `.upptimerc.yml`. Services without a public URL (e.g. `vb-manager-next` served locally via PM2, RabbitMQ reachable only inside the VM network) are exempt and covered by `ci-health-check` instead.
 
 ### Terraform
 

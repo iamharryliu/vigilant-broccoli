@@ -8,6 +8,7 @@ Decision-making map for LLM agents: where a new app, lib, or deploy destination 
 - [Deployment](#deployment)
 - [npm package publishing](#npm-package-publishing)
 - [Testing](#testing)
+- [Monitoring](#monitoring)
 
 ## Choosing a home
 
@@ -44,4 +45,8 @@ A `libs/@vigilant-broccoli/*` lib publishes iff its `project.json` defines a `pu
 - Unit tests: `@nx/vite:test` (vitest), run via `nx affected` in CI.
 - Pre-deploy gate: fly services must have a `smoke` target that boots the built dist with dummy env vars — the only thing that catches missing pruned deps (mechanics in [fly-service-pattern.md](./api/deployment/fly-service-pattern.md)).
 - Post-deploy verification belongs in a `test-*` workflow hitting live URLs, never in a unit suite.
-- Ongoing monitoring: Upptime for public URLs, `ci-health-check` for everything else. Both `cron-upptime.yml` (hourly up/down) and `cron-upptime-response-time.yml` (daily response-time) warm every fly.io URL (staging + production) with a parallel `curl` before invoking `upptime-monitor`, so a scaled-to-zero fly machine's cold start isn't misreported as downtime.
+
+## Monitoring
+
+- Every deployed service — apps and self-hosted infrastructure alike (e.g. Gitea, code-server) — must have an Upptime status check: add its public URL to `sites` in the root `.upptimerc.yml`. Services without a public URL (e.g. `vb-manager-next` served locally via PM2, RabbitMQ reachable only inside the VM network) are exempt and covered by `ci-health-check` instead.
+- Both `cron-upptime.yml` (hourly up/down) and `cron-upptime-response-time.yml` (daily response-time) warm every fly.io URL (staging + production) with a parallel `curl` before invoking `upptime-monitor`, so a scaled-to-zero fly machine's cold start isn't misreported as downtime.
