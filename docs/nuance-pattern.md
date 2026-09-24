@@ -5,6 +5,14 @@ looks like. A nuance is a non-obvious bug or quirk discovered while working here
 — something that isn't derivable from reading the code alone, and that would
 cost the next person (or agent) hours to rediscover.
 
+## Table of Contents
+
+- [Where a nuance goes](#where-a-nuance-goes)
+- [File shape](#file-shape)
+- [Harness portability](#harness-portability)
+- [Entry shape](#entry-shape)
+- [Upkeep](#upkeep)
+
 ## Where a nuance goes
 
 A nuance lives in the `## Nuances` section of the `CLAUDE.md` at the **deepest

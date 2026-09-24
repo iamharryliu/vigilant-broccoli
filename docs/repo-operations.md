@@ -1,6 +1,13 @@
 # Repo Operations
 
-Decision-making map for LLM agents: infrastructure operations, secrets, data/persistence, local dev environment, and auth. Companion to [repo-patterns.md](./repo-patterns.md) (app develop/test/CI/deploy lifecycle).
+Decision-making map for LLM agents: infrastructure operations, data/persistence, local dev environment, and auth. Companion to [app-development.md](./app-development/app-development.md) (where a new app, lib, or deploy destination goes).
+
+## Table of Contents
+
+- [Infrastructure Operations](#infrastructure-operations)
+- [Data & Persistence Map](#data--persistence-map)
+- [Local Dev Environment](#local-dev-environment)
+- [Auth Patterns](#auth-patterns)
 
 ## Infrastructure Operations
 
@@ -16,10 +23,6 @@ Rule of thumb: check `docs/cheatsheet.md` before hand-rolling SSH or cloud comma
 - **Workflow triggers from CLI** — `pnpm gh:actions:deploy | health-check | kill-services | run-tests | replace-code-server | refresh-code-server-github-token`.
 
 Architecture diagrams: [infrastructure.md](./infrastructure/infrastructure.md).
-
-## Secret Lifecycle
-
-All of it — hierarchy, per-tier key inventory, CI and local Vault access, rotation commands and per-key mechanisms — lives in [secret-management.md](./infrastructure/secret-management.md). Read it before touching a secret.
 
 ## Data & Persistence Map
 
@@ -42,7 +45,7 @@ Backups: `cron-backup.yml` runs nightly, one job per store (repo zip, Gitea repo
 - `infrastructure/local/docker-compose.yml` — local service stack (Grafana, Prometheus, Loki/Promtail, Resilio, nginx with local certs via `setup-certs.sh`). Managed with `pnpm local:docker:up|down|restart|reload`.
 - `infrastructure/immich/docker-compose.yml` — standalone Immich stack (server, machine-learning, Redis, Postgres) exposed on `:2283`; local nginx proxies `images.vigilant-broccoli.app` to it via `host.docker.internal:2283`. Managed with `pnpm immich:docker:up|down|restart|reload|logs`.
 - Mock backends for UI development live under `apps/api/mock/` (e.g. `mock-employee-handler-service`) — prefer extending a mock over pointing local UIs at live services.
-- Running a service with real secrets locally: use its `serve` target (Vault-wrapped; see repo-patterns.md).
+- Running a service with real secrets locally: use its `serve` target (Vault-wrapped; see [app-development.md](./app-development/app-development.md#choosing-a-home)).
 
 ## Auth Patterns
 

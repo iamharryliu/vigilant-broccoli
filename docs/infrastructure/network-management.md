@@ -2,6 +2,12 @@
 
 Changes to network infrastructure (DNS records, domains/subdomains, proxying, tunnels, VPN) must be reflected here.
 
+## Table of Contents
+
+- [DNS URLs](#dns-urls)
+- [Tailnet](#tailnet)
+- [Private-only Fly.io services](#private-only-flyio-services)
+
 ## DNS URLs
 
 All public URLs for deployed applications, grouped by domain/provider.

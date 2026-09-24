@@ -2,6 +2,13 @@
 
 Source of truth for the shape of the repo root `TODO.md`. `/create-todo-task`, `infrastructure/agent-sandbox/create-todo-runner.sh`, `audit-todo-runner.sh`, and the `solve-todo*.sh` parsers all follow this file — change the format here first, then the consumers.
 
+## Table of Contents
+
+- [Structure](#structure)
+- [Row Rules](#row-rules)
+- [Machine-Read Contract](#machine-read-contract)
+- [Staleness](#staleness)
+
 ## Structure
 
 - A Table of Contents, then one `## <Category>` section per category: `Security`, `Performance`, `Maintenance`, `Refactor`, `Feature Enhancements`, `UI Cleanup`, `Not so serious`.
