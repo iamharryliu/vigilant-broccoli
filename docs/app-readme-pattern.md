@@ -1,8 +1,15 @@
 # README Stack Pattern
 
-Every app under `projects/nx-workspace/apps/*`, every component under `infrastructure/*`, and every `libs/@vigilant-broccoli/*` lib that publishes to npm (has a `publish-package` target — see [repo-patterns.md](./repo-patterns.md#deployment)) carries a `README.md` with a title, a one-line purpose, a `## Table of Contents`, and a `## Stack` section. Keep it minimal — headers + bullets, no prose. Derive everything from the actual code and config so newly introduced tech shows up, and update sections in place rather than duplicating.
+Every app under `projects/nx-workspace/apps/*`, every component under `infrastructure/*`, and every `libs/@vigilant-broccoli/*` lib that publishes to npm (has a `publish-package` target — see [app-development.md](./app-development/app-development.md#npm-package-publishing)) carries a `README.md` with a title, a one-line purpose, a `## Table of Contents`, and a `## Stack` section. Keep it minimal — headers + bullets, no prose. Derive everything from the actual code and config so newly introduced tech shows up, and update sections in place rather than duplicating.
 
 ## Table of Contents
+
+- [Generating a README's ToC](#generating-a-readmes-toc)
+- [Apps and publishable libs](#apps-and-publishable-libs)
+- [Infrastructure](#infrastructure)
+- [Aggregate](#aggregate)
+
+## Generating a README's ToC
 
 Every README gets a `## Table of Contents` right after the one-line purpose, linking to each `##` header that follows it, in document order. Regenerate it whenever headers are added, removed, or reordered — it's the one section that's fully derived, safe to rebuild from scratch every run.
 

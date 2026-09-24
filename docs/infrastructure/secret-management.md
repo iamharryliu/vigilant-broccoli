@@ -1,5 +1,12 @@
 # Secret Management
 
+## Table of Contents
+
+- [Local config files](#local-config-files)
+- [Secret Hierarchy](#secret-hierarchy)
+- [Top-Level Secrets](#top-level-secrets)
+- [Secret Rotation](#secret-rotation)
+
 ## Local config files
 
 - Secrets live in a secret manager, never checked into the repo: Vault (`kv/data/secrets`) and GCP Secret Manager (Tier 0, root of trust) are the sources of truth — see the hierarchy below.
