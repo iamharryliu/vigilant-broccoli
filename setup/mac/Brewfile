@@ -103,8 +103,6 @@ brew "ripgrep"
 brew "speedtest-cli"
 # OCR (Optical Character Recognition) engine
 brew "tesseract"
-# Linter for Terraform files
-brew "tflint"
 # Terminal multiplexer
 brew "tmux"
 # Parser generator tool
@@ -174,8 +172,6 @@ cask "insta360-studio"
 cask "iterm2"
 # Keyboard customiser
 cask "karabiner-elements"
-# Host-based application firewall
-cask "little-snitch"
 # VPN client for secure internet access and private browsing
 cask "nordvpn"
 # Retro video game emulation
@@ -194,6 +190,8 @@ cask "spotify"
 cask "steam"
 # Mesh VPN based on WireGuard
 cask "tailscale-app"
+# Pluggable Terraform linter
+cask "terraform-linters/tap/tflint", trusted: true
 # Open-source code editor
 cask "visual-studio-code"
 # Create, manage, and run virtual machines
