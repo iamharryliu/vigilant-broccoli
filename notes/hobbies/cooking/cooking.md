@@ -12,4 +12,5 @@
 - [Recipe Template](./recipe-template.md)
 - [Food Notes](./food-notes/food-notes.md)
 - [Drinks](./drinks/drinks.md)
+- [Restaurant Types](./restaurant-types.md)
 - [Cooking Lingo](./cooking-lingo.md)
