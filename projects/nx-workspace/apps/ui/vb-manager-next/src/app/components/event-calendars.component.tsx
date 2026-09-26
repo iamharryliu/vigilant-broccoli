@@ -1,5 +1,5 @@
 'use client';
-import { RefreshCw } from 'lucide-react';
+import { ChevronDown, RefreshCw } from 'lucide-react';
 import {
   Badge,
   Button,
@@ -16,6 +16,11 @@ import {
   Text,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import {
+  buildCalendarUrl,
+  CalendarConfig,
+  GOOGLE_CALENDAR,
+} from '@vigilant-broccoli/common-browser';
 import { useCallback, useEffect, useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
@@ -39,6 +44,9 @@ const SYNC_ERROR = 'Failed to start sync';
 const UNTRACKED_FETCH_ERROR = 'Failed to load untracked calendars';
 const UNTRACKED_DELETE_ERROR = 'Failed to delete calendar';
 const OPEN_IN_GOOGLE_CALENDAR = 'Open in Google Calendar';
+const SHOW_CALENDAR_PREVIEW = 'Show calendar preview';
+const HIDE_CALENDAR_PREVIEW = 'Hide calendar preview';
+const CALENDAR_PREVIEW_HEIGHT = 450;
 const MAKE_PUBLIC_TITLE = 'Make this calendar public?';
 const MAKE_PUBLIC_DESCRIPTION =
   'Anyone with the link will be able to see this calendar and all of its events, without signing in.';
@@ -133,6 +141,19 @@ const urlsToSources = (urls: string[]) =>
       sourceType:
         detectEventSourceType(url) ?? EVENT_SOURCE_TYPE.FACEBOOK_GROUP,
     }));
+
+const buildCalendarPreviewConfig = (
+  calendar: EventCalendar,
+): CalendarConfig => ({
+  height: CALENDAR_PREVIEW_HEIGHT,
+  wkst: 2,
+  ctz: GOOGLE_CALENDAR.TIMEZONE.COPENHAGEN,
+  showPrint: 0,
+  mode: 'MONTH',
+  title: calendar.name,
+  ownerCalendars: [],
+  sharedCalendars: [{ id: calendar.googleCalendarId }],
+});
 
 export const EventCalendarsComponent = () => {
   const [items, setItems] = useState<EventCalendar[]>([]);
@@ -314,6 +335,18 @@ export const EventCalendarsComponent = () => {
     null,
   );
 
+  const [expandedPreviewIds, setExpandedPreviewIds] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const toggleCalendarPreview = (id: string) =>
+    setExpandedPreviewIds(current => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
   // Making a calendar public exposes every event to anyone with the link, so
   // it goes through a confirmation. Making one private again is safe and
   // applies immediately.
@@ -359,83 +392,118 @@ export const EventCalendarsComponent = () => {
     );
   };
 
-  const EventCalendarListItem = ({ item }: { item: EventCalendar }) => (
-    <div className="flex flex-wrap items-center justify-between gap-3">
-      <div className="flex flex-col gap-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <Text weight="medium">{item.name}</Text>
-          {item.language && (
-            <Badge color="blue" size="1">
-              {item.language}
-            </Badge>
-          )}
-        </div>
-        <div className="flex flex-col gap-1">
-          {item.sources.length ? (
-            item.sources.map(source => (
-              <div
-                key={source.url}
-                className="flex flex-wrap items-center gap-2"
-              >
-                <a
-                  href={toExternalUrl(source.url)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-xs text-blue-600 hover:underline dark:text-blue-400"
-                >
-                  {source.url}
-                </a>
-                <CopyButton text={source.url} />
-              </div>
-            ))
-          ) : (
-            <Text size="1" color="gray">
-              No source URLs configured.
-            </Text>
-          )}
-        </div>
-      </div>
-      <div className="flex flex-wrap items-center gap-6">
-        <div className="flex items-center gap-2">
-          <a
-            href={buildGoogleCalendarUrl(item.googleCalendarId)}
-            target="_blank"
-            rel="noreferrer"
-            className="text-xs text-blue-600 hover:underline dark:text-blue-400"
-          >
-            {OPEN_IN_GOOGLE_CALENDAR}
-          </a>
-          <CopyButton text={buildGoogleCalendarUrl(item.googleCalendarId)} />
-        </div>
-        {syncStatuses[item.id]?.lastSyncedAt && (
-          <Text size="1" color="gray">
-            {LAST_SYNCED_LABEL}{' '}
-            {formatRelativeTime(syncStatuses[item.id].lastSyncedAt as string)}
-          </Text>
-        )}
-        <Button
-          variant="secondary"
-          size="icon"
-          title={SYNC_NOW_LABEL}
-          aria-label={SYNC_NOW_LABEL}
-          onClick={() => startSync(item.id)}
-          loading={syncStatuses[item.id]?.state === SYNC_RUNNING}
-          disabled={!item.sources.length}
-        >
-          <RefreshCw className="h-4 w-4" />
-        </Button>
-        <Text size="1" color="gray" as="label">
-          <div className="flex items-center gap-2">
-            {PUBLIC_LABEL}
-            <Switch
-              checked={item.isPublic}
-              onCheckedChange={checked => requestTogglePublic(item, checked)}
-            />
+  const EventCalendarListItem = ({ item }: { item: EventCalendar }) => {
+    const isPreviewOpen = expandedPreviewIds.has(item.id);
+    return (
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <Text weight="medium">{item.name}</Text>
+              {item.language && (
+                <Badge color="blue" size="1">
+                  {item.language}
+                </Badge>
+              )}
+            </div>
+            <div className="flex flex-col gap-1">
+              {item.sources.length ? (
+                item.sources.map(source => (
+                  <div
+                    key={source.url}
+                    className="flex flex-wrap items-center gap-2"
+                  >
+                    <a
+                      href={toExternalUrl(source.url)}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+                    >
+                      {source.url}
+                    </a>
+                    <CopyButton text={source.url} />
+                  </div>
+                ))
+              ) : (
+                <Text size="1" color="gray">
+                  No source URLs configured.
+                </Text>
+              )}
+            </div>
           </div>
-        </Text>
+          <div className="flex flex-wrap items-center gap-6">
+            <div className="flex items-center gap-2">
+              <a
+                href={buildGoogleCalendarUrl(item.googleCalendarId)}
+                target="_blank"
+                rel="noreferrer"
+                className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+              >
+                {OPEN_IN_GOOGLE_CALENDAR}
+              </a>
+              <CopyButton
+                text={buildGoogleCalendarUrl(item.googleCalendarId)}
+              />
+              <Button
+                variant="secondary"
+                size="icon"
+                title={
+                  isPreviewOpen ? HIDE_CALENDAR_PREVIEW : SHOW_CALENDAR_PREVIEW
+                }
+                aria-label={
+                  isPreviewOpen ? HIDE_CALENDAR_PREVIEW : SHOW_CALENDAR_PREVIEW
+                }
+                aria-expanded={isPreviewOpen}
+                onClick={() => toggleCalendarPreview(item.id)}
+              >
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform duration-200 ${isPreviewOpen ? 'rotate-180' : ''}`}
+                />
+              </Button>
+            </div>
+            {syncStatuses[item.id]?.lastSyncedAt && (
+              <Text size="1" color="gray">
+                {LAST_SYNCED_LABEL}{' '}
+                {formatRelativeTime(
+                  syncStatuses[item.id].lastSyncedAt as string,
+                )}
+              </Text>
+            )}
+            <Button
+              variant="secondary"
+              size="icon"
+              title={SYNC_NOW_LABEL}
+              aria-label={SYNC_NOW_LABEL}
+              onClick={() => startSync(item.id)}
+              loading={syncStatuses[item.id]?.state === SYNC_RUNNING}
+              disabled={!item.sources.length}
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+            <Text size="1" color="gray" as="label">
+              <div className="flex items-center gap-2">
+                {PUBLIC_LABEL}
+                <Switch
+                  checked={item.isPublic}
+                  onCheckedChange={checked =>
+                    requestTogglePublic(item, checked)
+                  }
+                />
+              </div>
+            </Text>
+          </div>
+        </div>
+        {isPreviewOpen && (
+          <iframe
+            src={buildCalendarUrl(buildCalendarPreviewConfig(item))}
+            className="w-full rounded border border-gray-300 dark:border-gray-700"
+            style={{ height: CALENDAR_PREVIEW_HEIGHT, border: 'none' }}
+            title={item.name}
+          />
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="flex flex-col gap-4">
