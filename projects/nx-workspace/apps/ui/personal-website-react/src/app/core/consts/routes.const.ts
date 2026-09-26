@@ -1,6 +1,8 @@
 import {
+  BUSINESS_LINK,
   COMMUNITY_LINK,
   EMAIL_LINK,
+  INTEREST_LINK,
   PROJECT_LINK,
   SOCIAL_LINK,
 } from '@vigilant-broccoli/personal-common-js';
@@ -100,8 +102,8 @@ const PERSONAL_INSTAGRAM: Link = {
   text: 'Personal Instagram',
 };
 const SECONDHAND_STORE_IG: Link = {
-  url: { external: SOCIAL_LINK.INSTAGRAM_HARRYSELLSSHIT.URL },
-  text: 'Secondhand Store harrysellsshit',
+  url: { external: BUSINESS_LINK.SECONDHAND_STORE.URL },
+  text: BUSINESS_LINK.SECONDHAND_STORE.NAME,
 };
 const SKATE_IG: Link = {
   url: { external: SOCIAL_LINK.INSTAGRAM_TORONTOCITYSKATE.URL },
@@ -132,6 +134,22 @@ const SOFTWARE_PROJECTS: Link = {
   url: { external: PROJECT_LINK.SOFTWARE_PROJECTS.URL },
   text: PROJECT_LINK.SOFTWARE_PROJECTS.NAME,
 };
+const SPOTIFY: Link = {
+  url: { external: INTEREST_LINK.SPOTIFY.URL },
+  text: INTEREST_LINK.SPOTIFY.NAME,
+};
+const GOODREADS: Link = {
+  url: { external: INTEREST_LINK.GOODREADS.URL },
+  text: INTEREST_LINK.GOODREADS.NAME,
+};
+const MYANIMELIST: Link = {
+  url: { external: INTEREST_LINK.MYANIMELIST.URL },
+  text: INTEREST_LINK.MYANIMELIST.NAME,
+};
+const IMDB: Link = {
+  url: { external: INTEREST_LINK.IMDB.URL },
+  text: INTEREST_LINK.IMDB.NAME,
+};
 
 export const LINKS = {
   INDEX_PAGE,
@@ -150,6 +168,10 @@ export const LINKS = {
   HUSTLEMALMO_IG,
   RESUME,
   SOFTWARE_PROJECTS,
+  SPOTIFY,
+  GOODREADS,
+  MYANIMELIST,
+  IMDB,
 };
 
 export const ROUTES: RouteMeta[] = [

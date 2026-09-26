@@ -1,6 +1,9 @@
 import type { PastebinGroup } from '@vigilant-broccoli/common-js';
 import {
+  BUSINESS_LINK,
   COMMUNITY_LINK,
+  EMAIL_LINK,
+  INTEREST_LINK,
   PROJECT_LINK,
   SOCIAL_LINK,
 } from '@vigilant-broccoli/personal-common-js';
@@ -18,6 +21,10 @@ export const PERSONAL_SITE_LINK = {
     NAME: 'Calendar',
     URL: 'https://harryliu.dev/calendar',
   },
+  CONTACT: {
+    NAME: 'Contact',
+    URL: 'https://harryliu.dev/contact',
+  },
   RESUME: {
     NAME: 'Resume',
     URL: 'https://harryliu.dev/resume',
@@ -33,8 +40,12 @@ const ADDRESS_LINK = {
 
 const PASTEBIN_GROUP_NAME = {
   PERSONAL: 'Personal',
-  COMMUNITY: 'Community',
+  CONTACT: 'Contact',
+  ADDRESS: 'Address',
   CAREER: 'Career',
+  SOFTWARE: 'Software',
+  BUSINESS: 'Business',
+  COMMUNITY: 'Community',
   INTERESTS_AND_HOBBIES: 'Interests and Hobbies',
 } as const;
 
@@ -51,8 +62,27 @@ export const PASTEBIN_GROUPS: PastebinGroup[] = [
       PERSONAL_SITE_LINK.LINKS,
       PERSONAL_SITE_LINK.CALENDAR,
       SOCIAL_LINK.INSTAGRAM_PRETTYDAMNTIRED,
-      ADDRESS_LINK.ADDRESS,
     ].map(toEntry),
+  },
+  {
+    name: PASTEBIN_GROUP_NAME.CONTACT,
+    entries: [PERSONAL_SITE_LINK.CONTACT, EMAIL_LINK].map(toEntry),
+  },
+  {
+    name: PASTEBIN_GROUP_NAME.ADDRESS,
+    entries: [ADDRESS_LINK.ADDRESS].map(toEntry),
+  },
+  {
+    name: PASTEBIN_GROUP_NAME.CAREER,
+    entries: [PERSONAL_SITE_LINK.RESUME, SOCIAL_LINK.LINKEDIN].map(toEntry),
+  },
+  {
+    name: PASTEBIN_GROUP_NAME.SOFTWARE,
+    entries: [SOCIAL_LINK.GITHUB, PROJECT_LINK.SOFTWARE_PROJECTS].map(toEntry),
+  },
+  {
+    name: PASTEBIN_GROUP_NAME.BUSINESS,
+    entries: [BUSINESS_LINK.SECONDHAND_STORE].map(toEntry),
   },
   {
     name: PASTEBIN_GROUP_NAME.COMMUNITY,
@@ -65,16 +95,12 @@ export const PASTEBIN_GROUPS: PastebinGroup[] = [
     ].map(toEntry),
   },
   {
-    name: PASTEBIN_GROUP_NAME.CAREER,
-    entries: [
-      SOCIAL_LINK.LINKEDIN,
-      SOCIAL_LINK.GITHUB,
-      PROJECT_LINK.SOFTWARE_PROJECTS,
-      PERSONAL_SITE_LINK.RESUME,
-    ].map(toEntry),
-  },
-  {
     name: PASTEBIN_GROUP_NAME.INTERESTS_AND_HOBBIES,
-    entries: [SOCIAL_LINK.INSTAGRAM_HARRYSELLSSHIT].map(toEntry),
+    entries: [
+      INTEREST_LINK.SPOTIFY,
+      INTEREST_LINK.GOODREADS,
+      INTEREST_LINK.MYANIMELIST,
+      INTEREST_LINK.IMDB,
+    ].map(toEntry),
   },
 ];
