@@ -97,3 +97,7 @@ projects/nx-workspace/apps/ui/pages-index/public/claude-context/
 
 # Claude Code per-machine overrides
 .claude/settings.local.json
+
+# Claude Code's own synced-skill cache (~/.claude/skills symlinks into setup/dotfiles/.claude/skills)
+setup/dotfiles/.claude/skills/synced/
+setup/dotfiles/.claude/skills/.trash/
