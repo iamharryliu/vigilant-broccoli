@@ -2,10 +2,16 @@ import {
   Globe,
   Calendar,
   File,
+  Film,
   Github,
   Linkedin,
   Instagram,
   Mail,
+  MessageSquare,
+  Music,
+  BookOpen,
+  ShoppingBag,
+  Tv,
   type LucideIcon,
 } from 'lucide-react';
 import { CenteredAppLayout } from '../layouts/centered-app-layout';
@@ -38,14 +44,19 @@ const LINK_TREE_SECTIONS: LinkTreeSection[] = [
         icon: Calendar,
       },
       {
-        text: 'Secondhand Store harrysellsshit',
-        url: LINKS.SECONDHAND_STORE_IG.url.external!,
-        icon: Instagram,
-      },
-      {
         text: 'Personal Instagram',
         url: LINKS.PERSONAL_INSTAGRAM.url.external!,
         icon: Instagram,
+      },
+    ],
+  },
+  {
+    heading: 'Contact',
+    items: [
+      {
+        text: 'Contact',
+        url: LINKS.CONTACT_PAGE.url.external!,
+        icon: MessageSquare,
       },
       {
         text: 'Email',
@@ -81,32 +92,67 @@ const LINK_TREE_SECTIONS: LinkTreeSection[] = [
     ],
   },
   {
+    heading: 'Business',
+    items: [
+      {
+        text: LINKS.SECONDHAND_STORE_IG.text,
+        url: LINKS.SECONDHAND_STORE_IG.url.external!,
+        icon: ShoppingBag,
+      },
+    ],
+  },
+  {
     heading: 'Community',
     items: [
+      {
+        text: 'Cloud 8 Skate',
+        url: LINKS.CLOUD8SKATE.url.external!,
+        icon: Globe,
+      },
+      {
+        text: 'Cloud 8 Skate Instagram',
+        url: LINKS.CLOUD8SKATE_IG.url.external!,
+        icon: Instagram,
+      },
       {
         text: 'Toronto City Skate',
         url: LINKS.SKATE_IG.url.external!,
         icon: Instagram,
       },
       {
-        text: 'Cloud8Skate',
-        url: LINKS.CLOUD8SKATE.url.external!,
-        icon: Globe,
-      },
-      {
-        text: 'Cloud8Skate Instagram',
-        url: LINKS.CLOUD8SKATE_IG.url.external!,
-        icon: Instagram,
-      },
-      {
-        text: 'Malmo Urban Skate',
+        text: 'Malmö Urban Skate',
         url: LINKS.MALMOURBANSKATE_IG.url.external!,
         icon: Instagram,
       },
       {
-        text: 'Hustle Malmo',
+        text: 'Hustle Malmö',
         url: LINKS.HUSTLEMALMO_IG.url.external!,
         icon: Instagram,
+      },
+    ],
+  },
+  {
+    heading: 'Interests and Hobbies',
+    items: [
+      {
+        text: LINKS.SPOTIFY.text,
+        url: LINKS.SPOTIFY.url.external!,
+        icon: Music,
+      },
+      {
+        text: LINKS.GOODREADS.text,
+        url: LINKS.GOODREADS.url.external!,
+        icon: BookOpen,
+      },
+      {
+        text: LINKS.MYANIMELIST.text,
+        url: LINKS.MYANIMELIST.url.external!,
+        icon: Tv,
+      },
+      {
+        text: LINKS.IMDB.text,
+        url: LINKS.IMDB.url.external!,
+        icon: Film,
       },
     ],
   },

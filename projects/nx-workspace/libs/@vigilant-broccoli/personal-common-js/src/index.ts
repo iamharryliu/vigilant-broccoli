@@ -97,8 +97,8 @@ export const SOCIAL_LINK = {
     URL: 'https://www.instagram.com/cloud8skate/',
   },
   INSTAGRAM_MALMOURBANSKATE: {
-    NAME: 'Instagram - malmourbanskate',
-    URL: 'https://www.instagram.com/malmourbanskate/',
+    NAME: 'Instagram - malmo.urbanskate',
+    URL: 'https://www.instagram.com/malmo.urbanskate/',
   },
   INSTAGRAM_HUSTLEMALMO: {
     NAME: 'Instagram - hustlemalmo',
@@ -117,6 +117,32 @@ export const PROJECT_LINK = {
   SOFTWARE_PROJECTS: {
     NAME: 'Software Projects',
     URL: 'https://iamharryliu.github.io/vigilant-broccoli/',
+  },
+} as const;
+
+export const BUSINESS_LINK = {
+  SECONDHAND_STORE: {
+    NAME: 'harrysellsshit',
+    URL: SOCIAL_LINK.INSTAGRAM_HARRYSELLSSHIT.URL,
+  },
+} as const;
+
+export const INTEREST_LINK = {
+  SPOTIFY: {
+    NAME: 'Spotify',
+    URL: 'https://open.spotify.com/user/22z5agodra7fwhm2erdqn5bjq',
+  },
+  GOODREADS: {
+    NAME: 'Goodreads',
+    URL: 'https://www.goodreads.com/user/show/74043883-harry',
+  },
+  MYANIMELIST: {
+    NAME: 'MyAnimeList',
+    URL: 'https://myanimelist.net/profile/prettydamntired',
+  },
+  IMDB: {
+    NAME: 'IMDb',
+    URL: 'https://www.imdb.com/user/ur45097057/',
   },
 } as const;
 
