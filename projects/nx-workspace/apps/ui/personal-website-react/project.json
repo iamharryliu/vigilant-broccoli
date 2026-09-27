@@ -68,22 +68,22 @@
       "dependsOn": ["ensure-cf-project"]
     },
     "deploy": {
-      "command": "npx wrangler pages deploy dist/apps/ui/personal-website-react --project-name staging-harryliu-dev-react",
+      "command": "npx wrangler pages deploy dist/apps/ui/personal-website-react --project-name staging-harryliu-dev-react --branch main",
       "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
     },
     "manual-deploy": {
-      "command": "npx wrangler pages deploy dist/apps/ui/personal-website-react --project-name staging-harryliu-dev-react",
+      "command": "npx wrangler pages deploy dist/apps/ui/personal-website-react --project-name staging-harryliu-dev-react --branch main",
       "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
     },
     "ensure-cf-project:production": {
-      "command": "npx wrangler pages project list 2>&1 | grep -qw production-harryliu-dev-react || npx wrangler pages project create production-harryliu-dev-react --production-branch main"
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-harryliu-dev-react || npx wrangler pages project create production-harryliu-dev-react --production-branch production"
     },
     "prune-deployments:production": {
       "command": "npx tsx scripts/prune-wrangler-deployments.ts production-harryliu-dev-react 10",
       "dependsOn": ["ensure-cf-project:production"]
     },
     "deploy:production": {
-      "command": "npx nx build personal-website-react --configuration=production-env && npx wrangler pages deploy dist/apps/ui/personal-website-react --project-name production-harryliu-dev-react",
+      "command": "npx nx build personal-website-react --configuration=production-env && npx wrangler pages deploy dist/apps/ui/personal-website-react --project-name production-harryliu-dev-react --branch production",
       "dependsOn": [
         "ensure-cf-project:production",
         "prune-deployments:production"

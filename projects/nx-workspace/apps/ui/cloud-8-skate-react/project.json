@@ -57,7 +57,7 @@
       "dependsOn": ["ensure-cf-project"]
     },
     "deploy": {
-      "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-react --project-name staging-cloud-8-skate-react",
+      "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-react --project-name staging-cloud-8-skate-react --branch main",
       "dependsOn": [
         "generate-sitemap",
         "ensure-cf-project",
@@ -65,7 +65,7 @@
       ]
     },
     "manual-deploy": {
-      "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-react --project-name staging-cloud-8-skate-react",
+      "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-react --project-name staging-cloud-8-skate-react --branch main",
       "dependsOn": [
         "generate-sitemap",
         "ensure-cf-project",
@@ -73,14 +73,14 @@
       ]
     },
     "ensure-cf-project:production": {
-      "command": "npx wrangler pages project list 2>&1 | grep -qw production-cloud-8-skate-react || npx wrangler pages project create production-cloud-8-skate-react --production-branch main"
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-cloud-8-skate-react || npx wrangler pages project create production-cloud-8-skate-react --production-branch production"
     },
     "prune-deployments:production": {
       "command": "npx tsx scripts/prune-wrangler-deployments.ts production-cloud-8-skate-react 10",
       "dependsOn": ["ensure-cf-project:production"]
     },
     "deploy:production": {
-      "command": "npx nx build cloud-8-skate-react --configuration=production-env && node apps/ui/cloud-8-skate-react/scripts/generate-sitemap.mjs && npx wrangler pages deploy dist/apps/ui/cloud-8-skate-react --project-name production-cloud-8-skate-react",
+      "command": "npx nx build cloud-8-skate-react --configuration=production-env && node apps/ui/cloud-8-skate-react/scripts/generate-sitemap.mjs && npx wrangler pages deploy dist/apps/ui/cloud-8-skate-react --project-name production-cloud-8-skate-react --branch production",
       "dependsOn": [
         "ensure-cf-project:production",
         "prune-deployments:production"

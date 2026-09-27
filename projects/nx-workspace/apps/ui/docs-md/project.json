@@ -45,11 +45,11 @@
       "dependsOn": ["ensure-cf-project"]
     },
     "deploy": {
-      "command": "npx wrangler pages deploy dist/docs-md --project-name staging-docs-md",
+      "command": "npx wrangler pages deploy dist/docs-md --project-name staging-docs-md --branch main",
       "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
     },
     "manual-deploy": {
-      "command": "npx wrangler pages deploy dist/docs-md --project-name staging-docs-md",
+      "command": "npx wrangler pages deploy dist/docs-md --project-name staging-docs-md --branch main",
       "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
     }
   }
