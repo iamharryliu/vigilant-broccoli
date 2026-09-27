@@ -2,10 +2,7 @@ export const ROUTE_PATH = {
   HOME: '/',
   CONTACT: '/contact',
   FAQ: '/faq',
-  MORE: '/more',
-  MORE_SUBPAGE: '/more/:id',
   PLAYLISTS: '/playlists',
-  TERMINOLOGY: '/skate-terminology',
   WAIVER: '/waiver',
   CALENDAR: '/calendar',
   GALLERY: '/gallery',
@@ -25,9 +22,6 @@ export const LOGO_PATH = '/assets/cloud8skate.png';
 
 export const SITE_CONTENT = {
   ABOUT: '/assets/site-content/about.md',
-  MORE: '/assets/site-content/more.md',
-  TERMINOLOGY: '/assets/site-content/skate-terminology.md',
-  subpage: (id: string) => `/assets/site-content/${id}.md`,
 } as const;
 
 export const NAV_LINKS = [
