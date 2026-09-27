@@ -26,7 +26,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── socket.harryliu.dev                   Socket server — OCI RabbitMQ VM (A record, DNS-only)
 └── vault.harryliu.dev                    Vault — GCP vb-free-vm via cloudflared tunnel (CNAME, proxied + Cloudflare Access service token, CI-only)
 
-cloud8skate.com                           Cloudflare Pages `staging-cloud-8-skate-react` (domain + CNAME: Terraform, infrastructure/terraform/)
+cloud8skate.com                           Cloudflare Pages `production-cloud-8-skate-react` (domain + CNAME: Terraform, infrastructure/terraform/)
 └── cloud8skate.com                       Cloud 8 Skate
 
 fly.dev                                   Fly.io API services (production apps created on first production dispatch)
@@ -44,9 +44,9 @@ vercel.app                                Vercel (production projects created on
 ├── staging-whiteboard.vercel.app             Whiteboard (staging)
 └── production-whiteboard.vercel.app          Whiteboard (production)
 
-pages.dev                                 Cloudflare Pages production aliases (staging projects serve the custom domains above)
-├── production-cloud-8-skate-react.pages.dev   Cloud 8 Skate (production)
-└── production-harryliu-dev-react.pages.dev    Personal website React (production)
+pages.dev                                 Cloudflare Pages URLs for the environment not attached to a custom domain above
+├── staging-cloud-8-skate-react.pages.dev      Cloud 8 Skate (staging — cloud8skate.com is on production, the exception)
+└── production-harryliu-dev-react.pages.dev    Personal website React (production — harryliu.dev is on staging)
 
 github.io                                 GitHub Pages
 └── iamharryliu.github.io/vigilant-broccoli   Pages index (pages-index/)

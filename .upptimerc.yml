@@ -18,10 +18,10 @@ sites:
     url: https://nx-cache.harryliu.dev/health
   - name: observability-vm
     url: https://loki.harryliu.dev/health
-  - name: staging-cloud8skate.com
+  - name: staging-cloud-8-skate
+    url: https://staging-cloud-8-skate-react.pages.dev/
+  - name: production-cloud-8-skate
     url: https://cloud8skate.com/
-  - name: production-cloud8skate
-    url: https://production-cloud-8-skate-react.pages.dev/
   - name: socket-server
     url: https://socket.harryliu.dev/health
   - name: staging-findme

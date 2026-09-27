@@ -73,6 +73,15 @@ const getStatusGroup = (name: string): StatusGroup => {
   return STATUS_GROUP.PERSONAL;
 };
 
+const getDisplayText = (svc: ServiceStatus): string => {
+  try {
+    const { host, pathname } = new URL(svc.url);
+    return pathname === '/' ? host : `${host}${pathname}`;
+  } catch {
+    return svc.name;
+  }
+};
+
 const groupServices = (
   services: ServiceStatus[],
 ): Record<StatusGroup, ServiceStatus[]> => {
@@ -96,7 +105,9 @@ function ServiceListItem({ svc }: { svc: ServiceStatus }) {
         className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
       >
         <span className={`h-2 w-2 rounded-full ${status.dot} shrink-0`} />
-        <span className="flex-1 font-medium truncate">{svc.name}</span>
+        <span className="flex-1 font-medium truncate">
+          {getDisplayText(svc)}
+        </span>
         <span className={`shrink-0 ${status.text}`}>{status.label}</span>
         <span className="shrink-0 font-mono text-gray-400 w-14 text-right">
           {svc.uptime || '—'}
