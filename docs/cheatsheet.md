@@ -88,6 +88,9 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   jellyfin:docker:up          Start the Jellyfin stack
   jellyfin:docker:down        Stop the Jellyfin stack
   jellyfin:docker:restart     Restart the Jellyfin stack
+  jellyfin:media              Mount the media library SMB share in Finder
+  jellyfin:scan               Trigger a Jellyfin library scan (needed after adding media)
+  jellyfin:share:status       Show the Samba unit and connected share sessions
 
 🚚 LOG SHIPPER (fly -> loki)
   logs:shipper:deploy         Create/update the vb-log-shipper fly app (secrets from Vault)

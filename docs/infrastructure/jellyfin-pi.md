@@ -14,8 +14,9 @@ Docker Compose, provisioned with Ansible from
 - [Variables and secrets](#variables-and-secrets)
 - [From scratch](#from-scratch)
 - [First-boot Jellyfin setup](#first-boot-jellyfin-setup)
+- [Adding and managing media](#adding-and-managing-media)
 - [Operations](#operations)
-- [Replacing the Pi with the same media drive](#replacing-the-pi-with-the-same-media-drive)
+- [Replacing the Pi](#replacing-the-pi)
 - [Backups and monitoring](#backups-and-monitoring)
 
 ## Why Ansible and not Terraform
@@ -76,24 +77,26 @@ Hardware:
   library in formats the clients play natively.
 - On a 3B+ specifically, mind two hardware limits. Its 1GB of RAM leaves
   roughly 600MB free with Jellyfin running, so the library database is the
-  constraint rather than playback; and Ethernet and every USB port share one
-  USB 2.0 bus, capping the media drive and the network at a combined ~250Mbit.
+  constraint rather than playback; and Ethernet hangs off the USB 2.0 bus,
+  capping the network near 300Mbit. The microSD slot is separate (SDIO), so
+  the library does not contend with the network the way the old USB drive did.
   One or two direct-play streams are fine. Several are not.
 - Ethernet, not Wi-Fi. Beyond the shared-bus limit, Raspberry Pi OS ships the
   Wi-Fi radio rfkill-soft-blocked until a WLAN country is set, which is an easy
   trap on a headless box (see [CLAUDE.md](../../infrastructure/jellyfin-pi/CLAUDE.md#a-headless-pi-boots-pings-and-has-no-user-account)).
-- A reliable boot device (SD card or, better, USB SSD) for the OS, config and
-  cache. **Size it at 32GB or more.** Jellyfin refuses to start when its data
-  path has less than 2GiB free, and the Docker image alone is ~1.3GB: a 8GB
-  card leaves no headroom, and the failure arrives weeks later as a service
-  that crash-loops with `SQLite Error 8` or
+- A reliable boot device (SD card or, better, USB SSD) holding the OS, config,
+  cache **and the media library** — there is no external drive. **Size it for
+  the library plus headroom; 128GB is the verified configuration.** Jellyfin
+  refuses to start when its data path has less than 2GiB free, and the Docker
+  image alone is ~1.3GB: an 8GB card leaves no headroom, and the failure
+  arrives weeks later as a service that crash-loops with `SQLite Error 8` or
   `insufficient free space ... Available: 2GiB, Required: 2GiB` rather than as
-  anything that looks like a disk problem. `tasks/preflight.yml` now refuses to
+  anything that looks like a disk problem. `tasks/preflight.yml` refuses to
   provision below `pi_min_free_gib` (3GiB) for this reason.
-- An external USB drive for the media library, already partitioned and
-  formatted (the playbook never formats — see [From scratch](#from-scratch)).
-  Self-powered drives are worth it; a bus-powered drive browning out mid-write
-  is the most common way this host loses data.
+- Because the library shares that device, **it has no independent durability**.
+  A reflash wipes it, and a card failure takes the media with it. Keep a second
+  copy of anything irreplaceable somewhere else — see
+  [Backups and monitoring](#backups-and-monitoring).
 
 Software:
 
@@ -111,20 +114,19 @@ The inventory is gitignored, so these values live only on the operator's
 laptop. None of them are secrets — per
 [secret-management.md](./secret-management.md), non-secret identifiers are
 recorded rather than routed through Vault — so they are written down here to
-keep rebuilding independent of any one machine. The Tailscale auth key is the
-only real secret and stays in Vault.
+keep rebuilding independent of any one machine. The three real secrets — the
+Tailscale auth key, the SMB password and the Jellyfin API key — stay in Vault.
 
-| Value                 | Current                                                                     | Where it goes           |
-| --------------------- | --------------------------------------------------------------------------- | ----------------------- |
-| Board                 | Raspberry Pi 3 Model B+ Rev 1.3, Debian 13 trixie arm64                     | —                       |
-| `ansible_host`        | `192.168.0.11` (DHCP lease)                                                 | `inventory/hosts.yml`   |
-| `ansible_user`        | `hliu`                                                                      | `inventory/hosts.yml`   |
-| Ethernet MAC          | `b8:27:eb:23:4d:e0`                                                         | router DHCP reservation |
-| `media_drive_uuid`    | `6628-EBD7` (Kingston DataTraveler 3.0, 29.2GB)                             | `host_vars/`            |
-| `media_fs_type`       | `exfat`                                                                     | `host_vars/`            |
-| `media_mount_options` | `defaults,nofail,uid=2000,gid=2000,umask=0022,x-systemd.device-timeout=30s` | `host_vars/`            |
-| `pi_timezone`         | `Europe/Stockholm`                                                          | `host_vars/`            |
-| `ssh_authorized_keys` | the operator's `id_ed25519.pub`                                             | `host_vars/`            |
+| Value                 | Current                                                    | Where it goes           |
+| --------------------- | ---------------------------------------------------------- | ----------------------- |
+| Board                 | Raspberry Pi 3 Model B+ Rev 1.3, Debian 13 trixie arm64    | —                       |
+| `ansible_host`        | `192.168.0.11` (DHCP lease)                                | `inventory/hosts.yml`   |
+| `ansible_user`        | `hliu`                                                     | `inventory/hosts.yml`   |
+| Ethernet MAC          | `b8:27:eb:23:4d:e0`                                        | router DHCP reservation |
+| Boot device           | 128GB microSD, ext4, holding OS + config + cache + library | —                       |
+| `media_library_dir`   | `/srv/media/library` (the committed default)               | `group_vars/`           |
+| `pi_timezone`         | `Europe/Stockholm`                                         | `host_vars/`            |
+| `ssh_authorized_keys` | the operator's `id_ed25519.pub`                            | `host_vars/`            |
 
 The address is a DHCP lease and every client hardcodes it, so **reserve it on
 the router against the MAC above**. Without that, the lease eventually moves
@@ -132,32 +134,35 @@ and every TV, phone and browser bookmark breaks at once.
 
 ## On-disk layout
 
-Nothing below lives in Git. Media files and Jellyfin's runtime state are
-gitignored in [infrastructure/jellyfin-pi/.gitignore](../../infrastructure/jellyfin-pi/.gitignore);
-the repo carries only the playbook, the compose file and the `.example`
+Everything lives on the one boot device — there is no external drive. Nothing
+below is in Git: media files and Jellyfin's runtime state are gitignored in
+[infrastructure/jellyfin-pi/.gitignore](../../infrastructure/jellyfin-pi/.gitignore),
+and the repo carries only the playbook, the compose file and the `.example`
 inventory.
 
-| Path on the Pi                     | Storage         | Contents                                                                 |
-| ---------------------------------- | --------------- | ------------------------------------------------------------------------ |
-| `/opt/jellyfin/docker-compose.yml` | Internal (boot) | Copy of the repo's compose file                                          |
-| `/opt/jellyfin/.env`               | Internal (boot) | Rendered from `templates/jellyfin.env.j2` — uids, paths, timezone, URL   |
-| `/opt/jellyfin/config`             | Internal (boot) | Jellyfin config, users, library database, metadata (container `/config`) |
-| `/var/cache/jellyfin`              | Internal (boot) | Transcode and image cache (container `/cache`) — disposable              |
-| `/mnt/media`                       | External USB    | Mount point for the media drive, in `/etc/fstab` by UUID                 |
-| `/mnt/media/library`               | External USB    | The media library, bind-mounted read-only into the container at `/media` |
+| Path on the Pi                     | Contents                                                                 |
+| ---------------------------------- | ------------------------------------------------------------------------ |
+| `/opt/jellyfin/docker-compose.yml` | Copy of the repo's compose file                                          |
+| `/opt/jellyfin/.env`               | Rendered from `templates/jellyfin.env.j2` — uids, paths, timezone, URL   |
+| `/opt/jellyfin/config`             | Jellyfin config, users, library database, metadata (container `/config`) |
+| `/var/cache/jellyfin`              | Transcode and image cache (container `/cache`) — disposable              |
+| `/srv/media/library`               | The media library, bind-mounted read-only into the container at `/media` |
 
-Config and cache stay on internal storage on purpose: they are small, they are
-rebuildable from the library, and keeping them off the external drive means the
-drive carries media and nothing else — so it can move to a replacement Pi
-without dragging a stale server identity with it.
+The library is under `/srv` rather than `/mnt/media` deliberately. `/srv` is
+where Debian puts data a host serves, and `/mnt` is for mount points — so if a
+drive is ever mounted at `/mnt/media` later, it cannot shadow a library that
+already has files in it. A shadowed library reads exactly like deleted media
+and is unpleasant to diagnose.
 
-The media bind mount is declared with `create_host_path: false`. If the
-external drive is not mounted, Docker would otherwise create an empty
-`/mnt/media/library` on the boot device and Jellyfin would come up with an
-empty library that looks exactly like data loss. Instead the container refuses
-to start, and `jellyfin-compose.service`'s `RequiresMountsFor=/mnt/media` keeps
-systemd from even trying. The fstab entry carries `nofail`, so a missing drive
-costs you Jellyfin, not the ability to SSH in and fix it.
+The media bind mount keeps `create_host_path: false`. The playbook creates
+`/srv/media/library`, so if a run ever failed to, Docker would otherwise
+helpfully create an empty one and Jellyfin would come up with an empty library
+that looks exactly like data loss. Refusing to start is the better outcome.
+
+Config and cache are separate paths from the library so that the distinction
+still means something: config is reproducible by re-running the setup wizard
+and the cache is disposable, while the library is the only part worth backing
+up.
 
 ## Variables and secrets
 
@@ -168,13 +173,15 @@ everything host-specific is operator-supplied and gitignored.
 | Value                                  | Where it goes                            | Notes                                                                                       |
 | -------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------- |
 | `ansible_host`, `ansible_user`         | `inventory/hosts.yml`                    | The Pi's LAN address (or MagicDNS name after enrolment) and the admin account from flashing |
-| `media_drive_uuid`                     | `inventory/host_vars/<host>.yml`         | `lsblk -f` on the Pi. Required — preflight fails without it                                 |
-| `media_fs_type`                        | `inventory/host_vars/<host>.yml`         | Must match the drive's existing filesystem; defaults to `ext4`                              |
+| `media_library_dir`                    | `group_vars/jellyfin_pi.yml`             | `/srv/media/library` on the boot device; the container and the SMB share both resolve it    |
 | `ssh_authorized_keys`                  | `inventory/host_vars/<host>.yml`         | Required — the same run disables password authentication                                    |
 | `pi_timezone`                          | `inventory/host_vars/<host>.yml`         | Also becomes the container's `TZ`, which is what Jellyfin schedules tasks against           |
-| `jellyfin_uid` / `jellyfin_gid`        | `group_vars/jellyfin_pi.yml` (2000/2000) | Pinned, not system-assigned — they are baked into file ownership on the media drive         |
+| `jellyfin_uid` / `jellyfin_gid`        | `group_vars/jellyfin_pi.yml` (2000/2000) | Pinned, not system-assigned — they are baked into the library's file ownership              |
 | `tailnet_domain`, `tailscale_hostname` | `group_vars/jellyfin_pi.yml`             | Non-secret identifiers, hardcoded like the account/zone ids in `variables.tf`               |
-| `TAILSCALE_AUTH_KEY`                   | Vault `kv/data/secrets`                  | The only secret. Never in the repo, never in the inventory                                  |
+| `TAILSCALE_AUTH_KEY`                   | Vault `kv/data/secrets`                  | Never in the repo, never in the inventory                                                   |
+| `SAMBA_PASSWORD`                       | Vault `kv/data/secrets`                  | Login for the `jellyfin` SMB account; read only when the account does not exist yet         |
+| `JELLYFIN_API_KEY`                     | Vault `kv/data/secrets`                  | Minted in Dashboard → API Keys; used by `pnpm jellyfin:scan`, never by the playbook         |
+| `samba_*`                              | `group_vars/jellyfin_pi.yml`             | Share name, path, allowed networks, mDNS — all non-secret                                   |
 
 `TAILSCALE_AUTH_KEY` is a reusable, pre-approved, non-ephemeral auth key minted
 in the Tailscale admin console (ephemeral keys delete the node when it goes
@@ -195,44 +202,60 @@ tailnet yet, so routine converge runs work with Vault unreachable.
 1. **Flash.** Raspberry Pi Imager → Raspberry Pi OS Lite (64-bit). In OS
    customisation set the hostname (`jellyfin-pi`), create the admin user, paste
    your SSH public key, and enable SSH with public-key auth only. Prefer
-   Ethernet over Wi-Fi.
+   Ethernet over Wi-Fi; leave "Configure wireless LAN" unchecked.
 
-   **Use Imager's customisation rather than hand-writing config onto the boot
-   partition.** Imager knows which first-boot mechanism the image it just wrote
-   actually consumes; that mechanism has changed twice and is not what older
-   guides describe. If you must do it by hand on a card already flashed, the
-   two files that work on current images are Pi-native and independent of
-   cloud-init:
+   Use Imager's customisation rather than hand-writing config, because the
+   first-boot mechanism keeps moving: `custom.toml` (Bookworm era), then
+   `firstrun.sh` plus a `systemd.run=` hook in `cmdline.txt`, and as of Imager
+   2.x a **cloud-init seed** (`user-data`, `meta-data`, `network-config`) on
+   the boot partition. Older guides describe mechanisms current images ignore.
 
-   - `/boot/firmware/userconf.txt` containing `username:<sha512crypt hash>`
-     (`openssl passwd -6`) — consumed by `userconf-pi`, which creates the
-     account and deletes the file.
-   - An empty `/boot/firmware/ssh` — consumed by `sshswitch.service`, which
-     enables and starts `sshd`.
+2. **Verify the customisation actually landed — before first boot.** Imager
+   2.0.11 has been observed writing the card correctly while leaving
+   `user-data` as the stock all-commented template, which produces a Pi that
+   boots, answers ping and has no user account. Re-insert the card and check:
 
-   Do **not** reach for `custom.toml` or hand-edited `user-data` on the boot
-   partition. `custom.toml` is a Bookworm-era mechanism that current images
-   ignore outright, and the shipped cloud-init seed has a defect that makes
-   edits to it silently do nothing — see [CLAUDE.md](../../infrastructure/jellyfin-pi/CLAUDE.md#a-headless-pi-boots-pings-and-has-no-user-account). Both
-   failure modes present identically: the Pi boots, answers ping, and has no
-   user account.
+   ```bash
+   grep -E '^(hostname|users|ssh_pwauth):' /Volumes/bootfs/user-data
+   ```
 
-2. **Boot and find it.** `ssh <admin-user>@jellyfin-pi.local` (mDNS) or the
-   address from the router's DHCP table. Connect once to accept the host key —
-   Ansible will not prompt for it.
-3. **Attach the media drive.** Plug it in and read `lsblk -f`. For a brand new
-   drive, partition and format it first (destroys everything on it):
-   `sudo mkfs.ext4 -L media /dev/sda1`. For a drive that already holds media —
-   the replacement-Pi case — do not format; just note the `UUID`.
+   Three matches means it applied. No output means it did not, and booting
+   that card wastes a round trip. Write it by hand instead — the card has
+   never booted, so cloud-init runs every per-instance module on first boot:
 
-   Keeping the drive **exFAT** is a legitimate choice, and is what the verified
-   host runs: it lets you load media by plugging the drive into a Mac or
-   Windows machine, which ext4 does not. The cost is that exFAT has no Unix
-   ownership, so `media_mount_options` must carry `uid=`/`gid=` matching
-   `jellyfin_uid`/`jellyfin_gid` or the container cannot read the library. Set
-   `media_fs_type: exfat` and the playbook skips the ownership tasks that
-   cannot apply (`media_non_posix_fs_types` in `group_vars/`). Install
-   `exfatprogs` on the Pi if `mount` reports an unknown filesystem type.
+   ```yaml
+   #cloud-config
+   hostname: jellyfin-pi
+   manage_etc_hosts: true
+   timezone: Europe/Stockholm
+   ssh_pwauth: false
+   users:
+     - name: hliu
+       groups: sudo
+       shell: /bin/bash
+       lock_passwd: false
+       passwd: '<openssl passwd -6 output>'
+       sudo: 'ALL=(ALL) NOPASSWD:ALL'
+       ssh_authorized_keys:
+         - ssh-ed25519 AAAA... you@your-laptop
+   ```
+
+   List only `sudo` under `groups` — cloud-init errors on a group that does
+   not exist yet, and the Pi-specific ones (`gpio`, `spi`, `i2c`) are not
+   guaranteed on a Lite image. Nothing here needs them.
+
+   Fix `meta-data` in the same pass: the shipped file spells the key
+   `instance_id`, which the NoCloud datasource does not read, so the id falls
+   back to the literal `nocloud` and never changes — see
+   [CLAUDE.md](../../infrastructure/jellyfin-pi/CLAUDE.md#a-headless-pi-boots-pings-and-has-no-user-account).
+   Replace it with `instance-id: jellyfin-pi-<date>`. Also `touch
+/Volumes/bootfs/ssh`: Raspberry Pi OS keeps `sshd` disabled until
+   `sshswitch.service` finds that file, independent of cloud-init.
+
+3. **Boot and find it.** `ssh <admin-user>@jellyfin-pi.local` (mDNS) or the
+   address from the router's DHCP table. First boot resizes the root partition
+   to fill the card and runs cloud-init, so give it 2–3 minutes. Connect once
+   to accept the host key — Ansible will not prompt for it.
 
 4. **Fill in the inventory.**
    ```bash
@@ -240,8 +263,10 @@ tailnet yet, so routine converge runs work with Vault unreachable.
    cp inventory/hosts.example.yml inventory/hosts.yml
    cp inventory/host_vars/jellyfin-pi.example.yml inventory/host_vars/jellyfin-pi.yml
    ```
-   Set `ansible_host`/`ansible_user` in the first and `media_drive_uuid`,
-   `ssh_authorized_keys`, `pi_timezone` in the second. Both are gitignored.
+   Set `ansible_host`/`ansible_user` in the first and `ssh_authorized_keys`
+   plus `pi_timezone` in the second. Both are gitignored. There is no drive
+   UUID to supply — the library lives on the boot device at
+   `media_library_dir`.
 5. **Put the auth key in Vault** if it is not there yet (see above), or skip
    Tailscale entirely:
 
@@ -270,13 +295,13 @@ tailnet yet, so routine converge runs work with Vault unreachable.
    pnpm jellyfin:provision
    ```
    The run installs base packages and unattended security upgrades, creates the
-   `jellyfin` service user, hardens sshd (key-only, no root login), mounts the
-   drive by UUID via fstab, installs Docker and the Compose plugin, enrols the
-   node in the tailnet, and starts `jellyfin-compose.service`.
+   `jellyfin` service user and the library directory, hardens sshd (key-only,
+   no root login), installs Docker and the Compose plugin, enrols the node in
+   the tailnet, exports the SMB share, and starts `jellyfin-compose.service`.
    A dry run reports what it would do, but on a never-provisioned Pi it cannot
-   fully simulate the steps that depend on earlier ones (Docker is not
-   installed yet, the drive is not mounted yet) — `--check` earns its keep on
-   re-runs, where it shows exactly what has drifted.
+   fully simulate the steps that depend on earlier ones (Docker and Samba are
+   not installed yet) — `--check` earns its keep on re-runs, where it shows
+   exactly what has drifted.
 7. **Re-run it.** A second `pnpm jellyfin:provision` must report `changed=0`.
    That is the convergence check; treat any recurring change as a bug in the
    playbook.
@@ -291,34 +316,15 @@ the setup wizard the first time only:
 1. Language, then create the admin user. That password is a personal login, not
    an app secret: it belongs in Bitwarden, not Vault, not the repo.
 2. Add a library pointing at `/media` — the read-only bind mount of
-   `/mnt/media/library`. Use Jellyfin's expected folder names underneath
+   `/srv/media/library`. Use Jellyfin's expected folder names underneath
    (`Movies`, `Shows`, `Music`), one library per content type.
 3. Leave remote access at its default. Do not forward a port on the router:
    remote access is the tailnet, and `JELLYFIN_PublishedServerUrl` already
    points clients at the MagicDNS name.
-4. Add media by copying into `/mnt/media/library/...`, then **trigger a library
-   scan** — Dashboard → Libraries → Scan All Libraries.
-
-   The scan is not optional. A USB drive delivers no inotify events, so
-   Jellyfin's real-time monitoring never sees new files there; without a scan
-   the library stays empty and everything looks broken while the file sits
-   correctly on disk.
-
-   On an ext4 drive the library directory is group-writable by `jellyfin`, so
-   add yourself to that group or use `sudo`. On an exFAT drive there is no such
-   group to join — write access comes from the `uid`/`gid` mount options, so
-   copy as that uid or via `sudo`. Either way `rsync -a` **fails on exFAT**: it
-   tries to preserve ownership the filesystem cannot express, and does so after
-   transferring the data, so a long copy ends in
-   `chown ... Operation not permitted` and exit 23. Use:
-
-   ```bash
-   rsync -rh --no-owner --no-group --no-perms --rsync-path="sudo rsync" \
-     "local/Film (2019).mkv" "pi:/mnt/media/library/movies/Film (2019)/"
-   ```
-
-   Name files `Title (Year).ext`, one folder per title, or metadata matching
-   silently returns nothing.
+4. Mint an API key — Dashboard → API Keys → **+**, named `media-scan` — and put
+   it in Vault as `JELLYFIN_API_KEY` so `pnpm jellyfin:scan` can trigger
+   library scans. See [Adding and managing media](#adding-and-managing-media)
+   for the whole loop.
 
 5. **Casting has a constraint worth knowing before you fight it.** The web
    client's Cast button lists other Jellyfin sessions and Google Cast devices.
@@ -331,6 +337,93 @@ the setup wizard the first time only:
 
 The wizard only appears once — the answers land in `/opt/jellyfin/config`, which
 survives every re-provision.
+
+## Adding and managing media
+
+The library is a writable SMB share, so content goes on the drive by dragging
+into Finder with the server running — no unplugging the drive, no rsync
+invocation to get right. Two steps, always:
+
+```bash
+pnpm jellyfin:media   # mount smb://jellyfin@<pi>/media in Finder
+# …drag files in…
+pnpm jellyfin:scan    # tell Jellyfin to look
+```
+
+`pnpm jellyfin:scan` posts to `/Library/Refresh` with `JELLYFIN_API_KEY` from
+Vault — the same thing as Dashboard → Libraries → Scan All Libraries.
+
+Now that the library sits on local ext4 rather than a USB drive, the kernel
+does deliver inotify events and Jellyfin's real-time monitoring should notice
+new files on its own, including ones written over the share. Treat that as a
+convenience, not a guarantee: monitoring can be switched off per library and
+is not reliable for large files still being written. Running the scan costs
+seconds and removes the question — if a title is missing, scan before
+investigating anything else.
+
+Name files `Title (Year).ext`, one folder per title, under `movies/`, `shows/`
+or `music/`, or metadata matching silently returns nothing.
+
+### How the share is put together
+
+`tasks/samba.yml` and `templates/smb.conf.j2` export `/srv/media/library` as
+`[media]`, and the defaults are in `group_vars/jellyfin_pi.yml` under
+`samba_*`. Four decisions worth knowing:
+
+- **It writes to the host path, not through the container.** Jellyfin's own
+  bind mount of the same directory stays `read_only: true`; nothing in
+  `docker-compose.yml` changed to add the share.
+- **`force user = jellyfin`.** The library directory is owned by the Jellyfin
+  service user (uid/gid 2000), so forcing every write to that identity is what
+  keeps files arriving over the share readable by the container without a
+  second ownership pass.
+- **Authenticated, not guest.** The login is the `jellyfin` service account and
+  the password is `SAMBA_PASSWORD` in Vault. The library is the one
+  irreplaceable thing on this host, and the home LAN carries guest phones and
+  IoT devices; a guest-writable share means any of them can empty it.
+- **No `fruit` VFS.** ext4 could support it, but a media library has no use
+  for Finder resource forks and colour labels, and it is one more moving part
+  between Samba and the files. The share vetoes `.DS_Store`,
+  `.Spotlight-V100` and friends instead — `.Spotlight-V100` in particular
+  grows without bound on a card the library already shares with Jellyfin's
+  cache. The `._` AppleDouble files that remain are harmless; Jellyfin skips
+  dotfiles.
+
+Reach is the same as Jellyfin's: the LAN and the tailnet (`hosts allow` covers
+`192.168.0.0/16` and the Tailscale CGNAT range `100.64.0.0/10`), and nothing is
+port-forwarded. `avahi-daemon` advertises the host so it appears in Finder's
+sidebar rather than needing the address typed.
+
+On a Pi 3B+ the ceiling is the network, not the card: Ethernet hangs off the
+USB 2.0 bus and tops out near 300Mbit in practice, so expect roughly
+25–35 MB/s depending on the card's write speed. The microSD slot is on its own
+SDIO interface, so unlike the old USB drive it does not contend with Ethernet
+for bandwidth.
+
+### Rotating the SMB password
+
+The playbook only reads `SMB_PASSWORD` when the Samba account does not exist
+yet, so routine converge runs work with Vault sealed. To change it on an
+existing account, patch Vault and then force the task:
+
+```bash
+pnpm jellyfin:provision -- --tags samba -e samba_reset_password=true
+```
+
+### Falling back to rsync
+
+Still the right tool for a bulk first load, where Finder's copy dialog is a
+liability:
+
+```bash
+rsync -rh --info=progress2 "local/Film (2019).mkv" \
+  "jellyfin-pi:/srv/media/library/movies/Film (2019)/"
+```
+
+On ext4 a plain `rsync -a` works too — the `--no-owner --no-group --no-perms`
+dance the exFAT drive needed no longer applies. Write as a user in the
+`jellyfin` group, or with `--rsync-path="sudo rsync"`, since the library
+directory is `0775` owned by `jellyfin:jellyfin`.
 
 ## Operations
 
@@ -350,25 +443,26 @@ The image tag in `docker-compose.yml` is pinned and bumped deliberately
 only and deliberately exclude the Docker and Tailscale repos, so the container
 runtime never changes under a running library at 04:00.
 
-## Replacing the Pi with the same media drive
+## Replacing the Pi
 
-The media drive is the only irreplaceable part. Everything else is rebuilt by
-the playbook:
+Nothing on this host is irreplaceable except the library, and the library has
+no independent existence — it is on the boot card with everything else. So a
+replacement is a restore, not a transplant:
 
-1. Flash the replacement Pi (steps 1–2 above), move the drive over, and read
-   its UUID again — it does not change with the host, but it does change if you
-   ever reformat.
-2. Update `ansible_host` (and `media_drive_uuid` if it changed) in the
-   inventory, then `pnpm jellyfin:provision`.
-3. The `jellyfin` user is recreated with uid/gid 2000, so every file already on
-   the drive keeps a valid owner. This is why those numbers are pinned in
-   `group_vars` — letting `useradd` pick them would silently orphan the entire
-   library on a rebuild.
-4. Jellyfin config does not move with the drive by design, so the replacement
-   comes up on a fresh setup wizard: recreate the admin user and re-add the
-   library, then let it rescan. To keep users, playback positions and metadata
-   instead, copy `/opt/jellyfin/config` off the old Pi first (with the stack
-   stopped) and restore it before the first start.
+1. Copy the library off the old card first, while the old Pi still boots:
+   `rsync -rh pi-old:/srv/media/library/ ./library-backup/`, or pull it over
+   the SMB share. If the card is dead, the library is gone — which is the
+   trade made by dropping the external drive.
+2. Flash the replacement per [From scratch](#from-scratch), including the
+   verification step, then `pnpm jellyfin:provision`.
+3. Copy the library back into `/srv/media/library` and run `pnpm
+jellyfin:scan`. The `jellyfin` user is recreated with uid/gid 2000, so
+   ownership lines up — that is why those numbers are pinned in `group_vars`
+   rather than left to `useradd`.
+4. Jellyfin config does not survive unless you bring it: the replacement comes
+   up on a fresh setup wizard. To keep users, playback positions and metadata,
+   copy `/opt/jellyfin/config` off the old Pi first (with the stack stopped)
+   and restore it before the first start.
 
 ## Backups and monitoring
 
@@ -376,9 +470,15 @@ Neither of the repo-wide rules applies here, deliberately:
 
 - **No backup job in `cron-backup.yml`.** The Pi is LAN-only and unreachable
   from GitHub Actions, and the library is bulk media, not a store that can be
-  dumped into `gs://vigilant-broccoli-backup` nightly. Media durability is the
-  drive's problem (and a second copy of anything irreplaceable); Jellyfin's
-  config is reproducible by re-running the wizard, and the manual copy above
-  covers the case where that is not good enough.
+  dumped into `gs://vigilant-broccoli-backup` nightly.
 - **No Upptime entry.** `.upptimerc.yml` monitors public URLs; a tailnet-only
   host has none to poll. `pnpm jellyfin:status` is the check.
+
+What that leaves is worth stating plainly, because dropping the external drive
+removed the one piece of redundancy this host had. The library now shares a
+single microSD card with the OS, and cards fail. There is no RAID, no second
+copy and no snapshot: **anything irreplaceable needs a copy somewhere else** —
+the simplest being a periodic pull over the SMB share to a machine that is
+itself backed up. Jellyfin's config is reproducible by re-running the wizard,
+and the manual copy in [Replacing the Pi](#replacing-the-pi) covers the case
+where that is not good enough.
