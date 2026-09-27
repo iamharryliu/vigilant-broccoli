@@ -108,9 +108,13 @@ function ServiceListItem({ svc }: { svc: ServiceStatus }) {
         <span className="flex-1 font-medium truncate">
           {getDisplayText(svc)}
         </span>
-        {svc.status !== 'up' && (
-          <span className={`shrink-0 ${status.text}`}>{status.label}</span>
-        )}
+        <span
+          className={`shrink-0 ${status.text} ${
+            svc.status === 'up' ? 'hidden sm:inline' : ''
+          }`}
+        >
+          {status.label}
+        </span>
         <span className="shrink-0 font-mono text-gray-400 w-14 text-right">
           {svc.uptime || '—'}
         </span>
