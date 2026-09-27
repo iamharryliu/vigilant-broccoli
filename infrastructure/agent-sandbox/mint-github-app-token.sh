@@ -8,12 +8,19 @@ APP_ID=$1
 PEM_FILE=$2
 GITHUB_API=https://api.github.com
 
+# openssl's key loader needs a seekable regular file; callers commonly pass a
+# process-substitution FIFO, which fails with "Could not read private key ...
+# STORE routines ... unsupported". Copy into a real temp file before signing.
+KEY_FILE=$(mktemp)
+trap 'rm -f "$KEY_FILE"' EXIT
+cat "$PEM_FILE" > "$KEY_FILE"
+
 b64url() { openssl base64 -A | tr '+/' '-_' | tr -d '='; }
 
 NOW=$(date +%s)
 HEADER=$(printf '{"alg":"RS256","typ":"JWT"}' | b64url)
 PAYLOAD=$(printf '{"iat":%d,"exp":%d,"iss":"%s"}' "$((NOW - 60))" "$((NOW + 540))" "$APP_ID" | b64url)
-SIGNATURE=$(printf '%s.%s' "$HEADER" "$PAYLOAD" | openssl dgst -sha256 -sign "$PEM_FILE" -binary | b64url)
+SIGNATURE=$(printf '%s.%s' "$HEADER" "$PAYLOAD" | openssl dgst -sha256 -sign "$KEY_FILE" -binary | b64url)
 JWT="${HEADER}.${PAYLOAD}.${SIGNATURE}"
 
 INSTALLATION_ID=$(curl -fsS \
