@@ -7,17 +7,17 @@ export default defineConfig(() => ({
   base: process.env.VITE_BASE_PATH ?? '/',
   cacheDir: '../../../node_modules/.vite/personal-website-react',
   server: {
-    port: 4200,
+    port: 3000,
     host: 'localhost',
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: 'http://localhost:3001',
         secure: false,
       },
     },
   },
   preview: {
-    port: 4200,
+    port: 3000,
     host: 'localhost',
   },
   plugins: [react(), tsconfigPaths()],

@@ -9,11 +9,11 @@ export default defineConfig(() => ({
   base: process.env.VITE_BASE_PATH ?? '/',
   cacheDir: '../../../node_modules/.vite/component-library',
   server: {
-    port: 4200,
+    port: 3000,
     host: 'localhost',
   },
   preview: {
-    port: 4200,
+    port: 3000,
     host: 'localhost',
   },
   plugins: [
