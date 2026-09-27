@@ -51,7 +51,6 @@
       "@vigilant-broccoli/react-lib/toaster": [
         "./libs/@vigilant-broccoli/react-lib/src/components/Toaster.tsx"
       ],
-      "general-components": ["./libs/angular/general-components/src/index.ts"],
       "@vigilant-broccoli/personal-common-js": [
         "./libs/@vigilant-broccoli/personal-common-js/src/index.ts"
       ],

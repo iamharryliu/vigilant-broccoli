@@ -19,8 +19,8 @@ const withActive =
   ({ isActive }: { isActive: boolean }) =>
     isActive ? `${baseClasses} ${ACTIVE_CLASSES}` : baseClasses;
 
-// Mirrors general-components' lib-navbar: both bars fade out while scrolling
-// down and fade back in on scroll up, ignoring the first second after load.
+// Both bars fade out while scrolling down and fade back in on scroll up,
+// ignoring the first second after load.
 const useFadeOnScrollDown = (onFade: () => void) => {
   const [isFading, setIsFading] = useState(false);
   const onFadeRef = useRef(onFade);

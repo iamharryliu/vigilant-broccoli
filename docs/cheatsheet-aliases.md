@@ -116,7 +116,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   testgrind75                 Run grind-75 tests (py + ts + go)
   testgrind75py|ts|go         Run grind-75 tests for one language
   deploypersonalfrontend      Manually deploy the personal website frontend
-  servecloud8                 Serve cloud-8-skate-angular
+  servecloud8                 Serve cloud-8-skate-react
   npmEmployeeHandler          Install the local employee-handler build
   dldjmusic                   Download DJ music from Spotify playlists
 
