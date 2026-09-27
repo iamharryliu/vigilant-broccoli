@@ -1,6 +1,6 @@
 # Cloud8Skate (React)
 
-React rewrite of `cloud-8-skate-angular`, the Cloud8 Toronto skating community site.
+The Cloud8 Toronto skating community site.
 
 ## Table of Contents
 
