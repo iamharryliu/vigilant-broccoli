@@ -234,12 +234,12 @@ variable "cloud8skate_domain" {
 
 variable "cloud8skate_pages_project" {
   type    = string
-  default = "staging-cloud-8-skate-react"
+  default = "production-cloud-8-skate-react"
 }
 
 variable "cloud8skate_pages_subdomain" {
   type    = string
-  default = "staging-cloud-8-skate-react.pages.dev"
+  default = "production-cloud-8-skate-react.pages.dev"
 }
 
 variable "harryliu_dev_pages_project" {
