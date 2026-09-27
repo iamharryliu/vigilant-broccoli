@@ -21,7 +21,7 @@ sites:
   - name: staging-cloud8skate.com
     url: https://cloud8skate.com/
   - name: production-cloud8skate
-    url: https://production-cloud-8-skate-angular.pages.dev/
+    url: https://production-cloud-8-skate-react.pages.dev/
   - name: socket-server
     url: https://socket.harryliu.dev/health
   - name: staging-findme

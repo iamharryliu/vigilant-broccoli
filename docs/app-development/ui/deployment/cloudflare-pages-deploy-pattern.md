@@ -4,7 +4,7 @@ Static UIs in `apps/ui/*` deploy to Cloudflare Pages via wrangler.
 
 Reference apps:
 
-- `cloud-8-skate-angular` — full staging + production pair, plus sitemap generation before deploy.
+- `cloud-8-skate-react` — full staging + production pair, plus sitemap generation before deploy.
 - `personal-website-react` — React variant with the same staging + production pair.
 - `docs-md` — staging-only.
 
@@ -14,7 +14,7 @@ Reference apps:
 - `prune-deployments` — `scripts/prune-wrangler-deployments.ts <project> 10`: keeps the newest 10 deployments, deletes the rest (Pages accumulates one deployment per push otherwise).
 - `deploy` — `wrangler pages deploy <dist dir> --project-name <project>`, `dependsOn` the build and the two targets above.
 
-Project names are environment-prefixed (`staging-docs-md`, `production-cloud-8-skate-angular`); production mirrors the trio as `:production` target variants. Each app also carries a `manual-deploy` target (same command as `deploy`) — `manual-deploy-app.yml` dispatches whichever target name is chosen via `nx run-many -t $DEPLOY_TARGET`.
+Project names are environment-prefixed (`staging-docs-md`, `production-cloud-8-skate-react`); production mirrors the trio as `:production` target variants. Each app also carries a `manual-deploy` target (same command as `deploy`) — `manual-deploy-app.yml` dispatches whichever target name is chosen via `nx run-many -t $DEPLOY_TARGET`.
 
 ## Per-environment build config
 
