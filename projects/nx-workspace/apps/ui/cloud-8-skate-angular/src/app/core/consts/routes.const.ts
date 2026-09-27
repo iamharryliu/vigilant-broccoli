@@ -1,4 +1,5 @@
 import { Route, Routes } from '@angular/router';
+import { SOCIAL_LINK } from '@vigilant-broccoli/personal-common-js';
 import { Link } from 'general-components';
 import { ContactPageComponent } from '../../components/pages/contact-page/contact-page.component';
 import { FaqPageComponent } from '../../components/pages/faq-page/faq.page';
@@ -167,14 +168,14 @@ const WAIVER_DOC: Link = {
 
 const CLOUD_8_SKATE_IG: Link = {
   url: {
-    external: 'https://www.instagram.com/cloud8skate/',
+    external: SOCIAL_LINK.INSTAGRAM_CLOUD8SKATE.URL,
   },
   text: 'Cloud8Skate Instagram',
 };
 
 const TORONTO_CITY_SKATE_IG: Link = {
   url: {
-    external: 'https://www.instagram.com/torontocityskate/',
+    external: SOCIAL_LINK.INSTAGRAM_TORONTOCITYSKATE.URL,
   },
   text: 'Toronto City Skate Instagram',
 };

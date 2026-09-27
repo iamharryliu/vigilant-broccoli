@@ -22,7 +22,7 @@ Project names are environment-prefixed (`staging-docs-md`, `production-cloud-8-s
 
 ## Custom domains (Terraform)
 
-Terraform owns the `cloudflare_pages_domain` attachment and its DNS record — one `cloudflare-<site>.tf` per site in `infrastructure/terraform/`. `cloudflare-cloud8skate.tf` is the plain pattern. Private content is deliberately not served from Pages at all — it stays on the self-hosted Gitea VM behind Access, since a Pages deploy would copy it onto a CI runner and Cloudflare storage. Custom domains are environment-less: attached to whichever environment's project serves live traffic (today the `staging-*` projects). Public URLs per domain: [network-management.md](../../infrastructure/network-management.md).
+Terraform owns the `cloudflare_pages_domain` attachment and its DNS record — one `cloudflare-<site>.tf` per site in `infrastructure/terraform/`. `cloudflare-cloud8skate.tf` is the plain pattern. Private content is deliberately not served from Pages at all — it stays on the self-hosted Gitea VM behind Access, since a Pages deploy would copy it onto a CI runner and Cloudflare storage. Custom domains are environment-less: attached to whichever environment's project serves live traffic (today the `staging-*` projects). Public URLs per domain: [network-management.md](../../../infrastructure/network-management.md).
 
 ## New app checklist (Cloudflare-side)
 

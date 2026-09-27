@@ -16,6 +16,7 @@
   - [Home](#home)
 - [Activities](#activities)
 - [Entertainment](#entertainment)
+- [Tourist Attractions](#tourist-attractions)
 - [Events](#events)
 - [Waste Management](#waste-management)
 - [Dog Friendly Spaces](#dog-friendly-spaces)
@@ -130,8 +131,13 @@
 - [Lund](https://lund.se/)
 - [Malmö Live](https://malmolive.se/program)
 - Inline Skating
-  - [Friday Night Skate Copenhagen](https://www.instagram.com/fnscph/)
+  - FNS Copenhagen
+    - [FNS Copenhagen Facebook](https://www.facebook.com/FNSCPH/events)
+    - [FNS Copenhagen Instagram](https://www.instagram.com/fnscph/)
   - [Malmö City Skaters](https://www.malmocityskaters.se/)
+- Latin Social Dancing
+  - [Klubbkalender LATIN Salsa Bachata etc Klubb Fest Malmö Lund Helsingborg](https://www.facebook.com/groups/532372383132088)
+  - [Salsa & Bachata in Copenhagen](https://www.facebook.com/groups/salsacph/events)
 - Salsa Places
   - Aldonya - A salsa/bachata dance school.
   - [United Dance Studio](https://www.uniteddancestudios.se/) - A salsa/bachata dance school.
@@ -167,6 +173,20 @@
 | [Filmstaden Malmö](https://www.filmstaden.se/) | Main cinema chain in Sweden.                                                             |
 | [Panora](https://www.panora.se/)               | Independent arthouse cinema at Möllevången.                                              |
 | [Aq-va-kul](https://aqvakul.malmo.se/)         | Public swimming and water park.                                                          |
+
+## Tourist Attractions
+
+| Place                          | Type                                        | Open hours                             | Free visit times                                                      |
+| ------------------------------- | --------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------ |
+| Alnarpsparken Arboretum         | Arboretum / botanical park                    | Open 24h                                | Always free                                                              |
+| Katrinetorp Landeri             | Historic estate / gardens                     | Grounds approximately 08:00–20:00       | Grounds generally free; events may differ                               |
+| Malmö Castle                    | Castle / museum                               | Tue–Sun 11:00–17:00; Thu until 19:00    | Included with Malmö Museum ticket; ages 0–19 free                       |
+| Malmö Konsthall                 | Contemporary art gallery                      | Tue–Sun 11:00–17:00; Wed until 19:00    | Always free                                                              |
+| Malmö Konstmuseum               | Art museum                                    | Thu–Fri 10:00–17:00; Sat–Sun 10:00–16:00 | Always free at current Kungsparken location                             |
+| Malmö Museum                    | History / natural history / aquarium          | Tue–Sun 11:00–17:00; Thu until 19:00    | Ages 0–19 free                                                           |
+| Moderna Museet Malmö            | Modern art museum                             | Tue–Sun 11:00–17:00; Thu until 19:00    | Check current exhibition                                                 |
+| Slottsträdgården                | Garden / park                                 | Open year-round                          | Always free                                                              |
+| Teknikens och Sjöfartens hus     | Technology / maritime museum                  | Tue–Sun 11:00–17:00; Thu until 19:00    | Ages 0–19 free                                                           |
 
 ## Events
 

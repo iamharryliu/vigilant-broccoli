@@ -11,7 +11,9 @@ import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { Email, TextMessageService } from '@vigilant-broccoli/messaging';
 import {
   APP_NAME,
+  EMAIL_ADDRESS,
   MessageRequest,
+  SENDER_EMAIL_ADDRESS,
 } from '@vigilant-broccoli/personal-common-js';
 
 let textMessageService: TextMessageService | undefined;
@@ -24,11 +26,11 @@ const SHARED_APP_TOKEN = getEnvironmentVariable('SHARED_APP_TOKEN');
 
 const APP_EMAIL_CONFIG: Record<string, { from: string; to: string }> = {
   [APP_NAME.HARRYLIU_DESIGN]: {
-    from: 'Harry Liu <contact@harryliu.dev>',
-    to: 'harryliu1995@gmail.com',
+    from: `Harry Liu <${SENDER_EMAIL_ADDRESS}>`,
+    to: EMAIL_ADDRESS,
   },
   [APP_NAME.CLOUD_8_SKATE]: {
-    from: 'Cloud8Skate <contact@harryliu.dev>',
+    from: `Cloud8Skate <${SENDER_EMAIL_ADDRESS}>`,
     to: 'cloud8.ca@gmail.com',
   },
 };

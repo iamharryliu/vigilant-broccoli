@@ -81,7 +81,7 @@ Hardware:
   One or two direct-play streams are fine. Several are not.
 - Ethernet, not Wi-Fi. Beyond the shared-bus limit, Raspberry Pi OS ships the
   Wi-Fi radio rfkill-soft-blocked until a WLAN country is set, which is an easy
-  trap on a headless box (see [nuance.md](../nuance.md)).
+  trap on a headless box (see [CLAUDE.md](../../infrastructure/jellyfin-pi/CLAUDE.md#a-headless-pi-boots-pings-and-has-no-user-account)).
 - A reliable boot device (SD card or, better, USB SSD) for the OS, config and
   cache. **Size it at 32GB or more.** Jellyfin refuses to start when its data
   path has less than 2GiB free, and the Docker image alone is ~1.3GB: a 8GB
@@ -213,7 +213,7 @@ tailnet yet, so routine converge runs work with Vault unreachable.
    Do **not** reach for `custom.toml` or hand-edited `user-data` on the boot
    partition. `custom.toml` is a Bookworm-era mechanism that current images
    ignore outright, and the shipped cloud-init seed has a defect that makes
-   edits to it silently do nothing — see [nuance.md](../nuance.md). Both
+   edits to it silently do nothing — see [CLAUDE.md](../../infrastructure/jellyfin-pi/CLAUDE.md#a-headless-pi-boots-pings-and-has-no-user-account). Both
    failure modes present identically: the Pi boots, answers ping, and has no
    user account.
 

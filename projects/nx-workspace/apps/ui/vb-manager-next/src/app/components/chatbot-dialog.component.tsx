@@ -1,7 +1,13 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Dialog } from '@radix-ui/themes';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  type CSSProperties,
+} from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Loader2, Trash2 } from 'lucide-react';
 import {
@@ -117,6 +123,20 @@ const CONST_STREAM_UPDATE_INTERVAL = 50;
 const DEFAULT_CHAT_MODEL = LLM_MODEL.GPT_4O;
 
 const ASSISTANT_NAME = 'Jarvis';
+
+const USER_MESSAGE_STYLE: CSSProperties = {
+  padding: '0.5rem 0.875rem',
+  borderRadius: '1rem',
+  backgroundColor: 'var(--accent-3)',
+};
+
+const ASSISTANT_MESSAGE_STYLE: CSSProperties = {
+  padding: '0.75rem 1rem',
+  borderRadius: '0.75rem',
+  border: '1px solid var(--gray-6)',
+  backgroundColor: 'var(--color-panel-solid)',
+  boxShadow: 'var(--shadow-2)',
+};
 
 const TASKS_PARSING_MESSAGE = 'Parsing tasks...';
 const TASKS_PARSE_ERROR_MESSAGE = 'Failed to parse tasks';
@@ -334,9 +354,7 @@ const MessagesArea = ({
               style={{
                 maxWidth: '85%',
                 alignSelf: isUser ? 'flex-end' : 'flex-start',
-                padding: isUser ? '0.5rem 0.875rem' : 0,
-                borderRadius: isUser ? '1rem' : 0,
-                backgroundColor: isUser ? 'var(--accent-3)' : 'transparent',
+                ...(isUser ? USER_MESSAGE_STYLE : ASSISTANT_MESSAGE_STYLE),
               }}
             >
               {message.images && message.images.length > 0 && (

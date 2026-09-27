@@ -62,6 +62,90 @@ export const PERSONAL_URL = {
   },
 } as const;
 
+export const EMAIL_ADDRESS = 'harryliu1995@gmail.com';
+
+export const SENDER_EMAIL_ADDRESS = 'contact@harryliu.dev';
+
+export const EMAIL_LINK = {
+  NAME: EMAIL_ADDRESS,
+  URL: `mailto:${EMAIL_ADDRESS}`,
+} as const;
+
+export const SOCIAL_LINK = {
+  LINKEDIN: {
+    NAME: 'LinkedIn',
+    URL: 'https://www.linkedin.com/in/iamharryliu/',
+  },
+  GITHUB: {
+    NAME: 'GitHub',
+    URL: 'https://github.com/iamharryliu',
+  },
+  INSTAGRAM_PRETTYDAMNTIRED: {
+    NAME: 'Instagram - prettydamntired',
+    URL: 'https://www.instagram.com/prettydamntired/',
+  },
+  INSTAGRAM_TORONTOCITYSKATE: {
+    NAME: 'Instagram - torontocityskate',
+    URL: 'https://www.instagram.com/torontocityskate/',
+  },
+  INSTAGRAM_HARRYSELLSSHIT: {
+    NAME: 'Instagram - harrysellsshit',
+    URL: 'https://www.instagram.com/harrysellsshit/',
+  },
+  INSTAGRAM_CLOUD8SKATE: {
+    NAME: 'Instagram - cloud8skate',
+    URL: 'https://www.instagram.com/cloud8skate/',
+  },
+  INSTAGRAM_MALMOURBANSKATE: {
+    NAME: 'Instagram - malmo.urbanskate',
+    URL: 'https://www.instagram.com/malmo.urbanskate/',
+  },
+  INSTAGRAM_HUSTLEMALMO: {
+    NAME: 'Instagram - hustlemalmo',
+    URL: 'https://www.instagram.com/hustlemalmo/',
+  },
+} as const;
+
+export const COMMUNITY_LINK = {
+  CLOUD8SKATE: {
+    NAME: 'Cloud 8 Skate',
+    URL: 'https://cloud8skate.com/',
+  },
+} as const;
+
+export const PROJECT_LINK = {
+  SOFTWARE_PROJECTS: {
+    NAME: 'Software Projects',
+    URL: 'https://iamharryliu.github.io/vigilant-broccoli/',
+  },
+} as const;
+
+export const BUSINESS_LINK = {
+  SECONDHAND_STORE: {
+    NAME: 'harrysellsshit',
+    URL: SOCIAL_LINK.INSTAGRAM_HARRYSELLSSHIT.URL,
+  },
+} as const;
+
+export const INTEREST_LINK = {
+  SPOTIFY: {
+    NAME: 'Spotify',
+    URL: 'https://open.spotify.com/user/22z5agodra7fwhm2erdqn5bjq',
+  },
+  GOODREADS: {
+    NAME: 'Goodreads',
+    URL: 'https://www.goodreads.com/user/show/74043883-harry',
+  },
+  MYANIMELIST: {
+    NAME: 'MyAnimeList',
+    URL: 'https://myanimelist.net/profile/prettydamntired',
+  },
+  IMDB: {
+    NAME: 'IMDb',
+    URL: 'https://www.imdb.com/user/ur45097057/',
+  },
+} as const;
+
 export const MAC_OS_APP = {
   CHROME: {
     NAME: 'Google Chrome',

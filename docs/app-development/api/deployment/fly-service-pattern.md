@@ -68,7 +68,7 @@ Declare in `projects/nx-workspace/scripts/secrets-mapping.config.ts`. The servic
 
 Set `privateOnly: true` in `secrets-mapping.config.ts` (llm-service, bucket-service). `deploy:secrets` then reconciles the app's IPs before every deploy: allocates a private ingress IPv6 if missing, and releases any public `v4`/`v6`/`shared_v4` it finds. Because `deploy` depends on `deploy:secrets`, a brand-new private service never has a public edge, and a public IP that reappears (some flyctl versions auto-allocate on first deploy when the config declares an `http_service`) is cleaned up on the next deploy rather than needing a human to notice.
 
-Pair it with `[http_service].force_https = false` — see [network-management.md](../../infrastructure/network-management.md) for why, and for how CI reaches these services.
+Pair it with `[http_service].force_https = false` — see [network-management.md](../../../infrastructure/network-management.md) for why, and for how CI reaches these services.
 
 Going private also takes the service's own `/docs` Swagger UI off the internet. Docs stay readable because the OpenAPI specs are static objects (`createSwaggerSpec`), so `pages-index`'s `generate-openapi` target imports them and publishes `public/openapi/<service>.json` at build time; `/api-services/<service>` renders Swagger UI against that. Register a new service in `scripts/generate-openapi-specs.ts` and `pages-index`'s `consts/apiServices.ts` — give public services a `publicUrl` so "Try it out" works, and leave it off for private ones.
 

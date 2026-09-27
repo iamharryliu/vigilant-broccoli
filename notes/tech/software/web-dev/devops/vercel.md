@@ -22,4 +22,4 @@ Pro is $20/developer-seat/month with usage-based overage on most of the above in
 
 - [Vercel Hobby Plan](https://vercel.com/docs/plans/hobby)
 - [Fair Use Guidelines](https://vercel.com/docs/limits/fair-use-guidelines)
-- [vercel-deploy-pattern.md](../../../../../docs/ui/deployment/vercel-deploy-pattern.md) — how this repo deploys Next.js apps to Vercel
+- [vercel-deploy-pattern.md](../../../../../docs/app-development/ui/deployment/vercel-deploy-pattern.md) — how this repo deploys Next.js apps to Vercel

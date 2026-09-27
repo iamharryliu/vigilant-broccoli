@@ -39,6 +39,16 @@ const BASE_CALENDAR_CONFIG: Omit<CalendarConfig, 'mode'> = {
   ],
 };
 
+// Fill whatever the shell leaves over: below lg that is the fixed topbar, the
+// shell's own 1rem offset under it, and this wrapper's 1.5rem bottom margin; at
+// lg+ the topbar is gone and NavbarSection's 4rem row and 1px rule take its
+// place, plus 1.5rem of margin above and below.
+const CALENDAR_HEIGHT =
+  'h-[calc(100dvh_-_var(--topbar-h)_-_2.5rem)] lg:h-[calc(100dvh_-_7rem_-_1px)]';
+
+const CALENDAR_FRAME =
+  'border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden min-h-[400px]';
+
 export function CalendarPage() {
   const [mode, setMode] = useState<CalendarConfig['mode']>(() =>
     typeof window !== 'undefined'
@@ -59,12 +69,11 @@ export function CalendarPage() {
 
   return (
     <GeneralLayout>
-      <div className="w-11/12 mx-auto mt-6">
-        <div className="border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
+      <div className="w-11/12 mx-auto mb-6 lg:mt-6">
+        <div className={`${CALENDAR_FRAME} ${CALENDAR_HEIGHT}`}>
           <iframe
             src={url}
-            className="w-full h-[600px] dark:invert dark:hue-rotate-180"
-            style={{ minHeight: 400 }}
+            className="w-full h-full dark:invert dark:hue-rotate-180"
             title="Calendar"
           />
         </div>

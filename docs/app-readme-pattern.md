@@ -1,8 +1,15 @@
 # README Stack Pattern
 
-Every app under `projects/nx-workspace/apps/*`, every component under `infrastructure/*`, and every `libs/@vigilant-broccoli/*` lib that publishes to npm (has a `publish-package` target — see [repo-patterns.md](./repo-patterns.md#deployment)) carries a `README.md` with a title, a one-line purpose, a `## Table of Contents`, and a `## Stack` section. Keep it minimal — headers + bullets, no prose. Derive everything from the actual code and config so newly introduced tech shows up, and update sections in place rather than duplicating.
+Every app under `projects/nx-workspace/apps/*`, every component under `infrastructure/*`, and every `libs/@vigilant-broccoli/*` lib that publishes to npm (has a `publish-package` target — see [app-development.md](./app-development/app-development.md#npm-package-publishing)) carries a `README.md` with a title, a one-line purpose, a `## Table of Contents`, and a `## Stack` section. Keep it minimal — headers + bullets, no prose. Derive everything from the actual code and config so newly introduced tech shows up, and update sections in place rather than duplicating.
 
 ## Table of Contents
+
+- [Generating a README's ToC](#generating-a-readmes-toc)
+- [Apps and publishable libs](#apps-and-publishable-libs)
+- [Infrastructure](#infrastructure)
+- [Aggregate](#aggregate)
+
+## Generating a README's ToC
 
 Every README gets a `## Table of Contents` right after the one-line purpose, linking to each `##` header that follows it, in document order. Regenerate it whenever headers are added, removed, or reordered — it's the one section that's fully derived, safe to rebuild from scratch every run.
 
@@ -20,7 +27,7 @@ Each app under `projects/nx-workspace/apps/*`, and each `libs/@vigilant-broccoli
   - **Build Tool** — the bundler/builder, e.g. Vite, Next.js, esbuild, webpack
   - **External libs** — other third-party npm packages: UI libs, SDKs, tooling
   - **Internal libs** — the `@vigilant-broccoli/*` VB libs it consumes
-  - **Cloud services** — hosted/managed platforms and external APIs it deploys to or calls (e.g. Vercel, Cloudflare Pages, Fly.io, Docker Hub, npm, Supabase, Sanity, AWS S3, Stripe). Always reflect the deploy destination here: a `libs/@vigilant-broccoli/*` lib with a `publish-package` target lists `npm`; an `apps/api/*` service shipped via the Docker Hub roundtrip (`deploy-container` target — see [fly-service-pattern.md](./api/deployment/fly-service-pattern.md)) lists `Docker Hub`.
+  - **Cloud services** — hosted/managed platforms and external APIs it deploys to or calls (e.g. Vercel, Cloudflare Pages, Fly.io, Docker Hub, npm, Supabase, Sanity, AWS S3, Stripe). Always reflect the deploy destination here: a `libs/@vigilant-broccoli/*` lib with a `publish-package` target lists `npm`; an `apps/api/*` service shipped via the Docker Hub roundtrip (`deploy-container` target — see [fly-service-pattern.md](./app-development/api/deployment/fly-service-pattern.md)) lists `Docker Hub`.
 
 Language, Framework, and Build Tool each hold a single value, written inline (`- Language - TypeScript`). External libs, Internal libs, and Cloud services are nested bullet lists.
 
@@ -75,7 +82,7 @@ Each component under `infrastructure/*` (e.g. `terraform`, `local`, `agent-sandb
 
 Same rules as apps: single-value groups written inline, the rest nested; classify by nature; omit a group only when there is genuinely nothing for it. Derive everything from `*.tf` provider/resource blocks, `docker-compose.yml`, `Dockerfile`, and scripts — so a newly added Terraform provider or compose service shows up.
 
-Networking and Observability only apply to components that actually have externally reachable services or a curated logging story — most infra components omit both and carry only Stack. When a component has its own directory-scoped `CLAUDE.md` (e.g. `infrastructure/local/CLAUDE.md`), that file is the authority on which of these sections apply to it and how to curate them.
+Networking and Observability only apply to components that actually have externally reachable services or a curated logging story — most infra components omit both and carry only Stack. When a component has its own directory-scoped `CLAUDE.md` (e.g. `infrastructure/local/CLAUDE.md`), that file is the authority on which of these sections apply to it and how to curate them. Its `## Nuances` section is not README guidance — that records traps per [nuance-pattern.md](./nuance-pattern.md) and `/update-readmes` neither reads nor rewrites it.
 
 Example (`infrastructure/terraform`):
 

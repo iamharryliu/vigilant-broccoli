@@ -1,31 +1,12 @@
 import type { PastebinGroup } from '@vigilant-broccoli/common-js';
-
-export const SOCIAL_LINK = {
-  LINKEDIN: {
-    NAME: 'LinkedIn',
-    URL: 'https://www.linkedin.com/in/iamharryliu/',
-  },
-  GITHUB: {
-    NAME: 'GitHub',
-    URL: 'https://github.com/iamharryliu',
-  },
-  INSTAGRAM_PRETTYDAMNTIRED: {
-    NAME: 'Instagram - prettydamntired',
-    URL: 'https://www.instagram.com/prettydamntired/',
-  },
-  INSTAGRAM_TORONTOCITYSKATE: {
-    NAME: 'Instagram - torontocityskate',
-    URL: 'https://www.instagram.com/torontocityskate/',
-  },
-  INSTAGRAM_HARRYSELLSSHIT: {
-    NAME: 'Instagram - harrysellsshit',
-    URL: 'https://www.instagram.com/harrysellsshit/',
-  },
-  INSTAGRAM_CLOUD8SKATE: {
-    NAME: 'Instagram - cloud8skate',
-    URL: 'https://www.instagram.com/cloud8skate/',
-  },
-} as const;
+import {
+  BUSINESS_LINK,
+  COMMUNITY_LINK,
+  EMAIL_LINK,
+  INTEREST_LINK,
+  PROJECT_LINK,
+  SOCIAL_LINK,
+} from '@vigilant-broccoli/personal-common-js';
 
 export const PERSONAL_SITE_LINK = {
   INDEX: {
@@ -36,9 +17,13 @@ export const PERSONAL_SITE_LINK = {
     NAME: 'Links',
     URL: 'https://harryliu.dev/links',
   },
-  PROJECTS: {
-    NAME: 'Projects',
-    URL: 'https://harryliu.dev/projects',
+  CALENDAR: {
+    NAME: 'Calendar',
+    URL: 'https://harryliu.dev/calendar',
+  },
+  CONTACT: {
+    NAME: 'Contact',
+    URL: 'https://harryliu.dev/contact',
   },
   RESUME: {
     NAME: 'Resume',
@@ -46,10 +31,22 @@ export const PERSONAL_SITE_LINK = {
   },
 } as const;
 
+const ADDRESS_LINK = {
+  ADDRESS: {
+    NAME: 'Address',
+    URL: 'https://maps.app.goo.gl/E6q6Bnau5dA8AgU4A',
+  },
+} as const;
+
 const PASTEBIN_GROUP_NAME = {
-  SOCIAL: 'Social',
-  INSTAGRAM: 'Instagram',
-  PERSONAL_SITE: 'harryliu.dev',
+  PERSONAL: 'Personal',
+  CONTACT: 'Contact',
+  ADDRESS: 'Address',
+  CAREER: 'Career',
+  SOFTWARE: 'Software',
+  BUSINESS: 'Business',
+  COMMUNITY: 'Community',
+  INTERESTS_AND_HOBBIES: 'Interests and Hobbies',
 } as const;
 
 const toEntry = ({ NAME, URL }: { NAME: string; URL: string }) => ({
@@ -59,25 +56,51 @@ const toEntry = ({ NAME, URL }: { NAME: string; URL: string }) => ({
 
 export const PASTEBIN_GROUPS: PastebinGroup[] = [
   {
-    name: PASTEBIN_GROUP_NAME.SOCIAL,
-    entries: [SOCIAL_LINK.LINKEDIN, SOCIAL_LINK.GITHUB].map(toEntry),
-  },
-  {
-    name: PASTEBIN_GROUP_NAME.INSTAGRAM,
-    entries: [
-      SOCIAL_LINK.INSTAGRAM_PRETTYDAMNTIRED,
-      SOCIAL_LINK.INSTAGRAM_TORONTOCITYSKATE,
-      SOCIAL_LINK.INSTAGRAM_HARRYSELLSSHIT,
-      SOCIAL_LINK.INSTAGRAM_CLOUD8SKATE,
-    ].map(toEntry),
-  },
-  {
-    name: PASTEBIN_GROUP_NAME.PERSONAL_SITE,
+    name: PASTEBIN_GROUP_NAME.PERSONAL,
     entries: [
       PERSONAL_SITE_LINK.INDEX,
       PERSONAL_SITE_LINK.LINKS,
-      PERSONAL_SITE_LINK.PROJECTS,
-      PERSONAL_SITE_LINK.RESUME,
+      PERSONAL_SITE_LINK.CALENDAR,
+      SOCIAL_LINK.INSTAGRAM_PRETTYDAMNTIRED,
+    ].map(toEntry),
+  },
+  {
+    name: PASTEBIN_GROUP_NAME.CONTACT,
+    entries: [PERSONAL_SITE_LINK.CONTACT, EMAIL_LINK].map(toEntry),
+  },
+  {
+    name: PASTEBIN_GROUP_NAME.ADDRESS,
+    entries: [ADDRESS_LINK.ADDRESS].map(toEntry),
+  },
+  {
+    name: PASTEBIN_GROUP_NAME.CAREER,
+    entries: [PERSONAL_SITE_LINK.RESUME, SOCIAL_LINK.LINKEDIN].map(toEntry),
+  },
+  {
+    name: PASTEBIN_GROUP_NAME.SOFTWARE,
+    entries: [SOCIAL_LINK.GITHUB, PROJECT_LINK.SOFTWARE_PROJECTS].map(toEntry),
+  },
+  {
+    name: PASTEBIN_GROUP_NAME.BUSINESS,
+    entries: [BUSINESS_LINK.SECONDHAND_STORE].map(toEntry),
+  },
+  {
+    name: PASTEBIN_GROUP_NAME.COMMUNITY,
+    entries: [
+      COMMUNITY_LINK.CLOUD8SKATE,
+      SOCIAL_LINK.INSTAGRAM_CLOUD8SKATE,
+      SOCIAL_LINK.INSTAGRAM_TORONTOCITYSKATE,
+      SOCIAL_LINK.INSTAGRAM_MALMOURBANSKATE,
+      SOCIAL_LINK.INSTAGRAM_HUSTLEMALMO,
+    ].map(toEntry),
+  },
+  {
+    name: PASTEBIN_GROUP_NAME.INTERESTS_AND_HOBBIES,
+    entries: [
+      INTEREST_LINK.SPOTIFY,
+      INTEREST_LINK.GOODREADS,
+      INTEREST_LINK.MYANIMELIST,
+      INTEREST_LINK.IMDB,
     ].map(toEntry),
   },
 ];
