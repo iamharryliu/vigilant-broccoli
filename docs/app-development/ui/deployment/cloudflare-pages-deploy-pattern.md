@@ -11,7 +11,7 @@ Reference apps:
 ## The wrangler target trio (per environment)
 
 - `ensure-cf-project` — `wrangler pages project list | grep -qw <project> || wrangler pages project create <project> --production-branch main`. Auto-creation: the first deploy provisions the project, no console setup.
-- `prune-deployments` — `scripts/prune-wrangler-deployments.ts <project> 10`: keeps the newest 10 deployments, deletes the rest (Pages accumulates one deployment per push otherwise).
+- `prune-deployments` — `scripts/prune-wrangler-deployments.ts <project> 10`: keeps the newest 10 deployments, deletes the rest (Pages accumulates one deployment per push otherwise). Give it its own `"dependsOn": ["ensure-cf-project"]` (`["ensure-cf-project:production"]` for the `:production` variant) rather than relying on `deploy`'s `dependsOn` list to order it — Nx doesn't serialize siblings listed there, so on a brand-new project `prune-deployments` can race ahead of `ensure-cf-project` and fail with "Project not found" the first time a project deploys. `docs-md` carries the correct form; copy it, not the `deploy` list's ordering.
 - `deploy` — `wrangler pages deploy <dist dir> --project-name <project>`, `dependsOn` the build and the two targets above.
 
 Project names are environment-prefixed (`staging-docs-md`, `production-cloud-8-skate-react`); production mirrors the trio as `:production` target variants. Each app also carries a `manual-deploy` target (same command as `deploy`) — `manual-deploy-app.yml` dispatches whichever target name is chosen via `nx run-many -t $DEPLOY_TARGET`.
@@ -26,5 +26,5 @@ Terraform owns the `cloudflare_pages_domain` attachment and its DNS record — o
 
 ## New app checklist (Cloudflare-side)
 
-1. Wrangler target trio (staging, and `:production` variants unless deliberately single-env) + `manual-deploy` in `project.json` — copy `personal-website-react`.
+1. Wrangler target trio (staging, and `:production` variants unless deliberately single-env) + `manual-deploy` in `project.json` — copy `docs-md`, which has `prune-deployments`'s `dependsOn` ordering right (`personal-website-react` and `cloud-8-skate-react` were both missing it until it caused a first-deploy CI failure).
 2. `cloudflare-<site>.tf` if the site gets a custom domain.
