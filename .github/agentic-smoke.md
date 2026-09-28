@@ -5,4 +5,4 @@ the smoke test has a tiny, always-valid edit to make: rewriting one line gives
 the notification email a diff with both an added and a removed row, which a
 new-file-only change would not exercise.
 
-Last smoke test: never
+Last smoke test: 2026-09-28 11:15:32 UTC
