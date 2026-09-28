@@ -40,12 +40,8 @@ AGENT_GH_APP_ID=$(echo "$SECRETS" | jq -r '.AGENT_GH_APP_ID // empty')
 AGENT_GH_APP_PRIVATE_KEY=$(echo "$SECRETS" | jq -r '.AGENT_GH_APP_PRIVATE_KEY // empty')
 
 if [ -n "$AGENT_GH_APP_ID" ] && [ -n "$AGENT_GH_APP_PRIVATE_KEY" ]; then
-  case "$AGENT_GH_APP_PRIVATE_KEY" in
-    -----BEGIN*) PEM_CONTENT="$AGENT_GH_APP_PRIVATE_KEY" ;;
-    *) PEM_CONTENT=$(echo "$AGENT_GH_APP_PRIVATE_KEY" | base64 -d) ;;
-  esac
   echo "Minting GitHub App installation token..." >&2
-  GH_TOKEN=$("${SCRIPT_DIR}/mint-github-app-token.sh" "$AGENT_GH_APP_ID" <(printf '%s\n' "$PEM_CONTENT"))
+  GH_TOKEN=$("${SCRIPT_DIR}/mint-github-app-token.sh" "$AGENT_GH_APP_ID" <(printf '%s\n' "$AGENT_GH_APP_PRIVATE_KEY"))
 fi
 
 if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
