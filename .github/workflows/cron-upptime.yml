@@ -35,10 +35,7 @@ jobs:
         env:
           UPPTIME_GH_APP_ID: '4350545'
         run: |
-          PEM_FILE=$(mktemp)
-          echo "$UPPTIME_GH_APP_PRIVATE_KEY" | base64 -d > "$PEM_FILE"
-          TOKEN=$(./infrastructure/agent-sandbox/mint-github-app-token.sh "$UPPTIME_GH_APP_ID" "$PEM_FILE")
-          rm -f "$PEM_FILE"
+          TOKEN=$(./infrastructure/agent-sandbox/mint-github-app-token.sh "$UPPTIME_GH_APP_ID" <(printf '%s\n' "$UPPTIME_GH_APP_PRIVATE_KEY"))
           echo "::add-mask::$TOKEN"
           echo "GH_PAT=$TOKEN" >> "$GITHUB_ENV"
       - name: Point origin at the upptime app token for push
