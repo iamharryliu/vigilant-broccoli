@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react';
-import { DotPaths, GithubActionsBadges } from '@vigilant-broccoli/react-lib';
+import { CircleHelp } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DotPaths,
+  GithubActionsBadges,
+} from '@vigilant-broccoli/react-lib';
 import { useTranslation } from '../i18n';
 import en from '../i18n/en.json';
 import { PageHeader } from '../components/PageHeader';
@@ -8,7 +16,6 @@ import { REPO_URL, toRawGithubUrl } from '../consts/repo';
 import { PAGE_CLASS } from '../consts/layout';
 
 const SUMMARY_URL = toRawGithubUrl('history/summary.json');
-const HISTORY_URL = `${REPO_URL}/tree/main/history`;
 const ACTIONS_URL = `${REPO_URL}/actions`;
 
 interface ServiceStatus {
@@ -21,27 +28,27 @@ interface ServiceStatus {
 
 const STATUS_COLORS: Record<
   ServiceStatus['status'],
-  { dot: string; label: string; text: string }
+  { dot: string; label: string; description: string }
 > = {
   up: {
     dot: 'bg-emerald-500',
     label: 'Up',
-    text: 'text-emerald-600 dark:text-emerald-400',
+    description: 'Responding normally.',
   },
   down: {
     dot: 'bg-red-500',
     label: 'Down',
-    text: 'text-red-600 dark:text-red-400',
+    description: 'Not responding to health checks.',
   },
   degraded: {
     dot: 'bg-amber-500',
     label: 'Degraded',
-    text: 'text-amber-600 dark:text-amber-400',
+    description: 'Responding, but slower or with errors.',
   },
   unknown: {
     dot: 'bg-gray-400',
     label: 'Unknown',
-    text: 'text-gray-400',
+    description: 'No recent check result.',
   },
 };
 
@@ -67,6 +74,18 @@ const STATUS_GROUP_LABEL_KEY: Record<StatusGroup, DotPaths<typeof en>> = {
   [STATUS_GROUP.PERSONAL]: 'STATUS_PAGE.GROUP_PERSONAL',
 };
 
+const LEGEND_GROUPS: StatusGroup[] = [
+  STATUS_GROUP.PRODUCTION,
+  STATUS_GROUP.STAGING,
+];
+
+const LEGEND_STATUS_ORDER: ServiceStatus['status'][] = [
+  'up',
+  'degraded',
+  'down',
+  'unknown',
+];
+
 const getStatusGroup = (name: string): StatusGroup => {
   if (name.startsWith(PRODUCTION_PREFIX)) return STATUS_GROUP.PRODUCTION;
   if (name.startsWith(STAGING_PREFIX)) return STATUS_GROUP.STAGING;
@@ -91,6 +110,11 @@ const groupServices = (
     [STATUS_GROUP.PERSONAL]: [],
   };
   services.forEach(svc => groups[getStatusGroup(svc.name)].push(svc));
+  STATUS_GROUP_ORDER.forEach(group =>
+    groups[group].sort((a, b) =>
+      getDisplayText(a).localeCompare(getDisplayText(b)),
+    ),
+  );
   return groups;
 };
 
@@ -104,11 +128,13 @@ function ServiceListItem({ svc }: { svc: ServiceStatus }) {
         rel="noopener noreferrer"
         className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
       >
-        <span className={`h-2 w-2 rounded-full ${status.dot} shrink-0`} />
+        <span
+          className={`h-2 w-2 rounded-full ${status.dot} shrink-0`}
+          title={status.label}
+        />
         <span className="flex-1 font-medium truncate">
           {getDisplayText(svc)}
         </span>
-        <span className={`shrink-0 ${status.text}`}>{status.label}</span>
         <span className="shrink-0 font-mono text-gray-400 w-14 text-right">
           {svc.uptime || '—'}
         </span>
@@ -117,6 +143,42 @@ function ServiceListItem({ svc }: { svc: ServiceStatus }) {
         </span>
       </a>
     </li>
+  );
+}
+
+function StatusLegendDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t('STATUS_PAGE.LEGEND_TITLE')}</DialogTitle>
+        </DialogHeader>
+        <ul className="space-y-3 text-sm">
+          {LEGEND_STATUS_ORDER.map(statusKey => (
+            <li key={statusKey} className="flex items-start gap-3">
+              <span
+                className={`mt-1 h-2.5 w-2.5 rounded-full ${STATUS_COLORS[statusKey].dot} shrink-0`}
+              />
+              <span>
+                <span className="font-medium">
+                  {STATUS_COLORS[statusKey].label}
+                </span>
+                <span className="block text-gray-500 dark:text-gray-400">
+                  {STATUS_COLORS[statusKey].description}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -129,6 +191,7 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
   const [services, setServices] = useState<ServiceStatus[] | null>(null);
   const [servicesError, setServicesError] = useState<string | null>(null);
   const [updated, setUpdated] = useState<string | null>(null);
+  const [legendOpen, setLegendOpen] = useState(false);
   const grouped = services ? groupServices(services) : null;
 
   useEffect(() => {
@@ -171,6 +234,7 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
           <p className="mt-2 text-gray-600 dark:text-gray-400">{updated}</p>
         )}
       </header>
+      <StatusLegendDialog open={legendOpen} onOpenChange={setLegendOpen} />
 
       {servicesError && (
         <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
@@ -196,9 +260,21 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
         STATUS_GROUP_ORDER.filter(group => grouped[group].length > 0).map(
           group => (
             <section key={group} className="mb-4 last:mb-0">
-              <SectionHeading>
-                {t(STATUS_GROUP_LABEL_KEY[group])}
-              </SectionHeading>
+              <div className="flex items-center justify-between mb-4">
+                <SectionHeading className="mb-0">
+                  {t(STATUS_GROUP_LABEL_KEY[group])}
+                </SectionHeading>
+                {LEGEND_GROUPS.includes(group) && (
+                  <button
+                    type="button"
+                    onClick={() => setLegendOpen(true)}
+                    aria-label={t('STATUS_PAGE.LEGEND_BUTTON_LABEL')}
+                    className="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  >
+                    <CircleHelp className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
               <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700 text-sm">
                 {grouped[group].map(svc => (
                   <ServiceListItem key={svc.url} svc={svc} />
@@ -232,18 +308,6 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
           <GithubActionsBadges repoUrl={REPO_URL} />
         </div>
       </section>
-
-      <footer className="mt-6 text-xs text-gray-400">
-        {t('STATUS_PAGE.RAW_HISTORY')}{' '}
-        <a
-          className="underline"
-          target="_blank"
-          rel="noopener noreferrer"
-          href={HISTORY_URL}
-        >
-          github.com/.../history
-        </a>
-      </footer>
     </main>
   );
 }

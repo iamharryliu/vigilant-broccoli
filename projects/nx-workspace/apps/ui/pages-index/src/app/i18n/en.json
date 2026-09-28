@@ -69,13 +69,14 @@
     "NO_SERVICES": "No services configured.",
     "GITHUB_ACTIONS": "GitHub Actions",
     "VIEW_ALL": "View all →",
-    "RAW_HISTORY": "Raw history:",
     "ERROR_STATUS_UNAVAILABLE": "Status data unavailable (HTTP {status}).",
     "ERROR_STATUS_FAILED": "Failed to load status: {message}",
     "UPDATED": "Updated {date}",
     "GROUP_PRODUCTION": "Production",
     "GROUP_STAGING": "Staging",
-    "GROUP_PERSONAL": "Personal Apps"
+    "GROUP_PERSONAL": "Personal Apps",
+    "LEGEND_BUTTON_LABEL": "Status legend",
+    "LEGEND_TITLE": "Status Legend"
   },
   "REPO_TIMELINE_PAGE": {
     "TITLE": "Repo Timeline",
