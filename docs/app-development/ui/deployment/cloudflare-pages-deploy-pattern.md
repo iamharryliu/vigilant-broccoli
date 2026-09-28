@@ -14,7 +14,7 @@ Reference apps:
 
 - `cloud-8-skate-react` — full staging + production pair, plus sitemap generation before deploy.
 - `personal-website-react` — React variant with the same staging + production pair.
-- `docs-md` — staging-only.
+- `docs-md` — full staging + production pair, no per-environment build config (`prune-deployments`'s `dependsOn` ordering is the reference for that part).
 
 ## The wrangler target trio (per environment)
 
@@ -45,7 +45,7 @@ The failure is invisible: CI stays green, and the live URL keeps serving the las
 
 ## Custom domains (Terraform)
 
-Terraform owns the `cloudflare_pages_domain` attachment and its DNS record — one `cloudflare-<site>.tf` per site in `infrastructure/terraform/`. `cloudflare-cloud8skate.tf` is the plain pattern. Private content is deliberately not served from Pages at all — it stays on the self-hosted Gitea VM behind Access, since a Pages deploy would copy it onto a CI runner and Cloudflare storage. Custom domains are environment-less: attached to whichever environment's project serves live traffic — `harryliu.dev` and the docs site still point at their `staging-*` projects, but `cloud8skate.com` is attached to `production-cloud-8-skate-react` (the first domain on a `production-*` project, which is what surfaced the branch-matching rule above). Public URLs per domain: [network-management.md](../../../infrastructure/network-management.md).
+Terraform owns the `cloudflare_pages_domain` attachment and its DNS record — one `cloudflare-<site>.tf` per site in `infrastructure/terraform/`. `cloudflare-cloud8skate.tf` is the plain pattern. Private content is deliberately not served from Pages at all — it stays on the self-hosted Gitea VM behind Access, since a Pages deploy would copy it onto a CI runner and Cloudflare storage. Custom domains are environment-less: attached to whichever environment's project serves live traffic — `harryliu.dev` still points at its `staging-*` project, but `cloud8skate.com` is attached to `production-cloud-8-skate-react` (the first domain on a `production-*` project, which is what surfaced the branch-matching rule above) and `docs.harryliu.dev` now points at `production-docs-md`. Public URLs per domain: [network-management.md](../../../infrastructure/network-management.md).
 
 ## New app checklist (Cloudflare-side)
 

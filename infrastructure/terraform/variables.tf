@@ -217,14 +217,14 @@ variable "docs_domain" {
 
 variable "docs_pages_project" {
   type    = string
-  default = "staging-docs-md"
+  default = "production-docs-md"
 }
 
 # Kept separate from the project name: Cloudflare appends a suffix when
 # <project>.pages.dev is taken globally.
 variable "docs_pages_subdomain" {
   type    = string
-  default = "staging-docs-md.pages.dev"
+  default = "production-docs-md.pages.dev"
 }
 
 variable "cloud8skate_domain" {
