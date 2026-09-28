@@ -118,4 +118,8 @@ export const API_ENDPOINTS = {
   // TODO list
   TODO: '/api/todo',
   TODO_SOLVE: '/api/todo/solve',
+
+  // Spotify
+  SPOTIFY_AUTH_LOGIN: '/api/spotify/auth/login',
+  SPOTIFY_GRAPH: '/api/spotify/graph',
 } as const;
