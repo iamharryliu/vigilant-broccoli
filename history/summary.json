@@ -1,8 +1,8 @@
 [
   {
     "name": "staging-docs",
-    "url": "https://docs.harryliu.dev/",
-    "icon": "https://icons.duckduckgo.com/ip3/docs.harryliu.dev.ico",
+    "url": "https://staging-docs-md.pages.dev/",
+    "icon": "https://icons.duckduckgo.com/ip3/staging-docs-md.pages.dev.ico",
     "slug": "staging-docs",
     "status": "up",
     "uptime": "100.00%",
@@ -422,6 +422,24 @@
     "timeWeek": 291,
     "timeMonth": 269,
     "timeYear": 267,
+    "dailyMinutesDown": {}
+  },
+  {
+    "name": "production-docs",
+    "url": "https://docs.harryliu.dev/",
+    "icon": "https://icons.duckduckgo.com/ip3/docs.harryliu.dev.ico",
+    "slug": "production-docs",
+    "status": "up",
+    "uptime": "100.00%",
+    "uptimeDay": "100.00%",
+    "uptimeWeek": "100.00%",
+    "uptimeMonth": "100.00%",
+    "uptimeYear": "100.00%",
+    "time": 130,
+    "timeDay": 130,
+    "timeWeek": 130,
+    "timeMonth": 130,
+    "timeYear": 130,
     "dailyMinutesDown": {}
   }
 ]
