@@ -39,7 +39,13 @@ permissions:
 
 concurrency:
   group: deploy-${{ github.ref }}
-  cancel-in-progress: false
+  # A staging run that another push has already superseded is wasted work, and
+  # waiting it out cost 7-25min of queueing on 4 of the last 20 runs — the next
+  # run redeploys everything affected anyway, so cancelling loses nothing.
+  # Production keeps the old behaviour: never interrupted midway. The condition
+  # mirrors DEPLOY_ENVIRONMENT below, so a production deploy dispatched from
+  # another branch is also protected.
+  cancel-in-progress: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) != 'production' }}
 
 env:
   DOCKERHUB_USERNAME: iamharryliu
