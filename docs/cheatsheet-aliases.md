@@ -122,8 +122,9 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
 
 🍺 HOMEBREW & DEPS
   brewinit / brewup           Install from Brewfile / update + upgrade + cleanup
-  brewsync / brewdump         Sync to Brewfile / dump Brewfile
+  brewsync / brewdump         Sync to Brewfile (uninstalls extras) / dump Brewfile
   npminit / npmdump           Install from npmfile / dump npmfile
+  npmsync                     Uninstall globals not listed in npmfile
   depsdump / pushdeps         Dump both / dump both, commit and push
   pushbrew / pushnpm          Commit and push Brewfile / npmfile
 
