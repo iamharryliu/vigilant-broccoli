@@ -5,7 +5,7 @@ import {
 } from '@vigilant-broccoli/employee-handler';
 
 const HOST = process.env.HOST ?? 'localhost';
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 const API_KEY = process.env.EMPLOYEE_HANDLER_API_KEY;
 
 const app = createEmployeeHandlerApp(EMPLOYEE_HANDLER_CONFIG_MOCK, {

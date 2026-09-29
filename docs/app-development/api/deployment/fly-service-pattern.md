@@ -9,11 +9,28 @@ Reference apps (each demonstrates a different combination):
 - `apps/api/email-service/`, `apps/api/email-subscription-service/` — bundled + Docker Hub roundtrip
 - `apps/api/vb-express/` — pruned + `flyctl deploy --dockerfile`, with a fly volume mount (`[mounts]`) for its SQLite db.
 
+## Table of Contents
+
+- [Environments](#environments)
+- [Local dev](#local-dev)
+- [Two orthogonal axes](#two-orthogonal-axes)
+- [Transitive-dep gotcha (pruned only)](#transitive-dep-gotcha-pruned-only)
+- [pnpm `overrides` gotcha (pruned only)](#pnpm-overrides-gotcha-pruned-only)
+- [Smoke target](#smoke-target)
+- [Health check](#health-check)
+- [Machine count](#machine-count)
+- [Secrets](#secrets)
+- [Private-only services](#private-only-services)
+
 ## Environments
 
 Deployed instances follow the repo-wide `staging-` / `production-` prefix convention. Fly specifics: the app name (`staging-llm-service`) and config filename (`deployment-configs/fly-configs/<env>-llm-service.toml`) are prefixed; nx project names stay unprefixed (`llm-service`).
 
 Each service defines a target pair: `deploy` (staging) and `deploy:production`, with mirrored `deploy:secrets` / `deploy:secrets:production` chains. `scripts/secrets-mapping.config.ts` stores the env-less `flyAppBaseName`; `deploy-flyio-secrets.ts <project> <env>` composes `<env>-<base>`. Cross-service URLs (`EMAIL_SERVICE_URL`, `LLM_SERVICE_URL`, `BETTER_AUTH_URL`, build args) live in the per-env fly config / deploy command so each environment talks only to its own siblings. Post-deploy checks run in the environment-matrix `test-*` workflows (e.g. `test-e2e-llm.yml`).
+
+## Local dev
+
+Every service's `PORT` fallback (used when `nx serve` runs with no `PORT` set) defaults to 3001 — UI apps default to 3000 (see [ui-app-pattern.md](../../ui/ui-app-pattern.md#local-dev)). Deployed instances are unaffected: `deployment-configs/fly-configs/*.toml` and each service's `Dockerfile` set `PORT`/`internal_port` to 3000 explicitly, which always wins over the code fallback. A new service's `main.ts` should default to 3001 the same way, not pick its own port.
 
 ## Two orthogonal axes
 

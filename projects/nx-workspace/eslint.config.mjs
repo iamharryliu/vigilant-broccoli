@@ -73,10 +73,4 @@ export default [
         ...config.rules,
       },
     })),
-  {
-    files: ['**/*.ts'],
-    rules: {
-      '@angular-eslint/prefer-standalone': 'off',
-    },
-  },
 ];

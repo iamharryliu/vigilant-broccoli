@@ -2,9 +2,19 @@
 
 What every UI app in this workspace must have, and the shared building blocks to use. Each deploy destination has its own pattern doc: [vercel-deploy-pattern.md](./deployment/vercel-deploy-pattern.md), [cloudflare-pages-deploy-pattern.md](./deployment/cloudflare-pages-deploy-pattern.md), [github-pages-deploy-pattern.md](./deployment/github-pages-deploy-pattern.md).
 
+## Table of Contents
+
+- [Where UI apps live](#where-ui-apps-live)
+- [Shared components (react-lib)](#shared-components-react-lib)
+- [i18n (required)](#i18n-required)
+- [Page titles (required)](#page-titles-required)
+- [pages-index card (required)](#pages-index-card-required)
+- [Local dev](#local-dev)
+- [New UI app checklist (app-side)](#new-ui-app-checklist-app-side)
+
 ## Where UI apps live
 
-- Static UIs → `apps/ui/*`, Vite + React for new apps (`cloud-8-skate-angular` is a legacy Angular exception) → Cloudflare Pages.
+- Static UIs → `apps/ui/*`, Vite + React → Cloudflare Pages.
 - Next.js apps → `apps/*` (`hearth`, `findme`, `whiteboard`) or `apps/ui/*` (`employee-handler-ui`) → Vercel. `vb-manager-next` is the exception: PM2 on the VM, no nx `deploy` target.
 - GitHub Pages hosts the `pages-index` landing site and `component-library`.
 
@@ -40,6 +50,7 @@ Every UI application appears as a card under "UI Apps" in `apps/ui/pages-index/s
 
 - Mock backends live under `apps/api/mock/*` (e.g. `mock-employee-handler-service`) — prefer extending a mock over pointing a local UI at live services.
 - Running against real secrets: the app's `serve` target (Vault-wrapped).
+- Every UI app's local dev server defaults to port 3000 (Vite `server.port`, or Next's own unset-port default) — API services default to 3001 (see [fly-service-pattern.md](../api/deployment/fly-service-pattern.md#local-dev)). Since only one app on each side can hold its default port at a time, a new UI app should follow this default rather than picking its own — reach for a `PORT`/`--port` override only for genuinely concurrent local multi-service dev (e.g. Playwright driving two apps at once).
 
 ## New UI app checklist (app-side)
 

@@ -38,7 +38,7 @@ alias testgrind75go="go test $GRIND75_DIR/..."
 alias testgrind75="testgrind75py && testgrind75ts && testgrind75go"
 
 # Cloud8
-alias servecloud8="cdnx && nx serve cloud-8-skate-angular"
+alias servecloud8="cdnx && nx serve cloud-8-skate-react"
 
 # Employee Handler
 alias npmEmployeeHandler="npm i $PROJECTS_DIR/nx-workspace/dist/libs/@vigilant-broccoli/employee-handler"

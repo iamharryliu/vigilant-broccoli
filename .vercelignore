@@ -3,6 +3,7 @@ node_modules
 projects/nx-workspace/node_modules
 projects/nx-workspace/.nx
 projects/nx-workspace/dist
+projects/nx-workspace/.wrangler
 projects/nx-workspace/apps/*/.next
 projects/nx-workspace/apps/*/*/.next
 projects/nx-workspace/apps/*/*/*/.next

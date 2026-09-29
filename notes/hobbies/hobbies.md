@@ -7,6 +7,7 @@
 - [Content Creation Workflow](./content-creation-workflow.md)
 - [Cooking](./cooking/cooking.md)
 - [Freediving](./freediving/freediving.md)
+- [Media](./media/media.md)
 - [Outdoor](./outdoor/outdoor.md)
 - [Philosophy](./philosophy.md)
 - [Reading](./reading/reading.md)

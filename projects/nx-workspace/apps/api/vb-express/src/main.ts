@@ -35,7 +35,7 @@ import { swaggerSpec } from './libs/swagger';
 const SERVICE_NAME = 'vb-express';
 const BODY_LIMIT_BYTES = 10 * 1024 * 1024;
 
-const APP_PORT = Number(getEnvironmentVariable('PORT') || 3333);
+const APP_PORT = Number(getEnvironmentVariable('PORT') || 3001);
 const APP_HOST = getEnvironmentVariable('HOST') || '127.0.0.1';
 const API_KEY = getEnvironmentVariable('VB_EXPRESS_API_KEY');
 

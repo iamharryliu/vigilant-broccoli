@@ -23,7 +23,7 @@ Each app under `projects/nx-workspace/apps/*`, and each `libs/@vigilant-broccoli
 - `## Deployment URLs` — optional; a bullet list of externally hosted resources tied to it (deployed site, CMS studio/overview, calendars, analytics dashboards, admin consoles, etc.), grouped the same way as Stack (single link inline, related links nested under a group label). This section is manually curated, not derived from code — `/update-readmes` must never delete or invent entries here. Only add an entry when the user gives you the URL, and only fix an entry the user confirms is broken or stale.
 - `## Stack` — a bullet list grouped into these levels, in order:
   - **Language** — e.g. TypeScript
-  - **Framework** — the app framework, e.g. Next.js, Fastify, Angular, React
+  - **Framework** — the app framework, e.g. Next.js, Fastify, React
   - **Build Tool** — the bundler/builder, e.g. Vite, Next.js, esbuild, webpack
   - **External libs** — other third-party npm packages: UI libs, SDKs, tooling
   - **Internal libs** — the `@vigilant-broccoli/*` VB libs it consumes

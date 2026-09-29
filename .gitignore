@@ -52,6 +52,9 @@ venv.bak/
 # Angular
 .angular/
 
+# Wrangler (Cloudflare Pages CLI tmp uploads)
+.wrangler/
+
 # Jest
 coverage
 

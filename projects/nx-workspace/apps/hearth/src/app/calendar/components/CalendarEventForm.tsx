@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { type DateRange } from 'react-day-picker';
 
 import {
   Button,
@@ -9,7 +10,7 @@ import {
   Textarea,
   Text,
 } from '@vigilant-broccoli/react-lib';
-import { toDatetimeLocal, toDateLocal } from '../../../lib/date-utils';
+import { DateRangePicker, toMidnight } from './DateRangePicker';
 
 export interface CalendarEventFormData {
   title: string;
@@ -52,66 +53,27 @@ export function CalendarEventForm({
   const [description, setDescription] = useState(
     initialData?.description ?? '',
   );
-  const [allDay, setAllDay] = useState(initialData?.allDay ?? false);
-  const [start, setStart] = useState(
+  const [range, setRange] = useState<DateRange | undefined>(
     initialData?.start
-      ? initialData.allDay
-        ? toDateLocal(initialData.start)
-        : toDatetimeLocal(initialData.start)
-      : '',
-  );
-  const [end, setEnd] = useState(
-    initialData?.end
-      ? initialData.allDay
-        ? toDateLocal(initialData.end)
-        : toDatetimeLocal(initialData.end)
-      : '',
+      ? {
+          from: new Date(initialData.start),
+          to: initialData.end ? new Date(initialData.end) : undefined,
+        }
+      : undefined,
   );
   const [color, setColor] = useState(initialData?.color || NO_COLOR);
 
-  useEffect(() => {
-    if (initialData?.start)
-      setStart(
-        allDay
-          ? toDateLocal(initialData.start)
-          : toDatetimeLocal(initialData.start),
-      );
-    if (initialData?.end)
-      setEnd(
-        allDay
-          ? toDateLocal(initialData.end)
-          : toDatetimeLocal(initialData.end),
-      );
-    // intentionally only re-runs when allDay toggles, not on every initialData change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allDay]);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const startIso = allDay
-      ? new Date(start + 'T00:00:00').toISOString()
-      : new Date(start).toISOString();
-    const endIso = allDay
-      ? new Date(end + 'T00:00:00').toISOString()
-      : new Date(end).toISOString();
+    if (!range?.from) return;
     onSubmit({
       title,
       description,
-      start: startIso,
-      end: endIso,
-      allDay,
+      start: toMidnight(range.from).toISOString(),
+      end: toMidnight(range.to ?? range.from).toISOString(),
+      allDay: true,
       color: color === NO_COLOR ? '' : color,
     });
-  };
-
-  const inputStyle: React.CSSProperties = {
-    padding: '6px 10px',
-    borderRadius: '6px',
-    border: '1px solid var(--gray-6)',
-    background: 'var(--color-background)',
-    color: 'inherit',
-    fontSize: '14px',
-    width: '100%',
   };
 
   return (
@@ -141,43 +103,11 @@ export function CalendarEventForm({
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="allDay"
-            checked={allDay}
-            onChange={e => setAllDay(e.target.checked)}
-          />
-          <Text size="2" asChild>
-            <label htmlFor="allDay">All day</label>
+        <div>
+          <Text size="1" weight="medium" as="p" mb="1">
+            Dates
           </Text>
-        </div>
-
-        <div className="flex gap-3">
-          <div style={{ flex: 1 }}>
-            <Text size="1" weight="medium" as="p" mb="1">
-              Start
-            </Text>
-            <input
-              type={allDay ? 'date' : 'datetime-local'}
-              value={start}
-              onChange={e => setStart(e.target.value)}
-              required
-              style={inputStyle}
-            />
-          </div>
-          <div style={{ flex: 1 }}>
-            <Text size="1" weight="medium" as="p" mb="1">
-              End
-            </Text>
-            <input
-              type={allDay ? 'date' : 'datetime-local'}
-              value={end}
-              onChange={e => setEnd(e.target.value)}
-              required
-              style={inputStyle}
-            />
-          </div>
+          <DateRangePicker value={range} onChange={setRange} />
         </div>
 
         <div>
@@ -222,7 +152,9 @@ export function CalendarEventForm({
             <Button type="button" variant="secondary" onClick={onCancel}>
               Cancel
             </Button>
-            <Button type="submit">{isEdit ? 'Save' : 'Create'}</Button>
+            <Button type="submit" disabled={!range?.from}>
+              {isEdit ? 'Save' : 'Create'}
+            </Button>
           </div>
         </div>
       </div>
