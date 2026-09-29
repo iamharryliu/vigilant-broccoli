@@ -87,8 +87,7 @@ export function HomePage() {
         <CardGrid>
           <li>
             <CardLink
-              route
-              href="/claude-context"
+              href="#/claude-context"
               title={t('HOME.CLAUDE_CONTEXT.TITLE')}
               description={t('HOME.CLAUDE_CONTEXT.DESCRIPTION')}
               icon={<Bot className={ICON_CLASS} />}
