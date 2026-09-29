@@ -18,7 +18,7 @@ import { ClaudeContextPage } from './pages/ClaudeContextPage';
 export function App() {
   return (
     <I18nProvider>
-      <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+      <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-dvh">
         <HashRouter>
           <Routes>
             <Route path="/" element={<HomePage />} />
