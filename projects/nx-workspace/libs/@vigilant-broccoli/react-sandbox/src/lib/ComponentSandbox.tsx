@@ -27,6 +27,7 @@ import {
 import { AvatarDemo } from './demos/AvatarDemo';
 import { UserAvatarDemo } from './demos/UserAvatarDemo';
 import { ButtonDemo } from './demos/ButtonDemo';
+import { CheckListDemo } from './demos/CheckListDemo';
 import { CollapsibleListItemDemo } from './demos/CollapsibleListItemDemo';
 import { CRUDListNoImagesDemo } from './demos/CRUDListNoImagesDemo';
 import { DashboardInfoCardDemo } from './demos/DashboardInfoCardDemo';
@@ -167,6 +168,14 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
       'The full button set - variants, icon buttons, copy and close buttons, provider sign-in buttons and button lists.',
     category: CATEGORY.COMPONENTS,
     content: <ButtonDemo />,
+  },
+  {
+    id: 'checklist',
+    label: 'Checklist',
+    description:
+      'Checkable rows with inline editing, drag reorder and a collapsible completed section, driven entirely by caller-supplied render props.',
+    category: CATEGORY.COMPONENTS,
+    content: <CheckListDemo />,
   },
   {
     id: 'collapsible-list-item',

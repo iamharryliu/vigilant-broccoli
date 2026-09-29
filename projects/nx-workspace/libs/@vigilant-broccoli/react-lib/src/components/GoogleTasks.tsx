@@ -2,25 +2,12 @@
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Card } from './Card';
 import { Button } from './Button';
-import { Checkbox } from './Checkbox';
-import { CollapsibleList } from './CollapsibleList';
 import { Select } from './Select';
 import { Text } from './Text';
 import { Textarea } from './Textarea';
+import { CheckList, CheckListItem } from './CheckList';
 import { useEffect, useState, useCallback, memo, useMemo } from 'react';
-import {
-  useDroppable,
-  DndContext,
-  DragEndEvent,
-  closestCenter,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { DragHandleDots2Icon } from '@radix-ui/react-icons';
+import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
 import { CardSkeleton } from './Skeleton';
 import { getCommitType } from '../utils/commit-type.utils';
 import { useSpeechToText } from '../hooks/useSpeechToText';
@@ -30,23 +17,6 @@ const TASKS_ENDPOINT = '/api/tasks';
 const TASKS_LISTS_ENDPOINT = '/api/tasks/lists';
 const TASKS_MOVE_ENDPOINT = '/api/tasks/move';
 const TASKS_PARSE_TEXT_ENDPOINT = '/api/tasks/parse-text';
-
-const ANIMATION_STYLES = `
-  @keyframes slideInAndFadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .task-item-new {
-    animation: slideInAndFadeIn 0.3s ease-out;
-  }
-`;
 
 interface Task {
   id: string;
@@ -386,21 +356,6 @@ const useSortModeStorage = (taskListId: string, enabled = true) => {
   return [sortMode, setSortMode] as const;
 };
 
-interface TaskItemProps {
-  task: Task;
-  isEditing: boolean;
-  editingTitle: string;
-  onToggleComplete: (task: Task) => void;
-  onStartEdit: (task: Task) => void;
-  onEditChange: (title: string) => void;
-  onSaveEdit: () => void;
-  onCancelEdit: () => void;
-  isNew?: boolean;
-  enableDragDrop?: boolean;
-  taskListId?: string;
-  sortMode?: SortMode;
-}
-
 const QUADRANT_COLORS: Record<EisenhowerQuadrant, string> = {
   Q1: 'bg-red-100 dark:bg-red-900/20 border-l-4 border-red-500',
   Q2: 'bg-blue-100 dark:bg-blue-900/20 border-l-4 border-blue-500',
@@ -408,169 +363,6 @@ const QUADRANT_COLORS: Record<EisenhowerQuadrant, string> = {
   Q4: 'bg-green-100 dark:bg-green-900/20 border-l-4 border-green-500',
   none: '',
 };
-
-const DRAG_OPACITY = {
-  DRAGGING: 0.5,
-  DEFAULT: 1,
-} as const;
-
-const TaskItemContent = memo(
-  ({
-    task,
-    isEditing,
-    editingTitle,
-    onStartEdit,
-    onEditChange,
-    onSaveEdit,
-    onCancelEdit,
-    sortMode,
-  }: {
-    task: Task;
-    isEditing: boolean;
-    editingTitle: string;
-    onStartEdit: (task: Task) => void;
-    onEditChange: (value: string) => void;
-    onSaveEdit: () => void;
-    onCancelEdit: () => void;
-    sortMode?: SortMode;
-  }) => (
-    <div className="flex flex-col gap-1 flex-1">
-      {isEditing ? (
-        <Textarea
-          value={editingTitle}
-          rows={2}
-          onChange={e => onEditChange(e.target.value)}
-          onKeyDown={e => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              onSaveEdit();
-            } else if (e.key === 'Escape') onCancelEdit();
-          }}
-          onBlur={onSaveEdit}
-          className="min-h-0 resize-none"
-          autoFocus
-        />
-      ) : (
-        <Text
-          size="2"
-          className={
-            task.status === 'completed'
-              ? 'line-through text-gray-400 cursor-pointer'
-              : 'cursor-pointer'
-          }
-          onClick={() => onStartEdit(task)}
-        >
-          {task.title}
-        </Text>
-      )}
-      {task.notes && (
-        <Text size="1" color="gray">
-          {task.notes}
-        </Text>
-      )}
-      {task.due && (
-        <Text size="1" color="blue">
-          Due: {new Date(task.due).toLocaleDateString()}
-        </Text>
-      )}
-      {(sortMode === SORT_MODE.DATE_CREATED_NEWEST ||
-        sortMode === SORT_MODE.DATE_CREATED_OLDEST) &&
-        task.updated && (
-          <Text size="1" color="gray">
-            Created: {new Date(task.updated).toLocaleDateString()}
-          </Text>
-        )}
-    </div>
-  ),
-);
-
-TaskItemContent.displayName = 'TaskItemContent';
-
-const TaskItem = memo(
-  ({
-    task,
-    isEditing,
-    editingTitle,
-    onToggleComplete,
-    onStartEdit,
-    onEditChange,
-    onSaveEdit,
-    onCancelEdit,
-    isNew = false,
-    enableDragDrop = false,
-    taskListId,
-    sortMode,
-  }: TaskItemProps) => {
-    const quadrant = getEisenhowerQuadrant(task.title);
-    const commitType = getCommitType(task.title);
-
-    const {
-      attributes,
-      listeners,
-      setNodeRef,
-      transform,
-      transition,
-      isDragging,
-    } = useSortable({
-      id: task.id,
-      data: { type: 'task', task, taskListId },
-      disabled: !enableDragDrop || isEditing,
-    });
-
-    const style = {
-      transform: CSS.Transform.toString(transform),
-      transition,
-      opacity: isDragging ? DRAG_OPACITY.DRAGGING : DRAG_OPACITY.DEFAULT,
-    };
-
-    const isDraggable = enableDragDrop && !isEditing;
-
-    return (
-      <div
-        ref={setNodeRef}
-        style={style}
-        className={`flex items-start gap-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 -mx-2 ${
-          QUADRANT_COLORS[quadrant]
-        } ${isNew ? 'task-item-new' : ''}`}
-      >
-        {isDraggable && (
-          <div
-            {...listeners}
-            {...attributes}
-            className="cursor-grab active:cursor-grabbing opacity-50 hover:opacity-100 transition-opacity"
-          >
-            <DragHandleDots2Icon />
-          </div>
-        )}
-        <Checkbox
-          checked={task.status === 'completed'}
-          onCheckedChange={() => onToggleComplete(task)}
-          disabled={task.isRemoving}
-          className="mt-0.5"
-        />
-        <div className="flex-1 flex items-start gap-2">
-          <TaskItemContent
-            task={task}
-            isEditing={isEditing}
-            editingTitle={editingTitle}
-            onStartEdit={onStartEdit}
-            onEditChange={onEditChange}
-            onSaveEdit={onSaveEdit}
-            onCancelEdit={onCancelEdit}
-            sortMode={sortMode}
-          />
-          {commitType !== 'other' && (
-            <span className="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 self-start">
-              {commitType}
-            </span>
-          )}
-        </div>
-      </div>
-    );
-  },
-);
-
-TaskItem.displayName = 'TaskItem';
 
 const TaskHeader = memo(
   ({
@@ -771,184 +563,6 @@ AddTaskForm.displayName = 'AddTaskForm';
 
 const getActiveTasks = (tasks: Task[]) =>
   tasks.filter(t => t.status !== 'completed' || t.isRemoving);
-
-const getCompletedTasks = (tasks: Task[]) =>
-  tasks
-    .filter(t => t.status === 'completed' && !t.isRemoving)
-    .sort((a, b) => (b.updated ?? '').localeCompare(a.updated ?? ''));
-
-const PLACEHOLDER_PREFIX = 'placeholder-';
-
-const TaskPlaceholder = ({
-  id,
-  title,
-  taskListId,
-}: {
-  id: string;
-  title: string;
-  taskListId?: string;
-}) => {
-  const placeholderId = `${PLACEHOLDER_PREFIX}${id}`;
-  const { setNodeRef, transform, transition } = useSortable({
-    id: placeholderId,
-    data: { type: 'task', taskListId },
-    disabled: true,
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="flex items-center gap-2 py-2 px-2 -mx-2 rounded border-2 border-dashed border-blue-400 bg-blue-50 dark:bg-blue-950 opacity-70"
-    >
-      <Text size="2" color="gray" className="truncate">
-        {title}
-      </Text>
-    </div>
-  );
-};
-
-const TaskList = memo(
-  ({
-    loading,
-    error,
-    tasks,
-    editingTaskId,
-    editingTaskTitle,
-    onToggleComplete,
-    onStartEdit,
-    onEditChange,
-    onSaveEdit,
-    onCancelEdit,
-    enableDragDrop,
-    taskListId,
-    dragOverTask,
-    sortMode,
-  }: {
-    loading: boolean;
-    error: string | null;
-    tasks: Task[];
-    editingTaskId: string | null;
-    editingTaskTitle: string;
-    onToggleComplete: (task: Task) => void;
-    onStartEdit: (task: Task) => void;
-    onEditChange: (title: string) => void;
-    onSaveEdit: () => void;
-    onCancelEdit: () => void;
-    enableDragDrop?: boolean;
-    taskListId?: string;
-    dragOverTask?: DragOverTask | null;
-    sortMode?: SortMode;
-  }) => {
-    const { setNodeRef, isOver } = useDroppable({
-      id: taskListId || 'default',
-      data: { type: 'taskList', taskListId },
-    });
-    if (loading) {
-      return (
-        <div className="flex flex-col gap-2">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              className="animate-pulse bg-gray-200 dark:bg-gray-700 h-10 rounded"
-            />
-          ))}
-        </div>
-      );
-    }
-
-    if (error) {
-      return (
-        <Text size="2" color="red">
-          {error}
-        </Text>
-      );
-    }
-
-    const activeTasks = getActiveTasks(tasks);
-    const completedTasks = getCompletedTasks(tasks);
-
-    const showPlaceholder =
-      dragOverTask && !activeTasks.some(t => t.id === dragOverTask.id);
-
-    const sortableIds: string[] = activeTasks.map(t => t.id);
-    if (showPlaceholder)
-      sortableIds.push(`${PLACEHOLDER_PREFIX}${dragOverTask.id}`);
-
-    const highlightClass = isOver
-      ? 'bg-blue-100 dark:bg-blue-900 ring-2 ring-blue-400 ring-inset'
-      : '';
-
-    const renderTaskItem = (task: Task, draggable: boolean) => (
-      <TaskItem
-        key={task.id}
-        task={task}
-        isEditing={editingTaskId === task.id}
-        editingTitle={editingTaskTitle}
-        onToggleComplete={onToggleComplete}
-        onStartEdit={onStartEdit}
-        onEditChange={onEditChange}
-        onSaveEdit={onSaveEdit}
-        onCancelEdit={onCancelEdit}
-        isNew={task.isNew}
-        enableDragDrop={draggable}
-        taskListId={taskListId}
-        sortMode={sortMode}
-      />
-    );
-
-    return (
-      <div
-        ref={setNodeRef}
-        className={`rounded-lg transition-all duration-150 min-h-[60px] ${highlightClass}`}
-      >
-        <SortableContext
-          items={sortableIds}
-          strategy={verticalListSortingStrategy}
-        >
-          <div className="flex flex-col gap-2">
-            {activeTasks.length === 0 && !showPlaceholder && (
-              <Text size="2" color="gray">
-                No tasks to display
-              </Text>
-            )}
-            {activeTasks.map(task => renderTaskItem(task, !!enableDragDrop))}
-            {showPlaceholder && (
-              <TaskPlaceholder
-                id={dragOverTask.id}
-                title={dragOverTask.title}
-                taskListId={taskListId}
-              />
-            )}
-          </div>
-        </SortableContext>
-        {completedTasks.length > 0 && (
-          <CollapsibleList
-            storageKeyPrefix={`google-tasks-${taskListId ?? 'default'}`}
-            items={[
-              {
-                id: `${taskListId ?? 'default'}-completed`,
-                title: `Completed (${completedTasks.length})`,
-                content: (
-                  <div className="flex flex-col gap-2">
-                    {completedTasks.map(task => renderTaskItem(task, false))}
-                  </div>
-                ),
-              },
-            ]}
-          />
-        )}
-      </div>
-    );
-  },
-);
-
-TaskList.displayName = 'TaskList';
 
 const UnauthenticatedView = memo(
   ({ signInWithGoogle }: { signInWithGoogle: () => Promise<void> }) => (
@@ -1158,9 +772,9 @@ export const GoogleTasksComponent = ({
     toggleRecording: toggleVoice,
   } = useVoiceAddTasks(createTasksFromVoice, authFetch);
 
-  const handleStartEdit = useCallback((task: Task) => {
-    setEditingTaskId(task.id);
-    setEditingTaskTitle(task.title);
+  const handleStartEdit = useCallback((item: CheckListItem) => {
+    setEditingTaskId(item.id);
+    setEditingTaskTitle(item.title);
   }, []);
 
   const handleEditChange = useCallback((title: string) => {
@@ -1194,6 +808,14 @@ export const GoogleTasksComponent = ({
     setSelectedTaskListId(newTaskListId);
   }, []);
 
+  const handleToggleCheck = useCallback(
+    (item: CheckListItem) => {
+      const task = tasks.find(t => t.id === item.id);
+      if (task) toggleTaskComplete(task);
+    },
+    [tasks, toggleTaskComplete],
+  );
+
   const sortedTasks = useMemo(() => {
     if (sortMode === SORT_MODE.EISENHOWER) return sortByEisenhower(tasks);
     if (sortMode === SORT_MODE.COMMIT_TYPE) return sortByCommitType(tasks);
@@ -1203,6 +825,50 @@ export const GoogleTasksComponent = ({
       return sortByDateCreated(tasks, false);
     return tasks;
   }, [sortMode, tasks]);
+
+  const checklistItems: CheckListItem[] = useMemo(
+    () =>
+      sortedTasks.map(t => ({
+        id: t.id,
+        title: t.title,
+        checked: t.status === 'completed',
+        notes: t.notes,
+        due: t.due,
+        updatedAt: t.updated,
+        isNew: t.isNew,
+        isRemoving: t.isRemoving,
+      })),
+    [sortedTasks],
+  );
+
+  const showCreatedMeta =
+    sortMode === SORT_MODE.DATE_CREATED_NEWEST ||
+    sortMode === SORT_MODE.DATE_CREATED_OLDEST;
+
+  const renderItemMeta = useCallback(
+    (item: CheckListItem) =>
+      showCreatedMeta && item.updatedAt ? (
+        <Text size="1" color="gray">
+          Created: {new Date(item.updatedAt).toLocaleDateString()}
+        </Text>
+      ) : null,
+    [showCreatedMeta],
+  );
+
+  const renderItemAccessory = useCallback((item: CheckListItem) => {
+    const commitType = getCommitType(item.title);
+    if (commitType === 'other') return null;
+    return (
+      <span className="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 self-start">
+        {commitType}
+      </span>
+    );
+  }, []);
+
+  const itemClassName = useCallback(
+    (item: CheckListItem) => QUADRANT_COLORS[getEisenhowerQuadrant(item.title)],
+    [],
+  );
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -1268,21 +934,24 @@ export const GoogleTasksComponent = ({
       />
 
       <div className="flex-1 overflow-y-auto min-h-0 px-2 -mx-2">
-        <TaskList
+        <CheckList
+          items={checklistItems}
           loading={loading}
           error={error}
-          tasks={sortedTasks}
-          editingTaskId={editingTaskId}
-          editingTaskTitle={editingTaskTitle}
-          onToggleComplete={toggleTaskComplete}
+          editingItemId={editingTaskId}
+          editingItemTitle={editingTaskTitle}
+          onToggleCheck={handleToggleCheck}
           onStartEdit={handleStartEdit}
           onEditChange={handleEditChange}
           onSaveEdit={handleSaveEdit}
           onCancelEdit={handleCancelEdit}
           enableDragDrop={isDragDropEnabled || enableDragDrop}
-          taskListId={taskListId}
-          dragOverTask={dragOverTask}
-          sortMode={sortMode}
+          listId={taskListId}
+          dragOverItem={dragOverTask}
+          emptyLabel="No tasks to display"
+          renderItemAccessory={renderItemAccessory}
+          renderItemMeta={renderItemMeta}
+          itemClassName={itemClassName}
         />
       </div>
     </div>
@@ -1295,20 +964,12 @@ export const GoogleTasksComponent = ({
   );
 
   if (disableInternalDndContext) {
-    return (
-      <>
-        <style>{ANIMATION_STYLES}</style>
-        {content}
-      </>
-    );
+    return content;
   }
 
   return (
-    <>
-      <style>{ANIMATION_STYLES}</style>
-      <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
-        {content}
-      </DndContext>
-    </>
+    <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
+      {content}
+    </DndContext>
   );
 };
