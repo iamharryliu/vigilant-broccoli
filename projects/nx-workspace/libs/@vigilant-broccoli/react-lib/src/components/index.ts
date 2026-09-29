@@ -37,6 +37,7 @@ export * from './GoogleSignInPage';
 export * from './GithubActionsBadges';
 export * from './StackedImages';
 export * from './CollapsibleList';
+export * from './CheckList';
 export * from './MonospaceText';
 export * from './Text';
 export * from './Heading';

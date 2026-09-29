@@ -5,6 +5,7 @@
 - [Nuances](#nuances)
   - [`@nx/next` build doesn't copy `deprecation.js` into `dist/.nx-helpers`](#nxnext-build-doesnt-copy-deprecationjs-into-distnx-helpers)
   - [A failed kanban board fetch used to look like a brand-new account](#a-failed-kanban-board-fetch-used-to-look-like-a-brand-new-account)
+  - [Kanban's cross-lane drag reads CheckList's internal dnd-kit payload](#kanbans-cross-lane-drag-reads-checklists-internal-dnd-kit-payload)
 
 ## Nuances
 
@@ -63,3 +64,27 @@ failed fetch without ever reaching the default-board-creation/persist path.
 Any other client-side hydration flow that falls back to "create and save a
 default" needs to make the same distinction between a failed load and a
 confirmed-empty one.
+
+### Kanban's cross-lane drag reads CheckList's internal dnd-kit payload
+
+`kanban.component.tsx` wraps one `GoogleTasksComponent` per lane (each with
+`disableInternalDndContext`) in its own top-level `DndContext`, and its own
+handlers (`handleDragStart`/`handleDragOver`/`handleTaskDragEnd`,
+`TaskDragOverlay`) read the raw, untyped dnd-kit drag payload directly:
+`active.data.current?.type === 'task'`, `.task`, `.taskListId`, and a
+droppable `type: 'taskList'`. That payload isn't part of any component's
+TypeScript props — it's set internally by
+`@vigilant-broccoli/react-lib`'s `CheckList` (`CheckListRow`'s `useSortable`
+and `CheckList`'s own `useDroppable` calls in
+`libs/@vigilant-broccoli/react-lib/src/components/CheckList.tsx`), which
+`GoogleTasksComponent` renders under the hood.
+
+`CheckList` is otherwise fully generic (Google-Tasks-agnostic
+`CheckListItem`/`listId` naming throughout its typed props), but this one
+internal payload literal was deliberately left as `'task'`/`task`/
+`'taskList'`/`taskListId` instead of being genericized, specifically so this
+file's cross-lane handlers keep working unmodified. Renaming or restructuring
+that payload inside `CheckList` will silently break drag-and-drop between
+lanes here — there's no test coverage over it, so it fails only as "dragging
+a task to another lane does nothing." Update this file's handlers in the same
+change if that payload shape ever changes.
