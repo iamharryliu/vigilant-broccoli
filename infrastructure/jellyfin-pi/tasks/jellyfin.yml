@@ -35,6 +35,18 @@
   # has not provisioned yet. Real runs create the user first.
   ignore_errors: '{{ ansible_check_mode }}'
 
+# Group-writable so a member of the jellyfin group can drop files in without
+# sudo, and never recursive - the playbook does not rewrite ownership of media
+# already there.
+- name: Create the media library directory
+  ansible.builtin.file:
+    path: '{{ media_library_dir }}'
+    state: directory
+    owner: '{{ jellyfin_service_user }}'
+    group: '{{ jellyfin_service_group }}'
+    mode: '0775'
+  ignore_errors: '{{ ansible_check_mode }}'
+
 - name: Install the Jellyfin compose file
   ansible.builtin.copy:
     src: docker-compose.yml

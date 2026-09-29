@@ -6,6 +6,7 @@
   - [A partial `observability` block on `cloudflare_workers_script` replans forever](#a-partial-observability-block-on-cloudflareworkersscript-replans-forever)
   - [A replaced OCI VM dies on `container name "/watchtower" is already in use`](#a-replaced-oci-vm-dies-on-container-name-watchtower-is-already-in-use)
   - [A new OCI API key returns 401 for ~5 minutes while reporting `ACTIVE`](#a-new-oci-api-key-returns-401-for-5-minutes-while-reporting-active)
+  - [`vault:set-secrets` rewrites every secret through an `eval`](#vaultset-secrets-rewrites-every-secret-through-an-eval)
 
 ## Nuances
 
@@ -95,3 +96,38 @@ accelerates acceptance — so the only correct strategy is a long retry window.
 Worth knowing when debugging: a rotation that fails "verification" here is
 almost always this, not a signing bug. Check by re-signing the same request a
 few minutes later before suspecting the signature.
+
+### `vault:set-secrets` rewrites every secret through an `eval`
+
+`packer/scripts/run-vault-set-secrets.sh` looks like a targeted write and is
+not. It does a whole-map `vault kv put`, so every key in
+`~/Desktop/vault-secrets.json` is rewritten on every run, and it builds that
+command by `eval`-ing a string assembled with `jq`:
+
+```bash
+KV_ARGS=$(jq -r 'to_entries | map("\(.key)=\"\(.value)\"") | join(" ")' "$SECRETS_FILE")
+eval "vault kv put kv/secrets $KV_ARGS"
+```
+
+Values holding a newline, a double quote, a backslash or a `$` do not survive
+that round trip. At the time of writing five of the sixty-nine secrets are
+affected — `OCI_CONFIG`, `OCI_PRIVATE_KEY` and `PROFILE_REPO_DEPLOY_KEY` carry
+newlines, `EMAIL_SERVICE_API_KEY` and `SUPABASE_DB_PASSWORD` carry shell
+metacharacters — so the documented save-local → edit → set-secrets flow can
+corrupt `SUPABASE_DB_PASSWORD` and break migrations while reporting success.
+Check before running it:
+
+```bash
+jq -r 'to_entries | map(select(.value | tostring | test("[\"\\\\`$]") or contains("\n"))) | .[].key' ~/Desktop/vault-secrets.json
+```
+
+To add or rotate a single key, patch it instead —
+`infrastructure/jellyfin-pi/save-vault-secret.sh` does exactly this, reading
+the value from stdin and letting `jq` do the JSON escaping:
+
+```bash
+printf %s "$VALUE" | infrastructure/jellyfin-pi/save-vault-secret.sh MY_KEY
+```
+
+`kv put` remains correct for a deliberate full rewrite; it is the wrong
+default for adding one key.

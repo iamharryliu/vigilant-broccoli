@@ -53,27 +53,45 @@ ssh_permit_root_login: 'no'
 ssh_password_authentication: 'no'
 ssh_max_auth_tries: 3
 
-# --- External media drive --------------------------------------------------
-# media_drive_uuid has no default on purpose — it is per-drive and asserted in
-# tasks/preflight.yml.
-media_mount_point: /mnt/media
-media_fs_type: ext4
-# exFAT/vFAT/NTFS carry no Unix ownership. On those, uid/gid/umask come from
-# the mount options and chown/chmod on the library directory would either fail
-# or report changed on every run, breaking convergence.
-media_non_posix_fs_types:
-  - exfat
-  - vfat
-  - ntfs
-  - ntfs3
-# Derived once here rather than repeating the membership test at every task
-# that has to decide whether ownership is a thing this drive can express.
-media_fs_posix: '{{ media_fs_type not in media_non_posix_fs_types }}'
-# nofail + a device timeout so a missing drive degrades to "Jellyfin does not
-# start" instead of "the Pi drops to an emergency shell over SSH".
-media_mount_options: defaults,noatime,nofail,x-systemd.device-timeout=30s
-media_library_subdir: library
-media_library_dir: '{{ media_mount_point }}/{{ media_library_subdir }}'
+# --- Media library ---------------------------------------------------------
+# The library lives on the boot device. /srv is where Debian puts data this
+# host serves, and keeping it off /mnt means a drive mounted there later
+# cannot shadow it. Size the boot card for the library: it shares the device
+# with Jellyfin's metadata and transcode cache, which is what pi_min_free_gib
+# guards.
+media_library_dir: /srv/media/library
+
+# --- Samba media share -----------------------------------------------------
+# A writable SMB share of the library so media is added by dragging into
+# Finder instead of composing an rsync command. The container's own mount of
+# the same directory stays read-only; this writes to the host path.
+samba_packages:
+  - samba
+  # Finder only lists a host in its sidebar if something advertises it.
+  - avahi-daemon
+samba_workgroup: WORKGROUP
+samba_share_name: media
+samba_share_path: '{{ media_library_dir }}'
+# The Jellyfin service user doubles as the SMB login: it owns the library
+# directory, so forcing writes to it is what keeps files arriving over the
+# share readable by the container, and a second identity would buy no extra
+# isolation over the same files.
+samba_user: '{{ jellyfin_service_user }}'
+# Home LAN plus the Tailscale CGNAT range (100.64.0.0/10), so the share
+# follows the same reachability as Jellyfin itself. Narrow it per host if the
+# LAN is not a /16.
+samba_allowed_networks:
+  - 192.168.0.0/16
+  - 100.64.0.0/10
+samba_advertise_mdns: true
+samba_config_path: /etc/samba/smb.conf
+samba_avahi_service_path: /etc/avahi/services/samba.service
+samba_service_name: smbd
+samba_password_path: /run/samba-password
+# The password is only read when the Samba account does not exist yet, so
+# routine converge runs need no Vault. Set this to rotate it on an existing
+# account: pnpm jellyfin:provision -- --tags samba -e samba_reset_password=true
+samba_reset_password: false
 
 # --- Docker ----------------------------------------------------------------
 docker_apt_key_url: https://download.docker.com/linux/debian/gpg

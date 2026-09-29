@@ -3,10 +3,6 @@
 Description=Jellyfin media server (Docker Compose)
 Requires=docker.service
 After=docker.service network-online.target
-# Ordering plus a hard requirement on the media mount: if the external drive
-# is missing, systemd refuses to start the stack rather than letting Jellyfin
-# come up with no library.
-RequiresMountsFor={{ media_mount_point }}
 
 [Service]
 Type=oneshot
