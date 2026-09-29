@@ -4,9 +4,9 @@ import { Card } from './Card';
 import { Button } from './Button';
 import { Checkbox } from './Checkbox';
 import { CollapsibleList } from './CollapsibleList';
-import { Input } from './Input';
 import { Select } from './Select';
 import { Text } from './Text';
+import { Textarea } from './Textarea';
 import { useEffect, useState, useCallback, memo, useMemo } from 'react';
 import {
   useDroppable,
@@ -436,14 +436,18 @@ const TaskItemContent = memo(
   }) => (
     <div className="flex flex-col gap-1 flex-1">
       {isEditing ? (
-        <Input
+        <Textarea
           value={editingTitle}
+          rows={2}
           onChange={e => onEditChange(e.target.value)}
           onKeyDown={e => {
-            if (e.key === 'Enter') onSaveEdit();
-            else if (e.key === 'Escape') onCancelEdit();
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              onSaveEdit();
+            } else if (e.key === 'Escape') onCancelEdit();
           }}
           onBlur={onSaveEdit}
+          className="min-h-0 resize-none"
           autoFocus
         />
       ) : (
@@ -728,18 +732,21 @@ const AddTaskForm = memo(
     return (
       <div className="flex flex-col gap-2">
         <div className="flex gap-2 items-end">
-          <Input
+          <Textarea
             placeholder="Add a task, or use * item1 > item2 for multiple..."
             value={newTaskTitle}
+            rows={2}
             onChange={e => onTitleChange(e.target.value)}
             onKeyDown={e => {
-              if (e.key === 'Enter' && !isLoading) onSubmit();
-              else if (e.key === 'Escape') onCancel();
+              if (e.key === 'Enter' && !e.shiftKey && !isLoading) {
+                e.preventDefault();
+                onSubmit();
+              } else if (e.key === 'Escape') onCancel();
             }}
             onBlur={() => {
               if (!newTaskTitle.trim()) onCancel();
             }}
-            className="flex-1"
+            className="flex-1 min-h-0 resize-none"
             disabled={isLoading}
             autoFocus
           />
@@ -1113,7 +1120,7 @@ export const GoogleTasksComponent = ({
       if (newTaskTitle.startsWith('*')) {
         const titles = newTaskTitle
           .slice(1)
-          .split('>')
+          .split(/[>\n]/)
           .map(t => t.trim())
           .filter(Boolean)
           .reverse();
