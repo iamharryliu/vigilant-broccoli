@@ -354,6 +354,7 @@ jobs:
           DEPLOY_ENVIRONMENT: ${{ env.DEPLOY_ENVIRONMENT }}
           RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_SHA: ${{ github.sha }}
         run: |
           CONCLUSION=success
           for RESULT in "$GITLEAKS_RESULT" "$NPM_RESULT" "$APPS_RESULT" "$PAGES_RESULT"; do
@@ -376,5 +377,6 @@ jobs:
             --arg run_url "$RUN_URL" \
             --arg started_at "$RUN_STARTED_AT" \
             --arg commit_message "$COMMIT_MESSAGE" \
-            '{event_type: "deploy-fanout", client_payload: {conclusion: $conclusion, deployed: $deployed, environment: $environment, run_id: $run_id, run_url: $run_url, started_at: $started_at, commit_message: $commit_message}}' \
+            --arg commit_sha "$COMMIT_SHA" \
+            '{event_type: "deploy-fanout", client_payload: {conclusion: $conclusion, deployed: $deployed, environment: $environment, run_id: $run_id, run_url: $run_url, started_at: $started_at, commit_message: $commit_message, commit_sha: $commit_sha}}' \
             | gh api repos/${{ github.repository }}/dispatches --input -
