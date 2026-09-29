@@ -42,7 +42,7 @@ A `libs/@vigilant-broccoli/*` lib publishes iff its `project.json` defines a `pu
 
 ## Testing
 
-- Unit tests: `@nx/vite:test` (vitest), run via `nx affected` in CI.
+- Unit tests: `@nx/vitest:test` (vitest), run via `nx affected` in CI. The executor lives in `@nx/vitest` as of Nx 23 — `@nx/vite` no longer ships a `test` executor. A vitest target is **not** inferred: `nx.json`'s `@nx/vite/plugin` entry sets no `testTargetName`, so a lib needs both a `test` block in its `vite.config.ts` and an explicit `test` target in `project.json`, or `nx affected -t test` silently skips it and the suite never runs in CI.
 - Pre-deploy gate: fly services must have a `smoke` target that boots the built dist with dummy env vars — the only thing that catches missing pruned deps (mechanics in [fly-service-pattern.md](./api/deployment/fly-service-pattern.md)).
 - Post-deploy verification belongs in a `test-*` workflow hitting live URLs, never in a unit suite.
 
