@@ -380,14 +380,15 @@ export const TasksInput = () => {
           <div className="space-y-2">
             {items.map((item, i) => (
               <div key={i} className="flex items-center gap-2">
-                <input
+                <textarea
                   value={item}
+                  rows={2}
                   onChange={e =>
                     setItems(prev =>
                       prev.map((v, j) => (j === i ? e.target.value : v)),
                     )
                   }
-                  className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none"
                 />
                 <button
                   onClick={() =>
@@ -414,17 +415,19 @@ export const TasksInput = () => {
           </div>
 
           <div className="flex items-center gap-2">
-            <input
+            <textarea
               value={newItem}
+              rows={2}
               onChange={e => setNewItem(e.target.value)}
               onKeyDown={e => {
-                if (e.key === 'Enter' && newItem.trim()) {
+                if (e.key === 'Enter' && !e.shiftKey && newItem.trim()) {
+                  e.preventDefault();
                   setItems(prev => [...prev, newItem.trim()]);
                   setNewItem('');
                 }
               }}
               placeholder="Add another item..."
-              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none"
             />
             <button
               onClick={() => {
