@@ -10,7 +10,6 @@ declare -a DEVELOPMENT_APPS=(
     "/Applications/Godot.app"
     "/Applications/iTerm.app"
     "/Applications/Visual Studio Code.app"
-    "/Applications/VMware Fusion.app"
     "/Applications/Wireshark.app"
 )
 

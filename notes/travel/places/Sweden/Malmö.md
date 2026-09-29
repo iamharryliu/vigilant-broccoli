@@ -16,6 +16,7 @@
   - [Home](#home)
 - [Activities](#activities)
 - [Entertainment](#entertainment)
+- [Tourist Attractions](#tourist-attractions)
 - [Events](#events)
 - [Waste Management](#waste-management)
 - [Dog Friendly Spaces](#dog-friendly-spaces)
@@ -172,6 +173,20 @@
 | [Filmstaden Malmö](https://www.filmstaden.se/) | Main cinema chain in Sweden.                                                             |
 | [Panora](https://www.panora.se/)               | Independent arthouse cinema at Möllevången.                                              |
 | [Aq-va-kul](https://aqvakul.malmo.se/)         | Public swimming and water park.                                                          |
+
+## Tourist Attractions
+
+| Place                          | Type                                        | Open hours                             | Free visit times                                                      |
+| ------------------------------- | --------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------ |
+| Alnarpsparken Arboretum         | Arboretum / botanical park                    | Open 24h                                | Always free                                                              |
+| Katrinetorp Landeri             | Historic estate / gardens                     | Grounds approximately 08:00–20:00       | Grounds generally free; events may differ                               |
+| Malmö Castle                    | Castle / museum                               | Tue–Sun 11:00–17:00; Thu until 19:00    | Included with Malmö Museum ticket; ages 0–19 free                       |
+| Malmö Konsthall                 | Contemporary art gallery                      | Tue–Sun 11:00–17:00; Wed until 19:00    | Always free                                                              |
+| Malmö Konstmuseum               | Art museum                                    | Thu–Fri 10:00–17:00; Sat–Sun 10:00–16:00 | Always free at current Kungsparken location                             |
+| Malmö Museum                    | History / natural history / aquarium          | Tue–Sun 11:00–17:00; Thu until 19:00    | Ages 0–19 free                                                           |
+| Moderna Museet Malmö            | Modern art museum                             | Tue–Sun 11:00–17:00; Thu until 19:00    | Check current exhibition                                                 |
+| Slottsträdgården                | Garden / park                                 | Open year-round                          | Always free                                                              |
+| Teknikens och Sjöfartens hus     | Technology / maritime museum                  | Tue–Sun 11:00–17:00; Thu until 19:00    | Ages 0–19 free                                                           |
 
 ## Events
 

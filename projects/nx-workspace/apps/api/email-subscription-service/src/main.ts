@@ -25,7 +25,7 @@ import { swaggerSpec } from './swagger';
 const SERVICE_NAME = 'email-subscription-service';
 
 const HOST = process.env.HOST ?? 'localhost';
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 const API_KEY = process.env.SHARED_APP_TOKEN;
 const RABBITMQ_CONNECTION_STRING = process.env.RABBITMQ_CONNECTION_STRING;
 const RABBITMQ_CA_CERT = process.env.RABBITMQ_CA_CERT;

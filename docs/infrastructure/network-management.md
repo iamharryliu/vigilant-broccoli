@@ -16,7 +16,7 @@ All public URLs for deployed applications, grouped by domain/provider.
 harryliu.dev                              Cloudflare zone (Terraform: infrastructure/terraform/)
 ├── harryliu.dev                          Personal website — Cloudflare Pages `staging-harryliu-dev-react` (domain + CNAME: Terraform, infrastructure/terraform/)
 ├── www.harryliu.dev                      301 redirect to apex (Cloudflare ruleset)
-├── docs.harryliu.dev                     Docs MD — Cloudflare Pages `staging-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed via deploy.yml's deploy-apps job; public, no Access gating)
+├── docs.harryliu.dev                     Docs MD — Cloudflare Pages `production-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed via deploy.yml's deploy-apps job; public, no Access gating)
 ├── git.harryliu.dev                      Gitea — OCI VM (A record, proxied + Cloudflare Access; web UI gated by owner email, git/CI over HTTPS via service token, git-SSH on :2222 direct). Also the read surface for the private journal notes — browsed directly in Gitea rather than mirrored to a Pages site, so the notes never leave the VM
 ├── code.harryliu.dev                     code-server — OCI VM (A record, proxied + Cloudflare Access; owner-email + non-identity CI service token for ci-health-check /healthz origin probes)
 ├── drive.harryliu.dev                    Seafile — AWS EC2 VM (A record, proxied + Cloudflare Access, owner-email only; kept off the OCI Ampere pool — its 50GB-per-boot-volume floor left no free-tier storage headroom for a 4th/5th OCI VM)
@@ -26,7 +26,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── socket.harryliu.dev                   Socket server — OCI RabbitMQ VM (A record, DNS-only)
 └── vault.harryliu.dev                    Vault — GCP vb-free-vm via cloudflared tunnel (CNAME, proxied + Cloudflare Access service token, CI-only)
 
-cloud8skate.com                           Cloudflare Pages `staging-cloud-8-skate-angular` (domain + CNAME: Terraform, infrastructure/terraform/)
+cloud8skate.com                           Cloudflare Pages `production-cloud-8-skate-react` (domain + CNAME: Terraform, infrastructure/terraform/)
 └── cloud8skate.com                       Cloud 8 Skate
 
 fly.dev                                   Fly.io API services (production apps created on first production dispatch)
@@ -44,9 +44,9 @@ vercel.app                                Vercel (production projects created on
 ├── staging-whiteboard.vercel.app             Whiteboard (staging)
 └── production-whiteboard.vercel.app          Whiteboard (production)
 
-pages.dev                                 Cloudflare Pages production aliases (staging projects serve the custom domains above)
-├── production-cloud-8-skate-angular.pages.dev Cloud 8 Skate (production)
-└── production-harryliu-dev-react.pages.dev    Personal website React (production)
+pages.dev                                 Cloudflare Pages URLs for the environment not attached to a custom domain above
+├── staging-cloud-8-skate-react.pages.dev      Cloud 8 Skate (staging — cloud8skate.com is on production, the exception)
+└── production-harryliu-dev-react.pages.dev    Personal website React (production — harryliu.dev is on staging)
 
 github.io                                 GitHub Pages
 └── iamharryliu.github.io/vigilant-broccoli   Pages index (pages-index/)

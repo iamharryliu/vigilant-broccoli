@@ -27,7 +27,6 @@ terraform apply \
   -target=google_project_iam_member.vm_default_sa_secret_accessor \
   -target=google_secret_manager_secret.wg_server_private_key \
   -target=google_secret_manager_secret.wg_server_public_key \
-  -target=google_secret_manager_secret.wg_elva11_mbp_public_key \
   -target=google_secret_manager_secret.wg_gha_public_key
 ```
 
@@ -38,17 +37,13 @@ WireGuard is for laptop access only. CI reaches Vault through the cloudflared tu
 ```bash
 SERVER_PRIV=$(wg genkey)
 SERVER_PUB=$(echo "$SERVER_PRIV" | wg pubkey)
-LAPTOP_PRIV=$(wg genkey)
-LAPTOP_PUB=$(echo "$LAPTOP_PRIV" | wg pubkey)
 GHA_PRIV=$(wg genkey)
 GHA_PUB=$(echo "$GHA_PRIV" | wg pubkey)
 
 echo -n "$SERVER_PRIV" | gcloud secrets versions add VB_VM_WG_SERVER_PRIVATE_KEY --data-file=- --project=vigilant-broccoli
 echo -n "$SERVER_PUB"  | gcloud secrets versions add VB_VM_WG_SERVER_PUBLIC_KEY  --data-file=- --project=vigilant-broccoli
-echo -n "$LAPTOP_PUB"  | gcloud secrets versions add VB_VM_WG_ELVA11_MBP_PUBLIC_KEY --data-file=- --project=vigilant-broccoli
 echo -n "$GHA_PUB"     | gcloud secrets versions add VB_VM_WG_GHA_PUBLIC_KEY --data-file=- --project=vigilant-broccoli
 
-echo "Laptop private key (save for wg0.conf): $LAPTOP_PRIV"
 echo "Server public key (for wg0.conf [Peer]): $SERVER_PUB"
 echo "GHA private key (save as GitHub Actions secret VB_GHA_WG_PRIVATE_KEY): $GHA_PRIV"
 ```
@@ -88,8 +83,8 @@ Write `/opt/homebrew/etc/wireguard/vb.conf`:
 
 ```ini
 [Interface]
-PrivateKey = <LAPTOP_PRIV from step 2>
-Address = 10.0.1.2/24
+PrivateKey = <private key matching VB_VM_WG_PERSONAL_MBP_PUBLIC_KEY>
+Address = 10.0.1.3/24
 
 [Peer]
 PublicKey = <SERVER_PUB from step 2>

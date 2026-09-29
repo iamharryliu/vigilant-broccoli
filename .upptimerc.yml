@@ -2,28 +2,14 @@ owner: iamharryliu
 repo: vigilant-broccoli
 
 sites:
-  - name: harryliu.dev
-    url: https://harryliu.dev/
-  - name: harryliu.dev-resume
-    url: https://harryliu.dev/resume
-  - name: git.harryliu.dev
-    url: https://git.harryliu.dev/
-  - name: docs.harryliu.dev
-    url: https://docs.harryliu.dev/
-  - name: code.harryliu.dev
-    url: https://code.harryliu.dev/login
-  - name: drive.harryliu.dev
-    url: https://drive.harryliu.dev/
-  - name: nx-cache.harryliu.dev
-    url: https://nx-cache.harryliu.dev/health
-  - name: observability-vm
-    url: https://loki.harryliu.dev/health
-  - name: staging-cloud8skate.com
-    url: https://cloud8skate.com/
-  - name: production-cloud8skate
-    url: https://production-cloud-8-skate-angular.pages.dev/
-  - name: socket-server
-    url: https://socket.harryliu.dev/health
+  - name: staging-docs
+    url: https://staging-docs-md.pages.dev/
+  - name: staging-cloud-8-skate
+    url: https://staging-cloud-8-skate-react.pages.dev/
+  - name: staging-harryliu-dev
+    url: https://staging-harryliu-dev-react.pages.dev/
+  - name: staging-harryliu-dev-resume
+    url: https://staging-harryliu-dev-react.pages.dev/resume
   - name: staging-findme
     url: https://staging-findme.vercel.app/
   - name: staging-hearth
@@ -34,6 +20,24 @@ sites:
     url: https://staging-whiteboard.vercel.app/
   - name: staging-vb-manager-next-mobile
     url: https://staging-vb-manager-next-mobile.vercel.app/login
+  - name: production-cloud-8-skate
+    url: https://cloud8skate.com/
+  - name: production-harryliu-dev
+    url: https://production-harryliu-dev-react.pages.dev/
+  - name: production-harryliu-dev-resume
+    url: https://production-harryliu-dev-react.pages.dev/resume
+  - name: production-git
+    url: https://git.harryliu.dev/
+  - name: production-code-server
+    url: https://code.harryliu.dev/login
+  - name: production-drive
+    url: https://drive.harryliu.dev/
+  - name: production-nx-cache
+    url: https://nx-cache.harryliu.dev/health
+  - name: production-observability-vm
+    url: https://loki.harryliu.dev/health
+  - name: production-socket-server
+    url: https://socket.harryliu.dev/health
   - name: production-findme
     url: https://production-findme.vercel.app/
   - name: production-hearth
@@ -44,6 +48,8 @@ sites:
     url: https://production-whiteboard.vercel.app/
   - name: production-vb-manager-next-mobile
     url: https://production-vb-manager-next-mobile.vercel.app/login
+  - name: production-docs
+    url: https://docs.harryliu.dev/
 
 user-agent: upptime-vigilant-broccoli
 

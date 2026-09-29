@@ -1,6 +1,7 @@
 # docs.harryliu.dev — Cloudflare Pages site (project + deploys owned by the
-# `deploy` workflow's deploy-apps job via wrangler). Terraform owns the custom
-# domain and its DNS. Public docs — no Access gating.
+# `deploy` workflow's deploy-apps job via wrangler). Points at the
+# production-docs-md project. Terraform owns the custom domain and its DNS.
+# Public docs — no Access gating.
 
 resource "cloudflare_pages_domain" "docs" {
   account_id   = var.cloudflare_account_id
