@@ -25,7 +25,6 @@ Management dashboard app.
   - `links`
   - `llm-schemas`
   - `money-movement`
-  - `next-lib`
   - `personal-common-js`
   - `react-lib`
   - `react-music-lib`
