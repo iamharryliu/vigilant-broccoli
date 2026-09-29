@@ -9,16 +9,6 @@ const PRODUCTION = 'production';
 const ENVIRONMENTS = [STAGING, PRODUCTION];
 const VERCEL_ENV = PRODUCTION;
 
-const VERCEL_ROOT_DIRECTORY = 'projects/nx-workspace';
-const VERCEL_OUTPUT_DIR = '.vercel/output';
-const PREBUILT_DIR = `${VERCEL_ROOT_DIRECTORY}/dist/vercel`;
-// nx builds the app before this target runs and the runner installs the
-// workspace once, so `vercel build` only has to package what is already there.
-// Running the real `nx build` here instead would nest one nx invocation inside
-// another, which nx rejects as a recursive task invocation.
-const SKIP_BUILD_COMMAND = 'echo "Built by nx via dependsOn"';
-const SKIP_INSTALL_COMMAND = 'echo "Dependencies installed by the caller"';
-
 interface VaultSecrets {
   [key: string]: string;
 }
@@ -241,11 +231,11 @@ async function main() {
       SUPABASE_PUBLIC_SECRETS.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   };
 
-  const NX_VERCEL_SETTINGS = (outputDirectory: string) => ({
+  const NX_VERCEL_SETTINGS = (nxProject: string, outputDirectory: string) => ({
     framework: 'nextjs',
-    rootDirectory: VERCEL_ROOT_DIRECTORY,
-    buildCommand: SKIP_BUILD_COMMAND,
-    installCommand: SKIP_INSTALL_COMMAND,
+    rootDirectory: 'projects/nx-workspace',
+    buildCommand: `nx build ${nxProject}`,
+    installCommand: 'pnpm install --frozen-lockfile',
     outputDirectory,
   });
 
@@ -257,20 +247,23 @@ async function main() {
         VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
       },
       envExamplePath: 'apps/hearth/.env.local.example',
-      settings: NX_VERCEL_SETTINGS('dist/apps/hearth/.next'),
+      settings: NX_VERCEL_SETTINGS('hearth', 'dist/apps/hearth/.next'),
     },
     'employee-handler-ui': {
       hardcodedSecrets: { ...EMPLOYEE_HANDLER_UI_SUPABASE_SECRETS },
       envExamplePath: 'apps/ui/employee-handler-ui/.env.example',
-      settings: NX_VERCEL_SETTINGS('dist/apps/ui/employee-handler-ui/.next'),
+      settings: NX_VERCEL_SETTINGS(
+        'employee-handler-ui',
+        'dist/apps/ui/employee-handler-ui/.next',
+      ),
     },
     findme: {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
-      settings: NX_VERCEL_SETTINGS('dist/apps/findme/.next'),
+      settings: NX_VERCEL_SETTINGS('findme', 'dist/apps/findme/.next'),
     },
     whiteboard: {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
-      settings: NX_VERCEL_SETTINGS('dist/apps/whiteboard/.next'),
+      settings: NX_VERCEL_SETTINGS('whiteboard', 'dist/apps/whiteboard/.next'),
     },
     'vb-manager-next-mobile': {
       hardcodedSecrets: {
@@ -278,7 +271,10 @@ async function main() {
         VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
       },
       envExamplePath: 'apps/vb-manager-next-mobile/.env.example',
-      settings: NX_VERCEL_SETTINGS('dist/apps/vb-manager-next-mobile/.next'),
+      settings: NX_VERCEL_SETTINGS(
+        'vb-manager-next-mobile',
+        'dist/apps/vb-manager-next-mobile/.next',
+      ),
     },
   };
 
@@ -353,26 +349,9 @@ async function main() {
   }
 
   const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
-
-  // Packaged here because Vercel's Hobby plan builds one deployment at a time,
-  // which serialises the Next.js apps. `vercel deploy --prebuilt` has no
-  // --output flag and always reads <cwd>/<rootDirectory>/.vercel/output, hence
-  // the per-app cwd.
-  const prebuiltCwd = resolve(repoRoot, PREBUILT_DIR, projectName);
-  const outputDir = resolve(
-    prebuiltCwd,
-    VERCEL_ROOT_DIRECTORY,
-    VERCEL_OUTPUT_DIR,
-  );
-
-  console.log(`\nPackaging ${projectName}...\n`);
-  execSync(
-    `npx vercel build --prod --yes --cwd "${repoRoot}" --output "${outputDir}"`,
-    { stdio: 'inherit', env: vercelEnv },
-  );
-
-  console.log(`\nDeploying ${projectName} to Vercel...\n`);
-  execSync(`npx vercel deploy --prebuilt --prod --yes --cwd "${prebuiltCwd}"`, {
+  const deployArgs = ['deploy', '--prod', '--yes', `"${repoRoot}"`].join(' ');
+  console.log(`\nTriggering Vercel deployment for ${projectName}...\n`);
+  execSync(`npx vercel ${deployArgs}`, {
     stdio: 'inherit',
     env: vercelEnv,
   });
