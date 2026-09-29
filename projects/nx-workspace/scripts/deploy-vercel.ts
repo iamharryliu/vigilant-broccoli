@@ -9,6 +9,10 @@ const PRODUCTION = 'production';
 const ENVIRONMENTS = [STAGING, PRODUCTION];
 const VERCEL_ENV = PRODUCTION;
 
+const VERCEL_ROOT_DIRECTORY = 'projects/nx-workspace';
+const VERCEL_OUTPUT_DIR = '.vercel/output';
+const PREBUILT_DIR = `${VERCEL_ROOT_DIRECTORY}/dist/vercel`;
+
 interface VaultSecrets {
   [key: string]: string;
 }
@@ -349,9 +353,40 @@ async function main() {
   }
 
   const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
-  const deployArgs = ['deploy', '--prod', '--yes', `"${repoRoot}"`].join(' ');
-  console.log(`\nTriggering Vercel deployment for ${projectName}...\n`);
-  execSync(`npx vercel ${deployArgs}`, {
+
+  // Vercel's Hobby plan builds one deployment at a time, so letting it build
+  // every Next.js app serialises them. Building on the runner and uploading the
+  // result sidesteps that; only the upload still goes through Vercel.
+  //
+  // `vercel build` has to run the build itself — handed a `.next` some other
+  // command produced, it packages nothing and dies resolving `next` from a
+  // fabricated `apps/<app>/noop.js`. So the project keeps its real
+  // `nx build <app>` buildCommand rather than a no-op.
+  //
+  // Build-time vars come from this env rather than the `.vercel/.env.*.local`
+  // that `vercel pull` writes: with a rootDirectory set, the CLI writes that
+  // file beside the cwd but reads it from cwd/rootDirectory, so it never loads
+  // and any app building a Supabase client at module scope fails with
+  // "supabaseUrl is required".
+  const buildEnv = { ...vercelEnv, ...allSecrets };
+
+  // `vercel deploy --prebuilt` has no --output flag and always reads
+  // <cwd>/<rootDirectory>/.vercel/output, hence the per-app cwd.
+  const prebuiltCwd = resolve(repoRoot, PREBUILT_DIR, projectName);
+  const outputDir = resolve(
+    prebuiltCwd,
+    VERCEL_ROOT_DIRECTORY,
+    VERCEL_OUTPUT_DIR,
+  );
+
+  console.log(`\nBuilding ${projectName}...\n`);
+  execSync(
+    `npx vercel build --prod --yes --cwd "${repoRoot}" --output "${outputDir}"`,
+    { stdio: 'inherit', env: buildEnv },
+  );
+
+  console.log(`\nDeploying ${projectName} to Vercel...\n`);
+  execSync(`npx vercel deploy --prebuilt --prod --yes --cwd "${prebuiltCwd}"`, {
     stdio: 'inherit',
     env: vercelEnv,
   });
