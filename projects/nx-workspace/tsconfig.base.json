@@ -18,6 +18,9 @@
       "@vigilant-broccoli/vibecheck-lite": [
         "./libs/@vigilant-broccoli/vibecheck-lite/src/index.ts"
       ],
+      "@vigilant-broccoli/dj-music": [
+        "./libs/@vigilant-broccoli/dj-music/src/index.ts"
+      ],
       "@vigilant-broccoli/common-browser": [
         "./libs/@vigilant-broccoli/common-browser/src/index.ts"
       ],

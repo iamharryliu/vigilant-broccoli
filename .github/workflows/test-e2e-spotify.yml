@@ -1,0 +1,47 @@
+name: test-e2e-spotify
+
+on:
+  schedule:
+    - cron: '55 5 * * 0'
+  workflow_dispatch:
+    inputs:
+      playlist_id:
+        description: 'Public Spotify playlist id to test against (blank uses the default)'
+        type: string
+        required: false
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test-spotify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: ./.github/actions/setup-nx-workspace
+
+      # App keys only. Spotify answers app-only (client-credentials) requests to
+      # /playlists/{id} with 429 QUOTA_EXCEEDED and a multi-hour Retry-After for
+      # apps in development mode, so the script's playlist leg needs a user
+      # refresh token and skips itself without one. To enable it, add
+      # SPOTIFY_REFRESH_TOKEN to kv/data/secrets and import it here too — adding
+      # the mapping before the key exists fails the step.
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets SPOTIFY_CLIENT_ID | SPOTIFY_CLIENT_ID ;
+            kv/data/secrets SPOTIFY_CLIENT_SECRET | SPOTIFY_CLIENT_SECRET ;
+
+      - name: Run spotify e2e tests
+        working-directory: ./projects/nx-workspace
+        env:
+          SPOTIFY_CLIENT_ID: ${{ env.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ env.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_TEST_PLAYLIST_ID: ${{ inputs.playlist_id }}
+        run: pnpm exec tsx scripts/test-spotify-e2e.ts

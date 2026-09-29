@@ -1,0 +1,12 @@
+{
+  "name": "@vigilant-broccoli/dj-music",
+  "version": "0.0.1",
+  "type": "commonjs",
+  "main": "./index.js",
+  "module": "./index.mjs",
+  "typings": "./index.d.ts",
+  "private": true,
+  "dependencies": {
+    "@vigilant-broccoli/common-js": "workspace:*"
+  }
+}
