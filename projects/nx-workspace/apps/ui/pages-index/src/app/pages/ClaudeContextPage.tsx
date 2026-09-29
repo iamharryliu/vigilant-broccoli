@@ -1,7 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { useTranslation } from '../i18n';
-import { PageHeader } from '../components/PageHeader';
-import { WIDE_FULL_HEIGHT_PAGE_CLASS } from '../consts/layout';
+import { usePageTitle } from '../use-page-title';
 
 const ClaudeContextViewer = lazy(
   () => import('../components/ClaudeContextViewer'),
@@ -9,10 +8,10 @@ const ClaudeContextViewer = lazy(
 
 export function ClaudeContextPage() {
   const { t } = useTranslation();
+  usePageTitle(t('CLAUDE_CONTEXT_PAGE.TITLE'));
 
   return (
-    <main className={WIDE_FULL_HEIGHT_PAGE_CLASS}>
-      <PageHeader title={t('CLAUDE_CONTEXT_PAGE.TITLE')} />
+    <main className="flex h-dvh flex-col p-2 sm:p-4">
       <Suspense
         fallback={
           <p className="text-sm text-gray-400">
