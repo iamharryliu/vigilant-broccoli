@@ -191,19 +191,19 @@
     "TITLE": "API Services",
     "EMAIL_SERVICE": {
       "TITLE": "Email Service",
-      "DESCRIPTION": "staging-vb-email-service.flycast — private"
+      "DESCRIPTION": "Email queue producer/consumer."
     },
     "EMAIL_SUBSCRIPTION_SERVICE": {
       "TITLE": "Email Subscription Service",
-      "DESCRIPTION": "staging-email-subscription-service.flycast — private"
+      "DESCRIPTION": "Email subscription management and broadcast."
     },
     "LLM_SERVICE": {
       "TITLE": "LLM Service",
-      "DESCRIPTION": "staging-llm-service.flycast — private"
+      "DESCRIPTION": "LLM proxy for Anthropic and OpenAI."
     },
     "STORAGE_SERVICE": {
       "TITLE": "Storage Service",
-      "DESCRIPTION": "staging-storage-service.flycast — private"
+      "DESCRIPTION": "Object storage proxy across multiple bucket providers."
     }
   },
   "API_SERVICE_DOCS_PAGE": {
