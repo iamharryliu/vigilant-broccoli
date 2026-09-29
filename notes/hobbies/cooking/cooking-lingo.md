@@ -77,6 +77,7 @@
 | Term                           | Description                                                                                                                                                                                                     |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **MSG (Monosodium Glutamate)** | A flavor enhancer consisting of the sodium salt of glutamic acid. It boosts the savory umami taste of foods and is commonly added to soups, stir-fries, snacks, and seasoning blends to make them taste richer. |
+| **Produce**                    | Fresh fruits and vegetables collectively, as sold or shopped for — the term used at a grocery store's produce section or a farmers' market, distinct from packaged, frozen, or shelf-stable goods.              |
 | **Quorn**                      | A fungus-based meat alternative made from mycoprotein. High in protein and low in fat, commonly used as a substitute for meat in vegetarian and vegan cooking.                                                  |
 
 ---

@@ -30,7 +30,7 @@
 
 ## Vegetable Choices
 
-See [Density Order](../food-notes/vegetables.md#-density-order-densest--most-tender) in [Vegetable Cooking Reference by Density](../food-notes/vegetables.md) for cook times and pan order.
+See [Density Order](../ingredients/vegetables.md#-density-order-densest--most-tender) in [Vegetables](../ingredients/vegetables.md) for cook times and pan order.
 
 | Category              | Vegetables                                                                           |
 | --------------------- | ------------------------------------------------------------------------------------ |
