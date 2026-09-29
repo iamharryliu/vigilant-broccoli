@@ -9,13 +9,6 @@ const PRODUCTION = 'production';
 const ENVIRONMENTS = [STAGING, PRODUCTION];
 const VERCEL_ENV = PRODUCTION;
 
-const VERCEL_ROOT_DIRECTORY = 'projects/nx-workspace';
-const VERCEL_OUTPUT_DIR = '.vercel/output';
-const PREBUILT_DIR = `${VERCEL_ROOT_DIRECTORY}/dist/vercel`;
-// Concurrent `vercel build`s would otherwise race on one node_modules; the
-// caller has already installed the workspace.
-const SKIP_INSTALL_COMMAND = 'echo "Dependencies installed by the caller"';
-
 interface VaultSecrets {
   [key: string]: string;
 }
@@ -240,9 +233,9 @@ async function main() {
 
   const NX_VERCEL_SETTINGS = (nxProject: string, outputDirectory: string) => ({
     framework: 'nextjs',
-    rootDirectory: VERCEL_ROOT_DIRECTORY,
+    rootDirectory: 'projects/nx-workspace',
     buildCommand: `nx build ${nxProject}`,
-    installCommand: SKIP_INSTALL_COMMAND,
+    installCommand: 'pnpm install --frozen-lockfile',
     outputDirectory,
   });
 
@@ -356,25 +349,9 @@ async function main() {
   }
 
   const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
-
-  // Built here because Vercel's Hobby plan builds one deployment at a time.
-  // `vercel deploy --prebuilt` has no --output flag and always reads
-  // <cwd>/<rootDirectory>/.vercel/output, hence the per-app cwd.
-  const prebuiltCwd = resolve(repoRoot, PREBUILT_DIR, projectName);
-  const outputDir = resolve(
-    prebuiltCwd,
-    VERCEL_ROOT_DIRECTORY,
-    VERCEL_OUTPUT_DIR,
-  );
-
-  console.log(`\nBuilding ${projectName}...\n`);
-  execSync(
-    `npx vercel build --prod --yes --cwd "${repoRoot}" --output "${outputDir}"`,
-    { stdio: 'inherit', env: vercelEnv },
-  );
-
-  console.log(`\nDeploying ${projectName} to Vercel...\n`);
-  execSync(`npx vercel deploy --prebuilt --prod --yes --cwd "${prebuiltCwd}"`, {
+  const deployArgs = ['deploy', '--prod', '--yes', `"${repoRoot}"`].join(' ');
+  console.log(`\nTriggering Vercel deployment for ${projectName}...\n`);
+  execSync(`npx vercel ${deployArgs}`, {
     stdio: 'inherit',
     env: vercelEnv,
   });
