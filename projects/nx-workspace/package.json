@@ -168,7 +168,6 @@
     "fastify": "^5.12.5",
     "fastify-plugin": "^5.1.0",
     "framer-motion": "^12.23.12",
-    "fuse.js": "^7.4.2",
     "gapi-script": "^1.2.0",
     "googleapis": "^154.1.0",
     "isomorphic-dompurify": "^2.36.0",

@@ -10,7 +10,6 @@ Renders repo markdown docs fetched at build/runtime.
 - External libs
   - Tailwind CSS
   - Radix Themes
-  - fuse.js
 - Internal libs
   - `react-lib`
   - `react-utility`
