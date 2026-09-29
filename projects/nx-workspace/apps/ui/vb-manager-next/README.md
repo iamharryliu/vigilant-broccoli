@@ -41,6 +41,7 @@ Management dashboard app.
   - OpenAI API
   - Open-Meteo (default weather provider)
   - OpenWeatherMap (alternate weather provider)
+  - Spotify Web API
   - Self-hosted (PM2)
 
 ## Agent Context

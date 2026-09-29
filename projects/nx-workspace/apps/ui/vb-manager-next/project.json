@@ -93,14 +93,14 @@
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
       "options": {
-        "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/ui/vb-manager-next/.env.local.example 'pm2 start apps/ui/vb-manager-next/ecosystem.config.js'"
+        "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/ui/vb-manager-next/.env.local.example --env-file scripts/.env.scripts.example 'node --import tsx scripts/migrate.ts --migrations-dir=apps/ui/vb-manager-next/supabase/migrations && pm2 start apps/ui/vb-manager-next/ecosystem.config.js'"
       }
     },
     "pm2:reload": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
       "options": {
-        "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/ui/vb-manager-next/.env.local.example 'pm2 reload apps/ui/vb-manager-next/ecosystem.config.js'"
+        "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/ui/vb-manager-next/.env.local.example --env-file scripts/.env.scripts.example 'node --import tsx scripts/migrate.ts --migrations-dir=apps/ui/vb-manager-next/supabase/migrations && pm2 reload apps/ui/vb-manager-next/ecosystem.config.js'"
       }
     },
     "pm2:delete": {

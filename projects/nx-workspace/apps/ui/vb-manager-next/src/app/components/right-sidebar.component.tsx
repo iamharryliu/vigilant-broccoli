@@ -19,6 +19,7 @@ import {
   CalendarDays,
   Languages,
   Briefcase,
+  ChartNetwork,
 } from 'lucide-react';
 import { NotificationRecord } from '../hooks/useNotificationHistory';
 import { NotificationsDialog } from './notifications-dialog.component';
@@ -35,6 +36,7 @@ const SIDEBAR_ROUTE_ITEMS = [
   { route: SIDEBAR_ROUTE.EVENT_CALENDARS, icon: CalendarDays },
   { route: SIDEBAR_ROUTE.LANGUAGE_LEARNING, icon: Languages },
   { route: SIDEBAR_ROUTE.CAREER, icon: Briefcase },
+  { route: SIDEBAR_ROUTE.SPOTIFY_PLAYLISTS, icon: ChartNetwork },
 ];
 
 const UNREAD_MAX = 9;
