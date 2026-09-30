@@ -104,3 +104,8 @@ projects/nx-workspace/apps/ui/pages-index/public/claude-context/
 # Claude Code's own synced-skill cache (~/.claude/skills symlinks into setup/dotfiles/.claude/skills)
 setup/dotfiles/.claude/skills/synced/
 setup/dotfiles/.claude/skills/.trash/
+
+# deploy-vercel.ts runs `vercel build --cwd <repo root>`, and the CLI writes
+# .vercel/.env.production.local there carrying a live VERCEL_OIDC_TOKEN.
+# projects/nx-workspace/.gitignore doesn't cover it at this level.
+.vercel/
