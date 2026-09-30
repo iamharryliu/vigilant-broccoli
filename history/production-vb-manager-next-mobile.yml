@@ -1,7 +1,7 @@
 url: https://production-vb-manager-next-mobile.vercel.app/login
-status: down
-code: 404
-responseTime: 216
-lastUpdated: 2026-09-30T05:43:59.171Z
+status: up
+code: 200
+responseTime: 410
+lastUpdated: 2026-09-30T13:27:50.866Z
 startTime: 2026-08-22T23:24:43.650Z
 generator: Upptime <https://github.com/upptime/upptime>
