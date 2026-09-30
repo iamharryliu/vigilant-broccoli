@@ -14,6 +14,16 @@ const VERCEL_DIR = '.vercel';
 const VERCEL_OUTPUT_DIR = `${VERCEL_DIR}/output`;
 const BUILD_LOCK_DIR = `${VERCEL_ROOT_DIRECTORY}/dist/.vercel-deploy-lock`;
 
+// Next's `output: 'standalone'` writes the server into .next/standalone as a
+// tree of symlinks into the pnpm store. Nx caches that happily, but the
+// restored tree is not something `vercel build` can package: it finds no
+// server entrypoint, fabricates apps/<app>/noop.js and dies resolving `next`
+// from there. Only a real build produces a packageable tree, so these projects
+// skip the cache. Projects on Next's default output restore from cache
+// correctly — verified — and keep the speedup, which is worth roughly a minute
+// of serialised build time each.
+const STANDALONE_OUTPUT_PROJECTS = new Set(['employee-handler-ui']);
+
 const BUILD_LOCK_TIMEOUT_MS = 20 * 60 * 1000;
 const BUILD_LOCK_POLL_MS = 500;
 
@@ -271,12 +281,9 @@ async function main() {
   const NX_VERCEL_SETTINGS = (nxProject: string, outputDirectory: string) => ({
     framework: 'nextjs',
     rootDirectory: 'projects/nx-workspace',
-    // --skip-nx-cache because `vercel build` needs the framework build to
-    // actually execute. An Nx cache hit — even one that restores the output
-    // files — leaves it convinced nothing was built, and it dies packaging a
-    // fabricated apps/<app>/noop.js. A dispatch redeploys every project, so
-    // without this any deploy with no code changes hits cache and fails.
-    buildCommand: `nx build ${nxProject} --skip-nx-cache`,
+    buildCommand: `nx build ${nxProject}${
+      STANDALONE_OUTPUT_PROJECTS.has(nxProject) ? ' --skip-nx-cache' : ''
+    }`,
     installCommand: 'pnpm install --frozen-lockfile',
     outputDirectory,
   });
