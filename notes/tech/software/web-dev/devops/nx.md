@@ -1,5 +1,13 @@
 # Nx
 
+## Table of Contents
+
+- [Commands](#commands)
+- [Workflows](#workflows)
+  - [Storybook](#storybook)
+- [Gotchas](#gotchas)
+- [References](#references)
+
 ## Commands
 
 ```
@@ -50,6 +58,11 @@ nx storybook [project-name]
 nx build-storybook [project-name]
 nx test-storybook [project-name]
 ```
+
+## Gotchas
+
+- **`--parallel` defaults to 3.** Worth raising when a `run-many` target is dominated by network waits (deploys, uploads) rather than CPU, since three slots occupied by waiting tasks starve everything else in the graph. Raising it for CPU-bound builds instead risks memory exhaustion on a small CI runner.
+- **A task whose command re-enters Nx can abort the whole run** with `Recursive task invocation detected`, printing the chain it found. Nx tracks invocations in a local database keyed on `NX_INVOCATION_ROOT_PID`, which it injects into every task's environment so nested runs join the same tracker. Two details matter when diagnosing it: entries are released when a task completes, so a dependency that already finished does **not** block a later nested invocation of the same task; and the guard fires on _simultaneous_ duplicates, so it can also mean two concurrent tasks were each told to build the same project — a symptom of shared configuration being clobbered rather than of genuine recursion.
 
 ## References
 
