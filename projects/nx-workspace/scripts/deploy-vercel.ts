@@ -271,7 +271,12 @@ async function main() {
   const NX_VERCEL_SETTINGS = (nxProject: string, outputDirectory: string) => ({
     framework: 'nextjs',
     rootDirectory: 'projects/nx-workspace',
-    buildCommand: `nx build ${nxProject}`,
+    // --skip-nx-cache because `vercel build` needs the framework build to
+    // actually execute. An Nx cache hit — even one that restores the output
+    // files — leaves it convinced nothing was built, and it dies packaging a
+    // fabricated apps/<app>/noop.js. A dispatch redeploys every project, so
+    // without this any deploy with no code changes hits cache and fails.
+    buildCommand: `nx build ${nxProject} --skip-nx-cache`,
     installCommand: 'pnpm install --frozen-lockfile',
     outputDirectory,
   });
