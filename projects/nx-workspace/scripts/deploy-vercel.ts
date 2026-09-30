@@ -1,5 +1,5 @@
 import { execSync, execFileSync } from 'child_process';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, mkdirSync, rmSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { createVaultClient, VAULT_SECRET_PATH } from './vault-client';
@@ -12,6 +12,38 @@ const VERCEL_ENV = PRODUCTION;
 const VERCEL_ROOT_DIRECTORY = 'projects/nx-workspace';
 const VERCEL_OUTPUT_DIR = '.vercel/output';
 const PREBUILT_DIR = `${VERCEL_ROOT_DIRECTORY}/dist/vercel`;
+
+const BUILD_LOCK_TIMEOUT_MS = 20 * 60 * 1000;
+const BUILD_LOCK_POLL_MS = 500;
+
+// `vercel build` pulls project settings into <cwd>/.vercel/project.json, one
+// path shared by every app deploying from this workspace — VERCEL_DIR is a
+// hardcoded constant in the CLI, so there is nothing to redirect. Two apps
+// building at once means the last pull wins and both read the same
+// buildCommand, so several nested Nx processes invoke one project's build and
+// Nx aborts the lot with "Recursive task invocation detected". Serialising is
+// the only way to remove that rather than narrow the window. mkdir is the
+// atomic primitive: it fails when the directory already exists.
+async function withBuildLock<T>(lockDir: string, fn: () => T): Promise<T> {
+  mkdirSync(dirname(lockDir), { recursive: true });
+  const deadline = Date.now() + BUILD_LOCK_TIMEOUT_MS;
+  for (;;) {
+    try {
+      mkdirSync(lockDir);
+      break;
+    } catch {
+      if (Date.now() >= deadline) {
+        throw new Error(`Timed out waiting for the build lock at ${lockDir}`);
+      }
+      await new Promise(done => setTimeout(done, BUILD_LOCK_POLL_MS));
+    }
+  }
+  try {
+    return fn();
+  } finally {
+    rmSync(lockDir, { recursive: true, force: true });
+  }
+}
 
 interface VaultSecrets {
   [key: string]: string;
@@ -380,9 +412,11 @@ async function main() {
   );
 
   console.log(`\nBuilding ${projectName}...\n`);
-  execSync(
-    `npx vercel build --prod --yes --cwd "${repoRoot}" --output "${outputDir}"`,
-    { stdio: 'inherit', env: buildEnv },
+  await withBuildLock(resolve(repoRoot, PREBUILT_DIR, '.build-lock'), () =>
+    execSync(
+      `npx vercel build --prod --yes --cwd "${repoRoot}" --output "${outputDir}"`,
+      { stdio: 'inherit', env: buildEnv },
+    ),
   );
 
   console.log(`\nDeploying ${projectName} to Vercel...\n`);
