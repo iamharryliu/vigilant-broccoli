@@ -30,7 +30,7 @@ Each app defines a `deploy` (staging) / `deploy:production` pair that sets `VERC
 
 The Hobby plan builds **one deployment at a time**, so letting Vercel build every Next.js app serialised them into ~20 min of each full deploy — the single largest cost in `deploy.yml`. Building locally and uploading the result sidesteps that cap, because a `--prebuilt` deployment has nothing left to build.
 
-Three constraints shape the wiring. Each one fails in a way that points nowhere near its cause:
+Four constraints shape the wiring. Each one fails in a way that points nowhere near its cause:
 
 - **`vercel build` must run the build itself.** Handed a `.next` that some other command produced — say an nx `dependsOn: ["build"]` — it packages nothing and dies with `Cannot find module 'next/dist/compiled/next-server/server.runtime.prod.js'`, required from a fabricated `<repoRoot>/apps/<app>/noop.js`. That is why the project keeps its real `nx build <app>` buildCommand. Do not "optimise" it to a no-op.
 - **Build-time env must be passed in the process environment.** `vercel build` does not fetch env from the API (that path is only reachable via `--id`); it loads `<cwd>/<rootDirectory>/.vercel/.env.<target>.local`. But `vercel pull` writes that file to `<cwd>/.vercel/` instead, so with a `rootDirectory` set it never loads — and the CLI only debug-logs the miss. Any app constructing a Supabase client at module scope then fails with `supabaseUrl is required`. The script passes `allSecrets` directly instead, which also keeps concurrent deploys off a shared file.
