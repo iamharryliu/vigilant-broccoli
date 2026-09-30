@@ -11,19 +11,19 @@ const VERCEL_ENV = PRODUCTION;
 
 const VERCEL_ROOT_DIRECTORY = 'projects/nx-workspace';
 const VERCEL_OUTPUT_DIR = '.vercel/output';
-const PREBUILT_DIR = `${VERCEL_ROOT_DIRECTORY}/dist/vercel`;
+const BUILD_LOCK_DIR = `${VERCEL_ROOT_DIRECTORY}/dist/.vercel-deploy-lock`;
 
 const BUILD_LOCK_TIMEOUT_MS = 20 * 60 * 1000;
 const BUILD_LOCK_POLL_MS = 500;
 
-// `vercel build` pulls project settings into <cwd>/.vercel/project.json, one
-// path shared by every app deploying from this workspace — VERCEL_DIR is a
-// hardcoded constant in the CLI, so there is nothing to redirect. Two apps
-// building at once means the last pull wins and both read the same
-// buildCommand, so several nested Nx processes invoke one project's build and
-// Nx aborts the lot with "Recursive task invocation detected". Serialising is
-// the only way to remove that rather than narrow the window. mkdir is the
-// atomic primitive: it fails when the directory already exists.
+// Every app deploying from this workspace shares one .vercel directory —
+// VERCEL_DIR is a hardcoded constant in the CLI, so there is nothing to
+// redirect, and both the build and the upload have to run from the repo root.
+// Concurrently the last `vercel build` pull wins, so apps read each other's
+// project settings: four once ran `nx build whiteboard` together and Nx
+// aborted the lot with "Recursive task invocation detected". Serialising the
+// build and its upload as one unit removes that rather than narrowing the
+// window. mkdir is the atomic primitive: it fails if the directory exists.
 async function withBuildLock<T>(lockDir: string, fn: () => T): Promise<T> {
   mkdirSync(dirname(lockDir), { recursive: true });
   const deadline = Date.now() + BUILD_LOCK_TIMEOUT_MS;
@@ -402,31 +402,33 @@ async function main() {
   // "supabaseUrl is required".
   const buildEnv = { ...vercelEnv, ...allSecrets };
 
-  // `vercel deploy --prebuilt` has no --output flag, so each app gets its own
-  // cwd to read from. Two things about that cwd, both established by running
-  // the CLI against candidate layouts rather than reading its source:
-  //   - the output sits directly under the cwd. The CLI only prepends the
-  //     project's rootDirectory when the link carries a repoRoot, and a
-  //     VERCEL_PROJECT_ID/VERCEL_ORG_ID link does not.
-  //   - the rootDirectory path still has to exist under the cwd, or the deploy
-  //     fails with "The provided path ... does not exist". An empty directory
-  //     satisfies it, since the upload only ever reads the output.
-  const prebuiltCwd = resolve(repoRoot, PREBUILT_DIR, projectName);
-  const outputDir = resolve(prebuiltCwd, VERCEL_OUTPUT_DIR);
-  mkdirSync(resolve(prebuiltCwd, VERCEL_ROOT_DIRECTORY), { recursive: true });
+  // Both commands run from the repo root, which forces them to share one
+  // output directory, so the lock spans the pair rather than just the build.
+  // The upload has to run from the repo root: the functions it uploads
+  // reference their dependencies by repo-relative path
+  // (projects/nx-workspace/node_modules/...) and it resolves them against its
+  // cwd, so anywhere else it fails with "Please ensure project dependencies
+  // have been installed". `--output` is passed explicitly because `vercel
+  // build` defaults to <cwd>/<rootDirectory>/.vercel/output while the upload
+  // reads <cwd>/.vercel/output, and left alone the two never meet.
+  const outputDir = resolve(repoRoot, VERCEL_OUTPUT_DIR);
 
-  console.log(`\nBuilding ${projectName}...\n`);
-  await withBuildLock(resolve(repoRoot, PREBUILT_DIR, '.build-lock'), () =>
+  await withBuildLock(resolve(repoRoot, BUILD_LOCK_DIR), () => {
+    // A previous app's output would otherwise be uploaded to this project if
+    // this build failed after the upload check.
+    rmSync(outputDir, { recursive: true, force: true });
+
+    console.log(`\nBuilding ${projectName}...\n`);
     execSync(
       `npx vercel build --prod --yes --cwd "${repoRoot}" --output "${outputDir}"`,
       { stdio: 'inherit', env: buildEnv },
-    ),
-  );
+    );
 
-  console.log(`\nDeploying ${projectName} to Vercel...\n`);
-  execSync(`npx vercel deploy --prebuilt --prod --yes --cwd "${prebuiltCwd}"`, {
-    stdio: 'inherit',
-    env: vercelEnv,
+    console.log(`\nDeploying ${projectName} to Vercel...\n`);
+    execSync(`npx vercel deploy --prebuilt --prod --yes --cwd "${repoRoot}"`, {
+      stdio: 'inherit',
+      env: vercelEnv,
+    });
   });
 
   console.log('\nDone!');
