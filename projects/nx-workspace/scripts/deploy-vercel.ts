@@ -10,7 +10,8 @@ const ENVIRONMENTS = [STAGING, PRODUCTION];
 const VERCEL_ENV = PRODUCTION;
 
 const VERCEL_ROOT_DIRECTORY = 'projects/nx-workspace';
-const VERCEL_OUTPUT_DIR = '.vercel/output';
+const VERCEL_DIR = '.vercel';
+const VERCEL_OUTPUT_DIR = `${VERCEL_DIR}/output`;
 const BUILD_LOCK_DIR = `${VERCEL_ROOT_DIRECTORY}/dist/.vercel-deploy-lock`;
 
 const BUILD_LOCK_TIMEOUT_MS = 20 * 60 * 1000;
@@ -414,9 +415,13 @@ async function main() {
   const outputDir = resolve(repoRoot, VERCEL_OUTPUT_DIR);
 
   await withBuildLock(resolve(repoRoot, BUILD_LOCK_DIR), () => {
-    // A previous app's output would otherwise be uploaded to this project if
-    // this build failed after the upload check.
-    rmSync(outputDir, { recursive: true, force: true });
+    // The whole .vercel directory goes, not just the output. `vercel build`
+    // takes its settings from an existing .vercel/project.json in preference
+    // to VERCEL_PROJECT_ID, so a link left by the previous app makes it build
+    // that app's project instead — and the upload still goes to the right
+    // project, silently publishing one app's code under another's name.
+    // Clearing it forces a fresh pull for the project named in the env.
+    rmSync(resolve(repoRoot, VERCEL_DIR), { recursive: true, force: true });
 
     console.log(`\nBuilding ${projectName}...\n`);
     execSync(
