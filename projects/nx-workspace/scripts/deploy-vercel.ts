@@ -402,14 +402,18 @@ async function main() {
   // "supabaseUrl is required".
   const buildEnv = { ...vercelEnv, ...allSecrets };
 
-  // `vercel deploy --prebuilt` has no --output flag and always reads
-  // <cwd>/<rootDirectory>/.vercel/output, hence the per-app cwd.
+  // `vercel deploy --prebuilt` has no --output flag, so each app gets its own
+  // cwd to read from. Two things about that cwd, both established by running
+  // the CLI against candidate layouts rather than reading its source:
+  //   - the output sits directly under the cwd. The CLI only prepends the
+  //     project's rootDirectory when the link carries a repoRoot, and a
+  //     VERCEL_PROJECT_ID/VERCEL_ORG_ID link does not.
+  //   - the rootDirectory path still has to exist under the cwd, or the deploy
+  //     fails with "The provided path ... does not exist". An empty directory
+  //     satisfies it, since the upload only ever reads the output.
   const prebuiltCwd = resolve(repoRoot, PREBUILT_DIR, projectName);
-  const outputDir = resolve(
-    prebuiltCwd,
-    VERCEL_ROOT_DIRECTORY,
-    VERCEL_OUTPUT_DIR,
-  );
+  const outputDir = resolve(prebuiltCwd, VERCEL_OUTPUT_DIR);
+  mkdirSync(resolve(prebuiltCwd, VERCEL_ROOT_DIRECTORY), { recursive: true });
 
   console.log(`\nBuilding ${projectName}...\n`);
   await withBuildLock(resolve(repoRoot, PREBUILT_DIR, '.build-lock'), () =>
