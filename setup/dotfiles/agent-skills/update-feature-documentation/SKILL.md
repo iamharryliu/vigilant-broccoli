@@ -1,6 +1,9 @@
 ---
-description: Create or update the slim docs/features note under the affected app for this conversation's changes.
+name: update-feature-documentation
+description: In vigilant-broccoli, create or update the slim docs/features note under the affected app for this conversation's changes.
 ---
+
+Use the current vigilant-broccoli checkout and resolve repository paths from its Git root. If the current directory is outside that repo, ask which checkout to use; do not operate on the skill installation checkout by default.
 
 Update or create a docs/features/this-feature.md to reflect changes in this conversation. Feature docs should live under the most relevant application's directory (e.g. `apps/my-app/docs/features/`), not at the workspace root.
 

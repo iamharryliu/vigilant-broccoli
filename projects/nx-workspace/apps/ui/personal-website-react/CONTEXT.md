@@ -1,4 +1,4 @@
-# CLAUDE — apps/ui/personal-website-react
+# Agent Context — apps/ui/personal-website-react
 
 `src/app/content/about.md` is not just the about page's content — it is also
 the source of truth for the `iamharryliu/iamharryliu` GitHub profile README.

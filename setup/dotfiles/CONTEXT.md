@@ -1,4 +1,4 @@
-# CLAUDE — setup/dotfiles
+# Agent Context — setup/dotfiles
 
 ## Table of Contents
 

@@ -1,4 +1,4 @@
-# CLAUDE — vb-manager-next
+# Agent Context — vb-manager-next
 
 ## Table of Contents
 

@@ -1,6 +1,9 @@
 ---
-description: Refresh every README.md against docs/app-readme-pattern.md and the current code.
+name: update-readmes
+description: In vigilant-broccoli, refresh every README.md against docs/app-readme-pattern.md and the current code.
 ---
+
+Use the current vigilant-broccoli checkout and resolve repository paths from its Git root. If the current directory is outside that repo, ask which checkout to use; do not operate on the skill installation checkout by default.
 
 Review and refresh every `README.md` in the repo to match `docs/app-readme-pattern.md`:
 

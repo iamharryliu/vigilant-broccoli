@@ -1,4 +1,5 @@
 ---
+name: docs-spell-check
 description: Spell-check the current directory with the spellcheck CLI.
 ---
 

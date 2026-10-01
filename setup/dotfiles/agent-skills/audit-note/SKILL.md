@@ -1,7 +1,9 @@
 ---
-description: Audit the repo for a scope and write a findings note under docs/audit/ from the audit template.
-argument-hint: <scope>
+name: audit-note
+description: In vigilant-broccoli, audit the repo for a scope and write a findings note under docs/audit/ from the audit template.
 ---
+
+Use the current vigilant-broccoli checkout and resolve repository paths from its Git root. If the current directory is outside that repo, ask which checkout to use; do not operate on the skill installation checkout by default.
 
 Audit the codebase for the scope in the arguments (or in this conversation) and write a concise findings note under `docs/audit/`.
 

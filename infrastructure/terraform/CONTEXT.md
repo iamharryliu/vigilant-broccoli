@@ -1,4 +1,4 @@
-# CLAUDE — infrastructure/terraform
+# Agent Context — infrastructure/terraform
 
 ## Table of Contents
 

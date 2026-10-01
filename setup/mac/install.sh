@@ -7,7 +7,7 @@ if ask "Install Brew dependencies?"; then
 fi
 
 if ask "Symlink dotfiles?"; then
-    symlink_common_dotfiles
+    symlink_common_dotfiles || exit 1
     create_symlink "$DOTFILES_DIR/macos" "$HOME/shell-macos"
     create_symlink "$ZSH_DOTFILES_DIR/.rc.zsh" "$HOME/.zshrc"
     create_symlink "$ZSH_DOTFILES_DIR/.aliases.mac.zsh" "$HOME/.zsh_aliases"

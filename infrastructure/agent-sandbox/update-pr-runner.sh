@@ -17,7 +17,11 @@ cd "$REPO_DIR"
 cp "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh" "$PRE_COMMIT_HELPER"
 
 git fetch origin --quiet
+bash "$REPO_DIR/setup/common/sync-agent-support.sh" --clean
 gh pr checkout "$PR"
+if [ -f "$REPO_DIR/setup/common/sync-agent-support.sh" ]; then
+  bash "$REPO_DIR/setup/common/sync-agent-support.sh"
+fi
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"

@@ -1,4 +1,4 @@
-# CLAUDE — infrastructure/jellyfin-pi
+# Agent Context — infrastructure/jellyfin-pi
 
 ## Table of Contents
 

@@ -1,4 +1,4 @@
-# CLAUDE — devops-cli
+# Agent Context — devops-cli
 
 ## Table of Contents
 

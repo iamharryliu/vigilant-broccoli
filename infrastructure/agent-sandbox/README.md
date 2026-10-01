@@ -35,6 +35,8 @@ rows whose paths, line numbers, counts or scope have drifted. `cron-agentic-todo
   or if any file other than `TODO.md` changed. Ids are the handle `pnpm agentic:task:solve <id>` resolves, so a table
   rewrite that quietly drops one is treated as a failure, not a diff to review.
 
+The entrypoint runs the Linux installer to generate ignored `CLAUDE.md` and `AGENTS.md` links from tracked `CONTEXT.md` sources and install shared skills. PR fix/update runners regenerate adapters after checking out the target branch. See [agent support](../../docs/agent-support.md).
+
 ## Stack
 
 - Language - Bash

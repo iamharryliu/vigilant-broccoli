@@ -1,4 +1,4 @@
-# CLAUDE — vb-manager-next-mobile
+# Agent Context — vb-manager-next-mobile
 
 ## Table of Contents
 

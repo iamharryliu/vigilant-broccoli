@@ -77,3 +77,6 @@ package-lock.json
 
 # One-shot LLM migration prompts written by `nx migrate`
 tools/ai-migrations/
+# Nx formatting reads this workspace's ignore rules, not the repository root's.
+AGENTS.md
+CLAUDE.md

@@ -1,4 +1,4 @@
-# CLAUDE — .github
+# Agent Context — .github
 
 ## Table of Contents
 

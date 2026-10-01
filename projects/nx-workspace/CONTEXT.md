@@ -1,4 +1,4 @@
-# CLAUDE — projects/nx-workspace
+# Agent Context — projects/nx-workspace
 
 ## Table of Contents
 
@@ -6,6 +6,7 @@
   - [`sharp` must stay in the nx-workspace root `dependencies`](#sharp-must-stay-in-the-nx-workspace-root-dependencies)
   - [A `react-lib` component renders unstyled in an app that never scanned it](#a-react-lib-component-renders-unstyled-in-an-app-that-never-scanned-it)
   - [The three link surfaces share one section structure and drift silently](#the-three-link-surfaces-share-one-section-structure-and-drift-silently)
+  - [Nx formatting needs workspace-local ignores for generated agent links](#nx-formatting-needs-workspace-local-ignores-for-generated-agent-links)
 
 ## Nuances
 
@@ -46,7 +47,7 @@ way, and nothing checks them against each other:
 
 - `apps/ui/personal-website-react/src/app/content/about.md` — a shields.io
   badge table, one row per section. Also the `iamharryliu/iamharryliu` profile
-  README (see that app's own `CLAUDE.md`), so a drift here ships to GitHub.
+  README (see that app's own `CONTEXT.md`), so a drift here ships to GitHub.
 - `apps/ui/personal-website-react/src/app/components/pages/link-tree.page.tsx`
   — `LINK_TREE_SECTIONS`, rendered at `harryliu.dev/links`.
 - `libs/@vigilant-broccoli/links/src/lib/pastebin.consts.ts` —
@@ -71,3 +72,14 @@ URLs belong in `libs/@vigilant-broccoli/personal-common-js/src/index.ts`
 `about.md` is the one surface that can't import them, so check it by hand
 against those consts. When editing any one of the three, open the other two in
 the same change.
+
+### Nx formatting needs workspace-local ignores for generated agent links
+
+`nx format:write` reads `.gitignore` and `.nxignore` from the Nx workspace
+root, not the repository root. During the context migration, its changed-file
+list still included deleted `CLAUDE.md` paths. Setup had recreated those paths
+as ignored symlinks, so Nx passed them to Prettier, which rejected them with
+"Explicitly specified pattern is a symbolic link" and blocked the commit hook.
+
+Keep `AGENTS.md` and `CLAUDE.md` in this workspace's `.gitignore` as well as
+the repository's. Format the canonical `CONTEXT.md` sources.
