@@ -54,4 +54,3 @@ One security note: `vercel build` and `vercel pull` leave `.vercel/.env.<target>
 - [Managing Builds](https://vercel.com/docs/builds/managing-builds) — build machines and the per-plan concurrency limits
 - [Build Output API](https://vercel.com/docs/build-output-api/v3) — the format `vercel build` emits and `--prebuilt` uploads
 - [Fair Use Guidelines](https://vercel.com/docs/limits/fair-use-guidelines)
-- [vercel-deploy-pattern.md](../../../../../docs/app-development/ui/deployment/vercel-deploy-pattern.md) — how this repo deploys Next.js apps to Vercel
