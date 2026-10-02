@@ -129,7 +129,6 @@ Linting (nvim-lint) runs automatically on save, buffer enter, and leaving insert
 ```
 neovide -- -c "terminal" -c "startinsert"   # Start Neovide as a dedicated terminal
 neovide -- -c "vsplit +term"                # Start with editor and terminal side-by-side
-neovide-project-tmux                        # Example alias: start Neovide attached to a project tmux session
 
 
 # --- OPENING INSIDE NEOVIDE (NORMAL MODE) ---
