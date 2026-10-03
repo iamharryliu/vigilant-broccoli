@@ -5,6 +5,7 @@
 - [Software Breakdown](./general/software-breakdown.md)
 - [Software Roadmap](./software-roadmap.md)
 - [Dev Glossary](./dev-glossary.md)
+- [URI Anatomy](./uri-anatomy.md)
 - [Software Languages](./languages/software-languages.md)
 - [Web Dev](./web-dev/web-dev.md)
 - [Software Practices](./general/software-practices.md)
