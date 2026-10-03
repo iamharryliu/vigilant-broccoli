@@ -6,6 +6,7 @@ Static UIs in `apps/ui/*` deploy to Cloudflare Pages via wrangler.
 
 - [The wrangler target trio (per environment)](#the-wrangler-target-trio-per-environment)
 - [Branch matching: every deploy passes `--branch` explicitly](#branch-matching-every-deploy-passes---branch-explicitly)
+- [PR previews](#pr-previews)
 - [Per-environment build config](#per-environment-build-config)
 - [Sources outside the nx graph need their own trigger](#sources-outside-the-nx-graph-need-their-own-trigger)
 - [Custom domains (Terraform)](#custom-domains-terraform)
@@ -40,6 +41,20 @@ The failure is invisible: CI stays green, and the live URL keeps serving the las
 
 **`ensure-cf-project` cannot repair an existing project.** It is a create-if-missing guard, so changing `--production-branch` in `project.json` only affects projects that don't exist yet. To change it on a live project, either delete the project and let the next deploy recreate it (which also drops any Terraform-managed `cloudflare_pages_domain` attachment — re-run `pnpm tf:apply` to restore it), or PATCH `production_branch` via the Cloudflare API.
 
+## PR previews
+
+`personal-website-react`, `pages-index`, and `docs-md` also carry a preview trio against a dedicated `preview-<site>` project, kept separate so the staging prune can't delete a PR's live preview:
+
+- `ensure-cf-project:preview` — same auto-create as above.
+- `deploy:preview` — `wrangler pages deploy <dist dir> --project-name preview-<site> --branch "$PREVIEW_BRANCH" --commit-hash "$PREVIEW_COMMIT"`. `PREVIEW_BRANCH` is `pr-<n>`, not a git branch, so Pages serves the PR at the alias `pr-<n>.preview-<site>.pages.dev`. It never equals the project's `production_branch`, which is what keeps every preview a Preview deployment per the rule above. `--commit-hash` is what ties a deployment back to a commit in the Cloudflare dashboard — the alias deliberately carries no commit, so that it stays stable as the PR is pushed to.
+- `prune-deployments:preview` — `scripts/prune-wrangler-preview-deployments.ts preview-<site>`: keeps only the newest deployment of each **open** PR (`gh pr list --state open`, so it needs `GH_TOKEN`) and deletes the rest. It carries its own `dependsOn` for the same first-deploy race reason as the staging trio.
+
+**The alias is keyed on the PR, not the branch, for two reasons.** Cloudflare sanitises a branch name into the alias host and truncates it to 28 characters, so `agent/task-implement-preview-branches-for-stateless-1790107341` collapsed to `agent-task-implement-preview` — two branches agreeing on the first 28 sanitised characters would silently share one alias. `pr-<n>` is short, unique, and readable. It also gives the prune a liveness signal that matches what a preview is for: a PR being closed, rather than a branch eventually being deleted.
+
+`deploy-preview.yml` runs `deploy:preview` for the affected projects on every pull request (plus `pages-index`/`docs-md` when their out-of-workspace snapshot sources change), writes a table of the alias and per-deployment URLs to the job summary, then prunes. It is `pull_request`-triggered because a `push` event carries no PR number. `cron-cleanup-preview-deployments.yml` runs the prune for every project daily, collecting the previews of PRs that have since closed. Previews build with `--skip-nx-cache`: `VITE_BASE_PATH` isn't a build input, so a cached `/vigilant-broccoli/`-based Pages build could otherwise be served. Both workflows pass `--output-style=static`, since nx hides successful tasks' output and that output is the only record of the URLs deployed and the deployments deleted. `pages-index` links to other GitHub Pages sub-paths (`/vigilant-broccoli/react-component-library/`) don't resolve on its preview.
+
+A new stateless site opts in by adding the trio — the workflows discover it via `nx show projects --withTarget=deploy:preview`. Only stateless sites belong here: a preview of an app with a backend would still talk to staging services.
+
 ## Per-environment build config
 
 `deploy:production` builds with `--configuration=production-env` — a build configuration whose `fileReplacements` swap `environment.ts` → `environment.production.ts`, baking per-env fly URLs into the bundle at build time (static sites cannot read env vars at runtime).
@@ -57,3 +72,4 @@ Terraform owns the `cloudflare_pages_domain` attachment and its DNS record — o
 1. Wrangler target trio (staging, and `:production` variants unless deliberately single-env) + `manual-deploy` in `project.json` — copy `docs-md`, which has `prune-deployments`'s `dependsOn` ordering right (`personal-website-react` and `cloud-8-skate-react` were both missing it until it caused a first-deploy CI failure).
 2. Matching `--production-branch`/`--branch` pair per environment (`main` for staging, `production` for `:production`) on every wrangler command.
 3. `cloudflare-<site>.tf` if the site gets a custom domain.
+4. The `:preview` trio if the site is stateless and should get PR previews.

@@ -267,9 +267,11 @@ resource "google_iam_workload_identity_pool_provider" "github" {
   # secrets). pull_request runs execute their workflow YAML from the PR
   # branch, so a PR that could mint a token through this provider could edit
   # its own workflow to impersonate this SA and reach that access — so
-  # pull_request tokens are refused here and must use the github-pr-check
-  # provider (narrow SA, github-actions-pr-check.tf) instead. Verified safe:
-  # ci-pr-check.yml is the only pull_request-triggered workflow, and no
+  # pull_request tokens are refused here and must use a narrow, per-workflow
+  # provider instead (github-pr-check in github-actions-pr-check.tf,
+  # github-deploy-preview in github-actions-deploy-preview.tf). Verified safe:
+  # ci-pr-check.yml and deploy-preview.yml are the only pull_request-triggered
+  # workflows and both use their own provider, and no
   # push/dispatch/workflow_call/workflow_run flow that legitimately uses this
   # provider ever carries event_name == "pull_request" (workflow_call tokens
   # keep the originating event's name, and deploy.yml's only caller is the

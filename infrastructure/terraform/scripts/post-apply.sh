@@ -202,6 +202,22 @@ fi
 
 '"${nx_cache_read_put_cmd}"'
 
+# deploy-preview.yml can only read kv/data/deploy-preview, so the two
+# Cloudflare Pages credentials it needs are mirrored there. Read back out of
+# kv/secrets rather than passed in from Terraform state: this token is created
+# by hand in the Cloudflare dashboard, so kv/secrets is the only source, and a
+# rotation needs nothing but a tf:post-apply re-run.
+CF_PREVIEW_ACCOUNT_ID=$(vault kv get -field=CLOUDFLARE_ACCOUNT_ID kv/secrets 2>/dev/null || true)
+CF_PREVIEW_API_TOKEN=$(vault kv get -field=CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS kv/secrets 2>/dev/null || true)
+if [ -n "$CF_PREVIEW_ACCOUNT_ID" ] && [ -n "$CF_PREVIEW_API_TOKEN" ]; then
+  vault kv put kv/deploy-preview \
+    CLOUDFLARE_ACCOUNT_ID="$CF_PREVIEW_ACCOUNT_ID" \
+    CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS="$CF_PREVIEW_API_TOKEN"
+  echo "Mirrored Cloudflare Pages credentials to kv/data/deploy-preview"
+else
+  echo "Warning: CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS missing from kv/data/secrets - kv/data/deploy-preview left unchanged, branch previews will fail to deploy."
+fi
+
 echo "Secrets synced to Vault"
 '
 
