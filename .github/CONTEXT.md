@@ -1,5 +1,7 @@
 # Agent Context — .github
 
+Workflow conventions — filename routing, action and runner pinning, `timeout-minutes`, `concurrency` groups, cron staggering and where toolchain versions come from — are in [workflow-conventions.md](../docs/ci/workflow-conventions.md). Read it before adding or changing a workflow; none of it is enforced by CI.
+
 ## Table of Contents
 
 - [Nuances](#nuances)
