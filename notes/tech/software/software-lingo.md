@@ -2,6 +2,7 @@
 
 - [Programming Concepts](#programming-concepts)
 - [Architecture](#architecture)
+- [Networking](#networking)
 - [Tooling](#tooling)
 
 ## Programming Concepts
@@ -19,8 +20,6 @@
 | Ternary Operator              | A one line if else statement.                                                                                                                     |
 | Test Driven Development (TDD) | You write your test code first and then write the actual code after.                                                                              |
 | Transpiler                    | Transforms code syntax and features so the code runs across different environments.                                                               |
-| URI                           | Uniform Resource Identifier. See [URI vs URL](./general/software-nuances.md#uri-vs-url).                                                          |
-| URL                           | Uniform Resource Locator. See [URI vs URL](./general/software-nuances.md#uri-vs-url).                                                             |
 
 ## Architecture
 
@@ -37,18 +36,25 @@
 | Monorepo                  | A single repository that contains multiple projects, often related, to simplify development and collaboration.                                      |
 | Pub/Sub Model             | Publisher -> Message Broker (routes topics) -> Subscriber                                                                                           |
 
+## Networking
+
+| Term          | Definition                                                                                                                     |
+| :------------ | :----------------------------------------------------------------------------------------------------------------------------- |
+| Edge Requests | Requests served/handled at edge servers close to users. Benefits are lower latency, faster response, smarter request handling. |
+| URI           | Uniform Resource Identifier.                                                                                                   |
+| URL           | Uniform Resource Locator.                                                                                                      |
+
 ## Tooling
 
-| Term            | Definition                                                                                                                     |
-| :-------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| Bundler         | A tool that packages multiple files and their dependencies into a single file or set of files for deployment.                  |
-| CPU bound       | A condition where the speed of a program is limited by the processor's computation power.                                      |
-| cron            | Operating system utility used to schedule automation script executions.                                                        |
-| Edge Requests   | Requests served/handled at edge servers close to users. Benefits are lower latency, faster response, smarter request handling. |
-| Elasticsearch   | A distributed, open-source search and analytics engine for handling large volumes of data in real time.                        |
-| Hadoop          | An open-source framework for distributed storage and processing of large data sets using clusters of computers.                |
-| IO bound        | A condition where the speed of a program is limited by input/output operations like reading files or network requests.         |
-| Package Manager | A tool that automates the process of installing, upgrading, and managing software dependencies.                                |
-| Redis           | An in-memory data structure store used as a database, cache, and message broker for high-performance applications.             |
-| Runtime         | The environment in which a program or script executes, including the necessary tools and resources.                            |
-| tree shaking    | A code optimization technique that removes unused code (dead code) from the final bundle during the build process.             |
+| Term            | Definition                                                                                                             |
+| :-------------- | :--------------------------------------------------------------------------------------------------------------------- |
+| Bundler         | A tool that packages multiple files and their dependencies into a single file or set of files for deployment.          |
+| CPU bound       | A condition where the speed of a program is limited by the processor's computation power.                              |
+| cron            | Operating system utility used to schedule automation script executions.                                                |
+| Elasticsearch   | A distributed, open-source search and analytics engine for handling large volumes of data in real time.                |
+| Hadoop          | An open-source framework for distributed storage and processing of large data sets using clusters of computers.        |
+| IO bound        | A condition where the speed of a program is limited by input/output operations like reading files or network requests. |
+| Package Manager | A tool that automates the process of installing, upgrading, and managing software dependencies.                        |
+| Redis           | An in-memory data structure store used as a database, cache, and message broker for high-performance applications.     |
+| Runtime         | The environment in which a program or script executes, including the necessary tools and resources.                    |
+| tree shaking    | A code optimization technique that removes unused code (dead code) from the final bundle during the build process.     |
