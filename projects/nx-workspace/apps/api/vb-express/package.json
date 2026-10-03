@@ -20,7 +20,7 @@
     "fastify-plugin": "^5.1.0",
     "googleapis": "*",
     "json-schema-to-ts": "*",
-    "nodemailer": "^9.1.1",
+    "nodemailer": "^10.0.13",
     "qrcode": "*",
     "resend": "*",
     "tslib": "*",

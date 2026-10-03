@@ -16,7 +16,7 @@
     "@vigilant-broccoli/react-lib": "workspace:*",
     "leaflet": "*",
     "lucide-react": "*",
-    "next": "16.3.5",
+    "next": "16.3.8",
     "react": "*",
     "react-day-picker": "^10.0.1",
     "react-leaflet": "*",

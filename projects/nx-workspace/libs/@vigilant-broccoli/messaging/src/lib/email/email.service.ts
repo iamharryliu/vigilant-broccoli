@@ -1,5 +1,8 @@
-import nodemailer from 'nodemailer';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
+import nodemailer, { type Transporter } from 'nodemailer';
+import type {
+  SMTPSentMessageInfo,
+  SMTPTransportOptions,
+} from 'nodemailer/lib/smtp-transport';
 import { Resend } from 'resend';
 import { DEFAULT_TEMPLATE_DATA, getDefaultEmailRequest } from './email.consts';
 import { logger, getEnvironmentVariable } from '@vigilant-broccoli/common-node';
@@ -26,7 +29,7 @@ export type EmailServiceConfig = SmtpConfig | ResendConfig;
 export class EmailService {
   private provider: EmailProvider;
   private defaultFrom: string;
-  private transporter?: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
+  private transporter?: Transporter<SMTPSentMessageInfo, SMTPTransportOptions>;
   private resend?: Resend;
 
   constructor(
