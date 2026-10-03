@@ -38,14 +38,9 @@ jobs:
         with:
           gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-          # The preview account, same as deploy-preview.yml — the preview
-          # projects live there, so the shared deploy token cannot see them.
-          # Read straight from kv/data/secrets (the source of truth) rather
-          # than the mirrored kv/data/deploy-preview, since this job runs from
-          # the default branch and the shared role can read it.
           secrets: |
-            kv/data/secrets CLOUDFLARE_PREVIEW_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
-            kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_PREVIEWS | CLOUDFLARE_API_TOKEN ;
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
+            kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
 
       # --output-style=static: nx hides successful tasks' output, which here is
       # the only record of how many deployments were deleted. GH_TOKEN: the

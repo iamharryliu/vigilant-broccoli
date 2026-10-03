@@ -43,7 +43,7 @@ The failure is invisible: CI stays green, and the live URL keeps serving the las
 
 ## PR previews
 
-`personal-website-react`, `pages-index`, and `docs-md` also carry a preview trio against a dedicated `preview-<site>` project, kept separate so the staging prune can't delete a PR's live preview. Those projects live in a **second Cloudflare account**, reached with its own token — see [secret-management.md](../../../infrastructure/secret-management.md#pr-preview-deploy-credentials) for why that boundary exists:
+`personal-website-react`, `pages-index`, and `docs-md` also carry a preview trio against a dedicated `preview-<site>` project, kept separate so the staging prune can't delete a PR's live preview:
 
 - `ensure-cf-project:preview` — same auto-create as above.
 - `deploy:preview` — `wrangler pages deploy <dist dir> --project-name preview-<site> --branch "$PREVIEW_BRANCH" --commit-hash "$PREVIEW_COMMIT"`. `PREVIEW_BRANCH` is `pr-<n>`, not a git branch, so Pages serves the PR at the alias `pr-<n>.preview-<site>.pages.dev`. It never equals the project's `production_branch`, which is what keeps every preview a Preview deployment per the rule above. `--commit-hash` is what ties a deployment back to a commit in the Cloudflare dashboard — the alias deliberately carries no commit, so that it stays stable as the PR is pushed to.

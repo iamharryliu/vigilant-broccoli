@@ -84,18 +84,11 @@ jobs:
           echo "projects=$(echo "$PROJECTS_JSON" | jq -r 'unique | join(",")')" >> $GITHUB_OUTPUT
 
       # Not the shared GCP_SERVICE_ACCOUNT / GCP_WORKLOAD_IDENTITY_PROVIDER
-      # pair: this workflow runs the YAML of the PR branch, so its identity is
-      # reachable by anyone who can open a PR. Both the GCP provider
+      # pair: this workflow runs the YAML of whatever branch was pushed, so its
+      # identity is reachable by anyone who can push one. Both the GCP provider
       # (github-actions-deploy-preview.tf) and the Vault role
       # (run-vault-post-init.sh) pin job_workflow_ref to this file and grant
-      # nothing but kv/data/deploy-preview.
-      #
-      # That path holds a SECOND Cloudflare account's credentials, not
-      # CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS. A Pages token is account-scoped
-      # and cannot be limited to one project, and the deploy step below builds
-      # PR-authored code with this token in its environment — so a malicious PR
-      # must only ever reach an account holding preview projects, never the one
-      # serving harryliu.dev, docs.harryliu.dev and cloud8skate.com.
+      # nothing but the Cloudflare Pages deploy credentials.
       - name: Import Secrets from Vault
         if: steps.check.outputs.projects != ''
         uses: ./.github/actions/vault-secrets
@@ -105,7 +98,7 @@ jobs:
           role: github-actions-deploy-preview-role
           secrets: |
             kv/data/deploy-preview CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
-            kv/data/deploy-preview CLOUDFLARE_API_TOKEN | CLOUDFLARE_API_TOKEN ;
+            kv/data/deploy-preview CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
 
       # --skip-nx-cache: VITE_BASE_PATH isn't a build input, so a cached main
       # build staged for GitHub Pages (base /vigilant-broccoli/) would otherwise
