@@ -5,4 +5,6 @@
 - [Database](./database/database.md)
 - [Devops](./devops/devops.md)
 - [Networking](./networking/networking.md)
+- [Authentication](./authentication.md)
+- [Service Communication](./service-communication.md)
 - [Web Dev Tools](./tools/web-dev-tools.md)
