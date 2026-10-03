@@ -43,3 +43,8 @@
 - **Documentation**
   - Immediately writing documentation after implementing new code.
   - Using a **single source of truth** rather than multiple places that may need to be updated if any code changes such as a singular README.md.
+
+## Application Building
+
+- **POC**
+  - Interfaces > utils > tests > implementation > scaling
