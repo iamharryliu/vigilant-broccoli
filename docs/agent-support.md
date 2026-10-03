@@ -5,7 +5,7 @@ Repository context and workflows shared by Claude Code, Codex, and future agents
 ## Table of Contents
 
 - [Sources and adapters](#sources-and-adapters)
-- [Maintaining repository links](#maintaining-repository-links)
+- [Adding a context source or skill](#adding-a-context-source-or-skill)
 - [Installing skills](#installing-skills)
 - [Context discovery](#context-discovery)
 
@@ -17,26 +17,36 @@ Repository context and workflows shared by Claude Code, Codex, and future agents
 | `setup/dotfiles/agent-skills/<name>/SKILL.md` | Claude command aliases in `setup/dotfiles/.claude/commands/`   |
 | Shared skill directories                      | Installed links in `~/.agents/skills/` and `~/.claude/skills/` |
 
-Only the neutral context and skill sources are tracked. `AGENTS.md`, `CLAUDE.md`, and Claude command aliases are generated, Git-ignored relative symlinks; they contain no duplicate Markdown. Agent-specific settings stay in their own files, such as `.codex/config.toml` and a skill's `agents/openai.yaml`.
+`CONTEXT.md` and the shared `SKILL.md` files are the only sources. The adapters beside them are committed relative symlinks (Git mode `120000`, ten bytes, one blob shared by all of them), so they carry no duplicate Markdown and a clone is usable before any setup runs. Agent-specific settings stay in their own files, such as `setup/dotfiles/.codex/config.toml` and a skill's `agents/openai.yaml`.
 
 Skills reference [CONTEXT.md](../CONTEXT.md) and the documents in its Doc Map rather than copying conventions. Change the owning document first when a workflow and its conventions disagree. Repo-specific skills operate on the current vigilant-broccoli checkout; a global installation does not authorize operating on the installation checkout from another project.
 
-## Maintaining repository links
+## Adding a context source or skill
 
-After cloning, creating a worktree, switching branches, or adding a context source or skill, run:
+Clones, worktrees, branch switches, the sandbox container and CI all get the adapters from Git, so nothing has to be generated or refreshed. Only a new source needs its adapters created, once, in the same commit:
 
 ```bash
-bash setup/common/sync-agent-support.sh
-bash setup/common/sync-agent-support.sh --check
+# new directory context
+ln -s CONTEXT.md <dir>/CLAUDE.md && ln -s CONTEXT.md <dir>/AGENTS.md
+# new shared skill
+ln -s ../../agent-skills/<name>/SKILL.md setup/dotfiles/.claude/commands/<name>.md
+git add <dir>/CLAUDE.md <dir>/AGENTS.md
 ```
 
-The script discovers tracked and unignored new `CONTEXT.md` files and shared skills. It creates missing links, repairs incorrect symlink targets, and preserves conflicting regular files and directories with an error. It reports orphaned adapters instead of deleting them. Use `--clean` before moving or deleting sources or switching branches, then regenerate afterward. Cleanup removes only symlinks with the targets owned by this script; it preserves regular files and unrelated symlinks. `--check` reports drift without changing files and runs in PR CI.
+The `pre-commit` job in `ci-pr-check.yml` fails when a `CONTEXT.md` is missing either adapter, when an adapter is a regular file rather than mode `120000`, or when one points somewhere other than its own directory's `CONTEXT.md`.
 
-Commit only the sources. Run setup before starting an agent in a fresh checkout: both machine installers and the standalone agent setup generate the links. PR CI generates and checks them, including that Git tracks no adapters and the checkout stays clean. Sandbox startup cleans old generated links before pulling and runs the Linux installer to regenerate them. PR fix/update runners also clean before checkout and regenerate for the target branch; new interactive sandbox sessions regenerate before launching the agent. The context viewer snapshots only the canonical context and shared skills, so each document appears once. Its existing `/claude-context` URL remains available.
+Two constraints follow from the adapters being tracked symlinks:
+
+- Prettier exits non-zero on an explicitly passed symbolic link and `.prettierignore` does not suppress it, so `format:commit` routes `lint-staged`'s file list through `scripts/shell/format-staged.sh`, which drops symlinks. Nx reads its own workspace's ignore rules, so `projects/nx-workspace/.gitignore` keeps `AGENTS.md`/`CLAUDE.md` listed to keep `nx format` from handing them to Prettier. Format the `CONTEXT.md` sources.
+- A tool that saves by writing a temporary file and renaming it over the target replaces the symlink with a regular file. Git reports that as a typechange (`T` in `git status`), and the CI check above fails on it.
+
+A Windows checkout without symlink support materializes each adapter as a text file containing the string `CONTEXT.md`; this repository targets macOS and Linux only.
+
+The context viewer snapshots only the canonical context and shared skills, so each document appears once. Its existing `/claude-context` URL remains available.
 
 ## Installing skills
 
-Both platform installers call the shared agent setup. To generate context adapters and install agent skills from the repository root:
+Both platform installers call the shared agent setup. To install the agent skills from the repository root:
 
 ```bash
 bash setup/common/agent-skills.sh
@@ -44,7 +54,7 @@ bash setup/common/agent-skills.sh
 
 An optional destination home directory lets you check installation in isolation. Setup creates per-skill links in `~/.agents/skills/` and `~/.claude/skills/`, plus command links in `~/.claude/commands/`. Matching entries are left alone; conflicting files, directories, and dangling symlinks are reported and preserved, with a nonzero exit status. Existing directory symlinks and caches from older installations continue to work.
 
-Installed Claude commands point through the generated `.claude/commands/` paths used by the sandbox runners. Run `bash setup/common/agent-skills-smoketest.sh` to check fresh installs, repeated setup, legacy caches, conflicts, and command compatibility; machine-setup CI runs it too.
+Installed Claude commands point through the committed `.claude/commands/` symlinks used by the sandbox runners. Run `bash setup/common/agent-skills-smoketest.sh` to check fresh installs, repeated setup, legacy caches, conflicts, and command compatibility; machine-setup CI runs it too.
 
 Use `/audit-note <scope>` in Claude or `$audit-note <scope>` in Codex. `ship-pr` requires explicit invocation; its Codex metadata disables implicit invocation. Start a new session after installation if skills are not visible. Executables, credentials, permissions, plugins, and personal settings are managed separately.
 
@@ -52,4 +62,9 @@ Use `/audit-note <scope>` in Claude or `$audit-note <scope>` in Codex. `ship-pr`
 
 Each agent reads its conventional filename, which resolves to the adjacent `CONTEXT.md`. Keep directory context beside the code it governs so relative documentation links and scoping remain intact.
 
-Codex builds its startup instruction chain from the repository root through the session's starting directory. The root instructions also require reading applicable context before editing a deeper subtree. `.codex/config.toml` raises the combined instruction limit to 64 KiB for the trusted project; the root context exceeds the default 32 KiB. Keep inherited context within that limit.
+Codex builds its startup instruction chain from the repository root through the session's starting directory. The root instructions also require reading applicable context before editing a deeper subtree. The root context exceeds Codex's default 32 KiB instruction limit, and Codex truncates past it without warning, so the limit is raised to 64 KiB in two places — neither is optional:
+
+- Locally, `setup/dotfiles/.codex/config.toml` carries `project_doc_max_bytes` and setup symlinks it to `~/.codex/config.toml`. Codex reads configuration only from `$CODEX_HOME`, never from a repository-local `.codex/config.toml`, so a checked-in copy would be inert.
+- In the sandbox, `solve-todo-runner.sh` passes `-c project_doc_max_bytes=65536` to `codex exec`, because that run uses a throwaway `$CODEX_HOME` with no configuration file.
+
+Keep inherited context within that limit, and raise both together if the root context grows past it.

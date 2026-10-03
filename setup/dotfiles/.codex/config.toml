@@ -1,0 +1,5 @@
+# Symlinked to ~/.codex/config.toml by setup. Codex reads config only from
+# $CODEX_HOME, never from a repo-local .codex/config.toml, so a checked-in copy
+# would be inert. The root CONTEXT.md is larger than the 32 KiB default and
+# Codex truncates past the limit without warning.
+project_doc_max_bytes = 65536

@@ -24,7 +24,7 @@ $DESCRIPTION
 Rules:
 - Read docs/todo-pattern.md first: it is the source of truth for TODO.md's sections, columns, priority values, row rules, and the machine-read id contract. Follow it exactly.
 - Research before writing: grep the repo for every file, workflow, config, and doc the task touches. The Description and Recommended Fix cells must cite concrete paths (with line numbers where useful) and name an existing pattern to follow when one exists.
-- Check CLAUDE.md and the docs it points to for conventions that constrain the task, and bake them into the Recommended Fix.
+- Check CONTEXT.md and the docs it points to for conventions that constrain the task, and bake them into the Recommended Fix.
 - Add ONE table row under the most fitting existing section, inserted in priority order among that section's rows; only create a new section (and its TOC entry) if none fits.
 - Do not implement the task. Do not touch any file besides TODO.md.
 - Do not run any git or gh commands and do not commit — branching, committing, pushing, and opening the PR are handled by the calling script.

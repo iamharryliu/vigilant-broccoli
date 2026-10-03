@@ -18,7 +18,6 @@ create_symlink() {
 }
 
 symlink_common_dotfiles() {
-    bash "$SETUP_DIR/common/sync-agent-support.sh" || return 1
     create_symlink "$DOTFILES_DIR/.gitconfig" "$HOME/.gitconfig"
     create_symlink "$ZSH_DOTFILES_DIR/aliases" "$HOME/shell-aliases"
     create_symlink "$ZSH_DOTFILES_DIR/scripts" "$HOME/shell-scripts"
@@ -26,6 +25,8 @@ symlink_common_dotfiles() {
     create_symlink "$DOTFILES_DIR/.vimrc" "$HOME/.vimrc"
     mkdir -p "$HOME/.config"
     create_symlink "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
+    mkdir -p "$HOME/.codex"
+    create_symlink "$DOTFILES_DIR/.codex/config.toml" "$HOME/.codex/config.toml"
     chmod -R +x "$HOME/shell-aliases/"
     chmod -R +x "$HOME/shell-scripts/"
     symlink_agent_skills

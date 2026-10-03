@@ -110,6 +110,7 @@ salvage_on_failure() {
   local exit_code=$?
   trap - EXIT
   set +e
+  [ -z "${CODEX_HOME:-}" ] || rm -rf "$CODEX_HOME"
   [ "$exit_code" -eq 0 ] && exit 0
 
   echo "Runner exited with status $exit_code — checking for salvageable work on $BRANCH" >&2
@@ -174,7 +175,7 @@ You are running non-interactively in a fresh clone of vigilant-broccoli, on a de
 $TASK
 
 Rules:
-- Make only the changes needed, following the repo conventions in AGENTS.md and CLAUDE.md when present.
+- Make only the changes needed, following the repo conventions in CONTEXT.md.
 $SCOPE_RULE
 - When finished, write $META_FILE containing only a JSON object with these string fields:
   - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure
@@ -198,7 +199,9 @@ run_agent() {
         echo "ERROR: AGENT_CODEX_ACCESS_TOKEN is required for SOLVE_AGENT=codex." >&2
         exit 1
       fi
-      CODEX_HOME=$(mktemp -d /tmp/codex-home.XXXXXX)
+      # Not under /tmp: workspace-write leaves /tmp writable for $META_FILE, so
+      # the agent could read the access token out of $CODEX_HOME/auth.json.
+      CODEX_HOME=$(mktemp -d "$HOME/.codex-run.XXXXXX")
       export CODEX_HOME
       printf '%s\n' "$AGENT_CODEX_ACCESS_TOKEN" | codex login --with-access-token >/dev/null
       unset AGENT_CODEX_ACCESS_TOKEN CODEX_ACCESS_TOKEN OPENAI_API_KEY CODEX_API_KEY
@@ -206,13 +209,21 @@ run_agent() {
       CODEX_ARGS=(
         exec
         --cd "$REPO_DIR"
+        # Codex ignores a repo-local .codex/config.toml, and this runner's
+        # $CODEX_HOME is a fresh directory, so the limit has to be passed here:
+        # the root CONTEXT.md is over the 32 KiB default and would be silently
+        # truncated.
+        -c project_doc_max_bytes=65536
         --sandbox workspace-write
         --approve-for-me
         --ephemeral
         --output-last-message /tmp/codex-last-message.txt
       )
       [ -z "$MODEL" ] || CODEX_ARGS+=(--model "$MODEL")
-      codex "${CODEX_ARGS[@]}" "$PROMPT"
+      # No GitHub credentials: codex exec has no tool deny-list of its own, so
+      # dropping the token is what keeps the agent off the push/PR path that the
+      # Claude branch blocks with --disallowedTools.
+      env -u GH_TOKEN -u GITHUB_TOKEN codex "${CODEX_ARGS[@]}" "$PROMPT"
       rm -rf "$CODEX_HOME"
       ;;
   esac

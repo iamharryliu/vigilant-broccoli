@@ -6,7 +6,7 @@
   - [`sharp` must stay in the nx-workspace root `dependencies`](#sharp-must-stay-in-the-nx-workspace-root-dependencies)
   - [A `react-lib` component renders unstyled in an app that never scanned it](#a-react-lib-component-renders-unstyled-in-an-app-that-never-scanned-it)
   - [The three link surfaces share one section structure and drift silently](#the-three-link-surfaces-share-one-section-structure-and-drift-silently)
-  - [Nx formatting needs workspace-local ignores for generated agent links](#nx-formatting-needs-workspace-local-ignores-for-generated-agent-links)
+  - [Nx formatting must not hand the agent symlinks to Prettier](#nx-formatting-must-not-hand-the-agent-symlinks-to-prettier)
 
 ## Nuances
 
@@ -73,13 +73,19 @@ URLs belong in `libs/@vigilant-broccoli/personal-common-js/src/index.ts`
 against those consts. When editing any one of the three, open the other two in
 the same change.
 
-### Nx formatting needs workspace-local ignores for generated agent links
+### Nx formatting must not hand the agent symlinks to Prettier
 
-`nx format:write` reads `.gitignore` and `.nxignore` from the Nx workspace
-root, not the repository root. During the context migration, its changed-file
-list still included deleted `CLAUDE.md` paths. Setup had recreated those paths
-as ignored symlinks, so Nx passed them to Prettier, which rejected them with
-"Explicitly specified pattern is a symbolic link" and blocked the commit hook.
+Prettier fails an explicitly passed symbolic link with "Explicitly specified
+pattern is a symbolic link" and exits 2; `.prettierignore` does not suppress
+that, because the check happens before ignore filtering. Only directory and
+glob arguments skip symlinks silently, which is why the repository-root
+`format` script (`prettier --write .`) is unaffected while anything feeding
+Prettier a file list is not.
 
-Keep `AGENTS.md` and `CLAUDE.md` in this workspace's `.gitignore` as well as
-the repository's. Format the canonical `CONTEXT.md` sources.
+`nx format:write` builds that list from changed files and reads `.gitignore`
+and `.nxignore` from the Nx workspace root, not the repository root, so
+`AGENTS.md` and `CLAUDE.md` stay listed in this workspace's `.gitignore` even
+though both are tracked — ignore rules do not untrack a tracked file, and the
+entry is what keeps Nx from passing them on. The repository-root commit hook
+handles the same problem in `scripts/shell/format-staged.sh`. Format the
+canonical `CONTEXT.md` sources.

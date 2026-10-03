@@ -1,6 +1,6 @@
 # Agent Context
 
-Shared repository guidance. Edit `CONTEXT.md`; `AGENTS.md` and `CLAUDE.md` are generated, Git-ignored relative symlinks to it. See [agent support](./docs/agent-support.md) for synchronization and installation.
+Shared repository guidance. Edit `CONTEXT.md`; `AGENTS.md` and `CLAUDE.md` are committed relative symlinks to it. See [agent support](./docs/agent-support.md) for the adapter layout and skill installation.
 
 ## Table of Contents
 

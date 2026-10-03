@@ -49,7 +49,6 @@ symlink_agent_skills() {
 }
 
 if [ -n "${BASH_VERSION:-}" ] && [ "${BASH_SOURCE[0]}" = "$0" ]; then
-    bash "$(dirname "${BASH_SOURCE[0]}")/sync-agent-support.sh" || exit 1
     AGENT_SKILLS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/../dotfiles/agent-skills" && pwd) || exit 1
     symlink_agent_skills "$@"
 fi

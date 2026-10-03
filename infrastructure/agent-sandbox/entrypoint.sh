@@ -16,9 +16,6 @@ fi
 if [ ! -d "$REPO_DIR/.git" ]; then
   git clone "$REPO_URL" "$REPO_DIR"
 else
-  if [ -f "$REPO_DIR/setup/common/sync-agent-support.sh" ]; then
-    bash "$REPO_DIR/setup/common/sync-agent-support.sh" --clean
-  fi
   git -C "$REPO_DIR" pull --ff-only || true
 fi
 

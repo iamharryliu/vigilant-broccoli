@@ -17,11 +17,7 @@ cd "$REPO_DIR"
 cp "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh" "$PRE_COMMIT_HELPER"
 
 git fetch origin --quiet
-bash "$REPO_DIR/setup/common/sync-agent-support.sh" --clean
 gh pr checkout "$PR"
-if [ -f "$REPO_DIR/setup/common/sync-agent-support.sh" ]; then
-  bash "$REPO_DIR/setup/common/sync-agent-support.sh"
-fi
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"
@@ -34,7 +30,7 @@ You are running non-interactively in a checkout of pull request #${PR}${PR_TITLE
 ${INSTRUCTION}
 
 Rules:
-- Make only the changes needed to satisfy the request, following the repo conventions in CLAUDE.md. Read the code already on this branch first and extend it rather than starting over.
+- Make only the changes needed to satisfy the request, following the repo conventions in CONTEXT.md. Read the code already on this branch first and extend it rather than starting over.
 - Do not run any git or gh commands — committing, pushing, and commenting are handled by the calling script.
 - When finished, write $META_FILE containing only a JSON object with these string fields:
   - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure

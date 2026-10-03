@@ -1,0 +1,1 @@
+../../agent-skills/docs-spell-check/SKILL.md

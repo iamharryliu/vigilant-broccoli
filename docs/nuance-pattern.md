@@ -37,7 +37,7 @@ the directory an agent is working in still reaches them, because every
 applicable `CONTEXT.md` on the path into that directory is read — which is why the
 Tailwind `content` trap that bit one app lives at the workspace root.
 
-Each source is exposed through generated `CLAUDE.md` and `AGENTS.md` symlinks
+Each source is exposed through committed `CLAUDE.md` and `AGENTS.md` symlinks
 in the same directory. The agent reads its conventional entry point; both
 resolve to the shared `CONTEXT.md`. See [Harness portability](#harness-portability).
 
@@ -76,20 +76,22 @@ describe the stack, `CONTEXT.md` records traps and conventions.
 
 ## Harness portability
 
-`CONTEXT.md` owns the instructions independently of any agent. The generated
+`CONTEXT.md` owns the instructions independently of any agent. The committed
 `CLAUDE.md` and `AGENTS.md` links expose them to Claude Code and Codex without
-copying Markdown or changing relative links. To support another harness, add
-its entry point to `setup/common/sync-agent-support.sh`.
+copying Markdown or changing relative links. To support another harness, commit
+its entry point beside each `CONTEXT.md` and add it to the adapter check in
+`ci-pr-check.yml`.
 
-After adding context, run the synchronization script and commit the
-source only. Agent adapters are Git-ignored; installers generate them, and CI
-checks that generation leaves the checkout clean. See [agent-support.md](./agent-support.md) for commands,
-conflict handling, installation, and discovery details.
+When adding a `CONTEXT.md`, commit both adapter symlinks beside it in the same
+change: `ln -s CONTEXT.md CLAUDE.md && ln -s CONTEXT.md AGENTS.md`. PR CI fails
+when one is missing or points elsewhere. See [agent-support.md](./agent-support.md) for the layout,
+installation, and discovery details.
 
 An agent's automatic discovery may depend on its starting directory. The root
 context therefore also requires reading applicable directory context before
-editing a subtree. Codex's combined instruction limit is set to 64 KiB in
-`.codex/config.toml` for this trusted project; keep inherited context within it.
+editing a subtree. Codex's combined instruction limit is raised to 64 KiB by
+`setup/dotfiles/.codex/config.toml` locally and by a `codex exec` flag in the
+sandbox; keep inherited context within it.
 
 ## Entry shape
 

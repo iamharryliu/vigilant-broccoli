@@ -25,4 +25,4 @@ done
 
 exec docker exec -it -u agent -w "$WORKDIR" "$CONTAINER" \
   tmux new-session -A -s "$SESSION" -c "$WORKDIR" \
-  "bash setup/common/sync-agent-support.sh && exec claude --permission-mode auto --model $MODEL"
+  "claude --permission-mode auto --model $MODEL"

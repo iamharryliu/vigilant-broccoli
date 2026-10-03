@@ -123,12 +123,29 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - name: Generate and verify agent adapters
+      - name: Verify agent adapters
         run: |
-          bash setup/common/sync-agent-support.sh
-          bash setup/common/sync-agent-support.sh --check
-          test -z "$(git ls-files -- 'AGENTS.md' '**/AGENTS.md' 'CLAUDE.md' '**/CLAUDE.md' 'setup/dotfiles/.claude/commands/*.md')"
-          test -z "$(git status --porcelain)"
+          set -euo pipefail
+          STATUS=0
+          check_link() {
+            if [ "$(git ls-files -s "$1" | cut -d' ' -f1)" != 120000 ]; then
+              echo "::error file=$1::missing, or not a tracked symlink"
+              STATUS=1
+            elif [ "$(git cat-file blob ":$1")" != "$2" ]; then
+              echo "::error file=$1::must point at $2"
+              STATUS=1
+            fi
+          }
+          for ctx in $(git ls-files 'CONTEXT.md' '*/CONTEXT.md'); do
+            for adapter in CLAUDE.md AGENTS.md; do
+              check_link "$(dirname "$ctx")/$adapter" CONTEXT.md
+            done
+          done
+          for skill in $(git ls-files 'setup/dotfiles/agent-skills/*/SKILL.md'); do
+            name=$(basename "$(dirname "$skill")")
+            check_link "setup/dotfiles/.claude/commands/$name.md" "../../agent-skills/$name/SKILL.md"
+          done
+          exit "$STATUS"
 
       - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
         with:

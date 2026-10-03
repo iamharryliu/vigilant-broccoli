@@ -196,7 +196,7 @@ const CheckListRow = memo(
       // generic `item`/`listId`) on purpose: apps/ui/vb-manager-next's
       // kanban.component.tsx reads this exact shape off the raw dnd-kit
       // drag payload to move tasks across lanes. See the Nuances entry in
-      // that app's CLAUDE.md before renaming any of these keys.
+      // that app's CONTEXT.md before renaming any of these keys.
       data: { type: 'task', task: item, taskListId: listId },
       disabled: !enableDragDrop || isEditing,
     });

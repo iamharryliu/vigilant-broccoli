@@ -101,11 +101,6 @@ projects/nx-workspace/apps/ui/pages-index/public/claude-context/
 # Claude Code per-machine overrides
 .claude/settings.local.json
 
-# Generated agent adapters; edit CONTEXT.md and shared SKILL.md sources.
-AGENTS.md
-CLAUDE.md
-/setup/dotfiles/.claude/commands/*.md
-
 # Older installs link ~/.claude/skills here: preserve runtime caches and installed skill links.
 setup/dotfiles/.claude/skills/*
 !setup/dotfiles/.claude/skills/.gitkeep

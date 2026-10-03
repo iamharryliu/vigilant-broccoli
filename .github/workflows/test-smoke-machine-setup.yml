@@ -37,7 +37,7 @@ jobs:
       - name: Verify dotfile symlinks resolve
         run: |
           set -euo pipefail
-          for link in .gitconfig .tmux.conf .vimrc .config/nvim shell-aliases shell-scripts; do
+          for link in .gitconfig .tmux.conf .vimrc .config/nvim .codex/config.toml shell-aliases shell-scripts; do
             [ -L "$HOME/$link" ] || { echo "$link is not a symlink"; exit 1; }
             [ -e "$HOME/$link" ] || { echo "$link points at nothing"; exit 1; }
           done

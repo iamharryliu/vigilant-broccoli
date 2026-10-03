@@ -40,6 +40,14 @@ Codex uses a dedicated ChatGPT/Codex access token, not the app's `OPENAI_API_KEY
 Use this ChatGPT-managed Codex auth only for private/trusted workflows; do not use it for public or open-source
 GitHub-hosted workflows.
 
+The egress firewall allows `api.openai.com`, `auth.openai.com` and `chatgpt.com` for this path. `chatgpt.com` sits
+behind a CDN and `init-firewall.sh` resolves the allowlist into an ipset once at container start, so a long solve can
+outlive the addresses it captured; if a Codex run dies mid-way on network errors, retry with `-f firewall=off`.
+
+`codex exec` has no tool deny-list equivalent to Claude's `--disallowedTools`, so the Codex branch of
+`solve-todo-runner.sh` runs it with `GH_TOKEN`/`GITHUB_TOKEN` stripped from the environment. Branching, committing,
+pushing and opening the PR stay with the runner for both agents.
+
 ## Auditing the backlog
 
 `pnpm agentic:task:audit [sections]` runs `audit-todo.sh`, the counterpart to `create-todo.sh`: instead of adding a row it
@@ -52,7 +60,7 @@ rows whose paths, line numbers, counts or scope have drifted. `cron-agentic-todo
   or if any file other than `TODO.md` changed. Ids are the handle `pnpm agentic:task:solve <id>` resolves, so a table
   rewrite that quietly drops one is treated as a failure, not a diff to review.
 
-The entrypoint runs the Linux installer to generate ignored `CLAUDE.md` and `AGENTS.md` links from tracked `CONTEXT.md` sources and install shared skills. PR fix/update runners regenerate adapters after checking out the target branch. See [agent support](../../docs/agent-support.md).
+The `CLAUDE.md` and `AGENTS.md` adapters are committed symlinks to `CONTEXT.md`, so the entrypoint's clone carries them and no step regenerates them per branch. The entrypoint still runs the Linux installer to install the shared skills. See [agent support](../../docs/agent-support.md).
 
 ## Stack
 
