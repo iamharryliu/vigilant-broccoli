@@ -123,7 +123,7 @@ jobs:
             printf 'PR [#%s](%s/pull/%s) · branch `%s` · commit [`%s`](%s/commit/%s)\n' \
               "$PR_NUMBER" "$REPO_URL" "$PR_NUMBER" "$PREVIEW_HEAD_REF" "${PREVIEW_COMMIT:0:7}" "$REPO_URL" "$PREVIEW_COMMIT"
             echo
-            echo "| Site | Latest (follows this PR) | This commit |"
+            echo "| Site | Latest (follows this PR) | This build (immutable) |"
             echo "| --- | --- | --- |"
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -143,6 +143,9 @@ jobs:
                 }
               ' \
             | sort >> "$GITHUB_STEP_SUMMARY"
+
+          printf '\n_The immutable subdomain is Cloudflare'"'"'s deployment id, not the commit — each deploy gets its own, so one commit yields a different id per site. The commit is recorded on the deployment itself via `--commit-hash`, visible in the Cloudflare dashboard._\n' \
+            >> "$GITHUB_STEP_SUMMARY"
 
       # --output-style=static for the same reason as the deploy step: the
       # script's "deleting N stale" line is the only record of what the prune
