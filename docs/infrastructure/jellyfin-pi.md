@@ -61,7 +61,7 @@ see a plain `http://jellyfin-pi.echidna-rohu.ts.net:8096`, nothing is published
 to the internet, no ports are forwarded on the home router, and the Pi keeps no
 inbound public surface. Free tier (3 users, 100 devices, unmetered
 peer-to-peer traffic) is documented in
-[tailscale.md](../../notes/tech/software/web-dev/network-security/tailscale.md#free-tier);
+[tailscale.md](../../notes/tech/software/web-dev/networking/tailscale.md#free-tier);
 one more node costs nothing.
 
 ## Prerequisites

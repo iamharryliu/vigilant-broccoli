@@ -2,7 +2,7 @@
 
 An IP (Internet Protocol) address identifies a device on a network. IPv4 addresses are 32-bit, written as four dotted decimal octets (`0.0.0.0`–`255.255.255.255`); IPv6 addresses are 128-bit, written as colon-separated hex groups. A trailing `/n` (CIDR prefix) marks how many leading bits are fixed, defining an address range (block).
 
-Back to [Network Security](./network-security.md).
+Back to [Networking](./networking.md).
 
 ## Special-Use IPv4 Ranges
 
