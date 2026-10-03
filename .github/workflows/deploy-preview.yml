@@ -38,6 +38,8 @@ jobs:
 
       - uses: ./.github/actions/setup-nx-workspace
 
+      # `nx show projects` prints a JSON array, not one project per line,
+      # whenever stdout is not a TTY — which is always the case on a runner.
       - name: Check which previews are needed
         id: check
         working-directory: ./projects/nx-workspace
@@ -49,18 +51,18 @@ jobs:
           NOTES_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^notes/" || true)
 
           if [[ "$WORKFLOW_CHANGED" -gt 0 ]]; then
-            PROJECTS=$(pnpm exec nx show projects --withTarget=deploy:preview)
+            PROJECTS_JSON=$(pnpm exec nx show projects --withTarget=deploy:preview --json)
           else
-            PROJECTS=$(pnpm exec nx show projects --affected --withTarget=deploy:preview --base=$NX_BASE --head=$NX_HEAD)
+            PROJECTS_JSON=$(pnpm exec nx show projects --affected --withTarget=deploy:preview --base=$NX_BASE --head=$NX_HEAD --json)
             if [[ "$AGENT_CONTEXT_CHANGED" -gt 0 ]]; then
-              PROJECTS=$(printf '%s\npages-index' "$PROJECTS")
+              PROJECTS_JSON=$(echo "$PROJECTS_JSON" | jq -c '. + ["pages-index"]')
             fi
             if [[ "$NOTES_CHANGED" -gt 0 ]]; then
-              PROJECTS=$(printf '%s\ndocs-md' "$PROJECTS")
+              PROJECTS_JSON=$(echo "$PROJECTS_JSON" | jq -c '. + ["docs-md"]')
             fi
           fi
 
-          echo "projects=$(echo "$PROJECTS" | sed '/^$/d' | sort -u | paste -sd, -)" >> $GITHUB_OUTPUT
+          echo "projects=$(echo "$PROJECTS_JSON" | jq -r 'unique | join(",")')" >> $GITHUB_OUTPUT
 
       - name: Import Secrets from Vault
         if: steps.check.outputs.projects != ''
