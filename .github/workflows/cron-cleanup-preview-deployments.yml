@@ -39,6 +39,8 @@ jobs:
             kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
             kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
 
+      # --output-style=static: nx hides successful tasks' output, which here is
+      # the only record of how many deployments were deleted.
       - name: Delete deployments of removed branches
         working-directory: ./projects/nx-workspace
-        run: pnpm exec nx run-many -t prune-deployments:preview
+        run: pnpm exec nx run-many -t prune-deployments:preview --output-style=static

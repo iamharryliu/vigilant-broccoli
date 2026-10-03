@@ -100,7 +100,10 @@ jobs:
           echo "## Preview deployments" >> $GITHUB_STEP_SUMMARY
           grep -o 'alias URL: https://[^ ]*' deploy.log | sed 's/^alias URL: /- /' | sort -u >> $GITHUB_STEP_SUMMARY || true
 
+      # --output-style=static for the same reason as the deploy step: the
+      # script's "deleting N stale" line is the only record of what the prune
+      # did, and nx would hide it.
       - name: Prune superseded preview deployments
         if: steps.check.outputs.projects != ''
         working-directory: ./projects/nx-workspace
-        run: pnpm exec nx run-many -t prune-deployments:preview --projects="${{ steps.check.outputs.projects }}"
+        run: pnpm exec nx run-many -t prune-deployments:preview --projects="${{ steps.check.outputs.projects }}" --output-style=static
