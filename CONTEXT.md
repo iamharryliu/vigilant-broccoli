@@ -92,6 +92,8 @@ Browse this whole graph rendered, with full-text search and a link graph view, a
 ## Git
 
 - Never commit or push unless explicitly instructed to.
+- **Staging**: stage only the files created or edited in the current session — never `git add -A` or `git add .`, and never files that were already modified or untracked before the session began, even if they look related.
+- **Safety**: never force-push, never skip hooks, never amend existing commits.
 - **This working tree may be shared.** Claude Code and Codex sessions attached to one checkout share the index, `HEAD`, and the stash. Establish ownership before branching, staging, committing, stashing, or switching branches; never stash in a shared or uncertain checkout, because a stash takes other sessions' uncommitted work with it; and commit by pathspec (`git commit -m "<message>" -- <your paths>`) when anything you do not own is staged. Full rules in [git-workflow.md](./docs/git-workflow.md#concurrent-agent-sessions).
 - Branch, staging, commit, PR and `main`-sync conventions live in [git-workflow.md](./docs/git-workflow.md) — read it before committing or pushing. Repository protection, bypass actors and GitHub App scopes live in [github-repo-protection.md](./docs/infrastructure/github-repo-protection.md).
 

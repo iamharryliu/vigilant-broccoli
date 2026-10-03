@@ -10,14 +10,12 @@ Branching, staging, commit and PR conventions for this repository, and how to st
 
 ## Conventions
 
-`/ship-pr` and `/sync-main` implement these; change the rule here first, then the skill. The standing prohibition on unprompted commits and the shared-worktree safety rules stay in [CONTEXT.md](../CONTEXT.md#git), because they bind every session, not just these workflows.
+`/ship-pr` and `/sync-main` implement these; change the rule here first, then the skill. The standing prohibitions — no unprompted commits, no `git add -A`, no force-push, no skipped hooks, no amended commits, and the shared-worktree safety rules — stay in [CONTEXT.md](../CONTEXT.md#git), because they bind every session rather than only these workflows.
 
-- **Staging**: stage only the files created or edited in the current session — never `git add -A` or `git add .`, and never files that were already modified or untracked before the session began, even if they look related.
 - **Branch names**: `<committype>/<short-kebab-case-description>` (e.g. `fix/rabbitmq-secret-rotation`, `feat/hearth-food-planner-page`), cut from a freshly fetched `main`.
 - **Commit types**: `feat`, `fix`, `ci`, `chore`, `docs`, `refactor`, `enhancement`, `security`, `infrastructure` — match existing usage in `git log`; don't invent a new type unless nothing fits.
 - **Commit messages**: `<committype>(<scope>): <Message>.` — scope is the affected app/service/lib (e.g. `hearth`, `github-actions`, `vb-manager-next`) and is omitted when the change isn't scoped to one; the message is capitalized, concise, focused on why not what, and ends with a period. Agent-authored commits end with the `Co-Authored-By:` trailer the environment specifies for the authoring model — never a hardcoded model name.
 - **PR body**: a `## Summary` section (bullets) and a `## Test plan` section (checklist), using the authoring environment’s attribution when provided; do not label Codex work as Claude Code. If the branch already has an open PR, push to it rather than opening a second.
-- **Safety**: never force-push, never skip hooks, never amend existing commits.
 - **Shared worktree**: more than one agent session can be attached to this checkout — check for peers before touching shared git state. See [Concurrent Agent Sessions](#concurrent-agent-sessions).
 
 ## Concurrent Agent Sessions

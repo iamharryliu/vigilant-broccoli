@@ -1,5 +1,7 @@
 # Agent Context — infrastructure/terraform
 
+Never change Terraform-managed configuration in a provider dashboard or the GitHub UI — the next apply reverts it. Where state lives, why applies stay local, and how `cron-terraform-drift` detects divergence are in [terraform.md](../../docs/ci/terraform.md); `main`'s ruleset and its bypass actors are in [github-repo-protection.md](../../docs/infrastructure/github-repo-protection.md).
+
 ## Table of Contents
 
 - [Nuances](#nuances)
