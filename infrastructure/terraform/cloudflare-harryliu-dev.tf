@@ -1,6 +1,6 @@
 # harryliu.dev — Cloudflare Pages site (project + deploys owned by the nx
 # `personal-website-react` deploy target via wrangler). Terraform owns the
-# custom domain attachment and its DNS, pointing at the `staging-harryliu-dev-react`
+# custom domain attachment and its DNS, pointing at the `production-harryliu-dev-react`
 # project.
 
 import {
