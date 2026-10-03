@@ -1,7 +1,7 @@
 import { execSync } from 'child_process';
 
 const MAX_PARALLEL_DELETES = 20;
-const REMOTE_HEADS_PREFIX = 'refs/heads/';
+const PREVIEW_BRANCH_PREFIX = 'pr-';
 
 interface WranglerDeployment {
   Id: string;
@@ -16,21 +16,26 @@ function listDeployments(projectName: string): WranglerDeployment[] {
   return JSON.parse(output || '[]');
 }
 
-function listLiveBranches(): Set<string> {
-  const output = execSync('git ls-remote --heads origin', {
-    stdio: ['ignore', 'pipe', 'inherit'],
-  }).toString();
+// Previews are deployed under the Pages "branch" pr-<n>, so liveness is
+// whether that PR is still open — not whether a branch exists. A merged PR's
+// head branch often outlives it, and a preview stops being useful the moment
+// the PR is closed.
+function listLivePreviewBranches(): Set<string> {
+  const output = execSync(
+    'gh pr list --state open --limit 500 --json number --jq ".[].number"',
+    { stdio: ['ignore', 'pipe', 'inherit'] },
+  ).toString();
   return new Set(
     output
       .split('\n')
       .filter(Boolean)
-      .map(line => line.split(REMOTE_HEADS_PREFIX)[1]),
+      .map(number => `${PREVIEW_BRANCH_PREFIX}${number.trim()}`),
   );
 }
 
-// The list is newest-first, so the first deployment seen per live branch is
-// the one serving its branch alias; everything else — older pushes to a live
-// branch and every deployment of a deleted branch — is stale.
+// The list is newest-first, so the first deployment seen per open PR is the
+// one serving its alias; everything else — superseded pushes to an open PR
+// and every deployment of a closed one — is stale.
 function staleDeploymentIds(
   deployments: WranglerDeployment[],
   liveBranches: Set<string>,
@@ -64,7 +69,10 @@ function main() {
   }
 
   const deployments = listDeployments(projectName);
-  const idsToDelete = staleDeploymentIds(deployments, listLiveBranches());
+  const idsToDelete = staleDeploymentIds(
+    deployments,
+    listLivePreviewBranches(),
+  );
 
   console.log(
     `${projectName}: ${deployments.length} deployment(s) listed (list is capped to a single page), deleting ${idsToDelete.length} stale this run`,

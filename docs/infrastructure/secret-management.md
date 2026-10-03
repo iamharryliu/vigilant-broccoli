@@ -8,7 +8,7 @@ Source of truth for where every credential lives, how CI and local tooling reach
 - [Secret Hierarchy](#secret-hierarchy)
 - [Top-Level Secrets](#top-level-secrets)
 - [Secret Rotation](#secret-rotation)
-- [Branch preview deploy credentials](#branch-preview-deploy-credentials)
+- [PR preview deploy credentials](#pr-preview-deploy-credentials)
 
 ## Local config files
 
@@ -94,20 +94,20 @@ Rotate at source, then write to Vault (`vault kv patch kv/data/secrets KEY=value
 
 - **Vault**: lives at its own path, `kv/data/ci-pr-check`, not `kv/data/secrets`. Read via `github-actions-pr-check-role` (`run-vault-post-init.sh`), whose policy grants `read` on that one path only — not the shared store the default `github-actions-role` can read in full.
 - **GCP WIF**: a separate, minimally-scoped service account (`github-actions-pr-check`, `github-actions-pr-check.tf`) fetches the Cloudflare Access secrets needed to reach the Vault tunnel. It's bound via a WIF provider (`github-pr-check`) whose `attribute_condition` requires `job_workflow_ref` to start with `ci-pr-check.yml@`, and it can read only the two `VAULT_CF_ACCESS_CLIENT_ID`/`_SECRET` secrets in Secret Manager — not the other GCP-level access (`compute.instanceAdmin.v1`, `storage.objectAdmin` on the backup bucket, `secretAccessor` on its own handful of secrets) the shared `github_actions` SA carries for push-triggered workflows. Without this, a PR could assume the broad SA and reach that access, which would bypass any amount of Vault-side role scoping.
-- **Broad provider refuses PR tokens**: the pivot the previous bullet describes is closed at the source — the shared `github` WIF provider's `attribute_condition` (`main.tf`) now also requires `event_name != 'pull_request'`, so a `pull_request` run cannot mint a token through it at all and _must_ use `github-pr-check` (narrow SA). This is safe because `ci-pr-check.yml` is the only `pull_request`-triggered workflow; every other consumer of the broad provider is push/schedule/dispatch/workflow_call/workflow_run, none of which carry `event_name == 'pull_request'`.
+- **Broad provider refuses PR tokens**: the pivot the previous bullet describes is closed at the source — the shared `github` WIF provider's `attribute_condition` (`main.tf`) now also requires `event_name != 'pull_request'`, so a `pull_request` run cannot mint a token through it at all and _must_ use `github-pr-check` (narrow SA). This is safe because `ci-pr-check.yml` and `deploy-preview.yml` are the only `pull_request`-triggered workflows and each uses its own narrow provider (`github-pr-check`, `github-deploy-preview`); every other consumer of the broad provider is push/schedule/dispatch/workflow_call/workflow_run, none of which carry `event_name == 'pull_request'`.
 - The WIF provider path and SA email are hardcoded literals in `ci-pr-check.yml` (`outputs.tf`'s `github_actions_pr_check_*` outputs), not repo secrets — knowing either grants nothing without satisfying the `attribute_condition`, and a PR that can edit the workflow can already exfiltrate anything it references regardless of whether it's a secret or a literal.
 - The Vault-secrets step is `continue-on-error: true` — none of this is load-bearing for PR correctness; worst case a PR just builds without a warm cache.
 
 Rotate `NX_CACHE_WRITE_TOKEN`/`NX_CACHE_READ_TOKEN` by tainting both `random_password` resources, then `pnpm tf:apply`.
 
-## Branch preview deploy credentials
+## PR preview deploy credentials
 
-`deploy-preview.yml` needs `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS` to push Cloudflare Pages previews, and it is isolated for the same reason `ci-pr-check.yml` is: it triggers on a push to **any** branch and runs the workflow YAML from that branch, so anyone who can push one could edit it to ask for a different secret or a different identity.
+`deploy-preview.yml` needs `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS` to push Cloudflare Pages previews, and it is isolated for the same reason `ci-pr-check.yml` is: it is `pull_request`-triggered, so it runs the workflow YAML from the PR branch and anyone who can open a PR could edit it to ask for a different secret or a different identity.
 
 - **Vault**: its own path, `kv/data/deploy-preview`, read via `github-actions-deploy-preview-role` (`run-vault-post-init.sh`), whose policy grants `read` on that one path. `kv/data/secrets` stays the single source of truth — `tf:post-apply` mirrors just those two keys across, reading them back out of `kv/data/secrets` rather than from Terraform state, because the Pages token is minted by hand in the Cloudflare dashboard. A rotation therefore needs nothing but a `pnpm tf:post-apply` re-run.
 - **GCP WIF**: a separate minimally-scoped service account (`github-actions-deploy-preview`, `github-actions-deploy-preview.tf`) behind a WIF provider (`github-deploy-preview`) whose `attribute_condition` requires `job_workflow_ref` to start with `deploy-preview.yml@`. Like the pr-check SA it can read only `VAULT_CF_ACCESS_CLIENT_ID`/`_SECRET` — not the shared `github_actions` SA's project-wide access. The shared `github` provider only refuses `pull_request`, so without this the workflow would be handed that broad SA on every branch push.
-- **No `@ref` pin, by design**: the rotate and code-server roles pin `job_workflow_ref` to `@refs/heads/main`, which previews cannot do — running on branches is the point. The compensating control is that the identity is worth nothing beyond the Vault tunnel credentials and those two Cloudflare keys.
-- `cron-cleanup-preview-deployments.yml` keeps the shared `github-actions-role`: it only ever runs from the default branch (`delete`, `schedule`, `workflow_dispatch`, push to `main`), so the shared role's `refs/heads/main` binding is satisfied.
+- **No `@ref` pin, by design**: the rotate and code-server roles pin `job_workflow_ref` to `@refs/heads/main`, which previews cannot do — a PR run's ref is `refs/pull/<n>/merge`, so the glob has to stay `deploy-preview.yml@*`. The compensating control is that the identity is worth nothing beyond the Vault tunnel credentials and those two Cloudflare keys.
+- `cron-cleanup-preview-deployments.yml` keeps the shared `github-actions-role`: it only ever runs from the default branch (`schedule`, `workflow_dispatch`, push to `main`), so the shared role's `refs/heads/main` binding is satisfied. That binding is also why it cannot take a `pull_request: closed` trigger, and why a closed PR's previews wait for the daily sweep.
 
 ### Other
 

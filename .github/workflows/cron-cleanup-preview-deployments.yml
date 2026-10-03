@@ -1,9 +1,12 @@
 name: cron-cleanup-preview-deployments
 
-# `delete` cleans up as soon as a branch goes away; the daily sweep catches
-# deletions that never fired the event (bulk deletes, a failed run).
+# Previews are keyed on the PR number, so a closed PR — not a deleted branch —
+# is what makes one stale. A pull_request trigger can't be used here: this job
+# uses the shared github-actions identity, whose WIF provider refuses
+# pull_request and whose Vault role is bound to refs/heads/main. The daily
+# sweep is what collects closed PRs' previews, so one can outlive its PR by up
+# to a day; dispatch the workflow to collect it sooner.
 on:
-  delete:
   push:
     branches: [main]
     paths:
@@ -15,6 +18,7 @@ on:
 permissions:
   contents: read
   id-token: write
+  pull-requests: read
 
 concurrency:
   group: cron-cleanup-preview-deployments
@@ -22,7 +26,6 @@ concurrency:
 
 jobs:
   cleanup:
-    if: github.event_name != 'delete' || github.event.ref_type == 'branch'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -40,7 +43,10 @@ jobs:
             kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
 
       # --output-style=static: nx hides successful tasks' output, which here is
-      # the only record of how many deployments were deleted.
-      - name: Delete deployments of removed branches
+      # the only record of how many deployments were deleted. GH_TOKEN: the
+      # script asks the API which PRs are still open to decide what is stale.
+      - name: Delete previews of closed PRs
         working-directory: ./projects/nx-workspace
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: pnpm exec nx run-many -t prune-deployments:preview --output-style=static

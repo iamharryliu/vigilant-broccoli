@@ -94,7 +94,7 @@
       "dependsOn": ["ensure-cf-project:preview"]
     },
     "deploy:preview": {
-      "command": "npx wrangler pages deploy dist/pages-index --project-name preview-pages-index --branch \"$PREVIEW_BRANCH\"",
+      "command": "npx wrangler pages deploy dist/pages-index --project-name preview-pages-index --branch \"$PREVIEW_BRANCH\" --commit-hash \"${PREVIEW_COMMIT:-$(git rev-parse HEAD)}\"",
       "dependsOn": ["build", "ensure-cf-project:preview"]
     }
   }

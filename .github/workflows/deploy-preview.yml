@@ -1,11 +1,14 @@
 name: deploy-preview
+run-name: deploy-preview (PR #${{ github.event.pull_request.number || inputs.pr }})
 
-# Branch pushes, not pull_request: the shared WIF provider rejects
-# pull_request events (main.tf attribute_condition), and only collaborators
-# can push branches here.
+# pull_request, so the alias can be keyed on the PR number: a push event
+# carries no PR number, and the first push to a branch usually predates its
+# PR, which would force a second branch-named scheme. The shared WIF provider
+# refuses pull_request (main.tf attribute_condition) but this workflow does
+# not use it — github-actions-deploy-preview.tf pins its own provider to this
+# file's job_workflow_ref, which matches refs/pull/<n>/merge just the same.
 on:
-  push:
-    branches-ignore: ['main', 'production']
+  pull_request:
     paths:
       - 'projects/nx-workspace/**'
       - '.github/workflows/deploy-preview.yml'
@@ -16,17 +19,30 @@ on:
       - 'setup/dotfiles/agent-skills/**'
       - '**/CONTEXT.md'
       - 'notes/**'
-  # Re-deploy a branch's previews without pushing to it — the paths filter
-  # above means an unrelated commit won't do it.
+  # Re-deploy a PR's previews without pushing to it — the paths filter above
+  # means an unrelated commit won't do it.
   workflow_dispatch:
+    inputs:
+      pr:
+        description: 'PR number to deploy previews for'
+        required: true
+        type: string
 
 permissions:
   contents: read
   id-token: write
+  pull-requests: read
 
 concurrency:
-  group: deploy-preview-${{ github.ref }}
+  group: deploy-preview-pr-${{ github.event.pull_request.number || inputs.pr }}
   cancel-in-progress: true
+
+env:
+  # The Cloudflare Pages "branch" for every preview deploy and the key the
+  # prune matches against open PRs. Sanitised into the alias host as
+  # pr-<n>.preview-<site>.pages.dev — short, so unlike a branch name it is
+  # never truncated at 28 characters.
+  PREVIEW_BRANCH: pr-${{ github.event.pull_request.number || inputs.pr }}
 
 jobs:
   deploy-preview:
@@ -88,22 +104,53 @@ jobs:
       # build staged for GitHub Pages (base /vigilant-broccoli/) would otherwise
       # be served from the preview's root.
       # --output-style=static: nx hides successful tasks' output by default, so
-      # wrangler's "Deployment alias URL" line never reaches deploy.log and the
-      # job summary comes out empty.
+      # wrangler's two URL lines never reach deploy.log and the summary comes
+      # out empty.
       - name: Deploy previews
         if: steps.check.outputs.projects != ''
         working-directory: ./projects/nx-workspace
         env:
-          PREVIEW_BRANCH: ${{ github.ref_name }}
+          PREVIEW_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+          PREVIEW_HEAD_REF: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr }}
         run: |
           pnpm exec nx run-many -t deploy:preview --projects="${{ steps.check.outputs.projects }}" --skip-nx-cache --output-style=static | tee deploy.log
-          echo "## Preview deployments" >> $GITHUB_STEP_SUMMARY
-          grep -o 'alias URL: https://[^ ]*' deploy.log | sed 's/^alias URL: /- /' | sort -u >> $GITHUB_STEP_SUMMARY || true
+
+          REPO_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+          {
+            echo "## Preview deployments"
+            echo
+            printf 'PR [#%s](%s/pull/%s) · branch `%s` · commit [`%s`](%s/commit/%s)\n' \
+              "$PR_NUMBER" "$REPO_URL" "$PR_NUMBER" "$PREVIEW_HEAD_REF" "${PREVIEW_COMMIT:0:7}" "$REPO_URL" "$PREVIEW_COMMIT"
+            echo
+            echo "| Site | Latest (follows this PR) | This commit |"
+            echo "| --- | --- | --- |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # wrangler prints the stable alias ("Deployment alias URL") and the
+          # per-deployment URL ("Take a peek over at"); the subdomain tells
+          # them apart, since only the alias is $PREVIEW_BRANCH. Grouped by the
+          # Cloudflare project in the host, which is the only place the nx
+          # project -> project-name mapping shows up in the log.
+          grep -ohE 'https://[a-z0-9-]+\.preview-[a-z0-9-]+\.pages\.dev' deploy.log \
+            | sort -u \
+            | awk -F'[/.]' -v alias="$PREVIEW_BRANCH" '
+                { seen[$4]; if ($3 == alias) a[$4] = $0; else c[$4] = $0 }
+                END {
+                  for (site in seen)
+                    printf "| %s | %s | %s |\n", site,
+                      (site in a ? a[site] : "—"), (site in c ? c[site] : "—")
+                }
+              ' \
+            | sort >> "$GITHUB_STEP_SUMMARY"
 
       # --output-style=static for the same reason as the deploy step: the
       # script's "deleting N stale" line is the only record of what the prune
-      # did, and nx would hide it.
+      # did, and nx would hide it. GH_TOKEN: the script asks the API which PRs
+      # are still open to decide what is stale.
       - name: Prune superseded preview deployments
         if: steps.check.outputs.projects != ''
         working-directory: ./projects/nx-workspace
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: pnpm exec nx run-many -t prune-deployments:preview --projects="${{ steps.check.outputs.projects }}" --output-style=static
