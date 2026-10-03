@@ -20,6 +20,8 @@
   - [Flour](./flour.md)
   - [Kidney Beans](./kidney-beans.md)
   - [Rice](./rice.md)
+- **Seafood**
+  - [Caviar](./caviar.md)
 - **Seasonings**
   - [Italian Seasoning](./spices-and-herbs/italian-seasoning.md)
 - **Substitutes**
