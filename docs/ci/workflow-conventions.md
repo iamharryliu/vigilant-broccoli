@@ -27,6 +27,7 @@ How workflows under `.github/workflows/` are named, triggered, pinned and bounde
 ## Branch previews
 
 - **Branch previews for stateless sites** — `deploy-preview` deploys each affected project that defines a `deploy:preview` target to a `preview-<site>` Cloudflare Pages branch alias on every non-`main` branch push, and `cron-cleanup-preview-deployments` deletes the deployments of branches that no longer exist (on the `delete` event and daily). It triggers on `push`, not `pull_request`, because the shared WIF provider rejects `pull_request` events. Details in [cloudflare-pages-deploy-pattern.md](../app-development/ui/deployment/cloudflare-pages-deploy-pattern.md#branch-previews).
+- **A workflow that runs on any branch gets its own narrow identity.** Because `deploy-preview` executes the workflow YAML of whatever branch was pushed, it must not use the shared `GCP_SERVICE_ACCOUNT`/`GCP_WORKLOAD_IDENTITY_PROVIDER` pair — the shared provider only refuses `pull_request`, so a branch push would otherwise be handed the project-wide SA. It uses the `github-deploy-preview` WIF provider and `github-actions-deploy-preview-role`, both pinned to its `job_workflow_ref` and scoped to `kv/data/deploy-preview`; see [secret-management.md](../infrastructure/secret-management.md#branch-preview-deploy-credentials). Apply the same reasoning to any future workflow triggered from arbitrary branches.
 
 ## Runners, timeouts, concurrency and schedules
 

@@ -64,15 +64,22 @@ jobs:
 
           echo "projects=$(echo "$PROJECTS_JSON" | jq -r 'unique | join(",")')" >> $GITHUB_OUTPUT
 
+      # Not the shared GCP_SERVICE_ACCOUNT / GCP_WORKLOAD_IDENTITY_PROVIDER
+      # pair: this workflow runs the YAML of whatever branch was pushed, so its
+      # identity is reachable by anyone who can push one. Both the GCP provider
+      # (github-actions-deploy-preview.tf) and the Vault role
+      # (run-vault-post-init.sh) pin job_workflow_ref to this file and grant
+      # nothing but the Cloudflare Pages deploy credentials.
       - name: Import Secrets from Vault
         if: steps.check.outputs.projects != ''
         uses: ./.github/actions/vault-secrets
         with:
-          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          gcp_workload_identity_provider: projects/88091895337/locations/global/workloadIdentityPools/github-actions/providers/github-deploy-preview
+          gcp_service_account: github-actions-deploy-preview@vigilant-broccoli.iam.gserviceaccount.com
+          role: github-actions-deploy-preview-role
           secrets: |
-            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
-            kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
+            kv/data/deploy-preview CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
+            kv/data/deploy-preview CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
 
       # --skip-nx-cache: VITE_BASE_PATH isn't a build input, so a cached main
       # build staged for GitHub Pages (base /vigilant-broccoli/) would otherwise
