@@ -2,18 +2,24 @@
 
 - [Programming Concepts](#programming-concepts)
 - [Architecture](#architecture)
+- [Networking](#networking)
 - [Tooling](#tooling)
 
 ## Programming Concepts
 
-| Term                | Definition                                                                                                                                        |
-| :------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------ |
-| ACID                | A set of properties that guarantee reliable transaction processing in relational database systems                                                 |
-| Compiler            | A tool that converts source code written in one programming language into another, typically into machine code.                                   |
-| first class citizen | a particular entity in a language—like a function, object, or data type—can be used freely and fully like any other value.                        |
-| High-level language | A programming language that is closer to human language, abstracting away hardware details. Easier to read, write, and maintain (e.g., Python).   |
-| immutable           | Cannot be changed after it’s created.                                                                                                             |
-| Low-level language  | A programming language that is closer to machine code, with less abstraction from hardware. Provides more control but is harder to use (e.g., C). |
+| Term                          | Definition                                                                                                                                        |
+| :---------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ACID                          | A set of properties that guarantee reliable transaction processing in relational database systems                                                 |
+| Closure                       | Enables functions to keep state.                                                                                                                  |
+| Compiler                      | A tool that converts source code written in one programming language into another, typically into machine code.                                   |
+| first class citizen           | a particular entity in a language—like a function, object, or data type—can be used freely and fully like any other value.                        |
+| High-level language           | A programming language that is closer to human language, abstracting away hardware details. Easier to read, write, and maintain (e.g., Python).   |
+| immutable                     | Cannot be changed after it’s created.                                                                                                             |
+| Low-level language            | A programming language that is closer to machine code, with less abstraction from hardware. Provides more control but is harder to use (e.g., C). |
+| Statically Typed              | Variable types are known at compile time.                                                                                                         |
+| Ternary Operator              | A one line if else statement.                                                                                                                     |
+| Test Driven Development (TDD) | You write your test code first and then write the actual code after.                                                                              |
+| Transpiler                    | Transforms code syntax and features so the code runs across different environments.                                                               |
 
 ## Architecture
 
@@ -30,17 +36,25 @@
 | Monorepo                  | A single repository that contains multiple projects, often related, to simplify development and collaboration.                                      |
 | Pub/Sub Model             | Publisher -> Message Broker (routes topics) -> Subscriber                                                                                           |
 
+## Networking
+
+| Term          | Definition                                                                                                                     |
+| :------------ | :----------------------------------------------------------------------------------------------------------------------------- |
+| Edge Requests | Requests served/handled at edge servers close to users. Benefits are lower latency, faster response, smarter request handling. |
+| URI           | Uniform Resource Identifier.                                                                                                   |
+| URL           | Uniform Resource Locator.                                                                                                      |
+
 ## Tooling
 
-| Term            | Definition                                                                                                                     |
-| :-------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| Bundler         | A tool that packages multiple files and their dependencies into a single file or set of files for deployment.                  |
-| CPU bound       | A condition where the speed of a program is limited by the processor's computation power.                                      |
-| Edge Requests   | Requests served/handled at edge servers close to users. Benefits are lower latency, faster response, smarter request handling. |
-| Elasticsearch   | A distributed, open-source search and analytics engine for handling large volumes of data in real time.                        |
-| Hadoop          | An open-source framework for distributed storage and processing of large data sets using clusters of computers.                |
-| IO bound        | A condition where the speed of a program is limited by input/output operations like reading files or network requests.         |
-| Package Manager | A tool that automates the process of installing, upgrading, and managing software dependencies.                                |
-| Redis           | An in-memory data structure store used as a database, cache, and message broker for high-performance applications.             |
-| Runtime         | The environment in which a program or script executes, including the necessary tools and resources.                            |
-| tree shaking    | A code optimization technique that removes unused code (dead code) from the final bundle during the build process.             |
+| Term            | Definition                                                                                                             |
+| :-------------- | :--------------------------------------------------------------------------------------------------------------------- |
+| Bundler         | A tool that packages multiple files and their dependencies into a single file or set of files for deployment.          |
+| CPU bound       | A condition where the speed of a program is limited by the processor's computation power.                              |
+| cron            | Operating system utility used to schedule automation script executions.                                                |
+| Elasticsearch   | A distributed, open-source search and analytics engine for handling large volumes of data in real time.                |
+| Hadoop          | An open-source framework for distributed storage and processing of large data sets using clusters of computers.        |
+| IO bound        | A condition where the speed of a program is limited by input/output operations like reading files or network requests. |
+| Package Manager | A tool that automates the process of installing, upgrading, and managing software dependencies.                        |
+| Redis           | An in-memory data structure store used as a database, cache, and message broker for high-performance applications.     |
+| Runtime         | The environment in which a program or script executes, including the necessary tools and resources.                    |
+| tree shaking    | A code optimization technique that removes unused code (dead code) from the final bundle during the build process.     |
