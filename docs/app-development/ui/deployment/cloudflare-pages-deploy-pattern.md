@@ -7,6 +7,7 @@ Static UIs in `apps/ui/*` deploy to Cloudflare Pages via wrangler.
 - [The wrangler target trio (per environment)](#the-wrangler-target-trio-per-environment)
 - [Branch matching: every deploy passes `--branch` explicitly](#branch-matching-every-deploy-passes---branch-explicitly)
 - [Per-environment build config](#per-environment-build-config)
+- [Sources outside the nx graph need their own trigger](#sources-outside-the-nx-graph-need-their-own-trigger)
 - [Custom domains (Terraform)](#custom-domains-terraform)
 - [New app checklist (Cloudflare-side)](#new-app-checklist-cloudflare-side)
 
@@ -42,6 +43,10 @@ The failure is invisible: CI stays green, and the live URL keeps serving the las
 ## Per-environment build config
 
 `deploy:production` builds with `--configuration=production-env` — a build configuration whose `fileReplacements` swap `environment.ts` → `environment.production.ts`, baking per-env fly URLs into the bundle at build time (static sites cannot read env vars at runtime).
+
+## Sources outside the nx graph need their own trigger
+
+`deploy.yml` picks what to deploy with `nx show projects --affected`, so an app whose content comes from outside the nx graph is invisible to it. `pages-index` is covered by hand — `deploy.yml`'s push paths list `CONTEXT.md`, `TODO.md`, `docs/**` and `setup/dotfiles/agent-skills/**` for exactly that reason. `docs-md` is the one left out: its `build-snapshot` target reads `snapshot.config.json`, rooted at the repo's `notes/` tree, which those paths do not cover. `deploy-docs-md.yml` exists to cover that gap, and because it owns the trigger it must also mirror `deploy.yml`'s environment selection — ref `production` (or a dispatch choosing it) runs the `deploy:production` target, anything else runs `deploy`. It invokes them through `run-many -t`, since `nx run docs-md:deploy:production` would read that trailing colon as a configuration on target `deploy`. Keeping it staging-only is what silently stopped `notes/` changes from reaching `docs.harryliu.dev` once that domain moved to `production-docs-md`: pushes still deployed, just to the project no domain pointed at. If another app grows an out-of-graph content source, give it the same paired trigger rather than widening `deploy.yml`'s paths — a path there fires the whole deploy pipeline, which then finds nothing affected and burns a run per push. The accepted cost of the split is that a push to `production` touching both `notes/**` and `projects/nx-workspace/**` deploys `production-docs-md` twice — once from each workflow, since a production `deploy.yml` run does an unfiltered `run-many -t deploy:production`. The deploys are idempotent and promotions are infrequent, so this is left alone rather than solved by sharing a concurrency group: group names are repo-wide, and `deploy.yml`'s staging half sets `cancel-in-progress: true`, which would let a staging deploy cancel an in-flight notes publish.
 
 ## Custom domains (Terraform)
 

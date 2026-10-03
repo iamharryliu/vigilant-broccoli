@@ -1,20 +1,34 @@
 name: deploy-docs-md
+run-name: deploy-docs-md (${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }})
 
 on:
   push:
-    branches: [main]
+    branches: [main, production]
     paths:
       - notes/**
       - .github/workflows/deploy-docs-md.yml
   workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        type: choice
+        default: staging
+        options:
+          - staging
+          - production
 
 permissions:
   id-token: write
   contents: read
 
 concurrency:
-  group: deploy-docs-md
+  # Keyed on environment so a production promotion and a staging push never
+  # land in the same group — one environment can never cancel the other.
+  group: deploy-docs-md-${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
   cancel-in-progress: false
+
+env:
+  DEPLOY_ENVIRONMENT: ${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
 
 jobs:
   deploy-docs-md:
@@ -40,4 +54,11 @@ jobs:
         env:
           CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_API_TOKEN }}
-        run: pnpm exec nx run docs-md:deploy --skip-nx-cache
+        run: |
+          DEPLOY_TARGET=deploy
+          if [[ "$DEPLOY_ENVIRONMENT" == "production" ]]; then
+            DEPLOY_TARGET=deploy:production
+          fi
+          # run-many, not `nx run docs-md:$DEPLOY_TARGET` — nx would read the
+          # colon in `deploy:production` as a configuration on target `deploy`.
+          pnpm exec nx run-many -t "$DEPLOY_TARGET" --projects=docs-md --skip-nx-cache
