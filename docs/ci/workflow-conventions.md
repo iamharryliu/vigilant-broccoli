@@ -6,6 +6,7 @@ How workflows under `.github/workflows/` are named, triggered, pinned and bounde
 
 - [Adding or changing a workflow](#adding-or-changing-a-workflow)
 - [Post-deploy followers](#post-deploy-followers)
+- [PR previews](#pr-previews)
 - [Runners, timeouts, concurrency and schedules](#runners-timeouts-concurrency-and-schedules)
 - [Toolchain versions](#toolchain-versions)
 - [Coverage that has to exist](#coverage-that-has-to-exist)
@@ -22,6 +23,12 @@ How workflows under `.github/workflows/` are named, triggered, pinned and bounde
 ## Post-deploy followers
 
 - Post-deploy followers (health-check, notify-complete, e2e/smoke/security suites) trigger on `repository_dispatch: types: [deploy-fanout]`, not `workflow_run` — `deploy.yml`'s `notify-followers` job fires that event once per invocation (including once per environment when called from `ci-rotate-secrets`) with a `client_payload` of `conclusion`, `deployed`, `environment`, `run_id`, `run_url`, `started_at`, `commit_message`, `commit_sha`. `workflow_run` doesn't fire for reusable `workflow_call` invocations, so it can't reliably signal "a deploy just finished" here. Gate any new follower job on `github.event.client_payload.conclusion == 'success'`, and add `&& github.event.client_payload.deployed == 'true'` if the job does real infra round trips (skip that half for cheap jobs like notifications that should still report a no-op success). Don't add a `workflow_run` trigger for `deploy`/`ci-rotate-secrets` — it never fires for the reusable `workflow_call` path, so `deploy-fanout` is the only reliable post-deploy signal. A suite can carry both its daily `cron` and the gated `deploy-fanout` trigger for periodic + immediate-post-deploy coverage (see the `test-security-*` suites, which run daily and re-check right after a real deploy; the `deployed == 'true'` gate keeps no-op deploys from firing them). `test-security-cloudflare-access` is the exception — it stays on `cron` + `terraform/**` push, since it validates infra (Cloudflare Access), not app deploys.
+
+## PR previews
+
+- **PR previews for stateless sites** — `deploy-preview` deploys each affected project that defines a `deploy:preview` target to a `preview-<site>` Cloudflare Pages project on every pull request, under the Pages branch `pr-<n>`, so each PR gets one stable alias at `pr-<n>.preview-<site>.pages.dev`. `cron-cleanup-preview-deployments` deletes the deployments of PRs that are no longer open (daily, or on demand). Details in [cloudflare-pages-deploy-pattern.md](../app-development/ui/deployment/cloudflare-pages-deploy-pattern.md#pr-previews).
+- **`pull_request`, not `push`, so the alias can be keyed on the PR number.** A `push` event carries no PR number, and the first push to a branch usually predates its PR, which would force a second branch-named scheme alongside `pr-<n>`. Keying on the PR also means the alias is short enough never to hit the 28-character truncation a branch name can.
+- **A workflow reachable from arbitrary PRs gets its own narrow identity.** Because `deploy-preview` executes the workflow YAML from the PR branch, it must not use the shared `GCP_SERVICE_ACCOUNT`/`GCP_WORKLOAD_IDENTITY_PROVIDER` pair — and in fact cannot, since the shared provider refuses `pull_request` outright. It uses the `github-deploy-preview` WIF provider and `github-actions-deploy-preview-role`, both pinned to its `job_workflow_ref` (which matches `refs/pull/<n>/merge`) and scoped to `kv/data/deploy-preview`; see [secret-management.md](../infrastructure/secret-management.md#pr-preview-deploy-credentials). Apply the same reasoning to any future workflow reachable from a PR or an arbitrary branch.
 
 ## Runners, timeouts, concurrency and schedules
 

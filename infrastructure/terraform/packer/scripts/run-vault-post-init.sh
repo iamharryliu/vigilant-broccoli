@@ -147,6 +147,36 @@ vault write auth/jwt/role/${VAULT_PR_CHECK_ROLE_NAME} - <<ROLE
 }
 ROLE
 
+# deploy-preview.yml runs on a push to any branch and executes the workflow
+# YAML from that branch, so — like ci-pr-check.yml above — its identity is
+# reachable by anyone who can push one, and job_workflow_ref cannot carry an
+# @refs/heads/main suffix the way the rotate/code-server roles do. Scoped to
+# its own path holding only the two Cloudflare Pages deploy credentials, never
+# kv/data/secrets. Mirrored there from kv/data/secrets by tf:post-apply, so
+# kv/data/secrets stays the single source of truth.
+echo 'Writing policy ${VAULT_PREVIEW_POLICY_NAME}...'
+vault policy write ${VAULT_PREVIEW_POLICY_NAME} - <<POLICY
+path \"${VAULT_KV_PATH}/data/deploy-preview\" {
+  capabilities = [\"read\"]
+}
+POLICY
+
+echo 'Creating role ${VAULT_PREVIEW_ROLE_NAME}...'
+vault write auth/jwt/role/${VAULT_PREVIEW_ROLE_NAME} - <<ROLE
+{
+  \"role_type\": \"jwt\",
+  \"user_claim\": \"actor\",
+  \"bound_claims_type\": \"glob\",
+  \"bound_claims\": {
+    \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
+    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/deploy-preview.yml@*\"
+  },
+  \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
+  \"policies\": [\"${VAULT_PREVIEW_POLICY_NAME}\"],
+  \"ttl\": \"30m\"
+}
+ROLE
+
 # manual-replace-code-server.yml re-syncs CODE_SERVER_VM_IP after replacing the
 # code-server VM (which gets a fresh ephemeral IP). Patch-only — it can merge a
 # single key into kv/data/secrets but cannot read any secret, so it grants no
