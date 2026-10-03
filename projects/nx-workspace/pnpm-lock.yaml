@@ -16,7 +16,7 @@ importers:
         version: 3.1082.0
       '@better-auth/api-key':
         specifier: ^1.6.23
-        version: 1.6.23(@better-auth/core@1.6.23(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.7(zod@3.25.76))(jose@6.2.3)(kysely@0.29.3)(nanostores@1.4.0))(@better-auth/utils@0.4.2)(better-auth@1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11))(better-call@1.3.7(zod@3.25.76))
+        version: 1.6.23(@better-auth/core@1.6.23(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.7(zod@3.25.76))(jose@6.2.3)(kysely@0.29.3)(nanostores@1.4.0))(@better-auth/utils@0.4.2)(better-auth@1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11))(better-call@1.3.7(zod@3.25.76))
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -142,7 +142,7 @@ importers:
         version: 7.0.1
       better-auth:
         specifier: ^1.6.23
-        version: 1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11)
+        version: 1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11)
       better-sqlite3:
         specifier: ^12.11.1
         version: 12.11.1
@@ -159,8 +159,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0
       dompurify:
-        specifier: ^3.4.15
-        version: 3.4.15
+        specifier: ^3.4.16
+        version: 3.4.16
       express:
         specifier: ^5.2.1
         version: 5.2.1(supports-color@8.1.1)
@@ -204,8 +204,8 @@ importers:
         specifier: ^2.4.0
         version: 2.4.0
       next:
-        specifier: 16.3.5
-        version: 16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
+        specifier: 16.3.8
+        version: 16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
       node-cron:
         specifier: ^4.6.0
         version: 4.6.0
@@ -213,8 +213,8 @@ importers:
         specifier: ^0.10.10
         version: 0.10.10(supports-color@8.1.1)
       nodemailer:
-        specifier: ^9.1.1
-        version: 9.1.1
+        specifier: ^10.0.13
+        version: 10.0.13
       openai:
         specifier: ^4.104.0
         version: 4.104.0(encoding@0.1.13)(ws@8.21.3)(zod@3.25.76)
@@ -261,8 +261,8 @@ importers:
         specifier: ^0.35.4
         version: 0.35.4(@types/node@24.13.3)
       socket.io:
-        specifier: ^4.8.3
-        version: 4.8.3(supports-color@8.1.1)
+        specifier: ^4.8.4
+        version: 4.8.4(supports-color@8.1.1)
       socket.io-client:
         specifier: ^4.8.3
         version: 4.8.3(supports-color@8.1.1)
@@ -344,7 +344,7 @@ importers:
         version: 23.2.1(@babel/traverse@7.29.7)(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.19))(@swc/types@0.1.27)(supports-color@8.1.1)(typescript@5.9.3))(@swc/cli@0.8.0(@swc/core@1.15.8(@swc/helpers@0.5.19))(chokidar@5.0.0)(supports-color@8.1.1))(@swc/core@1.15.8(@swc/helpers@0.5.19))(nx@23.2.1(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.19))(@swc/types@0.1.27)(supports-color@8.1.1)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.19)))(verdaccio@6.5.1(encoding@0.1.13)(supports-color@8.1.1)(typanion@3.14.0))
       '@nx/next':
         specifier: 23.2.1
-        version: 23.2.1(ee873f13629e98b16f6d50076281df62)
+        version: 23.2.1(87a4960fa60d9502b5878aae010d5f4b)
       '@nx/node':
         specifier: 23.2.1
         version: 23.2.1(cef2bd28fe834406e67ef0550fa3a0bb)
@@ -592,8 +592,8 @@ importers:
         specifier: ^5.2.6
         version: 5.2.6(supports-color@8.1.1)(tslib@2.8.1)(webpack-cli@7.2.1)(webpack@5.108.4)
       wrangler:
-        specifier: ^4.132.0
-        version: 4.132.0(@types/node@24.13.3)
+        specifier: ^4.145.0
+        version: 4.147.0(@types/node@24.13.3)
 
   apps/api/bucket-service:
     dependencies:
@@ -686,7 +686,7 @@ importers:
     dependencies:
       '@better-auth/api-key':
         specifier: ^1.6.23
-        version: 1.6.23(@better-auth/core@1.6.23(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.7(zod@4.6.5))(jose@6.2.3)(kysely@0.29.3)(nanostores@1.4.0))(@better-auth/utils@0.4.2)(better-auth@1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11))(better-call@1.3.7(zod@4.6.5))
+        version: 1.6.23(@better-auth/core@1.6.23(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.7(zod@4.6.5))(jose@6.2.3)(kysely@0.29.3)(nanostores@1.4.0))(@better-auth/utils@0.4.2)(better-auth@1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11))(better-call@1.3.7(zod@4.6.5))
       '@fastify/cors':
         specifier: ^11.3.0
         version: 11.3.0
@@ -716,7 +716,7 @@ importers:
         version: 7.0.1
       better-auth:
         specifier: ^1.6.23
-        version: 1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11)
+        version: 1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11)
       ejs:
         specifier: ^6.0.1
         version: 6.0.1
@@ -733,8 +733,8 @@ importers:
         specifier: '*'
         version: 3.1.1
       nodemailer:
-        specifier: ^9.1.1
-        version: 9.1.1
+        specifier: ^10.0.13
+        version: 10.0.13
       qrcode:
         specifier: '*'
         version: 1.5.4
@@ -797,8 +797,8 @@ importers:
         specifier: '*'
         version: 1.9.4
       next:
-        specifier: 16.3.5
-        version: 16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
+        specifier: 16.3.8
+        version: 16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
       react:
         specifier: '*'
         version: 19.2.7
@@ -848,8 +848,8 @@ importers:
         specifier: '*'
         version: 0.513.0(react@19.2.7)
       next:
-        specifier: 16.3.5
-        version: 16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
+        specifier: 16.3.8
+        version: 16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
       react:
         specifier: '*'
         version: 19.2.7
@@ -881,8 +881,8 @@ importers:
         specifier: workspace:*
         version: link:../../libs/@vigilant-broccoli/react-lib
       next:
-        specifier: 16.3.5
-        version: 16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
+        specifier: 16.3.8
+        version: 16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
       react:
         specifier: '*'
         version: 19.2.7
@@ -943,8 +943,8 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1(supports-color@8.1.1)
       nodemailer:
-        specifier: ^9.1.1
-        version: 9.1.1
+        specifier: ^10.0.13
+        version: 10.0.13
 
   libs/@vigilant-broccoli/fastify:
     dependencies:
@@ -1045,8 +1045,8 @@ importers:
         specifier: workspace:*
         version: link:../common-node
       nodemailer:
-        specifier: ^9.1.1
-        version: 9.1.1
+        specifier: ^10.0.13
+        version: 10.0.13
       resend:
         specifier: ^6.9.4
         version: 6.14.0
@@ -2247,8 +2247,8 @@ packages:
     resolution: {integrity: sha512-jxQYkj8dSIzc0cD6cMMNdOc1UVjqSqu8BZdor5s8cGjW2I8BjODt/kWPVdY+u9zj3ms75Q5qaZgnxUad83+eAg==}
     engines: {node: '>=22.0.0'}
 
-  '@cloudflare/unenv-preset@2.16.1':
-    resolution: {integrity: sha512-ECxObrMfyTl5bhQf/lZCXwo5G6xX9IAUo+nDMKK4SZ8m4Jvvxp52vilxyySSWh2YTZz8+HQ07qGH/2rEom1vDw==}
+  '@cloudflare/unenv-preset@2.16.2':
+    resolution: {integrity: sha512-JBP1+Z7ZSNG/d4mRP+y8VC5dka3tZVMLEZRvS+rzQ4DGV1EoxRFQckcJTTkXbHSQiTj0DtNI01Zwb/V2fX0mvQ==}
     peerDependencies:
       unenv: 2.0.0-rc.24
       workerd: '>1.20260305.0 <2.0.0-0'
@@ -2256,32 +2256,32 @@ packages:
       workerd:
         optional: true
 
-  '@cloudflare/workerd-darwin-64@1.20260915.1':
-    resolution: {integrity: sha512-EFjNxN4l5caJoHADhchROvO52EFFt+zmJvFZRmwX6UU9pE53BAbF94wRBhbpylv5Ethsd1TdJNwYuUPgZYbETg==}
+  '@cloudflare/workerd-darwin-64@1.20261001.1':
+    resolution: {integrity: sha512-4cgSgDf28JSw/P5Dj5GCS59hzVqS5XnmGAWNkvYHLI6ODU9idGaMMNEuhJXDkEG/lsABmlVlnCgsdh2VbKWepw==}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [darwin]
 
-  '@cloudflare/workerd-darwin-arm64@1.20260915.1':
-    resolution: {integrity: sha512-Xm2jbLw8M/o5YkuI5VsHCVU4rgnzr3ROl+Awk7FCBJ3mtLJNuxPtJNB/zZI+/t+3QtgsSPnmTisS5Gq6/KLQ/A==}
+  '@cloudflare/workerd-darwin-arm64@1.20261001.1':
+    resolution: {integrity: sha512-8ulAWruEVouNmEIsQsy9WSSCS9zkLu93W2MTwp5esiFyoPp05BNSVFIFsYSPi1pkFmBBd7fsnwMpbLkaJLaVPQ==}
     engines: {node: '>=16'}
     cpu: [arm64]
     os: [darwin]
 
-  '@cloudflare/workerd-linux-64@1.20260915.1':
-    resolution: {integrity: sha512-hkQp+PWBp7U6uDMd6hqUf4lfErPV79jolLaK6j4U50HrHC4jqWxESPemkxEk8H7p9jTKkZ9I9Z0nA5DLAE0J6g==}
+  '@cloudflare/workerd-linux-64@1.20261001.1':
+    resolution: {integrity: sha512-kZbTZJGrhsMOdqZ2BIybjaBRLZjYsRLWj7mcNw/6Y3hodOhp5MrNzcz4iWGwNVWwyIV+7Pl+/LX5VcgnRqdHOg==}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [linux]
 
-  '@cloudflare/workerd-linux-arm64@1.20260915.1':
-    resolution: {integrity: sha512-3yi8/irVGNQbuYTSmLXcEGupk4Js42jU3kyAx88MDbwGQUa34VbucKcNwHwfhqwEUNaIrn8ohlOEcNJChQl0Og==}
+  '@cloudflare/workerd-linux-arm64@1.20261001.1':
+    resolution: {integrity: sha512-oOk3Zj6k/8oP0FJgZBWDn7+BqbsqIMEMaV95pulHPVbwVu4wYoLfQq2hp0vkbCNsCFLqZb7cqixXdrwD54ZIow==}
     engines: {node: '>=16'}
     cpu: [arm64]
     os: [linux]
 
-  '@cloudflare/workerd-windows-64@1.20260915.1':
-    resolution: {integrity: sha512-+FQ3o/grK2tQy6dw3AqSOYWsYROZqxCQKBqSHQVcXvr2x2QetCT64OrvAAJ0hpQAokREFwQyzsNmMiZbAdW0zw==}
+  '@cloudflare/workerd-windows-64@1.20261001.1':
+    resolution: {integrity: sha512-uRxm5W4VyBkoSaoP1BfOuH0873tE+vxsknF4sab6/5YIRvIAufChq3QDp+zlAn67PuGPGcn7W8QraA0t4ucmOQ==}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [win32]
@@ -4557,8 +4557,8 @@ packages:
   '@neon-rs/load@0.0.4':
     resolution: {integrity: sha512-kTPhdZyTQxB+2wpiRcFWrDcejc4JI6tkPuS7UZCG4l6Zvc5kU/gGQ/ozvHTh1XR5tS+UlfAfGuPajjzQjCiHCw==}
 
-  '@next/env@16.3.5':
-    resolution: {integrity: sha512-NWEXVDMqoEo0ktmU6u0sE2Vg0LOcsD7NnOTJNo3/fEaTfsg+F1bMIxuDmQbda4e3yTIQwVdUREF2yIuMOusKtg==}
+  '@next/env@16.3.8':
+    resolution: {integrity: sha512-Al9zqHVV7TJv0eFuOU4U7Lvv74PTih4Ch63sk2xCIpSTkE3udFnaOcnzP2lQVymiL7yS9Cj2iClUXlR3EQ5sEw==}
 
   '@next/eslint-plugin-next@16.2.10':
     resolution: {integrity: sha512-Gs8D2m21VnJeFo9qvYIIqJH94frWerWYu41BprU1pLtRVF7PCQNLiFZZ3fG+iPuj3K83Cwv/rt+msLOy8Qgu3Q==}
@@ -4566,54 +4566,54 @@ packages:
   '@next/eslint-plugin-next@16.3.2':
     resolution: {integrity: sha512-z+HW1cZgt8QhByw8p2EbxF94AImgsKIYUbtSkA7Zld2T9yrKAlys4jNOcAOCtv6csX2CoA/5qCVyesL5pHmJ0A==}
 
-  '@next/swc-darwin-arm64@16.3.5':
-    resolution: {integrity: sha512-pMmGgETfKvElucLHtVaeiMRbp2zUbvKx7b1yGko0liBz3cw1mKSggWN/Rp/wPz8z+E1O82u3r4L1Co+ZS5hokQ==}
+  '@next/swc-darwin-arm64@16.3.8':
+    resolution: {integrity: sha512-2JPRMh2nmQG5CiL7cXGL9AGwnPWJQ//cTtAUCT+w511QHk79SYz3LGv/pc5X643B/WEO0rvu3Yww0hqwt3kgeA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
 
-  '@next/swc-darwin-x64@16.3.5':
-    resolution: {integrity: sha512-76VaGYvf6HPa5/w12yLkE3dXTn9AfdEviI79oEL3aZoAmRLc9rWitjWqyjViVysK/ht/y9YKzFkBrUdi/wGkow==}
+  '@next/swc-darwin-x64@16.3.8':
+    resolution: {integrity: sha512-GZtCCOBKJ4leVIT/Th0llWKhD1ca92lzbQiS5R5ON9QkoiFnilFsebDae1JU2a3HWoKMEmEZWGs1AGLavVM72Q==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
 
-  '@next/swc-linux-arm64-gnu@16.3.5':
-    resolution: {integrity: sha512-zKDELJ5jSQMHeO/hmXUQsAzagX4bQD4OiMi3pQ5FbUj+yK506oLVHnKA2YXMlbg1EHHqJYtyePOgByIDXD1lqw==}
+  '@next/swc-linux-arm64-gnu@16.3.8':
+    resolution: {integrity: sha512-O659ygeQYqneJ1fBKMpFxIFqYkYswu8IAS1OCKK/4f3ZgJJm1dRz4fVJZRi/kLLWjnBKnebOePA4WNv+sV1pVA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@next/swc-linux-arm64-musl@16.3.5':
-    resolution: {integrity: sha512-7Vql0pgzCoHagv6+FNOZoqmJqA52c6zeVbhtS/47qFozO1MSx4ms7x7GHiciY8R5CDsSMKMQjJEryoJLcsBIbA==}
+  '@next/swc-linux-arm64-musl@16.3.8':
+    resolution: {integrity: sha512-dSjKSyWpzxoO1d3DIZZcP4XJcNaKeLmxQMFOiYl5vuBRMmweIqnAhty8tAmRsvTss779cK1FtYnDMj40e4TQlg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@next/swc-linux-x64-gnu@16.3.5':
-    resolution: {integrity: sha512-NH/xzehyHEFWE2nlcZon7TB/0+H4shfWCi7S1zka815XCOhJDYZhoeJtOYy0dh0WVRWACVXSyGNFFytoMxUhRg==}
+  '@next/swc-linux-x64-gnu@16.3.8':
+    resolution: {integrity: sha512-lbqOuz3RPRcv+o9msNsJw5x4+Y1ZwPTs6vmL6DCf7i0fZfvng/F59wyeDwqHIvV0mK//RBy/jJkZ+nCKsSMXjQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@next/swc-linux-x64-musl@16.3.5':
-    resolution: {integrity: sha512-lV4+EhWMfS8jcC+EH2nn/Cm5cn6XsgbE07bU9tMH8fCo0tNAqhyzi1b5wQ/Tn6NGFTvKDY65w3ZH95EjwBRAnQ==}
+  '@next/swc-linux-x64-musl@16.3.8':
+    resolution: {integrity: sha512-+316WswI8ScVgZeUd+1KGaXkHhaYQzCjvH/05TZSpJ8zBizb1a4G7DtO7F12jcBIqMOtsz9ji1t48fmKtzqsGA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@next/swc-win32-arm64-msvc@16.3.5':
-    resolution: {integrity: sha512-/wKzAREX2RF++MhicjDbg8tGn2AiBIM0+EFeTFKoUEUbW5D6amCJehd5Z5G1H5/gxNdgnwoXMcHz24H/c2tGkQ==}
+  '@next/swc-win32-arm64-msvc@16.3.8':
+    resolution: {integrity: sha512-ji0gd4kMYUxO+1fJBIbiBVRCjzG/lloiyCccnlebvb1ZJ5qXCPZqYg4Jl1DrrixnWNMKylzgpmMWx0yNDYXlzw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [win32]
 
-  '@next/swc-win32-x64-msvc@16.3.5':
-    resolution: {integrity: sha512-LNdCHzgLFc+UeqMS84LzXPaeBRKyqDN9OMyFAr1OrB0XrNw78IRrEVtZvvA7245W/HsaoeVOQX9jPjPk8jojwA==}
+  '@next/swc-win32-x64-msvc@16.3.8':
+    resolution: {integrity: sha512-WcTlaKt/TWkh5kUjdJcUmB1XgZ+1c6fz4Y9fDHL73YNSdGaUWjceeWrrlwF0nv19iABYWC4iAq1oX1w4Bn0vfg==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
@@ -9825,11 +9825,6 @@ packages:
     resolution: {integrity: sha512-lGe34o6EHj9y3Kts9R4ZYs/Gr+6N7MCaMlIFA3F1R2O5/m7K06AxfSeO5530PEERE6/WyEg3lsuyw4GHlPZHog==}
     engines: {node: ^4.5.0 || >= 5.9}
 
-  baseline-browser-mapping@2.11.22:
-    resolution: {integrity: sha512-pWc4w51fBFd7mav43/zKRC+RI6f4yfzQoVlfvE8dECePyfkn1bzLp01Fj0QACcyCZyFhiEMyD2qScfKRWgWibA==}
-    engines: {node: '>=6.0.0'}
-    hasBin: true
-
   baseline-browser-mapping@2.11.24:
     resolution: {integrity: sha512-hYrgxie335U08WqICoGqKRzV1HFXv6zdxwJE4ekCb80CM9a0SVVsN4QPwT67RraRo+9h8IATk6uxHJw7QSkdOg==}
     engines: {node: '>=6.0.0'}
@@ -11029,6 +11024,9 @@ packages:
 
   dompurify@3.4.15:
     resolution: {integrity: sha512-EUBjM+B+lkDE41iE82DDSCfkoPGfXx8IxFxPMjNzm/Uk4xDet77rTN9wqlxlVg71kK7XGuUMv6wUxJUwwv+Xyw==}
+
+  dompurify@3.4.16:
+    resolution: {integrity: sha512-sqo+pNp3qRhCIpbgRi1y8Tgk27Bo2Ry7w0dC1NBeNTdZChWjz9Xb/KOoZbRP/R6pQZ80Qw8YhXw13hWWBbMRnQ==}
 
   domutils@3.2.2:
     resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
@@ -13953,8 +13951,8 @@ packages:
     resolution: {integrity: sha512-r9deDe9p5FJUPZAk3A59wGH7Ii9YrjjWw0jmw/liSbHl2CHiyXj6FcDXDu2K3TjVAXqiJdaw3xxwlZZr9E6nHg==}
     hasBin: true
 
-  miniflare@5.20260915.0-alpha:
-    resolution: {integrity: sha512-ApLsq9X2jbpkLAPXx89afGvuNxAFzd1rUK+nzfBSLu+34YWc2Q2YlgH6f3kSEEQYZ2gAlC5Q5IP6tDNNg/1KqQ==}
+  miniflare@5.20261001.0-alpha:
+    resolution: {integrity: sha512-GaimS5mSIOMyvd16ga+e1/QkI8cmp3z35QPHFex0DktqNQf2RVZQwMPQXdyoUreUiFP/0Gpe2MoQInTyMAD5xA==}
     engines: {node: '>=22.0.0'}
 
   minimalistic-assert@1.0.1:
@@ -14222,8 +14220,8 @@ packages:
     resolution: {integrity: sha512-eonl3sLUha+S1GzTPxychyhnUzKyeQkZ7jLjKrBagJgPla13F+uQ71HgpFefyHgqrjEbCPkDArxYsjY8/+gLKA==}
     engines: {node: '>= 0.4.0'}
 
-  next@16.3.5:
-    resolution: {integrity: sha512-MdtsTgzyfCPRLC6uJ1mN8ao7lyJ4BB0U6Inhnx3gta1UcCIdHK3yxLG0E8OWQteWD8/Q0qb8A5o7wJaL8M9y2w==}
+  next@16.3.8:
+    resolution: {integrity: sha512-U7QEZaTini6wKrb8A8hqLLqYQyCetegKjCpJOyxk642vWoMoU1x5PyZCJFvgYgiptA8xc5j/9xYlZFO7w9Sjmw==}
     engines: {node: '>=20.9.0'}
     hasBin: true
     peerDependencies:
@@ -14322,9 +14320,9 @@ packages:
     resolution: {integrity: sha512-gag25B9pi4RpPHvadnoySfh80BkFzYo1zHFVv+wrahnLvmrnIUUevM0A+pVcAgCheJr/H1RSrxrBIwPfG3nImQ==}
     engines: {node: '>= 18.0.0'}
 
-  nodemailer@9.1.1:
-    resolution: {integrity: sha512-izw9mVKFix6YSnC9eLgV6g1opl9DUlRio9ZNcq+Wu9Ujn2UwF+8Nl0B8nz22kEC+CTZCvinkxwJ0DeFbb6NwcQ==}
-    engines: {node: '>=6.0.0'}
+  nodemailer@10.0.13:
+    resolution: {integrity: sha512-SzG86OlvcW/NNhUFC6uROMwRTL4n7MswfQqC/T8mhkmnY1YVa23zUEMYi4ijSeXSl9GLz9ZeTJDUatEDuY5FeQ==}
+    engines: {node: '>=20.0.0'}
 
   nopt@8.1.0:
     resolution: {integrity: sha512-ieGu42u/Qsa4TFktmaKEwM6MQH0pOWnaB3htzh0JRtx84+Mebc0cbZYN5bC+6WTZ4+77xrL9Pn5m7CV6VIkV7A==}
@@ -16326,8 +16324,8 @@ packages:
     resolution: {integrity: sha512-IH/iSeO9T6gz1KkFleGDWkG9N3dl4jXVYUtMhIqH10Md0ttMer8nUNWiP1DKuNrybD2xBrixLJdCC9J6ECoYkg==}
     engines: {node: '>=10.0.0'}
 
-  socket.io@4.8.3:
-    resolution: {integrity: sha512-2Dd78bqzzjE6KPkD5fHZmDAKRNe3J15q+YHDrIsy9WEkqttc7GY+kT9OBLSMaPbQaEd0x1BjcmtMtXkfpc+T5A==}
+  socket.io@4.8.4:
+    resolution: {integrity: sha512-9ZV9zg8vN8hO3Y25DhR7nUkJ1VDnBhq5O/JrXhFT9s6+F0gqytSASTHVfCFc2mJXaTfARroErplXlzFWwETZqQ==}
     engines: {node: '>=10.2.0'}
 
   sockjs@0.3.24:
@@ -17270,10 +17268,6 @@ packages:
     resolution: {integrity: sha512-zWpdTVD54H48CIybL0rWQ3ukpb9d23wM7eH5RtfdmeP70cWHNjtfo7P4vZX+5CoDcO53J4Pu5uXp7lNfjc6DRA==}
     engines: {node: '>=18.17'}
 
-  undici@7.29.0:
-    resolution: {integrity: sha512-IDxfleLmmbSskfWSUATiN1nfn2rDuvnMOqb5CWR92iIfojA0Ud+ulOAAEQ57LPr9rWmsreUyf5lwyao+7GNNVw==}
-    engines: {node: '>=20.18.1'}
-
   undici@7.29.1:
     resolution: {integrity: sha512-RYONW2MeafgYlkVOKYKkA/Ag7BmXqgIWCa8t1m0JcxrQg9pI9lEqRhAOruOBCbAohOa/gkCF+iPi9hrgvTzu6Q==}
     engines: {node: '>=20.18.1'}
@@ -17892,17 +17886,17 @@ packages:
   wordwrap@1.0.0:
     resolution: {integrity: sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==}
 
-  workerd@1.20260915.1:
-    resolution: {integrity: sha512-9Nqh22lW/ondXnMkFTbn65MHZLdsE2izJ9sFIVdqAufQTEVWnUkcpp7T5JtLr4ASN/VuxlTVZ5xgYntyo+d4ag==}
+  workerd@1.20261001.1:
+    resolution: {integrity: sha512-d/SIYHFO0PT/wiFZg8in4NpRIxYuFwslX1HdylOtWkBIIUmSpkGFhK820cV84XACFylwJ48xuRoWW/8DWDPsPQ==}
     engines: {node: '>=16'}
     hasBin: true
 
-  wrangler@4.132.0:
-    resolution: {integrity: sha512-61HD7Unw3g7h9zSQoqldzfL3MEbCKUVfwtlMgfSQtjYwMjBD8z83K/EXnYGv75R5hczx3grFfjYH+tdmJm5PHg==}
+  wrangler@4.147.0:
+    resolution: {integrity: sha512-pQYRoiq8PTAxphaG69z8+GC1DkSGd19EDZehQ8zxjo/Ko3mRB6Qs1mTrd8ZuKAarLklIjTqr1lUdCK9r4q2hUg==}
     engines: {node: '>=22.0.0'}
     hasBin: true
     peerDependencies:
-      '@cloudflare/workers-types': ^5.20260915.1
+      '@cloudflare/workers-types': ^5.20261001.1
     peerDependenciesMeta:
       '@cloudflare/workers-types':
         optional: true
@@ -19332,19 +19326,19 @@ snapshots:
 
   '@bcoe/v8-coverage@1.0.2': {}
 
-  '@better-auth/api-key@1.6.23(@better-auth/core@1.6.23(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.7(zod@3.25.76))(jose@6.2.3)(kysely@0.29.3)(nanostores@1.4.0))(@better-auth/utils@0.4.2)(better-auth@1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11))(better-call@1.3.7(zod@3.25.76))':
+  '@better-auth/api-key@1.6.23(@better-auth/core@1.6.23(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.7(zod@3.25.76))(jose@6.2.3)(kysely@0.29.3)(nanostores@1.4.0))(@better-auth/utils@0.4.2)(better-auth@1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11))(better-call@1.3.7(zod@3.25.76))':
     dependencies:
       '@better-auth/core': 1.6.23(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.7(zod@3.25.76))(jose@6.2.3)(kysely@0.29.3)(nanostores@1.4.0)
       '@better-auth/utils': 0.4.2
-      better-auth: 1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11)
+      better-auth: 1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11)
       better-call: 1.3.7(zod@3.25.76)
       zod: 4.4.3
 
-  '@better-auth/api-key@1.6.23(@better-auth/core@1.6.23(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.7(zod@4.6.5))(jose@6.2.3)(kysely@0.29.3)(nanostores@1.4.0))(@better-auth/utils@0.4.2)(better-auth@1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11))(better-call@1.3.7(zod@4.6.5))':
+  '@better-auth/api-key@1.6.23(@better-auth/core@1.6.23(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.7(zod@4.6.5))(jose@6.2.3)(kysely@0.29.3)(nanostores@1.4.0))(@better-auth/utils@0.4.2)(better-auth@1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11))(better-call@1.3.7(zod@4.6.5))':
     dependencies:
       '@better-auth/core': 1.6.23(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.7(zod@4.6.5))(jose@6.2.3)(kysely@0.29.3)(nanostores@1.4.0)
       '@better-auth/utils': 0.4.2
-      better-auth: 1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11)
+      better-auth: 1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11)
       better-call: 1.3.7(zod@4.6.5)
       zod: 4.4.3
 
@@ -19478,25 +19472,25 @@ snapshots:
 
   '@cloudflare/kv-asset-handler@0.5.0': {}
 
-  '@cloudflare/unenv-preset@2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260915.1)':
+  '@cloudflare/unenv-preset@2.16.2(unenv@2.0.0-rc.24)(workerd@1.20261001.1)':
     dependencies:
       unenv: 2.0.0-rc.24
     optionalDependencies:
-      workerd: 1.20260915.1
+      workerd: 1.20261001.1
 
-  '@cloudflare/workerd-darwin-64@1.20260915.1':
+  '@cloudflare/workerd-darwin-64@1.20261001.1':
     optional: true
 
-  '@cloudflare/workerd-darwin-arm64@1.20260915.1':
+  '@cloudflare/workerd-darwin-arm64@1.20261001.1':
     optional: true
 
-  '@cloudflare/workerd-linux-64@1.20260915.1':
+  '@cloudflare/workerd-linux-64@1.20261001.1':
     optional: true
 
-  '@cloudflare/workerd-linux-arm64@1.20260915.1':
+  '@cloudflare/workerd-linux-arm64@1.20261001.1':
     optional: true
 
-  '@cloudflare/workerd-windows-64@1.20260915.1':
+  '@cloudflare/workerd-windows-64@1.20261001.1':
     optional: true
 
   '@codemirror/autocomplete@6.20.3':
@@ -20900,7 +20894,7 @@ snapshots:
     dependencies:
       '@jest/fake-timers': 30.4.1
       '@jest/types': 30.4.1
-      '@types/node': 24.13.3
+      '@types/node': 24.13.5
       jest-mock: 30.4.1
 
   '@jest/expect-utils@30.3.0':
@@ -20956,7 +20950,7 @@ snapshots:
     dependencies:
       '@jest/types': 30.4.1
       '@sinonjs/fake-timers': 15.4.0
-      '@types/node': 24.13.3
+      '@types/node': 24.13.5
       jest-message-util: 30.4.1
       jest-mock: 30.4.1
       jest-util: 30.4.1
@@ -21713,7 +21707,7 @@ snapshots:
 
   '@neon-rs/load@0.0.4': {}
 
-  '@next/env@16.3.5': {}
+  '@next/env@16.3.8': {}
 
   '@next/eslint-plugin-next@16.2.10':
     dependencies:
@@ -21726,28 +21720,28 @@ snapshots:
     transitivePeerDependencies:
       - eslint
 
-  '@next/swc-darwin-arm64@16.3.5':
+  '@next/swc-darwin-arm64@16.3.8':
     optional: true
 
-  '@next/swc-darwin-x64@16.3.5':
+  '@next/swc-darwin-x64@16.3.8':
     optional: true
 
-  '@next/swc-linux-arm64-gnu@16.3.5':
+  '@next/swc-linux-arm64-gnu@16.3.8':
     optional: true
 
-  '@next/swc-linux-arm64-musl@16.3.5':
+  '@next/swc-linux-arm64-musl@16.3.8':
     optional: true
 
-  '@next/swc-linux-x64-gnu@16.3.5':
+  '@next/swc-linux-x64-gnu@16.3.8':
     optional: true
 
-  '@next/swc-linux-x64-musl@16.3.5':
+  '@next/swc-linux-x64-musl@16.3.8':
     optional: true
 
-  '@next/swc-win32-arm64-msvc@16.3.5':
+  '@next/swc-win32-arm64-msvc@16.3.8':
     optional: true
 
-  '@next/swc-win32-x64-msvc@16.3.5':
+  '@next/swc-win32-x64-msvc@16.3.8':
     optional: true
 
   '@noble/ciphers@2.2.0': {}
@@ -21937,7 +21931,7 @@ snapshots:
       - nx
       - supports-color
 
-  '@nx/next@23.2.1(ee873f13629e98b16f6d50076281df62)':
+  '@nx/next@23.2.1(87a4960fa60d9502b5878aae010d5f4b)':
     dependencies:
       '@babel/plugin-proposal-decorators': 7.29.7(@babel/core@7.29.7(supports-color@8.1.1))
       '@nx/devkit': 23.2.1(nx@23.2.1(@swc-node/register@1.11.1(@swc/core@1.15.8(@swc/helpers@0.5.19))(@swc/types@0.1.27)(supports-color@8.1.1)(typescript@5.9.3))(@swc/core@1.15.8(@swc/helpers@0.5.19)))
@@ -21948,7 +21942,7 @@ snapshots:
       '@phenomnomnominal/tsquery': 6.2.0(typescript@5.9.3)
       copy-webpack-plugin: 14.0.0(webpack@5.108.4)
       ignore: 7.0.5
-      next: 16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
+      next: 16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
       semver: 7.8.5
       tslib: 2.8.1
       webpack-merge: 5.10.0
@@ -25903,7 +25897,7 @@ snapshots:
 
   '@types/cors@2.8.19':
     dependencies:
-      '@types/node': 24.13.3
+      '@types/node': 24.13.5
 
   '@types/d3-array@3.2.2': {}
 
@@ -26138,7 +26132,7 @@ snapshots:
 
   '@types/send@1.2.1':
     dependencies:
-      '@types/node': 24.13.4
+      '@types/node': 24.13.5
 
   '@types/serve-index@1.9.4':
     dependencies:
@@ -27995,8 +27989,6 @@ snapshots:
 
   base64id@2.0.0: {}
 
-  baseline-browser-mapping@2.11.22: {}
-
   baseline-browser-mapping@2.11.24: {}
 
   basic-auth@2.0.1:
@@ -28015,7 +28007,7 @@ snapshots:
 
   before-after-hook@4.0.0: {}
 
-  better-auth@1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11):
+  better-auth@1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11):
     dependencies:
       '@better-auth/core': 1.6.23(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.7(zod@3.25.76))(jose@6.2.3)(kysely@0.29.3)(nanostores@1.4.0)
       '@better-auth/drizzle-adapter': 1.6.23(@better-auth/core@1.6.23(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.7(zod@3.25.76))(jose@6.2.3)(kysely@0.29.3)(nanostores@1.4.0))(@better-auth/utils@0.4.2)
@@ -28037,7 +28029,7 @@ snapshots:
     optionalDependencies:
       better-sqlite3: 12.11.1
       mongodb: 7.5.0(socks@2.8.9)
-      next: 16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
+      next: 16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
       pg: 8.22.0
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
@@ -28046,7 +28038,7 @@ snapshots:
       - '@cloudflare/workers-types'
       - '@opentelemetry/api'
 
-  better-auth@1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11):
+  better-auth@1.6.23(better-sqlite3@12.11.1)(mongodb@7.5.0(socks@2.8.9))(next@16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@4.1.11):
     dependencies:
       '@better-auth/core': 1.6.23(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.7(zod@4.6.5))(jose@6.2.3)(kysely@0.29.3)(nanostores@1.4.0)
       '@better-auth/drizzle-adapter': 1.6.23(@better-auth/core@1.6.23(@better-auth/utils@0.4.2)(@better-fetch/fetch@1.3.1)(better-call@1.3.7(zod@4.6.5))(jose@6.2.3)(kysely@0.29.3)(nanostores@1.4.0))(@better-auth/utils@0.4.2)
@@ -28068,7 +28060,7 @@ snapshots:
     optionalDependencies:
       better-sqlite3: 12.11.1
       mongodb: 7.5.0(socks@2.8.9)
-      next: 16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
+      next: 16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
       pg: 8.22.0
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
@@ -29147,6 +29139,10 @@ snapshots:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 
+  dompurify@3.4.16:
+    optionalDependencies:
+      '@types/trusted-types': 2.0.7
+
   domutils@3.2.2:
     dependencies:
       dom-serializer: 2.0.0
@@ -29265,7 +29261,7 @@ snapshots:
   engine.io@6.6.9(supports-color@8.1.1):
     dependencies:
       '@types/cors': 2.8.19
-      '@types/node': 24.13.3
+      '@types/node': 24.13.5
       '@types/ws': 8.18.1
       accepts: 1.3.8
       base64id: 2.0.0
@@ -29273,7 +29269,7 @@ snapshots:
       cors: 2.8.6
       debug: 4.4.3(supports-color@8.1.1)
       engine.io-parser: 5.2.3
-      ws: 8.21.0
+      ws: 8.21.3
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -31610,7 +31606,7 @@ snapshots:
 
   isomorphic-dompurify@2.36.0(@noble/hashes@2.4.0):
     dependencies:
-      dompurify: 3.4.15
+      dompurify: 3.4.16
       jsdom: 28.1.0(@noble/hashes@2.4.0)
     transitivePeerDependencies:
       - '@noble/hashes'
@@ -31711,7 +31707,7 @@ snapshots:
       '@jest/expect': 30.4.1
       '@jest/test-result': 30.4.1
       '@jest/types': 30.4.1
-      '@types/node': 24.13.4
+      '@types/node': 24.13.5
       chalk: 4.1.2
       co: 4.6.0
       dedent: 1.7.2(babel-plugin-macros@3.1.0)
@@ -31888,7 +31884,7 @@ snapshots:
       '@jest/environment': 30.4.1
       '@jest/fake-timers': 30.4.1
       '@jest/types': 30.4.1
-      '@types/node': 24.13.4
+      '@types/node': 24.13.5
       jest-mock: 30.4.1
       jest-util: 30.4.1
       jest-validate: 30.4.1
@@ -32095,7 +32091,7 @@ snapshots:
       '@jest/test-result': 30.4.1
       '@jest/transform': 30.4.1
       '@jest/types': 30.4.1
-      '@types/node': 24.13.4
+      '@types/node': 24.13.5
       chalk: 4.1.2
       emittery: 0.13.1
       exit-x: 0.2.2
@@ -32299,7 +32295,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 24.13.4
+      '@types/node': 24.13.5
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -33291,12 +33287,12 @@ snapshots:
 
   mini-svg-data-uri@1.4.4: {}
 
-  miniflare@5.20260915.0-alpha(@types/node@24.13.3):
+  miniflare@5.20261001.0-alpha(@types/node@24.13.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       sharp: 0.35.4(@types/node@24.13.3)
-      undici: 7.29.0
-      workerd: 1.20260915.1
+      undici: 7.29.1
+      workerd: 1.20261001.1
       ws: 8.21.0
       youch: 4.1.0-beta.10
     transitivePeerDependencies:
@@ -33490,25 +33486,25 @@ snapshots:
 
   netmask@2.1.1: {}
 
-  next@16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0):
+  next@16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0):
     dependencies:
-      '@next/env': 16.3.5
+      '@next/env': 16.3.8
       '@swc/helpers': 0.5.23
-      baseline-browser-mapping: 2.11.22
+      baseline-browser-mapping: 2.11.24
       caniuse-lite: 1.0.30001810
       postcss: 8.5.23
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
       styled-jsx: 5.1.6(@babel/core@7.29.7(supports-color@8.1.1))(babel-plugin-macros@3.1.0)(react@19.2.7)
     optionalDependencies:
-      '@next/swc-darwin-arm64': 16.3.5
-      '@next/swc-darwin-x64': 16.3.5
-      '@next/swc-linux-arm64-gnu': 16.3.5
-      '@next/swc-linux-arm64-musl': 16.3.5
-      '@next/swc-linux-x64-gnu': 16.3.5
-      '@next/swc-linux-x64-musl': 16.3.5
-      '@next/swc-win32-arm64-msvc': 16.3.5
-      '@next/swc-win32-x64-msvc': 16.3.5
+      '@next/swc-darwin-arm64': 16.3.8
+      '@next/swc-darwin-x64': 16.3.8
+      '@next/swc-linux-arm64-gnu': 16.3.8
+      '@next/swc-linux-arm64-musl': 16.3.8
+      '@next/swc-linux-x64-gnu': 16.3.8
+      '@next/swc-linux-x64-musl': 16.3.8
+      '@next/swc-win32-arm64-msvc': 16.3.8
+      '@next/swc-win32-x64-msvc': 16.3.8
       '@playwright/test': 1.61.1
       sass: 1.101.0
       sharp: 0.35.4(@types/node@24.13.3)
@@ -33517,25 +33513,25 @@ snapshots:
       - '@types/node'
       - babel-plugin-macros
 
-  next@16.3.5(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0):
+  next@16.3.8(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0):
     dependencies:
-      '@next/env': 16.3.5
+      '@next/env': 16.3.8
       '@swc/helpers': 0.5.23
-      baseline-browser-mapping: 2.11.22
+      baseline-browser-mapping: 2.11.24
       caniuse-lite: 1.0.30001810
       postcss: 8.5.23
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
       styled-jsx: 5.1.6(@babel/core@7.29.7(supports-color@8.1.1))(babel-plugin-macros@3.1.0)(react@19.2.7)
     optionalDependencies:
-      '@next/swc-darwin-arm64': 16.3.5
-      '@next/swc-darwin-x64': 16.3.5
-      '@next/swc-linux-arm64-gnu': 16.3.5
-      '@next/swc-linux-arm64-musl': 16.3.5
-      '@next/swc-linux-x64-gnu': 16.3.5
-      '@next/swc-linux-x64-musl': 16.3.5
-      '@next/swc-win32-arm64-msvc': 16.3.5
-      '@next/swc-win32-x64-msvc': 16.3.5
+      '@next/swc-darwin-arm64': 16.3.8
+      '@next/swc-darwin-x64': 16.3.8
+      '@next/swc-linux-arm64-gnu': 16.3.8
+      '@next/swc-linux-arm64-musl': 16.3.8
+      '@next/swc-linux-x64-gnu': 16.3.8
+      '@next/swc-linux-x64-musl': 16.3.8
+      '@next/swc-win32-arm64-msvc': 16.3.8
+      '@next/swc-win32-x64-msvc': 16.3.8
       '@playwright/test': 1.61.1
       sass: 1.101.0
       sharp: 0.35.4(@types/node@26.1.1)
@@ -33616,7 +33612,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  nodemailer@9.1.1: {}
+  nodemailer@10.0.13: {}
 
   nopt@8.1.0:
     dependencies:
@@ -36157,7 +36153,7 @@ snapshots:
   socket.io-adapter@2.5.8(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
-      ws: 8.21.0
+      ws: 8.21.3
     transitivePeerDependencies:
       - bufferutil
       - supports-color
@@ -36181,10 +36177,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  socket.io@4.8.3(supports-color@8.1.1):
+  socket.io@4.8.4(supports-color@8.1.1):
     dependencies:
       accepts: 1.3.8
-      base64id: 2.0.0
       cors: 2.8.6
       debug: 4.4.3(supports-color@8.1.1)
       engine.io: 6.6.9(supports-color@8.1.1)
@@ -37255,8 +37250,6 @@ snapshots:
 
   undici@6.28.1: {}
 
-  undici@7.29.0: {}
-
   undici@7.29.1: {}
 
   unenv@2.0.0-rc.24:
@@ -38147,24 +38140,24 @@ snapshots:
 
   wordwrap@1.0.0: {}
 
-  workerd@1.20260915.1:
+  workerd@1.20261001.1:
     optionalDependencies:
-      '@cloudflare/workerd-darwin-64': 1.20260915.1
-      '@cloudflare/workerd-darwin-arm64': 1.20260915.1
-      '@cloudflare/workerd-linux-64': 1.20260915.1
-      '@cloudflare/workerd-linux-arm64': 1.20260915.1
-      '@cloudflare/workerd-windows-64': 1.20260915.1
+      '@cloudflare/workerd-darwin-64': 1.20261001.1
+      '@cloudflare/workerd-darwin-arm64': 1.20261001.1
+      '@cloudflare/workerd-linux-64': 1.20261001.1
+      '@cloudflare/workerd-linux-arm64': 1.20261001.1
+      '@cloudflare/workerd-windows-64': 1.20261001.1
 
-  wrangler@4.132.0(@types/node@24.13.3):
+  wrangler@4.147.0(@types/node@24.13.3):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.5.0
-      '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260915.1)
+      '@cloudflare/unenv-preset': 2.16.2(unenv@2.0.0-rc.24)(workerd@1.20261001.1)
       blake3-wasm: 2.1.5
       esbuild: 0.28.1
-      miniflare: 5.20260915.0-alpha(@types/node@24.13.3)
+      miniflare: 5.20261001.0-alpha(@types/node@24.13.3)
       path-to-regexp: 6.3.0
       unenv: 2.0.0-rc.24
-      workerd: 1.20260915.1
+      workerd: 1.20261001.1
     optionalDependencies:
       fsevents: 2.3.3
     transitivePeerDependencies:
