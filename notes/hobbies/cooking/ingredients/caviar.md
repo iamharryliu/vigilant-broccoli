@@ -2,7 +2,12 @@
 
 ## Table of Contents
 
+- [What Is Roe](#what-is-roe)
 - [Types](#types)
+
+## What Is Roe
+
+Roe is the fully ripe egg mass of fish and some other marine animals, such as sea urchin and scallops. It is eaten fresh, cured, or smoked. Caviar is the subset of roe that is salt-cured sturgeon eggs.
 
 ## Types
 
