@@ -4,7 +4,6 @@
 - [Software Timeline](./software-timeline.md)
 - [Software Breakdown](./general/software-breakdown.md)
 - [Software Roadmap](./software-roadmap.md)
-- [Dev Glossary](./dev-glossary.md)
 - [Software Languages](./languages/software-languages.md)
 - [Web Dev](./web-dev/web-dev.md)
 - [Software Practices](./general/software-practices.md)

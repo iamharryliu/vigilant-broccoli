@@ -5,6 +5,7 @@ Terminal coding agents: how they are used day to day, and how their subscription
 ## Table of Contents
 
 - [Usage](#usage)
+- [Commands](#commands)
 - [Plans and Billing](#plans-and-billing)
 - [Non-Interactive Authentication](#non-interactive-authentication)
 - [Why the Sandbox Credential Matters](#why-the-sandbox-credential-matters)
@@ -31,6 +32,24 @@ Two differences matter more than the file paths:
 
 - **Invocation sigil.** Claude Code collapses custom commands and skills into one `/` namespace; Codex keeps `/` for built-ins and uses `$` for skills, so a skill and a built-in can never shadow each other.
 - **How much is automatic.** Claude Code will delegate to a subagent on its own reading of the task. Codex spawns one only when asked, or when `AGENTS.md` or a skill tells it to, which makes parallelism explicit rather than emergent.
+
+## Commands
+
+The commands from [Claude Code](./claude-code.md) next to their [Codex](./codex.md#commands) counterparts.
+
+| Purpose                                  | Claude Code         | Codex                                                                 |
+| ---------------------------------------- | ------------------- | --------------------------------------------------------------------- |
+| Open the interactive session             | `claude`            | `codex`                                                               |
+| Show version, model, account, and limits | `/status`, `/usage` | `/status`                                                             |
+| Sign in or switch accounts               | `/login`            | `codex login`                                                         |
+| Sign out                                 | `/logout`           | `codex logout`                                                        |
+| Summarize context to free up space       | `/compact`          | `/compact`                                                            |
+| Start a fresh conversation               | `/clear`            | `/new`                                                                |
+| Roll back to an earlier checkpoint       | `/rewind`           | No checkpoint rollback; `codex fork` branches a session instead       |
+| Continue an earlier conversation         | `/resume`           | `codex resume --last`                                                 |
+| Choose the active model                  | `/model`            | `/model`                                                              |
+| Change settings                          | `/config`           | Edit `~/.codex/config.toml`; `/permissions` for sandbox and approvals |
+| Project instructions file                | `CLAUDE.md`         | `AGENTS.md`                                                           |
 
 ## Plans and Billing
 

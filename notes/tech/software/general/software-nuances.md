@@ -110,3 +110,7 @@ small_nums = []
 for i in range(20):
     if i < 5:
         small_nums.append(i)
+
+## URI vs URL
+
+A URI identifies a resource by name, location, or both. A URL is a URI that also says how to locate the resource (the scheme and address, such as `https://example.com/page`). Every URL is a URI, but not every URI is a URL (e.g. `urn:isbn:0451450523` names a book without saying where to find it). See [URI Anatomy](../web-dev/networking/networking.md#uri-anatomy) for the parts of a URI.
