@@ -15,17 +15,17 @@ cost the next person (or agent) hours to rediscover.
 
 ## Where a nuance goes
 
-A nuance lives in the `## Nuances` section of the `CLAUDE.md` at the **deepest
+A nuance lives in the `## Nuances` section of the `CONTEXT.md` at the **deepest
 directory that fully contains everything the nuance affects**. Scope it by
 blast radius, not by where it was first observed:
 
 - Breaks or constrains exactly one app, lib, or infrastructure component →
   that component's directory (e.g.
-  `projects/nx-workspace/apps/ui/vb-manager-next/CLAUDE.md`).
+  `projects/nx-workspace/apps/ui/vb-manager-next/CONTEXT.md`).
 - Spans several apps/libs inside one workspace → the workspace root
-  (`projects/nx-workspace/CLAUDE.md`).
+  (`projects/nx-workspace/CONTEXT.md`).
 - Spans top-level directories, or is about the repo itself (tooling, git,
-  conventions) → the `## Nuances` section of the repo-root `CLAUDE.md`. The
+  conventions) → the `## Nuances` section of the repo-root `CONTEXT.md`. The
   root is the deepest directory containing everything such a nuance affects,
   so this is the same rule, not an exception — and it puts a genuinely
   repo-wide trap in context on every session, which is where it belongs.
@@ -34,81 +34,64 @@ When a nuance is observed in one app but the underlying trap applies to a whole
 class of surfaces, write it at the level where the class lives and name the
 app as the sighting, rather than filing a copy per app. A nuance filed above
 the directory an agent is working in still reaches them, because every
-`CLAUDE.md` on the path into that directory is loaded — which is why the
+applicable `CONTEXT.md` on the path into that directory is read — which is why the
 Tailwind `content` trap that bit one app lives at the workspace root.
 
-The vehicle is whatever file the agent harness loads on its own when work
-happens in a subtree — `CLAUDE.md` in this repo today. That automatic load is
-the entire mechanism: a file the harness has no reason to open (a `NUANCE.md`,
-say) is found only by an agent that already went looking, which is the opposite
-of what a nuance needs. If that filename ever changes, see
-[Harness portability](#harness-portability) — nothing about the design depends
-on the name itself.
+Each source is exposed through committed `CLAUDE.md` and `AGENTS.md` symlinks
+in the same directory. The agent reads its conventional entry point; both
+resolve to the shared `CONTEXT.md`. See [Harness portability](#harness-portability).
 
 There is no separate index. The list of directories carrying nuances is
 derivable, so it is derived rather than maintained:
 
 ```sh
-grep -rl '^## Nuances' --include=CLAUDE.md .
+grep -rl '^## Nuances' --include=CONTEXT.md .
 ```
 
 A hand-written index would be a second place to drift, and nothing reads it —
-discovery happens through the auto-loaded `CLAUDE.md` itself, not through a
+discovery happens through the agent entry points themselves, not through a
 table someone has to remember to update.
 
 ## File shape
 
-A directory-scoped `CLAUDE.md` is:
+A directory-scoped `CONTEXT.md` is:
 
-- `# CLAUDE — <dir path or component name>`
+- `# Agent Context — <dir path or component name>`
 - `## Table of Contents` — links to every `##` section, and nested under
   `Nuances`, every `###` entry beneath it. Regenerate it whenever entries are
   added, removed, or retitled; it is fully derived, so rebuild it rather than
   patching it.
 - Any other directory conventions the component needs (see
-  `infrastructure/local/CLAUDE.md`, which carries curation rules and no
+  `infrastructure/local/CONTEXT.md`, which carries curation rules and no
   nuances).
 - `## Nuances` — the entries, each a `###`.
 
-A `CLAUDE.md` with no `##` headings at all doesn't need a Table of Contents,
+A `CONTEXT.md` with no `##` headings at all doesn't need a Table of Contents,
 the same exemption [notes-pattern.md](./notes-pattern.md) makes for notes.
 
-`CLAUDE.md` sits next to `README.md` in a component directory and is only
+`CONTEXT.md` sits next to `README.md` in a component directory and is only
 created when there is something to say — there is no empty-file placeholder.
 It is not part of [app-readme-pattern.md](./app-readme-pattern.md): READMEs
-describe the stack, `CLAUDE.md` records traps and conventions.
+describe the stack, `CONTEXT.md` records traps and conventions.
 
 ## Harness portability
 
-The design depends on two behaviours of the agent harness, neither of which is
-the filename:
+`CONTEXT.md` owns the instructions independently of any agent. The committed
+`CLAUDE.md` and `AGENTS.md` links expose them to Claude Code and Codex without
+copying Markdown or changing relative links. To support another harness, commit
+its entry point beside each `CONTEXT.md` and add it to the adapter check in
+`ci-pr-check.yml`.
 
-1. A **conventional file** in a directory is loaded without anyone asking for
-   it.
-2. That load is **nested** — the file for the directory being worked in, not
-   only the one at the repo root.
+When adding a `CONTEXT.md`, commit both adapter symlinks beside it in the same
+change: `ln -s CONTEXT.md CLAUDE.md && ln -s CONTEXT.md AGENTS.md`. PR CI fails
+when one is missing or points elsewhere. See [agent-support.md](./agent-support.md) for the layout,
+installation, and discovery details.
 
-Claude Code provides both through `CLAUDE.md`, which is why that is the file
-here. Other harnesses use other names (`AGENTS.md` is the closest thing to a
-vendor-neutral convention, and is what Codex reads). Should this repo move,
-the migration is mechanical, not a redesign:
-
-- Rename the per-directory files, and the root one with them.
-- Update the `--include` glob in the root file's nuance convention line.
-- Update the `filename` key in
-  `projects/nx-workspace/apps/ui/pages-index/claude-context.snapshot.config.json`,
-  which selects these files for the Claude Context site.
-- Reword the references here.
-
-To serve two harnesses at once, keep one real file per directory under the
-neutral name and symlink the harness-specific name beside it, so the content
-lives once.
-
-If a harness turns out to load only a root file and not nested ones, the
-convention degrades rather than breaks: the root file still carries the rule
-and the `grep` that finds every directory holding nuances, so an agent can get
-there in one command instead of automatically. Keeping that line in the root
-file is what makes the fallback work — it is not merely a convenience.
+An agent's automatic discovery may depend on its starting directory. The root
+context therefore also requires reading applicable directory context before
+editing a subtree. Codex's combined instruction limit is raised to 64 KiB by
+`setup/dotfiles/.codex/config.toml` locally and by a `codex exec` flag in the
+sandbox; keep inherited context within it.
 
 ## Entry shape
 
@@ -142,11 +125,11 @@ tokens on every session in that subtree.
 - Fixing the root cause upstream (a dependency bump, a deleted workaround)
   retires the entry: delete it and its Table of Contents line. If it was the
   last one, drop the now-empty `## Nuances` section too.
-- Moving or deleting a component moves or deletes its `CLAUDE.md` with it.
+- Before moving or deleting context, run `bash setup/common/sync-agent-support.sh --clean`. Move or delete its `CONTEXT.md`, then rerun the script to regenerate the ignored adapters.
 - Adding or retiring a nuance is two writes, both inside the one file you are
   already editing: the entry and its Table of Contents line.
-- Directory-scoped `CLAUDE.md` files are snapshotted into the GitHub Pages
-  Claude Context site via the `{ "path": ".", "filename": "CLAUDE.md" }` source
+- Directory-scoped `CONTEXT.md` files are snapshotted into the GitHub Pages
+  Agent Context site via the `{ "path": ".", "filename": "CONTEXT.md" }` source
   in
   `projects/nx-workspace/apps/ui/pages-index/claude-context.snapshot.config.json`,
   so a new one is picked up with no config change.

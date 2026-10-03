@@ -2,14 +2,20 @@
   "root": "../../../../..",
   "outDir": "public/claude-context",
   "sources": [
-    "CLAUDE.md",
+    "CONTEXT.md",
     "TODO.md",
     "docs",
-    "setup/dotfiles/.claude",
-    { "path": ".", "filename": "CLAUDE.md" }
+    "setup/dotfiles/agent-skills",
+    {
+      "path": ".",
+      "filename": "CONTEXT.md"
+    }
   ],
   "linkFallbacks": [
-    { "prefix": "notes/", "base": "https://docs.harryliu.dev/?file=" },
+    {
+      "prefix": "notes/",
+      "base": "https://docs.harryliu.dev/?file="
+    },
     {
       "prefix": "",
       "base": "https://github.com/iamharryliu/vigilant-broccoli/blob/main/"

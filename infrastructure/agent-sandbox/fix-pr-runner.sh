@@ -40,7 +40,7 @@ Failing CI output (checks summary followed by failed-step logs):
 ${FAILURES}
 
 Rules:
-- Diagnose from the logs above, then make the minimal changes needed to make CI pass, following the repo conventions in CLAUDE.md.
+- Diagnose from the logs above, then make the minimal changes needed to make CI pass, following the repo conventions in CONTEXT.md.
 - Formatting failures from the pre-commit job (trailing-whitespace, end-of-file-fixer, black) are auto-fixed for you by the calling script — do not hand-fix whitespace; spend your effort on real lint, test, build, or logic failures.
 - Do not run any git or gh commands — committing, pushing, and commenting are handled by the calling script.
 - When finished, write $META_FILE containing only a JSON object with these string fields:

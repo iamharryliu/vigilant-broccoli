@@ -1,6 +1,6 @@
 # App Development
 
-Decision-making map for LLM agents: where a new app, lib, or deploy destination goes, and which existing pattern to copy. Workflow naming, triggers, runner pins, and CI conventions live in [CLAUDE.md](../../CLAUDE.md#ci); infra operations, secrets, data/persistence, local dev environment, and auth live in [repo-operations.md](../repo-operations.md).
+Decision-making map for LLM agents: where a new app, lib, or deploy destination goes, and which existing pattern to copy. Workflow naming, triggers, runner pins, and CI conventions live in [CONTEXT.md](../../CONTEXT.md#ci); infra operations, secrets, data/persistence, local dev environment, and auth live in [repo-operations.md](../repo-operations.md).
 
 ## Table of Contents
 

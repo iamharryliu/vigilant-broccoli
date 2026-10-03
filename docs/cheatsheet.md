@@ -143,7 +143,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   dldjmusic                   Download DJ music from Spotify playlists (secrets pulled from Vault)
 
 🤖 AGENTIC — DEV SANDBOX (attended; you drive the persistent container)
-  agentic:dev-sandbox:up      Fetch tokens from Vault into the current shell session (never written to disk), then build + start contained Claude sandbox
+  agentic:dev-sandbox:up      Fetch tokens from Vault into the current shell session (never written to disk), then build + start contained agent sandbox
                                (export SANDBOX_VAULT_ENV_VARS=NAME1,NAME2 before running to also inject those Vault secret keys)
   agentic:dev-sandbox:cli     Open an interactive Claude session in a persistent tmux session in the sandbox repo clone (auto mode, sonnet; --model <m> to override)
   agentic:dev-sandbox:shell   Open an interactive bash shell in the sandbox (dotfiles loaded)
@@ -156,7 +156,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
                                errors after ~1h
 
 🚀 AGENTIC — TASKS (unattended; ephemeral containers, no human in the loop)
-  agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR (sonnet; --model <m> to override)
+  agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR (sonnet; --model <m> to override, or --agent codex [--codex-model <m>])
                                (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express")
   agentic:task:create <desc>  Headlessly research and add a TODO.md entry for <desc> in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
   agentic:task:audit [sections]  Headlessly re-verify TODO.md rows against the codebase in an ephemeral sandbox container — deletes resolved rows, corrects drifted paths/line numbers/counts — then open a PR; opens none if every row still holds (sonnet; --model <m> to override)

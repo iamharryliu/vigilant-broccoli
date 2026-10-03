@@ -29,12 +29,12 @@
       "DESCRIPTION": "Swagger docs for internal services."
     },
     "CLAUDE_CONTEXT": {
-      "TITLE": "Claude Context",
-      "DESCRIPTION": "How CLAUDE.md, docs, and skills link together."
+      "TITLE": "Agent Context",
+      "DESCRIPTION": "How repository context, docs, and shared skills link together."
     }
   },
   "CLAUDE_CONTEXT_PAGE": {
-    "TITLE": "Claude Context",
+    "TITLE": "Agent Context",
     "LOADING": "Loading viewer…"
   },
   "WEB_APPLICATIONS_PAGE": {
