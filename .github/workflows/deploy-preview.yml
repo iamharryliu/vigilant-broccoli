@@ -87,13 +87,16 @@ jobs:
       # --skip-nx-cache: VITE_BASE_PATH isn't a build input, so a cached main
       # build staged for GitHub Pages (base /vigilant-broccoli/) would otherwise
       # be served from the preview's root.
+      # --output-style=static: nx hides successful tasks' output by default, so
+      # wrangler's "Deployment alias URL" line never reaches deploy.log and the
+      # job summary comes out empty.
       - name: Deploy previews
         if: steps.check.outputs.projects != ''
         working-directory: ./projects/nx-workspace
         env:
           PREVIEW_BRANCH: ${{ github.ref_name }}
         run: |
-          pnpm exec nx run-many -t deploy:preview --projects="${{ steps.check.outputs.projects }}" --skip-nx-cache | tee deploy.log
+          pnpm exec nx run-many -t deploy:preview --projects="${{ steps.check.outputs.projects }}" --skip-nx-cache --output-style=static | tee deploy.log
           echo "## Preview deployments" >> $GITHUB_STEP_SUMMARY
           grep -o 'alias URL: https://[^ ]*' deploy.log | sed 's/^alias URL: /- /' | sort -u >> $GITHUB_STEP_SUMMARY || true
 
