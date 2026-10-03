@@ -17,12 +17,12 @@ Part of [Networking](../networking.md).
 
 ## Access Methods
 
-| Access Method                       | Description                                                                 | More                                                     |
-| ----------------------------------- | --------------------------------------------------------------------------- | -------------------------------------------------------- |
-| SSH Tunneling                       | Secure remote access and port forwarding over an encrypted SSH connection.  | [ssh](../ssh.md)                                          |
+| Access Method                       | Description                                                                 | More                                                       |
+| ----------------------------------- | --------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| SSH Tunneling                       | Secure remote access and port forwarding over an encrypted SSH connection.  | [ssh](../ssh.md)                                           |
 | VPN Access                          | Encrypted tunnel into a private network.                                    | [WireGuard](../wireguard.md), [Tailscale](../tailscale.md) |
-| Dynamic Whitelisting IP/Port Access | Grant time-boxed IP/port access on demand instead of static firewall rules. | —                                                        |
-| Token Authentication (JWT)          | Bearer-token format for authn/authz.                                        | [jwt](./jwt.md)                                          |
+| Dynamic Whitelisting IP/Port Access | Grant time-boxed IP/port access on demand instead of static firewall rules. | —                                                          |
+| Token Authentication (JWT)          | Bearer-token format for authn/authz.                                        | [jwt](./jwt.md)                                            |
 
 ## Security Classification Mapping
 
