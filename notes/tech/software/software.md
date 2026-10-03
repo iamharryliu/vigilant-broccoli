@@ -22,6 +22,7 @@
   - [Bitwarden](./bitwarden.md)
   - [Sanity](./sanity.md)
   - [Claude](./claude.md)
+  - [Codex](./codex.md)
   - [Immich](./self-host/immich.md)
 - [LLM Chat Services](./llm-chat-services.md)
 - [OS](./os/os.md)
