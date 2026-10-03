@@ -1,0 +1,301 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.grecaptcha-badge {
+  visibility: hidden;
+}
+
+@keyframes fade-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gentle-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+.reveal-up {
+  animation: fade-slide-up 0.55s ease-out both;
+}
+
+.reveal-up-delay-1 {
+  animation-delay: 0.08s;
+}
+
+.reveal-up-delay-2 {
+  animation-delay: 0.16s;
+}
+
+.reveal-up-delay-3 {
+  animation-delay: 0.24s;
+}
+
+.floating-bob {
+  animation: gentle-bob 1.9s ease-in-out infinite;
+}
+
+.surface-card {
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.surface-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px -24px rgba(15, 23, 42, 0.45);
+  border-color: rgb(96 165 250 / 0.45);
+}
+
+.interactive-chip {
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.interactive-chip:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 24px -18px rgba(37, 99, 235, 0.65);
+}
+
+.interactive-link {
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal-up,
+  .floating-bob,
+  .surface-card,
+  .interactive-chip,
+  .interactive-link {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+// Port of general-components' md.scss. The Angular markdown page rendered in
+// a shadow root, so Tailwind's preflight never reached it; the browser
+// defaults it relied on (heading/paragraph top margins, link underlines,
+// inline images) are restored here.
+.markdown-content {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p {
+    margin-bottom: 1rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: bold;
+  }
+
+  h1 {
+    font-size: 2rem;
+    margin-top: 0.67em;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-top: 0.83em;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+    margin-top: 1em;
+  }
+
+  h4 {
+    font-size: 1.1rem;
+    margin-top: 1.33em;
+  }
+
+  h5 {
+    font-size: 1rem;
+    margin-top: 1.67em;
+  }
+
+  h6 {
+    font-size: 0.9rem;
+    margin-top: 2.33em;
+  }
+
+  p {
+    margin-top: 1em;
+  }
+
+  a {
+    color: blue;
+    text-decoration: underline;
+  }
+
+  a:hover {
+    color: darkblue;
+  }
+
+  img {
+    display: inline;
+  }
+
+  a img {
+    display: inline-block;
+    height: 1.5rem;
+    transition:
+      transform 0.2s ease,
+      filter 0.2s ease;
+  }
+
+  a img:hover {
+    transform: scale(1.1);
+    filter: brightness(1.15);
+  }
+
+  ul {
+    list-style-type: disc;
+    margin-top: 1em;
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+
+  ol {
+    list-style-type: decimal;
+    margin-top: 1em;
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+
+  ul ul,
+  ol ol,
+  ul ol,
+  ol ul {
+    list-style-type: circle;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  li {
+    font-size: 1rem;
+  }
+
+  table {
+    border-collapse: collapse;
+    margin: 20px 0;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+
+  tr:hover {
+    background-color: #f5f5f5;
+  }
+
+  code {
+    background-color: #f8f8f8;
+    padding: 1em;
+    border-radius: 4px;
+    color: #333;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  @media (max-width: 768px) {
+    h1 {
+      font-size: 1.5rem;
+    }
+
+    h2 {
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+    }
+
+    h4 {
+      font-size: 1rem;
+    }
+
+    h5 {
+      font-size: 0.9rem;
+    }
+
+    h6 {
+      font-size: 0.8rem;
+    }
+
+    p,
+    li {
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    h1 {
+      font-size: 1.3rem;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+    }
+
+    h3 {
+      font-size: 1rem;
+    }
+
+    h4 {
+      font-size: 0.9rem;
+    }
+
+    h5 {
+      font-size: 0.8rem;
+    }
+
+    h6 {
+      font-size: 0.7rem;
+    }
+
+    p,
+    li {
+      font-size: 0.8rem;
+    }
+  }
+}

@@ -1,6 +1,9 @@
 {
   "HOME": {
     "TITLE": "vigilant-broccoli",
+    "SECTION_MONITORING": "Monitoring",
+    "SECTION_SOFTWARE_PROJECTS": "Software Projects",
+    "SECTION_DOCUMENTATION": "Documentation",
     "STATUS": {
       "TITLE": "Status",
       "DESCRIPTION": "Live health of deployed services and applications."
@@ -22,16 +25,16 @@
       "DESCRIPTION": "React component library."
     },
     "API_SERVICES": {
-      "TITLE": "API Services",
+      "TITLE": "API Documentation",
       "DESCRIPTION": "Swagger docs for internal services."
     },
     "CLAUDE_CONTEXT": {
-      "TITLE": "Claude Context",
-      "DESCRIPTION": "How CLAUDE.md, docs, and skills link together."
+      "TITLE": "Agent Context",
+      "DESCRIPTION": "How repository context, docs, and shared skills link together."
     }
   },
   "CLAUDE_CONTEXT_PAGE": {
-    "TITLE": "Claude Context",
+    "TITLE": "Agent Context",
     "LOADING": "Loading viewer…"
   },
   "WEB_APPLICATIONS_PAGE": {
@@ -69,13 +72,14 @@
     "NO_SERVICES": "No services configured.",
     "GITHUB_ACTIONS": "GitHub Actions",
     "VIEW_ALL": "View all →",
-    "RAW_HISTORY": "Raw history:",
     "ERROR_STATUS_UNAVAILABLE": "Status data unavailable (HTTP {status}).",
     "ERROR_STATUS_FAILED": "Failed to load status: {message}",
     "UPDATED": "Updated {date}",
     "GROUP_PRODUCTION": "Production",
     "GROUP_STAGING": "Staging",
-    "GROUP_PERSONAL": "Personal Apps"
+    "GROUP_PERSONAL": "Personal Apps",
+    "LEGEND_BUTTON_LABEL": "Status legend",
+    "LEGEND_TITLE": "Status Legend"
   },
   "REPO_TIMELINE_PAGE": {
     "TITLE": "Repo Timeline",
@@ -95,7 +99,16 @@
     "GRANULARITY_DAY_SHORT": "D",
     "GRANULARITY_MONTH_SHORT": "M",
     "GRANULARITY_YEAR_SHORT": "Y",
-    "ENTRY_SUMMARY": "{commits} commits · {pullRequests} PRs · +{added} / −{deleted}"
+    "RANGE_LABEL": "Range",
+    "RANGE_1W": "1W",
+    "RANGE_1M": "1M",
+    "RANGE_3M": "3M",
+    "RANGE_6M": "6M",
+    "RANGE_YTD": "YTD",
+    "RANGE_1Y": "1Y",
+    "RANGE_2Y": "2Y",
+    "RANGE_ALL": "ALL",
+    "ENTRY_SUMMARY": "{commits} commits · {pullRequests} PRs"
   },
   "OPEN_SOURCE_PAGE": {
     "TITLE": "Open Source",
@@ -178,19 +191,19 @@
     "TITLE": "API Services",
     "EMAIL_SERVICE": {
       "TITLE": "Email Service",
-      "DESCRIPTION": "staging-vb-email-service.flycast — private"
+      "DESCRIPTION": "Email queue producer/consumer."
     },
     "EMAIL_SUBSCRIPTION_SERVICE": {
       "TITLE": "Email Subscription Service",
-      "DESCRIPTION": "staging-email-subscription-service.flycast — private"
+      "DESCRIPTION": "Email subscription management and broadcast."
     },
     "LLM_SERVICE": {
       "TITLE": "LLM Service",
-      "DESCRIPTION": "staging-llm-service.flycast — private"
+      "DESCRIPTION": "LLM proxy for Anthropic and OpenAI."
     },
     "STORAGE_SERVICE": {
       "TITLE": "Storage Service",
-      "DESCRIPTION": "staging-storage-service.flycast — private"
+      "DESCRIPTION": "Object storage proxy across multiple bucket providers."
     }
   },
   "API_SERVICE_DOCS_PAGE": {

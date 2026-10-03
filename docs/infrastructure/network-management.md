@@ -2,6 +2,12 @@
 
 Changes to network infrastructure (DNS records, domains/subdomains, proxying, tunnels, VPN) must be reflected here.
 
+## Table of Contents
+
+- [DNS URLs](#dns-urls)
+- [Tailnet](#tailnet)
+- [Private-only Fly.io services](#private-only-flyio-services)
+
 ## DNS URLs
 
 All public URLs for deployed applications, grouped by domain/provider.
@@ -10,7 +16,7 @@ All public URLs for deployed applications, grouped by domain/provider.
 harryliu.dev                              Cloudflare zone (Terraform: infrastructure/terraform/)
 ├── harryliu.dev                          Personal website — Cloudflare Pages `staging-harryliu-dev-react` (domain + CNAME: Terraform, infrastructure/terraform/)
 ├── www.harryliu.dev                      301 redirect to apex (Cloudflare ruleset)
-├── docs.harryliu.dev                     Docs MD — Cloudflare Pages `staging-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed via deploy.yml's deploy-apps job; public, no Access gating)
+├── docs.harryliu.dev                     Docs MD — Cloudflare Pages `production-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-docs-md.yml, which mirrors `deploy.yml`'s environment selection because the notes snapshot lives outside the nx graph; public, no Access gating)
 ├── git.harryliu.dev                      Gitea — OCI VM (A record, proxied + Cloudflare Access; web UI gated by owner email, git/CI over HTTPS via service token, git-SSH on :2222 direct). Also the read surface for the private journal notes — browsed directly in Gitea rather than mirrored to a Pages site, so the notes never leave the VM
 ├── code.harryliu.dev                     code-server — OCI VM (A record, proxied + Cloudflare Access; owner-email + non-identity CI service token for ci-health-check /healthz origin probes)
 ├── drive.harryliu.dev                    Seafile — AWS EC2 VM (A record, proxied + Cloudflare Access, owner-email only; kept off the OCI Ampere pool — its 50GB-per-boot-volume floor left no free-tier storage headroom for a 4th/5th OCI VM)
@@ -20,7 +26,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── socket.harryliu.dev                   Socket server — OCI RabbitMQ VM (A record, DNS-only)
 └── vault.harryliu.dev                    Vault — GCP vb-free-vm via cloudflared tunnel (CNAME, proxied + Cloudflare Access service token, CI-only)
 
-cloud8skate.com                           Cloudflare Pages `staging-cloud-8-skate-angular` (domain + CNAME: Terraform, infrastructure/terraform/)
+cloud8skate.com                           Cloudflare Pages `production-cloud-8-skate-react` (domain + CNAME: Terraform, infrastructure/terraform/)
 └── cloud8skate.com                       Cloud 8 Skate
 
 fly.dev                                   Fly.io API services (production apps created on first production dispatch)
@@ -38,9 +44,9 @@ vercel.app                                Vercel (production projects created on
 ├── staging-whiteboard.vercel.app             Whiteboard (staging)
 └── production-whiteboard.vercel.app          Whiteboard (production)
 
-pages.dev                                 Cloudflare Pages production aliases (staging projects serve the custom domains above)
-├── production-cloud-8-skate-angular.pages.dev Cloud 8 Skate (production)
-└── production-harryliu-dev-react.pages.dev    Personal website React (production)
+pages.dev                                 Cloudflare Pages URLs for the environment not attached to a custom domain above
+├── staging-cloud-8-skate-react.pages.dev      Cloud 8 Skate (staging — cloud8skate.com is on production, the exception)
+└── production-harryliu-dev-react.pages.dev    Personal website React (production — harryliu.dev is on staging)
 
 github.io                                 GitHub Pages
 └── iamharryliu.github.io/vigilant-broccoli   Pages index (pages-index/)
@@ -67,7 +73,7 @@ there rather than only in the admin console.
 
 Reachable only over Fly's private 6PN network via a flycast address — no public IPv4/IPv6 allocated, so the `fly.dev` hostname resolves to nothing reachable. Each app has a private ingress IPv6 and `[http_service].force_https = false`, so the flycast edge serves the internal port over plain HTTP on port 80 (a `.internal` direct-machine dial would hit the app's IPv4-only `0.0.0.0` bind and reset; flycast routes through fly-proxy, which also auto-starts stopped machines).
 
-IP allocation is automated, not manual: services flagged `privateOnly: true` in `scripts/secrets-mapping.config.ts` get their private IPv6 allocated and any public IP released by `deploy:secrets` on every deploy — see [fly-service-pattern.md](../api/deployment/fly-service-pattern.md).
+IP allocation is automated, not manual: services flagged `privateOnly: true` in `scripts/secrets-mapping.config.ts` get their private IPv6 allocated and any public IP released by `deploy:secrets` on every deploy — see [fly-service-pattern.md](../app-development/api/deployment/fly-service-pattern.md).
 
 ```
 staging-llm-service.flycast                    LLM Service (staging) — called by staging-vb-express via http://…flycast over 6PN

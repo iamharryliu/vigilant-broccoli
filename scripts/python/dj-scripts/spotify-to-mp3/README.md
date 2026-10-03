@@ -6,7 +6,9 @@ Follow instructions inside [.env.example](.env.example) to setup environment var
 # Setup environment variables.
 cp .env.example .env
 
-# Install dependencies.
+# Install dependencies (mise install first, so `python` is the repo-pinned version
+# from mise.toml rather than whatever Homebrew last linked).
+mise install
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -15,7 +17,7 @@ spotdl --download-ffmpeg
 # Run script.
 python download_music.py
 python download_music.py --help
-pythong download_music.py --filter FILTER --output OUTPUT --parallel PARALLEL
+python download_music.py --filter FILTER --output OUTPUT --parallel PARALLEL
 
 # Run performance tests.
 python performance_test.py

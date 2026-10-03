@@ -12,7 +12,6 @@
 - [Sourdough](./sourdough.md)
 - [Sprinkles](./spinkles.md)
 - [Tofu](./tofu.md)
-- [Vegetables](./vegetables.md)
 
 ## Seasonal Produce
 

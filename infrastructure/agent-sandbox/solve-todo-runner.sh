@@ -23,11 +23,27 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-MODEL=${SOLVE_MODEL:-sonnet}
+AGENT_RUNNER=${SOLVE_AGENT:-claude}
+case "$AGENT_RUNNER" in
+  claude | codex) ;;
+  *)
+    echo "ERROR: SOLVE_AGENT must be 'claude' or 'codex'." >&2
+    exit 1
+    ;;
+esac
+if [ "$AGENT_RUNNER" = codex ]; then
+  MODEL=${CODEX_MODEL:-}
+  RUNNER_LABEL=Codex
+  PR_FOOTER='Generated with [Codex](https://openai.com/codex)'
+  FALLBACK_TRAILER='Co-authored-by: Codex <noreply@openai.com>'
+else
+  MODEL=${SOLVE_MODEL:-sonnet}
+  RUNNER_LABEL="Claude Code"
+  PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
+  FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
+fi
 REPO_DIR="$HOME/vigilant-broccoli"
 META_FILE=/tmp/solve-meta.json
-PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
-FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 
 cd "$REPO_DIR"
 
@@ -59,9 +75,9 @@ else
 fi
 
 if [ -n "${GITHUB_ACTIONS:-}" ]; then
-  REQUEST_SOURCE="GitHub Actions (manual-agentic-solve workflow)"
+  REQUEST_SOURCE="GitHub Actions (manual-agentic-solve workflow, ${RUNNER_LABEL})"
 else
-  REQUEST_SOURCE="Local CLI (pnpm agentic:task:solve)"
+  REQUEST_SOURCE="Local CLI (pnpm agentic:task:solve, ${RUNNER_LABEL})"
 fi
 if [ "$MODE" = id ]; then
   REQUEST_TRIGGER="TODO id \`${ID}\`"
@@ -94,6 +110,7 @@ salvage_on_failure() {
   local exit_code=$?
   trap - EXIT
   set +e
+  [ -z "${CODEX_HOME:-}" ] || rm -rf "$CODEX_HOME"
   [ "$exit_code" -eq 0 ] && exit 0
 
   echo "Runner exited with status $exit_code — checking for salvageable work on $BRANCH" >&2
@@ -158,21 +175,61 @@ You are running non-interactively in a fresh clone of vigilant-broccoli, on a de
 $TASK
 
 Rules:
-- Make only the changes needed, following the repo conventions in CLAUDE.md.
+- Make only the changes needed, following the repo conventions in CONTEXT.md.
 $SCOPE_RULE
 - When finished, write $META_FILE containing only a JSON object with these string fields:
   - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure
   - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
   - commit_message: capitalized, concise, focused on why not what, ending with a period
-  - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
+  - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit, or "$FALLBACK_TRAILER" when no such trailer is specified
   - pr_title: the pull request title
   - pr_summary: markdown bullet points for the PR "## Summary" section
   - pr_test_plan: markdown checklist for the PR "## Test plan" section
 EOF
 )
 
-claude -p "$PROMPT" --dangerously-skip-permissions --model "$MODEL" \
-  --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
+run_agent() {
+  case "$AGENT_RUNNER" in
+    claude)
+      claude -p "$PROMPT" --dangerously-skip-permissions --model "$MODEL" \
+        --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
+      ;;
+    codex)
+      if [ -z "${AGENT_CODEX_ACCESS_TOKEN:-}" ]; then
+        echo "ERROR: AGENT_CODEX_ACCESS_TOKEN is required for SOLVE_AGENT=codex." >&2
+        exit 1
+      fi
+      # Not under /tmp: workspace-write leaves /tmp writable for $META_FILE, so
+      # the agent could read the access token out of $CODEX_HOME/auth.json.
+      CODEX_HOME=$(mktemp -d "$HOME/.codex-run.XXXXXX")
+      export CODEX_HOME
+      printf '%s\n' "$AGENT_CODEX_ACCESS_TOKEN" | codex login --with-access-token >/dev/null
+      unset AGENT_CODEX_ACCESS_TOKEN CODEX_ACCESS_TOKEN OPENAI_API_KEY CODEX_API_KEY
+
+      CODEX_ARGS=(
+        exec
+        --cd "$REPO_DIR"
+        # Codex ignores a repo-local .codex/config.toml, and this runner's
+        # $CODEX_HOME is a fresh directory, so the limit has to be passed here:
+        # the root CONTEXT.md is over the 32 KiB default and would be silently
+        # truncated.
+        -c project_doc_max_bytes=65536
+        --sandbox workspace-write
+        --approve-for-me
+        --ephemeral
+        --output-last-message /tmp/codex-last-message.txt
+      )
+      [ -z "$MODEL" ] || CODEX_ARGS+=(--model "$MODEL")
+      # No GitHub credentials: codex exec has no tool deny-list of its own, so
+      # dropping the token is what keeps the agent off the push/PR path that the
+      # Claude branch blocks with --disallowedTools.
+      env -u GH_TOKEN -u GITHUB_TOKEN codex "${CODEX_ARGS[@]}" "$PROMPT"
+      rm -rf "$CODEX_HOME"
+      ;;
+  esac
+}
+
+run_agent
 
 git checkout "$BRANCH"
 [ "$(git rev-parse HEAD)" = "$BASE_SHA" ] || git reset --soft "$BASE_SHA"

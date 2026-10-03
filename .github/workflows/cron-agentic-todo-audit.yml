@@ -1,0 +1,82 @@
+name: cron-agentic-todo-audit
+
+# Re-verifies every TODO.md row against the current tree and opens a PR that
+# deletes the resolved ones and corrects the drifted ones. Same container and
+# credentials as `manual-agentic-solve`; the local equivalent is
+# `pnpm agentic:todo:audit`. The backlog goes stale silently — rows keep citing
+# files that moved and line numbers that shifted — so this runs on a schedule
+# rather than waiting for someone to notice.
+#
+# A clean audit opens no PR and still succeeds: the runner prints AUDIT_CLEAN
+# and exits 0.
+
+on:
+  schedule:
+    - cron: '50 4 * * 0'
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: 'TODO.md sections to audit (e.g. "Security Performance"). Blank audits every section.'
+        type: string
+        default: ''
+      model:
+        description: 'Claude model to run the agent with.'
+        type: choice
+        default: sonnet
+        options:
+          - sonnet
+          - opus
+          - haiku
+      firewall:
+        description: 'In-container egress firewall (turn off if iptables/ipset fails on the runner).'
+        type: choice
+        default: 'on'
+        options:
+          - 'on'
+          - 'off'
+
+permissions:
+  contents: read
+  id-token: write
+
+# Static group: the audit rewrites one file and opens one PR, so a second run
+# must not interleave with it, and the branch a half-finished run already
+# pushed is not something a newer run should cancel out from under.
+concurrency:
+  group: cron-agentic-todo-audit
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | CLAUDE_CODE_OAUTH_TOKEN ;
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+
+      - name: Audit TODO.md
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
+          AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
+          AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
+          SANDBOX_FIREWALL: ${{ inputs.firewall || 'on' }}
+          MODEL: ${{ inputs.model || 'sonnet' }}
+          SCOPE: ${{ inputs.scope }}
+        run: |
+          set -euo pipefail
+          # Section names only — the scope is interpolated into the agent prompt.
+          if [ -n "$SCOPE" ] && ! printf '%s' "$SCOPE" | grep -qE '^[A-Za-z ]*$'; then
+            echo "ERROR: 'scope' must be space-separated TODO.md section names." >&2
+            exit 1
+          fi
+          bash infrastructure/agent-sandbox/audit-todo.sh --model "$MODEL" $SCOPE

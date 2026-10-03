@@ -1,5 +1,9 @@
-import { NextNavRoute } from '@vigilant-broccoli/next-lib';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
+
+type NextNavRoute = {
+  path: string;
+  title: string;
+};
 
 type ExtendedNavRoute = {
   title: string;

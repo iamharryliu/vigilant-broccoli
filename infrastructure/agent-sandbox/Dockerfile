@@ -13,12 +13,12 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg -o 
     && apt-get update && apt-get install -y --no-install-recommends gh \
     && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g @anthropic-ai/claude-code pnpm@11.9.0
+RUN npm install -g @anthropic-ai/claude-code @openai/codex pnpm@11.9.0
 
 RUN useradd -m -s /bin/bash agent
 
-COPY init-firewall.sh entrypoint.sh /usr/local/bin/
-RUN chmod 755 /usr/local/bin/init-firewall.sh /usr/local/bin/entrypoint.sh
+COPY init-firewall.sh entrypoint.sh solve-todo-runner.sh /usr/local/bin/
+RUN chmod 755 /usr/local/bin/init-firewall.sh /usr/local/bin/entrypoint.sh /usr/local/bin/solve-todo-runner.sh
 
 WORKDIR /home/agent
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

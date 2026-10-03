@@ -11,7 +11,7 @@ Management dashboard app.
   - Radix Themes + Tailwind CSS, lucide-react icons
   - dnd-kit (drag-and-drop)
   - jsQR (QR code decoding)
-  - Leaflet / react-leaflet, react-markdown, fuse.js
+  - Leaflet / react-leaflet, react-markdown
   - Socket.IO client (chat demo)
 - Internal libs
   - `common-browser`
@@ -25,7 +25,6 @@ Management dashboard app.
   - `links`
   - `llm-schemas`
   - `money-movement`
-  - `next-lib`
   - `personal-common-js`
   - `react-lib`
   - `react-music-lib`

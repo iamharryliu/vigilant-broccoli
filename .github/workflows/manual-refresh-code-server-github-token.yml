@@ -43,10 +43,7 @@ jobs:
           AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
         run: |
           set -euo pipefail
-          PEM_FILE=$(mktemp)
-          echo "$AGENT_GH_APP_PRIVATE_KEY" | base64 -d > "$PEM_FILE"
-          TOKEN=$(./infrastructure/agent-sandbox/mint-github-app-token.sh "$AGENT_GH_APP_ID" "$PEM_FILE")
-          rm -f "$PEM_FILE"
+          TOKEN=$(./infrastructure/agent-sandbox/mint-github-app-token.sh "$AGENT_GH_APP_ID" <(printf '%s\n' "$AGENT_GH_APP_PRIVATE_KEY"))
           echo "::add-mask::$TOKEN"
           echo "GH_APP_TOKEN=$TOKEN" >> "$GITHUB_ENV"
 

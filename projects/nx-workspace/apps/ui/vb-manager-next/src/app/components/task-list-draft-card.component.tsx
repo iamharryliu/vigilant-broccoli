@@ -1,6 +1,12 @@
 'use client';
 
-import { Button, Input, Select, Text } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  Input,
+  Select,
+  Text,
+  Textarea,
+} from '@vigilant-broccoli/react-lib';
 import { Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { authFetch } from '../../../libs/auth';
@@ -126,12 +132,13 @@ export const TaskListDraftCard = ({
       <div className="flex flex-col gap-1">
         {items.map((item, index) => (
           <div className="flex gap-2 items-center" key={index}>
-            <Input
+            <Textarea
               placeholder="Task title"
               value={item.title}
+              rows={2}
               onChange={e => handleTitleChange(index, e.target.value)}
               disabled={isReadOnly}
-              className="flex-1"
+              className="flex-1 min-h-0 resize-none"
             />
             <Button
               variant="secondary"

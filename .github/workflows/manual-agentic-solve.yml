@@ -2,9 +2,9 @@ name: manual-agentic-solve
 
 # Runs the same agent solve as the local `pnpm agentic:task:solve`, but on the
 # ephemeral GitHub-hosted runner: it builds and runs the vb-agent-sandbox
-# container (fresh clone of main, headless Claude Code, commit, push, open PR).
-# Secrets come from Vault; the branch push + PR use a minted GitHub App token,
-# so the workflow's own GITHUB_TOKEN needs no write scope.
+# container (fresh clone of main, headless Claude Code or Codex, commit, push,
+# open PR). Secrets come from Vault; the branch push + PR use a minted GitHub App
+# token, so the workflow's own GITHUB_TOKEN needs no write scope.
 
 on:
   workflow_dispatch:
@@ -17,14 +17,25 @@ on:
         description: 'Free-text task to solve instead of TODO ids (mutually exclusive with ids).'
         type: string
         default: ''
+      agent:
+        description: 'Agent runner to use.'
+        type: choice
+        default: claude
+        options:
+          - claude
+          - codex
       model:
-        description: 'Claude model to run the agent with.'
+        description: 'Claude model to run when agent=claude.'
         type: choice
         default: sonnet
         options:
           - sonnet
           - opus
           - haiku
+      codex_model:
+        description: 'Optional Codex model override when agent=codex. Leave blank for the Codex CLI default.'
+        type: string
+        default: ''
       firewall:
         description: 'In-container egress firewall (turn off if iptables/ipset fails on the runner).'
         type: choice
@@ -53,9 +64,12 @@ jobs:
         env:
           IDS: ${{ inputs.ids }}
           PROMPT: ${{ inputs.prompt }}
+          AGENT: ${{ inputs.agent }}
+          MODEL: ${{ inputs.model }}
+          CODEX_MODEL: ${{ inputs.codex_model }}
         run: |
           set -euo pipefail
-          echo "group=$(printf '%s' "${IDS:-$PROMPT}" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+          echo "group=$(printf '%s' "${AGENT}:${MODEL}:${CODEX_MODEL}:${IDS:-$PROMPT}" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
 
   solve:
     needs: key
@@ -68,7 +82,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - name: Import Secrets from Vault
+      - name: Import Claude Secrets from Vault
+        if: inputs.agent == 'claude'
         uses: ./.github/actions/vault-secrets
         with:
           gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -80,29 +95,54 @@ jobs:
             kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
             kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
 
+      - name: Import Codex Secrets from Vault
+        if: inputs.agent == 'codex'
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets AGENT_CODEX_ACCESS_TOKEN | AGENT_CODEX_ACCESS_TOKEN ;
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+
       - name: Solve
         id: solve
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
+          AGENT_CODEX_ACCESS_TOKEN: ${{ inputs.agent == 'codex' && env.AGENT_CODEX_ACCESS_TOKEN || '' }}
           AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
           AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
+          AGENT: ${{ inputs.agent }}
           SANDBOX_FIREWALL: ${{ inputs.firewall }}
           MODEL: ${{ inputs.model }}
+          CODEX_MODEL: ${{ inputs.codex_model }}
           IDS: ${{ inputs.ids }}
           PROMPT: ${{ inputs.prompt }}
         run: |
           set -euo pipefail
           SOLVE=infrastructure/agent-sandbox/solve-todo.sh
+          SOLVE_ARGS=(--agent "$AGENT")
+          if [ "$AGENT" = "claude" ]; then
+            SOLVE_ARGS+=(--model "$MODEL")
+          elif [ "$AGENT" = "codex" ]; then
+            [ -z "$CODEX_MODEL" ] || SOLVE_ARGS+=(--codex-model "$CODEX_MODEL")
+          else
+            echo "ERROR: unsupported agent '$AGENT'." >&2
+            exit 1
+          fi
           STATUS=0
           if [ -n "$PROMPT" ]; then
-            bash "$SOLVE" --model "$MODEL" --prompt "$PROMPT" || STATUS=$?
+            bash "$SOLVE" "${SOLVE_ARGS[@]}" --prompt "$PROMPT" || STATUS=$?
           else
             if ! printf '%s' "$IDS" | grep -qE '^[0-9a-fA-F ]*$'; then
               echo "ERROR: 'ids' must be space-separated hex TODO ids." >&2
               exit 1
             fi
             read -ra ID_ARR <<<"$IDS"
-            bash "$SOLVE" --model "$MODEL" "${ID_ARR[@]}" || STATUS=$?
+            bash "$SOLVE" "${SOLVE_ARGS[@]}" "${ID_ARR[@]}" || STATUS=$?
           fi
           echo "===== per-id solve logs ====="
           for f in /tmp/vb-solve.*/*.log; do

@@ -5,6 +5,9 @@ import {
   Button,
   CloseButton,
   EllipsisCTA,
+  EisenhowerQuadrant,
+  getCommitType,
+  getEisenhowerQuadrant,
   GoogleTasksComponent,
   Input,
   Select,
@@ -157,7 +160,7 @@ const OVERLAY_CLASSES = {
   DARK: 'dark:bg-gray-800 dark:border-gray-600',
 } as const;
 
-const QUADRANT_OVERLAY_COLORS: Record<string, string> = {
+const QUADRANT_OVERLAY_COLORS: Partial<Record<EisenhowerQuadrant, string>> = {
   Q1: 'border-l-4 border-l-red-500',
   Q2: 'border-l-4 border-l-blue-500',
   Q3: 'border-l-4 border-l-yellow-500',
@@ -166,17 +169,6 @@ const QUADRANT_OVERLAY_COLORS: Record<string, string> = {
 
 const getDeleteBoardDescription = (name: string) =>
   `Are you sure you want to delete "${name}"? This action cannot be undone.`;
-
-const getQuadrantFromTitle = (title: string): string | null => {
-  const match = title.match(/^(Q[1-4])[\s:]/i);
-  return match ? match[1].toUpperCase() : null;
-};
-
-const getCommitTypeFromTitle = (title: string): string | null => {
-  const withoutQuadrant = title.replace(/^Q[1-4][\s:]+/i, '');
-  const match = withoutQuadrant.match(/^([a-z&]+)[(:]/i);
-  return match ? match[1].toLowerCase() : null;
-};
 
 const useBoards = (isAuthenticated: boolean) => {
   const [boards, setBoards] = useState<Board[]>([]);
@@ -540,9 +532,9 @@ const TaskDragOverlay = ({
 }: {
   task: { title: string; notes?: string; due?: string };
 }) => {
-  const quadrant = getQuadrantFromTitle(task.title);
-  const commitType = getCommitTypeFromTitle(task.title);
-  const quadrantClass = quadrant ? QUADRANT_OVERLAY_COLORS[quadrant] : '';
+  const quadrant = getEisenhowerQuadrant(task.title);
+  const commitType = getCommitType(task.title);
+  const quadrantClass = QUADRANT_OVERLAY_COLORS[quadrant] ?? '';
 
   return (
     <div
@@ -566,7 +558,7 @@ const TaskDragOverlay = ({
               {new Date(task.due).toLocaleDateString()}
             </Text>
           )}
-          {commitType && (
+          {commitType !== 'other' && (
             <span className="text-xs px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
               {commitType}
             </span>

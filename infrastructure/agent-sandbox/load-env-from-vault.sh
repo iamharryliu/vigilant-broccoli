@@ -36,31 +36,44 @@ vault kv get -format=json '"${VAULT_KV_PATH}"'/secrets | jq ".data.data"
 ' VAULT_TOKEN "$VAULT_TOKEN")
 
 CLAUDE_CODE_OAUTH_TOKEN=$(echo "$SECRETS" | jq -r '.CLAUDE_CODE_OAUTH_TOKEN // empty')
+AGENT_CODEX_ACCESS_TOKEN=$(echo "$SECRETS" | jq -r '.AGENT_CODEX_ACCESS_TOKEN // empty')
 AGENT_GH_APP_ID=$(echo "$SECRETS" | jq -r '.AGENT_GH_APP_ID // empty')
 AGENT_GH_APP_PRIVATE_KEY=$(echo "$SECRETS" | jq -r '.AGENT_GH_APP_PRIVATE_KEY // empty')
 
 if [ -n "$AGENT_GH_APP_ID" ] && [ -n "$AGENT_GH_APP_PRIVATE_KEY" ]; then
-  case "$AGENT_GH_APP_PRIVATE_KEY" in
-    -----BEGIN*) PEM_CONTENT="$AGENT_GH_APP_PRIVATE_KEY" ;;
-    *) PEM_CONTENT=$(echo "$AGENT_GH_APP_PRIVATE_KEY" | base64 -d) ;;
-  esac
   echo "Minting GitHub App installation token..." >&2
-  GH_TOKEN=$("${SCRIPT_DIR}/mint-github-app-token.sh" "$AGENT_GH_APP_ID" <(printf '%s\n' "$PEM_CONTENT"))
+  GH_TOKEN=$("${SCRIPT_DIR}/mint-github-app-token.sh" "$AGENT_GH_APP_ID" <(printf '%s\n' "$AGENT_GH_APP_PRIVATE_KEY"))
 fi
 
-if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
-  echo "ERROR: CLAUDE_CODE_OAUTH_TOKEN not found in Vault (${VAULT_KV_PATH}/secrets)." >&2
-  exit 1
-fi
-if [ "${#CLAUDE_CODE_OAUTH_TOKEN}" -lt 100 ]; then
-  echo "ERROR: CLAUDE_CODE_OAUTH_TOKEN in Vault looks truncated (${#CLAUDE_CODE_OAUTH_TOKEN} chars; expected ~109). Re-copy the full 'claude setup-token' output." >&2
-  exit 1
-fi
+AGENT_RUNNER=${AGENT_RUNNER:-${SOLVE_AGENT:-claude}}
+case "$AGENT_RUNNER" in
+  claude)
+    if [ -z "$CLAUDE_CODE_OAUTH_TOKEN" ]; then
+      echo "ERROR: CLAUDE_CODE_OAUTH_TOKEN not found in Vault (${VAULT_KV_PATH}/secrets)." >&2
+      exit 1
+    fi
+    if [ "${#CLAUDE_CODE_OAUTH_TOKEN}" -lt 100 ]; then
+      echo "ERROR: CLAUDE_CODE_OAUTH_TOKEN in Vault looks truncated (${#CLAUDE_CODE_OAUTH_TOKEN} chars; expected ~109). Re-copy the full 'claude setup-token' output." >&2
+      exit 1
+    fi
+    ;;
+  codex)
+    if [ -z "$AGENT_CODEX_ACCESS_TOKEN" ]; then
+      echo "ERROR: AGENT_CODEX_ACCESS_TOKEN not found in Vault (${VAULT_KV_PATH}/secrets)." >&2
+      exit 1
+    fi
+    ;;
+  *)
+    echo "ERROR: AGENT_RUNNER must be 'claude' or 'codex'." >&2
+    exit 1
+    ;;
+esac
 if [ -z "$GH_TOKEN" ]; then
   echo "WARNING: no GitHub App credentials (AGENT_GH_APP_ID + AGENT_GH_APP_PRIVATE_KEY) found in Vault; sandbox will have read-only git access." >&2
 fi
 
 emit CLAUDE_CODE_OAUTH_TOKEN "$CLAUDE_CODE_OAUTH_TOKEN"
+emit AGENT_CODEX_ACCESS_TOKEN "$AGENT_CODEX_ACCESS_TOKEN"
 emit GH_TOKEN "$GH_TOKEN"
 emit AGENT_GH_APP_ID "$AGENT_GH_APP_ID"
 emit AGENT_GH_APP_PRIVATE_KEY "$AGENT_GH_APP_PRIVATE_KEY"

@@ -1,26 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { type DateRange } from 'react-day-picker';
 
 import { Button, Input, Textarea, Text } from '@vigilant-broccoli/react-lib';
 import { CalendarEventFormData } from '../../calendar/components/CalendarEventForm';
-import { toDatetimeLocal, toDateLocal } from '../../../lib/date-utils';
+import {
+  DateRangePicker,
+  toMidnight,
+} from '../../calendar/components/DateRangePicker';
 
 interface Props {
   initialData: CalendarEventFormData;
   onConfirm: (data: CalendarEventFormData) => void;
   onCancel: () => void;
 }
-
-const inputStyle: React.CSSProperties = {
-  padding: '6px 10px',
-  borderRadius: '6px',
-  border: '1px solid var(--gray-6)',
-  background: 'var(--color-background)',
-  color: 'inherit',
-  fontSize: '14px',
-  width: '100%',
-};
 
 export function HomeProjectCalendarDropForm({
   initialData,
@@ -29,45 +23,21 @@ export function HomeProjectCalendarDropForm({
 }: Props) {
   const [title, setTitle] = useState(initialData.title);
   const [description, setDescription] = useState(initialData.description);
-  const [allDay, setAllDay] = useState(initialData.allDay);
-  const [start, setStart] = useState(
-    initialData.allDay
-      ? toDateLocal(initialData.start)
-      : toDatetimeLocal(initialData.start),
-  );
-  const [end, setEnd] = useState(
-    initialData.allDay
-      ? toDateLocal(initialData.end)
-      : toDatetimeLocal(initialData.end),
-  );
-
-  useEffect(() => {
-    setStart(
-      allDay
-        ? toDateLocal(initialData.start)
-        : toDatetimeLocal(initialData.start),
-    );
-    setEnd(
-      allDay ? toDateLocal(initialData.end) : toDatetimeLocal(initialData.end),
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allDay]);
+  const [range, setRange] = useState<DateRange | undefined>({
+    from: new Date(initialData.start),
+    to: new Date(initialData.end),
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const startIso = allDay
-      ? new Date(start + 'T00:00:00').toISOString()
-      : new Date(start).toISOString();
-    const endIso = allDay
-      ? new Date(end + 'T00:00:00').toISOString()
-      : new Date(end).toISOString();
+    if (!range?.from) return;
     onConfirm({
       ...initialData,
       title,
       description,
-      start: startIso,
-      end: endIso,
-      allDay,
+      start: toMidnight(range.from).toISOString(),
+      end: toMidnight(range.to ?? range.from).toISOString(),
+      allDay: true,
     });
   };
 
@@ -96,43 +66,11 @@ export function HomeProjectCalendarDropForm({
           />
         </div>
 
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="allDayDrop"
-            checked={allDay}
-            onChange={e => setAllDay(e.target.checked)}
-          />
-          <Text size="2" asChild>
-            <label htmlFor="allDayDrop">All day</label>
+        <div>
+          <Text size="1" weight="medium" as="p" mb="1">
+            Dates
           </Text>
-        </div>
-
-        <div className="flex gap-3">
-          <div style={{ flex: 1 }}>
-            <Text size="1" weight="medium" as="p" mb="1">
-              Start
-            </Text>
-            <input
-              type={allDay ? 'date' : 'datetime-local'}
-              value={start}
-              onChange={e => setStart(e.target.value)}
-              required
-              style={inputStyle}
-            />
-          </div>
-          <div style={{ flex: 1 }}>
-            <Text size="1" weight="medium" as="p" mb="1">
-              End
-            </Text>
-            <input
-              type={allDay ? 'date' : 'datetime-local'}
-              value={end}
-              onChange={e => setEnd(e.target.value)}
-              required
-              style={inputStyle}
-            />
-          </div>
+          <DateRangePicker value={range} onChange={setRange} />
         </div>
 
         <div className="flex justify-end gap-2 pt-2">
@@ -144,7 +82,11 @@ export function HomeProjectCalendarDropForm({
           >
             Cancel
           </Button>
-          <Button type="submit" className="cursor-pointer">
+          <Button
+            type="submit"
+            disabled={!range?.from}
+            className="cursor-pointer"
+          >
             Add to Calendar
           </Button>
         </div>

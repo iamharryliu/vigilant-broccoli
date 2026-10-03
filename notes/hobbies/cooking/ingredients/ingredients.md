@@ -1,7 +1,8 @@
 # Ingredients
 
 - **Produce**
-  - [Potatoes](./potatoes.md)
+  - [Fruits](./fruits.md)
+  - [Vegetables](./vegetables.md)
 - **Preparations**
   - **Sauces**
     - [Garlic Confit](./sauce-recipes/garlic-confit.md)

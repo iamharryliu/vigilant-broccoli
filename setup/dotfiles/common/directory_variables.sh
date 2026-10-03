@@ -11,8 +11,7 @@ export MAC_SETUP_DIR="$SETUP_DIR/mac"
 export DOTFILES_DIR="$SETUP_DIR/dotfiles"
 export COMMON_DOTFILES_DIR="$DOTFILES_DIR/common"
 export ZSH_DOTFILES_DIR="$DOTFILES_DIR/zsh"
-export CLAUDE_COMMANDS_DIR="$DOTFILES_DIR/.claude/commands"
-export CLAUDE_SKILLS_DIR="$DOTFILES_DIR/.claude/skills"
+export AGENT_SKILLS_DIR="$DOTFILES_DIR/agent-skills"
 export WORKSPACES_DIR="$SETUP_DIR/workspaces"
 
 # Audit

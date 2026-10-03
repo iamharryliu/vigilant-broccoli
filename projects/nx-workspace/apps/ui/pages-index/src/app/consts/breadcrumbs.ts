@@ -32,7 +32,6 @@ const BREADCRUMB_TREE: Record<string, BreadcrumbNode> = {
   },
   '/web-applications': { labelKey: 'WEB_APPLICATIONS_PAGE.TITLE', parent: '/' },
   '/api-services': { labelKey: 'API_SERVICES_PAGE.TITLE', parent: '/' },
-  '/claude-context': { labelKey: 'CLAUDE_CONTEXT_PAGE.TITLE', parent: '/' },
 };
 
 const resolveParent = (pathname: string): string | null => {

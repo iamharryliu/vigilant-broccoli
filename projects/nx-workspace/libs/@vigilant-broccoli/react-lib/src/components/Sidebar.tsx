@@ -44,6 +44,7 @@ export type SidebarProps = {
   className?: string;
   mobileOpen?: boolean;
   onMobileClose?: () => void;
+  mobileBreakpoint?: SidebarMobileBreakpoint;
   defaultOpenId?: string | null;
 };
 
@@ -54,15 +55,35 @@ const COLLAPSED_WIDTH = 'w-14';
 const EXPANDED_WIDTH = 'hover:w-48';
 const EXPANDED_FIXED_WIDTH = 'w-48';
 
-const MOBILE_WIDTH = 'max-md:w-64';
-const MOBILE_OPEN_TRANSFORM = 'max-md:translate-x-0';
-const MOBILE_CLOSED_TRANSFORM = 'max-md:-translate-x-full';
-const MD_VISIBLE_TRANSFORM = 'md:translate-x-0';
-const MD_COLLAPSED_WIDTH = 'md:w-14';
-const MD_EXPANDED_WIDTH = 'md:hover:w-48';
-const MD_EXPANDED_FIXED_WIDTH = 'md:w-48';
-const MOBILE_BACKDROP = 'fixed inset-0 z-20 bg-black/50 md:hidden';
-const NARROW_VIEWPORT_QUERY = '(max-width: 767px)';
+// Tailwind only generates classes it can see as complete literals, so each
+// breakpoint's drawer/rail switch is spelled out rather than built from the
+// prop at runtime. `md` is the original behaviour and stays the default.
+const BREAKPOINTS = {
+  md: {
+    mobileWidth: 'max-md:w-64',
+    mobileOpenTransform: 'max-md:translate-x-0',
+    mobileClosedTransform: 'max-md:-translate-x-full',
+    railVisibleTransform: 'md:translate-x-0',
+    railCollapsedWidth: 'md:w-14',
+    railExpandedWidth: 'md:hover:w-48',
+    railExpandedFixedWidth: 'md:w-48',
+    backdrop: 'fixed inset-0 z-20 bg-black/50 md:hidden',
+    narrowViewportQuery: '(max-width: 767px)',
+  },
+  lg: {
+    mobileWidth: 'max-lg:w-64',
+    mobileOpenTransform: 'max-lg:translate-x-0',
+    mobileClosedTransform: 'max-lg:-translate-x-full',
+    railVisibleTransform: 'lg:translate-x-0',
+    railCollapsedWidth: 'lg:w-14',
+    railExpandedWidth: 'lg:hover:w-48',
+    railExpandedFixedWidth: 'lg:w-48',
+    backdrop: 'fixed inset-0 z-20 bg-black/50 lg:hidden',
+    narrowViewportQuery: '(max-width: 1023px)',
+  },
+} as const;
+
+export type SidebarMobileBreakpoint = keyof typeof BREAKPOINTS;
 
 const BORDER_COLOR = 'border-gray-200 dark:border-gray-800';
 const SURFACE_BG = 'bg-white dark:bg-gray-950';
@@ -86,16 +107,16 @@ const LABEL_HIDDEN = 'hidden';
 const labelClassFor = (expandable: boolean) =>
   expandable ? LABEL_COLLAPSIBLE : LABEL_HIDDEN;
 
-const useIsNarrowViewport = () => {
+const useIsNarrowViewport = (query: string) => {
   const [isNarrow, setIsNarrow] = useState(false);
 
   useEffect(() => {
-    const mql = window.matchMedia(NARROW_VIEWPORT_QUERY);
+    const mql = window.matchMedia(query);
     const update = () => setIsNarrow(mql.matches);
     update();
     mql.addEventListener('change', update);
     return () => mql.removeEventListener('change', update);
-  }, []);
+  }, [query]);
 
   return isNarrow;
 };
@@ -228,8 +249,10 @@ export const Sidebar = ({
   className,
   mobileOpen,
   onMobileClose,
+  mobileBreakpoint = 'md',
   defaultOpenId = null,
 }: SidebarProps) => {
+  const breakpoint = BREAKPOINTS[mobileBreakpoint];
   const isMobileAware = mobileOpen !== undefined;
   const canCollapse = items.some(hasIcon);
   const forceExpanded = (isMobileAware && mobileOpen) || !canCollapse;
@@ -263,14 +286,18 @@ export const Sidebar = ({
       ? flat.filter(p => p.label.toLowerCase().includes(query.toLowerCase()))
       : null;
 
-  const isNarrowViewport = useIsNarrowViewport();
+  const isNarrowViewport = useIsNarrowViewport(breakpoint.narrowViewportQuery);
   const widthClass = isMobileAware
     ? cn(
-        MOBILE_WIDTH,
-        mobileOpen ? MOBILE_OPEN_TRANSFORM : MOBILE_CLOSED_TRANSFORM,
-        MD_VISIBLE_TRANSFORM,
-        canCollapse ? MD_COLLAPSED_WIDTH : MD_EXPANDED_FIXED_WIDTH,
-        canCollapse && expandable && MD_EXPANDED_WIDTH,
+        breakpoint.mobileWidth,
+        mobileOpen
+          ? breakpoint.mobileOpenTransform
+          : breakpoint.mobileClosedTransform,
+        breakpoint.railVisibleTransform,
+        canCollapse
+          ? breakpoint.railCollapsedWidth
+          : breakpoint.railExpandedFixedWidth,
+        canCollapse && expandable && breakpoint.railExpandedWidth,
       )
     : canCollapse
       ? cn(COLLAPSED_WIDTH, expandable && EXPANDED_WIDTH)
@@ -291,7 +318,7 @@ export const Sidebar = ({
   return (
     <>
       {isMobileAware && mobileOpen && (
-        <div className={MOBILE_BACKDROP} onClick={onMobileClose} />
+        <div className={breakpoint.backdrop} onClick={onMobileClose} />
       )}
       <aside
         className={cn(

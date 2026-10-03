@@ -12,7 +12,6 @@ import { initAnalytics, usePageviewTracking } from './core/services/analytics';
 import {
   ABOUT_ROUTE,
   CALENDAR_ROUTE,
-  CAREER_ROUTE,
   CONTACT_ROUTE,
   DEFAULT_DESCRIPTION,
   INDEX_ROUTE,
@@ -23,7 +22,6 @@ import {
 import { ENVIRONMENT } from '../environments/environment';
 import { HomePage } from './components/pages/home.page';
 import { AboutPage } from './components/pages/about.page';
-import { CareerPage } from './components/pages/career.page';
 import { ContactPage } from './components/pages/contact.page';
 import { CalendarPage } from './components/pages/calendar.page';
 import { LinkTreePage } from './components/pages/link-tree.page';
@@ -57,7 +55,7 @@ function SeoUpdater() {
     const meta = findRouteMeta(location.pathname);
     const title = meta?.title ?? 'home';
     const description = meta?.description ?? DEFAULT_DESCRIPTION;
-    const fullTitle = `design by harry - ${title}`;
+    const fullTitle = `harryliu.dev - ${title}`;
     const url = `${ENVIRONMENT.APP_URL}${location.pathname}${location.search}`;
 
     document.title = fullTitle;
@@ -120,7 +118,6 @@ export function App() {
           <Routes>
             <Route path={INDEX_ROUTE.path} element={<HomePage />} />
             <Route path={ABOUT_ROUTE.path} element={<AboutPage />} />
-            <Route path={CAREER_ROUTE.path} element={<CareerPage />} />
             <Route path={CONTACT_ROUTE.path} element={<ContactPage />} />
             <Route path={CALENDAR_ROUTE.path} element={<CalendarPage />} />
             <Route path={LINK_TREE_ROUTE.path} element={<LinkTreePage />} />

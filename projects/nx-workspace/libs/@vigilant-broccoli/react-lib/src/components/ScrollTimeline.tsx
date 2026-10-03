@@ -1,7 +1,6 @@
 'use client';
 
 import { ReactNode, useEffect, useRef, useState } from 'react';
-import { Card } from './Card';
 import { Text } from './Text';
 import { useAnimatedNumber } from '../leaderboard/useAnimatedNumber';
 import { cn } from '../utils/cn';
@@ -9,7 +8,7 @@ import { cn } from '../utils/cn';
 export interface ScrollTimelineEntry {
   id: string | number;
   label: string;
-  sublabel?: string;
+  sublabel?: ReactNode;
   value: number;
 }
 
@@ -47,6 +46,14 @@ function useActiveTimelineEntry(
     if (!container) return;
 
     const updateActiveEntry = () => {
+      if (container.scrollTop <= 0) {
+        const firstId = entries[0]?.id;
+        if (firstId !== undefined) {
+          setActiveId(prev => (prev === firstId ? prev : firstId));
+        }
+        return;
+      }
+
       const containerRect = container.getBoundingClientRect();
       const activeLineY =
         containerRect.top + containerRect.height * activeLinePosition;
@@ -85,6 +92,9 @@ function useActiveTimelineEntry(
   return { containerRef, registerItemRef, activeId };
 }
 
+const spacerHeight = (ratio: number, fill: boolean, height: number) =>
+  fill ? `${ratio * 100}%` : height * ratio;
+
 function ScrollTimelineValueCard({
   valueLabel,
   displayValue,
@@ -95,25 +105,23 @@ function ScrollTimelineValueCard({
   activeEntry?: ScrollTimelineEntry;
 }) {
   return (
-    <Card>
-      <div className="flex items-baseline justify-between gap-3 px-3 py-2">
-        <div className="flex items-baseline gap-2">
-          <Text size="6" weight="bold" className="tabular-nums">
-            {displayValue}
-          </Text>
-          {valueLabel && (
-            <Text size="1" color="gray">
-              {valueLabel}
-            </Text>
-          )}
-        </div>
-        {activeEntry && (
-          <Text size="2" color="gray">
-            {activeEntry.label}
+    <div className="flex items-baseline justify-between gap-3 px-1">
+      <div className="flex items-baseline gap-2">
+        <Text size="6" weight="bold" className="tabular-nums">
+          {displayValue}
+        </Text>
+        {valueLabel && (
+          <Text size="1" color="gray">
+            {valueLabel}
           </Text>
         )}
       </div>
-    </Card>
+      {activeEntry && (
+        <Text size="2" color="gray">
+          {activeEntry.label}
+        </Text>
+      )}
+    </div>
   );
 }
 
@@ -217,9 +225,7 @@ export function ScrollTimeline({
           aria-hidden
           className="shrink-0"
           style={{
-            height: fill
-              ? `${(1 - activeLinePosition) * 100}%`
-              : height * (1 - activeLinePosition),
+            height: spacerHeight(1 - activeLinePosition, fill, height),
           }}
         />
       </div>

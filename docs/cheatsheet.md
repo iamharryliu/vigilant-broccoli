@@ -29,6 +29,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   tf:import                   Load vault env and run terraform import <address> <id>
   tf:apply                    Load vault env, apply terraform, and run post-apply
   tf:post-apply               Run post-apply script
+  oci:config:sync-local       Refresh ~/.oci/config + key from Vault (after a rotation)
   tf:output                   Show terraform outputs
   tf:unlock                   Load vault env and run terraform force-unlock <lock-id>
 
@@ -111,7 +112,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   gcp:vm:vault:set-secrets    Set secrets in Vault
 
 🔑 SECRETS
-  secret-rotation:all         Run all scripted rotations, then dispatch ci-rotate-secrets workflow
+  secret-rotation:all         Run the local rotations, dispatch ci-rotate-secrets, then rotate the OCI key
   secret-rotation:flyio       Rotate Fly.io token
   secret-rotation:gitea       Rotate Gitea CI token (scoped read:repository)
   secret-rotation:profile-deploy-key  Rotate profile repo deploy key, store in Vault
@@ -119,6 +120,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   secret-rotation:resend      Rotate Resend API key (single-key swap, pushes to fly app)
   secret-rotation:rabbitmq    Rotate RabbitMQ password, push connection string to fly consumers
   secret-rotation:twilio      Rotate Twilio auth token (two-phase secondary-token promotion)
+  secret-rotation:oci         Rotate the OCI API key (local-only); refreshes ~/.oci, ~5min propagation wait
   secret-rotation:calendar-sa  Replace the Google Calendar service-account key, sync it to Vault, reload vb-manager-next
 
 🐳 LOCAL
@@ -141,7 +143,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   dldjmusic                   Download DJ music from Spotify playlists (secrets pulled from Vault)
 
 🤖 AGENTIC — DEV SANDBOX (attended; you drive the persistent container)
-  agentic:dev-sandbox:up      Fetch tokens from Vault into the current shell session (never written to disk), then build + start contained Claude sandbox
+  agentic:dev-sandbox:up      Fetch tokens from Vault into the current shell session (never written to disk), then build + start contained agent sandbox
                                (export SANDBOX_VAULT_ENV_VARS=NAME1,NAME2 before running to also inject those Vault secret keys)
   agentic:dev-sandbox:cli     Open an interactive Claude session in a persistent tmux session in the sandbox repo clone (auto mode, sonnet; --model <m> to override)
   agentic:dev-sandbox:shell   Open an interactive bash shell in the sandbox (dotfiles loaded)
@@ -154,9 +156,10 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
                                errors after ~1h
 
 🚀 AGENTIC — TASKS (unattended; ephemeral containers, no human in the loop)
-  agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR (sonnet; --model <m> to override)
+  agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR (sonnet; --model <m> to override, or --agent codex [--codex-model <m>])
                                (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express")
   agentic:task:create <desc>  Headlessly research and add a TODO.md entry for <desc> in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
+  agentic:task:audit [sections]  Headlessly re-verify TODO.md rows against the codebase in an ephemeral sandbox container — deletes resolved rows, corrects drifted paths/line numbers/counts — then open a PR; opens none if every row still holds (sonnet; --model <m> to override)
   agentic:rnd "<question>"    Headlessly research a concise R&D note (alternatives table + recommendation + sample) under docs/rnd/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
   agentic:audit "<scope>"    Headlessly audit the codebase for <scope> and write a concise findings note (severity + location + remediation table) under docs/audit/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
   agentic:pr:fix <pr>         Headlessly fix a PR's failing CI in an ephemeral sandbox container (checks out the branch, feeds the failing logs to the agent, runs pre-commit, pushes the fix); accepts a PR number or URL (sonnet; --model <m> to override)

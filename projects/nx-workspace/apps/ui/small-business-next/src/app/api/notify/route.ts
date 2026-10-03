@@ -6,8 +6,9 @@ import {
   HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import { SENDER_EMAIL_ADDRESS } from '@vigilant-broccoli/personal-common-js';
 
-const FROM = 'Harry Liu <contact@harryliu.dev>';
+const FROM = `Harry Liu <${SENDER_EMAIL_ADDRESS}>`;
 
 export const POST = async (req: NextRequest) => {
   const { service, emails } = await req.json();

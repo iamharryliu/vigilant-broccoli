@@ -4,6 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../config.sh"
 source "${SCRIPT_DIR}/../../lib/ssh-secrets.sh"
+source "${SCRIPT_DIR}/../../lib/oci-local-config.sh"
 
 TERRAFORM_DIR="$SCRIPT_DIR/../"
 WG_CONF="/opt/homebrew/etc/wireguard/vb.conf"
@@ -296,6 +297,7 @@ if [ "$NEW_IP" = "$CURRENT_IP" ]; then
   # be found" until someone ran `pnpm gcp:vm:post-init` by hand.
   npm run gcp:vm:post-init
   sync_secrets_to_vault
+  sync_oci_config_from_vault
   sync_socket_server
   exit 0
 fi
@@ -319,6 +321,7 @@ npm run gcp:vm:post-init
 
 echo "Step 3/4: Syncing secrets to Vault..."
 sync_secrets_to_vault
+sync_oci_config_from_vault
 
 echo "Step 4/4: Regenerating vault cert + updating WireGuard endpoint..."
 npm run gcp:vm:regen-cert

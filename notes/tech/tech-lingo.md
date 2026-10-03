@@ -24,7 +24,7 @@
 | Bazel          | Google's open-source build and test tool for multi-language monorepos, with fine-grained incremental builds and caching based on a declarative dependency graph.    |
 | Gerrit         | A web-based code review tool built on Git, using a change/patch-set model instead of long-lived PR branches, with formal reviewer approval workflows.               |
 | GitHub Actions | GitHub's built-in CI/CD platform for automating build, test, and deploy workflows via YAML-defined jobs triggered by repository events.                             |
-| Nx             | A build system and monorepo tool with computation caching, task orchestration, and dependency-graph-aware "affected" builds (used in this repo).                    |
+| Nx             | A build system and monorepo tool with computation caching, task orchestration, and dependency-graph-aware "affected" builds.                                        |
 | Turborepo      | A high-performance build system for JavaScript/TypeScript monorepos, with remote caching and declarative task pipelines.                                            |
 | Zuul           | A gated CI system that speculatively tests changes in their prospective merge order before merging, originally built for OpenStack and commonly paired with Gerrit. |
 

@@ -22,7 +22,7 @@ if ask "Install apt packages?"; then
 fi
 
 if ask "Symlink dotfiles?"; then
-    symlink_common_dotfiles
+    symlink_common_dotfiles || exit 1
 fi
 
 RC_LINE='source $HOME/vigilant-broccoli/setup/dotfiles/bash/.rc.bash'

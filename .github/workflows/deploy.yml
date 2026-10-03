@@ -6,12 +6,12 @@ on:
     paths:
       - 'projects/nx-workspace/**'
       - '.github/workflows/deploy.yml'
-      # Claude-context snapshot sources rendered by pages-index (see its claude-context.snapshot.config.json)
-      - 'CLAUDE.md'
+      # Agent-context snapshot sources rendered by pages-index (see its claude-context.snapshot.config.json)
+      - 'CONTEXT.md'
       - 'TODO.md'
       - 'docs/**'
-      - 'setup/dotfiles/.claude/**'
-      - '**/CLAUDE.md'
+      - 'setup/dotfiles/agent-skills/**'
+      - '**/CONTEXT.md'
   workflow_dispatch:
     inputs:
       environment:
@@ -38,8 +38,15 @@ permissions:
   pages: write
 
 concurrency:
-  group: deploy-${{ github.ref }}
-  cancel-in-progress: false
+  # Keyed on environment, not just ref, so a production dispatch and a staging
+  # push that happen to share a ref (e.g. production dispatched from `main`)
+  # never land in the same group — one environment can never cancel the other.
+  group: deploy-${{ github.ref }}-${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
+  # A staging run that another push has already superseded is wasted work, and
+  # waiting it out cost 7-25min of queueing on 4 of the last 20 runs — the next
+  # run redeploys everything affected anyway, so cancelling loses nothing.
+  # Production keeps the old behaviour: never interrupted midway.
+  cancel-in-progress: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) != 'production' }}
 
 env:
   DOCKERHUB_USERNAME: iamharryliu
@@ -173,11 +180,11 @@ jobs:
 
       - name: Set up QEMU
         if: steps.check.outputs.has_deployments == 'true'
-        uses: docker/setup-qemu-action@1f40c72289eff860ee54a304f1438e3cff362e0a # v4
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4
 
       - name: Set up Docker Buildx
         if: steps.check.outputs.has_deployments == 'true'
-        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
 
       - name: Import Secrets from Vault
         if: steps.check.outputs.has_deployments == 'true'
@@ -273,10 +280,10 @@ jobs:
         run: |
           CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
           DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
-          # Sources of the pages-index Claude-context snapshot live outside the nx workspace, so nx affected can't see them
-          CLAUDE_CONTEXT_CHANGED=$(echo "$CHANGED_FILES" | grep -cE "^(CLAUDE\.md|TODO\.md|docs/|setup/dotfiles/\.claude/)|/CLAUDE\.md$" || true)
+          # Sources of the pages-index Agent-context snapshot live outside the nx workspace, so nx affected can't see them
+          AGENT_CONTEXT_CHANGED=$(echo "$CHANGED_FILES" | grep -cE "^(CONTEXT\.md|TODO\.md|docs/|setup/dotfiles/agent-skills/)|/CONTEXT\.md$" || true)
 
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 || "$CLAUDE_CONTEXT_CHANGED" -gt 0 ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 || "$AGENT_CONTEXT_CHANGED" -gt 0 ]]; then
             echo "has_deployments=true" >> $GITHUB_OUTPUT
           else
             AFFECTED=$(pnpm exec nx show projects --affected --withTarget=deploy-github-pages --base=$NX_BASE --head=$NX_HEAD)
@@ -354,6 +361,7 @@ jobs:
           DEPLOY_ENVIRONMENT: ${{ env.DEPLOY_ENVIRONMENT }}
           RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_SHA: ${{ github.sha }}
         run: |
           CONCLUSION=success
           for RESULT in "$GITLEAKS_RESULT" "$NPM_RESULT" "$APPS_RESULT" "$PAGES_RESULT"; do
@@ -376,5 +384,6 @@ jobs:
             --arg run_url "$RUN_URL" \
             --arg started_at "$RUN_STARTED_AT" \
             --arg commit_message "$COMMIT_MESSAGE" \
-            '{event_type: "deploy-fanout", client_payload: {conclusion: $conclusion, deployed: $deployed, environment: $environment, run_id: $run_id, run_url: $run_url, started_at: $started_at, commit_message: $commit_message}}' \
+            --arg commit_sha "$COMMIT_SHA" \
+            '{event_type: "deploy-fanout", client_payload: {conclusion: $conclusion, deployed: $deployed, environment: $environment, run_id: $run_id, run_url: $run_url, started_at: $started_at, commit_message: $commit_message, commit_sha: $commit_sha}}' \
             | gh api repos/${{ github.repository }}/dispatches --input -

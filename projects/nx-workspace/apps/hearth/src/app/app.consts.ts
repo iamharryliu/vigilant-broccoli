@@ -17,6 +17,7 @@ import {
   Home,
   Receipt,
   Timer,
+  PartyPopper,
 } from 'lucide-react';
 import { ROUTES } from '../lib/routes';
 
@@ -59,7 +60,6 @@ const DEV_FEATURES_LINK: NavLink = {
       icon: Calendar,
       children: [
         { label: 'Resources', href: ROUTES.RESOURCES },
-        { label: 'Leisure', href: ROUTES.LEISURE },
         { label: 'Projects', href: ROUTES.PROJECTS },
       ],
     },
@@ -96,6 +96,11 @@ export const NAV_LINKS: NavLink[] = [
       { label: 'Kitchen Events', href: ROUTES.FOOD_CALENDAR, icon: Calendar },
       { label: 'Food Assistant', href: ROUTES.FOOD_CHAT, icon: MessageCircle },
     ],
+  },
+  {
+    label: 'Activity Planner',
+    href: ROUTES.ACTIVITY_PLANNER,
+    icon: PartyPopper,
   },
   { label: 'Find Members', href: ROUTES.LOCATOR, icon: MapPin },
   ...(IS_DEV ? [DEV_FEATURES_LINK] : []),

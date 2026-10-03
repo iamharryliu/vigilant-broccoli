@@ -21,6 +21,7 @@ export default function RepoScrollTimeline(props: RepoScrollTimelineProps) {
       hasBackground={false}
       accentColor="sky"
       className="flex min-h-0 flex-1 flex-col"
+      style={{ minHeight: 0 }}
     >
       <ScrollTimeline {...props} fill />
     </Theme>

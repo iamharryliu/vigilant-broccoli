@@ -52,6 +52,9 @@ venv.bak/
 # Angular
 .angular/
 
+# Wrangler (Cloudflare Pages CLI tmp uploads)
+.wrangler/
+
 # Jest
 coverage
 
@@ -97,3 +100,12 @@ projects/nx-workspace/apps/ui/pages-index/public/claude-context/
 
 # Claude Code per-machine overrides
 .claude/settings.local.json
+
+# Older installs link ~/.claude/skills here: preserve runtime caches and installed skill links.
+setup/dotfiles/.claude/skills/*
+!setup/dotfiles/.claude/skills/.gitkeep
+
+# deploy-vercel.ts runs `vercel build --cwd <repo root>`, and the CLI writes
+# .vercel/.env.production.local there carrying a live VERCEL_OIDC_TOKEN.
+# projects/nx-workspace/.gitignore doesn't cover it at this level.
+.vercel/

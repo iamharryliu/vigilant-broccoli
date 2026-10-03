@@ -44,9 +44,9 @@ Comparison of self-hosted/local solutions by category — software you run and o
 
 ## Process Management
 
-| Name | Usage                                                | Free Tier                       | When to Use                                                                                |
-| ---- | ---------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------ |
-| PM2  | Node.js process manager (restarts, logs, clustering) | Free (self-hosted, open source) | Running a Node app directly on a VM without containerizing it — used for `vb-manager-next` |
+| Name | Usage                                                | Free Tier                       | When to Use                                                   |
+| ---- | ---------------------------------------------------- | ------------------------------- | ------------------------------------------------------------- |
+| PM2  | Node.js process manager (restarts, logs, clustering) | Free (self-hosted, open source) | Running a Node app directly on a VM without containerizing it |
 
 ## Secrets Management
 
