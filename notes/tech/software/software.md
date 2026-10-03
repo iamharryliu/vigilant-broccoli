@@ -13,7 +13,6 @@
   - [Software Design Patterns](./general/software-design-patterns.md)
   - [Software Architecture Patterns](./software-architecture-patterns.md)
 - [Tools](./tools/software-tools.md)
-  - [Gerrit](./tools/gerrit.md)
 - [Software Services](./software-services.md)
 - [OS](./os/os.md)
 - [Open Source](./open-source.md)
