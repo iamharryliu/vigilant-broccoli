@@ -202,20 +202,32 @@ fi
 
 '"${nx_cache_read_put_cmd}"'
 
-# deploy-preview.yml can only read kv/data/deploy-preview, so the two
-# Cloudflare Pages credentials it needs are mirrored there. Read back out of
-# kv/secrets rather than passed in from Terraform state: this token is created
-# by hand in the Cloudflare dashboard, so kv/secrets is the only source, and a
-# rotation needs nothing but a tf:post-apply re-run.
-CF_PREVIEW_ACCOUNT_ID=$(vault kv get -field=CLOUDFLARE_ACCOUNT_ID kv/secrets 2>/dev/null || true)
-CF_PREVIEW_API_TOKEN=$(vault kv get -field=CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS kv/secrets 2>/dev/null || true)
+# deploy-preview.yml can only read kv/data/deploy-preview, so the preview
+# account credentials are mirrored there. Read back out of kv/secrets rather
+# than passed in from Terraform state: both are created by hand in the
+# Cloudflare dashboard, so kv/secrets is the only source, and a rotation needs
+# nothing but a tf:post-apply re-run.
+#
+# These are deliberately the SECOND Cloudflare account credentials, never
+# CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS: a Pages token carries account-level
+# Pages:Edit and cannot be scoped to one project, so the deploy token can
+# publish to staging-harryliu-dev-react (harryliu.dev), production-docs-md and
+# production-cloud-8-skate-react. deploy-preview.yml builds PR-authored code
+# with these in its environment, so the worst a malicious PR can reach has to
+# be an account holding nothing but preview projects.
+CF_PREVIEW_ACCOUNT_ID=$(vault kv get -field=CLOUDFLARE_PREVIEW_ACCOUNT_ID kv/secrets 2>/dev/null || true)
+CF_PREVIEW_API_TOKEN=$(vault kv get -field=CLOUDFLARE_API_TOKEN_VB_DEPLOY_PREVIEWS kv/secrets 2>/dev/null || true)
 if [ -n "$CF_PREVIEW_ACCOUNT_ID" ] && [ -n "$CF_PREVIEW_API_TOKEN" ]; then
   vault kv put kv/deploy-preview \
     CLOUDFLARE_ACCOUNT_ID="$CF_PREVIEW_ACCOUNT_ID" \
-    CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS="$CF_PREVIEW_API_TOKEN"
-  echo "Mirrored Cloudflare Pages credentials to kv/data/deploy-preview"
+    CLOUDFLARE_API_TOKEN="$CF_PREVIEW_API_TOKEN"
+  echo "Mirrored preview-account Cloudflare credentials to kv/data/deploy-preview"
 else
-  echo "Warning: CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS missing from kv/data/secrets - kv/data/deploy-preview left unchanged, branch previews will fail to deploy."
+  # Fail closed: leaving the path as-is could strand a previously mirrored
+  # production-capable token where PR-authored code can read it, so previews
+  # stop working until the preview account keys exist.
+  vault kv delete kv/deploy-preview >/dev/null 2>&1 || true
+  echo "Warning: CLOUDFLARE_PREVIEW_ACCOUNT_ID / CLOUDFLARE_API_TOKEN_VB_DEPLOY_PREVIEWS missing from kv/data/secrets - cleared kv/data/deploy-preview, PR previews will not deploy until both are set."
 fi
 
 echo "Secrets synced to Vault"

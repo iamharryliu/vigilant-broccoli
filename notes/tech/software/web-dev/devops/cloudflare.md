@@ -28,7 +28,8 @@ npx wrangler delete [name of worker]
 - Tunnels (`cloudflared`): free, no bandwidth cap; an outbound-only tunnel replaces every inbound firewall rule on the origin.
 - Zero Trust Access: free for up to 50 users (email OTP, identity providers, service tokens included) — enough to gate every self-hosted admin UI behind an owner-email policy.
 - Workers: 100k requests/day; Pages: 500 builds/month, unlimited bandwidth.
-- Pages branch previews: wrangler direct uploads with `--branch` get a free `<branch>.<project>.pages.dev` alias; deployments pile up one per push, which is why the preview projects are pruned to one deployment per live branch.
+- Pages branch previews: wrangler direct uploads with `--branch` get a free `<branch>.<project>.pages.dev` alias, sanitised and truncated to 28 characters; deployments pile up one per push, which is why the preview projects are pruned to one deployment per open PR.
+- A Pages API token is account-scoped — `Pages:Edit` cannot be narrowed to one project — so isolating untrusted deploys means a separate account, not a narrower token. Each account carries its own 500 builds/month.
 
 ## References
 
