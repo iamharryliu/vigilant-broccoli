@@ -6,10 +6,16 @@ import { Select } from './Select';
 import { Text } from './Text';
 import { Textarea } from './Textarea';
 import { CheckList, CheckListItem } from './CheckList';
+import {
+  SORT_MODE,
+  SORT_MODE_LABELS,
+  SORT_MODE_OPTIONS,
+  SortMode,
+  useTaskChecklistView,
+} from './TaskChecklist';
 import { useEffect, useState, useCallback, memo, useMemo } from 'react';
 import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
 import { CardSkeleton } from './Skeleton';
-import { getCommitType } from '../utils/commit-type.utils';
 import { useSpeechToText } from '../hooks/useSpeechToText';
 import { SpeechToTextToggleButton } from './SpeechToTextToggleButton';
 
@@ -47,28 +53,6 @@ export interface GoogleTasksAuthAdapter {
   signInWithGoogle: () => Promise<void>;
 }
 
-type EisenhowerQuadrant = 'Q1' | 'Q2' | 'Q3' | 'Q4' | 'none';
-
-export const SORT_MODE = {
-  DEFAULT: 'default',
-  EISENHOWER: 'eisenhower',
-  COMMIT_TYPE: 'commitType',
-  DATE_CREATED_NEWEST: 'dateCreatedNewest',
-  DATE_CREATED_OLDEST: 'dateCreatedOldest',
-} as const;
-
-export type SortMode = (typeof SORT_MODE)[keyof typeof SORT_MODE];
-
-const SORT_MODE_OPTIONS = Object.values(SORT_MODE);
-
-const SORT_MODE_LABELS: Record<SortMode, string> = {
-  [SORT_MODE.DEFAULT]: 'Default',
-  [SORT_MODE.EISENHOWER]: 'Eisenhower Matrix',
-  [SORT_MODE.COMMIT_TYPE]: 'Commit Type',
-  [SORT_MODE.DATE_CREATED_NEWEST]: 'Date Created (Newest)',
-  [SORT_MODE.DATE_CREATED_OLDEST]: 'Date Created (Oldest)',
-};
-
 const STORAGE_KEY_SELECTED_TASK_LIST = 'google-tasks-selected-list-id';
 
 const TASKS_TITLE = 'Tasks';
@@ -81,46 +65,6 @@ const RECONNECT_GOOGLE_DESCRIPTION =
 const getStorageKey = {
   sortMode: (taskListId: string) => `google-tasks-sort-mode-${taskListId}`,
 } as const;
-
-const getEisenhowerQuadrant = (title: string): EisenhowerQuadrant => {
-  const match = title.match(/^(Q[1-4])[\s:]/i);
-  if (match) {
-    return match[1].toUpperCase() as EisenhowerQuadrant;
-  }
-  return 'none';
-};
-
-const sortByEisenhower = (tasks: Task[]): Task[] => {
-  const priorityMap: Record<EisenhowerQuadrant, number> = {
-    Q1: 1,
-    Q2: 2,
-    Q3: 3,
-    Q4: 4,
-    none: 5,
-  };
-
-  return [...tasks].sort((a, b) => {
-    const quadrantA = getEisenhowerQuadrant(a.title);
-    const quadrantB = getEisenhowerQuadrant(b.title);
-    return priorityMap[quadrantA] - priorityMap[quadrantB];
-  });
-};
-
-const sortByCommitType = (tasks: Task[]): Task[] => {
-  return [...tasks].sort((a, b) => {
-    const typeA = getCommitType(a.title);
-    const typeB = getCommitType(b.title);
-    return typeA.localeCompare(typeB);
-  });
-};
-
-const sortByDateCreated = (tasks: Task[], newest = true): Task[] => {
-  return [...tasks].sort((a, b) => {
-    const dateA = a.updated ? new Date(a.updated).getTime() : 0;
-    const dateB = b.updated ? new Date(b.updated).getTime() : 0;
-    return newest ? dateB - dateA : dateA - dateB;
-  });
-};
 
 const handleApiError = (err: unknown, fallbackMsg: string): string => {
   const message = err instanceof Error ? err.message : fallbackMsg;
@@ -356,14 +300,6 @@ const useSortModeStorage = (taskListId: string, enabled = true) => {
   return [sortMode, setSortMode] as const;
 };
 
-const QUADRANT_COLORS: Record<EisenhowerQuadrant, string> = {
-  Q1: 'bg-red-100 dark:bg-red-900/20 border-l-4 border-red-500',
-  Q2: 'bg-blue-100 dark:bg-blue-900/20 border-l-4 border-blue-500',
-  Q3: 'bg-yellow-100 dark:bg-yellow-900/20 border-l-4 border-yellow-500',
-  Q4: 'bg-green-100 dark:bg-green-900/20 border-l-4 border-green-500',
-  none: '',
-};
-
 const TaskHeader = memo(
   ({
     taskLists,
@@ -560,9 +496,6 @@ const AddTaskForm = memo(
 );
 
 AddTaskForm.displayName = 'AddTaskForm';
-
-const getActiveTasks = (tasks: Task[]) =>
-  tasks.filter(t => t.status !== 'completed' || t.isRemoving);
 
 const UnauthenticatedView = memo(
   ({ signInWithGoogle }: { signInWithGoogle: () => Promise<void> }) => (
@@ -816,19 +749,9 @@ export const GoogleTasksComponent = ({
     [tasks, toggleTaskComplete],
   );
 
-  const sortedTasks = useMemo(() => {
-    if (sortMode === SORT_MODE.EISENHOWER) return sortByEisenhower(tasks);
-    if (sortMode === SORT_MODE.COMMIT_TYPE) return sortByCommitType(tasks);
-    if (sortMode === SORT_MODE.DATE_CREATED_NEWEST)
-      return sortByDateCreated(tasks, true);
-    if (sortMode === SORT_MODE.DATE_CREATED_OLDEST)
-      return sortByDateCreated(tasks, false);
-    return tasks;
-  }, [sortMode, tasks]);
-
-  const checklistItems: CheckListItem[] = useMemo(
+  const rawChecklistItems: CheckListItem[] = useMemo(
     () =>
-      sortedTasks.map(t => ({
+      tasks.map(t => ({
         id: t.id,
         title: t.title,
         checked: t.status === 'completed',
@@ -838,37 +761,15 @@ export const GoogleTasksComponent = ({
         isNew: t.isNew,
         isRemoving: t.isRemoving,
       })),
-    [sortedTasks],
+    [tasks],
   );
 
-  const showCreatedMeta =
-    sortMode === SORT_MODE.DATE_CREATED_NEWEST ||
-    sortMode === SORT_MODE.DATE_CREATED_OLDEST;
-
-  const renderItemMeta = useCallback(
-    (item: CheckListItem) =>
-      showCreatedMeta && item.updatedAt ? (
-        <Text size="1" color="gray">
-          Created: {new Date(item.updatedAt).toLocaleDateString()}
-        </Text>
-      ) : null,
-    [showCreatedMeta],
-  );
-
-  const renderItemAccessory = useCallback((item: CheckListItem) => {
-    const commitType = getCommitType(item.title);
-    if (commitType === 'other') return null;
-    return (
-      <span className="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 self-start">
-        {commitType}
-      </span>
-    );
-  }, []);
-
-  const itemClassName = useCallback(
-    (item: CheckListItem) => QUADRANT_COLORS[getEisenhowerQuadrant(item.title)],
-    [],
-  );
+  const {
+    items: checklistItems,
+    itemClassName,
+    renderItemAccessory,
+    renderItemMeta,
+  } = useTaskChecklistView(rawChecklistItems, sortMode);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -876,28 +777,35 @@ export const GoogleTasksComponent = ({
 
       if (!over || active.id === over.id) return;
 
-      const activeTasks = getActiveTasks(sortedTasks);
-      const activeIndex = activeTasks.findIndex(t => t.id === active.id);
-      const overIndex = activeTasks.findIndex(t => t.id === over.id);
+      const activeItems = checklistItems.filter(
+        item => !item.checked || item.isRemoving,
+      );
+      const activeIndex = activeItems.findIndex(item => item.id === active.id);
+      const overIndex = activeItems.findIndex(item => item.id === over.id);
 
       if (activeIndex === -1 || overIndex === -1) return;
 
-      const reorderedTasks = [...activeTasks];
-      const [movedTask] = reorderedTasks.splice(activeIndex, 1);
-      reorderedTasks.splice(overIndex, 0, movedTask);
+      const reorderedItems = [...activeItems];
+      const [movedItem] = reorderedItems.splice(activeIndex, 1);
+      reorderedItems.splice(overIndex, 0, movedItem);
+      const orderIndex = new Map(
+        reorderedItems.map((item, index) => [item.id, index]),
+      );
 
-      setTasks(
-        tasks.map(t => {
-          const newIndex = reorderedTasks.findIndex(rt => rt.id === t.id);
-          return newIndex !== -1 ? reorderedTasks[newIndex] : t;
+      setTasks(prevTasks =>
+        [...prevTasks].sort((a, b) => {
+          const indexA = orderIndex.get(a.id);
+          const indexB = orderIndex.get(b.id);
+          if (indexA === undefined || indexB === undefined) return 0;
+          return indexA - indexB;
         }),
       );
 
       const previousTaskId =
-        overIndex > 0 ? reorderedTasks[overIndex - 1].id : null;
+        overIndex > 0 ? reorderedItems[overIndex - 1].id : null;
       moveTask(active.id as string, previousTaskId);
     },
-    [sortedTasks, tasks, setTasks, moveTask],
+    [checklistItems, setTasks, moveTask],
   );
 
   if (status === 'loading') return <CardSkeleton showTitleSkeleton rows={5} />;
