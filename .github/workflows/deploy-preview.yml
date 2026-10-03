@@ -16,6 +16,9 @@ on:
       - 'setup/dotfiles/agent-skills/**'
       - '**/CONTEXT.md'
       - 'notes/**'
+  # Re-deploy a branch's previews without pushing to it — the paths filter
+  # above means an unrelated commit won't do it.
+  workflow_dispatch:
 
 permissions:
   contents: read
