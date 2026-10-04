@@ -4,6 +4,7 @@
 
 - [Commands](#commands)
 - [config.toml](#configtoml)
+  - [Reasoning Effort](#reasoning-effort)
 - [Sandbox](#sandbox)
 
 ## Commands
@@ -54,6 +55,10 @@ Codex reads user-level defaults from `~/.codex/config.toml`; trusted projects ca
 | `sandbox_workspace_write.writable_roots` | array of absolute paths                              | Extra writable locations when `sandbox_mode = "workspace-write"`.                                                                        |
 | `service_tier`                           | `fast` or another advertised tier                    | Preferred service tier for new turns.                                                                                                    |
 | `tools.web_search`                       | boolean or config object                             | Enables and configures Codex web search, including optional context size, allowed domains, and location hints.                           |
+
+### Reasoning Effort
+
+`model_reasoning_effort` trades latency for planning depth — it isn't a fixed cost per run. Running every automated task at `high`/`xhigh` pays a large latency tax on trivial changes. Set `low`/`medium` for routine fixes, and reserve `high`/`xhigh` for tasks shaped like `investigate → reproduce → understand architecture → implement → diagnose failure → fix → retest`, where Codex's methodical default is the better fit.
 
 ## Sandbox
 

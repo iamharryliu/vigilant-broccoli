@@ -9,33 +9,37 @@
 
 ## Programming Concepts
 
-| Term                          | Definition                                                                                                                                        |
-| :---------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ |
-| ACID                          | A set of properties that guarantee reliable transaction processing in relational database systems                                                 |
-| Closure                       | Enables functions to keep state.                                                                                                                  |
-| Compiler                      | A tool that converts source code written in one programming language into another, typically into machine code.                                   |
-| first class citizen           | a particular entity in a language—like a function, object, or data type—can be used freely and fully like any other value.                        |
-| High-level language           | A programming language that is closer to human language, abstracting away hardware details. Easier to read, write, and maintain (e.g., Python).   |
-| immutable                     | Cannot be changed after it’s created.                                                                                                             |
-| Low-level language            | A programming language that is closer to machine code, with less abstraction from hardware. Provides more control but is harder to use (e.g., C). |
-| Statically Typed              | Variable types are known at compile time.                                                                                                         |
-| Ternary Operator              | A one line if else statement.                                                                                                                     |
-| Transpiler                    | Transforms code syntax and features so the code runs across different environments.                                                               |
+| Term                | Definition                                                                                                                                        |
+| :------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ACID                | A set of properties that guarantee reliable transaction processing in relational database systems                                                 |
+| Closure             | Enables functions to keep state.                                                                                                                  |
+| Compiler            | A tool that converts source code written in one programming language into another, typically into machine code.                                   |
+| first class citizen | a particular entity in a language—like a function, object, or data type—can be used freely and fully like any other value.                        |
+| High-level language | A programming language that is closer to human language, abstracting away hardware details. Easier to read, write, and maintain (e.g., Python).   |
+| immutable           | Cannot be changed after it’s created.                                                                                                             |
+| Low-level language  | A programming language that is closer to machine code, with less abstraction from hardware. Provides more control but is harder to use (e.g., C). |
+| Statically Typed    | Variable types are known at compile time.                                                                                                         |
+| Ternary Operator    | A one line if else statement.                                                                                                                     |
+| Transpiler          | Transforms code syntax and features so the code runs across different environments.                                                               |
 
 ## Architecture
 
-| Term                      | Definition                                                                                                                                          |
-| :------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Backend                   | The server-side part of an application responsible for data processing, storage, and business logic.                                                |
-| daemon                    | A background process that runs continuously and handles tasks or requests without direct user interaction. Common in operating systems and servers. |
-| Dependency Inversion      | Implementing code so that high-level modules do not depend on low-level modules, ie abstract DB (could use MySQL or Postgres)                       |
-| ephemeral                 | Short lived or temporary.                                                                                                                           |
-| Event Driven Architecture |                                                                                                                                                     |
-| Frontend                  | The client-side part of an application responsible for user interface and interaction.                                                              |
-| LTS                       | Long term support.                                                                                                                                  |
-| microservices             | Breaking applications into tiny remote services that run independently of each other.                                                               |
-| Monorepo                  | A single repository that contains multiple projects, often related, to simplify development and collaboration.                                      |
-| Pub/Sub Model             | Publisher -> Message Broker (routes topics) -> Subscriber                                                                                           |
+| Term                      | Definition                                                                                                                                                                 |
+| :------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Backend                   | The server-side part of an application responsible for data processing, storage, and business logic.                                                                       |
+| daemon                    | A background process that runs continuously and handles tasks or requests without direct user interaction. Common in operating systems and servers.                        |
+| Dependency Inversion      | Implementing code so that high-level modules do not depend on low-level modules, ie abstract DB (could use MySQL or Postgres)                                              |
+| Embedded Software         | Software written to run on dedicated hardware with a specific function (e.g. firmware on a microcontroller), as opposed to general-purpose software running on a computer. |
+| ephemeral                 | Short lived or temporary.                                                                                                                                                  |
+| ERP                       | Enterprise Resource Planning. Software that integrates core business processes (finance, HR, supply chain, inventory, manufacturing) into a single system.                 |
+| Event Driven Architecture |                                                                                                                                                                            |
+| Firmware                  | Low-level software written to a device's non-volatile memory that directly controls its hardware, such as the code running on a microcontroller.                           |
+| Frontend                  | The client-side part of an application responsible for user interface and interaction.                                                                                     |
+| LTS                       | Long term support.                                                                                                                                                         |
+| Microcontroller           | A small computer on a single chip (CPU, memory, and I/O) built to run one dedicated task, typically the target hardware for embedded software.                             |
+| microservices             | Breaking applications into tiny remote services that run independently of each other.                                                                                      |
+| Monorepo                  | A single repository that contains multiple projects, often related, to simplify development and collaboration.                                                             |
+| Pub/Sub Model             | Publisher -> Message Broker (routes topics) -> Subscriber                                                                                                                  |
 
 ## Networking
 

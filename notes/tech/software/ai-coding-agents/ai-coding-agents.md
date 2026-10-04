@@ -6,6 +6,8 @@ Terminal coding agents: how they are used day to day, and how their subscription
 
 - [Usage](#usage)
 - [Commands](#commands)
+- [PR Workflow Performance](#pr-workflow-performance)
+- [Tips](#tips)
 - [Plans and Billing](#plans-and-billing)
 - [Non-Interactive Authentication](#non-interactive-authentication)
 - [Why the Sandbox Credential Matters](#why-the-sandbox-credential-matters)
@@ -50,6 +52,24 @@ The commands from [Claude Code](./claude-code.md) next to their [Codex](./codex.
 | Choose the active model                  | `/model`            | `/model`                                                              |
 | Change settings                          | `/config`           | Edit `~/.codex/config.toml`; `/permissions` for sandbox and approvals |
 | Project instructions file                | `CLAUDE.md`         | `AGENTS.md`                                                           |
+
+## PR Workflow Performance
+
+For an unattended `issue/prompt → inspect repo → implement → test → commit → PR` loop (e.g. both run as GitHub Actions agents), the gap is agent behavior more than raw model speed: Codex is tuned for long-horizon autonomy and leans on repeated implement → verify → repair cycles, where Claude Code tends to start editing sooner and reach a PR faster on straightforward tasks.
+
+| Dimension                       | Claude Code    | Codex                                                 |
+| ------------------------------- | -------------- | ----------------------------------------------------- |
+| Repo exploration                | Fast           | More methodical                                       |
+| Starts editing                  | Usually sooner | Usually later                                         |
+| Tool calls                      | Moderate       | Often more                                            |
+| Testing/verification            | Good           | Very thorough — implement → verify → repair, repeated |
+| Time to PR on routine tasks     | Usually faster | Often slower                                          |
+| Complex, long-horizon debugging | Excellent      | Excellent — this is the case it's optimized for       |
+| Risk of over-investigating      | Moderate       | Higher                                                |
+
+## Tips
+
+- Tune Codex's reasoning effort to the task instead of running every automated job at the same level — see [Reasoning Effort](./codex.md#reasoning-effort).
 
 ## Plans and Billing
 

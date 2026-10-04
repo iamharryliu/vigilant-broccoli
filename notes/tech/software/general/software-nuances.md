@@ -8,6 +8,10 @@
 - Event Driven Architecture vs Request Response
 - Static vs Dynamic Imports
 - Compiled vs Interpreted Code
+- Firmware vs Software
+  - Firmware is low-level code written to a device's non-volatile memory that directly controls its hardware (e.g. a microcontroller) and is tightly coupled to that specific hardware.
+  - Software (in the general sense) is run from a general-purpose OS on general-purpose hardware and can be updated, replaced, or swapped independently of the hardware it runs on.
+  - Firmware is a form of embedded software; not all embedded software is firmware (some runs under a full OS, e.g. embedded Linux).
 - **Languages**
   - GoLang vs Python
     - GoLang has more power under the hood. Compiled vs interpreted.
@@ -30,6 +34,7 @@
   - Use sockets when you need real-time, push-style updates.
   - Use APIs when you need on-demand data exchange or simple CRUD operations.
   - Rest is easier to scale statelessly as sockets use persistent connections.
+
 ## Web Applications
 
 - CSR vs SSR
@@ -95,7 +100,6 @@
 - **Use Axios**: For complex applications where you need features like interceptors, timeouts, retries, or simplified syntax.
 - **Use Fetch**: For simple projects or when you want a lightweight solution without adding a dependency.
 
-
 Declarative vs imperative code
 
 Declarative programming is when you say what you want, and imperative language is when you say how to get what you want.
@@ -103,13 +107,15 @@ Declarative programming is when you say what you want, and imperative language i
 A simple example in Python:
 
 # Declarative
+
 small_nums = [x for x in range(20) if x < 5]
 
 # Imperative
+
 small_nums = []
 for i in range(20):
-    if i < 5:
-        small_nums.append(i)
+if i < 5:
+small_nums.append(i)
 
 ## URI vs URL
 
