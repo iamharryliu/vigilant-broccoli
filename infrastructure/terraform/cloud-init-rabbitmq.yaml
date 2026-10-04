@@ -10,6 +10,7 @@ write_files:
   - path: /opt/rabbitmq/rabbitmq.conf
     content: |
       listeners.ssl.default = 5671
+      listeners.tcp = none
       ssl_options.cacertfile            = /etc/rabbitmq/certs/ca.crt
       ssl_options.certfile              = /etc/rabbitmq/certs/server.crt
       ssl_options.keyfile               = /etc/rabbitmq/certs/server.key
@@ -58,9 +59,7 @@ write_files:
             RABBITMQ_DEFAULT_PASS: ${rabbitmq_password}
           ports:
             - "5671:5671"
-            - "5672:5672"
             - "15671:15671"
-            - "15672:15672"
           volumes:
             - rabbitmq_data:/var/lib/rabbitmq
             - /opt/rabbitmq/certs:/etc/rabbitmq/certs:ro
