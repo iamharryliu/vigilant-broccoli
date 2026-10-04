@@ -10,6 +10,7 @@ const DEFAULT_TASK_LIST = '@default';
 const GOOGLE_PROVIDER_ID = 'google';
 const GOOGLE_TASKS_API_URL = 'https://tasks.googleapis.com/tasks/v1';
 const GOOGLE_TASK_LISTS_URL = `${GOOGLE_TASKS_API_URL}/users/@me/lists`;
+const TASK_LIST_QUERY = { showCompleted: 'false', maxResults: '10' };
 
 const ERROR_NOT_AUTHENTICATED = 'Not authenticated';
 const ERROR_UNAUTHORIZED = 'Unauthorized';
@@ -21,6 +22,7 @@ const ERROR_CREATE_TASK = 'Failed to create task';
 const ERROR_UPDATE_TASK = 'Failed to update task';
 const ERROR_DELETE_TASK = 'Failed to delete task';
 const ERROR_TASK_ID_REQUIRED = 'taskId is required';
+const LOG_GOOGLE_TASKS_ERROR = 'Google Tasks API error:';
 
 type TaskBody = {
   taskListId?: string;
@@ -33,9 +35,7 @@ type TaskBody = {
 
 type TaskQuery = { taskListId?: string; taskId?: string };
 
-type GoogleTasksListResponse = { items?: unknown[] };
-type GoogleTasksResponse = { items?: unknown[] };
-type GoogleTaskResponse = unknown;
+type GoogleTasksCollection = { items?: unknown[] };
 
 const getTaskListTasksUrl = (taskListId: string): string =>
   `${GOOGLE_TASKS_API_URL}/lists/${encodeURIComponent(taskListId)}/tasks`;
@@ -76,11 +76,11 @@ const tasksRoutes: FastifyPluginAsync = async app => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Google Tasks API error:', errorText);
+        console.error(LOG_GOOGLE_TASKS_ERROR, errorText);
         return reply.code(response.status).send({ error: ERROR_FETCH_LISTS });
       }
 
-      const data = (await response.json()) as GoogleTasksListResponse;
+      const data = (await response.json()) as GoogleTasksCollection;
       return { taskLists: data.items || [] };
     } catch (error) {
       if (error instanceof Error && error.message === ERROR_NOT_AUTHENTICATED) {
@@ -105,19 +105,18 @@ const tasksRoutes: FastifyPluginAsync = async app => {
       const accessToken = await getAuthenticatedAccessToken(req);
       const { taskListId } = req.query as TaskQuery;
       const url = new URL(getTaskListTasksUrl(taskListId || DEFAULT_TASK_LIST));
-      url.searchParams.set('showCompleted', 'false');
-      url.searchParams.set('maxResults', '10');
+      url.search = new URLSearchParams(TASK_LIST_QUERY).toString();
 
       const response = await fetch(url, {
         headers: HTTP_HEADERS.AUTHORIZATION(accessToken),
       });
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Google Tasks API error:', errorText);
+        console.error(LOG_GOOGLE_TASKS_ERROR, errorText);
         return reply.code(response.status).send({ error: ERROR_FETCH_TASKS });
       }
 
-      const data = (await response.json()) as GoogleTasksResponse;
+      const data = (await response.json()) as GoogleTasksCollection;
 
       return {
         success: true,
@@ -153,11 +152,11 @@ const tasksRoutes: FastifyPluginAsync = async app => {
       );
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Google Tasks API error:', errorText);
+        console.error(LOG_GOOGLE_TASKS_ERROR, errorText);
         return reply.code(response.status).send({ error: ERROR_CREATE_TASK });
       }
 
-      const task = (await response.json()) as GoogleTaskResponse;
+      const task: unknown = await response.json();
 
       return {
         success: true,
@@ -200,11 +199,11 @@ const tasksRoutes: FastifyPluginAsync = async app => {
       );
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Google Tasks API error:', errorText);
+        console.error(LOG_GOOGLE_TASKS_ERROR, errorText);
         return reply.code(response.status).send({ error: ERROR_UPDATE_TASK });
       }
 
-      const task = (await response.json()) as GoogleTaskResponse;
+      const task: unknown = await response.json();
 
       return {
         success: true,
@@ -238,7 +237,7 @@ const tasksRoutes: FastifyPluginAsync = async app => {
       );
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Google Tasks API error:', errorText);
+        console.error(LOG_GOOGLE_TASKS_ERROR, errorText);
         return reply.code(response.status).send({ error: ERROR_DELETE_TASK });
       }
 
