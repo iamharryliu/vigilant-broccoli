@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
+import { LoaderCircle } from 'lucide-react';
 import {
   Route,
   Routes,
@@ -22,9 +23,22 @@ import {
 import { ENVIRONMENT } from '../environments/environment';
 import { HomePage } from './components/pages/home.page';
 import { AboutPage } from './components/pages/about.page';
-import { ContactPage } from './components/pages/contact.page';
-import { CalendarPage } from './components/pages/calendar.page';
-import { LinkTreePage } from './components/pages/link-tree.page';
+import { GeneralLayout } from './components/layouts/general-layout';
+const ContactPage = lazy(() =>
+  import('./components/pages/contact.page').then(module => ({
+    default: module.ContactPage,
+  })),
+);
+const CalendarPage = lazy(() =>
+  import('./components/pages/calendar.page').then(module => ({
+    default: module.CalendarPage,
+  })),
+);
+const LinkTreePage = lazy(() =>
+  import('./components/pages/link-tree.page').then(module => ({
+    default: module.LinkTreePage,
+  })),
+);
 
 initAnalytics();
 
@@ -115,14 +129,30 @@ export function App() {
         <SeoUpdater />
         <PageviewTracker />
         <div key={location.pathname} className="animate-fade-in">
-          <Routes>
-            <Route path={INDEX_ROUTE.path} element={<HomePage />} />
-            <Route path={ABOUT_ROUTE.path} element={<AboutPage />} />
-            <Route path={CONTACT_ROUTE.path} element={<ContactPage />} />
-            <Route path={CALENDAR_ROUTE.path} element={<CalendarPage />} />
-            <Route path={LINK_TREE_ROUTE.path} element={<LinkTreePage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+          <Suspense
+            fallback={
+              <GeneralLayout>
+                <div
+                  aria-busy="true"
+                  className="flex min-h-[50vh] items-center justify-center"
+                >
+                  <LoaderCircle
+                    aria-hidden="true"
+                    className="size-6 animate-spin"
+                  />
+                </div>
+              </GeneralLayout>
+            }
+          >
+            <Routes>
+              <Route path={INDEX_ROUTE.path} element={<HomePage />} />
+              <Route path={ABOUT_ROUTE.path} element={<AboutPage />} />
+              <Route path={CONTACT_ROUTE.path} element={<ContactPage />} />
+              <Route path={CALENDAR_ROUTE.path} element={<CalendarPage />} />
+              <Route path={LINK_TREE_ROUTE.path} element={<LinkTreePage />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </Suspense>
         </div>
       </AppProvider>
     </ThemeProvider>
