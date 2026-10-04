@@ -726,9 +726,6 @@ importers:
       fastify-plugin:
         specifier: ^5.1.0
         version: 5.1.0
-      googleapis:
-        specifier: '*'
-        version: 154.1.0
       json-schema-to-ts:
         specifier: '*'
         version: 3.1.1
