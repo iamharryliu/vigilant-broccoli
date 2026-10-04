@@ -1,7 +1,7 @@
 {
   "basics": {
     "name": "Harry Liu",
-    "title": "Software Developer",
+    "title": "Fullstack Developer",
     "email": "harryliu1995@gmail.com",
     "phone": "+46 76 008 72 96",
     "links": [
@@ -22,7 +22,7 @@
   "workExperience": [
     {
       "company": "ELVA11",
-      "role": "Platform Engineer",
+      "role": "DevOps Engineer",
       "startDate": "March 2025",
       "endDate": "August 2026",
       "bullets": [
@@ -31,27 +31,28 @@
         "Developed internal AI tools and products, integrating LLMs and automated workflows into business and engineering use cases.",
         "Contributed to proprietary AI IP, exploring and productizing AI capabilities into reusable solutions and internal platforms.",
         "Worked across application and infrastructure layers to deploy and operate on-premise and self-hosted services, handling configuration, networking, monitoring, and maintenance.",
+        "Built and managed **AWS** resources (EC2, S3, IAM) to host internal services and support engineering workflows.",
         "Collaborated with engineering teams to turn infrastructure, tooling, and AI opportunities into maintainable solutions."
       ]
     },
     {
       "company": "Tillmobil",
-      "role": "Software Developer",
+      "role": "Fullstack Developer",
       "startDate": "March 2025",
       "endDate": "March 2026",
       "bullets": [
-        "Led two production systems—a call analysis SaaS platform and a trading card marketplace API—across code and infrastructure.",
+        "Led two **scalable end-to-end production systems**—a call analysis SaaS platform and a trading card marketplace API—owning architecture, frontend, backend, and cloud infrastructure.",
         "Built AI-driven transcription and insight pipelines for call centers.",
         "Adopted **AI-driven development** workflows with tools like **Claude Code** to accelerate feature delivery and code review.",
         "Delivered gamification features (leaderboards, achievements) to drive user engagement.",
         "Built REST API for trading card marketplace aggregating multi-source pricing data.",
         "Designed automated ingestion pipelines, search indexing, and cron-based synchronization.",
-        "Managed GCP infrastructure (Terraform) and CI/CD pipelines with automated testing and monitoring."
+        "Built and managed **cloud services on GCP**, provisioning infrastructure with **Terraform** and running **CI/CD pipelines** with automated testing and monitoring."
       ]
     },
     {
       "company": "Tretton37",
-      "role": "Software Developer",
+      "role": "Fullstack Developer",
       "startDate": "June 2024",
       "endDate": "March 2025",
       "bullets": [
@@ -61,7 +62,7 @@
     },
     {
       "company": "Capco",
-      "role": "Banking Software Developer",
+      "role": "Banking Fullstack Developer",
       "startDate": "September 2019",
       "endDate": "July 2024",
       "bullets": [
