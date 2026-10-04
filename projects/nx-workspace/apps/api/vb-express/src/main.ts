@@ -25,6 +25,7 @@ import {
   createApiKeyPlugin,
   createCorsOptions,
   createDocsPlugin,
+  createRateLimitPlugin,
   honeypotPlugin,
   pingPlugin,
   recaptchaPlugin,
@@ -75,7 +76,14 @@ const registerService = (
   );
 
 const buildApp = async () => {
-  const app = Fastify({ bodyLimit: BODY_LIMIT_BYTES, logger: false });
+  const app = Fastify({
+    bodyLimit: BODY_LIMIT_BYTES,
+    logger: false,
+    // Fly terminates at its proxy, so without this every caller shares one
+    // rate-limit key and a single busy client throttles everyone.
+    trustProxy: true,
+  });
+  await app.register(createRateLimitPlugin());
   await app.register(cors, createCorsOptions(ALLOWED_ORIGINS));
   await app.register(multipart);
   await app.register(requestLoggerPlugin);
