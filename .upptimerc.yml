@@ -23,9 +23,9 @@ sites:
   - name: production-cloud-8-skate
     url: https://cloud8skate.com/
   - name: production-harryliu-dev
-    url: https://production-harryliu-dev-react.pages.dev/
+    url: https://harryliu.dev/
   - name: production-harryliu-dev-resume
-    url: https://production-harryliu-dev-react.pages.dev/resume
+    url: https://harryliu.dev/resume
   - name: production-git
     url: https://git.harryliu.dev/
   - name: production-code-server
