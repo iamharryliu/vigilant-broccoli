@@ -20,3 +20,11 @@ resource "cloudflare_dns_record" "vercel_app" {
   ttl     = 1
   proxied = false
 }
+
+# Read by post-apply.sh, which attaches each domain to its production
+# Vercel project via the API — so a new entry here only needs the matching
+# `production-<key>` project to already exist (ensureProjectExists in
+# deploy-vercel.ts creates it on first deploy).
+output "vercel_app_subdomains" {
+  value = local.vercel_app_subdomains
+}

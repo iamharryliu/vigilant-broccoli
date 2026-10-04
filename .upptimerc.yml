@@ -39,13 +39,13 @@ sites:
   - name: production-socket-server
     url: https://socket.harryliu.dev/health
   - name: production-findme
-    url: https://production-findme.vercel.app/
+    url: https://findme.harryliu.dev/
   - name: production-hearth
     url: https://production-hearth.vercel.app/login
   - name: production-service-manager
     url: https://production-vb-express.fly.dev/
   - name: production-whiteboard
-    url: https://production-whiteboard.vercel.app/
+    url: https://whiteboard.harryliu.dev/
   - name: production-vb-manager-next-mobile
     url: https://production-vb-manager-next-mobile.vercel.app/login
   - name: production-docs
