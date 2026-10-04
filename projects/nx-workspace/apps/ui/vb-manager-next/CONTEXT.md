@@ -4,6 +4,7 @@
 
 - [Nuances](#nuances)
   - [`@nx/next` build doesn't copy `deprecation.js` into `dist/.nx-helpers`](#nxnext-build-doesnt-copy-deprecationjs-into-distnx-helpers)
+  - [PM2 reload needs `pm2 save` for boot resurrect](#pm2-reload-needs-pm2-save-for-boot-resurrect)
   - [A failed kanban board fetch used to look like a brand-new account](#a-failed-kanban-board-fetch-used-to-look-like-a-brand-new-account)
   - [Kanban's cross-lane drag reads CheckList's internal dnd-kit payload](#kanbans-cross-lane-drag-reads-checklists-internal-dnd-kit-payload)
 
@@ -39,6 +40,16 @@ after `nx run vb-manager-next:build:next`, which copies the missing
 content-hash path, since that hash changes across installs). Since
 `pm2:start`/`pm2:reload` both `dependsOn: ["build"]`, this fixes it
 transparently without patching vendored `node_modules` code.
+
+### PM2 reload needs `pm2 save` for boot resurrect
+
+`pnpm vb-manager-next:start` and `pnpm vb-manager-next:reload` both register
+the process from `ecosystem.config.js`, but PM2's boot restore path reads the
+saved dump file, not the current in-memory process list. After changing either
+target, keep `pm2 save` as the final successful step, or a machine restart can
+come back from an older saved list that does not include the fresh
+`vb-manager-next` process/env. This assumes `pm2 startup` has already installed
+the OS-level boot hook on the host.
 
 ### A failed kanban board fetch used to look like a brand-new account
 
