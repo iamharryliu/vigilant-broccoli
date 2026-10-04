@@ -1,0 +1,72 @@
+name: manual-agentic-rnd
+
+on:
+  workflow_dispatch:
+    inputs:
+      question:
+        description: 'Research question to answer in a new docs/rnd/ note and pull request.'
+        required: true
+        type: string
+      model:
+        description: 'Claude model to run the research with.'
+        type: choice
+        default: sonnet
+        options:
+          - sonnet
+          - opus
+          - haiku
+      firewall:
+        description: 'In-container egress firewall (turn off if iptables/ipset fails on the runner).'
+        type: choice
+        default: 'on'
+        options:
+          - 'on'
+          - 'off'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: manual-agentic-rnd
+  cancel-in-progress: false
+
+jobs:
+  research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Validate question
+        env:
+          QUESTION: ${{ inputs.question }}
+        run: |
+          set -euo pipefail
+          if ! printf '%s' "$QUESTION" | grep -q '[^[:space:]]'; then
+            echo "ERROR: 'question' must contain a research question." >&2
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | CLAUDE_CODE_OAUTH_TOKEN ;
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+
+      - name: Research and open pull request
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
+          AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
+          AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
+          SANDBOX_FIREWALL: ${{ inputs.firewall }}
+          MODEL: ${{ inputs.model }}
+          QUESTION: ${{ inputs.question }}
+        run: |
+          set -euo pipefail
+          bash infrastructure/agent-sandbox/create-rnd.sh --model "$MODEL" "$QUESTION"
