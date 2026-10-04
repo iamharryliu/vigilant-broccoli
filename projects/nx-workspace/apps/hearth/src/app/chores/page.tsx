@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Table, Dialog } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
 import {
+  Table,
   Badge,
   Button,
   Card,

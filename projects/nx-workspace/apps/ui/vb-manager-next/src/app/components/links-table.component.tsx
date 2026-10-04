@@ -1,8 +1,7 @@
 'use client';
 
 import type { ReactElement } from 'react';
-import { Table } from '@radix-ui/themes';
-import { Text } from '@vigilant-broccoli/react-lib';
+import { Table, Text } from '@vigilant-broccoli/react-lib';
 
 const FIELD_ICONS: Record<
   string,
