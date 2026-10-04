@@ -1,5 +1,15 @@
-import { AlertDialog } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  Button,
+} from '@vigilant-broccoli/react-lib';
 import { ReactNode } from 'react';
 
 interface ConfirmDeleteDialogProps {
@@ -23,27 +33,23 @@ export const ConfirmDeleteDialog = ({
   onConfirm,
   loading = false,
 }: ConfirmDeleteDialogProps) => (
-  <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
-    {trigger && <AlertDialog.Trigger>{trigger}</AlertDialog.Trigger>}
-    <AlertDialog.Content maxWidth="400px">
-      <AlertDialog.Title>{title}</AlertDialog.Title>
-      <AlertDialog.Description>{description}</AlertDialog.Description>
-      <div className="flex gap-3 mt-4 justify-end">
-        <AlertDialog.Cancel>
-          <Button variant="secondary">
-            Cancel
-          </Button>
-        </AlertDialog.Cancel>
-        <AlertDialog.Action>
-          <Button
-            variant="destructive"
-            onClick={onConfirm}
-            loading={loading}
-          >
+  <AlertDialog open={open} onOpenChange={onOpenChange}>
+    {trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
+    <AlertDialogContent className="max-w-[400px]">
+      <AlertDialogHeader>
+        <AlertDialogTitle>{title}</AlertDialogTitle>
+        <AlertDialogDescription>{description}</AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel asChild>
+          <Button variant="secondary">Cancel</Button>
+        </AlertDialogCancel>
+        <AlertDialogAction asChild>
+          <Button variant="destructive" onClick={onConfirm} loading={loading}>
             {confirmLabel}
           </Button>
-        </AlertDialog.Action>
-      </div>
-    </AlertDialog.Content>
-  </AlertDialog.Root>
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
 );

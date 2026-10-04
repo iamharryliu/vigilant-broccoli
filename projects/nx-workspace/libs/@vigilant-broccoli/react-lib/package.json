@@ -5,6 +5,7 @@
     "@dnd-kit/core": "*",
     "@dnd-kit/sortable": "*",
     "@dnd-kit/utilities": "*",
+    "@radix-ui/react-alert-dialog": "^1.1.19",
     "@radix-ui/react-accordion": "*",
     "@radix-ui/react-avatar": "*",
     "@radix-ui/react-checkbox": "*",
