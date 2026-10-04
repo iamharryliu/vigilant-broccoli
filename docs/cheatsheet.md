@@ -133,8 +133,8 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   immich:docker:restart       Restart the standalone Immich Docker Compose stack
   immich:docker:reload        Reload the standalone Immich Docker Compose stack
   immich:docker:logs          Tail the standalone Immich Docker Compose logs
-  vb-manager-next:start       Start vb-manager-next via PM2
-  vb-manager-next:reload      Reload vb-manager-next via PM2
+  vb-manager-next:start       Start vb-manager-next via PM2 and save the process list
+  vb-manager-next:reload      Reload vb-manager-next via PM2 and save the process list
   vb-manager-next:delete      Delete vb-manager-next PM2 process
   vb-manager-next:logs        Tail vb-manager-next PM2 logs
   vb-manager-next:status      Show PM2 process status
