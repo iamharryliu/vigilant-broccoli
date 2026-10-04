@@ -1,10 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Dialog, DropdownMenu } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
 import {
   Badge,
   Button,
+  DropdownMenu,
   CollapsibleList,
   DeleteItemConfirmationDialog,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,

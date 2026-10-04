@@ -6,7 +6,8 @@ import {
   SetStateAction,
   useState,
 } from 'react';
-import { Dialog, DropdownMenu } from '@radix-ui/themes';
+import { Dialog } from '@radix-ui/themes';
+import { DropdownMenu } from './DropdownMenu';
 import {
   AlertDialog,
   AlertDialogAction,
