@@ -49,7 +49,6 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   vibecode [dir] [-n name]    Vibe coding layout (claude + lazygit + shells)
   mktmuxw <name> [dir]        Create a named tmux window
   rmtmuxw <name>              Kill a named tmux window
-  neovidetmuxvb               Launch Neovide attached to the vb session
   neovideterminal             Launch Neovide straight into :terminal
   fzfvim                      fzf-pick a file and open it in vim
   pnpm cheatsheet:tmux-nvim   Print the tmux/nvim keybindings (from the repo)
@@ -115,9 +114,6 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
 🧪 VB PROJECTS
   testgrind75                 Run grind-75 tests (py + ts + go)
   testgrind75py|ts|go         Run grind-75 tests for one language
-  deploypersonalfrontend      Manually deploy the personal website frontend
-  servecloud8                 Serve cloud-8-skate-react
-  npmEmployeeHandler          Install the local employee-handler build
   dldjmusic                   Download DJ music from Spotify playlists
 
 🍺 HOMEBREW & DEPS

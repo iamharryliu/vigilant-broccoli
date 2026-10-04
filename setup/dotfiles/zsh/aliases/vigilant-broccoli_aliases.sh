@@ -29,19 +29,11 @@ alias pushsnippets="cdvb && git add $SNIPPETS_DIR && gc docs snippets 'Update sn
 alias pushactions="cdvb && git add $GIT_WORKFLOWS_DIR && gc ci github-actions 'Update Github actions.' && gpush"
 alias pushsetup="cdvb && git add $SETUP_DIR && gc feat setup 'Update setup scripts.' && gpush"
 alias pushdotfiles="cdvb && git add $DOTFILES_DIR && gc feat dotfiles 'Update dotfiles.' && gpush"
-# Projects
-alias deploypersonalfrontend="cdnx && nx manual-deploy personal-website-frontend"
 # Grind 75
 alias testgrind75py="python -m unittest discover -s $GRIND75_DIR/python"
 alias testgrind75ts="cdgrind75ts && npx jest $GRIND75_DIR/typescript"
 alias testgrind75go="go test $GRIND75_DIR/..."
 alias testgrind75="testgrind75py && testgrind75ts && testgrind75go"
-
-# Cloud8
-alias servecloud8="cdnx && nx serve cloud-8-skate-react"
-
-# Employee Handler
-alias npmEmployeeHandler="npm i $PROJECTS_DIR/nx-workspace/dist/libs/@vigilant-broccoli/employee-handler"
 
 # OCI VM
 sshocivm() {
@@ -50,7 +42,6 @@ sshocivm() {
 
 # Tmux
 alias tmuxvb="$REPO_DIR/setup/dotfiles/common/scripts/tmux-vb.sh"
-alias neovidetmuxvb='neovide -- -c "terminal tmux attach -t vb || ~/vigilant-broccoli/setup/dotfiles/common/scripts/tmux-vb.sh" -c "startinsert"'
 
 # WireGuard
 alias wg0-up='sudo wg-quick up wg0'
