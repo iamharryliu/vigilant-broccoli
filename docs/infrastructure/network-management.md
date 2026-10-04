@@ -15,7 +15,7 @@ All public URLs for deployed applications, grouped by domain/provider.
 ```
 harryliu.dev                              Cloudflare zone (Terraform: infrastructure/terraform/)
 ├── harryliu.dev                          Personal website — Cloudflare Pages `production-harryliu-dev-react` (domain + CNAME: Terraform, infrastructure/terraform/)
-├── projects.harryliu.dev                 GitHub Pages index (CNAME to iamharryliu.github.io, DNS-only: Terraform, infrastructure/terraform/; custom domain set via the CNAME file staged by `pages-index:deploy-github-pages`)
+├── projects.harryliu.dev                 GitHub Pages index (CNAME to iamharryliu.github.io, DNS-only: Terraform, infrastructure/terraform/; the Pages custom domain is set by `github_repository_pages` in `github.tf`; the CNAME file staged by `pages-index:deploy-github-pages` keeps deploys from clearing it)
 ├── www.harryliu.dev                      301 redirect to apex (Cloudflare ruleset)
 ├── findme.harryliu.dev                   FindMe — Vercel `production-findme` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
 ├── whiteboard.harryliu.dev               Whiteboard — Vercel `production-whiteboard` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)

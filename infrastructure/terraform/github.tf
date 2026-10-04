@@ -136,3 +136,14 @@ resource "github_repository_ruleset" "production" {
     update           = true
   }
 }
+
+import {
+  to = github_repository_pages.vigilant_broccoli
+  id = var.github_repo
+}
+
+resource "github_repository_pages" "vigilant_broccoli" {
+  repository = github_repository.vigilant_broccoli.name
+  build_type = "workflow"
+  cname      = cloudflare_dns_record.harryliu_dev_projects.name
+}
