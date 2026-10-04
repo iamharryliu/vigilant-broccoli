@@ -42,6 +42,13 @@ const audioMultipartBody = (extraProperties: Record<string, unknown> = {}) => ({
 });
 
 const UNAUTHORIZED_RESPONSE = { description: 'Unauthorized' };
+const TASK_ID_REQUIRED_RESPONSE = { description: 'taskId is required' };
+const GOOGLE_TASKS_ERROR_RESPONSE = {
+  description: "Google Tasks API error, with Google's status passed through",
+};
+const TASKS_INTERNAL_RESPONSE = {
+  description: 'Not authenticated or unexpected error',
+};
 
 export const swaggerSpec = createSwaggerSpec({
   title: SERVICE_TITLE,
@@ -227,7 +234,8 @@ export const swaggerSpec = createSwaggerSpec({
         ],
         responses: {
           '200': { description: '{ success, tasks }' },
-          '500': { description: 'Not authenticated or Google error' },
+          '4XX': GOOGLE_TASKS_ERROR_RESPONSE,
+          '500': TASKS_INTERNAL_RESPONSE,
         },
       },
       post: {
@@ -244,7 +252,8 @@ export const swaggerSpec = createSwaggerSpec({
         }),
         responses: {
           '200': { description: '{ success, task }' },
-          '500': { description: 'Not authenticated or Google error' },
+          '4XX': GOOGLE_TASKS_ERROR_RESPONSE,
+          '500': TASKS_INTERNAL_RESPONSE,
         },
       },
       patch: {
@@ -263,7 +272,9 @@ export const swaggerSpec = createSwaggerSpec({
         }),
         responses: {
           '200': { description: '{ success, task }' },
-          '500': { description: 'Not authenticated or Google error' },
+          '400': TASK_ID_REQUIRED_RESPONSE,
+          '4XX': GOOGLE_TASKS_ERROR_RESPONSE,
+          '500': TASKS_INTERNAL_RESPONSE,
         },
       },
       delete: {
@@ -283,8 +294,9 @@ export const swaggerSpec = createSwaggerSpec({
         ],
         responses: {
           '200': { description: '{ success }' },
-          '400': { description: 'taskId is required' },
-          '500': { description: 'Not authenticated or Google error' },
+          '400': TASK_ID_REQUIRED_RESPONSE,
+          '4XX': GOOGLE_TASKS_ERROR_RESPONSE,
+          '500': TASKS_INTERNAL_RESPONSE,
         },
       },
     },
