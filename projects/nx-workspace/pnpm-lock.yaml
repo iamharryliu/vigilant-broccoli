@@ -615,6 +615,9 @@ importers:
       '@fastify/multipart':
         specifier: ^9.4.0
         version: 9.4.0
+      '@fastify/rate-limit':
+        specifier: ^11.2.0
+        version: 11.2.0
       '@google-cloud/storage':
         specifier: ^7.21.0
         version: 7.21.0(encoding@0.1.13)
@@ -654,6 +657,9 @@ importers:
       '@fastify/cors':
         specifier: ^11.3.0
         version: 11.3.0
+      '@fastify/rate-limit':
+        specifier: ^11.2.0
+        version: 11.2.0
       '@vigilant-broccoli/common-js':
         specifier: workspace:*
         version: link:../../../libs/@vigilant-broccoli/common-js
