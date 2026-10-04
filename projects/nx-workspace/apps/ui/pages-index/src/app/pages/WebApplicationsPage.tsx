@@ -40,14 +40,14 @@ export function WebApplicationsPage() {
           </li>
           <li>
             <CardLink
-              href="https://staging-findme.vercel.app/"
+              href="https://findme.harryliu.dev/"
               title={t('WEB_APPLICATIONS_PAGE.FIND_ME.TITLE')}
               description={t('WEB_APPLICATIONS_PAGE.FIND_ME.DESCRIPTION')}
             />
           </li>
           <li>
             <CardLink
-              href="https://staging-whiteboard.vercel.app/"
+              href="https://whiteboard.harryliu.dev/"
               title={t('WEB_APPLICATIONS_PAGE.WHITEBOARD.TITLE')}
               description={t('WEB_APPLICATIONS_PAGE.WHITEBOARD.DESCRIPTION')}
             />
