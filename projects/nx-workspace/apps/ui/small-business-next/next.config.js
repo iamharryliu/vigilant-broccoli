@@ -1,6 +1,5 @@
 //@ts-check
 const { composePlugins, withNx } = require('@nx/next');
-const { resolve } = require('node:path');
 const configValues = {
   default: {},
   development: {},
@@ -15,7 +14,6 @@ const options = {
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
-  outputFileTracingRoot: resolve(__dirname, '../../..'),
   nx: { ...options },
   distDir: '../../../dist/apps/ui/small-business-next/.next',
   agentRules: false,
