@@ -9,10 +9,16 @@
       "executor": "@nx/eslint:lint"
     },
     "build-snapshot": {
-      "command": "node scripts/build-docs-snapshot.mjs apps/ui/docs-md/snapshot.config.json"
+      "command": "node scripts/build-docs-snapshot.mjs apps/ui/docs-md/snapshot.config.json",
+      "outputs": ["{projectRoot}/public"]
     },
     "build": {
       "dependsOn": ["^build", "build-snapshot"],
+      "inputs": [
+        "production",
+        "^production",
+        { "dependentTasksOutputFiles": "**/*" }
+      ],
       "outputs": [
         "{projectRoot}/{options.outDir}",
         "{workspaceRoot}/dist/docs-md"
