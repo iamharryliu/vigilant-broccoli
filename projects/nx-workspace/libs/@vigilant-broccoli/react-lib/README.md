@@ -9,7 +9,7 @@ Shared React component library.
 
 ## Deployment URLs
 
-- [Component Library](https://iamharryliu.github.io/vigilant-broccoli/react-component-library/)
+- [Component Library](https://projects.harryliu.dev/react-component-library/)
 
 ## Stack
 

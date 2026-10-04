@@ -1350,7 +1350,7 @@ const UI_APP_LINKS = [
   {
     label: 'React Component Library',
     target:
-      'https://iamharryliu.github.io/vigilant-broccoli/react-component-library/',
+      'https://projects.harryliu.dev/react-component-library/',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
   },

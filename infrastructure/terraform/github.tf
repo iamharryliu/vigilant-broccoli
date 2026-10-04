@@ -1,7 +1,7 @@
 resource "github_repository" "vigilant_broccoli" {
   name         = var.github_repo
   description  = "idek"
-  homepage_url = "https://iamharryliu.github.io/vigilant-broccoli/"
+  homepage_url = "https://projects.harryliu.dev/"
   visibility   = "public"
 
   has_issues      = true

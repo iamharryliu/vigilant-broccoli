@@ -12,7 +12,7 @@
   - [Commands](#commands)
 - [Stack](#stack)
 - [CI Actions](#ci-actions)
-- [Click here](https://iamharryliu.github.io/vigilant-broccoli/) for more.
+- [Click here](https://projects.harryliu.dev/) for more.
 
 ## Development
 
