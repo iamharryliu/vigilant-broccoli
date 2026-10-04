@@ -25,8 +25,6 @@ symlink_common_dotfiles() {
     create_symlink "$DOTFILES_DIR/.vimrc" "$HOME/.vimrc"
     mkdir -p "$HOME/.config"
     create_symlink "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
-    mkdir -p "$HOME/.codex"
-    create_symlink "$DOTFILES_DIR/.codex/config.toml" "$HOME/.codex/config.toml"
     chmod -R +x "$HOME/shell-aliases/"
     chmod -R +x "$HOME/shell-scripts/"
     symlink_agent_skills

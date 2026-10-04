@@ -25,4 +25,4 @@ bash setup/common/agent-skills.sh
 
 Use Claude's `/audit-note <scope>` or Codex's `$audit-note <scope>`. Existing skills and caches are preserved; conflicting entries are reported for manual resolution. See [agent setup](../agent-support.md) for the shared source, installation paths, and context discovery. Start a new agent session after setup to load the repository context.
 
-Setup also symlinks `~/.codex/config.toml` to `setup/dotfiles/.codex/config.toml`, which raises Codex's instruction limit past the root context's size. It replaces an existing `~/.codex/config.toml`, so move any local Codex settings you want to keep into the dotfile first.
+Personal Codex settings stay in the untracked `~/.codex/config.toml`. Machine setup does not create, modify, or symlink this file.

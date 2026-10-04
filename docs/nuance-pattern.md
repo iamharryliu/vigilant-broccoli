@@ -89,9 +89,9 @@ installation, and discovery details.
 
 An agent's automatic discovery may depend on its starting directory. The root
 context therefore also requires reading applicable directory context before
-editing a subtree. Codex's combined instruction limit is raised to 64 KiB by
-`setup/dotfiles/.codex/config.toml` locally and by a `codex exec` flag in the
-sandbox; keep inherited context within it.
+editing a subtree. Keep inherited context within Codex's default 32 KiB
+instruction limit for local sessions. The sandbox runner uses an explicit
+64 KiB limit; see [agent support](./agent-support.md#context-discovery).
 
 ## Entry shape
 
