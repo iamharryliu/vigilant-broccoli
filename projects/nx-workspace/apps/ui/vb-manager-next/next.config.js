@@ -1,5 +1,6 @@
 //@ts-check
 const { composePlugins, withNx } = require('@nx/next');
+const { resolve } = require('node:path');
 const configValues = {
   default: {},
   development: {},
@@ -23,6 +24,7 @@ const SERVER_ONLY_EXTERNALS = [
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
 const nextConfig = {
+  outputFileTracingRoot: resolve(__dirname, '../../..'),
   nx: { ...options },
   distDir: '../../../dist/apps/ui/vb-manager-next/.next',
   agentRules: false,
