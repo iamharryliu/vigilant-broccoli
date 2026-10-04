@@ -45,6 +45,12 @@ import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
 import { GroupLeaderboardDemo } from './demos/GroupLeaderboardDemo';
 import { EmptyLeaderboardDemo } from './demos/EmptyLeaderboardDemo';
 import { NotepadDemo } from './demos/NotepadDemo';
+import { PastebinDemo } from './demos/PastebinDemo';
+import {
+  I18nProvider as PastebinI18nProvider,
+  useTranslation as usePastebinTranslation,
+} from './demos/pastebin/i18n';
+import pastebinEn from './demos/pastebin/en.json';
 import { QuickLinksDemo } from './demos/QuickLinksDemo';
 import { ScrollTimelineDemo } from './demos/ScrollTimelineDemo';
 import { TasksDemo } from './demos/TasksDemo';
@@ -356,6 +362,13 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     content: <NotepadDemo />,
   },
   {
+    id: 'pastebin',
+    label: pastebinEn.PASTEBIN.TITLE,
+    description: pastebinEn.PASTEBIN.DESCRIPTION,
+    category: CATEGORY.UTILITIES,
+    content: <PastebinDemo />,
+  },
+  {
     id: 'quick-links',
     label: 'Quick Links',
     description:
@@ -547,16 +560,30 @@ const SandboxBody = ({
   setDark,
   showThemeToggle,
 }: SandboxBodyProps) => {
+  const { t } = usePastebinTranslation();
+  const entries = useMemo(
+    () =>
+      ALL_ENTRIES.map(entry =>
+        entry.id === 'pastebin'
+          ? {
+              ...entry,
+              label: t('PASTEBIN.TITLE'),
+              description: t('PASTEBIN.DESCRIPTION'),
+            }
+          : entry,
+      ),
+    [t],
+  );
   const [selectedId, setSelectedId] = useState(readStoredSelectedId);
   const [iconMode, setIconMode] = useState(readStoredIconMode);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const selectedEntry =
-    ALL_ENTRIES.find(entry => entry.id === selectedId) ?? ALL_ENTRIES[0];
+    entries.find(entry => entry.id === selectedId) ?? entries[0];
 
   const items = useMemo(
     () => [
       ...buildSidebarItems({
-        entries: ALL_ENTRIES,
+        entries,
         selectedId,
         onSelect: id => {
           setSelectedId(id);
@@ -576,7 +603,7 @@ const SandboxBody = ({
         },
       }),
     ],
-    [selectedId, iconMode, dark, showThemeToggle, setDark],
+    [entries, selectedId, iconMode, dark, showThemeToggle, setDark],
   );
 
   return (
@@ -614,7 +641,7 @@ const SandboxBody = ({
   );
 };
 
-export function ComponentSandbox({
+function ComponentSandboxContent({
   title,
   subtitle,
   wrapInTheme = false,
@@ -646,5 +673,13 @@ export function ComponentSandbox({
         />
       </div>
     </Theme>
+  );
+}
+
+export function ComponentSandbox(props: ComponentSandboxProps): ReactNode {
+  return (
+    <PastebinI18nProvider>
+      <ComponentSandboxContent {...props} />
+    </PastebinI18nProvider>
   );
 }
