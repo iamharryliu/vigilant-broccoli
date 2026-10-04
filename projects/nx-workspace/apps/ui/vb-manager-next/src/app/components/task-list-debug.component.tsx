@@ -1,7 +1,6 @@
 'use client';
 
-import { Table } from '@radix-ui/themes';
-import { Button, Card, Code, Text } from '@vigilant-broccoli/react-lib';
+import { Button, Card, Code, Table, Text } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { CopyIcon } from '@radix-ui/react-icons';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
