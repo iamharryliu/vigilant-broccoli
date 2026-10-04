@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Table } from '@radix-ui/themes';
 import {
+  Table,
   Callout,
   CalloutText,
   EllipsisCTA,
