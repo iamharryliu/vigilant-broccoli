@@ -1,6 +1,7 @@
 {
   "HOME": {
     "TITLE": "vigilant-broccoli",
+    "DESCRIPTION": "Explore the apps, libraries, and documentation in vigilant-broccoli, and follow the repository’s activity and service health.",
     "SECTION_MONITORING": "Monitoring",
     "SECTION_SOFTWARE_PROJECTS": "Software Projects",
     "SECTION_DOCUMENTATION": "Documentation",

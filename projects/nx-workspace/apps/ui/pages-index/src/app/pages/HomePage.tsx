@@ -24,6 +24,9 @@ export function HomePage() {
     <main className={PAGE_CLASS}>
       <header className="mb-6">
         <h1 className="text-3xl font-bold tracking-tight">{t('HOME.TITLE')}</h1>
+        <p className="mt-2 text-gray-600 dark:text-gray-400">
+          {t('HOME.DESCRIPTION')}
+        </p>
       </header>
 
       <section className="mb-8">
