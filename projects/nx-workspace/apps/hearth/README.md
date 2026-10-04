@@ -23,7 +23,7 @@ Shared life for homes, communes, and communities.
 - Framework - Next.js (React)
 - Build Tool - Next.js
 - External libs
-  - Radix Themes, lucide-react, recharts
+  - lucide-react, recharts
   - Leaflet / react-leaflet, FullCalendar
   - Zod
   - AWS SDK (S3 client, for Cloudflare R2)

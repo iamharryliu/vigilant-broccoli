@@ -1,5 +1,4 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
-import { Theme } from '@radix-ui/themes';
 import {
   Blocks,
   Eye,
@@ -10,6 +9,8 @@ import {
   Wrench,
 } from 'lucide-react';
 import {
+  ThemeProvider,
+  useTheme,
   Sidebar,
   SidebarCTA,
   Switch,
@@ -661,38 +662,37 @@ const SandboxBody = ({
   );
 };
 
-function ComponentSandboxContent({
-  title,
-  subtitle,
-  wrapInTheme = false,
-}: ComponentSandboxProps): ReactNode {
-  const [dark, setDark] = useState(false);
-
-  if (!wrapInTheme) {
-    return (
+function ThemedSandbox({ title, subtitle }: ComponentSandboxProps): ReactNode {
+  const { appearance, toggleTheme } = useTheme();
+  return (
+    <div className="w-full h-screen overflow-hidden">
       <SandboxBody
         title={title}
         subtitle={subtitle}
-        dark={dark}
-        setDark={setDark}
-        showThemeToggle={false}
+        dark={appearance === 'dark'}
+        setDark={toggleTheme}
+        showThemeToggle
       />
-    );
-  }
+    </div>
+  );
+}
 
-  const appearance = dark ? 'dark' : 'light';
-  return (
-    <Theme appearance={appearance}>
-      <div className={`${appearance} w-full h-screen overflow-hidden`}>
-        <SandboxBody
-          title={title}
-          subtitle={subtitle}
-          dark={dark}
-          setDark={setDark}
-          showThemeToggle
-        />
-      </div>
-    </Theme>
+function ComponentSandboxContent({
+  wrapInTheme = false,
+  ...props
+}: ComponentSandboxProps): ReactNode {
+  const [dark, setDark] = useState(false);
+  return wrapInTheme ? (
+    <ThemeProvider>
+      <ThemedSandbox {...props} />
+    </ThemeProvider>
+  ) : (
+    <SandboxBody
+      {...props}
+      dark={dark}
+      setDark={setDark}
+      showThemeToggle={false}
+    />
   );
 }
 

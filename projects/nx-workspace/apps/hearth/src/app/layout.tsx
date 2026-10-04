@@ -1,5 +1,4 @@
 import type { Viewport } from 'next';
-import '@radix-ui/themes/styles.css';
 import './global.css';
 import AuthProvider from './providers/auth-provider';
 import HomeProvider from './providers/home-provider';

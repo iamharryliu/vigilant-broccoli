@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Popover } from '@radix-ui/themes';
+import { Popover } from '@vigilant-broccoli/react-lib';
 import { Home, Menu, Moon, Sun } from 'lucide-react';
 import { supabase } from '../../../libs/supabase';
 import { useHome } from '../providers/home-provider';
@@ -97,16 +97,14 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
         {invites.length > 0 && (
           <Popover.Root>
             <Popover.Trigger>
-              <span className="relative inline-flex">
-                <IconButton
-                  variant="ghost"
-                  icon="bell"
-                  aria-label={`${invites.length} pending invite${invites.length === 1 ? '' : 's'}`}
-                />
-                <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-red-500" />
-              </span>
+              <IconButton
+                variant="ghost"
+                className="relative after:absolute after:-right-0.5 after:-top-0.5 after:h-2 after:w-2 after:rounded-full after:bg-red-500 after:content-['']"
+                icon="bell"
+                aria-label={`${invites.length} pending invite${invites.length === 1 ? '' : 's'}`}
+              />
             </Popover.Trigger>
-            <Popover.Content align="end" size="2" style={{ width: 280 }}>
+            <Popover.Content align="end" style={{ width: 280 }}>
               <Text size="2" weight="medium" as="p" mb="2">
                 Pending invites
               </Text>

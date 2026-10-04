@@ -1,10 +1,9 @@
-import '@radix-ui/themes/styles.css';
-import { Theme } from '@radix-ui/themes';
 import {
+  ThemeScope,
   ScrollTimeline,
   ScrollTimelineEntry,
 } from '@vigilant-broccoli/react-lib';
-import { useRadixAppearance } from '../use-prefers-dark';
+import { useThemeAppearance } from '../use-prefers-dark';
 
 interface RepoScrollTimelineProps {
   entries: ScrollTimelineEntry[];
@@ -13,10 +12,10 @@ interface RepoScrollTimelineProps {
 }
 
 export default function RepoScrollTimeline(props: RepoScrollTimelineProps) {
-  const appearance = useRadixAppearance();
+  const appearance = useThemeAppearance();
 
   return (
-    <Theme
+    <ThemeScope
       appearance={appearance}
       hasBackground={false}
       accentColor="sky"
@@ -24,6 +23,6 @@ export default function RepoScrollTimeline(props: RepoScrollTimelineProps) {
       style={{ minHeight: 0 }}
     >
       <ScrollTimeline {...props} fill />
-    </Theme>
+    </ThemeScope>
   );
 }

@@ -2,13 +2,18 @@
 
 Management dashboard app.
 
+## Table of Contents
+
+- [Stack](#stack)
+- [Agent Context](#agent-context)
+
 ## Stack
 
 - Language - TypeScript
 - Framework - Next.js (App Router, React)
 - Build Tool - Next.js
 - External libs
-  - Radix Themes + Tailwind CSS, lucide-react icons
+  - Tailwind CSS, lucide-react icons
   - dnd-kit (drag-and-drop)
   - jsQR (QR code decoding)
   - Leaflet / react-leaflet, react-markdown

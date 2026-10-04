@@ -6,7 +6,10 @@ import {
   useState,
   useEffect,
   ReactNode,
+  type CSSProperties,
 } from 'react';
+
+import { ThemeScope } from './ThemeScope';
 
 const LIGHT = 'light';
 const DARK = 'dark';
@@ -26,7 +29,13 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const isAppearance = (value: unknown): value is ThemeAppearance =>
   value === LIGHT || value === DARK;
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
+export function ThemeProvider({
+  children,
+  style,
+}: {
+  children: ReactNode;
+  style?: CSSProperties;
+}) {
   const [appearance, setAppearance] = useState<ThemeAppearance>(LIGHT);
 
   useEffect(() => {
@@ -55,7 +64,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{ appearance, toggleTheme }}>
-      {children}
+      <ThemeScope appearance={appearance} style={style}>
+        {children}
+      </ThemeScope>
     </ThemeContext.Provider>
   );
 }

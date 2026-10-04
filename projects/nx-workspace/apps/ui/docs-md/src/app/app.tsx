@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Theme } from '@radix-ui/themes';
+import { ThemeProvider } from '@vigilant-broccoli/react-lib';
 import {
   createDocsSnapshotSource,
   DocsViewer,
@@ -26,7 +26,7 @@ export function App() {
   const urlSync = useMemo(() => ({ get: getFileParam, set: setFileParam }), []);
 
   return (
-    <Theme>
+    <ThemeProvider>
       <div className="h-dvh p-2 sm:p-4 bg-white dark:bg-gray-900">
         <DocsViewer
           getStructure={fetchStructure}
@@ -36,7 +36,7 @@ export function App() {
           urlSync={urlSync}
         />
       </div>
-    </Theme>
+    </ThemeProvider>
   );
 }
 

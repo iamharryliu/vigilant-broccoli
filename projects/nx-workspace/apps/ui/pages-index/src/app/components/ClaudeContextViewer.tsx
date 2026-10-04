@@ -1,7 +1,6 @@
-import '@radix-ui/themes/styles.css';
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Theme } from '@radix-ui/themes';
+import { ThemeScope } from '@vigilant-broccoli/react-lib';
 import type { DocsExplorerUrlSync } from '@vigilant-broccoli/react-lib';
 import {
   createDocsSnapshotSource,
@@ -9,7 +8,7 @@ import {
   FILE_PARAM,
 } from '@vigilant-broccoli/react-utility';
 import { CLAUDE_CONTEXT_SNAPSHOT_URL } from '../consts/claudeContext';
-import { useRadixAppearance } from '../use-prefers-dark';
+import { useThemeAppearance } from '../use-prefers-dark';
 
 const HASH_PREFIX = '#';
 const DUMMY_ORIGIN = 'http://localhost';
@@ -27,7 +26,7 @@ const readRoute = () =>
 
 export default function ClaudeContextViewer() {
   const navigate = useNavigate();
-  const appearance = useRadixAppearance();
+  const appearance = useThemeAppearance();
 
   const urlSync = useMemo<DocsExplorerUrlSync>(
     () => ({
@@ -50,7 +49,7 @@ export default function ClaudeContextViewer() {
   );
 
   return (
-    <Theme
+    <ThemeScope
       appearance={appearance}
       hasBackground={false}
       accentColor="sky"
@@ -63,6 +62,6 @@ export default function ClaudeContextViewer() {
         getGraph={fetchGraph}
         urlSync={urlSync}
       />
-    </Theme>
+    </ThemeScope>
   );
 }
