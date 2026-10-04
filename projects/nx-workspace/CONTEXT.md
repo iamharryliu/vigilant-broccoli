@@ -7,6 +7,7 @@
   - [A `react-lib` component renders unstyled in an app that never scanned it](#a-react-lib-component-renders-unstyled-in-an-app-that-never-scanned-it)
   - [The three link surfaces share one section structure and drift silently](#the-three-link-surfaces-share-one-section-structure-and-drift-silently)
   - [Nx formatting must not hand the agent symlinks to Prettier](#nx-formatting-must-not-hand-the-agent-symlinks-to-prettier)
+  - [Next.js workspace-root inference warnings are accepted](#nextjs-workspace-root-inference-warnings-are-accepted)
 
 ## Nuances
 
@@ -89,3 +90,23 @@ though both are tracked — ignore rules do not untrack a tracked file, and the
 entry is what keeps Nx from passing them on. The repository-root commit hook
 handles the same problem in `scripts/shell/format-staged.sh`. Format the
 canonical `CONTEXT.md` sources.
+
+### Next.js workspace-root inference warnings are accepted
+
+Next.js can log "Next.js inferred your workspace root, but it may not be
+correct" because it finds both the repository-root `pnpm-lock.yaml` and
+`projects/nx-workspace/pnpm-lock.yaml`. This affects `small-business-next`,
+`vb-manager-next`, `vb-manager-next-mobile`, `whiteboard`, `findme`,
+`hearth`, and `employee-handler-ui`.
+
+The warning alone is accepted: no build or deployment defect has been
+attributed to it. Previous attempts to silence it have been revisited without
+establishing a need to change the working configuration. Keep both lockfiles
+and the current Next.js configs; do not add `outputFileTracingRoot` or
+`turbopack.root` solely to suppress this message, or recreate retired TODO
+`1f0a7e` for the warning alone.
+
+Revisit only if a concrete build, file-tracing, or deployed dependency failure
+is traced to root inference. Reproduce that failure with the affected app's
+`nx build <app>` and deploy target before changing the root; for missing
+`sharp` in hearth, check the dependency-placement nuance above first.

@@ -19,6 +19,7 @@ Source of truth for the shape of the repo root `TODO.md`. `/create-todo-task`, `
 
 ## Row Rules
 
+- **Bar for a row**: a row has to be worth a session of someone's time. A micro-optimization whose whole payoff is a few kB of bundle, a few forked processes per shell, or seconds on a manual operator command does not clear it, and neither does a warning with no demonstrated build, deploy, or runtime defect behind it — those are accepted, not deferred. Do not file a grab-bag row collecting several such nits under one id; each would be declined on its own, and bundling them only makes the row harder to decline. A real defect stays a row no matter how small the diff that fixes it.
 - `ID`: a unique, bare 6-hex id (no link). Generate with `python3 -c "import random; print(format(random.randint(0, 0xffffff), '06x'))"` and confirm it does not already appear in the file.
 - `Priority`: `P1`/`P2`/`P3` for Security, Performance, Maintenance, Refactor, and UI Cleanup items; `NA` for Feature Enhancements and Not so serious items (nice-to-have or deliberately-accepted risk).
 - `Description`: current state with concrete file references (`path/to/file.ext:12` where useful) and why it matters. Not so serious items migrated from an accepted-risk finding are prefixed `[security · non-risk]` / `[performance · non-risk]`.
