@@ -216,4 +216,5 @@ Often added at the end of dishes._
 
 ## See Also
 
+- [Cabbage](./cabbage.md)
 - [Potatoes](./potatoes.md)
