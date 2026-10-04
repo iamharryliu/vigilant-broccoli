@@ -43,7 +43,7 @@ echo "Response: $PARSE_RESPONSE"
 echo ""
 
 # Low credit balance is an account/billing issue, not a code regression — pass rather than fail
-if echo "$PARSE_RESPONSE" | grep -q "credit balance"; then
+if echo "$PARSE_RESPONSE" | grep -qi "credit balance\|credit_balance\|no credits remaining"; then
   for label in \
     "parse returns both sessions as separate events" \
     "occurrence list collapses into a recurrence" \

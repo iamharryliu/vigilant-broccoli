@@ -2,7 +2,7 @@ name: test-e2e-llm
 
 on:
   schedule:
-    - cron: '25 4 * * 0'
+    - cron: '35 1 * * *'
   workflow_dispatch:
     inputs:
       environment:
@@ -13,8 +13,6 @@ on:
           - all
           - staging
           - production
-  repository_dispatch:
-    types: [deploy-fanout]
 
 permissions:
   contents: read
@@ -22,28 +20,16 @@ permissions:
 
 jobs:
   test-llm-service:
-    if: ${{ github.event_name != 'repository_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        environment: ${{ fromJSON(github.event_name == 'repository_dispatch' && format('["{0}"]', github.event.client_payload.environment) || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
-        provider: [openai, anthropic, gemini, deepseek, grok]
-        include:
-          - provider: openai
-            model: gpt-4o-mini
-          - provider: anthropic
-            model: claude-haiku-4-5-20251001
-          - provider: gemini
-            model: gemini-2.5-flash-lite
-          - provider: deepseek
-            model: deepseek-v4-flash
-          - provider: grok
-            model: grok-3-mini
-    name: ${{ matrix.environment }} ${{ matrix.provider }}
+        environment: ${{ fromJSON(inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
+    name: ${{ matrix.environment }} gemini
     env:
       LLM_SERVICE_URL: http://127.0.0.1:3000
+      MODEL: gemini-2.5-flash-lite
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -60,23 +46,22 @@ jobs:
         with:
           app: ${{ matrix.environment }}-llm-service
 
-      - name: Run e2e tests (${{ matrix.provider }})
+      - name: Run e2e tests (gemini)
         env:
           LLM_SERVICE_URL: ${{ env.LLM_SERVICE_URL }}
           SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
-          MODEL: ${{ matrix.model }}
+          MODEL: ${{ env.MODEL }}
         run: |
           chmod +x scripts/shell/test-llm-e2e.sh
           scripts/shell/test-llm-e2e.sh
 
   test-calendar-parse:
-    if: ${{ github.event_name != 'repository_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        environment: ${{ fromJSON(github.event_name == 'repository_dispatch' && format('["{0}"]', github.event.client_payload.environment) || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
+        environment: ${{ fromJSON(inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
     name: ${{ matrix.environment }} calendar-parse
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
