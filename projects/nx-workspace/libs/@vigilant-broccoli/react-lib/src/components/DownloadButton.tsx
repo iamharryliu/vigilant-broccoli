@@ -1,4 +1,4 @@
-import { DropdownMenu } from '@radix-ui/themes';
+import { DropdownMenu } from './DropdownMenu';
 import { IconButton } from './IconButton';
 
 export type DownloadAction = {

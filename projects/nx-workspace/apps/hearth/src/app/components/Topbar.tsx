@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { DropdownMenu, Popover } from '@radix-ui/themes';
+import { Popover } from '@radix-ui/themes';
 import { Home, Menu, Moon, Sun } from 'lucide-react';
 import { supabase } from '../../../libs/supabase';
 import { useHome } from '../providers/home-provider';
@@ -11,6 +11,7 @@ import { useTopbarSlotNode } from '../providers/topbar-slot-provider';
 import { ROUTES } from '../../lib/routes';
 import {
   Button,
+  DropdownMenu,
   IconButton,
   Select,
   Text,
