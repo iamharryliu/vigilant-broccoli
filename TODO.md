@@ -77,11 +77,8 @@ Dependencies whose usage in `projects/nx-workspace` is a thin slice of what the 
 
 ## UI Cleanup
 
-Deprecating `@radix-ui/themes` component-by-component (see the shim precedent in `libs/@vigilant-broccoli/react-lib/src/components/Text.tsx` / `Heading.tsx` — cva + Tailwind + `cn`, `asChild` via `@radix-ui/react-slot`). `Text`, `Heading`, `Button`, `TextField` (→ `Input`), `Select`, `Slider` (→ native `<input type="range">`), `Card`, `DropdownMenu`, and `Dialog` are already migrated. One row per remaining component; counts are import sites; ordered easy → hard. `Theme` must go last (it also carries `@radix-ui/themes/styles.css`).
-
-| ID     | Priority | Description                                                                                                                     | Recommended Fix                                                                                                                                                                                                              |
-| ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| a6ffe1 | P3       | Difficulty **Hard / blocked** (8). `Theme` — the `<Theme>` provider root; removing it also drops `@radix-ui/themes/styles.css`. | Do **last**, only once every component above is migrated: replace with react-lib `ThemeProvider` + a minimal CSS reset. Dropping it also drops the full Radix CSS import from the `component-library` and `docs-md` bundles. |
+| ID  | Priority | Description | Recommended Fix |
+| --- | -------- | ----------- | --------------- |
 
 ## Not so serious
 

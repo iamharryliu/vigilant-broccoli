@@ -1,12 +1,16 @@
 # Employee Handler UI
 
+## Table of Contents
+
+- [Stack](#stack)
+
 ## Stack
 
 - Language - TypeScript
 - Framework - Next.js (React)
 - Build Tool - Next.js
 - External libs
-  - Radix Themes/UI + Tailwind CSS, lucide-react icons
+  - Tailwind CSS, lucide-react icons
   - Nodemailer
   - isomorphic-dompurify
 - Internal libs

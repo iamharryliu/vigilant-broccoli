@@ -13,5 +13,5 @@
 ## Migration constraints
 
 - Body portals mirror the originating DOM scope's dark class and inherited CSS variables, including ancestor attribute changes while open; controlled dialogs without a trigger receive the same treatment.
-- Existing Radix theme tokens remain available to legacy utility content during the remaining Theme migration; dialog rendering does not import Radix Themes.
+- ThemeScope supplies the small set of legacy color tokens used by utility content; dialog rendering does not import Radix Themes.
 - Former Themes dialogs use block layout, preserve their widths/title spacing and existing close controls, and explicitly opt out of the shared close icon.

@@ -66,3 +66,5 @@ export * from './GoogleTasks';
 export * from './QuickLinksDialog';
 export * from './QuickLinksPanel';
 export * from './Table';
+export * from './ThemeScope';
+export * from './Popover';

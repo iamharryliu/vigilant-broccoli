@@ -8,7 +8,6 @@
     "@fullcalendar/interaction": "*",
     "@fullcalendar/react": "*",
     "@fullcalendar/timegrid": "*",
-    "@radix-ui/themes": "*",
     "@supabase/supabase-js": "*",
     "@vigilant-broccoli/common-js": "workspace:*",
     "@vigilant-broccoli/common-node": "workspace:*",

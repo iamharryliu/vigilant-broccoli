@@ -19,5 +19,5 @@ export const usePrefersDark = () => {
   return prefersDark;
 };
 
-export const useRadixAppearance = () =>
+export const useThemeAppearance = () =>
   usePrefersDark() ? APPEARANCE.DARK : APPEARANCE.LIGHT;

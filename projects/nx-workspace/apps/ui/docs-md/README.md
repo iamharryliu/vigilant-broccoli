@@ -2,6 +2,10 @@
 
 Renders repo markdown docs fetched at build/runtime.
 
+## Table of Contents
+
+- [Stack](#stack)
+
 ## Stack
 
 - Language - TypeScript
@@ -9,7 +13,6 @@ Renders repo markdown docs fetched at build/runtime.
 - Build Tool - Vite
 - External libs
   - Tailwind CSS
-  - Radix Themes
 - Internal libs
   - `react-lib`
   - `react-utility`

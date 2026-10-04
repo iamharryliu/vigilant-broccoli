@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Popover } from '@radix-ui/themes';
+import { Popover } from '@vigilant-broccoli/react-lib';
 import { DayPicker, type DateRange } from 'react-day-picker';
 import 'react-day-picker/style.css';
 import { Calendar as CalendarIcon } from 'lucide-react';

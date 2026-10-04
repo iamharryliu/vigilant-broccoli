@@ -1,4 +1,3 @@
-import '@radix-ui/themes/styles.css';
 import './global.css';
 import AuthProvider from './providers/auth-provider';
 import AppLayout from './components/AppLayout';
