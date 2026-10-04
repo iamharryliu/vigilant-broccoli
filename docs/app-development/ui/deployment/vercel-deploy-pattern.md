@@ -42,6 +42,8 @@ Five constraints shape the wiring. Each one fails in a way that points nowhere n
 
 Renaming a project does **not** move its `<name>.vercel.app` domain, and `vercel deploy` never adds or removes domains — it only points the project's existing domains at the new deployment. Attach/detach via the API (`POST`/`DELETE /v9/projects/{idOrName}/domains`, `VERCEL_TOKEN` from Vault). When renaming a deployed instance, add the new `<name>.vercel.app` domain and remove the old one explicitly.
 
+A custom `harryliu.dev` subdomain for one of these apps is attached automatically: declare it in `infrastructure/terraform/cloudflare-vercel-apps.tf`'s `vercel_app_subdomains` map (which also creates the Cloudflare CNAME), and `pnpm tf:apply`'s `post-apply.sh` step reads that map back via `terraform output -json vercel_app_subdomains` and calls `scripts/vercel-domains.ts add production-<key> <domain>` for each entry — no manual step in the Vercel dashboard. The target project (`production-<key>`) must already exist (`ensureProjectExists` above creates it on first deploy).
+
 ## Gotchas
 
 - `sharp` must remain in the workspace root `dependencies` — required for Vercel serverless bundling of the `hearth` `/api/where-is` route.
