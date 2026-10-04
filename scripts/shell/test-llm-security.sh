@@ -3,7 +3,7 @@
 set -e
 
 LLM_SERVICE_URL="${LLM_SERVICE_URL:-http://127.0.0.1:3000}"
-MODEL="${MODEL:-gpt-4o-mini}"
+MODEL="${MODEL:-gemini-2.5-flash-lite}"
 MAX_NUM_OUTPUTS=10
 REQUESTED_NUM_OUTPUTS=15
 FAILED=0
@@ -48,7 +48,7 @@ RESPONSE=$(curl -s -X POST "${LLM_SERVICE_URL}/api/llm" \
 
 echo "Response: ${RESPONSE}"
 
-if echo "${RESPONSE}" | grep -q "credit balance"; then
+if echo "${RESPONSE}" | grep -qi "credit balance\|credit_balance\|no credits remaining"; then
   echo "✓ Passed: skipped (account credit balance too low)"
 elif ! echo "${RESPONSE}" | jq -e '.outputs' >/dev/null 2>&1; then
   echo "✗ Failed: response did not contain an outputs array"

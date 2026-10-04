@@ -65,7 +65,7 @@ const calendarRoutes: FastifyPluginAsync = async app => {
       userPrompt,
       systemPrompt: buildSystemPrompt(timeZone),
       images,
-      model: LLM_MODEL.GPT_4O,
+      model: LLM_MODEL.FLASH_2_5,
       jsonSchema: calendarParseSchema,
     });
 

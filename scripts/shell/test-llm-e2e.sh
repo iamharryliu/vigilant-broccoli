@@ -3,7 +3,7 @@
 set -e
 
 LLM_SERVICE_URL="${LLM_SERVICE_URL:-http://127.0.0.1:3000}"
-MODEL="${MODEL:-gpt-4o-mini}"
+MODEL="${MODEL:-gemini-2.5-flash-lite}"
 PASS=0
 FAIL=0
 
@@ -37,7 +37,7 @@ LLM_RESPONSE=$(curl -s -X POST "${LLM_SERVICE_URL}/api/llm" \
 echo "Response: $LLM_RESPONSE"
 
 # Low credit balance is an account/billing issue, not a code regression — pass rather than fail
-if echo "$LLM_RESPONSE" | grep -q "credit balance"; then
+if echo "$LLM_RESPONSE" | grep -qi "credit balance\|credit_balance\|no credits remaining"; then
   echo "✓ llm returns expected answer (earth) [skipped: credit balance too low]"
   PASS=$((PASS + 1))
 else
@@ -82,7 +82,7 @@ WIZARD_RESPONSE=$(curl -s -X POST "${LLM_SERVICE_URL}/api/llm" \
 echo "Response: $WIZARD_RESPONSE"
 
 # Low credit balance is an account/billing issue, not a code regression — pass rather than fail
-if echo "$WIZARD_RESPONSE" | grep -q "credit balance"; then
+if echo "$WIZARD_RESPONSE" | grep -qi "credit balance\|credit_balance\|no credits remaining"; then
   echo "✓ jsonSchema returns >= 5 characters [skipped: credit balance too low]"
   PASS=$((PASS + 1))
   echo "✓ jsonSchema includes Dorothy [skipped: credit balance too low]"
