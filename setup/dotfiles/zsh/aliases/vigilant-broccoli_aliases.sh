@@ -42,6 +42,7 @@ sshocivm() {
 
 # Tmux
 alias tmuxvb="$REPO_DIR/setup/dotfiles/common/scripts/tmux-vb.sh"
+alias neovidetmuxvb='neovide -- -c "terminal tmux attach -t vb || ~/vigilant-broccoli/setup/dotfiles/common/scripts/tmux-vb.sh" -c "startinsert"'
 
 # WireGuard
 alias wg0-up='sudo wg-quick up wg0'

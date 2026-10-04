@@ -49,6 +49,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   vibecode [dir] [-n name]    Vibe coding layout (claude + lazygit + shells)
   mktmuxw <name> [dir]        Create a named tmux window
   rmtmuxw <name>              Kill a named tmux window
+  neovidetmuxvb               Launch Neovide attached to the vb session
   neovideterminal             Launch Neovide straight into :terminal
   fzfvim                      fzf-pick a file and open it in vim
   pnpm cheatsheet:tmux-nvim   Print the tmux/nvim keybindings (from the repo)
