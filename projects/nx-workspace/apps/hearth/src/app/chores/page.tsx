@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Dialog } from '@radix-ui/themes';
 import {
   Table,
   Badge,
@@ -13,6 +12,12 @@ import {
   Select,
   Text,
   Textarea,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
+  cn,
 } from '@vigilant-broccoli/react-lib';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
@@ -431,17 +436,22 @@ export default function ChoresPage() {
               <Text size="5" weight="bold">
                 Chores
               </Text>
-              <Dialog.Root open={isFormOpen} onOpenChange={setIsFormOpen}>
-                <Dialog.Trigger>
+              <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                <DialogTrigger asChild>
                   <Button>Add Chore</Button>
-                </Dialog.Trigger>
-                <Dialog.Content
-                  className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+                </DialogTrigger>
+                <DialogContent
+                  aria-describedby={undefined}
+                  showCloseButton={false}
+                  className={cn(
+                    'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+                    FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+                  )}
                   style={{ maxWidth: 500 }}
                 >
-                  <Dialog.Title>
+                  <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
                     {editingChore ? 'Edit Chore' : 'New Chore'}
-                  </Dialog.Title>
+                  </DialogTitle>
                   <div className="flex flex-col gap-4 mt-4">
                     <div>
                       <Text as="label" size="2" weight="medium" mb="1">
@@ -537,11 +547,11 @@ export default function ChoresPage() {
                       </Text>
                     </div>
                     <div className="flex gap-2 justify-end mt-4">
-                      <Dialog.Close>
+                      <DialogClose asChild>
                         <Button variant="secondary" onClick={resetForm}>
                           Cancel
                         </Button>
-                      </Dialog.Close>
+                      </DialogClose>
                       <Button
                         onClick={handleSaveChore}
                         disabled={!formData.name.trim()}
@@ -550,8 +560,8 @@ export default function ChoresPage() {
                       </Button>
                     </div>
                   </div>
-                </Dialog.Content>
-              </Dialog.Root>
+                </DialogContent>
+              </Dialog>
             </div>
 
             {chores.length === 0 ? (

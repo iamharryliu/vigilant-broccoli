@@ -1,19 +1,20 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Dialog } from '@radix-ui/themes';
 import { CalendarPlus } from 'lucide-react';
 import {
   buildCalendarUrl,
   CalendarConfig,
   GOOGLE_CALENDAR,
 } from '@vigilant-broccoli/common-browser';
-import { VisuallyHidden } from '@vigilant-broccoli/react-lib';
-import { CalendarInput } from './calendar-input';
 import {
-  buildAuthHeaders,
-  reconnectGoogle,
-} from '../providers/auth-provider';
+  VisuallyHidden,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@vigilant-broccoli/react-lib';
+import { CalendarInput } from './calendar-input';
+import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
 
 const BIRTHDAYS_CALENDAR =
   'f61b08e940f7c4fb8becf0d419c8c09f7e0c46d6d03343637aef5837c766a09b@group.calendar.google.com';
@@ -70,12 +71,12 @@ const CALENDAR_CONFIG: CalendarConfig = {
   showPrint: 0,
   mode: 'AGENDA',
   title: CALENDAR_TITLE,
-  ownerCalendars: CALENDAR_SOURCES.filter(source => source.kind === 'owner').map(
-    source => ({ email: source.id, color: source.color }),
-  ),
-  sharedCalendars: CALENDAR_SOURCES.filter(source => source.kind === 'shared').map(
-    source => ({ id: source.id, color: source.color }),
-  ),
+  ownerCalendars: CALENDAR_SOURCES.filter(
+    source => source.kind === 'owner',
+  ).map(source => ({ email: source.id, color: source.color })),
+  sharedCalendars: CALENDAR_SOURCES.filter(
+    source => source.kind === 'shared',
+  ).map(source => ({ id: source.id, color: source.color })),
 };
 
 const CALENDAR_COLOR_BY_ID = new Map(
@@ -147,7 +148,8 @@ const formatEventTime = (event: CalendarEvent) => {
   });
 };
 
-const isSameDay = (a: Date, b: Date) => dateOnly(a).getTime() === dateOnly(b).getTime();
+const isSameDay = (a: Date, b: Date) =>
+  dateOnly(a).getTime() === dateOnly(b).getTime();
 
 const formatDateHeading = (date: Date) => {
   if (isSameDay(date, new Date())) return TODAY_LABEL;
@@ -174,7 +176,11 @@ const groupEventsByDay = (events: CalendarEvent[]): EventDayGroup[] => {
   });
   return Array.from(groups.entries())
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([key, dayEvents]) => ({ key, date: new Date(key), events: dayEvents }));
+    .map(([key, dayEvents]) => ({
+      key,
+      date: new Date(key),
+      events: dayEvents,
+    }));
 };
 
 const useIsMobileBrowser = () => {
@@ -291,7 +297,8 @@ export const MyCalendarView = () => {
                           className="h-2.5 w-2.5 shrink-0 rounded-full"
                           style={{
                             backgroundColor:
-                              CALENDAR_COLOR_BY_ID.get(event.calendarId) ?? '#9ca3af',
+                              CALENDAR_COLOR_BY_ID.get(event.calendarId) ??
+                              '#9ca3af',
                           }}
                         />
                         <span className="flex min-w-0 flex-1 flex-col">
@@ -311,8 +318,11 @@ export const MyCalendarView = () => {
         </div>
       )}
 
-      <Dialog.Root open={createOpen} onOpenChange={handleCreateOpenChange}>
-        <Dialog.Content
+      <Dialog open={createOpen} onOpenChange={handleCreateOpenChange}>
+        <DialogContent
+          className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+          aria-describedby={undefined}
+          showCloseButton={false}
           style={{
             maxWidth: '95vw',
             width: '95vw',
@@ -321,11 +331,13 @@ export const MyCalendarView = () => {
           }}
         >
           <VisuallyHidden>
-            <Dialog.Title>Create Calendar Event</Dialog.Title>
+            <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+              Create Calendar Event
+            </DialogTitle>
           </VisuallyHidden>
           <CalendarInput />
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

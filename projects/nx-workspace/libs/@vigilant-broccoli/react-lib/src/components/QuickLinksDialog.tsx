@@ -1,9 +1,15 @@
 'use client';
 
-import { Dialog } from '@radix-ui/themes';
+import { cn } from '../utils/cn';
 import { type QuickLink } from '@vigilant-broccoli/common-js';
 import { CloseButton } from './CloseButton';
-import { FULL_SCREEN_ON_MOBILE_DIALOG_CLASS } from './Dialog';
+import {
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
+} from './Dialog';
 import { QuickLinksPanel, type ShellExecuteHandler } from './QuickLinksPanel';
 
 const DIALOG_TITLE = 'Quick Links';
@@ -26,9 +32,14 @@ export function QuickLinksDialog({
   onShellExecute,
 }: QuickLinksDialogProps) {
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Content
-        className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        aria-describedby={undefined}
+        showCloseButton={false}
+        className={cn(
+          'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+          FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+        )}
         style={{
           maxWidth: DIALOG_MAX_WIDTH,
           overflow: 'hidden',
@@ -37,13 +48,15 @@ export function QuickLinksDialog({
         }}
       >
         <div className={HEADER_CLASS}>
-          <Dialog.Title mb="0">{DIALOG_TITLE}</Dialog.Title>
-          <Dialog.Close>
+          <DialogTitle className="mb-0 text-xl font-bold leading-7 tracking-normal">
+            {DIALOG_TITLE}
+          </DialogTitle>
+          <DialogClose asChild>
             <CloseButton
               aria-label={CLOSE_LABEL}
               className={CLOSE_BUTTON_CLASS}
             />
-          </Dialog.Close>
+          </DialogClose>
         </div>
 
         <QuickLinksPanel
@@ -52,7 +65,7 @@ export function QuickLinksDialog({
           autoFocusSearch={open}
           onLinkOpen={() => onOpenChange(false)}
         />
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 }

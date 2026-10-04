@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
-import { Dialog } from '@radix-ui/themes';
 import {
   Badge,
   Button,
@@ -10,6 +9,10 @@ import {
   EllipsisCTA,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Text,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  cn,
 } from '@vigilant-broccoli/react-lib';
 import { CalendarEvent, LeisureActivity } from '../../../lib/types';
 import {
@@ -230,19 +233,24 @@ export function LeisureList({
         })}
       </div>
 
-      <Dialog.Root
+      <Dialog
         open={modal !== null}
         onOpenChange={open => {
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content
-          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+        <DialogContent
+          aria-describedby={undefined}
+          showCloseButton={false}
+          className={cn(
+            'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+            FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+          )}
           style={{ maxWidth: 440 }}
         >
-          <Dialog.Title>
+          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
             {modal?.type === 'edit' ? 'Edit Activity' : 'Add Activity'}
-          </Dialog.Title>
+          </DialogTitle>
 
           {modal?.type === 'create' && (
             <LeisureActivityForm
@@ -264,17 +272,24 @@ export function LeisureList({
               isEdit
             />
           )}
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
 
-      <Dialog.Root
+      <Dialog
         open={infoActivity !== null}
         onOpenChange={open => {
           if (!open) setInfoActivity(null);
         }}
       >
-        <Dialog.Content style={{ maxWidth: 440 }}>
-          <Dialog.Title>{infoActivity?.title}</Dialog.Title>
+        <DialogContent
+          className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+          aria-describedby={undefined}
+          showCloseButton={false}
+          style={{ maxWidth: 440 }}
+        >
+          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+            {infoActivity?.title}
+          </DialogTitle>
           {infoActivity && (
             <div className="flex flex-col gap-3">
               <Badge
@@ -300,20 +315,27 @@ export function LeisureList({
               </Text>
             </div>
           )}
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
 
-      <Dialog.Root
+      <Dialog
         open={calendarActivity !== null}
         onOpenChange={open => {
           if (!open) setCalendarActivity(null);
         }}
       >
-        <Dialog.Content
-          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+        <DialogContent
+          aria-describedby={undefined}
+          showCloseButton={false}
+          className={cn(
+            'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+            FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+          )}
           style={{ maxWidth: 460 }}
         >
-          <Dialog.Title>{ADD_TO_CALENDAR_DIALOG_TITLE}</Dialog.Title>
+          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+            {ADD_TO_CALENDAR_DIALOG_TITLE}
+          </DialogTitle>
           {calendarActivity && (
             <CalendarEventForm
               initialData={{
@@ -330,8 +352,8 @@ export function LeisureList({
               onCancel={() => setCalendarActivity(null)}
             />
           )}
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

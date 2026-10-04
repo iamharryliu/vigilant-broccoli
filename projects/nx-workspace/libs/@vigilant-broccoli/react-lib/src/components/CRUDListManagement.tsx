@@ -1,3 +1,4 @@
+import { cn } from '../utils/cn';
 import { Plus } from 'lucide-react';
 import {
   ComponentType,
@@ -6,7 +7,6 @@ import {
   SetStateAction,
   useState,
 } from 'react';
-import { Dialog } from '@radix-ui/themes';
 import { DropdownMenu } from './DropdownMenu';
 import {
   AlertDialog,
@@ -23,7 +23,14 @@ import { Card } from './Card';
 import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 import { Button } from './Button';
 import { Heading } from './Heading';
-import { FULL_SCREEN_ON_MOBILE_DIALOG_CLASS } from './Dialog';
+import {
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from './Dialog';
 import { IconButton, type IconButtonIcon } from './IconButton';
 import { StackedImages } from './StackedImages';
 
@@ -492,29 +499,34 @@ export const CRUDItemFormDialog = <T,>({
     setOpen?.(false);
   }
   return (
-    <Dialog.Root
-      open={isControlled ? open : internalOpen}
-      onOpenChange={setOpen}
-    >
+    <Dialog open={isControlled ? open : internalOpen} onOpenChange={setOpen}>
       {!isControlled && (
-        <Dialog.Trigger>
+        <DialogTrigger asChild>
           <Button variant="ghost">
             {formType === FORM_TYPE.CREATE ? <Plus /> : 'Update'}
           </Button>
-        </Dialog.Trigger>
+        </DialogTrigger>
       )}
-      <Dialog.Content
-        className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+      <DialogContent
+        showCloseButton={false}
+        className={cn(
+          'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+          FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+        )}
         onCloseAutoFocus={e => e.preventDefault()}
       >
-        <Dialog.Title>{copy[formType].TITLE}</Dialog.Title>
-        <Dialog.Description>{copy[formType].DESCRIPTION}</Dialog.Description>
+        <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+          {copy[formType].TITLE}
+        </DialogTitle>
+        <DialogDescription className="text-base">
+          {copy[formType].DESCRIPTION}
+        </DialogDescription>
         <FormComponent
           formType={formType}
           initialFormValues={initialFormValues}
           submitHandler={dialogSubmitHandler}
         />
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 };

@@ -1,8 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Dialog } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+} from '@vigilant-broccoli/react-lib';
 import { EnvelopeClosedIcon } from '@radix-ui/react-icons';
 import { EmailMessageForm } from './EmailMessageForm';
 
@@ -21,17 +26,24 @@ export const EmailModalComponent = ({
   const setOpen = externalOnOpenChange ?? setInternalOpen;
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={setOpen}>
       {externalOpen === undefined && (
-        <Dialog.Trigger>
+        <DialogTrigger asChild>
           <Button size="icon" variant="secondary" aria-label="Send email">
             <EnvelopeClosedIcon />
           </Button>
-        </Dialog.Trigger>
+        </DialogTrigger>
       )}
 
-      <Dialog.Content maxWidth="600px">
-        <Dialog.Title>Send Email Message</Dialog.Title>
+      <DialogContent
+        className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+        aria-describedby={undefined}
+        showCloseButton={false}
+        style={{ maxWidth: '600px' }}
+      >
+        <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+          Send Email Message
+        </DialogTitle>
 
         <EmailMessageForm
           defaultTo=""
@@ -40,7 +52,7 @@ export const EmailModalComponent = ({
           defaultHtml=""
           onSuccess={() => setOpen(false)}
         />
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 };

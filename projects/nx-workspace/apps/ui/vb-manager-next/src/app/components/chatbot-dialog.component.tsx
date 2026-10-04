@@ -1,6 +1,5 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
-import { Dialog } from '@radix-ui/themes';
 import {
   useState,
   useRef,
@@ -22,6 +21,10 @@ import {
   UserAvatar,
   Text,
   useSpeechToText,
+  DialogTitle,
+  DialogClose,
+  Dialog,
+  DialogContent,
 } from '@vigilant-broccoli/react-lib';
 import {
   LLM_MODEL,
@@ -260,7 +263,12 @@ const PanelHeader = ({
   >
     <div className="flex gap-2 items-center">
       <UserAvatar name={ASSISTANT_NAME} />
-      <Dialog.Title style={{ margin: 0 }}>{ASSISTANT_NAME}</Dialog.Title>
+      <DialogTitle
+        className="mb-3 text-xl font-bold leading-7 tracking-normal"
+        style={{ margin: 0 }}
+      >
+        {ASSISTANT_NAME}
+      </DialogTitle>
     </div>
     <div className="flex gap-6 items-center">
       <IconButton
@@ -275,9 +283,9 @@ const PanelHeader = ({
         onClick={onToggleFullscreen}
         aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
       />
-      <Dialog.Close>
+      <DialogClose asChild>
         <CloseButton aria-label="Close" />
-      </Dialog.Close>
+      </DialogClose>
     </div>
   </div>
 );
@@ -1721,8 +1729,11 @@ export const ChatbotDialog = ({
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Content
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+        aria-describedby={undefined}
+        showCloseButton={false}
         style={{
           maxWidth: isFullscreen ? '95vw' : 700,
           height: isFullscreen ? '95vh' : '80vh',
@@ -1742,7 +1753,7 @@ export const ChatbotDialog = ({
           isFullscreen={isFullscreen}
           onToggleFullscreen={() => setIsFullscreen(prev => !prev)}
         />
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 };
