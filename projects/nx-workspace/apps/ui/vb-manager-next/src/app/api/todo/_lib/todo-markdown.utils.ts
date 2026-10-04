@@ -7,6 +7,7 @@ export interface TodoRow {
 
 export interface TodoSection {
   heading: string;
+  description: string;
   rows: TodoRow[];
 }
 
@@ -80,6 +81,7 @@ export const parseTodoMarkdown = (content: string): TodoSection[] => {
     }
     const heading = headingMatch[1].trim();
     i++;
+    const descriptionStart = i;
 
     let headerIdx = -1;
     while (i < lines.length && !SECTION_HEADING_REGEX.test(lines[i])) {
@@ -118,7 +120,11 @@ export const parseTodoMarkdown = (content: string): TodoSection[] => {
       cursor++;
     }
 
-    sections.push({ heading, rows });
+    sections.push({
+      heading,
+      description: lines.slice(descriptionStart, headerIdx).join('\n').trim(),
+      rows,
+    });
     i = cursor;
   }
 
