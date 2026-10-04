@@ -1,6 +1,5 @@
 'use client';
 
-import { Dialog } from '@radix-ui/themes';
 import {
   Button,
   CloseButton,
@@ -15,6 +14,11 @@ import {
   SortMode,
   SORT_MODE,
   Text,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
 } from '@vigilant-broccoli/react-lib';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { useEffect, useState, useCallback } from 'react';
@@ -990,7 +994,7 @@ export const KanbanComponent = () => {
                   Boards
                 </Text>
                 <div className="flex gap-1">
-                  <Dialog.Root
+                  <Dialog
                     open={showManageLists}
                     onOpenChange={open => {
                       setShowManageLists(open);
@@ -1000,13 +1004,19 @@ export const KanbanComponent = () => {
                       }
                     }}
                   >
-                    <Dialog.Trigger>
+                    <DialogTrigger asChild>
                       <Button size="icon" variant="ghost">
                         <Menu size={14} />
                       </Button>
-                    </Dialog.Trigger>
-                    <Dialog.Content>
-                      <Dialog.Title>Manage Task Lists</Dialog.Title>
+                    </DialogTrigger>
+                    <DialogContent
+                      className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+                      aria-describedby={undefined}
+                      showCloseButton={false}
+                    >
+                      <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+                        Manage Task Lists
+                      </DialogTitle>
                       <div className="flex flex-col gap-2">
                         {taskLists.map(list => (
                           <div
@@ -1078,23 +1088,29 @@ export const KanbanComponent = () => {
                         )}
                       </div>
                       <div className="flex justify-end mt-4">
-                        <Dialog.Close>
+                        <DialogClose asChild>
                           <Button variant="secondary">Close</Button>
-                        </Dialog.Close>
+                        </DialogClose>
                       </div>
-                    </Dialog.Content>
-                  </Dialog.Root>
-                  <Dialog.Root
+                    </DialogContent>
+                  </Dialog>
+                  <Dialog
                     open={showNewBoardForm}
                     onOpenChange={setShowNewBoardForm}
                   >
-                    <Dialog.Trigger>
+                    <DialogTrigger asChild>
                       <Button size="icon" variant="ghost">
                         <Plus size={14} />
                       </Button>
-                    </Dialog.Trigger>
-                    <Dialog.Content>
-                      <Dialog.Title>Add Board</Dialog.Title>
+                    </DialogTrigger>
+                    <DialogContent
+                      className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+                      aria-describedby={undefined}
+                      showCloseButton={false}
+                    >
+                      <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+                        Add Board
+                      </DialogTitle>
                       <div className="flex flex-col gap-3">
                         <Input
                           placeholder="Board name..."
@@ -1106,9 +1122,9 @@ export const KanbanComponent = () => {
                           autoFocus
                         />
                         <div className="flex gap-3 justify-end">
-                          <Dialog.Close>
+                          <DialogClose asChild>
                             <Button variant="secondary">Cancel</Button>
-                          </Dialog.Close>
+                          </DialogClose>
                           <Button
                             onClick={handleAddBoard}
                             disabled={!newBoardName.trim()}
@@ -1117,8 +1133,8 @@ export const KanbanComponent = () => {
                           </Button>
                         </div>
                       </div>
-                    </Dialog.Content>
-                  </Dialog.Root>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
 
@@ -1230,20 +1246,26 @@ export const KanbanComponent = () => {
                   );
                 })}
                 <div className="ml-2">
-                  <Dialog.Root
+                  <Dialog
                     open={showAddLaneDialog}
                     onOpenChange={setShowAddLaneDialog}
                   >
-                    <Dialog.Trigger>
+                    <DialogTrigger asChild>
                       <Button
                         variant="ghost"
                         className="w-80 h-12 flex-shrink-0 border-2 border-dashed"
                       >
                         <Text size="3">+ Add Lane</Text>
                       </Button>
-                    </Dialog.Trigger>
-                    <Dialog.Content>
-                      <Dialog.Title>Add Lane</Dialog.Title>
+                    </DialogTrigger>
+                    <DialogContent
+                      className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+                      aria-describedby={undefined}
+                      showCloseButton={false}
+                    >
+                      <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+                        Add Lane
+                      </DialogTitle>
                       <div className="flex flex-col gap-3">
                         {showCreateList ? (
                           <div className="flex flex-col gap-2">
@@ -1301,9 +1323,9 @@ export const KanbanComponent = () => {
                           </>
                         )}
                         <div className="flex gap-3 justify-end">
-                          <Dialog.Close>
+                          <DialogClose asChild>
                             <Button variant="secondary">Cancel</Button>
-                          </Dialog.Close>
+                          </DialogClose>
                           {!showCreateList && (
                             <Button
                               onClick={handleAddLane}
@@ -1314,8 +1336,8 @@ export const KanbanComponent = () => {
                           )}
                         </div>
                       </div>
-                    </Dialog.Content>
-                  </Dialog.Root>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             </SortableContext>

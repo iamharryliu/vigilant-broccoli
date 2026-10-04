@@ -1,13 +1,17 @@
 'use client';
 
 import { useMemo } from 'react';
-import { Dialog } from '@radix-ui/themes';
 import {
   buildCalendarUrl,
   CalendarConfig,
   GOOGLE_CALENDAR,
 } from '@vigilant-broccoli/common-browser';
-import { VisuallyHidden } from '@vigilant-broccoli/react-lib';
+import {
+  VisuallyHidden,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@vigilant-broccoli/react-lib';
 
 const BIRTHDAYS_CALENDAR =
   'f61b08e940f7c4fb8becf0d419c8c09f7e0c46d6d03343637aef5837c766a09b@group.calendar.google.com';
@@ -70,8 +74,11 @@ export const CalendarDialog = ({ open, onOpenChange }: CalendarDialogProps) => {
   }, [open]);
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Content
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+        aria-describedby={undefined}
+        showCloseButton={false}
         style={{
           maxWidth: '90vw',
           width: '90vw',
@@ -81,7 +88,9 @@ export const CalendarDialog = ({ open, onOpenChange }: CalendarDialogProps) => {
         }}
       >
         <VisuallyHidden>
-          <Dialog.Title>Calendar</Dialog.Title>
+          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+            Calendar
+          </DialogTitle>
         </VisuallyHidden>
         <iframe
           tabIndex={-1}
@@ -94,7 +103,7 @@ export const CalendarDialog = ({ open, onOpenChange }: CalendarDialogProps) => {
             display: 'block',
           }}
         />
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 };

@@ -4,6 +4,7 @@ import * as React from 'react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { usePortalTheme } from '../hooks/usePortalTheme';
 
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
@@ -32,27 +33,49 @@ const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
     fullScreenOnMobile?: boolean;
+    showCloseButton?: boolean;
   }
->(({ className, children, fullScreenOnMobile = false, ...props }, ref) => (
-  <DialogPortal>
-    <DialogOverlay />
-    <DialogPrimitive.Content
-      ref={ref}
-      className={cn(
-        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg',
-        fullScreenOnMobile && FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
-        className,
-      )}
-      {...props}
-    >
-      {children}
-      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
-        <X className="h-4 w-4" />
-        <span className="sr-only">Close</span>
-      </DialogPrimitive.Close>
-    </DialogPrimitive.Content>
-  </DialogPortal>
-));
+>(
+  (
+    {
+      className,
+      children,
+      fullScreenOnMobile = false,
+      showCloseButton = true,
+      ...props
+    },
+    ref,
+  ) => {
+    const theme = usePortalTheme();
+    return (
+      <>
+        <span hidden ref={theme.anchorRef} />
+        <DialogPortal>
+          <div className={theme.className} style={theme.style}>
+            <DialogOverlay />
+            <DialogPrimitive.Content
+              ref={ref}
+              className={cn(
+                'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-border bg-background p-6 text-foreground shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg',
+                fullScreenOnMobile && FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+                className,
+              )}
+              {...props}
+            >
+              {children}
+              {showCloseButton && (
+                <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none">
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Close</span>
+                </DialogPrimitive.Close>
+              )}
+            </DialogPrimitive.Content>
+          </div>
+        </DialogPortal>
+      </>
+    );
+  },
+);
 DialogContent.displayName = 'DialogContent';
 
 const DialogHeader = ({

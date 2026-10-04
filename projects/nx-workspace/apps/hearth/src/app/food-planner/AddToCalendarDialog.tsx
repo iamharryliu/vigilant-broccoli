@@ -1,7 +1,12 @@
 'use client';
 
-import { Dialog } from '@radix-ui/themes';
-import { FULL_SCREEN_ON_MOBILE_DIALOG_CLASS } from '@vigilant-broccoli/react-lib';
+import {
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  cn,
+} from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import {
@@ -50,17 +55,24 @@ export function AddToCalendarDialog({ recipe, onClose, onAdded }: Props) {
   };
 
   return (
-    <Dialog.Root
+    <Dialog
       open={recipe !== null}
       onOpenChange={open => {
         if (!open) onClose();
       }}
     >
-      <Dialog.Content
-        className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+      <DialogContent
+        aria-describedby={undefined}
+        showCloseButton={false}
+        className={cn(
+          'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+          FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+        )}
         style={{ maxWidth: 480 }}
       >
-        <Dialog.Title>{DIALOG_TITLE}</Dialog.Title>
+        <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+          {DIALOG_TITLE}
+        </DialogTitle>
         {recipe && (
           <CalendarEventForm
             initialData={{
@@ -77,7 +89,7 @@ export function AddToCalendarDialog({ recipe, onClose, onAdded }: Props) {
             onCancel={onClose}
           />
         )}
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 }

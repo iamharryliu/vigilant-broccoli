@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Dialog } from '@radix-ui/themes';
 import {
   Badge,
   Button,
@@ -11,6 +10,10 @@ import {
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   IconButton,
   Text,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  cn,
 } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
@@ -274,37 +277,51 @@ export function KitchenProjectsList({ refreshSignal }: Props) {
         }}
       />
 
-      <Dialog.Root
+      <Dialog
         open={formOpen}
         onOpenChange={open => {
           if (!open) setFormOpen(false);
         }}
       >
-        <Dialog.Content
-          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+        <DialogContent
+          aria-describedby={undefined}
+          showCloseButton={false}
+          className={cn(
+            'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+            FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+          )}
           style={{ maxWidth: 460 }}
         >
-          <Dialog.Title>{ADD_DIALOG_TITLE}</Dialog.Title>
+          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+            {ADD_DIALOG_TITLE}
+          </DialogTitle>
           {formOpen && (
             <KitchenProjectForm
               onSubmit={handleCreate}
               onCancel={() => setFormOpen(false)}
             />
           )}
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
 
-      <Dialog.Root
+      <Dialog
         open={editingItem !== null}
         onOpenChange={open => {
           if (!open) setEditingItem(null);
         }}
       >
-        <Dialog.Content
-          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+        <DialogContent
+          aria-describedby={undefined}
+          showCloseButton={false}
+          className={cn(
+            'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+            FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+          )}
           style={{ maxWidth: 460 }}
         >
-          <Dialog.Title>{EDIT_DIALOG_TITLE}</Dialog.Title>
+          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+            {EDIT_DIALOG_TITLE}
+          </DialogTitle>
           {editingItem && (
             <KitchenProjectForm
               item={editingItem}
@@ -312,8 +329,8 @@ export function KitchenProjectsList({ refreshSignal }: Props) {
               onCancel={() => setEditingItem(null)}
             />
           )}
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
