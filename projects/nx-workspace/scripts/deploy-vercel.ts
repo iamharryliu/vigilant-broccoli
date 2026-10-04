@@ -356,9 +356,14 @@ async function main() {
       const value = vaultSecrets[key];
       if (value) {
         allSecrets[key] = value;
-      } else {
-        console.warn(`⚠ ${key}: not found in vault, skipping`);
       }
+    }
+
+    const missingVaultKeys = keysFromVault.filter(key => !(key in allSecrets));
+    if (missingVaultKeys.length) {
+      throw new Error(
+        `Missing expected Vault secret(s): ${missingVaultKeys.join(', ')}. Aborting before pruning Vercel env vars.`,
+      );
     }
   }
 
