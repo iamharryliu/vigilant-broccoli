@@ -1,3 +1,4 @@
+export * from './AlertDialog';
 export * from './AudioPlayer';
 export * from './AudioButton';
 export * from './Avatar';

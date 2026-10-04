@@ -24,6 +24,12 @@ import {
   StopwatchUtilityContent,
   TimerUtilityContent,
 } from '@vigilant-broccoli/react-utility';
+import { AlertDialogDemo } from './demos/AlertDialogDemo';
+import {
+  I18nProvider as AlertDialogI18nProvider,
+  useTranslation as useAlertDialogTranslation,
+} from './i18n';
+import alertDialogEn from './i18n/en.json';
 import { AvatarDemo } from './demos/AvatarDemo';
 import { UserAvatarDemo } from './demos/UserAvatarDemo';
 import { ButtonDemo } from './demos/ButtonDemo';
@@ -159,6 +165,13 @@ const CRUDListSection = () => {
 };
 
 const COMPONENT_ENTRIES: SandboxEntry[] = [
+  {
+    id: 'alert-dialog',
+    label: alertDialogEn.ALERT_DIALOG.NAME,
+    description: alertDialogEn.ALERT_DIALOG.SUMMARY,
+    category: CATEGORY.COMPONENTS,
+    content: <AlertDialogDemo />,
+  },
   {
     id: 'avatar',
     label: 'Avatar',
@@ -561,6 +574,7 @@ const SandboxBody = ({
   showThemeToggle,
 }: SandboxBodyProps) => {
   const { t } = usePastebinTranslation();
+  const { t: translateAlertDialog } = useAlertDialogTranslation();
   const entries = useMemo(
     () =>
       ALL_ENTRIES.map(entry =>
@@ -570,9 +584,15 @@ const SandboxBody = ({
               label: t('PASTEBIN.TITLE'),
               description: t('PASTEBIN.DESCRIPTION'),
             }
-          : entry,
+          : entry.id === 'alert-dialog'
+            ? {
+                ...entry,
+                label: translateAlertDialog('ALERT_DIALOG.NAME'),
+                description: translateAlertDialog('ALERT_DIALOG.SUMMARY'),
+              }
+            : entry,
       ),
-    [t],
+    [t, translateAlertDialog],
   );
   const [selectedId, setSelectedId] = useState(readStoredSelectedId);
   const [iconMode, setIconMode] = useState(readStoredIconMode);
@@ -679,7 +699,9 @@ function ComponentSandboxContent({
 export function ComponentSandbox(props: ComponentSandboxProps): ReactNode {
   return (
     <PastebinI18nProvider>
-      <ComponentSandboxContent {...props} />
+      <AlertDialogI18nProvider>
+        <ComponentSandboxContent {...props} />
+      </AlertDialogI18nProvider>
     </PastebinI18nProvider>
   );
 }

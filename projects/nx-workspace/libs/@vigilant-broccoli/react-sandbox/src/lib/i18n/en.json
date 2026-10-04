@@ -1,0 +1,12 @@
+{
+  "ALERT_DIALOG": {
+    "NAME": "Alert Dialog",
+    "SUMMARY": "Confirmation dialog with cancel and destructive actions, keyboard focus management and a harmless confirmation counter.",
+    "OPEN": "Delete example item",
+    "TITLE": "Delete this item?",
+    "DESCRIPTION": "This example only updates the confirmation count. No saved data will be deleted.",
+    "CANCEL": "Cancel",
+    "CONFIRM": "Delete item",
+    "COUNT": "Confirmed {count} times"
+  }
+}
