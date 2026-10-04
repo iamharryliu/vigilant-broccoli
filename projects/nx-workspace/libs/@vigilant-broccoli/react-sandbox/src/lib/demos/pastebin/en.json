@@ -1,0 +1,19 @@
+{
+  "PASTEBIN": {
+    "TITLE": "Pastebin",
+    "DESCRIPTION": "Searchable grouped snippets with copy buttons and link actions, using fictional sample data.",
+    "HINT": "Fictional sample data. Search by label or value, copy an entry, or open a sample link. Nothing is saved or fetched from a server.",
+    "SEARCH_PLACEHOLDER": "Search sample entries...",
+    "CONTACT": "Contact",
+    "EMAIL": "Email",
+    "PHONE": "Phone",
+    "LINKS": "Links",
+    "WEBSITE": "Website",
+    "DOCUMENTATION": "Documentation",
+    "SNIPPETS": "Snippets",
+    "GREETING": "Greeting",
+    "GREETING_VALUE": "Hello from the pastebin demo!",
+    "COMMAND": "Development command",
+    "ADDRESS": "Sample address"
+  }
+}
