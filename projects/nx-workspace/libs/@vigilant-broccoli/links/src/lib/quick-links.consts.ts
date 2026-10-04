@@ -815,6 +815,19 @@ const VB_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
+    label: 'VB - GitHub Pull Requests',
+    target: 'https://github.com/iamharryliu/vigilant-broccoli/pulls',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: 'VB - Manual Agentic Solve',
+    target:
+      'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-agentic-solve.yml',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
     label: 'VB - GitHub Projects',
     target: 'https://github.com/iamharryliu/vigilant-broccoli/projects',
     type: OPEN_TYPE.BROWSER,
