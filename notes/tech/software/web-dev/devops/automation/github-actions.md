@@ -29,6 +29,7 @@ on:
 - Minutes are metered per runner OS with a multiplier against the included minutes: Linux 1x, Windows 2x, macOS 10x (a 10-minute macOS job burns 100 included minutes).
 - Self-hosted runners bypass the minutes/storage quota entirely — only the (unlimited on all plans) job/workflow API usage limits apply.
 - `manual-agentic-solve` runs the agent sandbox on a hosted Linux runner: each dispatch rebuilds the container image and runs a Claude Code solve, so it is a long job (tens of minutes, 1x Linux rate) — free on public repos, but it draws proportionally more included minutes on private plans than the short workflows here.
+- Manually dispatched research agents also use hosted runner time while building their sandbox and generating a note. A job timeout bounds each run's runner usage; the agent provider's subscription or API allowance is separate from Actions minutes.
 
 ## Concurrency
 

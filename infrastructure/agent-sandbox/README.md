@@ -5,6 +5,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 ## Table of Contents
 
 - [Running in CI](#running-in-ci)
+- [Auditing the backlog](#auditing-the-backlog)
 - [Stack](#stack)
 
 ## Running in CI
@@ -23,6 +24,15 @@ from Vault, the script skips the local Vault-over-SSH load and mints the install
 - Notification: the workflow emails the outcome with each PR's title, summary, link and full diff, rendered as a
   GitHub-style patch. `solve-todo-runner.sh` prints the diff between `PR_DIFF_BEGIN`/`PR_DIFF_END` markers, `solve-todo.sh`
   collects the markers into a JSON Lines file, and `.github/scripts/agentic-solve-email.mjs` renders and sends it.
+
+`pnpm agentic:rnd "<question>"` runs `create-rnd.sh` locally. The `manual-agentic-rnd` workflow runs the same command
+on a hosted runner using the existing Claude and GitHub App credentials from Vault. It researches the question,
+writes a new note under `docs/rnd/`, and opens a PR; changes outside `docs/rnd/` fail the run.
+
+- GitHub UI: **Actions → manual-agentic-rnd → Run workflow** on `main`; enter a research question and optionally choose a model
+  (default `sonnet`) or disable the firewall.
+- CLI: `gh workflow run manual-agentic-rnd.yml -f question="<question>"`, with optional `-f model=opus` or `-f firewall=off`.
+- Runs queue behind an active R&D run; the job has a 60-minute timeout. The PR URL appears in the research step's logs.
 
 Codex uses a dedicated ChatGPT/Codex access token, not the app's `OPENAI_API_KEY`:
 
