@@ -7,21 +7,23 @@ REPO_DIR="$HOME/vigilant-broccoli"
 META_FILE=/tmp/fix-meta.json
 CI_LOG=/tmp/pr-ci-failures.log
 CI_LOG_BUDGET=20000
-PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
 FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 PRE_COMMIT_HELPER=/tmp/run-pre-commit.sh
+MERGE_BODY_HELPER=/tmp/merge-pr-body.py
 
 cd "$REPO_DIR"
 
-# Stash the helper outside the working tree before checkout — the PR branch may predate it,
-# and gh pr checkout would otherwise leave us on a branch where the helper path doesn't exist.
+# Stash the helpers outside the working tree before checkout — the PR branch may predate them,
+# and gh pr checkout would otherwise leave us on a branch where the helper paths don't exist.
 cp "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh" "$PRE_COMMIT_HELPER"
+cp "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py" "$MERGE_BODY_HELPER"
 
 git fetch origin --quiet
 gh pr checkout "$PR"
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"
+CURRENT_BODY=$(gh pr view "$PR" --json body -q .body 2>/dev/null || true)
 
 : > "$CI_LOG"
 gh pr checks "$PR" >> "$CI_LOG" 2>&1 || true
@@ -39,16 +41,23 @@ Failing CI output (checks summary followed by failed-step logs):
 
 ${FAILURES}
 
+The PR's current body is:
+
+---
+${CURRENT_BODY}
+---
+
 Rules:
 - Diagnose from the logs above, then make the minimal changes needed to make CI pass, following the repo conventions in CONTEXT.md.
 - Formatting failures from the pre-commit job (trailing-whitespace, end-of-file-fixer, black) are auto-fixed for you by the calling script — do not hand-fix whitespace; spend your effort on real lint, test, build, or logic failures.
-- Do not run any git or gh commands — committing, pushing, and commenting are handled by the calling script.
+- Do not run any git or gh commands — committing, pushing, and updating the PR body are handled by the calling script.
 - When finished, write $META_FILE containing only a JSON object with these string fields:
   - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure
   - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
   - commit_message: capitalized, concise, focused on why not what, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
-  - pr_comment: one short sentence describing what you changed to fix CI, for a PR comment
+  - pr_summary: markdown bullet points replacing the PR's "## Summary" section — rewrite it to describe the PR's full, cumulative state (prior work plus this CI fix), not just this increment
+  - pr_test_plan: markdown checklist replacing the PR's "## Test plan" section — same rule, cover the whole PR as it now stands
 EOF
 )
 
@@ -71,7 +80,8 @@ COMMIT_TYPE=$(read_meta .commit_type)
 COMMIT_SCOPE=$(read_meta .commit_scope)
 COMMIT_MESSAGE=$(read_meta .commit_message)
 TRAILER=$(read_meta .co_authored_by)
-PR_COMMENT=$(read_meta .pr_comment)
+PR_SUMMARY=$(read_meta .pr_summary)
+PR_TEST_PLAN=$(read_meta .pr_test_plan)
 
 case "$COMMIT_TYPE" in
   feat | fix | ci | chore | docs | refactor | enhancement | security | infrastructure) ;;
@@ -94,6 +104,14 @@ git add -A
 git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
 git push
 
-[ -n "$PR_COMMENT" ] && gh pr comment "$PR" --body "$PR_COMMENT
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+  HISTORY_SOURCE="GitHub Actions"
+else
+  HISTORY_SOURCE="Docker sandbox (local)"
+fi
 
-$PR_FOOTER" || true
+NEW_BODY=$(CURRENT_BODY="$CURRENT_BODY" PR_SUMMARY="$PR_SUMMARY" PR_TEST_PLAN="$PR_TEST_PLAN" \
+  HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic:pr:fix" HISTORY_PROMPT="Fix failing CI." \
+  HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
+  python3 "$MERGE_BODY_HELPER")
+gh pr edit "$PR" --body "$NEW_BODY"

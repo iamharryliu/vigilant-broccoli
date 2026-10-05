@@ -80,17 +80,15 @@ git add TODO.md
 git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
 git push -u origin "$BRANCH"
 
-PR_BODY=$(cat <<EOF
-## Summary
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+  HISTORY_SOURCE="GitHub Actions"
+else
+  HISTORY_SOURCE="Docker sandbox (local)"
+fi
 
-$PR_SUMMARY
-
-## Test plan
-
-$PR_TEST_PLAN
-
-$PR_FOOTER
-EOF
-)
+PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_TEST_PLAN="$PR_TEST_PLAN" \
+  HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic:task:create" HISTORY_PROMPT="$DESCRIPTION" \
+  HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
+  python3 "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py")
 
 gh pr create --title "$PR_TITLE" --body "$PR_BODY"
