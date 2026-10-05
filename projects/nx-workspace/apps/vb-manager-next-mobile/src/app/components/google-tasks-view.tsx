@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { GoogleTasksComponent } from '@vigilant-broccoli/react-lib';
+import { GoogleTasksComponent, IconButton } from '@vigilant-broccoli/react-lib';
 import {
   authFetch,
   useAuthStatus,
@@ -18,18 +18,20 @@ export const GoogleTasksView = () => {
 
   return (
     <div className="flex flex-col gap-3">
-      <button
-        onClick={() => setDialogOpen(true)}
-        className="w-full bg-blue-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-blue-600 active:bg-blue-700 transition-colors"
-      >
-        {CREATE_TASKS_LABEL}
-      </button>
       <GoogleTasksComponent
         auth={{ authFetch, useAuthStatus, useGoogleToken, signInWithGoogle }}
         showSelector
         enableDragDrop
         wrapInCard={false}
         refreshTrigger={refreshTrigger}
+        addTaskActions={
+          <IconButton
+            icon="bot"
+            variant="outline"
+            onClick={() => setDialogOpen(true)}
+            aria-label={CREATE_TASKS_LABEL}
+          />
+        }
       />
       {dialogOpen && (
         <CreateTasksDialog

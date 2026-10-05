@@ -1,6 +1,7 @@
 import {
   ArrowLeft,
   Bell,
+  Bot,
   Check,
   Copy,
   Download,
@@ -65,6 +66,7 @@ export const ICON_BUTTON_ICONS = {
   share: Share2,
   'qr-code': QrCode,
   bell: Bell,
+  bot: Bot,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconButtonIcon = keyof typeof ICON_BUTTON_ICONS;

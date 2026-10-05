@@ -13,7 +13,14 @@ import {
   SortMode,
   useTaskChecklistView,
 } from './TaskChecklist';
-import { useEffect, useState, useCallback, memo, useMemo } from 'react';
+import {
+  ReactNode,
+  useEffect,
+  useState,
+  useCallback,
+  memo,
+  useMemo,
+} from 'react';
 import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
 import { CardSkeleton } from './Skeleton';
 import { useSpeechToText } from '../hooks/useSpeechToText';
@@ -423,6 +430,7 @@ const AddTaskForm = memo(
     voiceProcessing,
     voiceError,
     onVoiceToggle,
+    extraActions,
   }: {
     showAddTask: boolean;
     newTaskTitle: string;
@@ -435,6 +443,7 @@ const AddTaskForm = memo(
     voiceProcessing: boolean;
     voiceError: string | null;
     onVoiceToggle: () => void;
+    extraActions?: ReactNode;
   }) => {
     if (!showAddTask) {
       return (
@@ -448,6 +457,7 @@ const AddTaskForm = memo(
             isDisabled={isLoading}
             onToggle={onVoiceToggle}
           />
+          {extraActions}
           {voiceError && (
             <Text size="1" color="red">
               {voiceError}
@@ -459,7 +469,7 @@ const AddTaskForm = memo(
 
     return (
       <div className="flex flex-col gap-2">
-        <div className="flex gap-2 items-end">
+        <div className="flex flex-col gap-2">
           <Textarea
             placeholder="Add a task, or use * item1 > item2 for multiple..."
             value={newTaskTitle}
@@ -478,12 +488,18 @@ const AddTaskForm = memo(
             disabled={isLoading}
             autoFocus
           />
-          <SpeechToTextToggleButton
-            isRecording={voiceRecording}
-            isProcessing={voiceProcessing}
-            isDisabled={isLoading}
-            onToggle={onVoiceToggle}
-          />
+          <div
+            className="flex gap-2 items-center"
+            onMouseDown={e => e.preventDefault()}
+          >
+            <SpeechToTextToggleButton
+              isRecording={voiceRecording}
+              isProcessing={voiceProcessing}
+              isDisabled={isLoading}
+              onToggle={onVoiceToggle}
+            />
+            {extraActions}
+          </div>
         </div>
         {voiceError && (
           <Text size="1" color="red">
@@ -566,6 +582,7 @@ export const GoogleTasksComponent = ({
   sortMode: controlledSortMode,
   onSortModeChange,
   wrapInCard = true,
+  addTaskActions,
 }: {
   auth: GoogleTasksAuthAdapter;
   taskListId?: string;
@@ -577,6 +594,7 @@ export const GoogleTasksComponent = ({
   sortMode?: SortMode;
   onSortModeChange?: (taskListId: string, sortMode: SortMode) => void;
   wrapInCard?: boolean;
+  addTaskActions?: ReactNode;
 }) => {
   const { authFetch, useAuthStatus, useGoogleToken, signInWithGoogle } = auth;
   const status = useAuthStatus();
@@ -839,6 +857,7 @@ export const GoogleTasksComponent = ({
         voiceProcessing={voiceProcessing}
         voiceError={voiceError}
         onVoiceToggle={toggleVoice}
+        extraActions={addTaskActions}
       />
 
       <div className="flex-1 overflow-y-auto min-h-0 px-2 -mx-2">
