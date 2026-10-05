@@ -68,3 +68,12 @@ resource "cloudflare_dns_record" "harryliu_dev_projects" {
   ttl     = 1
   proxied = false
 }
+
+resource "cloudflare_dns_record" "harryliu_dev_api" {
+  zone_id = var.cloudflare_zone_id
+  name    = "api.harryliu.dev"
+  content = "production-vb-express.fly.dev"
+  type    = "CNAME"
+  ttl     = 1
+  proxied = true
+}
