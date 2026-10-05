@@ -63,6 +63,8 @@ export * from './VisuallyHidden';
 export * from './Skeleton';
 export * from './SpeechToTextToggleButton';
 export * from './GoogleTasks';
+export * from './TaskCapture';
+export * from './CreateTasksDialog';
 export * from './QuickLinksDialog';
 export * from './QuickLinksPanel';
 export * from './Table';

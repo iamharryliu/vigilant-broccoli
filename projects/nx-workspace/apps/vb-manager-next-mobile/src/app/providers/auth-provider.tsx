@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 import type { Session } from '@supabase/supabase-js';
+import type { GoogleTasksAuthAdapter } from '@vigilant-broccoli/react-lib';
 import { supabase } from '../../../libs/supabase';
 import { isAllowedEmail } from '../../../libs/auth-policy';
 import {
@@ -105,6 +106,13 @@ export const useGoogleToken = () => {
   }, []);
 
   return { googleToken, clearGoogleToken: clear };
+};
+
+export const googleTasksAuth: GoogleTasksAuthAdapter = {
+  authFetch,
+  useAuthStatus,
+  useGoogleToken,
+  signInWithGoogle,
 };
 
 export default function AuthProvider({
