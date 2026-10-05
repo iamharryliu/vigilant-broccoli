@@ -372,20 +372,20 @@
     "url": "https://api.harryliu.dev/",
     "icon": "https://icons.duckduckgo.com/ip3/api.harryliu.dev.ico",
     "slug": "production-service-manager",
-    "status": "down",
-    "uptime": "99.97%",
-    "uptimeDay": "99.96%",
-    "uptimeWeek": "99.99%",
-    "uptimeMonth": "100.00%",
-    "uptimeYear": "99.97%",
-    "time": 545,
-    "timeDay": 62,
-    "timeWeek": 114,
-    "timeMonth": 126,
-    "timeYear": 545,
+    "status": "up",
+    "uptime": "99.93%",
+    "uptimeDay": "96.08%",
+    "uptimeWeek": "99.44%",
+    "uptimeMonth": "99.87%",
+    "uptimeYear": "99.93%",
+    "time": 541,
+    "timeDay": 88,
+    "timeWeek": 119,
+    "timeMonth": 127,
+    "timeYear": 541,
     "dailyMinutesDown": {
       "2026-07-12": 33,
-      "2026-10-05": 1
+      "2026-10-05": 56
     }
   },
   {
