@@ -254,6 +254,17 @@ jobs:
           NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
         run: ${{ steps.check.outputs.deploy_cmd }}
 
+      # Cloudflare proxies api.harryliu.dev to the fly app, so fly needs a cert
+      # for that hostname or the origin TLS handshake fails. `certs add` errors
+      # when the cert exists, so only add it when `certs show` finds none.
+      - name: Ensure fly cert for api.harryliu.dev
+        if: steps.check.outputs.has_deployments == 'true'
+        env:
+          FLY_API_TOKEN: ${{ env.FLY_API_TOKEN }}
+        run: |
+          flyctl certs show api.harryliu.dev -a production-vb-express >/dev/null 2>&1 \
+            || flyctl certs add api.harryliu.dev -a production-vb-express
+
   deploy-github-pages:
     needs: gitleaks
     if: ${{ github.ref_name == 'main' && !inputs.skip_pages }}

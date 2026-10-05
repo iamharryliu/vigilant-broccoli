@@ -43,7 +43,7 @@ sites:
   - name: production-hearth
     url: https://production-hearth.vercel.app/login
   - name: production-service-manager
-    url: https://production-vb-express.fly.dev/
+    url: https://api.harryliu.dev/
   - name: production-whiteboard
     url: https://whiteboard.harryliu.dev/
   - name: production-vb-manager-next-mobile

@@ -10,7 +10,7 @@ primary_region = 'yyz'
   LLM_SERVICE_URL = 'http://production-llm-service.flycast'
   STORAGE_SERVICE_URL = 'http://production-storage-service.flycast'
   DATABASE_PATH = '/data/vb-express.sqlite'
-  BETTER_AUTH_URL = 'https://production-vb-express.fly.dev'
+  BETTER_AUTH_URL = 'https://api.harryliu.dev'
 
 [mounts]
   source = 'vb_express_data'
