@@ -374,8 +374,8 @@
     "slug": "production-service-manager",
     "status": "down",
     "uptime": "99.97%",
-    "uptimeDay": "99.98%",
-    "uptimeWeek": "100.00%",
+    "uptimeDay": "99.96%",
+    "uptimeWeek": "99.99%",
     "uptimeMonth": "100.00%",
     "uptimeYear": "99.97%",
     "time": 545,
@@ -385,7 +385,7 @@
     "timeYear": 545,
     "dailyMinutesDown": {
       "2026-07-12": 33,
-      "2026-10-05": 0
+      "2026-10-05": 1
     }
   },
   {
