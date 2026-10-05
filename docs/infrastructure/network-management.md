@@ -15,6 +15,7 @@ All public URLs for deployed applications, grouped by domain/provider.
 ```
 harryliu.dev                              Cloudflare zone (Terraform: infrastructure/terraform/)
 ├── harryliu.dev                          Personal website — Cloudflare Pages `production-harryliu-dev-react` (domain + CNAME: Terraform, infrastructure/terraform/)
+├── projects.harryliu.dev                 GitHub Pages index (CNAME to iamharryliu.github.io, DNS-only: Terraform, infrastructure/terraform/; the Pages custom domain is set by `github_repository_pages` in `github.tf`; the CNAME file staged by `pages-index:deploy-github-pages` keeps deploys from clearing it)
 ├── www.harryliu.dev                      301 redirect to apex (Cloudflare ruleset)
 ├── findme.harryliu.dev                   FindMe — Vercel `production-findme` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
 ├── whiteboard.harryliu.dev               Whiteboard — Vercel `production-whiteboard` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
@@ -50,8 +51,8 @@ pages.dev                                 Cloudflare Pages URLs for the environm
 ├── staging-cloud-8-skate-react.pages.dev      Cloud 8 Skate (staging — cloud8skate.com is on production, the exception)
 └── staging-harryliu-dev-react.pages.dev       Personal website React (staging — harryliu.dev is on production)
 
-github.io                                 GitHub Pages
-└── iamharryliu.github.io/vigilant-broccoli   Pages index (pages-index/)
+github.io                                 GitHub Pages (custom domain projects.harryliu.dev)
+└── iamharryliu.github.io                     Pages origin for projects.harryliu.dev (pages-index/)
 ```
 
 ## Tailnet

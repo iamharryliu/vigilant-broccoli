@@ -116,7 +116,7 @@ export const COMMUNITY_LINK = {
 export const PROJECT_LINK = {
   SOFTWARE_PROJECTS: {
     NAME: 'Software Projects',
-    URL: 'https://iamharryliu.github.io/vigilant-broccoli/',
+    URL: 'https://projects.harryliu.dev/',
   },
 } as const;
 

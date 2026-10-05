@@ -1,6 +1,6 @@
 # GitHub Pages deploy pattern
 
-One GitHub Pages site — `iamharryliu.github.io/vigilant-broccoli` — assembled from a shared `_site/` staging directory: `pages-index` at the root, `component-library` under `/react-component-library/`.
+One GitHub Pages site — `projects.harryliu.dev` — assembled from a shared `_site/` staging directory: `pages-index` at the root, `component-library` under `/react-component-library/`.
 
 ## How it works
 

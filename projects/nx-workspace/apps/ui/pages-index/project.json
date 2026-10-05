@@ -80,7 +80,8 @@
           "mkdir -p ../../../_site",
           "cp -R ../../../dist/pages-index/. ../../../_site/",
           "cp public/repo-timeline.json ../../../_site/repo-timeline.json",
-          "cp -R public/claude-context ../../../_site/claude-context"
+          "cp -R public/claude-context ../../../_site/claude-context",
+          "echo projects.harryliu.dev > ../../../_site/CNAME"
         ],
         "parallel": false,
         "cwd": "{projectRoot}"
