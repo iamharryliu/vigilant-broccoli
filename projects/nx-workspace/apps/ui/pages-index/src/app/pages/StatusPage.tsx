@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CircleHelp } from 'lucide-react';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   Dialog,
   DialogContent,
@@ -12,10 +13,15 @@ import { useTranslation } from '../i18n';
 import en from '../i18n/en.json';
 import { PageHeader } from '../components/PageHeader';
 import { SectionHeading } from '../components/SectionHeading';
-import { REPO_URL, toRawGithubUrl } from '../consts/repo';
+import {
+  REPO_URL,
+  UPTIME_REPO_URL,
+  UPTIME_SUMMARY_URL,
+  toRawGithubUrl,
+} from '../consts/repo';
 import { PAGE_CLASS } from '../consts/layout';
 
-const SUMMARY_URL = toRawGithubUrl('history/summary.json');
+const LEGACY_SUMMARY_URL = toRawGithubUrl('history/summary.json');
 const ACTIONS_URL = `${REPO_URL}/actions`;
 
 interface ServiceStatus {
@@ -197,9 +203,14 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${SUMMARY_URL}?t=${Date.now()}`, {
+        let res = await fetch(`${UPTIME_SUMMARY_URL}?t=${Date.now()}`, {
           cache: 'no-store',
         });
+        if (res.status === HTTP_STATUS_CODES.NOT_FOUND) {
+          res = await fetch(`${LEGACY_SUMMARY_URL}?t=${Date.now()}`, {
+            cache: 'no-store',
+          });
+        }
         if (!res.ok) {
           setServicesError(
             t('STATUS_PAGE.ERROR_STATUS_UNAVAILABLE', { status: res.status }),
@@ -306,6 +317,7 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
           }
         >
           <GithubActionsBadges repoUrl={REPO_URL} />
+          <GithubActionsBadges repoUrl={UPTIME_REPO_URL} />
         </div>
       </section>
     </main>

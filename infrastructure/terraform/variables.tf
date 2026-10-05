@@ -61,6 +61,34 @@ variable "upptime_gh_app_id" {
   default     = 4350545
 }
 
+variable "upptime_repo" {
+  description = "Public repository managed by this workspace for isolated Upptime monitoring."
+  type        = string
+  default     = "uptime"
+
+  validation {
+    condition     = can(regex("^[A-Za-z0-9_.-]+$", var.upptime_repo)) && lower(var.upptime_repo) != lower(var.github_repo)
+    error_message = "Use a separate GitHub repository name."
+  }
+}
+
+variable "upptime_sync_gh_app_id" {
+  description = "Public ID of the sync App installed only on the monitoring repository (Contents + Workflows RW). Set after registering the App and storing its key in kv/upptime-sync. Zero keeps sync disabled."
+  type        = number
+  default     = 0
+}
+
+variable "upptime_migration_complete" {
+  description = "Set true only after verifying the new monitoring repository. Disables legacy checks and removes their App's main bypass together."
+  type        = bool
+  default     = false
+
+  validation {
+    condition     = !var.upptime_migration_complete || var.upptime_sync_gh_app_id > 0
+    error_message = "Configure the monitoring sync App before completing migration."
+  }
+}
+
 variable "cloudflare_account_id" {
   type    = string
   default = "26d066ec62c4d27b8da5e9aebac17293"

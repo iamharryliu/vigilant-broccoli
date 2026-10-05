@@ -11,6 +11,13 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   cheatsheet:tmux-nvim        Print the tmux/nvim keybinding cheatsheet
   cheatsheet:aliases          Print the shell alias cheatsheet
 
+📈 UPTIME
+  upptime:config:render <dir> Render managed monitoring files locally (empty external directory)
+  upptime:history:export <bundle> [ref] Export history-only Git commits to a new bundle
+  upptime:history:import <bundle> [owner/repo] Import history into an uninitialized monitoring dataset
+  upptime:sync:store-key <pem> Store the monitoring sync App key in its dedicated Vault path
+  gh:actions:sync-upptime      Publish managed monitoring configuration from main
+
 ⚙️  SETUP
   local:install:machine-setup Run machine setup installer (mac/linux)
   local:start-mission-control-helper  Open Hammerspoon and Karabiner-Elements (fallback if login items fail)

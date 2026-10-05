@@ -138,7 +138,12 @@
     "cheatsheet:aliases": "./scripts/shell/cheatsheet-aliases.sh",
     "audit": "python3 scripts/python/vuln_tree.py .",
     "nx:migrate": "cd projects/nx-workspace && nx migrate latest",
-    "nx:migrate:run": "cd projects/nx-workspace && nx migrate --run-migrations"
+    "nx:migrate:run": "cd projects/nx-workspace && nx migrate --run-migrations",
+    "upptime:config:render": "python3 infrastructure/upptime/sync.py --render",
+    "upptime:history:export": "bash infrastructure/upptime/export-history.sh",
+    "upptime:history:import": "bash infrastructure/upptime/import-history.sh",
+    "upptime:sync:store-key": "bash infrastructure/upptime/store-sync-key.sh",
+    "gh:actions:sync-upptime": "gh workflow run ci-sync-upptime --repo iamharryliu/vigilant-broccoli --ref main"
   },
   "repository": {
     "type": "git",

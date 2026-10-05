@@ -1,0 +1,51 @@
+name: ci-sync-upptime
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .upptimerc.yml
+      - infrastructure/upptime/**
+      - infrastructure/agent-sandbox/mint-github-app-token.sh
+      - .github/workflows/ci-sync-upptime.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: upptime-config-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    if: github.ref == 'refs/heads/main' && vars.UPPTIME_SYNC_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Import sync App key
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ vars.UPPTIME_SYNC_WIF_PROVIDER }}
+          gcp_service_account: ${{ vars.UPPTIME_SYNC_SERVICE_ACCOUNT }}
+          role: github-actions-upptime-sync-role
+          secrets: |
+            kv/data/upptime-sync UPPTIME_SYNC_GH_APP_PRIVATE_KEY | UPPTIME_SYNC_GH_APP_PRIVATE_KEY ;
+      - name: Publish managed monitoring files
+        env:
+          UPPTIME_SYNC_APP_ID: ${{ vars.UPPTIME_SYNC_APP_ID }}
+          UPPTIME_REPOSITORY: ${{ vars.UPPTIME_REPOSITORY }}
+        run: |
+          owner=${UPPTIME_REPOSITORY%/*}
+          repo=${UPPTIME_REPOSITORY#*/}
+          TOKEN=$(./infrastructure/agent-sandbox/mint-github-app-token.sh "$UPPTIME_SYNC_APP_ID" <(printf '%s\n' "$UPPTIME_SYNC_GH_APP_PRIVATE_KEY") "$repo" "$owner" '{"contents":"write","workflows":"write"}')
+          echo "::add-mask::$TOKEN"
+          unset UPPTIME_SYNC_GH_APP_PRIVATE_KEY
+          GH_TOKEN="$TOKEN" python3 infrastructure/upptime/sync.py
+      - name: Activation instructions
+        run: |
+          echo 'Verify both workflows in the monitoring repository before setting upptime_migration_complete=true in Terraform.' >> "$GITHUB_STEP_SUMMARY"
