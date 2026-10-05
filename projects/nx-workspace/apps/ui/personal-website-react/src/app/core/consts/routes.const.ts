@@ -8,6 +8,8 @@ import {
 } from '@vigilant-broccoli/personal-common-js';
 import { ENVIRONMENT } from '../../../environments/environment';
 
+export const SITE_NAME = 'harryliu.dev';
+
 export const DEFAULT_DESCRIPTION =
   'Harry Liu - Software developer, designer, and creator. Explore my portfolio and projects.';
 
@@ -27,31 +29,31 @@ export type RouteMeta = {
 
 export const INDEX_ROUTE: RouteMeta = {
   path: '/',
-  title: 'home',
+  title: 'Home',
   description: DEFAULT_DESCRIPTION,
 };
 
 export const ABOUT_ROUTE: RouteMeta = {
   path: '/about',
-  title: 'about',
+  title: 'About',
   description: 'Learn more about Harry Liu - developer, designer, and creator.',
 };
 
 export const CONTACT_ROUTE: RouteMeta = {
   path: '/contact',
-  title: 'contact',
+  title: 'Contact',
   description: 'Get in touch with Harry Liu.',
 };
 
 export const LINK_TREE_ROUTE: RouteMeta = {
   path: '/links',
-  title: 'link tree',
+  title: 'Links',
   description: "Harry Liu's links - social media, projects, and more.",
 };
 
 export const CALENDAR_ROUTE: RouteMeta = {
   path: '/calendar',
-  title: 'calendar',
+  title: 'Calendar',
   description: "Harry Liu's calendar.",
 };
 

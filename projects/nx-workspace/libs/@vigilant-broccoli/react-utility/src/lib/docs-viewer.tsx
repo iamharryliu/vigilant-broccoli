@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   Button,
+  useDocumentTitle,
   DocsExplorer,
   type DocsExplorerUrlSync,
   type DocsNode,
@@ -92,17 +93,19 @@ const titleFromPath = (path: string) =>
 function DocumentTitleSync({
   content,
   fallback,
+  siteName,
 }: {
   content: string;
   fallback: string;
+  siteName?: string;
 }) {
-  useEffect(() => {
-    document.title = HEADING_RE.exec(content)?.[1]?.trim() || fallback;
-  }, [content, fallback]);
+  const title = HEADING_RE.exec(content)?.[1]?.trim() || fallback;
+  useDocumentTitle(siteName ? `${title} | ${siteName}` : title);
   return null;
 }
 
 export interface DocsViewerProps {
+  siteName?: string;
   getStructure: () => Promise<DocsNode[]>;
   getContent: (path: string) => Promise<string>;
   saveContent?: (path: string, content: string) => Promise<void>;
@@ -287,6 +290,7 @@ function GraphPanel({
 }
 
 export function DocsViewer({
+  siteName,
   getStructure,
   getContent,
   saveContent,
@@ -356,6 +360,7 @@ export function DocsViewer({
     return (
       <div className="flex flex-col h-full">
         <DocumentTitleSync
+          siteName={siteName}
           content={content}
           fallback={isAggregate ? contentKey : titleFromPath(contentKey)}
         />

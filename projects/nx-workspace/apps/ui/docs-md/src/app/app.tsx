@@ -1,10 +1,13 @@
 import { useMemo } from 'react';
-import { ThemeProvider } from '@vigilant-broccoli/react-lib';
+import { ThemeProvider, useDocumentTitle } from '@vigilant-broccoli/react-lib';
 import {
   createDocsSnapshotSource,
   DocsViewer,
   FILE_PARAM,
 } from '@vigilant-broccoli/react-utility';
+
+const SITE_NAME = 'Docs';
+const PAGE_TITLE = 'Browse';
 
 const { fetchStructure, fetchContent, fetchGraph, searchDocs } =
   createDocsSnapshotSource();
@@ -23,12 +26,14 @@ const setFileParam = (path: string) => {
 };
 
 export function App() {
+  useDocumentTitle(`${PAGE_TITLE} | ${SITE_NAME}`);
   const urlSync = useMemo(() => ({ get: getFileParam, set: setFileParam }), []);
 
   return (
     <ThemeProvider>
       <div className="h-dvh p-2 sm:p-4 bg-white dark:bg-gray-900">
         <DocsViewer
+          siteName={SITE_NAME}
           getStructure={fetchStructure}
           getContent={fetchContent}
           search={searchDocs}

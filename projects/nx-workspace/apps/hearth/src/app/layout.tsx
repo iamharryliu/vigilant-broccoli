@@ -6,7 +6,7 @@ import AppLayout from './components/AppLayout';
 import { RootThemeWrapper } from './components/RootThemeWrapper';
 
 export const metadata = {
-  title: 'Hearth',
+  title: 'Home | Hearth',
   description: 'Shared life for homes, communes, and communities.',
 };
 

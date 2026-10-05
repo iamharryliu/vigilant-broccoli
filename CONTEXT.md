@@ -66,7 +66,6 @@ Browse this whole graph rendered, with full-text search and a link graph view, a
 ## CI
 
 - Never introduce a new GitHub Actions repo secret, and remove unused ones. `GCP_SERVICE_ACCOUNT` and `GCP_WORKLOAD_IDENTITY_PROVIDER` are the only required ones; every other credential comes from GCP Secret Manager or Vault. The reasoning, and the rest of the workflow conventions, are in [workflow-conventions.md](./docs/ci/workflow-conventions.md) — read it before adding or changing a workflow.
-- Migrations: [database-migrations.md](./docs/ci/database-migrations.md). Infrastructure-as-code and drift detection: [terraform.md](./docs/ci/terraform.md).
 
 ## App Development
 
@@ -74,11 +73,11 @@ Browse this whole graph rendered, with full-text search and a link graph view, a
 - For personal identity links and contact details (social profiles, the personal email address, community sites), prefer the shared consts in `libs/@vigilant-broccoli/personal-common-js/src/index.ts` (`SOCIAL_LINK`, `EMAIL_ADDRESS`, `SENDER_EMAIL_ADDRESS`, `EMAIL_LINK`, `COMMUNITY_LINK`, `PERSONAL_URL`) over hardcoding them per app — several apps surface the same profiles, and a moved account should only need one edit. Keep them out of `@vigilant-broccoli/links`, whose ops registry (cloud account ids, dashboard URLs) must never be imported into a public client bundle. Auth allowlists and API-key seed identities stay literal on purpose — they happen to equal the contact address today, and importing it would make a change of contact address silently move who can log in. Google Calendar ids live in `GOOGLE_CALENDAR.CALENDAR_EMAIL` in `@vigilant-broccoli/common-browser`.
 - For accessing environment variables server-side, prefer `getEnvironmentVariable` from `@vigilant-broccoli/common-node` over `process.env` directly. Exception: `NEXT_PUBLIC_` vars accessed client-side must use `process.env.NEXT_PUBLIC_*` direct property access — Next.js can only statically inline them at build time with direct access, not through a wrapper function.
 - Never declare a dependency as `"*"` (or an exact/stale pin that differs from root) in a lib/app `package.json` for a package already pinned in the workspace root `package.json` — mirror the root's caret range instead. pnpm only re-resolves an importer when its own specifier changes, so a `"*"` copy can silently drift to a different resolved version once root is bumped, surfacing as a confusing type error (e.g. two `fastify` versions producing incompatible `FastifyInstance` types) instead of an obvious version mismatch; matching caret ranges let pnpm dedupe to one resolved version. Do NOT use `overrides` in `pnpm-workspace.yaml` to force versions for packages consumed by the fly services — it breaks their pruned installs (rationale in [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-pattern.md)).
-- A `libs/@vigilant-broccoli/*` lib publishes to npm iff its `project.json` defines a `publish-package` target — `publishConfig` in `package.json` alone does nothing. Before adding or changing npm publishing, follow the npm package publishing steps in [app-development.md](./docs/app-development/app-development.md#npm-package-publishing) (reference libs, target wiring, `NPM_TOKEN` requirements, first-publish constraints).
+- Before adding or changing npm publishing, read [npm package publishing](./docs/app-development/app-development.md#npm-package-publishing) first.
 
 ### UI
 
-- For UI applications, read [ui-app-pattern.md](./docs/app-development/ui/ui-app-pattern.md) first — it owns the binding UI requirements (prefer `@vigilant-broccoli/react-lib` shared components over hand-rolling, i18n via the shared `createI18n` for all user-facing copy, user-facing auth via `createSupabaseAuth`, a card on the pages-index "UI Apps" page) and routes to the per-destination deploy and auth pattern docs alongside it.
+- For UI applications, read [ui-app-pattern.md](./docs/app-development/ui/ui-app-pattern.md) first; it owns the binding UI requirements and links to the deploy and auth patterns.
 
 ### API
 
@@ -87,7 +86,7 @@ Browse this whole graph rendered, with full-text search and a link graph view, a
 
 ### Documentation
 
-- Each app under `apps/*`, and each `libs/@vigilant-broccoli/*` lib that publishes to npm, carries a `README.md` following [app-readme-pattern.md](./docs/app-readme-pattern.md) (title, one-line purpose, `## Stack`); keep it in sync with the code — in particular, add or remove a deploy destination (Docker Hub, npm, Fly.io, Vercel, …) under Cloud services in the same change that wires or unwires it. Run `/update-readmes` to review and refresh them all.
+- Before adding or updating a README, read [app-readme-pattern.md](./docs/app-readme-pattern.md) first. Run `/update-readmes` to review and refresh them all.
 - Feature docs live in a `docs/features/<feature>/` folder nearest the code that implements them — under the owning app (`apps/hearth/docs/features/`, `apps/ui/vb-manager-next/docs/features/`) or lib (`libs/@vigilant-broccoli/react-lib/docs/features/`), never at the workspace root for something one app owns. `projects/nx-workspace/docs/features/` is reserved for features that genuinely span apps (today: `dev-dashboard/`). `/update-feature-documentation` writes them.
 
 ## Git

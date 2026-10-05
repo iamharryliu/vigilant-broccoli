@@ -2,7 +2,7 @@ import './global.css';
 import type { Viewport } from 'next';
 
 export const metadata = {
-  title: 'Whiteboard',
+  title: 'Shared board | Whiteboard',
   description: 'Write together live in shared whiteboard rooms',
 };
 

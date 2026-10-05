@@ -8,6 +8,7 @@ import {
   FILE_PARAM,
 } from '@vigilant-broccoli/react-utility';
 import { CLAUDE_CONTEXT_SNAPSHOT_URL } from '../consts/claudeContext';
+import { useTranslation } from '../i18n';
 import { useThemeAppearance } from '../use-prefers-dark';
 
 const HASH_PREFIX = '#';
@@ -26,6 +27,7 @@ const readRoute = () =>
 
 export default function ClaudeContextViewer() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const appearance = useThemeAppearance();
 
   const urlSync = useMemo<DocsExplorerUrlSync>(
@@ -56,6 +58,7 @@ export default function ClaudeContextViewer() {
       className="flex !min-h-0 flex-1 flex-col"
     >
       <DocsViewer
+        siteName={t('HOME.TITLE')}
         getStructure={fetchStructure}
         getContent={fetchContent}
         search={searchDocs}
