@@ -41,3 +41,26 @@ jobs:
           command: summary
         env:
           GH_PAT: ${{ github.token }}
+      - name: Generate README graphs and badge endpoints
+        uses: upptime/uptime-monitor@8be193bbcb957a3a917d2bb16a0c96959778a889 # v1.44.1
+        with:
+          command: graphs
+        env:
+          GH_PAT: ${{ github.token }}
+          npm_config_yes: 'true'
+      - name: Verify README assets
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          for service in json.loads(Path('history/summary.json').read_text()):
+              slug = service['slug']
+              for metric in ('uptime', 'response-time'):
+                  for period in ('', '-day', '-week', '-month', '-year'):
+                      path = Path('api') / slug / f'{metric}{period}.json'
+                      badge = json.loads(path.read_text())
+                      assert badge['schemaVersion'] == 1 and badge['message'], path
+              graph = Path('graphs') / slug / 'response-time-week.png'
+              assert graph.read_bytes().startswith(b'\x89PNG\r\n\x1a\n'), graph
+          PY

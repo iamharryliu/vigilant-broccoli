@@ -26,13 +26,15 @@ The sync publishes an explicit allowlist through GitHub's Git database API:
 
 - `.upptimerc.yml` — same endpoints and names; `owner` and `repo` are rendered from Terraform's `UPPTIME_REPOSITORY` variable. The root source retains its legacy repository identity until legacy checks are retired.
 - `.github/workflows/cron-upptime.yml` — hourly at minute 7, plus manual/dispatch triggers; updates uptime and then refreshes the summary.
-- `.github/workflows/cron-upptime-response-time.yml` — daily at 00:25 UTC, plus manual/dispatch triggers; records response times and refreshes the summary.
+- `.github/workflows/cron-upptime-response-time.yml` — daily at 00:25 UTC, plus manual/dispatch triggers; records response times, refreshes the summary, then generates and verifies README graphs and badge endpoints.
 - `scripts/warm-fly.sh` — parallel HTTP requests to staging and production VB Express, up to three 20-second attempts with three-second waits. HTTP errors fail warming; an exhausted warm-up emits a warning and Upptime still checks for a real outage.
 - `README.md` — managed text around Upptime's generated status-table markers. Existing table content is preserved on sync.
 
 Sync creates a commit on the current monitoring tip using its existing tree, never force-updates the branch, and retries if monitoring advances during publication. It neither checks out target files nor executes target code. Generated `history/` files and other unlisted files are left untouched. Keep the allowlist in `sync.py` explicit when adding or retiring a managed file.
 
 Both monitoring workflows share the `upptime` concurrency group, use full-history checkouts and pinned Node 24-compatible actions, and finish within 15 minutes. Terraform restricts allowed actions to those exact SHAs; update the allowlist when changing a pin. Summary generation is an explicit step, so it does not depend on `GITHUB_TOKEN` pushes triggering another workflow ([GitHub behavior](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow)). Template/dependency regeneration workflows are not installed.
+
+Upptime's summary command writes the README table and `history/summary.json`; it does not create the table's linked images or Shields endpoints. The daily workflow's `graphs` command generates `graphs/` PNGs and `api/` badge JSON for all-time, day, week, month, and year metrics ([badges](https://upptime.js.org/docs/badges/)). Run the response-time workflow manually after initializing a repository to populate these assets. Sync preserves them as generated files. The workflow verifies every service's badge endpoints and weekly PNG so missing assets fail the run even if an upstream generation subprocess fails silently.
 
 ## Setup and migration
 

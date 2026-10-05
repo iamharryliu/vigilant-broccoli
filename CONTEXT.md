@@ -67,6 +67,7 @@ Browse this whole graph rendered, with full-text search and a link graph view, a
 ## CI
 
 - Never introduce a new GitHub Actions repo secret, and remove unused ones. `GCP_SERVICE_ACCOUNT` and `GCP_WORKLOAD_IDENTITY_PROVIDER` are the only required ones; every other credential comes from GCP Secret Manager or Vault. The reasoning, and the rest of the workflow conventions, are in [workflow-conventions.md](./docs/ci/workflow-conventions.md) — read it before adding or changing a workflow.
+- Before changing Terraform GitHub resources or its CI consumers, check the [Terraform GitHub token permissions](./docs/infrastructure/secret-management.md#terraform-github-token). `TF_GITHUB_TOKEN` needs access to both managed repositories; its PAT permissions are separate from workflow `permissions:` and the Upptime sync App.
 
 ## App Development
 

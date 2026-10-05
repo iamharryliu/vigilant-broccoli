@@ -75,13 +75,13 @@ variable "upptime_repo" {
 variable "upptime_sync_gh_app_id" {
   description = "Public ID of the sync App installed only on the monitoring repository (Contents + Workflows RW). Set after registering the App and storing its key in kv/upptime-sync. Zero keeps sync disabled."
   type        = number
-  default     = 0
+  default     = 5202397
 }
 
 variable "upptime_migration_complete" {
   description = "Set true only after verifying the new monitoring repository. Disables legacy checks and removes their App's main bypass together."
   type        = bool
-  default     = false
+  default     = true
 
   validation {
     condition     = !var.upptime_migration_complete || var.upptime_sync_gh_app_id > 0
