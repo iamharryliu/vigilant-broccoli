@@ -110,7 +110,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   pushactions / pushsetup     Commit and push workflows / setup scripts
   pushdotfiles                Commit and push dotfiles
   pushleetcode                Commit and push grind-75
-  pushJournal / pulljournal   Push / pull the journal repo
+  pushjournal / pulljournal   Push / pull the journal repo
 
 🧪 VB PROJECTS
   testgrind75                 Run grind-75 tests (py + ts + go)
