@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useDocumentTitle } from '@vigilant-broccoli/react-lib';
 import {
   Route,
   Routes,
@@ -17,6 +18,7 @@ import {
   INDEX_ROUTE,
   LINK_TREE_ROUTE,
   ROUTES,
+  SITE_NAME,
   type RouteMeta,
 } from './core/consts/routes.const';
 import { ENVIRONMENT } from '../environments/environment';
@@ -49,16 +51,15 @@ const findRouteMeta = (pathname: string): RouteMeta | undefined => {
 
 function SeoUpdater() {
   const location = useLocation();
+  const meta = findRouteMeta(location.pathname) ?? INDEX_ROUTE;
+  const fullTitle = `${meta.title} | ${SITE_NAME}`;
+  useDocumentTitle(fullTitle);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    const meta = findRouteMeta(location.pathname);
-    const title = meta?.title ?? 'home';
-    const description = meta?.description ?? DEFAULT_DESCRIPTION;
-    const fullTitle = `harryliu.dev - ${title}`;
+    const description = meta.description ?? DEFAULT_DESCRIPTION;
     const url = `${ENVIRONMENT.APP_URL}${location.pathname}${location.search}`;
 
-    document.title = fullTitle;
     updateMetaTag(
       'meta[name="description"]',
       'name',
@@ -95,7 +96,7 @@ function SeoUpdater() {
       'link[rel="canonical"]',
     );
     if (canonical) canonical.setAttribute('href', url);
-  }, [location.pathname, location.search]);
+  }, [location.pathname, location.search, meta, fullTitle]);
 
   return null;
 }
@@ -106,7 +107,6 @@ function PageviewTracker() {
 }
 
 export function App() {
-  // Touch matches to silence unused warning; not strictly needed.
   useMatch('/');
   const location = useLocation();
   return (

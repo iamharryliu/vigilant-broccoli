@@ -11,14 +11,14 @@ import { useTranslation } from '../i18n';
 import { CardLink } from '../components/CardLink';
 import { CardGrid } from '../components/CardGrid';
 import { SectionHeading } from '../components/SectionHeading';
-import { useDocumentTitle } from '@vigilant-broccoli/react-lib';
+import { usePageTitle } from '../use-page-title';
 import { PAGE_CLASS } from '../consts/layout';
 
 const ICON_CLASS = 'h-5 w-5 shrink-0';
 
 export function HomePage() {
   const { t } = useTranslation();
-  useDocumentTitle(t('HOME.TITLE'));
+  usePageTitle(t('HOME.PAGE_TITLE'));
 
   return (
     <main className={PAGE_CLASS}>

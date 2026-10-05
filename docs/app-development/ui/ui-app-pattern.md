@@ -35,11 +35,13 @@ All user-facing copy goes through the shared `createI18n` from `@vigilant-brocco
 
 ## Page titles (required)
 
-Every route-level page sets a document title of `<Page> | <App>`, so browser tabs, history, and bookmarks identify the page rather than just the app.
+Every route-level page sets a document title of `Page Name | Site Name`, so browser tabs, history, and bookmarks identify the page rather than just the app.
 
 - The shared primitive is `useDocumentTitle` from `@vigilant-broccoli/react-lib`; each app wraps it in a local `usePageTitle` that appends the app name (e.g. `apps/hearth/src/lib/page-title.ts`).
 - Titles come from the app's existing page-name source — i18n keys where the app has them (`employee-handler-ui`, `pages-index`), otherwise a `PAGE_TITLE`/`APP_ROUTE` const module.
 - Next.js server-component pages use `export const metadata` instead, with a `title.template` on the root layout (`vb-manager-next-mobile`).
+- Home, login, callback, and error pages follow the same convention; initial HTML/root metadata defaults also include both names. Keep Open Graph and Twitter title tags consistent where present.
+- `DocsViewer` and `ComponentSandbox` accept `siteName` so their selected document/component titles retain the hosting app suffix. Pass it from the app; the viewer must not overwrite a formatted title with a bare document name.
 - Detail pages title themselves after the record they render (doc name, project title, org name), falling back to a generic label while loading.
 
 ## pages-index card (required)

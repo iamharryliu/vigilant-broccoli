@@ -2,7 +2,7 @@ import './global.css';
 import type { Viewport } from 'next';
 
 export const metadata = {
-  title: 'FindMe',
+  title: 'Live Locations | FindMe',
   description: 'Share your live location with others',
 };
 

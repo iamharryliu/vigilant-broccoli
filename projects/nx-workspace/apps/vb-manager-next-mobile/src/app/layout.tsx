@@ -2,10 +2,13 @@ import './global.css';
 import AuthProvider from './providers/auth-provider';
 import { AppShell } from './components/app-shell';
 import { ThemeWrapper } from './components/theme-wrapper';
-import { APP_NAME } from './app.const';
+import { APP_NAME, PAGE_TITLE } from './app.const';
 
 export const metadata = {
-  title: { default: APP_NAME, template: `%s | ${APP_NAME}` },
+  title: {
+    default: `${PAGE_TITLE.HOME} | ${APP_NAME}`,
+    template: `%s | ${APP_NAME}`,
+  },
   description: 'VB Manager Mobile',
 };
 

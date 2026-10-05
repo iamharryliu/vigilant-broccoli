@@ -11,6 +11,7 @@ import {
 import {
   ThemeProvider,
   useTheme,
+  useDocumentTitle,
   Sidebar,
   SidebarCTA,
   Switch,
@@ -436,6 +437,7 @@ const MENU_BUTTON_CLASS =
 const OPEN_MENU_LABEL = 'Open menu';
 
 export interface ComponentSandboxProps {
+  siteName?: string;
   title?: string;
   subtitle?: string;
   wrapInTheme?: boolean;
@@ -550,6 +552,7 @@ const SandboxTopbar = ({ title, onMenuClick }: SandboxTopbarProps) => (
 );
 
 interface SandboxBodyProps {
+  siteName?: string;
   title?: string;
   subtitle?: string;
   dark: boolean;
@@ -567,7 +570,13 @@ const readStoredSelectedId = () => {
 const readStoredIconMode = () =>
   localStorage.getItem(ICON_MODE_STORAGE_KEY) === 'true';
 
+const SandboxDocumentTitle = ({ title }: { title: string }) => {
+  useDocumentTitle(title);
+  return null;
+};
+
 const SandboxBody = ({
+  siteName,
   title,
   subtitle,
   dark,
@@ -629,6 +638,9 @@ const SandboxBody = ({
 
   return (
     <div className="h-full">
+      {siteName && (
+        <SandboxDocumentTitle title={`${selectedEntry.label} | ${siteName}`} />
+      )}
       <Sidebar
         items={items}
         searchable
@@ -662,11 +674,16 @@ const SandboxBody = ({
   );
 };
 
-function ThemedSandbox({ title, subtitle }: ComponentSandboxProps): ReactNode {
+function ThemedSandbox({
+  title,
+  subtitle,
+  siteName,
+}: ComponentSandboxProps): ReactNode {
   const { appearance, toggleTheme } = useTheme();
   return (
     <div className="w-full h-screen overflow-hidden">
       <SandboxBody
+        siteName={siteName}
         title={title}
         subtitle={subtitle}
         dark={appearance === 'dark'}

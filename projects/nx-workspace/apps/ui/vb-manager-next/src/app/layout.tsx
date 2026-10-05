@@ -4,7 +4,7 @@ import './global.css';
 import { ThemeProvider } from '@vigilant-broccoli/react-lib';
 import { Toaster } from '@vigilant-broccoli/react-lib/toaster';
 import { AuthProvider } from '../../libs/auth';
-import { APP_NAME } from './app.const';
+import { APP_NAME, SIDEBAR_ROUTE } from './app.const';
 
 export default function RootLayout({
   children,
@@ -14,7 +14,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>{APP_NAME}</title>
+        <title>{`${SIDEBAR_ROUTE.INDEX.title} | ${APP_NAME}`}</title>
       </head>
       <body>
         <AuthProvider>
