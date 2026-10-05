@@ -185,6 +185,7 @@ $SCOPE_RULE
   - pr_title: the pull request title
   - pr_summary: markdown bullet points for the PR "## Summary" section
   - pr_test_plan: markdown checklist for the PR "## Test plan" section
+  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
 EOF
 )
 
@@ -261,6 +262,7 @@ TRAILER=$(read_meta .co_authored_by)
 PR_TITLE=$(read_meta .pr_title)
 PR_SUMMARY=$(read_meta .pr_summary)
 PR_TEST_PLAN=$(read_meta .pr_test_plan)
+PR_SUGGESTIONS=$(read_meta .pr_suggestions)
 
 case "$COMMIT_TYPE" in
   feat | fix | ci | chore | docs | refactor | enhancement | security | infrastructure) ;;
@@ -307,21 +309,14 @@ else
   HISTORY_COMMAND="agentic:task:solve --prompt"
 fi
 
-# The base body carries only "## Request" + the footer; merge-pr-body.py
-# (shared with update-pr-runner.sh / fix-pr-runner.sh) inserts "## Summary"
-# and "## Test plan" ahead of it and appends the first "## Agentic Change
+# The base body is only the footer; merge-pr-body.py (shared with
+# update-pr-runner.sh / fix-pr-runner.sh) inserts "## Summary", "## Test plan"
+# and "## Suggestions" ahead of it and appends the first "## Agentic Change
 # History" row, so a brand-new PR's body is assembled the same way a later
 # pr:update/pr:fix edits it.
-BASE_BODY=$(cat <<EOF
-## Request
+BASE_BODY="$PR_FOOTER"
 
-$REQUEST_BODY
-
-$PR_FOOTER
-EOF
-)
-
-PR_BODY=$(CURRENT_BODY="$BASE_BODY" PR_SUMMARY="$PR_SUMMARY" PR_TEST_PLAN="$PR_TEST_PLAN" \
+PR_BODY=$(CURRENT_BODY="$BASE_BODY" PR_SUMMARY="$PR_SUMMARY" PR_TEST_PLAN="$PR_TEST_PLAN" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
   HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="$HISTORY_COMMAND" HISTORY_PROMPT="$TASK" \
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
   python3 "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py")
