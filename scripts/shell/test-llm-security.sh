@@ -3,8 +3,15 @@
 set -e
 
 LLM_SERVICE_URL="${LLM_SERVICE_URL:-http://127.0.0.1:3000}"
-MODEL="${MODEL:-gemini-2.5-flash-lite}"
-BILLING_ERROR_PATTERN="credit balance|credit_balance|no credits remaining|resource_exhausted|quota|rate limit|\b429\b"
+MODEL="${MODEL:-gpt-4o-mini}"
+BILLING_ERROR_PATTERN="insufficient_quota|exceeded your current quota|credit balance|credit_balance|no credits remaining"
+
+flag_out_of_credits() {
+  echo "::error title=LLM provider out of credits::${MODEL} request was rejected for quota/credit exhaustion — top up the OpenAI account"
+  if [ -n "${GITHUB_OUTPUT:-}" ]; then
+    echo "out_of_credits=true" >> "$GITHUB_OUTPUT"
+  fi
+}
 MAX_NUM_OUTPUTS=10
 REQUESTED_NUM_OUTPUTS=15
 FAILED=0
@@ -50,7 +57,9 @@ RESPONSE=$(curl -s -X POST "${LLM_SERVICE_URL}/api/llm" \
 echo "Response: ${RESPONSE}"
 
 if echo "${RESPONSE}" | grep -qiE "$BILLING_ERROR_PATTERN"; then
-  echo "✓ Passed: skipped (account credit balance too low)"
+  flag_out_of_credits
+  echo "✗ Failed: account is out of credits"
+  FAILED=1
 elif ! echo "${RESPONSE}" | jq -e '.outputs' >/dev/null 2>&1; then
   echo "✗ Failed: response did not contain an outputs array"
   FAILED=1
