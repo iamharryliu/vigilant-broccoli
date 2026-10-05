@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - .nvmrc
       - .upptimerc.yml
       - infrastructure/upptime/**
       - infrastructure/agent-sandbox/mint-github-app-token.sh

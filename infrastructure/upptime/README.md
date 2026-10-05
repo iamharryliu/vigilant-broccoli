@@ -15,6 +15,8 @@ One-way configuration publishing and history migration for isolated monitoring; 
 - Tooling
   - Git
   - GitHub Actions
+  - Node.js
+  - npm
   - Terraform
 - Cloud providers
   - GitHub

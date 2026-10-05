@@ -25,16 +25,22 @@ Manage monitoring from vigilant-broccoli while running Upptime with credentials 
 The sync publishes an explicit allowlist through GitHub's Git database API:
 
 - `.upptimerc.yml` — same endpoints and names; `owner` and `repo` are rendered from Terraform's `UPPTIME_REPOSITORY` variable. The root source retains its legacy repository identity until legacy checks are retired.
+- `.nvmrc` — Node version from the workspace root for the graph runtime.
 - `.github/workflows/cron-upptime.yml` — hourly at minute 7, plus manual/dispatch triggers; updates uptime and then refreshes the summary.
 - `.github/workflows/cron-upptime-response-time.yml` — daily at 00:25 UTC, plus manual/dispatch triggers; records response times, refreshes the summary, then generates and verifies README graphs and badge endpoints.
 - `scripts/warm-fly.sh` — parallel HTTP requests to staging and production VB Express, up to three 20-second attempts with three-second waits. HTTP errors fail warming; an exhausted warm-up emits a warning and Upptime still checks for a real outage.
+- `scripts/graphs/package.json` and `package-lock.json` — isolated, locked graph dependencies with a Node 24-compatible canvas override.
 - `README.md` — managed text around Upptime's generated status-table markers. Existing table content is preserved on sync.
 
 Sync creates a commit on the current monitoring tip using its existing tree, never force-updates the branch, and retries if monitoring advances during publication. It neither checks out target files nor executes target code. Generated `history/` files and other unlisted files are left untouched. Keep the allowlist in `sync.py` explicit when adding or retiring a managed file.
 
+The source config disables Upptime's description, topics, and homepage updates. Terraform owns repository settings; the monitoring token cannot perform these administrative writes. This avoids caught 403 errors during otherwise successful summary updates.
+
 Both monitoring workflows share the `upptime` concurrency group, use full-history checkouts and pinned Node 24-compatible actions, and finish within 15 minutes. Terraform restricts allowed actions to those exact SHAs; update the allowlist when changing a pin. Summary generation is an explicit step, so it does not depend on `GITHUB_TOKEN` pushes triggering another workflow ([GitHub behavior](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow)). Template/dependency regeneration workflows are not installed.
 
-Upptime's summary command writes the README table and `history/summary.json`; it does not create the table's linked images or Shields endpoints. The daily workflow's `graphs` command generates `graphs/` PNGs and `api/` badge JSON for all-time, day, week, month, and year metrics ([badges](https://upptime.js.org/docs/badges/)). Run the response-time workflow manually after initializing a repository to populate these assets. Sync preserves them as generated files. The workflow verifies every service's badge endpoints and weekly PNG so missing assets fail the run even if an upstream generation subprocess fails silently.
+Upptime's summary command writes the README table and `history/summary.json`; it does not create the table's linked images or Shields endpoints. The daily workflow installs the locked graph runtime with `npm ci`, invokes its CLI directly, verifies every service's badge JSON and weekly PNG, and commits only `api/` and `graphs/`. Installation and generation failures stop the workflow before publication. The runtime pins `@upptime/graphs` and overrides its old canvas dependency with `canvas@3.2.0`, whose N-API implementation works on Node 24 ([canvas release](https://github.com/Automattic/node-canvas/releases/tag/v3.0.0)). The upstream action's `graphs` command runs floating `npx` dependencies and ignores subprocess exit codes; the failed migration run reported success while creating no assets. [Runtime nuance](../../infrastructure/upptime/graphs/CONTEXT.md#canvas-2-fails-on-node-24) records this constraint.
+
+These assets supply the README's all-time, day, week, month, and year metrics ([badges](https://upptime.js.org/docs/badges/)). Run the response-time workflow manually after initializing a repository to populate them. Sync preserves generated assets. Before publishing this workflow change, apply the Terraform action allowlist update for the pinned `actions/setup-node` SHA.
 
 ## Setup and migration
 
@@ -79,5 +85,6 @@ Warm-up intentionally measures warmed availability and response time; it does no
 ## Free Tier
 
 - GitHub-hosted standard runners are free for public repositories ([GitHub billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions)). Monitoring uses roughly 25 scheduled workflow runs per day; sync runs only on configuration changes or manual dispatch. No separate Upptime Pages site is provisioned; Pages Index continues displaying the public summary.
+- Graph and badge generation runs within the existing daily response-time workflow, adding dependency installation and rendering time without another scheduled run.
 - The dedicated GCP service account and WIF provider add no VM. They reuse the existing Cloudflare Access secrets and Vault VM, adding only authentication/secret-read operations to the current services.
 - No paid monitoring subscription or new persistent compute resource is required.

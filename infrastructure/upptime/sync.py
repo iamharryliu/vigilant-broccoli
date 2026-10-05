@@ -27,6 +27,8 @@ MANAGED_FILES = {
     ".github/workflows/cron-upptime-response-time.yml": "workflows/cron-upptime-response-time.yml",
     "scripts/warm-fly.sh": "warm-fly.sh",
     "README.md": "monitoring-readme.md",
+    "scripts/graphs/package.json": "graphs/package.json",
+    "scripts/graphs/package-lock.json": "graphs/package-lock.json",
 }
 
 
@@ -45,7 +47,7 @@ def managed_files(repository):
         config, count = re.subn(rf"^{key}:.*$", f"{key}: {value}", config, flags=re.M)
         if count != 1:
             raise ValueError(f"Expected exactly one {key} in .upptimerc.yml")
-    files = {".upptimerc.yml": config}
+    files = {".upptimerc.yml": config, ".nvmrc": (ROOT / ".nvmrc").read_text()}
     files.update(
         {
             target: (SOURCE / source)

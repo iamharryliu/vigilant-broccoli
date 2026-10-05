@@ -52,6 +52,9 @@ sites:
     url: https://docs.harryliu.dev/
 
 user-agent: upptime-vigilant-broccoli
+skipDescriptionUpdate: true
+skipTopicsUpdate: true
+skipHomepageUpdate: true
 
 assignees:
   - iamharryliu
