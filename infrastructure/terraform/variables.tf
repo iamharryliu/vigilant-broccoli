@@ -55,12 +55,6 @@ variable "github_repo" {
   default     = "vigilant-broccoli"
 }
 
-variable "upptime_gh_app_id" {
-  description = "App ID of the dedicated GitHub App (Contents + Issues RW only) that the upptime crons use to push status commits and manage incident issues. Not a secret — it's visible in the ruleset config — so it's hardcoded here like the other non-secret IDs. Only its private key (UPPTIME_GH_APP_PRIVATE_KEY) lives in Vault. If the app is recreated, update this and the ID in the two cron-upptime workflows."
-  type        = number
-  default     = 4350545
-}
-
 variable "upptime_repo" {
   description = "Public repository managed by this workspace for isolated Upptime monitoring."
   type        = string
@@ -79,7 +73,7 @@ variable "upptime_sync_gh_app_id" {
 }
 
 variable "upptime_migration_complete" {
-  description = "Set true only after verifying the new monitoring repository. Disables legacy checks and removes their App's main bypass together."
+  description = "Enables scheduled checks in the initialized monitoring repository. Set true only after importing history and verifying manual checks."
   type        = bool
   default     = true
 

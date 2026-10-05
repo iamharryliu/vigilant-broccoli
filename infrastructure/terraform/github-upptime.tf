@@ -58,7 +58,6 @@ locals {
     UPPTIME_REPOSITORY           = "${var.github_owner}/${github_repository.upptime.name}"
     UPPTIME_SYNC_APP_ID          = tostring(var.upptime_sync_gh_app_id)
     UPPTIME_SYNC_ENABLED         = tostring(var.upptime_sync_gh_app_id > 0)
-    UPPTIME_MIGRATED             = tostring(var.upptime_migration_complete)
     UPPTIME_SYNC_WIF_PROVIDER    = google_iam_workload_identity_pool_provider.github_upptime_sync.name
     UPPTIME_SYNC_SERVICE_ACCOUNT = google_service_account.github_actions_upptime_sync.email
   }

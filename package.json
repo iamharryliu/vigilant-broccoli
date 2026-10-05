@@ -143,6 +143,7 @@
     "upptime:history:export": "bash infrastructure/upptime/export-history.sh",
     "upptime:history:import": "bash infrastructure/upptime/import-history.sh",
     "upptime:sync:store-key": "bash infrastructure/upptime/store-sync-key.sh",
+    "upptime:legacy:retire-key": "bash infrastructure/upptime/retire-legacy-key.sh",
     "gh:actions:sync-upptime": "gh workflow run ci-sync-upptime --repo iamharryliu/vigilant-broccoli --ref main"
   },
   "repository": {
