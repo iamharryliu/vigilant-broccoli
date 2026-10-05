@@ -1,0 +1,10 @@
+{
+  "name": "upptime-graphs-runtime",
+  "private": true,
+  "dependencies": {
+    "@upptime/graphs": "1.2.31"
+  },
+  "overrides": {
+    "canvas": "3.2.0"
+  }
+}

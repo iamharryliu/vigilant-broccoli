@@ -41,13 +41,16 @@ jobs:
           command: summary
         env:
           GH_PAT: ${{ github.token }}
-      - name: Generate README graphs and badge endpoints
-        uses: upptime/uptime-monitor@8be193bbcb957a3a917d2bb16a0c96959778a889 # v1.44.1
+      - name: Set up graph runtime
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          command: graphs
+          node-version-file: .nvmrc
+      - name: Install graph dependencies
+        run: npm ci --prefix scripts/graphs --no-audit --no-fund --foreground-scripts
+      - name: Generate README graphs and badge endpoints
+        run: node scripts/graphs/node_modules/@upptime/graphs/dist/cli.js
         env:
           GH_PAT: ${{ github.token }}
-          npm_config_yes: 'true'
       - name: Verify README assets
         run: |
           python3 - <<'PY'
@@ -64,3 +67,12 @@ jobs:
               graph = Path('graphs') / slug / 'response-time-week.png'
               assert graph.read_bytes().startswith(b'\x89PNG\r\n\x1a\n'), graph
           PY
+      - name: Publish README assets
+        run: |
+          git config user.name 'Upptime Bot'
+          git config user.email 'upptime@koj.co'
+          git add api graphs
+          if ! git diff --cached --quiet; then
+            git commit -m ':bento: Update graphs and badges [skip ci] [upptime]'
+            git push origin HEAD:main
+          fi
