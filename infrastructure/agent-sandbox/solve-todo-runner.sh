@@ -296,15 +296,18 @@ git add -A
 git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
 git push -u origin "$BRANCH"
 
-PR_BODY=$(cat <<EOF
-## Summary
+if [ "$MODE" = id ]; then
+  HISTORY_COMMAND="agentic:task:solve --id ${ID}"
+else
+  HISTORY_COMMAND="agentic:task:solve --prompt"
+fi
 
-$PR_SUMMARY
-
-## Test plan
-
-$PR_TEST_PLAN
-
+# The base body carries only "## Request" + the footer; merge-pr-body.py
+# (shared with update-pr-runner.sh / fix-pr-runner.sh) inserts "## Summary"
+# and "## Test plan" ahead of it and appends the first "## Agentic Change
+# History" row, so a brand-new PR's body is assembled the same way a later
+# pr:update/pr:fix edits it.
+BASE_BODY=$(cat <<EOF
 ## Request
 
 $REQUEST_BODY
@@ -312,6 +315,11 @@ $REQUEST_BODY
 $PR_FOOTER
 EOF
 )
+
+PR_BODY=$(CURRENT_BODY="$BASE_BODY" PR_SUMMARY="$PR_SUMMARY" PR_TEST_PLAN="$PR_TEST_PLAN" \
+  HISTORY_COMMAND="$HISTORY_COMMAND" HISTORY_PROMPT="$TASK" \
+  HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
+  python3 "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py")
 
 PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
 echo "$PR_URL"

@@ -41,7 +41,7 @@ elif [ -n "${AGENT_GH_APP_ID:-}" ] && [ -n "${AGENT_GH_APP_PRIVATE_KEY:-}" ]; th
 fi
 
 if [ -z "${GH_TOKEN:-}" ]; then
-  echo "ERROR: no GitHub token available — this cannot check out, push, or comment on the PR." >&2
+  echo "ERROR: no GitHub token available — this cannot check out, push, or update the PR body." >&2
   echo "Add GitHub App credentials or a fine-grained PAT to Vault (see docs/infrastructure/secret-management.md), then run: pnpm agentic:dev-sandbox:up" >&2
   exit 1
 fi

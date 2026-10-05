@@ -3,8 +3,8 @@ name: manual-agentic-update-pr
 # Runs the same agent PR update as the local `pnpm agentic:pr:update`, but on the
 # ephemeral GitHub-hosted runner: it builds and runs the vb-agent-sandbox
 # container (checks out the PR branch, headless Claude Code applies the change,
-# commit, push, PR comment). Secrets come from Vault; the branch push + comment
-# use a minted GitHub App token, so the workflow's own GITHUB_TOKEN needs no write scope.
+# commit, push, PR body update). Secrets come from Vault; the branch push + PR
+# edit use a minted GitHub App token, so the workflow's own GITHUB_TOKEN needs no write scope.
 
 on:
   workflow_dispatch:

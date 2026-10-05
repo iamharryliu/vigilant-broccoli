@@ -1,0 +1,111 @@
+#!/usr/bin/env python3
+"""Shared by update-pr-runner.sh and fix-pr-runner.sh to rewrite a PR body in
+place: replace the "## Summary" / "## Test plan" sections with the agent's
+latest cumulative description, and append a row to an "## Agentic Change
+History" table — creating either if the PR body doesn't have them yet.
+Reads everything from the environment (see the CURRENT_BODY/PR_*/HISTORY_*
+vars below) and prints the merged body to stdout; the caller passes it to
+`gh pr edit --body`.
+"""
+import os
+import re
+
+CLAUDE_FOOTER = "🤖 Generated with [Claude Code](https://claude.com/claude-code)"
+CODEX_FOOTER = "Generated with [Codex](https://openai.com/codex)"
+
+body = os.environ["CURRENT_BODY"]
+
+# solve-todo-runner.sh's Claude and Codex paths each sign off with their own
+# footer as the body's trailing paragraph — strip it before editing sections
+# so it stays last instead of getting stranded above whatever's appended below.
+footer = ""
+for candidate in (CLAUDE_FOOTER, CODEX_FOOTER):
+    suffix = "\n\n" + candidate
+    if body.endswith(suffix):
+        body = body[: -len(suffix)]
+        footer = candidate
+        break
+
+# Split into (heading, content) pairs on top-level "## " headings, keeping any
+# content that precedes the first heading (there normally is none).
+heading_re = re.compile(r"^## (.+)$", re.MULTILINE)
+matches = list(heading_re.finditer(body))
+sections = []
+if matches:
+    if matches[0].start() > 0:
+        sections.append((None, body[: matches[0].start()]))
+    for i, m in enumerate(matches):
+        start = m.end()
+        end = matches[i + 1].start() if i + 1 < len(matches) else len(body)
+        sections.append((m.group(1).strip(), body[start:end]))
+else:
+    sections.append((None, body))
+
+
+def replace_section(name, content):
+    for i, (heading, _) in enumerate(sections):
+        if heading == name:
+            sections[i] = (heading, content)
+            return True
+    return False
+
+
+pr_summary = os.environ.get("PR_SUMMARY", "").strip()
+pr_test_plan = os.environ.get("PR_TEST_PLAN", "").strip()
+
+if pr_summary and not replace_section("Summary", pr_summary):
+    sections.insert(0, ("Summary", pr_summary))
+
+if pr_test_plan and not replace_section("Test plan", pr_test_plan):
+    insert_at = next((i for i, (h, _) in enumerate(sections) if h == "Summary"), -1) + 1
+    sections.insert(insert_at, ("Test plan", pr_test_plan))
+
+history_command = os.environ.get("HISTORY_COMMAND", "").strip()
+history_prompt = os.environ.get("HISTORY_PROMPT", "").strip()
+history_summary = os.environ.get("HISTORY_SUMMARY", "").strip()
+history_date = os.environ.get("HISTORY_DATE", "").strip()
+
+if history_command and history_summary and history_date:
+    HISTORY_HEADING = "Agentic Change History"
+    HEADER_ROW = "| Date | Command | Prompt | Summary |"
+    SEPARATOR_ROW = "| --- | --- | --- | --- |"
+
+    def table_cell(text):
+        return text.replace("|", "\\|").replace("\n", "<br>").strip()
+
+    new_row = "| {} | {} | {} | {} |".format(
+        table_cell(history_date),
+        table_cell(history_command),
+        table_cell(history_prompt),
+        table_cell(history_summary),
+    )
+
+    existing_index = next(
+        (i for i, (h, _) in enumerate(sections) if h == HISTORY_HEADING), None
+    )
+    if existing_index is None:
+        sections.append(
+            (HISTORY_HEADING, "\n".join([HEADER_ROW, SEPARATOR_ROW, new_row]))
+        )
+    else:
+        lines = [
+            l for l in sections[existing_index][1].strip().splitlines() if l.strip()
+        ]
+        data_rows = lines[2:] if len(lines) >= 2 else []
+        data_rows.append(new_row)
+        sections[existing_index] = (
+            HISTORY_HEADING,
+            "\n".join([HEADER_ROW, SEPARATOR_ROW] + data_rows),
+        )
+
+parts = []
+for heading, text in sections:
+    if heading is not None:
+        parts.append(f"## {heading}")
+    stripped = text.strip()
+    if stripped:
+        parts.append(stripped)
+if footer:
+    parts.append(footer)
+
+print("\n\n".join(parts))
