@@ -64,7 +64,13 @@ jobs:
           if [ "${{ inputs.rotate_password }}" = "true" ]; then
             REPLACE_FLAGS="$REPLACE_FLAGS -replace=random_password.code_server_password"
           fi
-          terraform apply -input=false -auto-approve $REPLACE_FLAGS
+          # -target keeps the refresh to just this VM and its DNS record: the
+          # github_actions SA (de-privileged in #361) can't read the unrelated
+          # GCP secrets/buckets/service-accounts sharing this state, and an
+          # untargeted apply refreshes the whole state before planning.
+          terraform apply -input=false -auto-approve $REPLACE_FLAGS \
+            -target=oci_core_instance.code_server \
+            -target=cloudflare_dns_record.code_server
           echo "CODE_SERVER_IP=$(terraform output -raw oci_code_server_public_ip)" >> "$GITHUB_ENV"
 
       # The replaced VM gets a fresh ephemeral IP; Terraform updates its DNS
