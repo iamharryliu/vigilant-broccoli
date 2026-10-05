@@ -8,6 +8,12 @@ Source of truth for where every credential lives, how CI and local tooling reach
 - [Secret Hierarchy](#secret-hierarchy)
 - [Top-Level Secrets](#top-level-secrets)
 - [Secret Rotation](#secret-rotation)
+  - [Automated](#automated)
+  - [Manual](#manual)
+  - [Nx cache](#nx-cache)
+  - [Other](#other)
+  - [Tier 0 — GCP Secret Manager (root of trust)](#tier-0--gcp-secret-manager-root-of-trust)
+- [Terraform GitHub token](#terraform-github-token)
 - [PR preview deploy credentials](#pr-preview-deploy-credentials)
 
 ## Local config files
@@ -106,7 +112,7 @@ Rotate `NX_CACHE_WRITE_TOKEN`/`NX_CACHE_READ_TOKEN` by tainting both `random_pas
 
 - Cloudflare — `CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS`, `CLOUDFLARE_R2_ACCESS_KEY_ID`, `CLOUDFLARE_R2_SECRET_ACCESS_KEY` ([API tokens](https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/api-tokens), [R2 tokens](https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/r2/api-tokens))
 - `DOCKERHUB_TOKEN` (Docker Hub account settings)
-- `TF_GITHUB_TOKEN` (Terraform GitHub provider PAT; consumers export it to the `GITHUB_TOKEN` env var the provider reads — `load-vault-tf-env.sh` KEY_MAP locally, `manual-replace-code-server.yml` in CI)
+- `TF_GITHUB_TOKEN` — Terraform GitHub provider PAT; [permissions and consumers](#terraform-github-token).
 - `AGENT_GH_APP_ID` / `AGENT_GH_APP_PRIVATE_KEY` — [GitHub App](https://github.com/settings/apps) installed on `iamharryliu/vigilant-broccoli` only (Contents RW + Pull requests RW + Workflows RW); the agent sandbox's GitHub auth (no PAT fallback — a missing App leaves the sandbox with read-only git): `load-env-from-vault.sh` holds the key only in the shell session (never written to disk) and `mint-github-app-token.sh` mints 1-hour repo-scoped installation tokens via process substitution, fresh per `agentic:dev-sandbox:up` and per `agentic:task:solve` batch. The code-server VM reuses the same App but never holds the key: `manual-refresh-code-server-github-token.yml` (`pnpm gh:actions:refresh-code-server-github-token`, the CI twin of `agentic:dev-sandbox:refresh-github-token`) mints a 1-hour token in the job and drops it over SSH (`OCI_VM_SSH_KEY` + `CODE_SERVER_VM_IP`) into `/opt/code-server/secrets/gh-token.json`, which the container's `gh` wrapper reads through `gh-token` (`infrastructure/code-server/gh-token.sh`); once expired, `git push`/`gh` say so and you re-run the workflow. Store the private key base64-encoded (`base64 -i key.pem`). Rotate by generating a new key on the App and patching Vault
 - `CLAUDE_CODE_OAUTH_TOKEN` — long-lived OAuth token from `claude setup-token` (interactive login, cannot be minted headlessly); every `agentic:*` container reads it via `load-env-from-vault.sh`, and the code-server VM gets it as container env (`TF_VAR_claude_code_oauth_token` via `load-vault-tf-env.sh` KEY_MAP / `manual-replace-code-server.yml`, baked into cloud-init — so a rotation reaches code-server on the next `code-server:replace`). Rarely needs rotation; to rotate, run `claude setup-token` yourself, patch the value into Vault (`vault kv patch ${VAULT_KV_PATH}/secrets CLAUDE_CODE_OAUTH_TOKEN=...`), then `pnpm agentic:dev-sandbox:up`
 - `AGENT_CODEX_ACCESS_TOKEN` — dedicated ChatGPT/Codex access token for `manual-agentic-solve` / `agentic:task:solve --agent codex`; keep it separate from the app `OPENAI_API_KEY`. Create it from a dedicated Codex service account or a personal Codex access-token flow in ChatGPT workspace settings, then assign that identity to the groups/roles whose Codex usage limits the agent should follow. Platform API keys use separate API billing and do not inherit ChatGPT/Codex session limits. The Codex runner loads this token from Vault, writes a temporary Codex auth home inside the disposable container, unsets the token before `codex exec` starts repository work, and removes that auth home when the run succeeds. Rotate through ChatGPT workspace settings, patch Vault (`vault kv patch ${VAULT_KV_PATH}/secrets AGENT_CODEX_ACCESS_TOKEN=...`), and rerun the desired Codex solve.
@@ -123,6 +129,27 @@ Set-once, rotate only deliberately. `VB_VM_VAULT_UNSEAL_KEYS` (Vault rekey requi
 ```bash
 gcloud secrets versions add BITWARDEN_PASSWORD --data-file=- <<< "your-bitwarden-password"
 ```
+
+## Terraform GitHub token
+
+`TF_GITHUB_TOKEN` is a fine-grained personal access token owned by `iamharryliu`, with repository access covering `vigilant-broccoli` and `uptime`. Terraform manages resources in both repositories (`infrastructure/terraform/github.tf` and `github-upptime.tf`). Configure it in [GitHub token settings](https://github.com/settings/personal-access-tokens) with these repository permissions:
+
+| Permission     | Access         | Terraform operations                                                                                                               |
+| -------------- | -------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Administration | Read and write | Repository settings, default branches, rulesets, vulnerability-alert enablement, allowed actions, and default workflow permissions |
+| Contents       | Read and write | Creating and managing branch references                                                                                            |
+| Pages          | Read and write | Managing vigilant-broccoli's GitHub Pages configuration                                                                            |
+| Secrets        | Read and write | Managing `GCP_SERVICE_ACCOUNT` and `GCP_WORKLOAD_IDENTITY_PROVIDER` repository secrets                                             |
+| Variables      | Read and write | Managing Upptime configuration and migration flags in both repositories                                                            |
+| Metadata       | Read           | Repository metadata; automatically included                                                                                        |
+
+GitHub documents these requirements for [administration operations](https://docs.github.com/en/rest/authentication/permissions-required-for-fine-grained-personal-access-tokens#repository-permissions-for-administration), [branch references](https://docs.github.com/en/rest/git/refs#create-a-reference), [Pages](https://docs.github.com/en/rest/pages/pages#update-information-about-a-github-pages-site), [secrets](https://docs.github.com/en/rest/actions/secrets#create-or-update-a-repository-secret), and [variables](https://docs.github.com/en/rest/actions/variables#create-a-repository-variable). The current resources do not require Actions, Workflows, Issues, Pull requests, Deployments, or account/organization permissions. Managing Actions settings uses Administration, while managing Actions variables uses Variables.
+
+Local `pnpm tf:*` commands load the token from the latest Bitwarden backup through `load-vault-tf-env.sh`, exporting it as `GITHUB_TOKEN`. CI consumers `cron-terraform-drift.yml` and `manual-replace-code-server.yml` load it from Vault `kv/data/secrets` under the same environment variable; their Terraform operations add no further GitHub permissions. Workflow `permissions:` blocks govern the job's built-in token, not this PAT.
+
+Editing permissions on the existing token requires no secret update. If replacing its value, update `TF_GITHUB_TOKEN` in Vault and run `projects/nx-workspace/scripts/shell/backup-secrets.sh` before retrying local Terraform commands. A `403 Resource not accessible by personal access token` during branch creation or variable creation can indicate missing Contents or Variables write permission respectively; verify repository access too.
+
+Keep this PAT separate from the Upptime sync App, whose Contents and Workflows read/write permissions apply only to `uptime` ([Upptime architecture](./upptime.md#architecture)).
 
 ## PR preview deploy credentials
 
