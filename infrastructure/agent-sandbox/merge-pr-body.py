@@ -3,7 +3,7 @@
 (solve-todo-runner.sh, update-pr-runner.sh, fix-pr-runner.sh,
 create-todo-runner.sh, create-rnd-runner.sh, create-audit-runner.sh,
 audit-todo-runner.sh) to rewrite a PR body in place: replace the
-"## Summary" / "## Test plan" sections with the agent's latest cumulative
+"## Summary" / "## Test plan" / "## Suggestions" sections with the agent's latest cumulative
 description, and append a row to an "## Agentic Change History" table —
 creating either if the PR body doesn't have them yet. Reads everything from
 the environment (see the CURRENT_BODY/PR_*/HISTORY_* vars below) and prints
@@ -21,8 +21,7 @@ body = os.environ["CURRENT_BODY"]
 # The sandbox runners' Claude and Codex paths each sign off with their own
 # footer as the body's trailing paragraph — strip it before editing sections
 # so it stays last instead of getting stranded above whatever's appended below.
-# A body that is nothing but the footer (the create-*/audit-todo runners have
-# no "## Request" section ahead of it) has no leading blank line to match on,
+# A body that is nothing but the footer (every runner's fresh PR body) has no leading blank line to match on,
 # hence the exact-equality branch.
 footer = ""
 for candidate in (CLAUDE_FOOTER, CODEX_FOOTER):
@@ -69,6 +68,18 @@ if pr_summary and not replace_section("Summary", pr_summary):
 if pr_test_plan and not replace_section("Test plan", pr_test_plan):
     insert_at = next((i for i, (h, _) in enumerate(sections) if h == "Summary"), -1) + 1
     sections.insert(insert_at, ("Test plan", pr_test_plan))
+
+pr_suggestions = os.environ.get("PR_SUGGESTIONS", "").strip()
+
+if pr_suggestions and not replace_section("Suggestions", pr_suggestions):
+    insert_at = (
+        next(
+            (i for i, (h, _) in enumerate(sections) if h == "Test plan"),
+            next((i for i, (h, _) in enumerate(sections) if h == "Summary"), -1),
+        )
+        + 1
+    )
+    sections.insert(insert_at, ("Suggestions", pr_suggestions))
 
 history_source = os.environ.get("HISTORY_SOURCE", "").strip()
 history_command = os.environ.get("HISTORY_COMMAND", "").strip()

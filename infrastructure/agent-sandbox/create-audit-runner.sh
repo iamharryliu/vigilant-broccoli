@@ -34,6 +34,7 @@ Rules:
   - pr_title: the pull request title
   - pr_summary: markdown bullet points for the PR "## Summary" section
   - pr_test_plan: markdown checklist for the PR "## Test plan" section
+  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
 EOF
 )
 
@@ -61,6 +62,7 @@ TRAILER=$(read_meta .co_authored_by)
 PR_TITLE=$(read_meta .pr_title)
 PR_SUMMARY=$(read_meta .pr_summary)
 PR_TEST_PLAN=$(read_meta .pr_test_plan)
+PR_SUGGESTIONS=$(read_meta .pr_suggestions)
 
 if [ -n "$COMMIT_MESSAGE" ]; then
   COMMIT_SUBJECT="docs(audit): ${COMMIT_MESSAGE}"
@@ -85,7 +87,7 @@ else
   HISTORY_SOURCE="Docker sandbox (local)"
 fi
 
-PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_TEST_PLAN="$PR_TEST_PLAN" \
+PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_TEST_PLAN="$PR_TEST_PLAN" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
   HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic:audit" HISTORY_PROMPT="$SCOPE" \
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
   python3 "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py")

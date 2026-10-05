@@ -62,6 +62,7 @@ When finished, write $META_FILE containing only a JSON object with these fields:
   - pr_title: the pull request title
   - pr_summary: markdown bullet points for the PR "## Summary" section, listing each resolved and drifted row by id with its evidence
   - pr_test_plan: markdown checklist for the PR "## Test plan" section
+  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
 EOF
 )
 
@@ -91,6 +92,7 @@ TRAILER=$(read_meta .co_authored_by)
 PR_TITLE=$(read_meta .pr_title)
 PR_SUMMARY=$(read_meta .pr_summary)
 PR_TEST_PLAN=$(read_meta .pr_test_plan)
+PR_SUGGESTIONS=$(read_meta .pr_suggestions)
 RESOLVED_COUNT=$(read_meta '.resolved | length')
 DRIFTED_COUNT=$(read_meta '.drifted | length')
 
@@ -137,7 +139,7 @@ else
   HISTORY_SOURCE="Docker sandbox (local)"
 fi
 
-PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_TEST_PLAN="$PR_TEST_PLAN" \
+PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_TEST_PLAN="$PR_TEST_PLAN" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
   HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic:task:audit" \
   HISTORY_PROMPT="${SCOPE:-Audit every row in every section.}" \
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
