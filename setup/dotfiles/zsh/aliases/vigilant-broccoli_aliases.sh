@@ -1,7 +1,7 @@
 # Journal
 JOURNAL_DIR="$HOME/journal"
 alias cdjournal="cd '$JOURNAL_DIR'"
-pushJournal() {
+pushjournal() {
   pushd "$JOURNAL_DIR" > /dev/null || return 1
   git add . && gc docs 'Update journal.' && gpush
   popd > /dev/null
