@@ -10,6 +10,7 @@
 - [What I need to succeed](#what-i-need-to-succeed)
 - [Driving Factors](#driving-factors)
   - [Things that spark joy](#things-that-spark-joy)
+  - [Categories](#categories)
   - [Ideal conditions for an activity](#ideal-conditions-for-an-activity)
 - [Battle on Attention](#battle-on-attention)
 
@@ -69,7 +70,7 @@
 | Consumption     | Being able to consume what I find interesting        |                         | Nourishment    |
 | Dabbling        | Being able to dabble                                 |                         | Nourishment    |
 | Delivery        | Delivery                                             | Cooking, software       | Accomplishment |
-| Flow            | Entering flow state                                  | Skating, dance, reading | Meditation     |
+| Flow            | Entering flow state                                  | Skating, dance, reading | Flow state     |
 | Freedom         | Freedom of choice                                    |                         | Autonomy       |
 | Fresh air       | Fresh, crisp air                                     |                         | Health         |
 | Full heart      | Doing things with a full heart instead of half-assed |                         | Growth         |
@@ -79,7 +80,57 @@
 | Meaningful time | Spending meaningful time                             |                         | Relationships  |
 | Water           | Being in water                                       | Freediving              | Health         |
 
-Categories: Relationships, Growth, Autonomy, Health, Nourishment, Meditation, Accomplishment
+#### Activities
+
+There are activities that don't spark job unless they meet certain conditions / requirements such as rollerskating to at a rollerdisco vs rollerskating for point A to point B purposes. Inline skating in flow state vs not being able to freely skate how I want to.
+
+| Activity       | Categories |
+| -------------- | ---------- |
+| Cooking        |            |
+| Dance          | Movement   |
+| Freediving     | Movement   |
+| Ice Skating    | Movement   |
+| Inline Skate   | Movement   |
+| Reading        |            |
+| Skateboard     | Movement   |
+| Social Dancing | Movement   |
+| Software       |            |
+| Urban Skating  | Movement   |
+
+##### Want to get into but haven't
+
+| Activity           | Categories |
+| ------------------ | ---------- |
+| Bass               |            |
+| BJJ                | Movement   |
+| Blogging           |            |
+| DJing              |            |
+| Drawing            |            |
+| Guitar             |            |
+| Handstand training | Movement   |
+| Language learning  | Growth     |
+| Photography        |            |
+| Ping Pong          | Movement   |
+| Slackline          | Movement   |
+| Stretching         | Movement   |
+| Tennis             | Movement   |
+| Videography        |            |
+| Vlogging           |            |
+| Vocal training     |            |
+
+### Categories
+
+| Category       | Description                                                                                        |
+| -------------- | -------------------------------------------------------------------------------------------------- |
+| Accomplishment | The feeling of having made it or achieving something that would not be possible with prior efforts |
+| Autonomy       | Being able to do what I want when I want to                                                        |
+| Creativity     | Being able to express myself through something                                                     |
+| Flow state     | Being in a state of meditation and focus on a specific activity                                    |
+| Growth         | Either feeling or seeing improvement                                                               |
+| Health         |                                                                                                    |
+| Movement       | Being active and moving around.                                                                    |
+| Nourishment    |                                                                                                    |
+| Relationships  |                                                                                                    |
 
 ### Ideal conditions for an activity
 
