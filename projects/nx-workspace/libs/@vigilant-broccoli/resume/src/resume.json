@@ -6,16 +6,16 @@
     "phone": "+46 76 008 72 96",
     "links": [
       {
-        "label": "linkedin.com/in/iamharryliu",
-        "url": "https://linkedin.com/in/iamharryliu"
-      },
-      {
-        "label": "harryliu.dev",
-        "url": "https://harryliu.dev"
+        "label": "projects.harryliu.dev",
+        "url": "https://projects.harryliu.dev"
       },
       {
         "label": "github.com/iamharryliu",
         "url": "https://github.com/iamharryliu"
+      },
+      {
+        "label": "linkedin.com/in/iamharryliu",
+        "url": "https://linkedin.com/in/iamharryliu"
       }
     ]
   },
