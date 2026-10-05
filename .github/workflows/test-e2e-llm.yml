@@ -13,6 +13,8 @@ on:
           - all
           - staging
           - production
+  repository_dispatch:
+    types: [deploy-fanout]
 
 permissions:
   contents: read
@@ -20,16 +22,17 @@ permissions:
 
 jobs:
   test-llm-service:
+    if: ${{ github.event_name != 'repository_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        environment: ${{ fromJSON(inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
-    name: ${{ matrix.environment }} gemini
+        environment: ${{ fromJSON(github.event_name == 'repository_dispatch' && format('["{0}"]', github.event.client_payload.environment) || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
+    name: ${{ matrix.environment }} openai
     env:
       LLM_SERVICE_URL: http://127.0.0.1:3000
-      MODEL: gemini-2.5-flash-lite
+      MODEL: gpt-4o-mini
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -46,7 +49,8 @@ jobs:
         with:
           app: ${{ matrix.environment }}-llm-service
 
-      - name: Run e2e tests (gemini)
+      - name: Run e2e tests (openai)
+        id: llm-e2e
         env:
           LLM_SERVICE_URL: ${{ env.LLM_SERVICE_URL }}
           SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
@@ -55,13 +59,31 @@ jobs:
           chmod +x scripts/shell/test-llm-e2e.sh
           scripts/shell/test-llm-e2e.sh
 
+      - name: Tunnel to email service
+        if: failure() && steps.llm-e2e.outputs.out_of_credits == 'true'
+        uses: ./.github/actions/fly-private-tunnel
+        with:
+          app: staging-vb-email-service
+          local_port: '3001'
+
+      - name: Email out-of-credits alert
+        if: failure() && steps.llm-e2e.outputs.out_of_credits == 'true'
+        env:
+          SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
+          WORKFLOW_NAME: ${{ github.workflow }}
+          TARGET_ENVIRONMENT: ${{ matrix.environment }}
+          MODEL: ${{ env.MODEL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node .github/scripts/llm-out-of-credits-email.mjs
+
   test-calendar-parse:
+    if: ${{ github.event_name != 'repository_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
       fail-fast: false
       matrix:
-        environment: ${{ fromJSON(inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
+        environment: ${{ fromJSON(github.event_name == 'repository_dispatch' && format('["{0}"]', github.event.client_payload.environment) || inputs.environment && inputs.environment != 'all' && format('["{0}"]', inputs.environment) || '["staging", "production"]') }}
     name: ${{ matrix.environment }} calendar-parse
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
