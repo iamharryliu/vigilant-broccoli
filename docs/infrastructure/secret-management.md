@@ -53,6 +53,8 @@ Google account > GCP Secret Manager > Vault access > deploy secrets > app secret
 
 Rotation procedures for tiers 2–5 are in [Secret Rotation](#secret-rotation) below.
 
+Upptime migration adds a separate `kv/upptime-sync` path containing only `UPPTIME_SYNC_GH_APP_PRIVATE_KEY`. Its `github-actions-upptime-sync-role` can read only that path and accepts only `ci-sync-upptime.yml@refs/heads/main` from this repo. The matching GCP identity reads only the Cloudflare Access bootstrap pair; no new GitHub Actions secret is added. The monitoring repo has no Vault/GCP identity or private key. Keep the legacy `UPPTIME_GH_APP_PRIVATE_KEY` until verified cutover, then revoke the old App and remove the stored key. Setup, rotation, and cutover are in [upptime.md](./upptime.md).
+
 ## Secret Rotation
 
 Rotate credentials semi-annually. Everything below Tier 0 lives in Vault at `kv/data/secrets`.

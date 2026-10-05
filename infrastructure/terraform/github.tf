@@ -83,10 +83,13 @@ resource "github_repository_ruleset" "main" {
     bypass_mode = "always"
   }
 
-  bypass_actors {
-    actor_id    = var.upptime_gh_app_id
-    actor_type  = "Integration"
-    bypass_mode = "always"
+  dynamic "bypass_actors" {
+    for_each = var.upptime_migration_complete ? [] : [var.upptime_gh_app_id]
+    content {
+      actor_id    = bypass_actors.value
+      actor_type  = "Integration"
+      bypass_mode = "always"
+    }
   }
 
   # `update` restricts every ref update on main -- including merging a PR --

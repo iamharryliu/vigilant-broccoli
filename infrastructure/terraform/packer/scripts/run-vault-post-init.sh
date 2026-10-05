@@ -177,6 +177,28 @@ vault write auth/jwt/role/${VAULT_PREVIEW_ROLE_NAME} - <<ROLE
 }
 ROLE
 
+echo 'Writing policy ${VAULT_UPPTIME_SYNC_POLICY_NAME}...'
+vault policy write ${VAULT_UPPTIME_SYNC_POLICY_NAME} - <<POLICY
+path \"${VAULT_KV_PATH}/data/upptime-sync\" {
+  capabilities = [\"read\"]
+}
+POLICY
+
+echo 'Creating role ${VAULT_UPPTIME_SYNC_ROLE_NAME}...'
+vault write auth/jwt/role/${VAULT_UPPTIME_SYNC_ROLE_NAME} - <<ROLE
+{
+  \"role_type\": \"jwt\",
+  \"user_claim\": \"actor\",
+  \"bound_claims\": {
+    \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
+    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/ci-sync-upptime.yml@refs/heads/main\"
+  },
+  \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
+  \"policies\": [\"${VAULT_UPPTIME_SYNC_POLICY_NAME}\"],
+  \"ttl\": \"10m\"
+}
+ROLE
+
 # manual-replace-code-server.yml re-syncs CODE_SERVER_VM_IP after replacing the
 # code-server VM (which gets a fresh ephemeral IP). Patch-only — it can merge a
 # single key into kv/data/secrets but cannot read any secret, so it grants no

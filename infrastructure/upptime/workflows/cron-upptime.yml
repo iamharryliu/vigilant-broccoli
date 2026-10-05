@@ -1,0 +1,41 @@
+name: cron-upptime
+
+on:
+  schedule:
+    - cron: '7 * * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [uptime]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: upptime
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    if: github.event_name == 'workflow_dispatch' || vars.UPPTIME_MONITORING_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Warm Fly services
+        run: bash scripts/warm-fly.sh
+      - name: Configure monitoring repository credentials
+        env:
+          GH_PAT: ${{ github.token }}
+        run: git remote set-url origin "https://x-access-token:${GH_PAT}@github.com/${GITHUB_REPOSITORY}.git"
+      - uses: upptime/uptime-monitor@8be193bbcb957a3a917d2bb16a0c96959778a889 # v1.44.1
+        env:
+          GH_PAT: ${{ github.token }}
+      - uses: upptime/uptime-monitor@8be193bbcb957a3a917d2bb16a0c96959778a889 # v1.44.1
+        with:
+          command: summary
+        env:
+          GH_PAT: ${{ github.token }}
