@@ -21,7 +21,7 @@ interface ImagePreview {
   previewUrl: string;
 }
 
-export const TasksInput = () => {
+export const TasksInput = ({ onCreated }: { onCreated?: () => void }) => {
   const [phase, setPhase] = useState<Phase>('input');
   const [textInput, setTextInput] = useState('');
   const [images, setImages] = useState<ImagePreview[]>([]);
@@ -159,6 +159,7 @@ export const TasksInput = () => {
     const data = await res.json();
     setResults(data.results);
     setPhase('done');
+    onCreated?.();
   };
 
   const handleReset = () => {
