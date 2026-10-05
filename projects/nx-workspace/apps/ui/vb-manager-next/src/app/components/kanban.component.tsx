@@ -21,12 +21,13 @@ import {
   DialogClose,
 } from '@vigilant-broccoli/react-lib';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
+import { CreateTasksDialogTrigger } from './create-tasks-dialog.component';
 import { useEffect, useState, useCallback } from 'react';
 import {
   authFetch,
+  googleTasksAuth,
   signInWithGoogle,
   useAuthStatus,
-  useGoogleToken,
 } from '../../../libs/auth';
 import {
   DndContext,
@@ -367,6 +368,7 @@ interface SortableLaneProps {
   dragOverTask: DragOverTask | null;
   sortMode: SortMode | undefined;
   onSortModeChange: (taskListId: string, sortMode: SortMode) => void;
+  onTasksCreated: () => void;
 }
 
 const SortableBoard = ({
@@ -447,6 +449,7 @@ const SortableLane = ({
   dragOverTask,
   sortMode,
   onSortModeChange,
+  onTasksCreated,
 }: SortableLaneProps) => {
   const {
     attributes,
@@ -516,7 +519,7 @@ const SortableLane = ({
       </div>
       <div className="flex-1 overflow-y-auto min-h-0">
         <GoogleTasksComponent
-          auth={{ authFetch, useAuthStatus, useGoogleToken, signInWithGoogle }}
+          auth={googleTasksAuth}
           taskListId={lane.taskListId}
           showSelector={false}
           enableDragDrop={true}
@@ -525,6 +528,12 @@ const SortableLane = ({
           dragOverTask={dragOverTask}
           sortMode={sortMode ?? SORT_MODE.DEFAULT}
           onSortModeChange={onSortModeChange}
+          addTaskActions={
+            <CreateTasksDialogTrigger
+              taskListId={lane.taskListId}
+              onCreated={onTasksCreated}
+            />
+          }
         />
       </div>
     </div>
@@ -1242,6 +1251,7 @@ export const KanbanComponent = () => {
                       }
                       sortMode={sortModes[lane.taskListId]}
                       onSortModeChange={setSortMode}
+                      onTasksCreated={() => setRefreshTrigger(prev => prev + 1)}
                     />
                   );
                 })}

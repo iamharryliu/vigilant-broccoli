@@ -1,19 +1,33 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
 import {
-  buildAuthHeaders,
-  getGoogleToken,
-  reconnectGoogle,
-} from '../providers/auth-provider';
-import { GOOGLE_TOKEN_EXPIRED } from '../../../libs/api-errors';
-import { useVoiceInput } from '../hooks/use-voice-input';
-import { resizeImage } from '../utils/image.utils';
+  ChangeEvent,
+  ClipboardEvent,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import {
+  HTTP_METHOD,
+  HTTP_HEADERS,
+  HTTP_STATUS_CODES,
+} from '@vigilant-broccoli/common-js';
+import { resizeImage } from '../utils/resizeImage';
+import { GoogleTasksAuthAdapter } from './GoogleTasks';
+
+const TASKS_LISTS_ENDPOINT = '/api/tasks/lists';
+const TASKS_PARSE_IMAGE_ENDPOINT = '/api/tasks/parse-image';
+const TASKS_CREATE_ENDPOINT = '/api/tasks/create';
+
+const RECONNECT_GOOGLE_LABEL = 'Reconnect Google';
+const RECONNECT_GOOGLE_DESCRIPTION =
+  'Google Tasks access expired. Reconnect to keep creating tasks.';
 
 type Phase = 'input' | 'analyzing' | 'preview' | 'creating' | 'done';
 
 type TaskResult = { title: string; success: boolean; error?: string };
-type TaskList = { id: string; title: string };
+type TaskListOption = { id: string; title: string };
 
 interface ImagePreview {
   base64: string;
@@ -21,7 +35,22 @@ interface ImagePreview {
   previewUrl: string;
 }
 
-export const TasksInput = ({ onCreated }: { onCreated?: () => void }) => {
+export interface TaskCaptureProps {
+  auth: GoogleTasksAuthAdapter;
+  onCreated?: () => void;
+  taskListId?: string;
+  renderVoiceAction?: (onTranscript: (text: string) => void) => ReactNode;
+}
+
+export const TaskCapture = ({
+  auth,
+  onCreated,
+  taskListId: lockedTaskListId,
+  renderVoiceAction,
+}: TaskCaptureProps) => {
+  const { authFetch, useGoogleToken, signInWithGoogle } = auth;
+  const { clearGoogleToken } = useGoogleToken();
+
   const [phase, setPhase] = useState<Phase>('input');
   const [textInput, setTextInput] = useState('');
   const [images, setImages] = useState<ImagePreview[]>([]);
@@ -29,64 +58,53 @@ export const TasksInput = ({ onCreated }: { onCreated?: () => void }) => {
   const [newItem, setNewItem] = useState('');
   const [results, setResults] = useState<TaskResult[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [taskLists, setTaskLists] = useState<TaskList[]>([]);
-  const [selectedListId, setSelectedListId] = useState('');
-  const [listsLoaded, setListsLoaded] = useState(false);
+  const [taskLists, setTaskLists] = useState<TaskListOption[]>([]);
+  const [selectedListId, setSelectedListId] = useState(
+    lockedTaskListId ?? '',
+  );
+  const [listsLoaded, setListsLoaded] = useState(!!lockedTaskListId);
+  const [googleAuthError, setGoogleAuthError] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
-  const [googleToken, setGoogleToken] = useState<string | null>(null);
-  const { recordingState, voiceError, interimTranscript, toggleRecording } =
-    useVoiceInput(transcript =>
-      setTextInput(prev => (prev ? `${prev}\n${transcript}` : transcript)),
-    );
-
   useEffect(() => {
-    const token = getGoogleToken();
-    if (!token) {
-      reconnectGoogle();
-      return;
-    }
-    setGoogleToken(token);
-  }, []);
-
-  useEffect(() => {
-    if (!googleToken) return;
+    if (lockedTaskListId || googleAuthError) return;
+    let cancelled = false;
     const load = async () => {
-      try {
-        const r = await fetch('/api/tasks/lists', {
-          headers: await buildAuthHeaders({
-            includeGoogleToken: true,
-          }),
-        });
-        const data = await r.json();
-        if (data.error === GOOGLE_TOKEN_EXPIRED) {
-          await reconnectGoogle();
-          return;
-        }
-        const lists: TaskList[] = data.taskLists ?? [];
-        setTaskLists(lists);
-        if (lists.length) setSelectedListId(lists[0].id ?? '');
-        setListsLoaded(true);
-      } catch {
-        setListsLoaded(true);
+      const res = await authFetch(TASKS_LISTS_ENDPOINT);
+      if (res.status === HTTP_STATUS_CODES.UNAUTHORIZED) {
+        if (!cancelled) setGoogleAuthError(true);
+        return;
       }
+      const data = await res.json();
+      if (cancelled) return;
+      const lists: TaskListOption[] = data.taskLists ?? [];
+      setTaskLists(lists);
+      if (lists.length) setSelectedListId(lists[0].id ?? '');
+      setListsLoaded(true);
     };
     load();
-  }, [googleToken]);
+    return () => {
+      cancelled = true;
+    };
+  }, [authFetch, lockedTaskListId, googleAuthError]);
+
+  useEffect(() => {
+    if (googleAuthError) clearGoogleToken();
+  }, [googleAuthError, clearGoogleToken]);
 
   const addImageFile = async (file: File) => {
     const { base64, mimeType, previewUrl } = await resizeImage(file);
     setImages(prev => [...prev, { base64, mimeType, previewUrl }]);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     Array.from(e.target.files ?? []).forEach(addImageFile);
     e.target.value = '';
   };
 
-  const handlePaste = (e: React.ClipboardEvent) => {
+  const handlePaste = (e: ClipboardEvent) => {
     Array.from(e.clipboardData.items)
       .filter(item => item.type.startsWith('image/'))
       .forEach(item => {
@@ -95,19 +113,23 @@ export const TasksInput = ({ onCreated }: { onCreated?: () => void }) => {
       });
   };
 
+  const handleVoiceTranscript = (transcript: string) => {
+    setTextInput(prev => (prev ? `${prev}\n${transcript}` : transcript));
+  };
+
   const handleParse = async () => {
     if (!textInput.trim() && !images.length) return;
     setPhase('analyzing');
     setError(null);
-    const res = await fetch('/api/tasks/parse-image', {
-      method: 'POST',
-      headers: await buildAuthHeaders({ json: true }),
+    const res = await authFetch(TASKS_PARSE_IMAGE_ENDPOINT, {
+      method: HTTP_METHOD.POST,
+      headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
       body: JSON.stringify({
         text: textInput.trim() || undefined,
         images: images.length
           ? images.map(i => ({ base64: i.base64, mimeType: i.mimeType }))
           : undefined,
-        availableLists: taskLists,
+        availableLists: lockedTaskListId ? undefined : taskLists,
       }),
     });
     if (!res.ok) {
@@ -123,6 +145,7 @@ export const TasksInput = ({ onCreated }: { onCreated?: () => void }) => {
     }
     setItems(data.items);
     if (
+      !lockedTaskListId &&
       data.suggestedListId &&
       taskLists.some(l => l.id === data.suggestedListId)
     ) {
@@ -132,26 +155,19 @@ export const TasksInput = ({ onCreated }: { onCreated?: () => void }) => {
   };
 
   const handleCreateTasks = async () => {
-    if (!googleToken) {
-      setError('Google Tasks access required. Sign in again.');
-      return;
-    }
     setPhase('creating');
     setError(null);
-    const res = await fetch('/api/tasks/create', {
-      method: 'POST',
-      headers: await buildAuthHeaders({
-        includeGoogleToken: true,
-        json: true,
-      }),
+    const res = await authFetch(TASKS_CREATE_ENDPOINT, {
+      method: HTTP_METHOD.POST,
+      headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
       body: JSON.stringify({ items, taskListId: selectedListId }),
     });
+    if (res.status === HTTP_STATUS_CODES.UNAUTHORIZED) {
+      setGoogleAuthError(true);
+      setPhase('preview');
+      return;
+    }
     if (!res.ok) {
-      const data = await res.json();
-      if (data.error === GOOGLE_TOKEN_EXPIRED) {
-        await reconnectGoogle();
-        return;
-      }
       setError('Failed to create tasks.');
       setPhase('preview');
       return;
@@ -177,7 +193,19 @@ export const TasksInput = ({ onCreated }: { onCreated?: () => void }) => {
   const successCount = results.filter(r => r.success).length;
   const failCount = results.filter(r => !r.success).length;
 
-  if (!googleToken) return null;
+  if (googleAuthError) {
+    return (
+      <div className="space-y-3 py-4">
+        <p className="text-sm text-gray-600">{RECONNECT_GOOGLE_DESCRIPTION}</p>
+        <button
+          onClick={() => signInWithGoogle()}
+          className="w-full bg-blue-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-blue-600 active:bg-blue-700 transition-colors"
+        >
+          {RECONNECT_GOOGLE_LABEL}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
@@ -259,41 +287,8 @@ export const TasksInput = ({ onCreated }: { onCreated?: () => void }) => {
               </svg>
               Camera
             </button>
-            <button
-              onClick={toggleRecording}
-              disabled={recordingState === 'transcribing'}
-              className={`flex-1 flex items-center justify-center gap-2 border rounded-lg px-3 py-2 text-sm transition-colors ${
-                recordingState === 'recording'
-                  ? 'border-red-300 bg-red-50 text-red-600'
-                  : 'border-gray-200 text-gray-600 hover:bg-gray-50 active:bg-gray-100'
-              } disabled:opacity-50`}
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                />
-              </svg>
-              {recordingState === 'recording'
-                ? 'Stop'
-                : recordingState === 'transcribing'
-                  ? '...'
-                  : 'Voice'}
-            </button>
+            {renderVoiceAction?.(handleVoiceTranscript)}
           </div>
-
-          {recordingState === 'recording' && interimTranscript && (
-            <p className="text-sm text-gray-400 italic px-1">
-              {interimTranscript}
-            </p>
-          )}
 
           <button
             onClick={handleParse}
@@ -302,12 +297,6 @@ export const TasksInput = ({ onCreated }: { onCreated?: () => void }) => {
           >
             Extract tasks
           </button>
-
-          {voiceError && (
-            <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
-              {voiceError}
-            </p>
-          )}
 
           <input
             ref={fileInputRef}
@@ -359,7 +348,7 @@ export const TasksInput = ({ onCreated }: { onCreated?: () => void }) => {
 
       {phase === 'preview' && (
         <>
-          {listsLoaded && taskLists.length > 1 && (
+          {!lockedTaskListId && listsLoaded && taskLists.length > 1 && (
             <select
               value={selectedListId}
               onChange={e => setSelectedListId(e.target.value)}

@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
-import { resizeImage } from '../utils/image.utils';
+import { resizeImage } from '@vigilant-broccoli/react-lib';
 import {
   EventDraftCard,
   EventDraft,
