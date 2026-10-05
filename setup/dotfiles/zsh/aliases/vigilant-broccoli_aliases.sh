@@ -1,7 +1,11 @@
 # Journal
 JOURNAL_DIR="$HOME/journal"
 alias cdjournal="cd '$JOURNAL_DIR'"
-alias pushJournal="cdjournal && git add . && gc docs 'Update journal.' && gpush"
+pushJournal() {
+  pushd "$JOURNAL_DIR" > /dev/null || return 1
+  git add . && gc docs 'Update journal.' && gpush
+  popd > /dev/null
+}
 alias pulljournal="cdjournal && gpull"
 
 # VB
