@@ -37,9 +37,9 @@ export const SIDEBAR_ROUTE = {
     title: 'Chatbot',
     path: '/chatbot',
   },
-  EVENT_CALENDARS: {
-    title: 'Event Calendars',
-    path: '/event-calendars',
+  CALENDAR: {
+    title: 'Calendar',
+    path: '/calendar',
   },
   LANGUAGE_LEARNING: {
     title: 'Language Learning',
