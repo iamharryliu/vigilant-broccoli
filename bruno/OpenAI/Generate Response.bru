@@ -1,0 +1,18 @@
+meta {
+  name: Generate Response
+  type: http
+  seq: 1
+}
+
+post {
+  url: https://api.openai.com/v1/responses
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "model": "gpt-4.1-mini",
+    "input": "Why is the sky blue?"
+  }
+}
