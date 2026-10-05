@@ -16,6 +16,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   upptime:history:export <bundle> [ref] Export history-only Git commits to a new bundle
   upptime:history:import <bundle> [owner/repo] Import history into an uninitialized monitoring dataset
   upptime:sync:store-key <pem> Store the monitoring sync App key in its dedicated Vault path
+  upptime:legacy:retire-key  Remove the retired App key after cleanup merge and scheduled verification
   gh:actions:sync-upptime      Publish managed monitoring configuration from main
 
 ⚙️  SETUP
