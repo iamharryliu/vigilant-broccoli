@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Shared by update-pr-runner.sh and fix-pr-runner.sh to rewrite a PR body in
-place: replace the "## Summary" / "## Test plan" sections with the agent's
-latest cumulative description, and append a row to an "## Agentic Change
-History" table — creating either if the PR body doesn't have them yet.
-Reads everything from the environment (see the CURRENT_BODY/PR_*/HISTORY_*
-vars below) and prints the merged body to stdout; the caller passes it to
+"""Shared by every agentic-sandbox runner that opens or edits a PR
+(solve-todo-runner.sh, update-pr-runner.sh, fix-pr-runner.sh,
+create-todo-runner.sh, create-rnd-runner.sh, create-audit-runner.sh,
+audit-todo-runner.sh) to rewrite a PR body in place: replace the
+"## Summary" / "## Test plan" sections with the agent's latest cumulative
+description, and append a row to an "## Agentic Change History" table —
+creating either if the PR body doesn't have them yet. Reads everything from
+the environment (see the CURRENT_BODY/PR_*/HISTORY_* vars below) and prints
+the merged body to stdout; the caller passes it to `gh pr create --body` or
 `gh pr edit --body`.
 """
 import os
@@ -15,11 +18,18 @@ CODEX_FOOTER = "Generated with [Codex](https://openai.com/codex)"
 
 body = os.environ["CURRENT_BODY"]
 
-# solve-todo-runner.sh's Claude and Codex paths each sign off with their own
+# The sandbox runners' Claude and Codex paths each sign off with their own
 # footer as the body's trailing paragraph — strip it before editing sections
 # so it stays last instead of getting stranded above whatever's appended below.
+# A body that is nothing but the footer (the create-*/audit-todo runners have
+# no "## Request" section ahead of it) has no leading blank line to match on,
+# hence the exact-equality branch.
 footer = ""
 for candidate in (CLAUDE_FOOTER, CODEX_FOOTER):
+    if body == candidate:
+        body = ""
+        footer = candidate
+        break
     suffix = "\n\n" + candidate
     if body.endswith(suffix):
         body = body[: -len(suffix)]
@@ -60,21 +70,23 @@ if pr_test_plan and not replace_section("Test plan", pr_test_plan):
     insert_at = next((i for i, (h, _) in enumerate(sections) if h == "Summary"), -1) + 1
     sections.insert(insert_at, ("Test plan", pr_test_plan))
 
+history_source = os.environ.get("HISTORY_SOURCE", "").strip()
 history_command = os.environ.get("HISTORY_COMMAND", "").strip()
 history_prompt = os.environ.get("HISTORY_PROMPT", "").strip()
 history_summary = os.environ.get("HISTORY_SUMMARY", "").strip()
 history_date = os.environ.get("HISTORY_DATE", "").strip()
 
-if history_command and history_summary and history_date:
+if history_source and history_command and history_summary and history_date:
     HISTORY_HEADING = "Agentic Change History"
-    HEADER_ROW = "| Date | Command | Prompt | Summary |"
-    SEPARATOR_ROW = "| --- | --- | --- | --- |"
+    HEADER_ROW = "| Date | Source | Command | Prompt | Summary |"
+    SEPARATOR_ROW = "| --- | --- | --- | --- | --- |"
 
     def table_cell(text):
         return text.replace("|", "\\|").replace("\n", "<br>").strip()
 
-    new_row = "| {} | {} | {} | {} |".format(
+    new_row = "| {} | {} | {} | {} | {} |".format(
         table_cell(history_date),
+        table_cell(history_source),
         table_cell(history_command),
         table_cell(history_prompt),
         table_cell(history_summary),
