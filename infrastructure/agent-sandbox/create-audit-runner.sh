@@ -33,7 +33,7 @@ Rules:
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
   - pr_title: the pull request title
   - pr_summary: markdown bullet points for the PR "## Summary" section
-  - pr_test_plan: markdown checklist for the PR "## Test plan" section
+  - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (review, then merge)
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
 EOF
 )
@@ -61,7 +61,7 @@ COMMIT_MESSAGE=$(read_meta .commit_message)
 TRAILER=$(read_meta .co_authored_by)
 PR_TITLE=$(read_meta .pr_title)
 PR_SUMMARY=$(read_meta .pr_summary)
-PR_TEST_PLAN=$(read_meta .pr_test_plan)
+PR_NEXT_STEPS=$(read_meta .pr_next_steps)
 PR_SUGGESTIONS=$(read_meta .pr_suggestions)
 
 if [ -n "$COMMIT_MESSAGE" ]; then
@@ -73,7 +73,7 @@ fi
 echo "$TRAILER" | grep -Eqi '^co-authored-by: .+ <.+>$' || TRAILER="$FALLBACK_TRAILER"
 [ -n "$PR_TITLE" ] || PR_TITLE="$COMMIT_SUBJECT"
 [ -n "$PR_SUMMARY" ] || PR_SUMMARY="- Add audit note${NOTE_PATH:+ (${NOTE_PATH})} for: ${SCOPE}"
-[ -n "$PR_TEST_PLAN" ] || PR_TEST_PLAN="- [ ] Findings reviewed for accuracy, severity, and actionable remediation"
+[ -n "$PR_NEXT_STEPS" ] || PR_NEXT_STEPS="- [ ] Review findings for accuracy, severity, and actionable remediation, then merge"
 
 bash "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh"
 
@@ -87,7 +87,7 @@ else
   HISTORY_SOURCE="Docker sandbox (local)"
 fi
 
-PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_TEST_PLAN="$PR_TEST_PLAN" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
+PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
   HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic:audit" HISTORY_PROMPT="$SCOPE" \
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
   python3 "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py")
