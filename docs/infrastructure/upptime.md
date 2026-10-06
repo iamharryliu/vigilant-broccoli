@@ -18,6 +18,7 @@ Manage monitoring from vigilant-broccoli while running Upptime with credentials 
 - `ci-sync-upptime.yml`, reachable only on `main`, reads the dedicated sync App key from `kv/upptime-sync` through `github-actions-upptime-sync-role`. The GCP identity only reads the two Cloudflare Access secrets needed to reach Vault; its WIF binding is pinned to this workflow on `main`.
 - The sync App is installed **only on the monitoring repo**, with Contents and Workflows read/write. It has no installation or ruleset bypass in vigilant-broccoli. Each sync mints a repository-restricted installation token with those two permissions.
 - Monitoring workflows use the monitoring repo's temporary `GITHUB_TOKEN`, with Contents and Issues write and no OIDC permission. The monitoring repo receives no private key, Vault/GCP credentials, or application secrets.
+- GitHub Pages serves the monitoring repo's `gh-pages` branch at `upptime.harryliu.dev` (Terraform `github_repository_pages.upptime`, DNS-only CNAME to `<owner>.github.io` in `cloudflare-harryliu-dev.tf`). `cron-upptime-site.yml` builds Upptime's static status site with `upptime/uptime-monitor`'s `site` command (daily at 01:40 UTC, manual, or `static_site` dispatch) and force-pushes the export to `gh-pages` using the temporary `GITHUB_TOKEN`; the `status-website` block in `.upptimerc.yml` sets the domain. The branch is created from `main` by Terraform, so the page is empty until the first workflow run. Apply locally with `pnpm tf:apply`, then enable HTTPS enforcement once the certificate is issued.
 - The Pages Index status page reads the monitoring repo's public `history/summary.json` and shows workflow badges from both repos. Missing or failed monitoring data displays an error; archived source-repository data is never used as a fallback.
 
 ## Managed files and runtime behavior
@@ -28,6 +29,7 @@ The sync publishes an explicit allowlist through GitHub's Git database API:
 - `.nvmrc` — Node version from the workspace root for the graph runtime.
 - `.github/workflows/cron-upptime.yml` — hourly at minute 7, plus manual/dispatch triggers; updates uptime and then refreshes the summary.
 - `.github/workflows/cron-upptime-response-time.yml` — daily at 00:25 UTC, plus manual/dispatch triggers; records response times, refreshes the summary, then generates and verifies README graphs and badge endpoints.
+- `.github/workflows/cron-upptime-site.yml` — daily at 01:40 UTC, plus manual/dispatch triggers; builds the static status site from `history/` and publishes it to `gh-pages`.
 - `scripts/warm-fly.sh` — parallel HTTP requests to staging and production VB Express, up to three 20-second attempts with three-second waits. HTTP errors fail warming; an exhausted warm-up emits a warning and Upptime still checks for a real outage.
 - `scripts/graphs/package.json` and `package-lock.json` — isolated, locked graph dependencies with a Node 24-compatible canvas override.
 - `README.md` — managed text around Upptime's generated status-table markers. Existing table content is preserved on sync.
@@ -83,7 +85,7 @@ Warm-up intentionally measures warmed availability and response time; it does no
 
 ## Free Tier
 
-- GitHub-hosted standard runners are free for public repositories ([GitHub billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions)). Monitoring uses roughly 25 scheduled workflow runs per day; sync runs only on configuration changes or manual dispatch. No separate Upptime Pages site is provisioned; Pages Index continues displaying the public summary.
+- GitHub-hosted standard runners are free for public repositories ([GitHub billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions)). Monitoring uses roughly 25 scheduled workflow runs per day; sync runs only on configuration changes or manual dispatch. The daily static-site build adds one more scheduled run; GitHub Pages is free for public repositories. Pages Index continues displaying the public summary.
 - Graph and badge generation runs within the existing daily response-time workflow, adding dependency installation and rendering time without another scheduled run.
 - The dedicated GCP service account and WIF provider add no VM. They reuse the existing Cloudflare Access secrets and Vault VM, adding only authentication/secret-read operations to the current services.
 - No paid monitoring subscription or new persistent compute resource is required.
