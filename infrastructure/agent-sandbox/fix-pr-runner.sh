@@ -57,7 +57,7 @@ Rules:
   - commit_message: capitalized, concise, focused on why not what, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
   - pr_summary: markdown bullet points replacing the PR's "## Summary" section — rewrite it to describe the PR's full, cumulative state (prior work plus this CI fix), not just this increment
-  - pr_test_plan: markdown checklist replacing the PR's "## Test plan" section — same rule, cover the whole PR as it now stands
+  - pr_next_steps: markdown checklist replacing the PR's "## Next steps" section — same rule, cover the whole PR as it now stands: remaining manual commands, spot checks, CI status, and merging, or "- [ ] Merge once CI is green" when nothing else is left
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none — rewrite it to cover the whole PR as it now stands
 EOF
 )
@@ -82,7 +82,7 @@ COMMIT_SCOPE=$(read_meta .commit_scope)
 COMMIT_MESSAGE=$(read_meta .commit_message)
 TRAILER=$(read_meta .co_authored_by)
 PR_SUMMARY=$(read_meta .pr_summary)
-PR_TEST_PLAN=$(read_meta .pr_test_plan)
+PR_NEXT_STEPS=$(read_meta .pr_next_steps)
 PR_SUGGESTIONS=$(read_meta .pr_suggestions)
 
 case "$COMMIT_TYPE" in
@@ -112,7 +112,7 @@ else
   HISTORY_SOURCE="Docker sandbox (local)"
 fi
 
-NEW_BODY=$(CURRENT_BODY="$CURRENT_BODY" PR_SUMMARY="$PR_SUMMARY" PR_TEST_PLAN="$PR_TEST_PLAN" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
+NEW_BODY=$(CURRENT_BODY="$CURRENT_BODY" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
   HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic:pr:fix" HISTORY_PROMPT="Fix failing CI." \
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
   python3 "$MERGE_BODY_HELPER")

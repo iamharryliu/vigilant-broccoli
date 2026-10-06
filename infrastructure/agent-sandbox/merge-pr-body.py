@@ -3,7 +3,7 @@
 (solve-todo-runner.sh, update-pr-runner.sh, fix-pr-runner.sh,
 create-todo-runner.sh, create-rnd-runner.sh, create-audit-runner.sh,
 audit-todo-runner.sh) to rewrite a PR body in place: replace the
-"## Summary" / "## Test plan" / "## Suggestions" sections with the agent's latest cumulative
+"## Summary" / "## Next steps" / "## Suggestions" sections with the agent's latest cumulative
 description, and append a row to an "## Agentic Change History" table —
 creating either if the PR body doesn't have them yet. Reads everything from
 the environment (see the CURRENT_BODY/PR_*/HISTORY_* vars below) and prints
@@ -60,21 +60,21 @@ def replace_section(name, content):
 
 
 pr_summary = os.environ.get("PR_SUMMARY", "").strip()
-pr_test_plan = os.environ.get("PR_TEST_PLAN", "").strip()
+pr_next_steps = os.environ.get("PR_NEXT_STEPS", "").strip()
 
 if pr_summary and not replace_section("Summary", pr_summary):
     sections.insert(0, ("Summary", pr_summary))
 
-if pr_test_plan and not replace_section("Test plan", pr_test_plan):
+if pr_next_steps and not replace_section("Next steps", pr_next_steps):
     insert_at = next((i for i, (h, _) in enumerate(sections) if h == "Summary"), -1) + 1
-    sections.insert(insert_at, ("Test plan", pr_test_plan))
+    sections.insert(insert_at, ("Next steps", pr_next_steps))
 
 pr_suggestions = os.environ.get("PR_SUGGESTIONS", "").strip()
 
 if pr_suggestions and not replace_section("Suggestions", pr_suggestions):
     insert_at = (
         next(
-            (i for i, (h, _) in enumerate(sections) if h == "Test plan"),
+            (i for i, (h, _) in enumerate(sections) if h == "Next steps"),
             next((i for i, (h, _) in enumerate(sections) if h == "Summary"), -1),
         )
         + 1
