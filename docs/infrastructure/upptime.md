@@ -7,7 +7,6 @@ Manage monitoring from vigilant-broccoli while running Upptime with credentials 
 - [Architecture](#architecture)
 - [Managed files and runtime behavior](#managed-files-and-runtime-behavior)
 - [Setup and migration](#setup-and-migration)
-- [Legacy retirement](#legacy-retirement)
 - [Operations](#operations)
 - [Security limits](#security-limits)
 - [Free Tier](#free-tier)
@@ -39,7 +38,7 @@ The source config disables Upptime's description, topics, and homepage updates. 
 
 Both monitoring workflows share the `upptime` concurrency group, use full-history checkouts and pinned Node 24-compatible actions, and finish within 15 minutes. Terraform restricts allowed actions to those exact SHAs; update the allowlist when changing a pin. Summary generation is an explicit step, so it does not depend on `GITHUB_TOKEN` pushes triggering another workflow ([GitHub behavior](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow)). Template/dependency regeneration workflows are not installed.
 
-Upptime's summary command writes the README table and `history/summary.json`; it does not create the table's linked images or Shields endpoints. The daily workflow installs the locked graph runtime with `npm ci`, invokes its CLI directly, verifies every service's badge JSON and weekly PNG, and commits only `api/` and `graphs/`. Installation and generation failures stop the workflow before publication. The runtime pins `@upptime/graphs` and overrides its old canvas dependency with `canvas@3.2.0`, whose N-API implementation works on Node 24 ([canvas release](https://github.com/Automattic/node-canvas/releases/tag/v3.0.0)). The upstream action's `graphs` command runs floating `npx` dependencies and ignores subprocess exit codes; the failed migration run reported success while creating no assets. [Runtime nuance](../../infrastructure/upptime/graphs/CONTEXT.md#canvas-2-fails-on-node-24) records this constraint.
+Upptime's summary command writes the README table and `history/summary.json`; it does not create the table's linked images or Shields endpoints. The daily workflow installs the locked graph runtime with `npm ci`, invokes its CLI directly, verifies every service's badge JSON and weekly PNG, and commits only `api/` and `graphs/`. Installation and generation failures stop the workflow before publication. The runtime pins `@upptime/graphs` and overrides its old canvas dependency with `canvas@3.2.0`, whose N-API implementation works on Node 24 ([canvas release](https://github.com/Automattic/node-canvas/releases/tag/v3.0.0)). The upstream action's `graphs` command runs floating `npx` dependencies and ignores subprocess exit codes. [Runtime nuance](../../infrastructure/upptime/graphs/CONTEXT.md#canvas-2-fails-on-node-24) records this constraint.
 
 These assets supply the README's all-time, day, week, month, and year metrics ([badges](https://upptime.js.org/docs/badges/)). Run the response-time workflow manually after initializing a repository to populate them. Sync preserves generated assets. Before publishing this workflow change, apply the Terraform action allowlist update for the pinned `actions/setup-node` SHA.
 
@@ -55,18 +54,14 @@ These assets supply the README's all-time, day, week, month, and year metrics ([
    pnpm upptime:history:import /private/tmp/upptime-history.bundle iamharryliu/uptime
    ```
 
-   Fetch unshallow history first if needed. Import into an uninitialized monitoring dataset before running checks. The importer uses a temporary bare repo, preserves target files, refuses existing history, and pushes only a fast-forward merge. The migration of `iamharryliu/uptime` is already complete; do not re-import its archive.
+   Fetch unshallow history first if needed. Import into an uninitialized monitoring dataset before running checks. The importer uses a temporary bare repo, preserves target files, refuses existing history, and pushes only a fast-forward merge. `iamharryliu/uptime` is already populated; do not re-import.
 
-4. Run `pnpm gh:actions:sync-upptime`, then manually run both monitoring workflows. Verify refreshed history, `history/summary.json`, all services on Pages Index `/#/status`, and README graphs and badges. Subscribe to incident issues in the new repository when configuring notifications; notification verification was deferred during this migration.
+4. Run `pnpm gh:actions:sync-upptime`, then manually run both monitoring workflows. Verify refreshed history, `history/summary.json`, all services on Pages Index `/#/status`, and README graphs and badges. Subscribe to incident issues in the new repository when configuring notifications.
 5. Set `upptime_migration_complete = true` and apply the reviewed plan to enable schedules. This flag now controls only the monitoring repository's schedule gate. Verify a successful scheduled uptime run; GitHub may delay cron jobs. Application credentials and observability infrastructure require no changes.
 
-App creation and installation are account setup; Terraform manages repository configuration. The legacy App cannot regain a source-repository bypass by toggling the schedule gate: its Terraform bypass block and workflows have been removed.
+App creation and installation are account setup; Terraform manages repository configuration.
 
-## Legacy retirement
-
-The migration to `iamharryliu/uptime` is complete. The source repository's legacy monitoring workflows, App bypass configuration, status-summary fallback, and `UPPTIME_MIGRATED` variable have been removed. The legacy `UPPTIME_GH_APP_PRIVATE_KEY` and `UPPTIME_GH_APP_ID` fields have been removed from the current shared Vault secrets; the one-time retirement command has been deleted.
-
-Keep sync App `5202397`, installed only on `uptime`. Legacy App `4350545` must remain uninstalled/revoked. Historical Vault versions and backups may retain its old key; revocation makes those copies unusable. Source monitoring history and incident issues remain as an archive. Refresh the Bitwarden backup after changing Vault fields using `projects/nx-workspace/scripts/shell/backup-secrets.sh`.
+Keep sync App `5202397`, installed only on `uptime`. Refresh the Bitwarden backup after changing Vault fields using `projects/nx-workspace/scripts/shell/backup-secrets.sh`.
 
 ## Operations
 

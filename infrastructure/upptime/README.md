@@ -1,6 +1,6 @@
 # Upptime Management
 
-One-way configuration publishing and history migration for isolated monitoring; [setup and cutover](../../docs/infrastructure/upptime.md).
+One-way configuration publishing and history import for isolated monitoring; [setup](../../docs/infrastructure/upptime.md).
 
 ## Table of Contents
 
