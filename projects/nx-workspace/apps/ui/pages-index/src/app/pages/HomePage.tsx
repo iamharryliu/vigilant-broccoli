@@ -31,6 +31,20 @@ export function HomePage() {
       </header>
 
       <section className="mb-8">
+        <CardGrid>
+          <li>
+            <CardLink
+              route
+              href="/open-source/github/vigilant-broccoli"
+              title={t('HOME.README.TITLE')}
+              description={t('HOME.README.DESCRIPTION')}
+              icon={<FileText className={ICON_CLASS} />}
+            />
+          </li>
+        </CardGrid>
+      </section>
+
+      <section className="mb-8">
         <SectionHeading>{t('HOME.SECTION_MONITORING')}</SectionHeading>
         <CardGrid>
           <li>
@@ -89,15 +103,6 @@ export function HomePage() {
       <section>
         <SectionHeading>{t('HOME.SECTION_DOCUMENTATION')}</SectionHeading>
         <CardGrid>
-          <li>
-            <CardLink
-              route
-              href="/open-source/github/vigilant-broccoli"
-              title={t('HOME.README.TITLE')}
-              description={t('HOME.README.DESCRIPTION')}
-              icon={<FileText className={ICON_CLASS} />}
-            />
-          </li>
           <li>
             <CardLink
               href="#/claude-context"

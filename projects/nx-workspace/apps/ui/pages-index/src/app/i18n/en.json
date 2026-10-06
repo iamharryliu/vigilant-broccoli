@@ -2,7 +2,7 @@
   "HOME": {
     "PAGE_TITLE": "Home",
     "TITLE": "vigilant-broccoli",
-    "DESCRIPTION": "Explore the apps, libraries, and documentation in vigilant-broccoli, and follow the repository’s activity and service health.",
+    "DESCRIPTION": "Personal monorepo.",
     "SECTION_MONITORING": "Monitoring",
     "SECTION_SOFTWARE_PROJECTS": "Software Projects",
     "SECTION_DOCUMENTATION": "Documentation",
@@ -132,6 +132,7 @@
     }
   },
   "README_PAGE": {
+    "TITLE": "README",
     "README_LABEL": "README",
     "VIEW_ON_GITHUB": "View on GitHub",
     "VIEW_ON_NPM": "View on npm",

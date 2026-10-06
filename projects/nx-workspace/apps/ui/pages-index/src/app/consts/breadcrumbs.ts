@@ -22,6 +22,10 @@ const BREADCRUMB_TREE: Record<string, BreadcrumbNode> = {
     labelKey: 'GITHUB_REPOS_PAGE.TITLE',
     parent: '/open-source',
   },
+  '/open-source/github/vigilant-broccoli': {
+    labelKey: 'README_PAGE.TITLE',
+    parent: '/',
+  },
   '/open-source/docker': {
     labelKey: 'DOCKER_IMAGES_PAGE.TITLE',
     parent: '/open-source',
