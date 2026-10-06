@@ -41,6 +41,14 @@ export function HomePage() {
               icon={<FileText className={ICON_CLASS} />}
             />
           </li>
+          <li>
+            <CardLink
+              href="#/claude-context"
+              title={t('HOME.CLAUDE_CONTEXT.TITLE')}
+              description={t('HOME.CLAUDE_CONTEXT.DESCRIPTION')}
+              icon={<Bot className={ICON_CLASS} />}
+            />
+          </li>
         </CardGrid>
       </section>
 
@@ -68,7 +76,7 @@ export function HomePage() {
         </CardGrid>
       </section>
 
-      <section className="mb-8">
+      <section>
         <SectionHeading>{t('HOME.SECTION_SOFTWARE_PROJECTS')}</SectionHeading>
         <CardGrid>
           <li>
@@ -95,20 +103,6 @@ export function HomePage() {
               title={t('HOME.UI.TITLE')}
               description={t('HOME.UI.DESCRIPTION')}
               icon={<LayoutGrid className={ICON_CLASS} />}
-            />
-          </li>
-        </CardGrid>
-      </section>
-
-      <section>
-        <SectionHeading>{t('HOME.SECTION_DOCUMENTATION')}</SectionHeading>
-        <CardGrid>
-          <li>
-            <CardLink
-              href="#/claude-context"
-              title={t('HOME.CLAUDE_CONTEXT.TITLE')}
-              description={t('HOME.CLAUDE_CONTEXT.DESCRIPTION')}
-              icon={<Bot className={ICON_CLASS} />}
             />
           </li>
           <li>

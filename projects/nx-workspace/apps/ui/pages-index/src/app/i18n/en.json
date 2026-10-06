@@ -5,7 +5,6 @@
     "DESCRIPTION": "Personal monorepo.",
     "SECTION_MONITORING": "Monitoring",
     "SECTION_SOFTWARE_PROJECTS": "Software Projects",
-    "SECTION_DOCUMENTATION": "Documentation",
     "STATUS": {
       "TITLE": "Status",
       "DESCRIPTION": "Live health of deployed services and applications."
@@ -16,14 +15,14 @@
     },
     "OPEN_SOURCE": {
       "TITLE": "Open Source",
-      "DESCRIPTION": "GitHub, Docker Hub, and npm packages."
+      "DESCRIPTION": "GitHub repos, Docker Hub images, npm packages."
     },
     "WEB_APPLICATIONS": {
       "TITLE": "Web Applications",
       "DESCRIPTION": "Deployed apps and demos."
     },
     "UI": {
-      "TITLE": "UI",
+      "TITLE": "Component Library",
       "DESCRIPTION": "React component library."
     },
     "API_SERVICES": {
