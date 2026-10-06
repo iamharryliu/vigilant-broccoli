@@ -1,11 +1,14 @@
 # Tech Lingo
 
-- [Software Lingo](./software/software-lingo.md)
-- [Computer Hardware Lingo](./hardware/computer-hardware-lingo.md)
-
+- [Lingo](#lingo)
 - [Build Systems & CI/CD](#build-systems--cicd)
 - [Roles](#roles)
 - [Hot Takes](#hot-takes)
+
+## Lingo
+
+- [Software Lingo](./software/software-lingo.md)
+- [Computer Hardware Lingo](./hardware/computer-hardware-lingo.md)
 
 | Term                           | Description                                                                                                                                                                                         |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

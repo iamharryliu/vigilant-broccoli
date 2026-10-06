@@ -9,23 +9,25 @@
 
 ## Programming Concepts
 
-| Term                | Definition                                                                                                                                        |
-| :------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------ |
-| ACID                | A set of properties that guarantee reliable transaction processing in relational database systems                                                 |
-| Closure             | Enables functions to keep state.                                                                                                                  |
-| Compiler            | A tool that converts source code written in one programming language into another, typically into machine code.                                   |
-| first class citizen | a particular entity in a language—like a function, object, or data type—can be used freely and fully like any other value.                        |
-| High-level language | A programming language that is closer to human language, abstracting away hardware details. Easier to read, write, and maintain (e.g., Python).   |
-| immutable           | Cannot be changed after it’s created.                                                                                                             |
-| Low-level language  | A programming language that is closer to machine code, with less abstraction from hardware. Provides more control but is harder to use (e.g., C). |
-| Statically Typed    | Variable types are known at compile time.                                                                                                         |
-| Ternary Operator    | A one line if else statement.                                                                                                                     |
-| Transpiler          | Transforms code syntax and features so the code runs across different environments.                                                               |
+| Term                | Definition                                                                                                                                                          |
+| :------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ACID                | A set of properties that guarantee reliable transaction processing in relational database systems                                                                   |
+| Closure             | Enables functions to keep state.                                                                                                                                    |
+| Compiler            | A tool that converts source code written in one programming language into another, typically into machine code.                                                     |
+| first class citizen | a particular entity in a language—like a function, object, or data type—can be used freely and fully like any other value.                                          |
+| FOSS                | Free and Open Source Software — software whose source code is freely available to view, modify, and redistribute, usually under a license like MIT, GPL, or Apache. |
+| High-level language | A programming language that is closer to human language, abstracting away hardware details. Easier to read, write, and maintain (e.g., Python).                     |
+| immutable           | Cannot be changed after it’s created.                                                                                                                               |
+| Low-level language  | A programming language that is closer to machine code, with less abstraction from hardware. Provides more control but is harder to use (e.g., C).                   |
+| Statically Typed    | Variable types are known at compile time.                                                                                                                           |
+| Ternary Operator    | A one line if else statement.                                                                                                                                       |
+| Transpiler          | Transforms code syntax and features so the code runs across different environments.                                                                                 |
 
 ## Architecture
 
 | Term                      | Definition                                                                                                                                                                 |
 | :------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| API                       | Application Programming Interface — a defined set of rules and protocols that lets one piece of software request services or data from another.                            |
 | Backend                   | The server-side part of an application responsible for data processing, storage, and business logic.                                                                       |
 | daemon                    | A background process that runs continuously and handles tasks or requests without direct user interaction. Common in operating systems and servers.                        |
 | Dependency Inversion      | Implementing code so that high-level modules do not depend on low-level modules, ie abstract DB (could use MySQL or Postgres)                                              |
@@ -74,10 +76,11 @@
 
 ## Development Approaches
 
-| Term | Definition                                                                                                                                             |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| BDD  | Behavior-Driven Development. Requirements are written as plain-language Given-When-Then scenarios and automated as tests. See [BDD](./general/bdd.md). |
-| TDD  | Test-Driven Development. You write the test first and then the code that makes it pass.                                                                |
+| Term  | Definition                                                                                                                                                                          |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BDD   | Behavior-Driven Development. Requirements are written as plain-language Given-When-Then scenarios and automated as tests. See [BDD](./general/bdd.md).                              |
+| CI/CD | Continuous Integration/Continuous Deployment (or Delivery). CI automatically builds and tests every merged change; CD automatically ships passing changes to staging or production. |
+| TDD   | Test-Driven Development. You write the test first and then the code that makes it pass.                                                                                             |
 
 ## Tooling
 
