@@ -15,7 +15,6 @@ import {
   CALENDAR_ROUTE,
   CONTACT_ROUTE,
   DEFAULT_DESCRIPTION,
-  EMAIL_SIGNATURE_ROUTE,
   INDEX_ROUTE,
   LINK_TREE_ROUTE,
   ROUTES,
@@ -28,7 +27,6 @@ import { AboutPage } from './components/pages/about.page';
 import { ContactPage } from './components/pages/contact.page';
 import { CalendarPage } from './components/pages/calendar.page';
 import { LinkTreePage } from './components/pages/link-tree.page';
-import { EmailSignaturePage } from './components/pages/email-signature.page';
 
 initAnalytics();
 
@@ -123,10 +121,6 @@ export function App() {
             <Route path={CONTACT_ROUTE.path} element={<ContactPage />} />
             <Route path={CALENDAR_ROUTE.path} element={<CalendarPage />} />
             <Route path={LINK_TREE_ROUTE.path} element={<LinkTreePage />} />
-            <Route
-              path={EMAIL_SIGNATURE_ROUTE.path}
-              element={<EmailSignaturePage />}
-            />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
