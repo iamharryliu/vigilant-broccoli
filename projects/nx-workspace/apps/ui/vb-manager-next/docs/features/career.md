@@ -33,7 +33,3 @@
 - The React component (`resume-view.component.tsx`, Tailwind/`next/font`) and the PDF template (`server.ts`, plain HTML string) implement the same design twice — Next's bundler and the headless-Chromium script can't share one implementation. Styling changes must be applied in both places.
 - vb-manager-next isn't deployed to the cloud (runs locally via PM2) — the PDF generator can't render the live `/career` page, so it re-implements the layout standalone instead.
 - `apps/ui/personal-website-react` declares no `implicitDependencies` on vb-manager-next — Nx's affected-graph correctly picks up resume.json changes via the real `@vigilant-broccoli/resume` import.
-
-## Deprecated
-
-- The old Google Docs → R2 cron pipeline (`cron-utility-update-resume.yml`) is removed; the stale `HarryLiu-Resume.pdf` object in the `vigilant-broccoli` R2 bucket is now unmaintained.
