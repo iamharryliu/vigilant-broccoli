@@ -146,6 +146,7 @@ jobs:
     timeout-minutes: 30
     outputs:
       has_deployments: ${{ steps.check.outputs.has_deployments }}
+      projects: ${{ steps.check.outputs.projects }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -166,12 +167,15 @@ jobs:
           fi
 
           if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_ENVIRONMENT" == "production" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
+            ALL_COMMA=$(pnpm exec nx show projects --withTarget=$DEPLOY_TARGET | tr '\n' ',' | sed 's/,$//')
             echo "has_deployments=true" >> $GITHUB_OUTPUT
+            echo "projects=$ALL_COMMA" >> $GITHUB_OUTPUT
             echo "deploy_cmd=pnpm exec nx run-many -t $DEPLOY_TARGET" >> $GITHUB_OUTPUT
           else
             AFFECTED_COMMA=$(pnpm exec nx show projects --affected --withTarget=$DEPLOY_TARGET --base=$NX_BASE --head=$NX_HEAD | tr '\n' ',' | sed 's/,$//')
             if [[ -n "$AFFECTED_COMMA" ]]; then
               echo "has_deployments=true" >> $GITHUB_OUTPUT
+              echo "projects=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
               echo "deploy_cmd=pnpm exec nx run-many -t $DEPLOY_TARGET --projects=\"$AFFECTED_COMMA\"" >> $GITHUB_OUTPUT
             else
               echo "has_deployments=false" >> $GITHUB_OUTPUT
@@ -367,6 +371,7 @@ jobs:
           APPS_RESULT: ${{ needs.deploy-apps.result }}
           PAGES_RESULT: ${{ needs.deploy-github-pages.result }}
           HAS_PACKAGES: ${{ needs.deploy-npm-packages.outputs.has_packages }}
+          APP_PROJECTS: ${{ needs.deploy-apps.outputs.projects }}
           HAS_APPS: ${{ needs.deploy-apps.outputs.has_deployments }}
           HAS_PAGES: ${{ needs.deploy-github-pages.outputs.has_deployments }}
           DEPLOY_ENVIRONMENT: ${{ env.DEPLOY_ENVIRONMENT }}
@@ -381,6 +386,11 @@ jobs:
             fi
           done
 
+          DEPLOYED_APPS=""
+          if [[ "$HAS_APPS" == "true" ]]; then
+            DEPLOYED_APPS="$APP_PROJECTS"
+          fi
+
           DEPLOYED=false
           if [[ "$HAS_PACKAGES" == "true" || "$HAS_APPS" == "true" || "$HAS_PAGES" == "true" ]]; then
             DEPLOYED=true
@@ -390,11 +400,12 @@ jobs:
           jq -n \
             --arg conclusion "$CONCLUSION" \
             --arg deployed "$DEPLOYED" \
+            --arg deployed_apps "$DEPLOYED_APPS" \
             --arg environment "$DEPLOY_ENVIRONMENT" \
             --arg run_id "${{ github.run_id }}" \
             --arg run_url "$RUN_URL" \
             --arg started_at "$RUN_STARTED_AT" \
             --arg commit_message "$COMMIT_MESSAGE" \
             --arg commit_sha "$COMMIT_SHA" \
-            '{event_type: "deploy-fanout", client_payload: {conclusion: $conclusion, deployed: $deployed, environment: $environment, run_id: $run_id, run_url: $run_url, started_at: $started_at, commit_message: $commit_message, commit_sha: $commit_sha}}' \
+            '{event_type: "deploy-fanout", client_payload: {conclusion: $conclusion, deployed: $deployed, deployed_apps: $deployed_apps, environment: $environment, run_id: $run_id, run_url: $run_url, started_at: $started_at, commit_message: $commit_message, commit_sha: $commit_sha}}' \
             | gh api repos/${{ github.repository }}/dispatches --input -
