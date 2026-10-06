@@ -47,6 +47,3 @@ jobs:
           echo "::add-mask::$TOKEN"
           unset UPPTIME_SYNC_GH_APP_PRIVATE_KEY
           GH_TOKEN="$TOKEN" python3 infrastructure/upptime/sync.py
-      - name: Activation instructions
-        run: |
-          echo 'Verify both workflows in the monitoring repository before setting upptime_migration_complete=true in Terraform.' >> "$GITHUB_STEP_SUMMARY"
