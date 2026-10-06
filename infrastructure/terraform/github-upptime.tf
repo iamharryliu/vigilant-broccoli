@@ -27,6 +27,17 @@ resource "github_branch" "upptime_main" {
   }
 }
 
+resource "github_branch" "upptime_pages" {
+  repository    = github_repository.upptime.name
+  branch        = "gh-pages"
+  source_branch = github_branch.upptime_main.branch
+
+  # The site workflow force-publishes this branch; later source changes must not recreate it.
+  lifecycle {
+    ignore_changes = [source_branch]
+  }
+}
+
 resource "github_branch_default" "upptime" {
   repository = github_repository.upptime.name
   branch     = github_branch.upptime_main.branch
@@ -82,7 +93,7 @@ resource "github_repository_pages" "upptime" {
   cname      = cloudflare_dns_record.harryliu_dev_upptime.name
 
   source {
-    branch = github_branch.upptime_main.branch
+    branch = github_branch.upptime_pages.branch
     path   = "/"
   }
 }

@@ -1,0 +1,51 @@
+name: cron-upptime-site
+
+on:
+  schedule:
+    - cron: '40 1 * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [static_site]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: upptime
+  cancel-in-progress: false
+
+env:
+  SITE_DIR: site/status-page/__sapper__/export
+  PAGES_BRANCH: gh-pages
+
+jobs:
+  site:
+    if: github.event_name == 'workflow_dispatch' || vars.UPPTIME_MONITORING_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Configure monitoring repository credentials
+        env:
+          GH_PAT: ${{ github.token }}
+        run: git remote set-url origin "https://x-access-token:${GH_PAT}@github.com/${GITHUB_REPOSITORY}.git"
+      - uses: upptime/uptime-monitor@8be193bbcb957a3a917d2bb16a0c96959778a889 # v1.44.1
+        with:
+          command: site
+        env:
+          GH_PAT: ${{ github.token }}
+      - name: Deploy site to Pages branch
+        run: |
+          test -f "$SITE_DIR/index.html"
+          cd "$SITE_DIR"
+          git init --initial-branch "$PAGES_BRANCH"
+          git config user.name 'Upptime Bot'
+          git config user.email 'upptime@koj.co'
+          touch .nojekyll
+          git add --all
+          git commit -m ':bento: Deploy status site [skip ci] [upptime]'
+          git push --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${PAGES_BRANCH}"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}

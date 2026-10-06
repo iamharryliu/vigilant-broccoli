@@ -25,6 +25,7 @@ STATUS_END = "<!--end: status pages-->"
 MANAGED_FILES = {
     ".github/workflows/cron-upptime.yml": "workflows/cron-upptime.yml",
     ".github/workflows/cron-upptime-response-time.yml": "workflows/cron-upptime-response-time.yml",
+    ".github/workflows/cron-upptime-site.yml": "workflows/cron-upptime-site.yml",
     "scripts/warm-fly.sh": "warm-fly.sh",
     "README.md": "monitoring-readme.md",
     "scripts/graphs/package.json": "graphs/package.json",
