@@ -18,6 +18,7 @@ Manage monitoring from vigilant-broccoli while running Upptime with credentials 
 - `ci-sync-upptime.yml`, reachable only on `main`, reads the dedicated sync App key from `kv/upptime-sync` through `github-actions-upptime-sync-role`. The GCP identity only reads the two Cloudflare Access secrets needed to reach Vault; its WIF binding is pinned to this workflow on `main`.
 - The sync App is installed **only on the monitoring repo**, with Contents and Workflows read/write. It has no installation or ruleset bypass in vigilant-broccoli. Each sync mints a repository-restricted installation token with those two permissions.
 - Monitoring workflows use the monitoring repo's temporary `GITHUB_TOKEN`, with Contents and Issues write and no OIDC permission. The monitoring repo receives no private key, Vault/GCP credentials, or application secrets.
+- GitHub Pages serves the monitoring repo's `main` branch root at `upptime.harryliu.dev` (Terraform `github_repository_pages.upptime`, DNS-only CNAME to `<owner>.github.io` in `cloudflare-harryliu-dev.tf`); Jekyll renders the generated README status table as the page. Apply locally with `pnpm tf:apply`, then enable HTTPS enforcement once the certificate is issued.
 - The Pages Index status page reads the monitoring repo's public `history/summary.json` and shows workflow badges from both repos. Missing or failed monitoring data displays an error; archived source-repository data is never used as a fallback.
 
 ## Managed files and runtime behavior

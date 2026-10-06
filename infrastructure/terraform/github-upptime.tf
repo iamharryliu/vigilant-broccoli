@@ -75,3 +75,14 @@ resource "github_actions_variable" "upptime_monitoring_enabled" {
   variable_name = "UPPTIME_MONITORING_ENABLED"
   value         = tostring(var.upptime_migration_complete)
 }
+
+resource "github_repository_pages" "upptime" {
+  repository = github_repository.upptime.name
+  build_type = "legacy"
+  cname      = cloudflare_dns_record.harryliu_dev_upptime.name
+
+  source {
+    branch = github_branch.upptime_main.branch
+    path   = "/"
+  }
+}
