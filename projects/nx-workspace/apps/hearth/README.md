@@ -13,7 +13,9 @@ Shared life for homes, communes, and communities.
   - [Users](https://supabase.com/dashboard/project/jrdosjjgmsoodpjmjqxx/auth/users)
   - [SQL Editor](https://supabase.com/dashboard/project/jrdosjjgmsoodpjmjqxx/sql)
   - [URL Configuration](https://supabase.com/dashboard/project/jrdosjjgmsoodpjmjqxx/auth/url-configuration)
-- [Buckets](https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/r2/default/buckets/home-management)
+- Buckets
+  - [home-docs](https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/r2/default/buckets/home-docs)
+  - [where-is](https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/r2/default/buckets/where-is)
 - [Vercel](https://vercel.com/vigilant-broccoli/staging-hearth)
   - [Environement Variables](https://vercel.com/vigilant-broccoli/staging-hearth/settings/environment-variables)
 
@@ -33,5 +35,5 @@ Shared life for homes, communes, and communities.
   - `react-lib`
 - Cloud services
   - Supabase (auth + data)
-  - Cloudflare R2 (`home-management` bucket)
+  - Cloudflare R2 (`home-docs` and `where-is` buckets)
   - Vercel
