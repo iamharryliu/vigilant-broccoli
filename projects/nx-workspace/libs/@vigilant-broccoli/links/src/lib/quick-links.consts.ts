@@ -1009,6 +1009,12 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
+    label: GOOGLE_SERVICES.GMAIL.SIGNATURE.NAME,
+    target: GOOGLE_SERVICES.GMAIL.SIGNATURE.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
     label: PROTON_LINK.MAIL.NAME,
     target: PROTON_LINK.MAIL.URL,
     type: OPEN_TYPE.BROWSER,
@@ -1349,8 +1355,7 @@ const UI_APP_LINKS = [
   },
   {
     label: 'React Component Library',
-    target:
-      'https://projects.harryliu.dev/react-component-library/',
+    target: 'https://projects.harryliu.dev/react-component-library/',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
   },

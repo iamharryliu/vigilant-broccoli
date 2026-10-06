@@ -26,6 +26,10 @@ export const GOOGLE_SERVICES = {
       NAME: 'Gmail Filters',
       URL: 'https://mail.google.com/mail/u/0/#settings/filters',
     },
+    SIGNATURE: {
+      NAME: 'Gmail Signature',
+      URL: 'https://mail.google.com/mail/u/0/#settings/general',
+    },
   },
   CALENDAR: {
     NAME: 'Google Calendar',
