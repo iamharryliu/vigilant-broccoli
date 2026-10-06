@@ -130,6 +130,7 @@ There are activities that don't spark job unless they meet certain conditions / 
 | Health         |                                                                                                    |
 | Movement       | Being active and moving around.                                                                    |
 | Nourishment    |                                                                                                    |
+| Novelty        | Experiencing something new                                                                         |
 | Relationships  |                                                                                                    |
 
 ### Ideal conditions for an activity
