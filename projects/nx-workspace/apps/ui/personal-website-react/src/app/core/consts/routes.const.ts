@@ -57,12 +57,6 @@ export const CALENDAR_ROUTE: RouteMeta = {
   description: "Harry Liu's calendar.",
 };
 
-export const EMAIL_SIGNATURE_ROUTE: RouteMeta = {
-  path: '/email-signature',
-  title: 'Email Signature',
-  description: "Harry Liu's email signature.",
-};
-
 const internalUrl = (path: string) =>
   path === '/' ? '/' : path.startsWith('/') ? path : `/${path}`;
 
@@ -188,5 +182,4 @@ export const ROUTES: RouteMeta[] = [
   CONTACT_ROUTE,
   LINK_TREE_ROUTE,
   CALENDAR_ROUTE,
-  EMAIL_SIGNATURE_ROUTE,
 ];
