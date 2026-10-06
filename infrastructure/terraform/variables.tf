@@ -273,3 +273,13 @@ variable "harryliu_dev_pages_subdomain" {
   type    = string
   default = "production-harryliu-dev-react.pages.dev"
 }
+
+variable "rabbitmq_management_domain" {
+  type    = string
+  default = "queue.harryliu.dev"
+}
+
+variable "rabbitmq_allowed_emails" {
+  type    = list(string)
+  default = ["harryliu1995@gmail.com"]
+}
