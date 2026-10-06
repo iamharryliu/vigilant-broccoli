@@ -35,6 +35,7 @@ jobs:
           shared_app_token: ${{ env.SHARED_APP_TOKEN }}
           started_at: ${{ github.event.client_payload.started_at }}
           run_url: ${{ github.event.client_payload.run_url }}
+          affected_projects: ${{ github.event.client_payload.deployed_apps }}
 
       - name: Look up deployed PR
         id: pr
@@ -68,4 +69,5 @@ jobs:
           PR_NUMBER: ${{ steps.pr.outputs.number }}
           PR_TITLE: ${{ steps.pr.outputs.title }}
           PR_URL: ${{ steps.pr.outputs.url }}
+          DEPLOYED_APPS: ${{ github.event.client_payload.deployed_apps }}
         run: node .github/scripts/deploy-complete-email.mjs

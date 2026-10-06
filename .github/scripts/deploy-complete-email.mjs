@@ -22,6 +22,10 @@ const COMMIT_MESSAGE = process.env.COMMIT_MESSAGE ?? '';
 const PR_NUMBER = process.env.PR_NUMBER ?? '';
 const PR_TITLE = process.env.PR_TITLE ?? '';
 const PR_URL = process.env.PR_URL ?? '';
+const DEPLOYED_APPS = (process.env.DEPLOYED_APPS ?? '')
+  .split(',')
+  .map(app => app.trim())
+  .filter(Boolean);
 
 const SANS_FONT =
   "-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif";
@@ -54,10 +58,18 @@ const prLineText = PR_NUMBER
   ? `#${PR_NUMBER} ${PR_TITLE}\n${PR_URL}`
   : commitSummary;
 
+const appsHtml = DEPLOYED_APPS.length
+  ? `<p style="margin:0 0 12px 0;">Redeployed apps:</p><ul style="margin:0 0 12px 0;">${DEPLOYED_APPS.map(app => `<li>${escapeHtml(app)}</li>`).join('')}</ul>`
+  : '';
+const appsText = DEPLOYED_APPS.length
+  ? ['Redeployed apps:', ...DEPLOYED_APPS.map(app => `- ${app}`)].join('\n')
+  : '';
+
 const html =
   `<div style="font-family:${SANS_FONT};font-size:14px;color:${COLOR.text};padding:16px;">` +
   `<p style="margin:0 0 12px 0;">Deploy${ENVIRONMENT ? ` to <strong>${escapeHtml(ENVIRONMENT)}</strong>` : ''} <strong style="color:${resultColor};">${escapeHtml(CONCLUSION)}</strong>.</p>` +
   `<p style="margin:0 0 12px 0;">${prLineHtml}</p>` +
+  appsHtml +
   `<p style="margin:0 0 12px 0;color:${COLOR.muted};">Commit <code>${escapeHtml(shortSha)}</code></p>` +
   `<p style="margin:0;"><a href="${escapeHtml(RUN_URL)}" style="color:${COLOR.link};">View run</a></p>` +
   `</div>`;
@@ -65,6 +77,7 @@ const html =
 const text = [
   `Deploy${ENVIRONMENT ? ` to ${ENVIRONMENT}` : ''} ${CONCLUSION}.`,
   prLineText,
+  ...(appsText ? [appsText] : []),
   `Commit ${shortSha}`,
   '',
   RUN_URL,
