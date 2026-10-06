@@ -1,6 +1,6 @@
 // Every page shares one container width and gutter so the content column does
 // not shift when navigating between pages.
-const PAGE_WIDTH_CLASS = 'mx-auto max-w-3xl';
+const PAGE_WIDTH_CLASS = 'mx-auto max-w-4xl';
 const PAGE_GUTTER_CLASS = 'px-4 sm:px-6';
 
 // Scrolling pages: room at the bottom so the last card clears the viewport edge.
