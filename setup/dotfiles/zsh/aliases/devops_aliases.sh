@@ -13,11 +13,6 @@ terraform_run() {
   local action=$1; shift || return 1
   local env=$1
   local auto=$2
-  # If user used a 3rd positional param for extra args, preserve them:
-  # (we allow terraform_run to be called with extra args after the three params)
-  # so shift accordingly if env/auto were supplied
-  # (caller functions below pass parameters explicitly)
-  # Build var-file flag if env provided
   local varfile=""
   if [[ -n "$env" ]]; then
     varfile="-var-file=${env}.tfvars"
@@ -48,7 +43,6 @@ terraform_run() {
   esac
 }
 
-# Basic wrappers without empty placeholders
 tfinit()    { terraform_run init "$@"; }
 tfplan()    { terraform_run plan "$@"; }
 tfapply()   { terraform_run apply "$@"; }
@@ -91,7 +85,6 @@ wgls() {
   for conf_path in "${conf_files[@]}"; do
     local conf_name=$(basename "$conf_path")
 
-    # Extract the Address from the config file
     local address=$(grep "^Address" "$conf_path" 2>/dev/null | sed 's/.*=[ ]*//' | cut -d'/' -f1)
 
     # Find matching interface by IP address
@@ -99,11 +92,9 @@ wgls() {
     local iface=""
 
     if [[ -n "$address" ]]; then
-      # Check all utun interfaces for matching IP
       local matching_iface=$(ifconfig | grep -B1 "inet $address " | grep "^utun" | awk '{print $1}' | tr -d ':')
 
       if [[ -n "$matching_iface" ]]; then
-        # Check if interface is UP and RUNNING
         if ifconfig "$matching_iface" | grep -q "flags=.*<.*UP.*RUNNING"; then
           wg_status="UP"
           iface="$matching_iface"
@@ -111,7 +102,6 @@ wgls() {
       fi
     fi
 
-    # Format output with color and status
     if [[ "$wg_status" == "UP" ]]; then
       printf "%2d. %-20s \033[32m[%s]\033[0m %s (%s)\n" "$num" "$conf_name" "$wg_status" "$iface" "$address"
     else

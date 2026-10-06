@@ -21,10 +21,6 @@ export default defineConfig(() => ({
     tsconfigPaths(),
     viteStaticCopy({ targets: [{ src: '*.md', dest: '.' }], silent: true }),
   ],
-  // Uncomment this if you are using workers.
-  // worker: {
-  //   plugins: () => [ tsconfigPaths() ],
-  // },
   build: {
     outDir: '../../../dist/component-library',
     emptyOutDir: true,

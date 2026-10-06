@@ -59,7 +59,6 @@ alias wg-status='sudo wg show'
 alias vbvault="open 'https://10.0.1.1:8200'"
 alias cpvaulttoken="gcloud secrets versions access latest --secret=VB_VM_VAULT_ROOT_TOKEN --project=vigilant-broccoli | pbcopy && echo 'Vault root token copied to clipboard.'"
 alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell/backup-repo.sh'
-# alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell/backup-repo.sh && rsync -av --delete --exclude=".*" ~/resilio-sync/backup/ ~/My\ Drive/resilio-backup/'
 
 # Hobby Code
 alias dldjmusic="$NX_DIR/scripts/shell/run-spotify-to-mp3.sh --output '$HOME/My Drive/DJ Music Library' --filter mix --parallel 5"

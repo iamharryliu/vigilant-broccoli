@@ -6,10 +6,6 @@ name: manual-agentic-solve-smoke
 # notification email) can be exercised with Claude or Codex without typing a
 # prompt or burning a real TODO id. The PR it opens is disposable — close it
 # once the email looks right.
-#
-# The prompt rewrites one line of .github/agentic-smoke.md, so the resulting
-# diff carries both an added and a removed row and the email's diff rendering is
-# actually covered.
 
 on:
   workflow_dispatch:

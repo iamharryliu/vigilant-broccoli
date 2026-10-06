@@ -41,7 +41,6 @@ const APP_HOST = getEnvironmentVariable('HOST') || '127.0.0.1';
 const API_KEY = getEnvironmentVariable('VB_EXPRESS_API_KEY');
 
 const ALLOWED_ORIGINS = [
-  // ---- Localhost ----
   'http://localhost:1337',
   'http://localhost:3000',
   'http://localhost:4200',
@@ -50,7 +49,6 @@ const ALLOWED_ORIGINS = [
   'http://127.0.0.1:3000',
   'http://127.0.0.1:4200',
   'http://127.0.0.1:5173',
-  // ---- Production ----
   'https://harryliu.dev',
   'https://www.harryliu.dev',
   'https://cloud8skate.com',

@@ -123,7 +123,7 @@ class PerformanceTest:
         logger.info(f"  Starting parallel downloads: {self.start_parallel}")
         logger.info(f"  Max parallel downloads to test: {self.max_parallel}")
         logger.info(f"  Max acceptable failure rate: {self.max_failure_rate*100:.1f}%")
-        test_playlists = get_spotify_playlists()[:30]  # Limit to first 30 for testing
+        test_playlists = get_spotify_playlists()[:30]
         logger.info(f"Using {len(test_playlists)} playlists for testing")
 
         optimal_parallel = self.start_parallel
@@ -137,7 +137,6 @@ class PerformanceTest:
             result = self.test_parallel_level(test_playlists, parallel)
             self.results.append(result)
 
-            # Check if we've hit too many failures
             if result["failure_rate"] > self.max_failure_rate:
                 logger.warning(
                     f"\nFailure rate ({result['failure_rate']*100:.1f}%) "
@@ -151,16 +150,13 @@ class PerformanceTest:
                 optimal_parallel = parallel
                 best_result = result
 
-        # Clean up test directory
         self.cleanup_test_directory()
 
-        # Report results
         self.print_summary(optimal_parallel, best_result)
 
         return optimal_parallel, self.results
 
     def print_summary(self, optimal_parallel: int, best_result: Dict):
-        """Print summary of test results"""
         logger.info("\n" + "=" * 80)
         logger.info("TEST SUMMARY - MAX PARALLEL DOWNLOADS")
         logger.info("=" * 80)

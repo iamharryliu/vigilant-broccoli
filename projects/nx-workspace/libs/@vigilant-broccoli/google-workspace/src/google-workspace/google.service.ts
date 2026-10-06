@@ -466,17 +466,14 @@ function getBatchDeleteCalendarEventCommands(
 }
 
 export const GoogleService = {
-  // CREATE
   createCalendar,
   createCalendarEvent,
   createRecurringCalendarEvent,
   getBatchCreateCalendarCommands,
   getBatchCreateCalendarEventCommands,
-  // READ
   getMembersOfOrganizationalUnit,
   getEmailsInWorkspace,
   getEmployeesOrganizationData,
-  // UPDATE
   getBatchUpdateGroupCommands,
   getBatchUpdatePasswordCommands,
   getBatchUpdateOrganizationalUnitCommands,
@@ -485,7 +482,6 @@ export const GoogleService = {
   getBatchUpdatePhoneNumberCommands,
   getBatchAddUsersToCalendarCommands,
   getBatchUpdateCalendarEventCommands,
-  // DELETE
   getBatchDeleteCalendarEventCommands,
   // Offboard
   batchSuspendEmails,

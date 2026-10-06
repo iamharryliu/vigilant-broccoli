@@ -34,20 +34,11 @@ jobs:
       - uses: ./.github/actions/setup-nx-workspace
         if: steps.check.outputs.nx-workspace-changed == 'true'
 
-      # pull_request runs execute this workflow's YAML from the PR branch
-      # itself, so (unlike every other workflow in this repo) anyone who gets
-      # a PR check to run could edit this file to request a different secret.
-      # That's why this does NOT use secrets.GCP_WORKLOAD_IDENTITY_PROVIDER /
-      # GCP_SERVICE_ACCOUNT (the broad SA — roles/editor, project-wide Secret
-      # Manager access, serviceAccountAdmin) or the default Vault role (reads
-      # all of kv/data/secrets). Both are hardcoded literals, not secrets —
-      # see outputs.tf's github_actions_pr_check_* outputs for why that's
-      # safe — and both are narrowly scoped: the WIF provider only trusts
-      # job_workflow_ref=ci-pr-check.yml, the SA can only read the two
-      # Cloudflare Access secrets, and the Vault role's policy can only read
-      # kv/data/ci-pr-check (one path, one low-privilege token), not the
-      # shared secret store. continue-on-error because none of this is
-      # load-bearing — worst case a PR just runs without a warm cache.
+      # pull_request runs this YAML from the PR branch, so it uses its own
+      # narrow WIF provider/SA/Vault role instead of the shared ones — see
+      # docs/infrastructure/secret-management.md#nx-cache.
+      # continue-on-error because none of this is load-bearing — worst case a
+      # PR just runs without a warm cache.
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         continue-on-error: true
@@ -83,9 +74,7 @@ jobs:
       # -t ... build` command above) so this doesn't also try to run
       # vb-manager-next's separate, not-yet-CI-wired e2e target. Its config
       # boots its own server via Playwright's webServer, so no live deploy or
-      # extra server-management step is needed here. Covers both icon-bearing
-      # and icon-less Sidebar nav (toggled via Settings > Icons in the demo
-      # itself) - see apps/ui/component-library/e2e/sidebar.spec.ts.
+      # extra server-management step is needed here.
       - name: Check for Sidebar e2e coverage
         id: e2e-check
         if: steps.check.outputs.nx-workspace-changed == 'true'

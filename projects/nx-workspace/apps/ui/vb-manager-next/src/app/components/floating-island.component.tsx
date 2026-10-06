@@ -240,7 +240,6 @@ export const FloatingIslandComponent = ({
 
   return (
     <>
-      {/* Floating Card Container */}
       <div
         ref={containerRef}
         onPointerDown={handlePointerDown}
@@ -265,12 +264,10 @@ export const FloatingIslandComponent = ({
           visibility: position.x < 0 ? 'hidden' : 'visible',
         }}
       >
-        {/* Block 1: Time */}
         <div style={{ minWidth: 'max-content' }}>
           <ClockComponent type="time" />
         </div>
 
-        {/* Divider */}
         <div
           style={{
             width: '1px',
@@ -279,12 +276,10 @@ export const FloatingIslandComponent = ({
           }}
         />
 
-        {/* Block 2: Info */}
         <div style={{ minWidth: 'max-content' }}>
           <ClockComponent type="info" />
         </div>
 
-        {/* Divider */}
         <div
           style={{
             width: '1px',
@@ -293,7 +288,6 @@ export const FloatingIslandComponent = ({
           }}
         />
 
-        {/* Block 3: Weather */}
         <div
           onClick={() => !weatherLoading && setWeatherDialogOpen(true)}
           style={{
@@ -352,7 +346,6 @@ export const FloatingIslandComponent = ({
         </div>
       </div>
 
-      {/* Dialogs */}
       <ChatbotDialog
         open={chatbotDialogOpen}
         onOpenChange={setChatbotDialogOpen}

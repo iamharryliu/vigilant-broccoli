@@ -243,7 +243,6 @@ export default function DocsPage() {
         ))}
       </div>
 
-      {/* Create */}
       <Dialog
         open={modal?.type === 'create'}
         onOpenChange={open => {
@@ -269,7 +268,6 @@ export default function DocsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Edit */}
       <Dialog
         open={modal?.type === 'edit'}
         onOpenChange={open => {

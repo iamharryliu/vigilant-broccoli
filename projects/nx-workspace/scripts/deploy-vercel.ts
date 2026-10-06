@@ -14,27 +14,16 @@ const VERCEL_DIR = '.vercel';
 const VERCEL_OUTPUT_DIR = `${VERCEL_DIR}/output`;
 const BUILD_LOCK_DIR = `${VERCEL_ROOT_DIRECTORY}/dist/.vercel-deploy-lock`;
 
-// Next's `output: 'standalone'` writes the server into .next/standalone as a
-// tree of symlinks into the pnpm store. Nx caches that happily, but the
-// restored tree is not something `vercel build` can package: it finds no
-// server entrypoint, fabricates apps/<app>/noop.js and dies resolving `next`
-// from there. Only a real build produces a packageable tree, so these projects
-// skip the cache. Projects on Next's default output restore from cache
-// correctly — verified — and keep the speedup, which is worth roughly a minute
-// of serialised build time each.
+// Standalone output can't be packaged from an Nx cache restore — see
+// docs/app-development/ui/deployment/vercel-deploy-pattern.md
 const STANDALONE_OUTPUT_PROJECTS = new Set(['employee-handler-ui']);
 
 const BUILD_LOCK_TIMEOUT_MS = 20 * 60 * 1000;
 const BUILD_LOCK_POLL_MS = 500;
 
-// Every app deploying from this workspace shares one .vercel directory —
-// VERCEL_DIR is a hardcoded constant in the CLI, so there is nothing to
-// redirect, and both the build and the upload have to run from the repo root.
-// Concurrently the last `vercel build` pull wins, so apps read each other's
-// project settings: four once ran `nx build whiteboard` together and Nx
-// aborted the lot with "Recursive task invocation detected". Serialising the
-// build and its upload as one unit removes that rather than narrowing the
-// window. mkdir is the atomic primitive: it fails if the directory exists.
+// All apps share one .vercel directory, so build and upload are serialised as
+// a unit (see vercel-deploy-pattern.md). mkdir is the atomic primitive: it
+// fails if the directory exists.
 async function withBuildLock<T>(lockDir: string, fn: () => T): Promise<T> {
   mkdirSync(dirname(lockDir), { recursive: true });
   const deadline = Date.now() + BUILD_LOCK_TIMEOUT_MS;
@@ -399,40 +388,16 @@ async function main() {
 
   const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 
-  // Vercel's Hobby plan builds one deployment at a time, so letting it build
-  // every Next.js app serialises them. Building on the runner and uploading the
-  // result sidesteps that; only the upload still goes through Vercel.
-  //
-  // `vercel build` has to run the build itself — handed a `.next` some other
-  // command produced, it packages nothing and dies resolving `next` from a
-  // fabricated `apps/<app>/noop.js`. So the project keeps its real
-  // `nx build <app>` buildCommand rather than a no-op.
-  //
-  // Build-time vars come from this env rather than the `.vercel/.env.*.local`
-  // that `vercel pull` writes: with a rootDirectory set, the CLI writes that
-  // file beside the cwd but reads it from cwd/rootDirectory, so it never loads
-  // and any app building a Supabase client at module scope fails with
-  // "supabaseUrl is required".
+  // The cwd, --output, buildEnv and .vercel clearing below are each
+  // load-bearing — see "The build runs on the runner, not on Vercel" in
+  // docs/app-development/ui/deployment/vercel-deploy-pattern.md.
   const buildEnv = { ...vercelEnv, ...allSecrets };
 
-  // Both commands run from the repo root, which forces them to share one
-  // output directory, so the lock spans the pair rather than just the build.
-  // The upload has to run from the repo root: the functions it uploads
-  // reference their dependencies by repo-relative path
-  // (projects/nx-workspace/node_modules/...) and it resolves them against its
-  // cwd, so anywhere else it fails with "Please ensure project dependencies
-  // have been installed". `--output` is passed explicitly because `vercel
-  // build` defaults to <cwd>/<rootDirectory>/.vercel/output while the upload
-  // reads <cwd>/.vercel/output, and left alone the two never meet.
   const outputDir = resolve(repoRoot, VERCEL_OUTPUT_DIR);
 
   await withBuildLock(resolve(repoRoot, BUILD_LOCK_DIR), () => {
-    // The whole .vercel directory goes, not just the output. `vercel build`
-    // takes its settings from an existing .vercel/project.json in preference
-    // to VERCEL_PROJECT_ID, so a link left by the previous app makes it build
-    // that app's project instead — and the upload still goes to the right
-    // project, silently publishing one app's code under another's name.
-    // Clearing it forces a fresh pull for the project named in the env.
+    // The whole .vercel directory, not just output: a stale project.json link
+    // silently builds the previous app's project under this one's name.
     rmSync(resolve(repoRoot, VERCEL_DIR), { recursive: true, force: true });
 
     console.log(`\nBuilding ${projectName}...\n`);
