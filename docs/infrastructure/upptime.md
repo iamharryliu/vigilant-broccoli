@@ -64,18 +64,13 @@ App creation and installation are account setup; Terraform manages repository co
 
 ## Legacy retirement
 
-This cleanup is prepared for merge after a successful scheduled check in `iamharryliu/uptime`. Keep the new monitoring repo's schedules enabled.
+The migration to `iamharryliu/uptime` is complete. The source repository's legacy monitoring workflows, App bypass configuration, status-summary fallback, and `UPPTIME_MIGRATED` variable have been removed. The legacy `UPPTIME_GH_APP_PRIVATE_KEY` and `UPPTIME_GH_APP_ID` fields have been removed from the current shared Vault secrets; the one-time retirement command has been deleted.
 
-1. Confirm a successful run with `event: schedule`, both manual workflows succeeding, and preserved monitoring history. Merge the cleanup PR and verify the deployed Pages Index status page. A missing new summary should display the existing error message rather than stale archived results.
-2. Uninstall/revoke the legacy Upptime App, ID `4350545`, from vigilant-broccoli in [GitHub installed App settings](https://github.com/settings/installations). Keep sync App `5202397`, installed only on `uptime`.
-3. Run `pnpm upptime:legacy:retire-key`. The command refuses while the legacy workflows remain on source `main`, schedules are disabled, or no successful scheduled uptime check exists. It removes only `UPPTIME_GH_APP_PRIVATE_KEY` from the current `kv/secrets` version using a [JSON merge patch](https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v2#patch-secret), preserving other fields and `kv/upptime-sync`.
-4. Refresh the Bitwarden backup with `projects/nx-workspace/scripts/shell/backup-secrets.sh`, then review/apply Terraform to delete the obsolete source `UPPTIME_MIGRATED` variable. The cleanup does not delete monitoring history, incident issues, or historical Vault versions/backups; revoking the old App makes their retained key copies unusable.
-
-The retirement command does not uninstall the App. Merge, account revocation, key removal, backup refresh, and Terraform apply remain explicit operator steps; merely opening this PR performs none of them.
+Keep sync App `5202397`, installed only on `uptime`. Legacy App `4350545` must remain uninstalled/revoked. Historical Vault versions and backups may retain its old key; revocation makes those copies unusable. Source monitoring history and incident issues remain as an archive. Refresh the Bitwarden backup after changing Vault fields using `projects/nx-workspace/scripts/shell/backup-secrets.sh`.
 
 ## Operations
 
-- Edit endpoints in the root `.upptimerc.yml`; a push to `main` syncs config automatically. Edit runtime workflows under `infrastructure/upptime/workflows/`, not the legacy copies under `.github/workflows/`.
+- Edit endpoints in the root `.upptimerc.yml`; a push to `main` syncs config automatically. Edit runtime workflows under `infrastructure/upptime/workflows/`; `.github/workflows/ci-sync-upptime.yml` publishes them to the monitoring repository.
 - `pnpm upptime:config:render /private/tmp/upptime-config` renders the allowlist into an empty external directory without credentials or network access.
 - `pnpm gh:actions:sync-upptime` republishes configuration on demand. A no-change sync produces no commit.
 - New endpoint names change Upptime's inferred slugs; preserve names or specify stable slugs when renaming to keep the existing history ([Upptime configuration](https://upptime.js.org/docs/configuration/)).
