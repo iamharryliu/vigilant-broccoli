@@ -1,18 +1,17 @@
 # Minimally-scoped GCP identity for pull_request-triggered workflows
 # (currently just ci-pr-check.yml, which needs to reach Vault for the
 # read-only nx-cache token). Deliberately separate from
-# google_service_account.github_actions in main.tf: that SA carries
-# roles/editor + secretmanager.secretAccessor (project-wide, everything
-# except BITWARDEN_PASSWORD) + serviceAccountAdmin + workloadIdentityPoolAdmin
-# + compute/IAP/osLogin, for push-triggered deploy/rotate workflows.
+# google_service_account.github_actions in main.tf, which still holds real
+# privilege (compute/IAP/osLogin, the backup bucket, a handful of secrets) for
+# push-triggered deploy/rotate workflows.
 #
 # pull_request (unlike pull_request_target) executes the workflow YAML from
 # the PR branch itself, so any contributor who gets a PR check to run could
-# edit ci-pr-check.yml to assume that broad SA and read the Vault root token
-# straight out of Secret Manager — which would bypass any amount of Vault-side
-# role/policy scoping entirely. This SA can only ever read the two Cloudflare
-# Access secrets needed to reach the Vault tunnel, nothing else, so there's
-# nothing worth exfiltrating even if a malicious PR assumes it.
+# edit ci-pr-check.yml to assume that broad SA and reach that access — which
+# would bypass any amount of Vault-side role/policy scoping entirely. This SA
+# can only ever read the two Cloudflare Access secrets needed to reach the
+# Vault tunnel, nothing else, so there's nothing worth exfiltrating even if a
+# malicious PR assumes it.
 
 resource "google_service_account" "github_actions_pr_check" {
   account_id   = "github-actions-pr-check"

@@ -176,7 +176,6 @@ const useTasks = (
         ),
       );
     } catch (err) {
-      // If the server call fails, revert the task to its original status.
       setTasks(prevTasks =>
         prevTasks.map(t =>
           t.id === task.id

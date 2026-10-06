@@ -64,5 +64,5 @@ COPY infrastructure/code-server/gh-token.sh /usr/local/bin/gh-token
 COPY infrastructure/code-server/gh-wrapper.sh /usr/local/bin/gh
 
 # Gives the abc service account a usable login shell in the code-server
-# terminal; carried over from the old custom-init script.
+# terminal.
 RUN usermod -s /bin/bash abc

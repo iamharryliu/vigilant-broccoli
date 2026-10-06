@@ -201,7 +201,6 @@ export const CookingConversionsUtilityContent = () => {
 
   return (
     <>
-      {/* Weight: kg, lb */}
       <div className="flex gap-2">
         <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
@@ -226,8 +225,6 @@ export const CookingConversionsUtilityContent = () => {
           />
         </div>
       </div>
-
-      {/* Weight: g, ounce */}
       <div className="flex gap-2">
         <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
@@ -252,8 +249,6 @@ export const CookingConversionsUtilityContent = () => {
           />
         </div>
       </div>
-
-      {/* Volume: ml, tsp, tbsp, cup */}
       <div className="grid grid-cols-2 gap-2">
         <div className="flex flex-col gap-1">
           <Text size="1" color="gray">
@@ -300,8 +295,6 @@ export const CookingConversionsUtilityContent = () => {
           />
         </div>
       </div>
-
-      {/* Length: mm, cm, inch */}
       <div className="flex gap-2">
         <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">
@@ -337,8 +330,6 @@ export const CookingConversionsUtilityContent = () => {
           />
         </div>
       </div>
-
-      {/* Temperature: Fahrenheit, Celsius */}
       <div className="flex gap-2">
         <div className="flex flex-col gap-1 flex-1">
           <Text size="1" color="gray">

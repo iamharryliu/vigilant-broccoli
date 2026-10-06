@@ -101,8 +101,6 @@ const readEntries = () => {
     .map(line => JSON.parse(line));
 };
 
-// --- diff parsing -----------------------------------------------------------
-
 const fileNameFrom = header => {
   const match = header.match(/^diff --git a\/(.+?) b\/(.+)$/);
   if (!match) return header.replace(/^diff --git /, '');
@@ -176,8 +174,6 @@ const parseDiff = diff => {
 
   return files;
 };
-
-// --- rendering --------------------------------------------------------------
 
 const ROW_STYLE = {
   [LINE_KIND.ADD]: { body: COLOR.addBg, gutter: COLOR.addGutter, marker: '+' },

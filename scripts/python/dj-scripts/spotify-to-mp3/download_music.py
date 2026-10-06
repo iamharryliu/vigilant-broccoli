@@ -80,7 +80,6 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    # Use provided playlists JSON if available, otherwise fetch from Spotify
     if args.playlists:
         playlists = json.loads(args.playlists)
     else:

@@ -2,8 +2,6 @@ import { CalendarConfig } from './google-calendar.models';
 
 /**
  * Encodes a calendar source to base64 without padding (browser-compatible)
- * @param src - The calendar source string to encode
- * @returns Base64 encoded string without padding
  */
 export function encodeCalendarSrc(src: string): string {
   // btoa expects binary string, so we need to handle UTF-8 properly
@@ -14,11 +12,6 @@ export function encodeCalendarSrc(src: string): string {
   return btoa(binaryString).replace(/=+$/, '');
 }
 
-/**
- * Builds a Google Calendar embed URL from configuration
- * @param config - Calendar configuration object
- * @returns Google Calendar embed URL
- */
 export function buildCalendarUrl(config: CalendarConfig): string {
   const baseParams = [
     `height=${config.height}`,
@@ -41,7 +34,6 @@ export function buildCalendarUrl(config: CalendarConfig): string {
     cal => `src=${encodeCalendarSrc(cal.id)}`,
   );
 
-  // All color parameters (owner + shared, in order)
   const colorParams = [
     ...config.ownerCalendars.map(cal => cal.color),
     ...config.sharedCalendars.map(cal => cal.color),

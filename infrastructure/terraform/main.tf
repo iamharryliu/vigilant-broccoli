@@ -637,13 +637,9 @@ resource "cloudflare_r2_bucket" "vibecheck" {
   location   = "ENAM"
 }
 
-# Private buckets for hearth's home-docs and where-is features. Both used to
-# share a single "home-management" bucket that had a public r2.dev "Public
-# Development URL" enabled, which made every object in it fetchable by anyone
-# with the key, regardless of the app's presigned/expiring download URLs. That
-# bucket has since been emptied and deleted; neither replacement below is ever
-# given a public r2.dev hostname, so these files are only reachable through the
-# app's short-lived presigned URLs.
+# Private buckets for hearth's home-docs and where-is features. Never give
+# either a public r2.dev hostname: that makes every object fetchable by anyone
+# with the key, bypassing the app's short-lived presigned download URLs.
 resource "cloudflare_r2_bucket" "home_docs" {
   account_id = var.cloudflare_account_id
   name       = "home-docs"

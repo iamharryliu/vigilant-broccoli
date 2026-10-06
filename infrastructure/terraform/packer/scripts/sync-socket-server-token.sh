@@ -62,7 +62,8 @@ ssh-keygen -R "$OCI_VM_HOST" >/dev/null 2>&1 || true
 
 # Gate on cloud-init being done, not just on the compose file existing: the file
 # and a running dockerd both predate cloud-init's own `docker compose up -d`, so
-# a weaker probe races it into the same project. See docs/nuance.md.
+# a weaker probe races it into the same project. See the watchtower nuance in
+# infrastructure/terraform/CONTEXT.md.
 CLOUD_INIT_DONE_PATTERN='^status: (done|degraded done)'
 READY_ATTEMPTS=60
 READY_SLEEP_SECONDS=10

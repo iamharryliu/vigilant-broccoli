@@ -193,7 +193,7 @@ const useBoards = (isAuthenticated: boolean) => {
       // A failed fetch must never be treated as "no boards exist yet" — doing
       // so used to fall through to creating and persisting a default board,
       // silently overwriting real saved boards on a transient auth/network
-      // error (see docs/nuance.md).
+      // error (see this app's CONTEXT.md Nuances).
       if (!result.ok) return;
 
       const remoteState = result.state;
