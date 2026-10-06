@@ -30,6 +30,10 @@
       "TITLE": "API Documentation",
       "DESCRIPTION": "Swagger docs for internal services."
     },
+    "README": {
+      "TITLE": "README",
+      "DESCRIPTION": "Browse the repository README."
+    },
     "CLAUDE_CONTEXT": {
       "TITLE": "Agent Context",
       "DESCRIPTION": "How repository context, docs, and shared skills link together."

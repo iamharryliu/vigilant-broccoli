@@ -1,5 +1,7 @@
 # vigilant-broccoli
 
+Personal monorepo. Go to [projects.harryliu.dev](https://projects.harryliu.dev/) for more project details.
+
 <div>
 <a href="https://github.com/iamharryliu/vigilant-broccoli">
 <img src="https://i.pinimg.com/564x/b7/62/38/b762386c0bbb20dec77c2632f73d28a8.jpg" alt="broccoli" width="200"/>
@@ -13,7 +15,6 @@
 - [Applications](#applications)
 - [Stack](#stack)
 - [CI Actions](#ci-actions)
-- [Click here](https://projects.harryliu.dev/) for more.
 
 ## Development
 

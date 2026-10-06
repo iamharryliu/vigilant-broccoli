@@ -2,6 +2,7 @@ import {
   Activity,
   Bot,
   ChartColumn,
+  FileText,
   GitBranch,
   Globe,
   LayoutGrid,
@@ -88,6 +89,15 @@ export function HomePage() {
       <section>
         <SectionHeading>{t('HOME.SECTION_DOCUMENTATION')}</SectionHeading>
         <CardGrid>
+          <li>
+            <CardLink
+              route
+              href="/open-source/github/vigilant-broccoli"
+              title={t('HOME.README.TITLE')}
+              description={t('HOME.README.DESCRIPTION')}
+              icon={<FileText className={ICON_CLASS} />}
+            />
+          </li>
           <li>
             <CardLink
               href="#/claude-context"
