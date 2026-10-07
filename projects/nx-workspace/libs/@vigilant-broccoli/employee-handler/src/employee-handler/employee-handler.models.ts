@@ -79,12 +79,26 @@ export interface WorkspaceGroup {
   ROLES: string[];
 }
 
-export interface EmployeeEmailSignature {
+export interface EmployeeMetadata {
+  githubUrl?: string;
+  linkedInURL?: string;
+  resumeUrl?: string;
+}
+
+export const EMPLOYEE_METADATA_KEYS = [
+  'githubUrl',
+  'linkedInURL',
+  'resumeUrl',
+] as const satisfies readonly (keyof EmployeeMetadata)[];
+
+export interface EmployeeEmailSignature extends Pick<
+  EmployeeMetadata,
+  'linkedInURL'
+> {
   displayName: string;
   title: string;
   office: string;
   image: string;
   phoneNumber: string;
   email: string;
-  linkedInURL?: string;
 }

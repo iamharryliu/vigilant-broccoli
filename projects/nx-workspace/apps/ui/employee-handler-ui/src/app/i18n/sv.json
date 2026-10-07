@@ -72,11 +72,24 @@
       "OFFBOARD_SELECTED": "Valda medarbetare har avslutats",
       "ONBOARD_SELECTED": "Valda medarbetare har introducerats",
       "RETENTION": "Efterhantering slutförd",
-      "SYNC": "Synkronisering slutförd"
+      "SYNC": "Synkronisering slutförd",
+      "METADATA_SAVED": "Medarbetarens länkar har sparats"
     },
     "ERROR": {
       "NO_EMAILS": "Ange giltiga e-postadresser",
-      "LOAD_FAILED": "Det gick inte att hämta medarbetare"
+      "LOAD_FAILED": "Det gick inte att hämta medarbetare",
+      "METADATA_SAVE_FAILED": "Det gick inte att spara medarbetarens länkar"
+    },
+    "DRAWER": {
+      "TITLE": "Medarbetarinformation",
+      "STATUS": "Status",
+      "METADATA": "Länkar",
+      "GITHUB": "GitHub",
+      "LINKEDIN": "LinkedIn",
+      "RESUME": "CV",
+      "NOT_SET": "Inte angiven",
+      "URL_PLACEHOLDER": "https://",
+      "SAVE": "Spara ändringar"
     }
   },
   "ABSENCES": {

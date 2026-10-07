@@ -1,6 +1,8 @@
 import {
+  EMPLOYEE_METADATA_KEYS,
   EmployeeAbsence,
   EmployeeHandlerConfig,
+  EmployeeMetadata,
 } from '../employee-handler.models';
 import { SignatureTemplate } from '../signature-templates/signature-templates.store';
 
@@ -80,9 +82,14 @@ const TITLES = [
 const DEPARTMENTS = ['Engineering', 'Product', 'Design', 'People', 'Data'];
 const OFFICES = ['Toronto', 'New York', 'Remote — EU'];
 
-type EmployeeStatus = 'incoming' | 'active' | 'inactive';
+export type EmployeeStatus = 'incoming' | 'active' | 'inactive';
 
-type MockEmployee = {
+const GITHUB_BASE_URL = 'https://github.com';
+const LINKEDIN_BASE_URL = 'https://www.linkedin.com/in';
+const RESUME_BASE_URL = `${COMPANY_WEBSITE}/resumes`;
+const METADATA_GAP_INTERVAL = 4;
+
+export type MockEmployee = EmployeeMetadata & {
   firstName: string;
   lastName: string;
   email: string;
@@ -96,6 +103,22 @@ const pick = <T>(arr: T[], index: number): T => arr[index % arr.length];
 
 const slug = (firstName: string, lastName: string) =>
   `${firstName}.${lastName}`.toLowerCase().replace(/\s+/g, '');
+
+const buildMetadata = (handle: string, index: number): EmployeeMetadata => {
+  const metadata: EmployeeMetadata = {
+    githubUrl: `${GITHUB_BASE_URL}/${handle}`,
+    linkedInURL: `${LINKEDIN_BASE_URL}/${handle}`,
+    resumeUrl: `${RESUME_BASE_URL}/${handle}.pdf`,
+  };
+  // Leave a few fields empty so the UI's empty state is exercised.
+  if (index % METADATA_GAP_INTERVAL === METADATA_GAP_INTERVAL - 1) {
+    delete metadata.githubUrl;
+  }
+  if (index % METADATA_GAP_INTERVAL === 0 && index > 0) {
+    delete metadata.resumeUrl;
+  }
+  return metadata;
+};
 
 const generateEmployees = (
   status: EmployeeStatus,
@@ -112,6 +135,7 @@ const generateEmployees = (
       department: pick(DEPARTMENTS, i),
       office: pick(OFFICES, i),
       phoneNumber: `+1 (555) ${String(100 + i).padStart(3, '0')}-${String(1000 + i * 7).padStart(4, '0')}`,
+      ...buildMetadata(slug(firstName, lastName).replace('.', '-'), i),
     };
   });
 
@@ -171,6 +195,30 @@ const listByStatus = (set: Set<string>): MockEmployee[] => {
     if (record) out.push(record);
   }
   return out;
+};
+
+export const listEmployeesByStatus = (status: EmployeeStatus): MockEmployee[] =>
+  listByStatus(
+    status === 'incoming'
+      ? incomingEmails
+      : status === 'active'
+        ? activeEmails
+        : inactiveEmails,
+  );
+
+export const updateEmployeeMetadata = (
+  email: string,
+  updates: EmployeeMetadata,
+): MockEmployee | null => {
+  const record = employeesByEmail.get(email);
+  if (!record) return null;
+  for (const key of EMPLOYEE_METADATA_KEYS) {
+    if (!(key in updates)) continue;
+    const value = updates[key]?.trim();
+    if (value) record[key] = value;
+    else delete record[key];
+  }
+  return record;
 };
 
 const buildSignature = (employee: MockEmployee): string =>
