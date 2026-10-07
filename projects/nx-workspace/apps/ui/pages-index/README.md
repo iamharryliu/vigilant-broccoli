@@ -33,12 +33,12 @@
     - npm → `/open-source/npm` (published `@vigilant-broccoli/*` packages)
       - `/open-source/npm/:pkg` (README fetched from `registry.npmjs.org`, links out to the npm package)
   - `/web-applications` - Web applications
-    - Apps → harryliu.dev, Cloud8Skate, Docs (Markdown), Utilities, Links, FindMe, Whiteboard, Weather (external)
+    - Apps → harryliu.dev, Cloud8Skate, Docs (Markdown), Utilities, Component Library, Links, FindMe, Whiteboard, Weather (external)
     - Demo → Employee Handler
   - `/api-services` — API Services
     - `/api-services/:service` — Swagger UI rendered in-app against a spec published at build time to `public/openapi/<service>.json` by the `generate-openapi` target (`scripts/generate-openapi-specs.ts`). All four services (llm-service, bucket-service, email-service, email-subscription-service) are private-only Fly apps, so their own `/docs` is unreachable from the internet — this page is the only way to browse them. Swagger UI itself loads from a pinned jsDelivr CDN rather than bundling `swagger-ui-dist`.
   - `/claude-context` — Agent Context, a standalone full-viewport page (no breadcrumb header, like `docs-md`) that the home card opens in a new tab (react-utility's `DocsViewer` — file tree, search, link graph — over a build-time snapshot of the agent context: root `CONTEXT.md`, `TODO.md`, `docs/**`, `setup/dotfiles/agent-skills/**`, and every other `CONTEXT.md`. Agent adapter symlinks are excluded to avoid duplicate documents. Sources are listed in `claude-context.snapshot.config.json`; `scripts/build-docs-snapshot.mjs` writes `public/claude-context/` (gitignored) via the `build-claude-context-snapshot` target and it is copied into `_site` on each Pages deploy. Links to files outside the snapshot are rewritten to `docs.harryliu.dev` for `notes/` and to the GitHub blob URL for everything else. Selected file and heading anchor live inside the hash route — `#/claude-context?file=<path>#<heading>` — since `HashRouter` owns the window fragment)
-  - UI → `./react-component-library/` (external)
+  - UI → `component-library.harryliu.dev` (external); `/react-component-library/` on the Pages site is a static redirect to it (`public/react-component-library/index.html`)
 
 ## Agent Context
 

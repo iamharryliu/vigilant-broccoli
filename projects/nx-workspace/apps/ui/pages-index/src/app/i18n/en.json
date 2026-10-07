@@ -74,6 +74,10 @@
       "TITLE": "Utilities",
       "DESCRIPTION": "Searchable page of everyday utilities."
     },
+    "COMPONENT_LIBRARY": {
+      "TITLE": "Component Library",
+      "DESCRIPTION": "Interactive shared React component sandbox."
+    },
     "LINKS": {
       "TITLE": "Links",
       "DESCRIPTION": "Public pastebin of personal links and contact details."
