@@ -75,7 +75,7 @@ else
 fi
 
 if [ -n "${GITHUB_ACTIONS:-}" ]; then
-  REQUEST_SOURCE="GitHub Actions (manual-agentic-solve workflow, ${RUNNER_LABEL})"
+  REQUEST_SOURCE="GitHub Actions (manual-agentic-pr-create workflow, ${RUNNER_LABEL})"
 else
   REQUEST_SOURCE="Local CLI (pnpm agentic:task:solve, ${RUNNER_LABEL})"
 fi

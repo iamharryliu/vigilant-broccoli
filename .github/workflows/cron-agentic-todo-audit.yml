@@ -2,7 +2,7 @@ name: cron-agentic-todo-audit
 
 # Re-verifies every TODO.md row against the current tree and opens a PR that
 # deletes the resolved ones and corrects the drifted ones. Same container and
-# credentials as `manual-agentic-solve`; the local equivalent is
+# credentials as `manual-agentic-pr-create`; the local equivalent is
 # `pnpm agentic:todo:audit`. The backlog goes stale silently — rows keep citing
 # files that moved and line numbers that shifted — so this runs on a schedule
 # rather than waiting for someone to notice.

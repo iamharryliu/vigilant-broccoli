@@ -829,9 +829,9 @@ const VB_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
-    label: 'VB - Manual Agentic Solve',
+    label: 'VB - Manual Agentic PR Create',
     target:
-      'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-agentic-solve.yml',
+      'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-agentic-pr-create.yml',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
