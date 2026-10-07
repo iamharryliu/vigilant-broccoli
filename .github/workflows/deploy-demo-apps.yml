@@ -1,0 +1,37 @@
+name: deploy-demo-apps
+
+on:
+  repository_dispatch:
+    types: [deploy-fanout]
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: deploy-demo-apps
+  cancel-in-progress: false
+
+jobs:
+  employee-handler-ui:
+    if: ${{ github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true' && github.event.client_payload.environment == 'staging' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: ./.github/actions/setup-nx-workspace
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          export_token: 'true'
+
+      - name: Deploy employee-handler-ui
+        working-directory: ./projects/nx-workspace
+        env:
+          VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
+          VAULT_ADDR: https://vault.harryliu.dev
+        run: pnpm exec nx run employee-handler-ui:deploy:demo

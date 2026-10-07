@@ -6,7 +6,8 @@ import { createVaultClient, VAULT_SECRET_PATH } from './vault-client';
 
 const STAGING = 'staging';
 const PRODUCTION = 'production';
-const ENVIRONMENTS = [STAGING, PRODUCTION];
+const DEMO = 'demo';
+const ENVIRONMENTS = [STAGING, PRODUCTION, DEMO];
 const VERCEL_ENV = PRODUCTION;
 
 const VERCEL_ROOT_DIRECTORY = 'projects/nx-workspace';
@@ -228,7 +229,7 @@ async function main() {
 
   if (!projectName) {
     console.error(
-      'Usage: npx tsx scripts/deploy-vercel.ts <project-name> [staging|production]',
+      'Usage: npx tsx scripts/deploy-vercel.ts <project-name> [staging|production|demo]',
     );
     process.exit(1);
   }
