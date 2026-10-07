@@ -21,7 +21,7 @@ export function NavbarSection() {
   const { isDark, toggleDarkMode } = useTheme();
 
   return (
-    <nav className="hidden lg:block sticky top-0 bg-inherit transition-opacity duration-500">
+    <nav className="hidden lg:block sticky top-0 z-10 bg-white dark:bg-zinc-900 transition-opacity duration-500">
       <div className="flex items-center justify-between h-16 mx-6">
         <div className="flex items-center space-x-6">
           {NAV_LINKS.map(link => (
