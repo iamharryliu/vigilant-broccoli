@@ -18,7 +18,7 @@ const TARGETS = [
   {
     path: 'README.md',
     template: ({ applications, services, images, packages }) =>
-      `Personal monorepo, **${applications} applications**, **${services} API services**, **${images} Docker images** and **${packages} npm packages**. Learn more at [projects.harryliu.dev](${PAGES_INDEX_URL}).`,
+      `Personal monorepo, supporting **${applications} applications**, **${services} API services**, **${images} Docker images** and **${packages} npm packages**. Learn more at [projects.harryliu.dev](${PAGES_INDEX_URL}).`,
   },
   {
     path: `${NX_WORKSPACE}/apps/ui/personal-website-react/src/app/content/about.md`,
