@@ -1,6 +1,6 @@
 # Vercel deploy pattern (Next.js apps)
 
-Deploys for `hearth`, `findme`, `whiteboard`, `employee-handler-ui`, `vb-manager-next-mobile`. Everything runs through `scripts/deploy-vercel.ts`.
+Deploys for `hearth`, `findme`, `whiteboard`, `vb-manager-next-mobile`. `employee-handler-ui` no longer deploys here: the `deploy-demo-apps` workflow runs the Docker image `deploy` pushed on Fly. Everything runs through `scripts/deploy-vercel.ts`.
 
 ## Table of Contents
 

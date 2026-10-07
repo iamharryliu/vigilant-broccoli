@@ -1,0 +1,23 @@
+app = 'staging-employee-handler-ui'
+primary_region = 'yyz'
+
+[build]
+  image = 'iamharryliu/employee-handler-next:latest'
+
+[env]
+  PORT = '3000'
+  HOST = '0.0.0.0'
+  SUPABASE_URL = 'https://jrdosjjgmsoodpjmjqxx.supabase.co'
+  SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0'
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '256mb'
+  cpus = 1
