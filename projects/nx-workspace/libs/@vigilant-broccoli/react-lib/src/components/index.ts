@@ -30,6 +30,7 @@ export * from './Callout';
 export * from './Card';
 export * from './IconButton';
 export * from './CardContainer';
+export * from './LinkCard';
 export * from './Checkbox';
 export * from './CloseButton';
 export * from './DeleteIconButton';
