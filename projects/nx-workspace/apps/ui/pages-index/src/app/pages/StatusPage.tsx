@@ -11,8 +11,15 @@ import {
 import { useTranslation } from '../i18n';
 import en from '../i18n/en.json';
 import { PageHeader } from '../components/PageHeader';
+import { CardGrid } from '../components/CardGrid';
+import { CardLink } from '../components/CardLink';
 import { SectionHeading } from '../components/SectionHeading';
-import { REPO_URL, UPTIME_REPO_URL, UPTIME_SUMMARY_URL } from '../consts/repo';
+import {
+  REPO_URL,
+  UPTIME_REPO_URL,
+  UPTIME_SITE_URL,
+  UPTIME_SUMMARY_URL,
+} from '../consts/repo';
 import { PAGE_CLASS } from '../consts/layout';
 
 const ACTIONS_URL = `${REPO_URL}/actions`;
@@ -239,6 +246,17 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
           <p className="mt-2 text-gray-600 dark:text-gray-400">{updated}</p>
         )}
       </header>
+      <div className="mb-4">
+        <CardGrid>
+          <li>
+            <CardLink
+              href={UPTIME_SITE_URL}
+              title={t('STATUS_PAGE.UPTIME_SITE.TITLE')}
+              description={t('STATUS_PAGE.UPTIME_SITE.DESCRIPTION')}
+            />
+          </li>
+        </CardGrid>
+      </div>
       <StatusLegendDialog open={legendOpen} onOpenChange={setLegendOpen} />
 
       {servicesError && (
