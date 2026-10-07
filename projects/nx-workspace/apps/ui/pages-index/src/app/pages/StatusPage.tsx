@@ -12,7 +12,12 @@ import { useTranslation } from '../i18n';
 import en from '../i18n/en.json';
 import { PageHeader } from '../components/PageHeader';
 import { SectionHeading } from '../components/SectionHeading';
-import { REPO_URL, UPTIME_REPO_URL, UPTIME_SUMMARY_URL } from '../consts/repo';
+import {
+  REPO_URL,
+  UPTIME_REPO_URL,
+  UPTIME_SITE_URL,
+  UPTIME_SUMMARY_URL,
+} from '../consts/repo';
 import { PAGE_CLASS } from '../consts/layout';
 
 const ACTIONS_URL = `${REPO_URL}/actions`;
@@ -238,6 +243,14 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
         {updated && (
           <p className="mt-2 text-gray-600 dark:text-gray-400">{updated}</p>
         )}
+        <a
+          href={UPTIME_SITE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-block text-sm text-gray-500 dark:text-gray-400 hover:underline"
+        >
+          {t('STATUS_PAGE.UPTIME_SITE')}
+        </a>
       </header>
       <StatusLegendDialog open={legendOpen} onOpenChange={setLegendOpen} />
 
