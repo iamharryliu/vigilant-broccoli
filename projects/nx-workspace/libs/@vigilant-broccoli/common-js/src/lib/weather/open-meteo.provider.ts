@@ -16,6 +16,7 @@ interface OpenMeteoResponse {
   current: {
     temperature_2m: number;
     apparent_temperature: number;
+    relative_humidity_2m: number;
     wind_speed_10m: number;
     precipitation: number;
     weather_code: number;
@@ -38,7 +39,7 @@ interface OpenMeteoResponse {
 }
 
 const CURRENT_FIELDS =
-  'temperature_2m,apparent_temperature,wind_speed_10m,precipitation,weather_code,is_day';
+  'temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,precipitation,weather_code,is_day';
 const HOURLY_FIELDS = 'temperature_2m,weather_code,is_day';
 const DAILY_FIELDS =
   'temperature_2m_min,temperature_2m_max,wind_speed_10m_max,precipitation_sum,weather_code';
@@ -108,6 +109,7 @@ const buildUrl = (location: Location, dailyCount: number): string => {
 const toCurrent = (data: OpenMeteoResponse): CurrentWeather => ({
   temperatureC: data.current.temperature_2m,
   feelsLikeC: data.current.apparent_temperature,
+  humidityPercent: data.current.relative_humidity_2m,
   windSpeedKph: data.current.wind_speed_10m,
   precipitationMm: data.current.precipitation,
   condition: toConditionFromWmoCode(data.current.weather_code),

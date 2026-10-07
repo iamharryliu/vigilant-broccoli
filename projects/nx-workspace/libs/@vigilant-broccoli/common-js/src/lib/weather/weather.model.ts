@@ -105,6 +105,7 @@ export const toDisplayTemperature = (
 export interface CurrentWeather {
   temperatureC: number;
   feelsLikeC: number;
+  humidityPercent: number;
   windSpeedKph: number;
   precipitationMm: number;
   condition: WeatherCondition;

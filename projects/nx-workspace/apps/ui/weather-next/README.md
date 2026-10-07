@@ -5,11 +5,16 @@ Current weather for the browser's location: city, temperature, condition, and to
 ## Table of Contents
 
 - [Deployment URLs](#deployment-urls)
+- [Attribution](#attribution)
 - [Stack](#stack)
 
 ## Deployment URLs
 
 - [weather.harryliu.dev](https://weather.harryliu.dev)
+
+## Attribution
+
+The footer credits Open-Meteo (CC BY 4.0) and OpenStreetMap contributors (Nominatim usage policy); both licences require it, so keep it when changing the layout.
 
 ## Stack
 

@@ -44,6 +44,8 @@ interface DemoWeather {
   feelsLikeC: number;
   highC: number;
   lowC: number;
+  humidityPercent: number;
+  windSpeedKph: number;
   condition: WeatherCondition;
   isDay: boolean;
 }
@@ -53,6 +55,8 @@ const FALLBACK_WEATHER: DemoWeather = {
   feelsLikeC: 17,
   highC: 21,
   lowC: 12,
+  humidityPercent: 60,
+  windSpeedKph: 12,
   condition: WEATHER_CONDITION.PARTLY_CLOUDY,
   isDay: true,
 };
@@ -62,6 +66,8 @@ const TEMPERATURE_FIELDS = [
   { key: 'feelsLikeC', labelKey: 'WEATHER_DISPLAY.CONTROLS.FEELS_LIKE' },
   { key: 'highC', labelKey: 'WEATHER_DISPLAY.CONTROLS.HIGH' },
   { key: 'lowC', labelKey: 'WEATHER_DISPLAY.CONTROLS.LOW' },
+  { key: 'humidityPercent', labelKey: 'WEATHER_DISPLAY.CONTROLS.HUMIDITY' },
+  { key: 'windSpeedKph', labelKey: 'WEATHER_DISPLAY.CONTROLS.WIND' },
 ] as const;
 
 const fetchLiveWeather = (): Promise<DemoWeather | null> =>
@@ -74,6 +80,8 @@ const fetchLiveWeather = (): Promise<DemoWeather | null> =>
             feelsLikeC: current.feelsLikeC,
             highC: today.tempMaxC,
             lowC: today.tempMinC,
+            humidityPercent: current.humidityPercent,
+            windSpeedKph: current.windSpeedKph,
             condition: current.condition,
             isDay: current.isDay,
           }
@@ -142,7 +150,7 @@ const WeatherDisplayDemoContent = () => {
       </Text>
 
       <div className="flex flex-col gap-4">
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-5">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-4 lg:grid-cols-7">
           <label className="flex flex-col gap-1 text-sm">
             {t('WEATHER_DISPLAY.CONTROLS.CITY')}
             <Input
@@ -230,6 +238,12 @@ const WeatherDisplayDemoContent = () => {
             })}
             feelsLike={t('WEATHER_DISPLAY.WEATHER.FEELS_LIKE', {
               temperature: formatTemperature(weather.feelsLikeC),
+            })}
+            humidity={t('WEATHER_DISPLAY.WEATHER.HUMIDITY', {
+              percent: Math.round(weather.humidityPercent),
+            })}
+            wind={t('WEATHER_DISPLAY.WEATHER.WIND', {
+              speed: Math.round(weather.windSpeedKph),
             })}
             badges={badges.map(badge => ({
               key: badge,

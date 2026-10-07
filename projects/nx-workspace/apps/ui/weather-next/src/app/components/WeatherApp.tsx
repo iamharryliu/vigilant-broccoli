@@ -43,6 +43,7 @@ const GEOLOCATION_OPTIONS: PositionOptions = {
 
 const LOCATION_ICON = '📍';
 const ERROR_ICON = '🌥️';
+const SEPARATOR = '·';
 
 const locationService = new LocationService();
 
@@ -163,6 +164,8 @@ export function WeatherApp() {
     feelsLikeC,
     highC,
     lowC,
+    humidityPercent,
+    windSpeedKph,
     condition,
     isDay,
   }: LocalWeather) => (
@@ -179,6 +182,10 @@ export function WeatherApp() {
       feelsLike={t('WEATHER.FEELS_LIKE', {
         temperature: toDisplayTemperature(feelsLikeC),
       })}
+      humidity={t('WEATHER.HUMIDITY', {
+        percent: Math.round(humidityPercent),
+      })}
+      wind={t('WEATHER.WIND', { speed: Math.round(windSpeedKph) })}
       badges={PREPARATION_BADGES.filter(({ key }) => preparation?.[key]).map(
         ({ key, icon, labelKey }) => ({ key, icon, label: t(labelKey) }),
       )}
@@ -217,6 +224,10 @@ export function WeatherApp() {
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-gradient-to-b from-sky-50 to-white px-6 py-12 text-gray-900 dark:from-slate-900 dark:to-slate-950 dark:text-gray-100">
       <WeatherCard>{renderContent()}</WeatherCard>
+      <footer className="text-xs text-gray-400 dark:text-gray-500">
+        {t('ATTRIBUTION.WEATHER')} <span aria-hidden>{SEPARATOR}</span>{' '}
+        {t('ATTRIBUTION.LOCATION')}
+      </footer>
     </main>
   );
 }

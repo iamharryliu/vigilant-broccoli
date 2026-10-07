@@ -22,6 +22,8 @@ export interface WeatherDisplayProps {
   high: string;
   low: string;
   feelsLike: string;
+  humidity: string;
+  wind: string;
   badges?: WeatherDisplayBadge[];
 }
 
@@ -41,6 +43,8 @@ export const WeatherDisplay = ({
   high,
   low,
   feelsLike,
+  humidity,
+  wind,
   badges = [],
 }: WeatherDisplayProps) => (
   <div className="flex flex-col items-center gap-2">
@@ -53,6 +57,9 @@ export const WeatherDisplay = ({
       {high} <span aria-hidden>{SEPARATOR}</span> {low}
     </p>
     <p className="text-sm text-gray-500 dark:text-gray-400">{feelsLike}</p>
+    <p className="text-sm text-gray-500 dark:text-gray-400">
+      {humidity} <span aria-hidden>{SEPARATOR}</span> {wind}
+    </p>
     {badges.length > 0 && (
       <ul className="mt-3 flex flex-wrap justify-center gap-2">
         {badges.map(({ key, icon, label }) => (

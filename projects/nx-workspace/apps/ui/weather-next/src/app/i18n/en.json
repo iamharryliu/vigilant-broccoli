@@ -16,7 +16,9 @@
     "CURRENT": "{temperature}°, {condition}",
     "HIGH": "H {temperature}°",
     "LOW": "L {temperature}°",
-    "FEELS_LIKE": "Feels like {temperature}°"
+    "FEELS_LIKE": "Feels like {temperature}°",
+    "HUMIDITY": "Humidity {percent}%",
+    "WIND": "Wind {speed} km/h"
   },
   "CONDITION": {
     "CLEAR": "Clear",
@@ -36,5 +38,9 @@
   },
   "ACTIONS": {
     "RETRY": "Try again"
+  },
+  "ATTRIBUTION": {
+    "WEATHER": "Weather by Open-Meteo",
+    "LOCATION": "Places © OpenStreetMap contributors"
   }
 }

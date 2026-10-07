@@ -1,6 +1,6 @@
 # Component Library
 
-Browsable sandbox of the shared `react-lib` components and `react-utility` utilities, including a Weather Display entry seeded from live Open-Meteo weather.
+Browsable sandbox of the shared `react-lib` components and `react-utility` utilities, including a Weather Display entry seeded from live Open-Meteo weather, with controls for temperature, humidity, wind, condition, day/night, units and preparation badges.
 
 ## Table of Contents
 
