@@ -68,17 +68,11 @@ const SHARED_QUICK_LINK_SUBGROUPS = [
   LINK_GROUP_SUBGROUP.LEARN,
 ];
 
-const ACCOUNT_SPECIFIC_URL_PATTERN =
-  /billing|settings|account|apppasswords|[0-9a-f]{32}|harry-\d+|[?&]project=/i;
-
 const SHARED_QUICK_LINK_GROUPS: PastebinGroup[] =
   SHARED_QUICK_LINK_SUBGROUPS.map(subgroup => ({
     name: subgroup,
     entries: EXTERNAL_QUICK_LINKS.filter(
-      link =>
-        link.subgroup === subgroup &&
-        link.type === OPEN_TYPE.BROWSER &&
-        !ACCOUNT_SPECIFIC_URL_PATTERN.test(link.target),
+      link => link.subgroup === subgroup && link.type === OPEN_TYPE.BROWSER,
     ).map(link => ({ label: link.label, value: link.target.trim() })),
   }));
 
