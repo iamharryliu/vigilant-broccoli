@@ -1,3 +1,9 @@
+import {
+  apiPath,
+  EMPLOYEE_HANDLER_ROUTES,
+  type Employee,
+} from '@vigilant-broccoli/employee-handler/contract';
+
 export const EMPLOYEE_TAB = {
   INCOMING: 'incoming',
   ACTIVE: 'active',
@@ -12,16 +18,11 @@ export const EMPLOYEE_TAB_LABEL_KEY = {
   [EMPLOYEE_TAB.INACTIVE]: 'EMPLOYEES.TAB.INACTIVE',
 } as const;
 
-export const EMPLOYEE_METADATA_ENDPOINT = '/api/employees/metadata';
+export const EMPLOYEE_METADATA_ENDPOINT = apiPath(
+  EMPLOYEE_HANDLER_ROUTES.employeesMetadata,
+);
 
-export type Employee = {
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  githubUrl?: string;
-  linkedInURL?: string;
-  resumeUrl?: string;
-};
+export type { Employee };
 
 export const displayName = (e: Employee): string => {
   const name = [e.firstName, e.lastName].filter(Boolean).join(' ').trim();

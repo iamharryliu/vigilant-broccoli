@@ -314,6 +314,8 @@ const generateMockAbsences = (employees: MockEmployee[]): EmployeeAbsence[] => {
 };
 
 export const EMPLOYEE_HANDLER_CONFIG_MOCK: EmployeeHandlerConfig = {
+  updateEmployeeMetadata: async (email, updates) =>
+    updateEmployeeMetadata(email, updates),
   onboardUtilities: {
     fetchIncomingEmployees: async () => listByStatus(incomingEmails),
     processIncomingEmployees: async users => {

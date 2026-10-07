@@ -4,6 +4,7 @@ import {
   updateEmployeeMetadata,
   type EmployeeMetadata,
 } from '@vigilant-broccoli/employee-handler';
+import type { EmployeeHandlerRouteBody } from '@vigilant-broccoli/employee-handler/contract';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   hasUpstream,
@@ -15,7 +16,9 @@ const ERROR_NOT_FOUND = 'Employee not found';
 
 export async function PATCH(request: NextRequest) {
   if (hasUpstream()) return forwardToUpstream(request);
-  const body = (await request.json()) as { email?: string } & EmployeeMetadata;
+  const body = (await request.json()) as Partial<
+    EmployeeHandlerRouteBody<'employeesMetadata'>
+  >;
   if (!body.email) {
     return NextResponse.json(
       { error: ERROR_EMAIL_REQUIRED },

@@ -57,6 +57,10 @@ export interface EmployeeHandlerConfig {
   absenceUtilities: AbsenceUtilities;
   birthdaySyncUtilities?: BirthdaySyncUtilities;
   leaveSyncUtilities?: LeaveSyncUtilities;
+  updateEmployeeMetadata?: (
+    email: string,
+    updates: EmployeeMetadata,
+  ) => Promise<(EmployeeMetadata & { email: string }) | null | undefined>;
   customFunctions?: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: (...args: any[]) => Promise<void>;

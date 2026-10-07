@@ -169,6 +169,10 @@
       "TITLE": "bucket-service",
       "DESCRIPTION": "Object storage proxy across multiple bucket providers."
     },
+    "EMPLOYEE_HANDLER": {
+      "TITLE": "Employee Handler",
+      "DESCRIPTION": "Employee lifecycle, absences and signature API contract implemented by custom upstreams."
+    },
     "EMAIL_SERVICE": {
       "TITLE": "email-service",
       "DESCRIPTION": "Email queue producer/consumer."

@@ -16,6 +16,10 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { Card } from '@vigilant-broccoli/react-lib';
+import {
+  apiPath,
+  EMPLOYEE_HANDLER_ROUTES,
+} from '@vigilant-broccoli/employee-handler/contract';
 import { authFetchOk, postEmails } from '../../../lib/api-helpers';
 import { useAction } from '../../../lib/use-action';
 import { useTranslation } from '../../i18n';
@@ -28,14 +32,18 @@ import {
 } from './employees.shared';
 import { usePageTitle } from '../../use-page-title';
 
-const INCOMING_ENDPOINT = '/api/employees/incoming';
-const ACTIVE_ENDPOINT = '/api/employees/active';
-const INACTIVE_ENDPOINT = '/api/employees/inactive';
-const MANUAL_OFFBOARD_ENDPOINT = '/api/offboard/manualOffboard';
-const MANUAL_ONBOARD_ENDPOINT = '/api/onboard/manualOnboard';
-const RECOVER_ENDPOINT = '/api/recover';
-const POST_RETENTION_ENDPOINT = '/api/postRetentionCleanup';
-const SYNC_ENDPOINT = '/api/sync';
+const INCOMING_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.employeesIncoming);
+const ACTIVE_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.employeesActive);
+const INACTIVE_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.employeesInactive);
+const MANUAL_OFFBOARD_ENDPOINT = apiPath(
+  EMPLOYEE_HANDLER_ROUTES.manualOffboard,
+);
+const MANUAL_ONBOARD_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.manualOnboard);
+const RECOVER_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.recover);
+const POST_RETENTION_ENDPOINT = apiPath(
+  EMPLOYEE_HANDLER_ROUTES.postRetentionCleanup,
+);
+const SYNC_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.sync);
 
 const TAB_INCOMING = EMPLOYEE_TAB.INCOMING;
 const TAB_ACTIVE = EMPLOYEE_TAB.ACTIVE;

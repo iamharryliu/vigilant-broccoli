@@ -960,6 +960,9 @@ importers:
       nodemailer:
         specifier: ^10.0.13
         version: 10.0.13
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
 
   libs/@vigilant-broccoli/fastify:
     dependencies:

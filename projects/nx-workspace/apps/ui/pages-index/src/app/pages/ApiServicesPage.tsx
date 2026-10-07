@@ -32,6 +32,12 @@ export function ApiServicesPage() {
       title: t('API_SERVICES_PAGE.STORAGE_SERVICE.TITLE'),
       description: t('API_SERVICES_PAGE.STORAGE_SERVICE.DESCRIPTION'),
     },
+    {
+      key: 'employee-handler',
+      href: toApiServiceDocsHref('employee-handler'),
+      title: t('API_SERVICES_PAGE.EMPLOYEE_HANDLER.TITLE'),
+      description: t('API_SERVICES_PAGE.EMPLOYEE_HANDLER.DESCRIPTION'),
+    },
   ];
 
   return <CardListPage title={t('API_SERVICES_PAGE.TITLE')} items={items} />;
