@@ -35,7 +35,9 @@ import { usePageTitle } from '../../use-page-title';
 const INCOMING_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.employeesIncoming);
 const ACTIVE_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.employeesActive);
 const INACTIVE_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.employeesInactive);
-const MANUAL_OFFBOARD_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.manualOffboard);
+const MANUAL_OFFBOARD_ENDPOINT = apiPath(
+  EMPLOYEE_HANDLER_ROUTES.manualOffboard,
+);
 const MANUAL_ONBOARD_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.manualOnboard);
 const RECOVER_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.recover);
 const POST_RETENTION_ENDPOINT = apiPath(

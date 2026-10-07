@@ -17,7 +17,8 @@ type RouteContext = { params: Promise<{ id: string }> };
 export async function PATCH(request: NextRequest, context: RouteContext) {
   if (hasUpstream()) return forwardToUpstream(request);
   const { id } = await context.params;
-  const body = (await request.json()) as EmployeeHandlerRouteBody<'signatureTemplatesUpdate'>;
+  const body =
+    (await request.json()) as EmployeeHandlerRouteBody<'signatureTemplatesUpdate'>;
   const updated = updateTemplate(id, body);
   if (!updated) {
     return new NextResponse(null, { status: HTTP_STATUS_CODES.INVALID_PATH });

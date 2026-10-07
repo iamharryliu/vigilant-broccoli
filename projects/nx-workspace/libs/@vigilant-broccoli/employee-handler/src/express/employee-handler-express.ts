@@ -16,6 +16,7 @@ import {
   EmployeeHandlerRouteBody,
   EmployeeHandlerRouteId,
   EmployeeHandlerRouteResponse,
+  ZIP_CONTENT_TYPE,
 } from '../employee-handler/employee-handler.contract';
 import { createEmployeeHandlerOpenApiSpec } from '../employee-handler/employee-handler.openapi';
 import {
@@ -67,32 +68,36 @@ const mountRoute = <Id extends EmployeeHandlerRouteId>(
     status: number;
     body?: z.ZodType;
   } = EMPLOYEE_HANDLER_ROUTES[id];
-  const method = route.method.toLowerCase() as 'get' | 'post' | 'patch' | 'delete';
-  router[method](route.path, (req: Request, res: Response, next: NextFunction) => {
-    const parsed = route.body
-      ? route.body.safeParse(req.body ?? {})
-      : undefined;
-    if (parsed && !parsed.success) {
-      res
-        .status(HTTP_STATUS_CODES.BAD_REQUEST)
-        .json({ error: formatIssues(parsed.error) });
-      return;
-    }
-    handler({
-      body: parsed?.data as EmployeeHandlerRouteBody<Id>,
-      params: req.params as Record<string, string>,
-      res,
-    })
-      .then(result => {
-        if (res.headersSent || res.writableEnded) return;
-        if (result === undefined) {
-          res.status(route.status).end();
-          return;
-        }
-        res.status(route.status).json(result);
+  const method = route.method.toLowerCase() as
+    'get' | 'post' | 'patch' | 'delete';
+  router[method](
+    route.path,
+    (req: Request, res: Response, next: NextFunction) => {
+      const parsed = route.body
+        ? route.body.safeParse(req.body ?? {})
+        : undefined;
+      if (parsed && !parsed.success) {
+        res
+          .status(HTTP_STATUS_CODES.BAD_REQUEST)
+          .json({ error: formatIssues(parsed.error) });
+        return;
+      }
+      handler({
+        body: parsed?.data as EmployeeHandlerRouteBody<Id>,
+        params: req.params as Record<string, string>,
+        res,
       })
-      .catch(next);
-  });
+        .then(result => {
+          if (res.headersSent || res.writableEnded) return;
+          if (result === undefined) {
+            res.status(route.status).end();
+            return;
+          }
+          res.status(route.status).json(result);
+        })
+        .catch(next);
+    },
+  );
 };
 
 const createHandlers = (
@@ -150,7 +155,8 @@ const createHandlers = (
         { email: body.email, signatureString: body.template },
       ]),
     signatureUpdateAll: async ({ body }) => {
-      const signatures = await activeMaintenanceUtilities.fetchEmailSignatures();
+      const signatures =
+        await activeMaintenanceUtilities.fetchEmailSignatures();
       await activeMaintenanceUtilities.processEmailSignatures(
         signatures.map(sig => ({ ...sig, signatureString: body.template })),
       );
@@ -168,10 +174,7 @@ const createHandlers = (
         return;
       }
       res.setHeader(CONTENT_DISPOSITION_HEADER, ZIP_FILENAME_HEADER);
-      res.setHeader(
-        CONTENT_TYPE_HEADER,
-        EMPLOYEE_HANDLER_ROUTES.signatureDownloadZipped.binaryContentType,
-      );
+      res.setHeader(CONTENT_TYPE_HEADER, ZIP_CONTENT_TYPE);
       fs.createReadStream(ZIPPED_GENERATED_SIGNATURES_FILEPATH).pipe(res);
     },
     signatureTemplatesList: async () => ({ templates: store.list() }),

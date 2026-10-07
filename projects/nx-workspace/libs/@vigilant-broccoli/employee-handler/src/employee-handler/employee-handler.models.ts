@@ -60,7 +60,7 @@ export interface EmployeeHandlerConfig {
   updateEmployeeMetadata?: (
     email: string,
     updates: EmployeeMetadata,
-  ) => Promise<Record<string, unknown> | null | undefined>;
+  ) => Promise<(EmployeeMetadata & { email: string }) | null | undefined>;
   customFunctions?: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: (...args: any[]) => Promise<void>;

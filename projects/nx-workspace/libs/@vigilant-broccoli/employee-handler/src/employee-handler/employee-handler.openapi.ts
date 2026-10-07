@@ -1,5 +1,8 @@
 import { z } from 'zod/v4';
-import { API_KEY_HEADER, JSON_CONTENT_TYPE } from '@vigilant-broccoli/common-js';
+import {
+  API_KEY_HEADER,
+  JSON_CONTENT_TYPE,
+} from '@vigilant-broccoli/common-js';
 import {
   API_BASE_PATH,
   EMPLOYEE_HANDLER_ROUTES,
@@ -45,7 +48,11 @@ const buildOperation = (route: AnyRoute) => {
   const content = route.response
     ? jsonContent(route.response)
     : route.binaryContentType
-      ? { [route.binaryContentType]: { schema: { type: 'string', format: 'binary' } } }
+      ? {
+          [route.binaryContentType]: {
+            schema: { type: 'string', format: 'binary' },
+          },
+        }
       : undefined;
   return {
     summary: route.summary,
@@ -84,7 +91,11 @@ export const createEmployeeHandlerOpenApiSpec = () => {
     },
     components: {
       securitySchemes: {
-        [API_KEY_SCHEME]: { type: 'apiKey', in: 'header', name: API_KEY_HEADER },
+        [API_KEY_SCHEME]: {
+          type: 'apiKey',
+          in: 'header',
+          name: API_KEY_HEADER,
+        },
       },
     },
     security: [{ [API_KEY_SCHEME]: [] }],

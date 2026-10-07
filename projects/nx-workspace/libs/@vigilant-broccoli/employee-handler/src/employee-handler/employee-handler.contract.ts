@@ -69,7 +69,7 @@ const defineRoute = <
 ) => route;
 
 const { OK, CREATED, NO_CONTENT } = HTTP_STATUS_CODES;
-const ZIP_CONTENT_TYPE = 'application/zip';
+export const ZIP_CONTENT_TYPE = 'application/zip';
 
 export const EMPLOYEE_HANDLER_ROUTES = {
   employeesIncoming: defineRoute({
@@ -77,7 +77,9 @@ export const EMPLOYEE_HANDLER_ROUTES = {
     path: '/employees/incoming',
     summary: 'List incoming employees',
     status: OK,
-    response: z.object({ employees: z.array(z.record(z.string(), z.unknown())) }),
+    response: z.object({
+      employees: z.array(z.record(z.string(), z.unknown())),
+    }),
   }),
   employeesActive: defineRoute({
     method: HTTP_METHOD.GET,
@@ -250,17 +252,19 @@ export const EMPLOYEE_HANDLER_UI_ROUTES = {
 
 export type EmployeeHandlerRouteId = keyof typeof EMPLOYEE_HANDLER_ROUTES;
 
-type RouteBody<Id extends EmployeeHandlerRouteId> =
-  (typeof EMPLOYEE_HANDLER_ROUTES)[Id] extends { body: infer B extends z.ZodType }
-    ? z.infer<B>
+type InferSchema<Schema> = [NonNullable<Schema>] extends [never]
+  ? undefined
+  : NonNullable<Schema> extends z.ZodType
+    ? z.infer<NonNullable<Schema>>
     : undefined;
 
-type RouteResponse<Id extends EmployeeHandlerRouteId> =
-  (typeof EMPLOYEE_HANDLER_ROUTES)[Id] extends {
-    response: infer R extends z.ZodType;
-  }
-    ? z.infer<R>
-    : undefined;
+type RouteBody<Id extends EmployeeHandlerRouteId> = InferSchema<
+  (typeof EMPLOYEE_HANDLER_ROUTES)[Id]['body']
+>;
+
+type RouteResponse<Id extends EmployeeHandlerRouteId> = InferSchema<
+  (typeof EMPLOYEE_HANDLER_ROUTES)[Id]['response']
+>;
 
 export type EmployeeHandlerRouteBody<Id extends EmployeeHandlerRouteId> =
   RouteBody<Id>;

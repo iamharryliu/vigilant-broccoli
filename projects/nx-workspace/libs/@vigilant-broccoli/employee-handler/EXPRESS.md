@@ -11,18 +11,10 @@ import {
 } from '@vigilant-broccoli/employee-handler';
 
 const myConfig: EmployeeHandlerConfig = {
-  onboardUtilities: {
-    /* your impl */
-  },
-  activeMaintenanceUtilities: {
-    /* your impl */
-  },
-  offboardUtilities: {
-    /* your impl */
-  },
-  postRetentionUtilities: {
-    /* your impl */
-  },
+  onboardUtilities: {/* your impl */},
+  activeMaintenanceUtilities: {/* your impl */},
+  offboardUtilities: {/* your impl */},
+  postRetentionUtilities: {/* your impl */},
 };
 
 const app = createEmployeeHandlerApp(myConfig, {

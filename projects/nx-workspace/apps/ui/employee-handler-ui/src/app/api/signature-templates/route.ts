@@ -14,7 +14,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   if (hasUpstream()) return forwardToUpstream(request);
-  const body = (await request.json()) as EmployeeHandlerRouteBody<'signatureTemplatesCreate'>;
+  const body =
+    (await request.json()) as EmployeeHandlerRouteBody<'signatureTemplatesCreate'>;
   const created = createTemplate(body);
   return NextResponse.json(created, { status: HTTP_STATUS_CODES.CREATED });
 }
