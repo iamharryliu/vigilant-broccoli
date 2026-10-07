@@ -26,6 +26,22 @@ const EXTERNAL_OR_HASH_HREF_RE = /^([a-z][a-z0-9+.-]*:|#)/i;
 const MD_LINK_RE = /\]\(\s*(<[^>]+>|[^)\s]+)/g;
 const ANGLE_WRAPPED_RE = /^<(.+)>$/;
 
+const ROOT_LABEL = 'root';
+
+const stripExt = name => name.replace(/\.md$/, '');
+
+// Files whose name is fixed by convention (an agent's CONTEXT.md or SKILL.md)
+// are labelled by their directory instead; ids stay paths so links are unaffected.
+const createGraphLabeler = labelByDirectory => {
+  const generic = new Set(labelByDirectory);
+  return file => {
+    if (!generic.has(file.name)) return stripExt(file.name);
+    const dir = path.dirname(file.path);
+    const owner = dir === CURRENT_SEGMENT ? ROOT_LABEL : path.basename(dir);
+    return `${owner}/${stripExt(file.name)}`;
+  };
+};
+
 const shouldIgnore = p => IGNORE.some(re => re.test(p));
 
 const toSource = entry => (typeof entry === 'string' ? { path: entry } : entry);
@@ -129,7 +145,7 @@ const createLinkResolver = knownPaths => (fromPath, href) => {
   return knownPaths.has(withExt) ? withExt : null;
 };
 
-const buildGraph = (files, resolveToKnown) => {
+const buildGraph = (files, resolveToKnown, graphLabel) => {
   const linkKeys = new Set();
   const links = [];
   for (const file of files) {
@@ -145,7 +161,7 @@ const buildGraph = (files, resolveToKnown) => {
 
   const nodes = files.map(f => ({
     id: f.path,
-    name: f.name.replace(/\.md$/, ''),
+    name: graphLabel(f),
     group: f.path.includes(PATH_SEP) ? f.path.split(PATH_SEP)[0] : '',
   }));
 
@@ -215,7 +231,11 @@ fs.writeFileSync(
   JSON.stringify(buildTree(files), null, 2),
 );
 
-const graph = buildGraph(files, resolveToKnown);
+const graph = buildGraph(
+  files,
+  resolveToKnown,
+  createGraphLabeler(config.labelByDirectory ?? []),
+);
 fs.writeFileSync(path.join(outDir, GRAPH_FILE), JSON.stringify(graph, null, 2));
 
 fs.writeFileSync(
