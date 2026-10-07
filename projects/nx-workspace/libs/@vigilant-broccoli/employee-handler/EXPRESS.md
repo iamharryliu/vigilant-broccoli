@@ -44,20 +44,10 @@ app.listen(3000);
 
 ## Routes
 
-All routes are mounted under `/api` and mirror the paths the UI calls:
+Routes are defined once as zod schemas in `src/employee-handler/employee-handler.contract.ts`; the Express wrapper mounts and validates request bodies from that contract. The OpenAPI document generated from it is the route reference:
 
-- `GET /api/employees/{incoming,active,inactive}`
-- `GET /api/onboard`, `POST /api/onboard/manualOnboard`
-- `GET /api/offboard`, `POST /api/offboard/manualOffboard`
-- `POST /api/recover`
-- `GET /api/sync`
-- `GET /api/postRetentionCleanup`
-- `GET /api/signature/list`
-- `POST /api/signature/update`, `POST /api/signature/updateAll`
-- `GET /api/signature/updateEmailSignatures`
-- `POST /api/signature/emailZippedSignatures`
-- `GET /api/signature/downloadZippedSignatures`
-- `GET|POST /api/signature-templates`, `PATCH|DELETE /api/signature-templates/:id`
+- Live: `GET /api/openapi.json` on any `createEmployeeHandlerApp` instance (behind `apiKey` when set).
+- Build-generated: `employee-handler.json`, published by `scripts/generate-openapi-specs.ts` (`pages-index` `generate-openapi` target) to `apps/ui/pages-index/public/openapi/`.
 
 ## Local Dev
 

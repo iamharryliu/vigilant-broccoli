@@ -27,6 +27,9 @@
       "@vigilant-broccoli/common-node": [
         "./libs/@vigilant-broccoli/common-node/src/index.ts"
       ],
+      "@vigilant-broccoli/employee-handler/contract": [
+        "./libs/@vigilant-broccoli/employee-handler/src/employee-handler/employee-handler.contract.ts"
+      ],
       "@vigilant-broccoli/employee-handler": [
         "./libs/@vigilant-broccoli/employee-handler/src/index.ts"
       ],

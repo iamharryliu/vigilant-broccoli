@@ -1,4 +1,5 @@
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
+import type { EmailsBody } from '@vigilant-broccoli/employee-handler/contract';
 import { buildAuthHeaders } from '../app/providers/auth-provider';
 
 export const ERR_REQUEST_FAILED = 'Request failed';
@@ -36,5 +37,5 @@ export const postEmails = (endpoint: string, emails: string[]) =>
   authFetchOk(endpoint, {
     method: HTTP_METHOD.POST,
     headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
-    body: JSON.stringify({ emails }),
+    body: JSON.stringify({ emails } satisfies EmailsBody),
   });
