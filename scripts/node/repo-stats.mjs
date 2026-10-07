@@ -26,6 +26,9 @@ const TARGETS = [
       `Proud maintainer of [vigilant-broccoli](${REPO_URL}) supporting **${applications} applications**, **${services} API services**, **${images} Docker images** and **${packages} npm packages**.`,
   },
 ];
+const RESUME_PATH = `${NX_WORKSPACE}/libs/@vigilant-broccoli/resume/src/resume.json`;
+const RESUME_COUNTS =
+  /\*\*\d+ applications\*\*, \*\*\d+ API services\*\*, \*\*\d+ Docker images\*\* and \*\*\d+ npm packages\*\*/;
 const MARKER_START = '<!-- managed:repo-stats:start -->';
 const MARKER_END = '<!-- managed:repo-stats:end -->';
 const CHECK_FLAG = '--check';
@@ -101,11 +104,36 @@ const withStats = (content, line, path) => {
   return `${content.slice(0, start + MARKER_START.length)}\n\n${line}\n\n${content.slice(end)}`;
 };
 
+const withResumeStats = (
+  content,
+  { applications, services, images, packages },
+  path,
+) => {
+  if (!RESUME_COUNTS.test(content)) {
+    throw new Error(`${path}: no repo-stats counts bullet found`);
+  }
+  return content.replace(
+    RESUME_COUNTS,
+    `**${applications} applications**, **${services} API services**, **${images} Docker images** and **${packages} npm packages**`,
+  );
+};
+
+const REWRITES = [
+  ...TARGETS.map(({ path, template }) => ({
+    path,
+    rewrite: (content, stats) => withStats(content, template(stats), path),
+  })),
+  {
+    path: RESUME_PATH,
+    rewrite: (content, stats) => withResumeStats(content, stats, RESUME_PATH),
+  },
+];
+
 const check = process.argv.includes(CHECK_FLAG);
 const stats = computeStats();
-const stale = TARGETS.filter(({ path, template }) => {
+const stale = REWRITES.filter(({ path, rewrite }) => {
   const current = read(path);
-  const next = withStats(current, template(stats), path);
+  const next = rewrite(current, stats);
   if (current === next) return false;
   if (!check) writeFileSync(join(REPO_ROOT, path), next);
   return true;
@@ -118,5 +146,7 @@ if (check && stale.length) {
   process.exit(1);
 }
 console.log(
-  stale.length ? `Updated: ${stale.join(', ')}` : `Up to date: ${JSON.stringify(stats)}`,
+  stale.length
+    ? `Updated: ${stale.join(', ')}`
+    : `Up to date: ${JSON.stringify(stats)}`,
 );
