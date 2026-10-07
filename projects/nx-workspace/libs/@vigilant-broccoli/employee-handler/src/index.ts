@@ -13,4 +13,6 @@ export * from './express/employee-handler-express';
 export {
   EMPLOYEE_HANDLER_CONFIG_MOCK,
   MOCK_DEFAULT_TEMPLATES,
+  listEmployeesByStatus,
+  updateEmployeeMetadata,
 } from './employee-handler/mocks/config.mock';
