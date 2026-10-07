@@ -47,6 +47,7 @@ import { GithubActionsBadgesDemo } from './demos/GithubActionsBadgesDemo';
 import { StatusCardListDemo } from './demos/StatusCardListDemo';
 import { TabsDemo } from './demos/TabsDemo';
 import { TooltipDemo } from './demos/TooltipDemo';
+import { LinkCardDemo } from './demos/LinkCardDemo';
 import { SwitchDemo } from './demos/SwitchDemo';
 import { ToasterDemo } from './demos/ToasterDemo';
 import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
@@ -253,6 +254,14 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
       'A running balance timeline, scroll-linked to a series of dated entries.',
     category: CATEGORY.COMPONENTS,
     content: <ScrollTimelineDemo />,
+  },
+  {
+    id: 'link-card',
+    label: 'Link Card',
+    description:
+      'Clickable card with title, description and icon, with a subtle lift on hover; renders an anchor or a router link.',
+    category: CATEGORY.COMPONENTS,
+    content: <LinkCardDemo />,
   },
   {
     id: 'select',
