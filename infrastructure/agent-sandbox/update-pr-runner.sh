@@ -23,8 +23,8 @@ BRANCH=$(git rev-parse --abbrev-ref HEAD)
 BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"
 
-# --no-commit keeps MERGE_HEAD through the later `git add -A` + `git commit`, so the result
-# is a real merge commit; a plain change on top of BASE_SHA would leave the PR conflicted.
+# --no-commit leaves MERGE_HEAD for the final `git commit`, so the result is a real merge
+# commit; a plain change on top of BASE_SHA would leave the PR conflicted.
 if [ -n "${SANDBOX_MERGE_MAIN:-}" ]; then
   git merge origin/main --no-commit --no-ff || true
 fi
@@ -66,6 +66,10 @@ claude -p "$PROMPT" --dangerously-skip-permissions --model "$MODEL" \
 # checkout below even onto the branch we're already on, so clear that first.
 git add -A
 
+# `git checkout` deletes MERGE_HEAD even when already on $BRANCH, which would turn the
+# merge into a single-parent commit; save it here and restore it just before committing.
+MERGE_HEAD_SHA=$(git rev-parse -q --verify MERGE_HEAD || true)
+
 git checkout "$BRANCH"
 [ "$(git rev-parse HEAD)" = "$BASE_SHA" ] || git reset --soft "$BASE_SHA"
 
@@ -104,6 +108,7 @@ fi
 echo "$TRAILER" | grep -Eqi '^co-authored-by: .+ <.+>$' || TRAILER="$FALLBACK_TRAILER"
 
 git add -A
+[ -z "$MERGE_HEAD_SHA" ] || echo "$MERGE_HEAD_SHA" >"$(git rev-parse --git-path MERGE_HEAD)"
 git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
 git push
 
