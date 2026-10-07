@@ -12,12 +12,13 @@ const NPM_LIBS_DIR = `${NX_WORKSPACE}/libs/@vigilant-broccoli/`;
 const WORKFLOWS_DIR = '.github/workflows/';
 const PROJECT_JSON = 'project.json';
 const DOCKER_HUB_NAMESPACE = 'iamharryliu';
+const PAGES_INDEX_URL = 'https://projects.harryliu.dev/';
 const REPO_URL = 'https://github.com/iamharryliu/vigilant-broccoli';
 const TARGETS = [
   {
     path: 'README.md',
     template: ({ applications, services, images, packages }) =>
-      `Supports **${applications}** applications, **${services}** API services, **${images}** Docker images and **${packages}** npm packages.`,
+      `Personal monorepo, **${applications} applications**, **${services} API services**, **${images} Docker images** and **${packages} npm packages**. Learn more at [projects.harryliu.dev](${PAGES_INDEX_URL}).`,
   },
   {
     path: `${NX_WORKSPACE}/apps/ui/personal-website-react/src/app/content/about.md`,

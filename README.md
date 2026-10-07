@@ -1,10 +1,8 @@
 # vigilant-broccoli
 
-Personal monorepo. Go to [projects.harryliu.dev](https://projects.harryliu.dev/) for more project details.
-
 <!-- managed:repo-stats:start -->
 
-Supports **9** applications, **5** API services, **7** Docker images and **4** npm packages.
+Personal monorepo, **9 applications**, **5 API services**, **7 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
 
 <!-- managed:repo-stats:end -->
 
