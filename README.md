@@ -4,7 +4,7 @@ Personal monorepo. Go to [projects.harryliu.dev](https://projects.harryliu.dev/)
 
 <!-- managed:repo-stats:start -->
 
-Publicly shipped from [vigilant-broccoli](https://github.com/iamharryliu/vigilant-broccoli): **9** applications, **5** services, **7** Docker images and **4** npm packages.
+Supports **9** applications, **5** API services, **7** Docker images and **4** npm packages.
 
 <!-- managed:repo-stats:end -->
 

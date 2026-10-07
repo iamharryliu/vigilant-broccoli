@@ -13,9 +13,17 @@ const WORKFLOWS_DIR = '.github/workflows/';
 const PROJECT_JSON = 'project.json';
 const DOCKER_HUB_NAMESPACE = 'iamharryliu';
 const REPO_URL = 'https://github.com/iamharryliu/vigilant-broccoli';
-const TARGET_FILES = [
-  'README.md',
-  `${NX_WORKSPACE}/apps/ui/personal-website-react/src/app/content/about.md`,
+const TARGETS = [
+  {
+    path: 'README.md',
+    template: ({ applications, services, images, packages }) =>
+      `Supports **${applications}** applications, **${services}** API services, **${images}** Docker images and **${packages}** npm packages.`,
+  },
+  {
+    path: `${NX_WORKSPACE}/apps/ui/personal-website-react/src/app/content/about.md`,
+    template: ({ applications, services, images, packages }) =>
+      `Proud maintainer of [vigilant-broccoli](${REPO_URL}) supporting **${applications} applications**, **${services} API services**, **${images} Docker images** and **${packages} npm packages**.`,
+  },
 ];
 const MARKER_START = '<!-- managed:repo-stats:start -->';
 const MARKER_END = '<!-- managed:repo-stats:end -->';
@@ -76,8 +84,12 @@ const countDockerImages = () =>
     ),
   ]).size;
 
-const statsLine = () =>
-  `Publicly shipped from [vigilant-broccoli](${REPO_URL}): **${countApplications()}** applications, **${countProjectsWithTarget(API_APPS_DIR, 'deploy')}** services, **${countDockerImages()}** Docker images and **${countProjectsWithTarget(NPM_LIBS_DIR, 'publish-package')}** npm packages.`;
+const computeStats = () => ({
+  applications: countApplications(),
+  services: countProjectsWithTarget(API_APPS_DIR, 'deploy'),
+  images: countDockerImages(),
+  packages: countProjectsWithTarget(NPM_LIBS_DIR, 'publish-package'),
+});
 
 const withStats = (content, line, path) => {
   const start = content.indexOf(MARKER_START);
@@ -89,14 +101,14 @@ const withStats = (content, line, path) => {
 };
 
 const check = process.argv.includes(CHECK_FLAG);
-const line = statsLine();
-const stale = TARGET_FILES.filter(path => {
+const stats = computeStats();
+const stale = TARGETS.filter(({ path, template }) => {
   const current = read(path);
-  const next = withStats(current, line, path);
+  const next = withStats(current, template(stats), path);
   if (current === next) return false;
   if (!check) writeFileSync(join(REPO_ROOT, path), next);
   return true;
-});
+}).map(({ path }) => path);
 
 if (check && stale.length) {
   console.error(
@@ -105,5 +117,5 @@ if (check && stale.length) {
   process.exit(1);
 }
 console.log(
-  stale.length ? `Updated: ${stale.join(', ')}` : `Up to date: ${line}`,
+  stale.length ? `Updated: ${stale.join(', ')}` : `Up to date: ${JSON.stringify(stats)}`,
 );
