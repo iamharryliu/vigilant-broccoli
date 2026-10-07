@@ -7,6 +7,7 @@ const DEFAULT_MAX_REQUESTS = 300;
 const DEFAULT_TIME_WINDOW = '1 minute';
 const ROOT_PATH = '/';
 const QUERY_SEPARATOR = '?';
+const FLY_CLIENT_IP_HEADER = 'fly-client-ip';
 
 type RateLimitOptions = { max?: number; timeWindow?: string };
 
@@ -18,6 +19,16 @@ const isHealthCheck = (req: FastifyRequest): boolean => {
   return path === ROOT_PATH || path.endsWith(PING_PATH);
 };
 
+// Fly terminates at its proxy, so req.ip is the proxy's address and every
+// caller would share one bucket. Fly-Client-IP is set by that proxy and
+// overwrites any client-sent value, unlike X-Forwarded-For whose leftmost
+// entry (what `trustProxy: true` resolves req.ip to) the client controls.
+// Off Fly (local dev) the header is absent and req.ip is the real peer.
+const getClientKey = (req: FastifyRequest): string => {
+  const flyClientIp = req.headers[FLY_CLIENT_IP_HEADER];
+  return typeof flyClientIp === 'string' ? flyClientIp : req.ip;
+};
+
 export const createRateLimitPlugin = ({
   max = DEFAULT_MAX_REQUESTS,
   timeWindow = DEFAULT_TIME_WINDOW,
@@ -27,6 +38,7 @@ export const createRateLimitPlugin = ({
       max,
       timeWindow,
       allowList: isHealthCheck,
+      keyGenerator: getClientKey,
     });
   };
   return fp(plugin);
