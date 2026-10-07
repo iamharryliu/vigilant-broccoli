@@ -92,7 +92,10 @@
     "NO_SERVICES": "No services configured.",
     "GITHUB_ACTIONS": "GitHub Actions",
     "VIEW_ALL": "View all →",
-    "UPTIME_SITE": "Full uptime history →",
+    "UPTIME_SITE": {
+      "TITLE": "Full uptime history",
+      "DESCRIPTION": "Upptime status site with historical uptime, response times and incidents for every service."
+    },
     "ERROR_STATUS_UNAVAILABLE": "Status data unavailable (HTTP {status}).",
     "ERROR_STATUS_FAILED": "Failed to load status: {message}",
     "UPDATED": "Updated {date}",
