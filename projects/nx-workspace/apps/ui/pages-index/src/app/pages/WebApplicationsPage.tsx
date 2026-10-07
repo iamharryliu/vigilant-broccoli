@@ -62,7 +62,7 @@ export function WebApplicationsPage() {
         <CardGrid>
           <li>
             <CardLink
-              href="https://staging-employee-handler-ui.vercel.app"
+              href="https://demo-employee-handler-ui.vercel.app"
               title={t('WEB_APPLICATIONS_PAGE.EMPLOYEE_HANDLER.TITLE')}
               description={t(
                 'WEB_APPLICATIONS_PAGE.EMPLOYEE_HANDLER.DESCRIPTION',

@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   employee-handler-ui:
-    if: ${{ github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true' && github.event.client_payload.environment == 'staging' }}
+    if: ${{ github.event.client_payload.conclusion == 'success' && github.event.client_payload.environment == 'staging' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:

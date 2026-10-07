@@ -2,7 +2,12 @@
 
 ## Table of Contents
 
+- [Deployment URLs](#deployment-urls)
 - [Stack](#stack)
+
+## Deployment URLs
+
+- [Demo](https://demo-employee-handler-ui.vercel.app/) — the only deploy; no staging or production
 
 ## Stack
 
