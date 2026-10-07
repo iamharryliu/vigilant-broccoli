@@ -136,6 +136,8 @@
     "cheatsheet": "./scripts/shell/cheatsheet.sh",
     "cheatsheet:tmux-nvim": "./scripts/shell/cheatsheet-tmux-nvim.sh",
     "cheatsheet:aliases": "./scripts/shell/cheatsheet-aliases.sh",
+    "repo-stats": "node scripts/node/repo-stats.mjs",
+    "repo-stats:check": "node scripts/node/repo-stats.mjs --check",
     "audit": "python3 scripts/python/vuln_tree.py .",
     "nx:migrate": "cd projects/nx-workspace && nx migrate latest",
     "nx:migrate:run": "cd projects/nx-workspace && nx migrate --run-migrations",
