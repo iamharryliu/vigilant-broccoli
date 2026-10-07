@@ -24,7 +24,7 @@ on:
           - bucket-service
           - email-subscription-service
       environment:
-        description: 'Deployment environment (production only exists for fly services; employee-handler-ui only has demo)'
+        description: "Deployment environment (production only exists for fly services; employee-handler-ui only has demo)"
         type: choice
         default: staging
         options:
