@@ -85,6 +85,7 @@
       "startDate": "July 2023",
       "endDate": "present",
       "bullets": [
+        "Support **9 public applications**, **5 services**, **7 Docker images** and **4 npm packages** from one monorepo.",
         "Architect and maintain an **open-source Nx monorepo** of web apps, API services, shared **npm** libraries, and infrastructure code.",
         "Design and run **agentic coding workflows** with **Claude Code**, building custom skills and slash commands for code review, refactor cleanup, documentation upkeep, and automated PR authoring.",
         "Provision and operate **cloud infrastructure** with **Terraform**, managing secrets through dedicated secret managers.",
