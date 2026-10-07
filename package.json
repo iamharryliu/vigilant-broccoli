@@ -21,7 +21,7 @@
     "tf:post-apply": "./infrastructure/terraform/scripts/post-apply.sh",
     "oci:config:sync-local": "./infrastructure/terraform/scripts/sync-oci-config-local.sh",
     "tf:output": "cd infrastructure/terraform && terraform output",
-    "tf:unlock": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform force-unlock",
+    "tf:unlock": "eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform force-unlock vigilant-broccoli/vigilant-broccoli-infrastructure",
     "oci:vm:ssh": "./scripts/shell/oci-ssh.sh oci_vm_public_ip",
     "oci:vm:sync-socket-token": "./infrastructure/terraform/packer/scripts/sync-socket-server-token.sh",
     "gitea:ssh": "./scripts/shell/oci-ssh.sh oci_gitea_public_ip",
