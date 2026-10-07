@@ -5,6 +5,7 @@ Repository context and workflows shared by Claude Code, Codex, and future agents
 ## Table of Contents
 
 - [Sources and adapters](#sources-and-adapters)
+- [Agentic commands](#agentic-commands)
 - [Adding a context source or skill](#adding-a-context-source-or-skill)
 - [Installing skills](#installing-skills)
 - [Context discovery](#context-discovery)
@@ -20,6 +21,18 @@ Repository context and workflows shared by Claude Code, Codex, and future agents
 `CONTEXT.md` and the shared `SKILL.md` files are the only sources. The adapters beside them are committed relative symlinks (Git mode `120000`, ten bytes, one blob shared by all of them), so they carry no duplicate Markdown and a clone is usable before any setup runs. Personal Codex settings stay in the untracked `~/.codex/config.toml`; skill metadata stays in each skill's `agents/openai.yaml`.
 
 Skills reference [CONTEXT.md](../CONTEXT.md) and the documents in its Doc Map rather than copying conventions. Change the owning document first when a workflow and its conventions disagree. Repo-specific skills operate on the current vigilant-broccoli checkout; a global installation does not authorize operating on the installation checkout from another project.
+
+## Agentic commands
+
+Use one base name, `agentic-<resource>-<verb>[-<variant>]`, for each operation: for example `agentic-pr-create`, `agentic-pr-update`, or `agentic-pr-update-resolve-conflicts`. The root pnpm script and canonical skill directory/frontmatter use that exact name; Claude exposes `/name` and Codex `$name`. The corresponding GitHub workflow adds its routing prefix (`manual-` or `cron-`). Runner filenames are implementation details.
+
+Keep task instructions in `setup/dotfiles/agent-skills/<name>/SKILL.md`. Both local sessions and sandbox prompts consume that source. Runners load the file at runtime and embed it in the prompt; load it before checking out a PR branch, which may predate the skill. Variant runners select the matching variant skill rather than copying its task instructions into shell strings or YAML.
+
+Keep runtime concerns in the runner: isolated checkout setup, credentials, merge preparation, metadata, validation, commits, pushes and PR publishing. Skills describe the task and any local preparation needed when no runner has prepared the checkout. Mark those local steps explicitly so sandbox agents do not repeat them. A local skill invocation alone does not authorize publishing.
+
+Plan, Develop and Maintain operations follow this pattern. The smoke workflow is an Actions-only pipeline check and has no local equivalent.
+
+When adding or renaming an operation, update the root script, workflow name and concurrency routing where applicable, canonical skill and command adapter, runner references and history labels, README lifecycle table, command cheatsheet and installed skill links together. Do not add a workflow just to fill the Actions column: reuse an existing entry point when it serves the task, otherwise use `N/A`. Do not add a local equivalent to the table unless it exists. Verify argument forwarding, skill loading and adapters without publishing live PRs as a routine check.
 
 ## Adding a context source or skill
 
@@ -56,7 +69,7 @@ An optional destination home directory lets you check installation in isolation.
 
 Installed Claude commands point through the committed `.claude/commands/` symlinks used by the sandbox runners. Run `bash setup/common/agent-skills-smoketest.sh` to check fresh installs, repeated setup, legacy caches, conflicts, and command compatibility; machine-setup CI runs it too.
 
-Use `/audit-note <scope>` in Claude or `$audit-note <scope>` in Codex. `ship-pr` requires explicit invocation; its Codex metadata disables implicit invocation. Start a new session after installation if skills are not visible. Executables, credentials, permissions, plugins, and personal settings are managed separately.
+Use `/agentic-pr-create-rnd <question>` in Claude or `$agentic-pr-create-rnd <question>` in Codex. `ship-pr` requires explicit invocation; its Codex metadata disables implicit invocation. Start a new session after installation if skills are not visible. Executables, credentials, permissions, plugins, and personal settings are managed separately.
 
 ## Context discovery
 

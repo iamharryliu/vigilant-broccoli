@@ -1,5 +1,5 @@
 ---
-name: rnd-note
+name: agentic-pr-create-rnd
 description: In vigilant-broccoli, research a question and write an R&D note under docs/rnd/ from the R&D template.
 ---
 
@@ -11,4 +11,4 @@ Research the question in the arguments (or in this conversation) and write a con
 2. Research before writing. When the question touches this repo, grep for the relevant files, patterns, and docs and cite concrete paths (e.g. `path/to/file.ext:12`) in Context and Sample Implementation. Prefer patterns already used in the repo — check `CONTEXT.md` and the docs it links.
 3. Write the note to a new file `docs/rnd/<concise-kebab-slug>.md`; do not modify anything outside `docs/rnd/`. Do not commit.
 
-For the unattended sandbox + PR version, run `pnpm agentic:rnd "<question>"` instead.
+For the unattended sandbox + PR version, run `pnpm agentic-pr-create-rnd "<question>"` instead.

@@ -6,15 +6,27 @@ IMAGE=vb-agent-sandbox
 
 MODEL=sonnet
 ARGS=()
+usage() {
+  echo "Usage: pnpm agentic-pr-update [--model <model>] [--with-ci-logs] <PR_NUMBER_OR_URL> <instruction>" >&2
+  echo "  e.g. pnpm agentic-pr-update 149 \"add input validation to the new route\"" >&2
+  echo "       pnpm agentic-pr-update --with-ci-logs 149 \"fix the failing checks\"" >&2
+  exit 1
+}
 while [ $# -gt 0 ]; do
   case "$1" in
     --model)
+      [ $# -ge 2 ] && [ -n "$2" ] || usage
       MODEL=$2
       shift 2
       ;;
     --prompt)
+      [ $# -ge 2 ] || usage
       ARGS+=("$2")
       shift 2
+      ;;
+    --with-ci-logs)
+      export SANDBOX_CI_LOGS=1
+      shift
       ;;
     *)
       ARGS+=("$1")
@@ -26,9 +38,7 @@ done
 PR="${ARGS[0]:-}"
 INSTRUCTION="${ARGS[*]:1}"
 if [ -z "$PR" ] || [ -z "$INSTRUCTION" ]; then
-  echo "Usage: pnpm agentic:pr:update [--model <model>] <PR_NUMBER_OR_URL> <instruction>" >&2
-  echo "  e.g. pnpm agentic:pr:update 149 \"add input validation to the new route\"" >&2
-  exit 1
+  usage
 fi
 
 if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
@@ -66,6 +76,8 @@ docker run --rm --init --name "vb-update-pr-$(date +%s)" \
   -e AGENT_GH_APP_ID \
   -e SANDBOX_FIREWALL \
   -e SANDBOX_MERGE_MAIN \
+  -e SANDBOX_CI_LOGS \
+  -e SANDBOX_FIX_CI \
   -e SANDBOX_ALLOWED_DOMAINS \
   -e SOLVE_MODEL="$MODEL" \
   "$IMAGE" \

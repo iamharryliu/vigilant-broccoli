@@ -125,7 +125,7 @@ tokens on every session in that subtree.
 - Fixing the root cause upstream (a dependency bump, a deleted workaround)
   retires the entry: delete it and its Table of Contents line. If it was the
   last one, drop the now-empty `## Nuances` section too.
-- Before moving or deleting context, run `bash setup/common/sync-agent-support.sh --clean`. Move or delete its `CONTEXT.md`, then rerun the script to regenerate the ignored adapters.
+- When moving or deleting a `CONTEXT.md`, move or delete its adjacent committed `CLAUDE.md` and `AGENTS.md` symlinks in the same change. Keep surviving adapters pointed at the adjacent `CONTEXT.md`, update incoming documentation links, and verify that the symlinks resolve. No adapter-generation step is needed; see [agent support](./agent-support.md#sources-and-adapters).
 - Adding or retiring a nuance is two writes, both inside the one file you are
   already editing: the entry and its Table of Contents line.
 - Directory-scoped `CONTEXT.md` files are snapshotted into the Agent

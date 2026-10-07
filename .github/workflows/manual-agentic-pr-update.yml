@@ -1,6 +1,6 @@
 name: manual-agentic-pr-update
 
-# Runs the same agent PR update as the local `pnpm agentic:pr:update`, but on the
+# Runs the same agent PR update as the local `pnpm agentic-pr-update`, but on the
 # ephemeral GitHub-hosted runner: it builds and runs the vb-agent-sandbox
 # container (checks out the PR branch, headless Claude Code applies the change,
 # commit, push, PR body update). Secrets come from Vault; the branch push + PR
