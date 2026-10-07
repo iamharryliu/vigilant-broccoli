@@ -38,8 +38,20 @@
         "command": "node scripts/build-docs-snapshot.mjs apps/ui/pages-index/claude-context.snapshot.config.json"
       }
     },
+    "check-i18n-keys": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{workspaceRoot}/scripts/check-i18n-keys.ts",
+        "{projectRoot}/src/**/*.{ts,tsx,json}"
+      ],
+      "options": {
+        "command": "tsx scripts/check-i18n-keys.ts"
+      }
+    },
     "build": {
       "dependsOn": [
+        "check-i18n-keys",
         "generate-openapi",
         "generate-repo-timeline",
         "build-claude-context-snapshot"
