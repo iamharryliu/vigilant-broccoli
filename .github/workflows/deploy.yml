@@ -267,6 +267,13 @@ jobs:
           flyctl certs show api.harryliu.dev -a production-vb-express >/dev/null 2>&1 \
             || flyctl certs add api.harryliu.dev -a production-vb-express
 
+      - name: Summarize deployed apps
+        if: steps.check.outputs.has_deployments == 'true'
+        env:
+          DEPLOY_PROJECTS: ${{ steps.check.outputs.projects }}
+          DEPLOY_ENVIRONMENT: ${{ env.DEPLOY_ENVIRONMENT }}
+        run: node .github/scripts/deploy-summary.mjs
+
   deploy-github-pages:
     needs: gitleaks
     if: ${{ github.ref_name == 'main' && !inputs.skip_pages }}
