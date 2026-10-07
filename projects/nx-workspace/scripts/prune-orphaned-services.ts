@@ -1,6 +1,7 @@
 import { execFileSync, execSync } from 'child_process';
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
+import { EMAIL_ADDRESS } from '@vigilant-broccoli/personal-common-js';
 
 const NAME_TOKEN_PATTERN = /[a-z0-9][a-z0-9-]*/g;
 const DECLARATION_PATHSPECS = [
@@ -11,6 +12,8 @@ const DECLARATION_PATHSPECS = [
 ];
 const APPLY_FLAG = '--apply';
 const FORCE_FLAG = '--force';
+const REPORT_JSON_FLAG = '--report-json';
+const REPORT_MD_FLAG = '--report-md';
 const MAX_DELETIONS_WITHOUT_FORCE = 6;
 const VERCEL_API = 'https://api.vercel.com';
 const VERCEL_ORG_ID = 'team_K8XGLgKfYA0WKlMX80jaVSvg';
@@ -115,15 +118,102 @@ const vercelProjects: Provider = {
   },
 };
 
-async function findOrphans(provider: Provider, declared: Set<string>) {
-  const live = await provider.list();
-  return live.filter(name => !declared.has(name));
+interface ProviderReport {
+  provider: string;
+  live: string[];
+  declaredCount: number;
+  orphans: string[];
+  errors: string[];
+  warnings: string[];
 }
+
+interface Report {
+  generatedAt: string;
+  commit: string;
+  emailTo: string;
+  declaredNameCount: number;
+  providers: ProviderReport[];
+}
+
+async function inspectProvider(
+  provider: Provider,
+  declared: Set<string>,
+): Promise<ProviderReport> {
+  const report: ProviderReport = {
+    provider: provider.name,
+    live: [],
+    declaredCount: 0,
+    orphans: [],
+    errors: [],
+    warnings: [],
+  };
+  try {
+    report.live = await provider.list();
+  } catch (error) {
+    report.errors.push(
+      `Listing failed: ${error instanceof Error ? error.message : String(error)}`,
+    );
+    return report;
+  }
+  if (report.live.length === 0) {
+    report.warnings.push(
+      'Listing returned no services; check the credentials.',
+    );
+  }
+  report.orphans = report.live.filter(name => !declared.has(name));
+  report.declaredCount = report.live.length - report.orphans.length;
+  return report;
+}
+
+const renderList = (names: string[]) =>
+  names.length ? names.map(name => `\`${name}\``).join(', ') : 'none';
+
+function renderMarkdown(report: Report): string {
+  const orphanTotal = report.providers.reduce(
+    (sum, provider) => sum + provider.orphans.length,
+    0,
+  );
+  const errorTotal = report.providers.reduce(
+    (sum, provider) => sum + provider.errors.length,
+    0,
+  );
+  return [
+    '# Orphaned services report',
+    '',
+    `- Run: ${report.generatedAt}`,
+    `- Commit: \`${report.commit}\``,
+    `- Declared names scanned: ${report.declaredNameCount}`,
+    `- Orphans: ${orphanTotal}`,
+    `- Listing errors: ${errorTotal}`,
+    '',
+    '| Provider | Live | Declared | Orphans | Errors / warnings |',
+    '| --- | --- | --- | --- | --- |',
+    ...report.providers.map(
+      provider =>
+        `| ${provider.provider} | ${provider.live.length} | ${provider.declaredCount} | ${provider.orphans.length} | ${[...provider.errors, ...provider.warnings].join('; ') || 'none'} |`,
+    ),
+    '',
+    ...report.providers.flatMap(provider => [
+      `## ${provider.provider}`,
+      '',
+      `- Orphans: ${renderList(provider.orphans)}`,
+      `- Live: ${renderList(provider.live)}`,
+      '',
+    ]),
+  ].join('\n');
+}
+
+const flagValue = (args: string[], flag: string) => {
+  const index = args.indexOf(flag);
+  return index === -1 ? undefined : args[index + 1];
+};
 
 async function main() {
   const args = process.argv.slice(2);
   const apply = args.includes(APPLY_FLAG);
   const force = args.includes(FORCE_FLAG);
+  const reportJsonPath = flagValue(args, REPORT_JSON_FLAG);
+  const reportMdPath = flagValue(args, REPORT_MD_FLAG);
 
   const declared = listDeclaredNames();
   if (declared.size === 0) {
@@ -131,26 +221,38 @@ async function main() {
   }
 
   const providers = [cloudflarePages, vercelProjects, flyApps];
-  const orphansByProvider = await Promise.all(
-    providers.map(async provider => ({
-      provider,
-      orphans: await findOrphans(provider, declared),
-    })),
+  const providerReports = await Promise.all(
+    providers.map(provider => inspectProvider(provider, declared)),
   );
+  const report: Report = {
+    generatedAt: new Date().toISOString(),
+    commit: execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim(),
+    emailTo: EMAIL_ADDRESS,
+    declaredNameCount: declared.size,
+    providers: providerReports,
+  };
+  const markdown = renderMarkdown(report);
+  console.log(markdown);
+  if (reportJsonPath) {
+    writeFileSync(reportJsonPath, JSON.stringify(report, null, 2));
+  }
+  if (reportMdPath) writeFileSync(reportMdPath, markdown);
+
+  const orphansByProvider = providers.map((provider, index) => ({
+    provider,
+    orphans: providerReports[index].orphans,
+  }));
   const total = orphansByProvider.reduce(
     (sum, { orphans }) => sum + orphans.length,
     0,
   );
 
-  orphansByProvider.forEach(({ provider, orphans }) =>
-    console.log(
-      `${provider.name}: ${orphans.length} orphan(s)${orphans.length ? ` — ${orphans.join(', ')}` : ''}`,
-    ),
-  );
-
   if (!apply) {
     console.log(`Dry run: pass ${APPLY_FLAG} to delete ${total} orphan(s).`);
     return;
+  }
+  if (providerReports.some(({ errors }) => errors.length)) {
+    throw new Error('A provider failed to list; refusing to delete.');
   }
   if (total > MAX_DELETIONS_WITHOUT_FORCE && !force) {
     throw new Error(

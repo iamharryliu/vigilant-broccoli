@@ -1,0 +1,64 @@
+name: cron-prune-orphaned-services
+
+# Report-only: lists Cloudflare Pages, Vercel and Fly services that nothing in
+# the repo declares and emails the result. Deleting stays a manual local
+# `--apply` run of scripts/prune-orphaned-services.ts.
+on:
+  schedule:
+    - cron: '55 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: cron-prune-orphaned-services
+  cancel-in-progress: false
+
+jobs:
+  report:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: ./.github/actions/setup-nx-workspace
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
+            kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+            kv/data/secrets VERCEL_TOKEN | VERCEL_TOKEN ;
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+
+      - uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # 1.6
+
+      - name: Find orphaned services
+        working-directory: ./projects/nx-workspace
+        run: |
+          pnpm exec tsx scripts/prune-orphaned-services.ts \
+            --report-json "$RUNNER_TEMP/orphans.json" \
+            --report-md "$RUNNER_TEMP/orphans.md"
+
+      - name: Write job summary
+        if: always() && hashFiles(format('{0}/orphans.md', runner.temp)) != ''
+        run: cat "$RUNNER_TEMP/orphans.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Tunnel to email service
+        uses: ./.github/actions/fly-private-tunnel
+        with:
+          app: staging-vb-email-service
+
+      - name: Email report
+        env:
+          SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
+          REPORT_JSON_PATH: ${{ runner.temp }}/orphans.json
+          REPORT_MD_PATH: ${{ runner.temp }}/orphans.md
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node .github/scripts/orphaned-services-email.mjs
