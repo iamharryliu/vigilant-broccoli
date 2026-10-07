@@ -70,6 +70,14 @@
       "TITLE": "Weather",
       "DESCRIPTION": "Current weather for your location, deployed on Vercel."
     },
+    "UTILITIES": {
+      "TITLE": "Utilities",
+      "DESCRIPTION": "Searchable page of everyday utilities."
+    },
+    "LINKS": {
+      "TITLE": "Links",
+      "DESCRIPTION": "Public pastebin of personal links and contact details."
+    },
     "EMPLOYEE_HANDLER": {
       "TITLE": "Employee Handler",
       "DESCRIPTION": "Employee management app deployed on Vercel."
@@ -86,6 +94,7 @@
     "UPDATED": "Updated {date}",
     "GROUP_PRODUCTION": "Production",
     "GROUP_STAGING": "Staging",
+    "GROUP_DEMO": "Demo",
     "GROUP_PERSONAL": "Personal Apps",
     "LEGEND_BUTTON_LABEL": "Status legend",
     "LEGEND_TITLE": "Status Legend"
