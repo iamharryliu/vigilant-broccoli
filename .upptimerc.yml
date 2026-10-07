@@ -4,6 +4,8 @@ repo: uptime
 sites:
   - name: staging-docs
     url: https://staging-docs-md.pages.dev/
+  - name: staging-links
+    url: https://staging-links-react.pages.dev/
   - name: staging-cloud-8-skate
     url: https://staging-cloud-8-skate-react.pages.dev/
   - name: staging-harryliu-dev
@@ -50,6 +52,8 @@ sites:
     url: https://production-vb-manager-next-mobile.vercel.app/login
   - name: production-docs
     url: https://docs.harryliu.dev/
+  - name: production-links
+    url: https://links.harryliu.dev/
 
 user-agent: upptime-vigilant-broccoli
 status-website:

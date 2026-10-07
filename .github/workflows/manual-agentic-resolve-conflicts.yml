@@ -1,0 +1,72 @@
+name: manual-agentic-resolve-conflicts
+
+# Thin wrapper over the same sandbox PR update as `manual-agentic-update-pr`
+# with a fixed instruction: merge origin/main into the PR branch and resolve
+# the conflicts. The PR number is the only input.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: 'PR number or URL to resolve merge conflicts for (e.g. "149").'
+        type: string
+        required: true
+      model:
+        description: 'Claude model to run the agent with.'
+        type: choice
+        default: sonnet
+        options:
+          - sonnet
+          - opus
+          - haiku
+      firewall:
+        description: 'In-container egress firewall (turn off if iptables/ipset fails on the runner).'
+        type: choice
+        default: 'on'
+        options:
+          - 'on'
+          - 'off'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: manual-agentic-resolve-conflicts-${{ inputs.pr }}
+  cancel-in-progress: false
+
+jobs:
+  resolve-conflicts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | CLAUDE_CODE_OAUTH_TOKEN ;
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+
+      - name: Resolve conflicts
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
+          AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
+          AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
+          SANDBOX_FIREWALL: ${{ inputs.firewall }}
+          MODEL: ${{ inputs.model }}
+          PR: ${{ inputs.pr }}
+          SANDBOX_MERGE_MAIN: '1'
+        run: |
+          set -euo pipefail
+          INSTRUCTION='origin/main has already been merged into this branch without committing. Resolve every remaining merge conflict (files with conflict markers), keeping the intent of both sides, and make no unrelated changes. Do not commit.'
+          if ! printf '%s' "$PR" | grep -qE '^([0-9]+|https://github\.com/[^ ]+)$'; then
+            echo "ERROR: 'pr' must be a PR number or a github.com URL." >&2
+            exit 1
+          fi
+          bash infrastructure/agent-sandbox/update-pr.sh --model "$MODEL" "$PR" "$INSTRUCTION"

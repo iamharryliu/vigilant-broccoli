@@ -65,6 +65,7 @@ docker run --rm --init --name "vb-update-pr-$(date +%s)" \
   -e GH_TOKEN \
   -e AGENT_GH_APP_ID \
   -e SANDBOX_FIREWALL \
+  -e SANDBOX_MERGE_MAIN \
   -e SANDBOX_ALLOWED_DOMAINS \
   -e SOLVE_MODEL="$MODEL" \
   "$IMAGE" \

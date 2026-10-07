@@ -264,6 +264,21 @@ variable "utilities_pages_subdomain" {
   default = "production-utilities-ui.pages.dev"
 }
 
+variable "links_domain" {
+  type    = string
+  default = "links.harryliu.dev"
+}
+
+variable "links_pages_project" {
+  type    = string
+  default = "production-links-react"
+}
+
+variable "links_pages_subdomain" {
+  type    = string
+  default = "production-links-react.pages.dev"
+}
+
 variable "cloud8skate_domain" {
   type    = string
   default = "cloud8skate.com"
