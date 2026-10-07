@@ -10,7 +10,9 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 ## Running in CI
 
-`pnpm agentic:task:solve <ID...>` runs `solve-todo.sh` locally. The same solve runs in GitHub Actions via the
+Plan- and Develop-phase agents and backlog auditing load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths.
+
+`pnpm agentic-pr-create <ID...>` runs `solve-todo.sh` locally. The same solve runs in GitHub Actions via the
 `manual-agentic-pr-create` workflow (`workflow_dispatch`) — it builds and runs this container on the `ubuntu-24.04`
 runner, so no local machine is needed. `solve-todo.sh` is shared verbatim: when the workflow supplies the selected
 agent credential (`CLAUDE_CODE_OAUTH_TOKEN` for Claude, `AGENT_CODEX_ACCESS_TOKEN` for Codex) plus the GitHub App credentials
@@ -25,7 +27,7 @@ from Vault, the script skips the local Vault-over-SSH load and mints the install
   GitHub-style patch. `solve-todo-runner.sh` prints the diff between `PR_DIFF_BEGIN`/`PR_DIFF_END` markers, `solve-todo.sh`
   collects the markers into a JSON Lines file, and `.github/scripts/agentic-solve-email.mjs` renders and sends it.
 
-`pnpm agentic:rnd "<question>"` runs `create-rnd.sh` locally. The `manual-agentic-pr-create-rnd` workflow runs the same command
+`pnpm agentic-pr-create-rnd "<question>"` runs `create-rnd.sh` locally. The `manual-agentic-pr-create-rnd` workflow runs the same command
 on a hosted runner using the existing Claude and GitHub App credentials from Vault. It researches the question,
 writes a new note under `docs/rnd/`, and opens a PR; changes outside `docs/rnd/` fail the run.
 
@@ -58,16 +60,24 @@ outlive the addresses it captured; if a Codex run dies mid-way on network errors
 `solve-todo-runner.sh` runs it with `GH_TOKEN`/`GITHUB_TOKEN` stripped from the environment. Branching, committing,
 pushing and opening the PR stay with the runner for both agents.
 
+`pnpm agentic-pr-update --with-ci-logs <pr> "<instruction>"` makes `update-pr-runner.sh` collect `gh pr checks` and the failed-step logs (`gh run view --log-failed`) of the branch's recent failing runs, keep the last 20 KB, and add them to the prompt. The agent cannot run `gh` itself, so this is how it sees why CI failed.
+
+`pnpm agentic-pr-update-fix-ci <pr> ["<instruction>"]` runs `fix-pr-ci.sh`, also used by `manual-agentic-pr-update-fix-ci`. It calls `update-pr.sh --with-ci-logs` with a fixed CI-fix instruction and selects the shared CI-fix skill; the optional instruction is appended as extra guidance. It accepts a PR number or URL and optional `--model <model>`.
+
+`pnpm agentic-pr-update-resolve-conflicts <pr>` runs `resolve-pr-conflicts.sh`, also used by `manual-agentic-pr-update-resolve-conflicts`. It accepts a PR number or URL and optional `--model <model>`, enables the merge of `origin/main`, and selects the shared conflict-resolution skill in the existing PR-update runner.
+
 ## Auditing the backlog
 
-`pnpm agentic:task:audit [sections]` runs `audit-todo.sh`, the counterpart to `create-todo.sh`: instead of adding a row it
-re-verifies the ones already there against the current tree, deleting rows whose problem is genuinely fixed and correcting
-rows whose paths, line numbers, counts or scope have drifted. `cron-agentic-todo-audit` runs the same script weekly.
+`pnpm agentic-pr-create-todo "<description>"` runs `create-todo.sh`. It refines the initial request using repo research, writes one actionable TODO entry, and includes the refined prompt in the PR summary. Use `/agentic-pr-create-todo <description>` locally; there is no dedicated Actions workflow.
 
-- Dispatch: `gh workflow run cron-agentic-todo-audit.yml` (optional `-f scope="Security Performance"`, `-f model=`, `-f firewall=off`).
+`pnpm agentic-pr-create-todo-audit` runs `audit-todo.sh`, the counterpart to `create-todo.sh`: instead of adding a row it
+re-verifies the ones already there against the current tree, deleting rows whose problem is genuinely fixed and correcting
+rows whose paths, line numbers, counts or scope have drifted. `cron-agentic-pr-create-todo-audit` runs the same script weekly.
+
+- Dispatch: `gh workflow run cron-agentic-pr-create-todo-audit.yml` (optional `-f model=`, `-f firewall=off`).
 - A clean audit opens no PR — `audit-todo-runner.sh` prints `AUDIT_CLEAN` and exits 0 rather than raising an empty PR.
 - The runner refuses to commit if an id disappeared without being reported as resolved, if an id was added or renumbered,
-  or if any file other than `TODO.md` changed. Ids are the handle `pnpm agentic:task:solve <id>` resolves, so a table
+  or if any file other than `TODO.md` changed. Ids are the handle `pnpm agentic-pr-create <id>` resolves, so a table
   rewrite that quietly drops one is treated as a failure, not a diff to review.
 
 The `CLAUDE.md` and `AGENTS.md` adapters are committed symlinks to `CONTEXT.md`, so the entrypoint's clone carries them and no step regenerates them per branch. The entrypoint still runs the Linux installer to install the shared skills. See [agent support](../../docs/agent-support.md).

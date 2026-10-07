@@ -1,9 +1,9 @@
-name: cron-agentic-todo-audit
+name: cron-agentic-pr-create-todo-audit
 
 # Re-verifies every TODO.md row against the current tree and opens a PR that
 # deletes the resolved ones and corrects the drifted ones. Same container and
 # credentials as `manual-agentic-pr-create`; the local equivalent is
-# `pnpm agentic:todo:audit`. The backlog goes stale silently — rows keep citing
+# `pnpm agentic-pr-create-todo-audit`. The backlog goes stale silently — rows keep citing
 # files that moved and line numbers that shifted — so this runs on a schedule
 # rather than waiting for someone to notice.
 #
@@ -15,10 +15,6 @@ on:
     - cron: '50 4 * * 0'
   workflow_dispatch:
     inputs:
-      scope:
-        description: 'TODO.md sections to audit (e.g. "Security Performance"). Blank audits every section.'
-        type: string
-        default: ''
       model:
         description: 'Claude model to run the agent with.'
         type: choice
@@ -43,7 +39,7 @@ permissions:
 # must not interleave with it, and the branch a half-finished run already
 # pushed is not something a newer run should cancel out from under.
 concurrency:
-  group: cron-agentic-todo-audit
+  group: cron-agentic-pr-create-todo-audit
   cancel-in-progress: false
 
 jobs:
@@ -71,12 +67,6 @@ jobs:
           AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
           SANDBOX_FIREWALL: ${{ inputs.firewall || 'on' }}
           MODEL: ${{ inputs.model || 'sonnet' }}
-          SCOPE: ${{ inputs.scope }}
         run: |
           set -euo pipefail
-          # Section names only — the scope is interpolated into the agent prompt.
-          if [ -n "$SCOPE" ] && ! printf '%s' "$SCOPE" | grep -qE '^[A-Za-z ]*$'; then
-            echo "ERROR: 'scope' must be space-separated TODO.md section names." >&2
-            exit 1
-          fi
-          bash infrastructure/agent-sandbox/audit-todo.sh --model "$MODEL" $SCOPE
+          bash infrastructure/agent-sandbox/audit-todo.sh --model "$MODEL"

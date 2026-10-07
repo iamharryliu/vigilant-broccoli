@@ -21,7 +21,7 @@ done
 
 DESCRIPTION="${ARGS[*]:-}"
 if [ -z "$DESCRIPTION" ]; then
-  echo "Usage: pnpm agentic:task:create [--model <model>] <description>" >&2
+  echo "Usage: pnpm agentic-pr-create-todo [--model <model>] <description>" >&2
   exit 1
 fi
 

@@ -3,7 +3,7 @@
 Shared checklist behind `/refactor-code-cleanup`. Two triggers:
 
 - Manual — run `/refactor-code-cleanup` in an interactive session.
-- Automatic — unattended `agentic:task:solve` runs apply this before finishing, per [CONTEXT.md](../CONTEXT.md).
+- Automatic — unattended `agentic-pr-create` runs apply this before finishing, per [CONTEXT.md](../CONTEXT.md).
 
 ## Checklist
 

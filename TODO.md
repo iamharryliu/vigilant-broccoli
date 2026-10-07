@@ -1,6 +1,6 @@
 # Repo Audit — Outstanding Issues
 
-Backlog grouped by category. Each section is a markdown table (`ID | Priority | Description | Recommended Fix`), ordered by priority. Priority values: **P1** (highest) → **P2** → **P3**, then **NA** (nice-to-have or deliberately-accepted risk). IDs are stable 6-hex handles; `pnpm agentic:task:solve <id>` resolves an item from its row.
+Backlog grouped by category. Each section is a markdown table (`ID | Priority | Description | Recommended Fix`), ordered by priority. Priority values: **P1** (highest) → **P2** → **P3**, then **NA** (nice-to-have or deliberately-accepted risk). IDs are stable 6-hex handles; `pnpm agentic-pr-create <id>` resolves an item from its row.
 
 ## Table of Contents
 
