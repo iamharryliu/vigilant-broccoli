@@ -28,7 +28,7 @@ import {
   VB_REPO_PATH,
 } from '@vigilant-broccoli/personal-common-js';
 
-const LINK_GROUP_SUBGROUP = {
+export const LINK_GROUP_SUBGROUP = {
   UTILITY: 'Utility',
   CAREER: 'Career',
   LEISURE: 'Leisure',
