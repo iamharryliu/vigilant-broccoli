@@ -128,8 +128,8 @@ tokens on every session in that subtree.
 - Before moving or deleting context, run `bash setup/common/sync-agent-support.sh --clean`. Move or delete its `CONTEXT.md`, then rerun the script to regenerate the ignored adapters.
 - Adding or retiring a nuance is two writes, both inside the one file you are
   already editing: the entry and its Table of Contents line.
-- Directory-scoped `CONTEXT.md` files are snapshotted into the GitHub Pages
-  Agent Context site via the `{ "path": ".", "filename": "CONTEXT.md" }` source
+- Directory-scoped `CONTEXT.md` files are snapshotted into the Agent
+  Context site (`context.harryliu.dev`) via the `{ "path": ".", "filename": "CONTEXT.md" }` source
   in
-  `projects/nx-workspace/apps/ui/pages-index/claude-context.snapshot.config.json`,
+  `projects/nx-workspace/apps/ui/context-md/snapshot.config.json`,
   so a new one is picked up with no config change.

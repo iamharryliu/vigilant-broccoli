@@ -12,7 +12,7 @@ on:
     paths:
       - 'projects/nx-workspace/**'
       - '.github/workflows/deploy-preview.yml'
-      # Snapshot sources rendered by pages-index (agent context) and docs-md (notes)
+      # Snapshot sources rendered by context-md (agent context) and docs-md (notes)
       - 'CONTEXT.md'
       - 'TODO.md'
       - 'docs/**'
@@ -74,7 +74,7 @@ jobs:
           else
             PROJECTS_JSON=$(pnpm exec nx show projects --affected --withTarget=deploy:preview --base=$NX_BASE --head=$NX_HEAD --json)
             if [[ "$AGENT_CONTEXT_CHANGED" -gt 0 ]]; then
-              PROJECTS_JSON=$(echo "$PROJECTS_JSON" | jq -c '. + ["pages-index"]')
+              PROJECTS_JSON=$(echo "$PROJECTS_JSON" | jq -c '. + ["context-md"]')
             fi
             if [[ "$NOTES_CHANGED" -gt 0 ]]; then
               PROJECTS_JSON=$(echo "$PROJECTS_JSON" | jq -c '. + ["docs-md"]')

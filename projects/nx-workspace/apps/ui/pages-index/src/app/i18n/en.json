@@ -37,10 +37,6 @@
       "DESCRIPTION": "How repository context, docs, and shared skills link together."
     }
   },
-  "CLAUDE_CONTEXT_PAGE": {
-    "TITLE": "Agent Context",
-    "LOADING": "Loading viewer…"
-  },
   "WEB_APPLICATIONS_PAGE": {
     "TITLE": "Web Applications",
     "SECTION_APPS": "Apps",
@@ -52,6 +48,10 @@
     "CLOUD_8_SKATE": {
       "TITLE": "Cloud8Skate",
       "DESCRIPTION": "Toronto skate community."
+    },
+    "CONTEXT_MD": {
+      "TITLE": "Agent Context",
+      "DESCRIPTION": "Browse the repo's agent context, docs, and shared skills."
     },
     "DOCS_MD": {
       "TITLE": "Docs (Markdown)",

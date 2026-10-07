@@ -13,7 +13,6 @@ import { NpmPackageReadmePage } from './pages/NpmPackageReadmePage';
 import { WebApplicationsPage } from './pages/WebApplicationsPage';
 import { ApiServicesPage } from './pages/ApiServicesPage';
 import { ApiServiceDocsPage } from './pages/ApiServiceDocsPage';
-import { ClaudeContextPage } from './pages/ClaudeContextPage';
 
 export function App() {
   return (
@@ -46,7 +45,6 @@ export function App() {
               path="/api-services/:service"
               element={<ApiServiceDocsPage />}
             />
-            <Route path="/claude-context" element={<ClaudeContextPage />} />
           </Routes>
         </HashRouter>
       </div>

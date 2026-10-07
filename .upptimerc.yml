@@ -4,6 +4,8 @@ repo: uptime
 sites:
   - name: staging-docs
     url: https://staging-docs-md.pages.dev/
+  - name: staging-context
+    url: https://staging-context-md.pages.dev/
   - name: staging-links
     url: https://staging-links-react.pages.dev/
   - name: staging-cloud-8-skate
@@ -64,6 +66,8 @@ sites:
     url: https://production-vb-manager-next-mobile.vercel.app/login
   - name: production-docs
     url: https://docs.harryliu.dev/
+  - name: production-context
+    url: https://context.harryliu.dev/
   - name: production-links
     url: https://links.harryliu.dev/
   - name: demo-employee-handler-ui

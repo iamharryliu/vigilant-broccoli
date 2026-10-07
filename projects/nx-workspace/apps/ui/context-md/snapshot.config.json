@@ -1,6 +1,6 @@
 {
   "root": "../../../../..",
-  "outDir": "public/claude-context",
+  "outDir": "public",
   "sources": [
     "CONTEXT.md",
     "TODO.md",

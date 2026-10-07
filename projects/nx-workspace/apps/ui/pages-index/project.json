@@ -31,13 +31,6 @@
         "command": "tsx scripts/generate-repo-timeline.ts"
       }
     },
-    "build-claude-context-snapshot": {
-      "executor": "nx:run-commands",
-      "cache": false,
-      "options": {
-        "command": "node scripts/build-docs-snapshot.mjs apps/ui/pages-index/claude-context.snapshot.config.json"
-      }
-    },
     "check-i18n-keys": {
       "executor": "nx:run-commands",
       "cache": true,
@@ -53,8 +46,7 @@
       "dependsOn": [
         "check-i18n-keys",
         "generate-openapi",
-        "generate-repo-timeline",
-        "build-claude-context-snapshot"
+        "generate-repo-timeline"
       ],
       "outputs": [
         "{projectRoot}/{options.outDir}",
@@ -76,8 +68,7 @@
     "serve": {
       "dependsOn": [
         "generate-openapi",
-        "generate-repo-timeline",
-        "build-claude-context-snapshot"
+        "generate-repo-timeline"
       ],
       "defaultConfiguration": "development",
       "configurations": {
@@ -93,7 +84,6 @@
           "mkdir -p ../../../_site",
           "cp -R ../../../dist/pages-index/. ../../../_site/",
           "cp public/repo-timeline.json ../../../_site/repo-timeline.json",
-          "cp -R public/claude-context ../../../_site/claude-context",
           "echo projects.harryliu.dev > ../../../_site/CNAME"
         ],
         "parallel": false,
