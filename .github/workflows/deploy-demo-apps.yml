@@ -48,3 +48,12 @@ jobs:
           CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
         run: pnpm exec nx affected -t deploy:demo
+
+      - name: Summarize deployed apps
+        if: success()
+        working-directory: ./projects/nx-workspace
+        env:
+          DEPLOY_ENVIRONMENT: demo
+        run: |
+          DEPLOY_PROJECTS=$(pnpm exec nx show projects --affected --withTarget=deploy:demo | tr '\n' ',') \
+            node ../../.github/scripts/deploy-summary.mjs

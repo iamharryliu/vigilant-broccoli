@@ -106,3 +106,10 @@ jobs:
             exit 1
           fi
           pnpm exec nx run-many -t "$DEPLOY_TARGET" --projects="$DEPLOY_PROJECT"
+
+      - name: Summarize deployed apps
+        if: success()
+        env:
+          DEPLOY_PROJECTS: ${{ github.event.inputs.project }}
+          DEPLOY_ENVIRONMENT: ${{ github.event.inputs.environment }}
+        run: node .github/scripts/deploy-summary.mjs
