@@ -10,7 +10,7 @@ Browsable sandbox of the shared `react-lib` components and `react-utility` utili
 ## Deployment URLs
 
 - Staging: `staging-component-library.pages.dev`
-- Production: [component-library.harryliu.dev](https://component-library.harryliu.dev) (Cloudflare Pages `production-component-library`)
+- Production: [components.harryliu.dev](https://components.harryliu.dev) (Cloudflare Pages `production-component-library`)
 
 ## Stack
 

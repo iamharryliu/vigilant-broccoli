@@ -1,4 +1,4 @@
-# component-library.harryliu.dev — Cloudflare Pages site (project + deploys owned
+# components.harryliu.dev — Cloudflare Pages site (project + deploys owned
 # by the nx `component-library` deploy targets via wrangler). Points at the
 # production-component-library project. Terraform owns the custom domain and its DNS.
 

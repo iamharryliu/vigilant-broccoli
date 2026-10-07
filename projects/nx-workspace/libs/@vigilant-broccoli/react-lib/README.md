@@ -9,7 +9,7 @@ Shared React component library.
 
 ## Deployment URLs
 
-- [Component Library](https://component-library.harryliu.dev/)
+- [Component Library](https://components.harryliu.dev/)
 
 ## Stack
 

@@ -99,7 +99,7 @@ export function HomePage() {
           </li>
           <li>
             <CardLink
-              href="https://component-library.harryliu.dev/"
+              href="https://components.harryliu.dev/"
               title={t('HOME.UI.TITLE')}
               description={t('HOME.UI.DESCRIPTION')}
               icon={<LayoutGrid className={ICON_CLASS} />}

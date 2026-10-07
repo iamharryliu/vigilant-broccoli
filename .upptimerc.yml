@@ -53,7 +53,7 @@ sites:
   - name: production-service-manager
     url: https://api.harryliu.dev/
   - name: production-component-library
-    url: https://component-library.harryliu.dev/
+    url: https://components.harryliu.dev/
   - name: production-utilities
     url: https://utilities.harryliu.dev/
   - name: production-whiteboard

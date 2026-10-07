@@ -266,7 +266,7 @@ variable "utilities_pages_subdomain" {
 
 variable "component_library_domain" {
   type    = string
-  default = "component-library.harryliu.dev"
+  default = "components.harryliu.dev"
 }
 
 variable "component_library_pages_project" {
