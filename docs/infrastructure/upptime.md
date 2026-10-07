@@ -47,7 +47,7 @@ These assets supply the README's all-time, day, week, month, and year metrics ([
 ## Setup and migration
 
 1. For a new monitoring repository, set `upptime_migration_complete = false` to keep schedules disabled while initializing it. Run `pnpm tf:plan`, then apply reviewed changes locally with `pnpm tf:apply`. Terraform creates the public repository, action restrictions, dedicated sync identity, source variables, and Vault role through post-apply. An App ID of zero keeps configuration sync disabled.
-2. Register a private GitHub App with Contents and Workflows read/write, webhooks inactive, installed only on the monitoring repository. Store its key using `pnpm upptime:sync:store-key /absolute/path/app-key.pem` and set its public ID as `upptime_sync_gh_app_id` in `variables.tf`. Apply that change locally. No new GitHub Actions secret is introduced.
+2. Register a private GitHub App with Contents and Workflows read/write, webhooks inactive, installed only on the monitoring repository. Store its key in `kv/upptime-sync` as described in [the rotation roadmap](./secret-rotation-implementation.md#upptime_sync_gh_app_private_key--guided-rotation-not-yet-built) and set its public ID as `upptime_sync_gh_app_id` in `variables.tf`. Apply that change locally. No new GitHub Actions secret is introduced.
 3. If importing an existing monitoring archive, authenticate local GitHub/GCP tooling and fetch complete source history before exporting. The retained `history/` in vigilant-broccoli is an archive of the old implementation; ongoing history lives in `iamharryliu/uptime`.
 
    ```bash
@@ -58,7 +58,7 @@ These assets supply the README's all-time, day, week, month, and year metrics ([
 
    Fetch unshallow history first if needed. Import into an uninitialized monitoring dataset before running checks. The importer uses a temporary bare repo, preserves target files, refuses existing history, and pushes only a fast-forward merge. `iamharryliu/uptime` is already populated; do not re-import.
 
-4. Run `pnpm gh:actions:sync-upptime`, then manually run both monitoring workflows. Verify refreshed history, `history/summary.json`, all services on Pages Index `/#/status`, and README graphs and badges. Subscribe to incident issues in the new repository when configuring notifications.
+4. Run `gh workflow run ci-sync-upptime --ref main`, then manually run both monitoring workflows. Verify refreshed history, `history/summary.json`, all services on Pages Index `/#/status`, and README graphs and badges. Subscribe to incident issues in the new repository when configuring notifications.
 5. Set `upptime_migration_complete = true` and apply the reviewed plan to enable schedules. This flag now controls only the monitoring repository's schedule gate. Verify a successful scheduled uptime run; GitHub may delay cron jobs. Application credentials and observability infrastructure require no changes.
 
 App creation and installation are account setup; Terraform manages repository configuration.
@@ -69,10 +69,10 @@ Keep sync App `5202397`, installed only on `uptime`. Refresh the Bitwarden backu
 
 - Edit endpoints in the root `.upptimerc.yml`; a push to `main` syncs config automatically. Edit runtime workflows under `infrastructure/upptime/workflows/`; `.github/workflows/ci-sync-upptime.yml` publishes them to the monitoring repository.
 - `pnpm upptime:config:render /private/tmp/upptime-config` renders the allowlist into an empty external directory without credentials or network access.
-- `pnpm gh:actions:sync-upptime` republishes configuration on demand. A no-change sync produces no commit.
+- `gh workflow run ci-sync-upptime --ref main` republishes configuration on demand. A no-change sync produces no commit.
 - New endpoint names change Upptime's inferred slugs; preserve names or specify stable slugs when renaming to keep the existing history ([Upptime configuration](https://upptime.js.org/docs/configuration/)).
 - Watch sync failures and monitoring run freshness. GitHub may delay/drop scheduled jobs or disable schedules after 60 days of inactivity ([GitHub schedules](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/disable-and-enable-workflows)); history commits normally provide activity, but prolonged failures need attention. This design does not add an independent watchdog.
-- Rotate the sync App key by generating a replacement, storing it with `upptime:sync:store-key`, verifying a sync, and revoking the previous key.
+- Rotate the sync App key by generating a replacement, storing it in Vault ([manual steps](./secret-rotation-implementation.md#upptime_sync_gh_app_private_key--guided-rotation-not-yet-built)), verifying a sync, and revoking the previous key.
 - Grafana, Loki, Alloy, and the observability VM health timer require no changes; `/health` remains a monitored endpoint.
 
 ## Security limits
