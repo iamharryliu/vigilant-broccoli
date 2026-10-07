@@ -12,11 +12,6 @@ concurrency:
   group: deploy-demo-apps
   cancel-in-progress: false
 
-env:
-  EMPLOYEE_HANDLER_IMAGE: iamharryliu/employee-handler-next
-  EMPLOYEE_HANDLER_FLY_APP: staging-employee-handler-ui
-  EMPLOYEE_HANDLER_FLY_CONFIG: projects/nx-workspace/deployment-configs/fly-configs/staging-employee-handler-ui.toml
-
 jobs:
   employee-handler-ui:
     if: ${{ github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true' && github.event.client_payload.environment == 'staging' }}
@@ -25,35 +20,18 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
+      - uses: ./.github/actions/setup-nx-workspace
+
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         with:
           gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-          secrets: |
-            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
-
-      - uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # 1.6
-
-      # `deploy` only builds the image for runs where the app is affected, so
-      # a commit that skipped it has no sha tag; `latest` is then the image
-      # the previous deploy pushed.
-      - name: Resolve deployed image
-        id: image
-        env:
-          COMMIT_SHA: ${{ github.event.client_payload.commit_sha }}
-        run: |
-          IMAGE="$EMPLOYEE_HANDLER_IMAGE:$COMMIT_SHA"
-          if ! docker manifest inspect "$IMAGE" >/dev/null 2>&1; then
-            IMAGE="$EMPLOYEE_HANDLER_IMAGE:latest"
-          fi
-          echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+          export_token: 'true'
 
       - name: Deploy employee-handler-ui
+        working-directory: ./projects/nx-workspace
         env:
-          FLY_API_TOKEN: ${{ env.FLY_API_TOKEN }}
-          IMAGE: ${{ steps.image.outputs.image }}
-        run: |
-          flyctl status -a "$EMPLOYEE_HANDLER_FLY_APP" >/dev/null 2>&1 \
-            || flyctl apps create "$EMPLOYEE_HANDLER_FLY_APP"
-          flyctl deploy --config "$EMPLOYEE_HANDLER_FLY_CONFIG" --image "$IMAGE"
+          VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
+          VAULT_ADDR: https://vault.harryliu.dev
+        run: pnpm exec nx run employee-handler-ui:deploy:demo
