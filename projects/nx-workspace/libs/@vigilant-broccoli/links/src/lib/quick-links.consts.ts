@@ -1361,8 +1361,8 @@ const UI_APP_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
   },
   {
-    label: 'VibeCheck Lite',
-    target: 'https://staging-vibecheck-lite-next.vercel.app/',
+    label: 'Weather',
+    target: 'https://staging-weather-next.vercel.app/',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
   },

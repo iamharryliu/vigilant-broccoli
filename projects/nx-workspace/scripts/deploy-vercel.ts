@@ -304,14 +304,14 @@ async function main() {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
       settings: NX_VERCEL_SETTINGS('whiteboard', 'dist/apps/whiteboard/.next'),
     },
-    'vibecheck-lite-next': {
+    'weather-next': {
       hardcodedSecrets: {
         VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
       },
-      envExamplePath: 'apps/ui/vibecheck-lite-next/.env.example',
+      envExamplePath: 'apps/ui/weather-next/.env.example',
       settings: NX_VERCEL_SETTINGS(
-        'vibecheck-lite-next',
-        'dist/apps/ui/vibecheck-lite-next/.next',
+        'weather-next',
+        'dist/apps/ui/weather-next/.next',
       ),
     },
     'vb-manager-next-mobile': {

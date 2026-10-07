@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 const NOMINATIM_REVERSE_URL = 'https://nominatim.openstreetmap.org/reverse';
 // Nominatim's usage policy rejects requests without an identifying User-Agent.
 const NOMINATIM_USER_AGENT =
-  'vibecheck-lite-next (https://vibecheck-lite.harryliu.dev)';
+  'weather-next (https://weather.harryliu.dev)';
 const NOMINATIM_CITY_ZOOM = '10';
 const NOMINATIM_FORMAT = 'jsonv2';
 const NOMINATIM_LANGUAGE = 'en';

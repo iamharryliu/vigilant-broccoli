@@ -72,7 +72,7 @@ queue_http_check "harryliu.dev" "https://harryliu.dev"
 queue_http_check "cloud8skate.com" "https://cloud8skate.com"
 queue_http_check "staging-hearth" "https://staging-hearth.vercel.app"
 queue_http_check "findme" "https://findme-kohl.vercel.app"
-queue_http_check "vibecheck-lite-next" "https://staging-vibecheck-lite-next.vercel.app"
+queue_http_check "weather-next" "https://staging-weather-next.vercel.app"
 queue_http_check "git.harryliu.dev" "https://git.harryliu.dev"
 
 wait

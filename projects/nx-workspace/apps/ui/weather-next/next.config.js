@@ -15,7 +15,7 @@ const options = {
  **/
 const nextConfig = {
   nx: { ...options },
-  distDir: '../../../dist/apps/ui/vibecheck-lite-next/.next',
+  distDir: '../../../dist/apps/ui/weather-next/.next',
   agentRules: false,
 };
 const plugins = [withNx];

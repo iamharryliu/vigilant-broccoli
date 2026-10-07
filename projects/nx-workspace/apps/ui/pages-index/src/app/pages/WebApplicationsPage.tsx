@@ -54,10 +54,10 @@ export function WebApplicationsPage() {
           </li>
           <li>
             <CardLink
-              href="https://vibecheck-lite.harryliu.dev/"
-              title={t('WEB_APPLICATIONS_PAGE.VIBECHECK_LITE.TITLE')}
+              href="https://weather.harryliu.dev/"
+              title={t('WEB_APPLICATIONS_PAGE.WEATHER.TITLE')}
               description={t(
-                'WEB_APPLICATIONS_PAGE.VIBECHECK_LITE.DESCRIPTION',
+                'WEB_APPLICATIONS_PAGE.WEATHER.DESCRIPTION',
               )}
             />
           </li>

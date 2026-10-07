@@ -1,7 +1,7 @@
 {
-  "name": "vibecheck-lite-next",
+  "name": "weather-next",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/ui/vibecheck-lite-next",
+  "sourceRoot": "apps/ui/weather-next",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -16,11 +16,11 @@
         { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true }
       ],
       "outputs": [
-        "{workspaceRoot}/dist/apps/ui/vibecheck-lite-next/.next/!(cache)/**/*",
-        "{workspaceRoot}/dist/apps/ui/vibecheck-lite-next/.next/!(cache)"
+        "{workspaceRoot}/dist/apps/ui/weather-next/.next/!(cache)/**/*",
+        "{workspaceRoot}/dist/apps/ui/weather-next/.next/!(cache)"
       ],
       "options": {
-        "cwd": "apps/ui/vibecheck-lite-next",
+        "cwd": "apps/ui/weather-next",
         "tty": false,
         "command": "next build --webpack"
       },
@@ -32,7 +32,7 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "cwd": "apps/ui/vibecheck-lite-next",
+        "cwd": "apps/ui/weather-next",
         "command": "next dev --webpack",
         "env": {
           "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev"
@@ -49,13 +49,13 @@
     "deploy": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "VERCEL_PROJECT_ID=staging-vibecheck-lite-next VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts vibecheck-lite-next staging"
+        "command": "VERCEL_PROJECT_ID=staging-weather-next VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts weather-next staging"
       }
     },
     "deploy:production": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "VERCEL_PROJECT_ID=production-vibecheck-lite-next VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts vibecheck-lite-next production"
+        "command": "VERCEL_PROJECT_ID=production-weather-next VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts weather-next production"
       }
     }
   }

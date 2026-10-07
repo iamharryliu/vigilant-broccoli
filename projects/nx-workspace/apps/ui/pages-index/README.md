@@ -33,7 +33,7 @@
     - npm → `/open-source/npm` (published `@vigilant-broccoli/*` packages)
       - `/open-source/npm/:pkg` (README fetched from `registry.npmjs.org`, links out to the npm package)
   - `/web-applications` - Web applications
-    - Apps → harryliu.dev, Cloud8Skate, Docs (Markdown), FindMe, Whiteboard, VibeCheck Lite (external)
+    - Apps → harryliu.dev, Cloud8Skate, Docs (Markdown), FindMe, Whiteboard, Weather (external)
     - Demo → Employee Handler
   - `/api-services` — API Services
     - `/api-services/:service` — Swagger UI rendered in-app against a spec published at build time to `public/openapi/<service>.json` by the `generate-openapi` target (`scripts/generate-openapi-specs.ts`). All four services (llm-service, bucket-service, email-service, email-subscription-service) are private-only Fly apps, so their own `/docs` is unreachable from the internet — this page is the only way to browse them. Swagger UI itself loads from a pinned jsDelivr CDN rather than bundling `swagger-ui-dist`.

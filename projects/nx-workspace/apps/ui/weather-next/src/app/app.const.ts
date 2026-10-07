@@ -1,4 +1,4 @@
-export const APP_NAME = 'VibeCheck Lite';
+export const APP_NAME = 'Weather';
 
 export const PAGE_TITLE = {
   HOME: 'Current Weather',
