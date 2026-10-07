@@ -1,13 +1,6 @@
 import { useEffect } from 'react';
 import { useDocumentTitle } from '@vigilant-broccoli/react-lib';
-import {
-  Route,
-  Routes,
-  useLocation,
-  useMatch,
-  Navigate,
-} from 'react-router-dom';
-import { AppProvider } from './core/services/app-context';
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './core/services/theme-context';
 import { initAnalytics, usePageviewTracking } from './core/services/analytics';
 import {
@@ -107,24 +100,21 @@ function PageviewTracker() {
 }
 
 export function App() {
-  useMatch('/');
   const location = useLocation();
   return (
     <ThemeProvider>
-      <AppProvider>
-        <SeoUpdater />
-        <PageviewTracker />
-        <div key={location.pathname} className="animate-fade-in">
-          <Routes>
-            <Route path={INDEX_ROUTE.path} element={<HomePage />} />
-            <Route path={ABOUT_ROUTE.path} element={<AboutPage />} />
-            <Route path={CONTACT_ROUTE.path} element={<ContactPage />} />
-            <Route path={CALENDAR_ROUTE.path} element={<CalendarPage />} />
-            <Route path={LINK_TREE_ROUTE.path} element={<LinkTreePage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </div>
-      </AppProvider>
+      <SeoUpdater />
+      <PageviewTracker />
+      <div key={location.pathname} className="animate-fade-in">
+        <Routes>
+          <Route path={INDEX_ROUTE.path} element={<HomePage />} />
+          <Route path={ABOUT_ROUTE.path} element={<AboutPage />} />
+          <Route path={CONTACT_ROUTE.path} element={<ContactPage />} />
+          <Route path={CALENDAR_ROUTE.path} element={<CalendarPage />} />
+          <Route path={LINK_TREE_ROUTE.path} element={<LinkTreePage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
     </ThemeProvider>
   );
 }

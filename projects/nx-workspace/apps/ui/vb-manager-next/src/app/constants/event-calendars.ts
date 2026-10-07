@@ -9,11 +9,6 @@ export const EVENT_SOURCE_TYPE = {
 export type EventSourceType =
   (typeof EVENT_SOURCE_TYPE)[keyof typeof EVENT_SOURCE_TYPE];
 
-export const EVENT_SOURCE_TYPE_LABEL: Record<EventSourceType, string> = {
-  [EVENT_SOURCE_TYPE.FACEBOOK_GROUP]: 'Facebook group',
-  [EVENT_SOURCE_TYPE.FACEBOOK_PAGE]: 'Facebook page',
-};
-
 export const EVENT_SOURCE_TYPES = Object.values(EVENT_SOURCE_TYPE);
 
 const FACEBOOK_GROUP_URL_PATTERN =
