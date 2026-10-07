@@ -20,6 +20,7 @@ const PROJECT_HOSTING = {
     name: 'harryliu-dev-react',
   },
   'docs-md': { platform: 'pages', name: 'docs-md' },
+  'context-md': { platform: 'pages', name: 'context-md' },
   'utilities-ui': { platform: 'pages', name: 'utilities-ui' },
   'links-react': { platform: 'pages', name: 'links-react' },
   'weather-next': { platform: 'vercel', name: 'weather-next' },

@@ -249,6 +249,21 @@ variable "docs_pages_subdomain" {
   default = "production-docs-md.pages.dev"
 }
 
+variable "context_domain" {
+  type    = string
+  default = "context.harryliu.dev"
+}
+
+variable "context_pages_project" {
+  type    = string
+  default = "production-context-md"
+}
+
+variable "context_pages_subdomain" {
+  type    = string
+  default = "production-context-md.pages.dev"
+}
+
 variable "utilities_domain" {
   type    = string
   default = "utilities.harryliu.dev"

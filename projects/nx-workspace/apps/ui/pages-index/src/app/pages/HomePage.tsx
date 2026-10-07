@@ -40,7 +40,7 @@ export function HomePage() {
           </li>
           <li>
             <CardLink
-              href="#/claude-context"
+              href="https://context.harryliu.dev/"
               title={t('HOME.CLAUDE_CONTEXT.TITLE')}
               description={t('HOME.CLAUDE_CONTEXT.DESCRIPTION')}
               icon={<Bot className={ICON_CLASS} />}

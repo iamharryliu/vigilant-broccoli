@@ -17,7 +17,7 @@
   - lucide-react
 - Internal libs
   - `react-lib`
-  - `react-utility` (`MarkdownViewer` — marked + DOMPurify; `DocsViewer` + `createDocsSnapshotSource` for the Agent Context page)
+  - `react-utility` (`MarkdownViewer` — marked + DOMPurify)
 - Cloud services
   - GitHub Pages
 
@@ -33,15 +33,14 @@
     - npm → `/open-source/npm` (published `@vigilant-broccoli/*` packages)
       - `/open-source/npm/:pkg` (README fetched from `registry.npmjs.org`, links out to the npm package)
   - `/web-applications` - Web applications
-    - Apps → harryliu.dev, Cloud8Skate, Docs (Markdown), Utilities, Component Library, Links, FindMe, Whiteboard, Weather (external)
+    - Apps → harryliu.dev, Cloud8Skate, Docs (Markdown), Agent Context, Utilities, Component Library, Links, FindMe, Whiteboard, Weather (external)
     - Demo → Employee Handler
   - `/api-services` — API Services
     - `/api-services/:service` — Swagger UI rendered in-app against a spec published at build time to `public/openapi/<service>.json` by the `generate-openapi` target (`scripts/generate-openapi-specs.ts`). All five services (llm-service, bucket-service, email-service, email-subscription-service, employee-handler) are private-only (the first four are private Fly apps; employee-handler is a library-hosted contract with no public `/docs`), so this page is the only way to browse them. The employee-handler spec is generated from the zod contract in `libs/@vigilant-broccoli/employee-handler`, whose sources are `generate-openapi` inputs. Swagger UI itself loads from a pinned jsDelivr CDN rather than bundling `swagger-ui-dist`.
-  - `/claude-context` — Agent Context, a standalone full-viewport page (no breadcrumb header, like `docs-md`) that the home card opens in a new tab (react-utility's `DocsViewer` — file tree, search, link graph — over a build-time snapshot of the agent context: root `CONTEXT.md`, `TODO.md`, `docs/**`, `setup/dotfiles/agent-skills/**`, and every other `CONTEXT.md`. Agent adapter symlinks are excluded to avoid duplicate documents. Sources are listed in `claude-context.snapshot.config.json`; `scripts/build-docs-snapshot.mjs` writes `public/claude-context/` (gitignored) via the `build-claude-context-snapshot` target and it is copied into `_site` on each Pages deploy. Links to files outside the snapshot are rewritten to `docs.harryliu.dev` for `notes/` and to the GitHub blob URL for everything else. Selected file and heading anchor live inside the hash route — `#/claude-context?file=<path>#<heading>` — since `HashRouter` owns the window fragment)
   - UI → `components.harryliu.dev` (external)
 
 ## Agent Context
 
 - Page shells share one container width and gutter through `src/app/consts/layout.ts` (`PAGE_CLASS`, `FULL_HEIGHT_PAGE_CLASS`, `WIDE_FULL_HEIGHT_PAGE_CLASS`). A new page uses one of those rather than its own `max-w-*`/`px-*` combination, so the content column does not shift between routes.
 - When adding, removing, or changing a route, card link, or external destination, update the `## Page Navigation` section above so it stays in sync with `src/app/app.tsx`, `src/app/consts/breadcrumbs.ts`, and the home-page cards.
-- When a new kind of agent-context file appears in the repo (a new place `CONTEXT.md` points at, a new skills/commands directory), add it to `claude-context.snapshot.config.json` `sources` and to the matching `paths`/`AGENT_CONTEXT_CHANGED` patterns in `.github/workflows/deploy.yml` so the Agent Context page picks it up and redeploys on change.
+- When a new kind of agent-context file appears in the repo (a new place `CONTEXT.md` points at, a new skills/commands directory), add it to the `context-md` app's `snapshot.config.json` `sources` and to the matching `paths` in `.github/workflows/deploy-context-md.yml` and `AGENT_CONTEXT_CHANGED` patterns in `.github/workflows/deploy-preview.yml` so context.harryliu.dev picks it up and redeploys on change.

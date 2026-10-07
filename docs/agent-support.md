@@ -42,7 +42,7 @@ Two constraints follow from the adapters being tracked symlinks:
 
 A Windows checkout without symlink support materializes each adapter as a text file containing the string `CONTEXT.md`; this repository targets macOS and Linux only.
 
-The context viewer snapshots only the canonical context and shared skills, so each document appears once. Its existing `/claude-context` URL remains available.
+The context viewer snapshots only the canonical context and shared skills, so each document appears once. It is served at `context.harryliu.dev`.
 
 ## Installing skills
 
