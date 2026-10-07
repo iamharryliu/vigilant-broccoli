@@ -11,7 +11,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   cheatsheet:tmux-nvim        Print the tmux/nvim keybinding cheatsheet
   cheatsheet:aliases          Print the shell alias cheatsheet
   repo-stats                  Regenerate the managed repo-stats line in README.md and about.md
-  repo-stats:check            Fail if the managed repo-stats line is stale
+  repo-stats:check            Fail if a managed repo-stats copy (README, about, resume) is stale
 
 📈 UPTIME
   upptime:config:render <dir> Render managed monitoring files locally (empty external directory)

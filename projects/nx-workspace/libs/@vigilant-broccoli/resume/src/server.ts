@@ -4,6 +4,8 @@ import type { ResumeData, ResumeWorkExperience } from './resume.types';
 
 const LINK_COLOR = '#1155cc';
 const HEADING_COLOR = '#3d85c6';
+const MAX_PAGES = 1;
+const PDF_PAGE_PATTERN = /\/Type\s*\/Page(?![a-z])/g;
 const SKILL_SEPARATOR = ' · ';
 const GOOGLE_FONTS_URL =
   'https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap';
@@ -114,7 +116,18 @@ export async function generateResumePdfBuffer(
   try {
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: 'networkidle' });
-    return await page.pdf({ preferCSSPageSize: true, printBackground: true });
+    const pdf = await page.pdf({
+      preferCSSPageSize: true,
+      printBackground: true,
+    });
+    const pageCount =
+      pdf.toString('latin1').match(PDF_PAGE_PATTERN)?.length ?? 0;
+    if (pageCount > MAX_PAGES) {
+      throw new Error(
+        `Resume spans ${pageCount} pages; the limit is ${MAX_PAGES}. Shorten resume.json.`,
+      );
+    }
+    return pdf;
   } finally {
     await browser.close();
   }

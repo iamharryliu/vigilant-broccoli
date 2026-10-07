@@ -29,8 +29,8 @@ repos:
   - repo: local
     hooks:
       - id: repo-stats
-        name: Check the managed repo-stats line.
-        entry: node scripts/node/repo-stats.mjs --check
+        name: Refresh the managed repo-stats counts.
+        entry: node scripts/node/repo-stats.mjs
         language: system
         pass_filenames: false
         always_run: true
