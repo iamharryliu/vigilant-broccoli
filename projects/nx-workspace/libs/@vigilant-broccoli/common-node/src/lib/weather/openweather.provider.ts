@@ -25,7 +25,7 @@ interface OpenWeatherCondition {
 
 interface OpenWeatherCurrentResponse {
   dt: number;
-  main: { temp: number; feels_like: number };
+  main: { temp: number; feels_like: number; humidity: number };
   wind: { speed: number };
   rain?: { '1h'?: number };
   snow?: { '1h'?: number };
@@ -130,6 +130,7 @@ const fetchJson = async <T>(url: string): Promise<T> => {
 const toCurrent = (data: OpenWeatherCurrentResponse): CurrentWeather => ({
   temperatureC: data.main.temp,
   feelsLikeC: data.main.feels_like,
+  humidityPercent: data.main.humidity,
   windSpeedKph: toKph(data.wind.speed),
   precipitationMm: (data.rain?.['1h'] ?? 0) + (data.snow?.['1h'] ?? 0),
   condition: toConditionFromOpenWeatherId(data.weather[0].id),

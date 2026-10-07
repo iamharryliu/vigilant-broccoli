@@ -63,6 +63,7 @@ import pastebinEn from './demos/pastebin/en.json';
 import { QuickLinksDemo } from './demos/QuickLinksDemo';
 import { ScrollTimelineDemo } from './demos/ScrollTimelineDemo';
 import { TasksDemo } from './demos/TasksDemo';
+import { WeatherDisplayDemo } from './demos/WeatherDisplayDemo';
 
 const CRUD_STORAGE_KEYS = {
   IS_CARDS: 'component-sandbox-crud-is-cards',
@@ -326,6 +327,14 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
       'User leaderboard with sortable metrics, column toggles, paging and live rank changes.',
     category: CATEGORY.COMPONENTS,
     content: <UserLeaderboardDemo />,
+  },
+  {
+    id: 'weather-display',
+    label: 'Weather Display',
+    description:
+      'The weather.harryliu.dev card, seeded from live Open-Meteo weather for Toronto, with controls for every value, the condition, day/night, units and preparation badges.',
+    category: CATEGORY.COMPONENTS,
+    content: <WeatherDisplayDemo />,
   },
 ];
 
