@@ -15,7 +15,7 @@ What every UI app in this workspace must have, and the shared building blocks to
 ## Where UI apps live
 
 - Static UIs → `apps/ui/*`, Vite + React → Cloudflare Pages.
-- Next.js apps → `apps/*` (`hearth`, `findme`, `whiteboard`) or `apps/ui/*` (`employee-handler-ui`) → Vercel; `employee-handler-ui` deploys via `deploy:demo` from `deploy-demo-apps`. `vb-manager-next` is the exception: PM2 on the VM, no nx `deploy` target.
+- Next.js apps → `apps/*` (`hearth`, `findme`, `whiteboard`) or `apps/ui/*` (`employee-handler-ui`, `vibecheck-lite-next`) → Vercel; `employee-handler-ui` deploys via `deploy:demo` from `deploy-demo-apps`. `vb-manager-next` is the exception: PM2 on the VM, no nx `deploy` target.
 - GitHub Pages hosts the `pages-index` landing site and `component-library`.
 
 ## Shared components (react-lib)

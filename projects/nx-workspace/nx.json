@@ -181,7 +181,11 @@
         "startTargetName": "start",
         "serveStaticTargetName": "serve-static"
       },
-      "include": ["apps/findme/**/*", "apps/whiteboard/**/*"]
+      "include": [
+        "apps/findme/**/*",
+        "apps/whiteboard/**/*",
+        "apps/ui/vibecheck-lite-next/**/*"
+      ]
     },
     {
       "plugin": "@nx/next/plugin",

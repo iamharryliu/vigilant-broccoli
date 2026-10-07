@@ -66,6 +66,10 @@
       "TITLE": "Whiteboard",
       "DESCRIPTION": "Live collaborative whiteboard rooms deployed on Vercel."
     },
+    "VIBECHECK_LITE": {
+      "TITLE": "VibeCheck Lite",
+      "DESCRIPTION": "Current weather for your location, deployed on Vercel."
+    },
     "EMPLOYEE_HANDLER": {
       "TITLE": "Employee Handler",
       "DESCRIPTION": "Employee management app deployed on Vercel."

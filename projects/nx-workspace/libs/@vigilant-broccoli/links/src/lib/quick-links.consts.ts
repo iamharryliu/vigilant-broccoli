@@ -1354,6 +1354,12 @@ const UI_APP_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
   },
   {
+    label: 'VibeCheck Lite',
+    target: 'https://staging-vibecheck-lite-next.vercel.app/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
+  },
+  {
     label: 'React Component Library',
     target: 'https://projects.harryliu.dev/react-component-library/',
     type: OPEN_TYPE.BROWSER,
