@@ -34,7 +34,7 @@ writes a new note under `docs/rnd/`, and opens a PR; changes outside `docs/rnd/`
 - GitHub UI: **Actions → manual-agentic-pr-create-rnd → Run workflow** on `main`; enter a research question and optionally choose a model
   (default `sonnet`) or disable the firewall.
 - CLI: `gh workflow run manual-agentic-pr-create-rnd.yml -f question="<question>"`, with optional `-f model=opus` or `-f firewall=off`.
-- Runs queue behind an active R&D run; the job has a 60-minute timeout. The PR URL appears in the research step's logs.
+- Runs queue behind an active R&D run; the job has a 60-minute timeout. The PR link is written to the run's job summary.
 
 Codex uses a dedicated ChatGPT/Codex access token, not the app's `OPENAI_API_KEY`:
 

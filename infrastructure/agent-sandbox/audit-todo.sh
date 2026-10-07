@@ -44,6 +44,8 @@ if [ -z "${GH_TOKEN:-}" ]; then
 fi
 
 echo "Auditing every TODO.md row for stale and resolved entries"
+STATUS=0
+LOG_FILE=$(mktemp /tmp/vb-todo-audit.XXXXXX)
 docker run --rm --init --name "vb-todo-audit-$(date +%s)" \
   --cap-add NET_ADMIN --cap-add NET_RAW \
   -e CLAUDE_CODE_OAUTH_TOKEN \
@@ -53,4 +55,7 @@ docker run --rm --init --name "vb-todo-audit-$(date +%s)" \
   -e SANDBOX_ALLOWED_DOMAINS \
   -e SOLVE_MODEL="$MODEL" \
   "$IMAGE" \
-  bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/audit-todo-runner.sh"'
+  bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/audit-todo-runner.sh"' \
+  2>&1 | tee "$LOG_FILE" || STATUS="${PIPESTATUS[0]}"
+bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_FILE"
+exit "$STATUS"
