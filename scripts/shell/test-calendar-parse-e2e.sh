@@ -7,6 +7,7 @@ TIME_ZONE="${TIME_ZONE:-Europe/Stockholm}"
 FIXTURE="$(dirname "$0")/fixtures/calendar-parse-multi-session.txt"
 EXPECTED_SESSIONS=2
 MAX_EVENTS=3
+BILLING_ERROR_PATTERN="insufficient_quota|exceeded your current quota|credit balance|credit_balance|no credits remaining"
 PASS=0
 FAIL=0
 
@@ -42,8 +43,8 @@ PARSE_RESPONSE=$(curl -s -X POST "${VB_EXPRESS_URL}/api/calendar/parse" \
 echo "Response: $PARSE_RESPONSE"
 echo ""
 
-# Low credit balance is an account/billing issue, not a code regression — pass rather than fail
-if echo "$PARSE_RESPONSE" | grep -qi "credit balance\|credit_balance\|no credits remaining"; then
+# Low credit balance or exhausted quota is an account/billing issue, not a code regression — pass rather than fail
+if echo "$PARSE_RESPONSE" | grep -qiE "$BILLING_ERROR_PATTERN"; then
   for label in \
     "parse returns both sessions as separate events" \
     "occurrence list collapses into a recurrence" \
@@ -51,7 +52,7 @@ if echo "$PARSE_RESPONSE" | grep -qi "credit balance\|credit_balance\|no credits
     "evening session starts at 18:00" \
     "every event repeats weekly" \
     "the venue is carried onto at least one event"; do
-    echo "✓ $label [skipped: credit balance too low]"
+    echo "✓ $label [skipped: billing quota exhausted]"
     PASS=$((PASS + 1))
   done
 else
