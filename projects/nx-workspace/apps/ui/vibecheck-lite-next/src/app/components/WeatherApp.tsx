@@ -3,9 +3,19 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Button, Card, Skeleton } from '@vigilant-broccoli/react-lib';
 import { LocationService } from '@vigilant-broccoli/common-browser';
-import { getWeatherIcon, Location } from '@vigilant-broccoli/common-js';
-import { QUERY_PARAM, WEATHER_API_PATH } from '../../lib/weather.consts';
-import { LocalWeather } from '../../lib/weather.types';
+import {
+  getWeatherIcon,
+  HTTP_HEADERS,
+  HTTP_METHOD,
+  Location,
+} from '@vigilant-broccoli/common-js';
+import {
+  PREPARATION_API_PATH,
+  PREPARATION_BADGES,
+  QUERY_PARAM,
+  WEATHER_API_PATH,
+} from '../../lib/weather.consts';
+import { LocalWeather, Preparation } from '../../lib/weather.types';
 import { useTranslation } from '../i18n';
 
 const STATUS = {
@@ -44,6 +54,17 @@ const fetchWeather = ({ latitude, longitude }: Location) =>
     )
     .catch(() => null);
 
+const fetchPreparation = (weather: LocalWeather) =>
+  fetch(PREPARATION_API_PATH, {
+    method: HTTP_METHOD.POST,
+    headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
+    body: JSON.stringify(weather),
+  })
+    .then(response =>
+      response.ok ? (response.json() as Promise<Preparation>) : null,
+    )
+    .catch(() => null);
+
 const loadWeather = async (onLocated: () => void): Promise<ViewState> => {
   if (!navigator.geolocation) return { status: STATUS.LOCATION_UNAVAILABLE };
 
@@ -72,6 +93,7 @@ const roundTemperature = (celsius: number) => Math.round(celsius);
 export function WeatherApp() {
   const { t } = useTranslation();
   const [state, setState] = useState<ViewState>({ status: STATUS.LOCATING });
+  const [preparation, setPreparation] = useState<Preparation | null>(null);
 
   const load = useCallback(
     () =>
@@ -84,6 +106,19 @@ export function WeatherApp() {
   useEffect(() => {
     load();
   }, [load]);
+
+  const readyWeather = state.status === STATUS.READY ? state.weather : null;
+  useEffect(() => {
+    setPreparation(null);
+    if (!readyWeather) return;
+    let cancelled = false;
+    fetchPreparation(readyWeather).then(result => {
+      if (!cancelled) setPreparation(result);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [readyWeather]);
 
   const retry = () => {
     setState({ status: STATUS.LOCATING });
@@ -120,6 +155,24 @@ export function WeatherApp() {
     </div>
   );
 
+  const renderPreparation = () => {
+    const badges = PREPARATION_BADGES.filter(({ key }) => preparation?.[key]);
+    if (!badges.length) return null;
+    return (
+      <ul className="mt-3 flex flex-wrap justify-center gap-2">
+        {badges.map(({ key, icon, labelKey }) => (
+          <li
+            key={key}
+            className="flex items-center gap-1.5 rounded-full bg-sky-100 px-3 py-1 text-sm text-sky-900 dark:bg-sky-900/40 dark:text-sky-100"
+          >
+            <span aria-hidden>{icon}</span>
+            {t(labelKey)}
+          </li>
+        ))}
+      </ul>
+    );
+  };
+
   const renderWeather = ({
     city,
     temperatureC,
@@ -148,6 +201,7 @@ export function WeatherApp() {
       <p className="text-sm text-gray-500 dark:text-gray-400">
         {t('WEATHER.FEELS_LIKE', { temperature: roundTemperature(feelsLikeC) })}
       </p>
+      {renderPreparation()}
     </div>
   );
 

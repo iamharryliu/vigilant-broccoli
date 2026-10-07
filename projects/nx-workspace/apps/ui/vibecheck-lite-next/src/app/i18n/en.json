@@ -28,6 +28,12 @@
     "SNOW": "Snow",
     "THUNDERSTORM": "Thunderstorm"
   },
+  "PREPARATION": {
+    "WIND_RESISTANT_CLOTHING": "Wind-resistant clothing",
+    "RAIN_RESISTANT_CLOTHING": "Rain-resistant clothing",
+    "SNOW_RESISTANT_CLOTHING": "Snow-resistant clothing",
+    "SUNGLASSES": "Sunglasses"
+  },
   "ACTIONS": {
     "RETRY": "Try again"
   },
