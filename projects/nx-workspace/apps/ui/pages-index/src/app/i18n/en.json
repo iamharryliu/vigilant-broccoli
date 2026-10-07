@@ -2,7 +2,6 @@
   "HOME": {
     "PAGE_TITLE": "Home",
     "TITLE": "vigilant-broccoli",
-    "DESCRIPTION": "Personal monorepo.",
     "SECTION_MONITORING": "Monitoring",
     "SECTION_SOFTWARE_PROJECTS": "Software Projects",
     "STATUS": {
@@ -73,6 +72,10 @@
     "UTILITIES": {
       "TITLE": "Utilities",
       "DESCRIPTION": "Searchable page of everyday utilities."
+    },
+    "COMPONENT_LIBRARY": {
+      "TITLE": "Component Library",
+      "DESCRIPTION": "Interactive shared React component sandbox."
     },
     "LINKS": {
       "TITLE": "Links",

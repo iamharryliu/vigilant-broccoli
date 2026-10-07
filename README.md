@@ -1,6 +1,10 @@
 # vigilant-broccoli
 
-Personal monorepo. Go to [projects.harryliu.dev](https://projects.harryliu.dev/) for more project details.
+<!-- managed:repo-stats:start -->
+
+Personal monorepo, supporting **10 applications**, **5 API services**, **7 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
+
+<!-- managed:repo-stats:end -->
 
 <div>
 <a href="https://github.com/iamharryliu/vigilant-broccoli">
@@ -41,7 +45,7 @@ pnpm local:install:machine-setup
 | [Utilities UI](./projects/nx-workspace/apps/ui/utilities-ui)                                          | Searchable page of everyday utilities.                              | Public - [utilities.harryliu.dev](https://utilities.harryliu.dev/)                                                                                                                             |
 | [Cloud8Skate Sanity](./projects/nx-workspace/apps/cms/cloud8skate-sanity)                             | Content studio for the skating community site.                      | Private - Sanity Membership - [www.sanity.io/@ogjQYJiGp/studio/ek3f096j4gzjxyaci1n5dfrq/default/structure](https://www.sanity.io/@ogjQYJiGp/studio/ek3f096j4gzjxyaci1n5dfrq/default/structure) |
 | [code-server](./infrastructure/terraform/oci-code-server.tf)                                          | Browser-based VS Code development environment.                      | Private - Cloudflare Access - [code.harryliu.dev](https://code.harryliu.dev/)                                                                                                                  |
-| [Component Library](./projects/nx-workspace/apps/ui/component-library)                                | Interactive shared React component sandbox.                         | Public - [projects.harryliu.dev/react-component-library](https://projects.harryliu.dev/react-component-library/)                                                                               |
+| [Component Library](./projects/nx-workspace/apps/ui/component-library)                                | Interactive shared React component sandbox.                         | Public - [components.harryliu.dev](https://components.harryliu.dev/)                                                                                                                           |
 | [Docs MD](./projects/nx-workspace/apps/ui/docs-md)                                                    | Searchable Markdown notes with a file tree and link graph.          | Public - [docs.harryliu.dev](https://docs.harryliu.dev/)                                                                                                                                       |
 | [Links React](./projects/nx-workspace/apps/ui/links-react)                                            | Public pastebin of personal links and contact details.              | Public - [links.harryliu.dev](https://links.harryliu.dev/)                                                                                                                                     |
 | [Email Service](./projects/nx-workspace/apps/api/email-service)                                       | Queued email delivery producer and consumer.                        | Private - Fly Network - `production-vb-email-service`                                                                                                                                          |
@@ -70,7 +74,7 @@ pnpm local:install:machine-setup
 | [VB Express](./projects/nx-workspace/apps/api/vb-express)                                             | API gateway for tasks, messaging, and other services.               | Private - API Key - [api.harryliu.dev](https://api.harryliu.dev/)                                                                                                                              |
 | [VB Manager](./projects/nx-workspace/apps/ui/vb-manager-next)                                         | Personal management dashboard.                                      | Private - Local - [manager.vigilant-broccoli.app](https://manager.vigilant-broccoli.app/)                                                                                                      |
 | [VB Manager Mobile](./projects/nx-workspace/apps/vb-manager-next-mobile)                              | Mobile calendar, tasks, and productivity tools.                     | Private - [production-vb-manager-next-mobile.vercel.app](https://production-vb-manager-next-mobile.vercel.app/)                                                                                |
-| [Weather](./projects/nx-workspace/apps/ui/weather-next)                                 | Current weather for your location at a glance.                      | Public - [weather.harryliu.dev](https://weather.harryliu.dev/)                                                                                                                   |
+| [Weather](./projects/nx-workspace/apps/ui/weather-next)                                               | Current weather for your location at a glance.                      | Public - [weather.harryliu.dev](https://weather.harryliu.dev/)                                                                                                                                 |
 | [Whiteboard](./projects/nx-workspace/apps/whiteboard)                                                 | Collaborative writing in shared live rooms.                         | Public - [whiteboard.harryliu.dev](https://whiteboard.harryliu.dev/)                                                                                                                           |
 
 ## Stack

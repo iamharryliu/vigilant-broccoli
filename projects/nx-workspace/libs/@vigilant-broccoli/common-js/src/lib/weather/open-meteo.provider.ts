@@ -1,24 +1,22 @@
+import { Location } from '../location/location.model';
 import {
   CurrentWeather,
   DailyWeather,
   HourlyWeather,
-  Location,
   WEATHER_CONDITION,
   WEATHER_PROVIDER,
   WeatherCondition,
   WeatherSnapshot,
-} from '@vigilant-broccoli/common-js';
-import {
-  ISO_DATE_LENGTH,
-  MS_PER_SECOND,
-  OPEN_METEO_BASE_URL,
-} from './weather.consts';
+} from './weather.model';
+
+export const OPEN_METEO_BASE_URL = 'https://api.open-meteo.com/v1/forecast';
 
 interface OpenMeteoResponse {
   utc_offset_seconds: number;
   current: {
     temperature_2m: number;
     apparent_temperature: number;
+    relative_humidity_2m: number;
     wind_speed_10m: number;
     precipitation: number;
     weather_code: number;
@@ -41,11 +39,13 @@ interface OpenMeteoResponse {
 }
 
 const CURRENT_FIELDS =
-  'temperature_2m,apparent_temperature,wind_speed_10m,precipitation,weather_code,is_day';
+  'temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,precipitation,weather_code,is_day';
 const HOURLY_FIELDS = 'temperature_2m,weather_code,is_day';
 const DAILY_FIELDS =
   'temperature_2m_min,temperature_2m_max,wind_speed_10m_max,precipitation_sum,weather_code';
 const TIMEZONE_PARAM = 'auto';
+const MS_PER_SECOND = 1000;
+const ISO_DATE_LENGTH = 10;
 
 /**
  * WMO 4677 code groups, as documented by Open-Meteo.
@@ -109,6 +109,7 @@ const buildUrl = (location: Location, dailyCount: number): string => {
 const toCurrent = (data: OpenMeteoResponse): CurrentWeather => ({
   temperatureC: data.current.temperature_2m,
   feelsLikeC: data.current.apparent_temperature,
+  humidityPercent: data.current.relative_humidity_2m,
   windSpeedKph: data.current.wind_speed_10m,
   precipitationMm: data.current.precipitation,
   condition: toConditionFromWmoCode(data.current.weather_code),

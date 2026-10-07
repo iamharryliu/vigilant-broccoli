@@ -16,6 +16,7 @@ on:
           - hearth
           - cloud-8-skate-react
           - utilities-ui
+          - component-library
           - personal-website-react
           - employee-handler-ui
           - cloud8skate-sanity

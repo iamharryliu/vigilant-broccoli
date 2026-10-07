@@ -585,6 +585,11 @@ export const PROTON_LINK = {
 } as const;
 
 export const HARRYLIU_APP_URL = {
+  COMPONENT_LIBRARY: {
+    NAME: 'Component Library',
+    URL: 'https://components.harryliu.dev/',
+    STAGING_URL: 'https://staging-component-library.pages.dev/',
+  },
   UTILITIES: {
     NAME: 'Utilities',
     URL: 'https://utilities.harryliu.dev/',

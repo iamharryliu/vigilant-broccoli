@@ -1422,8 +1422,14 @@ const HOME_LINKS = [
 
 const UI_APP_LINKS = [
   {
-    label: 'React Component Library',
-    target: 'https://projects.harryliu.dev/react-component-library/',
+    label: HARRYLIU_APP_URL.COMPONENT_LIBRARY.NAME,
+    target: HARRYLIU_APP_URL.COMPONENT_LIBRARY.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
+  },
+  {
+    label: `${HARRYLIU_APP_URL.COMPONENT_LIBRARY.NAME} (Staging)`,
+    target: HARRYLIU_APP_URL.COMPONENT_LIBRARY.STAGING_URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
   },
