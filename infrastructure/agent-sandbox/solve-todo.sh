@@ -64,12 +64,14 @@ write_pr_details() {
   url=$(grep -m1 '^PR_URL::' "$log_file" 2>/dev/null | sed 's/^PR_URL:://' || true)
   summary=$(awk '/^PR_SUMMARY_BEGIN$/{f=1;next} /^PR_SUMMARY_END$/{f=0} f' "$log_file")
   diff=$(awk '/^PR_DIFF_BEGIN$/{f=1;next} /^PR_DIFF_END$/{f=0} f' "$log_file")
+  # --rawfile, not --arg: Linux caps a single argv string at 128 KiB and a large
+  # diff exceeds it, failing the exec with "Argument list too long" (exit 126).
   jq -nc \
     --arg label "$label" \
     --arg title "$title" \
     --arg url "$url" \
-    --arg summary "$summary" \
-    --arg diff "$diff" \
+    --rawfile summary <(printf '%s' "$summary") \
+    --rawfile diff <(printf '%s' "$diff") \
     '{label: $label, title: $title, url: $url, summary: $summary, diff: $diff}' >> "$out_file"
 }
 
