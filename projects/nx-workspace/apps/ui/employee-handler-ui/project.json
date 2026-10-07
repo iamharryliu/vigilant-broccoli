@@ -56,6 +56,14 @@
       "dependsOn": ["build"],
       "command": "docker buildx build --platform linux/amd64 -f apps/ui/employee-handler-ui/Dockerfile -t iamharryliu/employee-handler-next:latest -t iamharryliu/employee-handler-next:${COMMIT_SHA:-latest} --push ."
     },
+    "deploy": {
+      "executor": "nx:noop",
+      "dependsOn": ["deploy-container"]
+    },
+    "deploy:production": {
+      "executor": "nx:noop",
+      "dependsOn": ["deploy-container"]
+    },
     "deploy:demo": {
       "executor": "nx:run-commands",
       "options": {

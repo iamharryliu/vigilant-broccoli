@@ -43,7 +43,7 @@ fly.dev                                   Fly.io API services (production apps c
 vercel.app                                Vercel (production projects created on first production dispatch)
 ├── staging-hearth.vercel.app                 Hearth (staging)
 ├── production-hearth.vercel.app              Hearth (production)
-├── demo-employee-handler-ui.vercel.app       Employee Handler UI (demo — its only deploy)
+├── demo-employee-handler-ui.vercel.app       Employee Handler UI (demo — its only Vercel deploy)
 ├── staging-findme.vercel.app                 FindMe (staging)
 ├── production-findme.vercel.app              FindMe (production)
 ├── staging-whiteboard.vercel.app             Whiteboard (staging)

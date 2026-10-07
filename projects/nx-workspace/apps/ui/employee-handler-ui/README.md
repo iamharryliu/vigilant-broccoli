@@ -7,7 +7,7 @@
 
 ## Deployment URLs
 
-- [Demo](https://demo-employee-handler-ui.vercel.app/) — the only deploy; no staging or production
+- [Demo](https://demo-employee-handler-ui.vercel.app/) — the only Vercel deploy (`deploy:demo`); `deploy` and `deploy:production` still push the Docker image
 
 ## Stack
 
