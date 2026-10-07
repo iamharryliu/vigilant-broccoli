@@ -12,7 +12,7 @@ on:
           - office-presence-socket-server-demo
           - vb-manager-next-mobile
           - findme
-          - vibecheck-lite-next
+          - weather-next
           - hearth
           - cloud-8-skate-react
           - utilities-ui

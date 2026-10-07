@@ -13,7 +13,7 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ['**/dist', '**/out-tsc', 'apps/ui/vibecheck-lite-next/.next/**'],
+    ignores: ['**/dist', '**/out-tsc', 'apps/ui/weather-next/.next/**'],
   },
   ...baseConfig,
   nextPlugin.configs.recommended,

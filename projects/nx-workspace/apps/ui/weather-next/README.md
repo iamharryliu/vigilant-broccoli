@@ -1,4 +1,4 @@
-# VibeCheck Lite
+# Weather
 
 Current weather for the browser's location: city, temperature, condition, and today's high and low, plus badges for what to wear or bring (wind-, rain- or snow-resistant clothing, sunglasses) decided by the vb-express LLM endpoint from that weather. If the LLM call fails, no badges are shown.
 
@@ -9,7 +9,7 @@ Current weather for the browser's location: city, temperature, condition, and to
 
 ## Deployment URLs
 
-- [vibecheck-lite.harryliu.dev](https://vibecheck-lite.harryliu.dev)
+- [weather.harryliu.dev](https://weather.harryliu.dev)
 
 ## Stack
 

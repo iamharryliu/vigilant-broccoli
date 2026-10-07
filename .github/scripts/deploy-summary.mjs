@@ -22,7 +22,7 @@ const PROJECT_HOSTING = {
   'docs-md': { platform: 'pages', name: 'docs-md' },
   'utilities-ui': { platform: 'pages', name: 'utilities-ui' },
   'links-react': { platform: 'pages', name: 'links-react' },
-  'vibecheck-lite-next': { platform: 'vercel', name: 'vibecheck-lite-next' },
+  'weather-next': { platform: 'vercel', name: 'weather-next' },
   whiteboard: { platform: 'vercel', name: 'whiteboard' },
   'vb-manager-next-mobile': {
     platform: 'vercel',
