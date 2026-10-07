@@ -38,7 +38,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   tf:post-apply               Run post-apply script
   oci:config:sync-local       Refresh ~/.oci/config + key from Vault (after a rotation)
   tf:output                   Show terraform outputs
-  tf:unlock                   Load vault env and run terraform force-unlock <lock-id>
+  tf:unlock                   Load vault env and force-unlock the HCP Terraform workspace
 
 ☁️  OCI
   oci:vm:ssh                  SSH into OCI VM (RabbitMQ)
