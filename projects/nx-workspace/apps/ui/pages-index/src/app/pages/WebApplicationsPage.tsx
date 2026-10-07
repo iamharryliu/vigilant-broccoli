@@ -56,9 +56,7 @@ export function WebApplicationsPage() {
             <CardLink
               href="https://weather.harryliu.dev/"
               title={t('WEB_APPLICATIONS_PAGE.WEATHER.TITLE')}
-              description={t(
-                'WEB_APPLICATIONS_PAGE.WEATHER.DESCRIPTION',
-              )}
+              description={t('WEB_APPLICATIONS_PAGE.WEATHER.DESCRIPTION')}
             />
           </li>
           <li>
@@ -66,6 +64,15 @@ export function WebApplicationsPage() {
               href="https://utilities.harryliu.dev/"
               title={t('WEB_APPLICATIONS_PAGE.UTILITIES.TITLE')}
               description={t('WEB_APPLICATIONS_PAGE.UTILITIES.DESCRIPTION')}
+            />
+          </li>
+          <li>
+            <CardLink
+              href="https://components.harryliu.dev/"
+              title={t('WEB_APPLICATIONS_PAGE.COMPONENT_LIBRARY.TITLE')}
+              description={t(
+                'WEB_APPLICATIONS_PAGE.COMPONENT_LIBRARY.DESCRIPTION',
+              )}
             />
           </li>
           <li>

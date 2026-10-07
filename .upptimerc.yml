@@ -18,6 +18,8 @@ sites:
     url: https://staging-hearth.vercel.app/login
   - name: staging-service-manager
     url: https://staging-vb-express.fly.dev/
+  - name: staging-component-library
+    url: https://staging-component-library.pages.dev/
   - name: staging-utilities
     url: https://staging-utilities-ui.pages.dev/
   - name: staging-whiteboard
@@ -50,6 +52,8 @@ sites:
     url: https://production-hearth.vercel.app/login
   - name: production-service-manager
     url: https://api.harryliu.dev/
+  - name: production-component-library
+    url: https://components.harryliu.dev/
   - name: production-utilities
     url: https://utilities.harryliu.dev/
   - name: production-whiteboard

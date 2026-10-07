@@ -264,6 +264,21 @@ variable "utilities_pages_subdomain" {
   default = "production-utilities-ui.pages.dev"
 }
 
+variable "component_library_domain" {
+  type    = string
+  default = "components.harryliu.dev"
+}
+
+variable "component_library_pages_project" {
+  type    = string
+  default = "production-component-library"
+}
+
+variable "component_library_pages_subdomain" {
+  type    = string
+  default = "production-component-library.pages.dev"
+}
+
 variable "links_domain" {
   type    = string
   default = "links.harryliu.dev"

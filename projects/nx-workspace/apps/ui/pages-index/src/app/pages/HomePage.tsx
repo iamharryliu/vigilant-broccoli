@@ -96,7 +96,7 @@ export function HomePage() {
           </li>
           <li>
             <CardLink
-              href="./react-component-library/"
+              href="https://components.harryliu.dev/"
               title={t('HOME.UI.TITLE')}
               description={t('HOME.UI.DESCRIPTION')}
               icon={<LayoutGrid className={ICON_CLASS} />}

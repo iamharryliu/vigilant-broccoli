@@ -6,7 +6,6 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig(() => ({
   root: import.meta.dirname,
-  base: process.env.VITE_BASE_PATH ?? '/',
   cacheDir: '../../../node_modules/.vite/component-library',
   server: {
     port: 3000,
