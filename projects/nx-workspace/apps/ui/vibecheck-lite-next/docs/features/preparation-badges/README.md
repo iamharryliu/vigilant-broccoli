@@ -18,4 +18,5 @@ Any LLM failure (network, non-2xx, malformed output) returns 502 and the client 
 
 ## Limits
 
-The weather payload has no wind speed or precipitation figures, so wind advice is inferred from condition and feels-like temperature.
+- The weather payload carries current and daily-max wind speed (km/h) and current and daily-total precipitation (mm), which are passed to the LLM alongside the condition.
+- `/api/preparation` is unauthenticated and calls an LLM, so it allows 10 requests per minute per client IP (`x-forwarded-for`) and answers 429 with `Retry-After` beyond that. The counter lives in module memory, so on Vercel it limits per warm instance, not globally.

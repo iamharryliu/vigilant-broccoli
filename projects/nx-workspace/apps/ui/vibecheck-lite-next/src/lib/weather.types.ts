@@ -6,6 +6,10 @@ export interface LocalWeather {
   feelsLikeC: number;
   highC: number;
   lowC: number;
+  windSpeedKph: number;
+  windMaxKph: number;
+  precipitationMm: number;
+  precipitationSumMm: number;
   condition: WeatherCondition;
   isDay: boolean;
 }

@@ -84,6 +84,8 @@ export const getWeatherIcon = (
 export interface CurrentWeather {
   temperatureC: number;
   feelsLikeC: number;
+  windSpeedKph: number;
+  precipitationMm: number;
   condition: WeatherCondition;
   isDay: boolean;
 }
@@ -99,6 +101,8 @@ export interface DailyWeather {
   date: string;
   tempMinC: number;
   tempMaxC: number;
+  windMaxKph: number;
+  precipitationSumMm: number;
   condition: WeatherCondition;
 }
 
