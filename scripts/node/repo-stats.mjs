@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { execFileSync } from 'node:child_process';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -47,7 +47,7 @@ const trackedFiles = (...pathspecs) =>
     encoding: 'utf8',
   })
     .split('\n')
-    .filter(Boolean);
+    .filter(path => path && existsSync(join(REPO_ROOT, path)));
 const readTargets = path => JSON.parse(read(path)).targets ?? {};
 const isDirectChild = dir => path =>
   path.startsWith(dir) &&
