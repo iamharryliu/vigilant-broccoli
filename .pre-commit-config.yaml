@@ -28,6 +28,14 @@ repos:
         always_run: true
   - repo: local
     hooks:
+      - id: repo-stats
+        name: Check the managed repo-stats line.
+        entry: node scripts/node/repo-stats.mjs --check
+        language: system
+        pass_filenames: false
+        always_run: true
+  - repo: local
+    hooks:
       - id: nvim-tmux-config-smoketest
         name: Run nvim/tmux custom config smoke test.
         entry: ./setup/dotfiles/common/scripts/config-smoketest.sh

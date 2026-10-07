@@ -2,6 +2,12 @@
 
 Personal monorepo. Go to [projects.harryliu.dev](https://projects.harryliu.dev/) for more project details.
 
+<!-- managed:repo-stats:start -->
+
+Publicly shipped from [vigilant-broccoli](https://github.com/iamharryliu/vigilant-broccoli): **9** applications, **5** services, **7** Docker images and **4** npm packages.
+
+<!-- managed:repo-stats:end -->
+
 <div>
 <a href="https://github.com/iamharryliu/vigilant-broccoli">
 <img src="https://i.pinimg.com/564x/b7/62/38/b762386c0bbb20dec77c2632f73d28a8.jpg" alt="broccoli" width="200"/>
@@ -70,7 +76,7 @@ pnpm local:install:machine-setup
 | [VB Express](./projects/nx-workspace/apps/api/vb-express)                                             | API gateway for tasks, messaging, and other services.               | Private - API Key - [api.harryliu.dev](https://api.harryliu.dev/)                                                                                                                              |
 | [VB Manager](./projects/nx-workspace/apps/ui/vb-manager-next)                                         | Personal management dashboard.                                      | Private - Local - [manager.vigilant-broccoli.app](https://manager.vigilant-broccoli.app/)                                                                                                      |
 | [VB Manager Mobile](./projects/nx-workspace/apps/vb-manager-next-mobile)                              | Mobile calendar, tasks, and productivity tools.                     | Private - [production-vb-manager-next-mobile.vercel.app](https://production-vb-manager-next-mobile.vercel.app/)                                                                                |
-| [Weather](./projects/nx-workspace/apps/ui/weather-next)                                 | Current weather for your location at a glance.                      | Public - [weather.harryliu.dev](https://weather.harryliu.dev/)                                                                                                                   |
+| [Weather](./projects/nx-workspace/apps/ui/weather-next)                                               | Current weather for your location at a glance.                      | Public - [weather.harryliu.dev](https://weather.harryliu.dev/)                                                                                                                                 |
 | [Whiteboard](./projects/nx-workspace/apps/whiteboard)                                                 | Collaborative writing in shared live rooms.                         | Public - [whiteboard.harryliu.dev](https://whiteboard.harryliu.dev/)                                                                                                                           |
 
 ## Stack
