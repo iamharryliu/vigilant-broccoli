@@ -42,8 +42,10 @@ concurrency:
   # push that happen to share a ref (e.g. production dispatched from `main`)
   # never land in the same group — one environment can never cancel the other.
   group: deploy-${{ github.ref }}-${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
-  # Staging's next run redeploys everything affected anyway, so cancelling a
-  # superseded one loses nothing; production is never interrupted midway.
+  # Staging's next run redeploys everything affected since its last success
+  # anyway, so cancelling a superseded one loses nothing; production is never
+  # interrupted midway — its affected base is the last successful production
+  # run, so a cancelled run would silently drop its apps from the next diff.
   cancel-in-progress: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) != 'production' }}
 
 env:
@@ -164,7 +166,7 @@ jobs:
             DEPLOY_TARGET="deploy:production"
           fi
 
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_ENVIRONMENT" == "production" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
             ALL_COMMA=$(pnpm exec nx show projects --withTarget=$DEPLOY_TARGET | tr '\n' ',' | sed 's/,$//')
             echo "has_deployments=true" >> $GITHUB_OUTPUT
             echo "projects=$ALL_COMMA" >> $GITHUB_OUTPUT
