@@ -23,6 +23,12 @@ BRANCH=$(git rev-parse --abbrev-ref HEAD)
 BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"
 
+# --no-commit keeps MERGE_HEAD through the later `git add -A` + `git commit`, so the result
+# is a real merge commit; a plain change on top of BASE_SHA would leave the PR conflicted.
+if [ -n "${SANDBOX_MERGE_MAIN:-}" ]; then
+  git merge origin/main --no-commit --no-ff || true
+fi
+
 PR_TITLE=$(gh pr view "$PR" --json title -q .title 2>/dev/null || true)
 CURRENT_BODY=$(gh pr view "$PR" --json body -q .body 2>/dev/null || true)
 
