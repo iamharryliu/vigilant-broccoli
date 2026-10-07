@@ -47,8 +47,8 @@ jobs:
             --report-md "$RUNNER_TEMP/orphans.md"
 
       - name: Write job summary
-        if: always() && hashFiles(format('{0}/orphans.md', runner.temp)) != ''
-        run: cat "$RUNNER_TEMP/orphans.md" >> "$GITHUB_STEP_SUMMARY"
+        if: always()
+        run: '[ -f "$RUNNER_TEMP/orphans.md" ] && cat "$RUNNER_TEMP/orphans.md" >> "$GITHUB_STEP_SUMMARY" || true'
 
       - name: Tunnel to email service
         uses: ./.github/actions/fly-private-tunnel
