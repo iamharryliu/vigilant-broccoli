@@ -33,7 +33,10 @@
       "defaultConfiguration": "development",
       "options": {
         "cwd": "apps/ui/vibecheck-lite-next",
-        "command": "next dev --webpack"
+        "command": "next dev --webpack",
+        "env": {
+          "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev"
+        }
       },
       "configurations": {
         "development": {},

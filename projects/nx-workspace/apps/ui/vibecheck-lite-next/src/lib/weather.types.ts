@@ -9,3 +9,10 @@ export interface LocalWeather {
   condition: WeatherCondition;
   isDay: boolean;
 }
+
+export interface Preparation {
+  windResistantClothing: boolean;
+  rainResistantClothing: boolean;
+  snowResistantClothing: boolean;
+  sunglasses: boolean;
+}
