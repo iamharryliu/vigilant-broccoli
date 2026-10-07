@@ -3,6 +3,7 @@ name: deploy-demo-apps
 on:
   repository_dispatch:
     types: [deploy-fanout]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,7 +15,7 @@ concurrency:
 
 jobs:
   employee-handler-ui:
-    if: ${{ github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true' && github.event.client_payload.environment == 'staging' }}
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true' && github.event.client_payload.environment == 'staging') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -31,9 +32,19 @@ jobs:
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           export_token: 'true'
 
+      - name: Fetch Cloudflare Access service token from Secret Manager
+        id: cf-access
+        uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3
+        with:
+          secrets: |-
+            CF_ACCESS_CLIENT_ID:vigilant-broccoli/VAULT_CF_ACCESS_CLIENT_ID
+            CF_ACCESS_CLIENT_SECRET:vigilant-broccoli/VAULT_CF_ACCESS_CLIENT_SECRET
+
       - name: Deploy affected demo apps
         working-directory: ./projects/nx-workspace
         env:
           VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
           VAULT_ADDR: https://vault.harryliu.dev
+          CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
         run: pnpm exec nx affected -t deploy:demo

@@ -304,6 +304,12 @@ async function main() {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
       settings: NX_VERCEL_SETTINGS('whiteboard', 'dist/apps/whiteboard/.next'),
     },
+    'vibecheck-lite-next': {
+      settings: NX_VERCEL_SETTINGS(
+        'vibecheck-lite-next',
+        'dist/apps/ui/vibecheck-lite-next/.next',
+      ),
+    },
     'vb-manager-next-mobile': {
       hardcodedSecrets: {
         ...SUPABASE_PUBLIC_SECRETS,
