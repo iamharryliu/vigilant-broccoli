@@ -19,6 +19,8 @@ interface OpenMeteoResponse {
   current: {
     temperature_2m: number;
     apparent_temperature: number;
+    wind_speed_10m: number;
+    precipitation: number;
     weather_code: number;
     is_day: number;
   };
@@ -32,14 +34,17 @@ interface OpenMeteoResponse {
     time: string[];
     temperature_2m_min: number[];
     temperature_2m_max: number[];
+    wind_speed_10m_max: number[];
+    precipitation_sum: number[];
     weather_code: number[];
   };
 }
 
 const CURRENT_FIELDS =
-  'temperature_2m,apparent_temperature,weather_code,is_day';
+  'temperature_2m,apparent_temperature,wind_speed_10m,precipitation,weather_code,is_day';
 const HOURLY_FIELDS = 'temperature_2m,weather_code,is_day';
-const DAILY_FIELDS = 'temperature_2m_min,temperature_2m_max,weather_code';
+const DAILY_FIELDS =
+  'temperature_2m_min,temperature_2m_max,wind_speed_10m_max,precipitation_sum,weather_code';
 const TIMEZONE_PARAM = 'auto';
 
 /**
@@ -104,6 +109,8 @@ const buildUrl = (location: Location, dailyCount: number): string => {
 const toCurrent = (data: OpenMeteoResponse): CurrentWeather => ({
   temperatureC: data.current.temperature_2m,
   feelsLikeC: data.current.apparent_temperature,
+  windSpeedKph: data.current.wind_speed_10m,
+  precipitationMm: data.current.precipitation,
   condition: toConditionFromWmoCode(data.current.weather_code),
   isDay: Boolean(data.current.is_day),
 });
@@ -129,6 +136,8 @@ const toDaily = (data: OpenMeteoResponse, dailyCount: number): DailyWeather[] =>
     date: date.slice(0, ISO_DATE_LENGTH),
     tempMinC: data.daily.temperature_2m_min[index],
     tempMaxC: data.daily.temperature_2m_max[index],
+    windMaxKph: data.daily.wind_speed_10m_max[index],
+    precipitationSumMm: data.daily.precipitation_sum[index],
     condition: toConditionFromWmoCode(data.daily.weather_code[index]),
   }));
 

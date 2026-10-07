@@ -26,6 +26,9 @@ interface OpenWeatherCondition {
 interface OpenWeatherCurrentResponse {
   dt: number;
   main: { temp: number; feels_like: number };
+  wind: { speed: number };
+  rain?: { '1h'?: number };
+  snow?: { '1h'?: number };
   weather: OpenWeatherCondition[];
   timezone: number;
   sys: { sunrise: number; sunset: number };
@@ -35,6 +38,9 @@ interface OpenWeatherForecastResponse {
   list: Array<{
     dt: number;
     main: { temp: number };
+    wind: { speed: number };
+    rain?: { '3h'?: number };
+    snow?: { '3h'?: number };
     weather: OpenWeatherCondition[];
   }>;
   city: { timezone: number };
@@ -44,6 +50,10 @@ const METRIC_UNITS = 'metric';
 const DAY_ICON_SUFFIX = 'd';
 const CURRENT_WEATHER_PATH = 'weather';
 const FORECAST_PATH = 'forecast';
+const KPH_PER_METER_PER_SECOND = 3.6;
+
+const toKph = (metersPerSecond: number): number =>
+  metersPerSecond * KPH_PER_METER_PER_SECOND;
 
 /**
  * OpenWeather condition ids are grouped by their leading digit, except the
@@ -120,6 +130,8 @@ const fetchJson = async <T>(url: string): Promise<T> => {
 const toCurrent = (data: OpenWeatherCurrentResponse): CurrentWeather => ({
   temperatureC: data.main.temp,
   feelsLikeC: data.main.feels_like,
+  windSpeedKph: toKph(data.wind.speed),
+  precipitationMm: (data.rain?.['1h'] ?? 0) + (data.snow?.['1h'] ?? 0),
   condition: toConditionFromOpenWeatherId(data.weather[0].id),
   isDay: isDayIcon(data.weather[0].icon),
 });
@@ -152,25 +164,40 @@ const toDaily = (
   const offsetMs = data.city.timezone * MS_PER_SECOND;
   const buckets = new Map<
     string,
-    { temps: number[]; conditions: WeatherCondition[] }
+    {
+      temps: number[];
+      winds: number[];
+      precipitationMm: number;
+      conditions: WeatherCondition[];
+    }
   >();
 
   data.list.forEach(item => {
     const localDate = new Date(item.dt * MS_PER_SECOND + offsetMs)
       .toISOString()
       .slice(0, ISO_DATE_LENGTH);
-    const bucket = buckets.get(localDate) ?? { temps: [], conditions: [] };
+    const bucket = buckets.get(localDate) ?? {
+      temps: [],
+      winds: [],
+      precipitationMm: 0,
+      conditions: [],
+    };
     bucket.temps.push(item.main.temp);
+    bucket.winds.push(toKph(item.wind.speed));
+    bucket.precipitationMm +=
+      (item.rain?.['3h'] ?? 0) + (item.snow?.['3h'] ?? 0);
     bucket.conditions.push(toConditionFromOpenWeatherId(item.weather[0].id));
     buckets.set(localDate, bucket);
   });
 
   return Array.from(buckets.entries())
     .slice(0, dailyCount)
-    .map(([date, { temps, conditions }]) => ({
+    .map(([date, { temps, winds, precipitationMm, conditions }]) => ({
       date,
       tempMinC: Math.min(...temps),
       tempMaxC: Math.max(...temps),
+      windMaxKph: Math.max(...winds),
+      precipitationSumMm: precipitationMm,
       condition: conditions[Math.floor(conditions.length / 2)],
     }));
 };

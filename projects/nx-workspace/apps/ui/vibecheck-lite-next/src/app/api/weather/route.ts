@@ -125,6 +125,10 @@ export async function GET(request: NextRequest) {
     feelsLikeC: weather.current.feelsLikeC,
     highC: today.tempMaxC,
     lowC: today.tempMinC,
+    windSpeedKph: weather.current.windSpeedKph,
+    windMaxKph: today.windMaxKph,
+    precipitationMm: weather.current.precipitationMm,
+    precipitationSumMm: today.precipitationSumMm,
     condition: weather.current.condition,
     isDay: weather.current.isDay,
   };
