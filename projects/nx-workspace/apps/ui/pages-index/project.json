@@ -16,7 +16,8 @@
         "{workspaceRoot}/apps/api/bucket-service/src/libs/swagger.ts",
         "{workspaceRoot}/apps/api/email-service/src/swagger.ts",
         "{workspaceRoot}/apps/api/email-subscription-service/src/swagger.ts",
-        "{workspaceRoot}/apps/api/llm-service/src/libs/swagger.ts"
+        "{workspaceRoot}/apps/api/llm-service/src/libs/swagger.ts",
+        "{workspaceRoot}/libs/@vigilant-broccoli/employee-handler/src/**/*.ts"
       ],
       "outputs": ["{projectRoot}/public/openapi"],
       "options": {
