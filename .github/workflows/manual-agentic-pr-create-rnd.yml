@@ -1,18 +1,14 @@
-name: manual-agentic-resolve-conflicts
-
-# Thin wrapper over the same sandbox PR update as `manual-agentic-update-pr`
-# with a fixed instruction: merge origin/main into the PR branch and resolve
-# the conflicts. The PR number is the only input.
+name: manual-agentic-pr-create-rnd
 
 on:
   workflow_dispatch:
     inputs:
-      pr:
-        description: 'PR number or URL to resolve merge conflicts for (e.g. "149").'
-        type: string
+      question:
+        description: 'Research question to answer in a new docs/rnd/ note and pull request.'
         required: true
+        type: string
       model:
-        description: 'Claude model to run the agent with.'
+        description: 'Claude model to run the research with.'
         type: choice
         default: sonnet
         options:
@@ -32,14 +28,24 @@ permissions:
   id-token: write
 
 concurrency:
-  group: manual-agentic-resolve-conflicts-${{ inputs.pr }}
+  group: manual-agentic-pr-create-rnd
   cancel-in-progress: false
 
 jobs:
-  resolve-conflicts:
+  research:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
+      - name: Validate question
+        env:
+          QUESTION: ${{ inputs.question }}
+        run: |
+          set -euo pipefail
+          if ! printf '%s' "$QUESTION" | grep -q '[^[:space:]]'; then
+            echo "ERROR: 'question' must contain a research question." >&2
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -53,20 +59,14 @@ jobs:
             kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
             kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
 
-      - name: Resolve conflicts
+      - name: Research and open pull request
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
           AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
           AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
           SANDBOX_FIREWALL: ${{ inputs.firewall }}
           MODEL: ${{ inputs.model }}
-          PR: ${{ inputs.pr }}
-          SANDBOX_MERGE_MAIN: '1'
+          QUESTION: ${{ inputs.question }}
         run: |
           set -euo pipefail
-          INSTRUCTION='origin/main has already been merged into this branch without committing. Resolve every remaining merge conflict (files with conflict markers), keeping the intent of both sides, and make no unrelated changes. Do not commit.'
-          if ! printf '%s' "$PR" | grep -qE '^([0-9]+|https://github\.com/[^ ]+)$'; then
-            echo "ERROR: 'pr' must be a PR number or a github.com URL." >&2
-            exit 1
-          fi
-          bash infrastructure/agent-sandbox/update-pr.sh --model "$MODEL" "$PR" "$INSTRUCTION"
+          bash infrastructure/agent-sandbox/create-rnd.sh --model "$MODEL" "$QUESTION"
