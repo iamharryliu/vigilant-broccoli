@@ -5,21 +5,22 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 IMAGE=vb-agent-sandbox
 
 MODEL=sonnet
-ARGS=()
 while [ $# -gt 0 ]; do
   case "$1" in
     --model)
+      if [ $# -lt 2 ]; then
+        echo "Usage: pnpm agentic-pr-create-todo-audit [--model <model>]" >&2
+        exit 1
+      fi
       MODEL=$2
       shift 2
       ;;
     *)
-      ARGS+=("$1")
-      shift
+      echo "Usage: pnpm agentic-pr-create-todo-audit [--model <model>]" >&2
+      exit 1
       ;;
   esac
 done
-
-SCOPE="${ARGS[*]:-}"
 
 if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
   docker compose -f "$SCRIPT_DIR/docker-compose.yml" build
@@ -42,7 +43,7 @@ if [ -z "${GH_TOKEN:-}" ]; then
   exit 1
 fi
 
-echo "Auditing TODO.md${SCOPE:+ (sections: $SCOPE)} for stale and resolved entries"
+echo "Auditing every TODO.md row for stale and resolved entries"
 docker run --rm --init --name "vb-todo-audit-$(date +%s)" \
   --cap-add NET_ADMIN --cap-add NET_RAW \
   -e CLAUDE_CODE_OAUTH_TOKEN \
@@ -52,4 +53,4 @@ docker run --rm --init --name "vb-todo-audit-$(date +%s)" \
   -e SANDBOX_ALLOWED_DOMAINS \
   -e SOLVE_MODEL="$MODEL" \
   "$IMAGE" \
-  bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/audit-todo-runner.sh" "$1"' _ "$SCOPE"
+  bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/audit-todo-runner.sh"'

@@ -1,8 +1,8 @@
-name: manual-agentic-solve
+name: manual-agentic-pr-create
 
-run-name: manual-agentic-solve (${{ inputs.agent }}) ${{ inputs.ids || inputs.prompt }}
+run-name: manual-agentic-pr-create (${{ inputs.agent }}) ${{ inputs.ids || inputs.prompt }}
 
-# Runs the same agent solve as the local `pnpm agentic:task:solve`, but on the
+# Runs the same agent solve as the local `pnpm agentic-pr-create`, but on the
 # ephemeral GitHub-hosted runner: it builds and runs the vb-agent-sandbox
 # container (fresh clone of main, headless Claude Code or Codex, commit, push,
 # open PR). Secrets come from Vault; the branch push + PR use a minted GitHub App
@@ -104,7 +104,7 @@ jobs:
   solve:
     needs: key
     concurrency:
-      group: manual-agentic-solve-${{ needs.key.outputs.group }}
+      group: manual-agentic-pr-create-${{ needs.key.outputs.group }}
       cancel-in-progress: true
     runs-on: ubuntu-24.04
     timeout-minutes: 60

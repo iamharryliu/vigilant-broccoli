@@ -21,7 +21,7 @@ done
 
 QUESTION="${ARGS[*]:-}"
 if [ -z "$QUESTION" ]; then
-  echo "Usage: pnpm agentic:rnd [--model <model>] \"<research question>\"" >&2
+  echo "Usage: pnpm agentic-pr-create-rnd [--model <model>] \"<research question>\"" >&2
   exit 1
 fi
 

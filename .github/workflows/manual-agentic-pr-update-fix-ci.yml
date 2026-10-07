@@ -1,0 +1,74 @@
+name: manual-agentic-pr-update-fix-ci
+
+# Runs the same CI-fix wrapper as
+# `pnpm agentic-pr-update-fix-ci <pr> [instruction]`.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: 'PR number or URL whose failing CI should be fixed (e.g. "149").'
+        type: string
+        required: true
+      instruction:
+        description: 'Optional extra guidance for the fix (e.g. "only the e2e job is failing; leave the lint warnings").'
+        type: string
+        default: ''
+      model:
+        description: 'Claude model to run the agent with.'
+        type: choice
+        default: sonnet
+        options:
+          - sonnet
+          - opus
+          - haiku
+      firewall:
+        description: 'In-container egress firewall (turn off if iptables/ipset fails on the runner).'
+        type: choice
+        default: 'on'
+        options:
+          - 'on'
+          - 'off'
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: manual-agentic-pr-update-fix-ci-${{ inputs.pr }}
+  cancel-in-progress: false
+
+jobs:
+  fix-ci:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | CLAUDE_CODE_OAUTH_TOKEN ;
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+
+      - name: Fix CI
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
+          AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
+          AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
+          SANDBOX_FIREWALL: ${{ inputs.firewall }}
+          MODEL: ${{ inputs.model }}
+          PR: ${{ inputs.pr }}
+          INSTRUCTION: ${{ inputs.instruction }}
+        run: |
+          set -euo pipefail
+          if [ -n "$INSTRUCTION" ]; then
+            bash infrastructure/agent-sandbox/fix-pr-ci.sh --model "$MODEL" "$PR" "$INSTRUCTION"
+          else
+            bash infrastructure/agent-sandbox/fix-pr-ci.sh --model "$MODEL" "$PR"
+          fi

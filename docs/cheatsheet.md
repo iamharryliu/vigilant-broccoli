@@ -17,8 +17,6 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   upptime:config:render <dir> Render managed monitoring files locally (empty external directory)
   upptime:history:export <bundle> [ref] Export history-only Git commits to a new bundle
   upptime:history:import <bundle> [owner/repo] Import history into an uninitialized monitoring dataset
-  upptime:sync:store-key <pem> Store the monitoring sync App key in its dedicated Vault path
-  gh:actions:sync-upptime      Publish managed monitoring configuration from main
 
 ⚙️  SETUP
   local:install:machine-setup Run machine setup installer (mac/linux)
@@ -165,14 +163,15 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
                                errors after ~1h
 
 🚀 AGENTIC — TASKS (unattended; ephemeral containers, no human in the loop)
-  agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR (sonnet; --model <m> to override, or --agent codex [--codex-model <m>])
+  agentic-pr-create <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR (sonnet; --model <m> to override, or --agent codex [--codex-model <m>])
                                (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express")
-  agentic:task:create <desc>  Headlessly research and add a TODO.md entry for <desc> in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
-  agentic:task:audit [sections]  Headlessly re-verify TODO.md rows against the codebase in an ephemeral sandbox container — deletes resolved rows, corrects drifted paths/line numbers/counts — then open a PR; opens none if every row still holds (sonnet; --model <m> to override)
-  agentic:rnd "<question>"    Headlessly research a concise R&D note (alternatives table + recommendation + sample) under docs/rnd/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
-  agentic:audit "<scope>"    Headlessly audit the codebase for <scope> and write a concise findings note (severity + location + remediation table) under docs/audit/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
-  agentic:pr:fix <pr>         Headlessly fix a PR's failing CI in an ephemeral sandbox container (checks out the branch, feeds the failing logs to the agent, runs pre-commit, pushes the fix); accepts a PR number or URL (sonnet; --model <m> to override)
-  agentic:pr:update <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update); accepts a PR number or URL (sonnet; --model <m> to override)
+  agentic-pr-create-todo <desc>  Headlessly refine <desc> into a repo-informed task prompt and add a TODO.md entry in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
+  agentic-pr-create-todo-audit  Headlessly re-verify TODO.md rows against the codebase in an ephemeral sandbox container — deletes resolved rows, corrects drifted paths/line numbers/counts — then open a PR; opens none if every row still holds (sonnet; --model <m> to override)
+  agentic-pr-create-rnd "<question>"    Headlessly research a concise R&D note (alternatives table + recommendation + sample) under docs/rnd/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
+  agentic-pr-update <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update); accepts a PR number or URL (sonnet; --model <m> to override)
+                                (--with-ci-logs feeds the PR's failing check summary and failed-step logs to the agent, e.g. agentic-pr-update --with-ci-logs 149 "fix the failing checks")
+  agentic-pr-update-fix-ci <pr> [instruction]  Fix a PR's failing CI in an ephemeral sandbox: feeds its failing check summary and failed-step logs to the agent, runs pre-commit and pushes the fix; accepts a PR number or URL (sonnet; --model <m> to override)
+  agentic-pr-update-resolve-conflicts <pr>  Merge origin/main into a PR branch, resolve conflicts, run pre-commit and push the update in an ephemeral sandbox; accepts a PR number or URL (sonnet; --model <m> to override)
 
 🐙 GITHUB
   gh:actions:deploy           Trigger deploy workflow

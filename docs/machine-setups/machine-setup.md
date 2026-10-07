@@ -23,6 +23,6 @@ Context adapters are committed symlinks, so a clone already carries them. The do
 bash setup/common/agent-skills.sh
 ```
 
-Use Claude's `/audit-note <scope>` or Codex's `$audit-note <scope>`. Existing skills and caches are preserved; conflicting entries are reported for manual resolution. See [agent setup](../agent-support.md) for the shared source, installation paths, and context discovery. Start a new agent session after setup to load the repository context.
+Use Claude's `/agentic-pr-create-rnd <question>` or Codex's `$agentic-pr-create-rnd <question>`. Existing skills and caches are preserved; conflicting entries are reported for manual resolution. See [agent setup](../agent-support.md) for the shared source, installation paths, and context discovery. Start a new agent session after setup to load the repository context.
 
 Personal Codex settings stay in the untracked `~/.codex/config.toml`. Machine setup does not create, modify, or symlink this file.

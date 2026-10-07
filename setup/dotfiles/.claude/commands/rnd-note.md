@@ -1,1 +1,0 @@
-../../agent-skills/rnd-note/SKILL.md

@@ -1,4 +1,4 @@
-// Builds and sends the manual-agentic-solve notification email. The run's diff
+// Builds and sends the manual-agentic-pr-create notification email. The run's diff
 // is rendered as a GitHub-style split-gutter patch so the change can be read
 // from the inbox without opening the PR.
 //

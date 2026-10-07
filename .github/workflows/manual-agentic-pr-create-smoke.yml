@@ -1,7 +1,7 @@
-name: manual-agentic-solve-smoke
+name: manual-agentic-pr-create-smoke
 
 # One-click smoke test for the agentic solve pipeline: dispatches
-# `manual-agentic-solve` with a canned, deliberately tiny prompt so the whole
+# `manual-agentic-pr-create` with a canned, deliberately tiny prompt so the whole
 # chain (sandbox container -> headless agent -> commit -> push -> PR ->
 # notification email) can be exercised with Claude or Codex without typing a
 # prompt or burning a real TODO id. The PR it opens is disposable — close it
@@ -35,7 +35,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: manual-agentic-solve-smoke
+  group: manual-agentic-pr-create-smoke
   cancel-in-progress: true
 
 jobs:
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
-      - name: Dispatch manual-agentic-solve
+      - name: Dispatch manual-agentic-pr-create
         env:
           GH_TOKEN: ${{ github.token }}
           AGENT: ${{ inputs.agent }}
@@ -53,7 +53,7 @@ jobs:
         run: |
           set -euo pipefail
           args=(
-            workflow run manual-agentic-solve.yml
+            workflow run manual-agentic-pr-create.yml
             --repo "$GITHUB_REPOSITORY"
             --ref "$GITHUB_REF_NAME"
             -f prompt="$PROMPT"
@@ -68,5 +68,5 @@ jobs:
             exit 1
           fi
           gh "${args[@]}"
-          echo "Dispatched manual-agentic-solve (agent: $AGENT)."
-          echo "Watch it at https://github.com/$GITHUB_REPOSITORY/actions/workflows/manual-agentic-solve.yml"
+          echo "Dispatched manual-agentic-pr-create (agent: $AGENT)."
+          echo "Watch it at https://github.com/$GITHUB_REPOSITORY/actions/workflows/manual-agentic-pr-create.yml"

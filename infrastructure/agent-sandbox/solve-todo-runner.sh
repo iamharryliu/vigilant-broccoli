@@ -46,6 +46,7 @@ REPO_DIR="$HOME/vigilant-broccoli"
 META_FILE=/tmp/solve-meta.json
 
 cd "$REPO_DIR"
+SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create/SKILL.md")
 
 if [ "$MODE" = id ]; then
   # TODO items live as rows in per-section markdown tables (ID | Priority |
@@ -75,9 +76,9 @@ else
 fi
 
 if [ -n "${GITHUB_ACTIONS:-}" ]; then
-  REQUEST_SOURCE="GitHub Actions (manual-agentic-solve workflow, ${RUNNER_LABEL})"
+  REQUEST_SOURCE="GitHub Actions (manual-agentic-pr-create workflow, ${RUNNER_LABEL})"
 else
-  REQUEST_SOURCE="Local CLI (pnpm agentic:task:solve, ${RUNNER_LABEL})"
+  REQUEST_SOURCE="Local CLI (pnpm agentic-pr-create, ${RUNNER_LABEL})"
 fi
 if [ "$MODE" = id ]; then
   REQUEST_TRIGGER="TODO id \`${ID}\`"
@@ -146,7 +147,7 @@ This agent run did not finish (exited with status ${exit_code}). This draft PR c
 
 $REQUEST_BODY
 
-To continue, run: \`pnpm agentic:pr:update <PR#> "finish the task"\`
+To continue, run: \`pnpm agentic-pr-update <PR#> "finish the task"\`
 
 $PR_FOOTER
 BODY
@@ -174,8 +175,12 @@ You are running non-interactively in a fresh clone of vigilant-broccoli, on a de
 
 $TASK
 
-Rules:
-- Make only the changes needed, following the repo conventions in CONTEXT.md.
+Follow these shared task instructions:
+
+$SKILL_INSTRUCTIONS
+
+Sandbox execution rules:
+- You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
 $SCOPE_RULE
 - When finished, write $META_FILE containing only a JSON object with these string fields:
   - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure
@@ -304,16 +309,16 @@ else
   HISTORY_SOURCE="Docker sandbox (local)"
 fi
 if [ "$MODE" = id ]; then
-  HISTORY_COMMAND="agentic:task:solve --id ${ID}"
+  HISTORY_COMMAND="agentic-pr-create ${ID}"
 else
-  HISTORY_COMMAND="agentic:task:solve --prompt"
+  HISTORY_COMMAND="agentic-pr-create --prompt"
 fi
 
 # The base body is only the footer; merge-pr-body.py (shared with
-# update-pr-runner.sh / fix-pr-runner.sh) inserts "## Summary", "## Next steps"
+# update-pr-runner.sh) inserts "## Summary", "## Next steps"
 # and "## Suggestions" ahead of it and appends the first "## Agentic Change
 # History" row, so a brand-new PR's body is assembled the same way a later
-# pr:update/pr:fix edits it.
+# agentic-pr-update edits it.
 BASE_BODY="$PR_FOOTER"
 
 PR_BODY=$(CURRENT_BODY="$BASE_BODY" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \

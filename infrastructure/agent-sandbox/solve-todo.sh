@@ -47,7 +47,7 @@ if [ -n "$PROMPT" ] && [ ${#IDS[@]} -gt 0 ]; then
   exit 1
 fi
 if [ -z "$PROMPT" ] && [ ${#IDS[@]} -eq 0 ]; then
-  echo "Usage: pnpm agentic:task:solve [--agent claude|codex] [--model <claude-model>] [--codex-model <codex-model>] (<TODO_ID> [TODO_ID...] | --prompt \"<task description>\")" >&2
+  echo "Usage: pnpm agentic-pr-create [--agent claude|codex] [--model <claude-model>] [--codex-model <codex-model>] (<TODO_ID> [TODO_ID...] | --prompt \"<task description>\")" >&2
   exit 1
 fi
 

@@ -9,8 +9,19 @@ META_FILE=/tmp/update-meta.json
 FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 PRE_COMMIT_HELPER=/tmp/run-pre-commit.sh
 MERGE_BODY_HELPER=/tmp/merge-pr-body.py
+CI_LOG=/tmp/pr-ci-failures.log
+CI_LOG_BUDGET=20000
 
 cd "$REPO_DIR"
+SKILL_NAME=agentic-pr-update
+FALLBACK_SUBJECT="chore: Apply requested update to PR #${PR}."
+if [ -n "${SANDBOX_MERGE_MAIN:-}" ]; then
+  SKILL_NAME=agentic-pr-update-resolve-conflicts
+elif [ -n "${SANDBOX_FIX_CI:-}" ]; then
+  SKILL_NAME=agentic-pr-update-fix-ci
+  FALLBACK_SUBJECT="ci: Fix failing checks on PR #${PR}."
+fi
+SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/$SKILL_NAME/SKILL.md")
 
 # Stash the helpers outside the working tree before checkout — the PR branch may predate them,
 # and gh pr checkout would otherwise leave us on a branch where the helper paths don't exist.
@@ -32,10 +43,39 @@ fi
 PR_TITLE=$(gh pr view "$PR" --json title -q .title 2>/dev/null || true)
 CURRENT_BODY=$(gh pr view "$PR" --json body -q .body 2>/dev/null || true)
 
+# The agent cannot call gh, so failing CI output has to be collected here and
+# handed over in the prompt.
+CI_SECTION=""
+if [ -n "${SANDBOX_CI_LOGS:-}" ]; then
+  : > "$CI_LOG"
+  gh pr checks "$PR" >> "$CI_LOG" 2>&1 || true
+  # A token without Actions read access makes this fail; say so rather than
+  # handing the agent an empty log.
+  if ! FAILED_RUN_IDS=$(gh run list --branch "$BRANCH" --limit 15 \
+    --json databaseId,conclusion -q '.[] | select(.conclusion == "failure") | .databaseId'); then
+    echo "WARNING: could not list workflow runs for ${BRANCH}; the agent gets no failed-step logs." >&2
+    FAILED_RUN_IDS=""
+  fi
+  for run_id in $FAILED_RUN_IDS; do
+    echo "===== failing run $run_id =====" >> "$CI_LOG"
+    gh run view "$run_id" --log-failed >> "$CI_LOG" 2>&1 || true
+  done
+  CI_SECTION=$(cat <<EOF
+
+Failing CI output for this PR (checks summary followed by failed-step logs, truncated to the last ${CI_LOG_BUDGET} bytes):
+
+$(tail -c "$CI_LOG_BUDGET" "$CI_LOG")
+
+Formatting failures from the pre-commit job (trailing-whitespace, end-of-file-fixer, black) are auto-fixed by the calling script; spend your effort on real lint, test, build, or logic failures.
+EOF
+)
+fi
+
 PROMPT=$(cat <<EOF
 You are running non-interactively in a checkout of pull request #${PR}${PR_TITLE:+ ("${PR_TITLE}")} (branch ${BRANCH}) of vigilant-broccoli. Apply the following change to this PR's branch, building on the work already there:
 
 ${INSTRUCTION}
+${CI_SECTION}
 
 The PR's current body is:
 
@@ -43,8 +83,12 @@ The PR's current body is:
 ${CURRENT_BODY}
 ---
 
-Rules:
-- Make only the changes needed to satisfy the request, following the repo conventions in CONTEXT.md. Read the code already on this branch first and extend it rather than starting over.
+Follow these shared task instructions:
+
+$SKILL_INSTRUCTIONS
+
+Sandbox execution rules:
+- You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
 - Do not run any git or gh commands — committing, pushing, and updating the PR body are handled by the calling script.
 - When finished, write $META_FILE containing only a JSON object with these string fields:
   - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure
@@ -102,7 +146,7 @@ if [ -n "$COMMIT_TYPE" ] && [ -n "$COMMIT_MESSAGE" ]; then
     COMMIT_SUBJECT="${COMMIT_TYPE}: ${COMMIT_MESSAGE}"
   fi
 else
-  COMMIT_SUBJECT="chore: Apply requested update to PR #${PR}."
+  COMMIT_SUBJECT="$FALLBACK_SUBJECT"
 fi
 
 echo "$TRAILER" | grep -Eqi '^co-authored-by: .+ <.+>$' || TRAILER="$FALLBACK_TRAILER"
@@ -119,7 +163,7 @@ else
 fi
 
 NEW_BODY=$(CURRENT_BODY="$CURRENT_BODY" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
-  HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic:pr:update" HISTORY_PROMPT="$INSTRUCTION" \
+  HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="$SKILL_NAME" HISTORY_PROMPT="$INSTRUCTION" \
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
   python3 "$MERGE_BODY_HELPER")
 gh pr edit "$PR" --body "$NEW_BODY"

@@ -1,14 +1,17 @@
-name: manual-agentic-rnd
+name: manual-agentic-pr-update-resolve-conflicts
+
+# Runs the same conflict-resolution wrapper as
+# `pnpm agentic-pr-update-resolve-conflicts <pr>`.
 
 on:
   workflow_dispatch:
     inputs:
-      question:
-        description: 'Research question to answer in a new docs/rnd/ note and pull request.'
-        required: true
+      pr:
+        description: 'PR number or URL to resolve merge conflicts for (e.g. "149").'
         type: string
+        required: true
       model:
-        description: 'Claude model to run the research with.'
+        description: 'Claude model to run the agent with.'
         type: choice
         default: sonnet
         options:
@@ -28,24 +31,14 @@ permissions:
   id-token: write
 
 concurrency:
-  group: manual-agentic-rnd
+  group: manual-agentic-pr-update-resolve-conflicts-${{ inputs.pr }}
   cancel-in-progress: false
 
 jobs:
-  research:
+  resolve-conflicts:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
-      - name: Validate question
-        env:
-          QUESTION: ${{ inputs.question }}
-        run: |
-          set -euo pipefail
-          if ! printf '%s' "$QUESTION" | grep -q '[^[:space:]]'; then
-            echo "ERROR: 'question' must contain a research question." >&2
-            exit 1
-          fi
-
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -59,14 +52,14 @@ jobs:
             kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
             kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
 
-      - name: Research and open pull request
+      - name: Resolve conflicts
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
           AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
           AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
           SANDBOX_FIREWALL: ${{ inputs.firewall }}
           MODEL: ${{ inputs.model }}
-          QUESTION: ${{ inputs.question }}
+          PR: ${{ inputs.pr }}
         run: |
           set -euo pipefail
-          bash infrastructure/agent-sandbox/create-rnd.sh --model "$MODEL" "$QUESTION"
+          bash infrastructure/agent-sandbox/resolve-pr-conflicts.sh --model "$MODEL" "$PR"

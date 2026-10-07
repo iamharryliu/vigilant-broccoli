@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Shared by every agentic-sandbox runner that opens or edits a PR
-(solve-todo-runner.sh, update-pr-runner.sh, fix-pr-runner.sh,
-create-todo-runner.sh, create-rnd-runner.sh, create-audit-runner.sh,
+(solve-todo-runner.sh, update-pr-runner.sh,
+create-todo-runner.sh, create-rnd-runner.sh,
 audit-todo-runner.sh) to rewrite a PR body in place: replace the
 "## Summary" / "## Next steps" / "## Suggestions" sections with the agent's latest cumulative
 description, and append a row to an "## Agentic Change History" table —
