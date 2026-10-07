@@ -93,6 +93,7 @@
 | Hadoop          | An open-source framework for distributed storage and processing of large data sets using clusters of computers.        |
 | IO bound        | A condition where the speed of a program is limited by input/output operations like reading files or network requests. |
 | Package Manager | A tool that automates the process of installing, upgrading, and managing software dependencies.                        |
+| Prune           | Remove unused or unneeded items (dead code, dependencies, stale branches, old data) to cut size and clutter.           |
 | Redis           | An in-memory data structure store used as a database, cache, and message broker for high-performance applications.     |
 | Runtime         | The environment in which a program or script executes, including the necessary tools and resources.                    |
 | tree shaking    | A code optimization technique that removes unused code (dead code) from the final bundle during the build process.     |
