@@ -16,6 +16,7 @@ Reference apps:
 
 - `cloud-8-skate-react` — full staging + production pair, plus sitemap generation before deploy.
 - `personal-website-react` — React variant with the same staging + production pair.
+- `utilities-ui` — full staging + production + preview set, no per-environment build config.
 - `docs-md` — full staging + production pair, no per-environment build config (`prune-deployments`'s `dependsOn` ordering is the reference for that part).
 
 ## The wrangler target trio (per environment)

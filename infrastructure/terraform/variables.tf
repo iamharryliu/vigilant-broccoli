@@ -249,6 +249,21 @@ variable "docs_pages_subdomain" {
   default = "production-docs-md.pages.dev"
 }
 
+variable "utilities_domain" {
+  type    = string
+  default = "utilities.harryliu.dev"
+}
+
+variable "utilities_pages_project" {
+  type    = string
+  default = "production-utilities-ui"
+}
+
+variable "utilities_pages_subdomain" {
+  type    = string
+  default = "production-utilities-ui.pages.dev"
+}
+
 variable "links_domain" {
   type    = string
   default = "links.harryliu.dev"
