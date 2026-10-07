@@ -20,5 +20,6 @@
       "prefix": "",
       "base": "https://github.com/iamharryliu/vigilant-broccoli/blob/main/"
     }
-  ]
+  ],
+  "labelByDirectory": ["CONTEXT.md", "SKILL.md"]
 }
