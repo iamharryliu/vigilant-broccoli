@@ -289,8 +289,6 @@ export const RECEIPT_CATEGORIES = [
   'Other',
 ] as const;
 
-export type ReceiptCategory = (typeof RECEIPT_CATEGORIES)[number];
-
 export const DEFAULT_RENAME_LANGUAGE = 'English';
 
 export const RENAME_LANGUAGES = [
