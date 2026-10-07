@@ -284,7 +284,7 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
-    label: 'VB - Cloudflare Workers',
+    label: 'VB - Cloudflare Workers and Pages',
     target:
       'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/workers-and-pages',
     type: OPEN_TYPE.BROWSER,
