@@ -14,3 +14,5 @@ The paragraph between `<!-- managed:repo-stats:start -->` and
 `repo-stats` pre-commit hook (run by `ci-pr-check`) fails when either is stale.
 Its counts and their sources are listed under the root README's managed line in
 [app-readme-pattern.md](../../../../../docs/app-readme-pattern.md#aggregate).
+
+The resume PDF (`scripts/generate-resume.ts`, from `@vigilant-broccoli/resume`) must stay on one page — generation throws otherwise and `pre-build` fails. Its hand-edited repo-stats bullet in `resume.json` should stay a single line, so trim wording rather than adding a line when the counts grow.
