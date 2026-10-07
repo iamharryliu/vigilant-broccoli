@@ -20,6 +20,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
 
       - uses: ./.github/actions/setup-nx-workspace
 
@@ -38,11 +40,11 @@ jobs:
             CF_ACCESS_CLIENT_ID:vigilant-broccoli/VAULT_CF_ACCESS_CLIENT_ID
             CF_ACCESS_CLIENT_SECRET:vigilant-broccoli/VAULT_CF_ACCESS_CLIENT_SECRET
 
-      - name: Deploy employee-handler-ui
+      - name: Deploy affected demo apps
         working-directory: ./projects/nx-workspace
         env:
           VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
           VAULT_ADDR: https://vault.harryliu.dev
           CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
-        run: pnpm exec nx run employee-handler-ui:deploy:demo
+        run: pnpm exec nx affected -t deploy:demo

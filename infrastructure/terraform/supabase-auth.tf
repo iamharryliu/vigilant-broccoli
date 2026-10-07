@@ -45,8 +45,7 @@ resource "supabase_settings" "vb_auth" {
       "https://staging-hearth.vercel.app/*",                                # hearth staging
       "https://production-hearth.vercel.app/*",                             # hearth prod
       "http://localhost:4000/auth/callback",                                # employee-handler-ui local dev
-      "https://staging-employee-handler-ui.vercel.app/*",                   # employee-handler-ui staging
-      "https://production-employee-handler-ui.vercel.app/*",                # employee-handler-ui prod
+      "https://demo-employee-handler-ui.vercel.app/*",                      # employee-handler-ui demo (its only deploy)
       "http://localhost:3000/*",                                            # vb-manager-next local dev
       "http://127.0.0.1:3000/*",                                            # vb-manager-next local dev (127.0.0.1 form)
       "https://manager.vigilant-broccoli.app/*",                            # vb-manager-next prod (PM2)
