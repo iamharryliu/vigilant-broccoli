@@ -151,6 +151,7 @@ fi
 if [ -n "$PROMPT" ]; then
   LOG_DIR=$(mktemp -d /tmp/vb-solve.XXXXXX)
   LOG_FILE="$LOG_DIR/solve-prompt.log"
+  STATUS=0
   echo "Solving free-text task (agent: $AGENT_RUNNER, model: $RUNNER_MODEL): $PROMPT"
   echo "Log: $LOG_FILE"
   docker run --rm --init --name "vb-solve-prompt-$(date +%s)" \
@@ -158,9 +159,9 @@ if [ -n "$PROMPT" ]; then
     "${DOCKER_ENV_ARGS[@]}" \
     "$IMAGE" \
     bash -c 'exec bash "$0" --prompt "$1"' "$RUNNER_PATH" "$PROMPT" \
-    2>&1 | tee "$LOG_FILE"
-  STATUS="${PIPESTATUS[0]}"
+    2>&1 | tee "$LOG_FILE" || STATUS="${PIPESTATUS[0]}"
   write_pr_details "$LOG_FILE" "$LOG_DIR/pr-details.jsonl"
+  bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_FILE"
   if [ -n "${GITHUB_OUTPUT:-}" ] && [ -f "$LOG_DIR/pr-details.jsonl" ]; then
     echo "pr_details_file=$LOG_DIR/pr-details.jsonl" >> "$GITHUB_OUTPUT"
   fi
@@ -194,6 +195,7 @@ for i in "${!PIDS[@]}"; do
     if [ -n "$PR_URL" ]; then
       echo "✓ TODO ${id}: $PR_URL"
       write_pr_details "$LOG_DIR/solve-${id}.log" "$LOG_DIR/pr-details.jsonl" "$id"
+      bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_DIR/solve-${id}.log" "TODO $id"
     else
       FAILED=1
       echo "✗ TODO ${id}: completed without opening a PR (see $LOG_DIR/solve-${id}.log)" >&2
@@ -202,6 +204,7 @@ for i in "${!PIDS[@]}"; do
     FAILED=1
     echo "✗ TODO ${id} failed (see $LOG_DIR/solve-${id}.log)" >&2
     write_pr_details "$LOG_DIR/solve-${id}.log" "$LOG_DIR/pr-details.jsonl" "$id (salvage)"
+    bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_DIR/solve-${id}.log" "TODO $id, salvage"
   fi
 done
 
