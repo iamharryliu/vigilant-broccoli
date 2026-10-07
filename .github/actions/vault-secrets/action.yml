@@ -20,6 +20,14 @@ inputs:
     required: false
     default: github-actions-role
 
+outputs:
+  cf_access_client_id:
+    description: Cloudflare Access service token client id, for scripts that call Vault directly
+    value: ${{ steps.cf-access.outputs.cf_access_client_id }}
+  cf_access_client_secret:
+    description: Cloudflare Access service token client secret, for scripts that call Vault directly
+    value: ${{ steps.cf-access.outputs.cf_access_client_secret }}
+
 runs:
   using: composite
   steps:

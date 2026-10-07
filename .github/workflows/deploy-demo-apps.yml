@@ -23,6 +23,7 @@ jobs:
       - uses: ./.github/actions/setup-nx-workspace
 
       - name: Import Secrets from Vault
+        id: vault
         uses: ./.github/actions/vault-secrets
         with:
           gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -34,4 +35,6 @@ jobs:
         env:
           VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
           VAULT_ADDR: https://vault.harryliu.dev
+          CF_ACCESS_CLIENT_ID: ${{ steps.vault.outputs.cf_access_client_id }}
+          CF_ACCESS_CLIENT_SECRET: ${{ steps.vault.outputs.cf_access_client_secret }}
         run: pnpm exec nx run employee-handler-ui:deploy:demo
