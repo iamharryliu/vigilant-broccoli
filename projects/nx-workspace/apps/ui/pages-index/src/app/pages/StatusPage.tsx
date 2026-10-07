@@ -54,22 +54,26 @@ const STATUS_COLORS: Record<
 const STATUS_GROUP = {
   PRODUCTION: 'production',
   STAGING: 'staging',
+  DEMO: 'demo',
   PERSONAL: 'personal',
 } as const;
 type StatusGroup = (typeof STATUS_GROUP)[keyof typeof STATUS_GROUP];
 
 const PRODUCTION_PREFIX = 'production-';
 const STAGING_PREFIX = 'staging-';
+const DEMO_PREFIX = 'demo-';
 
 const STATUS_GROUP_ORDER: StatusGroup[] = [
   STATUS_GROUP.PRODUCTION,
   STATUS_GROUP.STAGING,
+  STATUS_GROUP.DEMO,
   STATUS_GROUP.PERSONAL,
 ];
 
 const STATUS_GROUP_LABEL_KEY: Record<StatusGroup, DotPaths<typeof en>> = {
   [STATUS_GROUP.PRODUCTION]: 'STATUS_PAGE.GROUP_PRODUCTION',
   [STATUS_GROUP.STAGING]: 'STATUS_PAGE.GROUP_STAGING',
+  [STATUS_GROUP.DEMO]: 'STATUS_PAGE.GROUP_DEMO',
   [STATUS_GROUP.PERSONAL]: 'STATUS_PAGE.GROUP_PERSONAL',
 };
 
@@ -88,6 +92,7 @@ const LEGEND_STATUS_ORDER: ServiceStatus['status'][] = [
 const getStatusGroup = (name: string): StatusGroup => {
   if (name.startsWith(PRODUCTION_PREFIX)) return STATUS_GROUP.PRODUCTION;
   if (name.startsWith(STAGING_PREFIX)) return STATUS_GROUP.STAGING;
+  if (name.startsWith(DEMO_PREFIX)) return STATUS_GROUP.DEMO;
   return STATUS_GROUP.PERSONAL;
 };
 
@@ -106,6 +111,7 @@ const groupServices = (
   const groups: Record<StatusGroup, ServiceStatus[]> = {
     [STATUS_GROUP.PRODUCTION]: [],
     [STATUS_GROUP.STAGING]: [],
+    [STATUS_GROUP.DEMO]: [],
     [STATUS_GROUP.PERSONAL]: [],
   };
   services.forEach(svc => groups[getStatusGroup(svc.name)].push(svc));

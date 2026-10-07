@@ -61,6 +61,20 @@ export function WebApplicationsPage() {
               )}
             />
           </li>
+          <li>
+            <CardLink
+              href="https://utilities.harryliu.dev/"
+              title={t('WEB_APPLICATIONS_PAGE.UTILITIES.TITLE')}
+              description={t('WEB_APPLICATIONS_PAGE.UTILITIES.DESCRIPTION')}
+            />
+          </li>
+          <li>
+            <CardLink
+              href="https://links.harryliu.dev/"
+              title={t('WEB_APPLICATIONS_PAGE.LINKS.TITLE')}
+              description={t('WEB_APPLICATIONS_PAGE.LINKS.DESCRIPTION')}
+            />
+          </li>
         </CardGrid>
       </section>
 

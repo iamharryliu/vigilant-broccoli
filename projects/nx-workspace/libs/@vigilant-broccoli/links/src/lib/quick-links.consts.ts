@@ -11,6 +11,7 @@ import {
   GITHUB_LINK,
   GOOGLE_SERVICES,
   GROK_LINK,
+  HARRYLIU_APP_URL,
   OPENAI_LINK,
   OPENWEATHER_LINK,
   PROTON_LINK,
@@ -853,6 +854,72 @@ const VB_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
+    label: HARRYLIU_APP_URL.UTILITIES.NAME,
+    target: HARRYLIU_APP_URL.UTILITIES.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: `${HARRYLIU_APP_URL.UTILITIES.NAME} (Staging)`,
+    target: HARRYLIU_APP_URL.UTILITIES.STAGING_URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: HARRYLIU_APP_URL.LINKS.NAME,
+    target: HARRYLIU_APP_URL.LINKS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: `${HARRYLIU_APP_URL.LINKS.NAME} (Staging)`,
+    target: HARRYLIU_APP_URL.LINKS.STAGING_URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: HARRYLIU_APP_URL.WEATHER.NAME,
+    target: HARRYLIU_APP_URL.WEATHER.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: `${HARRYLIU_APP_URL.WEATHER.NAME} (Staging)`,
+    target: HARRYLIU_APP_URL.WEATHER.STAGING_URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: HARRYLIU_APP_URL.FIND_ME.NAME,
+    target: HARRYLIU_APP_URL.FIND_ME.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: `${HARRYLIU_APP_URL.FIND_ME.NAME} (Staging)`,
+    target: HARRYLIU_APP_URL.FIND_ME.STAGING_URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: HARRYLIU_APP_URL.WHITEBOARD.NAME,
+    target: HARRYLIU_APP_URL.WHITEBOARD.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: `${HARRYLIU_APP_URL.WHITEBOARD.NAME} (Staging)`,
+    target: HARRYLIU_APP_URL.WHITEBOARD.STAGING_URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: HARRYLIU_APP_URL.EMPLOYEE_HANDLER_DEMO.NAME,
+    target: HARRYLIU_APP_URL.EMPLOYEE_HANDLER_DEMO.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
     label: 'Code Server',
     target: 'https://code.harryliu.dev/',
     type: OPEN_TYPE.BROWSER,
@@ -1354,18 +1421,6 @@ const HOME_LINKS = [
 ];
 
 const UI_APP_LINKS = [
-  {
-    label: 'FindMe',
-    target: 'https://staging-findme.vercel.app/',
-    type: OPEN_TYPE.BROWSER,
-    subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
-  },
-  {
-    label: 'Weather',
-    target: 'https://staging-weather-next.vercel.app/',
-    type: OPEN_TYPE.BROWSER,
-    subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
-  },
   {
     label: 'React Component Library',
     target: 'https://projects.harryliu.dev/react-component-library/',

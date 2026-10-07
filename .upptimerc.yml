@@ -18,6 +18,8 @@ sites:
     url: https://staging-hearth.vercel.app/login
   - name: staging-service-manager
     url: https://staging-vb-express.fly.dev/
+  - name: staging-utilities
+    url: https://staging-utilities-ui.pages.dev/
   - name: staging-whiteboard
     url: https://staging-whiteboard.vercel.app/
   - name: staging-weather
@@ -48,6 +50,8 @@ sites:
     url: https://production-hearth.vercel.app/login
   - name: production-service-manager
     url: https://api.harryliu.dev/
+  - name: production-utilities
+    url: https://utilities.harryliu.dev/
   - name: production-whiteboard
     url: https://whiteboard.harryliu.dev/
   - name: production-weather
@@ -58,6 +62,8 @@ sites:
     url: https://docs.harryliu.dev/
   - name: production-links
     url: https://links.harryliu.dev/
+  - name: demo-employee-handler-ui
+    url: https://demo-employee-handler-ui.vercel.app/
 
 user-agent: upptime-vigilant-broccoli
 status-website:

@@ -583,3 +583,35 @@ export const PROTON_LINK = {
     URL: 'https://account.proton.me/u/0/mail/dashboard',
   },
 } as const;
+
+export const HARRYLIU_APP_URL = {
+  UTILITIES: {
+    NAME: 'Utilities',
+    URL: 'https://utilities.harryliu.dev/',
+    STAGING_URL: 'https://staging-utilities-ui.pages.dev/',
+  },
+  LINKS: {
+    NAME: 'Links',
+    URL: 'https://links.harryliu.dev/',
+    STAGING_URL: 'https://staging-links-react.pages.dev/',
+  },
+  WEATHER: {
+    NAME: 'Weather',
+    URL: 'https://weather.harryliu.dev/',
+    STAGING_URL: 'https://staging-weather-next.vercel.app/',
+  },
+  FIND_ME: {
+    NAME: 'Find Me',
+    URL: 'https://findme.harryliu.dev/',
+    STAGING_URL: 'https://staging-findme.vercel.app/',
+  },
+  WHITEBOARD: {
+    NAME: 'Whiteboard',
+    URL: 'https://whiteboard.harryliu.dev/',
+    STAGING_URL: 'https://staging-whiteboard.vercel.app/',
+  },
+  EMPLOYEE_HANDLER_DEMO: {
+    NAME: 'Employee Handler Demo',
+    URL: 'https://demo-employee-handler-ui.vercel.app/',
+  },
+} as const;

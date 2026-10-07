@@ -46,7 +46,7 @@ Every route-level page sets a document title of `Page Name | Site Name`, so brow
 
 ## pages-index card (required)
 
-Every UI application appears as a card under "UI Apps" in `apps/ui/pages-index/src/app/pages/UiPage.tsx` (the GitHub Pages "UI" page).
+Every UI application with a public URL appears as a card in `apps/ui/pages-index/src/app/pages/WebApplicationsPage.tsx` (the GitHub Pages "Web Applications" page; demo-only deploys go in its Demo section). Each public URL also needs an Upptime entry and a quick-links browser entry — see [Public URL registration](../app-development.md#deployment).
 
 ## Local dev
 
@@ -59,4 +59,4 @@ Every UI application appears as a card under "UI Apps" in `apps/ui/pages-index/s
 1. Project under `apps/ui/*` (or `apps/*` for Next.js), deploy targets per the destination's pattern doc.
 2. i18n wired via `createI18n` (above).
 3. Per-page document titles via `usePageTitle` (above).
-4. UI Apps card in `UiPage.tsx`.
+4. Web Applications card in `WebApplicationsPage.tsx`, plus the Upptime and quick-links entries above.

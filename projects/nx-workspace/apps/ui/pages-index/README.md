@@ -24,7 +24,7 @@
 ## Page Navigation
 
 - `/` — Home
-  - `/status` — Status (service health grouped by Production / Staging / Personal Apps from `iamharryliu/uptime`; unavailable monitoring data displays an error; GitHub Actions badges for both repositories)
+  - `/status` — Status (service health grouped by Production / Staging / Demo / Personal Apps from `iamharryliu/uptime`; unavailable monitoring data displays an error; GitHub Actions badges for both repositories)
   - `/repo-timeline` — Repo Timeline (lines of code, commits, PRs merged, lines added/deleted per day / month / year, shown as a horizontally scrollable bar chart or as react-lib's `ScrollTimeline`; data is `public/repo-timeline.json`, generated from `git log --numstat` by the `generate-repo-timeline` target (`scripts/generate-repo-timeline.ts`, lockfiles and >100K-line single-file changes excluded) and copied into `_site` on each Pages deploy)
   - `/open-source` — Open Source
     - GitHub → `/open-source/github` (README fetched from `raw.githubusercontent.com`, links out to the repo)
@@ -33,7 +33,7 @@
     - npm → `/open-source/npm` (published `@vigilant-broccoli/*` packages)
       - `/open-source/npm/:pkg` (README fetched from `registry.npmjs.org`, links out to the npm package)
   - `/web-applications` - Web applications
-    - Apps → harryliu.dev, Cloud8Skate, Docs (Markdown), FindMe, Whiteboard, Weather (external)
+    - Apps → harryliu.dev, Cloud8Skate, Docs (Markdown), Utilities, Links, FindMe, Whiteboard, Weather (external)
     - Demo → Employee Handler
   - `/api-services` — API Services
     - `/api-services/:service` — Swagger UI rendered in-app against a spec published at build time to `public/openapi/<service>.json` by the `generate-openapi` target (`scripts/generate-openapi-specs.ts`). All four services (llm-service, bucket-service, email-service, email-subscription-service) are private-only Fly apps, so their own `/docs` is unreachable from the internet — this page is the only way to browse them. Swagger UI itself loads from a pinned jsDelivr CDN rather than bundling `swagger-ui-dist`.
