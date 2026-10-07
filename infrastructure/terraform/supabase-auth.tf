@@ -108,6 +108,6 @@ resource "supabase_settings" "vb_auth" {
     # Supabase advances this as it migrates the storage service, so apply fails
     # with "inconsistent result after apply" until it is synced to the live
     # value. Read the value out of the error and paste it here.
-    migrationVersion = "objects-null-version-index"
+    migrationVersion = "drop-bucketid-objname-index"
   })
 }
