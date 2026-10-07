@@ -269,6 +269,13 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: 'Supabase Auth URL Configuration (vigilant-broccoli)',
+    target:
+      'https://supabase.com/dashboard/project/jrdosjjgmsoodpjmjqxx/auth/url-configuration',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: 'VB - Cloudflare Domains',
     target:
       'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/registrar/domains',
