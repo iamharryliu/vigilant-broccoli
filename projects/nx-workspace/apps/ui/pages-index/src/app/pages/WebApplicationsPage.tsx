@@ -52,6 +52,15 @@ export function WebApplicationsPage() {
               description={t('WEB_APPLICATIONS_PAGE.WHITEBOARD.DESCRIPTION')}
             />
           </li>
+          <li>
+            <CardLink
+              href="https://vibecheck-lite.harryliu.dev/"
+              title={t('WEB_APPLICATIONS_PAGE.VIBECHECK_LITE.TITLE')}
+              description={t(
+                'WEB_APPLICATIONS_PAGE.VIBECHECK_LITE.DESCRIPTION',
+              )}
+            />
+          </li>
         </CardGrid>
       </section>
 

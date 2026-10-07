@@ -1,6 +1,6 @@
 # Vercel deploy pattern (Next.js apps)
 
-Deploys for `hearth`, `findme`, `whiteboard`, `vb-manager-next-mobile`. `employee-handler-ui` deploys only through its `deploy:demo` target (project `demo-employee-handler-ui`), run by the `deploy-demo-apps` workflow. Everything runs through `scripts/deploy-vercel.ts`.
+Deploys for `hearth`, `findme`, `whiteboard`, `vibecheck-lite-next`, `vb-manager-next-mobile`. `employee-handler-ui` deploys only through its `deploy:demo` target (project `demo-employee-handler-ui`), run by the `deploy-demo-apps` workflow. Everything runs through `scripts/deploy-vercel.ts`.
 
 ## Table of Contents
 

@@ -20,6 +20,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── www.harryliu.dev                      301 redirect to apex (Cloudflare ruleset)
 ├── findme.harryliu.dev                   FindMe — Vercel `production-findme` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
 ├── whiteboard.harryliu.dev               Whiteboard — Vercel `production-whiteboard` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
+├── vibecheck-lite.harryliu.dev           VibeCheck Lite — Vercel `production-vibecheck-lite-next` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
 ├── links.harryliu.dev                    Links — Cloudflare Pages `production-links-react` (domain + CNAME: Terraform, infrastructure/terraform/; public pastebin page, no Access gating)
 ├── docs.harryliu.dev                     Docs MD — Cloudflare Pages `production-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-docs-md.yml, which mirrors `deploy.yml`'s environment selection because the notes snapshot lives outside the nx graph; public, no Access gating)
 ├── utilities.harryliu.dev                Utilities UI — Cloudflare Pages `production-utilities-ui` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating)
@@ -48,7 +49,9 @@ vercel.app                                Vercel (production projects created on
 ├── staging-findme.vercel.app                 FindMe (staging)
 ├── production-findme.vercel.app              FindMe (production)
 ├── staging-whiteboard.vercel.app             Whiteboard (staging)
-└── production-whiteboard.vercel.app          Whiteboard (production)
+├── production-whiteboard.vercel.app          Whiteboard (production)
+├── staging-vibecheck-lite-next.vercel.app    VibeCheck Lite (staging)
+└── production-vibecheck-lite-next.vercel.app VibeCheck Lite (production)
 
 pages.dev                                 Cloudflare Pages URLs for the environment not attached to a custom domain above
 ├── staging-cloud-8-skate-react.pages.dev      Cloud 8 Skate (staging — cloud8skate.com is on production, the exception)

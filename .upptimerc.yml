@@ -20,6 +20,8 @@ sites:
     url: https://staging-vb-express.fly.dev/
   - name: staging-whiteboard
     url: https://staging-whiteboard.vercel.app/
+  - name: staging-vibecheck-lite
+    url: https://staging-vibecheck-lite-next.vercel.app/
   - name: staging-vb-manager-next-mobile
     url: https://staging-vb-manager-next-mobile.vercel.app/login
   - name: production-cloud-8-skate
@@ -48,6 +50,8 @@ sites:
     url: https://api.harryliu.dev/
   - name: production-whiteboard
     url: https://whiteboard.harryliu.dev/
+  - name: production-vibecheck-lite
+    url: https://vibecheck-lite.harryliu.dev/
   - name: production-vb-manager-next-mobile
     url: https://production-vb-manager-next-mobile.vercel.app/login
   - name: production-docs
