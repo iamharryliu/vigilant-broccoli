@@ -1,13 +1,18 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Button, Card, Skeleton } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  Skeleton,
+  WeatherCard,
+  WeatherDisplay,
+} from '@vigilant-broccoli/react-lib';
 import { LocationService } from '@vigilant-broccoli/common-browser';
 import {
-  getWeatherIcon,
   HTTP_HEADERS,
   HTTP_METHOD,
   Location,
+  toDisplayTemperature,
 } from '@vigilant-broccoli/common-js';
 import {
   PREPARATION_API_PATH,
@@ -38,7 +43,6 @@ const GEOLOCATION_OPTIONS: PositionOptions = {
 
 const LOCATION_ICON = '📍';
 const ERROR_ICON = '🌥️';
-const SEPARATOR = '·';
 
 const locationService = new LocationService();
 
@@ -87,8 +91,6 @@ const loadWeather = async (onLocated: () => void): Promise<ViewState> => {
     ? { status: STATUS.READY, weather }
     : { status: STATUS.WEATHER_ERROR };
 };
-
-const roundTemperature = (celsius: number) => Math.round(celsius);
 
 export function WeatherApp() {
   const { t } = useTranslation();
@@ -155,24 +157,6 @@ export function WeatherApp() {
     </div>
   );
 
-  const renderPreparation = () => {
-    const badges = PREPARATION_BADGES.filter(({ key }) => preparation?.[key]);
-    if (!badges.length) return null;
-    return (
-      <ul className="mt-3 flex flex-wrap justify-center gap-2">
-        {badges.map(({ key, icon, labelKey }) => (
-          <li
-            key={key}
-            className="flex items-center gap-1.5 rounded-full bg-sky-100 px-3 py-1 text-sm text-sky-900 dark:bg-sky-900/40 dark:text-sky-100"
-          >
-            <span aria-hidden>{icon}</span>
-            {t(labelKey)}
-          </li>
-        ))}
-      </ul>
-    );
-  };
-
   const renderWeather = ({
     city,
     temperatureC,
@@ -182,27 +166,23 @@ export function WeatherApp() {
     condition,
     isDay,
   }: LocalWeather) => (
-    <div className="flex flex-col items-center gap-2">
-      <h1 className="text-xl font-medium">{city ?? t('LOCATION.FALLBACK')}</h1>
-      <span className="my-2 text-7xl leading-none" aria-hidden>
-        {getWeatherIcon(condition, isDay)}
-      </span>
-      <p className="text-4xl font-light tracking-tight">
-        {t('WEATHER.CURRENT', {
-          temperature: roundTemperature(temperatureC),
-          condition: t(`CONDITION.${condition}`),
-        })}
-      </p>
-      <p className="text-base text-gray-700 dark:text-gray-300">
-        {t('WEATHER.HIGH', { temperature: roundTemperature(highC) })}{' '}
-        <span aria-hidden>{SEPARATOR}</span>{' '}
-        {t('WEATHER.LOW', { temperature: roundTemperature(lowC) })}
-      </p>
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        {t('WEATHER.FEELS_LIKE', { temperature: roundTemperature(feelsLikeC) })}
-      </p>
-      {renderPreparation()}
-    </div>
+    <WeatherDisplay
+      city={city ?? t('LOCATION.FALLBACK')}
+      condition={condition}
+      isDay={isDay}
+      current={t('WEATHER.CURRENT', {
+        temperature: toDisplayTemperature(temperatureC),
+        condition: t(`CONDITION.${condition}`),
+      })}
+      high={t('WEATHER.HIGH', { temperature: toDisplayTemperature(highC) })}
+      low={t('WEATHER.LOW', { temperature: toDisplayTemperature(lowC) })}
+      feelsLike={t('WEATHER.FEELS_LIKE', {
+        temperature: toDisplayTemperature(feelsLikeC),
+      })}
+      badges={PREPARATION_BADGES.filter(({ key }) => preparation?.[key]).map(
+        ({ key, icon, labelKey }) => ({ key, icon, label: t(labelKey) }),
+      )}
+    />
   );
 
   const renderContent = () => {
@@ -236,13 +216,7 @@ export function WeatherApp() {
 
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-6 bg-gradient-to-b from-sky-50 to-white px-6 py-12 text-gray-900 dark:from-slate-900 dark:to-slate-950 dark:text-gray-100">
-      <Card className="w-full max-w-sm px-8 py-10 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
-        {renderContent()}
-      </Card>
-      <footer className="text-xs text-gray-400 dark:text-gray-500">
-        {t('ATTRIBUTION.WEATHER')} <span aria-hidden>{SEPARATOR}</span>{' '}
-        {t('ATTRIBUTION.LOCATION')}
-      </footer>
+      <WeatherCard>{renderContent()}</WeatherCard>
     </main>
   );
 }

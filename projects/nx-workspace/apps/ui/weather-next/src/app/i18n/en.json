@@ -36,9 +36,5 @@
   },
   "ACTIONS": {
     "RETRY": "Try again"
-  },
-  "ATTRIBUTION": {
-    "WEATHER": "Weather by Open-Meteo",
-    "LOCATION": "Places © OpenStreetMap contributors"
   }
 }

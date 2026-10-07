@@ -1,18 +1,15 @@
+import { Location } from '../location/location.model';
 import {
   CurrentWeather,
   DailyWeather,
   HourlyWeather,
-  Location,
   WEATHER_CONDITION,
   WEATHER_PROVIDER,
   WeatherCondition,
   WeatherSnapshot,
-} from '@vigilant-broccoli/common-js';
-import {
-  ISO_DATE_LENGTH,
-  MS_PER_SECOND,
-  OPEN_METEO_BASE_URL,
-} from './weather.consts';
+} from './weather.model';
+
+export const OPEN_METEO_BASE_URL = 'https://api.open-meteo.com/v1/forecast';
 
 interface OpenMeteoResponse {
   utc_offset_seconds: number;
@@ -46,6 +43,8 @@ const HOURLY_FIELDS = 'temperature_2m,weather_code,is_day';
 const DAILY_FIELDS =
   'temperature_2m_min,temperature_2m_max,wind_speed_10m_max,precipitation_sum,weather_code';
 const TIMEZONE_PARAM = 'auto';
+const MS_PER_SECOND = 1000;
+const ISO_DATE_LENGTH = 10;
 
 /**
  * WMO 4677 code groups, as documented by Open-Meteo.

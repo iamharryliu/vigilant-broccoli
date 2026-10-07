@@ -1,5 +1,7 @@
 # Component Library
 
+Browsable sandbox of the shared `react-lib` components and `react-utility` utilities, including a Weather Display entry seeded from live Open-Meteo weather.
+
 ## Table of Contents
 
 - [Stack](#stack)
@@ -14,4 +16,5 @@
 - Internal libs
   - `react-sandbox`
 - Cloud services
+  - Open-Meteo (Weather Display sandbox)
   - GitHub Pages

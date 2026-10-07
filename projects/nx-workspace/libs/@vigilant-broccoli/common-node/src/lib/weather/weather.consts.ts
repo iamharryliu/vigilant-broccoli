@@ -1,4 +1,3 @@
-export const OPEN_METEO_BASE_URL = 'https://api.open-meteo.com/v1/forecast';
 export const OPENWEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
 export const OPENWEATHER_API_KEY_ENV_VAR = 'OPENWEATHER_API_KEY';

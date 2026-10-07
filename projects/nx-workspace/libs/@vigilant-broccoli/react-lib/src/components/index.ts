@@ -71,3 +71,4 @@ export * from './QuickLinksPanel';
 export * from './Table';
 export * from './ThemeScope';
 export * from './Popover';
+export * from './WeatherDisplay';
