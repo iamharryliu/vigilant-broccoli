@@ -63,9 +63,9 @@ pushing and opening the PR stay with the runner for both agents.
 
 `pnpm agentic-pr-update --with-ci-logs <pr> "<instruction>"` makes `update-pr-runner.sh` collect `gh pr checks` and the failed-step logs (`gh run view --log-failed`) of the branch's recent failing runs, keep the last 20 KB, and add them to the prompt. The agent cannot run `gh` itself, so this is how it sees why CI failed.
 
-`pnpm agentic-pr-update-fix-ci <pr> ["<instruction>"]` runs `fix-pr-ci.sh`, also used by `manual-agentic-pr-update-fix-ci`. It calls `update-pr.sh --with-ci-logs` with a fixed CI-fix instruction and selects the shared CI-fix skill; the optional instruction is appended as extra guidance. It accepts a PR number or URL and optional `--model <model>`.
+`pnpm agentic-pr-update-fix-ci <pr> ["<instruction>"]` runs `fix-pr-ci.sh`, also used by `manual-agentic-pr-update` with `operation=fix-ci`. It calls `update-pr.sh --with-ci-logs` with a fixed CI-fix instruction and selects the shared CI-fix skill; the optional instruction is appended as extra guidance. It accepts a PR number or URL and optional `--model <model>`.
 
-`pnpm agentic-pr-update-resolve-conflicts <pr>` runs `resolve-pr-conflicts.sh`, also used by `manual-agentic-pr-update-resolve-conflicts`. It accepts a PR number or URL and optional `--model <model>`, enables the merge of `origin/main`, and selects the shared conflict-resolution skill in the existing PR-update runner.
+`pnpm agentic-pr-update-resolve-conflicts <pr>` runs `resolve-pr-conflicts.sh`, also used by `manual-agentic-pr-update` with `operation=resolve-conflicts`. It accepts a PR number or URL and optional `--model <model>`, enables the merge of `origin/main`, and selects the shared conflict-resolution skill in the existing PR-update runner.
 
 ## Auditing the backlog
 

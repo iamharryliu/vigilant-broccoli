@@ -24,7 +24,7 @@ Skills reference [CONTEXT.md](../CONTEXT.md) and the documents in its Doc Map ra
 
 ## Agentic commands
 
-Use one base name, `agentic-<resource>-<verb>[-<variant>]`, for each operation: for example `agentic-pr-create`, `agentic-pr-update`, or `agentic-pr-update-resolve-conflicts`. The root pnpm script and canonical skill directory/frontmatter use that exact name; Claude exposes `/name` and Codex `$name`. The corresponding GitHub workflow adds its routing prefix (`manual-` or `cron-`). Runner filenames are implementation details.
+Use one base name, `agentic-<resource>-<verb>[-<variant>]`, for each operation: for example `agentic-pr-create`, `agentic-pr-update`, or `agentic-pr-update-resolve-conflicts`. The root pnpm script and canonical skill directory/frontmatter use that exact name; Claude exposes `/name` and Codex `$name`. The corresponding GitHub workflow adds its routing prefix (`manual-` or `cron-`), or serves several related operations through an explicit selector. `manual-agentic-pr-update` routes `change`, `fix-ci`, and `resolve-conflicts` to their existing wrappers and skills; the local command names stay separate. Runner filenames are implementation details.
 
 Keep task instructions in `setup/dotfiles/agent-skills/<name>/SKILL.md`. Both local sessions and sandbox prompts consume that source. Runners load the file at runtime and embed it in the prompt; load it before checking out a PR branch, which may predate the skill. Variant runners select the matching variant skill rather than copying its task instructions into shell strings or YAML.
 
