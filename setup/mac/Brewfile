@@ -204,6 +204,7 @@ cask "wechat"
 cask "whatsapp"
 # Network protocol analyzer
 cask "wireshark-app"
+cask "zed"
 vscode "anthropic.claude-code"
 vscode "dbaeumer.vscode-eslint"
 vscode "eamodio.gitlens"
