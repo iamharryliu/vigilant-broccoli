@@ -4,7 +4,7 @@
 
 - [IP Addresses](./ip-address.md)
 - [URI Anatomy](#uri-anatomy)
-- [Remote Access and VPN](#remote-access-and-vpn)
+- [Remote Access](#remote-access)
 - [Network Security](./network-security/network-security.md)
 
 ## URI Anatomy
@@ -24,10 +24,9 @@ foo://example.com:8042/over/there?name=ferret#nose
 scheme    authority      path        query     hash
 ```
 
-## Remote Access and VPN
+## Remote Access
 
-| Tool                        | Description                                                                |
-| --------------------------- | -------------------------------------------------------------------------- |
-| [SSH](./ssh.md)             | Secure remote access and port forwarding over an encrypted SSH connection. |
-| [WireGuard](./wireguard.md) | Encrypted point-to-point VPN tunnel into a private network.                |
-| [Tailscale](./tailscale.md) | Mesh VPN built on WireGuard with a hosted control plane.                   |
+| Method          | Description                                                                                               | Best Used For                                                             |
+| --------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| [SSH](./ssh.md) | Encrypted remote shell, file transfer, and port forwarding.                                               | Run commands on a remote machine or forward access to a specific service. |
+| [VPN](./vpn.md) | Encrypted network connectivity between devices or networks; compares WireGuard, Tailscale, and Headscale. | Reach private services across devices or connect entire networks.         |
