@@ -19,9 +19,9 @@ export function WebApplicationsPage() {
         <CardGrid>
           <li>
             <CardLink
-              href="https://harryliu.dev/"
-              title={t('WEB_APPLICATIONS_PAGE.HARRY_LIU.TITLE')}
-              description={t('WEB_APPLICATIONS_PAGE.HARRY_LIU.DESCRIPTION')}
+              href="https://context.harryliu.dev/"
+              title={t('WEB_APPLICATIONS_PAGE.CONTEXT_MD.TITLE')}
+              description={t('WEB_APPLICATIONS_PAGE.CONTEXT_MD.DESCRIPTION')}
             />
           </li>
           <li>
@@ -33,9 +33,11 @@ export function WebApplicationsPage() {
           </li>
           <li>
             <CardLink
-              href="https://context.harryliu.dev/"
-              title={t('WEB_APPLICATIONS_PAGE.CONTEXT_MD.TITLE')}
-              description={t('WEB_APPLICATIONS_PAGE.CONTEXT_MD.DESCRIPTION')}
+              href="https://components.harryliu.dev/"
+              title={t('WEB_APPLICATIONS_PAGE.COMPONENT_LIBRARY.TITLE')}
+              description={t(
+                'WEB_APPLICATIONS_PAGE.COMPONENT_LIBRARY.DESCRIPTION',
+              )}
             />
           </li>
           <li>
@@ -54,16 +56,16 @@ export function WebApplicationsPage() {
           </li>
           <li>
             <CardLink
-              href="https://whiteboard.harryliu.dev/"
-              title={t('WEB_APPLICATIONS_PAGE.WHITEBOARD.TITLE')}
-              description={t('WEB_APPLICATIONS_PAGE.WHITEBOARD.DESCRIPTION')}
+              href="https://harryliu.dev/"
+              title={t('WEB_APPLICATIONS_PAGE.HARRY_LIU.TITLE')}
+              description={t('WEB_APPLICATIONS_PAGE.HARRY_LIU.DESCRIPTION')}
             />
           </li>
           <li>
             <CardLink
-              href="https://weather.harryliu.dev/"
-              title={t('WEB_APPLICATIONS_PAGE.WEATHER.TITLE')}
-              description={t('WEB_APPLICATIONS_PAGE.WEATHER.DESCRIPTION')}
+              href="https://links.harryliu.dev/"
+              title={t('WEB_APPLICATIONS_PAGE.LINKS.TITLE')}
+              description={t('WEB_APPLICATIONS_PAGE.LINKS.DESCRIPTION')}
             />
           </li>
           <li>
@@ -75,18 +77,16 @@ export function WebApplicationsPage() {
           </li>
           <li>
             <CardLink
-              href="https://components.harryliu.dev/"
-              title={t('WEB_APPLICATIONS_PAGE.COMPONENT_LIBRARY.TITLE')}
-              description={t(
-                'WEB_APPLICATIONS_PAGE.COMPONENT_LIBRARY.DESCRIPTION',
-              )}
+              href="https://weather.harryliu.dev/"
+              title={t('WEB_APPLICATIONS_PAGE.WEATHER.TITLE')}
+              description={t('WEB_APPLICATIONS_PAGE.WEATHER.DESCRIPTION')}
             />
           </li>
           <li>
             <CardLink
-              href="https://links.harryliu.dev/"
-              title={t('WEB_APPLICATIONS_PAGE.LINKS.TITLE')}
-              description={t('WEB_APPLICATIONS_PAGE.LINKS.DESCRIPTION')}
+              href="https://whiteboard.harryliu.dev/"
+              title={t('WEB_APPLICATIONS_PAGE.WHITEBOARD.TITLE')}
+              description={t('WEB_APPLICATIONS_PAGE.WHITEBOARD.DESCRIPTION')}
             />
           </li>
         </CardGrid>
