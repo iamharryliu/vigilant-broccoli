@@ -18,3 +18,4 @@ export * from './lib/recaptcha/recaptcha.service';
 export * from './lib/weather/weather.service';
 export * from './lib/audio/audio.service';
 export * from './lib/qr-code/qr-code.service';
+export * from './lib/supabase/supabase.consts';

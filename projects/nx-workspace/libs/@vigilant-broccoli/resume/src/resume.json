@@ -85,7 +85,7 @@
       "startDate": "July 2023",
       "endDate": "present",
       "bullets": [
-        "Open source maintainer of **11 applications**, **5 API services**, **7 Docker images** and **4 npm packages**.",
+        "Open source maintainer of **12 applications**, **5 API services**, **7 Docker images** and **4 npm packages**.",
         "Design and run **agentic coding workflows** with **Claude Code**, building custom skills and slash commands for code review, refactor cleanup, documentation upkeep, and automated PR authoring.",
         "Provision and operate **cloud infrastructure** with **Terraform**, managing secrets through dedicated secret managers.",
         "Build and maintain **CI/CD pipelines** for PR checks, health checks, cron jobs, and smoke, end-to-end, and security tests."

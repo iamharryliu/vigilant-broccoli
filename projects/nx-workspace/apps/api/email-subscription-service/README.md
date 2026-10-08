@@ -16,6 +16,7 @@ Email subscription management and broadcast.
   - `@supabase/supabase-js`
 - Internal libs
   - `common-js`
+  - `common-node`
   - `fastify`
   - `messaging`
 - Cloud services

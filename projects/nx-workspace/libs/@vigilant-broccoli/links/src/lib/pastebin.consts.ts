@@ -1,7 +1,4 @@
-import {
-  OPEN_TYPE,
-  type PastebinGroup,
-} from '@vigilant-broccoli/common-js';
+import { OPEN_TYPE, type PastebinGroup } from '@vigilant-broccoli/common-js';
 import {
   BUSINESS_LINK,
   COMMUNITY_LINK,

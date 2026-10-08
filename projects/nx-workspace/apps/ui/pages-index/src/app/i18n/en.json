@@ -65,6 +65,10 @@
       "TITLE": "Whiteboard",
       "DESCRIPTION": "Live collaborative whiteboard rooms deployed on Vercel."
     },
+    "CALENDARS": {
+      "TITLE": "Calendars",
+      "DESCRIPTION": "Public personal and event calendar directory, deployed on Vercel."
+    },
     "WEATHER": {
       "TITLE": "Weather",
       "DESCRIPTION": "Current weather for your location, deployed on Vercel."
