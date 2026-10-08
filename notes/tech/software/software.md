@@ -9,7 +9,6 @@
 - [Web Dev](./web-dev/web-dev.md)
 - [Software Practices](./general/software-practices.md)
 - [Software Business](./general/software-business.md)
-- [Software Maintenance](./general/software-maintenance.md)
 - [Software Architecture](./general/software-architecture.md)
   - [Software Design Patterns](./general/software-design-patterns.md)
   - [Software Architecture Patterns](./software-architecture-patterns.md)
