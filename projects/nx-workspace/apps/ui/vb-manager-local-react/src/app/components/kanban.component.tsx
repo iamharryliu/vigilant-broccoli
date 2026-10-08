@@ -1,0 +1,1371 @@
+import {
+  Button,
+  CloseButton,
+  EllipsisCTA,
+  EisenhowerQuadrant,
+  getCommitType,
+  getEisenhowerQuadrant,
+  GoogleTasksComponent,
+  Input,
+  Select,
+  Skeleton,
+  SortMode,
+  SORT_MODE,
+  Text,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
+} from '@vigilant-broccoli/react-lib';
+import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
+import { CreateTasksDialogTrigger } from './create-tasks-dialog.component';
+import { useEffect, useState, useCallback } from 'react';
+import {
+  authFetch,
+  googleTasksAuth,
+  signInWithGoogle,
+  useAuthStatus,
+} from '../../libs/auth';
+import {
+  DndContext,
+  DragOverlay,
+  closestCorners,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragStartEvent,
+  DragEndEvent,
+  DragOverEvent,
+  Active,
+  Over,
+} from '@dnd-kit/core';
+import { SortableContext, useSortable, arrayMove } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { DragHandleDots2Icon } from '@radix-ui/react-icons';
+import {
+  Menu,
+  Pencil,
+  Trash2,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+} from 'lucide-react';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
+
+interface TaskList {
+  id: string;
+  title: string;
+}
+
+interface Lane {
+  id: string;
+  taskListId: string;
+}
+
+interface Board {
+  id: string;
+  name: string;
+  lanes: Lane[];
+}
+
+interface KanbanState {
+  boards: Board[];
+  activeBoardId: string;
+  sortModes: Record<string, SortMode>;
+}
+
+const STORAGE_KEY_BOARDS = 'swimlanes-boards';
+const STORAGE_KEY_ACTIVE_BOARD = 'swimlanes-active-board';
+const STORAGE_KEY_SIDEBAR_OPEN = 'swimlanes-sidebar-open';
+
+const PERSIST_DEBOUNCE_MS = 500;
+
+const DEFAULT_BOARD_NAME = 'Default Board';
+
+const SORT_MODE_KEY_PREFIX = 'google-tasks-sort-mode-';
+
+const readLocalSortModes = (): Record<string, SortMode> => {
+  const sortModes: Record<string, SortMode> = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key?.startsWith(SORT_MODE_KEY_PREFIX)) {
+      const taskListId = key.slice(SORT_MODE_KEY_PREFIX.length);
+      const value = localStorage.getItem(key);
+      if (value) sortModes[taskListId] = value as SortMode;
+    }
+  }
+  return sortModes;
+};
+
+const readLocalBoards = (): KanbanState | null => {
+  const storedBoards = localStorage.getItem(STORAGE_KEY_BOARDS);
+  if (!storedBoards) return null;
+  const boards: Board[] = JSON.parse(storedBoards);
+  if (boards.length === 0) return null;
+  const storedActiveBoard = localStorage.getItem(STORAGE_KEY_ACTIVE_BOARD);
+  return {
+    boards,
+    activeBoardId: storedActiveBoard || boards[0].id,
+    sortModes: readLocalSortModes(),
+  };
+};
+
+const clearLocalBoards = () => {
+  localStorage.removeItem(STORAGE_KEY_BOARDS);
+  localStorage.removeItem(STORAGE_KEY_ACTIVE_BOARD);
+  Object.keys(localStorage)
+    .filter(key => key.startsWith(SORT_MODE_KEY_PREFIX))
+    .forEach(key => localStorage.removeItem(key));
+};
+
+const createDefaultBoard = (): Board => ({
+  id: crypto.randomUUID(),
+  name: DEFAULT_BOARD_NAME,
+  lanes: [],
+});
+
+type KanbanFetchResult =
+  { ok: true; state: KanbanState | null } | { ok: false };
+
+const fetchKanbanState = async (): Promise<KanbanFetchResult> => {
+  const response = await authFetch(API_ENDPOINTS.KANBAN_BOARDS);
+  if (!response.ok) return { ok: false };
+  const data = await response.json();
+  return { ok: true, state: data.state ?? null };
+};
+
+const persistKanbanState = async (state: KanbanState): Promise<boolean> => {
+  const response = await authFetch(API_ENDPOINTS.KANBAN_BOARDS, {
+    method: HTTP_METHOD.PUT,
+    headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
+    body: JSON.stringify(state),
+  });
+  return response.ok;
+};
+
+const DRAG_TYPE = {
+  TASK: 'task',
+  LANE: 'lane',
+  BOARD: 'board',
+} as const;
+
+const LANE_OPACITY = {
+  DRAGGING: 0.5,
+  DEFAULT: 1,
+} as const;
+
+const OVERLAY_CLASSES = {
+  BASE: 'rounded shadow-xl border',
+  LIGHT: 'bg-white border-gray-200',
+  DARK: 'dark:bg-gray-800 dark:border-gray-600',
+} as const;
+
+const QUADRANT_OVERLAY_COLORS: Partial<Record<EisenhowerQuadrant, string>> = {
+  Q1: 'border-l-4 border-l-red-500',
+  Q2: 'border-l-4 border-l-blue-500',
+  Q3: 'border-l-4 border-l-yellow-500',
+  Q4: 'border-l-4 border-l-green-500',
+} as const;
+
+const getDeleteBoardDescription = (name: string) =>
+  `Are you sure you want to delete "${name}"? This action cannot be undone.`;
+
+const useBoards = (isAuthenticated: boolean) => {
+  const [boards, setBoards] = useState<Board[]>([]);
+  const [activeBoardId, setActiveBoardId] = useState<string>('');
+  const [sortModes, setSortModes] = useState<Record<string, SortMode>>({});
+  const [taskLists, setTaskLists] = useState<TaskList[]>([]);
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    let cancelled = false;
+    const hydrate = async () => {
+      const result = await fetchKanbanState();
+      if (cancelled) return;
+
+      // A failed fetch must never be treated as "no boards exist yet" — doing
+      // so used to fall through to creating and persisting a default board,
+      // silently overwriting real saved boards on a transient auth/network
+      // error (see this app's CONTEXT.md Nuances).
+      if (!result.ok) return;
+
+      const remoteState = result.state;
+      if (remoteState && remoteState.boards.length > 0) {
+        setBoards(remoteState.boards);
+        setActiveBoardId(remoteState.activeBoardId || remoteState.boards[0].id);
+        setSortModes(remoteState.sortModes ?? {});
+        setHydrated(true);
+        return;
+      }
+
+      const localState = readLocalBoards();
+      if (localState) {
+        const migrated = await persistKanbanState(localState);
+        if (migrated) clearLocalBoards();
+        if (cancelled) return;
+        setBoards(localState.boards);
+        setActiveBoardId(localState.activeBoardId);
+        setSortModes(localState.sortModes);
+        setHydrated(true);
+        return;
+      }
+
+      const defaultBoard = createDefaultBoard();
+      await persistKanbanState({
+        boards: [defaultBoard],
+        activeBoardId: defaultBoard.id,
+        sortModes: {},
+      });
+      if (cancelled) return;
+      setBoards([defaultBoard]);
+      setActiveBoardId(defaultBoard.id);
+      setHydrated(true);
+    };
+    hydrate();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (!hydrated || boards.length === 0) return;
+    const timeout = setTimeout(() => {
+      persistKanbanState({ boards, activeBoardId, sortModes });
+    }, PERSIST_DEBOUNCE_MS);
+    return () => clearTimeout(timeout);
+  }, [boards, activeBoardId, sortModes, hydrated]);
+
+  const setSortMode = useCallback((taskListId: string, sortMode: SortMode) => {
+    setSortModes(prev =>
+      prev[taskListId] === sortMode
+        ? prev
+        : { ...prev, [taskListId]: sortMode },
+    );
+  }, []);
+
+  const addBoard = useCallback((name: string) => {
+    const newBoard: Board = {
+      id: crypto.randomUUID(),
+      name,
+      lanes: [],
+    };
+    setBoards(prev => [...prev, newBoard]);
+    setActiveBoardId(newBoard.id);
+  }, []);
+
+  const removeBoard = useCallback(
+    (boardId: string) => {
+      setBoards(prev => {
+        const filtered = prev.filter(board => board.id !== boardId);
+        if (activeBoardId === boardId && filtered.length > 0) {
+          setActiveBoardId(filtered[0].id);
+        }
+        return filtered;
+      });
+    },
+    [activeBoardId],
+  );
+
+  const renameBoard = useCallback((boardId: string, newName: string) => {
+    setBoards(prev =>
+      prev.map(board =>
+        board.id === boardId ? { ...board, name: newName } : board,
+      ),
+    );
+  }, []);
+
+  const addLane = useCallback((boardId: string, taskListId: string) => {
+    const newLane: Lane = {
+      id: crypto.randomUUID(),
+      taskListId,
+    };
+    setBoards(prev =>
+      prev.map(board =>
+        board.id === boardId
+          ? { ...board, lanes: [...board.lanes, newLane] }
+          : board,
+      ),
+    );
+  }, []);
+
+  const removeLane = useCallback((boardId: string, laneId: string) => {
+    setBoards(prev =>
+      prev.map(board =>
+        board.id === boardId
+          ? { ...board, lanes: board.lanes.filter(lane => lane.id !== laneId) }
+          : board,
+      ),
+    );
+  }, []);
+
+  const reorderLanes = useCallback((boardId: string, newLanes: Lane[]) => {
+    setBoards(prev =>
+      prev.map(board =>
+        board.id === boardId ? { ...board, lanes: newLanes } : board,
+      ),
+    );
+  }, []);
+
+  const reorderBoards = useCallback((newBoards: Board[]) => {
+    setBoards(newBoards);
+  }, []);
+
+  const activeBoard = boards.find(board => board.id === activeBoardId);
+
+  return {
+    boards,
+    activeBoard,
+    activeBoardId,
+    setActiveBoardId,
+    sortModes,
+    setSortMode,
+    taskLists,
+    setTaskLists,
+    addBoard,
+    removeBoard,
+    renameBoard,
+    addLane,
+    removeLane,
+    reorderLanes,
+    reorderBoards,
+  };
+};
+
+interface SortableBoardProps {
+  board: Board;
+  isActive: boolean;
+  onSelect: (boardId: string) => void;
+  editingBoardId: string | null;
+  editingBoardName: string;
+  onStartEdit: (boardId: string, name: string) => void;
+  onSaveEdit: () => void;
+  onEditNameChange: (name: string) => void;
+  onCancelEdit: () => void;
+}
+
+interface DragOverTask {
+  id: string;
+  title: string;
+}
+
+interface SortableLaneProps {
+  lane: Lane;
+  taskList: TaskList | undefined;
+  boardId: string;
+  onRemove: (boardId: string, laneId: string) => void;
+  refreshTrigger: number;
+  isTaskDragOver: boolean;
+  isDraggingTask: boolean;
+  isDraggingLane: boolean;
+  dragOverTask: DragOverTask | null;
+  sortMode: SortMode | undefined;
+  onSortModeChange: (taskListId: string, sortMode: SortMode) => void;
+  onTasksCreated: () => void;
+}
+
+const SortableBoard = ({
+  board,
+  isActive,
+  onSelect,
+  editingBoardId,
+  editingBoardName,
+  onStartEdit,
+  onSaveEdit,
+  onEditNameChange,
+  onCancelEdit,
+}: SortableBoardProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: board.id,
+    data: { type: DRAG_TYPE.BOARD, board },
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? LANE_OPACITY.DRAGGING : LANE_OPACITY.DEFAULT,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <div
+        className={`flex justify-between items-center ${`py-1 px-2 rounded hover:bg-[var(--gray-a3)] transition-colors ${
+          isActive ? 'border-l-2 border-blue-500 bg-[var(--gray-a3)]' : ''
+        }`}`}
+      >
+        {editingBoardId === board.id ? (
+          <Input
+            value={editingBoardName}
+            onChange={e => onEditNameChange(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') onSaveEdit();
+              else if (e.key === 'Escape') onCancelEdit();
+            }}
+            onBlur={onSaveEdit}
+            className="flex-1"
+            autoFocus
+          />
+        ) : (
+          <div
+            {...attributes}
+            {...listeners}
+            onClick={() => onSelect(board.id)}
+            onDoubleClick={() => onStartEdit(board.id, board.name)}
+            className="flex-1 cursor-grab active:cursor-grabbing"
+          >
+            <Text size="2" weight={isActive ? 'bold' : 'regular'}>
+              {board.name}
+            </Text>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const SortableLane = ({
+  lane,
+  taskList,
+  boardId,
+  onRemove,
+  refreshTrigger,
+  isTaskDragOver,
+  isDraggingTask,
+  isDraggingLane,
+  dragOverTask,
+  sortMode,
+  onSortModeChange,
+  onTasksCreated,
+}: SortableLaneProps) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef: setSortableRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: lane.id,
+    data: { type: DRAG_TYPE.LANE, lane },
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? LANE_OPACITY.DRAGGING : LANE_OPACITY.DEFAULT,
+  };
+
+  if (isDragging) {
+    return (
+      <div
+        ref={setSortableRef}
+        style={style}
+        className="w-80 h-64 flex-shrink-0 rounded-lg border-2 border-dashed border-blue-400 bg-blue-50 dark:bg-blue-950 opacity-50"
+      />
+    );
+  }
+
+  const laneHighlight = isTaskDragOver
+    ? 'ring-2 ring-blue-400 bg-blue-50 dark:bg-blue-950'
+    : isDraggingTask
+      ? 'ring-1 ring-dashed ring-gray-300 dark:ring-gray-600'
+      : '';
+
+  return (
+    <div
+      ref={setSortableRef}
+      style={style}
+      className={`flex flex-col gap-2 w-80 flex-shrink-0 rounded-lg transition-all duration-150 h-full overflow-hidden ${laneHighlight}`}
+    >
+      <div className="flex justify-between items-center px-2 flex-shrink-0">
+        <div
+          {...attributes}
+          {...listeners}
+          className={`flex items-center gap-1 flex-1 ${
+            isDraggingLane
+              ? 'cursor-grabbing'
+              : 'cursor-grab active:cursor-grabbing'
+          }`}
+        >
+          <DragHandleDots2Icon className="opacity-40 hover:opacity-70 flex-shrink-0" />
+          <Text size="3" weight="bold">
+            {taskList?.title ? (
+              taskList.title
+            ) : (
+              <Skeleton className="w-32 h-5" />
+            )}
+          </Text>
+        </div>
+        <ConfirmDeleteDialog
+          trigger={<CloseButton />}
+          title="Remove Lane"
+          description={`Remove "${taskList?.title ?? 'this lane'}" from the board?`}
+          onConfirm={() => onRemove(boardId, lane.id)}
+        />
+      </div>
+      <div className="flex-1 overflow-y-auto min-h-0">
+        <GoogleTasksComponent
+          auth={googleTasksAuth}
+          taskListId={lane.taskListId}
+          showSelector={false}
+          enableDragDrop={true}
+          refreshTrigger={refreshTrigger}
+          disableInternalDndContext={true}
+          dragOverTask={dragOverTask}
+          sortMode={sortMode ?? SORT_MODE.DEFAULT}
+          onSortModeChange={onSortModeChange}
+          addTaskActions={
+            <CreateTasksDialogTrigger
+              taskListId={lane.taskListId}
+              onCreated={onTasksCreated}
+            />
+          }
+        />
+      </div>
+    </div>
+  );
+};
+
+const TaskDragOverlay = ({
+  task,
+}: {
+  task: { title: string; notes?: string; due?: string };
+}) => {
+  const quadrant = getEisenhowerQuadrant(task.title);
+  const commitType = getCommitType(task.title);
+  const quadrantClass = QUADRANT_OVERLAY_COLORS[quadrant] ?? '';
+
+  return (
+    <div
+      className={`${OVERLAY_CLASSES.BASE} ${OVERLAY_CLASSES.LIGHT} ${OVERLAY_CLASSES.DARK} p-3 max-w-72 rotate-2 ${quadrantClass}`}
+    >
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <DragHandleDots2Icon className="opacity-60 flex-shrink-0" />
+          <Text size="2" weight="medium" className="line-clamp-2">
+            {task.title}
+          </Text>
+        </div>
+        {task.notes && (
+          <Text size="1" color="gray" className="ml-5 line-clamp-1">
+            {task.notes}
+          </Text>
+        )}
+        <div className="flex gap-2 items-center ml-5">
+          {task.due && (
+            <Text size="1" color="blue">
+              {new Date(task.due).toLocaleDateString()}
+            </Text>
+          )}
+          {commitType !== 'other' && (
+            <span className="text-xs px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+              {commitType}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const LaneDragOverlay = ({ title }: { title: string }) => (
+  <div
+    className={`${OVERLAY_CLASSES.BASE} ${OVERLAY_CLASSES.LIGHT} ${OVERLAY_CLASSES.DARK} p-3 w-80 rotate-1`}
+  >
+    <div className="flex items-center gap-2">
+      <DragHandleDots2Icon className="opacity-60 flex-shrink-0" />
+      <Text size="3" weight="bold">
+        {title ? title : <Skeleton className="w-32 h-5" />}
+      </Text>
+    </div>
+    <div className="mt-2 space-y-1.5">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div
+          key={i}
+          className="h-6 rounded bg-gray-100 dark:bg-gray-700"
+          style={{ width: `${80 - i * 15}%` }}
+        />
+      ))}
+    </div>
+  </div>
+);
+
+const BoardDragOverlay = ({ name }: { name: string }) => (
+  <div
+    className={`${OVERLAY_CLASSES.BASE} ${OVERLAY_CLASSES.LIGHT} ${OVERLAY_CLASSES.DARK} py-1.5 px-3 border-l-2 border-l-blue-500 rotate-1`}
+  >
+    <Text size="2" weight="bold">
+      {name}
+    </Text>
+  </div>
+);
+
+// eslint-disable-next-line complexity
+export const KanbanComponent = () => {
+  const status = useAuthStatus();
+  const {
+    boards,
+    activeBoard,
+    activeBoardId,
+    setActiveBoardId,
+    sortModes,
+    setSortMode,
+    taskLists,
+    setTaskLists,
+    addBoard,
+    removeBoard,
+    renameBoard,
+    addLane,
+    removeLane,
+    reorderLanes,
+    reorderBoards,
+  } = useBoards(status === 'authenticated');
+  const [selectedTaskListId, setSelectedTaskListId] = useState<string>('');
+  const [activeTask, setActiveTask] = useState<any>(null);
+  const [activeLane, setActiveLane] = useState<Lane | null>(null);
+  const [activeBoard_dnd, setActiveBoard_dnd] = useState<Board | null>(null);
+  const [overTaskListId, setOverTaskListId] = useState<string | null>(null);
+  const [draggingLanes, setDraggingLanes] = useState<Lane[] | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [showNewBoardForm, setShowNewBoardForm] = useState(false);
+  const [newBoardName, setNewBoardName] = useState('');
+  const [editingBoardId, setEditingBoardId] = useState<string | null>(null);
+  const [editingBoardName, setEditingBoardName] = useState('');
+  const [showAddLaneDialog, setShowAddLaneDialog] = useState(false);
+  const [showCreateList, setShowCreateList] = useState(false);
+  const [newListName, setNewListName] = useState('');
+  const [creatingList, setCreatingList] = useState(false);
+  const [showManageLists, setShowManageLists] = useState(false);
+  const [editingListId, setEditingListId] = useState<string | null>(null);
+  const [editingListName, setEditingListName] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    const stored = localStorage.getItem(STORAGE_KEY_SIDEBAR_OPEN);
+    return stored === null ? true : stored === 'true';
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+  );
+
+  useEffect(() => {
+    if (status !== 'authenticated') return;
+
+    const fetchTaskLists = async () => {
+      try {
+        const response = await authFetch(API_ENDPOINTS.TASKS_LISTS);
+        const data = await response.json();
+
+        if (response.ok && data.taskLists) {
+          setTaskLists(data.taskLists);
+          if (data.taskLists.length > 0 && !selectedTaskListId) {
+            setSelectedTaskListId(data.taskLists[0].id);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching task lists:', err);
+      }
+    };
+    fetchTaskLists();
+  }, [status]);
+
+  const handleAddLane = useCallback(() => {
+    if (selectedTaskListId && activeBoardId) {
+      addLane(activeBoardId, selectedTaskListId);
+      setShowAddLaneDialog(false);
+      setSelectedTaskListId('');
+    }
+  }, [selectedTaskListId, activeBoardId, addLane]);
+
+  const handleDeleteList = useCallback(
+    async (taskListId: string) => {
+      const response = await authFetch(
+        `${API_ENDPOINTS.TASKS_LISTS}?taskListId=${taskListId}`,
+        { method: 'DELETE' },
+      );
+      if (!response.ok) return;
+      setTaskLists(prev => prev.filter(list => list.id !== taskListId));
+      boards.forEach(board => {
+        const lane = board.lanes.find(l => l.taskListId === taskListId);
+        if (lane) removeLane(board.id, lane.id);
+      });
+    },
+    [boards, removeLane, setTaskLists],
+  );
+
+  const handleRenameList = useCallback(
+    async (taskListId: string, title: string) => {
+      const response = await authFetch(
+        `${API_ENDPOINTS.TASKS_LISTS}?taskListId=${taskListId}`,
+        {
+          method: HTTP_METHOD.PATCH,
+          headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
+          body: JSON.stringify({ title }),
+        },
+      );
+      if (!response.ok) return;
+      setTaskLists(prev =>
+        prev.map(list => (list.id === taskListId ? { ...list, title } : list)),
+      );
+      setEditingListId(null);
+      setEditingListName('');
+    },
+    [setTaskLists],
+  );
+
+  const handleCreateList = useCallback(async () => {
+    if (!newListName.trim()) return;
+    setCreatingList(true);
+    const response = await authFetch(API_ENDPOINTS.TASKS_LISTS, {
+      method: HTTP_METHOD.POST,
+      headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
+      body: JSON.stringify({ title: newListName.trim() }),
+    });
+    const data = await response.json();
+    if (response.ok && data.taskList) {
+      setTaskLists(prev => [...prev, data.taskList]);
+      addLane(activeBoardId, data.taskList.id);
+      setNewListName('');
+      setShowCreateList(false);
+      setShowAddLaneDialog(false);
+    }
+    setCreatingList(false);
+  }, [newListName, setTaskLists, addLane, activeBoardId]);
+
+  const handleAddBoard = useCallback(() => {
+    if (newBoardName.trim()) {
+      addBoard(newBoardName.trim());
+      setNewBoardName('');
+      setShowNewBoardForm(false);
+    }
+  }, [newBoardName, addBoard]);
+
+  const handleStartEditBoard = useCallback(
+    (boardId: string, currentName: string) => {
+      setEditingBoardId(boardId);
+      setEditingBoardName(currentName);
+    },
+    [],
+  );
+
+  const handleSaveEditBoard = useCallback(() => {
+    if (editingBoardId && editingBoardName.trim()) {
+      renameBoard(editingBoardId, editingBoardName.trim());
+    }
+    setEditingBoardId(null);
+    setEditingBoardName('');
+  }, [editingBoardId, editingBoardName, renameBoard]);
+
+  const handleDragStart = useCallback(
+    (event: DragStartEvent) => {
+      const { active } = event;
+      const dragType = active.data.current?.type;
+
+      if (dragType === DRAG_TYPE.TASK) {
+        setActiveTask(active.data.current);
+      } else if (dragType === DRAG_TYPE.LANE) {
+        setActiveLane(active.data.current?.lane);
+        setDraggingLanes(activeBoard?.lanes ?? null);
+      } else if (dragType === DRAG_TYPE.BOARD) {
+        setActiveBoard_dnd(active.data.current?.board);
+      }
+    },
+    [activeBoard],
+  );
+
+  const handleDragOver = useCallback((event: DragOverEvent) => {
+    const { active, over } = event;
+    const dragType = active.data.current?.type;
+
+    if (dragType === DRAG_TYPE.TASK) {
+      setOverTaskListId(over?.data.current?.taskListId ?? null);
+      return;
+    }
+
+    if (dragType === DRAG_TYPE.LANE && over) {
+      setDraggingLanes(prev => {
+        if (!prev) return prev;
+
+        const overLaneId =
+          over.data.current?.type === DRAG_TYPE.LANE
+            ? (over.id as string)
+            : over.data.current?.taskListId
+              ? prev.find(l => l.taskListId === over.data.current?.taskListId)
+                  ?.id
+              : undefined;
+
+        if (!overLaneId) return prev;
+
+        const oldIndex = prev.findIndex(l => l.id === active.id);
+        const newIndex = prev.findIndex(l => l.id === overLaneId);
+        if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex)
+          return prev;
+        return arrayMove(prev, oldIndex, newIndex);
+      });
+    }
+  }, []);
+
+  const handleLaneDragEnd = useCallback(() => {
+    setActiveLane(null);
+    if (activeBoard && draggingLanes) {
+      reorderLanes(activeBoard.id, draggingLanes);
+    }
+    setDraggingLanes(null);
+  }, [activeBoard, draggingLanes, reorderLanes]);
+
+  const handleTaskReorder = useCallback(
+    async (taskListId: string, taskId: string, overTaskId: string) => {
+      const response = await authFetch(
+        `${API_ENDPOINTS.TASKS}?taskListId=${taskListId}`,
+      );
+      const data = await response.json();
+      if (!response.ok || !data.tasks) return;
+
+      const tasks: { id: string }[] = data.tasks.filter(
+        (t: { status: string }) => t.status !== 'completed',
+      );
+      const activeIndex = tasks.findIndex(t => t.id === taskId);
+      const overIndex = tasks.findIndex(t => t.id === overTaskId);
+      if (activeIndex === -1 || overIndex === -1) return;
+
+      const reordered = [...tasks];
+      const [moved] = reordered.splice(activeIndex, 1);
+      reordered.splice(overIndex, 0, moved);
+
+      const newIndex = reordered.findIndex(t => t.id === taskId);
+      const previousTaskId = newIndex > 0 ? reordered[newIndex - 1].id : null;
+
+      await authFetch(API_ENDPOINTS.TASKS_MOVE, {
+        method: HTTP_METHOD.POST,
+        headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
+        body: JSON.stringify({
+          taskListId,
+          taskId,
+          previous: previousTaskId,
+        }),
+      });
+
+      setRefreshTrigger(prev => prev + 1);
+    },
+    [],
+  );
+
+  const handleTaskCrossListMove = useCallback(
+    async (taskData: any, sourceListId: string, targetListId: string) => {
+      const createResponse = await authFetch(API_ENDPOINTS.TASKS, {
+        method: HTTP_METHOD.POST,
+        headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
+        body: JSON.stringify({
+          taskListId: targetListId,
+          title: taskData.task.title,
+          notes: taskData.task.notes,
+        }),
+      });
+
+      if (!createResponse.ok) return;
+
+      await authFetch(
+        `${API_ENDPOINTS.TASKS}?taskListId=${sourceListId}&taskId=${taskData.task.id}`,
+        { method: 'DELETE' },
+      );
+
+      setRefreshTrigger(prev => prev + 1);
+    },
+    [],
+  );
+
+  const handleTaskDragEnd = useCallback(
+    async (active: Active, over: Over | null) => {
+      setActiveTask(null);
+      setOverTaskListId(null);
+
+      if (!over || active.id === over.id) return;
+
+      const overType = over.data.current?.type;
+      if (overType !== 'task' && overType !== 'taskList') return;
+
+      const taskData = active.data.current;
+      const sourceListId = taskData?.taskListId;
+      const targetListId = over.data.current?.taskListId;
+
+      if (!sourceListId || !targetListId) return;
+
+      if (sourceListId === targetListId) {
+        if (overType === 'task') {
+          await handleTaskReorder(
+            sourceListId,
+            active.id as string,
+            over.id as string,
+          );
+        }
+        return;
+      }
+
+      await handleTaskCrossListMove(taskData, sourceListId, targetListId);
+    },
+    [handleTaskReorder, handleTaskCrossListMove],
+  );
+
+  const handleBoardDragEnd = useCallback(
+    (active: Active, over: Over | null) => {
+      setActiveBoard_dnd(null);
+      if (!over || active.id === over.id) return;
+
+      const oldIndex = boards.findIndex(board => board.id === active.id);
+      const newIndex = boards.findIndex(board => board.id === over.id);
+
+      if (oldIndex === -1 || newIndex === -1) return;
+
+      const newBoards = arrayMove(boards, oldIndex, newIndex);
+      reorderBoards(newBoards);
+    },
+    [boards, reorderBoards],
+  );
+
+  const resetDragState = useCallback(() => {
+    setActiveTask(null);
+    setActiveLane(null);
+    setActiveBoard_dnd(null);
+    setOverTaskListId(null);
+    setDraggingLanes(null);
+  }, []);
+
+  const handleDragEnd = useCallback(
+    async (event: DragEndEvent) => {
+      const { active, over } = event;
+      const dragType = active.data.current?.type;
+
+      if (dragType === DRAG_TYPE.BOARD) {
+        handleBoardDragEnd(active, over);
+      } else if (dragType === DRAG_TYPE.LANE) {
+        handleLaneDragEnd();
+      } else if (dragType === DRAG_TYPE.TASK) {
+        await handleTaskDragEnd(active, over);
+      }
+
+      resetDragState();
+    },
+    [handleBoardDragEnd, handleLaneDragEnd, handleTaskDragEnd, resetDragState],
+  );
+
+  const availableTaskLists = taskLists.filter(
+    list => !activeBoard?.lanes.some(lane => lane.taskListId === list.id),
+  );
+
+  if (status === 'unauthenticated') {
+    signInWithGoogle();
+    return null;
+  }
+
+  if (!activeBoard) {
+    return null;
+  }
+
+  return (
+    <DndContext
+      sensors={sensors}
+      collisionDetection={closestCorners}
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDragEnd={handleDragEnd}
+      onDragCancel={resetDragState}
+    >
+      <div className="flex h-full">
+        <div
+          className={`transition-all duration-300 border-r flex flex-col gap-4 overflow-hidden ${
+            sidebarOpen
+              ? 'w-64 py-4 pr-4 pl-6 overflow-y-auto'
+              : 'w-0 p-0 border-r-0'
+          }`}
+        >
+          {sidebarOpen && (
+            <>
+              <div className="flex justify-between items-center">
+                <Text size="4" weight="bold">
+                  Boards
+                </Text>
+                <div className="flex gap-1">
+                  <Dialog
+                    open={showManageLists}
+                    onOpenChange={open => {
+                      setShowManageLists(open);
+                      if (!open) {
+                        setEditingListId(null);
+                        setEditingListName('');
+                      }
+                    }}
+                  >
+                    <DialogTrigger asChild>
+                      <Button size="icon" variant="ghost">
+                        <Menu size={14} />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent
+                      className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+                      aria-describedby={undefined}
+                      showCloseButton={false}
+                    >
+                      <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+                        Manage Task Lists
+                      </DialogTitle>
+                      <div className="flex flex-col gap-2">
+                        {taskLists.map(list => (
+                          <div
+                            className="flex justify-between items-center py-1 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
+                            key={list.id}
+                          >
+                            {editingListId === list.id ? (
+                              <Input
+                                value={editingListName}
+                                onChange={e =>
+                                  setEditingListName(e.target.value)
+                                }
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter')
+                                    handleRenameList(list.id, editingListName);
+                                  else if (e.key === 'Escape') {
+                                    setEditingListId(null);
+                                    setEditingListName('');
+                                  }
+                                }}
+                                onBlur={() =>
+                                  handleRenameList(list.id, editingListName)
+                                }
+                                className="flex-1"
+                                autoFocus
+                              />
+                            ) : (
+                              <Text
+                                size="2"
+                                className="flex-1 cursor-pointer"
+                                onDoubleClick={() => {
+                                  setEditingListId(list.id);
+                                  setEditingListName(list.title);
+                                }}
+                              >
+                                {list.title}
+                              </Text>
+                            )}
+                            <div className="flex gap-2">
+                              {editingListId !== list.id && (
+                                <Button
+                                  size="icon"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    setEditingListId(list.id);
+                                    setEditingListName(list.title);
+                                  }}
+                                >
+                                  <Pencil size={14} />
+                                </Button>
+                              )}
+                              <ConfirmDeleteDialog
+                                trigger={
+                                  <Button size="icon" variant="ghost">
+                                    <Trash2 size={14} />
+                                  </Button>
+                                }
+                                title="Delete Task List"
+                                description={`Delete "${list.title}" and all its tasks? This cannot be undone.`}
+                                onConfirm={() => handleDeleteList(list.id)}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                        {taskLists.length === 0 && (
+                          <Text size="2" color="gray">
+                            No task lists found
+                          </Text>
+                        )}
+                      </div>
+                      <div className="flex justify-end mt-4">
+                        <DialogClose asChild>
+                          <Button variant="secondary">Close</Button>
+                        </DialogClose>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  <Dialog
+                    open={showNewBoardForm}
+                    onOpenChange={setShowNewBoardForm}
+                  >
+                    <DialogTrigger asChild>
+                      <Button size="icon" variant="ghost">
+                        <Plus size={14} />
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent
+                      className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+                      aria-describedby={undefined}
+                      showCloseButton={false}
+                    >
+                      <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+                        Add Board
+                      </DialogTitle>
+                      <div className="flex flex-col gap-3">
+                        <Input
+                          placeholder="Board name..."
+                          value={newBoardName}
+                          onChange={e => setNewBoardName(e.target.value)}
+                          onKeyDown={e => {
+                            if (e.key === 'Enter') handleAddBoard();
+                          }}
+                          autoFocus
+                        />
+                        <div className="flex gap-3 justify-end">
+                          <DialogClose asChild>
+                            <Button variant="secondary">Cancel</Button>
+                          </DialogClose>
+                          <Button
+                            onClick={handleAddBoard}
+                            disabled={!newBoardName.trim()}
+                          >
+                            Add Board
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </div>
+
+              <SortableContext items={boards.map(b => b.id)}>
+                <div className="flex flex-col gap-1">
+                  {boards.map(board => (
+                    <SortableBoard
+                      key={board.id}
+                      board={board}
+                      isActive={activeBoardId === board.id}
+                      onSelect={setActiveBoardId}
+                      editingBoardId={editingBoardId}
+                      editingBoardName={editingBoardName}
+                      onStartEdit={handleStartEditBoard}
+                      onSaveEdit={handleSaveEditBoard}
+                      onEditNameChange={setEditingBoardName}
+                      onCancelEdit={() => {
+                        setEditingBoardId(null);
+                        setEditingBoardName('');
+                      }}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </>
+          )}
+        </div>
+
+        <div className="flex-1 overflow-hidden">
+          <div className="flex flex-col gap-4 w-full h-full p-4">
+            <div className="flex items-center gap-2">
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={() => {
+                  const next = !sidebarOpen;
+                  setSidebarOpen(next);
+                  localStorage.setItem(STORAGE_KEY_SIDEBAR_OPEN, String(next));
+                }}
+              >
+                {sidebarOpen ? (
+                  <ChevronLeft size={16} />
+                ) : (
+                  <ChevronRight size={16} />
+                )}
+              </Button>
+              {editingBoardId === activeBoard.id ? (
+                <Input
+                  value={editingBoardName}
+                  onChange={e => setEditingBoardName(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') handleSaveEditBoard();
+                    else if (e.key === 'Escape') {
+                      setEditingBoardId(null);
+                      setEditingBoardName('');
+                    }
+                  }}
+                  onBlur={handleSaveEditBoard}
+                  className="text-lg font-bold"
+                  autoFocus
+                />
+              ) : (
+                <Text size="4" weight="bold">
+                  {activeBoard.name}
+                </Text>
+              )}
+              <EllipsisCTA
+                onUpdate={() =>
+                  handleStartEditBoard(activeBoard.id, activeBoard.name)
+                }
+                updateLabel="Rename"
+                deleteDisabled={boards.length <= 1}
+                confirmDescription={getDeleteBoardDescription(activeBoard.name)}
+                onDelete={() => removeBoard(activeBoard.id)}
+              />
+            </div>
+            <SortableContext
+              items={(draggingLanes ?? activeBoard?.lanes ?? []).map(l => l.id)}
+            >
+              <div className="flex gap-2 overflow-x-auto pb-4 h-full">
+                {(draggingLanes ?? activeBoard?.lanes ?? []).map(lane => {
+                  const taskList = taskLists.find(
+                    list => list.id === lane.taskListId,
+                  );
+                  return (
+                    <SortableLane
+                      key={lane.id}
+                      lane={lane}
+                      taskList={taskList}
+                      boardId={activeBoardId}
+                      onRemove={removeLane}
+                      refreshTrigger={refreshTrigger}
+                      isTaskDragOver={overTaskListId === lane.taskListId}
+                      isDraggingTask={!!activeTask}
+                      isDraggingLane={!!activeLane}
+                      dragOverTask={
+                        activeTask &&
+                        overTaskListId === lane.taskListId &&
+                        activeTask.taskListId !== lane.taskListId
+                          ? {
+                              id: activeTask.task.id,
+                              title: activeTask.task.title,
+                            }
+                          : null
+                      }
+                      sortMode={sortModes[lane.taskListId]}
+                      onSortModeChange={setSortMode}
+                      onTasksCreated={() => setRefreshTrigger(prev => prev + 1)}
+                    />
+                  );
+                })}
+                <div className="ml-2">
+                  <Dialog
+                    open={showAddLaneDialog}
+                    onOpenChange={setShowAddLaneDialog}
+                  >
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="w-80 h-12 flex-shrink-0 border-2 border-dashed"
+                      >
+                        <Text size="3">+ Add Lane</Text>
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent
+                      className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+                      aria-describedby={undefined}
+                      showCloseButton={false}
+                    >
+                      <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+                        Add Lane
+                      </DialogTitle>
+                      <div className="flex flex-col gap-3">
+                        {showCreateList ? (
+                          <div className="flex flex-col gap-2">
+                            <Input
+                              placeholder="New list name..."
+                              value={newListName}
+                              onChange={e => setNewListName(e.target.value)}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') handleCreateList();
+                                else if (e.key === 'Escape')
+                                  setShowCreateList(false);
+                              }}
+                              autoFocus
+                            />
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="secondary"
+                                onClick={() => setShowCreateList(false)}
+                              >
+                                Back
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={handleCreateList}
+                                disabled={!newListName.trim() || creatingList}
+                              >
+                                {creatingList ? 'Creating...' : 'Create List'}
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <Select
+                              selectedOption={availableTaskLists.find(
+                                l => l.id === selectedTaskListId,
+                              )}
+                              setValue={list => setSelectedTaskListId(list.id)}
+                              options={availableTaskLists}
+                              optionIdenfifier="id"
+                              optionDisplayKey="title"
+                              placeholder={
+                                availableTaskLists.length === 0
+                                  ? 'No task lists available'
+                                  : 'Select task list...'
+                              }
+                            />
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => setShowCreateList(true)}
+                            >
+                              + Create new list
+                            </Button>
+                          </>
+                        )}
+                        <div className="flex gap-3 justify-end">
+                          <DialogClose asChild>
+                            <Button variant="secondary">Cancel</Button>
+                          </DialogClose>
+                          {!showCreateList && (
+                            <Button
+                              onClick={handleAddLane}
+                              disabled={!selectedTaskListId}
+                            >
+                              Add Lane
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </div>
+            </SortableContext>
+          </div>
+        </div>
+      </div>
+
+      <DragOverlay dropAnimation={null}>
+        {activeTask ? (
+          <TaskDragOverlay task={activeTask.task} />
+        ) : activeLane ? (
+          <LaneDragOverlay
+            title={
+              taskLists.find(list => list.id === activeLane.taskListId)
+                ?.title || 'Unknown List'
+            }
+          />
+        ) : activeBoard_dnd ? (
+          <BoardDragOverlay name={activeBoard_dnd.name} />
+        ) : null}
+      </DragOverlay>
+    </DndContext>
+  );
+};

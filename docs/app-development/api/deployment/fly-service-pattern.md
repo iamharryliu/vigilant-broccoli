@@ -9,6 +9,8 @@ Reference apps (each demonstrates a different combination):
 - `apps/api/email-service/`, `apps/api/email-subscription-service/` — bundled + Docker Hub roundtrip
 - `apps/api/vb-express/` — pruned + `flyctl deploy --dockerfile`, with a fly volume mount (`[mounts]`) for its SQLite db.
 
+`apps/api/vb-manager-local-fastify/` is not a fly.io service: it runs locally under PM2 with no `deploy`/`smoke` target, so none of this applies to it — see its `CONTEXT.md`.
+
 ## Table of Contents
 
 - [Environments](#environments)

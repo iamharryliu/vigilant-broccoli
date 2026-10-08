@@ -1,6 +1,6 @@
 # Shared Supabase project ("vb-supabase", ref jrdosjjgmsoodpjmjqxx) backing
 # Google-provider auth for hearth, employee-handler-ui, small-business-next,
-# and vb-manager-next, plus hearth's Postgres DB. Within `auth`, only the
+# and vb-manager-local-react, plus hearth's Postgres DB. Within `auth`, only the
 # fields set below are managed — every other auth setting (mailer templates,
 # MFA, rate limits, etc.) stays dashboard-managed and untouched by apply. The
 # other top-level blocks (api/database/network/storage) mirror live values
@@ -46,9 +46,9 @@ resource "supabase_settings" "vb_auth" {
       "https://production-hearth.vercel.app/*",                             # hearth prod
       "http://localhost:4000/auth/callback",                                # employee-handler-ui local dev
       "https://demo-employee-handler-ui.vercel.app/*",                      # employee-handler-ui demo (its only deploy)
-      "http://localhost:3000/*",                                            # vb-manager-next local dev
-      "http://127.0.0.1:3000/*",                                            # vb-manager-next local dev (127.0.0.1 form)
-      "https://manager.vigilant-broccoli.app/*",                            # vb-manager-next prod (PM2)
+      "http://localhost:3000/*",                                            # vb-manager-local-react local dev
+      "http://127.0.0.1:3000/*",                                            # vb-manager-local-react local dev (127.0.0.1 form)
+      "https://manager.vigilant-broccoli.app/*",                            # vb-manager-local-react prod (PM2)
       "https://staging-vb-manager-next-mobile.vercel.app/auth/callback",    # vb-manager-next mobile staging
       "https://production-vb-manager-next-mobile.vercel.app/auth/callback", # vb-manager-next mobile prod
     ])

@@ -1,0 +1,141 @@
+{
+  "name": "vb-manager-local-fastify",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/vb-manager-local-fastify/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/api/vb-manager-local-fastify",
+        "format": ["cjs"],
+        "bundle": true,
+        "thirdParty": true,
+        "external": [
+          "playwright",
+          "playwright-core",
+          "chromium-bidi",
+          "better-sqlite3",
+          "socket.io-client"
+        ],
+        "main": "apps/api/vb-manager-local-fastify/src/main.ts",
+        "tsConfig": "apps/api/vb-manager-local-fastify/tsconfig.app.json",
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": ["default", "^default"],
+      "options": {
+        "command": "tsc -p apps/api/vb-manager-local-fastify/tsconfig.app.json --noEmit && tsc -p apps/api/vb-manager-local-fastify/tsconfig.spec.json --noEmit"
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/api/vb-manager-local-fastify/.env.example --env-file scripts/.env.scripts.example 'node --import tsx scripts/migrate.ts --migrations-dir=apps/api/vb-manager-local-fastify/supabase/migrations && nx run vb-manager-local-fastify:serve:no-vault'"
+      }
+    },
+    "serve:no-vault": {
+      "executor": "nx:run-commands",
+      "continuous": true,
+      "options": {
+        "cwd": "apps/api/vb-manager-local-fastify",
+        "command": "env -u GITHUB_TOKEN node --watch --import tsx src/main.ts",
+        "env": {
+          "PORT": "3003",
+          "SUPABASE_URL": "https://jrdosjjgmsoodpjmjqxx.supabase.co",
+          "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0",
+          "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev",
+          "VB_STORAGE_SERVICE_URL": "http://127.0.0.1:3001",
+          "EMAIL_SERVICE_URL": "http://127.0.0.1:3002"
+        }
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/api/vb-manager-local-fastify/jest.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "pm2:start": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "build",
+        { "projects": ["vb-manager-local-react"], "target": "build" }
+      ],
+      "options": {
+        "parallel": false,
+        "commands": [
+          {
+            "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/api/vb-manager-local-fastify/.env.example 'pm2 start apps/api/vb-manager-local-fastify/ecosystem.config.js'"
+          },
+          {
+            "command": "pm2 save"
+          }
+        ]
+      }
+    },
+    "pm2:reload": {
+      "executor": "nx:run-commands",
+      "dependsOn": [
+        "build",
+        { "projects": ["vb-manager-local-react"], "target": "build" }
+      ],
+      "options": {
+        "parallel": false,
+        "commands": [
+          {
+            "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/api/vb-manager-local-fastify/.env.example 'pm2 reload apps/api/vb-manager-local-fastify/ecosystem.config.js'"
+          },
+          {
+            "command": "pm2 save"
+          }
+        ]
+      }
+    },
+    "pm2:delete": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pm2 delete vb-manager-local-fastify"
+      }
+    },
+    "pm2:logs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pm2 logs vb-manager-local-fastify"
+      }
+    },
+    "pm2:status": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pm2 status"
+      }
+    }
+  }
+}

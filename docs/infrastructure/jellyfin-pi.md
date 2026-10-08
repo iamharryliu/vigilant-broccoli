@@ -54,7 +54,7 @@ The repo already has two remote-access patterns, and both are a poor fit:
   the media server means hand-editing configs on both ends.
 
 Tailscale is already in use in this repo — the tailnet is `echidna-rohu.ts.net`
-and `vb-manager-next`'s dev dashboard lists its machines via
+and the VB Manager dev dashboard (`vb-manager-local-fastify`) lists its machines via
 `TAILSCALE_API_KEY` — so this adds a node to an existing tailnet rather than a
 new vendor. It is WireGuard with the key distribution handled: native clients
 see a plain `http://jellyfin-pi.echidna-rohu.ts.net:8096`, nothing is published

@@ -5,7 +5,7 @@
 ## Enabling
 
 - `DocsViewer` shows a graph toggle (sidebar, waypoints icon) only when given the optional `getGraph()` prop; without it there is no graph
-- `docs-md` and `pages-index`'s Claude Context page wire `getGraph` to `createDocsSnapshotSource().fetchGraph` (`graph.json`); `vb-manager-next`'s docs route does not, so it has no graph toggle
+- `docs-md` and `pages-index`'s Claude Context page wire `getGraph` to `createDocsSnapshotSource().fetchGraph` (`graph.json`)
 - `DocsExplorer` takes `renderGraph(navigate)`; `DocsViewer` injects `GraphView` through it — react-lib can't import react-utility (would cycle), so the graph component is passed in rather than imported
 
 ## Data (`graph.json`)

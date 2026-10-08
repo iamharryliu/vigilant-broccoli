@@ -2,7 +2,7 @@
 
 ## Overview
 
-- Dev dashboard card in `vb-manager-next`
+- Dev dashboard card in `vb-manager-local-react`, backed by `vb-manager-local-fastify`
 - Reads auth state via `gcloud` CLI through `@vigilant-broccoli/devops-cli` (see [devops-cli.md](./devops-cli.md))
 
 ## Features

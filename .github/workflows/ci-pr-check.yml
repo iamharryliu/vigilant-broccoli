@@ -72,9 +72,9 @@ jobs:
 
       # Scoped to component-library specifically (not the shared `nx affected
       # -t ... build` command above) so this doesn't also try to run
-      # vb-manager-next's separate, not-yet-CI-wired e2e target. Its config
-      # boots its own server via Playwright's webServer, so no live deploy or
-      # extra server-management step is needed here.
+      # vb-manager-local-react's separate, not-yet-CI-wired e2e target. Its
+      # config boots its own server via Playwright's webServer, so no live
+      # deploy or extra server-management step is needed here.
       - name: Check for Sidebar e2e coverage
         id: e2e-check
         if: steps.check.outputs.nx-workspace-changed == 'true'

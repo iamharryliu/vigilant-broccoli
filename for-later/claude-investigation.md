@@ -14,7 +14,7 @@
 | PR / code review                                  | 121   | "Can you review current code and this PR ... assess ... safe to use and pose no security risks"         |
 | Fix/debug a bug or error                          | 96    | "Investigate this issue `github.com/.../actions/runs/...`"                                              |
 | Personal notes (cooking, career, journal)         | 95    | "make a document food-lingo.md with markdown table Term Description"                                    |
-| Calendar / vb-manager-next work                   | 89    | "Can you add the socket server connection to vb-manager-next dev-dashboard ... under tailscale"         |
+| Calendar / VB Manager work                        | 89    | "Can you add the socket server connection to [VB Manager] dev-dashboard ... under tailscale"            |
 | Docs/notes maintenance                            | 57    | "double check accuracy and validity of current CLAUDE docs and secret-management"                       |
 | Agent/Claude meta (subagents, skills, memory)     | 51    | "Can you look at pnpm agent commands and make an automated command to fix a PR"                         |
 | Testing                                           | 33    | "let's implement step 2 but can you try test out a tmp local sample to see if the code actually works?" |

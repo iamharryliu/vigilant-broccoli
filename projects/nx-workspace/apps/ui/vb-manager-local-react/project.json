@@ -1,0 +1,84 @@
+{
+  "name": "vb-manager-local-react",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/vb-manager-local-react/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "production",
+        "^production",
+        { "dependentTasksOutputFiles": "**/*" },
+        { "env": "VITE_SUPABASE_URL" },
+        { "env": "VITE_SUPABASE_PUBLISHABLE_KEY" },
+        { "env": "VITE_SOCKET_SERVER_URL" }
+      ],
+      "outputs": [
+        "{projectRoot}/{options.outDir}",
+        "{workspaceRoot}/dist/vb-manager-local-react"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "outDir": "../../../dist/vb-manager-local-react",
+        "env": {
+          "VITE_SUPABASE_URL": "https://jrdosjjgmsoodpjmjqxx.supabase.co",
+          "VITE_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0",
+          "VITE_SOCKET_SERVER_URL": "https://socket.harryliu.dev"
+        }
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": ".",
+        "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/api/vb-manager-local-fastify/.env.example --env-file scripts/.env.scripts.example --map SOCKET_SERVER_URL:VITE_SOCKET_SERVER_URL 'node --import tsx scripts/migrate.ts --migrations-dir=apps/api/vb-manager-local-fastify/supabase/migrations && nx run vb-manager-local-react:serve:no-vault'"
+      }
+    },
+    "serve:no-vault": {
+      "executor": "nx:run-commands",
+      "continuous": true,
+      "dependsOn": [
+        { "projects": ["vb-manager-local-fastify"], "target": "serve:no-vault" }
+      ],
+      "options": {
+        "cwd": "apps/ui/vb-manager-local-react",
+        "command": "vite",
+        "env": {
+          "VITE_SUPABASE_URL": "https://jrdosjjgmsoodpjmjqxx.supabase.co",
+          "VITE_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0"
+        }
+      }
+    },
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --config=apps/ui/vb-manager-local-react/e2e/playwright.config.ts"
+      }
+    },
+    "e2e:headed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --config=apps/ui/vb-manager-local-react/e2e/playwright.config.ts --headed"
+      }
+    },
+    "e2e:headed:slow": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright test --config=apps/ui/vb-manager-local-react/e2e/playwright.config.ts --headed --project=slow"
+      }
+    }
+  }
+}

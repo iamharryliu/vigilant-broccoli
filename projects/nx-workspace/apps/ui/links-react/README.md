@@ -1,6 +1,6 @@
 # Links React
 
-Public single-page pastebin of personal links, contact details, and the developer-facing vb-manager-next quick links, served at links.harryliu.dev.
+Public single-page pastebin of personal links, contact details, and the developer-facing VB Manager quick links, served at links.harryliu.dev.
 
 ## Table of Contents
 
