@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 
 const SOCIAL_BUTTON_CLASS =
-  'flex w-full items-center justify-center gap-3 rounded-md border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer';
+  'flex w-full items-center justify-center gap-3 rounded-md border border-border bg-background px-4 py-2.5 text-sm font-medium text-foreground shadow-sm hover:bg-muted active:bg-muted transition-colors cursor-pointer';
 
 export const SocialSigninButton = ({
   icon,

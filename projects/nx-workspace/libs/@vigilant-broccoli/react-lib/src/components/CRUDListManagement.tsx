@@ -181,7 +181,7 @@ export const CRUDItemList = <T extends CRUDItem>({
 
     if (fullWidthImage && imageUrls.length > 0) {
       return (
-        <div className="flex flex-col gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+        <div className="flex flex-col gap-2 p-2 rounded-lg hover:bg-muted transition-colors">
           <img
             src={imageUrls[0]}
             alt={title}
@@ -193,7 +193,7 @@ export const CRUDItemList = <T extends CRUDItem>({
     }
 
     return (
-      <div className="flex items-start sm:items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+      <div className="flex items-start sm:items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors">
         {imageUrls.length > 0 && <StackedImages urls={imageUrls} alt={title} />}
         {contentWithEllipsis('items-start sm:items-center')}
       </div>

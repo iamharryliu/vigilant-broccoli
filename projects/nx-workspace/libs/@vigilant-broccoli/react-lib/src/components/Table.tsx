@@ -19,7 +19,7 @@ const Root = forwardRef<HTMLTableElement, TableRootProps>(
       className={cn(
         'overflow-x-auto',
         variant === 'surface' &&
-          'rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900',
+          'rounded-lg border border-border bg-card text-card-foreground',
       )}
     >
       <table
@@ -36,11 +36,7 @@ const Header = forwardRef<
   HTMLTableSectionElement,
   ComponentPropsWithoutRef<'thead'>
 >(({ className, ...props }, ref) => (
-  <thead
-    ref={ref}
-    className={cn('bg-gray-50 dark:bg-gray-800', className)}
-    {...props}
-  />
+  <thead ref={ref} className={cn('bg-muted', className)} {...props} />
 ));
 Header.displayName = 'Table.Header';
 
@@ -60,7 +56,7 @@ const Row = forwardRef<HTMLTableRowElement, ComponentPropsWithoutRef<'tr'>>(
   ({ className, ...props }, ref) => (
     <tr
       ref={ref}
-      className={cn('border-b border-gray-200 dark:border-gray-700', className)}
+      className={cn('border-b border-border', className)}
       {...props}
     />
   ),

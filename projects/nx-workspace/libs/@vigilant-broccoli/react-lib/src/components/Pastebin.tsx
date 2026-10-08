@@ -30,7 +30,7 @@ const filterGroups = (groups: PastebinGroup[], query: string) => {
 };
 
 const PastebinRow = ({ entry }: { entry: PastebinEntry }) => (
-  <div className="flex items-center gap-2 rounded-md border border-gray-200 px-3 py-2 dark:border-gray-700">
+  <div className="flex items-center gap-2 rounded-md border border-border px-3 py-2 dark:border-border">
     <div className="min-w-0 flex-1">
       <Text as="div" size="2" weight="medium">
         {entry.label}

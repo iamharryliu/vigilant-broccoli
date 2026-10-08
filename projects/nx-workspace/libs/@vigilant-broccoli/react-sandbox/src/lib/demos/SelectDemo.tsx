@@ -1,122 +1,133 @@
-import { Select, Heading } from '@vigilant-broccoli/react-lib';
-import { useState } from 'react';
+import { DemoSection } from './DemoSection';
+import { Button, Select } from '@vigilant-broccoli/react-lib';
+import { ReactNode, useState } from 'react';
+import { I18nProvider, useTranslation } from '../i18n';
 
 interface Person {
-  id: number;
+  personId: number;
   name: string;
   role: string;
 }
 
-export const SelectDemo = () => {
-  const [selectedString, setSelectedString] = useState('');
-  const SELECT_STRING_OPTIONS = ['Apple', 'Banana', 'Orange', 'Grape', 'Mango'];
+const NUMBER_OPTIONS = [0, 1, 2, 3, 4, 5];
+const PERSON_OPTIONS: Person[] = [
+  { personId: 0, name: 'Alice Johnson', role: 'Developer' },
+  { personId: 1, name: 'Bob Smith', role: 'Designer' },
+  { personId: 2, name: 'Charlie Brown', role: 'Manager' },
+  { personId: 3, name: 'Diana Prince', role: 'Product Owner' },
+];
 
-  const [selectedNumber, setSelectedNumber] = useState<number>();
-  const SELECT_NUMBER_OPTIONS = [1, 2, 3, 4, 5];
+const DemoRow = ({
+  title,
+  selected,
+  children,
+}: {
+  title: string;
+  selected?: string | number | Person;
+  children: ReactNode;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <DemoSection title={title}>
+      <div className="flex flex-wrap items-start gap-4">
+        <div className="flex flex-wrap items-center gap-3">{children}</div>
+        {selected !== undefined && (
+          <div className="max-w-full text-xs text-muted-foreground">
+            <div className="mb-1">{t('SELECT_DEMO.SELECTED')}</div>
+            <pre className="whitespace-pre-wrap break-words">
+              {JSON.stringify(selected, null, 2)}
+            </pre>
+          </div>
+        )}
+      </div>
+    </DemoSection>
+  );
+};
 
+const SelectDemoContent = () => {
+  const { t } = useTranslation();
+  const [selectedString, setSelectedString] = useState<string>();
+  const [selectedNumber, setSelectedNumber] = useState<number | undefined>(0);
   const [selectedPerson, setSelectedPerson] = useState<Person>();
-  const SELECT_PERSON_OPTIONS: Person[] = [
-    { id: 1, name: 'Alice Johnson', role: 'Developer' },
-    { id: 2, name: 'Bob Smith', role: 'Designer' },
-    { id: 3, name: 'Charlie Brown', role: 'Manager' },
-    { id: 4, name: 'Diana Prince', role: 'Product Owner' },
+  const [selectedLongLabel, setSelectedLongLabel] = useState<string>();
+  const [legacyNumber, setLegacyNumber] = useState<number | undefined>(0);
+  const stringOptions = [
+    t('SELECT_DEMO.FRUIT.APPLE'),
+    t('SELECT_DEMO.FRUIT.BANANA'),
+    t('SELECT_DEMO.FRUIT.ORANGE'),
+    t('SELECT_DEMO.FRUIT.GRAPE'),
+    t('SELECT_DEMO.FRUIT.MANGO'),
   ];
+  const placeholder = t('SELECT_DEMO.PLACEHOLDER');
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-start gap-4">
-        <div className="w-32 shrink-0 pt-2">
-          <Heading size="3">Simple String</Heading>
-        </div>
+      <DemoRow title={t('SELECT_DEMO.STRING')} selected={selectedString}>
         <Select
-          selectedOption={selectedString}
-          setValue={setSelectedString}
-          options={SELECT_STRING_OPTIONS}
+          aria-label={t('SELECT_DEMO.STRING')}
+          value={selectedString}
+          onValueChange={setSelectedString}
+          options={stringOptions}
+          placeholder={placeholder}
         />
-        <div className="flex gap-4 text-xs">
-          <div>
-            <div className="text-gray-500 dark:text-gray-400 mb-1">
-              Options:
-            </div>
-            <pre className="text-gray-500 dark:text-gray-400">
-              {JSON.stringify(SELECT_STRING_OPTIONS, null, 2)}
-            </pre>
-          </div>
-          {selectedString && (
-            <div>
-              <div className="text-gray-500 dark:text-gray-400 mb-1">
-                Selected:
-              </div>
-              <pre className="text-gray-500 dark:text-gray-400">
-                {JSON.stringify(selectedString, null, 2)}
-              </pre>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="flex items-start gap-4">
-        <div className="w-32 shrink-0 pt-2">
-          <Heading size="3">Number</Heading>
-        </div>
+      </DemoRow>
+      <DemoRow title={t('SELECT_DEMO.NUMBER')} selected={selectedNumber}>
         <Select
-          selectedOption={selectedNumber}
-          setValue={setSelectedNumber}
-          options={SELECT_NUMBER_OPTIONS}
+          aria-label={t('SELECT_DEMO.NUMBER')}
+          value={selectedNumber}
+          onValueChange={setSelectedNumber}
+          options={NUMBER_OPTIONS}
+          placeholder={placeholder}
         />
-        <div className="flex gap-4 text-xs">
-          <div>
-            <div className="text-gray-500 dark:text-gray-400 mb-1">
-              Options:
-            </div>
-            <pre className="text-gray-500 dark:text-gray-400">
-              {JSON.stringify(SELECT_NUMBER_OPTIONS, null, 2)}
-            </pre>
-          </div>
-          {selectedNumber !== undefined && (
-            <div>
-              <div className="text-gray-500 dark:text-gray-400 mb-1">
-                Selected:
-              </div>
-              <pre className="text-gray-500 dark:text-gray-400">
-                {JSON.stringify(selectedNumber, null, 2)}
-              </pre>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="flex items-start gap-4">
-        <div className="w-32 shrink-0 pt-2">
-          <Heading size="3">Object</Heading>
-        </div>
+        <Button variant="outline" onClick={() => setSelectedNumber(undefined)}>
+          {t('SELECT_DEMO.CLEAR')}
+        </Button>
+      </DemoRow>
+      <DemoRow title={t('SELECT_DEMO.OBJECT')} selected={selectedPerson}>
         <Select
-          selectedOption={selectedPerson}
-          setValue={setSelectedPerson}
-          options={SELECT_PERSON_OPTIONS}
+          aria-label={t('SELECT_DEMO.OBJECT')}
+          value={selectedPerson}
+          onValueChange={setSelectedPerson}
+          options={PERSON_OPTIONS}
+          optionIdentifier="personId"
           optionDisplayKey="name"
+          placeholder={placeholder}
         />
-        <div className="flex gap-4 text-xs">
-          <div>
-            <div className="text-gray-500 dark:text-gray-400 mb-1">
-              Options:
-            </div>
-            <pre className="text-gray-500 dark:text-gray-400">
-              {JSON.stringify(SELECT_PERSON_OPTIONS, null, 2)}
-            </pre>
-          </div>
-          {selectedPerson && (
-            <div>
-              <div className="text-gray-500 dark:text-gray-400 mb-1">
-                Selected:
-              </div>
-              <pre className="text-gray-500 dark:text-gray-400">
-                {JSON.stringify(selectedPerson, null, 2)}
-              </pre>
-            </div>
-          )}
-        </div>
-      </div>
+      </DemoRow>
+      <DemoRow title={t('SELECT_DEMO.DISABLED')} selected={0}>
+        <Select
+          aria-label={t('SELECT_DEMO.DISABLED')}
+          value={0}
+          options={NUMBER_OPTIONS}
+          disabled
+        />
+      </DemoRow>
+      <DemoRow title={t('SELECT_DEMO.LONG_LABEL')} selected={selectedLongLabel}>
+        <Select
+          aria-label={t('SELECT_DEMO.LONG_LABEL')}
+          value={selectedLongLabel}
+          onValueChange={setSelectedLongLabel}
+          options={[t('SELECT_DEMO.LONG_OPTION'), ...stringOptions]}
+          placeholder={placeholder}
+          className="w-64 max-w-full"
+        />
+      </DemoRow>
+      <DemoRow title={t('SELECT_DEMO.LEGACY')} selected={legacyNumber}>
+        <Select
+          aria-label={t('SELECT_DEMO.LEGACY')}
+          selectedOption={legacyNumber}
+          setValue={setLegacyNumber}
+          options={NUMBER_OPTIONS}
+          optionIdenfifier="id"
+          placeholder={placeholder}
+        />
+      </DemoRow>
     </div>
   );
 };
+
+export const SelectDemo = () => (
+  <I18nProvider>
+    <SelectDemoContent />
+  </I18nProvider>
+);

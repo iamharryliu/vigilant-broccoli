@@ -70,16 +70,14 @@ export const CollapsibleList = ({
         <AccordionPrimitive.Item
           key={item.id}
           value={item.id}
-          className={
-            item.className ?? 'border-t border-gray-300 dark:border-gray-700'
-          }
+          className={item.className ?? 'border-t border-border'}
         >
           <AccordionPrimitive.Header className="flex items-center">
             <AccordionPrimitive.Trigger
               className={`flex flex-1 items-center ${triggerClassName} text-sm cursor-pointer transition-all [&[data-state=open]>svg]:rotate-180`}
             >
               {chevronPosition === 'left' && (
-                <ChevronDown className="h-4 w-4 shrink-0 text-gray-400 transition-transform duration-200 mr-2" />
+                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200 mr-2" />
               )}
               <div className="flex items-center flex-1">
                 {item.titleContent ?? (
@@ -87,7 +85,7 @@ export const CollapsibleList = ({
                 )}
               </div>
               {chevronPosition === 'right' && (
-                <ChevronDown className="h-4 w-4 shrink-0 text-gray-400 transition-transform duration-200" />
+                <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
               )}
             </AccordionPrimitive.Trigger>
             {item.headerAction && (

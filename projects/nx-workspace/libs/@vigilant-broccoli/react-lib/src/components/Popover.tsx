@@ -30,7 +30,7 @@ const Content = forwardRef<
           ref={ref}
           sideOffset={sideOffset}
           className={cn(
-            'z-50 max-h-[var(--radix-popover-content-available-height)] max-w-[calc(100vw-2rem)] overflow-y-auto rounded-md border border-border bg-background p-4 text-foreground shadow-md outline-none',
+            'z-50 max-h-[var(--radix-popover-content-available-height)] max-w-[calc(100vw-2rem)] overflow-y-auto rounded-md border border-border bg-popover p-4 text-popover-foreground shadow-md outline-none',
             theme.className,
             className,
           )}
