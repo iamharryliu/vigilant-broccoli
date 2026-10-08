@@ -67,7 +67,7 @@ A directory-scoped `CONTEXT.md` is:
 - `## Nuances` — the entries, each a `###`.
 
 A `CONTEXT.md` with no `##` headings at all doesn't need a Table of Contents,
-the same exemption [notes-pattern.md](./notes-pattern.md) makes for notes.
+the same exemption [notes/CONTEXT.md](../notes/CONTEXT.md) makes for notes.
 
 `CONTEXT.md` sits next to `README.md` in a component directory and is only
 created when there is something to say — there is no empty-file placeholder.
