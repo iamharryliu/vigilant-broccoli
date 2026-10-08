@@ -24,6 +24,7 @@
 
 ## Password Management
 
+- [Password Managers](./password-managers.md) — product comparison, pros, cons, and best uses.
 - [Bitwarden](./bitwarden.md)
 
 ## Communication

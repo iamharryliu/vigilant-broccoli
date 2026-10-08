@@ -115,6 +115,7 @@
     "agentic-pr-create": "./infrastructure/agent-sandbox/solve-todo.sh",
     "agentic-pr-create-todo": "./infrastructure/agent-sandbox/create-todo.sh",
     "agentic-pr-create-todo-audit": "./infrastructure/agent-sandbox/audit-todo.sh",
+    "agentic-pr-create-prune": "./infrastructure/agent-sandbox/prune.sh",
     "agentic-pr-create-rnd": "./infrastructure/agent-sandbox/create-rnd.sh",
     "agentic-pr-update": "./infrastructure/agent-sandbox/update-pr.sh",
     "agentic-pr-update-fix-ci": "./infrastructure/agent-sandbox/fix-pr-ci.sh",
