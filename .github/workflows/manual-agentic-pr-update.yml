@@ -48,12 +48,10 @@ jobs:
     outputs:
       pr: ${{ steps.validate.outputs.pr }}
     steps:
-      - name: Validate dispatch inputs and link PR
+      - name: Normalize PR
         id: validate
         env:
           PR: ${{ inputs.pr }}
-          OPERATION: ${{ inputs.operation }}
-          INSTRUCTION: ${{ inputs.instruction }}
         run: |
           set -euo pipefail
           PR_PREFIX="https://github.com/${GITHUB_REPOSITORY}/pull/"
@@ -69,8 +67,36 @@ jobs:
             echo "ERROR: 'pr' must be greater than zero." >&2
             exit 1
           fi
-          echo "**Pull request:** ${PR_PREFIX}${PR}" >> "$GITHUB_STEP_SUMMARY"
-          echo "**Operation:** ${OPERATION}" >> "$GITHUB_STEP_SUMMARY"
+          echo "pr=$PR" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout summary helper
+        if: ${{ !cancelled() && steps.validate.outputs.pr != '' }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Publish overview
+        if: ${{ !cancelled() && steps.validate.outputs.pr != '' }}
+        continue-on-error: true
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: overview
+          title: Update a pull request
+          agent: claude
+          model: ${{ inputs.model }}
+          firewall: ${{ inputs.firewall }}
+          operation: ${{ (inputs.operation == 'change' && 'Apply a change') || (inputs.operation == 'fix-ci' && 'Fix CI') || 'Resolve conflicts' }}
+          pull_request: https://github.com/${{ github.repository }}/pull/${{ steps.validate.outputs.pr }}
+          description: ${{ (inputs.operation == 'change' && 'Apply the requested change to the pull request branch and verify its cumulative result.') || (inputs.operation == 'fix-ci' && 'Diagnose the pull request''s failing CI checks from their logs and fix the branch so the checks pass.') || 'Merge origin/main into the pull request branch and resolve conflicts, preserving both sides.' }}
+          task_label: ${{ inputs.operation == 'change' && 'Instruction' || 'Additional guidance' }}
+          task: ${{ inputs.instruction }}
+
+      - name: Validate operation inputs
+        env:
+          OPERATION: ${{ inputs.operation }}
+          INSTRUCTION: ${{ inputs.instruction }}
+        run: |
+          set -euo pipefail
           case "$OPERATION" in
             change)
               if [[ ! "$INSTRUCTION" =~ [^[:space:]] ]]; then
@@ -90,7 +116,6 @@ jobs:
               exit 1
               ;;
           esac
-          echo "pr=$PR" >> "$GITHUB_OUTPUT"
 
   update-pr:
     needs: key
@@ -114,6 +139,7 @@ jobs:
             kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
 
       - name: Update PR
+        id: update
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
           AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
@@ -140,3 +166,12 @@ jobs:
               bash infrastructure/agent-sandbox/resolve-pr-conflicts.sh --model "$MODEL" "$PR"
               ;;
           esac
+
+      - name: Report result
+        if: always()
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: result
+          outcome: ${{ (steps.update.outcome == 'success' && 'pr-updated') || (job.status == 'cancelled' && 'cancelled') || 'failed' }}
+          result_pr_url: https://github.com/${{ github.repository }}/pull/${{ needs.key.outputs.pr }}
+          note: ${{ steps.update.outcome == 'skipped' && 'A step before the update failed, so the agent never started.' || '' }}

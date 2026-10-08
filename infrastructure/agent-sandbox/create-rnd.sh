@@ -60,5 +60,5 @@ docker run --rm --init --name "vb-rnd-$(date +%s)" \
   "$IMAGE" \
   bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/create-rnd-runner.sh" "$1"' _ "$QUESTION" \
   2>&1 | tee "$LOG_FILE" || STATUS="${PIPESTATUS[0]}"
-bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_FILE"
+bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_FILE" "$STATUS"
 exit "$STATUS"

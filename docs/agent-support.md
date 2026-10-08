@@ -28,6 +28,8 @@ Use one base name, `agentic-<resource>-<verb>[-<variant>]`, for each operation: 
 
 Keep task instructions in `setup/dotfiles/agent-skills/<name>/SKILL.md`. Both local sessions and sandbox prompts consume that source. Runners load the file at runtime and embed it in the prompt; load it before checking out a PR branch, which may predate the skill. Variant runners select the matching variant skill rather than copying its task instructions into shell strings or YAML.
 
+Every agentic workflow reports its work through the shared run summary described in [agentic run summaries](./ci/workflow-conventions.md#agentic-run-summaries); host wrappers hand the log and exit status to `write-pr-step-summary.sh` for the result, and local runs without `GITHUB_STEP_SUMMARY` are unaffected.
+
 Keep runtime concerns in the runner: isolated checkout setup, credentials, merge preparation, metadata, validation, commits, pushes and PR publishing. Skills describe the task and any local preparation needed when no runner has prepared the checkout. Mark those local steps explicitly so sandbox agents do not repeat them. A local skill invocation alone does not authorize publishing.
 
 Plan, Develop and Maintain operations follow this pattern. The smoke workflow is an Actions-only pipeline check and has no local equivalent. The two cleanup-shaped Maintain operations differ by scope: `agentic-pr-create-todo-audit` only edits `TODO.md`, and `agentic-pr-create-prune` removes repo-wide dead code and stale docs but never `TODO.md`; neither replaces the diff-scoped [refactor-code-cleanup.md](./refactor-code-cleanup.md) checklist.
