@@ -1,7 +1,8 @@
 {
   "STATUS": {
     "LOCATING": "Finding your location…",
-    "LOADING_WEATHER": "Checking the sky…"
+    "LOADING_WEATHER": "Checking the sky…",
+    "LOADING_PREPARATION": "Checking what to wear or bring…"
   },
   "LOCATION": {
     "FALLBACK": "Your location",

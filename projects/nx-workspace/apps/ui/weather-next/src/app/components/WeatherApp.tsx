@@ -96,7 +96,7 @@ const loadWeather = async (onLocated: () => void): Promise<ViewState> => {
 export function WeatherApp() {
   const { t } = useTranslation();
   const [state, setState] = useState<ViewState>({ status: STATUS.LOCATING });
-  const [preparation, setPreparation] = useState<Preparation | null>(null);
+  const [preparation, setPreparation] = useState<Preparation | null>();
 
   const load = useCallback(
     () =>
@@ -112,7 +112,7 @@ export function WeatherApp() {
 
   const readyWeather = state.status === STATUS.READY ? state.weather : null;
   useEffect(() => {
-    setPreparation(null);
+    setPreparation(undefined);
     if (!readyWeather) return;
     let cancelled = false;
     fetchPreparation(readyWeather).then(result => {
@@ -217,7 +217,26 @@ export function WeatherApp() {
           t('WEATHER.ERROR_MESSAGE'),
         );
       case STATUS.READY:
-        return renderWeather(state.weather);
+        return (
+          <>
+            {renderWeather(state.weather)}
+            {preparation === undefined && (
+              <div
+                className="mt-4 flex flex-col items-center gap-2"
+                role="status"
+                aria-live="polite"
+              >
+                <div className="flex gap-2" aria-hidden="true">
+                  <Skeleton className="h-7 w-32 rounded-full" />
+                  <Skeleton className="h-7 w-24 rounded-full" />
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {t('STATUS.LOADING_PREPARATION')}
+                </p>
+              </div>
+            )}
+          </>
+        );
     }
   };
 
