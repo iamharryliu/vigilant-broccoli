@@ -20,7 +20,7 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { CreateTasksDialogTrigger } from './create-tasks-dialog.component';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   authFetch,
   googleTasksAuth,
@@ -614,6 +614,7 @@ const BoardDragOverlay = ({ name }: { name: string }) => (
 // eslint-disable-next-line complexity
 export const KanbanComponent = () => {
   const status = useAuthStatus();
+  const signInStarted = useRef(false);
   const {
     boards,
     activeBoard,
@@ -967,10 +968,14 @@ export const KanbanComponent = () => {
     list => !activeBoard?.lanes.some(lane => lane.taskListId === list.id),
   );
 
-  if (status === 'unauthenticated') {
-    signInWithGoogle();
-    return null;
-  }
+  useEffect(() => {
+    if (status === 'unauthenticated' && !signInStarted.current) {
+      signInStarted.current = true;
+      void signInWithGoogle();
+    }
+  }, [status]);
+
+  if (status === 'unauthenticated') return null;
 
   if (!activeBoard) {
     return null;
@@ -1200,7 +1205,7 @@ export const KanbanComponent = () => {
                   }}
                   onBlur={handleSaveEditBoard}
                   className="text-lg font-bold"
-                  autoFocus
+                  autoFocus={!sidebarOpen}
                 />
               ) : (
                 <Text size="4" weight="bold">

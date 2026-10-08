@@ -284,7 +284,7 @@ test.describe('Kanban UI - Board management', () => {
     await page.goto('/kanban');
     await page.waitForTimeout(500);
 
-    await page.getByRole('button', { name: 'Default Board' }).dblclick();
+    await page.getByText('Default Board', { exact: true }).first().dblclick();
 
     const input = page.locator('input:visible').first();
     await input.fill('Renamed Board');

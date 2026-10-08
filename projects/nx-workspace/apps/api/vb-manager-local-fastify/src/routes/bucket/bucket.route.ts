@@ -1,3 +1,4 @@
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import {
   API_KEY_HEADER,
   CONTENT_TYPE_HEADER,
@@ -5,8 +6,8 @@ import {
   HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
 
-const VB_STORAGE_SERVICE_URL = process.env['VB_STORAGE_SERVICE_URL'];
-const SHARED_APP_TOKEN = process.env['SHARED_APP_TOKEN'];
+const VB_STORAGE_SERVICE_URL = getEnvironmentVariable('VB_STORAGE_SERVICE_URL');
+const SHARED_APP_TOKEN = getEnvironmentVariable('SHARED_APP_TOKEN');
 
 const BUCKET_API = `${VB_STORAGE_SERVICE_URL}/api/bucket`;
 const CONTENT_DISPOSITION_HEADER = 'Content-Disposition';

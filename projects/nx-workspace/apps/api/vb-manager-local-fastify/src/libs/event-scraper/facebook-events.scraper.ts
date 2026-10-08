@@ -1,3 +1,4 @@
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { chromium, BrowserContext, Page } from 'playwright';
 import { existsSync } from 'fs';
 import { mkdir, copyFile, rm } from 'fs/promises';
@@ -19,7 +20,8 @@ const CHROME_USER_DATA_DIR = path.join(
   'Chrome',
 );
 const LOCAL_PROFILE_DIR = path.join(
-  process.env.VB_MANAGER_DATA_DIR ?? path.join(os.homedir(), '.vb-manager'),
+  getEnvironmentVariable('VB_MANAGER_DATA_DIR') ||
+    path.join(os.homedir(), '.vb-manager'),
   'chrome-profile',
 );
 const ROOT_FILES_TO_SYNC = ['Local State'];

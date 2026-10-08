@@ -19,6 +19,6 @@ const getClientPromise = (): Promise<MongoClient> => {
 
 export const getDb = async (): Promise<Db> => {
   const client = await getClientPromise();
-  const dbName = process.env[MONGODB_DB] || DEFAULT_DB_NAME;
+  const dbName = getEnvironmentVariable(MONGODB_DB) || DEFAULT_DB_NAME;
   return client.db(dbName);
 };

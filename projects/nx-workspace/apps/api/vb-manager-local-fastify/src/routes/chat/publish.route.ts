@@ -1,3 +1,4 @@
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { HTTP_STATUS_CODES, PublishAck } from '@vigilant-broccoli/common-js';
 import { io } from 'socket.io-client';
 import {
@@ -16,8 +17,8 @@ const ERR_PUBLISH_FAILED = 'Publish failed';
 const CHAT_PUBLISH_ACK_TIMEOUT_MS = 5000;
 
 export async function POST(req: Request) {
-  const url = process.env.SOCKET_SERVER_URL;
-  const token = process.env.SHARED_APP_TOKEN;
+  const url = getEnvironmentVariable('SOCKET_SERVER_URL');
+  const token = getEnvironmentVariable('SHARED_APP_TOKEN');
   if (!url || !token) {
     return Response.json(
       { error: ERR_NOT_CONFIGURED },
