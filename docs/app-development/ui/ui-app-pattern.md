@@ -8,6 +8,10 @@ What every UI app in this workspace must have, and the shared building blocks to
 - [Shared components (react-lib)](#shared-components-react-lib)
 - [i18n (required)](#i18n-required)
 - [Page titles (required)](#page-titles-required)
+- [Theme (system light/dark)](#theme-system-lightdark)
+  - [Consistency requirements](#consistency-requirements)
+  - [Avoiding a wrong-theme flash](#avoiding-a-wrong-theme-flash)
+  - [Manual verification](#manual-verification)
 - [pages-index card (required)](#pages-index-card-required)
 - [Local dev](#local-dev)
 - [New UI app checklist (app-side)](#new-ui-app-checklist-app-side)
@@ -44,6 +48,51 @@ Every route-level page sets a document title of `Page Name | Site Name`, so brow
 - `DocsViewer` and `ComponentSandbox` accept `siteName` so their selected document/component titles retain the hosting app suffix. Pass it from the app; the viewer must not overwrite a formatted title with a bare document name.
 - Detail pages title themselves after the record they render (doc name, project title, org name), falling back to a generic label while loading.
 
+## Theme (system light/dark)
+
+New UI apps follow the OS/browser `prefers-color-scheme` by default, using the shared `ThemeProvider` in system mode. This is a convention for new apps: `ThemeProvider`'s own default (light, persisted override, cross-tab sync) is unchanged, and apps with an established manual theme selection pattern keep it unless separately asked to change. Deviate in a new app only when the user explicitly requests another behavior.
+
+```tsx
+import { ThemeProvider } from '@vigilant-broccoli/react-lib';
+
+export function App() {
+  return (
+    <ThemeProvider followSystem>
+      <div className="bg-white dark:bg-gray-900">{/* app */}</div>
+    </ThemeProvider>
+  );
+}
+```
+
+Reference implementations: `docs-md`, `context-md` and `links-react` (`src/app/app.tsx`). The component is `libs/@vigilant-broccoli/react-lib/src/components/ThemeProvider.tsx`; shared behavior is documented in [theme.md](../../../projects/nx-workspace/libs/@vigilant-broccoli/react-lib/docs/features/theme.md).
+
+What `followSystem` does today:
+
+- The initial appearance is read from `prefers-color-scheme` on first render.
+- It tracks later OS/browser changes live through a media-query listener that is removed on unmount or when the prop changes. The page is not reloaded, so UI state survives a switch.
+- The stored `theme` value in `localStorage` and cross-tab `storage` updates are ignored, and `toggleTheme` from `useTheme` is a no-op. Do not combine `followSystem` with a visible manual toggle. A system/light/dark selector is not implemented; it is separate future work.
+
+### Consistency requirements
+
+- Use the existing `light`/`dark` classes and `ThemeScope` tokens that `ThemeProvider` renders; do not add app-specific theme state or duplicate class toggling.
+- Tailwind only emits classes it scans, so add the shared lib globs (`react-lib`, `react-utility`, ...) the app imports to its `content` — see the workspace [Nuances](../../../projects/nx-workspace/CONTEXT.md#a-react-lib-component-renders-unstyled-in-an-app-that-never-scanned-it).
+- Give `dark:` variants to every surface: page background, text, markdown and code blocks, and native controls (inputs, scrollbars, `color-scheme`).
+- Overlays rendered through portals must use the shared primitives (`Dialog`, `Popover`, `Select`, `DropdownMenu`, `Tooltip`; see `usePortalTheme`), which copy the originating scope's variables and dark class.
+- Canvas and graph visuals must read the theme actually in effect, not assume `<html>` owns the class or guess from the media query, and must redraw when it changes. `react-utility`'s `graph-view.tsx` observes class/style changes on every ancestor of its container plus the media query.
+
+### Avoiding a wrong-theme flash
+
+- Vite apps: set `<meta name="color-scheme" content="light dark" />` and a `prefers-color-scheme: dark` body background in `index.html` so the page is not light before React mounts. See `apps/ui/docs-md/index.html`.
+- SSR/Next apps: do not copy that browser-only code indiscriminately. Guard `window`/`matchMedia` access, and keep the first client render identical to the server HTML to stay hydration-compatible, applying the system preference after mount.
+
+### Manual verification
+
+- Initial load in OS light and in OS dark.
+- Switch the OS preference while the app is open: the theme follows live and open dialogs, filters and scroll position are kept.
+- With `localStorage.theme` set to the opposite value, the app still follows the system.
+- Portals (dialogs, popovers, menus) and canvas/graph visuals redraw on a switch, and text and lines stay legible in both themes.
+- Unrelated apps that use `ThemeProvider` without `followSystem` keep their manual toggle and persistence.
+
 ## pages-index card (required)
 
 Every UI application with a public URL appears as a card in `apps/ui/pages-index/src/app/pages/WebApplicationsPage.tsx` (the GitHub Pages "Web Applications" page; demo-only deploys go in its Demo section). Each public URL also needs an Upptime entry and a quick-links browser entry — see [Public URL registration](../app-development.md#deployment).
@@ -60,3 +109,4 @@ Every UI application with a public URL appears as a card in `apps/ui/pages-index
 2. i18n wired via `createI18n` (above).
 3. Per-page document titles via `usePageTitle` (above).
 4. Web Applications card in `WebApplicationsPage.tsx`, plus the Upptime and quick-links entries above.
+5. Theme follows the system via `<ThemeProvider followSystem>` unless told otherwise (above).
