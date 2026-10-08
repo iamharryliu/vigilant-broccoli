@@ -28,5 +28,45 @@
       "DESKTOP_SAFARI": "Desktop Safari: Safari → Settings → Websites → Location → set this site to Allow.",
       "RELOAD": "Reload the page after changing the setting."
     }
+  },
+  "TABS": {
+    "LABEL": "FindMe sections",
+    "MAP": "Map",
+    "NEARBY": "Nearby",
+    "PEOPLE": "People"
+  },
+  "MAP": {
+    "LOCATION_UNAVAILABLE": "Your location is unavailable, so the map can't show where you are. Allow location access to see yourself and nearby places.",
+    "NO_SHARING_USERS": "No one else is sharing their location right now.",
+    "SELF_LOCAL_ONLY": "Only you can see your location. Tap Share my location to broadcast it."
+  },
+  "NEARBY": {
+    "TITLE": "Within {radius} m of you",
+    "DISTANCE": "{distance} m",
+    "DISTANCE_AWAY": "About {distance} m away",
+    "UNNAMED": "Unnamed {category}",
+    "SHOW_ON_MAP": "Show on map",
+    "REFRESH": "Refresh",
+    "RETRY": "Retry",
+    "LOADING": "Looking for places nearby…",
+    "EMPTY": "No places found within {radius} m. OpenStreetMap may not cover this area.",
+    "LOCATION_UNAVAILABLE": "Your location is unavailable, so nearby places can't be listed. Allow location access to continue.",
+    "ERROR": "Couldn't load nearby places. Check your connection and retry.",
+    "ERROR_CACHED": "Couldn't refresh nearby places. Showing the last results.",
+    "APPROXIMATE": "Distances are straight-line approximations. For parks and other areas, the distance is to the nearest edge of the area's bounding box.",
+    "ATTRIBUTION_PREFIX": "Place data ©",
+    "ATTRIBUTION_LINK": "OpenStreetMap contributors",
+    "CATEGORY": {
+      "SHOP": "Shop",
+      "FOOD_DRINK": "Food & drink",
+      "PARK": "Park",
+      "NATURE": "Nature",
+      "ATTRACTION": "Attraction"
+    }
+  },
+  "PEOPLE": {
+    "STATUS_SHARING": "Sharing location",
+    "STATUS_VIEWING": "Viewing",
+    "LIST_LABEL": "People online"
   }
 }
