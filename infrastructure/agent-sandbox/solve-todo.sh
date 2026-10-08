@@ -161,7 +161,7 @@ if [ -n "$PROMPT" ]; then
     bash -c 'exec bash "$0" --prompt "$1"' "$RUNNER_PATH" "$PROMPT" \
     2>&1 | tee "$LOG_FILE" || STATUS="${PIPESTATUS[0]}"
   write_pr_details "$LOG_FILE" "$LOG_DIR/pr-details.jsonl"
-  bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_FILE"
+  bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_FILE" "$STATUS"
   if [ -n "${GITHUB_OUTPUT:-}" ] && [ -f "$LOG_DIR/pr-details.jsonl" ]; then
     echo "pr_details_file=$LOG_DIR/pr-details.jsonl" >> "$GITHUB_OUTPUT"
   fi
@@ -187,24 +187,26 @@ done
 FAILED=0
 for i in "${!PIDS[@]}"; do
   id=${IDS[$i]}
-  if wait "${PIDS[$i]}"; then
-    # Anchored to the marker, not a loose URL match: the log now carries the
-    # branch diff too, and a solve that adds a PR link to a note would otherwise
-    # look like the PR this run opened.
-    PR_URL=$(grep -m1 '^PR_URL::' "$LOG_DIR/solve-${id}.log" 2>/dev/null | sed 's/^PR_URL:://' || true)
-    if [ -n "$PR_URL" ]; then
-      echo "✓ TODO ${id}: $PR_URL"
-      write_pr_details "$LOG_DIR/solve-${id}.log" "$LOG_DIR/pr-details.jsonl" "$id"
-      bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_DIR/solve-${id}.log" "TODO $id"
-    else
-      FAILED=1
-      echo "✗ TODO ${id}: completed without opening a PR (see $LOG_DIR/solve-${id}.log)" >&2
-    fi
-  else
+  RC=0
+  wait "${PIDS[$i]}" || RC=$?
+  DETAIL_LABEL=$id
+  [ "$RC" -eq 0 ] || DETAIL_LABEL="$id (salvage)"
+  write_pr_details "$LOG_DIR/solve-${id}.log" "$LOG_DIR/pr-details.jsonl" "$DETAIL_LABEL"
+  bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_DIR/solve-${id}.log" "$RC" "TODO $id"
+  if [ "$RC" -ne 0 ]; then
     FAILED=1
     echo "✗ TODO ${id} failed (see $LOG_DIR/solve-${id}.log)" >&2
-    write_pr_details "$LOG_DIR/solve-${id}.log" "$LOG_DIR/pr-details.jsonl" "$id (salvage)"
-    bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_DIR/solve-${id}.log" "TODO $id, salvage"
+    continue
+  fi
+  # Anchored to the marker, not a loose URL match: the log now carries the
+  # branch diff too, and a solve that adds a PR link to a note would otherwise
+  # look like the PR this run opened.
+  PR_URL=$(grep -m1 '^PR_URL::' "$LOG_DIR/solve-${id}.log" 2>/dev/null | sed 's/^PR_URL:://' || true)
+  if [ -n "$PR_URL" ]; then
+    echo "✓ TODO ${id}: $PR_URL"
+  else
+    FAILED=1
+    echo "✗ TODO ${id}: completed without opening a PR (see $LOG_DIR/solve-${id}.log)" >&2
   fi
 done
 

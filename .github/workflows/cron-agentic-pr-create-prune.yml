@@ -43,7 +43,43 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  overview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      model: ${{ steps.config.outputs.model }}
+      firewall: ${{ steps.config.outputs.firewall }}
+    steps:
+      # Scheduled runs carry no inputs, so the defaults are resolved once here
+      # and both the overview and the prune job read the same values.
+      - name: Resolve effective configuration
+        id: config
+        env:
+          MODEL: ${{ inputs.model || 'sonnet' }}
+          FIREWALL: ${{ inputs.firewall || 'on' }}
+        run: |
+          set -euo pipefail
+          echo "model=$MODEL" >> "$GITHUB_OUTPUT"
+          echo "firewall=$FIREWALL" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout summary helper
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Publish overview
+        continue-on-error: true
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: overview
+          title: Prune dead code and stale documentation
+          agent: claude
+          model: ${{ steps.config.outputs.model }}
+          firewall: ${{ steps.config.outputs.firewall }}
+          description: Sweep the whole repository for dead code, unused dependencies and stale or broken documentation, and remove only what has verifiably zero references. Opens a pull request only when something is removed.
+
   prune:
+    needs: overview
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
@@ -61,12 +97,21 @@ jobs:
             kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
 
       - name: Prune dead code and stale docs
+        id: prune
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
           AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
           AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
-          SANDBOX_FIREWALL: ${{ inputs.firewall || 'on' }}
-          MODEL: ${{ inputs.model || 'sonnet' }}
+          SANDBOX_FIREWALL: ${{ needs.overview.outputs.firewall }}
+          MODEL: ${{ needs.overview.outputs.model }}
         run: |
           set -euo pipefail
           bash infrastructure/agent-sandbox/prune.sh --model "$MODEL"
+
+      - name: Report result when the prune could not
+        if: ${{ always() && steps.prune.outcome != 'success' && steps.prune.outputs.result_reported != 'true' }}
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: result
+          outcome: ${{ job.status == 'cancelled' && 'cancelled' || 'failed' }}
+          note: ${{ steps.prune.outcome == 'skipped' && 'A step before the prune failed, so the agent never started.' || 'The prune stopped before it could report a result; see its step log.' }}

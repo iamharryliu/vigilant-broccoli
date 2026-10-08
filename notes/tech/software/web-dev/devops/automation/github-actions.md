@@ -29,6 +29,7 @@ on:
 - Minutes are metered per runner OS with a multiplier against the included minutes: Linux 1x, Windows 2x, macOS 10x (a 10-minute macOS job burns 100 included minutes).
 - Self-hosted runners bypass the minutes/storage quota entirely — only the (unlimited on all plans) job/workflow API usage limits apply.
 - `manual-agentic-pr-create` runs the agent sandbox on a hosted Linux runner: each dispatch rebuilds the container image and runs a Claude Code solve, so it is a long job (tens of minutes, 1x Linux rate) — free on public repos, but it draws proportionally more included minutes on private plans than the short workflows here.
+- Each agentic workflow also runs a short extra hosted Linux job (5-minute timeout, a sparse checkout and a Node script) that publishes its run summary before the agent job starts; it adds a small amount of 1x Linux runner time per run, not measured here. Summaries themselves cost nothing, and an artifact is uploaded only for a request over 20,000 characters.
 - Manually dispatched research and task-planning agents also use hosted runner time while building their sandbox and generating a note or backlog entry. A job timeout bounds each run's runner usage; the agent provider's subscription or API allowance is separate from Actions minutes.
 
 ## Concurrency

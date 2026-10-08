@@ -57,5 +57,5 @@ docker run --rm --init --name "vb-prune-$(date +%s)" \
   "$IMAGE" \
   bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/prune-runner.sh"' \
   2>&1 | tee "$LOG_FILE" || STATUS="${PIPESTATUS[0]}"
-bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_FILE"
+bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_FILE" "$STATUS"
 exit "$STATUS"

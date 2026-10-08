@@ -61,33 +61,23 @@ jobs:
     outputs:
       group: ${{ steps.hash.outputs.group }}
     steps:
-      - name: Summarize dispatch inputs
-        env:
-          IDS: ${{ inputs.ids }}
-          PROMPT: ${{ inputs.prompt }}
-          AGENT: ${{ inputs.agent }}
-          MODEL: ${{ inputs.model }}
-          CODEX_MODEL: ${{ inputs.codex_model }}
-          FIREWALL: ${{ inputs.firewall }}
-        run: |
-          set -euo pipefail
-          {
-            echo "## Dispatch inputs"
-            echo
-            echo "| Input | Value |"
-            echo "| --- | --- |"
-            echo "| agent | \`${AGENT}\` |"
-            echo "| model | \`${MODEL}\` |"
-            echo "| codex_model | \`${CODEX_MODEL}\` |"
-            echo "| firewall | \`${FIREWALL}\` |"
-            echo "| ids | \`${IDS}\` |"
-            echo
-            echo "### Prompt"
-            echo
-            echo '```text'
-            printf '%s\n' "$PROMPT"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Checkout summary helper
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Publish overview
+        continue-on-error: true
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: overview
+          title: Create a pull request
+          agent: ${{ inputs.agent }}
+          model: ${{ inputs.agent == 'claude' && inputs.model || inputs.codex_model }}
+          firewall: ${{ inputs.firewall }}
+          todo_ids: ${{ inputs.prompt == '' && inputs.ids || '' }}
+          description: ${{ inputs.prompt == '' && 'Resolve the listed TODO items, one pull request per item.' || '' }}
+          task: ${{ inputs.prompt }}
 
       - name: Hash dispatch inputs
         id: hash
@@ -181,6 +171,14 @@ jobs:
             cat "$f"
           done
           exit "$STATUS"
+
+      - name: Report result when the solve could not
+        if: ${{ always() && steps.solve.outcome != 'success' && steps.solve.outputs.result_reported != 'true' }}
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: result
+          outcome: ${{ job.status == 'cancelled' && 'cancelled' || 'failed' }}
+          note: ${{ steps.solve.outcome == 'skipped' && 'A step before the solve failed, so the agent never started.' || 'The solve stopped before it could report a result; see the Solve step log.' }}
 
       - name: Tunnel to email service
         if: always()
