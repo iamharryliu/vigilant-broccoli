@@ -8,6 +8,7 @@
   - [The three link surfaces share one section structure and drift silently](#the-three-link-surfaces-share-one-section-structure-and-drift-silently)
   - [Nx formatting must not hand the agent symlinks to Prettier](#nx-formatting-must-not-hand-the-agent-symlinks-to-prettier)
   - [Next.js workspace-root inference warnings are accepted](#nextjs-workspace-root-inference-warnings-are-accepted)
+  - [`fileReplacements` in a Vite app's `project.json` is ignored](#filereplacements-in-a-vite-apps-projectjson-is-ignored)
 
 ## Nuances
 
@@ -97,7 +98,7 @@ Next.js can log "Next.js inferred your workspace root, but it may not be
 correct" because it finds both the repository-root `pnpm-lock.yaml` and
 `projects/nx-workspace/pnpm-lock.yaml`. This affects `small-business-next`,
 `vb-manager-next`, `vb-manager-next-mobile`, `whiteboard`, `findme`,
-`hearth`, `employee-handler-ui`, `weather-next`, and `calendars`.
+`hearth`, `employee-handler-ui`, and `weather-next`.
 
 The warning alone is accepted: no build or deployment defect has been
 attributed to it. Previous attempts to silence it have been revisited without
@@ -110,3 +111,16 @@ Revisit only if a concrete build, file-tracing, or deployed dependency failure
 is traced to root inference. Reproduce that failure with the affected app's
 `nx build <app>` and deploy target before changing the root; for missing
 `sharp` in hearth, check the dependency-placement nuance above first.
+
+### `fileReplacements` in a Vite app's `project.json` is ignored
+
+The `build` target of a Vite app is inferred by `@nx/vite/plugin`, which runs
+plain `vite build`; a `fileReplacements` entry on a build configuration (the
+`production-env` configuration of `cloud-8-skate-react` and
+`personal-website-react`) is never applied. Building
+`cloud-8-skate-react --configuration=production-env` still bakes
+`environment.ts`'s staging VB Express URL into the bundle, with no error.
+`calendars` avoids it by setting the configuration's `mode` to `production-env`
+and aliasing `**/environments/environment` to `environment.production` in
+`vite.config.mts` for that mode. Verify any per-environment URL by grepping the
+built `assets/*.js` for the expected host, not by reading `project.json`.

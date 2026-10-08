@@ -11,27 +11,26 @@ Public, login-free directory of calendars to follow in Google Calendar: a Person
 ## Deployment URLs
 
 - [calendars.harryliu.dev](https://calendars.harryliu.dev)
-- [staging-calendars.vercel.app](https://staging-calendars.vercel.app)
+- [staging-calendars.pages.dev](https://staging-calendars.pages.dev)
+- [production-calendars.pages.dev](https://production-calendars.pages.dev)
 
 ## Data
 
-The home page is rendered per request (`force-dynamic`), so records the manager makes public, renames, removes or makes private show up on the next load without a redeploy. The server reads `event_calendars` from the shared Supabase project with the secret key (`SUPABASE_SECRET_KEY`, server-side only; the table is not readable with the public key), filters `is_public = true`, orders by `created_at`, and sends the client only each record's id, name and derived Google Calendar URL. Scraping sources and sync metadata never leave the server.
+The app is a static bundle. On every page load the browser fetches `GET /api/public/event-calendars` from VB Express (`staging-vb-express.fly.dev` for the staging build, `production-vb-express.fly.dev` for the production build, set by `src/environments/`), so records the manager makes public, renames, removes or makes private show up on the next load without a redeploy. VB Express reads `event_calendars` from the shared Supabase project with its own secret key, filters `is_public = true`, orders by `created_at`, and returns only each record's id, name and Google Calendar URL. No credential, API key or database snapshot is in the bundle.
 
-A failed read renders an error in the Event Calendars section only; the personal calendar stays usable. Feature notes: [docs/features/calendar-directory](./docs/features/calendar-directory/README.md).
+A failed request renders an error in the Event Calendars section only; the personal calendar stays usable. Feature notes: [docs/features/calendar-directory](./docs/features/calendar-directory/README.md).
 
 ## Stack
 
 - Language - TypeScript
-- Framework - Next.js (React)
-- Build Tool - Next.js
+- Framework - React
+- Build Tool - Vite
 - External libs
   - Tailwind CSS
-  - Supabase JS
 - Internal libs
   - `common-browser`
-  - `common-node`
   - `react-lib`
 - Cloud services
-  - Supabase (`event_calendars`)
+  - Cloudflare Pages
+  - VB Express (public `GET /api/public/event-calendars`, backed by Supabase)
   - Google Calendar (link targets)
-  - Vercel

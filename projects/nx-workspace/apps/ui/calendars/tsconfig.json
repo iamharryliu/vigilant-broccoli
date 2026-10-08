@@ -1,28 +1,19 @@
 {
-  "extends": "../../../tsconfig.base.json",
   "compilerOptions": {
-    "jsx": "preserve",
-    "strict": true,
-    "noEmit": true,
-    "emitDeclarationOnly": false,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "bundler",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
+    "jsx": "react-jsx",
+    "allowJs": false,
+    "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "incremental": true,
-    "plugins": [{ "name": "next" }]
+    "resolveJsonModule": true,
+    "strict": true,
+    "types": ["vite/client"]
   },
-  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "next-env.d.ts"],
-  "exclude": [
-    "node_modules",
-    "jest.config.ts",
-    "**/*.spec.ts",
-    "**/*.test.ts",
-    "../../../dist"
-  ]
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    }
+  ],
+  "extends": "../../../tsconfig.base.json"
 }

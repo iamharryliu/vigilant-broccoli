@@ -184,8 +184,7 @@
       "include": [
         "apps/findme/**/*",
         "apps/whiteboard/**/*",
-        "apps/ui/weather-next/**/*",
-        "apps/ui/calendars/**/*"
+        "apps/ui/weather-next/**/*"
       ]
     },
     {

@@ -17,12 +17,7 @@ export const PERSONAL_CALENDARS = [
   },
 ];
 
-export const EVENT_CALENDARS_TABLE = 'event_calendars';
-
-export const LOAD_STATUS = {
-  OK: 'OK',
-  ERROR: 'ERROR',
-} as const;
+export const PUBLIC_EVENT_CALENDARS_PATH = '/api/public/event-calendars';
 
 export const CALENDAR_SECTION_STATE = {
   READY: 'READY',

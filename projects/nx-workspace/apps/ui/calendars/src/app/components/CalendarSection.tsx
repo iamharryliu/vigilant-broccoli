@@ -1,5 +1,3 @@
-'use client';
-
 import { ReactNode } from 'react';
 import { CALENDAR_SECTION_STATE } from '../../lib/calendars.consts';
 import { CalendarLink, CalendarSectionState } from '../../lib/calendars.types';

@@ -1,59 +1,69 @@
 {
   "name": "calendars",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/ui/calendars",
+  "sourceRoot": "apps/ui/calendars/src",
   "projectType": "application",
   "tags": [],
   "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
     "build": {
-      "executor": "nx:run-commands",
-      "cache": true,
-      "dependsOn": ["^build"],
-      "inputs": [
-        "default",
-        "^default",
-        { "externalDependencies": ["next"] },
-        { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true }
-      ],
       "outputs": [
-        "{workspaceRoot}/dist/apps/ui/calendars/.next/!(cache)/**/*",
-        "{workspaceRoot}/dist/apps/ui/calendars/.next/!(cache)"
+        "{projectRoot}/{options.outDir}",
+        "{workspaceRoot}/dist/apps/ui/calendars"
       ],
+      "defaultConfiguration": "production",
       "options": {
-        "cwd": "apps/ui/calendars",
-        "tty": false,
-        "command": "next build --webpack"
+        "outDir": "../../../dist/apps/ui/calendars"
       },
       "configurations": {
-        "development": {}
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        },
+        "production-env": {
+          "mode": "production-env"
+        }
       }
     },
     "serve": {
-      "executor": "nx:run-commands",
       "defaultConfiguration": "development",
-      "options": {
-        "cwd": "apps/ui/calendars",
-        "command": "next dev --webpack"
-      },
       "configurations": {
         "development": {},
         "production": {}
       }
     },
-    "lint": {
-      "executor": "@nx/eslint:lint"
+    "ensure-cf-project": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw staging-calendars || npx wrangler pages project create staging-calendars --production-branch main"
+    },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-calendars 10",
+      "dependsOn": ["ensure-cf-project"]
     },
     "deploy": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "VERCEL_PROJECT_ID=staging-calendars VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts calendars staging"
-      }
+      "command": "npx wrangler pages deploy dist/apps/ui/calendars --project-name staging-calendars --branch main",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    },
+    "manual-deploy": {
+      "command": "npx wrangler pages deploy dist/apps/ui/calendars --project-name staging-calendars --branch main",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    },
+    "ensure-cf-project:production": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-calendars || npx wrangler pages project create production-calendars --production-branch production"
+    },
+    "prune-deployments:production": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts production-calendars 10",
+      "dependsOn": ["ensure-cf-project:production"]
     },
     "deploy:production": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "VERCEL_PROJECT_ID=production-calendars VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts calendars production"
-      }
+      "command": "npx nx build calendars --configuration=production-env && npx wrangler pages deploy dist/apps/ui/calendars --project-name production-calendars --branch production",
+      "dependsOn": [
+        "ensure-cf-project:production",
+        "prune-deployments:production"
+      ]
     }
   }
 }

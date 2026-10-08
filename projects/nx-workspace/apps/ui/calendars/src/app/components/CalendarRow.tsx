@@ -1,5 +1,3 @@
-'use client';
-
 import { CalendarDays, CalendarRange, List } from 'lucide-react';
 import { CopyButton } from '@vigilant-broccoli/react-lib';
 import { withViewMode } from '../../lib/calendar-links';

@@ -79,6 +79,8 @@ If you bump an app to more than 1 for redundancy, note it here so it doesn't get
 
 ## Secrets
 
+Public routes (no API key) are the exception to the keyed `/api/*` services and stay rare: `vb-express` serves `GET /api/public/event-calendars` from its own scope with a hard-coded server-side filter and minimal projection, and creates its Supabase client lazily per request so smoke needs no credentials. Non-secret config such as `SUPABASE_URL` lives in the fly `[env]` block, secrets in Vault via `.env.example`.
+
 Declare in `projects/nx-workspace/scripts/secrets-mapping.config.ts`. The service's `.env.example` is the key list: `deploy-flyio-secrets.ts` parses it, pulls those keys from the service's Vault path, and pushes them with `flyctl secrets set`. `nx deploy:secrets <svc>` creates the fly app first if it doesn't exist yet (`flyctl apps create`); `deploy` depends on `deploy:secrets`, so a first deploy to a brand-new app works end-to-end (volumes declared in `[mounts]` are auto-created on first deploy).
 
 ## Private-only services

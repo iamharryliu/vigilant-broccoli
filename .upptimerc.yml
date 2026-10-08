@@ -29,7 +29,7 @@ sites:
   - name: staging-weather
     url: https://staging-weather-next.vercel.app/
   - name: staging-calendars
-    url: https://staging-calendars.vercel.app/
+    url: https://staging-calendars.pages.dev/
   - name: staging-vb-manager-next-mobile
     url: https://staging-vb-manager-next-mobile.vercel.app/login
   - name: production-cloud-8-skate

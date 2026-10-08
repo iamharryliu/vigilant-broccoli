@@ -603,7 +603,7 @@ export const HARRYLIU_APP_URL = {
   CALENDARS: {
     NAME: 'Calendars',
     URL: 'https://calendars.harryliu.dev/',
-    STAGING_URL: 'https://staging-calendars.vercel.app/',
+    STAGING_URL: 'https://staging-calendars.pages.dev/',
   },
   WEATHER: {
     NAME: 'Weather',
