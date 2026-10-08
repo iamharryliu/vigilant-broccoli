@@ -24,6 +24,7 @@ const PROJECT_HOSTING = {
   'utilities-ui': { platform: 'pages', name: 'utilities-ui' },
   'links-react': { platform: 'pages', name: 'links-react' },
   'weather-next': { platform: 'vercel', name: 'weather-next' },
+  calendars: { platform: 'vercel', name: 'calendars' },
   whiteboard: { platform: 'vercel', name: 'whiteboard' },
   'vb-manager-next-mobile': {
     platform: 'vercel',

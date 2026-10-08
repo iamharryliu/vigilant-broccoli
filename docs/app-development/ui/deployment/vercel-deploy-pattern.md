@@ -1,6 +1,6 @@
 # Vercel deploy pattern (Next.js apps)
 
-Deploys for `hearth`, `findme`, `whiteboard`, `weather-next`, `vb-manager-next-mobile`. `employee-handler-ui` has no staging or production Vercel project (its `deploy` and `deploy:production` still push the Docker image) — it deploys to Vercel only through its `deploy:demo` target (project `demo-employee-handler-ui`), run by the `deploy-demo-apps` workflow on each successful staging `deploy-fanout` or by hand via `manual-deploy-app` with environment `demo`. Everything runs through `scripts/deploy-vercel.ts`.
+Deploys for `hearth`, `findme`, `whiteboard`, `weather-next`, `calendars`, `vb-manager-next-mobile`. `employee-handler-ui` has no staging or production Vercel project (its `deploy` and `deploy:production` still push the Docker image) — it deploys to Vercel only through its `deploy:demo` target (project `demo-employee-handler-ui`), run by the `deploy-demo-apps` workflow on each successful staging `deploy-fanout` or by hand via `manual-deploy-app` with environment `demo`. Everything runs through `scripts/deploy-vercel.ts`.
 
 ## Table of Contents
 

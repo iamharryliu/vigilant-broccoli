@@ -21,6 +21,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── findme.harryliu.dev                   FindMe — Vercel `production-findme` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
 ├── whiteboard.harryliu.dev               Whiteboard — Vercel `production-whiteboard` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
 ├── weather.harryliu.dev           Weather — Vercel `production-weather-next` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
+├── calendars.harryliu.dev         Calendars — Vercel `production-calendars` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
 ├── links.harryliu.dev                    Links — Cloudflare Pages `production-links-react` (domain + CNAME: Terraform, infrastructure/terraform/; public pastebin page, no Access gating)
 ├── docs.harryliu.dev                     Docs MD — Cloudflare Pages `production-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-docs-md.yml, which mirrors `deploy.yml`'s environment selection because the notes snapshot lives outside the nx graph; public, no Access gating)
 ├── context.harryliu.dev                  Agent Context — Cloudflare Pages `production-context-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-context-md.yml because the agent-context snapshot lives outside the nx graph; public, no Access gating)
@@ -51,6 +52,8 @@ vercel.app                                Vercel (production projects created on
 ├── production-findme.vercel.app              FindMe (production)
 ├── staging-whiteboard.vercel.app             Whiteboard (staging)
 ├── production-whiteboard.vercel.app          Whiteboard (production)
+├── staging-calendars.vercel.app       Calendars (staging)
+├── production-calendars.vercel.app    Calendars (production)
 ├── staging-weather-next.vercel.app    Weather (staging)
 └── production-weather-next.vercel.app Weather (production)
 

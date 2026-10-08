@@ -600,6 +600,11 @@ export const HARRYLIU_APP_URL = {
     URL: 'https://links.harryliu.dev/',
     STAGING_URL: 'https://staging-links-react.pages.dev/',
   },
+  CALENDARS: {
+    NAME: 'Calendars',
+    URL: 'https://calendars.harryliu.dev/',
+    STAGING_URL: 'https://staging-calendars.vercel.app/',
+  },
   WEATHER: {
     NAME: 'Weather',
     URL: 'https://weather.harryliu.dev/',

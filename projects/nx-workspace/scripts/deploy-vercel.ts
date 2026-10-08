@@ -314,6 +314,11 @@ async function main() {
         'dist/apps/ui/weather-next/.next',
       ),
     },
+    calendars: {
+      hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
+      envExamplePath: 'apps/ui/calendars/.env.example',
+      settings: NX_VERCEL_SETTINGS('calendars', 'dist/apps/ui/calendars/.next'),
+    },
     'vb-manager-next-mobile': {
       hardcodedSecrets: {
         ...SUPABASE_PUBLIC_SECRETS,
