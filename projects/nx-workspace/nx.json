@@ -221,16 +221,6 @@
       ]
     },
     {
-      "plugin": "@nx/next/plugin",
-      "options": {
-        "buildTargetName": "build:next",
-        "devTargetName": "serve:no-vault",
-        "startTargetName": "start",
-        "serveStaticTargetName": "serve-static"
-      },
-      "include": ["apps/ui/vb-manager-next/**/*"]
-    },
-    {
       "plugin": "@nx/webpack/plugin",
       "options": {
         "buildTargetName": "build",

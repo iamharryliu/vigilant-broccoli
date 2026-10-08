@@ -1,4 +1,4 @@
-export const DEPLOY_APP = 'vb-manager-next';
+export const DEPLOY_APP = 'vb-manager-local';
 export const DEPLOY_RECEIVER_ID = 'deploy';
 export const DEPLOY_COMMIT_SHORT_LENGTH = 7;
 

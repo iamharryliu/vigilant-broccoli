@@ -106,7 +106,8 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [Small Business Next](./projects/nx-workspace/apps/ui/small-business-next)                           | Subscription and subscriber notification management. |
 | [Spotify to MP3](./scripts/python/dj-scripts/spotify-to-mp3)                                         | Command-line music download utility.                 |
 | [Valentine’s Day Adventure Game](./vday-godot-game)                                                  | Godot adventure game with heart collection.          |
-| [VB Manager](./projects/nx-workspace/apps/ui/vb-manager-next)                                        | Personal management dashboard.                       |
+| [VB Manager](./projects/nx-workspace/apps/ui/vb-manager-local-react)                                 | Personal management dashboard.                       |
+| [VB Manager Local API](./projects/nx-workspace/apps/api/vb-manager-local-fastify)                    | API and static host behind VB Manager.               |
 
 ## CI Actions
 

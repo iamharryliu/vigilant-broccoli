@@ -128,7 +128,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   secret-rotation:rabbitmq    Rotate RabbitMQ password, push connection string to fly consumers
   secret-rotation:twilio      Rotate Twilio auth token (two-phase secondary-token promotion)
   secret-rotation:oci         Rotate the OCI API key (local-only); refreshes ~/.oci, ~5min propagation wait
-  secret-rotation:calendar-sa  Replace the Google Calendar service-account key, sync it to Vault, reload vb-manager-next
+  secret-rotation:calendar-sa  Replace the Google Calendar service-account key, sync it to Vault, reload vb-manager-local-fastify
 
 🐳 LOCAL
   local:docker:up             Start local Docker Compose services
@@ -140,12 +140,12 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   immich:docker:restart       Restart the standalone Immich Docker Compose stack
   immich:docker:reload        Reload the standalone Immich Docker Compose stack
   immich:docker:logs          Tail the standalone Immich Docker Compose logs
-  vb-manager-next:start       Start vb-manager-next via PM2 and save the process list
-  vb-manager-next:reload      Reload vb-manager-next via PM2 and save the process list
-  vb-manager-next:delete      Delete vb-manager-next PM2 process
-  vb-manager-next:logs        Tail vb-manager-next PM2 logs
-  vb-manager-next:status      Show PM2 process status
-  deploy:local-services       Bring up local Docker services + reload vb-manager-next
+  vb-manager-local-fastify:start  Build VB Manager (React + Fastify), start it via PM2 and save the process list
+  vb-manager-local-fastify:reload  Build VB Manager (React + Fastify), reload it via PM2 and save the process list
+  vb-manager-local-fastify:delete  Delete the vb-manager-local-fastify PM2 process
+  vb-manager-local-fastify:logs  Tail vb-manager-local-fastify PM2 logs
+  vb-manager-local-fastify:status  Show PM2 process status
+  deploy:local-services       Bring up local Docker services + reload vb-manager-local-fastify
   health-check                Run health check script
   dldjmusic                   Download DJ music from Spotify playlists (secrets pulled from Vault)
 

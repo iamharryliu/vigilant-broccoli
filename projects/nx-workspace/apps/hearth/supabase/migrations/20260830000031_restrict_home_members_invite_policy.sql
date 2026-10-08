@@ -4,7 +4,7 @@
 -- home_id as long as user_id/email matched themselves, self-granting
 -- 'accepted' membership -- and full read/write via is_home_member -- to any
 -- home without an invite ever being issued. homes.id is a sequential serial
--- and the Supabase auth pool is shared across hearth, vb-manager-next,
+-- and the Supabase auth pool is shared across hearth, vb-manager-local-react,
 -- vb-manager-next-mobile and employee-handler-ui, so any account from any of
 -- those apps could reach any home's private data.
 

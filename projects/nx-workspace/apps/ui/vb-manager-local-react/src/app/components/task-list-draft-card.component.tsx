@@ -1,0 +1,210 @@
+import {
+  Button,
+  Input,
+  Select,
+  Text,
+  Textarea,
+} from '@vigilant-broccoli/react-lib';
+import { Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { authFetch } from '../../libs/auth';
+
+export interface TaskDraftItem {
+  title: string;
+}
+
+export interface TaskListOption {
+  id: string;
+  title: string;
+}
+
+export type TaskListDraftStatus = 'draft' | 'creating' | 'created' | 'error';
+
+interface TaskListDraftCardProps {
+  drafts: TaskDraftItem[];
+  status: TaskListDraftStatus;
+  errorMessage?: string;
+  createdSummary?: string;
+  onCreate: (params: {
+    tasks: TaskDraftItem[];
+    targetListId?: string;
+    newListTitle?: string;
+  }) => void;
+  onCancel: () => void;
+}
+
+const NEW_LIST_VALUE = '__new_list__';
+const DEFAULT_NEW_LIST_TITLE = 'New list';
+const TASKS_LISTS_API_PATH = '/api/tasks/lists';
+const LOAD_LISTS_ERROR_MESSAGE = 'Failed to load task lists';
+
+export const TaskListDraftCard = ({
+  drafts,
+  status,
+  errorMessage,
+  createdSummary,
+  onCreate,
+  onCancel,
+}: TaskListDraftCardProps) => {
+  const [items, setItems] = useState<TaskDraftItem[]>(drafts);
+  const [taskLists, setTaskLists] = useState<TaskListOption[]>([]);
+  const [listsLoading, setListsLoading] = useState(true);
+  const [listsError, setListsError] = useState<string | null>(null);
+  const [selectedListId, setSelectedListId] = useState<string>(NEW_LIST_VALUE);
+  const [newListTitle, setNewListTitle] = useState<string>(
+    DEFAULT_NEW_LIST_TITLE,
+  );
+
+  const isReadOnly = status === 'creating' || status === 'created';
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await authFetch(TASKS_LISTS_API_PATH);
+        if (!res.ok) throw new Error(LOAD_LISTS_ERROR_MESSAGE);
+        const data = await res.json();
+        if (cancelled) return;
+        const lists: TaskListOption[] = (data.taskLists ?? []).map(
+          (l: { id: string; title: string }) => ({ id: l.id, title: l.title }),
+        );
+        setTaskLists(lists);
+        if (lists.length > 0) {
+          setSelectedListId(lists[0].id);
+        }
+      } catch (e) {
+        if (!cancelled) {
+          setListsError(
+            e instanceof Error ? e.message : LOAD_LISTS_ERROR_MESSAGE,
+          );
+        }
+      } finally {
+        if (!cancelled) setListsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleTitleChange = (index: number, value: string) => {
+    setItems(prev =>
+      prev.map((item, i) => (i === index ? { ...item, title: value } : item)),
+    );
+  };
+
+  const handleRemove = (index: number) => {
+    setItems(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const handleCreate = () => {
+    const cleaned = items
+      .map(i => ({ title: i.title.trim() }))
+      .filter(i => i.title.length > 0);
+    if (cleaned.length === 0) return;
+
+    if (selectedListId === NEW_LIST_VALUE) {
+      const title = newListTitle.trim() || DEFAULT_NEW_LIST_TITLE;
+      onCreate({ tasks: cleaned, newListTitle: title });
+    } else {
+      onCreate({ tasks: cleaned, targetListId: selectedListId });
+    }
+  };
+
+  const canCreate =
+    !isReadOnly &&
+    items.some(i => i.title.trim().length > 0) &&
+    (selectedListId !== NEW_LIST_VALUE || newListTitle.trim().length > 0);
+
+  const listOptions: TaskListOption[] = [
+    ...taskLists,
+    { id: NEW_LIST_VALUE, title: 'Create new list...' },
+  ];
+
+  return (
+    <div className="flex flex-col gap-2" style={{ marginTop: '0.5rem' }}>
+      <Text size="2" weight="medium">
+        Google Tasks
+      </Text>
+
+      <div className="flex flex-col gap-1">
+        {items.map((item, index) => (
+          <div className="flex gap-2 items-center" key={index}>
+            <Textarea
+              placeholder="Task title"
+              value={item.title}
+              rows={2}
+              onChange={e => handleTitleChange(index, e.target.value)}
+              disabled={isReadOnly}
+              className="flex-1 min-h-0 resize-none"
+            />
+            <Button
+              variant="secondary"
+              onClick={() => handleRemove(index)}
+              disabled={isReadOnly}
+              aria-label="Remove task"
+            >
+              <Trash2 size={14} />
+            </Button>
+          </div>
+        ))}
+        {items.length === 0 && (
+          <Text size="1" color="gray">
+            No tasks remaining.
+          </Text>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-1" style={{ marginTop: '0.5rem' }}>
+        <Text size="1" color="gray">
+          Task list
+        </Text>
+        <Select
+          options={listOptions}
+          selectedOption={listOptions.find(list => list.id === selectedListId)}
+          setValue={list => setSelectedListId(list.id)}
+          optionIdenfifier="id"
+          optionDisplayKey="title"
+          disabled={isReadOnly || listsLoading}
+          placeholder={listsLoading ? 'Loading lists...' : 'Select a list'}
+        />
+        {selectedListId === NEW_LIST_VALUE && (
+          <Input
+            placeholder="New list name"
+            value={newListTitle}
+            onChange={e => setNewListTitle(e.target.value)}
+            disabled={isReadOnly}
+          />
+        )}
+        {listsError && (
+          <Text size="1" color="red">
+            {listsError}
+          </Text>
+        )}
+      </div>
+
+      {status === 'error' && errorMessage && (
+        <Text size="1" color="red">
+          {errorMessage}
+        </Text>
+      )}
+
+      {status === 'created' && (
+        <Text size="1" color="green">
+          {createdSummary || 'Tasks created.'}
+        </Text>
+      )}
+
+      {status !== 'created' && (
+        <div className="flex gap-2">
+          <Button onClick={handleCreate} disabled={!canCreate}>
+            {status === 'creating' ? 'Creating...' : 'Create tasks'}
+          </Button>
+          <Button variant="secondary" onClick={onCancel} disabled={isReadOnly}>
+            Cancel
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};

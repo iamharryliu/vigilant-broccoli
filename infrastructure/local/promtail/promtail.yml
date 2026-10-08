@@ -32,5 +32,5 @@ scrape_configs:
           - localhost
         labels:
           job: pm2
-          app: vb-manager-next
-          __path__: /pm2-logs/vb-manager-next-*.log
+          app: vb-manager-local-fastify
+          __path__: /pm2-logs/vb-manager-local-fastify-*.log

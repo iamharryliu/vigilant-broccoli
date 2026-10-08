@@ -21,7 +21,7 @@ blast radius, not by where it was first observed:
 
 - Breaks or constrains exactly one app, lib, or infrastructure component →
   that component's directory (e.g.
-  `projects/nx-workspace/apps/ui/vb-manager-next/CONTEXT.md`).
+  `projects/nx-workspace/apps/ui/vb-manager-local-react/CONTEXT.md`).
 - Spans several apps/libs inside one workspace → the workspace root
   (`projects/nx-workspace/CONTEXT.md`).
 - Spans top-level directories, or is about the repo itself (tooling, git,

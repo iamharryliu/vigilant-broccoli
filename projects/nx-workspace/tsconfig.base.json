@@ -54,6 +54,9 @@
       "@vigilant-broccoli/slack-workspace": [
         "./libs/@vigilant-broccoli/slack-workspace/src/index.ts"
       ],
+      "@vigilant-broccoli/vb-manager-local-common": [
+        "./libs/@vigilant-broccoli/vb-manager-local-common/src/index.ts"
+      ],
       "@vigilant-broccoli/vercel-workspace": [
         "./libs/@vigilant-broccoli/vercel-workspace/src/index.ts"
       ],

@@ -75,7 +75,7 @@ services only the owner's devices need.
 jellyfin-pi.echidna-rohu.ts.net:8096   Jellyfin — Raspberry Pi on the home LAN (`infrastructure/jellyfin-pi/`, Ansible-provisioned, no Terraform). MagicDNS only. On Access-gated tunnels instead of the tailnet, the native clients (Android TV, iOS, Kodi) could not log in — the same constraint that put loki.harryliu.dev on basic auth. The node enrols non-interactively with the reusable `TAILSCALE_AUTH_KEY` from Vault; see [jellyfin-pi.md](./jellyfin-pi.md)
 ```
 
-`vb-manager-next`'s dev dashboard lists the tailnet's machines through the
+The VB Manager dev dashboard (`vb-manager-local-fastify`) lists the tailnet's machines through the
 Tailscale API (`TAILSCALE_API_KEY`), so what is currently enrolled is visible
 there rather than only in the admin console.
 
@@ -98,7 +98,7 @@ production-email-subscription-service.flycast  Email Subscription Service (produ
 
 CI e2e/security suites reach these from GitHub-hosted Ubuntu runners via the `.github/actions/fly-private-tunnel` composite action, which installs flyctl and opens a `flyctl proxy 3000:80 <app>.flycast -a <app>` WireGuard tunnel; the job then hits `http://127.0.0.1:3000`. Used by `test-e2e-llm.yml`, `test-security-llm.yml`, `test-e2e-storage-service.yml`, `test-security-storage-service.yml`, `test-smoke-email-service.yml`, `test-e2e-email-subscription-service.yml`, `test-security-email.yml`, `test-security-email-subscription-service.yml`. The job must also import `FLY_API_TOKEN` from Vault for flyctl to authenticate.
 
-Locally-run apps need the same tunnel: `vb-manager-next` (pm2, not deployed) reaches bucket-service via `flyctl proxy 3001:80 staging-storage-service.flycast -a staging-storage-service` with `VB_STORAGE_SERVICE_URL=http://127.0.0.1:3001`, and reaches email-service via `flyctl proxy 3002:80 staging-vb-email-service.flycast -a staging-vb-email-service` with `EMAIL_SERVICE_URL=http://127.0.0.1:3002`. `small-business-next` (also local-only) needs the same email-service tunnel and `EMAIL_SERVICE_URL` pointed at it. Port 3001/3002, not 3000 — `nx serve vb-manager-next` runs `next dev` on 3000.
+Locally-run apps need the same tunnel: `vb-manager-local-fastify` (pm2, not deployed) reaches bucket-service via `flyctl proxy 3001:80 staging-storage-service.flycast -a staging-storage-service` with `VB_STORAGE_SERVICE_URL=http://127.0.0.1:3001`, and reaches email-service via `flyctl proxy 3002:80 staging-vb-email-service.flycast -a staging-vb-email-service` with `EMAIL_SERVICE_URL=http://127.0.0.1:3002`. `small-business-next` (also local-only) needs the same email-service tunnel and `EMAIL_SERVICE_URL` pointed at it. Port 3001/3002, not 3000 or 3003 — `nx serve vb-manager-local-react` runs Vite on 3000 and the Fastify dev server it proxies `/api` to on 3003.
 
 The storage-service and llm-service apps dropped their `vb-` prefix (old: `<env>-vb-storage-service`, `<env>-vb-llm-service`). Fly has no rename, so these are new apps; the originals were destroyed after cutover. Only deployed instances carry the `<env>-` prefix — the nx projects stay `bucket-service` and `llm-service`.
 

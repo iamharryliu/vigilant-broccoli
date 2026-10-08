@@ -1,0 +1,396 @@
+import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
+import {
+  BORDER_ACTIVE,
+  Badge,
+  Button,
+  ButtonConfig,
+  ButtonList,
+  CardContainer,
+  CopyButton,
+  MonospaceText,
+  StatusCardList,
+  StatusCardListItem,
+  Text,
+  WINDOW_OPEN_FEATURES,
+  CardSkeleton,
+} from '@vigilant-broccoli/react-lib';
+import { GCP_LINK } from '@vigilant-broccoli/links';
+import { useState } from 'react';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../libs/auth';
+import { usePollingInterval } from '../hooks/usePollingInterval';
+
+const GCP_CONSOLE_BASE = 'https://console.cloud.google.com';
+const GCLOUD_POLL_INTERVAL_MS = 30000;
+const GCP_CONSOLE_LINK = {
+  href: GCP_LINK.CONSOLE.URL,
+  label: 'Console',
+};
+
+const BUTTON_LABELS: Record<string, string> = {
+  dashboard: 'Dashboard',
+  secrets: 'Secrets',
+  buckets: 'Buckets',
+  gce: 'GCE',
+  'cloud sql': 'Cloud SQL',
+  credentials: 'Credentials',
+};
+
+const getProjectUrls = (projectId: string) => ({
+  dashboard: `${GCP_CONSOLE_BASE}/home/dashboard?project=${projectId}`,
+  secrets: `${GCP_CONSOLE_BASE}/security/secret-manager?project=${projectId}`,
+  buckets: `${GCP_CONSOLE_BASE}/storage/browser?project=${projectId}`,
+  gce: `${GCP_CONSOLE_BASE}/compute/overview?project=${projectId}`,
+  'cloud sql': `${GCP_CONSOLE_BASE}/sql/instances?project=${projectId}`,
+  credentials: `${GCP_CONSOLE_BASE}/apis/credentials?referrer=search&project=${projectId}`,
+});
+
+interface GcloudAccount {
+  account: string;
+  status: string;
+}
+
+interface GcloudProject {
+  projectId: string;
+  name: string;
+  projectNumber: string;
+}
+
+interface GcloudAuthStatus {
+  activeAccount: string | null;
+  accounts: GcloudAccount[];
+  currentProject: string | null;
+}
+
+interface ReauthStatus {
+  needsReauth: boolean;
+  activeAccount: string | null;
+  error?: string;
+}
+
+interface AccountItemProps {
+  account: GcloudAccount;
+  isActive: boolean;
+  needsAuth: boolean;
+  switchingProject: string | null;
+  activeAccount: string | null;
+  onSwitchAccount: (account: string) => void;
+}
+
+const BORDER_NEEDS_AUTH =
+  'border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600';
+const BORDER_INACTIVE =
+  'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800';
+
+const getAccountBorderStyle = (isActive: boolean, needsAuth: boolean) => {
+  if (isActive && needsAuth) return BORDER_NEEDS_AUTH;
+  if (isActive) return BORDER_ACTIVE;
+  return BORDER_INACTIVE;
+};
+
+const AccountBadge = ({
+  isActive,
+  needsAuth,
+}: {
+  isActive: boolean;
+  needsAuth: boolean;
+}) => {
+  if (needsAuth)
+    return (
+      <Badge color="yellow" size="1">
+        ⚠️ Reauth
+      </Badge>
+    );
+  if (isActive)
+    return (
+      <Badge color="green" size="1">
+        Active
+      </Badge>
+    );
+  return null;
+};
+
+const AUTH_COMMAND =
+  'gcloud auth login && gcloud auth application-default login';
+
+const AccountItem = ({
+  account,
+  isActive,
+  needsAuth,
+  switchingProject,
+  onSwitchAccount,
+}: AccountItemProps) => (
+  <div
+    className={`flex items-center gap-2 flex-wrap ${`p-2 rounded border ${getAccountBorderStyle(isActive, needsAuth)}`}`}
+  >
+    <AccountBadge isActive={isActive} needsAuth={needsAuth} />
+    <Text size="2" weight={isActive ? 'bold' : 'regular'} className="flex-1">
+      {account.account}
+    </Text>
+    {needsAuth && <MonospaceText text={AUTH_COMMAND} truncate={true} />}
+    {!isActive && (
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={() => onSwitchAccount(account.account)}
+        disabled={switchingProject === account.account}
+      >
+        {switchingProject === account.account ? 'Switching...' : 'Select'}
+      </Button>
+    )}
+  </div>
+);
+
+const toProjectItem = (
+  project: GcloudProject,
+  isCurrent: boolean,
+  switchingProject: string | null,
+  onSwitch: (projectId: string) => void,
+): StatusCardListItem => ({
+  id: project.projectId,
+  label: project.name || project.projectId,
+  borderClassName: isCurrent ? BORDER_ACTIVE : undefined,
+  badges: isCurrent ? (
+    <Badge color="green" size="1">
+      Current
+    </Badge>
+  ) : undefined,
+  actions: !isCurrent ? (
+    <Button
+      variant="secondary"
+      size="sm"
+      onClick={() => onSwitch(project.projectId)}
+      disabled={switchingProject === project.projectId}
+    >
+      {switchingProject === project.projectId ? 'Switching...' : 'Select'}
+    </Button>
+  ) : undefined,
+  children: (
+    <ButtonList
+      buttons={Object.entries(getProjectUrls(project.projectId)).map(
+        ([key, url]): ButtonConfig => ({
+          label: BUTTON_LABELS[key],
+          onClick: () => window.open(url, '_blank', WINDOW_OPEN_FEATURES),
+          isExternal: true,
+        }),
+      )}
+    />
+  ),
+});
+
+const parseReauthData = (
+  reauthResponse: Response,
+  reauthJson: ReauthStatus | null,
+  activeAccount: string | null,
+): ReauthStatus =>
+  reauthResponse.ok && reauthJson
+    ? reauthJson
+    : { needsReauth: false, activeAccount };
+
+const fetchProjectsIfNeeded = async (needsReauth: boolean) => {
+  if (needsReauth) return [];
+  const projectsResponse = await authFetch(API_ENDPOINTS.GCLOUD_PROJECTS);
+  return projectsResponse.ok ? projectsResponse.json() : [];
+};
+
+export const GcloudAuthStatusComponent = () => {
+  const [authStatus, setAuthStatus] = useState<GcloudAuthStatus | null>(null);
+  const [projects, setProjects] = useState<GcloudProject[]>([]);
+  const [switchingProject, setSwitchingProject] = useState<string | null>(null);
+  const [reauthStatus, setReauthStatus] = useState<ReauthStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const switchProject = async (projectId: string) => {
+    setSwitchingProject(projectId);
+    try {
+      const response = await authFetch(API_ENDPOINTS.GCLOUD_SET_PROJECT, {
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
+        body: JSON.stringify({ projectId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to switch project');
+      }
+
+      const authResponse = await authFetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS);
+      if (authResponse.ok) {
+        setAuthStatus(await authResponse.json());
+      }
+    } catch (_err) {
+      // Error switching project
+    } finally {
+      setSwitchingProject(null);
+    }
+  };
+
+  const switchAccount = async (account: string) => {
+    setSwitchingProject(account);
+    try {
+      const response = await authFetch(API_ENDPOINTS.GCLOUD_SET_ACCOUNT, {
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
+        body: JSON.stringify({ account }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to switch account');
+      }
+
+      const [authResponse, reauthResponse] = await Promise.all([
+        authFetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS),
+        authFetch('/api/gcloud/reauth-needed?fresh=1'),
+      ]);
+
+      if (authResponse.ok) {
+        const authData = await authResponse.json();
+        setAuthStatus(authData);
+        const reauthJson = reauthResponse.ok
+          ? await reauthResponse.json()
+          : null;
+        const reauthData = parseReauthData(
+          reauthResponse,
+          reauthJson,
+          authData.activeAccount,
+        );
+        setReauthStatus(reauthData);
+        setProjects(await fetchProjectsIfNeeded(reauthData.needsReauth));
+      }
+    } catch (_err) {
+      // Error switching account
+    } finally {
+      setSwitchingProject(null);
+    }
+  };
+
+  const fetchGcloudData = async () => {
+    try {
+      const [authResponse, reauthResponse] = await Promise.all([
+        authFetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS),
+        authFetch('/api/gcloud/reauth-needed'),
+      ]);
+
+      if (!authResponse.ok) {
+        throw new Error('Failed to fetch gcloud auth status');
+      }
+
+      const authData = await authResponse.json();
+      setAuthStatus(authData);
+      const reauthJson = reauthResponse.ok ? await reauthResponse.json() : null;
+      const reauthData = parseReauthData(
+        reauthResponse,
+        reauthJson,
+        authData.activeAccount,
+      );
+      setReauthStatus(reauthData);
+      setProjects(await fetchProjectsIfNeeded(reauthData.needsReauth));
+      setLoading(false);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : 'Failed to fetch gcloud status',
+      );
+      setLoading(false);
+    }
+  };
+
+  usePollingInterval(fetchGcloudData, GCLOUD_POLL_INTERVAL_MS);
+
+  if (loading) {
+    return <CardSkeleton title="GCP Management" rows={3} />;
+  }
+
+  if (error) {
+    return (
+      <CardContainer title="GCP Management" headerLink={GCP_CONSOLE_LINK}>
+        <Text color="red">{error}</Text>
+      </CardContainer>
+    );
+  }
+
+  const sortedAccounts = [...(authStatus?.accounts || [])].sort((a, b) => {
+    if (a.account === authStatus?.activeAccount) return -1;
+    if (b.account === authStatus?.activeAccount) return 1;
+    return 0;
+  });
+
+  const sortedProjects = [...projects].sort((a, b) => {
+    if (a.projectId === authStatus?.currentProject) return -1;
+    if (b.projectId === authStatus?.currentProject) return 1;
+    return 0;
+  });
+
+  return (
+    <CardContainer title="GCP Management" headerLink={GCP_CONSOLE_LINK}>
+      <div className="flex items-center justify-between gap-2">
+        <Text size="2" weight="bold">
+          Vault Root Token
+        </Text>
+        <CopyButton
+          skipBrowserCopy
+          text={async () => {
+            await authFetch(API_ENDPOINTS.GCLOUD_VAULT_TOKEN, {
+              method: HTTP_METHOD.POST,
+            });
+            return '';
+          }}
+        />
+      </div>
+      {authStatus?.activeAccount ? (
+        <div className="flex flex-col gap-3">
+          {sortedAccounts.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <Text size="1" weight="bold">
+                Accounts ({sortedAccounts.length}):
+              </Text>
+              <div className="flex flex-col gap-1">
+                {sortedAccounts.map((acc, idx) => (
+                  <AccountItem
+                    key={idx}
+                    account={acc}
+                    isActive={acc.account === authStatus.activeAccount}
+                    needsAuth={
+                      acc.account === authStatus.activeAccount &&
+                      !!reauthStatus?.needsReauth
+                    }
+                    switchingProject={switchingProject}
+                    activeAccount={authStatus.activeAccount}
+                    onSwitchAccount={switchAccount}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {sortedProjects.length > 0 && (
+            <div className="flex flex-col gap-2">
+              <Text size="1" weight="bold">
+                All Projects ({sortedProjects.length}):
+              </Text>
+              <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                <StatusCardList
+                  items={sortedProjects.map(project =>
+                    toProjectItem(
+                      project,
+                      project.projectId === authStatus.currentProject,
+                      switchingProject,
+                      switchProject,
+                    ),
+                  )}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="flex items-center gap-2">
+          <Badge color="red" size="2">
+            Not Authenticated
+          </Badge>
+          <Text size="2" className="text-gray-500">
+            No active gcloud account
+          </Text>
+        </div>
+      )}
+    </CardContainer>
+  );
+};

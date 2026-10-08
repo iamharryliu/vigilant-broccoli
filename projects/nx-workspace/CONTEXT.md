@@ -52,7 +52,7 @@ way, and nothing checks them against each other:
 - `apps/ui/personal-website-react/src/app/components/pages/link-tree.page.tsx`
   — `LINK_TREE_SECTIONS`, rendered at `harryliu.dev/links`.
 - `libs/@vigilant-broccoli/links/src/lib/pastebin.consts.ts` —
-  `PASTEBIN_GROUPS`, rendered by `vb-manager-next`'s `/pastebin`.
+  `PASTEBIN_GROUPS`, rendered by `vb-manager-local-react`'s `/pastebin`.
 
 They must carry the **same section headings in the same order, with the same
 links under each**: Personal, Contact, Address, Career, Software, Business,
@@ -96,8 +96,8 @@ canonical `CONTEXT.md` sources.
 Next.js can log "Next.js inferred your workspace root, but it may not be
 correct" because it finds both the repository-root `pnpm-lock.yaml` and
 `projects/nx-workspace/pnpm-lock.yaml`. This affects `small-business-next`,
-`vb-manager-next`, `vb-manager-next-mobile`, `whiteboard`, `findme`,
-`hearth`, `employee-handler-ui`, and `weather-next`.
+`vb-manager-next-mobile`, `whiteboard`, `findme`, `hearth`,
+`employee-handler-ui`, and `weather-next`.
 
 The warning alone is accepted: no build or deployment defect has been
 attributed to it. Previous attempts to silence it have been revisited without

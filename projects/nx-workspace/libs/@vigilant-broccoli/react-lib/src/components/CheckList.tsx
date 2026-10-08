@@ -193,7 +193,7 @@ const CheckListRow = memo(
     } = useSortable({
       id: item.id,
       // Kept as `type: 'task'` / `task` / `taskListId` (rather than a
-      // generic `item`/`listId`) on purpose: apps/ui/vb-manager-next's
+      // generic `item`/`listId`) on purpose: apps/ui/vb-manager-local-react's
       // kanban.component.tsx reads this exact shape off the raw dnd-kit
       // drag payload to move tasks across lanes. See the Nuances entry in
       // that app's CONTEXT.md before renaming any of these keys.
