@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CircleHelp } from 'lucide-react';
+import { CircleHelp, History } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -23,6 +23,7 @@ import {
 import { PAGE_CLASS } from '../consts/layout';
 
 const ACTIONS_URL = `${REPO_URL}/actions`;
+const ICON_CLASS = 'h-5 w-5 shrink-0';
 
 interface ServiceStatus {
   name: string;
@@ -253,6 +254,7 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
               href={UPTIME_SITE_URL}
               title={t('STATUS_PAGE.UPTIME_SITE.TITLE')}
               description={t('STATUS_PAGE.UPTIME_SITE.DESCRIPTION')}
+              icon={<History className={ICON_CLASS} aria-hidden="true" />}
             />
           </li>
         </CardGrid>
