@@ -119,6 +119,7 @@ salvage_on_failure() {
 
   if [ -z "$(git status --porcelain)" ]; then
     echo "No uncommitted changes to salvage." >&2
+    printf 'RESULT::salvage-nothing\n'
     exit "$exit_code"
   fi
 
@@ -135,6 +136,7 @@ salvage_on_failure() {
 
   if ! git push -u origin "$BRANCH"; then
     echo "Failed to push salvage branch $BRANCH — partial work could not be recovered." >&2
+    printf 'RESULT::salvage-push-failed\n'
     exit "$exit_code"
   fi
 
@@ -158,12 +160,14 @@ BODY
     echo "$PR_URL"
     printf 'PR_TITLE::%s\n' "$SALVAGE_TITLE"
     printf 'PR_URL::%s\n' "$PR_URL"
+    printf 'RESULT::salvaged\n'
     echo 'PR_SUMMARY_BEGIN'
     echo "This agent run did not finish (exited with status ${exit_code}); partial work was pushed as a draft PR."
     echo 'PR_SUMMARY_END'
     emit_pr_diff
   else
     echo "Pushed salvage branch $BRANCH but failed to open a PR — open one manually." >&2
+    printf 'RESULT::salvage-pr-failed\n'
   fi
 
   exit "$exit_code"
