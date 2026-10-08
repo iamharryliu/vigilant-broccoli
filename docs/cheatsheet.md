@@ -4,6 +4,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 
 ```
 📦 REPOSITORY
+  postinstall                 Runs after root `pnpm i`: installs projects/nx-workspace dependencies (not meant to be run directly)
   open:repo                   Open GitHub repo
   open:repo:actions           Open GitHub Actions
   npm:packages                Open npm packages page

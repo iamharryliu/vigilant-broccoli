@@ -29,6 +29,7 @@ Personal monorepo, supporting **11 applications**, **5 API services**, **7 Docke
 ### Commands
 
 ```
+pnpm i                             # Install root dependencies, then projects/nx-workspace via the root postinstall hook
 pnpm cheatsheet                    # Print the CLI command cheatsheet
 pnpm local:install:machine-setup   # Install tools and dotfiles for this machine (macOS or Linux)
 ```
