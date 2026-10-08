@@ -1,8 +1,11 @@
 # Software Lingo
 
+## Table of Contents
+
 - [Programming Concepts](#programming-concepts)
 - [Architecture](#architecture)
 - [Networking](#networking)
+- [Web Rendering](#web-rendering)
 - [Testing](#testing)
 - [Development Approaches](#development-approaches)
 - [Tooling](#tooling)
@@ -50,6 +53,17 @@
 | Edge Requests | Requests served/handled at edge servers close to users. Benefits are lower latency, faster response, smarter request handling. |
 | URI           | Uniform Resource Identifier.                                                                                                   |
 | URL           | Uniform Resource Locator.                                                                                                      |
+
+## Web Rendering
+
+| Term                                               | Definition                                                                                                                                                                                                       |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [CSS](./web-dev/frontend/css.md)                   | Cascading Style Sheets — the language used to style a document, including colors, fonts, spacing, and layout.                                                                                                    |
+| CSSOM                                              | CSS Object Model — the browser's representation of stylesheets and their rules, exposed through APIs that JavaScript can read and modify.                                                                        |
+| DOM                                                | Document Object Model — the live tree of nodes representing a document, exposed through APIs that JavaScript can use to read, create, and update its content and structure.                                      |
+| HTML                                               | HyperText Markup Language — the markup language that defines a web document's content, structure, and semantics. The browser parses HTML into DOM nodes.                                                         |
+| [JavaScript](./languages/javascript/javascript.md) | A programming language used in browsers to implement behavior, respond to events, and update the DOM and styles; it also runs outside browsers.                                                                  |
+| Shadow DOM                                         | A browser feature that attaches an encapsulated DOM tree to a host element, commonly used for a Web Component's internal markup and styles. It scopes styles across the boundary but is not a security boundary. |
 
 ## Testing
 
