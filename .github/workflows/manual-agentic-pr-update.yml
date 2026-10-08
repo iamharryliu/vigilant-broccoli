@@ -1,10 +1,6 @@
 name: manual-agentic-pr-update
 
-# Runs the same agent PR update as the local `pnpm agentic-pr-update`, but on the
-# ephemeral GitHub-hosted runner: it builds and runs the vb-agent-sandbox
-# container (checks out the PR branch, headless Claude Code applies the change,
-# commit, push, PR body update). Secrets come from Vault; the branch push + PR
-# edit use a minted GitHub App token, so the workflow's own GITHUB_TOKEN needs no write scope.
+run-name: manual-agentic-pr-update (${{ inputs.operation }}) PR ${{ inputs.pr }}
 
 on:
   workflow_dispatch:
@@ -13,10 +9,18 @@ on:
         description: 'PR number or URL to update (e.g. "149").'
         type: string
         required: true
+      operation:
+        description: 'Operation to perform on the PR branch.'
+        type: choice
+        default: change
+        options:
+          - change
+          - fix-ci
+          - resolve-conflicts
       instruction:
-        description: 'Free-text change to apply to the PR branch.'
+        description: 'Required for change; optional guidance for fix-ci; leave blank for resolve-conflicts.'
         type: string
-        required: true
+        default: ''
       model:
         description: 'Claude model to run the agent with.'
         type: choice
@@ -38,21 +42,64 @@ permissions:
   id-token: write
 
 jobs:
-  update-pr:
+  key:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 5
+    outputs:
+      pr: ${{ steps.validate.outputs.pr }}
     steps:
-      - name: Link PR in summary
+      - name: Validate dispatch inputs and link PR
+        id: validate
         env:
           PR: ${{ inputs.pr }}
+          OPERATION: ${{ inputs.operation }}
+          INSTRUCTION: ${{ inputs.instruction }}
         run: |
           set -euo pipefail
-          case "$PR" in
-            *[!0-9]*) PR_URL=$PR ;;
-            *) PR_URL="https://github.com/${GITHUB_REPOSITORY}/pull/${PR}" ;;
+          PR_PREFIX="https://github.com/${GITHUB_REPOSITORY}/pull/"
+          if [[ "$PR" == "$PR_PREFIX"* ]]; then
+            PR=${PR#"$PR_PREFIX"}
+          fi
+          if [[ ! "$PR" =~ ^[0-9]{1,20}$ ]]; then
+            echo "ERROR: 'pr' must be a PR number or a pull request URL for ${GITHUB_REPOSITORY}." >&2
+            exit 1
+          fi
+          PR=$(printf '%s' "$PR" | sed 's/^0*//')
+          if [ -z "$PR" ]; then
+            echo "ERROR: 'pr' must be greater than zero." >&2
+            exit 1
+          fi
+          echo "**Pull request:** ${PR_PREFIX}${PR}" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Operation:** ${OPERATION}" >> "$GITHUB_STEP_SUMMARY"
+          case "$OPERATION" in
+            change)
+              if [[ ! "$INSTRUCTION" =~ [^[:space:]] ]]; then
+                echo "ERROR: 'instruction' is required for change." >&2
+                exit 1
+              fi
+              ;;
+            fix-ci) ;;
+            resolve-conflicts)
+              if [ -n "$INSTRUCTION" ]; then
+                echo "ERROR: 'instruction' must be blank for resolve-conflicts." >&2
+                exit 1
+              fi
+              ;;
+            *)
+              echo "ERROR: Unknown operation." >&2
+              exit 1
+              ;;
           esac
-          echo "**Pull request:** ${PR_URL}" >> "$GITHUB_STEP_SUMMARY"
+          echo "pr=$PR" >> "$GITHUB_OUTPUT"
 
+  update-pr:
+    needs: key
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    concurrency:
+      group: manual-agentic-pr-update-${{ needs.key.outputs.pr }}
+      cancel-in-progress: false
+    steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -73,12 +120,23 @@ jobs:
           AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
           SANDBOX_FIREWALL: ${{ inputs.firewall }}
           MODEL: ${{ inputs.model }}
-          PR: ${{ inputs.pr }}
+          PR: ${{ needs.key.outputs.pr }}
+          OPERATION: ${{ inputs.operation }}
           INSTRUCTION: ${{ inputs.instruction }}
         run: |
           set -euo pipefail
-          if ! printf '%s' "$PR" | grep -qE '^([0-9]+|https://github\.com/[^ ]+)$'; then
-            echo "ERROR: 'pr' must be a PR number or a github.com URL." >&2
-            exit 1
-          fi
-          bash infrastructure/agent-sandbox/update-pr.sh --model "$MODEL" "$PR" "$INSTRUCTION"
+          case "$OPERATION" in
+            change)
+              bash infrastructure/agent-sandbox/update-pr.sh --model "$MODEL" "$PR" "$INSTRUCTION"
+              ;;
+            fix-ci)
+              if [ -n "$INSTRUCTION" ]; then
+                bash infrastructure/agent-sandbox/fix-pr-ci.sh --model "$MODEL" "$PR" "$INSTRUCTION"
+              else
+                bash infrastructure/agent-sandbox/fix-pr-ci.sh --model "$MODEL" "$PR"
+              fi
+              ;;
+            resolve-conflicts)
+              bash infrastructure/agent-sandbox/resolve-pr-conflicts.sh --model "$MODEL" "$PR"
+              ;;
+          esac
