@@ -84,7 +84,6 @@ Browse this whole graph rendered, with full-text search and a link graph view, a
 ### UI
 
 - For UI applications, read [ui-app-pattern.md](./docs/app-development/ui/ui-app-pattern.md) first; it owns the binding UI requirements and links to the deploy and auth patterns.
-- New UI apps follow the OS/browser light/dark preference by default, via the shared `ThemeProvider followSystem` from `@vigilant-broccoli/react-lib`, unless the user explicitly requests other behavior or the app already has a manual theme selection pattern (keep those as they are). This is a convention for new apps, not a change to `ThemeProvider`'s runtime default; details in [Theme (system light/dark)](./docs/app-development/ui/ui-app-pattern.md#theme-system-lightdark).
 
 ### API
 

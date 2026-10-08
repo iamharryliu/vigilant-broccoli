@@ -9,6 +9,7 @@ Repository context and workflows shared by Claude Code, Codex, and future agents
 - [Adding a context source or skill](#adding-a-context-source-or-skill)
 - [Installing skills](#installing-skills)
 - [Context discovery](#context-discovery)
+- [Documentation placement](#documentation-placement)
 
 ## Sources and adapters
 
@@ -80,3 +81,13 @@ Each agent reads its conventional filename, which resolves to the adjacent `CONT
 Codex builds its startup instruction chain from the repository root through the session's starting directory. The root instructions also require reading applicable context before editing a deeper subtree. Keep inherited context within Codex's default 32 KiB instruction limit; the root context fits within it. Machine setup does not create or modify personal Codex configuration.
 
 The sandbox runner retains its explicit `-c project_doc_max_bytes=65536` flag for `codex exec`, which uses a throwaway `$CODEX_HOME`.
+
+## Documentation placement
+
+Keep the root [CONTEXT.md](../CONTEXT.md) slim. Put each new convention in the narrowest document that owns it:
+
+- Domain conventions (UI, API, CI, infrastructure, tooling) go in the existing owning pattern document that the root already links as read-first, such as [ui-app-pattern.md](./app-development/ui/ui-app-pattern.md) for UI apps. Do not repeat them in the root when that link already makes them discoverable.
+- Component conventions and non-obvious traps go in the `CONTEXT.md` of the deepest directory they affect; record traps as nuances per [nuance-pattern.md](./nuance-pattern.md).
+- Root additions are for genuinely repository-wide instructions or a necessary new navigation link, not for every new UI, API or tooling pattern. For example, the system light/dark default lives in the UI pattern's theme section and has no root bullet.
+
+This is a default for where to write, not an approval step: an explicit instruction from the user takes precedence, and authorized work is never blocked by it.

@@ -7,7 +7,7 @@ Use the current vigilant-broccoli checkout and resolve repository paths from its
 
 Implement the requested task in the current vigilant-broccoli checkout. Accept TODO IDs or a free-text request; `--prompt` explicitly selects free text.
 
-1. Read applicable `CONTEXT.md` files and the documents they require. Inspect the existing implementation and reuse its patterns. Keep changes focused on the requested outcome.
+1. Read applicable `CONTEXT.md` files and the documents they require. Inspect the existing implementation and reuse its patterns. Keep changes focused on the requested outcome. When adding documentation or context, place it per [documentation placement](../../../../docs/agent-support.md#documentation-placement) rather than in the root `CONTEXT.md` by default.
 2. For TODO IDs, read `docs/todo-pattern.md` and locate each exact ID in `TODO.md`; use both its Description and Recommended Fix as the task. If the runner supplied an extracted row, use that row directly. Report an unknown ID rather than guessing. For free text, use the supplied request and session context.
 3. Implement the task and run appropriate existing checks. Apply `docs/refactor-code-cleanup.md` before finishing. Follow repository rules on adding tests.
 4. For a completed TODO task, remove only its own row. When a sandbox runner owns TODO cleanup, leave `TODO.md` untouched and let it remove the row after verification. Keep unfinished items.
