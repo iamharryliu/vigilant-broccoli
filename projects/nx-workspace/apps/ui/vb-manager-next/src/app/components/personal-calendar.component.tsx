@@ -18,7 +18,7 @@ const BIRTHDAYS_CALENDAR =
 const MOBILE_VIEWPORT_QUERY = '(max-width: 767px)';
 
 // Colors not already claimed by BASE_CALENDAR_CONFIG below, so an event
-// calendar never visually matches a personal/work/public one. Cycled if
+// calendar never visually matches a personal/public one. Cycled if
 // there are more event calendars than spare colors.
 const EVENT_CALENDAR_COLORS = [
   GOOGLE_CALENDAR.CALENDAR_COLOR.LIGHT_BLUE,
@@ -35,10 +35,6 @@ const BASE_CALENDAR_CONFIG: Omit<CalendarConfig, 'mode'> = {
     {
       email: GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL,
       color: GOOGLE_CALENDAR.CALENDAR_COLOR.GREEN,
-    },
-    {
-      email: GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK,
-      color: GOOGLE_CALENDAR.CALENDAR_COLOR.RED,
     },
   ],
   sharedCalendars: [

@@ -33,12 +33,6 @@ const CALENDAR_SOURCES: {
     kind: 'owner',
   },
   {
-    id: GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK,
-    color: GOOGLE_CALENDAR.CALENDAR_COLOR.RED,
-    label: 'Work',
-    kind: 'owner',
-  },
-  {
     id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.COUNTRY_CALENDAR.SWEDEN,
     color: GOOGLE_CALENDAR.CALENDAR_COLOR.PURPLE,
     label: 'Sweden holidays',
@@ -83,7 +77,7 @@ const BASE_CALENDAR_COLOR_BY_ID = new Map(
 );
 
 // Colors not already claimed by CALENDAR_SOURCES above, so an event
-// calendar never visually matches a personal/work/public one. Cycled if
+// calendar never visually matches a personal/public one. Cycled if
 // there are more event calendars than spare colors.
 const EVENT_CALENDAR_COLORS = [
   GOOGLE_CALENDAR.CALENDAR_COLOR.LIGHT_BLUE,

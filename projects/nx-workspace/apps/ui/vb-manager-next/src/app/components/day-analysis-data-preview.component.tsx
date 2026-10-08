@@ -61,7 +61,6 @@ interface DayAnalysisData {
 const PERSONAL_TASK_LIST_ID = '@default';
 const WORK_TASK_LIST_ID = 'cXJUTkpUQzZ6bTBpQjNybA';
 const PERSONAL_CALENDAR_ID = GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL;
-const WORK_CALENDAR_ID = GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK;
 const MALMO_COORDINATES = { lat: 55.605, lon: 13.0038 };
 const LOCATION_NAME = 'Malmö';
 
@@ -70,7 +69,6 @@ const fetchAllDataSources = async () => {
     personalTasksResponse,
     workTasksResponse,
     personalCalendarResponse,
-    workCalendarResponse,
     weatherResponse,
   ] = await Promise.all([
     authFetch(`${API_ENDPOINTS.TASKS}?taskListId=${PERSONAL_TASK_LIST_ID}`),
@@ -79,26 +77,17 @@ const fetchAllDataSources = async () => {
       `${API_ENDPOINTS.CALENDAR_EVENTS}?calendarId=${PERSONAL_CALENDAR_ID}`,
     ),
     authFetch(
-      `${API_ENDPOINTS.CALENDAR_EVENTS}?calendarId=${WORK_CALENDAR_ID}`,
-    ),
-    authFetch(
       `${API_ENDPOINTS.WEATHER}?lat=${MALMO_COORDINATES.lat}&lon=${MALMO_COORDINATES.lon}`,
     ),
   ]);
 
-  const [
-    personalTasksData,
-    workTasksData,
-    personalCalendarData,
-    workCalendarData,
-    weatherData,
-  ] = await Promise.all([
-    personalTasksResponse.json(),
-    workTasksResponse.json(),
-    personalCalendarResponse.json(),
-    workCalendarResponse.json(),
-    weatherResponse.json(),
-  ]);
+  const [personalTasksData, workTasksData, personalCalendarData, weatherData] =
+    await Promise.all([
+      personalTasksResponse.json(),
+      workTasksResponse.json(),
+      personalCalendarResponse.json(),
+      weatherResponse.json(),
+    ]);
 
   return {
     personalTasks: { response: personalTasksResponse, data: personalTasksData },
@@ -107,25 +96,7 @@ const fetchAllDataSources = async () => {
       response: personalCalendarResponse,
       data: personalCalendarData,
     },
-    workCalendar: { response: workCalendarResponse, data: workCalendarData },
     weather: weatherData,
-  };
-};
-
-const mergeCalendarEvents = (personalData: any, workData: any) => {
-  const allTodayEvents = [
-    ...(personalData.todayEvents || []),
-    ...(workData.todayEvents || []),
-  ];
-
-  const allUpcomingEvents = [
-    ...(personalData.upcomingEvents || []),
-    ...(workData.upcomingEvents || []),
-  ];
-
-  return {
-    todayEvents: cleanCalendarEvents(allTodayEvents),
-    upcomingEvents: cleanCalendarEvents(allUpcomingEvents),
   };
 };
 
@@ -160,17 +131,18 @@ export const useDayAnalysisSuggestions = () => {
       return;
     }
 
-    if (
-      !sources.personalCalendar.response.ok &&
-      !sources.workCalendar.response.ok
-    ) {
+    if (!sources.personalCalendar.response.ok) {
       return;
     }
 
-    const calendarEvents = mergeCalendarEvents(
-      sources.personalCalendar.data,
-      sources.workCalendar.data,
-    );
+    const calendarEvents = {
+      todayEvents: cleanCalendarEvents(
+        sources.personalCalendar.data.todayEvents || [],
+      ),
+      upcomingEvents: cleanCalendarEvents(
+        sources.personalCalendar.data.upcomingEvents || [],
+      ),
+    };
 
     const analysisData = buildAnalysisData(
       sources.personalTasks.data,

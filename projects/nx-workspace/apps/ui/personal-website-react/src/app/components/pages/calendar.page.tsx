@@ -26,10 +26,6 @@ const BASE_CALENDAR_CONFIG: Omit<CalendarConfig, 'mode'> = {
       email: GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL,
       color: GOOGLE_CALENDAR.CALENDAR_COLOR.GREEN,
     },
-    {
-      email: GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK,
-      color: GOOGLE_CALENDAR.CALENDAR_COLOR.RED,
-    },
   ],
   sharedCalendars: [
     {
