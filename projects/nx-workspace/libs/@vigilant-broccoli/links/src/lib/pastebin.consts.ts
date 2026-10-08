@@ -7,7 +7,10 @@ import {
   PROJECT_LINK,
   SOCIAL_LINK,
 } from '@vigilant-broccoli/personal-common-js';
-import { EXTERNAL_QUICK_LINKS, LINK_GROUP_SUBGROUP } from './quick-links.consts';
+import {
+  EXTERNAL_QUICK_LINKS,
+  LINK_GROUP_SUBGROUP,
+} from './quick-links.consts';
 
 export const PERSONAL_SITE_LINK = {
   INDEX: {

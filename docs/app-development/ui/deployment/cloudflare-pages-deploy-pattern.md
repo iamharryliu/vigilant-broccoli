@@ -60,7 +60,7 @@ A new stateless site opts in by adding the trio — the workflows discover it vi
 
 ## Per-environment build config
 
-`deploy:production` builds with `--configuration=production-env`, baking per-env fly URLs into the bundle at build time (static sites cannot read env vars at runtime). `environment.ts` → `environment.production.ts` is meant to be a `fileReplacements` swap, but the inferred Vite build ignores `fileReplacements` (see the [nx-workspace nuance](../../../../projects/nx-workspace/CONTEXT.md#filereplacements-in-a-vite-apps-projectjson-is-ignored)); `calendars` sets the configuration's `mode` and aliases the environment module in `vite.config.mts` instead.
+`deploy:production` builds with `--configuration=production-env`, baking per-env fly URLs into the bundle at build time (static sites cannot read env vars at runtime). `environment.ts` → `environment.production.ts` cannot be a `fileReplacements` swap because the inferred Vite build ignores `fileReplacements` (see the [nx-workspace nuance](../../../../projects/nx-workspace/CONTEXT.md#filereplacements-in-a-vite-apps-projectjson-is-ignored)); `calendars`, `cloud-8-skate-react` and `personal-website-react` set the `production-env` configuration's `mode` to `production-env` and alias the environment module in `vite.config.mts` instead.
 
 ## Sources outside the nx graph need their own trigger
 

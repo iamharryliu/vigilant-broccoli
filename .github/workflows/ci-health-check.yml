@@ -114,6 +114,7 @@ jobs:
           http_check "staging-hearth.vercel.app" "https://staging-hearth.vercel.app"
           http_check "findme" "https://staging-findme.vercel.app"
           http_check "weather-next" "https://staging-weather-next.vercel.app"
+          http_check "staging-calendars" "https://staging-calendars.pages.dev"
 
           echo ""
           echo "[GCP VM]"

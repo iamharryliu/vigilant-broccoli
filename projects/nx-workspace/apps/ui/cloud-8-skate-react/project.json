@@ -25,13 +25,7 @@
           "mode": "production"
         },
         "production-env": {
-          "mode": "production",
-          "fileReplacements": [
-            {
-              "replace": "apps/ui/cloud-8-skate-react/src/environments/environment.ts",
-              "with": "apps/ui/cloud-8-skate-react/src/environments/environment.production.ts"
-            }
-          ]
+          "mode": "production-env"
         }
       }
     },

@@ -115,12 +115,10 @@ is traced to root inference. Reproduce that failure with the affected app's
 ### `fileReplacements` in a Vite app's `project.json` is ignored
 
 The `build` target of a Vite app is inferred by `@nx/vite/plugin`, which runs
-plain `vite build`; a `fileReplacements` entry on a build configuration (the
-`production-env` configuration of `cloud-8-skate-react` and
-`personal-website-react`) is never applied. Building
-`cloud-8-skate-react --configuration=production-env` still bakes
-`environment.ts`'s staging VB Express URL into the bundle, with no error.
-`calendars` avoids it by setting the configuration's `mode` to `production-env`
-and aliasing `**/environments/environment` to `environment.production` in
+plain `vite build`; a `fileReplacements` entry on a build configuration is never applied and would
+bake `environment.ts`'s staging VB Express URL into the bundle, with no error.
+`calendars`, `cloud-8-skate-react` and `personal-website-react` avoid it by
+setting the `production-env` configuration's `mode` to `production-env` and
+aliasing `**/environments/environment` to `environment.production` in
 `vite.config.mts` for that mode. Verify any per-environment URL by grepping the
 built `assets/*.js` for the expected host, not by reading `project.json`.

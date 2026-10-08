@@ -1,5 +1,8 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import {
+  getEnvironmentVariable,
+  getSupabaseUrl,
+} from '@vigilant-broccoli/common-node';
 
 const EVENT_CALENDARS_TABLE = 'event_calendars';
 const PUBLIC_COLUMNS = 'id, name, google_calendar_id';
@@ -17,12 +20,13 @@ let client: SupabaseClient | null = null;
 
 const getClient = (): SupabaseClient => {
   if (client) return client;
-  const url = getEnvironmentVariable('SUPABASE_URL');
   const secretKey = getEnvironmentVariable('SUPABASE_SECRET_KEY');
-  if (!url || !secretKey) {
+  if (!secretKey) {
     throw new Error('Supabase credentials are not configured');
   }
-  client = createClient(url, secretKey, { auth: { persistSession: false } });
+  client = createClient(getSupabaseUrl(), secretKey, {
+    auth: { persistSession: false },
+  });
   return client;
 };
 
