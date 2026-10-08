@@ -8,7 +8,7 @@ export function App() {
   useDocumentTitle(PAGE_TITLE);
 
   return (
-    <ThemeProvider>
+    <ThemeProvider followSystem>
       <div className="h-dvh bg-white p-2 dark:bg-gray-900 sm:p-4">
         <div className="mx-auto h-full max-w-2xl">
           <Pastebin
