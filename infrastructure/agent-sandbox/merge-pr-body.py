@@ -2,7 +2,7 @@
 """Shared by every agentic-sandbox runner that opens or edits a PR
 (solve-todo-runner.sh, update-pr-runner.sh,
 create-todo-runner.sh, create-rnd-runner.sh,
-audit-todo-runner.sh) to rewrite a PR body in place: replace the
+audit-todo-runner.sh, prune-runner.sh) to rewrite a PR body in place: replace the
 "## Summary" / "## Next steps" / "## Suggestions" sections with the agent's latest cumulative
 description, and append a row to an "## Agentic Change History" table —
 creating either if the PR body doesn't have them yet. Reads everything from

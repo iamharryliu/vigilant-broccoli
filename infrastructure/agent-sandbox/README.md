@@ -6,11 +6,12 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 - [Running in CI](#running-in-ci)
 - [Auditing the backlog](#auditing-the-backlog)
+- [Pruning dead code and stale docs](#pruning-dead-code-and-stale-docs)
 - [Stack](#stack)
 
 ## Running in CI
 
-Plan- and Develop-phase agents and backlog auditing load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths.
+Plan- and Develop-phase agents, backlog auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-prune`, `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths.
 
 `pnpm agentic-pr-create <ID...>` runs `solve-todo.sh` locally. The same solve runs in GitHub Actions via the
 `manual-agentic-pr-create` workflow (`workflow_dispatch`) — it builds and runs this container on the `ubuntu-24.04`
@@ -79,6 +80,18 @@ rows whose paths, line numbers, counts or scope have drifted. `cron-agentic-pr-c
 - The runner refuses to commit if an id disappeared without being reported as resolved, if an id was added or renumbered,
   or if any file other than `TODO.md` changed. Ids are the handle `pnpm agentic-pr-create <id>` resolves, so a table
   rewrite that quietly drops one is treated as a failure, not a diff to review.
+
+## Pruning dead code and stale docs
+
+`pnpm agentic-pr-create-prune` runs `prune.sh`, which sweeps the whole tree for dead code, unused dependencies, broken
+doc links and anchors, orphaned docs, scripts and workflows, and cheatsheet drift, then opens one PR removing only what a
+repo-wide grep shows has zero references. `cron-agentic-pr-create-prune` runs the same script weekly.
+
+- Dispatch: `gh workflow run cron-agentic-pr-create-prune.yml` (optional `-f model=`, `-f firewall=off`).
+- A clean run opens no PR — `prune-runner.sh` prints `PRUNE_CLEAN` and exits 0 rather than raising an empty PR.
+- The runner refuses to commit if `TODO.md`, a `migrations/` directory or Terraform state changed, if a file under
+  `notes/` was added, deleted or renamed, or if more than 50 files changed. The skill asks for about 40; the runner's cap
+  is the backstop that keeps a runaway sweep from becoming an unreviewable PR.
 
 The `CLAUDE.md` and `AGENTS.md` adapters are committed symlinks to `CONTEXT.md`, so the entrypoint's clone carries them and no step regenerates them per branch. The entrypoint still runs the Linux installer to install the shared skills. See [agent support](../../docs/agent-support.md).
 

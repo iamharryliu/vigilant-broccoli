@@ -1,0 +1,72 @@
+name: cron-agentic-pr-create-prune
+
+# Sweeps the whole tree for dead code, unused dependencies and stale or broken
+# documentation, and opens one conservative PR removing only what has zero
+# verified references. Same container and credentials as
+# `cron-agentic-pr-create-todo-audit`; the local equivalent is
+# `pnpm agentic-pr-create-prune`. Per-change cleanup only sees its own diff, so
+# code orphaned by a later change elsewhere is never revisited without this.
+#
+# A clean run opens no PR and still succeeds: the runner prints PRUNE_CLEAN
+# and exits 0.
+
+on:
+  schedule:
+    - cron: '5 5 * * 0'
+  workflow_dispatch:
+    inputs:
+      model:
+        description: 'Claude model to run the agent with.'
+        type: choice
+        default: sonnet
+        options:
+          - sonnet
+          - opus
+          - haiku
+      firewall:
+        description: 'In-container egress firewall (turn off if iptables/ipset fails on the runner).'
+        type: choice
+        default: 'on'
+        options:
+          - 'on'
+          - 'off'
+
+permissions:
+  contents: read
+  id-token: write
+
+# Static group: two overlapping sweeps would open competing PRs deleting the
+# same files, and a half-finished run's pushed branch is not something a newer
+# run should cancel out from under.
+concurrency:
+  group: cron-agentic-pr-create-prune
+  cancel-in-progress: false
+
+jobs:
+  prune:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | CLAUDE_CODE_OAUTH_TOKEN ;
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+
+      - name: Prune dead code and stale docs
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
+          AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
+          AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
+          SANDBOX_FIREWALL: ${{ inputs.firewall || 'on' }}
+          MODEL: ${{ inputs.model || 'sonnet' }}
+        run: |
+          set -euo pipefail
+          bash infrastructure/agent-sandbox/prune.sh --model "$MODEL"
