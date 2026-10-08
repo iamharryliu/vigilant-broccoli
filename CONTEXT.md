@@ -41,7 +41,6 @@ Browse this whole graph rendered, with full-text search and a link graph view, a
 | API — [docs/app-development/api/](./docs/app-development/api/)                   | `deployment/fly-service-pattern.md`                                                                                                                                                                                                  |
 | [app-readme-pattern.md](./docs/app-readme-pattern.md)                            | The format every app/publishing lib's `README.md` follows; read first before adding or updating one                                                                                                                                  |
 | [repo-operations.md](./docs/repo-operations.md)                                  | Operations map: the Terraform/VM/observability inventory, where each app's state lives and its backup rule, the local dev stack, and service-to-service auth                                                                         |
-| [notes-pattern.md](./docs/notes-pattern.md)                                      | Read first before adding or editing files under `notes/`; per-topic conventions live under `docs/notes/`                                                                                                                             |
 | [learning-timeline.md](./docs/learning-timeline.md)                              | Month-by-month record of what was being learned; extend the current month's row when work lands that introduces a new topic                                                                                                          |
 | [network-management.md](./docs/infrastructure/network-management.md)             | Read first before changing DNS, domains, proxying, tunnels, or VPN                                                                                                                                                                   |
 | [jellyfin-pi.md](./docs/infrastructure/jellyfin-pi.md)                           | The Ansible-provisioned homelab Pi running Jellyfin; read first before provisioning or changing hardware on the LAN (there is no Terraform for it)                                                                                   |
@@ -93,6 +92,8 @@ Browse this whole graph rendered, with full-text search and a link graph view, a
 ### Documentation
 
 - When asked to create or edit a Markdown table, keep the requested content in the table. Do not add introductory descriptions, explanatory paragraphs, caveats, or follow-up notes around it unless explicitly requested.
+- Markdown links are relative to the linking file and must resolve, as must their `#section` anchors; check both after moving a file or renaming a heading. A table of contents is derived from the headings, so rebuild it whenever they change, following the rules of the document type (the Doc Map for agent docs, [app-readme-pattern.md](./docs/app-readme-pattern.md) for READMEs, [notes/CONTEXT.md](./notes/CONTEXT.md) for notes); do not add one to unrelated files.
+- A table that enumerates or compares items with no inherent order between rows is ordered alphabetically by its first column, so a row stays findable as the table grows. Tables where order carries meaning are exempt: ordered steps or progressions, rows keyed to labels in an accompanying diagram, and side-by-side comparisons of a small fixed set whose heading already names the order. When in doubt, alphabetize — the exemption is for tables that would read wrong sorted, not merely short ones.
 - Before adding or updating a README, read [app-readme-pattern.md](./docs/app-readme-pattern.md) first. Run `/update-readmes` to review and refresh them all.
 - Feature docs live in a `docs/features/<feature>/` folder nearest the code that implements them — under the owning app (`apps/hearth/docs/features/`, `apps/ui/vb-manager-next/docs/features/`) or lib (`libs/@vigilant-broccoli/react-lib/docs/features/`), never at the workspace root for something one app owns. `projects/nx-workspace/docs/features/` is reserved for features that genuinely span apps (today: `dev-dashboard/`). `/update-feature-documentation` writes them.
 
@@ -118,7 +119,7 @@ Browse this whole graph rendered, with full-text search and a link graph view, a
 ## Folder Structure
 
 - [Docs](./docs/) - Repo documentation.
-- [Notes](./notes/) - Collection of markdown notes linked with relative file paths — see [notes-pattern.md](./docs/notes-pattern.md).
+- [Notes](./notes/) - Collection of markdown notes linked with relative file paths — see [notes/CONTEXT.md](./notes/CONTEXT.md).
 - [Setup](./setup/) - Machine setup scripts and dotfiles.
   - [dotfiles](./setup/dotfiles/) - Shell configs, aliases, and scripts (symlinked to `$HOME`).
   - [mac](./setup/mac/) - macOS setup.
