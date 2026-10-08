@@ -3,6 +3,7 @@ import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { homedir } from 'os';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { validateResume } from '@vigilant-broccoli/resume';
 
 const RESUME_JSON_PATH = join(
   homedir(),
@@ -20,6 +21,7 @@ const ENCODING = 'utf-8';
 const ERROR = {
   CONTENT_REQUIRED: 'Resume JSON content is required',
   INVALID_JSON: 'Resume content is not valid JSON',
+  INVALID_RESUME: 'Resume content is not a valid resume',
   SAVE_FAILED: 'Failed to save resume.json',
   READ_FAILED: 'Failed to read resume.json',
 } as const;
@@ -47,11 +49,20 @@ export async function PUT(req: NextRequest) {
       );
     }
 
+    let parsed: unknown;
     try {
-      JSON.parse(body.content);
+      parsed = JSON.parse(body.content);
     } catch {
       return NextResponse.json(
         { error: ERROR.INVALID_JSON },
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
+      );
+    }
+
+    const validation = validateResume(parsed);
+    if (!validation.ok) {
+      return NextResponse.json(
+        { error: ERROR.INVALID_RESUME, details: validation.errors },
         { status: HTTP_STATUS_CODES.BAD_REQUEST },
       );
     }
