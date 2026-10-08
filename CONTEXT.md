@@ -92,6 +92,7 @@ Browse this whole graph rendered, with full-text search and a link graph view, a
 
 ### Documentation
 
+- When asked to create or edit a Markdown table, keep the requested content in the table. Do not add introductory descriptions, explanatory paragraphs, caveats, or follow-up notes around it unless explicitly requested.
 - Before adding or updating a README, read [app-readme-pattern.md](./docs/app-readme-pattern.md) first. Run `/update-readmes` to review and refresh them all.
 - Feature docs live in a `docs/features/<feature>/` folder nearest the code that implements them — under the owning app (`apps/hearth/docs/features/`, `apps/ui/vb-manager-next/docs/features/`) or lib (`libs/@vigilant-broccoli/react-lib/docs/features/`), never at the workspace root for something one app owns. `projects/nx-workspace/docs/features/` is reserved for features that genuinely span apps (today: `dev-dashboard/`). `/update-feature-documentation` writes them.
 
