@@ -24,7 +24,7 @@
 - Labels show for hovered/active nodes always, for other nodes only past a zoom threshold
 - Clicking a node opens that note and closes the graph
 - Auto-fits to the viewport until the first zoom/pan/drag, then leaves the view alone
-- Follows the viewer's light/dark theme (`.dark` class, `prefers-color-scheme` fallback) and repaints on theme change
+- Follows the viewer's light/dark theme (`.dark` class, `prefers-color-scheme` fallback) and repaints on theme change by observing `class`/`style` on the canvas container and every ancestor (a scoped `ThemeProvider` does not touch `<html>`)
 
 ## Notes
 
