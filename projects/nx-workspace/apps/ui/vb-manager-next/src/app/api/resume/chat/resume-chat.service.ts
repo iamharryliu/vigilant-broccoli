@@ -3,6 +3,8 @@ import { z } from 'zod';
 import {
   RESUME_PDF_MAX_PAGES,
   describeResumePdfLayout,
+  isResumePdfFilled,
+  resumePdfFillShortfallPx,
   validateResume,
 } from '@vigilant-broccoli/resume';
 import type { ResumeData, ResumePdfLayout } from '@vigilant-broccoli/resume';
@@ -37,6 +39,8 @@ type ResultEvent = ResumeChatResult;
 const MAX_MODEL_CALLS = RESUME_CHAT_LIMITS.MAX_REVISIONS + 1;
 const MAX_ISSUES_SHOWN = 10;
 const REJECTED_STATUS = 'rejected';
+const UNDERFILLED_STATUS = 'fits_but_underfilled';
+const PERCENT = 100;
 
 const MESSAGE = {
   DEFAULT_SUMMARY: 'Here is the updated resume.',
@@ -47,12 +51,17 @@ const MESSAGE = {
     'The model could not produce a valid, supported resume draft, so nothing was proposed and your resume was not changed.',
   TOOL_RECORDED: 'Ledger recorded.',
   TOOL_REJECTED:
-    'Draft rejected. Fix every problem and call update_resume again with the COMPLETE shorter or corrected resume. Keep confirmed facts, every employer, role and date, and the most relevant content.',
+    'Draft rejected. Fix every problem and call update_resume again with the COMPLETE corrected resume. If it overflowed, shorten only as much as needed and do not drop below the target fill band; a previously retained one-page version is not lost. Keep confirmed facts, every employer, role and date, and the most relevant content.',
+  TOOL_UNDERFILLED: `This draft fits ${RESUME_PDF_MAX_PAGES} page and is retained as the best fit so far, but it leaves noticeable unused space. Call update_resume again with the COMPLETE resume only if the current resume or user-confirmed facts hold more supported, job-relevant material to restore or develop: omitted achievements, clearer wording of existing facts, confirmed experience. Never invent claims, metrics or experience, repeat bullets, pad or keyword-stuff. If no more supported material exists, or the user asked for a concise version, reply in plain text instead, say so, and optionally ask which relevant experience they could add.`,
   IGNORED_FACTS:
     'I ignored these "confirmed" items because they do not quote anything you wrote or you said you lack them:',
   UNCONFIRMED_HEADING: '**Left out because unconfirmed:**',
   VALIDATED: (attempts: number) =>
     `**Validated:** rendered with the same PDF pipeline as Download and it is exactly ${RESUME_PDF_MAX_PAGES} page (attempt ${attempts} of ${MAX_MODEL_CALLS}). Nothing is applied until you press Apply.`,
+  VALIDATED_SPARSE: (attempts: number, percent: number, lines: number) =>
+    `**Validated:** rendered with the same PDF pipeline as Download and it is exactly ${RESUME_PDF_MAX_PAGES} page (attempt ${attempts} of ${MAX_MODEL_CALLS}). About ${percent}% of the page is used, leaving room for roughly ${lines} more lines. I could not safely add more from the supported material; if there is other relevant experience you would like included, tell me and I will work it in. Nothing is applied until you press Apply.`,
+  KEPT_EARLIER:
+    'A later revision did not fit one page or did not improve on it, so this earlier validated version was kept.',
   UNVALIDATED: (attempts: number, detail: string) =>
     `**Not validated:** after ${attempts} attempt(s) I could not confirm a one-page result (${detail}). I kept this draft so we can keep working on it, but it cannot be applied. Tell me what to prioritise or cut, for example which older roles or bullets matter least.`,
   RENDER_FAILED: (detail: string) => `the PDF check itself failed: ${detail}`,
@@ -64,6 +73,8 @@ const MESSAGE = {
     `Rendering the one-page PDF check (attempt ${attempt} of ${MAX_MODEL_CALLS})`,
   PROGRESS_REVISING: (revision: number, reason: string) =>
     `${reason}; asking for a revision (${revision} of ${RESUME_CHAT_LIMITS.MAX_REVISIONS})`,
+  PROGRESS_FILLING: (revision: number) =>
+    `Refining to fill the page (${revision} of ${RESUME_CHAT_LIMITS.MAX_REVISIONS})`,
 } as const;
 
 const updateArgsSchema = z.object({
@@ -80,10 +91,11 @@ interface Candidate {
   summary: string;
   unconfirmed: UnconfirmedKeyword[];
   layout?: ResumePdfLayout;
+  attempt?: number;
 }
 
 type Evaluation =
-  | { kind: 'validated'; candidate: Candidate; layout: ResumePdfLayout }
+  | { kind: 'fits'; candidate: Candidate; layout: ResumePdfLayout }
   | {
       kind: 'rejected';
       problems: string[];
@@ -161,7 +173,11 @@ const evaluateUpdate = async (
   try {
     const { layout } = await renderResumePdf(candidate.resume);
     if (layout.fits) {
-      return { kind: 'validated', candidate: { ...candidate, layout }, layout };
+      return {
+        kind: 'fits',
+        candidate: { ...candidate, layout, attempt },
+        layout,
+      };
     }
     return {
       kind: 'rejected',
@@ -204,6 +220,12 @@ const withNotes = (
     .filter(Boolean)
     .join('\n\n');
 
+const isNearerFillTarget = (candidate: Candidate, best?: Candidate): boolean =>
+  !best?.layout ||
+  (!!candidate.layout &&
+    resumePdfFillShortfallPx(candidate.layout) <
+      resumePdfFillShortfallPx(best.layout));
+
 const buildUpdateEvent = (
   candidate: Candidate,
   validation: ResumeChatValidation,
@@ -212,9 +234,23 @@ const buildUpdateEvent = (
   modelText: string,
 ): ResultEvent => {
   const attempts = validation.attempts;
+  const layout = validation.layout;
+  const validatedAttempt = candidate.attempt ?? attempts;
+  const validatedStatus = layout?.underfilled
+    ? MESSAGE.VALIDATED_SPARSE(
+        validatedAttempt,
+        Math.round(layout.fillRatio * PERCENT),
+        layout.unusedLines,
+      )
+    : MESSAGE.VALIDATED(validatedAttempt);
   const status =
     validation.status === RESUME_CHAT_VALIDATION_STATUS.VALIDATED
-      ? MESSAGE.VALIDATED(attempts)
+      ? [
+          validatedStatus,
+          validatedAttempt < attempts ? MESSAGE.KEPT_EARLIER : '',
+        ]
+          .filter(Boolean)
+          .join(' ')
       : MESSAGE.UNVALIDATED(attempts, validation.issues.join(' '));
   return {
     type: RESUME_CHAT_RESPONSE_TYPE.RESUME_UPDATE,
@@ -301,6 +337,7 @@ export async function runResumeChat({
   ];
 
   let lastDraft: Candidate | undefined;
+  let best: Candidate | undefined;
   let lastProblems: string[] = [];
   let hasRequestedReply = false;
 
@@ -322,6 +359,24 @@ export async function runResumeChat({
           type: RESUME_CHAT_RESPONSE_TYPE.ERROR,
           message: `${MESSAGE.NO_DRAFT} ${lastProblems.join(' ')}`.trim(),
         };
+
+  const validated = (
+    candidate: Candidate,
+    attempts: number,
+    modelText: string,
+  ): ResultEvent =>
+    buildUpdateEvent(
+      candidate,
+      {
+        status: RESUME_CHAT_VALIDATION_STATUS.VALIDATED,
+        attempts,
+        issues: [],
+        layout: candidate.layout,
+      },
+      context,
+      ignoredFacts,
+      modelText,
+    );
 
   try {
     for (let call = 1; call <= MAX_MODEL_CALLS; call += 1) {
@@ -351,6 +406,7 @@ export async function runResumeChat({
       );
 
       if (!updateCall) {
+        if (best) return validated(best, call - 1, modelText);
         if (lastDraft) return unvalidated(call - 1, modelText);
         if (modelText || toolCalls.length === 0) {
           return {
@@ -384,26 +440,47 @@ export async function runResumeChat({
         emit,
       );
 
-      if (evaluation.kind === 'validated') {
-        return buildUpdateEvent(
-          evaluation.candidate,
-          {
-            status: RESUME_CHAT_VALIDATION_STATUS.VALIDATED,
-            attempts: call,
-            issues: [],
-            layout: evaluation.layout,
-          },
-          context,
-          ignoredFacts,
-          modelText,
+      if (evaluation.kind === 'fits') {
+        const repeatsBest =
+          !!best &&
+          JSON.stringify(best.resume) ===
+            JSON.stringify(evaluation.candidate.resume);
+        if (isNearerFillTarget(evaluation.candidate, best)) {
+          best = evaluation.candidate;
+        }
+        if (
+          repeatsBest ||
+          isResumePdfFilled(evaluation.layout) ||
+          call === MAX_MODEL_CALLS
+        ) {
+          return validated(best ?? evaluation.candidate, call, modelText);
+        }
+        emit({
+          type: RESUME_CHAT_RESPONSE_TYPE.PROGRESS,
+          message: MESSAGE.PROGRESS_FILLING(call),
+        });
+        messages.push(
+          message,
+          ...toolResults(toolCalls, {
+            id: updateCall.id,
+            content: JSON.stringify({
+              status: UNDERFILLED_STATUS,
+              problems: [describeResumePdfLayout(evaluation.layout)],
+              layout: evaluation.layout,
+              instructions: MESSAGE.TOOL_UNDERFILLED,
+            }),
+          }),
         );
+        continue;
       }
 
       lastProblems = evaluation.problems;
       if (evaluation.candidate) lastDraft = evaluation.candidate;
 
       if (evaluation.renderFailed || call === MAX_MODEL_CALLS) {
-        return unvalidated(call, modelText);
+        return best
+          ? validated(best, call, modelText)
+          : unvalidated(call, modelText);
       }
 
       emit({
@@ -421,6 +498,7 @@ export async function runResumeChat({
             status: REJECTED_STATUS,
             problems: evaluation.problems,
             layout: evaluation.candidate?.layout,
+            retainedFitLayout: best?.layout,
             instructions: MESSAGE.TOOL_REJECTED,
           }),
         }),
@@ -428,11 +506,14 @@ export async function runResumeChat({
     }
   } catch (error) {
     console.error(MESSAGE.MODEL_FAILED, error);
+    if (best) return validated(best, MAX_MODEL_CALLS, '');
     return {
       type: RESUME_CHAT_RESPONSE_TYPE.ERROR,
       message: `${MESSAGE.MODEL_FAILED} ${errorMessage(error)}`,
     };
   }
 
-  return unvalidated(MAX_MODEL_CALLS, '');
+  return best
+    ? validated(best, MAX_MODEL_CALLS, '')
+    : unvalidated(MAX_MODEL_CALLS, '');
 }

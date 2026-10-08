@@ -45,9 +45,19 @@
 ### Validation and retry limits
 
 - Every candidate from `update_resume` is checked structurally, then for grounding, then rendered with the same `renderResumePdf` path as Download. Only a result of exactly one page (page count read from the PDF with `pdf-lib`) is offered as a validated proposal; zero pages is an error
-- On overflow the model receives structured layout feedback (page count, content height versus printable height, overflow lines, per-section heights) and must return a shorter version that keeps employers, roles and dates. Budget: 1 initial call plus 3 revisions, so at most 4 model calls and 4 renders per message
-- If the budget runs out, or the PDF check itself fails (for example Chromium is missing), the draft stays in the chat as "Not validated as one page", the Apply button is disabled and the assistant asks what to prioritise or cut. If no valid draft ever existed, an error message is shown. In every failure the current resume is untouched
+- One page is the hard constraint; filling it is a bounded, soft objective (see below). On overflow the model receives structured layout feedback (page count, content height versus printable height, overflow lines, per-section heights) and must return a shorter version that keeps employers, roles and dates. Budget: 1 initial call plus 3 revisions, so at most 4 model calls and 4 renders per message
+- If the budget runs out with no one-page candidate, or the PDF check itself fails (for example Chromium is missing), the draft stays in the chat as "Not validated as one page", the Apply button is disabled and the assistant asks what to prioritise or cut. If no valid draft ever existed, an error message is shown. In every failure the current resume is untouched
 - Page size, margins and type size are never changed to make content fit
+
+### Fit plus fill
+
+- `renderResumePdf` measures the body in the same viewport, fonts and HTML as the exported PDF and adds `unusedPx`, `unusedLines`, `fillRatio` (content height ÷ printable height, so the margins and the spacing between sections count as content and nothing is stretched to the page) and `underfilled` to the layout. The PDF's actual page count remains the final authority for fitting
+- The target band is `RESUME_PDF_FILL_TARGET` in `resume.pdf.types.ts`: 90%-97% of the 1017px printable height (915-986px of content). Below 90% is "underfilled"; the unused ~3% at the bottom is an intentional gutter, so content above the band that still fits is never shortened
+- The model gets measured feedback in both directions. Overflow: shorten judiciously, only as much as needed. Underfill: restore or develop the most job-relevant supported achievements, clarify existing facts, or include confirmed experience that was left out. It is told not to pad, invent claims or metrics, repeat bullets or keyword-stuff, and to answer in plain text instead when no supported material is left or the user asked for a concise version
+- The best one-page candidate (the one nearest the band, earliest on ties) is retained through refinement. A later overflow, grounding rejection, render failure or model error returns that version instead of losing it, and the reply says an earlier version was kept
+- Underfill alone never blocks Apply or counts as a failed one-page check. When the budget or the supported material runs out the sparse candidate is returned as validated with how much of the page is used, and the assistant offers to work in other relevant experience the user can describe
+- Layout CSS is unchanged: page size, margins, font sizes and spacing are the same, so the browser preview matches and Download exports exactly the validated candidate with no export-time content changes. No spacing stretch, forced height or shrinking is used to claim occupancy
+- Progress shows "Refining to fill the page (n of 3)"; the metrics themselves are only sent to the model and appear here
 
 ### Apply and stale protection
 

@@ -3,6 +3,7 @@ import type { Browser } from '@playwright/test';
 import { PDFDocument } from 'pdf-lib';
 import { resumeData } from './index';
 import {
+  RESUME_PDF_FILL_TARGET,
   RESUME_PDF_MAX_PAGES,
   describeResumePdfLayout,
 } from './resume.pdf.types';
@@ -171,18 +172,29 @@ const buildLayout = (
   fontsLoaded: boolean,
   sections: ResumePdfSectionLayout[],
 ): ResumePdfLayout => {
-  const overflowPx = Math.max(
-    0,
-    Math.ceil(contentHeightPx) - PRINTABLE_HEIGHT_PX,
+  const roundedContentPx = Math.ceil(contentHeightPx);
+  const overflowPx = Math.max(0, roundedContentPx - PRINTABLE_HEIGHT_PX);
+  const unusedPx = Math.max(0, PRINTABLE_HEIGHT_PX - roundedContentPx);
+  const targetMinContentPx = Math.ceil(
+    PRINTABLE_HEIGHT_PX * RESUME_PDF_FILL_TARGET.MIN_RATIO,
   );
+  const fits = pageCount <= RESUME_PDF_MAX_PAGES;
   return {
     pageCount,
     maxPages: RESUME_PDF_MAX_PAGES,
-    fits: pageCount <= RESUME_PDF_MAX_PAGES,
-    contentHeightPx: Math.ceil(contentHeightPx),
+    fits,
+    contentHeightPx: roundedContentPx,
     pageContentHeightPx: PRINTABLE_HEIGHT_PX,
     overflowPx,
     overflowLines: Math.ceil(overflowPx / LINE_HEIGHT_PX),
+    unusedPx,
+    unusedLines: Math.floor(unusedPx / LINE_HEIGHT_PX),
+    fillRatio: Math.round((roundedContentPx / PRINTABLE_HEIGHT_PX) * 100) / 100,
+    targetMinContentPx,
+    targetMaxContentPx: Math.floor(
+      PRINTABLE_HEIGHT_PX * RESUME_PDF_FILL_TARGET.MAX_RATIO,
+    ),
+    underfilled: fits && roundedContentPx < targetMinContentPx,
     fontsLoaded,
     sections,
   };

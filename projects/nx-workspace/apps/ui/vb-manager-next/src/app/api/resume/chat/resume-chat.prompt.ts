@@ -73,7 +73,7 @@ const UPDATE_RESUME_TOOL: OpenAI.Chat.Completions.ChatCompletionTool = {
   function: {
     name: RESUME_CHAT_TOOL_NAME.UPDATE_RESUME,
     description:
-      'Propose a revised resume. Call this only when the user asks for an edit, a tailored draft, a refinement of the latest draft, or a refresh onto their current resume. Return the COMPLETE resume. The server renders it as a one-page Letter PDF and may send it back to you to shorten.',
+      'Propose a revised resume. Call this only when the user asks for an edit, a tailored draft, a refinement of the latest draft, or a refresh onto their current resume. Return the COMPLETE resume. The server renders it as a one-page Letter PDF and may send it back to you to shorten (overflow) or to develop further (noticeably unused space).',
     parameters: {
       type: 'object',
       properties: {
@@ -237,7 +237,8 @@ export const buildSystemPrompt = (
     '5. When the user only asks questions or wants feedback, answer in plain text and call no tool.',
     '',
     'Editing rules:',
-    `- Tailor by consolidating, shortening and reordering bullets so the most relevant achievements come first. Do not stuff keywords or append everything. The resume must fit ${RESUME_PDF_MAX_PAGES} US Letter page at its current readable size; the server renders every draft and will send overflow feedback you must act on by cutting less relevant wording, not employment history.`,
+    `- Tailor by consolidating, shortening and reordering bullets so the most relevant achievements come first. Do not stuff keywords or append everything. The resume must fit ${RESUME_PDF_MAX_PAGES} US Letter page at its current readable size; the server renders every draft and will send overflow feedback you must act on by cutting less relevant wording, not employment history, and only as much as needed.`,
+    '- Exactly one page is a hard limit. Using the page well is a softer goal: the server measures how much of the printable height is used and aims for roughly 90-97%, leaving a small bottom gutter. When it reports unused space, restore or develop the most job-relevant supported achievements, clarify existing facts or include confirmed experience that was left out, rather than padding. Never invent claims, metrics or experience, repeat bullets or keyword-stuff to fill space. If there is no more supported material, or the user asked for a concise version, say so in plain text and optionally ask what relevant experience they could add; a sparse one-page result is acceptable.',
     '- Keep name, contact details, employers, job titles, dates and the factual meaning of every bullet unless the user explicitly changes them.',
     '- The optional summary is a concise professional summary of at most three sentences from supported facts. Bullets may use **bold** markdown.',
     `- Call ${RESUME_CHAT_TOOL_NAME.RECORD_TAILORING_CONTEXT} whenever the ledger changes, and ${RESUME_CHAT_TOOL_NAME.UPDATE_RESUME} with the complete resume only when an edit or draft is wanted. Keep suggestions concise and focused on impact.`,
