@@ -1,3 +1,4 @@
+import { DemoSection } from './DemoSection';
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import {
@@ -85,10 +86,7 @@ export const DocsExplorerDemo = () => {
         <ExternalLink className="h-4 w-4" />
       </a>
 
-      <div className="flex flex-col gap-3">
-        <Text size="3" weight="medium">
-          {COPY.SCREENSHOTS}
-        </Text>
+      <DemoSection title={COPY.SCREENSHOTS} className="flex flex-col gap-3">
         <Text size="2" color="gray">
           {COPY.SCREENSHOTS_HINT}
         </Text>
@@ -114,7 +112,7 @@ export const DocsExplorerDemo = () => {
             </figure>
           ))}
         </div>
-      </div>
+      </DemoSection>
 
       <ImageCarouselDialog
         images={SCREENSHOTS.map(screenshot => screenshot.src)}
@@ -124,10 +122,7 @@ export const DocsExplorerDemo = () => {
         alt={COPY.ALT}
       />
 
-      <div className="flex flex-col gap-3">
-        <Text size="3" weight="medium">
-          {COPY.README}
-        </Text>
+      <DemoSection title={COPY.README} className="flex flex-col gap-3">
         <div className={CARD_CLASS}>
           {error && (
             <p className={`${STATUS_CLASS} text-red-500`}>
@@ -147,7 +142,7 @@ export const DocsExplorerDemo = () => {
             />
           )}
         </div>
-      </div>
+      </DemoSection>
     </div>
   );
 };

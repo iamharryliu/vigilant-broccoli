@@ -1,6 +1,19 @@
 import { Card } from './Card';
 import { Text } from './Text';
 import { ReactNode } from 'react';
+import { cn } from '../utils/cn';
+
+const GAP_CLASS = {
+  '1': 'gap-1',
+  '2': 'gap-2',
+  '3': 'gap-3',
+  '4': 'gap-4',
+  '5': 'gap-5',
+  '6': 'gap-6',
+  '7': 'gap-7',
+  '8': 'gap-8',
+  '9': 'gap-9',
+} as const;
 
 const HEADER_LINK_CLASS =
   'text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300';
@@ -14,7 +27,7 @@ interface HeaderLink {
 interface CardContainerProps {
   title: string;
   children: ReactNode;
-  gap?: '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+  gap?: keyof typeof GAP_CLASS;
   headerAction?: ReactNode;
   headerLink?: HeaderLink;
 }
@@ -46,7 +59,7 @@ export const CardContainer = ({
 
   return (
     <Card className="w-full">
-      <div className={`flex flex-col p-4 gap-${gap}`}>
+      <div className={cn('flex flex-col p-4', GAP_CLASS[gap])}>
         {trailing ? (
           <div className="flex justify-between items-center">
             <Text size="5" weight="bold">

@@ -5,16 +5,22 @@
 /* Tokens consumed by react-lib components (e.g. ScrollTimeline) */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --primary: 199 89% 48%;
-    --border: 220 13% 91%;
+    --pages-background: 0 0% 100%;
+    --background: var(--pages-background);
+    --pages-primary: 199 89% 48%;
+    --primary: var(--pages-primary);
+    --pages-border: 220 13% 91%;
+    --border: var(--pages-border);
   }
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --background: 215 28% 17%;
-      --primary: 198 93% 60%;
-      --border: 217 19% 27%;
+      --pages-background: 215 28% 17%;
+      --background: var(--pages-background);
+      --pages-primary: 198 93% 60%;
+      --primary: var(--pages-primary);
+      --pages-border: 217 19% 27%;
+      --border: var(--pages-border);
     }
   }
 }

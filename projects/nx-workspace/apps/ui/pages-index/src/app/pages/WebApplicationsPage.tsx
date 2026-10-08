@@ -29,6 +29,8 @@ type WebApplicationEntry = {
   descriptionKey: string;
 };
 
+type TranslationKey = Parameters<ReturnType<typeof useTranslation>['t']>[0];
+
 const ICON_CLASS = 'h-5 w-5 shrink-0';
 
 const FALLBACK_ICON: LucideIcon = Globe;
@@ -57,8 +59,8 @@ export function WebApplicationsPage() {
         const Icon = CARD_ICONS[id] ?? FALLBACK_ICON;
         return {
           href,
-          title: t(titleKey),
-          description: t(descriptionKey),
+          title: t(titleKey as TranslationKey),
+          description: t(descriptionKey as TranslationKey),
           icon: <Icon className={ICON_CLASS} aria-hidden="true" />,
         };
       })

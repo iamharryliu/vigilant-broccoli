@@ -1,24 +1,20 @@
-// createGlobPatternsForDependencies from '@nx/next/tailwind' is deprecated and
-// removed in Nx v24; the lib globs below mirror its last computed output.
-/** @type {import('tailwindcss').Config} */
+const plugin = require('tailwindcss/plugin');
+const tokens = require('./src/theme-tokens.json');
+
 module.exports = {
-  presets: [
-    require('../../libs/@vigilant-broccoli/react-lib/tailwind.preset.cjs'),
-  ],
-  darkMode: 'class',
-  content: [
-    './{src,pages,components,app}/**/*.{ts,tsx,js,jsx,html}',
-    '!./{src,pages,components,app}/**/*.{stories,spec}.{ts,tsx,js,jsx,html}',
-    '../../libs/@vigilant-broccoli/common-js/src/**/*.{tsx,ts,jsx,js,html}',
-    '../../libs/@vigilant-broccoli/common-node/src/**/*.{tsx,ts,jsx,js,html}',
-    '../../libs/@vigilant-broccoli/react-lib/src/**/*.{tsx,ts,jsx,js,html}',
-    '../../libs/@vigilant-broccoli/common-browser/src/**/*.{tsx,ts,jsx,js,html}',
-  ],
   theme: {
     extend: {
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
@@ -45,5 +41,20 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(({ addBase, config }) => {
+      addBase({
+        ':root': tokens.light,
+        '.light': tokens.light,
+        '.dark': tokens.dark,
+      });
+      if (config('darkMode') === 'media') {
+        addBase({
+          '@media (prefers-color-scheme: dark)': {
+            ':root:not(.light):not(.dark)': tokens.dark,
+          },
+        });
+      }
+    }),
+  ],
 };

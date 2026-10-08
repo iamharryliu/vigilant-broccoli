@@ -5,6 +5,7 @@ import {
   useContext,
   useState,
   useEffect,
+  useLayoutEffect,
   ReactNode,
   type CSSProperties,
 } from 'react';
@@ -61,7 +62,7 @@ export function ThemeProvider({
     return () => media.removeEventListener(CHANGE_EVENT, sync);
   }, [followSystem]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (followSystem) return;
     const saved = localStorage.getItem(THEME_STORAGE_KEY);
     if (isAppearance(saved)) {
