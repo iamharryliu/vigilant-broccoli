@@ -1,0 +1,73 @@
+name: manual-promote-production
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: manual-promote-production
+  cancel-in-progress: false
+
+env:
+  PRODUCTION_BRANCH: production
+  SOURCE_BRANCH: main
+
+jobs:
+  promote:
+    if: github.ref == 'refs/heads/main' && vars.PRODUCTION_PROMOTION_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify production can fast-forward to main
+        id: verify
+        run: |
+          git fetch --no-tags origin \
+            "+refs/heads/${SOURCE_BRANCH}:refs/remotes/origin/${SOURCE_BRANCH}" \
+            "+refs/heads/${PRODUCTION_BRANCH}:refs/remotes/origin/${PRODUCTION_BRANCH}"
+          main_sha=$(git rev-parse "refs/remotes/origin/${SOURCE_BRANCH}^{commit}")
+          production_sha=$(git rev-parse "refs/remotes/origin/${PRODUCTION_BRANCH}^{commit}")
+          if ! git merge-base --is-ancestor "$production_sha" "$main_sha"; then
+            echo "::error::${PRODUCTION_BRANCH} (${production_sha}) is not an ancestor of ${SOURCE_BRANCH} (${main_sha}); refusing a non-fast-forward promotion."
+            exit 1
+          fi
+          if [ "$production_sha" = "$main_sha" ]; then
+            echo "${PRODUCTION_BRANCH} already at ${main_sha}; nothing to promote."
+            echo "promote=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "Promoting ${production_sha} -> ${main_sha}"
+          echo "promote=true" >> "$GITHUB_OUTPUT"
+          echo "main_sha=${main_sha}" >> "$GITHUB_OUTPUT"
+
+      - name: Import promotion App key
+        if: steps.verify.outputs.promote == 'true'
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ vars.PRODUCTION_PROMOTION_WIF_PROVIDER }}
+          gcp_service_account: ${{ vars.PRODUCTION_PROMOTION_SERVICE_ACCOUNT }}
+          role: github-actions-production-promotion-role
+          secrets: |
+            kv/data/production-promotion PRODUCTION_PROMOTION_GH_APP_PRIVATE_KEY | PRODUCTION_PROMOTION_GH_APP_PRIVATE_KEY ;
+
+      - name: Push captured main commit to production
+        if: steps.verify.outputs.promote == 'true'
+        env:
+          APP_ID: ${{ vars.PRODUCTION_PROMOTION_APP_ID }}
+          MAIN_SHA: ${{ steps.verify.outputs.main_sha }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          TOKEN=$(./infrastructure/agent-sandbox/mint-github-app-token.sh "$APP_ID" <(printf '%s\n' "$PRODUCTION_PROMOTION_GH_APP_PRIVATE_KEY") "${REPOSITORY#*/}" "${REPOSITORY%/*}" '{"contents":"write"}')
+          echo "::add-mask::$TOKEN"
+          unset PRODUCTION_PROMOTION_GH_APP_PRIVATE_KEY
+          AUTH=$(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)
+          echo "::add-mask::$AUTH"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic ${AUTH}" \
+            push origin "${MAIN_SHA}:refs/heads/${PRODUCTION_BRANCH}"
