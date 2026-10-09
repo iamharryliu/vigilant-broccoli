@@ -52,6 +52,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   neovidetmuxvb               Launch Neovide attached to the vb session
   neovideterminal             Launch Neovide straight into :terminal
   fzfvim                      fzf-pick a file and open it in vim
+  y [dir]                     Open yazi; cd to where you quit it
   pnpm cheatsheet:tmux-nvim   Print the tmux/nvim keybindings (from the repo)
 
 📦 NODE
