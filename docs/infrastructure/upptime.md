@@ -7,7 +7,6 @@ Manage monitoring from vigilant-broccoli while running Upptime with credentials 
 - [Architecture](#architecture)
 - [Managed files and runtime behavior](#managed-files-and-runtime-behavior)
 - [Setup and migration](#setup-and-migration)
-- [Domain cutover rollout](#domain-cutover-rollout)
 - [Operations](#operations)
 - [Security limits](#security-limits)
 - [Free Tier](#free-tier)
@@ -66,39 +65,6 @@ These assets supply the README's all-time, day, week, month, and year metrics ([
 App creation and installation are account setup; Terraform manages repository configuration.
 
 Keep sync App `5202397`, installed only on `uptime`. Refresh the Bitwarden backup after changing Vault fields using `projects/nx-workspace/scripts/shell/backup-secrets.sh`.
-
-## Domain cutover rollout
-
-Moves the historical site from `upptime.harryliu.dev` to `uptime.harryliu.dev`, the calendars site from `calendars.harryliu.dev` to `calendar.harryliu.dev`, and adds `status.harryliu.dev`. The `iamharryliu/uptime` repository, monitor names, slugs, history and incident issues are untouched; only `production-calendars`' URL changes, and `production-status`/`production-uptime` are new monitors. Why the Terraform addresses changed and the staging rationale: [network-management.md](./network-management.md#domain-cutover).
-
-### Rollout
-
-1. **Local plan and targeted provision.** `pnpm tf:plan` first and read it: it must show creates for the new resources and destroys only for the old calendars/upptime ones. Then apply only the additive part with the targeted command in [network-management.md](./network-management.md#domain-cutover) (new Pages domain + proxied CNAME for `calendar`, DNS-only CNAME for `uptime`, the `status-proxy` Worker and its custom domain). Wait for the `calendar` Pages domain to report `active` and for Cloudflare to issue the edge certificates for `calendar` and `status`.
-2. **Merge the PR.** Do this after step 1 or the `production-calendars` monitor (now `https://calendar.harryliu.dev/`) reports down once `ci-sync-upptime` publishes it. Merging to `main` deploys:
-   - the API (`deploy.yml`), whose public-event-calendar CORS allowlist now has `https://calendar.harryliu.dev` instead of the old origin, plus the unchanged staging and production `*.pages.dev` origins;
-   - the `calendars` UI (new canonical URL) and `pages-index` (`deploy-github-pages`, host-aware routing and the `uptime.harryliu.dev` history link).
-3. **Publish monitoring config.** `ci-sync-upptime` runs on the push to `main` (or `gh workflow run ci-sync-upptime --ref main`); confirm `iamharryliu/uptime`'s `.upptimerc.yml` has `cname: uptime.harryliu.dev` and the new monitor URLs.
-4. **Verify new URLs while the old ones still exist.** `https://calendar.harryliu.dev/` loads and lists public event calendars (no CORS error in the console); `https://status.harryliu.dev/` renders the status page; `https://projects.harryliu.dev/#/status` is unchanged. Section "Post-rollout checks" below lists the details.
-5. **Retire and switch the Upptime site.** `pnpm tf:plan` must show exactly: destroy the old `calendars` Pages domain and DNS record and `harryliu_dev_upptime`, and update `github_repository_pages.upptime.cname` in place. Then `pnpm tf:apply`. GitHub Pages holds one custom domain, so `upptime.harryliu.dev` ends and `uptime.harryliu.dev` begins in this step.
-6. **Rebuild the site.** `gh workflow run cron-upptime-site -R iamharryliu/uptime` so `gh-pages` carries `CNAME` = `uptime.harryliu.dev` (a daily build before step 3 would have written the old name). Once GitHub issues the certificate (it can take minutes to an hour), enable HTTPS enforcement for the Pages site, then re-check.
-
-### Post-rollout checks
-
-- New URLs: `calendar`, `status` and `uptime` answer over HTTPS with valid certificates.
-- Retired: `calendars.harryliu.dev` and `upptime.harryliu.dev` no longer resolve to the sites (NXDOMAIN or a Cloudflare/GitHub error); `dig +short` returns nothing for the DNS records Terraform destroyed. No redirect is expected.
-- Status host: a direct load and a refresh of `https://status.harryliu.dev/` both render StatusPage; `/assets/*.js` and `.css` return `text/javascript` and `text/css`; an unknown path returns the upstream 404 rather than the app shell.
-- Summary: the page lists services from `https://raw.githubusercontent.com/iamharryliu/uptime/main/history/summary.json` (browser network tab, no CORS error) and `production-calendars`, `production-status`, `production-uptime` appear after the next hourly run.
-- Link categories on the status host: service rows open their absolute service URLs; GitHub Actions badges and "View all" open GitHub; "Full uptime history" opens `https://uptime.harryliu.dev`; the breadcrumb's Home opens `https://projects.harryliu.dev/#/` (full navigation, not a hash change on the status host).
-- Back/forward: on `projects.harryliu.dev` navigate Home → Status → Open Source and step back and forward; on `status.harryliu.dev` follow Home, then press Back to return to the status page.
-- CORS: `curl -sI -H 'Origin: https://calendar.harryliu.dev' https://api.harryliu.dev/api/public/event-calendars` returns `access-control-allow-origin: https://calendar.harryliu.dev` and no `access-control-allow-credentials`; the same request with `Origin: https://calendars.harryliu.dev` returns no allow-origin header, and a non-public route (any `/api/...` path outside `/api/public/`) returns none for the calendar origin.
-- History preserved: `iamharryliu/uptime` still has its commit history, `history/summary.json` entries for every pre-existing monitor name, and open and closed incident issues; the new site shows the same graphs.
-- `pnpm tf:plan` ends with no changes, and `cron-terraform-drift` is green.
-
-### Rollback
-
-- Before step 5 nothing has been retired: remove the new calendar/status/uptime resources with a targeted `terraform destroy`, or revert the PR and `pnpm tf:apply`, which plans destroys for the unapplied new resources; the old hosts are still live. Revert the code (API, `calendars`, `pages-index`) via the revert PR's normal deploys and `ci-sync-upptime`.
-- After step 5 the old domains are intentionally gone and are not maintained. To go back, revert the PR (this restores the old resource addresses, which Terraform recreates), `pnpm tf:apply`, wait for the Pages domain and GitHub certificate again, then rerun `ci-sync-upptime` and `cron-upptime-site`. History is never affected because it lives in `iamharryliu/uptime`.
-- If only the status host misbehaves, the Worker can be removed independently (`terraform destroy -target=cloudflare_workers_custom_domain.status -target=cloudflare_workers_script.status_proxy`); `projects.harryliu.dev` keeps working.
 
 ## Operations
 

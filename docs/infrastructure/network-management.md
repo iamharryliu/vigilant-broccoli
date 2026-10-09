@@ -5,7 +5,6 @@ Changes to network infrastructure (DNS records, domains/subdomains, proxying, tu
 ## Table of Contents
 
 - [DNS URLs](#dns-urls)
-- [Domain cutover](#domain-cutover)
 - [Tailnet](#tailnet)
 - [Private-only Fly.io services](#private-only-flyio-services)
 
@@ -65,22 +64,6 @@ pages.dev                                 Cloudflare Pages URLs for the environm
 github.io                                 GitHub Pages (custom domain projects.harryliu.dev)
 └── iamharryliu.github.io                     Pages origin for projects.harryliu.dev (pages-index/)
 ```
-
-## Domain cutover
-
-`calendars.harryliu.dev` and `upptime.harryliu.dev` are retired in favour of `calendar.harryliu.dev` and `uptime.harryliu.dev`, and `status.harryliu.dev` is new. No redirects, aliases or legacy CORS origins are kept for the old names.
-
-Terraform addresses: `cloudflare_pages_domain.calendars`/`cloudflare_dns_record.calendars` became `.calendar`, and `cloudflare_dns_record.harryliu_dev_upptime` became `harryliu_dev_uptime`. A Pages domain `name` is immutable, so keeping the old address would plan a destroy-then-create (Terraform's default replacement order) that removes `calendars.harryliu.dev` before `calendar.harryliu.dev` is attached, and an in-place rename of a DNS record would drop the old name the moment it applied. Distinct addresses let a targeted apply create the new resources first, and a later full apply remove the old ones.
-
-Order:
-
-1. **Provision** (additive, nothing retired): from the repo root, `eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform plan -target=cloudflare_pages_domain.calendar -target=cloudflare_dns_record.calendar -target=cloudflare_dns_record.harryliu_dev_uptime -target=cloudflare_workers_script.status_proxy -target=cloudflare_workers_custom_domain.status`, review it shows only creates, then run the same with `apply`. Terraform warns that a targeted run is incomplete; that is intended. `pnpm tf:apply` is not used here because it appends its arguments after the post-apply step.
-2. **Ship the code**: merge the PR so the API (`api.harryliu.dev` allows the new origin), the `calendars` and `pages-index` UIs and `ci-sync-upptime` deploy.
-3. **Verify the new URLs** while the old ones still work (calendar and status; `uptime.harryliu.dev` cannot be served until step 4 because GitHub Pages holds one custom domain per site).
-4. **Retire and switch**: `pnpm tf:plan` should now show exactly: destroy `cloudflare_pages_domain.calendars`, `cloudflare_dns_record.calendars` and `cloudflare_dns_record.harryliu_dev_upptime`, and update `github_repository_pages.upptime` `cname` in place. Then `pnpm tf:apply`. The GitHub Pages `cname` swap is atomic, so `upptime.harryliu.dev` stops and `uptime.harryliu.dev` starts in the same step; HTTPS for the new name can take a while to issue.
-5. **Rebuild the Upptime site** (`cron-upptime-site` in `iamharryliu/uptime`) so `gh-pages` carries the `CNAME` file for the new name, then enable HTTPS enforcement once the certificate exists.
-
-The full rollout and rollback checklist is in [upptime.md](./upptime.md#domain-cutover-rollout).
 
 ## Tailnet
 
