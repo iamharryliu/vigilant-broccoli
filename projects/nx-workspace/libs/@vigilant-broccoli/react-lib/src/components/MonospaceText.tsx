@@ -17,14 +17,14 @@ const styles = {
   text: {
     fontFamily: 'monospace',
     padding: '4px 8px',
-    backgroundColor: 'var(--gray-3)',
+    backgroundColor: 'hsl(var(--muted))',
     borderRadius: '4px',
     fontSize: '0.875rem',
   },
   skeleton: {
     width: '120px',
     height: '24px',
-    backgroundColor: 'var(--gray-3)',
+    backgroundColor: 'hsl(var(--muted))',
     borderRadius: '4px',
   },
 } as const;

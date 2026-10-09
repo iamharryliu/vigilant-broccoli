@@ -334,7 +334,7 @@ const TaskHeader = memo(
               {selectedTaskList.title}
             </Text>
           ) : (
-            <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-8 w-32 rounded" />
+            <div className="animate-pulse bg-muted h-8 w-32 rounded" />
           )}
           <div className="flex gap-2 items-center">
             <Text size="2" color="gray">

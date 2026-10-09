@@ -2,7 +2,7 @@
 
 <!-- managed:repo-stats:start -->
 
-Personal monorepo, supporting **11 applications**, **5 API services**, **7 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
+Personal monorepo, supporting **12 applications**, **5 API services**, **7 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
 
 <!-- managed:repo-stats:end -->
 
@@ -29,6 +29,7 @@ Personal monorepo, supporting **11 applications**, **5 API services**, **7 Docke
 ### Commands
 
 ```
+pnpm i                             # Install root dependencies, then projects/nx-workspace via the root postinstall hook
 pnpm cheatsheet                    # Print the CLI command cheatsheet
 pnpm local:install:machine-setup   # Install tools and dotfiles for this machine (macOS or Linux)
 ```
@@ -63,6 +64,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | Application                                                                | Description                                                         | URL                                                                                 |
 | -------------------------------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
 | [Agent Context](./projects/nx-workspace/apps/ui/context-md)                | Repo agent context, docs and skills with search and link graph.     | [context.harryliu.dev](https://context.harryliu.dev/)                               |
+| [Calendars](./projects/nx-workspace/apps/ui/calendars)                     | Public personal and event calendar directory.                       | [calendars.harryliu.dev](https://calendars.harryliu.dev/)                           |
 | [Cloud8Skate](./projects/nx-workspace/apps/ui/cloud-8-skate-react)         | Toronto skating community website.                                  | [cloud8skate.com](https://cloud8skate.com/)                                         |
 | [Component Library](./projects/nx-workspace/apps/ui/component-library)     | Interactive shared React component sandbox.                         | [components.harryliu.dev](https://components.harryliu.dev/)                         |
 | [Docs MD](./projects/nx-workspace/apps/ui/docs-md)                         | Searchable Markdown notes with a file tree and link graph.          | [docs.harryliu.dev](https://docs.harryliu.dev/)                                     |

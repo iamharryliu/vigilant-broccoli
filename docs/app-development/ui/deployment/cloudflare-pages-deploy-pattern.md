@@ -18,6 +18,7 @@ Reference apps:
 - `personal-website-react` — React variant with the same staging + production pair.
 - `utilities-ui` — full staging + production + preview set, no per-environment build config.
 - `context-md` — copy of `docs-md` over the agent-context snapshot.
+- `calendars` — staging + production pair, no preview trio, with a live API base URL swapped per environment (`mode` alias in `vite.config.mts`).
 - `docs-md` — full staging + production pair, no per-environment build config (`prune-deployments`'s `dependsOn` ordering is the reference for that part).
 
 ## The wrangler target trio (per environment)
@@ -55,11 +56,11 @@ The failure is invisible: CI stays green, and the live URL keeps serving the las
 
 `deploy-preview.yml` runs `deploy:preview` for the affected projects on every pull request (plus `pages-index`/`docs-md` when their out-of-workspace snapshot sources change), writes a table of the alias and per-deployment URLs to the job summary, then prunes. It is `pull_request`-triggered because a `push` event carries no PR number. `cron-cleanup-preview-deployments.yml` runs the prune for every project daily, collecting the previews of PRs that have since closed. Previews build with `--skip-nx-cache`: `VITE_BASE_PATH` isn't a build input, so a cached `/vigilant-broccoli/`-based Pages build could otherwise be served. Both workflows pass `--output-style=static`, since nx hides successful tasks' output and that output is the only record of the URLs deployed and the deployments deleted.
 
-A new stateless site opts in by adding the trio — the workflows discover it via `nx show projects --withTarget=deploy:preview`. Only stateless sites belong here: a preview of an app with a backend would still talk to staging services.
+A new stateless site opts in by adding the trio — the workflows discover it via `nx show projects --withTarget=deploy:preview`. Only stateless sites belong here: a preview of an app with a backend would still talk to staging services. `calendars` deliberately has no preview trio for that reason: it fetches live data from VB Express.
 
 ## Per-environment build config
 
-`deploy:production` builds with `--configuration=production-env` — a build configuration whose `fileReplacements` swap `environment.ts` → `environment.production.ts`, baking per-env fly URLs into the bundle at build time (static sites cannot read env vars at runtime).
+`deploy:production` builds with `--configuration=production-env`, baking per-env fly URLs into the bundle at build time (static sites cannot read env vars at runtime). `environment.ts` → `environment.production.ts` cannot be a `fileReplacements` swap because the inferred Vite build ignores `fileReplacements` (see the [nx-workspace nuance](../../../../projects/nx-workspace/CONTEXT.md#filereplacements-in-a-vite-apps-projectjson-is-ignored)); `calendars`, `cloud-8-skate-react` and `personal-website-react` set the `production-env` configuration's `mode` to `production-env` and alias the environment module in `vite.config.mts` instead.
 
 ## Sources outside the nx graph need their own trigger
 
@@ -67,7 +68,7 @@ A new stateless site opts in by adding the trio — the workflows discover it vi
 
 ## Custom domains (Terraform)
 
-Terraform owns the `cloudflare_pages_domain` attachment and its DNS record — one `cloudflare-<site>.tf` per site in `infrastructure/terraform/`. `cloudflare-cloud8skate.tf` is the plain pattern. Private content is deliberately not served from Pages at all — it stays on the self-hosted Gitea VM behind Access, since a Pages deploy would copy it onto a CI runner and Cloudflare storage. Custom domains are environment-less: attached to whichever environment's project serves live traffic — `harryliu.dev` points at `production-harryliu-dev-react`, `cloud8skate.com` is attached to `production-cloud-8-skate-react` (the first domain on a `production-*` project, which is what surfaced the branch-matching rule above), and `docs.harryliu.dev` now points at `production-docs-md`, `context.harryliu.dev` at `production-context-md`, `links.harryliu.dev` at `production-links-react`, `utilities.harryliu.dev` at `production-utilities-ui`, and `components.harryliu.dev` at `production-component-library`. Public URLs per domain: [network-management.md](../../../infrastructure/network-management.md).
+Terraform owns the `cloudflare_pages_domain` attachment and its DNS record — one `cloudflare-<site>.tf` per site in `infrastructure/terraform/`. `cloudflare-cloud8skate.tf` is the plain pattern. Private content is deliberately not served from Pages at all — it stays on the self-hosted Gitea VM behind Access, since a Pages deploy would copy it onto a CI runner and Cloudflare storage. Custom domains are environment-less: attached to whichever environment's project serves live traffic — `harryliu.dev` points at `production-harryliu-dev-react`, `cloud8skate.com` is attached to `production-cloud-8-skate-react` (the first domain on a `production-*` project, which is what surfaced the branch-matching rule above), and `docs.harryliu.dev` now points at `production-docs-md`, `context.harryliu.dev` at `production-context-md`, `links.harryliu.dev` at `production-links-react`, `utilities.harryliu.dev` at `production-utilities-ui`, and `components.harryliu.dev` at `production-component-library`, and `calendars.harryliu.dev` at `production-calendars`. Public URLs per domain: [network-management.md](../../../infrastructure/network-management.md).
 
 ## New app checklist (Cloudflare-side)
 

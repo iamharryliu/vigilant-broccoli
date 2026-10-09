@@ -717,6 +717,9 @@ importers:
       '@fastify/rate-limit':
         specifier: ^11.2.0
         version: 11.2.0
+      '@supabase/supabase-js':
+        specifier: ^2.110.1
+        version: 2.110.1
       '@vigilant-broccoli/common-js':
         specifier: workspace:*
         version: link:../../../libs/@vigilant-broccoli/common-js
@@ -811,6 +814,9 @@ importers:
       '@vigilant-broccoli/common-browser':
         specifier: workspace:*
         version: link:../../libs/@vigilant-broccoli/common-browser
+      '@vigilant-broccoli/common-js':
+        specifier: workspace:*
+        version: link:../../libs/@vigilant-broccoli/common-js
       '@vigilant-broccoli/react-lib':
         specifier: workspace:*
         version: link:../../libs/@vigilant-broccoli/react-lib

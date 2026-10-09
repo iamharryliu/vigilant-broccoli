@@ -26,7 +26,7 @@ export const ErrorDemo = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       {showAlert && (
         <Callout color="red">
           <CalloutIcon>
@@ -36,7 +36,7 @@ export const ErrorDemo = () => {
         </Callout>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-3">
         <Button variant="destructive" onClick={displayNotification}>
           Error Notification
         </Button>

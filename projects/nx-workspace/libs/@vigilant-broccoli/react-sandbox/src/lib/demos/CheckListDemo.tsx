@@ -1,3 +1,5 @@
+import { useTranslation } from '../i18n';
+import { DemoSection } from './DemoSection';
 import { useCallback, useState } from 'react';
 import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
@@ -5,7 +7,6 @@ import {
   Button,
   CheckList,
   CheckListItem,
-  Heading,
   Input,
   Switch,
   Text,
@@ -65,6 +66,7 @@ const createId = () =>
   `item-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
 export const CheckListDemo = () => {
+  const { t } = useTranslation();
   const [items, setItems] = useState<CheckListItem[]>(seedItems);
   const [enableDragDrop, setEnableDragDrop] = useState(true);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
@@ -167,11 +169,8 @@ export const CheckListDemo = () => {
   );
 
   return (
-    <div className="flex flex-col gap-4 max-w-xl">
-      <div>
-        <Heading size="4" mb="2">
-          Generic checklist
-        </Heading>
+    <div className="flex min-w-0 flex-col gap-6 max-w-xl">
+      <DemoSection title={t('DEMO_SECTION.CHECK_LIST.GENERIC_CHECKLIST')}>
         <Text size="2" color="gray">
           <code>CheckList</code> only knows about checkboxes, editable titles,
           notes/due dates and drag order. It has no idea this demo is using a{' '}
@@ -179,7 +178,7 @@ export const CheckListDemo = () => {
           that comes entirely from the <code>itemClassName</code> and{' '}
           <code>renderItemAccessory</code> props below.
         </Text>
-      </div>
+      </DemoSection>
 
       <div className="flex flex-wrap items-center gap-4">
         <label className="flex items-center gap-2 text-sm cursor-pointer">

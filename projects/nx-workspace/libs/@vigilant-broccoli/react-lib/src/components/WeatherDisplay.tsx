@@ -6,7 +6,7 @@ import { cn } from '../utils/cn';
 const SEPARATOR = '·';
 
 const WEATHER_CARD_CLASS =
-  'w-full max-w-sm px-8 py-10 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900/60';
+  'w-full max-w-sm px-8 py-10 text-center shadow-sm border-border bg-card';
 
 export interface WeatherDisplayBadge {
   key: string;
@@ -53,11 +53,11 @@ export const WeatherDisplay = ({
       {getWeatherIcon(condition, isDay)}
     </span>
     <p className="text-4xl font-light tracking-tight">{current}</p>
-    <p className="text-base text-gray-700 dark:text-gray-300">
+    <p className="text-base text-foreground">
       {high} <span aria-hidden>{SEPARATOR}</span> {low}
     </p>
-    <p className="text-sm text-gray-500 dark:text-gray-400">{feelsLike}</p>
-    <p className="text-sm text-gray-500 dark:text-gray-400">
+    <p className="text-sm text-muted-foreground">{feelsLike}</p>
+    <p className="text-sm text-muted-foreground">
       {humidity} <span aria-hidden>{SEPARATOR}</span> {wind}
     </p>
     {badges.length > 0 && (

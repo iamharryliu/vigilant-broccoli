@@ -28,6 +28,8 @@ sites:
     url: https://staging-whiteboard.vercel.app/
   - name: staging-weather
     url: https://staging-weather-next.vercel.app/
+  - name: staging-calendars
+    url: https://staging-calendars.pages.dev/
   - name: staging-vb-manager-next-mobile
     url: https://staging-vb-manager-next-mobile.vercel.app/login
   - name: production-cloud-8-skate
@@ -62,6 +64,8 @@ sites:
     url: https://whiteboard.harryliu.dev/
   - name: production-weather
     url: https://weather.harryliu.dev/
+  - name: production-calendars
+    url: https://calendars.harryliu.dev/
   - name: production-vb-manager-next-mobile
     url: https://production-vb-manager-next-mobile.vercel.app/login
   - name: production-docs

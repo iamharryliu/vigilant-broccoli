@@ -2,6 +2,7 @@
   "private": true,
   "packageManager": "pnpm@11.9.0",
   "scripts": {
+    "postinstall": "pnpm -C projects/nx-workspace install",
     "open:repo": "open https://github.com/iamharryliu/vigilant-broccoli",
     "open:repo:actions": "open https://github.com/iamharryliu/vigilant-broccoli/actions",
     "npm:packages": "open https://www.npmjs.com/settings/vigilant-broccoli/packages",

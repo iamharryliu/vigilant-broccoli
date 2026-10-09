@@ -85,16 +85,14 @@ const BREAKPOINTS = {
 
 export type SidebarMobileBreakpoint = keyof typeof BREAKPOINTS;
 
-const BORDER_COLOR = 'border-gray-200 dark:border-gray-800';
-const SURFACE_BG = 'bg-white dark:bg-gray-950';
-const TEXT_MUTED = 'text-gray-500 dark:text-gray-400';
-const TEXT_MUTED_HOVER =
-  'hover:text-black hover:bg-gray-50 dark:hover:text-white dark:hover:bg-gray-800';
+const BORDER_COLOR = 'border-border';
+const SURFACE_BG = 'bg-background';
+const TEXT_MUTED = 'text-muted-foreground';
+const TEXT_MUTED_HOVER = 'hover:text-foreground hover:bg-accent';
 
 const ROW_BASE =
   'text-sm rounded-md transition-colors flex items-center gap-3 px-2 py-2 w-full text-left';
-const ROW_ACTIVE =
-  'font-medium text-black bg-gray-100 dark:text-white dark:bg-gray-800';
+const ROW_ACTIVE = 'font-medium text-foreground bg-accent';
 const ROW_INACTIVE = `${TEXT_MUTED} ${TEXT_MUTED_HOVER}`;
 
 const LABEL_BASE =
@@ -365,7 +363,7 @@ export const Sidebar = ({
                 onChange={e => setQuery(e.target.value)}
                 placeholder="Search..."
                 className={cn(
-                  'transition-all duration-150 text-sm bg-transparent outline-none placeholder-gray-400 dark:placeholder-gray-500 dark:text-white min-w-0',
+                  'transition-all duration-150 text-sm bg-transparent outline-none placeholder:text-muted-foreground text-foreground min-w-0',
                   collapsibleLabelClass,
                 )}
               />
@@ -387,7 +385,7 @@ export const Sidebar = ({
                 />
               ))
             ) : (
-              <span className="text-xs text-gray-400 dark:text-gray-500 px-3 py-2">
+              <span className="text-xs text-muted-foreground px-3 py-2">
                 No results
               </span>
             )
@@ -463,7 +461,7 @@ const BrandingHeader = ({
     (Icon ? (
       <Icon size={ICON_SIZE} />
     ) : (
-      <span className="block w-[18px] h-[18px] rounded-sm bg-black dark:bg-white" />
+      <span className="block w-[18px] h-[18px] rounded-sm bg-foreground" />
     ));
 
   const labelClass = cn(
@@ -476,7 +474,7 @@ const BrandingHeader = ({
   );
 
   const containerClass = cn(
-    'flex items-center border-b shrink-0 gap-3 px-3 dark:text-white',
+    'flex items-center border-b shrink-0 gap-3 px-3 text-foreground',
     BRANDING_HEIGHT,
     BORDER_COLOR,
     forceExpanded

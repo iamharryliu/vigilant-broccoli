@@ -126,7 +126,7 @@ const CheckListRowContent = memo(
           size="2"
           className={
             item.checked
-              ? 'line-through text-gray-400 cursor-pointer'
+              ? 'line-through text-muted-foreground cursor-pointer'
               : 'cursor-pointer'
           }
           onClick={() => onStartEdit(item)}
@@ -213,7 +213,7 @@ const CheckListRow = memo(
       <div
         ref={setNodeRef}
         style={style}
-        className={`flex items-start gap-2 py-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded px-2 -mx-2 ${
+        className={`flex items-start gap-2 py-2 hover:bg-muted dark:hover:bg-muted rounded px-2 -mx-2 ${
           itemClassName?.(item) ?? ''
         } ${item.isNew ? 'checklist-item-new' : ''}`}
       >
@@ -317,10 +317,7 @@ export const CheckList = memo(
       return (
         <div className="flex flex-col gap-2">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div
-              key={i}
-              className="animate-pulse bg-gray-200 dark:bg-gray-700 h-10 rounded"
-            />
+            <div key={i} className="animate-pulse bg-muted h-10 rounded" />
           ))}
         </div>
       );

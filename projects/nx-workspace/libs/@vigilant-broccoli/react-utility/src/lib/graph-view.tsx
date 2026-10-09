@@ -82,6 +82,7 @@ const COLOR = {
 } as const;
 
 const CLASS_ATTR = 'class';
+const STYLE_ATTR = 'style';
 const PREFERS_DARK_QUERY = '(prefers-color-scheme: dark)';
 const RGB_LUMINANCE = { R: 0.2126, G: 0.7152, B: 0.0722, MID: 128 } as const;
 
@@ -499,10 +500,17 @@ export function GraphView({
     canvas.addEventListener(EVENT.WHEEL, onWheel, { passive: false });
 
     const themeObserver = new MutationObserver(draw);
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: [CLASS_ATTR],
-    });
+    // A scoped ThemeProvider flips class/style on its own wrapper, not on <html>.
+    for (
+      let node: HTMLElement | null = container;
+      node;
+      node = node.parentElement
+    ) {
+      themeObserver.observe(node, {
+        attributes: true,
+        attributeFilter: [CLASS_ATTR, STYLE_ATTR],
+      });
+    }
     const media = window.matchMedia?.(PREFERS_DARK_QUERY);
     media?.addEventListener(EVENT.CHANGE, draw);
 

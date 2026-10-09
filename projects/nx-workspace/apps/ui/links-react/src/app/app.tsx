@@ -1,4 +1,8 @@
-import { Pastebin, ThemeProvider, useDocumentTitle } from '@vigilant-broccoli/react-lib';
+import {
+  Pastebin,
+  ThemeProvider,
+  useDocumentTitle,
+} from '@vigilant-broccoli/react-lib';
 import { PASTEBIN_GROUPS } from '@vigilant-broccoli/links';
 
 const PAGE_TITLE = 'Links';
@@ -8,7 +12,7 @@ export function App() {
   useDocumentTitle(PAGE_TITLE);
 
   return (
-    <ThemeProvider>
+    <ThemeProvider followSystem>
       <div className="h-dvh bg-white p-2 dark:bg-gray-900 sm:p-4">
         <div className="mx-auto h-full max-w-2xl">
           <Pastebin

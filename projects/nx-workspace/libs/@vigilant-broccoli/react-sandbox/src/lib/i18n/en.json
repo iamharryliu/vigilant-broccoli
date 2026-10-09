@@ -8,5 +8,187 @@
     "CANCEL": "Cancel",
     "CONFIRM": "Delete item",
     "COUNT": "Confirmed {count} times"
+  },
+  "SELECT_DEMO": {
+    "STRING": "String options",
+    "NUMBER": "Numbers, including zero",
+    "OBJECT": "Object options",
+    "DISABLED": "Disabled",
+    "LONG_LABEL": "Long labels",
+    "LEGACY": "Legacy props",
+    "PLACEHOLDER": "Choose an option",
+    "CLEAR": "Clear selection",
+    "LONG_OPTION": "A deliberately long option label to demonstrate truncation within a fixed-width control",
+    "FRUIT": {
+      "APPLE": "Apple",
+      "BANANA": "Banana",
+      "ORANGE": "Orange",
+      "GRAPE": "Grape",
+      "MANGO": "Mango"
+    },
+    "SELECTED": "Selected:"
+  },
+  "FOUNDATIONS": {
+    "INPUT": {
+      "NAME": "Input and Textarea",
+      "SUMMARY": "Text fields in default, disabled, invalid and long-content states, with labels and validation messages."
+    },
+    "CHECKBOX": {
+      "NAME": "Checkbox",
+      "SUMMARY": "Unchecked, checked, disabled, indeterminate and invalid checkboxes, plus controlled selection and wrapping labels."
+    },
+    "BADGE": {
+      "NAME": "Badge",
+      "SUMMARY": "Badge variants, colors, sizes and long labels."
+    },
+    "CARD": {
+      "NAME": "Card",
+      "SUMMARY": "Plain and composed cards, loading and empty states, and long content."
+    },
+    "TYPOGRAPHY": {
+      "NAME": "Typography",
+      "SUMMARY": "Text and heading scales, font weights, semantic colors and wrapping text."
+    },
+    "SEGMENTED_CONTROL": {
+      "NAME": "Segmented Control",
+      "SUMMARY": "Controlled selection in both sizes, with icons, short labels and a selected-value readout."
+    }
+  },
+  "FOUNDATION_DEMO": {
+    "DEFAULT": "Default",
+    "DISABLED": "Disabled",
+    "ERROR": "Error",
+    "LONG_CONTENT": "Long content",
+    "INPUT": "Input",
+    "TEXTAREA": "Textarea",
+    "PLACEHOLDER": "Enter some text…",
+    "ERROR_MESSAGE": "Please enter a valid value.",
+    "LONG_TEXT": "A longer piece of example content that helps reveal wrapping, spacing and readability on a narrow screen. Try editing this text and switching between light and dark themes.",
+    "CHECKED": "Checked",
+    "UNCHECKED": "Unchecked",
+    "DISABLED_CHECKED": "Disabled, checked",
+    "INDETERMINATE": "Indeterminate",
+    "CONTROLLED": "Controlled",
+    "CHECKBOX_LABEL": "Receive updates",
+    "LONG_CHECKBOX_LABEL": "Receive occasional updates about new components, improvements and changes to the library, with a label long enough to wrap on small screens.",
+    "CHECKBOX_ERROR": "Accept this option before continuing.",
+    "SELECTED": "Selected: {value}",
+    "SIZES": "Sizes",
+    "COLORS": "Colors",
+    "SIZE_LABEL": "Size {size}",
+    "VARIANT": {
+      "SOFT": "Soft",
+      "SOLID": "Solid",
+      "OUTLINE": "Outline",
+      "SURFACE": "Surface"
+    },
+    "COLOR": {
+      "GRAY": "Gray",
+      "RED": "Red",
+      "BLUE": "Blue",
+      "GREEN": "Green",
+      "ORANGE": "Orange",
+      "AMBER": "Amber",
+      "PURPLE": "Purple",
+      "YELLOW": "Yellow"
+    },
+    "LONG_BADGE": "A longer badge label that wraps within the available space on a narrow screen",
+    "PLAIN_CARD": "Plain card",
+    "COMPOSED_CARD": "Card with a header action",
+    "CARD_TITLE": "Example card",
+    "CARD_BODY": "A shared surface for related content and actions.",
+    "CARD_ACTION": "Increment counter",
+    "CARD_COUNT": "Action count: {count}",
+    "LOADING": "Loading",
+    "EMPTY": "Empty state",
+    "EMPTY_MESSAGE": "No items to display yet.",
+    "TEXT_SCALE": "Text sizes",
+    "HEADING_SCALE": "Heading sizes",
+    "TEXT_SAMPLE": "The quick brown fox jumps over the lazy dog.",
+    "HEADING_SAMPLE": "A clear heading",
+    "WEIGHTS": "Font weights",
+    "WEIGHT": {
+      "LIGHT": "Light",
+      "REGULAR": "Regular",
+      "MEDIUM": "Medium",
+      "BOLD": "Bold"
+    },
+    "SEGMENTED_SMALL": "Small",
+    "SEGMENTED_DEFAULT": "Default size",
+    "SEGMENTED_RESPONSIVE": "Icons and short labels",
+    "VIEW": {
+      "LIST": "List view",
+      "GRID": "Grid view",
+      "TIMELINE": "Timeline view"
+    },
+    "SHORT_VIEW": {
+      "LIST": "List",
+      "GRID": "Grid",
+      "TIMELINE": "Time"
+    }
+  },
+  "DEMO_SECTION": {
+    "BUTTON": {
+      "VARIANTS": "Variants",
+      "SIZES": "Sizes",
+      "STATES": "States",
+      "INLINE_ICONS": "Inline Icons",
+      "ICON_BUTTONS": "Icon Buttons",
+      "DELETE_ICON_BUTTON": "Delete Icon Button",
+      "DARK_MODE_ICON_BUTTON": "Dark Mode Icon Button",
+      "CLOSE_BUTTON": "Close Button",
+      "COPY_BUTTON": "Copy Button",
+      "SPEECH_TO_TEXT_BUTTON": "Speech To Text Button",
+      "AUDIO_BUTTON": "Audio Button",
+      "MONOSPACE_TEXT": "Monospace Text",
+      "SOCIAL_SIGNIN_BUTTONS": "Social Signin Buttons",
+      "CHAT_SEND_BUTTON": "Chat Send Button",
+      "BUTTON_LIST": "Button List",
+      "CHAT_PLACEHOLDER": "Type a message…"
+    },
+    "AVATAR": {
+      "SIZES": "Sizes",
+      "CHARACTER_FALLBACK": "Character fallback",
+      "BORINGAVATAR_FALLBACK_VARIANTS": "BoringAvatar fallback (variants)",
+      "WITH_BADGE": "With badge"
+    },
+    "USER_AVATAR": {
+      "BORING_AVATAR_FALLBACK_DEFAULT": "Boring avatar fallback (default)",
+      "INITIALS_FALLBACK": "Initials fallback",
+      "WITH_UPLOAD_CLICK_AVATAR": "With upload (click avatar)"
+    },
+    "TOASTER": {
+      "TOAST_TYPES": "Toast Types",
+      "WITH_DESCRIPTION": "With Description",
+      "WITH_ACTION": "With Action",
+      "PROMISE": "Promise"
+    },
+    "COLLAPSIBLE_LIST_ITEM": {
+      "WITH_RICH_CONTENT": "With Rich Content",
+      "SECTION_1": "Section 1",
+      "SECTION_2": "Section 2",
+      "SECTION_3": "Section 3",
+      "MULTIPLE_ITEMS": "Multiple Items",
+      "CHEVRON_LEFT": "Chevron Left"
+    },
+    "GITHUB_ACTIONS_BADGES": {
+      "WRAPPED_CARDCONTAINER": "Wrapped (CardContainer)",
+      "NON_WRAPPED": "Non-wrapped"
+    },
+    "SCROLL_TIMELINE": {
+      "BANK_BALANCE": "Bank balance",
+      "GIT_COMMIT_HISTORY": "Git commit history"
+    },
+    "STATUS_CARD_LIST": {
+      "FLAT_ITEMS": "Flat items",
+      "COLLAPSIBLE_ITEMS": "Collapsible items",
+      "EMPTY_STATE": "Empty state"
+    },
+    "CHECK_LIST": {
+      "GENERIC_CHECKLIST": "Generic checklist"
+    },
+    "SWITCH": {
+      "LABEL": "Receive updates"
+    }
   }
 }

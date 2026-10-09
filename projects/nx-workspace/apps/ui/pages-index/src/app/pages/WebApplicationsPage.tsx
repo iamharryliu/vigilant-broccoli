@@ -2,7 +2,9 @@ import {
   Bike,
   BookOpen,
   Bot,
+  CalendarDays,
   CloudSun,
+  Globe,
   LayoutGrid,
   Link as LinkIcon,
   type LucideIcon,
@@ -27,9 +29,14 @@ type WebApplicationEntry = {
   descriptionKey: string;
 };
 
+type TranslationKey = Parameters<ReturnType<typeof useTranslation>['t']>[0];
+
 const ICON_CLASS = 'h-5 w-5 shrink-0';
 
-const CARD_ICONS: Record<string, LucideIcon> = {
+const FALLBACK_ICON: LucideIcon = Globe;
+
+const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
+  calendars: CalendarDays,
   'context-md': Bot,
   'cloud-8-skate': Bike,
   'component-library': LayoutGrid,
@@ -49,11 +56,11 @@ export function WebApplicationsPage() {
   const renderSortedCards = (entries: readonly WebApplicationEntry[]) =>
     entries
       .map(({ id, href, titleKey, descriptionKey }) => {
-        const Icon = CARD_ICONS[id];
+        const Icon = CARD_ICONS[id] ?? FALLBACK_ICON;
         return {
           href,
-          title: t(titleKey),
-          description: t(descriptionKey),
+          title: t(titleKey as TranslationKey),
+          description: t(descriptionKey as TranslationKey),
           icon: <Icon className={ICON_CLASS} aria-hidden="true" />,
         };
       })

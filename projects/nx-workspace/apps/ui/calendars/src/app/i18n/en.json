@@ -1,0 +1,22 @@
+{
+  "TITLE": "Calendars",
+  "SUBTITLE": "Public calendars to follow in Google Calendar.",
+  "SECTION": {
+    "PERSONAL": "Personal Calendars",
+    "EVENT": "Event Calendars"
+  },
+  "STATUS": {
+    "LOADING": "Loading…",
+    "EMPTY": "No event calendars yet.",
+    "ERROR": "Failed to load event calendars. Please try again in a moment."
+  },
+  "VIEW": {
+    "AGENDA": "Schedule",
+    "WEEK": "Week",
+    "MONTH": "Month"
+  },
+  "ACTIONS": {
+    "OPEN_VIEW": "Open {name} in {view} view",
+    "COPY_LINK": "Copy link to {name}"
+  }
+}

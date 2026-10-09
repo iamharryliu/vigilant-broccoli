@@ -7,7 +7,7 @@ locals {
   vercel_app_subdomains = {
     findme              = "findme.harryliu.dev"
     whiteboard          = "whiteboard.harryliu.dev"
-    weather-next = "weather.harryliu.dev"
+    weather-next        = "weather.harryliu.dev"
   }
 }
 

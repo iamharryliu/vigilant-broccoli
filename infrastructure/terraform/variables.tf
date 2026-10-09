@@ -279,6 +279,21 @@ variable "utilities_pages_subdomain" {
   default = "production-utilities-ui.pages.dev"
 }
 
+variable "calendars_domain" {
+  type    = string
+  default = "calendars.harryliu.dev"
+}
+
+variable "calendars_pages_project" {
+  type    = string
+  default = "production-calendars"
+}
+
+variable "calendars_pages_subdomain" {
+  type    = string
+  default = "production-calendars.pages.dev"
+}
+
 variable "component_library_domain" {
   type    = string
   default = "components.harryliu.dev"

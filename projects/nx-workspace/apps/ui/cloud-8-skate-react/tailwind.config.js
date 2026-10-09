@@ -2,6 +2,9 @@ const { join } = require('path');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  presets: [
+    require('../../../libs/@vigilant-broccoli/react-lib/tailwind.preset.cjs'),
+  ],
   // No dark mode toggle in this app; pin to 'class' (never applied) rather
   // than the 'media' default so react-lib's dark: classes never activate off
   // the OS color scheme and mismatch the rest of the light-only site.
