@@ -12,6 +12,7 @@ import {
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { DownloadIcon } from '@radix-ui/react-icons';
 import { ResumeViewComponent } from '../resume-view.component';
+import { ResumeDiffComponent } from '../resume-diff.component';
 import { ResumeChatPanel } from '../resume-chat-panel.component';
 import {
   resumeData,
@@ -24,6 +25,7 @@ import { useResumeChat } from '../../hooks/useResumeChat';
 const EDITOR_TAB = {
   JSON: 'json',
   AI: 'ai',
+  DIFF: 'diff',
 } as const;
 
 type EditorTab = (typeof EDITOR_TAB)[keyof typeof EDITOR_TAB];
@@ -31,6 +33,7 @@ type EditorTab = (typeof EDITOR_TAB)[keyof typeof EDITOR_TAB];
 const INITIAL_JSON_TEXT = JSON.stringify(resumeData, null, 2);
 
 const RESUME_API_PATH = '/api/resume';
+const RESUME_BASELINE_API_PATH = '/api/resume/baseline';
 const RESUME_PDF_API_PATH = '/api/resume/pdf';
 const RESUME_PDF_FILENAME = 'resume.pdf';
 const SAVE_DEBOUNCE_MS = 500;
@@ -77,6 +80,7 @@ export const CareerPage = () => {
   const [activeTab, setActiveTab] = useState<EditorTab>(EDITOR_TAB.JSON);
   const [jsonText, setJsonText] = useState(INITIAL_JSON_TEXT);
   const [resume, setResume] = useState<ResumeData>(resumeData);
+  const [originalJsonText, setOriginalJsonText] = useState(INITIAL_JSON_TEXT);
   const [jsonError, setJsonError] = useState<string | null>(null);
   const [revision, setRevision] = useState(0);
   const [isDownloading, setIsDownloading] = useState(false);
@@ -101,6 +105,15 @@ export const CareerPage = () => {
     commitResume(parsed.resume);
     setJsonError(null);
   };
+
+  useEffect(() => {
+    authFetch(RESUME_BASELINE_API_PATH)
+      .then(response => (response.ok ? response.json() : Promise.reject()))
+      .then(
+        ({ content }) => setOriginalJsonText(content),
+        () => undefined,
+      );
+  }, []);
 
   useEffect(() => {
     authFetch(RESUME_API_PATH)
@@ -189,6 +202,7 @@ export const CareerPage = () => {
               <TabsList>
                 <TabsTrigger value={EDITOR_TAB.JSON}>Edit JSON</TabsTrigger>
                 <TabsTrigger value={EDITOR_TAB.AI}>AI Chat</TabsTrigger>
+                <TabsTrigger value={EDITOR_TAB.DIFF}>Diff</TabsTrigger>
               </TabsList>
               <Button
                 onClick={handleDownloadPdf}
@@ -224,6 +238,16 @@ export const CareerPage = () => {
                 onSend={chat.send}
                 onApply={chat.apply}
                 onReset={chat.reset}
+              />
+            </TabsContent>
+
+            <TabsContent
+              value={EDITOR_TAB.DIFF}
+              className="pt-3 flex-1 min-h-0"
+            >
+              <ResumeDiffComponent
+                original={originalJsonText}
+                current={jsonText}
               />
             </TabsContent>
           </Tabs>

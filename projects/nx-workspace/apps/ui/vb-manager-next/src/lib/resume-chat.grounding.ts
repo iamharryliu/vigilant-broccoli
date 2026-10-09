@@ -4,7 +4,7 @@ import type {
   ResumeWorkExperience,
 } from '@vigilant-broccoli/resume';
 import type { ConfirmedFact, TailoringContext } from './resume-chat.schema';
-import type { SkillsNote } from './resume-chat.skills-note';
+import type { SkillsNote, SkillUsage } from './resume-chat.skills-note';
 
 const WHITESPACE_PATTERN = /\s+/g;
 const QUOTE_PATTERN = /["'“”‘’`]/g;
@@ -13,8 +13,6 @@ const SLASH_PATTERN = /\s*\/\s*/g;
 const JS_SUFFIX_PATTERN = /\.js\b/g;
 const PARENTHESIS_PATTERN = /\(([^)]*)\)/g;
 const REGEX_SPECIAL_PATTERN = /[.*+?^${}()|[\]\\]/g;
-const NUMBER_PATTERN = /(?<![A-Za-z0-9])\d[\d,.]*(?![A-Za-z0-9])\+?%?/g;
-const NUMBER_TRAILING_PATTERN = /[+%.,]+$/;
 const YEARS_CLAIM_PATTERN = /(nearly\s+)?(\d+)\+?\s+years?\b/gi;
 const MONTHS_PER_YEAR = 12;
 const SKILL_PART_SEPARATOR = '/';
@@ -105,11 +103,6 @@ const evidenceText = (resume: ResumeData): string =>
     ...resume.skills.technical,
   ].join(' ');
 
-const numericCores = (text: string): string[] =>
-  Array.from(text.matchAll(NUMBER_PATTERN), match =>
-    match[0].replace(NUMBER_TRAILING_PATTERN, ''),
-  );
-
 /** Prose that can carry a claim: the summary and bullets, not names or dates. */
 const claimText = (resume: ResumeData): string =>
   [
@@ -118,6 +111,54 @@ const claimText = (resume: ResumeData): string =>
       entry => entry.bullets,
     ),
   ].join('\n');
+
+const OPEN_SOURCE_LABEL = 'open source';
+
+const bulletsByLabel = (resume: ResumeData): Map<string, string[]> =>
+  new Map([
+    ...resume.workExperience.map(
+      entry => [normalize(entry.company), entry.bullets] as const,
+    ),
+    ...resume.projectExperience.map(
+      entry => [OPEN_SOURCE_LABEL, entry.bullets] as const,
+    ),
+  ]);
+
+/**
+ * A new bullet may only mention a skill the target asks for in a place the
+ * skills note lists it under ("Used In"), so Spring Boot lines can be added to
+ * Capco but never to an employer where it was not used.
+ */
+const findMisplacedSkillBullets = (
+  current: ResumeData,
+  candidate: ResumeData,
+  requirementsText: string,
+  skillUsage: SkillUsage[],
+): string[] => {
+  const before = bulletsByLabel(current);
+  const wanted = skillUsage.filter(({ skill }) =>
+    skillParts(skill).some(part => containsTerm(requirementsText, part)),
+  );
+  return Array.from(bulletsByLabel(candidate)).flatMap(([label, bullets]) => {
+    const existing = new Set((before.get(label) ?? []).map(normalize));
+    return bullets
+      .filter(bullet => !existing.has(normalize(bullet)))
+      .flatMap(bullet =>
+        wanted
+          .filter(
+            ({ skill, usedIn }) =>
+              !usedIn.map(normalize).includes(label) &&
+              skillParts(skill).some(part =>
+                containsTerm(normalize(bullet), part),
+              ),
+          )
+          .map(
+            ({ skill, usedIn }) =>
+              `A new bullet under "${label}" mentions ${skill}, but the skills note lists it only under: ${usedIn.join(', ') || 'nowhere'}. Move it to one of those or remove it.`,
+          ),
+      );
+  });
+};
 
 const experienceKey = (entry: ResumeWorkExperience): string =>
   [entry.company, entry.role, entry.startDate, entry.endDate]
@@ -172,6 +213,7 @@ export const findGroundingIssues = ({
   const isTermSupported = (term: string): boolean =>
     skillEntries.some(entry => containsTerm(entry, term)) ||
     containsTerm(currentText, term) ||
+    containsTerm(normalize(skillsNote?.experienceText ?? ''), term) ||
     isSupportedByFacts(term, context.confirmedFacts);
   const unsupportedSkills = candidate.skills.technical.filter(
     skill =>
@@ -184,24 +226,14 @@ export const findGroundingIssues = ({
     );
   }
 
-  const allowedNumbers = new Set(
-    numericCores(
-      [
-        JSON.stringify(current),
-        skillsNote?.skillsText ?? '',
-        ...userMessages,
-        ...context.confirmedFacts.map(fact => `${fact.claim} ${fact.evidence}`),
-      ].join('\n'),
+  issues.push(
+    ...findMisplacedSkillBullets(
+      current,
+      candidate,
+      normalize(context.requirements.join('\n')),
+      skillsNote?.skillUsage ?? [],
     ),
   );
-  const inventedNumbers = Array.from(
-    new Set(numericCores(claimText(candidate))),
-  ).filter(figure => !allowedNumbers.has(figure));
-  if (inventedNumbers.length > 0) {
-    issues.push(
-      `Figures not found in the current resume, the skills note or what the user said: ${inventedNumbers.join(', ')}. Never invent numbers; restore the original wording or remove them.`,
-    );
-  }
 
   const { totalMonths, fullYears } = calculateWorkExperience(candidate);
   const overstatedYears = Array.from(

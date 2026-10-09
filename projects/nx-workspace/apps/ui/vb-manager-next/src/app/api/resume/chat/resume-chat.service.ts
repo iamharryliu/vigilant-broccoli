@@ -31,6 +31,14 @@ import {
   findGroundingIssues,
   sanitizeTailoringContext,
 } from '../../../../lib/resume-chat.grounding';
+import {
+  alignTitleWithTarget,
+  findExtraSkills,
+  findHighlightKeywords,
+  highlightResumeKeywords,
+  orderSkillsByImportance,
+  withRoleSummaryOpener,
+} from '../../../../lib/resume-chat.highlight';
 import type { SkillsNote } from '../../../../lib/resume-chat.skills-note';
 import { RESUME_CHAT_TOOLS, buildSystemPrompt } from './resume-chat.prompt';
 import { loadSkillsNote } from './resume-chat.skills-note.server';
@@ -125,6 +133,48 @@ const parseJson = (text: string): unknown => {
 const errorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error);
 
+/**
+ * Appends as many of the extra skills as still fit the skills line without
+ * adding a line or a page. Rendering is monotonic in the count, so a binary
+ * search needs only a handful of renders.
+ */
+const fillSkillsLine = async (
+  resume: ResumeData,
+  layout: ResumePdfLayout,
+  extras: string[],
+  context: TailoringContext,
+): Promise<{ resume: ResumeData; layout: ResumePdfLayout } | undefined> => {
+  const withExtras = (count: number): ResumeData =>
+    orderSkillsByImportance(
+      {
+        ...resume,
+        skills: {
+          ...resume.skills,
+          technical: [...resume.skills.technical, ...extras.slice(0, count)],
+        },
+      },
+      context,
+    );
+  let low = 0;
+  let high = extras.length;
+  let best: { resume: ResumeData; layout: ResumePdfLayout } | undefined;
+  while (low < high) {
+    const mid = Math.ceil((low + high) / 2);
+    const trial = withExtras(mid);
+    const { layout: trialLayout } = await renderResumePdf(trial);
+    if (
+      trialLayout.fits &&
+      trialLayout.skillsLineCount <= Math.max(layout.skillsLineCount, 1)
+    ) {
+      best = { resume: trial, layout: trialLayout };
+      low = mid;
+    } else {
+      high = mid - 1;
+    }
+  }
+  return best;
+};
+
 const evaluateUpdate = async (
   rawArguments: string,
   request: ResumeChatRequest,
@@ -160,6 +210,7 @@ const evaluateUpdate = async (
     type: RESUME_CHAT_RESPONSE_TYPE.PROGRESS,
     message: MESSAGE.PROGRESS_CHECKING,
   });
+
   const groundingIssues = findGroundingIssues({
     current: request.resume,
     candidate: candidate.resume,
@@ -172,12 +223,39 @@ const evaluateUpdate = async (
     return { kind: 'rejected', problems: groundingIssues };
   }
 
+  const aligned = withRoleSummaryOpener(
+    alignTitleWithTarget(
+      candidate.resume,
+      request.resume.basics.title,
+      context,
+      skillsNote,
+    ),
+  );
+  const ordered = orderSkillsByImportance(aligned, context);
+  const highlightKeywords = findHighlightKeywords(ordered, context, skillsNote);
+  candidate.resume = highlightResumeKeywords(ordered, highlightKeywords);
+
   emit({
     type: RESUME_CHAT_RESPONSE_TYPE.PROGRESS,
     message: MESSAGE.PROGRESS_RENDERING(attempt),
   });
   try {
-    const { layout } = await renderResumePdf(candidate.resume);
+    const base = await renderResumePdf(candidate.resume);
+    const filled = base.layout.fits
+      ? await fillSkillsLine(
+          candidate.resume,
+          base.layout,
+          findExtraSkills(
+            request.resume,
+            candidate.resume,
+            context,
+            skillsNote,
+          ),
+          context,
+        )
+      : undefined;
+    if (filled) candidate.resume = filled.resume;
+    const layout = filled?.layout ?? base.layout;
     if (layout.fits) {
       return {
         kind: 'fits',

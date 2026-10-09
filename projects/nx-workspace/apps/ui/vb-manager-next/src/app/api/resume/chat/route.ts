@@ -1,13 +1,11 @@
 import { NextRequest } from 'next/server';
 import OpenAI from 'openai';
-import {
-  HTTP_HEADERS,
-  HTTP_STATUS_CODES,
-  LLM_MODEL,
-  LLM_MODELS,
-} from '@vigilant-broccoli/common-js';
+import { HTTP_HEADERS, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
-import { RESUME_CHAT_RESPONSE_TYPE } from '../../../constants/resume-chat.consts';
+import {
+  RESUME_CHAT_MODEL,
+  RESUME_CHAT_RESPONSE_TYPE,
+} from '../../../constants/resume-chat.consts';
 import {
   resumeChatRequestSchema,
   ResumeChatEvent,
@@ -56,10 +54,7 @@ export async function POST(request: NextRequest) {
     );
   }
   const chatRequest = parsed.data;
-  const model =
-    chatRequest.model && LLM_MODELS.some(item => item === chatRequest.model)
-      ? chatRequest.model
-      : LLM_MODEL.GPT_4O;
+  const model = RESUME_CHAT_MODEL;
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {

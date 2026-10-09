@@ -24,3 +24,5 @@ export const RESUME_CHAT_LIMITS = {
   MAX_CONTEXT_ITEM_CHARS: 600,
   MAX_REVISIONS: 3,
 } as const;
+
+export const RESUME_CHAT_MODEL = 'gpt-5.5';

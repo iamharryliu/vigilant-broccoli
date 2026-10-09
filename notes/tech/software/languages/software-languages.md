@@ -4,7 +4,7 @@
 
 - [Languages](#languages)
 - [Comparison Table](#comparison-table)
-- [Python / TypeScript Cheatsheet](#python--typescript-cheatsheet)
+- [Python / TypeScript / Go Cheatsheet](#python--typescript--go-cheatsheet)
 
 ## Languages
 
@@ -41,23 +41,23 @@
 | **Elixir**           | Scalable, concurrent web services                            | Functional (Erlang VM)                                    | Compiled to BEAM bytecode     | Garbage-collected                  | Fault tolerance, concurrency                 |
 | **Lua**              | Game scripting, embedded systems                             | Lightweight, procedural                                   | Interpreted                   | Garbage-collected                  | Embeddable, fast                             |
 
-## Python / TypeScript Cheatsheet
+## Python / TypeScript / Go Cheatsheet
 
-| Python                        | Typescript                             |
-| :---------------------------- | :------------------------------------- |
-| for i, num in enumerate(nums) | for (const [i, num] of nums.entries()) |
-| hmap.values()                 | hmap.values()                          |
-| hmap = {}                     | const hmap = {}                        |
-| len(arr)                      | arr.length                             |
-| arr.pop()                     | arr.pop()                              |
-| arr.append(x)                 | arr.push(x)                            |
-| if, elif, else                | if, else if, else                      |
-| not                           | !                                      |
-| or                            | \|\|                                   |
-| ==                            | ===                                    |
-| !=                            | !==                                    |
-| float("inf")                  | Infinity                               |
-| float("-inf")                 | -Infinity                              |
-| max(n1, n2..)                 | Math.max(n1, n2..)                     |
-| min(n1, n2..)                 | Math.min(n1, n2..)                     |
-| s.isalnum()                   | /^[A-Za-z0-9]+$/.test(s);              |
+| Python                          | TypeScript                               | Go                                                                                                                                               |
+| :------------------------------ | :--------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `for i, num in enumerate(nums)` | `for (const [i, num] of nums.entries())` | `for i, num := range nums { ... }`                                                                                                               |
+| `hmap.values()`                 | `hmap.values()`                          | `for _, value := range hmap { ... }` (unordered iteration)                                                                                       |
+| `hmap = {}`                     | `const hmap = {}`                        | `hmap := make(map[string]int)` (choose key/value types)                                                                                          |
+| `len(arr)`                      | `arr.length`                             | `len(arr)`                                                                                                                                       |
+| `arr.pop()`                     | `arr.pop()`                              | `x := arr[len(arr)-1]; arr = arr[:len(arr)-1]` (nonempty slice)                                                                                  |
+| `arr.append(x)`                 | `arr.push(x)`                            | `arr = append(arr, x)`                                                                                                                           |
+| `if, elif, else`                | `if, else if, else`                      | `if, else if, else`                                                                                                                              |
+| `not`                           | `!`                                      | `!`                                                                                                                                              |
+| `or`                            | `\|\|`                                   | `\|\|`                                                                                                                                           |
+| `==`                            | `===`                                    | `==`                                                                                                                                             |
+| `!=`                            | `!==`                                    | `!=`                                                                                                                                             |
+| `float("inf")`                  | `Infinity`                               | `math.Inf(1)` (import `math`)                                                                                                                    |
+| `float("-inf")`                 | `-Infinity`                              | `math.Inf(-1)` (import `math`)                                                                                                                   |
+| `max(n1, n2, ...)`              | `Math.max(n1, n2, ...)`                  | `max(n1, n2, ...)` (Go 1.21+)                                                                                                                    |
+| `min(n1, n2, ...)`              | `Math.min(n1, n2, ...)`                  | `min(n1, n2, ...)` (Go 1.21+)                                                                                                                    |
+| `s.isalnum()`                   | `/^[A-Za-z0-9]+$/.test(s)`               | `s != "" && strings.IndexFunc(s, func(r rune) bool { return !unicode.IsLetter(r) && !unicode.IsNumber(r) }) == -1` (import `strings`, `unicode`) |
