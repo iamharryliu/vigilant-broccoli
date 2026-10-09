@@ -1,9 +1,3 @@
-export interface SkillUsage {
-  skill: string;
-  usedIn: string[];
-  note: string;
-}
-
 export interface JobExperience {
   company: string;
   role: string;
@@ -15,9 +9,7 @@ export interface SkillsNote {
   skills: string[];
   skillsText: string;
   titles: string[];
-  skillUsage: SkillUsage[];
   experience: JobExperience[];
-  experienceText: string;
   languages: string[];
 }
 
@@ -33,9 +25,6 @@ const TABLE_ROW_PREFIX = '|';
 const TABLE_SEPARATOR_PATTERN = /^\|[\s:|-]+\|$/;
 const HEADER_ROW_COUNT = 1;
 const FIRST_CELL_INDEX = 0;
-const USED_IN_CELL_INDEX = 1;
-const NOTE_CELL_INDEX = 2;
-const USED_IN_SEPARATOR = ';';
 const LANGUAGE_PROFICIENCY_SEPARATOR = ': ';
 
 const sectionLines = (markdown: string, heading: string): string[] => {
@@ -83,20 +72,9 @@ export const parseSkillsNote = (markdown: string): SkillsNote => {
   );
   return {
     experience,
-    experienceText: experience.map(entry => entry.context).join(' '),
     languages: languageRows
       .map(cells => cells.filter(Boolean).join(LANGUAGE_PROFICIENCY_SEPARATOR))
       .filter(Boolean),
-    skillUsage: skillRows
-      .filter(cells => cells[FIRST_CELL_INDEX])
-      .map(cells => ({
-        skill: cells[FIRST_CELL_INDEX],
-        usedIn: (cells[USED_IN_CELL_INDEX] ?? '')
-          .split(USED_IN_SEPARATOR)
-          .map(place => place.trim())
-          .filter(Boolean),
-        note: cells[NOTE_CELL_INDEX] ?? '',
-      })),
     skills: skillRows.map(cells => cells[FIRST_CELL_INDEX]).filter(Boolean),
     skillsText: skillRows.map(cells => cells.join(' ')).join(' '),
     titles: roleRows.map(cells => cells[FIRST_CELL_INDEX]).filter(Boolean),

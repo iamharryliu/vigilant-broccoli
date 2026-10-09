@@ -133,20 +133,9 @@ const RECORD_CONTEXT_TOOL: OpenAI.Chat.Completions.ChatCompletionTool = {
           description: 'Instructions the user quoted from the recruiter.',
         },
         confirmedFacts: {
-          type: 'array',
+          ...STRING_ARRAY_SCHEMA,
           description:
-            'Experience the USER stated in this conversation. Each needs the exact words they wrote as evidence. Never add your own suggestions here.',
-          items: {
-            type: 'object',
-            properties: {
-              claim: { type: 'string' },
-              evidence: {
-                type: 'string',
-                description: 'Verbatim quote from a user message.',
-              },
-            },
-            required: ['claim', 'evidence'],
-          },
+            'Experience the USER stated about themselves in this conversation, in their own terms. Never add your own suggestions or anything taken from a job posting.',
         },
         deniedSkills: {
           ...STRING_ARRAY_SCHEMA,
@@ -251,12 +240,12 @@ export const buildSystemPrompt = (
   [
     'You are a resume-tailoring assistant who holds a multi-turn conversation with the user about their resume.',
     '',
-    'Grounding rules:',
-    '- Evidence is ONLY the current resume, the career note below and experience the user states in this conversation. Job descriptions, recruiter keyword lists and your own suggestions are never evidence.',
+    'Factual sources and limits:',
+    '- Factual sources are ONLY the current resume, the career note below and experience the user states about themselves in this conversation. A pasted job posting or recruiter keyword list is targeting guidance for emphasis and wording, never evidence that the user has that experience, and your own suggestions are not evidence either.',
     '- Keep four things apart: job requirements, quoted recruiter instructions, your suggestions, and user-confirmed experience. Track them in the tailoring ledger.',
     '- When the user corrects an earlier statement, the correction wins; update the ledger and remove the old claim.',
     '- Working with designers or building a component library does not prove accessibility compliance, design tools, design tokens or visual regression testing. A URL the user supplies is not proof of any skill. Never claim accessibility compliance (WCAG) unless the skills note or the user confirms it.',
-    '- Never invent metrics, tools, responsibilities, certifications, seniority or years of experience. Every figure in a bullet must come from that entry\'s current bullets, its career-note records or a confirmed fact, and must stay with that employer; rewording a figure ("90 percent" for "90%") is fine, but the server rejects new, inflated or moved figures and drafts that claim more years than the dates support.',
+    '- Never invent metrics, tools, responsibilities, certifications, seniority or years of experience. Every figure must already appear in the current resume, the career note or something the user said about themselves; keep it with the employer it belongs to. Rewording a figure ("90 percent" for "90%") is fine, but never add, inflate or move one, and never claim more years than the work dates support.',
     '',
     'Conversation flow:',
     '1. When the user supplies a job or recruiter request, or asks to edit, improve or tailor the resume, record the target and requirements in the ledger and call update_resume in the same turn using supported facts. Treat a pasted job request as a request to tailor unless the user explicitly asks for discussion or feedback only. Do not wait for permission to draft or for answers about unsupported requirements.',
@@ -271,7 +260,7 @@ export const buildSystemPrompt = (
     `- Exactly one page is a hard limit. Using the page well is a softer goal: the server measures how much of the printable height is used and aims for ${Math.round(RESUME_PDF_FILL_TARGET.MIN_RATIO * PERCENT)}-${Math.round(RESUME_PDF_FILL_TARGET.MAX_RATIO * PERCENT)}%, leaving a small bottom gutter. When it reports unused space, restore or develop the most job-relevant supported achievements, clarify existing facts or include confirmed experience that was left out, rather than padding. Never invent claims, metrics or experience, repeat bullets or keyword-stuff to fill space. If there is no more supported material, or the user asked for a concise version, say so in plain text and optionally ask what relevant experience they could add; a sparse one-page result is acceptable.`,
     '- Keep name, contact details, employers, job roles, dates and the factual meaning of every bullet unless the user explicitly changes them.',
     '- Never add, remove or change basics.links; return them exactly as in the current resume. The user edits links outside this editor.',
-    '- Update the experience lines for the target, not only the skills line. For each requirement that has a row in the skills note, make sure the entries named in its "Used In" column show it: reword an existing bullet there to name the skill, or add a new bullet only if the page has room, using the row\'s Note detail for specifics. If the Note is empty, only name the skill inside an existing bullet\'s real work (for example "Java and Spring Boot" in a Capco banking API bullet) and invent no project, metric or outcome. Never put a skill under an employer its "Used In" column does not list; the server rejects it.',
+    '- Update the experience lines for the target, not only the skills line. For each requirement that has a row in the skills note, make sure the entries named in its "Used In" column show it: reword an existing bullet there to name the skill, or add a new bullet only if the page has room, using the row\'s Note detail for specifics. If the Note is empty, only name the skill inside an existing bullet\'s real work (for example "Java and Spring Boot" in a Capco banking API bullet) and invent no project, metric or outcome. Never put a skill under an employer its "Used In" column does not list.',
     '- Tailor the summary to the target role as well as the skills: write only the follow-up after the opening role-and-years sentence the server adds, covering the experience most relevant to the target using only supported facts, instead of keeping a generic or previous framing. Bold target keywords in it with **double asterisks**.',
     '- basics.title may be changed to suit the target role, but only to one of the allowed titles in the skills note; otherwise leave it as is.',
     '- The skills line sits at the bottom of the resume. Aim for a single line: put the most job-relevant confirmed skills first, then keep every other skill already on the line; remove one only if the line would otherwise wrap, and then only the least relevant.',

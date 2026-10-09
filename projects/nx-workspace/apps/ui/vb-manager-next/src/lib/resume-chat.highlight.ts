@@ -345,3 +345,22 @@ export const findExtraSkills = (
     [],
   );
 };
+
+const resumeProseAndSkills = (resume: ResumeData): string =>
+  [
+    resume.summary ?? '',
+    ...[...resume.workExperience, ...resume.projectExperience].flatMap(
+      entry => entry.bullets,
+    ),
+    ...resume.skills.technical,
+  ].join('\n');
+
+/** Whether a gap keyword ended up in the resume after all, so its gap note is stale. */
+export const isKeywordInResume = (
+  resume: ResumeData,
+  keyword: string,
+): boolean => {
+  const terms = skillTerms(keyword);
+  const text = resumeProseAndSkills(resume);
+  return terms.length > 0 && terms.every(term => containsWord(text, term));
+};

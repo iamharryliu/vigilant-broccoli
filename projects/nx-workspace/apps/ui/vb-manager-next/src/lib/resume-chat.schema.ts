@@ -16,19 +16,11 @@ export const chatMessageSchema = z.object({
   content: z.string().max(RESUME_CHAT_LIMITS.MAX_MESSAGE_CHARS),
 });
 
-export const confirmedFactSchema = z.object({
-  claim: contextText,
-  evidence: contextText,
-});
-export type ConfirmedFact = z.infer<typeof confirmedFactSchema>;
-
 export const tailoringContextSchema = z.object({
   target: contextText,
   requirements: contextList(),
   recruiterInstructions: contextList(),
-  confirmedFacts: z
-    .array(confirmedFactSchema)
-    .max(RESUME_CHAT_LIMITS.MAX_CONTEXT_ITEMS),
+  confirmedFacts: contextList(),
   deniedSkills: contextList(),
   openQuestions: contextList(),
 });
