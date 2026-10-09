@@ -82,7 +82,9 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
         </div>
       </div>
 
-      {trimmedSummary && <p className="mb-2">{trimmedSummary}</p>}
+      {trimmedSummary && (
+        <p className="mb-2">{renderInlineBold(trimmedSummary)}</p>
+      )}
 
       <section className="mb-2">
         <SectionHeading>Work Experience</SectionHeading>

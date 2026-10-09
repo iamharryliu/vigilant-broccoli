@@ -7,8 +7,7 @@ import {
 } from '@vigilant-broccoli/resume';
 import { renderResumePdf } from '@vigilant-broccoli/resume/server';
 import { loadSkillsNote } from '../src/app/api/resume/chat/resume-chat.skills-note.server';
-import { findGroundingIssues } from '../src/lib/resume-chat.grounding';
-import { EMPTY_TAILORING_CONTEXT } from '../src/lib/resume-chat.schema';
+import { findProtectedFieldIssues } from '../src/lib/resume-chat.protection';
 
 const RESUME_PATH = 'libs/@vigilant-broccoli/resume/src/resume.json';
 const DEFAULT_BASE_REF = 'HEAD';
@@ -35,8 +34,8 @@ const parseResume = (value: unknown) => {
 };
 
 /**
- * Runs the in-app editor's code-enforced checks on the working-tree resume so a
- * CLI edit is held to the same rules. The baseline is the committed resume,
+ * Runs the in-app editor's protected-field and layout checks on the working-tree
+ * resume so a CLI edit is held to the same rules. The baseline is the committed resume,
  * standing in for the editor's "current resume"; a rule the user explicitly
  * waived for this edit is the only reason to ignore a reported issue.
  */
@@ -45,10 +44,9 @@ const main = async (): Promise<void> => {
   const candidate = parseResume(JSON.parse(readFileSync(RESUME_PATH, 'utf-8')));
   const current = parseResume(readBaseline(baseRef));
 
-  const issues = findGroundingIssues({
+  const issues = findProtectedFieldIssues({
     current,
     candidate,
-    context: EMPTY_TAILORING_CONTEXT,
     userMessages: [],
     skillsNote: await loadSkillsNote(),
   });
@@ -61,7 +59,7 @@ const main = async (): Promise<void> => {
   );
 
   if (issues.length === 0) {
-    console.log(`${PREFIX.OK} Grounding checks pass against ${baseRef}.`);
+    console.log(`${PREFIX.OK} Protected fields unchanged against ${baseRef}.`);
   }
   if (issues.length > 0 || !layoutOk) process.exit(FAILURE_EXIT_CODE);
 };

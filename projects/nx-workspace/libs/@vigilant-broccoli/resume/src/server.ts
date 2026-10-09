@@ -137,7 +137,7 @@ const buildResumeHtml = (resume: ResumeData): string => {
     </div>
   </div>
 
-  ${trimmedSummary ? `<p class="summary" ${LAYOUT_ATTRIBUTE}="${LAYOUT_NAME.SUMMARY}">${escapeHtml(trimmedSummary)}</p>` : ''}
+  ${trimmedSummary ? `<p class="summary" ${LAYOUT_ATTRIBUTE}="${LAYOUT_NAME.SUMMARY}">${renderInlineBold(trimmedSummary)}</p>` : ''}
 
   <section ${LAYOUT_ATTRIBUTE}="${LAYOUT_NAME.WORK_EXPERIENCE}">
     <h2>Work Experience</h2>

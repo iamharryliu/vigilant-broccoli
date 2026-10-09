@@ -27,10 +27,16 @@ import type {
   TailoringContext,
   UnconfirmedKeyword,
 } from '../../../../lib/resume-chat.schema';
+import { findProtectedFieldIssues } from '../../../../lib/resume-chat.protection';
 import {
-  findGroundingIssues,
-  sanitizeTailoringContext,
-} from '../../../../lib/resume-chat.grounding';
+  alignTitleWithTarget,
+  findExtraSkills,
+  findHighlightKeywords,
+  highlightResumeKeywords,
+  isKeywordInResume,
+  orderSkillsByImportance,
+  withRoleSummaryOpener,
+} from '../../../../lib/resume-chat.highlight';
 import type { SkillsNote } from '../../../../lib/resume-chat.skills-note';
 import { RESUME_CHAT_TOOLS, buildSystemPrompt } from './resume-chat.prompt';
 import { loadSkillsNote } from './resume-chat.skills-note.server';
@@ -53,12 +59,12 @@ const MESSAGE = {
   NO_DRAFT:
     'The model could not produce a valid, supported resume draft, so nothing was proposed and your resume was not changed.',
   TOOL_RECORDED: 'Ledger recorded.',
+  TOOL_RECORDED_ONLY:
+    'Ledger recorded. If the user supplied a job or recruiter request or asked for an edit, call update_resume now with a draft from supported facts and the gaps in unconfirmed; otherwise reply in plain text.',
   TOOL_REJECTED:
     'Draft rejected. Fix every problem and call update_resume again with the COMPLETE corrected resume. If it overflowed, shorten only as much as needed and do not drop below the target fill band; a previously retained one-page version is not lost. Keep confirmed facts, every employer, role and date, and the most relevant content.',
   TOOL_UNDERFILLED: `This draft fits ${RESUME_PDF_MAX_PAGES} page and is retained as the best fit so far, but it leaves noticeable unused space. Call update_resume again with the COMPLETE resume only if the current resume or user-confirmed facts hold more supported, job-relevant material to restore or develop: omitted achievements, clearer wording of existing facts, confirmed experience. Never invent claims, metrics or experience, repeat bullets, pad or keyword-stuff. If no more supported material exists, or the user asked for a concise version, reply in plain text instead, say so, and optionally ask which relevant experience they could add.`,
   TOOL_SHORT_LINES: `This draft fits ${RESUME_PDF_MAX_PAGES} page and is retained as the best fit so far, but some wrapped lines end with only a few words. Call update_resume again with the COMPLETE resume, tightening each listed bullet to one line or extending it with supported detail so its last line is mostly full. Change nothing else, keep the page fill, and never invent claims, metrics or experience. If a line cannot be fixed with supported wording, reply in plain text instead.`,
-  IGNORED_FACTS:
-    'I ignored these "confirmed" items because they do not quote anything you wrote or you said you lack them:',
   UNCONFIRMED_HEADING: '**Left out because unconfirmed:**',
   VALIDATED: (attempts: number) =>
     `**Validated:** rendered with the same PDF pipeline as Download and it is exactly ${RESUME_PDF_MAX_PAGES} page (attempt ${attempts} of ${MAX_MODEL_CALLS}). Nothing is applied until you press Apply.`,
@@ -72,7 +78,7 @@ const MESSAGE = {
   DRAFT_REJECTED: 'Draft was rejected',
   PROGRESS_THINKING: 'Thinking',
   PROGRESS_REPLY: 'Writing a reply',
-  PROGRESS_CHECKING: 'Checking the draft against your confirmed facts',
+  PROGRESS_CHECKING: 'Checking the draft',
   PROGRESS_RENDERING: (attempt: number) =>
     `Rendering the one-page PDF check (attempt ${attempt} of ${MAX_MODEL_CALLS})`,
   PROGRESS_REVISING: (revision: number, reason: string) =>
@@ -98,14 +104,15 @@ interface Candidate {
   attempt?: number;
 }
 
-type Evaluation =
+type Evaluation = { unconfirmed: UnconfirmedKeyword[] } & (
   | { kind: 'fits'; candidate: Candidate; layout: ResumePdfLayout }
   | {
       kind: 'rejected';
       problems: string[];
       candidate?: Candidate;
       renderFailed?: boolean;
-    };
+    }
+);
 
 interface RunOptions {
   openai: OpenAI;
@@ -125,6 +132,48 @@ const parseJson = (text: string): unknown => {
 const errorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : String(error);
 
+/**
+ * Appends as many of the extra skills as still fit the skills line without
+ * adding a line or a page. Rendering is monotonic in the count, so a binary
+ * search needs only a handful of renders.
+ */
+const fillSkillsLine = async (
+  resume: ResumeData,
+  layout: ResumePdfLayout,
+  extras: string[],
+  context: TailoringContext,
+): Promise<{ resume: ResumeData; layout: ResumePdfLayout } | undefined> => {
+  const withExtras = (count: number): ResumeData =>
+    orderSkillsByImportance(
+      {
+        ...resume,
+        skills: {
+          ...resume.skills,
+          technical: [...resume.skills.technical, ...extras.slice(0, count)],
+        },
+      },
+      context,
+    );
+  let low = 0;
+  let high = extras.length;
+  let best: { resume: ResumeData; layout: ResumePdfLayout } | undefined;
+  while (low < high) {
+    const mid = Math.ceil((low + high) / 2);
+    const trial = withExtras(mid);
+    const { layout: trialLayout } = await renderResumePdf(trial);
+    if (
+      trialLayout.fits &&
+      trialLayout.skillsLineCount <= Math.max(layout.skillsLineCount, 1)
+    ) {
+      best = { resume: trial, layout: trialLayout };
+      low = mid;
+    } else {
+      high = mid - 1;
+    }
+  }
+  return best;
+};
+
 const evaluateUpdate = async (
   rawArguments: string,
   request: ResumeChatRequest,
@@ -139,56 +188,88 @@ const evaluateUpdate = async (
     return {
       kind: 'rejected',
       problems: ['The tool arguments were not a valid JSON object.'],
+      unconfirmed: [],
     };
   }
+  const unconfirmed = args.data.unconfirmed ?? [];
 
   const validation = validateResume(args.data.resume);
   if (!validation.ok) {
     return {
       kind: 'rejected',
       problems: validation.errors.slice(0, MAX_ISSUES_SHOWN),
+      unconfirmed,
     };
   }
 
   const candidate: Candidate = {
-    resume: validation.resume,
+    resume: withRoleSummaryOpener(
+      alignTitleWithTarget(
+        validation.resume,
+        request.resume.basics.title,
+        context,
+        skillsNote,
+      ),
+    ),
     summary: args.data.summary?.trim() || MESSAGE.DEFAULT_SUMMARY,
-    unconfirmed: args.data.unconfirmed ?? [],
+    unconfirmed,
   };
 
   emit({
     type: RESUME_CHAT_RESPONSE_TYPE.PROGRESS,
     message: MESSAGE.PROGRESS_CHECKING,
   });
-  const groundingIssues = findGroundingIssues({
+
+  const protectedFieldIssues = findProtectedFieldIssues({
     current: request.resume,
     candidate: candidate.resume,
-    context,
     userMessages,
     identityChangeEvidence: args.data.identityChangeEvidence,
     skillsNote,
   });
-  if (groundingIssues.length > 0) {
-    return { kind: 'rejected', problems: groundingIssues };
+  if (protectedFieldIssues.length > 0) {
+    return { kind: 'rejected', problems: protectedFieldIssues, unconfirmed };
   }
+
+  const ordered = orderSkillsByImportance(candidate.resume, context);
+  const highlightKeywords = findHighlightKeywords(ordered, context, skillsNote);
+  candidate.resume = highlightResumeKeywords(ordered, highlightKeywords);
 
   emit({
     type: RESUME_CHAT_RESPONSE_TYPE.PROGRESS,
     message: MESSAGE.PROGRESS_RENDERING(attempt),
   });
   try {
-    const { layout } = await renderResumePdf(candidate.resume);
+    const base = await renderResumePdf(candidate.resume);
+    const filled = base.layout.fits
+      ? await fillSkillsLine(
+          candidate.resume,
+          base.layout,
+          findExtraSkills(
+            request.resume,
+            candidate.resume,
+            context,
+            userMessages.at(-1) ?? '',
+            skillsNote,
+          ),
+          context,
+        )
+      : undefined;
+    if (filled) candidate.resume = filled.resume;
+    const layout = filled?.layout ?? base.layout;
     if (layout.fits) {
       return {
         kind: 'fits',
         candidate: { ...candidate, layout, attempt },
         layout,
+        unconfirmed,
       };
     }
     return {
       kind: 'rejected',
       problems: [describeResumePdfLayout(layout)],
       candidate: { ...candidate, layout },
+      unconfirmed,
     };
   } catch (error) {
     return {
@@ -196,6 +277,7 @@ const evaluateUpdate = async (
       problems: [MESSAGE.RENDER_FAILED(errorMessage(error))],
       candidate,
       renderFailed: true,
+      unconfirmed,
     };
   }
 };
@@ -203,7 +285,6 @@ const evaluateUpdate = async (
 const withNotes = (
   body: string,
   unconfirmed: UnconfirmedKeyword[],
-  ignoredFacts: string[],
   extra: string[] = [],
 ): string =>
   [
@@ -215,11 +296,6 @@ const withNotes = (
             ({ keyword, reason }) => `- ${keyword}: ${reason}`,
           ),
         ].join('\n')
-      : '',
-    ignoredFacts.length > 0
-      ? [MESSAGE.IGNORED_FACTS, ...ignoredFacts.map(fact => `- ${fact}`)].join(
-          '\n',
-        )
       : '',
     ...extra,
   ]
@@ -246,7 +322,6 @@ const buildUpdateEvent = (
   candidate: Candidate,
   validation: ResumeChatValidation,
   context: TailoringContext,
-  ignoredFacts: string[],
   modelText: string,
 ): ResultEvent => {
   const attempts = validation.attempts;
@@ -273,7 +348,6 @@ const buildUpdateEvent = (
     content: withNotes(
       [candidate.summary, modelText].filter(Boolean).join('\n\n'),
       candidate.unconfirmed,
-      ignoredFacts,
       [status],
     ),
     resume: candidate.resume,
@@ -291,37 +365,47 @@ const isToolCall = (toolCall: ToolCall, name: string): boolean =>
 const recordContextCalls = (
   toolCalls: ToolCall[],
   current: TailoringContext,
-  userMessages: string[],
-): { context: TailoringContext; ignoredFacts: string[] } =>
+): TailoringContext =>
   toolCalls
     .filter(toolCall =>
       isToolCall(toolCall, RESUME_CHAT_TOOL_NAME.RECORD_TAILORING_CONTEXT),
     )
-    .reduce(
-      (state, toolCall) => {
-        const parsed = tailoringContextSchema.safeParse(
-          parseJson(toolCall.function.arguments),
-        );
-        if (!parsed.success) return state;
-        const sanitized = sanitizeTailoringContext(parsed.data, userMessages);
-        return {
-          context: sanitized.context,
-          ignoredFacts: [...state.ignoredFacts, ...sanitized.ignoredFacts],
-        };
-      },
-      { context: current, ignoredFacts: [] as string[] },
-    );
+    .reduce((state, toolCall) => {
+      const parsed = tailoringContextSchema.safeParse(
+        parseJson(toolCall.function.arguments),
+      );
+      return parsed.success ? parsed.data : state;
+    }, current);
 
 const toolResults = (
   toolCalls: ToolCall[],
   feedback?: { id: string; content: string },
+  recorded: string = MESSAGE.TOOL_RECORDED,
 ): ChatMessageParam[] =>
   toolCalls.map(toolCall => ({
     role: 'tool',
     tool_call_id: toolCall.id,
-    content:
-      feedback?.id === toolCall.id ? feedback.content : MESSAGE.TOOL_RECORDED,
+    content: feedback?.id === toolCall.id ? feedback.content : recorded,
   }));
+
+const gapKey = (gap: UnconfirmedKeyword): string =>
+  gap.keyword.trim().toLowerCase();
+
+/**
+ * Nothing can be confirmed between revisions of one request, so a gap the model
+ * reported on any attempt still applies to the draft that is finally returned.
+ */
+const mergeGaps = (
+  gaps: UnconfirmedKeyword[],
+  added: UnconfirmedKeyword[],
+): UnconfirmedKeyword[] =>
+  added.reduce(
+    (merged, gap) =>
+      merged.some(existing => gapKey(existing) === gapKey(gap))
+        ? merged
+        : [...merged, gap],
+    gaps,
+  );
 
 const describeOverflow = (candidate?: Candidate): string =>
   candidate?.layout
@@ -337,12 +421,7 @@ export async function runResumeChat({
   const userMessages = request.messages
     .filter(message => message.role === 'user')
     .map(message => message.content);
-  const initial = sanitizeTailoringContext(
-    request.context ?? EMPTY_TAILORING_CONTEXT,
-    userMessages,
-  );
-  let context = initial.context;
-  const ignoredFacts = [...initial.ignoredFacts];
+  let context = request.context ?? EMPTY_TAILORING_CONTEXT;
 
   const skillsNote = await loadSkillsNote();
 
@@ -362,12 +441,20 @@ export async function runResumeChat({
   let lastDraft: Candidate | undefined;
   let best: Candidate | undefined;
   let lastProblems: string[] = [];
+  let gaps: UnconfirmedKeyword[] = [];
   let hasRequestedReply = false;
+
+  const withGaps = (candidate: Candidate): Candidate => ({
+    ...candidate,
+    unconfirmed: gaps.filter(
+      gap => !isKeywordInResume(candidate.resume, gap.keyword),
+    ),
+  });
 
   const unvalidated = (attempts: number, modelText: string): ResultEvent =>
     lastDraft
       ? buildUpdateEvent(
-          lastDraft,
+          withGaps(lastDraft),
           {
             status: RESUME_CHAT_VALIDATION_STATUS.UNVALIDATED,
             attempts,
@@ -375,7 +462,6 @@ export async function runResumeChat({
             layout: lastDraft.layout,
           },
           context,
-          ignoredFacts,
           modelText,
         )
       : {
@@ -389,7 +475,7 @@ export async function runResumeChat({
     modelText: string,
   ): ResultEvent =>
     buildUpdateEvent(
-      candidate,
+      withGaps(candidate),
       {
         status: RESUME_CHAT_VALIDATION_STATUS.VALIDATED,
         attempts,
@@ -397,7 +483,6 @@ export async function runResumeChat({
         layout: candidate.layout,
       },
       context,
-      ignoredFacts,
       modelText,
     );
 
@@ -420,9 +505,7 @@ export async function runResumeChat({
       const toolCalls = message.tool_calls ?? [];
       const modelText = message.content?.trim() ?? '';
 
-      const recorded = recordContextCalls(toolCalls, context, userMessages);
-      context = recorded.context;
-      ignoredFacts.push(...recorded.ignoredFacts);
+      context = recordContextCalls(toolCalls, context);
 
       const updateCall = toolCalls.find(toolCall =>
         isToolCall(toolCall, RESUME_CHAT_TOOL_NAME.UPDATE_RESUME),
@@ -434,11 +517,7 @@ export async function runResumeChat({
         if (modelText || toolCalls.length === 0) {
           return {
             type: RESUME_CHAT_RESPONSE_TYPE.TEXT,
-            content: withNotes(
-              modelText || MESSAGE.EMPTY_REPLY,
-              [],
-              ignoredFacts,
-            ),
+            content: withNotes(modelText || MESSAGE.EMPTY_REPLY, []),
             context,
           };
         }
@@ -450,7 +529,10 @@ export async function runResumeChat({
           };
         }
         hasRequestedReply = true;
-        messages.push(message, ...toolResults(toolCalls));
+        messages.push(
+          message,
+          ...toolResults(toolCalls, undefined, MESSAGE.TOOL_RECORDED_ONLY),
+        );
         continue;
       }
 
@@ -463,6 +545,7 @@ export async function runResumeChat({
         call,
         emit,
       );
+      gaps = mergeGaps(gaps, evaluation.unconfirmed);
 
       if (evaluation.kind === 'fits') {
         const repeatsBest =

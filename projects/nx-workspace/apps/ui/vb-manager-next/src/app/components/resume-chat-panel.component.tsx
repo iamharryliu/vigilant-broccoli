@@ -31,7 +31,7 @@ const ENTER_KEY = 'Enter';
 const PLACEHOLDER =
   'Paste a job request, ask about your resume, or request an edit...';
 const EMPTY_STATE =
-  'Discuss your resume with the assistant. Paste a recruiter request and I will ask about anything your resume does not support, then draft a tailored one-page version. Drafts only change your resume when you press Apply.';
+  'Paste a recruiter request and I will draft a tailored one-page resume from your confirmed experience, with notes on any gaps. You can answer follow-up questions to refine it. Drafts only change your resume when you press Apply.';
 const THINKING_LABEL = 'Thinking';
 const APPLY_LABEL = 'Apply changes';
 const APPLIED_LABEL = 'Applied';
@@ -45,12 +45,6 @@ const PROPOSAL_LABEL: Record<ProposalState, string> = {
     'Out of date: your resume changed. Ask me to refresh this draft.',
   [PROPOSAL_STATE.UNVALIDATED]: 'Not validated as one page. Cannot be applied.',
 };
-
-const PROMPT_SUGGESTIONS = [
-  'Review my resume and suggest improvements.',
-  'Make my work experience bullets more impactful.',
-  'Tailor my resume for a job. I will paste the recruiter request.',
-];
 
 const MessageBody = ({ message }: { message: ResumeChatMessage }) => {
   if (message.isPending) {
@@ -181,17 +175,6 @@ export const ResumeChatPanel = ({
               <Text size="2" color="gray">
                 {EMPTY_STATE}
               </Text>
-              <div className="flex flex-col gap-2 items-start">
-                {PROMPT_SUGGESTIONS.map(suggestion => (
-                  <Button
-                    key={suggestion}
-                    variant="secondary"
-                    onClick={() => handleSend(suggestion)}
-                  >
-                    {suggestion}
-                  </Button>
-                ))}
-              </div>
             </div>
           ) : (
             <div className="flex flex-col gap-3" style={{ padding: '0.5rem' }}>
