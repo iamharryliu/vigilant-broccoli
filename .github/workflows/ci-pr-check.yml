@@ -3,17 +3,19 @@ name: ci-pr-check
 on:
   pull_request:
     branches: ['main']
+    types: [opened, synchronize, reopened, edited]
 
 permissions:
   contents: read
   id-token: write
 
 concurrency:
-  group: ci-pr-check-${{ github.ref }}
+  group: ci-pr-check-${{ github.ref }}-${{ github.event.action == 'edited' && 'edited' || 'code' }}
   cancel-in-progress: true
 
 jobs:
   nx-affected:
+    if: github.event.action != 'edited'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -107,6 +109,7 @@ jobs:
         run: pnpm exec nx run-many -t e2e -p ${{ steps.e2e-check.outputs.projects }}
 
   pre-commit:
+    if: github.event.action != 'edited'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -163,3 +166,44 @@ jobs:
         env:
           SKIP: grind-75-tests,lint-staged
         run: pre-commit run --show-diff-on-failure --color=always --all-files
+
+  commitlint:
+    if: github.event.pull_request.user.type != 'Bot'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
+        with:
+          package_json_file: ./package.json
+
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version-file: .nvmrc
+          cache: 'pnpm'
+          cache-dependency-path: ./pnpm-lock.yaml
+
+      # --ignore-scripts skips the root postinstall, which would install the
+      # whole nx-workspace for a job that only needs commitlint.
+      - name: Install root dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      # The PR title is what a squash merge of a multi-commit PR lands on main
+      # (GitHub appends " (#N)" to it afterwards), and the commits are what a
+      # single-commit squash or a rebase merge lands, so both are linted.
+      # Merge commits are ignored by commitlint's defaults.
+      - name: Lint PR title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: printf '%s\n' "$PR_TITLE" | pnpm exec commitlint
+
+      - name: Lint PR commits
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose

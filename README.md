@@ -31,12 +31,14 @@ Personal monorepo, supporting **12 applications**, **5 API services**, **7 Docke
 ```
 pnpm i                             # Install root dependencies, then projects/nx-workspace via the root postinstall hook
 pnpm cheatsheet                    # Print the CLI command cheatsheet
+pre-commit install                 # Install the pre-commit and commit-msg (commitlint) git hooks
 pnpm local:install:machine-setup   # Install tools and dotfiles for this machine (macOS or Linux)
 ```
 
 See more:
 
 - [Cheatsheet](https://context.harryliu.dev/?file=docs/cheatsheet.md) — useful infra-level CLI commands
+- [Code quality tools](./docs/code-quality-tools.md) — linters, formatters, hooks and scanners with their local/CI enforcement
 - [Alias cheatsheet](https://context.harryliu.dev/?file=docs/cheatsheet-aliases.md) — shell aliases from `setup/dotfiles/`
 
 ### Agentic

@@ -124,15 +124,16 @@ salvage_on_failure() {
   fi
 
   if [ "$MODE" = id ]; then
-    SALVAGE_TITLE="[WIP] Resolve TODO ${ID} (agent run incomplete)"
+    SALVAGE_TITLE="chore: Save partial progress on TODO ${ID} from an incomplete agent run."
   else
-    SALVAGE_TITLE="[WIP] $(printf '%s' "$TASK" | tr '\n' ' ' | cut -c1-80) (agent run incomplete)"
+    SALVAGE_TITLE="chore: Save partial progress on an incomplete agent run: $(printf '%s' "$TASK" | tr '\n' ' ' | cut -c1-80 | sed 's/[[:space:]]*$//; s/[.]*$//')."
   fi
 
   git add -A
-  # --no-verify: a WIP salvage commit must not be blocked by lint/format hooks —
-  # the goal is to preserve an unfinished diff, not to ship clean code.
-  git commit --no-verify -m "wip: Save partial progress from an incomplete agent run." -m "$FALLBACK_TRAILER"
+  # --no-verify: a salvage commit must not be blocked by lint/format hooks —
+  # the goal is to preserve an unfinished diff, not to ship clean code. The
+  # message still follows the commit contract so the PR commitlint check passes.
+  git commit --no-verify -m "chore: Save partial progress from an incomplete agent run." -m "$FALLBACK_TRAILER"
 
   if ! git push -u origin "$BRANCH"; then
     echo "Failed to push salvage branch $BRANCH — partial work could not be recovered." >&2
