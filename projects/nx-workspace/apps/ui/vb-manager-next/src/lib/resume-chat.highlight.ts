@@ -152,9 +152,15 @@ export const highlightResumeKeywords = (
 
 const LEAD_WORD_WEIGHT = 3;
 
+/** Spellings of a title's lead word, so a "full-stack" posting scores as Fullstack. */
+const LEAD_WORD_VARIANTS: Record<string, string[]> = {
+  backend: ['back-end', 'back end'],
+  frontend: ['front-end', 'front end'],
+  fullstack: ['full-stack', 'full stack'],
+};
+
 const ROLE_KEYWORDS: Record<string, string[]> = {
   backend: [
-    'back-end',
     'server-side',
     'api',
     'apis',
@@ -176,7 +182,6 @@ const ROLE_KEYWORDS: Record<string, string[]> = {
     'fastify',
   ],
   frontend: [
-    'front-end',
     'ui',
     'ux',
     'react',
@@ -206,7 +211,7 @@ const ROLE_KEYWORDS: Record<string, string[]> = {
     'observability',
     'platform engineer',
   ],
-  fullstack: ['full-stack', 'full stack', 'end-to-end'],
+  fullstack: ['end-to-end'],
 };
 
 const wordCount = (text: string, word: string): number =>
@@ -222,7 +227,10 @@ const wordCount = (text: string, word: string): number =>
 const roleScore = (target: string, title: string): number => {
   const lead = lower(title.split(' ')[0]);
   return (
-    wordCount(target, lead) * LEAD_WORD_WEIGHT +
+    [lead, ...(LEAD_WORD_VARIANTS[lead] ?? [])].reduce(
+      (total, word) => total + wordCount(target, word) * LEAD_WORD_WEIGHT,
+      0,
+    ) +
     (ROLE_KEYWORDS[lead] ?? []).reduce(
       (total, keyword) => total + wordCount(target, keyword),
       0,
@@ -301,12 +309,16 @@ const overlapsSkill = (existing: string[], skill: string): boolean =>
 /**
  * Skills worth keeping on the line beyond what the model chose: confirmed skills
  * the target mentions (in mention order), then the skills already on the
- * current resume. The caller keeps as many as still fit on one line.
+ * current resume. A denied skill is never re-added, nor is a current skill the
+ * latest user message names outside the target, since the model may have
+ * dropped it on request.
+ * The caller keeps as many as still fit on one line.
  */
 export const findExtraSkills = (
   current: ResumeData,
   candidate: ResumeData,
   context: TailoringContext,
+  latestUserMessage: string,
   skillsNote?: SkillsNote,
 ): string[] => {
   const target = targetText(context);
@@ -315,9 +327,19 @@ export const findExtraSkills = (
     .filter(item => item.index !== Infinity)
     .sort((a, b) => a.index - b.index)
     .map(item => displaySkill(item.skill));
-  return [...mentioned, ...current.skills.technical].reduce<string[]>(
+  const kept = current.skills.technical.filter(
+    skill =>
+      !skillTerms(skill).some(
+        term =>
+          containsWord(latestUserMessage, term) && !containsWord(target, term),
+      ),
+  );
+  return [...mentioned, ...kept].reduce<string[]>(
     (extras, skill) =>
-      overlapsSkill([...candidate.skills.technical, ...extras], skill)
+      overlapsSkill(
+        [...candidate.skills.technical, ...context.deniedSkills, ...extras],
+        skill,
+      )
         ? extras
         : [...extras, skill],
     [],

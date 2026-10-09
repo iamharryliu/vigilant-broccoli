@@ -1,6 +1,7 @@
 export interface SkillUsage {
   skill: string;
   usedIn: string[];
+  note: string;
 }
 
 export interface JobExperience {
@@ -33,6 +34,7 @@ const TABLE_SEPARATOR_PATTERN = /^\|[\s:|-]+\|$/;
 const HEADER_ROW_COUNT = 1;
 const FIRST_CELL_INDEX = 0;
 const USED_IN_CELL_INDEX = 1;
+const NOTE_CELL_INDEX = 2;
 const USED_IN_SEPARATOR = ';';
 const LANGUAGE_PROFICIENCY_SEPARATOR = ': ';
 
@@ -93,6 +95,7 @@ export const parseSkillsNote = (markdown: string): SkillsNote => {
           .split(USED_IN_SEPARATOR)
           .map(place => place.trim())
           .filter(Boolean),
+        note: cells[NOTE_CELL_INDEX] ?? '',
       })),
     skills: skillRows.map(cells => cells[FIRST_CELL_INDEX]).filter(Boolean),
     skillsText: skillRows.map(cells => cells.join(' ')).join(' '),

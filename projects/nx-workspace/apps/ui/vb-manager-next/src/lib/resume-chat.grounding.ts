@@ -5,6 +5,7 @@ import type {
 } from '@vigilant-broccoli/resume';
 import type { ConfirmedFact, TailoringContext } from './resume-chat.schema';
 import type { SkillsNote, SkillUsage } from './resume-chat.skills-note';
+import { extractQuantities, isQuantityGrounded } from './resume-chat.metrics';
 
 const WHITESPACE_PATTERN = /\s+/g;
 const QUOTE_PATTERN = /["'“”‘’`]/g;
@@ -114,15 +115,28 @@ const claimText = (resume: ResumeData): string =>
 
 const OPEN_SOURCE_LABEL = 'open source';
 
+/** Entries keyed the way the skills note names them: the company, or `Open Source` for projects. */
+const labelledEntries = (
+  resume: ResumeData,
+): (readonly [string, ResumeWorkExperience])[] => [
+  ...resume.workExperience.map(
+    entry => [normalize(entry.company), entry] as const,
+  ),
+  ...resume.projectExperience.map(entry => [OPEN_SOURCE_LABEL, entry] as const),
+];
+
+const OPEN_SOURCE_DISPLAY = 'Open Source';
+
+const displayLabel = (resume: ResumeData, label: string): string =>
+  resume.workExperience.find(entry => normalize(entry.company) === label)
+    ?.company ?? OPEN_SOURCE_DISPLAY;
+
 const bulletsByLabel = (resume: ResumeData): Map<string, string[]> =>
-  new Map([
-    ...resume.workExperience.map(
-      entry => [normalize(entry.company), entry.bullets] as const,
-    ),
-    ...resume.projectExperience.map(
-      entry => [OPEN_SOURCE_LABEL, entry.bullets] as const,
-    ),
-  ]);
+  labelledEntries(resume).reduce(
+    (byLabel, [label, entry]) =>
+      byLabel.set(label, [...(byLabel.get(label) ?? []), ...entry.bullets]),
+    new Map<string, string[]>(),
+  );
 
 /**
  * A new bullet may only mention a skill the target asks for in a place the
@@ -154,10 +168,85 @@ const findMisplacedSkillBullets = (
           )
           .map(
             ({ skill, usedIn }) =>
-              `A new bullet under "${label}" mentions ${skill}, but the skills note lists it only under: ${usedIn.join(', ') || 'nowhere'}. Move it to one of those or remove it.`,
+              `A new bullet under "${displayLabel(candidate, label)}" mentions ${skill}, but the skills note lists it only under: ${usedIn.join(', ') || 'nowhere'}. Move it to one of those or remove it.`,
           ),
       );
   });
+};
+
+const withoutYearsClaims = (text: string): string =>
+  text.replace(YEARS_CLAIM_PATTERN, ' ');
+
+const entrySourceText = (
+  current: ResumeData,
+  label: string,
+  skillsNote?: SkillsNote,
+): string[] => [
+  ...labelledEntries(current)
+    .filter(([entryLabel]) => entryLabel === label)
+    .flatMap(([, entry]) => [...entry.bullets, entry.startDate, entry.endDate]),
+  ...(skillsNote?.experience ?? [])
+    .filter(entry => normalize(entry.company) === label)
+    .flatMap(entry => [entry.context, entry.dates]),
+  ...(skillsNote?.skillUsage ?? [])
+    .filter(({ usedIn }) => usedIn.map(normalize).includes(label))
+    .map(({ note }) => note),
+];
+
+/**
+ * Every figure in a bullet must come from that same entry's current bullets,
+ * its career-note records or the user's own words, so a metric is neither
+ * invented nor moved to another employer; the summary may use any of them.
+ * Years claims are bounded separately by the work dates.
+ */
+const findUngroundedFigures = (
+  current: ResumeData,
+  candidate: ResumeData,
+  context: TailoringContext,
+  skillsNote?: SkillsNote,
+): string[] => {
+  const userWords = context.confirmedFacts.map(fact => fact.evidence);
+  const allSources = [
+    claimText(current),
+    ...labelledEntries(current).flatMap(([, entry]) => [
+      entry.startDate,
+      entry.endDate,
+    ]),
+    skillsNote?.skillsText ?? '',
+    ...(skillsNote?.experience ?? []).map(
+      entry => `${entry.context} ${entry.dates}`,
+    ),
+  ];
+  const ungrounded = (text: string, sources: string[]): string[] => {
+    const sourceQuantities = extractQuantities(
+      [...sources, ...userWords].join('\n'),
+    );
+    return Array.from(
+      new Set(
+        extractQuantities(withoutYearsClaims(text))
+          .filter(quantity => !isQuantityGrounded(quantity, sourceQuantities))
+          .map(quantity => `"${quantity.text}"`),
+      ),
+    );
+  };
+  return [
+    ['the summary', ungrounded(candidate.summary ?? '', allSources)] as const,
+    ...Array.from(bulletsByLabel(candidate)).map(
+      ([label, bullets]) =>
+        [
+          `"${displayLabel(candidate, label)}"`,
+          ungrounded(
+            bullets.join('\n'),
+            entrySourceText(current, label, skillsNote),
+          ),
+        ] as const,
+    ),
+  ]
+    .filter(([, figures]) => figures.length > 0)
+    .map(
+      ([place, figures]) =>
+        `Figures in ${place} (${figures.join(', ')}) are not in that entry's current bullets, its career-note records or the user's own words. Restore the original figures or drop them; if the user stated one, record it as a confirmed fact quoting their words.`,
+    );
 };
 
 const experienceKey = (entry: ResumeWorkExperience): string =>
@@ -191,9 +280,10 @@ export interface GroundingInput {
 
 /**
  * Deterministic guards on what the model may add: new skills need support in the
- * current resume, the skills note or a confirmed fact; header links never
- * change; the title may only become one the skills note lists; and identity,
- * employers and dates only change on a quoted instruction.
+ * current resume, the skills note or a confirmed fact; figures need a source in
+ * the same entry; header links never change; the title may only become one the
+ * skills note lists; and identity, employers and dates only change on a quoted
+ * instruction.
  */
 export const findGroundingIssues = ({
   current,
@@ -233,6 +323,10 @@ export const findGroundingIssues = ({
       normalize(context.requirements.join('\n')),
       skillsNote?.skillUsage ?? [],
     ),
+  );
+
+  issues.push(
+    ...findUngroundedFigures(current, candidate, context, skillsNote),
   );
 
   const { totalMonths, fullYears } = calculateWorkExperience(candidate);
@@ -283,4 +377,14 @@ export const findGroundingIssues = ({
   }
 
   return issues;
+};
+
+/** Whether a gap keyword ended up in the resume after all, so its gap note is stale. */
+export const isMentionedInResume = (
+  resume: ResumeData,
+  keyword: string,
+): boolean => {
+  const text = normalize(evidenceText(resume));
+  const parts = skillParts(keyword);
+  return parts.length > 0 && parts.every(part => containsTerm(text, part));
 };

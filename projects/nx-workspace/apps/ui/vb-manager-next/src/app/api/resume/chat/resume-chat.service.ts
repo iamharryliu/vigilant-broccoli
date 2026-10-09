@@ -29,6 +29,7 @@ import type {
 } from '../../../../lib/resume-chat.schema';
 import {
   findGroundingIssues,
+  isMentionedInResume,
   sanitizeTailoringContext,
 } from '../../../../lib/resume-chat.grounding';
 import {
@@ -61,6 +62,8 @@ const MESSAGE = {
   NO_DRAFT:
     'The model could not produce a valid, supported resume draft, so nothing was proposed and your resume was not changed.',
   TOOL_RECORDED: 'Ledger recorded.',
+  TOOL_RECORDED_ONLY:
+    'Ledger recorded. If the user supplied a job or recruiter request or asked for an edit, call update_resume now with a draft from supported facts and the gaps in unconfirmed; otherwise reply in plain text.',
   TOOL_REJECTED:
     'Draft rejected. Fix every problem and call update_resume again with the COMPLETE corrected resume. If it overflowed, shorten only as much as needed and do not drop below the target fill band; a previously retained one-page version is not lost. Keep confirmed facts, every employer, role and date, and the most relevant content.',
   TOOL_UNDERFILLED: `This draft fits ${RESUME_PDF_MAX_PAGES} page and is retained as the best fit so far, but it leaves noticeable unused space. Call update_resume again with the COMPLETE resume only if the current resume or user-confirmed facts hold more supported, job-relevant material to restore or develop: omitted achievements, clearer wording of existing facts, confirmed experience. Never invent claims, metrics or experience, repeat bullets, pad or keyword-stuff. If no more supported material exists, or the user asked for a concise version, reply in plain text instead, say so, and optionally ask which relevant experience they could add.`,
@@ -106,14 +109,15 @@ interface Candidate {
   attempt?: number;
 }
 
-type Evaluation =
+type Evaluation = { unconfirmed: UnconfirmedKeyword[] } & (
   | { kind: 'fits'; candidate: Candidate; layout: ResumePdfLayout }
   | {
       kind: 'rejected';
       problems: string[];
       candidate?: Candidate;
       renderFailed?: boolean;
-    };
+    }
+);
 
 interface RunOptions {
   openai: OpenAI;
@@ -189,21 +193,31 @@ const evaluateUpdate = async (
     return {
       kind: 'rejected',
       problems: ['The tool arguments were not a valid JSON object.'],
+      unconfirmed: [],
     };
   }
+  const unconfirmed = args.data.unconfirmed ?? [];
 
   const validation = validateResume(args.data.resume);
   if (!validation.ok) {
     return {
       kind: 'rejected',
       problems: validation.errors.slice(0, MAX_ISSUES_SHOWN),
+      unconfirmed,
     };
   }
 
   const candidate: Candidate = {
-    resume: validation.resume,
+    resume: withRoleSummaryOpener(
+      alignTitleWithTarget(
+        validation.resume,
+        request.resume.basics.title,
+        context,
+        skillsNote,
+      ),
+    ),
     summary: args.data.summary?.trim() || MESSAGE.DEFAULT_SUMMARY,
-    unconfirmed: args.data.unconfirmed ?? [],
+    unconfirmed,
   };
 
   emit({
@@ -220,18 +234,10 @@ const evaluateUpdate = async (
     skillsNote,
   });
   if (groundingIssues.length > 0) {
-    return { kind: 'rejected', problems: groundingIssues };
+    return { kind: 'rejected', problems: groundingIssues, unconfirmed };
   }
 
-  const aligned = withRoleSummaryOpener(
-    alignTitleWithTarget(
-      candidate.resume,
-      request.resume.basics.title,
-      context,
-      skillsNote,
-    ),
-  );
-  const ordered = orderSkillsByImportance(aligned, context);
+  const ordered = orderSkillsByImportance(candidate.resume, context);
   const highlightKeywords = findHighlightKeywords(ordered, context, skillsNote);
   candidate.resume = highlightResumeKeywords(ordered, highlightKeywords);
 
@@ -249,6 +255,7 @@ const evaluateUpdate = async (
             request.resume,
             candidate.resume,
             context,
+            userMessages.at(-1) ?? '',
             skillsNote,
           ),
           context,
@@ -261,12 +268,14 @@ const evaluateUpdate = async (
         kind: 'fits',
         candidate: { ...candidate, layout, attempt },
         layout,
+        unconfirmed,
       };
     }
     return {
       kind: 'rejected',
       problems: [describeResumePdfLayout(layout)],
       candidate: { ...candidate, layout },
+      unconfirmed,
     };
   } catch (error) {
     return {
@@ -274,6 +283,7 @@ const evaluateUpdate = async (
       problems: [MESSAGE.RENDER_FAILED(errorMessage(error))],
       candidate,
       renderFailed: true,
+      unconfirmed,
     };
   }
 };
@@ -393,13 +403,32 @@ const recordContextCalls = (
 const toolResults = (
   toolCalls: ToolCall[],
   feedback?: { id: string; content: string },
+  recorded: string = MESSAGE.TOOL_RECORDED,
 ): ChatMessageParam[] =>
   toolCalls.map(toolCall => ({
     role: 'tool',
     tool_call_id: toolCall.id,
-    content:
-      feedback?.id === toolCall.id ? feedback.content : MESSAGE.TOOL_RECORDED,
+    content: feedback?.id === toolCall.id ? feedback.content : recorded,
   }));
+
+const gapKey = (gap: UnconfirmedKeyword): string =>
+  gap.keyword.trim().toLowerCase();
+
+/**
+ * Nothing can be confirmed between revisions of one request, so a gap the model
+ * reported on any attempt still applies to the draft that is finally returned.
+ */
+const mergeGaps = (
+  gaps: UnconfirmedKeyword[],
+  added: UnconfirmedKeyword[],
+): UnconfirmedKeyword[] =>
+  added.reduce(
+    (merged, gap) =>
+      merged.some(existing => gapKey(existing) === gapKey(gap))
+        ? merged
+        : [...merged, gap],
+    gaps,
+  );
 
 const describeOverflow = (candidate?: Candidate): string =>
   candidate?.layout
@@ -440,12 +469,20 @@ export async function runResumeChat({
   let lastDraft: Candidate | undefined;
   let best: Candidate | undefined;
   let lastProblems: string[] = [];
+  let gaps: UnconfirmedKeyword[] = [];
   let hasRequestedReply = false;
+
+  const withGaps = (candidate: Candidate): Candidate => ({
+    ...candidate,
+    unconfirmed: gaps.filter(
+      gap => !isMentionedInResume(candidate.resume, gap.keyword),
+    ),
+  });
 
   const unvalidated = (attempts: number, modelText: string): ResultEvent =>
     lastDraft
       ? buildUpdateEvent(
-          lastDraft,
+          withGaps(lastDraft),
           {
             status: RESUME_CHAT_VALIDATION_STATUS.UNVALIDATED,
             attempts,
@@ -467,7 +504,7 @@ export async function runResumeChat({
     modelText: string,
   ): ResultEvent =>
     buildUpdateEvent(
-      candidate,
+      withGaps(candidate),
       {
         status: RESUME_CHAT_VALIDATION_STATUS.VALIDATED,
         attempts,
@@ -528,7 +565,10 @@ export async function runResumeChat({
           };
         }
         hasRequestedReply = true;
-        messages.push(message, ...toolResults(toolCalls));
+        messages.push(
+          message,
+          ...toolResults(toolCalls, undefined, MESSAGE.TOOL_RECORDED_ONLY),
+        );
         continue;
       }
 
@@ -541,6 +581,7 @@ export async function runResumeChat({
         call,
         emit,
       );
+      gaps = mergeGaps(gaps, evaluation.unconfirmed);
 
       if (evaluation.kind === 'fits') {
         const repeatsBest =
