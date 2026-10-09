@@ -7,7 +7,7 @@ resource "google_service_account" "github_actions_production_promotion" {
 resource "google_iam_workload_identity_pool_provider" "github_production_promotion" {
   workload_identity_pool_id          = google_iam_workload_identity_pool.github_actions.workload_identity_pool_id
   workload_identity_pool_provider_id = "github-production-promotion"
-  display_name                       = "GitHub provider (production promotion)"
+  display_name                       = "GitHub (production promotion)"
 
   # Mapping attribute.repository would also match the shared service account's
   # repository-wide pool binding, exposing its broader permissions.
