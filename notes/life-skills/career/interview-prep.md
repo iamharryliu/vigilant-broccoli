@@ -2,6 +2,7 @@
 
 ## Table of Contents
 
+- [Ask Yourself](#ask-yourself)
 - [What I Care About](#what-i-care-about)
 - [Questions](#questions)
   - [Exit Interview Questions](#exit-interview-questions)
@@ -12,6 +13,20 @@
   - [Further Stage Questions](#further-stage-questions)
   - [Questions for Team](#questions-for-team)
   - [Negotiation Questions](#negotiation-questions)
+
+## Ask Yourself
+
+| Factor              | Category   | Ask Yourself                                                                                          |
+| ------------------- | ---------- | ----------------------------------------------------------------------------------------------------- |
+| Product quality     | Delivery   | Is the product reliable, useful, and something you would be proud to work on?                         |
+| Project opportunity | Delivery   | Is the project greenfield or brownfield? Will you have opportunities to make architectural decisions? |
+| Autonomy            | Management | Will you be trusted to make decisions and choose how to approach your work without micromanagement?   |
+| Management          | Management | Does management set clear expectations, provide support, and communicate openly?                      |
+| Work arrangement    | Management | Does the role offer flexible hybrid or remote work?                                                   |
+| Work-life balance   | Management | Are the working hours, workload, and expectations compatible with the life you want?                  |
+| Team                | People     | Is the team collaborative and supportive, with people you can learn from and work well with?          |
+| Company security    | Stability  | Is the company financially stable, growing sustainably, and well positioned for the future?           |
+| Role security       | Stability  | How secure is the role given the company's financial health, priorities, and potential restructuring? |
 
 ## What I Care About
 
