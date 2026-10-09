@@ -1,12 +1,14 @@
 'use client';
 
-import { CSSProperties, useRef } from 'react';
+import { CSSProperties, useRef, useState, RefObject } from 'react';
 import {
+  Button,
   PeerCaretsOverlay,
   PeerCursorsOverlay,
   SyncedTextEditor,
 } from '@vigilant-broccoli/react-lib';
 import { useWhiteboard } from '../../hooks/use-whiteboard';
+import { WhiteboardAssistantDialog } from './WhiteboardAssistantDialog';
 
 interface WhiteboardEditorProps {
   homeId: number | null;
@@ -18,6 +20,8 @@ interface WhiteboardEditorProps {
   style?: CSSProperties;
 }
 
+const DEFAULT_BOARD_KEY = 'family';
+const AI_EDIT_LABEL = 'AI edit';
 const DEFAULT_PLACEHOLDER = 'Shared family notes...';
 const CURSOR_SEND_INTERVAL_MS = 60;
 
@@ -26,7 +30,7 @@ export function WhiteboardEditor({
   token,
   userId,
   username,
-  boardKey,
+  boardKey = DEFAULT_BOARD_KEY,
   placeholder = DEFAULT_PLACEHOLDER,
   style,
 }: WhiteboardEditorProps) {
@@ -41,7 +45,9 @@ export function WhiteboardEditor({
     setTextCursorIndex,
   } = useWhiteboard(homeId, token, userId, username, boardKey);
 
+  const [assistantOpen, setAssistantOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const dialogTextareaRef = useRef<HTMLTextAreaElement>(null);
   const lastCursorSentAtRef = useRef(0);
   const lastIndexSentAtRef = useRef(0);
 
@@ -60,26 +66,29 @@ export function WhiteboardEditor({
 
   const handleBoardMouseLeave = () => setCursorPosition(null, null);
 
-  const sendTextCursorIndex = () => {
+  const sendTextCursorIndex = (ref: RefObject<HTMLTextAreaElement | null>) => {
     const now = Date.now();
     if (now - lastIndexSentAtRef.current < CURSOR_SEND_INTERVAL_MS) return;
     lastIndexSentAtRef.current = now;
-    const textarea = textareaRef.current;
+    const textarea = ref.current;
     if (!textarea) return;
     setTextCursorIndex(textarea.selectionStart);
   };
 
   const handleTextareaBlur = () => setTextCursorIndex(null);
 
-  return (
+  const renderEditor = (
+    ref: RefObject<HTMLTextAreaElement | null>,
+    editorStyle?: CSSProperties,
+  ) => (
     <SyncedTextEditor
       content={content}
       onChange={setContent}
       isLoading={isLoading}
       placeholder={placeholder}
-      style={style}
-      textareaRef={textareaRef}
-      onTextareaSelect={sendTextCursorIndex}
+      style={editorStyle}
+      textareaRef={ref}
+      onTextareaSelect={() => sendTextCursorIndex(ref)}
       onTextareaBlur={handleTextareaBlur}
       onBoardMouseMove={handleBoardMouseMove}
       onBoardMouseLeave={handleBoardMouseLeave}
@@ -91,11 +100,39 @@ export function WhiteboardEditor({
             cursors={cursors}
             currentUserId={userId}
             content={content}
-            textareaRef={textareaRef}
+            textareaRef={ref}
           />
           <PeerCursorsOverlay cursors={cursors} currentUserId={userId} />
         </>
       }
     />
+  );
+
+  return (
+    <div
+      className="relative flex flex-col"
+      style={{ display: 'flex', flexDirection: 'column', ...style }}
+    >
+      {renderEditor(textareaRef, { flex: 1, minHeight: 0 })}
+      <Button
+        size="sm"
+        variant="outline"
+        className="absolute right-3 top-3"
+        disabled={isLoading || !homeId}
+        onClick={() => setAssistantOpen(true)}
+      >
+        {AI_EDIT_LABEL}
+      </Button>
+      <WhiteboardAssistantDialog
+        open={assistantOpen}
+        onOpenChange={setAssistantOpen}
+        homeId={homeId}
+        boardKey={boardKey}
+        token={token}
+        content={content}
+        setContent={setContent}
+        editor={renderEditor(dialogTextareaRef, { flex: 1, minHeight: 0 })}
+      />
+    </div>
   );
 }
