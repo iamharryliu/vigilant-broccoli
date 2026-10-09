@@ -133,6 +133,7 @@
     "gh:actions:health-check": "gh workflow run ci-health-check --repo iamharryliu/vigilant-broccoli",
     "gh:actions:kill-services": "gh workflow run kill-services --repo iamharryliu/vigilant-broccoli",
     "gh:actions:security-cloudflare-access": "gh workflow run test-security-cloudflare-access --repo iamharryliu/vigilant-broccoli",
+    "gh:actions:promote-production": "gh workflow run manual-promote-production --repo iamharryliu/vigilant-broccoli --ref main",
     "gh:actions:rotate-secrets": "gh workflow run ci-rotate-secrets --repo iamharryliu/vigilant-broccoli",
     "gh:actions:run-tests": "gh workflow run manual-run-tests --repo iamharryliu/vigilant-broccoli",
     "cheatsheet": "./scripts/shell/cheatsheet.sh",

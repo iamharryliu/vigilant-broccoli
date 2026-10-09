@@ -92,8 +92,28 @@ resource "github_repository_ruleset" "main" {
   }
 }
 
-resource "github_repository_ruleset" "production" {
-  name        = "production"
+locals {
+  production_promotion_variables = {
+    PRODUCTION_PROMOTION_APP_ID          = tostring(var.production_promotion_gh_app_id)
+    PRODUCTION_PROMOTION_ENABLED         = tostring(var.production_promotion_gh_app_id > 0)
+    PRODUCTION_PROMOTION_WIF_PROVIDER    = google_iam_workload_identity_pool_provider.github_production_promotion.name
+    PRODUCTION_PROMOTION_SERVICE_ACCOUNT = google_service_account.github_actions_production_promotion.email
+  }
+}
+
+resource "github_actions_variable" "production_promotion" {
+  for_each      = local.production_promotion_variables
+  repository    = github_repository.vigilant_broccoli.name
+  variable_name = each.key
+  value         = each.value
+}
+
+# Deletion and force-pushes are blocked for everyone, the promotion App
+# included: no bypass actors, so neither an admin nor the App can rewrite or
+# remove production. Kept apart from the update ruleset below because a bypass
+# actor on a ruleset skips every rule in it.
+resource "github_repository_ruleset" "production_protection" {
+  name        = "production-protection"
   repository  = github_repository.vigilant_broccoli.name
   target      = "branch"
   enforcement = "active"
@@ -105,22 +125,46 @@ resource "github_repository_ruleset" "production" {
     }
   }
 
-  # Only the admin bypass actor can update production at all (`update`), and
-  # even then only via a fast-forward (`non_fast_forward`) — matching a
-  # local `git merge main --ff-only && git push`, not a GitHub-side PR
-  # merge. Bypass mode "always" means the admin can still override both in
-  # an emergency, same tradeoff as the `main` ruleset above.
-  bypass_actors {
-    actor_id    = local.ruleset_bypass_repository_role
-    actor_type  = "RepositoryRole"
-    bypass_mode = "always"
-  }
-
   rules {
     deletion         = true
     non_fast_forward = true
-    update           = true
   }
+}
+
+# `update` restricts every push to production to the dedicated promotion App.
+# Rulesets cannot restrict which branch a push comes from, so the fast-forward
+# from main is enforced by manual-promote-production.yml, whose App key only
+# that workflow on main can read. Disabled until the App ID is configured.
+resource "github_repository_ruleset" "production_update" {
+  name        = "production-update"
+  repository  = github_repository.vigilant_broccoli.name
+  target      = "branch"
+  enforcement = var.production_promotion_gh_app_id > 0 ? "active" : "disabled"
+
+  conditions {
+    ref_name {
+      include = ["refs/heads/production"]
+      exclude = []
+    }
+  }
+
+  dynamic "bypass_actors" {
+    for_each = var.production_promotion_gh_app_id > 0 ? [var.production_promotion_gh_app_id] : []
+    content {
+      actor_id    = bypass_actors.value
+      actor_type  = "Integration"
+      bypass_mode = "always"
+    }
+  }
+
+  rules {
+    update = true
+  }
+}
+
+moved {
+  from = github_repository_ruleset.production
+  to   = github_repository_ruleset.production_protection
 }
 
 import {

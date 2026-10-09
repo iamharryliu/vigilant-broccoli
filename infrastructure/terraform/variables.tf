@@ -72,6 +72,12 @@ variable "upptime_sync_gh_app_id" {
   default     = 5202397
 }
 
+variable "production_promotion_gh_app_id" {
+  description = "Public ID of the dedicated production-promotion App installed only on this repository (Contents write). Set after registering the App and storing its key in kv/production-promotion. Zero leaves the production update ruleset disabled and the promotion workflow gated off."
+  type        = number
+  default     = 0
+}
+
 variable "upptime_migration_complete" {
   description = "Enables scheduled checks in the initialized monitoring repository. Set true only after importing history and verifying manual checks."
   type        = bool
