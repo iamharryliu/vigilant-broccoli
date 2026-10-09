@@ -213,7 +213,9 @@ vault write auth/jwt/role/${VAULT_PROMOTION_ROLE_NAME} - <<ROLE
   \"user_claim\": \"actor\",
   \"bound_claims\": {
     \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
-    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/manual-promote-production.yml@refs/heads/main\"
+    \"workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/manual-promote-production.yml@refs/heads/main\",
+    \"ref\": \"refs/heads/main\",
+    \"event_name\": \"workflow_dispatch\"
   },
   \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
   \"policies\": [\"${VAULT_PROMOTION_POLICY_NAME}\"],
