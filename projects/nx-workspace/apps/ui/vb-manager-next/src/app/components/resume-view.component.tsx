@@ -47,7 +47,8 @@ const WorkExperienceEntry = ({ entry }: { entry: ResumeWorkExperience }) => (
 );
 
 export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
-  const { basics, workExperience, projectExperience, skills } = resume;
+  const { basics, summary, workExperience, projectExperience, skills } = resume;
+  const trimmedSummary = summary?.trim();
 
   return (
     <div
@@ -81,7 +82,7 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
         </div>
       </div>
 
-      <p className="mb-2">{skills.technical.join(SKILL_SEPARATOR)}</p>
+      {trimmedSummary && <p className="mb-2">{trimmedSummary}</p>}
 
       <section className="mb-2">
         <SectionHeading>Work Experience</SectionHeading>
@@ -96,6 +97,10 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
           <WorkExperienceEntry key={index} entry={entry} />
         ))}
       </section>
+
+      <p className="mt-[18px] border-t border-black pt-1 text-center">
+        {skills.technical.join(SKILL_SEPARATOR)}
+      </p>
     </div>
   );
 };

@@ -1,4 +1,8 @@
-import { Pastebin, ThemeProvider, useDocumentTitle } from '@vigilant-broccoli/react-lib';
+import {
+  Pastebin,
+  ThemeProvider,
+  useDocumentTitle,
+} from '@vigilant-broccoli/react-lib';
 import { PASTEBIN_GROUPS } from '@vigilant-broccoli/links';
 
 const PAGE_TITLE = 'Links';
