@@ -90,7 +90,7 @@ resource "github_actions_variable" "upptime_monitoring_enabled" {
 resource "github_repository_pages" "upptime" {
   repository = github_repository.upptime.name
   build_type = "legacy"
-  cname      = cloudflare_dns_record.harryliu_dev_upptime.name
+  cname      = cloudflare_dns_record.harryliu_dev_uptime.name
 
   source {
     branch = github_branch.upptime_pages.branch

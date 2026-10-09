@@ -38,7 +38,7 @@
     },
     {
       "id": "calendars",
-      "href": "https://calendars.harryliu.dev/",
+      "href": "https://calendar.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.CALENDARS.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.CALENDARS.DESCRIPTION"
     },

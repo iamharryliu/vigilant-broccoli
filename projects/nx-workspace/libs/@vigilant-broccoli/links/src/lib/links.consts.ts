@@ -602,7 +602,7 @@ export const HARRYLIU_APP_URL = {
   },
   CALENDARS: {
     NAME: 'Calendars',
-    URL: 'https://calendars.harryliu.dev/',
+    URL: 'https://calendar.harryliu.dev/',
     STAGING_URL: 'https://staging-calendars.pages.dev/',
   },
   WEATHER: {

@@ -287,7 +287,7 @@ variable "utilities_pages_subdomain" {
 
 variable "calendars_domain" {
   type    = string
-  default = "calendars.harryliu.dev"
+  default = "calendar.harryliu.dev"
 }
 
 variable "calendars_pages_project" {
@@ -298,6 +298,21 @@ variable "calendars_pages_project" {
 variable "calendars_pages_subdomain" {
   type    = string
   default = "production-calendars.pages.dev"
+}
+
+variable "projects_domain" {
+  type    = string
+  default = "projects.harryliu.dev"
+}
+
+variable "status_domain" {
+  type    = string
+  default = "status.harryliu.dev"
+}
+
+variable "uptime_domain" {
+  type    = string
+  default = "uptime.harryliu.dev"
 }
 
 variable "component_library_domain" {
