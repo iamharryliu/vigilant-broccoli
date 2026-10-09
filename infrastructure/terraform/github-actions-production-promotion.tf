@@ -1,5 +1,5 @@
 resource "google_service_account" "github_actions_production_promotion" {
-  account_id   = "github-actions-production-promotion"
+  account_id   = "github-actions-prod-promotion"
   display_name = "GitHub Actions (production promotion)"
   description  = "Only reads Cloudflare Access credentials for the workflow-bound production promotion Vault role."
 }
