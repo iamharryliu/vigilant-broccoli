@@ -30,15 +30,15 @@ Upptime executes in `iamharryliu/uptime` using that repository's temporary `GITH
 
 **The App.** A dedicated private GitHub App, `production-promotion`, webhooks inactive, installed only on `iamharryliu/vigilant-broccoli`, with repository permission **Contents: read and write** (Metadata read is implicit). It is not the agent-sandbox/code-server App and that App gets no production bypass. If a promotion that includes `.github/workflows/**` changes is rejected for lacking `workflows` permission, add Workflows write to the App and accept the new permission request on the installation.
 
-**Rollout order.** Nothing here has been applied; do it in this order:
+**Rollout order.** Applied in this order and verified (App ID 5249426; `manual-promote-production` run 37921322293 fast-forwarded `production` to `main` and the `push: production` deploys succeeded). It remains the procedure to follow when redoing it, e.g. for a new App or key:
 
 1. Register and install the App as above; note its numeric App ID and generate a private key.
-2. Store the key: `base64 -i key.pem | tr -d '\n'`, then `vault kv put kv/production-promotion PRODUCTION_PROMOTION_GH_APP_PRIVATE_KEY=<b64>` (same procedure as in [secret-rotation-implementation.md](./secret-rotation-implementation.md)); refresh the Bitwarden backup.
+2. Store the key: `pnpm vault:store-promotion-key <path-to-pem>` (validates the key, base64-encodes it and writes `PRODUCTION_PROMOTION_GH_APP_PRIVATE_KEY` to `kv/production-promotion` on the Vault VM). `backup-vault-secrets.ts` reads only `kv/data/secrets`, so `kv/production-promotion` is not in the Bitwarden backup; the App's private key can be regenerated in its settings if lost.
 3. Run `pnpm gcp:vm:post-init` to create `github-actions-production-promotion-role`/`-policy` (bound on `repository`, `workflow_ref` of this workflow file on `main`, `ref` `refs/heads/main` and `event_name` `workflow_dispatch`, reading only `kv/data/production-promotion`).
 4. Set `production_promotion_gh_app_id` in `infrastructure/terraform/variables.tf`, then locally `pnpm tf:plan` and `pnpm tf:apply` (applies stay local — see [terraform.md](../ci/terraform.md)). This creates the dedicated GCP identity and WIF provider (same `workflow_ref`/`ref`/`event_name` conditions, mapped as `attribute.workflow_ref` only), the `PRODUCTION_PROMOTION_*` Actions variables (variables, not secrets), splits the old `production` ruleset into the two above (a `moved` block renames it, dropping its admin bypass) and activates `production-update`. Until the App ID is non-zero, `production-update` is `disabled` and the workflow job is skipped, but `production-protection` is already enforced: nobody can force-push or delete `production`.
 5. Merge the workflow to `main`, then run it once and confirm the deploy runs on `production` start.
 
-**Credential rotation.** Generate a new key on the App, `vault kv put` it to `kv/production-promotion` as above, run the workflow once to confirm, then delete the old key in the App settings. A leaked key can mint tokens until revoked, and those tokens can update `production` (not delete or rewind it); revoke the key first, then inspect `production` history.
+**Credential rotation.** Generate a new key on the App, store it with `pnpm vault:store-promotion-key <path-to-pem>`, run the workflow once to confirm, then delete the old key in the App settings. A leaked key can mint tokens until revoked, and those tokens can update `production` (not delete or rewind it); revoke the key first, then inspect `production` history.
 
 **Enforcement limits.**
 
