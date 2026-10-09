@@ -18,9 +18,10 @@ Real-time location sharing for friends and family.
 - Build Tool - Next.js
 - External libs
   - Leaflet / react-leaflet
-  - OpenStreetMap Overpass API (nearby places)
+  - OpenStreetMap Overpass API via VK Maps and Private.coffee (nearby places)
 - Internal libs
   - `common-browser`
+  - `common-js`
   - `react-lib`
 - Cloud services
   - Supabase (live location sync)

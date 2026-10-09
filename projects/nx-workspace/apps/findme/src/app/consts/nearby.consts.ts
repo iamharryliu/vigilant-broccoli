@@ -5,7 +5,12 @@ export const NEARBY_MANUAL_REFRESH_COOLDOWN_MS = 5_000;
 export const NEARBY_ELIGIBILITY_CHECK_INTERVAL_MS = 5_000;
 export const NEARBY_REQUEST_TIMEOUT_MS = 15_000;
 export const OVERPASS_SERVER_TIMEOUT_SECONDS = 10;
-export const OVERPASS_ENDPOINT = 'https://overpass-api.de/api/interpreter';
+export const OVERPASS_ENDPOINTS = [
+  'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
+  'https://overpass.private.coffee/api/interpreter',
+] as const;
+export const OVERPASS_FORM_DATA_FIELD = 'data';
+export const OVERPASS_RUNTIME_ERROR_PATTERN = /runtime error/i;
 
 export const OVERPASS_ELEMENT_TYPE = {
   NODE: 'node',

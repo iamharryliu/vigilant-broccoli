@@ -3,10 +3,13 @@ import {
   NEARBY_RADIUS_METRES,
   NEARBY_REQUEST_TIMEOUT_MS,
   OVERPASS_ELEMENT_TYPE,
-  OVERPASS_ENDPOINT,
+  OVERPASS_ENDPOINTS,
+  OVERPASS_FORM_DATA_FIELD,
+  OVERPASS_RUNTIME_ERROR_PATTERN,
   OVERPASS_SERVER_TIMEOUT_SECONDS,
   PlaceCategory,
 } from '../app/consts/nearby.consts';
+import { HTTP_METHOD, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   Bounds,
   Coordinates,
@@ -17,21 +20,22 @@ import {
 const NAME_TAGS = ['name', 'brand', 'operator'] as const;
 const SAME_PLACE_MAX_SEPARATION_METRES = 30;
 const SUBTYPE_SEPARATOR_PATTERN = /_/g;
-const FORM_DATA_FIELD = 'data';
 
 interface OverpassElement {
   type: string;
   id: number;
   lat?: number;
   lon?: number;
-  center?: { lat: number; lon: number };
   bounds?: { minlat: number; minlon: number; maxlat: number; maxlon: number };
   tags?: Record<string, string>;
 }
 
 interface OverpassResponse {
   elements?: OverpassElement[];
+  remark?: string;
 }
+
+class OverpassQueryError extends Error {}
 
 export interface Place {
   id: string;
@@ -59,7 +63,7 @@ const buildFilterClause = (
 export const buildOverpassQuery = (origin: Coordinates): string =>
   `[out:json][timeout:${OVERPASS_SERVER_TIMEOUT_SECONDS}];(${CATEGORY_FILTERS.map(
     filter => buildFilterClause(filter, origin),
-  ).join('')});out tags center bb;`;
+  ).join('')});out body bb;`;
 
 const classify = (tags: Record<string, string>) => {
   for (const filter of CATEGORY_FILTERS) {
@@ -75,11 +79,12 @@ const classify = (tags: Record<string, string>) => {
 const toPlace = (element: OverpassElement): Place | null => {
   const tags = element.tags ?? {};
   const classification = classify(tags);
-  const lat = element.lat ?? element.center?.lat;
-  const lng = element.lon ?? element.center?.lon;
+  const isArea = element.type !== OVERPASS_ELEMENT_TYPE.NODE;
+  const bounds = isArea ? element.bounds : undefined;
+  const lat = element.lat ?? (bounds && (bounds.minlat + bounds.maxlat) / 2);
+  const lng = element.lon ?? (bounds && (bounds.minlon + bounds.maxlon) / 2);
   if (!classification || lat === undefined || lng === undefined) return null;
   const nameTag = NAME_TAGS.find(tag => tags[tag]);
-  const isArea = element.type !== OVERPASS_ELEMENT_TYPE.NODE;
   return {
     id: `${element.type}/${element.id}`,
     name: nameTag ? tags[nameTag] : null,
@@ -87,15 +92,14 @@ const toPlace = (element: OverpassElement): Place | null => {
     subtype: classification.subtype.replace(SUBTYPE_SEPARATOR_PATTERN, ' '),
     lat,
     lng,
-    bounds:
-      isArea && element.bounds
-        ? {
-            minLat: element.bounds.minlat,
-            minLng: element.bounds.minlon,
-            maxLat: element.bounds.maxlat,
-            maxLng: element.bounds.maxlon,
-          }
-        : null,
+    bounds: bounds
+      ? {
+          minLat: bounds.minlat,
+          minLng: bounds.minlon,
+          maxLat: bounds.maxlat,
+          maxLng: bounds.maxlon,
+        }
+      : null,
   };
 };
 
@@ -140,19 +144,46 @@ export const withDistances = (
     }))
     .sort((a, b) => a.distanceMetres - b.distanceMetres);
 
+const fetchFromEndpoint = async (
+  endpoint: string,
+  query: string,
+  signal: AbortSignal,
+): Promise<Place[]> => {
+  const response = await fetch(endpoint, {
+    method: HTTP_METHOD.POST,
+    body: new URLSearchParams({ [OVERPASS_FORM_DATA_FIELD]: query }),
+    signal: AbortSignal.any([
+      signal,
+      AbortSignal.timeout(NEARBY_REQUEST_TIMEOUT_MS),
+    ]),
+  });
+  if (response.status === HTTP_STATUS_CODES.BAD_REQUEST) {
+    throw new OverpassQueryError('Overpass rejected the query');
+  }
+  if (!response.ok) throw new Error(`Overpass responded ${response.status}`);
+  const body = (await response.json()) as OverpassResponse;
+  if (
+    !Array.isArray(body.elements) ||
+    OVERPASS_RUNTIME_ERROR_PATTERN.test(body.remark ?? '')
+  ) {
+    throw new Error('Overpass returned an incomplete result');
+  }
+  return parseOverpassPlaces(body);
+};
+
 export async function fetchNearbyPlaces(
   origin: Coordinates,
   signal: AbortSignal,
 ): Promise<Place[]> {
-  const timeout = AbortSignal.timeout(NEARBY_REQUEST_TIMEOUT_MS);
-  const body = new URLSearchParams({
-    [FORM_DATA_FIELD]: buildOverpassQuery(origin),
-  });
-  const response = await fetch(OVERPASS_ENDPOINT, {
-    method: 'POST',
-    body,
-    signal: AbortSignal.any([signal, timeout]),
-  });
-  if (!response.ok) throw new Error(`Overpass responded ${response.status}`);
-  return parseOverpassPlaces((await response.json()) as OverpassResponse);
+  const query = buildOverpassQuery(origin);
+  let lastError: unknown;
+  for (const endpoint of OVERPASS_ENDPOINTS) {
+    try {
+      return await fetchFromEndpoint(endpoint, query, signal);
+    } catch (error) {
+      if (signal.aborted || error instanceof OverpassQueryError) throw error;
+      lastError = error;
+    }
+  }
+  throw lastError;
 }
