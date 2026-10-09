@@ -5,6 +5,7 @@ Changes to network infrastructure (DNS records, domains/subdomains, proxying, tu
 ## Table of Contents
 
 - [DNS URLs](#dns-urls)
+- [Domain cutover](#domain-cutover)
 - [Tailnet](#tailnet)
 - [Private-only Fly.io services](#private-only-flyio-services)
 
@@ -15,7 +16,9 @@ All public URLs for deployed applications, grouped by domain/provider.
 ```
 harryliu.dev                              Cloudflare zone (Terraform: infrastructure/terraform/)
 ├── harryliu.dev                          Personal website — Cloudflare Pages `production-harryliu-dev-react` (domain + CNAME: Terraform, infrastructure/terraform/)
-├── projects.harryliu.dev                 GitHub Pages index (CNAME to iamharryliu.github.io, DNS-only: Terraform, infrastructure/terraform/; the Pages custom domain is set by `github_repository_pages` in `github.tf`; the CNAME file staged by `pages-index:deploy-github-pages` keeps deploys from clearing it)
+├── projects.harryliu.dev                 GitHub Pages index (CNAME to iamharryliu.github.io, DNS-only: Terraform, infrastructure/terraform/; also the upstream of `status.harryliu.dev`, so it must stay DNS-only; the Pages custom domain is set by `github_repository_pages` in `github.tf`; the CNAME file staged by `pages-index:deploy-github-pages` keeps deploys from clearing it)
+├── status.harryliu.dev                   Status summary — the pages-index `StatusPage` at the host root. Cloudflare Worker `status-proxy` (`infrastructure/cloudflare-workers/status-proxy/`, custom domain + script: Terraform `cloudflare-status.tf`; Cloudflare creates the DNS record) reverse-proxies GET/HEAD to `projects.harryliu.dev`, rewrites upstream redirect `Location`s to the status host and passes status codes and content types through. The app picks `StatusPage` because `window.location.hostname` is this host — a URL fragment never reaches the network, so no proxy could select the route
+├── uptime.harryliu.dev                   Upptime historical site — GitHub Pages `gh-pages` branch of `iamharryliu/uptime` (CNAME to iamharryliu.github.io, DNS-only: Terraform `cloudflare-harryliu-dev.tf`; Pages custom domain set by `github_repository_pages.upptime`; see [upptime.md](./upptime.md))
 ├── api.harryliu.dev                      VB Express (production) — proxied CNAME to `production-vb-express.fly.dev` (Terraform, infrastructure/terraform/); the fly app needs a matching cert, which the `deploy.yml` "Ensure fly cert" step adds idempotently (`flyctl certs add api.harryliu.dev -a production-vb-express`) so Cloudflare's origin TLS handshake succeeds. All production clients and Upptime use this hostname
 ├── www.harryliu.dev                      301 redirect to apex (Cloudflare ruleset)
 ├── findme.harryliu.dev                   FindMe — Vercel `production-findme` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
@@ -25,7 +28,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── docs.harryliu.dev                     Docs MD — Cloudflare Pages `production-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-docs-md.yml, which mirrors `deploy.yml`'s environment selection because the notes snapshot lives outside the nx graph; public, no Access gating)
 ├── context.harryliu.dev                  Agent Context — Cloudflare Pages `production-context-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-context-md.yml because the agent-context snapshot lives outside the nx graph; public, no Access gating)
 ├── components.harryliu.dev        Component Library — Cloudflare Pages `production-component-library` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating).
-├── calendars.harryliu.dev                Calendars — Cloudflare Pages `production-calendars` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating; lists public event calendars from VB Express `GET /api/public/event-calendars` at `api.harryliu.dev` (staging Pages → `staging-vb-express.fly.dev`), allowed by a narrowly scoped CORS rule on that route only)
+├── calendar.harryliu.dev                 Calendars — Cloudflare Pages `production-calendars` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating; lists public event calendars from VB Express `GET /api/public/event-calendars` at `api.harryliu.dev` (staging Pages → `staging-vb-express.fly.dev`), allowed by a narrowly scoped CORS rule on that route only)
 ├── utilities.harryliu.dev                Utilities UI — Cloudflare Pages `production-utilities-ui` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating)
 ├── git.harryliu.dev                      Gitea — OCI VM (A record, proxied + Cloudflare Access; web UI gated by owner email, git/CI over HTTPS via service token, git-SSH on :2222 direct). Also the read surface for the private journal notes — browsed directly in Gitea rather than mirrored to a Pages site, so the notes never leave the VM
 ├── code.harryliu.dev                     code-server — OCI VM (A record, proxied + Cloudflare Access; owner-email + non-identity CI service token for ci-health-check /healthz origin probes)
@@ -62,6 +65,22 @@ pages.dev                                 Cloudflare Pages URLs for the environm
 github.io                                 GitHub Pages (custom domain projects.harryliu.dev)
 └── iamharryliu.github.io                     Pages origin for projects.harryliu.dev (pages-index/)
 ```
+
+## Domain cutover
+
+`calendars.harryliu.dev` and `upptime.harryliu.dev` are retired in favour of `calendar.harryliu.dev` and `uptime.harryliu.dev`, and `status.harryliu.dev` is new. No redirects, aliases or legacy CORS origins are kept for the old names.
+
+Terraform addresses: `cloudflare_pages_domain.calendars`/`cloudflare_dns_record.calendars` became `.calendar`, and `cloudflare_dns_record.harryliu_dev_upptime` became `harryliu_dev_uptime`. A Pages domain `name` is immutable, so keeping the old address would plan a destroy-then-create (Terraform's default replacement order) that removes `calendars.harryliu.dev` before `calendar.harryliu.dev` is attached, and an in-place rename of a DNS record would drop the old name the moment it applied. Distinct addresses let a targeted apply create the new resources first, and a later full apply remove the old ones.
+
+Order:
+
+1. **Provision** (additive, nothing retired): from the repo root, `eval $(./infrastructure/terraform/scripts/load-vault-tf-env.sh) && cd infrastructure/terraform && terraform plan -target=cloudflare_pages_domain.calendar -target=cloudflare_dns_record.calendar -target=cloudflare_dns_record.harryliu_dev_uptime -target=cloudflare_workers_script.status_proxy -target=cloudflare_workers_custom_domain.status`, review it shows only creates, then run the same with `apply`. Terraform warns that a targeted run is incomplete; that is intended. `pnpm tf:apply` is not used here because it appends its arguments after the post-apply step.
+2. **Ship the code**: merge the PR so the API (`api.harryliu.dev` allows the new origin), the `calendars` and `pages-index` UIs and `ci-sync-upptime` deploy.
+3. **Verify the new URLs** while the old ones still work (calendar and status; `uptime.harryliu.dev` cannot be served until step 4 because GitHub Pages holds one custom domain per site).
+4. **Retire and switch**: `pnpm tf:plan` should now show exactly: destroy `cloudflare_pages_domain.calendars`, `cloudflare_dns_record.calendars` and `cloudflare_dns_record.harryliu_dev_upptime`, and update `github_repository_pages.upptime` `cname` in place. Then `pnpm tf:apply`. The GitHub Pages `cname` swap is atomic, so `upptime.harryliu.dev` stops and `uptime.harryliu.dev` starts in the same step; HTTPS for the new name can take a while to issue.
+5. **Rebuild the Upptime site** (`cron-upptime-site` in `iamharryliu/uptime`) so `gh-pages` carries the `CNAME` file for the new name, then enable HTTPS enforcement once the certificate exists.
+
+The full rollout and rollback checklist is in [upptime.md](./upptime.md#domain-cutover-rollout).
 
 ## Tailnet
 

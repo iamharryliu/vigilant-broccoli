@@ -62,7 +62,7 @@ resource "cloudflare_ruleset" "harryliu_dev_redirects" {
 
 resource "cloudflare_dns_record" "harryliu_dev_projects" {
   zone_id = var.cloudflare_zone_id
-  name    = "projects.harryliu.dev"
+  name    = var.projects_domain
   content = "${var.github_owner}.github.io"
   type    = "CNAME"
   ttl     = 1
@@ -78,9 +78,9 @@ resource "cloudflare_dns_record" "harryliu_dev_api" {
   proxied = true
 }
 
-resource "cloudflare_dns_record" "harryliu_dev_upptime" {
+resource "cloudflare_dns_record" "harryliu_dev_uptime" {
   zone_id = var.cloudflare_zone_id
-  name    = "upptime.harryliu.dev"
+  name    = var.uptime_domain
   content = "${var.github_owner}.github.io"
   type    = "CNAME"
   ttl     = 1

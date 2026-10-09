@@ -61,7 +61,7 @@ const PUBLIC_EVENT_CALENDARS_PREFIX = `${PUBLIC_API_PREFIX}event-calendars`;
 const QUERY_SEPARATOR = '?';
 
 const PUBLIC_CLIENT_ORIGINS = [
-  'https://calendars.harryliu.dev',
+  'https://calendar.harryliu.dev',
   'https://staging-calendars.pages.dev',
   'https://production-calendars.pages.dev',
 ];

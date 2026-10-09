@@ -21,6 +21,7 @@ import {
   UPTIME_SUMMARY_URL,
 } from '../consts/repo';
 import { PAGE_CLASS } from '../consts/layout';
+import { STATUS_ROUTE } from '../consts/routes';
 
 const ACTIONS_URL = `${REPO_URL}/actions`;
 const ICON_CLASS = 'h-5 w-5 shrink-0';
@@ -242,7 +243,7 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
   return (
     <main className={PAGE_CLASS}>
       <header className="mb-4">
-        <PageHeader title={t('STATUS_PAGE.TITLE')} />
+        <PageHeader title={t('STATUS_PAGE.TITLE')} route={STATUS_ROUTE} />
         {updated && (
           <p className="mt-2 text-gray-600 dark:text-gray-400">{updated}</p>
         )}
