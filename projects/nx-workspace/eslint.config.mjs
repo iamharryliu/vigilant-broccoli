@@ -62,6 +62,12 @@ export default [
       'no-extra-semi': 'error',
     },
   },
+  {
+    files: ['**/tailwind.config.js'],
+    rules: {
+      '@nx/enforce-module-boundaries': 'off',
+    },
+  },
   ...compat
     .config({
       env: {
