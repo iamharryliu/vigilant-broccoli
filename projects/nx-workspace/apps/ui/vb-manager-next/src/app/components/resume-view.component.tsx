@@ -84,8 +84,6 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
 
       {trimmedSummary && <p className="mb-2">{trimmedSummary}</p>}
 
-      <p className="mb-2">{skills.technical.join(SKILL_SEPARATOR)}</p>
-
       <section className="mb-2">
         <SectionHeading>Work Experience</SectionHeading>
         {workExperience.map((entry, index) => (
@@ -99,6 +97,10 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
           <WorkExperienceEntry key={index} entry={entry} />
         ))}
       </section>
+
+      <p className="mt-[18px] border-t border-black pt-1 text-center">
+        {skills.technical.join(SKILL_SEPARATOR)}
+      </p>
     </div>
   );
 };

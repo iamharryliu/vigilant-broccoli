@@ -1,6 +1,7 @@
 import OpenAI from 'openai';
 import {
   RESUME_PDF_MAX_PAGES,
+  RESUME_PDF_MIN_LAST_LINE_RATIO,
   calculateWorkExperience,
 } from '@vigilant-broccoli/resume';
 import type { ResumeData } from '@vigilant-broccoli/resume';
@@ -9,6 +10,7 @@ import type {
   ProposalContext,
   TailoringContext,
 } from '../../../../lib/resume-chat.schema';
+import type { SkillsNote } from '../../../../lib/resume-chat.skills-note';
 
 const RESUME_LINK_SCHEMA = {
   type: 'object',
@@ -205,6 +207,21 @@ const describeContext = (context: TailoringContext): string[] => [
   `Open questions: ${JSON.stringify(context.openQuestions)}`,
 ];
 
+const PERCENT = 100;
+
+const describeSkillsNote = (skillsNote?: SkillsNote): string[] =>
+  skillsNote
+    ? [
+        "Skills note (the user's own record; a skill listed here counts as genuinely used and may be claimed):",
+        `Confirmed skills: ${JSON.stringify(skillsNote.skills)}`,
+        `Allowed titles (basics.title may only ever be one of these): ${JSON.stringify(skillsNote.titles)}`,
+        'A keyword with no row in the skills note is unconfirmed: never claim it. Ask the user where they used it, and if they confirm, suggest the row to add to the skills note without claiming it yet.',
+        `Detail on where each confirmed skill was used: ${skillsNote.skillsText}`,
+      ]
+    : [
+        'No skills note is available, so skills are supported only by the current resume and the conversation, and the title cannot change.',
+      ];
+
 const describeExperience = (resume: ResumeData): string => {
   const { fullYears, remainderMonths, totalMonths, skippedRoles } =
     calculateWorkExperience(resume);
@@ -218,6 +235,7 @@ export const buildSystemPrompt = (
   resume: ResumeData,
   context: TailoringContext,
   proposal: ProposalContext | null | undefined,
+  skillsNote?: SkillsNote,
 ): string =>
   [
     'You are a resume-tailoring assistant who holds a multi-turn conversation with the user about their resume.',
@@ -226,8 +244,8 @@ export const buildSystemPrompt = (
     '- Evidence is ONLY the current resume below and experience the user states in this conversation. Job descriptions, recruiter keyword lists and your own suggestions are never evidence.',
     '- Keep four things apart: job requirements, quoted recruiter instructions, your suggestions, and user-confirmed experience. Track them in the tailoring ledger.',
     '- When the user corrects an earlier statement, the correction wins; update the ledger and remove the old claim.',
-    '- Working with designers or building a component library does not prove accessibility compliance, design tools, design tokens or visual regression testing. A link the user supplies may be added to the links, but a URL is not proof of any skill.',
-    '- Never invent metrics, tools, responsibilities, certifications, seniority or years of experience.',
+    '- Working with designers or building a component library does not prove accessibility compliance, design tools, design tokens or visual regression testing. A URL the user supplies is not proof of any skill. Never claim accessibility compliance (WCAG) unless the skills note or the user confirms it.',
+    '- Never invent metrics, tools, responsibilities, certifications, seniority or years of experience. Any figure in a bullet or the summary must already be in the current resume, the skills note or something the user said; the server rejects drafts that add new numbers or claim more years than the dates support.',
     '',
     'Conversation flow:',
     '1. When the user pastes a job or recruiter request, record it in the ledger, then compare it with the current resume. For requirements the resume does not support, ask a short list of focused questions (the most important first) instead of drafting. Do not call update_resume yet unless the user told you to proceed.',
@@ -239,11 +257,20 @@ export const buildSystemPrompt = (
     'Editing rules:',
     `- Tailor by consolidating, shortening and reordering bullets so the most relevant achievements come first. Do not stuff keywords or append everything. The resume must fit ${RESUME_PDF_MAX_PAGES} US Letter page at its current readable size; the server renders every draft and will send overflow feedback you must act on by cutting less relevant wording, not employment history, and only as much as needed.`,
     '- Exactly one page is a hard limit. Using the page well is a softer goal: the server measures how much of the printable height is used and aims for roughly 90-97%, leaving a small bottom gutter. When it reports unused space, restore or develop the most job-relevant supported achievements, clarify existing facts or include confirmed experience that was left out, rather than padding. Never invent claims, metrics or experience, repeat bullets or keyword-stuff to fill space. If there is no more supported material, or the user asked for a concise version, say so in plain text and optionally ask what relevant experience they could add; a sparse one-page result is acceptable.',
-    '- Keep name, contact details, employers, job titles, dates and the factual meaning of every bullet unless the user explicitly changes them.',
+    '- Keep name, contact details, employers, job roles, dates and the factual meaning of every bullet unless the user explicitly changes them.',
+    '- Never add, remove or change basics.links; return them exactly as in the current resume. The user edits links outside this editor.',
+    '- basics.title may be changed to suit the target role, but only to one of the allowed titles in the skills note; otherwise leave it as is.',
+    '- The skills line sits at the bottom of the resume. Aim for a single line: choose the most job-relevant confirmed skills first, then breadth, and drop the least relevant rather than wrap.',
+    `- Every wrapped line (bullet, summary, skills) should end at least ${Math.round(RESUME_PDF_MIN_LAST_LINE_RATIO * PERCENT)}% full. A bullet whose last line is only a few words should be tightened to one line or extended with supported detail; the server reports these lines and you must fix them.`,
+    '- When over one page, trim in this order: condense older or less relevant bullets first, then drop the least relevant bullets of the earliest roles. Keep every employer and role, and the bullets that match the target.',
+    '- When there is unused space, first restore material that was on the earlier resume or in the skills note and is relevant, before writing anything new. Prefer a full one-line bullet to a half-empty wrapped one.',
+    '- When the calculated experience is just under a whole number of years, write "nearly N years" rather than rounding up.',
     '- The optional summary is a concise professional summary of at most three sentences from supported facts. Bullets may use **bold** markdown.',
     `- Call ${RESUME_CHAT_TOOL_NAME.RECORD_TAILORING_CONTEXT} whenever the ledger changes, and ${RESUME_CHAT_TOOL_NAME.UPDATE_RESUME} with the complete resume only when an edit or draft is wanted. Keep suggestions concise and focused on impact.`,
     '',
     describeExperience(resume),
+    '',
+    ...describeSkillsNote(skillsNote),
     '',
     'Tailoring ledger:',
     ...describeContext(context),

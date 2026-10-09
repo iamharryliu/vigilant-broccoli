@@ -3,7 +3,7 @@ import { z } from 'zod';
 import {
   RESUME_PDF_MAX_PAGES,
   describeResumePdfLayout,
-  isResumePdfFilled,
+  isResumePdfPolished,
   resumePdfFillShortfallPx,
   validateResume,
 } from '@vigilant-broccoli/resume';
@@ -31,7 +31,9 @@ import {
   findGroundingIssues,
   sanitizeTailoringContext,
 } from '../../../../lib/resume-chat.grounding';
+import type { SkillsNote } from '../../../../lib/resume-chat.skills-note';
 import { RESUME_CHAT_TOOLS, buildSystemPrompt } from './resume-chat.prompt';
+import { loadSkillsNote } from './resume-chat.skills-note.server';
 
 type ChatMessageParam = OpenAI.Chat.Completions.ChatCompletionMessageParam;
 type ResultEvent = ResumeChatResult;
@@ -40,6 +42,7 @@ const MAX_MODEL_CALLS = RESUME_CHAT_LIMITS.MAX_REVISIONS + 1;
 const MAX_ISSUES_SHOWN = 10;
 const REJECTED_STATUS = 'rejected';
 const UNDERFILLED_STATUS = 'fits_but_underfilled';
+const SHORT_LINES_STATUS = 'fits_but_has_short_lines';
 const PERCENT = 100;
 
 const MESSAGE = {
@@ -53,6 +56,7 @@ const MESSAGE = {
   TOOL_REJECTED:
     'Draft rejected. Fix every problem and call update_resume again with the COMPLETE corrected resume. If it overflowed, shorten only as much as needed and do not drop below the target fill band; a previously retained one-page version is not lost. Keep confirmed facts, every employer, role and date, and the most relevant content.',
   TOOL_UNDERFILLED: `This draft fits ${RESUME_PDF_MAX_PAGES} page and is retained as the best fit so far, but it leaves noticeable unused space. Call update_resume again with the COMPLETE resume only if the current resume or user-confirmed facts hold more supported, job-relevant material to restore or develop: omitted achievements, clearer wording of existing facts, confirmed experience. Never invent claims, metrics or experience, repeat bullets, pad or keyword-stuff. If no more supported material exists, or the user asked for a concise version, reply in plain text instead, say so, and optionally ask which relevant experience they could add.`,
+  TOOL_SHORT_LINES: `This draft fits ${RESUME_PDF_MAX_PAGES} page and is retained as the best fit so far, but some wrapped lines end with only a few words. Call update_resume again with the COMPLETE resume, tightening each listed bullet to one line or extending it with supported detail so its last line is mostly full. Change nothing else, keep the page fill, and never invent claims, metrics or experience. If a line cannot be fixed with supported wording, reply in plain text instead.`,
   IGNORED_FACTS:
     'I ignored these "confirmed" items because they do not quote anything you wrote or you said you lack them:',
   UNCONFIRMED_HEADING: '**Left out because unconfirmed:**',
@@ -126,6 +130,7 @@ const evaluateUpdate = async (
   request: ResumeChatRequest,
   context: TailoringContext,
   userMessages: string[],
+  skillsNote: SkillsNote | undefined,
   attempt: number,
   emit: RunOptions['emit'],
 ): Promise<Evaluation> => {
@@ -161,6 +166,7 @@ const evaluateUpdate = async (
     context,
     userMessages,
     identityChangeEvidence: args.data.identityChangeEvidence,
+    skillsNote,
   });
   if (groundingIssues.length > 0) {
     return { kind: 'rejected', problems: groundingIssues };
@@ -220,11 +226,21 @@ const withNotes = (
     .filter(Boolean)
     .join('\n\n');
 
-const isNearerFillTarget = (candidate: Candidate, best?: Candidate): boolean =>
-  !best?.layout ||
-  (!!candidate.layout &&
-    resumePdfFillShortfallPx(candidate.layout) <
-      resumePdfFillShortfallPx(best.layout));
+const isNearerFillTarget = (
+  candidate: Candidate,
+  best?: Candidate,
+): boolean => {
+  if (!best?.layout) return true;
+  if (!candidate.layout) return false;
+  const shortfall = resumePdfFillShortfallPx(candidate.layout);
+  const bestShortfall = resumePdfFillShortfallPx(best.layout);
+  return (
+    shortfall < bestShortfall ||
+    (shortfall === bestShortfall &&
+      candidate.layout.shortLastLines.length <
+        best.layout.shortLastLines.length)
+  );
+};
 
 const buildUpdateEvent = (
   candidate: Candidate,
@@ -328,10 +344,17 @@ export async function runResumeChat({
   let context = initial.context;
   const ignoredFacts = [...initial.ignoredFacts];
 
+  const skillsNote = await loadSkillsNote();
+
   const messages: ChatMessageParam[] = [
     {
       role: 'system',
-      content: buildSystemPrompt(request.resume, context, request.proposal),
+      content: buildSystemPrompt(
+        request.resume,
+        context,
+        request.proposal,
+        skillsNote,
+      ),
     },
     ...request.messages,
   ];
@@ -436,6 +459,7 @@ export async function runResumeChat({
         request,
         context,
         userMessages,
+        skillsNote,
         call,
         emit,
       );
@@ -450,7 +474,7 @@ export async function runResumeChat({
         }
         if (
           repeatsBest ||
-          isResumePdfFilled(evaluation.layout) ||
+          isResumePdfPolished(evaluation.layout) ||
           call === MAX_MODEL_CALLS
         ) {
           return validated(best ?? evaluation.candidate, call, modelText);
@@ -464,10 +488,14 @@ export async function runResumeChat({
           ...toolResults(toolCalls, {
             id: updateCall.id,
             content: JSON.stringify({
-              status: UNDERFILLED_STATUS,
+              status: evaluation.layout.underfilled
+                ? UNDERFILLED_STATUS
+                : SHORT_LINES_STATUS,
               problems: [describeResumePdfLayout(evaluation.layout)],
               layout: evaluation.layout,
-              instructions: MESSAGE.TOOL_UNDERFILLED,
+              instructions: evaluation.layout.underfilled
+                ? MESSAGE.TOOL_UNDERFILLED
+                : MESSAGE.TOOL_SHORT_LINES,
             }),
           }),
         );

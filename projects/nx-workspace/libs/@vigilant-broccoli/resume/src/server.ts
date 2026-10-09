@@ -5,11 +5,13 @@ import { resumeData } from './index';
 import {
   RESUME_PDF_FILL_TARGET,
   RESUME_PDF_MAX_PAGES,
+  RESUME_PDF_MIN_LAST_LINE_RATIO,
   describeResumePdfLayout,
 } from './resume.pdf.types';
 import type {
   ResumePdfLayout,
   ResumePdfSectionLayout,
+  ResumePdfShortLine,
 } from './resume.pdf.types';
 import type { ResumeData, ResumeWorkExperience } from './resume.types';
 
@@ -40,6 +42,9 @@ const FONT_FAMILY_CHECK = `${BODY_FONT_SIZE_PX}px Roboto`;
 const FONT_STYLESHEET_SELECTOR = 'link[rel="stylesheet"]';
 const LAYOUT_ATTRIBUTE = 'data-layout';
 const LAYOUT_SECTION_SELECTOR = `[${LAYOUT_ATTRIBUTE}]`;
+const WRAPPING_TEXT_SELECTOR = 'li, .summary, .skills';
+const SKILLS_SELECTOR = '.skills';
+const SHORT_LINE_TEXT_CHARS = 48;
 const LAYOUT_NAME = {
   HEADER: 'header',
   SUMMARY: 'summary',
@@ -99,6 +104,7 @@ const buildResumeHtml = (resume: ResumeData): string => {
   .header .identity h1 { font-size: 24px; margin: 0; }
   .header .identity p { font-size: 13px; font-weight: 700; margin: 0; }
   .summary { margin: 0 0 8px; }
+  .skills { margin: 18px 0 0; border-top: 1px solid #000; padding-top: 4px; text-align: center; }
   section { margin-bottom: 8px; }
   h2 {
     font-size: 16px;
@@ -133,8 +139,6 @@ const buildResumeHtml = (resume: ResumeData): string => {
 
   ${trimmedSummary ? `<p class="summary" ${LAYOUT_ATTRIBUTE}="${LAYOUT_NAME.SUMMARY}">${escapeHtml(trimmedSummary)}</p>` : ''}
 
-  <p class="summary" ${LAYOUT_ATTRIBUTE}="${LAYOUT_NAME.SKILLS}">${escapeHtml(skills.technical.join(SKILL_SEPARATOR))}</p>
-
   <section ${LAYOUT_ATTRIBUTE}="${LAYOUT_NAME.WORK_EXPERIENCE}">
     <h2>Work Experience</h2>
     ${workExperience.map(renderWorkExperience).join('')}
@@ -144,6 +148,8 @@ const buildResumeHtml = (resume: ResumeData): string => {
     <h2>Open Source</h2>
     ${projectExperience.map(renderWorkExperience).join('')}
   </section>
+
+  <p class="skills" ${LAYOUT_ATTRIBUTE}="${LAYOUT_NAME.SKILLS}">${escapeHtml(skills.technical.join(SKILL_SEPARATOR))}</p>
 </body>
 </html>`;
 };
@@ -171,6 +177,8 @@ const buildLayout = (
   contentHeightPx: number,
   fontsLoaded: boolean,
   sections: ResumePdfSectionLayout[],
+  shortLastLines: ResumePdfShortLine[],
+  skillsLineCount: number,
 ): ResumePdfLayout => {
   const roundedContentPx = Math.ceil(contentHeightPx);
   const overflowPx = Math.max(0, roundedContentPx - PRINTABLE_HEIGHT_PX);
@@ -197,6 +205,8 @@ const buildLayout = (
     underfilled: fits && roundedContentPx < targetMinContentPx,
     fontsLoaded,
     sections,
+    shortLastLines,
+    skillsLineCount,
   };
 };
 
@@ -256,16 +266,63 @@ const renderWithBrowser = async (
     }
 
     const measured = await page.evaluate(
-      (selector: string) => ({
-        contentHeightPx: document.body.getBoundingClientRect().height,
-        sections: Array.from(document.querySelectorAll(selector)).map(
-          element => ({
-            name: element.getAttribute('data-layout') ?? '',
-            heightPx: Math.ceil(element.getBoundingClientRect().height),
-          }),
-        ),
-      }),
-      LAYOUT_SECTION_SELECTOR,
+      ({
+        sectionSelector,
+        textSelector,
+        skillsSelector,
+        minLastLineRatio,
+        snippetChars,
+      }) => {
+        const lines = Array.from(document.querySelectorAll(textSelector)).map(
+          element => {
+            const range = document.createRange();
+            range.selectNodeContents(element);
+            const rects = Array.from(range.getClientRects());
+            const box = element.getBoundingClientRect();
+            const style = getComputedStyle(element);
+            const width =
+              box.width -
+              parseFloat(style.paddingLeft) -
+              parseFloat(style.paddingRight);
+            const tops = Array.from(
+              new Set(rects.map(rect => Math.round(rect.top))),
+            );
+            const lastTop = Math.max(...tops);
+            const last = rects.filter(rect => Math.round(rect.top) === lastTop);
+            const lastWidth =
+              Math.max(...last.map(rect => rect.right)) -
+              Math.min(...last.map(rect => rect.left));
+            return {
+              isSkills: element.matches(skillsSelector),
+              text: (element.textContent ?? '').slice(0, snippetChars),
+              lineCount: tops.length,
+              fillRatio: Math.round((lastWidth / width) * 100) / 100,
+            };
+          },
+        );
+        return {
+          contentHeightPx: document.body.getBoundingClientRect().height,
+          sections: Array.from(document.querySelectorAll(sectionSelector)).map(
+            element => ({
+              name: element.getAttribute('data-layout') ?? '',
+              heightPx: Math.ceil(element.getBoundingClientRect().height),
+            }),
+          ),
+          shortLastLines: lines
+            .filter(
+              line => line.lineCount > 1 && line.fillRatio < minLastLineRatio,
+            )
+            .map(({ text, fillRatio }) => ({ text, fillRatio })),
+          skillsLineCount: lines.find(line => line.isSkills)?.lineCount ?? 0,
+        };
+      },
+      {
+        sectionSelector: LAYOUT_SECTION_SELECTOR,
+        textSelector: WRAPPING_TEXT_SELECTOR,
+        skillsSelector: SKILLS_SELECTOR,
+        minLastLineRatio: RESUME_PDF_MIN_LAST_LINE_RATIO,
+        snippetChars: SHORT_LINE_TEXT_CHARS,
+      },
     );
 
     const pdf = await page.pdf({
@@ -281,6 +338,8 @@ const renderWithBrowser = async (
         measured.contentHeightPx,
         fontsLoaded,
         measured.sections,
+        measured.shortLastLines,
+        measured.skillsLineCount,
       ),
     };
   } finally {
