@@ -1,18 +1,27 @@
 # Pronouns
 
+## Table of Contents
+
+- [Personal Pronouns](#personal-pronouns)
+  - [Subjective](#subjective)
+  - [Objective](#objective)
+- [Possessive Pronouns](#possessive-pronouns)
+  - [Reflexive Possessives](#reflexive-possessives)
+- [Reflexive Pronouns](#reflexive-pronouns)
+- [Relative Pronouns](#relative-pronouns)
+
 ## Personal Pronouns
 
 ### Subjective
 
-| English      | Swedish       | French    | Spanish           |
-| :----------- | :------------ | :-------- | :---------------- |
-| I            | jag           | je        | yo                |
-| you          | du            | tu        | tú                |
-| he/she       | han/hon       | il/elle   | él/ella           |
-| we           | vi            | nous      | nosotros/nosotras |
-| you (plural) | ni            | vous      | vosotros/ustedes  |
-| they         | de            | ils/elles | ellos/ellas       |
-| he/she/they  | sin/sitt/sina |           |                   |
+| English      | Swedish | French    | Spanish           |
+| :----------- | :------ | :-------- | :---------------- |
+| I            | jag     | je        | yo                |
+| you          | du      | tu        | tú                |
+| he/she       | han/hon | il/elle   | él/ella           |
+| we           | vi      | nous      | nosotros/nosotras |
+| you (plural) | ni      | vous      | vosotros/ustedes  |
+| they         | de      | ils/elles | ellos/ellas       |
 
 ### Objective
 
@@ -35,6 +44,14 @@
 | ours           | vår           | nôtre       | nuestro/nuestra |
 | yours (plural) | er/ert/era    | vôtre       | vuestra/suya    |
 | theirs         | deras         | leurs       | suyo/suya       |
+
+### Reflexive Possessives
+
+| Swedish | Usage                                                                      | Example               | English                    |
+| :------ | :------------------------------------------------------------------------- | :-------------------- | :------------------------- |
+| sin     | With a singular en-word; owner is the third-person subject of the clause.  | Hon läser sin bok.    | She reads her own book.    |
+| sina    | With a plural noun; owner is the third-person subject of the clause.       | De läser sina böcker. | They read their own books. |
+| sitt    | With a singular ett-word; owner is the third-person subject of the clause. | Han säljer sitt hus.  | He sells his own house.    |
 
 ## Reflexive Pronouns
 
