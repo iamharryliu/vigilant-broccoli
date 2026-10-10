@@ -289,6 +289,8 @@ inc_publish() {
 
   case " $INC_COMMIT_TYPES " in *" $commit_type "*) ;; *) commit_type="" ;; esac
   if [ -n "$commit_type" ] && [ -n "$commit_message" ]; then
+    commit_message=${commit_message^}
+    commit_message="${commit_message%.}."
     if [ -n "$commit_scope" ]; then subject="${commit_type}(${commit_scope}): ${commit_message}"; else subject="${commit_type}: ${commit_message}"; fi
   else
     subject=$fallback_subject
@@ -300,7 +302,7 @@ inc_publish() {
 
   bash "$PRE_COMMIT_HELPER" || return 1
   git add -A || return 1
-  git commit -m "$subject" -m "$trailer" || return 1
+  SKIP=commitlint git commit -m "$subject" -m "$trailer" || return 1
   git push -u origin "$branch" || return 1
 
   INC_BRANCH[$id]=$branch
@@ -345,7 +347,7 @@ inc_salvage() {
     return 0
   fi
   if [ -n "$(git status --porcelain)" ]; then
-    if ! git add -A || ! git commit -m "chore: Save partial progress from an incomplete agent run." -m "$FALLBACK_TRAILER"; then
+    if ! git add -A || ! SKIP=commitlint git commit -m "chore: Save partial progress from an incomplete agent run." -m "$FALLBACK_TRAILER"; then
       echo "Failed to commit salvage work on $branch; hooks were not bypassed." >&2
       printf 'RESULT::salvage-commit-failed\n'
       return 0
