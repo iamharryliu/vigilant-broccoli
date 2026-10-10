@@ -22,9 +22,6 @@ pi_base_packages:
   # the Docker and Tailscale repositories are both declared with that module
   # later in the same run.
   - python3-debian
-# Security updates only — Docker's and Tailscale's apt repos are deliberately
-# left out of the origins pattern so a media server never reboots into an
-# untested container runtime on its own.
 # Empty disables the step. Raspberry Pi OS ships the Wi-Fi radio rfkill
 # soft-blocked until a WLAN regulatory domain is set, so a headless Pi with no
 # country configured has a working driver and an unusable radio.

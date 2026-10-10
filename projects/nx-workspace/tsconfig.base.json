@@ -1,6 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "resolveJsonModule": true,
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
@@ -26,6 +27,9 @@
       ],
       "@vigilant-broccoli/common-node": [
         "./libs/@vigilant-broccoli/common-node/src/index.ts"
+      ],
+      "@vigilant-broccoli/employee-handler/contract": [
+        "./libs/@vigilant-broccoli/employee-handler/src/employee-handler/employee-handler.contract.ts"
       ],
       "@vigilant-broccoli/employee-handler": [
         "./libs/@vigilant-broccoli/employee-handler/src/index.ts"
@@ -77,9 +81,6 @@
       ],
       "@vigilant-broccoli/react-utility": [
         "./libs/@vigilant-broccoli/react-utility/src/index.ts"
-      ],
-      "@vigilant-broccoli/office-presence": [
-        "./libs/@vigilant-broccoli/office-presence/src/index.ts"
       ],
       "@vigilant-broccoli/slackbots": [
         "./libs/@vigilant-broccoli/slackbots/src/index.ts"

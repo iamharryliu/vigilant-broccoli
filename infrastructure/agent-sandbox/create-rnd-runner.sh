@@ -11,6 +11,7 @@ PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
 FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 
 cd "$REPO_DIR"
+SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create-rnd/SKILL.md")
 
 git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
@@ -21,13 +22,14 @@ You are running non-interactively in a fresh clone of vigilant-broccoli, on a de
 
 $QUESTION
 
-Rules:
-- Read docs/rnd/rnd-template.md first and follow its template and rules EXACTLY: sections in order — # R&D title, a one-line blockquote restating the question with today's date, ## Context, ## Alternatives (a markdown table with columns Option | Pros | Cons | Cost | Security | Scalability, at least two options, every cell filled or "—"), ## Recommendation, ## Sample Implementation.
-- Be brief. Favor the table and short sentences over prose. No filler, no preamble, no conclusion beyond the recommendation.
-- Research before writing. When the question touches this repo, grep for the relevant files, patterns, and docs and cite concrete paths (e.g. path/to/file.ext:12) in Context and Sample Implementation. Prefer patterns already used in the repo (check CONTEXT.md and the docs it links).
-- Write the note to a NEW file docs/rnd/<concise-kebab-slug>.md — pick a short descriptive slug from the question. Do not modify any file outside docs/rnd/.
+Follow these shared task instructions:
+
+$SKILL_INSTRUCTIONS
+
+Sandbox execution rules:
+- You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
 - Do not run any git or gh commands and do not commit — branching, committing, pushing, and opening the PR are handled by the calling script.
-- When finished, write $META_FILE containing only a JSON object with these string fields:
+- The only exception to the skill's output scope is $META_FILE, outside the checkout. When finished, write it containing only a JSON object with these string fields:
   - note_path: the repo-relative path of the note you created (e.g. docs/rnd/mobile-development-options.md)
   - commit_message: capitalized, concise, focused on what was researched, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
@@ -88,8 +90,10 @@ else
 fi
 
 PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
-  HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic:rnd" HISTORY_PROMPT="$QUESTION" \
+  HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic-pr-create-rnd" HISTORY_PROMPT="$QUESTION" \
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
   python3 "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py")
 
-gh pr create --title "$PR_TITLE" --body "$PR_BODY"
+PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
+echo "$PR_URL"
+printf 'PR_URL::%s\n' "$PR_URL"

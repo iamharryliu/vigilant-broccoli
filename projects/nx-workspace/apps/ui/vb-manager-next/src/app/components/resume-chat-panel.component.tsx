@@ -11,82 +11,48 @@ import {
   Textarea,
 } from '@vigilant-broccoli/react-lib';
 import {
-  HTTP_HEADERS,
-  HTTP_METHOD,
-  LLM_MODEL,
-} from '@vigilant-broccoli/common-js';
-import { ResumeData } from '@vigilant-broccoli/resume';
-import { authFetch } from '../../../libs/auth';
-import {
-  RESUME_CHAT_API_PATH,
-  RESUME_CHAT_RESPONSE_TYPE,
-} from '../constants/resume-chat.consts';
-
-interface ResumeUpdate {
-  resume: ResumeData;
-  summary: string;
-  applied: boolean;
-}
-
-interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: string;
-  isPending?: boolean;
-  update?: ResumeUpdate;
-}
+  PROPOSAL_STATE,
+  ProposalState,
+  ResumeChatMessage,
+  getProposalState,
+} from '../hooks/useResumeChat';
 
 interface ResumeChatPanelProps {
-  resume: ResumeData;
-  onApplyResume: (resume: ResumeData) => void;
+  messages: ResumeChatMessage[];
+  isLoading: boolean;
+  revision: number;
+  canApply: boolean;
+  onSend: (text: string) => void;
+  onApply: (messageIndex: number) => void;
+  onReset: () => void;
 }
 
 const ENTER_KEY = 'Enter';
-const PLACEHOLDER = 'Ask about your resume or request an edit...';
+const PLACEHOLDER =
+  'Paste a job request, ask about your resume, or request an edit...';
 const EMPTY_STATE =
-  'Discuss your resume with the assistant. Ask for feedback, or request edits and apply them with one click.';
-const ERROR_MESSAGE = 'Failed to get a response. Please try again.';
+  'Paste a recruiter request and I will draft a tailored one-page resume from your confirmed experience, with notes on any gaps. You can answer follow-up questions to refine it. Drafts only change your resume when you press Apply.';
 const THINKING_LABEL = 'Thinking';
 const APPLY_LABEL = 'Apply changes';
 const APPLIED_LABEL = 'Applied';
+const NEW_CONVERSATION_LABEL = 'New conversation';
+const FIX_JSON_HINT = 'Fix the JSON error before applying.';
 
-const PROMPT_SUGGESTIONS = [
-  'Review my resume and suggest improvements.',
-  'Make my work experience bullets more impactful.',
-  'Add a skill: TypeScript.',
-];
-
-const sendResumeChat = async (
-  history: ChatMessage[],
-  resume: ResumeData,
-): Promise<
-  | { type: typeof RESUME_CHAT_RESPONSE_TYPE.TEXT; content: string }
-  | {
-      type: typeof RESUME_CHAT_RESPONSE_TYPE.RESUME_UPDATE;
-      resume: ResumeData;
-      summary: string;
-    }
-> => {
-  const response = await authFetch(RESUME_CHAT_API_PATH, {
-    method: HTTP_METHOD.POST,
-    headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
-    body: JSON.stringify({
-      messages: history.map(({ role, content }) => ({ role, content })),
-      resume,
-      model: LLM_MODEL.GPT_4O,
-    }),
-  });
-
-  if (!response.ok) throw new Error(ERROR_MESSAGE);
-  return response.json();
+const PROPOSAL_LABEL: Record<ProposalState, string> = {
+  [PROPOSAL_STATE.APPLIED]: 'Applied',
+  [PROPOSAL_STATE.READY]: 'Validated one-page draft',
+  [PROPOSAL_STATE.STALE]:
+    'Out of date: your resume changed. Ask me to refresh this draft.',
+  [PROPOSAL_STATE.UNVALIDATED]: 'Not validated as one page. Cannot be applied.',
 };
 
-const MessageBody = ({ message }: { message: ChatMessage }) => {
+const MessageBody = ({ message }: { message: ResumeChatMessage }) => {
   if (message.isPending) {
     return (
       <div className="flex gap-2 items-center" style={{ padding: '0.25rem 0' }}>
         <Loader2 className="h-4 w-4 animate-spin" />
         <Text size="2" color="gray">
-          {THINKING_LABEL}
+          {message.progress ?? THINKING_LABEL}
         </Text>
       </div>
     );
@@ -107,12 +73,19 @@ const MessageBody = ({ message }: { message: ChatMessage }) => {
 
 const MessageBubble = ({
   message,
+  revision,
+  canApply,
   onApply,
 }: {
-  message: ChatMessage;
+  message: ResumeChatMessage;
+  revision: number;
+  canApply: boolean;
   onApply: () => void;
 }) => {
   const isUser = message.role === 'user';
+  const proposalState = message.proposal
+    ? getProposalState(message.proposal, revision)
+    : undefined;
   return (
     <div
       style={{
@@ -125,7 +98,7 @@ const MessageBubble = ({
     >
       <MessageBody message={message} />
 
-      {message.update && (
+      {proposalState && (
         <div
           className="flex items-center justify-between gap-3"
           style={{
@@ -136,14 +109,21 @@ const MessageBubble = ({
           }}
         >
           <Text size="2" color="gray">
-            {message.update.applied ? APPLIED_LABEL : 'Proposed edit'}
+            {PROPOSAL_LABEL[proposalState]}
+            {proposalState === PROPOSAL_STATE.READY && !canApply
+              ? ` ${FIX_JSON_HINT}`
+              : ''}
           </Text>
           <Button
             onClick={onApply}
-            disabled={message.update.applied}
-            variant={message.update.applied ? 'secondary' : 'default'}
+            disabled={proposalState !== PROPOSAL_STATE.READY || !canApply}
+            variant={
+              proposalState === PROPOSAL_STATE.READY ? 'default' : 'secondary'
+            }
           >
-            {message.update.applied ? APPLIED_LABEL : APPLY_LABEL}
+            {proposalState === PROPOSAL_STATE.APPLIED
+              ? APPLIED_LABEL
+              : APPLY_LABEL}
           </Button>
         </div>
       )}
@@ -152,12 +132,15 @@ const MessageBubble = ({
 };
 
 export const ResumeChatPanel = ({
-  resume,
-  onApplyResume,
+  messages,
+  isLoading,
+  revision,
+  canApply,
+  onSend,
+  onApply,
+  onReset,
 }: ResumeChatPanelProps) => {
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -166,53 +149,11 @@ export const ResumeChatPanel = ({
     }
   }, [messages]);
 
-  const handleSend = async (text?: string) => {
+  const handleSend = (text?: string) => {
     const content = (text ?? input).trim();
     if (!content || isLoading) return;
-
-    const userMessage: ChatMessage = { role: 'user', content };
-    const history = [...messages, userMessage];
-    setMessages([
-      ...history,
-      { role: 'assistant', content: '', isPending: true },
-    ]);
+    onSend(content);
     setInput('');
-    setIsLoading(true);
-
-    try {
-      const result = await sendResumeChat(history, resume);
-      const assistantMessage: ChatMessage =
-        result.type === RESUME_CHAT_RESPONSE_TYPE.RESUME_UPDATE
-          ? {
-              role: 'assistant',
-              content: result.summary,
-              update: {
-                resume: result.resume,
-                summary: result.summary,
-                applied: false,
-              },
-            }
-          : { role: 'assistant', content: result.content };
-      setMessages([...history, assistantMessage]);
-    } catch {
-      setMessages([...history, { role: 'assistant', content: ERROR_MESSAGE }]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleApply = (messageIndex: number) => {
-    setMessages(prev => {
-      const target = prev[messageIndex];
-      if (!target.update) return prev;
-      onApplyResume(target.update.resume);
-      const updated = [...prev];
-      updated[messageIndex] = {
-        ...target,
-        update: { ...target.update, applied: true },
-      };
-      return updated;
-    });
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -234,17 +175,6 @@ export const ResumeChatPanel = ({
               <Text size="2" color="gray">
                 {EMPTY_STATE}
               </Text>
-              <div className="flex flex-col gap-2 items-start">
-                {PROMPT_SUGGESTIONS.map(suggestion => (
-                  <Button
-                    key={suggestion}
-                    variant="secondary"
-                    onClick={() => handleSend(suggestion)}
-                  >
-                    {suggestion}
-                  </Button>
-                ))}
-              </div>
             </div>
           ) : (
             <div className="flex flex-col gap-3" style={{ padding: '0.5rem' }}>
@@ -252,13 +182,23 @@ export const ResumeChatPanel = ({
                 <MessageBubble
                   key={index}
                   message={message}
-                  onApply={() => handleApply(index)}
+                  revision={revision}
+                  canApply={canApply}
+                  onApply={() => onApply(index)}
                 />
               ))}
             </div>
           )}
         </ScrollArea>
       </div>
+
+      {messages.length > 0 && (
+        <div className="flex justify-end" style={{ flexShrink: 0 }}>
+          <Button variant="secondary" onClick={onReset}>
+            {NEW_CONVERSATION_LABEL}
+          </Button>
+        </div>
+      )}
 
       <div className="flex gap-2 items-end" style={{ flexShrink: 0 }}>
         <Textarea

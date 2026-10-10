@@ -111,10 +111,6 @@ export interface NoteGraph {
 export interface DocsExplorerUrlSync {
   get: () => string | null;
   set: (path: string) => void;
-  // Heading-anchor accessors for hosts whose URL fragment is already taken
-  // (e.g. a HashRouter route); default to window.location.hash when omitted.
-  getHash?: () => string;
-  setHash?: (hash: string) => void;
 }
 
 export interface ViewModeOption {
@@ -294,10 +290,7 @@ export const DocsExplorer = ({
       // link) — plain path selections (tree, search, initial URL sync) leave
       // whatever's already in the URL alone, so a direct load of `?file=...#foo`
       // isn't clobbered by the initial mount echoing the file back into the URL.
-      if (hash !== undefined) {
-        if (urlSync?.setHash) urlSync.setHash(hash);
-        else window.location.hash = hash;
-      }
+      if (hash !== undefined) window.location.hash = hash;
       setSelectedPaths([]);
       setSelectedPath(path);
       setMobilePanel('content');
@@ -488,7 +481,7 @@ export const DocsExplorer = ({
                   />
                 </InputGroup>
                 {isSearchMode && !isSearching && (
-                  <div className="text-xs text-gray-500 mt-1.5">
+                  <div className="text-xs text-muted-foreground mt-1.5">
                     {searchResults.length === 0
                       ? COPY.NO_RESULTS
                       : `${searchResults.length} ${
@@ -499,7 +492,7 @@ export const DocsExplorer = ({
               </>
             )}
             {multiSelectMode && (
-              <div className="flex items-center justify-between text-xs text-gray-500 mt-1.5">
+              <div className="flex items-center justify-between text-xs text-muted-foreground mt-1.5">
                 <span>
                   {hasSelection
                     ? `${selectedPaths.length} ${COPY.SELECTED_SUFFIX}`
@@ -543,7 +536,7 @@ export const DocsExplorer = ({
                 onKeyDown={handleResultsKeyDown}
               >
                 {isSearching ? (
-                  <div className="text-gray-500 text-center py-2">
+                  <div className="text-muted-foreground text-center py-2">
                     {COPY.SEARCHING}
                   </div>
                 ) : (
@@ -729,7 +722,7 @@ const CenteredMessage = ({
 }) => (
   <div
     className={`flex items-center justify-center h-full ${
-      tone === 'error' ? 'text-red-500' : 'text-gray-500'
+      tone === 'error' ? 'text-red-500' : 'text-muted-foreground'
     }`}
   >
     {children}
@@ -814,7 +807,7 @@ const FileTreeNode = ({
   return (
     <div>
       <div
-        className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 rounded ${
+        className={`flex items-center gap-1 px-2 py-1 cursor-pointer hover:bg-muted dark:hover:bg-muted rounded ${
           isSelected ? 'bg-blue-100 dark:bg-blue-900' : ''
         }`}
         style={{ paddingLeft: `${depth * INDENT_PX + INDENT_BASE_PX}px` }}
@@ -893,7 +886,7 @@ const SearchResultList = ({
             key={result.path}
             type="button"
             data-search-result-index={index}
-            className={`w-full text-left flex flex-col gap-1 px-3 py-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 rounded border-b border-gray-200 dark:border-gray-700 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 ${
+            className={`w-full text-left flex flex-col gap-1 px-3 py-2 cursor-pointer hover:bg-muted dark:hover:bg-muted rounded border-b border-border focus:outline-none focus:bg-muted dark:focus:bg-muted ${
               isSelected ? 'bg-blue-100 dark:bg-blue-900' : ''
             }`}
             onClick={() => onResultClick(result.path)}
@@ -908,11 +901,11 @@ const SearchResultList = ({
                 <HighlightMatch text={result.name} query={query} />
               </span>
             </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 pl-6 truncate">
+            <div className="text-xs text-muted-foreground pl-6 truncate">
               {result.path}
             </div>
             {result.excerpt && (
-              <div className="text-xs text-gray-500 dark:text-gray-500 pl-6 line-clamp-2">
+              <div className="text-xs text-muted-foreground pl-6 line-clamp-2">
                 <HighlightMatch text={result.excerpt} query={query} />
               </div>
             )}

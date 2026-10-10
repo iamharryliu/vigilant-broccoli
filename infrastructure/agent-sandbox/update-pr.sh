@@ -6,15 +6,27 @@ IMAGE=vb-agent-sandbox
 
 MODEL=sonnet
 ARGS=()
+usage() {
+  echo "Usage: pnpm agentic-pr-update [--model <model>] [--with-ci-logs] <PR_NUMBER_OR_URL> <instruction>" >&2
+  echo "  e.g. pnpm agentic-pr-update 149 \"add input validation to the new route\"" >&2
+  echo "       pnpm agentic-pr-update --with-ci-logs 149 \"fix the failing checks\"" >&2
+  exit 1
+}
 while [ $# -gt 0 ]; do
   case "$1" in
     --model)
+      [ $# -ge 2 ] && [ -n "$2" ] || usage
       MODEL=$2
       shift 2
       ;;
     --prompt)
+      [ $# -ge 2 ] || usage
       ARGS+=("$2")
       shift 2
+      ;;
+    --with-ci-logs)
+      export SANDBOX_CI_LOGS=1
+      shift
       ;;
     *)
       ARGS+=("$1")
@@ -26,9 +38,7 @@ done
 PR="${ARGS[0]:-}"
 INSTRUCTION="${ARGS[*]:1}"
 if [ -z "$PR" ] || [ -z "$INSTRUCTION" ]; then
-  echo "Usage: pnpm agentic:pr:update [--model <model>] <PR_NUMBER_OR_URL> <instruction>" >&2
-  echo "  e.g. pnpm agentic:pr:update 149 \"add input validation to the new route\"" >&2
-  exit 1
+  usage
 fi
 
 if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
@@ -58,6 +68,9 @@ if [ -n "${GITHUB_ACTIONS:-}" ]; then
   echo "::add-mask::$GH_TOKEN"
 fi
 
+LOG_DIR=$(mktemp -d /tmp/vb-update.XXXXXX)
+LOG_FILE="$LOG_DIR/update-pr.log"
+STATUS=0
 echo "Updating PR (model: $MODEL): #$PR — $INSTRUCTION"
 docker run --rm --init --name "vb-update-pr-$(date +%s)" \
   --cap-add NET_ADMIN --cap-add NET_RAW \
@@ -65,7 +78,18 @@ docker run --rm --init --name "vb-update-pr-$(date +%s)" \
   -e GH_TOKEN \
   -e AGENT_GH_APP_ID \
   -e SANDBOX_FIREWALL \
+  -e SANDBOX_MERGE_MAIN \
+  -e SANDBOX_CI_LOGS \
+  -e SANDBOX_FIX_CI \
   -e SANDBOX_ALLOWED_DOMAINS \
   -e SOLVE_MODEL="$MODEL" \
   "$IMAGE" \
-  bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/update-pr-runner.sh" "$1" "$2"' _ "$PR" "$INSTRUCTION"
+  bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/update-pr-runner.sh" "$1" "$2"' _ "$PR" "$INSTRUCTION" \
+  2>&1 | tee "$LOG_FILE" || STATUS="${PIPESTATUS[0]}"
+
+# The target PR is reported by the caller; recovery and follow-up PRs are
+# reported from the runner's records.
+if grep -qE '^(PR_URL|INCREMENT_UNPUBLISHED)::' "$LOG_FILE"; then
+  bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_FILE" "$STATUS" "Recovery and follow-up pull requests"
+fi
+exit "$STATUS"

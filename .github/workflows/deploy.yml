@@ -6,12 +6,6 @@ on:
     paths:
       - 'projects/nx-workspace/**'
       - '.github/workflows/deploy.yml'
-      # Agent-context snapshot sources rendered by pages-index (see its claude-context.snapshot.config.json)
-      - 'CONTEXT.md'
-      - 'TODO.md'
-      - 'docs/**'
-      - 'setup/dotfiles/agent-skills/**'
-      - '**/CONTEXT.md'
   workflow_dispatch:
     inputs:
       environment:
@@ -42,10 +36,8 @@ concurrency:
   # push that happen to share a ref (e.g. production dispatched from `main`)
   # never land in the same group — one environment can never cancel the other.
   group: deploy-${{ github.ref }}-${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
-  # A staging run that another push has already superseded is wasted work, and
-  # waiting it out cost 7-25min of queueing on 4 of the last 20 runs — the next
-  # run redeploys everything affected anyway, so cancelling loses nothing.
-  # Production keeps the old behaviour: never interrupted midway.
+  # Staging's next run redeploys everything affected anyway, so cancelling a
+  # superseded one loses nothing; production is never interrupted midway.
   cancel-in-progress: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) != 'production' }}
 
 env:
@@ -269,6 +261,13 @@ jobs:
           flyctl certs show api.harryliu.dev -a production-vb-express >/dev/null 2>&1 \
             || flyctl certs add api.harryliu.dev -a production-vb-express
 
+      - name: Summarize deployed apps
+        if: steps.check.outputs.has_deployments == 'true'
+        env:
+          DEPLOY_PROJECTS: ${{ steps.check.outputs.projects }}
+          DEPLOY_ENVIRONMENT: ${{ env.DEPLOY_ENVIRONMENT }}
+        run: node .github/scripts/deploy-summary.mjs
+
   deploy-github-pages:
     needs: gitleaks
     if: ${{ github.ref_name == 'main' && !inputs.skip_pages }}
@@ -295,10 +294,8 @@ jobs:
         run: |
           CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
           DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
-          # Sources of the pages-index Agent-context snapshot live outside the nx workspace, so nx affected can't see them
-          AGENT_CONTEXT_CHANGED=$(echo "$CHANGED_FILES" | grep -cE "^(CONTEXT\.md|TODO\.md|docs/|setup/dotfiles/agent-skills/)|/CONTEXT\.md$" || true)
 
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 || "$AGENT_CONTEXT_CHANGED" -gt 0 ]]; then
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
             echo "has_deployments=true" >> $GITHUB_OUTPUT
           else
             AFFECTED=$(pnpm exec nx show projects --affected --withTarget=deploy-github-pages --base=$NX_BASE --head=$NX_HEAD)
@@ -317,15 +314,6 @@ jobs:
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets NX_CACHE_WRITE_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
-
-      - name: Stage component-library pages artifact
-        if: steps.check.outputs.has_deployments == 'true'
-        working-directory: ./projects/nx-workspace
-        env:
-          VITE_BASE_PATH: /react-component-library/
-          NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
-          NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
-        run: pnpm exec nx run component-library:deploy-github-pages
 
       - name: Stage pages-index landing artifact
         if: steps.check.outputs.has_deployments == 'true'

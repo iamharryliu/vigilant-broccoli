@@ -2,7 +2,6 @@
   "HOME": {
     "PAGE_TITLE": "Home",
     "TITLE": "vigilant-broccoli",
-    "DESCRIPTION": "Personal monorepo.",
     "SECTION_MONITORING": "Monitoring",
     "SECTION_SOFTWARE_PROJECTS": "Software Projects",
     "STATUS": {
@@ -38,10 +37,6 @@
       "DESCRIPTION": "How repository context, docs, and shared skills link together."
     }
   },
-  "CLAUDE_CONTEXT_PAGE": {
-    "TITLE": "Agent Context",
-    "LOADING": "Loading viewer…"
-  },
   "WEB_APPLICATIONS_PAGE": {
     "TITLE": "Web Applications",
     "SECTION_APPS": "Apps",
@@ -53,6 +48,10 @@
     "CLOUD_8_SKATE": {
       "TITLE": "Cloud8Skate",
       "DESCRIPTION": "Toronto skate community."
+    },
+    "CONTEXT_MD": {
+      "TITLE": "Agent Context",
+      "DESCRIPTION": "Browse the repo's agent context, docs, and shared skills."
     },
     "DOCS_MD": {
       "TITLE": "Docs (Markdown)",
@@ -66,6 +65,30 @@
       "TITLE": "Whiteboard",
       "DESCRIPTION": "Live collaborative whiteboard rooms deployed on Vercel."
     },
+    "CALENDARS": {
+      "TITLE": "Calendars",
+      "DESCRIPTION": "Public personal and event calendar directory, deployed on Vercel."
+    },
+    "WEATHER": {
+      "TITLE": "Weather",
+      "DESCRIPTION": "Current weather for your location, deployed on Vercel."
+    },
+    "UTILITIES": {
+      "TITLE": "Utilities",
+      "DESCRIPTION": "Searchable page of everyday utilities."
+    },
+    "WAITING_GAMES": {
+      "TITLE": "Waiting Games",
+      "DESCRIPTION": "Hands-free cup, quiz and estimation games to watch while you wait."
+    },
+    "COMPONENT_LIBRARY": {
+      "TITLE": "Component Library",
+      "DESCRIPTION": "Interactive shared React component sandbox."
+    },
+    "LINKS": {
+      "TITLE": "Links",
+      "DESCRIPTION": "Public pastebin of personal links and contact details."
+    },
     "EMPLOYEE_HANDLER": {
       "TITLE": "Employee Handler",
       "DESCRIPTION": "Employee management app deployed on Vercel."
@@ -77,11 +100,16 @@
     "NO_SERVICES": "No services configured.",
     "GITHUB_ACTIONS": "GitHub Actions",
     "VIEW_ALL": "View all →",
+    "UPTIME_SITE": {
+      "TITLE": "Full uptime history",
+      "DESCRIPTION": "Upptime status site with historical uptime, response times and incidents for every service."
+    },
     "ERROR_STATUS_UNAVAILABLE": "Status data unavailable (HTTP {status}).",
     "ERROR_STATUS_FAILED": "Failed to load status: {message}",
     "UPDATED": "Updated {date}",
     "GROUP_PRODUCTION": "Production",
     "GROUP_STAGING": "Staging",
+    "GROUP_DEMO": "Demo",
     "GROUP_PERSONAL": "Personal Apps",
     "LEGEND_BUTTON_LABEL": "Status legend",
     "LEGEND_TITLE": "Status Legend"
@@ -210,6 +238,10 @@
     "STORAGE_SERVICE": {
       "TITLE": "Storage Service",
       "DESCRIPTION": "Object storage proxy across multiple bucket providers."
+    },
+    "EMPLOYEE_HANDLER": {
+      "TITLE": "Employee Handler",
+      "DESCRIPTION": "Employee lifecycle, absences and signature API contract implemented by custom upstreams."
     }
   },
   "API_SERVICE_DOCS_PAGE": {

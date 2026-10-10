@@ -5,7 +5,6 @@ import { createHeadingRenderer, marked } from './markdown-config';
 import {
   createNoteLinkClickHandler,
   scrollToUrlHash,
-  type NoteHashSync,
 } from './note-links';
 
 const STORAGE_PREFIX = 'docs-checklist:';
@@ -40,7 +39,6 @@ interface ChecklistViewerProps {
   content: string;
   filePath: string;
   onNavigate?: (path: string) => void;
-  hashSync?: NoteHashSync;
 }
 
 interface ChecklistItem {
@@ -146,7 +144,6 @@ interface ItemRowProps {
   toggle: (id: string) => void;
   filePath: string;
   onNavigate?: (path: string) => void;
-  hashSync?: NoteHashSync;
 }
 
 const ItemRow = ({
@@ -155,14 +152,9 @@ const ItemRow = ({
   toggle,
   filePath,
   onNavigate,
-  hashSync,
 }: ItemRowProps) => {
   const isChecked = checked.has(item.id);
-  const handleLinkClick = createNoteLinkClickHandler(
-    filePath,
-    onNavigate,
-    hashSync,
-  );
+  const handleLinkClick = createNoteLinkClickHandler(filePath, onNavigate);
   return (
     <li className="list-none">
       <label className={CLS.ROW_LABEL}>
@@ -193,7 +185,6 @@ const ItemRow = ({
               toggle={toggle}
               filePath={filePath}
               onNavigate={onNavigate}
-              hashSync={hashSync}
             />
           ))}
         </ul>
@@ -206,7 +197,6 @@ export function ChecklistViewer({
   content,
   filePath,
   onNavigate,
-  hashSync,
 }: ChecklistViewerProps) {
   const blocks = useMemo(() => parseContent(content), [content]);
   const [checked, setChecked] = useState<Set<string>>(() => new Set());
@@ -216,8 +206,8 @@ export function ChecklistViewer({
   }, [filePath]);
 
   useEffect(() => {
-    scrollToUrlHash(hashSync);
-  }, [blocks, hashSync]);
+    scrollToUrlHash();
+  }, [blocks]);
 
   const toggle = (id: string) => {
     setChecked(prev => {
@@ -250,11 +240,7 @@ export function ChecklistViewer({
   const total = allIds.length;
   const done = allIds.filter(id => checked.has(id)).length;
 
-  const handleContentClick = createNoteLinkClickHandler(
-    filePath,
-    onNavigate,
-    hashSync,
-  );
+  const handleContentClick = createNoteLinkClickHandler(filePath, onNavigate);
 
   return (
     <div className={CLS.ROOT}>
@@ -282,7 +268,6 @@ export function ChecklistViewer({
                   toggle={toggle}
                   filePath={filePath}
                   onNavigate={onNavigate}
-                  hashSync={hashSync}
                 />
               ))}
             </ul>

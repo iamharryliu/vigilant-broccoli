@@ -40,7 +40,6 @@ esac
 if [ -z "$1" ]; then
     open "$base_url"
 else
-    # Use %20 for chatgpt, + for others
     if [ "$site" = "chatgpt" ]; then
         search_query=$(echo "$*" | sed 's/ /%20/g')
     else

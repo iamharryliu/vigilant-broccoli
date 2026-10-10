@@ -1,6 +1,6 @@
 # Board Games Notes Pattern
 
-Convention specific to `notes/hobbies/board-games/`. The universal link-hygiene rules that apply to all of `notes/` are in [notes-pattern.md](../notes-pattern.md) — this doc only covers what's specific to board games.
+Convention specific to `notes/hobbies/board-games/`. The universal link-hygiene rules that apply to all of `notes/` are in [notes/CONTEXT.md](../../notes/CONTEXT.md) — this doc only covers what's specific to board games.
 
 ## Index
 
@@ -19,7 +19,7 @@ A note missing any of the three is incomplete, regardless of how much else it co
 
 ## Section order
 
-Sections run in play order, not alphabetically — this is one of the ordered-content exemptions in [notes-pattern.md](../notes-pattern.md):
+Sections run in play order, not alphabetically — this is one of the ordered-content exemptions in [root Documentation conventions](../../CONTEXT.md#documentation):
 
 1. `# <Game Name>`
 2. `## Table of Contents`

@@ -1,0 +1,47 @@
+{
+  "STATUS": {
+    "LOCATING": "Finding your location…",
+    "LOADING_WEATHER": "Checking the sky…",
+    "LOADING_PREPARATION": "Checking what to wear or bring…"
+  },
+  "LOCATION": {
+    "FALLBACK": "Your location",
+    "DENIED_TITLE": "Location is turned off",
+    "DENIED_MESSAGE": "Allow location access in your browser so we can show the weather where you are.",
+    "UNAVAILABLE_TITLE": "Couldn't find you",
+    "UNAVAILABLE_MESSAGE": "Your location isn't available right now. Check your connection or device settings and try again."
+  },
+  "WEATHER": {
+    "ERROR_TITLE": "Weather is unavailable",
+    "ERROR_MESSAGE": "We couldn't load the weather right now. Please try again in a moment.",
+    "CURRENT": "{temperature}°, {condition}",
+    "HIGH": "H {temperature}°",
+    "LOW": "L {temperature}°",
+    "FEELS_LIKE": "Feels like {temperature}°",
+    "HUMIDITY": "Humidity {percent}%",
+    "WIND": "Wind {speed} km/h"
+  },
+  "CONDITION": {
+    "CLEAR": "Clear",
+    "PARTLY_CLOUDY": "Partly cloudy",
+    "CLOUDY": "Cloudy",
+    "FOG": "Foggy",
+    "DRIZZLE": "Drizzle",
+    "RAIN": "Rain",
+    "SNOW": "Snow",
+    "THUNDERSTORM": "Thunderstorm"
+  },
+  "PREPARATION": {
+    "WIND_RESISTANT_CLOTHING": "Wind-resistant clothing",
+    "RAIN_RESISTANT_CLOTHING": "Rain-resistant clothing",
+    "SNOW_RESISTANT_CLOTHING": "Snow-resistant clothing",
+    "SUNGLASSES": "Sunglasses"
+  },
+  "ACTIONS": {
+    "RETRY": "Try again"
+  },
+  "ATTRIBUTION": {
+    "WEATHER": "Weather by Open-Meteo",
+    "LOCATION": "Places © OpenStreetMap contributors"
+  }
+}

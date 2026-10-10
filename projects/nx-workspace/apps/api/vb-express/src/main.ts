@@ -1,5 +1,5 @@
 import Fastify, { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import cors from '@fastify/cors';
+import cors, { FastifyCorsOptionsDelegate } from '@fastify/cors';
 import multipart from '@fastify/multipart';
 import { auth, createServiceVerifier, verifyApiKey } from './auth';
 import { getMigrations } from 'better-auth/db/migration';
@@ -19,8 +19,9 @@ import whereIsRoutes from './routes/where-is';
 import priceTrackerRoutes from './routes/price-tracker';
 import recipeRoutes from './routes/recipe';
 import bucketRoutes from './routes/bucket';
+import publicEventCalendarsRoutes from './routes/public-event-calendars';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
-import { VB_EXPRESS_SERVICE } from '@vigilant-broccoli/common-js';
+import { HTTP_METHOD, VB_EXPRESS_SERVICE } from '@vigilant-broccoli/common-js';
 import {
   createApiKeyPlugin,
   createCorsOptions,
@@ -41,7 +42,6 @@ const APP_HOST = getEnvironmentVariable('HOST') || '127.0.0.1';
 const API_KEY = getEnvironmentVariable('VB_EXPRESS_API_KEY');
 
 const ALLOWED_ORIGINS = [
-  // ---- Localhost ----
   'http://localhost:1337',
   'http://localhost:3000',
   'http://localhost:4200',
@@ -50,12 +50,38 @@ const ALLOWED_ORIGINS = [
   'http://127.0.0.1:3000',
   'http://127.0.0.1:4200',
   'http://127.0.0.1:5173',
-  // ---- Production ----
   'https://harryliu.dev',
   'https://www.harryliu.dev',
   'https://cloud8skate.com',
   'https://www.cloud8skate.com',
 ];
+
+const PUBLIC_API_PREFIX = '/api/public/';
+const PUBLIC_EVENT_CALENDARS_PREFIX = `${PUBLIC_API_PREFIX}event-calendars`;
+const QUERY_SEPARATOR = '?';
+
+const PUBLIC_CLIENT_ORIGINS = [
+  'https://calendar.harryliu.dev',
+  'https://staging-calendars.pages.dev',
+  'https://production-calendars.pages.dev',
+];
+
+const privateCorsOptions = createCorsOptions(ALLOWED_ORIGINS);
+const publicCorsOptions = {
+  ...createCorsOptions([...ALLOWED_ORIGINS, ...PUBLIC_CLIENT_ORIGINS]),
+  credentials: false,
+  methods: [HTTP_METHOD.GET],
+};
+
+// The public Pages origins are allowed only on the public read-only prefix and
+// never with credentials; every other route keeps the original allowlist.
+const corsDelegator: FastifyCorsOptionsDelegate = (req, callback) =>
+  callback(
+    null,
+    req.url.split(QUERY_SEPARATOR)[0].startsWith(PUBLIC_API_PREFIX)
+      ? publicCorsOptions
+      : privateCorsOptions,
+  );
 
 const registerService = (
   app: FastifyInstance,
@@ -79,12 +105,9 @@ const buildApp = async () => {
   const app = Fastify({
     bodyLimit: BODY_LIMIT_BYTES,
     logger: false,
-    // Fly terminates at its proxy, so without this every caller shares one
-    // rate-limit key and a single busy client throttles everyone.
-    trustProxy: true,
   });
   await app.register(createRateLimitPlugin());
-  await app.register(cors, createCorsOptions(ALLOWED_ORIGINS));
+  await app.register(cors, () => corsDelegator);
   await app.register(multipart);
   await app.register(requestLoggerPlugin);
   await app.register(createDocsPlugin(swaggerSpec, SERVICE_NAME));
@@ -149,6 +172,9 @@ const buildApp = async () => {
   await registerService(app, '/api/storage', VB_EXPRESS_SERVICE.STORAGE, [
     bucketRoutes,
   ]);
+  await app.register(publicEventCalendarsRoutes, {
+    prefix: PUBLIC_EVENT_CALENDARS_PREFIX,
+  });
   await app.register(
     async scope => {
       await scope.register(createApiKeyPlugin(API_KEY, verifyApiKey));

@@ -25,9 +25,6 @@ export function HomePage() {
     <main className={PAGE_CLASS}>
       <header className="mb-6">
         <h1 className="text-3xl font-bold tracking-tight">{t('HOME.TITLE')}</h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          {t('HOME.DESCRIPTION')}
-        </p>
       </header>
 
       <section className="mb-8">
@@ -43,7 +40,7 @@ export function HomePage() {
           </li>
           <li>
             <CardLink
-              href="#/claude-context"
+              href="https://context.harryliu.dev/"
               title={t('HOME.CLAUDE_CONTEXT.TITLE')}
               description={t('HOME.CLAUDE_CONTEXT.DESCRIPTION')}
               icon={<Bot className={ICON_CLASS} />}
@@ -99,7 +96,7 @@ export function HomePage() {
           </li>
           <li>
             <CardLink
-              href="./react-component-library/"
+              href="https://components.harryliu.dev/"
               title={t('HOME.UI.TITLE')}
               description={t('HOME.UI.DESCRIPTION')}
               icon={<LayoutGrid className={ICON_CLASS} />}

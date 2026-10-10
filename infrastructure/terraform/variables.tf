@@ -72,6 +72,12 @@ variable "upptime_sync_gh_app_id" {
   default     = 5202397
 }
 
+variable "production_promotion_gh_app_id" {
+  description = "Public ID of the dedicated production-promotion App installed only on this repository (Contents write). Set after registering the App and storing its key in kv/production-promotion. Zero leaves the production update ruleset disabled and the promotion workflow gated off."
+  type        = number
+  default     = 5249426
+}
+
 variable "upptime_migration_complete" {
   description = "Enables scheduled checks in the initialized monitoring repository. Set true only after importing history and verifying manual checks."
   type        = bool
@@ -247,6 +253,117 @@ variable "docs_pages_project" {
 variable "docs_pages_subdomain" {
   type    = string
   default = "production-docs-md.pages.dev"
+}
+
+variable "context_domain" {
+  type    = string
+  default = "context.harryliu.dev"
+}
+
+variable "context_pages_project" {
+  type    = string
+  default = "production-context-md"
+}
+
+variable "context_pages_subdomain" {
+  type    = string
+  default = "production-context-md.pages.dev"
+}
+
+variable "utilities_domain" {
+  type    = string
+  default = "utilities.harryliu.dev"
+}
+
+variable "utilities_pages_project" {
+  type    = string
+  default = "production-utilities-ui"
+}
+
+variable "utilities_pages_subdomain" {
+  type    = string
+  default = "production-utilities-ui.pages.dev"
+}
+
+variable "waiting_domain" {
+  type    = string
+  default = "waiting.harryliu.dev"
+}
+
+variable "waiting_pages_project" {
+  type    = string
+  default = "production-waiting-games"
+}
+
+variable "waiting_pages_subdomain" {
+  type    = string
+  default = "production-waiting-games.pages.dev"
+}
+
+variable "calendars_domain" {
+  type    = string
+  default = "calendar.harryliu.dev"
+}
+
+variable "calendars_pages_project" {
+  type    = string
+  default = "production-calendars"
+}
+
+variable "calendars_pages_subdomain" {
+  type    = string
+  default = "production-calendars.pages.dev"
+}
+
+variable "projects_domain" {
+  type    = string
+  default = "projects.harryliu.dev"
+}
+
+variable "status_domain" {
+  type    = string
+  default = "status.harryliu.dev"
+}
+
+variable "uptime_domain" {
+  type    = string
+  default = "uptime.harryliu.dev"
+}
+
+variable "upptime_https_enforced" {
+  type        = bool
+  default     = false
+  description = "Enforce HTTPS on the Upptime Pages site. Set true only after GitHub has issued a certificate covering the custom domain; the API rejects it earlier."
+}
+
+variable "component_library_domain" {
+  type    = string
+  default = "components.harryliu.dev"
+}
+
+variable "component_library_pages_project" {
+  type    = string
+  default = "production-component-library"
+}
+
+variable "component_library_pages_subdomain" {
+  type    = string
+  default = "production-component-library.pages.dev"
+}
+
+variable "links_domain" {
+  type    = string
+  default = "links.harryliu.dev"
+}
+
+variable "links_pages_project" {
+  type    = string
+  default = "production-links-react"
+}
+
+variable "links_pages_subdomain" {
+  type    = string
+  default = "production-links-react.pages.dev"
 }
 
 variable "cloud8skate_domain" {

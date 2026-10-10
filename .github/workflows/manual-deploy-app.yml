@@ -12,8 +12,13 @@ on:
           - office-presence-socket-server-demo
           - vb-manager-next-mobile
           - findme
+          - weather-next
+          - calendars
           - hearth
           - cloud-8-skate-react
+          - utilities-ui
+          - waiting-games
+          - component-library
           - personal-website-react
           - employee-handler-ui
           - cloud8skate-sanity
@@ -23,12 +28,13 @@ on:
           - bucket-service
           - email-subscription-service
       environment:
-        description: 'Deployment environment (production only exists for fly services)'
+        description: "Deployment environment (production only exists for fly services; employee-handler-ui only has demo)"
         type: choice
         default: staging
         options:
           - staging
           - production
+          - demo
 
 permissions:
   actions: read
@@ -94,7 +100,19 @@ jobs:
           DEPLOY_PROJECT: ${{ github.event.inputs.project }}
         run: |
           DEPLOY_TARGET="deploy"
-          if [[ "$DEPLOY_ENVIRONMENT" == "production" ]]; then
-            DEPLOY_TARGET="deploy:production"
+          if [[ "$DEPLOY_ENVIRONMENT" != "staging" ]]; then
+            DEPLOY_TARGET="deploy:$DEPLOY_ENVIRONMENT"
+          fi
+          # run-many exits 0 with "No tasks were run" when the project lacks the target
+          if ! pnpm exec nx show projects --withTarget="$DEPLOY_TARGET" --json | jq -e --arg p "$DEPLOY_PROJECT" 'index($p) != null' >/dev/null; then
+            echo "::error::$DEPLOY_PROJECT has no $DEPLOY_TARGET target"
+            exit 1
           fi
           pnpm exec nx run-many -t "$DEPLOY_TARGET" --projects="$DEPLOY_PROJECT"
+
+      - name: Summarize deployed apps
+        if: success()
+        env:
+          DEPLOY_PROJECTS: ${{ github.event.inputs.project }}
+          DEPLOY_ENVIRONMENT: ${{ github.event.inputs.environment }}
+        run: node .github/scripts/deploy-summary.mjs

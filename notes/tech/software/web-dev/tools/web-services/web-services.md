@@ -4,6 +4,7 @@
   - [Gmail](./gmail.md)
   - [Google Workspace](./google-workspace.md)
   - [Google Maps](./google-maps.md)
+- [Nominatim API](./nominatim-api.md)
 - [OpenAI](./openai.md)
 - [Spotify API](./spotify-api.md)
 - [Stripe](./stripe.md)

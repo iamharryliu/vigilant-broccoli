@@ -1,0 +1,68 @@
+name: deploy-context-md
+run-name: deploy-context-md (${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }})
+
+on:
+  push:
+    branches: [main, production]
+    paths:
+      - CONTEXT.md
+      - TODO.md
+      - docs/**
+      - setup/dotfiles/agent-skills/**
+      - '**/CONTEXT.md'
+      - .github/workflows/deploy-context-md.yml
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        type: choice
+        default: staging
+        options:
+          - staging
+          - production
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  # Keyed on environment so a production promotion and a staging push never
+  # land in the same group — one environment can never cancel the other.
+  group: deploy-context-md-${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
+  cancel-in-progress: false
+
+env:
+  DEPLOY_ENVIRONMENT: ${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
+
+jobs:
+  deploy-context-md:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: ./.github/actions/setup-nx-workspace
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
+            kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
+
+      - name: Deploy to Cloudflare Pages
+        working-directory: ./projects/nx-workspace
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ env.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ env.CLOUDFLARE_API_TOKEN }}
+        run: |
+          DEPLOY_TARGET=deploy
+          if [[ "$DEPLOY_ENVIRONMENT" == "production" ]]; then
+            DEPLOY_TARGET=deploy:production
+          fi
+          # run-many, not `nx run context-md:$DEPLOY_TARGET` — nx would read the
+          # colon in `deploy:production` as a configuration on target `deploy`.
+          pnpm exec nx run-many -t "$DEPLOY_TARGET" --projects=context-md --skip-nx-cache

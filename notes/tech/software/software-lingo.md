@@ -1,31 +1,36 @@
 # Software Lingo
 
+## Table of Contents
+
 - [Programming Concepts](#programming-concepts)
 - [Architecture](#architecture)
 - [Networking](#networking)
+- [Web Rendering](#web-rendering)
 - [Testing](#testing)
 - [Development Approaches](#development-approaches)
 - [Tooling](#tooling)
 
 ## Programming Concepts
 
-| Term                | Definition                                                                                                                                        |
-| :------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------ |
-| ACID                | A set of properties that guarantee reliable transaction processing in relational database systems                                                 |
-| Closure             | Enables functions to keep state.                                                                                                                  |
-| Compiler            | A tool that converts source code written in one programming language into another, typically into machine code.                                   |
-| first class citizen | a particular entity in a language—like a function, object, or data type—can be used freely and fully like any other value.                        |
-| High-level language | A programming language that is closer to human language, abstracting away hardware details. Easier to read, write, and maintain (e.g., Python).   |
-| immutable           | Cannot be changed after it’s created.                                                                                                             |
-| Low-level language  | A programming language that is closer to machine code, with less abstraction from hardware. Provides more control but is harder to use (e.g., C). |
-| Statically Typed    | Variable types are known at compile time.                                                                                                         |
-| Ternary Operator    | A one line if else statement.                                                                                                                     |
-| Transpiler          | Transforms code syntax and features so the code runs across different environments.                                                               |
+| Term                | Definition                                                                                                                                                          |
+| :------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| ACID                | A set of properties that guarantee reliable transaction processing in relational database systems                                                                   |
+| Closure             | Enables functions to keep state.                                                                                                                                    |
+| Compiler            | A tool that converts source code written in one programming language into another, typically into machine code.                                                     |
+| first class citizen | a particular entity in a language—like a function, object, or data type—can be used freely and fully like any other value.                                          |
+| FOSS                | Free and Open Source Software — software whose source code is freely available to view, modify, and redistribute, usually under a license like MIT, GPL, or Apache. |
+| High-level language | A programming language that is closer to human language, abstracting away hardware details. Easier to read, write, and maintain (e.g., Python).                     |
+| immutable           | Cannot be changed after it’s created.                                                                                                                               |
+| Low-level language  | A programming language that is closer to machine code, with less abstraction from hardware. Provides more control but is harder to use (e.g., C).                   |
+| Statically Typed    | Variable types are known at compile time.                                                                                                                           |
+| Ternary Operator    | A one line if else statement.                                                                                                                                       |
+| Transpiler          | Transforms code syntax and features so the code runs across different environments.                                                                                 |
 
 ## Architecture
 
 | Term                      | Definition                                                                                                                                                                 |
 | :------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| API                       | Application Programming Interface — a defined set of rules and protocols that lets one piece of software request services or data from another.                            |
 | Backend                   | The server-side part of an application responsible for data processing, storage, and business logic.                                                                       |
 | daemon                    | A background process that runs continuously and handles tasks or requests without direct user interaction. Common in operating systems and servers.                        |
 | Dependency Inversion      | Implementing code so that high-level modules do not depend on low-level modules, ie abstract DB (could use MySQL or Postgres)                                              |
@@ -48,6 +53,17 @@
 | Edge Requests | Requests served/handled at edge servers close to users. Benefits are lower latency, faster response, smarter request handling. |
 | URI           | Uniform Resource Identifier.                                                                                                   |
 | URL           | Uniform Resource Locator.                                                                                                      |
+
+## Web Rendering
+
+| Term                                               | Definition                                                                                                                                                                                                       |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [CSS](./web-dev/frontend/css.md)                   | Cascading Style Sheets — the language used to style a document, including colors, fonts, spacing, and layout.                                                                                                    |
+| CSSOM                                              | CSS Object Model — the browser's representation of stylesheets and their rules, exposed through APIs that JavaScript can read and modify.                                                                        |
+| DOM                                                | Document Object Model — the live tree of nodes representing a document, exposed through APIs that JavaScript can use to read, create, and update its content and structure.                                      |
+| HTML                                               | HyperText Markup Language — the markup language that defines a web document's content, structure, and semantics. The browser parses HTML into DOM nodes.                                                         |
+| [JavaScript](./languages/javascript/javascript.md) | A programming language used in browsers to implement behavior, respond to events, and update the DOM and styles; it also runs outside browsers.                                                                  |
+| Shadow DOM                                         | A browser feature that attaches an encapsulated DOM tree to a host element, commonly used for a Web Component's internal markup and styles. It scopes styles across the boundary but is not a security boundary. |
 
 ## Testing
 
@@ -74,10 +90,11 @@
 
 ## Development Approaches
 
-| Term | Definition                                                                                                                                             |
-| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| BDD  | Behavior-Driven Development. Requirements are written as plain-language Given-When-Then scenarios and automated as tests. See [BDD](./general/bdd.md). |
-| TDD  | Test-Driven Development. You write the test first and then the code that makes it pass.                                                                |
+| Term  | Definition                                                                                                                                                                          |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BDD   | Behavior-Driven Development. Requirements are written as plain-language Given-When-Then scenarios and automated as tests. See [BDD](./general/bdd.md).                              |
+| CI/CD | Continuous Integration/Continuous Deployment (or Delivery). CI automatically builds and tests every merged change; CD automatically ships passing changes to staging or production. |
+| TDD   | Test-Driven Development. You write the test first and then the code that makes it pass.                                                                                             |
 
 ## Tooling
 
@@ -90,6 +107,7 @@
 | Hadoop          | An open-source framework for distributed storage and processing of large data sets using clusters of computers.        |
 | IO bound        | A condition where the speed of a program is limited by input/output operations like reading files or network requests. |
 | Package Manager | A tool that automates the process of installing, upgrading, and managing software dependencies.                        |
+| Prune           | Remove unused or unneeded items (dead code, dependencies, stale branches, old data) to cut size and clutter.           |
 | Redis           | An in-memory data structure store used as a database, cache, and message broker for high-performance applications.     |
 | Runtime         | The environment in which a program or script executes, including the necessary tools and resources.                    |
 | tree shaking    | A code optimization technique that removes unused code (dead code) from the final bundle during the build process.     |

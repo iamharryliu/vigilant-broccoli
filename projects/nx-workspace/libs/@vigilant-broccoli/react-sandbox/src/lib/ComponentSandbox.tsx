@@ -11,6 +11,7 @@ import {
 import {
   ThemeProvider,
   useTheme,
+  useThemeKeybind,
   useDocumentTitle,
   Sidebar,
   SidebarCTA,
@@ -28,10 +29,16 @@ import {
 } from '@vigilant-broccoli/react-utility';
 import { AlertDialogDemo } from './demos/AlertDialogDemo';
 import {
-  I18nProvider as AlertDialogI18nProvider,
-  useTranslation as useAlertDialogTranslation,
+  I18nProvider as SandboxI18nProvider,
+  useTranslation as useSandboxTranslation,
 } from './i18n';
-import alertDialogEn from './i18n/en.json';
+import sandboxEn from './i18n/en.json';
+import { InputDemo } from './demos/InputDemo';
+import { CheckboxDemo } from './demos/CheckboxDemo';
+import { BadgeDemo } from './demos/BadgeDemo';
+import { CardDemo } from './demos/CardDemo';
+import { TypographyDemo } from './demos/TypographyDemo';
+import { SegmentedControlDemo } from './demos/SegmentedControlDemo';
 import { AvatarDemo } from './demos/AvatarDemo';
 import { UserAvatarDemo } from './demos/UserAvatarDemo';
 import { ButtonDemo } from './demos/ButtonDemo';
@@ -47,6 +54,7 @@ import { GithubActionsBadgesDemo } from './demos/GithubActionsBadgesDemo';
 import { StatusCardListDemo } from './demos/StatusCardListDemo';
 import { TabsDemo } from './demos/TabsDemo';
 import { TooltipDemo } from './demos/TooltipDemo';
+import { LinkCardDemo } from './demos/LinkCardDemo';
 import { SwitchDemo } from './demos/SwitchDemo';
 import { ToasterDemo } from './demos/ToasterDemo';
 import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
@@ -62,6 +70,7 @@ import pastebinEn from './demos/pastebin/en.json';
 import { QuickLinksDemo } from './demos/QuickLinksDemo';
 import { ScrollTimelineDemo } from './demos/ScrollTimelineDemo';
 import { TasksDemo } from './demos/TasksDemo';
+import { WeatherDisplayDemo } from './demos/WeatherDisplayDemo';
 
 const CRUD_STORAGE_KEYS = {
   IS_CARDS: 'component-sandbox-crud-is-cards',
@@ -101,6 +110,7 @@ interface SandboxEntry {
   label: string;
   description: string;
   category: Category;
+  foundationKey?: keyof typeof sandboxEn.FOUNDATIONS;
   content: ReactNode;
 }
 
@@ -169,8 +179,8 @@ const CRUDListSection = () => {
 const COMPONENT_ENTRIES: SandboxEntry[] = [
   {
     id: 'alert-dialog',
-    label: alertDialogEn.ALERT_DIALOG.NAME,
-    description: alertDialogEn.ALERT_DIALOG.SUMMARY,
+    label: sandboxEn.ALERT_DIALOG.NAME,
+    description: sandboxEn.ALERT_DIALOG.SUMMARY,
     category: CATEGORY.COMPONENTS,
     content: <AlertDialogDemo />,
   },
@@ -183,12 +193,36 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     content: <AvatarDemo />,
   },
   {
+    id: 'badge',
+    label: sandboxEn.FOUNDATIONS.BADGE.NAME,
+    description: sandboxEn.FOUNDATIONS.BADGE.SUMMARY,
+    category: CATEGORY.COMPONENTS,
+    foundationKey: 'BADGE',
+    content: <BadgeDemo />,
+  },
+  {
     id: 'buttons',
     label: 'Buttons',
     description:
       'The full button set - variants, icon buttons, copy and close buttons, provider sign-in buttons and button lists.',
     category: CATEGORY.COMPONENTS,
     content: <ButtonDemo />,
+  },
+  {
+    id: 'card',
+    label: sandboxEn.FOUNDATIONS.CARD.NAME,
+    description: sandboxEn.FOUNDATIONS.CARD.SUMMARY,
+    category: CATEGORY.COMPONENTS,
+    foundationKey: 'CARD',
+    content: <CardDemo />,
+  },
+  {
+    id: 'checkbox',
+    label: sandboxEn.FOUNDATIONS.CHECKBOX.NAME,
+    description: sandboxEn.FOUNDATIONS.CHECKBOX.SUMMARY,
+    category: CATEGORY.COMPONENTS,
+    foundationKey: 'CHECKBOX',
+    content: <CheckboxDemo />,
   },
   {
     id: 'checklist',
@@ -255,6 +289,30 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     content: <ScrollTimelineDemo />,
   },
   {
+    id: 'input',
+    label: sandboxEn.FOUNDATIONS.INPUT.NAME,
+    description: sandboxEn.FOUNDATIONS.INPUT.SUMMARY,
+    category: CATEGORY.COMPONENTS,
+    foundationKey: 'INPUT',
+    content: <InputDemo />,
+  },
+  {
+    id: 'link-card',
+    label: 'Link Card',
+    description:
+      'Clickable card with title, description and icon, with a subtle lift on hover; renders an anchor or a router link.',
+    category: CATEGORY.COMPONENTS,
+    content: <LinkCardDemo />,
+  },
+  {
+    id: 'segmented-control',
+    label: sandboxEn.FOUNDATIONS.SEGMENTED_CONTROL.NAME,
+    description: sandboxEn.FOUNDATIONS.SEGMENTED_CONTROL.SUMMARY,
+    category: CATEGORY.COMPONENTS,
+    foundationKey: 'SEGMENTED_CONTROL',
+    content: <SegmentedControlDemo />,
+  },
+  {
     id: 'select',
     label: 'Select',
     description:
@@ -303,6 +361,14 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     content: <TooltipDemo />,
   },
   {
+    id: 'typography',
+    label: sandboxEn.FOUNDATIONS.TYPOGRAPHY.NAME,
+    description: sandboxEn.FOUNDATIONS.TYPOGRAPHY.SUMMARY,
+    category: CATEGORY.COMPONENTS,
+    foundationKey: 'TYPOGRAPHY',
+    content: <TypographyDemo />,
+  },
+  {
     id: 'user-avatar',
     label: 'User Avatar',
     description:
@@ -317,6 +383,14 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
       'User leaderboard with sortable metrics, column toggles, paging and live rank changes.',
     category: CATEGORY.COMPONENTS,
     content: <UserLeaderboardDemo />,
+  },
+  {
+    id: 'weather-display',
+    label: 'Weather Display',
+    description:
+      'The weather.harryliu.dev card, seeded from live Open-Meteo weather for Toronto, with controls for every value, the condition, day/night, units and preparation badges.',
+    category: CATEGORY.COMPONENTS,
+    content: <WeatherDisplayDemo />,
   },
 ];
 
@@ -584,25 +658,35 @@ const SandboxBody = ({
   showThemeToggle,
 }: SandboxBodyProps) => {
   const { t } = usePastebinTranslation();
-  const { t: translateAlertDialog } = useAlertDialogTranslation();
+  const { t: translateSandbox } = useSandboxTranslation();
   const entries = useMemo(
     () =>
       ALL_ENTRIES.map(entry =>
-        entry.id === 'pastebin'
+        entry.foundationKey
           ? {
               ...entry,
-              label: t('PASTEBIN.TITLE'),
-              description: t('PASTEBIN.DESCRIPTION'),
+              label: translateSandbox(
+                `FOUNDATIONS.${entry.foundationKey}.NAME`,
+              ),
+              description: translateSandbox(
+                `FOUNDATIONS.${entry.foundationKey}.SUMMARY`,
+              ),
             }
-          : entry.id === 'alert-dialog'
+          : entry.id === 'pastebin'
             ? {
                 ...entry,
-                label: translateAlertDialog('ALERT_DIALOG.NAME'),
-                description: translateAlertDialog('ALERT_DIALOG.SUMMARY'),
+                label: t('PASTEBIN.TITLE'),
+                description: t('PASTEBIN.DESCRIPTION'),
               }
-            : entry,
+            : entry.id === 'alert-dialog'
+              ? {
+                  ...entry,
+                  label: translateSandbox('ALERT_DIALOG.NAME'),
+                  description: translateSandbox('ALERT_DIALOG.SUMMARY'),
+                }
+              : entry,
       ),
-    [t, translateAlertDialog],
+    [t, translateSandbox],
   );
   const [selectedId, setSelectedId] = useState(readStoredSelectedId);
   const [iconMode, setIconMode] = useState(readStoredIconMode);
@@ -680,6 +764,7 @@ function ThemedSandbox({
   siteName,
 }: ComponentSandboxProps): ReactNode {
   const { appearance, toggleTheme } = useTheme();
+  useThemeKeybind();
   return (
     <div className="w-full h-screen overflow-hidden">
       <SandboxBody
@@ -716,9 +801,9 @@ function ComponentSandboxContent({
 export function ComponentSandbox(props: ComponentSandboxProps): ReactNode {
   return (
     <PastebinI18nProvider>
-      <AlertDialogI18nProvider>
+      <SandboxI18nProvider>
         <ComponentSandboxContent {...props} />
-      </AlertDialogI18nProvider>
+      </SandboxI18nProvider>
     </PastebinI18nProvider>
   );
 }

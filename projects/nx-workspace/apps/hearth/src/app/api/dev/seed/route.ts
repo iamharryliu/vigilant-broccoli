@@ -50,7 +50,6 @@ export async function POST(request: NextRequest) {
 
   const results: Record<string, string> = {};
 
-  // Household rules
   const { error: rulesErr } = await supabase.from('household_rules').insert([
     {
       name: 'Clean up after yourself',
@@ -79,7 +78,6 @@ export async function POST(request: NextRequest) {
   ]);
   results['household-rules'] = rulesErr ? rulesErr.message : 'ok';
 
-  // Leisure activities
   const { error: leisureErr } = await supabase
     .from('leisure_activities')
     .insert([
@@ -121,7 +119,6 @@ export async function POST(request: NextRequest) {
     ]);
   results['leisure-activities'] = leisureErr ? leisureErr.message : 'ok';
 
-  // Meals
   const { error: mealsErr } = await supabase.from('meals').insert([
     {
       title: 'Spaghetti Bolognese',
@@ -166,7 +163,6 @@ export async function POST(request: NextRequest) {
   ]);
   results['meals'] = mealsErr ? mealsErr.message : 'ok';
 
-  // Projects
   const { error: projectsErr } = await supabase.from('home_projects').insert([
     {
       title: 'Paint the living room',
@@ -203,7 +199,6 @@ export async function POST(request: NextRequest) {
   ]);
   results['home-projects'] = projectsErr ? projectsErr.message : 'ok';
 
-  // Resources
   const { data: resourceRows, error: resourcesErr } = await supabase
     .from('resources')
     .insert([
@@ -235,7 +230,6 @@ export async function POST(request: NextRequest) {
     .select();
   results['home-resources'] = resourcesErr ? resourcesErr.message : 'ok';
 
-  // Resource bookings (for the car)
   if (resourceRows && resourceRows.length > 0) {
     const carId = resourceRows[0].id;
     const { error: bookingsErr } = await supabase
@@ -261,7 +255,6 @@ export async function POST(request: NextRequest) {
     results['resource-bookings'] = bookingsErr ? bookingsErr.message : 'ok';
   }
 
-  // Calendar events
   const { error: calErr } = await supabase.from('calendar_events').insert([
     {
       title: 'Weekly house meeting',
@@ -316,7 +309,6 @@ export async function POST(request: NextRequest) {
   ]);
   results['calendar-events'] = calErr ? calErr.message : 'ok';
 
-  // Price tracker
   const { data: priceItemRows, error: priceItemsErr } = await supabase
     .from('price_items')
     .insert([
@@ -675,7 +667,6 @@ export async function POST(request: NextRequest) {
     results['price-entries'] = priceEntriesErr ? priceEntriesErr.message : 'ok';
   }
 
-  // Where Is
   const whereIsSeeds = [
     {
       title: 'Toolbox',
@@ -738,7 +729,6 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Docs
   const { error: docsErr } = await supabase.from('home_docs').insert([
     {
       name: 'Home Insurance Policy',

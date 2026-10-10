@@ -1,12 +1,77 @@
+import {
+  Bike,
+  BookOpen,
+  Bot,
+  CalendarDays,
+  CloudSun,
+  Globe,
+  Hourglass,
+  LayoutGrid,
+  Link as LinkIcon,
+  type LucideIcon,
+  MapPin,
+  PenTool,
+  User,
+  Users,
+  Wrench,
+} from 'lucide-react';
 import { useTranslation } from '../i18n';
 import { PageHeader } from '../components/PageHeader';
 import { SectionHeading } from '../components/SectionHeading';
 import { CardLink } from '../components/CardLink';
 import { CardGrid } from '../components/CardGrid';
 import { PAGE_CLASS } from '../consts/layout';
+import WEB_APPLICATIONS from '../consts/webApplications.json';
+
+type WebApplicationEntry = {
+  id: string;
+  href: string;
+  titleKey: string;
+  descriptionKey: string;
+};
+
+type TranslationKey = Parameters<ReturnType<typeof useTranslation>['t']>[0];
+
+const ICON_CLASS = 'h-5 w-5 shrink-0';
+
+const FALLBACK_ICON: LucideIcon = Globe;
+
+const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
+  calendars: CalendarDays,
+  'context-md': Bot,
+  'cloud-8-skate': Bike,
+  'component-library': LayoutGrid,
+  'docs-md': BookOpen,
+  'find-me': MapPin,
+  'harry-liu': User,
+  links: LinkIcon,
+  utilities: Wrench,
+  'waiting-games': Hourglass,
+  weather: CloudSun,
+  whiteboard: PenTool,
+  'employee-handler': Users,
+};
 
 export function WebApplicationsPage() {
   const { t } = useTranslation();
+
+  const renderSortedCards = (entries: readonly WebApplicationEntry[]) =>
+    entries
+      .map(({ id, href, titleKey, descriptionKey }) => {
+        const Icon = CARD_ICONS[id] ?? FALLBACK_ICON;
+        return {
+          href,
+          title: t(titleKey as TranslationKey),
+          description: t(descriptionKey as TranslationKey),
+          icon: <Icon className={ICON_CLASS} aria-hidden="true" />,
+        };
+      })
+      .sort((a, b) => a.title.localeCompare(b.title))
+      .map(card => (
+        <li key={card.href}>
+          <CardLink {...card} />
+        </li>
+      ));
 
   return (
     <main className={PAGE_CLASS}>
@@ -16,60 +81,14 @@ export function WebApplicationsPage() {
         <SectionHeading>
           {t('WEB_APPLICATIONS_PAGE.SECTION_APPS')}
         </SectionHeading>
-        <CardGrid>
-          <li>
-            <CardLink
-              href="https://harryliu.dev/"
-              title={t('WEB_APPLICATIONS_PAGE.HARRY_LIU.TITLE')}
-              description={t('WEB_APPLICATIONS_PAGE.HARRY_LIU.DESCRIPTION')}
-            />
-          </li>
-          <li>
-            <CardLink
-              href="https://cloud8skate.com/"
-              title={t('WEB_APPLICATIONS_PAGE.CLOUD_8_SKATE.TITLE')}
-              description={t('WEB_APPLICATIONS_PAGE.CLOUD_8_SKATE.DESCRIPTION')}
-            />
-          </li>
-          <li>
-            <CardLink
-              href="https://docs.harryliu.dev/"
-              title={t('WEB_APPLICATIONS_PAGE.DOCS_MD.TITLE')}
-              description={t('WEB_APPLICATIONS_PAGE.DOCS_MD.DESCRIPTION')}
-            />
-          </li>
-          <li>
-            <CardLink
-              href="https://findme.harryliu.dev/"
-              title={t('WEB_APPLICATIONS_PAGE.FIND_ME.TITLE')}
-              description={t('WEB_APPLICATIONS_PAGE.FIND_ME.DESCRIPTION')}
-            />
-          </li>
-          <li>
-            <CardLink
-              href="https://whiteboard.harryliu.dev/"
-              title={t('WEB_APPLICATIONS_PAGE.WHITEBOARD.TITLE')}
-              description={t('WEB_APPLICATIONS_PAGE.WHITEBOARD.DESCRIPTION')}
-            />
-          </li>
-        </CardGrid>
+        <CardGrid>{renderSortedCards(WEB_APPLICATIONS.applications)}</CardGrid>
       </section>
 
       <section>
         <SectionHeading>
           {t('WEB_APPLICATIONS_PAGE.SECTION_DEMO')}
         </SectionHeading>
-        <CardGrid>
-          <li>
-            <CardLink
-              href="https://staging-employee-handler-ui.vercel.app"
-              title={t('WEB_APPLICATIONS_PAGE.EMPLOYEE_HANDLER.TITLE')}
-              description={t(
-                'WEB_APPLICATIONS_PAGE.EMPLOYEE_HANDLER.DESCRIPTION',
-              )}
-            />
-          </li>
-        </CardGrid>
+        <CardGrid>{renderSortedCards(WEB_APPLICATIONS.demos)}</CardGrid>
       </section>
     </main>
   );

@@ -8,6 +8,7 @@
 - External libs
   - better-auth
   - SQLite (`node:sqlite`)
+  - Supabase JS
 - Internal libs
   - `common-js`
   - `common-node`
@@ -19,6 +20,7 @@
   - Google Tasks
   - Google OAuth
   - Google reCAPTCHA
+  - Supabase (public `event_calendars` read)
   - Twilio
   - ElevenLabs
   - Email Service (HTTP)

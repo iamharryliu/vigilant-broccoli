@@ -1,5 +1,6 @@
 import {
   DEFAULT_WEATHER_PROVIDER,
+  fetchOpenMeteoSnapshot,
   isWeatherProvider,
   Location,
   WEATHER_PROVIDER,
@@ -9,7 +10,6 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '../utils';
 import { logger } from '../logging/logger.service';
-import { fetchOpenMeteoSnapshot } from './open-meteo.provider';
 import { fetchOpenWeatherSnapshot } from './openweather.provider';
 import {
   DEFAULT_DAILY_COUNT,

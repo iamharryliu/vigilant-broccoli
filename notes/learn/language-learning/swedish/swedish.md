@@ -7,14 +7,13 @@
 - [Grammar](./swedish-grammar.md)
 - [Nouns](./swedish-nouns.md)
 - [Keyboard Shortcuts for Characters](./swedish-keyboard-shortcuts.md)
-- [Verb Conjugations](./conjugations/swedish-verb-conjugations.md)
-- [Verb Forms](./swedish-verbs/swedish-verb-forms.md)
+- [Verbs](./swedish-verb.md)
 - [Auxiliary Verbs](./swedish-verbs/swedish-auxiliary-verbs.md)
 - [Help Verbs](./swedish-verbs/swedish-help-verbs.md)
 - [Comparison](./adjectives/swedish-adjective-comparison.md)
 - [Irregular Verbs](./swedish-verbs/swedish-irregular-verbs.md)
 - Tenses
-  - [Past Tense](./grammar/swedish-past-tense.md)
+  - [Past Tense](./swedish-verb.md#past-tense)
   - [Future Tense](./grammar/swedish-future-tense.md)
 - [Nuances](./swedish-nuances.md)
 - Vocab

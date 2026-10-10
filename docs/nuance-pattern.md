@@ -67,7 +67,7 @@ A directory-scoped `CONTEXT.md` is:
 - `## Nuances` — the entries, each a `###`.
 
 A `CONTEXT.md` with no `##` headings at all doesn't need a Table of Contents,
-the same exemption [notes-pattern.md](./notes-pattern.md) makes for notes.
+the same exemption [notes/CONTEXT.md](../notes/CONTEXT.md) makes for notes.
 
 `CONTEXT.md` sits next to `README.md` in a component directory and is only
 created when there is something to say — there is no empty-file placeholder.
@@ -125,11 +125,11 @@ tokens on every session in that subtree.
 - Fixing the root cause upstream (a dependency bump, a deleted workaround)
   retires the entry: delete it and its Table of Contents line. If it was the
   last one, drop the now-empty `## Nuances` section too.
-- Before moving or deleting context, run `bash setup/common/sync-agent-support.sh --clean`. Move or delete its `CONTEXT.md`, then rerun the script to regenerate the ignored adapters.
+- When moving or deleting a `CONTEXT.md`, move or delete its adjacent committed `CLAUDE.md` and `AGENTS.md` symlinks in the same change. Keep surviving adapters pointed at the adjacent `CONTEXT.md`, update incoming documentation links, and verify that the symlinks resolve. No adapter-generation step is needed; see [agent support](./agent-support.md#sources-and-adapters).
 - Adding or retiring a nuance is two writes, both inside the one file you are
   already editing: the entry and its Table of Contents line.
-- Directory-scoped `CONTEXT.md` files are snapshotted into the GitHub Pages
-  Agent Context site via the `{ "path": ".", "filename": "CONTEXT.md" }` source
+- Directory-scoped `CONTEXT.md` files are snapshotted into the Agent
+  Context site (`context.harryliu.dev`) via the `{ "path": ".", "filename": "CONTEXT.md" }` source
   in
-  `projects/nx-workspace/apps/ui/pages-index/claude-context.snapshot.config.json`,
+  `projects/nx-workspace/apps/ui/context-md/snapshot.config.json`,
   so a new one is picked up with no config change.

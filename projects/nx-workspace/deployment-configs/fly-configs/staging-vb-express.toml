@@ -10,6 +10,7 @@ primary_region = 'yyz'
   LLM_SERVICE_URL = 'http://staging-llm-service.flycast'
   STORAGE_SERVICE_URL = 'http://staging-storage-service.flycast'
   DATABASE_PATH = '/data/vb-express.sqlite'
+  SUPABASE_URL = 'https://jrdosjjgmsoodpjmjqxx.supabase.co'
   BETTER_AUTH_URL = 'https://staging-vb-express.fly.dev'
 
 [mounts]

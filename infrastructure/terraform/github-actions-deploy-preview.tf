@@ -1,19 +1,17 @@
 # Minimally-scoped GCP identity for deploy-preview.yml, which needs to reach
 # Vault for the Cloudflare Pages deploy credentials. Deliberately separate from
-# google_service_account.github_actions in main.tf: that SA carries
-# roles/editor + secretmanager.secretAccessor (project-wide, everything except
-# BITWARDEN_PASSWORD) + serviceAccountAdmin + workloadIdentityPoolAdmin +
-# compute/IAP/osLogin, for deploy/rotate workflows running on main/production.
+# google_service_account.github_actions in main.tf, which still holds real
+# privilege (compute/IAP/osLogin, the backup bucket, a handful of secrets) for
+# deploy/rotate workflows running on main/production.
 #
 # deploy-preview.yml runs on a push to *any* branch and executes the workflow
 # YAML from that branch, so — exactly like the pull_request case in
 # github-actions-pr-check.tf — anyone who can push a branch could edit it to
-# assume whatever identity it names and read the Vault root token straight out
-# of Secret Manager, bypassing any Vault-side role/policy scoping. The shared
-# 'github' provider's attribute_condition only refuses pull_request, so it
-# would hand this workflow that broad SA; this one is pinned to the workflow
-# file and can read nothing but the two Cloudflare Access secrets needed to
-# reach the Vault tunnel.
+# assume whatever identity it names and reach that access, bypassing any
+# Vault-side role/policy scoping. The shared 'github' provider's
+# attribute_condition only refuses pull_request, so it would hand this workflow
+# that broad SA; this one is pinned to the workflow file and can read nothing
+# but the two Cloudflare Access secrets needed to reach the Vault tunnel.
 
 resource "google_service_account" "github_actions_deploy_preview" {
   account_id   = "github-actions-deploy-preview"

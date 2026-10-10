@@ -16,7 +16,8 @@
         "{workspaceRoot}/apps/api/bucket-service/src/libs/swagger.ts",
         "{workspaceRoot}/apps/api/email-service/src/swagger.ts",
         "{workspaceRoot}/apps/api/email-subscription-service/src/swagger.ts",
-        "{workspaceRoot}/apps/api/llm-service/src/libs/swagger.ts"
+        "{workspaceRoot}/apps/api/llm-service/src/libs/swagger.ts",
+        "{workspaceRoot}/libs/@vigilant-broccoli/employee-handler/src/**/*.ts"
       ],
       "outputs": ["{projectRoot}/public/openapi"],
       "options": {
@@ -30,18 +31,22 @@
         "command": "tsx scripts/generate-repo-timeline.ts"
       }
     },
-    "build-claude-context-snapshot": {
+    "check-i18n-keys": {
       "executor": "nx:run-commands",
-      "cache": false,
+      "cache": true,
+      "inputs": [
+        "{workspaceRoot}/scripts/check-i18n-keys.ts",
+        "{projectRoot}/src/**/*.{ts,tsx,json}"
+      ],
       "options": {
-        "command": "node scripts/build-docs-snapshot.mjs apps/ui/pages-index/claude-context.snapshot.config.json"
+        "command": "tsx scripts/check-i18n-keys.ts"
       }
     },
     "build": {
       "dependsOn": [
+        "check-i18n-keys",
         "generate-openapi",
-        "generate-repo-timeline",
-        "build-claude-context-snapshot"
+        "generate-repo-timeline"
       ],
       "outputs": [
         "{projectRoot}/{options.outDir}",
@@ -63,8 +68,7 @@
     "serve": {
       "dependsOn": [
         "generate-openapi",
-        "generate-repo-timeline",
-        "build-claude-context-snapshot"
+        "generate-repo-timeline"
       ],
       "defaultConfiguration": "development",
       "configurations": {
@@ -80,7 +84,6 @@
           "mkdir -p ../../../_site",
           "cp -R ../../../dist/pages-index/. ../../../_site/",
           "cp public/repo-timeline.json ../../../_site/repo-timeline.json",
-          "cp -R public/claude-context ../../../_site/claude-context",
           "echo projects.harryliu.dev > ../../../_site/CNAME"
         ],
         "parallel": false,

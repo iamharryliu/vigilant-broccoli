@@ -32,7 +32,6 @@ echo "Target: $LLM_SERVICE_URL"
 echo "Model:  $MODEL"
 echo ""
 
-# --- /api/llm — plain prompt ---
 echo "Testing /api/llm (plain)..."
 LLM_RESPONSE=$(curl -s -X POST "${LLM_SERVICE_URL}/api/llm" \
   -H "Content-Type: application/json" \
@@ -53,7 +52,6 @@ else
   check "llm returns expected answer (earth)" "$([ "$ANSWER" = "earth" ] && echo true || echo false)"
 fi
 
-# --- /api/llm — structured output via jsonSchema (Wizard of Oz characters) ---
 echo ""
 echo "Testing /api/llm (jsonSchema, Wizard of Oz characters)..."
 WIZARD_RESPONSE=$(curl -s -X POST "${LLM_SERVICE_URL}/api/llm" \
@@ -104,7 +102,6 @@ else
   check "every character has name/species/trait" "$ALL_FIELDS_PRESENT"
 fi
 
-# --- Summary ---
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 

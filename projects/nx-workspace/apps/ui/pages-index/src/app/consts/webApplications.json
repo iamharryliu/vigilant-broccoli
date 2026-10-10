@@ -1,0 +1,84 @@
+{
+  "applications": [
+    {
+      "id": "context-md",
+      "href": "https://context.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.CONTEXT_MD.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.CONTEXT_MD.DESCRIPTION"
+    },
+    {
+      "id": "cloud-8-skate",
+      "href": "https://cloud8skate.com/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.CLOUD_8_SKATE.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.CLOUD_8_SKATE.DESCRIPTION"
+    },
+    {
+      "id": "component-library",
+      "href": "https://components.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.COMPONENT_LIBRARY.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.COMPONENT_LIBRARY.DESCRIPTION"
+    },
+    {
+      "id": "docs-md",
+      "href": "https://docs.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.DOCS_MD.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.DOCS_MD.DESCRIPTION"
+    },
+    {
+      "id": "find-me",
+      "href": "https://findme.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.FIND_ME.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.FIND_ME.DESCRIPTION"
+    },
+    {
+      "id": "harry-liu",
+      "href": "https://harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.HARRY_LIU.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.HARRY_LIU.DESCRIPTION"
+    },
+    {
+      "id": "calendars",
+      "href": "https://calendar.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.CALENDARS.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.CALENDARS.DESCRIPTION"
+    },
+    {
+      "id": "links",
+      "href": "https://links.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.LINKS.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.LINKS.DESCRIPTION"
+    },
+    {
+      "id": "utilities",
+      "href": "https://utilities.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.UTILITIES.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.UTILITIES.DESCRIPTION"
+    },
+    {
+      "id": "waiting-games",
+      "href": "https://waiting.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.WAITING_GAMES.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.WAITING_GAMES.DESCRIPTION"
+    },
+    {
+      "id": "weather",
+      "href": "https://weather.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.WEATHER.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.WEATHER.DESCRIPTION"
+    },
+    {
+      "id": "whiteboard",
+      "href": "https://whiteboard.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.WHITEBOARD.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.WHITEBOARD.DESCRIPTION"
+    }
+  ],
+  "demos": [
+    {
+      "id": "employee-handler",
+      "href": "https://demo-employee-handler-ui.vercel.app",
+      "titleKey": "WEB_APPLICATIONS_PAGE.EMPLOYEE_HANDLER.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.EMPLOYEE_HANDLER.DESCRIPTION"
+    }
+  ]
+}

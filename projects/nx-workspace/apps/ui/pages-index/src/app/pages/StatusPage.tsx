@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CircleHelp } from 'lucide-react';
+import { CircleHelp, History } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -11,11 +11,20 @@ import {
 import { useTranslation } from '../i18n';
 import en from '../i18n/en.json';
 import { PageHeader } from '../components/PageHeader';
+import { CardGrid } from '../components/CardGrid';
+import { CardLink } from '../components/CardLink';
 import { SectionHeading } from '../components/SectionHeading';
-import { REPO_URL, UPTIME_REPO_URL, UPTIME_SUMMARY_URL } from '../consts/repo';
+import {
+  REPO_URL,
+  UPTIME_REPO_URL,
+  UPTIME_SITE_URL,
+  UPTIME_SUMMARY_URL,
+} from '../consts/repo';
 import { PAGE_CLASS } from '../consts/layout';
+import { STATUS_ROUTE } from '../consts/routes';
 
 const ACTIONS_URL = `${REPO_URL}/actions`;
+const ICON_CLASS = 'h-5 w-5 shrink-0';
 
 interface ServiceStatus {
   name: string;
@@ -54,22 +63,26 @@ const STATUS_COLORS: Record<
 const STATUS_GROUP = {
   PRODUCTION: 'production',
   STAGING: 'staging',
+  DEMO: 'demo',
   PERSONAL: 'personal',
 } as const;
 type StatusGroup = (typeof STATUS_GROUP)[keyof typeof STATUS_GROUP];
 
 const PRODUCTION_PREFIX = 'production-';
 const STAGING_PREFIX = 'staging-';
+const DEMO_PREFIX = 'demo-';
 
 const STATUS_GROUP_ORDER: StatusGroup[] = [
   STATUS_GROUP.PRODUCTION,
   STATUS_GROUP.STAGING,
+  STATUS_GROUP.DEMO,
   STATUS_GROUP.PERSONAL,
 ];
 
 const STATUS_GROUP_LABEL_KEY: Record<StatusGroup, DotPaths<typeof en>> = {
   [STATUS_GROUP.PRODUCTION]: 'STATUS_PAGE.GROUP_PRODUCTION',
   [STATUS_GROUP.STAGING]: 'STATUS_PAGE.GROUP_STAGING',
+  [STATUS_GROUP.DEMO]: 'STATUS_PAGE.GROUP_DEMO',
   [STATUS_GROUP.PERSONAL]: 'STATUS_PAGE.GROUP_PERSONAL',
 };
 
@@ -88,6 +101,7 @@ const LEGEND_STATUS_ORDER: ServiceStatus['status'][] = [
 const getStatusGroup = (name: string): StatusGroup => {
   if (name.startsWith(PRODUCTION_PREFIX)) return STATUS_GROUP.PRODUCTION;
   if (name.startsWith(STAGING_PREFIX)) return STATUS_GROUP.STAGING;
+  if (name.startsWith(DEMO_PREFIX)) return STATUS_GROUP.DEMO;
   return STATUS_GROUP.PERSONAL;
 };
 
@@ -106,6 +120,7 @@ const groupServices = (
   const groups: Record<StatusGroup, ServiceStatus[]> = {
     [STATUS_GROUP.PRODUCTION]: [],
     [STATUS_GROUP.STAGING]: [],
+    [STATUS_GROUP.DEMO]: [],
     [STATUS_GROUP.PERSONAL]: [],
   };
   services.forEach(svc => groups[getStatusGroup(svc.name)].push(svc));
@@ -228,11 +243,23 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
   return (
     <main className={PAGE_CLASS}>
       <header className="mb-4">
-        <PageHeader title={t('STATUS_PAGE.TITLE')} />
+        <PageHeader title={t('STATUS_PAGE.TITLE')} route={STATUS_ROUTE} />
         {updated && (
           <p className="mt-2 text-gray-600 dark:text-gray-400">{updated}</p>
         )}
       </header>
+      <div className="mb-4">
+        <CardGrid>
+          <li>
+            <CardLink
+              href={UPTIME_SITE_URL}
+              title={t('STATUS_PAGE.UPTIME_SITE.TITLE')}
+              description={t('STATUS_PAGE.UPTIME_SITE.DESCRIPTION')}
+              icon={<History className={ICON_CLASS} aria-hidden="true" />}
+            />
+          </li>
+        </CardGrid>
+      </div>
       <StatusLegendDialog open={legendOpen} onOpenChange={setLegendOpen} />
 
       {servicesError && (

@@ -10,7 +10,7 @@
 
 ## Data (`graph.json`)
 
-- Generated at build time by `scripts/build-docs-snapshot.mjs` from a per-app JSON config (`root`, `outDir`, `sources`, optional `linkFallbacks` that rewrite links leaving the snapshot to absolute URLs), alongside `structure.json` and `search-index.json`; gitignored (build artifact). `react-utility`'s `createDocsSnapshotSource(baseUrl)` is the matching client reader
+- Generated at build time by `scripts/build-docs-snapshot.mjs` from a per-app JSON config (`root`, `outDir`, `sources`, optional `linkFallbacks` that rewrite links leaving the snapshot to absolute URLs, optional `labelByDirectory` filenames whose graph labels use their parent directory), alongside `structure.json` and `search-index.json`; gitignored (build artifact). `react-utility`'s `createDocsSnapshotSource(baseUrl)` is the matching client reader
 - Shape `{ nodes: [{ id, name, group }], links: [{ source, target }] }` — `id`/`source`/`target` are note paths, `group` is the top-level folder
 - Edges are markdown links resolved against known note paths (same resolution as in-note link clicks, plus a `.md`-extension fallback); external/hash links, self-links, and duplicate edges are dropped
 - Built entirely at snapshot time — no note content is parsed in the browser
@@ -24,7 +24,7 @@
 - Labels show for hovered/active nodes always, for other nodes only past a zoom threshold
 - Clicking a node opens that note and closes the graph
 - Auto-fits to the viewport until the first zoom/pan/drag, then leaves the view alone
-- Follows the viewer's light/dark theme (`.dark` class, `prefers-color-scheme` fallback) and repaints on theme change
+- Follows the viewer's light/dark theme (`.dark` class, `prefers-color-scheme` fallback) and repaints on theme change by observing `class`/`style` on the canvas container and every ancestor (a scoped `ThemeProvider` does not touch `<html>`)
 
 ## Notes
 

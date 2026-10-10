@@ -1,4 +1,4 @@
-import type { PastebinGroup } from '@vigilant-broccoli/common-js';
+import { OPEN_TYPE, type PastebinGroup } from '@vigilant-broccoli/common-js';
 import {
   BUSINESS_LINK,
   COMMUNITY_LINK,
@@ -7,6 +7,10 @@ import {
   PROJECT_LINK,
   SOCIAL_LINK,
 } from '@vigilant-broccoli/personal-common-js';
+import {
+  EXTERNAL_QUICK_LINKS,
+  LINK_GROUP_SUBGROUP,
+} from './quick-links.consts';
 
 export const PERSONAL_SITE_LINK = {
   INDEX: {
@@ -53,6 +57,21 @@ const toEntry = ({ NAME, URL }: { NAME: string; URL: string }) => ({
   label: NAME,
   value: URL,
 });
+
+const SHARED_QUICK_LINK_SUBGROUPS = [
+  LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  LINK_GROUP_SUBGROUP.UI_APPS,
+  LINK_GROUP_SUBGROUP.DEV,
+  LINK_GROUP_SUBGROUP.LEARN,
+];
+
+const SHARED_QUICK_LINK_GROUPS: PastebinGroup[] =
+  SHARED_QUICK_LINK_SUBGROUPS.map(subgroup => ({
+    name: subgroup,
+    entries: EXTERNAL_QUICK_LINKS.filter(
+      link => link.subgroup === subgroup && link.type === OPEN_TYPE.BROWSER,
+    ).map(link => ({ label: link.label, value: link.target.trim() })),
+  }));
 
 export const PASTEBIN_GROUPS: PastebinGroup[] = [
   {
@@ -103,4 +122,5 @@ export const PASTEBIN_GROUPS: PastebinGroup[] = [
       INTEREST_LINK.IMDB,
     ].map(toEntry),
   },
+  ...SHARED_QUICK_LINK_GROUPS,
 ];

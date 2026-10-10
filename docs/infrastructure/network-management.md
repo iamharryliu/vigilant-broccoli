@@ -15,12 +15,21 @@ All public URLs for deployed applications, grouped by domain/provider.
 ```
 harryliu.dev                              Cloudflare zone (Terraform: infrastructure/terraform/)
 ├── harryliu.dev                          Personal website — Cloudflare Pages `production-harryliu-dev-react` (domain + CNAME: Terraform, infrastructure/terraform/)
-├── projects.harryliu.dev                 GitHub Pages index (CNAME to iamharryliu.github.io, DNS-only: Terraform, infrastructure/terraform/; the Pages custom domain is set by `github_repository_pages` in `github.tf`; the CNAME file staged by `pages-index:deploy-github-pages` keeps deploys from clearing it)
+├── projects.harryliu.dev                 GitHub Pages index (CNAME to iamharryliu.github.io, DNS-only: Terraform, infrastructure/terraform/; also the upstream of `status.harryliu.dev`, so it must stay DNS-only; the Pages custom domain is set by `github_repository_pages` in `github.tf`; the CNAME file staged by `pages-index:deploy-github-pages` keeps deploys from clearing it)
+├── status.harryliu.dev                   Status summary — the pages-index `StatusPage` at the host root. Cloudflare Worker `status-proxy` (`infrastructure/cloudflare-workers/status-proxy/`, custom domain + script: Terraform `cloudflare-status.tf`; Cloudflare creates the DNS record) reverse-proxies GET/HEAD to `projects.harryliu.dev`, rewrites upstream redirect `Location`s to the status host and passes status codes and content types through. The app picks `StatusPage` because `window.location.hostname` is this host — a URL fragment never reaches the network, so no proxy could select the route
+├── uptime.harryliu.dev                   Upptime historical site — GitHub Pages `gh-pages` branch of `iamharryliu/uptime` (CNAME to iamharryliu.github.io, DNS-only: Terraform `cloudflare-harryliu-dev.tf`; Pages custom domain set by `github_repository_pages.upptime`; see [upptime.md](./upptime.md))
 ├── api.harryliu.dev                      VB Express (production) — proxied CNAME to `production-vb-express.fly.dev` (Terraform, infrastructure/terraform/); the fly app needs a matching cert, which the `deploy.yml` "Ensure fly cert" step adds idempotently (`flyctl certs add api.harryliu.dev -a production-vb-express`) so Cloudflare's origin TLS handshake succeeds. All production clients and Upptime use this hostname
 ├── www.harryliu.dev                      301 redirect to apex (Cloudflare ruleset)
 ├── findme.harryliu.dev                   FindMe — Vercel `production-findme` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
 ├── whiteboard.harryliu.dev               Whiteboard — Vercel `production-whiteboard` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
+├── weather.harryliu.dev           Weather — Vercel `production-weather-next` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
+├── links.harryliu.dev                    Links — Cloudflare Pages `production-links-react` (domain + CNAME: Terraform, infrastructure/terraform/; public pastebin page, no Access gating)
 ├── docs.harryliu.dev                     Docs MD — Cloudflare Pages `production-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-docs-md.yml, which mirrors `deploy.yml`'s environment selection because the notes snapshot lives outside the nx graph; public, no Access gating)
+├── context.harryliu.dev                  Agent Context — Cloudflare Pages `production-context-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-context-md.yml because the agent-context snapshot lives outside the nx graph; public, no Access gating)
+├── components.harryliu.dev        Component Library — Cloudflare Pages `production-component-library` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating).
+├── calendar.harryliu.dev                 Calendars — Cloudflare Pages `production-calendars` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating; lists public event calendars from VB Express `GET /api/public/event-calendars` at `api.harryliu.dev` (staging Pages → `staging-vb-express.fly.dev`), allowed by a narrowly scoped CORS rule on that route only)
+├── utilities.harryliu.dev                Utilities UI — Cloudflare Pages `production-utilities-ui` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating)
+├── waiting.harryliu.dev                  Waiting Games — Cloudflare Pages `production-waiting-games` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating; stateless passive games, no backend)
 ├── git.harryliu.dev                      Gitea — OCI VM (A record, proxied + Cloudflare Access; web UI gated by owner email, git/CI over HTTPS via service token, git-SSH on :2222 direct). Also the read surface for the private journal notes — browsed directly in Gitea rather than mirrored to a Pages site, so the notes never leave the VM
 ├── code.harryliu.dev                     code-server — OCI VM (A record, proxied + Cloudflare Access; owner-email + non-identity CI service token for ci-health-check /healthz origin probes)
 ├── drive.harryliu.dev                    Seafile — AWS EC2 VM (A record, proxied + Cloudflare Access, owner-email only; kept off the OCI Ampere pool — its 50GB-per-boot-volume floor left no free-tier storage headroom for a 4th/5th OCI VM)
@@ -42,12 +51,13 @@ fly.dev                                   Fly.io API services (production apps c
 vercel.app                                Vercel (production projects created on first production dispatch)
 ├── staging-hearth.vercel.app                 Hearth (staging)
 ├── production-hearth.vercel.app              Hearth (production)
-├── staging-employee-handler-ui.vercel.app    Employee Handler UI (staging)
-├── production-employee-handler-ui.vercel.app Employee Handler UI (production)
+├── demo-employee-handler-ui.vercel.app       Employee Handler UI (demo — its only Vercel deploy)
 ├── staging-findme.vercel.app                 FindMe (staging)
 ├── production-findme.vercel.app              FindMe (production)
 ├── staging-whiteboard.vercel.app             Whiteboard (staging)
-└── production-whiteboard.vercel.app          Whiteboard (production)
+├── production-whiteboard.vercel.app          Whiteboard (production)
+├── staging-weather-next.vercel.app    Weather (staging)
+└── production-weather-next.vercel.app Weather (production)
 
 pages.dev                                 Cloudflare Pages URLs for the environment not attached to a custom domain above
 ├── staging-cloud-8-skate-react.pages.dev      Cloud 8 Skate (staging — cloud8skate.com is on production, the exception)

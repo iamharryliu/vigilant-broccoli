@@ -1,15 +1,12 @@
-export type Signature = {
-  email: string;
-  signatureString: string;
-  firstName?: string;
-  lastName?: string;
-};
+import {
+  apiPath,
+  EMPLOYEE_HANDLER_ROUTES,
+  type Signature,
+} from '@vigilant-broccoli/employee-handler/contract';
+import type { SignatureTemplate as EmployeeHandlerSignatureTemplate } from '@vigilant-broccoli/employee-handler';
 
-export type SignatureTemplate = {
-  id: string;
-  label: string;
-  template: string;
-};
+export type { Signature };
+export type SignatureTemplate = EmployeeHandlerSignatureTemplate;
 
 export const DEMO_EMAIL = 'demo@example.com';
 
@@ -89,5 +86,9 @@ export const PRESET_TEMPLATES: SignatureTemplate[] = [
   },
 ];
 
-export const UPDATE_ALL_ENDPOINT = '/api/signature/updateAll';
-export const TEMPLATES_ENDPOINT = '/api/signature-templates';
+export const UPDATE_ALL_ENDPOINT = apiPath(
+  EMPLOYEE_HANDLER_ROUTES.signatureUpdateAll,
+);
+export const TEMPLATES_ENDPOINT = apiPath(
+  EMPLOYEE_HANDLER_ROUTES.signatureTemplatesList,
+);

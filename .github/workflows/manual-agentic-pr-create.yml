@@ -1,0 +1,179 @@
+name: manual-agentic-pr-create
+
+run-name: manual-agentic-pr-create (${{ inputs.agent }}) ${{ inputs.prompt }}
+
+# Runs the same agent solve as the local `pnpm agentic-pr-create`, but on the
+# ephemeral GitHub-hosted runner: it builds and runs the vb-agent-sandbox
+# container (fresh clone of main, headless Claude Code or Codex, commit, push,
+# open PR). Secrets come from Vault; the branch push + PR use a minted GitHub App
+# token, so the workflow's own GITHUB_TOKEN needs no write scope.
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: 'Task to solve. Mention TODO ids (e.g. "solve a1b2c3 and d4e5f6") to have the agent resolve those TODO.md rows.'
+        type: string
+        required: true
+      agent:
+        description: 'Agent runner to use.'
+        type: choice
+        default: claude
+        options:
+          - claude
+          - codex
+      model:
+        description: 'Claude model to run when agent=claude.'
+        type: choice
+        default: sonnet
+        options:
+          - sonnet
+          - opus
+          - haiku
+      codex_model:
+        description: 'Optional Codex model override when agent=codex. Leave blank for the Codex CLI default.'
+        type: string
+        default: ''
+      firewall:
+        description: 'In-container egress firewall (turn off if iptables/ipset fails on the runner).'
+        type: choice
+        default: 'on'
+        options:
+          - 'on'
+          - 'off'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  # GitHub rejects a run whose concurrency group exceeds 400 characters, and a
+  # free-text prompt blows past that on its own, so the group is keyed on a hash
+  # of the inputs instead. Hashing needs a step, and only job-level concurrency
+  # can read `needs`, hence the split.
+  key:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      group: ${{ steps.hash.outputs.group }}
+    steps:
+      - name: Checkout summary helper
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Publish overview
+        continue-on-error: true
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: overview
+          title: Create a pull request
+          agent: ${{ inputs.agent }}
+          model: ${{ inputs.agent == 'claude' && inputs.model || inputs.codex_model }}
+          firewall: ${{ inputs.firewall }}
+          task: ${{ inputs.prompt }}
+
+      - name: Hash dispatch inputs
+        id: hash
+        env:
+          PROMPT: ${{ inputs.prompt }}
+          AGENT: ${{ inputs.agent }}
+          MODEL: ${{ inputs.model }}
+          CODEX_MODEL: ${{ inputs.codex_model }}
+        run: |
+          set -euo pipefail
+          echo "group=$(printf '%s' "${AGENT}:${MODEL}:${CODEX_MODEL}:${PROMPT}" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+
+  solve:
+    needs: key
+    concurrency:
+      group: manual-agentic-pr-create-${{ needs.key.outputs.group }}
+      cancel-in-progress: true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Claude Secrets from Vault
+        if: inputs.agent == 'claude'
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | CLAUDE_CODE_OAUTH_TOKEN ;
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+
+      - name: Import Codex Secrets from Vault
+        if: inputs.agent == 'codex'
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets AGENT_CODEX_ACCESS_TOKEN | AGENT_CODEX_ACCESS_TOKEN ;
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+
+      - name: Solve
+        id: solve
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
+          AGENT_CODEX_ACCESS_TOKEN: ${{ inputs.agent == 'codex' && env.AGENT_CODEX_ACCESS_TOKEN || '' }}
+          AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
+          AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
+          AGENT: ${{ inputs.agent }}
+          SANDBOX_FIREWALL: ${{ inputs.firewall }}
+          MODEL: ${{ inputs.model }}
+          CODEX_MODEL: ${{ inputs.codex_model }}
+          PROMPT: ${{ inputs.prompt }}
+        run: |
+          set -euo pipefail
+          SOLVE=infrastructure/agent-sandbox/solve-todo.sh
+          SOLVE_ARGS=(--agent "$AGENT")
+          if [ "$AGENT" = "claude" ]; then
+            SOLVE_ARGS+=(--model "$MODEL")
+          elif [ "$AGENT" = "codex" ]; then
+            [ -z "$CODEX_MODEL" ] || SOLVE_ARGS+=(--codex-model "$CODEX_MODEL")
+          else
+            echo "ERROR: unsupported agent '$AGENT'." >&2
+            exit 1
+          fi
+          STATUS=0
+          bash "$SOLVE" "${SOLVE_ARGS[@]}" --prompt "$PROMPT" || STATUS=$?
+          echo "===== solve log ====="
+          for f in /tmp/vb-solve.*/*.log; do
+            [ -e "$f" ] || continue
+            echo "--- $f ---"
+            cat "$f"
+          done
+          exit "$STATUS"
+
+      - name: Report result when the solve could not
+        if: ${{ always() && steps.solve.outcome != 'success' && steps.solve.outputs.result_reported != 'true' }}
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: result
+          outcome: ${{ job.status == 'cancelled' && 'cancelled' || 'failed' }}
+          note: ${{ steps.solve.outcome == 'skipped' && 'A step before the solve failed, so the agent never started.' || 'The solve stopped before it could report a result; see the Solve step log.' }}
+
+      - name: Tunnel to email service
+        if: always()
+        uses: ./.github/actions/fly-private-tunnel
+        with:
+          app: staging-vb-email-service
+
+      - name: Notify by email
+        if: always()
+        env:
+          SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
+          SOLVE_RESULT: ${{ steps.solve.outcome == 'success' && 'succeeded' || 'failed' }}
+          RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          PR_DETAILS_FILE: ${{ steps.solve.outputs.pr_details_file }}
+        run: node .github/scripts/agentic-solve-email.mjs

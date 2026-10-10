@@ -16,17 +16,23 @@ import {
   Signature,
   SignatureTemplate,
 } from './signatures.shared';
+import {
+  apiPath,
+  EMPLOYEE_HANDLER_ROUTES,
+} from '@vigilant-broccoli/employee-handler/contract';
 import { sanitizeSignatureHtml } from './sanitize-signature';
 import { authFetchOk } from '../../../lib/api-helpers';
 import { useAction } from '../../../lib/use-action';
 import { useTranslation } from '../../i18n';
 
-const LIST_ENDPOINT = '/api/signature/list';
+const LIST_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.signatureList);
 
 const DOWNLOAD_FILENAME = 'signature.html';
 const MIME_TYPE_HTML = 'text/html';
 const ZIP_FILENAME = 'signatures.zip';
-const DOWNLOAD_ZIP_ENDPOINT = '/api/signature/downloadZippedSignatures';
+const DOWNLOAD_ZIP_ENDPOINT = apiPath(
+  EMPLOYEE_HANDLER_ROUTES.signatureDownloadZipped,
+);
 
 const triggerDownload = (blob: Blob, filename: string) => {
   const url = URL.createObjectURL(blob);

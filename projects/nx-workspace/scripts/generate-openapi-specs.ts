@@ -1,5 +1,6 @@
 import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
+import { createEmployeeHandlerOpenApiSpec } from '../libs/@vigilant-broccoli/employee-handler/src/employee-handler/employee-handler.openapi';
 import { swaggerSpec as bucketServiceSpec } from '../apps/api/bucket-service/src/libs/swagger';
 import { swaggerSpec as emailServiceSpec } from '../apps/api/email-service/src/swagger';
 import { swaggerSpec as emailSubscriptionServiceSpec } from '../apps/api/email-subscription-service/src/swagger';
@@ -21,6 +22,7 @@ const SPECS: SpecEntry[] = [
   { slug: 'email-subscription-service', spec: emailSubscriptionServiceSpec },
   { slug: 'llm-service', spec: llmServiceSpec },
   { slug: 'bucket-service', spec: bucketServiceSpec },
+  { slug: 'employee-handler', spec: createEmployeeHandlerOpenApiSpec() },
 ];
 
 const withServers = ({ spec, publicUrl }: SpecEntry) => ({

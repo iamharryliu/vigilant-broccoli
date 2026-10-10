@@ -2,7 +2,7 @@
 
 ## Overview
 
-- `/career` page renders Harry's resume as a 1:1 web copy of the source PDF
+- `/career` page edits Harry's resume (JSON editor or AI chat) next to a live 1:1 web copy of the PDF
 - Resume content is a single JSON file, shared across apps via `@vigilant-broccoli/resume`
 - Same data also drives `personal-website-react`'s `resume.pdf` (no more external source)
 
@@ -10,21 +10,85 @@
 
 - `libs/@vigilant-broccoli/resume/src/resume.json` — single source of truth
 - Bullet strings support inline `**bold**` markdown, parsed by both renderers
-- `@vigilant-broccoli/resume` (index) — browser-safe: `resumeData` + `ResumeData` types
-- `@vigilant-broccoli/resume/server` — Node-only: `generateResumePdfBuffer()` (Playwright/Chromium)
+- Optional `summary` — a concise professional summary rendered between the header and the work experience (the skills line sits at the bottom, after Open Source); resumes without it stay valid
+- `@vigilant-broccoli/resume` (index) — browser-safe: `resumeData`, `ResumeData` types, the zod `resumeSchema`/`validateResume`, `calculateWorkExperience` and the PDF layout types
+- `@vigilant-broccoli/resume/server` — Node-only: `renderResumePdf()` (Playwright/Chromium), `generateResumePdfBuffer()` and `ResumePdfOverflowError`
 - Split into two entry points so Next's client bundle for `/career` never pulls in Playwright
+- `validateResume` is the one structural check: the JSON editor, `PUT /api/resume`, `POST /api/resume/pdf`, the chat request and every model tool output go through it. Link URLs must be `http(s)`
 
 ## `/career` Page (vb-manager-next)
 
-- Read-only view for now — manual editing and AI-assisted updates are a future step
-- "Download PDF" button opens the browser print dialog (`window.print()`) — no server-side export
-- Print styling forces Letter page size and strips the app chrome (nav bar, sidebar) via `print:` Tailwind variants
+- "Edit JSON" tab: edits parse and validate on every keystroke; invalid JSON or a structurally invalid resume shows the error, keeps the last valid preview and blocks save, download and Apply. Valid edits autosave (debounced) to `resume.json`. Nothing is truncated
+- "Diff" tab: a git-style line diff (`+`/`-`, green/red) of the JSON editor text against the committed (`HEAD`) `resume.json`, read by `GET /api/resume/baseline` (`git show`). Updates live as the editor or Apply changes the resume, and survives reloads. Until it loads (or if git fails) the baseline is the bundled `resume.json`, and trailing newlines are ignored
+- "AI Chat" tab: see below. Its conversation lives in `CareerPage`, so it survives switching tabs; "New conversation" clears it
+- "Download PDF" posts the current resume to `POST /api/resume/pdf` (server Playwright, Letter). If the PDF is over one page the toast shows the measured overflow (for example "about 4 lines too long") instead of a generic failure; the editor content is never changed
 - Fonts/colors match the original PDF exactly (extracted from the PDF's content streams): Roboto, link color `#1155cc`, heading color `#3d85c6`
+
+## AI Chat
+
+`POST /api/resume/chat` streams newline-delimited JSON: `progress` events (shown in the existing "Thinking" spinner bubble) and one final `text`, `resume_update` or `error` event.
+
+### Progressive conversation
+
+- The browser sends the visible history plus explicit context each turn: the current applied resume, the latest proposal (`validated`, `applied`, `basedOnCurrentResume`) and a tailoring ledger. Users never restate the target or confirmed facts
+- Typical flow: paste a recruiter request, receive a tailored one-page draft with gap notes, optionally answer follow-up questions, refine the draft, Apply, keep talking. The model drafts from supported experience in the same turn instead of waiting for answers about unsupported requirements. Feedback-only questions get plain text without a resume update
+- The empty chat shows a brief explanation and a free-text input; there are no canned prompt buttons
+- Refinements such as "shorten your previous draft" work on the exact latest draft sent as JSON, with its status (applied, awaiting Apply, stale or unvalidated). A stale draft is rebased by asking the assistant to refresh it onto the current resume
+- Conversation continuity is session state only (React state, cleared by a reload or "New conversation"); there is no stored chat and no extra service
+
+### Grounding
+
+- Factual sources are the current resume, the career note and experience the user states about themselves in the conversation. A pasted job posting or keyword list is targeting guidance for emphasis and wording, never evidence of the user's experience, and assistant suggestions are not evidence either
+- The ledger (`target`, `requirements`, `recruiterInstructions`, `confirmedFacts`, `deniedSkills`, `openQuestions`) is recorded by the model through `record_tailoring_context`. `confirmedFacts` and `deniedSkills` are instructions to the model; the server does not verify them against the conversation
+- Years of experience are calculated by `calculateWorkExperience` from the work-experience dates (overlapping roles merged, gaps excluded, month boundaries exclusive) and given to the model as the ceiling to claim; the code-built summary opener uses the same calculation
+- Factual grounding is prompt-guided, not code-enforced: the prompt tells the model never to invent experience, figures or years. Code (`resume-chat.protection.ts`) only protects fixed fields: `basics.links` must match the current resume exactly (links are never edited in the editor); `basics.title` may change only to a title listed in the skills note; and name, contact details, employers, roles and dates must match the current resume unless the user's instruction is quoted. Failures are sent back to the model like overflow, as are PDF layout failures
+- The career note is `notes/personal/personal-software-career-experience.md`, read live on every request by `resume-chat.skills-note.server.ts` (walking up from the working directory, so it works under `next dev` and the PM2 `dist/` process; the app is only run from this checkout). Its `## Skills` table is the confirmed skills, `## Roles` the allowed titles (its first column). The parser sends skill names and employer attribution as a structured index; implementation details come from Job Experience and Project Contributions. A keyword with neither a skill row nor explicit project implementation evidence is unconfirmed, so the model leaves it out of the draft and lists it as a gap. Follow-up questions can confirm it for a later revision without delaying supported edits. If the file is missing the editor falls back to the resume and conversation, and the title cannot change
+- The same protected-field and layout checks run for CLI edits through `scripts/check-resume.ts` (run with `npx tsx` from `projects/nx-workspace`; deliberately no root script), which compares the working-tree `resume.json` with `HEAD` (or a given git ref) and also reports the layout. The resume lib's `CONTEXT.md` tells agents to hold CLI edits to the same rules as this chat
+- Keyword highlighting is automatic: before rendering, `resume-chat.highlight.ts` bolds (`**…**`) summary and bullet words that match a confirmed skill the target, requirements or recruiter instructions mention, plus that skill's related terms (a posting asking for WCAG also bolds ARIA from `Accessibility (WCAG, ARIA)`). Whole-word matches only, existing bold is left alone, and it runs before the one-page render so the bold width is measured. Unconfirmed keywords are never emphasised
+- The skills line is reordered in code (`orderSkillsByImportance`) before rendering: skills the target mentions come first, in the order the ledger lists requirements (the model is told to record them most important first, required before nice-to-have), then the rest in their existing order. No skill is added or removed
+- If the model leaves `basics.title` unchanged, `alignTitleWithTarget` switches it to the closest allowed Roles title: the target's mentions of the title's lead word (Backend, DevOps, ..., including spellings such as `full-stack` or `back end`) count triple, plus mentions of that discipline's typical technologies (`ROLE_KEYWORDS`: Java, API, microservices for Backend; React, CSS for Frontend; Docker, Kubernetes, Terraform for DevOps), so a posting that never says "backend" still lands on the nearest role; a title the model chose itself is kept. Highlighting skips generic terms (`platform`, `architecture`, ...), hyphenated compounds (`cross-platform`) and the parenthetical list after an already-bold keyword (`**AWS** resources (EC2, S3)`)
+- Experience lines are tailored too: the note's `## Skills` table has two columns, `Skill` and `Used In`, and is an employer-attribution index. Implementation details and source links live in Project Contributions, with responsibilities spanning projects in Job Experience. The model rewrites or adds employer bullets using those records; a skill row alone permits naming a skill in existing real work, not inventing a responsibility or outcome. Employer attribution comes from the skill row, an explicit project contribution or user-confirmed experience
+- The summary always opens with a code-built sentence, `<title> with <N>+ (or nearly N) years of experience in software development.`, from the aligned title and the work dates (`withRoleSummaryOpener`); the model writes only the related follow-up, and a leading model sentence that claims years is dropped. Title alignment and the opener run before the protected-field check and the render, so the checked text is the text that is rendered
+- After a one-page fit, `fillSkillsLine` appends skills beyond the model's choice (confirmed skills the target mentions, then the current resume's skills) as long as the skills line does not gain a line or the resume a page; it binary-searches the count with a few extra renders. It never re-adds a denied skill, or a current skill the latest user message names outside the target (so "drop Testing from the skills" sticks)
+- Both renderers (`resume-view.component.tsx`, `server.ts`) parse `**bold**` in the summary as well as in bullets
+- The note's `## Job Experience` table (company, role, dates, context) is the user's own account of each job; it is sent to the model as the source of truth for what was done at each company. Edit the note, not the code, to give the model more context for a job
+- The note's `## Project Contributions` section has a `### Company — Project — Dates` heading for each project and a contribution/description table. Dates come from the user's project record or observed authored Git activity, including historical paths and excluding stash commits. Git activity ranges are approximate context, not confirmed project boundaries or uninterrupted work. Projects without known dates use `Dates unconfirmed`; the model must not claim dates or duration for those projects or print the placeholder. Concrete implementation details live in project contribution tables, while role-wide responsibilities and context awaiting project attribution remain in Job Experience. `OSS Projects` is one project attributed to `Open Source`, with its app and library details kept in contribution descriptions. The Job Experience context explicitly maps this attribution to the existing `vigilant-broccoli` resume entry, so tailoring preserves that entry instead of creating a duplicate. Reference links are retained for traceability, omitted from generated resume bullets, and never treated as additional skill claims. The parser passes each contribution with its project, company and dates to the model on every request; a missing section produces an empty list. Contribution describes the work and description records its technologies and implementation. Explicit implementation technologies support claims for that project and company even without a separate skill row; an omitted employer in a broad skill row is not a denial, but explicit contradictions must be reported. The model selects relevant examples for employer bullets within the existing page budget and keeps prototypes labeled as prototypes. Project dates never change employment dates
+- The note's `## Languages` table (language and proficiency) is given to the model as confirmed, so it never asks about spoken or written languages
+- Each `update_resume` call includes `unconfirmed` (an empty array when there are no gaps), so the edited resume and keywords left out with reasons arrive together. The server merges the gaps from every attempt in a request, so a revision that forgets them, or a retained earlier draft, still shows them; a gap whose keyword ended up in the returned resume is dropped. Optional questions follow the draft rather than blocking it. If the model only records the ledger, its tool result asks it to draft now when a draft was requested. The reply also includes the validation status
+
+### Model
+
+- The server picks the model (`RESUME_CHAT_MODEL` in `resume-chat.consts.ts`, currently `gpt-5.5`, called with `OPENAI_API_KEY`); the client's `model` field is ignored
+
+### Validation and retry limits
+
+- Every candidate from `update_resume` is checked structurally, then for protected fields, then rendered with the same `renderResumePdf` path as Download. Only a result of exactly one page (page count read from the PDF with `pdf-lib`) is offered as a validated proposal; zero pages is an error
+- One page is the hard constraint; filling it is a bounded, soft objective (see below). On overflow the model receives structured layout feedback (page count, content height versus printable height, overflow lines, per-section heights) and must return a shorter version that keeps employers, roles and dates. Budget: 1 initial call plus 3 revisions, so at most 4 model calls per message; each candidate uses a base PDF render and may use additional bounded renders to fill the skills line
+- If the budget runs out with no one-page candidate, or the PDF check itself fails (for example Chromium is missing), the draft stays in the chat as "Not validated as one page", the Apply button is disabled and the assistant asks what to prioritise or cut. If no valid draft ever existed, an error message is shown. In every failure the current resume is untouched
+- Page size, margins and type size are never changed to make content fit
+
+### Fit plus fill
+
+- `renderResumePdf` measures the body in the same viewport, fonts and HTML as the exported PDF and adds `unusedPx`, `unusedLines`, `fillRatio` (content height ÷ printable height, so the margins and the spacing between sections count as content and nothing is stretched to the page) and `underfilled` to the layout. The PDF's actual page count remains the final authority for fitting
+- The target band is `RESUME_PDF_FILL_TARGET` in `resume.pdf.types.ts`: 95%-98% of the 1017px printable height (967-996px of content). Below 95% is "underfilled"; the unused ~2% at the bottom is an intentional gutter, so content above the band that still fits is never shortened
+- The model gets measured feedback in both directions. Overflow: shorten judiciously, only as much as needed. Underfill: restore or develop the most job-relevant supported achievements, clarify existing facts, or include confirmed experience that was left out. It is told not to pad, invent claims or metrics, repeat bullets or keyword-stuff, and to answer in plain text instead when no supported material is left or the user asked for a concise version
+- The layout also reports `shortLastLines` (wrapped bullets, summary or skills lines whose last line is under 70% full, `RESUME_PDF_MIN_LAST_LINE_RATIO`) and `skillsLineCount`. A candidate with short last lines is sent back for a bounded revision like an underfilled one; the skills line prefers one line but a wrap never fails a draft
+- The best one-page candidate (the one nearest the band, fewest short lines on ties, earliest after that) is retained through refinement. A later overflow, protected-field rejection, render failure or model error returns that version instead of losing it, and the reply says an earlier version was kept
+- Underfill alone never blocks Apply or counts as a failed one-page check. When the budget or the supported material runs out the sparse candidate is returned as validated with how much of the page is used, and the assistant offers to work in other relevant experience the user can describe
+- Layout CSS is unchanged: page size, margins, font sizes and spacing are the same, so the browser preview matches and Download exports exactly the validated candidate with no export-time content changes. No spacing stretch, forced height or shrinking is used to claim occupancy
+- Progress shows "Refining to fill the page (n of 3)"; the metrics themselves are only sent to the model and appear here
+
+### Apply and stale protection
+
+- A proposal is never applied or saved automatically. Apply updates the preview, JSON editor and `resume.json` together (through the editor's autosave)
+- `CareerPage` keeps a resume revision that increases on every JSON edit, load and Apply. A proposal records the revision it was based on and can only be applied while that revision is current; otherwise it shows as out of date
+- A reply that arrives after the resume changed is marked as based on the older version and cannot be applied. A reply that arrives after "New conversation" is dropped
+- Apply is blocked while the JSON editor has an error. A malformed or invalid model response is discarded before it reaches state
 
 ## `personal-website-react` resume.pdf
 
 - Generated at build time by the `pre-build` Nx target, not committed (gitignored)
-- Renders a standalone HTML/CSS template (duplicated from, not shared with, the React view — different runtime, see below) via headless Chromium, `page.pdf()`
+- Calls `generateResumePdfBuffer()`, which throws `ResumePdfOverflowError` (with the measured layout) if the resume is over one page
 - Spacing is hand-tuned to fit exactly one Letter page — adding resume content may push it to a second page and require re-tuning
 - `pre-build` also runs `playwright install --with-deps chromium` since no other CI job in this repo installs Playwright browsers
 
@@ -32,4 +96,5 @@
 
 - The React component (`resume-view.component.tsx`, Tailwind/`next/font`) and the PDF template (`server.ts`, plain HTML string) implement the same design twice — Next's bundler and the headless-Chromium script can't share one implementation. Styling changes must be applied in both places.
 - vb-manager-next isn't deployed to the cloud (runs locally via PM2) — the PDF generator can't render the live `/career` page, so it re-implements the layout standalone instead.
+- The PDF template loads Roboto from Google Fonts. Loading is bounded (5 s); if it does not arrive the stylesheet is dropped and a fallback font is measured, which is reported as `fontsLoaded: false` and can change whether a resume fits.
 - `apps/ui/personal-website-react` declares no `implicitDependencies` on vb-manager-next — Nx's affected-graph correctly picks up resume.json changes via the real `@vigilant-broccoli/resume` import.

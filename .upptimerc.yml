@@ -4,6 +4,10 @@ repo: uptime
 sites:
   - name: staging-docs
     url: https://staging-docs-md.pages.dev/
+  - name: staging-context
+    url: https://staging-context-md.pages.dev/
+  - name: staging-links
+    url: https://staging-links-react.pages.dev/
   - name: staging-cloud-8-skate
     url: https://staging-cloud-8-skate-react.pages.dev/
   - name: staging-harryliu-dev
@@ -16,8 +20,18 @@ sites:
     url: https://staging-hearth.vercel.app/login
   - name: staging-service-manager
     url: https://staging-vb-express.fly.dev/
+  - name: staging-component-library
+    url: https://staging-component-library.pages.dev/
+  - name: staging-utilities
+    url: https://staging-utilities-ui.pages.dev/
+  - name: staging-waiting-games
+    url: https://staging-waiting-games.pages.dev/
   - name: staging-whiteboard
     url: https://staging-whiteboard.vercel.app/
+  - name: staging-weather
+    url: https://staging-weather-next.vercel.app/
+  - name: staging-calendars
+    url: https://staging-calendars.pages.dev/
   - name: staging-vb-manager-next-mobile
     url: https://staging-vb-manager-next-mobile.vercel.app/login
   - name: production-cloud-8-skate
@@ -44,16 +58,36 @@ sites:
     url: https://production-hearth.vercel.app/login
   - name: production-service-manager
     url: https://api.harryliu.dev/
+  - name: production-component-library
+    url: https://components.harryliu.dev/
+  - name: production-utilities
+    url: https://utilities.harryliu.dev/
+  - name: production-waiting-games
+    url: https://waiting.harryliu.dev/
   - name: production-whiteboard
     url: https://whiteboard.harryliu.dev/
+  - name: production-weather
+    url: https://weather.harryliu.dev/
+  - name: production-calendars
+    url: https://calendar.harryliu.dev/
   - name: production-vb-manager-next-mobile
     url: https://production-vb-manager-next-mobile.vercel.app/login
+  - name: production-status
+    url: https://status.harryliu.dev/
+  - name: production-uptime
+    url: https://uptime.harryliu.dev/
   - name: production-docs
     url: https://docs.harryliu.dev/
+  - name: production-context
+    url: https://context.harryliu.dev/
+  - name: production-links
+    url: https://links.harryliu.dev/
+  - name: demo-employee-handler-ui
+    url: https://demo-employee-handler-ui.vercel.app/
 
 user-agent: upptime-vigilant-broccoli
 status-website:
-  cname: upptime.harryliu.dev
+  cname: uptime.harryliu.dev
   name: Harry Liu Status
 
 skipDescriptionUpdate: true

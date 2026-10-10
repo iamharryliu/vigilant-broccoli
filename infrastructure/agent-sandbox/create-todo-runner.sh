@@ -11,6 +11,7 @@ PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
 FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 
 cd "$REPO_DIR"
+SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create-todo/SKILL.md")
 
 git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
@@ -21,19 +22,20 @@ You are running non-interactively in a fresh clone of vigilant-broccoli, on a de
 
 $DESCRIPTION
 
-Rules:
-- Read docs/todo-pattern.md first: it is the source of truth for TODO.md's sections, columns, priority values, row rules, and the machine-read id contract. Follow it exactly.
-- Research before writing: grep the repo for every file, workflow, config, and doc the task touches. The Description and Recommended Fix cells must cite concrete paths (with line numbers where useful) and name an existing pattern to follow when one exists.
-- Check CONTEXT.md and the docs it points to for conventions that constrain the task, and bake them into the Recommended Fix.
-- Add ONE table row under the most fitting existing section, inserted in priority order among that section's rows; only create a new section (and its TOC entry) if none fits.
-- Do not implement the task. Do not touch any file besides TODO.md.
+Follow these shared task instructions:
+
+$SKILL_INSTRUCTIONS
+
+Sandbox execution rules:
+- You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
+- Only TODO.md may change inside the checkout.
 - Do not run any git or gh commands and do not commit — branching, committing, pushing, and opening the PR are handled by the calling script.
-- When finished, write $META_FILE containing only a JSON object with these string fields:
+- The only exception to the skill's output scope is $META_FILE, outside the checkout. When finished, write it containing only a JSON object with these string fields:
   - todo_id: the 6-hex id you generated
   - commit_message: capitalized, concise, focused on why the entry is needed, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
   - pr_title: the pull request title
-  - pr_summary: markdown bullet points for the PR "## Summary" section
+  - pr_summary: markdown bullet points for the PR "## Summary" section, including the refined task prompt and any assumptions or unresolved questions
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (review, then merge)
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
 EOF
@@ -89,8 +91,10 @@ else
 fi
 
 PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
-  HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic:task:create" HISTORY_PROMPT="$DESCRIPTION" \
+  HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic-pr-create-todo" HISTORY_PROMPT="$DESCRIPTION" \
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
   python3 "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py")
 
-gh pr create --title "$PR_TITLE" --body "$PR_BODY"
+PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
+echo "$PR_URL"
+printf 'PR_URL::%s\n' "$PR_URL"

@@ -1,4 +1,4 @@
-import { HashRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { I18nProvider } from './i18n';
 import { HomePage } from './pages/HomePage';
 import { StatusPage } from './pages/StatusPage';
@@ -13,41 +13,47 @@ import { NpmPackageReadmePage } from './pages/NpmPackageReadmePage';
 import { WebApplicationsPage } from './pages/WebApplicationsPage';
 import { ApiServicesPage } from './pages/ApiServicesPage';
 import { ApiServiceDocsPage } from './pages/ApiServiceDocsPage';
-import { ClaudeContextPage } from './pages/ClaudeContextPage';
+import { isStatusHost } from './consts/hosts';
+import { STATUS_ROUTE } from './consts/routes';
+
+function StatusHostRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<StatusPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
+function ProjectsRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path={STATUS_ROUTE} element={<StatusPage />} />
+      <Route path="/repo-timeline" element={<RepoTimelinePage />} />
+      <Route path="/open-source" element={<OpenSourcePage />} />
+      <Route path="/open-source/github" element={<GithubReposPage />} />
+      <Route path="/open-source/github/:repo" element={<GithubReadmePage />} />
+      <Route path="/open-source/docker" element={<DockerImagesPage />} />
+      <Route
+        path="/open-source/docker/:image"
+        element={<DockerImageReadmePage />}
+      />
+      <Route path="/open-source/npm" element={<NpmPackagesPage />} />
+      <Route path="/open-source/npm/:pkg" element={<NpmPackageReadmePage />} />
+      <Route path="/web-applications" element={<WebApplicationsPage />} />
+      <Route path="/api-services" element={<ApiServicesPage />} />
+      <Route path="/api-services/:service" element={<ApiServiceDocsPage />} />
+    </Routes>
+  );
+}
 
 export function App() {
   return (
     <I18nProvider>
       <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-dvh">
         <HashRouter>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/status" element={<StatusPage />} />
-            <Route path="/repo-timeline" element={<RepoTimelinePage />} />
-            <Route path="/open-source" element={<OpenSourcePage />} />
-            <Route path="/open-source/github" element={<GithubReposPage />} />
-            <Route
-              path="/open-source/github/:repo"
-              element={<GithubReadmePage />}
-            />
-            <Route path="/open-source/docker" element={<DockerImagesPage />} />
-            <Route
-              path="/open-source/docker/:image"
-              element={<DockerImageReadmePage />}
-            />
-            <Route path="/open-source/npm" element={<NpmPackagesPage />} />
-            <Route
-              path="/open-source/npm/:pkg"
-              element={<NpmPackageReadmePage />}
-            />
-            <Route path="/web-applications" element={<WebApplicationsPage />} />
-            <Route path="/api-services" element={<ApiServicesPage />} />
-            <Route
-              path="/api-services/:service"
-              element={<ApiServiceDocsPage />}
-            />
-            <Route path="/claude-context" element={<ClaudeContextPage />} />
-          </Routes>
+          {isStatusHost() ? <StatusHostRoutes /> : <ProjectsRoutes />}
         </HashRouter>
       </div>
     </I18nProvider>

@@ -15,7 +15,7 @@ GITHUB_API=https://api.github.com
 # already-decoded PEM, so normalise here rather than at each call site: a
 # caller that forgets the decode looks fine until openssl rejects the key at
 # run time ("Could not read private key ... STORE routines ... unsupported"),
-# which is how cron-agentic-todo-audit shipped broken.
+# which is how cron-agentic-pr-create-todo-audit shipped broken.
 PEM_CONTENT=$(cat "$PEM_FILE")
 case "$PEM_CONTENT" in
   -----BEGIN*) ;;

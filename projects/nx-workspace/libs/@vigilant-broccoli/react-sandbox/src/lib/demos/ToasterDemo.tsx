@@ -1,17 +1,17 @@
-import { Button, Heading } from '@vigilant-broccoli/react-lib';
+import { useTranslation } from '../i18n';
+import { DemoSection } from './DemoSection';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { toast, Toaster } from '@vigilant-broccoli/react-lib/toaster';
 
 const DEMO_DURATION_MS = 3000;
 
 export function ToasterDemo() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-6">
       <Toaster richColors duration={DEMO_DURATION_MS} />
 
-      <div>
-        <Heading size="4" mb="3">
-          Toast Types
-        </Heading>
+      <DemoSection title={t('DEMO_SECTION.TOASTER.TOAST_TYPES')}>
         <div className="flex gap-3 flex-wrap">
           <Button onClick={() => toast('Default toast message')}>
             Default
@@ -31,12 +31,9 @@ export function ToasterDemo() {
             Info
           </Button>
         </div>
-      </div>
+      </DemoSection>
 
-      <div>
-        <Heading size="4" mb="3">
-          With Description
-        </Heading>
+      <DemoSection title={t('DEMO_SECTION.TOASTER.WITH_DESCRIPTION')}>
         <div className="flex gap-3 flex-wrap">
           <Button
             onClick={() =>
@@ -57,12 +54,9 @@ export function ToasterDemo() {
             Success + Description
           </Button>
         </div>
-      </div>
+      </DemoSection>
 
-      <div>
-        <Heading size="4" mb="3">
-          With Action
-        </Heading>
+      <DemoSection title={t('DEMO_SECTION.TOASTER.WITH_ACTION')}>
         <div className="flex gap-3 flex-wrap">
           <Button
             onClick={() =>
@@ -77,12 +71,9 @@ export function ToasterDemo() {
             With Undo Action
           </Button>
         </div>
-      </div>
+      </DemoSection>
 
-      <div>
-        <Heading size="4" mb="3">
-          Promise
-        </Heading>
+      <DemoSection title={t('DEMO_SECTION.TOASTER.PROMISE')}>
         <div className="flex gap-3 flex-wrap">
           <Button
             onClick={() =>
@@ -96,7 +87,7 @@ export function ToasterDemo() {
             Promise Toast
           </Button>
         </div>
-      </div>
+      </DemoSection>
     </div>
   );
 }

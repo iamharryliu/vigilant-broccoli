@@ -1,6 +1,6 @@
 # Vercel deploy pattern (Next.js apps)
 
-Deploys for `hearth`, `findme`, `whiteboard`, `employee-handler-ui`, `vb-manager-next-mobile`. Everything runs through `scripts/deploy-vercel.ts`.
+Deploys for `hearth`, `findme`, `whiteboard`, `weather-next`, `vb-manager-next-mobile`. `employee-handler-ui` has no staging or production Vercel project (its `deploy` and `deploy:production` still push the Docker image) — it deploys to Vercel only through its `deploy:demo` target (project `demo-employee-handler-ui`), run by the `deploy-demo-apps` workflow on each successful staging `deploy-fanout` or by hand via `manual-deploy-app` with environment `demo`. Everything runs through `scripts/deploy-vercel.ts`.
 
 ## Table of Contents
 
@@ -13,7 +13,7 @@ Deploys for `hearth`, `findme`, `whiteboard`, `employee-handler-ui`, `vb-manager
 
 ## Targets
 
-Each app defines a `deploy` (staging) / `deploy:production` pair that sets `VERCEL_PROJECT_ID=<env>-<app>` and `VERCEL_ORG_ID`, then runs `NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts <app> <env>` (copy `hearth`'s targets).
+Each app defines a `deploy` (staging) / `deploy:production` pair that sets `VERCEL_PROJECT_ID=<env>-<app>` and `VERCEL_ORG_ID`, then runs `NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts <app> <env>` (copy `hearth`'s targets). A demo-only app instead defines a single `deploy:demo` target with `VERCEL_PROJECT_ID=demo-<app>` and `<env>` = `demo` (see `employee-handler-ui`); `deploy.yml` does not run it, so a workflow on `deploy-fanout` has to.
 
 `VERCEL_PROJECT_ID` must be the project **name** (`staging-hearth`), never a `prj_` ID — `ensureProjectExists` creates the project by that name on first deploy, so a new (or renamed) app needs no manual console setup. Each repo environment is its own Vercel project.
 

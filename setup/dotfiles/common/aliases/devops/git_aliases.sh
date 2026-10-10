@@ -181,12 +181,10 @@ function gc() {
     fi
   fi
 
-  # Append the body if provided
   if [ -n "$body" ]; then
     commit_message+="\n\n$body"
   fi
 
-  # Append the ticket footer if provided
   if [ -n "$ticket_footer" ]; then
     commit_message+="\n\ncloses: $ticket_footer"
   fi
@@ -204,7 +202,6 @@ function pushfile() {
     local message=$2
     local filepath
 
-    # First, check for the file in the current directory before doing a full search
     if [[ -f $filename ]]; then
         filepath=$filename
     else

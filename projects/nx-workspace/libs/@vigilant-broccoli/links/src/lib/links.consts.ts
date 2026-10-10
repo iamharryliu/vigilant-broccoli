@@ -26,6 +26,10 @@ export const GOOGLE_SERVICES = {
       NAME: 'Gmail Filters',
       URL: 'https://mail.google.com/mail/u/0/#settings/filters',
     },
+    SIGNATURE: {
+      NAME: 'Gmail Signature',
+      URL: 'https://mail.google.com/mail/u/0/#settings/general',
+    },
   },
   CALENDAR: {
     NAME: 'Google Calendar',
@@ -577,5 +581,52 @@ export const PROTON_LINK = {
   ACCOUNT: {
     NAME: 'Proton Account',
     URL: 'https://account.proton.me/u/0/mail/dashboard',
+  },
+} as const;
+
+export const HARRYLIU_APP_URL = {
+  COMPONENT_LIBRARY: {
+    NAME: 'Component Library',
+    URL: 'https://components.harryliu.dev/',
+    STAGING_URL: 'https://staging-component-library.pages.dev/',
+  },
+  UTILITIES: {
+    NAME: 'Utilities',
+    URL: 'https://utilities.harryliu.dev/',
+    STAGING_URL: 'https://staging-utilities-ui.pages.dev/',
+  },
+  WAITING_GAMES: {
+    NAME: 'Waiting Games',
+    URL: 'https://waiting.harryliu.dev/',
+    STAGING_URL: 'https://staging-waiting-games.pages.dev/',
+  },
+  LINKS: {
+    NAME: 'Links',
+    URL: 'https://links.harryliu.dev/',
+    STAGING_URL: 'https://staging-links-react.pages.dev/',
+  },
+  CALENDARS: {
+    NAME: 'Calendars',
+    URL: 'https://calendar.harryliu.dev/',
+    STAGING_URL: 'https://staging-calendars.pages.dev/',
+  },
+  WEATHER: {
+    NAME: 'Weather',
+    URL: 'https://weather.harryliu.dev/',
+    STAGING_URL: 'https://staging-weather-next.vercel.app/',
+  },
+  FIND_ME: {
+    NAME: 'Find Me',
+    URL: 'https://findme.harryliu.dev/',
+    STAGING_URL: 'https://staging-findme.vercel.app/',
+  },
+  WHITEBOARD: {
+    NAME: 'Whiteboard',
+    URL: 'https://whiteboard.harryliu.dev/',
+    STAGING_URL: 'https://staging-whiteboard.vercel.app/',
+  },
+  EMPLOYEE_HANDLER_DEMO: {
+    NAME: 'Employee Handler Demo',
+    URL: 'https://demo-employee-handler-ui.vercel.app/',
   },
 } as const;

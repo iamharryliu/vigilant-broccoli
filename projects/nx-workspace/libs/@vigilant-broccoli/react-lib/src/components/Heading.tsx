@@ -23,7 +23,7 @@ export const headingVariants = cva('font-bold tracking-tight', {
       bold: 'font-bold',
     },
     color: {
-      gray: 'text-gray-500 dark:text-gray-400',
+      gray: 'text-muted-foreground',
       red: 'text-red-600 dark:text-red-400',
       blue: 'text-blue-600 dark:text-blue-400',
       green: 'text-green-600 dark:text-green-400',

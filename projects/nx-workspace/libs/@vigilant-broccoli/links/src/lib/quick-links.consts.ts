@@ -11,6 +11,7 @@ import {
   GITHUB_LINK,
   GOOGLE_SERVICES,
   GROK_LINK,
+  HARRYLIU_APP_URL,
   OPENAI_LINK,
   OPENWEATHER_LINK,
   PROTON_LINK,
@@ -28,7 +29,7 @@ import {
   VB_REPO_PATH,
 } from '@vigilant-broccoli/personal-common-js';
 
-const LINK_GROUP_SUBGROUP = {
+export const LINK_GROUP_SUBGROUP = {
   UTILITY: 'Utility',
   CAREER: 'Career',
   LEISURE: 'Leisure',
@@ -269,6 +270,13 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: 'Supabase Auth URL Configuration (vigilant-broccoli)',
+    target:
+      'https://supabase.com/dashboard/project/jrdosjjgmsoodpjmjqxx/auth/url-configuration',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: 'VB - Cloudflare Domains',
     target:
       'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/registrar/domains',
@@ -276,7 +284,7 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
-    label: 'VB - Cloudflare Workers',
+    label: 'VB - Cloudflare Workers and Pages',
     target:
       'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/workers-and-pages',
     type: OPEN_TYPE.BROWSER,
@@ -821,9 +829,9 @@ const VB_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
-    label: 'VB - Manual Agentic Solve',
+    label: 'VB - Manual Agentic PR Create',
     target:
-      'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-agentic-solve.yml',
+      'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-agentic-pr-create.yml',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
@@ -846,6 +854,96 @@ const VB_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
+    label: HARRYLIU_APP_URL.UTILITIES.NAME,
+    target: HARRYLIU_APP_URL.UTILITIES.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: `${HARRYLIU_APP_URL.UTILITIES.NAME} (Staging)`,
+    target: HARRYLIU_APP_URL.UTILITIES.STAGING_URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: HARRYLIU_APP_URL.WAITING_GAMES.NAME,
+    target: HARRYLIU_APP_URL.WAITING_GAMES.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: `${HARRYLIU_APP_URL.WAITING_GAMES.NAME} (Staging)`,
+    target: HARRYLIU_APP_URL.WAITING_GAMES.STAGING_URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: HARRYLIU_APP_URL.LINKS.NAME,
+    target: HARRYLIU_APP_URL.LINKS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: `${HARRYLIU_APP_URL.LINKS.NAME} (Staging)`,
+    target: HARRYLIU_APP_URL.LINKS.STAGING_URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: HARRYLIU_APP_URL.CALENDARS.NAME,
+    target: HARRYLIU_APP_URL.CALENDARS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: `${HARRYLIU_APP_URL.CALENDARS.NAME} (Staging)`,
+    target: HARRYLIU_APP_URL.CALENDARS.STAGING_URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: HARRYLIU_APP_URL.WEATHER.NAME,
+    target: HARRYLIU_APP_URL.WEATHER.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: `${HARRYLIU_APP_URL.WEATHER.NAME} (Staging)`,
+    target: HARRYLIU_APP_URL.WEATHER.STAGING_URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: HARRYLIU_APP_URL.FIND_ME.NAME,
+    target: HARRYLIU_APP_URL.FIND_ME.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: `${HARRYLIU_APP_URL.FIND_ME.NAME} (Staging)`,
+    target: HARRYLIU_APP_URL.FIND_ME.STAGING_URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: HARRYLIU_APP_URL.WHITEBOARD.NAME,
+    target: HARRYLIU_APP_URL.WHITEBOARD.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: `${HARRYLIU_APP_URL.WHITEBOARD.NAME} (Staging)`,
+    target: HARRYLIU_APP_URL.WHITEBOARD.STAGING_URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: HARRYLIU_APP_URL.EMPLOYEE_HANDLER_DEMO.NAME,
+    target: HARRYLIU_APP_URL.EMPLOYEE_HANDLER_DEMO.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
     label: 'Code Server',
     target: 'https://code.harryliu.dev/',
     type: OPEN_TYPE.BROWSER,
@@ -854,6 +952,12 @@ const VB_LINKS = [
   {
     label: 'Docs',
     target: 'https://docs.harryliu.dev/',
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: 'Agent Context',
+    target: 'https://context.harryliu.dev/',
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
@@ -1005,6 +1109,12 @@ const UTILITY_LINKS = [
   {
     label: GOOGLE_SERVICES.GMAIL.FILTERS.NAME,
     target: GOOGLE_SERVICES.GMAIL.FILTERS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: GOOGLE_SERVICES.GMAIL.SIGNATURE.NAME,
+    target: GOOGLE_SERVICES.GMAIL.SIGNATURE.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
@@ -1342,15 +1452,14 @@ const HOME_LINKS = [
 
 const UI_APP_LINKS = [
   {
-    label: 'FindMe',
-    target: 'https://staging-findme.vercel.app/',
+    label: HARRYLIU_APP_URL.COMPONENT_LIBRARY.NAME,
+    target: HARRYLIU_APP_URL.COMPONENT_LIBRARY.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
   },
   {
-    label: 'React Component Library',
-    target:
-      'https://projects.harryliu.dev/react-component-library/',
+    label: `${HARRYLIU_APP_URL.COMPONENT_LIBRARY.NAME} (Staging)`,
+    target: HARRYLIU_APP_URL.COMPONENT_LIBRARY.STAGING_URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UI_APPS,
   },

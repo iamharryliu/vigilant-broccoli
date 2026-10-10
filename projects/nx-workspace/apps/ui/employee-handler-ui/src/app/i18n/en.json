@@ -72,11 +72,24 @@
       "OFFBOARD_SELECTED": "Offboarded selected employees",
       "ONBOARD_SELECTED": "Onboarded selected employees",
       "RETENTION": "Post-retention cleanup complete",
-      "SYNC": "Sync complete"
+      "SYNC": "Sync complete",
+      "METADATA_SAVED": "Employee links saved"
     },
     "ERROR": {
       "NO_EMAILS": "Please enter valid email addresses",
-      "LOAD_FAILED": "Failed to load employees"
+      "LOAD_FAILED": "Failed to load employees",
+      "METADATA_SAVE_FAILED": "Failed to save employee links"
+    },
+    "DRAWER": {
+      "TITLE": "Employee details",
+      "STATUS": "Status",
+      "METADATA": "Links",
+      "GITHUB": "GitHub",
+      "LINKEDIN": "LinkedIn",
+      "RESUME": "Resume",
+      "NOT_SET": "Not set",
+      "URL_PLACEHOLDER": "https://",
+      "SAVE": "Save changes"
     }
   },
   "ABSENCES": {

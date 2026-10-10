@@ -81,9 +81,33 @@ export const getWeatherIcon = (
   return isDay ? icon.day : icon.night;
 };
 
+export const TEMPERATURE_UNIT = {
+  CELSIUS: 'CELSIUS',
+  FAHRENHEIT: 'FAHRENHEIT',
+} as const;
+
+export type TemperatureUnit =
+  (typeof TEMPERATURE_UNIT)[keyof typeof TEMPERATURE_UNIT];
+
+const FAHRENHEIT_SCALE = 9 / 5;
+const FAHRENHEIT_OFFSET = 32;
+
+export const toDisplayTemperature = (
+  celsius: number,
+  unit: TemperatureUnit = TEMPERATURE_UNIT.CELSIUS,
+): number =>
+  Math.round(
+    unit === TEMPERATURE_UNIT.FAHRENHEIT
+      ? celsius * FAHRENHEIT_SCALE + FAHRENHEIT_OFFSET
+      : celsius,
+  );
+
 export interface CurrentWeather {
   temperatureC: number;
   feelsLikeC: number;
+  humidityPercent: number;
+  windSpeedKph: number;
+  precipitationMm: number;
   condition: WeatherCondition;
   isDay: boolean;
 }
@@ -99,6 +123,8 @@ export interface DailyWeather {
   date: string;
   tempMinC: number;
   tempMaxC: number;
+  windMaxKph: number;
+  precipitationSumMm: number;
   condition: WeatherCondition;
 }
 

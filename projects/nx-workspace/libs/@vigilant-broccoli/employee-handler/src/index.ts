@@ -1,5 +1,7 @@
 export * from './employee-handler/employee-handler.service';
 export * from './employee-handler/employee-handler.models';
+export * from './employee-handler/employee-handler.contract';
+export * from './employee-handler/employee-handler.openapi';
 export * from './employee-handler/birthday-sync/birthday-sync.models';
 export * from './employee-handler/birthday-sync/birthday-sync.service';
 export * from './employee-handler/birthday-sync/file-birthday-store';
@@ -13,4 +15,6 @@ export * from './express/employee-handler-express';
 export {
   EMPLOYEE_HANDLER_CONFIG_MOCK,
   MOCK_DEFAULT_TEMPLATES,
+  listEmployeesByStatus,
+  updateEmployeeMetadata,
 } from './employee-handler/mocks/config.mock';

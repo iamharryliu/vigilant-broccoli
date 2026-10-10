@@ -4,19 +4,20 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 
 ```
 📦 REPOSITORY
+  postinstall                 Runs after root `pnpm i`: installs projects/nx-workspace dependencies (not meant to be run directly)
   open:repo                   Open GitHub repo
   open:repo:actions           Open GitHub Actions
   npm:packages                Open npm packages page
   cheatsheet                  Print this cheatsheet
   cheatsheet:tmux-nvim        Print the tmux/nvim keybinding cheatsheet
   cheatsheet:aliases          Print the shell alias cheatsheet
+  repo-stats                  Regenerate the managed repo-stats line in README.md and about.md
+  repo-stats:check            Fail if a managed repo-stats copy (README, about, resume) is stale
 
 📈 UPTIME
   upptime:config:render <dir> Render managed monitoring files locally (empty external directory)
   upptime:history:export <bundle> [ref] Export history-only Git commits to a new bundle
   upptime:history:import <bundle> [owner/repo] Import history into an uninitialized monitoring dataset
-  upptime:sync:store-key <pem> Store the monitoring sync App key in its dedicated Vault path
-  gh:actions:sync-upptime      Publish managed monitoring configuration from main
 
 ⚙️  SETUP
   local:install:machine-setup Run machine setup installer (mac/linux)
@@ -38,7 +39,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   tf:post-apply               Run post-apply script
   oci:config:sync-local       Refresh ~/.oci/config + key from Vault (after a rotation)
   tf:output                   Show terraform outputs
-  tf:unlock                   Load vault env and run terraform force-unlock <lock-id>
+  tf:unlock                   Load vault env and force-unlock the HCP Terraform workspace
 
 ☁️  OCI
   oci:vm:ssh                  SSH into OCI VM (RabbitMQ)
@@ -117,6 +118,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   gcp:vm:vault:seal           Seal Vault
   gcp:vm:vault:save-secrets-local     Save Vault secrets locally
   gcp:vm:vault:set-secrets    Set secrets in Vault
+  vault:store-promotion-key <pem>  Store the production-promotion GitHub App key in Vault
 
 🔑 SECRETS
   secret-rotation:all         Run the local rotations, dispatch ci-rotate-secrets, then rotate the OCI key
@@ -163,19 +165,23 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
                                errors after ~1h
 
 🚀 AGENTIC — TASKS (unattended; ephemeral containers, no human in the loop)
-  agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR (sonnet; --model <m> to override, or --agent codex [--codex-model <m>])
-                               (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express")
-  agentic:task:create <desc>  Headlessly research and add a TODO.md entry for <desc> in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
-  agentic:task:audit [sections]  Headlessly re-verify TODO.md rows against the codebase in an ephemeral sandbox container — deletes resolved rows, corrects drifted paths/line numbers/counts — then open a PR; opens none if every row still holds (sonnet; --model <m> to override)
-  agentic:rnd "<question>"    Headlessly research a concise R&D note (alternatives table + recommendation + sample) under docs/rnd/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
-  agentic:audit "<scope>"    Headlessly audit the codebase for <scope> and write a concise findings note (severity + location + remediation table) under docs/audit/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
-  agentic:pr:fix <pr>         Headlessly fix a PR's failing CI in an ephemeral sandbox container (checks out the branch, feeds the failing logs to the agent, runs pre-commit, pushes the fix); accepts a PR number or URL (sonnet; --model <m> to override)
-  agentic:pr:update <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update); accepts a PR number or URL (sonnet; --model <m> to override)
+  agentic-pr-create <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers, one run per id; each opens a PR, or several when the request splits into increments (sonnet; --model <m> to override, or --agent codex [--codex-model <m>])
+                               (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express"; TODO ids named in the task are resolved the same way)
+  agentic-pr-create-todo <desc>  Headlessly refine <desc> into a repo-informed task prompt and add a TODO.md entry in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
+  agentic-pr-create-todo-audit  Headlessly re-verify TODO.md rows against the codebase in an ephemeral sandbox container — deletes resolved rows, corrects drifted paths/line numbers/counts — then open a PR; opens none if every row still holds (sonnet; --model <m> to override)
+  agentic-pr-create-prune  Headlessly sweep the repo for dead code, unused dependencies, broken doc links/anchors, orphaned docs/scripts/workflows and cheatsheet drift in an ephemeral sandbox container, remove only items grep shows have zero references, then open one capped PR listing the evidence and skipped candidates; opens none if nothing is provably dead (sonnet; --model <m> to override)
+  agentic-pr-create-rnd "<question>"    Headlessly research a concise R&D note (alternatives table + recommendation + sample) under docs/rnd/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
+  GitHub Actions: manual-agentic-pr-update selects operation=change|fix-ci|resolve-conflicts; instruction is required for change, optional for fix-ci, blank for resolve-conflicts
+  agentic-pr-update <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update, and opens separate follow-up PRs for independent work it surfaces); accepts a PR number or URL (sonnet; --model <m> to override)
+                                (--with-ci-logs feeds the PR's failing check summary and failed-step logs to the agent, e.g. agentic-pr-update --with-ci-logs 149 "fix the failing checks")
+  agentic-pr-update-fix-ci <pr> [instruction]  Fix a PR's failing CI in an ephemeral sandbox: feeds its failing check summary and failed-step logs to the agent, runs pre-commit and pushes the fix; accepts a PR number or URL (sonnet; --model <m> to override)
+  agentic-pr-update-resolve-conflicts <pr>  Merge origin/main into a PR branch, resolve conflicts, run pre-commit and push the update in an ephemeral sandbox; accepts a PR number or URL (sonnet; --model <m> to override)
 
 🐙 GITHUB
   gh:actions:deploy           Trigger deploy workflow
   gh:actions:health-check     Trigger ci-health-check workflow
   gh:actions:kill-services    Trigger kill-services workflow
+  gh:actions:promote-production  Trigger manual-promote-production (fast-forward production to main)
   gh:actions:rotate-secrets   Trigger ci-rotate-secrets workflow
   gh:actions:run-tests        Trigger all post-deploy test workflows
   gh:actions:replace-code-server  Trigger code-server VM replace workflow

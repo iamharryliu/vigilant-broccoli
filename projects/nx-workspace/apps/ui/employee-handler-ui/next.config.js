@@ -23,7 +23,7 @@ const nextConfig = {
       {
         source: '/',
         destination: '/dashboard',
-        permanent: false, // Set to false if it's temporary
+        permanent: false,
       },
     ];
   },

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import type { EmployeeHandlerRouteBody } from '@vigilant-broccoli/employee-handler/contract';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
   hasUpstream,
@@ -8,7 +9,6 @@ import {
   deleteTemplate,
   updateTemplate,
 } from '../../../../lib/signature-templates-store';
-import type { SignatureTemplate } from '../../../dashboard/signatures/signatures.shared';
 
 const STATUS_NO_CONTENT = 204;
 
@@ -17,7 +17,8 @@ type RouteContext = { params: Promise<{ id: string }> };
 export async function PATCH(request: NextRequest, context: RouteContext) {
   if (hasUpstream()) return forwardToUpstream(request);
   const { id } = await context.params;
-  const body = (await request.json()) as Partial<SignatureTemplate>;
+  const body =
+    (await request.json()) as EmployeeHandlerRouteBody<'signatureTemplatesUpdate'>;
   const updated = updateTemplate(id, body);
   if (!updated) {
     return new NextResponse(null, { status: HTTP_STATUS_CODES.INVALID_PATH });

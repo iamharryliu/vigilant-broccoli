@@ -52,6 +52,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   neovidetmuxvb               Launch Neovide attached to the vb session
   neovideterminal             Launch Neovide straight into :terminal
   fzfvim                      fzf-pick a file and open it in vim
+  y [dir]                     Open yazi; cd to where you quit it
   pnpm cheatsheet:tmux-nvim   Print the tmux/nvim keybindings (from the repo)
 
 📦 NODE
@@ -143,7 +144,10 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   pingtest                    Ping google.com
   check_network [-v]          Exit 0 if 8.8.8.8 is reachable (-v prints)
 
-🔍 VS CODE & SEARCH
+🔍 EDITORS & SEARCH
+  fzfzed                      fzf-pick a file and open it in Zed
+  zedwsls                     List saved workspace folder sets, numbered
+  zedws [name] / zedwsn <n>   Open workspace folders in Zed by name / number
   fzfcode                     fzf-pick a file and open it in VS Code
   vswsls                      List VS Code workspaces, numbered
   vsws [name] / vswsn <n>     Open a workspace by name / number
