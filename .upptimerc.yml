@@ -24,6 +24,8 @@ sites:
     url: https://staging-component-library.pages.dev/
   - name: staging-utilities
     url: https://staging-utilities-ui.pages.dev/
+  - name: staging-waiting-games
+    url: https://staging-waiting-games.pages.dev/
   - name: staging-whiteboard
     url: https://staging-whiteboard.vercel.app/
   - name: staging-weather
@@ -60,6 +62,8 @@ sites:
     url: https://components.harryliu.dev/
   - name: production-utilities
     url: https://utilities.harryliu.dev/
+  - name: production-waiting-games
+    url: https://waiting.harryliu.dev/
   - name: production-whiteboard
     url: https://whiteboard.harryliu.dev/
   - name: production-weather

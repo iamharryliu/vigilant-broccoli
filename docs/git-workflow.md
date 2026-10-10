@@ -5,6 +5,7 @@ Branching, staging, commit and PR conventions for this repository, and how to st
 ## Table of Contents
 
 - [Conventions](#conventions)
+- [Commit message enforcement](#commit-message-enforcement)
 - [Concurrent Agent Sessions](#concurrent-agent-sessions)
 - [Staying Current With `main`](#staying-current-with-main)
 - [Stacked Pull Requests](#stacked-pull-requests)
@@ -15,7 +16,7 @@ Branching, staging, commit and PR conventions for this repository, and how to st
 
 - **Branch names**: `<committype>/<short-kebab-case-description>` (e.g. `fix/rabbitmq-secret-rotation`, `feat/hearth-food-planner-page`), cut from a freshly fetched `main`.
 - **Commit types**: `feat`, `fix`, `ci`, `chore`, `docs`, `refactor`, `enhancement`, `security`, `infrastructure` — match existing usage in `git log`; don't invent a new type unless nothing fits.
-- **Commit messages**: `<committype>(<scope>): <Message>.` — scope is the affected app/service/lib (e.g. `hearth`, `github-actions`, `vb-manager-next`) and is omitted when the change isn't scoped to one; the message is capitalized, concise, focused on why not what, and ends with a period. Agent-authored commits end with the `Co-Authored-By:` trailer the environment specifies for the authoring model — never a hardcoded model name.
+- **Commit messages**: `<committype>(<scope>): <Message>.` — scope is the affected app/service/lib (e.g. `hearth`, `github-actions`, `vb-manager-next`) and is omitted when the change isn't scoped to one; the message is capitalized, concise, focused on why not what, and ends with a period. Agent-authored commits end with the `Co-Authored-By:` trailer the environment specifies for the authoring model — never a hardcoded model name. [commitlint](../commitlint.config.mjs) enforces this contract locally and in CI — see [Commit message enforcement](#commit-message-enforcement).
 - **PR body**: a `## Summary` section (bullets) and a `## Next steps` section (checklist) of what's left for the human — manual commands to run (e.g. `pnpm tf:apply`), UI/manual spot checks, watching CI to green, and merging. When nothing else is left but merging, say so directly (e.g. `- [ ] Merge once CI is green`) rather than restating tests already run. For UI changes, name the affected apps, routes/pages, and shared components to spot-check, and expected behavior; include affected consumers when changing a shared component. Leave a step unchecked until it's actually been done, and record any blockers found along the way. Use the authoring environment’s attribution when provided; do not label Codex work as Claude Code. If the branch already has an open PR, push to it rather than opening a second.
 - **Agentic change history**: every flow that opens or edits a PR on this branch's behalf — `ship-pr` and the `infrastructure/agent-sandbox/*-runner.sh` scripts behind the `pnpm agentic-pr-*` scripts — keeps `## Summary`/`## Next steps` current as the PR's cumulative state (not just the latest increment) and appends a row to a trailing `## Agentic Change History` table (`Date | Source | Command | Prompt | Summary`) recording what ran. `Source` is one of `Local agent (Claude Code)` / `Local agent (Codex)` (an interactive session, e.g. `ship-pr`), `GitHub Actions` (`$GITHUB_ACTIONS` set), or `Docker sandbox (local)` (the sandbox container run from a developer's machine). The shared `infrastructure/agent-sandbox/merge-pr-body.py` helper builds this merge — reuse it rather than hand-assembling the body.
 - **Agentic flow parity**: the PR-body contract above (`## Summary` / `## Next steps` / `## Suggestions`, the `pr_title`/`pr_summary`/`pr_next_steps`/`pr_suggestions` meta fields, their fallback text, and the `HISTORY_*` row) is implemented independently by every flow below — none of them discover each other at runtime, so a change to a section name, a field, or its fallback wording made in one is invisible to the rest until mirrored by hand in the same change:
@@ -27,6 +28,15 @@ Branching, staging, commit and PR conventions for this repository, and how to st
   Before relying on a flow having some behavior, check it has that behavior rather than assuming parity with another flow — `ship-pr` went without the `## Suggestions` section and without ever passing `--title` to `gh pr create` for a stretch because neither were ported over when the sandbox runners gained them. When changing the convention, `grep -rn` the old string across every file above and update all of them together, then update this bullet if the set of participating files changes.
 
 - **Shared worktree**: more than one agent session can be attached to this checkout — check for peers before touching shared git state. See [Concurrent Agent Sessions](#concurrent-agent-sessions).
+
+## Commit message enforcement
+
+[commitlint](../commitlint.config.mjs) extends `@commitlint/config-conventional` and overrides it to the contract above: the nine commit types, a lower-case optional scope, a capitalized subject ending with a period, and no header, body or footer length limits (existing subjects are long and trailers carry URLs). Merge commits are ignored by commitlint's defaults, and any `Co-Authored-By:` trailer passes because footers are not constrained.
+
+- **Local**: the `commitlint` hook in [.pre-commit-config.yaml](../.pre-commit-config.yaml) runs at the `commit-msg` stage. `default_install_hook_types` makes a plain `pre-commit install` install both the `pre-commit` and `commit-msg` hooks, which `setup/mac/install.sh` and `setup/linux/install.sh` ("Setup git hooks?") already call; run `pnpm install` once at the root first, since the hook uses `npx --no-install commitlint`. Existing checkouts must re-run `pre-commit install` to get the new hook. Clones without hooks installed and `--no-verify` commits are caught by CI.
+- **CI**: the `commitlint` job in `ci-pr-check` lints the PR title and the PR's commits; see [commit message checks](./ci/workflow-conventions.md#commit-message-checks) for why both.
+- **Try a message**: `printf '%s\n' 'feat(hearth): Add a page.' | npx commitlint` (exit 0 when accepted).
+- The full inventory of repository quality tools is in [code-quality-tools.md](./code-quality-tools.md).
 
 ## Concurrent Agent Sessions
 

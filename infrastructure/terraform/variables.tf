@@ -285,6 +285,21 @@ variable "utilities_pages_subdomain" {
   default = "production-utilities-ui.pages.dev"
 }
 
+variable "waiting_domain" {
+  type    = string
+  default = "waiting.harryliu.dev"
+}
+
+variable "waiting_pages_project" {
+  type    = string
+  default = "production-waiting-games"
+}
+
+variable "waiting_pages_subdomain" {
+  type    = string
+  default = "production-waiting-games.pages.dev"
+}
+
 variable "calendars_domain" {
   type    = string
   default = "calendar.harryliu.dev"
@@ -313,6 +328,12 @@ variable "status_domain" {
 variable "uptime_domain" {
   type    = string
   default = "uptime.harryliu.dev"
+}
+
+variable "upptime_https_enforced" {
+  type        = bool
+  default     = false
+  description = "Enforce HTTPS on the Upptime Pages site. Set true only after GitHub has issued a certificate covering the custom domain; the API rejects it earlier."
 }
 
 variable "component_library_domain" {

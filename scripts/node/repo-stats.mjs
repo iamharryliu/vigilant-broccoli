@@ -28,7 +28,7 @@ const TARGETS = [
 ];
 const RESUME_PATH = `${NX_WORKSPACE}/libs/@vigilant-broccoli/resume/src/resume.json`;
 const RESUME_COUNTS =
-  /\*\*\d+ applications\*\*, \*\*\d+ API services\*\*, \*\*\d+ Docker images\*\* and \*\*\d+ npm packages\*\*/;
+  /(\*\*)?\d+ applications\1, (\*\*)?\d+ API services\2, (\*\*)?\d+ Docker images\3 and (\*\*)?\d+ npm packages\4/;
 const MARKER_START = '<!-- managed:repo-stats:start -->';
 const MARKER_END = '<!-- managed:repo-stats:end -->';
 const CHECK_FLAG = '--check';
@@ -113,7 +113,14 @@ const withResumeStats = (
   }
   return content.replace(
     RESUME_COUNTS,
-    `**${applications} applications**, **${services} API services**, **${images} Docker images** and **${packages} npm packages**`,
+    (
+      _match,
+      applicationsMarker = '',
+      servicesMarker = '',
+      imagesMarker = '',
+      packagesMarker = '',
+    ) =>
+      `${applicationsMarker}${applications} applications${applicationsMarker}, ${servicesMarker}${services} API services${servicesMarker}, ${imagesMarker}${images} Docker images${imagesMarker} and ${packagesMarker}${packages} npm packages${packagesMarker}`,
   );
 };
 

@@ -2,7 +2,7 @@
 
 <!-- managed:repo-stats:start -->
 
-Personal monorepo, supporting **12 applications**, **5 API services**, **7 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
+Personal monorepo, supporting **13 applications**, **5 API services**, **7 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
 
 <!-- managed:repo-stats:end -->
 
@@ -31,12 +31,14 @@ Personal monorepo, supporting **12 applications**, **5 API services**, **7 Docke
 ```
 pnpm i                             # Install root dependencies, then projects/nx-workspace via the root postinstall hook
 pnpm cheatsheet                    # Print the CLI command cheatsheet
+pre-commit install                 # Install the pre-commit and commit-msg (commitlint) git hooks
 pnpm local:install:machine-setup   # Install tools and dotfiles for this machine (macOS or Linux)
 ```
 
 See more:
 
 - [Cheatsheet](https://context.harryliu.dev/?file=docs/cheatsheet.md) — useful infra-level CLI commands
+- [Code quality tools](./docs/code-quality-tools.md) — linters, formatters, hooks and scanners with their local/CI enforcement
 - [Alias cheatsheet](https://context.harryliu.dev/?file=docs/cheatsheet-aliases.md) — shell aliases from `setup/dotfiles/`
 
 ### Agentic
@@ -77,6 +79,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [Pages Index](./projects/nx-workspace/apps/ui/pages-index)                 | Repository applications, packages, status, and agent documentation. | [projects.harryliu.dev](https://projects.harryliu.dev/)                             |
 | [Personal Website](./projects/nx-workspace/apps/ui/personal-website-react) | Personal profile, links, calendar, and resume.                      | [harryliu.dev](https://harryliu.dev/)                                               |
 | [Utilities UI](./projects/nx-workspace/apps/ui/utilities-ui)               | Searchable page of everyday utilities.                              | [utilities.harryliu.dev](https://utilities.harryliu.dev/)                           |
+| [Waiting Games](./projects/nx-workspace/apps/ui/waiting-games)             | Hands-free cup, quiz and estimation games to watch while you wait.  | [waiting.harryliu.dev](https://waiting.harryliu.dev/)                               |
 | [Weather](./projects/nx-workspace/apps/ui/weather-next)                    | Current weather for your location at a glance.                      | [weather.harryliu.dev](https://weather.harryliu.dev/)                               |
 | [Whiteboard](./projects/nx-workspace/apps/whiteboard)                      | Collaborative writing in shared live rooms.                         | [whiteboard.harryliu.dev](https://whiteboard.harryliu.dev/)                         |
 

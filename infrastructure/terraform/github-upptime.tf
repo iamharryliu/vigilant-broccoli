@@ -92,6 +92,8 @@ resource "github_repository_pages" "upptime" {
   build_type = "legacy"
   cname      = cloudflare_dns_record.harryliu_dev_uptime.name
 
+  https_enforced = var.upptime_https_enforced
+
   source {
     branch = github_branch.upptime_pages.branch
     path   = "/"

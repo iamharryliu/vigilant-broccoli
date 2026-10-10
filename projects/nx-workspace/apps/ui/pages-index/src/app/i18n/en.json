@@ -77,6 +77,10 @@
       "TITLE": "Utilities",
       "DESCRIPTION": "Searchable page of everyday utilities."
     },
+    "WAITING_GAMES": {
+      "TITLE": "Waiting Games",
+      "DESCRIPTION": "Hands-free cup, quiz and estimation games to watch while you wait."
+    },
     "COMPONENT_LIBRARY": {
       "TITLE": "Component Library",
       "DESCRIPTION": "Interactive shared React component sandbox."
