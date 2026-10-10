@@ -95,4 +95,6 @@ PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
   python3 "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py")
 
-gh pr create --title "$PR_TITLE" --body "$PR_BODY"
+PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
+echo "$PR_URL"
+printf 'PR_URL::%s\n' "$PR_URL"

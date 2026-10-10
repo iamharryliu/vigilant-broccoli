@@ -24,6 +24,8 @@ sites:
     url: https://staging-component-library.pages.dev/
   - name: staging-utilities
     url: https://staging-utilities-ui.pages.dev/
+  - name: staging-waiting-games
+    url: https://staging-waiting-games.pages.dev/
   - name: staging-whiteboard
     url: https://staging-whiteboard.vercel.app/
   - name: staging-weather
@@ -60,14 +62,20 @@ sites:
     url: https://components.harryliu.dev/
   - name: production-utilities
     url: https://utilities.harryliu.dev/
+  - name: production-waiting-games
+    url: https://waiting.harryliu.dev/
   - name: production-whiteboard
     url: https://whiteboard.harryliu.dev/
   - name: production-weather
     url: https://weather.harryliu.dev/
   - name: production-calendars
-    url: https://calendars.harryliu.dev/
+    url: https://calendar.harryliu.dev/
   - name: production-vb-manager-next-mobile
     url: https://production-vb-manager-next-mobile.vercel.app/login
+  - name: production-status
+    url: https://status.harryliu.dev/
+  - name: production-uptime
+    url: https://uptime.harryliu.dev/
   - name: production-docs
     url: https://docs.harryliu.dev/
   - name: production-context
@@ -79,7 +87,7 @@ sites:
 
 user-agent: upptime-vigilant-broccoli
 status-website:
-  cname: upptime.harryliu.dev
+  cname: uptime.harryliu.dev
   name: Harry Liu Status
 
 skipDescriptionUpdate: true

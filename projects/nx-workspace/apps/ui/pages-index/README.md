@@ -20,10 +20,12 @@
   - `react-utility` (`MarkdownViewer` — marked + DOMPurify)
 - Cloud services
   - GitHub Pages
+  - Cloudflare Workers (`status-proxy`, serves the same build at `status.harryliu.dev`)
 
 ## Page Navigation
 
 - `/` — Home
+  - `status.harryliu.dev` — the same `StatusPage` at the host root. `app.tsx` picks the status route table when `window.location.hostname` is `STATUS_HOST` (`src/app/consts/hosts.ts`); other hash routes redirect to `/`. The Home breadcrumb and any other pages-index link there are explicit `https://projects.harryliu.dev/#/…` URLs, built with `toProjectsUrl`. The "Full uptime history" card opens `uptime.harryliu.dev` (the Upptime site).
   - `/status` — Status (service health grouped by Production / Staging / Demo / Personal Apps from `iamharryliu/uptime`; unavailable monitoring data displays an error; GitHub Actions badges for both repositories)
   - `/repo-timeline` — Repo Timeline (lines of code, commits, PRs merged, lines added/deleted per day / month / year, shown as a horizontally scrollable bar chart or as react-lib's `ScrollTimeline`; data is `public/repo-timeline.json`, generated from `git log --numstat` by the `generate-repo-timeline` target (`scripts/generate-repo-timeline.ts`, lockfiles and >100K-line single-file changes excluded) and copied into `_site` on each Pages deploy)
   - `/open-source` — Open Source
@@ -33,7 +35,7 @@
     - npm → `/open-source/npm` (published `@vigilant-broccoli/*` packages)
       - `/open-source/npm/:pkg` (README fetched from `registry.npmjs.org`, links out to the npm package)
   - `/web-applications` - Web applications
-    - Apps → harryliu.dev, Calendars, Cloud8Skate, Docs (Markdown), Agent Context, Utilities, Component Library, Links, FindMe, Whiteboard, Weather (external)
+    - Apps → harryliu.dev, Calendars, Cloud8Skate, Docs (Markdown), Agent Context, Utilities, Waiting Games, Component Library, Links, FindMe, Whiteboard, Weather (external)
     - Demo → Employee Handler
   - `/api-services` — API Services
     - `/api-services/:service` — Swagger UI rendered in-app against a spec published at build time to `public/openapi/<service>.json` by the `generate-openapi` target (`scripts/generate-openapi-specs.ts`). All five services (llm-service, bucket-service, email-service, email-subscription-service, employee-handler) are private-only (the first four are private Fly apps; employee-handler is a library-hosted contract with no public `/docs`), so this page is the only way to browse them. The employee-handler spec is generated from the zod contract in `libs/@vigilant-broccoli/employee-handler`, whose sources are `generate-openapi` inputs. Swagger UI itself loads from a pinned jsDelivr CDN rather than bundling `swagger-ui-dist`.
@@ -41,6 +43,7 @@
 
 ## Agent Context
 
+- Hostnames: `projects.harryliu.dev` (GitHub Pages) and `status.harryliu.dev` (Cloudflare Worker `status-proxy` in `infrastructure/cloudflare-workers/status-proxy/`, reverse-proxying the former) serve one build. Anything on `StatusPage` that points at another pages-index page must go through `toProjectsUrl` / the host-aware `Breadcrumb`, never a bare router `Link` — on the status host a hash link would stay on that host and land on a redirect. Keep `route` on `PageHeader` for pages that render outside their own route.
 - Page shells share one container width and gutter through `src/app/consts/layout.ts` (`PAGE_CLASS`, `FULL_HEIGHT_PAGE_CLASS`, `WIDE_FULL_HEIGHT_PAGE_CLASS`). A new page uses one of those rather than its own `max-w-*`/`px-*` combination, so the content column does not shift between routes.
 - When adding, removing, or changing a route, card link, or external destination, update the `## Page Navigation` section above so it stays in sync with `src/app/app.tsx`, `src/app/consts/breadcrumbs.ts`, and the home-page cards.
 - Web application and demo cards are defined in `src/app/consts/webApplications.json` (data only; icons stay in `WebApplicationsPage.tsx`, keyed by each entry's `id`). `scripts/node/repo-stats.mjs` counts its distinct `href`s for the generated "applications" figure, so edit the registry for any card change and run `pnpm repo-stats`.

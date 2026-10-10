@@ -38,7 +38,7 @@
     },
     {
       "id": "calendars",
-      "href": "https://calendars.harryliu.dev/",
+      "href": "https://calendar.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.CALENDARS.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.CALENDARS.DESCRIPTION"
     },
@@ -53,6 +53,12 @@
       "href": "https://utilities.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.UTILITIES.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.UTILITIES.DESCRIPTION"
+    },
+    {
+      "id": "waiting-games",
+      "href": "https://waiting.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.WAITING_GAMES.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.WAITING_GAMES.DESCRIPTION"
     },
     {
       "id": "weather",

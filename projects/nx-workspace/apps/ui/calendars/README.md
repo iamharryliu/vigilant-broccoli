@@ -10,7 +10,7 @@ Public, login-free directory of calendars to follow in Google Calendar: a Person
 
 ## Deployment URLs
 
-- [calendars.harryliu.dev](https://calendars.harryliu.dev)
+- [calendar.harryliu.dev](https://calendar.harryliu.dev)
 - [staging-calendars.pages.dev](https://staging-calendars.pages.dev)
 - [production-calendars.pages.dev](https://production-calendars.pages.dev)
 

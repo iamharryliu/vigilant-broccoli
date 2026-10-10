@@ -2,7 +2,7 @@
 
 <!-- managed:repo-stats:start -->
 
-Personal monorepo, supporting **12 applications**, **5 API services**, **7 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
+Personal monorepo, supporting **13 applications**, **5 API services**, **7 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
 
 <!-- managed:repo-stats:end -->
 
@@ -31,12 +31,14 @@ Personal monorepo, supporting **12 applications**, **5 API services**, **7 Docke
 ```
 pnpm i                             # Install root dependencies, then projects/nx-workspace via the root postinstall hook
 pnpm cheatsheet                    # Print the CLI command cheatsheet
+pre-commit install                 # Install the pre-commit and commit-msg (commitlint) git hooks
 pnpm local:install:machine-setup   # Install tools and dotfiles for this machine (macOS or Linux)
 ```
 
 See more:
 
 - [Cheatsheet](https://context.harryliu.dev/?file=docs/cheatsheet.md) — useful infra-level CLI commands
+- [Code quality tools](./docs/code-quality-tools.md) — linters, formatters, hooks and scanners with their local/CI enforcement
 - [Alias cheatsheet](https://context.harryliu.dev/?file=docs/cheatsheet-aliases.md) — shell aliases from `setup/dotfiles/`
 
 ### Agentic
@@ -55,6 +57,8 @@ See more:
 
 The update workflow selects `change`, `fix-ci`, or `resolve-conflicts` through its `operation` input. Instructions are required for `change`, optional for `fix-ci`, and left blank for `resolve-conflicts`. All three operations share a concurrency group per normalized PR number.
 
+Entry points in one row share a task contract and differ only where [entry-point parity](./docs/agent-support.md#entry-point-parity) documents it.
+
 _Command notation: `/name` for Claude; `$name` for Codex._
 
 ## Applications
@@ -64,7 +68,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | Application                                                                | Description                                                         | URL                                                                                 |
 | -------------------------------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
 | [Agent Context](./projects/nx-workspace/apps/ui/context-md)                | Repo agent context, docs and skills with search and link graph.     | [context.harryliu.dev](https://context.harryliu.dev/)                               |
-| [Calendars](./projects/nx-workspace/apps/ui/calendars)                     | Public personal and event calendar directory.                       | [calendars.harryliu.dev](https://calendars.harryliu.dev/)                           |
+| [Calendars](./projects/nx-workspace/apps/ui/calendars)                     | Public personal and event calendar directory.                       | [calendar.harryliu.dev](https://calendar.harryliu.dev/)                             |
 | [Cloud8Skate](./projects/nx-workspace/apps/ui/cloud-8-skate-react)         | Toronto skating community website.                                  | [cloud8skate.com](https://cloud8skate.com/)                                         |
 | [Component Library](./projects/nx-workspace/apps/ui/component-library)     | Interactive shared React component sandbox.                         | [components.harryliu.dev](https://components.harryliu.dev/)                         |
 | [Docs MD](./projects/nx-workspace/apps/ui/docs-md)                         | Searchable Markdown notes with a file tree and link graph.          | [docs.harryliu.dev](https://docs.harryliu.dev/)                                     |
@@ -75,6 +79,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [Pages Index](./projects/nx-workspace/apps/ui/pages-index)                 | Repository applications, packages, status, and agent documentation. | [projects.harryliu.dev](https://projects.harryliu.dev/)                             |
 | [Personal Website](./projects/nx-workspace/apps/ui/personal-website-react) | Personal profile, links, calendar, and resume.                      | [harryliu.dev](https://harryliu.dev/)                                               |
 | [Utilities UI](./projects/nx-workspace/apps/ui/utilities-ui)               | Searchable page of everyday utilities.                              | [utilities.harryliu.dev](https://utilities.harryliu.dev/)                           |
+| [Waiting Games](./projects/nx-workspace/apps/ui/waiting-games)             | Hands-free cup, quiz and estimation games to watch while you wait.  | [waiting.harryliu.dev](https://waiting.harryliu.dev/)                               |
 | [Weather](./projects/nx-workspace/apps/ui/weather-next)                    | Current weather for your location at a glance.                      | [weather.harryliu.dev](https://weather.harryliu.dev/)                               |
 | [Whiteboard](./projects/nx-workspace/apps/whiteboard)                      | Collaborative writing in shared live rooms.                         | [whiteboard.harryliu.dev](https://whiteboard.harryliu.dev/)                         |
 
