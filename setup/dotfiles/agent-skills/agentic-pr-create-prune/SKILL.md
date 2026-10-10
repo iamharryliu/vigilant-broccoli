@@ -32,7 +32,7 @@ Read the root `CONTEXT.md` and every `CONTEXT.md` on the path to each directory 
 - Never touch `TODO.md` — `agentic-pr-create-todo-audit` owns it. Mention backlog-worthy findings in the report instead.
 - Never remove an export of a published npm package (see `docs/app-development/app-development.md#npm-package-publishing`), a Swagger-documented route, a database migration, or Terraform state.
 - Do not refactor, rename or restyle working code. Removal and link/ToC repair are the only edits; a doc sentence may be rewritten only where it describes something that no longer exists.
-- Cap the change at about 40 files so it stays reviewable. When there are more candidates, prune the highest-confidence ones and list the rest as follow-ups.
+- Cap the change at about 40 files so it stays reviewable. When there are more candidates, prune the highest-confidence ones, keeping categories together so the PR merges as one coherent increment, and list the rest as follow-ups per [pull request scope](../../../../docs/agent-support.md#pull-request-scope).
 - After removing an export or dependency, run `pnpm install --lockfile-only` from the root if a `package.json` changed, then run the affected checks from `projects/nx-workspace`: `npx nx affected -t lint typecheck build --base=HEAD` (fall back to the specific projects' targets if `affected` cannot resolve a base). Revert any removal that breaks a check rather than fixing forward.
 - Apply `docs/refactor-code-cleanup.md` to the result before finishing.
 - Do not commit or publish changes. Read-only Git history inspection is allowed.

@@ -1,6 +1,6 @@
 name: manual-agentic-pr-create
 
-run-name: manual-agentic-pr-create (${{ inputs.agent }}) ${{ inputs.ids || inputs.prompt }}
+run-name: manual-agentic-pr-create (${{ inputs.agent }}) ${{ inputs.prompt }}
 
 # Runs the same agent solve as the local `pnpm agentic-pr-create`, but on the
 # ephemeral GitHub-hosted runner: it builds and runs the vb-agent-sandbox
@@ -11,14 +11,10 @@ run-name: manual-agentic-pr-create (${{ inputs.agent }}) ${{ inputs.ids || input
 on:
   workflow_dispatch:
     inputs:
-      ids:
-        description: 'Space-separated TODO ids to solve (e.g. "a1b2c3 d4e5f6"). Leave blank if using prompt.'
-        type: string
-        default: ''
       prompt:
-        description: 'Free-text task to solve instead of TODO ids (mutually exclusive with ids).'
+        description: 'Task to solve. Mention TODO ids (e.g. "solve a1b2c3 and d4e5f6") to have the agent resolve those TODO.md rows.'
         type: string
-        default: ''
+        required: true
       agent:
         description: 'Agent runner to use.'
         type: choice
@@ -75,21 +71,18 @@ jobs:
           agent: ${{ inputs.agent }}
           model: ${{ inputs.agent == 'claude' && inputs.model || inputs.codex_model }}
           firewall: ${{ inputs.firewall }}
-          todo_ids: ${{ inputs.prompt == '' && inputs.ids || '' }}
-          description: ${{ inputs.prompt == '' && 'Resolve the listed TODO items, one pull request per item.' || '' }}
           task: ${{ inputs.prompt }}
 
       - name: Hash dispatch inputs
         id: hash
         env:
-          IDS: ${{ inputs.ids }}
           PROMPT: ${{ inputs.prompt }}
           AGENT: ${{ inputs.agent }}
           MODEL: ${{ inputs.model }}
           CODEX_MODEL: ${{ inputs.codex_model }}
         run: |
           set -euo pipefail
-          echo "group=$(printf '%s' "${AGENT}:${MODEL}:${CODEX_MODEL}:${IDS:-$PROMPT}" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+          echo "group=$(printf '%s' "${AGENT}:${MODEL}:${CODEX_MODEL}:${PROMPT}" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
 
   solve:
     needs: key
@@ -139,7 +132,6 @@ jobs:
           SANDBOX_FIREWALL: ${{ inputs.firewall }}
           MODEL: ${{ inputs.model }}
           CODEX_MODEL: ${{ inputs.codex_model }}
-          IDS: ${{ inputs.ids }}
           PROMPT: ${{ inputs.prompt }}
         run: |
           set -euo pipefail
@@ -154,17 +146,8 @@ jobs:
             exit 1
           fi
           STATUS=0
-          if [ -n "$PROMPT" ]; then
-            bash "$SOLVE" "${SOLVE_ARGS[@]}" --prompt "$PROMPT" || STATUS=$?
-          else
-            if ! printf '%s' "$IDS" | grep -qE '^[0-9a-fA-F ]*$'; then
-              echo "ERROR: 'ids' must be space-separated hex TODO ids." >&2
-              exit 1
-            fi
-            read -ra ID_ARR <<<"$IDS"
-            bash "$SOLVE" "${SOLVE_ARGS[@]}" "${ID_ARR[@]}" || STATUS=$?
-          fi
-          echo "===== per-id solve logs ====="
+          bash "$SOLVE" "${SOLVE_ARGS[@]}" --prompt "$PROMPT" || STATUS=$?
+          echo "===== solve log ====="
           for f in /tmp/vb-solve.*/*.log; do
             [ -e "$f" ] || continue
             echo "--- $f ---"
