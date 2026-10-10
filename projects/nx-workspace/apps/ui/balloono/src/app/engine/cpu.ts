@@ -5,6 +5,7 @@ import {
   hypotheticalBalloon,
   isWalkable,
   neighbours,
+  isCentered,
   occupiedTile,
   splashCells,
   ticksPerTile,
@@ -249,9 +250,6 @@ const canEscapeAfterDrop = (
     ...bot,
     x: spot.x,
     y: spot.y,
-    fromX: spot.x,
-    fromY: spot.y,
-    progress: 0,
   };
   const danger = dangerMap(
     state,
@@ -385,12 +383,12 @@ const isHesitating = (bot: Player, profile: BotProfile, memory: BotMemory) => {
   return true;
 };
 
-export const decideCpuInput = (
+const decideTileInput = (
   state: MatchState,
   bot: Player,
   memory: BotMemory,
 ): PlayerInput => {
-  if (!bot.alive || !bot.difficulty || bot.progress > 0) return NO_INPUT;
+  if (!bot.alive || !bot.difficulty) return NO_INPUT;
   const profile = BOT_PROFILES[bot.difficulty];
   const here = occupiedTile(bot);
   const danger = dangerMap(state, [], profile.followsChains);
@@ -405,4 +403,15 @@ export const decideCpuInput = (
   }
   if (Math.random() < profile.wanderChance) return wander(state, bot, danger);
   return walk(chooseTarget(state, bot, danger, profile));
+};
+
+export const decideCpuInput = (
+  state: MatchState,
+  bot: Player,
+  memory: BotMemory,
+): PlayerInput => {
+  if (!isCentered(bot)) {
+    return { direction: bot.facing, placeBalloon: false, snap: true };
+  }
+  return { ...decideTileInput(state, bot, memory), snap: true };
 };

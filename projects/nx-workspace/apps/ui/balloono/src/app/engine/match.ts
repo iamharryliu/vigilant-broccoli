@@ -1,5 +1,6 @@
 import {
   balloonAt,
+  cellAt,
   cellIndex,
   closingTileAt,
   isPillar,
@@ -16,12 +17,14 @@ import {
   CELL,
   CRATE_DENSITY,
   DIRECTION,
+  DIRECTION_VECTORS,
   MATCH_STATUS,
   MAX_BALLOONS,
   MAX_RANGE,
   MAX_SPEED_LEVEL,
   NO_INPUT,
-  OPPOSITE_DIRECTION,
+  PLAYER_HALF_SIZE,
+  POSITION_EPSILON,
   POWER_UP,
   POWER_UP_CHANCE,
   POWER_UP_TYPES,
@@ -81,9 +84,6 @@ const createPlayer = (contender: Contender, slot: number): Player => {
     slot,
     x: spawn.x,
     y: spawn.y,
-    fromX: spawn.x,
-    fromY: spawn.y,
-    progress: 0,
     facing: DIRECTION.DOWN,
     alive: true,
     maxBalloons: STARTING_BALLOONS,
@@ -104,43 +104,86 @@ export const createMatch = (contenders: Contender[]): MatchState => ({
   winnerId: null,
 });
 
-const tryStartMove = (
-  state: MatchState,
-  player: Player,
-  input: PlayerInput,
-  budget: number,
-) => {
-  if (!input.direction) return;
-  player.facing = input.direction;
-  const target = step(player, input.direction);
-  if (!isWalkable(state, target.x, target.y)) return;
-  player.fromX = player.x;
-  player.fromY = player.y;
-  player.x = target.x;
-  player.y = target.y;
-  player.progress = budget;
+type Axis = 'x' | 'y';
+
+const tileSpan = (centre: number) => {
+  const half = PLAYER_HALF_SIZE - POSITION_EPSILON;
+  const first = Math.floor(centre - half - 0.5) + 1;
+  const last = Math.ceil(centre + half + 0.5) - 1;
+  return Array.from({ length: last - first + 1 }, (_, i) => first + i);
 };
 
+const overlappedTiles = (x: number, y: number): Point[] =>
+  tileSpan(y).flatMap(ty => tileSpan(x).map(tx => ({ x: tx, y: ty })));
+
+// A balloon only blocks players who are not already overlapping it, so the
+// dropper can walk off their own balloon but not back onto it.
+const isBlocked = (state: MatchState, player: Player, x: number, y: number) => {
+  const standingOn = overlappedTiles(player.x, player.y);
+  return overlappedTiles(x, y).some(
+    tile =>
+      cellAt(state.cells, tile.x, tile.y) !== CELL.FLOOR ||
+      (balloonAt(state.balloons, tile.x, tile.y) &&
+        !standingOn.some(spot => samePoint(spot, tile))),
+  );
+};
+
+const shiftAlong = (
+  state: MatchState,
+  player: Player,
+  axis: Axis,
+  target: number,
+) => {
+  const next = { x: player.x, y: player.y, [axis]: target };
+  if (isBlocked(state, player, next.x, next.y)) return false;
+  player.x = next.x;
+  player.y = next.y;
+  return true;
+};
+
+const centreAhead = (coordinate: number, sign: number) =>
+  sign > 0
+    ? Math.floor(coordinate + POSITION_EPSILON) + 1
+    : Math.ceil(coordinate - POSITION_EPSILON) - 1;
+
 const movePlayer = (state: MatchState, player: Player, input: PlayerInput) => {
+  if (!input.direction) return;
+  player.facing = input.direction;
+  const vector = DIRECTION_VECTORS[input.direction];
+  const axis: Axis = vector.x !== 0 ? 'x' : 'y';
+  const cross: Axis = axis === 'x' ? 'y' : 'x';
+  const sign = vector[axis];
   const speed = playerSpeed(player);
-  if (player.progress === 0) {
-    tryStartMove(state, player, input, speed);
+
+  let target = player[axis] + sign * speed;
+  if (input.snap) {
+    const centre = centreAhead(player[axis], sign);
+    if ((target - centre) * sign > 0) target = centre;
+  }
+  if (shiftAlong(state, player, axis, target)) return;
+
+  const centre = occupiedTile(player);
+  const offset = player[cross] - centre[cross];
+  const ahead = step(centre, input.direction);
+  // Cutting a corner: the lane ahead is open but the avatar is slightly off
+  // it, so slide toward the lane centre instead of stopping dead.
+  if (
+    Math.abs(offset) > POSITION_EPSILON &&
+    isWalkable(state, ahead.x, ahead.y)
+  ) {
+    const correction = Math.min(speed, Math.abs(offset));
+    shiftAlong(
+      state,
+      player,
+      cross,
+      player[cross] - Math.sign(offset) * correction,
+    );
     return;
   }
-  // Reversing mid-step is allowed so a player can back out of a splash lane.
-  if (input.direction === OPPOSITE_DIRECTION[player.facing]) {
-    [player.x, player.fromX] = [player.fromX, player.x];
-    [player.y, player.fromY] = [player.fromY, player.y];
-    player.progress = 1 - player.progress;
-    player.facing = input.direction;
-  }
-  player.progress += speed;
-  if (player.progress < 1) return;
-  const leftover = player.progress - 1;
-  player.progress = 0;
-  player.fromX = player.x;
-  player.fromY = player.y;
-  if (leftover > 0) tryStartMove(state, player, input, leftover);
+  const stop = centre[axis] + sign * (0.5 - PLAYER_HALF_SIZE);
+  const gap = (stop - player[axis]) * sign;
+  if (gap > 0)
+    shiftAlong(state, player, axis, player[axis] + sign * Math.min(speed, gap));
 };
 
 const placeBalloon = (state: MatchState, player: Player) => {
@@ -196,9 +239,6 @@ const popBalloons = (state: MatchState) => {
 
   if (!popped.size) return;
   state.balloons = state.balloons.filter(balloon => !popped.has(balloon.id));
-  state.powerUps = state.powerUps.filter(
-    powerUp => !soaked.some(point => samePoint(point, powerUp)),
-  );
   cratesHit.forEach(point => {
     state.cells[cellIndex(point.x, point.y)] = CELL.FLOOR;
     const hidden = state.hiddenPowerUps.find(powerUp =>

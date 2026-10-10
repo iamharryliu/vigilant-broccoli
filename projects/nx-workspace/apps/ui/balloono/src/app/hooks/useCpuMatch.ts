@@ -10,6 +10,7 @@ export function useCpuMatch(
   contenders: Contender[] | null,
   playerId: string,
   controls: Controls,
+  localPlayer?: { id: string; controls: Controls },
 ) {
   const [match, setMatch] = useState<MatchState | null>(null);
   const [wins, setWins] = useState<Record<string, number>>({});
@@ -26,7 +27,16 @@ export function useCpuMatch(
     const botMemory: BotMemory = new Map();
     setMatch(state);
     const interval = window.setInterval(() => {
-      state = runTick(state, { [playerId]: controls.takeInput() }, botMemory);
+      state = runTick(
+        state,
+        {
+          [playerId]: controls.takeInput(),
+          ...(localPlayer && {
+            [localPlayer.id]: localPlayer.controls.takeInput(),
+          }),
+        },
+        botMemory,
+      );
       setMatch(state);
       if (state.status !== MATCH_STATUS.OVER) return;
       window.clearInterval(interval);
@@ -39,7 +49,7 @@ export function useCpuMatch(
       }
     }, TICK_MS);
     return () => window.clearInterval(interval);
-  }, [contenders, playerId, controls, round]);
+  }, [contenders, playerId, controls, localPlayer, round]);
 
   return { match, wins, restart };
 }

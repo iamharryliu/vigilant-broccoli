@@ -1,8 +1,4 @@
 {
-  "APP": {
-    "TITLE": "Balloono",
-    "TAGLINE": "Drop water balloons, soak your rivals, be the last one dry."
-  },
   "PAGE": {
     "HOME": "Play",
     "CPU": "Versus CPU",
@@ -13,8 +9,22 @@
     "NAME_PLACEHOLDER": "Pick a name",
     "RANDOM_NAME": "Pick a random name"
   },
+  "LOCAL": {
+    "ADD": "Add local player",
+    "DESCRIPTION": "A second person on this keyboard plays with WASD and Space; you switch to the arrow keys and Enter.",
+    "NAME": "Player 2"
+  },
+  "GAMES": {
+    "TITLE": "Games",
+    "EMPTY": "No games right now. Start one!"
+  },
+  "START": {
+    "BUTTON": "Start game",
+    "BACK": "Back",
+    "MODE": "Game mode"
+  },
   "CPU": {
-    "TITLE": "Play vs CPU",
+    "TITLE": "Versus CPU",
     "DESCRIPTION": "Practice against computer opponents on your own.",
     "OPPONENTS": "Opponents",
     "DIFFICULTY": "Difficulty",
@@ -33,8 +43,6 @@
     "ROOM_PLACEHOLDER": "e.g. soggy-otter",
     "JOIN": "Join room",
     "RANDOM_ROOM": "Pick a random room name",
-    "OPEN_ROOMS": "Open rooms",
-    "NO_ROOMS": "No open rooms right now. Create one!",
     "ROOM_PLAYERS": "{count}/{max} players",
     "ROOM_PLAYING": "In a match",
     "ROOM_WAITING": "In the lobby",
@@ -75,6 +83,7 @@
     "QUIT": "Quit",
     "WAITING_FOR_HOST": "Waiting for the host to start the next round…",
     "SPECTATING": "You're watching this round. You'll get a seat in the next one if one is free.",
+    "LOCAL_CONTROLS_HINT": "Player 1: arrow keys + Enter. Player 2: WASD + Space.",
     "CONTROLS_HINT": "Move with the arrow keys or WASD. Drop a balloon with Space.",
     "STATS": "Balloons {balloons} · Range {range} · Speed {speed}"
   },

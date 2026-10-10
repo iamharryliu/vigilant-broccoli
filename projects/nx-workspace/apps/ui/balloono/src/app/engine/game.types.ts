@@ -28,9 +28,6 @@ export interface Player {
   difficulty: Difficulty | null;
   x: number;
   y: number;
-  fromX: number;
-  fromY: number;
-  progress: number;
   facing: Direction;
   alive: boolean;
   maxBalloons: number;
@@ -65,6 +62,9 @@ export interface MatchState {
 export interface PlayerInput {
   direction: Direction | null;
   placeBalloon: boolean;
+  // Stops at the next tile centre instead of gliding past it; CPU bots only
+  // think on tile centres.
+  snap?: boolean;
 }
 
 export interface Contender {

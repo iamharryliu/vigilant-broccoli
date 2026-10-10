@@ -56,6 +56,7 @@ export function MatchView({
   controls,
   actions,
   note,
+  controlsHint,
 }: {
   match: MatchState;
   localPlayerId: string;
@@ -63,6 +64,7 @@ export function MatchView({
   controls: Controls;
   actions: ReactNode;
   note?: string;
+  controlsHint?: string;
 }) {
   const { t } = useTranslation();
   const touchLayout = useTouchLayout();
@@ -116,7 +118,7 @@ export function MatchView({
           <TouchControls controls={controls} />
         ) : (
           <p className="text-center text-xs text-muted-foreground">
-            {t('MATCH.CONTROLS_HINT')}
+            {controlsHint ?? t('MATCH.CONTROLS_HINT')}
           </p>
         )}
         {note && (

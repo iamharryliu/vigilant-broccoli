@@ -6,6 +6,7 @@ import {
   CELL,
   DIRECTION_VECTORS,
   DIRECTIONS,
+  POSITION_EPSILON,
   SPEED_STEP,
   SUDDEN_DEATH_INTERVAL_TICKS,
   SUDDEN_DEATH_TICK,
@@ -78,12 +79,17 @@ export const step = (point: Point, direction: Direction): Point => ({
 export const neighbours = (point: Point) =>
   DIRECTIONS.map(direction => ({ direction, ...step(point, direction) }));
 
-// A player mid-step is counted on whichever tile they are mostly over, so
-// splashes, pickups and balloon drops agree with what the canvas shows.
-export const occupiedTile = (player: Player): Point =>
-  player.progress >= 0.5
-    ? { x: player.x, y: player.y }
-    : { x: player.fromX, y: player.fromY };
+// Players glide freely between tiles; they count as standing on whichever
+// tile their centre is over, so splashes, pickups and balloon drops agree
+// with what the canvas shows.
+export const occupiedTile = (player: Player): Point => ({
+  x: Math.round(player.x),
+  y: Math.round(player.y),
+});
+
+export const isCentered = (player: Player) =>
+  Math.abs(player.x - Math.round(player.x)) < POSITION_EPSILON &&
+  Math.abs(player.y - Math.round(player.y)) < POSITION_EPSILON;
 
 export const playerSpeed = (player: Player) =>
   BASE_SPEED + player.speedLevel * SPEED_STEP;

@@ -3,6 +3,7 @@ import { useCallback, useState } from 'react';
 const USERNAME_STORAGE_KEY = 'balloono-username';
 const USER_PREFIX = 'player-';
 const USER_ID_LENGTH = 8;
+const ID_RADIX = 36;
 const NAME_SEPARATOR = '-';
 export const MAX_NAME_LENGTH = 16;
 
@@ -32,16 +33,20 @@ const NAME_NOUNS = [
   'gull',
 ];
 
+const randomInt = (limit: number) =>
+  crypto.getRandomValues(new Uint32Array(1))[0] % limit;
+
 export const randomItem = <T>(items: readonly T[]): T =>
-  items[Math.floor(Math.random() * items.length)];
+  items[randomInt(items.length)];
 
 export const randomPhrase = () =>
   `${randomItem(NAME_ADJECTIVES)}${NAME_SEPARATOR}${randomItem(NAME_NOUNS)}`;
 
 const randomUserId = () =>
-  `${USER_PREFIX}${Math.random()
-    .toString(36)
-    .slice(2, 2 + USER_ID_LENGTH)}`;
+  `${USER_PREFIX}${Array.from(
+    crypto.getRandomValues(new Uint8Array(USER_ID_LENGTH)),
+    byte => (byte % ID_RADIX).toString(ID_RADIX),
+  ).join('')}`;
 
 const getOrCreate = (key: string, create: () => string) => {
   const existing = localStorage.getItem(key);

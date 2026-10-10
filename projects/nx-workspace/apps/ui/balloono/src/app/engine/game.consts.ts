@@ -1,6 +1,6 @@
 export const BOARD_COLUMNS = 13;
 export const BOARD_ROWS = 11;
-export const MAX_PLAYERS = 4;
+export const MAX_PLAYERS = 8;
 
 export const TICK_MS = 50;
 export const TICKS_PER_SECOND = 1000 / TICK_MS;
@@ -11,12 +11,17 @@ export const SUDDEN_DEATH_TICK = 120 * TICKS_PER_SECOND;
 export const SUDDEN_DEATH_INTERVAL_TICKS = 8;
 export const SUDDEN_DEATH_WARNING_TICKS = 2 * TICKS_PER_SECOND;
 
+// Half the avatar's width in tiles. Under 0.5 so a player can slide past a
+// corner without being pixel-perfect.
+export const PLAYER_HALF_SIZE = 0.4;
+export const POSITION_EPSILON = 1e-6;
+
 export const BASE_SPEED = 0.16;
 export const SPEED_STEP = 0.03;
 export const MAX_SPEED_LEVEL = 4;
 export const STARTING_BALLOONS = 1;
 export const MAX_BALLOONS = 8;
-export const STARTING_RANGE = 2;
+export const STARTING_RANGE = 1;
 export const MAX_RANGE = 8;
 
 export const CRATE_DENSITY = 0.7;
@@ -77,6 +82,10 @@ export const SPAWN_POINTS = [
   { x: BOARD_COLUMNS - 2, y: BOARD_ROWS - 2 },
   { x: BOARD_COLUMNS - 2, y: 1 },
   { x: 1, y: BOARD_ROWS - 2 },
+  { x: Math.floor(BOARD_COLUMNS / 2), y: 1 },
+  { x: Math.floor(BOARD_COLUMNS / 2), y: BOARD_ROWS - 2 },
+  { x: 1, y: Math.floor(BOARD_ROWS / 2) },
+  { x: BOARD_COLUMNS - 2, y: Math.floor(BOARD_ROWS / 2) },
 ] as const;
 
 export const NO_INPUT = { direction: null, placeBalloon: false } as const;

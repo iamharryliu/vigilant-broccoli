@@ -1,7 +1,16 @@
 import { POWER_UP } from '../engine/game.consts';
 import { PowerUpType } from '../engine/game.types';
 
-export const PLAYER_COLORS = ['#ef4444', '#3b82f6', '#22c55e', '#f59e0b'];
+export const PLAYER_COLORS = [
+  '#ef4444',
+  '#3b82f6',
+  '#22c55e',
+  '#f59e0b',
+  '#a855f7',
+  '#ec4899',
+  '#14b8a6',
+  '#78716c',
+];
 
 // Each power-up also gets its own colour so the board stays readable on
 // devices without an emoji font.

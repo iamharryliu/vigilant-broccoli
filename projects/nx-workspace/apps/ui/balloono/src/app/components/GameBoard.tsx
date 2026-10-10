@@ -56,8 +56,8 @@ type Palette = (typeof PALETTE)[keyof typeof PALETTE];
 type Position = { x: number; y: number };
 
 const targetPosition = (player: Player): Position => ({
-  x: player.fromX + (player.x - player.fromX) * player.progress,
-  y: player.fromY + (player.y - player.fromY) * player.progress,
+  x: player.x,
+  y: player.y,
 });
 
 const drawBoard = (
