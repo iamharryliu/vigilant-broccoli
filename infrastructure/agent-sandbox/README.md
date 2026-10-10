@@ -98,8 +98,8 @@ conflict-resolution updates never split. If the target update fails before its p
 targeting the original PR branch. Recovery restores unresolved TODO rows and respects commit hooks; if hooks or GitHub
 publication fail, the log reports that recovery failed rather than claiming the work was saved. Git, pushes and PR creation stay in the runner with the credentials it already
 has; branches are only created and pushed, never force-pushed. Squash-merge implications of stacked PRs are in
-[Stacked pull requests](../../docs/git-workflow.md#stacked-pull-requests). The container copies `solve-todo-runner.sh` and
-`pr-increments.sh` into the image, so rebuild it (`docker compose build`) after changing either when running locally.
+[Stacked pull requests](../../docs/git-workflow.md#stacked-pull-requests). The container copies `solve-todo-runner.sh`,
+`pr-increments.sh` and `commit-subject.sh` into the image, so rebuild it (`docker compose build`) after changing any of them when running locally. Every runner sources `commit-subject.sh` to capitalize commit messages and PR titles, end them with a period and strip trailing ellipses, so they pass the CI `commitlint` job.
 
 ## Auditing the backlog
 

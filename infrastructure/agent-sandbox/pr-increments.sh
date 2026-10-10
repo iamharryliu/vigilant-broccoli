@@ -13,6 +13,9 @@
 # PRE_COMMIT_HELPER, MERGE_BODY_HELPER, INC_SKILL_INSTRUCTIONS, INC_REQUEST,
 # INC_HISTORY_SOURCE, INC_HISTORY_COMMAND, INC_HISTORY_BASE_COMMAND, and agent_invoke "<prompt>".
 
+# shellcheck source=commit-subject.sh
+. "$(dirname "${BASH_SOURCE[0]}")/commit-subject.sh"
+
 INC_MAX_LATER=4
 INC_SKIP_COMMIT_HOOKS=commitlint,lint-staged
 INC_DEFAULT_BASE=${INC_DEFAULT_BASE:-main}
@@ -290,14 +293,13 @@ inc_publish() {
 
   case " $INC_COMMIT_TYPES " in *" $commit_type "*) ;; *) commit_type="" ;; esac
   if [ -n "$commit_type" ] && [ -n "$commit_message" ]; then
-    commit_message=${commit_message^}
-    commit_message="${commit_message%.}."
+    commit_message=$(normalize_commit_message "$commit_message")
     if [ -n "$commit_scope" ]; then subject="${commit_type}(${commit_scope}): ${commit_message}"; else subject="${commit_type}: ${commit_message}"; fi
   else
     subject=$fallback_subject
   fi
   echo "$trailer" | grep -Eqi '^co-authored-by: .+ <.+>$' || trailer=$FALLBACK_TRAILER
-  [ -n "$pr_title" ] || pr_title=$subject
+  [ -n "$pr_title" ] && pr_title=$(normalize_pr_title "$pr_title") || pr_title=$subject
   [ -n "$pr_summary" ] || pr_summary=$fallback_summary
   [ -n "$pr_next_steps" ] || pr_next_steps='- [ ] Merge once CI is green'
 
