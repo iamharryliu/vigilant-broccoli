@@ -17,7 +17,7 @@
 . "$(dirname "${BASH_SOURCE[0]}")/commit-subject.sh"
 
 INC_MAX_LATER=4
-INC_SKIP_COMMIT_HOOKS=commitlint,lint-staged
+INC_SKIP_COMMIT_HOOKS=lint-staged
 INC_DEFAULT_BASE=${INC_DEFAULT_BASE:-main}
 INC_CURRENT=current
 INC_PLAN_FILE=/tmp/increment-plan.json

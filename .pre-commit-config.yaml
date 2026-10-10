@@ -1,5 +1,4 @@
 exclude: ^history/
-default_install_hook_types: [pre-commit, commit-msg]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
@@ -43,10 +42,3 @@ repos:
         language: system
         pass_filenames: false
         files: ^setup/dotfiles/(\.config/nvim/|\.tmux\.conf$)
-  - repo: local
-    hooks:
-      - id: commitlint
-        name: Lint the commit message against the commit contract.
-        entry: npx --no-install commitlint --edit
-        language: system
-        stages: [commit-msg]

@@ -31,7 +31,7 @@ Personal monorepo, supporting **13 applications**, **5 API services**, **7 Docke
 ```
 pnpm i                             # Install root dependencies, then projects/nx-workspace via the root postinstall hook
 pnpm cheatsheet                    # Print the CLI command cheatsheet
-pre-commit install                 # Install the pre-commit and commit-msg (commitlint) git hooks
+pre-commit install                 # Install the pre-commit git hooks
 pnpm local:install:machine-setup   # Install tools and dotfiles for this machine (macOS or Linux)
 ```
 

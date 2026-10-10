@@ -34,8 +34,7 @@ Branching, staging, commit and PR conventions for this repository, and how to st
 
 [commitlint](../commitlint.config.mjs) extends `@commitlint/config-conventional` and overrides it to the contract above: the nine commit types, a lower-case optional scope, a capitalized subject ending with a period, and no header, body or footer length limits (existing subjects are long and trailers carry URLs). Merge commits are ignored by commitlint's defaults, and any `Co-Authored-By:` trailer passes because footers are not constrained.
 
-- **Local**: the `commitlint` hook in [.pre-commit-config.yaml](../.pre-commit-config.yaml) runs at the `commit-msg` stage. `default_install_hook_types` makes a plain `pre-commit install` install both the `pre-commit` and `commit-msg` hooks, which `setup/mac/install.sh` and `setup/linux/install.sh` ("Setup git hooks?") already call; run `pnpm install` once at the root first, since the hook uses `npx --no-install commitlint`. Existing checkouts must re-run `pre-commit install` to get the new hook. Clones without hooks installed and `--no-verify` commits are caught by CI.
-- **CI**: the `commitlint` job in `ci-pr-check` lints the PR title and the PR's commits; see [commit message checks](./ci/workflow-conventions.md#commit-message-checks) for why both.
+- **CI only**: there is no local `commit-msg` hook, because every commit is agent-authored; the `commitlint` job in `ci-pr-check` lints the PR title and the PR's commits; see [commit message checks](./ci/workflow-conventions.md#commit-message-checks) for why both.
 - **Try a message**: `printf '%s\n' 'feat(hearth): Add a page.' | npx commitlint` (exit 0 when accepted).
 - The full inventory of repository quality tools is in [code-quality-tools.md](./code-quality-tools.md).
 
