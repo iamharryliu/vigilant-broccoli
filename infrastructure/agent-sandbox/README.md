@@ -19,8 +19,10 @@ runner, so no local machine is needed. `solve-todo.sh` is shared verbatim: when 
 agent credential (`CLAUDE_CODE_OAUTH_TOKEN` for Claude, `AGENT_CODEX_ACCESS_TOKEN` for Codex) plus the GitHub App credentials
 from Vault, the script skips the local Vault-over-SSH load and mints the installation token itself.
 
-- Dispatch: `gh workflow run manual-agentic-pr-create.yml -f ids="<id> <id>"` (or `-f prompt="<task>"`), with optional
-  `-f agent=claude|codex`, `-f model=` for Claude, `-f codex_model=` for Codex, and `-f firewall=off`.
+- Dispatch: `gh workflow run manual-agentic-pr-create.yml -f prompt="<task>"`, with optional `-f agent=claude|codex`,
+  `-f model=` for Claude, `-f codex_model=` for Codex, and `-f firewall=off`. The workflow has no separate TODO id input:
+  mention ids in the prompt (`-f prompt="solve a1b2c3"`) and the agent resolves those `TODO.md` rows and removes them
+  once done. Use `pnpm agentic-pr-create <id...>` locally to solve several ids as parallel, one-PR-per-id runs.
 - Smoke test: dispatch `manual-agentic-pr-create-smoke` (`gh workflow run manual-agentic-pr-create-smoke.yml`) to run the whole
   pipeline against a canned one-line prompt and check the notification email. Pass `-f agent=codex` to smoke-test the
   Codex path. It opens a disposable PR; close it after.

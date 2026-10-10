@@ -193,7 +193,7 @@ $SCOPE_RULE
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit, or "$FALLBACK_TRAILER" when no such trailer is specified
   - pr_title: the pull request title
   - pr_summary: markdown bullet points for the PR "## Summary" section
-  - pr_next_steps: markdown checklist for the PR "## Next steps" section — concrete remaining actions for the human (manual commands to run, UI/manual spot checks, watching CI to green), or "- [ ] Merge once CI is green" when nothing else is left
+  - pr_next_steps: markdown checklist for the PR "## Next steps" section — concrete remaining actions for the human (manual commands to run, UI/manual spot checks, watching CI to green, then one ready-to-run `pnpm agentic-pr-create --prompt "<task>"` item per remaining increment when the task was split), or "- [ ] Merge once CI is green" when nothing else is left
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
 EOF
 )

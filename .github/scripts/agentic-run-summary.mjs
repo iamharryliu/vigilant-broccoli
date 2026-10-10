@@ -137,7 +137,6 @@ const renderOverview = () => {
   const firewall = env('AGENTIC_FIREWALL');
   const event = env('AGENTIC_EVENT') || env('GITHUB_EVENT_NAME');
   const pullRequest = env('AGENTIC_PULL_REQUEST');
-  const todoIds = env('AGENTIC_TODO_IDS').split(/\s+/).filter(Boolean);
 
   const blocks = [`# ${escapeInline(env('AGENTIC_TITLE'))}`];
   const lines = [
@@ -152,7 +151,6 @@ const renderOverview = () => {
     ]),
     metaLine([['Operation', escapeInline(env('AGENTIC_OPERATION'))]]),
     metaLine([['Pull request', pullRequest && urlOrText(pullRequest)]]),
-    metaLine([['TODO IDs', todoIds.map(id => escapeInline(id)).join(', ')]]),
   ].filter(Boolean);
   blocks.push(lines.join(LINE_BREAK));
 
