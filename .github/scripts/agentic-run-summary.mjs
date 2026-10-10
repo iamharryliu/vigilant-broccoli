@@ -210,10 +210,13 @@ const renderUnpublished = unpublished => {
 
 const headlineFor = (outcome, pulls) => {
   if (outcome === 'failed' && pulls.length) {
-    const published = pulls.filter(pull => pull.state !== 'salvaged').length;
-    return published
-      ? `Failed — ${published} pull request${published === 1 ? '' : 's'} published before the failure`
-      : FAILED_WITH_PR;
+    const published = pulls.filter(
+      pull => pull.state === 'created' || pull.state === 'updated',
+    ).length;
+    if (published)
+      return `Failed — ${published} pull request${published === 1 ? '' : 's'} published before the failure`;
+    if (pulls.some(pull => pull.state === 'salvaged')) return FAILED_WITH_PR;
+    return OUTCOME.failed;
   }
   if (outcome === 'pr-created' && pulls.length > 1)
     return `${pulls.length} pull requests created`;

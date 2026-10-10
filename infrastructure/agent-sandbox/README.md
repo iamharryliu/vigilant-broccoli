@@ -12,7 +12,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 ## Running in CI
 
-Plan- and Develop-phase agents, backlog auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-prune`, `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, no draft-PR salvage in the update runner, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
+Plan- and Develop-phase agents, backlog auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-prune`, `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
 
 `pnpm agentic-pr-create <ID...>` runs `solve-todo.sh` locally. The same solve runs in GitHub Actions via the
 `manual-agentic-pr-create` workflow (`workflow_dispatch`) — it builds and runs this container on the `ubuntu-24.04`
@@ -94,7 +94,9 @@ lists the rest in an `increments` array in its metadata file (contract in
   sequentially in the same container, so the workflow's 60-minute timeout covers the whole set.
 
 `update-pr-runner.sh` does the same for follow-ups an update surfaces, leaving the target PR to its own purpose; fix-CI and
-conflict-resolution updates never split. Git, pushes and PR creation stay in the runner with the credentials it already
+conflict-resolution updates never split. If the target update fails before its push, recovery uses a separate draft branch
+targeting the original PR branch. Recovery restores unresolved TODO rows and respects commit hooks; if hooks or GitHub
+publication fail, the log reports that recovery failed rather than claiming the work was saved. Git, pushes and PR creation stay in the runner with the credentials it already
 has; branches are only created and pushed, never force-pushed. Squash-merge implications of stacked PRs are in
 [Stacked pull requests](../../docs/git-workflow.md#stacked-pull-requests). The container copies `solve-todo-runner.sh` and
 `pr-increments.sh` into the image, so rebuild it (`docker compose build`) after changing either when running locally.

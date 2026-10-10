@@ -326,17 +326,30 @@ inc_publish() {
 inc_salvage() {
   local branch=$1 pr_base=$2 base_sha=$3 title=$4 request_body=$5 exit_code=$6 id=${7:-$INC_CURRENT}
   local pr_url body
-  git checkout "$branch" >/dev/null 2>&1 || true
+  if ! git checkout "$branch" >/dev/null 2>&1; then
+    echo "Failed to check out salvage branch $branch." >&2
+    printf 'RESULT::salvage-checkout-failed\n'
+    return 0
+  fi
+  # Unfinished work cannot resolve a TODO, including cleanup committed before a
+  # publication failure. Keep those rows on the recovery branch.
+  if git cat-file -e "$base_sha:TODO.md" 2>/dev/null; then
+    if ! git restore --source="$base_sha" --staged --worktree -- TODO.md; then
+      printf 'RESULT::salvage-todo-restore-failed\n'
+      return 0
+    fi
+  fi
   if [ -z "$(git status --porcelain)" ] && [ "$(git rev-parse HEAD)" = "$base_sha" ]; then
     echo "No work to salvage on $branch." >&2
     printf 'RESULT::salvage-nothing\n'
     return 0
   fi
   if [ -n "$(git status --porcelain)" ]; then
-    git add -A
-    # --no-verify: a WIP salvage commit must not be blocked by lint/format hooks —
-    # the goal is to preserve an unfinished diff, not to ship clean code.
-    git commit --no-verify -m "wip: Save partial progress from an incomplete agent run." -m "$FALLBACK_TRAILER" >/dev/null || true
+    if ! git add -A || ! git commit -m "chore: Save partial progress from an incomplete agent run." -m "$FALLBACK_TRAILER"; then
+      echo "Failed to commit salvage work on $branch; hooks were not bypassed." >&2
+      printf 'RESULT::salvage-commit-failed\n'
+      return 0
+    fi
   fi
   if ! git push -u origin "$branch"; then
     echo "Failed to push salvage branch $branch — partial work could not be recovered." >&2
@@ -451,7 +464,7 @@ inc_run_later() {
       INC_STATE[$id]=failed
       INC_REASON[$id]=$failed_reason
       if [ -z "${INC_URL[$id]:-}" ]; then
-        inc_salvage "$branch" "$pr_base" "$base_sha" "${INC_TITLE[$id]}" "${INC_TASK[$id]}" "${agent_status:-1}" "$id"
+        inc_salvage "$branch" "$pr_base" "$base_sha" "${INC_TITLE[$id]}" "${INC_TASK[$id]}" "$((agent_status == 0 ? 1 : agent_status))" "$id"
       fi
       [ "${INC_STATE[$id]}" = salvaged ] || inc_emit_unpublished "$id" "$failed_reason"
     fi

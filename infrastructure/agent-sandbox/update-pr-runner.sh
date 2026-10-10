@@ -53,6 +53,28 @@ PR_TITLE=$(gh pr view "$PR" --json title -q .title 2>/dev/null || true)
 PR_URL=$(gh pr view "$PR" --json url -q .url 2>/dev/null || true)
 CURRENT_BODY=$(gh pr view "$PR" --json body -q .body 2>/dev/null || true)
 
+SALVAGE_ENABLED=1
+salvage_on_failure() {
+  local exit_code=$? recovery_branch
+  trap - EXIT
+  set +e
+  [ "$exit_code" -ne 0 ] && [ "$SALVAGE_ENABLED" = 1 ] || exit "$exit_code"
+  recovery_branch="${BRANCH}-recovery-$(date +%s)"
+  # A failed update must never publish unfinished work onto the target PR.
+  if git checkout -b "$recovery_branch"; then
+    inc_salvage "$recovery_branch" "$BRANCH" "$BASE_SHA" "${PR_TITLE:-Update PR #$PR}" "$INSTRUCTION" "$exit_code"
+  else
+    echo "ERROR: could not create a recovery branch; the target PR was not updated." >&2
+    echo 'RESULT::salvage-branch-failed'
+  fi
+  local id
+  for id in "${INC_ORDER[@]:1}"; do
+    inc_emit_unpublished "$id" "the target PR update failed"
+  done
+  exit "$exit_code"
+}
+trap salvage_on_failure EXIT
+
 # The agent cannot call gh, so failing CI output has to be collected here and
 # handed over in the prompt.
 CI_SECTION=""
@@ -209,6 +231,7 @@ git add -A
 [ -z "$MERGE_HEAD_SHA" ] || echo "$MERGE_HEAD_SHA" >"$(git rev-parse --git-path MERGE_HEAD)"
 git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
 git push
+SALVAGE_ENABLED=0
 
 HISTORY_SOURCE=$INC_HISTORY_SOURCE
 
