@@ -332,7 +332,7 @@ variable "uptime_domain" {
 
 variable "upptime_https_enforced" {
   type        = bool
-  default     = false
+  default     = true
   description = "Enforce HTTPS on the Upptime Pages site. Set true only after GitHub has issued a certificate covering the custom domain; the API rejects it earlier."
 }
 
