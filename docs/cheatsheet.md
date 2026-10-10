@@ -131,6 +131,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   secret-rotation:twilio      Rotate Twilio auth token (two-phase secondary-token promotion)
   secret-rotation:oci         Rotate the OCI API key (local-only); refreshes ~/.oci, ~5min propagation wait
   secret-rotation:calendar-sa  Replace the Google Calendar service-account key, sync it to Vault, reload vb-manager-next
+  rabbitmq:password           Copy RabbitMQ admin password to clipboard (login user: admin)
 
 🐳 LOCAL
   local:docker:up             Start local Docker Compose services
