@@ -229,7 +229,7 @@ echo "$TRAILER" | grep -Eqi '^co-authored-by: .+ <.+>$' || TRAILER="$FALLBACK_TR
 
 git add -A
 [ -z "$MERGE_HEAD_SHA" ] || echo "$MERGE_HEAD_SHA" >"$(git rev-parse --git-path MERGE_HEAD)"
-git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
+SKIP=$INC_SKIP_COMMIT_HOOKS git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
 git push
 SALVAGE_ENABLED=0
 
