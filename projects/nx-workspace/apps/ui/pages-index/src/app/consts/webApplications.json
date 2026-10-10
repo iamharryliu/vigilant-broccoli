@@ -55,6 +55,12 @@
       "descriptionKey": "WEB_APPLICATIONS_PAGE.UTILITIES.DESCRIPTION"
     },
     {
+      "id": "waiting-games",
+      "href": "https://waiting.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.WAITING_GAMES.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.WAITING_GAMES.DESCRIPTION"
+    },
+    {
       "id": "weather",
       "href": "https://weather.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.WEATHER.TITLE",

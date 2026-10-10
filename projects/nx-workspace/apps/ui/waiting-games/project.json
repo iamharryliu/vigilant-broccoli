@@ -1,0 +1,84 @@
+{
+  "name": "waiting-games",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/waiting-games/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": [
+        "production",
+        "^production",
+        { "dependentTasksOutputFiles": "**/*" }
+      ],
+      "outputs": [
+        "{projectRoot}/{options.outDir}",
+        "{workspaceRoot}/dist/waiting-games"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "outDir": "../../../dist/waiting-games"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "defaultConfiguration": "development",
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "ensure-cf-project": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw staging-waiting-games || npx wrangler pages project create staging-waiting-games --production-branch main"
+    },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-waiting-games 10",
+      "dependsOn": ["ensure-cf-project"]
+    },
+    "deploy": {
+      "command": "npx wrangler pages deploy dist/waiting-games --project-name staging-waiting-games --branch main",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    },
+    "manual-deploy": {
+      "command": "npx wrangler pages deploy dist/waiting-games --project-name staging-waiting-games --branch main",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    },
+    "ensure-cf-project:production": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-waiting-games || npx wrangler pages project create production-waiting-games --production-branch production"
+    },
+    "prune-deployments:production": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts production-waiting-games 10",
+      "dependsOn": ["ensure-cf-project:production"]
+    },
+    "deploy:production": {
+      "command": "npx wrangler pages deploy dist/waiting-games --project-name production-waiting-games --branch production",
+      "dependsOn": [
+        "build",
+        "ensure-cf-project:production",
+        "prune-deployments:production"
+      ]
+    },
+    "ensure-cf-project:preview": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw preview-waiting-games || npx wrangler pages project create preview-waiting-games --production-branch main"
+    },
+    "prune-deployments:preview": {
+      "command": "npx tsx scripts/prune-wrangler-preview-deployments.ts preview-waiting-games",
+      "dependsOn": ["ensure-cf-project:preview"]
+    },
+    "deploy:preview": {
+      "command": "npx wrangler pages deploy dist/waiting-games --project-name preview-waiting-games --branch \"$PREVIEW_BRANCH\" --commit-hash \"${PREVIEW_COMMIT:-$(git rev-parse HEAD)}\"",
+      "dependsOn": ["build", "ensure-cf-project:preview"]
+    }
+  }
+}
