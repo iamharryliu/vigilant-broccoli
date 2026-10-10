@@ -168,7 +168,7 @@ jobs:
         run: pre-commit run --show-diff-on-failure --color=always --all-files
 
   commitlint:
-    if: github.event.pull_request.user.type != 'Bot'
+    if: ${{ !contains(fromJSON('["dependabot[bot]","renovate[bot]"]'), github.event.pull_request.user.login) }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
