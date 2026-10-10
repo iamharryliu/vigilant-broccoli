@@ -13,6 +13,7 @@ module.exports = {
     '../../libs/@vigilant-broccoli/common-node/src/**/*.{tsx,ts,jsx,js,html}',
     '../../libs/@vigilant-broccoli/react-lib/src/**/*.{tsx,ts,jsx,js,html}',
     '../../libs/@vigilant-broccoli/common-browser/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../libs/@vigilant-broccoli/react-utility/src/lib/markdown-viewer.tsx',
   ],
   theme: {
     extend: {
@@ -45,5 +46,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('@tailwindcss/typography')],
 };

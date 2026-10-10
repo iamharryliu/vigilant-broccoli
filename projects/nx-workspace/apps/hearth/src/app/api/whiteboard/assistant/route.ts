@@ -16,6 +16,7 @@ import {
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+const HOMES_TABLE = 'homes';
 const HOME_MEMBERS_TABLE = 'home_members';
 const ACCEPTED_STATUS = 'accepted';
 const DEFAULT_BOARD_KEY = 'family';
@@ -95,14 +96,23 @@ export async function POST(request: NextRequest) {
   }
   const { homeId, document, messages } = parsed.data;
 
-  const { data: membership } = await createAdminClient()
-    .from(HOME_MEMBERS_TABLE)
-    .select('id')
-    .eq('home_id', homeId)
-    .eq('user_id', user.id)
-    .eq('status', ACCEPTED_STATUS)
-    .maybeSingle();
-  if (!membership) {
+  const admin = createAdminClient();
+  const [{ data: ownedHome }, { data: membership }] = await Promise.all([
+    admin
+      .from(HOMES_TABLE)
+      .select('id')
+      .eq('id', homeId)
+      .eq('user_id', user.id)
+      .maybeSingle(),
+    admin
+      .from(HOME_MEMBERS_TABLE)
+      .select('id')
+      .eq('home_id', homeId)
+      .eq('user_id', user.id)
+      .eq('status', ACCEPTED_STATUS)
+      .maybeSingle(),
+  ]);
+  if (!ownedHome && !membership) {
     return Response.json(
       { error: 'Forbidden' },
       { status: HTTP_STATUS_CODES.FORBIDDEN },

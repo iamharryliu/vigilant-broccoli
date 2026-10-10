@@ -1,12 +1,14 @@
 'use client';
 
-import { CSSProperties, useRef, useState, RefObject } from 'react';
+import { CSSProperties, ReactNode, useRef, useState, RefObject } from 'react';
+import { MessageSquare, Eye, Pencil } from 'lucide-react';
 import {
   Button,
   PeerCaretsOverlay,
   PeerCursorsOverlay,
   SyncedTextEditor,
 } from '@vigilant-broccoli/react-lib';
+import { MarkdownViewer } from '@vigilant-broccoli/react-utility';
 import { useWhiteboard } from '../../hooks/use-whiteboard';
 import { WhiteboardAssistantDialog } from './WhiteboardAssistantDialog';
 
@@ -22,8 +24,68 @@ interface WhiteboardEditorProps {
 
 const DEFAULT_BOARD_KEY = 'family';
 const AI_EDIT_LABEL = 'AI edit';
+const MARKDOWN_PREVIEW_LABEL = 'Show markdown preview';
+const EDIT_MODE_LABEL = 'Back to editing';
+const ICON_SIZE = 16;
+const PREVIEW_CLASS_NAME = 'overflow-auto pt-10';
+const PANE_STYLE: CSSProperties = { flex: 1, minHeight: 0 };
 const DEFAULT_PLACEHOLDER = 'Shared family notes...';
 const CURSOR_SEND_INTERVAL_MS = 60;
+
+interface WhiteboardPaneProps {
+  content: string;
+  isLoading: boolean;
+  renderEditor: () => ReactNode;
+  onOpenChat?: () => void;
+  chatDisabled?: boolean;
+}
+
+function WhiteboardPane({
+  content,
+  isLoading,
+  renderEditor,
+  onOpenChat,
+  chatDisabled,
+}: WhiteboardPaneProps) {
+  const [isPreview, setIsPreview] = useState(false);
+  const previewLabel = isPreview ? EDIT_MODE_LABEL : MARKDOWN_PREVIEW_LABEL;
+
+  return (
+    <div className="relative flex min-h-0 flex-1 flex-col">
+      {isPreview ? (
+        <div className={PREVIEW_CLASS_NAME} style={PANE_STYLE}>
+          <MarkdownViewer content={content} />
+        </div>
+      ) : (
+        renderEditor()
+      )}
+      <div className="absolute right-3 top-3 flex gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          aria-label={previewLabel}
+          title={previewLabel}
+          disabled={isLoading}
+          onClick={() => setIsPreview(prev => !prev)}
+        >
+          {isPreview ? <Pencil size={ICON_SIZE} /> : <Eye size={ICON_SIZE} />}
+        </Button>
+        {onOpenChat && (
+          <Button
+            size="sm"
+            variant="outline"
+            aria-label={AI_EDIT_LABEL}
+            title={AI_EDIT_LABEL}
+            disabled={isLoading || chatDisabled}
+            onClick={onOpenChat}
+          >
+            <MessageSquare size={ICON_SIZE} />
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export function WhiteboardEditor({
   homeId,
@@ -113,16 +175,13 @@ export function WhiteboardEditor({
       className="relative flex flex-col"
       style={{ display: 'flex', flexDirection: 'column', ...style }}
     >
-      {renderEditor(textareaRef, { flex: 1, minHeight: 0 })}
-      <Button
-        size="sm"
-        variant="outline"
-        className="absolute right-3 top-3"
-        disabled={isLoading || !homeId}
-        onClick={() => setAssistantOpen(true)}
-      >
-        {AI_EDIT_LABEL}
-      </Button>
+      <WhiteboardPane
+        content={content}
+        isLoading={isLoading}
+        renderEditor={() => renderEditor(textareaRef, PANE_STYLE)}
+        onOpenChat={() => setAssistantOpen(true)}
+        chatDisabled={!homeId}
+      />
       <WhiteboardAssistantDialog
         open={assistantOpen}
         onOpenChange={setAssistantOpen}
@@ -131,7 +190,13 @@ export function WhiteboardEditor({
         token={token}
         content={content}
         setContent={setContent}
-        editor={renderEditor(dialogTextareaRef, { flex: 1, minHeight: 0 })}
+        editor={
+          <WhiteboardPane
+            content={content}
+            isLoading={isLoading}
+            renderEditor={() => renderEditor(dialogTextareaRef, PANE_STYLE)}
+          />
+        }
       />
     </div>
   );
