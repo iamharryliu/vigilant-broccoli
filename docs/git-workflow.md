@@ -23,6 +23,7 @@ Branching, staging, commit and PR conventions for this repository, and how to st
   - `setup/dotfiles/agent-skills/ship-pr/SKILL.md` (the interactive `/ship-pr` command)
   - `infrastructure/agent-sandbox/solve-todo-runner.sh`, `update-pr-runner.sh`, `create-todo-runner.sh`, `create-rnd-runner.sh`, `audit-todo-runner.sh`, `prune-runner.sh` (the `pnpm agentic-pr-*` sandbox runners)
   - `infrastructure/agent-sandbox/pr-increments.sh`, which `solve-todo-runner.sh` and `update-pr-runner.sh` source to publish later increments — it carries its own copy of the metadata fallbacks and history row for those PRs
+  - `infrastructure/agent-sandbox/commit-subject.sh`, sourced by every runner (via `pr-increments.sh` for the two that publish increments) to capitalize commit messages and PR titles and end them with a period, so they pass the CI `commitlint` job
   - `infrastructure/agent-sandbox/merge-pr-body.py`, the shared helper every flow above calls to actually write the sections — section names only match if this file's string literals match theirs
 
   Before relying on a flow having some behavior, check it has that behavior rather than assuming parity with another flow — `ship-pr` went without the `## Suggestions` section and without ever passing `--title` to `gh pr create` for a stretch because neither were ported over when the sandbox runners gained them. When changing the convention, `grep -rn` the old string across every file above and update all of them together, then update this bullet if the set of participating files changes.

@@ -204,7 +204,7 @@ read_meta() { jq -r "$1 // empty" "$META_FILE" 2>/dev/null || true; }
 
 COMMIT_TYPE=$(read_meta .commit_type)
 COMMIT_SCOPE=$(read_meta .commit_scope)
-COMMIT_MESSAGE=$(read_meta .commit_message)
+COMMIT_MESSAGE=$(normalize_commit_message "$(read_meta .commit_message)")
 TRAILER=$(read_meta .co_authored_by)
 PR_SUMMARY=$(read_meta .pr_summary)
 PR_NEXT_STEPS=$(read_meta .pr_next_steps)

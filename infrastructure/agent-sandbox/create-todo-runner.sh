@@ -57,12 +57,14 @@ if [ -n "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
   exit 1
 fi
 
+# shellcheck source=commit-subject.sh
+. "$REPO_DIR/infrastructure/agent-sandbox/commit-subject.sh"
 read_meta() { jq -r "$1 // empty" "$META_FILE" 2>/dev/null || true; }
 
 TODO_ID=$(read_meta .todo_id)
-COMMIT_MESSAGE=$(read_meta .commit_message)
+COMMIT_MESSAGE=$(normalize_commit_message "$(read_meta .commit_message)")
 TRAILER=$(read_meta .co_authored_by)
-PR_TITLE=$(read_meta .pr_title)
+PR_TITLE=$(normalize_pr_title "$(read_meta .pr_title)")
 PR_SUMMARY=$(read_meta .pr_summary)
 PR_NEXT_STEPS=$(read_meta .pr_next_steps)
 PR_SUGGESTIONS=$(read_meta .pr_suggestions)
