@@ -1,4 +1,6 @@
 import {
+  arenaSizeFor,
+  spawnPoints,
   balloonAt,
   cellAt,
   cellIndex,
@@ -12,8 +14,8 @@ import {
 } from './board';
 import {
   BALLOON_FUSE_TICKS,
-  BOARD_COLUMNS,
-  BOARD_ROWS,
+  MATCH_EVENT,
+  MATCH_EVENT_HISTORY_TICKS,
   CELL,
   CRATE_DENSITY,
   DIRECTION,
@@ -28,12 +30,13 @@ import {
   POWER_UP,
   POWER_UP_CHANCE,
   POWER_UP_TYPES,
-  SPAWN_POINTS,
   SPLASH_TICKS,
   STARTING_BALLOONS,
   STARTING_RANGE,
 } from './game.consts';
 import {
+  ArenaSize,
+  MatchEvent,
   Cell,
   Contender,
   MatchState,
@@ -45,8 +48,8 @@ import {
 
 const SPAWN_CLEARANCE = 1;
 
-const isNearSpawn = (x: number, y: number) =>
-  SPAWN_POINTS.some(
+const isNearSpawn = (spawns: Point[], x: number, y: number) =>
+  spawns.some(
     spawn =>
       (spawn.x === x && Math.abs(spawn.y - y) <= SPAWN_CLEARANCE) ||
       (spawn.y === y && Math.abs(spawn.x - x) <= SPAWN_CLEARANCE),
@@ -55,16 +58,16 @@ const isNearSpawn = (x: number, y: number) =>
 const randomItem = <T>(items: readonly T[]): T =>
   items[Math.floor(Math.random() * items.length)];
 
-const createBoard = () => {
+const createBoard = (board: ArenaSize, spawns: Point[]) => {
   const cells: Cell[] = [];
   const hiddenPowerUps: PowerUp[] = [];
-  for (let y = 0; y < BOARD_ROWS; y++) {
-    for (let x = 0; x < BOARD_COLUMNS; x++) {
-      if (isPillar(x, y)) {
+  for (let y = 0; y < board.rows; y++) {
+    for (let x = 0; x < board.columns; x++) {
+      if (isPillar(board, x, y)) {
         cells.push(CELL.WALL);
         continue;
       }
-      if (isNearSpawn(x, y) || Math.random() > CRATE_DENSITY) {
+      if (isNearSpawn(spawns, x, y) || Math.random() > CRATE_DENSITY) {
         cells.push(CELL.FLOOR);
         continue;
       }
@@ -77,8 +80,11 @@ const createBoard = () => {
   return { cells, hiddenPowerUps };
 };
 
-const createPlayer = (contender: Contender, slot: number): Player => {
-  const spawn = SPAWN_POINTS[slot];
+const createPlayer = (
+  contender: Contender,
+  slot: number,
+  spawn: Point,
+): Player => {
   return {
     ...contender,
     slot,
@@ -92,17 +98,31 @@ const createPlayer = (contender: Contender, slot: number): Player => {
   };
 };
 
-export const createMatch = (contenders: Contender[]): MatchState => ({
-  tick: 0,
-  ...createBoard(),
-  powerUps: [],
-  players: contenders.map(createPlayer),
-  balloons: [],
-  splashes: [],
-  nextBalloonId: 1,
-  status: MATCH_STATUS.PLAYING,
-  winnerId: null,
-});
+export const createMatch = (contenders: Contender[]): MatchState => {
+  const board = arenaSizeFor(contenders.length);
+  const spawns = spawnPoints(board).slice(0, contenders.length);
+  return {
+    ...board,
+    id: crypto.randomUUID(),
+    events: [],
+    nextEventId: 1,
+    tick: 0,
+    ...createBoard(board, spawns),
+    powerUps: [],
+    players: contenders.map((contender, slot) =>
+      createPlayer(contender, slot, spawns[slot]),
+    ),
+    balloons: [],
+    splashes: [],
+    nextBalloonId: 1,
+    status: MATCH_STATUS.PLAYING,
+    winnerId: null,
+  };
+};
+
+const recordEvent = (state: MatchState, type: MatchEvent['type']) => {
+  state.events.push({ id: state.nextEventId++, tick: state.tick, type });
+};
 
 type Axis = 'x' | 'y';
 
@@ -122,7 +142,7 @@ const isBlocked = (state: MatchState, player: Player, x: number, y: number) => {
   const standingOn = overlappedTiles(player.x, player.y);
   return overlappedTiles(x, y).some(
     tile =>
-      cellAt(state.cells, tile.x, tile.y) !== CELL.FLOOR ||
+      cellAt(state, tile.x, tile.y) !== CELL.FLOOR ||
       (balloonAt(state.balloons, tile.x, tile.y) &&
         !standingOn.some(spot => samePoint(spot, tile))),
   );
@@ -227,9 +247,10 @@ const popBalloons = (state: MatchState) => {
     const balloon = queue.shift() as (typeof queue)[number];
     if (popped.has(balloon.id)) continue;
     popped.add(balloon.id);
-    splashCells(state.cells, balloon, balloon.range).forEach(point => {
+    recordEvent(state, MATCH_EVENT.POP);
+    splashCells(state, balloon, balloon.range).forEach(point => {
       soaked.push(point);
-      if (state.cells[cellIndex(point.x, point.y)] === CELL.CRATE) {
+      if (state.cells[cellIndex(state, point.x, point.y)] === CELL.CRATE) {
         cratesHit.push(point);
       }
       const chained = balloonAt(state.balloons, point.x, point.y);
@@ -240,7 +261,7 @@ const popBalloons = (state: MatchState) => {
   if (!popped.size) return;
   state.balloons = state.balloons.filter(balloon => !popped.has(balloon.id));
   cratesHit.forEach(point => {
-    state.cells[cellIndex(point.x, point.y)] = CELL.FLOOR;
+    state.cells[cellIndex(state, point.x, point.y)] = CELL.FLOOR;
     const hidden = state.hiddenPowerUps.find(powerUp =>
       samePoint(powerUp, point),
     );
@@ -258,9 +279,9 @@ const popBalloons = (state: MatchState) => {
 };
 
 const closeArena = (state: MatchState) => {
-  const tile = closingTileAt(state.tick);
+  const tile = closingTileAt(state, state.tick);
   if (!tile) return;
-  state.cells[cellIndex(tile.x, tile.y)] = CELL.WALL;
+  state.cells[cellIndex(state, tile.x, tile.y)] = CELL.WALL;
   state.balloons = state.balloons.filter(balloon => !samePoint(balloon, tile));
   state.powerUps = state.powerUps.filter(powerUp => !samePoint(powerUp, tile));
   state.players
@@ -284,6 +305,9 @@ export const advanceMatch = (
   if (previous.status !== MATCH_STATUS.PLAYING) return previous;
   const state: MatchState = structuredClone(previous);
   state.tick++;
+  state.events = state.events.filter(
+    event => state.tick - event.tick < MATCH_EVENT_HISTORY_TICKS,
+  );
 
   state.splashes = state.splashes
     .map(splash => ({ ...splash, ttl: splash.ttl - 1 }))
@@ -307,11 +331,13 @@ export const advanceMatch = (
     .forEach(player => {
       const tile = occupiedTile(player);
       if (state.splashes.some(splash => samePoint(splash, tile))) {
+        recordEvent(state, MATCH_EVENT.SPLASH);
         player.alive = false;
         return;
       }
       const powerUp = state.powerUps.find(item => samePoint(item, tile));
       if (!powerUp) return;
+      recordEvent(state, MATCH_EVENT.PICKUP);
       applyPowerUp(player, powerUp);
       state.powerUps = state.powerUps.filter(item => item !== powerUp);
     });

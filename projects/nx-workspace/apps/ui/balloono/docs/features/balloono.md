@@ -9,11 +9,13 @@ A Bomberman-style arena game at `balloono.harryliu.dev`: drop water balloons, so
 - [CPU opponents](#cpu-opponents)
 - [Online rooms](#online-rooms)
 - [Controls](#controls)
+- [Sound effects](#sound-effects)
 - [Manual verification](#manual-verification)
 
 ## Rules
 
-- 13×11 arena with fixed pillars and random crates. Each corner and the middle of each edge is a spawn with its neighbouring tiles kept clear. Up to eight players, human or CPU.
+- Arena size is selected at the start of each round: 13×11 for 1–4 contenders, 15×13 for 5–7, and 17×15 for 8. Humans, local players, and CPUs count; spectators do not. Dimensions stay fixed if players leave and are recalculated for the next round.
+- Fixed pillars and random crates fill the arena. Spawns occupy the four corners and the middle of each edge, with neighbouring tiles kept clear around occupied spawns. Up to eight players, human or CPU.
 - A balloon pops 2.5 s after it is dropped and splashes in a plus shape up to its range, which starts at one tile. The splash stops at pillars, and also at the first crate it breaks. It sets off any balloon it reaches. Power-ups stay until a player picks them up.
 - Broken crates can reveal a power-up: extra balloon, bigger splash, or faster feet.
 - Anyone standing in a splash is soaked and out. The last player dry wins the round. Wins are counted per session or per room.
@@ -23,6 +25,7 @@ A Bomberman-style arena game at `balloono.harryliu.dev`: drop water balloons, so
 
 `src/app/engine/` is pure TypeScript with no React and no network, so the same code runs the local game and an online host.
 
+- Match state carries its arena dimensions, round id, and a two-second history of numbered pop, pickup, and splash-hit events. Board helpers, CPU paths, closure order, and canvas rendering use those dimensions.
 - `advanceMatch` (`match.ts`) steps one 50 ms tick from a state and a map of inputs, and returns a new state.
 - Movement is continuous. A player is a box slightly narrower than a tile and can sit between tiles, sliding toward a lane's centre to cut corners. They count as standing on the tile their centre is over (`occupiedTile`). CPU bots send `snap` inputs so they stop on tile centres, which is where they decide.
 - `dangerMap` (`board.ts`) gives the ticks until each tile is soaked. It follows chain reactions and includes sudden-death closures. The CPU uses it, and so does the renderer's warning overlay.
@@ -65,9 +68,19 @@ Without `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (f
 - Local second player (Versus CPU only): ticking **Add local player** gives player 1 the arrow keys and Enter, and player 2 WASD and Space. It leaves room for six CPUs.
 - Touch: an on-screen pad and balloon button, shown on coarse pointers and on screens narrower than 768 px.
 
+## Sound effects
+
+Short synthesized Web Audio effects distinguish balloon pops, power-up pickups, and players getting soaked by a splash. They play in CPU matches, local multiplayer, and online rooms. No audio assets or background music are downloaded.
+
+Audio unlocks after a pointer or keyboard gesture. The match panel provides a mute/unmute button whose preference persists. Concurrent effects are limited to six voices so chain reactions stay quiet enough to follow.
+
+Numbered events travel in snapshots so guests do not miss a pop between broadcasts. Each client advances its playback cursor even while muted, skips historical events on joining a round, reconnecting, or returning from a hidden tab, and does not replay duplicates after host migration. Arena closure and departing players do not produce splash-hit sounds.
+
 ## Manual verification
 
 - CPU match at each difficulty: bots break crates, collect power-ups, flee their own balloons, and sudden death starts at 2:00.
 - Two browsers in one room: the room appears in the other browser's directory, and a guest's moves and balloons show on the host. Closing the host tab mid-match hands the game to the guest.
+- Arena tiers: start rounds with 4, 5, 6, 7, and 8 contenders; verify dimensions, spawns, free movement, bot navigation, closure warnings, and canvas aspect ratio.
+- Audio: pop a balloon, collect an item, and get hit by a splash; verify distinct sounds, chain reactions, mute persistence, mobile gesture unlock, and no duplicate playback online.
 - Light and dark OS theme: the board redraws in the matching palette.
 - Phone: the touch pad moves the player, and holding a direction keeps walking.

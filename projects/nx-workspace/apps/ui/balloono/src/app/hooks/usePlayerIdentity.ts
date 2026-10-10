@@ -5,6 +5,7 @@ const USER_PREFIX = 'player-';
 const USER_ID_LENGTH = 8;
 const ID_RADIX = 36;
 const NAME_SEPARATOR = '-';
+const RANDOM_SPACE = 2 ** 32;
 export const MAX_NAME_LENGTH = 16;
 
 const NAME_ADJECTIVES = [
@@ -33,8 +34,15 @@ const NAME_NOUNS = [
   'gull',
 ];
 
-const randomInt = (limit: number) =>
-  crypto.getRandomValues(new Uint32Array(1))[0] % limit;
+const randomInt = (limit: number) => {
+  const bucketSize = Math.floor(RANDOM_SPACE / limit);
+  const cutoff = bucketSize * limit;
+  const sample = new Uint32Array(1);
+  do {
+    crypto.getRandomValues(sample);
+  } while (sample[0] >= cutoff);
+  return Math.floor(sample[0] / bucketSize);
+};
 
 export const randomItem = <T>(items: readonly T[]): T =>
   items[randomInt(items.length)];
@@ -43,9 +51,8 @@ export const randomPhrase = () =>
   `${randomItem(NAME_ADJECTIVES)}${NAME_SEPARATOR}${randomItem(NAME_NOUNS)}`;
 
 const randomUserId = () =>
-  `${USER_PREFIX}${Array.from(
-    crypto.getRandomValues(new Uint8Array(USER_ID_LENGTH)),
-    byte => (byte % ID_RADIX).toString(ID_RADIX),
+  `${USER_PREFIX}${Array.from({ length: USER_ID_LENGTH }, () =>
+    randomInt(ID_RADIX).toString(ID_RADIX),
   ).join('')}`;
 
 const getOrCreate = (key: string, create: () => string) => {

@@ -3,6 +3,7 @@ import {
   DIFFICULTY,
   DIRECTION,
   MATCH_STATUS,
+  MATCH_EVENT,
   POWER_UP,
 } from './game.consts';
 
@@ -46,7 +47,21 @@ export interface Splash extends Point {
   ttl: number;
 }
 
-export interface MatchState {
+export interface ArenaSize {
+  columns: number;
+  rows: number;
+}
+
+export interface MatchEvent {
+  id: number;
+  tick: number;
+  type: (typeof MATCH_EVENT)[keyof typeof MATCH_EVENT];
+}
+
+export interface MatchState extends ArenaSize {
+  id: string;
+  events: MatchEvent[];
+  nextEventId: number;
   tick: number;
   cells: Cell[];
   hiddenPowerUps: PowerUp[];

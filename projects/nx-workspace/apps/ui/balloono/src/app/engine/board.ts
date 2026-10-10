@@ -1,8 +1,8 @@
 import {
   BALLOON_FUSE_TICKS,
   BASE_SPEED,
-  BOARD_COLUMNS,
-  BOARD_ROWS,
+  ARENA_SIZES,
+  MAX_PLAYERS,
   CELL,
   DIRECTION_VECTORS,
   DIRECTIONS,
@@ -12,6 +12,7 @@ import {
   SUDDEN_DEATH_TICK,
 } from './game.consts';
 import {
+  ArenaSize,
   Balloon,
   Cell,
   Direction,
@@ -20,24 +21,47 @@ import {
   Point,
 } from './game.types';
 
-export const cellIndex = (x: number, y: number) => y * BOARD_COLUMNS + x;
+export const arenaSizeFor = (players: number): ArenaSize =>
+  players <= 4
+    ? ARENA_SIZES.SMALL
+    : players < MAX_PLAYERS
+      ? ARENA_SIZES.MEDIUM
+      : ARENA_SIZES.LARGE;
 
-export const isInside = (x: number, y: number) =>
-  x >= 0 && y >= 0 && x < BOARD_COLUMNS && y < BOARD_ROWS;
+export const spawnPoints = ({ columns, rows }: ArenaSize): Point[] => [
+  { x: 1, y: 1 },
+  { x: columns - 2, y: rows - 2 },
+  { x: columns - 2, y: 1 },
+  { x: 1, y: rows - 2 },
+  { x: Math.floor(columns / 2), y: 1 },
+  { x: Math.floor(columns / 2), y: rows - 2 },
+  { x: 1, y: Math.floor(rows / 2) },
+  { x: columns - 2, y: Math.floor(rows / 2) },
+];
 
-export const cellAt = (cells: Cell[], x: number, y: number): Cell =>
-  isInside(x, y) ? cells[cellIndex(x, y)] : CELL.WALL;
+export const cellIndex = (board: ArenaSize, x: number, y: number) =>
+  y * board.columns + x;
 
-export const isPillar = (x: number, y: number) =>
+export const isInside = (board: ArenaSize, x: number, y: number) =>
+  x >= 0 && y >= 0 && x < board.columns && y < board.rows;
+
+export const cellAt = (
+  board: ArenaSize & { cells: Cell[] },
+  x: number,
+  y: number,
+): Cell =>
+  isInside(board, x, y) ? board.cells[cellIndex(board, x, y)] : CELL.WALL;
+
+export const isPillar = (board: ArenaSize, x: number, y: number) =>
   x === 0 ||
   y === 0 ||
-  x === BOARD_COLUMNS - 1 ||
-  y === BOARD_ROWS - 1 ||
+  x === board.columns - 1 ||
+  y === board.rows - 1 ||
   (x % 2 === 0 && y % 2 === 0);
 
-const spiralOrder = (): Point[] => {
+const spiralOrder = (board: ArenaSize): Point[] => {
   const order: Point[] = [];
-  let [left, top, right, bottom] = [1, 1, BOARD_COLUMNS - 2, BOARD_ROWS - 2];
+  let [left, top, right, bottom] = [1, 1, board.columns - 2, board.rows - 2];
   while (left <= right && top <= bottom) {
     for (let x = left; x <= right; x++) order.push({ x, y: top });
     for (let y = top + 1; y <= bottom; y++) order.push({ x: right, y });
@@ -49,27 +73,36 @@ const spiralOrder = (): Point[] => {
     }
     [left, top, right, bottom] = [left + 1, top + 1, right - 1, bottom - 1];
   }
-  return order.filter(point => !isPillar(point.x, point.y));
+  return order.filter(point => !isPillar(board, point.x, point.y));
 };
 
 // Sudden death walls the arena in from the outside, one tile at a time, so a
 // cautious stalemate on an emptied board still ends.
-export const SUDDEN_DEATH_ORDER = spiralOrder();
+const spiralCache = new Map<string, Point[]>();
+
+export const suddenDeathOrder = (board: ArenaSize): Point[] => {
+  const key = `${board.columns}x${board.rows}`;
+  const cached = spiralCache.get(key);
+  if (cached) return cached;
+  const order = spiralOrder(board);
+  spiralCache.set(key, order);
+  return order;
+};
 
 export const closingTick = (index: number) =>
   SUDDEN_DEATH_TICK + index * SUDDEN_DEATH_INTERVAL_TICKS;
 
-export const closingTileAt = (tick: number): Point | null => {
+export const closingTileAt = (board: ArenaSize, tick: number): Point | null => {
   const elapsed = tick - SUDDEN_DEATH_TICK;
   if (elapsed < 0 || elapsed % SUDDEN_DEATH_INTERVAL_TICKS !== 0) return null;
-  return SUDDEN_DEATH_ORDER[elapsed / SUDDEN_DEATH_INTERVAL_TICKS] ?? null;
+  return suddenDeathOrder(board)[elapsed / SUDDEN_DEATH_INTERVAL_TICKS] ?? null;
 };
 
 export const balloonAt = (balloons: Balloon[], x: number, y: number) =>
   balloons.find(balloon => balloon.x === x && balloon.y === y);
 
 export const isWalkable = (state: MatchState, x: number, y: number) =>
-  cellAt(state.cells, x, y) === CELL.FLOOR && !balloonAt(state.balloons, x, y);
+  cellAt(state, x, y) === CELL.FLOOR && !balloonAt(state.balloons, x, y);
 
 export const step = (point: Point, direction: Direction): Point => ({
   x: point.x + DIRECTION_VECTORS[direction].x,
@@ -98,7 +131,7 @@ export const ticksPerTile = (player: Player) =>
   Math.ceil(1 / playerSpeed(player));
 
 export const splashCells = (
-  cells: Cell[],
+  board: ArenaSize & { cells: Cell[] },
   origin: Point,
   range: number,
 ): Point[] => {
@@ -107,7 +140,7 @@ export const splashCells = (
     let current: Point = origin;
     for (let distance = 1; distance <= range; distance++) {
       current = step(current, direction);
-      const cell = cellAt(cells, current.x, current.y);
+      const cell = cellAt(board, current.x, current.y);
       if (cell === CELL.WALL) return;
       hit.push(current);
       if (cell === CELL.CRATE) return;
@@ -126,7 +159,7 @@ export const dangerMap = (
 ) => {
   const danger = new Array<number>(state.cells.length).fill(Infinity);
   state.splashes.forEach(splash => {
-    danger[cellIndex(splash.x, splash.y)] = 0;
+    danger[cellIndex(state, splash.x, splash.y)] = 0;
   });
 
   const balloons = [...state.balloons, ...extraBalloons];
@@ -135,7 +168,7 @@ export const dangerMap = (
   while (changed) {
     changed = false;
     balloons.forEach((balloon, index) => {
-      splashCells(state.cells, balloon, balloon.range).forEach(point => {
+      splashCells(state, balloon, balloon.range).forEach(point => {
         balloons.forEach((other, otherIndex) => {
           if (
             other.x === point.x &&
@@ -151,15 +184,15 @@ export const dangerMap = (
   }
 
   balloons.forEach((balloon, index) => {
-    splashCells(state.cells, balloon, balloon.range).forEach(point => {
-      const cell = cellIndex(point.x, point.y);
+    splashCells(state, balloon, balloon.range).forEach(point => {
+      const cell = cellIndex(state, point.x, point.y);
       danger[cell] = Math.min(danger[cell], detonation[index]);
     });
   });
-  SUDDEN_DEATH_ORDER.forEach((point, index) => {
+  suddenDeathOrder(state).forEach((point, index) => {
     const ticksLeft = closingTick(index) - state.tick;
     if (ticksLeft <= 0) return;
-    const cell = cellIndex(point.x, point.y);
+    const cell = cellIndex(state, point.x, point.y);
     danger[cell] = Math.min(danger[cell], ticksLeft);
   });
   return danger;

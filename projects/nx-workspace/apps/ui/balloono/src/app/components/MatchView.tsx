@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Badge, Card } from '@vigilant-broccoli/react-lib';
+import { Badge, Button, Card } from '@vigilant-broccoli/react-lib';
 import {
   MATCH_STATUS,
   POWER_UP_TYPES,
@@ -10,6 +10,7 @@ import {
 } from '../engine/game.consts';
 import { MatchState } from '../engine/game.types';
 import { Controls } from '../hooks/useControls';
+import { useGameAudio, useMatchSounds } from '../hooks/useGameAudio';
 import { useTouchLayout } from '../hooks/useTouchLayout';
 import { useTranslation } from '../i18n';
 import { GameBoard } from './GameBoard';
@@ -57,6 +58,7 @@ export function MatchView({
   actions,
   note,
   controlsHint,
+  soundsEnabled = true,
 }: {
   match: MatchState;
   localPlayerId: string;
@@ -65,9 +67,12 @@ export function MatchView({
   actions: ReactNode;
   note?: string;
   controlsHint?: string;
+  soundsEnabled?: boolean;
 }) {
   const { t } = useTranslation();
   const touchLayout = useTouchLayout();
+  const { muted, toggleMuted } = useGameAudio();
+  useMatchSounds(match, soundsEnabled);
   const over = match.status === MATCH_STATUS.OVER;
   const ticksToSuddenDeath = SUDDEN_DEATH_TICK - match.tick;
 
@@ -126,6 +131,14 @@ export function MatchView({
         )}
       </div>
       <Card className="flex flex-col gap-3 p-4 lg:w-64">
+        <Button
+          variant="outline"
+          size="sm"
+          aria-pressed={muted}
+          onClick={toggleMuted}
+        >
+          {t(muted ? 'AUDIO.UNMUTE' : 'AUDIO.MUTE')}
+        </Button>
         {match.players.map(player => (
           <div
             key={player.id}

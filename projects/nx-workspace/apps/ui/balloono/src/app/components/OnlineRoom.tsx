@@ -47,6 +47,7 @@ export function OnlineRoom({
     hostId,
     isHost,
     snapshot,
+    snapshotReady,
     setCpus,
     startMatch,
     backToLobby,
@@ -98,6 +99,9 @@ export function OnlineRoom({
           localPlayerId={userId}
           wins={wins}
           controls={controls}
+          soundsEnabled={
+            connection === CONNECTION.CONNECTED && (isHost || snapshotReady)
+          }
           note={isSeatedInMatch ? undefined : t('MATCH.SPECTATING')}
           actions={
             isHost ? (

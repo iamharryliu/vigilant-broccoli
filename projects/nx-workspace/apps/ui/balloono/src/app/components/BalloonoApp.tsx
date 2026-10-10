@@ -6,6 +6,7 @@ import { DIFFICULTY_LABEL_KEY, ONLINE_AVAILABLE } from '../app.consts';
 import { Contender, Difficulty } from '../engine/game.types';
 import { MAX_PLAYERS } from '../engine/game.consts';
 import { cpuContenders, fillSeats } from '../engine/runner';
+import { GameAudioProvider } from '../hooks/useGameAudio';
 import { usePlayerIdentity } from '../hooks/usePlayerIdentity';
 import { RoomListing, useRoomDirectory } from '../hooks/useRoomDirectory';
 import { I18nProvider, useTranslation } from '../i18n';
@@ -101,7 +102,9 @@ export function BalloonoApp() {
   return (
     <I18nProvider>
       <ThemeProvider followSystem>
-        <Balloono />
+        <GameAudioProvider>
+          <Balloono />
+        </GameAudioProvider>
       </ThemeProvider>
     </I18nProvider>
   );

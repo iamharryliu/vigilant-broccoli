@@ -18,6 +18,7 @@ import {
   SPLASH_TICKS,
 } from './game.consts';
 import {
+  ArenaSize,
   Difficulty,
   Direction,
   MatchState,
@@ -86,12 +87,13 @@ interface PathResult {
 }
 
 const isSafeDuring = (
+  state: ArenaSize,
   danger: number[],
   point: Point,
   arrival: number,
   stay: number,
 ) => {
-  const soakAt = danger[cellIndex(point.x, point.y)];
+  const soakAt = danger[cellIndex(state, point.x, point.y)];
   if (soakAt === Infinity) return true;
   return arrival + stay < soakAt || arrival > soakAt + SPLASH_TICKS + stay;
 };
@@ -108,16 +110,18 @@ const explore = (
 ): Reachable[] => {
   const start = occupiedTile(bot);
   const tileTicks = ticksPerTile(bot);
-  const visited = new Set<number>([cellIndex(start.x, start.y)]);
+  const visited = new Set<number>([cellIndex(state, start.x, start.y)]);
   const reached: Reachable[] = [{ ...start, direction: null, distance: 0 }];
 
   for (let cursor = 0; cursor < reached.length; cursor++) {
     const current = reached[cursor];
     neighbours(current).forEach(next => {
-      const index = cellIndex(next.x, next.y);
+      const index = cellIndex(state, next.x, next.y);
       if (visited.has(index) || !isWalkable(state, next.x, next.y)) return;
       const arrival = (current.distance + 1) * tileTicks;
-      if (!isSafeDuring(danger, next, arrival, tileTicks + marginTicks)) {
+      if (
+        !isSafeDuring(state, danger, next, arrival, tileTicks + marginTicks)
+      ) {
         return;
       }
       visited.add(index);
@@ -145,19 +149,19 @@ const findPath = (
 // dangerous once sudden death schedules it, and bots would stop playing.
 const CALM_HORIZON_TICKS = BALLOON_FUSE_TICKS + SPLASH_TICKS;
 
-const isCalm = (danger: number[]) => (point: Point) =>
-  danger[cellIndex(point.x, point.y)] > CALM_HORIZON_TICKS;
+const isCalm = (state: ArenaSize, danger: number[]) => (point: Point) =>
+  danger[cellIndex(state, point.x, point.y)] > CALM_HORIZON_TICKS;
 
 const enemiesOf = (state: MatchState, bot: Player) =>
   state.players.filter(player => player.alive && player.id !== bot.id);
 
 const hitsCrate = (state: MatchState, bot: Player, from: Point) =>
-  splashCells(state.cells, from, bot.range).some(
-    point => cellAt(state.cells, point.x, point.y) === CELL.CRATE,
+  splashCells(state, from, bot.range).some(
+    point => cellAt(state, point.x, point.y) === CELL.CRATE,
   );
 
 const hitsEnemy = (state: MatchState, bot: Player, from: Point) => {
-  const splash = splashCells(state.cells, from, bot.range);
+  const splash = splashCells(state, from, bot.range);
   return enemiesOf(state, bot)
     .map(occupiedTile)
     .some(enemy =>
@@ -172,7 +176,8 @@ const trapsEnemy = (state: MatchState, bot: Player, here: Point) => {
   return enemiesOf(state, bot).some(
     enemy =>
       Math.abs(enemy.x - here.x) + Math.abs(enemy.y - here.y) <=
-        bot.range + 1 && !findPath(state, enemy, danger, 0, isCalm(danger)),
+        bot.range + 1 &&
+      !findPath(state, enemy, danger, 0, isCalm(state, danger)),
   );
 };
 
@@ -199,7 +204,7 @@ const shelterCost = (
         ENEMY_NEARBY_DISTANCE,
     ).length;
   const exits = neighbours(tile).filter(
-    next => isWalkable(state, next.x, next.y) && isCalm(danger)(next),
+    next => isWalkable(state, next.x, next.y) && isCalm(state, danger)(next),
   ).length;
   return (
     tile.distance +
@@ -216,7 +221,7 @@ const bestShelter = (
   profile: BotProfile,
 ): PathResult | null => {
   const shelters = explore(state, bot, danger, marginTicks).filter(
-    isCalm(danger),
+    isCalm(state, danger),
   );
   if (!profile.readsEnemies) return shelters[0] ?? null;
   return (
@@ -285,7 +290,7 @@ const chooseTarget = (
   profile: BotProfile,
 ) => {
   const margin = profile.safetyMarginTicks;
-  const calm = isCalm(danger);
+  const calm = isCalm(state, danger);
   const toPowerUp = () =>
     findPath(
       state,
@@ -346,7 +351,7 @@ const chooseTarget = (
 
 const wander = (state: MatchState, bot: Player, danger: number[]) => {
   const options = neighbours(occupiedTile(bot)).filter(
-    next => isWalkable(state, next.x, next.y) && isCalm(danger)(next),
+    next => isWalkable(state, next.x, next.y) && isCalm(state, danger)(next),
   );
   if (!options.length) return NO_INPUT;
   const pick = options[Math.floor(Math.random() * options.length)];
@@ -363,7 +368,8 @@ const latestSoakedTile = (
   explore(state, bot, danger, 0).reduce<Reachable | null>(
     (best, tile) =>
       !best ||
-      danger[cellIndex(tile.x, tile.y)] > danger[cellIndex(best.x, best.y)]
+      danger[cellIndex(state, tile.x, tile.y)] >
+        danger[cellIndex(state, best.x, best.y)]
         ? tile
         : best,
     null,
@@ -393,7 +399,7 @@ const decideTileInput = (
   const here = occupiedTile(bot);
   const danger = dangerMap(state, [], profile.followsChains);
 
-  if (!isCalm(danger)(here)) {
+  if (!isCalm(state, danger)(here)) {
     const escape = escapeRoute(state, bot, danger, profile);
     return walk(escape ?? latestSoakedTile(state, bot, danger));
   }

@@ -2,11 +2,9 @@
 
 import { useEffect, useRef } from 'react';
 import { useTheme } from '@vigilant-broccoli/react-lib';
-import { closingTick, SUDDEN_DEATH_ORDER } from '../engine/board';
+import { closingTick, suddenDeathOrder } from '../engine/board';
 import {
   BALLOON_FUSE_TICKS,
-  BOARD_COLUMNS,
-  BOARD_ROWS,
   CELL,
   DIRECTION_VECTORS,
   SUDDEN_DEATH_WARNING_TICKS,
@@ -66,9 +64,9 @@ const drawBoard = (
   tile: number,
   palette: Palette,
 ) => {
-  for (let y = 0; y < BOARD_ROWS; y++) {
-    for (let x = 0; x < BOARD_COLUMNS; x++) {
-      const cell = match.cells[y * BOARD_COLUMNS + x];
+  for (let y = 0; y < match.rows; y++) {
+    for (let x = 0; x < match.columns; x++) {
+      const cell = match.cells[y * match.columns + x];
       const left = x * tile;
       const top = y * tile;
       context.fillStyle = palette.floor[(x + y) % 2];
@@ -114,7 +112,7 @@ const drawWarnings = (
   palette: Palette,
 ) => {
   context.fillStyle = palette.warning;
-  SUDDEN_DEATH_ORDER.forEach((point, index) => {
+  suddenDeathOrder(match).forEach((point, index) => {
     const ticksLeft = closingTick(index) - match.tick;
     if (ticksLeft <= 0 || ticksLeft > SUDDEN_DEATH_WARNING_TICKS) return;
     context.fillRect(point.x * tile, point.y * tile, tile, tile);
@@ -300,16 +298,16 @@ export function GameBoard({
       const delta = (now - lastTime) / MS_PER_SECOND;
       lastTime = now;
       const ratio = window.devicePixelRatio || 1;
+      const current = matchRef.current;
       const width = canvas.clientWidth;
-      const tile = (width / BOARD_COLUMNS) * ratio;
-      const pixelWidth = Math.round(tile * BOARD_COLUMNS);
-      const pixelHeight = Math.round(tile * BOARD_ROWS);
+      const tile = (width / current.columns) * ratio;
+      const pixelWidth = Math.round(tile * current.columns);
+      const pixelHeight = Math.round(tile * current.rows);
       if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
         canvas.width = pixelWidth;
         canvas.height = pixelHeight;
       }
 
-      const current = matchRef.current;
       drawBoard(context, current, tile, palette);
       drawWarnings(context, current, tile, palette);
       drawSplashes(context, current, tile, palette);
@@ -355,7 +353,7 @@ export function GameBoard({
       role="img"
       aria-label={label}
       className="block w-full rounded-lg shadow-md"
-      style={{ aspectRatio: `${BOARD_COLUMNS} / ${BOARD_ROWS}` }}
+      style={{ aspectRatio: `${match.columns} / ${match.rows}` }}
     />
   );
 }

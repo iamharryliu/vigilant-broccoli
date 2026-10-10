@@ -1,5 +1,15 @@
-export const BOARD_COLUMNS = 13;
-export const BOARD_ROWS = 11;
+export const ARENA_SIZES = {
+  SMALL: { columns: 13, rows: 11 },
+  MEDIUM: { columns: 15, rows: 13 },
+  LARGE: { columns: 17, rows: 15 },
+} as const;
+
+export const MATCH_EVENT_HISTORY_TICKS = 40;
+export const MATCH_EVENT = {
+  POP: 'pop',
+  PICKUP: 'pickup',
+  SPLASH: 'splash',
+} as const;
 export const MAX_PLAYERS = 8;
 
 export const TICK_MS = 50;
@@ -76,16 +86,5 @@ export const MATCH_STATUS = {
   PLAYING: 'playing',
   OVER: 'over',
 } as const;
-
-export const SPAWN_POINTS = [
-  { x: 1, y: 1 },
-  { x: BOARD_COLUMNS - 2, y: BOARD_ROWS - 2 },
-  { x: BOARD_COLUMNS - 2, y: 1 },
-  { x: 1, y: BOARD_ROWS - 2 },
-  { x: Math.floor(BOARD_COLUMNS / 2), y: 1 },
-  { x: Math.floor(BOARD_COLUMNS / 2), y: BOARD_ROWS - 2 },
-  { x: 1, y: Math.floor(BOARD_ROWS / 2) },
-  { x: BOARD_COLUMNS - 2, y: Math.floor(BOARD_ROWS / 2) },
-] as const;
 
 export const NO_INPUT = { direction: null, placeBalloon: false } as const;

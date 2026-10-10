@@ -75,7 +75,7 @@ export function RoomLobby({
           </ul>
           {members.length >= MAX_PLAYERS && (
             <p className="text-xs text-muted-foreground">
-              {t('LOBBY.SEATS_FULL')}
+              {t('LOBBY.SEATS_FULL', { count: MAX_PLAYERS })}
             </p>
           )}
         </CardContainer>

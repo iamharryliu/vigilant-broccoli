@@ -63,7 +63,7 @@
     "WAITING_FOR_HOST": "Waiting for {name} to start the match…",
     "NEED_PLAYERS": "Add a CPU or invite a friend to start.",
     "SHARE_HINT": "Share the room name “{room}” so friends can join.",
-    "SEATS_FULL": "All four seats are taken. Anyone else watches."
+    "SEATS_FULL": "All {count} seats are taken. Anyone else watches."
   },
   "CONNECTION": {
     "CONNECTING": "Connecting to the room…",
@@ -98,5 +98,9 @@
     "LEFT": "Move left",
     "RIGHT": "Move right",
     "BALLOON": "Drop balloon"
+  },
+  "AUDIO": {
+    "MUTE": "Mute sounds",
+    "UNMUTE": "Unmute sounds"
   }
 }

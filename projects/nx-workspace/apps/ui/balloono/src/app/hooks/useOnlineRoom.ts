@@ -98,6 +98,7 @@ export function useOnlineRoom({
   const [knownHostId, setKnownHostId] = useState<string | null>(null);
   const [graceOver, setGraceOver] = useState(false);
   const [snapshot, setSnapshot] = useState(EMPTY_SNAPSHOT);
+  const [snapshotReady, setSnapshotReady] = useState(false);
 
   const channelRef = useRef<RealtimeChannel | null>(null);
   const snapshotRef = useRef(snapshot);
@@ -167,6 +168,7 @@ export function useOnlineRoom({
         wins: incoming.wins,
         match: incoming.match,
       });
+      setSnapshotReady(true);
     });
 
     channel.on(BROADCAST_EVENT, { event: INPUT_EVENT }, ({ payload }) => {
@@ -185,6 +187,7 @@ export function useOnlineRoom({
 
     channel.subscribe(status => {
       if (status === SUBSCRIBE_STATUS.SUBSCRIBED) {
+        setSnapshotReady(false);
         setConnection(CONNECTION.CONNECTED);
         void channel.track({
           userId,
@@ -202,6 +205,7 @@ export function useOnlineRoom({
         status === SUBSCRIBE_STATUS.CHANNEL_ERROR ||
         status === SUBSCRIBE_STATUS.TIMED_OUT
       ) {
+        setSnapshotReady(false);
         setConnection(CONNECTION.ERROR);
       }
     });
@@ -227,6 +231,7 @@ export function useOnlineRoom({
       setKnownHostId(null);
       setGraceOver(false);
       setSnapshot(EMPTY_SNAPSHOT);
+      setSnapshotReady(false);
       setConnection(CONNECTION.CONNECTING);
     };
   }, [room, userId, broadcast]);
@@ -336,6 +341,7 @@ export function useOnlineRoom({
     hostId,
     isHost,
     snapshot,
+    snapshotReady,
     setCpus,
     startMatch,
     backToLobby,
