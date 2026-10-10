@@ -23,6 +23,7 @@ const PROJECT_HOSTING = {
   'context-md': { platform: 'pages', name: 'context-md' },
   'utilities-ui': { platform: 'pages', name: 'utilities-ui' },
   'links-react': { platform: 'pages', name: 'links-react' },
+  'waiting-games': { platform: 'pages', name: 'waiting-games' },
   'weather-next': { platform: 'vercel', name: 'weather-next' },
   calendars: { platform: 'pages', name: 'calendars' },
   whiteboard: { platform: 'vercel', name: 'whiteboard' },

@@ -285,6 +285,21 @@ variable "utilities_pages_subdomain" {
   default = "production-utilities-ui.pages.dev"
 }
 
+variable "waiting_domain" {
+  type    = string
+  default = "waiting.harryliu.dev"
+}
+
+variable "waiting_pages_project" {
+  type    = string
+  default = "production-waiting-games"
+}
+
+variable "waiting_pages_subdomain" {
+  type    = string
+  default = "production-waiting-games.pages.dev"
+}
+
 variable "calendars_domain" {
   type    = string
   default = "calendar.harryliu.dev"

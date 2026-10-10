@@ -595,6 +595,11 @@ export const HARRYLIU_APP_URL = {
     URL: 'https://utilities.harryliu.dev/',
     STAGING_URL: 'https://staging-utilities-ui.pages.dev/',
   },
+  WAITING_GAMES: {
+    NAME: 'Waiting Games',
+    URL: 'https://waiting.harryliu.dev/',
+    STAGING_URL: 'https://staging-waiting-games.pages.dev/',
+  },
   LINKS: {
     NAME: 'Links',
     URL: 'https://links.harryliu.dev/',
