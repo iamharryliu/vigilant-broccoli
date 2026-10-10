@@ -49,6 +49,10 @@ export const SIDEBAR_ROUTE = {
     title: 'Career',
     path: '/career',
   },
+  MUSIC: {
+    title: 'Music',
+    path: '/music',
+  },
 } satisfies Record<string, ExtendedNavRoute>;
 
 export const APP_NAME = 'VB Manager';
