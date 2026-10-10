@@ -29,10 +29,6 @@ inputs:
     description: 'URL of the pull request being updated (overview).'
     required: false
     default: ''
-  todo_ids:
-    description: 'Space-separated TODO ids, for TODO-based runs only (overview).'
-    required: false
-    default: ''
   description:
     description: 'Concise description of the actual work, for operations without user text (overview).'
     required: false
@@ -84,7 +80,6 @@ runs:
         AGENTIC_FIREWALL: ${{ inputs.firewall }}
         AGENTIC_OPERATION: ${{ inputs.operation }}
         AGENTIC_PULL_REQUEST: ${{ inputs.pull_request }}
-        AGENTIC_TODO_IDS: ${{ inputs.todo_ids }}
         AGENTIC_DESCRIPTION: ${{ inputs.description }}
         AGENTIC_TASK_LABEL: ${{ inputs.task_label }}
         AGENTIC_TASK: ${{ inputs.task }}

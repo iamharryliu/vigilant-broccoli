@@ -59,7 +59,6 @@ write_files:
             RABBITMQ_DEFAULT_PASS: ${rabbitmq_password}
           ports:
             - "5671:5671"
-            - "15671:15671"
           volumes:
             - rabbitmq_data:/var/lib/rabbitmq
             - /opt/rabbitmq/certs:/etc/rabbitmq/certs:ro
@@ -69,6 +68,17 @@ write_files:
             interval: 10s
             timeout: 5s
             retries: 5
+        cloudflared:
+          image: cloudflare/cloudflared:latest
+          container_name: cloudflared
+          restart: unless-stopped
+          command: tunnel run
+          environment:
+            TUNNEL_TOKEN: ${cloudflared_token}
+          volumes:
+            - /opt/rabbitmq/certs:/etc/rabbitmq/certs:ro
+          depends_on:
+            - rabbitmq
       volumes:
         rabbitmq_data:
 

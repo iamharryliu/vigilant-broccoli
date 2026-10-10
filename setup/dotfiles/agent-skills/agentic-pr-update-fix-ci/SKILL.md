@@ -11,6 +11,6 @@ Fix the specified PR's failing CI so its checks pass, preserving the work alread
 2. Diagnose each failure from the logs before editing. Read the failing code and applicable `CONTEXT.md` guidance, then make the minimal changes that fix the root cause, following repo conventions. Do not skip, disable or weaken checks to make them pass, and do not expand into unrelated cleanup.
 3. Formatting-only failures from the pre-commit job (trailing-whitespace, end-of-file-fixer, black) are fixed by running pre-commit; the sandbox runner does this itself, so spend effort on real lint, test, build or logic failures. If a failure is unrelated to the branch (flaky test, outage, missing credential), say so instead of inventing a code change.
 4. Re-run the affected checks locally where possible and report each failure, its cause, the fix and the verification result. Describe the PR's cumulative result, not only this increment.
-5. Leave local changes uncommitted unless publishing was separately authorized. Sandbox runners own staging, committing, pushing and updating PR metadata.
+5. This operation always stays on the one PR: it never splits into increments or opens follow-up PRs. Report unrelated findings instead. Leave local changes uncommitted unless publishing was separately authorized. Sandbox runners own staging, committing, pushing and updating PR metadata.
 
 For the unattended sandbox version, run `pnpm agentic-pr-update-fix-ci <pr> ["<instruction>"]`.

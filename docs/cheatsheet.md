@@ -131,6 +131,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   secret-rotation:twilio      Rotate Twilio auth token (two-phase secondary-token promotion)
   secret-rotation:oci         Rotate the OCI API key (local-only); refreshes ~/.oci, ~5min propagation wait
   secret-rotation:calendar-sa  Replace the Google Calendar service-account key, sync it to Vault, reload vb-manager-next
+  rabbitmq:password           Copy RabbitMQ admin password to clipboard (login user: admin)
 
 🐳 LOCAL
   local:docker:up             Start local Docker Compose services
@@ -165,14 +166,14 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
                                errors after ~1h
 
 🚀 AGENTIC — TASKS (unattended; ephemeral containers, no human in the loop)
-  agentic-pr-create <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR (sonnet; --model <m> to override, or --agent codex [--codex-model <m>])
-                               (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express")
+  agentic-pr-create <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers, one run per id; each opens a PR, or several when the request splits into increments (sonnet; --model <m> to override, or --agent codex [--codex-model <m>])
+                               (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express"; TODO ids named in the task are resolved the same way)
   agentic-pr-create-todo <desc>  Headlessly refine <desc> into a repo-informed task prompt and add a TODO.md entry in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
   agentic-pr-create-todo-audit  Headlessly re-verify TODO.md rows against the codebase in an ephemeral sandbox container — deletes resolved rows, corrects drifted paths/line numbers/counts — then open a PR; opens none if every row still holds (sonnet; --model <m> to override)
   agentic-pr-create-prune  Headlessly sweep the repo for dead code, unused dependencies, broken doc links/anchors, orphaned docs/scripts/workflows and cheatsheet drift in an ephemeral sandbox container, remove only items grep shows have zero references, then open one capped PR listing the evidence and skipped candidates; opens none if nothing is provably dead (sonnet; --model <m> to override)
   agentic-pr-create-rnd "<question>"    Headlessly research a concise R&D note (alternatives table + recommendation + sample) under docs/rnd/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
   GitHub Actions: manual-agentic-pr-update selects operation=change|fix-ci|resolve-conflicts; instruction is required for change, optional for fix-ci, blank for resolve-conflicts
-  agentic-pr-update <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update); accepts a PR number or URL (sonnet; --model <m> to override)
+  agentic-pr-update <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update, and opens separate follow-up PRs for independent work it surfaces); accepts a PR number or URL (sonnet; --model <m> to override)
                                 (--with-ci-logs feeds the PR's failing check summary and failed-step logs to the agent, e.g. agentic-pr-update --with-ci-logs 149 "fix the failing checks")
   agentic-pr-update-fix-ci <pr> [instruction]  Fix a PR's failing CI in an ephemeral sandbox: feeds its failing check summary and failed-step logs to the agent, runs pre-commit and pushes the fix; accepts a PR number or URL (sonnet; --model <m> to override)
   agentic-pr-update-resolve-conflicts <pr>  Merge origin/main into a PR branch, resolve conflicts, run pre-commit and push the update in an ephemeral sandbox; accepts a PR number or URL (sonnet; --model <m> to override)

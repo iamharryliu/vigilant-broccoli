@@ -332,7 +332,7 @@ variable "uptime_domain" {
 
 variable "upptime_https_enforced" {
   type        = bool
-  default     = false
+  default     = true
   description = "Enforce HTTPS on the Upptime Pages site. Set true only after GitHub has issued a certificate covering the custom domain; the API rejects it earlier."
 }
 
@@ -389,4 +389,14 @@ variable "harryliu_dev_pages_project" {
 variable "harryliu_dev_pages_subdomain" {
   type    = string
   default = "production-harryliu-dev-react.pages.dev"
+}
+
+variable "rabbitmq_management_domain" {
+  type    = string
+  default = "queue.harryliu.dev"
+}
+
+variable "rabbitmq_allowed_emails" {
+  type    = list(string)
+  default = ["harryliu1995@gmail.com"]
 }

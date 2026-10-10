@@ -51,28 +51,41 @@ if [ -z "$PROMPT" ] && [ ${#IDS[@]} -eq 0 ]; then
   exit 1
 fi
 
-# Pulls the PR_TITLE::/PR_URL::/PR_SUMMARY_*/PR_DIFF_* markers a runner log
-# printed after `gh pr create` and appends one JSON record per solve to $2,
-# which the CI email step renders into a styled diff. JSON Lines keeps the diff
-# intact — it carries newlines, markdown and HTML metacharacters that no flat
-# text format survives.
+# Splits a runner log into one record per pull request (each starts at its
+# PR_TITLE:: marker) and appends one JSON record per PR to $2, plus one per
+# increment that was planned but not published, which the CI email step renders
+# into styled diffs. JSON Lines keeps each diff intact — it carries newlines,
+# markdown and HTML metacharacters that no flat text format survives.
 write_pr_details() {
   local log_file=$1 out_file=$2 label=${3:-}
-  local title url summary diff
-  title=$(grep -m1 '^PR_TITLE::' "$log_file" 2>/dev/null | sed 's/^PR_TITLE:://' || true)
-  [ -n "$title" ] || return 0
-  url=$(grep -m1 '^PR_URL::' "$log_file" 2>/dev/null | sed 's/^PR_URL:://' || true)
-  summary=$(awk '/^PR_SUMMARY_BEGIN$/{f=1;next} /^PR_SUMMARY_END$/{f=0} f' "$log_file")
-  diff=$(awk '/^PR_DIFF_BEGIN$/{f=1;next} /^PR_DIFF_END$/{f=0} f' "$log_file")
-  # --rawfile, not --arg: Linux caps a single argv string at 128 KiB and a large
-  # diff exceeds it, failing the exec with "Argument list too long" (exit 126).
-  jq -nc \
-    --arg label "$label" \
-    --arg title "$title" \
-    --arg url "$url" \
-    --rawfile summary <(printf '%s' "$summary") \
-    --rawfile diff <(printf '%s' "$diff") \
-    '{label: $label, title: $title, url: $url, summary: $summary, diff: $diff}' >> "$out_file"
+  local split_dir record title url state base depends summary diff
+  split_dir=$(mktemp -d)
+  awk -v dir="$split_dir" '/^PR_TITLE::/ { n++ } n { print > sprintf("%s/%03d.rec", dir, n) }' "$log_file"
+  for record in "$split_dir"/*.rec; do
+    [ -e "$record" ] || continue
+    title=$(grep -m1 '^PR_TITLE::' "$record" | sed 's/^PR_TITLE:://' || true)
+    url=$(grep -m1 '^PR_URL::' "$record" | sed 's/^PR_URL:://' || true)
+    state=$(grep -m1 '^PR_STATE::' "$record" | sed 's/^PR_STATE:://' || true)
+    base=$(grep -m1 '^PR_BASE::' "$record" | sed 's/^PR_BASE:://' || true)
+    depends=$(grep -m1 '^PR_DEPENDS_ON::' "$record" | sed 's/^PR_DEPENDS_ON:://' || true)
+    summary=$(awk '/^PR_SUMMARY_BEGIN$/{f=1;next} /^PR_SUMMARY_END$/{f=0} f' "$record")
+    diff=$(awk '/^PR_DIFF_BEGIN$/{f=1;next} /^PR_DIFF_END$/{f=0} f' "$record")
+    # --rawfile, not --arg: Linux caps a single argv string at 128 KiB and a large
+    # diff exceeds it, failing the exec with "Argument list too long" (exit 126).
+    jq -nc \
+      --arg runlabel "$label" \
+      --arg title "$title" \
+      --arg url "$url" \
+      --arg state "${state:-created}" \
+      --arg base "$base" \
+      --arg dependsOn "$depends" \
+      --rawfile summary <(printf '%s' "$summary") \
+      --rawfile diff <(printf '%s' "$diff") \
+      '{kind: "pr", "label": $runlabel, title: $title, url: $url, state: $state, base: $base, dependsOn: $dependsOn, summary: $summary, diff: $diff}' >> "$out_file"
+  done
+  rm -rf "$split_dir"
+  { grep '^INCREMENT_UNPUBLISHED::' "$log_file" 2>/dev/null || true; } | sed 's/^INCREMENT_UNPUBLISHED:://' \
+    | jq -c --arg runlabel "$label" '. + {kind: "unpublished", "label": $runlabel}' >> "$out_file"
 }
 
 if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
@@ -189,21 +202,25 @@ for i in "${!PIDS[@]}"; do
   id=${IDS[$i]}
   RC=0
   wait "${PIDS[$i]}" || RC=$?
-  DETAIL_LABEL=$id
-  [ "$RC" -eq 0 ] || DETAIL_LABEL="$id (salvage)"
-  write_pr_details "$LOG_DIR/solve-${id}.log" "$LOG_DIR/pr-details.jsonl" "$DETAIL_LABEL"
+  write_pr_details "$LOG_DIR/solve-${id}.log" "$LOG_DIR/pr-details.jsonl" "$id"
   bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_DIR/solve-${id}.log" "$RC" "TODO $id"
   if [ "$RC" -ne 0 ]; then
     FAILED=1
     echo "✗ TODO ${id} failed (see $LOG_DIR/solve-${id}.log)" >&2
+    grep '^PR_URL::' "$LOG_DIR/solve-${id}.log" 2>/dev/null | sed 's/^PR_URL::/  already opened before the failure: /' >&2 || true
     continue
   fi
-  # Anchored to the marker, not a loose URL match: the log now carries the
-  # branch diff too, and a solve that adds a PR link to a note would otherwise
-  # look like the PR this run opened.
-  PR_URL=$(grep -m1 '^PR_URL::' "$LOG_DIR/solve-${id}.log" 2>/dev/null | sed 's/^PR_URL:://' || true)
-  if [ -n "$PR_URL" ]; then
-    echo "✓ TODO ${id}: $PR_URL"
+  # Anchored to the marker, not a loose URL match: the log carries each branch
+  # diff too, and a solve that adds a PR link to a note would otherwise look like
+  # a PR this run opened.
+  PR_URLS=$(grep '^PR_URL::' "$LOG_DIR/solve-${id}.log" 2>/dev/null | sed 's/^PR_URL:://' || true)
+  UNPUBLISHED=$(grep -c '^INCREMENT_UNPUBLISHED::' "$LOG_DIR/solve-${id}.log" 2>/dev/null || true)
+  if [ -n "$PR_URLS" ]; then
+    while IFS= read -r pr_url; do echo "✓ TODO ${id}: $pr_url"; done <<<"$PR_URLS"
+    if [ "${UNPUBLISHED:-0}" -gt 0 ]; then
+      FAILED=1
+      echo "✗ TODO ${id}: ${UNPUBLISHED} planned increment(s) were not published (see $LOG_DIR/solve-${id}.log)" >&2
+    fi
   else
     FAILED=1
     echo "✗ TODO ${id}: completed without opening a PR (see $LOG_DIR/solve-${id}.log)" >&2

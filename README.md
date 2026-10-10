@@ -57,6 +57,8 @@ See more:
 
 The update workflow selects `change`, `fix-ci`, or `resolve-conflicts` through its `operation` input. Instructions are required for `change`, optional for `fix-ci`, and left blank for `resolve-conflicts`. All three operations share a concurrency group per normalized PR number.
 
+Entry points in one row share a task contract and differ only where [entry-point parity](./docs/agent-support.md#entry-point-parity) documents it.
+
 _Command notation: `/name` for Claude; `$name` for Codex._
 
 ## Applications

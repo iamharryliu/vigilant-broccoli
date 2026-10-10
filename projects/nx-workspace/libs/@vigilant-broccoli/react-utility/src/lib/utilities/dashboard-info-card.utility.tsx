@@ -131,8 +131,6 @@ const TILE_GRID_STYLE = {
   gridTemplateColumns: `repeat(2, minmax(${TILE_MIN_WIDTH}, 1fr))`,
   columnGap: '1.25rem',
   rowGap: '0.75rem',
-  paddingLeft: '1.5rem',
-  borderLeft: '1px solid var(--gray-6)',
 } as const;
 
 const TILE_ICON_STYLE = {
