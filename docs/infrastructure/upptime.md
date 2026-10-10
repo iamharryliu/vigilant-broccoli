@@ -7,6 +7,7 @@ Manage monitoring from vigilant-broccoli while running Upptime with credentials 
 - [Architecture](#architecture)
 - [Managed files and runtime behavior](#managed-files-and-runtime-behavior)
 - [Setup and migration](#setup-and-migration)
+- [HTTPS certificate recovery](#https-certificate-recovery)
 - [Operations](#operations)
 - [Security limits](#security-limits)
 - [Free Tier](#free-tier)
@@ -18,7 +19,7 @@ Manage monitoring from vigilant-broccoli while running Upptime with credentials 
 - `ci-sync-upptime.yml`, reachable only on `main`, reads the dedicated sync App key from `kv/upptime-sync` through `github-actions-upptime-sync-role`. The GCP identity only reads the two Cloudflare Access secrets needed to reach Vault; its WIF binding is pinned to this workflow on `main`.
 - The sync App is installed **only on the monitoring repo**, with Contents and Workflows read/write. It has no installation or ruleset bypass in vigilant-broccoli. Each sync mints a repository-restricted installation token with those two permissions.
 - Monitoring workflows use the monitoring repo's temporary `GITHUB_TOKEN`, with Contents and Issues write and no OIDC permission. The monitoring repo receives no private key, Vault/GCP credentials, or application secrets.
-- GitHub Pages serves the monitoring repo's `gh-pages` branch at `uptime.harryliu.dev` (Terraform `github_repository_pages.upptime`, DNS-only CNAME to `<owner>.github.io` in `cloudflare-harryliu-dev.tf`). `cron-upptime-site.yml` builds Upptime's static status site with `upptime/uptime-monitor`'s `site` command (daily at 01:40 UTC, manual, or `static_site` dispatch) and force-pushes the export to `gh-pages` using the temporary `GITHUB_TOKEN`; the `status-website` block in `.upptimerc.yml` sets the domain. The branch is created from `main` by Terraform, so the page is empty until the first workflow run. Apply locally with `pnpm tf:apply`, then enable HTTPS enforcement once the certificate is issued.
+- GitHub Pages serves the monitoring repo's `gh-pages` branch at `uptime.harryliu.dev` (Terraform `github_repository_pages.upptime`, DNS-only CNAME to `<owner>.github.io` in `cloudflare-harryliu-dev.tf`). `cron-upptime-site.yml` builds Upptime's static status site with `upptime/uptime-monitor`'s `site` command (daily at 01:40 UTC, manual, or `static_site` dispatch) and force-pushes the export to `gh-pages` using the temporary `GITHUB_TOKEN`; the `status-website` block in `.upptimerc.yml` sets the domain. The branch is created from `main` by Terraform, so the page is empty until the first workflow run. Apply locally with `pnpm tf:apply`, then enable HTTPS enforcement once the certificate is issued ([HTTPS recovery](#https-certificate-recovery)). The workflow's last step polls `https://<cname>/` for up to 10 minutes with certificate verification on, so a green run means a valid certificate.
 - `status.harryliu.dev` is a different surface: the Pages Index `StatusPage` (the same component as `projects.harryliu.dev/#/status`), served through the `status-proxy` Cloudflare Worker ([network-management.md](./network-management.md#dns-urls)). Its "Full uptime history" card opens `uptime.harryliu.dev`, the Upptime site above.
 - The Pages Index status page reads the monitoring repo's public `history/summary.json` and shows workflow badges from both repos. Missing or failed monitoring data displays an error; archived source-repository data is never used as a fallback.
 
@@ -66,6 +67,19 @@ App creation and installation are account setup; Terraform manages repository co
 
 Keep sync App `5202397`, installed only on `uptime`. Refresh the Bitwarden backup after changing Vault fields using `projects/nx-workspace/scripts/shell/backup-secrets.sh`.
 
+## HTTPS certificate recovery
+
+GitHub provisions the Let's Encrypt certificate for a Pages custom domain once DNS resolves to Pages, and it can take up to an hour ([GitHub docs](https://docs.github.com/en/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https)). Until then GitHub serves its `*.github.io` certificate, which browsers reject for `uptime.harryliu.dev` (`ERR_CERT_COMMON_NAME_INVALID`). The `uptime` Pages API reports `https_enforced=false` and no `https_certificate` in that state. After the hostname rename the certificate was never issued; the exact blocker is not visible through the API.
+
+The pinned GitHub provider (6.13.0) supports `https_enforced` on `github_repository_pages`, exposed as `upptime_https_enforced` (default `false`). GitHub rejects enforcement before a certificate exists, so keep it `false` until step 3.
+
+1. Confirm DNS: `dig +short CNAME uptime.harryliu.dev` returns `iamharryliu.github.io.`, the record is DNS-only, and `dig CAA uptime.harryliu.dev` permits `letsencrypt.org`.
+2. Force re-provisioning by removing and re-adding the domain, with reviewed local applies. Temporarily set `cname = null` in `github_repository_pages.upptime`, run `pnpm tf:plan` then `pnpm tf:apply`, restore the line and apply again. Wait for the domain check to pass and the certificate to issue. If it still does not issue within an hour, ask GitHub Support to re-provision the certificate for `uptime.harryliu.dev`; that step has no API.
+3. Once `gh api repos/iamharryliu/uptime/pages` shows an `https_certificate` whose `domains` include `uptime.harryliu.dev`, set `upptime_https_enforced = true` (tfvars or the default), then `pnpm tf:plan` and `pnpm tf:apply`.
+4. Run `gh workflow run cron-upptime-site -R iamharryliu/uptime` (after `ci-sync-upptime` has published the workflow change); the verify step must pass. Check `curl -sI http://uptime.harryliu.dev` redirects to HTTPS and `curl -s https://uptime.harryliu.dev` returns the status page.
+
+Do not proxy the record or disable TLS verification; neither changes certificate issuance. Monitoring history lives in the repository and is untouched by these steps.
+
 ## Operations
 
 - Edit endpoints in the root `.upptimerc.yml`; a push to `main` syncs config automatically. Edit runtime workflows under `infrastructure/upptime/workflows/`; `.github/workflows/ci-sync-upptime.yml` publishes them to the monitoring repository.
@@ -86,7 +100,7 @@ Warm-up intentionally measures warmed availability and response time; it does no
 
 ## Free Tier
 
-- GitHub-hosted standard runners are free for public repositories ([GitHub billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions)). Monitoring uses roughly 25 scheduled workflow runs per day; sync runs only on configuration changes or manual dispatch. The daily static-site build adds one more scheduled run; GitHub Pages is free for public repositories. Pages Index continues displaying the public summary.
+- GitHub-hosted standard runners are free for public repositories ([GitHub billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions)). Monitoring uses roughly 25 scheduled workflow runs per day; sync runs only on configuration changes or manual dispatch. The daily static-site build adds one more scheduled run; GitHub Pages is free for public repositories, including the automatic HTTPS certificate; the verify step adds at most 10 minutes of runner time to a failing daily run. Pages Index continues displaying the public summary.
 - Graph and badge generation runs within the existing daily response-time workflow, adding dependency installation and rendering time without another scheduled run.
 - The dedicated GCP service account and WIF provider add no VM. They reuse the existing Cloudflare Access secrets and Vault VM, adding only authentication/secret-read operations to the current services.
 - No paid monitoring subscription or new persistent compute resource is required.
