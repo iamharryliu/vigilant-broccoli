@@ -6,6 +6,11 @@ Repository context and workflows shared by Claude Code, Codex, and future agents
 
 - [Sources and adapters](#sources-and-adapters)
 - [Agentic commands](#agentic-commands)
+- [Entry-point parity](#entry-point-parity)
+  - [Task contract](#task-contract)
+  - [Execution adapters](#execution-adapters)
+  - [Intentional differences](#intentional-differences)
+  - [Maintenance rule](#maintenance-rule)
 - [Pull request scope](#pull-request-scope)
   - [Increment contract](#increment-contract)
 - [Adding a context source or skill](#adding-a-context-source-or-skill)
@@ -38,6 +43,51 @@ Keep runtime concerns in the runner: isolated checkout setup, credentials, merge
 Plan, Develop and Maintain operations follow this pattern. The smoke workflow is an Actions-only pipeline check and has no local equivalent. The two cleanup-shaped Maintain operations differ by scope: `agentic-pr-create-todo-audit` only edits `TODO.md`, and `agentic-pr-create-prune` removes repo-wide dead code and stale docs but never `TODO.md`; neither replaces the diff-scoped [refactor-code-cleanup.md](./refactor-code-cleanup.md) checklist.
 
 When adding or renaming an operation, update the root script, workflow name and concurrency routing where applicable, canonical skill and command adapter, runner references and history labels, README lifecycle table, command cheatsheet and installed skill links together. Do not add a workflow just to fill the Actions column: reuse an existing entry point when it serves the task, otherwise use `N/A`. Do not add a local equivalent to the table unless it exists. Verify argument forwarding, skill loading and adapters without publishing live PRs as a routine check.
+
+## Entry-point parity
+
+Each row of the README's [Agentic lifecycle table](../README.md#agentic) is one operation reached through up to three entry points: Actions (a workflow), Docker Sandbox (a `pnpm` script that runs a runner in the sandbox container) and Local (the skill, run in an interactive session). The entry points of one row are interchangeable ways to ask for the same thing, so they must behave the same on everything below and may differ only where [execution adapters](#execution-adapters) and [intentional differences](#intentional-differences) say so.
+
+### Task contract
+
+For an operation and equivalent task input, every supported entry point must match on:
+
+- **Canonical instructions.** The task is defined by `setup/dotfiles/agent-skills/<name>/SKILL.md` and the docs it links; the sandbox runner embeds that file, a local session reads it. No entry point restates, narrows or widens task policy in a workflow, wrapper, runner prompt or command alias. Runner prompts add only execution rules and the metadata request.
+- **Interpretation and scope.** The same request means the same outcome and the same permitted file scope: R&D writes only under `docs/rnd/`, TODO planning adds one row to `TODO.md` and nothing else, the audit edits only `TODO.md`, prune never edits `TODO.md`, fix-ci diagnoses the failing check logs, resolve-conflicts preserves both sides of the merge, and smoke is an Actions-only pipeline check.
+- **TODO resolution.** Ids in the request resolve per [pull request scope](#pull-request-scope): the same rows are read, only rows an increment fully resolves are removed, and an id without a row is reported.
+- **Increments.** Where split work is supported (`agentic-pr-create`, and the change operation of `agentic-pr-update`), all entry points use the same split criteria, independent-versus-stacked rules, per-PR content and failure handling of the [increment contract](#increment-contract). Other operations stay on one PR and never split.
+- **Validation.** The same checks are expected before reporting success: the task's existing checks, `docs/refactor-code-cleanup.md` where the skill asks for it, and pre-commit. Runner-side guards (changed-file scope, TODO id preservation, file caps) enforce what the skill already states.
+- **Reported outcome.** The same facts are reported: what changed, verification, assumptions, remaining work and, for PRs, the shared PR body (`## Summary`, `## Next steps`, `## Suggestions`, `## Agentic Change History` via `merge-pr-body.py`) and `PR_URL::` result marker.
+
+### Execution adapters
+
+Only these may differ by entry point:
+
+| Concern                                  | Owner                                                                                                                                                                                                       |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hosted summaries and email               | Actions only: the shared run summary and, for `manual-agentic-pr-create`, the notification email. Docker Sandbox runs write the summary when `GITHUB_STEP_SUMMARY` is set; Local has neither.              |
+| Isolated checkout and credentials        | Actions and Docker Sandbox: a fresh clone or PR checkout in the container, the minted GitHub App token, Vault secrets and the egress firewall. Local: the user's checkout, which the skill asks them to prepare. |
+| Provider and model selection             | Workflow inputs and `--agent`/`--model` flags choose the model (and, for create, Codex). The task instructions are identical whichever model runs them.                                                     |
+| Scheduling                               | `cron-` workflows add a schedule and default inputs; the task is the same one the `pnpm` script runs.                                                                                                       |
+| Unattended authorization to publish      | Actions and Docker Sandbox runners own staging, commits, pushes, PR creation and PR metadata. A local skill describes any preparation it needs and gains no implicit permission to commit, push or open a PR. |
+
+### Intentional differences
+
+| Operation                               | Actions                                                       | Docker Sandbox                                                                     | Local                                    | Difference                                                                                                                                                                                                                                        |
+| --------------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `agentic-pr-create`                     | `manual-agentic-pr-create` (`prompt` only)                    | `<id...>` or `--prompt`                                                            | `<id...>` or `--prompt`                  | Actions takes the single free-text prompt, so ids are named inside it. `<id...>` is a local convenience that starts one independent run per id, each planned and published on its own; it is not one combined plan. `--agent codex` exists on both runnable entry points; Local uses whatever agent runs the skill. |
+| `agentic-pr-create-prune`               | `cron-agentic-pr-create-prune` (weekly or manual)             | `pnpm agentic-pr-create-prune`                                                     | `/agentic-pr-create-prune`               | Claude only. The runner rejects a diff over 50 files, and `TODO.md`, migrations or Terraform state changes; the skill asks for about 40 files. A clean sweep opens no PR.                                                                         |
+| `agentic-pr-create-rnd`                 | `manual-agentic-pr-create-rnd`                                | `pnpm agentic-pr-create-rnd`                                                       | `/agentic-pr-create-rnd`                 | Claude only. The note's increments are written into the note for later `agentic-pr-create` runs rather than published as PRs.                                                                                                                      |
+| `agentic-pr-create-smoke`               | `manual-agentic-pr-create-smoke`                              | N/A                                                                                | N/A                                      | Actions-only pipeline check that dispatches `manual-agentic-pr-create` with a canned prompt. It has no task of its own to keep in parity.                                                                                                        |
+| `agentic-pr-create-todo`                | N/A                                                           | `pnpm agentic-pr-create-todo`                                                      | `/agentic-pr-create-todo`                | No workflow; none is added for symmetry. Claude only. Large tasks become ordered increments inside the row, or several rows, rather than several PRs.                                                                                            |
+| `agentic-pr-create-todo-audit`          | `cron-agentic-pr-create-todo-audit` (weekly or manual)        | `pnpm agentic-pr-create-todo-audit`                                                | `/agentic-pr-create-todo-audit`          | Claude only. The runner rejects any file besides `TODO.md`, vanished ids not reported as resolved, and new ids. A clean audit opens no PR.                                                                                                        |
+| `agentic-pr-update`                     | `manual-agentic-pr-update` (`operation=change`)               | `pnpm agentic-pr-update <pr> "<instruction>"`                                      | `/agentic-pr-update <pr> <instruction>`  | Claude only. Splitting creates follow-up PRs and leaves the target PR on its purpose. Unlike create, the update runner has no draft-PR salvage of a failed agent run; the target PR stays as it was. `--with-ci-logs` is a Docker Sandbox flag.    |
+| `agentic-pr-update-fix-ci`              | `manual-agentic-pr-update` (`operation=fix-ci`)               | `pnpm agentic-pr-update-fix-ci <pr> ["<instruction>"]`                             | `/agentic-pr-update-fix-ci <pr>`         | Never splits. The runner collects the failing logs the agent cannot fetch with `gh`; a local session collects them itself.                                                                                                                        |
+| `agentic-pr-update-resolve-conflicts`   | `manual-agentic-pr-update` (`operation=resolve-conflicts`)    | `pnpm agentic-pr-update-resolve-conflicts <pr>`                                    | `/agentic-pr-update-resolve-conflicts <pr>` | Never splits and takes no instruction. The runner starts the `origin/main` merge; a local session starts it itself.                                                                                                                              |
+
+### Maintenance rule
+
+When you change an operation's behavior, inspect and update every supported entry point in its lifecycle row in the same change: the skill, the root `pnpm` script and wrapper, the workflow inputs and their forwarding, the runner prompt and guards, the result markers and summary consumers, and the README, cheatsheet and sandbox README rows. Put task policy in the skill or the docs it links and execution policy in the runner. Before claiming parity, verify it: read the argument path of each entry point end to end, confirm each loads the canonical skill and none overrides its policy, and exercise argument forwarding with stubbed `docker`, `gh` and agent commands or a temporary local repository. Do not dispatch workflows or open disposable PRs as a routine check, and do not add a workflow or local command just to fill a cell: an entry point that does not exist stays `N/A`.
 
 ## Pull request scope
 
