@@ -4,8 +4,9 @@ set -euo pipefail
 PR=${1:?Usage: update-pr-runner.sh <PR_NUMBER_OR_URL> <instruction>}
 INSTRUCTION=${2:?Usage: update-pr-runner.sh <PR_NUMBER_OR_URL> <instruction>}
 MODEL=${SOLVE_MODEL:-sonnet}
-REPO_DIR="$HOME/vigilant-broccoli"
-META_FILE=/tmp/update-meta.json
+REPO_DIR=${REPO_DIR:-$HOME/vigilant-broccoli}
+META_FILE=${META_FILE:-/tmp/update-meta.json}
+PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
 FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 PRE_COMMIT_HELPER=/tmp/run-pre-commit.sh
 MERGE_BODY_HELPER=/tmp/merge-pr-body.py
@@ -22,6 +23,14 @@ elif [ -n "${SANDBOX_FIX_CI:-}" ]; then
   FALLBACK_SUBJECT="ci: Fix failing checks on PR #${PR}."
 fi
 SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/$SKILL_NAME/SKILL.md")
+# Sourced before the PR checkout: the PR branch may predate this file.
+# shellcheck source=pr-increments.sh
+. "$(dirname "${BASH_SOURCE[0]}")/pr-increments.sh"
+
+# Only a change instruction can ask for follow-up increments; CI fixes and
+# conflict resolution stay on the one PR.
+PLAN_ENABLED=0
+[ "$SKILL_NAME" != agentic-pr-update ] || PLAN_ENABLED=1
 
 # Stash the helpers outside the working tree before checkout — the PR branch may predate them,
 # and gh pr checkout would otherwise leave us on a branch where the helper paths don't exist.
@@ -41,6 +50,7 @@ if [ -n "${SANDBOX_MERGE_MAIN:-}" ]; then
 fi
 
 PR_TITLE=$(gh pr view "$PR" --json title -q .title 2>/dev/null || true)
+PR_URL=$(gh pr view "$PR" --json url -q .url 2>/dev/null || true)
 CURRENT_BODY=$(gh pr view "$PR" --json body -q .body 2>/dev/null || true)
 
 # The agent cannot call gh, so failing CI output has to be collected here and
@@ -71,6 +81,16 @@ EOF
 )
 fi
 
+PLAN_RULES=""
+PLAN_FIELDS=""
+if [ "$PLAN_ENABLED" = 1 ]; then
+  PLAN_RULES="- Do not edit TODO.md: the runner removes exactly the rows you declare in todo_ids.
+$(inc_plan_instructions update)"
+  PLAN_FIELDS="
+  - todo_ids: array of the TODO.md ids named in the instruction that this update fully resolves (omit or [] when none)
+  - increments: the optional array of later increments described above"
+fi
+
 PROMPT=$(cat <<EOF
 You are running non-interactively in a checkout of pull request #${PR}${PR_TITLE:+ ("${PR_TITLE}")} (branch ${BRANCH}) of vigilant-broccoli. Apply the following change to this PR's branch, building on the work already there:
 
@@ -90,19 +110,24 @@ $SKILL_INSTRUCTIONS
 Sandbox execution rules:
 - You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
 - Do not run any git or gh commands — committing, pushing, and updating the PR body are handled by the calling script.
-- When finished, write $META_FILE containing only a JSON object with these string fields:
+${PLAN_RULES}
+- When finished, write $META_FILE containing only a JSON object with these fields (strings unless noted):
   - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure
   - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
   - commit_message: capitalized, concise, focused on why not what, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
   - pr_summary: markdown bullet points replacing the PR's "## Summary" section — rewrite it to describe the PR's full, cumulative state (prior work plus this change), not just this increment
-  - pr_next_steps: markdown checklist replacing the PR's "## Next steps" section — same rule, cover the whole PR as it now stands: remaining manual commands, spot checks, CI status, merging, and one ready-to-run `pnpm agentic-pr-create --prompt "<task>"` item per independent piece of work left out of this PR, or "- [ ] Merge once CI is green" when nothing else is left
-  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none — rewrite it to cover the whole PR as it now stands
+  - pr_next_steps: markdown checklist replacing the PR's "## Next steps" section — same rule, cover the whole PR as it now stands: remaining manual commands, spot checks, CI status, merging, and one ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\` item per piece of work deliberately left out of every increment, or "- [ ] Merge once CI is green" when nothing else is left
+  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none — rewrite it to cover the whole PR as it now stands${PLAN_FIELDS}
 EOF
 )
 
-claude -p "$PROMPT" --dangerously-skip-permissions --model "$MODEL" \
-  --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
+agent_invoke() {
+  claude -p "$1" --dangerously-skip-permissions --model "$MODEL" \
+    --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
+}
+
+agent_invoke "$PROMPT"
 
 # Stage first: if the instruction involved resolving a merge conflict, the working
 # tree may hold a fix for it that was never `git add`-ed (the model is disallowed
@@ -116,6 +141,35 @@ MERGE_HEAD_SHA=$(git rev-parse -q --verify MERGE_HEAD || true)
 
 git checkout "$BRANCH"
 [ "$(git rev-parse HEAD)" = "$BASE_SHA" ] || git reset --soft "$BASE_SHA"
+
+INC_REQUEST=$INSTRUCTION
+INC_SKILL_INSTRUCTIONS=$SKILL_INSTRUCTIONS
+INC_ORDER=("$INC_CURRENT")
+INC_BRANCH[$INC_CURRENT]=$BRANCH
+INC_URL[$INC_CURRENT]=$PR_URL
+INC_TITLE[$INC_CURRENT]=$PR_TITLE
+INC_HISTORY_BASE_COMMAND="agentic-pr-update (follow-up increment)"
+INC_HISTORY_COMMAND=$INC_HISTORY_BASE_COMMAND
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+  INC_HISTORY_SOURCE="GitHub Actions"
+else
+  INC_HISTORY_SOURCE="Docker sandbox (local)"
+fi
+
+if [ "$PLAN_ENABLED" = 1 ] && [ -n "$(git status --porcelain)" ]; then
+  # Checked before anything is pushed, so a bad plan never leaves a partial set behind.
+  inc_validate_plan "$META_FILE" "$BASE_SHA" "$INSTRUCTION" ""
+  inc_load_plan "$META_FILE"
+  RESOLVED_IDS=()
+  while IFS= read -r resolved_id; do
+    [ -z "$resolved_id" ] || RESOLVED_IDS+=("$resolved_id")
+  done < <(inc_current_todo_ids "$META_FILE")
+  inc_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
+  if [ "${#RESOLVED_IDS[@]}" -gt 0 ] && [ -z "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
+    echo "ERROR: no changes besides TODO.md — ${RESOLVED_IDS[*]} not resolved." >&2
+    exit 1
+  fi
+fi
 
 bash "$PRE_COMMIT_HELPER"
 
@@ -156,14 +210,20 @@ git add -A
 git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
 git push
 
-if [ -n "${GITHUB_ACTIONS:-}" ]; then
-  HISTORY_SOURCE="GitHub Actions"
-else
-  HISTORY_SOURCE="Docker sandbox (local)"
-fi
+HISTORY_SOURCE=$INC_HISTORY_SOURCE
 
 NEW_BODY=$(CURRENT_BODY="$CURRENT_BODY" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
   HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="$SKILL_NAME" HISTORY_PROMPT="$INSTRUCTION" \
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
   python3 "$MERGE_BODY_HELPER")
 gh pr edit "$PR" --body "$NEW_BODY"
+
+# The target PR is already updated and pushed; follow-up increments are
+# separate PRs, so a failure here leaves it untouched.
+LATER_STATUS=0
+if [ "${#INC_ORDER[@]}" -gt 1 ]; then
+  echo "=== Follow-up increments ===" >&2
+  inc_run_later || LATER_STATUS=1
+  inc_refresh_stacks || true
+fi
+exit "$LATER_STATUS"

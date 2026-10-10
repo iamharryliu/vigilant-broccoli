@@ -7,6 +7,7 @@ Branching, staging, commit and PR conventions for this repository, and how to st
 - [Conventions](#conventions)
 - [Concurrent Agent Sessions](#concurrent-agent-sessions)
 - [Staying Current With `main`](#staying-current-with-main)
+- [Stacked Pull Requests](#stacked-pull-requests)
 
 ## Conventions
 
@@ -20,6 +21,7 @@ Branching, staging, commit and PR conventions for this repository, and how to st
 - **Agentic flow parity**: the PR-body contract above (`## Summary` / `## Next steps` / `## Suggestions`, the `pr_title`/`pr_summary`/`pr_next_steps`/`pr_suggestions` meta fields, their fallback text, and the `HISTORY_*` row) is implemented independently by every flow below — none of them discover each other at runtime, so a change to a section name, a field, or its fallback wording made in one is invisible to the rest until mirrored by hand in the same change:
   - `setup/dotfiles/agent-skills/ship-pr/SKILL.md` (the interactive `/ship-pr` command)
   - `infrastructure/agent-sandbox/solve-todo-runner.sh`, `update-pr-runner.sh`, `create-todo-runner.sh`, `create-rnd-runner.sh`, `audit-todo-runner.sh`, `prune-runner.sh` (the `pnpm agentic-pr-*` sandbox runners)
+  - `infrastructure/agent-sandbox/pr-increments.sh`, which `solve-todo-runner.sh` and `update-pr-runner.sh` source to publish later increments — it carries its own copy of the metadata fallbacks and history row for those PRs
   - `infrastructure/agent-sandbox/merge-pr-body.py`, the shared helper every flow above calls to actually write the sections — section names only match if this file's string literals match theirs
 
   Before relying on a flow having some behavior, check it has that behavior rather than assuming parity with another flow — `ship-pr` went without the `## Suggestions` section and without ever passing `--title` to `gh pr create` for a stretch because neither were ported over when the sandbox runners gained them. When changing the convention, `grep -rn` the old string across every file above and update all of them together, then update this bullet if the set of participating files changes.
@@ -45,3 +47,18 @@ Branches here are short-lived and PRs land as **squash merges**, so the cheapest
 - **Check drift with `git rev-list --left-right --count origin/main...HEAD`** — left is what the branch is missing, right is what it adds. A left number in the dozens on a branch open more than a day is the signal to sync now.
 - **`git pull --ff-only` on `main`.** If it refuses, `main` has local commits that never went through a PR — that is a state to report, not to paper over with a merge. `pull.rebase=false` is already set locally.
 - **Enable `git rerere`** (`git config rerere.enabled true`): git records how a conflict was resolved and replays that resolution automatically the next time the same conflict appears. It pays for itself when a long-lived branch re-merges `main` repeatedly.
+
+## Stacked Pull Requests
+
+`pnpm agentic-pr-create` and `pnpm agentic-pr-update` can publish one request as several PRs (the [increment contract](./agent-support.md#increment-contract)). An independent increment branches from `main` and targets `main`. A dependent increment branches from its prerequisite's branch and targets that branch, so its diff holds only its own change even when it edits a file the prerequisite also edited. Every PR carries a `## Stack` section with the merge order, and a stacked PR must be merged after the one it targets.
+
+Because PRs land as **squash merges**, a stack needs care after each merge:
+
+- **Retargeting does not remove inherited commits.** Squashing PR 1 puts a new commit on `main` whose content equals PR 1's, but PR 2's branch still holds PR 1's original commits, which Git does not recognise as already in `main`. If PR 1's head branch is deleted, GitHub retargets PR 2 to `main` — that changes only its base. Until PR 2's branch is brought up to date, its diff and merge can show PR 1's changes again or conflict.
+- **Do not delete PR 1's head branch until PR 2 has been advanced**, or retarget PR 2 yourself first (`gh pr edit <pr2> --base main`) so it is never left without a base.
+- **Advance each dependent without a force-push**, one PR at a time in stack order, once its prerequisite has merged:
+  1. Merge `origin/main` into the dependent's branch (`git merge --no-edit origin/main`, or `pnpm agentic-pr-update-resolve-conflicts <pr>`) and push normally. A conflict is expected exactly where the two increments touched the same lines; keep the dependent's own side, because `main` already holds the prerequisite's final content.
+  2. Confirm `git diff origin/main HEAD` (the PR's _Files changed_) shows only this increment, then retarget the PR to `main` if GitHub has not.
+  3. Repeat for the next PR in the stack.
+- **Never rebase or force-push a stack branch** (forbidden in [Conventions](#conventions)). The merge commit and the inherited commits stay in the branch's commit list, and disappear when this PR is itself squash-merged.
+- **A draft PR in the stack blocks the PRs after it.** A failed increment is saved as a draft with partial work and its dependents are not published; finish it with `pnpm agentic-pr-update <pr> "finish the task"` before merging anything that follows.

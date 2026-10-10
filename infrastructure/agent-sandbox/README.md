@@ -5,6 +5,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 ## Table of Contents
 
 - [Running in CI](#running-in-ci)
+- [Publishing several pull requests](#publishing-several-pull-requests)
 - [Auditing the backlog](#auditing-the-backlog)
 - [Pruning dead code and stale docs](#pruning-dead-code-and-stale-docs)
 - [Stack](#stack)
@@ -21,14 +22,15 @@ from Vault, the script skips the local Vault-over-SSH load and mints the install
 
 - Dispatch: `gh workflow run manual-agentic-pr-create.yml -f prompt="<task>"`, with optional `-f agent=claude|codex`,
   `-f model=` for Claude, `-f codex_model=` for Codex, and `-f firewall=off`. The workflow has no separate TODO id input:
-  mention ids in the prompt (`-f prompt="solve a1b2c3"`) and the agent resolves those `TODO.md` rows and removes them
-  once done. Use `pnpm agentic-pr-create <id...>` locally to solve several ids as parallel, one-PR-per-id runs.
+  mention ids in the prompt (`-f prompt="solve a1b2c3"`) and the agent resolves those `TODO.md` rows and the runner removes the ones it fully resolved
+  once done. Use `pnpm agentic-pr-create <id...>` locally to solve several ids as parallel runs, one per id (each may itself publish more than one PR).
 - Smoke test: dispatch `manual-agentic-pr-create-smoke` (`gh workflow run manual-agentic-pr-create-smoke.yml`) to run the whole
   pipeline against a canned one-line prompt and check the notification email. Pass `-f agent=codex` to smoke-test the
   Codex path. It opens a disposable PR; close it after.
-- Notification: the workflow emails the outcome with each PR's title, summary, link and full diff, rendered as a
-  GitHub-style patch. `solve-todo-runner.sh` prints the diff between `PR_DIFF_BEGIN`/`PR_DIFF_END` markers, `solve-todo.sh`
-  collects the markers into a JSON Lines file, and `.github/scripts/agentic-solve-email.mjs` renders and sends it.
+- Notification: the workflow emails the outcome with each PR's title, summary, link, base and full diff, rendered as a
+  GitHub-style patch, and lists any planned increment that was not published. The runner prints one record per PR
+  (`PR_TITLE::`, `PR_URL::`, `PR_STATE::`, `PR_BASE::`, `PR_DEPENDS_ON::`, `PR_SUMMARY_*` and `PR_DIFF_BEGIN`/`PR_DIFF_END`),
+  `solve-todo.sh` collects them into a JSON Lines file, and `.github/scripts/agentic-solve-email.mjs` renders and sends it.
 
 `pnpm agentic-pr-create-rnd "<question>"` runs `create-rnd.sh` locally. The `manual-agentic-pr-create-rnd` workflow runs the same command
 on a hosted runner using the existing Claude and GitHub App credentials from Vault. It researches the question,
@@ -68,6 +70,34 @@ pushing and opening the PR stay with the runner for both agents.
 `pnpm agentic-pr-update-fix-ci <pr> ["<instruction>"]` runs `fix-pr-ci.sh`, also used by `manual-agentic-pr-update` with `operation=fix-ci`. It calls `update-pr.sh --with-ci-logs` with a fixed CI-fix instruction and selects the shared CI-fix skill; the optional instruction is appended as extra guidance. It accepts a PR number or URL and optional `--model <model>`.
 
 `pnpm agentic-pr-update-resolve-conflicts <pr>` runs `resolve-pr-conflicts.sh`, also used by `manual-agentic-pr-update` with `operation=resolve-conflicts`. It accepts a PR number or URL and optional `--model <model>`, enables the merge of `origin/main`, and selects the shared conflict-resolution skill in the existing PR-update runner.
+
+## Publishing several pull requests
+
+`pnpm agentic-pr-create` (and its `manual-agentic-pr-create` workflow) and the change operation of `pnpm agentic-pr-update`
+(`manual-agentic-pr-update`) share `pr-increments.sh`, sourced by `solve-todo-runner.sh` and `update-pr-runner.sh`. A simple
+task is still one PR. When the first agent run judges the request too large or bundled, it implements the first increment and
+lists the rest in an `increments` array in its metadata file (contract in
+[agent support](../../docs/agent-support.md#increment-contract)). The runner then:
+
+- validates the whole plan before publishing anything (at most 4 later increments, unique ids, one earlier prerequisite each,
+  TODO ids that exist, are named in the request and are assigned once) and fails the run on a bad plan, saving the first
+  increment's work as a draft PR;
+- publishes the first increment, then runs a fresh agent per later increment on its own branch: an independent one from
+  `origin/main` targeting `main`, a dependent one from its prerequisite's branch targeting that branch, so its diff is only its
+  own increment even where several increments edit the same file;
+- removes from `TODO.md` only the rows each increment declares in `todo_ids`, on that increment's branch, and fails an
+  increment that deleted any other row;
+- gives every PR its own title, summary, next steps, suggestions and history row, plus a `## Stack` section with the merge
+  order, refreshed on every PR once all are open;
+- stops at the first failing increment, saves its partial work as a draft PR, prints `INCREMENT_UNPUBLISHED::` for it and
+  every increment not attempted, and exits non-zero, leaving the PRs already opened in place. Later increments run
+  sequentially in the same container, so the workflow's 60-minute timeout covers the whole set.
+
+`update-pr-runner.sh` does the same for follow-ups an update surfaces, leaving the target PR to its own purpose; fix-CI and
+conflict-resolution updates never split. Git, pushes and PR creation stay in the runner with the credentials it already
+has; branches are only created and pushed, never force-pushed. Squash-merge implications of stacked PRs are in
+[Stacked pull requests](../../docs/git-workflow.md#stacked-pull-requests). The container copies `solve-todo-runner.sh` and
+`pr-increments.sh` into the image, so rebuild it (`docker compose build`) after changing either when running locally.
 
 ## Auditing the backlog
 

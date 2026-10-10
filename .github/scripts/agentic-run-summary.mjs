@@ -159,29 +159,101 @@ const renderOverview = () => {
   return { markdown: blocks.join('\n\n'), requestFile: task.file };
 };
 
+const readJsonList = name => {
+  try {
+    const parsed = JSON.parse(process.env[name] || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+};
+
+const text = value => (typeof value === 'string' ? value : '');
+
+const pullRequestLine = pull => {
+  const title = text(pull.title);
+  const notes = [
+    pull.state === 'salvaged' && 'draft with partial work, do not merge',
+    text(pull.base) && `base \`${text(pull.base).replace(/`/g, '')}\``,
+  ].filter(Boolean);
+  return [
+    urlOrText(text(pull.url)),
+    title && escapeInline(title),
+    notes.length && `(${notes.join(', ')})`,
+  ]
+    .filter(Boolean)
+    .join(' ');
+};
+
+const renderPullRequests = pulls => {
+  if (pulls.length === 0) return '';
+  if (pulls.length === 1)
+    return label('Pull request', pullRequestLine(pulls[0]));
+  const items = pulls.map(
+    (pull, index) => `${index + 1}. ${pullRequestLine(pull)}`,
+  );
+  return [
+    label('Pull requests, in merge order', '').trimEnd(),
+    '',
+    ...items,
+  ].join('\n');
+};
+
+const renderUnpublished = unpublished => {
+  if (unpublished.length === 0) return '';
+  const items = unpublished.map(
+    item =>
+      `- ${escapeInline(text(item.title) || text(item.id))} — ${escapeInline(text(item.reason))}`,
+  );
+  return [label('Not published', '').trimEnd(), '', ...items].join('\n');
+};
+
+const headlineFor = (outcome, pulls) => {
+  if (outcome === 'failed' && pulls.length) {
+    const published = pulls.filter(pull => pull.state !== 'salvaged').length;
+    return published
+      ? `Failed — ${published} pull request${published === 1 ? '' : 's'} published before the failure`
+      : FAILED_WITH_PR;
+  }
+  if (outcome === 'pr-created' && pulls.length > 1)
+    return `${pulls.length} pull requests created`;
+  return OUTCOME[outcome] ?? escapeInline(outcome);
+};
+
 const renderResult = () => {
   const outcome = env('AGENTIC_OUTCOME');
-  const pullRequest = env('AGENTIC_PR_URL');
   const exitCode = env('AGENTIC_EXIT_CODE');
   const childRun = env('AGENTIC_CHILD_RUN_URL');
   const note = env('AGENTIC_NOTE');
   const section = env('AGENTIC_LABEL');
+  const listed = readJsonList('AGENTIC_PULL_REQUESTS');
+  const single = env('AGENTIC_PR_URL');
+  const pulls = listed.length ? listed : single ? [{ url: single }] : [];
+  const unpublished = readJsonList('AGENTIC_UNPUBLISHED');
 
-  const headline =
-    outcome === 'failed' && pullRequest
-      ? FAILED_WITH_PR
-      : (OUTCOME[outcome] ?? escapeInline(outcome));
   const lines = [
-    label('Outcome', headline),
-    pullRequest && label('Pull request', urlOrText(pullRequest)),
+    label('Outcome', headlineFor(outcome, pulls)),
+    renderPullRequests(pulls),
+    renderUnpublished(unpublished),
     childRun && label('Child run', urlOrText(childRun)),
     exitCode && exitCode !== '0' && label('Exit code', escapeInline(exitCode)),
     note && label('Details', escapeInline(note)),
   ].filter(Boolean);
 
+  // A list needs blank lines around it, or the hard-break line that follows
+  // is swallowed into its last item.
+  const body = lines.reduce((joined, line, index) => {
+    if (index === 0) return line;
+    const separator =
+      line.includes('\n') || lines[index - 1].includes('\n')
+        ? '\n\n'
+        : LINE_BREAK;
+    return joined + separator + line;
+  }, '');
+
   const heading = section ? `Result: ${escapeInline(section)}` : 'Result';
   return {
-    markdown: [`## ${heading}`, lines.join(LINE_BREAK)].join('\n\n'),
+    markdown: [`## ${heading}`, body].join('\n\n'),
   };
 };
 

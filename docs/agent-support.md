@@ -7,6 +7,7 @@ Repository context and workflows shared by Claude Code, Codex, and future agents
 - [Sources and adapters](#sources-and-adapters)
 - [Agentic commands](#agentic-commands)
 - [Pull request scope](#pull-request-scope)
+  - [Increment contract](#increment-contract)
 - [Adding a context source or skill](#adding-a-context-source-or-skill)
 - [Installing skills](#installing-skills)
 - [Context discovery](#context-discovery)
@@ -42,10 +43,27 @@ When adding or renaming an operation, update the root script, workflow name and 
 
 Agentic operations that open or extend a pull request share these scope rules, so every PR they produce can be reviewed and merged on its own:
 
-- **TODO ids in free text.** A request may name `TODO.md` ids in passing ("solve a1b2c3 and d4e5f6"). Treat each 6-hex token that matches a row's leading cell as a reference to that row: read its Description and Recommended Fix as part of the task per [todo-pattern.md](./todo-pattern.md), report an id with no row rather than guessing, and remove the row of each id the change fully resolves. Leave the row in place when the id is only mentioned for context or the change resolves it partly.
-- **One mergeable increment per PR.** Each PR should leave `main` working and be worth merging even if nothing after it lands. Prefer the smallest such increment that delivers the requested outcome over one large change.
-- **Split when the request does not fit.** When a request bundles independent changes (unrelated TODO ids, separate apps, a refactor plus a feature) or is too large to review as one diff, implement the first increment — the one the others build on, or the highest-value independent one — and stop there. List each remaining increment in the PR's next steps as a ready-to-run, self-contained command (`pnpm agentic-pr-create --prompt "<task>"`), naming what it depends on, so the human can merge in order and dispatch the next one. A sandbox run publishes exactly one PR, so splitting is expressed this way rather than by opening several.
-- **Never grow an existing PR sideways.** An update applies what belongs to the PR's purpose; independent work it surfaces becomes a follow-up prompt in the PR's next steps instead of more diff.
+- **TODO ids in free text.** A request may name `TODO.md` ids in passing ("solve a1b2c3 and d4e5f6"). Treat each 6-hex token that matches a row's leading cell as a reference to that row: read its Description and Recommended Fix as part of the task per [todo-pattern.md](./todo-pattern.md) and report an id with no row rather than guessing. In a sandbox the agent never edits `TODO.md`; it lists in `todo_ids` the ids its increment **fully** resolves and the runner removes exactly those rows from that increment's branch. An id mentioned only for context, or resolved partly, stays. A row that vanishes without being declared fails the run.
+- **One mergeable increment per PR.** Each PR should leave `main` working and be worth merging even if nothing after it lands. Keep a simple task as one PR; prefer the smallest increment that delivers the requested outcome over one large change.
+- **Split when the request does not fit.** When a request bundles independent changes (unrelated TODO ids, separate apps, a refactor plus a feature) or is too large to review as one diff, split it by outcome, not by file path: one file may change in several increments. In a sandbox the agent implements the first increment and describes the rest in the metadata `increments` array; the runner validates the whole plan, then publishes every increment (see [increment contract](#increment-contract)). In a local session without a sandbox, implement the first increment and list the rest as ready-to-run `pnpm agentic-pr-create --prompt "<task>"` follow-ups.
+- **Never grow an existing PR sideways.** An update applies what belongs to the PR's purpose; independent work it surfaces becomes a separate follow-up increment PR (stacked on the target PR only when it needs that PR's changes) instead of more diff.
+
+### Increment contract
+
+`infrastructure/agent-sandbox/pr-increments.sh`, sourced by `solve-todo-runner.sh` and `update-pr-runner.sh`, is the single implementation behind `pnpm agentic-pr-create`, `manual-agentic-pr-create` and the change operation of `pnpm agentic-pr-update`/`manual-agentic-pr-update`. The first agent run implements the first increment and may add to its metadata file:
+
+| Field                     | Meaning                                                                                                                                                         |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `increments[].depends_on` | `""` for an increment that works on `main` alone, `"current"` for one that needs the increment being implemented now, or the id of one earlier-listed increment |
+| `increments[].id`         | Short unique kebab-case id, never `current`                                                                                                                     |
+| `increments[].task`       | Self-contained prompt for a fresh agent that sees only the original request and the plan                                                                        |
+| `increments[].title`      | Pull request title                                                                                                                                              |
+| `increments[].todo_ids`   | 6-hex ids named in the request that this increment fully resolves                                                                                               |
+| `todo_ids`                | Ids the increment being implemented now fully resolves                                                                                                          |
+
+The runner rejects the run, before publishing anything, when the plan is not an array of at most 4 increments with unique ids, titles, tasks, a single earlier prerequisite, and `todo_ids` that are unique across the plan, have a row in `TODO.md` and are named in the request. Then it runs one fresh agent per later increment: an independent one branches from `origin/main` and targets `main`; a dependent one branches from its prerequisite's branch and targets that branch, so its PR diff is only its own increment. Each increment gets its own title, summary, next steps, suggestions, `## Agentic Change History` row and a `## Stack` section listing every PR in merge order. Publishing stops at the first failing increment: its partial work becomes a draft PR, the rest are reported as unpublished with their reason, and PRs already opened stay. Git, pushes and PR creation never leave the runner. Branches are only ever created and pushed, never force-pushed.
+
+Stacked PRs and squash merges: see [Stacked pull requests](./git-workflow.md#stacked-pull-requests).
 
 ## Adding a context source or skill
 

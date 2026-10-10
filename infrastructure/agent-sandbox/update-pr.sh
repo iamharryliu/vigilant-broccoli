@@ -68,6 +68,9 @@ if [ -n "${GITHUB_ACTIONS:-}" ]; then
   echo "::add-mask::$GH_TOKEN"
 fi
 
+LOG_DIR=$(mktemp -d /tmp/vb-update.XXXXXX)
+LOG_FILE="$LOG_DIR/update-pr.log"
+STATUS=0
 echo "Updating PR (model: $MODEL): #$PR — $INSTRUCTION"
 docker run --rm --init --name "vb-update-pr-$(date +%s)" \
   --cap-add NET_ADMIN --cap-add NET_RAW \
@@ -81,4 +84,12 @@ docker run --rm --init --name "vb-update-pr-$(date +%s)" \
   -e SANDBOX_ALLOWED_DOMAINS \
   -e SOLVE_MODEL="$MODEL" \
   "$IMAGE" \
-  bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/update-pr-runner.sh" "$1" "$2"' _ "$PR" "$INSTRUCTION"
+  bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/update-pr-runner.sh" "$1" "$2"' _ "$PR" "$INSTRUCTION" \
+  2>&1 | tee "$LOG_FILE" || STATUS="${PIPESTATUS[0]}"
+
+# The target PR is reported by the caller. Follow-up increments the update
+# published as separate PRs (or could not publish) get their own summary section.
+if grep -qE '^(PR_URL|INCREMENT_UNPUBLISHED)::' "$LOG_FILE"; then
+  bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_FILE" "$STATUS" "Follow-up increments"
+fi
+exit "$STATUS"

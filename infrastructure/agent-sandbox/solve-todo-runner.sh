@@ -42,11 +42,15 @@ else
   PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
   FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 fi
-REPO_DIR="$HOME/vigilant-broccoli"
-META_FILE=/tmp/solve-meta.json
+REPO_DIR=${REPO_DIR:-$HOME/vigilant-broccoli}
+META_FILE=${META_FILE:-/tmp/solve-meta.json}
+PRE_COMMIT_HELPER="$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh"
+MERGE_BODY_HELPER="$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py"
 
 cd "$REPO_DIR"
 SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create/SKILL.md")
+# shellcheck source=pr-increments.sh
+. "$(dirname "${BASH_SOURCE[0]}")/pr-increments.sh"
 
 if [ "$MODE" = id ]; then
   # TODO items live as rows in per-section markdown tables (ID | Priority |
@@ -64,12 +68,14 @@ if [ "$MODE" = id ]; then
   fi
   BRANCH="agent/todo-${ID}"
   INTRO="Resolve this TODO item (already extracted from the repo root TODO.md):"
-  SCOPE_RULE="- Do not run any git or gh commands and do not edit TODO.md — branching, TODO.md cleanup, committing, pushing, and opening the PR are all handled by the calling script."
+  PLAN_REQUEST=$ID
+  SCOPE_RULE="- Do not run any git or gh commands and do not edit TODO.md — branching, TODO.md cleanup, committing, pushing, and opening the PR are all handled by the calling script. TODO ${ID} is removed by the one increment that fully resolves it (this one unless you assign it to a later increment in todo_ids)."
 elif [ "$MODE" = prompt ]; then
   SLUG=$(echo "$TASK" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-*//;s/-*$//' | cut -c1-40)
   BRANCH="agent/task-${SLUG:-task}-$(date +%s)"
   INTRO="Accomplish this task:"
-  SCOPE_RULE="- Do not run any git or gh commands — branching, committing, pushing, and opening the PR are all handled by the calling script."
+  PLAN_REQUEST=$TASK
+  SCOPE_RULE="- Do not run any git or gh commands and do not edit TODO.md — branching, TODO.md cleanup, committing, pushing, and opening the PR are all handled by the calling script."
 else
   echo "Usage: solve-todo-runner.sh (--id <TODO_ID> | --prompt <text>)" >&2
   exit 1
@@ -97,79 +103,47 @@ git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"
 
-# The sandbox container is --rm'd as soon as the run ends, so the only way the
-# calling script can report the diff is to print it to stdout (tee'd to the run
-# log) between markers. Diff body lines are always prefixed (' ', '+', '-', '\'),
-# so a bare marker can never appear inside the payload.
-emit_pr_diff() {
-  echo 'PR_DIFF_BEGIN'
-  git --no-pager diff --no-color --no-ext-diff "$BASE_SHA" HEAD
-  echo 'PR_DIFF_END'
-}
+INC_REQUEST=$TASK
+INC_SKILL_INSTRUCTIONS=$SKILL_INSTRUCTIONS
+INC_ORDER=("$INC_CURRENT")
+INC_BRANCH[$INC_CURRENT]=$BRANCH
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+  INC_HISTORY_SOURCE="GitHub Actions"
+else
+  INC_HISTORY_SOURCE="Docker sandbox (local)"
+fi
+if [ "$MODE" = id ]; then
+  INC_HISTORY_BASE_COMMAND="agentic-pr-create ${ID}"
+  SALVAGE_TITLE="Resolve TODO ${ID}"
+  FALLBACK_SUBJECT="chore: Resolve TODO ${ID}."
+  FALLBACK_SUMMARY="- Resolve TODO ${ID}."
+else
+  INC_HISTORY_BASE_COMMAND="agentic-pr-create --prompt"
+  SALVAGE_TITLE=$TASK
+  FALLBACK_SUBJECT="chore: Complete agent task."
+  FALLBACK_SUMMARY="- ${TASK}"
+fi
+INC_HISTORY_COMMAND=$INC_HISTORY_BASE_COMMAND
+INC_TITLE[$INC_CURRENT]=$SALVAGE_TITLE
 
+# Only the first increment is rescued by this trap; once its PR is open, each
+# later increment salvages itself in inc_run_later and the PRs already published
+# stay as they are.
+SALVAGE_ENABLED=1
 salvage_on_failure() {
   local exit_code=$?
   trap - EXIT
   set +e
   [ -z "${CODEX_HOME:-}" ] || rm -rf "$CODEX_HOME"
   [ "$exit_code" -eq 0 ] && exit 0
+  [ "$SALVAGE_ENABLED" = 1 ] || exit "$exit_code"
 
   echo "Runner exited with status $exit_code — checking for salvageable work on $BRANCH" >&2
-  git checkout "$BRANCH" >/dev/null 2>&1
-
-  if [ -z "$(git status --porcelain)" ]; then
-    echo "No uncommitted changes to salvage." >&2
-    printf 'RESULT::salvage-nothing\n'
-    exit "$exit_code"
-  fi
-
-  if [ "$MODE" = id ]; then
-    SALVAGE_TITLE="[WIP] Resolve TODO ${ID} (agent run incomplete)"
-  else
-    SALVAGE_TITLE="[WIP] $(printf '%s' "$TASK" | tr '\n' ' ' | cut -c1-80) (agent run incomplete)"
-  fi
-
-  git add -A
-  # --no-verify: a WIP salvage commit must not be blocked by lint/format hooks —
-  # the goal is to preserve an unfinished diff, not to ship clean code.
-  git commit --no-verify -m "wip: Save partial progress from an incomplete agent run." -m "$FALLBACK_TRAILER"
-
-  if ! git push -u origin "$BRANCH"; then
-    echo "Failed to push salvage branch $BRANCH — partial work could not be recovered." >&2
-    printf 'RESULT::salvage-push-failed\n'
-    exit "$exit_code"
-  fi
-
-  SALVAGE_BODY=$(cat <<BODY
-## Summary
-
-This agent run did not finish (exited with status ${exit_code}). This draft PR captures its partial, uncommitted work so it isn't lost.
-
-## Request
-
-$REQUEST_BODY
-
-To continue, run: \`pnpm agentic-pr-update <PR#> "finish the task"\`
-
-$PR_FOOTER
-BODY
-)
-
-  if PR_URL=$(gh pr create --draft --title "$SALVAGE_TITLE" --body "$SALVAGE_BODY" 2>&1); then
-    echo "Salvaged partial work: $PR_URL" >&2
-    echo "$PR_URL"
-    printf 'PR_TITLE::%s\n' "$SALVAGE_TITLE"
-    printf 'PR_URL::%s\n' "$PR_URL"
-    printf 'RESULT::salvaged\n'
-    echo 'PR_SUMMARY_BEGIN'
-    echo "This agent run did not finish (exited with status ${exit_code}); partial work was pushed as a draft PR."
-    echo 'PR_SUMMARY_END'
-    emit_pr_diff
-  else
-    echo "Pushed salvage branch $BRANCH but failed to open a PR — open one manually." >&2
-    printf 'RESULT::salvage-pr-failed\n'
-  fi
-
+  inc_salvage "$BRANCH" "$INC_DEFAULT_BASE" "$BASE_SHA" "$SALVAGE_TITLE" "$REQUEST_BODY" "$exit_code" "$INC_CURRENT"
+  local id
+  for id in "${INC_ORDER[@]:1}"; do
+    inc_emit_unpublished "$id" "the first increment was not published"
+  done
   exit "$exit_code"
 }
 trap salvage_on_failure EXIT
@@ -186,37 +160,45 @@ $SKILL_INSTRUCTIONS
 Sandbox execution rules:
 - You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
 $SCOPE_RULE
-- When finished, write $META_FILE containing only a JSON object with these string fields:
+$(inc_plan_instructions solve)
+- When finished, write $META_FILE containing only a JSON object with these fields (strings unless noted):
   - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure
   - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
   - commit_message: capitalized, concise, focused on why not what, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit, or "$FALLBACK_TRAILER" when no such trailer is specified
   - pr_title: the pull request title
-  - pr_summary: markdown bullet points for the PR "## Summary" section
-  - pr_next_steps: markdown checklist for the PR "## Next steps" section — concrete remaining actions for the human (manual commands to run, UI/manual spot checks, watching CI to green, then one ready-to-run `pnpm agentic-pr-create --prompt "<task>"` item per remaining increment when the task was split), or "- [ ] Merge once CI is green" when nothing else is left
+  - pr_summary: markdown bullet points for the PR "## Summary" section, describing only the increment you implemented
+  - pr_next_steps: markdown checklist for the PR "## Next steps" section — concrete remaining actions for the human (manual commands to run, UI/manual spot checks, watching CI to green, then one ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\` item per piece of work deliberately left out of every increment), or "- [ ] Merge once CI is green" when nothing else is left
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
+  - todo_ids: array of the TODO.md ids this increment fully resolves (omit or [] when none)
+  - increments: the optional array of later increments described above
 EOF
 )
 
-run_agent() {
+CODEX_LOGGED_IN=0
+agent_invoke() {
+  local prompt=$1
   case "$AGENT_RUNNER" in
     claude)
-      claude -p "$PROMPT" --dangerously-skip-permissions --model "$MODEL" \
+      claude -p "$prompt" --dangerously-skip-permissions --model "$MODEL" \
         --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
       ;;
     codex)
-      if [ -z "${AGENT_CODEX_ACCESS_TOKEN:-}" ]; then
-        echo "ERROR: AGENT_CODEX_ACCESS_TOKEN is required for SOLVE_AGENT=codex." >&2
-        exit 1
+      if [ "$CODEX_LOGGED_IN" = 0 ]; then
+        if [ -z "${AGENT_CODEX_ACCESS_TOKEN:-}" ]; then
+          echo "ERROR: AGENT_CODEX_ACCESS_TOKEN is required for SOLVE_AGENT=codex." >&2
+          return 1
+        fi
+        # Not under /tmp: workspace-write leaves /tmp writable for $META_FILE, so
+        # the agent could read the access token out of $CODEX_HOME/auth.json.
+        CODEX_HOME=$(mktemp -d "$HOME/.codex-run.XXXXXX")
+        export CODEX_HOME
+        printf '%s\n' "$AGENT_CODEX_ACCESS_TOKEN" | codex login --with-access-token >/dev/null
+        unset AGENT_CODEX_ACCESS_TOKEN CODEX_ACCESS_TOKEN OPENAI_API_KEY CODEX_API_KEY
+        CODEX_LOGGED_IN=1
       fi
-      # Not under /tmp: workspace-write leaves /tmp writable for $META_FILE, so
-      # the agent could read the access token out of $CODEX_HOME/auth.json.
-      CODEX_HOME=$(mktemp -d "$HOME/.codex-run.XXXXXX")
-      export CODEX_HOME
-      printf '%s\n' "$AGENT_CODEX_ACCESS_TOKEN" | codex login --with-access-token >/dev/null
-      unset AGENT_CODEX_ACCESS_TOKEN CODEX_ACCESS_TOKEN OPENAI_API_KEY CODEX_API_KEY
 
-      CODEX_ARGS=(
+      local codex_args=(
         exec
         --cd "$REPO_DIR"
         # Codex ignores a repo-local .codex/config.toml, and this runner's
@@ -229,112 +211,44 @@ run_agent() {
         --ephemeral
         --output-last-message /tmp/codex-last-message.txt
       )
-      [ -z "$MODEL" ] || CODEX_ARGS+=(--model "$MODEL")
+      [ -z "$MODEL" ] || codex_args+=(--model "$MODEL")
       # No GitHub credentials: codex exec has no tool deny-list of its own, so
       # dropping the token is what keeps the agent off the push/PR path that the
       # Claude branch blocks with --disallowedTools.
-      env -u GH_TOKEN -u GITHUB_TOKEN codex "${CODEX_ARGS[@]}" "$PROMPT"
-      rm -rf "$CODEX_HOME"
+      env -u GH_TOKEN -u GITHUB_TOKEN codex "${codex_args[@]}" "$prompt"
       ;;
   esac
 }
 
-run_agent
+agent_invoke "$PROMPT"
 
 git checkout "$BRANCH"
 [ "$(git rev-parse HEAD)" = "$BASE_SHA" ] || git reset --soft "$BASE_SHA"
 
-if [ "$MODE" = id ]; then
-  if [ -z "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
-    echo "ERROR: no changes besides TODO.md — TODO ${ID} was not resolved." >&2
-    exit 1
-  fi
-  TMP=$(mktemp)
-  # Each TODO item is a single table row whose first column is its id; drop that
-  # row. The anchored regex only matches the id in the leading cell, so passing
-  # mentions of the id inside another row's prose (cross-references) are kept.
-  grep -vE "^\|[[:space:]]*${ID}[[:space:]]*\|" TODO.md > "$TMP"
-  mv "$TMP" TODO.md
-else
-  if [ -z "$(git status --porcelain)" ]; then
-    echo "ERROR: no changes produced — task was not completed." >&2
-    exit 1
-  fi
+if [ -z "$(git status --porcelain)" ]; then
+  echo "ERROR: no changes produced — task was not completed." >&2
+  exit 1
 fi
 
-read_meta() { jq -r "$1 // empty" "$META_FILE" 2>/dev/null || true; }
+# The whole plan is checked before the first PR is opened, so a bad plan never
+# leaves a partial stack behind.
+inc_validate_plan "$META_FILE" "$BASE_SHA" "$PLAN_REQUEST" "${ID:-}"
+inc_load_plan "$META_FILE"
 
-COMMIT_TYPE=$(read_meta .commit_type)
-COMMIT_SCOPE=$(read_meta .commit_scope)
-COMMIT_MESSAGE=$(read_meta .commit_message)
-TRAILER=$(read_meta .co_authored_by)
-PR_TITLE=$(read_meta .pr_title)
-PR_SUMMARY=$(read_meta .pr_summary)
-PR_NEXT_STEPS=$(read_meta .pr_next_steps)
-PR_SUGGESTIONS=$(read_meta .pr_suggestions)
-
-case "$COMMIT_TYPE" in
-  feat | fix | ci | chore | docs | refactor | enhancement | security | infrastructure) ;;
-  *) COMMIT_TYPE="" ;;
-esac
-
-if [ "$MODE" = id ]; then
-  FALLBACK_SUBJECT="chore: Resolve TODO ${ID}."
-  FALLBACK_SUMMARY="- Resolve TODO ${ID}."
-else
-  FALLBACK_SUBJECT="chore: Complete agent task."
-  FALLBACK_SUMMARY="- ${TASK}"
+RESOLVED_IDS=()
+while IFS= read -r resolved_id; do
+  [ -z "$resolved_id" ] || RESOLVED_IDS+=("$resolved_id")
+done < <(inc_current_todo_ids "$META_FILE" "${ID:-}")
+inc_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
+if [ "${#RESOLVED_IDS[@]}" -gt 0 ] && [ -z "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
+  echo "ERROR: no changes besides TODO.md — ${RESOLVED_IDS[*]} not resolved." >&2
+  exit 1
 fi
 
-if [ -n "$COMMIT_TYPE" ] && [ -n "$COMMIT_MESSAGE" ]; then
-  if [ -n "$COMMIT_SCOPE" ]; then
-    COMMIT_SUBJECT="${COMMIT_TYPE}(${COMMIT_SCOPE}): ${COMMIT_MESSAGE}"
-  else
-    COMMIT_SUBJECT="${COMMIT_TYPE}: ${COMMIT_MESSAGE}"
-  fi
-else
-  COMMIT_SUBJECT="$FALLBACK_SUBJECT"
-fi
+inc_publish "$INC_CURRENT" "$BRANCH" "$INC_DEFAULT_BASE" "$BASE_SHA" "$TASK" "$FALLBACK_SUBJECT" "$FALLBACK_SUMMARY" || exit 1
+SALVAGE_ENABLED=0
 
-echo "$TRAILER" | grep -Eqi '^co-authored-by: .+ <.+>$' || TRAILER="$FALLBACK_TRAILER"
-[ -n "$PR_TITLE" ] || PR_TITLE="$COMMIT_SUBJECT"
-[ -n "$PR_SUMMARY" ] || PR_SUMMARY="$FALLBACK_SUMMARY"
-[ -n "$PR_NEXT_STEPS" ] || PR_NEXT_STEPS="- [ ] Merge once CI is green"
-
-bash "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh"
-
-git add -A
-git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
-git push -u origin "$BRANCH"
-
-if [ -n "${GITHUB_ACTIONS:-}" ]; then
-  HISTORY_SOURCE="GitHub Actions"
-else
-  HISTORY_SOURCE="Docker sandbox (local)"
-fi
-if [ "$MODE" = id ]; then
-  HISTORY_COMMAND="agentic-pr-create ${ID}"
-else
-  HISTORY_COMMAND="agentic-pr-create --prompt"
-fi
-
-# The base body is only the footer; merge-pr-body.py (shared with
-# update-pr-runner.sh) inserts "## Summary", "## Next steps"
-# and "## Suggestions" ahead of it and appends the first "## Agentic Change
-# History" row, so a brand-new PR's body is assembled the same way a later
-# agentic-pr-update edits it.
-BASE_BODY="$PR_FOOTER"
-
-PR_BODY=$(CURRENT_BODY="$BASE_BODY" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
-  HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="$HISTORY_COMMAND" HISTORY_PROMPT="$TASK" \
-  HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
-  python3 "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py")
-
-PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
-echo "$PR_URL"
-printf 'PR_TITLE::%s\n' "$PR_TITLE"
-printf 'PR_URL::%s\n' "$PR_URL"
-echo 'PR_SUMMARY_BEGIN'
-printf '%s\n' "$PR_SUMMARY"
-echo 'PR_SUMMARY_END'
-emit_pr_diff
+LATER_STATUS=0
+inc_run_later || LATER_STATUS=1
+inc_refresh_stacks || true
+exit "$LATER_STATUS"

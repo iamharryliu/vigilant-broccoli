@@ -6,7 +6,9 @@ audit-todo-runner.sh, prune-runner.sh) to rewrite a PR body in place: replace th
 "## Summary" / "## Next steps" / "## Suggestions" sections with the agent's latest cumulative
 description, and append a row to an "## Agentic Change History" table —
 creating either if the PR body doesn't have them yet. Reads everything from
-the environment (see the CURRENT_BODY/PR_*/HISTORY_* vars below) and prints
+the environment (see the CURRENT_BODY/PR_*/HISTORY_* vars below; PR_STACK is the
+"## Stack" section pr-increments.sh writes when one request is published as
+several pull requests) and prints
 the merged body to stdout; the caller passes it to `gh pr create --body` or
 `gh pr edit --body`.
 """
@@ -70,6 +72,7 @@ if pr_next_steps and not replace_section("Next steps", pr_next_steps):
     sections.insert(insert_at, ("Next steps", pr_next_steps))
 
 pr_suggestions = os.environ.get("PR_SUGGESTIONS", "").strip()
+pr_stack = os.environ.get("PR_STACK", "").strip()
 
 if pr_suggestions and not replace_section("Suggestions", pr_suggestions):
     insert_at = (
@@ -80,6 +83,10 @@ if pr_suggestions and not replace_section("Suggestions", pr_suggestions):
         + 1
     )
     sections.insert(insert_at, ("Suggestions", pr_suggestions))
+
+if pr_stack and not replace_section("Stack", pr_stack):
+    insert_at = next((i for i, (h, _) in enumerate(sections) if h == "Summary"), -1) + 1
+    sections.insert(insert_at, ("Stack", pr_stack))
 
 history_source = os.environ.get("HISTORY_SOURCE", "").strip()
 history_command = os.environ.get("HISTORY_COMMAND", "").strip()
