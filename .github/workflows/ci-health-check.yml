@@ -184,34 +184,20 @@ jobs:
           fi
 
           echo ""
-          echo "[OCI VM — RabbitMQ Management]"
+          echo "[OCI VM — RabbitMQ Broker]"
           PROTO_STRIPPED="${RABBITMQ_CONNECTION_STRING#amqps://}"
-          USER_PASS="${PROTO_STRIPPED%@*}"
           HOST_PORT="${PROTO_STRIPPED##*@}"
-          RMQ_USER="${USER_PASS%%:*}"
-          RMQ_PASS="${USER_PASS#*:}"
           RMQ_HOST="${HOST_PORT%%:*}"
-          echo "::add-mask::$RMQ_PASS"
           echo "$RABBITMQ_CA_CERT" | base64 -d > /tmp/rabbitmq-ca.crt
-          RMQ_NETRC=$(mktemp)
-          printf 'machine rabbitmq login %s password %s\n' "$RMQ_USER" "$RMQ_PASS" > "$RMQ_NETRC"
-          # SAN is 'rabbitmq'; --connect-to keeps SNI 'rabbitmq' while dialing
-          # the real host (DNS name or IP). Retry to tolerate transient blips.
-          for attempt in 1 2 3; do
-            RMQ_CODE=$(curl -s -o /tmp/mgmt.json -w '%{http_code}' --max-time 15 \
-              --cacert /tmp/rabbitmq-ca.crt \
-              --connect-to "rabbitmq:15671:${RMQ_HOST}:15671" \
-              --netrc-file "$RMQ_NETRC" \
-              "https://rabbitmq:15671/api/overview" 2>/dev/null) || RMQ_CODE="timeout"
-            [ "$RMQ_CODE" = "200" ] && break
-            [ "$attempt" -lt 3 ] && sleep 5
-          done
-          rm -f "$RMQ_NETRC"
-          if [ "$RMQ_CODE" = "200" ]; then
-            VERSION=$(grep -o '"rabbitmq_version":"[^"]*"' /tmp/mgmt.json | cut -d'"' -f4)
-            check "rabbitmq broker (version: $VERSION)" "ok"
+          # The management UI is tunnel-only behind Cloudflare Access, so the
+          # broker is checked by verifying its AMQPS chain + 'rabbitmq' SAN.
+          RMQ_TLS=$(echo | timeout 15 openssl s_client -connect "${RMQ_HOST}:5671" \
+            -servername rabbitmq -verify_hostname rabbitmq \
+            -CAfile /tmp/rabbitmq-ca.crt 2>&1 </dev/null) || true
+          if echo "$RMQ_TLS" | grep -q "Verify return code: 0 (ok)"; then
+            check "rabbitmq broker (AMQPS 5671)" "ok"
           else
-            check "rabbitmq broker" "HTTP $RMQ_CODE (expected 200)"
+            check "rabbitmq broker (AMQPS 5671)" "TLS verification failed or unreachable"
           fi
 
           echo ""
