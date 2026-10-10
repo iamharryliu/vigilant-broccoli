@@ -13,13 +13,17 @@ export default function Page() {
   usePageTitle(SIDEBAR_ROUTE.MUSIC.title);
   return (
     <div className="h-full overflow-auto">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <CardContainer title={DJ_MUSIC_TITLE}>
-          <DjMusicUtilityContent />
-        </CardContainer>
-        <CardContainer title={METRONOME_TITLE}>
-          <Metronome />
-        </CardContainer>
+      <div className="grid grid-cols-2 gap-4">
+        <div className="min-w-0 overflow-x-auto">
+          <CardContainer title={DJ_MUSIC_TITLE}>
+            <DjMusicUtilityContent />
+          </CardContainer>
+        </div>
+        <div className="min-w-0 overflow-x-auto">
+          <CardContainer title={METRONOME_TITLE}>
+            <Metronome />
+          </CardContainer>
+        </div>
       </div>
     </div>
   );
