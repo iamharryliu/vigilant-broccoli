@@ -73,6 +73,10 @@
       "TITLE": "Weather",
       "DESCRIPTION": "Current weather for your location, deployed on Vercel."
     },
+    "BALLOONO": {
+      "TITLE": "Balloono",
+      "DESCRIPTION": "Bomberman-style water balloon battles in online rooms or against CPUs, deployed on Vercel."
+    },
     "UTILITIES": {
       "TITLE": "Utilities",
       "DESCRIPTION": "Searchable page of everyday utilities."

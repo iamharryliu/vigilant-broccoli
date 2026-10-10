@@ -4,6 +4,7 @@ import {
   Bot,
   CalendarDays,
   CloudSun,
+  Gamepad2,
   Globe,
   Hourglass,
   LayoutGrid,
@@ -37,6 +38,7 @@ const ICON_CLASS = 'h-5 w-5 shrink-0';
 const FALLBACK_ICON: LucideIcon = Globe;
 
 const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
+  balloono: Gamepad2,
   calendars: CalendarDays,
   'context-md': Bot,
   'cloud-8-skate': Bike,

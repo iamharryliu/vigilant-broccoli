@@ -2,7 +2,7 @@
 
 <!-- managed:repo-stats:start -->
 
-Personal monorepo, supporting **13 applications**, **5 API services**, **7 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
+Personal monorepo, supporting **14 applications**, **5 API services**, **7 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
 
 <!-- managed:repo-stats:end -->
 
@@ -64,6 +64,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | Application                                                                | Description                                                         | URL                                                                                 |
 | -------------------------------------------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
 | [Agent Context](./projects/nx-workspace/apps/ui/context-md)                | Repo agent context, docs and skills with search and link graph.     | [context.harryliu.dev](https://context.harryliu.dev/)                               |
+| [Balloono](./projects/nx-workspace/apps/ui/balloono)                       | Water balloon battles in online rooms or against CPU opponents.     | [balloono.harryliu.dev](https://balloono.harryliu.dev/)                             |
 | [Calendars](./projects/nx-workspace/apps/ui/calendars)                     | Public personal and event calendar directory.                       | [calendar.harryliu.dev](https://calendar.harryliu.dev/)                             |
 | [Cloud8Skate](./projects/nx-workspace/apps/ui/cloud-8-skate-react)         | Toronto skating community website.                                  | [cloud8skate.com](https://cloud8skate.com/)                                         |
 | [Component Library](./projects/nx-workspace/apps/ui/component-library)     | Interactive shared React component sandbox.                         | [components.harryliu.dev](https://components.harryliu.dev/)                         |

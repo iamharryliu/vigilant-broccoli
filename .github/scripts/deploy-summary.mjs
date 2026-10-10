@@ -25,6 +25,7 @@ const PROJECT_HOSTING = {
   'links-react': { platform: 'pages', name: 'links-react' },
   'waiting-games': { platform: 'pages', name: 'waiting-games' },
   'weather-next': { platform: 'vercel', name: 'weather-next' },
+  balloono: { platform: 'vercel', name: 'balloono' },
   calendars: { platform: 'pages', name: 'calendars' },
   whiteboard: { platform: 'vercel', name: 'whiteboard' },
   'vb-manager-next-mobile': {

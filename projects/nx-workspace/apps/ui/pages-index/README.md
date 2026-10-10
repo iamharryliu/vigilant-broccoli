@@ -35,7 +35,7 @@
     - npm → `/open-source/npm` (published `@vigilant-broccoli/*` packages)
       - `/open-source/npm/:pkg` (README fetched from `registry.npmjs.org`, links out to the npm package)
   - `/web-applications` - Web applications
-    - Apps → harryliu.dev, Calendars, Cloud8Skate, Docs (Markdown), Agent Context, Utilities, Waiting Games, Component Library, Links, FindMe, Whiteboard, Weather (external)
+    - Apps → harryliu.dev, Calendars, Cloud8Skate, Docs (Markdown), Agent Context, Utilities, Waiting Games, Component Library, Links, FindMe, Whiteboard, Weather, Balloono (external)
     - Demo → Employee Handler
   - `/api-services` — API Services
     - `/api-services/:service` — Swagger UI rendered in-app against a spec published at build time to `public/openapi/<service>.json` by the `generate-openapi` target (`scripts/generate-openapi-specs.ts`). All five services (llm-service, bucket-service, email-service, email-subscription-service, employee-handler) are private-only (the first four are private Fly apps; employee-handler is a library-hosted contract with no public `/docs`), so this page is the only way to browse them. The employee-handler spec is generated from the zod contract in `libs/@vigilant-broccoli/employee-handler`, whose sources are `generate-openapi` inputs. Swagger UI itself loads from a pinned jsDelivr CDN rather than bundling `swagger-ui-dist`.
