@@ -1,0 +1,106 @@
+{
+  "PAGE": {
+    "HOME": "Play",
+    "CPU": "Versus CPU",
+    "ROOM": "Room {room}"
+  },
+  "PROFILE": {
+    "NAME_LABEL": "Your name",
+    "NAME_PLACEHOLDER": "Pick a name",
+    "RANDOM_NAME": "Pick a random name"
+  },
+  "LOCAL": {
+    "ADD": "Add local player",
+    "DESCRIPTION": "A second person on this keyboard plays with WASD and Space; you switch to the arrow keys and Enter.",
+    "NAME": "Player 2"
+  },
+  "GAMES": {
+    "TITLE": "Games",
+    "EMPTY": "No games right now. Start one!"
+  },
+  "START": {
+    "BUTTON": "Start game",
+    "BACK": "Back",
+    "MODE": "Game mode"
+  },
+  "CPU": {
+    "TITLE": "Versus CPU",
+    "DESCRIPTION": "Practice against computer opponents on your own.",
+    "OPPONENTS": "Opponents",
+    "DIFFICULTY": "Difficulty",
+    "START": "Start match",
+    "NAME": "CPU {number} · {difficulty}"
+  },
+  "DIFFICULTY": {
+    "EASY": "Easy",
+    "MEDIUM": "Medium",
+    "HARD": "Hard"
+  },
+  "ONLINE": {
+    "TITLE": "Online rooms",
+    "DESCRIPTION": "Create a room or join one, then share its name with friends.",
+    "ROOM_LABEL": "Room name",
+    "ROOM_PLACEHOLDER": "e.g. soggy-otter",
+    "JOIN": "Join room",
+    "RANDOM_ROOM": "Pick a random room name",
+    "ROOM_PLAYERS": "{count}/{max} players",
+    "ROOM_PLAYING": "In a match",
+    "ROOM_WAITING": "In the lobby",
+    "HOSTED_BY": "Hosted by {name}",
+    "UNAVAILABLE": "Online rooms aren't configured in this build, but CPU matches still work."
+  },
+  "LOBBY": {
+    "LEAVE": "Leave room",
+    "PLAYERS": "Players",
+    "HOST_BADGE": "Host",
+    "YOU_BADGE": "You",
+    "SPECTATOR_BADGE": "Watching",
+    "CPUS": "CPU opponents",
+    "NO_CPUS": "No CPU opponents.",
+    "ADD_CPU": "Add CPU",
+    "REMOVE_CPU": "Remove {name}",
+    "START": "Start match",
+    "WAITING_FOR_HOST": "Waiting for {name} to start the match…",
+    "NEED_PLAYERS": "Add a CPU or invite a friend to start.",
+    "SHARE_HINT": "Share the room name “{room}” so friends can join.",
+    "SEATS_FULL": "All {count} seats are taken. Anyone else watches."
+  },
+  "CONNECTION": {
+    "CONNECTING": "Connecting to the room…",
+    "ERROR": "Lost connection to the room. Retrying… check your network."
+  },
+  "MATCH": {
+    "BOARD_LABEL": "Balloono arena",
+    "SUDDEN_DEATH_IN": "Sudden death in {time}",
+    "SUDDEN_DEATH": "Sudden death! The arena is closing in.",
+    "WINS": "{count} wins",
+    "SOAKED": "Soaked",
+    "WINNER": "{name} wins the round!",
+    "YOU_WIN": "You win the round!",
+    "DRAW": "Draw. Nobody stayed dry.",
+    "PLAY_AGAIN": "Play again",
+    "BACK_TO_LOBBY": "Back to lobby",
+    "QUIT": "Quit",
+    "WAITING_FOR_HOST": "Waiting for the host to start the next round…",
+    "SPECTATING": "You're watching this round. You'll get a seat in the next one if one is free.",
+    "LOCAL_CONTROLS_HINT": "Player 1: arrow keys + Enter. Player 2: WASD + Space.",
+    "CONTROLS_HINT": "Move with the arrow keys or WASD. Drop a balloon with Space.",
+    "STATS": "Balloons {balloons} · Range {range} · Speed {speed}"
+  },
+  "POWER_UP": {
+    "BALLOON": "Extra balloon",
+    "RANGE": "Bigger splash",
+    "SPEED": "Faster feet"
+  },
+  "TOUCH": {
+    "UP": "Move up",
+    "DOWN": "Move down",
+    "LEFT": "Move left",
+    "RIGHT": "Move right",
+    "BALLOON": "Drop balloon"
+  },
+  "AUDIO": {
+    "MUTE": "Mute sounds",
+    "UNMUTE": "Unmute sounds"
+  }
+}

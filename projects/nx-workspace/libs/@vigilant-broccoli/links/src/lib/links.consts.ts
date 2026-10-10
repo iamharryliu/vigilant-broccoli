@@ -625,6 +625,11 @@ export const HARRYLIU_APP_URL = {
     URL: 'https://whiteboard.harryliu.dev/',
     STAGING_URL: 'https://staging-whiteboard.vercel.app/',
   },
+  BALLOONO: {
+    NAME: 'Balloono',
+    URL: 'https://balloono.harryliu.dev/',
+    STAGING_URL: 'https://staging-balloono.vercel.app/',
+  },
   EMPLOYEE_HANDLER_DEMO: {
     NAME: 'Employee Handler Demo',
     URL: 'https://demo-employee-handler-ui.vercel.app/',

@@ -30,6 +30,8 @@ sites:
     url: https://staging-whiteboard.vercel.app/
   - name: staging-weather
     url: https://staging-weather-next.vercel.app/
+  - name: staging-balloono
+    url: https://staging-balloono.vercel.app/
   - name: staging-calendars
     url: https://staging-calendars.pages.dev/
   - name: staging-vb-manager-next-mobile
@@ -68,6 +70,8 @@ sites:
     url: https://whiteboard.harryliu.dev/
   - name: production-weather
     url: https://weather.harryliu.dev/
+  - name: production-balloono
+    url: https://balloono.harryliu.dev/
   - name: production-calendars
     url: https://calendar.harryliu.dev/
   - name: production-vb-manager-next-mobile

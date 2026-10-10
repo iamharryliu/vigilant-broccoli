@@ -304,6 +304,10 @@ async function main() {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
       settings: NX_VERCEL_SETTINGS('whiteboard', 'dist/apps/whiteboard/.next'),
     },
+    balloono: {
+      hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
+      settings: NX_VERCEL_SETTINGS('balloono', 'dist/apps/ui/balloono/.next'),
+    },
     'weather-next': {
       hardcodedSecrets: {
         VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,

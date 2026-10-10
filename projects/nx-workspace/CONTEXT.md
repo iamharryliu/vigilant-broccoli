@@ -98,7 +98,7 @@ Next.js can log "Next.js inferred your workspace root, but it may not be
 correct" because it finds both the repository-root `pnpm-lock.yaml` and
 `projects/nx-workspace/pnpm-lock.yaml`. This affects `small-business-next`,
 `vb-manager-next`, `vb-manager-next-mobile`, `whiteboard`, `findme`,
-`hearth`, `employee-handler-ui`, and `weather-next`.
+`hearth`, `employee-handler-ui`, `weather-next`, and `balloono`.
 
 The warning alone is accepted: no build or deployment defect has been
 attributed to it. Previous attempts to silence it have been revisited without

@@ -1,6 +1,12 @@
 {
   "applications": [
     {
+      "id": "balloono",
+      "href": "https://balloono.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.BALLOONO.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.BALLOONO.DESCRIPTION"
+    },
+    {
       "id": "context-md",
       "href": "https://context.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.CONTEXT_MD.TITLE",
