@@ -330,6 +330,12 @@ variable "uptime_domain" {
   default = "uptime.harryliu.dev"
 }
 
+variable "upptime_https_enforced" {
+  type        = bool
+  default     = false
+  description = "Enforce HTTPS on the Upptime Pages site. Set true only after GitHub has issued a certificate covering the custom domain; the API rejects it earlier."
+}
+
 variable "component_library_domain" {
   type    = string
   default = "components.harryliu.dev"
