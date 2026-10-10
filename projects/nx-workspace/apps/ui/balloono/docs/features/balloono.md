@@ -13,8 +13,8 @@ A Bomberman-style arena game at `balloono.harryliu.dev`: drop water balloons, so
 
 ## Rules
 
-- 13×11 arena with fixed pillars and random crates. Each corner is a spawn with its neighbouring tiles kept clear. Up to four players.
-- A balloon pops 2.5 s after it is dropped and splashes in a plus shape up to its range. The splash stops at pillars, and also at the first crate it breaks. It sets off any balloon it reaches and destroys power-ups lying in its path.
+- 13×11 arena with fixed pillars and random crates. Each corner and the middle of each edge is a spawn with its neighbouring tiles kept clear. Up to eight players, human or CPU.
+- A balloon pops 2.5 s after it is dropped and splashes in a plus shape up to its range, which starts at one tile. The splash stops at pillars, and also at the first crate it breaks. It sets off any balloon it reaches. Power-ups stay until a player picks them up.
 - Broken crates can reveal a power-up: extra balloon, bigger splash, or faster feet.
 - Anyone standing in a splash is soaked and out. The last player dry wins the round. Wins are counted per session or per room.
 - After 2 minutes, sudden death walls the arena in on a spiral, one tile at a time. Tiles about to close flash red. This ends cautious stalemates.
@@ -24,7 +24,7 @@ A Bomberman-style arena game at `balloono.harryliu.dev`: drop water balloons, so
 `src/app/engine/` is pure TypeScript with no React and no network, so the same code runs the local game and an online host.
 
 - `advanceMatch` (`match.ts`) steps one 50 ms tick from a state and a map of inputs, and returns a new state.
-- Movement is tile to tile. A player counts as standing on whichever tile they are mostly over (`occupiedTile`). Reversing mid-step is allowed.
+- Movement is continuous. A player is a box slightly narrower than a tile and can sit between tiles, sliding toward a lane's centre to cut corners. They count as standing on the tile their centre is over (`occupiedTile`). CPU bots send `snap` inputs so they stop on tile centres, which is where they decide.
 - `dangerMap` (`board.ts`) gives the ticks until each tile is soaked. It follows chain reactions and includes sudden-death closures. The CPU uses it, and so does the renderer's warning overlay.
 
 ## CPU opponents
@@ -49,7 +49,7 @@ Every bot targets only crate or enemy spots it could escape from after dropping.
 
 Rooms use public Supabase Realtime channels (`balloono-room:<name>`), with no backend or database of their own:
 
-- **Presence** lists who is in the room. Seats go to the first four members by join time; anyone else watches.
+- **Presence** lists who is in the room. Seats go to the first eight members by join time; anyone else watches.
 - **Host-authoritative:** the host's browser runs the simulation, including CPU seats. It broadcasts a state snapshot every other tick. Guests send input only when it changes, and their canvas eases toward each snapshot.
 - **Host migration:** the host is whoever the last snapshot named, while they are still present. Otherwise it is the earliest joiner. A newcomer waits 1.5 s before claiming the role, so a fast clock cannot steal it. If the host leaves mid-match, the next host continues from the last snapshot. Players who left are soaked.
 - **Room directory:** Realtime cannot list channels, so each host advertises its room as presence on `balloono-directory`. The home screen lists those rooms.
@@ -62,6 +62,7 @@ Without `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (f
 ## Controls
 
 - Keyboard: arrow keys or WASD to move, Space, Enter or X to drop a balloon. The most recently pressed held direction wins.
+- Local second player (Versus CPU only): ticking **Add local player** gives player 1 the arrow keys and Enter, and player 2 WASD and Space. It leaves room for six CPUs.
 - Touch: an on-screen pad and balloon button, shown on coarse pointers and on screens narrower than 768 px.
 
 ## Manual verification
