@@ -156,6 +156,10 @@ export const CLAUDE_LINK = {
     NAME: 'Claude',
     URL: 'https://claude.ai',
   },
+  CODE: {
+    NAME: 'Claude Code',
+    URL: 'https://claude.ai/code',
+  },
   DASHBOARD: {
     NAME: 'Claude Dashboard',
     URL: 'https://claude.ai/',

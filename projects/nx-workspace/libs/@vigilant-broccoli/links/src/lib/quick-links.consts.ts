@@ -448,6 +448,12 @@ const DEV_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.DEV,
   },
   {
+    label: CLAUDE_LINK.CODE.NAME,
+    target: CLAUDE_LINK.CODE.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.DEV,
+  },
+  {
     label: CLAUDE_LINK.DASHBOARD.NAME,
     target: CLAUDE_LINK.DASHBOARD.URL,
     type: OPEN_TYPE.BROWSER,
