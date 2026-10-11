@@ -8,12 +8,19 @@ unset CLAUDE_CODE_OAUTH_TOKEN
 
 WORKDIR=/config/vigilant-broccoli
 LOGIN_POLL_SECONDS=60
+CLAUDE_STATE_FILE="$HOME/.claude.json"
 
 if ! s6-setuidgid abc claude auth status >/dev/null 2>&1; then
   echo "claude-remote-control: not logged in; run 'pnpm code-server:remote-control:login' once"
   sleep "$LOGIN_POLL_SECONDS"
   exit 0
 fi
+
+# Remote Control refuses an untrusted directory and cannot prompt under s6.
+s6-setuidgid abc bash -c '
+  [ -s "$1" ] || echo "{}" > "$1"
+  jq --arg dir "$2" ".projects[\$dir].hasTrustDialogAccepted = true" "$1" > "$1.tmp" && mv "$1.tmp" "$1"
+' _ "$CLAUDE_STATE_FILE" "$WORKDIR"
 
 cd "$WORKDIR" || { sleep "$LOGIN_POLL_SECONDS"; exit 0; }
 exec s6-setuidgid abc claude remote-control --name code-server --spawn worktree
