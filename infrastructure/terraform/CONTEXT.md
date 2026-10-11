@@ -5,7 +5,7 @@ Never change Terraform-managed configuration in a provider dashboard or the GitH
 ## Table of Contents
 
 - [Nuances](#nuances)
-  - [A partial `observability` block on `cloudflare_workers_script` replans forever](#a-partial-observability-block-on-cloudflareworkersscript-replans-forever)
+  - [A partial `observability` block on `cloudflare_workers_script` replans forever](#a-partial-observability-block-on-cloudflare_workers_script-replans-forever)
   - [A replaced OCI VM dies on `container name "/watchtower" is already in use`](#a-replaced-oci-vm-dies-on-container-name-watchtower-is-already-in-use)
   - [A new OCI API key returns 401 for ~5 minutes while reporting `ACTIVE`](#a-new-oci-api-key-returns-401-for-5-minutes-while-reporting-active)
 
