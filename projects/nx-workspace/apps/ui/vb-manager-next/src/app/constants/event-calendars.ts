@@ -67,3 +67,18 @@ const GOOGLE_CALENDAR_EMBED_URL = 'https://calendar.google.com/calendar/embed';
 
 export const buildGoogleCalendarUrl = (googleCalendarId: string) =>
   `${GOOGLE_CALENDAR_EMBED_URL}?src=${encodeURIComponent(googleCalendarId)}`;
+
+// Order is the step order shown while a sync runs.
+export const SYNC_PHASE = {
+  SCRAPING: 'scraping',
+  LOCALIZING: 'localizing',
+  WRITING: 'writing',
+} as const;
+
+export type SyncPhase = (typeof SYNC_PHASE)[keyof typeof SYNC_PHASE];
+
+export const SYNC_PHASE_ORDER: SyncPhase[] = [
+  SYNC_PHASE.SCRAPING,
+  SYNC_PHASE.LOCALIZING,
+  SYNC_PHASE.WRITING,
+];

@@ -3,7 +3,11 @@ import { getEventCalendar, recordSyncResult } from '../event-calendars.db';
 import { scrapeFacebookEvents, ScrapedEvent } from './facebook-events.scraper';
 import { syncEventsToCalendar } from './google-calendar.sync';
 import { localizeEvents } from './event-localizer';
-import { EVENT_SOURCE_TYPE } from '../../app/constants/event-calendars';
+import {
+  EVENT_SOURCE_TYPE,
+  SYNC_PHASE,
+  SyncPhase,
+} from '../../app/constants/event-calendars';
 
 export const SYNC_STATE = {
   RUNNING: 'running',
@@ -13,9 +17,19 @@ export const SYNC_STATE = {
 
 export type SyncState = (typeof SYNC_STATE)[keyof typeof SYNC_STATE];
 
+export interface SyncProgress {
+  message: string;
+  phase?: SyncPhase;
+  done?: number;
+  total?: number;
+}
+
 export interface SyncStatus {
   state: SyncState;
   message: string;
+  phase?: SyncPhase;
+  done?: number;
+  total?: number;
   startedAt: string;
   finishedAt?: string;
 }
@@ -37,7 +51,7 @@ const FACEBOOK_SOURCE_TYPES: string[] = [
 const scrapeSource = (
   url: string,
   sourceType: string,
-  onProgress: (message: string) => void,
+  onProgress: (progress: SyncProgress) => void,
 ) => {
   if (!FACEBOOK_SOURCE_TYPES.includes(sourceType)) {
     throw new Error(`No scraper implemented for source type "${sourceType}"`);
@@ -45,14 +59,21 @@ const scrapeSource = (
   return scrapeFacebookEvents({
     eventsUrl: url,
     onProgress: (done, total) =>
-      onProgress(`Scraping ${url} — ${done}/${total} events`),
+      onProgress({
+        message: `Scraping ${url} — ${done}/${total} events`,
+        phase: SYNC_PHASE.SCRAPING,
+        done,
+        total,
+      }),
   });
 };
 
 const runSync = async (calendarId: string) => {
-  const setStatus = (message: string) => {
+  const setStatus = ({ message, phase, done, total }: SyncProgress) => {
     const current = runningSyncs.get(calendarId);
-    if (current) runningSyncs.set(calendarId, { ...current, message });
+    if (current) {
+      runningSyncs.set(calendarId, { ...current, message, phase, done, total });
+    }
   };
 
   try {
@@ -64,7 +85,10 @@ const runSync = async (calendarId: string) => {
 
     const scraped: ScrapedEvent[] = [];
     for (const source of eventCalendar.sources) {
-      setStatus(`Scraping ${source.url}`);
+      setStatus({
+        message: `Scraping ${source.url}`,
+        phase: SYNC_PHASE.SCRAPING,
+      });
       scraped.push(
         ...(await scrapeSource(source.url, source.sourceType, setStatus)),
       );
@@ -77,15 +101,29 @@ const runSync = async (calendarId: string) => {
       ...new Map(scraped.map(event => [event.id, event])).values(),
     ];
 
-    setStatus(
-      `Writing titles and descriptions for ${uniqueEvents.length} events`,
-    );
+    const localizingMessage = `Writing titles and descriptions for ${uniqueEvents.length} events`;
+    setStatus({
+      message: localizingMessage,
+      phase: SYNC_PHASE.LOCALIZING,
+      done: 0,
+      total: uniqueEvents.length,
+    });
     const localizedEvents = await localizeEvents(
       uniqueEvents,
       eventCalendar.language,
+      (done, total) =>
+        setStatus({
+          message: localizingMessage,
+          phase: SYNC_PHASE.LOCALIZING,
+          done,
+          total,
+        }),
     );
 
-    setStatus(`Syncing ${uniqueEvents.length} events to Google Calendar`);
+    setStatus({
+      message: `Syncing ${uniqueEvents.length} events to Google Calendar`,
+      phase: SYNC_PHASE.WRITING,
+    });
     const result = await syncEventsToCalendar(
       getCalendarAdminClient(),
       eventCalendar.googleCalendarId,
