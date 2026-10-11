@@ -8,11 +8,12 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 - [Publishing several pull requests](#publishing-several-pull-requests)
 - [Auditing the backlog](#auditing-the-backlog)
 - [Pruning dead code and stale docs](#pruning-dead-code-and-stale-docs)
+- [Auditing legacy documentation](#auditing-legacy-documentation)
 - [Stack](#stack)
 
 ## Running in CI
 
-Plan- and Develop-phase agents, backlog auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-prune`, `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
+Plan- and Develop-phase agents, backlog auditing, documentation auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-audit`, `agentic-pr-create-prune`, `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
 
 `pnpm agentic-pr-create <ID...>` runs `solve-todo.sh` locally. The same solve runs in GitHub Actions via the
 `manual-agentic-pr-create` workflow (`workflow_dispatch`) — it builds and runs this container on the `ubuntu-24.04`
@@ -128,6 +129,19 @@ repo-wide grep shows has zero references. `cron-agentic-pr-create-prune` runs th
   is the backstop that keeps a runaway sweep from becoming an unreviewable PR.
 
 The `CLAUDE.md` and `AGENTS.md` adapters are committed symlinks to `CONTEXT.md`, so the entrypoint's clone carries them and no step regenerates them per branch. The entrypoint still runs the Linux installer to install the shared skills. See [agent support](../../docs/agent-support.md).
+
+## Auditing legacy documentation
+
+`pnpm agentic-pr-create-audit` runs `audit-docs.sh`, which audits `docs/`, every `CONTEXT.md` and `README.md` and
+code-adjacent docs for passages about legacy implementations that no longer apply, then opens one PR removing them or
+rewriting them to the current state. It runs Opus by default (`--model` overrides). `manual-agentic-pr-create-audit`
+runs the same script on dispatch; it has no schedule.
+
+- Dispatch: `gh workflow run manual-agentic-pr-create-audit.yml` (optional `-f model=`, `-f firewall=off`).
+- A clean run opens no PR — `audit-docs-runner.sh` prints `AUDIT_CLEAN` and exits 0.
+- The runner refuses to commit if any non-Markdown file changed, if `notes/`, `docs/rnd/`, `docs/learning-timeline.md`,
+  `TODO.md` or a changelog changed, or if more than 15 files changed. The skill fills the cap highest-value first and
+  lists the rest as skipped in the PR body, so a re-run picks them up.
 
 ## Stack
 
