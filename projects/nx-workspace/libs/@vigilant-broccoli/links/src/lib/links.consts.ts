@@ -188,10 +188,6 @@ export const CLAUDE_LINK = {
     NAME: 'Claude Pricing',
     URL: 'https://claude.com/pricing',
   },
-  CODE: {
-    NAME: 'Claude Code',
-    URL: 'https://www.claude.com/product/claude-code',
-  },
 } as const;
 
 export const GITHUB_LINK = {
