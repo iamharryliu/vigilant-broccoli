@@ -67,7 +67,7 @@ Wiring: pruned `smoke` depends on `prune`; bundled `smoke` depends on `build`. `
 ## Health check
 
 - `GET /` must be unauthenticated, fast, no DB/LLM calls. Pattern: `reply.send({ service: SERVICE_NAME, docs: DOCS_PATH })`.
-- `grace_period = '30s'` is required to cover cold-start under `auto_stop_machines = 'stop'`.
+- `grace_period = '30s'` is required to cover cold-start under `auto_stop_machines = 'stop'` (the email services); `'suspend'` services (`vb-express`, `bucket-service`, `llm-service`) resume from a memory snapshot in under a second. Keep a service on `'stop'` if it holds RabbitMQ/Redis/websocket/DB connections or consumers, or runs timers — they do not survive a resume.
 - Failed checks on a new machine abort the deploy and keep the previous machine running — don't skip the `[[http_service.checks]]` block.
 
 ## Machine count
