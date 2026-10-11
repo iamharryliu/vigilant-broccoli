@@ -10,7 +10,7 @@
 
 - **Time**: Live clock display
 - **Info**: Date and contextual info
-- **Weather**: City name, emoji weather status, and temperature; clickable to open weather dialog (keyboard shortcut: `w`)
+- **Weather**: City name, emoji weather status, and temperature; clickable to open the weather dialog (keyboard shortcut: `w`), which embeds the standalone weather site (`HARRYLIU_APP_URL.WEATHER`) in an iframe
 
 ## Dialogs
 
