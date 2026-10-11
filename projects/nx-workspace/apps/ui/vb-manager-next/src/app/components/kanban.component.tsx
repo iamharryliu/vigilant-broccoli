@@ -82,6 +82,22 @@ const STORAGE_KEY_BOARDS = 'swimlanes-boards';
 const STORAGE_KEY_ACTIVE_BOARD = 'swimlanes-active-board';
 const STORAGE_KEY_SIDEBAR_OPEN = 'swimlanes-sidebar-open';
 
+const loadSidebarOpen = (): boolean => {
+  try {
+    return localStorage.getItem(STORAGE_KEY_SIDEBAR_OPEN) !== 'false';
+  } catch {
+    return true;
+  }
+};
+
+const saveSidebarOpen = (open: boolean) => {
+  try {
+    localStorage.setItem(STORAGE_KEY_SIDEBAR_OPEN, String(open));
+  } catch {
+    // Storage can be unavailable (private mode, quota); the state just won't persist.
+  }
+};
+
 const PERSIST_DEBOUNCE_MS = 500;
 
 const DEFAULT_BOARD_NAME = 'Default Board';
@@ -652,11 +668,11 @@ export const KanbanComponent = () => {
   const [showManageLists, setShowManageLists] = useState(false);
   const [editingListId, setEditingListId] = useState<string | null>(null);
   const [editingListName, setEditingListName] = useState('');
-  const [sidebarOpen, setSidebarOpen] = useState(() => {
-    if (typeof window === 'undefined') return true;
-    const stored = localStorage.getItem(STORAGE_KEY_SIDEBAR_OPEN);
-    return stored === null ? true : stored === 'true';
-  });
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    setSidebarOpen(loadSidebarOpen());
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -1181,7 +1197,7 @@ export const KanbanComponent = () => {
                 onClick={() => {
                   const next = !sidebarOpen;
                   setSidebarOpen(next);
-                  localStorage.setItem(STORAGE_KEY_SIDEBAR_OPEN, String(next));
+                  saveSidebarOpen(next);
                 }}
               >
                 {sidebarOpen ? (
