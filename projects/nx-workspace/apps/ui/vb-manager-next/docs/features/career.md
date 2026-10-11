@@ -58,7 +58,7 @@
 
 ### Model
 
-- The server picks the model (`RESUME_CHAT_MODEL` in `resume-chat.consts.ts`, currently `gpt-5.5`, called with `OPENAI_API_KEY`); the client's `model` field is ignored
+- The server picks the model (`RESUME_CHAT_MODEL` in `resume-chat.consts.ts`, currently `gpt-5.4`, called with `OPENAI_API_KEY`); the client's `model` field is ignored
 
 ### Validation and retry limits
 
