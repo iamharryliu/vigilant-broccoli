@@ -29,6 +29,9 @@ on:
           - 'on'
           - 'off'
 
+env:
+  RUN_DESCRIPTION: Remove or rewrite documentation that describes legacy implementations which no longer apply to the current codebase, verifying each candidate against the tree. Opens one pull request of at most 15 files, highest-value first, listing skipped candidates for a re-run, and only when something is changed.
+
 permissions:
   contents: read
   id-token: write
@@ -59,7 +62,7 @@ jobs:
           agent: claude
           model: ${{ inputs.model }}
           firewall: ${{ inputs.firewall }}
-          description: Remove or rewrite documentation that describes legacy implementations which no longer apply to the current codebase, verifying each candidate against the tree. Opens one pull request of at most 15 files, highest-value first, listing skipped candidates for a re-run, and only when something is changed.
+          description: ${{ env.RUN_DESCRIPTION }}
 
   audit:
     needs: overview
@@ -98,3 +101,14 @@ jobs:
           mode: result
           outcome: ${{ job.status == 'cancelled' && 'cancelled' || 'failed' }}
           note: ${{ steps.audit.outcome == 'skipped' && 'A step before the audit failed, so the agent never started.' || 'The audit stopped before it could report a result; see its step log.' }}
+
+      - name: Email the no-changes reason
+        if: ${{ !cancelled() && steps.audit.outputs.outcome == 'no-changes' }}
+        continue-on-error: true
+        uses: ./.github/actions/agentic-no-changes-email
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          operation: agentic-pr-create-audit
+          request: ${{ env.RUN_DESCRIPTION }}
+          reason: ${{ steps.audit.outputs.no_changes_reason }}

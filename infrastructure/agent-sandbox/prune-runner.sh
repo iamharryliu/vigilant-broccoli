@@ -16,6 +16,8 @@ FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 
 cd "$REPO_DIR"
 SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create-prune/SKILL.md")
+# shellcheck source=no-changes.sh
+. "$REPO_DIR/infrastructure/agent-sandbox/no-changes.sh"
 
 git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
@@ -43,6 +45,7 @@ When finished, write $META_FILE containing only a JSON object with these fields:
   - pr_summary: markdown for the PR "## Summary" section — one "### <category>" subsection per category with removals, each item a bullet with its zero-reference evidence, then a "### Skipped candidates" subsection listing each skipped candidate with its reason
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (spot-check the evidence, watch CI to green, then merge)
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (candidates over the file cap as ready-to-run follow-up increments, related cleanups worth a separate PR), or "" when there are none
+$NO_CHANGES_FIELD
 EOF
 )
 
@@ -56,6 +59,7 @@ git checkout "$BRANCH"
 # machinery rather than opening an empty PR for the owner to close.
 if [ -z "$(git status --porcelain)" ]; then
   echo "PRUNE_CLEAN: no candidate survived zero-reference verification — no PR opened."
+  no_changes_report "$META_FILE" || true
   exit 0
 fi
 

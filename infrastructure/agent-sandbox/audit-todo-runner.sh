@@ -15,6 +15,8 @@ FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 
 cd "$REPO_DIR"
 SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create-todo-audit/SKILL.md")
+# shellcheck source=no-changes.sh
+. "$REPO_DIR/infrastructure/agent-sandbox/no-changes.sh"
 
 git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
@@ -42,6 +44,7 @@ When finished, write $META_FILE containing only a JSON object with these fields:
   - pr_summary: markdown bullet points for the PR "## Summary" section, listing each resolved and drifted row by id with its evidence
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (review, then merge)
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
+$NO_CHANGES_FIELD
 EOF
 )
 
@@ -61,6 +64,7 @@ fi
 # PR machinery rather than opening an empty PR for the owner to close.
 if [ -z "$(git status --porcelain -- TODO.md)" ]; then
   echo "AUDIT_CLEAN: every TODO.md row still matches the codebase — no PR opened."
+  no_changes_report "$META_FILE" || true
   exit 0
 fi
 
@@ -80,8 +84,8 @@ DRIFTED_COUNT=$(read_meta '.drifted | length')
 # Every id present before the run must still be present unless the agent listed
 # it as resolved: a row silently dropped by a bad table rewrite is invisible in
 # review once the diff is large, and the id is the only handle solve-todo has.
-mapfile -t BEFORE_IDS < <(git show "$BASE_SHA:TODO.md" | grep -oE '^\| [0-9a-f]{6} \|' | grep -oE '[0-9a-f]{6}' | sort)
-mapfile -t AFTER_IDS < <(grep -oE '^\| [0-9a-f]{6} \|' TODO.md | grep -oE '[0-9a-f]{6}' | sort)
+mapfile -t BEFORE_IDS < <(git show "$BASE_SHA:TODO.md" | grep -oE '^\|[[:space:]]*[0-9a-f]{6}[[:space:]]*\|' | grep -oE '[0-9a-f]{6}' | sort)
+mapfile -t AFTER_IDS < <(grep -oE '^\|[[:space:]]*[0-9a-f]{6}[[:space:]]*\|' TODO.md | grep -oE '[0-9a-f]{6}' | sort)
 mapfile -t CLAIMED_IDS < <(jq -r '.resolved[]?.id // empty' "$META_FILE" 2>/dev/null | sort)
 UNEXPLAINED=$(comm -23 <(comm -23 <(printf '%s\n' "${BEFORE_IDS[@]}") <(printf '%s\n' "${AFTER_IDS[@]}")) <(printf '%s\n' "${CLAIMED_IDS[@]}"))
 if [ -n "$UNEXPLAINED" ]; then

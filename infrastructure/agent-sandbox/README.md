@@ -6,6 +6,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 - [Running in CI](#running-in-ci)
 - [Publishing several pull requests](#publishing-several-pull-requests)
+- [Ending without changes](#ending-without-changes)
 - [Auditing the backlog](#auditing-the-backlog)
 - [Pruning dead code and stale docs](#pruning-dead-code-and-stale-docs)
 - [Auditing legacy documentation](#auditing-legacy-documentation)
@@ -88,6 +89,10 @@ lists the rest in an `increments` array in its metadata file (contract in
   own increment even where several increments edit the same file;
 - removes from `TODO.md` only the rows each increment declares in `todo_ids`, on that increment's branch, and fails an
   increment that deleted any other row;
+- for an update's target PR, rewrites in place the existing rows declared in `todo_edits` (`{id, priority, description,
+fix}`), keeping each id, the one-line row and its column widths, and fails the update on an unknown id, an id also in
+  `todo_ids`, a malformed cell or any other change to `TODO.md`, so a request to reword a row no longer fails as "no
+  changes besides TODO.md" and the field can never add a row;
 - gives every PR its own title, summary, next steps, suggestions and history row, plus a `## Stack` section with the merge
   order, refreshed on every PR once all are open;
 - stops at the first failing increment, saves its partial work as a draft PR, prints `INCREMENT_UNPUBLISHED::` for it and
@@ -100,7 +105,28 @@ targeting the original PR branch. Recovery restores unresolved TODO rows and res
 publication fail, the log reports that recovery failed rather than claiming the work was saved. Git, pushes and PR creation stay in the runner with the credentials it already
 has; branches are only created and pushed, never force-pushed. Squash-merge implications of stacked PRs are in
 [Stacked pull requests](../../docs/git-workflow.md#stacked-pull-requests). The container copies `solve-todo-runner.sh`,
-`pr-increments.sh` and `commit-subject.sh` into the image, so rebuild it (`docker compose build`) after changing any of them when running locally. Every runner sources `commit-subject.sh` to capitalize commit messages and PR titles, end them with a period and strip trailing ellipses, so they pass the CI `commitlint` job.
+`pr-increments.sh`, `commit-subject.sh` and `no-changes.sh` into the image, so rebuild it (`docker compose build`) after changing any of them when running locally. Every runner sources `commit-subject.sh` to capitalize commit messages and PR titles, end them with a period and strip trailing ellipses, so they pass the CI `commitlint` job.
+
+## Ending without changes
+
+A request the agent judges should change nothing (already done, out of scope, or wrong for the repo) is a decision, not a
+failure, when the agent says why. Every runner that can end with no changes — `solve-todo-runner.sh`,
+`update-pr-runner.sh`, `create-rnd-runner.sh`, `create-todo-runner.sh`, `audit-docs-runner.sh`, `audit-todo-runner.sh`
+and `prune-runner.sh` — asks for an optional `no_changes_reason` in its metadata file and handles it through
+`no-changes.sh`:
+
+- no changes and a non-empty reason: the runner prints `RESULT::no-changes` and `NO_CHANGES_REASON::<JSON string>` and
+  exits 0; `write-pr-step-summary.sh` reports _Completed with no changes_ with the reason and sets the `outcome` and
+  `no_changes_reason` step outputs. `update-pr.sh` sets the same outputs for `manual-agentic-pr-update`'s own result step,
+  and `update-pr-runner.sh` also comments the reason on the target PR;
+- no changes and no reason: the run fails as before, so a crashed or confused agent is never reported as a decision;
+- the audits and prune keep their `AUDIT_CLEAN`/`PRUNE_CLEAN` exit 0 and add the reason when the agent gave one.
+
+On that outcome each agentic workflow runs `.github/actions/agentic-no-changes-email`, which imports `RESEND_API_KEY`
+from Vault and emails the owner the operation, effective request, reason and run URL through
+`.github/scripts/agentic-no-changes-email.mjs`. The recipient and sender are the shared `EMAIL_ADDRESS` and
+`SENDER_EMAIL_ADDRESS` consts of `@vigilant-broccoli/personal-common-js`. `manual-agentic-pr-create` skips its usual
+solve email for such a run. `pnpm agentic-pr-create <id...>` prints the reason for an id and does not count it as failed.
 
 ## Auditing the backlog
 
@@ -152,6 +178,7 @@ runs the same script on dispatch; it has no schedule.
 - Services
   - Claude Code
   - Codex CLI
+  - Resend
 - Cloud providers
   - GitHub
 - Secrets

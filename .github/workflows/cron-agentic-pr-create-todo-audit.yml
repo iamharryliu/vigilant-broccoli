@@ -31,6 +31,9 @@ on:
           - 'on'
           - 'off'
 
+env:
+  RUN_DESCRIPTION: Re-verify every TODO.md row against the current tree, remove resolved entries and correct drifted references without adding tasks. Opens a pull request only when something changes.
+
 permissions:
   contents: read
   id-token: write
@@ -76,7 +79,7 @@ jobs:
           agent: claude
           model: ${{ steps.config.outputs.model }}
           firewall: ${{ steps.config.outputs.firewall }}
-          description: Re-verify every TODO.md row against the current tree, remove resolved entries and correct drifted references without adding tasks. Opens a pull request only when something changes.
+          description: ${{ env.RUN_DESCRIPTION }}
 
   audit:
     needs: overview
@@ -115,3 +118,14 @@ jobs:
           mode: result
           outcome: ${{ job.status == 'cancelled' && 'cancelled' || 'failed' }}
           note: ${{ steps.audit.outcome == 'skipped' && 'A step before the audit failed, so the agent never started.' || 'The audit stopped before it could report a result; see its step log.' }}
+
+      - name: Email the no-changes reason
+        if: ${{ !cancelled() && steps.audit.outputs.outcome == 'no-changes' }}
+        continue-on-error: true
+        uses: ./.github/actions/agentic-no-changes-email
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          operation: agentic-pr-create-todo-audit
+          request: ${{ env.RUN_DESCRIPTION }}
+          reason: ${{ steps.audit.outputs.no_changes_reason }}

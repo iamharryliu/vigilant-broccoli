@@ -26,6 +26,8 @@ SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/$SKILL_NAME/SKIL
 # Sourced before the PR checkout: the PR branch may predate this file.
 # shellcheck source=pr-increments.sh
 . "$(dirname "${BASH_SOURCE[0]}")/pr-increments.sh"
+# shellcheck source=no-changes.sh
+. "$(dirname "${BASH_SOURCE[0]}")/no-changes.sh"
 
 # Only a change instruction can ask for follow-up increments; CI fixes and
 # conflict resolution stay on the one PR.
@@ -106,10 +108,11 @@ fi
 PLAN_RULES=""
 PLAN_FIELDS=""
 if [ "$PLAN_ENABLED" = 1 ]; then
-  PLAN_RULES="- Do not edit TODO.md: the runner removes exactly the rows you declare in todo_ids.
+  PLAN_RULES="- Do not edit TODO.md: the runner removes exactly the rows you declare in todo_ids and rewrites in place exactly the rows you declare in todo_edits.
 $(inc_plan_instructions update)"
   PLAN_FIELDS="
   - todo_ids: array of the TODO.md ids named in the instruction that this update fully resolves (omit or [] when none)
+  - todo_edits: array of objects {id, priority, description, fix}, one per existing TODO.md row the instruction asks you to reword, reprioritize or correct (omit or [] when none). The id must already have a row and stays the same; never list an id that is also in todo_ids, and never use this to add a row. priority is P1, P2, P3 or NA, and description and fix are the new Description and Recommended Fix cells written as they appear in TODO.md: one line, steps joined with <br>, every literal | escaped as \\|
   - increments: the optional array of later increments described above"
 fi
 
@@ -141,12 +144,34 @@ ${PLAN_RULES}
   - pr_summary: markdown bullet points replacing the PR's "## Summary" section — rewrite it to describe the PR's full, cumulative state (prior work plus this change), not just this increment
   - pr_next_steps: markdown checklist replacing the PR's "## Next steps" section — same rule, cover the whole PR as it now stands: remaining manual commands, spot checks, CI status, merging, and one ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\` item per piece of work deliberately left out of every increment, or "- [ ] Merge once CI is green" when nothing else is left
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none — rewrite it to cover the whole PR as it now stands${PLAN_FIELDS}
+$NO_CHANGES_FIELD
 EOF
 )
 
 agent_invoke() {
   claude -p "$1" --dangerously-skip-permissions --model "$MODEL" \
     --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
+}
+
+# The reason is also left on the PR, where the requester looks for the update.
+finish_without_changes() {
+  local reason
+  reason=$(no_changes_reason "$META_FILE")
+  if [ -n "$reason" ]; then
+    gh pr comment "$PR" --body "$(cat <<COMMENT
+\`${SKILL_NAME}\` made no changes to this pull request.
+
+**Request:**
+
+$(printf '%s\n' "$INSTRUCTION" | sed 's/^/> /')
+
+**Reason:** ${reason}
+
+${PR_FOOTER}
+COMMENT
+)" || echo "WARNING: could not comment the reason on PR #${PR}." >&2
+  fi
+  no_changes_exit "$META_FILE" "$1"
 }
 
 agent_invoke "$PROMPT"
@@ -178,7 +203,9 @@ else
   INC_HISTORY_SOURCE="Docker sandbox (local)"
 fi
 
-if [ "$PLAN_ENABLED" = 1 ] && [ -n "$(git status --porcelain)" ]; then
+# A request that only rewords TODO rows leaves the tree clean until the runner
+# applies todo_edits.
+if [ "$PLAN_ENABLED" = 1 ] && { [ -n "$(git status --porcelain)" ] || inc_has_todo_edits "$META_FILE"; }; then
   # Checked before anything is pushed, so a bad plan never leaves a partial set behind.
   inc_validate_plan "$META_FILE" "$BASE_SHA" "$INSTRUCTION" ""
   inc_load_plan "$META_FILE"
@@ -187,17 +214,16 @@ if [ "$PLAN_ENABLED" = 1 ] && [ -n "$(git status --porcelain)" ]; then
     [ -z "$resolved_id" ] || RESOLVED_IDS+=("$resolved_id")
   done < <(inc_current_todo_ids "$META_FILE")
   inc_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
+  inc_apply_todo_edits "$META_FILE" "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"} || exit 1
   if [ "${#RESOLVED_IDS[@]}" -gt 0 ] && [ -z "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
-    echo "ERROR: no changes besides TODO.md — ${RESOLVED_IDS[*]} not resolved." >&2
-    exit 1
+    finish_without_changes "no changes besides TODO.md — ${RESOLVED_IDS[*]} not resolved."
   fi
 fi
 
 bash "$PRE_COMMIT_HELPER"
 
 if [ -z "$(git status --porcelain)" ]; then
-  echo "ERROR: no changes produced — PR #${PR} was not updated." >&2
-  exit 1
+  finish_without_changes "no changes produced — PR #${PR} was not updated."
 fi
 
 read_meta() { jq -r "$1 // empty" "$META_FILE" 2>/dev/null || true; }

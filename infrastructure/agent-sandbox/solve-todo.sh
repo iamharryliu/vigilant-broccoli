@@ -3,6 +3,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+# shellcheck source=no-changes.sh
+. "$SCRIPT_DIR/no-changes.sh"
 IMAGE=vb-agent-sandbox
 
 AGENT_RUNNER=claude
@@ -221,6 +223,8 @@ for i in "${!PIDS[@]}"; do
       FAILED=1
       echo "✗ TODO ${id}: ${UNPUBLISHED} planned increment(s) were not published (see $LOG_DIR/solve-${id}.log)" >&2
     fi
+  elif grep -qx "$NO_CHANGES_MARKER" "$LOG_DIR/solve-${id}.log"; then
+    echo "– TODO ${id}: no changes made — $(no_changes_reason_in_log "$LOG_DIR/solve-${id}.log")"
   else
     FAILED=1
     echo "✗ TODO ${id}: completed without opening a PR (see $LOG_DIR/solve-${id}.log)" >&2

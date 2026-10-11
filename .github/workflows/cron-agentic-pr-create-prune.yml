@@ -31,6 +31,9 @@ on:
           - 'on'
           - 'off'
 
+env:
+  RUN_DESCRIPTION: Sweep the whole repository for dead code, unused dependencies and stale or broken documentation, and remove only what has verifiably zero references. Opens a pull request only when something is removed.
+
 permissions:
   contents: read
   id-token: write
@@ -76,7 +79,7 @@ jobs:
           agent: claude
           model: ${{ steps.config.outputs.model }}
           firewall: ${{ steps.config.outputs.firewall }}
-          description: Sweep the whole repository for dead code, unused dependencies and stale or broken documentation, and remove only what has verifiably zero references. Opens a pull request only when something is removed.
+          description: ${{ env.RUN_DESCRIPTION }}
 
   prune:
     needs: overview
@@ -115,3 +118,14 @@ jobs:
           mode: result
           outcome: ${{ job.status == 'cancelled' && 'cancelled' || 'failed' }}
           note: ${{ steps.prune.outcome == 'skipped' && 'A step before the prune failed, so the agent never started.' || 'The prune stopped before it could report a result; see its step log.' }}
+
+      - name: Email the no-changes reason
+        if: ${{ !cancelled() && steps.prune.outputs.outcome == 'no-changes' }}
+        continue-on-error: true
+        uses: ./.github/actions/agentic-no-changes-email
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          operation: agentic-pr-create-prune
+          request: ${{ env.RUN_DESCRIPTION }}
+          reason: ${{ steps.prune.outputs.no_changes_reason }}

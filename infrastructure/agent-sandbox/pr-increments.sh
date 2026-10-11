@@ -159,6 +159,90 @@ inc_apply_todo_cleanup() {
   done
 }
 
+inc_has_todo_edits() { [ "$(jq '(.todo_edits // []) | if type == "array" then length else 1 end' "$1" 2>/dev/null || echo 0)" -gt 0 ]; }
+
+# Rewrites existing TODO.md rows in place from the metadata's todo_edits
+# ({id, priority, description, fix}), keeping each row on one line with its
+# id and padded to its table's column widths. Cells are written as they appear
+# in TODO.md (`\|` for a literal pipe, `<br>` between steps). An edit can only
+# replace a row present at the base and not removed through todo_ids; TODO.md
+# must otherwise match the base minus the removed rows, so the field can never
+# add a row or touch another line. Run after inc_apply_todo_cleanup.
+#   $1 metadata file  $2 base ref/sha  $3... ids removed through todo_ids
+inc_apply_todo_edits() {
+  local meta=$1 base=$2 edits problems before id base_file
+  shift 2
+  inc_has_todo_edits "$meta" || return 0
+  edits=$(jq -c '.todo_edits' "$meta")
+  problems=$(jq -r --argjson removed "$(printf '%s\n' "$@" | jq -Rsc 'split("\n") | map(select(length > 0))')" '
+    def bad_cell: (type != "string") or (gsub("\\s"; "") == "") or test("[\\n\\r]") or test("(^|[^\\\\])\\|") or test("\\\\$");
+    if type != "array" then "todo_edits must be an array"
+    else
+      (to_entries[] | .key as $i | .value as $e
+        | if ($e | type) != "object" then "todo_edits #\($i + 1) is not an object"
+          elif (($e.id | type) != "string") or (($e.id | test("^[0-9a-f]{6}$")) | not) then "todo_edits #\($i + 1) needs a 6-hex id"
+          else
+            (if ($removed | index($e.id)) then "TODO id \($e.id) is both edited and listed in todo_ids" else empty end),
+            (if (["P1", "P2", "P3", "NA"] | index($e.priority)) then empty else "TODO id \($e.id): priority must be P1, P2, P3 or NA" end),
+            (if ($e.description | bad_cell) then "TODO id \($e.id): description must be one non-empty line with every literal | escaped as \\|" else empty end),
+            (if ($e.fix | bad_cell) then "TODO id \($e.id): fix must be one non-empty line with every literal | escaped as \\|" else empty end)
+          end),
+      ([.[] | .id? | strings] | group_by(.) | map(select(length > 1) | .[0])[] | "TODO id \(.) is edited more than once")
+    end' <<<"$edits" 2>&1) || problems="todo_edits could not be evaluated: $problems"
+  before=$(git show "$base:TODO.md" 2>/dev/null | inc_todo_ids_in || true)
+  for id in $(jq -r '.[]? | .id? | strings | select(test("^[0-9a-f]{6}$"))' <<<"$edits" | sort -u); do
+    printf '%s\n' "$before" | grep -qx "$id" || problems+=$'\n'"TODO id $id has no row in TODO.md to edit"
+  done
+  problems=$(printf '%s' "$problems" | sed '/^$/d')
+  if [ -n "$problems" ]; then
+    echo "ERROR: invalid todo_edits — TODO.md was not changed:" >&2
+    printf '%s\n' "$problems" | sed 's/^/  - /' >&2
+    return 1
+  fi
+
+  base_file=$(mktemp)
+  git show "$base:TODO.md" > "$base_file"
+  TODO_EDITS=$edits python3 - "$base_file" TODO.md "$@" <<'PY'
+import json, os, re, sys
+
+base_path, todo_path, removed = sys.argv[1], sys.argv[2], set(sys.argv[3:])
+edits = {edit["id"]: edit for edit in json.loads(os.environ["TODO_EDITS"])}
+row_id = re.compile(r"^\|\s*([0-9a-f]{6})\s*\|")
+cell_split = re.compile(r"(?<!\\)\|")
+
+
+def row_key(line):
+    match = row_id.match(line)
+    return match.group(1) if match else None
+
+
+def rewrite(line):
+    key = row_key(line)
+    if key not in edits:
+        return line
+    cells = cell_split.split(line.rstrip("\n"))
+    if len(cells) != 6 or cells[0] or cells[-1].strip():
+        sys.exit(f"ERROR: TODO row {key} is not a one-line ID | Priority | Description | Recommended Fix row.")
+    widths = [len(cell) - 2 for cell in cells[1:5]]
+    edit = edits[key]
+    values = [cells[1].strip(), edit["priority"], edit["description"].strip(), edit["fix"].strip()]
+    return "| " + " | ".join(value.ljust(width) for value, width in zip(values, widths)) + " |\n"
+
+
+with open(base_path) as handle:
+    expected = [rewrite(line) for line in handle if row_key(line) not in removed]
+with open(todo_path) as handle:
+    actual = [rewrite(line) for line in handle]
+if actual != expected:
+    sys.exit("ERROR: TODO.md changed outside the rows declared in todo_ids and todo_edits; only the runner edits TODO.md.")
+with open(todo_path, "w") as handle:
+    handle.writelines(actual)
+PY
+  local status=$?
+  rm -f "$base_file"
+  return "$status"
+}
+
 # Instructions appended to the first agent run's prompt.
 #   $1 solve | update
 inc_plan_instructions() {

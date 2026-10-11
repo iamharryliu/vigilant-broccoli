@@ -51,6 +51,8 @@ cd "$REPO_DIR"
 SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create/SKILL.md")
 # shellcheck source=pr-increments.sh
 . "$(dirname "${BASH_SOURCE[0]}")/pr-increments.sh"
+# shellcheck source=no-changes.sh
+. "$(dirname "${BASH_SOURCE[0]}")/no-changes.sh"
 
 if [ "$MODE" = id ]; then
   # TODO items live as rows in per-section markdown tables (ID | Priority |
@@ -172,6 +174,7 @@ $(inc_plan_instructions solve)
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
   - todo_ids: array of the TODO.md ids this increment fully resolves (omit or [] when none)
   - increments: the optional array of later increments described above
+$NO_CHANGES_FIELD
 EOF
 )
 
@@ -226,8 +229,7 @@ git checkout "$BRANCH"
 [ "$(git rev-parse HEAD)" = "$BASE_SHA" ] || git reset --soft "$BASE_SHA"
 
 if [ -z "$(git status --porcelain)" ]; then
-  echo "ERROR: no changes produced — task was not completed." >&2
-  exit 1
+  no_changes_exit "$META_FILE" "no changes produced — task was not completed."
 fi
 
 # The whole plan is checked before the first PR is opened, so a bad plan never
@@ -241,8 +243,7 @@ while IFS= read -r resolved_id; do
 done < <(inc_current_todo_ids "$META_FILE" "${ID:-}")
 inc_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
 if [ "${#RESOLVED_IDS[@]}" -gt 0 ] && [ -z "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
-  echo "ERROR: no changes besides TODO.md — ${RESOLVED_IDS[*]} not resolved." >&2
-  exit 1
+  no_changes_exit "$META_FILE" "no changes besides TODO.md — ${RESOLVED_IDS[*]} not resolved."
 fi
 
 inc_publish "$INC_CURRENT" "$BRANCH" "$INC_DEFAULT_BASE" "$BASE_SHA" "$TASK" "$FALLBACK_SUBJECT" "$FALLBACK_SUMMARY" || exit 1

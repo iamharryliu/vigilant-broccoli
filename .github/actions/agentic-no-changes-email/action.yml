@@ -1,0 +1,46 @@
+name: Agentic No-Changes Email
+description: Email the owner the agent's reason when an agentic run deliberately ended with no changes.
+
+inputs:
+  gcp_workload_identity_provider:
+    description: GCP Workload Identity Provider, forwarded to vault-secrets
+    required: true
+  gcp_service_account:
+    description: GCP service account, forwarded to vault-secrets
+    required: true
+  operation:
+    description: 'Operation name, e.g. "agentic-pr-update (change)".'
+    required: true
+  request:
+    description: 'The effective request: the user text, or what the run does for operations without one.'
+    required: false
+    default: ''
+  reason:
+    description: "The agent's reason for making no change."
+    required: false
+    default: ''
+  pull_request:
+    description: 'URL of the pull request the run targeted, if any.'
+    required: false
+    default: ''
+
+runs:
+  using: composite
+  steps:
+    - name: Import Resend key from Vault
+      uses: ./.github/actions/vault-secrets
+      with:
+        gcp_workload_identity_provider: ${{ inputs.gcp_workload_identity_provider }}
+        gcp_service_account: ${{ inputs.gcp_service_account }}
+        secrets: |
+          kv/data/secrets RESEND_API_KEY | RESEND_API_KEY ;
+
+    - name: Send email
+      shell: bash
+      env:
+        AGENTIC_OPERATION: ${{ inputs.operation }}
+        AGENTIC_REQUEST: ${{ inputs.request }}
+        AGENTIC_REASON: ${{ inputs.reason }}
+        AGENTIC_PULL_REQUEST: ${{ inputs.pull_request }}
+        RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      run: node "$GITHUB_ACTION_PATH/../../scripts/agentic-no-changes-email.mjs"
