@@ -5,7 +5,7 @@ Shared checklist behind `/refactor-code-cleanup`. Two triggers:
 - Manual — run `/refactor-code-cleanup` in an interactive session.
 - Automatic — unattended `agentic-pr-create` runs apply this before finishing, per [CONTEXT.md](../CONTEXT.md).
 
-This checklist is diff-scoped: it only reviews the change in front of it, so code orphaned later by an unrelated change is never revisited. Two Maintain-phase operations cover what it cannot see — `agentic-pr-create-prune` sweeps the whole tree for dead code, unused dependencies and stale docs with zero verified references, and `agentic-pr-create-todo-audit` re-verifies `TODO.md` rows, which the prune never touches. See the [agent sandbox README](../infrastructure/agent-sandbox/README.md#pruning-dead-code-and-stale-docs).
+This checklist is diff-scoped: it only reviews the change in front of it, so code orphaned later by an unrelated change is never revisited. Three Maintain-phase operations cover what it cannot see — `agentic-pr-create-prune` sweeps the whole tree for dead code, unused dependencies and stale docs with zero verified references, `agentic-pr-create-audit` removes or rewrites documentation of legacy implementations that no longer apply, and `agentic-pr-create-todo-audit` re-verifies `TODO.md` rows, which neither of the others touches. See the [agent sandbox README](../infrastructure/agent-sandbox/README.md#pruning-dead-code-and-stale-docs).
 
 ## Checklist
 
