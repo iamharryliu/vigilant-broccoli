@@ -4,6 +4,8 @@ export const FlyioCommand = {
   authLogin: ['auth', 'login'],
   authToken: ['auth', 'token'],
   listApps: ['apps', 'list', '--json'],
+  listMachines: (app: string) =>
+    ['machines', 'list', '--app', app, '--json'] as const,
 } as const;
 
 export const FLYIO_AUTH_ERROR_STRINGS = [

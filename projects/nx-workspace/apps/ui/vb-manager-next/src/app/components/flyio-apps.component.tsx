@@ -21,6 +21,7 @@ import { usePollingInterval } from '../hooks/usePollingInterval';
 interface FlyApp {
   name: string;
   status: string;
+  machineStates: string[];
 }
 
 interface FlyAppsResponse {
@@ -43,15 +44,43 @@ const LOGIN_PENDING_MSG =
 const FLY_BASE = 'https://fly.io/apps';
 const POLL_INTERVAL_MS = 60000;
 
-const getStatusColor = (
-  status: string,
-): 'green' | 'yellow' | 'red' | 'gray' => {
-  const s = status.toLowerCase();
-  if (s === 'deployed' || s === 'running') return 'green';
-  if (s === 'suspended') return 'yellow';
-  if (s === 'pending') return 'gray';
-  return 'red';
+const MACHINE_STATE = {
+  started: 'started',
+  stopped: 'stopped',
+  failed: 'failed',
+} as const;
+
+const DOWN_STATES: string[] = [MACHINE_STATE.stopped, MACHINE_STATE.failed];
+
+type DotColor = 'green' | 'yellow' | 'red' | 'gray';
+
+const DOT_CLASS: Record<DotColor, string> = {
+  green: 'bg-green-500',
+  yellow: 'bg-yellow-500',
+  red: 'bg-red-500',
+  gray: 'bg-gray-400',
 };
+
+const LEGEND: { color: DotColor; label: string }[] = [
+  { color: 'green', label: 'Started' },
+  { color: 'yellow', label: 'Suspended / partial' },
+  { color: 'red', label: 'Stopped / failed' },
+  { color: 'gray', label: 'Unknown / no machines' },
+];
+
+const getMachineColor = (states: string[]): DotColor => {
+  if (states.length === 0) return 'gray';
+  if (states.every(s => s === MACHINE_STATE.started)) return 'green';
+  if (states.every(s => DOWN_STATES.includes(s))) return 'red';
+  return 'yellow';
+};
+
+const StatusDot = ({ color, title }: { color: DotColor; title?: string }) => (
+  <span
+    title={title}
+    className={`inline-block h-3 w-3 shrink-0 rounded-full mt-0.5 ${DOT_CLASS[color]}`}
+  />
+);
 
 const DASHBOARD_LINK = {
   href: FLYIO_LINK.DASHBOARD.URL,
@@ -68,9 +97,10 @@ const toItem = (app: FlyApp): StatusCardListItem => ({
   id: app.name,
   label: app.name,
   badges: (
-    <Badge color={getStatusColor(app.status)} size="1">
-      {app.status}
-    </Badge>
+    <StatusDot
+      color={getMachineColor(app.machineStates)}
+      title={`${app.status}: ${app.machineStates.join(', ') || 'no machines'}`}
+    />
   ),
   children: (
     <ButtonList
@@ -189,6 +219,16 @@ export const FlyIoAppsComponent = () => {
         items={appsData.map(toItem)}
         emptyMessage="No apps found"
       />
+      <div className="flex flex-wrap gap-x-4 gap-y-1">
+        {LEGEND.map(({ color, label }) => (
+          <div key={color} className="flex items-center gap-1">
+            <StatusDot color={color} />
+            <Text size="1" color="gray">
+              {label}
+            </Text>
+          </div>
+        ))}
+      </div>
     </CardContainer>
   );
 };
