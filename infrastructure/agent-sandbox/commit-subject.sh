@@ -17,13 +17,13 @@ normalize_commit_message() {
   printf '%s.' "${message^}"
 }
 
+# Prints nothing for a title without a <type>(<scope>): prefix so callers fall
+# back to the commit subject instead of opening a PR the commit contract rejects.
 normalize_pr_title() {
   local title=$1 prefix
   local pattern='^([a-z]+(\([^)]*\))?: )(.+)$'
   if [[ $title =~ $pattern ]]; then
     prefix=${BASH_REMATCH[1]}
     printf '%s%s' "$prefix" "$(normalize_commit_message "${BASH_REMATCH[3]}")"
-  else
-    printf '%s' "$title"
   fi
 }

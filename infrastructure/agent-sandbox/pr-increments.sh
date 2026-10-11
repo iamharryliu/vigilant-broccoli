@@ -220,7 +220,7 @@ Sandbox execution rules:
   - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
   - commit_message: capitalized, concise, focused on why not what, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit, or "$FALLBACK_TRAILER" when no such trailer is specified
-  - pr_title: the pull request title
+  - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
   - pr_summary: markdown bullet points for the PR "## Summary" section, describing only this increment
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — remaining actions for the human for this increment, or "- [ ] Merge once CI is green" when nothing else is left
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section, or "" when there are none
@@ -299,7 +299,8 @@ inc_publish() {
     subject=$fallback_subject
   fi
   echo "$trailer" | grep -Eqi '^co-authored-by: .+ <.+>$' || trailer=$FALLBACK_TRAILER
-  [ -n "$pr_title" ] && pr_title=$(normalize_pr_title "$pr_title") || pr_title=$subject
+  pr_title=$(normalize_pr_title "$pr_title")
+  [ -n "$pr_title" ] || pr_title=$subject
   [ -n "$pr_summary" ] || pr_summary=$fallback_summary
   [ -n "$pr_next_steps" ] || pr_next_steps='- [ ] Merge once CI is green'
 
