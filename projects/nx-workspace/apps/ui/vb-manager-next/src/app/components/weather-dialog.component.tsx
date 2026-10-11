@@ -8,6 +8,10 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { HARRYLIU_APP_URL } from '@vigilant-broccoli/links';
 
+const IFRAME_PERMISSION = {
+  GEOLOCATION: 'geolocation',
+} as const;
+
 interface WeatherDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -33,6 +37,7 @@ export const WeatherDialog = ({ open, onOpenChange }: WeatherDialogProps) => {
         <iframe
           src={HARRYLIU_APP_URL.WEATHER.URL}
           title={HARRYLIU_APP_URL.WEATHER.NAME}
+          allow={IFRAME_PERMISSION.GEOLOCATION}
           className="h-full w-full"
           style={{ border: 'none' }}
         />
