@@ -6,7 +6,7 @@ import {
   DialogContent,
   DialogTitle,
 } from '@vigilant-broccoli/react-lib';
-import { WeatherComponent } from './weather.component';
+import { HARRYLIU_APP_URL } from '@vigilant-broccoli/links';
 
 interface WeatherDialogProps {
   open: boolean;
@@ -17,17 +17,25 @@ export const WeatherDialog = ({ open, onOpenChange }: WeatherDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+        className="block gap-0 overflow-hidden"
         aria-describedby={undefined}
         showCloseButton={false}
-        style={{ maxWidth: '600px', width: '90vw', padding: '1.5rem' }}
+        style={{
+          maxWidth: '900px',
+          width: '90vw',
+          height: '85dvh',
+          padding: 0,
+        }}
       >
         <VisuallyHidden>
-          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
-            Weather
-          </DialogTitle>
+          <DialogTitle>{HARRYLIU_APP_URL.WEATHER.NAME}</DialogTitle>
         </VisuallyHidden>
-        <WeatherComponent />
+        <iframe
+          src={HARRYLIU_APP_URL.WEATHER.URL}
+          title={HARRYLIU_APP_URL.WEATHER.NAME}
+          className="h-full w-full"
+          style={{ border: 'none' }}
+        />
       </DialogContent>
     </Dialog>
   );
