@@ -1,3 +1,5 @@
+import { LLM_MODEL } from '@vigilant-broccoli/common-js';
+
 export const RESUME_CHAT_RESPONSE_TYPE = {
   TEXT: 'text',
   RESUME_UPDATE: 'resume_update',
@@ -25,4 +27,4 @@ export const RESUME_CHAT_LIMITS = {
   MAX_REVISIONS: 3,
 } as const;
 
-export const RESUME_CHAT_MODEL = 'gpt-5.5';
+export const RESUME_CHAT_MODEL = LLM_MODEL.GPT_5_4;
