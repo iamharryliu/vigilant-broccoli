@@ -52,6 +52,6 @@ A sign-in whose `redirectTo` is **not** matched by `uri_allow_list` does not err
 
 ## Migration status
 
-- `vb-manager-next` — on the shared `react-lib` auth module (migrated from NextAuth).
+- `vb-manager-next` — on the shared `react-lib` auth module.
 - `hearth`, `employee-handler-ui`, `small-business-next`, `vb-manager-next-mobile` — same pattern, but hand-rolled per-app copies predating the shared module; consolidation pending.
 - `vb-express` (Fastify) — still on better-auth + API-key plugin; not part of this pattern yet.

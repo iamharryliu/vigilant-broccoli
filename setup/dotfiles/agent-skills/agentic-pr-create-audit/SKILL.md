@@ -32,6 +32,7 @@ Never touch:
 
 - Keep history that explains a live constraint or prevents a repeat mistake, but rewrite it as the present-tense rule without the backstory: "Do not use `overrides` for fly service packages; it breaks their pruned installs" rather than "We used to use `overrides` until the fly deploys broke".
 - Keep anything a reader still needs to operate the current system: migration steps still pending, compatibility shims still in the tree, old names that still appear in live URLs, data or external services.
+- Keep redeploy and recovery documentation: setup, bootstrap, migration and disaster-recovery steps, their ordering constraints and one-time gotchas (an allowlist to apply first, a flag to set before the first apply, a certificate that may not issue) stay even though they are not needed day to day, because someone rebuilding the system from scratch depends on them. Rewrite them as present-tense steps for a redeploy rather than deleting them; remove only the account of a past incident.
 - Rewrite rather than delete when a passage mixes the current state with its history; delete only the parts that are purely about the past.
 
 ## Verification rules
