@@ -1,6 +1,6 @@
 # Weather
 
-Current weather for the browser's location: city, temperature, condition, and today's high and low, plus badges for what to wear or bring (wind-, rain- or snow-resistant clothing, sunglasses) decided by the vb-express LLM endpoint from that weather. If the LLM call fails, no badges are shown.
+Current weather for the browser's location: city, temperature, condition, and today's high and low, plus badges for what to wear or bring (wind-, rain- or snow-resistant clothing, sunglasses) decided by the vb-express LLM endpoint from that weather. If the LLM call fails, no badges are shown. The UI is the shared `LocalWeatherPanel` from `react-lib`; this app only supplies the `/api/weather` and `/api/preparation` data fetching.
 
 ## Table of Contents
 

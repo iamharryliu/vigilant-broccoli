@@ -6,7 +6,6 @@ import { EmailModalComponent } from './email-modal.component';
 import { SearchDialogComponent } from './search-dialog.component';
 import { CalendarDialog } from './calendar-dialog.component';
 import { NotepadDialog } from './notepad-dialog.component';
-import { WeatherDialog } from './weather-dialog.component';
 import { PomodoroDialog } from './pomodoro-dialog.component';
 import { UtilitiesDialog } from './utilities-dialog.component';
 import {
@@ -18,7 +17,8 @@ import {
 import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
 import { useDrag } from '../hooks/useDrag';
 import { useWeather } from '../hooks/useWeather';
-import { Skeleton } from '@vigilant-broccoli/react-lib';
+import { LocalWeatherDialog, Skeleton } from '@vigilant-broccoli/react-lib';
+import { fetchLocalWeather } from '../utils/local-weather.utils';
 import { authFetch } from '../../../libs/auth';
 
 interface ChatSuggestion {
@@ -367,7 +367,8 @@ export const FloatingIslandComponent = ({
         open={notepadDialogOpen}
         onOpenChange={setNotepadDialogOpen}
       />
-      <WeatherDialog
+      <LocalWeatherDialog
+        fetchWeather={fetchLocalWeather}
         open={weatherDialogOpen}
         onOpenChange={setWeatherDialogOpen}
       />

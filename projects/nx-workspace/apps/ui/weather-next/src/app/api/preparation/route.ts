@@ -9,9 +9,9 @@ import {
   WEATHER_CONDITIONS,
 } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import type { LocalWeather, Preparation } from '@vigilant-broccoli/react-lib';
 import { PREPARATION_KEY } from '../../../lib/weather.consts';
 import { getRetryAfterHeaders } from '../../../lib/rate-limit';
-import { LocalWeather, Preparation } from '../../../lib/weather.types';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
