@@ -5,7 +5,12 @@
 - [Local Infrastructure](#local-infrastructure)
 - [Cloud Infrastructure](#cloud-infrastructure)
 - [Personal Infrastructure](#personal-infrastructure)
-- [Organization Infrastructure](#organization-infrastructure)
+  - [Sync Services](#sync-services)
+  - [Storage Services](#storage-services)
+  - [Image Services](#image-services)
+  - [Backups](#backups)
+  - [CI](#ci)
+  - [RabbitMQ Email Consumer Architecture](#rabbitmq-email-consumer-architecture)
 
 ## Local Infrastructure
 
