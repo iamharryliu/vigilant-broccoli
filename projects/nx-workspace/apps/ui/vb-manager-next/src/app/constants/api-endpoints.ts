@@ -61,6 +61,7 @@ export const API_ENDPOINTS = {
   EVENT_CALENDARS: '/api/event-calendars',
 
   WEATHER: '/api/weather',
+  WEATHER_CITY: '/api/weather/city',
 
   DJ_PLAYLISTS: '/api/dj/playlists',
   DJ_DOWNLOAD: '/api/dj/download',

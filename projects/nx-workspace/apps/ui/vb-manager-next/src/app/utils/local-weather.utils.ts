@@ -5,10 +5,13 @@ import { API_ENDPOINTS } from '../constants/api-endpoints';
 
 const TODAY_INDEX = 0;
 
-const toLocalWeather = ({ current, daily }: WeatherSnapshot): LocalWeather => {
+const toLocalWeather = (
+  { current, daily }: WeatherSnapshot,
+  city: string | null,
+): LocalWeather => {
   const today = daily[TODAY_INDEX];
   return {
-    city: null,
+    city,
     temperatureC: current.temperatureC,
     feelsLikeC: current.feelsLikeC,
     highC: today.tempMaxC,
@@ -23,6 +26,13 @@ const toLocalWeather = ({ current, daily }: WeatherSnapshot): LocalWeather => {
   };
 };
 
+const fetchCity = async (params: URLSearchParams): Promise<string | null> => {
+  const response = await authFetch(`${API_ENDPOINTS.WEATHER_CITY}?${params}`);
+  if (!response.ok) return null;
+  const { city }: { city: string | null } = await response.json();
+  return city;
+};
+
 export const fetchLocalWeather = async ({
   latitude,
   longitude,
@@ -31,8 +41,11 @@ export const fetchLocalWeather = async ({
     lat: String(latitude),
     lon: String(longitude),
   });
-  const response = await authFetch(`${API_ENDPOINTS.WEATHER}?${params}`);
+  const [response, city] = await Promise.all([
+    authFetch(`${API_ENDPOINTS.WEATHER}?${params}`),
+    fetchCity(params).catch(() => null),
+  ]);
   if (!response.ok) return null;
   const { weather }: { weather: WeatherSnapshot } = await response.json();
-  return weather.daily[TODAY_INDEX] ? toLocalWeather(weather) : null;
+  return weather.daily[TODAY_INDEX] ? toLocalWeather(weather, city) : null;
 };

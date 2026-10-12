@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { LocationService } from '@vigilant-broccoli/common-browser';
 import { Location, toDisplayTemperature } from '@vigilant-broccoli/common-js';
 import { Button } from '../components/Button';
@@ -76,12 +76,19 @@ const LocalWeatherPanelContent = ({
   const [state, setState] = useState<ViewState>({ status: STATUS.LOCATING });
   const [preparation, setPreparation] = useState<Preparation | null>();
 
+  const fetchWeatherRef = useRef(fetchWeather);
+  const fetchPreparationRef = useRef(fetchPreparation);
+  fetchWeatherRef.current = fetchWeather;
+  fetchPreparationRef.current = fetchPreparation;
+  const hasPreparation = !!fetchPreparation;
+
   const load = useCallback(
     () =>
-      loadWeather(fetchWeather, () =>
-        setState({ status: STATUS.LOADING_WEATHER }),
+      loadWeather(
+        location => fetchWeatherRef.current(location),
+        () => setState({ status: STATUS.LOADING_WEATHER }),
       ).then(setState),
-    [fetchWeather],
+    [],
   );
 
   useEffect(() => {
@@ -90,10 +97,11 @@ const LocalWeatherPanelContent = ({
 
   const readyWeather = state.status === STATUS.READY ? state.weather : null;
   useEffect(() => {
-    setPreparation(fetchPreparation ? undefined : null);
-    if (!readyWeather || !fetchPreparation) return;
+    setPreparation(hasPreparation ? undefined : null);
+    const fetchPreparationNow = fetchPreparationRef.current;
+    if (!readyWeather || !fetchPreparationNow) return;
     let cancelled = false;
-    fetchPreparation(readyWeather)
+    fetchPreparationNow(readyWeather)
       .catch(() => null)
       .then(result => {
         if (!cancelled) setPreparation(result);
@@ -101,7 +109,7 @@ const LocalWeatherPanelContent = ({
     return () => {
       cancelled = true;
     };
-  }, [readyWeather, fetchPreparation]);
+  }, [readyWeather, hasPreparation]);
 
   const retry = () => {
     setState({ status: STATUS.LOCATING });
