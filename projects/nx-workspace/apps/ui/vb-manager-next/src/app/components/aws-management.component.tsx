@@ -1,7 +1,6 @@
 'use client';
 
 import {
-  Badge,
   ButtonConfig,
   ButtonList,
   CardContainer,
@@ -16,6 +15,13 @@ import { useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
 import { usePollingInterval } from '../hooks/usePollingInterval';
+import {
+  DotColor,
+  StatusDot,
+  StatusLegend,
+  StatusLegendEntry,
+  getDotBorder,
+} from './status-dot.component';
 
 const AWS_POLL_INTERVAL_MS = 30000;
 const AWS_CONSOLE_BASE = 'https://console.aws.amazon.com';
@@ -59,56 +65,59 @@ interface AwsProfile {
   ssoExpired: boolean;
 }
 
-const BORDER_SSO_EXPIRED =
-  'border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600';
+const LEGEND: StatusLegendEntry[] = [
+  { color: 'blue', label: 'SSO' },
+  { color: 'yellow', label: 'SSO expired' },
+  { color: 'gray', label: 'Static credentials' },
+];
 
-const toItem = (profile: AwsProfile): StatusCardListItem => ({
-  id: profile.name,
-  label: profile.name,
-  borderClassName: profile.ssoExpired ? BORDER_SSO_EXPIRED : undefined,
-  badges: profile.ssoExpired ? (
-    <Badge color="yellow" size="1">
-      ⚠️ SSO Expired
-    </Badge>
-  ) : profile.isSso ? (
-    <Badge color="blue" size="1">
-      SSO
-    </Badge>
-  ) : undefined,
-  children: (
-    <>
-      {profile.region && (
-        <Text size="1" color="gray">
-          Region: {profile.region}
-        </Text>
-      )}
-      {profile.ssoAccountId && (
-        <Text size="1" color="gray">
-          Account: {profile.ssoAccountId}
-        </Text>
-      )}
-      {profile.ssoRoleName && (
-        <Text size="1" color="gray">
-          Role: {profile.ssoRoleName}
-        </Text>
-      )}
-      {profile.identity && (
-        <Text size="1" color="gray">
-          ARN: {profile.identity.arn}
-        </Text>
-      )}
-      <ButtonList
-        buttons={Object.entries(getProfileUrls(profile.region)).map(
-          ([key, url]): ButtonConfig => ({
-            label: CONSOLE_LABELS[key],
-            onClick: () => window.open(url, '_blank', WINDOW_OPEN_FEATURES),
-            isExternal: true,
-          }),
+const getProfileColor = (profile: AwsProfile): DotColor => {
+  if (profile.ssoExpired) return 'yellow';
+  return profile.isSso ? 'blue' : 'gray';
+};
+
+const toItem = (profile: AwsProfile): StatusCardListItem => {
+  const color = getProfileColor(profile);
+  return {
+    id: profile.name,
+    label: profile.name,
+    borderClassName: getDotBorder(color),
+    badges: <StatusDot color={color} />,
+    children: (
+      <>
+        {profile.region && (
+          <Text size="1" color="gray">
+            Region: {profile.region}
+          </Text>
         )}
-      />
-    </>
-  ),
-});
+        {profile.ssoAccountId && (
+          <Text size="1" color="gray">
+            Account: {profile.ssoAccountId}
+          </Text>
+        )}
+        {profile.ssoRoleName && (
+          <Text size="1" color="gray">
+            Role: {profile.ssoRoleName}
+          </Text>
+        )}
+        {profile.identity && (
+          <Text size="1" color="gray">
+            ARN: {profile.identity.arn}
+          </Text>
+        )}
+        <ButtonList
+          buttons={Object.entries(getProfileUrls(profile.region)).map(
+            ([key, url]): ButtonConfig => ({
+              label: CONSOLE_LABELS[key],
+              onClick: () => window.open(url, '_blank', WINDOW_OPEN_FEATURES),
+              isExternal: true,
+            }),
+          )}
+        />
+      </>
+    ),
+  };
+};
 
 export const AwsManagementComponent = () => {
   const [profiles, setProfiles] = useState<AwsProfile[]>([]);
@@ -148,6 +157,7 @@ export const AwsManagementComponent = () => {
         items={profiles.map(toItem)}
         emptyMessage="No AWS profiles found"
       />
+      <StatusLegend entries={LEGEND} />
     </CardContainer>
   );
 };
