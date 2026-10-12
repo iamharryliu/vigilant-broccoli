@@ -1,37 +1,17 @@
 import {
   HTTP_HEADERS,
   HTTP_METHOD,
+  LocalWeather,
   Location,
+  Preparation,
+  toLocalWeather,
   WeatherSnapshot,
 } from '@vigilant-broccoli/common-js';
-import { LocalWeather, Preparation } from '@vigilant-broccoli/react-lib';
 import { authFetch } from '../providers/auth-provider';
 
 const WEATHER_API = '/api/weather';
 const WEATHER_CITY_API = '/api/weather/city';
 const PREPARATION_API = '/api/preparation';
-const TODAY_INDEX = 0;
-
-const toLocalWeather = (
-  { current, daily }: WeatherSnapshot,
-  city: string | null,
-): LocalWeather => {
-  const today = daily[TODAY_INDEX];
-  return {
-    city,
-    temperatureC: current.temperatureC,
-    feelsLikeC: current.feelsLikeC,
-    highC: today.tempMaxC,
-    lowC: today.tempMinC,
-    humidityPercent: current.humidityPercent,
-    windSpeedKph: current.windSpeedKph,
-    windMaxKph: today.windMaxKph,
-    precipitationMm: current.precipitationMm,
-    precipitationSumMm: today.precipitationSumMm,
-    condition: current.condition,
-    isDay: current.isDay,
-  };
-};
 
 const fetchCity = async (params: URLSearchParams): Promise<string | null> => {
   const response = await authFetch(`${WEATHER_CITY_API}?${params}`);
@@ -54,7 +34,7 @@ export const fetchLocalWeather = async ({
   ]);
   if (!response.ok) return null;
   const { weather }: { weather: WeatherSnapshot } = await response.json();
-  return weather.daily[TODAY_INDEX] ? toLocalWeather(weather, city) : null;
+  return toLocalWeather(weather, city);
 };
 
 export const fetchLocalPreparation = async (

@@ -7,7 +7,6 @@ Shortcuts work anywhere outside of text inputs, and are ignored while Ctrl, Cmd,
 - **c** — Open Jarvis chatbot
 - **Shift+C** — Open calendar
 - **n** — Open notepad
-- **w** — Open weather
 - **Shift+P** — Open pomodoro timer
 - **u** — Open utilities
 - **d** — Toggle light/dark theme

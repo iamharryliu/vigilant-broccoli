@@ -1,13 +1,14 @@
 import { NextRequest } from 'next/server';
 import {
   HTTP_STATUS_CODES,
+  OPEN_METEO_MAX_FORECAST_DAYS,
+  toLocalWeather,
   WEATHER_PROVIDER,
 } from '@vigilant-broccoli/common-js';
 import {
   reverseGeocodeCity,
   WeatherService,
 } from '@vigilant-broccoli/common-node';
-import type { LocalWeather } from '@vigilant-broccoli/react-lib';
 import { QUERY_PARAM } from '../../../lib/weather.consts';
 
 export const runtime = 'nodejs';
@@ -21,8 +22,6 @@ const NOMINATIM_USER_AGENT = 'weather-next (https://weather.harryliu.dev)';
 const COORDINATE_DECIMALS = 2;
 const MAX_LATITUDE = 90;
 const MAX_LONGITUDE = 180;
-const TODAY_INDEX = 0;
-const DAILY_COUNT = 1;
 const HOURLY_COUNT = 0;
 
 const INVALID_COORDINATES_ERROR = 'lat and lon must be valid coordinates';
@@ -60,32 +59,17 @@ export async function GET(request: NextRequest) {
     WeatherService.getWeather(location, {
       provider: WEATHER_PROVIDER.OPEN_METEO,
       hourlyCount: HOURLY_COUNT,
-      dailyCount: DAILY_COUNT,
+      dailyCount: OPEN_METEO_MAX_FORECAST_DAYS,
     }).catch(() => null),
     reverseGeocodeCity(location, NOMINATIM_USER_AGENT),
   ]);
 
-  const today = weather?.daily[TODAY_INDEX];
-  if (!weather || !today) {
+  const body = weather && toLocalWeather(weather, city);
+  if (!body) {
     return Response.json(
       { error: WEATHER_UNAVAILABLE_ERROR },
       { status: HTTP_STATUS_CODES.BAD_GATEWAY },
     );
   }
-
-  const body: LocalWeather = {
-    city,
-    temperatureC: weather.current.temperatureC,
-    feelsLikeC: weather.current.feelsLikeC,
-    highC: today.tempMaxC,
-    lowC: today.tempMinC,
-    humidityPercent: weather.current.humidityPercent,
-    windSpeedKph: weather.current.windSpeedKph,
-    windMaxKph: today.windMaxKph,
-    precipitationMm: weather.current.precipitationMm,
-    precipitationSumMm: today.precipitationSumMm,
-    condition: weather.current.condition,
-    isDay: weather.current.isDay,
-  };
   return Response.json(body);
 }

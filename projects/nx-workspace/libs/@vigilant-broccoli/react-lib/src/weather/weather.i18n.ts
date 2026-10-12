@@ -6,7 +6,6 @@ const DEFAULT_LOCALE = 'en';
 
 const en = {
   STATUS: {
-    LOCATING: 'Finding your location…',
     LOADING_WEATHER: 'Checking the sky…',
     LOADING_PREPARATION: 'Checking what to wear or bring…',
   },
@@ -23,12 +22,12 @@ const en = {
     ERROR_TITLE: 'Weather is unavailable',
     ERROR_MESSAGE:
       "We couldn't load the weather right now. Please try again in a moment.",
-    CURRENT: '{temperature}°, {condition}',
     HIGH: 'H {temperature}°',
     LOW: 'L {temperature}°',
     FEELS_LIKE: 'Feels like {temperature}°',
     HUMIDITY: 'Humidity {percent}%',
-    WIND: 'Wind {speed} km/h',
+    WIND: 'Wind {speed} km/h (max {max})',
+    PRECIPITATION: 'Precipitation {amount} mm ({sum} mm today)',
   },
   CONDITION: {
     CLEAR: 'Clear',
@@ -45,6 +44,14 @@ const en = {
     RAIN_RESISTANT_CLOTHING: 'Rain-resistant clothing',
     SNOW_RESISTANT_CLOTHING: 'Snow-resistant clothing',
     SUNGLASSES: 'Sunglasses',
+  },
+  FORECAST: {
+    LABEL: 'Forecast',
+    TODAY: 'Today',
+    PRECIPITATION: '{amount} mm',
+    RANGE: 'High {high}°, low {low}°',
+    PREVIOUS: 'Previous days',
+    NEXT: 'Next days',
   },
   ACTIONS: {
     RETRY: 'Try again',

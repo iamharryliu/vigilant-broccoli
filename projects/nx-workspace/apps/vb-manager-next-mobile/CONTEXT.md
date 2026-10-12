@@ -9,7 +9,7 @@
 
 ## Weather
 
-`/weather` renders `LocalWeatherPanel` fed by `fetchLocalWeather` (`src/app/utils/local-weather.utils.ts`) over the auth-guarded `/api/weather` and `/api/weather/city` routes, which use `WeatherService` and `reverseGeocodeCity` from `common-node`, and `fetchLocalPreparation` over the auth-guarded `/api/preparation`, which validates the payload and calls `fetchWeatherPreparation` from `common-node` (LLM via `VB_EXPRESS_URL` / `VB_EXPRESS_API_KEY`, no rate limit) so the page shows preparation badges.
+`/weather` renders `DashboardInfoCardUtilityContent` (`react-utility`, self-locating via browser geolocation; see [Dashboard Info Card](../../libs/@vigilant-broccoli/react-utility/docs/features/dashboard-info-card.md)) fed by `fetchLocalWeather` (`src/app/utils/local-weather.utils.ts`) over the auth-guarded `/api/weather` and `/api/weather/city` routes, which use `WeatherService` and `reverseGeocodeCity` from `common-node`, and `fetchLocalPreparation` over the auth-guarded `/api/preparation`, which validates the payload and calls `fetchWeatherPreparation` from `common-node` (LLM via `VB_EXPRESS_URL` / `VB_EXPRESS_API_KEY`, no rate limit) so the card shows preparation badges. Both `/api/weather` routes request the Open-Meteo 16-day maximum and `fetchLocalWeather` maps the snapshot with the shared `toLocalWeather` from `common-js`, so the card's forecast carousel gets every returned day. `tailwind.config.js` must keep the `react-utility` content glob or the card renders unstyled.
 
 ## Nuances
 

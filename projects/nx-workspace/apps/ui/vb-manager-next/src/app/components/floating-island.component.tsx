@@ -16,12 +16,6 @@ import {
 } from '@vigilant-broccoli/react-utility';
 import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
 import { useDrag } from '../hooks/useDrag';
-import { useWeather } from '../hooks/useWeather';
-import { LocalWeatherDialog, Skeleton } from '@vigilant-broccoli/react-lib';
-import {
-  fetchLocalPreparation,
-  fetchLocalWeather,
-} from '../utils/local-weather.utils';
 import { authFetch } from '../../../libs/auth';
 
 interface ChatSuggestion {
@@ -41,8 +35,6 @@ interface FloatingIslandProps {
   setCalendarDialogOpen?: (open: boolean) => void;
   notepadDialogOpen?: boolean;
   setNotepadDialogOpen?: (open: boolean) => void;
-  weatherDialogOpen?: boolean;
-  setWeatherDialogOpen?: (open: boolean) => void;
   pomodoroDialogOpen?: boolean;
   setPomodoroDialogOpen?: (open: boolean) => void;
   utilitiesDialogOpen?: boolean;
@@ -107,8 +99,6 @@ export const FloatingIslandComponent = ({
   setCalendarDialogOpen: externalSetCalendarOpen,
   notepadDialogOpen: externalNotepadOpen,
   setNotepadDialogOpen: externalSetNotepadOpen,
-  weatherDialogOpen: externalWeatherOpen,
-  setWeatherDialogOpen: externalSetWeatherOpen,
   pomodoroDialogOpen: externalPomodoroOpen,
   setPomodoroDialogOpen: externalSetPomodoroOpen,
   utilitiesDialogOpen: externalUtilitiesOpen,
@@ -125,13 +115,10 @@ export const FloatingIslandComponent = ({
     useState(false);
   const [internalNotepadDialogOpen, setInternalNotepadDialogOpen] =
     useState(false);
-  const [internalWeatherDialogOpen, setInternalWeatherDialogOpen] =
-    useState(false);
   const [internalPomodoroDialogOpen, setInternalPomodoroDialogOpen] =
     useState(false);
   const [internalUtilitiesDialogOpen, setInternalUtilitiesDialogOpen] =
     useState(false);
-  const { weatherData, loading: weatherLoading } = useWeather();
   const dayData = useDayAnalysisSuggestions();
 
   const fetchOutfitRecommendation = async () => {
@@ -222,12 +209,6 @@ export const FloatingIslandComponent = ({
   );
   const setNotepadDialogOpen =
     externalSetNotepadOpen ?? setInternalNotepadDialogOpen;
-  const weatherDialogOpen = getDialogState(
-    externalWeatherOpen,
-    internalWeatherDialogOpen,
-  );
-  const setWeatherDialogOpen =
-    externalSetWeatherOpen ?? setInternalWeatherDialogOpen;
   const pomodoroDialogOpen = getDialogState(
     externalPomodoroOpen,
     internalPomodoroDialogOpen,
@@ -282,71 +263,6 @@ export const FloatingIslandComponent = ({
         <div style={{ minWidth: 'max-content' }}>
           <ClockComponent type="info" />
         </div>
-
-        <div
-          style={{
-            width: '1px',
-            height: '60px',
-            backgroundColor: 'var(--gray-6)',
-          }}
-        />
-
-        <div
-          onClick={() => !weatherLoading && setWeatherDialogOpen(true)}
-          style={{
-            width: '5rem',
-            cursor: weatherLoading ? 'default' : 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.5rem',
-            transition: 'opacity 0.2s ease',
-          }}
-          onMouseEnter={e => {
-            if (!weatherLoading) e.currentTarget.style.opacity = '0.7';
-          }}
-          onMouseLeave={e => {
-            e.currentTarget.style.opacity = '1';
-          }}
-          title="Weather"
-        >
-          {weatherLoading || !weatherData[0] ? (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                width: '100%',
-              }}
-            >
-              <Skeleton className="h-6 w-6 rounded-full" />
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.25rem',
-                  flex: 1,
-                }}
-              >
-                <Skeleton className="h-3.5 w-10" />
-                <Skeleton className="h-2.5 w-8" />
-              </div>
-            </div>
-          ) : (
-            <>
-              <span style={{ fontSize: '1.5rem' }}>
-                {weatherData[0].now.icon}
-              </span>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>
-                  {weatherData[0].now.temp}&deg;C
-                </span>
-                <span style={{ fontSize: '0.7rem', color: 'var(--gray-9)' }}>
-                  {weatherData[0].city}
-                </span>
-              </div>
-            </>
-          )}
-        </div>
       </div>
 
       <ChatbotDialog
@@ -369,12 +285,6 @@ export const FloatingIslandComponent = ({
       <NotepadDialog
         open={notepadDialogOpen}
         onOpenChange={setNotepadDialogOpen}
-      />
-      <LocalWeatherDialog
-        fetchWeather={fetchLocalWeather}
-        fetchPreparation={fetchLocalPreparation}
-        open={weatherDialogOpen}
-        onOpenChange={setWeatherDialogOpen}
       />
       <PomodoroDialog
         open={pomodoroDialogOpen}

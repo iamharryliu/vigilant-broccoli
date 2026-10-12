@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import {
   HTTP_STATUS_CODES,
   isWeatherProvider,
+  OPEN_METEO_MAX_FORECAST_DAYS,
   WeatherProvider,
   WeatherSnapshot,
 } from '@vigilant-broccoli/common-js';
@@ -13,7 +14,6 @@ export const dynamic = 'force-dynamic';
 
 const CACHE_DURATION_MS = 10 * 60 * 1000;
 const HOURLY_COUNT = 8;
-const DAILY_COUNT = 5;
 
 const LAT_PARAM = 'lat';
 const LON_PARAM = 'lon';
@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
       {
         ...(provider ? { provider } : {}),
         hourlyCount: HOURLY_COUNT,
-        dailyCount: DAILY_COUNT,
+        dailyCount: OPEN_METEO_MAX_FORECAST_DAYS,
       },
     );
 
