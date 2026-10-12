@@ -27,3 +27,10 @@ normalize_pr_title() {
     printf '%s%s' "$prefix" "$(normalize_commit_message "${BASH_REMATCH[3]}")"
   fi
 }
+
+# Prints the PR_FILES:: marker write-pr-step-summary.sh renders as a changed-files
+# table, listing what the run committed since $1. Runners without per-file agent
+# summaries leave the summary column blank.
+emit_pr_files() {
+  printf 'PR_FILES::%s\n' "$(git --no-pager diff --name-only "$1" HEAD | jq -Rsc 'split("\n") | map(select(length > 0) | {file: ., summary: ""})')"
+}
