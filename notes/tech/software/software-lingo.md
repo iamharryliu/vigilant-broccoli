@@ -19,9 +19,12 @@
 | Compiler            | A tool that converts source code written in one programming language into another, typically into machine code.                                                     |
 | first class citizen | a particular entity in a language—like a function, object, or data type—can be used freely and fully like any other value.                                          |
 | FOSS                | Free and Open Source Software — software whose source code is freely available to view, modify, and redistribute, usually under a license like MIT, GPL, or Apache. |
+| Hard delete         | Physically removing a row from the database, so it cannot be recovered without a backup. The opposite of a soft delete.                                             |
 | High-level language | A programming language that is closer to human language, abstracting away hardware details. Easier to read, write, and maintain (e.g., Python).                     |
 | immutable           | Cannot be changed after it’s created.                                                                                                                               |
+| Lazy loading        | Deferring a load until first access, such as an ORM fetching a related entity only when it is read. Can cause N+1 queries.                                          |
 | Low-level language  | A programming language that is closer to machine code, with less abstraction from hardware. Provides more control but is harder to use (e.g., C).                   |
+| Soft delete         | Marking a record deleted (a `deleted_at` timestamp or flag) instead of removing the row, so it stays recoverable. A hard delete removes the row.                    |
 | Statically Typed    | Variable types are known at compile time.                                                                                                                           |
 | Ternary Operator    | A one line if else statement.                                                                                                                                       |
 | Transpiler          | Transforms code syntax and features so the code runs across different environments.                                                                                 |

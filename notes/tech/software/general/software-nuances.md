@@ -34,6 +34,13 @@
   - Use sockets when you need real-time, push-style updates.
   - Use APIs when you need on-demand data exchange or simple CRUD operations.
   - Rest is easier to scale statelessly as sockets use persistent connections.
+- REST vs gRPC APIs
+  - REST (HTTP + JSON) for anything browsers, third parties, `curl`, or CI call directly; every client and tool already speaks it, and OpenAPI/Swagger docs come for free.
+  - gRPC (HTTP/2 + Protocol Buffers) for internal service-to-service calls where you need strict typed contracts, streaming, or high call volume across several languages.
+  - gRPC needs codegen, and browsers need gRPC-Web or a proxy, so it rarely replaces a public API.
+  - At low traffic the serialization savings are negligible next to the work each call does (a database query, an LLM call), so gRPC mostly costs tooling.
+  - A typed contract does not require gRPC: a shared schema (zod, OpenAPI, ts-rest) gives typed clients and validation while keeping plain REST.
+  - See [Service Communication](../web-dev/service-communication.md) for the comparison tables.
 
 ## Web Applications
 

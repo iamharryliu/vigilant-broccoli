@@ -12,6 +12,7 @@
 - [Python](./python/python.md)
 - [Go](./go.md)
 - [Markdown](./markdown.md)
+- [Language Ecosystem Equivalents](./ecosystem-equivalents.md)
 
 ## Comparison Table
 
