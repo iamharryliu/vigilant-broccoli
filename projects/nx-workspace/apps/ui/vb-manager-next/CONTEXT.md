@@ -60,11 +60,12 @@ the OS-level boot hook on the host.
 Tailwind classes that appear only in a lib under `libs/@vigilant-broccoli/*`
 (e.g. `react-utility`'s Dashboard Info Card) can be missing from the built CSS
 after a rebuild: Next's webpack cache in `dist/apps/ui/vb-manager-next/.next/cache`
-does not regenerate the Tailwind output when only those files changed. The
-build succeeds, PM2 reports online, and the component renders unstyled.
-`scripts/shell/vb-manager-next-reload.sh` removes that cache before building,
-which costs about 20s (≈54s cold vs ≈32s warm for `build:next`). A manual
-`nx run vb-manager-next:build:next` does not, so clear it yourself first.
+did not regenerate the Tailwind output when a lib file was added or edited. The
+build succeeded, PM2 reported online, and the component rendered unstyled.
+`next.config.js` now appends a hash of every lib source's path, mtime and size
+to webpack's `cache.version`, so a lib change rebuilds cold (about 20s slower:
+≈65s vs ≈45s) and an app-only change keeps the warm cache. If a lib class still
+looks stale, remove that cache directory and rebuild.
 
 ### A failed kanban board fetch used to look like a brand-new account
 
