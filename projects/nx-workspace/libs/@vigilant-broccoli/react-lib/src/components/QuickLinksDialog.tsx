@@ -25,6 +25,7 @@ export type QuickLinksDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onShellExecute?: ShellExecuteHandler;
+  canEmbed?: () => boolean;
 };
 
 export function QuickLinksDialog({
@@ -32,6 +33,7 @@ export function QuickLinksDialog({
   open,
   onOpenChange,
   onShellExecute,
+  canEmbed,
 }: QuickLinksDialogProps) {
   const [embedLink, setEmbedLink] = useState<QuickLink | null>(null);
 
@@ -70,6 +72,7 @@ export function QuickLinksDialog({
             autoFocusSearch={open}
             onLinkOpen={() => onOpenChange(false)}
             onEmbedOpen={setEmbedLink}
+            canEmbed={canEmbed}
           />
         </DialogContent>
       </Dialog>
