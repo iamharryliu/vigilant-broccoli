@@ -34,11 +34,11 @@ Use `libs/@vigilant-broccoli/personal-common-js/src/index.ts` for URLs; manually
 
 ### Nx formatting must not hand the agent symlinks to Prettier
 
-Prettier rejects explicitly passed symlinks before applying `.prettierignore`. Nx uses this workspace's ignore files when building its file list, so keep `AGENTS.md`/`CLAUDE.md` in its `.gitignore` even though they are tracked. Format `CONTEXT.md` sources; the root hook filters symlinks in `scripts/shell/format-staged.sh`.
+Prettier rejects explicitly passed symlinks ("Explicitly specified pattern is a symbolic link", exit 2) before applying `.prettierignore`. Nx uses this workspace's ignore files when building its file list, so keep `AGENTS.md`/`CLAUDE.md` in its `.gitignore` even though they are tracked. Format `CONTEXT.md` sources; the root hook filters symlinks in `scripts/shell/format-staged.sh`.
 
 ### Next.js workspace-root inference warnings are accepted
 
-The root and workspace `pnpm-lock.yaml` files trigger Next.js root-inference warnings. Keep both lockfiles and current configs; do not add `outputFileTracingRoot`/`turbopack.root` or reopen TODO `1f0a7e` solely to silence the warning.
+The root and workspace `pnpm-lock.yaml` files trigger Next.js's "Next.js inferred your workspace root, but it may not be correct" warning. Keep both lockfiles and current configs; do not add `outputFileTracingRoot`/`turbopack.root` or reopen TODO `1f0a7e` solely to silence the warning.
 
 Revisit only for a reproduced build, file-tracing or deployed-dependency failure attributable to inference. Check the affected app's build/deploy; for hearth's missing `sharp`, check dependency placement first.
 
