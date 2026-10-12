@@ -50,8 +50,6 @@ const en = {
     TODAY: 'Today',
     PRECIPITATION: '{amount} mm',
     RANGE: 'High {high}°, low {low}°',
-    PREVIOUS: 'Previous days',
-    NEXT: 'Next days',
   },
   ACTIONS: {
     RETRY: 'Try again',
