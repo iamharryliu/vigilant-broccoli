@@ -51,6 +51,9 @@ come back from an older saved list that does not include the fresh
 `vb-manager-next` process/env. This assumes `pm2 startup` has already installed
 the OS-level boot hook on the host.
 
+`pnpm vb-manager-next:reload` runs `scripts/shell/vb-manager-next-reload.sh`, which first does a
+`git pull --ff-only` in the repo root and aborts the reload if the pull fails.
+
 ### A failed kanban board fetch used to look like a brand-new account
 
 `vb-manager-next`'s kanban board (`src/app/components/kanban.component.tsx`,
