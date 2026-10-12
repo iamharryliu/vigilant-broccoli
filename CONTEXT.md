@@ -79,7 +79,7 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 - Alphabetize unordered tables by their first column. Preserve meaningful order for steps, progressions, diagram labels and fixed side-by-side comparisons whose heading names the order.
 - Check relative links and section anchors after moving files or renaming headings.
 - This file and Doc Map documents with at least three `##` sections need a `## Table of Contents` after the one-line purpose. Derive it from headings in document order, nesting `###` entries and ignoring fenced examples; rebuild it when headings change and add a missing one when touching a listed doc. READMEs follow `app-readme-pattern.md`; notes follow [notes/CONTEXT.md](./notes/CONTEXT.md). Do not add ToCs to unrelated files.
-- Feature docs belong in `docs/features/<feature>/` under the owning app/lib. Only features spanning apps belong in `projects/nx-workspace/docs/features/`.
+- Feature docs belong in `docs/features/<feature>.md` (a `<feature>/` folder only when it needs several files) under the owning app/lib. Only features spanning apps belong in `projects/nx-workspace/docs/features/`.
 - When changing a cloud service or its usage, update its notes/docs `## Free Tier` section with the limits.
 
 ## Git
