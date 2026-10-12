@@ -1,25 +1,20 @@
 import { NextRequest } from 'next/server';
 import {
-  HTTP_HEADERS,
   HTTP_STATUS_CODES,
-  Location,
   WEATHER_PROVIDER,
 } from '@vigilant-broccoli/common-js';
-import { WeatherService } from '@vigilant-broccoli/common-node';
+import {
+  reverseGeocodeCity,
+  WeatherService,
+} from '@vigilant-broccoli/common-node';
 import type { LocalWeather } from '@vigilant-broccoli/react-lib';
 import { QUERY_PARAM } from '../../../lib/weather.consts';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const NOMINATIM_REVERSE_URL = 'https://nominatim.openstreetmap.org/reverse';
 // Nominatim's usage policy rejects requests without an identifying User-Agent.
 const NOMINATIM_USER_AGENT = 'weather-next (https://weather.harryliu.dev)';
-const NOMINATIM_CITY_ZOOM = '10';
-const NOMINATIM_FORMAT = 'jsonv2';
-const NOMINATIM_LANGUAGE = 'en';
-const GEOCODE_REVALIDATE_SECONDS = 60 * 60 * 24;
-const USER_AGENT_HEADER = 'User-Agent';
 
 // ~1 km of precision is plenty for city-level weather, keeps the user's exact
 // position out of upstream logs, and lets nearby requests share cached lookups.
@@ -33,51 +28,11 @@ const HOURLY_COUNT = 0;
 const INVALID_COORDINATES_ERROR = 'lat and lon must be valid coordinates';
 const WEATHER_UNAVAILABLE_ERROR = 'Weather is unavailable';
 
-// Nominatim names the place by its size, so the first field present wins.
-const CITY_ADDRESS_FIELDS = [
-  'city',
-  'town',
-  'village',
-  'municipality',
-] as const;
-
-interface NominatimReverseResponse {
-  name?: string;
-  address?: Partial<Record<(typeof CITY_ADDRESS_FIELDS)[number], string>>;
-}
-
 const parseCoordinate = (value: string | null, max: number): number | null => {
   const parsed = Number.parseFloat(value ?? '');
   return Number.isFinite(parsed) && Math.abs(parsed) <= max
     ? Number(parsed.toFixed(COORDINATE_DECIMALS))
     : null;
-};
-
-const fetchCityName = async ({
-  latitude,
-  longitude,
-}: Location): Promise<string | null> => {
-  const params = new URLSearchParams({
-    lat: String(latitude),
-    lon: String(longitude),
-    zoom: NOMINATIM_CITY_ZOOM,
-    format: NOMINATIM_FORMAT,
-    'accept-language': NOMINATIM_LANGUAGE,
-  });
-  const response = await fetch(`${NOMINATIM_REVERSE_URL}?${params}`, {
-    headers: {
-      ...HTTP_HEADERS.ACCEPT.JSON,
-      [USER_AGENT_HEADER]: NOMINATIM_USER_AGENT,
-    },
-    next: { revalidate: GEOCODE_REVALIDATE_SECONDS },
-  });
-  if (!response.ok) return null;
-  const { name, address }: NominatimReverseResponse = await response.json();
-  return (
-    CITY_ADDRESS_FIELDS.map(field => address?.[field]).find(Boolean) ??
-    name ??
-    null
-  );
 };
 
 export async function GET(request: NextRequest) {
@@ -107,7 +62,7 @@ export async function GET(request: NextRequest) {
       hourlyCount: HOURLY_COUNT,
       dailyCount: DAILY_COUNT,
     }).catch(() => null),
-    fetchCityName(location).catch(() => null),
+    reverseGeocodeCity(location, NOMINATIM_USER_AGENT),
   ]);
 
   const today = weather?.daily[TODAY_INDEX];

@@ -2,9 +2,14 @@
 
 ## Table of Contents
 
+- [Weather](#weather)
 - [Nuances](#nuances)
   - [`vb-manager-next-mobile` ran the shell and the Google task list on two different sessions](#vb-manager-next-mobile-ran-the-shell-and-the-google-task-list-on-two-different-sessions)
   - [Sticky headings punch holes in a mobile overlay scrollbar](#sticky-headings-punch-holes-in-a-mobile-overlay-scrollbar)
+
+## Weather
+
+`/weather` renders `LocalWeatherPanel` fed by `fetchLocalWeather` (`src/app/utils/local-weather.utils.ts`) over the auth-guarded `/api/weather` and `/api/weather/city` routes, which use `WeatherService` and `reverseGeocodeCity` from `common-node`. No preparation badges.
 
 ## Nuances
 

@@ -86,9 +86,7 @@ export const authFetch = async (
 };
 
 export const useAuthStatus = ():
-  | 'loading'
-  | 'authenticated'
-  | 'unauthenticated' => {
+  'loading' | 'authenticated' | 'unauthenticated' => {
   const session = useAuth();
   return session ? 'authenticated' : 'unauthenticated';
 };

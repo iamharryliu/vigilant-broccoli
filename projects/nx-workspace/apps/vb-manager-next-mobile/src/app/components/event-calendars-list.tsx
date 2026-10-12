@@ -18,13 +18,18 @@ type EventCalendarLink = {
 
 type CalendarViewMode = 'AGENDA' | 'WEEK' | 'MONTH';
 
-const CALENDAR_VIEWS: { mode: CalendarViewMode; label: string; Icon: typeof List }[] = [
+const CALENDAR_VIEWS: {
+  mode: CalendarViewMode;
+  label: string;
+  Icon: typeof List;
+}[] = [
   { mode: 'AGENDA', label: 'Schedule', Icon: List },
   { mode: 'WEEK', label: 'Week', Icon: CalendarRange },
   { mode: 'MONTH', label: 'Month', Icon: CalendarDays },
 ];
 
-const withViewMode = (url: string, mode: CalendarViewMode) => `${url}&mode=${mode}`;
+const withViewMode = (url: string, mode: CalendarViewMode) =>
+  `${url}&mode=${mode}`;
 
 export const EventCalendarsList = () => {
   const [calendars, setCalendars] = useState<EventCalendarLink[] | null>(null);
