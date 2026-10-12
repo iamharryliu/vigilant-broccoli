@@ -693,6 +693,10 @@ export const HARRYLIU_INFRA_URL = {
     NAME: 'Socket Server Health',
     URL: 'https://socket.harryliu.dev/health',
   },
+  CAREER: {
+    NAME: 'Career',
+    URL: 'https://career.harryliu.dev/',
+  },
   STATUS: {
     NAME: 'Status',
     URL: 'https://status.harryliu.dev/',

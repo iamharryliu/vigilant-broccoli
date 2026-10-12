@@ -37,8 +37,45 @@
       "DESCRIPTION": "How repository context, docs, and shared skills link together."
     }
   },
+  "CAREER_PAGE": {
+    "PAGE_TITLE": "Career",
+    "TITLE": "Career",
+    "SECTION_PROFILE": "Profile",
+    "SECTION_LINKS": "Links",
+    "RESUME": {
+      "TITLE": "Resume",
+      "DESCRIPTION": "Current resume on harryliu.dev."
+    },
+    "EXPERIENCE": {
+      "TITLE": "Personal Software Career Experience",
+      "DESCRIPTION": "Skills, jobs, and project contributions."
+    },
+    "PROJECTS": {
+      "TITLE": "projects.harryliu.dev",
+      "DESCRIPTION": "Software projects, open source, and deployed apps."
+    },
+    "PERSONAL_WEBSITE": {
+      "TITLE": "harryliu.dev",
+      "DESCRIPTION": "Personal website."
+    },
+    "GITHUB": {
+      "TITLE": "GitHub",
+      "DESCRIPTION": "Code and open source contributions."
+    },
+    "LINKEDIN": {
+      "TITLE": "LinkedIn",
+      "DESCRIPTION": "Professional profile."
+    }
+  },
+  "CAREER_EXPERIENCE_PAGE": {
+    "TITLE": "Personal Software Career Experience"
+  },
   "WEB_APPLICATIONS_PAGE": {
     "TITLE": "Web Applications",
+    "CAREER": {
+      "TITLE": "Career",
+      "DESCRIPTION": "Resume, career experience, and professional links."
+    },
     "SECTION_APPS": "Apps",
     "SECTION_DEMO": "Demo",
     "HARRY_LIU": {

@@ -2,6 +2,7 @@ import {
   Bike,
   BookOpen,
   Bot,
+  Briefcase,
   CalendarDays,
   CloudSun,
   Gamepad2,
@@ -40,6 +41,7 @@ const FALLBACK_ICON: LucideIcon = Globe;
 const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
   balloono: Gamepad2,
   calendars: CalendarDays,
+  career: Briefcase,
   'context-md': Bot,
   'cloud-8-skate': Bike,
   'component-library': LayoutGrid,
