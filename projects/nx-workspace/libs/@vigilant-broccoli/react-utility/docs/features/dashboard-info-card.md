@@ -12,6 +12,11 @@
 - `fetchPreparation` receives the weather without its `forecast`.
 - The card wraps itself in the internal weather i18n provider and carries the Open-Meteo / OpenStreetMap attribution footer once weather is shown, so apps need no provider or footer.
 
+## Layout
+
+- The summary is a wrapping horizontal row: the clock hero on one side and a 2-column grid of stat tiles (weather, sunrise, moon, sunset) beside it. The grid only drops under the clock when the card is too narrow for both.
+- The weather details, preparation badges, forecast carousel and attribution footer stack below the summary row; they never move the tiles into a vertical column.
+
 ## Weather data
 
 - `DashboardInfoCardWeather` is `LocalWeather` (from `common-js`) plus `preparation`. Fields shown inline: temperature, feels-like, high/low, humidity, wind and wind max, precipitation and day sum, and the Preparation badges built from `PREPARATION_BADGES` (`react-lib`).
