@@ -422,10 +422,12 @@ async function main() {
     );
 
     console.log(`\nDeploying ${projectName} to Vercel...\n`);
-    execSync(`npx vercel deploy --prebuilt --prod --yes --cwd "${repoRoot}"`, {
-      stdio: 'inherit',
-      env: vercelEnv,
-    });
+    // tgz uploads one archive instead of every output file; per-file uploads
+    // exhaust the free plan's 5000 uploads/24h ("api-upload-free") mid-run.
+    execSync(
+      `npx vercel deploy --prebuilt --prod --yes --archive=tgz --cwd "${repoRoot}"`,
+      { stdio: 'inherit', env: vercelEnv },
+    );
   });
 
   console.log('\nDone!');
