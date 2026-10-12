@@ -11,9 +11,9 @@ How today's weather becomes glanceable "what to wear or bring" badges.
 
 ## Flow
 
-1. `WeatherApp.tsx` loads the weather from `/api/weather`, renders it, then POSTs it to `/api/preparation`. While that request is pending, badge skeletons and “Checking what to wear or bring…” appear below the weather in a live status region.
+1. `WeatherApp.tsx` passes `/api/weather` and `/api/preparation` fetchers to the shared `LocalWeatherPanel` (react-lib, see [Local Weather](../../../../../../libs/@vigilant-broccoli/react-lib/docs/features/local-weather.md)), which loads the weather, renders it, then POSTs it to `/api/preparation`. While that request is pending, badge skeletons and “Checking what to wear or bring…” appear below the weather in a live status region.
 2. `src/app/api/preparation/route.ts` validates the payload and calls vb-express `POST /api/llm` with a JSON schema holding one boolean per badge (`wind-`, `rain-`, `snow-resistant clothing`, `sunglasses`).
-3. The client renders only the badges that are `true`, labelled from `i18n/en.json` (`PREPARATION.*`).
+3. The client renders only the badges that are `true`, labelled from the panel's dictionary (`PREPARATION.*`).
 
 ## Failure behaviour
 

@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { DashboardInfoCardUtilityContent } from '@vigilant-broccoli/react-utility';
+import { LocalWeatherDialog } from '@vigilant-broccoli/react-lib';
+import { fetchLocalWeather } from '../utils/local-weather.utils';
 import { useWeather } from '../hooks/useWeather';
-import { WeatherDialog } from './weather-dialog.component';
 
 const FALLBACK_LOCATION = { latitude: 0, longitude: 0 };
 
@@ -28,7 +29,8 @@ export const DashboardInfoCard = () => {
         loading={weatherLoading}
         onWeatherClick={() => setWeatherDialogOpen(true)}
       />
-      <WeatherDialog
+      <LocalWeatherDialog
+        fetchWeather={fetchLocalWeather}
         open={weatherDialogOpen}
         onOpenChange={setWeatherDialogOpen}
       />

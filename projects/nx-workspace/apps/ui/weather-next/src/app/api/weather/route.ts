@@ -6,16 +6,15 @@ import {
   WEATHER_PROVIDER,
 } from '@vigilant-broccoli/common-js';
 import { WeatherService } from '@vigilant-broccoli/common-node';
+import type { LocalWeather } from '@vigilant-broccoli/react-lib';
 import { QUERY_PARAM } from '../../../lib/weather.consts';
-import { LocalWeather } from '../../../lib/weather.types';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const NOMINATIM_REVERSE_URL = 'https://nominatim.openstreetmap.org/reverse';
 // Nominatim's usage policy rejects requests without an identifying User-Agent.
-const NOMINATIM_USER_AGENT =
-  'weather-next (https://weather.harryliu.dev)';
+const NOMINATIM_USER_AGENT = 'weather-next (https://weather.harryliu.dev)';
 const NOMINATIM_CITY_ZOOM = '10';
 const NOMINATIM_FORMAT = 'jsonv2';
 const NOMINATIM_LANGUAGE = 'en';

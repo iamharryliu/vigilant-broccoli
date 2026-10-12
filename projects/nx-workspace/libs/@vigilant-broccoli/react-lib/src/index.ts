@@ -9,6 +9,7 @@ export * from './hooks/useThemeKeybind';
 export * from './i18n';
 export * from './leaderboard';
 export * from './live-location';
+export * from './weather';
 export * from './whiteboard';
 export * from './utils/browser.utils';
 export * from './utils/cn';

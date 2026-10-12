@@ -10,7 +10,7 @@
 
 - **Time**: Live clock display
 - **Info**: Date and contextual info
-- **Weather**: City name, emoji weather status, and temperature; clickable to open the weather dialog (keyboard shortcut: `w`), which embeds the standalone weather site (`HARRYLIU_APP_URL.WEATHER`) in an iframe
+- **Weather**: City name, emoji weather status, and temperature; clickable to open the weather dialog (keyboard shortcut: `w`), which renders the shared `LocalWeatherDialog` from `react-lib` (the same UI as `weather-next`), fed by `fetchLocalWeather` (`src/app/utils/local-weather.utils.ts`) over this app's `/api/weather` plus `/api/weather/city` (Nominatim reverse geocoding, best-effort); no preparation badges. The island's inline city/emoji/temperature still comes from `useWeather`
 
 ## Dialogs
 
