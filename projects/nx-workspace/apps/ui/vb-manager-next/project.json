@@ -13,7 +13,7 @@
     },
     "build:next": {
       "executor": "nx:run-commands",
-      "cache": true,
+      "cache": false,
       "dependsOn": ["^build"],
       "inputs": [
         "default",
