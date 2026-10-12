@@ -29,7 +29,6 @@ type KeyboardHandlers = {
   setChatbotDialogOpen: (open: boolean) => void;
   setCalendarDialogOpen: (open: boolean) => void;
   setNotepadDialogOpen: (open: boolean) => void;
-  setWeatherDialogOpen: (open: boolean) => void;
   setPomodoroDialogOpen: (open: boolean) => void;
   setUtilitiesDialogOpen: (open: boolean) => void;
 };
@@ -59,9 +58,6 @@ const processKeyboardInput = (
       return false;
     case 'n':
       handlers.setNotepadDialogOpen(true);
-      return true;
-    case 'w':
-      handlers.setWeatherDialogOpen(true);
       return true;
     case 'p':
       if (isShift) {
@@ -118,7 +114,6 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [calendarDialogOpen, setCalendarDialogOpen] = useState(false);
   const [notepadDialogOpen, setNotepadDialogOpen] = useState(false);
-  const [weatherDialogOpen, setWeatherDialogOpen] = useState(false);
   const [pomodoroDialogOpen, setPomodoroDialogOpen] = useState(false);
   const [utilitiesDialogOpen, setUtilitiesDialogOpen] = useState(false);
   const [shortcutsOverlayOpen, setShortcutsOverlayOpen] = useState(false);
@@ -141,7 +136,6 @@ export default function Layout({ children }: { children: ReactNode }) {
         setChatbotDialogOpen,
         setCalendarDialogOpen,
         setNotepadDialogOpen,
-        setWeatherDialogOpen,
         setPomodoroDialogOpen,
         setUtilitiesDialogOpen,
       });
@@ -204,8 +198,6 @@ export default function Layout({ children }: { children: ReactNode }) {
             setCalendarDialogOpen={setCalendarDialogOpen}
             notepadDialogOpen={notepadDialogOpen}
             setNotepadDialogOpen={setNotepadDialogOpen}
-            weatherDialogOpen={weatherDialogOpen}
-            setWeatherDialogOpen={setWeatherDialogOpen}
             pomodoroDialogOpen={pomodoroDialogOpen}
             setPomodoroDialogOpen={setPomodoroDialogOpen}
             utilitiesDialogOpen={utilitiesDialogOpen}
