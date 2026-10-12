@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CircleHelp, History } from 'lucide-react';
+import { CircleHelp, ExternalLink } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -7,12 +7,14 @@ import {
   DialogTitle,
   DotPaths,
   GithubActionsBadges,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '@vigilant-broccoli/react-lib';
 import { useTranslation } from '../i18n';
 import en from '../i18n/en.json';
 import { PageHeader } from '../components/PageHeader';
-import { CardGrid } from '../components/CardGrid';
-import { CardLink } from '../components/CardLink';
 import { SectionHeading } from '../components/SectionHeading';
 import {
   REPO_URL,
@@ -20,11 +22,12 @@ import {
   UPTIME_SITE_URL,
   UPTIME_SUMMARY_URL,
 } from '../consts/repo';
-import { PAGE_CLASS } from '../consts/layout';
+import { PAGE_CLASS, UPTIME_FRAME_CLASS } from '../consts/layout';
+import { STATUS_TAB } from '../consts/statusTabs';
 import { STATUS_ROUTE } from '../consts/routes';
 
 const ACTIONS_URL = `${REPO_URL}/actions`;
-const ICON_CLASS = 'h-5 w-5 shrink-0';
+const ICON_CLASS = 'h-4 w-4 shrink-0';
 
 interface ServiceStatus {
   name: string;
@@ -248,93 +251,112 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
           <p className="mt-2 text-gray-600 dark:text-gray-400">{updated}</p>
         )}
       </header>
-      <div className="mb-4">
-        <CardGrid>
-          <li>
-            <CardLink
-              href={UPTIME_SITE_URL}
-              title={t('STATUS_PAGE.UPTIME_SITE.TITLE')}
-              description={t('STATUS_PAGE.UPTIME_SITE.DESCRIPTION')}
-              icon={<History className={ICON_CLASS} aria-hidden="true" />}
-            />
-          </li>
-        </CardGrid>
-      </div>
-      <StatusLegendDialog open={legendOpen} onOpenChange={setLegendOpen} />
+      <Tabs defaultValue={STATUS_TAB.STATUS}>
+        <TabsList>
+          <TabsTrigger value={STATUS_TAB.STATUS}>
+            {t('STATUS_PAGE.TAB_STATUS')}
+          </TabsTrigger>
+          <TabsTrigger value={STATUS_TAB.UPTIME}>
+            {t('STATUS_PAGE.TAB_UPTIME')}
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value={STATUS_TAB.STATUS}>
+            <StatusLegendDialog open={legendOpen} onOpenChange={setLegendOpen} />
 
-      {servicesError && (
-        <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
-          <li className="px-4 py-2 text-red-500">{servicesError}</li>
-        </ul>
-      )}
-      {!servicesError && services === null && (
-        <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
-          <li className="px-4 py-2 text-gray-400">
-            {t('STATUS_PAGE.LOADING_SERVICES')}
-          </li>
-        </ul>
-      )}
-      {!servicesError && services?.length === 0 && (
-        <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
-          <li className="px-4 py-2 text-gray-400">
-            {t('STATUS_PAGE.NO_SERVICES')}
-          </li>
-        </ul>
-      )}
-      {!servicesError &&
-        grouped &&
-        STATUS_GROUP_ORDER.filter(group => grouped[group].length > 0).map(
-          group => (
-            <section key={group} className="mb-4 last:mb-0">
-              <div className="flex items-center justify-between mb-4">
-                <SectionHeading className="mb-0">
-                  {t(STATUS_GROUP_LABEL_KEY[group])}
-                </SectionHeading>
-                {LEGEND_GROUPS.includes(group) && (
-                  <button
-                    type="button"
-                    onClick={() => setLegendOpen(true)}
-                    aria-label={t('STATUS_PAGE.LEGEND_BUTTON_LABEL')}
-                    className="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                  >
-                    <CircleHelp className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-              <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700 text-sm">
-                {grouped[group].map(svc => (
-                  <ServiceListItem key={svc.url} svc={svc} />
-                ))}
+            {servicesError && (
+              <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+                <li className="px-4 py-2 text-red-500">{servicesError}</li>
               </ul>
-            </section>
-          ),
-        )}
+            )}
+            {!servicesError && services === null && (
+              <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+                <li className="px-4 py-2 text-gray-400">
+                  {t('STATUS_PAGE.LOADING_SERVICES')}
+                </li>
+              </ul>
+            )}
+            {!servicesError && services?.length === 0 && (
+              <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+                <li className="px-4 py-2 text-gray-400">
+                  {t('STATUS_PAGE.NO_SERVICES')}
+                </li>
+              </ul>
+            )}
+            {!servicesError &&
+              grouped &&
+              STATUS_GROUP_ORDER.filter(group => grouped[group].length > 0).map(
+                group => (
+                  <section key={group} className="mb-4 last:mb-0">
+                    <div className="flex items-center justify-between mb-4">
+                      <SectionHeading className="mb-0">
+                        {t(STATUS_GROUP_LABEL_KEY[group])}
+                      </SectionHeading>
+                      {LEGEND_GROUPS.includes(group) && (
+                        <button
+                          type="button"
+                          onClick={() => setLegendOpen(true)}
+                          aria-label={t('STATUS_PAGE.LEGEND_BUTTON_LABEL')}
+                          className="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                        >
+                          <CircleHelp className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
+                    <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700 text-sm">
+                      {grouped[group].map(svc => (
+                        <ServiceListItem key={svc.url} svc={svc} />
+                      ))}
+                    </ul>
+                  </section>
+                ),
+              )}
 
-      <section className="mt-6">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-            {t('STATUS_PAGE.GITHUB_ACTIONS')}
-          </h2>
-          <a
-            href={ACTIONS_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-gray-400 hover:underline"
-          >
-            {t('STATUS_PAGE.VIEW_ALL')}
-          </a>
-        </div>
-        <div
-          className={
-            wrapped
-              ? 'flex flex-wrap gap-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3'
-              : 'flex flex-wrap gap-1.5'
-          }
-        >
-          <GithubActionsBadges repoUrl={REPO_URL} />
-          <GithubActionsBadges repoUrl={UPTIME_REPO_URL} />
-        </div>
-      </section>
+            <section className="mt-6">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                  {t('STATUS_PAGE.GITHUB_ACTIONS')}
+                </h2>
+                <a
+                  href={ACTIONS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-gray-400 hover:underline"
+                >
+                  {t('STATUS_PAGE.VIEW_ALL')}
+                </a>
+              </div>
+              <div
+                className={
+                  wrapped
+                    ? 'flex flex-wrap gap-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3'
+                    : 'flex flex-wrap gap-1.5'
+                }
+              >
+                <GithubActionsBadges repoUrl={REPO_URL} />
+                <GithubActionsBadges repoUrl={UPTIME_REPO_URL} />
+              </div>
+            </section>
+        </TabsContent>
+        <TabsContent value={STATUS_TAB.UPTIME}>
+          <div className="mb-2 flex justify-end">
+            <a
+              href={UPTIME_SITE_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm text-gray-500 hover:underline dark:text-gray-400"
+            >
+              {t('STATUS_PAGE.OPEN_UPTIME_IN_NEW_TAB')}
+              <ExternalLink className={ICON_CLASS} aria-hidden="true" />
+            </a>
+          </div>
+          <iframe
+            src={UPTIME_SITE_URL}
+            title={t('STATUS_PAGE.UPTIME_FRAME_TITLE')}
+            loading="lazy"
+            className={UPTIME_FRAME_CLASS}
+          />
+        </TabsContent>
+      </Tabs>
     </main>
   );
 }
