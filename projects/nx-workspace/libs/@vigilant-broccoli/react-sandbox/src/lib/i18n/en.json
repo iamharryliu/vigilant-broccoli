@@ -15,7 +15,6 @@
     "OBJECT": "Object options",
     "DISABLED": "Disabled",
     "LONG_LABEL": "Long labels",
-    "LEGACY": "Legacy props",
     "PLACEHOLDER": "Choose an option",
     "CLEAR": "Clear selection",
     "LONG_OPTION": "A deliberately long option label to demonstrate truncation within a fixed-width control",

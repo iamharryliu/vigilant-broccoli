@@ -341,8 +341,8 @@ const TaskHeader = memo(
               Sort:
             </Text>
             <Select
-              selectedOption={sortMode}
-              setValue={onSortChange}
+              value={sortMode}
+              onValueChange={onSortChange}
               options={SORT_MODE_OPTIONS}
               displayMapper={SORT_MODE_LABELS}
               placeholder="Sort by..."
@@ -352,10 +352,10 @@ const TaskHeader = memo(
         {showSelector && taskLists.length > 0 && (
           <div className="flex gap-2 items-center">
             <Select
-              selectedOption={taskLists.find(l => l.id === selectedTaskListId)}
-              setValue={list => onTaskListChange(list.id)}
+              value={taskLists.find(l => l.id === selectedTaskListId)}
+              onValueChange={list => onTaskListChange(list.id)}
               options={taskLists}
-              optionIdenfifier="id"
+              optionIdentifier="id"
               optionDisplayKey="title"
               placeholder="Select task list..."
               triggerClassName="w-full"

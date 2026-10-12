@@ -384,8 +384,8 @@ export const TasksDemo = () => {
         <div className="flex items-center gap-2">
           <Text size="2">{CONTROL_LABEL.SCENARIO}</Text>
           <Select
-            selectedOption={scenario}
-            setValue={setScenario}
+            value={scenario}
+            onValueChange={setScenario}
             options={SCENARIO_OPTIONS}
             displayMapper={SCENARIO_LABELS}
           />

@@ -14,6 +14,6 @@ Typed selection of string, number or object options through the shared Radix-bas
 
 ## Compatibility
 
-- `selectedOption`, `setValue` and the misspelled `optionIdenfifier` remain supported as deprecated aliases for `value`, `onValueChange` and `optionIdentifier`.
+- `selectedOption`, `setValue` and the misspelled `optionIdenfifier` remain supported as deprecated aliases for `value`, `onValueChange` and `optionIdentifier`, retained for external consumers. All workspace callers have migrated to the new props; removing the aliases is a breaking change needing separate authorization.
 - An explicitly supplied `value` takes precedence over `selectedOption`, including when it is `undefined`. `onValueChange` takes precedence over `setValue`; only one callback runs. `optionIdentifier` takes precedence over `optionIdenfifier`.
-- The component-library demo includes string and object selection, numeric zero, clearing, disabled and long-label controls, and legacy selection props.
+- The component-library demo includes string and object selection, numeric zero, clearing, disabled and long-label controls.

@@ -115,10 +115,10 @@ export function CalendarEventForm({
             Color
           </Text>
           <Select
-            selectedOption={EVENT_COLORS.find(c => c.value === color)}
-            setValue={c => setColor(c.value)}
+            value={EVENT_COLORS.find(c => c.value === color)}
+            onValueChange={c => setColor(c.value)}
             options={EVENT_COLORS}
-            optionIdenfifier="value"
+            optionIdentifier="value"
             optionDisplayKey="label"
             placeholder="Default"
             renderItem={c => (

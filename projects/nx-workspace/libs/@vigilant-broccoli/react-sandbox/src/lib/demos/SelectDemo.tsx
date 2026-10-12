@@ -50,7 +50,6 @@ const SelectDemoContent = () => {
   const [selectedNumber, setSelectedNumber] = useState<number | undefined>(0);
   const [selectedPerson, setSelectedPerson] = useState<Person>();
   const [selectedLongLabel, setSelectedLongLabel] = useState<string>();
-  const [legacyNumber, setLegacyNumber] = useState<number | undefined>(0);
   const stringOptions = [
     t('SELECT_DEMO.FRUIT.APPLE'),
     t('SELECT_DEMO.FRUIT.BANANA'),
@@ -110,16 +109,6 @@ const SelectDemoContent = () => {
           options={[t('SELECT_DEMO.LONG_OPTION'), ...stringOptions]}
           placeholder={placeholder}
           className="w-64 max-w-full"
-        />
-      </DemoRow>
-      <DemoRow title={t('SELECT_DEMO.LEGACY')} selected={legacyNumber}>
-        <Select
-          aria-label={t('SELECT_DEMO.LEGACY')}
-          selectedOption={legacyNumber}
-          setValue={setLegacyNumber}
-          options={NUMBER_OPTIONS}
-          optionIdenfifier="id"
-          placeholder={placeholder}
         />
       </DemoRow>
     </div>

@@ -129,8 +129,7 @@ const createDefaultBoard = (): Board => ({
 });
 
 type KanbanFetchResult =
-  | { ok: true; state: KanbanState | null }
-  | { ok: false };
+  { ok: true; state: KanbanState | null } | { ok: false };
 
 const fetchKanbanState = async (): Promise<KanbanFetchResult> => {
   const response = await authFetch(API_ENDPOINTS.KANBAN_BOARDS);
@@ -1310,12 +1309,14 @@ export const KanbanComponent = () => {
                         ) : (
                           <>
                             <Select
-                              selectedOption={availableTaskLists.find(
+                              value={availableTaskLists.find(
                                 l => l.id === selectedTaskListId,
                               )}
-                              setValue={list => setSelectedTaskListId(list.id)}
+                              onValueChange={list =>
+                                setSelectedTaskListId(list.id)
+                              }
                               options={availableTaskLists}
-                              optionIdenfifier="id"
+                              optionIdentifier="id"
                               optionDisplayKey="title"
                               placeholder={
                                 availableTaskLists.length === 0

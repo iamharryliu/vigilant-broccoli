@@ -236,27 +236,27 @@ export function UserLeaderboard({
       <LeaderboardFilterField label={LEADERBOARD_TEXT.PERIOD}>
         <Select
           triggerClassName="w-32"
-          selectedOption={period}
+          value={period}
           options={PERIOD_OPTIONS}
           displayMapper={PERIOD_LABELS}
-          setValue={setPeriod}
+          onValueChange={setPeriod}
           placeholder={LEADERBOARD_TEXT.PERIOD}
         />
       </LeaderboardFilterField>
       <LeaderboardFilterField label={LEADERBOARD_TEXT.SORT_BY}>
         <Select
           triggerClassName="w-40"
-          selectedOption={sortKey}
+          value={sortKey}
           options={availableSortKeys}
           displayMapper={sortLabels}
-          setValue={setSortKey}
+          onValueChange={setSortKey}
           placeholder={LEADERBOARD_TEXT.SORT_BY}
         />
       </LeaderboardFilterField>
       <LeaderboardFilterField label={LEADERBOARD_TEXT.GROUP}>
         <Select
           triggerClassName="w-40"
-          selectedOption={
+          value={
             selectedGroupId === null
               ? { id: null, name: LEADERBOARD_TEXT.ALL_GROUPS }
               : userGroups.find(g => g.id === selectedGroupId)
@@ -265,19 +265,19 @@ export function UserLeaderboard({
             { id: null, name: LEADERBOARD_TEXT.ALL_GROUPS },
             ...userGroups.map(g => ({ id: g.id, name: g.name })),
           ]}
-          optionIdenfifier="id"
+          optionIdentifier="id"
           optionDisplayKey="name"
-          setValue={(option: GroupOption) => setSelectedGroupId(option.id)}
+          onValueChange={(option: GroupOption) => setSelectedGroupId(option.id)}
           placeholder={LEADERBOARD_TEXT.GROUP}
         />
       </LeaderboardFilterField>
       <LeaderboardFilterField label={LEADERBOARD_TEXT.ITEMS_PER_PAGE}>
         <Select
           triggerClassName="w-20"
-          selectedOption={itemsPerPage.toString()}
+          value={itemsPerPage.toString()}
           options={ITEMS_PER_PAGE_OPTIONS.map(String)}
           displayMapper={ITEMS_PER_PAGE_DISPLAY}
-          setValue={(value: string) =>
+          onValueChange={(value: string) =>
             handleItemsPerPageChange(parseInt(value, 10))
           }
           placeholder={LEADERBOARD_TEXT.ITEMS_PER_PAGE}
