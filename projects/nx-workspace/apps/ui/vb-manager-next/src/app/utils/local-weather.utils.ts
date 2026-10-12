@@ -1,5 +1,10 @@
-import { Location, WeatherSnapshot } from '@vigilant-broccoli/common-js';
-import { LocalWeather } from '@vigilant-broccoli/react-lib';
+import {
+  HTTP_HEADERS,
+  HTTP_METHOD,
+  Location,
+  WeatherSnapshot,
+} from '@vigilant-broccoli/common-js';
+import { LocalWeather, Preparation } from '@vigilant-broccoli/react-lib';
 import { authFetch } from '../../../libs/auth';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
@@ -48,4 +53,15 @@ export const fetchLocalWeather = async ({
   if (!response.ok) return null;
   const { weather }: { weather: WeatherSnapshot } = await response.json();
   return weather.daily[TODAY_INDEX] ? toLocalWeather(weather, city) : null;
+};
+
+export const fetchLocalPreparation = async (
+  weather: LocalWeather,
+): Promise<Preparation | null> => {
+  const response = await authFetch(API_ENDPOINTS.PREPARATION, {
+    method: HTTP_METHOD.POST,
+    headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
+    body: JSON.stringify(weather),
+  });
+  return response.ok ? ((await response.json()) as Preparation) : null;
 };
