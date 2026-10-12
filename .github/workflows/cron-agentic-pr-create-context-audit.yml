@@ -1,6 +1,6 @@
 name: cron-agentic-pr-create-context-audit
 
-# Slims agent guidance (CONTEXT.md files, shared skill bodies and Doc Map
+# Slims agent guidance (CONTEXT.md files, shared skill bodies and Doc Map/required-reading
 # docs) by removing duplicated rules and incident narrative without losing any
 # rule, workaround, recovery step or exact error string, and opens one PR of at
 # most 15 files. Same container and credentials as
@@ -78,7 +78,7 @@ jobs:
           agent: claude
           model: ${{ steps.config.outputs.model }}
           firewall: ${{ steps.config.outputs.firewall }}
-          description: Slim CONTEXT.md files, shared skill bodies and Doc Map docs by removing duplication and incident narrative without losing rules, workarounds, recovery steps or exact error strings, citing where each removed fact is retained. Opens one pull request of at most 15 files, and only when something is changed.
+          description: Slim CONTEXT.md files, shared skill bodies, Doc Map and required-reading docs by removing duplication and incident narrative without losing rules, workarounds, recovery steps or exact error strings, citing where each removed fact is retained. Opens one pull request of at most 15 files, and only when something is changed.
 
   audit:
     needs: overview
