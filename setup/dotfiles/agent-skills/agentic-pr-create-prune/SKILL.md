@@ -15,7 +15,7 @@ Prune verifiably unused code and stale docs repo-wide. Follow applicable context
 
 ## Verification
 
-Search each candidate's bare name, filename/stem and path across the whole repository, including hidden workflows, scripts/targets, docs/notes, dotfiles, deployment configs, Terraform, Ansible and hooks. Require zero references outside its definition. Check dynamic imports/paths, globs, inferred targets, filesystem routes and convention-loaded config before deleting. Skip anything potentially reachable.
+Search each candidate's bare name, filename/stem and path across the whole repository, including hidden workflows, scripts/targets, docs/notes, dotfiles, deployment configs, Terraform, Ansible and hooks. Require zero references outside its definition. Check dynamic imports/paths, globs, inferred targets, filesystem routes, convention-loaded config and env var names read through `getEnvironmentVariable` before deleting. Skip anything potentially reachable.
 
 Record exact searches and zero-match results for removals. Orphaned docs should be relinked or reported; delete only if demonstrably superseded and cite the replacement.
 
