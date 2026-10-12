@@ -34,7 +34,7 @@ Operations use `agentic-<resource>-<verb>[-<variant>]` for the root pnpm script 
 
 Task policy belongs in the canonical `SKILL.md`. Runners load it before PR checkout (older branches may lack it) and embed it in prompts. Runners own checkout setup, credentials, merge preparation, metadata, validation and publishing; skills state preparation needed only in local sessions. Local invocation alone does not authorize publishing. Agentic workflows use the [shared run summary](./ci/workflow-conventions.md#agentic-run-summaries).
 
-Maintenance scopes differ: prune removes verified dead code/docs, audit rewrites obsolete implementation documentation, TODO audit changes only backlog rows, and [refactor cleanup](./refactor-code-cleanup.md) reviews only the current diff. Smoke is Actions-only.
+Maintenance scopes differ: prune removes verified dead code/docs, audit rewrites obsolete implementation documentation, context audit slims duplicated agent guidance without losing facts, TODO audit changes only backlog rows, and [refactor cleanup](./refactor-code-cleanup.md) reviews only the current diff. Smoke is Actions-only.
 
 ## Entry-point parity
 
@@ -62,6 +62,7 @@ Checks include the task's existing validation, the cleanup checklist when requir
 | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `agentic-pr-create`                   | Actions accepts free text; local/sandbox positional IDs start separate runs per ID. Runnable entry points support `--agent codex`.                                                             |
 | `agentic-pr-create-audit`             | Manual Actions/Docker/Local; Claude, Opus by default. Runner caps 15 files and enforces Markdown/excluded-record scope. A clean audit opens no PR.                                             |
+| `agentic-pr-create-context-audit`     | Weekly/manual Actions plus Docker/Local; Claude, Opus by default. Runner caps 15 files and guards context scope, skill frontmatter and adapters. A clean audit opens no PR.                    |
 | `agentic-pr-create-prune`             | Weekly/manual Actions plus Docker/Local; Claude. Skill targets about 40 files, runner caps 50 and protects TODO/migrations/state. A clean sweep opens no PR.                                   |
 | `agentic-pr-create-rnd`               | Claude; writes proposed increments into the note rather than publishing them.                                                                                                                  |
 | `agentic-pr-create-smoke`             | Actions-only dispatch check, with no separate local task.                                                                                                                                      |
