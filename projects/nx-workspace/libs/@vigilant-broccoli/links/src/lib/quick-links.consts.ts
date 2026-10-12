@@ -1080,12 +1080,14 @@ const VB_LINKS = [
     label: HARRYLIU_INFRA_URL.STATUS.NAME,
     target: HARRYLIU_INFRA_URL.STATUS.URL,
     type: OPEN_TYPE.BROWSER,
+    embed: true,
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
     label: HARRYLIU_INFRA_URL.UPTIME.NAME,
     target: HARRYLIU_INFRA_URL.UPTIME.URL,
     type: OPEN_TYPE.BROWSER,
+    embed: true,
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
