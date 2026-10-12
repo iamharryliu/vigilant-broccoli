@@ -9,7 +9,7 @@
 
 ## Weather
 
-`/weather` renders `LocalWeatherPanel` fed by `fetchLocalWeather` (`src/app/utils/local-weather.utils.ts`) over the auth-guarded `/api/weather` and `/api/weather/city` routes, which use `WeatherService` and `reverseGeocodeCity` from `common-node`. No preparation badges.
+`/weather` renders `LocalWeatherPanel` fed by `fetchLocalWeather` (`src/app/utils/local-weather.utils.ts`) over the auth-guarded `/api/weather` and `/api/weather/city` routes, which use `WeatherService` and `reverseGeocodeCity` from `common-node`, and `fetchLocalPreparation` over the auth-guarded `/api/preparation`, which validates the payload and calls `fetchWeatherPreparation` from `common-node` (LLM via `VB_EXPRESS_URL` / `VB_EXPRESS_API_KEY`, no rate limit) so the page shows preparation badges.
 
 ## Nuances
 

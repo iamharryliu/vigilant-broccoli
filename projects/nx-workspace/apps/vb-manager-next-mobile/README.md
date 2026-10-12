@@ -1,6 +1,6 @@
 # VB Manager Next Mobile
 
-Mobile-friendly dashboard for managing personal tasks and calendars, with a `/weather` page showing local weather through the shared `LocalWeatherPanel`.
+Mobile-friendly dashboard for managing personal tasks and calendars, with a `/weather` page showing local weather and preparation badges through the shared `LocalWeatherPanel`.
 
 ## Table of Contents
 

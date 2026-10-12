@@ -1,9 +1,6 @@
-export const PREPARATION_KEY = {
-  WIND_RESISTANT_CLOTHING: 'windResistantClothing',
-  RAIN_RESISTANT_CLOTHING: 'rainResistantClothing',
-  SNOW_RESISTANT_CLOTHING: 'snowResistantClothing',
-  SUNGLASSES: 'sunglasses',
-} as const;
+import { PREPARATION_KEY } from '@vigilant-broccoli/common-js';
+
+export { PREPARATION_KEY };
 
 export const PREPARATION_BADGES = [
   {
