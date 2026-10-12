@@ -13,7 +13,7 @@
 
 ### `@nx/next` build doesn't copy `deprecation.js` into `dist/.nx-helpers`
 
-`@nx/next@23.0.1` copies `compose-plugins.js` but misses its `./deprecation` dependency, causing `next start` failures and PM2 crash loops. Keep the post-build `scripts/fix-next-config-helpers.js` step in `project.json` until the upstream copy logic is fixed. It resolves the installed package rather than relying on pnpm's changing hash paths; both PM2 targets depend on the patched build.
+`@nx/next@23.0.1` copies `compose-plugins.js` but misses its `./deprecation` dependency, so `next start` throws `Error: Cannot find module './deprecation'` and PM2 crash-loops (a 502 through `manager.vigilant-broccoli.app`). Keep the post-build `scripts/fix-next-config-helpers.js` step in `project.json` until the upstream copy logic is fixed. It resolves the installed package rather than relying on pnpm's changing hash paths; both PM2 targets depend on the patched build.
 
 ### PM2 reload needs `pm2 save` for boot resurrect
 

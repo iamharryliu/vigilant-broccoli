@@ -13,7 +13,7 @@ Audit `docs/`, `CONTEXT.md`, READMEs and code-adjacent Markdown. Exclude `notes/
 
 ## Candidates
 
-Look for obsolete before/after narratives, removed components or names, and historical rationale that no longer explains a constraint. Keep live compatibility names, pending migrations, and setup/bootstrap/recovery instructions with their ordering and one-time gotchas. Rewrite mixed passages as current rules; delete only obsolete parts.
+Look for obsolete before/after narratives ("previously", "formerly", "used to", "legacy", "no longer", "migrated from", "replaced by", "renamed from"), removed components or names, and historical rationale that no longer explains a constraint. Keep live compatibility names, pending migrations, and setup/bootstrap/recovery instructions with their ordering and one-time gotchas. Rewrite mixed passages as current rules; delete only obsolete parts.
 
 ## Verification
 

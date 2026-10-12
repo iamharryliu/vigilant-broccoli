@@ -17,7 +17,7 @@ Cloudflare provider 5.x treats omitted `observability` fields as null, while the
 
 ### A replaced OCI VM dies on `container name "/watchtower" is already in use`
 
-Any change to `oci_core_instance.rabbitmq`'s `metadata.user_data` forces replacement, which puts `post-apply` and a fresh cloud-init run on the same clock. `packer/scripts/sync-socket-server-token.sh` must wait for cloud-init to finish (`done` or `degraded done`) before running Compose. The compose file and Docker daemon exist earlier; starting then races cloud-init for explicit container names and can leave Watchtower running with literal `DOCKER_API_VERSION_PLACEHOLDER`, silently disabling updates.
+Any change to `oci_core_instance.rabbitmq`'s `metadata.user_data` forces replacement, which puts `post-apply` and a fresh cloud-init run on the same clock. `packer/scripts/sync-socket-server-token.sh` must wait for cloud-init to finish (`done` or `degraded done`) before running Compose. The compose file and Docker daemon exist earlier; starting then races cloud-init for explicit container names (the clash can name `caddy` or `socket-server-socketio` instead of `/watchtower`) and can leave Watchtower running with literal `DOCKER_API_VERSION_PLACEHOLDER`, silently disabling updates.
 
 After a replacement failure, check `cloud-init status --long`, `grep DOCKER_API_VERSION /opt/socket-server/docker-compose.yml`, then `sudo docker inspect watchtower --format '{{.Config.Env}}'`. Once cloud-init is done, recover with `sudo docker compose -f /opt/socket-server/docker-compose.yml up -d --force-recreate`, then rerun `pnpm tf:post-apply`.
 
