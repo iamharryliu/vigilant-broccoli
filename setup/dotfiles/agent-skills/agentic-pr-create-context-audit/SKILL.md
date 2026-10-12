@@ -11,7 +11,7 @@ Slim repository agent guidance so it costs fewer tokens to read while every agen
 
 - Every `CONTEXT.md`, root and directory-scoped; never edit the adjacent `AGENTS.md`/`CLAUDE.md` adapter symlinks.
 - Bodies of shared `setup/dotfiles/agent-skills/*/SKILL.md` files. Frontmatter stays byte-identical so `name`/`description` and the commands they define do not change; never edit the `setup/dotfiles/.claude/commands/` adapters.
-- Documents in the root `CONTEXT.md` Doc Map.
+- Documents in the root `CONTEXT.md` Doc Map, and Markdown docs root `CONTEXT.md` directs agents to read before a class of work (its "Read [x](./x.md) before ..." sentences, e.g. `ui-app-pattern.md`, `fly-service-pattern.md`). Other linked docs are out of scope. The runner resolves both lists from the base commit, so editing root `CONTEXT.md` cannot widen the scope.
 
 Exclude `notes/` (including `notes/CONTEXT.md`), `docs/rnd/`, `docs/learning-timeline.md`, `TODO.md`, changelogs, generated sections (such as `managed:repo-stats`), code, configuration, workflows and scripts. Edit files in place; do not create, delete or rename them.
 
@@ -44,7 +44,7 @@ Compression must keep the same obligation: do not widen or narrow what a skill o
 
 ## Editing and report
 
-- Prioritize the most-read files: root `CONTEXT.md`, Doc Map documents, then high-traffic skills. Stop at the cap and list the rest as skipped.
+- Prioritize the most-read files: root `CONTEXT.md`, Doc Map and required-reading documents, then high-traffic skills. Stop at the cap and list the rest as skipped.
 - Report per file what was cut and, for each removed fact, where it is retained with the evidence above. List skipped candidates with reasons, including those over the cap. Report backlog findings without editing `TODO.md`.
 - Do not commit or publish. When nothing can be slimmed safely, make no edits.
 

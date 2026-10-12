@@ -147,7 +147,7 @@ runs the same script on dispatch; it has no schedule.
 ## Auditing agent context
 
 `pnpm agentic-pr-create-context-audit` runs `audit-context.sh`, which slims every `CONTEXT.md`, shared skill body and
-root Doc Map document by replacing restated rules with links to their owner and compressing incident narratives, then
+root Doc Map or required-reading document by replacing restated rules with links to their owner and compressing incident narratives, then
 opens one PR citing where each removed fact is retained. It runs Opus by default (`--model` overrides).
 `cron-agentic-pr-create-context-audit` runs the same script weekly.
 
