@@ -15,7 +15,10 @@ import {
   moveQuickLinkFocusByDirection,
   type Direction,
 } from '../utils/focus-navigation.utils';
-import { WINDOW_OPEN_FEATURES } from '../utils/browser.utils';
+import {
+  isDesktopEmbedEnvironment,
+  WINDOW_OPEN_FEATURES,
+} from '../utils/browser.utils';
 
 const LOCAL_STORAGE_KEY = 'quick-links-grouped-state';
 const SEARCH_PLACEHOLDER = 'Search...';
@@ -85,6 +88,7 @@ export type QuickLinksPanelProps = {
   onShellExecute?: ShellExecuteHandler;
   autoFocusSearch?: boolean;
   onLinkOpen?: () => void;
+  onEmbedOpen?: (link: QuickLink) => void;
 };
 
 const NON_BROWSER_TYPES = [
@@ -126,6 +130,7 @@ export function QuickLinksPanel({
   onShellExecute,
   autoFocusSearch = false,
   onLinkOpen,
+  onEmbedOpen,
 }: QuickLinksPanelProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isGrouped, setIsGrouped] = useState(true);
@@ -170,6 +175,8 @@ export function QuickLinksPanel({
   const openLink = (link: QuickLink) => {
     if (isShellLink(link)) {
       onShellExecute?.(link.type, link.target, link.args);
+    } else if (link.embed && onEmbedOpen && isDesktopEmbedEnvironment()) {
+      onEmbedOpen(link);
     } else {
       window.open(link.target, WINDOW_TARGET_BLANK, WINDOW_OPEN_FEATURES);
     }

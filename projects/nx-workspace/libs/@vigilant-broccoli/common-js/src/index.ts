@@ -29,6 +29,7 @@ export type QuickLink = {
   type: OpenType;
   subgroup?: string;
   args?: string;
+  embed?: boolean;
 };
 
 export type PastebinEntry = {
