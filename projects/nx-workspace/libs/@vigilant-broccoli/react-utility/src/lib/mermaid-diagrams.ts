@@ -1,4 +1,4 @@
-import { isDarkTheme } from './graph-view';
+import { isDarkTheme, PREFERS_DARK_QUERY } from './theme';
 
 const CODE_SELECTOR = 'code.language-mermaid';
 const SOURCE_KEY = 'mermaidSource';
@@ -6,6 +6,7 @@ const TARGET_SELECTOR = `pre:has(> ${CODE_SELECTOR}), .mermaid-diagram`;
 const RENDER_ID_PREFIX = 'mermaid-diagram-';
 const THEME = { DARK: 'dark', LIGHT: 'default' } as const;
 const SECURITY_LEVEL = 'strict';
+const SVG_MIME_TYPE = 'image/svg+xml';
 const CLASS_ATTR = 'class';
 const STYLE_ATTR = 'style';
 
@@ -42,7 +43,9 @@ export const renderMermaidDiagrams = async (
       const diagram = document.createElement('div');
       diagram.className = MERMAID_DIAGRAM_CLS;
       diagram.dataset[SOURCE_KEY] = source;
-      diagram.innerHTML = svg;
+      diagram.replaceChildren(
+        new DOMParser().parseFromString(svg, SVG_MIME_TYPE).documentElement,
+      );
       target.replaceWith(diagram);
     } catch {
       // Invalid syntax: keep the original block. mermaid leaves its error
@@ -65,7 +68,7 @@ export const observeThemeChange = (
       attributeFilter: [CLASS_ATTR, STYLE_ATTR],
     });
   }
-  const media = window.matchMedia?.('(prefers-color-scheme: dark)');
+  const media = window.matchMedia?.(PREFERS_DARK_QUERY);
   media?.addEventListener('change', onChange);
   return () => {
     observer.disconnect();

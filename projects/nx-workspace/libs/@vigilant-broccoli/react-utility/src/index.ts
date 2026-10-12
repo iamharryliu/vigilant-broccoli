@@ -12,4 +12,5 @@ export * from './lib/clock';
 export * from './lib/docs-viewer';
 export * from './lib/docs-snapshot-source';
 export * from './lib/graph-view';
+export * from './lib/theme';
 export * from './lib/markdown-viewer';
