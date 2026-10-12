@@ -54,11 +54,11 @@ const DOWN_STATES: string[] = [MACHINE_STATE.stopped, MACHINE_STATE.failed];
 
 type DotColor = 'green' | 'yellow' | 'red' | 'gray';
 
-const DOT_CLASS: Record<DotColor, string> = {
-  green: 'bg-green-500',
-  yellow: 'bg-yellow-500',
-  red: 'bg-red-500',
-  gray: 'bg-gray-400',
+const DOT_COLOR: Record<DotColor, string> = {
+  green: '#22c55e',
+  yellow: '#eab308',
+  red: '#ef4444',
+  gray: '#9ca3af',
 };
 
 const LEGEND: { color: DotColor; label: string }[] = [
@@ -78,7 +78,8 @@ const getMachineColor = (states: string[]): DotColor => {
 const StatusDot = ({ color, title }: { color: DotColor; title?: string }) => (
   <span
     title={title}
-    className={`inline-block h-3 w-3 shrink-0 rounded-full mt-0.5 ${DOT_CLASS[color]}`}
+    className="inline-block h-3 w-3 shrink-0 rounded-full mt-0.5"
+    style={{ backgroundColor: DOT_COLOR[color] }}
   />
 );
 
