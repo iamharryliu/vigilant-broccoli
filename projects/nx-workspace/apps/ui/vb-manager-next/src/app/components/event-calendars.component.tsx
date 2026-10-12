@@ -774,8 +774,8 @@ const EventCalendarForm = ({
       </Text>
       <Select
         options={EVENT_LANGUAGES}
-        selectedOption={item.language || undefined}
-        setValue={language => setItem({ ...item, language })}
+        value={item.language || undefined}
+        onValueChange={language => setItem({ ...item, language })}
         placeholder={LANGUAGE_PLACEHOLDER}
         triggerClassName="w-full"
       />

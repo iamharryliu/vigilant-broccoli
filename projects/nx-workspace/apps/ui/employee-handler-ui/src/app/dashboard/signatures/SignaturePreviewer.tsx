@@ -130,10 +130,10 @@ export const SignaturePreviewer = ({
     <div className="space-y-4">
       <Select<SignatureTemplate>
         options={templates}
-        selectedOption={previewTemplate}
-        setValue={setPreviewTemplate}
+        value={previewTemplate}
+        onValueChange={setPreviewTemplate}
         placeholder={t('SIGNATURES.PREVIEWER.SELECT_PLACEHOLDER')}
-        optionIdenfifier="id"
+        optionIdentifier="id"
         optionDisplayKey="label"
         triggerClassName="w-full"
       />

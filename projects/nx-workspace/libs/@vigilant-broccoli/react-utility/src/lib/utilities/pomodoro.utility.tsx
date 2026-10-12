@@ -398,9 +398,9 @@ const DurationSetting = ({
   <div style={SETTINGS_LABEL_STYLE}>
     {label}
     <Select
-      selectedOption={value}
+      value={value}
       options={DURATION_OPTIONS.map(o => o.id)}
-      setValue={id => sendCommand(command, id)}
+      onValueChange={id => sendCommand(command, id)}
       disabled={disabled}
       displayMapper={Object.fromEntries(
         DURATION_OPTIONS.map(o => [o.id, o.label]),

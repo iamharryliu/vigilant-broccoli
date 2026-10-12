@@ -74,8 +74,8 @@ const MemberFormComponent = ({
             Role
           </Text>
           <Select
-            selectedOption={role}
-            setValue={setRole}
+            value={role}
+            onValueChange={setRole}
             options={ASSIGNABLE_ROLE_OPTIONS}
             displayMapper={ROLE_LABEL}
           />

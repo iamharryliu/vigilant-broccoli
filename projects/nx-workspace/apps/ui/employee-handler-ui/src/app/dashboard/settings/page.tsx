@@ -39,9 +39,9 @@ export default function SettingsPage() {
             </Text>
             <Select<LanguageOption>
               options={languageOptions}
-              selectedOption={selectedOption}
-              setValue={option => setLocale(option.id)}
-              optionIdenfifier="id"
+              value={selectedOption}
+              onValueChange={option => setLocale(option.id)}
+              optionIdentifier="id"
               optionDisplayKey="label"
               triggerClassName={LANGUAGE_SELECT_CLASS}
             />

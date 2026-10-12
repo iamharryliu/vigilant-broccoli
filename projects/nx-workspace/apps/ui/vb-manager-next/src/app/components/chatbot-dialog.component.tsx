@@ -617,8 +617,8 @@ const InputControls = ({
       className="flex-1 min-h-[2.25rem] max-h-48"
     />
     <Select
-      selectedOption={selectedModel}
-      setValue={value => onModelChange(value as LLMModel)}
+      value={selectedModel}
+      onValueChange={value => onModelChange(value as LLMModel)}
       options={modelOptions}
       disabled={isStreaming}
       triggerClassName="min-w-40"
