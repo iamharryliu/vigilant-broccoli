@@ -1,7 +1,7 @@
+import DOMPurify from 'dompurify';
 import { isDarkTheme, PREFERS_DARK_QUERY } from './theme';
 
 const CODE_SELECTOR = 'code.language-mermaid';
-const SOURCE_KEY = 'mermaidSource';
 const TARGET_SELECTOR = `pre:has(> ${CODE_SELECTOR}), .mermaid-diagram`;
 const RENDER_ID_PREFIX = 'mermaid-diagram-';
 const THEME = { DARK: 'dark', LIGHT: 'default' } as const;
@@ -11,6 +11,11 @@ const CLASS_ATTR = 'class';
 const STYLE_ATTR = 'style';
 
 let renderCount = 0;
+const diagramSources = new WeakMap<Element, string>();
+const SVG_SANITIZE_CONFIG = {
+  USE_PROFILES: { svg: true, svgFilters: true },
+  ADD_TAGS: ['foreignObject'],
+};
 
 export const MERMAID_DIAGRAM_CLS =
   'mermaid-diagram not-prose my-4 flex justify-center overflow-x-auto';
@@ -34,7 +39,7 @@ export const renderMermaidDiagrams = async (
   for (const target of targets) {
     if (!target.isConnected) continue;
     const source =
-      target.dataset[SOURCE_KEY] ??
+      diagramSources.get(target) ??
       target.querySelector(CODE_SELECTOR)?.textContent ??
       '';
     const id = `${RENDER_ID_PREFIX}${renderCount++}`;
@@ -42,9 +47,12 @@ export const renderMermaidDiagrams = async (
       const { svg } = await mermaid.render(id, source);
       const diagram = document.createElement('div');
       diagram.className = MERMAID_DIAGRAM_CLS;
-      diagram.dataset[SOURCE_KEY] = source;
+      diagramSources.set(diagram, source);
       diagram.replaceChildren(
-        new DOMParser().parseFromString(svg, SVG_MIME_TYPE).documentElement,
+        new DOMParser().parseFromString(
+          DOMPurify.sanitize(svg, SVG_SANITIZE_CONFIG),
+          SVG_MIME_TYPE,
+        ).documentElement,
       );
       target.replaceWith(diagram);
     } catch {
