@@ -1,8 +1,6 @@
 'use client';
 
 import {
-  Badge,
-  BORDER_ACTIVE,
   CardContainer,
   MonospaceText,
   StatusCardList,
@@ -15,6 +13,12 @@ import { useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
 import { usePollingInterval } from '../hooks/usePollingInterval';
+import {
+  StatusDot,
+  StatusLegend,
+  StatusLegendEntry,
+  getDotBorder,
+} from './status-dot.component';
 
 const TERRAFORM_POLL_INTERVAL_MS = 30000;
 const TERRAFORM_DASHBOARD_LINK = {
@@ -32,28 +36,37 @@ interface TerraformAuthStatus {
   email: string | null;
 }
 
-const toItem = (status: TerraformAuthStatus): StatusCardListItem => ({
-  id: status.workspace,
-  label: status.workspace,
-  borderClassName: status.loggedIn ? BORDER_ACTIVE : undefined,
-  badges: (
-    <Badge color={status.loggedIn ? 'green' : 'red'} size="1">
-      {status.loggedIn ? 'Logged In' : 'Not Logged In'}
-    </Badge>
-  ),
-  children: status.loggedIn ? (
-    <>
-      <Text size="1" color="gray">
-        User: {status.username ?? status.email ?? 'Unknown'}
-      </Text>
-      <Text size="1" color="gray">
-        Org: {status.organization}
-      </Text>
-    </>
-  ) : (
-    <MonospaceText text={LOGIN_COMMAND} truncate={true} />
-  ),
-});
+const LEGEND: StatusLegendEntry[] = [
+  { color: 'green', label: 'Logged in' },
+  { color: 'red', label: 'Not logged in' },
+];
+
+const toItem = (status: TerraformAuthStatus): StatusCardListItem => {
+  const color = status.loggedIn ? 'green' : 'red';
+  return {
+    id: status.workspace,
+    label: status.workspace,
+    borderClassName: getDotBorder(color),
+    badges: (
+      <StatusDot
+        color={color}
+        title={status.loggedIn ? 'Logged in' : 'Not logged in'}
+      />
+    ),
+    children: status.loggedIn ? (
+      <>
+        <Text size="1" color="gray">
+          User: {status.username ?? status.email ?? 'Unknown'}
+        </Text>
+        <Text size="1" color="gray">
+          Org: {status.organization}
+        </Text>
+      </>
+    ) : (
+      <MonospaceText text={LOGIN_COMMAND} truncate={true} />
+    ),
+  };
+};
 
 export const TerraformStatusComponent = () => {
   const [status, setStatus] = useState<TerraformAuthStatus | null>(null);
@@ -89,6 +102,7 @@ export const TerraformStatusComponent = () => {
   return (
     <CardContainer title="Terraform" headerLink={TERRAFORM_DASHBOARD_LINK}>
       <StatusCardList items={status ? [toItem(status)] : []} />
+      <StatusLegend entries={LEGEND} />
     </CardContainer>
   );
 };

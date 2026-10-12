@@ -9,6 +9,7 @@ export const PAGE_TITLE = {
   NOTEPAD: 'Notepad',
   EVENT_CALENDARS: 'Event Calendars',
   PASTEBIN: 'Pastebin',
+  WEATHER: 'Weather',
   LOGIN: 'Login',
   AUTH_CALLBACK: 'Signing In',
 } as const;

@@ -66,6 +66,7 @@ export * from './SpeechToTextToggleButton';
 export * from './GoogleTasks';
 export * from './TaskCapture';
 export * from './CreateTasksDialog';
+export * from './EmbedDialog';
 export * from './QuickLinksDialog';
 export * from './QuickLinksPanel';
 export * from './Table';

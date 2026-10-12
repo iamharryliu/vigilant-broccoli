@@ -29,7 +29,6 @@ export interface ProjectContribution {
 
 const SECTION_HEADING = {
   SKILLS: 'Skills',
-  ROLES: 'Roles',
   LANGUAGES: 'Languages',
   JOB_EXPERIENCE: 'Job Experience',
   PROJECT_CONTRIBUTIONS: 'Project Contributions',
@@ -43,7 +42,7 @@ const FIRST_CELL_INDEX = 0;
 const LANGUAGE_PROFICIENCY_SEPARATOR = ': ';
 const PROJECT_HEADING_PATTERN = /^### /m;
 const PROJECT_METADATA_SEPARATOR = ' — ';
-const USED_IN_SEPARATOR = '; ';
+const LIST_SEPARATOR = '; ';
 
 const sectionLines = (markdown: string, heading: string): string[] => {
   const lines = markdown.split('\n');
@@ -96,7 +95,6 @@ const projectContributions = (markdown: string): ProjectContribution[] =>
 
 export const parseSkillsNote = (markdown: string): SkillsNote => {
   const skillRows = tableRows(sectionLines(markdown, SECTION_HEADING.SKILLS));
-  const roleRows = tableRows(sectionLines(markdown, SECTION_HEADING.ROLES));
   const experience = tableRows(
     sectionLines(markdown, SECTION_HEADING.JOB_EXPERIENCE),
   )
@@ -122,10 +120,19 @@ export const parseSkillsNote = (markdown: string): SkillsNote => {
       .map(([skill, usedIn = '']) => ({
         skill,
         companies: usedIn
-          .split(USED_IN_SEPARATOR)
+          .split(LIST_SEPARATOR)
           .map(company => company.trim())
           .filter(Boolean),
       })),
-    titles: roleRows.map(cells => cells[FIRST_CELL_INDEX]).filter(Boolean),
+    titles: [
+      ...new Set(
+        experience.flatMap(({ role }) =>
+          role
+            .split(LIST_SEPARATOR)
+            .map(title => title.trim())
+            .filter(Boolean),
+        ),
+      ),
+    ].sort((a, b) => a.localeCompare(b)),
   };
 };

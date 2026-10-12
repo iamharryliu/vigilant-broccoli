@@ -1,4 +1,7 @@
 //@ts-check
+const { createHash } = require('crypto');
+const { readdirSync, statSync } = require('fs');
+const { join } = require('path');
 const { composePlugins, withNx } = require('@nx/next');
 const configValues = {
   default: {},
@@ -19,6 +22,33 @@ const SERVER_ONLY_EXTERNALS = [
   'playwright-core',
   'chromium-bidi',
 ];
+const LIBS_DIR = join(__dirname, '../../../libs/@vigilant-broccoli');
+const LIB_SOURCE_PATTERN = /\.(tsx?|jsx?|html)$/;
+// Tailwind scans lib sources by glob, but webpack's cache does not reliably
+// notice a lib file being added or edited, so the built CSS misses new classes.
+// Keying the cache on each lib source's path, mtime and size busts it exactly
+// when a lib changes, and app-only edits keep the warm cache.
+/** @type {(dir: string) => string[]} */
+const listLibSources = dir =>
+  readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+    const path = join(dir, entry.name);
+    if (entry.name === 'node_modules') return [];
+    if (entry.isDirectory()) return listLibSources(path);
+    return LIB_SOURCE_PATTERN.test(entry.name) ? [path] : [];
+  });
+const libSourcesHash = () =>
+  createHash('sha1')
+    .update(
+      listLibSources(LIBS_DIR)
+        .sort()
+        .map(path => {
+          const { mtimeMs, size } = statSync(path);
+          return `${path}:${mtimeMs}:${size}`;
+        })
+        .join('\n'),
+    )
+    .digest('hex');
+
 /**
  * @type {import('@nx/next/plugins/with-nx').WithNxOptions}
  **/
@@ -28,6 +58,9 @@ const nextConfig = {
   agentRules: false,
   serverExternalPackages: ['socket.io-client', 'better-sqlite3'],
   webpack: (config, { isServer }) => {
+    if (config.cache && typeof config.cache === 'object') {
+      config.cache.version = `${config.cache.version ?? ''}|${libSourcesHash()}`;
+    }
     if (isServer) {
       config.externals = [
         ...(Array.isArray(config.externals)

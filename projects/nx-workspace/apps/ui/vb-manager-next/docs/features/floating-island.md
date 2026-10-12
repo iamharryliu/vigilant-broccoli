@@ -10,11 +10,10 @@
 
 - **Time**: Live clock display
 - **Info**: Date and contextual info
-- **Weather**: City name, emoji weather status, and temperature; clickable to open the weather dialog (keyboard shortcut: `w`), which embeds the standalone weather site (`HARRYLIU_APP_URL.WEATHER`) in an iframe
 
 ## Dialogs
 
-- Hosts Jarvis, email, calendar, notepad, search, weather, pomodoro, and utilities dialogs, opened through the page layout's controls and keyboard shortcuts
+- Hosts Jarvis, email, calendar, notepad, search, pomodoro, and utilities dialogs, opened through the page layout's controls and keyboard shortcuts
 - Runs the shared alarm, timer, and pomodoro engines
 - See [Settings](./settings.md) for the keyboard shortcuts cheatsheet
 

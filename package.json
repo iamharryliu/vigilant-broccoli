@@ -127,7 +127,7 @@
     "agentic-pr-update-fix-ci": "./infrastructure/agent-sandbox/fix-pr-ci.sh",
     "agentic-pr-update-resolve-conflicts": "./infrastructure/agent-sandbox/resolve-pr-conflicts.sh",
     "vb-manager-next:start": "cd projects/nx-workspace && nx run vb-manager-next:pm2:start",
-    "vb-manager-next:reload": "cd projects/nx-workspace && nx run vb-manager-next:pm2:reload",
+    "vb-manager-next:reload": "./scripts/shell/vb-manager-next-reload.sh",
     "vb-manager-next:delete": "cd projects/nx-workspace && nx run vb-manager-next:pm2:delete",
     "vb-manager-next:logs": "cd projects/nx-workspace && nx run vb-manager-next:pm2:logs",
     "vb-manager-next:status": "cd projects/nx-workspace && nx run vb-manager-next:pm2:status",

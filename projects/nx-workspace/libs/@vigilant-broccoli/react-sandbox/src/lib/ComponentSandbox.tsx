@@ -430,7 +430,7 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     id: 'dashboard-info-card',
     label: 'Dashboard Info Card',
     description:
-      'Clock, weather, the next sunrise/sunset and the current moon phase. Sun times and moon phase are computed locally from the location, so only the weather tile needs data.',
+      'Clock, weather with details, preparation badges and a day-by-day forecast carousel (click the weather tile), the next sunrise/sunset and the current moon phase. Sun times and moon phase are computed locally from the location.',
     category: CATEGORY.UTILITIES,
     content: <DashboardInfoCardDemo />,
   },
