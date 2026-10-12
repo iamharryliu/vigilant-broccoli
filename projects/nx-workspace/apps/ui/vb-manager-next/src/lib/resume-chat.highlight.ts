@@ -242,7 +242,7 @@ const roleScore = (target: string, title: string): number => {
  * The model tends to leave `basics.title` alone, so when it has not changed the
  * title, switch to the allowed title closest to the target: its lead word
  * ("Backend", "DevOps", ...) counts most, then the discipline's typical
- * technologies. Titles stay limited to the skills note's Roles.
+ * technologies. Titles stay limited to the skills note's Job Experience roles.
  */
 export const alignTitleWithTarget = (
   resume: ResumeData,
@@ -265,8 +265,8 @@ const YEARS_MENTION = /\byears?\b/i;
 const NEARLY_THRESHOLD_MONTHS = 6;
 
 /**
- * The summary always opens with a fixed "ROLE with N years in software
- * development" sentence built from the title and the work dates; the model only
+ * The summary always opens with a fixed "ROLE with N years of software
+ * experience" sentence built from the title and the work dates; the model only
  * writes the related follow-up, and a leading sentence of its own that makes a
  * years claim is dropped.
  */
@@ -284,7 +284,7 @@ export const withRoleSummaryOpener = (resume: ResumeData): ResumeData => {
   return {
     ...resume,
     summary: [
-      `${resume.basics.title} with ${years} years of experience in software development.`,
+      `${resume.basics.title} with ${years} years of software experience.`,
       followUp,
     ]
       .filter(Boolean)
