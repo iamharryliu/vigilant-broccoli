@@ -24,3 +24,5 @@ export VAULT_JWT_ISSUER="https://token.actions.githubusercontent.com"
 # never-expiring root token.
 export VAULT_OPS_POLICY_NAME="vb-ops-policy"
 export VAULT_OPS_ROLE_NAME="vb-ops-role"
+# Loopback (IAP-SSH scripts on the VM) + WireGuard (laptop scripts via 10.0.1.1).
+export VAULT_OPS_BOUND_CIDRS="127.0.0.1/32,10.0.1.0/24"

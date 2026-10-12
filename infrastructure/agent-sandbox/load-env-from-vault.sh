@@ -26,14 +26,10 @@ emit() {
 fetch_vault_ops_credentials
 
 echo "Fetching agent sandbox tokens from Vault..." >&2
-SECRETS=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
-export VAULT_TOKEN
-
+SECRETS=$(vault_ops_ssh '
 vault kv get -format=json '"${VAULT_KV_PATH}"'/secrets | jq ".data.data"
-' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID")
+')
+unset VAULT_OPS_ROLE_ID VAULT_OPS_SECRET_ID
 
 CLAUDE_CODE_OAUTH_TOKEN=$(echo "$SECRETS" | jq -r '.CLAUDE_CODE_OAUTH_TOKEN // empty')
 AGENT_GH_APP_ID=$(echo "$SECRETS" | jq -r '.AGENT_GH_APP_ID // empty')

@@ -141,7 +141,14 @@ fi
 
 echo ""
 echo "[OCI VM — RabbitMQ Connection]"
-VAULT_TOKEN=$(gcloud secrets versions access latest --secret=VB_VM_VAULT_ROOT_TOKEN --project="$GCP_PROJECT" 2>/dev/null) || VAULT_TOKEN=""
+VAULT_OPS_ROLE_ID=$(gcloud secrets versions access latest --secret=VB_VM_VAULT_OPS_ROLE_ID --project="$GCP_PROJECT" 2>/dev/null) || VAULT_OPS_ROLE_ID=""
+VAULT_OPS_SECRET_ID=$(gcloud secrets versions access latest --secret=VB_VM_VAULT_OPS_SECRET_ID --project="$GCP_PROJECT" 2>/dev/null) || VAULT_OPS_SECRET_ID=""
+VAULT_TOKEN=""
+if [ -n "$VAULT_OPS_ROLE_ID" ] && [ -n "$VAULT_OPS_SECRET_ID" ]; then
+  VAULT_TOKEN=$(printf '{"role_id":"%s","secret_id":"%s"}' "$VAULT_OPS_ROLE_ID" "$VAULT_OPS_SECRET_ID" \
+    | curl -k -s --max-time 10 -X POST -d @- "${GCP_VAULT_URL}/v1/auth/approle/login" 2>/dev/null \
+    | grep -o '"client_token":"[^"]*"' | cut -d'"' -f4) || VAULT_TOKEN=""
+fi
 if [ -n "$VAULT_TOKEN" ]; then
   vault_secrets=$(curl -k -s --max-time 10 \
     -H "X-Vault-Token: $VAULT_TOKEN" \

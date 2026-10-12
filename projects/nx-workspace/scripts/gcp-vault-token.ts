@@ -1,17 +1,19 @@
 import { execSync } from 'child_process';
 
 const GCP_PROJECT = 'vigilant-broccoli';
-const SECRET_NAME = 'VB_VM_VAULT_ROOT_TOKEN';
+const ROLE_ID_SECRET_NAME = 'VB_VM_VAULT_OPS_ROLE_ID';
+const SECRET_ID_SECRET_NAME = 'VB_VM_VAULT_OPS_SECRET_ID';
 
-export function getVaultToken(): string {
-  const envToken = process.env.VAULT_TOKEN;
-  if (envToken) return envToken;
-
-  console.error('Fetching Vault token from GCP Secret Manager...');
-  const token = execSync(
-    `gcloud secrets versions access latest --secret=${SECRET_NAME} --project=${GCP_PROJECT}`,
+const accessSecret = (name: string): string =>
+  execSync(
+    `gcloud secrets versions access latest --secret=${name} --project=${GCP_PROJECT}`,
     { encoding: 'utf-8' },
   ).trim();
 
-  return token;
-}
+export const getVaultOpsCredentials = () => {
+  console.error('Fetching Vault ops AppRole credentials from GCP Secret Manager...');
+  return {
+    role_id: accessSecret(ROLE_ID_SECRET_NAME),
+    secret_id: accessSecret(SECRET_ID_SECRET_NAME),
+  };
+};

@@ -76,14 +76,9 @@ fi
 
 echo "Updating Vault with new connection string..."
 if [ -z "$VAULT_ADDR" ]; then
-  gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
-export VAULT_TOKEN
-
-vault kv patch '"${VAULT_KV_PATH}"'/secrets RABBITMQ_CONNECTION_STRING="$NEW_CONNECTION_STRING"
-' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" NEW_CONNECTION_STRING "$NEW_CONNECTION_STRING"
+  vault_ops_ssh '
+printf "%s" "$NEW_CONNECTION_STRING" | vault kv patch '"${VAULT_KV_PATH}"'/secrets RABBITMQ_CONNECTION_STRING=-
+' NEW_CONNECTION_STRING "$NEW_CONNECTION_STRING"
 else
   curl -sf -o /dev/null \
     -H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" \

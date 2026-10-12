@@ -35,14 +35,9 @@ fi
 
 echo "Updating Vault with new deploy key..."
 NEW_KEY=$(cat "${KEY_DIR}/key")
-gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
-export VAULT_TOKEN
-
-vault kv patch '"${VAULT_KV_PATH}"'/secrets PROFILE_REPO_DEPLOY_KEY="$NEW_KEY"
-' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" NEW_KEY "$NEW_KEY"
+vault_ops_ssh '
+printf "%s" "$NEW_KEY" | vault kv patch '"${VAULT_KV_PATH}"'/secrets PROFILE_REPO_DEPLOY_KEY=-
+' NEW_KEY "$NEW_KEY"
 
 echo "Revoking previous deploy keys..."
 for KEY_ID in $OLD_KEY_IDS; do

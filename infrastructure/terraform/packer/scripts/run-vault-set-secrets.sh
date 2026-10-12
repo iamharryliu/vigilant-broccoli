@@ -18,24 +18,18 @@ if ! command -v jq &> /dev/null; then
   exit 1
 fi
 
-KV_ARGS=$(jq -r 'to_entries | map("\(.key)=\"\(.value)\"") | join(" ")' "$SECRETS_FILE" 2>/dev/null)
-
-if [ $? -ne 0 ] || [ -z "$KV_ARGS" ]; then
+KV_JSON=$(jq -c 'if type == "object" and length > 0 then . else error("expected a non-empty JSON object") end' "$SECRETS_FILE" 2>/dev/null) || {
   echo "ERROR: Failed to parse JSON from $SECRETS_FILE"
   exit 1
-fi
+}
 
 fetch_vault_ops_credentials
 
+# The payload is piped to `vault kv put ... -` as JSON on stdin, keeping every
+# secret value off the remote vault process argv.
 echo "Setting secrets in Vault..."
-gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-set -e
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
-export VAULT_TOKEN
-
-eval "vault kv put '"${VAULT_KV_PATH}"'/secrets $KV_ARGS"
+vault_ops_ssh '
+printf "%s" "$KV_JSON" | vault kv put '"${VAULT_KV_PATH}"'/secrets -
 
 echo "Secrets set successfully."
-' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" KV_ARGS "$KV_ARGS"
+' KV_JSON "$KV_JSON"

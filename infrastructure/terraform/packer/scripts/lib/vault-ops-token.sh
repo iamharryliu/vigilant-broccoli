@@ -1,19 +1,52 @@
 #!/bin/bash
 # Sourced by operator scripts that need a short-TTL Vault token instead of the
-# never-expiring root token. Fetches the vb-ops AppRole credentials from
-# Secret Manager into $VAULT_OPS_ROLE_ID / $VAULT_OPS_SECRET_ID.
+# root token. Callers must also source infrastructure/lib/ssh-secrets.sh.
 #
-# Callers pipe both values over stdin into their gcloud compute ssh --command,
-# where the remote script logs in via `vault write auth/approle/login` and
-# uses the resulting token locally to that ssh session — the AppRole
-# credentials and the derived token never appear in a command line, so they
-# don't show up in `ps` on the VM.
+# The AppRole credentials go over stdin (ssh-secrets.sh), and the remote login
+# feeds them to `vault write auth/approle/login -` as JSON on stdin, so neither
+# they nor the derived token ever appear in a command line / `ps` on the VM.
+
+VAULT_OPS_ROLE_ID_SECRET="VB_VM_VAULT_OPS_ROLE_ID"
+VAULT_OPS_SECRET_ID_SECRET="VB_VM_VAULT_OPS_SECRET_ID"
+
+VAULT_OPS_LOGIN='set -e
+export VAULT_ADDR=https://127.0.0.1:8200
+export VAULT_CACERT=/etc/vault/tls/vault.crt
+VAULT_TOKEN=$(printf "{\"role_id\":\"%s\",\"secret_id\":\"%s\"}" "$VAULT_OPS_ROLE_ID" "$VAULT_OPS_SECRET_ID" | vault write -field=token auth/approle/login -)
+[ -n "$VAULT_TOKEN" ] || { echo "vault-ops: AppRole login returned an empty token" >&2; exit 1; }
+export VAULT_TOKEN
+'
 
 fetch_vault_ops_credentials() {
   VAULT_OPS_ROLE_ID=$(gcloud secrets versions access latest \
-    --secret=VB_VM_VAULT_OPS_ROLE_ID \
+    --secret="${VAULT_OPS_ROLE_ID_SECRET}" \
     --project="${GCP_PROJECT}")
   VAULT_OPS_SECRET_ID=$(gcloud secrets versions access latest \
-    --secret=VB_VM_VAULT_OPS_SECRET_ID \
+    --secret="${VAULT_OPS_SECRET_ID_SECRET}" \
     --project="${GCP_PROJECT}")
+  if [ -z "$VAULT_OPS_ROLE_ID" ] || [ -z "$VAULT_OPS_SECRET_ID" ]; then
+    echo "ERROR: ${VAULT_OPS_ROLE_ID_SECRET}/${VAULT_OPS_SECRET_ID_SECRET} empty in Secret Manager (run pnpm gcp:vm:post-init)" >&2
+    return 1
+  fi
+}
+
+# vault_ops_ssh SCRIPT [NAME VALUE]... — runs SCRIPT on the Vault VM after an
+# AppRole login (with set -e), passing the credentials and any extra secrets
+# over stdin. Requires fetch_vault_ops_credentials to have run.
+vault_ops_ssh() {
+  local script="$1"
+  shift
+  gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" "${VAULT_OPS_LOGIN}${script}" \
+    VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" \
+    VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" \
+    "$@"
+}
+
+# require_value NAME VALUE — `$(remote | tr ...)` pipelines mask a failed
+# remote; abort rather than continue with an empty secret.
+require_value() {
+  if [ -z "$2" ]; then
+    echo "ERROR: failed to read $1 from Vault" >&2
+    exit 1
+  fi
 }

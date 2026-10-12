@@ -16,14 +16,9 @@ if [ -z "$VAULT_ADDR" ]; then
   fetch_vault_ops_credentials
 
   echo "Fetching SHARED_APP_TOKEN from Vault..."
-  SHARED_APP_TOKEN=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
-export VAULT_TOKEN
-
+  SHARED_APP_TOKEN=$(vault_ops_ssh '
 vault kv get -field=SHARED_APP_TOKEN '"${VAULT_KV_PATH}"'/secrets
-' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" | tr -d '[:space:]')
+' | tr -d '[:space:]')
 
   OCI_VM_HOST=$(cd "${SCRIPT_DIR}/../.." && terraform output -raw oci_vm_public_ip)
   SSH_KEY_FILE="$HOME/.ssh/id_ed25519"

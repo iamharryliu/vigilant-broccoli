@@ -32,14 +32,9 @@ if ! fly apps list --access-token "$NEW_TOKEN" > /dev/null; then
 fi
 
 echo "Updating Vault with new token..."
-gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
-export VAULT_TOKEN
-
-vault kv patch '"${VAULT_KV_PATH}"'/secrets FLY_API_TOKEN="$NEW_TOKEN"
-' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" NEW_TOKEN "$NEW_TOKEN"
+vault_ops_ssh '
+printf "%s" "$NEW_TOKEN" | vault kv patch '"${VAULT_KV_PATH}"'/secrets FLY_API_TOKEN=-
+' NEW_TOKEN "$NEW_TOKEN"
 
 echo "Revoking previous tokens..."
 for TOKEN_ID in $OLD_TOKEN_IDS; do

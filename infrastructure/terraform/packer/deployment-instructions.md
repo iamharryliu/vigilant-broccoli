@@ -120,6 +120,8 @@ npm run gcp:vm:vault:revoke-root-token
 
 Verifies `vb-ops` can mint a working token, then revokes the root token. Recovery keys in `VB_VM_VAULT_UNSEAL_KEYS` remain valid — regenerate a root token with `vault operator generate-root` if one is ever needed again (e.g. to re-run this post-init step after rebuilding the VM).
 
+After revocation `npm run gcp:vm:post-init` (also run by `tf:apply`) skips its root-only policy/role bootstrap; re-apply it with `VAULT_TOKEN=<generate-root token> npm run gcp:vm:post-init`. The `vb-ops` `secret_id` expires after 90 days — rotate it before then with `pnpm secret-rotation:vault-ops`.
+
 ### 9.Regenerate Vault TLS cert + update WireGuard endpoint (optional)
 
 ```bash

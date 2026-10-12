@@ -3,24 +3,19 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
+source "${SCRIPT_DIR}/lib/vault-ops-token.sh"
 source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
 TF_API="https://app.terraform.io/api/v2"
 TOKEN_PREFIX="vb-ci-"
 TOKEN_DESCRIPTION="${TOKEN_PREFIX}$(date +%Y%m%d%H%M%S)"
 
-echo "Fetching root token from Secret Manager..."
-VAULT_TOKEN=$(gcloud secrets versions access latest \
-  --secret=VB_VM_VAULT_ROOT_TOKEN \
-  --project="${GCP_PROJECT}")
+fetch_vault_ops_credentials
 
 echo "Reading current TF Cloud token from Vault..."
-OLD_TOKEN=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-
+OLD_TOKEN=$(vault_ops_ssh '
 vault kv get -field=TF_CLOUD_TOKEN '"${VAULT_KV_PATH}"'/secrets
-' VAULT_TOKEN "$VAULT_TOKEN" 2>/dev/null | tr -d '[:space:]')
+' 2>/dev/null | tr -d '[:space:]')
 
 if [ -z "$OLD_TOKEN" ]; then
   echo "ERROR: Failed to read current TF_CLOUD_TOKEN from Vault"
@@ -63,12 +58,9 @@ if ! curl -sf -o /dev/null -H "Authorization: Bearer ${NEW_TOKEN}" "${TF_API}/ac
 fi
 
 echo "Updating Vault with new token..."
-gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-
-vault kv patch '"${VAULT_KV_PATH}"'/secrets TF_CLOUD_TOKEN="$NEW_TOKEN"
-' VAULT_TOKEN "$VAULT_TOKEN" NEW_TOKEN "$NEW_TOKEN"
+vault_ops_ssh '
+printf "%s" "$NEW_TOKEN" | vault kv patch '"${VAULT_KV_PATH}"'/secrets TF_CLOUD_TOKEN=-
+' NEW_TOKEN "$NEW_TOKEN"
 
 echo "Revoking previous ${TOKEN_PREFIX}* tokens..."
 for TOKEN_ID in $MANAGED_TOKEN_IDS; do

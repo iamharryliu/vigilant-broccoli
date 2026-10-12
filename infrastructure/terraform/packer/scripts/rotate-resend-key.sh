@@ -25,13 +25,9 @@ if [ -z "$VAULT_ADDR" ]; then
   fetch_vault_ops_credentials
 
   echo "Reading current Resend key from Vault..."
-  CURRENT_KEY=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
-export VAULT_TOKEN
+  CURRENT_KEY=$(vault_ops_ssh '
 vault kv get -field=RESEND_API_KEY '"${VAULT_KV_PATH}"'/secrets
-' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" 2>/dev/null | tr -d '[:space:]')
+' 2>/dev/null | tr -d '[:space:]')
 else
   CURRENT_KEY="$RESEND_API_KEY"
 fi
@@ -61,14 +57,9 @@ fi
 
 echo "Updating Vault with new key..."
 if [ -z "$VAULT_ADDR" ]; then
-  gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
-export VAULT_TOKEN
-
-vault kv patch '"${VAULT_KV_PATH}"'/secrets RESEND_API_KEY="$NEW_KEY"
-' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" NEW_KEY "$NEW_KEY"
+  vault_ops_ssh '
+printf "%s" "$NEW_KEY" | vault kv patch '"${VAULT_KV_PATH}"'/secrets RESEND_API_KEY=-
+' NEW_KEY "$NEW_KEY"
 else
   curl -sf -o /dev/null \
     -H "CF-Access-Client-Id: ${CF_ACCESS_CLIENT_ID}" \

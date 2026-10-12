@@ -21,22 +21,14 @@ GITEA_SSH="ubuntu@${GITEA_IP}"
 fetch_vault_ops_credentials
 
 # CF Access service token — the verify curl below hits the Access-gated hostname.
-CF_ID=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
-export VAULT_TOKEN
-
+CF_ID=$(vault_ops_ssh '
 vault kv get -field=GITEA_CF_ACCESS_CLIENT_ID '"${VAULT_KV_PATH}"'/secrets
-' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" 2>/dev/null | tr -d '[:space:]')
-CF_SECRET=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
-export VAULT_TOKEN
-
+' 2>/dev/null | tr -d '[:space:]')
+CF_SECRET=$(vault_ops_ssh '
 vault kv get -field=GITEA_CF_ACCESS_CLIENT_SECRET '"${VAULT_KV_PATH}"'/secrets
-' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" 2>/dev/null | tr -d '[:space:]')
+' 2>/dev/null | tr -d '[:space:]')
+require_value GITEA_CF_ACCESS_CLIENT_ID "$CF_ID"
+require_value GITEA_CF_ACCESS_CLIENT_SECRET "$CF_SECRET"
 
 echo "Minting new Gitea token (${TOKEN_NAME}, scopes: ${TOKEN_SCOPES})..."
 NEW_TOKEN=$(ssh $SSH_OPTS "$GITEA_SSH" \
@@ -58,14 +50,9 @@ if ! curl -sf -o /dev/null \
 fi
 
 echo "Updating Vault with new token..."
-gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-VAULT_TOKEN=$(vault write -field=token auth/approle/login role_id="$VAULT_OPS_ROLE_ID" secret_id="$VAULT_OPS_SECRET_ID")
-export VAULT_TOKEN
-
-vault kv patch '"${VAULT_KV_PATH}"'/secrets GITEA_TOKEN="$NEW_TOKEN"
-' VAULT_OPS_ROLE_ID "$VAULT_OPS_ROLE_ID" VAULT_OPS_SECRET_ID "$VAULT_OPS_SECRET_ID" NEW_TOKEN "$NEW_TOKEN"
+vault_ops_ssh '
+printf "%s" "$NEW_TOKEN" | vault kv patch '"${VAULT_KV_PATH}"'/secrets GITEA_TOKEN=-
+' NEW_TOKEN "$NEW_TOKEN"
 
 echo "Revoking previous ${TOKEN_PREFIX}* tokens..."
 ssh $SSH_OPTS "$GITEA_SSH" \
