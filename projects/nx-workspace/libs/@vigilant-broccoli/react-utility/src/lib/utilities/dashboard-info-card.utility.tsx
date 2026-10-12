@@ -1,6 +1,8 @@
 'use client';
 
 import {
+  KeyboardEvent,
+  MouseEvent,
   ReactNode,
   useCallback,
   useEffect,
@@ -8,7 +10,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { ChevronDown, LucideIcon } from 'lucide-react';
+import { LucideIcon } from 'lucide-react';
 import {
   formatLocalTime,
   formatMoonIllumination,
@@ -45,7 +47,6 @@ const TICK_MS = 60 * 1000;
 
 const TILE_ICON_SIZE = 22;
 const TILE_ICON_STROKE = 1.75;
-const TOGGLE_ICON_SIZE = 14;
 const TILE_COUNT = 4;
 const DEGREES_CELSIUS = '°C';
 const WEATHER_TILE_TITLE = 'Weather';
@@ -62,23 +63,24 @@ const FAILURE_STATUSES: string[] = [
 ];
 
 const CARD_CLASS =
-  'flex w-full flex-col gap-4 rounded-xl border border-border bg-card p-4 text-card-foreground shadow-lg';
+  'flex w-full flex-col gap-4 rounded-xl border border-[var(--gray-6)] bg-[color-mix(in_srgb,var(--color-background)_50%,transparent)] p-4 shadow-lg';
+const CARD_TOGGLE_CLASS =
+  'cursor-pointer transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gray-8)]';
+const INTERACTIVE_SELECTOR = 'button, a, input, select, textarea';
 const SUMMARY_CLASS =
   'flex flex-wrap items-center justify-center gap-x-6 gap-y-4';
 const HERO_CLASS = 'flex min-w-max flex-col items-center gap-1.5';
 const TILE_GRID_CLASS =
   'grid grid-cols-[repeat(2,minmax(6.5rem,1fr))] gap-x-5 gap-y-3';
 const TILE_CLASS = 'flex min-w-[6.5rem] items-center gap-2 text-left';
-const TILE_TOGGLE_CLASS =
-  'cursor-pointer rounded-md transition-opacity hover:opacity-70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring';
-const TILE_ICON_CLASS = 'flex items-center text-2xl text-muted-foreground';
+const TILE_ICON_CLASS = 'flex items-center text-2xl text-[var(--gray-11)]';
 const TILE_TEXT_CLASS = 'flex min-w-0 flex-col';
 const TILE_VALUE_CLASS = 'flex items-center gap-1 text-[0.85rem] font-semibold';
 const TILE_LABEL_CLASS =
-  'overflow-hidden text-ellipsis whitespace-nowrap text-[0.7rem] text-muted-foreground';
-const ATTRIBUTION_CLASS = 'text-center text-[0.65rem] text-muted-foreground';
+  'overflow-hidden text-ellipsis whitespace-nowrap text-[0.7rem] text-[var(--gray-11)]';
+const ATTRIBUTION_CLASS = 'text-center text-[0.65rem] text-[var(--gray-11)]';
 const DETAIL_LIST_CLASS =
-  'flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground';
+  'flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-[var(--gray-11)]';
 
 export interface DashboardInfoCardWeather extends LocalWeather {
   preparation?: Preparation | null;
@@ -100,66 +102,27 @@ export interface DashboardInfoCardProps {
   className?: string;
 }
 
-interface TileToggle {
-  expanded: boolean;
-  controls: string;
-  onToggle: () => void;
-}
-
 interface StatTile {
   key: string;
   icon: ReactNode;
   value: string;
   label: string;
   title: string;
-  toggle?: TileToggle;
 }
 
 const TileIcon = ({ icon: Icon }: { icon: LucideIcon }) => (
   <Icon size={TILE_ICON_SIZE} strokeWidth={TILE_ICON_STROKE} />
 );
 
-const StatTileView = ({ tile }: { tile: StatTile }) => {
-  const { toggle } = tile;
-  const content = (
-    <>
-      <span className={TILE_ICON_CLASS}>{tile.icon}</span>
-      <div className={TILE_TEXT_CLASS}>
-        <span className={TILE_VALUE_CLASS}>
-          {tile.value}
-          {toggle && (
-            <ChevronDown
-              size={TOGGLE_ICON_SIZE}
-              aria-hidden
-              className={cn(
-                'transition-transform',
-                toggle.expanded && 'rotate-180',
-              )}
-            />
-          )}
-        </span>
-        <span className={TILE_LABEL_CLASS}>{tile.label}</span>
-      </div>
-    </>
-  );
-
-  return toggle ? (
-    <button
-      type="button"
-      title={tile.title}
-      aria-expanded={toggle.expanded}
-      aria-controls={toggle.expanded ? toggle.controls : undefined}
-      onClick={toggle.onToggle}
-      className={cn(TILE_CLASS, TILE_TOGGLE_CLASS)}
-    >
-      {content}
-    </button>
-  ) : (
-    <div title={tile.title} className={TILE_CLASS}>
-      {content}
+const StatTileView = ({ tile }: { tile: StatTile }) => (
+  <div title={tile.title} className={TILE_CLASS}>
+    <span className={TILE_ICON_CLASS}>{tile.icon}</span>
+    <div className={TILE_TEXT_CLASS}>
+      <span className={TILE_VALUE_CLASS}>{tile.value}</span>
+      <span className={TILE_LABEL_CLASS}>{tile.label}</span>
     </div>
-  );
-};
+  </div>
+);
 
 const SkeletonTileView = () => (
   <div className={TILE_CLASS}>
@@ -276,6 +239,25 @@ const DashboardInfoCardView = ({
     onExpandedChange?.(next);
   }, [isExpanded, expanded, onExpandedChange]);
 
+  const canToggle = hasForecast && !isLoading && !error;
+
+  const handleCardClick = (event: MouseEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    if (
+      target.closest(INTERACTIVE_SELECTOR) ||
+      target.closest(`#${CSS.escape(forecastId)}`)
+    )
+      return;
+    toggleForecast();
+  };
+
+  const handleCardKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) return;
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    toggleForecast();
+  };
+
   const tiles: StatTile[] = useMemo(() => {
     if (!weather) {
       return [];
@@ -307,13 +289,6 @@ const DashboardInfoCardView = ({
         title: `${WEATHER_TILE_TITLE}${TITLE_SEPARATOR}${t(
           `CONDITION.${weather.condition}`,
         )}`,
-        toggle: hasForecast
-          ? {
-              expanded: isExpanded,
-              controls: forecastId,
-              onToggle: toggleForecast,
-            }
-          : undefined,
       },
       {
         key: MOON_TILE_KEY,
@@ -329,18 +304,7 @@ const DashboardInfoCardView = ({
     return leftTiles.flatMap((leftTile, row) =>
       [leftTile, sunTiles[row]].filter(Boolean),
     );
-  }, [
-    weather,
-    location,
-    timezoneOffsetSeconds,
-    nowMs,
-    moonPhase,
-    hasForecast,
-    isExpanded,
-    forecastId,
-    toggleForecast,
-    t,
-  ]);
+  }, [weather, location, timezoneOffsetSeconds, nowMs, moonPhase, t]);
 
   const renderTiles = () => {
     if (error) {
@@ -362,7 +326,18 @@ const DashboardInfoCardView = ({
   };
 
   return (
-    <div className={cn(CARD_CLASS, className)}>
+    <div
+      className={cn(CARD_CLASS, canToggle && CARD_TOGGLE_CLASS, className)}
+      {...(canToggle && {
+        role: 'button',
+        tabIndex: 0,
+        title: t('FORECAST.LABEL'),
+        'aria-expanded': isExpanded,
+        'aria-controls': isExpanded ? forecastId : undefined,
+        onClick: handleCardClick,
+        onKeyDown: handleCardKeyDown,
+      })}
+    >
       <div className={SUMMARY_CLASS}>
         <div className={HERO_CLASS}>
           <ClockComponent type="time" timeSize={CLOCK_TIME_SIZE} />

@@ -25,13 +25,13 @@
 
 ## Forecast carousel
 
-- The weather tile is a real `<button>` with `aria-expanded` only when `weather.forecast` has entries; otherwise it is a plain tile.
-- Clicking it toggles a horizontally scrolling list built on native scroll with scroll-snap. It is swipeable on touch, scrollable by wheel/trackpad, and the focusable list scrolls with the arrow keys. Previous/next buttons are disabled at the ends.
+- The whole card is the toggle (`role="button"`, `aria-expanded`, Enter/Space) only when `weather.forecast` has entries and the weather is loaded; otherwise it is plain. There is no caret. Clicks on inner buttons/links and inside the carousel do not toggle.
+- Clicking the card toggles a horizontally scrolling list built on native scroll with scroll-snap. It is swipeable on touch, draggable with a mouse, scrollable by wheel/trackpad, and the focusable list scrolls with the arrow keys. There are no previous/next buttons and the scrollbar is hidden.
 - State is internal (`defaultExpanded`) and optionally controlled through `expanded` / `onExpandedChange`.
 
 ## Tailwind
 
-The card is styled with Tailwind classes and the `react-lib` theme tokens (`border-border`, `bg-card`, `text-muted-foreground`). Every app that imports `react-utility` must list `libs/@vigilant-broccoli/react-utility/src/**` (and `react-lib`) in its Tailwind `content` globs; see the nuance in [nx-workspace CONTEXT.md](../../../../../CONTEXT.md#a-react-lib-component-renders-unstyled-in-an-app-that-never-scanned-it).
+The card is styled with Tailwind classes and the Radix Themes variables the apps' `ThemeProvider` supplies (`--gray-*`, `--color-background`), as the original card was, so it matches in every app regardless of shadcn tokens. Every app that imports `react-utility` must list `libs/@vigilant-broccoli/react-utility/src/**` (and `react-lib`) in its Tailwind `content` globs; see the nuance in [nx-workspace CONTEXT.md](../../../../../CONTEXT.md#a-react-lib-component-renders-unstyled-in-an-app-that-never-scanned-it).
 
 ## Data fetching per app
 
