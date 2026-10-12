@@ -12,6 +12,7 @@ Renders repo markdown docs fetched at build/runtime.
 - Framework - React
 - Build Tool - Vite
 - External libs
+  - Mermaid
   - Tailwind CSS
 - Internal libs
   - `react-lib`

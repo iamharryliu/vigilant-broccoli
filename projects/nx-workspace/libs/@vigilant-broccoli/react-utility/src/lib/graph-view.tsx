@@ -108,7 +108,7 @@ const parseRgb = (
 // Detect the actual background painted behind the canvas rather than guessing
 // the theme: the app may render light even while the OS prefers dark, so a
 // prefers-color-scheme guess can pick line colors that vanish into the page.
-const isDarkTheme = (el: HTMLElement | null): boolean => {
+export const isDarkTheme = (el: HTMLElement | null): boolean => {
   if (typeof document === 'undefined') return false;
   for (let node = el; node; node = node.parentElement) {
     const rgb = parseRgb(getComputedStyle(node).backgroundColor);
