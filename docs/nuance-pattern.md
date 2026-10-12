@@ -1,9 +1,6 @@
 # Nuance Pattern
 
-Source of truth for where a repo nuance is written down and what a nuance entry
-looks like. A nuance is a non-obvious bug or quirk discovered while working here
-— something that isn't derivable from reading the code alone, and that would
-cost the next person (or agent) hours to rediscover.
+Record non-obvious repository constraints that code alone does not explain.
 
 ## Table of Contents
 
@@ -15,121 +12,32 @@ cost the next person (or agent) hours to rediscover.
 
 ## Where a nuance goes
 
-A nuance lives in the `## Nuances` section of the `CONTEXT.md` at the **deepest
-directory that fully contains everything the nuance affects**. Scope it by
-blast radius, not by where it was first observed:
+Use `## Nuances` in the deepest `CONTEXT.md` containing every affected surface: component, workspace, or repository root. A trap affecting a class of components belongs at their shared ancestor, with a concrete sighting, rather than copied into each component.
 
-- Breaks or constrains exactly one app, lib, or infrastructure component →
-  that component's directory (e.g.
-  `projects/nx-workspace/apps/ui/vb-manager-next/CONTEXT.md`).
-- Spans several apps/libs inside one workspace → the workspace root
-  (`projects/nx-workspace/CONTEXT.md`).
-- Spans top-level directories, or is about the repo itself (tooling, git,
-  conventions) → the `## Nuances` section of the repo-root `CONTEXT.md`. The
-  root is the deepest directory containing everything such a nuance affects,
-  so this is the same rule, not an exception — and it puts a genuinely
-  repo-wide trap in context on every session, which is where it belongs.
-
-When a nuance is observed in one app but the underlying trap applies to a whole
-class of surfaces, write it at the level where the class lives and name the
-app as the sighting, rather than filing a copy per app. A nuance filed above
-the directory an agent is working in still reaches them, because every
-applicable `CONTEXT.md` on the path into that directory is read — which is why the
-Tailwind `content` trap that bit one app lives at the workspace root.
-
-Each source is exposed through committed `CLAUDE.md` and `AGENTS.md` symlinks
-in the same directory. The agent reads its conventional entry point; both
-resolve to the shared `CONTEXT.md`. See [Harness portability](#harness-portability).
-
-There is no separate index. The list of directories carrying nuances is
-derivable, so it is derived rather than maintained:
-
-```sh
-grep -rl '^## Nuances' --include=CONTEXT.md .
-```
-
-A hand-written index would be a second place to drift, and nothing reads it —
-discovery happens through the agent entry points themselves, not through a
-table someone has to remember to update.
+Applicable ancestor context is read before subtree edits. Discover nuance files with `rg -l '^## Nuances' --glob CONTEXT.md --hidden`; do not maintain a separate index.
 
 ## File shape
 
-A directory-scoped `CONTEXT.md` is:
+Create context only when there are instructions to retain:
 
-- `# Agent Context — <dir path or component name>`
-- `## Table of Contents` — links to every `##` section, and nested under
-  `Nuances`, every `###` entry beneath it. Regenerate it whenever entries are
-  added, removed, or retitled; it is fully derived, so rebuild it rather than
-  patching it.
-- Any other directory conventions the component needs (see
-  `infrastructure/local/CONTEXT.md`, which carries curation rules and no
-  nuances).
-- `## Nuances` — the entries, each a `###`.
+- `# Agent Context — <component or directory>`
+- A derived `## Table of Contents` linking `##` sections and nested `###` entries; omit it if there are no section headings.
+- Directory-specific conventions, followed by `## Nuances` when needed.
 
-A `CONTEXT.md` with no `##` headings at all doesn't need a Table of Contents,
-the same exemption [notes/CONTEXT.md](../notes/CONTEXT.md) makes for notes.
-
-`CONTEXT.md` sits next to `README.md` in a component directory and is only
-created when there is something to say — there is no empty-file placeholder.
-It is not part of [app-readme-pattern.md](./app-readme-pattern.md): READMEs
-describe the stack, `CONTEXT.md` records traps and conventions.
+README files describe the component; context records its constraints. Do not repeat inherited rules or add empty sections.
 
 ## Harness portability
 
-`CONTEXT.md` owns the instructions independently of any agent. The committed
-`CLAUDE.md` and `AGENTS.md` links expose them to Claude Code and Codex without
-copying Markdown or changing relative links. To support another harness, commit
-its entry point beside each `CONTEXT.md` and add it to the adapter check in
-`ci-pr-check.yml`.
-
-When adding a `CONTEXT.md`, commit both adapter symlinks beside it in the same
-change: `ln -s CONTEXT.md CLAUDE.md && ln -s CONTEXT.md AGENTS.md`. PR CI fails
-when one is missing or points elsewhere. See [agent-support.md](./agent-support.md) for the layout,
-installation, and discovery details.
-
-An agent's automatic discovery may depend on its starting directory. The root
-context therefore also requires reading applicable directory context before
-editing a subtree. Keep inherited context within Codex's default 32 KiB
-instruction limit for local sessions. The sandbox runner uses an explicit
-64 KiB limit; see [agent support](./agent-support.md#context-discovery).
+Each source needs adjacent committed `AGENTS.md` and `CLAUDE.md` symlinks pointing to `CONTEXT.md`. Add, move or delete them with the source. See [agent support](./agent-support.md#adding-a-context-source-or-skill) for adapter validation and [context discovery](./agent-support.md#context-discovery) for instruction limits.
 
 ## Entry shape
 
-Each nuance is one `###` section under `## Nuances`:
+Use one `###` per trap, appended oldest-first. State the symptom/rule in the heading, then briefly explain its mechanism, affected files/identifiers, current workaround and recovery checks. Mention other affected surfaces when the trap generalizes.
 
-- The heading states the symptom or the rule, as a sentence — what someone
-  would search for while confused ("`wrangler pages deployment list --json` is
-  capped to one page (25 items)"), not a topic label ("Wrangler"). The headings
-  are what the Table of Contents shows, so they double as the scannable list of
-  what this directory can do to you.
-- The body explains **why** it happens (the mechanism, the upstream bug, the
-  API behaviour), not just what to do — the mechanism is what makes it
-  recognizable the next time it wears a different symptom.
-- Name the concrete files, commands, and identifiers involved so the entry is
-  greppable, and cite the deployed symptom when there was one.
-- Close with the fix or workaround that is in place, and what to do when it
-  resurfaces (which commands to check, in what order).
-- If the same trap can reappear elsewhere, say so explicitly ("any other
-  hand-rolled copy of this provider still needs the same treatment").
-
-Entries are ordered oldest-first — append new ones at the bottom rather than
-sorting, so the section reads as a log.
-
-Because the whole section is always-on context for anyone working in that
-directory, keep entries to what actually can't be derived from the code. A
-nuance that has become obvious, or that the code now guards against, is costing
-tokens on every session in that subtree.
+Retain enough evidence to recognize the problem, not an incident transcript. Omit implementation inventories, obvious behavior, repeated instructions and bugs now guarded by code. External workarounds still need their reason until the underlying constraint disappears.
 
 ## Upkeep
 
-- Fixing the root cause upstream (a dependency bump, a deleted workaround)
-  retires the entry: delete it and its Table of Contents line. If it was the
-  last one, drop the now-empty `## Nuances` section too.
-- When moving or deleting a `CONTEXT.md`, move or delete its adjacent committed `CLAUDE.md` and `AGENTS.md` symlinks in the same change. Keep surviving adapters pointed at the adjacent `CONTEXT.md`, update incoming documentation links, and verify that the symlinks resolve. No adapter-generation step is needed; see [agent support](./agent-support.md#sources-and-adapters).
-- Adding or retiring a nuance is two writes, both inside the one file you are
-  already editing: the entry and its Table of Contents line.
-- Directory-scoped `CONTEXT.md` files are snapshotted into the Agent
-  Context site (`context.harryliu.dev`) via the `{ "path": ".", "filename": "CONTEXT.md" }` source
-  in
-  `projects/nx-workspace/apps/ui/context-md/snapshot.config.json`,
-  so a new one is picked up with no config change.
+- Retire entries when the upstream issue is fixed or the workaround disappears; remove empty Nuances sections and rebuild the ToC.
+- Repair incoming paths/anchors after moves or heading changes and verify adapter symlinks.
+- New directory contexts are discovered automatically by the context site's `snapshot.config.json`; no manual index/config update is needed.
