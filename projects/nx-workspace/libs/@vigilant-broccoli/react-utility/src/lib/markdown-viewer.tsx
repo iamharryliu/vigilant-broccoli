@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import DOMPurify from 'dompurify';
 import { createHeadingRenderer, marked } from './markdown-config';
-import {
-  createNoteLinkClickHandler,
-  scrollToUrlHash,
-} from './note-links';
+import { createNoteLinkClickHandler, scrollToUrlHash } from './note-links';
+import { observeThemeChange, renderMermaidDiagrams } from './mermaid-diagrams';
 
 const CLS = {
   ROOT: 'w-full',
@@ -60,9 +58,16 @@ export function MarkdownViewer({
       });
   }, [content]);
 
+  const proseRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    if (html) scrollToUrlHash();
-  }, [html]);
+    if (!html) return;
+    const el = proseRef.current;
+    renderMermaidDiagrams(el).then(scrollToUrlHash);
+    return el
+      ? observeThemeChange(el, () => renderMermaidDiagrams(el))
+      : undefined;
+  }, [html, isEditing]);
 
   const canEdit = Boolean(saveContent && filePath);
 
@@ -137,6 +142,7 @@ export function MarkdownViewer({
   return (
     <div className={CLS.ROOT}>
       <div
+        ref={proseRef}
         className={CLS.PROSE}
         dangerouslySetInnerHTML={{ __html: html }}
         onClick={createNoteLinkClickHandler(filePath ?? '', onNavigate)}
