@@ -18,7 +18,10 @@ import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component
 import { useDrag } from '../hooks/useDrag';
 import { useWeather } from '../hooks/useWeather';
 import { LocalWeatherDialog, Skeleton } from '@vigilant-broccoli/react-lib';
-import { fetchLocalWeather } from '../utils/local-weather.utils';
+import {
+  fetchLocalPreparation,
+  fetchLocalWeather,
+} from '../utils/local-weather.utils';
 import { authFetch } from '../../../libs/auth';
 
 interface ChatSuggestion {
@@ -369,6 +372,7 @@ export const FloatingIslandComponent = ({
       />
       <LocalWeatherDialog
         fetchWeather={fetchLocalWeather}
+        fetchPreparation={fetchLocalPreparation}
         open={weatherDialogOpen}
         onOpenChange={setWeatherDialogOpen}
       />
