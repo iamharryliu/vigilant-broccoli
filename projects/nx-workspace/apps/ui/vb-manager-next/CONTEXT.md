@@ -5,6 +5,7 @@
 - [Nuances](#nuances)
   - [`@nx/next` build doesn't copy `deprecation.js` into `dist/.nx-helpers`](#nxnext-build-doesnt-copy-deprecationjs-into-distnx-helpers)
   - [PM2 reload needs `pm2 save` for boot resurrect](#pm2-reload-needs-pm2-save-for-boot-resurrect)
+  - [Lib-only class changes ship stale CSS from Next's build cache](#lib-only-class-changes-ship-stale-css-from-nexts-build-cache)
   - [A failed kanban board fetch used to look like a brand-new account](#a-failed-kanban-board-fetch-used-to-look-like-a-brand-new-account)
   - [Kanban's cross-lane drag reads CheckList's internal dnd-kit payload](#kanbans-cross-lane-drag-reads-checklists-internal-dnd-kit-payload)
 
@@ -53,6 +54,17 @@ the OS-level boot hook on the host.
 
 `pnpm vb-manager-next:reload` runs `scripts/shell/vb-manager-next-reload.sh`, which first does a
 `git pull --ff-only` in the repo root and aborts the reload if the pull fails.
+
+### Lib-only class changes ship stale CSS from Next's build cache
+
+Tailwind classes that appear only in a lib under `libs/@vigilant-broccoli/*`
+(e.g. `react-utility`'s Dashboard Info Card) can be missing from the built CSS
+after a rebuild: Next's webpack cache in `dist/apps/ui/vb-manager-next/.next/cache`
+does not regenerate the Tailwind output when only those files changed. The
+build succeeds, PM2 reports online, and the component renders unstyled.
+`scripts/shell/vb-manager-next-reload.sh` removes that cache before building,
+which costs about 20s (≈54s cold vs ≈32s warm for `build:next`). A manual
+`nx run vb-manager-next:build:next` does not, so clear it yourself first.
 
 ### A failed kanban board fetch used to look like a brand-new account
 
