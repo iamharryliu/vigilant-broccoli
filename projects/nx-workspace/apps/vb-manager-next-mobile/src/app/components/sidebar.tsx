@@ -13,6 +13,7 @@ import {
   QrCode,
   ScanLine,
   StickyNote,
+  CloudSun,
   LogOut,
 } from 'lucide-react';
 import {
@@ -49,6 +50,7 @@ const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
     icon: CalendarRange,
   },
   { href: '/pastebin', label: PAGE_TITLE.PASTEBIN, icon: ClipboardList },
+  { href: '/weather', label: PAGE_TITLE.WEATHER, icon: CloudSun },
 ];
 
 type AppSidebarProps = {
