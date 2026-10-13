@@ -12,6 +12,10 @@ PRE_COMMIT_HELPER=/tmp/run-pre-commit.sh
 MERGE_BODY_HELPER=/tmp/merge-pr-body.py
 CI_LOG=/tmp/pr-ci-failures.log
 CI_LOG_BUDGET=20000
+# A just-pushed branch still has checks running; a CI-log run waits this long for them
+# so it sees their result instead of an empty failure list.
+CI_WAIT_SECONDS=${CI_WAIT_SECONDS:-600}
+CI_POLL_SECONDS=30
 
 cd "$REPO_DIR"
 SKILL_NAME=agentic-pr-update
@@ -75,10 +79,26 @@ salvage_on_failure() {
 }
 trap salvage_on_failure EXIT
 
+count_checks() {
+  gh pr checks "$PR" --json bucket -q "[.[] | select(.bucket == \"$1\")] | length" 2>/dev/null || echo 0
+}
+
+wait_for_pending_checks() {
+  local waited=0
+  while [ "$(count_checks pending)" -gt 0 ] && [ "$waited" -lt "$CI_WAIT_SECONDS" ]; do
+    sleep "$CI_POLL_SECONDS"
+    waited=$((waited + CI_POLL_SECONDS))
+  done
+  if [ "$(count_checks pending)" -gt 0 ]; then
+    echo "WARNING: checks were still running after ${CI_WAIT_SECONDS}s; their results are not in the CI output." >&2
+  fi
+}
+
 # The agent cannot call gh, so failing CI output has to be collected here and
 # handed over in the prompt.
 CI_SECTION=""
 if [ -n "${SANDBOX_CI_LOGS:-}" ]; then
+  wait_for_pending_checks
   : > "$CI_LOG"
   gh pr checks "$PR" >> "$CI_LOG" 2>&1 || true
   # A token without Actions read access makes this fail; say so rather than
@@ -101,6 +121,25 @@ $(tail -c "$CI_LOG_BUDGET" "$CI_LOG")
 Formatting failures from the pre-commit job (trailing-whitespace, end-of-file-fixer, black) are auto-fixed by the calling script; spend your effort on real lint, test, build, or logic failures.
 EOF
 )
+fi
+
+# A plain change skips the log collection above, but still starts from the PR's check
+# state: a branch that already fails CI should be reported, not silently built on.
+# Conflict resolution is excluded because a conflicting PR runs no CI.
+if [ -z "$CI_SECTION" ] && [ "$SKILL_NAME" = agentic-pr-update ]; then
+  NON_PASSING_CHECKS=$(gh pr checks "$PR" --json name,bucket \
+    -q '.[] | select(.bucket == "fail" or .bucket == "pending" or .bucket == "cancel") | "- \(.name): \(.bucket)"' 2>/dev/null || true)
+  if [ -n "$NON_PASSING_CHECKS" ]; then
+    CI_SECTION=$(cat <<EOF
+
+Checks on this PR that are not passing before your change (fail, cancel or still pending):
+
+${NON_PASSING_CHECKS}
+
+You have no logs for these. Do not try to fix them unless the instruction asks; if your change could affect one, say so in your report.
+EOF
+)
+  fi
 fi
 
 PLAN_RULES=""
