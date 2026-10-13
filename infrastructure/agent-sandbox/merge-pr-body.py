@@ -75,7 +75,12 @@ if pr_next_steps and not replace_section("Next steps", pr_next_steps):
 pr_suggestions = os.environ.get("PR_SUGGESTIONS", "").strip()
 pr_stack = os.environ.get("PR_STACK", "").strip()
 
-if pr_suggestions and not replace_section("Suggestions", pr_suggestions):
+# Suggestions describe what is still open, so an explicitly empty
+# PR_SUGGESTIONS (set but blank) drops the stale section; an unset variable
+# leaves it alone.
+if "PR_SUGGESTIONS" in os.environ and not pr_suggestions:
+    sections[:] = [(h, c) for h, c in sections if h != "Suggestions"]
+elif pr_suggestions and not replace_section("Suggestions", pr_suggestions):
     insert_at = (
         next(
             (i for i, (h, _) in enumerate(sections) if h == "Next steps"),
