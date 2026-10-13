@@ -93,4 +93,5 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 
 - Prefer functional patterns over OOP and consts over string literals. Add error handling only when explicitly needed.
 - Do not write tests unless explicitly asked.
+- Never create import cycles; `import/no-cycle` fails lint. Inside a lib, import from the sibling module, never from the lib's own `index.ts`.
 - Comments should explain non-obvious reasons, constraints or traps. Remove redundant comments and generator scaffolding when touching a file. Preserve comments that are an empty block's sole body, and `TODO`/`FIXME`/lint directives.
