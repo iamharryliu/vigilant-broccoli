@@ -80,7 +80,7 @@ Verify argument forwarding and canonical skill loading end to end, using stubbed
 
 ## Pull request scope
 
-- **TODO references:** resolve matching 6-hex IDs in free text against `TODO.md` using [todo-pattern.md](./todo-pattern.md), including Description and Recommended Fix. Report unknown IDs. Remove only fully resolved rows; partial/context-only references remain. Sandbox agents leave TODO edits to the runner and declare resolved `todo_ids`. `agentic-pr-update` accepts a TODO-only update (a stale row, or one never checked off) when the instruction names the ID; `agentic-pr-create` still requires real changes beyond `TODO.md`.
+- **TODO references:** resolve matching 6-hex IDs in free text against `TODO.md` using [todo-pattern.md](./todo-pattern.md), including Description and Recommended Fix. Report unknown IDs. Remove only fully resolved rows; partial/context-only references remain. Sandbox agents leave TODO edits to the runner and declare resolved `todo_ids`.
 - **One mergeable increment per PR:** keep simple tasks together. Split independent or oversized work by outcome, with each increment useful on its own. Sandbox agents implement the first and describe the rest in `increments`; local sessions list ready-to-run `pnpm agentic-pr-create --prompt "<task>"` follow-ups unless separately authorized to publish them.
 - **Existing PRs keep their purpose:** unrelated work becomes a follow-up; stack it only when it needs the target PR's changes.
 
