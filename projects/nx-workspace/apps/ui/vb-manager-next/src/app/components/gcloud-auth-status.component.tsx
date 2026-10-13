@@ -21,7 +21,7 @@ import { usePollingInterval } from '../hooks/usePollingInterval';
 import {
   DotColor,
   StatusDot,
-  StatusLegend,
+  StatusLegendButton,
   StatusLegendEntry,
   getDotBorder,
 } from './status-dot.component';
@@ -307,7 +307,11 @@ export const GcloudAuthStatusComponent = () => {
   });
 
   return (
-    <CardContainer title="GCP Management" headerLink={GCP_CONSOLE_LINK}>
+    <CardContainer
+      titleAction={<StatusLegendButton entries={LEGEND} />}
+      title="GCP Management"
+      headerLink={GCP_CONSOLE_LINK}
+    >
       <div className="flex items-center justify-between gap-2">
         <Text size="2" weight="bold">
           Vault Root Token
@@ -376,7 +380,6 @@ export const GcloudAuthStatusComponent = () => {
           </Text>
         </div>
       )}
-      <StatusLegend entries={LEGEND} />
     </CardContainer>
   );
 };

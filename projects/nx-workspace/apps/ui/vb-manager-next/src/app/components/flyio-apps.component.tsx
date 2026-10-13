@@ -5,22 +5,19 @@ import {
   Button,
   ButtonConfig,
   ButtonList,
-  CardContainer,
-  StatusCardList,
   StatusCardListItem,
   Text,
   WINDOW_OPEN_FEATURES,
-  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
 import { FLYIO_LINK } from '@vigilant-broccoli/links';
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
 import { usePollingInterval } from '../hooks/usePollingInterval';
+import { StatusListCard } from './status-list-card.component';
 import {
   DotColor,
   StatusDot,
-  StatusLegend,
   StatusLegendEntry,
   getDotBorder,
 } from './status-dot.component';
@@ -165,12 +162,19 @@ export const FlyIoAppsComponent = () => {
     await fetchFlyApps();
   };
 
-  if (loading) return <CardSkeleton title="Fly.io Apps" rows={5} />;
-
-  if (error) {
-    return (
-      <CardContainer title="Fly.io Apps" gap="3" headerLink={DASHBOARD_LINK}>
-        {authRequired ? (
+  return (
+    <StatusListCard
+      title="Fly.io Apps"
+      gap="3"
+      loading={loading}
+      error={error}
+      skeletonRows={5}
+      headerLink={DASHBOARD_LINK}
+      legend={LEGEND}
+      items={appsData.map(toItem)}
+      emptyMessage="No apps found"
+      errorContent={
+        authRequired ? (
           <div className="flex flex-col gap-2 items-start">
             <Text size="2">Not logged in to Fly.io.</Text>
             <Button
@@ -203,18 +207,8 @@ export const FlyIoAppsComponent = () => {
           </div>
         ) : (
           <Badge color="red">{error}</Badge>
-        )}
-      </CardContainer>
-    );
-  }
-
-  return (
-    <CardContainer title="Fly.io Apps" gap="3" headerLink={DASHBOARD_LINK}>
-      <StatusCardList
-        items={appsData.map(toItem)}
-        emptyMessage="No apps found"
-      />
-      <StatusLegend entries={LEGEND} />
-    </CardContainer>
+        )
+      }
+    />
   );
 };

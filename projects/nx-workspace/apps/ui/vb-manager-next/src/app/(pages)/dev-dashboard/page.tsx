@@ -85,11 +85,9 @@ export default function Page() {
         <TabsTrigger value={TAB.FEATURE_SANDBOX}>Feature Sandbox</TabsTrigger>
       </TabsList>
       <TabsContent value={TAB.LOCAL} className="pt-4 flex-1 min-h-0">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div className="flex flex-col gap-4">
             <PublicIpComponent />
-          </div>
-          <div className="flex flex-col gap-4">
             <WireguardStatusComponent />
             <TailscaleMachinesComponent />
           </div>
@@ -103,7 +101,7 @@ export default function Page() {
         </div>
       </TabsContent>
       <TabsContent value={TAB.CLOUD} className="pt-4 flex-1 min-h-0">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div className="flex flex-col gap-4">
             <GcloudAuthStatusComponent />
             <AwsManagementComponent />
@@ -120,12 +118,12 @@ export default function Page() {
         </div>
       </TabsContent>
       <TabsContent value={TAB.TEAM_MANAGEMENT} className="pt-4 flex-1 min-h-0">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <GithubTeamManager />
         </div>
       </TabsContent>
       <TabsContent value={TAB.CI_MANAGEMENT} className="pt-4 flex-1 min-h-0">
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <GithubRepoActionStatusBadges repoUrl={REPO_URL} />
         </div>
       </TabsContent>

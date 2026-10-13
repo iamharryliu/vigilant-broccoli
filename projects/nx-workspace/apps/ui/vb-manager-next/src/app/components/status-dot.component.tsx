@@ -1,4 +1,13 @@
-import { BORDER_ACTIVE, Text } from '@vigilant-broccoli/react-lib';
+import { CircleHelp } from 'lucide-react';
+import { useState } from 'react';
+import {
+  BORDER_ACTIVE,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 
 export type DotColor = 'green' | 'yellow' | 'red' | 'blue' | 'gray';
 
@@ -44,15 +53,38 @@ export const StatusDot = ({
   />
 );
 
-export const StatusLegend = ({ entries }: { entries: StatusLegendEntry[] }) => (
-  <div className="flex flex-wrap gap-x-4 gap-y-1">
-    {entries.map(({ color, label }) => (
-      <div key={label} className="flex items-center gap-1">
-        <StatusDot color={color} />
-        <Text size="1" color="gray">
-          {label}
-        </Text>
-      </div>
-    ))}
-  </div>
-);
+export const StatusLegendButton = ({
+  entries,
+}: {
+  entries: StatusLegendEntry[];
+}) => {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="Show status legend"
+        title="Show status legend"
+        className="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+      >
+        <CircleHelp className="h-4 w-4" />
+      </button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Status legend</DialogTitle>
+          </DialogHeader>
+          <ul className="space-y-3 text-sm">
+            {entries.map(({ color, label }) => (
+              <li key={label} className="flex items-center gap-3">
+                <StatusDot color={color} />
+                <span>{label}</span>
+              </li>
+            ))}
+          </ul>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
