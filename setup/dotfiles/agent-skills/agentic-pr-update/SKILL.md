@@ -9,7 +9,7 @@ Apply a PR number/URL plus instruction to the existing branch, preserving its wo
 
 1. Locally, follow `docs/git-workflow.md`, inspect the PR and establish ownership before checkout; use an isolated checkout if shared or dirty. A sandbox runner supplies the checked-out PR and body; do not repeat setup.
 2. Follow applicable context and [pull request scope](../../../../docs/agent-support.md#pull-request-scope). Keep this PR on its purpose; separate follow-ups through `increments` (`depends_on: "current"` when dependent). Locally list ready-to-run `pnpm agentic-pr-create --prompt` follow-ups, or publish under the increment contract when separately authorized.
-3. Resolve TODO IDs named in the instruction; remove only fully resolved rows locally. In a sandbox, leave `TODO.md` to the runner and declare those IDs in `todo_ids`. Place new docs per [documentation placement](../../../../docs/agent-support.md#documentation-placement).
+3. Resolve TODO IDs named in the instruction; remove only fully resolved rows locally. In a sandbox, leave `TODO.md` to the runner and declare those IDs in `todo_ids`. An instruction that only removes a named TODO row is valid and needs no other change. Place new docs per [documentation placement](../../../../docs/agent-support.md#documentation-placement).
 4. Run appropriate existing checks and report the PR's cumulative result, verification and remaining work.
 5. On failure, preserve partial work separately from the target PR. Locally leave changes uncommitted unless publishing was separately authorized; the sandbox runner attempts a separate draft PR targeting the original branch, retaining unresolved TODO rows and running hooks. Runners own Git publishing and PR metadata.
 

@@ -237,19 +237,21 @@ else
   INC_HISTORY_SOURCE="Docker sandbox (local)"
 fi
 
-if [ "$PLAN_ENABLED" = 1 ] && [ -n "$(git status --porcelain)" ]; then
-  # Checked before anything is pushed, so a bad plan never leaves a partial set behind.
-  inc_validate_plan "$META_FILE" "$BASE_SHA" "$INSTRUCTION" ""
-  inc_load_plan "$META_FILE"
-  RESOLVED_IDS=()
+RESOLVED_IDS=()
+if [ "$PLAN_ENABLED" = 1 ]; then
   while IFS= read -r resolved_id; do
     [ -z "$resolved_id" ] || RESOLVED_IDS+=("$resolved_id")
   done < <(inc_current_todo_ids "$META_FILE")
+fi
+
+# Declared ids open this block on a clean tree too: dropping a stale row, or one that was
+# never checked off, is a TODO-only update. inc_validate_plan still requires the request to
+# name each id, so the user's instruction is what authorizes the removal.
+if [ "$PLAN_ENABLED" = 1 ] && { [ -n "$(git status --porcelain)" ] || [ "${#RESOLVED_IDS[@]}" -gt 0 ]; }; then
+  # Checked before anything is pushed, so a bad plan never leaves a partial set behind.
+  inc_validate_plan "$META_FILE" "$BASE_SHA" "$INSTRUCTION" ""
+  inc_load_plan "$META_FILE"
   inc_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
-  if [ "${#RESOLVED_IDS[@]}" -gt 0 ] && [ -z "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
-    echo "ERROR: no changes besides TODO.md — ${RESOLVED_IDS[*]} not resolved." >&2
-    exit 1
-  fi
 fi
 
 bash "$PRE_COMMIT_HELPER"
