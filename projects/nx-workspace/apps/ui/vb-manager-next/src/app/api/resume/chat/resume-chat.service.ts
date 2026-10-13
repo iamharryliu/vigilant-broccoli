@@ -2,6 +2,7 @@ import OpenAI from 'openai';
 import { z } from 'zod';
 import {
   RESUME_PDF_MAX_PAGES,
+  RESUME_PDF_SKILLS_TARGET_LINES,
   describeResumePdfLayout,
   isResumePdfPolished,
   resumePdfFillShortfallPx,
@@ -29,6 +30,11 @@ import type {
 } from '../../../../lib/resume-chat.schema';
 import { findProtectedFieldIssues } from '../../../../lib/resume-chat.protection';
 import {
+  describeDroppedFacts,
+  findDroppedFacts,
+  findFigureIssues,
+} from '../../../../lib/resume-chat.fidelity';
+import {
   alignTitleWithTarget,
   findExtraSkills,
   findHighlightKeywords,
@@ -49,6 +55,7 @@ const MAX_ISSUES_SHOWN = 10;
 const REJECTED_STATUS = 'rejected';
 const UNDERFILLED_STATUS = 'fits_but_underfilled';
 const SHORT_LINES_STATUS = 'fits_but_has_short_lines';
+const DROPPED_FACTS_STATUS = 'fits_but_drops_facts';
 const PERCENT = 100;
 
 const MESSAGE = {
@@ -65,6 +72,7 @@ const MESSAGE = {
     'Draft rejected. Fix every problem and call update_resume again with the COMPLETE corrected resume. If it overflowed, shorten only as much as needed and do not drop below the target fill band; a previously retained one-page version is not lost. Keep confirmed facts, every employer, role and date, and the most relevant content.',
   TOOL_UNDERFILLED: `This draft fits ${RESUME_PDF_MAX_PAGES} page and is retained as the best fit so far, but it leaves noticeable unused space. Call update_resume again with the COMPLETE resume only if the current resume or user-confirmed facts hold more supported, job-relevant material to restore or develop: omitted achievements, clearer wording of existing facts, confirmed experience. Never invent claims, metrics or experience, repeat bullets, pad or keyword-stuff. If no more supported material exists, or the user asked for a concise version, reply in plain text instead, say so, and optionally ask which relevant experience they could add.`,
   TOOL_SHORT_LINES: `This draft fits ${RESUME_PDF_MAX_PAGES} page and is retained as the best fit so far, but some wrapped lines end with only a few words. Call update_resume again with the COMPLETE resume, tightening each listed bullet to one line or extending it with supported detail so its last line is mostly full. Change nothing else, keep the page fill, and never invent claims, metrics or experience. If a line cannot be fixed with supported wording, reply in plain text instead.`,
+  TOOL_DROPPED_FACTS: `This draft fits ${RESUME_PDF_MAX_PAGES} page and is retained as the best fit so far, but it dropped bold facts from the current resume. Call update_resume again with the COMPLETE resume, restoring each listed phrase verbatim and condensing other wording to keep the page. Change nothing else and never invent claims, metrics or experience.`,
   UNCONFIRMED_HEADING: '**Left out because unconfirmed:**',
   VALIDATED: (attempts: number) =>
     `**Validated:** rendered with the same PDF pipeline as Download and it is exactly ${RESUME_PDF_MAX_PAGES} page (attempt ${attempts} of ${MAX_MODEL_CALLS}). Nothing is applied until you press Apply.`,
@@ -102,6 +110,7 @@ interface Candidate {
   unconfirmed: UnconfirmedKeyword[];
   layout?: ResumePdfLayout;
   attempt?: number;
+  dropped?: string[];
 }
 
 type Evaluation = { unconfirmed: UnconfirmedKeyword[] } & (
@@ -174,6 +183,41 @@ const fillSkillsLine = async (
   return best;
 };
 
+/**
+ * Drops the least relevant trailing skills until the line fits its target line
+ * count. The caller orders skills by importance first, and the model only ever
+ * pads the line, so trimming is deterministic instead of costing a revision.
+ */
+const trimSkillsLine = async (
+  resume: ResumeData,
+): Promise<{ resume: ResumeData; layout: ResumePdfLayout } | undefined> => {
+  const withCount = (count: number): ResumeData => ({
+    ...resume,
+    skills: {
+      ...resume.skills,
+      technical: resume.skills.technical.slice(0, count),
+    },
+  });
+  let low = 1;
+  let high = resume.skills.technical.length - 1;
+  let best: { resume: ResumeData; layout: ResumePdfLayout } | undefined;
+  while (low <= high) {
+    const mid = Math.ceil((low + high) / 2);
+    const trial = withCount(mid);
+    const { layout } = await renderResumePdf(trial);
+    if (
+      layout.fits &&
+      layout.skillsLineCount <= RESUME_PDF_SKILLS_TARGET_LINES
+    ) {
+      best = { resume: trial, layout };
+      low = mid + 1;
+    } else {
+      high = mid - 1;
+    }
+  }
+  return best;
+};
+
 const evaluateUpdate = async (
   rawArguments: string,
   request: ResumeChatRequest,
@@ -227,8 +271,18 @@ const evaluateUpdate = async (
     identityChangeEvidence: args.data.identityChangeEvidence,
     skillsNote,
   });
-  if (protectedFieldIssues.length > 0) {
-    return { kind: 'rejected', problems: protectedFieldIssues, unconfirmed };
+  const figureIssues = findFigureIssues(
+    request.resume,
+    candidate.resume,
+    userMessages,
+    skillsNote,
+  );
+  if (protectedFieldIssues.length + figureIssues.length > 0) {
+    return {
+      kind: 'rejected',
+      problems: [...protectedFieldIssues, ...figureIssues],
+      unconfirmed,
+    };
   }
 
   const ordered = orderSkillsByImportance(candidate.resume, context);
@@ -240,7 +294,14 @@ const evaluateUpdate = async (
     message: MESSAGE.PROGRESS_RENDERING(attempt),
   });
   try {
-    const base = await renderResumePdf(candidate.resume);
+    const rendered = await renderResumePdf(candidate.resume);
+    const trimmed =
+      rendered.layout.fits &&
+      rendered.layout.skillsLineCount > RESUME_PDF_SKILLS_TARGET_LINES
+        ? await trimSkillsLine(candidate.resume)
+        : undefined;
+    if (trimmed) candidate.resume = trimmed.resume;
+    const base = trimmed ?? rendered;
     const filled = base.layout.fits
       ? await fillSkillsLine(
           candidate.resume,
@@ -260,7 +321,12 @@ const evaluateUpdate = async (
     if (layout.fits) {
       return {
         kind: 'fits',
-        candidate: { ...candidate, layout, attempt },
+        candidate: {
+          ...candidate,
+          layout,
+          attempt,
+          dropped: findDroppedFacts(request.resume, candidate.resume),
+        },
         layout,
         unconfirmed,
       };
@@ -308,6 +374,9 @@ const isNearerFillTarget = (
 ): boolean => {
   if (!best?.layout) return true;
   if (!candidate.layout) return false;
+  const droppedDelta =
+    (candidate.dropped?.length ?? 0) - (best.dropped?.length ?? 0);
+  if (droppedDelta !== 0) return droppedDelta < 0;
   const shortfall = resumePdfFillShortfallPx(candidate.layout);
   const bestShortfall = resumePdfFillShortfallPx(best.layout);
   return (
@@ -557,7 +626,8 @@ export async function runResumeChat({
         }
         if (
           repeatsBest ||
-          isResumePdfPolished(evaluation.layout) ||
+          (isResumePdfPolished(evaluation.layout) &&
+            !evaluation.candidate.dropped?.length) ||
           call === MAX_MODEL_CALLS
         ) {
           return validated(best ?? evaluation.candidate, call, modelText);
@@ -571,14 +641,25 @@ export async function runResumeChat({
           ...toolResults(toolCalls, {
             id: updateCall.id,
             content: JSON.stringify({
-              status: evaluation.layout.underfilled
-                ? UNDERFILLED_STATUS
-                : SHORT_LINES_STATUS,
-              problems: [describeResumePdfLayout(evaluation.layout)],
+              status: isResumePdfPolished(evaluation.layout)
+                ? DROPPED_FACTS_STATUS
+                : evaluation.layout.underfilled
+                  ? UNDERFILLED_STATUS
+                  : SHORT_LINES_STATUS,
+              problems: [
+                ...(isResumePdfPolished(evaluation.layout)
+                  ? []
+                  : [describeResumePdfLayout(evaluation.layout)]),
+                ...(evaluation.candidate.dropped?.length
+                  ? [describeDroppedFacts(evaluation.candidate.dropped)]
+                  : []),
+              ],
               layout: evaluation.layout,
-              instructions: evaluation.layout.underfilled
-                ? MESSAGE.TOOL_UNDERFILLED
-                : MESSAGE.TOOL_SHORT_LINES,
+              instructions: isResumePdfPolished(evaluation.layout)
+                ? MESSAGE.TOOL_DROPPED_FACTS
+                : evaluation.layout.underfilled
+                  ? MESSAGE.TOOL_UNDERFILLED
+                  : MESSAGE.TOOL_SHORT_LINES,
             }),
           }),
         );

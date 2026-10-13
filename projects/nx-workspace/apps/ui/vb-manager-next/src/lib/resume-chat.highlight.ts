@@ -18,6 +18,8 @@ const REGEX_SPECIAL_PATTERN = /[.*+?^${}()|[\]\\]/g;
 const PARENTHESIS_PATTERN = /\(([^)]*)\)/g;
 const ALTERNATIVE_SEPARATORS = /[/,]/;
 const MIN_KEYWORD_CHARS = 2;
+const MIN_SPLIT_CHARS = 3;
+const SLASH_TOKEN_PATTERN = /\S+\/\S+/;
 
 const lower = (text: string): string => text.toLowerCase();
 
@@ -32,8 +34,16 @@ const skillTerms = (skill: string): string[] => {
   const inParentheses = Array.from(skill.matchAll(PARENTHESIS_PATTERN)).flatMap(
     match => match[1].split(ALTERNATIVE_SEPARATORS),
   );
+  const alternatives = skill
+    .replace(PARENTHESIS_PATTERN, '')
+    .split(ALTERNATIVE_SEPARATORS);
+  // CI/CD is one term; only split slash pairs whose parts are each real words.
+  const whole = alternatives.some(term => term.trim().length < MIN_SPLIT_CHARS);
+  const unsplit = skill.replace(PARENTHESIS_PATTERN, '');
   return [
-    ...skill.replace(PARENTHESIS_PATTERN, '').split(ALTERNATIVE_SEPARATORS),
+    ...(whole
+      ? [unsplit.match(SLASH_TOKEN_PATTERN)?.[0] ?? unsplit]
+      : alternatives),
     ...inParentheses,
   ]
     .map(term => term.trim())
