@@ -21,10 +21,6 @@ on:
         description: 'Required for change; optional guidance for fix-ci; leave blank for resolve-conflicts.'
         type: string
         default: ''
-      with_ci_logs:
-        description: 'Feed the PR''s failing checks and failed-step logs to the agent (always on for fix-ci).'
-        type: boolean
-        default: false
       model:
         description: 'Claude model to run the agent with.'
         type: choice
@@ -153,15 +149,12 @@ jobs:
           PR: ${{ needs.key.outputs.pr }}
           OPERATION: ${{ inputs.operation }}
           INSTRUCTION: ${{ inputs.instruction }}
-          WITH_CI_LOGS: ${{ inputs.with_ci_logs }}
         run: |
           set -euo pipefail
-          ARGS=(--model "$MODEL" --operation "$OPERATION")
-          [ "$WITH_CI_LOGS" != true ] || ARGS+=(--with-ci-logs)
           if [ "$OPERATION" = change ] || [ -n "$INSTRUCTION" ]; then
-            bash infrastructure/agent-sandbox/update-pr.sh "${ARGS[@]}" "$PR" "$INSTRUCTION"
+            bash infrastructure/agent-sandbox/update-pr.sh --model "$MODEL" --operation "$OPERATION" "$PR" "$INSTRUCTION"
           else
-            bash infrastructure/agent-sandbox/update-pr.sh "${ARGS[@]}" "$PR"
+            bash infrastructure/agent-sandbox/update-pr.sh --model "$MODEL" --operation "$OPERATION" "$PR"
           fi
 
       - name: Report result
