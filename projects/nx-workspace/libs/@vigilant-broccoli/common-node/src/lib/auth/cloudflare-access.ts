@@ -1,10 +1,9 @@
-import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { getEnvironmentVariable } from '../utils';
 
 const ACCESS_ASSERTION_HEADER = 'Cf-Access-Jwt-Assertion';
 const verificationKeys = new Map<
   string,
-  ReturnType<typeof createRemoteJWKSet>
+  ReturnType<typeof import('jose').createRemoteJWKSet>
 >();
 
 export async function isStagingUiRequestAuthorized(
@@ -23,6 +22,8 @@ export async function isStagingUiRequestAuthorized(
   }
 
   try {
+    // Keep ESM-only jose out of barrel initialization for Jest/CommonJS consumers.
+    const { createRemoteJWKSet, jwtVerify } = await import('jose');
     let keys = verificationKeys.get(issuer);
     if (!keys) {
       keys = createRemoteJWKSet(new URL(`${issuer}/cdn-cgi/access/certs`));
