@@ -34,6 +34,8 @@ import { usePageTitle } from '../../use-page-title';
 const TAB = {
   LOCAL: 'local',
   CLOUD: 'cloud',
+  TEAM_MANAGEMENT: 'team-management',
+  CI_MANAGEMENT: 'ci-management',
   NETWORK: 'network',
   TEXT_TOOLS: 'text-tools',
   API_KEYS: 'api-keys',
@@ -74,6 +76,8 @@ export default function Page() {
       <TabsList>
         <TabsTrigger value={TAB.LOCAL}>Local Service</TabsTrigger>
         <TabsTrigger value={TAB.CLOUD}>Cloud Services</TabsTrigger>
+        <TabsTrigger value={TAB.TEAM_MANAGEMENT}>Team Management</TabsTrigger>
+        <TabsTrigger value={TAB.CI_MANAGEMENT}>CI Management</TabsTrigger>
         <TabsTrigger value={TAB.NETWORK}>Network Tools</TabsTrigger>
         <TabsTrigger value={TAB.TEXT_TOOLS}>Text Tools</TabsTrigger>
         <TabsTrigger value={TAB.API_KEYS}>API Keys</TabsTrigger>
@@ -113,10 +117,16 @@ export default function Page() {
             <WranglerPagesComponent />
             <GithubPagesComponent />
           </div>
-          <div className="flex flex-col gap-4">
-            <GithubTeamManager />
-            <GithubRepoActionStatusBadges repoUrl={REPO_URL} />
-          </div>
+        </div>
+      </TabsContent>
+      <TabsContent value={TAB.TEAM_MANAGEMENT} className="pt-4 flex-1 min-h-0">
+        <div className="grid grid-cols-4 gap-4">
+          <GithubTeamManager />
+        </div>
+      </TabsContent>
+      <TabsContent value={TAB.CI_MANAGEMENT} className="pt-4 flex-1 min-h-0">
+        <div className="grid grid-cols-4 gap-4">
+          <GithubRepoActionStatusBadges repoUrl={REPO_URL} />
         </div>
       </TabsContent>
       <TabsContent value={TAB.NETWORK} className="pt-4 flex-1 min-h-0">
