@@ -3,6 +3,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import js from '@eslint/js';
 import nx from '@nx/eslint-plugin';
+import importPlugin from 'eslint-plugin-import';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 const compat = new FlatCompat({
@@ -17,7 +18,14 @@ export default [
   ...nx.configs['flat/base'],
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-    plugins: { 'react-hooks': reactHooks },
+    plugins: { 'react-hooks': reactHooks, import: importPlugin },
+    settings: {
+      // Without these the plugin skips non-.js files and finds no cycles.
+      'import/extensions': ['.ts', '.tsx', '.js', '.jsx'],
+      'import/resolver': {
+        node: { extensions: ['.ts', '.tsx', '.js', '.jsx'] },
+      },
+    },
     rules: {
       '@nx/enforce-module-boundaries': [
         'error',
@@ -40,6 +48,9 @@ export default [
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+      // A cycle can pass typecheck and lint yet crash at runtime once bundled
+      // (a constant read before its module initializes), so fail it here.
+      'import/no-cycle': 'error',
       complexity: [
         'warn',
         {

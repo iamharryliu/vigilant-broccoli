@@ -1,5 +1,5 @@
 import { ShellUtils } from '@vigilant-broccoli/common-node';
-import { GithubService } from './github.service';
+import { GithubCLICommand } from './github-commands';
 import {
   toSlug,
   HTTP_METHOD,
@@ -14,6 +14,27 @@ import {
 import { GithubUser } from './github.models';
 import { GithubUserRole } from './github.consts';
 import { REPOSITORY_PERMISSION } from '@vigilant-broccoli/github-workspace-js';
+
+async function getTeamMemberMembership(
+  organizationName: string,
+  teamSlug: string,
+  memberUsername: string,
+): Promise<GithubTeamMember> {
+  const data = (await ShellUtils.runShellCommand(
+    GithubCLICommand.getTeamMemberMembership(
+      organizationName,
+      teamSlug,
+      memberUsername,
+    ),
+    true,
+  )) as string;
+  const membershipData = JSON.parse(data);
+  return {
+    username: memberUsername,
+    role: membershipData.role,
+    avatar_url: membershipData.member?.avatar_url || '',
+  };
+}
 
 async function getTeamMembers(
   org: string,
@@ -30,11 +51,7 @@ async function getTeamMembers(
 
   return await Promise.all(
     members.map(async m => {
-      const membership = await GithubService.getTeamMemberMembership(
-        org,
-        slug,
-        m.login,
-      );
+      const membership = await getTeamMemberMembership(org, slug, m.login);
       return {
         ...membership,
         avatar_url: m.avatar_url,
@@ -321,6 +338,7 @@ async function syncGithubOrganizationMembers({
 }
 
 export const GithubUtils = {
+  getTeamMemberMembership,
   buildTeamTree,
   syncGithubOrganizationMembers,
 };
