@@ -10,6 +10,7 @@ import { PERSONAL_CALENDAR_SOURCES } from '@vigilant-broccoli/personal-common-js
 import { authFetch } from '../../../libs/auth';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { EventCalendar } from '../constants/event-calendars';
+import { useCalendarViewEventCalendars } from '../hooks/useCalendarViewEventCalendars';
 
 // Matches the `md` breakpoint used elsewhere in the app (e.g. Sidebar's
 // narrow-viewport check) so "mobile" means the same thing everywhere.
@@ -59,6 +60,7 @@ export const PersonalCalendarComponent = ({
       : 'MONTH',
   );
   const [eventCalendars, setEventCalendars] = useState<EventCalendar[]>([]);
+  const { hiddenIds } = useCalendarViewEventCalendars();
 
   useEffect(() => {
     authFetch(API_ENDPOINTS.EVENT_CALENDARS)
@@ -73,13 +75,21 @@ export const PersonalCalendarComponent = ({
       mode: mode ?? autoMode,
       sharedCalendars: [
         ...BASE_CALENDAR_CONFIG.sharedCalendars,
-        ...eventCalendars.map((calendar, index) => ({
-          id: calendar.googleCalendarId,
-          color: EVENT_CALENDAR_COLORS[index % EVENT_CALENDAR_COLORS.length],
-        })),
+        // Colors are assigned before filtering so hiding one calendar doesn't
+        // recolor the rest.
+        ...eventCalendars
+          .map((calendar, index) => ({
+            calendar,
+            color: EVENT_CALENDAR_COLORS[index % EVENT_CALENDAR_COLORS.length],
+          }))
+          .filter(({ calendar }) => !hiddenIds.includes(calendar.id))
+          .map(({ calendar, color }) => ({
+            id: calendar.googleCalendarId,
+            color,
+          })),
       ],
     }),
-    [mode, autoMode, eventCalendars],
+    [mode, autoMode, eventCalendars, hiddenIds],
   );
 
   return (

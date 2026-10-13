@@ -16,8 +16,9 @@ import {
   Text,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { useCalendarViewEventCalendars } from '../hooks/useCalendarViewEventCalendars';
 import { authFetch } from '../../../libs/auth';
 import { supabase } from '../../lib/supabase';
 import {
@@ -54,6 +55,7 @@ const UNTRACKED_UNAVAILABLE =
 const SYNC_NOW_LABEL = 'Sync now';
 const LAST_SYNCED_LABEL = 'Last synced';
 const PUBLIC_LABEL = 'Public';
+const SHOW_IN_CALENDAR_VIEW_LABEL = 'Show in Calendar view';
 const SYNC_POLL_INTERVAL_MS = 3000;
 const SYNC_RUNNING = 'running';
 const SYNC_FAILED = 'failed';
@@ -347,6 +349,7 @@ export const EventCalendarsComponent = () => {
     );
   };
 
+  const { hiddenIds, setShown } = useCalendarViewEventCalendars();
   const [syncStatuses, setSyncStatuses] = useState<
     Record<string, SyncStatusView>
   >({});
@@ -460,7 +463,7 @@ export const EventCalendarsComponent = () => {
     );
   };
 
-  const EventCalendarListItem = ({ item }: { item: EventCalendar }) => {
+  const renderListItem = ({ item }: { item: EventCalendar }) => {
     return (
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -548,6 +551,15 @@ export const EventCalendarsComponent = () => {
             </Button>
             <Text size="1" color="gray" as="label">
               <div className="flex items-center gap-2">
+                {SHOW_IN_CALENDAR_VIEW_LABEL}
+                <Switch
+                  checked={!hiddenIds.includes(item.id)}
+                  onCheckedChange={checked => setShown(item.id, checked)}
+                />
+              </div>
+            </Text>
+            <Text size="1" color="gray" as="label">
+              <div className="flex items-center gap-2">
                 {PUBLIC_LABEL}
                 <Switch
                   checked={item.isPublic}
@@ -562,6 +574,16 @@ export const EventCalendarsComponent = () => {
       </div>
     );
   };
+
+  // A component declared in this body gets a new identity every render, so React
+  // would remount each row and the switches could never animate. Keep one stable
+  // component that always calls the latest render function.
+  const renderListItemRef = useRef(renderListItem);
+  renderListItemRef.current = renderListItem;
+  const EventCalendarListItem = useCallback(
+    (props: { item: EventCalendar }) => renderListItemRef.current(props),
+    [],
+  );
 
   return (
     <div className="flex flex-col gap-4">
