@@ -18,6 +18,7 @@ import {
   CalendarDays,
   Languages,
   Briefcase,
+  ChartNetwork,
   Music,
 } from 'lucide-react';
 import { NotificationRecord } from '../hooks/useNotificationHistory';
@@ -35,6 +36,7 @@ const SIDEBAR_ROUTE_ITEMS = [
   { route: SIDEBAR_ROUTE.LANGUAGE_LEARNING, icon: Languages },
   { route: SIDEBAR_ROUTE.CAREER, icon: Briefcase },
   { route: SIDEBAR_ROUTE.MUSIC, icon: Music },
+  { route: SIDEBAR_ROUTE.SPOTIFY_PLAYLISTS, icon: ChartNetwork },
 ];
 
 const UNREAD_MAX = 9;
