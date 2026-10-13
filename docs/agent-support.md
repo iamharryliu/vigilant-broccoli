@@ -68,9 +68,9 @@ Checks include the task's existing validation, the cleanup checklist when requir
 | `agentic-pr-create-smoke`             | Actions-only dispatch check, with no separate local task.                                                                                                                                      |
 | `agentic-pr-create-todo`              | Docker/Local only, Claude. Large tasks become ordered increments in a row or independent rows.                                                                                                 |
 | `agentic-pr-create-todo-audit`        | Weekly/manual Actions plus Docker/Local; Claude. Only TODO changes; new IDs or undeclared vanished IDs fail.                                                                                   |
-| `agentic-pr-update`                   | Actions selector `change`; Claude. Docker-only `--with-ci-logs`. Follow-ups may split; failure recovery uses a separate draft targeting the original PR, retaining unresolved TODOs and hooks. |
-| `agentic-pr-update-fix-ci`            | Actions selector `fix-ci`; never splits. Runners supply failed logs; local sessions collect them.                                                                                              |
-| `agentic-pr-update-resolve-conflicts` | Actions selector `resolve-conflicts`; never splits, accepts no instruction. Runners start the merge; local sessions start it themselves.                                                       |
+| `agentic-pr-update`                   | Actions selector `change`; Claude. `--operation change                                                                                                                                         | fix-ci | resolve-conflicts`(default`change`); docker-only `--with-ci-logs`. Follow-ups may split; failure recovery uses a separate draft targeting the original PR, retaining unresolved TODOs and hooks. |
+| `agentic-pr-update-fix-ci`            | `agentic-pr-update --operation fix-ci` and Actions selector `fix-ci`; never splits. Runners supply failed logs; local sessions collect them.                                                   |
+| `agentic-pr-update-resolve-conflicts` | `agentic-pr-update --operation resolve-conflicts` and Actions selector `resolve-conflicts`; never splits, accepts no instruction. Runners start the merge; local sessions start it themselves. |
 
 ### Maintenance rule
 

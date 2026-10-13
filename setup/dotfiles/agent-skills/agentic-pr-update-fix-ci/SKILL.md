@@ -13,4 +13,4 @@ Fix a PR number/URL's failing checks. Optional guidance may narrow the failures 
 
 Stay on this PR; no increments or follow-up PRs. Local invocation does not authorize publishing; sandbox runners own commits, pushes and PR metadata.
 
-Unattended entry point: `pnpm agentic-pr-update-fix-ci <pr> ["<instruction>"]`.
+Unattended entry point: `pnpm agentic-pr-update --operation fix-ci <pr> ["<instruction>"]`.
