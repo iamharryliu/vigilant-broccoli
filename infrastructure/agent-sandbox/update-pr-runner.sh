@@ -136,6 +136,7 @@ ${PLAN_RULES}
 - When finished, write $META_FILE containing only a JSON object with these fields (strings unless noted):
   - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure
   - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
+  - pr_title: only when a failing check is about the PR title itself (e.g. commitlint), the corrected title in the form "<committype>(<scope>): <Message>." — otherwise omit it; the calling script applies it, so make no file changes for a title-only failure
   - commit_message: capitalized, concise, focused on why not what, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
   - pr_summary: markdown bullet points replacing the PR's "## Summary" section — rewrite it to describe the PR's full, cumulative state (prior work plus this change), not just this increment
@@ -195,12 +196,23 @@ fi
 
 bash "$PRE_COMMIT_HELPER"
 
+read_meta() { jq -r "$1 // empty" "$META_FILE" 2>/dev/null || true; }
+
+# The title lives on GitHub, not in the branch, so a title-only failure (commitlint) leaves
+# the tree clean; the runner applies the agent's pr_title because the agent cannot call gh.
+NEW_PR_TITLE=$(normalize_pr_title "$(read_meta .pr_title)")
+[ "$NEW_PR_TITLE" != "$PR_TITLE" ] || NEW_PR_TITLE=""
+
 if [ -z "$(git status --porcelain)" ]; then
+  if [ -n "$NEW_PR_TITLE" ]; then
+    gh pr edit "$PR" --title "$NEW_PR_TITLE"
+    echo "PR #${PR} title updated to: ${NEW_PR_TITLE}"
+    SALVAGE_ENABLED=0
+    exit 0
+  fi
   echo "ERROR: no changes produced — PR #${PR} was not updated." >&2
   exit 1
 fi
-
-read_meta() { jq -r "$1 // empty" "$META_FILE" 2>/dev/null || true; }
 
 COMMIT_TYPE=$(read_meta .commit_type)
 COMMIT_SCOPE=$(read_meta .commit_scope)
@@ -240,6 +252,7 @@ NEW_BODY=$(CURRENT_BODY="$CURRENT_BODY" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
   python3 "$MERGE_BODY_HELPER")
 gh pr edit "$PR" --body "$NEW_BODY"
+[ -z "$NEW_PR_TITLE" ] || gh pr edit "$PR" --title "$NEW_PR_TITLE"
 
 # The target PR is already updated and pushed; follow-up increments are
 # separate PRs, so a failure here leaves it untouched.
