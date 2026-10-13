@@ -16,6 +16,24 @@ link_agent_file() {
     printf 'Created symbolic link %s -> %s\n' "$link_name" "$target"
 }
 
+# A top-level TOML key must precede every [table] header, so the line is prepended, never appended.
+disable_codex_update_check() {
+    local destination_home=${1:-$HOME}
+    local config_file="$destination_home/.codex/config.toml"
+    local setting='check_for_update_on_startup = false'
+
+    if [ -f "$config_file" ] && grep -Eq '^[[:space:]]*check_for_update_on_startup[[:space:]]*=' "$config_file"; then
+        return 0
+    fi
+
+    mkdir -p "$(dirname "$config_file")" || return 1
+    {
+        printf '%s\n' "$setting"
+        if [ -f "$config_file" ]; then cat "$config_file"; fi
+    } > "$config_file.tmp" && mv "$config_file.tmp" "$config_file" || return 1
+    printf 'Added "%s" to %s\n' "$setting" "$config_file"
+}
+
 symlink_agent_skills() {
     local destination_home=${1:-$HOME}
     local skills_dir=$AGENT_SKILLS_DIR
@@ -44,6 +62,8 @@ symlink_agent_skills() {
         [ -f "$command_file" ] || continue
         link_agent_file "$command_file" "$destination_home/.claude/commands/${command_file##*/}" || link_status=1
     done
+
+    disable_codex_update_check "$destination_home" || link_status=1
 
     return "$link_status"
 }
