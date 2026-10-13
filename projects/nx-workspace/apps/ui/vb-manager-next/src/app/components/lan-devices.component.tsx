@@ -13,6 +13,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogClose,
+  VisuallyHidden,
 } from '@vigilant-broccoli/react-lib';
 import { useCallback, useEffect, useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -104,13 +105,13 @@ const ScanDialog = ({ device }: { device: LanDevice }) => {
         showCloseButton={false}
         style={{ maxWidth: '480px' }}
       >
-        <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
-          {device.hostname ?? device.ip}{' '}
-          <Text size="2" color="gray" weight="regular">
-            ({device.ip})
+        <VisuallyHidden>
+          <DialogTitle>{device.hostname ?? device.ip}</DialogTitle>
+        </VisuallyHidden>
+        <div className="flex flex-col gap-2">
+          <Text size="2" weight="medium">
+            {device.hostname ?? device.ip} ({device.ip})
           </Text>
-        </DialogTitle>
-        <div className="flex flex-col gap-2 mt-2">
           <Text size="2" color="gray">
             {device.vendor ?? UNKNOWN_VENDOR} · {device.deviceType}
           </Text>
