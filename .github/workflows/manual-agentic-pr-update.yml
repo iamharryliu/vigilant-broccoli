@@ -97,25 +97,11 @@ jobs:
           INSTRUCTION: ${{ inputs.instruction }}
         run: |
           set -euo pipefail
-          case "$OPERATION" in
-            change)
-              if [[ ! "$INSTRUCTION" =~ [^[:space:]] ]]; then
-                echo "ERROR: 'instruction' is required for change." >&2
-                exit 1
-              fi
-              ;;
-            fix-ci) ;;
-            resolve-conflicts)
-              if [ -n "$INSTRUCTION" ]; then
-                echo "ERROR: 'instruction' must be blank for resolve-conflicts." >&2
-                exit 1
-              fi
-              ;;
-            *)
-              echo "ERROR: Unknown operation." >&2
-              exit 1
-              ;;
-          esac
+          if [ "$OPERATION" = change ] || [ -n "$INSTRUCTION" ]; then
+            bash infrastructure/agent-sandbox/update-pr.sh --model "$MODEL" --operation "$OPERATION" "$PR" "$INSTRUCTION"
+          else
+            bash infrastructure/agent-sandbox/update-pr.sh --model "$MODEL" --operation "$OPERATION" "$PR"
+          fi
 
   update-pr:
     needs: key

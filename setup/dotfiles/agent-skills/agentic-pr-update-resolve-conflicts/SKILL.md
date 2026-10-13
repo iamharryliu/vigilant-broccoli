@@ -12,4 +12,4 @@ Merge `origin/main` into a PR number/URL, preserving both sides' intent.
 3. Run affected existing checks and inspect for remaining markers. Locally stage only this operation's resolved files; the sandbox runner stages its own work and preserves the merge state.
 4. Report merged source, resolutions, verification and remaining issues. Stay on one PR, with no follow-up increments. Local commits/pushes require separate authorization; the sandbox runner publishes.
 
-Unattended entry point: `pnpm agentic-pr-update-resolve-conflicts <pr>`.
+Unattended entry point: `pnpm agentic-pr-update --operation resolve-conflicts <pr>`.
