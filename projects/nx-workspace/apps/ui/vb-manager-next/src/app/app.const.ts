@@ -53,10 +53,6 @@ export const SIDEBAR_ROUTE = {
     title: 'Music',
     path: '/music',
   },
-  SPOTIFY_PLAYLISTS: {
-    title: 'Spotify Playlists',
-    path: '/spotify-playlists',
-  },
 } satisfies Record<string, ExtendedNavRoute>;
 
 export const APP_NAME = 'VB Manager';

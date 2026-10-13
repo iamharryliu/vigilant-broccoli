@@ -2,8 +2,8 @@
 
 ## Overview
 
-- Force-directed graph of a user's Spotify playlists at `/spotify-playlists`, reusing the same `GraphView` (`@vigilant-broccoli/react-utility`) the `docs-md` note viewer uses
-- Edges = shared tracks between playlists
+- Force-directed graph of a user's Spotify playlists, shown as a card under the metronome on the Music page (`/music`), reusing the same `GraphView` (`@vigilant-broccoli/react-utility`) the `docs-md` note viewer uses
+- Edges = shared songs between playlists; a song matches across releases (single, album, remaster) by normalized title plus primary artist, not only by identical Spotify track id
 - Spotify's Web API doesn't expose playlist-folder structure, so folders aren't represented
 
 ## Auth
@@ -18,9 +18,9 @@
 
 ## Graph Data
 
-- `GET /api/spotify/graph` fetches all playlists, then each playlist's tracks, computes shared-track link weights
+- `GET /api/spotify/graph` fetches all playlists, then each playlist's tracks, computes shared-song link weights
 - Cached in-memory per user for 30 minutes (`createTtlCache`); `?force=true` bypasses it (wired to the page's Refresh button)
-- Link `weight` = shared-track count, scales line width in `GraphView`
+- Link `weight` = shared-song count, scales line width in `GraphView`
 
 ## UI
 
@@ -29,8 +29,9 @@
 
 ## Constraints
 
-- A playlist whose `/tracks` endpoint 403s (Spotify-owned algorithmic playlists — Discover Weekly, Daily Mix, Release Radar — routinely do) still appears as a node, just with no edges
-- A large library (100+ playlists) reliably trips Spotify's rate limit on a cold cache build — one `/tracks` call per playlist, no bulk endpoint exists. `spotifyFetch` retries a `429` up to twice, honoring `Retry-After` but capped at 5s (a dev-mode app's real penalty can run minutes, not seconds, so a request this app makes synchronously for a page load must fail fast rather than hang); a persistently-limited call surfaces as a load error like any other failure
+- Song matching is a heuristic: bracketed tags and a trailing ` - ...` suffix are dropped from the title, so a studio track and its live or remix version of the same name by the same primary artist also link
+- Tracks come from `GET /playlists/{id}/items` (entries under `item`); the older `/playlists/{id}/tracks` now returns 403 for every playlist. A playlist whose items can't be read (Spotify-owned algorithmic playlists may be refused) is skipped with a logged warning and still appears as a node, just with no edges
+- A large library (100+ playlists) reliably trips Spotify's rate limit on a cold cache build — one `/items` call per playlist, no bulk endpoint exists. `spotifyFetch` retries a `429` up to twice only when `Retry-After` is 5s or less; a longer one (a dev-mode app's lockout can last ~23.5 hours) fails at once instead of hanging or spending more requests. A 429 on any playlist aborts the whole build, so an incomplete graph is never returned or cached; the page shows its load error until the lockout ends
 - If this keeps 429ing in practice, the fix is Spotify's own Extended Quota Mode app review (dashboard), not more client-side retrying — this app is almost certainly still in Development Mode's tighter default limits
 
 ## Manual setup

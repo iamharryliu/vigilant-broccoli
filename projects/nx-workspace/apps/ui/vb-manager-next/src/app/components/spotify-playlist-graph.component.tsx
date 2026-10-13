@@ -123,7 +123,7 @@ export function SpotifyPlaylistGraphComponent() {
       <div className="flex h-full items-center justify-center">
         <CardContainer title="Connect Spotify">
           <Text size="2">
-            See how your playlists relate to each other by shared tracks.
+            See how your playlists relate to each other by shared songs.
           </Text>
           {connectError && (
             <Text size="2" color="red">
@@ -140,7 +140,7 @@ export function SpotifyPlaylistGraphComponent() {
     <div className="flex h-full flex-col gap-2 p-2 sm:p-4">
       <div className="flex flex-wrap items-center gap-3">
         <label className="flex items-center gap-2">
-          <Text size="2">Min shared tracks</Text>
+          <Text size="2">Min shared songs</Text>
           <Input
             type="number"
             min={1}

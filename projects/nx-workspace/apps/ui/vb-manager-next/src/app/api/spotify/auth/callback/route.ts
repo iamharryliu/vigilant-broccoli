@@ -16,7 +16,7 @@ export const runtime = 'nodejs';
 
 const redirectWithError = (request: NextRequest, error: string) => {
   const url = new URL(
-    SIDEBAR_ROUTE.SPOTIFY_PLAYLISTS.path,
+    SIDEBAR_ROUTE.MUSIC.path,
     spotifyAppOrigin(request.nextUrl.origin),
   );
   url.searchParams.set(SPOTIFY_ERROR_QUERY_PARAM, error);
@@ -49,9 +49,6 @@ export async function GET(request: NextRequest) {
   }
 
   return NextResponse.redirect(
-    new URL(
-      SIDEBAR_ROUTE.SPOTIFY_PLAYLISTS.path,
-      spotifyAppOrigin(request.nextUrl.origin),
-    ),
+    new URL(SIDEBAR_ROUTE.MUSIC.path, spotifyAppOrigin(request.nextUrl.origin)),
   );
 }
