@@ -31,14 +31,10 @@ http_check_bg() {
   local url="$2"
   local expected="${3:-200}"
   local outfile="$4"
-  local access_headers=()
-  if [ "${5:-}" = "staging-ui" ]; then
-    access_headers=(-H "CF-Access-Client-Id: ${STAGING_UI_CF_ACCESS_CLIENT_ID}" -H "CF-Access-Client-Secret: ${STAGING_UI_CF_ACCESS_CLIENT_SECRET}")
-  fi
   local code
   # Retry to tolerate scale-to-zero cold starts (first request wakes the service).
   for attempt in 1 2 3; do
-    code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "${access_headers[@]}" "$url" 2>/dev/null) || code="timeout"
+    code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$url" 2>/dev/null) || code="timeout"
     [ "$code" = "$expected" ] && break
     [ "$attempt" -lt 3 ] && sleep 5
   done
@@ -59,7 +55,7 @@ queue_http_check() {
   local outfile="$HC_TMPDIR/${#HC_NAMES[@]}"
   HC_NAMES+=("$name")
   HC_FILES+=("$outfile")
-  http_check_bg "$name" "$url" "$expected" "$outfile" "${4:-}" &
+  http_check_bg "$name" "$url" "$expected" "$outfile" &
 }
 
 print_http_check() {
@@ -72,15 +68,12 @@ echo ""
 queue_http_check "staging-vb-express" "https://staging-vb-express.fly.dev"
 FLY_COUNT=${#HC_NAMES[@]}
 
-STAGING_UI_CF_ACCESS_CLIENT_ID="${STAGING_UI_CF_ACCESS_CLIENT_ID:-$(gcloud secrets versions access latest --project="$GCP_PROJECT" --secret=STAGING_UI_CF_ACCESS_CLIENT_ID)}"
-STAGING_UI_CF_ACCESS_CLIENT_SECRET="${STAGING_UI_CF_ACCESS_CLIENT_SECRET:-$(gcloud secrets versions access latest --project="$GCP_PROJECT" --secret=STAGING_UI_CF_ACCESS_CLIENT_SECRET)}"
-
 queue_http_check "harryliu.dev" "https://harryliu.dev"
 queue_http_check "cloud8skate.com" "https://cloud8skate.com"
-queue_http_check "staging-hearth" "https://staging-hearth.harryliu.dev/login" 200 staging-ui
-queue_http_check "findme" "https://staging-findme.harryliu.dev/" 200 staging-ui
-queue_http_check "weather-next" "https://staging-weather.harryliu.dev/" 200 staging-ui
-queue_http_check "staging-calendars" "https://staging-calendars.pages.dev/" 200 staging-ui
+queue_http_check "staging-hearth" "https://staging-hearth.harryliu.dev/login" 302
+queue_http_check "findme" "https://staging-findme.harryliu.dev/" 302
+queue_http_check "weather-next" "https://staging-weather.harryliu.dev/" 302
+queue_http_check "staging-calendars" "https://staging-calendars.pages.dev/" 302
 queue_http_check "git.harryliu.dev" "https://git.harryliu.dev"
 
 wait

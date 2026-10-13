@@ -42,21 +42,6 @@ resource "cloudflare_zero_trust_access_policy" "staging_ui_owner" {
   include    = [for email in var.staging_ui_allowed_emails : { email = { email = email } }]
 }
 
-resource "cloudflare_zero_trust_access_service_token" "staging_ui_monitor" {
-  account_id = var.cloudflare_account_id
-  name       = "staging-ui-upptime"
-  duration   = "8760h"
-}
-
-resource "cloudflare_zero_trust_access_policy" "staging_ui_monitor" {
-  account_id = var.cloudflare_account_id
-  name       = "staging-ui-allow-upptime"
-  decision   = "non_identity"
-  include = [{
-    service_token = { token_id = cloudflare_zero_trust_access_service_token.staging_ui_monitor.id }
-  }]
-}
-
 # The project root and immutable/branch deployment aliases are separate hosts.
 resource "cloudflare_zero_trust_access_application" "staging_pages" {
   for_each         = local.staging_pages_projects
@@ -71,7 +56,6 @@ resource "cloudflare_zero_trust_access_application" "staging_pages" {
   ]
   policies = [
     { id = cloudflare_zero_trust_access_policy.staging_ui_owner.id, precedence = 1 },
-    { id = cloudflare_zero_trust_access_policy.staging_ui_monitor.id, precedence = 2 },
   ]
 }
 
@@ -94,7 +78,6 @@ resource "cloudflare_zero_trust_access_application" "staging_vercel" {
   session_duration = "24h"
   policies = [
     { id = cloudflare_zero_trust_access_policy.staging_ui_owner.id, precedence = 1 },
-    { id = cloudflare_zero_trust_access_policy.staging_ui_monitor.id, precedence = 2 },
   ]
 }
 
