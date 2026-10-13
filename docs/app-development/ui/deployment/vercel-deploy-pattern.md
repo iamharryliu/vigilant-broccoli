@@ -8,6 +8,7 @@ Deploys for `hearth`, `findme`, `whiteboard`, `weather-next`, `balloono`, `vb-ma
 - [What the script does](#what-the-script-does)
 - [The build runs on the runner, not on Vercel](#the-build-runs-on-the-runner-not-on-vercel)
 - [Domains are explicit records, not derived from the project name](#domains-are-explicit-records-not-derived-from-the-project-name)
+- [Staging Access](#staging-access)
 - [Gotchas](#gotchas)
 - [New app checklist (Vercel-side)](#new-app-checklist-vercel-side)
 
@@ -43,6 +44,18 @@ Five constraints shape the wiring. Each one fails in a way that points nowhere n
 Renaming a project does **not** move its `<name>.vercel.app` domain, and `vercel deploy` never adds or removes domains — it only points the project's existing domains at the new deployment. Attach/detach via the API (`POST`/`DELETE /v9/projects/{idOrName}/domains`, `VERCEL_TOKEN` from Vault). When renaming a deployed instance, add the new `<name>.vercel.app` domain and remove the old one explicitly.
 
 A custom `harryliu.dev` subdomain for one of these apps is attached automatically: declare it in `infrastructure/terraform/cloudflare-vercel-apps.tf`'s `vercel_app_subdomains` map (which also creates the Cloudflare CNAME), and `pnpm tf:apply`'s `post-apply.sh` step reads that map back via `terraform output -json vercel_app_subdomains` and calls `scripts/vercel-domains.ts add production-<key> <domain>` for each entry — no manual step in the Vercel dashboard. The target project (`production-<key>`) must already exist (`ensureProjectExists` above creates it on first deploy).
+
+## Staging Access
+
+All six staging projects use proxied `staging-*.harryliu.dev` domains managed by `cloudflare-staging-ui.tf`. `pnpm tf:apply` attaches those domains through post-apply and stores public issuer/audience metadata as `STAGING_UI_ACCESS_CONFIG` in Vault. The staging deploy reads that metadata, refuses to publish without it, and sets the server-only `STAGING_UI_ACCESS_ISSUER` / `STAGING_UI_ACCESS_AUDIENCE` variables. `next.config.js` freezes `STAGING_UI_ACCESS_REQUIRED` in the build so removing runtime variables cannot disable validation. Each app includes `STAGING_UI_ACCESS_REQUIRED` in its Nx build inputs so staging cannot restore an unprotected production/local build from cache. Local, production and demo builds do not require Access.
+
+Every staging app's `src/proxy.ts` delegates to `common-node`'s `isStagingUiRequestAuthorized`, which verifies `Cf-Access-Jwt-Assertion` with Cloudflare's remote signing keys using `jose`. Missing, forged, expired, wrong-issuer and wrong-audience assertions return 403. The matcher covers all paths, including API routes and assets. Cloudflare is responsible for browser login; the origin fails closed instead of trusting a host name or an unsigned header. [Cloudflare JWT validation](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/authorization-cookie/validating-json/) describes this requirement.
+
+Vercel's HTTP-01 certificate validation has a narrowly scoped Access bypass under `/.well-known/acme-challenge`; application routes remain gated. Allow plain HTTP on that validation path if zone settings redirect all HTTP to HTTPS, as required by [Vercel's reverse-proxy guidance](https://vercel.com/kb/guide/how-to-setup-verified-proxy). Never add a general bypass for the custom domain or direct origin.
+
+Rollout: review/apply Terraform, confirm post-apply synced Vault and attached domains, redeploy all six staging projects, then delete older staging deployments that lack the guard (their immutable URLs remain public until deleted). Verify an unauthenticated custom-domain request reaches Access, an unauthenticated `vercel.app` request returns 403, and owner/service-token requests reach the app. Supabase callbacks and Hearth's canonical URL use the protected staging domains. Existing API integrations remain on their staging API URLs.
+
+For new staging Next.js apps, add a domain to `staging_vercel_domains`, add the proxy and build-time required flag, register protected URLs in shared links and Upptime, and apply Terraform before the first deploy. Production custom domains remain DNS-only.
 
 ## Gotchas
 

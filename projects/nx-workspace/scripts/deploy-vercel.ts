@@ -282,7 +282,10 @@ async function main() {
     hearth: {
       hardcodedSecrets: {
         ...SUPABASE_PUBLIC_SECRETS,
-        NEXT_PUBLIC_APP_URL: `https://${environment}-hearth.vercel.app/`,
+        NEXT_PUBLIC_APP_URL:
+          environment === STAGING
+            ? 'https://staging-hearth.harryliu.dev/'
+            : `https://${environment}-hearth.vercel.app/`,
         VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
       },
       envExamplePath: 'apps/hearth/.env.local.example',
@@ -348,12 +351,34 @@ async function main() {
 
   const allSecrets: Record<string, string> = { ...hardcodedSecrets };
 
-  if (keysFromVault.length || !vercelEnv.VERCEL_TOKEN) {
+  if (
+    environment === STAGING ||
+    keysFromVault.length ||
+    !vercelEnv.VERCEL_TOKEN
+  ) {
     console.log('Fetching vault secrets...');
     const vaultSecrets = await fetchSecretsFromVault();
 
     if (!vercelEnv.VERCEL_TOKEN && vaultSecrets.VERCEL_TOKEN) {
       vercelEnv.VERCEL_TOKEN = vaultSecrets.VERCEL_TOKEN;
+    }
+
+    if (environment === STAGING) {
+      const access = JSON.parse(
+        vaultSecrets.STAGING_UI_ACCESS_CONFIG || '{}',
+      ) as {
+        issuer?: string;
+        apps?: Record<string, { audience: string; domain: string }>;
+      };
+      const appAccess = access.apps?.[projectName];
+      if (!access.issuer || !appAccess?.audience || !appAccess.domain) {
+        throw new Error(
+          'Apply staging UI Access Terraform and sync Vault before deploying staging.',
+        );
+      }
+      allSecrets.STAGING_UI_ACCESS_REQUIRED = 'true';
+      allSecrets.STAGING_UI_ACCESS_ISSUER = access.issuer;
+      allSecrets.STAGING_UI_ACCESS_AUDIENCE = appAccess.audience;
     }
 
     for (const key of keysFromVault) {

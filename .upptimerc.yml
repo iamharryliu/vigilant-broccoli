@@ -4,38 +4,118 @@ repo: uptime
 sites:
   - name: staging-docs
     url: https://staging-docs-md.pages.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: staging-context
     url: https://staging-context-md.pages.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: staging-links
     url: https://staging-links-react.pages.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: staging-cloud-8-skate
     url: https://staging-cloud-8-skate-react.pages.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: staging-harryliu-dev
     url: https://staging-harryliu-dev-react.pages.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: staging-harryliu-dev-resume
     url: https://staging-harryliu-dev-react.pages.dev/resume
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: staging-findme
-    url: https://staging-findme.vercel.app/
+    url: https://staging-findme.harryliu.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: staging-hearth
-    url: https://staging-hearth.vercel.app/login
+    url: https://staging-hearth.harryliu.dev/login
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: staging-service-manager
     url: https://staging-vb-express.fly.dev/
   - name: staging-component-library
     url: https://staging-component-library.pages.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: staging-utilities
     url: https://staging-utilities-ui.pages.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: staging-waiting-games
     url: https://staging-waiting-games.pages.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: staging-whiteboard
-    url: https://staging-whiteboard.vercel.app/
+    url: https://staging-whiteboard.harryliu.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: staging-weather
-    url: https://staging-weather-next.vercel.app/
+    url: https://staging-weather.harryliu.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: staging-balloono
-    url: https://staging-balloono.vercel.app/
+    url: https://staging-balloono.harryliu.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: staging-calendars
     url: https://staging-calendars.pages.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: staging-vb-manager-next-mobile
-    url: https://staging-vb-manager-next-mobile.vercel.app/login
+    url: https://staging-vb-manager-next-mobile.harryliu.dev/login
+    maxRedirects: 0
+    expectedStatusCodes: [200]
+    headers:
+      - 'CF-Access-Client-Id: $STAGING_UI_CF_ACCESS_CLIENT_ID'
+      - 'CF-Access-Client-Secret: $STAGING_UI_CF_ACCESS_CLIENT_SECRET'
   - name: production-cloud-8-skate
     url: https://cloud8skate.com/
   - name: production-harryliu-dev

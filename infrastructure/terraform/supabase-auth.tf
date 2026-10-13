@@ -42,14 +42,14 @@ resource "supabase_settings" "vb_auth" {
     # Management API's wire format (not a JSON array).
     uri_allow_list = join(",", [
       "http://localhost:4200/*",                                            # hearth local dev
-      "https://staging-hearth.vercel.app/*",                                # hearth staging
+      "https://staging-hearth.harryliu.dev/*",                              # hearth staging
       "https://production-hearth.vercel.app/*",                             # hearth prod
       "http://localhost:4000/auth/callback",                                # employee-handler-ui local dev
       "https://demo-employee-handler-ui.vercel.app/*",                      # employee-handler-ui demo (its only deploy)
       "http://localhost:3000/*",                                            # vb-manager-next local dev
       "http://127.0.0.1:3000/*",                                            # vb-manager-next local dev (127.0.0.1 form)
       "https://manager.vigilant-broccoli.app/*",                            # vb-manager-next prod (PM2)
-      "https://staging-vb-manager-next-mobile.vercel.app/auth/callback",    # vb-manager-next mobile staging
+      "https://staging-vb-manager-next-mobile.harryliu.dev/auth/callback",  # vb-manager-next mobile staging
       "https://production-vb-manager-next-mobile.vercel.app/auth/callback", # vb-manager-next mobile prod
     ])
 

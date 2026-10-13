@@ -175,6 +175,7 @@
     "gapi-script": "^1.2.0",
     "googleapis": "^154.1.0",
     "isomorphic-dompurify": "^2.36.0",
+    "jose": "^6.2.3",
     "json-schema-to-ts": "^3.1.1",
     "jsqr": "^1.4.0",
     "leaflet": "^1.9.4",

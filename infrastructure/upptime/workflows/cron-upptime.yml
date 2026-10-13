@@ -10,6 +10,7 @@ on:
 permissions:
   contents: write
   issues: write
+  id-token: write
 
 concurrency:
   group: upptime
@@ -25,6 +26,23 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      - name: Authenticate staging UI monitor to Google Cloud
+        id: staging-auth
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
+        with:
+          workload_identity_provider: ${{ vars.STAGING_UI_MONITOR_WIF_PROVIDER }}
+          service_account: ${{ vars.STAGING_UI_MONITOR_SERVICE_ACCOUNT }}
+      - name: Fetch staging UI Access token
+        id: staging-access
+        uses: google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262 # v3
+        with:
+          secrets: |-
+            client_id:vigilant-broccoli/STAGING_UI_CF_ACCESS_CLIENT_ID
+            client_secret:vigilant-broccoli/STAGING_UI_CF_ACCESS_CLIENT_SECRET
+      - name: Remove Google credential file before running monitoring
+        env:
+          CREDENTIALS_FILE: ${{ steps.staging-auth.outputs.credentials_file_path }}
+        run: rm -- "$CREDENTIALS_FILE"
       - name: Warm Fly services
         run: bash scripts/warm-fly.sh
       - name: Configure monitoring repository credentials
@@ -33,6 +51,8 @@ jobs:
         run: git remote set-url origin "https://x-access-token:${GH_PAT}@github.com/${GITHUB_REPOSITORY}.git"
       - uses: upptime/uptime-monitor@8be193bbcb957a3a917d2bb16a0c96959778a889 # v1.44.1
         env:
+          STAGING_UI_CF_ACCESS_CLIENT_ID: ${{ steps.staging-access.outputs.client_id }}
+          STAGING_UI_CF_ACCESS_CLIENT_SECRET: ${{ steps.staging-access.outputs.client_secret }}
           GH_PAT: ${{ github.token }}
       - uses: upptime/uptime-monitor@8be193bbcb957a3a917d2bb16a0c96959778a889 # v1.44.1
         with:

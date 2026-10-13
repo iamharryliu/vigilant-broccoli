@@ -52,6 +52,8 @@ resource "github_actions_repository_permissions" "upptime" {
     verified_allowed     = false
     patterns_allowed = [
       "actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093",
+      "google-github-actions/get-secretmanager-secrets@bc9c54b29fdffb8a47776820a7d26e77b379d262",
       "actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
       "upptime/uptime-monitor@8be193bbcb957a3a917d2bb16a0c96959778a889",
     ]

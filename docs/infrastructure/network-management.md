@@ -10,7 +10,7 @@ Changes to network infrastructure (DNS records, domains/subdomains, proxying, tu
 
 ## DNS URLs
 
-All public URLs for deployed applications, grouped by domain/provider.
+All public URLs for deployed applications, grouped by domain/provider. Staging UI browser access requires Cloudflare Access; see [staging monitoring](./upptime.md#staging-ui-access).
 
 ```
 harryliu.dev                              Cloudflare zone (Terraform: infrastructure/terraform/)
@@ -50,18 +50,20 @@ fly.dev                                   Fly.io API services (production apps c
 ├── production-vb-express.fly.dev                 VB Express (production) — origin behind `api.harryliu.dev`; clients should not call it directly
 └── vb-log-shipper                                Fly log shipper (no hostname, no public IP — outbound only: Fly NATS log stream → https://loki.harryliu.dev)
 
-vercel.app                                Vercel (production projects created on first production dispatch)
-├── staging-hearth.vercel.app                 Hearth (staging)
+Vercel                                    Production/demo on vercel.app; staging on proxied harryliu.dev domains
+├── staging-hearth.harryliu.dev                 Hearth (staging)
 ├── production-hearth.vercel.app              Hearth (production)
 ├── demo-employee-handler-ui.vercel.app       Employee Handler UI (demo — its only Vercel deploy)
-├── staging-findme.vercel.app                 FindMe (staging)
+├── staging-findme.harryliu.dev                 FindMe (staging)
 ├── production-findme.vercel.app              FindMe (production)
-├── staging-whiteboard.vercel.app             Whiteboard (staging)
+├── staging-whiteboard.harryliu.dev             Whiteboard (staging)
 ├── production-whiteboard.vercel.app          Whiteboard (production)
-├── staging-weather-next.vercel.app    Weather (staging)
+├── staging-weather.harryliu.dev    Weather (staging)
 ├── production-weather-next.vercel.app Weather (production)
-├── staging-balloono.vercel.app               Balloono (staging)
-└── production-balloono.vercel.app            Balloono (production)
+├── staging-balloono.harryliu.dev               Balloono (staging)
+├── production-balloono.vercel.app            Balloono (production)
+├── staging-vb-manager-next-mobile.harryliu.dev Mobile manager (staging)
+└── production-vb-manager-next-mobile.vercel.app Mobile manager (production)
 
 pages.dev                                 Cloudflare Pages URLs for the environment not attached to a custom domain above
 ├── staging-cloud-8-skate-react.pages.dev      Cloud 8 Skate (staging — cloud8skate.com is on production, the exception)
@@ -70,6 +72,8 @@ pages.dev                                 Cloudflare Pages URLs for the environm
 github.io                                 GitHub Pages (custom domain projects.harryliu.dev)
 └── iamharryliu.github.io                     Pages origin for projects.harryliu.dev (pages-index/)
 ```
+
+Staging Vercel custom domains are proxied CNAMEs to the matching `staging-<project>.vercel.app` project. Terraform and post-apply own DNS, Access policies and Vercel domain attachment; the Next.js origin validates Access JWTs so direct origin URLs return 403. `staging-vb-manager-next-mobile.harryliu.dev/login` is the mobile manager's protected staging URL. Staging Pages roots and deployment aliases use native Access without changing their URLs.
 
 ## Tailnet
 

@@ -17,6 +17,10 @@ const nextConfig = {
   nx: { ...options },
   distDir: '../../dist/apps/vb-manager-next-mobile/.next',
   agentRules: false,
+  env: {
+    STAGING_UI_ACCESS_REQUIRED:
+      process.env.STAGING_UI_ACCESS_REQUIRED === 'true' ? 'true' : 'false',
+  },
 };
 const plugins = [withNx];
 module.exports = composePlugins(...plugins)(nextConfig);
