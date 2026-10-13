@@ -178,7 +178,6 @@ export function SpotifyPlaylistGraphComponent() {
             >
               <Text size="2">Owner: {selectedPlaylist.owner}</Text>
               <Text size="2">Tracks: {selectedPlaylist.trackCount}</Text>
-              <Text size="2">Top genre: {selectedPlaylist.group}</Text>
             </CardContainer>
           </div>
         )}

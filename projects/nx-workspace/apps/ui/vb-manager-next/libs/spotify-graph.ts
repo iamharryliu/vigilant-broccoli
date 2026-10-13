@@ -11,8 +11,8 @@ import type {
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1';
 const PLAYLISTS_PAGE_LIMIT = 50;
 const TRACKS_PAGE_LIMIT = 100;
-const ARTISTS_BATCH_SIZE = 50;
-const UNGROUPED = 'Ungrouped';
+// GraphView requires a group per node; one shared group renders them uniformly.
+const PLAYLIST_GROUP = 'Playlist';
 const UNKNOWN_OWNER = 'Unknown';
 
 interface SpotifyPlaylistItem {
@@ -33,15 +33,7 @@ interface SpotifyPage<T> {
 }
 
 interface SpotifyTrackItem {
-  track: {
-    id: string | null;
-    artists?: { id: string }[];
-  } | null;
-}
-
-interface SpotifyArtist {
-  id: string;
-  genres: string[];
+  track: { id: string | null } | null;
 }
 
 export interface SpotifyPlaylistDetail {
@@ -50,7 +42,6 @@ export interface SpotifyPlaylistDetail {
   owner: string;
   trackCount: number;
   url: string;
-  group: string;
 }
 
 export interface SpotifyPlaylistGraph extends NoteGraph {
@@ -125,32 +116,9 @@ const fetchPlaylistTracks = (
 ): Promise<SpotifyTrackItem[]> =>
   fetchAllPages<SpotifyTrackItem>(
     `${SPOTIFY_API_BASE}/playlists/${playlistId}/tracks` +
-      `?fields=items(track(id,artists(id))),next&limit=${TRACKS_PAGE_LIMIT}`,
+      `?fields=items(track(id)),next&limit=${TRACKS_PAGE_LIMIT}`,
     accessToken,
   );
-
-const chunk = <T>(items: T[], size: number): T[][] => {
-  const chunks: T[][] = [];
-  for (let i = 0; i < items.length; i += size) {
-    chunks.push(items.slice(i, i + size));
-  }
-  return chunks;
-};
-
-const fetchArtistGenres = async (
-  artistIds: string[],
-  accessToken: string,
-): Promise<Map<string, string[]>> => {
-  const genresByArtist = new Map<string, string[]>();
-  for (const batch of chunk(artistIds, ARTISTS_BATCH_SIZE)) {
-    const { artists } = await spotifyFetch<{ artists: SpotifyArtist[] }>(
-      `${SPOTIFY_API_BASE}/artists?ids=${batch.join(',')}`,
-      accessToken,
-    );
-    for (const artist of artists) genresByArtist.set(artist.id, artist.genres);
-  }
-  return genresByArtist;
-};
 
 const pairKey = (a: string, b: string): string =>
   a < b ? `${a}|${b}` : `${b}|${a}`;
@@ -183,18 +151,6 @@ const buildSharedTrackLinks = (
   });
 };
 
-const dominantGenre = (genreTally: Map<string, number>): string => {
-  let top: string | null = null;
-  let topCount = 0;
-  for (const [genre, count] of genreTally) {
-    if (count > topCount) {
-      top = genre;
-      topCount = count;
-    }
-  }
-  return top ?? UNGROUPED;
-};
-
 export const buildSpotifyPlaylistGraph = async (
   accessToken: string,
 ): Promise<SpotifyPlaylistGraph> => {
@@ -203,49 +159,25 @@ export const buildSpotifyPlaylistGraph = async (
   const playlists = (await fetchAllPlaylists(accessToken)).filter(Boolean);
 
   const trackIdsByPlaylist = new Map<string, Set<string>>();
-  const primaryArtistIdByPlaylistTrack = new Map<string, string[]>();
-  const allArtistIds = new Set<string>();
 
   for (const playlist of playlists) {
     // Spotify-owned algorithmic playlists (Discover Weekly, Daily Mix,
     // Release Radar, ...) show up in /me/playlists but routinely 403 on
     // their own /tracks endpoint — a per-user API restriction, not an error
-    // in this app. Skip that playlist's track/genre data rather than
-    // aborting the whole graph; it still appears as a node.
+    // in this app. Skip that playlist's tracks rather than aborting the whole
+    // graph; it still appears as a node.
     const items = await fetchPlaylistTracks(playlist.id, accessToken).catch(
       () => [] as SpotifyTrackItem[],
     );
     const trackIds = new Set<string>();
-    const primaryArtistIds: string[] = [];
     for (const { track } of items) {
-      if (!track?.id) continue;
-      trackIds.add(track.id);
-      const primaryArtistId = track.artists?.[0]?.id;
-      if (primaryArtistId) {
-        primaryArtistIds.push(primaryArtistId);
-        allArtistIds.add(primaryArtistId);
-      }
+      if (track?.id) trackIds.add(track.id);
     }
     trackIdsByPlaylist.set(playlist.id, trackIds);
-    primaryArtistIdByPlaylistTrack.set(playlist.id, primaryArtistIds);
   }
-
-  const genresByArtist = await fetchArtistGenres(
-    [...allArtistIds],
-    accessToken,
-  );
 
   const playlistDetails: Record<string, SpotifyPlaylistDetail> = {};
   const nodes: NoteGraphNode[] = playlists.map(playlist => {
-    const genreTally = new Map<string, number>();
-    for (const artistId of primaryArtistIdByPlaylistTrack.get(playlist.id) ??
-      []) {
-      for (const genre of genresByArtist.get(artistId) ?? []) {
-        genreTally.set(genre, (genreTally.get(genre) ?? 0) + 1);
-      }
-    }
-    const group = dominantGenre(genreTally);
-
     playlistDetails[playlist.id] = {
       id: playlist.id,
       name: playlist.name,
@@ -255,10 +187,9 @@ export const buildSpotifyPlaylistGraph = async (
       owner: playlist.owner?.display_name ?? UNKNOWN_OWNER,
       trackCount: playlist.items?.total ?? 0,
       url: playlist.external_urls?.spotify ?? '',
-      group,
     };
 
-    return { id: playlist.id, name: playlist.name, group };
+    return { id: playlist.id, name: playlist.name, group: PLAYLIST_GROUP };
   });
 
   return {

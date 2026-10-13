@@ -3,8 +3,8 @@
 ## Overview
 
 - Force-directed graph of a user's Spotify playlists at `/spotify-playlists`, reusing the same `GraphView` (`@vigilant-broccoli/react-utility`) the `docs-md` note viewer uses
-- Edges = shared tracks between playlists; node color = each playlist's dominant genre
-- Spotify's Web API doesn't expose playlist-folder structure, so folders aren't represented — grouping is genre-based instead
+- Edges = shared tracks between playlists
+- Spotify's Web API doesn't expose playlist-folder structure, so folders aren't represented
 
 ## Auth
 
@@ -18,19 +18,18 @@
 
 ## Graph Data
 
-- `GET /api/spotify/graph` fetches all playlists, then each playlist's tracks, computes shared-track link weights and per-playlist dominant genre
+- `GET /api/spotify/graph` fetches all playlists, then each playlist's tracks, computes shared-track link weights
 - Cached in-memory per user for 30 minutes (`createTtlCache`); `?force=true` bypasses it (wired to the page's Refresh button)
 - Link `weight` = shared-track count, scales line width in `GraphView`
 
 ## UI
 
 - "Min shared tracks" filter prunes links client-side without refetching
-- Clicking a node shows a side panel: owner, track count, top genre, link to the playlist on Spotify
+- Clicking a node shows a side panel: owner, track count, link to the playlist on Spotify
 
 ## Constraints
 
-- Genre comes from each track's primary artist only (not full collaborator list)
-- A playlist whose `/tracks` endpoint 403s (Spotify-owned algorithmic playlists — Discover Weekly, Daily Mix, Release Radar — routinely do) still appears as a node, just with no edges and "Ungrouped" genre
+- A playlist whose `/tracks` endpoint 403s (Spotify-owned algorithmic playlists — Discover Weekly, Daily Mix, Release Radar — routinely do) still appears as a node, just with no edges
 - A large library (100+ playlists) reliably trips Spotify's rate limit on a cold cache build — one `/tracks` call per playlist, no bulk endpoint exists. `spotifyFetch` retries a `429` up to twice, honoring `Retry-After` but capped at 5s (a dev-mode app's real penalty can run minutes, not seconds, so a request this app makes synchronously for a page load must fail fast rather than hang); a persistently-limited call surfaces as a load error like any other failure
 - If this keeps 429ing in practice, the fix is Spotify's own Extended Quota Mode app review (dashboard), not more client-side retrying — this app is almost certainly still in Development Mode's tighter default limits
 
