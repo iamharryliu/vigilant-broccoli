@@ -13,6 +13,12 @@
       "descriptionKey": "WEB_APPLICATIONS_PAGE.CONTEXT_MD.DESCRIPTION"
     },
     {
+      "id": "career",
+      "href": "https://career.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.CAREER.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.CAREER.DESCRIPTION"
+    },
+    {
       "id": "cloud-8-skate",
       "href": "https://cloud8skate.com/",
       "titleKey": "WEB_APPLICATIONS_PAGE.CLOUD_8_SKATE.TITLE",

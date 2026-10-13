@@ -76,6 +76,8 @@ sites:
     url: https://calendar.harryliu.dev/
   - name: production-vb-manager-next-mobile
     url: https://production-vb-manager-next-mobile.vercel.app/login
+  - name: production-career
+    url: https://career.harryliu.dev/
   - name: production-status
     url: https://status.harryliu.dev/
   - name: production-uptime
