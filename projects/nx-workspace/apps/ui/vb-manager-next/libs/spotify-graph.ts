@@ -32,8 +32,15 @@ interface SpotifyPage<T> {
   next: string | null;
 }
 
-interface SpotifyTrackItem {
-  track: { id: string | null } | null;
+// The playlist items endpoint calls the entry `item` (it can be a track or an
+// episode); the older /tracks endpoint and its `track` field now 403 for every
+// playlist.
+interface SpotifyPlaylistEntry {
+  item: {
+    id: string | null;
+    name?: string;
+    artists?: { name: string }[];
+  } | null;
 }
 
 export interface SpotifyPlaylistDetail {
@@ -51,13 +58,15 @@ export interface SpotifyPlaylistGraph extends NoteGraph {
 const RATE_LIMIT_STATUS = 429;
 const MAX_RATE_LIMIT_RETRIES = 2;
 const DEFAULT_RETRY_AFTER_SECONDS = 1;
-// Spotify's Retry-After on a dev-mode app can be minutes, not seconds, once
-// its rolling window is actually blown (as opposed to a light, momentary
-// throttle) — a request this app makes synchronously for a page load must
-// not sit in that wait. Cap it; a still-limited call fails fast instead of
-// hanging, and callers that tolerate a failed fetch (per-playlist tracks)
-// just skip that one playlist rather than blocking the whole page.
+// Spotify's Retry-After on a dev-mode app is either a momentary throttle
+// (seconds) or an app-wide lockout (hours). A page load must not sit in the
+// wait, and retrying inside a lockout only spends more requests, so a
+// Retry-After above this fails immediately instead of sleeping and retrying.
 const MAX_RETRY_AFTER_SECONDS = 5;
+
+interface SpotifyApiError extends Error {
+  status: number;
+}
 
 const delay = (ms: number): Promise<void> =>
   new Promise(resolve => setTimeout(resolve, ms));
@@ -70,20 +79,23 @@ const spotifyFetch = async <T>(
   const response = await fetch(url, {
     headers: { [AUTHORIZATION_HEADER]: `${BEARER_PREFIX}${accessToken}` },
   });
-  if (
-    response.status === RATE_LIMIT_STATUS &&
-    attempt < MAX_RATE_LIMIT_RETRIES
-  ) {
-    const retryAfterSeconds = Math.min(
+  if (response.status === RATE_LIMIT_STATUS) {
+    const retryAfterSeconds =
       Number(response.headers.get('Retry-After')) ||
-        DEFAULT_RETRY_AFTER_SECONDS,
-      MAX_RETRY_AFTER_SECONDS,
-    );
-    await delay(retryAfterSeconds * 1000);
-    return spotifyFetch<T>(url, accessToken, attempt + 1);
+      DEFAULT_RETRY_AFTER_SECONDS;
+    if (
+      attempt < MAX_RATE_LIMIT_RETRIES &&
+      retryAfterSeconds <= MAX_RETRY_AFTER_SECONDS
+    ) {
+      await delay(retryAfterSeconds * 1000);
+      return spotifyFetch<T>(url, accessToken, attempt + 1);
+    }
   }
   if (!response.ok) {
-    throw new Error(`Spotify API request failed (${response.status}): ${url}`);
+    throw Object.assign(
+      new Error(`Spotify API request failed (${response.status}): ${url}`),
+      { status: response.status },
+    ) as SpotifyApiError;
   }
   return response.json();
 };
@@ -113,30 +125,57 @@ const fetchAllPlaylists = (
 const fetchPlaylistTracks = (
   playlistId: string,
   accessToken: string,
-): Promise<SpotifyTrackItem[]> =>
-  fetchAllPages<SpotifyTrackItem>(
-    `${SPOTIFY_API_BASE}/playlists/${playlistId}/tracks` +
-      `?fields=items(track(id)),next&limit=${TRACKS_PAGE_LIMIT}`,
+): Promise<SpotifyPlaylistEntry[]> =>
+  fetchAllPages<SpotifyPlaylistEntry>(
+    `${SPOTIFY_API_BASE}/playlists/${playlistId}/items` +
+      `?fields=items(item(id,name,artists(name))),next&limit=${TRACKS_PAGE_LIMIT}`,
     accessToken,
   );
+
+// Parenthetical/bracketed tags and a trailing " - Remastered 2011" / " - Live" style
+// suffix are what differ between releases of one recording (album, single, remaster,
+// compilation), each with its own Spotify track id.
+const TAG_PATTERN = /[([].*?[)\]]/g;
+const DASH_SUFFIX_PATTERN = /\s-\s.*$/;
+const NON_ALPHANUMERIC_PATTERN = /[^\p{L}\p{N}]+/gu;
+const COMBINING_MARKS_PATTERN = /\p{M}/gu;
+
+const normalizeSongPart = (value: string): string =>
+  value
+    .normalize('NFD')
+    .replace(COMBINING_MARKS_PATTERN, '')
+    .toLowerCase()
+    .replace(NON_ALPHANUMERIC_PATTERN, ' ')
+    .trim();
+
+// Two tracks count as the same song when title and primary artist match after
+// stripping release tags, so a single and its album version still link two
+// playlists. Falls back to the track id when either part is missing.
+const songKey = (item: NonNullable<SpotifyPlaylistEntry['item']>): string => {
+  const title = normalizeSongPart(
+    (item.name ?? '').replace(TAG_PATTERN, '').replace(DASH_SUFFIX_PATTERN, ''),
+  );
+  const artist = normalizeSongPart(item.artists?.[0]?.name ?? '');
+  return title && artist ? `${title}|${artist}` : (item.id as string);
+};
 
 const pairKey = (a: string, b: string): string =>
   a < b ? `${a}|${b}` : `${b}|${a}`;
 
-const buildSharedTrackLinks = (
-  trackIdsByPlaylist: Map<string, Set<string>>,
+const buildSharedSongLinks = (
+  songKeysByPlaylist: Map<string, Set<string>>,
 ): NoteGraphLink[] => {
-  const playlistsByTrack = new Map<string, string[]>();
-  for (const [playlistId, trackIds] of trackIdsByPlaylist) {
-    for (const trackId of trackIds) {
-      const playlistIds = playlistsByTrack.get(trackId);
+  const playlistsBySong = new Map<string, string[]>();
+  for (const [playlistId, songKeys] of songKeysByPlaylist) {
+    for (const key of songKeys) {
+      const playlistIds = playlistsBySong.get(key);
       if (playlistIds) playlistIds.push(playlistId);
-      else playlistsByTrack.set(trackId, [playlistId]);
+      else playlistsBySong.set(key, [playlistId]);
     }
   }
 
   const sharedCounts = new Map<string, number>();
-  for (const playlistIds of playlistsByTrack.values()) {
+  for (const playlistIds of playlistsBySong.values()) {
     for (let i = 0; i < playlistIds.length; i++) {
       for (let j = i + 1; j < playlistIds.length; j++) {
         const key = pairKey(playlistIds[i], playlistIds[j]);
@@ -158,22 +197,29 @@ export const buildSpotifyPlaylistGraph = async (
   // since become unavailable (deleted by its owner, etc.) — drop those.
   const playlists = (await fetchAllPlaylists(accessToken)).filter(Boolean);
 
-  const trackIdsByPlaylist = new Map<string, Set<string>>();
+  const songKeysByPlaylist = new Map<string, Set<string>>();
 
   for (const playlist of playlists) {
-    // Spotify-owned algorithmic playlists (Discover Weekly, Daily Mix,
-    // Release Radar, ...) show up in /me/playlists but routinely 403 on
-    // their own /tracks endpoint — a per-user API restriction, not an error
-    // in this app. Skip that playlist's tracks rather than aborting the whole
-    // graph; it still appears as a node.
+    // A playlist whose items can't be read (Spotify-owned algorithmic ones may
+    // be refused) is skipped rather than aborting the whole graph; it still
+    // appears as a node. Logged because a skip looks identical to an empty
+    // playlist, which once hid every playlist failing on a retired endpoint.
+    // A rate limit is not a per-playlist problem: it aborts the build so an
+    // incomplete graph is never returned and cached as if it were complete.
     const items = await fetchPlaylistTracks(playlist.id, accessToken).catch(
-      () => [] as SpotifyTrackItem[],
+      (error: SpotifyApiError) => {
+        if (error.status === RATE_LIMIT_STATUS) throw error;
+        console.warn(
+          `Skipping Spotify playlist ${playlist.id}: ${error.message}`,
+        );
+        return [] as SpotifyPlaylistEntry[];
+      },
     );
-    const trackIds = new Set<string>();
-    for (const { track } of items) {
-      if (track?.id) trackIds.add(track.id);
+    const songKeys = new Set<string>();
+    for (const { item } of items) {
+      if (item?.id) songKeys.add(songKey(item));
     }
-    trackIdsByPlaylist.set(playlist.id, trackIds);
+    songKeysByPlaylist.set(playlist.id, songKeys);
   }
 
   const playlistDetails: Record<string, SpotifyPlaylistDetail> = {};
@@ -182,7 +228,7 @@ export const buildSpotifyPlaylistGraph = async (
       id: playlist.id,
       name: playlist.name,
       // Some playlist types (algorithmic/generated ones, the same kind that
-      // 403 on /tracks above) come back from /me/playlists with sparse
+      // refused above) come back from /me/playlists with sparse
       // metadata — owner/tracks/external_urls aren't always present.
       owner: playlist.owner?.display_name ?? UNKNOWN_OWNER,
       trackCount: playlist.items?.total ?? 0,
@@ -194,7 +240,7 @@ export const buildSpotifyPlaylistGraph = async (
 
   return {
     nodes,
-    links: buildSharedTrackLinks(trackIdsByPlaylist),
+    links: buildSharedSongLinks(songKeysByPlaylist),
     playlists: playlistDetails,
   };
 };
