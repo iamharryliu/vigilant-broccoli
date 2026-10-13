@@ -3,22 +3,17 @@
 import {
   ButtonConfig,
   ButtonList,
-  CardContainer,
-  StatusCardList,
   StatusCardListItem,
   Text,
   WINDOW_OPEN_FEATURES,
-  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
 import { AWS_LINK } from '@vigilant-broccoli/links';
-import { useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
-import { authFetch } from '../../../libs/auth';
-import { usePollingInterval } from '../hooks/usePollingInterval';
+import { StatusListCard } from './status-list-card.component';
+import { usePolledResource } from '../hooks/usePolledResource';
 import {
   DotColor,
   StatusDot,
-  StatusLegend,
   StatusLegendEntry,
   getDotBorder,
 } from './status-dot.component';
@@ -120,44 +115,22 @@ const toItem = (profile: AwsProfile): StatusCardListItem => {
 };
 
 export const AwsManagementComponent = () => {
-  const [profiles, setProfiles] = useState<AwsProfile[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchProfiles = async () => {
-    try {
-      const response = await authFetch(API_ENDPOINTS.AWS_PROFILES);
-      if (!response.ok) throw new Error('Failed to fetch AWS profiles');
-      const data = await response.json();
-      setProfiles(data.profiles);
-      setLoading(false);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to fetch AWS profiles',
-      );
-      setLoading(false);
-    }
-  };
-
-  usePollingInterval(fetchProfiles, AWS_POLL_INTERVAL_MS);
-
-  if (loading) return <CardSkeleton title="AWS Management" rows={3} />;
-
-  if (error) {
-    return (
-      <CardContainer title="AWS Management" headerLink={AWS_CONSOLE_LINK}>
-        <Text color="red">{error}</Text>
-      </CardContainer>
-    );
-  }
+  const { data, loading, error } = usePolledResource<AwsProfile[]>({
+    endpoint: API_ENDPOINTS.AWS_PROFILES,
+    intervalMs: AWS_POLL_INTERVAL_MS,
+    errorMessage: 'Failed to fetch AWS profiles',
+    select: json => json.profiles,
+  });
 
   return (
-    <CardContainer title="AWS Management" headerLink={AWS_CONSOLE_LINK}>
-      <StatusCardList
-        items={profiles.map(toItem)}
-        emptyMessage="No AWS profiles found"
-      />
-      <StatusLegend entries={LEGEND} />
-    </CardContainer>
+    <StatusListCard
+      title="AWS Management"
+      loading={loading}
+      error={error}
+      headerLink={AWS_CONSOLE_LINK}
+      legend={LEGEND}
+      items={(data ?? []).map(toItem)}
+      emptyMessage="No AWS profiles found"
+    />
   );
 };
