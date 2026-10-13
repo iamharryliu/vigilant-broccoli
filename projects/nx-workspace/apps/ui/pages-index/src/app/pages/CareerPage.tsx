@@ -1,4 +1,4 @@
-import { Briefcase, FileText, FolderGit2, Linkedin, User } from 'lucide-react';
+import { Briefcase, FileText, FolderGit2, User } from 'lucide-react';
 import {
   PROJECT_LINK,
   SOCIAL_LINK,
@@ -6,7 +6,7 @@ import {
 import { useTranslation } from '../i18n';
 import { CardLink } from '../components/CardLink';
 import { CardGrid } from '../components/CardGrid';
-import { GithubIcon } from '../components/BrandIcons';
+import { GithubIcon, LinkedinIcon } from '../components/BrandIcons';
 import { SectionHeading } from '../components/SectionHeading';
 import { usePageTitle } from '../use-page-title';
 import { PAGE_CLASS } from '../consts/layout';
@@ -83,7 +83,7 @@ export function CareerPage() {
               href={SOCIAL_LINK.LINKEDIN.URL}
               title={t('CAREER_PAGE.LINKEDIN.TITLE')}
               description={t('CAREER_PAGE.LINKEDIN.DESCRIPTION')}
-              icon={<Linkedin className={ICON_CLASS} />}
+              icon={<LinkedinIcon />}
             />
           </li>
         </CardGrid>
