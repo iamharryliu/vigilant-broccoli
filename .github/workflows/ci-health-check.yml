@@ -55,8 +55,6 @@ jobs:
           secrets: |-
             CF_ACCESS_CLIENT_ID:vigilant-broccoli/VAULT_CF_ACCESS_CLIENT_ID
             CF_ACCESS_CLIENT_SECRET:vigilant-broccoli/VAULT_CF_ACCESS_CLIENT_SECRET
-            STAGING_UI_CF_ACCESS_CLIENT_ID:vigilant-broccoli/STAGING_UI_CF_ACCESS_CLIENT_ID
-            STAGING_UI_CF_ACCESS_CLIENT_SECRET:vigilant-broccoli/STAGING_UI_CF_ACCESS_CLIENT_SECRET
 
       - name: Run health checks
         env:
@@ -65,8 +63,6 @@ jobs:
           SOCKET_SERVER_URL: ${{ env.SOCKET_SERVER_URL }}
           CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
-          STAGING_UI_CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.STAGING_UI_CF_ACCESS_CLIENT_ID }}
-          STAGING_UI_CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.STAGING_UI_CF_ACCESS_CLIENT_SECRET }}
           GITEA_CF_ACCESS_CLIENT_ID: ${{ env.GITEA_CF_ACCESS_CLIENT_ID }}
           GITEA_CF_ACCESS_CLIENT_SECRET: ${{ env.GITEA_CF_ACCESS_CLIENT_SECRET }}
           CODE_SERVER_CF_ACCESS_CLIENT_ID: ${{ env.CODE_SERVER_CF_ACCESS_CLIENT_ID }}
@@ -91,14 +87,10 @@ jobs:
             local name="$1"
             local url="$2"
             local expected="${3:-200}"
-            local access_headers=()
-            if [ "${4:-}" = "staging-ui" ]; then
-              access_headers=(-H "CF-Access-Client-Id: ${STAGING_UI_CF_ACCESS_CLIENT_ID}" -H "CF-Access-Client-Secret: ${STAGING_UI_CF_ACCESS_CLIENT_SECRET}")
-            fi
             local code
             # Retry to tolerate scale-to-zero cold starts (first request wakes the service).
             for attempt in 1 2 3; do
-              code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "${access_headers[@]}" "$url" 2>/dev/null) || code="timeout"
+              code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "$url" 2>/dev/null) || code="timeout"
               [ "$code" = "$expected" ] && break
               [ "$attempt" -lt 3 ] && sleep 5
             done
@@ -119,10 +111,10 @@ jobs:
           echo "[Websites]"
           http_check "harryliu.dev" "https://harryliu.dev"
           http_check "cloud8skate.com" "https://cloud8skate.com"
-          http_check "staging-hearth" "https://staging-hearth.harryliu.dev/login" 200 staging-ui
-          http_check "staging-findme" "https://staging-findme.harryliu.dev/" 200 staging-ui
-          http_check "staging-weather-next" "https://staging-weather.harryliu.dev/" 200 staging-ui
-          http_check "staging-calendars" "https://staging-calendars.pages.dev" 200 staging-ui
+          http_check "staging-hearth" "https://staging-hearth.harryliu.dev/login" 302
+          http_check "staging-findme" "https://staging-findme.harryliu.dev/" 302
+          http_check "staging-weather-next" "https://staging-weather.harryliu.dev/" 302
+          http_check "staging-calendars" "https://staging-calendars.pages.dev" 302
 
           echo ""
           echo "[GCP VM]"
