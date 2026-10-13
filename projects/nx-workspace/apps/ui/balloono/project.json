@@ -10,6 +10,7 @@
       "cache": true,
       "dependsOn": ["^build"],
       "inputs": [
+        { "env": "STAGING_UI_ACCESS_REQUIRED" },
         "default",
         "^default",
         {

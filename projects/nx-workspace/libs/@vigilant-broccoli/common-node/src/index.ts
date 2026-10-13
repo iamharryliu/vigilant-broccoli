@@ -21,3 +21,4 @@ export * from './lib/weather/preparation.service';
 export * from './lib/audio/audio.service';
 export * from './lib/qr-code/qr-code.service';
 export * from './lib/supabase/supabase.consts';
+export * from './lib/auth/cloudflare-access';

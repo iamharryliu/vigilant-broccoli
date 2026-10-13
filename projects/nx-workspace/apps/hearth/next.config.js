@@ -17,6 +17,10 @@ const nextConfig = {
   nx: { ...options },
   distDir: '../../dist/apps/hearth/.next',
   agentRules: false,
+  env: {
+    STAGING_UI_ACCESS_REQUIRED:
+      process.env.STAGING_UI_ACCESS_REQUIRED === 'true' ? 'true' : 'false',
+  },
   transpilePackages: [
     '@fullcalendar/core',
     '@fullcalendar/react',

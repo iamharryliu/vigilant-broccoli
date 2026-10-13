@@ -66,6 +66,8 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 
 ## Secret Inventory
 
+Staging UI monitoring uses Terraform-minted `STAGING_UI_CF_ACCESS_CLIENT_ID` / `STAGING_UI_CF_ACCESS_CLIENT_SECRET` in GCP Secret Manager. Workflow read grants go to the isolated monitoring identity and the existing source health-check identity. The token is scoped to staging UI Access applications and expires after one year; replace it with Terraform before expiry, then remove superseded Secret Manager versions. No GitHub Actions secret or Vault credential is given to Upptime. Public `STAGING_UI_ACCESS_CONFIG` metadata (issuer and per-app audience/domain) is stored in Vault by post-apply for staging Vercel builds; it is not a credential. See [staging monitoring](./upptime.md#staging-ui-access).
+
 | Secret                                                            | Location                                                                           | Purpose                                                                                                                     |
 | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `AGENT_CODEX_ACCESS_TOKEN`                                        | Vault `kv/data/secrets`                                                            | ChatGPT/Codex access token for `agentic-pr-create --agent codex`; kept separate from `OPENAI_API_KEY`.                      |

@@ -194,6 +194,9 @@ importers:
       isomorphic-dompurify:
         specifier: ^2.36.0
         version: 2.36.0(@noble/hashes@2.4.0)
+      jose:
+        specifier: ^6.2.3
+        version: 6.2.3
       json-schema-to-ts:
         specifier: ^3.1.1
         version: 3.1.1
@@ -930,6 +933,9 @@ importers:
       archiver:
         specifier: ^7.0.1
         version: 7.0.1
+      jose:
+        specifier: ^6.2.3
+        version: 6.2.3
       qrcode:
         specifier: ^1.5.4
         version: 1.5.4
