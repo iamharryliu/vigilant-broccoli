@@ -11,7 +11,12 @@ FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 PRE_COMMIT_HELPER=/tmp/run-pre-commit.sh
 MERGE_BODY_HELPER=/tmp/merge-pr-body.py
 CI_LOG=/tmp/pr-ci-failures.log
+RUN_LOG=/tmp/pr-ci-run.log
 CI_LOG_BUDGET=20000
+# A just-pushed branch still has checks running; a CI-log run waits this long for them
+# so it sees their result instead of an empty failure list.
+CI_WAIT_SECONDS=${CI_WAIT_SECONDS:-600}
+CI_POLL_SECONDS=30
 
 cd "$REPO_DIR"
 SKILL_NAME=agentic-pr-update
@@ -75,10 +80,41 @@ salvage_on_failure() {
 }
 trap salvage_on_failure EXIT
 
+# A failure's cause usually sits where its step starts and the summary where it ends, so
+# an over-budget log keeps both ends instead of only the last bytes of the whole file.
+slice_log() {
+  local file=$1 budget=$2 size head_bytes
+  size=$(wc -c < "$file")
+  if [ "$size" -le "$budget" ]; then
+    cat "$file"
+    return
+  fi
+  head_bytes=$((budget / 3))
+  head -c "$head_bytes" "$file"
+  printf '\n... [%d bytes omitted] ...\n' $((size - budget))
+  tail -c $((budget - head_bytes)) "$file"
+}
+
+count_checks() {
+  gh pr checks "$PR" --json bucket -q "[.[] | select(.bucket == \"$1\")] | length" 2>/dev/null || echo 0
+}
+
+wait_for_pending_checks() {
+  local waited=0
+  while [ "$(count_checks pending)" -gt 0 ] && [ "$waited" -lt "$CI_WAIT_SECONDS" ]; do
+    sleep "$CI_POLL_SECONDS"
+    waited=$((waited + CI_POLL_SECONDS))
+  done
+  if [ "$(count_checks pending)" -gt 0 ]; then
+    echo "WARNING: checks were still running after ${CI_WAIT_SECONDS}s; their results are not in the CI output." >&2
+  fi
+}
+
 # The agent cannot call gh, so failing CI output has to be collected here and
 # handed over in the prompt.
 CI_SECTION=""
 if [ -n "${SANDBOX_CI_LOGS:-}" ]; then
+  wait_for_pending_checks
   : > "$CI_LOG"
   gh pr checks "$PR" >> "$CI_LOG" 2>&1 || true
   # A token without Actions read access makes this fail; say so rather than
@@ -88,19 +124,41 @@ if [ -n "${SANDBOX_CI_LOGS:-}" ]; then
     echo "WARNING: could not list workflow runs for ${BRANCH}; the agent gets no failed-step logs." >&2
     FAILED_RUN_IDS=""
   fi
-  for run_id in $FAILED_RUN_IDS; do
+  # shellcheck disable=SC2086
+  set -- $FAILED_RUN_IDS
+  for run_id in "$@"; do
     echo "===== failing run $run_id =====" >> "$CI_LOG"
-    gh run view "$run_id" --log-failed >> "$CI_LOG" 2>&1 || true
+    gh run view "$run_id" --log-failed > "$RUN_LOG" 2>&1 || true
+    slice_log "$RUN_LOG" $((CI_LOG_BUDGET / $#)) >> "$CI_LOG"
   done
   CI_SECTION=$(cat <<EOF
 
-Failing CI output for this PR (checks summary followed by failed-step logs, truncated to the last ${CI_LOG_BUDGET} bytes):
+Failing CI output for this PR (checks summary followed by failed-step logs, each run's log trimmed to its start and end, about ${CI_LOG_BUDGET} bytes in total):
 
-$(tail -c "$CI_LOG_BUDGET" "$CI_LOG")
+$(tail -c "$((CI_LOG_BUDGET * 2))" "$CI_LOG")
 
 Formatting failures from the pre-commit job (trailing-whitespace, end-of-file-fixer, black) are auto-fixed by the calling script; spend your effort on real lint, test, build, or logic failures.
 EOF
 )
+fi
+
+# A plain change skips the log collection above, but still starts from the PR's check
+# state: a branch that already fails CI should be reported, not silently built on.
+# Conflict resolution is excluded because a conflicting PR runs no CI.
+if [ -z "$CI_SECTION" ] && [ "$SKILL_NAME" = agentic-pr-update ]; then
+  NON_PASSING_CHECKS=$(gh pr checks "$PR" --json name,bucket \
+    -q '.[] | select(.bucket == "fail" or .bucket == "pending" or .bucket == "cancel") | "- \(.name): \(.bucket)"' 2>/dev/null || true)
+  if [ -n "$NON_PASSING_CHECKS" ]; then
+    CI_SECTION=$(cat <<EOF
+
+Checks on this PR that are not passing before your change (fail, cancel or still pending):
+
+${NON_PASSING_CHECKS}
+
+You have no logs for these. Do not try to fix them unless the instruction asks; if your change could affect one, say so in your report.
+EOF
+)
+  fi
 fi
 
 PLAN_RULES=""
@@ -179,19 +237,21 @@ else
   INC_HISTORY_SOURCE="Docker sandbox (local)"
 fi
 
-if [ "$PLAN_ENABLED" = 1 ] && [ -n "$(git status --porcelain)" ]; then
-  # Checked before anything is pushed, so a bad plan never leaves a partial set behind.
-  inc_validate_plan "$META_FILE" "$BASE_SHA" "$INSTRUCTION" ""
-  inc_load_plan "$META_FILE"
-  RESOLVED_IDS=()
+RESOLVED_IDS=()
+if [ "$PLAN_ENABLED" = 1 ]; then
   while IFS= read -r resolved_id; do
     [ -z "$resolved_id" ] || RESOLVED_IDS+=("$resolved_id")
   done < <(inc_current_todo_ids "$META_FILE")
+fi
+
+# Declared ids open this block on a clean tree too: dropping a stale row, or one that was
+# never checked off, is a TODO-only update. inc_validate_plan still requires the request to
+# name each id, so the user's instruction is what authorizes the removal.
+if [ "$PLAN_ENABLED" = 1 ] && { [ -n "$(git status --porcelain)" ] || [ "${#RESOLVED_IDS[@]}" -gt 0 ]; }; then
+  # Checked before anything is pushed, so a bad plan never leaves a partial set behind.
+  inc_validate_plan "$META_FILE" "$BASE_SHA" "$INSTRUCTION" ""
+  inc_load_plan "$META_FILE"
   inc_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
-  if [ "${#RESOLVED_IDS[@]}" -gt 0 ] && [ -z "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
-    echo "ERROR: no changes besides TODO.md — ${RESOLVED_IDS[*]} not resolved." >&2
-    exit 1
-  fi
 fi
 
 bash "$PRE_COMMIT_HELPER"

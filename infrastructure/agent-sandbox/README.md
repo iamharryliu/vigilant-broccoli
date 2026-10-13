@@ -67,9 +67,11 @@ outlive the addresses it captured; if a Codex run dies mid-way on network errors
 `solve-todo-runner.sh` runs it with `GH_TOKEN`/`GITHUB_TOKEN` stripped from the environment. Branching, committing,
 pushing and opening the PR stay with the runner for both agents.
 
-`pnpm agentic-pr-update --with-ci-logs <pr> "<instruction>"` makes `update-pr-runner.sh` collect `gh pr checks` and the failed-step logs (`gh run view --log-failed`) of the branch's recent failing runs, keep the last 20 KB, and add them to the prompt. The agent cannot run `gh` itself, so this is how it sees why CI failed.
+`pnpm agentic-pr-update --with-ci-logs <pr> "<instruction>"` makes `update-pr-runner.sh` collect `gh pr checks` and the failed-step logs (`gh run view --log-failed`) of the branch's recent failing runs, add them to the prompt within a 20 KB budget split across the failing runs (an over-budget run keeps the first third and the rest from its end). The agent cannot run `gh` itself, so this is how it sees why CI failed. Checks still running are waited on for up to 10 minutes (`CI_WAIT_SECONDS`) first. `manual-agentic-pr-update` exposes this as the `with_ci_logs` input. Without it, a `change` run still lists the PR's failing, cancelled and pending check names in the prompt (no logs), so the agent reports a branch that already fails CI instead of building on it silently.
 
 `pnpm agentic-pr-update --operation fix-ci <pr> ["<instruction>"]` is also used by `manual-agentic-pr-update` with `operation=fix-ci`. It implies `--with-ci-logs`, uses a fixed CI-fix instruction with the optional instruction appended as extra guidance, and selects the shared CI-fix skill. A failing PR-title check (commitlint) is fixed through the optional `pr_title` metadata field, which the runner normalizes and applies with `gh pr edit --title`; a title-only fix exits successfully without a commit.
+
+A `change` instruction can be TODO-only: naming a `TODO.md` row id and asking to drop it (a stale row, or one that was never checked off) is valid with no other file change. The agent declares the id in `todo_ids`, and the runner validates that the request names it and that the row exists, removes it and commits the removal. `agentic-pr-create` still requires real changes beyond `TODO.md`.
 
 `pnpm agentic-pr-update --operation resolve-conflicts <pr>` is also used by `manual-agentic-pr-update` with `operation=resolve-conflicts`. It accepts no instruction, enables the merge of `origin/main`, and selects the shared conflict-resolution skill in the existing PR-update runner.
 
