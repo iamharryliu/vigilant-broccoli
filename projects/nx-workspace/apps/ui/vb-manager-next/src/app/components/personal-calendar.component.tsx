@@ -6,12 +6,10 @@ import {
   CalendarConfig,
   GOOGLE_CALENDAR,
 } from '@vigilant-broccoli/common-browser';
+import { PERSONAL_CALENDAR_SOURCES } from '@vigilant-broccoli/personal-common-js';
 import { authFetch } from '../../../libs/auth';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { EventCalendar } from '../constants/event-calendars';
-
-const BIRTHDAYS_CALENDAR =
-  'f61b08e940f7c4fb8becf0d419c8c09f7e0c46d6d03343637aef5837c766a09b@group.calendar.google.com';
 
 // Matches the `md` breakpoint used elsewhere in the app (e.g. Sidebar's
 // narrow-viewport check) so "mobile" means the same thing everywhere.
@@ -31,30 +29,12 @@ const BASE_CALENDAR_CONFIG: Omit<CalendarConfig, 'mode'> = {
   ctz: GOOGLE_CALENDAR.TIMEZONE.COPENHAGEN,
   showPrint: 0,
   title: 'Personal Calendar',
-  ownerCalendars: [
-    {
-      email: GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL,
-      color: GOOGLE_CALENDAR.CALENDAR_COLOR.GREEN,
-    },
-  ],
-  sharedCalendars: [
-    {
-      id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.COUNTRY_CALENDAR.SWEDEN,
-      color: GOOGLE_CALENDAR.CALENDAR_COLOR.PURPLE,
-    },
-    {
-      id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.PHASES_OF_THE_MOON,
-      color: GOOGLE_CALENDAR.CALENDAR_COLOR.DARK_PINK,
-    },
-    {
-      id: BIRTHDAYS_CALENDAR,
-      color: GOOGLE_CALENDAR.CALENDAR_COLOR.BLUE,
-    },
-    {
-      id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.H_AND_K,
-      color: GOOGLE_CALENDAR.CALENDAR_COLOR.PINK,
-    },
-  ],
+  ownerCalendars: PERSONAL_CALENDAR_SOURCES.filter(
+    source => source.kind === 'owner',
+  ).map(source => ({ email: source.id, color: source.color })),
+  sharedCalendars: PERSONAL_CALENDAR_SOURCES.filter(
+    source => source.kind === 'shared',
+  ).map(source => ({ id: source.id, color: source.color })),
 };
 
 type CalendarMode = CalendarConfig['mode'];

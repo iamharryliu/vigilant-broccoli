@@ -4,6 +4,7 @@ import {
   GOOGLE_CALENDAR,
   type CalendarConfig,
 } from '@vigilant-broccoli/common-browser';
+import { PERSONAL_GOOGLE_CALENDAR } from '@vigilant-broccoli/personal-common-js';
 import { GeneralLayout } from '../layouts/general-layout';
 
 const MOBILE_BREAKPOINT = 640;
@@ -23,7 +24,7 @@ const BASE_CALENDAR_CONFIG: Omit<CalendarConfig, 'mode'> = {
   title: 'Calendar',
   ownerCalendars: [
     {
-      email: GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL,
+      email: PERSONAL_GOOGLE_CALENDAR.PERSONAL,
       color: GOOGLE_CALENDAR.CALENDAR_COLOR.GREEN,
     },
   ],
