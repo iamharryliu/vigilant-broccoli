@@ -20,6 +20,7 @@ import {
   Location,
   Preparation,
   toDisplayTemperature,
+  WEATHER_CONDITION,
 } from '@vigilant-broccoli/common-js';
 import {
   cn,
@@ -79,6 +80,21 @@ const TILE_VALUE_CLASS = 'flex items-center gap-1 text-[0.85rem] font-semibold';
 const TILE_LABEL_CLASS =
   'overflow-hidden text-ellipsis whitespace-nowrap text-[0.7rem] text-[var(--gray-11)]';
 const ATTRIBUTION_CLASS = 'text-center text-[0.65rem] text-[var(--gray-11)]';
+const PLACEHOLDER_WEATHER: LocalWeather = {
+  city: null,
+  temperatureC: 0,
+  feelsLikeC: 0,
+  highC: 0,
+  lowC: 0,
+  humidityPercent: 0,
+  windSpeedKph: 0,
+  windMaxKph: 0,
+  precipitationMm: 0,
+  precipitationSumMm: 0,
+  condition: WEATHER_CONDITION.CLEAR,
+  isDay: true,
+};
+const INVISIBLE_CLASS = 'invisible';
 const DETAIL_LIST_CLASS =
   'flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-[var(--gray-11)]';
 
@@ -139,11 +155,13 @@ const getBrowserTimezoneOffsetSeconds = (): number =>
 
 interface WeatherDetailsProps {
   weather: DashboardInfoCardWeather;
+  loading: boolean;
   preparationLoading: boolean;
 }
 
 const WeatherDetails = ({
   weather,
+  loading,
   preparationLoading,
 }: WeatherDetailsProps) => {
   const { t } = useWeatherTranslation();
@@ -182,24 +200,32 @@ const WeatherDetails = ({
     ({ key, icon, labelKey }) => ({ key, icon, label: t(labelKey) }),
   );
 
+  // Always render the details block (hidden while loading) and a badge row of
+  // fixed minimum height so the card keeps its size when data arrives.
   return (
     <div className="flex flex-col items-center gap-2">
-      <ul className={DETAIL_LIST_CLASS}>
+      <ul
+        className={cn(DETAIL_LIST_CLASS, loading && INVISIBLE_CLASS)}
+        aria-hidden={loading || undefined}
+      >
         {details.map(detail => (
           <li key={detail}>{detail}</li>
         ))}
       </ul>
-      <WeatherBadgeList badges={badges} />
-      {preparationLoading && (
-        <div
-          className="flex gap-2"
-          role="status"
-          aria-label={t('STATUS.LOADING_PREPARATION')}
-        >
-          <Skeleton className="h-7 w-32 rounded-full" />
-          <Skeleton className="h-7 w-24 rounded-full" />
-        </div>
-      )}
+      <div className="flex min-h-[1.75rem] items-center justify-center">
+        {preparationLoading || loading ? (
+          <div
+            className="flex gap-2"
+            role={loading ? undefined : 'status'}
+            aria-label={loading ? undefined : t('STATUS.LOADING_PREPARATION')}
+          >
+            <Skeleton className="h-7 w-32 rounded-full" />
+            <Skeleton className="h-7 w-24 rounded-full" />
+          </div>
+        ) : (
+          <WeatherBadgeList badges={badges} />
+        )}
+      </div>
     </div>
   );
 };
@@ -346,9 +372,10 @@ const DashboardInfoCardView = ({
         {renderTiles()}
       </div>
 
-      {weather && !isLoading && !error && (
+      {!error && (
         <WeatherDetails
-          weather={weather}
+          weather={isLoading ? PLACEHOLDER_WEATHER : weather}
+          loading={isLoading}
           preparationLoading={preparationLoading}
         />
       )}
@@ -357,8 +384,11 @@ const DashboardInfoCardView = ({
         <ForecastCarousel id={forecastId} forecast={forecast} />
       )}
 
-      {weather && !isLoading && !error && (
-        <footer className={ATTRIBUTION_CLASS}>
+      {!error && (
+        <footer
+          className={cn(ATTRIBUTION_CLASS, isLoading && INVISIBLE_CLASS)}
+          aria-hidden={isLoading || undefined}
+        >
           {t('ATTRIBUTION.WEATHER')} <span aria-hidden>{SEPARATOR}</span>{' '}
           {t('ATTRIBUTION.LOCATION')}
         </footer>
