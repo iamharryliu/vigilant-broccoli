@@ -11,6 +11,7 @@ FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 PRE_COMMIT_HELPER=/tmp/run-pre-commit.sh
 MERGE_BODY_HELPER=/tmp/merge-pr-body.py
 CI_LOG=/tmp/pr-ci-failures.log
+RUN_LOG=/tmp/pr-ci-run.log
 CI_LOG_BUDGET=20000
 # A just-pushed branch still has checks running; a CI-log run waits this long for them
 # so it sees their result instead of an empty failure list.
@@ -79,6 +80,21 @@ salvage_on_failure() {
 }
 trap salvage_on_failure EXIT
 
+# A failure's cause usually sits where its step starts and the summary where it ends, so
+# an over-budget log keeps both ends instead of only the last bytes of the whole file.
+slice_log() {
+  local file=$1 budget=$2 size head_bytes
+  size=$(wc -c < "$file")
+  if [ "$size" -le "$budget" ]; then
+    cat "$file"
+    return
+  fi
+  head_bytes=$((budget / 3))
+  head -c "$head_bytes" "$file"
+  printf '\n... [%d bytes omitted] ...\n' $((size - budget))
+  tail -c $((budget - head_bytes)) "$file"
+}
+
 count_checks() {
   gh pr checks "$PR" --json bucket -q "[.[] | select(.bucket == \"$1\")] | length" 2>/dev/null || echo 0
 }
@@ -108,15 +124,18 @@ if [ -n "${SANDBOX_CI_LOGS:-}" ]; then
     echo "WARNING: could not list workflow runs for ${BRANCH}; the agent gets no failed-step logs." >&2
     FAILED_RUN_IDS=""
   fi
-  for run_id in $FAILED_RUN_IDS; do
+  # shellcheck disable=SC2086
+  set -- $FAILED_RUN_IDS
+  for run_id in "$@"; do
     echo "===== failing run $run_id =====" >> "$CI_LOG"
-    gh run view "$run_id" --log-failed >> "$CI_LOG" 2>&1 || true
+    gh run view "$run_id" --log-failed > "$RUN_LOG" 2>&1 || true
+    slice_log "$RUN_LOG" $((CI_LOG_BUDGET / $#)) >> "$CI_LOG"
   done
   CI_SECTION=$(cat <<EOF
 
-Failing CI output for this PR (checks summary followed by failed-step logs, truncated to the last ${CI_LOG_BUDGET} bytes):
+Failing CI output for this PR (checks summary followed by failed-step logs, each run's log trimmed to its start and end, about ${CI_LOG_BUDGET} bytes in total):
 
-$(tail -c "$CI_LOG_BUDGET" "$CI_LOG")
+$(tail -c "$((CI_LOG_BUDGET * 2))" "$CI_LOG")
 
 Formatting failures from the pre-commit job (trailing-whitespace, end-of-file-fixer, black) are auto-fixed by the calling script; spend your effort on real lint, test, build, or logic failures.
 EOF
