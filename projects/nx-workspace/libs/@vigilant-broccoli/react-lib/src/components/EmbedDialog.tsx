@@ -32,25 +32,23 @@ export function EmbedDialog({ title, url, onOpenChange }: EmbedDialogProps) {
         showCloseButton={false}
         className="flex h-[90dvh] w-[calc(100%-2rem)] max-w-6xl flex-col gap-0 overflow-hidden p-0"
       >
-        <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-2">
-          <DialogTitle className="truncate text-base">{title}</DialogTitle>
-          <div className="flex items-center gap-1">
-            <IconButton
-              icon="external-link"
-              variant="ghost"
-              aria-label={OPEN_IN_NEW_TAB_LABEL}
-              title={OPEN_IN_NEW_TAB_LABEL}
-              onClick={openInNewTab}
-            />
-            <IconButton
-              icon="x"
-              variant="ghost"
-              aria-label={CLOSE_LABEL}
-              onClick={() => onOpenChange(false)}
-            />
-          </div>
-        </div>
+        <DialogTitle className="sr-only">{title}</DialogTitle>
         <DialogDescription className="sr-only">{title}</DialogDescription>
+        <div className="absolute right-2 top-2 z-10 flex items-center gap-1 rounded-md bg-background/80 p-0.5 backdrop-blur-sm">
+          <IconButton
+            icon="external-link"
+            variant="ghost"
+            aria-label={OPEN_IN_NEW_TAB_LABEL}
+            title={OPEN_IN_NEW_TAB_LABEL}
+            onClick={openInNewTab}
+          />
+          <IconButton
+            icon="x"
+            variant="ghost"
+            aria-label={CLOSE_LABEL}
+            onClick={() => onOpenChange(false)}
+          />
+        </div>
         {url && (
           <iframe
             title={title}
