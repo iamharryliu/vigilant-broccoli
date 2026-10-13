@@ -1,9 +1,12 @@
-import { HONEYPOT_FIELD_NAME } from '@vigilant-broccoli/common-js';
+import {
+  HONEYPOT_FIELD_NAME,
+  HTTP_STATUS_CODES,
+} from '@vigilant-broccoli/common-js';
 import { createSwaggerSpec } from '@vigilant-broccoli/fastify';
 
 const SERVICE_TITLE = 'vb-express';
 const SERVICE_DESCRIPTION =
-  'Personal API gateway: better-auth sessions, API key admin, Google Tasks, LLM-backed parsing (calendar, tasks, receipts, recipes, storage), messaging, and audio. /api routes require an x-api-key header with the matching service permission.';
+  'Personal API gateway: better-auth sessions, API key admin, Google Tasks, LLM-backed parsing (calendar, tasks, receipts, recipes, storage), messaging, and audio. /api routes require an x-api-key header with the matching service permission, except the read-only GET /api/public/event-calendars, which needs no key and returns only public event calendars.';
 
 const JSON_CONTENT = 'application/json';
 const MULTIPART_CONTENT = 'multipart/form-data';
@@ -46,6 +49,49 @@ const TASK_ID_REQUIRED_RESPONSE = { description: 'taskId is required' };
 const GOOGLE_TASKS_ERROR_RESPONSE = {
   description: "Google Tasks API error, with Google's status passed through",
 };
+const PUBLIC_EVENT_CALENDARS_PATH = '/api/public/event-calendars';
+const PUBLIC_EVENT_CALENDARS_ERROR_RESPONSE = {
+  description:
+    'Public event calendars could not be loaded (generic message; details are logged server-side)',
+  content: {
+    [JSON_CONTENT]: {
+      schema: {
+        type: 'object',
+        required: ['error'],
+        properties: { error: { type: 'string' } },
+      },
+    },
+  },
+};
+const PUBLIC_EVENT_CALENDARS_OK_RESPONSE = {
+  description:
+    'Event calendars the manager has marked public, oldest first. An empty list is a confirmed empty result. Sent with Cache-Control: no-store.',
+  content: {
+    [JSON_CONTENT]: {
+      schema: {
+        type: 'object',
+        required: ['calendars'],
+        properties: {
+          calendars: {
+            type: 'array',
+            items: {
+              type: 'object',
+              required: ['id', 'name', 'url'],
+              properties: {
+                id: { type: 'string' },
+                name: { type: 'string' },
+                url: {
+                  type: 'string',
+                  description: 'Encoded Google Calendar embed/view link',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
 const TASKS_INTERNAL_RESPONSE = {
   description: 'Not authenticated or unexpected error',
 };
@@ -60,6 +106,21 @@ export const swaggerSpec = createSwaggerSpec({
         summary: 'Health check',
         security: [],
         responses: { '200': { description: 'Service name' } },
+      },
+    },
+    [PUBLIC_EVENT_CALENDARS_PATH]: {
+      get: {
+        summary:
+          'Public event calendars (no API key; read-only, is_public rows only)',
+        security: [],
+        responses: {
+          [HTTP_STATUS_CODES.OK]: PUBLIC_EVENT_CALENDARS_OK_RESPONSE,
+          [HTTP_STATUS_CODES.TOO_MANY_REQUESTS]: {
+            description: 'Rate limit exceeded',
+          },
+          [HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR]:
+            PUBLIC_EVENT_CALENDARS_ERROR_RESPONSE,
+        },
       },
     },
     '/api/__ping': {

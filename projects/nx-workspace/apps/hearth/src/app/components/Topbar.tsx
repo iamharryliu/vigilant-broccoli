@@ -135,10 +135,10 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
           <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
             <Home size={14} />
             <Select
-              selectedOption={homes.find(h => h.id === selectedHomeId)}
-              setValue={home => setSelectedHomeId(home.id)}
+              value={homes.find(h => h.id === selectedHomeId)}
+              onValueChange={home => setSelectedHomeId(home.id)}
               options={homes}
-              optionIdenfifier="id"
+              optionIdentifier="id"
               optionDisplayKey="name"
             />
           </div>

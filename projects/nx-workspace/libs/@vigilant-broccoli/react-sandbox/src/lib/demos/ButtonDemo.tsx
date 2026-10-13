@@ -1,8 +1,11 @@
+import { useTranslation } from '../i18n';
+import { DemoSection } from './DemoSection';
 import { useState } from 'react';
 
 import { ExternalLink, ArrowRight } from 'lucide-react';
 import {
   Button,
+  Input,
   ButtonList,
   ButtonConfig,
   ChatSendButton,
@@ -15,7 +18,6 @@ import {
   GoogleSigninButton,
   MicrosoftSigninButton,
   SpeechToTextButton,
-  Heading,
 } from '@vigilant-broccoli/react-lib';
 import { AudioButtonDemo } from './AudioButtonDemo';
 
@@ -48,10 +50,10 @@ const BUTTON_LIST_BUTTONS: ButtonConfig[] = [
 
 const MOCK_PROCESS_DELAY_MS = 1500;
 const MOCK_STREAM_DELAY_MS = 2500;
-const CHAT_INPUT_PLACEHOLDER = 'Type a message...';
 const noop = () => undefined;
 
 function ChatSendButtonDemo() {
+  const { t } = useTranslation();
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
 
@@ -64,17 +66,13 @@ function ChatSendButtonDemo() {
   const handleStop = () => setIsStreaming(false);
 
   return (
-    <div className="flex gap-3 items-center">
-      <input
+    <div className="flex flex-wrap items-center gap-3">
+      <Input
         value={input}
         onChange={e => setInput(e.target.value)}
-        placeholder={CHAT_INPUT_PLACEHOLDER}
-        style={{
-          padding: '0.5rem 0.75rem',
-          borderRadius: '0.375rem',
-          border: '1px solid var(--gray-6)',
-          minWidth: '14rem',
-        }}
+        placeholder={t('DEMO_SECTION.BUTTON.CHAT_PLACEHOLDER')}
+        aria-label={t('DEMO_SECTION.BUTTON.CHAT_PLACEHOLDER')}
+        className="w-56 max-w-full"
       />
       <ChatSendButton
         isStreaming={isStreaming}
@@ -102,7 +100,7 @@ function SpeechToTextButtonDemo() {
   };
 
   return (
-    <div className="flex gap-3 items-center">
+    <div className="flex flex-wrap items-center gap-3">
       <SpeechToTextButton
         isRecording={isRecording}
         isProcessing={isProcessing}
@@ -115,14 +113,12 @@ function SpeechToTextButtonDemo() {
 }
 
 export function ButtonDemo() {
+  const { t } = useTranslation();
   const [dark, setDark] = useState(false);
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <Heading size="4" mb="3">
-          Variants
-        </Heading>
+      <DemoSection title={t('DEMO_SECTION.BUTTON.VARIANTS')}>
         <div className="flex gap-3 flex-wrap">
           <Button>Default</Button>
           <Button variant="secondary">Secondary</Button>
@@ -131,38 +127,29 @@ export function ButtonDemo() {
           <Button variant="destructive">Destructive</Button>
           <Button variant="link">Link</Button>
         </div>
-      </div>
+      </DemoSection>
 
-      <div>
-        <Heading size="4" mb="3">
-          Sizes
-        </Heading>
-        <div className="flex gap-3 items-center">
+      <DemoSection title={t('DEMO_SECTION.BUTTON.SIZES')}>
+        <div className="flex flex-wrap items-center gap-3">
           <Button size="xs">XSmall</Button>
           <Button size="sm">Small</Button>
           <Button size="default">Default</Button>
           <Button size="lg">Large</Button>
         </div>
-      </div>
+      </DemoSection>
 
-      <div>
-        <Heading size="4" mb="3">
-          States
-        </Heading>
-        <div className="flex gap-3">
+      <DemoSection title={t('DEMO_SECTION.BUTTON.STATES')}>
+        <div className="flex flex-wrap gap-3">
           <Button onClick={async () => new Promise(r => setTimeout(r, 1500))}>
             Click to Load
           </Button>
           <Button disabled>Disabled</Button>
           <Button loading>Loading</Button>
         </div>
-      </div>
+      </DemoSection>
 
-      <div>
-        <Heading size="4" mb="3">
-          Inline Icons
-        </Heading>
-        <div className="flex gap-3 items-center">
+      <DemoSection title={t('DEMO_SECTION.BUTTON.INLINE_ICONS')}>
+        <div className="flex flex-wrap items-center gap-3">
           <Button>
             <ArrowRight size={14} className="shrink-0" />
             inline-start
@@ -177,54 +164,39 @@ export function ButtonDemo() {
             <ExternalLink size={14} className="shrink-0" />
           </Button>
         </div>
-      </div>
+      </DemoSection>
 
-      <div className="flex flex-col gap-3">
-        <div>
-          <Heading size="4" mb="3">
-            Icon Buttons
-          </Heading>
-          <div className="flex gap-3 items-center">
+      <div className="flex flex-col gap-6">
+        <DemoSection title={t('DEMO_SECTION.BUTTON.ICON_BUTTONS')}>
+          <div className="flex flex-wrap items-center gap-3">
             <IconButton icon="x" title="Close" />
             <IconButton icon="filter" variant="outline" title="Filter" />
             <IconButton icon="search" variant="ghost" title="Search" />
             <IconButton icon="plus" variant="secondary" title="Add" />
             <IconButton icon="minus" variant="secondary" title="Remove" />
           </div>
-        </div>
+        </DemoSection>
 
-        <div>
-          <Heading size="4" mb="3">
-            Delete Icon Button
-          </Heading>
-          <div className="flex gap-3 items-center">
+        <DemoSection title={t('DEMO_SECTION.BUTTON.DELETE_ICON_BUTTON')}>
+          <div className="flex flex-wrap items-center gap-3">
             <DeleteIconButton title="Delete" />
           </div>
-        </div>
+        </DemoSection>
 
-        <div>
-          <Heading size="4" mb="3">
-            Dark Mode Icon Button
-          </Heading>
-          <div className="flex gap-3 items-center">
+        <DemoSection title={t('DEMO_SECTION.BUTTON.DARK_MODE_ICON_BUTTON')}>
+          <div className="flex flex-wrap items-center gap-3">
             <DarkModeIconButton dark={dark} onToggle={setDark} />
           </div>
-        </div>
+        </DemoSection>
 
-        <div>
-          <Heading size="4" mb="3">
-            Close Button
-          </Heading>
-          <div className="flex gap-3 items-center">
+        <DemoSection title={t('DEMO_SECTION.BUTTON.CLOSE_BUTTON')}>
+          <div className="flex flex-wrap items-center gap-3">
             <CloseButton title="Close" />
           </div>
-        </div>
+        </DemoSection>
 
-        <div>
-          <Heading size="4" mb="3">
-            Copy Button
-          </Heading>
-          <div className="flex gap-3 items-center">
+        <DemoSection title={t('DEMO_SECTION.BUTTON.COPY_BUTTON')}>
+          <div className="flex flex-wrap items-center gap-3">
             <CopyButton text="hello copy pastable" />
             <CopyButton
               text={async () => {
@@ -233,27 +205,21 @@ export function ButtonDemo() {
               }}
             />
           </div>
-        </div>
+        </DemoSection>
 
-        <div>
-          <Heading size="4" mb="3">
-            Speech To Text Button
-          </Heading>
+        <DemoSection title={t('DEMO_SECTION.BUTTON.SPEECH_TO_TEXT_BUTTON')}>
           <SpeechToTextButtonDemo />
-        </div>
+        </DemoSection>
 
-        <div>
-          <Heading size="4" mb="3">
-            Audio Button
-          </Heading>
+        <DemoSection title={t('DEMO_SECTION.BUTTON.AUDIO_BUTTON')}>
           <AudioButtonDemo />
-        </div>
+        </DemoSection>
       </div>
 
-      <div>
-        <Heading size="4" mb="3">
-          Monospace Text
-        </Heading>
+      <DemoSection
+        title={t('DEMO_SECTION.BUTTON.MONOSPACE_TEXT')}
+        className="overflow-x-auto"
+      >
         <div className="flex flex-col gap-3">
           <MonospaceText text="192.168.1.1" />
           <MonospaceText text="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC3very long ssh key content that should be truncated" />
@@ -263,31 +229,22 @@ export function ButtonDemo() {
           />
           <MonospaceText text="loading skeleton" loading />
         </div>
-      </div>
+      </DemoSection>
 
-      <div>
-        <Heading size="4" mb="3">
-          Social Signin Buttons
-        </Heading>
+      <DemoSection title={t('DEMO_SECTION.BUTTON.SOCIAL_SIGNIN_BUTTONS')}>
         <div className="flex flex-col gap-3" style={{ maxWidth: 300 }}>
           <GoogleSigninButton />
           <MicrosoftSigninButton />
         </div>
-      </div>
+      </DemoSection>
 
-      <div>
-        <Heading size="4" mb="3">
-          Chat Send Button
-        </Heading>
+      <DemoSection title={t('DEMO_SECTION.BUTTON.CHAT_SEND_BUTTON')}>
         <ChatSendButtonDemo />
-      </div>
+      </DemoSection>
 
-      <div>
-        <Heading size="4" mb="3">
-          Button List
-        </Heading>
+      <DemoSection title={t('DEMO_SECTION.BUTTON.BUTTON_LIST')}>
         <ButtonList buttons={BUTTON_LIST_BUTTONS} />
-      </div>
+      </DemoSection>
     </div>
   );
 }

@@ -40,13 +40,7 @@
           "mode": "production"
         },
         "production-env": {
-          "mode": "production",
-          "fileReplacements": [
-            {
-              "replace": "apps/ui/personal-website-react/src/environments/environment.ts",
-              "with": "apps/ui/personal-website-react/src/environments/environment.production.ts"
-            }
-          ]
+          "mode": "production-env"
         }
       }
     },

@@ -79,39 +79,17 @@ jobs:
             exit 1
           fi
 
-      - name: Management UI reachable + authenticated
+      - name: Management port not exposed
         env:
-          RABBITMQ_CA_CERT: ${{ env.RABBITMQ_CA_CERT }}
           RMQ_HOST: ${{ env.RMQ_HOST }}
-          RMQ_USER: ${{ env.RMQ_USER }}
-          RMQ_PASS: ${{ env.RMQ_PASS }}
         run: |
-          echo "$RABBITMQ_CA_CERT" | base64 -d > /tmp/rabbitmq-ca.crt
-          RMQ_NETRC=$(mktemp)
-          printf 'machine rabbitmq login %s password %s\n' "$RMQ_USER" "$RMQ_PASS" > "$RMQ_NETRC"
-          # The broker cert's SAN is 'rabbitmq' (not the public host), so we
-          # connect to the real host but present/verify SNI 'rabbitmq' against
-          # the CA. --connect-to resolves the host itself, so it works whether
-          # RMQ_HOST is a DNS name or a raw IP. Retry to tolerate brief blips.
-          for attempt in 1 2 3; do
-            STATUS=$(curl -s -o /tmp/mgmt.json -w '%{http_code}' --max-time 10 \
-              --cacert /tmp/rabbitmq-ca.crt \
-              --connect-to "rabbitmq:15671:${RMQ_HOST}:15671" \
-              --netrc-file "$RMQ_NETRC" \
-              "https://rabbitmq:15671/api/overview") || STATUS="000"
-            [ "$STATUS" = "200" ] && break
-            [ "$attempt" -lt 3 ] && sleep 5
-          done
-          rm -f "$RMQ_NETRC"
-          echo "Management /api/overview status: $STATUS"
-          if [ "$STATUS" != "200" ]; then
-            echo "✗ Management UI check failed"
-            cat /tmp/mgmt.json
+          # The management UI is tunnel-only behind Cloudflare Access; 15671
+          # must not be reachable from the internet.
+          if timeout 10 bash -c "exec 3<>/dev/tcp/${RMQ_HOST}/15671" 2>/dev/null; then
+            echo "✗ Port 15671 is reachable from the internet"
             exit 1
           fi
-          NODE=$(grep -o '"node":"[^"]*"' /tmp/mgmt.json | head -1)
-          VERSION=$(grep -o '"rabbitmq_version":"[^"]*"' /tmp/mgmt.json | head -1)
-          echo "✓ Management UI reachable ($NODE, $VERSION)"
+          echo "✓ Port 15671 closed"
 
       - name: Publish + consume round-trip
         env:

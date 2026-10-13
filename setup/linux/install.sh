@@ -25,6 +25,11 @@ if ask "Symlink dotfiles?"; then
     symlink_common_dotfiles || exit 1
 fi
 
+if command -v pre-commit >/dev/null 2>&1 && ask "Setup git hooks?"; then
+    git -C "$REPO_ROOT" config --unset-all core.hooksPath 2>/dev/null || true
+    (cd "$REPO_ROOT" && pre-commit install)
+fi
+
 RC_LINE='source $HOME/vigilant-broccoli/setup/dotfiles/bash/.rc.bash'
 grep -qxF "$RC_LINE" "$HOME/.bashrc" 2>/dev/null || echo "$RC_LINE" >> "$HOME/.bashrc"
 echo "Added rc hook to ~/.bashrc"

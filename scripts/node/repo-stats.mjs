@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const NX_WORKSPACE = 'projects/nx-workspace';
-const WEB_APPLICATIONS_PAGE = `${NX_WORKSPACE}/apps/ui/pages-index/src/app/pages/WebApplicationsPage.tsx`;
+const WEB_APPLICATIONS_REGISTRY = `${NX_WORKSPACE}/apps/ui/pages-index/src/app/consts/webApplications.json`;
 const API_APPS_DIR = `${NX_WORKSPACE}/apps/api/`;
 const NPM_LIBS_DIR = `${NX_WORKSPACE}/libs/@vigilant-broccoli/`;
 const WORKFLOWS_DIR = '.github/workflows/';
@@ -28,12 +28,11 @@ const TARGETS = [
 ];
 const RESUME_PATH = `${NX_WORKSPACE}/libs/@vigilant-broccoli/resume/src/resume.json`;
 const RESUME_COUNTS =
-  /\*\*\d+ applications\*\*, \*\*\d+ API services\*\*, \*\*\d+ Docker images\*\* and \*\*\d+ npm packages\*\*/;
+  /(\*\*)?\d+ applications\1, (\*\*)?\d+ API services\2, (\*\*)?\d+ Docker images\3 and (\*\*)?\d+ npm packages\4/;
 const MARKER_START = '<!-- managed:repo-stats:start -->';
 const MARKER_END = '<!-- managed:repo-stats:end -->';
 const CHECK_FLAG = '--check';
 
-const CARD_HREF = /<CardLink\s+href="([^"]+)"/g;
 const PUSH_COMMAND = /--push\b|docker push\b|docker\/build-push-action/;
 const IMAGE_TAG = new RegExp(
   `(?:-t\\s+|IMAGE:\\s*|tags:\\s*)["']?(${DOCKER_HUB_NAMESPACE}/[a-z0-9._-]+)`,
@@ -66,9 +65,9 @@ const projectJsons = trackedFiles(`${NX_WORKSPACE}/**/${PROJECT_JSON}`);
 
 const countApplications = () =>
   new Set(
-    [...read(WEB_APPLICATIONS_PAGE).matchAll(CARD_HREF)].map(
-      ([, href]) => href,
-    ),
+    Object.values(JSON.parse(read(WEB_APPLICATIONS_REGISTRY)))
+      .flat()
+      .map(({ href }) => href),
   ).size;
 
 const countProjectsWithTarget = (dir, target) =>
@@ -114,7 +113,14 @@ const withResumeStats = (
   }
   return content.replace(
     RESUME_COUNTS,
-    `**${applications} applications**, **${services} API services**, **${images} Docker images** and **${packages} npm packages**`,
+    (
+      _match,
+      applicationsMarker = '',
+      servicesMarker = '',
+      imagesMarker = '',
+      packagesMarker = '',
+    ) =>
+      `${applicationsMarker}${applications} applications${applicationsMarker}, ${servicesMarker}${services} API services${servicesMarker}, ${imagesMarker}${images} Docker images${imagesMarker} and ${packagesMarker}${packages} npm packages${packagesMarker}`,
   );
 };
 

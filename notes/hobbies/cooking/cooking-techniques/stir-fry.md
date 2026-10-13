@@ -4,6 +4,7 @@
 
 - [Technique](#technique)
 - [Vegetable Choices](#vegetable-choices)
+- [Flavor Bases](#flavor-bases)
 - [Recipe 1](#recipe-1)
   - [Ingredients](#ingredients)
   - [References](#references)
@@ -38,6 +39,12 @@ See [Density Order](../ingredients/vegetables.md#-density-order-densest--most-te
 | Soft / moisture-heavy | Cabbage, mushrooms, yellow squash                                                    |
 | Tender but crisp      | Green beans, snap peas                                                               |
 | Topping               | Garlic, ginger, scallions                                                            |
+
+## Flavor Bases
+
+| Style           | Aromatics          | Sauce                                                      |
+| --------------- | ------------------ | ---------------------------------------------------------- |
+| Garlic stir fry | Fry garlic for 15s | ¼ tsp salt, ¼ tsp sugar, ½ tsp cornstarch, sprinkle of MSG |
 
 ## Recipe 1
 

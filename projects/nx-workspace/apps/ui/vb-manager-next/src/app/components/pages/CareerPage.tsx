@@ -12,13 +12,20 @@ import {
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { DownloadIcon } from '@radix-ui/react-icons';
 import { ResumeViewComponent } from '../resume-view.component';
+import { ResumeDiffComponent } from '../resume-diff.component';
 import { ResumeChatPanel } from '../resume-chat-panel.component';
-import { resumeData, ResumeData } from '@vigilant-broccoli/resume';
+import {
+  resumeData,
+  ResumeData,
+  validateResume,
+} from '@vigilant-broccoli/resume';
 import { authFetch } from '../../../../libs/auth';
+import { useResumeChat } from '../../hooks/useResumeChat';
 
 const EDITOR_TAB = {
   JSON: 'json',
   AI: 'ai',
+  DIFF: 'diff',
 } as const;
 
 type EditorTab = (typeof EDITOR_TAB)[keyof typeof EDITOR_TAB];
@@ -26,6 +33,7 @@ type EditorTab = (typeof EDITOR_TAB)[keyof typeof EDITOR_TAB];
 const INITIAL_JSON_TEXT = JSON.stringify(resumeData, null, 2);
 
 const RESUME_API_PATH = '/api/resume';
+const RESUME_BASELINE_API_PATH = '/api/resume/baseline';
 const RESUME_PDF_API_PATH = '/api/resume/pdf';
 const RESUME_PDF_FILENAME = 'resume.pdf';
 const SAVE_DEBOUNCE_MS = 500;
@@ -37,32 +45,89 @@ const TOAST_MESSAGE = {
 } as const;
 
 const DEFAULT_JSON_ERROR = 'Invalid JSON';
+const SCHEMA_ERROR_SEPARATOR = '; ';
+const MAX_SCHEMA_ERRORS_SHOWN = 3;
+
+const parseResumeText = (
+  text: string,
+): { resume: ResumeData } | { error: string } => {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(text);
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : DEFAULT_JSON_ERROR,
+    };
+  }
+  const validation = validateResume(parsed);
+  return validation.ok
+    ? { resume: validation.resume }
+    : {
+        error: validation.errors
+          .slice(0, MAX_SCHEMA_ERRORS_SHOWN)
+          .join(SCHEMA_ERROR_SEPARATOR),
+      };
+};
+
+const readDownloadError = async (response: Response): Promise<string> => {
+  const body = await response.json().catch(() => undefined);
+  return typeof body?.error === 'string'
+    ? body.error
+    : TOAST_MESSAGE.DOWNLOAD_FAILED;
+};
 
 export const CareerPage = () => {
   const [activeTab, setActiveTab] = useState<EditorTab>(EDITOR_TAB.JSON);
   const [jsonText, setJsonText] = useState(INITIAL_JSON_TEXT);
   const [resume, setResume] = useState<ResumeData>(resumeData);
+  const [originalJsonText, setOriginalJsonText] = useState(INITIAL_JSON_TEXT);
   const [jsonError, setJsonError] = useState<string | null>(null);
+  const [revision, setRevision] = useState(0);
+  const [isDownloading, setIsDownloading] = useState(false);
   const hasEditedRef = useRef(false);
+  const revisionRef = useRef(0);
+
+  const commitResume = (nextResume: ResumeData): number => {
+    revisionRef.current += 1;
+    setRevision(revisionRef.current);
+    setResume(nextResume);
+    return revisionRef.current;
+  };
 
   const handleJsonChange = (value: string) => {
     hasEditedRef.current = true;
     setJsonText(value);
-    try {
-      setResume(JSON.parse(value) as ResumeData);
-      setJsonError(null);
-    } catch (error) {
-      setJsonError(error instanceof Error ? error.message : DEFAULT_JSON_ERROR);
+    const parsed = parseResumeText(value);
+    if ('error' in parsed) {
+      setJsonError(parsed.error);
+      return;
     }
+    commitResume(parsed.resume);
+    setJsonError(null);
   };
+
+  useEffect(() => {
+    authFetch(RESUME_BASELINE_API_PATH)
+      .then(response => (response.ok ? response.json() : Promise.reject()))
+      .then(
+        ({ content }) => setOriginalJsonText(content),
+        () => undefined,
+      );
+  }, []);
 
   useEffect(() => {
     authFetch(RESUME_API_PATH)
       .then(response => (response.ok ? response.json() : Promise.reject()))
       .then(
         ({ content }) => {
+          if (hasEditedRef.current) return;
+          const parsed = parseResumeText(content);
+          if ('error' in parsed) {
+            toast.error(`${TOAST_MESSAGE.LOAD_FAILED}: ${parsed.error}`);
+            return;
+          }
           setJsonText(content);
-          setResume(JSON.parse(content) as ResumeData);
+          commitResume(parsed.resume);
         },
         () => toast.error(TOAST_MESSAGE.LOAD_FAILED),
       );
@@ -86,30 +151,42 @@ export const CareerPage = () => {
     return () => clearTimeout(timeoutId);
   }, [jsonText, jsonError]);
 
-  const handleApplyResume = (nextResume: ResumeData) => {
+  const handleApplyResume = (nextResume: ResumeData): number => {
     hasEditedRef.current = true;
-    setResume(nextResume);
     setJsonText(JSON.stringify(nextResume, null, 2));
     setJsonError(null);
+    return commitResume(nextResume);
   };
 
-  const handleDownloadPdf = () => {
-    authFetch(RESUME_PDF_API_PATH, {
-      method: 'POST',
-      body: JSON.stringify({ resume }),
-    })
-      .then(response =>
-        response.ok ? response.blob() : Promise.reject(response),
-      )
-      .then(blob => {
-        const url = URL.createObjectURL(blob);
-        const anchor = document.createElement('a');
-        anchor.href = url;
-        anchor.download = RESUME_PDF_FILENAME;
-        anchor.click();
-        URL.revokeObjectURL(url);
-      })
-      .catch(() => toast.error(TOAST_MESSAGE.DOWNLOAD_FAILED));
+  const chat = useResumeChat({
+    resume,
+    revision,
+    canApply: !jsonError,
+    onApplyResume: handleApplyResume,
+  });
+
+  const handleDownloadPdf = async () => {
+    setIsDownloading(true);
+    try {
+      const response = await authFetch(RESUME_PDF_API_PATH, {
+        method: 'POST',
+        body: JSON.stringify({ resume }),
+      });
+      if (!response.ok) {
+        toast.error(await readDownloadError(response));
+        return;
+      }
+      const url = URL.createObjectURL(await response.blob());
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = RESUME_PDF_FILENAME;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      toast.error(TOAST_MESSAGE.DOWNLOAD_FAILED);
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -125,8 +202,12 @@ export const CareerPage = () => {
               <TabsList>
                 <TabsTrigger value={EDITOR_TAB.JSON}>Edit JSON</TabsTrigger>
                 <TabsTrigger value={EDITOR_TAB.AI}>AI Chat</TabsTrigger>
+                <TabsTrigger value={EDITOR_TAB.DIFF}>Diff</TabsTrigger>
               </TabsList>
-              <Button onClick={handleDownloadPdf} disabled={!!jsonError}>
+              <Button
+                onClick={handleDownloadPdf}
+                disabled={!!jsonError || isDownloading}
+              >
                 <DownloadIcon /> Download PDF
               </Button>
             </div>
@@ -150,8 +231,23 @@ export const CareerPage = () => {
 
             <TabsContent value={EDITOR_TAB.AI} className="pt-3 flex-1 min-h-0">
               <ResumeChatPanel
-                resume={resume}
-                onApplyResume={handleApplyResume}
+                messages={chat.messages}
+                isLoading={chat.isLoading}
+                revision={revision}
+                canApply={!jsonError}
+                onSend={chat.send}
+                onApply={chat.apply}
+                onReset={chat.reset}
+              />
+            </TabsContent>
+
+            <TabsContent
+              value={EDITOR_TAB.DIFF}
+              className="pt-3 flex-1 min-h-0"
+            >
+              <ResumeDiffComponent
+                original={originalJsonText}
+                current={jsonText}
               />
             </TabsContent>
           </Tabs>

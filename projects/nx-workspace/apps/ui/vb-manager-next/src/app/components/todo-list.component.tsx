@@ -220,8 +220,8 @@ export const TodoListComponent = () => {
                     </Table.Cell>
                     <Table.Cell>
                       <Select
-                        selectedOption={row.priority}
-                        setValue={priority =>
+                        value={row.priority}
+                        onValueChange={priority =>
                           updateRow(section.heading, rowIdx, { priority })
                         }
                         options={PRIORITY_OPTIONS}

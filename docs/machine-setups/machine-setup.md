@@ -25,4 +25,4 @@ bash setup/common/agent-skills.sh
 
 Use Claude's `/agentic-pr-create-rnd <question>` or Codex's `$agentic-pr-create-rnd <question>`. Existing skills and caches are preserved; conflicting entries are reported for manual resolution. See [agent setup](../agent-support.md) for the shared source, installation paths, and context discovery. Start a new agent session after setup to load the repository context.
 
-Personal Codex settings stay in the untracked `~/.codex/config.toml`. Machine setup does not create, modify, or symlink this file.
+Personal Codex settings stay in the untracked `~/.codex/config.toml`. Machine setup never symlinks this file; it only prepends `check_for_update_on_startup = false` when that key is missing (creating the file if needed) and leaves everything else untouched.

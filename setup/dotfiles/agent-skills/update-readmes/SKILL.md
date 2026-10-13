@@ -3,11 +3,6 @@ name: update-readmes
 description: In vigilant-broccoli, refresh every README.md against docs/app-readme-pattern.md and the current code.
 ---
 
-Use the current vigilant-broccoli checkout and resolve repository paths from its Git root. If the current directory is outside that repo, ask which checkout to use; do not operate on the skill installation checkout by default.
+Use the current vigilant-broccoli Git root. Outside this repo, ask which checkout to use; never default to the skill installation checkout.
 
-Review and refresh every `README.md` in the repo to match `docs/app-readme-pattern.md`:
-
-- Apps under `projects/nx-workspace/apps/*` — follow the app pattern.
-- Components under `infrastructure/*` (e.g. `terraform`, `local`, `agent-sandbox`) — follow the infrastructure pattern.
-
-Double check each README against the code and fix anything missing or incorrect.
+Refresh every `README.md` against `docs/app-readme-pattern.md` and current code. Use the app pattern for apps and the infrastructure pattern for infrastructure components; follow directory-specific curation rules.

@@ -1,0 +1,128 @@
+#!/bin/bash
+set -euo pipefail
+
+if [ $# -gt 0 ]; then
+  echo "Usage: audit-docs-runner.sh" >&2
+  exit 1
+fi
+
+MODEL=${SOLVE_MODEL:-opus}
+REPO_DIR="$HOME/vigilant-broccoli"
+META_FILE=/tmp/audit-docs-meta.json
+BRANCH="agent/audit-docs-$(date +%s)"
+MAX_CHANGED_FILES=15
+PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
+FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
+
+cd "$REPO_DIR"
+SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create-audit/SKILL.md")
+
+git checkout -b "$BRANCH"
+BASE_SHA=$(git rev-parse HEAD)
+rm -f "$META_FILE"
+
+PROMPT=$(cat <<EOF
+You are running non-interactively in a fresh clone of vigilant-broccoli, on a dedicated branch. Remove or rewrite documentation that describes legacy implementations which no longer apply to the current codebase.
+
+Follow these shared task instructions:
+
+$SKILL_INSTRUCTIONS
+
+Sandbox execution rules:
+- You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
+- Branching, committing, pushing, and opening the PR are handled by the calling script. Do not run mutating git commands or any gh commands.
+- The calling script rejects the run if any file other than Markdown changed, if notes/, docs/rnd/, docs/learning-timeline.md, TODO.md or a CHANGELOG file changed, or if more than $MAX_CHANGED_FILES files changed.
+- The only exception to the skill's output scope is $META_FILE, outside the checkout. Even for a clean run, write the metadata with empty removed/skipped lists; the calling script exits without opening a PR.
+
+When finished, write $META_FILE containing only a JSON object with these fields:
+  - removed: array of objects {path, change, reason} for every removal or rewrite, change being a short quote or description of what was removed or rewritten and reason a one-line reason with its verification evidence
+  - skipped: array of objects {path, reason} for candidates you left in place, including every candidate over the file cap
+  - commit_message: capitalized, concise, focused on why the documentation needed the cleanup, ending with a period
+  - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
+  - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
+  - pr_summary: markdown for the PR "## Summary" section — one bullet per removal or rewrite with its path and one-line reason, then a "### Skipped candidates" subsection listing each skipped candidate with its reason
+  - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (spot-check the removals, watch CI to green, then merge, and re-run \`pnpm agentic-pr-create-audit\` when candidates were skipped over the file cap)
+  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (uncertain candidates worth a human decision, related cleanups worth a separate PR), or "" when there are none
+EOF
+)
+
+claude -p "$PROMPT" --dangerously-skip-permissions --model "$MODEL" \
+  --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
+
+git checkout "$BRANCH"
+[ "$(git rev-parse HEAD)" = "$BASE_SHA" ] || git reset --soft "$BASE_SHA"
+
+# Finding nothing worth removing is a success: exit before the PR machinery
+# rather than opening an empty PR for the owner to close.
+if [ -z "$(git status --porcelain)" ]; then
+  echo "AUDIT_CLEAN: no legacy documentation survived verification — no PR opened."
+  exit 0
+fi
+
+git add -A
+
+# The skill's scope is re-checked here: these paths are historical records by
+# design (notes, R&D, the learning timeline, changelogs) or owned by another
+# operation (TODO.md belongs to agentic-pr-create-todo-audit).
+FORBIDDEN=$({
+  git diff --cached --name-only -- . ':(exclude,glob)**/*.md'
+  git diff --cached --name-only -- notes docs/rnd docs/learning-timeline.md TODO.md ':(glob,icase)**/CHANGELOG*'
+} | sort -u)
+if [ -n "$FORBIDDEN" ]; then
+  echo "ERROR: the audit touched paths it must never change:" >&2
+  echo "$FORBIDDEN" >&2
+  exit 1
+fi
+
+CHANGED_COUNT=$(git diff --cached --name-only | wc -l)
+if [ "$CHANGED_COUNT" -gt "$MAX_CHANGED_FILES" ]; then
+  echo "ERROR: $CHANGED_COUNT files changed, over the $MAX_CHANGED_FILES-file cap that keeps an audit reviewable." >&2
+  exit 1
+fi
+
+# shellcheck source=commit-subject.sh
+. "$REPO_DIR/infrastructure/agent-sandbox/commit-subject.sh"
+read_meta() { jq -r "$1 // empty" "$META_FILE" 2>/dev/null || true; }
+
+COMMIT_MESSAGE=$(normalize_commit_message "$(read_meta .commit_message)")
+TRAILER=$(read_meta .co_authored_by)
+PR_TITLE=$(normalize_pr_title "$(read_meta .pr_title)")
+PR_SUMMARY=$(read_meta .pr_summary)
+PR_NEXT_STEPS=$(read_meta .pr_next_steps)
+PR_SUGGESTIONS=$(read_meta .pr_suggestions)
+REMOVED_COUNT=$(read_meta '.removed | length')
+SKIPPED_COUNT=$(read_meta '.skipped | length')
+
+if [ -n "$COMMIT_MESSAGE" ]; then
+  COMMIT_SUBJECT="docs: ${COMMIT_MESSAGE}"
+else
+  COMMIT_SUBJECT="docs: Remove documentation of legacy implementations that no longer apply."
+fi
+
+echo "$TRAILER" | grep -Eqi '^co-authored-by: .+ <.+>$' || TRAILER="$FALLBACK_TRAILER"
+[ -n "$PR_TITLE" ] || PR_TITLE="$COMMIT_SUBJECT"
+[ -n "$PR_SUMMARY" ] || PR_SUMMARY="- Removed or rewrote ${REMOVED_COUNT:-0} legacy passages and skipped ${SKIPPED_COUNT:-0} candidates across ${CHANGED_COUNT} files."
+[ -n "$PR_NEXT_STEPS" ] || PR_NEXT_STEPS="- [ ] Spot-check each removal against its reason, then merge once CI is green"
+
+bash "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh"
+
+git add -A
+git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
+git push -u origin "$BRANCH"
+
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+  HISTORY_SOURCE="GitHub Actions"
+else
+  HISTORY_SOURCE="Docker sandbox (local)"
+fi
+
+PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
+  HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic-pr-create-audit" \
+  HISTORY_PROMPT="Remove or rewrite documentation of legacy implementations that no longer apply." \
+  HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
+  python3 "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py")
+
+PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
+echo "$PR_URL"
+printf 'PR_URL::%s\n' "$PR_URL"
+emit_pr_files "$BASE_SHA"

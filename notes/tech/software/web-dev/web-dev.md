@@ -2,7 +2,7 @@
 
 - [Frontend](./frontend/frontend.md)
 - [Backend](./backend/backend.md)
-- [Web Frameworks](./web-frameworks.md)
+- [Web Frameworks and Libraries](./frameworks-and-libraries.md)
 - [Database](./database/database.md)
 - [Devops](./devops/devops.md)
 - [Networking](./networking/networking.md)

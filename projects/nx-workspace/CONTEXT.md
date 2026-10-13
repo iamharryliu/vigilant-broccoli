@@ -8,105 +8,40 @@
   - [The three link surfaces share one section structure and drift silently](#the-three-link-surfaces-share-one-section-structure-and-drift-silently)
   - [Nx formatting must not hand the agent symlinks to Prettier](#nx-formatting-must-not-hand-the-agent-symlinks-to-prettier)
   - [Next.js workspace-root inference warnings are accepted](#nextjs-workspace-root-inference-warnings-are-accepted)
+  - [`fileReplacements` in a Vite app's `project.json` is ignored](#filereplacements-in-a-vite-apps-projectjson-is-ignored)
 
 ## Nuances
 
-Non-obvious traps in this directory — read the relevant entry **before**
-working on the surface it names, not only when something breaks.
-[nuance-pattern.md](../../docs/nuance-pattern.md) is the convention.
-
 ### `sharp` must stay in the nx-workspace root `dependencies`
 
-`sharp` is only imported by the `hearth` app's `/api/where-is` route, so it
-would normally belong in that app's own `package.json`. But Vercel's
-serverless bundler for `hearth` only picks up native/optional deps like
-`sharp` when they're hoisted into the workspace root `dependencies`
-(`projects/nx-workspace/package.json`) — a dep declared solely in the app's
-own `package.json` doesn't get bundled the same way, and the deployed
-function fails to resolve `sharp` at runtime.
-
-Keep `sharp` in the root `dependencies`, even though nothing at the root
-imports it directly.
+Keep `sharp` in `projects/nx-workspace/package.json`'s `dependencies`. Although only hearth's `/api/where-is` imports it, Vercel failed to bundle the native dependency when it was declared solely in hearth's `package.json`.
 
 ### A `react-lib` component renders unstyled in an app that never scanned it
 
-Tailwind only generates classes it finds in its `content` globs, and each
-app's `tailwind.config.js` lists the internal libs it scans by hand. When
-`personal-website-react` started using `react-lib`'s `Sidebar`, the lib's
-glob was never added, so every class that only appears inside the lib
-(`max-md:-translate-x-full`, `max-md:w-64`, `md:w-14`, ...) was missing from
-the CSS. Classes the app happened to use elsewhere still worked, so the
-sidebar half-rendered: on mobile it sat on-screen over the page instead of
-sliding off-canvas and blocked the menu button. Nothing fails at build or
-lint time. Whenever an app starts importing a new internal UI lib, add that
-lib's `src/**` glob to the app's Tailwind `content`.
+When an app starts importing an internal UI lib, add its `src/**` glob to the app's Tailwind `content`. Classes used only by that lib otherwise disappear silently from the CSS; build and lint still pass. This affected `react-lib`'s Sidebar in `personal-website-react`.
 
 ### The three link surfaces share one section structure and drift silently
 
-Three files publish the same set of personal links, each rendering it its own
-way, and nothing checks them against each other:
+When editing one of these, check all three; their URLs are shared but their section structures are not:
 
-- `apps/ui/personal-website-react/src/app/content/about.md` — a shields.io
-  badge table, one row per section. Also the `iamharryliu/iamharryliu` profile
-  README (see that app's own `CONTEXT.md`), so a drift here ships to GitHub.
-- `apps/ui/personal-website-react/src/app/components/pages/link-tree.page.tsx`
-  — `LINK_TREE_SECTIONS`, rendered at `harryliu.dev/links`.
-- `libs/@vigilant-broccoli/links/src/lib/pastebin.consts.ts` —
-  `PASTEBIN_GROUPS`, rendered by `vb-manager-next`'s `/pastebin`.
+- `apps/ui/personal-website-react/src/app/content/about.md` (also the GitHub profile README).
+- `apps/ui/personal-website-react/src/app/components/pages/link-tree.page.tsx` (`LINK_TREE_SECTIONS`).
+- `libs/@vigilant-broccoli/links/src/lib/pastebin.consts.ts` (`PASTEBIN_GROUPS`).
 
-They must carry the **same section headings in the same order, with the same
-links under each**: Personal, Contact, Address, Career, Software, Business,
-Community, Interests and Hobbies. Three exceptions, and only these three:
-Address is pastebin-only, Maps is `about.md`-only, and no surface links to
-itself (so `/links` omits its own Links entry).
+Keep matching links under the same headings and order: Personal, Contact, Address, Career, Software, Business, Community, Interests and Hobbies. Exceptions: Address is pastebin-only, Maps is `about.md`-only, and no surface links to itself.
 
-The drift is silent because only the URLs are shared — the section structure is
-hand-copied in three renderers with no common type. Before this was written
-down, `about.md` called the code section "Portfolio" while the other two called
-it "Software", `/links` had no Interests section at all, `harrysellsshit` sat in
-a different section in each file, and `about.md`'s IMDb badge pointed at
-MyAnimeList.
-
-URLs belong in `libs/@vigilant-broccoli/personal-common-js/src/index.ts`
-(`SOCIAL_LINK`, `COMMUNITY_LINK`, `PROJECT_LINK`, `BUSINESS_LINK`,
-`INTEREST_LINK`, `EMAIL_LINK`) so at least the addresses can't disagree —
-`about.md` is the one surface that can't import them, so check it by hand
-against those consts. When editing any one of the three, open the other two in
-the same change.
+Use `libs/@vigilant-broccoli/personal-common-js/src/index.ts` for URLs; manually check `about.md` against those consts because Markdown cannot import them.
 
 ### Nx formatting must not hand the agent symlinks to Prettier
 
-Prettier fails an explicitly passed symbolic link with "Explicitly specified
-pattern is a symbolic link" and exits 2; `.prettierignore` does not suppress
-that, because the check happens before ignore filtering. Only directory and
-glob arguments skip symlinks silently, which is why the repository-root
-`format` script (`prettier --write .`) is unaffected while anything feeding
-Prettier a file list is not.
-
-`nx format:write` builds that list from changed files and reads `.gitignore`
-and `.nxignore` from the Nx workspace root, not the repository root, so
-`AGENTS.md` and `CLAUDE.md` stay listed in this workspace's `.gitignore` even
-though both are tracked — ignore rules do not untrack a tracked file, and the
-entry is what keeps Nx from passing them on. The repository-root commit hook
-handles the same problem in `scripts/shell/format-staged.sh`. Format the
-canonical `CONTEXT.md` sources.
+Prettier rejects explicitly passed symlinks ("Explicitly specified pattern is a symbolic link", exit 2) before applying `.prettierignore`. Nx uses this workspace's ignore files when building its file list, so keep `AGENTS.md`/`CLAUDE.md` in its `.gitignore` even though they are tracked. Format `CONTEXT.md` sources; the root hook filters symlinks in `scripts/shell/format-staged.sh`.
 
 ### Next.js workspace-root inference warnings are accepted
 
-Next.js can log "Next.js inferred your workspace root, but it may not be
-correct" because it finds both the repository-root `pnpm-lock.yaml` and
-`projects/nx-workspace/pnpm-lock.yaml`. This affects `small-business-next`,
-`vb-manager-next`, `vb-manager-next-mobile`, `whiteboard`, `findme`,
-`hearth`, `employee-handler-ui`, and `weather-next`.
+The root and workspace `pnpm-lock.yaml` files trigger Next.js's "Next.js inferred your workspace root, but it may not be correct" warning. Keep both lockfiles and current configs; do not add `outputFileTracingRoot`/`turbopack.root` or reopen TODO `1f0a7e` solely to silence the warning.
 
-The warning alone is accepted: no build or deployment defect has been
-attributed to it. Previous attempts to silence it have been revisited without
-establishing a need to change the working configuration. Keep both lockfiles
-and the current Next.js configs; do not add `outputFileTracingRoot` or
-`turbopack.root` solely to suppress this message, or recreate retired TODO
-`1f0a7e` for the warning alone.
+Revisit only for a reproduced build, file-tracing or deployed-dependency failure attributable to inference. Check the affected app's build/deploy; for hearth's missing `sharp`, check dependency placement first.
 
-Revisit only if a concrete build, file-tracing, or deployed dependency failure
-is traced to root inference. Reproduce that failure with the affected app's
-`nx build <app>` and deploy target before changing the root; for missing
-`sharp` in hearth, check the dependency-placement nuance above first.
+### `fileReplacements` in a Vite app's `project.json` is ignored
+
+`@nx/vite/plugin` infers plain `vite build`, which ignores `fileReplacements` and can silently bake staging URLs into production. `calendars`, `cloud-8-skate-react` and `personal-website-react` use `mode: production-env` plus an environment-module alias in `vite.config.mts`. Verify the expected host in built `assets/*.js`, not just `project.json`.

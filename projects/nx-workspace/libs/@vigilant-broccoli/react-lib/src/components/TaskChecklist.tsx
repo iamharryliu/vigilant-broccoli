@@ -118,7 +118,7 @@ export const useTaskChecklistView = (
     const commitType = getCommitType(item.title);
     if (commitType === 'other') return null;
     return (
-      <span className="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 self-start">
+      <span className="text-xs px-2 py-0.5 rounded bg-muted text-muted-foreground self-start">
         {commitType}
       </span>
     );

@@ -2,6 +2,9 @@ const { join } = require('path');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  presets: [
+    require('../../../libs/@vigilant-broccoli/react-lib/tailwind.preset.cjs'),
+  ],
   darkMode: 'class',
   content: [
     join(__dirname, 'index.html'),

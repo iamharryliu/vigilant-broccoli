@@ -13,6 +13,7 @@ OCI_MAX_KEYS_PER_USER=3
 VERIFY_INITIAL_DELAY_SECONDS=180
 VERIFY_ATTEMPTS=30
 VERIFY_DELAY_SECONDS=15
+REVOKE_ATTEMPTS=20
 
 WORK_DIR=$(umask 077 && mktemp -d)
 trap 'rm -rf "${WORK_DIR}"' EXIT
@@ -98,6 +99,20 @@ content-length: ${#body}"
     "https://${OCI_IDENTITY_HOST}${path}"
 }
 
+# Identity-domain nodes sync a new key independently, so one successful request
+# does not guarantee the next one lands on a node that has the key yet.
+oci_request_retry() {
+  local attempt
+  for attempt in $(seq 1 "${REVOKE_ATTEMPTS}"); do
+    if oci_request "$@"; then
+      return 0
+    fi
+    echo "  attempt ${attempt}/${REVOKE_ATTEMPTS} failed; retrying in ${VERIFY_DELAY_SECONDS}s..." >&2
+    sleep "${VERIFY_DELAY_SECONDS}"
+  done
+  return 1
+}
+
 list_fingerprints() {
   jq -r --arg skip "$2" '.[] | select(.fingerprint != $skip) | "  \(.fingerprint) (created \(.timeCreated))"' <<< "$1"
 }
@@ -179,9 +194,9 @@ vault kv patch '"${VAULT_KV_PATH}"'/secrets OCI_CONFIG="$NEW_CONFIG" OCI_PRIVATE
 write_oci_local_config "$NEW_CONFIG" "$NEW_PRIVATE_KEY"
 
 echo "Revoking the superseded key (${CURRENT_FINGERPRINT})..."
-oci_request delete "${API_KEYS_PATH}/${CURRENT_FINGERPRINT}" "${NEW_KEY_FILE}" "${NEW_FINGERPRINT}" "" > /dev/null
+oci_request_retry delete "${API_KEYS_PATH}/${CURRENT_FINGERPRINT}" "${NEW_KEY_FILE}" "${NEW_FINGERPRINT}" "" > /dev/null
 
-REMAINING_KEYS=$(oci_request get "${API_KEYS_PATH}" "${NEW_KEY_FILE}" "${NEW_FINGERPRINT}" "")
+REMAINING_KEYS=$(oci_request_retry get "${API_KEYS_PATH}" "${NEW_KEY_FILE}" "${NEW_FINGERPRINT}" "")
 UNMANAGED=$(list_fingerprints "$REMAINING_KEYS" "$NEW_FINGERPRINT")
 if [ -n "$UNMANAGED" ]; then
   echo "Left in place — this script only revokes the key it replaced:"

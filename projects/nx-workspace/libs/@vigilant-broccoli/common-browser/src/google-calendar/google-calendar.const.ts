@@ -24,6 +24,5 @@ export const GOOGLE_CALENDAR = {
   },
   CALENDAR_EMAIL: {
     PERSONAL: 'harryliu1995@gmail.com',
-    WORK: 'harry.liu@elva11.se',
   },
 } as const;

@@ -28,6 +28,7 @@ Shared React component library.
   - `sonner`
   - `tailwind-merge`
 - Internal libs
+  - `common-browser`
   - `common-js`
 - Cloud services
   - Supabase

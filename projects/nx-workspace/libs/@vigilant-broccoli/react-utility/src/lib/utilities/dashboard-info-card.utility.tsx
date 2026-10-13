@@ -1,98 +1,122 @@
 'use client';
 
-import { ReactNode, useEffect, useMemo, useState } from 'react';
 import {
-  Cloud,
-  CloudDrizzle,
-  CloudFog,
-  CloudLightning,
-  CloudMoon,
-  CloudRain,
-  CloudSnow,
-  CloudSun,
-  LucideIcon,
-  Moon,
-  Sun,
-  Sunrise,
-  Sunset,
-} from 'lucide-react';
+  KeyboardEvent,
+  MouseEvent,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useState,
+} from 'react';
+import { LucideIcon } from 'lucide-react';
 import {
   formatLocalTime,
   formatMoonIllumination,
   getMoonPhase,
   getOrderedSunEvents,
+  LocalWeather,
   Location,
-  SUN_EVENT,
-  SunEventKind,
+  Preparation,
+  toDisplayTemperature,
   WEATHER_CONDITION,
-  WeatherCondition,
 } from '@vigilant-broccoli/common-js';
-import { Skeleton, TextProps } from '@vigilant-broccoli/react-lib';
+import {
+  cn,
+  LOCAL_WEATHER_STATUS,
+  LocalWeatherFailure,
+  LocalWeatherMessage,
+  PREPARATION_BADGES,
+  Skeleton,
+  TextProps,
+  useLocalWeather,
+  useWeatherTranslation,
+  WeatherBadgeList,
+  WeatherI18nProvider,
+} from '@vigilant-broccoli/react-lib';
 import { ClockComponent } from '../clock';
+import { ForecastCarousel } from './dashboard-info-card-forecast';
+import {
+  SUN_EVENT_LUCIDE_ICON,
+  weatherLucideIcon,
+} from './dashboard-info-card-icons';
 
 const CLOCK_TIME_SIZE: TextProps['size'] = '6';
 
 const TICK_MS = 60 * 1000;
 
-const TILE_MIN_WIDTH = '6.5rem';
 const TILE_ICON_SIZE = 22;
 const TILE_ICON_STROKE = 1.75;
 const TILE_COUNT = 4;
 const DEGREES_CELSIUS = '°C';
 const WEATHER_TILE_TITLE = 'Weather';
-const WEATHER_ICON_TIME = { DAY: 'day', NIGHT: 'night' } as const;
 const MOON_TILE_KEY = 'Moon';
+const SECONDS_PER_MINUTE = 60;
+const SEPARATOR = '·';
+const TITLE_SEPARATOR = ' — ';
+const PRECIPITATION_DECIMALS = 10;
 
-export interface DashboardInfoCardWeather {
-  city: string;
-  temp: number;
-  condition: WeatherCondition;
-  isDay: boolean;
+const FAILURE_STATUSES: string[] = [
+  LOCAL_WEATHER_STATUS.LOCATION_DENIED,
+  LOCAL_WEATHER_STATUS.LOCATION_UNAVAILABLE,
+  LOCAL_WEATHER_STATUS.WEATHER_ERROR,
+];
+
+const CARD_CLASS =
+  'flex w-full flex-col gap-4 rounded-xl border border-[var(--gray-6)] bg-[color-mix(in_srgb,var(--color-background)_50%,transparent)] p-4 shadow-lg';
+const CARD_TOGGLE_CLASS =
+  'cursor-pointer transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gray-8)]';
+const INTERACTIVE_SELECTOR = 'button, a, input, select, textarea';
+const SUMMARY_CLASS =
+  'flex flex-wrap items-center justify-center gap-x-6 gap-y-4';
+const HERO_CLASS = 'flex min-w-max flex-col items-center gap-1.5';
+const TILE_GRID_CLASS =
+  'grid grid-cols-[repeat(2,minmax(6.5rem,1fr))] gap-x-5 gap-y-3';
+const TILE_CLASS = 'flex min-w-[6.5rem] items-center gap-2 text-left';
+const TILE_ICON_CLASS = 'flex items-center text-2xl text-[var(--gray-11)]';
+const TILE_TEXT_CLASS = 'flex min-w-0 flex-col';
+const TILE_VALUE_CLASS = 'flex items-center gap-1 text-[0.85rem] font-semibold';
+const TILE_LABEL_CLASS =
+  'overflow-hidden text-ellipsis whitespace-nowrap text-[0.7rem] text-[var(--gray-11)]';
+const ATTRIBUTION_CLASS = 'text-center text-[0.65rem] text-[var(--gray-11)]';
+const PLACEHOLDER_WEATHER: LocalWeather = {
+  city: null,
+  temperatureC: 0,
+  feelsLikeC: 0,
+  highC: 0,
+  lowC: 0,
+  humidityPercent: 0,
+  windSpeedKph: 0,
+  windMaxKph: 0,
+  precipitationMm: 0,
+  precipitationSumMm: 0,
+  condition: WEATHER_CONDITION.CLEAR,
+  isDay: true,
+};
+const INVISIBLE_CLASS = 'invisible';
+const DETAIL_LIST_CLASS =
+  'flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-[var(--gray-11)]';
+
+export interface DashboardInfoCardWeather extends LocalWeather {
+  preparation?: Preparation | null;
 }
 
 export interface DashboardInfoCardProps {
-  location: Location;
-  timezoneOffsetSeconds: number;
+  location?: Location;
+  timezoneOffsetSeconds?: number;
   weather?: DashboardInfoCardWeather;
   loading?: boolean;
-  onWeatherClick?: () => void;
+  error?: LocalWeatherFailure;
+  onRetry?: () => void;
+  preparationLoading?: boolean;
+  fetchWeather?: (location: Location) => Promise<LocalWeather | null>;
+  fetchPreparation?: (weather: LocalWeather) => Promise<Preparation | null>;
+  expanded?: boolean;
+  defaultExpanded?: boolean;
+  onExpandedChange?: (expanded: boolean) => void;
+  className?: string;
 }
-
-interface WeatherLucideIcon {
-  day: LucideIcon;
-  night: LucideIcon;
-}
-
-const WEATHER_LUCIDE_ICON: Record<WeatherCondition, WeatherLucideIcon> = {
-  [WEATHER_CONDITION.CLEAR]: { day: Sun, night: Moon },
-  [WEATHER_CONDITION.PARTLY_CLOUDY]: { day: CloudSun, night: CloudMoon },
-  [WEATHER_CONDITION.CLOUDY]: { day: Cloud, night: Cloud },
-  [WEATHER_CONDITION.FOG]: { day: CloudFog, night: CloudFog },
-  [WEATHER_CONDITION.DRIZZLE]: { day: CloudDrizzle, night: CloudDrizzle },
-  [WEATHER_CONDITION.RAIN]: { day: CloudRain, night: CloudRain },
-  [WEATHER_CONDITION.SNOW]: { day: CloudSnow, night: CloudSnow },
-  [WEATHER_CONDITION.THUNDERSTORM]: {
-    day: CloudLightning,
-    night: CloudLightning,
-  },
-};
-
-const weatherLucideIcon = ({
-  condition,
-  isDay,
-}: DashboardInfoCardWeather): LucideIcon =>
-  WEATHER_LUCIDE_ICON[condition][
-    isDay ? WEATHER_ICON_TIME.DAY : WEATHER_ICON_TIME.NIGHT
-  ];
-
-const SUN_EVENT_LUCIDE_ICON: Record<SunEventKind, LucideIcon> = {
-  [SUN_EVENT.SUNRISE]: Sunrise,
-  [SUN_EVENT.SUNSET]: Sunset,
-};
-
-const TileIcon = ({ icon: Icon }: { icon: LucideIcon }) => (
-  <Icon size={TILE_ICON_SIZE} strokeWidth={TILE_ICON_STROKE} />
-);
 
 interface StatTile {
   key: string;
@@ -100,149 +124,204 @@ interface StatTile {
   value: string;
   label: string;
   title: string;
-  onClick?: () => void;
 }
 
-const CARD_STYLE = {
-  display: 'flex',
-  flexWrap: 'wrap',
-  alignItems: 'center',
-  justifyContent: 'center',
-  columnGap: '1.5rem',
-  rowGap: '1rem',
-  padding: '1rem',
-  backgroundColor:
-    'color-mix(in srgb, var(--color-background) 50%, transparent)',
-  borderRadius: '0.75rem',
-  border: '1px solid var(--gray-6)',
-  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-} as const;
-
-const HERO_STYLE = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  gap: '0.35rem',
-  minWidth: 'max-content',
-} as const;
-
-const TILE_GRID_STYLE = {
-  display: 'grid',
-  gridTemplateColumns: `repeat(2, minmax(${TILE_MIN_WIDTH}, 1fr))`,
-  columnGap: '1.25rem',
-  rowGap: '0.75rem',
-  paddingLeft: '1.5rem',
-  borderLeft: '1px solid var(--gray-6)',
-} as const;
-
-const TILE_ICON_STYLE = {
-  fontSize: '1.5rem',
-  display: 'flex',
-  alignItems: 'center',
-  color: 'var(--gray-11)',
-} as const;
-
-const TILE_TEXT_STYLE = {
-  display: 'flex',
-  flexDirection: 'column',
-  minWidth: 0,
-} as const;
-
-const TILE_VALUE_STYLE = { fontSize: '0.85rem', fontWeight: 600 } as const;
-
-const TILE_LABEL_STYLE = {
-  fontSize: '0.7rem',
-  color: 'var(--gray-9)',
-  whiteSpace: 'nowrap',
-  overflow: 'hidden',
-  textOverflow: 'ellipsis',
-} as const;
-
-const tileStyle = (interactive: boolean) =>
-  ({
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    minWidth: TILE_MIN_WIDTH,
-    cursor: interactive ? 'pointer' : 'default',
-    transition: 'opacity 0.2s ease',
-  }) as const;
+const TileIcon = ({ icon: Icon }: { icon: LucideIcon }) => (
+  <Icon size={TILE_ICON_SIZE} strokeWidth={TILE_ICON_STROKE} />
+);
 
 const StatTileView = ({ tile }: { tile: StatTile }) => (
-  <div
-    onClick={tile.onClick}
-    title={tile.title}
-    style={tileStyle(Boolean(tile.onClick))}
-    onMouseEnter={e => {
-      if (tile.onClick) e.currentTarget.style.opacity = '0.7';
-    }}
-    onMouseLeave={e => {
-      e.currentTarget.style.opacity = '1';
-    }}
-  >
-    <span style={TILE_ICON_STYLE}>{tile.icon}</span>
-    <div style={TILE_TEXT_STYLE}>
-      <span style={TILE_VALUE_STYLE}>{tile.value}</span>
-      <span style={TILE_LABEL_STYLE}>{tile.label}</span>
+  <div title={tile.title} className={TILE_CLASS}>
+    <span className={TILE_ICON_CLASS}>{tile.icon}</span>
+    <div className={TILE_TEXT_CLASS}>
+      <span className={TILE_VALUE_CLASS}>{tile.value}</span>
+      <span className={TILE_LABEL_CLASS}>{tile.label}</span>
     </div>
   </div>
 );
 
 const SkeletonTileView = () => (
-  <div style={tileStyle(false)}>
+  <div className={TILE_CLASS}>
     <Skeleton className="h-6 w-6 rounded-full" />
-    <div style={{ ...TILE_TEXT_STYLE, gap: '0.25rem', flex: 1 }}>
+    <div className={cn(TILE_TEXT_CLASS, 'flex-1 gap-1')}>
       <Skeleton className="h-3.5 w-10" />
       <Skeleton className="h-2.5 w-14" />
     </div>
   </div>
 );
 
-export const DashboardInfoCardUtilityContent = ({
+const getBrowserTimezoneOffsetSeconds = (): number =>
+  -new Date().getTimezoneOffset() * SECONDS_PER_MINUTE;
+
+interface WeatherDetailsProps {
+  weather: DashboardInfoCardWeather;
+  loading: boolean;
+  preparationLoading: boolean;
+}
+
+const WeatherDetails = ({
+  weather,
+  loading,
+  preparationLoading,
+}: WeatherDetailsProps) => {
+  const { t } = useWeatherTranslation();
+  const {
+    feelsLikeC,
+    highC,
+    lowC,
+    humidityPercent,
+    windSpeedKph,
+    windMaxKph,
+    precipitationMm,
+    precipitationSumMm,
+    preparation,
+  } = weather;
+  const roundPrecipitation = (mm: number) =>
+    Math.round(mm * PRECIPITATION_DECIMALS) / PRECIPITATION_DECIMALS;
+
+  const details = [
+    `${t('WEATHER.HIGH', { temperature: toDisplayTemperature(highC) })} / ${t(
+      'WEATHER.LOW',
+      { temperature: toDisplayTemperature(lowC) },
+    )}`,
+    t('WEATHER.FEELS_LIKE', { temperature: toDisplayTemperature(feelsLikeC) }),
+    t('WEATHER.HUMIDITY', { percent: Math.round(humidityPercent) }),
+    t('WEATHER.WIND', {
+      speed: Math.round(windSpeedKph),
+      max: Math.round(windMaxKph),
+    }),
+    t('WEATHER.PRECIPITATION', {
+      amount: roundPrecipitation(precipitationMm),
+      sum: roundPrecipitation(precipitationSumMm),
+    }),
+  ];
+
+  const badges = PREPARATION_BADGES.filter(({ key }) => preparation?.[key]).map(
+    ({ key, icon, labelKey }) => ({ key, icon, label: t(labelKey) }),
+  );
+
+  // Always render the details block (hidden while loading) and a badge row of
+  // fixed minimum height so the card keeps its size when data arrives.
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <ul
+        className={cn(DETAIL_LIST_CLASS, loading && INVISIBLE_CLASS)}
+        aria-hidden={loading || undefined}
+      >
+        {details.map(detail => (
+          <li key={detail}>{detail}</li>
+        ))}
+      </ul>
+      <div className="flex min-h-[1.75rem] items-center justify-center">
+        {preparationLoading || loading ? (
+          <div
+            className="flex gap-2"
+            role={loading ? undefined : 'status'}
+            aria-label={loading ? undefined : t('STATUS.LOADING_PREPARATION')}
+          >
+            <Skeleton className="h-7 w-32 rounded-full" />
+            <Skeleton className="h-7 w-24 rounded-full" />
+          </div>
+        ) : (
+          <WeatherBadgeList badges={badges} />
+        )}
+      </div>
+    </div>
+  );
+};
+
+const DashboardInfoCardView = ({
   location,
   timezoneOffsetSeconds,
   weather,
   loading = false,
-  onWeatherClick,
+  error,
+  onRetry,
+  preparationLoading = false,
+  expanded,
+  defaultExpanded = false,
+  onExpandedChange,
+  className,
 }: DashboardInfoCardProps) => {
+  const { t } = useWeatherTranslation();
+  const forecastId = useId();
   const [nowMs, setNowMs] = useState(() => Date.now());
+  const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
   const moonPhase = useMemo(() => getMoonPhase(new Date(nowMs)), [nowMs]);
+
+  const isExpanded = expanded ?? internalExpanded;
+  const forecast = weather?.forecast;
+  const hasForecast = !!forecast?.length;
+  const isLoading = loading || (!weather && !error);
 
   useEffect(() => {
     const interval = setInterval(() => setNowMs(Date.now()), TICK_MS);
     return () => clearInterval(interval);
   }, []);
 
+  const toggleForecast = useCallback(() => {
+    const next = !isExpanded;
+    if (expanded === undefined) setInternalExpanded(next);
+    onExpandedChange?.(next);
+  }, [isExpanded, expanded, onExpandedChange]);
+
+  const canToggle = hasForecast && !isLoading && !error;
+
+  const handleCardClick = (event: MouseEvent<HTMLDivElement>) => {
+    const target = event.target as HTMLElement;
+    if (
+      target.closest(INTERACTIVE_SELECTOR) ||
+      target.closest(`#${CSS.escape(forecastId)}`)
+    )
+      return;
+    toggleForecast();
+  };
+
+  const handleCardKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) return;
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    toggleForecast();
+  };
+
   const tiles: StatTile[] = useMemo(() => {
     if (!weather) {
       return [];
     }
 
-    const sunTiles: StatTile[] = getOrderedSunEvents(location, nowMs).map(
-      event => ({
-        key: event.label,
-        icon: <TileIcon icon={SUN_EVENT_LUCIDE_ICON[event.label]} />,
-        value: formatLocalTime(event.ts, timezoneOffsetSeconds),
-        label: event.label,
-        title: event.label,
-      }),
-    );
+    const sunTiles: StatTile[] = location
+      ? getOrderedSunEvents(location, nowMs).map(event => ({
+          key: event.label,
+          icon: <TileIcon icon={SUN_EVENT_LUCIDE_ICON[event.label]} />,
+          value: formatLocalTime(
+            event.ts,
+            timezoneOffsetSeconds ?? getBrowserTimezoneOffsetSeconds(),
+          ),
+          label: event.label,
+          title: event.label,
+        }))
+      : [];
 
     const leftTiles: StatTile[] = [
       {
         key: WEATHER_TILE_TITLE,
-        icon: <TileIcon icon={weatherLucideIcon(weather)} />,
-        value: `${weather.temp}${DEGREES_CELSIUS}`,
-        label: weather.city,
-        title: WEATHER_TILE_TITLE,
-        onClick: onWeatherClick,
+        icon: (
+          <TileIcon
+            icon={weatherLucideIcon(weather.condition, weather.isDay)}
+          />
+        ),
+        value: `${toDisplayTemperature(weather.temperatureC)}${DEGREES_CELSIUS}`,
+        label: weather.city ?? t('LOCATION.FALLBACK'),
+        title: `${WEATHER_TILE_TITLE}${TITLE_SEPARATOR}${t(
+          `CONDITION.${weather.condition}`,
+        )}`,
       },
       {
         key: MOON_TILE_KEY,
         icon: moonPhase.icon,
         value: formatMoonIllumination(moonPhase),
         label: moonPhase.name,
-        title: `${moonPhase.name} — ${formatMoonIllumination(
+        title: `${moonPhase.name}${TITLE_SEPARATOR}${formatMoonIllumination(
           moonPhase,
         )} illuminated`,
       },
@@ -251,29 +330,113 @@ export const DashboardInfoCardUtilityContent = ({
     return leftTiles.flatMap((leftTile, row) =>
       [leftTile, sunTiles[row]].filter(Boolean),
     );
-  }, [
-    weather,
-    location,
-    timezoneOffsetSeconds,
-    nowMs,
-    moonPhase,
-    onWeatherClick,
-  ]);
+  }, [weather, location, timezoneOffsetSeconds, nowMs, moonPhase, t]);
 
-  return (
-    <div style={CARD_STYLE}>
-      <div style={HERO_STYLE}>
-        <ClockComponent type="time" timeSize={CLOCK_TIME_SIZE} />
-        <ClockComponent type="info" />
-      </div>
-
-      <div style={TILE_GRID_STYLE}>
-        {loading || !weather
+  const renderTiles = () => {
+    if (error) {
+      return <LocalWeatherMessage failure={error} onRetry={onRetry} />;
+    }
+    return (
+      <div
+        className={TILE_GRID_CLASS}
+        role={isLoading ? 'status' : undefined}
+        aria-label={isLoading ? t('STATUS.LOADING_WEATHER') : undefined}
+      >
+        {isLoading
           ? Array.from({ length: TILE_COUNT }, (_, index) => (
               <SkeletonTileView key={index} />
             ))
           : tiles.map(tile => <StatTileView key={tile.key} tile={tile} />)}
       </div>
+    );
+  };
+
+  return (
+    <div
+      className={cn(CARD_CLASS, canToggle && CARD_TOGGLE_CLASS, className)}
+      {...(canToggle && {
+        role: 'button',
+        tabIndex: 0,
+        title: t('FORECAST.LABEL'),
+        'aria-expanded': isExpanded,
+        'aria-controls': isExpanded ? forecastId : undefined,
+        onClick: handleCardClick,
+        onKeyDown: handleCardKeyDown,
+      })}
+    >
+      <div className={SUMMARY_CLASS}>
+        <div className={HERO_CLASS}>
+          <ClockComponent type="time" timeSize={CLOCK_TIME_SIZE} />
+          <ClockComponent type="info" />
+        </div>
+        {renderTiles()}
+      </div>
+
+      {!error && (
+        <WeatherDetails
+          weather={isLoading || !weather ? PLACEHOLDER_WEATHER : weather}
+          loading={isLoading}
+          preparationLoading={preparationLoading}
+        />
+      )}
+
+      {isExpanded && hasForecast && forecast && (
+        <ForecastCarousel id={forecastId} forecast={forecast} />
+      )}
+
+      {!error && (
+        <footer
+          className={cn(ATTRIBUTION_CLASS, isLoading && INVISIBLE_CLASS)}
+          aria-hidden={isLoading || undefined}
+        >
+          {t('ATTRIBUTION.WEATHER')} <span aria-hidden>{SEPARATOR}</span>{' '}
+          {t('ATTRIBUTION.LOCATION')}
+        </footer>
+      )}
     </div>
   );
 };
+
+const SelfLocatingDashboardInfoCard = ({
+  fetchWeather,
+  fetchPreparation,
+  location,
+  ...viewProps
+}: DashboardInfoCardProps & {
+  fetchWeather: NonNullable<DashboardInfoCardProps['fetchWeather']>;
+}) => {
+  const { state, preparation, retry } = useLocalWeather({
+    fetchWeather,
+    fetchPreparation,
+  });
+  const ready = state.status === LOCAL_WEATHER_STATUS.READY ? state : null;
+  const failure = FAILURE_STATUSES.includes(state.status)
+    ? (state.status as LocalWeatherFailure)
+    : undefined;
+
+  return (
+    <DashboardInfoCardView
+      {...viewProps}
+      location={ready?.location ?? location}
+      weather={ready ? { ...ready.weather, preparation } : undefined}
+      error={failure}
+      onRetry={retry}
+      preparationLoading={
+        !!ready && !!fetchPreparation && preparation === undefined
+      }
+    />
+  );
+};
+
+export const DashboardInfoCardUtilityContent = ({
+  fetchWeather,
+  ...props
+}: DashboardInfoCardProps) => (
+  <WeatherI18nProvider>
+    {fetchWeather ? (
+      <SelfLocatingDashboardInfoCard fetchWeather={fetchWeather} {...props} />
+    ) : (
+      <DashboardInfoCardView {...props} />
+    )}
+  </WeatherI18nProvider>
+);

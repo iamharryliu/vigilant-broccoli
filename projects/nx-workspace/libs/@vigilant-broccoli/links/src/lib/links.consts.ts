@@ -156,6 +156,10 @@ export const CLAUDE_LINK = {
     NAME: 'Claude',
     URL: 'https://claude.ai',
   },
+  CODE: {
+    NAME: 'Claude Code',
+    URL: 'https://claude.ai/code',
+  },
   DASHBOARD: {
     NAME: 'Claude Dashboard',
     URL: 'https://claude.ai/',
@@ -183,10 +187,6 @@ export const CLAUDE_LINK = {
   PRICING: {
     NAME: 'Claude Pricing',
     URL: 'https://claude.com/pricing',
-  },
-  CODE: {
-    NAME: 'Claude Code',
-    URL: 'https://www.claude.com/product/claude-code',
   },
 } as const;
 
@@ -595,10 +595,20 @@ export const HARRYLIU_APP_URL = {
     URL: 'https://utilities.harryliu.dev/',
     STAGING_URL: 'https://staging-utilities-ui.pages.dev/',
   },
+  WAITING_GAMES: {
+    NAME: 'Waiting Games',
+    URL: 'https://waiting.harryliu.dev/',
+    STAGING_URL: 'https://staging-waiting-games.pages.dev/',
+  },
   LINKS: {
     NAME: 'Links',
     URL: 'https://links.harryliu.dev/',
     STAGING_URL: 'https://staging-links-react.pages.dev/',
+  },
+  CALENDARS: {
+    NAME: 'Calendars',
+    URL: 'https://calendar.harryliu.dev/',
+    STAGING_URL: 'https://staging-calendars.pages.dev/',
   },
   WEATHER: {
     NAME: 'Weather',
@@ -615,8 +625,84 @@ export const HARRYLIU_APP_URL = {
     URL: 'https://whiteboard.harryliu.dev/',
     STAGING_URL: 'https://staging-whiteboard.vercel.app/',
   },
+  BALLOONO: {
+    NAME: 'Balloono',
+    URL: 'https://balloono.harryliu.dev/',
+    STAGING_URL: 'https://staging-balloono.vercel.app/',
+  },
+  DOCS: {
+    NAME: 'Docs',
+    URL: 'https://docs.harryliu.dev/',
+    STAGING_URL: 'https://staging-docs-md.pages.dev/',
+  },
+  CONTEXT: {
+    NAME: 'Agent Context',
+    URL: 'https://context.harryliu.dev/',
+    STAGING_URL: 'https://staging-context-md.pages.dev/',
+  },
+  CLOUD_8_SKATE: {
+    NAME: 'Cloud 8 Skate',
+    URL: 'https://cloud8skate.com/',
+    STAGING_URL: 'https://staging-cloud-8-skate-react.pages.dev/',
+  },
+  PERSONAL_WEBSITE: {
+    NAME: 'harryliu.dev',
+    URL: 'https://harryliu.dev/',
+    STAGING_URL: 'https://staging-harryliu-dev-react.pages.dev/',
+  },
+  RESUME: {
+    NAME: 'Resume',
+    URL: 'https://harryliu.dev/resume',
+    STAGING_URL: 'https://staging-harryliu-dev-react.pages.dev/resume',
+  },
+  HEARTH: {
+    NAME: 'Hearth',
+    URL: 'https://production-hearth.vercel.app/login',
+    STAGING_URL: 'https://staging-hearth.vercel.app/login',
+  },
+  SERVICE_MANAGER: {
+    NAME: 'Service Manager API',
+    URL: 'https://api.harryliu.dev/',
+    STAGING_URL: 'https://staging-vb-express.fly.dev/',
+  },
+  VB_MANAGER_NEXT_MOBILE: {
+    NAME: 'VB Manager Mobile',
+    URL: 'https://production-vb-manager-next-mobile.vercel.app/login',
+    STAGING_URL: 'https://staging-vb-manager-next-mobile.vercel.app/login',
+  },
   EMPLOYEE_HANDLER_DEMO: {
     NAME: 'Employee Handler Demo',
     URL: 'https://demo-employee-handler-ui.vercel.app/',
+  },
+} as const;
+
+export const HARRYLIU_INFRA_URL = {
+  DRIVE: {
+    NAME: 'Drive',
+    URL: 'https://drive.harryliu.dev/',
+  },
+  NX_CACHE: {
+    NAME: 'Nx Cache Health',
+    URL: 'https://nx-cache.harryliu.dev/health',
+  },
+  LOKI: {
+    NAME: 'Loki Health',
+    URL: 'https://loki.harryliu.dev/health',
+  },
+  SOCKET_SERVER: {
+    NAME: 'Socket Server Health',
+    URL: 'https://socket.harryliu.dev/health',
+  },
+  CAREER: {
+    NAME: 'Career',
+    URL: 'https://career.harryliu.dev/',
+  },
+  STATUS: {
+    NAME: 'Status',
+    URL: 'https://status.harryliu.dev/',
+  },
+  UPTIME: {
+    NAME: 'Uptime',
+    URL: 'https://uptime.harryliu.dev/',
   },
 } as const;

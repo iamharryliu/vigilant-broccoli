@@ -3,14 +3,14 @@ name: agentic-pr-create
 description: In vigilant-broccoli, implement TODO items or a free-text task using repo conventions and verify the result.
 ---
 
-Use the current vigilant-broccoli checkout and resolve repository paths from its Git root. If outside that repo, ask which checkout to use; do not operate on the skill installation checkout by default.
+Use the current vigilant-broccoli Git root. Outside this repo, ask which checkout to use; never default to the skill installation checkout.
 
-Implement the requested task in the current vigilant-broccoli checkout. Accept TODO IDs or a free-text request; `--prompt` explicitly selects free text.
+Implement TODO IDs or a free-text request (`--prompt` selects free text).
 
-1. Read applicable `CONTEXT.md` files and the documents they require. Inspect the existing implementation and reuse its patterns. Keep changes focused on the requested outcome.
-2. For TODO IDs, read `docs/todo-pattern.md` and locate each exact ID in `TODO.md`; use both its Description and Recommended Fix as the task. If the runner supplied an extracted row, use that row directly. Report an unknown ID rather than guessing. For free text, use the supplied request and session context.
-3. Implement the task and run appropriate existing checks. Apply `docs/refactor-code-cleanup.md` before finishing. Follow repository rules on adding tests.
-4. For a completed TODO task, remove only its own row. When a sandbox runner owns TODO cleanup, leave `TODO.md` untouched and let it remove the row after verification. Keep unfinished items.
-5. Report the changes, verification results, assumptions and remaining work. Local invocation does not authorize committing, pushing or opening a PR; the sandbox runner handles those operations in unattended runs.
+1. Follow applicable repository guidance and [pull request scope](../../../../docs/agent-support.md#pull-request-scope). Resolve named TODO IDs using both row cells (or the runner's extracted row); report unknown IDs.
+2. Implement one mergeable increment and run appropriate existing checks plus `docs/refactor-code-cleanup.md`. Follow repository rules on adding tests and [documentation placement](../../../../docs/agent-support.md#documentation-placement).
+3. For larger requests, follow the [increment contract](../../../../docs/agent-support.md#increment-contract): the sandbox receives remaining work in `increments`; locally provide ready-to-run follow-up prompts. Separately authorized local publishing uses the same independent/stacked PR rules and stops at the first failed increment.
+4. Remove only TODO rows fully resolved by this increment. In a sandbox, leave `TODO.md` to the runner and declare resolved IDs in `todo_ids`.
+5. Report changes, verification, assumptions and remaining work. Local invocation does not authorize commits, pushes or PRs; sandbox runners own publishing.
 
-For the unattended sandbox + PR version, run `pnpm agentic-pr-create <id...>` or `pnpm agentic-pr-create --prompt "<task>"`.
+Unattended entry point: `pnpm agentic-pr-create <id...>` or `pnpm agentic-pr-create --prompt "<task>"`.

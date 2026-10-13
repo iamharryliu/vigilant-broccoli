@@ -68,15 +68,6 @@ resource "oci_core_security_list" "rabbitmq_sl" {
     protocol = "6"
     source   = "0.0.0.0/0"
     tcp_options {
-      min = 15671
-      max = 15671
-    }
-  }
-
-  ingress_security_rules {
-    protocol = "6"
-    source   = "0.0.0.0/0"
-    tcp_options {
       min = 80
       max = 80
     }
@@ -136,6 +127,7 @@ resource "oci_core_instance" "rabbitmq" {
       shared_app_token     = random_password.shared_app_token.result
       socket_server_domain = var.socket_server_domain
       acme_email           = var.acme_email
+      cloudflared_token    = data.cloudflare_zero_trust_tunnel_cloudflared_token.rabbitmq.token
     }))
   }
 
@@ -153,4 +145,69 @@ resource "cloudflare_dns_record" "socket_server" {
   type    = "A"
   ttl     = 300
   proxied = false
+}
+
+resource "cloudflare_zero_trust_tunnel_cloudflared" "rabbitmq" {
+  account_id = var.cloudflare_account_id
+  name       = "rabbitmq"
+  config_src = "cloudflare"
+}
+
+data "cloudflare_zero_trust_tunnel_cloudflared_token" "rabbitmq" {
+  account_id = var.cloudflare_account_id
+  tunnel_id  = cloudflare_zero_trust_tunnel_cloudflared.rabbitmq.id
+}
+
+resource "cloudflare_zero_trust_tunnel_cloudflared_config" "rabbitmq" {
+  account_id = var.cloudflare_account_id
+  tunnel_id  = cloudflare_zero_trust_tunnel_cloudflared.rabbitmq.id
+
+  config = {
+    ingress = [
+      {
+        hostname = var.rabbitmq_management_domain
+        # Compose DNS name; it is the `rabbitmq` SAN on the leaf cert, so the
+        # origin is verified against the private CA instead of skipping TLS.
+        service = "https://rabbitmq:15671"
+        origin_request = {
+          origin_server_name = "rabbitmq"
+          ca_pool            = "/etc/rabbitmq/certs/ca.crt"
+        }
+      },
+      {
+        service = "http_status:404"
+      }
+    ]
+  }
+}
+
+resource "cloudflare_dns_record" "rabbitmq_management" {
+  zone_id = var.cloudflare_zone_id
+  name    = var.rabbitmq_management_domain
+  content = "${cloudflare_zero_trust_tunnel_cloudflared.rabbitmq.id}.cfargotunnel.com"
+  type    = "CNAME"
+  ttl     = 1
+  proxied = true
+}
+
+resource "cloudflare_zero_trust_access_policy" "rabbitmq" {
+  account_id = var.cloudflare_account_id
+  name       = "rabbitmq-allow-owner"
+  decision   = "allow"
+  include    = [for email in var.rabbitmq_allowed_emails : { email = { email = email } }]
+}
+
+resource "cloudflare_zero_trust_access_application" "rabbitmq" {
+  account_id       = var.cloudflare_account_id
+  name             = "rabbitmq"
+  domain           = var.rabbitmq_management_domain
+  type             = "self_hosted"
+  session_duration = "24h"
+
+  policies = [
+    {
+      id         = cloudflare_zero_trust_access_policy.rabbitmq.id
+      precedence = 1
+    },
+  ]
 }

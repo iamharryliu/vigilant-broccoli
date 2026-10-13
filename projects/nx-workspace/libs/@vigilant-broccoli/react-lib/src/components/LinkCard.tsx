@@ -2,7 +2,7 @@ import { ComponentPropsWithoutRef, ElementType, ReactNode } from 'react';
 import { cn } from '../utils/cn';
 
 const LINK_CARD_CLASS =
-  'group block rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 transition duration-200 ease-out hover:-translate-y-0.5 hover:border-gray-400 dark:hover:border-gray-500 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0';
+  'group block rounded-lg border border-border bg-card text-card-foreground p-6 transition duration-200 ease-out hover:-translate-y-0.5 hover:border-ring/50 hover:shadow-md motion-reduce:transition-none motion-reduce:hover:translate-y-0';
 
 const EXTERNAL_LINK_PROPS = {
   target: '_blank',
@@ -41,9 +41,7 @@ export function LinkCard<T extends ElementType = 'a'>({
         {icon}
         <h2 className="text-lg font-semibold">{title}</h2>
       </div>
-      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-        {description}
-      </p>
+      <p className="mt-1 text-sm text-muted-foreground">{description}</p>
     </Component>
   );
 }

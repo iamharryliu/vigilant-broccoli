@@ -15,14 +15,11 @@ const SIZE_CLASS = {
 
 export type SegmentedControlSize = keyof typeof SIZE_CLASS;
 
-const ROOT_CLASS =
-  'flex w-fit rounded-lg border border-gray-200 bg-white p-0.5 dark:border-gray-700 dark:bg-gray-800';
+const ROOT_CLASS = 'flex w-fit rounded-lg border border-border bg-card p-0.5';
 const ITEM_CLASS =
   'flex items-center whitespace-nowrap rounded-md transition cursor-pointer';
-const ITEM_ACTIVE_CLASS =
-  'bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900';
-const ITEM_INACTIVE_CLASS =
-  'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100';
+const ITEM_ACTIVE_CLASS = 'bg-primary text-primary-foreground';
+const ITEM_INACTIVE_CLASS = 'text-muted-foreground hover:text-foreground';
 
 export function SegmentedControl<T extends string>({
   label,

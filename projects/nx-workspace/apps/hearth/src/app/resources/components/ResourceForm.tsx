@@ -80,8 +80,8 @@ export function ResourceForm({
               Category
             </Text>
             <Select
-              selectedOption={category}
-              setValue={setCategory}
+              value={category}
+              onValueChange={setCategory}
               options={RESOURCE_CATEGORIES as unknown as ResourceCategory[]}
               triggerClassName="w-full"
             />

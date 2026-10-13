@@ -38,20 +38,48 @@ concurrency:
   group: manual-agentic-pr-create-smoke
   cancel-in-progress: true
 
+env:
+  SMOKE_PROMPT: 'In .github/agentic-smoke.md, replace the "Last smoke test:" line with the current UTC date and time. Change nothing else.'
+
 jobs:
+  overview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout summary helper
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Publish overview
+        continue-on-error: true
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: overview
+          title: Smoke-test the pull request pipeline
+          agent: ${{ inputs.agent }}
+          model: ${{ inputs.agent == 'claude' && inputs.model || inputs.codex_model }}
+          firewall: 'on'
+          description: Dispatch manual-agentic-pr-create with the canned task below. That run opens a disposable pull request, which should be closed once its notification email looks right.
+          task_label: Smoke task
+          task: ${{ env.SMOKE_PROMPT }}
+
   dispatch:
+    needs: overview
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - name: Dispatch manual-agentic-pr-create
+        id: dispatch
         env:
           GH_TOKEN: ${{ github.token }}
           AGENT: ${{ inputs.agent }}
           MODEL: ${{ inputs.model }}
           CODEX_MODEL: ${{ inputs.codex_model }}
-          PROMPT: 'In .github/agentic-smoke.md, replace the "Last smoke test:" line with the current UTC date and time. Change nothing else.'
+          PROMPT: ${{ env.SMOKE_PROMPT }}
         run: |
           set -euo pipefail
+          STARTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
           args=(
             workflow run manual-agentic-pr-create.yml
             --repo "$GITHUB_REPOSITORY"
@@ -68,5 +96,34 @@ jobs:
             exit 1
           fi
           gh "${args[@]}"
+          # `gh workflow run` does not return the run it created, so the child is
+          # only linked when exactly one run created since the dispatch carries
+          # this prompt in its run name; otherwise the summary links nothing.
+          for _ in 1 2 3 4 5 6; do
+            sleep 5
+            MATCHES=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow manual-agentic-pr-create.yml \
+              --event workflow_dispatch --branch "$GITHUB_REF_NAME" --created ">=$STARTED_AT" \
+              --json url,displayTitle --limit 20 \
+              --jq "[.[] | select(.displayTitle | contains(env.PROMPT))] | map(.url)")
+            [ "$(jq length <<<"$MATCHES")" -eq 0 ] || break
+          done
+          if [ "$(jq length <<<"$MATCHES")" -eq 1 ]; then
+            echo "child_run_url=$(jq -r '.[0]' <<<"$MATCHES")" >> "$GITHUB_OUTPUT"
+          fi
           echo "Dispatched manual-agentic-pr-create (agent: $AGENT)."
           echo "Watch it at https://github.com/$GITHUB_REPOSITORY/actions/workflows/manual-agentic-pr-create.yml"
+
+      - name: Checkout summary helper
+        if: always()
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Report result
+        if: always()
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: result
+          outcome: ${{ (steps.dispatch.outcome == 'success' && 'dispatched') || (job.status == 'cancelled' && 'cancelled') || 'failed' }}
+          child_run_url: ${{ steps.dispatch.outputs.child_run_url }}
+          note: ${{ steps.dispatch.outcome == 'success' && !steps.dispatch.outputs.child_run_url && 'The child run could not be identified reliably; find it under the manual-agentic-pr-create workflow runs.' || '' }}

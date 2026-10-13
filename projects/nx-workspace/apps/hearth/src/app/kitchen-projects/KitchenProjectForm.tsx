@@ -148,8 +148,8 @@ export function KitchenProjectForm({ item, onSubmit, onCancel }: Props) {
               Stage
             </Text>
             <Select
-              selectedOption={kind}
-              setValue={value => setKind(value as KitchenProjectKind)}
+              value={kind}
+              onValueChange={value => setKind(value as KitchenProjectKind)}
               options={KIND_OPTIONS}
               displayMapper={KIND_LABELS}
               triggerClassName="w-full"
@@ -160,8 +160,10 @@ export function KitchenProjectForm({ item, onSubmit, onCancel }: Props) {
               Where
             </Text>
             <Select
-              selectedOption={location}
-              setValue={value => setLocation(value as KitchenProjectLocation)}
+              value={location}
+              onValueChange={value =>
+                setLocation(value as KitchenProjectLocation)
+              }
               options={[...KITCHEN_PROJECT_LOCATIONS]}
               displayMapper={LOCATION_LABELS}
               triggerClassName="w-full"

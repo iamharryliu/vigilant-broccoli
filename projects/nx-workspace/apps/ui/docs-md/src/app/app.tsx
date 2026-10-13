@@ -30,7 +30,7 @@ export function App() {
   const urlSync = useMemo(() => ({ get: getFileParam, set: setFileParam }), []);
 
   return (
-    <ThemeProvider>
+    <ThemeProvider followSystem>
       <div className="h-dvh p-2 sm:p-4 bg-white dark:bg-gray-900">
         <DocsViewer
           siteName={SITE_NAME}

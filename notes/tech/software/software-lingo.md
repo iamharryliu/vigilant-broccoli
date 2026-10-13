@@ -1,8 +1,11 @@
 # Software Lingo
 
+## Table of Contents
+
 - [Programming Concepts](#programming-concepts)
 - [Architecture](#architecture)
 - [Networking](#networking)
+- [Web Rendering](#web-rendering)
 - [Testing](#testing)
 - [Development Approaches](#development-approaches)
 - [Tooling](#tooling)
@@ -16,9 +19,12 @@
 | Compiler            | A tool that converts source code written in one programming language into another, typically into machine code.                                                     |
 | first class citizen | a particular entity in a language—like a function, object, or data type—can be used freely and fully like any other value.                                          |
 | FOSS                | Free and Open Source Software — software whose source code is freely available to view, modify, and redistribute, usually under a license like MIT, GPL, or Apache. |
+| Hard delete         | Physically removing a row from the database, so it cannot be recovered without a backup. The opposite of a soft delete.                                             |
 | High-level language | A programming language that is closer to human language, abstracting away hardware details. Easier to read, write, and maintain (e.g., Python).                     |
 | immutable           | Cannot be changed after it’s created.                                                                                                                               |
+| Lazy loading        | Deferring a load until first access, such as an ORM fetching a related entity only when it is read. Can cause N+1 queries.                                          |
 | Low-level language  | A programming language that is closer to machine code, with less abstraction from hardware. Provides more control but is harder to use (e.g., C).                   |
+| Soft delete         | Marking a record deleted (a `deleted_at` timestamp or flag) instead of removing the row, so it stays recoverable. A hard delete removes the row.                    |
 | Statically Typed    | Variable types are known at compile time.                                                                                                                           |
 | Ternary Operator    | A one line if else statement.                                                                                                                                       |
 | Transpiler          | Transforms code syntax and features so the code runs across different environments.                                                                                 |
@@ -50,6 +56,17 @@
 | Edge Requests | Requests served/handled at edge servers close to users. Benefits are lower latency, faster response, smarter request handling. |
 | URI           | Uniform Resource Identifier.                                                                                                   |
 | URL           | Uniform Resource Locator.                                                                                                      |
+
+## Web Rendering
+
+| Term                                               | Definition                                                                                                                                                                                                       |
+| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [CSS](./web-dev/frontend/css.md)                   | Cascading Style Sheets — the language used to style a document, including colors, fonts, spacing, and layout.                                                                                                    |
+| CSSOM                                              | CSS Object Model — the browser's representation of stylesheets and their rules, exposed through APIs that JavaScript can read and modify.                                                                        |
+| DOM                                                | Document Object Model — the live tree of nodes representing a document, exposed through APIs that JavaScript can use to read, create, and update its content and structure.                                      |
+| HTML                                               | HyperText Markup Language — the markup language that defines a web document's content, structure, and semantics. The browser parses HTML into DOM nodes.                                                         |
+| [JavaScript](./languages/javascript/javascript.md) | A programming language used in browsers to implement behavior, respond to events, and update the DOM and styles; it also runs outside browsers.                                                                  |
+| Shadow DOM                                         | A browser feature that attaches an encapsulated DOM tree to a host element, commonly used for a Web Component's internal markup and styles. It scopes styles across the boundary but is not a security boundary. |
 
 ## Testing
 

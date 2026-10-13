@@ -1,4 +1,4 @@
-# findme, whiteboard and weather subdomains of harryliu.dev — Vercel
+# findme, whiteboard, weather and balloono subdomains of harryliu.dev — Vercel
 # apps (projects and deploys owned by the nx deploy targets). Terraform owns
 # only the DNS; the domain must also be added to each production Vercel
 # project. DNS-only so Vercel can issue and renew its own certificate.
@@ -7,7 +7,8 @@ locals {
   vercel_app_subdomains = {
     findme              = "findme.harryliu.dev"
     whiteboard          = "whiteboard.harryliu.dev"
-    weather-next = "weather.harryliu.dev"
+    weather-next        = "weather.harryliu.dev"
+    balloono            = "balloono.harryliu.dev"
   }
 }
 

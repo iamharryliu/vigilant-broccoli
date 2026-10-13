@@ -6,6 +6,7 @@ import {
   type CSSProperties,
 } from 'react';
 import { cn } from '../utils/cn';
+import semanticTokens from '../theme-tokens.json';
 import type { ThemeAppearance } from './ThemeProvider';
 
 const LIGHT = 'light';
@@ -47,20 +48,21 @@ const DARK_TOKENS = {
 };
 
 type AccentColor = 'blue' | 'sky';
+type ThemeStyle = CSSProperties & Record<`--${string}`, string>;
 
 const getThemeStyle = (
   appearance: ThemeAppearance,
   accentColor: AccentColor,
-): CSSProperties => {
+): ThemeStyle => {
   const dark = appearance === DARK;
-  const foreground = dark ? '#edeef0' : '#1c2024';
   const background = dark ? '#020617' : '#ffffff';
   const accent = accentColor === 'sky' ? '#00a2c7' : '#0090ff';
 
   return {
+    ...semanticTokens[appearance],
     ...(dark ? DARK_TOKENS : LIGHT_TOKENS),
-    '--color-background': `hsl(var(--background, ${dark ? '222 84% 5%' : '0 0% 100%'}))`,
-    '--color-panel-solid': background,
+    '--color-background': 'hsl(var(--background))',
+    '--color-panel-solid': 'hsl(var(--card))',
     '--accent-2': `color-mix(in srgb, ${accent} 5%, ${background})`,
     '--accent-3': `color-mix(in srgb, ${accent} 10%, ${background})`,
     '--accent-9': accent,
@@ -71,8 +73,8 @@ const getThemeStyle = (
     '--shadow-2': '0 2px 8px rgb(0 0 0 / 0.15)',
     colorScheme: appearance,
     fontFamily: 'system-ui, sans-serif',
-    color: foreground,
-  } as CSSProperties;
+    color: 'hsl(var(--foreground))',
+  };
 };
 
 export const ThemeScope = forwardRef<

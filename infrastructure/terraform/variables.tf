@@ -72,6 +72,12 @@ variable "upptime_sync_gh_app_id" {
   default     = 5202397
 }
 
+variable "production_promotion_gh_app_id" {
+  description = "Public ID of the dedicated production-promotion App installed only on this repository (Contents write). Set after registering the App and storing its key in kv/production-promotion. Zero leaves the production update ruleset disabled and the promotion workflow gated off."
+  type        = number
+  default     = 5249426
+}
+
 variable "upptime_migration_complete" {
   description = "Enables scheduled checks in the initialized monitoring repository. Set true only after importing history and verifying manual checks."
   type        = bool
@@ -279,6 +285,62 @@ variable "utilities_pages_subdomain" {
   default = "production-utilities-ui.pages.dev"
 }
 
+variable "waiting_domain" {
+  type    = string
+  default = "waiting.harryliu.dev"
+}
+
+variable "waiting_pages_project" {
+  type    = string
+  default = "production-waiting-games"
+}
+
+variable "waiting_pages_subdomain" {
+  type    = string
+  default = "production-waiting-games.pages.dev"
+}
+
+variable "calendars_domain" {
+  type    = string
+  default = "calendar.harryliu.dev"
+}
+
+variable "calendars_pages_project" {
+  type    = string
+  default = "production-calendars"
+}
+
+variable "calendars_pages_subdomain" {
+  type    = string
+  default = "production-calendars.pages.dev"
+}
+
+variable "projects_domain" {
+  type    = string
+  default = "projects.harryliu.dev"
+}
+
+variable "career_domain" {
+  type    = string
+  default = "career.harryliu.dev"
+}
+
+variable "status_domain" {
+  type    = string
+  default = "status.harryliu.dev"
+}
+
+variable "uptime_domain" {
+  type    = string
+  default = "uptime.harryliu.dev"
+}
+
+variable "upptime_https_enforced" {
+  type        = bool
+  default     = true
+  description = "Enforce HTTPS on the Upptime Pages site. Set true only after GitHub has issued a certificate covering the custom domain; the API rejects it earlier."
+}
+
 variable "component_library_domain" {
   type    = string
   default = "components.harryliu.dev"
@@ -332,4 +394,14 @@ variable "harryliu_dev_pages_project" {
 variable "harryliu_dev_pages_subdomain" {
   type    = string
   default = "production-harryliu-dev-react.pages.dev"
+}
+
+variable "rabbitmq_management_domain" {
+  type    = string
+  default = "queue.harryliu.dev"
+}
+
+variable "rabbitmq_allowed_emails" {
+  type    = list(string)
+  default = ["harryliu1995@gmail.com"]
 }

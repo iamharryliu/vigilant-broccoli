@@ -4,15 +4,11 @@ import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Check } from 'lucide-react';
 import {
-  createContext,
   forwardRef,
-  useContext,
-  useImperativeHandle,
-  useState,
-  useSyncExternalStore,
   type ComponentPropsWithoutRef,
   type ElementRef,
 } from 'react';
+import { usePortalTheme } from '../hooks/usePortalTheme';
 import { cn } from '../utils/cn';
 
 const itemVariants = cva(
@@ -24,7 +20,7 @@ const itemVariants = cva(
         green:
           'text-green-600 dark:text-green-400 data-[highlighted]:text-green-600 dark:data-[highlighted]:text-green-400',
         blue: 'text-blue-600 dark:text-blue-400 data-[highlighted]:text-blue-600 dark:data-[highlighted]:text-blue-400',
-        gray: 'text-gray-500 dark:text-gray-400 data-[highlighted]:text-gray-500 dark:data-[highlighted]:text-gray-400',
+        gray: 'text-muted-foreground data-[highlighted]:text-muted-foreground dark:data-[highlighted]:text-muted-foreground',
         amber:
           'text-amber-600 dark:text-amber-400 data-[highlighted]:text-amber-600 dark:data-[highlighted]:text-amber-400',
       },
@@ -32,37 +28,14 @@ const itemVariants = cva(
   },
 );
 
-const TriggerContext = createContext<{
-  trigger: HTMLButtonElement | null;
-  setTrigger: (trigger: HTMLButtonElement | null) => void;
-}>({ trigger: null, setTrigger: () => undefined });
-
-function Root(
-  props: ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Root>,
-) {
-  const [trigger, setTrigger] = useState<HTMLButtonElement | null>(null);
-  return (
-    <TriggerContext.Provider value={{ trigger, setTrigger }}>
-      <DropdownMenuPrimitive.Root {...props} />
-    </TriggerContext.Provider>
-  );
-}
+const Root = DropdownMenuPrimitive.Root;
 
 const Trigger = forwardRef<
   ElementRef<typeof DropdownMenuPrimitive.Trigger>,
   ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Trigger>
->(({ asChild = true, ...props }, ref) => {
-  const { trigger, setTrigger } = useContext(TriggerContext);
-  useImperativeHandle(ref, () => trigger as HTMLButtonElement, [trigger]);
-  // Themes triggers compose their child button; preserve that default to avoid nested buttons.
-  return (
-    <DropdownMenuPrimitive.Trigger
-      ref={setTrigger}
-      asChild={asChild}
-      {...props}
-    />
-  );
-});
+>(({ asChild = true, ...props }, ref) => (
+  <DropdownMenuPrimitive.Trigger ref={ref} asChild={asChild} {...props} />
+));
 Trigger.displayName = 'DropdownMenu.Trigger';
 
 const Content = forwardRef<
@@ -70,38 +43,27 @@ const Content = forwardRef<
   ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content> & {
     size?: '1' | '2';
   }
->(({ className, sideOffset = 4, size = '2', ...props }, ref) => {
-  const { trigger } = useContext(TriggerContext);
-  // Body portals lose the app's theme ancestor; mirror it, including changes while open.
-  const themeScope = trigger?.closest('.dark, .light');
-  const isDark = useSyncExternalStore(
-    onChange => {
-      if (!themeScope) return () => undefined;
-      const observer = new MutationObserver(onChange);
-      observer.observe(themeScope, {
-        attributes: true,
-        attributeFilter: ['class'],
-      });
-      return () => observer.disconnect();
-    },
-    () => themeScope?.classList.contains('dark') ?? false,
-    () => false,
-  );
+>(({ className, style, sideOffset = 4, size = '2', ...props }, ref) => {
+  const theme = usePortalTheme();
   return (
-    <DropdownMenuPrimitive.Portal>
-      <DropdownMenuPrimitive.Content
-        ref={ref}
-        sideOffset={sideOffset}
-        className={cn(
-          'z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-[8rem] overflow-y-auto rounded-md border border-border bg-background p-1 text-foreground shadow-md',
-          isDark && 'dark',
-          size === '1' &&
-            '[&_[role=menuitem]]:text-xs [&_[role=menuitemradio]]:text-xs',
-          className,
-        )}
-        {...props}
-      />
-    </DropdownMenuPrimitive.Portal>
+    <>
+      <span hidden ref={theme.anchorRef} />
+      <DropdownMenuPrimitive.Portal>
+        <DropdownMenuPrimitive.Content
+          ref={ref}
+          sideOffset={sideOffset}
+          className={cn(
+            'z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-[8rem] overflow-y-auto rounded-md border border-border bg-background p-1 text-foreground shadow-md',
+            theme.className,
+            size === '1' &&
+              '[&_[role=menuitem]]:text-xs [&_[role=menuitemradio]]:text-xs',
+            className,
+          )}
+          style={{ ...theme.style, ...style }}
+          {...props}
+        />
+      </DropdownMenuPrimitive.Portal>
+    </>
   );
 });
 Content.displayName = 'DropdownMenu.Content';

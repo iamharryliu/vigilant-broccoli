@@ -49,3 +49,16 @@ jobs:
           git push --force "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:${PAGES_BRANCH}"
         env:
           GITHUB_TOKEN: ${{ github.token }}
+      - name: Verify custom-domain HTTPS
+        run: |
+          host=$(sed -n 's/^ *cname: *//p' .upptimerc.yml | head -n 1)
+          test -n "$host"
+          for attempt in $(seq 1 20); do
+            if curl --fail --silent --show-error --max-time 20 --output /dev/null "https://${host}/"; then
+              echo "HTTPS verified for ${host}"
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "::error::https://${host} has no valid certificate; follow the HTTPS recovery procedure in docs/infrastructure/upptime.md"
+          exit 1

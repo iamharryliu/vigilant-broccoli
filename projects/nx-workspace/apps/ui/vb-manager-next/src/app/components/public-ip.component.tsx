@@ -264,12 +264,10 @@ export const PublicIpComponent = () => {
               Secret Gen:
             </Text>
             <Select
-              selectedOption={SECRET_TYPE_OPTIONS.find(
-                o => o.value === secretType,
-              )}
-              setValue={opt => setSecretType(opt.value)}
+              value={SECRET_TYPE_OPTIONS.find(o => o.value === secretType)}
+              onValueChange={opt => setSecretType(opt.value)}
               options={SECRET_TYPE_OPTIONS}
-              optionIdenfifier="value"
+              optionIdentifier="value"
               optionDisplayKey="label"
               triggerClassName="w-[100px]"
             />

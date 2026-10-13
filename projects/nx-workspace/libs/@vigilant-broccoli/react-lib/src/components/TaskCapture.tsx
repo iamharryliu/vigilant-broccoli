@@ -59,9 +59,7 @@ export const TaskCapture = ({
   const [results, setResults] = useState<TaskResult[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [taskLists, setTaskLists] = useState<TaskListOption[]>([]);
-  const [selectedListId, setSelectedListId] = useState(
-    lockedTaskListId ?? '',
-  );
+  const [selectedListId, setSelectedListId] = useState(lockedTaskListId ?? '');
   const [listsLoaded, setListsLoaded] = useState(!!lockedTaskListId);
   const [googleAuthError, setGoogleAuthError] = useState(false);
 
@@ -196,7 +194,9 @@ export const TaskCapture = ({
   if (googleAuthError) {
     return (
       <div className="space-y-3 py-4">
-        <p className="text-sm text-gray-600">{RECONNECT_GOOGLE_DESCRIPTION}</p>
+        <p className="text-sm text-muted-foreground">
+          {RECONNECT_GOOGLE_DESCRIPTION}
+        </p>
         <button
           onClick={() => signInWithGoogle()}
           className="w-full bg-blue-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-blue-600 active:bg-blue-700 transition-colors"
@@ -217,7 +217,7 @@ export const TaskCapture = ({
             onPaste={handlePaste}
             placeholder={'Add a list, extra context for an image, or notes...'}
             rows={5}
-            className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none bg-white"
+            className="w-full border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none bg-background"
           />
 
           {images.length > 0 && (
@@ -227,13 +227,13 @@ export const TaskCapture = ({
                   <img
                     src={img.previewUrl}
                     alt=""
-                    className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                    className="w-20 h-20 object-cover rounded-lg border border-border"
                   />
                   <button
                     onClick={() =>
                       setImages(prev => prev.filter((_, j) => j !== i))
                     }
-                    className="absolute -top-1.5 -right-1.5 bg-gray-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                    className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center text-xs"
                   >
                     ×
                   </button>
@@ -245,7 +245,7 @@ export const TaskCapture = ({
           <div className="flex gap-2">
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 border border-border rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted active:bg-muted transition-colors"
             >
               <svg
                 className="w-4 h-4"
@@ -264,7 +264,7 @@ export const TaskCapture = ({
             </button>
             <button
               onClick={() => cameraInputRef.current?.click()}
-              className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 border border-border rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted active:bg-muted transition-colors"
             >
               <svg
                 className="w-4 h-4"
@@ -338,7 +338,7 @@ export const TaskCapture = ({
               d="M4 12a8 8 0 018-8v8H4z"
             />
           </svg>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             {phase === 'analyzing'
               ? 'Extracting tasks...'
               : `Creating ${items.length} task${items.length !== 1 ? 's' : ''}...`}
@@ -352,7 +352,7 @@ export const TaskCapture = ({
             <select
               value={selectedListId}
               onChange={e => setSelectedListId(e.target.value)}
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full border border-border rounded-xl px-4 py-2.5 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-blue-300"
             >
               {taskLists.map(l => (
                 <option key={l.id} value={l.id ?? ''}>
@@ -362,7 +362,7 @@ export const TaskCapture = ({
             </select>
           )}
 
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-muted-foreground">
             {items.length} item{items.length !== 1 ? 's' : ''}
             {selectedListName ? ` → ${selectedListName}` : ''}
           </p>
@@ -378,13 +378,13 @@ export const TaskCapture = ({
                       prev.map((v, j) => (j === i ? e.target.value : v)),
                     )
                   }
-                  className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none"
+                  className="flex-1 border border-border rounded-lg px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none"
                 />
                 <button
                   onClick={() =>
                     setItems(prev => prev.filter((_, j) => j !== i))
                   }
-                  className="text-gray-400 hover:text-red-500 transition-colors px-1"
+                  className="text-muted-foreground hover:text-red-500 transition-colors px-1"
                 >
                   <svg
                     className="w-4 h-4"
@@ -417,7 +417,7 @@ export const TaskCapture = ({
                 }
               }}
               placeholder="Add another item..."
-              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none"
+              className="flex-1 border border-border rounded-lg px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none"
             />
             <button
               onClick={() => {
@@ -427,7 +427,7 @@ export const TaskCapture = ({
                 }
               }}
               disabled={!newItem.trim()}
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+              className="border border-border rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted disabled:opacity-50 transition-colors"
             >
               Add
             </button>
@@ -443,7 +443,7 @@ export const TaskCapture = ({
             </button>
             <button
               onClick={handleReset}
-              className="border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+              className="border border-border rounded-lg px-4 py-2.5 text-sm text-muted-foreground hover:bg-muted transition-colors"
             >
               Start over
             </button>
@@ -468,7 +468,7 @@ export const TaskCapture = ({
                 >
                   {r.success ? '✓' : '✗'}
                 </span>
-                <span className="text-sm text-gray-700">{r.title}</span>
+                <span className="text-sm text-foreground">{r.title}</span>
                 {r.error && (
                   <span className="text-xs text-red-400">({r.error})</span>
                 )}

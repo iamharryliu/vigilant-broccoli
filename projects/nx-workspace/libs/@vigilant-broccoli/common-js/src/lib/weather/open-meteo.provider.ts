@@ -10,6 +10,7 @@ import {
 } from './weather.model';
 
 export const OPEN_METEO_BASE_URL = 'https://api.open-meteo.com/v1/forecast';
+export const OPEN_METEO_MAX_FORECAST_DAYS = 16;
 
 interface OpenMeteoResponse {
   utc_offset_seconds: number;
@@ -101,7 +102,7 @@ const buildUrl = (location: Location, dailyCount: number): string => {
     hourly: HOURLY_FIELDS,
     daily: DAILY_FIELDS,
     timezone: TIMEZONE_PARAM,
-    forecast_days: String(dailyCount),
+    forecast_days: String(Math.min(dailyCount, OPEN_METEO_MAX_FORECAST_DAYS)),
   });
   return `${OPEN_METEO_BASE_URL}?${params}`;
 };

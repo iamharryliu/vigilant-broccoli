@@ -13,13 +13,13 @@ export function AudioButton({ text, id, activeId, onSpeak }: AudioButtonProps) {
     <button
       onClick={() => onSpeak(text, id)}
       disabled={activeId !== null}
-      className="p-1 rounded hover:bg-gray-100 disabled:opacity-40 transition-colors"
+      className="p-1 rounded hover:bg-muted disabled:opacity-40 transition-colors"
       aria-label="Play audio"
     >
       {isLoading ? (
-        <Loader2 size={16} className="animate-spin text-gray-500" />
+        <Loader2 size={16} className="animate-spin text-muted-foreground" />
       ) : (
-        <Volume2 size={16} className="text-gray-500" />
+        <Volume2 size={16} className="text-muted-foreground" />
       )}
     </button>
   );

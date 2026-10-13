@@ -29,6 +29,7 @@ export type QuickLink = {
   type: OpenType;
   subgroup?: string;
   args?: string;
+  embed?: boolean;
 };
 
 export type PastebinEntry = {
@@ -56,6 +57,7 @@ export * from './lib/utils/solar.utils';
 export * from './lib/utils/lunar.utils';
 
 export * from './lib/weather/weather.model';
+export * from './lib/weather/local-weather';
 export * from './lib/weather/open-meteo.provider';
 
 export const DATE_CONST = {
