@@ -1101,6 +1101,9 @@ importers:
 
   libs/@vigilant-broccoli/personal-common-js:
     dependencies:
+      '@vigilant-broccoli/common-browser':
+        specifier: workspace:*
+        version: link:../common-browser
       tslib:
         specifier: ^2.3.0
         version: 2.8.1

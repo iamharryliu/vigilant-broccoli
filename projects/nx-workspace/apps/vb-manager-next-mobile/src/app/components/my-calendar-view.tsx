@@ -7,6 +7,7 @@ import {
   CalendarConfig,
   GOOGLE_CALENDAR,
 } from '@vigilant-broccoli/common-browser';
+import { PERSONAL_CALENDAR_SOURCES } from '@vigilant-broccoli/personal-common-js';
 import {
   VisuallyHidden,
   Dialog,
@@ -16,47 +17,7 @@ import {
 import { CalendarInput } from './calendar-input';
 import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
 
-const BIRTHDAYS_CALENDAR =
-  'f61b08e940f7c4fb8becf0d419c8c09f7e0c46d6d03343637aef5837c766a09b@group.calendar.google.com';
 const CALENDAR_TITLE = 'Personal Calendar';
-
-const CALENDAR_SOURCES: {
-  id: string;
-  color: string;
-  label: string;
-  kind: 'owner' | 'shared';
-}[] = [
-  {
-    id: GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL,
-    color: GOOGLE_CALENDAR.CALENDAR_COLOR.GREEN,
-    label: 'Personal',
-    kind: 'owner',
-  },
-  {
-    id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.COUNTRY_CALENDAR.SWEDEN,
-    color: GOOGLE_CALENDAR.CALENDAR_COLOR.PURPLE,
-    label: 'Sweden holidays',
-    kind: 'shared',
-  },
-  {
-    id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.PHASES_OF_THE_MOON,
-    color: GOOGLE_CALENDAR.CALENDAR_COLOR.DARK_PINK,
-    label: 'Moon phases',
-    kind: 'shared',
-  },
-  {
-    id: BIRTHDAYS_CALENDAR,
-    color: GOOGLE_CALENDAR.CALENDAR_COLOR.BLUE,
-    label: 'Birthdays',
-    kind: 'shared',
-  },
-  {
-    id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.H_AND_K,
-    color: GOOGLE_CALENDAR.CALENDAR_COLOR.PINK,
-    label: 'H&K',
-    kind: 'shared',
-  },
-];
 
 const BASE_CALENDAR_CONFIG: Omit<CalendarConfig, 'mode'> = {
   height: 600,
@@ -64,19 +25,22 @@ const BASE_CALENDAR_CONFIG: Omit<CalendarConfig, 'mode'> = {
   ctz: GOOGLE_CALENDAR.TIMEZONE.COPENHAGEN,
   showPrint: 0,
   title: CALENDAR_TITLE,
-  ownerCalendars: CALENDAR_SOURCES.filter(
+  ownerCalendars: PERSONAL_CALENDAR_SOURCES.filter(
     source => source.kind === 'owner',
   ).map(source => ({ email: source.id, color: source.color })),
-  sharedCalendars: CALENDAR_SOURCES.filter(
+  sharedCalendars: PERSONAL_CALENDAR_SOURCES.filter(
     source => source.kind === 'shared',
   ).map(source => ({ id: source.id, color: source.color })),
 };
 
 const BASE_CALENDAR_COLOR_BY_ID = new Map(
-  CALENDAR_SOURCES.map(source => [source.id, decodeURIComponent(source.color)]),
+  PERSONAL_CALENDAR_SOURCES.map(source => [
+    source.id,
+    decodeURIComponent(source.color),
+  ]),
 );
 
-// Colors not already claimed by CALENDAR_SOURCES above, so an event
+// Colors not already claimed by PERSONAL_CALENDAR_SOURCES above, so an event
 // calendar never visually matches a personal/public one. Cycled if
 // there are more event calendars than spare colors.
 const EVENT_CALENDAR_COLORS = [
@@ -112,7 +76,9 @@ interface CalendarEvent {
 
 const eventsApiUrl = (extraCalendarIds: string[]) => {
   const params = new URLSearchParams();
-  CALENDAR_SOURCES.forEach(source => params.append('calendarId', source.id));
+  PERSONAL_CALENDAR_SOURCES.forEach(source =>
+    params.append('calendarId', source.id),
+  );
   extraCalendarIds.forEach(id => params.append('calendarId', id));
   return `${EVENTS_API}?${params.toString()}`;
 };

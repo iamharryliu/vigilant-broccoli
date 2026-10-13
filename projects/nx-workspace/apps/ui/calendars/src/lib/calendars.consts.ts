@@ -1,4 +1,4 @@
-import { GOOGLE_CALENDAR } from '@vigilant-broccoli/common-browser';
+import { PERSONAL_GOOGLE_CALENDAR } from '@vigilant-broccoli/personal-common-js';
 
 export const GOOGLE_CALENDAR_EMBED_URL =
   'https://calendar.google.com/calendar/embed';
@@ -13,7 +13,7 @@ export const PERSONAL_CALENDARS = [
   {
     id: 'harry',
     name: "Harry's Calendar",
-    googleCalendarId: GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL,
+    googleCalendarId: PERSONAL_GOOGLE_CALENDAR.PERSONAL,
   },
 ];
 

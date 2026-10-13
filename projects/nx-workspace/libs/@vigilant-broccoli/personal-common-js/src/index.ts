@@ -166,3 +166,5 @@ export const MAC_OS_APP = {
     NAME: 'WhatsApp',
   },
 } as const;
+
+export * from './personal-calendar.const';
