@@ -1,5 +1,5 @@
 import { GOOGLE_CALENDAR } from '@vigilant-broccoli/common-browser';
-import { EMAIL_ADDRESS } from './index';
+import { EMAIL_ADDRESS } from './email-address.const';
 
 export const PERSONAL_GOOGLE_CALENDAR = {
   PERSONAL: EMAIL_ADDRESS,
