@@ -4,7 +4,7 @@ Shortcuts work anywhere outside of text inputs, and are ignored while Ctrl, Cmd,
 
 - **/** — Open search
 - **m** — Open email composer
-- **c** — Open Jarvis chatbot
+- **c** — Open chatbot page
 - **Shift+C** — Open calendar
 - **n** — Open notepad
 - **Shift+P** — Open pomodoro timer

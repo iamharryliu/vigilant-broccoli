@@ -35,7 +35,6 @@ Management dashboard app.
   - `react-music-lib`
   - `react-utility`
   - `resume`
-  - `vibecheck-lite`
 - Cloud services
   - Google OAuth
   - Google Tasks & Calendar
