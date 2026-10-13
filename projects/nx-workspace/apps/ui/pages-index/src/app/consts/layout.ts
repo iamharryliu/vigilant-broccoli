@@ -10,8 +10,3 @@ export const PAGE_CLASS = `${PAGE_WIDTH_CLASS} ${PAGE_GUTTER_CLASS} pt-6 pb-16`;
 const VIEWPORT_PAGE_CLASS = `flex h-[100dvh] flex-col overflow-hidden ${PAGE_GUTTER_CLASS} pt-6 pb-4`;
 
 export const FULL_HEIGHT_PAGE_CLASS = `${PAGE_WIDTH_CLASS} ${VIEWPORT_PAGE_CLASS}`;
-
-// Fixed viewport-fit height (page top padding, header, tabs and link row
-// subtracted) so the embedded site scrolls on its own instead of nesting.
-export const UPTIME_FRAME_CLASS =
-  'block h-[calc(100dvh-14rem)] min-h-96 w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white';
