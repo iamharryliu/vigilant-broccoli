@@ -374,7 +374,7 @@ const DashboardInfoCardView = ({
 
       {!error && (
         <WeatherDetails
-          weather={isLoading ? PLACEHOLDER_WEATHER : weather}
+          weather={isLoading || !weather ? PLACEHOLDER_WEATHER : weather}
           loading={isLoading}
           preparationLoading={preparationLoading}
         />
