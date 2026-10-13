@@ -1,10 +1,12 @@
 'use client';
 
-import { ChatbotPanel } from '../chatbot-dialog.component';
+import { ChatbotPanel } from '../chatbot-panel.component';
 import { ChatHistorySidebar } from '../chat-history-sidebar.component';
+import { useChatSuggestions } from '../../hooks/useChatSuggestions';
 import { useChatHistory } from '../../hooks/useChatHistory';
 
 export function ChatbotPage() {
+  const suggestions = useChatSuggestions();
   const {
     chats,
     currentChatId,
@@ -33,7 +35,7 @@ export function ChatbotPage() {
       <div style={{ flex: 1, minWidth: 0, height: '100%' }}>
         <ChatbotPanel
           key={sessionKey}
-          variant="page"
+          suggestions={suggestions}
           initialMessages={currentMessages}
           onMessagesChange={updateCurrentMessages}
         />

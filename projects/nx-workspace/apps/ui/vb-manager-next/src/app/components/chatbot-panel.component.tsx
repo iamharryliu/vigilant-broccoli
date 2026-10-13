@@ -1,37 +1,22 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
-import {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  type CSSProperties,
-} from 'react';
+import { useState, useRef, useEffect, type CSSProperties } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Loader2, Trash2 } from 'lucide-react';
 import {
   Button,
   ChatSendButton,
-  CloseButton,
   IconButton,
   ScrollArea,
   Select,
   SpeechToTextToggleButton,
   Textarea,
-  UserAvatar,
   Text,
   useSpeechToText,
-  DialogTitle,
-  DialogClose,
-  Dialog,
-  DialogContent,
 } from '@vigilant-broccoli/react-lib';
 import {
-  LLM_MODEL,
-  LLM_MODELS,
   LLMModel,
   modelSupportsImageInput,
-  modelSupportsImageOutput,
 } from '@vigilant-broccoli/common-js';
 import { useTextToSpeech } from '../hooks/useTextToSpeech';
 import {
@@ -47,9 +32,12 @@ import {
 import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
 import {
   CALENDAR_DRAFT_MARKER,
+  CHAT_MODELS,
+  DEFAULT_CHAT_MODEL,
   CHAT_RESPONSE_TYPE,
 } from '../constants/chatbot.consts';
 import { authFetch } from '../../../libs/auth';
+import { PLANNING_DATA_ERROR } from '../utils/day-analysis-data';
 
 export interface MessageImage {
   data: string;
@@ -92,29 +80,16 @@ interface ChatCommand {
   handler: () => Promise<void> | void;
 }
 
-interface ChatSuggestion {
+export interface ChatSuggestion {
   title: string;
   prompt?: string;
-  onClick?: () => Promise<{ prompt: string } | void>;
-}
-
-interface ChatbotDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  initialPrompt?: string;
-  systemPrompt?: string;
-  suggestions?: ChatSuggestion[];
+  onClick?: (signal: AbortSignal) => Promise<{ prompt: string } | void>;
 }
 
 interface ChatbotPanelProps {
   initialPrompt?: string;
   systemPrompt?: string;
   suggestions?: ChatSuggestion[];
-  variant?: 'dialog' | 'page';
-  isOpen?: boolean;
-  onClose?: () => void;
-  isFullscreen?: boolean;
-  onToggleFullscreen?: () => void;
   initialMessages?: Message[];
   onMessagesChange?: (messages: Message[]) => void;
 }
@@ -123,9 +98,6 @@ const MAX_MESSAGES = 20;
 
 const CONST_ERROR_MESSAGE = 'Error: Failed to get response';
 const CONST_STREAM_UPDATE_INTERVAL = 50;
-const DEFAULT_CHAT_MODEL = LLM_MODEL.GPT_4O;
-
-const ASSISTANT_NAME = 'Jarvis';
 
 const USER_MESSAGE_STYLE: CSSProperties = {
   padding: '0.5rem 0.875rem',
@@ -166,9 +138,6 @@ const CALENDAR_COMMAND_DESCRIPTION =
   'Parse text/images from the input into a calendar event draft.';
 const TASKS_COMMAND_DESCRIPTION =
   'Extract a Google Tasks list from the input text and/or attached images.';
-const CHAT_MODELS = LLM_MODELS.filter(
-  model => !modelSupportsImageOutput(model),
-);
 
 const formatModelLabel = (model: string) =>
   model
@@ -245,48 +214,6 @@ const ImagePreview = ({
     >
       <Trash2 size={12} />
     </Button>
-  </div>
-);
-
-const PanelHeader = ({
-  isFullscreen,
-  onClear,
-  onToggleFullscreen,
-}: {
-  isFullscreen: boolean;
-  onClear: () => void;
-  onToggleFullscreen: () => void;
-}) => (
-  <div
-    className="flex justify-between items-center"
-    style={{ minHeight: '2.5rem' }}
-  >
-    <div className="flex gap-2 items-center">
-      <UserAvatar name={ASSISTANT_NAME} />
-      <DialogTitle
-        className="mb-3 text-xl font-bold leading-7 tracking-normal"
-        style={{ margin: 0 }}
-      >
-        {ASSISTANT_NAME}
-      </DialogTitle>
-    </div>
-    <div className="flex gap-6 items-center">
-      <IconButton
-        icon="rotate-ccw"
-        variant="ghost"
-        onClick={onClear}
-        aria-label="Clear conversation"
-      />
-      <IconButton
-        icon={isFullscreen ? 'minimize' : 'maximize'}
-        variant="ghost"
-        onClick={onToggleFullscreen}
-        aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
-      />
-      <DialogClose asChild>
-        <CloseButton aria-label="Close" />
-      </DialogClose>
-    </div>
   </div>
 );
 
@@ -792,10 +719,6 @@ export const ChatbotPanel = ({
   initialPrompt,
   systemPrompt,
   suggestions = [],
-  variant = 'dialog',
-  isOpen = true,
-  isFullscreen: externalFullscreen,
-  onToggleFullscreen,
   initialMessages,
   onMessagesChange,
 }: ChatbotPanelProps) => {
@@ -814,15 +737,6 @@ export const ChatbotPanel = ({
   }, [messages]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
-  const [internalFullscreen, setInternalFullscreen] = useState(false);
-  const isFullscreen = externalFullscreen ?? internalFullscreen;
-  const toggleFullscreen = useCallback(() => {
-    if (onToggleFullscreen) {
-      onToggleFullscreen();
-    } else {
-      setInternalFullscreen(prev => !prev);
-    }
-  }, [onToggleFullscreen]);
   const [uploadedImages, setUploadedImages] = useState<MessageImage[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const [selectedModel, setSelectedModel] =
@@ -849,46 +763,17 @@ export const ChatbotPanel = ({
   const { error: textToSpeechError, speak, stop } = useTextToSpeech();
 
   useEffect(() => {
-    if (isOpen && initialPrompt && !initialPromptProcessedRef.current) {
+    if (initialPrompt && !initialPromptProcessedRef.current) {
       initialPromptProcessedRef.current = true;
       handleSend(initialPrompt);
     }
-    if (!isOpen) {
-      initialPromptProcessedRef.current = false;
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialPrompt, isOpen]);
+  }, [initialPrompt]);
 
   useEffect(() => {
-    if (!isOpen || variant !== 'dialog') return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const hasModifier = e.ctrlKey || e.metaKey;
-      const eventTarget = e.target as HTMLElement | null;
-      const isTypingTarget =
-        eventTarget instanceof HTMLInputElement ||
-        eventTarget instanceof HTMLTextAreaElement ||
-        eventTarget?.isContentEditable === true;
-
-      if (e.key.toLowerCase() === 'f' && !hasModifier && !isTypingTarget) {
-        e.preventDefault();
-        toggleFullscreen();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, variant, toggleFullscreen]);
-
-  useEffect(() => {
-    if (isOpen) {
-      const focusInput = () => {
-        textInputRef.current?.focus();
-      };
-
-      setTimeout(focusInput, 150);
-    }
-  }, [isOpen]);
+    const timeout = setTimeout(() => textInputRef.current?.focus(), 150);
+    return () => clearTimeout(timeout);
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -908,10 +793,11 @@ export const ChatbotPanel = ({
   }, [availableModels, selectedModel]);
 
   useEffect(() => {
-    if (!isOpen) {
+    return () => {
+      abortControllerRef.current?.abort();
       stop();
-    }
-  }, [isOpen, stop]);
+    };
+  }, [stop]);
 
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -1477,41 +1363,44 @@ export const ChatbotPanel = ({
   };
 
   const handleSuggestionAsChat = async (suggestion: ChatSuggestion) => {
-    let promptToUse = suggestion.prompt;
-
-    if (suggestion.onClick) {
-      const result = await suggestion.onClick();
-      if (result && typeof result === 'object' && 'prompt' in result) {
-        promptToUse = result.prompt;
-      } else {
-        return;
-      }
-    }
-
-    if (!promptToUse) return;
-
+    if (isStreaming) return;
+    setIsStreaming(true);
+    setInput('');
+    stop();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
     const userMessage: Message = {
       role: 'user',
-      content: promptToUse,
+      content: suggestion.prompt || suggestion.title,
       displayContent: suggestion.title,
     };
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
-    setInput('');
-    setIsStreaming(true);
-    stop();
-
-    const compactedMessages = compactConversation(updatedMessages);
-    abortControllerRef.current = new AbortController();
-
     const assistantMessage: Message = {
       role: 'assistant',
       content: '',
       isStreaming: true,
     };
-    setMessages([...compactedMessages, assistantMessage]);
+    setMessages([...messages, userMessage, assistantMessage]);
 
-    await sendChatRequest(compactedMessages, selectedModel);
+    try {
+      const result = await suggestion.onClick?.(controller.signal);
+      if (controller.signal.aborted) return;
+      const promptToUse = result?.prompt || suggestion.prompt;
+      if (!promptToUse) {
+        setMessages(messages);
+        setIsStreaming(false);
+        return;
+      }
+      const compactedMessages = compactConversation([
+        ...messages,
+        { ...userMessage, content: promptToUse },
+      ]);
+      setMessages([...compactedMessages, assistantMessage]);
+      await sendChatRequest(compactedMessages, selectedModel);
+    } catch {
+      if (controller.signal.aborted) return;
+      finalizeMessage(setMessages, PLANNING_DATA_ERROR);
+      setIsStreaming(false);
+    }
   };
 
   const builtInCommands: ChatCommand[] = [
@@ -1586,12 +1475,6 @@ export const ChatbotPanel = ({
     await runCommand(name);
   };
 
-  const handleClear = () => {
-    stop();
-    setMessages([]);
-    setInput('');
-  };
-
   const handleStop = () => {
     abortControllerRef.current?.abort();
     stop();
@@ -1652,25 +1535,12 @@ export const ChatbotPanel = ({
         overflow: 'hidden',
       }}
     >
-      {variant === 'dialog' && (
-        <div style={{ padding: '1.5rem 1.5rem 0 1.5rem' }}>
-          <PanelHeader
-            isFullscreen={isFullscreen}
-            onClear={handleClear}
-            onToggleFullscreen={toggleFullscreen}
-          />
-        </div>
-      )}
-
       <div
         className="flex flex-col gap-3"
         style={{
           flex: 1,
           overflow: 'hidden',
-          padding:
-            variant === 'dialog'
-              ? '1rem 1.5rem 1.5rem 1.5rem'
-              : '1.5rem 1.5rem 1.5rem 1.5rem',
+          padding: '1.5rem',
         }}
       >
         <MessagesArea
@@ -1716,44 +1586,5 @@ export const ChatbotPanel = ({
         />
       </div>
     </div>
-  );
-};
-
-export const ChatbotDialog = ({
-  open,
-  onOpenChange,
-  initialPrompt,
-  systemPrompt,
-  suggestions = [],
-}: ChatbotDialogProps) => {
-  const [isFullscreen, setIsFullscreen] = useState(false);
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
-        aria-describedby={undefined}
-        showCloseButton={false}
-        style={{
-          maxWidth: isFullscreen ? '95vw' : 700,
-          height: isFullscreen ? '95vh' : '80vh',
-          display: 'flex',
-          flexDirection: 'column',
-          padding: 0,
-          overflow: 'hidden',
-          transition: 'max-width 0.3s ease, height 0.3s ease',
-        }}
-      >
-        <ChatbotPanel
-          variant="dialog"
-          isOpen={open}
-          initialPrompt={initialPrompt}
-          systemPrompt={systemPrompt}
-          suggestions={suggestions}
-          isFullscreen={isFullscreen}
-          onToggleFullscreen={() => setIsFullscreen(prev => !prev)}
-        />
-      </DialogContent>
-    </Dialog>
   );
 };

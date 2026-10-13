@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { ChatbotDialog } from './chatbot-dialog.component';
 import { EmailModalComponent } from './email-modal.component';
 import { SearchDialogComponent } from './search-dialog.component';
 import { CalendarDialog } from './calendar-dialog.component';
@@ -14,21 +13,11 @@ import {
   PomodoroEngine,
   TimerEngine,
 } from '@vigilant-broccoli/react-utility';
-import { useDayAnalysisSuggestions } from './day-analysis-data-preview.component';
 import { useDrag } from '../hooks/useDrag';
-import { authFetch } from '../../../libs/auth';
-
-interface ChatSuggestion {
-  title: string;
-  prompt?: string;
-  onClick?: () => Promise<{ prompt: string } | void>;
-}
 
 interface FloatingIslandProps {
   searchDialogOpen?: boolean;
   setSearchDialogOpen?: (open: boolean) => void;
-  chatbotDialogOpen?: boolean;
-  setChatbotDialogOpen?: (open: boolean) => void;
   emailDialogOpen?: boolean;
   setEmailDialogOpen?: (open: boolean) => void;
   calendarDialogOpen?: boolean;
@@ -41,47 +30,6 @@ interface FloatingIslandProps {
   setUtilitiesDialogOpen?: (open: boolean) => void;
 }
 
-const isWeekPlanningVisible = (): boolean => {
-  const today = new Date();
-  const dayOfWeek = today.getDay();
-  return dayOfWeek >= 0 && dayOfWeek <= 3;
-};
-
-const generatePlanningPrompt = (data: Record<string, unknown>): string =>
-  `Please help me plan my day based on the following information:
-
-${JSON.stringify(data, null, 2)}
-
-Please analyze:
-1. My calendar events and suggest how to prepare for them
-2. My tasks organized by priority (urgent/important/delegate/eliminate) for both personal and work
-3. Any overdue tasks that need immediate attention
-4. The current weather and how it might affect my plans
-5. Give me a structured plan with time blocks and priorities`;
-
-const generateWeekPlanningPrompt = (data: Record<string, unknown>): string =>
-  `Please help me plan my work week based on the following information:
-
-${JSON.stringify(data, null, 2)}
-
-Please analyze:
-1. My calendar events for this week and suggest how to prepare for major meetings
-2. My priority tasks for the week - what needs to be done by Friday
-3. Any overdue tasks that need immediate attention this week
-4. Realistic time blocks for deep work and focus sessions
-5. Give me a strategic plan for Monday-Friday with daily focus areas`;
-
-const generateOutfitRecommendationPrompt = (outfitText: string): string =>
-  `Here is an outfit recommendation based on the current weather:
-
-${outfitText}
-
-Please help me refine this recommendation by:
-1. Suggesting alternative outfit options if needed
-2. Adding accessories based on the weather
-3. Considering my schedule and activities for today
-4. Providing styling tips for the recommended outfits`;
-
 const getDialogState = (
   externalOpen: boolean | undefined,
   internalOpen: boolean,
@@ -91,8 +39,6 @@ const getDialogState = (
 export const FloatingIslandComponent = ({
   searchDialogOpen: externalSearchOpen,
   setSearchDialogOpen: externalSetSearchOpen,
-  chatbotDialogOpen: externalChatbotOpen,
-  setChatbotDialogOpen: externalSetChatbotOpen,
   emailDialogOpen: externalEmailOpen,
   setEmailDialogOpen: externalSetEmailOpen,
   calendarDialogOpen: externalCalendarOpen,
@@ -106,8 +52,6 @@ export const FloatingIslandComponent = ({
 }: FloatingIslandProps = {}) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { position, isDragging, handlePointerDown } = useDrag(containerRef);
-  const [internalChatbotDialogOpen, setInternalChatbotDialogOpen] =
-    useState(false);
   const [internalEmailDialogOpen, setInternalEmailDialogOpen] = useState(false);
   const [internalSearchDialogOpen, setInternalSearchDialogOpen] =
     useState(false);
@@ -119,79 +63,12 @@ export const FloatingIslandComponent = ({
     useState(false);
   const [internalUtilitiesDialogOpen, setInternalUtilitiesDialogOpen] =
     useState(false);
-  const dayData = useDayAnalysisSuggestions();
-
-  const fetchOutfitRecommendation = async () => {
-    const MALMÖ = { lat: 55.605, lon: 13.0038 };
-    try {
-      const response = await authFetch(
-        `/api/outfit-recommendation?lat=${MALMÖ.lat}&lon=${MALMÖ.lon}`,
-      );
-
-      if (!response.ok || !response.body) return;
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let text = '';
-      let isDone = false;
-
-      while (!isDone) {
-        const { done, value } = await reader.read();
-        isDone = done;
-        if (isDone) break;
-        const chunk = decoder.decode(value, { stream: true });
-        text += chunk;
-      }
-
-      return text;
-    } catch (_err) {
-      return null;
-    }
-  };
-
-  const getSuggestions = (): ChatSuggestion[] => {
-    if (!dayData) return [];
-    const suggestions: ChatSuggestion[] = [
-      {
-        title: '📅 Plan My Day',
-        prompt: generatePlanningPrompt(dayData),
-      },
-    ];
-
-    suggestions.push({
-      title: '👔 Get Outfit Recommendation',
-      onClick: async () => {
-        const recommendation = await fetchOutfitRecommendation();
-        if (recommendation) {
-          return {
-            prompt: generateOutfitRecommendationPrompt(recommendation),
-          };
-        }
-      },
-    });
-
-    if (isWeekPlanningVisible()) {
-      suggestions.push({
-        title: '📊 Plan My Work Week',
-        prompt: generateWeekPlanningPrompt(dayData),
-      });
-    }
-
-    return suggestions;
-  };
-
   const searchDialogOpen = getDialogState(
     externalSearchOpen,
     internalSearchDialogOpen,
   );
   const setSearchDialogOpen =
     externalSetSearchOpen ?? setInternalSearchDialogOpen;
-  const chatbotDialogOpen = getDialogState(
-    externalChatbotOpen,
-    internalChatbotDialogOpen,
-  );
-  const setChatbotDialogOpen =
-    externalSetChatbotOpen ?? setInternalChatbotDialogOpen;
   const emailDialogOpen = getDialogState(
     externalEmailOpen,
     internalEmailDialogOpen,
@@ -265,11 +142,6 @@ export const FloatingIslandComponent = ({
         </div>
       </div>
 
-      <ChatbotDialog
-        open={chatbotDialogOpen}
-        onOpenChange={setChatbotDialogOpen}
-        suggestions={getSuggestions()}
-      />
       <EmailModalComponent
         open={emailDialogOpen}
         onOpenChange={setEmailDialogOpen}

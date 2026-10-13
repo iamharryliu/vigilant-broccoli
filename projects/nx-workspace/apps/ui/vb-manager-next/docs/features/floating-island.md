@@ -13,7 +13,7 @@
 
 ## Dialogs
 
-- Hosts Jarvis, email, calendar, notepad, search, pomodoro, and utilities dialogs, opened through the page layout's controls and keyboard shortcuts
+- Hosts email, calendar, notepad, search, pomodoro, and utilities dialogs, opened through the page layout's controls and keyboard shortcuts
 - Runs the shared alarm, timer, and pomodoro engines
 - See [Settings](./settings.md) for the keyboard shortcuts cheatsheet
 

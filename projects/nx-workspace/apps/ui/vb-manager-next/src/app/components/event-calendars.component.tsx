@@ -1,5 +1,5 @@
 'use client';
-import { ChevronDown, RefreshCw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import {
   Badge,
   Button,
@@ -16,11 +16,6 @@ import {
   Text,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import {
-  buildCalendarUrl,
-  CalendarConfig,
-  GOOGLE_CALENDAR,
-} from '@vigilant-broccoli/common-browser';
 import { useCallback, useEffect, useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
@@ -47,9 +42,6 @@ const SYNC_ERROR = 'Failed to start sync';
 const UNTRACKED_FETCH_ERROR = 'Failed to load untracked calendars';
 const UNTRACKED_DELETE_ERROR = 'Failed to delete calendar';
 const OPEN_IN_GOOGLE_CALENDAR = 'Open in Google Calendar';
-const SHOW_CALENDAR_PREVIEW = 'Show calendar preview';
-const HIDE_CALENDAR_PREVIEW = 'Hide calendar preview';
-const CALENDAR_PREVIEW_HEIGHT = 450;
 const MAKE_PUBLIC_TITLE = 'Make this calendar public?';
 const MAKE_PUBLIC_DESCRIPTION =
   'Anyone with the link will be able to see this calendar and all of its events, without signing in.';
@@ -239,19 +231,6 @@ const urlsToSources = (urls: string[]) =>
         detectEventSourceType(url) ?? EVENT_SOURCE_TYPE.FACEBOOK_GROUP,
     }));
 
-const buildCalendarPreviewConfig = (
-  calendar: EventCalendar,
-): CalendarConfig => ({
-  height: CALENDAR_PREVIEW_HEIGHT,
-  wkst: 2,
-  ctz: GOOGLE_CALENDAR.TIMEZONE.COPENHAGEN,
-  showPrint: 0,
-  mode: 'MONTH',
-  title: calendar.name,
-  ownerCalendars: [],
-  sharedCalendars: [{ id: calendar.googleCalendarId }],
-});
-
 export const EventCalendarsComponent = () => {
   const [items, setItems] = useState<EventCalendar[]>([]);
   const [loading, setLoading] = useState(true);
@@ -436,18 +415,6 @@ export const EventCalendarsComponent = () => {
     null,
   );
 
-  const [expandedPreviewIds, setExpandedPreviewIds] = useState<Set<string>>(
-    new Set(),
-  );
-
-  const toggleCalendarPreview = (id: string) =>
-    setExpandedPreviewIds(current => {
-      const next = new Set(current);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-
   // Making a calendar public exposes every event to anyone with the link, so
   // it goes through a confirmation. Making one private again is safe and
   // applies immediately.
@@ -494,7 +461,6 @@ export const EventCalendarsComponent = () => {
   };
 
   const EventCalendarListItem = ({ item }: { item: EventCalendar }) => {
-    const isPreviewOpen = expandedPreviewIds.has(item.id);
     return (
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -545,22 +511,6 @@ export const EventCalendarsComponent = () => {
               <CopyButton
                 text={buildGoogleCalendarUrl(item.googleCalendarId)}
               />
-              <Button
-                variant="secondary"
-                size="icon"
-                title={
-                  isPreviewOpen ? HIDE_CALENDAR_PREVIEW : SHOW_CALENDAR_PREVIEW
-                }
-                aria-label={
-                  isPreviewOpen ? HIDE_CALENDAR_PREVIEW : SHOW_CALENDAR_PREVIEW
-                }
-                aria-expanded={isPreviewOpen}
-                onClick={() => toggleCalendarPreview(item.id)}
-              >
-                <ChevronDown
-                  className={`h-4 w-4 transition-transform duration-200 ${isPreviewOpen ? 'rotate-180' : ''}`}
-                />
-              </Button>
             </div>
             {(syncStatuses[item.id]?.state === SYNC_RUNNING ||
               ((syncStatuses[item.id]?.state === SYNC_FAILED ||
@@ -609,14 +559,6 @@ export const EventCalendarsComponent = () => {
             </Text>
           </div>
         </div>
-        {isPreviewOpen && (
-          <iframe
-            src={buildCalendarUrl(buildCalendarPreviewConfig(item))}
-            className="w-full rounded border border-gray-300 dark:border-gray-700"
-            style={{ height: CALENDAR_PREVIEW_HEIGHT, border: 'none' }}
-            title={item.name}
-          />
-        )}
       </div>
     );
   };
