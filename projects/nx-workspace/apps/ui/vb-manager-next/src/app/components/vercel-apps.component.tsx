@@ -3,17 +3,13 @@
 import {
   ButtonList,
   ButtonConfig,
-  CardContainer,
-  StatusCardList,
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
-  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
 import { VERCEL_LINK } from '@vigilant-broccoli/links';
-import { useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
-import { authFetch } from '../../../libs/auth';
-import { usePollingInterval } from '../hooks/usePollingInterval';
+import { StatusListCard } from './status-list-card.component';
+import { usePolledResource } from '../hooks/usePolledResource';
 
 interface VercelProject {
   id: string;
@@ -96,48 +92,27 @@ const toItem = (org: string, project: VercelProject): StatusCardListItem => ({
 });
 
 export const VercelAppsComponent = () => {
-  const [projects, setProjects] = useState<VercelProject[]>([]);
-  const [org, setOrg] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchProjects = async () => {
-    try {
-      const response = await authFetch(API_ENDPOINTS.VERCEL_PROJECTS);
-      const data: VercelProjectsResponse = await response.json();
-      if (!data.success || !data.projects) {
-        setError(data.error || FETCH_ERROR_MSG);
-        setLoading(false);
-        return;
-      }
-      setError(null);
-      setProjects(data.projects);
-      setOrg(data.org ?? null);
-      setLoading(false);
-    } catch {
-      setError(FETCH_ERROR_MSG);
-      setLoading(false);
-    }
-  };
-
-  usePollingInterval(fetchProjects, POLL_INTERVAL_MS);
-
-  if (loading) return <CardSkeleton title={TITLE} rows={5} />;
-
-  if (error) {
-    return (
-      <CardContainer title={TITLE} gap="3" headerAction={<OrgLinks />}>
-        <p className="text-sm text-red-500">{error}</p>
-      </CardContainer>
-    );
-  }
+  const { data, loading, error } = usePolledResource<VercelProjectsResponse>({
+    endpoint: API_ENDPOINTS.VERCEL_PROJECTS,
+    intervalMs: POLL_INTERVAL_MS,
+    errorMessage: FETCH_ERROR_MSG,
+    select: (json: VercelProjectsResponse) => {
+      if (!json.success || !json.projects)
+        throw new Error(json.error || FETCH_ERROR_MSG);
+      return json;
+    },
+  });
 
   return (
-    <CardContainer title={TITLE} gap="3" headerAction={<OrgLinks />}>
-      <StatusCardList
-        items={projects.map(p => toItem(org ?? '', p))}
-        emptyMessage="No projects found"
-      />
-    </CardContainer>
+    <StatusListCard
+      title={TITLE}
+      gap="3"
+      loading={loading}
+      error={error}
+      skeletonRows={5}
+      headerAction={<OrgLinks />}
+      items={(data?.projects ?? []).map(p => toItem(data?.org ?? '', p))}
+      emptyMessage="No projects found"
+    />
   );
 };
