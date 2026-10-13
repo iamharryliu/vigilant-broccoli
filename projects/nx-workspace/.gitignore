@@ -80,3 +80,4 @@ tools/ai-migrations/
 # adapters are symlinks, so Nx must not hand them to Prettier.
 AGENTS.md
 CLAUDE.md
+.vitest
