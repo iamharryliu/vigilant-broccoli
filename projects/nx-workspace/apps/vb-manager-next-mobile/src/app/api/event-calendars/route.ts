@@ -26,6 +26,7 @@ export async function GET(request: NextRequest) {
   const calendars = data.map(row => ({
     id: row.id as string,
     name: row.name as string,
+    googleCalendarId: row.google_calendar_id as string,
     url: buildGoogleCalendarUrl(row.google_calendar_id as string),
   }));
 

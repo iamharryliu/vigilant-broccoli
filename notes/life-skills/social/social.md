@@ -29,3 +29,12 @@
 - Being combative.
 - Complaining.
 - Blaming.
+
+## Social Circles
+
+- relationship
+- family
+- friends
+  - neighbourhood
+  - school
+  - hobbies

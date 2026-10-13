@@ -1,10 +1,13 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Dialog } from '@radix-ui/themes';
 import {
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Text,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  cn,
 } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
@@ -46,19 +49,24 @@ function EventDialog({
   onDelete: () => void;
 }) {
   return (
-    <Dialog.Root
+    <Dialog
       open={modal !== null}
       onOpenChange={open => {
         if (!open) onClose();
       }}
     >
-      <Dialog.Content
-        className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+      <DialogContent
+        aria-describedby={undefined}
+        showCloseButton={false}
+        className={cn(
+          'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+          FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+        )}
         style={{ maxWidth: 480 }}
       >
-        <Dialog.Title>
+        <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
           {modal?.type === 'edit' ? 'Edit Kitchen Event' : 'New Kitchen Event'}
-        </Dialog.Title>
+        </DialogTitle>
 
         {modal?.type === 'create' && (
           <CalendarEventForm
@@ -95,8 +103,8 @@ function EventDialog({
             />
           </>
         )}
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -110,17 +118,24 @@ function DropDialog({
   onConfirm: (data: CalendarEventFormData) => void;
 }) {
   return (
-    <Dialog.Root
+    <Dialog
       open={pendingDrop !== null}
       onOpenChange={open => {
         if (!open) onClose();
       }}
     >
-      <Dialog.Content
-        className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+      <DialogContent
+        aria-describedby={undefined}
+        showCloseButton={false}
+        className={cn(
+          'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+          FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+        )}
         style={{ maxWidth: 460 }}
       >
-        <Dialog.Title>Plan Meal</Dialog.Title>
+        <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+          Plan Meal
+        </DialogTitle>
         <Text size="2" color="gray" as="p" mb="3">
           Confirm the details before adding to your calendar.
         </Text>
@@ -131,8 +146,8 @@ function DropDialog({
             onCancel={onClose}
           />
         )}
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 }
 

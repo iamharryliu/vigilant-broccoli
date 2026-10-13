@@ -2,9 +2,7 @@ import { Card } from './Card';
 import { Text } from './Text';
 
 export const Skeleton = ({ className = '' }: { className?: string }) => (
-  <div
-    className={`animate-pulse bg-gray-300 dark:bg-gray-700 rounded ${className}`}
-  />
+  <div className={`animate-pulse bg-muted rounded ${className}`} />
 );
 
 export const CardSkeleton = ({

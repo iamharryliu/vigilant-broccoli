@@ -11,6 +11,7 @@ import {
   JSON_CONTENT_TYPE,
   QUEUE,
 } from '@vigilant-broccoli/common-js';
+import { SUPABASE_URL } from '@vigilant-broccoli/common-node';
 import { Email } from '@vigilant-broccoli/messaging';
 import { SENDER_EMAIL_ADDRESS } from '@vigilant-broccoli/personal-common-js';
 import {
@@ -57,7 +58,7 @@ const RABBITMQ_SOCKET_OPTIONS = RABBITMQ_CA_CERT
   : undefined;
 
 const supabase = createClient(
-  'https://jrdosjjgmsoodpjmjqxx.supabase.co',
+  SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY as string,
 );
 

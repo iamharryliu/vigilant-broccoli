@@ -1,12 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Dialog } from '@radix-ui/themes';
 import {
   Button,
   Checkbox,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Text,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  cn,
 } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
@@ -92,17 +95,24 @@ export function AddToGroceryDialog({ recipe, onClose, onAdded }: Props) {
   };
 
   return (
-    <Dialog.Root
+    <Dialog
       open={recipe !== null}
       onOpenChange={open => {
         if (!open) onClose();
       }}
     >
-      <Dialog.Content
-        className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+      <DialogContent
+        aria-describedby={undefined}
+        showCloseButton={false}
+        className={cn(
+          'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+          FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+        )}
         style={{ maxWidth: 480 }}
       >
-        <Dialog.Title>Add to Grocery List</Dialog.Title>
+        <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+          Add to Grocery List
+        </DialogTitle>
         <Text size="2" color="gray" as="p" mb="3">
           Check anything you already have — the rest are added to your grocery
           list.
@@ -152,7 +162,7 @@ export function AddToGroceryDialog({ recipe, onClose, onAdded }: Props) {
             {saving ? 'Adding…' : `Add ${addCount} to Grocery List`}
           </Button>
         </div>
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 }

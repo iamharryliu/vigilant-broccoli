@@ -177,8 +177,8 @@ export const LLMSimplePromptTester = () => {
             Expected Output Type
           </Text>
           <Select
-            selectedOption={outputType}
-            setValue={handleOutputTypeChange}
+            value={outputType}
+            onValueChange={handleOutputTypeChange}
             options={OUTPUT_TYPE_OPTIONS}
             displayMapper={OUTPUT_TYPE_LABELS}
           />
@@ -189,8 +189,8 @@ export const LLMSimplePromptTester = () => {
             Number of Outputs
           </Text>
           <Select
-            selectedOption={numOutputs}
-            setValue={setNumOutputs}
+            value={numOutputs}
+            onValueChange={setNumOutputs}
             options={NUM_OUTPUT_OPTIONS}
           />
         </div>

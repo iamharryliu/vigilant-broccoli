@@ -1,12 +1,21 @@
 # Employee Handler UI
 
+## Table of Contents
+
+- [Deployment URLs](#deployment-urls)
+- [Stack](#stack)
+
+## Deployment URLs
+
+- [Demo](https://demo-employee-handler-ui.vercel.app/) — the only Vercel deploy (`deploy:demo`); `deploy` and `deploy:production` still push the Docker image
+
 ## Stack
 
 - Language - TypeScript
 - Framework - Next.js (React)
 - Build Tool - Next.js
 - External libs
-  - Radix Themes/UI + Tailwind CSS, lucide-react icons
+  - Tailwind CSS, lucide-react icons
   - Nodemailer
   - isomorphic-dompurify
 - Internal libs

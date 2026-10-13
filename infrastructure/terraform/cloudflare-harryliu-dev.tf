@@ -1,6 +1,6 @@
 # harryliu.dev — Cloudflare Pages site (project + deploys owned by the nx
 # `personal-website-react` deploy target via wrangler). Terraform owns the
-# custom domain attachment and its DNS, pointing at the `staging-harryliu-dev-react`
+# custom domain attachment and its DNS, pointing at the `production-harryliu-dev-react`
 # project.
 
 import {
@@ -58,4 +58,31 @@ resource "cloudflare_ruleset" "harryliu_dev_redirects" {
       }
     }
   }]
+}
+
+resource "cloudflare_dns_record" "harryliu_dev_projects" {
+  zone_id = var.cloudflare_zone_id
+  name    = var.projects_domain
+  content = "${var.github_owner}.github.io"
+  type    = "CNAME"
+  ttl     = 1
+  proxied = false
+}
+
+resource "cloudflare_dns_record" "harryliu_dev_api" {
+  zone_id = var.cloudflare_zone_id
+  name    = "api.harryliu.dev"
+  content = "production-vb-express.fly.dev"
+  type    = "CNAME"
+  ttl     = 1
+  proxied = true
+}
+
+resource "cloudflare_dns_record" "harryliu_dev_uptime" {
+  zone_id = var.cloudflare_zone_id
+  name    = var.uptime_domain
+  content = "${var.github_owner}.github.io"
+  type    = "CNAME"
+  ttl     = 1
+  proxied = false
 }

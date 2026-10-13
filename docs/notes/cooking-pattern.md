@@ -1,6 +1,6 @@
 # Cooking Notes Pattern
 
-Index-file convention specific to `notes/hobbies/cooking/`. The universal link-hygiene rules that apply to all of `notes/` are in [notes-pattern.md](../notes-pattern.md) — this doc only covers what's specific to cooking.
+Index-file convention specific to `notes/hobbies/cooking/`. The universal link-hygiene rules that apply to all of `notes/` are in [notes/CONTEXT.md](../../notes/CONTEXT.md) — this doc only covers what's specific to cooking.
 
 ## Index files
 

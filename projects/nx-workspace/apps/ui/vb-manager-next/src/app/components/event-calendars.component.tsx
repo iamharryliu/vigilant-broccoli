@@ -30,6 +30,9 @@ import {
   EVENT_LANGUAGES,
   EVENT_SOURCE_TYPE,
   EventCalendar,
+  SYNC_PHASE,
+  SYNC_PHASE_ORDER,
+  SyncPhase,
   UntrackedCalendar,
   buildGoogleCalendarUrl,
 } from '../constants/event-calendars';
@@ -61,6 +64,18 @@ const LAST_SYNCED_LABEL = 'Last synced';
 const PUBLIC_LABEL = 'Public';
 const SYNC_POLL_INTERVAL_MS = 3000;
 const SYNC_RUNNING = 'running';
+const SYNC_FAILED = 'failed';
+const SYNC_SUCCEEDED = 'succeeded';
+const SYNC_PHASE_LABELS: Record<string, string> = {
+  [SYNC_PHASE.SCRAPING]: 'Scraping events',
+  [SYNC_PHASE.LOCALIZING]: 'Writing titles and descriptions',
+  [SYNC_PHASE.WRITING]: 'Updating Google Calendar',
+};
+const DISMISS_LABEL = 'Dismiss';
+const ELAPSED_TICK_MS = 1000;
+const MS_PER_SECOND = 1000;
+const SECONDS_PER_MINUTE = 60;
+const PERCENT = 100;
 const CALENDARS_CHANNEL = 'event-calendars-changes';
 const POSTGRES_CHANGES_EVENT = 'postgres_changes';
 const PUBLIC_SCHEMA = 'public';
@@ -103,6 +118,88 @@ const CREATE_FORM_DEFAULT_VALUES: EventCalendar = {
 
 // Surfaces the route's own message (missing credential, Google API rejection,
 // …) instead of a generic failure string that gives nothing to debug with.
+interface SyncStatusView {
+  state: string;
+  message: string;
+  startedAt?: string;
+  finishedAt?: string;
+  phase?: SyncPhase;
+  done?: number;
+  total?: number;
+  lastSyncedAt?: string;
+}
+
+const formatElapsed = (startedAt: string, now: number) => {
+  const seconds = Math.max(
+    0,
+    Math.floor((now - new Date(startedAt).getTime()) / MS_PER_SECOND),
+  );
+  return `${Math.floor(seconds / SECONDS_PER_MINUTE)}m ${String(seconds % SECONDS_PER_MINUTE).padStart(2, '0')}s`;
+};
+
+const SyncProgress = ({
+  status,
+  onDismiss,
+}: {
+  status: SyncStatusView;
+  onDismiss: () => void;
+}) => {
+  const [now, setNow] = useState(() => Date.now());
+  const isRunning = status.state === SYNC_RUNNING;
+
+  useEffect(() => {
+    if (!isRunning) return;
+    const timer = setInterval(() => setNow(Date.now()), ELAPSED_TICK_MS);
+    return () => clearInterval(timer);
+  }, [isRunning]);
+
+  if (isRunning) {
+    const stepIndex = status.phase
+      ? SYNC_PHASE_ORDER.indexOf(status.phase)
+      : -1;
+    const hasProgress = !!status.total && status.done !== undefined;
+    return (
+      <div className="flex w-full flex-col gap-1">
+        <Text size="1" color="gray">
+          {stepIndex >= 0 &&
+            `Step ${stepIndex + 1} of ${SYNC_PHASE_ORDER.length} · ${SYNC_PHASE_LABELS[status.phase as SyncPhase]} · `}
+          {status.startedAt && formatElapsed(status.startedAt, now)}
+        </Text>
+        <Text size="1" color="gray">
+          {status.message}
+        </Text>
+        {hasProgress && (
+          <div
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={status.total}
+            aria-valuenow={status.done}
+            className="h-1.5 w-full overflow-hidden rounded bg-gray-200 dark:bg-gray-700"
+          >
+            <div
+              className="h-full bg-blue-600 transition-all"
+              style={{
+                width: `${Math.min(PERCENT, ((status.done as number) / (status.total as number)) * PERCENT)}%`,
+              }}
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex w-full items-center gap-2">
+      <Text size="1" color={status.state === SYNC_FAILED ? 'red' : 'gray'}>
+        {status.message}
+      </Text>
+      <Button variant="secondary" size="sm" onClick={onDismiss}>
+        {DISMISS_LABEL}
+      </Button>
+    </div>
+  );
+};
+
 const errorFromResponse = async (response: Response, fallback: string) => {
   const detail = await response
     .json()
@@ -272,8 +369,11 @@ export const EventCalendarsComponent = () => {
   };
 
   const [syncStatuses, setSyncStatuses] = useState<
-    Record<string, { state: string; message: string; lastSyncedAt?: string }>
+    Record<string, SyncStatusView>
   >({});
+  const [dismissedSyncs, setDismissedSyncs] = useState<Record<string, string>>(
+    {},
+  );
 
   const refreshSyncStatus = async (id: string) => {
     const response = await authFetch(
@@ -320,6 +420,7 @@ export const EventCalendarsComponent = () => {
       return;
     }
     const data = await response.json();
+    setDismissedSyncs(({ [id]: _removed, ...rest }) => rest);
     setSyncStatuses(current => ({
       ...current,
       [id]: { ...data.status, lastSyncedAt: current[id]?.lastSyncedAt },
@@ -461,6 +562,21 @@ export const EventCalendarsComponent = () => {
                 />
               </Button>
             </div>
+            {(syncStatuses[item.id]?.state === SYNC_RUNNING ||
+              ((syncStatuses[item.id]?.state === SYNC_FAILED ||
+                syncStatuses[item.id]?.state === SYNC_SUCCEEDED) &&
+                dismissedSyncs[item.id] !==
+                  syncStatuses[item.id].startedAt)) && (
+              <SyncProgress
+                status={syncStatuses[item.id]}
+                onDismiss={() =>
+                  setDismissedSyncs(current => ({
+                    ...current,
+                    [item.id]: syncStatuses[item.id].startedAt as string,
+                  }))
+                }
+              />
+            )}
             {syncStatuses[item.id]?.lastSyncedAt && (
               <Text size="1" color="gray">
                 {LAST_SYNCED_LABEL}{' '}
@@ -658,8 +774,8 @@ const EventCalendarForm = ({
       </Text>
       <Select
         options={EVENT_LANGUAGES}
-        selectedOption={item.language || undefined}
-        setValue={language => setItem({ ...item, language })}
+        value={item.language || undefined}
+        onValueChange={language => setItem({ ...item, language })}
         placeholder={LANGUAGE_PLACEHOLDER}
         triggerClassName="w-full"
       />

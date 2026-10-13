@@ -1,12 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { MarkedOptions, Tokens } from 'marked';
 import DOMPurify from 'dompurify';
 import { createHeadingRenderer, marked } from './markdown-config';
-import {
-  createNoteLinkClickHandler,
-  scrollToUrlHash,
-  type NoteHashSync,
-} from './note-links';
+import { createNoteLinkClickHandler, scrollToUrlHash } from './note-links';
+import { observeThemeChange, renderMermaidDiagrams } from './mermaid-diagrams';
 
 const STORAGE_PREFIX = 'docs-checklist:';
 const LIST_ID_PREFIX = 'list';
@@ -40,7 +37,6 @@ interface ChecklistViewerProps {
   content: string;
   filePath: string;
   onNavigate?: (path: string) => void;
-  hashSync?: NoteHashSync;
 }
 
 interface ChecklistItem {
@@ -50,8 +46,7 @@ interface ChecklistItem {
 }
 
 type ContentBlock =
-  | { kind: 'html'; html: string }
-  | { kind: 'list'; items: ChecklistItem[] };
+  { kind: 'html'; html: string } | { kind: 'list'; items: ChecklistItem[] };
 
 const inlineHtml = (tokens: Tokens.Generic[], opts: MarkedOptions): string =>
   marked
@@ -146,7 +141,6 @@ interface ItemRowProps {
   toggle: (id: string) => void;
   filePath: string;
   onNavigate?: (path: string) => void;
-  hashSync?: NoteHashSync;
 }
 
 const ItemRow = ({
@@ -155,14 +149,9 @@ const ItemRow = ({
   toggle,
   filePath,
   onNavigate,
-  hashSync,
 }: ItemRowProps) => {
   const isChecked = checked.has(item.id);
-  const handleLinkClick = createNoteLinkClickHandler(
-    filePath,
-    onNavigate,
-    hashSync,
-  );
+  const handleLinkClick = createNoteLinkClickHandler(filePath, onNavigate);
   return (
     <li className="list-none">
       <label className={CLS.ROW_LABEL}>
@@ -193,7 +182,6 @@ const ItemRow = ({
               toggle={toggle}
               filePath={filePath}
               onNavigate={onNavigate}
-              hashSync={hashSync}
             />
           ))}
         </ul>
@@ -206,7 +194,6 @@ export function ChecklistViewer({
   content,
   filePath,
   onNavigate,
-  hashSync,
 }: ChecklistViewerProps) {
   const blocks = useMemo(() => parseContent(content), [content]);
   const [checked, setChecked] = useState<Set<string>>(() => new Set());
@@ -215,9 +202,15 @@ export function ChecklistViewer({
     setChecked(loadChecked(filePath));
   }, [filePath]);
 
+  const proseRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    scrollToUrlHash(hashSync);
-  }, [blocks, hashSync]);
+    const el = proseRef.current;
+    renderMermaidDiagrams(el).then(scrollToUrlHash);
+    return el
+      ? observeThemeChange(el, () => renderMermaidDiagrams(el))
+      : undefined;
+  }, [blocks]);
 
   const toggle = (id: string) => {
     setChecked(prev => {
@@ -250,15 +243,11 @@ export function ChecklistViewer({
   const total = allIds.length;
   const done = allIds.filter(id => checked.has(id)).length;
 
-  const handleContentClick = createNoteLinkClickHandler(
-    filePath,
-    onNavigate,
-    hashSync,
-  );
+  const handleContentClick = createNoteLinkClickHandler(filePath, onNavigate);
 
   return (
     <div className={CLS.ROOT}>
-      <div className={CLS.PROSE} onClick={handleContentClick}>
+      <div ref={proseRef} className={CLS.PROSE} onClick={handleContentClick}>
         {total > 0 && (
           <div className={CLS.HEADER}>
             <span className={CLS.HEADER_TEXT}>
@@ -282,7 +271,6 @@ export function ChecklistViewer({
                   toggle={toggle}
                   filePath={filePath}
                   onNavigate={onNavigate}
-                  hashSync={hashSync}
                 />
               ))}
             </ul>

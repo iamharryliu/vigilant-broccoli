@@ -1,9 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState, KeyboardEvent } from 'react';
-import { Dialog, DropdownMenu } from '@radix-ui/themes';
 import {
   Button,
+  DropdownMenu,
   Checkbox,
   CollapsibleList,
   DeleteItemConfirmationDialog,
@@ -11,6 +11,10 @@ import {
   IconButton,
   Input,
   Text,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  cn,
 } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
@@ -267,17 +271,24 @@ export function Checklist({
         }}
       />
 
-      <Dialog.Root
+      <Dialog
         open={calendarItem !== null}
         onOpenChange={open => {
           if (!open) setCalendarItem(null);
         }}
       >
-        <Dialog.Content
-          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+        <DialogContent
+          aria-describedby={undefined}
+          showCloseButton={false}
+          className={cn(
+            'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+            FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+          )}
           style={{ maxWidth: 460 }}
         >
-          <Dialog.Title>{EVENT_DIALOG_TITLE}</Dialog.Title>
+          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+            {EVENT_DIALOG_TITLE}
+          </DialogTitle>
           {calendarItem && (
             <CalendarEventForm
               initialData={{
@@ -294,8 +305,8 @@ export function Checklist({
               onCancel={() => setCalendarItem(null)}
             />
           )}
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

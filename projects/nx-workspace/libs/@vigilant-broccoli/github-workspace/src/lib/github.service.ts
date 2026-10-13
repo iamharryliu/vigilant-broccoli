@@ -343,7 +343,6 @@ async function setSecrets(
 }
 
 export const GithubService = {
-  // READ
   getOwnedOrganizations,
   getOrgStructure,
   getOrgData,
@@ -356,7 +355,6 @@ export const GithubService = {
   getTeamMemberMembership,
   getTeamAndDescendants,
   listPagesSites,
-  // UPDATE
   updateTeamRepositories,
   updateTeamMembers,
   createOrgTeam,
@@ -364,12 +362,10 @@ export const GithubService = {
   deleteOrgRepo,
   addOrgMember,
   dispatchWorkflow,
-  // DELETE
   removeMembersNotInConfig,
   removeOrgMember,
   deleteTeam,
   deleteAllTeams,
-  // SECRETS
   setSecret,
   setSecrets,
 };

@@ -1,34 +1,38 @@
+import { useTranslation } from '../i18n';
+import { DemoSection } from './DemoSection';
 import {
   CardContainer,
   GithubActionsBadges,
-  Text,
 } from '@vigilant-broccoli/react-lib';
 
 const REPO_URL = 'https://github.com/iamharryliu/vigilant-broccoli';
 
-export const GithubActionsBadgesDemo = () => (
-  <div className="flex flex-col gap-6">
-    <div className="flex flex-col gap-3">
-      <Text size="2" weight="bold">
-        Wrapped (CardContainer)
-      </Text>
-      <CardContainer
-        title="GitHub Actions"
-        headerLink={{ href: `${REPO_URL}/actions`, label: 'View All' }}
+export const GithubActionsBadgesDemo = () => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col gap-6">
+      <DemoSection
+        title={t('DEMO_SECTION.GITHUB_ACTIONS_BADGES.WRAPPED_CARDCONTAINER')}
+        className="flex flex-col gap-3"
       >
-        <div className="flex flex-col gap-2">
+        <CardContainer
+          title="GitHub Actions"
+          headerLink={{ href: `${REPO_URL}/actions`, label: 'View All' }}
+        >
+          <div className="flex flex-col gap-2">
+            <GithubActionsBadges repoUrl={REPO_URL} />
+          </div>
+        </CardContainer>
+      </DemoSection>
+
+      <DemoSection
+        title={t('DEMO_SECTION.GITHUB_ACTIONS_BADGES.NON_WRAPPED')}
+        className="flex flex-col gap-3"
+      >
+        <div className="flex flex-wrap gap-1.5">
           <GithubActionsBadges repoUrl={REPO_URL} />
         </div>
-      </CardContainer>
+      </DemoSection>
     </div>
-
-    <div className="flex flex-col gap-3">
-      <Text size="2" weight="bold">
-        Non-wrapped
-      </Text>
-      <div className="flex flex-wrap gap-1.5">
-        <GithubActionsBadges repoUrl={REPO_URL} />
-      </div>
-    </div>
-  </div>
-);
+  );
+};

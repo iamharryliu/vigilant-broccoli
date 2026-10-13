@@ -67,10 +67,10 @@ export function ResourceBookingForm({
             Resource
           </Text>
           <Select
-            selectedOption={resources.find(r => r.id === resourceId)}
-            setValue={r => setResourceId(r.id)}
+            value={resources.find(r => r.id === resourceId)}
+            onValueChange={r => setResourceId(r.id)}
             options={resources}
-            optionIdenfifier="id"
+            optionIdentifier="id"
             optionDisplayKey="name"
             placeholder="Select a resource"
             triggerClassName="w-full"

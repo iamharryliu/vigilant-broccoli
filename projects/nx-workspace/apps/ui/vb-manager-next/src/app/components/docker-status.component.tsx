@@ -1,23 +1,26 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import {
-  BORDER_ACTIVE,
   Badge,
   Button,
-  CardContainer,
   DeleteIconButton,
   IconButton,
-  StatusCardList,
   StatusCardListItem,
   Text,
-  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
-import { usePollingInterval } from '../hooks/usePollingInterval';
+import { StatusListCard } from './status-list-card.component';
+import { usePolledResource } from '../hooks/usePolledResource';
+import {
+  DotColor,
+  StatusDot,
+  StatusLegendEntry,
+  getDotBorder,
+} from './status-dot.component';
 
 const DOCKER_POLL_INTERVAL_MS = 30000;
 
@@ -53,61 +56,47 @@ interface DockerStatus {
   standaloneContainers: StandaloneContainer[];
 }
 
-const getBadgeColor = (
-  state: string,
-): 'green' | 'yellow' | 'red' | 'gray' | 'blue' | 'orange' => {
+const LEGEND: StatusLegendEntry[] = [
+  { color: 'green', label: 'Running' },
+  { color: 'yellow', label: 'Paused / mixed' },
+  { color: 'blue', label: 'Restarting' },
+  { color: 'red', label: 'Exited / dead' },
+  { color: 'gray', label: 'Created / unknown' },
+];
+
+const getStateColor = (state: string): DotColor => {
   switch (state) {
     case 'running':
       return 'green';
     case 'paused':
+    case 'mixed':
       return 'yellow';
     case 'exited':
-      return 'red';
-    case 'mixed':
-      return 'orange';
-    case 'created':
-      return 'gray';
-    case 'restarting':
-      return 'blue';
     case 'removing':
     case 'dead':
-      return 'orange';
+      return 'red';
+    case 'restarting':
+      return 'blue';
     default:
       return 'gray';
   }
 };
 
 export const DockerStatusComponent = () => {
-  const [dockerStatus, setDockerStatus] = useState<DockerStatus | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isDockerRunning, setIsDockerRunning] = useState(false);
+  const {
+    data: dockerStatus,
+    loading,
+    error,
+    refetch: fetchDockerStatus,
+  } = usePolledResource<DockerStatus>({
+    endpoint: API_ENDPOINTS.DOCKER_CONTAINERS,
+    intervalMs: DOCKER_POLL_INTERVAL_MS,
+    errorMessage: 'Failed to fetch Docker container status',
+  });
   const [isStartingDocker, setIsStartingDocker] = useState(false);
   const [actionInProgress, setActionInProgress] = useState<Set<string>>(
     new Set(),
   );
-
-  const fetchDockerStatus = async () => {
-    try {
-      const response = await authFetch(API_ENDPOINTS.DOCKER_CONTAINERS);
-      if (!response.ok)
-        throw new Error('Failed to fetch Docker container status');
-      const data = await response.json();
-      setDockerStatus(data);
-      setIsDockerRunning(true);
-      setError(null);
-      setLoading(false);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Failed to fetch Docker container status',
-      );
-      setIsDockerRunning(false);
-      setLoading(false);
-      console.error('Docker status error:', err);
-    }
-  };
 
   const handleOpenDocker = async () => {
     setIsStartingDocker(true);
@@ -181,11 +170,9 @@ export const DockerStatusComponent = () => {
     return {
       id: project.name,
       label: project.name,
-      borderClassName: isRunning ? BORDER_ACTIVE : undefined,
+      borderClassName: getDotBorder(getStateColor(project.state)),
       badges: (
-        <Badge color={getBadgeColor(project.state)} size="1">
-          {isRunning ? 'Active' : 'Inactive'}
-        </Badge>
+        <StatusDot color={getStateColor(project.state)} title={project.state} />
       ),
       actions: (
         <div className="flex gap-1">
@@ -239,11 +226,12 @@ export const DockerStatusComponent = () => {
     return {
       id: container.id,
       label: container.name,
-      borderClassName: isRunning ? BORDER_ACTIVE : undefined,
+      borderClassName: getDotBorder(getStateColor(container.state)),
       badges: (
-        <Badge color={getBadgeColor(container.state)} size="1">
-          {container.state.charAt(0).toUpperCase() + container.state.slice(1)}
-        </Badge>
+        <StatusDot
+          color={getStateColor(container.state)}
+          title={container.state}
+        />
       ),
       actions: (
         <div className="flex gap-1">
@@ -290,13 +278,20 @@ export const DockerStatusComponent = () => {
     };
   };
 
-  usePollingInterval(fetchDockerStatus, DOCKER_POLL_INTERVAL_MS);
+  const items = [
+    ...(dockerStatus?.projects ?? []).map(projectToItem),
+    ...(dockerStatus?.standaloneContainers ?? []).map(containerToItem),
+  ];
 
-  if (loading) return <CardSkeleton title="Docker Containers" rows={3} />;
-
-  if (error) {
-    return (
-      <CardContainer title="Docker Containers">
+  return (
+    <StatusListCard
+      title={`Docker Containers${dockerStatus ? ` (${items.length})` : ''}`}
+      loading={loading}
+      error={error}
+      legend={LEGEND}
+      items={items}
+      emptyMessage="No Docker containers found"
+      errorContent={
         <Button
           onClick={handleOpenDocker}
           loading={isStartingDocker}
@@ -304,30 +299,7 @@ export const DockerStatusComponent = () => {
         >
           {isStartingDocker ? 'Starting Docker...' : 'Open Docker Desktop'}
         </Button>
-      </CardContainer>
-    );
-  }
-
-  const items = [
-    ...(dockerStatus?.projects ?? []).map(projectToItem),
-    ...(dockerStatus?.standaloneContainers ?? []).map(containerToItem),
-  ];
-
-  return (
-    <CardContainer
-      title={`Docker Containers${dockerStatus ? ` (${items.length})` : ''}`}
-      headerAction={
-        !isDockerRunning ? (
-          <IconButton
-            icon="external-link"
-            variant="ghost"
-            onClick={handleOpenDocker}
-            title="Open Docker.app"
-          />
-        ) : undefined
       }
-    >
-      <StatusCardList items={items} emptyMessage="No Docker containers found" />
-    </CardContainer>
+    />
   );
 };

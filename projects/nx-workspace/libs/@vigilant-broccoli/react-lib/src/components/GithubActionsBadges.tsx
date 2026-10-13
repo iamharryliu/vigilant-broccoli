@@ -113,7 +113,7 @@ export const GithubActionsBadges = ({
   if (loading) return null;
 
   if (badges.length === 0) {
-    return <Text className="text-gray-500">No workflows found</Text>;
+    return <Text className="text-muted-foreground">No workflows found</Text>;
   }
 
   return (

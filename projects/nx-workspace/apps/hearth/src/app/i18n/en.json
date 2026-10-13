@@ -17,6 +17,13 @@
       "FOOD_CHAT": "Food Assistant"
     }
   },
+  "ACTIVITY_PLANNER": {
+    "COLUMNS": {
+      "ACTIVITY_LIST": "Activity List",
+      "ACTIVITY_EVENTS": "Activity Events"
+    },
+    "EMPTY_EVENTS": "No activity events yet"
+  },
   "LOCATOR": {
     "TITLE": "Find Members",
     "SHARE": "Share my location",

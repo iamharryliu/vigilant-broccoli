@@ -1,19 +1,18 @@
 'use client';
 
 import {
-  BORDER_ACTIVE,
-  Badge,
-  CardContainer,
   MonospaceText,
-  StatusCardList,
   StatusCardListItem,
   Text,
-  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
-import { useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
-import { authFetch } from '../../../libs/auth';
-import { usePollingInterval } from '../hooks/usePollingInterval';
+import { StatusListCard } from './status-list-card.component';
+import { usePolledResource } from '../hooks/usePolledResource';
+import {
+  StatusDot,
+  StatusLegendEntry,
+  getDotBorder,
+} from './status-dot.component';
 
 const WIREGUARD_POLL_INTERVAL_MS = 30000;
 
@@ -28,72 +27,58 @@ interface WireguardStatus {
   connections: WireguardConnection[];
 }
 
-const toItem = (conn: WireguardConnection): StatusCardListItem => ({
-  id: conn.name,
-  label: conn.name.replace('.conf', ''),
-  borderClassName: conn.status === 'active' ? BORDER_ACTIVE : undefined,
-  badges: (
-    <Badge color={conn.status === 'active' ? 'green' : 'gray'} size="1">
-      {conn.status === 'active' ? 'Active' : 'Inactive'}
-    </Badge>
-  ),
-  actions: (
-    <MonospaceText
-      text={`sudo wg-quick ${conn.status === 'active' ? 'down' : 'up'} ${conn.name.replace('.conf', '')}`}
-      truncate={false}
-    />
-  ),
-  children: (
-    <>
-      <Text size="1" color="gray">
-        Interface: {conn.interface}
-      </Text>
-      <Text size="1" color="gray">
-        Address: {conn.address}
-      </Text>
-    </>
-  ),
-});
+const LEGEND: StatusLegendEntry[] = [
+  { color: 'green', label: 'Active' },
+  { color: 'gray', label: 'Inactive' },
+];
+
+const toItem = (conn: WireguardConnection): StatusCardListItem => {
+  const color = conn.status === 'active' ? 'green' : 'gray';
+  return {
+    id: conn.name,
+    label: conn.name.replace('.conf', ''),
+    borderClassName: getDotBorder(color),
+    badges: (
+      <StatusDot
+        color={color}
+        title={conn.status === 'active' ? 'Active' : 'Inactive'}
+      />
+    ),
+    actions: (
+      <MonospaceText
+        text={`sudo wg-quick ${conn.status === 'active' ? 'down' : 'up'} ${conn.name.replace('.conf', '')}`}
+        truncate={false}
+      />
+    ),
+    children: (
+      <>
+        <Text size="1" color="gray">
+          Interface: {conn.interface}
+        </Text>
+        <Text size="1" color="gray">
+          Address: {conn.address}
+        </Text>
+      </>
+    ),
+  };
+};
 
 export const WireguardStatusComponent = () => {
-  const [wgStatus, setWgStatus] = useState<WireguardStatus | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchWireguardStatus = async () => {
-    try {
-      const response = await authFetch(API_ENDPOINTS.WIREGUARD_STATUS);
-      if (!response.ok) throw new Error('Failed to fetch WireGuard status');
-      const data = await response.json();
-      setWgStatus(data);
-      setLoading(false);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to fetch WireGuard status',
-      );
-      setLoading(false);
-      console.error('WireGuard status error:', err);
-    }
-  };
-
-  usePollingInterval(fetchWireguardStatus, WIREGUARD_POLL_INTERVAL_MS);
-
-  if (loading) return <CardSkeleton title="WireGuard Connections" rows={2} />;
-
-  if (error) {
-    return (
-      <CardContainer title="WireGuard Connections">
-        <Text color="red">{error}</Text>
-      </CardContainer>
-    );
-  }
+  const { data, loading, error } = usePolledResource<WireguardStatus>({
+    endpoint: API_ENDPOINTS.WIREGUARD_STATUS,
+    intervalMs: WIREGUARD_POLL_INTERVAL_MS,
+    errorMessage: 'Failed to fetch WireGuard status',
+  });
 
   return (
-    <CardContainer title="WireGuard Connections">
-      <StatusCardList
-        items={(wgStatus?.connections ?? []).map(toItem)}
-        emptyMessage="No WireGuard configurations found"
-      />
-    </CardContainer>
+    <StatusListCard
+      title="WireGuard Connections"
+      loading={loading}
+      error={error}
+      skeletonRows={2}
+      legend={LEGEND}
+      items={(data?.connections ?? []).map(toItem)}
+      emptyMessage="No WireGuard configurations found"
+    />
   );
 };

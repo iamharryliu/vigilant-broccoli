@@ -8,7 +8,6 @@ import {
   GithubOrgRepository,
   GITHUB_ORG_URLS,
 } from '@vigilant-broccoli/github-workspace-js';
-import { Dialog } from '@radix-ui/themes';
 import { AlertCircle, Plus } from 'lucide-react';
 import { authFetch } from '../../../../../../libs/auth';
 
@@ -32,6 +31,11 @@ import {
   WINDOW_OPEN_FEATURES,
   Heading,
   Text,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
 } from '@vigilant-broccoli/react-lib';
 import { usePageTitle } from '../../../../use-page-title';
 
@@ -356,15 +360,22 @@ const AddItemDialog = ({
   };
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         <Button size="sm" variant="outline" className="w-full">
           <Plus size={12} />
           {buttonLabel}
         </Button>
-      </Dialog.Trigger>
-      <Dialog.Content style={{ maxWidth: 400 }}>
-        <Dialog.Title>{title}</Dialog.Title>
+      </DialogTrigger>
+      <DialogContent
+        className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+        aria-describedby={undefined}
+        showCloseButton={false}
+        style={{ maxWidth: 400 }}
+      >
+        <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+          {title}
+        </DialogTitle>
         <Input
           placeholder={placeholder}
           value={value}
@@ -373,9 +384,9 @@ const AddItemDialog = ({
           className="mt-3"
         />
         <div className="flex gap-2 justify-end mt-3">
-          <Dialog.Close>
+          <DialogClose asChild>
             <Button variant="ghost">Cancel</Button>
-          </Dialog.Close>
+          </DialogClose>
           <Button
             onClick={handleAdd}
             disabled={!value.trim()}
@@ -384,8 +395,8 @@ const AddItemDialog = ({
             {buttonLabel}
           </Button>
         </div>
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 };
 

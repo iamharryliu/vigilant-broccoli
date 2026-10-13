@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Dialog } from '@radix-ui/themes';
 import { ChevronRight } from 'lucide-react';
 import {
   Badge,
@@ -14,6 +13,9 @@ import {
   ImageCarouselDialog,
   ImageFilmstrip,
   Text,
+  Dialog,
+  DialogContent,
+  DialogTitle,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
@@ -198,9 +200,12 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
         )}
       </div>
 
-      <Dialog.Root open={qrOpen} onOpenChange={setQrOpen}>
-        <Dialog.Content
+      <Dialog open={qrOpen} onOpenChange={setQrOpen}>
+        <DialogContent
+          aria-describedby={undefined}
+          showCloseButton={false}
           className={cn(
+            'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
             FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
             'max-sm:flex max-sm:flex-col',
           )}
@@ -214,13 +219,15 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
               onClick={() => setQrOpen(false)}
               className="absolute left-0 sm:hidden"
             />
-            <Dialog.Title className="text-center">QR Code</Dialog.Title>
+            <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal text-center">
+              QR Code
+            </DialogTitle>
           </div>
           <div className="max-sm:flex max-sm:flex-1 max-sm:items-center max-sm:justify-center">
             <WhereIsLabel itemId={item.id} title={item.title} />
           </div>
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

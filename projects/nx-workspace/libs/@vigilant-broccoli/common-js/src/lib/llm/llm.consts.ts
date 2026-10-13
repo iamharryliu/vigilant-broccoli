@@ -1,6 +1,7 @@
 export const OPENAI_MODEL = {
   GPT_4: 'gpt-4',
   GPT_4_TURBO: 'gpt-4-turbo',
+  GPT_5_4: 'gpt-5.4',
   GPT_4O: 'gpt-4o',
   GPT_4O_MINI: 'gpt-4o-mini',
   GPT_3_5_TURBO: 'gpt-3.5-turbo',
@@ -45,19 +46,21 @@ export const LLM_MODEL = {
 } as const;
 export const LLM_MODELS = Object.values(LLM_MODEL);
 
-// Model metadata
 export type LLMModelMetadata = {
   hasImageInputSupport: boolean;
   hasImageOutputSupport: boolean;
 };
 
 export const LLM_MODEL_METADATA: Record<string, LLMModelMetadata> = {
-  // OpenAI Models
   [OPENAI_MODEL.GPT_4]: {
     hasImageInputSupport: false,
     hasImageOutputSupport: false,
   },
   [OPENAI_MODEL.GPT_4_TURBO]: {
+    hasImageInputSupport: true,
+    hasImageOutputSupport: false,
+  },
+  [OPENAI_MODEL.GPT_5_4]: {
     hasImageInputSupport: true,
     hasImageOutputSupport: false,
   },
@@ -82,7 +85,6 @@ export const LLM_MODEL_METADATA: Record<string, LLMModelMetadata> = {
     hasImageOutputSupport: true,
   },
 
-  // Gemini Models
   [GEMINI_MODEL.FLASH_2_5]: {
     hasImageInputSupport: true,
     hasImageOutputSupport: false,
@@ -92,7 +94,6 @@ export const LLM_MODEL_METADATA: Record<string, LLMModelMetadata> = {
     hasImageOutputSupport: false,
   },
 
-  // Anthropic Models
   [ANTHROPIC_MODEL.CLAUDE_4_HAIKU]: {
     hasImageInputSupport: true,
     hasImageOutputSupport: false,
@@ -106,7 +107,6 @@ export const LLM_MODEL_METADATA: Record<string, LLMModelMetadata> = {
     hasImageOutputSupport: false,
   },
 
-  // DeepSeek Models
   [DEEPSEEK_MODEL.DEEP_SEEK_V4_PRO]: {
     hasImageInputSupport: false,
     hasImageOutputSupport: false,
@@ -116,7 +116,6 @@ export const LLM_MODEL_METADATA: Record<string, LLMModelMetadata> = {
     hasImageOutputSupport: false,
   },
 
-  // Grok Models
   [GROK_MODEL.GROK_3]: {
     hasImageInputSupport: false,
     hasImageOutputSupport: false,

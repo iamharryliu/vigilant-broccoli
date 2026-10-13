@@ -24,14 +24,14 @@ const styles = {
   textarea: {
     flex: 1,
     resize: 'none',
-    border: '1px solid var(--gray-6)',
+    border: '1px solid hsl(var(--border))',
     borderRadius: '0.5rem',
     padding: '0.75rem',
     fontFamily: 'monospace',
     fontSize: '0.875rem',
     lineHeight: '1.5',
     backgroundColor: 'var(--color-background)',
-    color: 'var(--gray-12)',
+    color: 'hsl(var(--foreground))',
     outline: 'none',
     minHeight: '200px',
   },
@@ -116,8 +116,7 @@ const moveLine = (
 
   if (direction === -1) {
     if (blockStart === 0) return null;
-    const prevLineStart =
-      value.lastIndexOf('\n', blockStart - 2) + 1;
+    const prevLineStart = value.lastIndexOf('\n', blockStart - 2) + 1;
     const prevLine = value.slice(prevLineStart, blockStart - 1);
     const newValue =
       value.slice(0, prevLineStart) +
@@ -176,9 +175,7 @@ const handleTabKey = (
   if (selectionStart === selectionEnd && !e.shiftKey) {
     applyEdit({
       value:
-        value.slice(0, selectionStart) +
-        TAB_SPACES +
-        value.slice(selectionEnd),
+        value.slice(0, selectionStart) + TAB_SPACES + value.slice(selectionEnd),
       selectionStart: selectionStart + TAB_SIZE,
       selectionEnd: selectionStart + TAB_SIZE,
     });

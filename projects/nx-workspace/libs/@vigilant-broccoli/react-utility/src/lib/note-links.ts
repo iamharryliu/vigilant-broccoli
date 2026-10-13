@@ -1,14 +1,9 @@
 import type { MouseEvent } from 'react';
-import type { DocsExplorerUrlSync } from '@vigilant-broccoli/react-lib';
 
 const EXTERNAL_OR_HASH_HREF_RE = /^([a-z][a-z0-9+.-]*:|#)/i;
 const PATH_SEP = '/';
 const CURRENT_SEGMENT = '.';
 const PARENT_SEGMENT = '..';
-
-// Heading-anchor accessors; hosts whose URL fragment is already a route
-// (HashRouter) supply their own instead of the window.location.hash default.
-export type NoteHashSync = Pick<DocsExplorerUrlSync, 'getHash' | 'setHash'>;
 
 export const resolveNoteLink = (
   fromPath: string,
@@ -39,8 +34,8 @@ const getWindowHash = () => window.location.hash.slice(1);
 
 // The browser's native scroll-to-fragment only fires around the initial page load; by the
 // time async-fetched content renders its headings, that window has already closed.
-export const scrollToUrlHash = (hashSync?: NoteHashSync) => {
-  const hash = (hashSync?.getHash ?? getWindowHash)();
+export const scrollToUrlHash = () => {
+  const hash = getWindowHash();
   if (!hash) return;
   document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' });
 };
@@ -63,11 +58,7 @@ const setWindowHash = (id: string) => {
 };
 
 export const createNoteLinkClickHandler =
-  (
-    filePath: string,
-    onNavigate?: (path: string) => void,
-    hashSync?: NoteHashSync,
-  ) =>
+  (filePath: string, onNavigate?: (path: string) => void) =>
   (event: MouseEvent<HTMLElement>) => {
     const anchor = (event.target as HTMLElement).closest('a');
     if (!anchor) return;
@@ -82,7 +73,7 @@ export const createNoteLinkClickHandler =
       // onNavigate being passed) are safe to mirror the anchor into the URL — a bare
       // HashRouter consumer (no onNavigate, e.g. pages-index's ReadmePage) uses the
       // fragment as its route, so touching it there would still be wrong.
-      if (onNavigate) (hashSync?.setHash ?? setWindowHash)(id);
+      if (onNavigate) setWindowHash(id);
       return;
     }
 

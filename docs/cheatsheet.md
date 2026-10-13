@@ -4,12 +4,20 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 
 ```
 📦 REPOSITORY
+  postinstall                 Runs after root `pnpm i`: installs projects/nx-workspace dependencies (not meant to be run directly)
   open:repo                   Open GitHub repo
   open:repo:actions           Open GitHub Actions
   npm:packages                Open npm packages page
   cheatsheet                  Print this cheatsheet
   cheatsheet:tmux-nvim        Print the tmux/nvim keybinding cheatsheet
   cheatsheet:aliases          Print the shell alias cheatsheet
+  repo-stats                  Regenerate the managed repo-stats line in README.md and about.md
+  repo-stats:check            Fail if a managed repo-stats copy (README, about, resume) is stale
+
+📈 UPTIME
+  upptime:config:render <dir> Render managed monitoring files locally (empty external directory)
+  upptime:history:export <bundle> [ref] Export history-only Git commits to a new bundle
+  upptime:history:import <bundle> [owner/repo] Import history into an uninitialized monitoring dataset
 
 ⚙️  SETUP
   local:install:machine-setup Run machine setup installer (mac/linux)
@@ -31,7 +39,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   tf:post-apply               Run post-apply script
   oci:config:sync-local       Refresh ~/.oci/config + key from Vault (after a rotation)
   tf:output                   Show terraform outputs
-  tf:unlock                   Load vault env and run terraform force-unlock <lock-id>
+  tf:unlock                   Load vault env and force-unlock the HCP Terraform workspace
 
 ☁️  OCI
   oci:vm:ssh                  SSH into OCI VM (RabbitMQ)
@@ -48,6 +56,8 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   code-server:ssh             SSH into code-server VM
   code-server:logs            Follow code-server container logs
   code-server:logs:cloud-init  Follow VM provisioning log
+  code-server:remote-control:login  One-time claude.ai login for Remote Control
+  code-server:remote-control:logs  Follow Remote Control output from the container logs
   code-server:reset           Rebuild containers + volumes (fresh environment)
   code-server:replace         Replace the VM via terraform (fresh host)
 
@@ -110,6 +120,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   gcp:vm:vault:seal           Seal Vault
   gcp:vm:vault:save-secrets-local     Save Vault secrets locally
   gcp:vm:vault:set-secrets    Set secrets in Vault
+  vault:store-promotion-key <pem>  Store the production-promotion GitHub App key in Vault
 
 🔑 SECRETS
   secret-rotation:all         Run the local rotations, dispatch ci-rotate-secrets, then rotate the OCI key
@@ -122,6 +133,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   secret-rotation:twilio      Rotate Twilio auth token (two-phase secondary-token promotion)
   secret-rotation:oci         Rotate the OCI API key (local-only); refreshes ~/.oci, ~5min propagation wait
   secret-rotation:calendar-sa  Replace the Google Calendar service-account key, sync it to Vault, reload vb-manager-next
+  rabbitmq:password           Copy RabbitMQ admin password to clipboard (login user: admin)
 
 🐳 LOCAL
   local:docker:up             Start local Docker Compose services
@@ -133,8 +145,8 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   immich:docker:restart       Restart the standalone Immich Docker Compose stack
   immich:docker:reload        Reload the standalone Immich Docker Compose stack
   immich:docker:logs          Tail the standalone Immich Docker Compose logs
-  vb-manager-next:start       Start vb-manager-next via PM2
-  vb-manager-next:reload      Reload vb-manager-next via PM2
+  vb-manager-next:start       Start vb-manager-next via PM2 and save the process list
+  vb-manager-next:reload      Pull latest (ff-only), then reload vb-manager-next via PM2 and save the process list
   vb-manager-next:delete      Delete vb-manager-next PM2 process
   vb-manager-next:logs        Tail vb-manager-next PM2 logs
   vb-manager-next:status      Show PM2 process status
@@ -143,7 +155,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   dldjmusic                   Download DJ music from Spotify playlists (secrets pulled from Vault)
 
 🤖 AGENTIC — DEV SANDBOX (attended; you drive the persistent container)
-  agentic:dev-sandbox:up      Fetch tokens from Vault into the current shell session (never written to disk), then build + start contained Claude sandbox
+  agentic:dev-sandbox:up      Fetch tokens from Vault into the current shell session (never written to disk), then build + start contained agent sandbox
                                (export SANDBOX_VAULT_ENV_VARS=NAME1,NAME2 before running to also inject those Vault secret keys)
   agentic:dev-sandbox:cli     Open an interactive Claude session in a persistent tmux session in the sandbox repo clone (auto mode, sonnet; --model <m> to override)
   agentic:dev-sandbox:shell   Open an interactive bash shell in the sandbox (dotfiles loaded)
@@ -156,19 +168,24 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
                                errors after ~1h
 
 🚀 AGENTIC — TASKS (unattended; ephemeral containers, no human in the loop)
-  agentic:task:solve <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers; each opens a PR (sonnet; --model <m> to override)
-                               (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express")
-  agentic:task:create <desc>  Headlessly research and add a TODO.md entry for <desc> in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
-  agentic:task:audit [sections]  Headlessly re-verify TODO.md rows against the codebase in an ephemeral sandbox container — deletes resolved rows, corrects drifted paths/line numbers/counts — then open a PR; opens none if every row still holds (sonnet; --model <m> to override)
-  agentic:rnd "<question>"    Headlessly research a concise R&D note (alternatives table + recommendation + sample) under docs/rnd/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
-  agentic:audit "<scope>"    Headlessly audit the codebase for <scope> and write a concise findings note (severity + location + remediation table) under docs/audit/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
-  agentic:pr:fix <pr>         Headlessly fix a PR's failing CI in an ephemeral sandbox container (checks out the branch, feeds the failing logs to the agent, runs pre-commit, pushes the fix); accepts a PR number or URL (sonnet; --model <m> to override)
-  agentic:pr:update <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update); accepts a PR number or URL (sonnet; --model <m> to override)
+  agentic-pr-create <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers, one run per id; each opens a PR, or several when the request splits into increments (sonnet; --model <m> to override, or --agent codex [--codex-model <m>])
+                               (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express"; TODO ids named in the task are resolved the same way)
+  agentic-pr-create-todo <desc>  Headlessly refine <desc> into a repo-informed task prompt and add a TODO.md entry in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
+  agentic-pr-create-todo-audit  Headlessly re-verify TODO.md rows against the codebase in an ephemeral sandbox container — deletes resolved rows, corrects drifted paths/line numbers/counts — then open a PR; opens none if every row still holds (sonnet; --model <m> to override)
+  agentic-pr-create-audit  Headlessly audit docs/, every CONTEXT.md and README.md for passages about legacy implementations that no longer apply (removed apps/scripts/workflows/env vars, "previously/migrated from/no longer" backstory) in an ephemeral sandbox container, remove or rewrite to the current state only what grep verification supports, then open one PR of at most 15 files listing each removal and the skipped candidates for a re-run; opens none if nothing qualifies (opus; --model <m> to override)
+  agentic-pr-create-context-audit  Headlessly slim every CONTEXT.md, shared skill body, Doc Map and required-reading doc by replacing restated rules with links to their owner and compressing incident narratives, never losing rules, workarounds, recovery steps or exact error strings, in an ephemeral sandbox container, then open one PR of at most 15 files citing where each removed fact is retained; opens none if nothing can be slimmed safely (opus; --model <m> to override)
+  agentic-pr-create-prune  Headlessly sweep the repo for dead code, unused dependencies, broken doc links/anchors, orphaned docs/scripts/workflows and cheatsheet drift in an ephemeral sandbox container, remove only items grep shows have zero references, then open one capped PR listing the evidence and skipped candidates; opens none if nothing is provably dead (sonnet; --model <m> to override)
+  agentic-pr-create-rnd "<question>"    Headlessly research a concise R&D note (alternatives table + recommendation + sample) under docs/rnd/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
+  GitHub Actions: manual-agentic-pr-update selects operation=change|fix-ci|resolve-conflicts; instruction is required for change, optional for fix-ci, blank for resolve-conflicts
+  agentic-pr-update [--operation <op>] <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update, and opens separate follow-up PRs for independent work it surfaces); accepts a PR number or URL (sonnet; --model <m> to override)
+                                (--operation fix-ci [<instruction>] fixes a PR's failing CI from its check logs; --operation resolve-conflicts merges origin/main and resolves conflicts, taking no instruction)
+                                (--with-ci-logs feeds the PR's failing check summary and failed-step logs to the agent, e.g. agentic-pr-update --with-ci-logs 149 "fix the failing checks")
 
 🐙 GITHUB
   gh:actions:deploy           Trigger deploy workflow
   gh:actions:health-check     Trigger ci-health-check workflow
   gh:actions:kill-services    Trigger kill-services workflow
+  gh:actions:promote-production  Trigger manual-promote-production (fast-forward production to main)
   gh:actions:rotate-secrets   Trigger ci-rotate-secrets workflow
   gh:actions:run-tests        Trigger all post-deploy test workflows
   gh:actions:replace-code-server  Trigger code-server VM replace workflow

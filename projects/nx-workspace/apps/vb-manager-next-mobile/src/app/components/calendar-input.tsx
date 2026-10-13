@@ -2,16 +2,13 @@
 
 import { useRef, useState } from 'react';
 import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
-import { resizeImage } from '../utils/image.utils';
+import { resizeImage } from '@vigilant-broccoli/react-lib';
 import {
   EventDraftCard,
   EventDraft,
   EventDraftStatus,
 } from './event-draft-card';
-import {
-  buildAuthHeaders,
-  reconnectGoogle,
-} from '../providers/auth-provider';
+import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
 import { useVoiceInput } from '../hooks/use-voice-input';
 
 interface ImagePreview {

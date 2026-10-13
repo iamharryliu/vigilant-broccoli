@@ -32,11 +32,11 @@ gcloud storage rm --recursive "gs://BUCKET_NAME/8"
 # Snapshot Process
 
 ```
-gcloud compute disks snapshot free-vm --snapshot-names=free-vm-snapshot --zone=REGION
+gcloud compute disks snapshot SOURCE_DISK --snapshot-names=SNAPSHOT_NAME --zone=ZONE
 
-gcloud compute disks create vb-free-vm --source-snapshot=free-vm-snapshot --type=pd-standard --zone=REGION
+gcloud compute disks create NEW_DISK_NAME --source-snapshot=SNAPSHOT_NAME --type=pd-standard --zone=ZONE
 
-gcloud compute instances create vb-free-vm --zone=REGION --disk=name=vb-free-vm,boot=yes --machine-type=MACHINE_TYPE
+gcloud compute instances create INSTANCE_NAME --zone=ZONE --disk=name=NEW_DISK_NAME,boot=yes --machine-type=MACHINE_TYPE
 ```
 
 ## Free Tier
@@ -47,4 +47,4 @@ Always Free, per month. Cloud Storage and Compute Engine only qualify in `us-wes
 - Compute Engine: one `e2-micro` instance, 30 GB standard persistent disk, 5 GB snapshot storage.
 - Secret Manager (no region restriction): 6 active secret versions, 10,000 access operations.
 
-`gs://vigilant-broccoli-backup` lives in `us-central1`, and `cron-backup.yml` writes four dated dumps a night and prunes to the last 7, so operation counts stay far under the free quotas; total bytes stored is the limit to watch. Object versioning is off on the bucket, so a prune frees the bytes immediately instead of leaving a noncurrent copy behind until the 90-day age rule expires it.
+For a small scheduled backup bucket, use an Always Free region and keep pruning aggressive. A few dated dumps per night with only the last 7 retained usually stays far below operation quotas; total bytes stored is the limit to watch. If object versioning is off, pruning frees bytes immediately instead of leaving noncurrent copies behind until an age rule expires them.

@@ -1,6 +1,6 @@
 # TODO.md Pattern
 
-Source of truth for the shape of the repo root `TODO.md`. `/create-todo-task`, `infrastructure/agent-sandbox/create-todo-runner.sh`, `audit-todo-runner.sh`, and the `solve-todo*.sh` parsers all follow this file — change the format here first, then the consumers.
+Source of truth for the shape of the repo root `TODO.md`. `/agentic-pr-create-todo`, `infrastructure/agent-sandbox/create-todo-runner.sh`, `audit-todo-runner.sh`, and the `solve-todo*.sh` parsers all follow this file — change the format here first, then the consumers.
 
 ## Table of Contents
 
@@ -19,6 +19,7 @@ Source of truth for the shape of the repo root `TODO.md`. `/create-todo-task`, `
 
 ## Row Rules
 
+- **Bar for a row**: a row has to be worth a session of someone's time. A micro-optimization whose whole payoff is a few kB of bundle, a few forked processes per shell, or seconds on a manual operator command does not clear it, and neither does a warning with no demonstrated build, deploy, or runtime defect behind it — those are accepted, not deferred. Do not file a grab-bag row collecting several such nits under one id; each would be declined on its own, and bundling them only makes the row harder to decline. A real defect stays a row no matter how small the diff that fixes it.
 - `ID`: a unique, bare 6-hex id (no link). Generate with `python3 -c "import random; print(format(random.randint(0, 0xffffff), '06x'))"` and confirm it does not already appear in the file.
 - `Priority`: `P1`/`P2`/`P3` for Security, Performance, Maintenance, Refactor, and UI Cleanup items; `NA` for Feature Enhancements and Not so serious items (nice-to-have or deliberately-accepted risk).
 - `Description`: current state with concrete file references (`path/to/file.ext:12` where useful) and why it matters. Not so serious items migrated from an accepted-risk finding are prefixed `[security · non-risk]` / `[performance · non-risk]`.
@@ -27,12 +28,12 @@ Source of truth for the shape of the repo root `TODO.md`. `/create-todo-task`, `
 
 ## Machine-Read Contract
 
-`infrastructure/agent-sandbox/solve-todo.sh` and `solve-todo-runner.sh` locate, extract, and remove an item by matching `^| <id> |` at the start of its row (`<br>` is expanded to newlines and `\|` unescaped on extraction). Keep the id in the leading cell and the row on one line, or `pnpm agentic:task:solve <id>` cannot find it.
+`infrastructure/agent-sandbox/solve-todo.sh` and `solve-todo-runner.sh` locate, extract, and remove an item by matching `^| <id> |` at the start of its row (`<br>` is expanded to newlines and `\|` unescaped on extraction). Keep the id in the leading cell and the row on one line, or `pnpm agentic-pr-create <id>` cannot find it.
 
 `audit-todo-runner.sh` diffs the same `^| <id> |` match before and after its run and aborts rather than committing if an id vanished without being reported resolved, or if one was added or renumbered. An id is a permanent handle: correct a row in place, never reissue it.
 
 ## Staleness
 
-Rows describe the tree at the moment they were written, so they rot as the code moves — a renamed file, a shifted line number, a count that grew, a claim whose scope narrowed. `pnpm agentic:task:audit` (weekly via `cron-agentic-todo-audit`) re-verifies rows against the current tree and opens a PR that deletes the resolved ones and corrects the drifted ones. It never adds rows; a new problem found while auditing belongs to `/create-todo-task`.
+Rows describe the tree at the moment they were written, so they rot as the code moves — a renamed file, a shifted line number, a count that grew, a claim whose scope narrowed. `pnpm agentic-pr-create-todo-audit` (weekly via `cron-agentic-pr-create-todo-audit`) re-verifies rows against the current tree and opens a PR that deletes the resolved ones and corrects the drifted ones. It never adds rows; a new problem found while auditing belongs to `/agentic-pr-create-todo`.
 
-When correcting a row by hand, the same rule applies: a cited file that is missing is usually evidence the code moved, not that the problem is fixed — search by basename and symbol before deleting a row. Note that `projects/nx-workspace/apps/ui/pages-index/public/claude-context/` holds a build-time copy of `TODO.md`; it is gitignored and regenerated, so never edit it.
+When correcting a row by hand, the same rule applies: a cited file that is missing is usually evidence the code moved, not that the problem is fixed — search by basename and symbol before deleting a row. Note that `projects/nx-workspace/apps/ui/context-md/public/notes/` holds a build-time copy of `TODO.md`; it is gitignored and regenerated, so never edit it.

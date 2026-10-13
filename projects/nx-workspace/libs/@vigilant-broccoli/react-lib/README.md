@@ -9,7 +9,7 @@ Shared React component library.
 
 ## Deployment URLs
 
-- [Component Library](https://iamharryliu.github.io/vigilant-broccoli/react-component-library/)
+- [Component Library](https://components.harryliu.dev/)
 
 ## Stack
 
@@ -17,7 +17,7 @@ Shared React component library.
 - Framework - React
 - Build Tool - Vite
 - External libs
-  - Radix UI (`@radix-ui/themes`, accordion, avatar, checkbox, dialog, progress, scroll-area, select, tabs, tooltip)
+  - Radix UI (accordion, alert-dialog, avatar, checkbox, dialog, dropdown-menu, popover, progress, scroll-area, select, switch, tabs, tooltip)
   - `@supabase/supabase-js`
   - `boring-avatars`
   - `class-variance-authority`
@@ -28,6 +28,7 @@ Shared React component library.
   - `sonner`
   - `tailwind-merge`
 - Internal libs
+  - `common-browser`
   - `common-js`
 - Cloud services
   - Supabase

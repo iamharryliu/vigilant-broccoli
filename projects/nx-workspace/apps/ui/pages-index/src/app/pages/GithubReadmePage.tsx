@@ -11,7 +11,7 @@ export function GithubReadmePage() {
 
   return (
     <ReadmePage
-      title={repo ? repo.slug : t('GITHUB_REPOS_PAGE.TITLE')}
+      title={repo ? t('README_PAGE.TITLE') : t('GITHUB_REPOS_PAGE.TITLE')}
       source={
         repo
           ? {

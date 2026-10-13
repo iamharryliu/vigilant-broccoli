@@ -1,7 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
-SCOPE=${1:-}
+if [ $# -gt 0 ]; then
+  echo "Usage: audit-todo-runner.sh" >&2
+  exit 1
+fi
+
 MODEL=${SOLVE_MODEL:-sonnet}
 REPO_DIR="$HOME/vigilant-broccoli"
 META_FILE=/tmp/audit-todo-meta.json
@@ -10,48 +14,23 @@ PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
 FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 
 cd "$REPO_DIR"
+SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create-todo-audit/SKILL.md")
 
 git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"
 
-if [ -n "$SCOPE" ]; then
-  SCOPE_RULE="- Audit ONLY the rows in these TODO.md sections: $SCOPE. Leave every other section byte-identical."
-else
-  SCOPE_RULE="- Audit every row in every section."
-fi
-
 PROMPT=$(cat <<EOF
 You are running non-interactively in a fresh clone of vigilant-broccoli, on a dedicated branch. Audit the repo root TODO.md for entries that no longer match the codebase, and correct it in place.
 
-Every row was accurate when written. The repo has moved since. Your job is to re-verify each row against the tree as it exists right now and bring the file back into agreement with reality.
+Follow these shared task instructions:
 
-$SCOPE_RULE
+$SKILL_INSTRUCTIONS
 
-For each row, reach exactly one verdict, and gather the evidence BEFORE deciding:
-1. RESOLVED — the condition the row describes no longer exists (the guard was added, the dependency dropped, the file deleted with nothing replacing it). Delete the whole row.
-2. DRIFTED — the condition still exists, but the row misdescribes it: a moved or renamed file, a stale line number, a count that has changed, a claim whose scope is now narrower or wider than the row states. Rewrite only the inaccurate parts of the Description / Recommended Fix cells.
-3. ACCURATE — still true as written. Leave the row byte-identical.
-
-Verification rules — these decide the quality of the whole run:
-- Never judge a row from its own wording. Open the files it cites and read the surrounding code.
-- A file that is missing at the cited path is NOT evidence of RESOLVED. Search for it by basename and by symbol name first — most such rows are DRIFTED (the code moved), not resolved. Check "git log --oneline -5 -- <path>" to see whether it was deleted or relocated.
-- Treat a path that is generated or gitignored as not a source of truth: check .gitignore and the build targets before citing one.
-- Only mark RESOLVED when you have positively confirmed the fix exists — a guard you can read, a dependency absent from package.json, a setting changed. "I could not find the problem" is not confirmation.
-- When a row bundles several claims and only some are now false, it is DRIFTED: narrow the row to the claims that still hold rather than deleting it.
-- Line numbers cited as "path:12" must be re-checked and corrected even when the surrounding claim is accurate.
-
-Editing rules:
-- docs/todo-pattern.md is the source of truth for the file's structure, columns, priority values, row rules, and the machine-read id contract. Re-read it before editing and follow it exactly.
-- NEVER change, reuse or renumber an existing 6-hex id. Ids are stable handles that "pnpm agentic:task:solve <id>" resolves; a changed id breaks it.
-- Do not add new rows. Finding an unrelated new problem is out of scope for this audit — that is what /create-todo-task is for. Mention it in the PR summary instead.
-- Do not change a row's Priority unless the row's own evidence changed (e.g. the blast radius is now provably smaller). Priority is the owner's call, not a tidying opportunity.
-- Keep each row on one physical line, keep the id in the leading cell, write multi-step fixes with "<br>", and escape a literal pipe inside a cell.
-- Preserve section order, the Table of Contents, and each section's priority ordering. If deleting rows empties a section, keep the section and its header.
-- Do not touch any file besides TODO.md.
-- Do not run any git or gh commands and do not commit — branching, committing, pushing, and opening the PR are handled by the calling script.
-
-It is a perfectly good outcome to find nothing wrong. If every row is ACCURATE, make no edit to TODO.md at all and still write the meta file with empty resolved/drifted lists — the calling script will exit cleanly without opening a PR. Do not invent a change to justify the run.
+Sandbox execution rules:
+- You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
+- Branching, committing, pushing, and opening the PR are handled by the calling script. Do not run mutating git commands or any gh commands.
+- The only exception to the skill's output scope is $META_FILE, outside the checkout. Even for a clean audit, write the metadata with empty resolved/drifted lists; the calling script exits without opening a PR.
 
 When finished, write $META_FILE containing only a JSON object with these fields:
   - resolved: array of objects {id, reason} for rows you deleted, reason citing the evidence that the condition is gone
@@ -59,9 +38,10 @@ When finished, write $META_FILE containing only a JSON object with these fields:
   - accurate_count: number of rows you verified as still accurate
   - commit_message: capitalized, concise, focused on why the correction was needed, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
-  - pr_title: the pull request title
+  - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
   - pr_summary: markdown bullet points for the PR "## Summary" section, listing each resolved and drifted row by id with its evidence
-  - pr_test_plan: markdown checklist for the PR "## Test plan" section
+  - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (review, then merge)
+  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
 EOF
 )
 
@@ -84,13 +64,16 @@ if [ -z "$(git status --porcelain -- TODO.md)" ]; then
   exit 0
 fi
 
+# shellcheck source=commit-subject.sh
+. "$REPO_DIR/infrastructure/agent-sandbox/commit-subject.sh"
 read_meta() { jq -r "$1 // empty" "$META_FILE" 2>/dev/null || true; }
 
-COMMIT_MESSAGE=$(read_meta .commit_message)
+COMMIT_MESSAGE=$(normalize_commit_message "$(read_meta .commit_message)")
 TRAILER=$(read_meta .co_authored_by)
-PR_TITLE=$(read_meta .pr_title)
+PR_TITLE=$(normalize_pr_title "$(read_meta .pr_title)")
 PR_SUMMARY=$(read_meta .pr_summary)
-PR_TEST_PLAN=$(read_meta .pr_test_plan)
+PR_NEXT_STEPS=$(read_meta .pr_next_steps)
+PR_SUGGESTIONS=$(read_meta .pr_suggestions)
 RESOLVED_COUNT=$(read_meta '.resolved | length')
 DRIFTED_COUNT=$(read_meta '.drifted | length')
 
@@ -123,7 +106,7 @@ fi
 echo "$TRAILER" | grep -Eqi '^co-authored-by: .+ <.+>$' || TRAILER="$FALLBACK_TRAILER"
 [ -n "$PR_TITLE" ] || PR_TITLE="$COMMIT_SUBJECT"
 [ -n "$PR_SUMMARY" ] || PR_SUMMARY="- Removed ${RESOLVED_COUNT:-0} resolved and corrected ${DRIFTED_COUNT:-0} drifted TODO.md rows."
-[ -n "$PR_TEST_PLAN" ] || PR_TEST_PLAN="- [ ] Each removed row confirmed genuinely resolved against the cited files"
+[ -n "$PR_NEXT_STEPS" ] || PR_NEXT_STEPS="- [ ] Confirm each removed row was genuinely resolved against the cited files, then merge"
 
 bash "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh"
 
@@ -131,17 +114,19 @@ git add TODO.md
 git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
 git push -u origin "$BRANCH"
 
-PR_BODY=$(cat <<EOF
-## Summary
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+  HISTORY_SOURCE="GitHub Actions"
+else
+  HISTORY_SOURCE="Docker sandbox (local)"
+fi
 
-$PR_SUMMARY
+PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
+  HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic-pr-create-todo-audit" \
+  HISTORY_PROMPT="Audit every row in every section." \
+  HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
+  python3 "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py")
 
-## Test plan
-
-$PR_TEST_PLAN
-
-$PR_FOOTER
-EOF
-)
-
-gh pr create --title "$PR_TITLE" --body "$PR_BODY"
+PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
+echo "$PR_URL"
+printf 'PR_URL::%s\n' "$PR_URL"
+emit_pr_files "$BASE_SHA"

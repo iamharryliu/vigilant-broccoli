@@ -1,8 +1,8 @@
 import AuthProvider from './providers/auth-provider';
-import { APP_NAME } from './app.const';
+import { APP_NAME, PAGE_TITLE } from './app.const';
 
 export const metadata = {
-  title: APP_NAME,
+  title: `${PAGE_TITLE.HOME} | ${APP_NAME}`,
   description: 'Manage services and subscriber notifications.',
 };
 

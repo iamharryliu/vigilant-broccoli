@@ -4,6 +4,14 @@ set -e
 
 LLM_SERVICE_URL="${LLM_SERVICE_URL:-http://127.0.0.1:3000}"
 MODEL="${MODEL:-gpt-4o-mini}"
+BILLING_ERROR_PATTERN="insufficient_quota|exceeded your current quota|credit balance|credit_balance|no credits remaining"
+
+flag_out_of_credits() {
+  echo "::error title=LLM provider out of credits::${MODEL} request was rejected for quota/credit exhaustion — top up the OpenAI account"
+  if [ -n "${GITHUB_OUTPUT:-}" ]; then
+    echo "out_of_credits=true" >> "$GITHUB_OUTPUT"
+  fi
+}
 PASS=0
 FAIL=0
 
@@ -24,7 +32,6 @@ echo "Target: $LLM_SERVICE_URL"
 echo "Model:  $MODEL"
 echo ""
 
-# --- /api/llm — plain prompt ---
 echo "Testing /api/llm (plain)..."
 LLM_RESPONSE=$(curl -s -X POST "${LLM_SERVICE_URL}/api/llm" \
   -H "Content-Type: application/json" \
@@ -36,16 +43,15 @@ LLM_RESPONSE=$(curl -s -X POST "${LLM_SERVICE_URL}/api/llm" \
 
 echo "Response: $LLM_RESPONSE"
 
-# Low credit balance is an account/billing issue, not a code regression — pass rather than fail
-if echo "$LLM_RESPONSE" | grep -q "credit balance"; then
-  echo "✓ llm returns expected answer (earth) [skipped: credit balance too low]"
-  PASS=$((PASS + 1))
+if echo "$LLM_RESPONSE" | grep -qiE "$BILLING_ERROR_PATTERN"; then
+  flag_out_of_credits
+  echo "✗ llm returns expected answer (earth) [out of credits]"
+  FAIL=$((FAIL + 1))
 else
   ANSWER=$(echo "$LLM_RESPONSE" | jq -r '.outputs[0]' | tr '[:upper:]' '[:lower:]' | tr -d '[:space:][:punct:]')
   check "llm returns expected answer (earth)" "$([ "$ANSWER" = "earth" ] && echo true || echo false)"
 fi
 
-# --- /api/llm — structured output via jsonSchema (Wizard of Oz characters) ---
 echo ""
 echo "Testing /api/llm (jsonSchema, Wizard of Oz characters)..."
 WIZARD_RESPONSE=$(curl -s -X POST "${LLM_SERVICE_URL}/api/llm" \
@@ -81,14 +87,10 @@ WIZARD_RESPONSE=$(curl -s -X POST "${LLM_SERVICE_URL}/api/llm" \
 
 echo "Response: $WIZARD_RESPONSE"
 
-# Low credit balance is an account/billing issue, not a code regression — pass rather than fail
-if echo "$WIZARD_RESPONSE" | grep -q "credit balance"; then
-  echo "✓ jsonSchema returns >= 5 characters [skipped: credit balance too low]"
-  PASS=$((PASS + 1))
-  echo "✓ jsonSchema includes Dorothy [skipped: credit balance too low]"
-  PASS=$((PASS + 1))
-  echo "✓ every character has name/species/trait [skipped: credit balance too low]"
-  PASS=$((PASS + 1))
+if echo "$WIZARD_RESPONSE" | grep -qiE "$BILLING_ERROR_PATTERN"; then
+  flag_out_of_credits
+  echo "✗ jsonSchema checks [out of credits]"
+  FAIL=$((FAIL + 1))
 else
   CHAR_COUNT=$(echo "$WIZARD_RESPONSE" | jq -r '.outputs[0].characters | length' 2>/dev/null || echo "0")
   check "jsonSchema returns >= 5 characters" "$([ "$CHAR_COUNT" -ge 5 ] && echo true || echo false)"
@@ -100,7 +102,6 @@ else
   check "every character has name/species/trait" "$ALL_FIELDS_PRESENT"
 fi
 
-# --- Summary ---
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 

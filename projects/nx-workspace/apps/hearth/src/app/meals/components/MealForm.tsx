@@ -86,8 +86,8 @@ export function MealForm({
             Category
           </Text>
           <Select
-            selectedOption={category}
-            setValue={setCategory}
+            value={category}
+            onValueChange={setCategory}
             options={MEAL_CATEGORIES as unknown as MealCategory[]}
           />
         </div>

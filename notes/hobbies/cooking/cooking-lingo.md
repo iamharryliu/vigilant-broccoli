@@ -77,6 +77,7 @@
 | Term                           | Description                                                                                                                                                                                                     |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **MSG (Monosodium Glutamate)** | A flavor enhancer consisting of the sodium salt of glutamic acid. It boosts the savory umami taste of foods and is commonly added to soups, stir-fries, snacks, and seasoning blends to make them taste richer. |
+| **Produce**                    | Fresh fruits and vegetables collectively, as sold or shopped for — the term used at a grocery store's produce section or a farmers' market, distinct from packaged, frozen, or shelf-stable goods.              |
 | **Quorn**                      | A fungus-based meat alternative made from mycoprotein. High in protein and low in fat, commonly used as a substitute for meat in vegetarian and vegan cooking.                                                  |
 
 ---
@@ -124,10 +125,11 @@
 
 ## French Food Lingo
 
-| Term         | Description                                                                                                                                                                                             |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Béchamel** | One of the French mother sauces, made by whisking milk into a butter-and-flour roux and simmering until thickened. Used as the base for dishes like lasagna, gratins, and mac and cheese.               |
-| **Mirepoix** | A base of diced onion, celery, and carrot (traditionally in a 2:1:1 ratio), cooked in butter or oil to release their flavors, forming the aromatic foundation for many French sauces, soups, and stews. |
+| Term           | Description                                                                                                                                                                                                               |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **À la Carte** | French for "by the menu." Ordering or pricing each dish separately rather than as a set meal (prix fixe or tasting menu). In a kitchen, also a single item cooked to order for one ticket rather than prepped in batches. |
+| **Béchamel**   | One of the French mother sauces, made by whisking milk into a butter-and-flour roux and simmering until thickened. Used as the base for dishes like lasagna, gratins, and mac and cheese.                                 |
+| **Mirepoix**   | A base of diced onion, celery, and carrot (traditionally in a 2:1:1 ratio), cooked in butter or oil to release their flavors, forming the aromatic foundation for many French sauces, soups, and stews.                   |
 
 ---
 

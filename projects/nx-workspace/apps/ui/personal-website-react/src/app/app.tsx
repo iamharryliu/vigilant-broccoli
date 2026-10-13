@@ -1,12 +1,6 @@
 import { useEffect } from 'react';
-import {
-  Route,
-  Routes,
-  useLocation,
-  useMatch,
-  Navigate,
-} from 'react-router-dom';
-import { AppProvider } from './core/services/app-context';
+import { useDocumentTitle } from '@vigilant-broccoli/react-lib';
+import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import { ThemeProvider } from './core/services/theme-context';
 import { initAnalytics, usePageviewTracking } from './core/services/analytics';
 import {
@@ -17,6 +11,7 @@ import {
   INDEX_ROUTE,
   LINK_TREE_ROUTE,
   ROUTES,
+  SITE_NAME,
   type RouteMeta,
 } from './core/consts/routes.const';
 import { ENVIRONMENT } from '../environments/environment';
@@ -49,16 +44,15 @@ const findRouteMeta = (pathname: string): RouteMeta | undefined => {
 
 function SeoUpdater() {
   const location = useLocation();
+  const meta = findRouteMeta(location.pathname) ?? INDEX_ROUTE;
+  const fullTitle = `${meta.title} | ${SITE_NAME}`;
+  useDocumentTitle(fullTitle);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    const meta = findRouteMeta(location.pathname);
-    const title = meta?.title ?? 'home';
-    const description = meta?.description ?? DEFAULT_DESCRIPTION;
-    const fullTitle = `harryliu.dev - ${title}`;
+    const description = meta.description ?? DEFAULT_DESCRIPTION;
     const url = `${ENVIRONMENT.APP_URL}${location.pathname}${location.search}`;
 
-    document.title = fullTitle;
     updateMetaTag(
       'meta[name="description"]',
       'name',
@@ -95,7 +89,7 @@ function SeoUpdater() {
       'link[rel="canonical"]',
     );
     if (canonical) canonical.setAttribute('href', url);
-  }, [location.pathname, location.search]);
+  }, [location.pathname, location.search, meta, fullTitle]);
 
   return null;
 }
@@ -106,25 +100,21 @@ function PageviewTracker() {
 }
 
 export function App() {
-  // Touch matches to silence unused warning; not strictly needed.
-  useMatch('/');
   const location = useLocation();
   return (
     <ThemeProvider>
-      <AppProvider>
-        <SeoUpdater />
-        <PageviewTracker />
-        <div key={location.pathname} className="animate-fade-in">
-          <Routes>
-            <Route path={INDEX_ROUTE.path} element={<HomePage />} />
-            <Route path={ABOUT_ROUTE.path} element={<AboutPage />} />
-            <Route path={CONTACT_ROUTE.path} element={<ContactPage />} />
-            <Route path={CALENDAR_ROUTE.path} element={<CalendarPage />} />
-            <Route path={LINK_TREE_ROUTE.path} element={<LinkTreePage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </div>
-      </AppProvider>
+      <SeoUpdater />
+      <PageviewTracker />
+      <div key={location.pathname} className="animate-fade-in">
+        <Routes>
+          <Route path={INDEX_ROUTE.path} element={<HomePage />} />
+          <Route path={ABOUT_ROUTE.path} element={<AboutPage />} />
+          <Route path={CONTACT_ROUTE.path} element={<ContactPage />} />
+          <Route path={CALENDAR_ROUTE.path} element={<CalendarPage />} />
+          <Route path={LINK_TREE_ROUTE.path} element={<LinkTreePage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </div>
     </ThemeProvider>
   );
 }

@@ -29,6 +29,7 @@ export type QuickLink = {
   type: OpenType;
   subgroup?: string;
   args?: string;
+  embed?: boolean;
 };
 
 export type PastebinEntry = {
@@ -41,26 +42,23 @@ export type PastebinGroup = {
   entries: PastebinEntry[];
 };
 
-// Audio
 export * from './lib/audio/audio.consts';
 
-// LLM
 export * from './lib/llm/llm.consts';
 export * from './lib/llm/llm.types';
 
-// JSON Placeholder
 export * from './lib/jsonplaceholder/jsonplaceholder.services';
 export * from './lib/jsonplaceholder/jsonplaceholder.types';
 
-// Utils
 export * from './lib/utils/env.utils';
 export * from './lib/utils/string.utils';
 export * from './lib/utils/date.utils';
 export * from './lib/utils/solar.utils';
 export * from './lib/utils/lunar.utils';
 
-// Weather
 export * from './lib/weather/weather.model';
+export * from './lib/weather/local-weather';
+export * from './lib/weather/open-meteo.provider';
 
 export const DATE_CONST = {
   DAY: [

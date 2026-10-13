@@ -57,20 +57,20 @@ export function TeamLeaderboard({
       <LeaderboardFilterField label={LEADERBOARD_TEXT.PERIOD}>
         <Select
           triggerClassName="w-32"
-          selectedOption={period}
+          value={period}
           options={TEAM_PERIODS}
           displayMapper={PERIOD_LABELS}
-          setValue={setPeriod}
+          onValueChange={setPeriod}
           placeholder={LEADERBOARD_TEXT.PERIOD}
         />
       </LeaderboardFilterField>
       <LeaderboardFilterField label={LEADERBOARD_TEXT.SORT_BY}>
         <Select
           triggerClassName="w-36"
-          selectedOption={sortKey}
+          value={sortKey}
           options={metrics.map(m => m.key)}
           displayMapper={sortLabels}
-          setValue={setSortKey}
+          onValueChange={setSortKey}
           placeholder={LEADERBOARD_TEXT.SORT_BY}
         />
       </LeaderboardFilterField>

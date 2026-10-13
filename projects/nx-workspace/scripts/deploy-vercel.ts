@@ -1,13 +1,50 @@
 import { execSync, execFileSync } from 'child_process';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, mkdirSync, rmSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { createVaultClient, VAULT_SECRET_PATH } from './vault-client';
 
 const STAGING = 'staging';
 const PRODUCTION = 'production';
-const ENVIRONMENTS = [STAGING, PRODUCTION];
+const DEMO = 'demo';
+const ENVIRONMENTS = [STAGING, PRODUCTION, DEMO];
 const VERCEL_ENV = PRODUCTION;
+
+const VERCEL_ROOT_DIRECTORY = 'projects/nx-workspace';
+const VERCEL_DIR = '.vercel';
+const VERCEL_OUTPUT_DIR = `${VERCEL_DIR}/output`;
+const BUILD_LOCK_DIR = `${VERCEL_ROOT_DIRECTORY}/dist/.vercel-deploy-lock`;
+
+// Standalone output can't be packaged from an Nx cache restore — see
+// docs/app-development/ui/deployment/vercel-deploy-pattern.md
+const STANDALONE_OUTPUT_PROJECTS = new Set(['employee-handler-ui']);
+
+const BUILD_LOCK_TIMEOUT_MS = 20 * 60 * 1000;
+const BUILD_LOCK_POLL_MS = 500;
+
+// All apps share one .vercel directory, so build and upload are serialised as
+// a unit (see vercel-deploy-pattern.md). mkdir is the atomic primitive: it
+// fails if the directory exists.
+async function withBuildLock<T>(lockDir: string, fn: () => T): Promise<T> {
+  mkdirSync(dirname(lockDir), { recursive: true });
+  const deadline = Date.now() + BUILD_LOCK_TIMEOUT_MS;
+  for (;;) {
+    try {
+      mkdirSync(lockDir);
+      break;
+    } catch {
+      if (Date.now() >= deadline) {
+        throw new Error(`Timed out waiting for the build lock at ${lockDir}`);
+      }
+      await new Promise(done => setTimeout(done, BUILD_LOCK_POLL_MS));
+    }
+  }
+  try {
+    return fn();
+  } finally {
+    rmSync(lockDir, { recursive: true, force: true });
+  }
+}
 
 interface VaultSecrets {
   [key: string]: string;
@@ -192,7 +229,7 @@ async function main() {
 
   if (!projectName) {
     console.error(
-      'Usage: npx tsx scripts/deploy-vercel.ts <project-name> [staging|production]',
+      'Usage: npx tsx scripts/deploy-vercel.ts <project-name> [staging|production|demo]',
     );
     process.exit(1);
   }
@@ -234,7 +271,9 @@ async function main() {
   const NX_VERCEL_SETTINGS = (nxProject: string, outputDirectory: string) => ({
     framework: 'nextjs',
     rootDirectory: 'projects/nx-workspace',
-    buildCommand: `nx build ${nxProject}`,
+    buildCommand: `nx build ${nxProject}${
+      STANDALONE_OUTPUT_PROJECTS.has(nxProject) ? ' --skip-nx-cache' : ''
+    }`,
     installCommand: 'pnpm install --frozen-lockfile',
     outputDirectory,
   });
@@ -264,6 +303,20 @@ async function main() {
     whiteboard: {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
       settings: NX_VERCEL_SETTINGS('whiteboard', 'dist/apps/whiteboard/.next'),
+    },
+    balloono: {
+      hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
+      settings: NX_VERCEL_SETTINGS('balloono', 'dist/apps/ui/balloono/.next'),
+    },
+    'weather-next': {
+      hardcodedSecrets: {
+        VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
+      },
+      envExamplePath: 'apps/ui/weather-next/.env.example',
+      settings: NX_VERCEL_SETTINGS(
+        'weather-next',
+        'dist/apps/ui/weather-next/.next',
+      ),
     },
     'vb-manager-next-mobile': {
       hardcodedSecrets: {
@@ -349,11 +402,32 @@ async function main() {
   }
 
   const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
-  const deployArgs = ['deploy', '--prod', '--yes', `"${repoRoot}"`].join(' ');
-  console.log(`\nTriggering Vercel deployment for ${projectName}...\n`);
-  execSync(`npx vercel ${deployArgs}`, {
-    stdio: 'inherit',
-    env: vercelEnv,
+
+  // The cwd, --output, buildEnv and .vercel clearing below are each
+  // load-bearing — see "The build runs on the runner, not on Vercel" in
+  // docs/app-development/ui/deployment/vercel-deploy-pattern.md.
+  const buildEnv = { ...vercelEnv, ...allSecrets };
+
+  const outputDir = resolve(repoRoot, VERCEL_OUTPUT_DIR);
+
+  await withBuildLock(resolve(repoRoot, BUILD_LOCK_DIR), () => {
+    // The whole .vercel directory, not just output: a stale project.json link
+    // silently builds the previous app's project under this one's name.
+    rmSync(resolve(repoRoot, VERCEL_DIR), { recursive: true, force: true });
+
+    console.log(`\nBuilding ${projectName}...\n`);
+    execSync(
+      `npx vercel build --prod --yes --cwd "${repoRoot}" --output "${outputDir}"`,
+      { stdio: 'inherit', env: buildEnv },
+    );
+
+    console.log(`\nDeploying ${projectName} to Vercel...\n`);
+    // tgz uploads one archive instead of every output file; per-file uploads
+    // exhaust the free plan's 5000 uploads/24h ("api-upload-free") mid-run.
+    execSync(
+      `npx vercel deploy --prebuilt --prod --yes --archive=tgz --cwd "${repoRoot}"`,
+      { stdio: 'inherit', env: vercelEnv },
+    );
   });
 
   console.log('\nDone!');

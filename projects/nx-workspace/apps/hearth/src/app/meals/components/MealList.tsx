@@ -2,13 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
-import { Dialog } from '@radix-ui/themes';
 import {
   Badge,
   Button,
   EllipsisCTA,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Text,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  cn,
 } from '@vigilant-broccoli/react-lib';
 import { CalendarEvent, Meal } from '../../../lib/types';
 import { MealForm, MealFormData } from './MealForm';
@@ -164,19 +167,24 @@ export function MealList({
         })}
       </div>
 
-      <Dialog.Root
+      <Dialog
         open={modal !== null}
         onOpenChange={open => {
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content
-          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+        <DialogContent
+          aria-describedby={undefined}
+          showCloseButton={false}
+          className={cn(
+            'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+            FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+          )}
           style={{ maxWidth: 440 }}
         >
-          <Dialog.Title>
+          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
             {modal?.type === 'edit' ? 'Edit Meal' : 'Add Meal'}
-          </Dialog.Title>
+          </DialogTitle>
 
           {modal?.type === 'create' && (
             <MealForm onSubmit={handleAdd} onCancel={() => setModal(null)} />
@@ -196,8 +204,8 @@ export function MealList({
               isEdit
             />
           )}
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

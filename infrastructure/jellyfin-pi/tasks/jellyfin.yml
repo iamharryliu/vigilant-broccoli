@@ -73,6 +73,6 @@
     daemon_reload: true
   # The unit file above is only written for real outside check mode, so on a
   # not-yet-provisioned host systemd has nothing to enable here. Real runs
-  # install the unit first. Without this,  can never
-  # report a clean run on a fresh Pi.
+  # install the unit first. Without this, --check can never report a clean run
+  # on a fresh Pi.
   ignore_errors: '{{ ansible_check_mode }}'

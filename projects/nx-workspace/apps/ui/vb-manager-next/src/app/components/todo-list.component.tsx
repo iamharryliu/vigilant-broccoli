@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Table } from '@radix-ui/themes';
+import ReactMarkdown from 'react-markdown';
 import {
+  Table,
   Callout,
   CalloutText,
   EllipsisCTA,
@@ -19,18 +20,10 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
-
-interface TodoRow {
-  id: string;
-  priority: string;
-  description: string;
-  recommendedFix: string;
-}
-
-interface TodoSection {
-  heading: string;
-  rows: TodoRow[];
-}
+import type {
+  TodoRow,
+  TodoSection,
+} from '../api/todo/_lib/todo-markdown.utils';
 
 const PRIORITY_OPTIONS = ['P1', 'P2', 'P3', 'NA'];
 const NEW_ROW_DEFAULTS = {
@@ -195,6 +188,11 @@ export const TodoListComponent = () => {
           className="flex flex-col gap-2"
         >
           <Heading size="3">{section.heading}</Heading>
+          {section.description && (
+            <div className="prose prose-sm dark:prose-invert max-w-none">
+              <ReactMarkdown>{section.description}</ReactMarkdown>
+            </div>
+          )}
           <div className="overflow-x-auto">
             <Table.Root variant="surface">
               <Table.Header>
@@ -222,8 +220,8 @@ export const TodoListComponent = () => {
                     </Table.Cell>
                     <Table.Cell>
                       <Select
-                        selectedOption={row.priority}
-                        setValue={priority =>
+                        value={row.priority}
+                        onValueChange={priority =>
                           updateRow(section.heading, rowIdx, { priority })
                         }
                         options={PRIORITY_OPTIONS}

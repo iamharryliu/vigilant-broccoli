@@ -1,4 +1,5 @@
 {
+  "parallel": 6,
   "pluginsConfig": {
     "@nx/js": {
       "analyzeSourceFiles": true
@@ -180,7 +181,12 @@
         "startTargetName": "start",
         "serveStaticTargetName": "serve-static"
       },
-      "include": ["apps/findme/**/*", "apps/whiteboard/**/*"]
+      "include": [
+        "apps/findme/**/*",
+        "apps/whiteboard/**/*",
+        "apps/ui/weather-next/**/*",
+        "apps/ui/balloono/**/*"
+      ]
     },
     {
       "plugin": "@nx/next/plugin",

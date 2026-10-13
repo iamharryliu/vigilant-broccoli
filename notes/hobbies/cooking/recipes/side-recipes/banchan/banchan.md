@@ -55,8 +55,3 @@ Most banchan names are ingredient + method, so the suffix tells you how it was m
 - Salty, concentrated dishes (jangjorim, myeolchi-bokkeum, kongjaban) are eaten in small amounts as rice accompaniments; namul and muchim are eaten in larger amounts.
 - Most are served cold or at room temperature, which is what makes the make-ahead batch cooking work.
 - Kimchi and jeotgal keep for months and sharpen as they age; namul and muchim are at their best within a few days, so make those fresh around a standing stock of the fermented ones.
-
-## See Also
-
-- [Tofu](../../../food-notes/tofu.md)
-- [Vegetables](../../../food-notes/vegetables.md)

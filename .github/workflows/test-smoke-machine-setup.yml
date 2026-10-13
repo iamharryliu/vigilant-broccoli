@@ -28,15 +28,25 @@ jobs:
       - name: Run the Linux setup script
         run: ./setup/linux/install.sh -y
 
+      - name: Verify agent setup compatibility
+        run: bash setup/common/agent-skills-smoketest.sh
+
       - name: Verify apt packages installed
         run: xargs -a setup/linux/apt-packages.txt -I{} dpkg -s {} > /dev/null
 
       - name: Verify dotfile symlinks resolve
         run: |
           set -euo pipefail
-          for link in .gitconfig .tmux.conf .vimrc .config/nvim .claude/commands .claude/skills shell-aliases shell-scripts; do
+          for link in .gitconfig .tmux.conf .vimrc .config/nvim shell-aliases shell-scripts; do
             [ -L "$HOME/$link" ] || { echo "$link is not a symlink"; exit 1; }
             [ -e "$HOME/$link" ] || { echo "$link points at nothing"; exit 1; }
+          done
+          for skill in "$GITHUB_WORKSPACE"/setup/dotfiles/agent-skills/*; do
+            name=${skill##*/}
+            for directory in .claude/skills .agents/skills; do
+              [ "$HOME/$directory/$name/SKILL.md" -ef "$skill/SKILL.md" ] || exit 1
+            done
+            [ "$HOME/.claude/commands/$name.md" -ef "$skill/SKILL.md" ] || exit 1
           done
 
       # The rc chain is what a fresh login shell sources; a missing file or an

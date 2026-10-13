@@ -1,0 +1,52 @@
+name: cron-cleanup-preview-deployments
+
+# Previews are keyed on the PR number, so a closed PR — not a deleted branch —
+# is what makes one stale. A pull_request trigger can't be used here: this job
+# uses the shared github-actions identity, whose WIF provider refuses
+# pull_request and whose Vault role is bound to refs/heads/main. The daily
+# sweep is what collects closed PRs' previews, so one can outlive its PR by up
+# to a day; dispatch the workflow to collect it sooner.
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/cron-cleanup-preview-deployments.yml
+  schedule:
+    - cron: '45 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: read
+
+concurrency:
+  group: cron-cleanup-preview-deployments
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - uses: ./.github/actions/setup-nx-workspace
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
+            kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
+
+      # --output-style=static: nx hides successful tasks' output, which here is
+      # the only record of how many deployments were deleted. GH_TOKEN: the
+      # script asks the API which PRs are still open to decide what is stale.
+      - name: Delete previews of closed PRs
+        working-directory: ./projects/nx-workspace
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: pnpm exec nx run-many -t prune-deployments:preview --output-style=static

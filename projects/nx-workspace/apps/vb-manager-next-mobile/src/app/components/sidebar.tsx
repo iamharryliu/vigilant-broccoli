@@ -8,12 +8,12 @@ import {
   CalendarRange,
   ClipboardList,
   Link2,
-  ListChecks,
   ListTodo,
   Mic,
   QrCode,
   ScanLine,
   StickyNote,
+  CloudSun,
   LogOut,
 } from 'lucide-react';
 import {
@@ -39,7 +39,6 @@ const FOOTER_LABEL_VISIBLE = 'flex-1 opacity-100';
 
 const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
   { href: '/', label: PAGE_TITLE.HOME, icon: CalendarDays },
-  { href: '/tasks', label: PAGE_TITLE.TASKS, icon: ListChecks },
   { href: '/task-list', label: PAGE_TITLE.TASK_LIST, icon: ListTodo },
   { href: '/transcribe', label: PAGE_TITLE.TRANSCRIBE, icon: Mic },
   { href: '/ocr', label: PAGE_TITLE.OCR, icon: ScanLine },
@@ -51,6 +50,7 @@ const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
     icon: CalendarRange,
   },
   { href: '/pastebin', label: PAGE_TITLE.PASTEBIN, icon: ClipboardList },
+  { href: '/weather', label: PAGE_TITLE.WEATHER, icon: CloudSun },
 ];
 
 type AppSidebarProps = {

@@ -1,0 +1,99 @@
+{
+  "APP": {
+    "TITLE": "Waiting Games",
+    "PAGE_GAMES": "Games",
+    "DESCRIPTION": "Hands-free games to watch while you wait. Think of your answer, then watch it be revealed."
+  },
+  "GAME": {
+    "CUP_AND_BALL": "Cup & Ball",
+    "MULTIPLE_CHOICE": "Quiz",
+    "TRUE_FALSE": "True or False",
+    "ESTIMATION": "Estimation"
+  },
+  "PHASE": {
+    "PROMPT": "Watch",
+    "THINKING": "Think",
+    "REVEAL": "Answer",
+    "BREAK": "Next round"
+  },
+  "STATUS": {
+    "ROUND": "Round {round}",
+    "PHASE_ANNOUNCEMENT": "{game}: {phase}",
+    "PAUSED": "Paused",
+    "SECONDS_LEFT": "{seconds} seconds left",
+    "UP_NEXT": "Get ready for the next round"
+  },
+  "CUPS": {
+    "REGION_LABEL": "Three cups on a table",
+    "CUP_LABEL": "{position} cup",
+    "WATCH_BALL": "Watch the ball!",
+    "SHUFFLING": "Keep your eyes on the cup…",
+    "GUESS": "Where is the ball?",
+    "GUESS_HINT": "Think of left, middle or right.",
+    "REVEAL": "It was under the {position} cup!",
+    "SWAP_CAPTION": "Swapping the {first} and {second} cups",
+    "POSITION": {
+      "LEFT": "left",
+      "MIDDLE": "middle",
+      "RIGHT": "right"
+    }
+  },
+  "QUIZ": {
+    "THINK": "Which one is right?",
+    "CORRECT_ANSWER": "Correct answer"
+  },
+  "TRUE_FALSE": {
+    "THINK": "True or false?",
+    "TRUE": "True",
+    "FALSE": "False",
+    "REVEAL_TRUE": "It’s true!",
+    "REVEAL_FALSE": "It’s false!"
+  },
+  "ESTIMATION": {
+    "PROMPT_TARGET": "Count the {objects}",
+    "THINK": "How many {objects} were there?",
+    "THINK_HINT": "Make your best guess.",
+    "REVEAL": "There were {count} {objects}!",
+    "REVEAL_COUNTING": "Counting…",
+    "OBJECTS_LABEL": "Pile of {objects}",
+    "OBJECT": {
+      "STAR": "stars",
+      "APPLE": "apples",
+      "BALLOON": "balloons",
+      "FISH": "fish",
+      "FLOWER": "flowers",
+      "BUTTERFLY": "butterflies",
+      "DUCK": "ducks",
+      "GEM": "gems"
+    }
+  },
+  "CONTROLS": {
+    "GROUP_LABEL": "Playback and settings",
+    "PAUSE": "Pause",
+    "RESUME": "Resume",
+    "SKIP": "Skip to next round",
+    "SETTINGS": "Settings"
+  },
+  "SETTINGS": {
+    "TITLE": "Settings",
+    "DESCRIPTION": "Playback pauses while this window is open and picks up where it left off when you close it. Changes apply from the next phase that starts; the phase on screen keeps its length.",
+    "TIMING_LEGEND": "Round timing",
+    "TIMING_HELP": "Every round runs Watch, then Think, then Answer, then a short pause before the next round. These three times can be changed.",
+    "UNIT": "seconds",
+    "RANGE": "{min}–{max} seconds",
+    "RESET": "Reset to defaults",
+    "DONE": "Done",
+    "THINKING": {
+      "LABEL": "Thinking time",
+      "HELP": "How long viewers get to think of an answer before it is revealed."
+    },
+    "REVEAL": {
+      "LABEL": "Answer reveal time",
+      "HELP": "How long the correct answer and its explanation stay on screen."
+    },
+    "BREAK": {
+      "LABEL": "Time between rounds",
+      "HELP": "The pause after an answer is revealed, before the next round begins."
+    }
+  }
+}

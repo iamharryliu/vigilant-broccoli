@@ -1,5 +1,16 @@
 # Google Workspace
 
+## Table of Contents
+
+- [GAM](#gam)
+  - [Reference](#reference)
+  - [Install](#install)
+  - [Config Files & Credentials](#config-files--credentials)
+  - [Copying Credentials to a New Machine](#copying-credentials-to-a-new-machine)
+  - [Commands](#commands)
+- [Domain Wide Delegation](#domain-wide-delegation)
+  - [Scopes](#scopes)
+
 - [Pricing](https://workspace.google.com/pricing)
 
 ## GAM
@@ -56,20 +67,20 @@ alias gyb="~/bin/gyb/gyb"
 
 ### Config Files & Credentials
 
-| Tool | Location     | File                                                             | What it is                                                                                                                            |
-| ---- | ------------ | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| GAM  | `~/.gam/`    | `client_secrets.json`                                            | OAuth client ID/secret for the registered Cloud project (app identity, not user-specific).                                            |
-| GAM  | `~/.gam/`    | `oauth2.txt`                                                     | The authorized admin's OAuth token — this **is** the logged-in admin session GAM acts as.                                             |
-| GAM  | `~/.gam/`    | `oauth2service.json`                                             | Service account key enabling domain-wide delegation (impersonate any user within granted scopes).                                     |
-| GAM  | `~/.gam/`    | `gam.cfg`                                                        | Settings. Contains **absolute host paths** (`config_dir`, `cache_dir`, `drive_dir`) — not portable as-is between machines, see below. |
-| GYB  | `~/bin/gyb/` | `client_secrets.json`                                            | OAuth client ID/secret for GYB's registered Cloud project.                                                                            |
-| GYB  | `~/bin/gyb/` | `oauth2service.json`                                             | Service account key for domain-wide delegation — use with `--service-account` on every command.                                       |
-| GYB  | `~/bin/gyb/` | `<impersonated-email>.cfg` (e.g. `serviceaccount@elva11.se.cfg`) | Cached OAuth2 credential for one specific impersonated address, used when _not_ passing `--service-account`.                          |
-| GYB  | `~/bin/gyb/` | `lastcheck.txt`, `nobrowser.txt`                                 | Local-only state (update-check timestamp, headless-mode flag) — no need to copy between machines.                                     |
+| Tool | Location     | File                                                               | What it is                                                                                                                            |
+| ---- | ------------ | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| GAM  | `~/.gam/`    | `client_secrets.json`                                              | OAuth client ID/secret for the registered Cloud project (app identity, not user-specific).                                            |
+| GAM  | `~/.gam/`    | `oauth2.txt`                                                       | The authorized admin's OAuth token — this **is** the logged-in admin session GAM acts as.                                             |
+| GAM  | `~/.gam/`    | `oauth2service.json`                                               | Service account key enabling domain-wide delegation (impersonate any user within granted scopes).                                     |
+| GAM  | `~/.gam/`    | `gam.cfg`                                                          | Settings. Contains **absolute host paths** (`config_dir`, `cache_dir`, `drive_dir`) — not portable as-is between machines, see below. |
+| GYB  | `~/bin/gyb/` | `client_secrets.json`                                              | OAuth client ID/secret for GYB's registered Cloud project.                                                                            |
+| GYB  | `~/bin/gyb/` | `oauth2service.json`                                               | Service account key for domain-wide delegation — use with `--service-account` on every command.                                       |
+| GYB  | `~/bin/gyb/` | `<impersonated-email>.cfg` (e.g. `serviceaccount@company.com.cfg`) | Cached OAuth2 credential for one specific impersonated address, used when _not_ passing `--service-account`.                          |
+| GYB  | `~/bin/gyb/` | `lastcheck.txt`, `nobrowser.txt`                                   | Local-only state (update-check timestamp, headless-mode flag) — no need to copy between machines.                                     |
 
 `oauth2.txt`, `oauth2service.json`, and any `*.cfg` credential file are secrets — treat them like admin passwords (`chmod 600`, never commit them).
 
-> **Nuance:** the per-email `.cfg` OAuth cache (e.g. `serviceaccount@elva11.se.cfg`) can go stale (`invalid_grant: Bad Request` on every command) independent of which machine it's on — it failed identically on the original machine and a freshly-copied one. Domain-wide delegation via `oauth2service.json` + `--service-account` bypassed it entirely and worked immediately (verify with `gyb --email EMAIL --action check-service-account --service-account`). Prefer `--service-account` over the cached per-email token for this reason.
+> **Nuance:** the per-email `.cfg` OAuth cache (e.g. `serviceaccount@company.com.cfg`) can go stale (`invalid_grant: Bad Request` on every command) independent of which machine it's on — it failed identically on the original machine and a freshly-copied one. Domain-wide delegation via `oauth2service.json` + `--service-account` bypassed it entirely and worked immediately (verify with `gyb --email EMAIL --action check-service-account --service-account`). Prefer `--service-account` over the cached per-email token for this reason.
 
 ### Copying Credentials to a New Machine
 
@@ -79,8 +90,8 @@ To use the same authorized identity for GAM/GYB from a second machine (no need t
 2. Copy the credential files listed in the table above from the source machine over SSH, e.g.:
    ```bash
    scp user@source-host:~/.gam/{client_secrets.json,oauth2.txt,oauth2service.json,gam.cfg} ~/.gam/
-   scp "user@source-host:~/bin/gyb/{client_secrets.json,oauth2service.json,serviceaccount@elva11.se.cfg}" ~/bin/gyb/
-   chmod 600 ~/.gam/{client_secrets.json,oauth2.txt,oauth2service.json,gam.cfg} ~/bin/gyb/{client_secrets.json,oauth2service.json,serviceaccount@elva11.se.cfg}
+   scp "user@source-host:~/bin/gyb/{client_secrets.json,oauth2service.json,serviceaccount@company.com.cfg}" ~/bin/gyb/
+   chmod 600 ~/.gam/{client_secrets.json,oauth2.txt,oauth2service.json,gam.cfg} ~/bin/gyb/{client_secrets.json,oauth2service.json,serviceaccount@company.com.cfg}
    ```
 3. Patch the absolute paths in the copied `gam.cfg` to match the new machine's home directory:
    ```bash

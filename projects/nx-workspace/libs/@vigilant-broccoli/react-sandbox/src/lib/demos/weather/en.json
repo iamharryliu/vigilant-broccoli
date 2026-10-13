@@ -1,0 +1,47 @@
+{
+  "WEATHER_DISPLAY": {
+    "DEFAULT_CITY": "Toronto",
+    "STATUS": {
+      "LOADING": "Fetching live weather from Open-Meteo…",
+      "LIVE": "Started from live Open-Meteo weather for {city}. Adjust the controls to preview other conditions.",
+      "FALLBACK": "Live weather is unavailable, so this started from sample values."
+    },
+    "CONTROLS": {
+      "CITY": "City",
+      "TEMPERATURE": "Temperature (°C)",
+      "FEELS_LIKE": "Feels like (°C)",
+      "HIGH": "High (°C)",
+      "LOW": "Low (°C)",
+      "HUMIDITY": "Humidity (%)",
+      "WIND": "Wind (km/h)",
+      "CONDITION": "Condition",
+      "DAY": "Daytime",
+      "FAHRENHEIT": "Fahrenheit",
+      "BADGES": "Preparation badges"
+    },
+    "WEATHER": {
+      "CURRENT": "{temperature}°, {condition}",
+      "HIGH": "H {temperature}°",
+      "LOW": "L {temperature}°",
+      "FEELS_LIKE": "Feels like {temperature}°",
+      "HUMIDITY": "Humidity {percent}%",
+      "WIND": "Wind {speed} km/h"
+    },
+    "CONDITION": {
+      "CLEAR": "Clear",
+      "PARTLY_CLOUDY": "Partly cloudy",
+      "CLOUDY": "Cloudy",
+      "FOG": "Foggy",
+      "DRIZZLE": "Drizzle",
+      "RAIN": "Rain",
+      "SNOW": "Snow",
+      "THUNDERSTORM": "Thunderstorm"
+    },
+    "PREPARATION": {
+      "WIND_RESISTANT_CLOTHING": "Wind-resistant clothing",
+      "RAIN_RESISTANT_CLOTHING": "Rain-resistant clothing",
+      "SNOW_RESISTANT_CLOTHING": "Snow-resistant clothing",
+      "SUNGLASSES": "Sunglasses"
+    }
+  }
+}

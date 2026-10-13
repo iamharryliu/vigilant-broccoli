@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
-import { SegmentedControl } from '@radix-ui/themes';
 import {
   Button,
+  useDocumentTitle,
   DocsExplorer,
   type DocsExplorerUrlSync,
   type DocsNode,
   type DocsSearchResult,
   type NoteGraph,
+  SegmentedControl,
 } from '@vigilant-broccoli/react-lib';
 import { MarkdownViewer } from './markdown-viewer';
 import { ChecklistViewer } from './checklist-viewer';
@@ -77,6 +78,8 @@ const COPY = {
   ORPHAN_NOTE: 'This note has no links',
   FORCES: 'Forces',
   RESET: 'Reset',
+  SCOPE_LABEL: 'Graph scope',
+  DEPTH_LABEL: 'Graph depth',
 } as const;
 
 const depthLabel = (value: number) => `${value} hop${value > 1 ? 's' : ''}`;
@@ -90,17 +93,19 @@ const titleFromPath = (path: string) =>
 function DocumentTitleSync({
   content,
   fallback,
+  siteName,
 }: {
   content: string;
   fallback: string;
+  siteName?: string;
 }) {
-  useEffect(() => {
-    document.title = HEADING_RE.exec(content)?.[1]?.trim() || fallback;
-  }, [content, fallback]);
+  const title = HEADING_RE.exec(content)?.[1]?.trim() || fallback;
+  useDocumentTitle(siteName ? `${title} | ${siteName}` : title);
   return null;
 }
 
 export interface DocsViewerProps {
+  siteName?: string;
   getStructure: () => Promise<DocsNode[]>;
   getContent: (path: string) => Promise<string>;
   saveContent?: (path: string, content: string) => Promise<void>;
@@ -202,29 +207,27 @@ function GraphPanel({
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-center flex-wrap gap-2 px-12 pt-2 pb-1 flex-shrink-0">
-        <SegmentedControl.Root
-          size="1"
+        <SegmentedControl
+          label={COPY.SCOPE_LABEL}
+          size="sm"
           value={scope}
-          onValueChange={value => updateScope(value as GraphScope)}
-        >
-          {(Object.values(GRAPH_SCOPE) as GraphScope[]).map(value => (
-            <SegmentedControl.Item key={value} value={value}>
-              {GRAPH_SCOPE_LABEL[value]}
-            </SegmentedControl.Item>
-          ))}
-        </SegmentedControl.Root>
+          onChange={updateScope}
+          options={(Object.values(GRAPH_SCOPE) as GraphScope[]).map(value => ({
+            value,
+            label: GRAPH_SCOPE_LABEL[value],
+          }))}
+        />
         {scope === GRAPH_SCOPE.LOCAL && (
-          <SegmentedControl.Root
-            size="1"
+          <SegmentedControl
+            label={COPY.DEPTH_LABEL}
+            size="sm"
             value={String(depth)}
-            onValueChange={value => updateDepth(Number(value))}
-          >
-            {GRAPH_DEPTH_OPTIONS.map(value => (
-              <SegmentedControl.Item key={value} value={String(value)}>
-                {depthLabel(value)}
-              </SegmentedControl.Item>
-            ))}
-          </SegmentedControl.Root>
+            onChange={value => updateDepth(Number(value))}
+            options={GRAPH_DEPTH_OPTIONS.map(value => ({
+              value: String(value),
+              label: depthLabel(value),
+            }))}
+          />
         )}
         <Button
           size="sm"
@@ -287,6 +290,7 @@ function GraphPanel({
 }
 
 export function DocsViewer({
+  siteName,
   getStructure,
   getContent,
   saveContent,
@@ -356,6 +360,7 @@ export function DocsViewer({
     return (
       <div className="flex flex-col h-full">
         <DocumentTitleSync
+          siteName={siteName}
           content={content}
           fallback={isAggregate ? contentKey : titleFromPath(contentKey)}
         />
@@ -365,7 +370,6 @@ export function DocsViewer({
               content={content}
               filePath={contentKey}
               onNavigate={navigate}
-              hashSync={urlSync}
             />
           ) : (
             <MarkdownViewer
@@ -374,7 +378,6 @@ export function DocsViewer({
               saveContent={isAggregate ? undefined : saveContent}
               editTrigger={editTrigger}
               onNavigate={navigate}
-              hashSync={urlSync}
             />
           )}
         </div>

@@ -12,6 +12,8 @@ export const GITHUB_REPOS: GithubRepoInfo[] = [
   },
 ];
 
+export const GITHUB_REPOSITORIES_URL = `https://github.com/${GITHUB_OWNER}?tab=repositories`;
+
 export const toGithubRepoUrl = (slug: string) =>
   `https://github.com/${GITHUB_OWNER}/${slug}`;
 

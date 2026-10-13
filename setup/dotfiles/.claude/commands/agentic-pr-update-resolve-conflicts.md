@@ -1,0 +1,1 @@
+../../agent-skills/agentic-pr-update-resolve-conflicts/SKILL.md

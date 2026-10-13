@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Dialog } from '@radix-ui/themes';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import {
   Button,
@@ -14,6 +13,10 @@ import {
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Input,
   Text,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  cn,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
@@ -395,24 +398,31 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
           ]}
         />
 
-        <Dialog.Root
+        <Dialog
           open={detail !== null}
           onOpenChange={open => {
             if (!open) setDetail(null);
           }}
         >
-          <Dialog.Content
-            className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+          <DialogContent
+            aria-describedby={undefined}
+            showCloseButton={false}
+            className={cn(
+              'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+              FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+            )}
             style={{ maxWidth: 560 }}
           >
-            <Dialog.Title>{detail?.title}</Dialog.Title>
+            <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+              {detail?.title}
+            </DialogTitle>
             {detail && (
               <ReactMarkdown components={MARKDOWN_COMPONENTS}>
                 {detail.markdown}
               </ReactMarkdown>
             )}
-          </Dialog.Content>
-        </Dialog.Root>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="hidden md:flex md:h-full md:flex-col">

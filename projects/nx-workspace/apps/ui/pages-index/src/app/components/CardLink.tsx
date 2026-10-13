@@ -1,8 +1,6 @@
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-
-const CARD_CLASS =
-  'block rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 hover:border-gray-400 dark:hover:border-gray-500 transition';
+import { LinkCard } from '@vigilant-broccoli/react-lib';
 
 interface CardLinkProps {
   href: string;
@@ -19,34 +17,25 @@ export function CardLink({
   route,
   icon,
 }: CardLinkProps) {
-  const content = (
-    <>
-      <div className="flex items-center gap-2">
-        {icon}
-        <h2 className="text-lg font-semibold">{title}</h2>
-      </div>
-      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-        {description}
-      </p>
-    </>
-  );
-
   if (route) {
     return (
-      <Link to={href} className={CARD_CLASS}>
-        {content}
-      </Link>
+      <LinkCard
+        as={Link}
+        to={href}
+        title={title}
+        description={description}
+        icon={icon}
+      />
     );
   }
 
   return (
-    <a
+    <LinkCard
       href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={CARD_CLASS}
-    >
-      {content}
-    </a>
+      external
+      title={title}
+      description={description}
+      icon={icon}
+    />
   );
 }

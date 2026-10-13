@@ -7,8 +7,14 @@ export interface TodoRow {
 
 export interface TodoSection {
   heading: string;
+  description: string;
   rows: TodoRow[];
 }
+
+// Serialization regenerates each table from the parsed rows, so a row the parser
+// does not understand would be erased on the next write. Refusing to parse it is
+// what keeps an unrecognized row from silently disappearing.
+export class TodoParseError extends Error {}
 
 const SECTION_HEADING_REGEX = /^##\s+(.+)$/;
 const HEADER_ID_CELL_REGEX = /^\|\s*ID\s*\|/i;
@@ -17,6 +23,15 @@ const UNESCAPED_PIPE_REGEX = /(?<!\\)\|/g;
 const TABLE_ROW_PREFIX = '|';
 const COLUMN_HEADERS = ['ID', 'Priority', 'Description', 'Recommended Fix'];
 const MIN_COLUMN_WIDTH = 3;
+
+const malformedRowError = (
+  heading: string,
+  lineNumber: number,
+  cellCount: number,
+  line: string,
+): string =>
+  `TODO.md line ${lineNumber} (section "${heading}") has ${cellCount} cells, expected ${COLUMN_HEADERS.length}. ` +
+  `Keep the row on one line and escape any literal pipe as \\|: ${line.trim()}`;
 
 const splitRowCells = (line: string): string[] => {
   const inner = line.trim().slice(1, -1);
@@ -66,6 +81,7 @@ export const parseTodoMarkdown = (content: string): TodoSection[] => {
     }
     const heading = headingMatch[1].trim();
     i++;
+    const descriptionStart = i;
 
     let headerIdx = -1;
     while (i < lines.length && !SECTION_HEADING_REGEX.test(lines[i])) {
@@ -90,18 +106,25 @@ export const parseTodoMarkdown = (content: string): TodoSection[] => {
       lines[cursor].trim().startsWith(TABLE_ROW_PREFIX)
     ) {
       const cells = splitRowCells(lines[cursor]);
-      if (cells.length >= 4) {
-        rows.push({
-          id: cells[0],
-          priority: cells[1],
-          description: cells[2],
-          recommendedFix: cells[3],
-        });
+      if (cells.length !== COLUMN_HEADERS.length) {
+        throw new TodoParseError(
+          malformedRowError(heading, cursor + 1, cells.length, lines[cursor]),
+        );
       }
+      rows.push({
+        id: cells[0],
+        priority: cells[1],
+        description: cells[2],
+        recommendedFix: cells[3],
+      });
       cursor++;
     }
 
-    sections.push({ heading, rows });
+    sections.push({
+      heading,
+      description: lines.slice(descriptionStart, headerIdx).join('\n').trim(),
+      rows,
+    });
     i = cursor;
   }
 

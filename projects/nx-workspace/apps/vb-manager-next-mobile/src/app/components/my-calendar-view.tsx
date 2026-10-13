@@ -1,19 +1,20 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { Dialog } from '@radix-ui/themes';
 import { CalendarPlus } from 'lucide-react';
 import {
   buildCalendarUrl,
   CalendarConfig,
   GOOGLE_CALENDAR,
 } from '@vigilant-broccoli/common-browser';
-import { VisuallyHidden } from '@vigilant-broccoli/react-lib';
-import { CalendarInput } from './calendar-input';
 import {
-  buildAuthHeaders,
-  reconnectGoogle,
-} from '../providers/auth-provider';
+  VisuallyHidden,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@vigilant-broccoli/react-lib';
+import { CalendarInput } from './calendar-input';
+import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
 
 const BIRTHDAYS_CALENDAR =
   'f61b08e940f7c4fb8becf0d419c8c09f7e0c46d6d03343637aef5837c766a09b@group.calendar.google.com';
@@ -29,12 +30,6 @@ const CALENDAR_SOURCES: {
     id: GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL,
     color: GOOGLE_CALENDAR.CALENDAR_COLOR.GREEN,
     label: 'Personal',
-    kind: 'owner',
-  },
-  {
-    id: GOOGLE_CALENDAR.CALENDAR_EMAIL.WORK,
-    color: GOOGLE_CALENDAR.CALENDAR_COLOR.RED,
-    label: 'Work',
     kind: 'owner',
   },
   {
@@ -63,24 +58,39 @@ const CALENDAR_SOURCES: {
   },
 ];
 
-const CALENDAR_CONFIG: CalendarConfig = {
+const BASE_CALENDAR_CONFIG: Omit<CalendarConfig, 'mode'> = {
   height: 600,
   wkst: 2,
   ctz: GOOGLE_CALENDAR.TIMEZONE.COPENHAGEN,
   showPrint: 0,
-  mode: 'AGENDA',
   title: CALENDAR_TITLE,
-  ownerCalendars: CALENDAR_SOURCES.filter(source => source.kind === 'owner').map(
-    source => ({ email: source.id, color: source.color }),
-  ),
-  sharedCalendars: CALENDAR_SOURCES.filter(source => source.kind === 'shared').map(
-    source => ({ id: source.id, color: source.color }),
-  ),
+  ownerCalendars: CALENDAR_SOURCES.filter(
+    source => source.kind === 'owner',
+  ).map(source => ({ email: source.id, color: source.color })),
+  sharedCalendars: CALENDAR_SOURCES.filter(
+    source => source.kind === 'shared',
+  ).map(source => ({ id: source.id, color: source.color })),
 };
 
-const CALENDAR_COLOR_BY_ID = new Map(
+const BASE_CALENDAR_COLOR_BY_ID = new Map(
   CALENDAR_SOURCES.map(source => [source.id, decodeURIComponent(source.color)]),
 );
+
+// Colors not already claimed by CALENDAR_SOURCES above, so an event
+// calendar never visually matches a personal/public one. Cycled if
+// there are more event calendars than spare colors.
+const EVENT_CALENDAR_COLORS = [
+  GOOGLE_CALENDAR.CALENDAR_COLOR.LIGHT_BLUE,
+  GOOGLE_CALENDAR.CALENDAR_COLOR.DARK_GREEN,
+];
+
+const EVENT_CALENDARS_API = '/api/event-calendars';
+
+interface EventCalendar {
+  id: string;
+  name: string;
+  googleCalendarId: string;
+}
 
 const MOBILE_USER_AGENT_REGEX =
   /Android|iPhone|iPad|iPod|IEMobile|BlackBerry|Opera Mini/i;
@@ -100,9 +110,10 @@ interface CalendarEvent {
   htmlLink?: string;
 }
 
-const eventsApiUrl = () => {
+const eventsApiUrl = (extraCalendarIds: string[]) => {
   const params = new URLSearchParams();
   CALENDAR_SOURCES.forEach(source => params.append('calendarId', source.id));
+  extraCalendarIds.forEach(id => params.append('calendarId', id));
   return `${EVENTS_API}?${params.toString()}`;
 };
 
@@ -147,7 +158,8 @@ const formatEventTime = (event: CalendarEvent) => {
   });
 };
 
-const isSameDay = (a: Date, b: Date) => dateOnly(a).getTime() === dateOnly(b).getTime();
+const isSameDay = (a: Date, b: Date) =>
+  dateOnly(a).getTime() === dateOnly(b).getTime();
 
 const formatDateHeading = (date: Date) => {
   if (isSameDay(date, new Date())) return TODAY_LABEL;
@@ -174,7 +186,11 @@ const groupEventsByDay = (events: CalendarEvent[]): EventDayGroup[] => {
   });
   return Array.from(groups.entries())
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([key, dayEvents]) => ({ key, date: new Date(key), events: dayEvents }));
+    .map(([key, dayEvents]) => ({
+      key,
+      date: new Date(key),
+      events: dayEvents,
+    }));
 };
 
 const useIsMobileBrowser = () => {
@@ -192,7 +208,62 @@ export const MyCalendarView = () => {
   const [events, setEvents] = useState<CalendarEvent[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [eventCalendars, setEventCalendars] = useState<EventCalendar[]>([]);
+  // Gates the agenda fetch below so it waits for this list once, instead of
+  // firing twice — once without event calendars, once with them as soon as
+  // they arrive.
+  const [eventCalendarsLoaded, setEventCalendarsLoaded] = useState(false);
   const isMobile = useIsMobileBrowser();
+
+  useEffect(() => {
+    const load = async () => {
+      const headers = await buildAuthHeaders();
+      const res = await fetch(EVENT_CALENDARS_API, { headers });
+      if (!res.ok) return null;
+      return res.json();
+    };
+
+    load()
+      .then(data => data && setEventCalendars(data.calendars))
+      .catch(() => undefined)
+      .finally(() => setEventCalendarsLoaded(true));
+  }, []);
+
+  // Keyed by calendar id (not list position) so a calendar's color stays
+  // the same as the list is refetched, instead of reassigning colors.
+  const eventCalendarColorById = useMemo(() => {
+    const colors = new Map<string, string>();
+    eventCalendars.forEach((calendar, index) => {
+      colors.set(
+        calendar.googleCalendarId,
+        EVENT_CALENDAR_COLORS[index % EVENT_CALENDAR_COLORS.length],
+      );
+    });
+    return colors;
+  }, [eventCalendars]);
+
+  const calendarConfig = useMemo<CalendarConfig>(
+    () => ({
+      ...BASE_CALENDAR_CONFIG,
+      mode: 'AGENDA',
+      sharedCalendars: [
+        ...BASE_CALENDAR_CONFIG.sharedCalendars,
+        ...eventCalendars.map(calendar => ({
+          id: calendar.googleCalendarId,
+          color: eventCalendarColorById.get(calendar.googleCalendarId),
+        })),
+      ],
+    }),
+    [eventCalendars, eventCalendarColorById],
+  );
+
+  const calendarColorById = useMemo(() => {
+    const colors = new Map(BASE_CALENDAR_COLOR_BY_ID);
+    eventCalendarColorById.forEach((color, id) =>
+      colors.set(id, decodeURIComponent(color)),
+    );
+    return colors;
+  }, [eventCalendarColorById]);
 
   const agendaGroups = useMemo(
     () =>
@@ -206,14 +277,17 @@ export const MyCalendarView = () => {
   );
 
   useEffect(() => {
-    if (!isMobile) return;
+    if (!isMobile || !eventCalendarsLoaded) return;
 
     let cancelled = false;
     setError(null);
 
     const load = async () => {
       const headers = await buildAuthHeaders({ includeGoogleToken: true });
-      const res = await fetch(eventsApiUrl(), { headers });
+      const res = await fetch(
+        eventsApiUrl(eventCalendars.map(calendar => calendar.googleCalendarId)),
+        { headers },
+      );
       if (res.status === 401) {
         await reconnectGoogle();
         return null;
@@ -234,7 +308,7 @@ export const MyCalendarView = () => {
     return () => {
       cancelled = true;
     };
-  }, [isMobile, refreshKey]);
+  }, [isMobile, refreshKey, eventCalendarsLoaded, eventCalendars]);
 
   const handleCreateOpenChange = (open: boolean) => {
     setCreateOpen(open);
@@ -255,7 +329,7 @@ export const MyCalendarView = () => {
       {isMobile === false && (
         <div className="w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200">
           <iframe
-            src={buildCalendarUrl(CALENDAR_CONFIG)}
+            src={buildCalendarUrl(calendarConfig)}
             className="h-full w-full dark:invert dark:hue-rotate-180"
             title={CALENDAR_TITLE}
           />
@@ -291,7 +365,8 @@ export const MyCalendarView = () => {
                           className="h-2.5 w-2.5 shrink-0 rounded-full"
                           style={{
                             backgroundColor:
-                              CALENDAR_COLOR_BY_ID.get(event.calendarId) ?? '#9ca3af',
+                              calendarColorById.get(event.calendarId) ??
+                              '#9ca3af',
                           }}
                         />
                         <span className="flex min-w-0 flex-1 flex-col">
@@ -311,8 +386,11 @@ export const MyCalendarView = () => {
         </div>
       )}
 
-      <Dialog.Root open={createOpen} onOpenChange={handleCreateOpenChange}>
-        <Dialog.Content
+      <Dialog open={createOpen} onOpenChange={handleCreateOpenChange}>
+        <DialogContent
+          className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+          aria-describedby={undefined}
+          showCloseButton={false}
           style={{
             maxWidth: '95vw',
             width: '95vw',
@@ -321,11 +399,13 @@ export const MyCalendarView = () => {
           }}
         >
           <VisuallyHidden>
-            <Dialog.Title>Create Calendar Event</Dialog.Title>
+            <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+              Create Calendar Event
+            </DialogTitle>
           </VisuallyHidden>
           <CalendarInput />
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

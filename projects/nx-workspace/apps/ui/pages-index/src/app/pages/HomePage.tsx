@@ -2,6 +2,7 @@ import {
   Activity,
   Bot,
   ChartColumn,
+  FileText,
   GitBranch,
   Globe,
   LayoutGrid,
@@ -11,20 +12,42 @@ import { useTranslation } from '../i18n';
 import { CardLink } from '../components/CardLink';
 import { CardGrid } from '../components/CardGrid';
 import { SectionHeading } from '../components/SectionHeading';
-import { useDocumentTitle } from '@vigilant-broccoli/react-lib';
+import { usePageTitle } from '../use-page-title';
 import { PAGE_CLASS } from '../consts/layout';
 
 const ICON_CLASS = 'h-5 w-5 shrink-0';
 
 export function HomePage() {
   const { t } = useTranslation();
-  useDocumentTitle(t('HOME.TITLE'));
+  usePageTitle(t('HOME.PAGE_TITLE'));
 
   return (
     <main className={PAGE_CLASS}>
       <header className="mb-6">
         <h1 className="text-3xl font-bold tracking-tight">{t('HOME.TITLE')}</h1>
       </header>
+
+      <section className="mb-8">
+        <CardGrid>
+          <li>
+            <CardLink
+              route
+              href="/open-source/github/vigilant-broccoli"
+              title={t('HOME.README.TITLE')}
+              description={t('HOME.README.DESCRIPTION')}
+              icon={<FileText className={ICON_CLASS} />}
+            />
+          </li>
+          <li>
+            <CardLink
+              href="https://context.harryliu.dev/"
+              title={t('HOME.CLAUDE_CONTEXT.TITLE')}
+              description={t('HOME.CLAUDE_CONTEXT.DESCRIPTION')}
+              icon={<Bot className={ICON_CLASS} />}
+            />
+          </li>
+        </CardGrid>
+      </section>
 
       <section className="mb-8">
         <SectionHeading>{t('HOME.SECTION_MONITORING')}</SectionHeading>
@@ -50,7 +73,7 @@ export function HomePage() {
         </CardGrid>
       </section>
 
-      <section className="mb-8">
+      <section>
         <SectionHeading>{t('HOME.SECTION_SOFTWARE_PROJECTS')}</SectionHeading>
         <CardGrid>
           <li>
@@ -73,25 +96,10 @@ export function HomePage() {
           </li>
           <li>
             <CardLink
-              href="./react-component-library/"
+              href="https://components.harryliu.dev/"
               title={t('HOME.UI.TITLE')}
               description={t('HOME.UI.DESCRIPTION')}
               icon={<LayoutGrid className={ICON_CLASS} />}
-            />
-          </li>
-        </CardGrid>
-      </section>
-
-      <section>
-        <SectionHeading>{t('HOME.SECTION_DOCUMENTATION')}</SectionHeading>
-        <CardGrid>
-          <li>
-            <CardLink
-              route
-              href="/claude-context"
-              title={t('HOME.CLAUDE_CONTEXT.TITLE')}
-              description={t('HOME.CLAUDE_CONTEXT.DESCRIPTION')}
-              icon={<Bot className={ICON_CLASS} />}
             />
           </li>
           <li>

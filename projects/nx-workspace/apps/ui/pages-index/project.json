@@ -16,7 +16,8 @@
         "{workspaceRoot}/apps/api/bucket-service/src/libs/swagger.ts",
         "{workspaceRoot}/apps/api/email-service/src/swagger.ts",
         "{workspaceRoot}/apps/api/email-subscription-service/src/swagger.ts",
-        "{workspaceRoot}/apps/api/llm-service/src/libs/swagger.ts"
+        "{workspaceRoot}/apps/api/llm-service/src/libs/swagger.ts",
+        "{workspaceRoot}/libs/@vigilant-broccoli/employee-handler/src/**/*.ts"
       ],
       "outputs": ["{projectRoot}/public/openapi"],
       "options": {
@@ -30,18 +31,22 @@
         "command": "tsx scripts/generate-repo-timeline.ts"
       }
     },
-    "build-claude-context-snapshot": {
+    "check-i18n-keys": {
       "executor": "nx:run-commands",
-      "cache": false,
+      "cache": true,
+      "inputs": [
+        "{workspaceRoot}/scripts/check-i18n-keys.ts",
+        "{projectRoot}/src/**/*.{ts,tsx,json}"
+      ],
       "options": {
-        "command": "node scripts/build-docs-snapshot.mjs apps/ui/pages-index/claude-context.snapshot.config.json"
+        "command": "tsx scripts/check-i18n-keys.ts"
       }
     },
     "build": {
       "dependsOn": [
+        "check-i18n-keys",
         "generate-openapi",
-        "generate-repo-timeline",
-        "build-claude-context-snapshot"
+        "generate-repo-timeline"
       ],
       "outputs": [
         "{projectRoot}/{options.outDir}",
@@ -63,8 +68,7 @@
     "serve": {
       "dependsOn": [
         "generate-openapi",
-        "generate-repo-timeline",
-        "build-claude-context-snapshot"
+        "generate-repo-timeline"
       ],
       "defaultConfiguration": "development",
       "configurations": {
@@ -80,11 +84,22 @@
           "mkdir -p ../../../_site",
           "cp -R ../../../dist/pages-index/. ../../../_site/",
           "cp public/repo-timeline.json ../../../_site/repo-timeline.json",
-          "cp -R public/claude-context ../../../_site/claude-context"
+          "echo projects.harryliu.dev > ../../../_site/CNAME"
         ],
         "parallel": false,
         "cwd": "{projectRoot}"
       }
+    },
+    "ensure-cf-project:preview": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw preview-pages-index || npx wrangler pages project create preview-pages-index --production-branch main"
+    },
+    "prune-deployments:preview": {
+      "command": "npx tsx scripts/prune-wrangler-preview-deployments.ts preview-pages-index",
+      "dependsOn": ["ensure-cf-project:preview"]
+    },
+    "deploy:preview": {
+      "command": "npx wrangler pages deploy dist/pages-index --project-name preview-pages-index --branch \"$PREVIEW_BRANCH\" --commit-hash \"${PREVIEW_COMMIT:-$(git rev-parse HEAD)}\"",
+      "dependsOn": ["build", "ensure-cf-project:preview"]
     }
   }
 }

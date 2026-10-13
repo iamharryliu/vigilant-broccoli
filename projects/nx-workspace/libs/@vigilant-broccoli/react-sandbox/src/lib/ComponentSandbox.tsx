@@ -1,5 +1,4 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
-import { Theme } from '@radix-ui/themes';
 import {
   Blocks,
   Eye,
@@ -10,6 +9,10 @@ import {
   Wrench,
 } from 'lucide-react';
 import {
+  ThemeProvider,
+  useTheme,
+  useThemeKeybind,
+  useDocumentTitle,
   Sidebar,
   SidebarCTA,
   Switch,
@@ -24,9 +27,22 @@ import {
   StopwatchUtilityContent,
   TimerUtilityContent,
 } from '@vigilant-broccoli/react-utility';
+import { AlertDialogDemo } from './demos/AlertDialogDemo';
+import {
+  I18nProvider as SandboxI18nProvider,
+  useTranslation as useSandboxTranslation,
+} from './i18n';
+import sandboxEn from './i18n/en.json';
+import { InputDemo } from './demos/InputDemo';
+import { CheckboxDemo } from './demos/CheckboxDemo';
+import { BadgeDemo } from './demos/BadgeDemo';
+import { CardDemo } from './demos/CardDemo';
+import { TypographyDemo } from './demos/TypographyDemo';
+import { SegmentedControlDemo } from './demos/SegmentedControlDemo';
 import { AvatarDemo } from './demos/AvatarDemo';
 import { UserAvatarDemo } from './demos/UserAvatarDemo';
 import { ButtonDemo } from './demos/ButtonDemo';
+import { CheckListDemo } from './demos/CheckListDemo';
 import { CollapsibleListItemDemo } from './demos/CollapsibleListItemDemo';
 import { CRUDListNoImagesDemo } from './demos/CRUDListNoImagesDemo';
 import { DashboardInfoCardDemo } from './demos/DashboardInfoCardDemo';
@@ -38,15 +54,23 @@ import { GithubActionsBadgesDemo } from './demos/GithubActionsBadgesDemo';
 import { StatusCardListDemo } from './demos/StatusCardListDemo';
 import { TabsDemo } from './demos/TabsDemo';
 import { TooltipDemo } from './demos/TooltipDemo';
+import { LinkCardDemo } from './demos/LinkCardDemo';
 import { SwitchDemo } from './demos/SwitchDemo';
 import { ToasterDemo } from './demos/ToasterDemo';
 import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
 import { GroupLeaderboardDemo } from './demos/GroupLeaderboardDemo';
 import { EmptyLeaderboardDemo } from './demos/EmptyLeaderboardDemo';
 import { NotepadDemo } from './demos/NotepadDemo';
+import { PastebinDemo } from './demos/PastebinDemo';
+import {
+  I18nProvider as PastebinI18nProvider,
+  useTranslation as usePastebinTranslation,
+} from './demos/pastebin/i18n';
+import pastebinEn from './demos/pastebin/en.json';
 import { QuickLinksDemo } from './demos/QuickLinksDemo';
 import { ScrollTimelineDemo } from './demos/ScrollTimelineDemo';
 import { TasksDemo } from './demos/TasksDemo';
+import { WeatherDisplayDemo } from './demos/WeatherDisplayDemo';
 
 const CRUD_STORAGE_KEYS = {
   IS_CARDS: 'component-sandbox-crud-is-cards',
@@ -86,6 +110,7 @@ interface SandboxEntry {
   label: string;
   description: string;
   category: Category;
+  foundationKey?: keyof typeof sandboxEn.FOUNDATIONS;
   content: ReactNode;
 }
 
@@ -153,6 +178,13 @@ const CRUDListSection = () => {
 
 const COMPONENT_ENTRIES: SandboxEntry[] = [
   {
+    id: 'alert-dialog',
+    label: sandboxEn.ALERT_DIALOG.NAME,
+    description: sandboxEn.ALERT_DIALOG.SUMMARY,
+    category: CATEGORY.COMPONENTS,
+    content: <AlertDialogDemo />,
+  },
+  {
     id: 'avatar',
     label: 'Avatar',
     description:
@@ -161,12 +193,44 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     content: <AvatarDemo />,
   },
   {
+    id: 'badge',
+    label: sandboxEn.FOUNDATIONS.BADGE.NAME,
+    description: sandboxEn.FOUNDATIONS.BADGE.SUMMARY,
+    category: CATEGORY.COMPONENTS,
+    foundationKey: 'BADGE',
+    content: <BadgeDemo />,
+  },
+  {
     id: 'buttons',
     label: 'Buttons',
     description:
       'The full button set - variants, icon buttons, copy and close buttons, provider sign-in buttons and button lists.',
     category: CATEGORY.COMPONENTS,
     content: <ButtonDemo />,
+  },
+  {
+    id: 'card',
+    label: sandboxEn.FOUNDATIONS.CARD.NAME,
+    description: sandboxEn.FOUNDATIONS.CARD.SUMMARY,
+    category: CATEGORY.COMPONENTS,
+    foundationKey: 'CARD',
+    content: <CardDemo />,
+  },
+  {
+    id: 'checkbox',
+    label: sandboxEn.FOUNDATIONS.CHECKBOX.NAME,
+    description: sandboxEn.FOUNDATIONS.CHECKBOX.SUMMARY,
+    category: CATEGORY.COMPONENTS,
+    foundationKey: 'CHECKBOX',
+    content: <CheckboxDemo />,
+  },
+  {
+    id: 'checklist',
+    label: 'Checklist',
+    description:
+      'Checkable rows with inline editing, drag reorder and a collapsible completed section, driven entirely by caller-supplied render props.',
+    category: CATEGORY.COMPONENTS,
+    content: <CheckListDemo />,
   },
   {
     id: 'collapsible-list-item',
@@ -225,6 +289,30 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     content: <ScrollTimelineDemo />,
   },
   {
+    id: 'input',
+    label: sandboxEn.FOUNDATIONS.INPUT.NAME,
+    description: sandboxEn.FOUNDATIONS.INPUT.SUMMARY,
+    category: CATEGORY.COMPONENTS,
+    foundationKey: 'INPUT',
+    content: <InputDemo />,
+  },
+  {
+    id: 'link-card',
+    label: 'Link Card',
+    description:
+      'Clickable card with title, description and icon, with a subtle lift on hover; renders an anchor or a router link.',
+    category: CATEGORY.COMPONENTS,
+    content: <LinkCardDemo />,
+  },
+  {
+    id: 'segmented-control',
+    label: sandboxEn.FOUNDATIONS.SEGMENTED_CONTROL.NAME,
+    description: sandboxEn.FOUNDATIONS.SEGMENTED_CONTROL.SUMMARY,
+    category: CATEGORY.COMPONENTS,
+    foundationKey: 'SEGMENTED_CONTROL',
+    content: <SegmentedControlDemo />,
+  },
+  {
     id: 'select',
     label: 'Select',
     description:
@@ -273,6 +361,14 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     content: <TooltipDemo />,
   },
   {
+    id: 'typography',
+    label: sandboxEn.FOUNDATIONS.TYPOGRAPHY.NAME,
+    description: sandboxEn.FOUNDATIONS.TYPOGRAPHY.SUMMARY,
+    category: CATEGORY.COMPONENTS,
+    foundationKey: 'TYPOGRAPHY',
+    content: <TypographyDemo />,
+  },
+  {
     id: 'user-avatar',
     label: 'User Avatar',
     description:
@@ -287,6 +383,14 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
       'User leaderboard with sortable metrics, column toggles, paging and live rank changes.',
     category: CATEGORY.COMPONENTS,
     content: <UserLeaderboardDemo />,
+  },
+  {
+    id: 'weather-display',
+    label: 'Weather Display',
+    description:
+      'The weather.harryliu.dev card, seeded from live Open-Meteo weather for Toronto, with controls for every value, the condition, day/night, units and preparation badges.',
+    category: CATEGORY.COMPONENTS,
+    content: <WeatherDisplayDemo />,
   },
 ];
 
@@ -326,7 +430,7 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     id: 'dashboard-info-card',
     label: 'Dashboard Info Card',
     description:
-      'Clock, weather, the next sunrise/sunset and the current moon phase. Sun times and moon phase are computed locally from the location, so only the weather tile needs data.',
+      'Clock, weather with details, preparation badges and a day-by-day forecast carousel (click the weather tile), the next sunrise/sunset and the current moon phase. Sun times and moon phase are computed locally from the location.',
     category: CATEGORY.UTILITIES,
     content: <DashboardInfoCardDemo />,
   },
@@ -345,6 +449,13 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
       'A synced text editor with syntax highlighting, standing in for the notepad surface.',
     category: CATEGORY.UTILITIES,
     content: <NotepadDemo />,
+  },
+  {
+    id: 'pastebin',
+    label: pastebinEn.PASTEBIN.TITLE,
+    description: pastebinEn.PASTEBIN.DESCRIPTION,
+    category: CATEGORY.UTILITIES,
+    content: <PastebinDemo />,
   },
   {
     id: 'quick-links',
@@ -400,6 +511,7 @@ const MENU_BUTTON_CLASS =
 const OPEN_MENU_LABEL = 'Open menu';
 
 export interface ComponentSandboxProps {
+  siteName?: string;
   title?: string;
   subtitle?: string;
   wrapInTheme?: boolean;
@@ -514,6 +626,7 @@ const SandboxTopbar = ({ title, onMenuClick }: SandboxTopbarProps) => (
 );
 
 interface SandboxBodyProps {
+  siteName?: string;
   title?: string;
   subtitle?: string;
   dark: boolean;
@@ -531,23 +644,60 @@ const readStoredSelectedId = () => {
 const readStoredIconMode = () =>
   localStorage.getItem(ICON_MODE_STORAGE_KEY) === 'true';
 
+const SandboxDocumentTitle = ({ title }: { title: string }) => {
+  useDocumentTitle(title);
+  return null;
+};
+
 const SandboxBody = ({
+  siteName,
   title,
   subtitle,
   dark,
   setDark,
   showThemeToggle,
 }: SandboxBodyProps) => {
+  const { t } = usePastebinTranslation();
+  const { t: translateSandbox } = useSandboxTranslation();
+  const entries = useMemo(
+    () =>
+      ALL_ENTRIES.map(entry =>
+        entry.foundationKey
+          ? {
+              ...entry,
+              label: translateSandbox(
+                `FOUNDATIONS.${entry.foundationKey}.NAME`,
+              ),
+              description: translateSandbox(
+                `FOUNDATIONS.${entry.foundationKey}.SUMMARY`,
+              ),
+            }
+          : entry.id === 'pastebin'
+            ? {
+                ...entry,
+                label: t('PASTEBIN.TITLE'),
+                description: t('PASTEBIN.DESCRIPTION'),
+              }
+            : entry.id === 'alert-dialog'
+              ? {
+                  ...entry,
+                  label: translateSandbox('ALERT_DIALOG.NAME'),
+                  description: translateSandbox('ALERT_DIALOG.SUMMARY'),
+                }
+              : entry,
+      ),
+    [t, translateSandbox],
+  );
   const [selectedId, setSelectedId] = useState(readStoredSelectedId);
   const [iconMode, setIconMode] = useState(readStoredIconMode);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const selectedEntry =
-    ALL_ENTRIES.find(entry => entry.id === selectedId) ?? ALL_ENTRIES[0];
+    entries.find(entry => entry.id === selectedId) ?? entries[0];
 
   const items = useMemo(
     () => [
       ...buildSidebarItems({
-        entries: ALL_ENTRIES,
+        entries,
         selectedId,
         onSelect: id => {
           setSelectedId(id);
@@ -567,11 +717,14 @@ const SandboxBody = ({
         },
       }),
     ],
-    [selectedId, iconMode, dark, showThemeToggle, setDark],
+    [entries, selectedId, iconMode, dark, showThemeToggle, setDark],
   );
 
   return (
     <div className="h-full">
+      {siteName && (
+        <SandboxDocumentTitle title={`${selectedEntry.label} | ${siteName}`} />
+      )}
       <Sidebar
         items={items}
         searchable
@@ -605,37 +758,52 @@ const SandboxBody = ({
   );
 };
 
-export function ComponentSandbox({
+function ThemedSandbox({
   title,
   subtitle,
-  wrapInTheme = false,
+  siteName,
 }: ComponentSandboxProps): ReactNode {
-  const [dark, setDark] = useState(false);
-
-  if (!wrapInTheme) {
-    return (
+  const { appearance, toggleTheme } = useTheme();
+  useThemeKeybind();
+  return (
+    <div className="w-full h-screen overflow-hidden">
       <SandboxBody
+        siteName={siteName}
         title={title}
         subtitle={subtitle}
-        dark={dark}
-        setDark={setDark}
-        showThemeToggle={false}
+        dark={appearance === 'dark'}
+        setDark={toggleTheme}
+        showThemeToggle
       />
-    );
-  }
+    </div>
+  );
+}
 
-  const appearance = dark ? 'dark' : 'light';
+function ComponentSandboxContent({
+  wrapInTheme = false,
+  ...props
+}: ComponentSandboxProps): ReactNode {
+  const [dark, setDark] = useState(false);
+  return wrapInTheme ? (
+    <ThemeProvider>
+      <ThemedSandbox {...props} />
+    </ThemeProvider>
+  ) : (
+    <SandboxBody
+      {...props}
+      dark={dark}
+      setDark={setDark}
+      showThemeToggle={false}
+    />
+  );
+}
+
+export function ComponentSandbox(props: ComponentSandboxProps): ReactNode {
   return (
-    <Theme appearance={appearance}>
-      <div className={`${appearance} w-full h-screen overflow-hidden`}>
-        <SandboxBody
-          title={title}
-          subtitle={subtitle}
-          dark={dark}
-          setDark={setDark}
-          showThemeToggle
-        />
-      </div>
-    </Theme>
+    <PastebinI18nProvider>
+      <SandboxI18nProvider>
+        <ComponentSandboxContent {...props} />
+      </SandboxI18nProvider>
+    </PastebinI18nProvider>
   );
 }
