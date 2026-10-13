@@ -84,7 +84,9 @@ export const isResumePdfFilled = (layout: ResumePdfLayout): boolean =>
   layout.fits && !layout.underfilled;
 
 export const isResumePdfPolished = (layout: ResumePdfLayout): boolean =>
-  isResumePdfFilled(layout) && layout.shortLastLines.length === 0;
+  isResumePdfFilled(layout) &&
+  layout.shortLastLines.length === 0 &&
+  layout.skillsLineCount <= RESUME_PDF_SKILLS_TARGET_LINES;
 
 /** Smaller is nearer the fill target; 0 means inside or above the band. */
 export const resumePdfFillShortfallPx = (layout: ResumePdfLayout): number =>
