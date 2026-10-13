@@ -137,21 +137,11 @@ jobs:
           INSTRUCTION: ${{ inputs.instruction }}
         run: |
           set -euo pipefail
-          case "$OPERATION" in
-            change)
-              bash infrastructure/agent-sandbox/update-pr.sh --model "$MODEL" "$PR" "$INSTRUCTION"
-              ;;
-            fix-ci)
-              if [ -n "$INSTRUCTION" ]; then
-                bash infrastructure/agent-sandbox/fix-pr-ci.sh --model "$MODEL" "$PR" "$INSTRUCTION"
-              else
-                bash infrastructure/agent-sandbox/fix-pr-ci.sh --model "$MODEL" "$PR"
-              fi
-              ;;
-            resolve-conflicts)
-              bash infrastructure/agent-sandbox/resolve-pr-conflicts.sh --model "$MODEL" "$PR"
-              ;;
-          esac
+          if [ "$OPERATION" = change ] || [ -n "$INSTRUCTION" ]; then
+            bash infrastructure/agent-sandbox/update-pr.sh --model "$MODEL" --operation "$OPERATION" "$PR" "$INSTRUCTION"
+          else
+            bash infrastructure/agent-sandbox/update-pr.sh --model "$MODEL" --operation "$OPERATION" "$PR"
+          fi
 
       - name: Report result
         if: always()
