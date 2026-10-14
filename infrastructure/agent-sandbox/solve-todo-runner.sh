@@ -25,9 +25,9 @@ done
 
 AGENT_RUNNER=${SOLVE_AGENT:-claude}
 case "$AGENT_RUNNER" in
-  claude | codex) ;;
+  claude | codex | ollama) ;;
   *)
-    echo "ERROR: SOLVE_AGENT must be 'claude' or 'codex'." >&2
+    echo "ERROR: SOLVE_AGENT must be 'claude', 'codex' or 'ollama'." >&2
     exit 1
     ;;
 esac
@@ -42,6 +42,13 @@ else
   PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
   FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 fi
+if [ "$AGENT_RUNNER" = ollama ]; then
+  MODEL=${OLLAMA_MODEL:-qwen3-coder:30b}
+  RUNNER_LABEL="Ollama ($MODEL via Claude Code)"
+  PR_FOOTER='Generated with [Ollama](https://ollama.com)'
+  FALLBACK_TRAILER=''
+fi
+PREVIEW=${SOLVE_PREVIEW:-0}
 REPO_DIR=${REPO_DIR:-$HOME/vigilant-broccoli}
 META_FILE=${META_FILE:-/tmp/solve-meta.json}
 PRE_COMMIT_HELPER="$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh"
@@ -130,6 +137,7 @@ INC_TITLE[$INC_CURRENT]=$SALVAGE_TITLE
 # later increment salvages itself in inc_run_later and the PRs already published
 # stay as they are.
 SALVAGE_ENABLED=1
+[ "$PREVIEW" != 1 ] || SALVAGE_ENABLED=0
 salvage_on_failure() {
   local exit_code=$?
   trap - EXIT
@@ -148,6 +156,11 @@ salvage_on_failure() {
 }
 trap salvage_on_failure EXIT
 
+PREVIEW_RULE=""
+if [ "$PREVIEW" = 1 ]; then
+  PREVIEW_RULE="- This is a development preview: retain edits without committing or publishing. Report validation and remaining work; use --agent ollama in ready-to-run follow-up commands."
+fi
+
 PROMPT=$(cat <<EOF
 You are running non-interactively in a fresh clone of vigilant-broccoli, on a dedicated branch. $INTRO
 
@@ -160,6 +173,7 @@ $SKILL_INSTRUCTIONS
 Sandbox execution rules:
 - You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
 $SCOPE_RULE
+$PREVIEW_RULE
 $(inc_plan_instructions solve)
 - When finished, write $META_FILE containing only a JSON object with these fields (strings unless noted):
   - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure
@@ -179,6 +193,17 @@ CODEX_LOGGED_IN=0
 agent_invoke() {
   local prompt=$1
   case "$AGENT_RUNNER" in
+    ollama)
+      env -u CLAUDE_CODE_OAUTH_TOKEN -u GH_TOKEN -u GITHUB_TOKEN \
+        ANTHROPIC_BASE_URL="${OLLAMA_BASE_URL:?OLLAMA_BASE_URL is required}" \
+        ANTHROPIC_AUTH_TOKEN=ollama ANTHROPIC_API_KEY= \
+        ANTHROPIC_DEFAULT_HAIKU_MODEL="$MODEL" \
+        ANTHROPIC_DEFAULT_SONNET_MODEL="$MODEL" \
+        ANTHROPIC_DEFAULT_OPUS_MODEL="$MODEL" \
+        CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC=1 \
+        claude -p "$prompt" --dangerously-skip-permissions --model "$MODEL" \
+        --disallowedTools "Bash(git:*)" "Bash(gh:*)" "WebSearch" "WebFetch"
+      ;;
     claude)
       claude -p "$prompt" --dangerously-skip-permissions --model "$MODEL" \
         --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
@@ -222,6 +247,13 @@ agent_invoke() {
 
 agent_invoke "$PROMPT"
 
+if [ "$AGENT_RUNNER" = ollama ]; then
+  jq -e 'type == "object"' "$META_FILE" >/dev/null || {
+    echo "ERROR: the local agent did not produce valid metadata; its checkout is retained." >&2
+    exit 1
+  }
+fi
+
 git checkout "$BRANCH"
 [ "$(git rev-parse HEAD)" = "$BASE_SHA" ] || git reset --soft "$BASE_SHA"
 
@@ -243,6 +275,13 @@ inc_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
 if [ "${#RESOLVED_IDS[@]}" -gt 0 ] && [ -z "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
   echo "ERROR: no changes besides TODO.md — ${RESOLVED_IDS[*]} not resolved." >&2
   exit 1
+fi
+
+if [ "$PREVIEW" = 1 ]; then
+  bash "$PRE_COMMIT_HELPER"
+  echo "LOCAL_PREVIEW::Changes retained in $REPO_DIR; metadata: $META_FILE"
+  echo "Planned follow-up increments are recorded in the metadata and were not executed."
+  exit 0
 fi
 
 inc_publish "$INC_CURRENT" "$BRANCH" "$INC_DEFAULT_BASE" "$BASE_SHA" "$TASK" "$FALLBACK_SUBJECT" "$FALLBACK_SUMMARY" || exit 1

@@ -4,6 +4,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 ## Table of Contents
 
+- [Local Ollama agent](#local-ollama-agent)
 - [Running in CI](#running-in-ci)
 - [Publishing several pull requests](#publishing-several-pull-requests)
 - [Auditing the backlog](#auditing-the-backlog)
@@ -11,6 +12,20 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 - [Auditing legacy documentation](#auditing-legacy-documentation)
 - [Auditing agent context](#auditing-agent-context)
 - [Stack](#stack)
+
+## Local Ollama agent
+
+- Select local inference with `pnpm agentic-pr-create --agent ollama --prompt "<task>"` or `pnpm agentic-pr-create --local <TODO_ID...>`.
+- The default is `qwen3-coder:30b`, Ollama's approximately 19 GB quantized coding model. It is a starting choice for an M3 MacBook Pro with 36 GB unified memory; actual memory use includes context, macOS and Docker. Run one solve at a time, close memory-heavy apps and inspect `ollama ps` and Activity Monitor for GPU offloading or swap. See the [model](https://ollama.com/library/qwen3-coder) and [context guidance](https://docs.ollama.com/context-length).
+- Install Ollama on the Mac, then run `ollama pull qwen3-coder:30b`. Run inference natively for Metal acceleration; Docker runs the coding tools only. Quit the Ollama app before starting the server manually to avoid a port conflict:
+  ```bash
+  OLLAMA_HOST=0.0.0.0:11434 OLLAMA_CONTEXT_LENGTH=65536 OLLAMA_NUM_PARALLEL=1 OLLAMA_FLASH_ATTENTION=1 OLLAMA_KV_CACHE_TYPE=q8_0 ollama serve
+  ```
+- Docker needs access to the host listener. Binding to `0.0.0.0` also exposes Ollama to the LAN; restrict port 11434 with the host firewall. Ollama's API has no authentication. The sandbox keeps its egress firewall enabled and allows the host Ollama port.
+- Ollama uses the image's existing Claude Code tool harness through its [Anthropic-compatible API](https://docs.ollama.com/integrations/claude-code). Model inference is free and self hosted; no Claude subscription or model API credentials are needed. Local mode rejects cloud tags and cloud-backed models, strips model-provider credentials and disables the harness's nonessential traffic and hosted web tools. GitHub and package registries remain available for checkout and tooling; this is not an offline sandbox.
+- Preview runs do not fetch Vault credentials, commit, push or open PRs. Each run clones fresh remote main into a separate checkout under the printed `/tmp/vb-local-solve.*` directory, retaining code, `.git/solve-meta.json` and `run.log` after success or failure. Your current checkout and uncommitted edits are not inputs. Review with `git -C <printed-checkout> diff`; preview runs implement only the first increment and record follow-ups in metadata.
+- `--agent ollama --publish` explicitly enables the existing GitHub PR/increment pipeline, using an exported `GH_TOKEN` or the existing Vault GitHub credentials. It still uses only the local model. TODO jobs run sequentially in both modes to limit inference memory pressure.
+- Override the model with `--ollama-model <local-tag>` or `OLLAMA_MODEL`; override the host port with `OLLAMA_BASE_URL=http://host.docker.internal:<port>`. The model must already be pulled and support tools. The adapter rebuilds the Docker image and checks model availability before every batch. `--local` is shorthand for `--agent ollama`; Actions retains its existing hosted agent choices.
 
 ## Running in CI
 
@@ -168,6 +183,7 @@ opens one PR citing where each removed fact is retained. It runs Opus by default
 - Services
   - Claude Code
   - Codex CLI
+  - Ollama
 - Cloud providers
   - GitHub
 - Secrets

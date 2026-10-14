@@ -29,6 +29,14 @@ iptables -A INPUT -i lo -j ACCEPT
 iptables -A OUTPUT -o lo -j ACCEPT
 iptables -A INPUT -s "$HOST_NETWORK" -j ACCEPT
 iptables -A OUTPUT -d "$HOST_NETWORK" -j ACCEPT
+# Docker Desktop can resolve the host outside the bridge subnet. Permit only
+# the selected Ollama port there, rather than disabling the egress firewall.
+if [ -n "${OLLAMA_BASE_URL:-}" ]; then
+  OLLAMA_PORT=${OLLAMA_BASE_URL##*:}
+  for host_ip in $(getent ahostsv4 host.docker.internal | awk '{print $1}' | sort -u); do
+    iptables -A OUTPUT -p tcp -d "$host_ip" --dport "$OLLAMA_PORT" -j ACCEPT
+  done
+fi
 iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
 iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
 iptables -A INPUT -p tcp -m multiport --dports $DEV_PORTS -j ACCEPT
