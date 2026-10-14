@@ -18,8 +18,22 @@ const releaseLock = () => {
   }
 };
 
+const isSyncRunning = () => {
+  try {
+    const pid = Number(readFileSync(LOCK_FILE, 'utf-8').trim());
+    // Signal 0 only probes for the process; a stale lock throws ESRCH.
+    return Number.isInteger(pid) && pid > 0 && process.kill(pid, 0);
+  } catch {
+    return false;
+  }
+};
+
 const main = async () => {
   mkdirSync(DATA_DIR, { recursive: true });
+  if (isSyncRunning()) {
+    console.error('An event-calendar sync is already running.');
+    process.exit(FAILURE_EXIT_CODE);
+  }
   writeFileSync(LOCK_FILE, String(process.pid));
   process.on('exit', releaseLock);
   process.on('SIGINT', () => process.exit(FAILURE_EXIT_CODE));
