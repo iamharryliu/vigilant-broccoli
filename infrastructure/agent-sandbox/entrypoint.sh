@@ -16,7 +16,10 @@ fi
 
 # A bind-mounted checkout (local Ollama solve) is root-owned at its top level
 # while .git belongs to the agent, which git rejects as dubious ownership.
-git config --global safe.directory "$REPO_DIR"
+# Passed as environment config, not `git config --global`: install.sh below
+# replaces ~/.gitconfig with a symlink to the repo's dotfile, wiping any value
+# written there.
+export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=safe.directory GIT_CONFIG_VALUE_0="$REPO_DIR"
 
 if [ ! -d "$REPO_DIR/.git" ]; then
   git clone "$REPO_URL" "$REPO_DIR"
