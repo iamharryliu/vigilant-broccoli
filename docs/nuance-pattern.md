@@ -28,7 +28,7 @@ README files describe the component; context records its constraints. Do not rep
 
 ## Harness portability
 
-Each source needs adjacent committed `AGENTS.md` and `CLAUDE.md` symlinks pointing to `CONTEXT.md`. Add, move or delete them with the source. See [agent support](./agent-support.md#adding-a-context-source-or-skill) for adapter validation and [context discovery](./agent-support.md#context-discovery) for instruction limits.
+Each source needs an adjacent committed `AGENTS.md` symlink pointing to `CONTEXT.md`. Add, move or delete it with the source. See [agent support](./agent-support.md#adding-a-context-source-or-skill) for adapter validation and [context discovery](./agent-support.md#context-discovery) for instruction limits.
 
 ## Entry shape
 

@@ -129,9 +129,7 @@ jobs:
             fi
           }
           for ctx in $(git ls-files 'CONTEXT.md' '*/CONTEXT.md'); do
-            for adapter in CLAUDE.md AGENTS.md; do
-              check_link "$(dirname "$ctx")/$adapter" CONTEXT.md
-            done
+            check_link "$(dirname "$ctx")/AGENTS.md" CONTEXT.md
           done
           for skill in $(git ls-files 'setup/dotfiles/agent-skills/*/SKILL.md'); do
             name=$(basename "$(dirname "$skill")")

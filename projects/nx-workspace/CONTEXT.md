@@ -34,7 +34,7 @@ Use `libs/@vigilant-broccoli/personal-common-js/src/index.ts` for URLs; manually
 
 ### Nx formatting must not hand the agent symlinks to Prettier
 
-Prettier rejects explicitly passed symlinks ("Explicitly specified pattern is a symbolic link", exit 2) before applying `.prettierignore`. Nx uses this workspace's ignore files when building its file list, so keep `AGENTS.md`/`CLAUDE.md` in its `.gitignore` even though they are tracked. Format `CONTEXT.md` sources; the root hook filters symlinks in `scripts/shell/format-staged.sh`.
+Prettier rejects explicitly passed symlinks ("Explicitly specified pattern is a symbolic link", exit 2) before applying `.prettierignore`. Nx uses this workspace's ignore files when building its file list, so keep `AGENTS.md` in its `.gitignore` even though they are tracked. Format `CONTEXT.md` sources; the root hook filters symlinks in `scripts/shell/format-staged.sh`.
 
 ### Next.js workspace-root inference warnings are accepted
 

@@ -9,7 +9,7 @@ Slim repository agent guidance so it costs fewer tokens to read while every agen
 
 ## Scope
 
-- Every `CONTEXT.md`, root and directory-scoped; never edit the adjacent `AGENTS.md`/`CLAUDE.md` adapter symlinks.
+- Every `CONTEXT.md`, root and directory-scoped; never edit the adjacent `AGENTS.md` adapter symlinks.
 - Bodies of shared `setup/dotfiles/agent-skills/*/SKILL.md` files. Frontmatter stays byte-identical so `name`/`description` and the commands they define do not change; never edit the `setup/dotfiles/.claude/commands/` adapters.
 - Documents in the root `CONTEXT.md` Doc Map, and Markdown docs root `CONTEXT.md` directs agents to read before a class of work (its "Read [x](./x.md) before ..." sentences, e.g. `ui-app-pattern.md`, `fly-service-pattern.md`). Other linked docs are out of scope. The runner resolves both lists from the base commit, so editing root `CONTEXT.md` cannot widen the scope.
 
