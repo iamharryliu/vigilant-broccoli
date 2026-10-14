@@ -20,6 +20,7 @@ Mobile-friendly dashboard for managing personal tasks and calendars (a Calendar 
   - `common-node`
   - `google-workspace`
   - `links`
+  - `personal-common-js`
   - `react-lib`
   - `react-utility`
 - Cloud services

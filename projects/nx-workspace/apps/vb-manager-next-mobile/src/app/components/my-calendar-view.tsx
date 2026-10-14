@@ -3,37 +3,29 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CalendarPlus } from 'lucide-react';
 import {
-  buildCalendarUrl,
-  CalendarConfig,
-  GOOGLE_CALENDAR,
-} from '@vigilant-broccoli/common-browser';
-import { PERSONAL_CALENDAR_SOURCES } from '@vigilant-broccoli/personal-common-js';
+  BASE_CALENDAR_CONFIG,
+  buildEventCalendarEmbedUrl,
+  getEventCalendarColor,
+  PERSONAL_CALENDAR_SOURCES,
+  readHiddenCalendarIds,
+  writeHiddenCalendarIds,
+} from '@vigilant-broccoli/personal-common-js';
 import {
   VisuallyHidden,
   Dialog,
   DialogContent,
   DialogTitle,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '@vigilant-broccoli/react-lib';
 import { CalendarInput } from './calendar-input';
 import { EventCalendarLink, EventCalendarsList } from './event-calendars-list';
 import { CALENDAR_TAB, CalendarTab } from '../app.const';
 import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
 
-const CALENDAR_TITLE = 'Personal Calendar';
-
-const BASE_CALENDAR_CONFIG: Omit<CalendarConfig, 'mode'> = {
-  height: 600,
-  wkst: 2,
-  ctz: GOOGLE_CALENDAR.TIMEZONE.COPENHAGEN,
-  showPrint: 0,
-  title: CALENDAR_TITLE,
-  ownerCalendars: PERSONAL_CALENDAR_SOURCES.filter(
-    source => source.kind === 'owner',
-  ).map(source => ({ email: source.id, color: source.color })),
-  sharedCalendars: PERSONAL_CALENDAR_SOURCES.filter(
-    source => source.kind === 'shared',
-  ).map(source => ({ id: source.id, color: source.color })),
-};
+const CALENDAR_TITLE = BASE_CALENDAR_CONFIG.title;
 
 const BASE_CALENDAR_COLOR_BY_ID = new Map(
   PERSONAL_CALENDAR_SOURCES.map(source => [
@@ -42,40 +34,13 @@ const BASE_CALENDAR_COLOR_BY_ID = new Map(
   ]),
 );
 
-// Colors not already claimed by PERSONAL_CALENDAR_SOURCES above, so an event
-// calendar never visually matches a personal/public one. Cycled if
-// there are more event calendars than spare colors.
-const EVENT_CALENDAR_COLORS = [
-  GOOGLE_CALENDAR.CALENDAR_COLOR.LIGHT_BLUE,
-  GOOGLE_CALENDAR.CALENDAR_COLOR.DARK_GREEN,
-];
-
 const EVENT_CALENDARS_API = '/api/event-calendars';
 
 const HIDDEN_CALENDARS_STORAGE_KEY = 'vb-manager-hidden-event-calendars';
 
-const readHiddenCalendarIds = () => {
-  try {
-    const stored = localStorage.getItem(HIDDEN_CALENDARS_STORAGE_KEY);
-    return new Set<string>(stored ? JSON.parse(stored) : []);
-  } catch {
-    return new Set<string>();
-  }
-};
+const HIDDEN_CALENDARS_STORAGE_KEY = 'vb-manager-hidden-event-calendars';
 
-const writeHiddenCalendarIds = (ids: Set<string>) => {
-  try {
-    localStorage.setItem(
-      HIDDEN_CALENDARS_STORAGE_KEY,
-      JSON.stringify([...ids]),
-    );
-  } catch {
-    // Storage unavailable (private mode / quota): visibility just isn't persisted.
-  }
-};
-
-const TAB_TOUCH_CLASS =
-  'min-h-10 rounded-lg px-3 text-sm font-medium transition-colors';
+const TAB_TOUCH_CLASS = 'px-4 text-sm';
 
 const MOBILE_USER_AGENT_REGEX =
   /Android|iPhone|iPad|iPod|IEMobile|BlackBerry|Opera Mini/i;
@@ -206,14 +171,14 @@ export const MyCalendarView = () => {
   const isMobile = useIsMobileBrowser();
 
   useEffect(() => {
-    setHiddenIds(readHiddenCalendarIds());
+    setHiddenIds(new Set(readHiddenCalendarIds(HIDDEN_CALENDARS_STORAGE_KEY)));
   }, []);
 
   const toggleHidden = (googleCalendarId: string) =>
     setHiddenIds(current => {
       const next = new Set(current);
       if (!next.delete(googleCalendarId)) next.add(googleCalendarId);
-      writeHiddenCalendarIds(next);
+      writeHiddenCalendarIds(HIDDEN_CALENDARS_STORAGE_KEY, next);
       return next;
     });
 
@@ -236,33 +201,22 @@ export const MyCalendarView = () => {
   const eventCalendarColorById = useMemo(() => {
     const colors = new Map<string, string>();
     eventCalendars.forEach((calendar, index) => {
-      colors.set(
-        calendar.googleCalendarId,
-        EVENT_CALENDAR_COLORS[index % EVENT_CALENDAR_COLORS.length],
-      );
+      colors.set(calendar.googleCalendarId, getEventCalendarColor(index));
     });
     return colors;
   }, [eventCalendars]);
 
-  const visibleCalendarIds = eventCalendars
-    .map(calendar => calendar.googleCalendarId)
-    .filter(id => !hiddenIds.has(id));
-  const visibleCalendarKey = visibleCalendarIds.join(',');
-
   const calendarSrc = useMemo(
     () =>
-      buildCalendarUrl({
-        ...BASE_CALENDAR_CONFIG,
+      buildEventCalendarEmbedUrl({
         mode: 'AGENDA',
-        sharedCalendars: [
-          ...BASE_CALENDAR_CONFIG.sharedCalendars,
-          ...visibleCalendarKey
-            .split(',')
-            .filter(Boolean)
-            .map(id => ({ id, color: eventCalendarColorById.get(id) })),
-        ],
-      } satisfies CalendarConfig),
-    [visibleCalendarKey, eventCalendarColorById],
+        eventCalendars: eventCalendars.map(calendar => ({
+          hiddenKey: calendar.googleCalendarId,
+          googleCalendarId: calendar.googleCalendarId,
+        })),
+        hiddenKeys: hiddenIds,
+      }),
+    [eventCalendars, hiddenIds],
   );
 
   const calendarColorById = useMemo(() => {
@@ -325,26 +279,19 @@ export const MyCalendarView = () => {
   };
 
   return (
-    <div className="flex h-full w-full flex-col gap-3">
+    <Tabs
+      value={tab}
+      onValueChange={value => setTab(value as CalendarTab)}
+      className="flex h-full w-full flex-col gap-3"
+    >
       <div className="flex shrink-0 items-center justify-between gap-2">
-        <div role="tablist" className="flex gap-1">
+        <TabsList className="h-11">
           {Object.values(CALENDAR_TAB).map(name => (
-            <button
-              key={name}
-              type="button"
-              role="tab"
-              aria-selected={tab === name}
-              onClick={() => setTab(name)}
-              className={`${TAB_TOUCH_CLASS} ${
-                tab === name
-                  ? 'bg-blue-100 text-blue-700'
-                  : 'text-gray-600 hover:bg-gray-100'
-              }`}
-            >
+            <TabsTrigger key={name} value={name} className={TAB_TOUCH_CLASS}>
               {name}
-            </button>
+            </TabsTrigger>
           ))}
-        </div>
+        </TabsList>
         <button
           type="button"
           onClick={() => setCreateOpen(true)}
@@ -356,82 +303,85 @@ export const MyCalendarView = () => {
         </button>
       </div>
 
-      {tab === CALENDAR_TAB.EVENT_CALENDARS && (
+      <TabsContent value={CALENDAR_TAB.EVENT_CALENDARS} className="mt-0">
         <EventCalendarsList
           calendars={eventCalendarsLoaded ? eventCalendars : null}
           error={eventCalendarsError}
           hiddenIds={hiddenIds}
           onToggleHidden={toggleHidden}
         />
-      )}
+      </TabsContent>
 
-      {isMobile === false && (
-        <div
-          className={`w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200 ${
-            tab === CALENDAR_TAB.CALENDAR ? '' : 'hidden'
-          }`}
-        >
-          <iframe
-            src={calendarSrc}
-            className="h-full w-full dark:invert dark:hue-rotate-180"
-            title={CALENDAR_TITLE}
-          />
-        </div>
-      )}
+      {/* Force-mounted so switching tabs doesn't reload the iframe. */}
+      <TabsContent
+        forceMount
+        value={CALENDAR_TAB.CALENDAR}
+        className="mt-0 flex min-h-0 flex-1 flex-col"
+        style={{
+          display: tab === CALENDAR_TAB.CALENDAR ? undefined : 'none',
+        }}
+        aria-hidden={tab !== CALENDAR_TAB.CALENDAR}
+      >
+        {isMobile === false && (
+          <div className="w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200">
+            <iframe
+              src={calendarSrc}
+              className="h-full w-full dark:invert dark:hue-rotate-180"
+              title={CALENDAR_TITLE}
+            />
+          </div>
+        )}
 
-      {isMobile === true && (
-        <div
-          className={`w-full rounded-lg border border-gray-200 ${
-            tab === CALENDAR_TAB.CALENDAR ? '' : 'hidden'
-          }`}
-        >
-          {error && <p className="p-4 text-sm text-red-600">{error}</p>}
-          {!error && agendaGroups === null && (
-            <p className="p-4 text-sm text-gray-500">{LOADING_MESSAGE}</p>
-          )}
-          {!error && agendaGroups !== null && agendaGroups.length === 0 && (
-            <p className="p-4 text-sm text-gray-500">{EMPTY_MESSAGE}</p>
-          )}
-          {!error &&
-            agendaGroups !== null &&
-            agendaGroups.map(group => (
-              <div key={group.key}>
-                <p className="sticky top-[var(--topbar-h)] z-10 bg-gray-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 md:top-0">
-                  {formatDateHeading(group.date)}
-                </p>
-                <ul className="divide-y divide-gray-100">
-                  {group.events.map(event => (
-                    <li key={`${event.calendarId}-${event.id}`}>
-                      <a
-                        href={event.htmlLink ?? '#'}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
-                      >
-                        <span
-                          className="h-2.5 w-2.5 shrink-0 rounded-full"
-                          style={{
-                            backgroundColor:
-                              calendarColorById.get(event.calendarId) ??
-                              '#9ca3af',
-                          }}
-                        />
-                        <span className="flex min-w-0 flex-1 flex-col">
-                          <span className="truncate text-sm font-medium text-gray-900">
-                            {event.summary}
+        {isMobile === true && (
+          <div className="w-full rounded-lg border border-gray-200">
+            {error && <p className="p-4 text-sm text-red-600">{error}</p>}
+            {!error && agendaGroups === null && (
+              <p className="p-4 text-sm text-gray-500">{LOADING_MESSAGE}</p>
+            )}
+            {!error && agendaGroups !== null && agendaGroups.length === 0 && (
+              <p className="p-4 text-sm text-gray-500">{EMPTY_MESSAGE}</p>
+            )}
+            {!error &&
+              agendaGroups !== null &&
+              agendaGroups.map(group => (
+                <div key={group.key}>
+                  <p className="sticky top-[var(--topbar-h)] z-10 bg-gray-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 md:top-0">
+                    {formatDateHeading(group.date)}
+                  </p>
+                  <ul className="divide-y divide-gray-100">
+                    {group.events.map(event => (
+                      <li key={`${event.calendarId}-${event.id}`}>
+                        <a
+                          href={event.htmlLink ?? '#'}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
+                        >
+                          <span
+                            className="h-2.5 w-2.5 shrink-0 rounded-full"
+                            style={{
+                              backgroundColor:
+                                calendarColorById.get(event.calendarId) ??
+                                '#9ca3af',
+                            }}
+                          />
+                          <span className="flex min-w-0 flex-1 flex-col">
+                            <span className="truncate text-sm font-medium text-gray-900">
+                              {event.summary}
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              {formatEventTime(event)}
+                            </span>
                           </span>
-                          <span className="text-xs text-gray-500">
-                            {formatEventTime(event)}
-                          </span>
-                        </span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-        </div>
-      )}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+          </div>
+        )}
+      </TabsContent>
 
       <Dialog open={createOpen} onOpenChange={handleCreateOpenChange}>
         <DialogContent
@@ -453,6 +403,6 @@ export const MyCalendarView = () => {
           <CalendarInput />
         </DialogContent>
       </Dialog>
-    </div>
+    </Tabs>
   );
 };
