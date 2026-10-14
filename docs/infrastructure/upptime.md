@@ -54,7 +54,7 @@ Staging UI checks use no credentials. They disable redirects and require HTTP 30
 Two mechanisms produce the 302:
 
 - The nine staging Pages projects are gated by Cloudflare Access in `cloudflare-staging-ui.tf` on the root and the immutable/branch aliases. Browser access is limited to `staging_ui_allowed_emails` (default: the existing owner identity).
-- The six staging Vercel projects are gated by Vercel Authentication, which `deploy-vercel.ts` enables on each staging deploy ([details](../app-development/ui/deployment/vercel-deploy-pattern.md#staging-access)). A Vercel project is unmonitored-as-302 until its first staging deploy after this change.
+- The six staging Vercel projects are gated by Vercel Authentication, which `deploy-vercel.ts` enables on each staging deploy ([details](../app-development/ui/deployment/vercel-deploy-pattern.md#staging-access)). Its 302 check fails until the project's first staging deploy after this change.
 
 The staging probes in local and CI health checks also expect the unauthenticated HTTP 302. Monitoring adds no service token, secrets, GCP identity or OIDC permission. Do not add a Vercel protection-bypass secret or bypass Access on application health paths to make monitoring work.
 
