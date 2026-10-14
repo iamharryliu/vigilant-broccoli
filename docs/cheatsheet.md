@@ -146,7 +146,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   immich:docker:reload        Reload the standalone Immich Docker Compose stack
   immich:docker:logs          Tail the standalone Immich Docker Compose logs
   vb-manager-next:start       Start vb-manager-next via PM2 and save the process list
-  event-calendars:sync        Sync every event calendar with sources from Facebook to Google Calendar (exits non-zero on failure or Facebook login required)
+  event-calendars:sync        Sync every event calendar with sources from Facebook to Google Calendar (exits non-zero on failure, 3 when Facebook login is required; logs to ~/.vb-manager/event-calendars-sync.log)
   deploy:vb-manager           Pull latest (ff-only), then reload vb-manager-next via PM2 and save the process list
   vb-manager-next:delete      Delete vb-manager-next PM2 process
   vb-manager-next:logs        Tail vb-manager-next PM2 logs

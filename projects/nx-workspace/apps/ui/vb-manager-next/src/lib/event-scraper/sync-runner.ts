@@ -1,8 +1,12 @@
 import { getCalendarAdminClient } from '../google-calendar-admin';
 import {
+  finishSyncRun,
   getEventCalendar,
   listEventCalendars,
+  pruneSyncRuns,
   recordSyncResult,
+  startSyncRun,
+  updateSyncRun,
 } from '../event-calendars.db';
 import {
   FACEBOOK_LOGIN_REQUIRED_ERROR,
@@ -14,7 +18,11 @@ import { localizeEvents } from './event-localizer';
 import {
   EVENT_SOURCE_TYPE,
   SYNC_PHASE,
+  SYNC_RUN_STATUS,
+  SYNC_RUN_TRIGGER,
   SyncPhase,
+  SyncRunResult,
+  SyncRunTrigger,
 } from '../../app/constants/event-calendars';
 
 export const SYNC_STATE = {
@@ -180,18 +188,68 @@ const runSync = async (calendarId: string): Promise<SyncOutcome> => {
   }
 };
 
-export const runSyncAll = async () => {
+// Well under the 30-minute stale threshold in event-calendars.db.ts, so one
+// slow calendar (a long scrape or localization) never looks like a dead run.
+const SYNC_RUN_HEARTBEAT_MS = 5 * 60_000;
+
+const deriveRunStatus = (results: SyncRunResult[], expected: number) => {
+  const succeeded = results.filter(result => result.ok).length;
+  if (succeeded === expected) return SYNC_RUN_STATUS.SUCCESS;
+  return succeeded ? SYNC_RUN_STATUS.PARTIAL : SYNC_RUN_STATUS.FAILED;
+};
+
+const runRecordedSync = async (
+  trigger: SyncRunTrigger,
+  calendarIds: string[],
+) => {
+  await pruneSyncRuns();
+  const runId = await startSyncRun(trigger);
+  const results: SyncRunResult[] = [];
+  const outcomes: SyncOutcome[] = [];
+  const heartbeat = setInterval(
+    () =>
+      updateSyncRun(runId).catch(error =>
+        console.error('[event-calendars] sync run heartbeat failed', error),
+      ),
+    SYNC_RUN_HEARTBEAT_MS,
+  );
+  try {
+    for (const calendarId of calendarIds) {
+      await updateSyncRun(runId, { currentCalendarId: calendarId });
+      const outcome = await runSync(calendarId);
+      outcomes.push(outcome);
+      results.push({
+        calendarId,
+        ok: outcome.state === SYNC_STATE.SUCCEEDED,
+        message: outcome.message,
+      });
+      await updateSyncRun(runId, { results });
+      // Every remaining calendar would hit the same login wall.
+      if (outcome.loginRequired) break;
+    }
+  } finally {
+    clearInterval(heartbeat);
+    await finishSyncRun(
+      runId,
+      deriveRunStatus(results, calendarIds.length),
+      results,
+    );
+  }
+  return outcomes;
+};
+
+export const runSyncAll = async (trigger: SyncRunTrigger) => {
   const calendars = (await listEventCalendars()).filter(
     calendar => calendar.sources.length,
   );
-  const results: (SyncOutcome & { name: string })[] = [];
-  for (const calendar of calendars) {
-    const outcome = await runSync(calendar.id);
-    results.push({ name: calendar.name, ...outcome });
-    // Every remaining calendar would hit the same login wall.
-    if (outcome.loginRequired) break;
-  }
-  return results;
+  const outcomes = await runRecordedSync(
+    trigger,
+    calendars.map(calendar => calendar.id),
+  );
+  return outcomes.map((outcome, index) => ({
+    name: calendars[index].name,
+    ...outcome,
+  }));
 };
 
 export const startSync = (calendarId: string): SyncStatus => {
@@ -206,7 +264,18 @@ export const startSync = (calendarId: string): SyncStatus => {
   runningSyncs.set(calendarId, status);
 
   // Deliberately not awaited — the caller returns immediately and the UI polls.
-  void runSync(calendarId);
+  void runRecordedSync(SYNC_RUN_TRIGGER.UI, [calendarId]).catch(error => {
+    // runSync records its own failures; this is the run bookkeeping failing,
+    // which would otherwise leave the calendar stuck as running.
+    console.error('[event-calendars] sync run failed', error);
+    if (runningSyncs.get(calendarId)?.state !== SYNC_STATE.RUNNING) return;
+    runningSyncs.set(calendarId, {
+      ...status,
+      state: SYNC_STATE.FAILED,
+      message: error instanceof Error ? error.message : 'Sync failed',
+      finishedAt: new Date().toISOString(),
+    });
+  });
 
   return status;
 };
