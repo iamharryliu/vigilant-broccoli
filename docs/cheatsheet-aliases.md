@@ -9,6 +9,9 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   explain_shell '<cmd>'       Open the command on explainshell.com
   spellcheck                  Run codespell
 
+🤖 CODING AGENTS
+  codexyolo [args...]         Run Codex with approvals and sandbox disabled
+
 📁 FILES & DIRS
   la / lt / ltr               List all / by newest / by oldest
   lS / lSr                    List by largest / smallest
