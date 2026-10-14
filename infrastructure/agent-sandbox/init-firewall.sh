@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-ALLOWED_DOMAINS="registry.npmjs.org pypi.org files.pythonhosted.org api.anthropic.com api.openai.com auth.openai.com chatgpt.com claude.ai console.anthropic.com statsig.anthropic.com statsig.com sentry.io $*"
+ALLOWED_DOMAINS="registry.npmjs.org pypi.org files.pythonhosted.org api.anthropic.com api.openai.com auth.openai.com chatgpt.com claude.ai console.anthropic.com statsig.anthropic.com statsig.com sentry.io mise.jdx.dev mise-versions.jdx.dev releases.hashicorp.com nodejs.org objects.githubusercontent.com release-assets.githubusercontent.com $*"
 DEV_PORTS=3000,4200,8080
 IPSET_NAME=allowed-hosts
 
