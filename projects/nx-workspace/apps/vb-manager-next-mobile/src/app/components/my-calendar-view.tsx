@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { CalendarPlus } from 'lucide-react';
+import { isMobileUserAgent } from '@vigilant-broccoli/common-browser';
 import {
   BASE_CALENDAR_CONFIG,
   buildEventCalendarEmbedUrl,
@@ -39,9 +40,6 @@ const EVENT_CALENDARS_API = '/api/event-calendars';
 const HIDDEN_CALENDARS_STORAGE_KEY = 'vb-manager-hidden-event-calendars';
 
 const TAB_TOUCH_CLASS = 'px-4 text-sm';
-
-const MOBILE_USER_AGENT_REGEX =
-  /Android|iPhone|iPad|iPod|IEMobile|BlackBerry|Opera Mini/i;
 
 const EVENTS_API = '/api/calendar/events';
 const LOADING_MESSAGE = 'Loading…';
@@ -147,7 +145,7 @@ const useIsMobileBrowser = () => {
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
 
   useEffect(() => {
-    setIsMobile(MOBILE_USER_AGENT_REGEX.test(navigator.userAgent));
+    setIsMobile(isMobileUserAgent(navigator.userAgent));
   }, []);
 
   return isMobile;

@@ -31,6 +31,7 @@ export const HIDDEN_EVENT_CALENDARS_STORAGE_KEY =
 export const TAB_STORAGE_KEY = 'calendars-active-tab';
 
 export const TAB = {
+  CALENDAR_VIEW: 'calendar-view',
   PERSONAL: 'personal',
   EVENT_CALENDARS: 'event-calendars',
 } as const;

@@ -29,9 +29,7 @@ export const CalendarRow = ({
   });
 
   return (
-    <li
-      className={`flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-900 ${hidden ? 'opacity-60' : ''}`}
-    >
+    <li className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-900">
       <a
         href={calendar.url}
         target="_blank"

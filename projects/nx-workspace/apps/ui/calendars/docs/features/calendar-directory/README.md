@@ -1,10 +1,11 @@
 # Calendar Directory
 
-The `calendars` home page: two tabs (`CalendarTabs`, modelled on `vb-manager-next`'s `HomeCalendarTabs`) of link rows modelled on `vb-manager-next-mobile`'s Event Calendars tab. There is no page header.
+The `calendars` home page: three tabs (`CalendarTabs`, modelled on `vb-manager-next`'s `HomeCalendarTabs`) of link rows modelled on `vb-manager-next-mobile`'s Event Calendars tab. There is no page header.
 
 ## Table of Contents
 
 - [Tabs](#tabs)
+- [Embed](#embed)
 - [Public endpoint](#public-endpoint)
 - [Link construction](#link-construction)
 - [Browser storage](#browser-storage)
@@ -13,8 +14,15 @@ The `calendars` home page: two tabs (`CalendarTabs`, modelled on `vb-manager-nex
 
 ## Tabs
 
-- **Personal Calendars** (default tab) — static list in `src/lib/calendars.consts.ts`, seeded with Harry's Calendar from `GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL`. Google sharing settings are not managed here.
-- **Event Calendars** — `EventCalendars` fetches the VB Express public endpoint on mount (`cache: 'no-store'`) and renders the rows with an eye toggle per row that hides/shows it (the row stays listed, dimmed).
+- **Calendar View** (default tab) — the Google Calendar embed, see below.
+- **Personal Calendars** — static list in `src/lib/calendars.consts.ts`, seeded with Harry's Calendar from `GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL`. Google sharing settings are not managed here.
+- **Event Calendars** — `EventCalendars` fetches the VB Express public endpoint on mount (`cache: 'no-store'`) and renders the rows with an eye toggle per row that hides/shows it (the row stays listed with the EyeOff state so it can be shown again; the toggle drives the embed). `useEventCalendars` owns the fetch and hidden set above the tabs so the list and the embed share them.
+
+## Embed
+
+`CalendarView` builds the iframe URL with `buildEventCalendarEmbedUrl` and `PUBLIC_BASE_CALENDAR_CONFIG` from `personal-common-js`. Hidden calendars are filtered out of the URL (colours are assigned before filtering, so the rest keep theirs). The Google calendar id comes from the `src` parameter of each public event calendar URL (`getGoogleCalendarId`), so VB Express returns no extra field. The iframe mounts once the event calendars request settles (success or failure) and the tab is force-mounted (`display: none` and `aria-hidden` when inactive) to avoid reloads. Mode is MONTH on desktop and AGENDA when `isMobileUserAgent` (`common-browser`, shared with `vb-manager-next-mobile`) matches, because the authenticated custom agenda is unavailable here.
+
+**Public bundle:** `PUBLIC_BASE_CALENDAR_CONFIG` uses only `PUBLIC_CALENDAR_SOURCES` (the already-linked personal calendar and Google's public calendars); the private birthdays and shared calendars in `PERSONAL_CALENDAR_SOURCES` must not be used here. The embed only exposes what each calendar's sharing settings already make public.
 
 ## Public endpoint
 
@@ -29,11 +37,11 @@ The `calendars` home page: two tabs (`CalendarTabs`, modelled on `vb-manager-nex
 Both keys live in `src/lib/calendars.consts.ts` and are read and written through `try/catch`, so the page renders (default tab, nothing hidden) when storage is unavailable.
 
 - `calendars-active-tab` — active tab id.
-- `calendars-hidden-event-calendars` — JSON array of hidden event calendar ids, via `readHiddenCalendarIds`/`writeHiddenCalendarIds` from `personal-common-js`. The bundle already imports that lib for the personal calendar id, so this adds no personal data. Hidden state is only a stored preference here; it does not filter anything else.
+- `calendars-hidden-event-calendars` — JSON array of hidden event calendar ids, via `readHiddenCalendarIds`/`writeHiddenCalendarIds` from `personal-common-js`. The bundle already imports that lib for the personal calendar id, so this adds no personal data. Hidden ids filter the embed.
 
 ## States
 
-Loading, empty (a confirmed `{ calendars: [] }`) and failed load (network error, non-2xx or malformed body) are distinct. A failure is confined to the Event Calendars tab.
+Loading, empty (a confirmed `{ calendars: [] }`) and failed load (network error, non-2xx or malformed body) are distinct. A failure is confined to the Event Calendars tab; the embed still renders with the base calendars.
 
 ## Environments
 

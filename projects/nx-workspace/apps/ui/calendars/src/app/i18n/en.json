@@ -1,9 +1,11 @@
 {
   "SECTION": {
+    "CALENDAR_VIEW": "Calendar View",
     "PERSONAL": "Personal Calendars",
     "EVENT": "Event Calendars"
   },
   "STATUS": {
+    "EMBED_TITLE": "Embedded Google Calendar",
     "LOADING": "Loading…",
     "EMPTY": "No event calendars yet.",
     "ERROR": "Failed to load event calendars. Please try again in a moment."
