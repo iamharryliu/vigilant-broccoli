@@ -18,7 +18,7 @@ Shared React component library.
   - `clsx`
   - `framer-motion`
   - `lucide-react`
-  - Radix UI (accordion, alert-dialog, avatar, checkbox, dialog, dropdown-menu, popover, progress, scroll-area, select, switch, tabs, tooltip)
+  - Radix UI
   - `react-easy-crop`
   - `sonner`
   - `tailwind-merge`

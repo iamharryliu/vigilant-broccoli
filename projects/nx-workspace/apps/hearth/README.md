@@ -12,7 +12,7 @@ Shared life for homes, communes, and communities.
 - Framework - Next.js
 - Build Tool - Next.js
 - External libs
-  - AWS SDK (S3 client, for Cloudflare R2)
+  - AWS SDK
   - FullCalendar
   - Leaflet / react-leaflet
   - lucide-react
@@ -23,6 +23,6 @@ Shared life for homes, communes, and communities.
   - `common-node`
   - `react-lib`
 - Cloud services
-  - Cloudflare R2 (`home-docs` and `where-is` buckets)
-  - Supabase (auth + data)
-  - VB Express LLM endpoint (Anthropic Claude Haiku) for food chat, grocery extraction and recipe tagging
+  - Cloudflare R2
+  - Supabase
+  - VB Express

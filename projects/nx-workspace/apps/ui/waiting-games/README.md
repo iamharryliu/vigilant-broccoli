@@ -12,7 +12,7 @@ Hands-free games to watch while queuing or travelling, served at waiting.harryli
 - Framework - React
 - Build Tool - Vite
 - External libs
-  - Radix UI (via `react-lib` `Dialog`)
+  - Radix UI
   - Tailwind CSS
 - Internal libs
   - `react-lib`

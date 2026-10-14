@@ -21,5 +21,5 @@ Email subscription management and broadcast.
   - `messaging`
 - Cloud services
   - Email Service (HTTP)
-  - RabbitMQ (email queue)
-  - Supabase (subscriptions table)
+  - RabbitMQ
+  - Supabase

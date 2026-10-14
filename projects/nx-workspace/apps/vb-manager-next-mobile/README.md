@@ -25,6 +25,6 @@ Mobile-friendly dashboard for managing personal tasks and calendars (a Calendar 
   - `react-utility`
 - Cloud services
   - Google Workspace APIs
-  - Nominatim / OpenStreetMap (reverse geocoding)
-  - Open-Meteo (weather)
+  - Nominatim / OpenStreetMap
+  - Open-Meteo
   - Supabase

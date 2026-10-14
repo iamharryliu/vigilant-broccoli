@@ -12,8 +12,8 @@ Bomberman-style water balloon battles in the browser: online rooms with friends,
 - Framework - Next.js
 - Build Tool - Next.js
 - External libs
-  - Lucide (touch controls)
-  - Supabase JS (Realtime broadcast and presence)
+  - Lucide
+  - Supabase JS
   - Tailwind CSS
 - Internal libs
   - `react-lib`

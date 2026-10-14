@@ -27,5 +27,5 @@
   - Google reCAPTCHA
   - Google Tasks
   - LLM Service (HTTP)
-  - Supabase (public `event_calendars` read)
+  - Supabase
   - Twilio

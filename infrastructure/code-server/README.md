@@ -16,4 +16,4 @@ code-server image with the repo toolchain baked in, plus GitHub token handling a
   - GitHub
 - Services
   - Claude Code
-  - code-server (LinuxServer.io image)
+  - code-server

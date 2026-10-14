@@ -25,6 +25,6 @@ The footer credits Open-Meteo (CC BY 4.0) and OpenStreetMap contributors (Nomina
   - `react-lib`
   - `react-utility`
 - Cloud services
-  - Nominatim / OpenStreetMap (reverse geocoding)
-  - Open-Meteo (weather)
-  - vb-express (`/api/llm`, preparation badges)
+  - Nominatim / OpenStreetMap
+  - Open-Meteo
+  - vb-express

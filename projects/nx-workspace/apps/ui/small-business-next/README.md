@@ -10,11 +10,11 @@
 - Framework - Next.js
 - Build Tool - Next.js
 - External libs
-  - AWS SDK (S3 client, for Cloudflare R2)
+  - AWS SDK
   - Tailwind CSS
 - Internal libs
   - `common-js`
   - `common-node`
 - Cloud services
   - Cloudflare R2
-  - Supabase (auth)
+  - Supabase

@@ -12,12 +12,13 @@
 - Framework - React
 - Build Tool - Vite
 - External libs
+  - `@tailwindcss/typography`
   - lucide-react
   - React Router
-  - Tailwind CSS (+ `@tailwindcss/typography` for rendered READMEs)
+  - Tailwind CSS
 - Internal libs
   - `react-lib`
-  - `react-utility` (`MarkdownViewer` — marked + DOMPurify)
+  - `react-utility`
 
 ## Page Navigation
 

@@ -24,4 +24,4 @@ The Cloud8 Toronto skating community site.
   - Google Analytics
   - Google Calendar
   - Google reCAPTCHA
-  - Sanity (CMS)
+  - Sanity
