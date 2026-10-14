@@ -13,10 +13,9 @@ Slack bot apps built on slack-workspace, including Office Presence.
   - `@slack/bolt`
   - `@slack/types`
   - `@slack/web-api`
-  - `node-cron`
   - `better-sqlite3`
+  - `node-cron`
 - Internal libs
   - `slack-workspace`
 - Cloud services
   - Slack
-  - npm

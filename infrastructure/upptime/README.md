@@ -23,5 +23,5 @@ One-way configuration publishing and history import for isolated monitoring; [se
   - Google Cloud
 - Services - Upptime
 - Secrets
-  - HashiCorp Vault
   - Google Secret Manager
+  - HashiCorp Vault

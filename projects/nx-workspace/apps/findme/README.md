@@ -14,7 +14,7 @@ Real-time location sharing for friends and family.
 ## Stack
 
 - Language - TypeScript
-- Framework - Next.js (React)
+- Framework - Next.js
 - Build Tool - Next.js
 - External libs
   - Leaflet / react-leaflet
@@ -25,4 +25,3 @@ Real-time location sharing for friends and family.
   - `react-lib`
 - Cloud services
   - Supabase (live location sync)
-  - Vercel

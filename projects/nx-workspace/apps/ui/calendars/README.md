@@ -4,16 +4,9 @@ Public, login-free calendar page with three tabs: a Calendar View tab (default) 
 
 ## Table of Contents
 
-- [Deployment URLs](#deployment-urls)
 - [Embed](#embed)
 - [Data](#data)
 - [Stack](#stack)
-
-## Deployment URLs
-
-- [calendar.harryliu.dev](https://calendar.harryliu.dev)
-- [staging-calendars.pages.dev](https://staging-calendars.pages.dev)
-- [production-calendars.pages.dev](https://production-calendars.pages.dev)
 
 ## Embed
 
@@ -37,6 +30,5 @@ A failed request renders an error in the Event Calendars tab only; the personal 
   - `personal-common-js`
   - `react-lib`
 - Cloud services
-  - Cloudflare Pages
-  - VB Express (public `GET /api/public/event-calendars`, backed by Supabase)
   - Google Calendar (embed and link targets)
+  - VB Express (public `GET /api/public/event-calendars`, backed by Supabase)

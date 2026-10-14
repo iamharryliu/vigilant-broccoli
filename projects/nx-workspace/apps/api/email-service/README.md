@@ -20,5 +20,3 @@ Email queue producer/consumer.
 - Cloud services
   - RabbitMQ (email queue)
   - Resend
-  - Docker Hub
-  - Fly.io

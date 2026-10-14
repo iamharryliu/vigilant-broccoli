@@ -10,14 +10,16 @@ Management dashboard app.
 ## Stack
 
 - Language - TypeScript
-- Framework - Next.js (App Router, React)
+- Framework - Next.js
 - Build Tool - Next.js
 - External libs
-  - Tailwind CSS, lucide-react icons
   - dnd-kit (drag-and-drop)
   - jsQR (QR code decoding)
-  - Leaflet / react-leaflet, react-markdown
+  - Leaflet / react-leaflet
+  - lucide-react
+  - react-markdown
   - Socket.IO client (chat demo)
+  - Tailwind CSS
 - Internal libs
   - `common-browser`
   - `common-js`
@@ -39,14 +41,13 @@ Management dashboard app.
   - Google OAuth
   - Google Tasks & Calendar
   - MongoDB
-  - Supabase
-  - Stripe
-  - Tailscale
-  - OpenAI API
   - Open-Meteo (default weather provider)
+  - OpenAI API
   - OpenWeatherMap (alternate weather provider)
-  - Spotify Web API
   - Self-hosted (PM2)
+  - Spotify Web API
+  - Stripe
+  - Supabase
 
 ## Agent Context
 

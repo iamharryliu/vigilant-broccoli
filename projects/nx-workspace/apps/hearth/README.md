@@ -4,37 +4,25 @@ Shared life for homes, communes, and communities.
 
 ## Table of Contents
 
-- [Deployment URLs](#deployment-urls)
 - [Stack](#stack)
-
-## Deployment URLs
-
-- [Supabase](https://supabase.com/dashboard/project/jrdosjjgmsoodpjmjqxx)
-  - [Users](https://supabase.com/dashboard/project/jrdosjjgmsoodpjmjqxx/auth/users)
-  - [SQL Editor](https://supabase.com/dashboard/project/jrdosjjgmsoodpjmjqxx/sql)
-  - [URL Configuration](https://supabase.com/dashboard/project/jrdosjjgmsoodpjmjqxx/auth/url-configuration)
-- Buckets
-  - [home-docs](https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/r2/default/buckets/home-docs)
-  - [where-is](https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/r2/default/buckets/where-is)
-- [Vercel](https://vercel.com/vigilant-broccoli/staging-hearth)
-  - [Environement Variables](https://vercel.com/vigilant-broccoli/staging-hearth/settings/environment-variables)
 
 ## Stack
 
 - Language - TypeScript
-- Framework - Next.js (React)
+- Framework - Next.js
 - Build Tool - Next.js
 - External libs
-  - lucide-react, recharts
-  - Leaflet / react-leaflet, FullCalendar
-  - Zod
   - AWS SDK (S3 client, for Cloudflare R2)
+  - FullCalendar
+  - Leaflet / react-leaflet
+  - lucide-react
+  - recharts
+  - Zod
 - Internal libs
   - `common-js`
   - `common-node`
   - `react-lib`
 - Cloud services
-  - Supabase (auth + data)
   - Cloudflare R2 (`home-docs` and `where-is` buckets)
+  - Supabase (auth + data)
   - VB Express LLM endpoint (Anthropic Claude Haiku) for food chat, grocery extraction and recipe tagging
-  - Vercel

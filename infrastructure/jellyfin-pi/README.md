@@ -43,5 +43,5 @@ re-provisioning onto a replacement Pi:
 - Services
   - Jellyfin
 - Secrets
-  - HashiCorp Vault
   - Google Secret Manager
+  - HashiCorp Vault
