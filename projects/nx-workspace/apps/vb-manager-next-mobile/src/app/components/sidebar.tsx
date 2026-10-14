@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import {
   CalendarDays,
-  CalendarRange,
   ClipboardList,
   Link2,
   ListTodo,
@@ -44,11 +43,6 @@ const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
   { href: '/ocr', label: PAGE_TITLE.OCR, icon: ScanLine },
   { href: '/qr', label: PAGE_TITLE.QR, icon: QrCode },
   { href: '/notepad', label: PAGE_TITLE.NOTEPAD, icon: StickyNote },
-  {
-    href: '/event-calendars',
-    label: PAGE_TITLE.EVENT_CALENDARS,
-    icon: CalendarRange,
-  },
   { href: '/pastebin', label: PAGE_TITLE.PASTEBIN, icon: ClipboardList },
   { href: '/weather', label: PAGE_TITLE.WEATHER, icon: CloudSun },
 ];

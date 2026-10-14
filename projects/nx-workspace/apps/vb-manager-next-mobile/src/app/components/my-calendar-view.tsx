@@ -15,6 +15,8 @@ import {
   DialogTitle,
 } from '@vigilant-broccoli/react-lib';
 import { CalendarInput } from './calendar-input';
+import { EventCalendarLink, EventCalendarsList } from './event-calendars-list';
+import { CALENDAR_TAB, CalendarTab } from '../app.const';
 import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
 
 const CALENDAR_TITLE = 'Personal Calendar';
@@ -50,11 +52,30 @@ const EVENT_CALENDAR_COLORS = [
 
 const EVENT_CALENDARS_API = '/api/event-calendars';
 
-interface EventCalendar {
-  id: string;
-  name: string;
-  googleCalendarId: string;
-}
+const HIDDEN_CALENDARS_STORAGE_KEY = 'vb-manager-hidden-event-calendars';
+
+const readHiddenCalendarIds = () => {
+  try {
+    const stored = localStorage.getItem(HIDDEN_CALENDARS_STORAGE_KEY);
+    return new Set<string>(stored ? JSON.parse(stored) : []);
+  } catch {
+    return new Set<string>();
+  }
+};
+
+const writeHiddenCalendarIds = (ids: Set<string>) => {
+  try {
+    localStorage.setItem(
+      HIDDEN_CALENDARS_STORAGE_KEY,
+      JSON.stringify([...ids]),
+    );
+  } catch {
+    // Storage unavailable (private mode / quota): visibility just isn't persisted.
+  }
+};
+
+const TAB_TOUCH_CLASS =
+  'min-h-10 rounded-lg px-3 text-sm font-medium transition-colors';
 
 const MOBILE_USER_AGENT_REGEX =
   /Android|iPhone|iPad|iPod|IEMobile|BlackBerry|Opera Mini/i;
@@ -174,24 +195,39 @@ export const MyCalendarView = () => {
   const [events, setEvents] = useState<CalendarEvent[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [eventCalendars, setEventCalendars] = useState<EventCalendar[]>([]);
+  const [eventCalendars, setEventCalendars] = useState<EventCalendarLink[]>([]);
   // Gates the agenda fetch below so it waits for this list once, instead of
   // firing twice — once without event calendars, once with them as soon as
   // they arrive.
   const [eventCalendarsLoaded, setEventCalendarsLoaded] = useState(false);
+  const [eventCalendarsError, setEventCalendarsError] = useState(false);
+  const [tab, setTab] = useState<CalendarTab>(CALENDAR_TAB.CALENDAR);
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
   const isMobile = useIsMobileBrowser();
+
+  useEffect(() => {
+    setHiddenIds(readHiddenCalendarIds());
+  }, []);
+
+  const toggleHidden = (googleCalendarId: string) =>
+    setHiddenIds(current => {
+      const next = new Set(current);
+      if (!next.delete(googleCalendarId)) next.add(googleCalendarId);
+      writeHiddenCalendarIds(next);
+      return next;
+    });
 
   useEffect(() => {
     const load = async () => {
       const headers = await buildAuthHeaders();
       const res = await fetch(EVENT_CALENDARS_API, { headers });
-      if (!res.ok) return null;
+      if (!res.ok) throw res;
       return res.json();
     };
 
     load()
-      .then(data => data && setEventCalendars(data.calendars))
-      .catch(() => undefined)
+      .then(data => setEventCalendars(data.calendars ?? []))
+      .catch(() => setEventCalendarsError(true))
       .finally(() => setEventCalendarsLoaded(true));
   }, []);
 
@@ -208,19 +244,25 @@ export const MyCalendarView = () => {
     return colors;
   }, [eventCalendars]);
 
-  const calendarConfig = useMemo<CalendarConfig>(
-    () => ({
-      ...BASE_CALENDAR_CONFIG,
-      mode: 'AGENDA',
-      sharedCalendars: [
-        ...BASE_CALENDAR_CONFIG.sharedCalendars,
-        ...eventCalendars.map(calendar => ({
-          id: calendar.googleCalendarId,
-          color: eventCalendarColorById.get(calendar.googleCalendarId),
-        })),
-      ],
-    }),
-    [eventCalendars, eventCalendarColorById],
+  const visibleCalendarIds = eventCalendars
+    .map(calendar => calendar.googleCalendarId)
+    .filter(id => !hiddenIds.has(id));
+  const visibleCalendarKey = visibleCalendarIds.join(',');
+
+  const calendarSrc = useMemo(
+    () =>
+      buildCalendarUrl({
+        ...BASE_CALENDAR_CONFIG,
+        mode: 'AGENDA',
+        sharedCalendars: [
+          ...BASE_CALENDAR_CONFIG.sharedCalendars,
+          ...visibleCalendarKey
+            .split(',')
+            .filter(Boolean)
+            .map(id => ({ id, color: eventCalendarColorById.get(id) })),
+        ],
+      } satisfies CalendarConfig),
+    [visibleCalendarKey, eventCalendarColorById],
   );
 
   const calendarColorById = useMemo(() => {
@@ -236,10 +278,11 @@ export const MyCalendarView = () => {
       events &&
       groupEventsByDay(
         events
+          .filter(event => !hiddenIds.has(event.calendarId))
           .flatMap(expandMultiDayEvent)
           .sort((a, b) => a.start.localeCompare(b.start)),
       ),
-    [events],
+    [events, hiddenIds],
   );
 
   useEffect(() => {
@@ -283,19 +326,53 @@ export const MyCalendarView = () => {
 
   return (
     <div className="flex h-full w-full flex-col gap-3">
-      <button
-        type="button"
-        onClick={() => setCreateOpen(true)}
-        className="flex w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
-      >
-        <CalendarPlus size={16} />
-        Create Event
-      </button>
+      <div className="flex shrink-0 items-center justify-between gap-2">
+        <div role="tablist" className="flex gap-1">
+          {Object.values(CALENDAR_TAB).map(name => (
+            <button
+              key={name}
+              type="button"
+              role="tab"
+              aria-selected={tab === name}
+              onClick={() => setTab(name)}
+              className={`${TAB_TOUCH_CLASS} ${
+                tab === name
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              {name}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={() => setCreateOpen(true)}
+          aria-label="Create calendar event"
+          title="Create calendar event"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
+        >
+          <CalendarPlus size={18} />
+        </button>
+      </div>
+
+      {tab === CALENDAR_TAB.EVENT_CALENDARS && (
+        <EventCalendarsList
+          calendars={eventCalendarsLoaded ? eventCalendars : null}
+          error={eventCalendarsError}
+          hiddenIds={hiddenIds}
+          onToggleHidden={toggleHidden}
+        />
+      )}
 
       {isMobile === false && (
-        <div className="w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200">
+        <div
+          className={`w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200 ${
+            tab === CALENDAR_TAB.CALENDAR ? '' : 'hidden'
+          }`}
+        >
           <iframe
-            src={buildCalendarUrl(calendarConfig)}
+            src={calendarSrc}
             className="h-full w-full dark:invert dark:hue-rotate-180"
             title={CALENDAR_TITLE}
           />
@@ -303,7 +380,11 @@ export const MyCalendarView = () => {
       )}
 
       {isMobile === true && (
-        <div className="w-full rounded-lg border border-gray-200">
+        <div
+          className={`w-full rounded-lg border border-gray-200 ${
+            tab === CALENDAR_TAB.CALENDAR ? '' : 'hidden'
+          }`}
+        >
           {error && <p className="p-4 text-sm text-red-600">{error}</p>}
           {!error && agendaGroups === null && (
             <p className="p-4 text-sm text-gray-500">{LOADING_MESSAGE}</p>

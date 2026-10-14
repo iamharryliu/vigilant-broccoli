@@ -1,6 +1,6 @@
 # VB Manager Next Mobile
 
-Mobile-friendly dashboard for managing personal tasks and calendars, with a `/weather` page showing local weather and preparation badges through the shared `DashboardInfoCardUtilityContent` from `react-utility`, including a forecast carousel.
+Mobile-friendly dashboard for managing personal tasks and calendars (a Calendar tab and an Event Calendars tab with per-calendar visibility toggles), with a `/weather` page showing local weather and preparation badges through the shared `DashboardInfoCardUtilityContent` from `react-utility`, including a forecast carousel.
 
 ## Table of Contents
 
