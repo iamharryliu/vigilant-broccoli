@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { MarkdownViewer } from '@vigilant-broccoli/react-utility';
 import { useTranslation } from '../i18n';
@@ -18,6 +18,7 @@ interface ReadmeSource {
 
 interface ReadmePageProps {
   title: string;
+  beforeReadme?: ReactNode;
   source: ReadmeSource | null;
   externalHref?: string;
   externalLabel?: string;
@@ -43,6 +44,7 @@ const parseResponse = (
 
 export function ReadmePage({
   title,
+  beforeReadme,
   source,
   externalHref,
   externalLabel,
@@ -76,6 +78,8 @@ export function ReadmePage({
   return (
     <main className={PAGE_CLASS}>
       <PageHeader title={title} />
+
+      {beforeReadme}
 
       {!source && notFoundMessage && (
         <p className="text-sm text-red-500">{notFoundMessage}</p>

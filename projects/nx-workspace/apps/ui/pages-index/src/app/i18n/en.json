@@ -133,7 +133,8 @@
     "EMPLOYEE_HANDLER": {
       "TITLE": "Employee Handler",
       "DESCRIPTION": "Employee management app deployed on Vercel."
-    }
+    },
+    "OPEN_APPLICATION": "Open application"
   },
   "STATUS_PAGE": {
     "TITLE": "Status",
