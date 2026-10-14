@@ -23,10 +23,17 @@ fi
 # Build every time: the runner is copied into the image and local development
 # must execute the current adapter, rather than an old cached image's scripts.
 docker compose -f "$SCRIPT_DIR/docker-compose.yml" build
-DOCKER_ARGS=(--add-host host.docker.internal:host-gateway)
+# Docker Desktop resolves host.docker.internal to the Mac's loopback by itself,
+# so a loopback-bound Ollama is reachable. --add-host host-gateway would replace
+# that with a VM-side address that only a non-loopback listener accepts, forcing
+# 0.0.0.0 and exposing Ollama to the LAN. Only the Linux engine needs the flag.
+DOCKER_ARGS=()
+if [ "$(uname -s)" = Linux ]; then
+  DOCKER_ARGS=(--add-host host.docker.internal:host-gateway)
+fi
 export OLLAMA_MODEL OLLAMA_BASE_URL
 
-docker run --rm "${DOCKER_ARGS[@]}" -e OLLAMA_BASE_URL -e OLLAMA_MODEL \
+docker run --rm ${DOCKER_ARGS[@]+"${DOCKER_ARGS[@]}"} -e OLLAMA_BASE_URL -e OLLAMA_MODEL \
   --entrypoint bash "$IMAGE" -c '
     response=$(curl -fsS --connect-timeout 5 --max-time 30 \
       -H "Content-Type: application/json" \
@@ -64,7 +71,7 @@ run_local() {
   # Docker's agent UID differs from the macOS user and needs to clone here.
   chmod 777 "$output_dir/repo"
   local args=(
-    --rm --init "${DOCKER_ARGS[@]}"
+    --rm --init ${DOCKER_ARGS[@]+"${DOCKER_ARGS[@]}"}
     --cap-add NET_ADMIN --cap-add NET_RAW
     -e SOLVE_AGENT=ollama -e OLLAMA_MODEL -e OLLAMA_BASE_URL
     -e SOLVE_PREVIEW="$((1 - PUBLISH))"
