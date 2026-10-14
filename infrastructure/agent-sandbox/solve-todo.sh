@@ -80,7 +80,7 @@ if [ -z "$PROMPT" ] && [ ${#IDS[@]} -eq 0 ]; then
 fi
 
 if [ "$LOCAL" = 1 ]; then
-  exec bash "$SCRIPT_DIR/solve-local.sh" "$PUBLISH" "$OLLAMA_MODEL" "$OLLAMA_BASE_URL" "$PROMPT" "${IDS[@]}"
+  exec bash "$SCRIPT_DIR/solve-local.sh" "$PUBLISH" "$OLLAMA_MODEL" "$OLLAMA_BASE_URL" "$PROMPT" ${IDS[@]+"${IDS[@]}"}
 fi
 
 # Splits a runner log into one record per pull request (each starts at its
