@@ -57,13 +57,6 @@ export const DIRECTION_VECTORS = {
   [DIRECTION.RIGHT]: { x: 1, y: 0 },
 } as const;
 
-export const OPPOSITE_DIRECTION = {
-  [DIRECTION.UP]: DIRECTION.DOWN,
-  [DIRECTION.DOWN]: DIRECTION.UP,
-  [DIRECTION.LEFT]: DIRECTION.RIGHT,
-  [DIRECTION.RIGHT]: DIRECTION.LEFT,
-} as const;
-
 export const DIRECTIONS = Object.values(DIRECTION);
 
 export const DIFFICULTY = {
