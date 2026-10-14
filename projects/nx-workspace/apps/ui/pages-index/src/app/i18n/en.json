@@ -130,6 +130,10 @@
       "TITLE": "Links",
       "DESCRIPTION": "Public pastebin of personal links and contact details."
     },
+    "TODO": {
+      "TITLE": "Todo App",
+      "DESCRIPTION": "Simple todo application with add, complete, delete and filter functionality."
+    },
     "EMPLOYEE_HANDLER": {
       "TITLE": "Employee Handler",
       "DESCRIPTION": "Employee management app deployed on Vercel."

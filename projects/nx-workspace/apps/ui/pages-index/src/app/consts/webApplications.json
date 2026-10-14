@@ -71,6 +71,13 @@
       "readmePath": "projects/nx-workspace/apps/ui/links-react/README.md"
     },
     {
+      "id": "todo",
+      "href": "https://todo.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.TODO.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.TODO.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/todo/README.md"
+    },
+    {
       "id": "utilities",
       "href": "https://utilities.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.UTILITIES.TITLE",
