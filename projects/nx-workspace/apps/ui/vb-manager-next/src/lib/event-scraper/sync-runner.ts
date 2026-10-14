@@ -1,6 +1,14 @@
 import { getCalendarAdminClient } from '../google-calendar-admin';
-import { getEventCalendar, recordSyncResult } from '../event-calendars.db';
-import { scrapeFacebookEvents, ScrapedEvent } from './facebook-events.scraper';
+import {
+  getEventCalendar,
+  listEventCalendars,
+  recordSyncResult,
+} from '../event-calendars.db';
+import {
+  FACEBOOK_LOGIN_REQUIRED_ERROR,
+  scrapeFacebookEvents,
+  ScrapedEvent,
+} from './facebook-events.scraper';
 import { syncEventsToCalendar } from './google-calendar.sync';
 import { localizeEvents } from './event-localizer';
 import {
@@ -43,6 +51,12 @@ const runningSyncs = new Map<string, SyncStatus>();
 export const getSyncStatus = (calendarId: string) =>
   runningSyncs.get(calendarId) ?? null;
 
+export interface SyncOutcome {
+  state: SyncState;
+  message: string;
+  loginRequired?: boolean;
+}
+
 const FACEBOOK_SOURCE_TYPES: string[] = [
   EVENT_SOURCE_TYPE.FACEBOOK_GROUP,
   EVENT_SOURCE_TYPE.FACEBOOK_PAGE,
@@ -68,7 +82,7 @@ const scrapeSource = (
   });
 };
 
-const runSync = async (calendarId: string) => {
+const runSync = async (calendarId: string): Promise<SyncOutcome> => {
   const setStatus = ({ message, phase, done, total }: SyncProgress) => {
     const current = runningSyncs.get(calendarId);
     if (current) {
@@ -133,7 +147,10 @@ const runSync = async (calendarId: string) => {
     const message =
       `Synced ${result.synced} events` +
       (result.skipped ? `, ${result.skipped} skipped` : '') +
-      (result.removed ? `, ${result.removed} removed` : '');
+      (result.removed ? `, ${result.removed} removed` : '') +
+      (result.staleDeletionSkipped
+        ? `, stale deletion skipped (${result.staleDeletionSkipped})`
+        : '');
 
     runningSyncs.set(calendarId, {
       state: SYNC_STATE.SUCCEEDED,
@@ -143,6 +160,7 @@ const runSync = async (calendarId: string) => {
       finishedAt: new Date().toISOString(),
     });
     await recordSyncResult(calendarId, message);
+    return { state: SYNC_STATE.SUCCEEDED, message };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Sync failed';
     console.error('[event-calendars] sync failed', error);
@@ -154,7 +172,26 @@ const runSync = async (calendarId: string) => {
       finishedAt: new Date().toISOString(),
     });
     await recordSyncResult(calendarId, `Failed: ${message}`);
+    return {
+      state: SYNC_STATE.FAILED,
+      message,
+      loginRequired: message === FACEBOOK_LOGIN_REQUIRED_ERROR,
+    };
   }
+};
+
+export const runSyncAll = async () => {
+  const calendars = (await listEventCalendars()).filter(
+    calendar => calendar.sources.length,
+  );
+  const results: (SyncOutcome & { name: string })[] = [];
+  for (const calendar of calendars) {
+    const outcome = await runSync(calendar.id);
+    results.push({ name: calendar.name, ...outcome });
+    // Every remaining calendar would hit the same login wall.
+    if (outcome.loginRequired) break;
+  }
+  return results;
 };
 
 export const startSync = (calendarId: string): SyncStatus => {
