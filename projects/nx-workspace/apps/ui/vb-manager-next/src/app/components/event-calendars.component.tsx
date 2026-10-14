@@ -1,8 +1,16 @@
 'use client';
-import { RefreshCw } from 'lucide-react';
+import {
+  ExternalLink,
+  Eye,
+  EyeOff,
+  Lock,
+  RefreshCw,
+  Unlock,
+} from 'lucide-react';
 import {
   Badge,
   Button,
+  buttonVariants,
   Callout,
   CalloutText,
   Card,
@@ -14,6 +22,10 @@ import {
   Select,
   Switch,
   Text,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -55,10 +67,14 @@ const UNTRACKED_DESCRIPTION =
   'Owned by the calendar service account but not managed here — typically left behind by a deleted row. Deleting one removes it and all of its events for good.';
 const UNTRACKED_UNAVAILABLE =
   'Google returns no calendar list for this service account, so calendars it owns outside this page cannot be listed. Calendars managed here are unaffected.';
+const DETAILS_LABEL = 'Details';
 const SYNC_NOW_LABEL = 'Sync now';
 const LAST_SYNCED_LABEL = 'Last synced';
 const PUBLIC_LABEL = 'Public';
 const SHOW_IN_CALENDAR_VIEW_LABEL = 'Show in Calendar view';
+const HIDE_FROM_CALENDAR_VIEW_LABEL = 'Hide from Calendar view';
+const MAKE_PRIVATE_LABEL = 'Public — click to make private';
+const MAKE_PUBLIC_LABEL = 'Private — click to make public';
 const SYNC_POLL_INTERVAL_MS = 3000;
 // Catches CLI-started runs and their results while the page stays open.
 const SYNC_STATUS_REFRESH_INTERVAL_MS = 30_000;
@@ -114,7 +130,7 @@ const LIST_COPY = {
       'Creates a new Google Calendar owned by the calendar service account and shares it with you.',
   },
   [FORM_TYPE.UPDATE]: {
-    TITLE: 'Update Event Calendar',
+    TITLE: 'Event Calendar Details',
     DESCRIPTION:
       'Rename the calendar or change the URLs events are scraped from.',
   },
@@ -307,12 +323,6 @@ const SyncHistory = ({
     ))}
   </div>
 );
-
-const HTTP_PROTOCOL_PATTERN = /^https?:\/\//i;
-const HTTPS_PREFIX = 'https://';
-
-const toExternalUrl = (url: string) =>
-  HTTP_PROTOCOL_PATTERN.test(url) ? url : `${HTTPS_PREFIX}${url}`;
 
 const urlsToSources = (urls: string[]) =>
   urls
@@ -625,30 +635,6 @@ export const EventCalendarsComponent = () => {
                 </Badge>
               )}
             </div>
-            <div className="flex flex-col gap-1">
-              {item.sources.length ? (
-                item.sources.map(source => (
-                  <div
-                    key={source.url}
-                    className="flex flex-wrap items-center gap-2"
-                  >
-                    <a
-                      href={toExternalUrl(source.url)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs text-blue-600 hover:underline dark:text-blue-400"
-                    >
-                      {source.url}
-                    </a>
-                    <CopyButton text={source.url} />
-                  </div>
-                ))
-              ) : (
-                <Text size="1" color="gray">
-                  No source URLs configured.
-                </Text>
-              )}
-            </div>
           </div>
           <div className="flex flex-wrap items-center gap-6">
             <div className="flex items-center gap-2">
@@ -656,9 +642,14 @@ export const EventCalendarsComponent = () => {
                 href={buildGoogleCalendarUrl(item.googleCalendarId)}
                 target="_blank"
                 rel="noreferrer"
-                className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+                title={OPEN_IN_GOOGLE_CALENDAR}
+                aria-label={OPEN_IN_GOOGLE_CALENDAR}
+                className={buttonVariants({
+                  variant: 'ghost',
+                  size: 'icon',
+                })}
               >
-                {OPEN_IN_GOOGLE_CALENDAR}
+                <ExternalLink className="h-4 w-4" />
               </a>
               <CopyButton
                 text={buildGoogleCalendarUrl(item.googleCalendarId)}
@@ -679,42 +670,61 @@ export const EventCalendarsComponent = () => {
                   }
                 />
               )}
-            {lastSyncedAt && (
-              <Text size="1" color="gray">
-                {LAST_SYNCED_LABEL} {formatRelativeTime(lastSyncedAt)}
-              </Text>
-            )}
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label={SYNC_NOW_LABEL}
+                      onClick={() => startSync(item.id)}
+                      loading={syncStatus?.state === SYNC_RUNNING}
+                      disabled={!item.sources.length}
+                    >
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {lastSyncedAt
+                    ? `${LAST_SYNCED_LABEL} ${formatRelativeTime(lastSyncedAt)}`
+                    : SYNC_NOW_LABEL}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <Button
-              variant="secondary"
+              variant="ghost"
               size="icon"
-              title={SYNC_NOW_LABEL}
-              aria-label={SYNC_NOW_LABEL}
-              onClick={() => startSync(item.id)}
-              loading={syncStatus?.state === SYNC_RUNNING}
-              disabled={!item.sources.length}
+              title={
+                hiddenIds.includes(item.id)
+                  ? SHOW_IN_CALENDAR_VIEW_LABEL
+                  : HIDE_FROM_CALENDAR_VIEW_LABEL
+              }
+              aria-label={SHOW_IN_CALENDAR_VIEW_LABEL}
+              aria-pressed={!hiddenIds.includes(item.id)}
+              onClick={() => setShown(item.id, hiddenIds.includes(item.id))}
             >
-              <RefreshCw className="h-4 w-4" />
+              {hiddenIds.includes(item.id) ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
             </Button>
-            <Text size="1" color="gray" as="label">
-              <div className="flex items-center gap-2">
-                {SHOW_IN_CALENDAR_VIEW_LABEL}
-                <Switch
-                  checked={!hiddenIds.includes(item.id)}
-                  onCheckedChange={checked => setShown(item.id, checked)}
-                />
-              </div>
-            </Text>
-            <Text size="1" color="gray" as="label">
-              <div className="flex items-center gap-2">
-                {PUBLIC_LABEL}
-                <Switch
-                  checked={item.isPublic}
-                  onCheckedChange={checked =>
-                    requestTogglePublic(item, checked)
-                  }
-                />
-              </div>
-            </Text>
+            <Button
+              variant="ghost"
+              size="icon"
+              title={item.isPublic ? MAKE_PRIVATE_LABEL : MAKE_PUBLIC_LABEL}
+              aria-label={PUBLIC_LABEL}
+              aria-pressed={item.isPublic}
+              onClick={() => requestTogglePublic(item, !item.isPublic)}
+            >
+              {item.isPublic ? (
+                <Unlock className="h-4 w-4" />
+              ) : (
+                <Lock className="h-4 w-4" />
+              )}
+            </Button>
           </div>
         </div>
       </div>
@@ -746,6 +756,7 @@ export const EventCalendarsComponent = () => {
         createItem={createItem}
         createItemFormDefaultValues={CREATE_FORM_DEFAULT_VALUES}
         updateItem={updateItem}
+        updateLabel={DETAILS_LABEL}
         deleteItem={deleteItem}
         copy={{
           ...LIST_COPY,
@@ -783,9 +794,14 @@ export const EventCalendarsComponent = () => {
                     href={buildGoogleCalendarUrl(calendar.googleCalendarId)}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+                    title={OPEN_IN_GOOGLE_CALENDAR}
+                    aria-label={OPEN_IN_GOOGLE_CALENDAR}
+                    className={buttonVariants({
+                      variant: 'ghost',
+                      size: 'icon',
+                    })}
                   >
-                    {OPEN_IN_GOOGLE_CALENDAR}
+                    <ExternalLink className="h-4 w-4" />
                   </a>
                   <Text size="1" color={calendar.eventCount ? 'red' : 'gray'}>
                     {calendar.eventCount} event
@@ -908,6 +924,7 @@ const EventCalendarForm = ({
               value={url}
               onChange={event => updateSourceUrl(index, event.target.value)}
             />
+            <CopyButton text={url} />
             <Button
               variant="secondary"
               type="button"
