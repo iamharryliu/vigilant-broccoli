@@ -23,6 +23,7 @@ import { SectionHeading } from '../components/SectionHeading';
 import { CardLink } from '../components/CardLink';
 import { CardGrid } from '../components/CardGrid';
 import { PAGE_CLASS } from '../consts/layout';
+import { toWebApplicationRoute } from '../consts/routes';
 import WEB_APPLICATIONS from '../consts/webApplications.json';
 
 type WebApplicationEntry = {
@@ -61,10 +62,10 @@ export function WebApplicationsPage() {
 
   const renderSortedCards = (entries: readonly WebApplicationEntry[]) =>
     entries
-      .map(({ id, href, titleKey, descriptionKey }) => {
+      .map(({ id, titleKey, descriptionKey }) => {
         const Icon = CARD_ICONS[id] ?? FALLBACK_ICON;
         return {
-          href,
+          href: toWebApplicationRoute(id),
           title: t(titleKey as TranslationKey),
           description: t(descriptionKey as TranslationKey),
           icon: <Icon className={ICON_CLASS} aria-hidden="true" />,
@@ -73,7 +74,7 @@ export function WebApplicationsPage() {
       .sort((a, b) => a.title.localeCompare(b.title))
       .map(card => (
         <li key={card.href}>
-          <CardLink {...card} />
+          <CardLink {...card} route />
         </li>
       ));
 
