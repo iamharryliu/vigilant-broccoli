@@ -64,6 +64,17 @@
         "ensure-cf-project:production",
         "prune-deployments:production"
       ]
+    },
+    "ensure-cf-project:preview": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw preview-calendars || npx wrangler pages project create preview-calendars --production-branch main"
+    },
+    "prune-deployments:preview": {
+      "command": "npx tsx scripts/prune-wrangler-preview-deployments.ts preview-calendars",
+      "dependsOn": ["ensure-cf-project:preview"]
+    },
+    "deploy:preview": {
+      "command": "npx wrangler pages deploy dist/apps/ui/calendars --project-name preview-calendars --branch \"$PREVIEW_BRANCH\" --commit-hash \"${PREVIEW_COMMIT:-$(git rev-parse HEAD)}\"",
+      "dependsOn": ["build", "ensure-cf-project:preview"]
     }
   }
 }
