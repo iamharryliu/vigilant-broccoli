@@ -104,6 +104,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   showEllipsis = true,
   canShowEllipsis,
   itemActions,
+  updateLabel,
   getItemImages,
   getItemTitle,
   fullWidthImage = false,
@@ -124,6 +125,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   showEllipsis?: boolean;
   canShowEllipsis?: (item: T) => boolean;
   itemActions?: (item: T) => EllipsisAction[];
+  updateLabel?: string;
   getItemImages?: (item: T) => string[] | undefined;
   getItemTitle?: (item: T) => string;
   fullWidthImage?: boolean;
@@ -157,6 +159,7 @@ export const CRUDItemList = <T extends CRUDItem>({
             copy={copy}
             submitHandler={submitHandler}
             extraActions={itemActions?.(item)}
+            updateLabel={updateLabel}
           />
         </div>
       ) : null;
@@ -252,6 +255,7 @@ const EllipsisOptions = <T extends CRUDItem>({
   deleteItem,
   copy,
   extraActions,
+  updateLabel = DEFAULT_UPDATE_LABEL,
 }: {
   item: T;
   FormComponent: CRUDFormComponent<T>;
@@ -259,13 +263,14 @@ const EllipsisOptions = <T extends CRUDItem>({
   deleteItem: (id: string | number) => Promise<void>;
   copy: ListManagementCopy;
   extraActions?: EllipsisAction[];
+  updateLabel?: string;
 }) => {
   const [updateOpen, setUpdateOpen] = useState(false);
   const hasExtraActions = Boolean(extraActions?.length);
   const ctaProps = hasExtraActions
     ? {
         actions: [
-          { label: DEFAULT_UPDATE_LABEL, onSelect: () => setUpdateOpen(true) },
+          { label: updateLabel, onSelect: () => setUpdateOpen(true) },
           ...(extraActions ?? []),
           {
             label: DEFAULT_DELETE_LABEL,
@@ -281,7 +286,7 @@ const EllipsisOptions = <T extends CRUDItem>({
       };
   return (
     <>
-      <EllipsisCTA {...ctaProps} />
+      <EllipsisCTA {...ctaProps} updateLabel={updateLabel} />
       <CRUDItemFormDialog
         open={updateOpen}
         onOpenChange={setUpdateOpen}
@@ -374,7 +379,9 @@ export const EllipsisCTA = ({
 
   return (
     <div onClick={e => e.stopPropagation()}>
-      <DropdownMenu.Root>
+      {/* A modal menu that hands off to a dialog leaves pointer-events: none on
+          <body> once the dialog closes (e.g. via Esc), freezing the whole page. */}
+      <DropdownMenu.Root modal={false}>
         <DropdownMenu.Trigger>
           <IconButton variant="ghost" icon={icon} disabled={disabled} />
         </DropdownMenu.Trigger>
