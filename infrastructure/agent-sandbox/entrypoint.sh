@@ -14,6 +14,10 @@ if [ "$(id -u)" = "0" ]; then
   exec setpriv --reuid="$AGENT_USER" --regid="$AGENT_USER" --init-groups "$0" "$@"
 fi
 
+# A bind-mounted checkout (local Ollama solve) is root-owned at its top level
+# while .git belongs to the agent, which git rejects as dubious ownership.
+git config --global safe.directory "$REPO_DIR"
+
 if [ ! -d "$REPO_DIR/.git" ]; then
   git clone "$REPO_URL" "$REPO_DIR"
   SCRIPT_MODES=$(git -C "$REPO_DIR" ls-files --stage -- setup/dotfiles/zsh/aliases setup/dotfiles/zsh/scripts)
