@@ -15,7 +15,6 @@ Slack bot for sharing office presence status via Socket Mode.
   - `slackbots`
 - Cloud services
   - Slack
-  - Docker Hub (`iamharryliu/office-presence-socket-server-demo`)
 
 ## Build & Run
 

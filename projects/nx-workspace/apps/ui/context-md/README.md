@@ -16,5 +16,3 @@ Renders the agent context (`CONTEXT.md` files, `docs/`, `TODO.md` and shared age
 - Internal libs
   - `react-lib`
   - `react-utility`
-- Cloud services
-  - Cloudflare Pages (context.harryliu.dev)

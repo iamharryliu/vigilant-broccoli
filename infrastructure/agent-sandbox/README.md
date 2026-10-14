@@ -180,12 +180,12 @@ opens one PR citing where each removed fact is retained. It runs Opus by default
 - Tooling
   - Docker
   - Docker Compose
+- Cloud providers
+  - GitHub
 - Services
   - Claude Code
   - Codex CLI
   - Ollama
-- Cloud providers
-  - GitHub
 - Secrets
-  - HashiCorp Vault
   - Google Secret Manager
+  - HashiCorp Vault

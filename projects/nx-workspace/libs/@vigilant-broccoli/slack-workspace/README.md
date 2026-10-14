@@ -10,11 +10,10 @@ Slack Web API client and view-builder utilities.
 
 - Language - TypeScript
 - External libs
-  - `@slack/web-api`
   - `@slack/types`
+  - `@slack/web-api`
 - Internal libs
   - `common-js`
   - `common-node`
 - Cloud services
   - Slack
-  - npm

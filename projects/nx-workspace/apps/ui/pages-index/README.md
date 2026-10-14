@@ -12,15 +12,12 @@
 - Framework - React
 - Build Tool - Vite
 - External libs
-  - Tailwind CSS (+ `@tailwindcss/typography` for rendered READMEs)
-  - React Router
   - lucide-react
+  - React Router
+  - Tailwind CSS (+ `@tailwindcss/typography` for rendered READMEs)
 - Internal libs
   - `react-lib`
   - `react-utility` (`MarkdownViewer` — marked + DOMPurify)
-- Cloud services
-  - GitHub Pages
-  - Cloudflare Workers (`status-proxy`, serves the same build at `status.harryliu.dev` and `career.harryliu.dev`)
 
 ## Page Navigation
 

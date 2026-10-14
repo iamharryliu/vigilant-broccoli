@@ -17,5 +17,3 @@ Renders repo markdown docs fetched at build/runtime.
 - Internal libs
   - `react-lib`
   - `react-utility`
-- Cloud services
-  - Cloudflare Pages (docs.harryliu.dev)

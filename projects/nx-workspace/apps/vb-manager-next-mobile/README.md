@@ -9,11 +9,11 @@ Mobile-friendly dashboard for managing personal tasks and calendars (a Calendar 
 ## Stack
 
 - Language - TypeScript
-- Framework - Next.js (React)
+- Framework - Next.js
 - Build Tool - Next.js
 - External libs
-  - Zod
   - Tesseract.js
+  - Zod
 - Internal libs
   - `common-browser`
   - `common-js`
@@ -24,8 +24,7 @@ Mobile-friendly dashboard for managing personal tasks and calendars (a Calendar 
   - `react-lib`
   - `react-utility`
 - Cloud services
-  - Supabase
   - Google Workspace APIs
-  - Open-Meteo (weather)
   - Nominatim / OpenStreetMap (reverse geocoding)
-  - Vercel
+  - Open-Meteo (weather)
+  - Supabase
