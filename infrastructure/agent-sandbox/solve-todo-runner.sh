@@ -161,6 +161,20 @@ if [ "$PREVIEW" = 1 ]; then
   PREVIEW_RULE="- This is a development preview: retain edits without committing or publishing. Report validation and remaining work; use --agent ollama in ready-to-run follow-up commands."
 fi
 
+METADATA_FIELDS=$(cat <<EOF
+  - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure
+  - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
+  - commit_message: capitalized, concise, focused on why not what, ending with a period
+  - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit, or "$FALLBACK_TRAILER" when no such trailer is specified
+  - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
+  - pr_summary: markdown bullet points for the PR "## Summary" section, describing only the increment you implemented
+  - pr_next_steps: markdown checklist for the PR "## Next steps" section — concrete remaining actions for the human (manual commands to run, UI/manual spot checks, watching CI to green, then one ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\` item per piece of work deliberately left out of every increment), or "- [ ] Merge once CI is green" when nothing else is left
+  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
+  - todo_ids: array of the TODO.md ids this increment fully resolves (omit or [] when none)
+  - increments: the optional array of later increments described above
+EOF
+)
+
 PROMPT=$(cat <<EOF
 You are running non-interactively in a fresh clone of vigilant-broccoli, on a dedicated branch. $INTRO
 
@@ -176,16 +190,7 @@ $SCOPE_RULE
 $PREVIEW_RULE
 $(inc_plan_instructions solve)
 - When finished, write $META_FILE containing only a JSON object with these fields (strings unless noted):
-  - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure
-  - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
-  - commit_message: capitalized, concise, focused on why not what, ending with a period
-  - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit, or "$FALLBACK_TRAILER" when no such trailer is specified
-  - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
-  - pr_summary: markdown bullet points for the PR "## Summary" section, describing only the increment you implemented
-  - pr_next_steps: markdown checklist for the PR "## Next steps" section — concrete remaining actions for the human (manual commands to run, UI/manual spot checks, watching CI to green, then one ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\` item per piece of work deliberately left out of every increment), or "- [ ] Merge once CI is green" when nothing else is left
-  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
-  - todo_ids: array of the TODO.md ids this increment fully resolves (omit or [] when none)
-  - increments: the optional array of later increments described above
+$METADATA_FIELDS
 EOF
 )
 
@@ -248,6 +253,20 @@ agent_invoke() {
 agent_invoke "$PROMPT"
 
 if [ "$AGENT_RUNNER" = ollama ]; then
+  # Long prompts bury the metadata instruction last and the local model may skip
+  # it after finishing the work, so ask once for just that file before giving up.
+  jq -e 'type == "object"' "$META_FILE" >/dev/null 2>&1 || {
+    echo "The local agent did not write metadata; asking once more for it." >&2
+    agent_invoke "A previous run of the task below changed files in the working tree but did not write its metadata file. Do not modify, create or delete any other file.
+
+$TASK
+
+Changed files (git status --porcelain):
+$(git status --porcelain)
+
+Write $META_FILE containing only a JSON object with these fields (strings unless noted); omit increments:
+$METADATA_FIELDS" || true
+  }
   jq -e 'type == "object"' "$META_FILE" >/dev/null || {
     echo "ERROR: the local agent did not produce valid metadata; its checkout is retained." >&2
     exit 1

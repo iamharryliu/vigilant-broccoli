@@ -363,6 +363,10 @@ inc_salvage() {
     return 0
   fi
   if [ -n "$(git status --porcelain)" ]; then
+    # The commit hooks never bypass, so let the auto-fix pass rewrite the files
+    # first; otherwise one end-of-file or repo-stats fix fails the commit and the
+    # partial work is lost.
+    bash "$PRE_COMMIT_HELPER" >/dev/null 2>&1 || true
     if ! git add -A || ! SKIP=$INC_SKIP_COMMIT_HOOKS git commit -m "chore: Save partial progress from an incomplete agent run." -m "$FALLBACK_TRAILER"; then
       echo "Failed to commit salvage work on $branch; hooks were not bypassed." >&2
       printf 'RESULT::salvage-commit-failed\n'
