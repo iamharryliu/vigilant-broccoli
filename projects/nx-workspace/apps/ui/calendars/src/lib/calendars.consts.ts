@@ -24,3 +24,14 @@ export const CALENDAR_SECTION_STATE = {
   LOADING: 'LOADING',
   ERROR: 'ERROR',
 } as const;
+
+export const HIDDEN_EVENT_CALENDARS_STORAGE_KEY =
+  'calendars-hidden-event-calendars';
+
+export const TAB_STORAGE_KEY = 'calendars-active-tab';
+
+export const TAB = {
+  CALENDAR_VIEW: 'calendar-view',
+  PERSONAL: 'personal',
+  EVENT_CALENDARS: 'event-calendars',
+} as const;
