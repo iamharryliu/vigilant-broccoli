@@ -1,4 +1,8 @@
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
+import {
+  readHiddenCalendarIds,
+  writeHiddenCalendarIds,
+} from '@vigilant-broccoli/personal-common-js';
 
 // Per-browser, like the selected calendar tab. Stores the hidden ids rather
 // than the shown ones so a newly created event calendar shows up by default.
@@ -7,13 +11,9 @@ const STORAGE_KEY_HIDDEN = 'calendar-view-hidden-event-calendars';
 const CHANGE_EVENT = 'calendar-view-event-calendars-change';
 const EMPTY_SNAPSHOT = '[]';
 
-const readSnapshot = () => {
-  try {
-    return localStorage.getItem(STORAGE_KEY_HIDDEN) ?? EMPTY_SNAPSHOT;
-  } catch {
-    return EMPTY_SNAPSHOT;
-  }
-};
+// useSyncExternalStore needs a referentially stable snapshot, so compare serialized ids.
+const readSnapshot = () =>
+  JSON.stringify(readHiddenCalendarIds(STORAGE_KEY_HIDDEN));
 
 const subscribe = (onChange: () => void) => {
   window.addEventListener(CHANGE_EVENT, onChange);
@@ -24,35 +24,22 @@ const subscribe = (onChange: () => void) => {
   };
 };
 
-const parseHiddenIds = (snapshot: string): string[] => {
-  try {
-    const parsed = JSON.parse(snapshot);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-};
-
 export const useCalendarViewEventCalendars = () => {
   const snapshot = useSyncExternalStore(
     subscribe,
     readSnapshot,
     () => EMPTY_SNAPSHOT,
   );
-  const hiddenIds = useMemo(() => parseHiddenIds(snapshot), [snapshot]);
+  const hiddenIds = useMemo(() => JSON.parse(snapshot) as string[], [snapshot]);
 
   const setShown = useCallback((id: string, shown: boolean) => {
-    const others = parseHiddenIds(readSnapshot()).filter(
+    const others = readHiddenCalendarIds(STORAGE_KEY_HIDDEN).filter(
       hiddenId => hiddenId !== id,
     );
-    try {
-      localStorage.setItem(
-        STORAGE_KEY_HIDDEN,
-        JSON.stringify(shown ? others : [...others, id]),
-      );
-    } catch {
-      return;
-    }
+    writeHiddenCalendarIds(
+      STORAGE_KEY_HIDDEN,
+      shown ? others : [...others, id],
+    );
     window.dispatchEvent(new Event(CHANGE_EVENT));
   }, []);
 

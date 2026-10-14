@@ -170,3 +170,4 @@ export const MAC_OS_APP = {
 } as const;
 
 export * from './personal-calendar.const';
+export * from './personal-calendar-embed';
