@@ -10,6 +10,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   spellcheck                  Run codespell
 
 🤖 CODING AGENTS
+  codexotp                   Open the Codex device authentication page
   codexyolo [args...]         Run Codex with approvals and sandbox disabled
 
 📁 FILES & DIRS
