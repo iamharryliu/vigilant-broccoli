@@ -201,6 +201,7 @@ const deriveRunStatus = (results: SyncRunResult[], expected: number) => {
 const runRecordedSync = async (
   trigger: SyncRunTrigger,
   calendarIds: string[],
+  onOutcome?: (index: number, outcome: SyncOutcome) => void,
 ) => {
   await pruneSyncRuns();
   const runId = await startSyncRun(trigger);
@@ -214,10 +215,11 @@ const runRecordedSync = async (
     SYNC_RUN_HEARTBEAT_MS,
   );
   try {
-    for (const calendarId of calendarIds) {
+    for (const [index, calendarId] of calendarIds.entries()) {
       await updateSyncRun(runId, { currentCalendarId: calendarId });
       const outcome = await runSync(calendarId);
       outcomes.push(outcome);
+      onOutcome?.(index, outcome);
       results.push({
         calendarId,
         ok: outcome.state === SYNC_STATE.SUCCEEDED,
@@ -238,13 +240,21 @@ const runRecordedSync = async (
   return outcomes;
 };
 
-export const runSyncAll = async (trigger: SyncRunTrigger) => {
+export type SyncAllResult = SyncOutcome & { name: string };
+
+// onResult fires as each calendar finishes, so a caller's log keeps the
+// calendars completed before a crash instead of only the final summary.
+export const runSyncAll = async (
+  trigger: SyncRunTrigger,
+  onResult?: (result: SyncAllResult) => void,
+) => {
   const calendars = (await listEventCalendars()).filter(
     calendar => calendar.sources.length,
   );
   const outcomes = await runRecordedSync(
     trigger,
     calendars.map(calendar => calendar.id),
+    (index, outcome) => onResult?.({ name: calendars[index].name, ...outcome }),
   );
   return outcomes.map((outcome, index) => ({
     name: calendars[index].name,

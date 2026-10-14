@@ -10,7 +10,11 @@ import {
 } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runSyncAll, SYNC_STATE } from '../src/lib/event-scraper/sync-runner';
+import {
+  runSyncAll,
+  SYNC_STATE,
+  SyncAllResult,
+} from '../src/lib/event-scraper/sync-runner';
 import { SYNC_RUN_TRIGGER } from '../src/app/constants/event-calendars';
 
 const DATA_DIR =
@@ -57,6 +61,9 @@ const log = (message: string, isError = false) => {
   else console.log(message);
 };
 
+const logResult = ({ name, state, message }: SyncAllResult) =>
+  log(`${name}: ${state} — ${message}`, state === SYNC_STATE.FAILED);
+
 const releaseLock = () => {
   try {
     if (readFileSync(LOCK_FILE, 'utf-8').trim() === String(process.pid)) {
@@ -91,10 +98,7 @@ const main = async () => {
   process.on('SIGINT', () => process.exit(FAILURE_EXIT_CODE));
   process.on('SIGTERM', () => process.exit(FAILURE_EXIT_CODE));
 
-  const results = await runSyncAll(SYNC_RUN_TRIGGER.CLI);
-  results.forEach(({ name, state, message }) =>
-    log(`${name}: ${state} — ${message}`, state === SYNC_STATE.FAILED),
-  );
+  const results = await runSyncAll(SYNC_RUN_TRIGGER.CLI, logResult);
   const failed = results.filter(result => result.state === SYNC_STATE.FAILED);
   if (!failed.length) return;
   if (failed.some(result => result.loginRequired)) {
