@@ -38,8 +38,6 @@ const EVENT_CALENDARS_API = '/api/event-calendars';
 
 const HIDDEN_CALENDARS_STORAGE_KEY = 'vb-manager-hidden-event-calendars';
 
-const HIDDEN_CALENDARS_STORAGE_KEY = 'vb-manager-hidden-event-calendars';
-
 const TAB_TOUCH_CLASS = 'px-4 text-sm';
 
 const MOBILE_USER_AGENT_REGEX =
