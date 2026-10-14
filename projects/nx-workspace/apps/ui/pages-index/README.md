@@ -19,6 +19,8 @@
 - Internal libs
   - `react-lib`
   - `react-utility`
+- Cloud services
+  - GitHub API
 
 ## Page Navigation
 
@@ -29,7 +31,8 @@
   - `/status` — Status (service health grouped by Production / Staging / Demo / Personal Apps from `iamharryliu/uptime`; unavailable monitoring data displays an error; GitHub Actions badges for both repositories, in the Status tab; the Uptime tab lists the same services with 24h/7d/30d/1y uptime and a 30-day downtime strip from `summary.json`, plus a "Full uptime history" link to `uptime.harryliu.dev`)
   - `/repo-timeline` — Repo Timeline (lines of code, commits, PRs merged, lines added/deleted per day / month / year, shown as a horizontally scrollable bar chart or as react-lib's `ScrollTimeline`; data is `public/repo-timeline.json`, generated from `git log --numstat` by the `generate-repo-timeline` target (`scripts/generate-repo-timeline.ts`, lockfiles and >100K-line single-file changes excluded) and copied into `_site` on each Pages deploy)
   - `/open-source` — Open Source
-    - GitHub → `/open-source/github` (README fetched from `raw.githubusercontent.com`, links out to the repo)
+    - GitHub → `/open-source/github` (all public `iamharryliu` repositories, fetched from the paginated GitHub API)
+      - `/open-source/github/:repo` — README fetched through the GitHub API from the default branch, with a link to the repository; loading, empty and fetch errors are displayed.
     - Docker Hub → `/open-source/docker` (list of `iamharryliu/*` images)
       - `/open-source/docker/:image` (README fetched from this repo's app README via `raw.githubusercontent.com` — Docker Hub itself has no description set and its API has no CORS support for browser fetches, so content can't come from Docker Hub directly; links out to the image's Docker Hub page)
     - npm → `/open-source/npm` (published `@vigilant-broccoli/*` packages)

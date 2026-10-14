@@ -213,14 +213,15 @@
     "VIEW_ON_DOCKER_HUB": "View on Docker Hub",
     "LOADING": "Loading README…",
     "ERROR": "Failed to load README: {message}",
-    "NOT_FOUND": "Unknown item."
+    "NOT_FOUND": "Unknown item.",
+    "EMPTY": "No README content available."
   },
   "GITHUB_REPOS_PAGE": {
     "TITLE": "GitHub",
-    "VIGILANT_BROCCOLI": {
-      "TITLE": "vigilant-broccoli",
-      "DESCRIPTION": "Monorepo of apps, libraries, notes, and infrastructure."
-    }
+    "LOADING": "Loading public repositories…",
+    "EMPTY": "No public repositories found.",
+    "ERROR": "Failed to load repositories: {message}",
+    "NO_DESCRIPTION": "No description provided."
   },
   "DOCKER_IMAGES_PAGE": {
     "TITLE": "Docker Hub",

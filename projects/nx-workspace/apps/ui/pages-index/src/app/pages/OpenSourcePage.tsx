@@ -1,7 +1,6 @@
 import { useTranslation } from '../i18n';
 import { CardListPage, CardListItem } from '../components/CardListPage';
 import { DockerIcon, GithubIcon, NpmIcon } from '../components/BrandIcons';
-import { GITHUB_REPOSITORIES_URL } from '../consts/githubRepos';
 
 export function OpenSourcePage() {
   const { t } = useTranslation();
@@ -9,7 +8,8 @@ export function OpenSourcePage() {
   const items: CardListItem[] = [
     {
       key: 'github',
-      href: GITHUB_REPOSITORIES_URL,
+      route: true,
+      href: '/open-source/github',
       title: t('OPEN_SOURCE_PAGE.GITHUB.TITLE'),
       description: t('OPEN_SOURCE_PAGE.GITHUB.DESCRIPTION'),
       icon: <GithubIcon />,
