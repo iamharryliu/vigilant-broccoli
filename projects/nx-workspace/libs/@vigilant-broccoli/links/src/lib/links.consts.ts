@@ -613,22 +613,22 @@ export const HARRYLIU_APP_URL = {
   WEATHER: {
     NAME: 'Weather',
     URL: 'https://weather.harryliu.dev/',
-    STAGING_URL: 'https://staging-weather.harryliu.dev/',
+    STAGING_URL: 'https://staging-weather-next.vercel.app/',
   },
   FIND_ME: {
     NAME: 'Find Me',
     URL: 'https://findme.harryliu.dev/',
-    STAGING_URL: 'https://staging-findme.harryliu.dev/',
+    STAGING_URL: 'https://staging-findme.vercel.app/',
   },
   WHITEBOARD: {
     NAME: 'Whiteboard',
     URL: 'https://whiteboard.harryliu.dev/',
-    STAGING_URL: 'https://staging-whiteboard.harryliu.dev/',
+    STAGING_URL: 'https://staging-whiteboard.vercel.app/',
   },
   BALLOONO: {
     NAME: 'Balloono',
     URL: 'https://balloono.harryliu.dev/',
-    STAGING_URL: 'https://staging-balloono.harryliu.dev/',
+    STAGING_URL: 'https://staging-balloono.vercel.app/',
   },
   DOCS: {
     NAME: 'Docs',
@@ -658,7 +658,7 @@ export const HARRYLIU_APP_URL = {
   HEARTH: {
     NAME: 'Hearth',
     URL: 'https://production-hearth.vercel.app/login',
-    STAGING_URL: 'https://staging-hearth.harryliu.dev/login',
+    STAGING_URL: 'https://staging-hearth.vercel.app/login',
   },
   SERVICE_MANAGER: {
     NAME: 'Service Manager API',
@@ -668,7 +668,7 @@ export const HARRYLIU_APP_URL = {
   VB_MANAGER_NEXT_MOBILE: {
     NAME: 'VB Manager Mobile',
     URL: 'https://production-vb-manager-next-mobile.vercel.app/login',
-    STAGING_URL: 'https://staging-vb-manager-next-mobile.harryliu.dev/login',
+    STAGING_URL: 'https://staging-vb-manager-next-mobile.vercel.app/login',
   },
   EMPLOYEE_HANDLER_DEMO: {
     NAME: 'Employee Handler Demo',

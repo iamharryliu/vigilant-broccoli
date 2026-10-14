@@ -67,13 +67,6 @@ sync_secrets_to_vault() {
     return
   fi
 
-  local staging_ui_access_config
-  staging_ui_access_config=$(terraform output -json staging_ui_access_config | jq -c .)
-  if [ -z "$staging_ui_access_config" ] || [ "$staging_ui_access_config" = "null" ]; then
-    echo "Staging UI Access configuration missing from Terraform outputs." >&2
-    return 1
-  fi
-
   local vault_token
   vault_token=$(gcloud secrets versions access latest --secret="VB_VM_VAULT_ROOT_TOKEN" 2>/dev/null || echo "")
 
@@ -185,7 +178,6 @@ if vault kv get kv/secrets >/dev/null 2>&1; then
     CODE_SERVER_CF_ACCESS_CLIENT_ID="$CODE_SERVER_CF_ACCESS_CLIENT_ID" \
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
     CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
-    STAGING_UI_ACCESS_CONFIG="$STAGING_UI_ACCESS_CONFIG" \
     '"${nx_cache_write_patch_arg}"' \
     '"${loki_push_patch_arg}"'
 else
@@ -204,7 +196,6 @@ else
     CODE_SERVER_CF_ACCESS_CLIENT_ID="$CODE_SERVER_CF_ACCESS_CLIENT_ID" \
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
     CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
-    STAGING_UI_ACCESS_CONFIG="$STAGING_UI_ACCESS_CONFIG" \
     '"${nx_cache_write_patch_arg}"' \
     '"${loki_push_patch_arg}"'
 fi
@@ -262,7 +253,6 @@ echo "Secrets synced to Vault"
     CODE_SERVER_CF_ACCESS_CLIENT_ID "$code_server_cf_access_client_id" \
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET "$code_server_cf_access_client_secret" \
     CODE_SERVER_IP "$code_server_ip" \
-    STAGING_UI_ACCESS_CONFIG "$staging_ui_access_config" \
     "${nx_cache_secret_args[@]}" \
     "${loki_push_secret_args[@]}"
   echo "✓ Synced RABBITMQ_CA_CERT, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, GOOGLE_CALENDAR_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP to kv/data/secrets (RABBITMQ_CONNECTION_STRING synced only when broker holds the Terraform password — see above; SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
@@ -332,13 +322,6 @@ sync_vercel_domains() {
     [ -z "$key" ] && continue
     (cd "$nx_workspace_dir" && NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/vercel-domains.ts add "production-${key}" "${domain}")
   done < <(echo "$subdomains_json" | jq -r 'to_entries[] | "\(.key)\t\(.value)"')
-
-  local staging_domains_json
-  staging_domains_json=$(cd "$TERRAFORM_DIR" && terraform output -json staging_vercel_domains)
-  while IFS=$'\t' read -r key domain; do
-    [ -z "$key" ] && continue
-    (cd "$nx_workspace_dir" && NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/vercel-domains.ts add "staging-${key}" "$domain")
-  done < <(echo "$staging_domains_json" | jq -r 'to_entries[] | "\(.key)\t\(.value)"')
 }
 
 sync_vercel_domains
