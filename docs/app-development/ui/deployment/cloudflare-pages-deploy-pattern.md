@@ -14,11 +14,11 @@ Static UIs in `apps/ui/*` deploy to Cloudflare Pages via wrangler.
 
 Reference apps:
 
-- `cloud-8-skate-react` — full staging + production pair, plus sitemap generation before deploy.
+- `cloud-8-skate-react` — full staging + production + preview set, plus sitemap generation before deploy.
 - `personal-website-react` — React variant with the same staging + production pair.
 - `utilities-ui` — full staging + production + preview set, no per-environment build config.
 - `context-md` — copy of `docs-md` over the agent-context snapshot.
-- `calendars` — staging + production pair, no preview trio, with a live API base URL swapped per environment (`mode` alias in `vite.config.mts`).
+- `calendars` — staging + production + preview set, with a live API base URL swapped per environment (`mode` alias in `vite.config.mts`).
 - `docs-md` — full staging + production pair, no per-environment build config (`prune-deployments`'s `dependsOn` ordering is the reference for that part).
 
 ## The wrangler target trio (per environment)
@@ -46,7 +46,7 @@ The failure is invisible: CI stays green, and the live URL keeps serving the las
 
 ## PR previews
 
-`personal-website-react`, `pages-index`, `docs-md`, `links-react`, `utilities-ui`, `waiting-games` and `component-library` also carry a preview trio against a dedicated `preview-<site>` project, kept separate so the staging prune can't delete a PR's live preview:
+`calendars`, `cloud-8-skate-react`, `component-library`, `context-md`, `docs-md`, `links-react`, `pages-index`, `personal-website-react`, `utilities-ui` and `waiting-games` also carry a preview trio against a dedicated `preview-<site>` project, kept separate so the staging prune can't delete a PR's live preview:
 
 - `ensure-cf-project:preview` — same auto-create as above.
 - `deploy:preview` — `wrangler pages deploy <dist dir> --project-name preview-<site> --branch "$PREVIEW_BRANCH" --commit-hash "$PREVIEW_COMMIT"`. `PREVIEW_BRANCH` is `pr-<n>`, not a git branch, so Pages serves the PR at the alias `pr-<n>.preview-<site>.pages.dev`. It never equals the project's `production_branch`, which is what keeps every preview a Preview deployment per the rule above. `--commit-hash` is what ties a deployment back to a commit in the Cloudflare dashboard — the alias deliberately carries no commit, so that it stays stable as the PR is pushed to.
@@ -56,7 +56,7 @@ The failure is invisible: CI stays green, and the live URL keeps serving the las
 
 `deploy-preview.yml` runs `deploy:preview` for the affected projects on every pull request (plus `pages-index`/`docs-md` when their out-of-workspace snapshot sources change), writes a table of the alias and per-deployment URLs to the job summary, then prunes. It is `pull_request`-triggered because a `push` event carries no PR number. `cron-cleanup-preview-deployments.yml` runs the prune for every project daily, collecting the previews of PRs that have since closed. Previews build with `--skip-nx-cache`: `VITE_BASE_PATH` isn't a build input, so a cached `/vigilant-broccoli/`-based Pages build could otherwise be served. Both workflows pass `--output-style=static`, since nx hides successful tasks' output and that output is the only record of the URLs deployed and the deployments deleted.
 
-A new stateless site opts in by adding the trio — the workflows discover it via `nx show projects --withTarget=deploy:preview`. Only stateless sites belong here: a preview of an app with a backend would still talk to staging services. `calendars` deliberately has no preview trio for that reason: it fetches live data from VB Express.
+A new stateless site opts in by adding the trio — the workflows discover it via `nx show projects --withTarget=deploy:preview`. Previews deploy static frontend bundles; they do not provision isolated backends. `calendars` reads the staging VB Express public event-calendar endpoint, whose read-only, credential-free CORS policy accepts the stable and immutable `preview-calendars` subdomains. `cloud-8-skate-react` also uses its staging API configuration and generates its sitemap before deployment. Its contact form retains the existing API CORS and reCAPTCHA restrictions; preview origins do not gain write access to the API. PR-scoped URLs are published in the workflow summary and removed when the PR closes; they are not permanent application URLs for monitoring or the application directory.
 
 ## Per-environment build config
 

@@ -5,6 +5,7 @@ Deploy static sites with Wrangler. See [Cloudflare](./cloudflare.md) for the bro
 ## Table of Contents
 
 - [Commands](#commands)
+- [Free Tier](#free-tier)
 - [References](#references)
 
 ## Commands
@@ -28,6 +29,12 @@ npx wrangler pages project list
 
 code node_modules/.cache/wrangler/pages.json
 ```
+
+## Free Tier
+
+- 100 Pages projects per account and unlimited active preview deployments.
+- Free sites support 20,000 files, with a maximum of 25 MiB per asset.
+- Cloudflare-hosted builds allow 500 builds per month, one at a time; direct uploads can build elsewhere.
 
 ## References
 
