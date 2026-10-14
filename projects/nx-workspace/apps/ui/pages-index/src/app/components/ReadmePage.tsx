@@ -7,6 +7,7 @@ import { PAGE_CLASS } from '../consts/layout';
 
 export const PARSE_KIND = {
   TEXT: 'text',
+  GITHUB_README: 'github-readme',
   NPM_REGISTRY: 'npm-registry',
 } as const;
 type ParseKind = (typeof PARSE_KIND)[keyof typeof PARSE_KIND];
@@ -59,7 +60,12 @@ export function ReadmePage({
     let cancelled = false;
     setContent(null);
     setError(null);
-    fetch(source.url)
+    fetch(
+      source.url,
+      source.parseKind === PARSE_KIND.GITHUB_README
+        ? { headers: { Accept: 'application/vnd.github.raw+json' } }
+        : undefined,
+    )
       .then(res => parseResponse(res, source.parseKind))
       .then(text => {
         if (!cancelled) setContent(text);
@@ -112,6 +118,11 @@ export function ReadmePage({
           {!error && content === null && (
             <p className={`${STATUS_CLASS} text-gray-400`}>
               {t('README_PAGE.LOADING')}
+            </p>
+          )}
+          {!error && content === '' && (
+            <p className={`${STATUS_CLASS} text-gray-400`}>
+              {t('README_PAGE.EMPTY')}
             </p>
           )}
           {!error && content && <MarkdownViewer content={content} />}
