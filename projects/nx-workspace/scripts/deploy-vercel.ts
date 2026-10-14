@@ -125,7 +125,7 @@ async function applyProjectSettings(
 }
 
 // "all" also covers production-target deployments, which every staging project
-// is, including its immutable URLs and custom domains.
+// is, including its immutable URLs.
 const VERCEL_AUTHENTICATION_ALL_DEPLOYMENTS = {
   ssoProtection: { deploymentType: 'all' },
 };
