@@ -82,7 +82,7 @@ locals {
   hearth_r2_cors_origins = [
     "http://localhost:3000",
     "http://localhost:4200",
-    "https://staging-hearth.harryliu.dev",
+    "https://staging-hearth.vercel.app",
     "https://production-hearth.vercel.app",
   ]
 }

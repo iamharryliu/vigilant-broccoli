@@ -49,13 +49,16 @@ These assets supply the README's all-time, day, week, month, and year metrics ([
 
 ## Staging UI access
 
-Staging UI checks use no Access credentials. They disable redirects and require HTTP 302, checking the anonymous Access login redirect rather than following it to a login page that returns 200. Their names and slugs stay unchanged so existing history continues. This measures the availability of the Access gate; it does not prove that the protected app or its backend is healthy, and response times measure the gate. The staging VB Express API, production and demo checks keep their existing behavior.
+Staging UI checks use no credentials. They disable redirects and require HTTP 302, checking the anonymous login redirect rather than following it to a login page that returns 200. Their names and slugs stay unchanged so existing history continues. This measures the availability of the gate; it does not prove that the protected app or its backend is healthy, and response times measure the gate. The staging VB Express API, production and demo checks keep their existing behavior.
 
-Terraform in `cloudflare-staging-ui.tf` gates the nine staging Pages roots and their immutable/branch aliases, plus six proxied staging Vercel domains. Browser access is limited to `staging_ui_allowed_emails` (default: the existing owner identity). Each Vercel app verifies Access's signed JWT, issuer, expiry and its own audience on every route, including API routes and assets, so direct `vercel.app` URLs cannot bypass the gate. See [deployment instructions](../app-development/ui/deployment/vercel-deploy-pattern.md#staging-access).
+Two mechanisms produce the 302:
 
-The staging probes in local and CI health checks also expect the unauthenticated HTTP 302. Monitoring adds no service token, secrets, GCP identity or OIDC permission. Do not bypass Access on application health paths to make monitoring work.
+- The nine staging Pages projects are gated by Cloudflare Access in `cloudflare-staging-ui.tf` on the root and the immutable/branch aliases. Browser access is limited to `staging_ui_allowed_emails` (default: the existing owner identity).
+- The six staging Vercel projects are gated by Vercel Authentication, which `deploy-vercel.ts` enables on each staging deploy ([details](../app-development/ui/deployment/vercel-deploy-pattern.md#staging-access)). A Vercel project is unmonitored-as-302 until its first staging deploy after this change.
 
-Coordinate Terraform apply with configuration sync so the HTTP 302 expectations start when Access is active. Redeploy every staging Vercel app and remove all older staging Vercel deployments that predate JWT validation. Run the configuration sync, uptime and response-time workflows and verify Access redirects, browser login and direct-origin denial. Check the apps behind the gate through an owner browser session when verifying deployment health.
+The staging probes in local and CI health checks also expect the unauthenticated HTTP 302. Monitoring adds no service token, secrets, GCP identity or OIDC permission. Do not add a Vercel protection-bypass secret or bypass Access on application health paths to make monitoring work.
+
+Coordinate Terraform apply and the staging Vercel deploys with configuration sync so the HTTP 302 expectations start when each gate is active. Run the configuration sync, uptime and response-time workflows and verify the redirects. Check the apps behind the gates through an owner browser session when verifying deployment health.
 
 ## Setup and migration
 
@@ -103,7 +106,7 @@ Do not proxy the record or disable TLS verification; neither changes certificate
 
 ## Security limits
 
-A compromised monitoring action can falsify history, alter repository contents other than workflow files, manipulate incident issues, and send arbitrary outbound requests from its hosted runner. It cannot use the monitoring token to authorize writes to vigilant-broccoli or authenticate to Vault/GCP. Public endpoints remain reachable just as they are from any internet client; staging UI origins require owner authentication and monitoring can only observe their Access gate.
+A compromised monitoring action can falsify history, alter repository contents other than workflow files, manipulate incident issues, and send arbitrary outbound requests from its hosted runner. It cannot use the monitoring token to authorize writes to vigilant-broccoli or authenticate to Vault/GCP. Public endpoints remain reachable just as they are from any internet client; staging UIs require owner authentication and monitoring can only observe their gate.
 
 The sync App's private key is still a sensitive management credential; it can modify monitoring workflows. Only trusted source code executes in its workflow, and the monitoring repository must never be added to the App's installation scope alongside vigilant-broccoli. SHA pinning reduces upstream replacement risk, but does not prove the pinned code is vulnerability-free ([GitHub action security](https://docs.github.com/en/actions/reference/security/secure-use)).
 

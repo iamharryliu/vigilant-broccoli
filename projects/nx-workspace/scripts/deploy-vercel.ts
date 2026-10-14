@@ -124,6 +124,36 @@ async function applyProjectSettings(
   }
 }
 
+// "all" also covers production-target deployments, which every staging project
+// is, including its immutable URLs and custom domains.
+const VERCEL_AUTHENTICATION_ALL_DEPLOYMENTS = {
+  ssoProtection: { deploymentType: 'all' },
+};
+
+async function enableVercelAuthentication(
+  projectId: string,
+  teamId: string,
+  token: string,
+): Promise<void> {
+  const res = await fetch(
+    `https://api.vercel.com/v9/projects/${projectId}?teamId=${teamId}`,
+    {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(VERCEL_AUTHENTICATION_ALL_DEPLOYMENTS),
+    },
+  );
+  if (!res.ok) {
+    throw new Error(
+      `Failed to enable Vercel Authentication: ${res.status} ${await res.text()}`,
+    );
+  }
+  console.log('✓ Vercel Authentication enabled for all deployments');
+}
+
 async function vercelEnvAdd(
   key: string,
   value: string,
@@ -282,10 +312,7 @@ async function main() {
     hearth: {
       hardcodedSecrets: {
         ...SUPABASE_PUBLIC_SECRETS,
-        NEXT_PUBLIC_APP_URL:
-          environment === STAGING
-            ? 'https://staging-hearth.harryliu.dev/'
-            : `https://${environment}-hearth.vercel.app/`,
+        NEXT_PUBLIC_APP_URL: `https://${environment}-hearth.vercel.app/`,
         VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
       },
       envExamplePath: 'apps/hearth/.env.local.example',
@@ -351,34 +378,12 @@ async function main() {
 
   const allSecrets: Record<string, string> = { ...hardcodedSecrets };
 
-  if (
-    environment === STAGING ||
-    keysFromVault.length ||
-    !vercelEnv.VERCEL_TOKEN
-  ) {
+  if (keysFromVault.length || !vercelEnv.VERCEL_TOKEN) {
     console.log('Fetching vault secrets...');
     const vaultSecrets = await fetchSecretsFromVault();
 
     if (!vercelEnv.VERCEL_TOKEN && vaultSecrets.VERCEL_TOKEN) {
       vercelEnv.VERCEL_TOKEN = vaultSecrets.VERCEL_TOKEN;
-    }
-
-    if (environment === STAGING) {
-      const access = JSON.parse(
-        vaultSecrets.STAGING_UI_ACCESS_CONFIG || '{}',
-      ) as {
-        issuer?: string;
-        apps?: Record<string, { audience: string; domain: string }>;
-      };
-      const appAccess = access.apps?.[projectName];
-      if (!access.issuer || !appAccess?.audience || !appAccess.domain) {
-        throw new Error(
-          'Apply staging UI Access Terraform and sync Vault before deploying staging.',
-        );
-      }
-      allSecrets.STAGING_UI_ACCESS_REQUIRED = 'true';
-      allSecrets.STAGING_UI_ACCESS_ISSUER = access.issuer;
-      allSecrets.STAGING_UI_ACCESS_AUDIENCE = appAccess.audience;
     }
 
     for (const key of keysFromVault) {
@@ -402,6 +407,14 @@ async function main() {
       vercelEnv.VERCEL_PROJECT_ID,
       vercelEnv.VERCEL_ORG_ID,
       settings,
+      vercelEnv.VERCEL_TOKEN,
+    );
+  }
+
+  if (environment === STAGING) {
+    await enableVercelAuthentication(
+      vercelEnv.VERCEL_PROJECT_ID,
+      vercelEnv.VERCEL_ORG_ID,
       vercelEnv.VERCEL_TOKEN,
     );
   }
