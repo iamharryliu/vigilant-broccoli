@@ -1,19 +1,20 @@
 # Calendar Directory
 
-The `calendars` home page: two sections of link rows modelled on `vb-manager-next-mobile`'s Event Calendars tab.
+The `calendars` home page: two tabs (`CalendarTabs`, modelled on `vb-manager-next`'s `HomeCalendarTabs`) of link rows modelled on `vb-manager-next-mobile`'s Event Calendars tab. There is no page header.
 
 ## Table of Contents
 
-- [Sections](#sections)
+- [Tabs](#tabs)
 - [Public endpoint](#public-endpoint)
 - [Link construction](#link-construction)
+- [Browser storage](#browser-storage)
 - [States](#states)
 - [Environments](#environments)
 
-## Sections
+## Tabs
 
-- **Personal Calendars** — static list in `src/lib/calendars.consts.ts`, seeded with Harry's Calendar from `GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL`. Google sharing settings are not managed here.
-- **Event Calendars** — `EventCalendars` fetches the VB Express public endpoint on mount (`cache: 'no-store'`) and renders the rows.
+- **Personal Calendars** (default tab) — static list in `src/lib/calendars.consts.ts`, seeded with Harry's Calendar from `GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL`. Google sharing settings are not managed here.
+- **Event Calendars** — `EventCalendars` fetches the VB Express public endpoint on mount (`cache: 'no-store'`) and renders the rows with an eye toggle per row that hides/shows it (the row stays listed, dimmed).
 
 ## Public endpoint
 
@@ -23,9 +24,16 @@ The `calendars` home page: two sections of link rows modelled on `vb-manager-nex
 
 `https://calendar.google.com/calendar/embed?src=<encodeURIComponent(calendarId)>`, plus `&mode=AGENDA|WEEK|MONTH` for the Schedule, Week and Month links. The copy control copies the base link.
 
+## Browser storage
+
+Both keys live in `src/lib/calendars.consts.ts` and are read and written through `try/catch`, so the page renders (default tab, nothing hidden) when storage is unavailable.
+
+- `calendars-active-tab` — active tab id.
+- `calendars-hidden-event-calendars` — JSON array of hidden event calendar ids, via `readHiddenCalendarIds`/`writeHiddenCalendarIds` from `personal-common-js`. The bundle already imports that lib for the personal calendar id, so this adds no personal data. Hidden state is only a stored preference here; it does not filter anything else.
+
 ## States
 
-Loading, empty (a confirmed `{ calendars: [] }`) and failed load (network error, non-2xx or malformed body) are distinct. A failure is confined to the Event Calendars section.
+Loading, empty (a confirmed `{ calendars: [] }`) and failed load (network error, non-2xx or malformed body) are distinct. A failure is confined to the Event Calendars tab.
 
 ## Environments
 

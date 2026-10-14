@@ -1,6 +1,6 @@
 # Calendars
 
-Public, login-free directory of calendars to follow in Google Calendar: a Personal Calendars section (Harry's Calendar) and an Event Calendars section listing every `event_calendars` record the manager has marked public. Each row links to Google Calendar with Schedule, Week and Month view links and a copy-link control. Links only; nothing is embedded.
+Public, login-free directory of calendars to follow in Google Calendar: a Personal Calendars tab (Harry's Calendar) and an Event Calendars tab listing every `event_calendars` record the manager has marked public. Each row links to Google Calendar with Schedule, Week and Month view links and a copy-link control; event rows also have a show/hide toggle. The active tab and hidden event calendars are remembered in this browser's `localStorage`. Links only; nothing is embedded.
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@ Public, login-free directory of calendars to follow in Google Calendar: a Person
 
 The app is a static bundle. On every page load the browser fetches `GET /api/public/event-calendars` from VB Express (`staging-vb-express.fly.dev` for the staging build, `api.harryliu.dev` for the production build, set by `src/environments/`), so records the manager makes public, renames, removes or makes private show up on the next load without a redeploy. VB Express reads `event_calendars` from the shared Supabase project with its own secret key, filters `is_public = true`, orders by `created_at`, and returns only each record's id, name and Google Calendar URL. No credential, API key or database snapshot is in the bundle.
 
-A failed request renders an error in the Event Calendars section only; the personal calendar stays usable. Feature notes: [docs/features/calendar-directory](./docs/features/calendar-directory/README.md).
+A failed request renders an error in the Event Calendars tab only; the personal calendar stays usable. Feature notes: [docs/features/calendar-directory](./docs/features/calendar-directory/README.md).
 
 ## Stack
 

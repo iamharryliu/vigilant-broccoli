@@ -1,6 +1,4 @@
 {
-  "TITLE": "Calendars",
-  "SUBTITLE": "Public calendars to follow in Google Calendar.",
   "SECTION": {
     "PERSONAL": "Personal Calendars",
     "EVENT": "Event Calendars"
@@ -17,6 +15,8 @@
   },
   "ACTIONS": {
     "OPEN_VIEW": "Open {name} in {view} view",
-    "COPY_LINK": "Copy link to {name}"
+    "COPY_LINK": "Copy link to {name}",
+    "HIDE": "Hide {name}",
+    "SHOW": "Show {name}"
   }
 }

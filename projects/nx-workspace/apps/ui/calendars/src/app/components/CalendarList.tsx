@@ -9,16 +9,16 @@ const STATUS_MESSAGE_KEY = {
   [CALENDAR_SECTION_STATE.ERROR]: 'STATUS.ERROR',
 } as const;
 
-export const CalendarSection = ({
-  headingKey,
-  headingId,
+export const CalendarList = ({
   state = CALENDAR_SECTION_STATE.READY,
   calendars = [],
+  hiddenIds,
+  onToggleHidden,
 }: {
-  headingKey: 'SECTION.PERSONAL' | 'SECTION.EVENT';
-  headingId: string;
   state?: CalendarSectionState;
   calendars?: CalendarLink[];
+  hiddenIds?: ReadonlySet<string>;
+  onToggleHidden?: (id: string) => void;
 }) => {
   const { t } = useTranslation();
 
@@ -31,7 +31,12 @@ export const CalendarSection = ({
       ) : (
         <ul className="flex flex-col gap-2">
           {calendars.map(calendar => (
-            <CalendarRow key={calendar.id} calendar={calendar} />
+            <CalendarRow
+              key={calendar.id}
+              calendar={calendar}
+              hidden={hiddenIds?.has(calendar.id)}
+              onToggleHidden={onToggleHidden}
+            />
           ))}
         </ul>
       )
@@ -48,15 +53,5 @@ export const CalendarSection = ({
       </p>
     );
 
-  return (
-    <section aria-labelledby={headingId} className="flex flex-col gap-3">
-      <h2
-        id={headingId}
-        className="text-lg font-semibold text-gray-900 dark:text-gray-100"
-      >
-        {t(headingKey)}
-      </h2>
-      {body}
-    </section>
-  );
+  return body;
 };
