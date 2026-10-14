@@ -297,11 +297,21 @@ const deleteStaleEvents = async (
     maxResults: EVENTS_LIST_MAX_RESULTS,
   });
 
-  const staleEvents = (data.items || []).filter(
-    item =>
-      item.id?.startsWith(FACEBOOK_EVENT_ID_PREFIX) &&
-      !currentEventIds.has(item.id),
+  const existingEvents = (data.items || []).filter(item =>
+    item.id?.startsWith(FACEBOOK_EVENT_ID_PREFIX),
   );
+  const staleEvents = existingEvents.filter(
+    item => !currentEventIds.has(item.id as string),
+  );
+
+  // A partial or empty scrape (expired login, layout change) would otherwise
+  // wipe the calendar.
+  if (staleEvents.length && currentEventIds.size * 2 < existingEvents.length) {
+    return {
+      removed: 0,
+      staleDeletionSkipped: `scrape returned ${currentEventIds.size} of ${existingEvents.length} synced events`,
+    };
+  }
 
   for (const staleEvent of staleEvents) {
     await calendar.events.delete({
@@ -309,7 +319,7 @@ const deleteStaleEvents = async (
       eventId: staleEvent.id as string,
     });
   }
-  return staleEvents.length;
+  return { removed: staleEvents.length };
 };
 
 export const syncEventsToCalendar = async (
@@ -332,7 +342,16 @@ export const syncEventsToCalendar = async (
     syncedEventIds.add(buildCalendarEventId(event.id));
   }
 
-  const removed = await deleteStaleEvents(calendar, calendarId, syncedEventIds);
+  const { removed, staleDeletionSkipped } = await deleteStaleEvents(
+    calendar,
+    calendarId,
+    syncedEventIds,
+  );
 
-  return { synced: syncedEventIds.size, skipped, removed };
+  return {
+    synced: syncedEventIds.size,
+    skipped,
+    removed,
+    staleDeletionSkipped,
+  };
 };
