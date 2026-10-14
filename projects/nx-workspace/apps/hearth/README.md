@@ -36,4 +36,5 @@ Shared life for homes, communes, and communities.
 - Cloud services
   - Supabase (auth + data)
   - Cloudflare R2 (`home-docs` and `where-is` buckets)
+  - VB Express LLM endpoint (Anthropic Claude Haiku) for food chat, grocery extraction and recipe tagging
   - Vercel

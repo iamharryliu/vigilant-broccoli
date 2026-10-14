@@ -1,13 +1,26 @@
 import { NextRequest } from 'next/server';
-import {
-  createServerClient,
-  getBearerToken,
-} from '../../../../../libs/supabase-server';
+import { z } from 'zod';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import {
+  badRequest,
+  getRecipesSupabase as getSupabase,
+  recipeError,
+  serverError,
+  toRecipe,
+} from '../../../../lib/recipe-route';
+import {
+  RECIPE_TAG_CATEGORIES,
+  RECIPE_TAG_ERROR_CODE,
+  RECIPE_TAG_VOCABULARY,
+  normalizeTags,
+} from '../../../food-planner/recipe-tags.consts';
 
 export const runtime = 'nodejs';
 
 const MAX_IMPORT_RECIPES = 200;
+const STALE_TAGS_MESSAGE =
+  'Tags changed since this recipe was loaded. Refresh and try again.';
+const RECIPE_NOT_FOUND_MESSAGE = 'Recipe not found.';
 
 interface RecipeInput {
   title: string;
@@ -15,27 +28,14 @@ interface RecipeInput {
   markdown: string;
 }
 
-const getSupabase = (req: NextRequest) =>
-  createServerClient(getBearerToken(req));
-
-const toRecipe = (row: Record<string, unknown>) => ({
-  id: row.id,
-  title: row.title,
-  description: row.description ?? '',
-  markdown: row.markdown,
-  homeId: row.home_id,
-  createdAt: row.created_at,
-  updatedAt: row.updated_at,
-});
-
-const serverError = (message: string) =>
-  Response.json(
-    { error: message },
-    { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
-  );
-
-const badRequest = (message: string) =>
-  Response.json({ error: message }, { status: HTTP_STATUS_CODES.BAD_REQUEST });
+const TagsPatchSchema = z.object(
+  Object.fromEntries(
+    RECIPE_TAG_CATEGORIES.map(category => [
+      category,
+      z.array(z.enum(RECIPE_TAG_VOCABULARY[category] as [string, ...string[]])),
+    ]),
+  ),
+);
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -84,7 +84,11 @@ export async function POST(req: NextRequest) {
 
     if (error) return serverError(error.message);
 
-    return Response.json({ success: true, imported: data.length });
+    return Response.json({
+      success: true,
+      imported: data.length,
+      recipeIds: data.map(row => row.id),
+    });
   }
 
   if (!body.title?.trim() || !body.markdown?.trim())
@@ -108,11 +112,13 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   const supabase = getSupabase(req);
-  const { id, ...body } = (await req.json()) as {
+  const { id, tags, tagsRevision, ...body } = (await req.json()) as {
     id: string;
     title?: string;
     description?: string;
     markdown?: string;
+    tags?: unknown;
+    tagsRevision?: number;
   };
 
   if (!id) return badRequest('Missing id');
@@ -124,14 +130,28 @@ export async function PATCH(req: NextRequest) {
   if (body.description !== undefined) updates.description = body.description;
   if (body.markdown !== undefined) updates.markdown = body.markdown;
 
-  const { data, error } = await supabase
-    .from('recipes')
-    .update(updates)
-    .eq('id', id)
-    .select()
-    .single();
+  if (tags !== undefined) {
+    const parsedTags = TagsPatchSchema.safeParse(tags);
+    if (!parsedTags.success) return badRequest('Invalid tags.');
+    if (!Number.isInteger(tagsRevision))
+      return badRequest('tagsRevision is required when updating tags.');
+    updates.tags = normalizeTags(parsedTags.data);
+  }
+
+  let query = supabase.from('recipes').update(updates).eq('id', id);
+  if (tags !== undefined) query = query.eq('tags_revision', tagsRevision);
+
+  const { data, error } = await query.select().maybeSingle();
 
   if (error) return serverError(error.message);
+  if (!data)
+    return tags !== undefined
+      ? recipeError(
+          HTTP_STATUS_CODES.CONFLICT,
+          STALE_TAGS_MESSAGE,
+          RECIPE_TAG_ERROR_CODE.TAGS_CONFLICT,
+        )
+      : recipeError(HTTP_STATUS_CODES.INVALID_PATH, RECIPE_NOT_FOUND_MESSAGE);
 
   return Response.json(toRecipe(data));
 }
