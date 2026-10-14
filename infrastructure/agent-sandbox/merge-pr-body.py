@@ -18,16 +18,17 @@ import re
 
 CLAUDE_FOOTER = "🤖 Generated with [Claude Code](https://claude.com/claude-code)"
 CODEX_FOOTER = "Generated with [Codex](https://openai.com/codex)"
+OLLAMA_FOOTER = "Generated with [Ollama](https://ollama.com)"
 
 body = os.environ["CURRENT_BODY"]
 
-# The sandbox runners' Claude and Codex paths each sign off with their own
+# The sandbox runners' agent paths each sign off with their own
 # footer as the body's trailing paragraph — strip it before editing sections
 # so it stays last instead of getting stranded above whatever's appended below.
 # A body that is nothing but the footer (every runner's fresh PR body) has no leading blank line to match on,
 # hence the exact-equality branch.
 footer = ""
-for candidate in (CLAUDE_FOOTER, CODEX_FOOTER):
+for candidate in (CLAUDE_FOOTER, CODEX_FOOTER, OLLAMA_FOOTER):
     if body == candidate:
         body = ""
         footer = candidate

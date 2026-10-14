@@ -9,9 +9,25 @@ AGENT_RUNNER=claude
 MODEL=sonnet
 CODEX_MODEL=""
 PROMPT=""
+LOCAL=0
+PUBLISH=0
+OLLAMA_MODEL=${OLLAMA_MODEL:-qwen3-coder:30b}
+OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
 IDS=()
 while [ $# -gt 0 ]; do
   case "$1" in
+    --local)
+      LOCAL=1
+      shift
+      ;;
+    --publish)
+      PUBLISH=1
+      shift
+      ;;
+    --ollama-model)
+      OLLAMA_MODEL=${2:?--ollama-model requires a model}
+      shift 2
+      ;;
     --agent)
       AGENT_RUNNER=$2
       shift 2
@@ -35,10 +51,22 @@ while [ $# -gt 0 ]; do
   esac
 done
 
+[ "$AGENT_RUNNER" != ollama ] || LOCAL=1
+if [ "$LOCAL" = 1 ]; then
+  if [ "$AGENT_RUNNER" != claude ] && [ "$AGENT_RUNNER" != ollama ]; then
+    echo "ERROR: --local cannot be combined with --agent codex." >&2
+    exit 1
+  fi
+  AGENT_RUNNER=ollama
+elif [ "$PUBLISH" = 1 ]; then
+  echo "ERROR: --publish requires --local; hosted solves already publish." >&2
+  exit 1
+fi
+
 case "$AGENT_RUNNER" in
-  claude | codex) ;;
+  claude | codex | ollama) ;;
   *)
-    echo "ERROR: --agent must be 'claude' or 'codex'." >&2
+    echo "ERROR: --agent must be 'claude', 'codex' or 'ollama'." >&2
     exit 1
     ;;
 esac
@@ -47,8 +75,12 @@ if [ -n "$PROMPT" ] && [ ${#IDS[@]} -gt 0 ]; then
   exit 1
 fi
 if [ -z "$PROMPT" ] && [ ${#IDS[@]} -eq 0 ]; then
-  echo "Usage: pnpm agentic-pr-create [--agent claude|codex] [--model <claude-model>] [--codex-model <codex-model>] (<TODO_ID> [TODO_ID...] | --prompt \"<task description>\")" >&2
+  echo "Usage: pnpm agentic-pr-create [--local [--publish] [--ollama-model <model>]] [--agent claude|codex|ollama] [--model <claude-model>] [--codex-model <codex-model>] (<TODO_ID> [TODO_ID...] | --prompt \"<task description>\")" >&2
   exit 1
+fi
+
+if [ "$LOCAL" = 1 ]; then
+  exec bash "$SCRIPT_DIR/solve-local.sh" "$PUBLISH" "$OLLAMA_MODEL" "$OLLAMA_BASE_URL" "$PROMPT" "${IDS[@]}"
 fi
 
 # Splits a runner log into one record per pull request (each starts at its
