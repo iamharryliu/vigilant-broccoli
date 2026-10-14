@@ -3,21 +3,38 @@ import {
   CalendarConfig,
   GOOGLE_CALENDAR,
 } from '@vigilant-broccoli/common-browser';
-import { PERSONAL_CALENDAR_SOURCES } from './personal-calendar.const';
+import {
+  PERSONAL_CALENDAR_SOURCES,
+  PersonalCalendarSource,
+  PUBLIC_CALENDAR_SOURCES,
+} from './personal-calendar.const';
 
-export const BASE_CALENDAR_CONFIG: Omit<CalendarConfig, 'mode'> = {
+const buildBaseCalendarConfig = (
+  sources: readonly PersonalCalendarSource[],
+  title?: string,
+): Omit<CalendarConfig, 'mode'> => ({
   height: 600,
   wkst: 2,
   ctz: GOOGLE_CALENDAR.TIMEZONE.COPENHAGEN,
   showPrint: 0,
-  title: 'Personal Calendar',
-  ownerCalendars: PERSONAL_CALENDAR_SOURCES.filter(
-    source => source.kind === 'owner',
-  ).map(source => ({ email: source.id, color: source.color })),
-  sharedCalendars: PERSONAL_CALENDAR_SOURCES.filter(
-    source => source.kind === 'shared',
-  ).map(source => ({ id: source.id, color: source.color })),
-};
+  title,
+  ownerCalendars: sources
+    .filter(source => source.kind === 'owner')
+    .map(source => ({ email: source.id, color: source.color })),
+  sharedCalendars: sources
+    .filter(source => source.kind === 'shared')
+    .map(source => ({ id: source.id, color: source.color })),
+});
+
+export const BASE_CALENDAR_CONFIG = /* @__PURE__ */ buildBaseCalendarConfig(
+  PERSONAL_CALENDAR_SOURCES,
+  'Personal Calendar',
+);
+
+// For public sites: same layout as BASE_CALENDAR_CONFIG but only
+// PUBLIC_CALENDAR_SOURCES, and no title.
+export const PUBLIC_BASE_CALENDAR_CONFIG =
+  /* @__PURE__ */ buildBaseCalendarConfig(PUBLIC_CALENDAR_SOURCES);
 
 // Colors not already claimed by PERSONAL_CALENDAR_SOURCES, so an event
 // calendar never visually matches a personal/public one. Cycled if
@@ -62,17 +79,19 @@ export const buildEventCalendarEmbedUrl = ({
   mode,
   eventCalendars,
   hiddenKeys,
+  baseConfig = BASE_CALENDAR_CONFIG,
 }: {
   mode: CalendarConfig['mode'];
   eventCalendars: readonly EmbedEventCalendar[];
   hiddenKeys: Iterable<string>;
+  baseConfig?: Omit<CalendarConfig, 'mode'>;
 }) => {
   const hidden = new Set(hiddenKeys);
   return buildCalendarUrl({
-    ...BASE_CALENDAR_CONFIG,
+    ...baseConfig,
     mode,
     sharedCalendars: [
-      ...BASE_CALENDAR_CONFIG.sharedCalendars,
+      ...baseConfig.sharedCalendars,
       // Colors are assigned before filtering so hiding one calendar doesn't
       // recolor the rest.
       ...eventCalendars

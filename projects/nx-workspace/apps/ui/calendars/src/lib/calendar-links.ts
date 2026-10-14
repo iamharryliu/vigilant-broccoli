@@ -6,3 +6,8 @@ export const buildGoogleCalendarUrl = (googleCalendarId: string) =>
 
 export const withViewMode = (url: string, mode: CalendarViewMode) =>
   `${url}&mode=${mode}`;
+
+// The public endpoint builds `?src=<plain id>` links (see buildGoogleCalendarUrl
+// in VB Express), so the Google calendar id is recoverable from the URL.
+export const getGoogleCalendarId = (url: string) =>
+  new URL(url).searchParams.get('src');

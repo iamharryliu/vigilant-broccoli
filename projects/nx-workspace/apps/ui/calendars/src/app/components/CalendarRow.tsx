@@ -1,4 +1,4 @@
-import { CalendarDays, CalendarRange, List } from 'lucide-react';
+import { CalendarDays, CalendarRange, Eye, EyeOff, List } from 'lucide-react';
 import { CopyButton } from '@vigilant-broccoli/react-lib';
 import { withViewMode } from '../../lib/calendar-links';
 import { CALENDAR_VIEW_MODE } from '../../lib/calendars.consts';
@@ -13,8 +13,20 @@ const CALENDAR_VIEWS: { mode: CalendarViewMode; Icon: typeof List }[] = [
 
 const ICON_SIZE = 16;
 
-export const CalendarRow = ({ calendar }: { calendar: CalendarLink }) => {
+export const CalendarRow = ({
+  calendar,
+  hidden = false,
+  onToggleHidden,
+}: {
+  calendar: CalendarLink;
+  hidden?: boolean;
+  onToggleHidden?: (id: string) => void;
+}) => {
   const { t } = useTranslation();
+  const VisibilityIcon = hidden ? EyeOff : Eye;
+  const visibilityLabel = t(hidden ? 'ACTIONS.SHOW' : 'ACTIONS.HIDE', {
+    name: calendar.name,
+  });
 
   return (
     <li className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-900">
@@ -27,6 +39,18 @@ export const CalendarRow = ({ calendar }: { calendar: CalendarLink }) => {
         {calendar.name}
       </a>
       <div className="flex shrink-0 items-center gap-1">
+        {onToggleHidden && (
+          <button
+            type="button"
+            onClick={() => onToggleHidden(calendar.id)}
+            aria-label={visibilityLabel}
+            aria-pressed={!hidden}
+            title={visibilityLabel}
+            className="rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+          >
+            <VisibilityIcon size={ICON_SIZE} />
+          </button>
+        )}
         {CALENDAR_VIEWS.map(({ mode, Icon }) => {
           const view = t(`VIEW.${mode}`);
           return (
