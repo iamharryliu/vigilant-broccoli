@@ -31,7 +31,7 @@ $SKILL_INSTRUCTIONS
 Sandbox execution rules:
 - You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
 - Branching, committing, pushing, and opening the PR are handled by the calling script. Do not run mutating git commands or any gh commands.
-- The calling script rejects the run if any file outside the skill's scope changed (only CONTEXT.md files, shared SKILL.md files and root CONTEXT.md Doc Map and required-reading documents, minus notes/, docs/rnd/, docs/learning-timeline.md and TODO.md), if a file was created, deleted, renamed or changed type (including an AGENTS.md/CLAUDE.md or command adapter symlink), if a SKILL.md frontmatter block changed, or if more than $MAX_CHANGED_FILES files changed.
+- The calling script rejects the run if any file outside the skill's scope changed (only CONTEXT.md files, shared SKILL.md files and root CONTEXT.md Doc Map and required-reading documents, minus notes/, docs/rnd/, docs/learning-timeline.md and TODO.md), if a file was created, deleted, renamed or changed type (including an AGENTS.md or command adapter symlink), if a SKILL.md frontmatter block changed, or if more than $MAX_CHANGED_FILES files changed.
 - The only exception to the skill's output scope is $META_FILE, outside the checkout. Even for a clean run, write the metadata with empty cuts/skipped lists; the calling script exits without opening a PR.
 
 When finished, write $META_FILE containing only a JSON object with these fields:

@@ -13,7 +13,8 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg -o 
     && apt-get update && apt-get install -y --no-install-recommends gh \
     && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g @anthropic-ai/claude-code @openai/codex pnpm@11.9.0
+# Claude Code reads the AGENTS.md context adapters directly only from 2.1.277.
+RUN npm install -g '@anthropic-ai/claude-code@>=2.1.277' @openai/codex pnpm@11.9.0
 
 RUN useradd -m -s /bin/bash agent
 

@@ -146,7 +146,7 @@ repo-wide grep shows has zero references. `cron-agentic-pr-create-prune` runs th
   `notes/` was added, deleted or renamed, or if more than 50 files changed. The skill asks for about 40; the runner's cap
   is the backstop that keeps a runaway sweep from becoming an unreviewable PR.
 
-The `CLAUDE.md` and `AGENTS.md` adapters are committed symlinks to `CONTEXT.md`, so the entrypoint's clone carries them and no step regenerates them per branch. The entrypoint still runs the Linux installer to install the shared skills. See [agent support](../../docs/agent-support.md).
+The `AGENTS.md` adapters are committed symlinks to `CONTEXT.md`, which Claude Code reads directly from v2.1.277 (the image installs at least that version), so the entrypoint's clone carries them and no step regenerates them per branch. The entrypoint still runs the Linux installer to install the shared skills. See [agent support](../../docs/agent-support.md).
 
 ## Auditing legacy documentation
 

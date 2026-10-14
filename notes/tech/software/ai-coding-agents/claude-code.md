@@ -19,4 +19,5 @@ claude # open the interactive session in the current directory
 /model # choose the active model
 
 CLAUDE.md # project instructions file Claude Code reads at session start
+AGENTS.md # also read directly from v2.1.277
 ```

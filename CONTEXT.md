@@ -1,6 +1,6 @@
 # Agent Context
 
-Shared repository guidance. Edit `CONTEXT.md`; `AGENTS.md` and `CLAUDE.md` are relative symlinks to it.
+Shared repository guidance. Edit `CONTEXT.md`; `AGENTS.md` is a relative symlink to it.
 
 ## Table of Contents
 

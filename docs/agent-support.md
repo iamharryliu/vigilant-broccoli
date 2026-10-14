@@ -22,7 +22,7 @@ Shared context, skills and execution contracts for repository agents.
 
 | Source                                        | Adapter                                                            |
 | --------------------------------------------- | ------------------------------------------------------------------ |
-| Root and directory `CONTEXT.md`               | Adjacent `AGENTS.md` / `CLAUDE.md` relative symlinks               |
+| Root and directory `CONTEXT.md`               | Adjacent `AGENTS.md` relative symlink                              |
 | `setup/dotfiles/agent-skills/<name>/SKILL.md` | Relative command symlinks under `setup/dotfiles/.claude/commands/` |
 | Shared skill directories                      | Installed links in `~/.agents/skills/` and `~/.claude/skills/`     |
 
@@ -106,7 +106,6 @@ Each follow-up gets a fresh agent. Independent branches start from and target `o
 Add adapters once alongside a new source; clones/worktrees need no regeneration:
 
 ```bash
-ln -s CONTEXT.md <dir>/CLAUDE.md
 ln -s CONTEXT.md <dir>/AGENTS.md
 ln -s ../../agent-skills/<name>/SKILL.md setup/dotfiles/.claude/commands/<name>.md
 ```
@@ -123,7 +122,7 @@ Both platform installers use `bash setup/common/agent-skills.sh` from the repo r
 
 ## Context discovery
 
-Agents read conventional filenames resolving to adjacent context. Codex's startup chain follows the session's starting path; before deeper edits, read applicable directory context as root instructions require. Keep inherited context within the default 32 KiB limit. Sandbox `codex exec` uses `project_doc_max_bytes=65536` and a throwaway `CODEX_HOME`; machine setup leaves personal configuration alone.
+Agents read `AGENTS.md`, which resolves to adjacent context; Claude Code reads it directly from v2.1.277, so no `CLAUDE.md` adapter is kept. Codex's startup chain follows the session's starting path; before deeper edits, read applicable directory context as root instructions require. Keep inherited context within the default 32 KiB limit. Sandbox `codex exec` uses `project_doc_max_bytes=65536` and a throwaway `CODEX_HOME`; machine setup leaves personal configuration alone.
 
 ## Documentation placement
 
