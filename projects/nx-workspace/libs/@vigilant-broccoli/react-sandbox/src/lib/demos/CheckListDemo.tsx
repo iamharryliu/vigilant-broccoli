@@ -6,6 +6,8 @@ import { arrayMove } from '@dnd-kit/sortable';
 import {
   Button,
   CheckList,
+  CheckListBase,
+  CheckListBaseItem,
   CheckListItem,
   Input,
   Switch,
@@ -60,6 +62,19 @@ const seedItems = (): CheckListItem[] => [
   },
 ];
 
+const DENSE_EMPTY_LABEL = 'Nothing left to do';
+
+const seedDenseItems = (): CheckListBaseItem[] => [
+  { id: 'dense-1', title: 'Oat milk', checked: false },
+  { id: 'dense-2', title: 'Sourdough', checked: false },
+  {
+    id: 'dense-3',
+    title: 'Lemons',
+    checked: true,
+    completedAt: daysAgo(1),
+  },
+];
+
 const isUrgent = (item: CheckListItem) => item.title.startsWith(URGENT_PREFIX);
 
 const createId = () =>
@@ -72,12 +87,18 @@ export const CheckListDemo = () => {
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [editingItemTitle, setEditingItemTitle] = useState('');
   const [newItemTitle, setNewItemTitle] = useState('');
+  const [denseItems, setDenseItems] =
+    useState<CheckListBaseItem[]>(seedDenseItems);
+  const [denseEditingId, setDenseEditingId] = useState<string | null>(null);
+  const [denseEditingTitle, setDenseEditingTitle] = useState('');
 
   const handleReset = useCallback(() => {
     setItems(seedItems());
     setEditingItemId(null);
     setEditingItemTitle('');
     setNewItemTitle('');
+    setDenseItems(seedDenseItems());
+    setDenseEditingId(null);
   }, []);
 
   const handleAddItem = useCallback(() => {
@@ -141,6 +162,41 @@ export const CheckListDemo = () => {
       let cursor = 0;
       return prev.map(i => (i.checked ? i : reordered[cursor++]));
     });
+  }, []);
+
+  const handleDenseToggle = useCallback((item: CheckListBaseItem) => {
+    setDenseItems(prev =>
+      prev.map(i =>
+        i.id === item.id
+          ? {
+              ...i,
+              checked: !i.checked,
+              completedAt: i.checked ? null : new Date().toISOString(),
+            }
+          : i,
+      ),
+    );
+  }, []);
+
+  const handleDenseStartEdit = useCallback((item: CheckListBaseItem) => {
+    setDenseEditingId(item.id);
+    setDenseEditingTitle(item.title);
+  }, []);
+
+  const handleDenseSaveEdit = useCallback(() => {
+    const title = denseEditingTitle.trim();
+    if (denseEditingId && title) {
+      setDenseItems(prev =>
+        prev.map(i => (i.id === denseEditingId ? { ...i, title } : i)),
+      );
+    }
+    setDenseEditingId(null);
+    setDenseEditingTitle('');
+  }, [denseEditingId, denseEditingTitle]);
+
+  const handleDenseCancelEdit = useCallback(() => {
+    setDenseEditingId(null);
+    setDenseEditingTitle('');
   }, []);
 
   const renderItemAccessory = useCallback(
@@ -225,6 +281,37 @@ export const CheckListDemo = () => {
           itemClassName={itemClassName}
         />
       </DndContext>
+
+      <DemoSection
+        title={t('DEMO_SECTION.CHECK_LIST.PRESENTATIONAL_CHECKLIST')}
+      >
+        <Text size="2" color="gray">
+          <code>CheckListBase</code> is the presentational layer{' '}
+          <code>CheckList</code> is built on: no dnd-kit, an <code>input</code>{' '}
+          editor and dense separated rows.
+        </Text>
+      </DemoSection>
+
+      <CheckListBase
+        items={denseItems}
+        editingItemId={denseEditingId}
+        editingItemTitle={denseEditingTitle}
+        onToggleCheck={handleDenseToggle}
+        onStartEdit={handleDenseStartEdit}
+        onEditChange={setDenseEditingTitle}
+        onSaveEdit={handleDenseSaveEdit}
+        onCancelEdit={handleDenseCancelEdit}
+        editor="input"
+        rowVariant="dense"
+        size="3"
+        editCompleted={false}
+        storageKeyPrefix="checklist-demo-dense"
+        emptyLabel={
+          <Text size="3" color="gray">
+            {DENSE_EMPTY_LABEL}
+          </Text>
+        }
+      />
     </div>
   );
 };

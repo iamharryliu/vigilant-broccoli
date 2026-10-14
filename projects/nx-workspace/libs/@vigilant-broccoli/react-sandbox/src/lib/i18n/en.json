@@ -184,7 +184,8 @@
       "EMPTY_STATE": "Empty state"
     },
     "CHECK_LIST": {
-      "GENERIC_CHECKLIST": "Generic checklist"
+      "GENERIC_CHECKLIST": "Generic checklist",
+      "PRESENTATIONAL_CHECKLIST": "Presentational checklist (no drag and drop)"
     },
     "SWITCH": {
       "LABEL": "Receive updates"
