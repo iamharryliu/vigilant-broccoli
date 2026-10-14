@@ -82,3 +82,40 @@ export const SYNC_PHASE_ORDER: SyncPhase[] = [
   SYNC_PHASE.LOCALIZING,
   SYNC_PHASE.WRITING,
 ];
+
+export const SYNC_RUN_TRIGGER = {
+  CLI: 'cli',
+  UI: 'ui',
+} as const;
+
+export type SyncRunTrigger =
+  (typeof SYNC_RUN_TRIGGER)[keyof typeof SYNC_RUN_TRIGGER];
+
+export const SYNC_RUN_STATUS = {
+  RUNNING: 'running',
+  SUCCESS: 'success',
+  PARTIAL: 'partial',
+  FAILED: 'failed',
+} as const;
+
+export type SyncRunStatus =
+  (typeof SYNC_RUN_STATUS)[keyof typeof SYNC_RUN_STATUS];
+
+export interface SyncRunResult {
+  calendarId: string;
+  ok: boolean;
+  message: string;
+}
+
+export interface SyncRun {
+  id: string;
+  trigger: SyncRunTrigger;
+  status: SyncRunStatus;
+  // A 'running' row with no heartbeat for SYNC_RUN_STALE_MS is reported as
+  // failed with stale set, since its process is gone.
+  stale: boolean;
+  startedAt: string;
+  finishedAt?: string;
+  currentCalendarId?: string;
+  results: SyncRunResult[];
+}

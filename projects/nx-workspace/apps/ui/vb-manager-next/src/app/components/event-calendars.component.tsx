@@ -28,7 +28,10 @@ import {
   EventCalendar,
   SYNC_PHASE,
   SYNC_PHASE_ORDER,
+  SYNC_RUN_STATUS,
+  SYNC_RUN_TRIGGER,
   SyncPhase,
+  SyncRun,
   UntrackedCalendar,
   buildGoogleCalendarUrl,
 } from '../constants/event-calendars';
@@ -57,6 +60,24 @@ const LAST_SYNCED_LABEL = 'Last synced';
 const PUBLIC_LABEL = 'Public';
 const SHOW_IN_CALENDAR_VIEW_LABEL = 'Show in Calendar view';
 const SYNC_POLL_INTERVAL_MS = 3000;
+// Catches CLI-started runs and their results while the page stays open.
+const SYNC_STATUS_REFRESH_INTERVAL_MS = 30_000;
+const SYNC_RUNS_FETCH_ERROR = 'Failed to load sync history';
+const SYNC_HISTORY_TITLE = 'Sync history';
+const SYNC_HISTORY_EMPTY = 'No sync runs recorded yet.';
+const STALE_LABEL = 'Stale';
+const STALE_RUN_SUFFIX = ' (stale)';
+const RUN_IN_PROGRESS_SUFFIX = ' so far';
+const SYNC_RUN_TRIGGER_LABELS: Record<string, string> = {
+  [SYNC_RUN_TRIGGER.CLI]: 'CLI',
+  [SYNC_RUN_TRIGGER.UI]: 'UI',
+};
+const SYNC_RUN_STATUS_COLORS = {
+  [SYNC_RUN_STATUS.RUNNING]: 'blue',
+  [SYNC_RUN_STATUS.SUCCESS]: 'green',
+  [SYNC_RUN_STATUS.PARTIAL]: 'amber',
+  [SYNC_RUN_STATUS.FAILED]: 'red',
+} as const;
 const SYNC_RUNNING = 'running';
 const SYNC_FAILED = 'failed';
 const SYNC_SUCCEEDED = 'succeeded';
@@ -208,6 +229,13 @@ const errorFromResponse = async (response: Response, fallback: string) => {
 const MINUTE_MS = 60_000;
 const HOUR_MS = 60 * MINUTE_MS;
 const DAY_MS = 24 * HOUR_MS;
+// The daily autosync plus a half-day of slack before a calendar is flagged.
+const CALENDAR_STALE_MS = 36 * HOUR_MS;
+const CALENDAR_STALE_TITLE = 'Not synced in the last 36 hours';
+
+const isCalendarStale = (lastSyncedAt?: string) =>
+  !lastSyncedAt ||
+  Date.now() - new Date(lastSyncedAt).getTime() > CALENDAR_STALE_MS;
 
 const formatRelativeTime = (iso: string) => {
   const elapsed = Date.now() - new Date(iso).getTime();
@@ -216,6 +244,69 @@ const formatRelativeTime = (iso: string) => {
   if (elapsed < DAY_MS) return `${Math.floor(elapsed / HOUR_MS)}h ago`;
   return `${Math.floor(elapsed / DAY_MS)}d ago`;
 };
+
+const formatRunDuration = (run: SyncRun) => {
+  if (run.finishedAt)
+    return formatElapsed(run.startedAt, new Date(run.finishedAt).getTime());
+  return run.stale
+    ? ''
+    : `${formatElapsed(run.startedAt, Date.now())}${RUN_IN_PROGRESS_SUFFIX}`;
+};
+
+const SyncHistory = ({
+  runs,
+  calendarNames,
+  error,
+}: {
+  runs: SyncRun[];
+  calendarNames: Record<string, string>;
+  error: string | null;
+}) => (
+  <div className="flex flex-col gap-2">
+    <Text weight="medium">{SYNC_HISTORY_TITLE}</Text>
+    {error && (
+      <Text size="1" color="red">
+        {error}
+      </Text>
+    )}
+    {!error && !runs.length && (
+      <Text size="1" color="gray">
+        {SYNC_HISTORY_EMPTY}
+      </Text>
+    )}
+    {runs.map(run => (
+      <Card key={run.id}>
+        <div className="flex flex-col gap-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge color={SYNC_RUN_STATUS_COLORS[run.status]} size="1">
+              {run.status}
+              {run.stale && STALE_RUN_SUFFIX}
+            </Badge>
+            <Text size="1" color="gray">
+              {[
+                SYNC_RUN_TRIGGER_LABELS[run.trigger],
+                new Date(run.startedAt).toLocaleString(),
+                formatRunDuration(run),
+              ]
+                .filter(Boolean)
+                .join(' · ')}
+            </Text>
+          </div>
+          {run.results.map(result => (
+            <Text
+              key={result.calendarId}
+              size="1"
+              color={result.ok ? 'gray' : 'red'}
+            >
+              {calendarNames[result.calendarId] ?? result.calendarId}:{' '}
+              {result.message}
+            </Text>
+          ))}
+        </div>
+      </Card>
+    ))}
+  </div>
+);
 
 const HTTP_PROTOCOL_PATTERN = /^https?:\/\//i;
 const HTTPS_PREFIX = 'https://';
@@ -375,22 +466,72 @@ export const EventCalendarsComponent = () => {
       }));
   };
 
+  const [syncRuns, setSyncRuns] = useState<SyncRun[]>([]);
+  const [syncRunsError, setSyncRunsError] = useState<string | null>(null);
+
+  const refreshSyncRuns = async () => {
+    const response = await authFetch(
+      `${API_ENDPOINTS.EVENT_CALENDARS}/sync-runs`,
+    );
+    if (!response.ok) {
+      setSyncRunsError(
+        await errorFromResponse(response, SYNC_RUNS_FETCH_ERROR),
+      );
+      return;
+    }
+    const data = await response.json();
+    setSyncRuns(data.runs);
+    setSyncRunsError(null);
+  };
+
+  const refreshAllSyncStatus = () => {
+    refreshSyncRuns();
+    items.forEach(item => refreshSyncStatus(item.id));
+  };
+
+  // Stale runs come back as failed, so only a live run counts as running.
+  const activeRun = syncRuns.find(
+    run => run.status === SYNC_RUN_STATUS.RUNNING,
+  );
+
+  // A CLI run happens outside this server's in-memory status map, so the
+  // calendar it is on is only known from the run record.
+  const displayedSyncStatus = (id: string): SyncStatusView | undefined => {
+    const status = syncStatuses[id];
+    if (status?.state === SYNC_RUNNING || activeRun?.currentCalendarId !== id)
+      return status;
+    return {
+      state: SYNC_RUNNING,
+      message: `Syncing in a ${SYNC_RUN_TRIGGER_LABELS[activeRun.trigger]} run`,
+      startedAt: activeRun.startedAt,
+      lastSyncedAt: status?.lastSyncedAt,
+    };
+  };
+
   useEffect(() => {
     items.forEach(item => refreshSyncStatus(item.id));
+    refreshSyncRuns();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items.length]);
 
   useEffect(() => {
-    const anyRunning = Object.values(syncStatuses).some(
-      status => status.state === SYNC_RUNNING,
-    );
-    if (!anyRunning) return;
     const timer = setInterval(
-      () => items.forEach(item => refreshSyncStatus(item.id)),
-      SYNC_POLL_INTERVAL_MS,
+      refreshAllSyncStatus,
+      SYNC_STATUS_REFRESH_INTERVAL_MS,
     );
     return () => clearInterval(timer);
-  }, [syncStatuses, items]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items]);
+
+  useEffect(() => {
+    const anyRunning =
+      !!activeRun ||
+      Object.values(syncStatuses).some(status => status.state === SYNC_RUNNING);
+    if (!anyRunning) return;
+    const timer = setInterval(refreshAllSyncStatus, SYNC_POLL_INTERVAL_MS);
+    return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [syncStatuses, syncRuns, items]);
 
   const startSync = async (id: string) => {
     const response = await authFetch(
@@ -402,6 +543,7 @@ export const EventCalendarsComponent = () => {
       return;
     }
     const data = await response.json();
+    refreshSyncRuns();
     setDismissedSyncs(({ [id]: _removed, ...rest }) => rest);
     setSyncStatuses(current => ({
       ...current,
@@ -464,6 +606,8 @@ export const EventCalendarsComponent = () => {
   };
 
   const renderListItem = ({ item }: { item: EventCalendar }) => {
+    const syncStatus = displayedSyncStatus(item.id);
+    const lastSyncedAt = syncStatus?.lastSyncedAt ?? item.lastSyncedAt;
     return (
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -473,6 +617,11 @@ export const EventCalendarsComponent = () => {
               {item.language && (
                 <Badge color="blue" size="1">
                   {item.language}
+                </Badge>
+              )}
+              {item.sources.length > 0 && isCalendarStale(lastSyncedAt) && (
+                <Badge color="orange" size="1" title={CALENDAR_STALE_TITLE}>
+                  {STALE_LABEL}
                 </Badge>
               )}
             </div>
@@ -515,27 +664,24 @@ export const EventCalendarsComponent = () => {
                 text={buildGoogleCalendarUrl(item.googleCalendarId)}
               />
             </div>
-            {(syncStatuses[item.id]?.state === SYNC_RUNNING ||
-              ((syncStatuses[item.id]?.state === SYNC_FAILED ||
-                syncStatuses[item.id]?.state === SYNC_SUCCEEDED) &&
-                dismissedSyncs[item.id] !==
-                  syncStatuses[item.id].startedAt)) && (
-              <SyncProgress
-                status={syncStatuses[item.id]}
-                onDismiss={() =>
-                  setDismissedSyncs(current => ({
-                    ...current,
-                    [item.id]: syncStatuses[item.id].startedAt as string,
-                  }))
-                }
-              />
-            )}
-            {syncStatuses[item.id]?.lastSyncedAt && (
+            {syncStatus &&
+              (syncStatus.state === SYNC_RUNNING ||
+                ((syncStatus.state === SYNC_FAILED ||
+                  syncStatus.state === SYNC_SUCCEEDED) &&
+                  dismissedSyncs[item.id] !== syncStatus.startedAt)) && (
+                <SyncProgress
+                  status={syncStatus}
+                  onDismiss={() =>
+                    setDismissedSyncs(current => ({
+                      ...current,
+                      [item.id]: syncStatus.startedAt as string,
+                    }))
+                  }
+                />
+              )}
+            {lastSyncedAt && (
               <Text size="1" color="gray">
-                {LAST_SYNCED_LABEL}{' '}
-                {formatRelativeTime(
-                  syncStatuses[item.id].lastSyncedAt as string,
-                )}
+                {LAST_SYNCED_LABEL} {formatRelativeTime(lastSyncedAt)}
               </Text>
             )}
             <Button
@@ -544,7 +690,7 @@ export const EventCalendarsComponent = () => {
               title={SYNC_NOW_LABEL}
               aria-label={SYNC_NOW_LABEL}
               onClick={() => startSync(item.id)}
-              loading={syncStatuses[item.id]?.state === SYNC_RUNNING}
+              loading={syncStatus?.state === SYNC_RUNNING}
               disabled={!item.sources.length}
             >
               <RefreshCw className="h-4 w-4" />
@@ -609,6 +755,13 @@ export const EventCalendarsComponent = () => {
           },
         }}
         isCards
+      />
+      <SyncHistory
+        runs={syncRuns}
+        calendarNames={Object.fromEntries(
+          items.map(item => [item.id, item.name]),
+        )}
+        error={syncRunsError}
       />
       {!untrackedAvailable && (
         <Text size="1" color="gray">
