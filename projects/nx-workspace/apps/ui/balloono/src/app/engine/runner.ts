@@ -1,5 +1,5 @@
 import { BotMemory, decideCpuInput } from './cpu';
-import { DIFFICULTIES, MAX_PLAYERS } from './game.consts';
+import { MAX_PLAYERS } from './game.consts';
 import { Contender, Difficulty, MatchState, PlayerInput } from './game.types';
 import { advanceMatch } from './match';
 
@@ -17,9 +17,6 @@ export const cpuContenders = (
 
 export const fillSeats = (humans: Contender[], cpus: Contender[]) =>
   [...humans, ...cpus].slice(0, MAX_PLAYERS);
-
-export const isDifficulty = (value: unknown): value is Difficulty =>
-  DIFFICULTIES.includes(value as Difficulty);
 
 export const runTick = (
   state: MatchState,
