@@ -30,5 +30,5 @@ A failed request renders an error in the Event Calendars tab only; the personal 
   - `personal-common-js`
   - `react-lib`
 - Cloud services
-  - Google Calendar (embed and link targets)
-  - VB Express (public `GET /api/public/event-calendars`, backed by Supabase)
+  - Google Calendar
+  - VB Express

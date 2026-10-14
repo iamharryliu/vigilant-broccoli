@@ -12,4 +12,4 @@
 - External libs
   - styled-components
 - Cloud services
-  - Sanity (studio hosting)
+  - Sanity

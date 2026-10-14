@@ -16,4 +16,4 @@ Browsable sandbox of the shared `react-lib` components and `react-utility` utili
 - Internal libs
   - `react-sandbox`
 - Cloud services
-  - Open-Meteo (Weather Display sandbox)
+  - Open-Meteo

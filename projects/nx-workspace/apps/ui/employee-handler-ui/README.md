@@ -20,4 +20,4 @@
   - `react-lib`
 - Cloud services
   - Google APIs
-  - Supabase (auth)
+  - Supabase

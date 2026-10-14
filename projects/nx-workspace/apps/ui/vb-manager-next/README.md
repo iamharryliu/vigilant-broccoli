@@ -13,12 +13,12 @@ Management dashboard app.
 - Framework - Next.js
 - Build Tool - Next.js
 - External libs
-  - dnd-kit (drag-and-drop)
-  - jsQR (QR code decoding)
+  - dnd-kit
+  - jsQR
   - Leaflet / react-leaflet
   - lucide-react
   - react-markdown
-  - Socket.IO client (chat demo)
+  - Socket.IO client
   - Tailwind CSS
 - Internal libs
   - `common-browser`
@@ -41,10 +41,9 @@ Management dashboard app.
   - Google OAuth
   - Google Tasks & Calendar
   - MongoDB
-  - Open-Meteo (default weather provider)
+  - Open-Meteo
   - OpenAI API
-  - OpenWeatherMap (alternate weather provider)
-  - Self-hosted (PM2)
+  - OpenWeatherMap
   - Spotify Web API
   - Stripe
   - Supabase
