@@ -1,6 +1,6 @@
 # Calendar Directory
 
-The `calendars` home page: two sections of link rows modelled on `vb-manager-next-mobile`'s `/event-calendars` page.
+The `calendars` home page: two sections of link rows modelled on `vb-manager-next-mobile`'s Event Calendars tab.
 
 ## Table of Contents
 
