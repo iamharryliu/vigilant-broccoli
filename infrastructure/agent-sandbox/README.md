@@ -4,6 +4,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 ## Table of Contents
 
+- [Shell and toolchain](#shell-and-toolchain)
 - [Local Ollama agent](#local-ollama-agent)
 - [Running in CI](#running-in-ci)
 - [Publishing several pull requests](#publishing-several-pull-requests)
@@ -12,6 +13,12 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 - [Auditing legacy documentation](#auditing-legacy-documentation)
 - [Auditing agent context](#auditing-agent-context)
 - [Stack](#stack)
+
+## Shell and toolchain
+
+- The image installs `zsh` from apt and a pinned `mise` (`MISE_VERSION` build arg in the Dockerfile) at `/usr/local/bin/mise`. Both are fetched at build time, outside the egress firewall, so the allowlist is unchanged.
+- `agent` keeps bash as its login shell because the runners and entrypoint are bash scripts. The entrypoint runs `setup/linux/install.sh -y`, which hooks `setup/dotfiles/bash/.rc.bash` into `~/.bashrc` and `setup/dotfiles/zsh/.rc.linux.zsh` into `~/.zshrc`; both activate mise. Run `zsh` for an interactive zsh session with the repo aliases.
+- Tool versions come from the root `mise.toml`. Run `mise install` in the checkout to fetch them; downloads must be reachable through the firewall allowlist (add hosts via `SANDBOX_ALLOWED_DOMAINS`) or run with the firewall off.
 
 ## Local Ollama agent
 
@@ -180,6 +187,8 @@ opens one PR citing where each removed fact is retained. It runs Opus by default
 - Tooling
   - Docker
   - Docker Compose
+  - mise
+  - Zsh
 - Cloud providers
   - GitHub
 - Services
