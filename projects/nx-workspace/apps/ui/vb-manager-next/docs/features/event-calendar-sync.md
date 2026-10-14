@@ -17,7 +17,7 @@
 
 - A zsh hook (`setup/dotfiles/zsh/scripts/event_calendars_autosync.zsh`) starts the CLI in the background on a new interactive shell, once per local day (`event-calendars-sync.stamp`), at most once per hour (`event-calendars-sync.attempt`) and not while a live sync holds the lock.
 - When the run fails for any reason but an expired Facebook login (exit `3`), the hook deletes the day stamp so the next new shell retries after the hourly window. A login failure keeps the stamp until tomorrow.
-- The CLI appends timestamped start, per-calendar and exit lines to `event-calendars-sync.log` in the same directory, truncating it first when it exceeds 1 MB. The hook redirects the background run's full output there too.
+- The CLI appends timestamped start, exit and per-calendar lines (written as each calendar finishes, so a crash keeps the calendars completed before it) to `event-calendars-sync.log` in the same directory, truncating it first when it exceeds 1 MB. The hook redirects the background run's full output there too.
 
 ## Stale Event Protection
 
