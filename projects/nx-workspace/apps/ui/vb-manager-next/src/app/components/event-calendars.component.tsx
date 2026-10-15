@@ -636,8 +636,8 @@ export const EventCalendarsComponent = () => {
               )}
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-6">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="contents">
               <a
                 href={buildGoogleCalendarUrl(item.googleCalendarId)}
                 target="_blank"
