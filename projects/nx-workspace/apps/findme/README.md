@@ -4,12 +4,7 @@ Real-time location sharing for friends and family.
 
 ## Table of Contents
 
-- [Features](#features)
 - [Stack](#stack)
-
-## Features
-
-- Map, Nearby and People tabs — see [tabs](./docs/features/tabs.md)
 
 ## Stack
 
