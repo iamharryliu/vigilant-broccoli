@@ -622,12 +622,12 @@ export const HARRYLIU_APP_URL = {
   FIND_ME: {
     NAME: 'Find Me',
     URL: 'https://findme.harryliu.dev/',
-    STAGING_URL: 'https://staging-findme.vercel.app/',
+    STAGING_URL: 'https://staging-findme.pages.dev/',
   },
   WHITEBOARD: {
     NAME: 'Whiteboard',
     URL: 'https://whiteboard.harryliu.dev/',
-    STAGING_URL: 'https://staging-whiteboard.vercel.app/',
+    STAGING_URL: 'https://staging-whiteboard.pages.dev/',
   },
   BALLOONO: {
     NAME: 'Balloono',

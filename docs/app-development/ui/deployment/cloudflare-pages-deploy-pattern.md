@@ -1,6 +1,6 @@
 # Cloudflare Pages deploy pattern (static UI apps)
 
-Static UIs in `apps/ui/*` deploy to Cloudflare Pages via wrangler.
+Static UIs in `apps/ui/*` and the Next.js static exports `apps/findme` and `apps/whiteboard` deploy to Cloudflare Pages via wrangler.
 
 ## Table of Contents
 
@@ -8,6 +8,7 @@ Static UIs in `apps/ui/*` deploy to Cloudflare Pages via wrangler.
 - [Branch matching: every deploy passes `--branch` explicitly](#branch-matching-every-deploy-passes---branch-explicitly)
 - [PR previews](#pr-previews)
 - [Per-environment build config](#per-environment-build-config)
+- [Next.js static exports](#nextjs-static-exports)
 - [Sources outside the nx graph need their own trigger](#sources-outside-the-nx-graph-need-their-own-trigger)
 - [Custom domains (Terraform)](#custom-domains-terraform)
 - [New app checklist (Cloudflare-side)](#new-app-checklist-cloudflare-side)
@@ -61,6 +62,14 @@ A new stateless site opts in by adding the trio — the workflows discover it vi
 ## Per-environment build config
 
 `deploy:production` builds with `--configuration=production-env`, baking per-env fly URLs into the bundle at build time (static sites cannot read env vars at runtime). `environment.ts` → `environment.production.ts` cannot be a `fileReplacements` swap because the inferred Vite build ignores `fileReplacements` (see the [nx-workspace nuance](../../../../projects/nx-workspace/CONTEXT.md#filereplacements-in-a-vite-apps-projectjson-is-ignored)); `calendars`, `cloud-8-skate-react` and `personal-website-react` set the `production-env` configuration's `mode` to `production-env` and alias the environment module in `vite.config.mts` instead.
+
+## Next.js static exports
+
+`findme` and `whiteboard` use `output: 'export'` and export to `dist/apps/<app>`. Their build targets cache that complete directory; Wrangler uploads it using the same staging/production trio as `docs-md`.
+
+Next.js loads each app's tracked `.env.production`, which contains only the public Supabase URL and publishable key. `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` environment variables override those defaults at build time. The app files and both variables are Nx build inputs so changes invalidate cached bundles. No Pages runtime variables or Supabase service-role keys are needed.
+
+For the hosting cutover, apply the staging Access additions in `cloudflare-staging-ui.tf` before publishing staging. Deploy the production Pages projects before applying the domain attachments and DNS updates in `cloudflare-collaboration-apps.tf`. Its `moved` blocks retain the existing DNS records. Keep the old Vercel projects until the custom domains serve the Pages builds and collaboration has been checked in two browsers; remove the old projects afterward. Terraform applies stay local.
 
 ## Sources outside the nx graph need their own trigger
 

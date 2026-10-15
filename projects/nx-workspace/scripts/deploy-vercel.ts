@@ -326,14 +326,6 @@ async function main() {
         'dist/apps/ui/employee-handler-ui/.next',
       ),
     },
-    findme: {
-      hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
-      settings: NX_VERCEL_SETTINGS('findme', 'dist/apps/findme/.next'),
-    },
-    whiteboard: {
-      hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
-      settings: NX_VERCEL_SETTINGS('whiteboard', 'dist/apps/whiteboard/.next'),
-    },
     balloono: {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
       settings: NX_VERCEL_SETTINGS('balloono', 'dist/apps/ui/balloono/.next'),
