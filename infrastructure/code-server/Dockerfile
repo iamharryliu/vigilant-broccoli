@@ -63,12 +63,6 @@ RUN npm install -g @anthropic-ai/claude-code \
 COPY infrastructure/code-server/gh-token.sh /usr/local/bin/gh-token
 COPY infrastructure/code-server/gh-wrapper.sh /usr/local/bin/gh
 
-# Remote Control as an s6 service so it starts with the container and restarts
-# if it exits; see the run script for why it ignores CLAUDE_CODE_OAUTH_TOKEN.
-COPY infrastructure/code-server/rc-s6/svc-claude-remote-control /etc/s6-overlay/s6-rc.d/svc-claude-remote-control
-COPY infrastructure/code-server/rc-s6/user/contents.d/svc-claude-remote-control /etc/s6-overlay/s6-rc.d/user/contents.d/svc-claude-remote-control
-RUN chmod +x /etc/s6-overlay/s6-rc.d/svc-claude-remote-control/run
-
 # Gives the abc service account a usable login shell in the code-server
 # terminal.
 RUN usermod -s /bin/bash abc
