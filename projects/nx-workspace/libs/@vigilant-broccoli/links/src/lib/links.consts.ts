@@ -98,6 +98,10 @@ export const UTILITY_URL = {
     NAME: 'Slack',
     URL: 'https://app.slack.com/client/',
   },
+  SLACK_API_APPS: {
+    NAME: 'Slack API Apps',
+    URL: 'https://api.slack.com/apps',
+  },
   AMAZON: {
     NAME: 'Amazon',
     URL: 'https://www.amazon.com',

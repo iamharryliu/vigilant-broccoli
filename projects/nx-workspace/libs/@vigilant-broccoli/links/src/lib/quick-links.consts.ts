@@ -1136,6 +1136,12 @@ const UTILITY_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },
   {
+    label: UTILITY_URL.SLACK_API_APPS.NAME,
+    target: UTILITY_URL.SLACK_API_APPS.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
     label: 'Bitwarden',
     target: 'Bitwarden',
     type: OPEN_TYPE.MAC_APPLICATION,
