@@ -167,7 +167,7 @@
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.3",
     "lint-staged": "^17.6.0",
-    "prettier": "^3.9.9"
+    "prettier": "^3.9.10"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,html,css,scss,md}": [
