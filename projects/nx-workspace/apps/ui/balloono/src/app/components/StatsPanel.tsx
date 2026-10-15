@@ -7,8 +7,10 @@ import { useTranslation } from '../i18n';
 
 const SECONDS_PER_MINUTE = 60;
 
+type TranslationKey = Parameters<ReturnType<typeof useTranslation>['t']>[0];
+
 const STAT_ROWS: {
-  key: string;
+  key: TranslationKey;
   value: (stats: UserStats) => string | number;
 }[] = [
   { key: 'STATS.WINS', value: stats => stats.wins },
