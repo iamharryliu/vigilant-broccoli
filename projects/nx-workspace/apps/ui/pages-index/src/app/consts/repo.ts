@@ -10,3 +10,9 @@ export const UPTIME_SUMMARY_URL = `https://raw.githubusercontent.com/${REPO_OWNE
 
 export const toRawGithubUrl = (path: string) =>
   `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${path}`;
+
+export const toRepoLinkBase = (filePath: string) => ({
+  filePath,
+  blobBase: `${REPO_URL}/blob/main`,
+  rawBase: `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main`,
+});
