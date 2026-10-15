@@ -11,7 +11,7 @@
 - Build Tool - webpack
 - External libs
   - better-auth
-  - SQLite (`node:sqlite`)
+  - SQLite
   - Supabase JS
 - Internal libs
   - `common-js`
@@ -22,10 +22,10 @@
   - `personal-common-js`
 - Cloud services
   - ElevenLabs
-  - Email Service (HTTP)
+  - Email Service
   - Google OAuth
   - Google reCAPTCHA
   - Google Tasks
-  - LLM Service (HTTP)
+  - LLM Service
   - Supabase
   - Twilio

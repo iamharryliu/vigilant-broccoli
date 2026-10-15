@@ -20,6 +20,6 @@ Email subscription management and broadcast.
   - `fastify`
   - `messaging`
 - Cloud services
-  - Email Service (HTTP)
+  - Email Service
   - RabbitMQ
   - Supabase

@@ -9,7 +9,7 @@ Slack bot for sharing office presence status via Socket Mode.
 ## Stack
 
 - Language - TypeScript
-- Framework - Slack Bolt (Socket Mode)
+- Framework - Slack Bolt
 - Build Tool - esbuild
 - Internal libs
   - `slackbots`
