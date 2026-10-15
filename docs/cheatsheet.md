@@ -158,7 +158,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 🤖 AGENTIC — DEV SANDBOX (attended; you drive the persistent container)
   agentic:dev-sandbox:up      Fetch tokens from Vault into the current shell session (never written to disk), then build + start contained agent sandbox
                                (export SANDBOX_VAULT_ENV_VARS=NAME1,NAME2 before running to also inject those Vault secret keys)
-  agentic:dev-sandbox:cli     Open an interactive Claude session in a persistent tmux session in the sandbox repo clone (auto mode, sonnet; --model <m> to override)
+  agentic:dev-sandbox:claudeauto     Open an interactive Claude session in a persistent tmux session in the sandbox repo clone (auto mode, sonnet; --model <m> to override)
   agentic:dev-sandbox:codexyolo  Open Codex directly in a persistent sandbox tmux session (approvals and Codex sandbox disabled; forwards Codex arguments)
   agentic:dev-sandbox:shell   Open an interactive bash shell in the sandbox (dotfiles loaded)
   agentic:dev-sandbox:logs    Follow sandbox provisioning logs

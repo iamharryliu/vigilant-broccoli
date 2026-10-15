@@ -17,7 +17,7 @@ while [ $# -gt 0 ]; do
       shift
       ;;
     *)
-      echo "Usage: pnpm agentic:dev-sandbox:cli [--model <model>]" >&2
+      echo "Usage: pnpm agentic:dev-sandbox:claudeauto [--model <model>]" >&2
       exit 1
       ;;
   esac
