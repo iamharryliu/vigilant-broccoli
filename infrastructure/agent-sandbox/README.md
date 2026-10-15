@@ -21,6 +21,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
   - `pnpm agentic:dev-sandbox:codex:auto`: Codex workspace-write sandbox with on-request approvals and [Auto-review](https://developers.openai.com/codex/concepts/sandboxing/auto-review).
   - `pnpm agentic:dev-sandbox:claude:yolo`: Claude with permission checks bypassed.
   - `pnpm agentic:dev-sandbox:codex:yolo`: Codex with approvals and its sandbox disabled.
+- `pnpm agentic:dev-sandbox:shell` opens Bash directly. Interactive shell and CLI launchers treat status 130 (Ctrl-C, including a subsequent bare `exit` in Bash) as a normal exit so pnpm does not print a lifecycle error. Other failure statuses are preserved, and Docker CLI hints are disabled for these launchers.
 - Each command creates or reattaches its own `<agent>-<mode>` tmux session in the sandbox checkout. CLI arguments apply when creating the session; Claude defaults to Sonnet and accepts `--model <model>` overrides. Existing `cli` and `codexyolo` sessions are left running; the new commands use separate sessions.
 
 - The image installs `zsh` from apt and a pinned `mise` (`MISE_VERSION` build arg in the Dockerfile) at `/usr/local/bin/mise`. Both are fetched at build time, outside the egress firewall.
