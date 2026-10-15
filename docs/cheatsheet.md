@@ -56,8 +56,6 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   code-server:ssh             SSH into code-server VM
   code-server:logs            Follow code-server container logs
   code-server:logs:cloud-init  Follow VM provisioning log
-  code-server:remote-control:login  One-time claude.ai login for Remote Control
-  code-server:remote-control:logs  Follow Remote Control output from the container logs
   code-server:reset           Rebuild containers + volumes (fresh environment)
   code-server:replace         Replace the VM via terraform (fresh host)
 
