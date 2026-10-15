@@ -1,12 +1,13 @@
 # Calendar Directory
 
-The `calendars` home page: three tabs (`CalendarTabs`, modelled on `vb-manager-next`'s `HomeCalendarTabs`) of link rows modelled on `vb-manager-next-mobile`'s Event Calendars tab. There is no page header.
+The public, login-free `calendars` home page: three tabs (`CalendarTabs`, modelled on `vb-manager-next`'s `HomeCalendarTabs`) of link rows modelled on `vb-manager-next-mobile`'s Event Calendars tab. Event rows link to Google Calendar with Schedule, Week and Month view links and a copy-link control. There is no page header.
 
 ## Table of Contents
 
 - [Tabs](#tabs)
 - [Embed](#embed)
 - [Public endpoint](#public-endpoint)
+- [Data](#data)
 - [Link construction](#link-construction)
 - [Browser storage](#browser-storage)
 - [States](#states)
@@ -20,6 +21,8 @@ The `calendars` home page: three tabs (`CalendarTabs`, modelled on `vb-manager-n
 
 ## Embed
 
+See also [calendar view](../calendar-view.md).
+
 `CalendarView` builds the iframe URL with `buildEventCalendarEmbedUrl` and `PUBLIC_BASE_CALENDAR_CONFIG` from `personal-common-js`. Hidden calendars are filtered out of the URL (colours are assigned before filtering, so the rest keep theirs). The Google calendar id comes from the `src` parameter of each public event calendar URL (`getGoogleCalendarId`), so VB Express returns no extra field. The iframe mounts once the event calendars request settles (success or failure) and the tab is force-mounted (`display: none` and `aria-hidden` when inactive) to avoid reloads. Mode is MONTH on desktop and AGENDA when `isMobileUserAgent` (`common-browser`, shared with `vb-manager-next-mobile`) matches, because the authenticated custom agenda is unavailable here.
 
 **Public bundle:** `PUBLIC_BASE_CALENDAR_CONFIG` uses only `PUBLIC_CALENDAR_SOURCES` (the already-linked personal calendar and Google's public calendars); the private birthdays and shared calendars in `PERSONAL_CALENDAR_SOURCES` must not be used here. The embed only exposes what each calendar's sharing settings already make public.
@@ -27,6 +30,10 @@ The `calendars` home page: three tabs (`CalendarTabs`, modelled on `vb-manager-n
 ## Public endpoint
 
 `GET /api/public/event-calendars` in `apps/api/vb-express` (`src/routes/public-event-calendars.ts`, `src/libs/event-calendars.db.ts`) needs no API key and is registered in its own Fastify scope, outside every protected service scope. It selects `id, name, google_calendar_id` with `is_public = true` ordered by `created_at` (the filter is hard-coded server-side; query parameters are ignored) and returns `{ calendars: [{ id, name, url }] }`. Failures return 500 with a generic message and are logged server-side. Every response carries `Cache-Control: no-store`. The Supabase client is created on first request from the shared `SUPABASE_URL` constant in `common-node` (overridable by a `SUPABASE_URL` env var; the fly `[env]` block sets it explicitly) and `SUPABASE_SECRET_KEY` (Vault), so builds, health checks and smoke need neither. CORS for the Pages origins is scoped to the `/api/public/` prefix without credentials in `main.ts`; other routes keep the original allowlist.
+
+## Data
+
+The app is a static bundle: no credential, API key or database snapshot is in it. On every page load the browser fetches the public endpoint, so records the manager makes public, renames, removes or makes private show up on the next load without a redeploy. A failed request renders an error in the Event Calendars tab only; the personal calendar stays usable. The Event Calendars tab lists every `event_calendars` record the manager has marked public. Hostnames per environment are under [Environments](#environments).
 
 ## Link construction
 
@@ -45,4 +52,4 @@ Loading, empty (a confirmed `{ calendars: [] }`) and failed load (network error,
 
 ## Environments
 
-`src/environments/environment.ts` holds the staging API base URL (and the local `http://localhost:3001` for `nx serve`); `environment.production.ts` holds the production one (`api.harryliu.dev`, the canonical production route). `deploy:production` builds with `--configuration=production-env`, which swaps them via a Vite alias. `deploy:preview` uses the staging API too, with PR aliases at `pr-<number>.preview-calendars.pages.dev`; stable and immutable preview origins are allowed only by the public, credential-free GET CORS policy. `nx serve vb-express` needs only `SUPABASE_SECRET_KEY` (fetched from Vault) to serve real rows to `nx serve calendars`; the Supabase URL defaults to the shared constant.
+`src/environments/environment.ts` holds the staging API base URL (`staging-vb-express.fly.dev`) and the local `http://localhost:3001` for `nx serve`; `environment.production.ts` holds the production one (`api.harryliu.dev`, the canonical production route). `deploy:production` builds with `--configuration=production-env`, which swaps them via a Vite alias. `deploy:preview` uses the staging API too, with PR aliases at `pr-<number>.preview-calendars.pages.dev`; stable and immutable preview origins are allowed only by the public, credential-free GET CORS policy. `nx serve vb-express` needs only `SUPABASE_SECRET_KEY` (fetched from Vault) to serve real rows to `nx serve calendars`; the Supabase URL defaults to the shared constant.
