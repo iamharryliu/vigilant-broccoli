@@ -73,10 +73,13 @@ export const WeatherDisplay = ({
     <span className="my-2 text-7xl leading-none" aria-hidden>
       {getWeatherIcon(condition, isDay)}
     </span>
-    <p className="text-4xl font-light tracking-tight">{current}</p>
-    <p className="text-base text-foreground">
-      {high} <span aria-hidden>{SEPARATOR}</span> {low}
-    </p>
+    <div className="flex items-center gap-3">
+      <p className="text-4xl font-light tracking-tight">{current}</p>
+      <div className="flex flex-col text-left text-xs leading-tight text-muted-foreground">
+        <span>{high}</span>
+        <span>{low}</span>
+      </div>
+    </div>
     <p className="text-sm text-muted-foreground">{feelsLike}</p>
     <p className="text-sm text-muted-foreground">
       {humidity} <span aria-hidden>{SEPARATOR}</span> {wind}
