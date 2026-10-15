@@ -1,25 +1,25 @@
-# Dashboard Info Card
+# Weather Clock Card
 
 - One card for the clock, the current weather with its details, an optional forecast carousel, the next sunrise/sunset and the moon phase.
 - Single weather UI consumed by `weather-next` (weather.harryliu.dev), `vb-manager-next`'s dashboard; production and staging of each app share one codebase.
 
 ## Usage
 
-- `DashboardInfoCardUtilityContent` runs in one of two modes:
+- `WeatherClockCardUtilityContent` runs in one of two modes:
   - **Injected data**: pass `weather` (`LocalWeather` plus optional `preparation`), `location` and `timezoneOffsetSeconds`; use `loading`, `error` (a `LocalWeatherFailure`) and `onRetry` for the other states.
   - **Self-locating**: pass `fetchWeather(location)` and optionally `fetchPreparation(weather)`. The card asks the browser for its location through `useLocalWeather` (`react-lib`) and renders the locating/loading skeleton, the denied/unavailable/error message with a retry button (`LocalWeatherMessage`), then the weather. Sun times use the browser's UTC offset unless `timezoneOffsetSeconds` is passed.
-- The card always calls the latest `fetchWeather` / `fetchPreparation`, so inline functions do not reload the weather. Only adding or removing `fetchPreparation` changes whether badges are requested; a failed or `null` result renders no badges, and the badge skeleton shows while it is pending.
+- The card always calls the latest `fetchWeather` / `fetchPreparation`, so inline functions do not reload the weather. Only adding or removing `fetchPreparation` changes whether badges are requested; a failed or `null` result renders no badges, and the badge skeleton shows while it is pending, and once loaded with no badges the badge row is removed so no empty space remains.
 - `fetchPreparation` receives the weather without its `forecast`.
 - The card wraps itself in the internal weather i18n provider and carries the Open-Meteo / OpenStreetMap attribution footer once weather is shown, so apps need no provider or footer.
 
 ## Layout
 
 - The summary is a wrapping horizontal row: the clock hero on one side and a 2-column grid of stat tiles (weather, sunrise, moon, sunset) beside it. The grid only drops under the clock when the card is too narrow for both.
-- The weather details, preparation badges, forecast carousel and attribution footer stack below the summary row; they never move the tiles into a vertical column.
+- The humidity/wind/precipitation tiles, preparation badges, forecast carousel and attribution footer stack below the summary row; they never move the tiles into a vertical column.
 
 ## Weather data
 
-- `DashboardInfoCardWeather` is `LocalWeather` (from `common-js`) plus `preparation`. Fields shown inline: temperature, feels-like, high/low, humidity, wind and wind max, precipitation and day sum, and the Preparation badges built from `PREPARATION_BADGES` (`react-lib`).
+- `WeatherClockCardWeather` is `LocalWeather` (from `common-js`) plus `preparation`. Fields shown: temperature with feels-like in brackets (the word "Feels" is dropped when the card itself is narrower than 420px) and high/low as small stacked text beside it in the weather tile, then humidity, wind (max in the label) and precipitation (day sum in the label) as a row of icon stat tiles like the summary tiles, and the Preparation badges built from `PREPARATION_BADGES` (`react-lib`).
 - `toLocalWeather(snapshot, city)` in `common-js` is the single snapshot-to-`LocalWeather` mapper used by the `weather-next` route and by `vb-manager-next`'s `fetchLocalWeather`. It returns `null` when the snapshot has no daily entry and fills `forecast` from every daily entry, today first.
 - Each app's `/api/weather` requests `OPEN_METEO_MAX_FORECAST_DAYS` (16, the Open-Meteo `forecast_days` maximum; `fetchOpenMeteoSnapshot` clamps to it). The OpenWeather provider folds days out of its 5-day / 3-hour list, so it returns fewer days; the carousel shows whatever the provider returns, with no padding.
 

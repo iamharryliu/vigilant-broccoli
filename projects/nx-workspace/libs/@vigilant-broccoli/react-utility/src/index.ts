@@ -7,7 +7,7 @@ export * from './lib/utilities/alarm.utility';
 export * from './lib/utilities/currency-converter.utility';
 export * from './lib/utilities/pomodoro.utility';
 export * from './lib/utilities/qr-reader.utility';
-export * from './lib/utilities/dashboard-info-card.utility';
+export * from './lib/utilities/weather-clock-card.utility';
 export * from './lib/clock';
 export * from './lib/docs-viewer';
 export * from './lib/docs-snapshot-source';

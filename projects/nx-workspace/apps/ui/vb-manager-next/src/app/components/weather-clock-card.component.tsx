@@ -1,13 +1,13 @@
 'use client';
 
-import { DashboardInfoCardUtilityContent } from '@vigilant-broccoli/react-utility';
+import { WeatherClockCardUtilityContent } from '@vigilant-broccoli/react-utility';
 import {
   fetchLocalPreparation,
   fetchLocalWeather,
 } from '../utils/local-weather.utils';
 
-export const DashboardInfoCard = () => (
-  <DashboardInfoCardUtilityContent
+export const WeatherClockCard = () => (
+  <WeatherClockCardUtilityContent
     fetchWeather={fetchLocalWeather}
     fetchPreparation={fetchLocalPreparation}
   />
