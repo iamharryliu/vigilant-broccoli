@@ -19,4 +19,4 @@
   - DeepSeek API
   - Google Gemini API
   - OpenAI API
-  - xAI (Grok) API
+  - xAI API

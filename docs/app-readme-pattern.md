@@ -35,7 +35,7 @@ Stack conventions, for apps, libs and infrastructure alike:
 - Groups appear in the listed order; omit empty ones.
 - Framework and Build Tool are the bare tool name, with no parenthetical (`Next.js`, not `Next.js (React)`).
 - Items inside a nested group are sorted alphabetically, case-insensitively and ignoring backticks. A multi-value Language keeps its primary-first order.
-- One tool per bullet, named bare. Add a parenthetical only when the name alone is ambiguous (`PostgreSQL (pgvecto-rs)`, `Email Service (HTTP)`); never use it for purpose notes, option lists or usage detail.
+- One tool per bullet, named bare, with no parentheticals. Append ` - <description>` only when the name alone is ambiguous or hides how it is used (`- PostgreSQL - pgvecto-rs vector search`, `- Email Service - called over HTTP`): a short lowercase fragment, no trailing period, at most six words. Most bullets need none; never add one for purpose notes the name already implies. On an inline single-value group the description follows the value (`- Framework - Slack Bolt - Socket Mode`).
 
 Classify by nature, not name: a client SDK is an external lib, but the platform or API it talks to is a cloud service — list the service, not its SDK. Framework and Build Tool may be the same tool (e.g. Next.js); list it in both. Derive everything from `package.json`, imports, env vars, and config. Omit a group only when the app genuinely has nothing for it.
 

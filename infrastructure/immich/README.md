@@ -14,5 +14,5 @@ Docker Compose stack for the self-hosted Immich photo library.
 - Services
   - Immich machine learning
   - Immich server
-  - PostgreSQL (pgvecto-rs)
+  - PostgreSQL
   - Redis
