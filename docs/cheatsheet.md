@@ -156,10 +156,10 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 🤖 AGENTIC — DEV SANDBOX (attended; you drive the persistent container)
   agentic:dev-sandbox:up      Fetch tokens from Vault into the current shell session (never written to disk), then build + start contained agent sandbox
                                (export SANDBOX_VAULT_ENV_VARS=NAME1,NAME2 before running to also inject those Vault secret keys)
-  agentic:dev-sandbox:auto:claude  Open Claude in a persistent claude-auto tmux session (automatic approval review; forwards CLI arguments)
-  agentic:dev-sandbox:auto:codex  Open Codex in a persistent codex-auto tmux session (automatic approval review; forwards CLI arguments)
-  agentic:dev-sandbox:yolo:claude  Open Claude in a persistent claude-yolo tmux session (permission checks bypassed; forwards CLI arguments)
-  agentic:dev-sandbox:yolo:codex  Open Codex in a persistent codex-yolo tmux session (permission checks bypassed; forwards CLI arguments)
+  agentic:dev-sandbox:claude:auto  Open Claude in a persistent claude-auto tmux session (automatic approval review; forwards CLI arguments)
+  agentic:dev-sandbox:codex:auto  Open Codex in a persistent codex-auto tmux session (automatic approval review; forwards CLI arguments)
+  agentic:dev-sandbox:claude:yolo  Open Claude in a persistent claude-yolo tmux session (permission checks bypassed; forwards CLI arguments)
+  agentic:dev-sandbox:codex:yolo  Open Codex in a persistent codex-yolo tmux session (permission checks bypassed; forwards CLI arguments)
   agentic:dev-sandbox:shell   Open an interactive bash shell in the sandbox (dotfiles loaded)
   agentic:dev-sandbox:logs    Follow sandbox provisioning logs
   agentic:dev-sandbox:down    Stop the sandbox

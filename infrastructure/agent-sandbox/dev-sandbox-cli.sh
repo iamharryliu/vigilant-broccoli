@@ -3,8 +3,8 @@ set -euo pipefail
 
 CONTAINER=vb-agent-sandbox
 WORKDIR=/home/agent/vigilant-broccoli
-MODE=${1:-}
-AGENT=${2:-}
+AGENT=${1:-}
+MODE=${2:-}
 
 case "$MODE:$AGENT" in
   auto:claude) CLI=(claude --model sonnet --permission-mode auto) ;;
@@ -15,7 +15,7 @@ case "$MODE:$AGENT" in
     ;;
   yolo:codex) CLI=(codex --dangerously-bypass-approvals-and-sandbox) ;;
   *)
-    echo "Usage: pnpm agentic:dev-sandbox:{auto,yolo}:{claude,codex} [CLI arguments...]" >&2
+    echo "Usage: pnpm agentic:dev-sandbox:{claude,codex}:{auto,yolo} [CLI arguments...]" >&2
     exit 1
     ;;
 esac
