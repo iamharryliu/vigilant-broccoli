@@ -30,6 +30,34 @@ export const resolveNoteLink = (
   return hash ? `${resolvedPath}#${hash}` : resolvedPath;
 };
 
+export interface RepoLinkBase {
+  filePath: string;
+  blobBase: string;
+  rawBase: string;
+}
+
+// A README rendered outside its repository (e.g. on GitHub Pages) has no sibling files, so
+// relative links and images are pointed back at the repo: pages to github.com blob URLs
+// (GitHub redirects blob to tree for directories) and images to the raw host.
+export const rewriteRepoRelativeLinks = (
+  html: string,
+  { filePath, blobBase, rawBase }: RepoLinkBase,
+): string => {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  doc.querySelectorAll('a[href]').forEach(anchor => {
+    const target = resolveNoteLink(filePath, anchor.getAttribute('href') ?? '');
+    if (target === null) return;
+    anchor.setAttribute('href', `${blobBase}/${target}`);
+    anchor.setAttribute('target', '_blank');
+    anchor.setAttribute('rel', 'noopener noreferrer');
+  });
+  doc.querySelectorAll('img[src]').forEach(img => {
+    const target = resolveNoteLink(filePath, img.getAttribute('src') ?? '');
+    if (target !== null) img.setAttribute('src', `${rawBase}/${target}`);
+  });
+  return doc.body.innerHTML;
+};
+
 const getWindowHash = () => window.location.hash.slice(1);
 
 // The browser's native scroll-to-fragment only fires around the initial page load; by the
