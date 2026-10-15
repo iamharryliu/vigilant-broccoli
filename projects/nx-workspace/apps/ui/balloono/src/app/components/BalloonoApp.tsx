@@ -1,12 +1,14 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useState } from 'react';
 import { ThemeProvider } from '@vigilant-broccoli/react-lib';
+import { AuthProvider } from '../../lib/auth';
 import { DIFFICULTY_LABEL_KEY, ONLINE_AVAILABLE } from '../app.consts';
 import { Contender, Difficulty } from '../engine/game.types';
 import { MAX_PLAYERS } from '../engine/game.consts';
 import { cpuContenders, fillSeats } from '../engine/runner';
 import { GameAudioProvider } from '../hooks/useGameAudio';
+import { displayNameOf, useSession } from '../hooks/useSession';
 import { usePlayerIdentity } from '../hooks/usePlayerIdentity';
 import { RoomListing, useRoomDirectory } from '../hooks/useRoomDirectory';
 import { I18nProvider, useTranslation } from '../i18n';
@@ -15,6 +17,8 @@ import { HomeScreen } from './HomeScreen';
 import { OnlineRoom } from './OnlineRoom';
 
 const LOCAL_PLAYER_SUFFIX = '-local';
+
+const PREFILLED_USER_KEY = 'balloono-prefilled-user';
 
 const SCREEN = {
   HOME: 'home',
@@ -30,10 +34,23 @@ type Screen =
 function Balloono() {
   const { t } = useTranslation();
   const { userId, username, setUsername } = usePlayerIdentity();
+  const session = useSession();
   const [screen, setScreen] = useState<Screen>({ name: SCREEN.HOME });
   const [advertisement, setAdvertisement] = useState<RoomListing | null>(null);
   const rooms = useRoomDirectory(ONLINE_AVAILABLE, userId, advertisement);
   const localPlayerId = `${userId}${LOCAL_PLAYER_SUFFIX}`;
+  const accountId = session?.user.id;
+  const accountName = displayNameOf(session);
+
+  // Once per account per device, so a name the player later edits sticks.
+  // Presence keys stay the per-page-load `userId`.
+  useEffect(() => {
+    if (!accountId || !accountName) return;
+    if (localStorage.getItem(PREFILLED_USER_KEY) === accountId) return;
+    localStorage.setItem(PREFILLED_USER_KEY, accountId);
+    setUsername(accountName);
+  }, [accountId, accountName, setUsername]);
+
   const goHome = useCallback(() => setScreen({ name: SCREEN.HOME }), []);
 
   const startCpu = (
@@ -98,13 +115,20 @@ function Balloono() {
   );
 }
 
+// Without Supabase env there is no auth client to start; render as a guest.
+const AccountProvider = ONLINE_AVAILABLE
+  ? AuthProvider
+  : ({ children }: { children: ReactNode }) => children;
+
 export function BalloonoApp() {
   return (
     <I18nProvider>
       <ThemeProvider followSystem>
-        <GameAudioProvider>
-          <Balloono />
-        </GameAudioProvider>
+        <AccountProvider>
+          <GameAudioProvider>
+            <Balloono />
+          </GameAudioProvider>
+        </AccountProvider>
       </ThemeProvider>
     </I18nProvider>
   );

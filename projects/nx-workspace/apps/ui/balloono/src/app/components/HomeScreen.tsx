@@ -18,6 +18,8 @@ import { Difficulty } from '../engine/game.types';
 import { MAX_NAME_LENGTH, randomPhrase } from '../hooks/usePlayerIdentity';
 import { RoomListing } from '../hooks/useRoomDirectory';
 import { useTranslation } from '../i18n';
+import { AccountControl } from './AccountControl';
+import { StatsPanel } from './StatsPanel';
 import { usePageTitle } from '../use-page-title';
 
 const RANDOMIZE_ICON = '🎲';
@@ -76,7 +78,10 @@ export function HomeScreen({
 
   return (
     <div className="flex flex-col gap-6">
-      <CardContainer title={t('PROFILE.NAME_LABEL')}>
+      <CardContainer
+        title={t('PROFILE.NAME_LABEL')}
+        headerAction={<AccountControl />}
+      >
         <div className="flex gap-2">
           <Input
             aria-label={t('PROFILE.NAME_LABEL')}
@@ -96,6 +101,8 @@ export function HomeScreen({
           </Button>
         </div>
       </CardContainer>
+
+      <StatsPanel />
 
       {step === STEP.GAMES && (
         <CardContainer

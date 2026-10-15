@@ -16,6 +16,7 @@ Bomberman-style water balloon battles in the browser: online rooms with friends,
   - Supabase JS
   - Tailwind CSS
 - Internal libs
+  - `common-js`
   - `react-lib`
 - Cloud services
   - Supabase

@@ -9,6 +9,25 @@
     "NAME_PLACEHOLDER": "Pick a name",
     "RANDOM_NAME": "Pick a random name"
   },
+  "ACCOUNT": {
+    "SIGN_IN": "Sign in with Google",
+    "SIGN_OUT": "Sign out"
+  },
+  "STATS": {
+    "TITLE": "Your online stats",
+    "EMPTY": "Play an online room match to start your stats.",
+    "WINS": "Wins",
+    "LOSSES": "Losses",
+    "DRAWS": "Draws",
+    "TIME_PLAYED": "Minutes played",
+    "BALLOONS_DROPPED": "Balloons dropped",
+    "PLAYERS_SOAKED": "Players soaked",
+    "ITEMS_BALLOON": "Extra balloons",
+    "ITEMS_RANGE": "Bigger splashes",
+    "ITEMS_SPEED": "Faster feet",
+    "DISCLAIMER": "Only online room matches count. Stats are self-reported and unverified.",
+    "SAVE_FAILED": "Couldn't save your stats for this match."
+  },
   "LOCAL": {
     "ADD": "Add local player",
     "DESCRIPTION": "A second person on this keyboard plays with WASD and Space; you switch to the arrow keys and Enter.",
