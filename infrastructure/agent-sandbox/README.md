@@ -16,9 +16,12 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 ## Shell and toolchain
 
-- Run `pnpm agentic:dev-sandbox:claudeauto` for Claude in auto permission mode (Sonnet by default; pass `--model <model>` to override). It creates or reattaches the existing `cli` tmux session in the sandbox checkout.
-
-- Run `pnpm agentic:dev-sandbox:codexyolo` to enter Codex directly in the sandbox checkout, with approvals and the Codex sandbox disabled. It creates or reattaches the dedicated `codexyolo` tmux session; arguments such as `--model <model>` apply when creating the session. Start the container first with `pnpm agentic:dev-sandbox:up`.
+- Start the container with `pnpm agentic:dev-sandbox:up`, then open a CLI with one of:
+  - `pnpm agentic:dev-sandbox:auto:claude`: Claude auto permission mode.
+  - `pnpm agentic:dev-sandbox:auto:codex`: Codex workspace-write sandbox with on-request approvals and [Auto-review](https://developers.openai.com/codex/concepts/sandboxing/auto-review).
+  - `pnpm agentic:dev-sandbox:yolo:claude`: Claude with permission checks bypassed.
+  - `pnpm agentic:dev-sandbox:yolo:codex`: Codex with approvals and its sandbox disabled.
+- Each command creates or reattaches its own `<agent>-<mode>` tmux session in the sandbox checkout. CLI arguments apply when creating the session; Claude defaults to Sonnet and accepts `--model <model>` overrides. Existing `cli` and `codexyolo` sessions are left running; the new commands use separate sessions.
 
 - The image installs `zsh` from apt and a pinned `mise` (`MISE_VERSION` build arg in the Dockerfile) at `/usr/local/bin/mise`. Both are fetched at build time, outside the egress firewall.
 - `agent` keeps bash as its login shell because the runners and entrypoint are bash scripts. The entrypoint runs `setup/linux/install.sh -y`, which hooks `setup/dotfiles/bash/.rc.bash` into `~/.bashrc` and `setup/dotfiles/zsh/.rc.linux.zsh` into `~/.zshrc`; both activate mise. Run `zsh` for an interactive zsh session with the repo aliases.
