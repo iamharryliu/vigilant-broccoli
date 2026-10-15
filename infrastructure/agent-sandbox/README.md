@@ -16,6 +16,8 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 ## Shell and toolchain
 
+- Run `pnpm agentic:dev-sandbox:codexyolo` to enter Codex directly in the sandbox checkout, with approvals and the Codex sandbox disabled. It creates or reattaches the dedicated `codexyolo` tmux session; arguments such as `--model <model>` apply when creating the session. Start the container first with `pnpm agentic:dev-sandbox:up`.
+
 - The image installs `zsh` from apt and a pinned `mise` (`MISE_VERSION` build arg in the Dockerfile) at `/usr/local/bin/mise`. Both are fetched at build time, outside the egress firewall.
 - `agent` keeps bash as its login shell because the runners and entrypoint are bash scripts. The entrypoint runs `setup/linux/install.sh -y`, which hooks `setup/dotfiles/bash/.rc.bash` into `~/.bashrc` and `setup/dotfiles/zsh/.rc.linux.zsh` into `~/.zshrc`; both activate mise. Run `zsh` for an interactive zsh session with the repo aliases.
 - Tool versions come from the root `mise.toml`. Run `mise install` in the checkout to fetch them; the default allowlist covers the hosts these tools download from: `mise.jdx.dev` and `mise-versions.jdx.dev` (version metadata), `releases.hashicorp.com` (Terraform, Packer), `nodejs.org` (Node) and the GitHub release asset hosts `objects.githubusercontent.com` and `release-assets.githubusercontent.com` (standalone Python). A newly pinned tool that downloads elsewhere needs its host added via `SANDBOX_ALLOWED_DOMAINS`, or run with the firewall off.
