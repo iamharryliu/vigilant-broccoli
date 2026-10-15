@@ -11,9 +11,9 @@ Build and run the Slack bot in Docker locally or from the registry, and the envi
 
 ## Build & Run
 
-```
-nx docker:build office-presence-socket-server-demo
+The `build` and `deploy-container` targets in `project.json` bundle the app and build and push the Docker image.
 
+```
 docker run -p 3000:3000 \
   -e SLACK_BOT_TOKEN=xoxb-... \
   -e SLACK_APP_TOKEN=xapp-... \
@@ -23,8 +23,6 @@ docker run -p 3000:3000 \
 ## Deploy & Run from Registry
 
 ```
-nx deploy-container office-presence-socket-server-demo
-
 docker run -p 3000:3000 \
   -e SLACK_BOT_TOKEN=xoxb-... \
   -e SLACK_APP_TOKEN=xapp-... \

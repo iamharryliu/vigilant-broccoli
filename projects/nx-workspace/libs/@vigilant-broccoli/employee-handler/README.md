@@ -1,6 +1,6 @@
 # Employee Handler
 
-Employee lifecycle automation.
+Employee lifecycle automation — onboarding, offboarding, signatures, data sync.
 
 ## Table of Contents
 
