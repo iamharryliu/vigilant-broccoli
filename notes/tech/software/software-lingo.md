@@ -9,6 +9,7 @@
 - [Testing](#testing)
 - [Development Approaches](#development-approaches)
 - [Tooling](#tooling)
+- [AI and LLMs](#ai-and-llms)
 
 ## Programming Concepts
 
@@ -114,3 +115,29 @@
 | Redis           | An in-memory data structure store used as a database, cache, and message broker for high-performance applications.     |
 | Runtime         | The environment in which a program or script executes, including the necessary tools and resources.                    |
 | tree shaking    | A code optimization technique that removes unused code (dead code) from the final bundle during the build process.     |
+
+## AI and LLMs
+
+| Term               | Definition                                                                                                                                                                 |
+| :----------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Agent              | An LLM run in a loop that decides which tools to call, reads the results and repeats until the task is done, instead of answering once.                                    |
+| Context compaction | Summarizing earlier conversation history into a shorter form when the context window fills, so a long session can continue.                                                |
+| Context window     | The maximum number of tokens a model can consider at once, covering the system prompt, history, tool results and its own reply.                                            |
+| Embedding          | A vector of numbers that represents the meaning of text, so similar texts sit close together. Used for semantic search and RAG.                                            |
+| Hallucination      | A model stating something false or invented with confidence.                                                                                                               |
+| Harness            | The program around a model that supplies its system prompt and tools, runs the agent loop and enforces permissions. Claude Code and Codex are harnesses.                   |
+| Inference          | Running a trained model to produce output, as opposed to training it.                                                                                                      |
+| Max output         | The cap on how many tokens a model can generate in a single response, separate from the context window.                                                                    |
+| MCP                | Model Context Protocol, an open standard for connecting an AI application to external tools and data through servers that expose them in a uniform way.                    |
+| Ollama             | A local runtime that downloads open-weight models, runs them on your own hardware and serves them through an HTTP API, so tools can use them instead of a hosted provider. |
+| Open-weight model  | A model whose trained weights are published for download, so it can be run locally. Not necessarily open source, since training data and code may be withheld.             |
+| Prompt caching     | Reusing the already-processed start of a repeated prompt to cut cost and latency on later requests.                                                                        |
+| Quantization       | Storing model weights at lower numeric precision to shrink memory use and speed up inference, at a small cost in quality.                                                  |
+| RAG                | Retrieval-augmented generation: fetching relevant documents and adding them to the prompt so the model answers from them.                                                  |
+| Skill              | A packaged set of instructions an agent loads when a task matches, instead of keeping them in every prompt.                                                                |
+| Subagent           | A separate agent started by another agent for a subtask, with its own context window, that returns only its result.                                                        |
+| System Prompt      | A predefined instruction that sets the AI’s behavior, tone, and constraints.                                                                                               |
+| Temperature        | Controls randomness in responses. Higher values are more creative, lower are more deterministic.                                                                           |
+| Token              | The unit of text a model reads and writes, roughly a word fragment. Context limits, output limits and billing are counted in tokens.                                       |
+| Tool use           | A model requesting that the harness run a function, such as a shell command or file read, and then receiving the result.                                                   |
+| User Prompt        | The input provided by the user to request information or an action.                                                                                                        |
