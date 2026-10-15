@@ -5,10 +5,7 @@ export const PAGE_TITLE = {
   TASK_LIST: 'My Tasks',
   TRANSCRIBE: 'Transcribe',
   OCR: 'Scan',
-  QR: 'QR Reader',
   NOTEPAD: 'Notepad',
-  PASTEBIN: 'Pastebin',
-  WEATHER: 'Weather',
   LOGIN: 'Login',
   AUTH_CALLBACK: 'Signing In',
 } as const;
