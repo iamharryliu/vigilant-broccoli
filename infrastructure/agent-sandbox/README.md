@@ -16,6 +16,8 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 ## Shell and toolchain
 
+- Run `pnpm agentic:dev-sandbox:claudeauto` for Claude in auto permission mode (Sonnet by default; pass `--model <model>` to override). It creates or reattaches the existing `cli` tmux session in the sandbox checkout.
+
 - Run `pnpm agentic:dev-sandbox:codexyolo` to enter Codex directly in the sandbox checkout, with approvals and the Codex sandbox disabled. It creates or reattaches the dedicated `codexyolo` tmux session; arguments such as `--model <model>` apply when creating the session. Start the container first with `pnpm agentic:dev-sandbox:up`.
 
 - The image installs `zsh` from apt and a pinned `mise` (`MISE_VERSION` build arg in the Dockerfile) at `/usr/local/bin/mise`. Both are fetched at build time, outside the egress firewall.
