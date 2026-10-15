@@ -21,3 +21,4 @@ Resume data, PDF rendering and validation shared with the manager's career edito
   - Project sections run newest first; contribution rows are alphabetical. Git activity ranges and `Dates unconfirmed` are not resume dates or durations. Record only user-confirmed claims; keep guesses in the conversation.
 - `Open Source` / `OSS Projects` aliases map to the existing `vigilant-broccoli` experience; preserve its label, role and dates instead of adding a duplicate.
 - Keep the summary's single opening role-and-years sentence consistent with the chat editor and work dates; do not repeat years later.
+- After the opener, the summary is one general sentence starting `Expertise in` that names three to six target-relevant confirmed skill areas (bold keywords). No specific projects, employers, integrations or implementation details; those belong in bullets.

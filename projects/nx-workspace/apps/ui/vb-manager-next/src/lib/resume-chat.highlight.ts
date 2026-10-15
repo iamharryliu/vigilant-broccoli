@@ -272,20 +272,16 @@ export const alignTitleWithTarget = (
 
 const SENTENCE_BOUNDARY = /(?<=[.!?])\s+/;
 const YEARS_MENTION = /\byears?\b/i;
-const NEARLY_THRESHOLD_MONTHS = 6;
 
 /**
- * The summary always opens with a fixed "ROLE with N years of software
- * experience" sentence built from the title and the work dates; the model only
+ * The summary always opens with a fixed "ROLE with more than N years of
+ * software experience" sentence built from the title and the work dates; the model only
  * writes the related follow-up, and a leading sentence of its own that makes a
  * years claim is dropped.
  */
 export const withRoleSummaryOpener = (resume: ResumeData): ResumeData => {
   const { fullYears, remainderMonths } = calculateWorkExperience(resume);
-  const years =
-    remainderMonths >= NEARLY_THRESHOLD_MONTHS
-      ? `nearly ${fullYears + 1}`
-      : `${fullYears}+`;
+  const years = remainderMonths > 0 ? `more than ${fullYears}` : `${fullYears}`;
   const followUp = (resume.summary ?? '')
     .trim()
     .split(SENTENCE_BOUNDARY)
