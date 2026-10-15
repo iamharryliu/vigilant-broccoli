@@ -21,8 +21,6 @@ The public, login-free `calendars` home page: three tabs (`CalendarTabs`, modell
 
 ## Embed
 
-See also [calendar view](../calendar-view.md).
-
 `CalendarView` builds the iframe URL with `buildEventCalendarEmbedUrl` and `PUBLIC_BASE_CALENDAR_CONFIG` from `personal-common-js`. Hidden calendars are filtered out of the URL (colours are assigned before filtering, so the rest keep theirs). The Google calendar id comes from the `src` parameter of each public event calendar URL (`getGoogleCalendarId`), so VB Express returns no extra field. The iframe mounts once the event calendars request settles (success or failure) and the tab is force-mounted (`display: none` and `aria-hidden` when inactive) to avoid reloads. Mode is MONTH on desktop and AGENDA when `isMobileUserAgent` (`common-browser`, shared with `vb-manager-next-mobile`) matches, because the authenticated custom agenda is unavailable here.
 
 **Public bundle:** `PUBLIC_BASE_CALENDAR_CONFIG` uses only `PUBLIC_CALENDAR_SOURCES` (the already-linked personal calendar and Google's public calendars); the private birthdays and shared calendars in `PERSONAL_CALENDAR_SOURCES` must not be used here. The embed only exposes what each calendar's sharing settings already make public.
@@ -33,7 +31,7 @@ See also [calendar view](../calendar-view.md).
 
 ## Data
 
-The app is a static bundle: no credential, API key or database snapshot is in it. On every page load the browser fetches the public endpoint, so records the manager makes public, renames, removes or makes private show up on the next load without a redeploy. A failed request renders an error in the Event Calendars tab only; the personal calendar stays usable. The Event Calendars tab lists every `event_calendars` record the manager has marked public. Hostnames per environment are under [Environments](#environments).
+The app is a static bundle: no credential, API key or database snapshot is in it. A failed request affects only the Event Calendars tab.
 
 ## Link construction
 

@@ -16,8 +16,6 @@ Run employee lifecycle actions (onboarding, offboarding, signatures, data sync) 
         await EmployeeHandlerService.handleInput(YOUR_EMPLOYEE_HANDLER_CONFIG);
     } catch (err) {
         console.error(err);
-    } finally {
-        console.log('Finally.')
     }
 })();
 ```
