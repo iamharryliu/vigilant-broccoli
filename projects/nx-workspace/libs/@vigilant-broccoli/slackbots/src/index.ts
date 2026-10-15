@@ -4,3 +4,4 @@ export * from './lib/utils/utils';
 
 export { runOfficePresenceApp } from './office-presence-app/office-presence-app';
 export type { OfficePresenceAppRunConfig } from './office-presence-app/office-presence-app';
+export { runOfficePresenceMock } from './office-presence-app/mock/mock-server';

@@ -11,7 +11,8 @@ import Database from 'better-sqlite3';
 import { formatISODateLocal } from './date.utils';
 import { Language } from '../consts/app-copy.const';
 
-const db = new Database('state.db');
+// The local mock points this at ':memory:' so it never touches the real state.
+const db = new Database(process.env.OFFICE_PRESENCE_DB ?? 'state.db');
 
 db.prepare(
   `
@@ -262,4 +263,10 @@ export function updateEvent(eventId: number, event: OfficeEvent) {
     description: event.description || null,
     attendees: event.attendees ? JSON.stringify(event.attendees) : null,
   });
+}
+
+export function clearAllData() {
+  db.prepare('DELETE FROM user_presences').run();
+  db.prepare('DELETE FROM office_events').run();
+  db.prepare('DELETE FROM user_settings').run();
 }
