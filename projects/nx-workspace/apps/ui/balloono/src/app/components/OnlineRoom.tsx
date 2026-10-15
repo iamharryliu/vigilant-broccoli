@@ -5,6 +5,7 @@ import { Button } from '@vigilant-broccoli/react-lib';
 import { DIFFICULTY_LABEL_KEY } from '../app.consts';
 import { MATCH_STATUS } from '../engine/game.consts';
 import { Difficulty } from '../engine/game.types';
+import { useMatchStats } from '../hooks/useMatchStats';
 import { useControls } from '../hooks/useControls';
 import { CONNECTION, useOnlineRoom } from '../hooks/useOnlineRoom';
 import { RoomListing } from '../hooks/useRoomDirectory';
@@ -54,6 +55,7 @@ export function OnlineRoom({
   } = useOnlineRoom({ room, userId, username, controls, cpuName });
 
   const { match, cpus, wins } = snapshot;
+  const { saveFailed } = useMatchStats(room, userId, match);
   const playing = match?.status === MATCH_STATUS.PLAYING;
   const isSeatedInMatch = Boolean(
     match?.players.some(player => player.id === userId),
@@ -89,6 +91,12 @@ export function OnlineRoom({
       </p>
     );
 
+  const note = isSeatedInMatch
+    ? saveFailed
+      ? t('STATS.SAVE_FAILED')
+      : undefined
+    : t('MATCH.SPECTATING');
+
   if (match) {
     return (
       <div className="flex flex-col gap-4">
@@ -102,7 +110,7 @@ export function OnlineRoom({
           soundsEnabled={
             connection === CONNECTION.CONNECTED && (isHost || snapshotReady)
           }
-          note={isSeatedInMatch ? undefined : t('MATCH.SPECTATING')}
+          note={note}
           actions={
             isHost ? (
               <>

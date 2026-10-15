@@ -1,6 +1,6 @@
 # Supabase Auth Pattern
 
-Single shared Supabase project (`vb-supabase`, ref `jrdosjjgmsoodpjmjqxx`) provides Google-provider sign-in for all user-facing apps: `hearth`, `employee-handler-ui`, `small-business-next`, `vb-manager-next`, `vb-manager-next-mobile`. All apps share one auth user pool — the same Google account is the same user everywhere.
+Single shared Supabase project (`vb-supabase`, ref `jrdosjjgmsoodpjmjqxx`) provides Google-provider sign-in for all user-facing apps: `hearth`, `employee-handler-ui`, `small-business-next`, `vb-manager-next`, `vb-manager-next-mobile`, `balloono` (optional sign-in). All apps share one auth user pool — the same Google account is the same user everywhere.
 
 Reference implementation: **vb-manager-next** (the only app on the shared lib so far).
 

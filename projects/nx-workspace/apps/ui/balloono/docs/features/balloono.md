@@ -8,6 +8,7 @@ A Bomberman-style arena game at `balloono.harryliu.dev`: drop water balloons, so
 - [Engine](#engine)
 - [CPU opponents](#cpu-opponents)
 - [Online rooms](#online-rooms)
+- [Accounts and stats](#accounts-and-stats)
 - [Controls](#controls)
 - [Sound effects](#sound-effects)
 - [Manual verification](#manual-verification)
@@ -18,14 +19,14 @@ A Bomberman-style arena game at `balloono.harryliu.dev`: drop water balloons, so
 - Fixed pillars and random crates fill the arena. Spawns occupy the four corners and the middle of each edge, with neighbouring tiles kept clear around occupied spawns. Up to eight players, human or CPU.
 - A balloon pops 2.5 s after it is dropped and splashes in a plus shape up to its range, which starts at one tile. The splash stops at pillars, and also at the first crate it breaks. It sets off any balloon it reaches. Power-ups stay until a player picks them up.
 - Broken crates can reveal a power-up: extra balloon, bigger splash, or faster feet.
-- Anyone standing in a splash is soaked and out. The last player dry wins the round. Wins are counted per session or per room.
+- Anyone standing in a splash is soaked and out. The last player dry wins the round. Wins are counted per session or per room; signed-in players also keep lifetime online stats (see [Accounts and stats](#accounts-and-stats)).
 - After 2 minutes, sudden death walls the arena in on a spiral, one tile at a time. Tiles about to close flash red. This ends cautious stalemates.
 
 ## Engine
 
 `src/app/engine/` is pure TypeScript with no React and no network, so the same code runs the local game and an online host.
 
-- Match state carries its arena dimensions, round id, and a two-second history of numbered pop, pickup, and splash-hit events. Board helpers, CPU paths, closure order, and canvas rendering use those dimensions.
+- Match state carries its arena dimensions, round id, a two-second history of numbered pop, pickup, and splash-hit events, and a per-player `tally` (balloons dropped, opponents soaked, pickups by type, ticks alive). Board helpers, CPU paths, closure order, and canvas rendering use those dimensions.
 - `advanceMatch` (`match.ts`) steps one 50 ms tick from a state and a map of inputs, and returns a new state.
 - Movement is continuous. A player is a box slightly narrower than a tile and can sit between tiles, sliding toward a lane's centre to cut corners. They count as standing on the tile their centre is over (`occupiedTile`). CPU bots send `snap` inputs so they stop on tile centres, which is where they decide.
 - `dangerMap` (`board.ts`) gives the ticks until each tile is soaked. It follows chain reactions and includes sudden-death closures. The CPU uses it, and so does the renderer's warning overlay.
@@ -58,9 +59,21 @@ Rooms use public Supabase Realtime channels (`balloono-room:<name>`), with no ba
 - **Room directory:** Realtime cannot list channels, so each host advertises its room as presence on `balloono-directory`. The home screen lists those rooms.
 - **Player identity:** player ids are per page load, so two tabs never collide. Only the name is stored.
 
-Rooms are anonymous by design, like the standalone whiteboard: anyone who knows a room name can join it or spoof messages in it.
+Rooms are anonymous by design, like the standalone whiteboard: anyone who knows a room name can join it or spoof messages in it. Signing in never changes this: seats and presence stay keyed by the per-page-load player id, not the account.
 
 Without `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (for example, a plain local `nx serve`), the online card explains that rooms are unavailable. CPU play still works.
+
+## Accounts and stats
+
+Signing in with Google (`createSupabaseAuth`, `src/lib/auth.ts`) is optional. Guests play exactly as before. The home screen shows a small sign-in/sign-out control on the name card and, when signed in, a personal stats panel. Without the Supabase env vars the sign-in control is hidden and no auth client starts. A signed-in display name prefills the name field once per account per device; it never affects presence keys.
+
+- **Counted:** online room matches only. CPU and local 2-player matches record nothing. Spectators record nothing.
+- **Stats:** wins, losses, draws, seconds played (ticks the player was alive), items collected (extra balloon, bigger splash, faster feet), balloons dropped, and players soaked.
+- **Tally:** `Player.tally` in match state is advanced by `advanceMatch`, so it rides every snapshot and survives host migration. A soak credits the owner of the root balloon of a chain reaction. Self-soaks, arena closure and leaving players credit nobody.
+- **Recording:** when a round ends, a signed-in, seated client builds a result (`buildMatchResult`, `engine/results.ts`) from the final state. `match_id` is `<room>:<round id>`, identical on every client. A player who leaves (or closes the tab) mid-match records a loss from the last state seen. The write is a `keepalive` insert with `ON CONFLICT DO NOTHING`, so refreshes, reconnects and retries cannot double-count. A failed write is swallowed; the match shows one hint.
+- **Storage:** `balloono_match_results` (migration `supabase/migrations/20261015000000_create_balloono_match_results.sql`) has a unique `(user_id, match_id)` key, CHECK caps on every count, and RLS allowing users to insert and select only rows where `user_id = auth.uid()`. The `balloono_user_stats` view (`security_invoker`) totals a user's rows for the panel.
+- **Trust model:** honor system. Each client writes its own row from its own view of the match, so stats are unverified and trivially spoofable by anyone with a session. There is no leaderboard for that reason.
+- **Auth redirects:** `/auth/callback` must be in `uri_allow_list` in `infrastructure/terraform/supabase-auth.tf` for each environment.
 
 ## Controls
 
@@ -83,4 +96,7 @@ Numbered events travel in snapshots so guests do not miss a pop between broadcas
 - Arena tiers: start rounds with 4, 5, 6, 7, and 8 contenders; verify dimensions, spawns, free movement, bot navigation, closure warnings, and canvas aspect ratio.
 - Audio: pop a balloon, collect an item, and get hit by a splash; verify distinct sounds, chain reactions, mute persistence, mobile gesture unlock, and no duplicate playback online.
 - Light and dark OS theme: the board redraws in the matching palette.
+- Accounts: with a Supabase env, sign in; the name card shows your name and a sign-out button, and the stats panel appears. Signed out or without env, neither shows and CPU play is unchanged.
+- Stats: in a two-browser room (one signed in, one guest), finish a match; the signed-in user gets one `balloono_match_results` row and the guest none. Refresh or reconnect and replay the finished round id: still one row. Close the host tab mid-match: the new host's final state still records correct results. Leave mid-match: a loss row. The panel totals match the rows.
+- CPU and local 2-player matches add no rows.
 - Phone: the touch pad moves the player, and holding a direction keeps walking.
