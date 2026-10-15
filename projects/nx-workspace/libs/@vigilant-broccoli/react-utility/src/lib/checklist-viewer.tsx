@@ -1,11 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { MarkedOptions, Tokens } from 'marked';
 import DOMPurify from 'dompurify';
 import { createHeadingRenderer, marked } from './markdown-config';
-import {
-  createNoteLinkClickHandler,
-  scrollToUrlHash,
-} from './note-links';
+import { createNoteLinkClickHandler, scrollToUrlHash } from './note-links';
+import { observeThemeChange, renderMermaidDiagrams } from './mermaid-diagrams';
 
 const STORAGE_PREFIX = 'docs-checklist:';
 const LIST_ID_PREFIX = 'list';
@@ -48,8 +46,7 @@ interface ChecklistItem {
 }
 
 type ContentBlock =
-  | { kind: 'html'; html: string }
-  | { kind: 'list'; items: ChecklistItem[] };
+  { kind: 'html'; html: string } | { kind: 'list'; items: ChecklistItem[] };
 
 const inlineHtml = (tokens: Tokens.Generic[], opts: MarkedOptions): string =>
   marked
@@ -205,8 +202,14 @@ export function ChecklistViewer({
     setChecked(loadChecked(filePath));
   }, [filePath]);
 
+  const proseRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    scrollToUrlHash();
+    const el = proseRef.current;
+    renderMermaidDiagrams(el).then(scrollToUrlHash);
+    return el
+      ? observeThemeChange(el, () => renderMermaidDiagrams(el))
+      : undefined;
   }, [blocks]);
 
   const toggle = (id: string) => {
@@ -244,7 +247,7 @@ export function ChecklistViewer({
 
   return (
     <div className={CLS.ROOT}>
-      <div className={CLS.PROSE} onClick={handleContentClick}>
+      <div ref={proseRef} className={CLS.PROSE} onClick={handleContentClick}>
         {total > 0 && (
           <div className={CLS.HEADER}>
             <span className={CLS.HEADER_TEXT}>

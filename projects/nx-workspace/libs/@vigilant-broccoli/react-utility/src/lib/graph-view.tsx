@@ -18,6 +18,7 @@ import {
   type SimulationNodeDatum,
 } from 'd3-force';
 import type { NoteGraph } from '@vigilant-broccoli/react-lib';
+import { isDarkTheme, PREFERS_DARK_QUERY } from './theme';
 
 interface SimNode extends SimulationNodeDatum {
   id: string;
@@ -26,7 +27,9 @@ interface SimNode extends SimulationNodeDatum {
   degree: number;
 }
 
-type SimLink = SimulationLinkDatum<SimNode>;
+interface SimLink extends SimulationLinkDatum<SimNode> {
+  value?: number;
+}
 
 const CFG = {
   COLLIDE_PAD: 4,
@@ -34,6 +37,7 @@ const CFG = {
   NODE_R_STEP: 1.4,
   HIT_PAD: 4,
   LINK_WIDTH: 1.2,
+  LINK_WIDTH_MAX: 4,
   LABEL_FONT_PX: 11,
   LABEL_ZOOM: 1.4,
   MIN_ZOOM: 0.1,
@@ -83,8 +87,6 @@ const COLOR = {
 
 const CLASS_ATTR = 'class';
 const STYLE_ATTR = 'style';
-const PREFERS_DARK_QUERY = '(prefers-color-scheme: dark)';
-const RGB_LUMINANCE = { R: 0.2126, G: 0.7152, B: 0.0722, MID: 128 } as const;
 
 const EVENT = {
   POINTER_DOWN: 'pointerdown',
@@ -94,34 +96,6 @@ const EVENT = {
   WHEEL: 'wheel',
   CHANGE: 'change',
 } as const;
-
-const parseRgb = (
-  value: string,
-): { r: number; g: number; b: number; a: number } | null => {
-  const match = value.match(/rgba?\(([^)]+)\)/);
-  if (!match) return null;
-  const [r, g, b, a = 1] = match[1].split(',').map(part => parseFloat(part));
-  if ([r, g, b].some(Number.isNaN)) return null;
-  return { r, g, b, a };
-};
-
-// Detect the actual background painted behind the canvas rather than guessing
-// the theme: the app may render light even while the OS prefers dark, so a
-// prefers-color-scheme guess can pick line colors that vanish into the page.
-const isDarkTheme = (el: HTMLElement | null): boolean => {
-  if (typeof document === 'undefined') return false;
-  for (let node = el; node; node = node.parentElement) {
-    const rgb = parseRgb(getComputedStyle(node).backgroundColor);
-    if (rgb && rgb.a > 0) {
-      const luminance =
-        RGB_LUMINANCE.R * rgb.r +
-        RGB_LUMINANCE.G * rgb.g +
-        RGB_LUMINANCE.B * rgb.b;
-      return luminance < RGB_LUMINANCE.MID;
-    }
-  }
-  return window.matchMedia?.(PREFERS_DARK_QUERY).matches ?? false;
-};
 
 const groupHue = (group: string): number => {
   let hash = 0;
@@ -137,6 +111,11 @@ const nodeColor = (group: string, dark: boolean): string => {
 
 const nodeRadius = (degree: number): number =>
   CFG.NODE_MIN_R + Math.sqrt(degree) * CFG.NODE_R_STEP;
+
+const linkWidth = (value: number | undefined): number =>
+  value == null
+    ? CFG.LINK_WIDTH
+    : Math.min(CFG.LINK_WIDTH_MAX, CFG.LINK_WIDTH + Math.log2(1 + value));
 
 const endpointId = (end: SimLink['source']): string =>
   typeof end === 'object' ? (end as SimNode).id : String(end);
@@ -222,7 +201,7 @@ export function GraphView({
       const source = nodeById.get(link.source);
       const target = nodeById.get(link.target);
       if (!source || !target) continue;
-      links.push({ source: source.id, target: target.id });
+      links.push({ source: source.id, target: target.id, value: link.value });
       source.degree++;
       target.degree++;
     }
@@ -280,11 +259,11 @@ export function GraphView({
       const isLit = (id: string) =>
         !dimming || id === focusId || (focusSet?.has(id) ?? false);
 
-      ctx.lineWidth = CFG.LINK_WIDTH;
       for (const link of links) {
         const s = nodeById.get(endpointId(link.source));
         const t = nodeById.get(endpointId(link.target));
         if (!s || !t) continue;
+        ctx.lineWidth = linkWidth(link.value);
         const touchesFocus =
           focusId != null && (s.id === focusId || t.id === focusId);
         if (dimming && !touchesFocus) {

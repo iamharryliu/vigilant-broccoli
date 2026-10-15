@@ -17,7 +17,6 @@ module.exports = {
     '../../../libs/@vigilant-broccoli/devops-cli/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/github-workspace/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/llm-schemas/src/**/*.{tsx,ts,jsx,js,html}',
-    '../../../libs/@vigilant-broccoli/vibecheck-lite/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/llm-tools/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/money-movement/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/links/src/**/*.{tsx,ts,jsx,js,html}',

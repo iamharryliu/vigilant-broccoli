@@ -1,21 +1,23 @@
 # Agent Context — resume
 
-The resume data (`resume.json`), its one-page PDF renderer (`server.ts`), and the validation shared by the career editor in `vb-manager-next`.
+Resume data, PDF rendering and validation shared with the manager's career editor.
+
+## Table of Contents
+
+- [Editing](#editing)
 
 ## Editing
 
-- Treat a request to edit or tailor the resume from the CLI exactly like a message to the in-app AI chat. Follow the same rules, whose source of truth is `buildSystemPrompt` in `apps/ui/vb-manager-next/src/app/api/resume/chat/resume-chat.prompt.ts` (factual sources, editing rules, conversation flow) and the protected-field checks in `apps/ui/vb-manager-next/src/lib/resume-chat.protection.ts`. Read both before editing instead of relying on a summary here, and deviate only when the user explicitly waives a rule for that edit, saying which one you are waiving.
-- What differs from the chat: there is no ledger or Apply step, so edit `resume.json` directly and ask the user in the conversation about anything unsupported before drafting it.
-- After editing `resume.json`, run `cd projects/nx-workspace && npx tsx apps/ui/vb-manager-next/scripts/check-resume.ts` from the repo root (append a git ref to compare against something other than `HEAD`; there is deliberately no pnpm script for it). It runs the editor's protected-field check (links, title, identity, employers, roles, dates) against the committed resume, then renders the PDF and reports overflow, the fill band, wrapped lines ending under 70% full and how many lines the skills line wraps onto. Fix what it reports until it passes.
-- `notes/personal/personal-software-career-experience.md` holds confirmed career facts in four tables: `## Skills` (`| Skill | Used In |`), `## Roles` (`| Role | Used In |`), `## Job Experience` (`| Company | Role | Dates | Context |`) and `## Languages` (`| Language | Proficiency |`). The in-app editor reads them live, so preserve these headings and table shapes. Job Experience supplies role-wide context; `## Project Contributions` supplies concrete implementation details and source links under `### Company — Project — Dates` headings and `| Contribution | Description |` tables. Languages records confirmed spoken and written proficiency.
-- A skill may be added to a resume if it has a row in `## Skills` or explicit implementation evidence in Project Contributions; otherwise it is unconfirmed, so ask the user before claiming it and add a row once they confirm. Add a row, or extend an existing row's `Used In`, whenever a skill is used somewhere new. The editor sends these tables to the model as factual sources and does not check skills or figures in code, so never add a skill, count, percentage or other figure that is not already in the resume or these records; record a newly confirmed fact there first.
-- Conventions for that file's tables (keep them when editing):
-  - One skill per row; split combined skills such as `Angular / Ionic` into separate rows, except where the user keeps a pair together (`MySQL / MariaDB`, `TypeScript / JavaScript`).
-  - Rows are sorted alphabetically by the first column, case-insensitively, in all four tables.
-  - `Used In` lists only where the skill or role was used: company names (`Capco`, `ELVA11`, `Tillmobil`, `Tretton37`) and `Open Source` for the personal projects. Never repeat the role title there; the `## Roles` table maps roles to companies. Entries are separated by `; ` and sorted alphabetically, case-insensitively.
-  - Keep implementation details, outcomes and source links in the appropriate Project Contributions description. Keep responsibilities spanning projects or awaiting project attribution in Job Experience, never in `Used In`.
-  - Keep the skills index consistent with the company-specific project and job records, preserving original responsibilities and outcomes. Keep role titles and dates factual; adding an allowed Roles title does not change historical job titles.
-  - Write only what the user has confirmed; guesses are labelled as such in the conversation, not in the file.
-- Respect explicit aliases in the career record: `Open Source` / `OSS Projects` maps to the existing `vigilant-broccoli` project experience entry. Preserve the resume entry label, role and dates rather than adding a duplicate. Reference links provide traceability; do not infer skills from them or copy References lists into resume bullets.
-- Project sections stay newest to oldest; their contribution tables are alphabetical by contribution. User-confirmed dates can be used as recorded; Git activity ranges are approximate context, and `Dates unconfirmed` never becomes a resume date or duration.
-- Keep the resume on exactly one US Letter page.
+- Before resume edits, read `apps/ui/vb-manager-next/src/app/api/resume/chat/resume-chat.prompt.ts` (`buildSystemPrompt`) and `src/lib/resume-chat.protection.ts` in that app. Follow their factual, editing and conversation rules; waive a rule only on explicit user instruction and identify the waiver.
+- CLI edits go directly to `resume.json`, without the chat's ledger or Apply step. Use confirmed facts for the draft; ask about unsupported claims before adding them.
+- After editing, run `npx tsx apps/ui/vb-manager-next/scripts/check-resume.ts` from `projects/nx-workspace` (optional git ref; default `HEAD`). Fix protected-field, page overflow, fill-band and line-wrap failures. The PDF must fit exactly one US Letter page.
+- `notes/personal/personal-software-career-experience.md` is read live by the editor. Preserve `## Skills` (`Skill | Used In`), `## Job Experience` (`Company | Role | Dates | Context`), `## Languages` (`Language | Proficiency`), and `## Project Contributions` with `### Company — Project — Dates` headings and `Contribution | Description` tables.
+- Skills require a Skills row or explicit Project Contributions evidence; record newly confirmed facts before using them. Update `Used In` when a skill is used somewhere new. Do not infer experience from reference links or copy References lists into resume bullets. Figures must already be in the resume or confirmed records.
+- Career-record table conventions:
+  - One skill per row, except user-kept pairs (`MySQL / MariaDB`, `TypeScript / JavaScript`). Alphabetize rows case-insensitively.
+  - `Used In` contains company names or `Open Source`, separated by `; ` and alphabetized, never role titles or implementation details.
+  - Keep project details, outcomes and links in Project Contributions; role-wide or unattributed responsibilities stay in Job Experience. Preserve confirmed responsibilities and outcomes when reorganizing.
+  - A Job Experience `Role` cell lists the historical title first, then allowed resume titles separated by `; `; extra allowed titles do not change the historical title.
+  - Project sections run newest first; contribution rows are alphabetical. Git activity ranges and `Dates unconfirmed` are not resume dates or durations. Record only user-confirmed claims; keep guesses in the conversation.
+- `Open Source` / `OSS Projects` aliases map to the existing `vigilant-broccoli` experience; preserve its label, role and dates instead of adding a duplicate.
+- Keep the summary's single opening role-and-years sentence consistent with the chat editor and work dates; do not repeat years later.

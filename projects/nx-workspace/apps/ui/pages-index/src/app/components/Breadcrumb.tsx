@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { useTranslation } from '../i18n';
 import { getBreadcrumbAncestors } from '../consts/breadcrumbs';
-import { isStatusHost, toProjectsUrl } from '../consts/hosts';
+import { isCareerHost, isStatusHost, toProjectsUrl } from '../consts/hosts';
 
 interface BreadcrumbProps {
   current: string;
@@ -15,6 +15,12 @@ export function Breadcrumb({ current, route }: BreadcrumbProps) {
   const { pathname } = useLocation();
   const ancestors = getBreadcrumbAncestors(route ?? pathname);
   const onStatusHost = isStatusHost();
+  const onCareerHost = isCareerHost();
+  // The career host root is the career page, not the projects Home.
+  const crumbLabel = (crumb: (typeof ancestors)[number]) =>
+    onCareerHost && crumb.path === '/'
+      ? t('CAREER_PAGE.TITLE')
+      : t(crumb.labelKey);
 
   return (
     <nav
@@ -25,11 +31,11 @@ export function Breadcrumb({ current, route }: BreadcrumbProps) {
         <Fragment key={crumb.path}>
           {onStatusHost ? (
             <a href={toProjectsUrl(crumb.path)} className="hover:underline">
-              {t(crumb.labelKey)}
+              {crumbLabel(crumb)}
             </a>
           ) : (
             <Link to={crumb.path} className="hover:underline">
-              {t(crumb.labelKey)}
+              {crumbLabel(crumb)}
             </Link>
           )}
           <ChevronRight className="h-3.5 w-3.5 shrink-0" />

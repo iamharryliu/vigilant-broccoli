@@ -14,15 +14,14 @@ Real-time location sharing for friends and family.
 ## Stack
 
 - Language - TypeScript
-- Framework - Next.js (React)
+- Framework - Next.js
 - Build Tool - Next.js
 - External libs
   - Leaflet / react-leaflet
-  - OpenStreetMap Overpass API via VK Maps and Private.coffee (nearby places)
+  - OpenStreetMap Overpass API
 - Internal libs
   - `common-browser`
   - `common-js`
   - `react-lib`
 - Cloud services
-  - Supabase (live location sync)
-  - Vercel
+  - Supabase

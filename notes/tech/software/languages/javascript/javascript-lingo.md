@@ -18,11 +18,12 @@
 
 ## Package Managers
 
-| Term | Definition                                                                                              |
-| ---- | ------------------------------------------------------------------------------------------------------- |
-| npm  | Node Package Manager — the default package manager bundled with Node.js.                                |
-| pnpm | Uses a global content-addressable store and symlinks for installs, avoiding duplicate packages on disk. |
-| yarn | Installs packages in parallel, historically faster than classic npm.                                    |
+| Term     | Definition                                                                                                                                                          |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Corepack | A tool bundled with Node.js (up to v24) that installs and runs the pnpm/yarn version pinned in `package.json`'s `packageManager` field, so teams share one version. |
+| npm      | Node Package Manager — the default package manager bundled with Node.js.                                                                                            |
+| pnpm     | Uses a global content-addressable store and symlinks for installs, avoiding duplicate packages on disk.                                                             |
+| yarn     | Installs packages in parallel, historically faster than classic npm.                                                                                                |
 
 ## Bundlers
 

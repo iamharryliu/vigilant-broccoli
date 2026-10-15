@@ -39,7 +39,7 @@ When finished, write $META_FILE containing only a JSON object with these fields:
   - skipped: array of objects {path, reason} for candidates you left in place, including every candidate over the file cap
   - commit_message: capitalized, concise, focused on why the documentation needed the cleanup, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
-  - pr_title: the pull request title
+  - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
   - pr_summary: markdown for the PR "## Summary" section — one bullet per removal or rewrite with its path and one-line reason, then a "### Skipped candidates" subsection listing each skipped candidate with its reason
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (spot-check the removals, watch CI to green, then merge, and re-run \`pnpm agentic-pr-create-audit\` when candidates were skipped over the file cap)
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (uncertain candidates worth a human decision, related cleanups worth a separate PR), or "" when there are none
@@ -125,3 +125,4 @@ PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_
 PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
 echo "$PR_URL"
 printf 'PR_URL::%s\n' "$PR_URL"
+emit_pr_files "$BASE_SHA"

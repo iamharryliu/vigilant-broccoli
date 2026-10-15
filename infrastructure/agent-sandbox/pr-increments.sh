@@ -41,6 +41,7 @@ inc_emit_record() {
   printf 'PR_URL::%s\n' "$url"
   printf 'PR_STATE::%s\n' "$state"
   printf 'PR_BASE::%s\n' "$pr_base"
+  printf 'PR_FILES::%s\n' "$(inc_changed_files "$base_sha")"
   printf 'PR_DEPENDS_ON::%s\n' "$depends_url"
   echo 'PR_SUMMARY_BEGIN'
   printf '%s\n' "$summary"
@@ -48,6 +49,16 @@ inc_emit_record() {
   echo 'PR_DIFF_BEGIN'
   git --no-pager diff --no-color --no-ext-diff "$base_sha" HEAD
   echo 'PR_DIFF_END'
+}
+
+# One-line JSON array of {file, summary} for the run summary's changed-files
+# table. The file list comes from git; each summary is the agent's
+# file_changes entry, blank when it gave none.
+inc_changed_files() {
+  local base_sha=$1
+  git --no-pager diff --name-only "$base_sha" HEAD | jq -Rsc \
+    --slurpfile meta <(jq -c '.file_changes // []' "$META_FILE" 2>/dev/null || echo '[]') \
+    'split("\n") | map(select(length > 0)) | map(. as $f | {file: $f, summary: ((($meta[0] // []) | map(select(type == "object" and .file == $f)) | .[0].summary) // "")})'
 }
 
 inc_emit_unpublished() {
@@ -220,10 +231,11 @@ Sandbox execution rules:
   - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
   - commit_message: capitalized, concise, focused on why not what, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit, or "$FALLBACK_TRAILER" when no such trailer is specified
-  - pr_title: the pull request title
+  - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
   - pr_summary: markdown bullet points for the PR "## Summary" section, describing only this increment
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — remaining actions for the human for this increment, or "- [ ] Merge once CI is green" when nothing else is left
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section, or "" when there are none
+  - file_changes: array of objects {"file": "<repo-relative path of each file you changed>", "summary": "<one line on what changed or was implemented>"}, shown as a table in the run summary
 EOF
 }
 
@@ -299,7 +311,8 @@ inc_publish() {
     subject=$fallback_subject
   fi
   echo "$trailer" | grep -Eqi '^co-authored-by: .+ <.+>$' || trailer=$FALLBACK_TRAILER
-  [ -n "$pr_title" ] && pr_title=$(normalize_pr_title "$pr_title") || pr_title=$subject
+  pr_title=$(normalize_pr_title "$pr_title")
+  [ -n "$pr_title" ] || pr_title=$subject
   [ -n "$pr_summary" ] || pr_summary=$fallback_summary
   [ -n "$pr_next_steps" ] || pr_next_steps='- [ ] Merge once CI is green'
 

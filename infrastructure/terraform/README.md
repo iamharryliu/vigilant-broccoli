@@ -13,32 +13,32 @@ Provisions the project's cloud resources — Cloudflare DNS/Pages/Tunnels/Access
   - YAML
   - Bash
 - Tooling
-  - Terraform
-  - Packer
   - Docker
   - Docker Compose
+  - Packer
+  - Terraform
 - Cloud providers
+  - AWS
   - Cloudflare
+  - GitHub
   - Google Cloud
   - Oracle Cloud
-  - AWS
   - Supabase
-  - GitHub
 - Services
-  - Gitea
-  - RabbitMQ
+  - Alloy
   - Caddy
+  - cloudflared
   - code-server
-  - Seafile
+  - Gitea
   - Grafana
   - Loki
-  - Alloy
-  - nginx
-  - cloudflared
   - MariaDB
   - Memcached
+  - nginx
+  - RabbitMQ
+  - Seafile
   - Watchtower
 - Secrets
-  - HashiCorp Vault
-  - Google Secret Manager
   - Bitwarden
+  - Google Secret Manager
+  - HashiCorp Vault

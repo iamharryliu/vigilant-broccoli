@@ -2,98 +2,44 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { CalendarPlus } from 'lucide-react';
+import { isMobileUserAgent } from '@vigilant-broccoli/common-browser';
 import {
-  buildCalendarUrl,
-  CalendarConfig,
-  GOOGLE_CALENDAR,
-} from '@vigilant-broccoli/common-browser';
+  BASE_CALENDAR_CONFIG,
+  buildEventCalendarEmbedUrl,
+  getEventCalendarColor,
+  PERSONAL_CALENDAR_SOURCES,
+  readHiddenCalendarIds,
+  writeHiddenCalendarIds,
+} from '@vigilant-broccoli/personal-common-js';
 import {
   VisuallyHidden,
   Dialog,
   DialogContent,
   DialogTitle,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '@vigilant-broccoli/react-lib';
 import { CalendarInput } from './calendar-input';
+import { EventCalendarLink, EventCalendarsList } from './event-calendars-list';
+import { CALENDAR_TAB, CalendarTab } from '../app.const';
 import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
 
-const BIRTHDAYS_CALENDAR =
-  'f61b08e940f7c4fb8becf0d419c8c09f7e0c46d6d03343637aef5837c766a09b@group.calendar.google.com';
-const CALENDAR_TITLE = 'Personal Calendar';
-
-const CALENDAR_SOURCES: {
-  id: string;
-  color: string;
-  label: string;
-  kind: 'owner' | 'shared';
-}[] = [
-  {
-    id: GOOGLE_CALENDAR.CALENDAR_EMAIL.PERSONAL,
-    color: GOOGLE_CALENDAR.CALENDAR_COLOR.GREEN,
-    label: 'Personal',
-    kind: 'owner',
-  },
-  {
-    id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.COUNTRY_CALENDAR.SWEDEN,
-    color: GOOGLE_CALENDAR.CALENDAR_COLOR.PURPLE,
-    label: 'Sweden holidays',
-    kind: 'shared',
-  },
-  {
-    id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.PHASES_OF_THE_MOON,
-    color: GOOGLE_CALENDAR.CALENDAR_COLOR.DARK_PINK,
-    label: 'Moon phases',
-    kind: 'shared',
-  },
-  {
-    id: BIRTHDAYS_CALENDAR,
-    color: GOOGLE_CALENDAR.CALENDAR_COLOR.BLUE,
-    label: 'Birthdays',
-    kind: 'shared',
-  },
-  {
-    id: GOOGLE_CALENDAR.PUBLIC_CALENDAR.H_AND_K,
-    color: GOOGLE_CALENDAR.CALENDAR_COLOR.PINK,
-    label: 'H&K',
-    kind: 'shared',
-  },
-];
-
-const BASE_CALENDAR_CONFIG: Omit<CalendarConfig, 'mode'> = {
-  height: 600,
-  wkst: 2,
-  ctz: GOOGLE_CALENDAR.TIMEZONE.COPENHAGEN,
-  showPrint: 0,
-  title: CALENDAR_TITLE,
-  ownerCalendars: CALENDAR_SOURCES.filter(
-    source => source.kind === 'owner',
-  ).map(source => ({ email: source.id, color: source.color })),
-  sharedCalendars: CALENDAR_SOURCES.filter(
-    source => source.kind === 'shared',
-  ).map(source => ({ id: source.id, color: source.color })),
-};
+const CALENDAR_TITLE = BASE_CALENDAR_CONFIG.title;
 
 const BASE_CALENDAR_COLOR_BY_ID = new Map(
-  CALENDAR_SOURCES.map(source => [source.id, decodeURIComponent(source.color)]),
+  PERSONAL_CALENDAR_SOURCES.map(source => [
+    source.id,
+    decodeURIComponent(source.color),
+  ]),
 );
-
-// Colors not already claimed by CALENDAR_SOURCES above, so an event
-// calendar never visually matches a personal/public one. Cycled if
-// there are more event calendars than spare colors.
-const EVENT_CALENDAR_COLORS = [
-  GOOGLE_CALENDAR.CALENDAR_COLOR.LIGHT_BLUE,
-  GOOGLE_CALENDAR.CALENDAR_COLOR.DARK_GREEN,
-];
 
 const EVENT_CALENDARS_API = '/api/event-calendars';
 
-interface EventCalendar {
-  id: string;
-  name: string;
-  googleCalendarId: string;
-}
+const HIDDEN_CALENDARS_STORAGE_KEY = 'vb-manager-hidden-event-calendars';
 
-const MOBILE_USER_AGENT_REGEX =
-  /Android|iPhone|iPad|iPod|IEMobile|BlackBerry|Opera Mini/i;
+const TAB_TOUCH_CLASS = 'px-4 text-sm';
 
 const EVENTS_API = '/api/calendar/events';
 const LOADING_MESSAGE = 'Loading…';
@@ -112,7 +58,9 @@ interface CalendarEvent {
 
 const eventsApiUrl = (extraCalendarIds: string[]) => {
   const params = new URLSearchParams();
-  CALENDAR_SOURCES.forEach(source => params.append('calendarId', source.id));
+  PERSONAL_CALENDAR_SOURCES.forEach(source =>
+    params.append('calendarId', source.id),
+  );
   extraCalendarIds.forEach(id => params.append('calendarId', id));
   return `${EVENTS_API}?${params.toString()}`;
 };
@@ -197,7 +145,7 @@ const useIsMobileBrowser = () => {
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
 
   useEffect(() => {
-    setIsMobile(MOBILE_USER_AGENT_REGEX.test(navigator.userAgent));
+    setIsMobile(isMobileUserAgent(navigator.userAgent));
   }, []);
 
   return isMobile;
@@ -208,24 +156,39 @@ export const MyCalendarView = () => {
   const [events, setEvents] = useState<CalendarEvent[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [eventCalendars, setEventCalendars] = useState<EventCalendar[]>([]);
+  const [eventCalendars, setEventCalendars] = useState<EventCalendarLink[]>([]);
   // Gates the agenda fetch below so it waits for this list once, instead of
   // firing twice — once without event calendars, once with them as soon as
   // they arrive.
   const [eventCalendarsLoaded, setEventCalendarsLoaded] = useState(false);
+  const [eventCalendarsError, setEventCalendarsError] = useState(false);
+  const [tab, setTab] = useState<CalendarTab>(CALENDAR_TAB.CALENDAR);
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
   const isMobile = useIsMobileBrowser();
+
+  useEffect(() => {
+    setHiddenIds(new Set(readHiddenCalendarIds(HIDDEN_CALENDARS_STORAGE_KEY)));
+  }, []);
+
+  const toggleHidden = (googleCalendarId: string) =>
+    setHiddenIds(current => {
+      const next = new Set(current);
+      if (!next.delete(googleCalendarId)) next.add(googleCalendarId);
+      writeHiddenCalendarIds(HIDDEN_CALENDARS_STORAGE_KEY, next);
+      return next;
+    });
 
   useEffect(() => {
     const load = async () => {
       const headers = await buildAuthHeaders();
       const res = await fetch(EVENT_CALENDARS_API, { headers });
-      if (!res.ok) return null;
+      if (!res.ok) throw res;
       return res.json();
     };
 
     load()
-      .then(data => data && setEventCalendars(data.calendars))
-      .catch(() => undefined)
+      .then(data => setEventCalendars(data.calendars ?? []))
+      .catch(() => setEventCalendarsError(true))
       .finally(() => setEventCalendarsLoaded(true));
   }, []);
 
@@ -234,27 +197,22 @@ export const MyCalendarView = () => {
   const eventCalendarColorById = useMemo(() => {
     const colors = new Map<string, string>();
     eventCalendars.forEach((calendar, index) => {
-      colors.set(
-        calendar.googleCalendarId,
-        EVENT_CALENDAR_COLORS[index % EVENT_CALENDAR_COLORS.length],
-      );
+      colors.set(calendar.googleCalendarId, getEventCalendarColor(index));
     });
     return colors;
   }, [eventCalendars]);
 
-  const calendarConfig = useMemo<CalendarConfig>(
-    () => ({
-      ...BASE_CALENDAR_CONFIG,
-      mode: 'AGENDA',
-      sharedCalendars: [
-        ...BASE_CALENDAR_CONFIG.sharedCalendars,
-        ...eventCalendars.map(calendar => ({
-          id: calendar.googleCalendarId,
-          color: eventCalendarColorById.get(calendar.googleCalendarId),
+  const calendarSrc = useMemo(
+    () =>
+      buildEventCalendarEmbedUrl({
+        mode: 'AGENDA',
+        eventCalendars: eventCalendars.map(calendar => ({
+          hiddenKey: calendar.googleCalendarId,
+          googleCalendarId: calendar.googleCalendarId,
         })),
-      ],
-    }),
-    [eventCalendars, eventCalendarColorById],
+        hiddenKeys: hiddenIds,
+      }),
+    [eventCalendars, hiddenIds],
   );
 
   const calendarColorById = useMemo(() => {
@@ -270,10 +228,11 @@ export const MyCalendarView = () => {
       events &&
       groupEventsByDay(
         events
+          .filter(event => !hiddenIds.has(event.calendarId))
           .flatMap(expandMultiDayEvent)
           .sort((a, b) => a.start.localeCompare(b.start)),
       ),
-    [events],
+    [events, hiddenIds],
   );
 
   useEffect(() => {
@@ -316,75 +275,109 @@ export const MyCalendarView = () => {
   };
 
   return (
-    <div className="flex h-full w-full flex-col gap-3">
-      <button
-        type="button"
-        onClick={() => setCreateOpen(true)}
-        className="flex w-full shrink-0 items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
+    <Tabs
+      value={tab}
+      onValueChange={value => setTab(value as CalendarTab)}
+      className="flex h-full w-full flex-col gap-3"
+    >
+      <div className="flex shrink-0 items-center justify-between gap-2">
+        <TabsList className="h-11">
+          {Object.values(CALENDAR_TAB).map(name => (
+            <TabsTrigger key={name} value={name} className={TAB_TOUCH_CLASS}>
+              {name}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <button
+          type="button"
+          onClick={() => setCreateOpen(true)}
+          aria-label="Create calendar event"
+          title="Create calendar event"
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
+        >
+          <CalendarPlus size={18} />
+        </button>
+      </div>
+
+      <TabsContent value={CALENDAR_TAB.EVENT_CALENDARS} className="mt-0">
+        <EventCalendarsList
+          calendars={eventCalendarsLoaded ? eventCalendars : null}
+          error={eventCalendarsError}
+          hiddenIds={hiddenIds}
+          onToggleHidden={toggleHidden}
+        />
+      </TabsContent>
+
+      {/* Force-mounted so switching tabs doesn't reload the iframe. */}
+      <TabsContent
+        forceMount
+        value={CALENDAR_TAB.CALENDAR}
+        className="mt-0 flex min-h-0 flex-1 flex-col"
+        style={{
+          display: tab === CALENDAR_TAB.CALENDAR ? undefined : 'none',
+        }}
+        aria-hidden={tab !== CALENDAR_TAB.CALENDAR}
       >
-        <CalendarPlus size={16} />
-        Create Event
-      </button>
+        {isMobile === false && (
+          <div className="w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200">
+            <iframe
+              src={calendarSrc}
+              className="h-full w-full dark:invert dark:hue-rotate-180"
+              title={CALENDAR_TITLE}
+            />
+          </div>
+        )}
 
-      {isMobile === false && (
-        <div className="w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200">
-          <iframe
-            src={buildCalendarUrl(calendarConfig)}
-            className="h-full w-full dark:invert dark:hue-rotate-180"
-            title={CALENDAR_TITLE}
-          />
-        </div>
-      )}
-
-      {isMobile === true && (
-        <div className="w-full rounded-lg border border-gray-200">
-          {error && <p className="p-4 text-sm text-red-600">{error}</p>}
-          {!error && agendaGroups === null && (
-            <p className="p-4 text-sm text-gray-500">{LOADING_MESSAGE}</p>
-          )}
-          {!error && agendaGroups !== null && agendaGroups.length === 0 && (
-            <p className="p-4 text-sm text-gray-500">{EMPTY_MESSAGE}</p>
-          )}
-          {!error &&
-            agendaGroups !== null &&
-            agendaGroups.map(group => (
-              <div key={group.key}>
-                <p className="sticky top-[var(--topbar-h)] z-10 bg-gray-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 md:top-0">
-                  {formatDateHeading(group.date)}
-                </p>
-                <ul className="divide-y divide-gray-100">
-                  {group.events.map(event => (
-                    <li key={`${event.calendarId}-${event.id}`}>
-                      <a
-                        href={event.htmlLink ?? '#'}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
-                      >
-                        <span
-                          className="h-2.5 w-2.5 shrink-0 rounded-full"
-                          style={{
-                            backgroundColor:
-                              calendarColorById.get(event.calendarId) ??
-                              '#9ca3af',
-                          }}
-                        />
-                        <span className="flex min-w-0 flex-1 flex-col">
-                          <span className="truncate text-sm font-medium text-gray-900">
-                            {event.summary}
+        {isMobile === true && (
+          <div className="w-full rounded-lg border border-gray-200">
+            {error && <p className="p-4 text-sm text-red-600">{error}</p>}
+            {!error && agendaGroups === null && (
+              <p className="p-4 text-sm text-gray-500">{LOADING_MESSAGE}</p>
+            )}
+            {!error && agendaGroups !== null && agendaGroups.length === 0 && (
+              <p className="p-4 text-sm text-gray-500">{EMPTY_MESSAGE}</p>
+            )}
+            {!error &&
+              agendaGroups !== null &&
+              agendaGroups.map(group => (
+                <div key={group.key}>
+                  <p className="sticky top-[var(--topbar-h)] z-10 bg-gray-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 md:top-0">
+                    {formatDateHeading(group.date)}
+                  </p>
+                  <ul className="divide-y divide-gray-100">
+                    {group.events.map(event => (
+                      <li key={`${event.calendarId}-${event.id}`}>
+                        <a
+                          href={event.htmlLink ?? '#'}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
+                        >
+                          <span
+                            className="h-2.5 w-2.5 shrink-0 rounded-full"
+                            style={{
+                              backgroundColor:
+                                calendarColorById.get(event.calendarId) ??
+                                '#9ca3af',
+                            }}
+                          />
+                          <span className="flex min-w-0 flex-1 flex-col">
+                            <span className="truncate text-sm font-medium text-gray-900">
+                              {event.summary}
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              {formatEventTime(event)}
+                            </span>
                           </span>
-                          <span className="text-xs text-gray-500">
-                            {formatEventTime(event)}
-                          </span>
-                        </span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-        </div>
-      )}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+          </div>
+        )}
+      </TabsContent>
 
       <Dialog open={createOpen} onOpenChange={handleCreateOpenChange}>
         <DialogContent
@@ -406,6 +399,6 @@ export const MyCalendarView = () => {
           <CalendarInput />
         </DialogContent>
       </Dialog>
-    </div>
+    </Tabs>
   );
 };

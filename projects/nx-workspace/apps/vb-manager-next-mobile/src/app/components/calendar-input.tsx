@@ -8,10 +8,7 @@ import {
   EventDraft,
   EventDraftStatus,
 } from './event-draft-card';
-import {
-  buildAuthHeaders,
-  reconnectGoogle,
-} from '../providers/auth-provider';
+import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
 import { useVoiceInput } from '../hooks/use-voice-input';
 
 interface ImagePreview {

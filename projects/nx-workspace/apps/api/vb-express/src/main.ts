@@ -66,9 +66,17 @@ const PUBLIC_CLIENT_ORIGINS = [
   'https://production-calendars.pages.dev',
 ];
 
+const CALENDAR_PREVIEW_ORIGIN =
+  /^https:\/\/[a-z0-9-]+\.preview-calendars\.pages\.dev$/;
+
 const privateCorsOptions = createCorsOptions(ALLOWED_ORIGINS);
 const publicCorsOptions = {
   ...createCorsOptions([...ALLOWED_ORIGINS, ...PUBLIC_CLIENT_ORIGINS]),
+  origin: [
+    ...ALLOWED_ORIGINS,
+    ...PUBLIC_CLIENT_ORIGINS,
+    CALENDAR_PREVIEW_ORIGIN,
+  ],
   credentials: false,
   methods: [HTTP_METHOD.GET],
 };

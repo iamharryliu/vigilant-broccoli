@@ -63,4 +63,3 @@ npx tsx script.ts postRetentionCleanup
   - `google-workspace`
 - Cloud services
   - Google Workspace
-  - npm

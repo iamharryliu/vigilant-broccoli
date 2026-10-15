@@ -38,7 +38,7 @@ When finished, write $META_FILE containing only a JSON object with these fields:
   - accurate_count: number of rows you verified as still accurate
   - commit_message: capitalized, concise, focused on why the correction was needed, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
-  - pr_title: the pull request title
+  - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
   - pr_summary: markdown bullet points for the PR "## Summary" section, listing each resolved and drifted row by id with its evidence
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (review, then merge)
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
@@ -129,3 +129,4 @@ PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_
 PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
 echo "$PR_URL"
 printf 'PR_URL::%s\n' "$PR_URL"
+emit_pr_files "$BASE_SHA"

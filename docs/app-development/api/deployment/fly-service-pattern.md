@@ -67,7 +67,7 @@ Wiring: pruned `smoke` depends on `prune`; bundled `smoke` depends on `build`. `
 ## Health check
 
 - `GET /` must be unauthenticated, fast, no DB/LLM calls. Pattern: `reply.send({ service: SERVICE_NAME, docs: DOCS_PATH })`.
-- `grace_period = '30s'` is required to cover cold-start under `auto_stop_machines = 'stop'`.
+- `grace_period = '30s'` is a safe margin for resume or cold-start; every service (`vb-express`, `bucket-service`, `llm-service`, and the email services) uses `auto_stop_machines = 'suspend'` and resumes from a memory snapshot in under a second. The email services' amqplib publish connections and consumers survived a staging resume (2026-10-11, one short suspend); a long suspend where the broker drops the connection is untested, and their `setTimeout` reconnect loops are the fallback. Use `'stop'` instead if a service holds connections or timers that do not survive a resume.
 - Failed checks on a new machine abort the deploy and keep the previous machine running — don't skip the `[[http_service.checks]]` block.
 
 ## Machine count

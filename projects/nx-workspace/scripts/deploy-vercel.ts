@@ -124,6 +124,36 @@ async function applyProjectSettings(
   }
 }
 
+// "all" also covers production-target deployments, which every staging project
+// is, including its immutable URLs.
+const VERCEL_AUTHENTICATION_ALL_DEPLOYMENTS = {
+  ssoProtection: { deploymentType: 'all' },
+};
+
+async function enableVercelAuthentication(
+  projectId: string,
+  teamId: string,
+  token: string,
+): Promise<void> {
+  const res = await fetch(
+    `https://api.vercel.com/v9/projects/${projectId}?teamId=${teamId}`,
+    {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(VERCEL_AUTHENTICATION_ALL_DEPLOYMENTS),
+    },
+  );
+  if (!res.ok) {
+    throw new Error(
+      `Failed to enable Vercel Authentication: ${res.status} ${await res.text()}`,
+    );
+  }
+  console.log('✓ Vercel Authentication enabled for all deployments');
+}
+
 async function vercelEnvAdd(
   key: string,
   value: string,
@@ -381,6 +411,14 @@ async function main() {
     );
   }
 
+  if (environment === STAGING) {
+    await enableVercelAuthentication(
+      vercelEnv.VERCEL_PROJECT_ID,
+      vercelEnv.VERCEL_ORG_ID,
+      vercelEnv.VERCEL_TOKEN,
+    );
+  }
+
   await pruneStaleVercelEnvVars(
     vercelEnv.VERCEL_PROJECT_ID,
     vercelEnv.VERCEL_ORG_ID,
@@ -422,10 +460,12 @@ async function main() {
     );
 
     console.log(`\nDeploying ${projectName} to Vercel...\n`);
-    execSync(`npx vercel deploy --prebuilt --prod --yes --cwd "${repoRoot}"`, {
-      stdio: 'inherit',
-      env: vercelEnv,
-    });
+    // tgz uploads one archive instead of every output file; per-file uploads
+    // exhaust the free plan's 5000 uploads/24h ("api-upload-free") mid-run.
+    execSync(
+      `npx vercel deploy --prebuilt --prod --yes --archive=tgz --cwd "${repoRoot}"`,
+      { stdio: 'inherit', env: vercelEnv },
+    );
   });
 
   console.log('\nDone!');

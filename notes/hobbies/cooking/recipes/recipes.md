@@ -3,6 +3,7 @@
 - [Goto Meals](./goto-meals.md)
 - [Bread Recipes](./bread-recipes/bread-recipes.md)
 - [Breakfast Recipes](./breakfast-recipes/breakfast-recipes.md)
+- [Cookie Recipes](./cookie-recipes/cookie-recipes.md)
 - [Curry Recipes](./curry-recipes/curry-recipes.md)
 - [Drink Recipes](./drink-recipes/drink-recipes.md)
 - [Noodle Recipes](./noodle-recipes/noodle-recipes.md)

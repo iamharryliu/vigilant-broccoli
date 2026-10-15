@@ -3,15 +3,8 @@ name: update-feature-documentation
 description: In vigilant-broccoli, create or update the slim docs/features note under the affected app for this conversation's changes.
 ---
 
-Use the current vigilant-broccoli checkout and resolve repository paths from its Git root. If the current directory is outside that repo, ask which checkout to use; do not operate on the skill installation checkout by default.
+Use the current vigilant-broccoli Git root. Outside this repo, ask which checkout to use; never default to the skill installation checkout.
 
-Update or create a docs/features/this-feature.md to reflect changes in this conversation. Feature docs should live under the most relevant application's directory (e.g. `apps/my-app/docs/features/`), not at the workspace root.
+Create or update `docs/features/<feature>.md` (a `<feature>/` folder only when it needs several files) under the owning app/lib for this conversation's changes; only cross-app features belong at workspace level.
 
-Keep it as slim as possible:
-
-- Headers + bullet points only — no prose paragraphs
-- One line per behaviour — omit anything obvious or derivable from the code
-- No implementation details unless they explain a non-obvious constraint or decision
-- No file path tables, env var lists, or "key files" sections unless critical to using the feature
-
-Then double check the doc against the actual code and fix anything that is incorrect (file paths, names, env vars, endpoints, defaults, behavior).
+Use headings and bullets, one line per behavior. Omit code-obvious details, file/env inventories and key-file tables unless essential to usage or a non-obvious constraint. Verify the note against the implementation.

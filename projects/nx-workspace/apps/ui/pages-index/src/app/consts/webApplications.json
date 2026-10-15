@@ -4,79 +4,99 @@
       "id": "balloono",
       "href": "https://balloono.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.BALLOONO.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.BALLOONO.DESCRIPTION"
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.BALLOONO.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/balloono/README.md"
     },
     {
       "id": "context-md",
       "href": "https://context.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.CONTEXT_MD.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.CONTEXT_MD.DESCRIPTION"
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.CONTEXT_MD.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/context-md/README.md"
+    },
+    {
+      "id": "career",
+      "href": "https://career.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.CAREER.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.CAREER.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/pages-index/README.md"
     },
     {
       "id": "cloud-8-skate",
       "href": "https://cloud8skate.com/",
       "titleKey": "WEB_APPLICATIONS_PAGE.CLOUD_8_SKATE.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.CLOUD_8_SKATE.DESCRIPTION"
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.CLOUD_8_SKATE.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/cloud-8-skate-react/README.md"
     },
     {
       "id": "component-library",
       "href": "https://components.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.COMPONENT_LIBRARY.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.COMPONENT_LIBRARY.DESCRIPTION"
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.COMPONENT_LIBRARY.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/component-library/README.md"
     },
     {
       "id": "docs-md",
       "href": "https://docs.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.DOCS_MD.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.DOCS_MD.DESCRIPTION"
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.DOCS_MD.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/docs-md/README.md"
     },
     {
       "id": "find-me",
       "href": "https://findme.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.FIND_ME.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.FIND_ME.DESCRIPTION"
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.FIND_ME.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/findme/README.md"
     },
     {
       "id": "harry-liu",
       "href": "https://harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.HARRY_LIU.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.HARRY_LIU.DESCRIPTION"
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.HARRY_LIU.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/personal-website-react/README.md"
     },
     {
       "id": "calendars",
       "href": "https://calendar.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.CALENDARS.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.CALENDARS.DESCRIPTION"
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.CALENDARS.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/calendars/README.md"
     },
     {
       "id": "links",
       "href": "https://links.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.LINKS.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.LINKS.DESCRIPTION"
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.LINKS.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/links-react/README.md"
     },
     {
       "id": "utilities",
       "href": "https://utilities.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.UTILITIES.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.UTILITIES.DESCRIPTION"
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.UTILITIES.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/utilities-ui/README.md"
     },
     {
       "id": "waiting-games",
       "href": "https://waiting.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.WAITING_GAMES.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.WAITING_GAMES.DESCRIPTION"
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.WAITING_GAMES.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/waiting-games/README.md"
     },
     {
       "id": "weather",
       "href": "https://weather.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.WEATHER.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.WEATHER.DESCRIPTION"
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.WEATHER.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/weather-next/README.md"
     },
     {
       "id": "whiteboard",
       "href": "https://whiteboard.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.WHITEBOARD.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.WHITEBOARD.DESCRIPTION"
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.WHITEBOARD.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/whiteboard/README.md"
     }
   ],
   "demos": [
@@ -84,7 +104,8 @@
       "id": "employee-handler",
       "href": "https://demo-employee-handler-ui.vercel.app",
       "titleKey": "WEB_APPLICATIONS_PAGE.EMPLOYEE_HANDLER.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.EMPLOYEE_HANDLER.DESCRIPTION"
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.EMPLOYEE_HANDLER.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/employee-handler-ui/README.md"
     }
   ]
 }

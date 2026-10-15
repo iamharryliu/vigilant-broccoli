@@ -12,6 +12,7 @@ on:
     paths:
       - 'projects/nx-workspace/**'
       - '.github/workflows/deploy-preview.yml'
+      - '.github/scripts/deploy-preview-summary.mjs'
       # Snapshot sources rendered by context-md (agent context) and docs-md (notes)
       - 'CONTEXT.md'
       - 'TODO.md'
@@ -64,7 +65,7 @@ jobs:
         working-directory: ./projects/nx-workspace
         run: |
           CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
-          WORKFLOW_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy-preview\.yml$" || true)
+          WORKFLOW_CHANGED=$(echo "$CHANGED_FILES" | grep -cE "^\.github/(workflows/deploy-preview\.yml|scripts/deploy-preview-summary\.mjs)$" || true)
           # Snapshot sources live outside the nx workspace, so nx affected can't see them
           AGENT_CONTEXT_CHANGED=$(echo "$CHANGED_FILES" | grep -cE "^(CONTEXT\.md|TODO\.md|docs/|setup/dotfiles/agent-skills/)|/CONTEXT\.md$" || true)
           NOTES_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^notes/" || true)
@@ -107,6 +108,7 @@ jobs:
       # wrangler's two URL lines never reach deploy.log and the summary comes
       # out empty.
       - name: Deploy previews
+        id: deploy
         if: steps.check.outputs.projects != ''
         working-directory: ./projects/nx-workspace
         env:
@@ -116,36 +118,17 @@ jobs:
         run: |
           pnpm exec nx run-many -t deploy:preview --projects="${{ steps.check.outputs.projects }}" --skip-nx-cache --output-style=static | tee deploy.log
 
-          REPO_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
-          {
-            echo "## Preview deployments"
-            echo
-            printf 'PR [#%s](%s/pull/%s) · branch `%s` · commit [`%s`](%s/commit/%s)\n' \
-              "$PR_NUMBER" "$REPO_URL" "$PR_NUMBER" "$PREVIEW_HEAD_REF" "${PREVIEW_COMMIT:0:7}" "$REPO_URL" "$PREVIEW_COMMIT"
-            echo
-            echo "| Site | Latest (follows this PR) | This build (immutable) |"
-            echo "| --- | --- | --- |"
-          } >> "$GITHUB_STEP_SUMMARY"
-
-          # wrangler prints the stable alias ("Deployment alias URL") and the
-          # per-deployment URL ("Take a peek over at"); the subdomain tells
-          # them apart, since only the alias is $PREVIEW_BRANCH. Grouped by the
-          # Cloudflare project in the host, which is the only place the nx
-          # project -> project-name mapping shows up in the log.
-          grep -ohE 'https://[a-z0-9-]+\.preview-[a-z0-9-]+\.pages\.dev' deploy.log \
-            | sort -u \
-            | awk -F'[/.]' -v alias="$PREVIEW_BRANCH" '
-                { seen[$4]; if ($3 == alias) a[$4] = $0; else c[$4] = $0 }
-                END {
-                  for (site in seen)
-                    printf "| %s | %s | %s |\n", site,
-                      (site in a ? a[site] : "—"), (site in c ? c[site] : "—")
-                }
-              ' \
-            | sort >> "$GITHUB_STEP_SUMMARY"
-
-          printf '\n_The immutable subdomain is Cloudflare'"'"'s deployment id, not the commit — each deploy gets its own, so one commit yields a different id per site. The commit is recorded on the deployment itself via `--commit-hash`, visible in the Cloudflare dashboard._\n' \
-            >> "$GITHUB_STEP_SUMMARY"
+      - name: Summarize deployed apps
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr }}
+          PREVIEW_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+          PREVIEW_HEAD_REF: ${{ github.event.pull_request.head.ref || github.ref_name }}
+          DEPLOY_OUTCOME: ${{ steps.deploy.outcome }}
+          CHECK_OUTCOME: ${{ steps.check.outcome }}
+          DEPLOY_PROJECTS: ${{ steps.check.outputs.projects }}
+        run: node .github/scripts/deploy-preview-summary.mjs
 
       # --output-style=static for the same reason as the deploy step: the
       # script's "deleting N stale" line is the only record of what the prune

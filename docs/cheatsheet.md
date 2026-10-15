@@ -146,7 +146,8 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   immich:docker:reload        Reload the standalone Immich Docker Compose stack
   immich:docker:logs          Tail the standalone Immich Docker Compose logs
   vb-manager-next:start       Start vb-manager-next via PM2 and save the process list
-  vb-manager-next:reload      Reload vb-manager-next via PM2 and save the process list
+  event-calendars:sync        Sync every event calendar with sources from Facebook to Google Calendar (exits non-zero on failure, 3 when Facebook login is required; logs to ~/.vb-manager/event-calendars-sync.log)
+  deploy:vb-manager           Pull latest (ff-only), then reload vb-manager-next via PM2 and save the process list
   vb-manager-next:delete      Delete vb-manager-next PM2 process
   vb-manager-next:logs        Tail vb-manager-next PM2 logs
   vb-manager-next:status      Show PM2 process status
@@ -157,7 +158,10 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 🤖 AGENTIC — DEV SANDBOX (attended; you drive the persistent container)
   agentic:dev-sandbox:up      Fetch tokens from Vault into the current shell session (never written to disk), then build + start contained agent sandbox
                                (export SANDBOX_VAULT_ENV_VARS=NAME1,NAME2 before running to also inject those Vault secret keys)
-  agentic:dev-sandbox:cli     Open an interactive Claude session in a persistent tmux session in the sandbox repo clone (auto mode, sonnet; --model <m> to override)
+  agentic:dev-sandbox:auto:claude  Open Claude in a persistent claude-auto tmux session (automatic approval review; forwards CLI arguments)
+  agentic:dev-sandbox:auto:codex  Open Codex in a persistent codex-auto tmux session (automatic approval review; forwards CLI arguments)
+  agentic:dev-sandbox:yolo:claude  Open Claude in a persistent claude-yolo tmux session (permission checks bypassed; forwards CLI arguments)
+  agentic:dev-sandbox:yolo:codex  Open Codex in a persistent codex-yolo tmux session (permission checks bypassed; forwards CLI arguments)
   agentic:dev-sandbox:shell   Open an interactive bash shell in the sandbox (dotfiles loaded)
   agentic:dev-sandbox:logs    Follow sandbox provisioning logs
   agentic:dev-sandbox:down    Stop the sandbox
@@ -170,16 +174,17 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 🚀 AGENTIC — TASKS (unattended; ephemeral containers, no human in the loop)
   agentic-pr-create <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers, one run per id; each opens a PR, or several when the request splits into increments (sonnet; --model <m> to override, or --agent codex [--codex-model <m>])
                                (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express"; TODO ids named in the task are resolved the same way)
+  agentic-pr-create --agent ollama --prompt "<task>"  Use native host Ollama/Qwen in Docker; retain a preview checkout without publishing (--local shorthand, --ollama-model <tag>, --publish to open PRs)
   agentic-pr-create-todo <desc>  Headlessly refine <desc> into a repo-informed task prompt and add a TODO.md entry in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
   agentic-pr-create-todo-audit  Headlessly re-verify TODO.md rows against the codebase in an ephemeral sandbox container — deletes resolved rows, corrects drifted paths/line numbers/counts — then open a PR; opens none if every row still holds (sonnet; --model <m> to override)
   agentic-pr-create-audit  Headlessly audit docs/, every CONTEXT.md and README.md for passages about legacy implementations that no longer apply (removed apps/scripts/workflows/env vars, "previously/migrated from/no longer" backstory) in an ephemeral sandbox container, remove or rewrite to the current state only what grep verification supports, then open one PR of at most 15 files listing each removal and the skipped candidates for a re-run; opens none if nothing qualifies (opus; --model <m> to override)
+  agentic-pr-create-context-audit  Headlessly slim every CONTEXT.md, shared skill body, Doc Map and required-reading doc by replacing restated rules with links to their owner and compressing incident narratives, never losing rules, workarounds, recovery steps or exact error strings, in an ephemeral sandbox container, then open one PR of at most 15 files citing where each removed fact is retained; opens none if nothing can be slimmed safely (opus; --model <m> to override)
   agentic-pr-create-prune  Headlessly sweep the repo for dead code, unused dependencies, broken doc links/anchors, orphaned docs/scripts/workflows and cheatsheet drift in an ephemeral sandbox container, remove only items grep shows have zero references, then open one capped PR listing the evidence and skipped candidates; opens none if nothing is provably dead (sonnet; --model <m> to override)
   agentic-pr-create-rnd "<question>"    Headlessly research a concise R&D note (alternatives table + recommendation + sample) under docs/rnd/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
   GitHub Actions: manual-agentic-pr-update selects operation=change|fix-ci|resolve-conflicts; instruction is required for change, optional for fix-ci, blank for resolve-conflicts
-  agentic-pr-update <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update, and opens separate follow-up PRs for independent work it surfaces); accepts a PR number or URL (sonnet; --model <m> to override)
-                                (--with-ci-logs feeds the PR's failing check summary and failed-step logs to the agent, e.g. agentic-pr-update --with-ci-logs 149 "fix the failing checks")
-  agentic-pr-update-fix-ci <pr> [instruction]  Fix a PR's failing CI in an ephemeral sandbox: feeds its failing check summary and failed-step logs to the agent, runs pre-commit and pushes the fix; accepts a PR number or URL (sonnet; --model <m> to override)
-  agentic-pr-update-resolve-conflicts <pr>  Merge origin/main into a PR branch, resolve conflicts, run pre-commit and push the update in an ephemeral sandbox; accepts a PR number or URL (sonnet; --model <m> to override)
+  agentic-pr-update [--operation <op>] <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update, and opens separate follow-up PRs for independent work it surfaces); accepts a PR number or URL (sonnet; --model <m> to override)
+                                (--operation fix-ci [<instruction>] fixes a PR's failing CI from its check logs; --operation resolve-conflicts merges origin/main and resolves conflicts, taking no instruction)
+                                (--with-ci-logs, or the Actions with_ci_logs input, waits up to 10 minutes for running checks, then feeds the PR's failing check summary and failed-step logs to the agent; a plain change still lists non-passing check names, e.g. agentic-pr-update --with-ci-logs 149 "fix the failing checks")
 
 🐙 GITHUB
   gh:actions:deploy           Trigger deploy workflow
@@ -194,6 +199,9 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
 
 🔍 AUDIT
   audit                       Run vulnerability audit tree
+
+🏗️  NX WORKSPACE
+  nx <command> [args...]      Run Nx in projects/nx-workspace (e.g. pnpm nx serve <app>)
 
 ⬆️  MIGRATE
   nx:migrate                  nx migrate latest

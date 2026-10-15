@@ -16,9 +16,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@vigilant-broccoli/vibecheck-lite": [
-        "./libs/@vigilant-broccoli/vibecheck-lite/src/index.ts"
-      ],
       "@vigilant-broccoli/common-browser": [
         "./libs/@vigilant-broccoli/common-browser/src/index.ts"
       ],

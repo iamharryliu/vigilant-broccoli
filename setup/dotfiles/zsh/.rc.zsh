@@ -2,6 +2,10 @@ source ~/.zsh_aliases
 
 ($REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh &)
 
+if [ "$IS_CRON" != "true" ]; then
+    source "$REPO_DIR/setup/dotfiles/zsh/scripts/event_calendars_autosync.zsh"
+fi
+
 export PATH="/opt/homebrew/bin:$PATH"
 
 if command -v mise >/dev/null; then

@@ -101,6 +101,9 @@ export interface NoteGraphNode {
 export interface NoteGraphLink {
   source: string;
   target: string;
+  // Optional edge weight (e.g. shared-item count) used to scale line width;
+  // omitted links render at the default width, so existing graphs are unaffected.
+  value?: number;
 }
 
 export interface NoteGraph {

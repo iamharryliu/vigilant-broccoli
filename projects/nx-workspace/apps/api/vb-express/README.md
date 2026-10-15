@@ -1,5 +1,9 @@
 # VB Express
 
+## Table of Contents
+
+- [Stack](#stack)
+
 ## Stack
 
 - Language - TypeScript
@@ -17,12 +21,11 @@
   - `messaging`
   - `personal-common-js`
 - Cloud services
-  - Google Tasks
-  - Google OAuth
-  - Google reCAPTCHA
-  - Supabase (public `event_calendars` read)
-  - Twilio
   - ElevenLabs
   - Email Service (HTTP)
+  - Google OAuth
+  - Google reCAPTCHA
+  - Google Tasks
   - LLM Service (HTTP)
-  - Fly.io
+  - Supabase
+  - Twilio

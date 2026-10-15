@@ -5,10 +5,10 @@
 - 4 eggs
 - 2 tomatoes
 - salt
-- sugar
-- MSG
+- 1 tbsp sugar
+- 1/2 tsp MSG
 - white pepper
-- fish sauce
+- 1 tbsp fish sauce
 - cornstarch slurry
 - knobs of butter
 - green onion

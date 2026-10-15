@@ -3,26 +3,26 @@ set -euo pipefail
 
 CONTAINER=vb-agent-sandbox
 WORKDIR=/home/agent/vigilant-broccoli
-SESSION=cli
+MODE=${1:-}
+AGENT=${2:-}
 
-MODEL=sonnet
-while [ $# -gt 0 ]; do
-  case "$1" in
-    --model)
-      MODEL=$2
-      shift 2
-      ;;
-    --model=*)
-      MODEL="${1#*=}"
-      shift
-      ;;
-    *)
-      echo "Usage: pnpm agentic:dev-sandbox:cli [--model <model>]" >&2
-      exit 1
-      ;;
-  esac
-done
+case "$MODE:$AGENT" in
+  auto:claude) CLI=(claude --model sonnet --permission-mode auto) ;;
+  yolo:claude) CLI=(claude --model sonnet --dangerously-skip-permissions) ;;
+  auto:codex)
+    CLI=(codex --sandbox workspace-write --ask-for-approval on-request
+      -c 'approvals_reviewer="auto_review"')
+    ;;
+  yolo:codex) CLI=(codex --dangerously-bypass-approvals-and-sandbox) ;;
+  *)
+    echo "Usage: pnpm agentic:dev-sandbox:{auto,yolo}:{claude,codex} [CLI arguments...]" >&2
+    exit 1
+    ;;
+esac
+shift 2
+
+SESSION="$AGENT-$MODE"
+printf -v COMMAND '%q ' "${CLI[@]}" "$@"
 
 exec docker exec -it -u agent -w "$WORKDIR" "$CONTAINER" \
-  tmux new-session -A -s "$SESSION" -c "$WORKDIR" \
-  "claude --permission-mode auto --model $MODEL"
+  tmux new-session -A -s "$SESSION" -c "$WORKDIR" "$COMMAND"

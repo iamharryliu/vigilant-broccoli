@@ -62,12 +62,24 @@ jobs:
           [ "$STATUS" -eq 0 ] || { echo "sourcing .rc.bash exited $STATUS"; exit 1; }
           rm -f rc-stderr.log
 
+      # Linux has its own zsh rc because .rc.zsh is macOS-specific (Homebrew, sysctl).
+      - name: Verify the Linux zsh rc chain sources cleanly
+        run: |
+          set -euo pipefail
+          STATUS=0
+          zsh -c 'source "$HOME/vigilant-broccoli/setup/dotfiles/zsh/.rc.linux.zsh"' 2> zsh-rc-stderr.log || STATUS=$?
+          [ -s zsh-rc-stderr.log ] && { echo "sourcing .rc.linux.zsh wrote to stderr:"; cat zsh-rc-stderr.log; exit 1; }
+          [ "$STATUS" -eq 0 ] || { echo "sourcing .rc.linux.zsh exited $STATUS"; exit 1; }
+          rm -f zsh-rc-stderr.log
+
       - name: Verify a second run stays idempotent
         run: |
           set -euo pipefail
           ./setup/linux/install.sh -y
           HOOKS=$(grep -cxF 'source $HOME/vigilant-broccoli/setup/dotfiles/bash/.rc.bash' "$HOME/.bashrc")
           [ "$HOOKS" -eq 1 ] || { echo "rc hook appended $HOOKS times"; exit 1; }
+          ZSH_HOOKS=$(grep -cxF 'source $HOME/vigilant-broccoli/setup/dotfiles/zsh/.rc.linux.zsh' "$HOME/.zshrc")
+          [ "$ZSH_HOOKS" -eq 1 ] || { echo "zsh rc hook appended $ZSH_HOOKS times"; exit 1; }
 
   macos-brewfile:
     runs-on: macos-latest

@@ -23,7 +23,7 @@ Both agents have converged on the same primitives — a markdown instruction fil
 | Hooks                     | Lifecycle hooks declared in settings; an individual skill can also carry its own `hooks` entries.                                                                                                                   | Lifecycle shell scripts (beta) on events such as pre-tool-use, post-tool-use, and turn end. `/hooks` lists them, and untrusted projects skip them.                                                               |
 | MCP servers               | Added with `claude mcp add` or committed per project; `/mcp` inspects the connected servers.                                                                                                                        | Added with `codex mcp add` and recorded in `config.toml`; `/mcp` inspects the connected servers.                                                                                                                 |
 | Permissions and approvals | Per-tool permission prompts, pre-approved through settings rules or a skill's `allowed-tools`.                                                                                                                      | An explicit `sandbox_mode` paired with a separate `approval_policy`, changeable mid-session with `/permissions`. See [Sandbox](./codex.md#sandbox).                                                              |
-| Project instructions      | `CLAUDE.md`, read at session start and merged from the user-level file down through the directory tree.                                                                                                             | `AGENTS.md`, found by walking up to the project root, with a 32 KiB default byte cap and configurable fallback filenames. See [config.toml](./codex.md#configtoml).                                              |
+| Project instructions      | `CLAUDE.md` (or `AGENTS.md` from v2.1.277), read at session start and merged from the user-level file down through the directory tree.                                                                              | `AGENTS.md`, found by walking up to the project root, with a 32 KiB default byte cap and configurable fallback filenames. See [config.toml](./codex.md#configtoml).                                              |
 | Session resume            | `/resume` picks up an earlier conversation; `/rewind` rolls back to an earlier checkpoint; `/clear` starts fresh.                                                                                                   | `codex resume --last` continues the most recent session; `codex fork --last` branches a copy so an alternative approach doesn't cost the original.                                                               |
 | Skills                    | `SKILL.md` under `.claude/skills/`, `~/.claude/skills/`, a nested directory, managed settings, or a plugin. Frontmatter can restrict tools, bind arguments, scope to file globs, or fork the skill into a subagent. | `SKILL.md` under `.agents/skills/` in the repo or a parent, `$HOME/.agents/skills/`, `/etc/codex/skills`, plus the set bundled with the CLI. `/skills` browses what is loaded.                                   |
 | Skill invocation          | Typed as `/<name>`, or chosen by the model from the skill's `description`.                                                                                                                                          | Typed as `$<name>`, or chosen by the model from the skill's `description`.                                                                                                                                       |
@@ -39,19 +39,19 @@ Two differences matter more than the file paths:
 
 The commands from [Claude Code](./claude-code.md) next to their [Codex](./codex.md#commands) counterparts.
 
-| Purpose                                  | Claude Code         | Codex                                                                 |
-| ---------------------------------------- | ------------------- | --------------------------------------------------------------------- |
-| Open the interactive session             | `claude`            | `codex`                                                               |
-| Show version, model, account, and limits | `/status`, `/usage` | `/status`                                                             |
-| Sign in or switch accounts               | `/login`            | `codex login`                                                         |
-| Sign out                                 | `/logout`           | `codex logout`                                                        |
-| Summarize context to free up space       | `/compact`          | `/compact`                                                            |
-| Start a fresh conversation               | `/clear`            | `/new`                                                                |
-| Roll back to an earlier checkpoint       | `/rewind`           | No checkpoint rollback; `codex fork` branches a session instead       |
-| Continue an earlier conversation         | `/resume`           | `codex resume --last`                                                 |
-| Choose the active model                  | `/model`            | `/model`                                                              |
-| Change settings                          | `/config`           | Edit `~/.codex/config.toml`; `/permissions` for sandbox and approvals |
-| Project instructions file                | `CLAUDE.md`         | `AGENTS.md`                                                           |
+| Purpose                                  | Claude Code                            | Codex                                                                 |
+| ---------------------------------------- | -------------------------------------- | --------------------------------------------------------------------- |
+| Open the interactive session             | `claude`                               | `codex`                                                               |
+| Show version, model, account, and limits | `/status`, `/usage`                    | `/status`                                                             |
+| Sign in or switch accounts               | `/login`                               | `codex login`                                                         |
+| Sign out                                 | `/logout`                              | `codex logout`                                                        |
+| Summarize context to free up space       | `/compact`                             | `/compact`                                                            |
+| Start a fresh conversation               | `/clear`                               | `/new`                                                                |
+| Roll back to an earlier checkpoint       | `/rewind`                              | No checkpoint rollback; `codex fork` branches a session instead       |
+| Continue an earlier conversation         | `/resume`                              | `codex resume --last`                                                 |
+| Choose the active model                  | `/model`                               | `/model`                                                              |
+| Change settings                          | `/config`                              | Edit `~/.codex/config.toml`; `/permissions` for sandbox and approvals |
+| Project instructions file                | `CLAUDE.md` or `AGENTS.md` (v2.1.277+) | `AGENTS.md`                                                           |
 
 ## PR Workflow Performance
 

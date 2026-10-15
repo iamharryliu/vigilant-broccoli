@@ -35,6 +35,27 @@ export const WeatherCard = ({
   className?: string;
 }) => <Card className={cn(WEATHER_CARD_CLASS, className)}>{children}</Card>;
 
+export const WeatherBadgeList = ({
+  badges,
+  className,
+}: {
+  badges: WeatherDisplayBadge[];
+  className?: string;
+}) =>
+  badges.length > 0 ? (
+    <ul className={cn('flex flex-wrap justify-center gap-2', className)}>
+      {badges.map(({ key, icon, label }) => (
+        <li
+          key={key}
+          className="flex items-center gap-1.5 rounded-full bg-sky-100 px-3 py-1 text-sm text-sky-900 dark:bg-sky-900/40 dark:text-sky-100"
+        >
+          <span aria-hidden>{icon}</span>
+          {label}
+        </li>
+      ))}
+    </ul>
+  ) : null;
+
 export const WeatherDisplay = ({
   city,
   condition,
@@ -60,18 +81,6 @@ export const WeatherDisplay = ({
     <p className="text-sm text-muted-foreground">
       {humidity} <span aria-hidden>{SEPARATOR}</span> {wind}
     </p>
-    {badges.length > 0 && (
-      <ul className="mt-3 flex flex-wrap justify-center gap-2">
-        {badges.map(({ key, icon, label }) => (
-          <li
-            key={key}
-            className="flex items-center gap-1.5 rounded-full bg-sky-100 px-3 py-1 text-sm text-sky-900 dark:bg-sky-900/40 dark:text-sky-100"
-          >
-            <span aria-hidden>{icon}</span>
-            {label}
-          </li>
-        ))}
-      </ul>
-    )}
+    <WeatherBadgeList badges={badges} className="mt-3" />
   </div>
 );

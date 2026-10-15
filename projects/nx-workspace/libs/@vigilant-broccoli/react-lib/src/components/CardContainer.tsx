@@ -28,6 +28,7 @@ interface CardContainerProps {
   title: string;
   children: ReactNode;
   gap?: keyof typeof GAP_CLASS;
+  titleAction?: ReactNode;
   headerAction?: ReactNode;
   headerLink?: HeaderLink;
 }
@@ -48,6 +49,7 @@ export const CardContainer = ({
   title,
   children,
   gap = '4',
+  titleAction,
   headerAction,
   headerLink,
 }: CardContainerProps) => {
@@ -60,11 +62,14 @@ export const CardContainer = ({
   return (
     <Card className="w-full">
       <div className={cn('flex flex-col p-4', GAP_CLASS[gap])}>
-        {trailing ? (
+        {trailing || titleAction ? (
           <div className="flex justify-between items-center">
-            <Text size="5" weight="bold">
-              {title}
-            </Text>
+            <div className="flex items-center gap-2">
+              <Text size="5" weight="bold">
+                {title}
+              </Text>
+              {titleAction}
+            </div>
             {trailing}
           </div>
         ) : (

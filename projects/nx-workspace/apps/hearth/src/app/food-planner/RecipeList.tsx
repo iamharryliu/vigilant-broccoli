@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import {
   Button,
+  Callout,
+  Checkbox,
   CRUDItemFormDialog,
   CRUDItemList,
   DocsExplorer,
@@ -18,31 +20,34 @@ import {
   DialogTitle,
   cn,
 } from '@vigilant-broccoli/react-lib';
-import { FORM_TYPE } from '@vigilant-broccoli/common-js';
+import {
+  FORM_TYPE,
+  HTTP_METHOD,
+  HTTP_STATUS_CODES,
+} from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { Recipe } from './recipes.types';
 import { RecipeForm } from './RecipeForm';
 import { AddToGroceryDialog } from './AddToGroceryDialog';
 import { AddToCalendarDialog } from './AddToCalendarDialog';
+import { RecipeApiError } from './recipe-errors';
+import {
+  getRecipeTagSearchText,
+  getTagActionPath,
+  RecipeTagsPanel,
+  useTagLabels,
+} from './RecipeTags';
+import { createEmptyTags } from './recipe-tags.consts';
+import { useRecipeTagging } from './useRecipeTagging';
+import { useRecipeTranslation } from './useRecipeTranslation';
 
 const RECIPES_ENDPOINT = '/api/food-planner/recipes';
-const ADD_TO_GROCERY_LABEL = 'Add to grocery list';
-const ADD_TO_CALENDAR_LABEL = 'Add to calendar';
-const DELETE_RECIPE_LABEL = 'Delete recipe';
-const LOADING_RECIPES_LABEL = 'Loading recipes…';
-const IMPORT_LABEL = 'Import files';
-const IMPORT_FOLDER_LABEL = 'Import folder';
-const IMPORTING_LABEL = 'Importing…';
 const IMPORT_ACCEPT = '.md,.markdown,text/markdown';
 const MARKDOWN_EXTENSION_RE = /\.(md|markdown)$/i;
 const TITLE_HEADING_RE = /^#\s+(.+)$/m;
-const RECIPES_SIDEBAR_TITLE = 'Recipes';
-const RECIPES_SEARCH_PLACEHOLDER =
-  'Search recipes (e.g. pork, pasta, curry)...';
-const RECIPES_EMPTY_MESSAGE = 'Select a recipe to view it';
-const RECIPE_NOT_FOUND_ERROR = 'Recipe not found';
 const RECIPE_PARAM = 'recipe';
+const GENERATE_ON_IMPORT_INPUT_ID = 'recipe-import-generate-tags';
 
 const titleFromFilename = (filename: string) =>
   filename
@@ -70,23 +75,16 @@ const setRecipeParam = (path: string) => {
   window.history.pushState(null, '', `?${params.toString()}`);
 };
 
-const COPY = {
-  LIST: { TITLE: 'Recipes', EMPTY_MESSAGE: 'No recipes yet.' },
-  [FORM_TYPE.CREATE]: {
-    TITLE: 'Add Recipe',
-    DESCRIPTION: 'Add a recipe with its ingredients and method.',
-  },
-  [FORM_TYPE.UPDATE]: {
-    TITLE: 'Edit Recipe',
-    DESCRIPTION: 'Edit the title, description, and recipe markdown.',
-  },
-};
-
 const DEFAULT_FORM: Recipe = {
   id: '',
   title: '',
   description: '',
   markdown: '',
+  tags: createEmptyTags(),
+  tagsStatus: null,
+  tagsAttemptedAt: null,
+  revision: 1,
+  tagsRevision: 1,
 };
 
 const MARKDOWN_COMPONENTS: Components = {
@@ -102,10 +100,19 @@ const MARKDOWN_COMPONENTS: Components = {
   li: ({ children }) => <li className="mb-1">{children}</li>,
 };
 
-const matchesQuery = (query: string, recipe: Recipe): boolean => {
+const matchesQuery = (
+  query: string,
+  recipe: Recipe,
+  valueLabel: (value: string) => string,
+): boolean => {
   if (!query.trim()) return true;
   const q = query.toLowerCase();
-  const searchText = [recipe.title, recipe.description, recipe.markdown]
+  const searchText = [
+    recipe.title,
+    recipe.description,
+    recipe.markdown,
+    getRecipeTagSearchText(recipe, valueLabel),
+  ]
     .join(' ')
     .toLowerCase();
   return q.split(' ').every(word => searchText.includes(word));
@@ -127,7 +134,11 @@ type Props = {
   onCalendarEventAdded?: () => void;
 };
 
+type ImportSummary = { saved: number; generateTags: boolean };
+
 export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
+  const t = useRecipeTranslation();
+  const { valueLabel } = useTagLabels();
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
   const token = session?.access_token ?? '';
@@ -142,13 +153,18 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [recipesLoaded, setRecipesLoaded] = useState(false);
   const [query, setQuery] = useState('');
-  const [detail, setDetail] = useState<Recipe | null>(null);
+  const [detailId, setDetailId] = useState<string | null>(null);
   const [groceryTarget, setGroceryTarget] = useState<Recipe | null>(null);
   const [calendarTarget, setCalendarTarget] = useState<Recipe | null>(null);
   const [selectedRecipeId, setSelectedRecipeId] = useState<string | null>(null);
   const [editTarget, setEditTarget] = useState<Recipe | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [generateOnImport, setGenerateOnImport] = useState(true);
+  const [importSummary, setImportSummary] = useState<ImportSummary | null>(
+    null,
+  );
+  const [errorPath, setErrorPath] = useState<string | null>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
   const importFolderInputRef = useRef<HTMLInputElement>(null);
   const urlSync = useMemo(
@@ -165,6 +181,10 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
     const res = await fetch(`${RECIPES_ENDPOINT}?homeId=${homeId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
+    if (!res.ok) {
+      setErrorPath('ERRORS.LOAD_FAILED');
+      return;
+    }
     const data = await res.json();
     setRecipes(Array.isArray(data) ? data : []);
     setRecipesLoaded(true);
@@ -174,9 +194,15 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
     fetchRecipes();
   }, [fetchRecipes]);
 
+  const tagging = useRecipeTagging({
+    jsonHeaders,
+    setRecipes,
+    refreshRecipes: fetchRecipes,
+  });
+
   const createItem = async (item: Recipe): Promise<Recipe> => {
     const res = await fetch(RECIPES_ENDPOINT, {
-      method: 'POST',
+      method: HTTP_METHOD.POST,
       headers: jsonHeaders(),
       body: JSON.stringify({
         homeId,
@@ -185,34 +211,56 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
         markdown: item.markdown,
       }),
     });
-    return res.json();
+    if (!res.ok) throw new RecipeApiError('ERRORS.SAVE_FAILED');
+    const created: Recipe = await res.json();
+    if (item.generateTags) void tagging.generateTags(created.id);
+    return created;
   };
 
+  // CRUDItemList stores the submitted item once this resolves, so fold the
+  // persisted row into it to keep client state equal to the server's.
   const updateItem = async (item: Recipe): Promise<void> => {
-    await fetch(RECIPES_ENDPOINT, {
-      method: 'PATCH',
+    const res = await fetch(RECIPES_ENDPOINT, {
+      method: HTTP_METHOD.PATCH,
       headers: jsonHeaders(),
       body: JSON.stringify({
         id: item.id,
         title: item.title,
         description: item.description,
         markdown: item.markdown,
+        ...(item.tagsEdited
+          ? { tags: item.tags, tagsRevision: item.tagsRevision }
+          : {}),
       }),
     });
+    if (!res.ok) {
+      if (res.status === HTTP_STATUS_CODES.CONFLICT) {
+        await fetchRecipes();
+        throw new RecipeApiError('TAGS.ERROR_CONFLICT');
+      }
+      throw new RecipeApiError('ERRORS.SAVE_FAILED');
+    }
+    const persisted: Recipe = await res.json();
+    Object.assign(item, persisted, { tagsEdited: false });
   };
 
   const deleteItem = async (id: string | number): Promise<void> => {
-    if (selectedRecipeId === id) setSelectedRecipeId(null);
-    await fetch(RECIPES_ENDPOINT, {
-      method: 'DELETE',
+    const res = await fetch(RECIPES_ENDPOINT, {
+      method: HTTP_METHOD.DELETE,
       headers: jsonHeaders(),
       body: JSON.stringify({ id }),
     });
+    if (!res.ok) {
+      setErrorPath('ERRORS.DELETE_FAILED');
+      throw new RecipeApiError('ERRORS.DELETE_FAILED');
+    }
+    if (selectedRecipeId === id) setSelectedRecipeId(null);
   };
 
   const handleDeleteSelected = async (ids: string[]): Promise<void> => {
-    await Promise.all(ids.map(id => deleteItem(id)));
-    setRecipes(prev => prev.filter(r => !ids.includes(r.id)));
+    const results = await Promise.allSettled(ids.map(id => deleteItem(id)));
+    const deleted = ids.filter((_, i) => results[i].status === 'fulfilled');
+    setRecipes(prev => prev.filter(r => !deleted.includes(r.id)));
   };
 
   const handleImportFiles = async (fileList: FileList | null) => {
@@ -221,26 +269,48 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
     );
     if (!files.length || !homeId) return;
     setImporting(true);
+    setErrorPath(null);
+    setImportSummary(null);
+    tagging.clearProgress();
+    let savedIds: string[] = [];
     try {
       const parsed = await Promise.all(
         files.map(async file =>
           parseImportedFile(file.name, await file.text()),
         ),
       );
-      await fetch(RECIPES_ENDPOINT, {
-        method: 'POST',
+      const res = await fetch(RECIPES_ENDPOINT, {
+        method: HTTP_METHOD.POST,
         headers: jsonHeaders(),
         body: JSON.stringify({ homeId, recipes: parsed }),
       });
+      if (!res.ok) {
+        setErrorPath('ERRORS.IMPORT_FAILED');
+        return;
+      }
+      const { recipeIds } = (await res.json()) as { recipeIds: string[] };
+      savedIds = recipeIds;
       await fetchRecipes();
+      setImportSummary({
+        saved: savedIds.length,
+        generateTags: generateOnImport,
+      });
+    } catch {
+      setErrorPath('ERRORS.IMPORT_FAILED');
     } finally {
       setImporting(false);
       if (importInputRef.current) importInputRef.current.value = '';
       if (importFolderInputRef.current) importFolderInputRef.current.value = '';
     }
+    if (generateOnImport && savedIds.length)
+      await tagging.generateTagsForBatch(savedIds);
   };
 
-  const filtered = recipes.filter(recipe => matchesQuery(query, recipe));
+  const filtered = recipes.filter(recipe =>
+    matchesQuery(query, recipe, valueLabel),
+  );
+  const detail = recipes.find(r => r.id === detailId) ?? null;
+  const taggingBusy = Boolean(tagging.progress && !tagging.progress.finished);
 
   const nodes: DocsNode[] = useMemo(
     () =>
@@ -255,17 +325,17 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
   const getContent = useCallback(
     async (path: string): Promise<string> => {
       const recipe = recipes.find(r => r.id === path);
-      if (!recipe) throw new Error(RECIPE_NOT_FOUND_ERROR);
+      if (!recipe) throw new Error(t('NOT_FOUND'));
       setSelectedRecipeId(path);
       return recipe.markdown;
     },
-    [recipes],
+    [recipes, t],
   );
 
   const search = useCallback(
     async (searchQuery: string): Promise<DocsSearchResult[]> =>
       recipes
-        .filter(recipe => matchesQuery(searchQuery, recipe))
+        .filter(recipe => matchesQuery(searchQuery, recipe, valueLabel))
         .map(recipe => ({
           name: recipe.title,
           path: recipe.id,
@@ -273,59 +343,134 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
           score: 0,
           excerpt: recipe.description,
         })),
-    [recipes],
+    [recipes, valueLabel],
   );
 
-  const renderContent = useCallback(
-    (content: string) => (
+  const renderTagsPanel = (recipe: Recipe) => (
+    <RecipeTagsPanel
+      recipe={recipe}
+      pending={tagging.pendingIds.has(recipe.id)}
+      error={tagging.errors[recipe.id]}
+      onGenerate={() => void tagging.generateTags(recipe.id)}
+    />
+  );
+
+  const renderContent = (
+    content: string,
+    _navigate: (path: string) => void,
+    sourcePaths: string[],
+  ) => {
+    const recipe =
+      sourcePaths.length === 1
+        ? recipes.find(r => r.id === sourcePaths[0])
+        : undefined;
+    return (
       <div className="px-4 sm:px-6 py-4">
+        {recipe && renderTagsPanel(recipe)}
         <ReactMarkdown components={MARKDOWN_COMPONENTS}>
           {content}
         </ReactMarkdown>
       </div>
-    ),
-    [],
-  );
+    );
+  };
 
   const submitEdit = async (item: Recipe): Promise<void> => {
     await updateItem(item);
     setRecipes(prev => prev.map(r => (r.id === item.id ? item : r)));
   };
 
-  const extraActions = useCallback(
-    (path: string): DocsExplorerAction[] => {
-      const recipe = recipes.find(r => r.id === path);
-      if (!recipe) return [];
-      return [
-        {
-          label: ADD_TO_GROCERY_LABEL,
-          onSelect: () => setGroceryTarget(recipe),
+  const tagAction = (recipe: Recipe) => ({
+    label: t(getTagActionPath(recipe)),
+    onSelect: () => void tagging.generateTags(recipe.id),
+  });
+
+  const extraActions = (path: string): DocsExplorerAction[] => {
+    const recipe = recipes.find(r => r.id === path);
+    if (!recipe) return [];
+    return [
+      {
+        label: t('ADD_TO_GROCERY'),
+        onSelect: () => setGroceryTarget(recipe),
+      },
+      {
+        label: t('ADD_TO_CALENDAR'),
+        onSelect: () => setCalendarTarget(recipe),
+      },
+      tagAction(recipe),
+      {
+        label: t('DELETE'),
+        onSelect: async () => {
+          await deleteItem(recipe.id).then(
+            () => setRecipes(prev => prev.filter(r => r.id !== recipe.id)),
+            () => undefined,
+          );
         },
-        {
-          label: ADD_TO_CALENDAR_LABEL,
-          onSelect: () => setCalendarTarget(recipe),
-        },
-        {
-          label: DELETE_RECIPE_LABEL,
-          onSelect: async () => {
-            await deleteItem(recipe.id);
-            setRecipes(prev => prev.filter(r => r.id !== recipe.id));
-          },
-        },
-      ];
+      },
+    ];
+  };
+
+  const sidebarActions: DocsExplorerAction[] = [
+    { label: t('IMPORT'), onSelect: () => importInputRef.current?.click() },
+    {
+      label: t('IMPORT_FOLDER'),
+      onSelect: () => importFolderInputRef.current?.click(),
     },
-    [recipes, deleteItem],
+  ];
+
+  const copy = {
+    LIST: {
+      TITLE: t('LIST.TITLE'),
+      EMPTY_MESSAGE: t('LIST.EMPTY_MESSAGE'),
+    },
+    [FORM_TYPE.CREATE]: {
+      TITLE: t('CREATE.TITLE'),
+      DESCRIPTION: t('CREATE.DESCRIPTION'),
+    },
+    [FORM_TYPE.UPDATE]: {
+      TITLE: t('UPDATE.TITLE'),
+      DESCRIPTION: t('UPDATE.DESCRIPTION'),
+    },
+  };
+
+  const generateOnImportCheckbox = (
+    <label
+      htmlFor={GENERATE_ON_IMPORT_INPUT_ID}
+      className="flex items-center gap-2"
+    >
+      <Checkbox
+        id={GENERATE_ON_IMPORT_INPUT_ID}
+        checked={generateOnImport}
+        disabled={importing || taggingBusy}
+        onCheckedChange={checked => setGenerateOnImport(checked === true)}
+      />
+      <Text size="2">{t('TAGS.GENERATE_AUTOMATICALLY')}</Text>
+    </label>
   );
 
-  const sidebarActions: DocsExplorerAction[] = useMemo(
-    () => [
-      { label: IMPORT_LABEL, onSelect: () => importInputRef.current?.click() },
-      {
-        label: IMPORT_FOLDER_LABEL,
-        onSelect: () => importFolderInputRef.current?.click(),
-      },
-    ],
-    [],
+  const { progress } = tagging;
+  const statusBanner = (errorPath || importSummary || progress) && (
+    <div className="flex flex-col gap-2" aria-live="polite">
+      {errorPath && <Callout color="red">{t(errorPath)}</Callout>}
+      {importSummary && (
+        <Callout color="green">
+          {t('IMPORT_RESULT.SAVED', { saved: importSummary.saved })}{' '}
+          {!importSummary.generateTags && t('IMPORT_RESULT.TAGGING_SKIPPED')}
+        </Callout>
+      )}
+      {progress && (
+        <Callout color={progress.failed ? 'orange' : 'blue'}>
+          {progress.finished
+            ? t('IMPORT_RESULT.TAGGING_DONE', {
+                succeeded: progress.done - progress.failed,
+                failed: progress.failed,
+              })
+            : t('IMPORT_RESULT.TAGGING_PROGRESS', {
+                done: progress.done,
+                total: progress.total,
+              })}
+        </Callout>
+      )}
+    </div>
   );
 
   const importInput = (
@@ -347,17 +492,17 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
       />
       <Button
         variant="outline"
-        disabled={importing}
+        disabled={importing || taggingBusy}
         onClick={() => importInputRef.current?.click()}
       >
-        {importing ? IMPORTING_LABEL : IMPORT_LABEL}
+        {importing ? t('IMPORTING') : t('IMPORT')}
       </Button>
       <Button
         variant="outline"
-        disabled={importing}
+        disabled={importing || taggingBusy}
         onClick={() => importFolderInputRef.current?.click()}
       >
-        {importing ? IMPORTING_LABEL : IMPORT_FOLDER_LABEL}
+        {importing ? t('IMPORTING') : t('IMPORT_FOLDER')}
       </Button>
     </>
   );
@@ -365,15 +510,17 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
   return (
     <>
       <div className="mx-auto max-w-5xl space-y-6 p-2 sm:p-6 md:hidden">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Input
             className="grow"
-            placeholder={RECIPES_SEARCH_PLACEHOLDER}
+            placeholder={t('SEARCH_PLACEHOLDER')}
             value={query}
             onChange={e => setQuery(e.target.value)}
           />
           {importInput}
+          {generateOnImportCheckbox}
         </div>
+        {statusBanner}
         <CRUDItemList
           items={filtered}
           setItems={setRecipes}
@@ -383,25 +530,26 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
           deleteItem={deleteItem}
           FormComponent={RecipeForm}
           ListItemComponent={RecipeListItem}
-          copy={COPY}
+          copy={copy}
           getItemTitle={item => item.title}
-          onItemClick={item => setDetail(item)}
+          onItemClick={item => setDetailId(item.id)}
           itemActions={item => [
             {
-              label: ADD_TO_GROCERY_LABEL,
+              label: t('ADD_TO_GROCERY'),
               onSelect: () => setGroceryTarget(item),
             },
             {
-              label: ADD_TO_CALENDAR_LABEL,
+              label: t('ADD_TO_CALENDAR'),
               onSelect: () => setCalendarTarget(item),
             },
+            tagAction(item),
           ]}
         />
 
         <Dialog
           open={detail !== null}
           onOpenChange={open => {
-            if (!open) setDetail(null);
+            if (!open) setDetailId(null);
           }}
         >
           <DialogContent
@@ -416,6 +564,7 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
             <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
               {detail?.title}
             </DialogTitle>
+            {detail && renderTagsPanel(detail)}
             {detail && (
               <ReactMarkdown components={MARKDOWN_COMPONENTS}>
                 {detail.markdown}
@@ -427,27 +576,33 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
 
       <div className="hidden md:flex md:h-full md:flex-col">
         {recipesLoaded ? (
-          <DocsExplorer
-            nodes={nodes}
-            getContent={getContent}
-            renderContent={renderContent}
-            search={search}
-            sidebarTitle={RECIPES_SIDEBAR_TITLE}
-            searchPlaceholder={RECIPES_SEARCH_PLACEHOLDER}
-            emptyMessage={RECIPES_EMPTY_MESSAGE}
-            urlSync={urlSync}
-            onCreate={() => setCreateOpen(true)}
-            sidebarActions={sidebarActions}
-            onEdit={() => {
-              const recipe = recipes.find(r => r.id === selectedRecipeId);
-              if (recipe) setEditTarget(recipe);
-            }}
-            extraActions={extraActions}
-            onDeleteSelected={handleDeleteSelected}
-          />
+          <>
+            <div className="flex flex-col gap-2 pb-2">
+              {generateOnImportCheckbox}
+              {statusBanner}
+            </div>
+            <DocsExplorer
+              nodes={nodes}
+              getContent={getContent}
+              renderContent={renderContent}
+              search={search}
+              sidebarTitle={t('SIDEBAR_TITLE')}
+              searchPlaceholder={t('SEARCH_PLACEHOLDER')}
+              emptyMessage={t('EMPTY_MESSAGE')}
+              urlSync={urlSync}
+              onCreate={() => setCreateOpen(true)}
+              sidebarActions={sidebarActions}
+              onEdit={() => {
+                const recipe = recipes.find(r => r.id === selectedRecipeId);
+                if (recipe) setEditTarget(recipe);
+              }}
+              extraActions={extraActions}
+              onDeleteSelected={handleDeleteSelected}
+            />
+          </>
         ) : (
           <Text color="gray" size="2" className="p-4">
-            {LOADING_RECIPES_LABEL}
+            {t('LOADING')}
           </Text>
         )}
       </div>
@@ -456,7 +611,7 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
         formType={FORM_TYPE.CREATE}
         initialFormValues={DEFAULT_FORM}
         FormComponent={RecipeForm}
-        copy={COPY}
+        copy={copy}
         open={createOpen}
         onOpenChange={setCreateOpen}
         submitHandler={async item => {
@@ -469,7 +624,7 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
         formType={FORM_TYPE.UPDATE}
         initialFormValues={editTarget ?? DEFAULT_FORM}
         FormComponent={RecipeForm}
-        copy={COPY}
+        copy={copy}
         open={editTarget !== null}
         onOpenChange={open => {
           if (!open) setEditTarget(null);

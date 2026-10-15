@@ -19,6 +19,7 @@
 - Vocab
   - [Swedish Vocab](./swedish-vocab.md)
   - [Housing Vocab](./vocab/swedish-housing-vocab.md)
+  - [Bankruptcy Vocab](./vocab/swedish-bankruptcy-vocab.md)
 - Phrases
   - [Time Phrases](./phrases/swedish-time-phrases.md)
 

@@ -18,6 +18,8 @@ const REGEX_SPECIAL_PATTERN = /[.*+?^${}()|[\]\\]/g;
 const PARENTHESIS_PATTERN = /\(([^)]*)\)/g;
 const ALTERNATIVE_SEPARATORS = /[/,]/;
 const MIN_KEYWORD_CHARS = 2;
+const MIN_SPLIT_CHARS = 3;
+const SLASH_TOKEN_PATTERN = /\S+\/\S+/;
 
 const lower = (text: string): string => text.toLowerCase();
 
@@ -32,8 +34,16 @@ const skillTerms = (skill: string): string[] => {
   const inParentheses = Array.from(skill.matchAll(PARENTHESIS_PATTERN)).flatMap(
     match => match[1].split(ALTERNATIVE_SEPARATORS),
   );
+  const alternatives = skill
+    .replace(PARENTHESIS_PATTERN, '')
+    .split(ALTERNATIVE_SEPARATORS);
+  // CI/CD is one term; only split slash pairs whose parts are each real words.
+  const whole = alternatives.some(term => term.trim().length < MIN_SPLIT_CHARS);
+  const unsplit = skill.replace(PARENTHESIS_PATTERN, '');
   return [
-    ...skill.replace(PARENTHESIS_PATTERN, '').split(ALTERNATIVE_SEPARATORS),
+    ...(whole
+      ? [unsplit.match(SLASH_TOKEN_PATTERN)?.[0] ?? unsplit]
+      : alternatives),
     ...inParentheses,
   ]
     .map(term => term.trim())
@@ -242,7 +252,7 @@ const roleScore = (target: string, title: string): number => {
  * The model tends to leave `basics.title` alone, so when it has not changed the
  * title, switch to the allowed title closest to the target: its lead word
  * ("Backend", "DevOps", ...) counts most, then the discipline's typical
- * technologies. Titles stay limited to the skills note's Roles.
+ * technologies. Titles stay limited to the skills note's Job Experience roles.
  */
 export const alignTitleWithTarget = (
   resume: ResumeData,
@@ -265,8 +275,8 @@ const YEARS_MENTION = /\byears?\b/i;
 const NEARLY_THRESHOLD_MONTHS = 6;
 
 /**
- * The summary always opens with a fixed "ROLE with N years in software
- * development" sentence built from the title and the work dates; the model only
+ * The summary always opens with a fixed "ROLE with N years of software
+ * experience" sentence built from the title and the work dates; the model only
  * writes the related follow-up, and a leading sentence of its own that makes a
  * years claim is dropped.
  */
@@ -284,7 +294,7 @@ export const withRoleSummaryOpener = (resume: ResumeData): ResumeData => {
   return {
     ...resume,
     summary: [
-      `${resume.basics.title} with ${years} years of experience in software development.`,
+      `${resume.basics.title} with ${years} years of software experience.`,
       followUp,
     ]
       .filter(Boolean)

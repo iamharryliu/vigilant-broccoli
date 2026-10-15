@@ -1,11 +1,11 @@
 {
-  "TITLE": "Calendars",
-  "SUBTITLE": "Public calendars to follow in Google Calendar.",
   "SECTION": {
+    "CALENDAR_VIEW": "Calendar View",
     "PERSONAL": "Personal Calendars",
     "EVENT": "Event Calendars"
   },
   "STATUS": {
+    "EMBED_TITLE": "Embedded Google Calendar",
     "LOADING": "Loading…",
     "EMPTY": "No event calendars yet.",
     "ERROR": "Failed to load event calendars. Please try again in a moment."
@@ -17,6 +17,8 @@
   },
   "ACTIONS": {
     "OPEN_VIEW": "Open {name} in {view} view",
-    "COPY_LINK": "Copy link to {name}"
+    "COPY_LINK": "Copy link to {name}",
+    "HIDE": "Hide {name}",
+    "SHOW": "Show {name}"
   }
 }
