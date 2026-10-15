@@ -29,7 +29,7 @@ export const UTILITY_ITEMS: CollapsibleListItemConfig[] = [
   {
     id: 'qr-reader',
     title: 'QR Reader',
-    content: <QrReaderUtilityContent uploadOnly />,
+    content: <QrReaderUtilityContent />,
   },
   {
     id: 'stopwatch',

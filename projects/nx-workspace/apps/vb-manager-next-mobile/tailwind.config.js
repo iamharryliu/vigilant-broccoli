@@ -6,7 +6,6 @@ module.exports = {
     '../../libs/@vigilant-broccoli/common-js/src/**/*.{tsx,ts,jsx,js,html}',
     '../../libs/@vigilant-broccoli/common-node/src/**/*.{tsx,ts,jsx,js,html}',
     '../../libs/@vigilant-broccoli/react-lib/src/**/*.{tsx,ts,jsx,js,html}',
-    '../../libs/@vigilant-broccoli/react-utility/src/**/*.{tsx,ts,jsx,js,html}',
     '../../libs/@vigilant-broccoli/common-browser/src/**/*.{tsx,ts,jsx,js,html}',
   ],
   darkMode: 'class',

@@ -10,7 +10,6 @@ import {
   CalculatorUtilityContent,
   CookingConversionsUtilityContent,
   CurrencyConverterUtilityContent,
-  QrReaderUtilityContent,
   StopwatchUtilityContent,
   TimerUtilityContent,
 } from '@vigilant-broccoli/react-utility';
@@ -35,11 +34,6 @@ const UTILITY_ITEMS: CollapsibleListItemConfig[] = [
     id: 'recipe-scraper',
     title: 'Recipe Scraper',
     content: <RecipeScraperUtilityContent />,
-  },
-  {
-    id: 'qr-reader',
-    title: 'QR Reader',
-    content: <QrReaderUtilityContent uploadOnly />,
   },
   {
     id: 'stopwatch',
