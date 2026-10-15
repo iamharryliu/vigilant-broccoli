@@ -8,9 +8,10 @@ import {
   useEffect,
   useId,
   useMemo,
+  useRef,
   useState,
 } from 'react';
-import { LucideIcon } from 'lucide-react';
+import { CloudRain, Droplets, LucideIcon, Wind } from 'lucide-react';
 import {
   formatLocalTime,
   formatMoonIllumination,
@@ -36,11 +37,11 @@ import {
   WeatherI18nProvider,
 } from '@vigilant-broccoli/react-lib';
 import { ClockComponent } from '../clock';
-import { ForecastCarousel } from './dashboard-info-card-forecast';
+import { ForecastCarousel } from './weather-clock-card-forecast';
 import {
   SUN_EVENT_LUCIDE_ICON,
   weatherLucideIcon,
-} from './dashboard-info-card-icons';
+} from './weather-clock-card-icons';
 
 const CLOCK_TIME_SIZE: TextProps['size'] = '6';
 
@@ -50,6 +51,9 @@ const TILE_ICON_SIZE = 22;
 const TILE_ICON_STROKE = 1.75;
 const TILE_COUNT = 4;
 const DEGREES_CELSIUS = '°C';
+// Viewport breakpoints ignore a narrow card on a wide screen (sandbox, sidebar
+// layouts), so the compact feels-like follows the card's own width.
+const COMPACT_CARD_MAX_WIDTH_PX = 420;
 const WEATHER_TILE_TITLE = 'Weather';
 const MOON_TILE_KEY = 'Moon';
 const SECONDS_PER_MINUTE = 60;
@@ -95,17 +99,16 @@ const PLACEHOLDER_WEATHER: LocalWeather = {
   isDay: true,
 };
 const INVISIBLE_CLASS = 'invisible';
-const DETAIL_LIST_CLASS =
-  'flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-[var(--gray-11)]';
+const DETAIL_TILES_CLASS = 'flex flex-wrap justify-center gap-x-5 gap-y-3';
 
-export interface DashboardInfoCardWeather extends LocalWeather {
+export interface WeatherClockCardWeather extends LocalWeather {
   preparation?: Preparation | null;
 }
 
-export interface DashboardInfoCardProps {
+export interface WeatherClockCardProps {
   location?: Location;
   timezoneOffsetSeconds?: number;
-  weather?: DashboardInfoCardWeather;
+  weather?: WeatherClockCardWeather;
   loading?: boolean;
   error?: LocalWeatherFailure;
   onRetry?: () => void;
@@ -122,8 +125,10 @@ interface StatTile {
   key: string;
   icon: ReactNode;
   value: string;
+  valueNote?: ReactNode;
+  valueDetail?: ReactNode;
   label: string;
-  title: string;
+  title?: string;
 }
 
 const TileIcon = ({ icon: Icon }: { icon: LucideIcon }) => (
@@ -134,7 +139,13 @@ const StatTileView = ({ tile }: { tile: StatTile }) => (
   <div title={tile.title} className={TILE_CLASS}>
     <span className={TILE_ICON_CLASS}>{tile.icon}</span>
     <div className={TILE_TEXT_CLASS}>
-      <span className={TILE_VALUE_CLASS}>{tile.value}</span>
+      <span className={TILE_VALUE_CLASS}>
+        <span>
+          {tile.value}
+          {tile.valueNote}
+        </span>
+        {tile.valueDetail}
+      </span>
       <span className={TILE_LABEL_CLASS}>{tile.label}</span>
     </div>
   </div>
@@ -154,7 +165,7 @@ const getBrowserTimezoneOffsetSeconds = (): number =>
   -new Date().getTimezoneOffset() * SECONDS_PER_MINUTE;
 
 interface WeatherDetailsProps {
-  weather: DashboardInfoCardWeather;
+  weather: WeatherClockCardWeather;
   loading: boolean;
   preparationLoading: boolean;
 }
@@ -166,9 +177,6 @@ const WeatherDetails = ({
 }: WeatherDetailsProps) => {
   const { t } = useWeatherTranslation();
   const {
-    feelsLikeC,
-    highC,
-    lowC,
     humidityPercent,
     windSpeedKph,
     windMaxKph,
@@ -179,58 +187,71 @@ const WeatherDetails = ({
   const roundPrecipitation = (mm: number) =>
     Math.round(mm * PRECIPITATION_DECIMALS) / PRECIPITATION_DECIMALS;
 
-  const details = [
-    `${t('WEATHER.HIGH', { temperature: toDisplayTemperature(highC) })} / ${t(
-      'WEATHER.LOW',
-      { temperature: toDisplayTemperature(lowC) },
-    )}`,
-    t('WEATHER.FEELS_LIKE', { temperature: toDisplayTemperature(feelsLikeC) }),
-    t('WEATHER.HUMIDITY', { percent: Math.round(humidityPercent) }),
-    t('WEATHER.WIND', {
-      speed: Math.round(windSpeedKph),
-      max: Math.round(windMaxKph),
-    }),
-    t('WEATHER.PRECIPITATION', {
-      amount: roundPrecipitation(precipitationMm),
-      sum: roundPrecipitation(precipitationSumMm),
-    }),
+  const detailTiles: StatTile[] = [
+    {
+      key: 'humidity',
+      icon: <TileIcon icon={Droplets} />,
+      value: `${Math.round(humidityPercent)}%`,
+      label: t('WEATHER.HUMIDITY'),
+    },
+    {
+      key: 'wind',
+      icon: <TileIcon icon={Wind} />,
+      value: t('WEATHER.WIND_VALUE', { speed: Math.round(windSpeedKph) }),
+      label: t('WEATHER.WIND_MAX', { max: Math.round(windMaxKph) }),
+    },
+    {
+      key: 'precipitation',
+      icon: <TileIcon icon={CloudRain} />,
+      value: t('WEATHER.PRECIPITATION_VALUE', {
+        amount: roundPrecipitation(precipitationMm),
+      }),
+      label: t('WEATHER.PRECIPITATION_SUM', {
+        sum: roundPrecipitation(precipitationSumMm),
+      }),
+    },
   ];
 
   const badges = PREPARATION_BADGES.filter(({ key }) => preparation?.[key]).map(
     ({ key, icon, labelKey }) => ({ key, icon, label: t(labelKey) }),
   );
 
-  // Always render the details block (hidden while loading) and a badge row of
-  // fixed minimum height so the card keeps its size when data arrives.
+  // The details block stays rendered (hidden while loading) and the badge row
+  // keeps a fixed height while data is pending so the card does not jump; once
+  // loaded with no badges the row is dropped instead of leaving empty space.
+  const isBadgeRowPending = preparationLoading || loading;
+  const showBadgeRow = isBadgeRowPending || badges.length > 0;
   return (
     <div className="flex flex-col items-center gap-2">
-      <ul
-        className={cn(DETAIL_LIST_CLASS, loading && INVISIBLE_CLASS)}
+      <div
+        className={cn(DETAIL_TILES_CLASS, loading && INVISIBLE_CLASS)}
         aria-hidden={loading || undefined}
       >
-        {details.map(detail => (
-          <li key={detail}>{detail}</li>
+        {detailTiles.map(tile => (
+          <StatTileView key={tile.key} tile={tile} />
         ))}
-      </ul>
-      <div className="flex min-h-[1.75rem] items-center justify-center">
-        {preparationLoading || loading ? (
-          <div
-            className="flex gap-2"
-            role={loading ? undefined : 'status'}
-            aria-label={loading ? undefined : t('STATUS.LOADING_PREPARATION')}
-          >
-            <Skeleton className="h-7 w-32 rounded-full" />
-            <Skeleton className="h-7 w-24 rounded-full" />
-          </div>
-        ) : (
-          <WeatherBadgeList badges={badges} />
-        )}
       </div>
+      {showBadgeRow && (
+        <div className="flex min-h-[1.75rem] items-center justify-center">
+          {isBadgeRowPending ? (
+            <div
+              className="flex gap-2"
+              role={loading ? undefined : 'status'}
+              aria-label={loading ? undefined : t('STATUS.LOADING_PREPARATION')}
+            >
+              <Skeleton className="h-7 w-32 rounded-full" />
+              <Skeleton className="h-7 w-24 rounded-full" />
+            </div>
+          ) : (
+            <WeatherBadgeList badges={badges} />
+          )}
+        </div>
+      )}
     </div>
   );
 };
 
-const DashboardInfoCardView = ({
+const WeatherClockCardView = ({
   location,
   timezoneOffsetSeconds,
   weather,
@@ -242,9 +263,11 @@ const DashboardInfoCardView = ({
   defaultExpanded = false,
   onExpandedChange,
   className,
-}: DashboardInfoCardProps) => {
+}: WeatherClockCardProps) => {
   const { t } = useWeatherTranslation();
   const forecastId = useId();
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isCompact, setIsCompact] = useState(false);
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
   const moonPhase = useMemo(() => getMoonPhase(new Date(nowMs)), [nowMs]);
@@ -253,6 +276,16 @@ const DashboardInfoCardView = ({
   const forecast = weather?.forecast;
   const hasForecast = !!forecast?.length;
   const isLoading = loading || (!weather && !error);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    const observer = new ResizeObserver(([entry]) =>
+      setIsCompact(entry.contentRect.width < COMPACT_CARD_MAX_WIDTH_PX),
+    );
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => setNowMs(Date.now()), TICK_MS);
@@ -311,6 +344,31 @@ const DashboardInfoCardView = ({
           />
         ),
         value: `${toDisplayTemperature(weather.temperatureC)}${DEGREES_CELSIUS}`,
+        valueNote: (
+          <span className="ml-1 text-[0.7rem] font-normal text-[var(--gray-11)]">
+            (
+            {isCompact
+              ? `${toDisplayTemperature(weather.feelsLikeC)}°`
+              : t('WEATHER.FEELS_LIKE', {
+                  temperature: toDisplayTemperature(weather.feelsLikeC),
+                })}
+            )
+          </span>
+        ),
+        valueDetail: (
+          <span className="flex flex-col text-[0.6rem] font-normal leading-tight text-[var(--gray-11)]">
+            <span>
+              {t('WEATHER.HIGH', {
+                temperature: toDisplayTemperature(weather.highC),
+              })}
+            </span>
+            <span>
+              {t('WEATHER.LOW', {
+                temperature: toDisplayTemperature(weather.lowC),
+              })}
+            </span>
+          </span>
+        ),
         label: weather.city ?? t('LOCATION.FALLBACK'),
         title: `${WEATHER_TILE_TITLE}${TITLE_SEPARATOR}${t(
           `CONDITION.${weather.condition}`,
@@ -330,7 +388,15 @@ const DashboardInfoCardView = ({
     return leftTiles.flatMap((leftTile, row) =>
       [leftTile, sunTiles[row]].filter(Boolean),
     );
-  }, [weather, location, timezoneOffsetSeconds, nowMs, moonPhase, t]);
+  }, [
+    weather,
+    location,
+    timezoneOffsetSeconds,
+    nowMs,
+    moonPhase,
+    isCompact,
+    t,
+  ]);
 
   const renderTiles = () => {
     if (error) {
@@ -353,6 +419,7 @@ const DashboardInfoCardView = ({
 
   return (
     <div
+      ref={cardRef}
       className={cn(CARD_CLASS, canToggle && CARD_TOGGLE_CLASS, className)}
       {...(canToggle && {
         role: 'button',
@@ -397,13 +464,13 @@ const DashboardInfoCardView = ({
   );
 };
 
-const SelfLocatingDashboardInfoCard = ({
+const SelfLocatingWeatherClockCard = ({
   fetchWeather,
   fetchPreparation,
   location,
   ...viewProps
-}: DashboardInfoCardProps & {
-  fetchWeather: NonNullable<DashboardInfoCardProps['fetchWeather']>;
+}: WeatherClockCardProps & {
+  fetchWeather: NonNullable<WeatherClockCardProps['fetchWeather']>;
 }) => {
   const { state, preparation, retry } = useLocalWeather({
     fetchWeather,
@@ -415,7 +482,7 @@ const SelfLocatingDashboardInfoCard = ({
     : undefined;
 
   return (
-    <DashboardInfoCardView
+    <WeatherClockCardView
       {...viewProps}
       location={ready?.location ?? location}
       weather={ready ? { ...ready.weather, preparation } : undefined}
@@ -428,15 +495,15 @@ const SelfLocatingDashboardInfoCard = ({
   );
 };
 
-export const DashboardInfoCardUtilityContent = ({
+export const WeatherClockCardUtilityContent = ({
   fetchWeather,
   ...props
-}: DashboardInfoCardProps) => (
+}: WeatherClockCardProps) => (
   <WeatherI18nProvider>
     {fetchWeather ? (
-      <SelfLocatingDashboardInfoCard fetchWeather={fetchWeather} {...props} />
+      <SelfLocatingWeatherClockCard fetchWeather={fetchWeather} {...props} />
     ) : (
-      <DashboardInfoCardView {...props} />
+      <WeatherClockCardView {...props} />
     )}
   </WeatherI18nProvider>
 );

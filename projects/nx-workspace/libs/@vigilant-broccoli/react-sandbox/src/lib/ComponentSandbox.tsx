@@ -45,7 +45,7 @@ import { ButtonDemo } from './demos/ButtonDemo';
 import { CheckListDemo } from './demos/CheckListDemo';
 import { CollapsibleListItemDemo } from './demos/CollapsibleListItemDemo';
 import { CRUDListNoImagesDemo } from './demos/CRUDListNoImagesDemo';
-import { DashboardInfoCardDemo } from './demos/DashboardInfoCardDemo';
+import { WeatherClockCardDemo } from './demos/WeatherClockCardDemo';
 import { CRUDListWithImagesDemo } from './demos/CRUDListWithImagesDemo';
 import { DocsExplorerDemo } from './demos/DocsExplorerDemo';
 import { SelectDemo } from './demos/SelectDemo';
@@ -70,7 +70,6 @@ import pastebinEn from './demos/pastebin/en.json';
 import { QuickLinksDemo } from './demos/QuickLinksDemo';
 import { ScrollTimelineDemo } from './demos/ScrollTimelineDemo';
 import { TasksDemo } from './demos/TasksDemo';
-import { WeatherDisplayDemo } from './demos/WeatherDisplayDemo';
 
 const CRUD_STORAGE_KEYS = {
   IS_CARDS: 'component-sandbox-crud-is-cards',
@@ -384,14 +383,6 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     category: CATEGORY.COMPONENTS,
     content: <UserLeaderboardDemo />,
   },
-  {
-    id: 'weather-display',
-    label: 'Weather Display',
-    description:
-      'The weather.harryliu.dev card, seeded from live Open-Meteo weather for Toronto, with controls for every value, the condition, day/night, units and preparation badges.',
-    category: CATEGORY.COMPONENTS,
-    content: <WeatherDisplayDemo />,
-  },
 ];
 
 const UTILITY_ENTRIES: SandboxEntry[] = [
@@ -427,12 +418,12 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     content: <CurrencyConverterUtilityContent />,
   },
   {
-    id: 'dashboard-info-card',
-    label: 'Dashboard Info Card',
+    id: 'weather-clock-card',
+    label: 'Weather Clock Card',
     description:
       'Clock, weather with details, preparation badges and a day-by-day forecast carousel (click the weather tile), the next sunrise/sunset and the current moon phase. Sun times and moon phase are computed locally from the location.',
     category: CATEGORY.UTILITIES,
-    content: <DashboardInfoCardDemo />,
+    content: <WeatherClockCardDemo />,
   },
   {
     id: 'docs-explorer',

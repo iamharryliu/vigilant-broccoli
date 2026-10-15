@@ -56,6 +56,7 @@ export const WeatherBadgeList = ({
     </ul>
   ) : null;
 
+/** @deprecated Unused; use `WeatherClockCardUtilityContent` from `react-utility`. */
 export const WeatherDisplay = ({
   city,
   condition,

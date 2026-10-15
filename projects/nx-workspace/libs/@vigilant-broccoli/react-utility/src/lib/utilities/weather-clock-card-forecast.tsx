@@ -8,7 +8,7 @@ import {
   WEATHER_CONDITION_LABEL,
 } from '@vigilant-broccoli/common-js';
 import { cn, useWeatherTranslation } from '@vigilant-broccoli/react-lib';
-import { weatherLucideIcon } from './dashboard-info-card-icons';
+import { weatherLucideIcon } from './weather-clock-card-icons';
 
 const TODAY_INDEX = 0;
 const MONTH_DAY_START = 5;
