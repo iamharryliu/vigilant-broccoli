@@ -5,10 +5,12 @@ locals {
     "staging-component-library",
     "staging-context-md",
     "staging-docs-md",
+    "staging-findme",
     "staging-harryliu-dev-react",
     "staging-links-react",
     "staging-utilities-ui",
     "staging-waiting-games",
+    "staging-whiteboard",
   ])
 }
 

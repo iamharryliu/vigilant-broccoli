@@ -21,8 +21,8 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── uptime.harryliu.dev                   Upptime historical site — GitHub Pages `gh-pages` branch of `iamharryliu/uptime` (CNAME to iamharryliu.github.io, DNS-only: Terraform `cloudflare-harryliu-dev.tf`; Pages custom domain set by `github_repository_pages.upptime`; see [upptime.md](./upptime.md))
 ├── api.harryliu.dev                      VB Express (production) — proxied CNAME to `production-vb-express.fly.dev` (Terraform, infrastructure/terraform/); the fly app needs a matching cert, which the `deploy.yml` "Ensure fly cert" step adds idempotently (`flyctl certs add api.harryliu.dev -a production-vb-express`) so Cloudflare's origin TLS handshake succeeds. All production clients and Upptime use this hostname
 ├── www.harryliu.dev                      301 redirect to apex (Cloudflare ruleset)
-├── findme.harryliu.dev                   FindMe — Vercel `production-findme` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
-├── whiteboard.harryliu.dev               Whiteboard — Vercel `production-whiteboard` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
+├── findme.harryliu.dev                   FindMe — Cloudflare Pages `production-findme` (domain + CNAME: Terraform, infrastructure/terraform/)
+├── whiteboard.harryliu.dev               Whiteboard — Cloudflare Pages `production-whiteboard` (domain + CNAME: Terraform, infrastructure/terraform/)
 ├── weather.harryliu.dev           Weather — Vercel `production-weather-next` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
 ├── balloono.harryliu.dev                 Balloono — Vercel `production-balloono` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; online rooms run over public Supabase Realtime channels, no backend of its own)
 ├── links.harryliu.dev                    Links — Cloudflare Pages `production-links-react` (domain + CNAME: Terraform, infrastructure/terraform/; public pastebin page, no Access gating)
@@ -54,16 +54,16 @@ vercel.app                                Vercel (production projects created on
 ├── staging-hearth.vercel.app                 Hearth (staging)
 ├── production-hearth.vercel.app              Hearth (production)
 ├── demo-employee-handler-ui.vercel.app       Employee Handler UI (demo — its only Vercel deploy)
-├── staging-findme.vercel.app                 FindMe (staging)
-├── production-findme.vercel.app              FindMe (production)
-├── staging-whiteboard.vercel.app             Whiteboard (staging)
-├── production-whiteboard.vercel.app          Whiteboard (production)
 ├── staging-weather-next.vercel.app    Weather (staging)
 ├── production-weather-next.vercel.app Weather (production)
 ├── staging-balloono.vercel.app               Balloono (staging)
 └── production-balloono.vercel.app            Balloono (production)
 
 pages.dev                                 Cloudflare Pages URLs for the environment not attached to a custom domain above
+├── staging-findme.pages.dev                 FindMe (staging)
+├── production-findme.pages.dev              FindMe (production)
+├── staging-whiteboard.pages.dev                 Whiteboard (staging)
+├── production-whiteboard.pages.dev              Whiteboard (production)
 ├── staging-cloud-8-skate-react.pages.dev      Cloud 8 Skate (staging — cloud8skate.com is on production, the exception)
 └── staging-harryliu-dev-react.pages.dev       Personal website React (staging — harryliu.dev is on production)
 

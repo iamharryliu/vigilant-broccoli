@@ -27,7 +27,7 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-findme
-    url: https://staging-findme.vercel.app/
+    url: https://staging-findme.pages.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-hearth
@@ -49,7 +49,7 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-whiteboard
-    url: https://staging-whiteboard.vercel.app/
+    url: https://staging-whiteboard.pages.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-weather
