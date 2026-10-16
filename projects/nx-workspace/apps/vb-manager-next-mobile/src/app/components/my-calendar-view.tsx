@@ -146,6 +146,43 @@ const groupEventsByDay = (events: CalendarEvent[]): EventDayGroup[] => {
     }));
 };
 
+const NOW_REFRESH_MS = 60 * 1000;
+
+const useNow = () => {
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), NOW_REFRESH_MS);
+    return () => clearInterval(timer);
+  }, []);
+
+  return now;
+};
+
+// Index to insert the "now" line at: before the first timed event that has not
+// started, but never above an all-day event.
+const findNowLineIndex = (events: CalendarEvent[], now: Date) => {
+  const nowMs = now.getTime();
+  const upcomingIndex = events.findIndex(
+    event => !event.allDay && new Date(event.start).getTime() > nowMs,
+  );
+  const lastAllDayIndex = events.reduce(
+    (last, event, index) => (event.allDay ? index : last),
+    -1,
+  );
+  return Math.max(
+    upcomingIndex === -1 ? events.length : upcomingIndex,
+    lastAllDayIndex + 1,
+  );
+};
+
+const NowLine = () => (
+  <li aria-label="Now" className="flex items-center py-0 pl-3 pr-4">
+    <span className="h-2 w-2 shrink-0 rounded-full bg-red-500" />
+    <span className="h-px flex-1 bg-red-500" />
+  </li>
+);
+
 const useIsMobileBrowser = () => {
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
 
@@ -176,6 +213,7 @@ export const MyCalendarView = () => {
   });
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
   const isMobile = useIsMobileBrowser();
+  const now = useNow();
 
   useEffect(() => {
     setHiddenIds(new Set(readHiddenCalendarIds(HIDDEN_CALENDARS_STORAGE_KEY)));
@@ -334,7 +372,11 @@ export const MyCalendarView = () => {
                       {formatDateHeading(group.date)}
                     </p>
                     <ul className="divide-y divide-gray-100">
-                      {group.events.map(event => (
+                      {group.events.flatMap((event, index) => [
+                        isSameDay(group.date, now) &&
+                          index === findNowLineIndex(group.events, now) && (
+                            <NowLine key="now-line" />
+                          ),
                         <li key={`${event.calendarId}-${event.id}`}>
                           <a
                             href={event.htmlLink ?? '#'}
@@ -359,8 +401,11 @@ export const MyCalendarView = () => {
                               </span>
                             </span>
                           </a>
-                        </li>
-                      ))}
+                        </li>,
+                      ])}
+                      {isSameDay(group.date, now) &&
+                        findNowLineIndex(group.events, now) ===
+                          group.events.length && <NowLine />}
                     </ul>
                   </div>
                 ))}

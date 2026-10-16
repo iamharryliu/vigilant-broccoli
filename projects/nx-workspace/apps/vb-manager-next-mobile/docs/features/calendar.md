@@ -8,3 +8,4 @@
 - Event Calendars is read-only: a list with per-calendar visibility toggles, with no sync, untracked or edit actions.
 - Hidden Google calendar ids are saved in local storage under `vb-manager-hidden-event-calendars`.
 - The embed URL, base config, event calendar colors and hidden-id helpers come from `@vigilant-broccoli/personal-common-js` and are shared with `vb-manager-next`.
+- The phone agenda (`MyCalendarView`) draws a red "now" line with a left dot in the Today group, above the first upcoming timed event (below all events when none remain, never above all-day events). The clock refreshes every minute.
