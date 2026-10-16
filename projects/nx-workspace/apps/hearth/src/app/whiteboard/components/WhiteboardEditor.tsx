@@ -8,7 +8,7 @@ import {
   PeerCursorsOverlay,
   SyncedTextEditor,
 } from '@vigilant-broccoli/react-lib';
-import { MarkdownViewer } from '@vigilant-broccoli/react-utility';
+import { MarkdownViewer } from '@vigilant-broccoli/react-lib-higher-level';
 import { useWhiteboard } from '../../hooks/use-whiteboard';
 import { WhiteboardAssistantDialog } from './WhiteboardAssistantDialog';
 

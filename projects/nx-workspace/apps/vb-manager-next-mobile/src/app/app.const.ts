@@ -1,9 +1,7 @@
 export const APP_NAME = 'VB Manager';
 
 export const PAGE_TITLE = {
-  HOME: 'My Calendar',
-  TRANSCRIBE: 'Transcribe',
-  OCR: 'Scan',
+  HOME: 'Home',
   LOGIN: 'Login',
   AUTH_CALLBACK: 'Signing In',
 } as const;

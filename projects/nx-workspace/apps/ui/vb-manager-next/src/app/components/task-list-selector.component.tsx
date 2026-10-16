@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { GoogleTasksComponent } from '@vigilant-broccoli/react-lib';
+import { GoogleTasksComponent } from '@vigilant-broccoli/react-lib-higher-level';
 import { googleTasksAuth } from '../../../libs/auth';
 import { CreateTasksDialogTrigger } from './create-tasks-dialog.component';
 

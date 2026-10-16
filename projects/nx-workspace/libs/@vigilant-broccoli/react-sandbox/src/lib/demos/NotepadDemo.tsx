@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { CSSProperties, useState } from 'react';
 import { SyncedTextEditor } from '@vigilant-broccoli/react-lib';
 
 const DEFAULT_CONTENT = `function greet(name) {
@@ -9,15 +9,23 @@ greet('world');`;
 
 const EDITOR_STYLE = { height: '360px' } as const;
 
-export const NotepadDemo = () => {
-  const [content, setContent] = useState(DEFAULT_CONTENT);
+interface NotepadDemoProps {
+  initialContent?: string;
+  style?: CSSProperties;
+}
+
+export const NotepadDemo = ({
+  initialContent = DEFAULT_CONTENT,
+  style = EDITOR_STYLE,
+}: NotepadDemoProps) => {
+  const [content, setContent] = useState(initialContent);
 
   return (
     <SyncedTextEditor
       content={content}
       onChange={setContent}
       isLoading={false}
-      style={EDITOR_STYLE}
+      style={style}
     />
   );
 };

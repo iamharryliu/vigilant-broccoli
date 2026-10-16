@@ -1,9 +1,5 @@
 'use client';
 
-import { DropdownMenu } from './DropdownMenu';
-import { Card } from './Card';
-import { IconButton } from './IconButton';
-import { InputGroup, InputGroupAddon, InputGroupInput } from './Input';
 import {
   ChevronRight,
   File,
@@ -20,8 +16,16 @@ import {
   useRef,
   useState,
 } from 'react';
-import { HighlightMatch } from './HighlightMatch';
-import { DeleteItemConfirmationDialog } from './CRUDListManagement';
+import {
+  Card,
+  DeleteItemConfirmationDialog,
+  DropdownMenu,
+  HighlightMatch,
+  IconButton,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from '@vigilant-broccoli/react-lib';
 
 const MOBILE_NO_CARD_CLS =
   '!p-0 [&::before]:!hidden [&::after]:!hidden md:!p-3 md:[&::before]:![display:revert] md:[&::after]:![display:revert]';

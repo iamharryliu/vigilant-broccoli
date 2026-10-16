@@ -1,6 +1,6 @@
 'use client';
 
-import { Pastebin } from '@vigilant-broccoli/react-lib';
+import { Pastebin } from '@vigilant-broccoli/react-lib-higher-level';
 import { PASTEBIN_GROUPS } from '@vigilant-broccoli/links';
 import { SIDEBAR_ROUTE } from '../../app.const';
 import { usePageTitle } from '../../use-page-title';

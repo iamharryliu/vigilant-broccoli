@@ -17,7 +17,7 @@ import {
   type SimulationLinkDatum,
   type SimulationNodeDatum,
 } from 'd3-force';
-import type { NoteGraph } from '@vigilant-broccoli/react-lib';
+import type { NoteGraph } from './DocsExplorer';
 import { isDarkTheme, PREFERS_DARK_QUERY } from './theme';
 
 interface SimNode extends SimulationNodeDatum {

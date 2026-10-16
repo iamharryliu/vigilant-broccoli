@@ -2,13 +2,15 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   Button,
   useDocumentTitle,
+  SegmentedControl,
+} from '@vigilant-broccoli/react-lib';
+import {
   DocsExplorer,
   type DocsExplorerUrlSync,
   type DocsNode,
   type DocsSearchResult,
   type NoteGraph,
-  SegmentedControl,
-} from '@vigilant-broccoli/react-lib';
+} from './DocsExplorer';
 import { MarkdownViewer } from './markdown-viewer';
 import { ChecklistViewer } from './checklist-viewer';
 import {

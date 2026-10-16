@@ -1,6 +1,6 @@
 # VB Manager Next Mobile
 
-Mobile-friendly dashboard for personal tasks and calendars, with transcription, OCR and a notepad.
+Mobile-friendly dashboard for personal tasks and calendars, with voice input and a notepad.
 
 ## Table of Contents
 
@@ -12,7 +12,6 @@ Mobile-friendly dashboard for personal tasks and calendars, with transcription, 
 - Framework - Next.js
 - Build Tool - Next.js
 - External libs
-  - Tesseract.js
   - Zod
 - Internal libs
   - `common-browser`
@@ -22,6 +21,7 @@ Mobile-friendly dashboard for personal tasks and calendars, with transcription, 
   - `links`
   - `personal-common-js`
   - `react-lib`
+  - `react-lib-higher-level`
 - Cloud services
   - Google Workspace APIs
   - Supabase

@@ -14,4 +14,4 @@ The hand-written `src/app/providers/auth-provider.tsx` must follow the [Supabase
 
 ### Sticky headings punch holes in a mobile overlay scrollbar
 
-Chromium can paint sticky descendants above a nested scroller's mobile overlay scrollbar, leaving a gap in its thumb at each heading. Keep the phone agenda in `my-calendar-view.tsx` on document scrolling via `PAGE_HEIGHT_MOBILE_SCROLL`, with sticky headings at `top-[var(--topbar-h)]`. Restoring nested `overflow-y-auto` recreates the problem; use page scrolling for similar phone surfaces.
+Chromium can paint sticky descendants above a nested scroller's mobile overlay scrollbar, leaving a gap in its thumb at each heading. Keep the phone agenda (`CalendarAgenda` from `react-lib-higher-level`, rendered by `home-view.tsx`) on document scrolling via `PAGE_HEIGHT_MOBILE_SCROLL`, with sticky headings at `top-[var(--topbar-h)]`. Restoring nested `overflow-y-auto` recreates the problem; use page scrolling for similar phone surfaces. The component-library Mobile Home frame scrolls internally, so it cannot show this artifact.

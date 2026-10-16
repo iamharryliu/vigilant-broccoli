@@ -1,18 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { cn } from '../utils/cn';
 import { type QuickLink } from '@vigilant-broccoli/common-js';
-import { CloseButton } from './CloseButton';
-import { EmbedDialog } from './EmbedDialog';
+import { QuickLinksPanel, type ShellExecuteHandler } from './QuickLinksPanel';
 import {
-  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  CloseButton,
+  cn,
   Dialog,
+  DialogClose,
   DialogContent,
   DialogTitle,
-  DialogClose,
-} from './Dialog';
-import { QuickLinksPanel, type ShellExecuteHandler } from './QuickLinksPanel';
+  EmbedDialog,
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+} from '@vigilant-broccoli/react-lib';
 
 const DIALOG_TITLE = 'Quick Links';
 const DIALOG_MAX_WIDTH = 800;

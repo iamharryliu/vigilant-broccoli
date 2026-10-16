@@ -13,8 +13,8 @@ import {
   HTTP_HEADERS,
   HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
-import { resizeImage } from '../utils/resizeImage';
 import { GoogleTasksAuthAdapter } from './GoogleTasks';
+import { resizeImage } from '@vigilant-broccoli/react-lib';
 
 const TASKS_LISTS_ENDPOINT = '/api/tasks/lists';
 const TASKS_PARSE_IMAGE_ENDPOINT = '/api/tasks/parse-image';

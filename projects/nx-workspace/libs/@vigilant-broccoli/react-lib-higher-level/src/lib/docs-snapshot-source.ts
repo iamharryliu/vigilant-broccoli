@@ -1,8 +1,4 @@
-import type {
-  DocsNode,
-  DocsSearchResult,
-  NoteGraph,
-} from '@vigilant-broccoli/react-lib';
+import type { DocsNode, DocsSearchResult, NoteGraph } from './DocsExplorer';
 
 // Reads the static snapshot written by scripts/build-docs-snapshot.mjs
 // (structure.json, graph.json, search-index.json, notes/**) under one base URL.

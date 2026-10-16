@@ -1,19 +1,25 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { ButtonList, type ButtonConfig } from './ButtonList';
-import { CopyButton } from './CopyButton';
-import { IconButton } from './IconButton';
-import { Input } from './Input';
-import { SegmentedControl } from './SegmentedControl';
-import { Text } from './Text';
-import { WINDOW_OPEN_FEATURES } from '../utils/browser.utils';
+import { LayoutList, List, Rows3, type LucideIcon } from 'lucide-react';
 import {
+  Button,
+  type ButtonConfig,
+  ButtonList,
+  CopyButton,
+  type Direction,
+  fuzzyMatch,
+  IconButton,
+  Input,
   moveQuickLinkFocusByDirection,
   QUICK_LINK_ITEM_ATTR,
-  type Direction,
-} from '../utils/focus-navigation.utils';
-import { fuzzyMatch } from '../utils/fuzzy-match.utils';
+  Text,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+  WINDOW_OPEN_FEATURES,
+} from '@vigilant-broccoli/react-lib';
 
 export const PASTEBIN_VIEW = {
   ROWS: 'rows',
@@ -43,11 +49,33 @@ const WINDOW_TARGET_BLANK = '_blank';
 const URL_PREFIX = 'http';
 const ENTER_KEY = 'Enter';
 
-const VIEW_OPTIONS = [
-  { value: PASTEBIN_VIEW.ROWS, label: 'Rows' },
-  { value: PASTEBIN_VIEW.GROUPED, label: 'Grouped' },
-  { value: PASTEBIN_VIEW.LIST, label: 'List' },
+const VIEW_OPTIONS: {
+  value: PastebinView;
+  label: string;
+  description: string;
+  Icon: LucideIcon;
+}[] = [
+  {
+    value: PASTEBIN_VIEW.LIST,
+    label: 'List',
+    description: 'List: all entries as badges',
+    Icon: List,
+  },
+  {
+    value: PASTEBIN_VIEW.GROUPED,
+    label: 'Grouped',
+    description: 'Grouped: badges under group titles',
+    Icon: LayoutList,
+  },
+  {
+    value: PASTEBIN_VIEW.ROWS,
+    label: 'Rows',
+    description: 'Rows: detailed rows with open and copy buttons',
+    Icon: Rows3,
+  },
 ];
+
+const VIEW_ICON_SIZE = 16;
 
 const ARROW_DIRECTION: Record<string, Direction> = {
   ArrowDown: 'down',
@@ -272,13 +300,31 @@ export const Pastebin = ({
           onKeyDown={handleSearchKeyDown}
           className="flex-1"
         />
-        <SegmentedControl
-          label={VIEW_TOGGLE_LABEL}
-          value={view}
-          options={VIEW_OPTIONS}
-          onChange={handleViewChange}
-          size="sm"
-        />
+        <TooltipProvider delayDuration={0}>
+          <div
+            role="group"
+            aria-label={VIEW_TOGGLE_LABEL}
+            className="flex gap-1"
+          >
+            {VIEW_OPTIONS.map(({ value, label, description, Icon }) => (
+              <Tooltip key={value}>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant={view === value ? 'default' : 'outline'}
+                    aria-label={label}
+                    aria-pressed={view === value}
+                    onClick={() => handleViewChange(value)}
+                  >
+                    <Icon size={VIEW_ICON_SIZE} />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>{description}</TooltipContent>
+              </Tooltip>
+            ))}
+          </div>
+        </TooltipProvider>
       </div>
 
       {entries.length === 0 ? (

@@ -37,6 +37,13 @@ export default [
               sourceTag: '*',
               onlyDependOnLibsWithTags: ['*'],
             },
+            // react-lib stays atomic: higher-level components live in
+            // react-lib-higher-level so editing them does not redeploy every
+            // UI app that consumes react-lib.
+            {
+              sourceTag: 'type:primitive',
+              notDependOnLibsWithTags: ['type:higher-level'],
+            },
           ],
         },
       ],

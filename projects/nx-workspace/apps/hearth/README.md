@@ -22,6 +22,7 @@ Shared life for homes, communes, and communities.
   - `common-js`
   - `common-node`
   - `react-lib`
+  - `react-lib-higher-level`
 - Cloud services
   - Cloudflare R2
   - Supabase

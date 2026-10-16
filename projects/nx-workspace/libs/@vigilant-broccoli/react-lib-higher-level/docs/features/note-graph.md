@@ -1,12 +1,12 @@
 # Note Graph
 
-`react-utility` `GraphView` + `react-lib` `DocsExplorer` — Obsidian-style force-directed graph of the note link-graph, layered onto the [DocsExplorer](./docs-explorer.md) note viewer.
+`GraphView` + `DocsExplorer` (both `react-lib-higher-level`) — Obsidian-style force-directed graph of the note link-graph, layered onto the [DocsExplorer](./docs-explorer.md) note viewer.
 
 ## Enabling
 
 - `DocsViewer` shows a graph toggle (sidebar, waypoints icon) only when given the optional `getGraph()` prop; without it there is no graph
 - `docs-md` and `pages-index`'s Claude Context page wire `getGraph` to `createDocsSnapshotSource().fetchGraph` (`graph.json`); `vb-manager-next`'s docs route does not, so it has no graph toggle
-- `DocsExplorer` takes `renderGraph(navigate)`; `DocsViewer` injects `GraphView` through it — react-lib can't import react-utility (would cycle), so the graph component is passed in rather than imported
+- `DocsExplorer` takes `renderGraph(navigate)`; `DocsViewer` injects `GraphView` through it — the graph component is passed in rather than imported, which keeps `DocsExplorer` free of the force-simulation code
 
 ## Data (`graph.json`)
 

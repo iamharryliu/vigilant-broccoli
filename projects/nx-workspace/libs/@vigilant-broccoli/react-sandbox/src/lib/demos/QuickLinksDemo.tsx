@@ -1,13 +1,12 @@
 import { DemoSection } from './DemoSection';
 import { useState } from 'react';
 import { OPEN_TYPE, type QuickLink } from '@vigilant-broccoli/common-js';
+import { Button, Text } from '@vigilant-broccoli/react-lib';
 import {
-  Button,
   QuickLinksDialog,
   QuickLinksPanel,
-  Text,
   type ShellExecuteHandler,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { toast, Toaster } from '@vigilant-broccoli/react-lib/toaster';
 import {
   CLAUDE_LINK,

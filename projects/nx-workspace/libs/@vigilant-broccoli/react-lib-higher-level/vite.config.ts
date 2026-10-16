@@ -4,7 +4,8 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   root: __dirname,
-  cacheDir: '../../../node_modules/.vite/libs/@vigilant-broccoli/react-utility',
+  cacheDir:
+    '../../../node_modules/.vite/libs/@vigilant-broccoli/react-lib-higher-level',
 
   plugins: [tsconfigPaths()],
 
@@ -16,7 +17,7 @@ export default defineConfig({
     reporters: ['default'],
     coverage: {
       reportsDirectory:
-        '../../../coverage/libs/@vigilant-broccoli/react-utility',
+        '../../../coverage/libs/@vigilant-broccoli/react-lib-higher-level',
       provider: 'v8',
     },
   },

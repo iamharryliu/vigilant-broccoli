@@ -16,3 +16,4 @@ Public single-page pastebin of personal links, contact details, and the develope
 - Internal libs
   - `links`
   - `react-lib`
+  - `react-lib-higher-level`

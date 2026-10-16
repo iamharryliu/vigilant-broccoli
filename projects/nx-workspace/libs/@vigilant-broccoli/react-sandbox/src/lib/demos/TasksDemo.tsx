@@ -2,14 +2,11 @@
 
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
+import { Button, Select, Switch, Text } from '@vigilant-broccoli/react-lib';
 import {
-  Button,
   GoogleTasksAuthAdapter,
   GoogleTasksComponent,
-  Select,
-  Switch,
-  Text,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 
 const AUTH_STATUS = {
   LOADING: 'loading',
@@ -17,7 +14,7 @@ const AUTH_STATUS = {
   UNAUTHENTICATED: 'unauthenticated',
 } as const;
 
-const SCENARIO = {
+export const SCENARIO = {
   SIGNED_IN: 'signedIn',
   TOKEN_EXPIRED: 'tokenExpired',
   SIGNED_OUT: 'signedOut',
@@ -315,13 +312,13 @@ const CONTROL_LABEL = {
   RESET: 'Reset mock data',
 } as const;
 
-export const TasksDemo = () => {
-  const [scenario, setScenario] = useState<Scenario>(SCENARIO.SIGNED_IN);
-  const [showSelector, setShowSelector] = useState(true);
-  const [enableDragDrop, setEnableDragDrop] = useState(true);
-  const [failWrites, setFailWrites] = useState(false);
-  const [resetKey, setResetKey] = useState(0);
-
+// The mocked tasks API as a GoogleTasksAuthAdapter, shared with other demos
+// that embed the tasks component.
+export const useMockTasksAuth = (
+  scenario: Scenario,
+  failWrites: boolean,
+  onSignIn: () => void,
+) => {
   const storeRef = useRef<MockStore>(seedStore());
   const optionsRef = useRef({ scenario, failWrites });
   optionsRef.current = { scenario, failWrites };
@@ -368,13 +365,31 @@ export const TasksDemo = () => {
         googleToken: scenario === SCENARIO.SIGNED_IN ? MOCK_ACCESS_TOKEN : null,
         clearGoogleToken: () => undefined,
       }),
-      signInWithGoogle: async () => setScenario(SCENARIO.SIGNED_IN),
+      signInWithGoogle: async () => onSignIn(),
     }),
-    [authFetch, scenario],
+    [authFetch, scenario, onSignIn],
+  );
+
+  const resetStore = () => {
+    storeRef.current = seedStore();
+  };
+
+  return { auth, resetStore };
+};
+
+export const TasksDemo = () => {
+  const [scenario, setScenario] = useState<Scenario>(SCENARIO.SIGNED_IN);
+  const [showSelector, setShowSelector] = useState(true);
+  const [enableDragDrop, setEnableDragDrop] = useState(true);
+  const [failWrites, setFailWrites] = useState(false);
+  const [resetKey, setResetKey] = useState(0);
+
+  const { auth, resetStore } = useMockTasksAuth(scenario, failWrites, () =>
+    setScenario(SCENARIO.SIGNED_IN),
   );
 
   const handleReset = () => {
-    storeRef.current = seedStore();
+    resetStore();
     setResetKey(key => key + 1);
   };
 

@@ -7,8 +7,11 @@ import {
   Input,
   Text,
 } from '@vigilant-broccoli/react-lib';
-import { GraphView } from '@vigilant-broccoli/react-utility';
-import type { NoteGraph, NoteGraphLink } from '@vigilant-broccoli/react-lib';
+import { GraphView } from '@vigilant-broccoli/react-lib-higher-level';
+import type {
+  NoteGraph,
+  NoteGraphLink,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { authFetch } from '../../../libs/auth';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import {
