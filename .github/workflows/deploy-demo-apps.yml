@@ -14,10 +14,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  employee-handler-ui:
+  demo-apps:
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true' && github.event.client_payload.environment == 'staging') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -25,12 +25,21 @@ jobs:
 
       - uses: ./.github/actions/setup-nx-workspace
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
+
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         with:
           gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
           export_token: 'true'
+          secrets: |
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
+            kv/data/secrets CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ID ;
+            kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+            kv/data/secrets DOCKERHUB_TOKEN | DOCKERHUB_TOKEN
 
       - name: Fetch Cloudflare Access service token from Secret Manager
         id: cf-access
@@ -40,9 +49,18 @@ jobs:
             CF_ACCESS_CLIENT_ID:vigilant-broccoli/VAULT_CF_ACCESS_CLIENT_ID
             CF_ACCESS_CLIENT_SECRET:vigilant-broccoli/VAULT_CF_ACCESS_CLIENT_SECRET
 
+      - name: Log in to Docker Hub
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        with:
+          username: iamharryliu
+          password: ${{ env.DOCKERHUB_TOKEN }}
+
+      - uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # 1.6
+
       - name: Deploy affected demo apps
         working-directory: ./projects/nx-workspace
         env:
+          COMMIT_SHA: ${{ github.sha }}
           VAULT_TOKEN: ${{ env.VAULT_TOKEN }}
           VAULT_ADDR: https://vault.harryliu.dev
           CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}

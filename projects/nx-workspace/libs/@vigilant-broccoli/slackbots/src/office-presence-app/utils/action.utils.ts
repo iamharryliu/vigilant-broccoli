@@ -21,6 +21,7 @@ import { WebClient } from '@slack/web-api';
 import { AppCopy, LANGUAGE, Language } from '../consts/app-copy.const';
 import { ACTION_ID, BLOCK_ID } from '../consts/data.consts';
 import { validateInput } from './input-validation.utils';
+import { isDemoUserId } from '../consts/demo-users.const';
 
 export function handleCheckboxAction(body: BlockAction) {
   const action = body.actions[0];
@@ -92,8 +93,13 @@ export async function handleAskLunchAction(
   selectedUserIds: string[],
   client: WebClient,
   copy: AppCopy,
+  allowDemoRecipients = false,
 ) {
-  if (selectedUserIds.length === 0) {
+  // Slack rejects (or worse, mis-targets) seeded ids, so only the local mock may address them.
+  const recipientIds = allowDemoRecipients
+    ? selectedUserIds
+    : selectedUserIds.filter(id => !isDemoUserId(id));
+  if (recipientIds.length === 0) {
     await client.chat.postEphemeral({
       channel: userId,
       user: userId,
@@ -101,7 +107,7 @@ export async function handleAskLunchAction(
     });
     return;
   }
-  const allUserIds = [userId, ...selectedUserIds];
+  const allUserIds = [userId, ...recipientIds];
   const conv = await client.conversations.open({
     users: allUserIds.join(','),
   });
@@ -112,7 +118,7 @@ export async function handleAskLunchAction(
   await client.chat.postEphemeral({
     channel: userId,
     user: userId,
-    text: copy.ACTIONS.createdGroupChat(selectedUserIds.length),
+    text: copy.ACTIONS.createdGroupChat(recipientIds.length),
   });
 }
 
@@ -163,8 +169,7 @@ function isCheckboxChecked(
   actionId: string,
 ): boolean {
   const selected = view.state.values[blockId]?.[actionId].selected_options as
-    | ViewStateSelectedOption[]
-    | undefined;
+    ViewStateSelectedOption[] | undefined;
   return selected?.some(o => o.value === actionId) ?? false;
 }
 

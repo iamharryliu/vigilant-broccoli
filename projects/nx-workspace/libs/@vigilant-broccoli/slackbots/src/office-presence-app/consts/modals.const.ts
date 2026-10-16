@@ -9,6 +9,7 @@ import {
 } from '../utils/db.utils';
 import { getUpcomingWeekdays, formatISODateLocal } from '../utils/date.utils';
 import { buildModalDateOptionSlackBlocks } from '../utils/view.utils';
+import { formatUserMention } from '../utils/mention.utils';
 import { ACTION_ID, BLOCK_ID, INPUT_MAX_LENGTH } from './data.consts';
 import { LANGUAGE, LANGUAGE_DISPLAY_NAME, Language } from './app-copy.const';
 
@@ -409,8 +410,8 @@ export function createAskLunchModal(appConfig: AppConfig) {
       if (presences[today] && uid !== userId) {
         usersInOffice.push({
           label: presences[today].office
-            ? `<@${uid}> | 🏢 ${presences[today].office}`
-            : `<@${uid}>`,
+            ? `${formatUserMention(uid)} | 🏢 ${presences[today].office}`
+            : formatUserMention(uid),
           value: uid,
         });
       }

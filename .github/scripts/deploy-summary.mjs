@@ -39,6 +39,16 @@ const PROJECT_HOSTING = {
     name: 'employee-handler-ui',
     environments: ['demo'],
   },
+  'office-presence-ui': {
+    platform: 'pages',
+    name: 'office-presence-ui',
+    environments: ['demo'],
+  },
+  'office-presence-service': {
+    platform: 'fly',
+    name: 'office-presence-service',
+    environments: ['demo'],
+  },
   'vb-express': { platform: 'fly', name: 'vb-express' },
   'llm-service': { platform: 'fly', name: 'llm-service' },
   'email-service': { platform: 'fly', name: 'email-service' },
