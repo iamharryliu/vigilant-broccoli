@@ -69,10 +69,10 @@
 
 ### Ideal Flour Weight
 
-| Bake            | Flour (g) | Hydration | Total Dough (g) | Notes                                       |
-| --------------- | --------- | --------- | --------------- | ------------------------------------------- |
-| Sourdough Bread | 450-500   | 70-75%    | ~800-900        | One loaf (boule or batard) in a Dutch oven. |
-| Sourdough Pizza | 120-150   | 65%       | ~200-250        | One 10-12" pizza; scale per dough ball.     |
+| Bake            | Flour (g) | Notes                                       |
+| --------------- | --------- | ------------------------------------------- |
+| Sourdough Bread | 450-500   | One loaf (boule or batard) in a Dutch oven. |
+| Sourdough Pizza | 120-150   | One 10-12" pizza; scale per dough ball.     |
 
 ### Recipes
 
