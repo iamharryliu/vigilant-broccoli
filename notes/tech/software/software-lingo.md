@@ -13,43 +13,44 @@
 
 ## Programming Concepts
 
-| Term                | Definition                                                                                                                                                          |
-| :------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| ACID                | A set of properties that guarantee reliable transaction processing in relational database systems                                                                   |
-| Closure             | Enables functions to keep state.                                                                                                                                    |
-| Compiler            | A tool that converts source code written in one programming language into another, typically into machine code.                                                     |
-| first class citizen | a particular entity in a language—like a function, object, or data type—can be used freely and fully like any other value.                                          |
-| FOSS                | Free and Open Source Software — software whose source code is freely available to view, modify, and redistribute, usually under a license like MIT, GPL, or Apache. |
-| Hard delete         | Physically removing a row from the database, so it cannot be recovered without a backup. The opposite of a soft delete.                                             |
-| High-level language | A programming language that is closer to human language, abstracting away hardware details. Easier to read, write, and maintain (e.g., Python).                     |
-| immutable           | Cannot be changed after it’s created.                                                                                                                               |
-| Lazy loading        | Deferring a load until first access, such as an ORM fetching a related entity only when it is read. Can cause N+1 queries.                                          |
-| Low-level language  | A programming language that is closer to machine code, with less abstraction from hardware. Provides more control but is harder to use (e.g., C).                   |
-| Soft delete         | Marking a record deleted (a `deleted_at` timestamp or flag) instead of removing the row, so it stays recoverable. A hard delete removes the row.                    |
-| Statically Typed    | Variable types are known at compile time.                                                                                                                           |
-| Ternary Operator    | A one line if else statement.                                                                                                                                       |
-| Transpiler          | Transforms code syntax and features so the code runs across different environments.                                                                                 |
+| Term                | Definition                                                                                                                                                                                                        |
+| :------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ACID                | A set of properties that guarantee reliable transaction processing in relational database systems                                                                                                                 |
+| Closure             | Enables functions to keep state.                                                                                                                                                                                  |
+| Compiler            | A tool that converts source code written in one programming language into another, typically into machine code.                                                                                                   |
+| DSL                 | Domain-Specific Language. A language built for one narrow job (e.g. SQL, regex, CSS, HCL) rather than general programming, usually declarative: you describe the desired result and the tool works out the steps. |
+| first class citizen | a particular entity in a language—like a function, object, or data type—can be used freely and fully like any other value.                                                                                        |
+| FOSS                | Free and Open Source Software — software whose source code is freely available to view, modify, and redistribute, usually under a license like MIT, GPL, or Apache.                                               |
+| Hard delete         | Physically removing a row from the database, so it cannot be recovered without a backup. The opposite of a soft delete.                                                                                           |
+| High-level language | A programming language that is closer to human language, abstracting away hardware details. Easier to read, write, and maintain (e.g., Python).                                                                   |
+| immutable           | Cannot be changed after it’s created.                                                                                                                                                                             |
+| Lazy loading        | Deferring a load until first access, such as an ORM fetching a related entity only when it is read. Can cause N+1 queries.                                                                                        |
+| Low-level language  | A programming language that is closer to machine code, with less abstraction from hardware. Provides more control but is harder to use (e.g., C).                                                                 |
+| Soft delete         | Marking a record deleted (a `deleted_at` timestamp or flag) instead of removing the row, so it stays recoverable. A hard delete removes the row.                                                                  |
+| Statically Typed    | Variable types are known at compile time.                                                                                                                                                                         |
+| Ternary Operator    | A one line if else statement.                                                                                                                                                                                     |
+| Transpiler          | Transforms code syntax and features so the code runs across different environments.                                                                                                                               |
 
 ## Architecture
 
-| Term                      | Definition                                                                                                                                                                 |
-| :------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| API                       | Application Programming Interface — a defined set of rules and protocols that lets one piece of software request services or data from another.                            |
-| Backend                   | The server-side part of an application responsible for data processing, storage, and business logic.                                                                       |
-| daemon                    | A background process that runs continuously and handles tasks or requests without direct user interaction. Common in operating systems and servers.                        |
-| Dependency Inversion      | Implementing code so that high-level modules do not depend on low-level modules, ie abstract DB (could use MySQL or Postgres)                                              |
-| Distributed systems       | A system whose components run on multiple networked machines and coordinate by passing messages, so it appears to users as a single system.                                |
-| Embedded Software         | Software written to run on dedicated hardware with a specific function (e.g. firmware on a microcontroller), as opposed to general-purpose software running on a computer. |
-| ephemeral                 | Short lived or temporary.                                                                                                                                                  |
-| ERP                       | Enterprise Resource Planning. Software that integrates core business processes (finance, HR, supply chain, inventory, manufacturing) into a single system.                 |
-| Event Driven Architecture |                                                                                                                                                                            |
-| Firmware                  | Low-level software written to a device's non-volatile memory that directly controls its hardware, such as the code running on a microcontroller.                           |
-| Frontend                  | The client-side part of an application responsible for user interface and interaction.                                                                                     |
-| LTS                       | Long term support.                                                                                                                                                         |
-| Microcontroller           | A small computer on a single chip (CPU, memory, and I/O) built to run one dedicated task, typically the target hardware for embedded software.                             |
-| microservices             | Breaking applications into tiny remote services that run independently of each other.                                                                                      |
-| Monorepo                  | A single repository that contains multiple projects, often related, to simplify development and collaboration.                                                             |
-| Pub/Sub Model             | Publisher -> Message Broker (routes topics) -> Subscriber                                                                                                                  |
+| Term                      | Definition                                                                                                                                                                                                                   |
+| :------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| API                       | Application Programming Interface — a defined set of rules and protocols that lets one piece of software request services or data from another.                                                                              |
+| Backend                   | The server-side part of an application responsible for data processing, storage, and business logic.                                                                                                                         |
+| daemon                    | A background process that runs continuously and handles tasks or requests without direct user interaction. Common in operating systems and servers.                                                                          |
+| Dependency Inversion      | Implementing code so that high-level modules do not depend on low-level modules, ie abstract DB (could use MySQL or Postgres)                                                                                                |
+| Distributed systems       | A system whose components run on multiple networked machines and coordinate by passing messages, so it appears to users as a single system.                                                                                  |
+| Embedded Software         | Software written to run on dedicated hardware with a specific function (e.g. firmware on a microcontroller), as opposed to general-purpose software running on a computer.                                                   |
+| ephemeral                 | Short lived or temporary.                                                                                                                                                                                                    |
+| ERP                       | Enterprise Resource Planning. Software that integrates core business processes (finance, HR, supply chain, inventory, manufacturing) into a single system.                                                                   |
+| Event Driven Architecture | A design where components communicate by emitting and reacting to events (e.g. "order placed") through a broker or queue instead of calling each other directly, so producers and consumers stay decoupled and asynchronous. |
+| Firmware                  | Low-level software written to a device's non-volatile memory that directly controls its hardware, such as the code running on a microcontroller.                                                                             |
+| Frontend                  | The client-side part of an application responsible for user interface and interaction.                                                                                                                                       |
+| LTS                       | Long term support.                                                                                                                                                                                                           |
+| Microcontroller           | A small computer on a single chip (CPU, memory, and I/O) built to run one dedicated task, typically the target hardware for embedded software.                                                                               |
+| microservices             | Breaking applications into tiny remote services that run independently of each other.                                                                                                                                        |
+| Monorepo                  | A single repository that contains multiple projects, often related, to simplify development and collaboration.                                                                                                               |
+| Pub/Sub Model             | Publisher -> Message Broker (routes topics) -> Subscriber                                                                                                                                                                    |
 
 ## Networking
 
