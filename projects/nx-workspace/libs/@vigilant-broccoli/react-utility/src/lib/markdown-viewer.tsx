@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import DOMPurify from 'dompurify';
 import { createHeadingRenderer, marked } from './markdown-config';
-import { createNoteLinkClickHandler, scrollToUrlHash } from './note-links';
+import {
+  createNoteLinkClickHandler,
+  type RepoLinkBase,
+  rewriteRepoRelativeLinks,
+  scrollToUrlHash,
+} from './note-links';
 import { observeThemeChange, renderMermaidDiagrams } from './mermaid-diagrams';
 
 const CLS = {
@@ -34,6 +39,7 @@ interface MarkdownViewerProps {
   saveContent?: (path: string, content: string) => Promise<void>;
   editTrigger?: number;
   onNavigate?: (path: string) => void;
+  repoLinkBase?: RepoLinkBase;
 }
 
 export function MarkdownViewer({
@@ -42,6 +48,7 @@ export function MarkdownViewer({
   saveContent,
   editTrigger,
   onNavigate,
+  repoLinkBase,
 }: MarkdownViewerProps) {
   const [html, setHtml] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -54,9 +61,12 @@ export function MarkdownViewer({
       .parse(content, { renderer: createHeadingRenderer(), async: true })
       .then(raw => {
         if (typeof window === 'undefined') return;
-        setHtml(DOMPurify.sanitize(raw));
+        const safe = DOMPurify.sanitize(raw);
+        setHtml(
+          repoLinkBase ? rewriteRepoRelativeLinks(safe, repoLinkBase) : safe,
+        );
       });
-  }, [content]);
+  }, [content, repoLinkBase?.filePath]);
 
   const proseRef = useRef<HTMLDivElement>(null);
 
