@@ -55,8 +55,8 @@ export interface Balloon extends Point {
 
 export interface Splash extends Point {
   ttl: number;
-  // Owner of the balloon that started the chain; credited if this splash soaks someone.
-  ownerId: string;
+  // Owners of the balloons that started each chain reaching this tile; each is credited if it soaks someone.
+  ownerIds: string[];
 }
 
 export interface ArenaSize {
