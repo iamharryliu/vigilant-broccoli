@@ -2,7 +2,6 @@ export const APP_NAME = 'VB Manager';
 
 export const PAGE_TITLE = {
   HOME: 'My Calendar',
-  TASK_LIST: 'My Tasks',
   TRANSCRIBE: 'Transcribe',
   OCR: 'Scan',
   NOTEPAD: 'Notepad',
@@ -13,6 +12,9 @@ export const PAGE_TITLE = {
 export const CALENDAR_TAB = {
   CALENDAR: 'Calendar',
   EVENT_CALENDARS: 'Event Calendars',
+  TASKS: 'Tasks',
 } as const;
 
 export type CalendarTab = (typeof CALENDAR_TAB)[keyof typeof CALENDAR_TAB];
+
+export const CALENDAR_TAB_QUERY_PARAM = 'tab';

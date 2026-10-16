@@ -6,7 +6,6 @@ import { useState } from 'react';
 import {
   CalendarDays,
   Link2,
-  ListTodo,
   Mic,
   ScanLine,
   StickyNote,
@@ -35,7 +34,6 @@ const FOOTER_LABEL_VISIBLE = 'flex-1 opacity-100';
 
 const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
   { href: '/', label: PAGE_TITLE.HOME, icon: CalendarDays },
-  { href: '/task-list', label: PAGE_TITLE.TASK_LIST, icon: ListTodo },
   { href: '/transcribe', label: PAGE_TITLE.TRANSCRIBE, icon: Mic },
   { href: '/ocr', label: PAGE_TITLE.OCR, icon: ScanLine },
   { href: '/notepad', label: PAGE_TITLE.NOTEPAD, icon: StickyNote },

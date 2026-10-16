@@ -18,7 +18,6 @@ export const GoogleTasksView = () => {
     <GoogleTasksComponent
       auth={googleTasksAuth}
       showSelector
-      enableDragDrop
       wrapInCard={false}
       refreshTrigger={refreshTrigger}
       addTaskActions={
