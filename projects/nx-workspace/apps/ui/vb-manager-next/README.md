@@ -33,6 +33,7 @@ Management dashboard app.
   - `money-movement`
   - `personal-common-js`
   - `react-lib`
+  - `react-lib-higher-level`
   - `react-music-lib`
   - `react-utility`
   - `resume`

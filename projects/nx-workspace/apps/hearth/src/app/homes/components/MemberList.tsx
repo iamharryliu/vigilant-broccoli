@@ -4,13 +4,15 @@ import { useState } from 'react';
 import { Button, Text } from '@vigilant-broccoli/react-lib';
 import {
   Badge,
-  CRUDFormProps,
-  CRUDItemList,
   Input,
   Select,
   USER_AVATAR_VARIANT,
   UserAvatar,
 } from '@vigilant-broccoli/react-lib';
+import {
+  CRUDFormProps,
+  CRUDItemList,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { HOME_ROLE, HomeMember, HomeRole } from '../../../lib/types';
 

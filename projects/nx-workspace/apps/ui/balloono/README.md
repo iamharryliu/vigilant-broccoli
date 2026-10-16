@@ -18,5 +18,6 @@ Bomberman-style water balloon battles on desktop: online rooms for four or more 
 - Internal libs
   - `common-js`
   - `react-lib`
+  - `react-lib-higher-level`
 - Cloud services
   - Supabase

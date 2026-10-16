@@ -16,7 +16,7 @@ Shared real-time notes per home and board, with an AI document editing assistant
 
 ## Markdown Preview
 
-- An eye icon button beside the chat icon toggles a read-only markdown rendering of the document using `MarkdownViewer` from `react-utility` (the same renderer as docs-md: GFM via `marked`, sanitized with DOMPurify, Tailwind typography `prose` styling); the pencil icon returns to the editor. The AI edit dialog's document pane has the same toggle (without the chat button), with its own preview state. Content still syncs while previewing
+- An eye icon button beside the chat icon toggles a read-only markdown rendering of the document using `MarkdownViewer` from `react-lib-higher-level` (the same renderer as docs-md: GFM via `marked`, sanitized with DOMPurify, Tailwind typography `prose` styling); the pencil icon returns to the editor. The AI edit dialog's document pane has the same toggle (without the chat button), with its own preview state. Content still syncs while previewing
 
 ## AI Edit
 

@@ -18,6 +18,7 @@
   - `common-js`
   - `employee-handler`
   - `react-lib`
+  - `react-lib-higher-level`
 - Cloud services
   - Google APIs
   - Supabase

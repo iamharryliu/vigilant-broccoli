@@ -13,12 +13,11 @@ import {
   useTheme,
   useThemeKeybind,
   useDocumentTitle,
-  Sidebar,
-  SidebarCTA,
   Switch,
   Heading,
   Text,
 } from '@vigilant-broccoli/react-lib';
+import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import {
   AlarmUtilityContent,
   CalculatorUtilityContent,
@@ -60,6 +59,7 @@ import { ToasterDemo } from './demos/ToasterDemo';
 import { UserLeaderboardDemo } from './demos/UserLeaderboardDemo';
 import { GroupLeaderboardDemo } from './demos/GroupLeaderboardDemo';
 import { EmptyLeaderboardDemo } from './demos/EmptyLeaderboardDemo';
+import { MobileHomeDemo } from './demos/MobileHomeDemo';
 import { NotepadDemo } from './demos/NotepadDemo';
 import { PastebinDemo } from './demos/PastebinDemo';
 import {
@@ -432,6 +432,14 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
       'The docs explorer is the file-tree + search shell behind docs.harryliu.dev. It is not mounted here - it needs a notes tree to browse - so this page links to the live site and shows what it looks like there.',
     category: CATEGORY.UTILITIES,
     content: <DocsExplorerDemo />,
+  },
+  {
+    id: 'mobile-home',
+    label: 'Mobile Home',
+    description:
+      'The vb-manager-next-mobile home page inside an iPhone-sized frame. The agenda, event calendars list and tab shell are the real react-lib-higher-level components fed with sample data; tasks, notepad and quick links reuse the sandbox demos.',
+    category: CATEGORY.UTILITIES,
+    content: <MobileHomeDemo />,
   },
   {
     id: 'notepad',

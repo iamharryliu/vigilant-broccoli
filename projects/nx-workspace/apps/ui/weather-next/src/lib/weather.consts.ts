@@ -1,4 +1,4 @@
-import type { Preparation } from '@vigilant-broccoli/react-lib';
+import type { Preparation } from '@vigilant-broccoli/react-utility';
 
 export const WEATHER_API_PATH = '/api/weather';
 

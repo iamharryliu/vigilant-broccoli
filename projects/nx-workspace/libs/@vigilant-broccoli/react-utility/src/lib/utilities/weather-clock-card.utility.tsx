@@ -23,19 +23,16 @@ import {
   toDisplayTemperature,
   WEATHER_CONDITION,
 } from '@vigilant-broccoli/common-js';
+import { cn, Skeleton, TextProps } from '@vigilant-broccoli/react-lib';
 import {
-  cn,
   LOCAL_WEATHER_STATUS,
   LocalWeatherFailure,
-  LocalWeatherMessage,
-  PREPARATION_BADGES,
-  Skeleton,
-  TextProps,
   useLocalWeather,
-  useWeatherTranslation,
-  WeatherBadgeList,
-  WeatherI18nProvider,
-} from '@vigilant-broccoli/react-lib';
+} from '../weather/useLocalWeather';
+import { LocalWeatherMessage } from '../weather/LocalWeatherMessage';
+import { PREPARATION_BADGES } from '../weather/weather.consts';
+import { useWeatherTranslation, WeatherI18nProvider } from '../weather';
+import { WeatherBadgeList } from '../WeatherDisplay';
 import { ClockComponent } from '../clock';
 import { ForecastCarousel } from './weather-clock-card-forecast';
 import {

@@ -5,7 +5,6 @@ import { Draggable } from '@fullcalendar/interaction';
 import {
   Badge,
   Button,
-  EllipsisCTA,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Text,
   Dialog,
@@ -13,6 +12,7 @@ import {
   DialogTitle,
   cn,
 } from '@vigilant-broccoli/react-lib';
+import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { CalendarEvent, HomeProject } from '../../../lib/types';
 import { HomeProjectForm, HomeProjectFormData } from './HomeProjectForm';
 

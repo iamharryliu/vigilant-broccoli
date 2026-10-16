@@ -1,6 +1,6 @@
 'use client';
 
-import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib';
+import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { signInWithGoogle, signOut, useAuth } from '../../../libs/auth';
 import { usePathname, useRouter } from 'next/navigation';
 import {

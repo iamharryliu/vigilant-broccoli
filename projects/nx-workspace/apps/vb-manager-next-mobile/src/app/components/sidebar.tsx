@@ -2,8 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { CalendarDays, Mic, ScanLine, LogOut } from 'lucide-react';
-import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib';
+import { House, LogOut } from 'lucide-react';
+import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { signOut } from '../providers/auth-provider';
 import { PAGE_TITLE } from '../app.const';
 
@@ -18,9 +18,7 @@ const FOOTER_LABEL_COLLAPSIBLE =
 const FOOTER_LABEL_VISIBLE = 'flex-1 opacity-100';
 
 const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
-  { href: '/', label: PAGE_TITLE.HOME, icon: CalendarDays },
-  { href: '/transcribe', label: PAGE_TITLE.TRANSCRIBE, icon: Mic },
-  { href: '/ocr', label: PAGE_TITLE.OCR, icon: ScanLine },
+  { href: '/', label: PAGE_TITLE.HOME, icon: House },
 ];
 
 type AppSidebarProps = {

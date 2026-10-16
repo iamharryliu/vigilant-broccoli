@@ -37,6 +37,25 @@ export default [
               sourceTag: '*',
               onlyDependOnLibsWithTags: ['*'],
             },
+            // Layering: apps may use anything. Composite UI lives in
+            // type:higher-level libs so editing one does not redeploy every
+            // app that consumes the atomic type:primitive react-lib.
+            {
+              sourceTag: 'type:util',
+              onlyDependOnLibsWithTags: ['type:util'],
+            },
+            {
+              sourceTag: 'type:primitive',
+              onlyDependOnLibsWithTags: ['type:util', 'type:primitive'],
+            },
+            {
+              sourceTag: 'type:higher-level',
+              onlyDependOnLibsWithTags: [
+                'type:util',
+                'type:primitive',
+                'type:higher-level',
+              ],
+            },
           ],
         },
       ],
