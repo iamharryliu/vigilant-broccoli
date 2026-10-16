@@ -127,7 +127,7 @@
     "agentic-pr-create-rnd": "./infrastructure/agent-sandbox/create-rnd.sh",
     "agentic-pr-update": "./infrastructure/agent-sandbox/update-pr.sh",
     "vb-manager-next:start": "cd projects/nx-workspace && nx run vb-manager-next:pm2:start",
-    "event-calendars:sync": "cd projects/nx-workspace && env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/ui/vb-manager-next/.env.local.example --env-file scripts/.env.scripts.example 'tsx apps/ui/vb-manager-next/scripts/sync-event-calendars.ts'",
+    "event-calendars:sync": "cd projects/nx-workspace && env -u GITHUB_TOKEN NEXT_PUBLIC_SUPABASE_URL=https://jrdosjjgmsoodpjmjqxx.supabase.co VB_EXPRESS_URL=https://staging-vb-express.fly.dev NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/ui/vb-manager-next/.env.local.example --env-file scripts/.env.scripts.example 'tsx apps/ui/vb-manager-next/scripts/sync-event-calendars.ts'",
     "deploy:vb-manager": "./scripts/shell/vb-manager-next-deploy.sh",
     "vb-manager-next:delete": "cd projects/nx-workspace && nx run vb-manager-next:pm2:delete",
     "vb-manager-next:logs": "cd projects/nx-workspace && nx run vb-manager-next:pm2:logs",
