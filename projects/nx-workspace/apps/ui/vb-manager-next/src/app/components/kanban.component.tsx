@@ -4,15 +4,10 @@ import {
   Button,
   CloseButton,
   EllipsisCTA,
-  EisenhowerQuadrant,
   getCommitType,
-  getEisenhowerQuadrant,
-  GoogleTasksComponent,
   Input,
   Select,
   Skeleton,
-  SortMode,
-  SORT_MODE,
   Text,
   Dialog,
   DialogTrigger,
@@ -20,6 +15,13 @@ import {
   DialogTitle,
   DialogClose,
 } from '@vigilant-broccoli/react-lib';
+import {
+  EisenhowerQuadrant,
+  getEisenhowerQuadrant,
+  GoogleTasksComponent,
+  SortMode,
+  SORT_MODE,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { CreateTasksDialogTrigger } from './create-tasks-dialog.component';
 import { useEffect, useState, useCallback } from 'react';

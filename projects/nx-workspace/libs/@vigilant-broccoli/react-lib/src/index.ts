@@ -15,4 +15,5 @@ export * from './utils/browser.utils';
 export * from './utils/cn';
 export * from './utils/commit-type.utils';
 export * from './utils/focus-navigation.utils';
+export * from './utils/fuzzy-match.utils';
 export * from './utils/resizeImage';

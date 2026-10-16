@@ -2,7 +2,7 @@
 
 ## Overview
 
-- Force-directed graph of a user's Spotify playlists, shown as a card under the metronome on the Music page (`/music`), reusing the same `GraphView` (`@vigilant-broccoli/react-utility`) the `docs-md` note viewer uses
+- Force-directed graph of a user's Spotify playlists, shown as a card under the metronome on the Music page (`/music`), reusing the same `GraphView` (`@vigilant-broccoli/react-lib-higher-level`) the `docs-md` note viewer uses
 - Edges = shared songs between playlists; a song matches across releases (single, album, remaster) by normalized title plus primary artist, not only by identical Spotify track id
 - Spotify's Web API doesn't expose playlist-folder structure, so folders aren't represented
 

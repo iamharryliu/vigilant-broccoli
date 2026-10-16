@@ -16,4 +16,4 @@ Renders repo markdown docs fetched at build/runtime.
   - Tailwind CSS
 - Internal libs
   - `react-lib`
-  - `react-utility`
+  - `react-lib-higher-level`

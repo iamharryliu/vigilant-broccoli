@@ -1,13 +1,13 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
+import { TaskCapture, TaskCaptureProps } from './TaskCapture';
 import {
   Dialog,
   DialogContent,
   DialogTitle,
   DialogTrigger,
-} from './Dialog';
-import { TaskCapture, TaskCaptureProps } from './TaskCapture';
+} from '@vigilant-broccoli/react-lib';
 
 const DEFAULT_TITLE = 'Create tasks';
 

@@ -18,4 +18,4 @@ Layered checklist components in `libs/@vigilant-broccoli/react-lib`.
 ## Compatibility
 
 - `CheckList` keeps its props, `CheckListItem` type, localStorage keys and the dnd payload (`type: 'task'`, `task`, `taskListId`; droppable `type: 'taskList'`) read by `apps/ui/vb-manager-next`'s kanban handlers. See that app's `CONTEXT.md` before changing them.
-- Consumers: `TaskChecklist`, `GoogleTasks`, the component-library `CheckListDemo`, `react-utility`'s checklist viewer and hearth (`CheckListBase`).
+- Consumers: `TaskChecklist`, `GoogleTasks`, the component-library `CheckListDemo`, `react-lib-higher-level`'s checklist viewer and hearth (`CheckListBase`).

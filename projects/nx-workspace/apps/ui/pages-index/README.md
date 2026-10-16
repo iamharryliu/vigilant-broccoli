@@ -16,6 +16,6 @@
   - Tailwind CSS
 - Internal libs
   - `react-lib`
-  - `react-utility`
+  - `react-lib-higher-level`
 - Cloud services
   - GitHub API

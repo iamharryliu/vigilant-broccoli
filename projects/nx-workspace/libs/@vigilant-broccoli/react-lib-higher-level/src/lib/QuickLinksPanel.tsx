@@ -12,7 +12,7 @@ import {
   type PastebinItemGroup,
   type PastebinView,
 } from './Pastebin';
-import { WINDOW_OPEN_FEATURES } from '../utils/browser.utils';
+import { WINDOW_OPEN_FEATURES } from '@vigilant-broccoli/react-lib';
 
 const STORAGE_KEY = 'quick-links-view';
 const SEARCH_PLACEHOLDER = 'Search...';

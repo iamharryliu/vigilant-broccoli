@@ -1,8 +1,10 @@
 'use client';
 import { ReactNode, useCallback, useMemo } from 'react';
-import { Text } from './Text';
-import { CheckListItem } from './CheckList';
-import { getCommitType } from '../utils/commit-type.utils';
+import {
+  CheckListItem,
+  getCommitType,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 
 export const SORT_MODE = {
   DEFAULT: 'default',

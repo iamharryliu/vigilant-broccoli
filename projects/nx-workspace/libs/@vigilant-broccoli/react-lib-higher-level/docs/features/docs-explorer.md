@@ -1,14 +1,14 @@
 # DocsExplorer
 
-`libs/@vigilant-broccoli/react-lib` — file-tree + search shell for browsing markdown docs. Markdown/checklist rendering and edit mode are layered on top by `react-utility`'s `DocsViewer`.
+`libs/@vigilant-broccoli/react-lib-higher-level` — file-tree + search shell for browsing markdown docs. Markdown/checklist rendering and edit mode are layered on top by `DocsViewer`.
 
 The `component-library` sandbox has a Utilities > Docs Explorer page that links to docs.harryliu.dev, shows screenshots of it, and renders this file — it doesn't mount the component, which needs a notes tree to browse.
 
 ## Exports
 
-- `DocsExplorer` (react-lib) — tree/search shell, content-agnostic
-- `DocsNode`, `DocsSearchResult` (react-lib types)
-- `DocsViewer`, `FILE_PARAM` (react-utility) — wraps `DocsExplorer` with markdown + checklist view modes and edit mode; `FILE_PARAM` (`'file'`) is the URL query key both consuming apps sync the selected path through
+- `DocsExplorer` — tree/search shell, content-agnostic
+- `DocsNode`, `DocsSearchResult` types
+- `DocsViewer`, `FILE_PARAM` — wraps `DocsExplorer` with markdown + checklist view modes and edit mode; `FILE_PARAM` (`'file'`) is the URL query key both consuming apps sync the selected path through
 
 ## DocsExplorer Props
 
@@ -34,7 +34,7 @@ The `component-library` sandbox has a Utilities > Docs Explorer page that links 
 - Checklist view renders the full document exactly like markdown view — only top-level lists become checkboxes; tables, prose, code, headings pass through unchanged
 - Checkbox state persists per file (`localStorage`, key `docs-checklist:<path>`), keyed by structural position (`list<N>.<itemIndex>`, nested via `.l.`) — not content, so state can go stale if list ordering changes; in aggregate mode (below) the key is a composite of every selected path joined with `|`, so the same set of files always shares one saved state
 - All rendered HTML (both view modes) is sanitized with DOMPurify before injection
-- Fenced ` ```mermaid ` blocks render as diagrams in both view modes (`react-utility`'s `mermaid-diagrams.ts`): `mermaid` is lazy-loaded on first use, runs with `securityLevel: 'strict'` after DOMPurify, picks its `dark`/`default` theme from the painted background and re-renders when the theme toggles; a syntax error leaves the original code block in place. `docs-md` and `context-md` both get this through `DocsViewer`
+- Fenced ` ```mermaid ` blocks render as diagrams in both view modes (`mermaid-diagrams.ts`): `mermaid` is lazy-loaded on first use, runs with `securityLevel: 'strict'` after DOMPurify, picks its `dark`/`default` theme from the painted background and re-renders when the theme toggles; a syntax error leaves the original code block in place. `docs-md` and `context-md` both get this through `DocsViewer`
 - Relative markdown links are intercepted and routed through `urlSync`/`onNavigate` instead of a real browser navigation — no consuming app has a per-file route, so a plain `<a href>` navigation would 404 or reload the whole app. In-page anchors and cross-file `#heading` targets read and write `window.location.hash`
 - Headings get GitHub-style slug `id`s (`markdown-config.ts`'s `createHeadingRenderer`, via `github-slugger`) so `[Section](#section)`-style TOC/cross-file anchors resolve — `marked` v5+ no longer assigns heading ids on its own
 - `createHeadingRenderer()` builds a fresh renderer+slugger per parse call rather than a shared/global one — `marked`'s own heading-id extensions track dedup state in module scope, which breaks under React Strict Mode's double-invoked effects/memos (two overlapping parses for the same content stomp on each other's dedup reset) and under any real overlapping parse (e.g. switching files before the previous parse settles)
@@ -47,7 +47,7 @@ The `component-library` sandbox has a Utilities > Docs Explorer page that links 
 - Edit mode swaps content for a plain `<textarea>` (no live preview); content-pane dropdown also has "Copy markdown" (always) and "Back to files" (mobile only)
 - Search is debounced 300ms; Arrow keys move focus between the search box and result list, Escape clears the query
 - Mobile collapses to two full-width panels (sidebar/content) toggled by a back button — no side-by-side layout below `md:`
-- Search isn't implemented in these libs — each consuming app supplies its own `search` function. `docs-md` and `context-md` both use `createDocsSnapshotSource` (`react-utility`), which fetches every note body once (in-memory per-session cache, in-flight fetch dedup so overlapping searches don't double-fetch) and combines a plain substring content match with a local subsequence filename scorer
+- Search isn't implemented in these libs — each consuming app supplies its own `search` function. `docs-md` and `context-md` both use `createDocsSnapshotSource`, which fetches every note body once (in-memory per-session cache, in-flight fetch dedup so overlapping searches don't double-fetch) and combines a plain substring content match with a local subsequence filename scorer
 - The filename scorer (`docs-snapshot-source.ts`) keeps fuse.js' score convention — 0 is perfect, lower is better — so callers that sort ascending are unaffected. It runs three tiers, each in its own score band so a weaker match can never outrank a stronger one: contiguous substring `[0, 0.2)`, gapped subsequence `[0.2, 0.4)`, then bounded Damerau-Levenshtein `[0.4, 0.6)`. Each tier rejects on its own terms rather than against a shared cutoff, and the two gapped tiers both break ties on coverage — without it `github.md` and `github-actions.md` score identically and the winner is decided by array order
 - The fuzzy tier exists because a subsequence scan survives a dropped character for free but nothing else: `githb` matches `github.md`, while `gtihub` (transposition), `gothub` (substitution) and `githhub` (insertion) all fail it. It is gated on a 5-character minimum, one permitted edit per 4 query characters, and the query's first character opening a word in the target (start of name, or after `-_/.`)
 - That first-character gate is doing real work: without it `todo` sits one transposition from `tdoo` inside `outdoor.md`, which is precisely the noise fuse.js produced. Typists rarely fumble the first character, so the gate costs almost no recall
