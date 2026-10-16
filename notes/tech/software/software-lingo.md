@@ -38,6 +38,7 @@
 | Backend                   | The server-side part of an application responsible for data processing, storage, and business logic.                                                                       |
 | daemon                    | A background process that runs continuously and handles tasks or requests without direct user interaction. Common in operating systems and servers.                        |
 | Dependency Inversion      | Implementing code so that high-level modules do not depend on low-level modules, ie abstract DB (could use MySQL or Postgres)                                              |
+| Distributed systems       | A system whose components run on multiple networked machines and coordinate by passing messages, so it appears to users as a single system.                                |
 | Embedded Software         | Software written to run on dedicated hardware with a specific function (e.g. firmware on a microcontroller), as opposed to general-purpose software running on a computer. |
 | ephemeral                 | Short lived or temporary.                                                                                                                                                  |
 | ERP                       | Enterprise Resource Planning. Software that integrates core business processes (finance, HR, supply chain, inventory, manufacturing) into a single system.                 |
