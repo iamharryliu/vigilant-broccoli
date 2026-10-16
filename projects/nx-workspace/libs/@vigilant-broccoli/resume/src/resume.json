@@ -67,7 +67,7 @@
       "startDate": "September 2019",
       "endDate": "July 2024",
       "bullets": [
-        "Built secure login for a cross-platform mobile banking app—challenge authentication, OTP login, and **session management**.",
+        "Worked on a team building the sign-in logic for a cross-platform mobile banking app, including **multi-factor authentication**, one-time password (OTP) login, challenge questions, and **session management**.",
         "Rebuilt legacy banking **REST API** services spanning over 200 endpoints, and modernized legacy browser and mobile banking applications using **Angular/Ionic** and **Express** frameworks to meet evolving system requirements.",
         "Implemented **state management** using **Redux** to maintain consistency and performance across the banking frontend.",
         "Established test environments and wrote **unit** and **end-to-end** tests to meet the banking client's **90% test coverage** requirement.",
