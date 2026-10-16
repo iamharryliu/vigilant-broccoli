@@ -1,7 +1,19 @@
 import { useState } from 'react';
-import { CalendarDays, Link2, ListTodo, Rows3, StickyNote } from 'lucide-react';
-import { OPEN_TYPE, type QuickLink } from '@vigilant-broccoli/common-js';
+import {
+  CalendarDays,
+  CloudSun,
+  Link2,
+  ListTodo,
+  Rows3,
+  StickyNote,
+} from 'lucide-react';
+import {
+  OPEN_METEO_MAX_FORECAST_DAYS,
+  OPEN_TYPE,
+  type QuickLink,
+} from '@vigilant-broccoli/common-js';
 import { IconButton } from '@vigilant-broccoli/react-lib';
+import { WeatherClockCardUtilityContent } from '@vigilant-broccoli/react-utility';
 import {
   CreateTasksDialog,
   GoogleTasksComponent,
@@ -17,6 +29,11 @@ import {
 } from '@vigilant-broccoli/react-lib-higher-level';
 import { NotepadDemo } from './NotepadDemo';
 import { SCENARIO, useMockTasksAuth } from './TasksDemo';
+import {
+  buildWeather,
+  DEMO_LOCATION,
+  DEMO_TIMEZONE_OFFSET_SECONDS,
+} from './WeatherClockCardDemo';
 
 const TAB = {
   CALENDAR: 'Calendar',
@@ -24,6 +41,7 @@ const TAB = {
   TASKS: 'Tasks',
   NOTEPAD: 'Notepad',
   QUICK_LINKS: 'Quick Links',
+  WEATHER: 'Weather',
 } as const;
 
 type Tab = (typeof TAB)[keyof typeof TAB];
@@ -194,6 +212,8 @@ const MOCK_QUICK_LINKS: QuickLink[] = [
   },
 ];
 
+const WEATHER_FORECAST_DAYS = OPEN_METEO_MAX_FORECAST_DAYS;
+
 const CREATE_TASKS_LABEL = 'Create tasks';
 const noop = () => undefined;
 
@@ -228,6 +248,7 @@ const MobileTasks = () => {
 export const MobileHomeDemo = () => {
   const [tab, setTab] = useState<Tab>(TAB.CALENDAR);
   const [events] = useState(buildMockEvents);
+  const [weather] = useState(() => buildWeather(WEATHER_FORECAST_DAYS));
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
 
   const toggleHidden = (googleCalendarId: string) =>
@@ -283,6 +304,20 @@ export const MobileHomeDemo = () => {
       label: TAB.QUICK_LINKS,
       icon: <Link2 size={TAB_ICON_SIZE} />,
       content: <QuickLinksPanel links={MOCK_QUICK_LINKS} />,
+    },
+    {
+      value: TAB.WEATHER,
+      label: TAB.WEATHER,
+      icon: <CloudSun size={TAB_ICON_SIZE} />,
+      content: (
+        <div className="mx-auto w-full max-w-xl">
+          <WeatherClockCardUtilityContent
+            location={DEMO_LOCATION}
+            timezoneOffsetSeconds={DEMO_TIMEZONE_OFFSET_SECONDS}
+            weather={weather}
+          />
+        </div>
+      ),
     },
   ];
 

@@ -35,6 +35,6 @@ The card is styled with Tailwind classes and the Radix Themes variables the apps
 
 ## Data fetching per app
 
-- `weather-next`: its own `/api/weather` (Open-Meteo plus Nominatim city) and rate-limited `/api/preparation`.
-- `vb-manager-next-mobile`: `WeatherView` over auth-guarded `/api/weather` (the `weather-next` route returning `LocalWeather` with the city) and `/api/preparation` (`fetchWeatherPreparation` / `isPreparationWeather`).
+- `weather-next`: its own `/api/weather` (`getLocalWeather` from `common-node`: Open-Meteo plus Nominatim city) and rate-limited `/api/preparation`.
+- `vb-manager-next-mobile`: `WeatherView` over auth-guarded `/api/weather` (`getLocalWeather` from `common-node`, as in `weather-next`) and `/api/preparation` (`fetchWeatherPreparation` / `isPreparationWeather`).
 - `vb-manager-next`: `fetchLocalWeather` over auth-guarded `/api/weather` plus `/api/weather/city`, and `fetchLocalPreparation` over `/api/preparation` (`fetchWeatherPreparation` / `isPreparationWeather` from `common-node`). City names come from `reverseGeocodeCity` from `common-node` with the app's Nominatim User-Agent.
