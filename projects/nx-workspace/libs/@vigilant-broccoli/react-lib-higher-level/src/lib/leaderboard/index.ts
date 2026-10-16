@@ -1,7 +1,6 @@
 export * from './leaderboard.types';
 export * from './leaderboard.consts';
 export * from './leaderboard.utils';
-export * from './useAnimatedNumber';
 export * from './useRankTracking';
 export * from './useLeaderboard';
 export * from './useTeamLeaderboard';

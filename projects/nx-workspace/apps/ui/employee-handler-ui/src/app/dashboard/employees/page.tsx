@@ -6,14 +6,16 @@ import {
   DropdownMenu,
   Checkbox,
   CopyButton,
-  EllipsisCTA,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-  type EllipsisAction,
   Text,
 } from '@vigilant-broccoli/react-lib';
+import {
+  EllipsisCTA,
+  type EllipsisAction,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { Card } from '@vigilant-broccoli/react-lib';
 import {

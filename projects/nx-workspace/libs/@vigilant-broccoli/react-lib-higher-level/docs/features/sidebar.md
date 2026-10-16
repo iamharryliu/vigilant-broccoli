@@ -1,6 +1,6 @@
 # Sidebar
 
-`libs/@vigilant-broccoli/react-lib` — collapsible/drawer nav rail shared across hearth, vb-manager-next, employee-handler-ui, and component-library.
+`libs/@vigilant-broccoli/react-lib-higher-level` — collapsible/drawer nav rail shared across hearth, vb-manager-next, employee-handler-ui, and component-library.
 
 ## Exports
 

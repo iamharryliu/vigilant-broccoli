@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { MetricCell } from './MetricCell';
-import { cn } from '../utils/cn';
+import { cn } from '@vigilant-broccoli/react-lib';
 
 export function LeaderboardMetricCell({
   label,

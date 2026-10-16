@@ -18,5 +18,6 @@ Real-time location sharing for friends and family.
   - `common-browser`
   - `common-js`
   - `react-lib`
+  - `react-lib-higher-level`
 - Cloud services
   - Supabase

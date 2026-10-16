@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
-import { Card } from './Card';
-import { cn } from '../utils/cn';
+import { Card, cn } from '@vigilant-broccoli/react-lib';
 
 const WEATHER_CARD_CLASS =
   'w-full max-w-sm px-8 py-10 text-center shadow-sm border-border bg-card';

@@ -5,9 +5,9 @@ import {
   HTTP_STATUS_CODES,
   JSON_CONTENT_TYPE,
 } from '@vigilant-broccoli/common-js';
-import { useWhiteboardRoom } from '../whiteboard/useWhiteboardRoom';
-import type { SupabaseBroadcastLike } from '../whiteboard/supabase-broadcast.types';
-import type { WhiteboardCursor } from '../whiteboard/whiteboard-room.types';
+import { useWhiteboardRoom } from './whiteboard/useWhiteboardRoom';
+import type { SupabaseBroadcastLike } from './whiteboard/supabase-broadcast.types';
+import type { WhiteboardCursor } from './whiteboard/whiteboard-room.types';
 
 const SAVE_DEBOUNCE_MS = 1000;
 const BOOTSTRAP_WAIT_MS = 700;

@@ -6,13 +6,13 @@ import {
   Table,
   Callout,
   CalloutText,
-  EllipsisCTA,
   IconButton,
   Select,
   Textarea,
   Heading,
   Text,
 } from '@vigilant-broccoli/react-lib';
+import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import {
   CONTENT_TYPE_HEADER,
   HTTP_METHOD,

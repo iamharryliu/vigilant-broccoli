@@ -14,6 +14,7 @@ module.exports = {
     '../../../libs/@vigilant-broccoli/common-node/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/google-workspace/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/react-lib/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/react-lib-higher-level/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/common-browser/src/**/*.{tsx,ts,jsx,js,html}',
   ],
   theme: {

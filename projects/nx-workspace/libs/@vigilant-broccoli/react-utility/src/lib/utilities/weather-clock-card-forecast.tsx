@@ -7,7 +7,8 @@ import {
   toDisplayTemperature,
   WEATHER_CONDITION_LABEL,
 } from '@vigilant-broccoli/common-js';
-import { cn, useWeatherTranslation } from '@vigilant-broccoli/react-lib';
+import { cn } from '@vigilant-broccoli/react-lib';
+import { useWeatherTranslation } from '../weather';
 import { weatherLucideIcon } from './weather-clock-card-icons';
 
 const TODAY_INDEX = 0;

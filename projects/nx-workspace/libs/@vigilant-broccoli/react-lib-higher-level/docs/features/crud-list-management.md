@@ -1,6 +1,6 @@
 # CRUDListManagement
 
-`libs/@vigilant-broccoli/react-lib` — generic list UI with create, update, delete.
+`libs/@vigilant-broccoli/react-lib-higher-level` — generic list UI with create, update, delete.
 
 ## Exports
 

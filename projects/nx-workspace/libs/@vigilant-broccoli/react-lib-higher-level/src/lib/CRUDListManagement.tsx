@@ -1,4 +1,3 @@
-import { cn } from '../utils/cn';
 import { Plus } from 'lucide-react';
 import {
   ComponentType,
@@ -7,7 +6,7 @@ import {
   SetStateAction,
   useState,
 } from 'react';
-import { DropdownMenu } from './DropdownMenu';
+import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,21 +17,21 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from './AlertDialog';
-import { Card } from './Card';
-import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
-import { Button } from './Button';
-import { Heading } from './Heading';
-import {
-  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Button,
+  Card,
+  cn,
   Dialog,
-  DialogTrigger,
   DialogContent,
-  DialogTitle,
   DialogDescription,
-} from './Dialog';
-import { IconButton, type IconButtonIcon } from './IconButton';
-import { StackedImages } from './StackedImages';
+  DialogTitle,
+  DialogTrigger,
+  DropdownMenu,
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Heading,
+  IconButton,
+  type IconButtonIcon,
+  StackedImages,
+} from '@vigilant-broccoli/react-lib';
 
 const FULL_WIDTH_IMAGE_CLASS = 'w-full h-48 object-cover rounded';
 

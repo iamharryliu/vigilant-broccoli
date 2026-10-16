@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { LeaderboardMetrics } from './leaderboard.types';
+
+type LeaderboardMetrics = Record<string, number>;
 
 export function useAnimatedNumber(
   targetValue: number,

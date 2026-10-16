@@ -18,8 +18,7 @@ import {
   LEADERBOARD_TEXT,
   PERIOD_LABELS,
 } from './leaderboard.consts';
-import { Select } from '../components/Select';
-import { TeamAvatar } from '../components/TeamAvatar';
+import { Select, TeamAvatar } from '@vigilant-broccoli/react-lib';
 
 type TeamLeaderboardProps = {
   metrics: LeaderboardMetricDef[];

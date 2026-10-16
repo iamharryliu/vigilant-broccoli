@@ -26,7 +26,7 @@ What every UI app in this workspace must have, and the shared building blocks to
 
 ## Shared components (react-lib)
 
-Check the `libs/@vigilant-broccoli/react-lib/src/components` barrel before building new UI — prefer existing shared components over hand-rolled equivalents, unless told otherwise. Frequently needed: `CRUDItemList` (CRUD list management, exported from `CRUDListManagement.tsx`), `CardContainer`, `Button`, `IconButton`, `Dialog`, `Sidebar`, `Tabs`, `Select`, `Input`, `ThemeProvider`.
+Check the `libs/@vigilant-broccoli/react-lib/src/components` barrel (atoms) and the `react-lib-higher-level` lib (composites) before building new UI — prefer existing shared components over hand-rolled equivalents, unless told otherwise. Frequently needed: `CardContainer`, `Button`, `IconButton`, `Dialog`, `Tabs`, `Select`, `Input`, `ThemeProvider` from `react-lib`; `CRUDItemList` (CRUD list management, exported from `CRUDListManagement.tsx`) and `Sidebar` from `react-lib-higher-level`.
 
 User-facing auth is `createSupabaseAuth` from the same lib — read [supabase-auth-pattern.md](./auth/supabase-auth-pattern.md) first, never hand-roll per-app auth. Supabase auth is UI-app-only: its server half (bearer-token middleware, admin client, per-route helpers) lives inside the Next.js apps, and no fly API service uses it.
 

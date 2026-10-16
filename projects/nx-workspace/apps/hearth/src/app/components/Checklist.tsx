@@ -12,7 +12,6 @@ import {
   DropdownMenu,
   CheckListBase,
   CheckListBaseItem,
-  DeleteItemConfirmationDialog,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   IconButton,
   Input,
@@ -22,6 +21,7 @@ import {
   DialogTitle,
   cn,
 } from '@vigilant-broccoli/react-lib';
+import { DeleteItemConfirmationDialog } from '@vigilant-broccoli/react-lib-higher-level';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { ChecklistItem } from '../../lib/types';

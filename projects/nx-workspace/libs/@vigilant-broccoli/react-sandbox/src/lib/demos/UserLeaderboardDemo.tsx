@@ -3,7 +3,7 @@ import {
   useLeaderboard,
   LeaderBoardUser,
   LeaderboardMetricDef,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { Coins } from 'lucide-react';
 import { useCallback, useRef } from 'react';
 

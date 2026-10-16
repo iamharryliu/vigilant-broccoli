@@ -3,7 +3,7 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Maximize2, Minimize2, Database } from 'lucide-react';
-import { cn } from '../utils/cn';
+import { cn } from '@vigilant-broccoli/react-lib';
 
 type HeadingLevel = 'h1' | 'h2' | 'h3';
 

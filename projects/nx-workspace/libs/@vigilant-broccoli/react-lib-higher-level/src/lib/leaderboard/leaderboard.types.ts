@@ -8,10 +8,7 @@ export type LeaderBoardPeriod = 'day' | 'week' | 'month' | 'lifetime';
 export type LeaderboardMetrics = Record<string, number>;
 
 export type LeaderboardMetricFormat =
-  | 'integer'
-  | 'decimal1'
-  | 'duration'
-  | 'compact';
+  'integer' | 'decimal1' | 'duration' | 'compact';
 
 /** Describes one column/metric a leaderboard can sort and display by. */
 export interface LeaderboardMetricDef {
