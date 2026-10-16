@@ -1,10 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@vigilant-broccoli/react-lib';
-import { DIFFICULTY_LABEL_KEY } from '../app.consts';
 import { MATCH_STATUS } from '../engine/game.consts';
-import { Difficulty } from '../engine/game.types';
 import { useMatchStats } from '../hooks/useMatchStats';
 import { useControls } from '../hooks/useControls';
 import { CONNECTION, useOnlineRoom } from '../hooks/useOnlineRoom';
@@ -30,15 +28,6 @@ export function OnlineRoom({
   const { t } = useTranslation();
   usePageTitle(t('PAGE.ROOM', { room }));
 
-  const cpuName = useCallback(
-    (difficulty: Difficulty, index: number) =>
-      t('CPU.NAME', {
-        number: index + 1,
-        difficulty: t(DIFFICULTY_LABEL_KEY[difficulty]),
-      }),
-    [t],
-  );
-
   const [controlsEnabled, setControlsEnabled] = useState(false);
   const controls = useControls(controlsEnabled);
   const {
@@ -49,12 +38,10 @@ export function OnlineRoom({
     isHost,
     snapshot,
     snapshotReady,
-    setCpus,
-    startMatch,
     backToLobby,
-  } = useOnlineRoom({ room, userId, username, controls, cpuName });
+  } = useOnlineRoom({ room, userId, username, controls });
 
-  const { match, cpus, wins } = snapshot;
+  const { match, startsAt, wins } = snapshot;
   const { saveFailed } = useMatchStats(room, userId, match);
   const playing = match?.status === MATCH_STATUS.PLAYING;
   const isSeatedInMatch = Boolean(
@@ -114,7 +101,6 @@ export function OnlineRoom({
           actions={
             isHost ? (
               <>
-                <Button onClick={startMatch}>{t('MATCH.PLAY_AGAIN')}</Button>
                 <Button variant="outline" onClick={backToLobby}>
                   {t('MATCH.BACK_TO_LOBBY')}
                 </Button>
@@ -139,11 +125,7 @@ export function OnlineRoom({
         userId={userId}
         members={members}
         hostId={hostId}
-        isHost={isHost}
-        cpus={cpus}
-        setCpus={setCpus}
-        startMatch={startMatch}
-        cpuName={cpuName}
+        startsAt={startsAt}
       />
     </div>
   );
