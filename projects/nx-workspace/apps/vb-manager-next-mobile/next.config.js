@@ -17,11 +17,6 @@ const nextConfig = {
   nx: { ...options },
   distDir: '../../dist/apps/vb-manager-next-mobile/.next',
   agentRules: false,
-  async redirects() {
-    return [
-      { source: '/notepad', destination: '/?tab=Notepad', permanent: true },
-    ];
-  },
 };
 const plugins = [withNx];
 module.exports = composePlugins(...plugins)(nextConfig);

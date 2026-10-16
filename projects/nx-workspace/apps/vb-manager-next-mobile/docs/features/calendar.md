@@ -2,7 +2,7 @@
 
 - The calendar page uses the `@vigilant-broccoli/react-lib` `Tabs` pattern (as `HomeCalendarTabs` in `vb-manager-next`) with icon-only Calendar, Event Calendars, Tasks, Notepad and Quick Links tabs (each has an `aria-label` and `title`), sized for touch.
 - `TabbedView` (`tabbed-view.tsx`) is the generic tab shell: a tab list with an optional actions slot, and per-tab `forceMount`. `MyCalendarView` supplies the tabs.
-- The active tab is mirrored in the `?tab=` query param (omitted for Calendar), so `/?tab=Tasks` deep-links. `/task-list` redirects there, and `/notepad` redirects to `/?tab=Notepad` in `next.config.js`.
+- The active tab is mirrored in the `?tab=` query param (omitted for Calendar), so `/?tab=Tasks` deep-links. `/task-list` redirects there.
 - Tasks renders `GoogleTasksView` with drag and drop disabled, as this is a touch view. It unmounts when inactive and refetches on return. The create-event button is hidden on this tab, which has its own Create tasks button.
 - The Calendar tab is force-mounted and hidden with `display: none` plus `aria-hidden`, so the Google Calendar iframe is not reloaded when switching tabs.
 - Notepad renders `NotepadEditor` inline and Quick Links renders the react-lib `QuickLinksPanel` (the body of `QuickLinksDialog`); neither has a sidebar entry.
