@@ -2,7 +2,14 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { CalendarDays, CalendarPlus, ListTodo, Rows3 } from 'lucide-react';
+import {
+  CalendarDays,
+  CalendarPlus,
+  Link2,
+  ListTodo,
+  Rows3,
+  StickyNote,
+} from 'lucide-react';
 import { isMobileUserAgent } from '@vigilant-broccoli/common-browser';
 import {
   BASE_CALENDAR_CONFIG,
@@ -17,16 +24,19 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  QuickLinksPanel,
 } from '@vigilant-broccoli/react-lib';
 import { CalendarInput } from './calendar-input';
 import { EventCalendarLink, EventCalendarsList } from './event-calendars-list';
 import { GoogleTasksView } from './google-tasks-view';
+import { NotepadEditor } from './notepad-editor';
 import { TabbedView, TabbedViewTab } from './tabbed-view';
 import {
   CALENDAR_TAB,
   CALENDAR_TAB_QUERY_PARAM,
   CalendarTab,
 } from '../app.const';
+import { QUICK_LINKS } from '../constants/quick-links';
 import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
 
 const CALENDAR_TITLE = BASE_CALENDAR_CONFIG.title;
@@ -43,6 +53,10 @@ const EVENT_CALENDARS_API = '/api/event-calendars';
 const HIDDEN_CALENDARS_STORAGE_KEY = 'vb-manager-hidden-event-calendars';
 
 const TAB_ICON_SIZE = 18;
+
+// Tab content isn't a flex child, so size the editor to the viewport minus
+// the top bar and tab row.
+const NOTEPAD_HEIGHT = 'calc(100dvh - var(--topbar-h) - 8rem)';
 
 const CALENDAR_TABS = Object.values(CALENDAR_TAB);
 
@@ -432,6 +446,18 @@ export const MyCalendarView = () => {
       label: CALENDAR_TAB.TASKS,
       icon: <ListTodo size={TAB_ICON_SIZE} />,
       content: <GoogleTasksView />,
+    },
+    {
+      value: CALENDAR_TAB.NOTEPAD,
+      label: CALENDAR_TAB.NOTEPAD,
+      icon: <StickyNote size={TAB_ICON_SIZE} />,
+      content: <NotepadEditor style={{ height: NOTEPAD_HEIGHT }} />,
+    },
+    {
+      value: CALENDAR_TAB.QUICK_LINKS,
+      label: CALENDAR_TAB.QUICK_LINKS,
+      icon: <Link2 size={TAB_ICON_SIZE} />,
+      content: <QuickLinksPanel links={QUICK_LINKS} />,
     },
   ];
 
