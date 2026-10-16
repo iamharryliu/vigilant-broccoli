@@ -1,7 +1,11 @@
 import { useParams } from 'react-router-dom';
 import { useTranslation } from '../i18n';
 import { PARSE_KIND, ReadmePage } from '../components/ReadmePage';
-import { toGithubReadmeUrl, toGithubRepoUrl } from '../consts/githubRepos';
+import {
+  toGithubReadmeUrl,
+  toGithubRepoLinkBase,
+  toGithubRepoUrl,
+} from '../consts/githubRepos';
 
 export function GithubReadmePage() {
   const { t } = useTranslation();
@@ -18,6 +22,7 @@ export function GithubReadmePage() {
             }
           : null
       }
+      repoLinkBase={slug ? toGithubRepoLinkBase(slug) : undefined}
       externalHref={slug ? toGithubRepoUrl(slug) : undefined}
       externalLabel={t('README_PAGE.VIEW_ON_GITHUB')}
       notFoundMessage={t('README_PAGE.NOT_FOUND')}

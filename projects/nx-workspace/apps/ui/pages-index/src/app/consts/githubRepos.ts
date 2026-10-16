@@ -28,3 +28,9 @@ export const fetchGithubRepos = async (signal: AbortSignal) => {
     page += 1;
   }
 };
+
+export const toGithubRepoLinkBase = (slug: string) => ({
+  filePath: 'README.md',
+  blobBase: `${toGithubRepoUrl(slug)}/blob/HEAD`,
+  rawBase: `https://raw.githubusercontent.com/${GITHUB_OWNER}/${encodeURIComponent(slug)}/HEAD`,
+});
