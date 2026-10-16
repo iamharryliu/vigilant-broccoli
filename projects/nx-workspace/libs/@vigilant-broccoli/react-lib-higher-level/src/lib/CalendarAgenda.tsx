@@ -34,7 +34,12 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const NOW_REFRESH_MS = 60 * 1000;
 // Leaves some earlier events in view above the "now" line.
 const NOW_LINE_VIEWPORT_FRACTION = 0.18;
-const SCROLLABLE_OVERFLOW = ['auto', 'scroll'];
+
+// The agenda owns its scrolling so the page stays fixed to the viewport. The
+// scrollbar is hidden because Chromium paints sticky headings over a nested
+// scroller's overlay scrollbar, leaving a gap in its thumb at each heading.
+const AGENDA_SCROLLER_CLASS =
+  'min-h-0 w-full flex-1 overflow-y-auto overscroll-contain rounded-lg border border-gray-200 pb-[env(safe-area-inset-bottom)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden';
 
 const dateOnly = (date: Date) =>
   new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -136,31 +141,18 @@ const NowLine = ({ ref }: { ref: Ref<HTMLLIElement> }) => (
   </li>
 );
 
-// The phone app scrolls the document, while the component-library frame scrolls
-// a nested container, so find whichever one actually scrolls the agenda.
-const findScrollContainer = (element: HTMLElement): HTMLElement => {
-  const parent = element.parentElement;
-  if (!parent) return document.scrollingElement as HTMLElement;
-  const { overflowY } = getComputedStyle(parent);
-  return SCROLLABLE_OVERFLOW.includes(overflowY) &&
-    parent.scrollHeight > parent.clientHeight
-    ? parent
-    : findScrollContainer(parent);
-};
-
 // Sets scrollTop directly: scrollIntoView can also scroll the outer page on
 // mobile Safari. The visible area starts below the today heading, which sticks
-// under the top bar.
+// to the top of the container.
 const scrollNowLineIntoView = (
+  container: HTMLElement,
   nowLine: HTMLElement,
   todayHeading: HTMLElement,
 ) => {
-  const container = findScrollContainer(nowLine);
-  const isDocument = container === document.scrollingElement;
-  const containerTop = isDocument ? 0 : container.getBoundingClientRect().top;
-  const stickyTop = parseFloat(getComputedStyle(todayHeading).top) || 0;
-  const obscuredHeight = stickyTop + todayHeading.offsetHeight;
+  const obscuredHeight = todayHeading.offsetHeight;
   const visibleHeight = container.clientHeight - obscuredHeight;
+  const containerTop =
+    container.getBoundingClientRect().top + container.clientTop;
   const lineOffset = nowLine.getBoundingClientRect().top - containerTop;
   const target =
     container.scrollTop +
@@ -186,6 +178,7 @@ export const CalendarAgenda = ({
   colorByCalendarId,
 }: CalendarAgendaProps) => {
   const now = useNow();
+  const scrollerRef = useRef<HTMLDivElement>(null);
   const nowLineRef = useRef<HTMLLIElement>(null);
   const todayHeadingRef = useRef<HTMLParagraphElement>(null);
   const hasAutoScrolledRef = useRef(false);
@@ -207,16 +200,22 @@ export const CalendarAgenda = ({
   useLayoutEffect(() => {
     if (hasAutoScrolledRef.current || agendaGroups === null) return;
     hasAutoScrolledRef.current = true;
+    const scroller = scrollerRef.current;
     const nowLine = nowLineRef.current;
     const todayHeading = todayHeadingRef.current;
     // No layout while the force-mounted Calendar tab is hidden.
-    if (!nowLine || !todayHeading || nowLine.getClientRects().length === 0)
+    if (
+      !scroller ||
+      !nowLine ||
+      !todayHeading ||
+      nowLine.getClientRects().length === 0
+    )
       return;
-    scrollNowLineIntoView(nowLine, todayHeading);
+    scrollNowLineIntoView(scroller, nowLine, todayHeading);
   }, [agendaGroups]);
 
   return (
-    <div className="w-full rounded-lg border border-gray-200">
+    <div ref={scrollerRef} className={AGENDA_SCROLLER_CLASS}>
       {error && <p className="p-4 text-sm text-red-600">{error}</p>}
       {!error && agendaGroups === null && (
         <p className="p-4 text-sm text-gray-500">{LOADING_MESSAGE}</p>
@@ -230,7 +229,7 @@ export const CalendarAgenda = ({
           <div key={group.key}>
             <p
               ref={isSameDay(group.date, now) ? todayHeadingRef : undefined}
-              className="sticky top-[var(--topbar-h)] z-10 bg-gray-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 md:top-0"
+              className="sticky top-0 z-10 bg-gray-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500"
             >
               {formatDateHeading(group.date)}
             </p>
