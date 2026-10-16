@@ -2,9 +2,7 @@
 
 import { ReactNode, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { cn } from '../utils/cn';
-import { Button } from '../components/Button';
-import { Text } from '../components/Text';
+import { Button, cn, Text } from '@vigilant-broccoli/react-lib';
 import { CalendarListSkeleton } from './CalendarListSkeleton';
 import { CalendarEventInput } from './calendar.types';
 import {

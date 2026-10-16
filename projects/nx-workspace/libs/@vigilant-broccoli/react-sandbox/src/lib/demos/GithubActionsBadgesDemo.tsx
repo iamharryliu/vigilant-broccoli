@@ -1,9 +1,7 @@
 import { useTranslation } from '../i18n';
 import { DemoSection } from './DemoSection';
-import {
-  CardContainer,
-  GithubActionsBadges,
-} from '@vigilant-broccoli/react-lib';
+import { CardContainer } from '@vigilant-broccoli/react-lib';
+import { GithubActionsBadges } from '@vigilant-broccoli/react-lib-media';
 
 const REPO_URL = 'https://github.com/iamharryliu/vigilant-broccoli';
 

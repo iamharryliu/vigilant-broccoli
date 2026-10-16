@@ -1,11 +1,8 @@
 import { DemoSection } from './DemoSection';
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
-import {
-  ImageCarouselDialog,
-  Text,
-  buttonVariants,
-} from '@vigilant-broccoli/react-lib';
+import { ImageCarouselDialog } from '@vigilant-broccoli/react-lib-media';
+import { Text, buttonVariants } from '@vigilant-broccoli/react-lib';
 import { MarkdownViewer } from '@vigilant-broccoli/react-lib-higher-level';
 import checklistScreenshot from '../assets/docs-explorer/checklist.webp';
 import graphScreenshot from '../assets/docs-explorer/graph.webp';

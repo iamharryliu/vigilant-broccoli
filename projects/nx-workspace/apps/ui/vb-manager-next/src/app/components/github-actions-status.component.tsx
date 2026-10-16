@@ -1,10 +1,7 @@
 'use client';
 
-import {
-  CardContainer,
-  GithubActionsBadges,
-  CardSkeleton,
-} from '@vigilant-broccoli/react-lib';
+import { CardContainer, CardSkeleton } from '@vigilant-broccoli/react-lib';
+import { GithubActionsBadges } from '@vigilant-broccoli/react-lib-media';
 
 import { useState } from 'react';
 

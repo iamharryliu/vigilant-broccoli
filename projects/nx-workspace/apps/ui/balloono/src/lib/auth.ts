@@ -1,4 +1,4 @@
-import { createSupabaseAuth } from '@vigilant-broccoli/react-lib';
+import { createSupabaseAuth } from '@vigilant-broccoli/react-lib-auth';
 
 export const CALLBACK_ROUTE = '/auth/callback';
 

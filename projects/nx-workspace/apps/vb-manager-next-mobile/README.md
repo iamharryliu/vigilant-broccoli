@@ -21,6 +21,7 @@ Mobile-friendly dashboard for personal tasks and calendars, with voice input, a 
   - `links`
   - `personal-common-js`
   - `react-lib`
+  - `react-lib-auth`
   - `react-lib-higher-level`
   - `react-utility`
 - Cloud services

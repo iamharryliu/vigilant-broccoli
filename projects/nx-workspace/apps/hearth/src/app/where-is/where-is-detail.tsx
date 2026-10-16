@@ -8,13 +8,15 @@ import {
   cn,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   IconButton,
-  ImageCarouselDialog,
-  ImageFilmstrip,
   Text,
   Dialog,
   DialogContent,
   DialogTitle,
 } from '@vigilant-broccoli/react-lib';
+import {
+  ImageCarouselDialog,
+  ImageFilmstrip,
+} from '@vigilant-broccoli/react-lib-media';
 import {
   CRUDItemFormDialog,
   EllipsisCTA,

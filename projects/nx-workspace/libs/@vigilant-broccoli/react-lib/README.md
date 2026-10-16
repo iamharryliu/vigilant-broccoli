@@ -12,11 +12,8 @@ Shared React component library.
 - Framework - React
 - Build Tool - Vite
 - External libs
-  - `@supabase/supabase-js`
   - `boring-avatars`
   - `class-variance-authority`
-  - `clsx`
-  - `framer-motion`
   - `lucide-react`
   - Radix UI
   - `react-easy-crop`
@@ -25,5 +22,3 @@ Shared React component library.
 - Internal libs
   - `common-browser`
   - `common-js`
-- Cloud services
-  - Supabase

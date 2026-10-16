@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { GoogleSigninButton } from './SocialSigninButton';
+import { GoogleSigninButton } from '@vigilant-broccoli/react-lib';
 
 export interface GoogleSignInPageProps {
   appName: ReactNode;
