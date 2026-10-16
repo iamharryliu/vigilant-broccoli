@@ -9,9 +9,7 @@ import {
   TICKS_PER_SECOND,
 } from '../engine/game.consts';
 import { MatchState } from '../engine/game.types';
-import { Controls } from '../hooks/useControls';
 import { useGameAudio, useMatchSounds } from '../hooks/useGameAudio';
-import { useTouchLayout } from '../hooks/useTouchLayout';
 import { useTranslation } from '../i18n';
 import { GameBoard } from './GameBoard';
 import {
@@ -20,7 +18,6 @@ import {
   POWER_UP_GLYPHS,
   POWER_UP_LABEL_KEY,
 } from './game-visuals.consts';
-import { TouchControls } from './TouchControls';
 
 const SECONDS_PER_MINUTE = 60;
 const PAD_LENGTH = 2;
@@ -54,7 +51,6 @@ export function MatchView({
   match,
   localPlayerId,
   wins,
-  controls,
   actions,
   note,
   controlsHint,
@@ -63,14 +59,12 @@ export function MatchView({
   match: MatchState;
   localPlayerId: string;
   wins: Record<string, number>;
-  controls: Controls;
   actions: ReactNode;
   note?: string;
   controlsHint?: string;
   soundsEnabled?: boolean;
 }) {
   const { t } = useTranslation();
-  const touchLayout = useTouchLayout();
   const { muted, toggleMuted } = useGameAudio();
   useMatchSounds(match, soundsEnabled);
   const over = match.status === MATCH_STATUS.OVER;
@@ -119,13 +113,9 @@ export function MatchView({
             </li>
           ))}
         </ul>
-        {touchLayout ? (
-          <TouchControls controls={controls} />
-        ) : (
-          <p className="text-center text-xs text-muted-foreground">
-            {controlsHint ?? t('MATCH.CONTROLS_HINT')}
-          </p>
-        )}
+        <p className="text-center text-xs text-muted-foreground">
+          {controlsHint ?? t('MATCH.CONTROLS_HINT')}
+        </p>
         {note && (
           <p className="text-center text-sm text-muted-foreground">{note}</p>
         )}

@@ -12,6 +12,7 @@ export interface RoomListing {
   hostName: string;
   players: number;
   playing: boolean;
+  startsAt?: number | null;
 }
 
 // Supabase Realtime has no way to list channels, so each room's host
@@ -36,9 +37,9 @@ export function useRoomDirectory(
         .map(presences => presences[0])
         .filter(listing => listing?.room);
       const unique = new Map(
-        listings.map(({ room, hostName, players, playing }) => [
+        listings.map(({ room, hostName, players, playing, startsAt }) => [
           room,
-          { room, hostName, players, playing },
+          { room, hostName, players, playing, startsAt },
         ]),
       );
       setRooms(
@@ -55,7 +56,7 @@ export function useRoomDirectory(
     };
   }, [enabled, userId]);
 
-  const { room, hostName, players, playing } = advertisement ?? {};
+  const { room, hostName, players, playing, startsAt } = advertisement ?? {};
   useEffect(() => {
     const channel = channelRef.current;
     if (!subscribed || !channel) return;
@@ -63,8 +64,8 @@ export function useRoomDirectory(
       void channel.untrack();
       return;
     }
-    void channel.track({ room, hostName, players, playing });
-  }, [subscribed, room, hostName, players, playing]);
+    void channel.track({ room, hostName, players, playing, startsAt });
+  }, [subscribed, room, hostName, players, playing, startsAt]);
 
   return rooms;
 }

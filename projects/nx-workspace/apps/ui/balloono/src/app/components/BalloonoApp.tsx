@@ -13,6 +13,7 @@ import { usePlayerIdentity } from '../hooks/usePlayerIdentity';
 import { RoomListing, useRoomDirectory } from '../hooks/useRoomDirectory';
 import { I18nProvider, useTranslation } from '../i18n';
 import { CpuGame } from './CpuGame';
+import { DesktopOnly } from './DesktopOnly';
 import { HomeScreen } from './HomeScreen';
 import { OnlineRoom } from './OnlineRoom';
 
@@ -83,7 +84,7 @@ function Balloono() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <main className="mx-auto flex max-w-5xl flex-col gap-6 px-4 py-6">
+      <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6">
         {screen.name === SCREEN.HOME && (
           <HomeScreen
             username={username}
@@ -124,11 +125,13 @@ export function BalloonoApp() {
   return (
     <I18nProvider>
       <ThemeProvider followSystem>
-        <AccountProvider>
-          <GameAudioProvider>
-            <Balloono />
-          </GameAudioProvider>
-        </AccountProvider>
+        <DesktopOnly>
+          <AccountProvider>
+            <GameAudioProvider>
+              <Balloono />
+            </GameAudioProvider>
+          </AccountProvider>
+        </DesktopOnly>
       </ThemeProvider>
     </I18nProvider>
   );
