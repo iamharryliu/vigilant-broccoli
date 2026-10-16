@@ -1,6 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import {
+  type Ref,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 export interface CalendarEvent {
   id: string;
@@ -25,6 +32,9 @@ const TODAY_LABEL = 'Today';
 const FALLBACK_COLOR = '#9ca3af';
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const NOW_REFRESH_MS = 60 * 1000;
+// Leaves some earlier events in view above the "now" line.
+const NOW_LINE_VIEWPORT_FRACTION = 0.18;
+const SCROLLABLE_OVERFLOW = ['auto', 'scroll'];
 
 const dateOnly = (date: Date) =>
   new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -119,12 +129,47 @@ const findNowLineIndex = (events: CalendarEvent[], now: Date) => {
   );
 };
 
-const NowLine = () => (
-  <li aria-label="Now" className="flex items-center py-0 pl-3 pr-4">
+const NowLine = ({ ref }: { ref: Ref<HTMLLIElement> }) => (
+  <li ref={ref} aria-label="Now" className="flex items-center py-0 pl-3 pr-4">
     <span className="h-2 w-2 shrink-0 rounded-full bg-red-500" />
     <span className="h-px flex-1 bg-red-500" />
   </li>
 );
+
+// The phone app scrolls the document, while the component-library frame scrolls
+// a nested container, so find whichever one actually scrolls the agenda.
+const findScrollContainer = (element: HTMLElement): HTMLElement => {
+  const parent = element.parentElement;
+  if (!parent) return document.scrollingElement as HTMLElement;
+  const { overflowY } = getComputedStyle(parent);
+  return SCROLLABLE_OVERFLOW.includes(overflowY) &&
+    parent.scrollHeight > parent.clientHeight
+    ? parent
+    : findScrollContainer(parent);
+};
+
+// Sets scrollTop directly: scrollIntoView can also scroll the outer page on
+// mobile Safari. The visible area starts below the today heading, which sticks
+// under the top bar.
+const scrollNowLineIntoView = (
+  nowLine: HTMLElement,
+  todayHeading: HTMLElement,
+) => {
+  const container = findScrollContainer(nowLine);
+  const isDocument = container === document.scrollingElement;
+  const containerTop = isDocument ? 0 : container.getBoundingClientRect().top;
+  const stickyTop = parseFloat(getComputedStyle(todayHeading).top) || 0;
+  const obscuredHeight = stickyTop + todayHeading.offsetHeight;
+  const visibleHeight = container.clientHeight - obscuredHeight;
+  const lineOffset = nowLine.getBoundingClientRect().top - containerTop;
+  const target =
+    container.scrollTop +
+    lineOffset -
+    obscuredHeight -
+    visibleHeight * NOW_LINE_VIEWPORT_FRACTION;
+  const maxScrollTop = container.scrollHeight - container.clientHeight;
+  container.scrollTop = Math.min(Math.max(target, 0), maxScrollTop);
+};
 
 interface CalendarAgendaProps {
   // null while loading.
@@ -141,6 +186,9 @@ export const CalendarAgenda = ({
   colorByCalendarId,
 }: CalendarAgendaProps) => {
   const now = useNow();
+  const nowLineRef = useRef<HTMLLIElement>(null);
+  const todayHeadingRef = useRef<HTMLParagraphElement>(null);
+  const hasAutoScrolledRef = useRef(false);
 
   const agendaGroups = useMemo(
     () =>
@@ -153,6 +201,19 @@ export const CalendarAgenda = ({
       ),
     [events, hiddenIds],
   );
+
+  // Scrolls once, when events first render. Later renders (the minute tick,
+  // refetches, visibility toggles) must not move the list under the user.
+  useLayoutEffect(() => {
+    if (hasAutoScrolledRef.current || agendaGroups === null) return;
+    hasAutoScrolledRef.current = true;
+    const nowLine = nowLineRef.current;
+    const todayHeading = todayHeadingRef.current;
+    // No layout while the force-mounted Calendar tab is hidden.
+    if (!nowLine || !todayHeading || nowLine.getClientRects().length === 0)
+      return;
+    scrollNowLineIntoView(nowLine, todayHeading);
+  }, [agendaGroups]);
 
   return (
     <div className="w-full rounded-lg border border-gray-200">
@@ -167,14 +228,17 @@ export const CalendarAgenda = ({
         agendaGroups !== null &&
         agendaGroups.map(group => (
           <div key={group.key}>
-            <p className="sticky top-[var(--topbar-h)] z-10 bg-gray-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 md:top-0">
+            <p
+              ref={isSameDay(group.date, now) ? todayHeadingRef : undefined}
+              className="sticky top-[var(--topbar-h)] z-10 bg-gray-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 md:top-0"
+            >
               {formatDateHeading(group.date)}
             </p>
             <ul className="divide-y divide-gray-100">
               {group.events.flatMap((event, index) => [
                 isSameDay(group.date, now) &&
                   index === findNowLineIndex(group.events, now) && (
-                    <NowLine key="now-line" />
+                    <NowLine key="now-line" ref={nowLineRef} />
                   ),
                 <li key={`${event.calendarId}-${event.id}`}>
                   <a
@@ -204,7 +268,7 @@ export const CalendarAgenda = ({
               ])}
               {isSameDay(group.date, now) &&
                 findNowLineIndex(group.events, now) === group.events.length && (
-                  <NowLine />
+                  <NowLine ref={nowLineRef} />
                 )}
             </ul>
           </div>
