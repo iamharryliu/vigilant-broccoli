@@ -8,7 +8,9 @@ import {
   TabsTrigger,
 } from '@vigilant-broccoli/react-lib';
 
-const TAB_TOUCH_CLASS = 'px-4';
+// px-3 keeps six 44px-wide triggers plus the actions button inside a 360px
+// phone without horizontal overflow.
+const TAB_TOUCH_CLASS = 'px-3';
 
 export interface TabbedViewTab<T extends string> {
   value: T;

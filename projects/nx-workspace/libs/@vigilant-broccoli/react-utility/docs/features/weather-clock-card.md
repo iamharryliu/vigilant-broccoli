@@ -1,7 +1,7 @@
 # Weather Clock Card
 
 - One card for the clock, the current weather with its details, an optional forecast carousel, the next sunrise/sunset and the moon phase.
-- Single weather UI consumed by `weather-next` (weather.harryliu.dev), `vb-manager-next`'s dashboard; production and staging of each app share one codebase.
+- Single weather UI consumed by `weather-next` (weather.harryliu.dev), `vb-manager-next`'s dashboard and `vb-manager-next-mobile`'s Weather tab; production and staging of each app share one codebase.
 
 ## Usage
 
@@ -36,4 +36,5 @@ The card is styled with Tailwind classes and the Radix Themes variables the apps
 ## Data fetching per app
 
 - `weather-next`: its own `/api/weather` (Open-Meteo plus Nominatim city) and rate-limited `/api/preparation`.
+- `vb-manager-next-mobile`: `WeatherView` over auth-guarded `/api/weather` (the `weather-next` route returning `LocalWeather` with the city) and `/api/preparation` (`fetchWeatherPreparation` / `isPreparationWeather`).
 - `vb-manager-next`: `fetchLocalWeather` over auth-guarded `/api/weather` plus `/api/weather/city`, and `fetchLocalPreparation` over `/api/preparation` (`fetchWeatherPreparation` / `isPreparationWeather` from `common-node`). City names come from `reverseGeocodeCity` from `common-node` with the app's Nominatim User-Agent.

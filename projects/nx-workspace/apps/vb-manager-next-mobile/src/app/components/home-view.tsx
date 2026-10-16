@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import {
   CalendarDays,
   CalendarPlus,
+  CloudSun,
   Link2,
   ListTodo,
   Rows3,
@@ -44,6 +46,14 @@ import {
 } from '../app.const';
 import { QUICK_LINKS } from '../constants/quick-links';
 import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
+
+// Split into its own chunk, and only mounted while its tab is active, so the
+// weather card's code, geolocation prompt and requests stay off the initial
+// page load.
+const WeatherView = dynamic(
+  () => import('./weather-view').then(module => module.WeatherView),
+  { ssr: false },
+);
 
 const CALENDAR_TITLE = BASE_CALENDAR_CONFIG.title;
 
@@ -278,6 +288,12 @@ export const HomeView = () => {
       label: CALENDAR_TAB.QUICK_LINKS,
       icon: <Link2 size={TAB_ICON_SIZE} />,
       content: <QuickLinksPanel links={QUICK_LINKS} />,
+    },
+    {
+      value: CALENDAR_TAB.WEATHER,
+      label: CALENDAR_TAB.WEATHER,
+      icon: <CloudSun size={TAB_ICON_SIZE} />,
+      content: <WeatherView />,
     },
   ];
 
