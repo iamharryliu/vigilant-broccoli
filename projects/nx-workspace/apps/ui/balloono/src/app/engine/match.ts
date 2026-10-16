@@ -292,8 +292,17 @@ const popBalloons = (state: MatchState) => {
     const existing = state.splashes.find(splash => samePoint(splash, point));
     if (existing) {
       existing.ttl = SPLASH_TICKS;
-      existing.ownerId = point.ownerId;
-    } else state.splashes.push({ ...point, ttl: SPLASH_TICKS });
+      if (!existing.ownerIds.includes(point.ownerId)) {
+        existing.ownerIds.push(point.ownerId);
+      }
+    } else {
+      state.splashes.push({
+        x: point.x,
+        y: point.y,
+        ttl: SPLASH_TICKS,
+        ownerIds: [point.ownerId],
+      });
+    }
   });
 };
 
@@ -354,8 +363,13 @@ export const advanceMatch = (
       if (splash) {
         recordEvent(state, MATCH_EVENT.SPLASH);
         player.alive = false;
-        const dropper = state.players.find(item => item.id === splash.ownerId);
-        if (dropper && dropper.id !== player.id) dropper.tally.soaks++;
+        state.players
+          .filter(
+            item => splash.ownerIds.includes(item.id) && item.id !== player.id,
+          )
+          .forEach(dropper => {
+            dropper.tally.soaks++;
+          });
         return;
       }
       const powerUp = state.powerUps.find(item => samePoint(item, tile));
