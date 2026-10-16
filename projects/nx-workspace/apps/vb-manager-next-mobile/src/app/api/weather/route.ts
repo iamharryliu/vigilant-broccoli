@@ -1,14 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import {
-  HTTP_STATUS_CODES,
-  OPEN_METEO_MAX_FORECAST_DAYS,
-  toLocalWeather,
-  WEATHER_PROVIDER,
-} from '@vigilant-broccoli/common-js';
-import {
-  reverseGeocodeCity,
-  WeatherService,
-} from '@vigilant-broccoli/common-node';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { getLocalWeather } from '@vigilant-broccoli/common-node';
 import { requireAuth } from '../../../../libs/api-auth';
 import { WEATHER_QUERY_PARAM } from '../../app.const';
 
@@ -23,7 +15,6 @@ const NOMINATIM_USER_AGENT = 'vb-manager-next-mobile (https://harryliu.dev)';
 const COORDINATE_DECIMALS = 2;
 const MAX_LATITUDE = 90;
 const MAX_LONGITUDE = 180;
-const HOURLY_COUNT = 0;
 
 const INVALID_COORDINATES_ERROR = 'lat and lon must be valid coordinates';
 const WEATHER_UNAVAILABLE_ERROR = 'Weather is unavailable';
@@ -56,19 +47,10 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const location = { latitude, longitude };
-  // A missing city name only degrades the label, so it must not fail the
-  // weather that was fetched successfully alongside it.
-  const [weather, city] = await Promise.all([
-    WeatherService.getWeather(location, {
-      provider: WEATHER_PROVIDER.OPEN_METEO,
-      hourlyCount: HOURLY_COUNT,
-      dailyCount: OPEN_METEO_MAX_FORECAST_DAYS,
-    }).catch(() => null),
-    reverseGeocodeCity(location, NOMINATIM_USER_AGENT),
-  ]);
-
-  const body = weather && toLocalWeather(weather, city);
+  const body = await getLocalWeather(
+    { latitude, longitude },
+    NOMINATIM_USER_AGENT,
+  );
   if (!body) {
     return NextResponse.json(
       { error: WEATHER_UNAVAILABLE_ERROR },

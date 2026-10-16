@@ -49,8 +49,8 @@ const ISO_DATE_LENGTH = 10;
 const BASE_HIGH_C = 18;
 const BASE_LOW_C = 9;
 
-const DEMO_LOCATION = { latitude: 55.605, longitude: 13.0038 };
-const DEMO_TIMEZONE_OFFSET_SECONDS = 7200;
+export const DEMO_LOCATION = { latitude: 55.605, longitude: 13.0038 };
+export const DEMO_TIMEZONE_OFFSET_SECONDS = 7200;
 
 const buildForecast = (count: number): ForecastDay[] =>
   Array.from({ length: count }, (_, index) => ({
@@ -93,7 +93,9 @@ const CONDITION_LABEL: Record<string, string> = {
   THUNDERSTORM: 'Thunderstorm',
 };
 
-const buildWeather = (forecastDays: number): WeatherClockCardWeather => ({
+export const buildWeather = (
+  forecastDays: number,
+): WeatherClockCardWeather => ({
   city: 'Malmö',
   temperatureC: 18,
   feelsLikeC: 16,
