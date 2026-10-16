@@ -1,15 +1,14 @@
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 import * as path from 'path';
-import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   root: __dirname,
   cacheDir:
     '../../../node_modules/.vite/libs/@vigilant-broccoli/common-browser',
 
+  resolve: { tsconfigPaths: true },
   plugins: [
-    tsconfigPaths(),
     dts({
       entryRoot: 'src',
       tsconfigPath: path.join(__dirname, 'tsconfig.lib.json'),
