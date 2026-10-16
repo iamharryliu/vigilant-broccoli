@@ -13,12 +13,11 @@ import {
   useTheme,
   useThemeKeybind,
   useDocumentTitle,
-  Sidebar,
-  SidebarCTA,
   Switch,
   Heading,
   Text,
 } from '@vigilant-broccoli/react-lib';
+import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import {
   AlarmUtilityContent,
   CalculatorUtilityContent,

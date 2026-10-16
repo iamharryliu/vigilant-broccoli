@@ -6,8 +6,6 @@ import {
   Button,
   Callout,
   Checkbox,
-  CRUDItemFormDialog,
-  CRUDItemList,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Input,
   Text,
@@ -16,6 +14,10 @@ import {
   DialogTitle,
   cn,
 } from '@vigilant-broccoli/react-lib';
+import {
+  CRUDItemFormDialog,
+  CRUDItemList,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import {
   DocsExplorer,
   type DocsExplorerAction,

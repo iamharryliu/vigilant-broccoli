@@ -3,14 +3,11 @@
 import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
+import { Button, Input, Textarea, Text } from '@vigilant-broccoli/react-lib';
 import {
-  Button,
   CRUDFormProps,
   CRUDItemList,
-  Input,
-  Textarea,
-  Text,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { HouseholdRule } from '../../../lib/types';
 import { ROUTES } from '../../../lib/routes';

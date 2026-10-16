@@ -8,7 +8,7 @@ import {
   MouseEvent,
 } from 'react';
 import { ChevronDown, ChevronRight, Search } from 'lucide-react';
-import { cn } from '../utils/cn';
+import { cn } from '@vigilant-broccoli/react-lib';
 
 export type SidebarCTA = {
   id?: string;

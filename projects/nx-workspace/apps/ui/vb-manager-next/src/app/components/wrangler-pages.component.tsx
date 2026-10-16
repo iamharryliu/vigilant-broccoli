@@ -4,10 +4,10 @@ import {
   Badge,
   Button,
   ButtonList,
-  EllipsisCTA,
   StatusCardListItem,
   Text,
 } from '@vigilant-broccoli/react-lib';
+import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { CLOUDFLARE_LINK } from '@vigilant-broccoli/links';
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';

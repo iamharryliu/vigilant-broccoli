@@ -3,7 +3,6 @@
 import {
   Button,
   CloseButton,
-  EllipsisCTA,
   getCommitType,
   Input,
   Select,
@@ -15,6 +14,7 @@ import {
   DialogTitle,
   DialogClose,
 } from '@vigilant-broccoli/react-lib';
+import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import {
   EisenhowerQuadrant,
   getEisenhowerQuadrant,

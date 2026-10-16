@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import {
   Badge,
   Button,
-  EllipsisCTA,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Input,
   Text,
@@ -14,6 +13,7 @@ import {
   DialogTitle,
   cn,
 } from '@vigilant-broccoli/react-lib';
+import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { DOC_CATEGORIES, DocCategory, HomeDoc } from '../../lib/types';

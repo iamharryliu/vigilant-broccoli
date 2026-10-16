@@ -10,11 +10,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  Placement,
   Button,
+} from '@vigilant-broccoli/react-lib';
+import {
+  Placement,
   LeaderboardMetricDef,
   UserRow,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { fetchLeaderboard, LeaderboardEntry } from '../../lib/stats';
 import { ONLINE_AVAILABLE } from '../app.consts';
 import { useTranslation } from '../i18n';

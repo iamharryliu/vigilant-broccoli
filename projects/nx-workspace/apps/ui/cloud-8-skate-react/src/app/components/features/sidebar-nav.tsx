@@ -1,6 +1,9 @@
 import type { ComponentProps } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Sidebar, type SidebarCTA } from '@vigilant-broccoli/react-lib';
+import {
+  Sidebar,
+  type SidebarCTA,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { useTranslation } from '../../i18n';
 import { NAV_LINKS } from '../../core/consts/routes.const';
 

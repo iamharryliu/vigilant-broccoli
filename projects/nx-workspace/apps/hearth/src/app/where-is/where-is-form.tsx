@@ -4,11 +4,11 @@ import { useRef, useState } from 'react';
 import {
   Badge,
   Button,
-  CRUDFormProps,
   Input,
   Text,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
+import { CRUDFormProps } from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 

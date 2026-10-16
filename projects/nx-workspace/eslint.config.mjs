@@ -37,12 +37,24 @@ export default [
               sourceTag: '*',
               onlyDependOnLibsWithTags: ['*'],
             },
-            // react-lib stays atomic: higher-level components live in
-            // react-lib-higher-level so editing them does not redeploy every
-            // UI app that consumes react-lib.
+            // Layering: apps may use anything. Composite UI lives in
+            // type:higher-level libs so editing one does not redeploy every
+            // app that consumes the atomic type:primitive react-lib.
+            {
+              sourceTag: 'type:util',
+              onlyDependOnLibsWithTags: ['type:util'],
+            },
             {
               sourceTag: 'type:primitive',
-              notDependOnLibsWithTags: ['type:higher-level'],
+              onlyDependOnLibsWithTags: ['type:util', 'type:primitive'],
+            },
+            {
+              sourceTag: 'type:higher-level',
+              onlyDependOnLibsWithTags: [
+                'type:util',
+                'type:primitive',
+                'type:higher-level',
+              ],
             },
           ],
         },

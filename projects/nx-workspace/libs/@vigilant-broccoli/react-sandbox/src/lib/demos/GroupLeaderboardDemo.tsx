@@ -3,7 +3,7 @@ import {
   useTeamLeaderboard,
   LeaderBoardPeriod,
   LeaderboardMetricDef,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { useCallback, useRef } from 'react';
 
 type GroupSeed = {

@@ -1,10 +1,6 @@
 import { ChangeEvent, useMemo, useState } from 'react';
-import {
-  Input,
-  LOCAL_WEATHER_STATUS,
-  SegmentedControl,
-  Switch,
-} from '@vigilant-broccoli/react-lib';
+import { Input, SegmentedControl, Switch } from '@vigilant-broccoli/react-lib';
+import { LOCAL_WEATHER_STATUS } from '@vigilant-broccoli/react-utility';
 import {
   WeatherClockCardUtilityContent,
   WeatherClockCardWeather,

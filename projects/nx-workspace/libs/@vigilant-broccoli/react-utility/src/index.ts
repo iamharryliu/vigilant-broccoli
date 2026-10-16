@@ -9,3 +9,5 @@ export * from './lib/utilities/pomodoro.utility';
 export * from './lib/utilities/qr-reader.utility';
 export * from './lib/utilities/weather-clock-card.utility';
 export * from './lib/clock';
+export * from './lib/WeatherDisplay';
+export * from './lib/weather';

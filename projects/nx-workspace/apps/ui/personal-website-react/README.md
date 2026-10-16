@@ -17,6 +17,7 @@
   - `common-browser`
   - `personal-common-js`
   - `react-lib`
+  - `react-lib-higher-level`
   - `resume`
 - Cloud services
   - Google Analytics

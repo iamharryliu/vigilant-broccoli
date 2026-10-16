@@ -1,6 +1,6 @@
 'use client';
 
-import { createI18n } from '../i18n';
+import { createI18n } from '@vigilant-broccoli/react-lib';
 
 const DEFAULT_LOCALE = 'en';
 

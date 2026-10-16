@@ -1,13 +1,12 @@
 import { LeaderboardRow } from './LeaderboardRow';
 import { LeaderboardMetricCell } from './LeaderboardMetricCell';
 import { formatMetricValue } from './leaderboard.utils';
-import { useAnimatedMetrics } from './useAnimatedNumber';
 import {
   DisplaySize,
   LeaderBoardUser,
   LeaderboardMetricDef,
 } from './leaderboard.types';
-import { UserAvatar } from '../components/UserAvatar';
+import { useAnimatedMetrics, UserAvatar } from '@vigilant-broccoli/react-lib';
 
 interface TextSizeConfig {
   labelSize: string;

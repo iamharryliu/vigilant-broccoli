@@ -20,6 +20,7 @@ The Cloud8 Toronto skating community site.
   - `common-js`
   - `personal-common-js`
   - `react-lib`
+  - `react-lib-higher-level`
 - Cloud services
   - Google Analytics
   - Google Calendar

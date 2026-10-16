@@ -2,14 +2,14 @@
 
 import { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useGeolocation } from '@vigilant-broccoli/react-lib';
 import {
   CONNECTION_STATUS,
   ConnectionStatus,
   isSharingUser,
-  useGeolocation,
   useLiveLocations,
   SupabaseLike,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { supabase } from '../../../../libs/supabase';
 import { useTranslation } from '../../i18n';
 

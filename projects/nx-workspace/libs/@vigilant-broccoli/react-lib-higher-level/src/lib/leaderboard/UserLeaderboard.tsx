@@ -22,9 +22,7 @@ import {
   ITEMS_PER_PAGE_OPTIONS,
 } from './leaderboard.types';
 import { LEADERBOARD_TEXT, PERIOD_LABELS } from './leaderboard.consts';
-import { Select } from '../components/Select';
-import { MultiSelect } from '../components/MultiSelect';
-import { Button } from '../components/Button';
+import { Button, MultiSelect, Select } from '@vigilant-broccoli/react-lib';
 
 type GroupOption = {
   id: number | null;

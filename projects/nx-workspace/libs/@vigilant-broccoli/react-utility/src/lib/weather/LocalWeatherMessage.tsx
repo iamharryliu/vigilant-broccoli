@@ -1,9 +1,9 @@
 'use client';
 
-import { Button } from '../components/Button';
-import { WeatherCard } from '../components/WeatherDisplay';
+import { WeatherCard } from '../WeatherDisplay';
 import { LocalWeatherFailure, LOCAL_WEATHER_STATUS } from './useLocalWeather';
 import { useTranslation, WeatherI18nProvider } from './weather.i18n';
+import { Button } from '@vigilant-broccoli/react-lib';
 
 const LOCATION_ICON = '📍';
 const ERROR_ICON = '🌥️';
