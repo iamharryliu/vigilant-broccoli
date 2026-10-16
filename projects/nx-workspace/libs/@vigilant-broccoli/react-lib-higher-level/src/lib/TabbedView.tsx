@@ -38,7 +38,7 @@ export const TabbedView = <T extends string>({
   <Tabs
     value={value}
     onValueChange={next => onValueChange(next as T)}
-    className="flex h-full w-full flex-col gap-3"
+    className="flex h-full min-h-0 w-full flex-col gap-3"
   >
     <div className="flex shrink-0 items-center justify-between gap-2">
       <TabsList className="h-11">
@@ -70,7 +70,11 @@ export const TabbedView = <T extends string>({
           {tab.content}
         </TabsContent>
       ) : (
-        <TabsContent key={tab.value} value={tab.value} className="mt-0">
+        <TabsContent
+          key={tab.value}
+          value={tab.value}
+          className="mt-0 min-h-0 flex-1 overflow-y-auto pb-[env(safe-area-inset-bottom)]"
+        >
           {tab.content}
         </TabsContent>
       ),
