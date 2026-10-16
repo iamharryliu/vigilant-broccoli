@@ -200,6 +200,7 @@ ${PLAN_RULES}
   - pr_summary: markdown bullet points replacing the PR's "## Summary" section — rewrite it to describe the PR's full, cumulative state (prior work plus this change), not just this increment
   - pr_next_steps: markdown checklist replacing the PR's "## Next steps" section — same rule, cover the whole PR as it now stands: remaining manual commands, spot checks, CI status, merging, and one ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\` item per piece of work deliberately left out of every increment, or "- [ ] Merge once CI is green" when nothing else is left
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none — rewrite it to cover the whole PR as it now stands. Keep every suggestion already in the PR body that this change did not implement and the instruction did not reject, and name any you drop in your report; omit the field to leave the section untouched${PLAN_FIELDS}
+  - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none; keep these out of pr_suggestions, which is only optional follow-up work. Rewrite it to cover the whole PR as it now stands, keep every concern already in the PR body that this change did not resolve, and name any you drop in your report; omit the field to leave the section untouched
 EOF
 )
 
@@ -280,14 +281,20 @@ COMMIT_MESSAGE=$(normalize_commit_message "$(read_meta .commit_message)")
 TRAILER=$(read_meta .co_authored_by)
 PR_SUMMARY=$(read_meta .pr_summary)
 PR_NEXT_STEPS=$(read_meta .pr_next_steps)
-# merge-pr-body.py clears the Suggestions section when PR_SUGGESTIONS is set
+# merge-pr-body.py clears the Suggestions and Concerns sections when PR_SUGGESTIONS/PR_CONCERNS is set
 # but empty, so a missing or non-string field must leave the variable unset
-# rather than let a skipped field delete suggestions nobody addressed.
+# rather than let a skipped field delete entries nobody addressed.
 if jq -e '(.pr_suggestions | type) == "string"' "$META_FILE" >/dev/null 2>&1; then
   PR_SUGGESTIONS=$(read_meta .pr_suggestions)
   export PR_SUGGESTIONS
 else
   unset PR_SUGGESTIONS
+fi
+if jq -e '(.pr_concerns | type) == "string"' "$META_FILE" >/dev/null 2>&1; then
+  PR_CONCERNS=$(read_meta .pr_concerns)
+  export PR_CONCERNS
+else
+  unset PR_CONCERNS
 fi
 
 case "$COMMIT_TYPE" in

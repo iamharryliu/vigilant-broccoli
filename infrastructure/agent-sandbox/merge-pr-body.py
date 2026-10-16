@@ -4,7 +4,7 @@
 create-todo-runner.sh, create-rnd-runner.sh,
 audit-todo-runner.sh, audit-docs-runner.sh, audit-context-runner.sh,
 prune-runner.sh) to rewrite a PR body in place: replace the
-"## Summary" / "## Next steps" / "## Suggestions" sections with the agent's latest cumulative
+"## Summary" / "## Next steps" / "## Concerns" / "## Suggestions" sections with the agent's latest cumulative
 description, and append a row to an "## Agentic Change History" table —
 creating either if the PR body doesn't have them yet. Reads everything from
 the environment (see the CURRENT_BODY/PR_*/HISTORY_* vars below; PR_STACK is the
@@ -73,23 +73,36 @@ if pr_next_steps and not replace_section("Next steps", pr_next_steps):
     insert_at = next((i for i, (h, _) in enumerate(sections) if h == "Summary"), -1) + 1
     sections.insert(insert_at, ("Next steps", pr_next_steps))
 
+pr_concerns = os.environ.get("PR_CONCERNS", "").strip()
 pr_suggestions = os.environ.get("PR_SUGGESTIONS", "").strip()
 pr_stack = os.environ.get("PR_STACK", "").strip()
 
-# Suggestions describe what is still open, so an explicitly empty
-# PR_SUGGESTIONS (set but blank) drops the stale section; an unset variable
-# leaves it alone.
-if "PR_SUGGESTIONS" in os.environ and not pr_suggestions:
-    sections[:] = [(h, c) for h, c in sections if h != "Suggestions"]
-elif pr_suggestions and not replace_section("Suggestions", pr_suggestions):
-    insert_at = (
-        next(
-            (i for i, (h, _) in enumerate(sections) if h == "Next steps"),
-            next((i for i, (h, _) in enumerate(sections) if h == "Summary"), -1),
-        )
-        + 1
-    )
-    sections.insert(insert_at, ("Suggestions", pr_suggestions))
+
+def insert_after(*anchors):
+    """Index just past the last anchor heading present, else past the top."""
+    for anchor in anchors:
+        found = next((i for i, (h, _) in enumerate(sections) if h == anchor), None)
+        if found is not None:
+            return found + 1
+    return 0
+
+
+# Concerns and Suggestions describe what is still open, so an explicitly empty
+# variable (set but blank) drops the stale section; an unset variable leaves
+# it alone.
+for name, env_name, value, anchors in (
+    ("Concerns", "PR_CONCERNS", pr_concerns, ("Next steps", "Summary")),
+    (
+        "Suggestions",
+        "PR_SUGGESTIONS",
+        pr_suggestions,
+        ("Concerns", "Next steps", "Summary"),
+    ),
+):
+    if env_name in os.environ and not value:
+        sections[:] = [(h, c) for h, c in sections if h != name]
+    elif value and not replace_section(name, value):
+        sections.insert(insert_after(*anchors), (name, value))
 
 if pr_stack and not replace_section("Stack", pr_stack):
     insert_at = next((i for i, (h, _) in enumerate(sections) if h == "Summary"), -1) + 1
