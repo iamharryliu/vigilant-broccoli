@@ -1,29 +1,36 @@
 # Audit: Cloud Deployment Statefulness
 
-> Deployed app/service inventory reviewed for reliance on local disk/in-memory state vs. externalized cloud-managed state · 2026-10-11
+> Deployed apps/services checked for local-disk or in-process state vs. managed cloud state · refreshed 2026-10-16
 
-## Scope
+| App / service | Host | State kind | Risk |
+| --- | --- | --- | --- |
+| `vb-express` | Fly (staging + prod) | SQLite auth DB + generated secret on Fly volume `vb_express_data` | High |
+| `socket-server-socketio` | OCI VM (Docker) | In-memory Socket.IO rooms, no Redis adapter | High |
+| `office-presence-socket-server-demo` | Docker Hub image, no tracked deploy | `state.db` SQLite in container layer, no volume in tracked config | Medium |
+| Gitea, Immich, Seafile | OCI / AWS VMs | DBs + files on attached block volumes | Medium |
+| Vault | GCP `vb-free-vm` | Self-hosted; storage backend not verified here (KMS auto-unseal) | Medium |
+| RabbitMQ, code-server | OCI VMs | Docker volumes on boot disk | Low |
+| `vb-manager-next` | GCP `vb-free-vm` (PM2, 1 instance) | Reads host Docker/LAN by design; data in Supabase | Info |
+| `bucket-service` | Fly | Module `Map` caches provider clients only | None |
 
-Every deployed cloud app/service in the repo (Fly.io services under `projects/nx-workspace/apps/api/*`, Cloudflare Pages/GitHub Pages static sites, the `nx-cache` Cloudflare Worker + R2, Vercel Next.js apps, the Sanity CMS, the Terraform-managed OCI/AWS VMs (`infrastructure/terraform/`), the Docker-Hub `office-presence-socket-server-demo`, and the PM2-on-VM `vb-manager-next`) was checked for local SQLite/disk usage, Fly volume mounts, and in-process/in-memory state (websocket room registries, caches) that isn't backed by a managed external store (Postgres/Supabase, GCS/R2, etc.).
+## Evidence
 
-## Findings
+- `vb-express`: `apps/api/vb-express/src/auth.ts` uses `DatabaseSync` at `/data/vb-express.sqlite`; both `fly-configs/*-vb-express.toml` have `[mounts]`. Without `BETTER_AUTH_SECRET`, the secret is also stored on the volume, so volume loss kills all sessions. Capped at one machine.
+- `socket-server-socketio`: `src/main.ts:140` uses `io.sockets.adapter.rooms`; runs via `cloud-init-rabbitmq.yaml` with Watchtower, so each image update drops rooms.
+- `office-presence-socket-server-demo`: `libs/@vigilant-broccoli/slackbots/src/office-presence-app/utils/db.utils.ts:14` opens `new Database('state.db')`; confirm any untracked mount.
+- Block-volume VMs: `oci-gitea.tf`, `aws-immich.tf`, `aws-seafile.tf` (`*_volume` resources); confirm snapshots.
+- Vault: `cloudflare-vault.tf` and `main.tf` (`google_kms_crypto_key.vault_unseal`); check its storage backend and backups.
+- RabbitMQ/code-server: `rabbitmq_data` and `code_server_config` volumes in `cloud-init-{rabbitmq,code-server}.yaml`; no separate block volume.
+- `vb-manager-next`: `ecosystem.config.js:32` `instances: 1`.
 
-| #   | Severity | Location | Finding | Remediation |
-| --- | -------- | -------- | ------- | ----------- |
-| 1   | High     | `projects/nx-workspace/apps/api/vb-express/src/auth.ts:3,14-15,17-27,31`, `projects/nx-workspace/deployment-configs/fly-configs/{staging,production}-vb-express.toml:12,15-17` | **STATEFUL.** better-auth (sessions, OAuth tokens, API keys) is persisted via `node:sqlite` `DatabaseSync` to `DATABASE_PATH=/data/vb-express.sqlite`, backed by a Fly persistent volume (`[mounts] source = 'vb_express_data'`). When `BETTER_AUTH_SECRET` is unset, the signing secret is also generated and persisted as `better-auth.secret` next to the DB (`auth.ts:17-27`), so losing the volume also invalidates all sessions. Auth data lives on a single-machine local disk, not a managed DB — the service cannot scale beyond 1 Fly machine without a migration. | Migrate auth storage to a managed Postgres (e.g. Supabase, already used elsewhere in the repo) if multi-machine scaling or volume-loss resilience is ever needed; otherwise document this as an accepted single-instance constraint. |
-| 2   | High     | `projects/nx-workspace/apps/socket-server-socketio/src/main.ts:98,140`, `infrastructure/terraform/cloud-init-rabbitmq.yaml:76-118` | **STATEFUL.** Socket.IO server uses the default in-process room adapter (`socket.join(room)`, `io.sockets.adapter.rooms`) with no Redis (or other) adapter configured. All room/connection membership lives only in this one Node process's memory; it runs as a single Docker container (behind Caddy, auto-updated by Watchtower) on the OCI RabbitMQ VM at `socket.harryliu.dev`, so every Watchtower image update or restart drops all rooms and connections. | If horizontal scaling of this service is ever needed, add `@socket.io/redis-adapter` backed by a managed Redis. Otherwise no action needed as long as it stays single-instance. |
-| 3   | Medium   | `projects/nx-workspace/libs/@vigilant-broccoli/slackbots/src/office-presence-app/utils/db.utils.ts:14` | **STATEFUL.** `better-sqlite3` opens a relative-path file `new Database('state.db')` storing `user_presences`/`office_events`/`user_settings`. No `-v`/volume flag was found in this repo's tracked run commands (`README.md` `docker run` examples; the Dockerfile declares no `VOLUME`; no Terraform/cloud-init deploys it) for `office-presence-socket-server-demo`, so as configured in-repo the DB lives in the container's writable layer and is lost on every container replace/redeploy unless an operator manually adds an untracked bind mount. | Confirm operationally whether a bind mount/volume is attached outside of tracked config; if not, add one (or externalize to a managed DB) so presence history survives redeploys. |
-| 4   | Info     | `projects/nx-workspace/apps/ui/vb-manager-next/ecosystem.config.js:32` (`instances: 1`) | **STATEFUL by design, not a defect.** Core app data is Supabase-backed, but several API routes (`src/app/api/docker/containers/route.ts`, `src/app/api/network-monitor/*`, `src/app/api/local-services/route.ts`, `src/app/api/wrangler/pages/route.ts`) intentionally introspect the host VM's Docker daemon/LAN/local processes. The app is a single-VM home-server dashboard by nature; single-instance PM2 config matches that intent. | None — flagged for completeness only. |
-| 5   | Info     | `projects/nx-workspace/apps/whiteboard`, `projects/nx-workspace/apps/vb-manager-next-mobile/src/app/api/notepad/route.ts:8` | **Not stateful** (both Vercel). The two Yjs/CRDT features (whiteboard via `react-lib/src/whiteboard/useWhiteboardRoom.ts`, and the notepad live-sync via `react-lib/src/hooks/useNotepad.ts`, commit `e13ad2a27`) keep the Y.Doc entirely client-side and relay updates via Supabase Realtime Broadcast (a managed service); durable snapshots go through `supabaseAdmin.from('notepad')` Postgres CAS. No server process in this repo holds room state for these features, so they introduce no scaling hazard despite being CRDT-based. | None. |
-| 6   | Medium   | `infrastructure/terraform/oci-gitea.tf:94-105`, `infrastructure/terraform/aws-immich.tf:53-64`, `infrastructure/terraform/aws-seafile.tf:85-96`, `infrastructure/terraform/cloud-init-{gitea,immich,seafile}.yaml` | **STATEFUL by design.** Self-hosted Gitea (`/mnt/gitea-data`), Immich (`/mnt/immich-data/{upload,postgres}`) and Seafile (`/mnt/seafile-data/{db,shared}`) keep all data, including their databases, on attached OCI/EBS block volumes on single VMs. | Confirm volume snapshots/backups exist; these are single-VM services by nature. |
-| 7   | Low      | `infrastructure/terraform/cloud-init-rabbitmq.yaml:49-74`, `infrastructure/terraform/cloud-init-code-server.yaml:68-102` | **STATEFUL by design.** RabbitMQ keeps queue data in the `rabbitmq_data` Docker volume and code-server keeps `/config` (workspace, extensions) in `code_server_config`, both on the VM's boot disk with no separate block volume; Caddy cert state is in `caddy_data` on each VM. | Accept, or move to an attached block volume if queue/workspace durability across VM re-creation matters. |
-| 8   | Info     | `projects/nx-workspace/apps/api/bucket-service/src/routes/bucket.ts:29` | **Not stateful.** The module-level `bucketServices` Map only caches provider client instances; objects live in GCS/R2. | None. |
+## Stateless (no local state)
 
-All other deployed apps — `llm-service`, `bucket-service`, `email-service`, `email-subscription-service` (Fly.io); `cloud-8-skate-angular`, `docs-md`, `journal`, `personal-website-react`, `pages-index`, `component-library` (Cloudflare/GitHub Pages, static); `nx-cache` Worker (stateless, state in the `nx-cache` R2 bucket); `hearth`, `findme`, `whiteboard`, `vb-manager-next-mobile`, `small-business-next`, `employee-handler-ui` (Vercel); `cloud8skate-sanity` (Sanity) — externalize all state to managed cloud services (Supabase/Postgres, GCS/R2, RabbitMQ, CDN edge) or hold no state, and show no locally/in-process-only persistence.
+- Fly: `llm-service`, `email-service`, `email-subscription-service`.
+- Static/edge: `cloud-8-skate-angular`, `docs-md`, `journal`, `personal-website-react`, `pages-index`, `component-library`, `nx-cache` Worker (R2).
+- Vercel: `hearth`, `findme`, `whiteboard`, `vb-manager-next-mobile`, `small-business-next`, `employee-handler-ui`. The Yjs whiteboard and notepad sync keep the Y.Doc client-side and relay via Supabase Realtime.
+- `cloud8skate-sanity` (Sanity).
 
-## Recommendations
+## Actions
 
-1. Highest priority: decide whether `vb-express`'s auth SQLite-on-volume (#1) is an accepted constraint or needs migrating to managed Postgres — it's the only service holding security-sensitive state (sessions/OAuth/API keys) locally.
-2. Confirm `office-presence-socket-server-demo`'s `state.db` persistence operationally (#3) — silent data loss on redeploy is easy to miss since it isn't visible from tracked config alone.
-3. Verify backups for the self-hosted VM data volumes (#6, #7).
-4. `socket-server-socketio` (#2) and `vb-manager-next` (#4) are fine as-is provided both stay single-instance; no action needed unless scaling requirements change.
+1. Decide whether `vb-express` single-volume auth is acceptable or should move to managed Postgres.
+2. Confirm `office-presence-socket-server-demo` persistence and VM/Vault volume backups.
