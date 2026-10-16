@@ -12,8 +12,14 @@ export const CALENDAR_TAB = {
   TASKS: 'Tasks',
   NOTEPAD: 'Notepad',
   QUICK_LINKS: 'Quick Links',
+  WEATHER: 'Weather',
 } as const;
 
 export type CalendarTab = (typeof CALENDAR_TAB)[keyof typeof CALENDAR_TAB];
 
 export const CALENDAR_TAB_QUERY_PARAM = 'tab';
+
+export const WEATHER_QUERY_PARAM = {
+  LAT: 'lat',
+  LON: 'lon',
+} as const;
