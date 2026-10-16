@@ -86,7 +86,7 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 
 - Never commit or push unless explicitly instructed. Never force-push, skip hooks or amend existing commits.
 - Stage only files created or edited in this session; never `git add -A`, `git add .`, or files already modified/untracked before the session.
-- Treat the checkout as shared: establish ownership before branching, staging, committing, stashing or switching branches. Never stash in a shared or uncertain checkout. If others' work is staged, commit only your paths with `git commit -m "<message>" -- <your paths>`.
+- Treat the checkout as shared unless provably exclusive; if not provable, use a separate worktree off fresh `origin/main` with only your changes. Establish ownership before branching, staging, committing, stashing or switching branches. Never stash in a shared or uncertain checkout. If others' work is staged, commit only your paths with `git commit -m "<message>" -- <your paths>`.
 - Read [git-workflow.md](./docs/git-workflow.md) before changing Git state or publishing PRs.
 
 ## Coding Conventions

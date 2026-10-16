@@ -31,9 +31,9 @@ Enforcement is CI-only: `ci-pr-check` checks PR titles and commits; there is no 
 
 Sessions attached to one checkout share `HEAD`, the index and stash.
 
-- Establish ownership before branching, staging, committing, stashing or switching. A subagent list does not enumerate independent sessions and cannot prove exclusive use.
-- Coordinate paths and Git operations with known peers and wait for acknowledgement, using communication only as authorized. If ownership is uncertain, use a separate worktree carrying only this session's changes.
-- If peer work is staged, use `git commit -m "<message>" -- <your paths>`; it commits the named working-tree files and leaves other index entries alone.
+- Establish ownership before branching, staging, committing, stashing or switching. A subagent list does not enumerate independent sessions; an empty `ListAgents` result never proves exclusive use and is at most a best-effort hint.
+- Default to a separate worktree: unless the checkout is provably exclusive to this session, create one off freshly fetched `origin/main` and apply only this session's changes there. Do not hold for peer acknowledgement.
+- In an exclusively owned checkout, commit by pathspec, never stash and restore the original branch. If peer work is staged, use `git commit -m "<message>" -- <your paths>`; it commits the named working-tree files and leaves other index entries alone.
 - Never stash shared/uncertain work. `sync-main` requires a clean, exclusive checkout in that case and does not authorize committing pending work to clean it.
 - Restore a branch only if your workflow switched it in an exclusive checkout; do not switch a peer's branch during cleanup.
 
