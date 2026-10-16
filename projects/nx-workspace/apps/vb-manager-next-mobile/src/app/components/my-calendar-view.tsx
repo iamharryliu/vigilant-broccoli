@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { CalendarPlus } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { CalendarDays, CalendarPlus, ListTodo, Rows3 } from 'lucide-react';
 import { isMobileUserAgent } from '@vigilant-broccoli/common-browser';
 import {
   BASE_CALENDAR_CONFIG,
@@ -16,14 +17,16 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
 } from '@vigilant-broccoli/react-lib';
 import { CalendarInput } from './calendar-input';
 import { EventCalendarLink, EventCalendarsList } from './event-calendars-list';
-import { CALENDAR_TAB, CalendarTab } from '../app.const';
+import { GoogleTasksView } from './google-tasks-view';
+import { TabbedView, TabbedViewTab } from './tabbed-view';
+import {
+  CALENDAR_TAB,
+  CALENDAR_TAB_QUERY_PARAM,
+  CalendarTab,
+} from '../app.const';
 import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
 
 const CALENDAR_TITLE = BASE_CALENDAR_CONFIG.title;
@@ -39,7 +42,9 @@ const EVENT_CALENDARS_API = '/api/event-calendars';
 
 const HIDDEN_CALENDARS_STORAGE_KEY = 'vb-manager-hidden-event-calendars';
 
-const TAB_TOUCH_CLASS = 'px-4 text-sm';
+const TAB_ICON_SIZE = 18;
+
+const CALENDAR_TABS = Object.values(CALENDAR_TAB);
 
 const EVENTS_API = '/api/calendar/events';
 const LOADING_MESSAGE = 'Loading…';
@@ -162,7 +167,13 @@ export const MyCalendarView = () => {
   // they arrive.
   const [eventCalendarsLoaded, setEventCalendarsLoaded] = useState(false);
   const [eventCalendarsError, setEventCalendarsError] = useState(false);
-  const [tab, setTab] = useState<CalendarTab>(CALENDAR_TAB.CALENDAR);
+  const searchParams = useSearchParams();
+  const [tab, setTab] = useState<CalendarTab>(() => {
+    const requested = searchParams.get(CALENDAR_TAB_QUERY_PARAM);
+    return (
+      CALENDAR_TABS.find(name => name === requested) ?? CALENDAR_TAB.CALENDAR
+    );
+  });
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
   const isMobile = useIsMobileBrowser();
 
@@ -274,110 +285,131 @@ export const MyCalendarView = () => {
     if (!open) setRefreshKey(key => key + 1);
   };
 
-  return (
-    <Tabs
-      value={tab}
-      onValueChange={value => setTab(value as CalendarTab)}
-      className="flex h-full w-full flex-col gap-3"
-    >
-      <div className="flex shrink-0 items-center justify-between gap-2">
-        <TabsList className="h-11">
-          {Object.values(CALENDAR_TAB).map(name => (
-            <TabsTrigger key={name} value={name} className={TAB_TOUCH_CLASS}>
-              {name}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-        <button
-          type="button"
-          onClick={() => setCreateOpen(true)}
-          aria-label="Create calendar event"
-          title="Create calendar event"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
-        >
-          <CalendarPlus size={18} />
-        </button>
-      </div>
+  const handleTabChange = (next: CalendarTab) => {
+    setTab(next);
+    const params = new URLSearchParams(window.location.search);
+    if (next === CALENDAR_TAB.CALENDAR) params.delete(CALENDAR_TAB_QUERY_PARAM);
+    else params.set(CALENDAR_TAB_QUERY_PARAM, next);
+    const query = params.toString();
+    window.history.replaceState(
+      null,
+      '',
+      query ? `?${query}` : window.location.pathname,
+    );
+  };
 
-      <TabsContent value={CALENDAR_TAB.EVENT_CALENDARS} className="mt-0">
+  const tabs: TabbedViewTab<CalendarTab>[] = [
+    {
+      value: CALENDAR_TAB.CALENDAR,
+      label: CALENDAR_TAB.CALENDAR,
+      icon: <CalendarDays size={TAB_ICON_SIZE} />,
+      // Force-mounted so switching tabs doesn't reload the iframe.
+      forceMount: true,
+      content: (
+        <>
+          {isMobile === false && (
+            <div className="w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200">
+              <iframe
+                src={calendarSrc}
+                className="h-full w-full dark:invert dark:hue-rotate-180"
+                title={CALENDAR_TITLE}
+              />
+            </div>
+          )}
+
+          {isMobile === true && (
+            <div className="w-full rounded-lg border border-gray-200">
+              {error && <p className="p-4 text-sm text-red-600">{error}</p>}
+              {!error && agendaGroups === null && (
+                <p className="p-4 text-sm text-gray-500">{LOADING_MESSAGE}</p>
+              )}
+              {!error && agendaGroups !== null && agendaGroups.length === 0 && (
+                <p className="p-4 text-sm text-gray-500">{EMPTY_MESSAGE}</p>
+              )}
+              {!error &&
+                agendaGroups !== null &&
+                agendaGroups.map(group => (
+                  <div key={group.key}>
+                    <p className="sticky top-[var(--topbar-h)] z-10 bg-gray-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 md:top-0">
+                      {formatDateHeading(group.date)}
+                    </p>
+                    <ul className="divide-y divide-gray-100">
+                      {group.events.map(event => (
+                        <li key={`${event.calendarId}-${event.id}`}>
+                          <a
+                            href={event.htmlLink ?? '#'}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
+                          >
+                            <span
+                              className="h-2.5 w-2.5 shrink-0 rounded-full"
+                              style={{
+                                backgroundColor:
+                                  calendarColorById.get(event.calendarId) ??
+                                  '#9ca3af',
+                              }}
+                            />
+                            <span className="flex min-w-0 flex-1 flex-col">
+                              <span className="truncate text-sm font-medium text-gray-900">
+                                {event.summary}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                {formatEventTime(event)}
+                              </span>
+                            </span>
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+            </div>
+          )}
+        </>
+      ),
+    },
+    {
+      value: CALENDAR_TAB.EVENT_CALENDARS,
+      label: CALENDAR_TAB.EVENT_CALENDARS,
+      icon: <Rows3 size={TAB_ICON_SIZE} />,
+      content: (
         <EventCalendarsList
           calendars={eventCalendarsLoaded ? eventCalendars : null}
           error={eventCalendarsError}
           hiddenIds={hiddenIds}
           onToggleHidden={toggleHidden}
         />
-      </TabsContent>
+      ),
+    },
+    {
+      value: CALENDAR_TAB.TASKS,
+      label: CALENDAR_TAB.TASKS,
+      icon: <ListTodo size={TAB_ICON_SIZE} />,
+      content: <GoogleTasksView />,
+    },
+  ];
 
-      {/* Force-mounted so switching tabs doesn't reload the iframe. */}
-      <TabsContent
-        forceMount
-        value={CALENDAR_TAB.CALENDAR}
-        className="mt-0 flex min-h-0 flex-1 flex-col"
-        style={{
-          display: tab === CALENDAR_TAB.CALENDAR ? undefined : 'none',
-        }}
-        aria-hidden={tab !== CALENDAR_TAB.CALENDAR}
-      >
-        {isMobile === false && (
-          <div className="w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200">
-            <iframe
-              src={calendarSrc}
-              className="h-full w-full dark:invert dark:hue-rotate-180"
-              title={CALENDAR_TITLE}
-            />
-          </div>
-        )}
-
-        {isMobile === true && (
-          <div className="w-full rounded-lg border border-gray-200">
-            {error && <p className="p-4 text-sm text-red-600">{error}</p>}
-            {!error && agendaGroups === null && (
-              <p className="p-4 text-sm text-gray-500">{LOADING_MESSAGE}</p>
-            )}
-            {!error && agendaGroups !== null && agendaGroups.length === 0 && (
-              <p className="p-4 text-sm text-gray-500">{EMPTY_MESSAGE}</p>
-            )}
-            {!error &&
-              agendaGroups !== null &&
-              agendaGroups.map(group => (
-                <div key={group.key}>
-                  <p className="sticky top-[var(--topbar-h)] z-10 bg-gray-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 md:top-0">
-                    {formatDateHeading(group.date)}
-                  </p>
-                  <ul className="divide-y divide-gray-100">
-                    {group.events.map(event => (
-                      <li key={`${event.calendarId}-${event.id}`}>
-                        <a
-                          href={event.htmlLink ?? '#'}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
-                        >
-                          <span
-                            className="h-2.5 w-2.5 shrink-0 rounded-full"
-                            style={{
-                              backgroundColor:
-                                calendarColorById.get(event.calendarId) ??
-                                '#9ca3af',
-                            }}
-                          />
-                          <span className="flex min-w-0 flex-1 flex-col">
-                            <span className="truncate text-sm font-medium text-gray-900">
-                              {event.summary}
-                            </span>
-                            <span className="text-xs text-gray-500">
-                              {formatEventTime(event)}
-                            </span>
-                          </span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-          </div>
-        )}
-      </TabsContent>
+  return (
+    <>
+      <TabbedView
+        tabs={tabs}
+        value={tab}
+        onValueChange={handleTabChange}
+        actions={
+          tab !== CALENDAR_TAB.TASKS && (
+            <button
+              type="button"
+              onClick={() => setCreateOpen(true)}
+              aria-label="Create calendar event"
+              title="Create calendar event"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
+            >
+              <CalendarPlus size={18} />
+            </button>
+          )
+        }
+      />
 
       <Dialog open={createOpen} onOpenChange={handleCreateOpenChange}>
         <DialogContent
@@ -399,6 +431,6 @@ export const MyCalendarView = () => {
           <CalendarInput />
         </DialogContent>
       </Dialog>
-    </Tabs>
+    </>
   );
 };
