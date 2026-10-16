@@ -38,8 +38,11 @@ export default [
               onlyDependOnLibsWithTags: ['*'],
             },
             // Layering: apps may use anything. Composite UI lives in
-            // type:higher-level libs so editing one does not redeploy every
-            // app that consumes the atomic type:primitive react-lib.
+            // type:higher-level libs and narrow-audience UI (auth, calendar,
+            // media) in type:domain libs, so editing one does not redeploy
+            // every app that consumes the atomic type:primitive react-lib.
+            // Domain libs may not import each other, or one domain edit would
+            // again fan out to every other domain's consumers.
             {
               sourceTag: 'type:util',
               onlyDependOnLibsWithTags: ['type:util'],
@@ -49,10 +52,15 @@ export default [
               onlyDependOnLibsWithTags: ['type:util', 'type:primitive'],
             },
             {
+              sourceTag: 'type:domain',
+              onlyDependOnLibsWithTags: ['type:util', 'type:primitive'],
+            },
+            {
               sourceTag: 'type:higher-level',
               onlyDependOnLibsWithTags: [
                 'type:util',
                 'type:primitive',
+                'type:domain',
                 'type:higher-level',
               ],
             },

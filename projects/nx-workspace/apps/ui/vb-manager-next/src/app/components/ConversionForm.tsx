@@ -1,8 +1,10 @@
-import { Card } from './Card';
-import { Heading } from './Heading';
 import { useCallback, useState } from 'react';
-import { CopyPastable } from './CopyPastable';
-import { Textarea } from './Textarea';
+import {
+  Card,
+  CopyPastable,
+  Heading,
+  Textarea,
+} from '@vigilant-broccoli/react-lib';
 
 export const ConversionForm = ({
   copy,

@@ -1,6 +1,6 @@
 'use client';
 
-import { Text } from './Text';
+import { Text } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 
 const WORKFLOWS_PER_PAGE = 100;

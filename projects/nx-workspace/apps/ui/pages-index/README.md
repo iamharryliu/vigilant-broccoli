@@ -17,5 +17,6 @@
 - Internal libs
   - `react-lib`
   - `react-lib-higher-level`
+  - `react-lib-media`
 - Cloud services
   - GitHub API

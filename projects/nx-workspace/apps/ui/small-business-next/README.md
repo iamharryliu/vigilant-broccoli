@@ -15,6 +15,8 @@
 - Internal libs
   - `common-js`
   - `common-node`
+  - `react-lib`
+  - `react-lib-auth`
 - Cloud services
   - Cloudflare R2
   - Supabase

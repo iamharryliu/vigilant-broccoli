@@ -2,8 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Dialog, DialogContent, DialogTitle } from './Dialog';
-import { cn } from '../utils/cn';
+import {
+  cn,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from '@vigilant-broccoli/react-lib';
 
 const SWIPE_THRESHOLD = 50;
 const DEFAULT_ALT = 'Image';
