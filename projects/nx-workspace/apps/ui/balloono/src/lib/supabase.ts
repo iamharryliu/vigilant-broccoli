@@ -2,7 +2,7 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 let _supabase: SupabaseClient | null = null;
 
-// Realtime only: the signed-in session belongs to the auth client in
+// Realtime and public leaderboard: the signed-in session belongs to the auth client in
 // `lib/auth.ts`, and two auto-refreshing clients would race on a rotating
 // refresh token.
 export const supabase = new Proxy({} as SupabaseClient, {

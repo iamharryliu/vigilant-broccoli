@@ -5,6 +5,7 @@ import {
   HTTP_METHOD,
   JSON_CONTENT_TYPE,
 } from '@vigilant-broccoli/common-js';
+import { supabase } from './supabase';
 import { MatchResult } from '../app/engine/results';
 
 const REST_PATH = '/rest/v1';
@@ -66,4 +67,18 @@ export const fetchUserStats = async (
   if (!response.ok) return null;
   const rows = (await response.json()) as UserStats[];
   return rows[0] ?? null;
+};
+
+export interface LeaderboardEntry {
+  rank: number;
+  player_code: string;
+  matches: number;
+  wins: number;
+  players_soaked: number;
+}
+
+export const fetchLeaderboard = async (): Promise<LeaderboardEntry[]> => {
+  const { data, error } = await supabase.rpc('balloono_leaderboard');
+  if (error) throw error;
+  return data as LeaderboardEntry[];
 };

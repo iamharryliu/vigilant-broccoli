@@ -20,6 +20,7 @@ import { RoomListing } from '../hooks/useRoomDirectory';
 import { useTranslation } from '../i18n';
 import { AccountControl } from './AccountControl';
 import { StatsPanel } from './StatsPanel';
+import { LeaderboardPanel } from './LeaderboardPanel';
 import { usePageTitle } from '../use-page-title';
 
 const RANDOMIZE_ICON = '🎲';
@@ -103,6 +104,7 @@ export function HomeScreen({
       </CardContainer>
 
       <StatsPanel />
+      <LeaderboardPanel />
 
       {step === STEP.GAMES && (
         <CardContainer
