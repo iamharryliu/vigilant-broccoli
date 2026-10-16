@@ -34,6 +34,7 @@ export interface RepoLinkBase {
   filePath: string;
   blobBase: string;
   rawBase: string;
+  resolveInternalHref?: (path: string) => string | null;
 }
 
 // A README rendered outside its repository (e.g. on GitHub Pages) has no sibling files, so
@@ -41,12 +42,21 @@ export interface RepoLinkBase {
 // (GitHub redirects blob to tree for directories) and images to the raw host.
 export const rewriteRepoRelativeLinks = (
   html: string,
-  { filePath, blobBase, rawBase }: RepoLinkBase,
+  { filePath, blobBase, rawBase, resolveInternalHref }: RepoLinkBase,
 ): string => {
   const doc = new DOMParser().parseFromString(html, 'text/html');
   doc.querySelectorAll('a[href]').forEach(anchor => {
     const target = resolveNoteLink(filePath, anchor.getAttribute('href') ?? '');
     if (target === null) return;
+    const [path, hash] = target.split('#');
+    const internalHref = resolveInternalHref?.(path);
+    if (internalHref) {
+      anchor.setAttribute(
+        'href',
+        hash ? `${internalHref}#${hash}` : internalHref,
+      );
+      return;
+    }
     anchor.setAttribute('href', `${blobBase}/${target}`);
     anchor.setAttribute('target', '_blank');
     anchor.setAttribute('rel', 'noopener noreferrer');
