@@ -8,11 +8,11 @@ export default defineConfig(() => ({
   base: process.env.VITE_BASE_PATH ?? '/',
   cacheDir: '../../../node_modules/.vite/docs-md',
   server: {
-    port: 4201,
+    port: 3000,
     host: 'localhost',
   },
   preview: {
-    port: 4201,
+    port: 3000,
     host: 'localhost',
   },
   plugins: [

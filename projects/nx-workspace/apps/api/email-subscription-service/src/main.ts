@@ -1,3 +1,4 @@
+import { checkServerIdentity, type PeerCertificate } from 'node:tls';
 import Fastify from 'fastify';
 import amqplib, { ConfirmChannel } from 'amqplib';
 import { createClient } from '@supabase/supabase-js';
@@ -10,7 +11,9 @@ import {
   JSON_CONTENT_TYPE,
   QUEUE,
 } from '@vigilant-broccoli/common-js';
+import { SUPABASE_URL } from '@vigilant-broccoli/common-node';
 import { Email } from '@vigilant-broccoli/messaging';
+import { SENDER_EMAIL_ADDRESS } from '@vigilant-broccoli/personal-common-js';
 import {
   createApiKeyPlugin,
   createDocsPlugin,
@@ -23,13 +26,13 @@ import { swaggerSpec } from './swagger';
 const SERVICE_NAME = 'email-subscription-service';
 
 const HOST = process.env.HOST ?? 'localhost';
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 const API_KEY = process.env.SHARED_APP_TOKEN;
 const RABBITMQ_CONNECTION_STRING = process.env.RABBITMQ_CONNECTION_STRING;
 const RABBITMQ_CA_CERT = process.env.RABBITMQ_CA_CERT;
 const EMAIL_SERVICE_URL = process.env.EMAIL_SERVICE_URL;
 const SHARED_APP_TOKEN = process.env.SHARED_APP_TOKEN;
-const EMAIL_FROM = 'Vigilant Broccoli <contact@harryliu.dev>';
+const EMAIL_FROM = `Vigilant Broccoli <${SENDER_EMAIL_ADDRESS}>`;
 const RECONNECT_DELAY_MS = 5000;
 const SEND_EMAIL_TIMEOUT_MS = 30000;
 const MAX_DELIVERY_ATTEMPTS = 5;
@@ -44,39 +47,66 @@ const ERROR_FAILED_SAVE_SUBSCRIPTION = 'Failed to save subscription';
 const ERROR_FAILED_REMOVE_SUBSCRIPTION = 'Failed to remove subscription';
 const ERROR_FAILED_FETCH_SUBSCRIBERS = 'Failed to fetch subscribers';
 const ERROR_EMAIL_SERVICE_REQUEST_FAILED = 'Email service request failed';
+const RABBITMQ_TLS_SERVER_NAME = 'rabbitmq';
 
 const RABBITMQ_SOCKET_OPTIONS = RABBITMQ_CA_CERT
   ? {
       ca: [Buffer.from(RABBITMQ_CA_CERT, 'base64')],
-      checkServerIdentity: () => undefined,
+      checkServerIdentity: (_host: string, cert: PeerCertificate) =>
+        checkServerIdentity(RABBITMQ_TLS_SERVER_NAME, cert),
     }
   : undefined;
 
 const supabase = createClient(
-  'https://jrdosjjgmsoodpjmjqxx.supabase.co',
+  SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY as string,
 );
 
-let publishChannel: ConfirmChannel | null = null;
+let publishChannel: Promise<ConfirmChannel> | null = null;
+let publishGeneration = 0;
 
-const getPublishChannel = async (): Promise<ConfirmChannel> => {
-  if (publishChannel) return publishChannel;
+const connectPublishChannel = async (
+  generation: number,
+): Promise<ConfirmChannel> => {
   const connection = await amqplib.connect(
     RABBITMQ_CONNECTION_STRING!,
     RABBITMQ_SOCKET_OPTIONS,
   );
+  // Only the generation that still owns the cached entry may clear it. amqplib
+  // emits 'error' then 'close', so a request landing between the two installs a
+  // replacement — an unguarded handler from the superseded connection would drop
+  // that replacement and leave its connection open with nothing holding it.
+  const invalidate = () => {
+    if (generation === publishGeneration) publishChannel = null;
+  };
   connection.on('error', err => {
     console.error('RabbitMQ producer connection error:', err.message);
-    publishChannel = null;
+    invalidate();
   });
   connection.on('close', () => {
     console.warn(
       'RabbitMQ producer connection closed, will reconnect on next request',
     );
-    publishChannel = null;
+    invalidate();
   });
-  publishChannel = await connection.createConfirmChannel();
-  await publishChannel.assertQueue(QUEUE.EMAIL_SUBSCRIPTION, { durable: true });
+  try {
+    const channel = await connection.createConfirmChannel();
+    await channel.assertQueue(QUEUE.EMAIL_SUBSCRIPTION, { durable: true });
+    return channel;
+  } catch (err) {
+    await connection.close().catch(() => undefined);
+    throw err;
+  }
+};
+
+const getPublishChannel = (): Promise<ConfirmChannel> => {
+  if (!publishChannel) {
+    const generation = ++publishGeneration;
+    publishChannel = connectPublishChannel(generation).catch(err => {
+      if (generation === publishGeneration) publishChannel = null;
+      throw err;
+    });
+  }
   return publishChannel;
 };
 
@@ -277,23 +307,25 @@ const buildApp = async () => {
           return reply.send({ success: true, queued: 0 });
         }
 
-        let queued = 0;
-        for (const { email } of subscribers) {
-          try {
-            await queueEmail({
+        const results = await Promise.all(
+          subscribers.map(({ email }) =>
+            queueEmail({
               from: EMAIL_FROM,
               to: email,
               subject: `New update from ${subscriptionName}`,
               html: `<p>${message}</p>`,
-            });
-            queued++;
-          } catch (err) {
-            console.error(
-              `Failed to queue email for ${email}:`,
-              (err as Error).message,
-            );
-          }
-        }
+            })
+              .then(() => true)
+              .catch(err => {
+                console.error(
+                  `Failed to queue email for ${email}:`,
+                  (err as Error).message,
+                );
+                return false;
+              }),
+          ),
+        );
+        const queued = results.filter(Boolean).length;
 
         console.log(
           `📤 Queued ${queued}/${subscribers.length} emails for ${subscriptionName}`,

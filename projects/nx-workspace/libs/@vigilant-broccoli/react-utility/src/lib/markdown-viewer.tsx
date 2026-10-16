@@ -1,11 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import DOMPurify from 'dompurify';
 import { createHeadingRenderer, marked } from './markdown-config';
-import { createNoteLinkClickHandler, scrollToUrlHash } from './note-links';
+import {
+  createNoteLinkClickHandler,
+  type RepoLinkBase,
+  rewriteRepoRelativeLinks,
+  scrollToUrlHash,
+} from './note-links';
+import { observeThemeChange, renderMermaidDiagrams } from './mermaid-diagrams';
 
 const CLS = {
-  ROOT: 'w-full h-full overflow-auto',
-  PROSE: 'prose dark:prose-invert max-w-none px-4 sm:px-6 py-4',
+  ROOT: 'w-full',
+  PROSE:
+    'prose dark:prose-invert max-w-none px-4 sm:px-6 py-4 prose-th:align-middle prose-td:align-middle prose-table:block prose-table:overflow-x-auto',
   EDITOR_WRAP: 'flex flex-col h-full',
   TOOLBAR:
     'flex items-center justify-end gap-2 px-4 sm:px-6 py-2 border-b border-gray-200 dark:border-gray-700',
@@ -32,6 +39,7 @@ interface MarkdownViewerProps {
   saveContent?: (path: string, content: string) => Promise<void>;
   editTrigger?: number;
   onNavigate?: (path: string) => void;
+  repoLinkBase?: RepoLinkBase;
 }
 
 export function MarkdownViewer({
@@ -40,6 +48,7 @@ export function MarkdownViewer({
   saveContent,
   editTrigger,
   onNavigate,
+  repoLinkBase,
 }: MarkdownViewerProps) {
   const [html, setHtml] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -52,13 +61,23 @@ export function MarkdownViewer({
       .parse(content, { renderer: createHeadingRenderer(), async: true })
       .then(raw => {
         if (typeof window === 'undefined') return;
-        setHtml(DOMPurify.sanitize(raw));
+        const safe = DOMPurify.sanitize(raw);
+        setHtml(
+          repoLinkBase ? rewriteRepoRelativeLinks(safe, repoLinkBase) : safe,
+        );
       });
-  }, [content]);
+  }, [content, repoLinkBase?.filePath]);
+
+  const proseRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (html) scrollToUrlHash();
-  }, [html]);
+    if (!html) return;
+    const el = proseRef.current;
+    renderMermaidDiagrams(el).then(scrollToUrlHash);
+    return el
+      ? observeThemeChange(el, () => renderMermaidDiagrams(el))
+      : undefined;
+  }, [html, isEditing]);
 
   const canEdit = Boolean(saveContent && filePath);
 
@@ -133,6 +152,7 @@ export function MarkdownViewer({
   return (
     <div className={CLS.ROOT}>
       <div
+        ref={proseRef}
         className={CLS.PROSE}
         dangerouslySetInnerHTML={{ __html: html }}
         onClick={createNoteLinkClickHandler(filePath ?? '', onNavigate)}

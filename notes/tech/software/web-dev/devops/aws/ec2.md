@@ -9,7 +9,7 @@ ssh -i [pemfile] [ec2_machine_username]@[ec2_machine_ip_address]
 
 ## Free Tier
 
-- EC2: 750 hrs/month of t2.micro/t3.micro — first 12 months of the account only.
+- EC2: 750 hrs/month of t2.micro/t3.micro — first 12 months of the account only. Anything larger is always billed: a `t3.small` (2 GB, the practical floor for a Grafana + Loki box) is ≈ $15/month in eu-north-1. Every public IPv4 address, Elastic or not, attached or idle, has been billed at $0.005/h (≈ $3.65/month) since February 2024; the first 12 months include 750 hours of it.
 - EBS: 30 GB of General Purpose (SSD/gp2/gp3) or Magnetic storage, 2M I/Os, 1 GB snapshot storage — also first 12 months only. Established accounts are billed standard rates (~$0.088/GB-month for gp3 in most regions) for all volumes.
 
 ## References

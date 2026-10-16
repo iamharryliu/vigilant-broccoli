@@ -5,8 +5,13 @@
   },
   "NAV": {
     "EMPLOYEES": "Medarbetare",
+    "ABSENCES": "Frånvaro",
     "SIGNATURES": "Signaturer",
     "SETTINGS": "Inställningar"
+  },
+  "PAGE_TITLE": {
+    "LOGIN": "Logga in",
+    "AUTH_CALLBACK": "Loggar in"
   },
   "SIDEBAR": {
     "LIGHT_MODE": "Ljust läge",
@@ -67,11 +72,42 @@
       "OFFBOARD_SELECTED": "Valda medarbetare har avslutats",
       "ONBOARD_SELECTED": "Valda medarbetare har introducerats",
       "RETENTION": "Efterhantering slutförd",
-      "SYNC": "Synkronisering slutförd"
+      "SYNC": "Synkronisering slutförd",
+      "METADATA_SAVED": "Medarbetarens länkar har sparats"
     },
     "ERROR": {
       "NO_EMAILS": "Ange giltiga e-postadresser",
-      "LOAD_FAILED": "Det gick inte att hämta medarbetare"
+      "LOAD_FAILED": "Det gick inte att hämta medarbetare",
+      "METADATA_SAVE_FAILED": "Det gick inte att spara medarbetarens länkar"
+    },
+    "DRAWER": {
+      "TITLE": "Medarbetarinformation",
+      "STATUS": "Status",
+      "METADATA": "Länkar",
+      "GITHUB": "GitHub",
+      "LINKEDIN": "LinkedIn",
+      "RESUME": "CV",
+      "NOT_SET": "Inte angiven",
+      "URL_PLACEHOLDER": "https://",
+      "SAVE": "Spara ändringar"
+    }
+  },
+  "ABSENCES": {
+    "SUBTITLE": "Alla aktiva medarbetares senaste och kommande frånvaro.",
+    "SUMMARY": "{employees} medarbetare · {absences} frånvarotillfällen",
+    "EMPTY": "Ingen frånvaro",
+    "TODAY": "Idag",
+    "ROW_META": "{count} frånvarotillfällen",
+    "TABLE_VIEW": "Tabellvy (all frånvaro)",
+    "COL": {
+      "EMPLOYEE": "Medarbetare",
+      "TYPE": "Typ",
+      "START": "Start",
+      "END": "Slut",
+      "DAYS": "Dagar"
+    },
+    "ERROR": {
+      "LOAD_FAILED": "Det gick inte att hämta frånvaro"
     }
   },
   "SIGNATURES": {

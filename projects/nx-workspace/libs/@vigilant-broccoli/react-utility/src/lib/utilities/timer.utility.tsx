@@ -1,7 +1,6 @@
 'use client';
 
-import { Text } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
+import { Button, Text } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect, useRef } from 'react';
 import { createSoundAlert } from '../audio';
 

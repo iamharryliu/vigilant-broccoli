@@ -2,6 +2,7 @@ export type Home = {
   id: number;
   name: string;
   description: string;
+  isOwner?: boolean;
 };
 
 export const HOME_ROLE = {
@@ -32,6 +33,7 @@ export interface CalendarEvent {
   leisureActivityId: string | null;
   projectId?: string | null;
   mealId?: string | null;
+  kitchenEvent?: boolean;
   homeId: number;
   createdByEmail?: string | null;
   createdAt: string;
@@ -109,12 +111,64 @@ export interface HouseholdRule {
   updatedAt: string;
 }
 
+export interface ChecklistItem {
+  id: string;
+  name: string;
+  completed: boolean;
+  completedAt: string | null;
+  position: number;
+  homeId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const KITCHEN_PROJECT_KINDS = [
+  'FERMENT',
+  'PROOF',
+  'MARINATE',
+  'THAW',
+  'COMPONENT',
+] as const;
+
+export type KitchenProjectKind = (typeof KITCHEN_PROJECT_KINDS)[number];
+
+export const KITCHEN_PROJECT_LOCATIONS = [
+  'COUNTER',
+  'FRIDGE',
+  'FREEZER',
+  'PANTRY',
+] as const;
+
+export type KitchenProjectLocation = (typeof KITCHEN_PROJECT_LOCATIONS)[number];
+
+export const KITCHEN_PROJECT_RESOLUTIONS = ['USED', 'DISCARDED'] as const;
+
+export type KitchenProjectResolution =
+  (typeof KITCHEN_PROJECT_RESOLUTIONS)[number];
+
+export interface KitchenProjectItem {
+  id: string;
+  name: string;
+  kind: KitchenProjectKind;
+  location: KitchenProjectLocation;
+  notes: string | null;
+  startedAt: string;
+  readyAt: string | null;
+  useByAt: string | null;
+  resolution: KitchenProjectResolution | null;
+  resolvedAt: string | null;
+  homeId: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface WhereIsItem {
   id: string;
   title: string;
   description: string;
   tags: string[];
   imageUrls: string[];
+  imageKeys: string[];
   createdAt: string;
 }
 
@@ -218,6 +272,80 @@ export interface PriceItem {
   unit: string | null;
   homeId: number;
   entries: PriceEntry[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const RECEIPT_CATEGORIES = [
+  'Produce',
+  'Dairy',
+  'Meat',
+  'Bakery',
+  'Frozen',
+  'Beverages',
+  'Snacks',
+  'Household',
+  'Personal Care',
+  'Other',
+] as const;
+
+export const DEFAULT_RENAME_LANGUAGE = 'English';
+
+export const RENAME_LANGUAGES = [
+  'English',
+  'Swedish',
+  'French',
+  'German',
+  'Spanish',
+  'Italian',
+  'Danish',
+  'Norwegian',
+  'Simplified Chinese',
+] as const;
+
+// Persisted on the Supabase user, so the preference follows the account rather
+// than the browser.
+export const RENAME_ENABLED_KEY = 'receipt_rename_enabled';
+export const RENAME_LANGUAGE_KEY = 'receipt_rename_language';
+
+export interface ReceiptItem {
+  id: string;
+  name: string;
+  originalName: string | null;
+  category: string | null;
+  unit: string | null;
+  quantity: number;
+  unitPrice: number | null;
+  totalPrice: number;
+  priceItemId: string | null;
+  lineOrder: number;
+}
+
+export interface ReceiptTax {
+  id: string;
+  rate: number;
+  taxAmount: number | null;
+  netAmount: number | null;
+  grossAmount: number | null;
+}
+
+export interface Receipt {
+  id: string;
+  homeId: number;
+  merchantId: string | null;
+  merchantName: string | null;
+  merchantAddress: string | null;
+  purchasedAt: string;
+  currency: string;
+  taxInclusive: boolean;
+  subtotal: number | null;
+  tax: number | null;
+  total: number | null;
+  notes: string | null;
+  items: ReceiptItem[];
+  taxes: ReceiptTax[];
+  imageKeys: string[];
+  imageUrls: string[];
   createdAt: string;
   updatedAt: string;
 }

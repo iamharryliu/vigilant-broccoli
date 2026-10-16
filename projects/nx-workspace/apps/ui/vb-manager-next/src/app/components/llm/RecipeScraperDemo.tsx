@@ -1,7 +1,7 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
-import { Text } from '@radix-ui/themes';
-import { Button, CopyPastable } from '@vigilant-broccoli/react-lib';
+
+import { Button, CopyPastable, Text } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { authFetch } from '../../../../libs/auth';

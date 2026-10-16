@@ -23,5 +23,3 @@ Object storage proxy across multiple bucket providers.
   - AWS S3
   - Cloudflare R2
   - Google Cloud Storage
-  - Docker Hub
-  - Fly.io

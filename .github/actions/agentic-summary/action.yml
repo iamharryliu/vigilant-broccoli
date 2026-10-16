@@ -1,0 +1,100 @@
+name: Agentic Summary
+description: Publish the shared agentic run summary (overview or result) to the job summary.
+
+inputs:
+  mode:
+    description: 'overview | result'
+    required: true
+  title:
+    description: 'Human-readable operation title (overview).'
+    required: false
+    default: ''
+  agent:
+    description: 'claude | codex (overview).'
+    required: false
+    default: ''
+  model:
+    description: 'Effective model. Blank shows "CLI default" for codex and omits the field for claude (overview).'
+    required: false
+    default: ''
+  firewall:
+    description: 'on | off (overview).'
+    required: false
+    default: ''
+  operation:
+    description: 'Operation name, when the workflow serves several (overview).'
+    required: false
+    default: ''
+  pull_request:
+    description: 'URL of the pull request being updated (overview).'
+    required: false
+    default: ''
+  description:
+    description: 'Concise description of the actual work, for operations without user text (overview).'
+    required: false
+    default: ''
+  task_label:
+    description: 'Label above the request when a description is also shown, e.g. "Research question" (overview).'
+    required: false
+    default: ''
+  task:
+    description: 'The complete user request, rendered as escaped, wrapping prose (overview).'
+    required: false
+    default: ''
+  outcome:
+    description: 'pr-created | pr-updated | no-changes | no-pr | dispatched | failed | cancelled (result).'
+    required: false
+    default: ''
+  result_pr_url:
+    description: 'Pull request produced or updated (result).'
+    required: false
+    default: ''
+  child_run_url:
+    description: 'Dispatched child run, when reliably identified (result).'
+    required: false
+    default: ''
+  note:
+    description: 'Short plain-text detail (result).'
+    required: false
+    default: ''
+  label:
+    description: 'Section label when one run reports several results (result).'
+    required: false
+    default: ''
+
+outputs:
+  request_file:
+    description: 'Path of the complete request, set only when it was too large to show in full.'
+    value: ${{ steps.render.outputs.request_file }}
+
+runs:
+  using: composite
+  steps:
+    - name: Render summary
+      id: render
+      shell: bash
+      env:
+        AGENTIC_TITLE: ${{ inputs.title }}
+        AGENTIC_AGENT: ${{ inputs.agent }}
+        AGENTIC_MODEL: ${{ inputs.model }}
+        AGENTIC_FIREWALL: ${{ inputs.firewall }}
+        AGENTIC_OPERATION: ${{ inputs.operation }}
+        AGENTIC_PULL_REQUEST: ${{ inputs.pull_request }}
+        AGENTIC_DESCRIPTION: ${{ inputs.description }}
+        AGENTIC_TASK_LABEL: ${{ inputs.task_label }}
+        AGENTIC_TASK: ${{ inputs.task }}
+        AGENTIC_OUTCOME: ${{ inputs.outcome }}
+        AGENTIC_PR_URL: ${{ inputs.result_pr_url }}
+        AGENTIC_CHILD_RUN_URL: ${{ inputs.child_run_url }}
+        AGENTIC_NOTE: ${{ inputs.note }}
+        AGENTIC_LABEL: ${{ inputs.label }}
+        AGENTIC_REQUEST_FILE: ${{ runner.temp }}/agentic-request.txt
+        MODE: ${{ inputs.mode }}
+      run: node "$GITHUB_ACTION_PATH/../../scripts/agentic-run-summary.mjs" "$MODE"
+
+    - name: Upload oversized request
+      if: ${{ steps.render.outputs.request_file != '' }}
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+      with:
+        name: agentic-request
+        path: ${{ steps.render.outputs.request_file }}

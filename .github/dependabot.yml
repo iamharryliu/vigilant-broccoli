@@ -10,9 +10,6 @@ updates:
       # Batch low-risk dev/build tooling into a single PR to cut noise.
       dev-dependencies:
         dependency-type: 'development'
-      angular:
-        patterns:
-          - '@angular/*'
       next:
         patterns:
           - 'next'

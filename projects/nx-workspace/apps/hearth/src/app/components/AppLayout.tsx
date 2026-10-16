@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Skeleton } from '@radix-ui/themes';
 import { useAuth } from '../providers/auth-provider';
+import { TopbarSlotProvider } from '../providers/topbar-slot-provider';
 import { ROUTES } from '../../lib/routes';
 import Topbar from './Topbar';
 import Sidebar from './Sidebar';
 
 const PUBLIC_ROUTES = [ROUTES.LOGIN, ROUTES.SIGNUP, ROUTES.AUTH_CALLBACK];
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const session = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -38,11 +38,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="pt-[49px] px-6">
-        <Skeleton className="h-8 w-48 mt-4" />
-        <Skeleton className="h-4 w-full mt-3" />
-        <Skeleton className="h-4 w-full mt-2" />
-        <Skeleton className="h-4 w-3/4 mt-2" />
+      <div className="pt-[var(--topbar-h)] px-6">
+        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-8 w-48 mt-4" />
+        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-4 w-full mt-3" />
+        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-4 w-full mt-2" />
+        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-4 w-3/4 mt-2" />
       </div>
     );
   }
@@ -55,12 +55,27 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <Topbar onMenuClick={() => setSidebarOpen(open => !open)} />
       <Sidebar
         mobileOpen={sidebarOpen}
         onMobileClose={() => setSidebarOpen(false)}
       />
-      <div className="pt-[49px] pl-0 md:pl-14">{children}</div>
+      <Topbar onMenuClick={() => setSidebarOpen(open => !open)} />
+      <div className="pt-[var(--topbar-h)] pl-0 md:pl-14 md:peer-hover:pl-48 transition-[padding] duration-200">
+        {children}
+      </div>
     </>
+  );
+}
+
+/**
+ * The slot provider wraps every branch, not just the authenticated one: pages
+ * render their topbar tabs through `TopbarSlot` before auth resolves, and a
+ * missing provider throws instead of simply rendering nothing.
+ */
+export default function AppLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <TopbarSlotProvider>
+      <AppLayoutContent>{children}</AppLayoutContent>
+    </TopbarSlotProvider>
   );
 }

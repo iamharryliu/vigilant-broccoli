@@ -1,7 +1,16 @@
 import { useState } from 'react';
-import { Callout, Dialog } from '@radix-ui/themes';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
-import { Button } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  Callout,
+  CalloutIcon,
+  CalloutText,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from '@vigilant-broccoli/react-lib';
 
 export const ErrorDemo = () => {
   const [showAlert, setShowAlert] = useState(false);
@@ -17,17 +26,17 @@ export const ErrorDemo = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       {showAlert && (
-        <Callout.Root color="red">
-          <Callout.Icon>
+        <Callout color="red">
+          <CalloutIcon>
             <InfoCircledIcon />
-          </Callout.Icon>
-          <Callout.Text>Error demo notification!</Callout.Text>
-        </Callout.Root>
+          </CalloutIcon>
+          <CalloutText>Error demo notification!</CalloutText>
+        </Callout>
       )}
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-3">
         <Button variant="destructive" onClick={displayNotification}>
           Error Notification
         </Button>
@@ -36,23 +45,29 @@ export const ErrorDemo = () => {
         </Button>
       </div>
 
-      <Dialog.Root open={showModal} onOpenChange={setShowModal}>
-        <Dialog.Content style={{ maxWidth: 450 }}>
-          <Dialog.Title>Error Modal</Dialog.Title>
-          <Dialog.Description size="2" mb="4">
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent
+          className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+          showCloseButton={false}
+          style={{ maxWidth: 450 }}
+        >
+          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+            Error Modal
+          </DialogTitle>
+          <DialogDescription className="text-sm mb-4">
             Error modal description.
-          </Dialog.Description>
+          </DialogDescription>
 
           <div className="flex gap-3 mt-4 justify-end">
-            <Dialog.Close>
+            <DialogClose asChild>
               <Button variant="secondary">Cancel</Button>
-            </Dialog.Close>
-            <Dialog.Close>
+            </DialogClose>
+            <DialogClose asChild>
               <Button variant="destructive">Confirm</Button>
-            </Dialog.Close>
+            </DialogClose>
           </div>
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

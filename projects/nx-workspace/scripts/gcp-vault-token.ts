@@ -11,7 +11,9 @@ const accessSecret = (name: string): string =>
   ).trim();
 
 export const getVaultOpsCredentials = () => {
-  console.error('Fetching Vault ops AppRole credentials from GCP Secret Manager...');
+  console.error(
+    'Fetching Vault ops AppRole credentials from GCP Secret Manager...',
+  );
   return {
     role_id: accessSecret(ROLE_ID_SECRET_NAME),
     secret_id: accessSecret(SECRET_ID_SECRET_NAME),

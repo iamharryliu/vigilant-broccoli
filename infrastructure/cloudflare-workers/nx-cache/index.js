@@ -8,6 +8,7 @@
 
 const CACHE_KEY_PREFIX = 'v1/cache/';
 const CACHE_PATH_PATTERN = /^\/v1\/cache\/([a-zA-Z0-9]+)$/;
+const MAX_PUT_BYTES = 512 * 1024 * 1024;
 
 function timingSafeEqual(a, b) {
   if (a.length !== b.length) {
@@ -71,6 +72,16 @@ export default {
     if (request.method === 'PUT') {
       if (!isWriteToken) {
         return new Response('Forbidden', { status: 403 });
+      }
+      // Bound what a leaked write token can store: one entry is at most
+      // MAX_PUT_BYTES, and a body with no declared length is refused rather
+      // than streamed to R2 unbounded.
+      const contentLength = Number(request.headers.get('Content-Length'));
+      if (!Number.isSafeInteger(contentLength) || contentLength <= 0) {
+        return new Response('Length Required', { status: 411 });
+      }
+      if (contentLength > MAX_PUT_BYTES) {
+        return new Response('Payload Too Large', { status: 413 });
       }
       // Immutable writes: first successful writer for a given content-hash
       // key wins. This is the actual CREEP fix — a cache key can be created,

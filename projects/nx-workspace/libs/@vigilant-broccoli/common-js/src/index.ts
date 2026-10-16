@@ -1,5 +1,7 @@
 export * from './lib/node-environment/node-environment.consts';
 export * from './lib/http/http.consts';
+export * from './lib/honeypot/honeypot.consts';
+export * from './lib/honeypot/honeypot.utils';
 export * from './lib/location/location.model';
 export * from './lib/services/services.consts';
 export * from './lib/socket/socket.consts';
@@ -21,21 +23,42 @@ export const OPEN_TYPE = {
 
 export type OpenType = (typeof OPEN_TYPE)[keyof typeof OPEN_TYPE];
 
-// Audio
+export type QuickLink = {
+  label: string;
+  target: string;
+  type: OpenType;
+  subgroup?: string;
+  args?: string;
+  embed?: boolean;
+};
+
+export type PastebinEntry = {
+  label: string;
+  value: string;
+};
+
+export type PastebinGroup = {
+  name: string;
+  entries: PastebinEntry[];
+};
+
 export * from './lib/audio/audio.consts';
 
-// LLM
 export * from './lib/llm/llm.consts';
 export * from './lib/llm/llm.types';
 
-// JSON Placeholder
 export * from './lib/jsonplaceholder/jsonplaceholder.services';
 export * from './lib/jsonplaceholder/jsonplaceholder.types';
 
-// Utils
 export * from './lib/utils/env.utils';
 export * from './lib/utils/string.utils';
 export * from './lib/utils/date.utils';
+export * from './lib/utils/solar.utils';
+export * from './lib/utils/lunar.utils';
+
+export * from './lib/weather/weather.model';
+export * from './lib/weather/local-weather';
+export * from './lib/weather/open-meteo.provider';
 
 export const DATE_CONST = {
   DAY: [

@@ -5,7 +5,7 @@ Household storage inventory — upload photos of storage areas, AI identifies co
 ## Stack
 
 - Supabase — `where_is_items` + `where_is_images` tables
-- Cloudflare R2 (`home-management` bucket) — image storage
+- Cloudflare R2 (`where-is` bucket) — image storage
 - OpenAI GPT-4o — image analysis
 
 ## Data Model

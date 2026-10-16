@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Text } from '@radix-ui/themes';
+import { Text } from './Text';
 import { CollapsibleList, CollapsibleListItemConfig } from './CollapsibleList';
 
 export interface StatusCardListItem {
@@ -17,8 +17,7 @@ interface StatusCardListProps {
   emptyMessage?: string;
 }
 
-const DEFAULT_BORDER =
-  'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800';
+const DEFAULT_BORDER = 'border-border bg-card text-card-foreground';
 export const BORDER_ACTIVE =
   'border-green-500 bg-green-50 dark:bg-green-950 dark:border-green-700';
 
@@ -45,7 +44,9 @@ const toCollapsibleItem = (
 });
 
 const FlatItem = ({ item }: { item: StatusCardListItem }) => (
-  <div className={`flex items-center gap-2 ${`${itemClassName(item)} min-h-[36px]`}`}>
+  <div
+    className={`flex items-center gap-2 ${`${itemClassName(item)} min-h-[36px]`}`}
+  >
     {itemTitleContent(item)}
     {item.actions}
   </div>
@@ -56,7 +57,7 @@ export const StatusCardList = ({
   emptyMessage = 'No items found',
 }: StatusCardListProps) => {
   if (items.length === 0)
-    return <Text className="text-gray-500">{emptyMessage}</Text>;
+    return <Text className="text-muted-foreground">{emptyMessage}</Text>;
 
   const collapsible = items.filter(i => i.children);
   const flat = items.filter(i => !i.children);

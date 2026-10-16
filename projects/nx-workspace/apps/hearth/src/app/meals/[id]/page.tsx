@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Badge, Text } from '@radix-ui/themes';
+import { Text, Badge } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../providers/auth-provider';
 import { Meal } from '../../../lib/types';
 import { ROUTES } from '../../../lib/routes';
+import { PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
 
 const CATEGORY_COLORS: Record<string, string> = {
   Breakfast: 'yellow',
@@ -21,6 +22,7 @@ export default function MealDetailPage() {
   const { id } = useParams<{ id: string }>();
   const session = useAuth();
   const [meal, setMeal] = useState<Meal | null>(null);
+  usePageTitle(meal?.title ?? PAGE_TITLES.MEAL_DETAIL);
 
   useEffect(() => {
     if (!session?.access_token) return;
@@ -36,7 +38,7 @@ export default function MealDetailPage() {
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
       <Link
-        href={ROUTES.MEALS}
+        href={ROUTES.MASTER_LIST}
         className="text-sm text-gray-500 hover:text-gray-700"
       >
         ← Back

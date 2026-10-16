@@ -1,7 +1,22 @@
-import nodemailer, { Transporter } from 'nodemailer';
-import SMTPTransport from 'nodemailer/lib/smtp-transport';
-import { Email } from './email.models';
+import nodemailer, { type Transporter } from 'nodemailer';
+import type {
+  SMTPSentMessageInfo,
+  SMTPTransportOptions,
+} from 'nodemailer/lib/smtp-transport';
+import { Email, EmailTemplateData } from './email.models';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+
+const escapeHtml = (text: string): string =>
+  text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+export const renderDefaultEmailTemplate = ({
+  text,
+}: EmailTemplateData): string =>
+  `<h1>Default Email Template</h1>\n<pre>${escapeHtml(text)}</pre>`;
 
 const getGmailTransportOptions = (
   user: string,
@@ -19,7 +34,7 @@ const getGmailTransportOptions = (
 export const createGmailTransport = (
   user: string,
   pass: string,
-): Transporter<SMTPTransport.SentMessageInfo, SMTPTransport.Options> => {
+): Transporter<SMTPSentMessageInfo, SMTPTransportOptions> => {
   return nodemailer.createTransport(getGmailTransportOptions(user, pass));
 };
 

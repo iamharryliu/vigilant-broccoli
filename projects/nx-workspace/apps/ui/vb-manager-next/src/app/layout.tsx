@@ -1,21 +1,11 @@
 'use client';
 
-import '@radix-ui/themes/styles.css';
-import { Theme } from '@radix-ui/themes';
 import './global.css';
-import { ThemeProvider, useTheme } from '@vigilant-broccoli/react-lib';
+import { ThemeProvider } from '@vigilant-broccoli/react-lib';
 import { Toaster } from '@vigilant-broccoli/react-lib/toaster';
 import { AuthProvider } from '../../libs/auth';
-
-function ThemeWrapper({ children }: { children: React.ReactNode }) {
-  const { appearance } = useTheme();
-  return (
-    <Theme appearance={appearance} scaling="90%">
-      {children}
-      <Toaster richColors position="bottom-right" />
-    </Theme>
-  );
-}
+import { APP_NAME, SIDEBAR_ROUTE } from './app.const';
+import { I18nProvider } from './i18n';
 
 export default function RootLayout({
   children,
@@ -25,12 +15,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>vb-manager-next</title>
+        <title>{`${SIDEBAR_ROUTE.INDEX.title} | ${APP_NAME}`}</title>
       </head>
       <body>
         <AuthProvider>
-          <ThemeProvider>
-            <ThemeWrapper>{children}</ThemeWrapper>
+          <ThemeProvider style={{ fontSize: '0.9rem' }}>
+            <I18nProvider>
+              {children}
+              <Toaster richColors position="bottom-right" />
+            </I18nProvider>
           </ThemeProvider>
         </AuthProvider>
       </body>

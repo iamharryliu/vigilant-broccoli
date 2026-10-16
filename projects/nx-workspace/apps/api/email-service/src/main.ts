@@ -1,5 +1,6 @@
+import { checkServerIdentity, type PeerCertificate } from 'node:tls';
 import Fastify from 'fastify';
-import amqplib, { ConfirmChannel } from 'amqplib';
+import amqplib, { ChannelModel, ConfirmChannel } from 'amqplib';
 import {
   EMAIL_SERVICE_ENDPOINT,
   HTTP_STATUS_CODES,
@@ -18,44 +19,89 @@ import { swaggerSpec } from './swagger';
 const SERVICE_NAME = 'email-service';
 
 const HOST = process.env.HOST ?? 'localhost';
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 const API_KEY = process.env.SHARED_APP_TOKEN;
 const RABBITMQ_CONNECTION_STRING = process.env.RABBITMQ_CONNECTION_STRING;
 const RABBITMQ_CA_CERT = process.env.RABBITMQ_CA_CERT;
 const RECONNECT_DELAY_MS = 5000;
 const MAX_DELIVERY_ATTEMPTS = 5;
 const RETRY_COUNT_HEADER = 'x-retry-count';
+const RABBITMQ_TLS_SERVER_NAME = 'rabbitmq';
 
 const RABBITMQ_SOCKET_OPTIONS = RABBITMQ_CA_CERT
   ? {
       ca: [Buffer.from(RABBITMQ_CA_CERT, 'base64')],
-      checkServerIdentity: () => undefined,
+      checkServerIdentity: (_host: string, cert: PeerCertificate) =>
+        checkServerIdentity(RABBITMQ_TLS_SERVER_NAME, cert),
     }
   : undefined;
 
 const emailService = new EmailService({ provider: 'resend' });
 
-let publishChannel: ConfirmChannel | null = null;
+type PublishConnection = {
+  connection: ChannelModel;
+  channel: ConfirmChannel;
+};
 
-const getPublishChannel = async (): Promise<ConfirmChannel> => {
-  if (publishChannel) return publishChannel;
+let publishConnection: Promise<PublishConnection> | null = null;
+let publishGeneration = 0;
+
+const connectPublishChannel = async (
+  generation: number,
+): Promise<PublishConnection> => {
   const connection = await amqplib.connect(
     RABBITMQ_CONNECTION_STRING!,
     RABBITMQ_SOCKET_OPTIONS,
   );
+  // Only the generation that still owns the cached entry may clear it. amqplib
+  // emits 'error' then 'close', so a request landing between the two installs a
+  // replacement — an unguarded handler from the superseded connection would drop
+  // that replacement and leave its connection open with nothing holding it.
+  const invalidate = () => {
+    if (generation === publishGeneration) publishConnection = null;
+  };
   connection.on('error', err => {
     console.error('RabbitMQ producer connection error:', err.message);
-    publishChannel = null;
+    invalidate();
   });
   connection.on('close', () => {
     console.warn(
       'RabbitMQ producer connection closed, will reconnect on next request',
     );
-    publishChannel = null;
+    invalidate();
   });
-  publishChannel = await connection.createConfirmChannel();
-  await publishChannel.assertQueue(QUEUE.EMAIL, { durable: true });
-  return publishChannel;
+  try {
+    const channel = await connection.createConfirmChannel();
+    await channel.assertQueue(QUEUE.EMAIL, { durable: true });
+    return { connection, channel };
+  } catch (err) {
+    await connection.close().catch(() => undefined);
+    throw err;
+  }
+};
+
+const getPublishChannel = async (): Promise<ConfirmChannel> => {
+  if (!publishConnection) {
+    const generation = ++publishGeneration;
+    publishConnection = connectPublishChannel(generation).catch(err => {
+      if (generation === publishGeneration) publishConnection = null;
+      throw err;
+    });
+  }
+  return (await publishConnection).channel;
+};
+
+// A publish failure leaves the cached connection suspect. Bumping the
+// generation retires its handlers, and closing it releases the socket — merely
+// dropping the reference would leak the connection until the broker times out.
+const discardPublishChannel = (): void => {
+  const discarded = publishConnection;
+  if (!discarded) return;
+  publishConnection = null;
+  publishGeneration += 1;
+  void discarded
+    .then(({ connection }) => connection.close())
+    .catch(() => undefined);
 };
 
 async function startConsumer() {
@@ -168,7 +214,7 @@ const buildApp = async () => {
           return reply.send({ success: true });
         } catch (err) {
           console.error('Failed to queue email:', (err as Error).message);
-          publishChannel = null;
+          discardPublishChannel();
           return reply
             .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
             .send({ error: ERROR_FAILED_TO_QUEUE_EMAIL });
@@ -187,7 +233,7 @@ const buildApp = async () => {
           return reply.send({ success: true });
         } catch (err) {
           console.error('Failed to queue emails:', (err as Error).message);
-          publishChannel = null;
+          discardPublishChannel();
           return reply
             .code(HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR)
             .send({ error: ERROR_FAILED_TO_QUEUE_EMAILS });

@@ -142,26 +142,6 @@ async function getOrgRepositories(org: string): Promise<GithubOrgRepository[]> {
   const repos = JSON.parse(reposData);
   return Array.isArray(repos) ? repos : [];
 }
-async function getTeamMemberMembership(
-  organizationName: string,
-  teamSlug: string,
-  memberUsername: string,
-): Promise<GithubTeamMember> {
-  const data = (await ShellUtils.runShellCommand(
-    GithubCLICommand.getTeamMemberMembership(
-      organizationName,
-      teamSlug,
-      memberUsername,
-    ),
-    true,
-  )) as string;
-  const membershipData = JSON.parse(data);
-  return {
-    username: memberUsername,
-    role: membershipData.role,
-    avatar_url: membershipData.member?.avatar_url || '',
-  };
-}
 function getTeamAndDescendants(
   all: GithubTeamsDTO[],
   slug: string,
@@ -297,6 +277,16 @@ async function createOrgRepo(organizationName: string, repoName: string) {
   );
 }
 
+async function dispatchWorkflow(
+  repo: string,
+  workflowFile: string,
+  inputs: Record<string, string>,
+) {
+  await ShellUtils.runShellCommand(
+    GithubCLICommand.dispatchWorkflow(repo, workflowFile, inputs),
+  );
+}
+
 async function deleteOrgRepo(organizationName: string, repoName: string) {
   await ShellUtils.runShellCommand(
     GithubCLICommand.deleteOrgRepo(organizationName, repoName),
@@ -333,7 +323,6 @@ async function setSecrets(
 }
 
 export const GithubService = {
-  // READ
   getOwnedOrganizations,
   getOrgStructure,
   getOrgData,
@@ -343,22 +332,20 @@ export const GithubService = {
   getOrgMembers,
   getOrgMembersCount,
   getOrgRepositories,
-  getTeamMemberMembership,
+  getTeamMemberMembership: GithubUtils.getTeamMemberMembership,
   getTeamAndDescendants,
   listPagesSites,
-  // UPDATE
   updateTeamRepositories,
   updateTeamMembers,
   createOrgTeam,
   createOrgRepo,
   deleteOrgRepo,
   addOrgMember,
-  // DELETE
+  dispatchWorkflow,
   removeMembersNotInConfig,
   removeOrgMember,
   deleteTeam,
   deleteAllTeams,
-  // SECRETS
   setSecret,
   setSecrets,
 };

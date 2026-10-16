@@ -35,3 +35,9 @@
 - chew bone
 - dog bed
 - carrier
+
+## Grab and Go Bag
+
+- Dog kibble
+- Chew bone
+- Extra poo bag roll

@@ -1,16 +1,34 @@
 'use client';
 
-import { Text, Dialog } from '@radix-ui/themes';
 import {
   Button,
   CloseButton,
   EllipsisCTA,
+  EisenhowerQuadrant,
+  getCommitType,
+  getEisenhowerQuadrant,
+  GoogleTasksComponent,
   Input,
   Select,
+  Skeleton,
+  SortMode,
+  SORT_MODE,
+  Text,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
 } from '@vigilant-broccoli/react-lib';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
+import { CreateTasksDialogTrigger } from './create-tasks-dialog.component';
 import { useEffect, useState, useCallback } from 'react';
-import { authFetch, signInWithGoogle, useAuthStatus } from '../../../libs/auth';
+import {
+  authFetch,
+  googleTasksAuth,
+  signInWithGoogle,
+  useAuthStatus,
+} from '../../../libs/auth';
 import {
   DndContext,
   DragOverlay,
@@ -35,12 +53,6 @@ import {
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
-import {
-  GoogleTasksComponent,
-  SortMode,
-  SORT_MODE,
-} from './google-tasks.component';
-import { Skeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 
@@ -116,11 +128,14 @@ const createDefaultBoard = (): Board => ({
   lanes: [],
 });
 
-const fetchKanbanState = async (): Promise<KanbanState | null> => {
+type KanbanFetchResult =
+  { ok: true; state: KanbanState | null } | { ok: false };
+
+const fetchKanbanState = async (): Promise<KanbanFetchResult> => {
   const response = await authFetch(API_ENDPOINTS.KANBAN_BOARDS);
-  if (!response.ok) return null;
+  if (!response.ok) return { ok: false };
   const data = await response.json();
-  return data.state ?? null;
+  return { ok: true, state: data.state ?? null };
 };
 
 const persistKanbanState = async (state: KanbanState): Promise<boolean> => {
@@ -149,7 +164,7 @@ const OVERLAY_CLASSES = {
   DARK: 'dark:bg-gray-800 dark:border-gray-600',
 } as const;
 
-const QUADRANT_OVERLAY_COLORS: Record<string, string> = {
+const QUADRANT_OVERLAY_COLORS: Partial<Record<EisenhowerQuadrant, string>> = {
   Q1: 'border-l-4 border-l-red-500',
   Q2: 'border-l-4 border-l-blue-500',
   Q3: 'border-l-4 border-l-yellow-500',
@@ -158,17 +173,6 @@ const QUADRANT_OVERLAY_COLORS: Record<string, string> = {
 
 const getDeleteBoardDescription = (name: string) =>
   `Are you sure you want to delete "${name}"? This action cannot be undone.`;
-
-const getQuadrantFromTitle = (title: string): string | null => {
-  const match = title.match(/^(Q[1-4])[\s:]/i);
-  return match ? match[1].toUpperCase() : null;
-};
-
-const getCommitTypeFromTitle = (title: string): string | null => {
-  const withoutQuadrant = title.replace(/^Q[1-4][\s:]+/i, '');
-  const match = withoutQuadrant.match(/^([a-z&]+)[(:]/i);
-  return match ? match[1].toLowerCase() : null;
-};
 
 const useBoards = (isAuthenticated: boolean) => {
   const [boards, setBoards] = useState<Board[]>([]);
@@ -182,10 +186,17 @@ const useBoards = (isAuthenticated: boolean) => {
 
     let cancelled = false;
     const hydrate = async () => {
-      const remoteState = await fetchKanbanState();
+      const result = await fetchKanbanState();
+      if (cancelled) return;
 
+      // A failed fetch must never be treated as "no boards exist yet" — doing
+      // so used to fall through to creating and persisting a default board,
+      // silently overwriting real saved boards on a transient auth/network
+      // error (see this app's CONTEXT.md Nuances).
+      if (!result.ok) return;
+
+      const remoteState = result.state;
       if (remoteState && remoteState.boards.length > 0) {
-        if (cancelled) return;
         setBoards(remoteState.boards);
         setActiveBoardId(remoteState.activeBoardId || remoteState.boards[0].id);
         setSortModes(remoteState.sortModes ?? {});
@@ -356,6 +367,7 @@ interface SortableLaneProps {
   dragOverTask: DragOverTask | null;
   sortMode: SortMode | undefined;
   onSortModeChange: (taskListId: string, sortMode: SortMode) => void;
+  onTasksCreated: () => void;
 }
 
 const SortableBoard = ({
@@ -436,6 +448,7 @@ const SortableLane = ({
   dragOverTask,
   sortMode,
   onSortModeChange,
+  onTasksCreated,
 }: SortableLaneProps) => {
   const {
     attributes,
@@ -505,6 +518,7 @@ const SortableLane = ({
       </div>
       <div className="flex-1 overflow-y-auto min-h-0">
         <GoogleTasksComponent
+          auth={googleTasksAuth}
           taskListId={lane.taskListId}
           showSelector={false}
           enableDragDrop={true}
@@ -513,6 +527,12 @@ const SortableLane = ({
           dragOverTask={dragOverTask}
           sortMode={sortMode ?? SORT_MODE.DEFAULT}
           onSortModeChange={onSortModeChange}
+          addTaskActions={
+            <CreateTasksDialogTrigger
+              taskListId={lane.taskListId}
+              onCreated={onTasksCreated}
+            />
+          }
         />
       </div>
     </div>
@@ -524,9 +544,9 @@ const TaskDragOverlay = ({
 }: {
   task: { title: string; notes?: string; due?: string };
 }) => {
-  const quadrant = getQuadrantFromTitle(task.title);
-  const commitType = getCommitTypeFromTitle(task.title);
-  const quadrantClass = quadrant ? QUADRANT_OVERLAY_COLORS[quadrant] : '';
+  const quadrant = getEisenhowerQuadrant(task.title);
+  const commitType = getCommitType(task.title);
+  const quadrantClass = QUADRANT_OVERLAY_COLORS[quadrant] ?? '';
 
   return (
     <div
@@ -550,7 +570,7 @@ const TaskDragOverlay = ({
               {new Date(task.due).toLocaleDateString()}
             </Text>
           )}
-          {commitType && (
+          {commitType !== 'other' && (
             <span className="text-xs px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
               {commitType}
             </span>
@@ -982,7 +1002,7 @@ export const KanbanComponent = () => {
                   Boards
                 </Text>
                 <div className="flex gap-1">
-                  <Dialog.Root
+                  <Dialog
                     open={showManageLists}
                     onOpenChange={open => {
                       setShowManageLists(open);
@@ -992,13 +1012,19 @@ export const KanbanComponent = () => {
                       }
                     }}
                   >
-                    <Dialog.Trigger>
+                    <DialogTrigger asChild>
                       <Button size="icon" variant="ghost">
                         <Menu size={14} />
                       </Button>
-                    </Dialog.Trigger>
-                    <Dialog.Content>
-                      <Dialog.Title>Manage Task Lists</Dialog.Title>
+                    </DialogTrigger>
+                    <DialogContent
+                      className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+                      aria-describedby={undefined}
+                      showCloseButton={false}
+                    >
+                      <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+                        Manage Task Lists
+                      </DialogTitle>
                       <div className="flex flex-col gap-2">
                         {taskLists.map(list => (
                           <div
@@ -1070,23 +1096,29 @@ export const KanbanComponent = () => {
                         )}
                       </div>
                       <div className="flex justify-end mt-4">
-                        <Dialog.Close>
+                        <DialogClose asChild>
                           <Button variant="secondary">Close</Button>
-                        </Dialog.Close>
+                        </DialogClose>
                       </div>
-                    </Dialog.Content>
-                  </Dialog.Root>
-                  <Dialog.Root
+                    </DialogContent>
+                  </Dialog>
+                  <Dialog
                     open={showNewBoardForm}
                     onOpenChange={setShowNewBoardForm}
                   >
-                    <Dialog.Trigger>
+                    <DialogTrigger asChild>
                       <Button size="icon" variant="ghost">
                         <Plus size={14} />
                       </Button>
-                    </Dialog.Trigger>
-                    <Dialog.Content>
-                      <Dialog.Title>Add Board</Dialog.Title>
+                    </DialogTrigger>
+                    <DialogContent
+                      className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+                      aria-describedby={undefined}
+                      showCloseButton={false}
+                    >
+                      <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+                        Add Board
+                      </DialogTitle>
                       <div className="flex flex-col gap-3">
                         <Input
                           placeholder="Board name..."
@@ -1098,9 +1130,9 @@ export const KanbanComponent = () => {
                           autoFocus
                         />
                         <div className="flex gap-3 justify-end">
-                          <Dialog.Close>
+                          <DialogClose asChild>
                             <Button variant="secondary">Cancel</Button>
-                          </Dialog.Close>
+                          </DialogClose>
                           <Button
                             onClick={handleAddBoard}
                             disabled={!newBoardName.trim()}
@@ -1109,8 +1141,8 @@ export const KanbanComponent = () => {
                           </Button>
                         </div>
                       </div>
-                    </Dialog.Content>
-                  </Dialog.Root>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
 
@@ -1218,24 +1250,31 @@ export const KanbanComponent = () => {
                       }
                       sortMode={sortModes[lane.taskListId]}
                       onSortModeChange={setSortMode}
+                      onTasksCreated={() => setRefreshTrigger(prev => prev + 1)}
                     />
                   );
                 })}
                 <div className="ml-2">
-                  <Dialog.Root
+                  <Dialog
                     open={showAddLaneDialog}
                     onOpenChange={setShowAddLaneDialog}
                   >
-                    <Dialog.Trigger>
+                    <DialogTrigger asChild>
                       <Button
                         variant="ghost"
                         className="w-80 h-12 flex-shrink-0 border-2 border-dashed"
                       >
                         <Text size="3">+ Add Lane</Text>
                       </Button>
-                    </Dialog.Trigger>
-                    <Dialog.Content>
-                      <Dialog.Title>Add Lane</Dialog.Title>
+                    </DialogTrigger>
+                    <DialogContent
+                      className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+                      aria-describedby={undefined}
+                      showCloseButton={false}
+                    >
+                      <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+                        Add Lane
+                      </DialogTitle>
                       <div className="flex flex-col gap-3">
                         {showCreateList ? (
                           <div className="flex flex-col gap-2">
@@ -1270,12 +1309,14 @@ export const KanbanComponent = () => {
                         ) : (
                           <>
                             <Select
-                              selectedOption={availableTaskLists.find(
+                              value={availableTaskLists.find(
                                 l => l.id === selectedTaskListId,
                               )}
-                              setValue={list => setSelectedTaskListId(list.id)}
+                              onValueChange={list =>
+                                setSelectedTaskListId(list.id)
+                              }
                               options={availableTaskLists}
-                              optionIdenfifier="id"
+                              optionIdentifier="id"
                               optionDisplayKey="title"
                               placeholder={
                                 availableTaskLists.length === 0
@@ -1293,9 +1334,9 @@ export const KanbanComponent = () => {
                           </>
                         )}
                         <div className="flex gap-3 justify-end">
-                          <Dialog.Close>
+                          <DialogClose asChild>
                             <Button variant="secondary">Cancel</Button>
-                          </Dialog.Close>
+                          </DialogClose>
                           {!showCreateList && (
                             <Button
                               onClick={handleAddLane}
@@ -1306,8 +1347,8 @@ export const KanbanComponent = () => {
                           )}
                         </div>
                       </div>
-                    </Dialog.Content>
-                  </Dialog.Root>
+                    </DialogContent>
+                  </Dialog>
                 </div>
               </div>
             </SortableContext>

@@ -1,6 +1,7 @@
 # Travel
 
 - [Packlist](./packing/packlist.md)
+- [Travel Plans](./travel-plans.md)
 - [Camper Van](./campervan.md)
 - [Places](./places/places.md)
 

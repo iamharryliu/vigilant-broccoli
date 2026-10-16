@@ -41,3 +41,10 @@ LLM_PROVIDER-->GENERATED_TEXT_TOKENS-->OUTPUTS
 
 - Hearing and seeing.
 - Unable to smell, taste, feel.
+
+## Uses
+
+- performing repetitive manual work
+- assisting with software implementations
+- reducing decision fatigue
+- r&d and investigation work

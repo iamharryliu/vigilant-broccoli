@@ -1,11 +1,10 @@
-import '@radix-ui/themes/styles.css';
 import './global.css';
 import AuthProvider from './providers/auth-provider';
 import AppLayout from './components/AppLayout';
 import { RootThemeWrapper } from './components/RootThemeWrapper';
 
 export const metadata = {
-  title: 'Employee Handler',
+  title: 'Home | Employee Handler',
   description: 'Employee onboarding, offboarding, and signature management',
 };
 

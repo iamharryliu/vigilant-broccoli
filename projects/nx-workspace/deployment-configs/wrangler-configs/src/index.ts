@@ -5,7 +5,6 @@ const assetManifest = JSON.parse(manifestJSON);
 export default {
   async fetch(request, env, ctx) {
     try {
-      // Add logic to decide whether to serve an asset or run your original Worker code
       return await getAssetFromKV(
         {
           request,

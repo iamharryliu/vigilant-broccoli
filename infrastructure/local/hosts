@@ -1,6 +1,5 @@
 127.0.0.1	    localhost
 127.0.0.1       manager.vigilant-broccoli.app
-127.0.0.1       adminer.vigilant-broccoli.app
 127.0.0.1       loki.vigilant-broccoli.app
 127.0.0.1       grafana.vigilant-broccoli.app
 127.0.0.1       images.vigilant-broccoli.app

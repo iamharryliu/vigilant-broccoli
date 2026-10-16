@@ -2,11 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
-import { Badge, Dialog, Text } from '@radix-ui/themes';
 import {
+  Badge,
   Button,
   EllipsisCTA,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Text,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  cn,
 } from '@vigilant-broccoli/react-lib';
 import { CalendarEvent, HomeProject } from '../../../lib/types';
 import { HomeProjectForm, HomeProjectFormData } from './HomeProjectForm';
@@ -29,9 +34,7 @@ const STATUS_COLORS: Record<string, 'gray' | 'amber' | 'green'> = {
 };
 
 type ModalState =
-  | { type: 'create' }
-  | { type: 'edit'; project: HomeProject }
-  | null;
+  { type: 'create' } | { type: 'edit'; project: HomeProject } | null;
 
 interface Props {
   projects: HomeProject[];
@@ -180,19 +183,24 @@ export function HomeProjectList({
         })}
       </div>
 
-      <Dialog.Root
+      <Dialog
         open={modal !== null}
         onOpenChange={open => {
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content
-          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+        <DialogContent
+          aria-describedby={undefined}
+          showCloseButton={false}
+          className={cn(
+            'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+            FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+          )}
           style={{ maxWidth: 440 }}
         >
-          <Dialog.Title>
+          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
             {modal?.type === 'edit' ? 'Edit Project' : 'Add Project'}
-          </Dialog.Title>
+          </DialogTitle>
 
           {modal?.type === 'create' && (
             <HomeProjectForm
@@ -215,8 +223,8 @@ export function HomeProjectList({
               isEdit
             />
           )}
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

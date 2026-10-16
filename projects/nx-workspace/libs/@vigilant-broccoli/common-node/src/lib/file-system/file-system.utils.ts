@@ -135,21 +135,16 @@ export function getFilenamesFromDir(
 }
 
 export const FileSystemUtils = {
-  // CREATE
   writeFile,
   makedirectory,
   zipFolder,
   writeJSON,
   generateTmpFilepath,
-  // READ
   checkFilePath,
   getFilenamesFromDir,
   getListFromFilepath,
   getObjectFromFilepath,
-  // UPDATE
-  // DELETE
   deletePath,
   appendFile,
-  // PATH
   expandHomePath,
 };

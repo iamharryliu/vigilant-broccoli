@@ -1,16 +1,17 @@
 'use client';
 
 import { Dispatch, SetStateAction, useState } from 'react';
-import { Text, TextField } from '@radix-ui/themes';
 import {
   Button,
   CRUDFormProps,
   CRUDItemList,
+  Input,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
   Textarea,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import {
@@ -69,7 +70,7 @@ const SignatureForm = ({
         <Text size="1" weight="medium" as="p" mb="1">
           {t('SIGNATURES.FORM.LABEL_FIELD')}
         </Text>
-        <TextField.Root
+        <Input
           placeholder={t('SIGNATURES.FORM.LABEL_FIELD')}
           value={label}
           onChange={e => setLabel(e.target.value)}

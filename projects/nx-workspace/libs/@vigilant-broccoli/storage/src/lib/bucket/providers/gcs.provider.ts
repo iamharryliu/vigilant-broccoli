@@ -4,6 +4,11 @@ import { pipeline } from 'stream/promises';
 import { IBucketProvider, GcsBucketConfig, BucketFile } from '../bucket.models';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 
+const SIGNED_URL_ACTION = {
+  READ: 'read',
+  WRITE: 'write',
+} as const;
+
 export class GcsBucketProvider implements IBucketProvider {
   private storage: Storage;
   private bucket: Bucket;
@@ -81,5 +86,31 @@ export class GcsBucketProvider implements IBucketProvider {
     const file = this.bucket.file(fileName);
     const [buffer] = await file.download();
     return buffer;
+  }
+
+  async getUploadUrl(
+    destinationName: string,
+    contentType: string,
+    expiresInSeconds: number,
+  ): Promise<string> {
+    const file = this.bucket.file(destinationName);
+    const [url] = await file.getSignedUrl({
+      action: SIGNED_URL_ACTION.WRITE,
+      expires: Date.now() + expiresInSeconds * 1000,
+      contentType,
+    });
+    return url;
+  }
+
+  async getDownloadUrl(
+    fileName: string,
+    expiresInSeconds: number,
+  ): Promise<string> {
+    const file = this.bucket.file(fileName);
+    const [url] = await file.getSignedUrl({
+      action: SIGNED_URL_ACTION.READ,
+      expires: Date.now() + expiresInSeconds * 1000,
+    });
+    return url;
   }
 }

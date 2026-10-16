@@ -8,27 +8,36 @@ import {
   GithubOrgRepository,
   GITHUB_ORG_URLS,
 } from '@vigilant-broccoli/github-workspace-js';
-import { Heading, Link, Text, Callout, Badge, Dialog } from '@radix-ui/themes';
 import { AlertCircle, Plus } from 'lucide-react';
 import { authFetch } from '../../../../../../libs/auth';
 
 import {
-  CardSkeleton,
-  Skeleton,
-} from '../../../../components/skeleton.component';
-import {
   Avatar,
+  Badge,
   Button,
   ButtonConfig,
   ButtonList,
+  Callout,
+  CalloutIcon,
+  CalloutText,
   CardContainer,
+  CardSkeleton,
   EllipsisCTA,
   Input,
   SearchInput,
+  Skeleton,
   StatusCardList,
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
+  Heading,
+  Text,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
 } from '@vigilant-broccoli/react-lib';
+import { usePageTitle } from '../../../../use-page-title';
 
 const ORG_MEMBER_API = '/api/github/organization-members';
 
@@ -51,6 +60,7 @@ export default function Page({
   params: Promise<{ organizationName: string }>;
 }) {
   const { organizationName } = use(params);
+  usePageTitle(organizationName);
   const [meta, setMeta] = useState<OrgMeta>();
   const [members, setMembers] = useState<GithubOrgMember[]>();
   const [repositories, setRepositories] = useState<GithubOrgRepository[]>();
@@ -90,12 +100,12 @@ export default function Page({
 
   if (error) {
     return (
-      <Callout.Root color="red">
-        <Callout.Icon>
+      <Callout color="red">
+        <CalloutIcon>
           <AlertCircle size={16} />
-        </Callout.Icon>
-        <Callout.Text>{error}</Callout.Text>
-      </Callout.Root>
+        </CalloutIcon>
+        <CalloutText>{error}</CalloutText>
+      </Callout>
     );
   }
 
@@ -181,15 +191,25 @@ const GithubTeamLink = ({
   organization: string;
   team: string;
 }) => (
-  <Link href={GITHUB_ORG_URLS.team(organization, team)} target="_blank">
+  <a
+    href={GITHUB_ORG_URLS.team(organization, team)}
+    target="_blank"
+    rel="noreferrer"
+    className="text-blue-600 hover:underline dark:text-blue-400"
+  >
     {team}
-  </Link>
+  </a>
 );
 
 const GithubUserLink = ({ member }: { member: GithubTeamMember }) => (
-  <Link href={GITHUB_ORG_URLS.member(member.username)} target="_blank">
+  <a
+    href={GITHUB_ORG_URLS.member(member.username)}
+    target="_blank"
+    rel="noreferrer"
+    className="text-blue-600 hover:underline dark:text-blue-400"
+  >
     {member.username}
-  </Link>
+  </a>
 );
 
 const getRepoUrls = (repoUrl: string) => ({
@@ -340,15 +360,22 @@ const AddItemDialog = ({
   };
 
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
         <Button size="sm" variant="outline" className="w-full">
           <Plus size={12} />
           {buttonLabel}
         </Button>
-      </Dialog.Trigger>
-      <Dialog.Content style={{ maxWidth: 400 }}>
-        <Dialog.Title>{title}</Dialog.Title>
+      </DialogTrigger>
+      <DialogContent
+        className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+        aria-describedby={undefined}
+        showCloseButton={false}
+        style={{ maxWidth: 400 }}
+      >
+        <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+          {title}
+        </DialogTitle>
         <Input
           placeholder={placeholder}
           value={value}
@@ -357,9 +384,9 @@ const AddItemDialog = ({
           className="mt-3"
         />
         <div className="flex gap-2 justify-end mt-3">
-          <Dialog.Close>
+          <DialogClose asChild>
             <Button variant="ghost">Cancel</Button>
-          </Dialog.Close>
+          </DialogClose>
           <Button
             onClick={handleAdd}
             disabled={!value.trim()}
@@ -368,8 +395,8 @@ const AddItemDialog = ({
             {buttonLabel}
           </Button>
         </div>
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 };
 

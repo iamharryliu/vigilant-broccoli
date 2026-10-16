@@ -1,5 +1,9 @@
-import { NextNavRoute } from '@vigilant-broccoli/next-lib';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
+
+type NextNavRoute = {
+  path: string;
+  title: string;
+};
 
 type ExtendedNavRoute = {
   title: string;
@@ -7,14 +11,15 @@ type ExtendedNavRoute = {
   children?: NextNavRoute[];
 };
 
-export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
+export const NOTEPAD_ROUTE: ExtendedNavRoute = {
+  title: 'Notepad',
+  path: '/notepad',
+};
+
+export const SIDEBAR_ROUTE = {
   INDEX: {
     title: 'Home',
     path: '/',
-  },
-  CHATBOT: {
-    title: 'Chatbot',
-    path: '/chatbot',
   },
   KANBAN: {
     title: 'Kanban',
@@ -24,49 +29,43 @@ export const APP_ROUTE: Record<string, ExtendedNavRoute> = {
     title: 'Dev Dashboard',
     path: '/dev-dashboard',
   },
-  API_KEYS: {
-    title: 'API Keys',
-    path: '/api-keys',
+  PASTEBIN: {
+    title: 'Pastebin',
+    path: '/pastebin',
   },
-  NETWORK_MONITOR: {
-    title: 'Network Monitor',
-    path: '/network-monitor',
-  },
-  TEXT_TOOLS: {
-    title: 'Text Tools',
-    path: '/text-tools',
-  },
-  NOTEPAD: {
-    title: 'Notepad',
-    path: '/notepad',
-  },
-  DOCS_MD: {
-    title: 'DocsMD',
-    path: '/docs-md',
+  CHATBOT: {
+    title: 'Chatbot',
+    path: '/chatbot',
   },
   LANGUAGE_LEARNING: {
     title: 'Language Learning',
     path: '/language-learning',
   },
-  FEATURE_SANDBOX: {
-    title: 'Feature Sandbox',
-    path: '/feature-sandbox',
-  },
-  REACT_SANDBOX: {
-    title: 'React Sandbox',
-    path: '/react-sandbox',
-  },
   CAREER: {
     title: 'Career',
     path: '/career',
   },
-};
+  MUSIC: {
+    title: 'Music',
+    path: '/music',
+  },
+} satisfies Record<string, ExtendedNavRoute>;
+
+export const APP_NAME = 'VB Manager';
+
+export const PAGE_TITLE = {
+  SETTINGS: 'Settings',
+  LOGIN: 'Login',
+  AUTH_CALLBACK: 'Signing In',
+} as const;
 
 const APP_ROUTE_SUBGROUP = 'vb-manager-next';
 
 export const VIGILANT_BROCCOLI_ROOT_PATH = '~/vigilant-broccoli';
 
-export const APP_ROUTE_QUICK_LINKS = Object.values(APP_ROUTE).flatMap(route => {
+export const APP_ROUTE_QUICK_LINKS = (
+  [...Object.values(SIDEBAR_ROUTE), NOTEPAD_ROUTE] as ExtendedNavRoute[]
+).flatMap(route => {
   if (route.children) {
     return route.children.map(child => ({
       label: child.title,

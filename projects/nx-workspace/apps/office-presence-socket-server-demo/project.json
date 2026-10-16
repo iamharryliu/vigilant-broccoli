@@ -73,6 +73,41 @@
         }
       }
     },
+    "build-mock": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "development",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/office-presence-socket-server-demo-mock",
+        "format": ["cjs"],
+        "bundle": true,
+        "thirdParty": true,
+        "external": ["better-sqlite3", "node-cron"],
+        "main": "apps/office-presence-socket-server-demo/src/mock.main.ts",
+        "tsConfig": "apps/office-presence-socket-server-demo/tsconfig.app.json",
+        "assets": [],
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {}
+      },
+      "dependsOn": ["^build"]
+    },
+    "serve:mock": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "dependsOn": ["build-mock"],
+      "options": {
+        "buildTarget": "office-presence-socket-server-demo:build-mock:development",
+        "runBuildTargetDependencies": false
+      }
+    },
     "lint": {
       "executor": "@nx/eslint:lint"
     },

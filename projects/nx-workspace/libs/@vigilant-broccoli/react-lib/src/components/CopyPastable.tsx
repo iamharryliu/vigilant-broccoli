@@ -1,5 +1,6 @@
-import { Card, ScrollArea } from '@radix-ui/themes';
+import { Card } from './Card';
 import { CopyButton } from './CopyButton';
+import { ScrollArea } from './ScrollArea';
 
 export const CopyPastable = ({
   text,
@@ -18,14 +19,14 @@ export const CopyPastable = ({
 
   return (
     <Card
-      className={`bg-gray-100 dark:bg-gray-800 h-full ${shouldShowPlaceholder ? 'text-gray-500 dark:text-gray-400' : ''}`}
+      className={`bg-muted h-full ${shouldShowPlaceholder ? 'text-muted-foreground' : ''}`}
     >
       <div className="absolute top-2 right-2 ">
         <CopyButton text={text} disabled={shouldShowPlaceholder} />
       </div>
 
       {isScrollable ? (
-        <ScrollArea type="always" scrollbars="vertical" style={{ height: 180 }}>
+        <ScrollArea type="always" style={{ height: 180 }}>
           <pre className="whitespace-pre-wrap break-all">{displayText}</pre>
         </ScrollArea>
       ) : (

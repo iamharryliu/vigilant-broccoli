@@ -5,6 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../config.sh"
 source "${SCRIPT_DIR}/../packer/scripts/lib/vault-ops-token.sh"
 source "${SCRIPT_DIR}/../../lib/ssh-secrets.sh"
+source "${SCRIPT_DIR}/../../lib/oci-local-config.sh"
 
 TERRAFORM_DIR="$SCRIPT_DIR/../"
 WG_CONF="/opt/homebrew/etc/wireguard/vb.conf"
@@ -25,6 +26,7 @@ sync_secrets_to_vault() {
   local rabbitmq_password
   local email_api_key
   local gcs_sa_credentials
+  local google_calendar_sa_credentials
   local code_server_password
   local ci_ssh_private_key
   local ci_ssh_public_key
@@ -34,10 +36,9 @@ sync_secrets_to_vault() {
   local code_server_cf_access_client_id
   local code_server_cf_access_client_secret
   local code_server_ip
-  local journal_cf_access_client_id
-  local journal_cf_access_client_secret
   local nx_cache_write_token
   local nx_cache_read_token
+  local loki_push_password
 
   ca_cert=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_self_signed_cert" and .name == "rabbitmq_ca") | .instances[0].attributes.cert_pem' 2>/dev/null || echo "")
   rabbitmq_ip=$(echo "$state_json" | jq -r '.resources[] | select(.type == "oci_core_instance" and .name == "rabbitmq") | .instances[0].attributes.public_ip' 2>/dev/null || echo "")
@@ -45,6 +46,7 @@ sync_secrets_to_vault() {
   rabbitmq_password=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "rabbitmq_password") | .instances[0].attributes.result' 2>/dev/null || echo "")
   email_api_key=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "email_service_api_key") | .instances[0].attributes.result' 2>/dev/null || echo "")
   gcs_sa_credentials=$(echo "$state_json" | jq -r '.resources[] | select(.type == "google_service_account_key" and .name == "gcs_manager") | .instances[0].attributes.private_key' 2>/dev/null || echo "")
+  google_calendar_sa_credentials=$(echo "$state_json" | jq -r '.resources[] | select(.type == "google_service_account_key" and .name == "google_calendar_manager") | .instances[0].attributes.private_key' 2>/dev/null || echo "")
   code_server_password=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "code_server_password") | .instances[0].attributes.result' 2>/dev/null || echo "")
   ci_ssh_private_key=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_private_key" and .name == "oci_vm_ci_ssh") | .instances[0].attributes.private_key_openssh' 2>/dev/null || echo "")
   ci_ssh_public_key=$(echo "$state_json" | jq -r '.resources[] | select(.type == "tls_private_key" and .name == "oci_vm_ci_ssh") | .instances[0].attributes.public_key_openssh' 2>/dev/null || echo "")
@@ -54,12 +56,11 @@ sync_secrets_to_vault() {
   code_server_cf_access_client_id=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_zero_trust_access_service_token" and .name == "code_server_ci") | .instances[0].attributes.client_id' 2>/dev/null || echo "")
   code_server_cf_access_client_secret=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_zero_trust_access_service_token" and .name == "code_server_ci") | .instances[0].attributes.client_secret' 2>/dev/null || echo "")
   code_server_ip=$(echo "$state_json" | jq -r '.resources[] | select(.type == "oci_core_instance" and .name == "code_server") | .instances[0].attributes.public_ip' 2>/dev/null || echo "")
-  journal_cf_access_client_id=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_zero_trust_access_service_token" and .name == "journal_ci") | .instances[0].attributes.client_id' 2>/dev/null || echo "")
-  journal_cf_access_client_secret=$(echo "$state_json" | jq -r '.resources[] | select(.type == "cloudflare_zero_trust_access_service_token" and .name == "journal_ci") | .instances[0].attributes.client_secret' 2>/dev/null || echo "")
   nx_cache_write_token=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "nx_cache_write_token") | .instances[0].attributes.result' 2>/dev/null || echo "")
   nx_cache_read_token=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "nx_cache_read_token") | .instances[0].attributes.result' 2>/dev/null || echo "")
+  loki_push_password=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "loki_push_password") | .instances[0].attributes.result' 2>/dev/null || echo "")
 
-  if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$code_server_password" ] || [ -z "$ci_ssh_private_key" ] || [ -z "$gitea_cf_access_client_id" ] || [ -z "$gitea_cf_access_client_secret" ] || [ -z "$gitea_ip" ] || [ -z "$code_server_cf_access_client_id" ] || [ -z "$code_server_cf_access_client_secret" ] || [ -z "$code_server_ip" ] || [ -z "$journal_cf_access_client_id" ] || [ -z "$journal_cf_access_client_secret" ]; then
+  if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$google_calendar_sa_credentials" ] || [ -z "$code_server_password" ] || [ -z "$ci_ssh_private_key" ] || [ -z "$gitea_cf_access_client_id" ] || [ -z "$gitea_cf_access_client_secret" ] || [ -z "$gitea_ip" ] || [ -z "$code_server_cf_access_client_id" ] || [ -z "$code_server_cf_access_client_secret" ] || [ -z "$code_server_ip" ]; then
     echo "Warning: Some secrets not found in Terraform state. Skipping Vault sync."
     return
   fi
@@ -119,6 +120,7 @@ sync_secrets_to_vault() {
     --arg RABBITMQ_CA_CERT "$ca_cert_b64" \
     --arg EMAIL_SERVICE_API_KEY "$email_api_key" \
     --arg GOOGLE_GCS_SA_CREDENTIALS "$gcs_sa_credentials" \
+    --arg GOOGLE_CALENDAR_SA_CREDENTIALS "$google_calendar_sa_credentials" \
     --arg CODE_SERVER_PASSWORD "$code_server_password" \
     --arg SOCKET_SERVER_URL "$socket_server_url" \
     --arg OCI_VM_SSH_KEY "$ci_ssh_key_b64" \
@@ -128,8 +130,6 @@ sync_secrets_to_vault() {
     --arg CODE_SERVER_CF_ACCESS_CLIENT_ID "$code_server_cf_access_client_id" \
     --arg CODE_SERVER_CF_ACCESS_CLIENT_SECRET "$code_server_cf_access_client_secret" \
     --arg CODE_SERVER_VM_IP "$code_server_ip" \
-    --arg JOURNAL_CF_ACCESS_CLIENT_ID "$journal_cf_access_client_id" \
-    --arg JOURNAL_CF_ACCESS_CLIENT_SECRET "$journal_cf_access_client_secret" \
     '$ARGS.named')
 
   # nx-cache tokens aren't in the required-secrets guard above (they're
@@ -143,6 +143,12 @@ sync_secrets_to_vault() {
   # whose policy can only read that one path — not the whole secret store.
   if [ -n "$nx_cache_write_token" ]; then
     kv_json=$(jq --arg v "$nx_cache_write_token" '. + {NX_CACHE_WRITE_TOKEN: $v}' <<<"$kv_json")
+  fi
+
+  # Same optional treatment: absent until aws-grafana.tf has been applied.
+  # Consumed by `pnpm logs:shipper:deploy`.
+  if [ -n "$loki_push_password" ]; then
+    kv_json=$(jq --arg v "$loki_push_password" '. + {LOKI_PUSH_PASSWORD: $v}' <<<"$kv_json")
   fi
 
   # First-run seed always sets RABBITMQ_CONNECTION_STRING; an update only does
@@ -167,6 +173,22 @@ if [ -n "${NX_CACHE_READ_TOKEN:-}" ]; then
   printf "%s" "$NX_CACHE_READ_TOKEN" | vault kv put kv/ci-pr-check NX_CACHE_READ_TOKEN=-
 fi
 
+# deploy-preview.yml can only read kv/data/deploy-preview, so the two
+# Cloudflare Pages credentials it needs are mirrored there. Read back out of
+# kv/secrets rather than passed in from Terraform state: this token is created
+# by hand in the Cloudflare dashboard, so kv/secrets is the only source, and a
+# rotation needs nothing but a tf:post-apply re-run.
+CF_PREVIEW_ACCOUNT_ID=$(vault kv get -field=CLOUDFLARE_ACCOUNT_ID kv/secrets 2>/dev/null || true)
+CF_PREVIEW_API_TOKEN=$(vault kv get -field=CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS kv/secrets 2>/dev/null || true)
+if [ -n "$CF_PREVIEW_ACCOUNT_ID" ] && [ -n "$CF_PREVIEW_API_TOKEN" ]; then
+  vault kv put kv/deploy-preview \
+    CLOUDFLARE_ACCOUNT_ID="$CF_PREVIEW_ACCOUNT_ID" \
+    CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS="$CF_PREVIEW_API_TOKEN"
+  echo "Mirrored Cloudflare Pages credentials to kv/data/deploy-preview"
+else
+  echo "Warning: CLOUDFLARE_ACCOUNT_ID / CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS missing from kv/data/secrets - kv/data/deploy-preview left unchanged, branch previews will fail to deploy."
+fi
+
 echo "Secrets synced to Vault"
 '
 
@@ -181,11 +203,16 @@ echo "Secrets synced to Vault"
     KV_PATCH_JSON "$kv_patch_json" \
     KV_PUT_JSON "$kv_put_json" \
     "${nx_cache_secret_args[@]}"
-  echo "✓ Synced RABBITMQ_CA_CERT, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP, JOURNAL_CF_ACCESS_CLIENT_ID, JOURNAL_CF_ACCESS_CLIENT_SECRET to kv/data/secrets (RABBITMQ_CONNECTION_STRING synced only when broker holds the Terraform password — see above; SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
+  echo "✓ Synced RABBITMQ_CA_CERT, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, GOOGLE_CALENDAR_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP to kv/data/secrets (RABBITMQ_CONNECTION_STRING synced only when broker holds the Terraform password — see above; SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
   if [ -n "$nx_cache_write_token" ]; then
     echo "✓ Synced NX_CACHE_WRITE_TOKEN to kv/data/secrets"
   else
     echo "Warning: NX_CACHE_WRITE_TOKEN not found in Terraform state — apply cloudflare-nx-cache.tf, then rerun pnpm tf:post-apply."
+  fi
+  if [ -n "$loki_push_password" ]; then
+    echo "✓ Synced LOKI_PUSH_PASSWORD to kv/data/secrets"
+  else
+    echo "Warning: LOKI_PUSH_PASSWORD not found in Terraform state — apply aws-grafana.tf, then rerun pnpm tf:post-apply."
   fi
   if [ -n "$nx_cache_read_token" ]; then
     echo "✓ Synced NX_CACHE_READ_TOKEN to kv/data/ci-pr-check (isolated path for github-actions-pr-check-role)"
@@ -223,6 +250,30 @@ sync_socket_server() {
   return 1
 }
 
+# Unrelated to the GCP VM this script otherwise targets — runs regardless of
+# whether its IP changed. Reads the map straight from Terraform state rather
+# than hardcoding the app list here, so a new entry in
+# cloudflare-vercel-apps.tf's vercel_app_subdomains needs no matching edit to
+# this script.
+sync_vercel_domains() {
+  echo "Syncing Vercel domains..."
+
+  local subdomains_json
+  subdomains_json=$(cd "$TERRAFORM_DIR" && terraform output -json vercel_app_subdomains 2>/dev/null || echo "")
+
+  if [ -z "$subdomains_json" ] || [ "$subdomains_json" = "null" ]; then
+    return
+  fi
+
+  local nx_workspace_dir="${SCRIPT_DIR}/../../../projects/nx-workspace"
+  while IFS=$'\t' read -r key domain; do
+    [ -z "$key" ] && continue
+    (cd "$nx_workspace_dir" && NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/vercel-domains.ts add "production-${key}" "${domain}")
+  done < <(echo "$subdomains_json" | jq -r 'to_entries[] | "\(.key)\t\(.value)"')
+}
+
+sync_vercel_domains
+
 if [ "$NEW_IP" = "$CURRENT_IP" ]; then
   # Run post-init even when the VM IP is unchanged (the common case). It
   # (re)writes Vault's JWT policies/roles, and it's idempotent — every
@@ -234,6 +285,7 @@ if [ "$NEW_IP" = "$CURRENT_IP" ]; then
   # be found" until someone ran `pnpm gcp:vm:post-init` by hand.
   npm run gcp:vm:post-init
   sync_secrets_to_vault
+  sync_oci_config_from_vault
   sync_socket_server
   exit 0
 fi
@@ -257,6 +309,7 @@ npm run gcp:vm:post-init
 
 echo "Step 3/4: Syncing secrets to Vault..."
 sync_secrets_to_vault
+sync_oci_config_from_vault
 
 echo "Step 4/4: Regenerating vault cert + updating WireGuard endpoint..."
 npm run gcp:vm:regen-cert

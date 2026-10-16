@@ -48,6 +48,9 @@ export function useCursorPresence(
   channelName: string,
   userId: string,
   username: string,
+  // When provided, the channel is joined as private and the connection is
+  // authenticated with this JWT. Omit for anonymous (public) rooms.
+  accessToken?: string | null,
 ): CursorPresenceState {
   const [cursors, setCursors] = useState<WhiteboardCursor[]>([]);
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(
@@ -55,6 +58,16 @@ export function useCursorPresence(
   );
   const channelRef = useRef<BroadcastPresenceChannel | null>(null);
   const usernameRef = useRef<string>(username);
+  const isPrivate = Boolean(accessToken);
+  const tokenRef = useRef<string | null | undefined>(accessToken);
+  tokenRef.current = accessToken;
+
+  // Keep the socket's JWT fresh across token refreshes without tearing down
+  // the channel (which would drop the presence roster). Only the initial
+  // subscribe below is gated on the token; this just re-auths in place.
+  useEffect(() => {
+    if (isPrivate && accessToken) void supabase.realtime?.setAuth(accessToken);
+  }, [supabase, accessToken, isPrivate]);
   const cursorsRef = useRef<Record<string, WhiteboardCursor>>({});
   const ownCursorRef = useRef<{
     x: number | null;
@@ -68,9 +81,16 @@ export function useCursorPresence(
 
   useEffect(() => {
     if (!userId || !channelName) return;
+    // Private rooms need the JWT on the socket before the join is authorized.
+    if (isPrivate && !tokenRef.current) return;
+    if (isPrivate) void supabase.realtime?.setAuth(tokenRef.current);
 
     const channel = supabase.channel(channelName, {
-      config: { presence: { key: userId }, broadcast: { self: false } },
+      config: {
+        presence: { key: userId },
+        broadcast: { self: false },
+        private: isPrivate,
+      },
     });
 
     channel.on(PRESENCE_EVENT, { event: SYNC_EVENT }, () => {
@@ -130,7 +150,9 @@ export function useCursorPresence(
       setCursors([]);
       ownCursorRef.current = { x: null, y: null, index: null };
     };
-  }, [supabase, channelName, userId]);
+    // token intentionally excluded: it is read via tokenRef and refreshed by
+    // the setAuth effect above, so a rotation re-auths without a rebuild.
+  }, [supabase, channelName, userId, isPrivate]);
 
   const sendOwnCursor = useCallback(() => {
     channelRef.current?.send({

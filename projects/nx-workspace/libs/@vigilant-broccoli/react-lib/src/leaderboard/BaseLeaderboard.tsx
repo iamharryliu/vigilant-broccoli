@@ -44,25 +44,18 @@ export interface BaseLeaderboardProps {
   title: string;
   /** Filter controls to display in the toolbar */
   filterControls: ReactNode;
-  /** Content/rows to display in the leaderboard */
   children: ReactNode;
-  /** Whether the leaderboard is in a loading state */
   loading?: boolean;
   /** Whether the leaderboard is refreshing (for fade effects) */
   refreshing?: boolean;
-  /** Enable fade effect during refresh */
   enableRefreshFade?: boolean;
   /** Custom className for the container */
   className?: string;
   /** Whether to show the heading in default view */
   showHeading?: boolean;
-  /** Heading level */
   headingLevel?: HeadingLevel;
-  /** Callback when fullscreen state changes */
   onFullscreenChange?: (isFullscreen: boolean) => void;
-  /** Whether there is no data to display */
   isEmpty?: boolean;
-  /** Empty state message to display when no data is available */
   emptyStateMessage?: string;
   /** Enable fullscreen keyboard shortcut (F key) */
   enableFullscreenKeybind?: boolean;

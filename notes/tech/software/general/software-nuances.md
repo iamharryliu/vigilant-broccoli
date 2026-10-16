@@ -8,6 +8,10 @@
 - Event Driven Architecture vs Request Response
 - Static vs Dynamic Imports
 - Compiled vs Interpreted Code
+- Firmware vs Software
+  - Firmware is low-level code written to a device's non-volatile memory that directly controls its hardware (e.g. a microcontroller) and is tightly coupled to that specific hardware.
+  - Software (in the general sense) is run from a general-purpose OS on general-purpose hardware and can be updated, replaced, or swapped independently of the hardware it runs on.
+  - Firmware is a form of embedded software; not all embedded software is firmware (some runs under a full OS, e.g. embedded Linux).
 - **Languages**
   - GoLang vs Python
     - GoLang has more power under the hood. Compiled vs interpreted.
@@ -30,6 +34,14 @@
   - Use sockets when you need real-time, push-style updates.
   - Use APIs when you need on-demand data exchange or simple CRUD operations.
   - Rest is easier to scale statelessly as sockets use persistent connections.
+- REST vs gRPC APIs
+  - REST (HTTP + JSON) for anything browsers, third parties, `curl`, or CI call directly; every client and tool already speaks it, and OpenAPI/Swagger docs come for free.
+  - gRPC (HTTP/2 + Protocol Buffers) for internal service-to-service calls where you need strict typed contracts, streaming, or high call volume across several languages.
+  - gRPC needs codegen, and browsers need gRPC-Web or a proxy, so it rarely replaces a public API.
+  - At low traffic the serialization savings are negligible next to the work each call does (a database query, an LLM call), so gRPC mostly costs tooling.
+  - A typed contract does not require gRPC: a shared schema (zod, OpenAPI, ts-rest) gives typed clients and validation while keeping plain REST.
+  - See [Service Communication](../web-dev/service-communication.md) for the comparison tables.
+
 ## Web Applications
 
 - CSR vs SSR
@@ -95,7 +107,6 @@
 - **Use Axios**: For complex applications where you need features like interceptors, timeouts, retries, or simplified syntax.
 - **Use Fetch**: For simple projects or when you want a lightweight solution without adding a dependency.
 
-
 Declarative vs imperative code
 
 Declarative programming is when you say what you want, and imperative language is when you say how to get what you want.
@@ -103,10 +114,16 @@ Declarative programming is when you say what you want, and imperative language i
 A simple example in Python:
 
 # Declarative
+
 small_nums = [x for x in range(20) if x < 5]
 
 # Imperative
+
 small_nums = []
 for i in range(20):
-    if i < 5:
-        small_nums.append(i)
+if i < 5:
+small_nums.append(i)
+
+## URI vs URL
+
+A URI identifies a resource by name, location, or both. A URL is a URI that also says how to locate the resource (the scheme and address, such as `https://example.com/page`). Every URL is a URI, but not every URI is a URL (e.g. `urn:isbn:0451450523` names a book without saying where to find it). See [URI Anatomy](../web-dev/networking/networking.md#uri-anatomy) for the parts of a URI.

@@ -1,13 +1,15 @@
 import { NextRequest } from 'next/server';
-import { createServerClient } from '../../../../../libs/supabase-server';
+import {
+  createServerClient,
+  getBearerToken,
+} from '../../../../../libs/supabase-server';
 import { buildEmailMap } from '../../../../../libs/email-map';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
 export const runtime = 'nodejs';
 
 const getSupabase = (req: NextRequest) => {
-  const accessToken =
-    req.headers.get('authorization')?.replace('Bearer ', '') ?? '';
+  const accessToken = getBearerToken(req);
   return createServerClient(accessToken);
 };
 
@@ -26,6 +28,7 @@ const toCalendarEvent = (
   leisureActivityId: row.leisure_activity_id ?? null,
   projectId: row.project_id ?? null,
   mealId: row.meal_id ?? null,
+  kitchenEvent: row.kitchen_event ?? false,
   homeId: row.home_id,
   createdByEmail:
     (row.user_id ? emailMap[row.user_id as string] : null) ?? null,
@@ -36,6 +39,8 @@ const toCalendarEvent = (
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const homeId = searchParams.get('homeId');
+  const start = searchParams.get('start');
+  const end = searchParams.get('end');
   const supabase = getSupabase(req);
 
   let query = supabase
@@ -44,6 +49,8 @@ export async function GET(req: NextRequest) {
     .order('start', { ascending: true });
 
   if (homeId) query = query.eq('home_id', homeId);
+  if (start) query = query.gte('end', start);
+  if (end) query = query.lte('start', end);
 
   const { data, error } = await query;
   if (error)
@@ -86,6 +93,7 @@ export async function POST(req: NextRequest) {
       leisure_activity_id: body.leisureActivityId ?? null,
       project_id: body.projectId ?? null,
       meal_id: body.mealId ?? null,
+      kitchen_event: body.kitchenEvent ?? false,
       home_id: body.homeId,
       user_id: user?.id ?? null,
     })
@@ -125,6 +133,8 @@ export async function PATCH(req: NextRequest) {
     updates.leisure_activity_id = body.leisureActivityId;
   if (body.projectId !== undefined) updates.project_id = body.projectId;
   if (body.mealId !== undefined) updates.meal_id = body.mealId;
+  if (body.kitchenEvent !== undefined)
+    updates.kitchen_event = body.kitchenEvent;
 
   const { data, error } = await supabase
     .from('calendar_events')

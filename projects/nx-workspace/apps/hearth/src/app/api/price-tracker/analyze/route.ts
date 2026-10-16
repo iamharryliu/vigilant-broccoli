@@ -6,7 +6,10 @@ import {
   HTTP_STATUS_CODES,
   VB_EXPRESS_ENDPOINT,
 } from '@vigilant-broccoli/common-js';
-import { createServerClient } from '../../../../../libs/supabase-server';
+import {
+  createServerClient,
+  getBearerToken,
+} from '../../../../../libs/supabase-server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -20,8 +23,7 @@ const RequestSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
-  const accessToken =
-    request.headers.get('authorization')?.replace('Bearer ', '') ?? '';
+  const accessToken = getBearerToken(request);
   const {
     data: { user },
   } = await createServerClient(accessToken).auth.getUser();

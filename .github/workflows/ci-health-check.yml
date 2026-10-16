@@ -2,12 +2,10 @@ name: ci-health-check
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '15 0 * * *'
   workflow_dispatch:
-  workflow_run:
-    workflows: ['deploy', 'ci-rotate-secrets']
-    types: [completed]
-    branches: [main]
+  repository_dispatch:
+    types: [deploy-fanout]
 
 permissions:
   actions: read
@@ -21,8 +19,9 @@ env:
 
 jobs:
   health-check:
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
-    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'repository_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -48,8 +47,6 @@ jobs:
             kv/data/secrets GITEA_CF_ACCESS_CLIENT_SECRET | GITEA_CF_ACCESS_CLIENT_SECRET ;
             kv/data/secrets CODE_SERVER_CF_ACCESS_CLIENT_ID | CODE_SERVER_CF_ACCESS_CLIENT_ID ;
             kv/data/secrets CODE_SERVER_CF_ACCESS_CLIENT_SECRET | CODE_SERVER_CF_ACCESS_CLIENT_SECRET ;
-            kv/data/secrets JOURNAL_CF_ACCESS_CLIENT_ID | JOURNAL_CF_ACCESS_CLIENT_ID ;
-            kv/data/secrets JOURNAL_CF_ACCESS_CLIENT_SECRET | JOURNAL_CF_ACCESS_CLIENT_SECRET ;
 
       - name: Fetch Cloudflare Access service token from Secret Manager
         id: cf-access
@@ -70,8 +67,6 @@ jobs:
           GITEA_CF_ACCESS_CLIENT_SECRET: ${{ env.GITEA_CF_ACCESS_CLIENT_SECRET }}
           CODE_SERVER_CF_ACCESS_CLIENT_ID: ${{ env.CODE_SERVER_CF_ACCESS_CLIENT_ID }}
           CODE_SERVER_CF_ACCESS_CLIENT_SECRET: ${{ env.CODE_SERVER_CF_ACCESS_CLIENT_SECRET }}
-          JOURNAL_CF_ACCESS_CLIENT_ID: ${{ env.JOURNAL_CF_ACCESS_CLIENT_ID }}
-          JOURNAL_CF_ACCESS_CLIENT_SECRET: ${{ env.JOURNAL_CF_ACCESS_CLIENT_SECRET }}
         run: |
           PASS=0
           FAIL=0
@@ -116,8 +111,10 @@ jobs:
           echo "[Websites]"
           http_check "harryliu.dev" "https://harryliu.dev"
           http_check "cloud8skate.com" "https://cloud8skate.com"
-          http_check "staging-hearth.vercel.app" "https://staging-hearth.vercel.app"
-          http_check "findme" "https://staging-findme.vercel.app"
+          http_check "staging-hearth" "https://staging-hearth.vercel.app/login" 302
+          http_check "staging-findme" "https://staging-findme.pages.dev/" 302
+          http_check "staging-weather-next" "https://staging-weather-next.vercel.app/" 302
+          http_check "staging-calendars" "https://staging-calendars.pages.dev" 302
 
           echo ""
           echo "[GCP VM]"
@@ -187,52 +184,20 @@ jobs:
           fi
 
           echo ""
-          echo "[Cloudflare Pages — journal (behind Cloudflare Access)]"
-          # Same rationale as code-server: unauthenticated only sees the Access
-          # login, so probe the origin with the service token. A 200 means the
-          # token works AND the Pages deploy is serving; 302 = token rejected;
-          # anything else = deploy broken/missing.
-          JOURNAL_CODE=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 \
-            -H "CF-Access-Client-Id: ${JOURNAL_CF_ACCESS_CLIENT_ID}" \
-            -H "CF-Access-Client-Secret: ${JOURNAL_CF_ACCESS_CLIENT_SECRET}" \
-            "https://journal.harryliu.dev/" 2>/dev/null) || JOURNAL_CODE="timeout"
-          if [ "$JOURNAL_CODE" = "200" ]; then
-            check "journal" "ok"
-          elif [ "$JOURNAL_CODE" = "302" ]; then
-            check "journal" "CF Access token rejected/expired (HTTP 302 to login)"
-          else
-            check "journal" "HTTP $JOURNAL_CODE (expected 200)"
-          fi
-
-          echo ""
-          echo "[OCI VM — RabbitMQ Management]"
+          echo "[OCI VM — RabbitMQ Broker]"
           PROTO_STRIPPED="${RABBITMQ_CONNECTION_STRING#amqps://}"
-          USER_PASS="${PROTO_STRIPPED%@*}"
           HOST_PORT="${PROTO_STRIPPED##*@}"
-          RMQ_USER="${USER_PASS%%:*}"
-          RMQ_PASS="${USER_PASS#*:}"
           RMQ_HOST="${HOST_PORT%%:*}"
-          echo "::add-mask::$RMQ_PASS"
           echo "$RABBITMQ_CA_CERT" | base64 -d > /tmp/rabbitmq-ca.crt
-          RMQ_NETRC=$(mktemp)
-          printf 'machine rabbitmq login %s password %s\n' "$RMQ_USER" "$RMQ_PASS" > "$RMQ_NETRC"
-          # SAN is 'rabbitmq'; --connect-to keeps SNI 'rabbitmq' while dialing
-          # the real host (DNS name or IP). Retry to tolerate transient blips.
-          for attempt in 1 2 3; do
-            RMQ_CODE=$(curl -s -o /tmp/mgmt.json -w '%{http_code}' --max-time 15 \
-              --cacert /tmp/rabbitmq-ca.crt \
-              --connect-to "rabbitmq:15671:${RMQ_HOST}:15671" \
-              --netrc-file "$RMQ_NETRC" \
-              "https://rabbitmq:15671/api/overview" 2>/dev/null) || RMQ_CODE="timeout"
-            [ "$RMQ_CODE" = "200" ] && break
-            [ "$attempt" -lt 3 ] && sleep 5
-          done
-          rm -f "$RMQ_NETRC"
-          if [ "$RMQ_CODE" = "200" ]; then
-            VERSION=$(grep -o '"rabbitmq_version":"[^"]*"' /tmp/mgmt.json | cut -d'"' -f4)
-            check "rabbitmq broker (version: $VERSION)" "ok"
+          # The management UI is tunnel-only behind Cloudflare Access, so the
+          # broker is checked by verifying its AMQPS chain + 'rabbitmq' SAN.
+          RMQ_TLS=$(echo | timeout 15 openssl s_client -connect "${RMQ_HOST}:5671" \
+            -servername rabbitmq -verify_hostname rabbitmq \
+            -CAfile /tmp/rabbitmq-ca.crt 2>&1 </dev/null) || true
+          if echo "$RMQ_TLS" | grep -q "Verify return code: 0 (ok)"; then
+            check "rabbitmq broker (AMQPS 5671)" "ok"
           else
-            check "rabbitmq broker" "HTTP $RMQ_CODE (expected 200)"
+            check "rabbitmq broker (AMQPS 5671)" "TLS verification failed or unreachable"
           fi
 
           echo ""

@@ -1,16 +1,13 @@
 # Hobbies
 
 - [Aquarium](./aquarium/aquarium.md)
-- [Drawing](./art/drawing.md)
 - [Bird Watching](./bird-watching.md)
-- [Board Games](./board-games.md)
+- [Board Games](./board-games/board-games.md)
 - [Chess](./chess/chess.md)
+- [Content Creation Workflow](./content-creation-workflow.md)
 - [Cooking](./cooking/cooking.md)
-- Dance
-  - [Social Dancing](./dance/social-dancing.md)
-- [DJing](./djing/djing.md)
 - [Freediving](./freediving/freediving.md)
-- [Music](./music/music.md)
+- [Media](./media/media.md)
 - [Outdoor](./outdoor/outdoor.md)
 - [Philosophy](./philosophy.md)
 - [Reading](./reading/reading.md)

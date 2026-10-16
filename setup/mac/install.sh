@@ -7,14 +7,41 @@ if ask "Install Brew dependencies?"; then
 fi
 
 if ask "Symlink dotfiles?"; then
-    symlink_common_dotfiles
+    symlink_common_dotfiles || exit 1
     create_symlink "$DOTFILES_DIR/macos" "$HOME/shell-macos"
     create_symlink "$ZSH_DOTFILES_DIR/.rc.zsh" "$HOME/.zshrc"
     create_symlink "$ZSH_DOTFILES_DIR/.aliases.mac.zsh" "$HOME/.zsh_aliases"
     create_symlink "$WORKSPACES_DIR" "$HOME/Workspaces"
+    create_symlink "$DOTFILES_DIR/macos/hammerspoon" "$HOME/.hammerspoon"
+    mkdir -p "$HOME/.config/karabiner"
+    create_symlink "$DOTFILES_DIR/macos/karabiner/karabiner.json" "$HOME/.config/karabiner/karabiner.json"
+    mkdir -p "$HOME/.config/zed"
+    if [ ! -e "$HOME/.config/zed/settings.json" ] && [ ! -L "$HOME/.config/zed/settings.json" ]; then
+        create_symlink "$DOTFILES_DIR/.config/zed/settings.json" "$HOME/.config/zed/settings.json"
+    else
+        echo "Keeping existing Zed settings at $HOME/.config/zed/settings.json"
+    fi
     source $HOME/.zshrc
 fi
 
+
+if ask "Add Hammerspoon and Karabiner-Elements as login items?"; then
+    osascript <<EOF
+tell application "System Events"
+    if not (exists login item "Hammerspoon") then
+        make login item at end with properties {path:"/Applications/Hammerspoon.app", hidden:false}
+    end if
+    if not (exists login item "Karabiner-Elements") then
+        make login item at end with properties {path:"/Applications/Karabiner-Elements.app", hidden:false}
+    end if
+end tell
+EOF
+fi
+
+if ask "Setup Hammerspoon Python helper (cross-space window owner lookups)?"; then
+    python3 -m venv "$HOME/.hammerspoon-venv"
+    "$HOME/.hammerspoon-venv/bin/pip" install --quiet pyobjc-framework-Quartz
+fi
 
 if ask "Setup macOS preferences?"; then
     chmod +x "$MAC_SETUP_DIR/setup_macos_preferences.sh"
@@ -41,6 +68,7 @@ if ask "Setup git hooks?"; then
 fi
 
 if ask "Install Node Packages?"; then
+    mise use --global node@lts
     npminit
 fi
 

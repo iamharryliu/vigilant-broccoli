@@ -17,5 +17,3 @@ check_network() {
         return 1
     fi
 }
-
-alias check_network_verbose='check_network -v'

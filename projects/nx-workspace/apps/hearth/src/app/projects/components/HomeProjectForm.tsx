@@ -1,8 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Text } from '@radix-ui/themes';
-import { Button, Input, Select, Textarea } from '@vigilant-broccoli/react-lib';
+
+import {
+  Button,
+  Input,
+  Select,
+  Textarea,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import {
   PROJECT_CATEGORIES,
   PROJECT_STATUSES,
@@ -80,8 +86,8 @@ export function HomeProjectForm({
             Category
           </Text>
           <Select
-            selectedOption={category}
-            setValue={setCategory}
+            value={category}
+            onValueChange={setCategory}
             options={PROJECT_CATEGORIES as unknown as ProjectCategory[]}
           />
         </div>
@@ -91,8 +97,8 @@ export function HomeProjectForm({
             Status
           </Text>
           <Select
-            selectedOption={status}
-            setValue={setStatus}
+            value={status}
+            onValueChange={setStatus}
             options={PROJECT_STATUSES as unknown as ProjectStatus[]}
           />
         </div>

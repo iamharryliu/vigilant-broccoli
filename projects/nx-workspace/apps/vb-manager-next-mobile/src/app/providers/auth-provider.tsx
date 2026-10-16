@@ -1,8 +1,16 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import type { Session } from '@supabase/supabase-js';
+import type { GoogleTasksAuthAdapter } from '@vigilant-broccoli/react-lib';
 import { supabase } from '../../../libs/supabase';
+import { isAllowedEmail } from '../../../libs/auth-policy';
 import {
   AUTHORIZATION_HEADER,
   BEARER_PREFIX,
@@ -12,12 +20,16 @@ import {
 } from '@vigilant-broccoli/common-js';
 
 const GOOGLE_TOKEN_KEY = 'google_provider_token';
+const GOOGLE_CALENDAR_TASKS_SCOPES =
+  'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/tasks';
 
 const AuthContext = createContext<Session | null>(null);
 
 export const useAuth = () => useContext(AuthContext);
 
 export const getGoogleToken = () => localStorage.getItem(GOOGLE_TOKEN_KEY);
+
+export const clearGoogleToken = () => localStorage.removeItem(GOOGLE_TOKEN_KEY);
 
 export const getSupabaseAccessToken = async () => {
   const { data } = await supabase.auth.getSession();
@@ -41,9 +53,64 @@ export const buildAuthHeaders = async (options?: {
   return headers;
 };
 
-export const signOutDueToExpiredToken = async () => {
-  localStorage.removeItem(GOOGLE_TOKEN_KEY);
+export const signOut = async () => {
+  clearGoogleToken();
   await supabase.auth.signOut();
+};
+
+export const signInWithGoogle = async () => {
+  await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`,
+      scopes: GOOGLE_CALENDAR_TASKS_SCOPES,
+    },
+  });
+};
+
+export const reconnectGoogle = async () => {
+  clearGoogleToken();
+  await signInWithGoogle();
+};
+
+export const authFetch = async (
+  input: RequestInfo | URL,
+  init: RequestInit = {},
+): Promise<Response> => {
+  const hasJsonBody = typeof init.body === 'string';
+  const headers = await buildAuthHeaders({
+    includeGoogleToken: true,
+    json: hasJsonBody,
+  });
+  return fetch(input, { ...init, headers: { ...headers, ...init.headers } });
+};
+
+export const useAuthStatus = ():
+  'loading' | 'authenticated' | 'unauthenticated' => {
+  const session = useAuth();
+  return session ? 'authenticated' : 'unauthenticated';
+};
+
+export const useGoogleToken = () => {
+  const [googleToken, setGoogleToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    setGoogleToken(getGoogleToken());
+  }, []);
+
+  const clear = useCallback(() => {
+    clearGoogleToken();
+    setGoogleToken(null);
+  }, []);
+
+  return { googleToken, clearGoogleToken: clear };
+};
+
+export const googleTasksAuth: GoogleTasksAuthAdapter = {
+  authFetch,
+  useAuthStatus,
+  useGoogleToken,
+  signInWithGoogle,
 };
 
 export default function AuthProvider({
@@ -54,7 +121,17 @@ export default function AuthProvider({
   const [session, setSession] = useState<Session | null | undefined>(undefined);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session));
+    const applySession = (next: Session | null) => {
+      if (next && !isAllowedEmail(next.user.email)) {
+        clearGoogleToken();
+        supabase.auth.signOut();
+        setSession(null);
+        return;
+      }
+      setSession(next);
+    };
+
+    supabase.auth.getSession().then(({ data }) => applySession(data.session));
 
     const {
       data: { subscription },
@@ -62,7 +139,7 @@ export default function AuthProvider({
       if (session?.provider_token) {
         localStorage.setItem(GOOGLE_TOKEN_KEY, session.provider_token);
       }
-      setSession(session);
+      applySession(session);
     });
 
     return () => subscription.unsubscribe();

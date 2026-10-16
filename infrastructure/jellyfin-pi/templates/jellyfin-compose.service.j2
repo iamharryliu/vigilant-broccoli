@@ -1,0 +1,20 @@
+# Managed by infrastructure/jellyfin-pi/playbook.yml — edits are overwritten.
+[Unit]
+Description=Jellyfin media server (Docker Compose)
+Requires=docker.service
+After=docker.service network-online.target
+# Ordering plus a hard requirement on the media mount: if the external drive
+# is missing, systemd refuses to start the stack rather than letting Jellyfin
+# come up with no library.
+RequiresMountsFor={{ media_mount_point }}
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+WorkingDirectory={{ jellyfin_stack_dir }}
+ExecStart=/usr/bin/docker compose up -d --remove-orphans
+ExecStop=/usr/bin/docker compose down
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target

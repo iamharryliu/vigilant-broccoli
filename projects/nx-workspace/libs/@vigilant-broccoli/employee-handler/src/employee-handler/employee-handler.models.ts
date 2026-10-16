@@ -3,6 +3,8 @@ import {
   WorkspaceEmailSignatureUpdate,
 } from '@vigilant-broccoli/google-workspace';
 import { Attachment } from 'nodemailer/lib/mailer';
+import { BirthdaySyncUtilities } from './birthday-sync/birthday-sync.models';
+import { LeaveSyncUtilities } from './leave-sync/leave-sync.models';
 
 interface OnboardUtilities {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -31,11 +33,34 @@ interface PostRetentionUtilities {
   postRetentionCleanup: () => Promise<void>;
 }
 
+export interface EmployeeAbsence {
+  id: string;
+  employeeEmail: string;
+  employeeName: string;
+  /** Human-readable leave type, e.g. "Vacation", "Sick Leave". */
+  type: string;
+  /** ISO date (YYYY-MM-DD), inclusive. */
+  startDate: string;
+  /** ISO date (YYYY-MM-DD), inclusive. */
+  endDate: string;
+}
+
+interface AbsenceUtilities {
+  fetchAbsences: () => Promise<EmployeeAbsence[]>;
+}
+
 export interface EmployeeHandlerConfig {
   onboardUtilities: OnboardUtilities;
   activeMaintenanceUtilities: ActiveMaintenanceUtilities;
   offboardUtilities: OffboardUtilities;
   postRetentionUtilities: PostRetentionUtilities;
+  absenceUtilities: AbsenceUtilities;
+  birthdaySyncUtilities?: BirthdaySyncUtilities;
+  leaveSyncUtilities?: LeaveSyncUtilities;
+  updateEmployeeMetadata?: (
+    email: string,
+    updates: EmployeeMetadata,
+  ) => Promise<(EmployeeMetadata & { email: string }) | null | undefined>;
   customFunctions?: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: (...args: any[]) => Promise<void>;
@@ -58,12 +83,26 @@ export interface WorkspaceGroup {
   ROLES: string[];
 }
 
-export interface EmployeeEmailSignature {
+export interface EmployeeMetadata {
+  githubUrl?: string;
+  linkedInURL?: string;
+  resumeUrl?: string;
+}
+
+export const EMPLOYEE_METADATA_KEYS = [
+  'githubUrl',
+  'linkedInURL',
+  'resumeUrl',
+] as const satisfies readonly (keyof EmployeeMetadata)[];
+
+export interface EmployeeEmailSignature extends Pick<
+  EmployeeMetadata,
+  'linkedInURL'
+> {
   displayName: string;
   title: string;
   office: string;
   image: string;
   phoneNumber: string;
   email: string;
-  linkedInURL?: string;
 }

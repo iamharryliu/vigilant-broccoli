@@ -1,14 +1,19 @@
 'use client';
 
-import { Card, Text, Tooltip } from '@radix-ui/themes';
 import {
+  Card,
   CopyButton,
   MonospaceText,
   Select,
+  Text,
+  Skeleton,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from '@vigilant-broccoli/react-lib';
 import { useEffect, useState } from 'react';
 import { InfoCircledIcon } from '@radix-ui/react-icons';
-import { Skeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
 import { usePollingInterval } from '../hooks/usePollingInterval';
@@ -259,26 +264,30 @@ export const PublicIpComponent = () => {
               Secret Gen:
             </Text>
             <Select
-              selectedOption={SECRET_TYPE_OPTIONS.find(
-                o => o.value === secretType,
-              )}
-              setValue={opt => setSecretType(opt.value)}
+              value={SECRET_TYPE_OPTIONS.find(o => o.value === secretType)}
+              onValueChange={opt => setSecretType(opt.value)}
               options={SECRET_TYPE_OPTIONS}
-              optionIdenfifier="value"
+              optionIdentifier="value"
               optionDisplayKey="label"
               triggerClassName="w-[100px]"
             />
-            <Tooltip
-              content={
-                SECRET_TYPE_OPTIONS.find(o => o.value === secretType)?.tooltip
-              }
-            >
-              <InfoCircledIcon
-                width="16"
-                height="16"
-                style={{ cursor: 'help', color: 'var(--gray-10)' }}
-              />
-            </Tooltip>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <InfoCircledIcon
+                    width="16"
+                    height="16"
+                    style={{ cursor: 'help', color: 'var(--gray-10)' }}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  {
+                    SECRET_TYPE_OPTIONS.find(o => o.value === secretType)
+                      ?.tooltip
+                  }
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
           <CopyButton
             disabled={loading}

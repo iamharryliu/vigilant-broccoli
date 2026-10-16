@@ -5,7 +5,12 @@
 - [Local Infrastructure](#local-infrastructure)
 - [Cloud Infrastructure](#cloud-infrastructure)
 - [Personal Infrastructure](#personal-infrastructure)
-- [Organization Infrastructure](#organization-infrastructure)
+  - [Sync Services](#sync-services)
+  - [Storage Services](#storage-services)
+  - [Image Services](#image-services)
+  - [Backups](#backups)
+  - [CI](#ci)
+  - [RabbitMQ Email Consumer Architecture](#rabbitmq-email-consumer-architecture)
 
 ## Local Infrastructure
 
@@ -15,7 +20,7 @@ USER[User]
 
 subgraph DOCKER[Docker]
   GRAFANA[Grafana]
-  ADMINER[Adminer]
+  IMMICH[Immich]
 end
 
 subgraph PM2
@@ -35,12 +40,19 @@ subgraph WIREGUARD[Wireguard]
   WORK_CLOUDS[Work Clouds]
 end
 
+subgraph HOMELAB_PI[Homelab Pi]
+  JELLYFIN[Jellyfin]
+  MEDIA_DRIVE[(External Media Drive)]
+  JELLYFIN-->MEDIA_DRIVE
+end
+
 VB_MANAGER_NEXT-->CLOUD_SERVICES
 VB_MANAGER_NEXT-->GRAFANA
 
 USER-->WIREGUARD
+USER-->TAILSCALE[Tailscale]-->JELLYFIN
 USER-->VB_MANAGER_NEXT
-USER-->ADMINER
+USER-->IMMICH
 ```
 
 ## Cloud Infrastructure

@@ -1,7 +1,6 @@
 'use client';
 
-import { Text } from '@radix-ui/themes';
-import { Button, Select, Textarea } from '@vigilant-broccoli/react-lib';
+import { Button, Select, Textarea, Text } from '@vigilant-broccoli/react-lib';
 import {
   ELEVENLABS_FREE_VOICE_OPTIONS,
   DEFAULT_VOICE_ID,
@@ -42,10 +41,10 @@ export const TextToSpeechVoices = () => {
       <div className="flex gap-2 items-center">
         <Select
           options={ELEVENLABS_FREE_VOICE_OPTIONS as unknown as VoiceOption[]}
-          selectedOption={voice}
-          setValue={setVoice}
+          value={voice}
+          onValueChange={setVoice}
           optionDisplayKey="label"
-          optionIdenfifier="value"
+          optionIdentifier="value"
           placeholder={PLACEHOLDER_VOICE}
         />
 

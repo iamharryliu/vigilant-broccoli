@@ -7,11 +7,11 @@ export default defineConfig(() => ({
   base: process.env.VITE_BASE_PATH ?? '/',
   cacheDir: '../../../node_modules/.vite/pages-index',
   server: {
-    port: 4202,
+    port: 3000,
     host: 'localhost',
   },
   preview: {
-    port: 4202,
+    port: 3000,
     host: 'localhost',
   },
   plugins: [react(), tsconfigPaths()],

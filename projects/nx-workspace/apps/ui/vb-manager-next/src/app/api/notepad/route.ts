@@ -41,18 +41,40 @@ export async function POST(request: NextRequest) {
   const userEmail = await getUserEmail(request);
   if (!userEmail) return unauthorized();
 
-  const { content } = await request.json();
+  const { content, baseUpdatedAt } = await request.json();
   const updatedAt = new Date().toISOString();
 
-  const { error } = await supabaseAdmin
+  const { data, error } = await supabaseAdmin
     .from(NOTEPAD_TABLE)
     .update({ content, updated_at: updatedAt })
-    .eq('id', NOTEPAD_ID);
+    .eq('id', NOTEPAD_ID)
+    .eq('updated_at', baseUpdatedAt)
+    .select('content, updated_at');
 
   if (error) {
     return NextResponse.json(
       { error: error.message },
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+  }
+
+  if (!data || data.length === 0) {
+    const { data: latest, error: latestError } = await supabaseAdmin
+      .from(NOTEPAD_TABLE)
+      .select('content, updated_at')
+      .eq('id', NOTEPAD_ID)
+      .single();
+
+    if (latestError) {
+      return NextResponse.json(
+        { error: latestError.message },
+        { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+      );
+    }
+
+    return NextResponse.json(
+      { content: latest.content ?? '', updatedAt: latest.updated_at },
+      { status: HTTP_STATUS_CODES.CONFLICT },
     );
   }
 

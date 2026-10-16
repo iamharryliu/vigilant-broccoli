@@ -1,6 +1,6 @@
 # Terraform
 
-Provisions the project's cloud resources — Cloudflare DNS/Pages, Oracle Cloud VMs, Supabase auth, and GitHub repo config — plus the Packer-built VM image.
+Provisions the project's cloud resources — Cloudflare DNS/Pages/Tunnels/Access, Oracle Cloud and AWS VMs, Supabase auth, and GitHub repo config — plus the Packer-built VM image.
 
 ## Table of Contents
 
@@ -13,27 +13,32 @@ Provisions the project's cloud resources — Cloudflare DNS/Pages, Oracle Cloud 
   - YAML
   - Bash
 - Tooling
-  - Terraform
-  - Packer
   - Docker
   - Docker Compose
+  - Packer
+  - Terraform
 - Cloud providers
+  - AWS
   - Cloudflare
+  - GitHub
   - Google Cloud
   - Oracle Cloud
-  - AWS
   - Supabase
-  - GitHub
 - Services
-  - Gitea
-  - RabbitMQ
+  - Alloy
   - Caddy
+  - cloudflared
   - code-server
-  - Seafile
+  - Gitea
+  - Grafana
+  - Loki
   - MariaDB
   - Memcached
+  - nginx
+  - RabbitMQ
+  - Seafile
   - Watchtower
 - Secrets
-  - HashiCorp Vault
-  - Google Secret Manager
   - Bitwarden
+  - Google Secret Manager
+  - HashiCorp Vault

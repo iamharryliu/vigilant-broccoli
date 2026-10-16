@@ -1,6 +1,7 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Button, Input, Textarea } from '@vigilant-broccoli/react-lib';
+import { EMAIL_ADDRESS } from '@vigilant-broccoli/personal-common-js';
 import { useState } from 'react';
 import { authFetch } from '../../../libs/auth';
 
@@ -17,7 +18,7 @@ interface EmailMessageFormProps {
 
 export const EmailMessageForm = ({
   defaultFrom = '',
-  defaultTo = 'harryliu1995@gmail.com',
+  defaultTo = EMAIL_ADDRESS,
   defaultSubject = 'Default subject',
   defaultText = 'Default text',
   defaultHtml = '',

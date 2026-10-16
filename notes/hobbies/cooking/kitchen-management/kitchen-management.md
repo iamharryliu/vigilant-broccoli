@@ -1,7 +1,7 @@
 # Kitchen Management
 
 - [Kitchen Cleaning](./kitchen-cleaning.md)
-- [Kitchen Knife Management](./kitchen-knife-management.md)
+- [Kitchen Knives](./kitchen-knives.md)
 - [Kitchen Tool Management](./kitchen-tool-management.md)
 - [Kitchen Tools](./kitchen-tools.md)
 

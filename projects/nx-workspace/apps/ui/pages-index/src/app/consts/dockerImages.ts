@@ -19,6 +19,19 @@ export const DOCKER_IMAGES: DockerImageInfo[] = [
     readmePath:
       'projects/nx-workspace/apps/api/email-subscription-service/README.md',
   },
+  {
+    slug: 'employee-handler-next',
+    readmePath: 'projects/nx-workspace/apps/ui/employee-handler-ui/README.md',
+  },
+  {
+    slug: 'office-presence-socket-server-demo',
+    readmePath:
+      'projects/nx-workspace/apps/office-presence-socket-server-demo/README.md',
+  },
+  {
+    slug: 'socket-server-socketio',
+    readmePath: 'projects/nx-workspace/apps/socket-server-socketio/README.md',
+  },
 ];
 
 export const toDockerImageUrl = (slug: string) =>

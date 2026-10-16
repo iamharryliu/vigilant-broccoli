@@ -1,8 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Text } from '@radix-ui/themes';
-import { Button, Input, Select, Textarea } from '@vigilant-broccoli/react-lib';
+
+import {
+  Button,
+  Input,
+  Select,
+  Textarea,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { MEAL_CATEGORIES, MealCategory } from '../../../lib/types';
 
 export interface MealFormData {
@@ -80,8 +86,8 @@ export function MealForm({
             Category
           </Text>
           <Select
-            selectedOption={category}
-            setValue={setCategory}
+            value={category}
+            onValueChange={setCategory}
             options={MEAL_CATEGORIES as unknown as MealCategory[]}
           />
         </div>

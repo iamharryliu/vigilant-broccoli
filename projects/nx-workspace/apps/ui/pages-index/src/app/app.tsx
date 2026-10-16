@@ -1,46 +1,89 @@
-import { HashRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { I18nProvider } from './i18n';
 import { HomePage } from './pages/HomePage';
-import { UiPage } from './pages/UiPage';
 import { StatusPage } from './pages/StatusPage';
+import { RepoTimelinePage } from './pages/RepoTimelinePage';
 import { OpenSourcePage } from './pages/OpenSourcePage';
+import { GithubReposPage } from './pages/GithubReposPage';
 import { GithubReadmePage } from './pages/GithubReadmePage';
 import { DockerImagesPage } from './pages/DockerImagesPage';
 import { DockerImageReadmePage } from './pages/DockerImageReadmePage';
 import { NpmPackagesPage } from './pages/NpmPackagesPage';
 import { NpmPackageReadmePage } from './pages/NpmPackageReadmePage';
+import { WebApplicationReadmePage } from './pages/WebApplicationReadmePage';
 import { WebApplicationsPage } from './pages/WebApplicationsPage';
 import { ApiServicesPage } from './pages/ApiServicesPage';
 import { ApiServiceDocsPage } from './pages/ApiServiceDocsPage';
+import { CareerPage } from './pages/CareerPage';
+import { CareerExperiencePage } from './pages/CareerExperiencePage';
+import { isCareerHost, isStatusHost } from './consts/hosts';
+import {
+  CAREER_EXPERIENCE_ROUTE,
+  STATUS_ROUTE,
+  WEB_APPLICATIONS_ROUTE,
+} from './consts/routes';
+
+function StatusHostRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<StatusPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
+function CareerHostRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<CareerPage />} />
+      <Route
+        path={CAREER_EXPERIENCE_ROUTE}
+        element={<CareerExperiencePage />}
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
+function ProjectsRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<HomePage />} />
+      <Route path={STATUS_ROUTE} element={<StatusPage />} />
+      <Route path="/repo-timeline" element={<RepoTimelinePage />} />
+      <Route path="/open-source" element={<OpenSourcePage />} />
+      <Route path="/open-source/github" element={<GithubReposPage />} />
+      <Route path="/open-source/github/:repo" element={<GithubReadmePage />} />
+      <Route path="/open-source/docker" element={<DockerImagesPage />} />
+      <Route
+        path="/open-source/docker/:image"
+        element={<DockerImageReadmePage />}
+      />
+      <Route path="/open-source/npm" element={<NpmPackagesPage />} />
+      <Route path="/open-source/npm/:pkg" element={<NpmPackageReadmePage />} />
+      <Route path={WEB_APPLICATIONS_ROUTE} element={<WebApplicationsPage />} />
+      <Route
+        path={`${WEB_APPLICATIONS_ROUTE}/:app`}
+        element={<WebApplicationReadmePage />}
+      />
+      <Route path="/api-services" element={<ApiServicesPage />} />
+      <Route path="/api-services/:service" element={<ApiServiceDocsPage />} />
+    </Routes>
+  );
+}
 
 export function App() {
   return (
     <I18nProvider>
-      <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+      <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-dvh">
         <HashRouter>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/ui" element={<UiPage />} />
-            <Route path="/status" element={<StatusPage />} />
-            <Route path="/open-source" element={<OpenSourcePage />} />
-            <Route path="/open-source/github" element={<GithubReadmePage />} />
-            <Route path="/open-source/docker" element={<DockerImagesPage />} />
-            <Route
-              path="/open-source/docker/:image"
-              element={<DockerImageReadmePage />}
-            />
-            <Route path="/open-source/npm" element={<NpmPackagesPage />} />
-            <Route
-              path="/open-source/npm/:pkg"
-              element={<NpmPackageReadmePage />}
-            />
-            <Route path="/web-applications" element={<WebApplicationsPage />} />
-            <Route path="/api-services" element={<ApiServicesPage />} />
-            <Route
-              path="/api-services/:service"
-              element={<ApiServiceDocsPage />}
-            />
-          </Routes>
+          {isStatusHost() ? (
+            <StatusHostRoutes />
+          ) : isCareerHost() ? (
+            <CareerHostRoutes />
+          ) : (
+            <ProjectsRoutes />
+          )}
         </HashRouter>
       </div>
     </I18nProvider>

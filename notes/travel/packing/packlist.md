@@ -1,11 +1,30 @@
 # Travel Packlist
 
+## Table of Contents
+
+- [Tips](#tips)
+- [Essentials](#essentials)
+- [Outing](#outing)
+- [Utility](#utility)
+- [Footwear](#footwear)
+- [Nice to have](#nice-to-have)
+  - [Leisure](#leisure)
+
+## Tips
+
+- Travel with a field jacket that has multiple accessible pockets.
+- Wireless headphone jack.
+- Easy shoes
+- Portable duffel bag.
+- Front open carry-on.
+
 ## Essentials
 
 - Phone
 - Wallet
 - Keys
 - [Digital Packlist](./digital-packlist.md)
+- [Light EDC](./light-edc.md)
 
 ## Outing
 
@@ -26,6 +45,7 @@
 - [Car Packlist](./car-packlist.md)
 - [Outdoor Packlist](./outdoor-packlist.md)
 - [Air Travel Packlist](./flight-packlist.md)
+- [Work Packlist](./work-packlist.md)
 - [Summer Vacation 2026 Packlist](./summer-vacation-2026-packlist.md)
 
 ## Utility

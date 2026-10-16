@@ -7,8 +7,7 @@
   "dependencies": {
     "@swc/helpers": "~0.5.18",
     "@vigilant-broccoli/common-node": "workspace:*",
-    "ejs": "^6.0.1",
-    "nodemailer": "^9.0.1",
+    "nodemailer": "^10.0.13",
     "resend": "^6.9.4",
     "twilio": "^4.21.0"
   }

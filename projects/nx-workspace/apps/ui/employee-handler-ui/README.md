@@ -1,20 +1,23 @@
 # Employee Handler UI
 
+## Table of Contents
+
+- [Stack](#stack)
+
 ## Stack
 
 - Language - TypeScript
-- Framework - Next.js (React)
+- Framework - Next.js
 - Build Tool - Next.js
 - External libs
-  - Radix Themes/UI + Tailwind CSS, lucide-react icons
-  - Nodemailer
   - isomorphic-dompurify
+  - lucide-react
+  - Nodemailer
+  - Tailwind CSS
 - Internal libs
   - `common-js`
   - `employee-handler`
   - `react-lib`
 - Cloud services
-  - Supabase (auth)
   - Google APIs
-  - Vercel
-  - Docker Hub (`iamharryliu/employee-handler-next`)
+  - Supabase

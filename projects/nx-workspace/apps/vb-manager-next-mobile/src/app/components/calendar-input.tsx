@@ -2,17 +2,14 @@
 
 import { useRef, useState } from 'react';
 import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
-import { resizeImage } from '../utils/image.utils';
+import { resizeImage } from '@vigilant-broccoli/react-lib';
 import {
   EventDraftCard,
   EventDraft,
   EventDraftStatus,
 } from './event-draft-card';
-import {
-  buildAuthHeaders,
-  signOutDueToExpiredToken,
-} from '../providers/auth-provider';
-import { useVoiceRecorder } from '../hooks/use-voice-recorder';
+import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
+import { useVoiceInput } from '../hooks/use-voice-input';
 
 interface ImagePreview {
   data: string;
@@ -35,10 +32,10 @@ export const CalendarInput = () => {
   const [eventStates, setEventStates] = useState<EventState[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
-  const { recordingState, voiceError, toggleRecording } = useVoiceRecorder(
-    transcript =>
+  const { recordingState, voiceError, interimTranscript, toggleRecording } =
+    useVoiceInput(transcript =>
       setText(prev => (prev ? `${prev}\n${transcript}` : transcript)),
-  );
+    );
 
   const addImageFile = async (file: File) => {
     const { base64, mimeType, previewUrl } = await resizeImage(file);
@@ -115,7 +112,7 @@ export const CalendarInput = () => {
 
     if (!res.ok) {
       if (res.status === 401) {
-        await signOutDueToExpiredToken();
+        await reconnectGoogle();
         return;
       }
       setEventStates(prev =>
@@ -252,6 +249,11 @@ export const CalendarInput = () => {
               : 'Voice'}
         </button>
       </div>
+
+      {recordingState === 'recording' && interimTranscript && (
+        <p className="text-sm text-gray-400 italic px-1">{interimTranscript}</p>
+      )}
+
       <button
         onClick={handleParse}
         disabled={!canParse}

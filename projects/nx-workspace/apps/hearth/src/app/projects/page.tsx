@@ -3,8 +3,14 @@
 import { useCallback, useEffect, useState } from 'react';
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type EventReceiveArg = any;
-import { Dialog, Text } from '@radix-ui/themes';
-import { FULL_SCREEN_ON_MOBILE_DIALOG_CLASS } from '@vigilant-broccoli/react-lib';
+import {
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Text,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  cn,
+} from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { CalendarEvent, HomeProject } from '../../lib/types';
@@ -16,6 +22,7 @@ import {
 import { HomeProjectList } from './components/HomeProjectList';
 import { HomeProjectCalendarDropForm } from './components/HomeProjectCalendarDropForm';
 import { HomeProjectFormData } from './components/HomeProjectForm';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 type PendingDrop = CalendarEventFormData & { projectId?: string };
 
@@ -25,6 +32,7 @@ type CalendarModal =
   | null;
 
 export default function ProjectsPage() {
+  usePageTitle(PAGE_TITLES.PROJECTS);
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
   const [projects, setProjects] = useState<HomeProject[]>([]);
@@ -197,17 +205,24 @@ export default function ProjectsPage() {
         />
       </div>
 
-      <Dialog.Root
+      <Dialog
         open={pendingDrop !== null}
         onOpenChange={open => {
           if (!open) setPendingDrop(null);
         }}
       >
-        <Dialog.Content
-          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+        <DialogContent
+          aria-describedby={undefined}
+          showCloseButton={false}
+          className={cn(
+            'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+            FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+          )}
           style={{ maxWidth: 460 }}
         >
-          <Dialog.Title>Schedule Project</Dialog.Title>
+          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+            Schedule Project
+          </DialogTitle>
           <Text size="2" color="gray" as="p" mb="3">
             Confirm the details before adding to your calendar.
           </Text>
@@ -218,22 +233,27 @@ export default function ProjectsPage() {
               onCancel={() => setPendingDrop(null)}
             />
           )}
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
 
-      <Dialog.Root
+      <Dialog
         open={calendarModal !== null}
         onOpenChange={open => {
           if (!open) setCalendarModal(null);
         }}
       >
-        <Dialog.Content
-          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+        <DialogContent
+          aria-describedby={undefined}
+          showCloseButton={false}
+          className={cn(
+            'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+            FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+          )}
           style={{ maxWidth: 480 }}
         >
-          <Dialog.Title>
+          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
             {calendarModal?.type === 'edit' ? 'Edit Event' : 'New Event'}
-          </Dialog.Title>
+          </DialogTitle>
 
           {calendarModal?.type === 'create' && (
             <CalendarEventForm
@@ -270,8 +290,8 @@ export default function ProjectsPage() {
               />
             </>
           )}
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

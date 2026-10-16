@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-
-const execAsync = promisify(exec);
+import {
+  GcloudService,
+  isValidGcloudAccount,
+} from '@vigilant-broccoli/devops-cli';
 
 export async function POST(request: Request) {
   try {
@@ -16,7 +16,14 @@ export async function POST(request: Request) {
       );
     }
 
-    await execAsync(`gcloud config set account ${account}`);
+    if (!isValidGcloudAccount(String(account))) {
+      return NextResponse.json(
+        { error: 'account is invalid' },
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
+      );
+    }
+
+    await GcloudService.setAccount(String(account));
 
     return NextResponse.json({ success: true, account });
   } catch (error) {

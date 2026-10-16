@@ -1,11 +1,11 @@
 'use client';
 
-import { Heading, Text } from '@radix-ui/themes';
 import { ChatDemo } from '../demos/ChatDemo';
 import { NotificationsDemo } from '../demos/NotificationsDemo';
 import { StorageDemo } from '../demos/StorageDemo';
 import { StripeDemo } from '../demos/StripeDemo';
-import { MessagingPage } from './MessagingPage';
+import { TextMessageForm } from './TextMessageForm';
+import { EmailMessageForm } from '../EmailMessageForm';
 import { SpeechToText } from '../llm/SpeechToText';
 import { VoiceListGenerator } from '../llm/VoiceListGenerator';
 import { TextToSpeechVoices } from '../llm/TextToSpeechVoices';
@@ -13,6 +13,7 @@ import { LLMSimplePromptTester } from '../llm/LLMPromptTester';
 import { RecipeScraperDemo } from '../llm/RecipeScraperDemo';
 import { QRCodeGenerator } from '../demos/QRCodeGenerator';
 import { LiveLocationsDemo } from '../demos/LiveLocationsDemo';
+import { NotepadEditorDemo } from '../demos/NotepadEditorDemo';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
@@ -25,6 +26,11 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
     id: 'live-locations',
     title: 'Live User Locations',
     content: <LiveLocationsDemo />,
+  },
+  {
+    id: 'notepad-editor',
+    title: 'Notepad Editor (VSCode-style editing)',
+    content: <NotepadEditorDemo />,
   },
   {
     id: 'qr-code-generator',
@@ -73,9 +79,14 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
     content: <StripeDemo />,
   },
   {
-    id: 'messaging',
-    title: 'Messaging Demo',
-    content: <MessagingPage />,
+    id: 'send-email-message',
+    title: 'Send Email Message',
+    content: <EmailMessageForm />,
+  },
+  {
+    id: 'send-text-message',
+    title: 'Send Text Message',
+    content: <TextMessageForm />,
   },
   {
     id: 'chat',
@@ -91,19 +102,11 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
 
 export function FeatureSandboxPage() {
   return (
-    <div className="w-full min-h-screen">
-      <div className="p-6 max-w-4xl mx-auto">
-        <Heading size="8" mb="2">
-          Feature Sandbox
-        </Heading>
-        <Text color="gray" size="4" mb="6">
-          Interactive feature demonstrations and testing playground
-        </Text>
-        <CollapsibleList
-          items={FEATURE_SECTIONS}
-          storageKeyPrefix={STORAGE_KEY}
-        />
-      </div>
+    <div className="max-w-4xl mx-auto">
+      <CollapsibleList
+        items={FEATURE_SECTIONS}
+        storageKeyPrefix={STORAGE_KEY}
+      />
     </div>
   );
 }

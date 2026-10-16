@@ -1,44 +1,48 @@
-# vb-manager-next
+# VB Manager Next
 
 Management dashboard app.
+
+## Table of Contents
+
+- [Stack](#stack)
 
 ## Stack
 
 - Language - TypeScript
-- Framework - Next.js (App Router, React)
+- Framework - Next.js
 - Build Tool - Next.js
 - External libs
-  - Radix Themes + Tailwind CSS, lucide-react icons
-  - dnd-kit (drag-and-drop)
-  - Leaflet / react-leaflet, react-markdown, fuse.js
-  - Socket.IO client (chat demo)
+  - dnd-kit
+  - jsQR
+  - Leaflet / react-leaflet
+  - lucide-react
+  - react-markdown
+  - Socket.IO client
+  - Tailwind CSS
 - Internal libs
-  - `ci`
   - `common-browser`
   - `common-js`
   - `common-node`
   - `deployment`
+  - `devops-cli`
   - `github-workspace`
   - `github-workspace-js`
   - `google-workspace`
   - `links`
   - `llm-schemas`
   - `money-movement`
-  - `next-lib`
   - `personal-common-js`
   - `react-lib`
   - `react-music-lib`
-  - `react-sandbox`
   - `react-utility`
   - `resume`
-  - `vibecheck-lite`
 - Cloud services
   - Google OAuth
   - Google Tasks & Calendar
   - MongoDB
-  - Supabase
-  - Stripe
-  - Tailscale
+  - Open-Meteo
   - OpenAI API
   - OpenWeatherMap
-  - Self-hosted (PM2)
+  - Spotify Web API
+  - Stripe
+  - Supabase

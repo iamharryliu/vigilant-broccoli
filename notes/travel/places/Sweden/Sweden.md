@@ -7,6 +7,21 @@
 - [Driving in Sweden](./driving-in-sweden.md)
 - [Swedish](../../../learn/language-learning/swedish/swedish.md)
 
+## Table of Contents
+
+- [Utility](#utility)
+- [Food & Drink](#food--drink)
+  - [Coffee](#coffee)
+- [Stores](#stores)
+- [Activity](#activity)
+- [Accommodation](#accommodation)
+- [Swedish Migration](#swedish-migration)
+- [Finance](#finance)
+- [Leaning Swedish](#leaning-swedish)
+- [Souvenirs/Gifts](#souvenirsgifts)
+- [Sustainability](#sustainability)
+- [Fun Facts](#fun-facts)
+
 ## Utility
 
 ### Emergency Services
@@ -16,6 +31,7 @@
 ### Communication
 
 - [Comviq Fastpris Mini Plan](https://www.comviq.se/kontantkort)
+- [Hallon](https://www.hallon.se/)
 - Telia
   - Text _surfmängd_ to **4466** for remaining data usage.
 
@@ -27,6 +43,12 @@
 - [Drink Spots](https://maps.app.goo.gl/qWopvXmCnxn3WXxR8)
 - [Dessert Spots](https://maps.app.goo.gl/1UqRzLEPdfzoYgJE6)
 - [Work Cafes](https://maps.app.goo.gl/eXVHPQRZgcNGekeV8)
+
+### Coffee
+
+| Cafe                                             | Description                                                                               |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| [Lykke Kaffegårdar](https://www.lykkegardar.se/) | Stockholm-based roastery growing, roasting, and selling coffee direct from its own farms. |
 
 ### Services
 
@@ -77,14 +99,25 @@
 
 ## Souvenirs/Gifts
 
-- [Kebab Sauce](https://schysstkak.se/het-kebabsas)
-- [Snus](https://sv.wikipedia.org/wiki/Snus) - Can be found in grocery/convenient stores.
-- Max Sauce
-- Kebab Sauce
-- Swedish Candies
-- Lund Tea
-- Butter Knife
-- Cheese Slicer
+- Teaspinner from [Designtorget](https://designtorget.se/)
+- Souvenir shops
+  - Dala horse keychains/coasters/figurines
+- Kitchen
+  - butter knife
+  - cheese slicer
+  - Wettex wipes
+  - Swedish whisks
+- Consumables
+  - Chocolate from [Malmö Chokladfabrik](https://malmochokladfabrik.se/)
+  - candies
+  - Lund tea
+  - cloudberry/hjortron jam
+  - [Schysst Kebab Sauce] (https://schysstkak.se/het-kebabsas)
+  - Max Sauce
+  - [Snus](https://sv.wikipedia.org/wiki/Snus) - Can be found in grocery/convenient stores.
+  - Sommarblandning from [https://maps.app.goo.gl/kUKPZbcxV9pbmBLa7]
+  - [Nordic Gastronomy](https://nordgastro.com/)
+  - [A.C. Perchs Thehandel](https://perchs.dk/)
 
 ## Sustainability
 
@@ -92,4 +125,5 @@
 
 ## Fun Facts
 
+- [Louisa Ulrika of Prussia, the mother of first Afican man in Sweden](https://en.wikipedia.org/wiki/Louisa_Ulrika_of_Prussia)
 - [Gustav Badin, the first African man in Sweden](https://en.wikipedia.org/wiki/Gustav_Badin)

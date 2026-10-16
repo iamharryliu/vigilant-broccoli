@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
+import { readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { homedir } from 'os';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { validateResume } from '@vigilant-broccoli/resume';
 
 const RESUME_JSON_PATH = join(
   homedir(),
@@ -20,8 +21,23 @@ const ENCODING = 'utf-8';
 const ERROR = {
   CONTENT_REQUIRED: 'Resume JSON content is required',
   INVALID_JSON: 'Resume content is not valid JSON',
+  INVALID_RESUME: 'Resume content is not a valid resume',
   SAVE_FAILED: 'Failed to save resume.json',
+  READ_FAILED: 'Failed to read resume.json',
 } as const;
+
+export async function GET() {
+  try {
+    const content = await readFile(RESUME_JSON_PATH, ENCODING);
+    return NextResponse.json({ content });
+  } catch (error) {
+    console.error(ERROR.READ_FAILED, error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : ERROR.READ_FAILED },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+  }
+}
 
 export async function PUT(req: NextRequest) {
   try {
@@ -33,11 +49,20 @@ export async function PUT(req: NextRequest) {
       );
     }
 
+    let parsed: unknown;
     try {
-      JSON.parse(body.content);
+      parsed = JSON.parse(body.content);
     } catch {
       return NextResponse.json(
         { error: ERROR.INVALID_JSON },
+        { status: HTTP_STATUS_CODES.BAD_REQUEST },
+      );
+    }
+
+    const validation = validateResume(parsed);
+    if (!validation.ok) {
+      return NextResponse.json(
+        { error: ERROR.INVALID_RESUME, details: validation.errors },
         { status: HTTP_STATUS_CODES.BAD_REQUEST },
       );
     }

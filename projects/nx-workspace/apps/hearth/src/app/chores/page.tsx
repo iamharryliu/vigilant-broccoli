@@ -1,15 +1,25 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, Text, Table, Badge, Dialog } from '@radix-ui/themes';
 import {
+  Table,
+  Badge,
   Button,
+  Card,
   Checkbox,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Input,
   Select,
+  Text,
   Textarea,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
+  cn,
 } from '@vigilant-broccoli/react-lib';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 interface Chore {
   id: string;
@@ -239,6 +249,7 @@ const EMPTY_FORM = {
 };
 
 export default function ChoresPage() {
+  usePageTitle(PAGE_TITLES.CHORES);
   const [mounted, setMounted] = useState(false);
   const [chores, setChores] = useLocalStorage<Chore[]>('chores', []);
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -373,7 +384,7 @@ export default function ChoresPage() {
                 {Object.entries(grouped).map(([choreId, choreTodos]) => {
                   const first = choreTodos[0];
                   return (
-                    <Card key={choreId} variant="surface">
+                    <Card key={choreId}>
                       <div className="flex justify-between items-center gap-4">
                         <div className="flex gap-2 items-center grow">
                           <Text size="3" weight="medium">
@@ -425,17 +436,22 @@ export default function ChoresPage() {
               <Text size="5" weight="bold">
                 Chores
               </Text>
-              <Dialog.Root open={isFormOpen} onOpenChange={setIsFormOpen}>
-                <Dialog.Trigger>
+              <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                <DialogTrigger asChild>
                   <Button>Add Chore</Button>
-                </Dialog.Trigger>
-                <Dialog.Content
-                  className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+                </DialogTrigger>
+                <DialogContent
+                  aria-describedby={undefined}
+                  showCloseButton={false}
+                  className={cn(
+                    'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+                    FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+                  )}
                   style={{ maxWidth: 500 }}
                 >
-                  <Dialog.Title>
+                  <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
                     {editingChore ? 'Edit Chore' : 'New Chore'}
-                  </Dialog.Title>
+                  </DialogTitle>
                   <div className="flex flex-col gap-4 mt-4">
                     <div>
                       <Text as="label" size="2" weight="medium" mb="1">
@@ -471,8 +487,8 @@ export default function ChoresPage() {
                           Recurrence
                         </Text>
                         <Select
-                          selectedOption={formData.recurrence}
-                          setValue={recurrence =>
+                          value={formData.recurrence}
+                          onValueChange={recurrence =>
                             setFormData({ ...formData, recurrence })
                           }
                           options={RECURRENCE_OPTIONS}
@@ -531,11 +547,11 @@ export default function ChoresPage() {
                       </Text>
                     </div>
                     <div className="flex gap-2 justify-end mt-4">
-                      <Dialog.Close>
+                      <DialogClose asChild>
                         <Button variant="secondary" onClick={resetForm}>
                           Cancel
                         </Button>
-                      </Dialog.Close>
+                      </DialogClose>
                       <Button
                         onClick={handleSaveChore}
                         disabled={!formData.name.trim()}
@@ -544,8 +560,8 @@ export default function ChoresPage() {
                       </Button>
                     </div>
                   </div>
-                </Dialog.Content>
-              </Dialog.Root>
+                </DialogContent>
+              </Dialog>
             </div>
 
             {chores.length === 0 ? (

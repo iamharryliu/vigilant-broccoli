@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Badge, Text } from '@radix-ui/themes';
+import { Text, Badge } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../providers/auth-provider';
 import { HomeProject } from '../../../lib/types';
 import { ROUTES } from '../../../lib/routes';
+import { PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
 
 const CATEGORY_COLORS: Record<string, string> = {
   Renovation: 'orange',
@@ -29,6 +30,7 @@ export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
   const session = useAuth();
   const [project, setProject] = useState<HomeProject | null>(null);
+  usePageTitle(project?.title ?? PAGE_TITLES.PROJECT_DETAIL);
 
   useEffect(() => {
     if (!session?.access_token) return;

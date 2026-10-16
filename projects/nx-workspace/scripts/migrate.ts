@@ -3,47 +3,42 @@ import { resolve4 } from 'node:dns/promises';
 import { readdirSync, readFileSync } from 'fs';
 import path from 'path';
 
-const migrationsArg = process.argv
-  .find(a => a.startsWith('--migrations-dir='))
-  ?.split('=')[1];
-if (!migrationsArg) {
-  console.error('migrate: --migrations-dir=<path> is required');
+// Accepts one or more --migrations-dir flags. Multiple dirs (all targeting the
+// one shared Supabase project) are merged and applied in a single global order
+// by filename, so a migration in one app's folder that depends on an object
+// created earlier in another's still runs after it. Single-dir usage — how the
+// per-app `serve` targets call this — is unchanged.
+const MIGRATION_DIRS = process.argv
+  .filter(a => a.startsWith('--migrations-dir='))
+  .map(a => path.resolve(a.split('=')[1]));
+if (MIGRATION_DIRS.length === 0) {
+  console.error('migrate: at least one --migrations-dir=<path> is required');
   process.exit(1);
 }
-const MIGRATIONS_DIR = path.resolve(migrationsArg);
 
-function parseDbUrl(raw: string) {
-  const match = raw.match(
-    /^(postgresql|postgres):\/\/([^:]+):(.+)@([^:/]+)(:\d+)?(\/.*)?$/,
-  );
-  if (!match) throw new Error('Invalid SUPABASE_DB_URL format');
-  const [, , user, password, host, portStr, database] = match;
-  return {
-    user,
-    password,
-    host,
-    port: portStr ? parseInt(portStr.slice(1)) : 5432,
-    database: database ? database.slice(1) : 'postgres',
-  };
-}
+const DB_HOST = 'aws-1-eu-west-1.pooler.supabase.com';
+const DB_PORT = 5432;
+const DB_USER = 'postgres.jrdosjjgmsoodpjmjqxx';
+const DB_NAME = 'postgres';
 
 async function run() {
-  const dbUrl = process.env.SUPABASE_DB_URL;
-  if (!dbUrl) {
-    console.error('migrate: SUPABASE_DB_URL not set — skipping migrations');
+  const password = process.env.SUPABASE_DB_PASSWORD;
+  if (!password) {
+    console.error(
+      'migrate: SUPABASE_DB_PASSWORD not set — skipping migrations',
+    );
     return;
   }
 
   const baseline = process.argv.includes('--baseline');
-  const { user, password, host, port, database } = parseDbUrl(dbUrl);
-  const [ipv4] = await resolve4(host);
+  const [ipv4] = await resolve4(DB_HOST);
 
   const client = new pg.Client({
     host: ipv4,
-    port,
-    user,
+    port: DB_PORT,
+    user: DB_USER,
     password,
-    database,
+    database: DB_NAME,
     ssl: { rejectUnauthorized: false },
   });
   await client.connect();
@@ -61,10 +56,23 @@ async function run() {
     );
     const appliedSet = new Set(applied.map(r => r.filename));
 
-    const files = readdirSync(MIGRATIONS_DIR)
-      .filter(f => f.endsWith('.sql'))
-      .sort();
+    const seen = new Map<string, string>();
+    for (const dir of MIGRATION_DIRS) {
+      for (const file of readdirSync(dir).filter(f => f.endsWith('.sql'))) {
+        const existing = seen.get(file);
+        if (existing && existing !== path.join(dir, file)) {
+          console.error(
+            `migrate: duplicate migration filename "${file}" in ${existing} and ${dir}`,
+          );
+          process.exit(1);
+        }
+        seen.set(file, path.join(dir, file));
+      }
+    }
 
+    // schema_migrations is keyed by filename, so a global filename sort gives a
+    // stable cross-dir order.
+    const files = [...seen.keys()].sort();
     const pending = files.filter(f => !appliedSet.has(f));
 
     if (pending.length === 0) {
@@ -78,7 +86,7 @@ async function run() {
 
     for (const file of pending) {
       if (!baseline) {
-        const sql = readFileSync(path.join(MIGRATIONS_DIR, file), 'utf-8');
+        const sql = readFileSync(seen.get(file) as string, 'utf-8');
         console.log(`migrate: applying ${file}...`);
         await client.query(sql);
       }

@@ -1,9 +1,14 @@
 import './global.css';
 import AuthProvider from './providers/auth-provider';
-import { BottomNav } from './components/bottom-nav';
+import { AppShell } from './components/app-shell';
+import { ThemeWrapper } from './components/theme-wrapper';
+import { APP_NAME, PAGE_TITLE } from './app.const';
 
 export const metadata = {
-  title: 'VB Manager',
+  title: {
+    default: `${PAGE_TITLE.HOME} | ${APP_NAME}`,
+    template: `%s | ${APP_NAME}`,
+  },
   description: 'VB Manager Mobile',
 };
 
@@ -22,8 +27,9 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-gray-50">
         <AuthProvider>
-          {children}
-          <BottomNav />
+          <ThemeWrapper>
+            <AppShell>{children}</AppShell>
+          </ThemeWrapper>
         </AuthProvider>
       </body>
     </html>

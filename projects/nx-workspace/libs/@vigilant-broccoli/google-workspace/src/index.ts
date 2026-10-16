@@ -7,3 +7,5 @@ export * from './google-workspace/google-tasks.errors';
 export * from './google-workspace/google-tasks.model';
 export * from './google-workspace/google-tasks.service';
 export * from './google-workspace/google-oauth.service';
+export * from './google-workspace/google-calendar-events.model';
+export * from './google-workspace/google-calendar-events.service';

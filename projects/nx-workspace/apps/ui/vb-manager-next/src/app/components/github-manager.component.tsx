@@ -1,16 +1,19 @@
 'use client';
 
-import { Callout, Text } from '@radix-ui/themes';
 import {
   Button,
   ButtonConfig,
   ButtonList,
+  Callout,
+  CalloutIcon,
+  CalloutText,
   CardContainer,
   StatusCardList,
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
+  Text,
+  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
-import { CardSkeleton } from './skeleton.component';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertCircle, ChevronRight, Users } from 'lucide-react';
@@ -43,12 +46,12 @@ const getOrgUrls = (orgName: string) => ({
 });
 
 const ErrorState = ({ error }: { error: string }) => (
-  <Callout.Root color="red" mb="3">
-    <Callout.Icon>
+  <Callout color="red" className="mb-3">
+    <CalloutIcon>
       <AlertCircle size={16} />
-    </Callout.Icon>
-    <Callout.Text>{error}</Callout.Text>
-  </Callout.Root>
+    </CalloutIcon>
+    <CalloutText>{error}</CalloutText>
+  </Callout>
 );
 
 const EmptyState = () => (

@@ -13,7 +13,6 @@ Builds the `vb-free-vm` GCE image (Vault + WireGuard + cloudflared) and manages 
   - Bash
 - Tooling
   - Packer
-  - Docker
 - Cloud providers
   - Google Cloud
   - Cloudflare

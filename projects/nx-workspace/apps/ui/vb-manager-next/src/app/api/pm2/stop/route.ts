@@ -1,44 +1,6 @@
-import { NextResponse } from 'next/server';
-import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { execFile } from 'child_process';
-import { promisify } from 'util';
-
-const execFileAsync = promisify(execFile);
-const PM2_ID_PATTERN = /^[\w.-]+$/;
+import { PM2_ACTION } from '@vigilant-broccoli/devops-cli';
+import { handlePm2ProcessAction } from '../_lib/pm2-action.utils';
 
 export async function POST(request: Request) {
-  try {
-    const body = await request.json();
-    const { processId } = body;
-
-    if (processId === undefined) {
-      return NextResponse.json(
-        { error: 'processId is required' },
-        { status: HTTP_STATUS_CODES.BAD_REQUEST },
-      );
-    }
-
-    if (!PM2_ID_PATTERN.test(String(processId))) {
-      return NextResponse.json(
-        { error: 'processId is invalid' },
-        { status: HTTP_STATUS_CODES.BAD_REQUEST },
-      );
-    }
-
-    await execFileAsync('pm2', ['stop', String(processId)]);
-
-    return NextResponse.json({
-      success: true,
-      message: `Stopped process: ${processId}`,
-    });
-  } catch (error) {
-    console.error('Error stopping PM2 process:', error);
-    return NextResponse.json(
-      {
-        error: 'Failed to stop PM2 process',
-        details: error instanceof Error ? error.message : String(error),
-      },
-      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
-    );
-  }
+  return handlePm2ProcessAction(request, PM2_ACTION.STOP);
 }

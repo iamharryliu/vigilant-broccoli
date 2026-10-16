@@ -2,12 +2,17 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Badge, Dialog, Text } from '@radix-ui/themes';
 import {
+  Badge,
   Button,
   EllipsisCTA,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Input,
+  Text,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  cn,
 } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
@@ -15,6 +20,7 @@ import { DOC_CATEGORIES, DocCategory, HomeDoc } from '../../lib/types';
 import { HomeDocForm, HomeDocFormData } from './components/HomeDocForm';
 import { uploadFormFiles } from './upload-files';
 import { ROUTES } from '../../lib/routes';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 const CATEGORY_COLORS: Record<DocCategory, string> = {
   Insurance: 'blue',
@@ -42,6 +48,7 @@ const formatBytes = (bytes: number) => {
 type ModalState = { type: 'create' } | { type: 'edit'; doc: HomeDoc } | null;
 
 export default function DocsPage() {
+  usePageTitle(PAGE_TITLES.DOCS);
   const router = useRouter();
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
@@ -236,37 +243,49 @@ export default function DocsPage() {
         ))}
       </div>
 
-      {/* Create */}
-      <Dialog.Root
+      <Dialog
         open={modal?.type === 'create'}
         onOpenChange={open => {
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content
-          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+        <DialogContent
+          aria-describedby={undefined}
+          showCloseButton={false}
+          className={cn(
+            'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+            FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+          )}
           style={{ maxWidth: 500 }}
         >
-          <Dialog.Title>Add Document</Dialog.Title>
+          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+            Add Document
+          </DialogTitle>
           <HomeDocForm
             onSubmit={handleCreate}
             onCancel={() => setModal(null)}
           />
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
 
-      {/* Edit */}
-      <Dialog.Root
+      <Dialog
         open={modal?.type === 'edit'}
         onOpenChange={open => {
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content
-          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+        <DialogContent
+          aria-describedby={undefined}
+          showCloseButton={false}
+          className={cn(
+            'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+            FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+          )}
           style={{ maxWidth: 500 }}
         >
-          <Dialog.Title>Edit Document</Dialog.Title>
+          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+            Edit Document
+          </DialogTitle>
           {modal?.type === 'edit' && (
             <HomeDocForm
               initialData={{
@@ -280,8 +299,8 @@ export default function DocsPage() {
               isEdit
             />
           )}
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

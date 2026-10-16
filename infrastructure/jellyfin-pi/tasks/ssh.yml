@@ -1,0 +1,23 @@
+---
+# Installed before the hardening drop-in: disabling password auth without a
+# working key is how a LAN box turns into a reflash.
+- name: Authorise the operator SSH keys
+  ansible.posix.authorized_key:
+    user: '{{ ansible_user }}'
+    key: '{{ item }}'
+    state: present
+  loop: '{{ ssh_authorized_keys }}'
+
+- name: Harden sshd
+  ansible.builtin.template:
+    src: 99-hardening.conf.j2
+    # Raspberry Pi OS Bookworm's sshd_config opens with
+    # `Include /etc/ssh/sshd_config.d/*.conf`, and sshd keeps the first value
+    # it sees for a keyword — so a drop-in here wins over the stock file
+    # without editing it.
+    dest: /etc/ssh/sshd_config.d/99-hardening.conf
+    owner: root
+    group: root
+    mode: '0644'
+    validate: /usr/sbin/sshd -t -f %s
+  notify: Reload sshd

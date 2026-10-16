@@ -6,7 +6,7 @@ on:
     paths:
       - .github/workflows/cron-cleanup-workflow-runs.yml
   schedule:
-    - cron: '0 3 * * *'
+    - cron: '35 3 * * *'
   workflow_dispatch:
 
 permissions:
@@ -14,7 +14,8 @@ permissions:
 
 jobs:
   cleanup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
     steps:
       - name: Delete old workflow runs
         run: |

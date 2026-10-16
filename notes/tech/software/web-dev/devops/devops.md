@@ -1,33 +1,22 @@
 # Devops
 
-- [Devops Lingo](./devops-lingo.md)
+## Table of Contents
 
-## Services
+- [Devops Lingo](#devops-lingo)
+- [Cloud Services Name Mapping](#cloud-services-name-mapping)
+- [IaC Manager Comparison](#iac-manager-comparison)
+- [Service Providers](#service-providers)
+- [Devops Tools](#devops-tools)
+- [Notes](#notes)
 
-- [Apple Developer](./apple.md)
-- [FlyIO](./flyio.md)
-- [Github](./github.md)
-- [Google](./google.md)
-- [Google Cloud](./google-cloud.md)
-- [AWS](./aws/aws.md)
-- [Cloudflare](./cloudflare.md)
+## Devops Lingo
 
-## Devops Tools
-
-- [Git](./git/git.md)
-- [Docker](./docker.md)
-- [Kubernetes](./kubernetes.md)
-- [Nx](./nx.md)
-- [Hashicorp Vault](./hashicorp-vault.md)
-- [Automation](./automation/automation.md)
-- [Deployment](./deployment/deployment.md)
-
-## Notes
-
-- [DNS](./dns.md)
-- [Monorepo](./monorepo.md)
-- [Cloud Services](./cloud-services.md)
-- [Local Services](./local-services.md)
+| Term | Description                                                                                                                                                                                   |
+| ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| KMS  | A system used to securely create, store, and control cryptographic keys used for encryption.                                                                                                  |
+| SLA  | Service Level Agreement — a contract between a provider and a customer promising a measurable level of service (e.g. 99.9% uptime), with penalties such as service credits when it is missed. |
+| SLI  | Service Level Indicator — the actual measured metric an SLO and SLA are judged on, e.g. the percentage of successful requests or requests served under 200 ms.                                |
+| SLO  | Service Level Objective — the internal target for an SLI, usually set stricter than the SLA so the team has headroom before the contractual promise is broken.                                |
 
 ## Cloud Services Name Mapping
 
@@ -43,3 +32,51 @@
 |     Containers     | Runs your containerized apps with automatic scaling and no server management.              | App Runner / Fargate\* |     Cloud Run     |     Container Apps     |
 |     Functions      | Runs small event-driven functions that scale instantly and bill only for execution time.   |         Lambda         |  Cloud Functions  |       Functions        |
 |     Kubernetes     | Managed Kubernetes clusters for container orchestration.                                   |          EKS           |        GKE        |          AKS           |
+
+## IaC Manager Comparison
+
+Comparison of infrastructure-as-code tools, to guide picking one for provisioning cloud resources.
+
+| Name                      | Language                                   | Clouds                                           | State                                                                        | When to Use                                                                                            |
+| ------------------------- | ------------------------------------------ | ------------------------------------------------ | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| AWS CDK                   | TypeScript, Python, Java, C#, Go           | AWS only (synthesizes CloudFormation)            | Managed by CloudFormation stacks, no state file to host                      | AWS-only shop that wants real programming languages and high-level constructs                          |
+| AWS CloudFormation        | JSON/YAML templates                        | AWS only                                         | Managed by AWS per stack, no state file to host                              | AWS-only, no extra tooling or vendor; also the engine under CDK and SAM                                |
+| Azure Bicep               | Bicep DSL (compiles to ARM templates)      | Azure only                                       | Managed by Azure, no state file to host                                      | Azure-only, replaces hand-written ARM JSON                                                             |
+| CDK for Terraform (CDKTF) | TypeScript, Python, Java, C#, Go           | Any Terraform provider                           | Terraform state                                                              | Avoid for new work: HashiCorp has sunset it                                                            |
+| Crossplane                | Kubernetes YAML (CRDs), optional functions | Any with a provider                              | Kubernetes API server (etcd) is the source of truth                          | Kubernetes-centric platform teams exposing self-service infra APIs; continuous reconciliation          |
+| OpenTofu                  | HCL                                        | Any Terraform provider                           | State file, local or remote backend (supports state encryption)              | Terraform-compatible fork under the Linux Foundation, for an open-source governance requirement        |
+| Pulumi                    | TypeScript, Python, Go, C#, Java, YAML     | Any (own providers, many bridged from Terraform) | Pulumi Cloud (free individual tier) or self-managed backend (S3, GCS, local) | Multi-cloud with real languages, loops and tests, and a team comfortable outside HCL                   |
+| Terraform                 | HCL                                        | Any (largest provider ecosystem)                 | State file, local or remote backend (S3, GCS, HCP Terraform)                 | Default for multi-cloud and SaaS resources (DNS, GitHub, Vault); biggest community and module registry |
+
+## Service Providers
+
+- [Apple Developer](./apple.md)
+- [FlyIO](./flyio.md)
+- [Github](./github.md)
+- [Google](./google.md)
+- [Google Cloud](./google-cloud.md)
+- [AWS](./aws/aws.md)
+- [Cloudflare](./cloudflare.md)
+- [Vercel](./vercel.md)
+- [Netlify](./netlify.md)
+- [Render](./render.md)
+- [Lovable](./lovable.md)
+
+## Devops Tools
+
+- [Ansible](./ansible.md)
+- [Git](./git/git.md)
+- [Docker](./docker.md)
+- [Kubernetes](./kubernetes.md)
+- [Nx](./nx.md)
+- [Hashicorp Vault](./hashicorp-vault.md)
+- [Loki + Grafana](./loki-grafana.md)
+- [Automation](./automation/automation.md)
+- [Deployment](./deployment/deployment.md)
+
+## Notes
+
+- [DNS](./dns.md)
+- [Monorepo](./monorepo.md)
+- [Cloud Services](./cloud-services.md)
+- [Local Services](./local-services.md)

@@ -1,29 +1,21 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+import { SIDEBAR_ROUTE } from '../app.const';
 import { ReactNode, useState, useEffect, useCallback } from 'react';
-import { NextNavBar, NextNavRoute } from '@vigilant-broccoli/next-lib';
-import { DropdownMenu } from '@radix-ui/themes';
-import { Button } from '@vigilant-broccoli/react-lib';
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
 import { useAuth } from '../../../libs/auth';
-import { APP_ROUTE } from '../app.const';
-import { useTheme, useThemeKeybind } from '@vigilant-broccoli/react-lib';
+import { useThemeKeybind } from '@vigilant-broccoli/react-lib';
 import { FloatingIslandComponent } from '../components/floating-island.component';
 import { RightSidebar } from '../components/right-sidebar.component';
+import { ShortcutsOverlay } from '../components/shortcuts-overlay.component';
 import { useDeployNotifications } from '../hooks/useDeployNotifications';
 import { useNotificationHistory } from '../hooks/useNotificationHistory';
 import { useBrowserNotifications } from '../hooks/useBrowserNotifications';
 import { useUnreadDocumentTitle } from '../hooks/useUnreadDocumentTitle';
 import { NotificationContext } from '../context/NotificationContext';
 
-type ExtendedNavRoute = {
-  title: string;
-  path?: string;
-  children?: NextNavRoute[];
-};
-
 const IGNORED_TAGS = ['INPUT', 'TEXTAREA', 'SELECT'];
+const SHORTCUTS_OVERLAY_KEY_CODE = 'Slash';
 
 const isIgnoredInputElement = (target: EventTarget | null): boolean => {
   return target instanceof Element && IGNORED_TAGS.includes(target.tagName);
@@ -36,10 +28,9 @@ const shouldIgnoreKeystroke = (e: KeyboardEvent): boolean => {
 type KeyboardHandlers = {
   setSearchDialogOpen: (open: boolean) => void;
   setEmailDialogOpen: (open: boolean) => void;
-  setChatbotDialogOpen: (open: boolean) => void;
+  openChatbot: () => void;
   setCalendarDialogOpen: (open: boolean) => void;
   setNotepadDialogOpen: (open: boolean) => void;
-  setWeatherDialogOpen: (open: boolean) => void;
   setPomodoroDialogOpen: (open: boolean) => void;
   setUtilitiesDialogOpen: (open: boolean) => void;
 };
@@ -59,7 +50,7 @@ const processKeyboardInput = (
       return true;
     case 'c':
       if (!isShift) {
-        handlers.setChatbotDialogOpen(true);
+        handlers.openChatbot();
         return true;
       }
       if (isShift) {
@@ -69,9 +60,6 @@ const processKeyboardInput = (
       return false;
     case 'n':
       handlers.setNotepadDialogOpen(true);
-      return true;
-    case 'w':
-      handlers.setWeatherDialogOpen(true);
       return true;
     case 'p':
       if (isShift) {
@@ -101,9 +89,8 @@ const handleKeyboardShortcut = (
 };
 
 export default function Layout({ children }: { children: ReactNode }) {
-  const { appearance } = useTheme();
   useThemeKeybind();
-  const pathname = usePathname();
+  const router = useRouter();
   const _session = useAuth();
   const { notifications, unreadCount, add, markAllRead, clear } =
     useNotificationHistory();
@@ -126,95 +113,69 @@ export default function Layout({ children }: { children: ReactNode }) {
     [markAllRead],
   );
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
-  const [chatbotDialogOpen, setChatbotDialogOpen] = useState(false);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [calendarDialogOpen, setCalendarDialogOpen] = useState(false);
   const [notepadDialogOpen, setNotepadDialogOpen] = useState(false);
-  const [weatherDialogOpen, setWeatherDialogOpen] = useState(false);
   const [pomodoroDialogOpen, setPomodoroDialogOpen] = useState(false);
   const [utilitiesDialogOpen, setUtilitiesDialogOpen] = useState(false);
-
-  const allRoutes = Object.values(APP_ROUTE) as ExtendedNavRoute[];
-  const dropdownRoutes = allRoutes.filter(
-    r => r.children && r.children.length > 0,
-  );
-  const tabRoutes = allRoutes.filter((r): r is NextNavRoute => !!r.path);
-
-  const isActiveDropdown = (children?: NextNavRoute[]) => {
-    return children?.some(child => child.path === pathname) ?? false;
-  };
+  const [shortcutsOverlayOpen, setShortcutsOverlayOpen] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        e.code === SHORTCUTS_OVERLAY_KEY_CODE &&
+        e.shiftKey &&
+        !shouldIgnoreKeystroke(e)
+      ) {
+        e.preventDefault();
+        setShortcutsOverlayOpen(true);
+        return;
+      }
+
       handleKeyboardShortcut(e, {
         setSearchDialogOpen,
         setEmailDialogOpen,
-        setChatbotDialogOpen,
+        openChatbot: () => router.push(SIDEBAR_ROUTE.CHATBOT.path),
         setCalendarDialogOpen,
         setNotepadDialogOpen,
-        setWeatherDialogOpen,
         setPomodoroDialogOpen,
         setUtilitiesDialogOpen,
       });
     };
 
+    // Keyed off e.code (physical key) rather than e.key so the overlay
+    // still closes correctly no matter which key - Shift or / - is
+    // released first, since e.key would otherwise flip between "?" and
+    // "/" depending on Shift's state at release time.
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.code === SHORTCUTS_OVERLAY_KEY_CODE) {
+        setShortcutsOverlayOpen(false);
+      }
+    };
+
+    // Closes the overlay if focus leaves the window mid-hold (e.g. alt-tab),
+    // since no keyup fires in that case.
+    const handleBlur = () => setShortcutsOverlayOpen(false);
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+    window.addEventListener('keyup', handleKeyUp);
+    window.addEventListener('blur', handleBlur);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+      window.removeEventListener('blur', handleBlur);
+    };
+  }, [router]);
 
   return (
     <NotificationContext.Provider value={add}>
       <div className="w-full h-screen flex flex-col overflow-hidden print:h-auto print:overflow-visible print:block">
-        <div className="print:hidden">
-          <NextNavBar
-            routes={tabRoutes}
-            isDark={appearance === 'dark'}
-            rightContent={
-              <div
-                style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
-              >
-                {dropdownRoutes.map(obj => (
-                  <DropdownMenu.Root key={obj.title}>
-                    <DropdownMenu.Trigger>
-                      <Button
-                        variant="ghost"
-                        style={{
-                          cursor: 'pointer',
-                          color: isActiveDropdown(obj.children)
-                            ? 'var(--accent-9)'
-                            : 'inherit',
-                          fontWeight: isActiveDropdown(obj.children)
-                            ? 500
-                            : 400,
-                        }}
-                      >
-                        {obj.title}
-                        <DropdownMenu.TriggerIcon />
-                      </Button>
-                    </DropdownMenu.Trigger>
-                    <DropdownMenu.Content>
-                      {obj.children?.map(child => (
-                        <DropdownMenu.Item key={child.path} asChild>
-                          <Link href={child.path ?? '#'}>{child.title}</Link>
-                        </DropdownMenu.Item>
-                      ))}
-                    </DropdownMenu.Content>
-                  </DropdownMenu.Root>
-                ))}
-              </div>
-            }
-          />
-        </div>
         <div className="flex flex-1 overflow-hidden print:h-auto print:overflow-visible print:block">
           <main className="flex-1 p-4 min-w-0 overflow-y-auto print:h-auto print:overflow-visible print:p-0 print:w-full">
             {children}
           </main>
           <div className="print:hidden">
             <RightSidebar
-              setChatbotDialogOpen={setChatbotDialogOpen}
-              setEmailDialogOpen={setEmailDialogOpen}
-              setCalendarDialogOpen={setCalendarDialogOpen}
-              setNotepadDialogOpen={setNotepadDialogOpen}
               setPomodoroDialogOpen={setPomodoroDialogOpen}
               setSearchDialogOpen={setSearchDialogOpen}
               notificationsOpen={notificationsOpen}
@@ -225,20 +186,17 @@ export default function Layout({ children }: { children: ReactNode }) {
             />
           </div>
         </div>
+        <ShortcutsOverlay open={shortcutsOverlayOpen} />
         <div style={{ display: 'none' }} aria-hidden="true">
           <FloatingIslandComponent
             searchDialogOpen={searchDialogOpen}
             setSearchDialogOpen={setSearchDialogOpen}
-            chatbotDialogOpen={chatbotDialogOpen}
-            setChatbotDialogOpen={setChatbotDialogOpen}
             emailDialogOpen={emailDialogOpen}
             setEmailDialogOpen={setEmailDialogOpen}
             calendarDialogOpen={calendarDialogOpen}
             setCalendarDialogOpen={setCalendarDialogOpen}
             notepadDialogOpen={notepadDialogOpen}
             setNotepadDialogOpen={setNotepadDialogOpen}
-            weatherDialogOpen={weatherDialogOpen}
-            setWeatherDialogOpen={setWeatherDialogOpen}
             pomodoroDialogOpen={pomodoroDialogOpen}
             setPomodoroDialogOpen={setPomodoroDialogOpen}
             utilitiesDialogOpen={utilitiesDialogOpen}

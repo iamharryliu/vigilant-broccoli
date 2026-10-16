@@ -29,7 +29,6 @@ function getEnvironmentVariablesFromJSON(text: string): string {
     const obj = JSON.parse(text?.trim());
     return Object.entries(obj as Record<string, string>)
       .map(([key, value]) => {
-        // Quote value if it contains spaces or special characters
         const needsQuotes = /[\s"'`$\\]/.test(value);
         const safeValue = needsQuotes
           ? `"${value.replace(/"/g, '\\"')}"`
@@ -103,6 +102,14 @@ function encodePercent(text: string): string {
   }
 }
 
+function decodePercent(text: string): string {
+  try {
+    return decodeURIComponent(text.trim());
+  } catch {
+    return '';
+  }
+}
+
 export const EnvUtils = {
   getPrettierJSON,
   getEnvironmentVariablesFromJSON,
@@ -113,4 +120,5 @@ export const EnvUtils = {
   encodeBase64,
   decodeBase64,
   encodePercent,
+  decodePercent,
 };

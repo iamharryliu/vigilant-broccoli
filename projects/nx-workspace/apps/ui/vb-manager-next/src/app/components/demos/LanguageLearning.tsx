@@ -1,9 +1,9 @@
 'use client';
 
 import { ReactNode, useEffect, useState } from 'react';
-import { Badge, Text } from '@radix-ui/themes';
 import {
   AudioButton,
+  Badge,
   Button,
   Checkbox,
   Dialog,
@@ -14,6 +14,7 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import {
   GraduationCap,
@@ -54,8 +55,7 @@ type StandaloneMasteredWord = {
 };
 
 type SelectedToken =
-  | { kind: 'vocab'; word: Word }
-  | { kind: 'lookup'; text: string };
+  { kind: 'vocab'; word: Word } | { kind: 'lookup'; text: string };
 
 type MasterAction =
   | { kind: 'vocab'; wordId: string }
@@ -68,8 +68,7 @@ type MasterAction =
     };
 
 type UnmasterAction =
-  | { kind: 'vocab'; wordId: string }
-  | { kind: 'word'; word: string };
+  { kind: 'vocab'; wordId: string } | { kind: 'word'; word: string };
 
 const SUPPORTED_LANGUAGES = [
   'Swedish',
@@ -916,8 +915,8 @@ export function LanguageLearning() {
             {historyLanguages.length > 1 && (
               <Select
                 options={[FILTER_ALL, ...historyLanguages]}
-                selectedOption={historyFilter}
-                setValue={handleHistoryFilterChange}
+                value={historyFilter}
+                onValueChange={handleHistoryFilterChange}
                 displayMapper={{
                   [FILTER_ALL]: LABEL_ALL_LANGUAGES,
                   ...Object.fromEntries(
@@ -989,8 +988,8 @@ export function LanguageLearning() {
             {masteredLanguages.length > 1 && (
               <Select
                 options={[FILTER_ALL, ...masteredLanguages]}
-                selectedOption={masteredFilter}
-                setValue={handleMasteredFilterChange}
+                value={masteredFilter}
+                onValueChange={handleMasteredFilterChange}
                 displayMapper={{
                   [FILTER_ALL]: LABEL_ALL_LANGUAGES,
                   ...Object.fromEntries(
@@ -1109,8 +1108,8 @@ export function LanguageLearning() {
               </Text>
               <Select
                 options={[...SPEED_OPTIONS]}
-                selectedOption={speed}
-                setValue={handleSpeedChange}
+                value={speed}
+                onValueChange={handleSpeedChange}
               />
             </div>
             <div className="flex flex-col gap-3">

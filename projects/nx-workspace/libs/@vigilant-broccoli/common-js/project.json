@@ -15,7 +15,7 @@
     "build": {
       "outputs": [
         "{projectRoot}/{options.outDir}",
-        "{workspaceRoot}/dist/libs/@vigilant-broccoli/common-node"
+        "{workspaceRoot}/dist/libs/@vigilant-broccoli/common-js"
       ],
       "defaultConfiguration": "production",
       "options": {

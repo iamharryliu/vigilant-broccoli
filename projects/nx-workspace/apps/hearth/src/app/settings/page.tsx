@@ -1,15 +1,33 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Text } from '@radix-ui/themes';
-import { Button, Checkbox } from '@vigilant-broccoli/react-lib';
+
+import { Button, Checkbox, Text } from '@vigilant-broccoli/react-lib';
+import {
+  CONTENT_TYPE_HEADER,
+  HTTP_METHOD,
+  JSON_CONTENT_TYPE,
+} from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { HomeDetailView } from '../homes/components/HomeDetailView';
 import { HomeCreateForm } from '../homes/components/HomeCreateForm';
 import { supabase } from '../../../libs/supabase';
+import { IS_DEV } from '../app.consts';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
+import {
+  DEFAULT_RENAME_LANGUAGE,
+  RENAME_ENABLED_KEY,
+  RENAME_LANGUAGE_KEY,
+  RENAME_LANGUAGES,
+} from '../../lib/types';
 
-const EXPORT_OPTIONS = [{ key: 'where-is', label: 'Where Is' }] as const;
+const USER_API = '/api/user';
+
+const EXPORT_OPTIONS = [
+  { key: 'where-is', label: 'Where Is' },
+  { key: 'food-planner', label: 'Food Planner' },
+] as const;
 
 type ExportKey = (typeof EXPORT_OPTIONS)[number]['key'];
 
@@ -30,8 +48,9 @@ const CLEAR_OPTIONS = [
 type ClearKey = (typeof CLEAR_OPTIONS)[number]['key'];
 
 export default function SettingsPage() {
+  usePageTitle(PAGE_TITLES.SETTINGS);
   const session = useAuth();
-  const { homes, selectedHomeId } = useHome();
+  const { homes, selectedHomeId, refreshHomes } = useHome();
   const selectedHome = homes.find(h => h.id === selectedHomeId);
 
   const [selected, setSelected] = useState<Set<ExportKey>>(new Set());
@@ -48,6 +67,27 @@ export default function SettingsPage() {
   const [seedResults, setSeedResults] = useState<Record<string, string> | null>(
     null,
   );
+
+  const metadata = session?.user.user_metadata ?? {};
+  const [renameEnabled, setRenameEnabled] = useState(
+    (metadata[RENAME_ENABLED_KEY] as boolean) ?? false,
+  );
+  const [renameLanguage, setRenameLanguage] = useState(
+    (metadata[RENAME_LANGUAGE_KEY] as string) ?? DEFAULT_RENAME_LANGUAGE,
+  );
+
+  const patchUser = async (body: Record<string, unknown>) => {
+    if (!session?.access_token) return;
+    await fetch(USER_API, {
+      method: HTTP_METHOD.PATCH,
+      headers: {
+        [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE,
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify(body),
+    });
+    await supabase.auth.refreshSession();
+  };
 
   const toggle = (key: ExportKey) =>
     setSelected(prev => {
@@ -73,19 +113,16 @@ export default function SettingsPage() {
   const handleExport = async () => {
     if (!selectedHomeId || !session?.access_token) return;
     for (const key of selected) {
-      if (key === 'where-is') {
-        const res = await fetch(
-          `/api/where-is/export?homeId=${selectedHomeId}`,
-          { headers: { Authorization: `Bearer ${session.access_token}` } },
-        );
-        const blob = await res.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `where-is-export-${selectedHomeId}-${Date.now()}.json`;
-        a.click();
-        URL.revokeObjectURL(url);
-      }
+      const res = await fetch(`/api/${key}/export?homeId=${selectedHomeId}`, {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+      });
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${key}-export-${selectedHomeId}-${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
     }
   };
 
@@ -94,8 +131,8 @@ export default function SettingsPage() {
     if (!file || !selectedHomeId || !session) return;
     const text = await file.text();
     const importData = JSON.parse(text);
-    if (selected.has('where-is')) {
-      await fetch('/api/where-is/import', {
+    for (const key of selected) {
+      await fetch(`/api/${key}/import`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -153,24 +190,69 @@ export default function SettingsPage() {
     await supabase
       .from('homes')
       .insert({ name, description, user_id: session?.user.id });
-    window.location.reload();
+    await refreshHomes();
   };
 
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-6">
       <Text size="6" weight="bold">
-        Settings
+        Home Settings
       </Text>
 
       <section className="space-y-3">
-        <Text size="3" weight="medium">
-          Home
-        </Text>
         {selectedHome ? (
           <HomeDetailView homeId={String(selectedHome.id)} />
         ) : (
           <HomeCreateForm onSubmit={handleCreateHome} />
         )}
+      </section>
+
+      <section className="space-y-3">
+        <Text size="3" weight="medium">
+          Receipts
+        </Text>
+        <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
+          <div className="flex items-center justify-between px-4 py-3 gap-4">
+            <div>
+              <Text size="2" as="p">
+                Suggest item renames
+              </Text>
+              <Text size="1" color="gray">
+                Scanned items are renamed to their everyday name. The printed
+                name is kept and can be restored per item.
+              </Text>
+            </div>
+            <input
+              type="checkbox"
+              checked={renameEnabled}
+              onChange={e => {
+                setRenameEnabled(e.target.checked);
+                patchUser({ renameEnabled: e.target.checked });
+              }}
+              className="shrink-0 cursor-pointer"
+            />
+          </div>
+          <div className="flex items-center justify-between px-4 py-3 gap-4">
+            <Text size="2" color="gray" className="shrink-0">
+              Rename to
+            </Text>
+            <select
+              value={renameLanguage}
+              onChange={e => {
+                setRenameLanguage(e.target.value);
+                patchUser({ renameLanguage: e.target.value });
+              }}
+              disabled={!renameEnabled}
+              className="h-9 px-2 rounded border border-gray-200 dark:border-gray-700 bg-transparent text-sm disabled:opacity-50"
+            >
+              {RENAME_LANGUAGES.map(language => (
+                <option key={language} value={language}>
+                  {language}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </section>
 
       <section className="space-y-3">
@@ -211,103 +293,105 @@ export default function SettingsPage() {
         </div>
       </section>
 
-      <section className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Text size="3" weight="medium">
-            Dev
-          </Text>
-          <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-700 font-medium">
-            danger
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          <Button
-            variant="outline"
-            onClick={handleSeed}
-            disabled={seeding || !selectedHomeId}
-          >
-            Seed Mock Data
-          </Button>
-          <Text size="1" color="gray">
-            Inserts sample rules, meals, projects, events and more.
-          </Text>
-        </div>
-        {seedResults && (
-          <div className="border border-gray-200 rounded-lg divide-y divide-gray-100">
-            {Object.entries(seedResults).map(([key, status]) => (
-              <div
-                key={key}
-                className="flex items-center justify-between px-4 py-2"
-              >
-                <Text size="2" color="gray">
-                  {key}
-                </Text>
-                <Text size="2" color={status === 'ok' ? 'green' : 'red'}>
-                  {status}
-                </Text>
-              </div>
-            ))}
-          </div>
-        )}
-
-        <Text size="2" color="gray">
-          Clear all records for the selected home. This is irreversible.
-        </Text>
-        <div className="border border-red-100 rounded-lg divide-y divide-red-50">
-          <label className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-red-50">
-            <Checkbox
-              checked={allClearSelected}
-              onCheckedChange={toggleAllClear}
-            />
-            <Text size="2" weight="medium">
-              Select All
+      {IS_DEV && (
+        <section className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Text size="3" weight="medium">
+              Dev
             </Text>
-          </label>
-          {CLEAR_OPTIONS.map(({ key, label }) => (
-            <label
-              key={key}
-              className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-red-50"
+            <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-700 font-medium">
+              danger
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              onClick={handleSeed}
+              disabled={seeding || !selectedHomeId}
             >
-              <Checkbox
-                checked={clearSelected.has(key)}
-                onCheckedChange={() => toggleClear(key)}
-              />
-              <Text size="2">{label}</Text>
-            </label>
-          ))}
-        </div>
-        <div className="flex items-center gap-3">
-          <Button
-            variant="destructive"
-            onClick={handleClear}
-            disabled={clearSelected.size === 0 || clearing || !selectedHomeId}
-          >
-            Clear Selected
-          </Button>
-          {clearSelected.size > 0 && (
+              Seed Mock Data
+            </Button>
             <Text size="1" color="gray">
-              {clearSelected.size} selected
+              Inserts sample rules, meals, projects, events and more.
             </Text>
+          </div>
+          {seedResults && (
+            <div className="border border-gray-200 rounded-lg divide-y divide-gray-100">
+              {Object.entries(seedResults).map(([key, status]) => (
+                <div
+                  key={key}
+                  className="flex items-center justify-between px-4 py-2"
+                >
+                  <Text size="2" color="gray">
+                    {key}
+                  </Text>
+                  <Text size="2" color={status === 'ok' ? 'green' : 'red'}>
+                    {status}
+                  </Text>
+                </div>
+              ))}
+            </div>
           )}
-        </div>
-        {clearResults && (
-          <div className="border border-gray-200 rounded-lg divide-y divide-gray-100 mt-2">
-            {Object.entries(clearResults).map(([key, status]) => (
-              <div
+
+          <Text size="2" color="gray">
+            Clear all records for the selected home. This is irreversible.
+          </Text>
+          <div className="border border-red-100 rounded-lg divide-y divide-red-50">
+            <label className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-red-50">
+              <Checkbox
+                checked={allClearSelected}
+                onCheckedChange={toggleAllClear}
+              />
+              <Text size="2" weight="medium">
+                Select All
+              </Text>
+            </label>
+            {CLEAR_OPTIONS.map(({ key, label }) => (
+              <label
                 key={key}
-                className="flex items-center justify-between px-4 py-2"
+                className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-red-50"
               >
-                <Text size="2" color="gray">
-                  {key}
-                </Text>
-                <Text size="2" color={status === 'ok' ? 'green' : 'red'}>
-                  {status}
-                </Text>
-              </div>
+                <Checkbox
+                  checked={clearSelected.has(key)}
+                  onCheckedChange={() => toggleClear(key)}
+                />
+                <Text size="2">{label}</Text>
+              </label>
             ))}
           </div>
-        )}
-      </section>
+          <div className="flex items-center gap-3">
+            <Button
+              variant="destructive"
+              onClick={handleClear}
+              disabled={clearSelected.size === 0 || clearing || !selectedHomeId}
+            >
+              Clear Selected
+            </Button>
+            {clearSelected.size > 0 && (
+              <Text size="1" color="gray">
+                {clearSelected.size} selected
+              </Text>
+            )}
+          </div>
+          {clearResults && (
+            <div className="border border-gray-200 rounded-lg divide-y divide-gray-100 mt-2">
+              {Object.entries(clearResults).map(([key, status]) => (
+                <div
+                  key={key}
+                  className="flex items-center justify-between px-4 py-2"
+                >
+                  <Text size="2" color="gray">
+                    {key}
+                  </Text>
+                  <Text size="2" color={status === 'ok' ? 'green' : 'red'}>
+                    {status}
+                  </Text>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
     </div>
   );
 }

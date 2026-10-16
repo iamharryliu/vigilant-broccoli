@@ -1,3 +1,7 @@
+import { EMAIL_ADDRESS } from './email-address.const';
+
+export { EMAIL_ADDRESS };
+
 export const APP_NAME = {
   HARRYLIU_DESIGN: 'HARRYLIU_DESIGN',
   CLOUD_8_SKATE: 'CLOUD_8_SKATE',
@@ -60,13 +64,87 @@ export const PERSONAL_URL = {
     NAME: 'Groceries',
     URL: 'https://outlook.live.com/host/0/0d5c91ee-5be2-4b79-81ed-23e6c4580427/ToDoId',
   },
-  HOME_PROJECTS: {
-    NAME: 'Home Projects',
-    URL: 'https://docs.google.com/document/d/1-kKUgs80h0BLM_KijHhSXp68i3omaAeg-54LTF47PA8/edit?tab=t.m0i0tbacqfkh',
+} as const;
+
+export const SENDER_EMAIL_ADDRESS = 'contact@harryliu.dev';
+
+export const EMAIL_LINK = {
+  NAME: EMAIL_ADDRESS,
+  URL: `mailto:${EMAIL_ADDRESS}`,
+} as const;
+
+export const SOCIAL_LINK = {
+  LINKEDIN: {
+    NAME: 'LinkedIn',
+    URL: 'https://www.linkedin.com/in/iamharryliu/',
   },
-  HOME_KITCHEN_INVENTORY: {
-    NAME: 'Home Kitchen Inventory',
-    URL: 'https://docs.google.com/document/d/1-kKUgs80h0BLM_KijHhSXp68i3omaAeg-54LTF47PA8/edit?tab=t.bb5o1okznd99',
+  GITHUB: {
+    NAME: 'GitHub',
+    URL: 'https://github.com/iamharryliu',
+  },
+  INSTAGRAM_PRETTYDAMNTIRED: {
+    NAME: 'Instagram - prettydamntired',
+    URL: 'https://www.instagram.com/prettydamntired/',
+  },
+  INSTAGRAM_TORONTOCITYSKATE: {
+    NAME: 'Instagram - torontocityskate',
+    URL: 'https://www.instagram.com/torontocityskate/',
+  },
+  INSTAGRAM_HARRYSELLSSHIT: {
+    NAME: 'Instagram - harrysellsshit',
+    URL: 'https://www.instagram.com/harrysellsshit/',
+  },
+  INSTAGRAM_CLOUD8SKATE: {
+    NAME: 'Instagram - cloud8skate',
+    URL: 'https://www.instagram.com/cloud8skate/',
+  },
+  INSTAGRAM_MALMOURBANSKATE: {
+    NAME: 'Instagram - malmo.urbanskate',
+    URL: 'https://www.instagram.com/malmo.urbanskate/',
+  },
+  INSTAGRAM_HUSTLEMALMO: {
+    NAME: 'Instagram - hustlemalmo',
+    URL: 'https://www.instagram.com/hustlemalmo/',
+  },
+} as const;
+
+export const COMMUNITY_LINK = {
+  CLOUD8SKATE: {
+    NAME: 'Cloud 8 Skate',
+    URL: 'https://cloud8skate.com/',
+  },
+} as const;
+
+export const PROJECT_LINK = {
+  SOFTWARE_PROJECTS: {
+    NAME: 'Software Projects',
+    URL: 'https://projects.harryliu.dev/',
+  },
+} as const;
+
+export const BUSINESS_LINK = {
+  SECONDHAND_STORE: {
+    NAME: 'harrysellsshit',
+    URL: SOCIAL_LINK.INSTAGRAM_HARRYSELLSSHIT.URL,
+  },
+} as const;
+
+export const INTEREST_LINK = {
+  SPOTIFY: {
+    NAME: 'Spotify',
+    URL: 'https://open.spotify.com/user/22z5agodra7fwhm2erdqn5bjq',
+  },
+  GOODREADS: {
+    NAME: 'Goodreads',
+    URL: 'https://www.goodreads.com/user/show/74043883-harry',
+  },
+  MYANIMELIST: {
+    NAME: 'MyAnimeList',
+    URL: 'https://myanimelist.net/profile/prettydamntired',
+  },
+  IMDB: {
+    NAME: 'IMDb',
+    URL: 'https://www.imdb.com/user/ur45097057/',
   },
 } as const;
 
@@ -90,3 +168,6 @@ export const MAC_OS_APP = {
     NAME: 'WhatsApp',
   },
 } as const;
+
+export * from './personal-calendar.const';
+export * from './personal-calendar-embed';

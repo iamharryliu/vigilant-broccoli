@@ -1,3 +1,4 @@
+import { cn } from '../utils/cn';
 import { Plus } from 'lucide-react';
 import {
   ComponentType,
@@ -6,16 +7,30 @@ import {
   SetStateAction,
   useState,
 } from 'react';
+import { DropdownMenu } from './DropdownMenu';
 import {
   AlertDialog,
-  Card,
-  Dialog,
-  DropdownMenu,
-  Heading,
-} from '@radix-ui/themes';
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './AlertDialog';
+import { Card } from './Card';
 import { FORM_TYPE, FormType } from '@vigilant-broccoli/common-js';
 import { Button } from './Button';
-import { FULL_SCREEN_ON_MOBILE_DIALOG_CLASS } from './Dialog';
+import { Heading } from './Heading';
+import {
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from './Dialog';
 import { IconButton, type IconButtonIcon } from './IconButton';
 import { StackedImages } from './StackedImages';
 
@@ -88,6 +103,8 @@ export const CRUDItemList = <T extends CRUDItem>({
   isCards,
   showEllipsis = true,
   canShowEllipsis,
+  itemActions,
+  updateLabel,
   getItemImages,
   getItemTitle,
   fullWidthImage = false,
@@ -107,6 +124,8 @@ export const CRUDItemList = <T extends CRUDItem>({
   isCards?: boolean;
   showEllipsis?: boolean;
   canShowEllipsis?: (item: T) => boolean;
+  itemActions?: (item: T) => EllipsisAction[];
+  updateLabel?: string;
   getItemImages?: (item: T) => string[] | undefined;
   getItemTitle?: (item: T) => string;
   fullWidthImage?: boolean;
@@ -139,6 +158,8 @@ export const CRUDItemList = <T extends CRUDItem>({
             deleteItem={handleDelete}
             copy={copy}
             submitHandler={submitHandler}
+            extraActions={itemActions?.(item)}
+            updateLabel={updateLabel}
           />
         </div>
       ) : null;
@@ -163,7 +184,7 @@ export const CRUDItemList = <T extends CRUDItem>({
 
     if (fullWidthImage && imageUrls.length > 0) {
       return (
-        <div className="flex flex-col gap-2 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+        <div className="flex flex-col gap-2 p-2 rounded-lg hover:bg-muted transition-colors">
           <img
             src={imageUrls[0]}
             alt={title}
@@ -175,7 +196,7 @@ export const CRUDItemList = <T extends CRUDItem>({
     }
 
     return (
-      <div className="flex items-start sm:items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
+      <div className="flex items-start sm:items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors">
         {imageUrls.length > 0 && <StackedImages urls={imageUrls} alt={title} />}
         {contentWithEllipsis('items-start sm:items-center')}
       </div>
@@ -233,20 +254,39 @@ const EllipsisOptions = <T extends CRUDItem>({
   submitHandler: formSubmitHandler,
   deleteItem,
   copy,
+  extraActions,
+  updateLabel = DEFAULT_UPDATE_LABEL,
 }: {
   item: T;
   FormComponent: CRUDFormComponent<T>;
   submitHandler: CRUDFormSubmitHandler<T>;
   deleteItem: (id: string | number) => Promise<void>;
   copy: ListManagementCopy;
+  extraActions?: EllipsisAction[];
+  updateLabel?: string;
 }) => {
   const [updateOpen, setUpdateOpen] = useState(false);
+  const hasExtraActions = Boolean(extraActions?.length);
+  const ctaProps = hasExtraActions
+    ? {
+        actions: [
+          { label: updateLabel, onSelect: () => setUpdateOpen(true) },
+          ...(extraActions ?? []),
+          {
+            label: DEFAULT_DELETE_LABEL,
+            color: 'red' as const,
+            onSelect: () => deleteItem(item.id),
+            confirm: { confirmLabel: DEFAULT_DELETE_LABEL },
+          },
+        ],
+      }
+    : {
+        onUpdate: () => setUpdateOpen(true),
+        onDelete: () => deleteItem(item.id),
+      };
   return (
     <>
-      <EllipsisCTA
-        onUpdate={() => setUpdateOpen(true)}
-        onDelete={() => deleteItem(item.id)}
-      />
+      <EllipsisCTA {...ctaProps} updateLabel={updateLabel} />
       <CRUDItemFormDialog
         open={updateOpen}
         onOpenChange={setUpdateOpen}
@@ -261,6 +301,7 @@ const EllipsisOptions = <T extends CRUDItem>({
 };
 
 const DEFAULT_DELETE_LABEL = 'Delete';
+const DEFAULT_CANCEL_LABEL = 'Cancel';
 const DEFAULT_UPDATE_LABEL = 'Update';
 const DEFAULT_DELETE_TITLE = 'Delete Item';
 const DEFAULT_DELETE_DESCRIPTION = 'Are you sure you want to delete this item?';
@@ -338,7 +379,9 @@ export const EllipsisCTA = ({
 
   return (
     <div onClick={e => e.stopPropagation()}>
-      <DropdownMenu.Root>
+      {/* A modal menu that hands off to a dialog leaves pointer-events: none on
+          <body> once the dialog closes (e.g. via Esc), freezing the whole page. */}
+      <DropdownMenu.Root modal={false}>
         <DropdownMenu.Trigger>
           <IconButton variant="ghost" icon={icon} disabled={disabled} />
         </DropdownMenu.Trigger>
@@ -382,6 +425,7 @@ export const DeleteItemConfirmationDialog = ({
   title = DEFAULT_DELETE_TITLE,
   description = DEFAULT_DELETE_DESCRIPTION,
   confirmLabel = DEFAULT_DELETE_LABEL,
+  cancelLabel = DEFAULT_CANCEL_LABEL,
 }: {
   deleteItem: () => Promise<void>;
   open?: boolean;
@@ -389,24 +433,53 @@ export const DeleteItemConfirmationDialog = ({
   title?: string;
   description?: string;
   confirmLabel?: string;
-}) => (
-  <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
-    {open === undefined && (
-      <AlertDialog.Trigger>
-        <Button className="w-min" variant="destructive">
-          {confirmLabel}
-        </Button>
-      </AlertDialog.Trigger>
-    )}
-    <AlertDialog.Content className="sm:max-w-[425px]">
-      <AlertDialog.Title>{title}</AlertDialog.Title>
-      <AlertDialog.Description>{description}</AlertDialog.Description>
-      <Button variant="destructive" onClick={deleteItem}>
-        {confirmLabel}
-      </Button>
-    </AlertDialog.Content>
-  </AlertDialog.Root>
-);
+  cancelLabel?: string;
+}) => {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = open !== undefined;
+  const setOpen = (next: boolean) => {
+    if (!isControlled) setInternalOpen(next);
+    onOpenChange?.(next);
+  };
+
+  return (
+    <AlertDialog
+      open={isControlled ? open : internalOpen}
+      onOpenChange={setOpen}
+    >
+      {!isControlled && (
+        <AlertDialogTrigger asChild>
+          <Button className="w-min" variant="destructive">
+            {confirmLabel}
+          </Button>
+        </AlertDialogTrigger>
+      )}
+      <AlertDialogContent className="sm:max-w-[425px]">
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel asChild>
+            <Button variant="outline">{cancelLabel}</Button>
+          </AlertDialogCancel>
+          <AlertDialogAction asChild>
+            <Button
+              variant="destructive"
+              onClick={async event => {
+                event.preventDefault();
+                await deleteItem();
+                setOpen(false);
+              }}
+            >
+              {confirmLabel}
+            </Button>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
 
 export const CRUDItemFormDialog = <T,>({
   formType,
@@ -433,29 +506,34 @@ export const CRUDItemFormDialog = <T,>({
     setOpen?.(false);
   }
   return (
-    <Dialog.Root
-      open={isControlled ? open : internalOpen}
-      onOpenChange={setOpen}
-    >
+    <Dialog open={isControlled ? open : internalOpen} onOpenChange={setOpen}>
       {!isControlled && (
-        <Dialog.Trigger>
+        <DialogTrigger asChild>
           <Button variant="ghost">
             {formType === FORM_TYPE.CREATE ? <Plus /> : 'Update'}
           </Button>
-        </Dialog.Trigger>
+        </DialogTrigger>
       )}
-      <Dialog.Content
-        className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+      <DialogContent
+        showCloseButton={false}
+        className={cn(
+          'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+          FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+        )}
         onCloseAutoFocus={e => e.preventDefault()}
       >
-        <Dialog.Title>{copy[formType].TITLE}</Dialog.Title>
-        <Dialog.Description>{copy[formType].DESCRIPTION}</Dialog.Description>
+        <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
+          {copy[formType].TITLE}
+        </DialogTitle>
+        <DialogDescription className="text-base">
+          {copy[formType].DESCRIPTION}
+        </DialogDescription>
         <FormComponent
           formType={formType}
           initialFormValues={initialFormValues}
           submitHandler={dialogSubmitHandler}
         />
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 };

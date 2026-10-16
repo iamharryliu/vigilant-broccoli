@@ -79,7 +79,6 @@ export const processImage = async (
     throw new ImageValidationError('Invalid image: could not read dimensions.');
   }
 
-  // Resize if needed, convert to jpeg, strip exif metadata
   const processed = await sharp(buffer)
     .rotate() // auto-orient based on EXIF before stripping
     .resize({

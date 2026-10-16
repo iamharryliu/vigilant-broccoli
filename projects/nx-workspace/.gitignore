@@ -1,5 +1,3 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
-
 # SQLite databases
 *.db
 *.sqlite
@@ -7,6 +5,7 @@ better-auth.secret
 
 # compiled output
 dist
+_site
 tmp
 /out-tsc
 
@@ -73,3 +72,11 @@ test-results/
 package-lock.json
 
 .nx/migrate-runs
+
+# One-shot LLM migration prompts written by `nx migrate`
+tools/ai-migrations/
+# Prettier refuses an explicitly passed symbolic link, and Nx formatting reads
+# this workspace's ignore rules rather than the repository root's. The agent
+# adapters are symlinks, so Nx must not hand them to Prettier.
+AGENTS.md
+.vitest

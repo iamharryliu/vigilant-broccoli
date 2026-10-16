@@ -1,7 +1,11 @@
 # Journal
 JOURNAL_DIR="$HOME/journal"
 alias cdjournal="cd '$JOURNAL_DIR'"
-alias pushJournal="cdjournal && git add . && gc docs 'Update journal.' && gpush"
+pushjournal() {
+  pushd "$JOURNAL_DIR" > /dev/null || return 1
+  git add . && gc docs 'Update journal.' && gpush
+  popd > /dev/null
+}
 alias pulljournal="cdjournal && gpull"
 
 # VB
@@ -19,9 +23,6 @@ alias pushleetcode="git add $GRIND75_DIR && gc feat leetcode 'Update leetcode.' 
 alias cdnx="cd $NX_DIR"
 
 # Github
-alias gitme='chrome "https://github.com/iamharryliu"'
-alias pushghreadme="cd $HOME/iamharryliu && gpull && git add README.md && gc docs github-readme 'Update Github profile README.md' && gpush"
-alias vbrepo="cdvb && npm run repo"
 alias vbactions="cdvb && npm run open:repo:actions"
 alias vbnpm="cdvb && npm run npm:packages"
 # vb push
@@ -32,21 +33,11 @@ alias pushsnippets="cdvb && git add $SNIPPETS_DIR && gc docs snippets 'Update sn
 alias pushactions="cdvb && git add $GIT_WORKFLOWS_DIR && gc ci github-actions 'Update Github actions.' && gpush"
 alias pushsetup="cdvb && git add $SETUP_DIR && gc feat setup 'Update setup scripts.' && gpush"
 alias pushdotfiles="cdvb && git add $DOTFILES_DIR && gc feat dotfiles 'Update dotfiles.' && gpush"
-# Projects
-alias servepersonalfrontend="cdnx && npm run serve:personal-website"
-alias deploypersonalfrontend="cdnx && nx manual-deploy personal-website-frontend"
 # Grind 75
 alias testgrind75py="python -m unittest discover -s $GRIND75_DIR/python"
 alias testgrind75ts="cdgrind75ts && npx jest $GRIND75_DIR/typescript"
 alias testgrind75go="go test $GRIND75_DIR/..."
 alias testgrind75="testgrind75py && testgrind75ts && testgrind75go"
-
-# Cloud8
-alias servecloud8="cdnx && nx serve cloud-8-skate-angular"
-
-# Employee Handler
-alias npmEmployeeHandler="npm i $PROJECTS_DIR/nx-workspace/dist/libs/@vigilant-broccoli/employee-handler"
-alias buildEmployeeHandler="nnx build @vigilant-broccoli/employee-handler"
 
 # OCI VM
 sshocivm() {
@@ -56,9 +47,6 @@ sshocivm() {
 # Tmux
 alias tmuxvb="$REPO_DIR/setup/dotfiles/common/scripts/tmux-vb.sh"
 alias neovidetmuxvb='neovide -- -c "terminal tmux attach -t vb || ~/vigilant-broccoli/setup/dotfiles/common/scripts/tmux-vb.sh" -c "startinsert"'
-
-# vigilant-broccoli vm
-alias vbvmwg=" sudo wg-quick up vb"
 
 # WireGuard
 alias wg0-up='sudo wg-quick up wg0'
@@ -77,19 +65,15 @@ cpvaulttoken() {
     | curl -sk -X POST -d @- https://10.0.1.1:8200/v1/auth/approle/login \
     | jq -er '.auth.client_token' | tr -d '\n' | pbcopy && echo 'Vault vb-ops token (15m TTL) copied to clipboard.'
 }
-alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell/backup-repo.sh && rsync -av --delete --exclude=".*" ~/resilio-sync/backup/ ~/My\ Drive/resilio-backup/'
+alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell/backup-repo.sh'
 
 # Hobby Code
-alias dldjmusic="cd $REPO_DIR/scripts/python/dj-scripts/spotify-to-mp3 && source venv/bin/activate && python download_music.py --output '$HOME/My Drive/DJ Music Library' --filter 'mix' --parallel 5"
+alias dldjmusic="$NX_DIR/scripts/shell/run-spotify-to-mp3.sh --output '$HOME/My Drive/DJ Music Library' --filter mix --parallel 5"
 
 # Docker
 alias dockercleanup="$REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh"
 
 # Cheatsheet
-vb-cheatsheet() {
-    echo "=== Tmux ==="
-    echo "tmuxvb                              Start/attach vb tmux session"
-    echo "vibecode [dir] [-n name]            Vibe coding layout (claude + lazygit + shells)"
-    echo "newtmuxwindow <name> [dir]          Create named tmux window"
-    echo "rmtmuxw <name>                      Kill named tmux window"
+cheatsheet() {
+    "$REPO_DIR/scripts/shell/cheatsheet-aliases.sh"
 }

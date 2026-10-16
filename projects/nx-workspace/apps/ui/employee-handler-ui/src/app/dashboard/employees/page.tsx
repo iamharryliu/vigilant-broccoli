@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Button,
+  DropdownMenu,
   Checkbox,
   CopyButton,
   EllipsisCTA,
@@ -12,26 +12,42 @@ import {
   TabsList,
   TabsTrigger,
   type EllipsisAction,
+  Text,
 } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
-import { Card, DropdownMenu, Text } from '@radix-ui/themes';
+import { Card } from '@vigilant-broccoli/react-lib';
+import {
+  apiPath,
+  EMPLOYEE_HANDLER_ROUTES,
+} from '@vigilant-broccoli/employee-handler/contract';
 import { authFetchOk, postEmails } from '../../../lib/api-helpers';
 import { useAction } from '../../../lib/use-action';
 import { useTranslation } from '../../i18n';
+import { EmployeeDrawer } from './EmployeeDrawer';
+import {
+  displayName,
+  EMPLOYEE_TAB,
+  type Employee,
+  type EmployeeTab,
+} from './employees.shared';
+import { usePageTitle } from '../../use-page-title';
 
-const INCOMING_ENDPOINT = '/api/employees/incoming';
-const ACTIVE_ENDPOINT = '/api/employees/active';
-const INACTIVE_ENDPOINT = '/api/employees/inactive';
-const MANUAL_OFFBOARD_ENDPOINT = '/api/offboard/manualOffboard';
-const MANUAL_ONBOARD_ENDPOINT = '/api/onboard/manualOnboard';
-const RECOVER_ENDPOINT = '/api/recover';
-const POST_RETENTION_ENDPOINT = '/api/postRetentionCleanup';
-const SYNC_ENDPOINT = '/api/sync';
+const INCOMING_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.employeesIncoming);
+const ACTIVE_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.employeesActive);
+const INACTIVE_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.employeesInactive);
+const MANUAL_OFFBOARD_ENDPOINT = apiPath(
+  EMPLOYEE_HANDLER_ROUTES.manualOffboard,
+);
+const MANUAL_ONBOARD_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.manualOnboard);
+const RECOVER_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.recover);
+const POST_RETENTION_ENDPOINT = apiPath(
+  EMPLOYEE_HANDLER_ROUTES.postRetentionCleanup,
+);
+const SYNC_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.sync);
 
-const TAB_QUERY_KEY = 'tab';
-const TAB_INCOMING = 'incoming';
-const TAB_ACTIVE = 'active';
-const TAB_INACTIVE = 'inactive';
+const TAB_INCOMING = EMPLOYEE_TAB.INCOMING;
+const TAB_ACTIVE = EMPLOYEE_TAB.ACTIVE;
+const TAB_INACTIVE = EMPLOYEE_TAB.INACTIVE;
 
 const PAGE_CONTAINER = 'max-w-5xl mx-auto p-8 space-y-6';
 const TABLE_WRAPPER = 'overflow-x-auto';
@@ -40,17 +56,9 @@ const TH_CLASS =
   'text-left font-medium text-muted-foreground border-b border-border py-2 px-3';
 const TD_CLASS = 'border-b border-border py-2 px-3 align-middle';
 const ROW_ACTIONS_CELL = 'flex items-center gap-2';
+const CLICKABLE_ROW_CLASS = 'cursor-pointer hover:bg-muted/50';
 
-type Employee = {
-  email: string;
-  firstName?: string;
-  lastName?: string;
-};
-
-const displayName = (e: Employee): string => {
-  const name = [e.firstName, e.lastName].filter(Boolean).join(' ').trim();
-  return name || '—';
-};
+const stopRowClick = (e: React.SyntheticEvent) => e.stopPropagation();
 
 const normalizeList = (data: unknown): Employee[] => {
   const raw = (data as { employees?: unknown[] })?.employees ?? [];
@@ -86,6 +94,7 @@ type EmployeeTableProps = {
   loading: boolean;
   actionsDisabled?: boolean;
   buildActions?: (employee: Employee) => EllipsisAction[];
+  onSelectEmployee?: (employee: Employee) => void;
   selection?: {
     selectedEmails: Set<string>;
     toggleEmail: (email: string) => void;
@@ -98,6 +107,7 @@ const EmployeeTable = ({
   loading,
   actionsDisabled,
   buildActions,
+  onSelectEmployee,
   selection,
 }: EmployeeTableProps) => {
   const { t } = useTranslation();
@@ -145,9 +155,13 @@ const EmployeeTable = ({
             const actions = buildActions?.(emp);
             const isChecked = selection?.selectedEmails.has(emp.email) ?? false;
             return (
-              <tr key={emp.email}>
+              <tr
+                key={emp.email}
+                className={onSelectEmployee ? CLICKABLE_ROW_CLASS : undefined}
+                onClick={() => onSelectEmployee?.(emp)}
+              >
                 {selection && (
-                  <td className={TD_CLASS}>
+                  <td className={TD_CLASS} onClick={stopRowClick}>
                     <Checkbox
                       checked={isChecked}
                       onCheckedChange={() => selection.toggleEmail(emp.email)}
@@ -157,12 +171,15 @@ const EmployeeTable = ({
                 )}
                 <td className={TD_CLASS}>{displayName(emp)}</td>
                 <td className={TD_CLASS}>
-                  <div className="flex items-center gap-1">
+                  <div
+                    className="flex items-center gap-1"
+                    onClick={stopRowClick}
+                  >
                     <span>{emp.email}</span>
                     <CopyButton text={emp.email} />
                   </div>
                 </td>
-                <td className={TD_CLASS}>
+                <td className={TD_CLASS} onClick={stopRowClick}>
                   <div className={ROW_ACTIONS_CELL}>
                     {actions && actions.length > 0 && (
                       <EllipsisCTA
@@ -190,10 +207,13 @@ const requireEmail = (email: string, errorMessage: string) => {
 };
 
 export default function EmployeesPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const { t } = useTranslation();
-  const tab = searchParams.get(TAB_QUERY_KEY) ?? TAB_ACTIVE;
+  usePageTitle(t('NAV.EMPLOYEES'));
+  const [tab, setTab] = useState<EmployeeTab>(TAB_ACTIVE);
+  const [drawer, setDrawer] = useState<{
+    employee: Employee;
+    tab: EmployeeTab;
+  } | null>(null);
   const { running, run } = useAction();
 
   const incoming = useEmployeesTab(INCOMING_ENDPOINT);
@@ -236,10 +256,18 @@ export default function EmployeesPage() {
     inactive.data.map(e => e.email),
   );
 
-  const onTabChange = (value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set(TAB_QUERY_KEY, value);
-    router.replace(`?${params.toString()}`);
+  const onTabChange = (value: string) => setTab(value as EmployeeTab);
+
+  const tabSources = {
+    [TAB_INCOMING]: incoming,
+    [TAB_ACTIVE]: active,
+    [TAB_INACTIVE]: inactive,
+  };
+  const openDrawer = (employeeTab: EmployeeTab) => (employee: Employee) =>
+    setDrawer({ employee, tab: employeeTab });
+  const onMetadataSaved = () => {
+    if (drawer) tabSources[drawer.tab].reload();
+    setDrawer(null);
   };
 
   const offboardOne = (email: string) => {
@@ -423,6 +451,7 @@ export default function EmployeesPage() {
                 loading={incoming.loading}
                 actionsDisabled={running}
                 buildActions={buildIncomingActions}
+                onSelectEmployee={openDrawer(TAB_INCOMING)}
                 selection={{
                   selectedEmails: selectedIncoming,
                   toggleEmail: incomingSelection.toggleEmail,
@@ -471,6 +500,7 @@ export default function EmployeesPage() {
                   loading={active.loading}
                   actionsDisabled={running}
                   buildActions={buildActiveActions}
+                  onSelectEmployee={openDrawer(TAB_ACTIVE)}
                   selection={{
                     selectedEmails: selectedActive,
                     toggleEmail: activeSelection.toggleEmail,
@@ -515,6 +545,7 @@ export default function EmployeesPage() {
                 loading={inactive.loading}
                 actionsDisabled={running}
                 buildActions={buildInactiveActions}
+                onSelectEmployee={openDrawer(TAB_INACTIVE)}
                 selection={{
                   selectedEmails: selectedInactive,
                   toggleEmail: inactiveSelection.toggleEmail,
@@ -525,6 +556,12 @@ export default function EmployeesPage() {
           </Card>
         </TabsContent>
       </Tabs>
+      <EmployeeDrawer
+        employee={drawer?.employee ?? null}
+        tab={drawer?.tab ?? TAB_ACTIVE}
+        onClose={() => setDrawer(null)}
+        onSaved={onMetadataSaved}
+      />
     </div>
   );
 }

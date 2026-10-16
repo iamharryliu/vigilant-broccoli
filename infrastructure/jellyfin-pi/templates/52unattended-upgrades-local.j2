@@ -1,0 +1,13 @@
+// Managed by infrastructure/jellyfin-pi/playbook.yml — edits are overwritten.
+// Security origins only: Docker and Tailscale ship their own apt repos, and a
+// media server that upgrades its container runtime unattended at 04:00 is a
+// media server that is down at 04:01.
+Unattended-Upgrade::Origins-Pattern {
+    "origin=Debian,codename=${distro_codename},label=Debian-Security";
+    "origin=Raspbian,codename=${distro_codename},label=Raspbian";
+    "origin=Raspberry Pi Foundation,codename=${distro_codename},label=Raspberry Pi Foundation";
+};
+Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+Unattended-Upgrade::Remove-Unused-Dependencies "true";
+Unattended-Upgrade::Automatic-Reboot "{{ pi_unattended_upgrades_automatic_reboot | ternary('true', 'false') }}";
+Unattended-Upgrade::Automatic-Reboot-Time "{{ pi_unattended_upgrades_reboot_time }}";

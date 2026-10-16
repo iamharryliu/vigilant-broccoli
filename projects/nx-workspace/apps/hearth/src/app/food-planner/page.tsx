@@ -1,54 +1,245 @@
 'use client';
 
-import { Tabs, Text } from '@radix-ui/themes';
+import { Suspense, useEffect, useState } from 'react';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { MessageCircle, X } from 'lucide-react';
+import {
+  Button,
+  CardContainer,
+  cn,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { I18nProvider, useTranslation } from '../i18n';
+import { GroceryList } from '../grocery/GroceryList';
+import { KitchenChoresList } from '../kitchen-chores/KitchenChoresList';
+import { KitchenNotes } from '../kitchen-notes/KitchenNotes';
+import { KitchenProjectsList } from '../kitchen-projects/KitchenProjectsList';
+import { KitchenEvents } from './KitchenEvents';
+import { KitchenEventCalendar } from './KitchenEventCalendar';
+import { FoodChatPanel } from './FoodChatPanel';
+import { RecipeList } from './RecipeList';
+import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
+
+const PLANNER_TAB = 'planner';
+const RECIPES_TAB = 'recipes';
+const CALENDAR_TAB = 'calendar';
+const TABS = [PLANNER_TAB, RECIPES_TAB, CALENDAR_TAB];
+const TAB_STORAGE_KEY = 'food-planner:active-tab';
+const GROCERY_LIST_TAB = 'grocery';
+const KITCHEN_CHORES_LIST_TAB = 'kitchen-chores';
+const KITCHEN_PROJECTS_LIST_TAB = 'kitchen-projects';
+const LIST_TABS = [
+  GROCERY_LIST_TAB,
+  KITCHEN_CHORES_LIST_TAB,
+  KITCHEN_PROJECTS_LIST_TAB,
+];
+const LIST_TAB_STORAGE_KEY = 'food-planner:active-list-tab';
+const TAB_PARAM = 'tab';
+const FOOD_CHAT_PARAM = 'foodChat';
+const FOOD_CHAT_OPEN_VALUE = '1';
 
 function FoodPlannerContent() {
   const { t } = useTranslation();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get(TAB_PARAM);
+  const [activeTab, setActiveTab] = useState(() =>
+    tabParam && TABS.includes(tabParam) ? tabParam : PLANNER_TAB,
+  );
+  const [groceryRefresh, setGroceryRefresh] = useState(0);
+  const [calendarRefresh, setCalendarRefresh] = useState(0);
+  const [activeListTab, setActiveListTab] = useState(GROCERY_LIST_TAB);
+
+  const chatOpen = searchParams.get(FOOD_CHAT_PARAM) === FOOD_CHAT_OPEN_VALUE;
+
+  const bumpGrocery = () => setGroceryRefresh(n => n + 1);
+  const bumpCalendar = () => setCalendarRefresh(n => n + 1);
+
+  const openChat = () => {
+    const params = new URLSearchParams(searchParams);
+    params.set(FOOD_CHAT_PARAM, FOOD_CHAT_OPEN_VALUE);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
+  const closeChat = () => {
+    const params = new URLSearchParams(searchParams);
+    params.delete(FOOD_CHAT_PARAM);
+    const queryString = params.toString();
+    router.push(queryString ? `${pathname}?${queryString}` : pathname, {
+      scroll: false,
+    });
+  };
+
+  const toggleChat = () => (chatOpen ? closeChat() : openChat());
+
+  useEffect(() => {
+    if (tabParam) return;
+    const stored = localStorage.getItem(TAB_STORAGE_KEY);
+    if (stored && TABS.includes(stored)) setActiveTab(stored);
+  }, [tabParam]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(LIST_TAB_STORAGE_KEY);
+    if (stored && LIST_TABS.includes(stored)) setActiveListTab(stored);
+  }, []);
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    localStorage.setItem(TAB_STORAGE_KEY, value);
+  };
+
+  const handleListTabChange = (value: string) => {
+    setActiveListTab(value);
+    localStorage.setItem(LIST_TAB_STORAGE_KEY, value);
+  };
+
+  const tabTriggers = (
+    <>
+      <TabsTrigger value={PLANNER_TAB}>
+        {t('FOOD_PLANNER.TABS.PLANNER')}
+      </TabsTrigger>
+      <TabsTrigger value={RECIPES_TAB}>
+        {t('FOOD_PLANNER.TABS.RECIPES')}
+      </TabsTrigger>
+      <TabsTrigger value={CALENDAR_TAB}>
+        {t('FOOD_PLANNER.TABS.CALENDAR')}
+      </TabsTrigger>
+    </>
+  );
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-6">
-      <Text size="6" weight="bold">
-        {t('FOOD_PLANNER.TITLE')}
-      </Text>
+    <div
+      className={cn(
+        'flex w-full flex-col px-4 pb-4 pt-2 sm:px-6 sm:pb-6 sm:pt-3 md:px-8 md:pb-8 md:pt-4 transition-[padding] duration-300',
+        chatOpen && 'lg:pr-[29rem]',
+      )}
+    >
+      <Tabs
+        value={activeTab}
+        onValueChange={handleTabChange}
+        className="flex w-full flex-col"
+      >
+        <TabsList className="self-start">{tabTriggers}</TabsList>
 
-      <Tabs.Root defaultValue="notes">
-        <Tabs.List>
-          <Tabs.Trigger value="notes">{t('FOOD_PLANNER.TABS.NOTES')}</Tabs.Trigger>
-          <Tabs.Trigger value="recipes">
-            {t('FOOD_PLANNER.TABS.RECIPES')}
-          </Tabs.Trigger>
-          <Tabs.Trigger value="inventory">
-            {t('FOOD_PLANNER.TABS.INVENTORY')}
-          </Tabs.Trigger>
-        </Tabs.List>
+        <TabsContent
+          value={PLANNER_TAB}
+          className="mt-6 lg:h-[calc(100dvh_-_var(--topbar-h)_-_4rem)]"
+        >
+          <div className="grid h-full grid-cols-1 items-stretch gap-6 lg:min-h-0 lg:grid-cols-3">
+            <div className="flex min-h-0 flex-col lg:overflow-y-auto">
+              <Tabs
+                value={activeListTab}
+                onValueChange={handleListTabChange}
+                className="flex w-full flex-col"
+              >
+                <TabsList className="self-start">
+                  <TabsTrigger value={GROCERY_LIST_TAB}>
+                    {t('FOOD_PLANNER.LIST_TABS.GROCERY')}
+                  </TabsTrigger>
+                  <TabsTrigger value={KITCHEN_CHORES_LIST_TAB}>
+                    {t('FOOD_PLANNER.LIST_TABS.KITCHEN_CHORES')}
+                  </TabsTrigger>
+                  <TabsTrigger value={KITCHEN_PROJECTS_LIST_TAB}>
+                    {t('FOOD_PLANNER.LIST_TABS.KITCHEN_PROJECTS')}
+                  </TabsTrigger>
+                </TabsList>
 
-        <div className="pt-4">
-          <Tabs.Content value="notes">
-            <Text size="2" color="gray">
-              {t('FOOD_PLANNER.PLACEHOLDER.NOTES')}
-            </Text>
-          </Tabs.Content>
-          <Tabs.Content value="recipes">
-            <Text size="2" color="gray">
-              {t('FOOD_PLANNER.PLACEHOLDER.RECIPES')}
-            </Text>
-          </Tabs.Content>
-          <Tabs.Content value="inventory">
-            <Text size="2" color="gray">
-              {t('FOOD_PLANNER.PLACEHOLDER.INVENTORY')}
-            </Text>
-          </Tabs.Content>
-        </div>
-      </Tabs.Root>
+                <TabsContent value={GROCERY_LIST_TAB}>
+                  <CardContainer title={t('FOOD_PLANNER.COLUMNS.GROCERY')}>
+                    <GroceryList
+                      refreshSignal={groceryRefresh}
+                      onCalendarEventAdded={bumpCalendar}
+                    />
+                  </CardContainer>
+                </TabsContent>
+
+                <TabsContent value={KITCHEN_CHORES_LIST_TAB}>
+                  <CardContainer
+                    title={t('FOOD_PLANNER.COLUMNS.KITCHEN_CHORES')}
+                  >
+                    <KitchenChoresList onCalendarEventAdded={bumpCalendar} />
+                  </CardContainer>
+                </TabsContent>
+
+                <TabsContent value={KITCHEN_PROJECTS_LIST_TAB}>
+                  <CardContainer
+                    title={t('FOOD_PLANNER.COLUMNS.KITCHEN_PROJECTS')}
+                  >
+                    <KitchenProjectsList />
+                  </CardContainer>
+                </TabsContent>
+              </Tabs>
+            </div>
+
+            <div className="h-96 min-h-0 lg:h-full">
+              <KitchenNotes />
+            </div>
+
+            <div className="flex min-h-0 flex-col gap-3">
+              <div className="flex shrink-0 items-center justify-between">
+                <Text size="5" weight="bold">
+                  {t('FOOD_PLANNER.TABS.CALENDAR')}
+                </Text>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  aria-label={t('FOOD_PLANNER.COLUMNS.FOOD_CHAT')}
+                  onClick={toggleChat}
+                >
+                  {chatOpen ? <X size={18} /> : <MessageCircle size={18} />}
+                </Button>
+              </div>
+
+              <KitchenEvents
+                refreshSignal={calendarRefresh}
+                className="min-h-0 flex-1 overflow-y-auto"
+              />
+            </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent
+          value={RECIPES_TAB}
+          className="mt-6 md:h-[calc(100dvh_-_var(--topbar-h)_-_4rem)]"
+        >
+          <RecipeList
+            onGroceryAdded={bumpGrocery}
+            onCalendarEventAdded={bumpCalendar}
+          />
+        </TabsContent>
+
+        <TabsContent value={CALENDAR_TAB} className="mt-6">
+          <KitchenEventCalendar
+            refreshSignal={calendarRefresh}
+            onChanged={bumpCalendar}
+          />
+        </TabsContent>
+      </Tabs>
+
+      <FoodChatPanel
+        open={chatOpen}
+        onClose={closeChat}
+        onAdded={() => {
+          bumpGrocery();
+          bumpCalendar();
+        }}
+      />
     </div>
   );
 }
 
 export default function FoodPlannerPage() {
+  usePageTitle(PAGE_TITLES.FOOD_PLANNER);
   return (
     <I18nProvider>
-      <FoodPlannerContent />
+      <Suspense fallback={null}>
+        <FoodPlannerContent />
+      </Suspense>
     </I18nProvider>
   );
 }

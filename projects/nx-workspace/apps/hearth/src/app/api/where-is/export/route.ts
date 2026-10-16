@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
 
       const images = await Promise.all(
         sortedImages.map(async img => {
-          const url = getImageUrl(img.r2_key);
+          const url = await getImageUrl(img.r2_key);
           const res = await fetch(url);
           const buffer = Buffer.from(await res.arrayBuffer());
           return {

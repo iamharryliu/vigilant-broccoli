@@ -5,10 +5,12 @@ import {
   BEARER_PREFIX,
   GOOGLE_TOKEN_HEADER,
 } from '@vigilant-broccoli/common-js';
+import { isAllowedEmail } from './auth-policy';
 
 const ERROR_MISSING_BEARER = 'Missing bearer token';
 const ERROR_INVALID_SESSION = 'Invalid session';
 const ERROR_MISSING_GOOGLE_TOKEN = 'Missing google token';
+const ERROR_FORBIDDEN = 'Forbidden';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL as string,
@@ -17,6 +19,9 @@ const supabase = createClient(
 
 const unauthorized = (message: string) =>
   NextResponse.json({ error: message }, { status: 401 });
+
+const forbidden = (message: string) =>
+  NextResponse.json({ error: message }, { status: 403 });
 
 export const requireAuth = async (
   request: NextRequest,
@@ -33,6 +38,7 @@ export const requireAuth = async (
   } = await supabase.auth.getUser(authHeader.slice(BEARER_PREFIX.length));
 
   if (error || !user) return unauthorized(ERROR_INVALID_SESSION);
+  if (!isAllowedEmail(user.email)) return forbidden(ERROR_FORBIDDEN);
 
   const googleToken = request.headers.get(GOOGLE_TOKEN_HEADER);
   if (options?.requireGoogleToken && !googleToken) {

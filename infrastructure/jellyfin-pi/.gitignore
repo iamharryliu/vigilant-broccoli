@@ -1,0 +1,14 @@
+# Operator-supplied inventory — host addresses and per-host values.
+# Committed *.example.yml files are the templates for these.
+inventory/hosts.yml
+inventory/host_vars/*.yml
+!inventory/host_vars/*.example.yml
+
+# Jellyfin runtime state and media never live in the repo — they live on the
+# Pi (config/cache) and on the external drive (library). See
+# docs/infrastructure/jellyfin-pi.md for the on-disk layout.
+config/
+cache/
+media/
+library/
+.env

@@ -1,7 +1,7 @@
 resource "github_repository" "vigilant_broccoli" {
   name         = var.github_repo
   description  = "idek"
-  homepage_url = "https://iamharryliu.github.io/vigilant-broccoli/"
+  homepage_url = "https://projects.harryliu.dev/"
   visibility   = "public"
 
   has_issues      = true
@@ -69,38 +69,72 @@ resource "github_repository_ruleset" "main" {
     }
   }
 
-  # Admin bypass, matching the old enforce_admins = false. The built-in
-  # GitHub Actions integration can't be a bypass actor on a user-owned repo
-  # (GitHub rejects it outside an owner organization) — but a GitHub App you
-  # create and install directly on the repo is a normal, separate actor and
-  # isn't subject to that restriction. The upptime crons authenticate as
-  # such an app (Contents + Issues RW only, nothing else) to push status
-  # commits. The agent sandbox's GitHub App is deliberately NOT a bypass
-  # actor here — it goes through PRs, unlike this dedicated upptime app.
   bypass_actors {
     actor_id    = local.ruleset_bypass_repository_role
     actor_type  = "RepositoryRole"
     bypass_mode = "always"
   }
 
-  bypass_actors {
-    actor_id    = var.upptime_gh_app_id
-    actor_type  = "Integration"
-    bypass_mode = "always"
-  }
-
+  # `update` restricts every ref update on main -- including merging a PR --
+  # to the bypass actors above. Without it the agent-sandbox/code-server App
+  # (Contents RW, which is also the permission that merges PRs) could push a
+  # branch, open a PR and merge it itself. The App has no bypass, so it can only
+  # ever get as far as an open PR. You merge as admin, which bypasses the rule.
+  #
+  # The admin bypass is `always`, not `pull_request`: the GitHub mobile app has
+  # no "bypass rules" merge option, so `pull_request` left the `update` rule
+  # blocking every mobile merge. The cost is that admins can merge past a red
+  # required check without an explicit prompt and push directly to main. The
+  # required checks are the ci-pr-check.yml job ids; each runs on every PR, and a job skipped by its
+  # `if` (nx-affected/pre-commit on `edited`, commitlint for bot authors) counts
+  # as passing. strict is off so a PR need not be rebased on every merge.
   rules {
     deletion         = true
     non_fast_forward = true
+    update           = true
 
     pull_request {
       required_approving_review_count = 0
     }
+
+    required_status_checks {
+      strict_required_status_checks_policy = false
+
+      required_check {
+        context = "nx-affected"
+      }
+      required_check {
+        context = "pre-commit"
+      }
+      required_check {
+        context = "commitlint"
+      }
+    }
   }
 }
 
-resource "github_repository_ruleset" "production" {
-  name        = "production"
+locals {
+  production_promotion_variables = {
+    PRODUCTION_PROMOTION_APP_ID          = tostring(var.production_promotion_gh_app_id)
+    PRODUCTION_PROMOTION_ENABLED         = tostring(var.production_promotion_gh_app_id > 0)
+    PRODUCTION_PROMOTION_WIF_PROVIDER    = google_iam_workload_identity_pool_provider.github_production_promotion.name
+    PRODUCTION_PROMOTION_SERVICE_ACCOUNT = google_service_account.github_actions_production_promotion.email
+  }
+}
+
+resource "github_actions_variable" "production_promotion" {
+  for_each      = local.production_promotion_variables
+  repository    = github_repository.vigilant_broccoli.name
+  variable_name = each.key
+  value         = each.value
+}
+
+# Deletion and force-pushes are blocked for everyone, the promotion App
+# included: no bypass actors, so neither an admin nor the App can rewrite or
+# remove production. Kept apart from the update ruleset below because a bypass
+# actor on a ruleset skips every rule in it.
+resource "github_repository_ruleset" "production_protection" {
+  name        = "production-protection"
   repository  = github_repository.vigilant_broccoli.name
   target      = "branch"
   enforcement = "active"
@@ -112,20 +146,55 @@ resource "github_repository_ruleset" "production" {
     }
   }
 
-  # Only the admin bypass actor can update production at all (`update`), and
-  # even then only via a fast-forward (`non_fast_forward`) — matching a
-  # local `git merge main --ff-only && git push`, not a GitHub-side PR
-  # merge. Bypass mode "always" means the admin can still override both in
-  # an emergency, same tradeoff as the `main` ruleset above.
-  bypass_actors {
-    actor_id    = local.ruleset_bypass_repository_role
-    actor_type  = "RepositoryRole"
-    bypass_mode = "always"
+  rules {
+    deletion         = true
+    non_fast_forward = true
+  }
+}
+
+# `update` restricts every push to production to the dedicated promotion App.
+# Rulesets cannot restrict which branch a push comes from, so the fast-forward
+# from main is enforced by manual-promote-production.yml, whose App key only
+# that workflow on main can read. Disabled until the App ID is configured.
+resource "github_repository_ruleset" "production_update" {
+  name        = "production-update"
+  repository  = github_repository.vigilant_broccoli.name
+  target      = "branch"
+  enforcement = var.production_promotion_gh_app_id > 0 ? "active" : "disabled"
+
+  conditions {
+    ref_name {
+      include = ["refs/heads/production"]
+      exclude = []
+    }
+  }
+
+  dynamic "bypass_actors" {
+    for_each = var.production_promotion_gh_app_id > 0 ? [var.production_promotion_gh_app_id] : []
+    content {
+      actor_id    = bypass_actors.value
+      actor_type  = "Integration"
+      bypass_mode = "always"
+    }
   }
 
   rules {
-    deletion          = true
-    non_fast_forward = true
-    update            = true
+    update = true
   }
+}
+
+moved {
+  from = github_repository_ruleset.production
+  to   = github_repository_ruleset.production_protection
+}
+
+import {
+  to = github_repository_pages.vigilant_broccoli
+  id = var.github_repo
+}
+
+resource "github_repository_pages" "vigilant_broccoli" {
+  repository = github_repository.vigilant_broccoli.name
+  build_type = "workflow"
+  cname      = cloudflare_dns_record.harryliu_dev_projects.name
 }

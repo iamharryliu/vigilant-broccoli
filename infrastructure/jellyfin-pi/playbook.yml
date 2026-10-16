@@ -1,0 +1,65 @@
+---
+# Takes a freshly flashed Raspberry Pi OS (64-bit) host to a running Jellyfin
+# server. Idempotent: every re-run converges, nothing duplicates.
+# Run it through ./provision.sh (pnpm jellyfin:provision), which installs the
+# collections and loads the Tailscale auth key from Vault first.
+- name: Provision the Jellyfin homelab Pi
+  hosts: jellyfin_pi
+  become: true
+  vars:
+    # Sourced from the environment rather than --extra-vars so the key never
+    # lands in the local argv (same reason as infrastructure/lib/ssh-secrets.sh).
+    ts_authkey: "{{ lookup('ansible.builtin.env', 'TS_AUTHKEY') }}"
+
+  handlers:
+    - name: Reload sshd
+      ansible.builtin.service:
+        name: ssh
+        state: reloaded
+
+    - name: Restart docker
+      ansible.builtin.service:
+        name: docker
+        state: restarted
+
+    - name: Restart jellyfin
+      ansible.builtin.systemd_service:
+        name: '{{ jellyfin_service_name }}'
+        state: restarted
+        daemon_reload: true
+      # In check mode the unit was never actually written, so this handler has
+      # no service to restart on a host the playbook has not provisioned yet.
+      ignore_errors: '{{ ansible_check_mode }}'
+
+  tasks:
+    - name: Preflight
+      ansible.builtin.import_tasks: tasks/preflight.yml
+      tags: [always]
+
+    - name: Base OS
+      ansible.builtin.import_tasks: tasks/base.yml
+      tags: [base]
+
+    - name: Service user
+      ansible.builtin.import_tasks: tasks/user.yml
+      tags: [user]
+
+    - name: SSH hardening
+      ansible.builtin.import_tasks: tasks/ssh.yml
+      tags: [ssh]
+
+    - name: Media drive
+      ansible.builtin.import_tasks: tasks/storage.yml
+      tags: [storage]
+
+    - name: Docker
+      ansible.builtin.import_tasks: tasks/docker.yml
+      tags: [docker]
+
+    - name: Tailscale
+      ansible.builtin.import_tasks: tasks/tailscale.yml
+      tags: [tailscale]
+
+    - name: Jellyfin stack
+      ansible.builtin.import_tasks: tasks/jellyfin.yml
+      tags: [jellyfin]

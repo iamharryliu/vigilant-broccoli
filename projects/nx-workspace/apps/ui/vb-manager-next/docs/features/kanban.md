@@ -54,7 +54,7 @@
 
 - Collection `kanban_boards`, one doc per `userEmail` (`MONGODB_URI`, `MONGODB_DB` default `vb-manager`)
 - Client: `src/lib/mongo.ts`; data access: `src/app/api/kanban/db.ts`
-- User email exposed on the NextAuth session (`src/lib/auth.ts`)
+- User email resolved from the Supabase bearer token by `getUserEmail` (`libs/server-auth.ts`)
 - One-time migration: when the user's Mongo doc is empty, existing `localStorage` boards + `google-tasks-sort-mode-*` keys upload, then `localStorage` keys cleared
 - Standalone `GoogleTasksComponent` (outside the board) still uses `localStorage` for sort mode
 - Last-write-wins: each change overwrites the whole user doc (no merge / concurrency control)

@@ -1,6 +1,5 @@
 import { RecurrenceRule } from './google.consts';
 
-// helper to format yyyy-mm-dd
 function formatDate(dateStr: string) {
   const date = new Date(dateStr);
   const yyyy = date.getFullYear();

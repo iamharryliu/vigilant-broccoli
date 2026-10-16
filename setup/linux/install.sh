@@ -11,14 +11,29 @@ source $SETUP_DIR/common/symlinks.sh
 
 if [ "$1" = "-y" ]; then
     ask() { return 0; }
-elif ask "Install apt packages?"; then
-    sudo apt-get update && xargs sudo apt-get install -y < "$REPO_ROOT/setup/linux/apt-packages.txt"
+fi
+
+if ask "Install apt packages?"; then
+    if [ "$1" = "-y" ] && ! sudo -n true 2>/dev/null; then
+        echo "Skipping apt packages: -y is non-interactive and sudo needs a password here (container images bake them in)"
+    else
+        sudo apt-get update && xargs sudo apt-get install -y < "$REPO_ROOT/setup/linux/apt-packages.txt"
+    fi
 fi
 
 if ask "Symlink dotfiles?"; then
-    symlink_common_dotfiles
+    symlink_common_dotfiles || exit 1
+fi
+
+if command -v pre-commit >/dev/null 2>&1 && ask "Setup git hooks?"; then
+    git -C "$REPO_ROOT" config --unset-all core.hooksPath 2>/dev/null || true
+    (cd "$REPO_ROOT" && pre-commit install)
 fi
 
 RC_LINE='source $HOME/vigilant-broccoli/setup/dotfiles/bash/.rc.bash'
 grep -qxF "$RC_LINE" "$HOME/.bashrc" 2>/dev/null || echo "$RC_LINE" >> "$HOME/.bashrc"
 echo "Added rc hook to ~/.bashrc"
+
+ZSH_RC_LINE='source $HOME/vigilant-broccoli/setup/dotfiles/zsh/.rc.linux.zsh'
+grep -qxF "$ZSH_RC_LINE" "$HOME/.zshrc" 2>/dev/null || echo "$ZSH_RC_LINE" >> "$HOME/.zshrc"
+echo "Added rc hook to ~/.zshrc"

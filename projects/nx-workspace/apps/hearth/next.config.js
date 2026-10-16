@@ -16,6 +16,7 @@ const options = {
 const nextConfig = {
   nx: { ...options },
   distDir: '../../dist/apps/hearth/.next',
+  agentRules: false,
   transpilePackages: [
     '@fullcalendar/core',
     '@fullcalendar/react',
@@ -24,8 +25,5 @@ const nextConfig = {
     '@fullcalendar/interaction',
   ],
 };
-const plugins = [
-  // Add more Next.js plugins to this list if needed.
-  withNx,
-];
+const plugins = [withNx];
 module.exports = composePlugins(...plugins)(nextConfig);

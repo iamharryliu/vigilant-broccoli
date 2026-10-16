@@ -1,7 +1,6 @@
 'use client';
 
-import { Badge, Switch } from '@radix-ui/themes';
-import { Button, Select } from '@vigilant-broccoli/react-lib';
+import { Button, Select, Switch, Badge } from '@vigilant-broccoli/react-lib';
 import { BellOff, Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
 import { CSSProperties, useEffect, useRef, useState } from 'react';
 import { playBeep } from '../audio';
@@ -399,9 +398,9 @@ const DurationSetting = ({
   <div style={SETTINGS_LABEL_STYLE}>
     {label}
     <Select
-      selectedOption={value}
+      value={value}
       options={DURATION_OPTIONS.map(o => o.id)}
-      setValue={id => sendCommand(command, id)}
+      onValueChange={id => sendCommand(command, id)}
       disabled={disabled}
       displayMapper={Object.fromEntries(
         DURATION_OPTIONS.map(o => [o.id, o.label]),

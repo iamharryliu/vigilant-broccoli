@@ -1,11 +1,10 @@
 # Shared Supabase project ("vb-supabase", ref jrdosjjgmsoodpjmjqxx) backing
 # Google-provider auth for hearth, employee-handler-ui, small-business-next,
-# and vb-manager-next, plus hearth's Postgres DB. Settings were originally
-# configured by hand via the dashboard. Within `auth`, only the fields set
-# below are managed — every other auth setting (mailer templates, MFA, rate
-# limits, etc.) stays dashboard-managed and untouched by apply. The other
-# top-level blocks (api/database/network/storage) mirror live values because
-# the provider nulls any attribute left unset.
+# and vb-manager-next, plus hearth's Postgres DB. Within `auth`, only the
+# fields set below are managed — every other auth setting (mailer templates,
+# MFA, rate limits, etc.) stays dashboard-managed and untouched by apply. The
+# other top-level blocks (api/database/network/storage) mirror live values
+# because the provider nulls any attribute left unset.
 #
 # Before first apply: `terraform import supabase_settings.vb_auth jrdosjjgmsoodpjmjqxx`
 # (pnpm tf:import -- supabase_settings.vb_auth jrdosjjgmsoodpjmjqxx), then
@@ -35,25 +34,26 @@ resource "supabase_settings" "vb_auth" {
   # config object, not a native HCL object.
   auth = jsonencode({
     # Fallback redirect target when redirectTo isn't on the allow list below.
-    # Previously pointed at hearth's dead pre-rename Vercel domain
-    # (vb-next-demo.vercel.app, then vb-hearth.vercel.app), which silently
-    # 404s any sign-in whose redirectTo doesn't match uri_allow_list instead
-    # of erroring loudly.
+    # A dead domain here silently 404s any such sign-in instead of erroring
+    # loudly.
     site_url = "https://production-hearth.vercel.app"
 
     # One allow-listed entry per app per environment. Comma-separated per the
     # Management API's wire format (not a JSON array).
     uri_allow_list = join(",", [
-      "http://localhost:4200/*",                              # hearth local dev
-      "https://staging-hearth.vercel.app/*",                  # hearth staging
-      "https://production-hearth.vercel.app/*",               # hearth prod
-      "http://localhost:4000/auth/callback",                  # employee-handler-ui local dev
-      "https://staging-employee-handler-ui.vercel.app/*",     # employee-handler-ui staging
-      "https://production-employee-handler-ui.vercel.app/*",  # employee-handler-ui prod
-      "http://localhost:3000/*",                              # vb-manager-next local dev
-      "http://127.0.0.1:3000/*",                              # vb-manager-next local dev (127.0.0.1 form)
-      "https://manager.vigilant-broccoli.app/*",              # vb-manager-next prod (PM2)
-      "https://staging-vb-manager-next-mobile.fly.dev/auth/callback", # vb-manager-next mobile
+      "http://localhost:4200/*",                                            # hearth local dev
+      "https://staging-hearth.vercel.app/*",                                # hearth staging
+      "https://production-hearth.vercel.app/*",                             # hearth prod
+      "http://localhost:4000/auth/callback",                                # employee-handler-ui local dev
+      "https://demo-employee-handler-ui.vercel.app/*",                      # employee-handler-ui demo (its only deploy)
+      "http://localhost:3000/*",                                            # vb-manager-next local dev
+      "http://127.0.0.1:3000/*",                                            # vb-manager-next local dev (127.0.0.1 form)
+      "https://manager.vigilant-broccoli.app/*",                            # vb-manager-next prod (PM2)
+      "https://staging-balloono.vercel.app/*",                              # balloono staging
+      "https://production-balloono.vercel.app/*",                           # balloono prod
+      "https://balloono.harryliu.dev/*",                                    # balloono prod (custom domain)
+      "https://staging-vb-manager-next-mobile.vercel.app/auth/callback",    # vb-manager-next mobile staging
+      "https://production-vb-manager-next-mobile.vercel.app/auth/callback", # vb-manager-next mobile prod
     ])
 
     external_google_enabled          = true
@@ -107,7 +107,6 @@ resource "supabase_settings" "vb_auth" {
         maxIndexes = 5
       }
     }
-    fileSizeLimit    = 52428800
-    migrationVersion = "optimize-existing-functions-again"
+    fileSizeLimit = 52428800
   })
 }

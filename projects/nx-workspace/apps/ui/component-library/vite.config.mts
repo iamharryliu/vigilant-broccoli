@@ -6,14 +6,13 @@ import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig(() => ({
   root: import.meta.dirname,
-  base: process.env.VITE_BASE_PATH ?? '/',
   cacheDir: '../../../node_modules/.vite/component-library',
   server: {
-    port: 4200,
+    port: 3000,
     host: 'localhost',
   },
   preview: {
-    port: 4200,
+    port: 3000,
     host: 'localhost',
   },
   plugins: [
@@ -21,10 +20,6 @@ export default defineConfig(() => ({
     tsconfigPaths(),
     viteStaticCopy({ targets: [{ src: '*.md', dest: '.' }], silent: true }),
   ],
-  // Uncomment this if you are using workers.
-  // worker: {
-  //   plugins: () => [ tsconfigPaths() ],
-  // },
   build: {
     outDir: '../../../dist/component-library',
     emptyOutDir: true,

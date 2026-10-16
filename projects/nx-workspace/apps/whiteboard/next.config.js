@@ -15,7 +15,9 @@ const options = {
  **/
 const nextConfig = {
   nx: { ...options },
-  distDir: '../../dist/apps/whiteboard/.next',
+  output: 'export',
+  distDir: '../../dist/apps/whiteboard',
+  agentRules: false,
 };
 const plugins = [withNx];
 module.exports = composePlugins(...plugins)(nextConfig);

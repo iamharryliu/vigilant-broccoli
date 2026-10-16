@@ -11,6 +11,7 @@ PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
 FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 
 cd "$REPO_DIR"
+SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create-todo/SKILL.md")
 
 git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
@@ -21,21 +22,23 @@ You are running non-interactively in a fresh clone of vigilant-broccoli, on a de
 
 $DESCRIPTION
 
-Rules:
-- Read TODO.md to learn its structure: section headings (## Features to Add, ## P1-P3) and entry format: <6-hex-id>. [category] Title, a short context paragraph, then a numbered Steps: list. The entry heading's depth matches the section it lives in: a direct child of a ## section is ###, but a section with an intermediate subsection (e.g. ## Feature > ### Enhancements) pushes its entries one level deeper (####) — match whatever depth the section you're adding to already uses, one level past its immediate parent heading.
-- Research before writing: grep the repo for every file, workflow, config, and doc the task touches. The entry must cite concrete paths (with line numbers where useful) and name an existing pattern to follow when one exists.
-- Check CLAUDE.md and the docs it points to for conventions that constrain the task, and bake them into the steps.
-- Generate a unique 6-hex id (python3 -c "import random; print(format(random.randint(0, 0xffffff), '06x'))") and verify it doesn't already appear in TODO.md.
-- Add the entry under the most fitting existing section; only create a new section if none fits.
-- Do not implement the task. Do not touch any file besides TODO.md.
+Follow these shared task instructions:
+
+$SKILL_INSTRUCTIONS
+
+Sandbox execution rules:
+- You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
+- Only TODO.md may change inside the checkout.
 - Do not run any git or gh commands and do not commit — branching, committing, pushing, and opening the PR are handled by the calling script.
-- When finished, write $META_FILE containing only a JSON object with these string fields:
+- The only exception to the skill's output scope is $META_FILE, outside the checkout. When finished, write it containing only a JSON object with these string fields:
   - todo_id: the 6-hex id you generated
   - commit_message: capitalized, concise, focused on why the entry is needed, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
-  - pr_title: the pull request title
-  - pr_summary: markdown bullet points for the PR "## Summary" section
-  - pr_test_plan: markdown checklist for the PR "## Test plan" section
+  - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
+  - pr_summary: markdown bullet points for the PR "## Summary" section, including the refined task prompt and any assumptions or unresolved questions
+  - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (review, then merge)
+  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
+  - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none. Keep these out of pr_suggestions, which is only for optional follow-up work
 EOF
 )
 
@@ -55,14 +58,18 @@ if [ -n "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
   exit 1
 fi
 
+# shellcheck source=commit-subject.sh
+. "$REPO_DIR/infrastructure/agent-sandbox/commit-subject.sh"
 read_meta() { jq -r "$1 // empty" "$META_FILE" 2>/dev/null || true; }
 
 TODO_ID=$(read_meta .todo_id)
-COMMIT_MESSAGE=$(read_meta .commit_message)
+COMMIT_MESSAGE=$(normalize_commit_message "$(read_meta .commit_message)")
 TRAILER=$(read_meta .co_authored_by)
-PR_TITLE=$(read_meta .pr_title)
+PR_TITLE=$(normalize_pr_title "$(read_meta .pr_title)")
 PR_SUMMARY=$(read_meta .pr_summary)
-PR_TEST_PLAN=$(read_meta .pr_test_plan)
+PR_NEXT_STEPS=$(read_meta .pr_next_steps)
+PR_CONCERNS=$(read_meta .pr_concerns)
+PR_SUGGESTIONS=$(read_meta .pr_suggestions)
 
 if [ -n "$COMMIT_MESSAGE" ]; then
   COMMIT_SUBJECT="docs: ${COMMIT_MESSAGE}"
@@ -73,7 +80,7 @@ fi
 echo "$TRAILER" | grep -Eqi '^co-authored-by: .+ <.+>$' || TRAILER="$FALLBACK_TRAILER"
 [ -n "$PR_TITLE" ] || PR_TITLE="$COMMIT_SUBJECT"
 [ -n "$PR_SUMMARY" ] || PR_SUMMARY="- Add TODO entry${TODO_ID:+ ${TODO_ID}} for: ${DESCRIPTION}"
-[ -n "$PR_TEST_PLAN" ] || PR_TEST_PLAN="- [ ] Entry reviewed for accuracy and actionable steps"
+[ -n "$PR_NEXT_STEPS" ] || PR_NEXT_STEPS="- [ ] Review entry for accuracy and actionable steps, then merge"
 
 bash "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh"
 
@@ -81,17 +88,18 @@ git add TODO.md
 git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
 git push -u origin "$BRANCH"
 
-PR_BODY=$(cat <<EOF
-## Summary
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+  HISTORY_SOURCE="GitHub Actions"
+else
+  HISTORY_SOURCE="Docker sandbox (local)"
+fi
 
-$PR_SUMMARY
+PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_CONCERNS="$PR_CONCERNS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
+  HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic-pr-create-todo" HISTORY_PROMPT="$DESCRIPTION" \
+  HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
+  python3 "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py")
 
-## Test plan
-
-$PR_TEST_PLAN
-
-$PR_FOOTER
-EOF
-)
-
-gh pr create --title "$PR_TITLE" --body "$PR_BODY"
+PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
+echo "$PR_URL"
+printf 'PR_URL::%s\n' "$PR_URL"
+emit_pr_files "$BASE_SHA"

@@ -10,6 +10,7 @@ export interface EventDraft {
   end: string;
   timeZone: string;
   allDay: boolean;
+  recurrence: string[];
 }
 
 export type EventDraftStatus = 'draft' | 'creating' | 'created' | 'error';
@@ -25,6 +26,39 @@ interface EventDraftCardProps {
 
 const ALL_DAY_INPUT_LENGTH = 10;
 const DATETIME_LOCAL_LENGTH = 16;
+
+const BYDAY_CODES = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+const CUSTOM_RECURRENCE_LABEL = 'custom';
+const NO_RECURRENCE_VALUE = '';
+
+const buildRecurrencePresets = (
+  startIso: string,
+): { value: string; label: string }[] => {
+  const date = startIso ? new Date(startIso) : null;
+  const isValid = date && !Number.isNaN(date.getTime());
+  const dayCode = isValid ? BYDAY_CODES[date.getDay()] : null;
+  const dayName = isValid
+    ? date.toLocaleDateString(undefined, { weekday: 'long' })
+    : null;
+
+  const presets = [{ value: NO_RECURRENCE_VALUE, label: 'Does not repeat' }];
+  if (!isValid) return presets;
+
+  presets.push(
+    { value: 'RRULE:FREQ=DAILY', label: 'Daily' },
+    {
+      value: `RRULE:FREQ=WEEKLY;BYDAY=${dayCode}`,
+      label: `Weekly on ${dayName}`,
+    },
+    { value: 'RRULE:FREQ=MONTHLY', label: 'Monthly' },
+    { value: 'RRULE:FREQ=YEARLY', label: 'Yearly' },
+    {
+      value: 'RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR',
+      label: 'Every weekday (Mon-Fri)',
+    },
+  );
+  return presets;
+};
 
 const toInputValue = (iso: string, allDay: boolean): string => {
   if (!iso) return '';
@@ -125,6 +159,35 @@ export const EventDraftCard = ({
             className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${editable.allDay ? 'translate-x-5' : 'translate-x-1'}`}
           />
         </button>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <span className="text-xs text-gray-500 w-14">Repeats</span>
+        <select
+          value={editable.recurrence[0] ?? NO_RECURRENCE_VALUE}
+          onChange={e =>
+            setEditable(prev => ({
+              ...prev,
+              recurrence: e.target.value ? [e.target.value] : [],
+            }))
+          }
+          disabled={isReadOnly}
+          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50"
+        >
+          {buildRecurrencePresets(editable.start).map(preset => (
+            <option key={preset.value} value={preset.value}>
+              {preset.label}
+            </option>
+          ))}
+          {editable.recurrence[0] &&
+            !buildRecurrencePresets(editable.start).some(
+              preset => preset.value === editable.recurrence[0],
+            ) && (
+              <option value={editable.recurrence[0]}>
+                {CUSTOM_RECURRENCE_LABEL}: {editable.recurrence[0]}
+              </option>
+            )}
+        </select>
       </div>
 
       <input

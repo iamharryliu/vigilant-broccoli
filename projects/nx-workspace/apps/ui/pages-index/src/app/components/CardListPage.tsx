@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { PageHeader } from './PageHeader';
 import { CardLink } from './CardLink';
 import { CardGrid } from './CardGrid';
+import { PAGE_CLASS } from '../consts/layout';
 
 export interface CardListItem {
   key: string;
@@ -14,14 +15,13 @@ export interface CardListItem {
 
 interface CardListPageProps {
   title: string;
-  description?: string;
   items: CardListItem[];
 }
 
-export function CardListPage({ title, description, items }: CardListPageProps) {
+export function CardListPage({ title, items }: CardListPageProps) {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-16">
-      <PageHeader title={title} description={description} />
+    <main className={PAGE_CLASS}>
+      <PageHeader title={title} />
       <CardGrid>
         {items.map(item => (
           <li key={item.key}>

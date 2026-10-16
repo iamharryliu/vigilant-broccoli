@@ -1,6 +1,7 @@
 # Aquarium
 
 - [Turtle Caretaking](./turtle-caretaking.md)
+- [Cherry Shrimp Caresheet](./cherry-shrimp-caresheet.md)
 
 ## Filters
 

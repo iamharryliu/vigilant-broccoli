@@ -44,8 +44,24 @@ output "aws_seafile_url" {
   value = "https://${var.seafile_domain}"
 }
 
-output "journal_url" {
-  value = "https://${var.journal_domain}"
+output "aws_immich_public_ip" {
+  value = aws_eip.immich.public_ip
+}
+
+output "aws_immich_url" {
+  value = "https://${var.immich_domain}"
+}
+
+output "aws_grafana_public_ip" {
+  value = aws_eip.grafana.public_ip
+}
+
+output "aws_grafana_url" {
+  value = "https://${var.grafana_domain}"
+}
+
+output "loki_push_url" {
+  value = "https://${var.loki_domain}/loki/api/v1/push"
 }
 
 output "docs_url" {
@@ -66,4 +82,24 @@ output "github_actions_pr_check_workload_identity_provider" {
 
 output "github_actions_pr_check_service_account_email" {
   value = google_service_account.github_actions_pr_check.email
+}
+
+# Pasted literally into cron-terraform-drift.yml's vault-secrets step, same
+# reasoning as the github_actions_pr_check_* outputs above.
+output "github_actions_tf_drift_workload_identity_provider" {
+  value = google_iam_workload_identity_pool_provider.github_tf_drift.name
+}
+
+output "github_actions_tf_drift_service_account_email" {
+  value = google_service_account.github_actions_tf_drift.email
+}
+
+# Pasted literally into deploy-preview.yml's vault-secrets step, same
+# reasoning as the github_actions_pr_check_* outputs above.
+output "github_actions_deploy_preview_workload_identity_provider" {
+  value = google_iam_workload_identity_pool_provider.github_deploy_preview.name
+}
+
+output "github_actions_deploy_preview_service_account_email" {
+  value = google_service_account.github_actions_deploy_preview.email
 }

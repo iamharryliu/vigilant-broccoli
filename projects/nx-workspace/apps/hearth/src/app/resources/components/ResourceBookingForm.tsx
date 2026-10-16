@@ -1,8 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Text } from '@radix-ui/themes';
-import { Button, Input, Select, Textarea } from '@vigilant-broccoli/react-lib';
+
+import {
+  Button,
+  Input,
+  Select,
+  Textarea,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { Resource } from '../../../lib/types';
 
 export interface ResourceBookingFormData {
@@ -61,10 +67,10 @@ export function ResourceBookingForm({
             Resource
           </Text>
           <Select
-            selectedOption={resources.find(r => r.id === resourceId)}
-            setValue={r => setResourceId(r.id)}
+            value={resources.find(r => r.id === resourceId)}
+            onValueChange={r => setResourceId(r.id)}
             options={resources}
-            optionIdenfifier="id"
+            optionIdentifier="id"
             optionDisplayKey="name"
             placeholder="Select a resource"
             triggerClassName="w-full"

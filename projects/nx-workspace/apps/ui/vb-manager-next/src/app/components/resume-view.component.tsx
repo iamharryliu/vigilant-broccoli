@@ -1,17 +1,13 @@
 import { Fragment, ReactNode } from 'react';
-import { Roboto } from 'next/font/google';
 import { ResumeData, ResumeWorkExperience } from '@vigilant-broccoli/resume';
 
-const roboto = Roboto({
-  subsets: ['latin'],
-  weight: ['300', '400', '700'],
-  style: ['normal', 'italic'],
-});
+const RESUME_FONT_FAMILY = "Roboto, 'Helvetica Neue', Arial, sans-serif";
 
 const LINK_COLOR_CLASS = 'text-[#1155cc]';
 const HEADING_COLOR_CLASS = 'text-[#3d85c6]';
 
 const BOLD_PATTERN = /\*\*(.+?)\*\*/g;
+const SKILL_SEPARATOR = ' · ';
 
 const renderInlineBold = (text: string): ReactNode => {
   const parts = text.split(BOLD_PATTERN);
@@ -52,10 +48,12 @@ const WorkExperienceEntry = ({ entry }: { entry: ResumeWorkExperience }) => (
 
 export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
   const { basics, summary, workExperience, projectExperience, skills } = resume;
+  const trimmedSummary = summary?.trim();
 
   return (
     <div
-      className={`bg-white text-black text-[13px] leading-snug p-8 shadow-md print:shadow-none print:p-0 max-w-[850px] print:max-w-none print:w-full ${roboto.className}`}
+      className="bg-white text-black text-[13px] leading-snug p-8 shadow-md print:shadow-none print:p-0 max-w-[850px] print:max-w-none print:w-full"
+      style={{ fontFamily: RESUME_FONT_FAMILY }}
     >
       <div className="grid grid-cols-3 items-start mb-2">
         <div className="flex flex-col gap-0.5">
@@ -84,7 +82,9 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
         </div>
       </div>
 
-      <p className="mb-2">{summary}</p>
+      {trimmedSummary && (
+        <p className="mb-2">{renderInlineBold(trimmedSummary)}</p>
+      )}
 
       <section className="mb-2">
         <SectionHeading>Work Experience</SectionHeading>
@@ -94,25 +94,15 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
       </section>
 
       <section className="mb-2">
-        <SectionHeading>Project Experience</SectionHeading>
+        <SectionHeading>Open Source</SectionHeading>
         {projectExperience.map((entry, index) => (
           <WorkExperienceEntry key={index} entry={entry} />
         ))}
       </section>
 
-      <section className="mb-2">
-        <SectionHeading>Skills</SectionHeading>
-        <p>
-          <span className="font-bold">Technical: </span>
-          {skills.technical.join(', ')}.
-        </p>
-        <p className="font-bold">Soft:</p>
-        <ul className="list-disc pl-5 space-y-0.5">
-          {skills.soft.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-      </section>
+      <p className="mt-[18px] border-t border-black pt-1 text-center">
+        {skills.technical.join(SKILL_SEPARATOR)}
+      </p>
     </div>
   );
 };

@@ -1,0 +1,70 @@
+---
+# Ownership is omitted on a non-POSIX drive: once it is mounted, this path *is*
+# the exFAT/vFAT root, whose ownership comes from the mount options and cannot
+# be chowned - the module fails outright on a re-run.
+- name: Ensure the media mount point exists
+  ansible.builtin.file:
+    path: '{{ media_mount_point }}'
+    state: directory
+    owner: "{{ 'root' if media_fs_posix else omit }}"
+    group: "{{ 'root' if media_fs_posix else omit }}"
+    mode: "{{ '0755' if media_fs_posix else omit }}"
+
+# By UUID, never by /dev/sdX: the kernel hands out device names in probe
+# order, so a reboot with a second disk attached can swap them.
+- name: Mount the external media drive by UUID via fstab
+  ansible.posix.mount:
+    path: '{{ media_mount_point }}'
+    src: 'UUID={{ media_drive_uuid }}'
+    fstype: '{{ media_fs_type }}'
+    opts: '{{ media_mount_options }}'
+    state: mounted
+
+- name: Read the live mount options
+  ansible.builtin.command: findmnt --noheadings --output OPTIONS --mountpoint {{ media_mount_point }}
+  register: media_live_options
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+# ansible.posix.mount with state: mounted rewrites fstab but will not remount a
+# filesystem that is already mounted, so changed options take effect only after
+# a reboot - the run reports success while the live mount still differs from
+# what was just declared. Only uid/gid are compared: they are what the
+# container's access depends on, and they appear verbatim in findmnt output,
+# unlike umask which the kernel expands into fmask and dmask.
+- name: Remount the media drive when its options have drifted from fstab
+  ansible.posix.mount:
+    path: '{{ media_mount_point }}'
+    src: 'UUID={{ media_drive_uuid }}'
+    fstype: '{{ media_fs_type }}'
+    opts: '{{ media_mount_options }}'
+    state: remounted
+  when:
+    - media_identity_options | length > 0
+    - media_identity_options | difference(media_live_option_list) | length > 0
+  vars:
+    media_identity_options: "{{ media_mount_options | split(',') | select('match', '^(uid|gid)=') | list }}"
+    media_live_option_list: "{{ media_live_options.stdout | default('') | split(',') | map('trim') | list }}"
+
+- name: Confirm the mount point is backed by the external drive
+  ansible.builtin.command: findmnt --noheadings --output SOURCE --mountpoint {{ media_mount_point }}
+  register: media_mount_source
+  changed_when: false
+  check_mode: false
+  # A dry run never performs the mount above, so it cannot assert the result.
+  failed_when: media_mount_source.rc != 0 and not ansible_check_mode
+
+# Mode is group-writable so a media-adding user in the jellyfin group can drop
+# files in without sudo, and never recursive - the playbook does not rewrite
+# ownership of media already on the drive. All of it is omitted on a non-POSIX
+# drive, where every file reports the uid/gid/umask from the mount options
+# instead: setting owner or mode there fails on some kernels and reports
+# changed on every run on others.
+- name: Ensure the library directory exists on the drive
+  ansible.builtin.file:
+    path: '{{ media_library_dir }}'
+    state: directory
+    owner: "{{ jellyfin_service_user if media_fs_posix else omit }}"
+    group: "{{ jellyfin_service_group if media_fs_posix else omit }}"
+    mode: "{{ '0775' if media_fs_posix else omit }}"

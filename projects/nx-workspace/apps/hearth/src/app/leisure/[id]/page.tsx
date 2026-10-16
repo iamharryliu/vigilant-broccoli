@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { Badge, Text } from '@radix-ui/themes';
+import { Text, Badge } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../providers/auth-provider';
 import { LeisureActivity } from '../../../lib/types';
 import { ROUTES } from '../../../lib/routes';
+import { PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
 
 const CATEGORY_COLORS: Record<string, string> = {
   Movies: 'blue',
@@ -23,6 +24,7 @@ export default function LeisureDetailPage() {
   const { id } = useParams<{ id: string }>();
   const session = useAuth();
   const [activity, setActivity] = useState<LeisureActivity | null>(null);
+  usePageTitle(activity?.title ?? PAGE_TITLES.LEISURE_DETAIL);
 
   useEffect(() => {
     if (!session?.access_token) return;
@@ -38,7 +40,7 @@ export default function LeisureDetailPage() {
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-6">
       <Link
-        href={ROUTES.LEISURE}
+        href={ROUTES.ACTIVITY_PLANNER}
         className="text-sm text-gray-500 hover:text-gray-700"
       >
         ← Back

@@ -42,13 +42,16 @@ const updateEmailSignatures = async (
     if (handlerConfig.activeMaintenanceUtilities.useSignatureCaching) {
       signaturesCache = Object.assign(
         signaturesCache,
-        signaturesToUpdate.reduce((cache, signature) => {
-          cache[signature.email] = crypto
-            .createHash('sha256')
-            .update(signature.signatureString)
-            .digest('hex');
-          return cache;
-        }, {} as Record<string, string>),
+        signaturesToUpdate.reduce(
+          (cache, signature) => {
+            cache[signature.email] = crypto
+              .createHash('sha256')
+              .update(signature.signatureString)
+              .digest('hex');
+            return cache;
+          },
+          {} as Record<string, string>,
+        ),
       );
       await FileSystemUtils.writeJSON(
         SIGNATURE_CACHE_FILEPATH,
@@ -121,7 +124,7 @@ const manualRecoverUsers = async (
 const syncData = async (
   handlerConfig: EmployeeHandlerConfig,
 ): Promise<void> => {
-  if(!handlerConfig.activeMaintenanceUtilities.syncData) return
+  if (!handlerConfig.activeMaintenanceUtilities.syncData) return;
   await handlerConfig.activeMaintenanceUtilities.syncData();
 };
 

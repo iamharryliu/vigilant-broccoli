@@ -1,16 +1,13 @@
 # Refactor & Code Cleanup Checklist
 
-Shared checklist behind `/refactor-code-cleanup`. Two triggers:
-
-- Manual — run `/refactor-code-cleanup` in an interactive session.
-- Automatic — unattended `agentic:task:solve` runs apply this before finishing, per [CLAUDE.md](../CLAUDE.md).
+Review the current diff; used by `/refactor-code-cleanup` and `agentic-pr-create`.
 
 ## Checklist
 
-- Double check the implementation and perform necessary cleanups.
-- Reduce string literals by using consts. Skip styling-related strings (CSS values, Tailwind classes, inline style objects, color/sizing tokens) — leave those inline.
-- Remove unused imports and dead code — variables, functions, or exports that are never referenced.
-- Remove debug `console.log` statements left over from development.
-- Remove unnecessary comments — inline comments that just restate what the code clearly does.
-- Report if there are any critical issues with the implementation.
-- Give any recommendations that would significantly improve the implementation, if any.
+- Reuse consts for repeated literals, except styling strings (CSS, Tailwind classes, colors and sizing tokens).
+- Remove unused imports/code, leftover debug logs and redundant comments per [Coding Conventions](../CONTEXT.md#coding-conventions): comments restating the next line, labelling a block in its own code's words (`// Helper function to ...`, `// Start a single container`) or explaining a self-describing flag (`agentRules: false`). Preserve comments explaining constraints, worked examples (`// Example input: "0.0.0.0:8080->80/tcp"`), empty blocks and TODO/FIXME/lint directives.
+- Format touched files after cleanup; deleting a comment can change how Prettier wraps the surrounding lines.
+- Record uncovered external constraints per [nuance-pattern.md](./nuance-pattern.md); keep new documentation in its [owning location](./agent-support.md#documentation-placement).
+- Report critical issues and recommendations that materially improve the implementation.
+
+Repository-wide dead-code, stale-documentation, context-slimming and backlog audits are separate [agentic operations](./agent-support.md#agentic-commands).

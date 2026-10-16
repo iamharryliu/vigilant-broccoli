@@ -1,17 +1,16 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+
+const UNREAD_PREFIX = /^\(\d+\)\s*/;
 
 export function useUnreadDocumentTitle(unreadCount: number) {
-  const baseTitle = useRef<string>('');
+  const pathname = usePathname();
 
   useEffect(() => {
-    if (!baseTitle.current) {
-      baseTitle.current = document.title.replace(/^\(\d+\)\s*/, '');
-    }
+    const baseTitle = document.title.replace(UNREAD_PREFIX, '');
     document.title =
-      unreadCount > 0
-        ? `(${unreadCount}) ${baseTitle.current}`
-        : baseTitle.current;
-  }, [unreadCount]);
+      unreadCount > 0 ? `(${unreadCount}) ${baseTitle}` : baseTitle;
+  }, [unreadCount, pathname]);
 }

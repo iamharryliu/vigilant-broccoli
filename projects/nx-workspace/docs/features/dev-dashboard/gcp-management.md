@@ -3,7 +3,7 @@
 ## Overview
 
 - Dev dashboard card in `vb-manager-next`
-- Reads auth state via `gcloud` CLI
+- Reads auth state via `gcloud` CLI through `@vigilant-broccoli/devops-cli` (see [devops-cli.md](./devops-cli.md))
 
 ## Features
 

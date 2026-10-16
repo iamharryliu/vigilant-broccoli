@@ -2,7 +2,10 @@
 
 - [Frontend](./frontend/frontend.md)
 - [Backend](./backend/backend.md)
+- [Web Frameworks and Libraries](./frameworks-and-libraries.md)
 - [Database](./database/database.md)
 - [Devops](./devops/devops.md)
-- [Network Security](./network-security/network-security.md)
+- [Networking](./networking/networking.md)
+- [Authentication](./authentication.md)
+- [Service Communication](./service-communication.md)
 - [Web Dev Tools](./tools/web-dev-tools.md)

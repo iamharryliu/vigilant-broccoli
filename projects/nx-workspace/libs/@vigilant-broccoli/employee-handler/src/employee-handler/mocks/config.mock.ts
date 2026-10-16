@@ -1,4 +1,9 @@
-import { EmployeeHandlerConfig } from '../employee-handler.models';
+import {
+  EMPLOYEE_METADATA_KEYS,
+  EmployeeAbsence,
+  EmployeeHandlerConfig,
+  EmployeeMetadata,
+} from '../employee-handler.models';
 import { SignatureTemplate } from '../signature-templates/signature-templates.store';
 
 const COMPANY_DOMAIN = 'company.com';
@@ -77,9 +82,14 @@ const TITLES = [
 const DEPARTMENTS = ['Engineering', 'Product', 'Design', 'People', 'Data'];
 const OFFICES = ['Toronto', 'New York', 'Remote — EU'];
 
-type EmployeeStatus = 'incoming' | 'active' | 'inactive';
+export type EmployeeStatus = 'incoming' | 'active' | 'inactive';
 
-type MockEmployee = {
+const GITHUB_BASE_URL = 'https://github.com';
+const LINKEDIN_BASE_URL = 'https://www.linkedin.com/in';
+const RESUME_BASE_URL = `${COMPANY_WEBSITE}/resumes`;
+const METADATA_GAP_INTERVAL = 4;
+
+export type MockEmployee = EmployeeMetadata & {
   firstName: string;
   lastName: string;
   email: string;
@@ -93,6 +103,22 @@ const pick = <T>(arr: T[], index: number): T => arr[index % arr.length];
 
 const slug = (firstName: string, lastName: string) =>
   `${firstName}.${lastName}`.toLowerCase().replace(/\s+/g, '');
+
+const buildMetadata = (handle: string, index: number): EmployeeMetadata => {
+  const metadata: EmployeeMetadata = {
+    githubUrl: `${GITHUB_BASE_URL}/${handle}`,
+    linkedInURL: `${LINKEDIN_BASE_URL}/${handle}`,
+    resumeUrl: `${RESUME_BASE_URL}/${handle}.pdf`,
+  };
+  // Leave a few fields empty so the UI's empty state is exercised.
+  if (index % METADATA_GAP_INTERVAL === METADATA_GAP_INTERVAL - 1) {
+    delete metadata.githubUrl;
+  }
+  if (index % METADATA_GAP_INTERVAL === 0 && index > 0) {
+    delete metadata.resumeUrl;
+  }
+  return metadata;
+};
 
 const generateEmployees = (
   status: EmployeeStatus,
@@ -109,6 +135,7 @@ const generateEmployees = (
       department: pick(DEPARTMENTS, i),
       office: pick(OFFICES, i),
       phoneNumber: `+1 (555) ${String(100 + i).padStart(3, '0')}-${String(1000 + i * 7).padStart(4, '0')}`,
+      ...buildMetadata(slug(firstName, lastName).replace('.', '-'), i),
     };
   });
 
@@ -170,6 +197,30 @@ const listByStatus = (set: Set<string>): MockEmployee[] => {
   return out;
 };
 
+export const listEmployeesByStatus = (status: EmployeeStatus): MockEmployee[] =>
+  listByStatus(
+    status === 'incoming'
+      ? incomingEmails
+      : status === 'active'
+        ? activeEmails
+        : inactiveEmails,
+  );
+
+export const updateEmployeeMetadata = (
+  email: string,
+  updates: EmployeeMetadata,
+): MockEmployee | null => {
+  const record = employeesByEmail.get(email);
+  if (!record) return null;
+  for (const key of EMPLOYEE_METADATA_KEYS) {
+    if (!(key in updates)) continue;
+    const value = updates[key]?.trim();
+    if (value) record[key] = value;
+    else delete record[key];
+  }
+  return record;
+};
+
 const buildSignature = (employee: MockEmployee): string =>
   `<div style="font-family: Arial, sans-serif; color: #333;">
   <p style="margin: 0; font-size: 16px;"><strong>${employee.firstName} ${employee.lastName}</strong></p>
@@ -210,7 +261,61 @@ const extractEmail = (input: unknown): string | null => {
   return null;
 };
 
+const DAY_MS = 24 * 60 * 60 * 1000;
+const isoDate = (d: Date): string => d.toISOString().slice(0, 10);
+const addDays = (d: Date, n: number): Date =>
+  new Date(d.getTime() + n * DAY_MS);
+
+const ABSENCE_TYPES: string[] = [
+  'Vacation',
+  'Sick Leave',
+  'Parental Leave',
+  'Unpaid Leave',
+  'Conference',
+];
+
+// Fixed offsets (days relative to "today") so the mock always shows a mix of
+// past, ongoing and upcoming absences no matter when it's viewed.
+const MOCK_ABSENCE_SLOTS: {
+  startOffset: number;
+  lengthDays: number;
+  typeIndex: number;
+}[] = [
+  { startOffset: -40, lengthDays: 5, typeIndex: 0 },
+  { startOffset: -18, lengthDays: 1, typeIndex: 1 },
+  { startOffset: -3, lengthDays: 9, typeIndex: 0 },
+  { startOffset: 10, lengthDays: 2, typeIndex: 4 },
+  { startOffset: 25, lengthDays: 14, typeIndex: 2 },
+  { startOffset: 50, lengthDays: 1, typeIndex: 1 },
+];
+
+const generateMockAbsences = (employees: MockEmployee[]): EmployeeAbsence[] => {
+  const today = new Date();
+  const absences: EmployeeAbsence[] = [];
+  employees.forEach((employee, employeeIndex) => {
+    // Not every employee has recent/upcoming absences — skip roughly a third.
+    if (employeeIndex % 3 === 2) return;
+    MOCK_ABSENCE_SLOTS.forEach((slot, slotIndex) => {
+      // Spread slots across employees instead of giving everyone every slot.
+      if ((employeeIndex + slotIndex) % 3 !== 0) return;
+      const start = addDays(today, slot.startOffset + employeeIndex);
+      const end = addDays(start, slot.lengthDays - 1);
+      absences.push({
+        id: `${employee.email}-${slotIndex}`,
+        employeeEmail: employee.email,
+        employeeName: `${employee.firstName} ${employee.lastName}`.trim(),
+        type: pick(ABSENCE_TYPES, slot.typeIndex),
+        startDate: isoDate(start),
+        endDate: isoDate(end),
+      });
+    });
+  });
+  return absences;
+};
+
 export const EMPLOYEE_HANDLER_CONFIG_MOCK: EmployeeHandlerConfig = {
+  updateEmployeeMetadata: async (email, updates) =>
+    updateEmployeeMetadata(email, updates),
   onboardUtilities: {
     fetchIncomingEmployees: async () => listByStatus(incomingEmails),
     processIncomingEmployees: async users => {
@@ -268,6 +373,9 @@ export const EMPLOYEE_HANDLER_CONFIG_MOCK: EmployeeHandlerConfig = {
       }
       console.log('Post-retention cleanup purged:', purged.join(', '));
     },
+  },
+  absenceUtilities: {
+    fetchAbsences: async () => generateMockAbsences(listByStatus(activeEmails)),
   },
   customFunctions: {
     customFunctionExample: async (...args) => {

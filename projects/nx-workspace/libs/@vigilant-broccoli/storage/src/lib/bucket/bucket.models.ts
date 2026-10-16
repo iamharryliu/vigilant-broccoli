@@ -51,4 +51,10 @@ export interface IBucketProvider {
   list(): Promise<BucketFile[]>;
   exists(fileName: string): Promise<boolean>;
   read(fileName: string): Promise<Buffer>;
+  getUploadUrl(
+    destinationName: string,
+    contentType: string,
+    expiresInSeconds: number,
+  ): Promise<string>;
+  getDownloadUrl(fileName: string, expiresInSeconds: number): Promise<string>;
 }

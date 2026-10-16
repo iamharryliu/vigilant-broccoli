@@ -16,6 +16,7 @@ export const runtime = 'nodejs';
 
 const MAX_REQUEST_BYTES = 1 * 1024 * 1024;
 const ERROR_REQUEST_TOO_LARGE = 'Request too large.';
+const STAGING_KEY_PREFIX = 'staging/where-is/';
 
 interface StagedImageRef {
   key: string;
@@ -25,8 +26,14 @@ interface StagedImageRef {
 const makeR2Key = (itemId: string) =>
   `where-is/${itemId}/${crypto.randomUUID()}.jpg`;
 
-const readAndProcessStagedImages = async (images: StagedImageRef[]) =>
-  Promise.all(
+const assertStagedKey = (key: string) => {
+  if (!key.startsWith(STAGING_KEY_PREFIX))
+    throw new ImageValidationError('Invalid staged image reference.');
+};
+
+const readAndProcessStagedImages = async (images: StagedImageRef[]) => {
+  images.forEach(img => assertStagedKey(img.key));
+  return Promise.all(
     images.map(async img => {
       try {
         const buffer = await readImage(img.key, MAX_IMAGE_SIZE_BYTES);
@@ -36,6 +43,7 @@ const readAndProcessStagedImages = async (images: StagedImageRef[]) =>
       }
     }),
   );
+};
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -53,21 +61,35 @@ export async function GET(request: NextRequest) {
 
   const { data: items } = await query;
 
-  const result = (items ?? []).map(item => ({
-    id: item.id,
-    title: item.title,
-    description: item.description,
-    tags: item.tags,
-    homeId: item.home_id,
-    imageUrls: (
-      item.where_is_images as { r2_key: string; sort_order: number }[]
-    )
-      .sort((a, b) => a.sort_order - b.sort_order)
-      .map(img => getImageUrl(img.r2_key)),
-    createdAt: item.created_at,
-  }));
+  try {
+    const result = await Promise.all(
+      (items ?? []).map(async item => {
+        const sortedImages = (
+          item.where_is_images as { r2_key: string; sort_order: number }[]
+        ).sort((a, b) => a.sort_order - b.sort_order);
 
-  return Response.json(id ? (result[0] ?? null) : result);
+        return {
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          tags: item.tags,
+          homeId: item.home_id,
+          imageUrls: await Promise.all(
+            sortedImages.map(img => getImageUrl(img.r2_key)),
+          ),
+          imageKeys: sortedImages.map(img => img.r2_key),
+          createdAt: item.created_at,
+        };
+      }),
+    );
+
+    return Response.json(id ? (result[0] ?? null) : result);
+  } catch (e) {
+    return Response.json(
+      { error: (e as Error).message },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -150,13 +172,13 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  const { id, title, description, tags, removedImageUrls, newImages } =
+  const { id, title, description, tags, removedImageKeys, newImages } =
     (await request.json()) as {
       id: string;
       title: string;
       description: string;
       tags: string[];
-      removedImageUrls: string[];
+      removedImageKeys: string[];
       newImages: StagedImageRef[];
     };
   const supabase = createServerClient(getBearerToken(request));
@@ -173,15 +195,14 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  if (removedImageUrls?.length) {
+  if (removedImageKeys?.length) {
     const { data: allImages } = await supabase
       .from('where_is_images')
       .select('id, r2_key')
       .eq('item_id', id);
 
-    const toRemove = (allImages ?? []).filter(img =>
-      removedImageUrls.some(url => url.endsWith(img.r2_key)),
-    );
+    const removed = new Set(removedImageKeys);
+    const toRemove = (allImages ?? []).filter(img => removed.has(img.r2_key));
 
     if (toRemove.length) {
       await supabase

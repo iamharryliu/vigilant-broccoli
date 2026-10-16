@@ -1,8 +1,12 @@
+import {
+  HONEYPOT_FIELD_NAME,
+  HTTP_STATUS_CODES,
+} from '@vigilant-broccoli/common-js';
 import { createSwaggerSpec } from '@vigilant-broccoli/fastify';
 
 const SERVICE_TITLE = 'vb-express';
 const SERVICE_DESCRIPTION =
-  'Personal API gateway: better-auth sessions, API key admin, Google Tasks, LLM-backed parsing (calendar, tasks, receipts, recipes, storage), messaging, and audio. /api routes require an x-api-key header with the matching service permission.';
+  'Personal API gateway: better-auth sessions, API key admin, Google Tasks, LLM-backed parsing (calendar, tasks, receipts, recipes, storage), messaging, and audio. /api routes require an x-api-key header with the matching service permission, except the read-only GET /api/public/event-calendars, which needs no key and returns only public event calendars.';
 
 const JSON_CONTENT = 'application/json';
 const MULTIPART_CONTENT = 'multipart/form-data';
@@ -41,6 +45,56 @@ const audioMultipartBody = (extraProperties: Record<string, unknown> = {}) => ({
 });
 
 const UNAUTHORIZED_RESPONSE = { description: 'Unauthorized' };
+const TASK_ID_REQUIRED_RESPONSE = { description: 'taskId is required' };
+const GOOGLE_TASKS_ERROR_RESPONSE = {
+  description: "Google Tasks API error, with Google's status passed through",
+};
+const PUBLIC_EVENT_CALENDARS_PATH = '/api/public/event-calendars';
+const PUBLIC_EVENT_CALENDARS_ERROR_RESPONSE = {
+  description:
+    'Public event calendars could not be loaded (generic message; details are logged server-side)',
+  content: {
+    [JSON_CONTENT]: {
+      schema: {
+        type: 'object',
+        required: ['error'],
+        properties: { error: { type: 'string' } },
+      },
+    },
+  },
+};
+const PUBLIC_EVENT_CALENDARS_OK_RESPONSE = {
+  description:
+    'Event calendars the manager has marked public, oldest first. An empty list is a confirmed empty result. Sent with Cache-Control: no-store.',
+  content: {
+    [JSON_CONTENT]: {
+      schema: {
+        type: 'object',
+        required: ['calendars'],
+        properties: {
+          calendars: {
+            type: 'array',
+            items: {
+              type: 'object',
+              required: ['id', 'name', 'url'],
+              properties: {
+                id: { type: 'string' },
+                name: { type: 'string' },
+                url: {
+                  type: 'string',
+                  description: 'Encoded Google Calendar embed/view link',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+const TASKS_INTERNAL_RESPONSE = {
+  description: 'Not authenticated or unexpected error',
+};
 
 export const swaggerSpec = createSwaggerSpec({
   title: SERVICE_TITLE,
@@ -52,6 +106,21 @@ export const swaggerSpec = createSwaggerSpec({
         summary: 'Health check',
         security: [],
         responses: { '200': { description: 'Service name' } },
+      },
+    },
+    [PUBLIC_EVENT_CALENDARS_PATH]: {
+      get: {
+        summary:
+          'Public event calendars (no API key; read-only, is_public rows only)',
+        security: [],
+        responses: {
+          [HTTP_STATUS_CODES.OK]: PUBLIC_EVENT_CALENDARS_OK_RESPONSE,
+          [HTTP_STATUS_CODES.TOO_MANY_REQUESTS]: {
+            description: 'Rate limit exceeded',
+          },
+          [HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR]:
+            PUBLIC_EVENT_CALENDARS_ERROR_RESPONSE,
+        },
       },
     },
     '/api/__ping': {
@@ -93,7 +162,7 @@ export const swaggerSpec = createSwaggerSpec({
     },
     '/contact/send-message': {
       post: {
-        summary: 'Contact form (recaptcha-protected, no API key)',
+        summary: 'Contact form (honeypot + recaptcha protected, no API key)',
         security: [],
         requestBody: jsonBody({
           type: 'object',
@@ -104,11 +173,15 @@ export const swaggerSpec = createSwaggerSpec({
             message: { type: 'string' },
             appName: { type: 'string' },
             recaptchaToken: { type: 'string' },
+            [HONEYPOT_FIELD_NAME]: {
+              type: 'string',
+              description: 'Honeypot spam trap; must be omitted or empty',
+            },
           },
         }),
         responses: {
           '200': { description: 'Emails queued' },
-          '403': { description: 'Recaptcha rejected' },
+          '403': { description: 'Honeypot triggered or recaptcha rejected' },
           '500': { description: 'Email service failure' },
         },
       },
@@ -222,7 +295,8 @@ export const swaggerSpec = createSwaggerSpec({
         ],
         responses: {
           '200': { description: '{ success, tasks }' },
-          '500': { description: 'Not authenticated or Google error' },
+          '4XX': GOOGLE_TASKS_ERROR_RESPONSE,
+          '500': TASKS_INTERNAL_RESPONSE,
         },
       },
       post: {
@@ -239,7 +313,8 @@ export const swaggerSpec = createSwaggerSpec({
         }),
         responses: {
           '200': { description: '{ success, task }' },
-          '500': { description: 'Not authenticated or Google error' },
+          '4XX': GOOGLE_TASKS_ERROR_RESPONSE,
+          '500': TASKS_INTERNAL_RESPONSE,
         },
       },
       patch: {
@@ -258,7 +333,9 @@ export const swaggerSpec = createSwaggerSpec({
         }),
         responses: {
           '200': { description: '{ success, task }' },
-          '500': { description: 'Not authenticated or Google error' },
+          '400': TASK_ID_REQUIRED_RESPONSE,
+          '4XX': GOOGLE_TASKS_ERROR_RESPONSE,
+          '500': TASKS_INTERNAL_RESPONSE,
         },
       },
       delete: {
@@ -278,8 +355,9 @@ export const swaggerSpec = createSwaggerSpec({
         ],
         responses: {
           '200': { description: '{ success }' },
-          '400': { description: 'taskId is required' },
-          '500': { description: 'Not authenticated or Google error' },
+          '400': TASK_ID_REQUIRED_RESPONSE,
+          '4XX': GOOGLE_TASKS_ERROR_RESPONSE,
+          '500': TASKS_INTERNAL_RESPONSE,
         },
       },
     },

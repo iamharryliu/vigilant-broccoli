@@ -45,4 +45,5 @@ export const VB_EXPRESS_SERVICE = {
   WHERE_IS: 'where-is',
   PRICE_TRACKER: 'price-tracker',
   RECIPE: 'recipe',
+  STORAGE: 'storage',
 };

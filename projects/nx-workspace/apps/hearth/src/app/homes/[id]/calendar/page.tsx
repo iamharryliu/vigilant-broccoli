@@ -2,8 +2,14 @@
 
 import { use, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Dialog, Text } from '@radix-ui/themes';
-import { FULL_SCREEN_ON_MOBILE_DIALOG_CLASS } from '@vigilant-broccoli/react-lib';
+import {
+  FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+  Text,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  cn,
+} from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../../providers/auth-provider';
 import { ROUTES } from '../../../../lib/routes';
 import { CalendarEvent } from '../../../../lib/types';
@@ -12,6 +18,7 @@ import {
   CalendarEventForm,
   CalendarEventFormData,
 } from '../../../calendar/components/CalendarEventForm';
+import { PAGE_TITLES, usePageTitle } from '../../../../lib/page-title';
 
 type ModalState =
   | { type: 'create'; start: string; end: string; allDay: boolean }
@@ -24,11 +31,15 @@ export default function HomeCalendarPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  usePageTitle(PAGE_TITLES.HOME_CALENDAR);
   const homeId = Number(id);
   const router = useRouter();
   const session = useAuth();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [modal, setModal] = useState<ModalState>(null);
+  const [range, setRange] = useState<{ start: string; end: string } | null>(
+    null,
+  );
 
   const token = session?.access_token ?? '';
   const authHeader = (extra?: Record<string, string>) => ({
@@ -37,13 +48,18 @@ export default function HomeCalendarPage({
   });
 
   const fetchEvents = useCallback(async () => {
-    if (!token) return;
-    const res = await fetch(`/api/calendar/events?homeId=${homeId}`, {
+    if (!token || !range) return;
+    const params = new URLSearchParams({
+      homeId: String(homeId),
+      start: range.start,
+      end: range.end,
+    });
+    const res = await fetch(`/api/calendar/events?${params}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
     setEvents(Array.isArray(data) ? data : []);
-  }, [homeId, token]);
+  }, [homeId, token, range]);
 
   useEffect(() => {
     fetchEvents();
@@ -116,21 +132,27 @@ export default function HomeCalendarPage({
         }
         onEventClick={event => setModal({ type: 'edit', event })}
         onEventDrop={handleEventDrop}
+        onRangeChange={(start, end) => setRange({ start, end })}
       />
 
-      <Dialog.Root
+      <Dialog
         open={modal !== null}
         onOpenChange={open => {
           if (!open) setModal(null);
         }}
       >
-        <Dialog.Content
-          className={FULL_SCREEN_ON_MOBILE_DIALOG_CLASS}
+        <DialogContent
+          aria-describedby={undefined}
+          showCloseButton={false}
+          className={cn(
+            'block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto',
+            FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+          )}
           style={{ maxWidth: 480 }}
         >
-          <Dialog.Title>
+          <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
             {modal?.type === 'edit' ? 'Edit Event' : 'New Event'}
-          </Dialog.Title>
+          </DialogTitle>
 
           {modal?.type === 'create' && (
             <CalendarEventForm
@@ -167,8 +189,8 @@ export default function HomeCalendarPage({
               />
             </>
           )}
-        </Dialog.Content>
-      </Dialog.Root>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

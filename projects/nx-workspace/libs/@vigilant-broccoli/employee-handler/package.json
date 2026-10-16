@@ -1,13 +1,14 @@
 {
   "name": "@vigilant-broccoli/employee-handler",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "dependencies": {
     "@swc/helpers": "0.5.19",
     "@vigilant-broccoli/common-js": "workspace:*",
     "@vigilant-broccoli/common-node": "workspace:*",
     "@vigilant-broccoli/google-workspace": "workspace:*",
     "express": "^5.2.1",
-    "nodemailer": "^9.0.1"
+    "nodemailer": "^10.0.13",
+    "zod": "^3.25.76"
   },
   "repository": {
     "type": "git",

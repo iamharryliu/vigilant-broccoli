@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server';
-import { createServerClient } from '../../../../libs/supabase-server';
+import {
+  createServerClient,
+  getBearerToken,
+} from '../../../../libs/supabase-server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { uploadFile, deleteFile, readFile, getFileUrl } from './r2';
 import {
@@ -12,6 +15,7 @@ import { MAX_FILE_SIZE_BYTES } from './limits';
 export const runtime = 'nodejs';
 
 const MAX_REQUEST_BYTES = 1 * 1024 * 1024;
+const STAGING_KEY_PREFIX = 'staging/docs/';
 
 interface StagedFileRef {
   key: string;
@@ -19,8 +23,14 @@ interface StagedFileRef {
   name: string;
 }
 
-const readAndProcessStagedFiles = async (files: StagedFileRef[]) =>
-  Promise.all(
+const assertStagedKey = (key: string) => {
+  if (!key.startsWith(STAGING_KEY_PREFIX))
+    throw new FileValidationError('Invalid staged file reference.');
+};
+
+const readAndProcessStagedFiles = async (files: StagedFileRef[]) => {
+  files.forEach(file => assertStagedKey(file.key));
+  return Promise.all(
     files.map(async file => {
       try {
         const buffer = await readFile(file.key, MAX_FILE_SIZE_BYTES);
@@ -34,10 +44,10 @@ const readAndProcessStagedFiles = async (files: StagedFileRef[]) =>
       }
     }),
   );
+};
 
 const getSupabase = (req: NextRequest) => {
-  const accessToken =
-    req.headers.get('authorization')?.replace('Bearer ', '') ?? '';
+  const accessToken = getBearerToken(req);
   return createServerClient(accessToken);
 };
 
@@ -84,8 +94,15 @@ export async function GET(req: NextRequest) {
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
 
-  const mapped = await Promise.all((data ?? []).map(toDoc));
-  return Response.json(id ? (mapped[0] ?? null) : mapped);
+  try {
+    const mapped = await Promise.all((data ?? []).map(toDoc));
+    return Response.json(id ? (mapped[0] ?? null) : mapped);
+  } catch (e) {
+    return Response.json(
+      { error: (e as Error).message },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+  }
 }
 
 export async function POST(req: NextRequest) {

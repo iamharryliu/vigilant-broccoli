@@ -5,8 +5,13 @@
   },
   "NAV": {
     "EMPLOYEES": "Employees",
+    "ABSENCES": "Absences",
     "SIGNATURES": "Signatures",
     "SETTINGS": "Settings"
+  },
+  "PAGE_TITLE": {
+    "LOGIN": "Sign In",
+    "AUTH_CALLBACK": "Signing In"
   },
   "SIDEBAR": {
     "LIGHT_MODE": "Light mode",
@@ -67,11 +72,42 @@
       "OFFBOARD_SELECTED": "Offboarded selected employees",
       "ONBOARD_SELECTED": "Onboarded selected employees",
       "RETENTION": "Post-retention cleanup complete",
-      "SYNC": "Sync complete"
+      "SYNC": "Sync complete",
+      "METADATA_SAVED": "Employee links saved"
     },
     "ERROR": {
       "NO_EMAILS": "Please enter valid email addresses",
-      "LOAD_FAILED": "Failed to load employees"
+      "LOAD_FAILED": "Failed to load employees",
+      "METADATA_SAVE_FAILED": "Failed to save employee links"
+    },
+    "DRAWER": {
+      "TITLE": "Employee details",
+      "STATUS": "Status",
+      "METADATA": "Links",
+      "GITHUB": "GitHub",
+      "LINKEDIN": "LinkedIn",
+      "RESUME": "Resume",
+      "NOT_SET": "Not set",
+      "URL_PLACEHOLDER": "https://",
+      "SAVE": "Save changes"
+    }
+  },
+  "ABSENCES": {
+    "SUBTITLE": "Every active employee's recent and upcoming absences.",
+    "SUMMARY": "{employees} employees · {absences} absences",
+    "EMPTY": "No absences",
+    "TODAY": "Today",
+    "ROW_META": "{count} absences",
+    "TABLE_VIEW": "Table view (all absences)",
+    "COL": {
+      "EMPLOYEE": "Employee",
+      "TYPE": "Type",
+      "START": "Start",
+      "END": "End",
+      "DAYS": "Days"
+    },
+    "ERROR": {
+      "LOAD_FAILED": "Failed to load absences"
     }
   },
   "SIGNATURES": {

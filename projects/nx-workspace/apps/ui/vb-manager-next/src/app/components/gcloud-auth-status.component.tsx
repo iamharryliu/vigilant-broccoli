@@ -1,23 +1,30 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
-import { Text, Badge } from '@radix-ui/themes';
 import {
-  BORDER_ACTIVE,
   Button,
-  ButtonList,
   ButtonConfig,
+  ButtonList,
   CardContainer,
+  CopyButton,
   MonospaceText,
   StatusCardList,
   StatusCardListItem,
+  Text,
   WINDOW_OPEN_FEATURES,
+  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
 import { GCP_LINK } from '@vigilant-broccoli/links';
 import { useState } from 'react';
-import { CardSkeleton } from './skeleton.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
 import { usePollingInterval } from '../hooks/usePollingInterval';
+import {
+  DotColor,
+  StatusDot,
+  StatusLegendButton,
+  StatusLegendEntry,
+  getDotBorder,
+} from './status-dot.component';
 
 const GCP_CONSOLE_BASE = 'https://console.cloud.google.com';
 const GCLOUD_POLL_INTERVAL_MS = 30000;
@@ -76,37 +83,19 @@ interface AccountItemProps {
   onSwitchAccount: (account: string) => void;
 }
 
-const BORDER_NEEDS_AUTH =
-  'border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-600';
 const BORDER_INACTIVE =
   'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800';
 
-const getAccountBorderStyle = (isActive: boolean, needsAuth: boolean) => {
-  if (isActive && needsAuth) return BORDER_NEEDS_AUTH;
-  if (isActive) return BORDER_ACTIVE;
-  return BORDER_INACTIVE;
-};
+const LEGEND: StatusLegendEntry[] = [
+  { color: 'green', label: 'Active / current' },
+  { color: 'yellow', label: 'Needs reauth' },
+  { color: 'gray', label: 'Inactive' },
+  { color: 'red', label: 'Not authenticated' },
+];
 
-const AccountBadge = ({
-  isActive,
-  needsAuth,
-}: {
-  isActive: boolean;
-  needsAuth: boolean;
-}) => {
-  if (needsAuth)
-    return (
-      <Badge color="yellow" size="1">
-        ⚠️ Reauth
-      </Badge>
-    );
-  if (isActive)
-    return (
-      <Badge color="green" size="1">
-        Active
-      </Badge>
-    );
-  return null;
+const getAccountColor = (isActive: boolean, needsAuth: boolean): DotColor => {
+  if (isActive && needsAuth) return 'yellow';
+  return isActive ? 'green' : 'gray';
 };
 
 const AUTH_COMMAND =
@@ -118,27 +107,30 @@ const AccountItem = ({
   needsAuth,
   switchingProject,
   onSwitchAccount,
-}: AccountItemProps) => (
-  <div
-    className={`flex items-center gap-2 flex-wrap ${`p-2 rounded border ${getAccountBorderStyle(isActive, needsAuth)}`}`}
-  >
-    <AccountBadge isActive={isActive} needsAuth={needsAuth} />
-    <Text size="2" weight={isActive ? 'bold' : 'regular'} className="flex-1">
-      {account.account}
-    </Text>
-    {needsAuth && <MonospaceText text={AUTH_COMMAND} truncate={true} />}
-    {!isActive && (
-      <Button
-        variant="secondary"
-        size="sm"
-        onClick={() => onSwitchAccount(account.account)}
-        disabled={switchingProject === account.account}
-      >
-        {switchingProject === account.account ? 'Switching...' : 'Select'}
-      </Button>
-    )}
-  </div>
-);
+}: AccountItemProps) => {
+  const accountColor = getAccountColor(isActive, needsAuth);
+  return (
+    <div
+      className={`flex items-center gap-2 flex-wrap p-2 rounded border ${getDotBorder(accountColor) ?? BORDER_INACTIVE}`}
+    >
+      <StatusDot color={accountColor} />
+      <Text size="2" weight={isActive ? 'bold' : 'regular'} className="flex-1">
+        {account.account}
+      </Text>
+      {needsAuth && <MonospaceText text={AUTH_COMMAND} truncate={true} />}
+      {!isActive && (
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => onSwitchAccount(account.account)}
+          disabled={switchingProject === account.account}
+        >
+          {switchingProject === account.account ? 'Switching...' : 'Select'}
+        </Button>
+      )}
+    </div>
+  );
+};
 
 const toProjectItem = (
   project: GcloudProject,
@@ -148,12 +140,8 @@ const toProjectItem = (
 ): StatusCardListItem => ({
   id: project.projectId,
   label: project.name || project.projectId,
-  borderClassName: isCurrent ? BORDER_ACTIVE : undefined,
-  badges: isCurrent ? (
-    <Badge color="green" size="1">
-      Current
-    </Badge>
-  ) : undefined,
+  borderClassName: isCurrent ? getDotBorder('green') : undefined,
+  badges: <StatusDot color={isCurrent ? 'green' : 'gray'} />,
   actions: !isCurrent ? (
     <Button
       variant="secondary"
@@ -275,9 +263,7 @@ export const GcloudAuthStatusComponent = () => {
 
       const authData = await authResponse.json();
       setAuthStatus(authData);
-      const reauthJson = reauthResponse.ok
-        ? await reauthResponse.json()
-        : null;
+      const reauthJson = reauthResponse.ok ? await reauthResponse.json() : null;
       const reauthData = parseReauthData(
         reauthResponse,
         reauthJson,
@@ -321,7 +307,25 @@ export const GcloudAuthStatusComponent = () => {
   });
 
   return (
-    <CardContainer title="GCP Management" headerLink={GCP_CONSOLE_LINK}>
+    <CardContainer
+      titleAction={<StatusLegendButton entries={LEGEND} />}
+      title="GCP Management"
+      headerLink={GCP_CONSOLE_LINK}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <Text size="2" weight="bold">
+          Vault Root Token
+        </Text>
+        <CopyButton
+          skipBrowserCopy
+          text={async () => {
+            await authFetch(API_ENDPOINTS.GCLOUD_VAULT_TOKEN, {
+              method: HTTP_METHOD.POST,
+            });
+            return '';
+          }}
+        />
+      </div>
       {authStatus?.activeAccount ? (
         <div className="flex flex-col gap-3">
           {sortedAccounts.length > 0 && (
@@ -370,9 +374,7 @@ export const GcloudAuthStatusComponent = () => {
         </div>
       ) : (
         <div className="flex items-center gap-2">
-          <Badge color="red" size="2">
-            Not Authenticated
-          </Badge>
+          <StatusDot color="red" />
           <Text size="2" className="text-gray-500">
             No active gcloud account
           </Text>

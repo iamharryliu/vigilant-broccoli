@@ -3,18 +3,20 @@ name: ci-pr-check
 on:
   pull_request:
     branches: ['main']
+    types: [opened, synchronize, reopened, edited]
 
 permissions:
   contents: read
   id-token: write
 
 concurrency:
-  group: ci-pr-check-${{ github.ref }}
+  group: ci-pr-check-${{ github.ref }}-${{ github.event.action == 'edited' && 'edited' || 'code' }}
   cancel-in-progress: true
 
 jobs:
   nx-affected:
-    runs-on: ubuntu-latest
+    if: github.event.action != 'edited'
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -24,7 +26,7 @@ jobs:
       - name: Check for nx-workspace changes
         id: check
         run: |
-          NX_WORKSPACE_PATHS='^(projects/nx-workspace/|\.github/(workflows/ci-pr-check\.yml|actions/setup-nx-workspace/))'
+          NX_WORKSPACE_PATHS='^(projects/nx-workspace/|\.nvmrc$|\.github/(workflows/ci-pr-check\.yml|actions/setup-nx-workspace/))'
           if git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.sha }}" | grep -qE "$NX_WORKSPACE_PATHS"; then
             echo "nx-workspace-changed=true" >> "$GITHUB_OUTPUT"
           else
@@ -34,20 +36,11 @@ jobs:
       - uses: ./.github/actions/setup-nx-workspace
         if: steps.check.outputs.nx-workspace-changed == 'true'
 
-      # pull_request runs execute this workflow's YAML from the PR branch
-      # itself, so (unlike every other workflow in this repo) anyone who gets
-      # a PR check to run could edit this file to request a different secret.
-      # That's why this does NOT use secrets.GCP_WORKLOAD_IDENTITY_PROVIDER /
-      # GCP_SERVICE_ACCOUNT (the broad SA — roles/editor, project-wide Secret
-      # Manager access, serviceAccountAdmin) or the default Vault role (reads
-      # all of kv/data/secrets). Both are hardcoded literals, not secrets —
-      # see outputs.tf's github_actions_pr_check_* outputs for why that's
-      # safe — and both are narrowly scoped: the WIF provider only trusts
-      # job_workflow_ref=ci-pr-check.yml, the SA can only read the two
-      # Cloudflare Access secrets, and the Vault role's policy can only read
-      # kv/data/ci-pr-check (one path, one low-privilege token), not the
-      # shared secret store. continue-on-error because none of this is
-      # load-bearing — worst case a PR just runs without a warm cache.
+      # pull_request runs this YAML from the PR branch, so it uses its own
+      # narrow WIF provider/SA/Vault role instead of the shared ones — see
+      # docs/infrastructure/secret-management.md#nx-cache.
+      # continue-on-error because none of this is load-bearing — worst case a
+      # PR just runs without a warm cache.
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         continue-on-error: true
@@ -79,15 +72,75 @@ jobs:
           fi
           pnpm exec nx affected -t lint test build --base=$NX_BASE --head=$NX_HEAD
 
+      # Scoped to component-library specifically (not the shared `nx affected
+      # -t ... build` command above) so this doesn't also try to run
+      # vb-manager-next's separate, not-yet-CI-wired e2e target. Its config
+      # boots its own server via Playwright's webServer, so no live deploy or
+      # extra server-management step is needed here.
+      - name: Check for Sidebar e2e coverage
+        id: e2e-check
+        if: steps.check.outputs.nx-workspace-changed == 'true'
+        working-directory: ./projects/nx-workspace
+        run: |
+          # Fail open: this only gates a best-effort quality check (below),
+          # not the required lint/test/build step above, so a flaky/failing
+          # `nx show projects` here should skip e2e for this run rather than
+          # fail the whole job - jq erroring on non-JSON/empty nx output
+          # otherwise takes the job down over an unrelated nx hiccup.
+          AFFECTED_JSON=$(pnpm exec nx show projects --affected -p component-library --withTarget=e2e --base=$NX_BASE --head=$NX_HEAD 2>&1) || AFFECTED_JSON='[]'
+          AFFECTED_E2E=$(echo "$AFFECTED_JSON" | jq -r 'join(",")' 2>/dev/null) || AFFECTED_E2E=''
+          echo "projects=$AFFECTED_E2E" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        if: steps.e2e-check.outputs.projects != ''
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('projects/nx-workspace/pnpm-lock.yaml') }}
+
+      - name: Install Playwright Chromium
+        if: steps.e2e-check.outputs.projects != ''
+        working-directory: ./projects/nx-workspace
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Sidebar e2e (component-library)
+        if: steps.e2e-check.outputs.projects != ''
+        working-directory: ./projects/nx-workspace
+        run: pnpm exec nx run-many -t e2e -p ${{ steps.e2e-check.outputs.projects }}
+
   pre-commit:
-    runs-on: ubuntu-latest
+    if: github.event.action != 'edited'
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - name: Verify agent adapters
+        run: |
+          set -euo pipefail
+          STATUS=0
+          check_link() {
+            if [ "$(git ls-files -s "$1" | cut -d' ' -f1)" != 120000 ]; then
+              echo "::error file=$1::missing, or not a tracked symlink"
+              STATUS=1
+            elif [ "$(git cat-file blob ":$1")" != "$2" ]; then
+              echo "::error file=$1::must point at $2"
+              STATUS=1
+            fi
+          }
+          for ctx in $(git ls-files 'CONTEXT.md' '*/CONTEXT.md'); do
+            check_link "$(dirname "$ctx")/AGENTS.md" CONTEXT.md
+          done
+          for skill in $(git ls-files 'setup/dotfiles/agent-skills/*/SKILL.md'); do
+            name=$(basename "$(dirname "$skill")")
+            check_link "setup/dotfiles/.claude/commands/$name.md" "../../agent-skills/$name/SKILL.md"
+          done
+          exit "$STATUS"
+
+      - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
         with:
-          python-version: '3.13'
+          version: 2026.9.10
+          install_args: python
 
       # pre-commit/action@v3.0.1 (its latest release) pins actions/cache@v4 by
       # a mutable tag, which resolves to a Node 20 action and triggers the
@@ -100,7 +153,7 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/pre-commit
-          key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+          key: pre-commit-3|${{ hashFiles('mise.toml') }}|${{ hashFiles('.pre-commit-config.yaml') }}
 
       # nvim-tmux-config-smoketest (see .pre-commit-config.yaml) needs a real nvim binary;
       # tmux is already preinstalled on this image.
@@ -111,3 +164,44 @@ jobs:
         env:
           SKIP: grind-75-tests,lint-staged
         run: pre-commit run --show-diff-on-failure --color=always --all-files
+
+  commitlint:
+    if: ${{ !contains(fromJSON('["dependabot[bot]","renovate[bot]"]'), github.event.pull_request.user.login) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6
+        with:
+          package_json_file: ./package.json
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: 'pnpm'
+          cache-dependency-path: ./pnpm-lock.yaml
+
+      # --ignore-scripts skips the root postinstall, which would install the
+      # whole nx-workspace for a job that only needs commitlint.
+      - name: Install root dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      # The PR title is what a squash merge of a multi-commit PR lands on main
+      # (GitHub appends " (#N)" to it afterwards), and the commits are what a
+      # single-commit squash or a rebase merge lands, so both are linted.
+      # Merge commits are ignored by commitlint's defaults.
+      - name: Lint PR title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: printf '%s\n' "$PR_TITLE" | pnpm exec commitlint
+
+      - name: Lint PR commits
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose

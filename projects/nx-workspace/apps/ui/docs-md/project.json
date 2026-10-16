@@ -9,10 +9,16 @@
       "executor": "@nx/eslint:lint"
     },
     "build-snapshot": {
-      "command": "node apps/ui/docs-md/scripts/build-snapshot.mjs ../../notes apps/ui/docs-md/public"
+      "command": "node scripts/build-docs-snapshot.mjs apps/ui/docs-md/snapshot.config.json",
+      "outputs": ["{projectRoot}/public"]
     },
     "build": {
       "dependsOn": ["^build", "build-snapshot"],
+      "inputs": [
+        "production",
+        "^production",
+        { "dependentTasksOutputFiles": "**/*" }
+      ],
       "outputs": [
         "{projectRoot}/{options.outDir}",
         "{workspaceRoot}/dist/docs-md"
@@ -45,12 +51,38 @@
       "dependsOn": ["ensure-cf-project"]
     },
     "deploy": {
-      "command": "npx wrangler pages deploy dist/docs-md --project-name staging-docs-md",
+      "command": "npx wrangler pages deploy dist/docs-md --project-name staging-docs-md --branch main",
       "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
     },
     "manual-deploy": {
-      "command": "npx wrangler pages deploy dist/docs-md --project-name staging-docs-md",
+      "command": "npx wrangler pages deploy dist/docs-md --project-name staging-docs-md --branch main",
       "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    },
+    "ensure-cf-project:production": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-docs-md || npx wrangler pages project create production-docs-md --production-branch production"
+    },
+    "prune-deployments:production": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts production-docs-md 10",
+      "dependsOn": ["ensure-cf-project:production"]
+    },
+    "deploy:production": {
+      "command": "npx wrangler pages deploy dist/docs-md --project-name production-docs-md --branch production",
+      "dependsOn": [
+        "build",
+        "ensure-cf-project:production",
+        "prune-deployments:production"
+      ]
+    },
+    "ensure-cf-project:preview": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw preview-docs-md || npx wrangler pages project create preview-docs-md --production-branch main"
+    },
+    "prune-deployments:preview": {
+      "command": "npx tsx scripts/prune-wrangler-preview-deployments.ts preview-docs-md",
+      "dependsOn": ["ensure-cf-project:preview"]
+    },
+    "deploy:preview": {
+      "command": "npx wrangler pages deploy dist/docs-md --project-name preview-docs-md --branch \"$PREVIEW_BRANCH\" --commit-hash \"${PREVIEW_COMMIT:-$(git rev-parse HEAD)}\"",
+      "dependsOn": ["build", "ensure-cf-project:preview"]
     }
   }
 }

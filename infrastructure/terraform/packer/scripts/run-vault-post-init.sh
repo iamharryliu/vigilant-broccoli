@@ -107,6 +107,15 @@ path \"${VAULT_KV_PATH}/data/secrets\" {
 path \"${VAULT_KV_PATH}/data/secrets/*\" {
   capabilities = [\"read\", \"create\", \"update\", \"patch\"]
 }
+path \"${VAULT_KV_PATH}/data/ci-pr-check\" {
+  capabilities = [\"create\", \"update\", \"patch\"]
+}
+path \"${VAULT_KV_PATH}/data/deploy-preview\" {
+  capabilities = [\"create\", \"update\", \"patch\"]
+}
+path \"${VAULT_KV_PATH}/data/production-promotion\" {
+  capabilities = [\"create\", \"update\", \"patch\"]
+}
 path \"sys/seal\" {
   capabilities = [\"update\", \"sudo\"]
 }
@@ -118,6 +127,11 @@ path \"auth/approle/role/${VAULT_OPS_ROLE_NAME}/secret-id/destroy\" {
 }
 POLICY
 
+# ref is bound alongside repository: without it any job in the repo -- including
+# a pull_request run of a branch-edited workflow, which the agent-sandbox /
+# code-server GitHub App can push -- could read every deploy secret. main and
+# production are the only refs whose workflows legitimately consume this role
+# (deploy.yml runs on both); workflow_dispatch runs must be dispatched on main.
 echo 'Creating role ${VAULT_ROLE_NAME}...'
 vault write auth/jwt/role/${VAULT_ROLE_NAME} - <<ROLE
 {
@@ -125,7 +139,8 @@ vault write auth/jwt/role/${VAULT_ROLE_NAME} - <<ROLE
   \"user_claim\": \"actor\",
   \"bound_claims_type\": \"glob\",
   \"bound_claims\": {
-    \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\"
+    \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
+    \"ref\": [\"refs/heads/main\", \"refs/heads/production\"]
   },
   \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
   \"policies\": [\"${VAULT_POLICY_NAME}\"],
@@ -141,7 +156,7 @@ vault write auth/jwt/role/${VAULT_ROTATE_ROLE_NAME} - <<ROLE
   \"bound_claims_type\": \"glob\",
   \"bound_claims\": {
     \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
-    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/ci-rotate-secrets.yml@*\"
+    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/ci-rotate-secrets.yml@refs/heads/main\"
   },
   \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
   \"policies\": [\"${VAULT_ROTATE_POLICY_NAME}\"],
@@ -185,6 +200,109 @@ vault write auth/jwt/role/${VAULT_PR_CHECK_ROLE_NAME} - <<ROLE
   },
   \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
   \"policies\": [\"${VAULT_PR_CHECK_POLICY_NAME}\"],
+  \"ttl\": \"30m\"
+}
+ROLE
+
+# deploy-preview.yml runs on a push to any branch and executes the workflow
+# YAML from that branch, so — like ci-pr-check.yml above — its identity is
+# reachable by anyone who can push one, and job_workflow_ref cannot carry an
+# @refs/heads/main suffix the way the rotate/code-server roles do. Scoped to
+# its own path holding only the two Cloudflare Pages deploy credentials, never
+# kv/data/secrets. Mirrored there from kv/data/secrets by tf:post-apply, so
+# kv/data/secrets stays the single source of truth.
+echo 'Writing policy ${VAULT_PREVIEW_POLICY_NAME}...'
+vault policy write ${VAULT_PREVIEW_POLICY_NAME} - <<POLICY
+path \"${VAULT_KV_PATH}/data/deploy-preview\" {
+  capabilities = [\"read\"]
+}
+POLICY
+
+echo 'Creating role ${VAULT_PREVIEW_ROLE_NAME}...'
+vault write auth/jwt/role/${VAULT_PREVIEW_ROLE_NAME} - <<ROLE
+{
+  \"role_type\": \"jwt\",
+  \"user_claim\": \"actor\",
+  \"bound_claims_type\": \"glob\",
+  \"bound_claims\": {
+    \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
+    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/deploy-preview.yml@*\"
+  },
+  \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
+  \"policies\": [\"${VAULT_PREVIEW_POLICY_NAME}\"],
+  \"ttl\": \"30m\"
+}
+ROLE
+
+echo 'Writing policy ${VAULT_UPPTIME_SYNC_POLICY_NAME}...'
+vault policy write ${VAULT_UPPTIME_SYNC_POLICY_NAME} - <<POLICY
+path \"${VAULT_KV_PATH}/data/upptime-sync\" {
+  capabilities = [\"read\"]
+}
+POLICY
+
+echo 'Creating role ${VAULT_UPPTIME_SYNC_ROLE_NAME}...'
+vault write auth/jwt/role/${VAULT_UPPTIME_SYNC_ROLE_NAME} - <<ROLE
+{
+  \"role_type\": \"jwt\",
+  \"user_claim\": \"actor\",
+  \"bound_claims\": {
+    \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
+    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/ci-sync-upptime.yml@refs/heads/main\"
+  },
+  \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
+  \"policies\": [\"${VAULT_UPPTIME_SYNC_POLICY_NAME}\"],
+  \"ttl\": \"10m\"
+}
+ROLE
+
+echo 'Writing policy ${VAULT_PROMOTION_POLICY_NAME}...'
+vault policy write ${VAULT_PROMOTION_POLICY_NAME} - <<POLICY
+path \"${VAULT_KV_PATH}/data/production-promotion\" {
+  capabilities = [\"read\"]
+}
+POLICY
+
+echo 'Creating role ${VAULT_PROMOTION_ROLE_NAME}...'
+vault write auth/jwt/role/${VAULT_PROMOTION_ROLE_NAME} - <<ROLE
+{
+  \"role_type\": \"jwt\",
+  \"user_claim\": \"actor\",
+  \"bound_claims\": {
+    \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
+    \"workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/manual-promote-production.yml@refs/heads/main\",
+    \"ref\": \"refs/heads/main\",
+    \"event_name\": \"workflow_dispatch\"
+  },
+  \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
+  \"policies\": [\"${VAULT_PROMOTION_POLICY_NAME}\"],
+  \"ttl\": \"10m\"
+}
+ROLE
+
+# manual-replace-code-server.yml re-syncs CODE_SERVER_VM_IP after replacing the
+# code-server VM (which gets a fresh ephemeral IP). Patch-only — it can merge a
+# single key into kv/data/secrets but cannot read any secret, so it grants no
+# read access the workflow doesn't already hold via ${VAULT_ROLE_NAME}.
+echo 'Writing policy ${VAULT_CODE_SERVER_POLICY_NAME}...'
+vault policy write ${VAULT_CODE_SERVER_POLICY_NAME} - <<POLICY
+path \"${VAULT_KV_PATH}/data/secrets\" {
+  capabilities = [\"patch\"]
+}
+POLICY
+
+echo 'Creating role ${VAULT_CODE_SERVER_ROLE_NAME}...'
+vault write auth/jwt/role/${VAULT_CODE_SERVER_ROLE_NAME} - <<ROLE
+{
+  \"role_type\": \"jwt\",
+  \"user_claim\": \"actor\",
+  \"bound_claims_type\": \"glob\",
+  \"bound_claims\": {
+    \"repository\": \"${GITHUB_OWNER}/${GITHUB_REPO}\",
+    \"job_workflow_ref\": \"${GITHUB_OWNER}/${GITHUB_REPO}/.github/workflows/manual-replace-code-server.yml@refs/heads/main\"
+  },
+  \"bound_audiences\": [\"https://github.com/${GITHUB_OWNER}/${GITHUB_REPO}\"],
+  \"policies\": [\"${VAULT_CODE_SERVER_POLICY_NAME}\"],
   \"ttl\": \"30m\"
 }
 ROLE

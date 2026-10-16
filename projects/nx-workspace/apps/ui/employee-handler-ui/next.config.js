@@ -16,19 +16,17 @@ const options = {
 const nextConfig = {
   nx: { ...options },
   distDir: '../../../dist/apps/ui/employee-handler-ui/.next',
+  agentRules: false,
   output: 'standalone',
   async redirects() {
     return [
       {
         source: '/',
         destination: '/dashboard',
-        permanent: false, // Set to false if it's temporary
+        permanent: false,
       },
     ];
   },
 };
-const plugins = [
-  // Add more Next.js plugins to this list if needed.
-  withNx,
-];
+const plugins = [withNx];
 module.exports = composePlugins(...plugins)(nextConfig);

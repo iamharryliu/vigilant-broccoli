@@ -1,8 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Text } from '@radix-ui/themes';
-import { Button, Input, Select, Textarea } from '@vigilant-broccoli/react-lib';
+
+import {
+  Button,
+  Input,
+  Select,
+  Textarea,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { RESOURCE_CATEGORIES, ResourceCategory } from '../../../lib/types';
 
 export interface ResourceFormData {
@@ -74,8 +80,8 @@ export function ResourceForm({
               Category
             </Text>
             <Select
-              selectedOption={category}
-              setValue={setCategory}
+              value={category}
+              onValueChange={setCategory}
               options={RESOURCE_CATEGORIES as unknown as ResourceCategory[]}
               triggerClassName="w-full"
             />

@@ -1,1 +1,1 @@
-Please do a spell check on the current directory using `spellcheck .`
+../../agent-skills/docs-spell-check/SKILL.md
