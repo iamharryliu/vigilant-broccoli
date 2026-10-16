@@ -7,6 +7,11 @@
 - [Bread Hydration](#bread-hydration)
   - [Hydration Table](#hydration-table)
   - [Bread Types by Hydration](#bread-types-by-hydration)
+- [Sourdough](#sourdough)
+  - [Starter](#starter)
+  - [Ideal Flour Weight](#ideal-flour-weight)
+  - [Recipes](#recipes)
+- [Shaping](#shaping)
 - [Tips](#tips)
 
 ## Bread Lingo
@@ -45,10 +50,38 @@
 | **Hydration Range** | **Type of Bread**                                       |
 | ------------------- | ------------------------------------------------------- |
 | 50-57%              | Bagels, Pretzels, Stiff doughs                          |
-| 58-65%              | Sandwich bread, Dinner rolls, Brioche                   |
+| 58-65%              | Sandwich bread, Dinner rolls, Brioche, Pizza            |
 | 65-70%              | Baguettes, French bread, Italian bread, Basic sourdough |
 | 70-75%              | Artisan sourdough, Country loaves, Rustic breads        |
 | 75-80%              | Ciabatta, Focaccia, High-hydration sourdough            |
+
+## Sourdough
+
+### Starter
+
+- **Feeding**
+  - **Developing a New Starter**
+    - Avoid overfeeding when developing a new starter. A maximum ratio of 2:1:1 or 1:1:1 (starter:water:flour) is recommended. Adding too much flour and water dilutes acidity, inhibiting the growth of beneficial bacteria and yeast.
+    - Feed the starter once per day.
+  - **Maintaining a Starter**
+    - Once the starter is strong and healthy, it can be refrigerated for several days. When feeding, a 1:2:2 ratio can be used if preferred.
+    - [Stop Wasting Time & Flour Maintaining A Sourdough Starter. This Strategy is Way Better](https://www.youtube.com/watch?v=xBvvlcdO93I)
+
+### Ideal Flour Weight
+
+| Bake            | Flour (g) | Hydration | Total Dough (g) | Notes                                       |
+| --------------- | --------- | --------- | --------------- | ------------------------------------------- |
+| Sourdough Bread | 450-500   | 70-75%    | ~800-900        | One loaf (boule or batard) in a Dutch oven. |
+| Sourdough Pizza | 120-150   | 65%       | ~200-250        | One 10-12" pizza; scale per dough ball.     |
+
+### Recipes
+
+- [Sourdough Bread](../../recipes/bread-recipes/sourdough-bread.md)
+- Scallion Pancakes
+
+## Shaping
+
+- [Shaping techniques](https://www.youtube.com/results?search_query=sourdough+shaping)
 
 ## Tips
 
