@@ -4,6 +4,7 @@ A Bomberman-style arena game at `balloono.harryliu.dev`: drop water balloons, so
 
 ## Table of Contents
 
+- [Desktop home](#desktop-home)
 - [Rules](#rules)
 - [Engine](#engine)
 - [CPU opponents](#cpu-opponents)
@@ -13,6 +14,14 @@ A Bomberman-style arena game at `balloono.harryliu.dev`: drop water balloons, so
 - [Controls](#controls)
 - [Sound effects](#sound-effects)
 - [Manual verification](#manual-verification)
+
+## Desktop home
+
+Balloono requires a desktop or laptop with a keyboard and a browser viewport at least 1024 CSS pixels wide. Narrow viewports and devices whose primary pointer is coarse with no hover show a desktop-required message. The device check runs before mounting auth, room presence or gameplay, and responds to viewport/input changes. Touch controls are removed.
+
+The home screen places the account control and name field above a two-column layout. The main column shows room creation, joining by room name and available rooms immediately, followed by expandable offline CPU settings. Room cards show player counts, the number still needed, countdown seconds or an in-progress Watch action. Hosts advertise the countdown deadline only when it changes; each viewer updates the displayed seconds locally. Older advertisements without a deadline still render.
+
+The sidebar shows three personal counters with an expandable full breakdown, a top-five leaderboard preview with a full ranking dialog, and keyboard controls. The dialog uses shared `react-lib` components, retains ten-row pagination and refresh, and follows the active light/dark theme.
 
 ## Rules
 
@@ -67,7 +76,7 @@ Without `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (f
 
 ## Accounts and stats
 
-Signing in with Google (`createSupabaseAuth`, `src/lib/auth.ts`) is optional. Guests play exactly as before. The home screen shows a small sign-in/sign-out control on the name card and, when signed in, a personal stats panel. Without the Supabase env vars the sign-in control is hidden and no auth client starts. A signed-in display name prefills the name field once per account per device; it never affects presence keys.
+Signing in with Google (`createSupabaseAuth`, `src/lib/auth.ts`) is optional. Guests play exactly as before. The home screen shows a small sign-in/sign-out control in the header and, when signed in, a personal stats panel. Without the Supabase env vars the sign-in control is hidden and no auth client starts. A signed-in display name prefills the name field once per account per device; it never affects presence keys.
 
 - **Counted:** online room matches only. CPU and local 2-player matches record nothing. Spectators record nothing.
 - **Stats:** wins, losses, draws, seconds played (ticks the player was alive), items collected (extra balloon, bigger splash, faster feet), balloons dropped, and players soaked.
@@ -75,18 +84,17 @@ Signing in with Google (`createSupabaseAuth`, `src/lib/auth.ts`) is optional. Gu
 - **Recording:** when a round ends, a signed-in, seated client builds a result (`buildMatchResult`, `engine/results.ts`) from the final state. `match_id` is `<room>:<round id>`, identical on every client. A player who leaves (or closes the tab) mid-match records a loss from the last state seen. The write is a `keepalive` insert with `ON CONFLICT DO NOTHING`, so refreshes, reconnects and retries cannot double-count. A failed write is swallowed; the match shows one hint.
 - **Storage:** `balloono_match_results` (migration `supabase/migrations/20261015000000_create_balloono_match_results.sql`) has a unique `(user_id, match_id)` key, CHECK caps on every count, and RLS allowing users to insert and select only rows where `user_id = auth.uid()`. The `balloono_user_stats` view (`security_invoker`) totals a user's rows for the panel.
 - **Trust model:** honor system. Each client writes its own row from its own view of the match, so stats are unverified and trivially spoofable by anyone with a session. The public leaderboard carries the same unverified-stats disclaimer.
-- **Leaderboard:** the home screen uses `react-lib`’s `BaseLeaderboard` and `UserRow`, visible to guests and signed-in players when Supabase is configured. It shows the top 50 lifetime players by wins, breaking ties by players soaked and then user id, with ten rows per page and a refresh button. The `balloono_leaderboard()` security-definer RPC returns only aggregate wins, matches, soaks and stable pseudonymous player codes; it exposes no account names, emails, UUIDs or individual match rows. Own-user RLS and the personal stats view are unchanged.
+- **Leaderboard:** the home screen uses `react-lib`’s `Placement`, `UserRow` and `Dialog`, visible to guests and signed-in players when Supabase is configured. It shows the top 50 lifetime players by wins, breaking ties by players soaked and then user id, with a top-five sidebar preview, ten rows per page in the full-ranking dialog, and a refresh button. The `balloono_leaderboard()` security-definer RPC returns only aggregate wins, matches, soaks and stable pseudonymous player codes; it exposes no account names, emails, UUIDs or individual match rows. Own-user RLS and the personal stats view are unchanged.
 - **Auth redirects:** `/auth/callback` must be in `uri_allow_list` in `infrastructure/terraform/supabase-auth.tf` for each environment.
 
 ## Free Tier
 
-Supabase shares the project’s 500 MB database, 5 GB monthly egress, 50,000 monthly active users, 200 concurrent Realtime connections and 2M monthly messages. Match recording uses one row per signed-in player per online round. Public rankings aggregate those rows on load or manual refresh and return at most 50 records; there is no polling or new Realtime subscription. Lobby countdowns broadcast only deadline or seat changes, rather than every displayed second.
+Supabase shares the project’s 500 MB database, 5 GB monthly egress, 50,000 monthly active users, 200 concurrent Realtime connections and 2M monthly messages. Match recording uses one row per signed-in player per online round. Public rankings aggregate those rows on load or manual refresh and return at most 50 records; there is no polling or new Realtime subscription. Lobby countdowns and room-directory advertisements broadcast only deadline or seat changes, rather than every displayed second.
 
 ## Controls
 
 - Keyboard: arrow keys or WASD to move, Space, Enter or X to drop a balloon. The most recently pressed held direction wins.
 - Local second player (Versus CPU only): ticking **Add local player** gives player 1 the arrow keys and Enter, and player 2 WASD and Space. It leaves room for six CPUs.
-- Touch: an on-screen pad and balloon button, shown on coarse pointers and on screens narrower than 768 px.
 
 ## Sound effects
 
@@ -101,11 +109,12 @@ Numbered events travel in snapshots so guests do not miss a pop between broadcas
 - CPU match at each difficulty: bots break crates, collect power-ups, flee their own balloons, and sudden death starts at 2:00.
 - Four browsers in one room: the room appears in the other browser's directory, and a guest's moves and balloons show on the host. Closing the host tab mid-match hands the game to the guest.
 - Arena tiers: start rounds with 4, 5, 6, 7, and 8 contenders; verify dimensions, spawns, free movement, bot navigation, closure warnings, and canvas aspect ratio.
-- Audio: pop a balloon, collect an item, and get hit by a splash; verify distinct sounds, chain reactions, mute persistence, mobile gesture unlock, and no duplicate playback online.
+- Audio: pop a balloon, collect an item, and get hit by a splash; verify distinct sounds, chain reactions, mute persistence, and no duplicate playback online.
 - Light and dark OS theme: the board redraws in the matching palette.
-- Accounts: with a Supabase env, sign in; the name card shows your name and a sign-out button, and the stats panel appears. Signed out or without env, neither shows and CPU play is unchanged.
+- Accounts: with a Supabase env, sign in; the header shows your name and a sign-out button, and the stats panel appears. Signed out or without env, neither shows and CPU play is unchanged.
 - Stats: in a four-browser room (one signed in, three guests), finish a match; the signed-in user gets one `balloono_match_results` row and the guest none. Refresh or reconnect and replay the finished round id: still one row. Close the host tab mid-match: the new host's final state still records correct results. Leave mid-match: a loss row. The panel totals match the rows.
 - Online lobby: fewer than four players cannot start; the fourth starts 30 seconds, the fifth adds five seconds, and a drop below four cancels. Check rejoining, a host leaving during the countdown, late joins near zero, spectator joins at eight seats, and returning to the lobby after a round. No online CPU or immediate-start controls appear.
-- Leaderboard: signed out and signed in, compare the top 50 with aggregate results; verify ordering, pagination, refresh, empty and failed-request states, fullscreen, and phone layout. Confirm match-table reads still return only your own rows and the RPC reveals no account details. Without Supabase env the leaderboard is hidden.
+- Leaderboard: signed out and signed in, compare the top 50 with aggregate results; verify ordering, pagination, refresh, empty and failed-request states, dialog focus/close behavior, and desktop layout. Confirm match-table reads still return only your own rows and the RPC reveals no account details. Without Supabase env the leaderboard is hidden.
 - CPU and local 2-player matches add no rows.
-- Phone: the touch pad moves the player, and holding a direction keeps walking.
+- Home: verify create/join actions without an extra step, expandable CPU settings, room countdown labels, compact/full stats, and the top-five/full leaderboard in light and dark themes.
+- Device gate: phone portrait/landscape and touch-only tablet views show only the desktop-required message and open no room connections. A desktop viewport of at least 1024 pixels mounts the game; resizing across the threshold switches views without hydration errors.

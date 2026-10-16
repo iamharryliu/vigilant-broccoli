@@ -1,6 +1,7 @@
 'use client';
 
-import { CardContainer } from '@vigilant-broccoli/react-lib';
+import { useState } from 'react';
+import { Button, CardContainer } from '@vigilant-broccoli/react-lib';
 import { UserStats } from '../../lib/stats';
 import { usePersonalStats } from '../hooks/usePersonalStats';
 import { useTranslation } from '../i18n';
@@ -14,6 +15,8 @@ const STAT_ROWS: {
   value: (stats: UserStats) => string | number;
 }[] = [
   { key: 'STATS.WINS', value: stats => stats.wins },
+  { key: 'LEADERBOARD.MATCHES', value: stats => stats.matches },
+  { key: 'STATS.PLAYERS_SOAKED', value: stats => stats.players_soaked },
   { key: 'STATS.LOSSES', value: stats => stats.losses },
   { key: 'STATS.DRAWS', value: stats => stats.draws },
   {
@@ -21,7 +24,6 @@ const STAT_ROWS: {
     value: stats => Math.round(stats.seconds_played / SECONDS_PER_MINUTE),
   },
   { key: 'STATS.BALLOONS_DROPPED', value: stats => stats.balloons_dropped },
-  { key: 'STATS.PLAYERS_SOAKED', value: stats => stats.players_soaked },
   { key: 'STATS.ITEMS_BALLOON', value: stats => stats.items_balloon },
   { key: 'STATS.ITEMS_RANGE', value: stats => stats.items_range },
   { key: 'STATS.ITEMS_SPEED', value: stats => stats.items_speed },
@@ -30,21 +32,34 @@ const STAT_ROWS: {
 export function StatsPanel() {
   const { t } = useTranslation();
   const { signedIn, stats } = usePersonalStats();
+  const [expanded, setExpanded] = useState(false);
   if (!signedIn) return null;
 
   return (
     <CardContainer title={t('STATS.TITLE')}>
       {stats ? (
-        <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-3">
-          {STAT_ROWS.map(({ key, value }) => (
-            <div key={key} className="flex flex-col">
-              <dt className="text-xs text-muted-foreground">{t(key)}</dt>
-              <dd className="text-lg font-semibold">{value(stats)}</dd>
-            </div>
-          ))}
+        <dl className="grid grid-cols-3 gap-x-4 gap-y-3 text-sm">
+          {(expanded ? STAT_ROWS : STAT_ROWS.slice(0, 3)).map(
+            ({ key, value }) => (
+              <div key={key} className="flex flex-col">
+                <dt className="text-xs text-muted-foreground">{t(key)}</dt>
+                <dd className="text-lg font-semibold">{value(stats)}</dd>
+              </div>
+            ),
+          )}
         </dl>
       ) : (
         <p className="text-sm text-muted-foreground">{t('STATS.EMPTY')}</p>
+      )}
+      {stats && (
+        <Button
+          variant="outline"
+          size="sm"
+          aria-expanded={expanded}
+          onClick={() => setExpanded(value => !value)}
+        >
+          {t(expanded ? 'HOME.HIDE_STATS' : 'HOME.ALL_STATS')}
+        </Button>
       )}
       <p className="text-xs text-muted-foreground">{t('STATS.DISCLAIMER')}</p>
     </CardContainer>

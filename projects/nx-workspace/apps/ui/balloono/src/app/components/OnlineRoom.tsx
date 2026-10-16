@@ -54,10 +54,16 @@ export function OnlineRoom({
   useEffect(() => {
     onAdvertise(
       isHost
-        ? { room, hostName: username, players: seated.length, playing }
+        ? {
+            room,
+            hostName: username,
+            players: seated.length,
+            playing,
+            startsAt,
+          }
         : null,
     );
-  }, [isHost, room, username, seated.length, playing, onAdvertise]);
+  }, [isHost, room, username, seated.length, playing, startsAt, onAdvertise]);
   useEffect(() => () => onAdvertise(null), [onAdvertise]);
 
   const header = (
@@ -93,7 +99,6 @@ export function OnlineRoom({
           match={match}
           localPlayerId={userId}
           wins={wins}
-          controls={controls}
           soundsEnabled={
             connection === CONNECTION.CONNECTED && (isHost || snapshotReady)
           }

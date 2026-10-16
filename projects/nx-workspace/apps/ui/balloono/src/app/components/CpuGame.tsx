@@ -54,7 +54,6 @@ export function CpuGame({
         match={match}
         localPlayerId={playerId}
         wins={wins}
-        controls={controls}
         controlsHint={
           hasLocalPlayer ? t('MATCH.LOCAL_CONTROLS_HINT') : undefined
         }
