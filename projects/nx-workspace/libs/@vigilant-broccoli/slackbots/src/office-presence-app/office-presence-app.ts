@@ -40,6 +40,7 @@ import {
   resolveAppCopyForLanguage,
 } from './consts/app-copy.const';
 import { loadUserSettings } from './utils/db.utils';
+import { SLACK_MODE, validateSlackEnv } from './slack-mode';
 
 export type OfficePresenceAppRunConfig = {
   APP_NAME?: string;
@@ -96,11 +97,17 @@ export type OfficePresenceHandlerApp = Pick<
   'event' | 'action' | 'view' | 'command'
 >;
 
-// Shared by the Socket Mode app and the local mock so both run the same handlers.
+export type RegisterHandlersOptions = {
+  // Only the mock client may address seeded members; real Slack clients must not.
+  allowDemoRecipients?: boolean;
+};
+
+// Shared by Socket Mode, HTTP mode and the mock so all three run the same handlers.
 export function registerOfficePresenceHandlers(
   app: OfficePresenceHandlerApp,
   appConfig: AppConfig,
   previewReminder: (userId: string) => Promise<void>,
+  { allowDemoRecipients = false }: RegisterHandlersOptions = {},
 ) {
   const publishHomeView = createPublishHomeView(appConfig);
   const getInputScheduleModal = createInputScheduleModal(appConfig);
@@ -225,7 +232,13 @@ export function registerOfficePresenceHandlers(
       }
     }
     const copy = appConfig.getCopy(loadUserSettings(userId).language);
-    await handleAskLunchAction(userId, selectedUsers, client, copy);
+    await handleAskLunchAction(
+      userId,
+      selectedUsers,
+      client,
+      copy,
+      allowDemoRecipients,
+    );
   });
 
   app.action(
@@ -288,9 +301,12 @@ export function registerOfficePresenceHandlers(
   });
 }
 
+// Socket Mode only: it needs no public URL and owns the reminder cron. HTTP mode is
+// hosted by the service app (see createOfficePresenceHttpRuntime).
 export async function runOfficePresenceApp(
   config: OfficePresenceAppRunConfig = {},
 ) {
+  validateSlackEnv(SLACK_MODE.SOCKET);
   const appConfig = createAppConfig(config);
   const sendReminders = createReminderSender(appConfig);
   const previewReminder = createReminderPreviewer(appConfig);

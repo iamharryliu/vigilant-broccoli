@@ -1,0 +1,33 @@
+{
+  "PAGE": {
+    "HOME": "Home",
+    "MESSAGES": "Messages",
+    "SITE_NAME": "OK-IN Demo"
+  },
+  "SIDEBAR": {
+    "VIEWING_AS": "Viewing as",
+    "HOME": "🏠 Home",
+    "MESSAGES": "💬 Messages",
+    "NOTE": "Demo of the Slack app, running against the live demo service. Presences, events and settings are shared with everyone trying it; your home view, dialogs and messages are private to this browser.",
+    "RESET": "Reset demo data",
+    "RESET_CONFIRM": "Reset all demo data to the starting team?"
+  },
+  "MESSAGES": {
+    "TITLE": "Messages",
+    "PREVIEW_REMINDER": "Run /preview-reminder",
+    "EMPTY": "No messages yet. Try “Ask about lunch” or /preview-reminder.",
+    "ONLY_YOU": "only you"
+  },
+  "STATUS": {
+    "LOADING": "Loading…",
+    "RESET_DONE": "Demo data reset",
+    "NEW_MESSAGE": "New message from {name}",
+    "UNREACHABLE": "The demo service is waking up or unreachable. Try again in a moment."
+  },
+  "FORM": {
+    "REQUIRED": "You must fill this in.",
+    "OPTIONAL": "(optional)",
+    "CLOSE": "Close",
+    "SELECT_PLACEHOLDER": "Select an item"
+  }
+}

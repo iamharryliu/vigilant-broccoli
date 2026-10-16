@@ -397,7 +397,7 @@ function renderSidebar() {
     S.data.users.filter(function (u) { return u.id !== S.data.botUserId; }).forEach(function (u) {
       var o = document.createElement('option');
       o.value = u.id;
-      o.textContent = u.realName + ' (' + u.homeOffice + ')';
+      o.textContent = u.realName + (u.homeOffice ? ' (' + u.homeOffice + ')' : '');
       select.appendChild(o);
     });
   }
@@ -444,7 +444,7 @@ document.getElementById('reset').onclick = function () {
 
 var saved = null;
 try { saved = localStorage.getItem('okin-mock-user'); } catch (e) { /* storage unavailable */ }
-S.user = saved || 'U01ASTRID';
+S.user = saved || 'U_DEMO_ASTRID';
 api('/api/state').then(function (d) {
   S.data = d;
   if (!userById(S.user) || S.user === d.botUserId) S.user = d.users[0].id;

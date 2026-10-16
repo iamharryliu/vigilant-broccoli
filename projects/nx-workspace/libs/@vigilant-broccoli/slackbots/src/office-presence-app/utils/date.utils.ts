@@ -44,3 +44,31 @@ export function getUpcomingWeekdays(
   }
   return days;
 }
+
+// `en-CA` formats as YYYY-MM-DD.
+export function formatISODateInTimeZone(date: Date, timeZone: string): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone }).format(date);
+}
+
+const MS_PER_DAY = 86400000;
+
+const shiftISODate = (isoDate: string, days: number): string =>
+  new Date(Date.parse(`${isoDate}T00:00:00Z`) + days * MS_PER_DAY)
+    .toISOString()
+    .slice(0, 10);
+
+// ISO weeks start on Monday; weekOffset 0 is the week containing `todayISO`.
+export function getWeekDates(
+  todayISO: string,
+  weekOffset: number,
+  includeWeekends = false,
+): string[] {
+  const weekday = new Date(`${todayISO}T00:00:00Z`).getUTCDay() || 7;
+  const monday = shiftISODate(todayISO, 1 - weekday + weekOffset * 7);
+  const dayCount = includeWeekends ? 7 : 5;
+  return Array.from({ length: dayCount }, (_, i) => shiftISODate(monday, i));
+}
+
+export function getWeekStart(todayISO: string): string {
+  return getWeekDates(todayISO, 0, true)[0];
+}

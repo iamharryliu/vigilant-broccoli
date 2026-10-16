@@ -265,8 +265,64 @@ export function updateEvent(eventId: number, event: OfficeEvent) {
   });
 }
 
-export function clearAllData() {
-  db.prepare('DELETE FROM user_presences').run();
-  db.prepare('DELETE FROM office_events').run();
-  db.prepare('DELETE FROM user_settings').run();
+// Seeded members are recognised by their reserved id prefix; GLOB (unlike LIKE) treats `_` literally.
+// Bounds are inclusive ISO dates.
+export function deleteSeededRows(prefix: string, from: string, to: string) {
+  const params = { pattern: `${prefix}*`, from, to };
+  db.prepare(
+    `DELETE FROM user_presences
+     WHERE user_id GLOB @pattern AND date >= @from AND date <= @to`,
+  ).run(params);
+  db.prepare(
+    `DELETE FROM office_events
+     WHERE creator_id GLOB @pattern AND date >= @from AND date <= @to`,
+  ).run(params);
+}
+
+export function deleteSeededRowsBefore(prefix: string, date: string) {
+  const params = { pattern: `${prefix}*`, date };
+  db.prepare(
+    'DELETE FROM user_presences WHERE user_id GLOB @pattern AND date < @date',
+  ).run(params);
+  db.prepare(
+    'DELETE FROM office_events WHERE creator_id GLOB @pattern AND date < @date',
+  ).run(params);
+}
+
+export function hasSeededRows(prefix: string): boolean {
+  return !!db
+    .prepare('SELECT 1 FROM user_settings WHERE user_id GLOB ? LIMIT 1')
+    .get(`${prefix}*`);
+}
+
+export function deleteSeededSettings(prefix: string) {
+  db.prepare('DELETE FROM user_settings WHERE user_id GLOB ?').run(
+    `${prefix}*`,
+  );
+}
+
+// Never overwrites: a real member's own entry for the day always wins over a seeded one.
+export function savePresenceIfMissing(
+  userId: string,
+  date: string,
+  presence: UserPresence,
+) {
+  db.prepare(
+    `
+    INSERT OR IGNORE INTO user_presences
+    (user_id, date, office, presence_time, is_bringing_dog, message)
+    VALUES (@user_id, @date, @office, @presence_time, @is_bringing_dog, @message)
+  `,
+  ).run({
+    user_id: userId,
+    date,
+    office: presence.office ?? null,
+    presence_time: presence.presenceTime ?? null,
+    is_bringing_dog: presence.isBringingDog ? 1 : 0,
+    message: presence.message ?? null,
+  });
+}
+
+export function runInTransaction<T>(work: () => T): T {
+  return db.transaction(work)();
 }

@@ -46,6 +46,7 @@ cloud8skate.com                           Cloudflare Pages `production-cloud-8-s
 └── cloud8skate.com                       Cloud 8 Skate
 
 fly.dev                                   Fly.io API services (production apps created on first production dispatch)
+├── demo-office-presence-service.fly.dev          Office Presence Service (demo only) — Slack Events API Request URLs and the demo UI API
 ├── staging-vb-express.fly.dev                    VB Express (staging)
 ├── production-vb-express.fly.dev                 VB Express (production) — origin behind `api.harryliu.dev`; clients should not call it directly
 └── vb-log-shipper                                Fly log shipper (no hostname, no public IP — outbound only: Fly NATS log stream → https://loki.harryliu.dev)
@@ -60,6 +61,7 @@ vercel.app                                Vercel (production projects created on
 └── production-balloono.vercel.app            Balloono (production)
 
 pages.dev                                 Cloudflare Pages URLs for the environment not attached to a custom domain above
+├── demo-office-presence-ui.pages.dev        Office Presence UI (demo only — its only deploy)
 ├── staging-findme.pages.dev                 FindMe (staging)
 ├── production-findme.pages.dev              FindMe (production)
 ├── staging-whiteboard.pages.dev                 Whiteboard (staging)

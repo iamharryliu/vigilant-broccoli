@@ -957,6 +957,12 @@ const VB_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
+    label: HARRYLIU_APP_URL.OFFICE_PRESENCE_DEMO.NAME,
+    target: HARRYLIU_APP_URL.OFFICE_PRESENCE_DEMO.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
     label: 'Code Server',
     target: 'https://code.harryliu.dev/',
     type: OPEN_TYPE.BROWSER,
