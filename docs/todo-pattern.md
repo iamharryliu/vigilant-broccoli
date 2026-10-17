@@ -1,6 +1,6 @@
 # TODO.md Pattern
 
-Source of truth for the shape of the repo root `TODO.md`. `/agentic-pr-create-todo`, `infrastructure/agent-sandbox/create-todo-runner.sh`, `audit-todo-runner.sh`, and the `solve-todo*.sh` parsers all follow this file — change the format here first, then the consumers.
+Source of truth for the shape of the repo root `TODO.md`. `/agentic-pr-create-todo`, `infrastructure/agent-sandbox/create-todo-runner.sh`, `audit-todo-runner.sh`, the `solve-todo*.sh` parsers and the `pr-increments.sh` row cleanup and rewrite all follow this file — change the format here first, then the consumers.
 
 ## Table of Contents
 
@@ -31,6 +31,8 @@ Source of truth for the shape of the repo root `TODO.md`. `/agentic-pr-create-to
 `infrastructure/agent-sandbox/solve-todo.sh` and `solve-todo-runner.sh` locate, extract, and remove an item by matching `^| <id> |` at the start of its row (`<br>` is expanded to newlines and `\|` unescaped on extraction). Keep the id in the leading cell and the row on one line, or `pnpm agentic-pr-create <id>` cannot find it.
 
 `audit-todo-runner.sh` diffs the same `^| <id> |` match before and after its run and aborts rather than committing if an id vanished without being reported resolved, or if one was added or renumbered. An id is a permanent handle: correct a row in place, never reissue it.
+
+`pr-increments.sh` uses the same match for the sandbox runs of `agentic-pr-create` and `agentic-pr-update`: it removes the rows declared in `todo_ids`, and for an `agentic-pr-update` change it rewrites the rows declared in `todo_edits` in place. A rewrite keeps the row's id cell, writes the new Priority, Description and Recommended Fix cells padded to the row's existing column widths, and keeps the row on one line; cells arrive already in the encoding above (`\|`, `<br>`) and the runner rejects an unescaped `|`, a line break, a trailing backslash, an unknown or removed id and any other change to the file. It never adds a row, so the audit's id diff and `pnpm agentic-pr-create <id>` see the same ids afterwards.
 
 ## Staleness
 

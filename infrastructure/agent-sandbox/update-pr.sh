@@ -2,6 +2,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=no-changes.sh
+. "$SCRIPT_DIR/no-changes.sh"
 IMAGE=vb-agent-sandbox
 
 MODEL=sonnet
@@ -114,8 +116,11 @@ docker run --rm --init --name "vb-update-pr-$(date +%s)" \
   2>&1 | tee "$LOG_FILE" || STATUS="${PIPESTATUS[0]}"
 
 # The target PR is reported by the caller; recovery and follow-up PRs are
-# reported from the runner's records.
+# reported from the runner's records. A deliberate no-change run is handed to
+# the caller as step outputs, since it reports the target PR's result itself.
 if grep -qE '^(PR_URL|INCREMENT_UNPUBLISHED)::' "$LOG_FILE"; then
   bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_FILE" "$STATUS" "Recovery and follow-up pull requests"
+elif [ "$STATUS" = 0 ] && grep -qx "$NO_CHANGES_MARKER" "$LOG_FILE"; then
+  write_result_outputs no-changes "$(no_changes_reason_in_log "$LOG_FILE")"
 fi
 exit "$STATUS"

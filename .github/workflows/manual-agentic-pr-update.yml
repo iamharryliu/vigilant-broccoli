@@ -169,6 +169,19 @@ jobs:
         uses: ./.github/actions/agentic-summary
         with:
           mode: result
-          outcome: ${{ (steps.update.outcome == 'success' && 'pr-updated') || (job.status == 'cancelled' && 'cancelled') || 'failed' }}
+          outcome: ${{ (steps.update.outputs.outcome == 'no-changes' && 'no-changes') || (steps.update.outcome == 'success' && 'pr-updated') || (job.status == 'cancelled' && 'cancelled') || 'failed' }}
           result_pr_url: https://github.com/${{ github.repository }}/pull/${{ needs.key.outputs.pr }}
           note: ${{ steps.update.outcome == 'skipped' && 'A step before the update failed, so the agent never started.' || '' }}
+          reason: ${{ steps.update.outputs.no_changes_reason }}
+
+      - name: Email the no-changes reason
+        if: ${{ !cancelled() && steps.update.outputs.outcome == 'no-changes' }}
+        continue-on-error: true
+        uses: ./.github/actions/agentic-no-changes-email
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          operation: agentic-pr-update (${{ inputs.operation }})
+          request: ${{ inputs.instruction }}
+          reason: ${{ steps.update.outputs.no_changes_reason }}
+          pull_request: https://github.com/${{ github.repository }}/pull/${{ needs.key.outputs.pr }}

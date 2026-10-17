@@ -163,17 +163,30 @@ jobs:
           outcome: ${{ job.status == 'cancelled' && 'cancelled' || 'failed' }}
           note: ${{ steps.solve.outcome == 'skipped' && 'A step before the solve failed, so the agent never started.' || 'The solve stopped before it could report a result; see the Solve step log.' }}
 
+      # A no-change run has no pull request to describe; the step after these
+      # sends the agent's reason instead.
       - name: Tunnel to email service
-        if: always()
+        if: ${{ always() && steps.solve.outputs.outcome != 'no-changes' }}
         uses: ./.github/actions/fly-private-tunnel
         with:
           app: staging-vb-email-service
 
       - name: Notify by email
-        if: always()
+        if: ${{ always() && steps.solve.outputs.outcome != 'no-changes' }}
         env:
           SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
           SOLVE_RESULT: ${{ steps.solve.outcome == 'success' && 'succeeded' || 'failed' }}
           RUN_URL: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
           PR_DETAILS_FILE: ${{ steps.solve.outputs.pr_details_file }}
         run: node .github/scripts/agentic-solve-email.mjs
+
+      - name: Email the no-changes reason
+        if: ${{ !cancelled() && steps.solve.outputs.outcome == 'no-changes' }}
+        continue-on-error: true
+        uses: ./.github/actions/agentic-no-changes-email
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          operation: agentic-pr-create (${{ inputs.agent }})
+          request: ${{ inputs.prompt }}
+          reason: ${{ steps.solve.outputs.no_changes_reason }}

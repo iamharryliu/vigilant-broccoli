@@ -102,3 +102,14 @@ jobs:
           mode: result
           outcome: ${{ job.status == 'cancelled' && 'cancelled' || 'failed' }}
           note: ${{ steps.research.outcome == 'skipped' && 'A step before the research failed, so the agent never started.' || 'The research stopped before it could report a result; see its step log.' }}
+
+      - name: Email the no-changes reason
+        if: ${{ !cancelled() && steps.research.outputs.outcome == 'no-changes' }}
+        continue-on-error: true
+        uses: ./.github/actions/agentic-no-changes-email
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          operation: agentic-pr-create-rnd
+          request: ${{ inputs.question }}
+          reason: ${{ steps.research.outputs.no_changes_reason }}
