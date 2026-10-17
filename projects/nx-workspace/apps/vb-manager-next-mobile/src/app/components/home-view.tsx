@@ -46,9 +46,9 @@ import {
 import { QUICK_LINKS } from '../constants/quick-links';
 import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
 
-// Split into its own chunk, and only mounted while its tab is active, so the
-// weather card's code, geolocation prompt and requests stay off the initial
-// page load.
+// Split into its own chunk so the weather card's code stays off the critical
+// path. The tab force-mounts it, so once the chunk loads it locates and
+// fetches once and switching to Weather is instant.
 const WeatherView = dynamic(
   () => import('./weather-view').then(module => module.WeatherView),
   { ssr: false },
@@ -67,6 +67,8 @@ const EVENT_CALENDARS_API = '/api/event-calendars';
 
 const HIDDEN_CALENDARS_STORAGE_KEY = 'vb-manager-hidden-event-calendars';
 
+const TAB_STORAGE_KEY = 'vb-manager-mobile-tab';
+
 const TAB_ICON_SIZE = 18;
 
 // Tailwind's sm breakpoint, where the dialog stops being full screen.
@@ -80,6 +82,37 @@ const CALENDAR_TABS = Object.values(CALENDAR_TAB);
 
 const EVENTS_API = '/api/calendar/events';
 const FETCH_ERROR = 'Failed to load calendar events.';
+
+const findTab = (value: string | null | undefined) =>
+  CALENDAR_TABS.find(name => name === value);
+
+const readStoredTab = () => {
+  try {
+    return findTab(window.localStorage.getItem(TAB_STORAGE_KEY));
+  } catch {
+    return undefined;
+  }
+};
+
+const writeStoredTab = (value: CalendarTab) => {
+  try {
+    window.localStorage.setItem(TAB_STORAGE_KEY, value);
+  } catch {
+    // Storage can be unavailable (private mode); the tab just isn't remembered.
+  }
+};
+
+const replaceTabQueryParam = (value: CalendarTab) => {
+  const params = new URLSearchParams(window.location.search);
+  if (value === CALENDAR_TAB.CALENDAR) params.delete(CALENDAR_TAB_QUERY_PARAM);
+  else params.set(CALENDAR_TAB_QUERY_PARAM, value);
+  const query = params.toString();
+  window.history.replaceState(
+    null,
+    '',
+    query ? `?${query}` : window.location.pathname,
+  );
+};
 
 const eventsApiUrl = (extraCalendarIds: string[]) => {
   const params = new URLSearchParams();
@@ -112,14 +145,30 @@ export const HomeView = () => {
   const [eventCalendarsLoaded, setEventCalendarsLoaded] = useState(false);
   const [eventCalendarsError, setEventCalendarsError] = useState(false);
   const searchParams = useSearchParams();
-  const [tab, setTab] = useState<CalendarTab>(() => {
-    const requested = searchParams.get(CALENDAR_TAB_QUERY_PARAM);
-    return (
-      CALENDAR_TABS.find(name => name === requested) ?? CALENDAR_TAB.CALENDAR
-    );
-  });
+  const [tab, setTab] = useState<CalendarTab>(
+    () =>
+      findTab(searchParams.get(CALENDAR_TAB_QUERY_PARAM)) ??
+      CALENDAR_TAB.CALENDAR,
+  );
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
   const isMobile = useIsMobileBrowser();
+
+  // localStorage is read after mount, not in the useState initializer, so the
+  // server-rendered markup matches the first client render.
+  useEffect(() => {
+    if (
+      findTab(
+        new URLSearchParams(window.location.search).get(
+          CALENDAR_TAB_QUERY_PARAM,
+        ),
+      )
+    )
+      return;
+    const stored = readStoredTab();
+    if (!stored || stored === CALENDAR_TAB.CALENDAR) return;
+    setTab(stored);
+    replaceTabQueryParam(stored);
+  }, []);
 
   useEffect(() => {
     setHiddenIds(new Set(readHiddenCalendarIds(HIDDEN_CALENDARS_STORAGE_KEY)));
@@ -219,15 +268,8 @@ export const HomeView = () => {
 
   const handleTabChange = (next: CalendarTab) => {
     setTab(next);
-    const params = new URLSearchParams(window.location.search);
-    if (next === CALENDAR_TAB.CALENDAR) params.delete(CALENDAR_TAB_QUERY_PARAM);
-    else params.set(CALENDAR_TAB_QUERY_PARAM, next);
-    const query = params.toString();
-    window.history.replaceState(
-      null,
-      '',
-      query ? `?${query}` : window.location.pathname,
-    );
+    writeStoredTab(next);
+    replaceTabQueryParam(next);
   };
 
   const tabs: TabbedViewTab<CalendarTab>[] = [
@@ -295,6 +337,8 @@ export const HomeView = () => {
       value: CALENDAR_TAB.WEATHER,
       label: CALENDAR_TAB.WEATHER,
       icon: <CloudSun size={TAB_ICON_SIZE} />,
+      // Force-mounted so the weather loads once on page load, not per visit.
+      forceMount: true,
       content: <WeatherView />,
     },
   ];
