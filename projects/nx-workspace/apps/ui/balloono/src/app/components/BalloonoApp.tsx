@@ -8,6 +8,7 @@ import { Contender, Difficulty } from '../engine/game.types';
 import { MAX_PLAYERS } from '../engine/game.consts';
 import { cpuContenders, fillSeats } from '../engine/runner';
 import { GameAudioProvider } from '../hooks/useGameAudio';
+import { KeyBindingsProvider } from '../hooks/useKeyBindings';
 import { displayNameOf, useSession } from '../hooks/useSession';
 import { usePlayerIdentity } from '../hooks/usePlayerIdentity';
 import { RoomListing, useRoomDirectory } from '../hooks/useRoomDirectory';
@@ -128,7 +129,9 @@ export function BalloonoApp() {
         <DesktopOnly>
           <AccountProvider>
             <GameAudioProvider>
-              <Balloono />
+              <KeyBindingsProvider>
+                <Balloono />
+              </KeyBindingsProvider>
             </GameAudioProvider>
           </AccountProvider>
         </DesktopOnly>

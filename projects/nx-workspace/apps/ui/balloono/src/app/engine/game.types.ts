@@ -75,6 +75,8 @@ export interface MatchState extends ArenaSize {
   events: MatchEvent[];
   nextEventId: number;
   tick: number;
+  // Ticks left in the 3-2-1 countdown; `tick` stays at 0 until it reaches 0.
+  startCountdown: number;
   cells: Cell[];
   hiddenPowerUps: PowerUp[];
   powerUps: PowerUp[];
