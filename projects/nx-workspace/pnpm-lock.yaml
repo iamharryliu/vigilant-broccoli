@@ -591,9 +591,6 @@ importers:
       vite-plugin-static-copy:
         specifier: 4.1.1
         version: 4.1.1(vite@8.1.3(@types/node@24.13.3)(esbuild@0.25.12)(jiti@2.4.2)(less@4.5.1)(sass-embedded@1.100.0)(sass@1.101.0)(terser@5.49.0)(tsx@4.23.0)(yaml@2.9.0))
-      vite-tsconfig-paths:
-        specifier: 6.1.1
-        version: 6.1.1(supports-color@8.1.1)(typescript@5.9.3)(vite@8.1.3(@types/node@24.13.3)(esbuild@0.25.12)(jiti@2.4.2)(less@4.5.1)(sass-embedded@1.100.0)(sass@1.101.0)(terser@5.49.0)(tsx@4.23.0)(yaml@2.9.0))
       vitest:
         specifier: 5.0.4
         version: 5.0.4(@edge-runtime/vm@3.2.0)(@types/node@24.13.3)(@vitest/coverage-v8@5.0.4)(@vitest/ui@5.0.4)(jsdom@26.1.0(supports-color@8.1.1))(vite@8.1.3(@types/node@24.13.3)(esbuild@0.25.12)(jiti@2.4.2)(less@4.5.1)(sass-embedded@1.100.0)(sass@1.101.0)(terser@5.49.0)(tsx@4.23.0)(yaml@2.9.0))
@@ -25457,7 +25454,7 @@ snapshots:
       '@sanity/id-utils': 1.0.0
       '@sanity/import': 6.0.3(@sanity/client@7.23.0)(@types/react@19.2.17)(supports-color@8.1.1)(vitest@5.0.4)
       '@sanity/migrate': 6.1.2(@oclif/core@4.11.10)(@sanity/cli-core@1.3.4(@noble/hashes@2.4.0)(@types/node@26.1.1)(less@4.9.0)(lightningcss@1.32.0)(sass-embedded@1.100.0)(sass@1.101.0)(terser@5.49.0)(yaml@2.9.0))(@types/react@19.2.17)(xstate@5.32.1)
-      '@sanity/runtime-cli': 15.2.1(@types/node@26.1.1)(less@4.9.0)(lightningcss@1.32.0)(sass-embedded@1.100.0)(sass@1.101.0)(terser@5.49.0)(tsx@4.23.0)(typescript@5.9.3)(yaml@2.9.0)
+      '@sanity/runtime-cli': 15.2.1(@types/node@26.1.1)(less@4.9.0)(lightningcss@1.32.0)(sass-embedded@1.100.0)(sass@1.101.0)(supports-color@8.1.1)(terser@5.49.0)(tsx@4.23.0)(typescript@5.9.3)(yaml@2.9.0)
       '@sanity/schema': 5.31.2(@types/react@19.2.17)
       '@sanity/telemetry': 1.1.0(react@19.2.7)
       '@sanity/template-validator': 3.1.0
@@ -25807,7 +25804,7 @@ snapshots:
 
   '@sanity/prism-groq@1.1.2': {}
 
-  '@sanity/runtime-cli@15.2.1(@types/node@26.1.1)(less@4.9.0)(lightningcss@1.32.0)(sass-embedded@1.100.0)(sass@1.101.0)(terser@5.49.0)(tsx@4.23.0)(typescript@5.9.3)(yaml@2.9.0)':
+  '@sanity/runtime-cli@15.2.1(@types/node@26.1.1)(less@4.9.0)(lightningcss@1.32.0)(sass-embedded@1.100.0)(sass@1.101.0)(supports-color@8.1.1)(terser@5.49.0)(tsx@4.23.0)(typescript@5.9.3)(yaml@2.9.0)':
     dependencies:
       '@architect/hydrate': 5.0.2
       '@architect/inventory': 5.0.0
@@ -25829,7 +25826,7 @@ snapshots:
       ora: 9.4.1
       tar-stream: 3.2.0
       vite: 7.3.6(@types/node@26.1.1)(jiti@2.7.0)(less@4.9.0)(lightningcss@1.32.0)(sass-embedded@1.100.0)(sass@1.101.0)(terser@5.49.0)(tsx@4.23.0)(yaml@2.9.0)
-      vite-tsconfig-paths: 6.1.1(typescript@5.9.3)(vite@7.3.6(@types/node@26.1.1)(jiti@2.7.0)(less@4.9.0)(lightningcss@1.32.0)(sass-embedded@1.100.0)(sass@1.101.0)(terser@5.49.0)(tsx@4.23.0)(yaml@2.9.0))
+      vite-tsconfig-paths: 6.1.1(supports-color@8.1.1)(typescript@5.9.3)(vite@7.3.6(@types/node@26.1.1)(jiti@2.7.0)(less@4.9.0)(lightningcss@1.32.0)(sass-embedded@1.100.0)(sass@1.101.0)(terser@5.49.0)(tsx@4.23.0)(yaml@2.9.0))
       ws: 8.21.3
       xdg-basedir: 5.1.0
     transitivePeerDependencies:
@@ -38815,17 +38812,7 @@ snapshots:
       tinyglobby: 0.2.17
       vite: 8.1.3(@types/node@24.13.3)(esbuild@0.25.12)(jiti@2.4.2)(less@4.5.1)(sass-embedded@1.100.0)(sass@1.101.0)(terser@5.49.0)(tsx@4.23.0)(yaml@2.9.0)
 
-  vite-tsconfig-paths@6.1.1(supports-color@8.1.1)(typescript@5.9.3)(vite@8.1.3(@types/node@24.13.3)(esbuild@0.25.12)(jiti@2.4.2)(less@4.5.1)(sass-embedded@1.100.0)(sass@1.101.0)(terser@5.49.0)(tsx@4.23.0)(yaml@2.9.0)):
-    dependencies:
-      debug: 4.4.3(supports-color@8.1.1)
-      globrex: 0.1.2
-      tsconfck: 3.1.6(typescript@5.9.3)
-      vite: 8.1.3(@types/node@24.13.3)(esbuild@0.25.12)(jiti@2.4.2)(less@4.5.1)(sass-embedded@1.100.0)(sass@1.101.0)(terser@5.49.0)(tsx@4.23.0)(yaml@2.9.0)
-    transitivePeerDependencies:
-      - supports-color
-      - typescript
-
-  vite-tsconfig-paths@6.1.1(typescript@5.9.3)(vite@7.3.6(@types/node@26.1.1)(jiti@2.7.0)(less@4.9.0)(lightningcss@1.32.0)(sass-embedded@1.100.0)(sass@1.101.0)(terser@5.49.0)(tsx@4.23.0)(yaml@2.9.0)):
+  vite-tsconfig-paths@6.1.1(supports-color@8.1.1)(typescript@5.9.3)(vite@7.3.6(@types/node@26.1.1)(jiti@2.7.0)(less@4.9.0)(lightningcss@1.32.0)(sass-embedded@1.100.0)(sass@1.101.0)(terser@5.49.0)(tsx@4.23.0)(yaml@2.9.0)):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       globrex: 0.1.2
