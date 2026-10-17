@@ -4,6 +4,7 @@ import {
   CalendarPlus,
   CloudSun,
   House,
+  LayoutGrid,
   Link2,
   ListTodo,
   LogOut,
@@ -363,6 +364,7 @@ export const MobileHomeDemo = () => {
 
   const navItems: SidebarCTA[] = [
     { label: 'Home', icon: House, isActive: true, onClick: closeDrawer },
+    { label: 'Apps', icon: LayoutGrid, onClick: closeDrawer },
   ];
 
   const toggleHidden = (googleCalendarId: string) =>
