@@ -4,6 +4,7 @@ import {
   Eye,
   Menu,
   Moon,
+  Smartphone,
   Settings as SettingsIcon,
   Sun,
   Wrench,
@@ -97,11 +98,13 @@ const SETTINGS_LABEL = {
 const CATEGORY = {
   COMPONENTS: 'Components',
   UTILITIES: 'Utilities',
+  MOBILE: 'Mobile',
 } as const;
 type Category = (typeof CATEGORY)[keyof typeof CATEGORY];
 const CATEGORY_ICON = {
   [CATEGORY.COMPONENTS]: Blocks,
   [CATEGORY.UTILITIES]: Wrench,
+  [CATEGORY.MOBILE]: Smartphone,
 } as const;
 
 interface SandboxEntry {
@@ -434,14 +437,6 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     content: <DocsExplorerDemo />,
   },
   {
-    id: 'mobile-home',
-    label: 'Mobile Home',
-    description:
-      'The vb-manager-next-mobile home page inside an iPhone-sized frame. The agenda, event calendars list and tab shell are the real react-lib-higher-level components fed with sample data; tasks, notepad and quick links reuse the sandbox demos.',
-    category: CATEGORY.UTILITIES,
-    content: <MobileHomeDemo />,
-  },
-  {
     id: 'notepad',
     label: 'Notepad',
     description:
@@ -488,7 +483,22 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
   },
 ];
 
-const ALL_ENTRIES: SandboxEntry[] = [...COMPONENT_ENTRIES, ...UTILITY_ENTRIES];
+const MOBILE_ENTRIES: SandboxEntry[] = [
+  {
+    id: 'mobile-home',
+    label: 'Mobile Home',
+    description:
+      'The vb-manager-next-mobile home page inside an iPhone-sized frame: the top bar with a menu button that opens the sidebar drawer, and the pinned layout where each tab panel scrolls on its own. The tab shell, agenda, event calendars list, tasks, quick links and sidebar are the real react-lib-higher-level components fed with sample data; the Create calendar event dialog and task voice input are mocked.',
+    category: CATEGORY.MOBILE,
+    content: <MobileHomeDemo />,
+  },
+];
+
+const ALL_ENTRIES: SandboxEntry[] = [
+  ...COMPONENT_ENTRIES,
+  ...UTILITY_ENTRIES,
+  ...MOBILE_ENTRIES,
+];
 
 const ENTRY_STAGE_CLASS = 'flex flex-col gap-3 mt-2';
 
