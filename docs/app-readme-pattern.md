@@ -1,6 +1,6 @@
 # README Stack Pattern
 
-Every app under `projects/nx-workspace/apps/*`, every component under `infrastructure/*`, and every `libs/@vigilant-broccoli/*` lib that publishes to npm (has a `publish-package` target — see [app-development.md](./app-development/app-development.md#npm-package-publishing)) carries a `README.md` with a title, a one-line purpose, a `## Table of Contents`, and a `## Stack` section. Keep it minimal — headers + bullets, no prose. Derive everything from the actual code and config so newly introduced tech shows up, and update sections in place rather than duplicating.
+Every app under `projects/nx-workspace/apps/*`, every component under `infrastructure/*`, and every `libs/@vigilant-broccoli/*` lib that publishes to npm (has a `publish-package` target — see [app-development.md](./app-development/app-development.md#npm-package-publishing)) carries a `README.md` with a title, a one-line purpose, a `## Table of Contents`, and a `## Stack` section. Keep it minimal — headers + bullets, no prose. App and lib READMEs are deployment-agnostic: no hosted URLs or dashboard links; public URLs live in the root `## Applications` inventory and the pages-index registry. Derive everything from the actual code and config so newly introduced tech shows up, and update sections in place rather than duplicating.
 
 ## Table of Contents
 
@@ -20,16 +20,22 @@ Each app under `projects/nx-workspace/apps/*`, and each `libs/@vigilant-broccoli
 - `# <Title>` — human-readable name (title case, not the dir/package slug)
 - One line on what it does (skip if the title already says it)
 - `## Table of Contents`
-- `## Deployment URLs` — optional; a bullet list of externally hosted resources tied to it (deployed site, CMS studio/overview, calendars, analytics dashboards, admin consoles, etc.), grouped the same way as Stack (single link inline, related links nested under a group label). This section is manually curated, not derived from code — `/update-readmes` must never delete or invent entries here. Only add an entry when the user gives you the URL, and only fix an entry the user confirms is broken or stale.
 - `## Stack` — a bullet list grouped into these levels, in order:
   - **Language** — e.g. TypeScript
   - **Framework** — the app framework, e.g. Next.js, Fastify, React
   - **Build Tool** — the bundler/builder, e.g. Vite, Next.js, esbuild, webpack
   - **External libs** — other third-party npm packages: UI libs, SDKs, tooling
   - **Internal libs** — the `@vigilant-broccoli/*` VB libs it consumes
-  - **Cloud services** — hosted/managed platforms and external APIs it deploys to or calls (e.g. Vercel, Cloudflare Pages, Fly.io, Docker Hub, npm, Supabase, Sanity, AWS S3, Stripe). Always reflect the deploy destination here: a `libs/@vigilant-broccoli/*` lib with a `publish-package` target lists `npm`; an `apps/api/*` service shipped via the Docker Hub roundtrip (`deploy-container` target — see [fly-service-pattern.md](./app-development/api/deployment/fly-service-pattern.md)) lists `Docker Hub`.
+  - **Cloud services** — hosted/managed platforms and external APIs it calls at runtime (e.g. Supabase, Sanity, AWS S3, Stripe). Never list where it is hosted or published (Vercel, Cloudflare Pages, Fly.io, Docker Hub, npm, GitHub Pages): the README is deployment-agnostic.
 
 Language, Framework, and Build Tool each hold a single value, written inline (`- Language - TypeScript`). External libs, Internal libs, and Cloud services are nested bullet lists.
+
+Stack conventions, for apps, libs and infrastructure alike:
+
+- Groups appear in the listed order; omit empty ones.
+- Framework and Build Tool are the bare tool name, with no parenthetical (`Next.js`, not `Next.js (React)`).
+- Items inside a nested group are sorted alphabetically, case-insensitively and ignoring backticks. A multi-value Language keeps its primary-first order.
+- One tool per bullet, named bare, with no parentheticals. Append ` - <description>` only when the name alone is ambiguous or hides how it is used (`- PostgreSQL - pgvecto-rs vector search`, `- Email Service - called over HTTP`): a short lowercase fragment, no trailing period, at most six words. Most bullets need none; never add one for purpose notes the name already implies. On an inline single-value group the description follows the value (`- Framework - Slack Bolt - Socket Mode`).
 
 Classify by nature, not name: a client SDK is an external lib, but the platform or API it talks to is a cloud service — list the service, not its SDK. Framework and Build Tool may be the same tool (e.g. Next.js); list it in both. Derive everything from `package.json`, imports, env vars, and config. Omit a group only when the app genuinely has nothing for it.
 
@@ -38,16 +44,7 @@ Example:
 ```md
 ## Table of Contents
 
-- [Deployment URLs](#deployment-urls)
 - [Stack](#stack)
-
-## Deployment URLs
-
-- [Deployed Site](https://example.com/)
-- Sanity CMS
-  - [Overview](https://www.sanity.io/organizations/xxx/project/yyy)
-  - [Studio](https://www.sanity.io/@xxx/studio/yyy/default/structure)
-- [Analytics](https://analytics.google.com/analytics/web/#/xxx/)
 
 ## Stack
 
@@ -61,7 +58,6 @@ Example:
   - `react-lib`
 - Cloud services
   - Supabase
-  - Cloudflare Pages
 ```
 
 ## Infrastructure
@@ -95,8 +91,8 @@ Example (`infrastructure/terraform`):
 
 - Language - HCL
 - Tooling
-  - Terraform
   - Packer
+  - Terraform
 - Cloud providers
   - Cloudflare
   - Google Cloud
@@ -113,7 +109,7 @@ The root README also carries an `## Applications` section listing every custom a
 
 The root README's opening paragraph is itself a generated repo-stats sentence (each copy has its own wording template in the script) between `<!-- managed:repo-stats:start -->` / `<!-- managed:repo-stats:end -->` markers, also generated into `personal-website-react`'s `about.md`. The resume's `vigilant-broccoli` bullet in `resume.json` ("Open source maintainer of …") carries the same counts, rewritten in place by the script's number pattern; the surrounding wording is hand-edited, so keep it to one line and don't name the monorepo tool (Nx) in it. The resume must fit one page: `generateResumePdfBuffer` throws when the PDF exceeds one page, which fails `personal-website-react`'s `pre-build`. Never hand-edit the counts: `pnpm repo-stats` (`scripts/node/repo-stats.mjs`) rewrites all three copies, and the `repo-stats` pre-commit hook runs it on every commit, so a stale copy is fixed and the commit stops once for re-staging (agents: stage the rewritten files and commit again). `ci-pr-check`'s `pre-commit` job fails if a copy was still stale. Its counts come from:
 
-- **Applications** — distinct `CardLink` `href`s on pages-index `WebApplicationsPage.tsx` (the curated public apps and demos from [Public URL registration](./app-development/app-development.md#deployment)).
+- **Applications** — distinct `href`s across both lists of the pages-index registry `src/app/consts/webApplications.json` (the curated public apps and demos from [Public URL registration](./app-development/app-development.md#deployment)). `WebApplicationsPage.tsx` renders the cards from the same file, so add, remove or change an application card there, never as inline JSX, or the count drifts.
 - **Services** — `apps/api/*` projects with a `deploy` target (fly services; the `mock` directory has none).
 - **Docker images** — distinct `iamharryliu/*` Docker Hub images tagged by a pushing command: `docker buildx … --push` in any `project.json` target, or a `.github/workflows/*.yml` that runs `docker push`.
 - **npm packages** — `libs/@vigilant-broccoli/*` projects with a `publish-package` target ([npm package publishing](./app-development/app-development.md#npm-package-publishing)).

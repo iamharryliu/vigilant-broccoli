@@ -6,17 +6,21 @@ import { ChevronRight } from 'lucide-react';
 import {
   Badge,
   cn,
-  CRUDItemFormDialog,
-  EllipsisCTA,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   IconButton,
-  ImageCarouselDialog,
-  ImageFilmstrip,
   Text,
   Dialog,
   DialogContent,
   DialogTitle,
 } from '@vigilant-broccoli/react-lib';
+import {
+  ImageCarouselDialog,
+  ImageFilmstrip,
+} from '@vigilant-broccoli/react-lib-media';
+import {
+  CRUDItemFormDialog,
+  EllipsisCTA,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { WhereIsItem } from '../../lib/types';

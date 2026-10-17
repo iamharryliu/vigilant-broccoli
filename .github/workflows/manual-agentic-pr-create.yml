@@ -1,6 +1,6 @@
 name: manual-agentic-pr-create
 
-run-name: manual-agentic-pr-create (${{ inputs.agent }}) ${{ inputs.ids || inputs.prompt }}
+run-name: manual-agentic-pr-create (${{ inputs.agent }}) ${{ inputs.prompt }}
 
 # Runs the same agent solve as the local `pnpm agentic-pr-create`, but on the
 # ephemeral GitHub-hosted runner: it builds and runs the vb-agent-sandbox
@@ -11,14 +11,10 @@ run-name: manual-agentic-pr-create (${{ inputs.agent }}) ${{ inputs.ids || input
 on:
   workflow_dispatch:
     inputs:
-      ids:
-        description: 'Space-separated TODO ids to solve (e.g. "a1b2c3 d4e5f6"). Leave blank if using prompt.'
-        type: string
-        default: ''
       prompt:
-        description: 'Free-text task to solve instead of TODO ids (mutually exclusive with ids).'
+        description: 'Task to solve. Mention TODO ids (e.g. "solve a1b2c3 and d4e5f6") to have the agent resolve those TODO.md rows.'
         type: string
-        default: ''
+        required: true
       agent:
         description: 'Agent runner to use.'
         type: choice
@@ -61,45 +57,32 @@ jobs:
     outputs:
       group: ${{ steps.hash.outputs.group }}
     steps:
-      - name: Summarize dispatch inputs
-        env:
-          IDS: ${{ inputs.ids }}
-          PROMPT: ${{ inputs.prompt }}
-          AGENT: ${{ inputs.agent }}
-          MODEL: ${{ inputs.model }}
-          CODEX_MODEL: ${{ inputs.codex_model }}
-          FIREWALL: ${{ inputs.firewall }}
-        run: |
-          set -euo pipefail
-          {
-            echo "## Dispatch inputs"
-            echo
-            echo "| Input | Value |"
-            echo "| --- | --- |"
-            echo "| agent | \`${AGENT}\` |"
-            echo "| model | \`${MODEL}\` |"
-            echo "| codex_model | \`${CODEX_MODEL}\` |"
-            echo "| firewall | \`${FIREWALL}\` |"
-            echo "| ids | \`${IDS}\` |"
-            echo
-            echo "### Prompt"
-            echo
-            echo '```text'
-            printf '%s\n' "$PROMPT"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Checkout summary helper
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Publish overview
+        continue-on-error: true
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: overview
+          title: Create a pull request
+          agent: ${{ inputs.agent }}
+          model: ${{ inputs.agent == 'claude' && inputs.model || inputs.codex_model }}
+          firewall: ${{ inputs.firewall }}
+          task: ${{ inputs.prompt }}
 
       - name: Hash dispatch inputs
         id: hash
         env:
-          IDS: ${{ inputs.ids }}
           PROMPT: ${{ inputs.prompt }}
           AGENT: ${{ inputs.agent }}
           MODEL: ${{ inputs.model }}
           CODEX_MODEL: ${{ inputs.codex_model }}
         run: |
           set -euo pipefail
-          echo "group=$(printf '%s' "${AGENT}:${MODEL}:${CODEX_MODEL}:${IDS:-$PROMPT}" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
+          echo "group=$(printf '%s' "${AGENT}:${MODEL}:${CODEX_MODEL}:${PROMPT}" | sha256sum | cut -c1-16)" >> "$GITHUB_OUTPUT"
 
   solve:
     needs: key
@@ -149,7 +132,6 @@ jobs:
           SANDBOX_FIREWALL: ${{ inputs.firewall }}
           MODEL: ${{ inputs.model }}
           CODEX_MODEL: ${{ inputs.codex_model }}
-          IDS: ${{ inputs.ids }}
           PROMPT: ${{ inputs.prompt }}
         run: |
           set -euo pipefail
@@ -164,23 +146,22 @@ jobs:
             exit 1
           fi
           STATUS=0
-          if [ -n "$PROMPT" ]; then
-            bash "$SOLVE" "${SOLVE_ARGS[@]}" --prompt "$PROMPT" || STATUS=$?
-          else
-            if ! printf '%s' "$IDS" | grep -qE '^[0-9a-fA-F ]*$'; then
-              echo "ERROR: 'ids' must be space-separated hex TODO ids." >&2
-              exit 1
-            fi
-            read -ra ID_ARR <<<"$IDS"
-            bash "$SOLVE" "${SOLVE_ARGS[@]}" "${ID_ARR[@]}" || STATUS=$?
-          fi
-          echo "===== per-id solve logs ====="
+          bash "$SOLVE" "${SOLVE_ARGS[@]}" --prompt "$PROMPT" || STATUS=$?
+          echo "===== solve log ====="
           for f in /tmp/vb-solve.*/*.log; do
             [ -e "$f" ] || continue
             echo "--- $f ---"
             cat "$f"
           done
           exit "$STATUS"
+
+      - name: Report result when the solve could not
+        if: ${{ always() && steps.solve.outcome != 'success' && steps.solve.outputs.result_reported != 'true' }}
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: result
+          outcome: ${{ job.status == 'cancelled' && 'cancelled' || 'failed' }}
+          note: ${{ steps.solve.outcome == 'skipped' && 'A step before the solve failed, so the agent never started.' || 'The solve stopped before it could report a result; see the Solve step log.' }}
 
       - name: Tunnel to email service
         if: always()

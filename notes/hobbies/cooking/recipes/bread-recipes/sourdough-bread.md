@@ -36,5 +36,4 @@
 
 ## References
 
-- [Shaping techniques](https://www.youtube.com/results?search_query=sourdough+shaping)
 - [How I Make Sourdough Bread Every Day In LESS Than 30 Minutes (hands-on time)](https://www.youtube.com/watch?v=ZxCf39G_7pY&t=384s)

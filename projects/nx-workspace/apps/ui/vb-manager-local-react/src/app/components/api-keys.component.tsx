@@ -3,8 +3,6 @@ import {
   Button,
   Callout,
   CalloutText,
-  CRUDFormProps,
-  CRUDItemList,
   Checkbox,
   Code,
   Input,
@@ -12,6 +10,10 @@ import {
   Switch,
   Text,
 } from '@vigilant-broccoli/react-lib';
+import {
+  CRUDFormProps,
+  CRUDItemList,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE, VB_EXPRESS_SERVICE } from '@vigilant-broccoli/common-js';
 import { useEffect, useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';

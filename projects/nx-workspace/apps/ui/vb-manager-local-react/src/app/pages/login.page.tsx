@@ -1,4 +1,4 @@
-import { GoogleSignInPage } from '@vigilant-broccoli/react-lib';
+import { GoogleSignInPage } from '@vigilant-broccoli/react-lib-auth';
 import { signInWithGoogle } from '../../libs/auth';
 import { APP_NAME, PAGE_TITLE } from '../app.const';
 import { usePageTitle } from '../use-page-title';

@@ -2,8 +2,9 @@ import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import {
   QuickLinksDialog,
   type ShellExecuteHandler,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { QUICK_LINKS } from '../constants/quick-links';
+import { isDesktopEmbedEnvironment } from '../utils/embed.utils';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../libs/auth';
 
@@ -36,6 +37,7 @@ export function SearchDialogComponent({
       open={open}
       onOpenChange={onOpenChange}
       onShellExecute={handleShellExecute}
+      canEmbed={isDesktopEmbedEnvironment}
     />
   );
 }

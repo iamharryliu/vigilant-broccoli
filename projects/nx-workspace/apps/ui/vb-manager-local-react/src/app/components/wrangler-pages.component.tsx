@@ -3,18 +3,16 @@ import {
   Badge,
   Button,
   ButtonList,
-  CardContainer,
-  EllipsisCTA,
-  StatusCardList,
   StatusCardListItem,
   Text,
-  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
+import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { CLOUDFLARE_LINK } from '@vigilant-broccoli/links';
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../libs/auth';
-import { usePollingInterval } from '../hooks/usePollingInterval';
+import { StatusListCard } from './status-list-card.component';
+import { usePolledResource } from '../hooks/usePolledResource';
 
 const CF_ACCOUNT_ID = '26d066ec62c4d27b8da5e9aebac17293';
 const CF_DASH = `https://dash.cloudflare.com/${CF_ACCOUNT_ID}`;
@@ -72,30 +70,25 @@ const DASHBOARD_LINK = {
 };
 
 export const WranglerPagesComponent = () => {
-  const [projectsData, setProjectsData] = useState<WranglerProject[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: projectsData,
+    loading,
+    error,
+    refetch: fetchWranglerPages,
+  } = usePolledResource<WranglerProject[]>({
+    endpoint: API_ENDPOINTS.WRANGLER_PAGES,
+    intervalMs: WRANGLER_POLL_INTERVAL_MS,
+    errorMessage: 'Failed to fetch Wrangler pages',
+    select: (json: WranglerPagesResponse) => {
+      if (!json.success || !json.projects)
+        throw new Error(json.error || 'Failed to fetch Wrangler pages');
+      return json.projects;
+    },
+  });
   const [loggingIn, setLoggingIn] = useState(false);
   const [deletingProjects, setDeletingProjects] = useState<Set<string>>(
     new Set(),
   );
-
-  const fetchWranglerPages = async () => {
-    try {
-      const response = await authFetch(API_ENDPOINTS.WRANGLER_PAGES);
-      const data: WranglerPagesResponse = await response.json();
-      if (!data.success || !data.projects)
-        throw new Error(data.error || 'Failed to fetch Wrangler pages');
-      setProjectsData(data.projects);
-      setLoading(false);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to fetch Wrangler pages',
-      );
-      setLoading(false);
-      console.error('Wrangler pages fetch error:', err);
-    }
-  };
 
   const handleDelete = async (projectName: string) => {
     const response = await authFetch(API_ENDPOINTS.WRANGLER_PAGES, {
@@ -108,7 +101,7 @@ export const WranglerPagesComponent = () => {
     setDeletingProjects(prev => new Set(prev).add(projectName));
     try {
       await pollDeletionStatus(projectName);
-      setProjectsData(prev => prev.filter(p => p.name !== projectName));
+      await fetchWranglerPages();
     } catch (err) {
       console.error('Wrangler pages delete error:', err);
     } finally {
@@ -128,15 +121,11 @@ export const WranglerPagesComponent = () => {
       const data: WranglerPagesResponse = await response.json();
       if (data.success && data.projects) {
         clearInterval(poll);
-        setProjectsData(data.projects);
         setLoggingIn(false);
-        setError(null);
-        setLoading(false);
+        await fetchWranglerPages();
       }
     }, 3000);
   };
-
-  usePollingInterval(fetchWranglerPages, WRANGLER_POLL_INTERVAL_MS);
 
   const toItem = (project: WranglerProject): StatusCardListItem => {
     const primaryDomain = project.domains[0];
@@ -211,24 +200,21 @@ export const WranglerPagesComponent = () => {
     };
   };
 
-  if (loading) return <CardSkeleton title={TITLE} rows={5} />;
-
-  if (error) {
-    return (
-      <CardContainer title={TITLE} gap="3" headerLink={DASHBOARD_LINK}>
+  return (
+    <StatusListCard
+      title={TITLE}
+      gap="3"
+      loading={loading}
+      error={error}
+      skeletonRows={5}
+      headerLink={DASHBOARD_LINK}
+      items={(projectsData ?? []).map(toItem)}
+      emptyMessage="No projects found"
+      errorContent={
         <Button onClick={handleLogin} loading={loggingIn} variant="secondary">
           Wrangler Login
         </Button>
-      </CardContainer>
-    );
-  }
-
-  return (
-    <CardContainer title={TITLE} gap="3" headerLink={DASHBOARD_LINK}>
-      <StatusCardList
-        items={projectsData.map(toItem)}
-        emptyMessage="No projects found"
-      />
-    </CardContainer>
+      }
+    />
   );
 };

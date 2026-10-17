@@ -1,0 +1,119 @@
+name: cron-agentic-pr-create-context-audit
+
+# Slims agent guidance (CONTEXT.md files, shared skill bodies and Doc Map/required-reading
+# docs) by removing duplicated rules and incident narrative without losing any
+# rule, workaround, recovery step or exact error string, and opens one PR of at
+# most 15 files. Same container and credentials as
+# `manual-agentic-pr-create-audit`; the local equivalent is
+# `pnpm agentic-pr-create-context-audit`. Every change adds guidance, so the
+# context agents read on each session grows unless something trims it on a
+# schedule.
+#
+# A clean audit opens no PR and still succeeds: the runner prints AUDIT_CLEAN
+# and exits 0.
+
+on:
+  schedule:
+    - cron: '55 5 * * 0'
+  workflow_dispatch:
+    inputs:
+      model:
+        description: 'Claude model to run the agent with.'
+        type: choice
+        default: opus
+        options:
+          - opus
+          - sonnet
+          - haiku
+      firewall:
+        description: 'In-container egress firewall (turn off if iptables/ipset fails on the runner).'
+        type: choice
+        default: 'on'
+        options:
+          - 'on'
+          - 'off'
+
+permissions:
+  contents: read
+  id-token: write
+
+# Static group: two overlapping audits would open competing PRs rewriting the
+# same guidance, and a half-finished run's pushed branch is not something a
+# newer run should cancel out from under.
+concurrency:
+  group: cron-agentic-pr-create-context-audit
+  cancel-in-progress: false
+
+jobs:
+  overview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      model: ${{ steps.config.outputs.model }}
+      firewall: ${{ steps.config.outputs.firewall }}
+    steps:
+      # Scheduled runs carry no inputs, so the defaults are resolved once here
+      # and both the overview and the audit job read the same values.
+      - name: Resolve effective configuration
+        id: config
+        env:
+          MODEL: ${{ inputs.model || 'opus' }}
+          FIREWALL: ${{ inputs.firewall || 'on' }}
+        run: |
+          set -euo pipefail
+          echo "model=$MODEL" >> "$GITHUB_OUTPUT"
+          echo "firewall=$FIREWALL" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout summary helper
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Publish overview
+        continue-on-error: true
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: overview
+          title: Audit agent context
+          agent: claude
+          model: ${{ steps.config.outputs.model }}
+          firewall: ${{ steps.config.outputs.firewall }}
+          description: Slim CONTEXT.md files, shared skill bodies, Doc Map and required-reading docs by removing duplication and incident narrative without losing rules, workarounds, recovery steps or exact error strings, citing where each removed fact is retained. Opens one pull request of at most 15 files, and only when something is changed.
+
+  audit:
+    needs: overview
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | CLAUDE_CODE_OAUTH_TOKEN ;
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+
+      - name: Audit agent context
+        id: audit
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
+          AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
+          AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
+          SANDBOX_FIREWALL: ${{ needs.overview.outputs.firewall }}
+          MODEL: ${{ needs.overview.outputs.model }}
+        run: |
+          set -euo pipefail
+          bash infrastructure/agent-sandbox/audit-context.sh --model "$MODEL"
+
+      - name: Report result when the audit could not
+        if: ${{ always() && steps.audit.outcome != 'success' && steps.audit.outputs.result_reported != 'true' }}
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: result
+          outcome: ${{ job.status == 'cancelled' && 'cancelled' || 'failed' }}
+          note: ${{ steps.audit.outcome == 'skipped' && 'A step before the audit failed, so the agent never started.' || 'The audit stopped before it could report a result; see its step log.' }}

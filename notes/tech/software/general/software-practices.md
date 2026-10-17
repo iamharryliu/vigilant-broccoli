@@ -1,14 +1,23 @@
 # Software Practices
 
+## Table of Contents
+
+- [Resources](#resources)
+- [Personal Habits](#personal-habits)
+- [Working in a Team](#working-in-a-team)
+- [Architecture](#architecture)
+- [Application Building](#application-building)
+- [Delivery](#delivery)
+  - [Handover](#handover)
+- [Software Maintenance](#software-maintenance)
+  - [Weekly](#weekly)
+
+## Resources
+
 - [Conventional Commits](./conventional-commits.md)
 - [Software Code Quality](./software-code-quality.md)
 - [Software Conventions](./software-conventions.md)
 - [Folder Structure](./folder-structure.md)
-- Coding Challenges (ie, LeetCode or Blind 75 type questions)
-  - [Grind 75](https://www.techinterviewhandbook.org/grind75/)
-    - [Grind 75 Complexities](./coding-challenges/grind-75-complexities.md)
-    - [LeetCode Notes](./coding-challenges/leetcode-notes.md)
-  - [NeetCode 150](https://neetcode.io/practice?tab=neetcode150)
 
 ## Personal Habits
 
@@ -24,7 +33,7 @@
 
 ## Architecture
 
-- At the start of a project is the best time to immplement good practices as you will save the most long time time at the expense of some extra upfront time.
+- Establish good practices at the start of a project to save time over its lifetime, even when they require extra upfront work.
 - Thinking long term management rather than fast delivery.
 - Custom built lightweight solutions over heavy third party solutions to have control over the project and avoiding vendor lock-in.
 - Use good **folder structure** patterns to separate concerns.
@@ -57,3 +66,14 @@
 - Transfer billing.
 - Update Permissions.
 - Secret rotation.
+
+## Software Maintenance
+
+- Test breakglass
+- Secret rotations
+- Security tests
+- Integration tests
+
+### Weekly
+
+- Review and update dependencies for local code and repositories.

@@ -1,0 +1,57 @@
+name: cron-seed-office-presence-demo
+
+# Reseeds the fake (U_DEMO_*) members of the office presence demo for the coming
+# week and prunes seeded rows older than the current week. Real members' rows
+# are never touched. The bearer token comes from Vault, not a repo secret.
+on:
+  schedule:
+    - cron: '27 17 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: cron-seed-office-presence-demo
+  cancel-in-progress: false
+
+env:
+  SEED_URL: https://demo-office-presence-service.fly.dev/internal/seed
+
+jobs:
+  seed:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets OFFICE_PRESENCE_INTERNAL_TOKEN | OFFICE_PRESENCE_INTERNAL_TOKEN
+
+      # The machine scales to zero; the first request resumes it, so allow retries.
+      - name: Seed the demo
+        env:
+          OFFICE_PRESENCE_INTERNAL_TOKEN: ${{ env.OFFICE_PRESENCE_INTERNAL_TOKEN }}
+        run: |
+          curl --fail-with-body --silent --show-error \
+            --max-time 60 --retry 3 --retry-delay 10 --retry-all-errors \
+            -X POST "$SEED_URL" \
+            -H "Authorization: Bearer $OFFICE_PRESENCE_INTERNAL_TOKEN" \
+            -H 'Content-Type: application/json' \
+            -d '{}' | tee "$RUNNER_TEMP/seed.json"
+          {
+            echo '### Office presence demo seeded'
+            echo
+            echo '```json'
+            cat "$RUNNER_TEMP/seed.json"
+            echo
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

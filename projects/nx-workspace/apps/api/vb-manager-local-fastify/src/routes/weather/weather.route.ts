@@ -1,6 +1,7 @@
 import {
   HTTP_STATUS_CODES,
   isWeatherProvider,
+  OPEN_METEO_MAX_FORECAST_DAYS,
   WeatherProvider,
   WeatherSnapshot,
 } from '@vigilant-broccoli/common-js';
@@ -8,7 +9,6 @@ import { WeatherService } from '@vigilant-broccoli/common-node';
 
 const CACHE_DURATION_MS = 10 * 60 * 1000;
 const HOURLY_COUNT = 8;
-const DAILY_COUNT = 5;
 
 const LAT_PARAM = 'lat';
 const LON_PARAM = 'lon';
@@ -56,7 +56,7 @@ export async function GET(request: Request) {
       {
         ...(provider ? { provider } : {}),
         hourlyCount: HOURLY_COUNT,
-        dailyCount: DAILY_COUNT,
+        dailyCount: OPEN_METEO_MAX_FORECAST_DAYS,
       },
     );
 

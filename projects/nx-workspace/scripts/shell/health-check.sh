@@ -70,9 +70,10 @@ FLY_COUNT=${#HC_NAMES[@]}
 
 queue_http_check "harryliu.dev" "https://harryliu.dev"
 queue_http_check "cloud8skate.com" "https://cloud8skate.com"
-queue_http_check "staging-hearth" "https://staging-hearth.vercel.app"
-queue_http_check "findme" "https://findme-kohl.vercel.app"
-queue_http_check "weather-next" "https://staging-weather-next.vercel.app"
+queue_http_check "staging-hearth" "https://staging-hearth.vercel.app/login" 302
+queue_http_check "staging-findme" "https://staging-findme.pages.dev/" 302
+queue_http_check "staging-weather-next" "https://staging-weather-next.vercel.app/" 302
+queue_http_check "staging-calendars" "https://staging-calendars.pages.dev/" 302
 queue_http_check "git.harryliu.dev" "https://git.harryliu.dev"
 
 wait

@@ -1,12 +1,17 @@
 'use client';
 
-import { useCallback, useEffect, useState, KeyboardEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  KeyboardEvent,
+} from 'react';
 import {
   Button,
   DropdownMenu,
-  Checkbox,
-  CollapsibleList,
-  DeleteItemConfirmationDialog,
+  CheckListBase,
+  CheckListBaseItem,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   IconButton,
   Input,
@@ -16,6 +21,7 @@ import {
   DialogTitle,
   cn,
 } from '@vigilant-broccoli/react-lib';
+import { DeleteItemConfirmationDialog } from '@vigilant-broccoli/react-lib-higher-level';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { ChecklistItem } from '../../lib/types';
@@ -29,6 +35,13 @@ const ADD_TO_CALENDAR_LABEL = 'Add to calendar';
 const EVENT_DIALOG_TITLE = 'Add to calendar';
 const CALENDAR_EVENTS_ENDPOINT = '/api/calendar/events';
 const EVENT_DEFAULT_DURATION_MS = 60 * 60 * 1000;
+
+const toBaseItem = (item: ChecklistItem): CheckListBaseItem => ({
+  id: item.id,
+  title: item.name,
+  checked: item.completed,
+  completedAt: item.completedAt,
+});
 
 type ChecklistProps = {
   endpoint: string;
@@ -153,69 +166,42 @@ export function Checklist({
     if (e.key === 'Enter') handleAdd();
   };
 
-  const onEditKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') saveEdit();
-    if (e.key === 'Escape') {
-      setEditingId(null);
-      setEditingName('');
-    }
-  };
+  const baseItems = useMemo(() => items.map(toBaseItem), [items]);
 
   if (!homeId) return null;
 
-  const active = items.filter(item => !item.completed);
-  const completed = items
-    .filter(item => item.completed)
-    .sort((a, b) => (b.completedAt ?? '').localeCompare(a.completedAt ?? ''));
+  const startEditById = (item: CheckListBaseItem) => {
+    const source = items.find(candidate => candidate.id === item.id);
+    if (source) startEdit(source);
+  };
 
-  const renderRow = (item: ChecklistItem) => (
-    <div
-      key={item.id}
-      className="flex items-center gap-3 py-1.5 border-b border-[var(--gray-a4)] last:border-b-0"
-    >
-      <Checkbox
-        className="h-5 w-5 shrink-0"
-        checked={item.completed}
-        onCheckedChange={checked => handleToggle(item.id, checked === true)}
-      />
-      {editingId === item.id ? (
-        <Input
-          autoFocus
-          className="grow"
-          value={editingName}
-          onChange={e => setEditingName(e.target.value)}
-          onBlur={saveEdit}
-          onKeyDown={onEditKeyDown}
-        />
-      ) : (
-        <Text
-          size="3"
-          className={`grow cursor-text ${
-            item.completed ? 'line-through text-[var(--gray-a9)]' : ''
-          }`}
-          onClick={() => !item.completed && startEdit(item)}
-        >
-          {item.name}
-        </Text>
-      )}
-      <div onClick={e => e.stopPropagation()}>
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger>
-            <IconButton icon="ellipsis-vertical" variant="ghost" />
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Content>
-            <DropdownMenu.Item onSelect={() => setCalendarItem(item)}>
-              {ADD_TO_CALENDAR_LABEL}
-            </DropdownMenu.Item>
-            <DropdownMenu.Item
-              color="red"
-              onSelect={() => setPendingDeleteId(item.id)}
-            >
-              {DELETE_LABEL}
-            </DropdownMenu.Item>
-          </DropdownMenu.Content>
-        </DropdownMenu.Root>
-      </div>
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditingName('');
+  };
+
+  const renderItemAccessory = (item: CheckListBaseItem) => (
+    <div onClick={e => e.stopPropagation()}>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+          <IconButton icon="ellipsis-vertical" variant="ghost" />
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content>
+          <DropdownMenu.Item
+            onSelect={() =>
+              setCalendarItem(items.find(i => i.id === item.id) ?? null)
+            }
+          >
+            {ADD_TO_CALENDAR_LABEL}
+          </DropdownMenu.Item>
+          <DropdownMenu.Item
+            color="red"
+            onSelect={() => setPendingDeleteId(item.id)}
+          >
+            {DELETE_LABEL}
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
     </div>
   );
 
@@ -234,30 +220,30 @@ export function Checklist({
         </Button>
       </div>
 
-      {active.length === 0 ? (
-        <div className="py-4">
-          <Text align="center" color="gray" size="3">
-            {emptyText}
-          </Text>
-        </div>
-      ) : (
-        <div className="flex flex-col">{active.map(renderRow)}</div>
-      )}
-
-      {completed.length > 0 && (
-        <CollapsibleList
-          storageKeyPrefix={storageKeyPrefix}
-          items={[
-            {
-              id: `${storageKeyPrefix}-completed`,
-              title: `Completed (${completed.length})`,
-              content: (
-                <div className="flex flex-col">{completed.map(renderRow)}</div>
-              ),
-            },
-          ]}
-        />
-      )}
+      <CheckListBase
+        items={baseItems}
+        editingItemId={editingId}
+        editingItemTitle={editingName}
+        onToggleCheck={item => handleToggle(item.id, !item.checked)}
+        onStartEdit={startEditById}
+        onEditChange={setEditingName}
+        onSaveEdit={saveEdit}
+        onCancelEdit={cancelEdit}
+        editor="input"
+        rowVariant="dense"
+        size="3"
+        editCompleted={false}
+        storageKeyPrefix={storageKeyPrefix}
+        completedSectionId={`${storageKeyPrefix}-completed`}
+        emptyLabel={
+          <div className="py-4">
+            <Text align="center" color="gray" size="3">
+              {emptyText}
+            </Text>
+          </div>
+        }
+        renderItemAccessory={renderItemAccessory}
+      />
 
       <DeleteItemConfirmationDialog
         open={pendingDeleteId !== null}

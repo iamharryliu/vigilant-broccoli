@@ -79,4 +79,4 @@ tools/ai-migrations/
 # this workspace's ignore rules rather than the repository root's. The agent
 # adapters are symlinks, so Nx must not hand them to Prettier.
 AGENTS.md
-CLAUDE.md
+.vitest

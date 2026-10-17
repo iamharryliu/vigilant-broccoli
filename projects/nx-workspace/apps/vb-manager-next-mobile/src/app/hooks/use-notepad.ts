@@ -4,7 +4,7 @@ import {
   useNotepad as useSyncedNotepad,
   NotepadState,
   SupabaseBroadcastLike,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { supabase } from '../../../libs/supabase';
 import { buildAuthHeaders, useAuth } from '../providers/auth-provider';
 

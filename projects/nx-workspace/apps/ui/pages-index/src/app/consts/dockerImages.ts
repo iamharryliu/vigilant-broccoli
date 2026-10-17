@@ -26,7 +26,7 @@ export const DOCKER_IMAGES: DockerImageInfo[] = [
   {
     slug: 'office-presence-socket-server-demo',
     readmePath:
-      'projects/nx-workspace/apps/office-presence-socket-server-demo/README.md',
+      'projects/nx-workspace/apps/api/office-presence-service/README.md',
   },
   {
     slug: 'socket-server-socketio',

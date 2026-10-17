@@ -3,7 +3,7 @@
 import {
   LiveUserMap as SharedLiveUserMap,
   SharingUser,
-} from '@vigilant-broccoli/react-lib/live-location-map';
+} from '@vigilant-broccoli/react-lib-higher-level/live-location-map';
 import { useTranslation } from '../../i18n';
 
 interface LiveUserMapProps {

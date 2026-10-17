@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, type RefObject } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { Button, buttonVariants } from './Button';
 import { VariantProps } from 'class-variance-authority';
@@ -26,9 +26,18 @@ export type ButtonConfig = {
 type ButtonListProps = {
   buttons: ButtonConfig[];
   className?: string;
+  /** Scopes arrow navigation to a wider root (e.g. several lists) instead of this list. */
+  navigationRootRef?: RefObject<HTMLElement | null>;
+  /** Receives focus when arrow navigation runs off the first or last item. */
+  searchInputRef?: RefObject<HTMLElement | null>;
 };
 
-export const ButtonList = ({ buttons, className }: ButtonListProps) => {
+export const ButtonList = ({
+  buttons,
+  className,
+  navigationRootRef,
+  searchInputRef,
+}: ButtonListProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLElement>) => {
@@ -48,12 +57,12 @@ export const ButtonList = ({ buttons, className }: ButtonListProps) => {
             ? 'right'
             : 'left';
     moveQuickLinkFocusByDirection({
-      contentRoot: contentRef.current,
-      searchInput: null,
+      contentRoot: navigationRootRef?.current ?? contentRef.current,
+      searchInput: searchInputRef?.current ?? null,
       currentElement: e.currentTarget,
       direction,
     });
-  }, []);
+  }, [navigationRootRef, searchInputRef]);
 
   return (
     <div ref={contentRef} className={`flex flex-wrap gap-2 ${className ?? ''}`}>

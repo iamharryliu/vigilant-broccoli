@@ -1,4 +1,5 @@
 # Software Tools
 
-- [VSCode](./vscode.md)
+- [Text Editors](./text-editors.md)
+- [Visual Studio Code](./vscode.md)
 - [Shell](../os/shell/shell.md)

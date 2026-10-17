@@ -3,14 +3,11 @@ import {
   CollapsibleListItemConfig,
 } from '@vigilant-broccoli/react-lib';
 import { RecipeScraperUtilityContent } from './utilities/recipe-scraper.utility';
-import { DjMusicUtilityContent } from './utilities/dj-music.utility';
-import { Metronome } from '@vigilant-broccoli/react-music-lib';
 import {
   AlarmUtilityContent,
   CalculatorUtilityContent,
   CookingConversionsUtilityContent,
   CurrencyConverterUtilityContent,
-  QrReaderUtilityContent,
   StopwatchUtilityContent,
   TimerUtilityContent,
 } from '@vigilant-broccoli/react-utility';
@@ -37,16 +34,6 @@ const UTILITY_ITEMS: CollapsibleListItemConfig[] = [
     content: <RecipeScraperUtilityContent />,
   },
   {
-    id: 'dj-music',
-    title: 'DJ Music',
-    content: <DjMusicUtilityContent />,
-  },
-  {
-    id: 'qr-reader',
-    title: 'QR Reader',
-    content: <QrReaderUtilityContent uploadOnly />,
-  },
-  {
     id: 'stopwatch',
     title: 'Stopwatch',
     content: <StopwatchUtilityContent />,
@@ -60,11 +47,6 @@ const UTILITY_ITEMS: CollapsibleListItemConfig[] = [
     id: 'alarm',
     title: 'Alarm',
     content: <AlarmUtilityContent />,
-  },
-  {
-    id: 'metronome',
-    title: 'Metronome',
-    content: <Metronome />,
   },
 ];
 

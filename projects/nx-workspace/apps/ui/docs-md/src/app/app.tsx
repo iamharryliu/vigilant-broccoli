@@ -4,7 +4,7 @@ import {
   createDocsSnapshotSource,
   DocsViewer,
   FILE_PARAM,
-} from '@vigilant-broccoli/react-utility';
+} from '@vigilant-broccoli/react-lib-higher-level';
 
 const SITE_NAME = 'Docs';
 const PAGE_TITLE = 'Browse';
@@ -30,7 +30,7 @@ export function App() {
   const urlSync = useMemo(() => ({ get: getFileParam, set: setFileParam }), []);
 
   return (
-    <ThemeProvider>
+    <ThemeProvider followSystem>
       <div className="h-dvh p-2 sm:p-4 bg-white dark:bg-gray-900">
         <DocsViewer
           siteName={SITE_NAME}

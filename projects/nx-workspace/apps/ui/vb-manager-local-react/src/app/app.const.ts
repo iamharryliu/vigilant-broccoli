@@ -37,10 +37,6 @@ export const SIDEBAR_ROUTE = {
     title: 'Chatbot',
     path: '/chatbot',
   },
-  CALENDAR: {
-    title: 'Calendar',
-    path: '/calendar',
-  },
   LANGUAGE_LEARNING: {
     title: 'Language Learning',
     path: '/language-learning',
@@ -48,6 +44,10 @@ export const SIDEBAR_ROUTE = {
   CAREER: {
     title: 'Career',
     path: '/career',
+  },
+  MUSIC: {
+    title: 'Music',
+    path: '/music',
   },
 } satisfies Record<string, ExtendedNavRoute>;
 

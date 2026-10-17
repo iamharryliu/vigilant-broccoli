@@ -1,47 +1,59 @@
 # Git Workflow
 
-Branching, staging, commit and PR conventions for this repository, and how to stay current with `main`.
+Branching, publishing and synchronization conventions for this repository.
 
 ## Table of Contents
 
 - [Conventions](#conventions)
+- [Commit message enforcement](#commit-message-enforcement)
 - [Concurrent Agent Sessions](#concurrent-agent-sessions)
 - [Staying Current With `main`](#staying-current-with-main)
+- [Stacked Pull Requests](#stacked-pull-requests)
 
 ## Conventions
 
-`/ship-pr` and `/sync-main` implement these; change the rule here first, then the skill. The standing prohibitions — no unprompted commits, no `git add -A`, no force-push, no skipped hooks, no amended commits, and the shared-worktree safety rules — stay in [CONTEXT.md](../CONTEXT.md#git), because they bind every session rather than only these workflows.
+`ship-pr` and `sync-main` implement these rules; update this source first. Standing authorization and safety rules remain in [root context](../CONTEXT.md#git).
 
-- **Branch names**: `<committype>/<short-kebab-case-description>` (e.g. `fix/rabbitmq-secret-rotation`, `feat/hearth-food-planner-page`), cut from a freshly fetched `main`.
-- **Commit types**: `feat`, `fix`, `ci`, `chore`, `docs`, `refactor`, `enhancement`, `security`, `infrastructure` — match existing usage in `git log`; don't invent a new type unless nothing fits.
-- **Commit messages**: `<committype>(<scope>): <Message>.` — scope is the affected app/service/lib (e.g. `hearth`, `github-actions`, `vb-manager-local-react`) and is omitted when the change isn't scoped to one; the message is capitalized, concise, focused on why not what, and ends with a period. Agent-authored commits end with the `Co-Authored-By:` trailer the environment specifies for the authoring model — never a hardcoded model name.
-- **PR body**: a `## Summary` section (bullets) and a `## Next steps` section (checklist) of what's left for the human — manual commands to run (e.g. `pnpm tf:apply`), UI/manual spot checks, watching CI to green, and merging. When nothing else is left but merging, say so directly (e.g. `- [ ] Merge once CI is green`) rather than restating tests already run. For UI changes, name the affected apps, routes/pages, and shared components to spot-check, and expected behavior; include affected consumers when changing a shared component. Leave a step unchecked until it's actually been done, and record any blockers found along the way. Use the authoring environment’s attribution when provided; do not label Codex work as Claude Code. If the branch already has an open PR, push to it rather than opening a second.
-- **Agentic change history**: every flow that opens or edits a PR on this branch's behalf — `ship-pr` and the `infrastructure/agent-sandbox/*-runner.sh` scripts behind the `pnpm agentic-pr-*` scripts — keeps `## Summary`/`## Next steps` current as the PR's cumulative state (not just the latest increment) and appends a row to a trailing `## Agentic Change History` table (`Date | Source | Command | Prompt | Summary`) recording what ran. `Source` is one of `Local agent (Claude Code)` / `Local agent (Codex)` (an interactive session, e.g. `ship-pr`), `GitHub Actions` (`$GITHUB_ACTIONS` set), or `Docker sandbox (local)` (the sandbox container run from a developer's machine). The shared `infrastructure/agent-sandbox/merge-pr-body.py` helper builds this merge — reuse it rather than hand-assembling the body.
-- **Agentic flow parity**: the PR-body contract above (`## Summary` / `## Next steps` / `## Suggestions`, the `pr_title`/`pr_summary`/`pr_next_steps`/`pr_suggestions` meta fields, their fallback text, and the `HISTORY_*` row) is implemented independently by every flow below — none of them discover each other at runtime, so a change to a section name, a field, or its fallback wording made in one is invisible to the rest until mirrored by hand in the same change:
-  - `setup/dotfiles/agent-skills/ship-pr/SKILL.md` (the interactive `/ship-pr` command)
-  - `infrastructure/agent-sandbox/solve-todo-runner.sh`, `update-pr-runner.sh`, `create-todo-runner.sh`, `create-rnd-runner.sh`, `audit-todo-runner.sh`, `prune-runner.sh` (the `pnpm agentic-pr-*` sandbox runners)
-  - `infrastructure/agent-sandbox/merge-pr-body.py`, the shared helper every flow above calls to actually write the sections — section names only match if this file's string literals match theirs
+- **Branches:** `<committype>/<short-kebab-case-description>`, from freshly fetched `origin/main` unless continuing the task's existing branch.
+- **Types:** `feat`, `fix`, `ci`, `chore`, `docs`, `refactor`, `enhancement`, `security`, `infrastructure`. Add a type only if none fits.
+- **Commits and PR titles:** `<type>(<scope>): <Capitalized message>.` Scope is the affected app/service/lib, omitted for unscoped changes. Explain why concisely; end with a period. Commits use the authoring environment's `Co-Authored-By` trailer, never a hardcoded model name.
+- **PR body:** keep `## Summary` bullets and `## Next steps` checkboxes current for the full PR. Next steps are remaining manual commands, UI checks, CI and merge; if only merging remains, say so. For UI checks, name apps/routes/components, affected shared consumers and expected behavior. Check off only completed work and record blockers. Use the environment's attribution when provided. Update an existing branch PR instead of opening another.
+- **Concerns, suggestions and history:** all publishing flows use `infrastructure/agent-sandbox/merge-pr-body.py` for optional `## Concerns` (risks, limitations, unverified behavior, open questions the reviewer must weigh), `## Suggestions` (optional follow-up work only) and appended `## Agentic Change History` rows (`Date | Source | Command | Prompt | Summary`). Sources are `Local agent (Claude Code)`, `Local agent (Codex)`, `GitHub Actions` or `Docker sandbox (local)`.
+- **Publishing parity:** changes to body sections, `pr_title`/`pr_summary`/`pr_next_steps`/`pr_concerns`/`pr_suggestions`, fallbacks or history fields must be mirrored across `ship-pr`, sandbox runners, `pr-increments.sh`, `commit-subject.sh` and `merge-pr-body.py`. Search consumers before changing the contract; follow [entry-point parity](./agent-support.md#entry-point-parity).
 
-  Before relying on a flow having some behavior, check it has that behavior rather than assuming parity with another flow — `ship-pr` went without the `## Suggestions` section and without ever passing `--title` to `gh pr create` for a stretch because neither were ported over when the sandbox runners gained them. When changing the convention, `grep -rn` the old string across every file above and update all of them together, then update this bullet if the set of participating files changes.
+## Commit message enforcement
 
-- **Shared worktree**: more than one agent session can be attached to this checkout — check for peers before touching shared git state. See [Concurrent Agent Sessions](#concurrent-agent-sessions).
+[commitlint.config.mjs](../commitlint.config.mjs) requires the types above, optional lower-case scope and capitalized subject ending in a period. Merge commits are ignored; header/body/footer lengths and attribution footers are unconstrained.
+
+Enforcement is CI-only: `ci-pr-check` checks PR titles and commits; there is no local `commit-msg` hook. See [workflow checks](./ci/workflow-conventions.md#commit-message-checks) and the [quality-tool inventory](./code-quality-tools.md). Check a message locally with `printf '%s\n' 'feat(hearth): Add a page.' | npx commitlint`.
 
 ## Concurrent Agent Sessions
 
-Claude Code and Codex sessions can share a working tree. The index, `HEAD`, and stash are shared by every session attached to it.
+Sessions attached to one checkout share `HEAD`, the index and stash.
 
-- **Establish ownership before touching shared Git state.** Use the environment's session tools when available, but a list of this conversation's subagents does not enumerate independent sessions or other agent applications. An empty list is not proof of exclusive use.
-- **Coordinate with known peers.** Before branching, staging, committing, stashing, or switching branches, tell known peers which paths and Git operations you own and wait for their acknowledgement. Use available communication tools only as authorized by the task. If ownership cannot be established, use a separate worktree and carry over only this session's changes.
-- **The index is shared, so commit by pathspec when others have staged work.** Use `git commit -m "<message>" -- <your paths>` so another session's staged files cannot ride along. This reads the named files from the working tree and leaves other index entries untouched.
-- **Never stash in a shared or uncertain checkout.** A stash can take other sessions' uncommitted work. The `sync-main` skill requires a clean, exclusive checkout in that case; it does not authorize committing pending work just to make the tree clean.
-- **A branch switch affects every session in the checkout.** Prefer a separate worktree for parallel work. Restore the original branch only when this workflow switched it in an exclusively owned checkout; do not switch a peer's active branch as cleanup.
+- Establish ownership before branching, staging, committing, stashing or switching. A subagent list does not enumerate independent sessions; an empty `ListAgents` result never proves exclusive use and is at most a best-effort hint.
+- Default to a separate worktree: unless the checkout is provably exclusive to this session, create one off freshly fetched `origin/main` and apply only this session's changes there. Do not hold for peer acknowledgement.
+- In an exclusively owned checkout, commit by pathspec, never stash and restore the original branch. If peer work is staged, use `git commit -m "<message>" -- <your paths>`; it commits the named working-tree files and leaves other index entries alone.
+- Never stash shared/uncertain work. `sync-main` requires a clean, exclusive checkout in that case and does not authorize committing pending work to clean it.
+- Restore a branch only if your workflow switched it in an exclusive checkout; do not switch a peer's branch during cleanup.
 
 ## Staying Current With `main`
 
-Branches here are short-lived and PRs land as **squash merges**, so the cheapest way to avoid conflicts is to close the gap with `main` early and often rather than at review time.
+Sync when starting work, before pushing and when main moves while a branch is open. `ship-pr` uses `sync-main` before publishing.
 
-- **Sync at the three natural checkpoints**: when starting work (branch from a freshly fetched `main`, never a stale local one), before pushing, and any time `main` moves while a branch is open. `/sync-main` does this; `/ship-pr` calls it at branch creation and again before the push.
-- **Merge, don't rebase.** A rebase of an already-pushed branch can only be published with a force-push, which is forbidden here. `git merge --no-edit origin/main` is the supported move — the squash merge at PR time means these merge commits never reach `main`'s history, so there is no history-tidiness cost.
-- **Check drift with `git rev-list --left-right --count origin/main...HEAD`** — left is what the branch is missing, right is what it adds. A left number in the dozens on a branch open more than a day is the signal to sync now.
-- **`git pull --ff-only` on `main`.** If it refuses, `main` has local commits that never went through a PR — that is a state to report, not to paper over with a merge. `pull.rebase=false` is already set locally.
-- **Enable `git rerere`** (`git config rerere.enabled true`): git records how a conflict was resolved and replays that resolution automatically the next time the same conflict appears. It pays for itself when a long-lived branch re-merges `main` repeatedly.
+- Fetch first; `git rev-list --left-right --count origin/main...HEAD` reports missing/additional commits.
+- On a feature branch, merge with `git merge --no-edit origin/main`. Never rebase: publishing a rewritten branch would require a forbidden force-push. PRs squash-merge, so these integration commits do not enter main's history.
+- On main, use `git pull --ff-only origin main`; report divergence instead of merging over it.
+- Enable `git rerere` (`git config rerere.enabled true`) to reuse conflict resolutions.
+
+## Stacked Pull Requests
+
+Follow the [increment contract](./agent-support.md#increment-contract). Independent PRs target main; dependent PRs target their prerequisite and carry a `## Stack` merge order.
+
+Squash merges do not preserve commit identity: retargeting a dependent PR to main alone can show the prerequisite's changes again. Advance each dependent in order:
+
+1. After its prerequisite merges, merge `origin/main` into the dependent branch and push normally. Preserve the dependent's changes while incorporating the prerequisite's final content.
+2. Confirm `git diff origin/main HEAD` contains only this increment, then retarget to main if necessary.
+3. Keep the prerequisite's branch until the dependent is advanced, or retarget explicitly before deleting it. Repeat for the next PR.
+
+Never rebase or force-push stack branches. A failed increment is saved as a draft and blocks unpublished dependents; finish it with `pnpm agentic-pr-update <pr> "finish the task"` before merging subsequent work.

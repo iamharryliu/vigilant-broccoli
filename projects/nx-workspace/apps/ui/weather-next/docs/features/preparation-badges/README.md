@@ -2,15 +2,22 @@
 
 How today's weather becomes glanceable "what to wear or bring" badges.
 
+## Table of Contents
+
+- [Flow](#flow)
+- [Failure behaviour](#failure-behaviour)
+- [Configuration](#configuration)
+- [Limits](#limits)
+
 ## Flow
 
-1. `WeatherApp.tsx` loads the weather from `/api/weather`, renders it, then POSTs it to `/api/preparation`.
+1. `WeatherApp.tsx` passes `/api/weather` and `/api/preparation` fetchers to the shared `WeatherClockCardUtilityContent` (react-utility, see [Dashboard Info Card](../../../../../../libs/@vigilant-broccoli/react-utility/docs/features/weather-clock-card.md)), which loads the weather, renders it, then POSTs it (without the forecast) to `/api/preparation`. While that request is pending, badge skeletons labelled “Checking what to wear or bring…” appear below the weather in a live status region.
 2. `src/app/api/preparation/route.ts` validates the payload and calls vb-express `POST /api/llm` with a JSON schema holding one boolean per badge (`wind-`, `rain-`, `snow-resistant clothing`, `sunglasses`).
-3. The client renders only the badges that are `true`, labelled from `i18n/en.json` (`PREPARATION.*`).
+3. The client renders only the badges that are `true`, labelled from the card's dictionary (`PREPARATION.*`).
 
 ## Failure behaviour
 
-Any LLM failure (network, non-2xx, malformed output) returns 502 and the client renders no badges; the weather card is unaffected.
+Any LLM failure (network, non-2xx, malformed output) returns 502 and the client renders no badges; the weather card is unaffected. The loading indicator disappears when the request finishes, including on failure or when no badges are recommended.
 
 ## Configuration
 

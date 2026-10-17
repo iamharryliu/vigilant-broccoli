@@ -1,4 +1,5 @@
-import { CreateTasksDialog, IconButton } from '@vigilant-broccoli/react-lib';
+import { IconButton } from '@vigilant-broccoli/react-lib';
+import { CreateTasksDialog } from '@vigilant-broccoli/react-lib-higher-level';
 import { googleTasksAuth } from '../../libs/auth';
 import { TaskVoiceButton } from './task-voice-button.component';
 

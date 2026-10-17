@@ -12,6 +12,7 @@ import { RecipeScraperDemo } from '../llm/RecipeScraperDemo';
 import { QRCodeGenerator } from '../demos/QRCodeGenerator';
 import { LiveLocationsDemo } from '../demos/LiveLocationsDemo';
 import { NotepadEditorDemo } from '../demos/NotepadEditorDemo';
+import { VoiceTranscriberDemo } from '../demos/VoiceTranscriberDemo';
 import {
   CollapsibleList,
   CollapsibleListItemConfig,
@@ -44,6 +45,11 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
     id: 'audio-transcriber',
     title: 'Speech to Text (Complete)',
     content: <SpeechToText mode="complete" />,
+  },
+  {
+    id: 'voice-transcriber',
+    title: 'Voice Transcriber (Copy / Clear)',
+    content: <VoiceTranscriberDemo />,
   },
   {
     id: 'voice-list-generator',

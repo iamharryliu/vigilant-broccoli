@@ -4,6 +4,9 @@ const { join } = require('path');
 // and removed in Nx v24; the lib globs below mirror its last computed output.
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  presets: [
+    require('../../../libs/@vigilant-broccoli/react-lib/tailwind.preset.cjs'),
+  ],
   darkMode: 'media',
   content: [
     join(
@@ -16,7 +19,11 @@ module.exports = {
     ),
     join(
       __dirname,
-      '../../../libs/@vigilant-broccoli/react-utility/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+      '../../../libs/@vigilant-broccoli/react-lib-media/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+    ),
+    join(
+      __dirname,
+      '../../../libs/@vigilant-broccoli/react-lib-higher-level/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
     ),
     join(
       __dirname,
@@ -27,14 +34,5 @@ module.exports = {
       '../../../libs/@vigilant-broccoli/common-browser/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
     ),
   ],
-  theme: {
-    extend: {
-      colors: {
-        background: 'hsl(var(--background))',
-        primary: 'hsl(var(--primary))',
-        border: 'hsl(var(--border))',
-      },
-    },
-  },
   plugins: [require('@tailwindcss/typography')],
 };

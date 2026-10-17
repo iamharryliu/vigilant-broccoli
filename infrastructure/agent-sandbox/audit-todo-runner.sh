@@ -38,10 +38,11 @@ When finished, write $META_FILE containing only a JSON object with these fields:
   - accurate_count: number of rows you verified as still accurate
   - commit_message: capitalized, concise, focused on why the correction was needed, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
-  - pr_title: the pull request title
+  - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
   - pr_summary: markdown bullet points for the PR "## Summary" section, listing each resolved and drifted row by id with its evidence
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (review, then merge)
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
+  - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none. Keep these out of pr_suggestions, which is only for optional follow-up work
 EOF
 )
 
@@ -64,13 +65,16 @@ if [ -z "$(git status --porcelain -- TODO.md)" ]; then
   exit 0
 fi
 
+# shellcheck source=commit-subject.sh
+. "$REPO_DIR/infrastructure/agent-sandbox/commit-subject.sh"
 read_meta() { jq -r "$1 // empty" "$META_FILE" 2>/dev/null || true; }
 
-COMMIT_MESSAGE=$(read_meta .commit_message)
+COMMIT_MESSAGE=$(normalize_commit_message "$(read_meta .commit_message)")
 TRAILER=$(read_meta .co_authored_by)
-PR_TITLE=$(read_meta .pr_title)
+PR_TITLE=$(normalize_pr_title "$(read_meta .pr_title)")
 PR_SUMMARY=$(read_meta .pr_summary)
 PR_NEXT_STEPS=$(read_meta .pr_next_steps)
+PR_CONCERNS=$(read_meta .pr_concerns)
 PR_SUGGESTIONS=$(read_meta .pr_suggestions)
 RESOLVED_COUNT=$(read_meta '.resolved | length')
 DRIFTED_COUNT=$(read_meta '.drifted | length')
@@ -118,7 +122,7 @@ else
   HISTORY_SOURCE="Docker sandbox (local)"
 fi
 
-PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
+PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_CONCERNS="$PR_CONCERNS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
   HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic-pr-create-todo-audit" \
   HISTORY_PROMPT="Audit every row in every section." \
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
@@ -127,3 +131,4 @@ PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_
 PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
 echo "$PR_URL"
 printf 'PR_URL::%s\n' "$PR_URL"
+emit_pr_files "$BASE_SHA"

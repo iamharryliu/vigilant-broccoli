@@ -3,13 +3,14 @@ name: agentic-pr-update
 description: In vigilant-broccoli, apply a requested change to an existing PR branch and verify its cumulative result.
 ---
 
-Use the current vigilant-broccoli checkout and resolve repository paths from its Git root. If outside that repo, ask which checkout to use; do not operate on the skill installation checkout by default.
+Use the current vigilant-broccoli Git root. Outside this repo, ask which checkout to use; never default to the skill installation checkout.
 
-Apply the requested instruction to the specified PR, preserving the work already on its branch. Accept a PR number or URL followed by the instruction.
+Apply a PR number/URL plus instruction to the existing branch, preserving its work.
 
-1. In a local session, read `docs/git-workflow.md`, inspect the PR and establish ownership before checking out its branch. Use an isolated checkout if the current tree is shared or dirty. In a sandbox, the runner has already checked out the PR and supplied its body; use that context without repeating setup.
-2. Read the existing code and applicable `CONTEXT.md` guidance. Make only the changes required by the instruction, building on the PR's current implementation. Do not expand the request to unrelated cleanup.
-3. Run appropriate existing checks and report the outcome. Describe the PR's cumulative result and remaining work, not only this increment.
-4. Leave local changes uncommitted unless publishing was separately authorized. Sandbox runners own staging, committing, pushing and updating PR metadata; do not perform those operations from the agent prompt.
+1. Locally, follow `docs/git-workflow.md`, inspect the PR and establish ownership before checkout; use an isolated checkout if shared or dirty. A sandbox runner supplies the checked-out PR and body; do not repeat setup.
+2. Follow applicable context and [pull request scope](../../../../docs/agent-support.md#pull-request-scope). Keep this PR on its purpose; separate follow-ups through `increments` (`depends_on: "current"` when dependent). Locally list ready-to-run `pnpm agentic-pr-create --prompt` follow-ups, or publish under the increment contract when separately authorized.
+3. Resolve TODO IDs named in the instruction; remove only fully resolved rows locally. In a sandbox, leave `TODO.md` to the runner and declare those IDs in `todo_ids`. An instruction that only removes a named TODO row is valid and needs no other change. Place new docs per [documentation placement](../../../../docs/agent-support.md#documentation-placement).
+4. Run appropriate existing checks and report the PR's cumulative result, verification and remaining work.
+5. On failure, preserve partial work separately from the target PR. Locally leave changes uncommitted unless publishing was separately authorized; the sandbox runner attempts a separate draft PR targeting the original branch, retaining unresolved TODO rows and running hooks. Runners own Git publishing and PR metadata.
 
-For the unattended sandbox version, run `pnpm agentic-pr-update <pr> "<instruction>"`.
+Unattended entry point: `pnpm agentic-pr-update <pr> "<instruction>"`.

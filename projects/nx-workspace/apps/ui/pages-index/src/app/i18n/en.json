@@ -37,8 +37,45 @@
       "DESCRIPTION": "How repository context, docs, and shared skills link together."
     }
   },
+  "CAREER_PAGE": {
+    "PAGE_TITLE": "Career",
+    "TITLE": "Career",
+    "SECTION_PROFILE": "Profile",
+    "SECTION_LINKS": "Links",
+    "RESUME": {
+      "TITLE": "Resume",
+      "DESCRIPTION": "Current resume on harryliu.dev."
+    },
+    "EXPERIENCE": {
+      "TITLE": "Personal Software Career Experience",
+      "DESCRIPTION": "Skills, jobs, and project contributions."
+    },
+    "PROJECTS": {
+      "TITLE": "projects.harryliu.dev",
+      "DESCRIPTION": "Software projects, open source, and deployed apps."
+    },
+    "PERSONAL_WEBSITE": {
+      "TITLE": "harryliu.dev",
+      "DESCRIPTION": "Personal website."
+    },
+    "GITHUB": {
+      "TITLE": "GitHub",
+      "DESCRIPTION": "Code and open source contributions."
+    },
+    "LINKEDIN": {
+      "TITLE": "LinkedIn",
+      "DESCRIPTION": "Professional profile."
+    }
+  },
+  "CAREER_EXPERIENCE_PAGE": {
+    "TITLE": "Personal Software Career Experience"
+  },
   "WEB_APPLICATIONS_PAGE": {
     "TITLE": "Web Applications",
+    "CAREER": {
+      "TITLE": "Career",
+      "DESCRIPTION": "Resume, career experience, and professional links."
+    },
     "SECTION_APPS": "Apps",
     "SECTION_DEMO": "Demo",
     "HARRY_LIU": {
@@ -65,13 +102,25 @@
       "TITLE": "Whiteboard",
       "DESCRIPTION": "Live collaborative whiteboard rooms deployed on Vercel."
     },
+    "CALENDARS": {
+      "TITLE": "Calendars",
+      "DESCRIPTION": "Public personal and event calendar directory, deployed on Vercel."
+    },
     "WEATHER": {
       "TITLE": "Weather",
       "DESCRIPTION": "Current weather for your location, deployed on Vercel."
     },
+    "BALLOONO": {
+      "TITLE": "Balloono",
+      "DESCRIPTION": "Bomberman-style water balloon battles in online rooms or against CPUs, deployed on Vercel."
+    },
     "UTILITIES": {
       "TITLE": "Utilities",
       "DESCRIPTION": "Searchable page of everyday utilities."
+    },
+    "WAITING_GAMES": {
+      "TITLE": "Waiting Games",
+      "DESCRIPTION": "Hands-free cup, quiz and estimation games to watch while you wait."
     },
     "COMPONENT_LIBRARY": {
       "TITLE": "Component Library",
@@ -84,7 +133,12 @@
     "EMPLOYEE_HANDLER": {
       "TITLE": "Employee Handler",
       "DESCRIPTION": "Employee management app deployed on Vercel."
-    }
+    },
+    "OFFICE_PRESENCE": {
+      "TITLE": "Office Presence",
+      "DESCRIPTION": "Browser demo of the OK-IN office presence Slack app."
+    },
+    "OPEN_APPLICATION": "Open application"
   },
   "STATUS_PAGE": {
     "TITLE": "Status",
@@ -92,10 +146,15 @@
     "NO_SERVICES": "No services configured.",
     "GITHUB_ACTIONS": "GitHub Actions",
     "VIEW_ALL": "View all →",
-    "UPTIME_SITE": {
-      "TITLE": "Full uptime history",
-      "DESCRIPTION": "Upptime status site with historical uptime, response times and incidents for every service."
-    },
+    "TAB_STATUS": "Status",
+    "TAB_UPTIME": "Uptime",
+    "OPEN_UPTIME_IN_NEW_TAB": "Full uptime history",
+    "UPTIME_BAR_HEADER": "30 days",
+    "UPTIME_BAR_LABEL": "{date}: {minutes} min down",
+    "UPTIME_RANGE_DAY": "24h",
+    "UPTIME_RANGE_WEEK": "7d",
+    "UPTIME_RANGE_MONTH": "30d",
+    "UPTIME_RANGE_YEAR": "1y",
     "ERROR_STATUS_UNAVAILABLE": "Status data unavailable (HTTP {status}).",
     "ERROR_STATUS_FAILED": "Failed to load status: {message}",
     "UPDATED": "Updated {date}",
@@ -158,14 +217,15 @@
     "VIEW_ON_DOCKER_HUB": "View on Docker Hub",
     "LOADING": "Loading README…",
     "ERROR": "Failed to load README: {message}",
-    "NOT_FOUND": "Unknown item."
+    "NOT_FOUND": "Unknown item.",
+    "EMPTY": "No README content available."
   },
   "GITHUB_REPOS_PAGE": {
     "TITLE": "GitHub",
-    "VIGILANT_BROCCOLI": {
-      "TITLE": "vigilant-broccoli",
-      "DESCRIPTION": "Monorepo of apps, libraries, notes, and infrastructure."
-    }
+    "LOADING": "Loading public repositories…",
+    "EMPTY": "No public repositories found.",
+    "ERROR": "Failed to load repositories: {message}",
+    "NO_DESCRIPTION": "No description provided."
   },
   "DOCKER_IMAGES_PAGE": {
     "TITLE": "Docker Hub",
@@ -187,7 +247,7 @@
     },
     "OFFICE_PRESENCE_SOCKET_SERVER_DEMO": {
       "TITLE": "office-presence-socket-server-demo",
-      "DESCRIPTION": "Slack bot for sharing office presence status via Socket Mode."
+      "DESCRIPTION": "Slack bot for sharing office presence status via Socket Mode or the HTTP Events API."
     },
     "SOCKET_SERVER_SOCKETIO": {
       "TITLE": "socket-server-socketio",

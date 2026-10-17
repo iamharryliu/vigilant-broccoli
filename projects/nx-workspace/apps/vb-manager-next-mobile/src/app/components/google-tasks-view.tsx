@@ -1,11 +1,11 @@
 'use client';
 
 import { useState } from 'react';
+import { IconButton } from '@vigilant-broccoli/react-lib';
 import {
   GoogleTasksComponent,
-  IconButton,
   CreateTasksDialog,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { googleTasksAuth } from '../providers/auth-provider';
 import { TaskVoiceButton } from './task-voice-button';
 
@@ -18,7 +18,6 @@ export const GoogleTasksView = () => {
     <GoogleTasksComponent
       auth={googleTasksAuth}
       showSelector
-      enableDragDrop
       wrapInCard={false}
       refreshTrigger={refreshTrigger}
       addTaskActions={

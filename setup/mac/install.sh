@@ -15,6 +15,12 @@ if ask "Symlink dotfiles?"; then
     create_symlink "$DOTFILES_DIR/macos/hammerspoon" "$HOME/.hammerspoon"
     mkdir -p "$HOME/.config/karabiner"
     create_symlink "$DOTFILES_DIR/macos/karabiner/karabiner.json" "$HOME/.config/karabiner/karabiner.json"
+    mkdir -p "$HOME/.config/zed"
+    if [ ! -e "$HOME/.config/zed/settings.json" ] && [ ! -L "$HOME/.config/zed/settings.json" ]; then
+        create_symlink "$DOTFILES_DIR/.config/zed/settings.json" "$HOME/.config/zed/settings.json"
+    else
+        echo "Keeping existing Zed settings at $HOME/.config/zed/settings.json"
+    fi
     source $HOME/.zshrc
 fi
 

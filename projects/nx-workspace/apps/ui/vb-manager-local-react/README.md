@@ -29,6 +29,9 @@ Management dashboard SPA, served in production by [`vb-manager-local-fastify`](.
   - `llm-schemas`
   - `personal-common-js`
   - `react-lib`
+  - `react-lib-auth`
+  - `react-lib-higher-level`
+  - `react-lib-media`
   - `react-music-lib`
   - `react-utility`
   - `resume`

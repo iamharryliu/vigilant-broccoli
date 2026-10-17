@@ -26,6 +26,7 @@ interface CategorizedTasks {
   delegate: CleanTask[];
   eliminate: CleanTask[];
   overdue: CleanTask[];
+  unclassified: CleanTask[];
 }
 
 const QUADRANT_REGEX = /^(Q[1-4])[\s:]/i;
@@ -80,7 +81,9 @@ const cleanTask = (task: RawTask): CleanTask => {
 export const categorizeTasksByQuadrant = (
   rawTasks: RawTask[],
 ): CategorizedTasks => {
-  const cleanedTasks = rawTasks.map(cleanTask);
+  const cleanedTasks = rawTasks
+    .filter(task => task.status === 'needsAction')
+    .map(cleanTask);
 
   const categorized: CategorizedTasks = {
     urgent: [],
@@ -88,10 +91,11 @@ export const categorizeTasksByQuadrant = (
     delegate: [],
     eliminate: [],
     overdue: [],
+    unclassified: [],
   };
 
   cleanedTasks.forEach(task => {
-    if (task.isOverdue && task.status === 'needsAction') {
+    if (task.isOverdue) {
       categorized.overdue.push(task);
     }
 
@@ -108,6 +112,8 @@ export const categorizeTasksByQuadrant = (
       case 'Q4':
         categorized.eliminate.push(task);
         break;
+      default:
+        categorized.unclassified.push(task);
     }
   });
 

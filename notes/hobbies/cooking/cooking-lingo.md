@@ -125,10 +125,11 @@
 
 ## French Food Lingo
 
-| Term         | Description                                                                                                                                                                                             |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Béchamel** | One of the French mother sauces, made by whisking milk into a butter-and-flour roux and simmering until thickened. Used as the base for dishes like lasagna, gratins, and mac and cheese.               |
-| **Mirepoix** | A base of diced onion, celery, and carrot (traditionally in a 2:1:1 ratio), cooked in butter or oil to release their flavors, forming the aromatic foundation for many French sauces, soups, and stews. |
+| Term           | Description                                                                                                                                                                                                               |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **À la Carte** | French for "by the menu." Ordering or pricing each dish separately rather than as a set meal (prix fixe or tasting menu). In a kitchen, also a single item cooked to order for one ticket rather than prepped in batches. |
+| **Béchamel**   | One of the French mother sauces, made by whisking milk into a butter-and-flour roux and simmering until thickened. Used as the base for dishes like lasagna, gratins, and mac and cheese.                                 |
+| **Mirepoix**   | A base of diced onion, celery, and carrot (traditionally in a 2:1:1 ratio), cooked in butter or oil to release their flavors, forming the aromatic foundation for many French sauces, soups, and stews.                   |
 
 ---
 

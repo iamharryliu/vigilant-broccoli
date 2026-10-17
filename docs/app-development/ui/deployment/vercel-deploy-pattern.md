@@ -1,6 +1,6 @@
 # Vercel deploy pattern (Next.js apps)
 
-Deploys for `hearth`, `findme`, `whiteboard`, `weather-next`, `vb-manager-next-mobile`. `employee-handler-ui` has no staging or production Vercel project (its `deploy` and `deploy:production` still push the Docker image) — it deploys to Vercel only through its `deploy:demo` target (project `demo-employee-handler-ui`), run by the `deploy-demo-apps` workflow on each successful staging `deploy-fanout` or by hand via `manual-deploy-app` with environment `demo`. Everything runs through `scripts/deploy-vercel.ts`.
+Deploys for `hearth`, `weather-next`, `balloono`, `vb-manager-next-mobile`. `employee-handler-ui` has no staging or production Vercel project (its `deploy` and `deploy:production` still push the Docker image) — it deploys to Vercel only through its `deploy:demo` target (project `demo-employee-handler-ui`), run by the `deploy-demo-apps` workflow on each successful staging `deploy-fanout` or by hand via `manual-deploy-app` with environment `demo`. Everything runs through `scripts/deploy-vercel.ts`.
 
 ## Table of Contents
 
@@ -8,6 +8,7 @@ Deploys for `hearth`, `findme`, `whiteboard`, `weather-next`, `vb-manager-next-m
 - [What the script does](#what-the-script-does)
 - [The build runs on the runner, not on Vercel](#the-build-runs-on-the-runner-not-on-vercel)
 - [Domains are explicit records, not derived from the project name](#domains-are-explicit-records-not-derived-from-the-project-name)
+- [Staging Access](#staging-access)
 - [Gotchas](#gotchas)
 - [New app checklist (Vercel-side)](#new-app-checklist-vercel-side)
 
@@ -44,10 +45,19 @@ Renaming a project does **not** move its `<name>.vercel.app` domain, and `vercel
 
 A custom `harryliu.dev` subdomain for one of these apps is attached automatically: declare it in `infrastructure/terraform/cloudflare-vercel-apps.tf`'s `vercel_app_subdomains` map (which also creates the Cloudflare CNAME), and `pnpm tf:apply`'s `post-apply.sh` step reads that map back via `terraform output -json vercel_app_subdomains` and calls `scripts/vercel-domains.ts add production-<key> <domain>` for each entry — no manual step in the Vercel dashboard. The target project (`production-<key>`) must already exist (`ensureProjectExists` above creates it on first deploy).
 
+## Staging Access
+
+`deploy-vercel.ts` enables [Vercel Authentication](https://vercel.com/docs/deployment-protection/methods-to-protect-deployments/vercel-authentication) with `ssoProtection.deploymentType: "all"` on every staging project before it deploys, and fails the deploy if the API call fails. `all` is required: staging projects deploy with `--prod`, and the default scope only covers previews. It covers the project's alias, immutable deployment URLs and every path, including API routes and assets, so no application code is involved. Only members of the Vercel team (the owner) can sign in. Production and demo projects stay public.
+
+Anonymous requests receive HTTP 302 to `vercel.com/sso-api`. Upptime and the health checks expect that 302 with redirects disabled ([monitoring](../../../infrastructure/upptime.md#staging-ui-access)), so they need no bypass token. Do not add a protection-bypass secret for monitoring.
+
+Existing projects pick the protection up on their next staging deploy.
+
 ## Gotchas
 
 - `sharp` must remain in the workspace root `dependencies` — required for Vercel serverless bundling of the `hearth` `/api/where-is` route.
 - Apps with Supabase sign-in need their real deployed domains in `uri_allow_list` — follow [supabase-auth-pattern.md](../auth/supabase-auth-pattern.md); a missing entry silently redirects to `site_url`.
+- `vercel deploy` must keep `--archive=tgz`: per-file uploads across all apps exhaust the free plan's 5000 uploads/24h and fail with `Too many requests - try again in 24 hours (more than 5000, code: "api-upload-free")`. The limit resets after 24 hours, so re-runs fail until then.
 
 ## New app checklist (Vercel-side)
 

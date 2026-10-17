@@ -3,17 +3,19 @@ name: ci-pr-check
 on:
   pull_request:
     branches: ['main']
+    types: [opened, synchronize, reopened, edited]
 
 permissions:
   contents: read
   id-token: write
 
 concurrency:
-  group: ci-pr-check-${{ github.ref }}
+  group: ci-pr-check-${{ github.ref }}-${{ github.event.action == 'edited' && 'edited' || 'code' }}
   cancel-in-progress: true
 
 jobs:
   nx-affected:
+    if: github.event.action != 'edited'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -107,6 +109,7 @@ jobs:
         run: pnpm exec nx run-many -t e2e -p ${{ steps.e2e-check.outputs.projects }}
 
   pre-commit:
+    if: github.event.action != 'edited'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -126,9 +129,7 @@ jobs:
             fi
           }
           for ctx in $(git ls-files 'CONTEXT.md' '*/CONTEXT.md'); do
-            for adapter in CLAUDE.md AGENTS.md; do
-              check_link "$(dirname "$ctx")/$adapter" CONTEXT.md
-            done
+            check_link "$(dirname "$ctx")/AGENTS.md" CONTEXT.md
           done
           for skill in $(git ls-files 'setup/dotfiles/agent-skills/*/SKILL.md'); do
             name=$(basename "$(dirname "$skill")")
@@ -136,7 +137,7 @@ jobs:
           done
           exit "$STATUS"
 
-      - uses: jdx/mise-action@7a4e45a543138629540c9a1616d08632b893e492 # v5.0.1
+      - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
         with:
           version: 2026.9.10
           install_args: python
@@ -163,3 +164,44 @@ jobs:
         env:
           SKIP: grind-75-tests,lint-staged
         run: pre-commit run --show-diff-on-failure --color=always --all-files
+
+  commitlint:
+    if: ${{ !contains(fromJSON('["dependabot[bot]","renovate[bot]"]'), github.event.pull_request.user.login) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6
+        with:
+          package_json_file: ./package.json
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: 'pnpm'
+          cache-dependency-path: ./pnpm-lock.yaml
+
+      # --ignore-scripts skips the root postinstall, which would install the
+      # whole nx-workspace for a job that only needs commitlint.
+      - name: Install root dependencies
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      # The PR title is what a squash merge of a multi-commit PR lands on main
+      # (GitHub appends " (#N)" to it afterwards), and the commits are what a
+      # single-commit squash or a rebase merge lands, so both are linted.
+      # Merge commits are ignored by commitlint's defaults.
+      - name: Lint PR title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: printf '%s\n' "$PR_TITLE" | pnpm exec commitlint
+
+      - name: Lint PR commits
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: pnpm exec commitlint --from "$BASE_SHA" --to "$HEAD_SHA" --verbose

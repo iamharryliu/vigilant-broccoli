@@ -94,6 +94,7 @@ const localizeEvent = async (
 export const localizeEvents = async (
   events: ScrapedEvent[],
   language?: string,
+  onProgress?: (done: number, total: number) => void,
 ) => {
   const localized: ScrapedEvent[] = [];
   for (let index = 0; index < events.length; index += LOCALIZE_CONCURRENCY) {
@@ -103,6 +104,7 @@ export const localizeEvents = async (
         batch.map(event => localizeEvent(event, language)),
       )),
     );
+    onProgress?.(localized.length, events.length);
   }
   return localized;
 };

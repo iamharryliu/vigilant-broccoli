@@ -3,14 +3,14 @@ name: agentic-pr-update-fix-ci
 description: In vigilant-broccoli, diagnose a PR's failing CI checks from their logs and fix the branch so the checks pass.
 ---
 
-Use the current vigilant-broccoli checkout and resolve repository paths from its Git root. If outside that repo, ask which checkout to use; do not operate on the skill installation checkout by default.
+Use the current vigilant-broccoli Git root. Outside this repo, ask which checkout to use; never default to the skill installation checkout.
 
-Fix the specified PR's failing CI so its checks pass, preserving the work already on its branch. Accept a PR number or URL, optionally followed by extra guidance (which failures to focus on, constraints) that narrows the fix without replacing it.
+Fix a PR number/URL's failing checks. Optional guidance may narrow the failures or constraints.
 
-1. In a local session, read `docs/git-workflow.md`, inspect the PR and establish ownership before checking out its branch. Use an isolated checkout if the current tree is shared or dirty. Collect the failures with `gh pr checks <pr>` and `gh run view <run-id> --log-failed` for the branch's failed runs. In a sandbox, the runner has already checked out the PR and supplied the checks summary and failed-step logs in the prompt; use them without repeating setup or calling `gh`.
-2. Diagnose each failure from the logs before editing. Read the failing code and applicable `CONTEXT.md` guidance, then make the minimal changes that fix the root cause, following repo conventions. Do not skip, disable or weaken checks to make them pass, and do not expand into unrelated cleanup.
-3. Formatting-only failures from the pre-commit job (trailing-whitespace, end-of-file-fixer, black) are fixed by running pre-commit; the sandbox runner does this itself, so spend effort on real lint, test, build or logic failures. If a failure is unrelated to the branch (flaky test, outage, missing credential), say so instead of inventing a code change.
-4. Re-run the affected checks locally where possible and report each failure, its cause, the fix and the verification result. Describe the PR's cumulative result, not only this increment.
-5. Leave local changes uncommitted unless publishing was separately authorized. Sandbox runners own staging, committing, pushing and updating PR metadata.
+1. Locally, follow `docs/git-workflow.md` and establish ownership before checkout; isolate shared/dirty trees. Collect failures with `gh pr checks <pr>` and `gh run view <run-id> --log-failed`. Sandbox runners supply the checkout and logs; do not repeat setup or call `gh`.
+2. Diagnose from logs and applicable context. Fix causes without weakening checks or unrelated cleanup. Run pre-commit for formatting failures locally; the sandbox runner handles them. Report flakes, outages or missing credentials instead of inventing code changes. A commitlint failure on the PR title needs no file change: locally run `gh pr edit --title`; sandbox runners apply the `pr_title` metadata field.
+3. Re-run affected checks where possible. Report each cause, fix and verification, plus the PR's cumulative result.
 
-For the unattended sandbox version, run `pnpm agentic-pr-update-fix-ci <pr> ["<instruction>"]`.
+Stay on this PR; no increments or follow-up PRs. Local invocation does not authorize publishing; sandbox runners own commits, pushes and PR metadata.
+
+Unattended entry point: `pnpm agentic-pr-update --operation fix-ci <pr> ["<instruction>"]`.

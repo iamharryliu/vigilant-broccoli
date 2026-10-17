@@ -39,10 +39,10 @@ export const TextToSpeechVoices = () => {
       <div className="flex gap-2 items-center">
         <Select
           options={ELEVENLABS_FREE_VOICE_OPTIONS as unknown as VoiceOption[]}
-          selectedOption={voice}
-          setValue={setVoice}
+          value={voice}
+          onValueChange={setVoice}
           optionDisplayKey="label"
-          optionIdenfifier="value"
+          optionIdentifier="value"
           placeholder={PLACEHOLDER_VOICE}
         />
 

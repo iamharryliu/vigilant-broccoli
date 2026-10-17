@@ -4,6 +4,7 @@ set -euo pipefail
 REPO_URL=https://github.com/iamharryliu/vigilant-broccoli.git
 AGENT_USER=agent
 REPO_DIR="/home/$AGENT_USER/vigilant-broccoli"
+SCRIPT_MODES=""
 
 if [ "$(id -u)" = "0" ]; then
   if [ "${SANDBOX_FIREWALL:-on}" != "off" ]; then
@@ -13,13 +14,32 @@ if [ "$(id -u)" = "0" ]; then
   exec setpriv --reuid="$AGENT_USER" --regid="$AGENT_USER" --init-groups "$0" "$@"
 fi
 
+# A bind-mounted checkout (local Ollama solve) is root-owned at its top level
+# while .git belongs to the agent, which git rejects as dubious ownership.
+# Passed as environment config, not `git config --global`: install.sh below
+# replaces ~/.gitconfig with a symlink to the repo's dotfile, wiping any value
+# written there.
+export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=safe.directory GIT_CONFIG_VALUE_0="$REPO_DIR"
+
 if [ ! -d "$REPO_DIR/.git" ]; then
   git clone "$REPO_URL" "$REPO_DIR"
+  SCRIPT_MODES=$(git -C "$REPO_DIR" ls-files --stage -- setup/dotfiles/zsh/aliases setup/dotfiles/zsh/scripts)
 else
   git -C "$REPO_DIR" pull --ff-only || true
 fi
 
 bash "$REPO_DIR/setup/linux/install.sh" -y
+
+# Setup from the cloned ref may chmod tracked files through its symlinks.
+# Restore only executable bits in a fresh clone so PR checkout stays clean.
+if [ -n "$SCRIPT_MODES" ]; then
+  while IFS=$'\t' read -r metadata path; do
+    case "${metadata%% *}" in
+      100644) chmod a-x "$REPO_DIR/$path" ;;
+      100755) chmod a+x "$REPO_DIR/$path" ;;
+    esac
+  done <<< "$SCRIPT_MODES"
+fi
 
 CLAUDE_STATE="$HOME/.claude.json"
 if [ -f "$CLAUDE_STATE" ]; then

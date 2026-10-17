@@ -2,6 +2,8 @@
 
 One GitHub Pages site — `projects.harryliu.dev` — assembled from a shared `_site/` staging directory. Its only app is `pages-index`, at the root; new static UIs go to Cloudflare Pages instead ([cloudflare-pages-deploy-pattern.md](./cloudflare-pages-deploy-pattern.md)).
 
+GitHub Pages permits one custom domain per site, so `status.harryliu.dev` serves the same `pages-index` build through the `status-proxy` Cloudflare Worker rather than a second Pages attachment; a separate static deployment was not needed because the Worker passes assets, content types and errors through unchanged (see [network-management.md](../../../infrastructure/network-management.md#dns-urls)).
+
 ## How it works
 
 - An app participates iff its `project.json` defines a `deploy-github-pages` target: `dependsOn: ["build"]`, copies `dist/<project>` into `_site/` (`parallel: false`).

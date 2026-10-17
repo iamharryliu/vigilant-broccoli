@@ -2,12 +2,16 @@
 // removed in Nx v24; the lib globs below mirror its last computed output.
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  presets: [
+    require('../../libs/@vigilant-broccoli/react-lib/tailwind.preset.cjs'),
+  ],
   content: [
     './{src,pages,components,app}/**/*.{ts,tsx,js,jsx,html}',
     '!./{src,pages,components,app}/**/*.{stories,spec}.{ts,tsx,js,jsx,html}',
     '../../libs/@vigilant-broccoli/common-browser/src/**/*.{tsx,ts,jsx,js,html}',
     '../../libs/@vigilant-broccoli/common-js/src/**/*.{tsx,ts,jsx,js,html}',
     '../../libs/@vigilant-broccoli/react-lib/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../libs/@vigilant-broccoli/react-lib-higher-level/src/**/*.{tsx,ts,jsx,js,html}',
   ],
   theme: { extend: {} },
   plugins: [],

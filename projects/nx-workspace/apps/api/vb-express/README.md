@@ -1,5 +1,9 @@
 # VB Express
 
+## Table of Contents
+
+- [Stack](#stack)
+
 ## Stack
 
 - Language - TypeScript
@@ -7,7 +11,8 @@
 - Build Tool - webpack
 - External libs
   - better-auth
-  - SQLite (`node:sqlite`)
+  - SQLite
+  - Supabase JS
 - Internal libs
   - `common-js`
   - `common-node`
@@ -16,11 +21,11 @@
   - `messaging`
   - `personal-common-js`
 - Cloud services
-  - Google Tasks
+  - ElevenLabs
+  - Email Service
   - Google OAuth
   - Google reCAPTCHA
+  - Google Tasks
+  - LLM Service
+  - Supabase
   - Twilio
-  - ElevenLabs
-  - Email Service (HTTP)
-  - LLM Service (HTTP)
-  - Fly.io

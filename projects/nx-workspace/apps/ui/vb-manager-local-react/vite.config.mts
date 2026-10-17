@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
-import tsconfigPaths from 'vite-tsconfig-paths';
 
 const API_PATH = '/api';
 const API_DEV_SERVER_URL = 'http://127.0.0.1:3003';
@@ -19,7 +18,10 @@ export default defineConfig(() => ({
     port: 3000,
     host: '127.0.0.1',
   },
-  plugins: [react(), tsconfigPaths()],
+  resolve: {
+    tsconfigPaths: true,
+  },
+  plugins: [react()],
   build: {
     outDir: '../../../dist/vb-manager-local-react',
     emptyOutDir: true,

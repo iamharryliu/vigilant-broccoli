@@ -1,0 +1,159 @@
+{
+  "name": "office-presence-service",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/api/office-presence-service/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/api/office-presence-service",
+        "format": ["cjs"],
+        "bundle": true,
+        "thirdParty": true,
+        "external": ["better-sqlite3", "node-cron"],
+        "main": "apps/api/office-presence-service/src/main.ts",
+        "tsConfig": "apps/api/office-presence-service/tsconfig.app.json",
+        "assets": ["apps/api/office-presence-service/src/assets"],
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve:docker": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "docker ps -q --filter ancestor=iamharryliu/office-presence-socket-server-demo | xargs -r docker rm -f",
+          "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts 'docker run --pull=always --platform linux/amd64 -p 3000:3000 -v office-presence-data:/data -e OFFICE_PRESENCE_DB=/data/state.db -e SLACK_MODE=${SLACK_MODE:-socket} -e SLACK_BOT_TOKEN=$SLACK_BOT_TOKEN -e SLACK_APP_TOKEN=$SLACK_APP_TOKEN -e SLACK_SIGNING_SECRET=$SLACK_SIGNING_SECRET -e OFFICES=$OFFICES -e ENABLE_REMINDERS=$ENABLE_REMINDERS -e INCLUDE_WEEKENDS=$INCLUDE_WEEKENDS iamharryliu/office-presence-socket-server-demo:latest'"
+        ],
+        "parallel": false
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts 'nx serve:local office-presence-service'"
+      }
+    },
+    "serve:local": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "office-presence-service:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "office-presence-service:build:development"
+        },
+        "production": {
+          "buildTarget": "office-presence-service:build:production"
+        }
+      }
+    },
+    "build-mock": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "development",
+      "options": {
+        "platform": "node",
+        "outputPath": "dist/apps/api/office-presence-service-mock",
+        "format": ["cjs"],
+        "bundle": true,
+        "thirdParty": true,
+        "external": ["better-sqlite3", "node-cron"],
+        "main": "apps/api/office-presence-service/src/mock.main.ts",
+        "tsConfig": "apps/api/office-presence-service/tsconfig.app.json",
+        "assets": [],
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {}
+      },
+      "dependsOn": ["^build"]
+    },
+    "serve:mock": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "dependsOn": ["build-mock"],
+      "options": {
+        "buildTarget": "office-presence-service:build-mock:development",
+        "runBuildTargetDependencies": false
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "deploy-and-serve": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "options": {
+        "commands": [
+          "nx run office-presence-service:deploy-container",
+          "nx run office-presence-service:serve:docker"
+        ],
+        "parallel": false
+      }
+    },
+    "deploy-container": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "dependsOn": ["build", "smoke"],
+      "options": {
+        "commands": [
+          "docker buildx build --platform linux/amd64 -f apps/api/office-presence-service/Dockerfile -t iamharryliu/office-presence-socket-server-demo:latest -t iamharryliu/office-presence-socket-server-demo:${COMMIT_SHA:-latest} --push dist/apps/api/office-presence-service",
+          "docker rmi $(docker images iamharryliu/office-presence-socket-server-demo --filter 'dangling=true' -q) 2>/dev/null || true"
+        ],
+        "parallel": false
+      }
+    },
+    "deploy": {
+      "dependsOn": ["deploy-container"],
+      "executor": "nx:noop"
+    },
+    "smoke": {
+      "dependsOn": ["build"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "SMOKE_NODE_PATH=\"$PWD/node_modules\" SMOKE_EXTRA_ENV='SLACK_MODE=http SLACK_BOT_TOKEN=xoxb-smoke SLACK_SIGNING_SECRET=smoke DEMO_MODE=true DEMO_UI_ORIGIN=http://localhost:5173 OFFICE_PRESENCE_INTERNAL_TOKEN=smoke' bash scripts/shell/smoke-dist.sh dist/apps/api/office-presence-service"
+      }
+    },
+    "deploy:secrets:demo": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-flyio-secrets.ts office-presence-service demo"
+      }
+    },
+    "deploy:demo": {
+      "dependsOn": ["deploy-container", "deploy:secrets:demo"],
+      "command": "flyctl deploy --config ./deployment-configs/fly-configs/demo-office-presence-service.toml --image iamharryliu/office-presence-socket-server-demo:${COMMIT_SHA:-latest}"
+    }
+  }
+}

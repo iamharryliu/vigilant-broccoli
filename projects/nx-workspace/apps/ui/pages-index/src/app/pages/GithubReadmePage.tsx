@@ -1,26 +1,29 @@
 import { useParams } from 'react-router-dom';
 import { useTranslation } from '../i18n';
 import { PARSE_KIND, ReadmePage } from '../components/ReadmePage';
-import { findGithubRepo, toGithubRepoUrl } from '../consts/githubRepos';
-import { toRawGithubUrl } from '../consts/repo';
+import {
+  toGithubReadmeUrl,
+  toGithubRepoLinkBase,
+  toGithubRepoUrl,
+} from '../consts/githubRepos';
 
 export function GithubReadmePage() {
   const { t } = useTranslation();
   const { repo: slug } = useParams<{ repo: string }>();
-  const repo = findGithubRepo(slug);
 
   return (
     <ReadmePage
-      title={repo ? t('README_PAGE.TITLE') : t('GITHUB_REPOS_PAGE.TITLE')}
+      title={slug ?? t('GITHUB_REPOS_PAGE.TITLE')}
       source={
-        repo
+        slug
           ? {
-              url: toRawGithubUrl(repo.readmePath),
-              parseKind: PARSE_KIND.TEXT,
+              url: toGithubReadmeUrl(slug),
+              parseKind: PARSE_KIND.GITHUB_README,
             }
           : null
       }
-      externalHref={repo ? toGithubRepoUrl(repo.slug) : undefined}
+      repoLinkBase={slug ? toGithubRepoLinkBase(slug) : undefined}
+      externalHref={slug ? toGithubRepoUrl(slug) : undefined}
       externalLabel={t('README_PAGE.VIEW_ON_GITHUB')}
       notFoundMessage={t('README_PAGE.NOT_FOUND')}
     />

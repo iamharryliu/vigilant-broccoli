@@ -7,7 +7,13 @@ import {
 import { supabase } from './supabase';
 
 export const API_PREFIX = '/api';
-const AUTH_EXEMPT_PREFIX = `${API_PREFIX}/auth/`;
+// Spotify's OAuth callback is a plain browser redirect with no Authorization
+// header; it authenticates via its signed `state` param, and the login route
+// under the same prefix re-checks the bearer token itself.
+const AUTH_EXEMPT_PREFIXES = [
+  `${API_PREFIX}/auth/`,
+  `${API_PREFIX}/spotify/auth/`,
+];
 const QUERY_SEPARATOR = '?';
 
 const isUnderApi = (path: string) =>
@@ -24,7 +30,10 @@ const requiresAuth = (request: FastifyRequest): boolean => {
     routeUrl && isUnderApi(routeUrl)
       ? routeUrl
       : request.url.split(QUERY_SEPARATOR)[0];
-  return isUnderApi(path) && !path.startsWith(AUTH_EXEMPT_PREFIX);
+  return (
+    isUnderApi(path) &&
+    !AUTH_EXEMPT_PREFIXES.some(prefix => path.startsWith(prefix))
+  );
 };
 
 const unauthorized = (reply: FastifyReply) =>

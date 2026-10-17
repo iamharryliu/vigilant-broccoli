@@ -133,8 +133,6 @@ cask "alt-tab"
 cask "appcleaner"
 # Tool to flash OS images to SD cards & USB drives
 cask "balenaetcher"
-# Swedish personal electronic identification (eID) system
-cask "bankid"
 # Desktop password and login vault
 cask "bitwarden"
 # Open source IDE for exploring and testing APIs
@@ -204,6 +202,8 @@ cask "wechat"
 cask "whatsapp"
 # Network protocol analyzer
 cask "wireshark-app"
+# Multiplayer code editor
+cask "zed"
 vscode "anthropic.claude-code"
 vscode "dbaeumer.vscode-eslint"
 vscode "eamodio.gitlens"

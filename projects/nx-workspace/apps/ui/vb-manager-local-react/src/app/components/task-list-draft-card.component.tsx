@@ -161,9 +161,9 @@ export const TaskListDraftCard = ({
         </Text>
         <Select
           options={listOptions}
-          selectedOption={listOptions.find(list => list.id === selectedListId)}
-          setValue={list => setSelectedListId(list.id)}
-          optionIdenfifier="id"
+          value={listOptions.find(list => list.id === selectedListId)}
+          onValueChange={list => setSelectedListId(list.id)}
+          optionIdentifier="id"
           optionDisplayKey="title"
           disabled={isReadOnly || listsLoading}
           placeholder={listsLoading ? 'Loading lists...' : 'Select a list'}

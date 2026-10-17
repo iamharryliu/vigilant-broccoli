@@ -1,10 +1,11 @@
+import { useTranslation } from '../i18n';
+import { DemoSection } from './DemoSection';
 import { useState } from 'react';
 
 import {
   AvatarUploadConfig,
   UserAvatar,
   USER_AVATAR_VARIANT,
-  Text,
 } from '@vigilant-broccoli/react-lib';
 
 const SAMPLE_IMAGE = 'https://i.pravatar.cc/200?img=12';
@@ -13,13 +14,6 @@ const BLOB_URL_PREFIX = 'blob:';
 const UPLOAD_LABEL = 'Update profile picture';
 const UPLOAD_FILE_NAME = 'avatar.webp';
 
-const SECTION_HEADING_PROPS = {
-  as: 'p',
-  size: '2',
-  weight: 'bold',
-  mb: '2',
-} as const;
-const ROW_FLEX_PROPS = { align: 'center', gap: '4' } as const;
 const NAMES = ['Alice', 'Bob', 'Carol'];
 const INITIALS_NAMES = ['Alice Anderson', 'Alice'];
 
@@ -50,23 +44,24 @@ function makeUploadConfig(
 }
 
 export const UserAvatarDemo = () => {
+  const { t } = useTranslation();
   const [emptyUrl, setEmptyUrl] = useState<UrlState>();
   const [preloadedUrl, setPreloadedUrl] = useState<UrlState>(SAMPLE_IMAGE);
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <Text {...SECTION_HEADING_PROPS}>Boring avatar fallback (default)</Text>
-        <div className="flex" {...ROW_FLEX_PROPS}>
+      <DemoSection
+        title={t('DEMO_SECTION.USER_AVATAR.BORING_AVATAR_FALLBACK_DEFAULT')}
+      >
+        <div className="flex flex-wrap items-center gap-4">
           {NAMES.map(name => (
             <UserAvatar key={name} name={name} />
           ))}
         </div>
-      </div>
+      </DemoSection>
 
-      <div>
-        <Text {...SECTION_HEADING_PROPS}>Initials fallback</Text>
-        <div className="flex" {...ROW_FLEX_PROPS}>
+      <DemoSection title={t('DEMO_SECTION.USER_AVATAR.INITIALS_FALLBACK')}>
+        <div className="flex flex-wrap items-center gap-4">
           {INITIALS_NAMES.map(name => (
             <UserAvatar
               key={name}
@@ -75,11 +70,12 @@ export const UserAvatarDemo = () => {
             />
           ))}
         </div>
-      </div>
+      </DemoSection>
 
-      <div>
-        <Text {...SECTION_HEADING_PROPS}>With upload (click avatar)</Text>
-        <div className="flex" {...ROW_FLEX_PROPS}>
+      <DemoSection
+        title={t('DEMO_SECTION.USER_AVATAR.WITH_UPLOAD_CLICK_AVATAR')}
+      >
+        <div className="flex flex-wrap items-center gap-4">
           <UserAvatar
             name={SAMPLE_NAME}
             avatarUrl={emptyUrl}
@@ -91,7 +87,7 @@ export const UserAvatarDemo = () => {
             upload={makeUploadConfig(preloadedUrl, setPreloadedUrl)}
           />
         </div>
-      </div>
+      </DemoSection>
     </div>
   );
 };

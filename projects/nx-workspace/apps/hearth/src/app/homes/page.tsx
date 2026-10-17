@@ -3,7 +3,10 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { CRUDItemList, CRUDFormProps } from '@vigilant-broccoli/react-lib';
+import {
+  CRUDItemList,
+  CRUDFormProps,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { supabase } from '../../../libs/supabase';

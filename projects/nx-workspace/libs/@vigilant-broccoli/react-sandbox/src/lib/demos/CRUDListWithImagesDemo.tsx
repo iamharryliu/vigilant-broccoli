@@ -1,12 +1,9 @@
 import { useRef, useState } from 'react';
+import { Badge, Button, Input, Text } from '@vigilant-broccoli/react-lib';
 import {
-  Badge,
-  Button,
   CRUDFormProps,
   CRUDItemList,
-  Input,
-  Text,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 
 type ImageItem = {

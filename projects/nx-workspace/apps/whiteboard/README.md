@@ -9,11 +9,11 @@ Collaborative drawing and brainstorming canvas.
 ## Stack
 
 - Language - TypeScript
-- Framework - Next.js (React)
+- Framework - Next.js
 - Build Tool - Next.js
 - Internal libs
   - `common-browser`
   - `react-lib`
+  - `react-lib-higher-level`
 - Cloud services
   - Supabase
-  - Vercel

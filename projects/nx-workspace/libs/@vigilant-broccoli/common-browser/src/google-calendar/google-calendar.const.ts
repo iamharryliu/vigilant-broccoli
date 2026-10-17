@@ -8,6 +8,7 @@ export const GOOGLE_CALENDAR = {
     DARK_PINK: '%23ad1457',
     LIGHT_BLUE: '%23039be5',
     DARK_GREEN: '%230b8043',
+    ORANGE: '%23f4511e',
   },
   TIMEZONE: {
     COPENHAGEN: 'Europe/Copenhagen',
@@ -16,14 +17,10 @@ export const GOOGLE_CALENDAR = {
   },
   PUBLIC_CALENDAR: {
     COUNTRY_CALENDAR: {
+      CANADA: 'en.canadian#holiday@group.v.calendar.google.com',
+      CHINA: 'en.china#holiday@group.v.calendar.google.com',
       SWEDEN: 'en.swedish#holiday@group.v.calendar.google.com',
     },
     PHASES_OF_THE_MOON: 'ht3jlfaac5lfd6263ulfh4tql8@group.calendar.google.com',
-    H_AND_K:
-      '539abad77f9d2e321ea402608c2b33fbf88ea71de29e916dff3a00c5de1686b0@group.calendar.google.com',
-  },
-  CALENDAR_EMAIL: {
-    PERSONAL: 'harryliu1995@gmail.com',
-    WORK: 'harry.liu@elva11.se',
   },
 } as const;

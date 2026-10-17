@@ -8,7 +8,7 @@ import {
   useState,
 } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import type { GoogleTasksAuthAdapter } from '@vigilant-broccoli/react-lib';
+import type { GoogleTasksAuthAdapter } from '@vigilant-broccoli/react-lib-higher-level';
 import { supabase } from '../../../libs/supabase';
 import { isAllowedEmail } from '../../../libs/auth-policy';
 import {
@@ -86,9 +86,7 @@ export const authFetch = async (
 };
 
 export const useAuthStatus = ():
-  | 'loading'
-  | 'authenticated'
-  | 'unauthenticated' => {
+  'loading' | 'authenticated' | 'unauthenticated' => {
   const session = useAuth();
   return session ? 'authenticated' : 'unauthenticated';
 };

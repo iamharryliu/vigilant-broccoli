@@ -22,7 +22,6 @@ import {
   CalloutText,
   CardContainer,
   CardSkeleton,
-  EllipsisCTA,
   Input,
   SearchInput,
   Skeleton,
@@ -37,6 +36,7 @@ import {
   DialogTitle,
   DialogClose,
 } from '@vigilant-broccoli/react-lib';
+import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { usePageTitle } from '../use-page-title';
 
 const ORG_MEMBER_API = '/api/github/organization-members';

@@ -1,16 +1,11 @@
 import {
   Badge,
   ButtonList,
-  CardContainer,
-  StatusCardList,
   StatusCardListItem,
-  Text,
-  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
-import { useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
-import { authFetch } from '../../libs/auth';
-import { usePollingInterval } from '../hooks/usePollingInterval';
+import { StatusListCard } from './status-list-card.component';
+import { usePolledResource } from '../hooks/usePolledResource';
 
 const TITLE = 'GitHub Pages';
 const GH_BASE = 'https://github.com';
@@ -109,42 +104,26 @@ const toItem = (site: GithubPagesSite): StatusCardListItem => ({
 });
 
 export const GithubPagesComponent = () => {
-  const [sites, setSites] = useState<GithubPagesSite[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchSites = async () => {
-    try {
-      const response = await authFetch(API_ENDPOINTS.GITHUB_PAGES);
-      const data: GithubPagesResponse = await response.json();
-      if (!data.success || !data.sites)
-        throw new Error(data.error || MESSAGE.FETCH_FAILED);
-      setSites(data.sites);
-      setLoading(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : MESSAGE.FETCH_FAILED_SHORT);
-      setLoading(false);
-      console.error(MESSAGE.FETCH_ERROR_LOG, err);
-    }
-  };
-
-  usePollingInterval(fetchSites, POLL_INTERVAL_MS);
-
-  if (loading) return <CardSkeleton title={TITLE} rows={3} />;
-
-  if (error) {
-    return (
-      <CardContainer title={TITLE} gap="3" headerLink={SETTINGS_LINK}>
-        <Text size="2" color="red">
-          {error}
-        </Text>
-      </CardContainer>
-    );
-  }
+  const { data, loading, error } = usePolledResource<GithubPagesSite[]>({
+    endpoint: API_ENDPOINTS.GITHUB_PAGES,
+    intervalMs: POLL_INTERVAL_MS,
+    errorMessage: MESSAGE.FETCH_FAILED_SHORT,
+    select: (json: GithubPagesResponse) => {
+      if (!json.success || !json.sites)
+        throw new Error(json.error || MESSAGE.FETCH_FAILED);
+      return json.sites;
+    },
+  });
 
   return (
-    <CardContainer title={TITLE} gap="3" headerLink={SETTINGS_LINK}>
-      <StatusCardList items={sites.map(toItem)} emptyMessage={MESSAGE.EMPTY} />
-    </CardContainer>
+    <StatusListCard
+      title={TITLE}
+      gap="3"
+      loading={loading}
+      error={error}
+      headerLink={SETTINGS_LINK}
+      items={(data ?? []).map(toItem)}
+      emptyMessage={MESSAGE.EMPTY}
+    />
   );
 };

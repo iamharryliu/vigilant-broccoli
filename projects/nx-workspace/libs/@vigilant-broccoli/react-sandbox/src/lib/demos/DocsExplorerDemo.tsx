@@ -1,11 +1,9 @@
+import { DemoSection } from './DemoSection';
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
-import {
-  ImageCarouselDialog,
-  Text,
-  buttonVariants,
-} from '@vigilant-broccoli/react-lib';
-import { MarkdownViewer } from '@vigilant-broccoli/react-utility';
+import { ImageCarouselDialog } from '@vigilant-broccoli/react-lib-media';
+import { Text, buttonVariants } from '@vigilant-broccoli/react-lib';
+import { MarkdownViewer } from '@vigilant-broccoli/react-lib-higher-level';
 import checklistScreenshot from '../assets/docs-explorer/checklist.webp';
 import graphScreenshot from '../assets/docs-explorer/graph.webp';
 import searchScreenshot from '../assets/docs-explorer/search.webp';
@@ -13,7 +11,7 @@ import treeScreenshot from '../assets/docs-explorer/tree.webp';
 
 const DOCS_URL = 'https://docs.harryliu.dev/';
 const README_PATH =
-  'projects/nx-workspace/libs/@vigilant-broccoli/react-lib/docs/features/docs-explorer.md';
+  'projects/nx-workspace/libs/@vigilant-broccoli/react-lib-higher-level/docs/features/docs-explorer.md';
 const README_URL = `https://raw.githubusercontent.com/iamharryliu/vigilant-broccoli/main/${README_PATH}`;
 const REPO_BLOB_URL =
   'https://github.com/iamharryliu/vigilant-broccoli/blob/main/';
@@ -85,10 +83,7 @@ export const DocsExplorerDemo = () => {
         <ExternalLink className="h-4 w-4" />
       </a>
 
-      <div className="flex flex-col gap-3">
-        <Text size="3" weight="medium">
-          {COPY.SCREENSHOTS}
-        </Text>
+      <DemoSection title={COPY.SCREENSHOTS} className="flex flex-col gap-3">
         <Text size="2" color="gray">
           {COPY.SCREENSHOTS_HINT}
         </Text>
@@ -114,7 +109,7 @@ export const DocsExplorerDemo = () => {
             </figure>
           ))}
         </div>
-      </div>
+      </DemoSection>
 
       <ImageCarouselDialog
         images={SCREENSHOTS.map(screenshot => screenshot.src)}
@@ -124,10 +119,7 @@ export const DocsExplorerDemo = () => {
         alt={COPY.ALT}
       />
 
-      <div className="flex flex-col gap-3">
-        <Text size="3" weight="medium">
-          {COPY.README}
-        </Text>
+      <DemoSection title={COPY.README} className="flex flex-col gap-3">
         <div className={CARD_CLASS}>
           {error && (
             <p className={`${STATUS_CLASS} text-red-500`}>
@@ -147,7 +139,7 @@ export const DocsExplorerDemo = () => {
             />
           )}
         </div>
-      </div>
+      </DemoSection>
     </div>
   );
 };

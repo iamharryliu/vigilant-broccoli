@@ -1,8 +1,7 @@
-import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib';
+import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { signInWithGoogle, signOut, useAuth } from '../../libs/auth';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
-  MessageCircle,
   Search,
   Timer,
   LogOut,
@@ -13,9 +12,9 @@ import {
   SquareKanban,
   LayoutDashboard,
   MessageSquare,
-  CalendarDays,
   Languages,
   Briefcase,
+  Music,
 } from 'lucide-react';
 import { NotificationRecord } from '../hooks/useNotificationHistory';
 import { NotificationsDialog } from './notifications-dialog.component';
@@ -28,9 +27,9 @@ const SIDEBAR_ROUTE_ITEMS = [
   { route: SIDEBAR_ROUTE.KANBAN, icon: SquareKanban },
   { route: SIDEBAR_ROUTE.DEV_DASHBOARD, icon: LayoutDashboard },
   { route: SIDEBAR_ROUTE.CHATBOT, icon: MessageSquare },
-  { route: SIDEBAR_ROUTE.CALENDAR, icon: CalendarDays },
   { route: SIDEBAR_ROUTE.LANGUAGE_LEARNING, icon: Languages },
   { route: SIDEBAR_ROUTE.CAREER, icon: Briefcase },
+  { route: SIDEBAR_ROUTE.MUSIC, icon: Music },
 ];
 
 const UNREAD_MAX = 9;
@@ -57,7 +56,6 @@ const BellIconWithBadge = ({ unreadCount }: { unreadCount: number }) => (
 );
 
 type Props = {
-  setChatbotDialogOpen: (open: boolean) => void;
   setPomodoroDialogOpen: (open: boolean) => void;
   setSearchDialogOpen: (open: boolean) => void;
   notificationsOpen: boolean;
@@ -68,7 +66,6 @@ type Props = {
 };
 
 export const RightSidebar = ({
-  setChatbotDialogOpen,
   setPomodoroDialogOpen,
   setSearchDialogOpen,
   notificationsOpen,
@@ -93,16 +90,11 @@ export const RightSidebar = ({
     ...SIDEBAR_ROUTE_ITEMS.map(({ route, icon }) => ({
       label: route.title,
       icon,
-      title: route.title,
+      title:
+        route === SIDEBAR_ROUTE.CHATBOT ? `${route.title} (C)` : route.title,
       onClick: () => navigate(route.path),
       isActive: pathname === route.path,
     })),
-    {
-      label: 'Jarvis',
-      icon: MessageCircle,
-      title: 'Jarvis (C)',
-      onClick: () => setChatbotDialogOpen(true),
-    },
     {
       label: 'Pomodoro',
       icon: Timer,

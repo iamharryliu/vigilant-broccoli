@@ -32,9 +32,9 @@ Local-only Fastify API behind VB Manager: serves every `/api` route and, in prod
   - `llm-schemas`
   - `money-movement`
   - `personal-common-js`
+  - `react-lib-higher-level`
   - `resume`
   - `vb-manager-local-common`
-  - `vibecheck-lite`
 - Cloud services
   - Google OAuth
   - Google Tasks & Calendar
@@ -43,18 +43,19 @@ Local-only Fastify API behind VB Manager: serves every `/api` route and, in prod
   - Stripe
   - Tailscale
   - OpenAI API
+  - Spotify Web API
   - Open-Meteo (default weather provider)
   - OpenWeatherMap (alternate weather provider)
   - Self-hosted (PM2)
 
 ## Agent Context
 
-- Every `/api/*` route needs `Authorization: Bearer <Supabase access token>`; the top-level `onRequest` hook in `src/libs/auth.hook.ts` enforces it and only exempts `/api/auth/*`. Add routes inside a feature plugin under `src/routes/<feature>/index.ts` so it inherits the `/api` prefix and the hook.
+- Every `/api/*` route needs `Authorization: Bearer <Supabase access token>`; the top-level `onRequest` hook in `src/libs/auth.hook.ts` enforces it and only exempts `/api/auth/*` and `/api/spotify/auth/*` (Spotify's OAuth callback is a browser redirect with no bearer token; it authenticates through a signed `state`). Add routes inside a feature plugin under `src/routes/<feature>/index.ts` so it inherits the `/api` prefix and the hook.
 - When adding, removing, or renaming a route, update `API_ROUTES` in `src/libs/swagger.ts` (served at `/docs`) in the same change.
 
 ## Migration verification
 
-- [Route inventory](./docs/migration-routes.md): all 90 original API paths and 116 methods retain their URLs and methods.
+- [Route inventory](./docs/migration-routes.md): every API path and method still served from the Next app keeps its URL (96 paths, 122 methods); `/api/outfit-recommendation` was retired upstream.
 - From `projects/nx-workspace`, run `nx run-many -t build lint test typecheck -p vb-manager-local-fastify,vb-manager-local-react` and `nx run vb-manager-local-react:e2e -- --project=default`.
 - The API auth suite covers unauthenticated shell, Docker, PM2 and SSH routes, invalid tokens, valid tokens and the `/api/auth/*` exemption.
 - API requests are limited to 600 requests per minute per client IP before token validation; static files and Swagger remain unlimited.

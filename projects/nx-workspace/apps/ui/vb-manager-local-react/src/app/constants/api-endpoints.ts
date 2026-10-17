@@ -61,6 +61,8 @@ export const API_ENDPOINTS = {
   EVENT_CALENDARS: '/api/event-calendars',
 
   WEATHER: '/api/weather',
+  WEATHER_CITY: '/api/weather/city',
+  PREPARATION: '/api/preparation',
 
   DJ_PLAYLISTS: '/api/dj/playlists',
   DJ_DOWNLOAD: '/api/dj/download',
@@ -90,4 +92,8 @@ export const API_ENDPOINTS = {
 
   TODO: '/api/todo',
   TODO_SOLVE: '/api/todo/solve',
+
+  // Spotify
+  SPOTIFY_AUTH_LOGIN: '/api/spotify/auth/login',
+  SPOTIFY_GRAPH: '/api/spotify/graph',
 } as const;

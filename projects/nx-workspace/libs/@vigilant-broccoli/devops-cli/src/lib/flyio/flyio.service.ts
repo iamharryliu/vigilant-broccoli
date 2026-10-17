@@ -10,6 +10,11 @@ import {
 export interface FlyApp {
   name: string;
   status: string;
+  machineStates: string[];
+}
+
+interface FlyMachineJson {
+  state: string;
 }
 
 interface FlyAppJson {
@@ -31,12 +36,26 @@ export interface FlyioLoginResult {
 const sleep = (ms: number): Promise<void> =>
   new Promise(resolve => setTimeout(resolve, ms));
 
+const listMachineStates = async (appName: string): Promise<string[]> => {
+  const machines = await runCliJson<FlyMachineJson[] | null>(
+    FLYCTL_CLI,
+    FlyioCommand.listMachines(appName),
+  ).catch(() => null);
+  return (machines ?? []).map(machine => machine.state);
+};
+
 const listApps = async (): Promise<FlyApp[]> => {
   const apps = await runCliJson<FlyAppJson[]>(
     FLYCTL_CLI,
     FlyioCommand.listApps,
   );
-  return apps.map(app => ({ name: app.Name, status: app.Status }));
+  return Promise.all(
+    apps.map(async app => ({
+      name: app.Name,
+      status: app.Status,
+      machineStates: await listMachineStates(app.Name),
+    })),
+  );
 };
 
 // `flyctl auth login` returns before the token lands on disk.

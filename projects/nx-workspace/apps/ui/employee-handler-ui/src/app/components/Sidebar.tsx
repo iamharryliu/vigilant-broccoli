@@ -3,11 +3,11 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LogOut, Moon, Sun } from 'lucide-react';
+import { useTheme } from '@vigilant-broccoli/react-lib';
 import {
   Sidebar as SharedSidebar,
   SidebarCTA,
-  useTheme,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { getSupabase } from '../../../libs/supabase';
 import { NAV_LINKS } from '../app.consts';
 import { useTranslation } from '../i18n';

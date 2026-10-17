@@ -1,11 +1,14 @@
+import { useTranslation } from '../i18n';
+import { DemoSection } from './DemoSection';
 import { useCallback, useState } from 'react';
 import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
 import {
   Button,
   CheckList,
+  CheckListBase,
+  CheckListBaseItem,
   CheckListItem,
-  Heading,
   Input,
   Switch,
   Text,
@@ -59,23 +62,43 @@ const seedItems = (): CheckListItem[] => [
   },
 ];
 
+const DENSE_EMPTY_LABEL = 'Nothing left to do';
+
+const seedDenseItems = (): CheckListBaseItem[] => [
+  { id: 'dense-1', title: 'Oat milk', checked: false },
+  { id: 'dense-2', title: 'Sourdough', checked: false },
+  {
+    id: 'dense-3',
+    title: 'Lemons',
+    checked: true,
+    completedAt: daysAgo(1),
+  },
+];
+
 const isUrgent = (item: CheckListItem) => item.title.startsWith(URGENT_PREFIX);
 
 const createId = () =>
   `item-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
 export const CheckListDemo = () => {
+  const { t } = useTranslation();
   const [items, setItems] = useState<CheckListItem[]>(seedItems);
   const [enableDragDrop, setEnableDragDrop] = useState(true);
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [editingItemTitle, setEditingItemTitle] = useState('');
   const [newItemTitle, setNewItemTitle] = useState('');
+  const [denseItems, setDenseItems] =
+    useState<CheckListBaseItem[]>(seedDenseItems);
+  const [denseEditingId, setDenseEditingId] = useState<string | null>(null);
+  const [denseEditingTitle, setDenseEditingTitle] = useState('');
 
   const handleReset = useCallback(() => {
     setItems(seedItems());
     setEditingItemId(null);
     setEditingItemTitle('');
     setNewItemTitle('');
+    setDenseItems(seedDenseItems());
+    setDenseEditingId(null);
   }, []);
 
   const handleAddItem = useCallback(() => {
@@ -141,6 +164,41 @@ export const CheckListDemo = () => {
     });
   }, []);
 
+  const handleDenseToggle = useCallback((item: CheckListBaseItem) => {
+    setDenseItems(prev =>
+      prev.map(i =>
+        i.id === item.id
+          ? {
+              ...i,
+              checked: !i.checked,
+              completedAt: i.checked ? null : new Date().toISOString(),
+            }
+          : i,
+      ),
+    );
+  }, []);
+
+  const handleDenseStartEdit = useCallback((item: CheckListBaseItem) => {
+    setDenseEditingId(item.id);
+    setDenseEditingTitle(item.title);
+  }, []);
+
+  const handleDenseSaveEdit = useCallback(() => {
+    const title = denseEditingTitle.trim();
+    if (denseEditingId && title) {
+      setDenseItems(prev =>
+        prev.map(i => (i.id === denseEditingId ? { ...i, title } : i)),
+      );
+    }
+    setDenseEditingId(null);
+    setDenseEditingTitle('');
+  }, [denseEditingId, denseEditingTitle]);
+
+  const handleDenseCancelEdit = useCallback(() => {
+    setDenseEditingId(null);
+    setDenseEditingTitle('');
+  }, []);
+
   const renderItemAccessory = useCallback(
     (item: CheckListItem) =>
       isUrgent(item) ? (
@@ -167,11 +225,8 @@ export const CheckListDemo = () => {
   );
 
   return (
-    <div className="flex flex-col gap-4 max-w-xl">
-      <div>
-        <Heading size="4" mb="2">
-          Generic checklist
-        </Heading>
+    <div className="flex min-w-0 flex-col gap-6 max-w-xl">
+      <DemoSection title={t('DEMO_SECTION.CHECK_LIST.GENERIC_CHECKLIST')}>
         <Text size="2" color="gray">
           <code>CheckList</code> only knows about checkboxes, editable titles,
           notes/due dates and drag order. It has no idea this demo is using a{' '}
@@ -179,7 +234,7 @@ export const CheckListDemo = () => {
           that comes entirely from the <code>itemClassName</code> and{' '}
           <code>renderItemAccessory</code> props below.
         </Text>
-      </div>
+      </DemoSection>
 
       <div className="flex flex-wrap items-center gap-4">
         <label className="flex items-center gap-2 text-sm cursor-pointer">
@@ -226,6 +281,37 @@ export const CheckListDemo = () => {
           itemClassName={itemClassName}
         />
       </DndContext>
+
+      <DemoSection
+        title={t('DEMO_SECTION.CHECK_LIST.PRESENTATIONAL_CHECKLIST')}
+      >
+        <Text size="2" color="gray">
+          <code>CheckListBase</code> is the presentational layer{' '}
+          <code>CheckList</code> is built on: no dnd-kit, an <code>input</code>{' '}
+          editor and dense separated rows.
+        </Text>
+      </DemoSection>
+
+      <CheckListBase
+        items={denseItems}
+        editingItemId={denseEditingId}
+        editingItemTitle={denseEditingTitle}
+        onToggleCheck={handleDenseToggle}
+        onStartEdit={handleDenseStartEdit}
+        onEditChange={setDenseEditingTitle}
+        onSaveEdit={handleDenseSaveEdit}
+        onCancelEdit={handleDenseCancelEdit}
+        editor="input"
+        rowVariant="dense"
+        size="3"
+        editCompleted={false}
+        storageKeyPrefix="checklist-demo-dense"
+        emptyLabel={
+          <Text size="3" color="gray">
+            {DENSE_EMPTY_LABEL}
+          </Text>
+        }
+      />
     </div>
   );
 };

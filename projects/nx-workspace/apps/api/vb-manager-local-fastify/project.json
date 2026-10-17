@@ -93,7 +93,7 @@
         "parallel": false,
         "commands": [
           {
-            "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/api/vb-manager-local-fastify/.env.example 'pm2 start apps/api/vb-manager-local-fastify/ecosystem.config.js'"
+            "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/api/vb-manager-local-fastify/.env.example --env-file scripts/.env.scripts.example 'node --import tsx scripts/migrate.ts --migrations-dir=apps/api/vb-manager-local-fastify/supabase/migrations && pm2 start apps/api/vb-manager-local-fastify/ecosystem.config.js'"
           },
           {
             "command": "pm2 save"
@@ -111,7 +111,7 @@
         "parallel": false,
         "commands": [
           {
-            "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/api/vb-manager-local-fastify/.env.example 'pm2 reload apps/api/vb-manager-local-fastify/ecosystem.config.js'"
+            "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/api/vb-manager-local-fastify/.env.example --env-file scripts/.env.scripts.example 'node --import tsx scripts/migrate.ts --migrations-dir=apps/api/vb-manager-local-fastify/supabase/migrations && pm2 reload apps/api/vb-manager-local-fastify/ecosystem.config.js'"
           },
           {
             "command": "pm2 save"

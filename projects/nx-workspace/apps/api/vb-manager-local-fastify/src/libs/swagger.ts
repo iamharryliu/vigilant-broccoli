@@ -2,7 +2,7 @@ import { createSwaggerSpec } from '@vigilant-broccoli/fastify';
 
 const SERVICE_TITLE = 'vb-manager-local-fastify';
 const SERVICE_DESCRIPTION =
-  'Local-only API behind VB Manager. Every /api route except /api/auth/* requires an Authorization: Bearer <Supabase access token> header.';
+  'Local-only API behind VB Manager. Every /api route except /api/auth/* and /api/spotify/auth/* requires an Authorization: Bearer <Supabase access token> header.';
 const PATH_PARAM_PATTERN = /\{(\w+)\}/g;
 
 type HttpMethod = 'get' | 'post' | 'put' | 'patch' | 'delete';
@@ -28,6 +28,7 @@ const API_ROUTES: Record<string, HttpMethod[]> = {
   '/api/event-calendars': ['get', 'post'],
   '/api/event-calendars/{id}': ['patch', 'delete'],
   '/api/event-calendars/{id}/sync': ['get', 'post'],
+  '/api/event-calendars/sync-runs': ['get'],
   '/api/event-calendars/untracked': ['get'],
   '/api/event-calendars/untracked/{calendarId}': ['delete'],
   '/api/flyio/apps': ['get'],
@@ -61,17 +62,18 @@ const API_ROUTES: Record<string, HttpMethod[]> = {
   '/api/network-monitor/outbound-connections': ['get'],
   '/api/network-monitor/scan-device': ['post'],
   '/api/notepad': ['get', 'post'],
-  '/api/outfit-recommendation': ['get'],
   '/api/pm2/delete': ['post'],
   '/api/pm2/processes': ['get'],
   '/api/pm2/restart': ['post'],
   '/api/pm2/start': ['post'],
   '/api/pm2/stop': ['post'],
+  '/api/preparation': ['post'],
   '/api/public-ip': ['get'],
   '/api/qr-code': ['post'],
   '/api/recipe/scrape': ['post'],
   '/api/recipe/scrape-preview': ['post'],
   '/api/resume': ['get', 'put'],
+  '/api/resume/baseline': ['get'],
   '/api/resume/chat': ['post'],
   '/api/resume/pdf': ['post'],
   '/api/send-email-message': ['post'],
@@ -79,6 +81,9 @@ const API_ROUTES: Record<string, HttpMethod[]> = {
   '/api/shell/execute': ['post'],
   '/api/speech-to-text': ['post'],
   '/api/speed-test': ['get'],
+  '/api/spotify/auth/callback': ['get'],
+  '/api/spotify/auth/login': ['get'],
+  '/api/spotify/graph': ['get'],
   '/api/ssh-key': ['get'],
   '/api/stripe/checkout-session': ['post'],
   '/api/tailscale/machines': ['get'],
@@ -95,6 +100,7 @@ const API_ROUTES: Record<string, HttpMethod[]> = {
   '/api/vercel/projects': ['get'],
   '/api/voice-list': ['post'],
   '/api/weather': ['get'],
+  '/api/weather/city': ['get'],
   '/api/wireguard/status': ['get'],
   '/api/wrangler/login': ['post'],
   '/api/wrangler/pages': ['get', 'delete'],

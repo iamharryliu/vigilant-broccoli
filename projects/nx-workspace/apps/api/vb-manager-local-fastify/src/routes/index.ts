@@ -21,7 +21,7 @@ import localMachineRoutes from './local-machine';
 import localServicesRoutes from './local-services';
 import networkMonitorRoutes from './network-monitor';
 import notepadRoutes from './notepad';
-import outfitRecommendationRoutes from './outfit-recommendation';
+import preparationRoutes from './preparation';
 import pm2Routes from './pm2';
 import publicIpRoutes from './public-ip';
 import qrCodeRoutes from './qr-code';
@@ -30,6 +30,7 @@ import resumeRoutes from './resume';
 import sendEmailMessageRoutes from './send-email-message';
 import sendTextMessageRoutes from './send-text-message';
 import shellRoutes from './shell';
+import spotifyRoutes from './spotify';
 import speechToTextRoutes from './speech-to-text';
 import speedTestRoutes from './speed-test';
 import sshKeyRoutes from './ssh-key';
@@ -68,8 +69,8 @@ const ROUTE_PLUGINS: [FastifyPluginAsync, string][] = [
   [localServicesRoutes, '/local-services'],
   [networkMonitorRoutes, '/network-monitor'],
   [notepadRoutes, '/notepad'],
-  [outfitRecommendationRoutes, '/outfit-recommendation'],
   [pm2Routes, '/pm2'],
+  [preparationRoutes, '/preparation'],
   [publicIpRoutes, '/public-ip'],
   [qrCodeRoutes, '/qr-code'],
   [recipeRoutes, '/recipe'],
@@ -78,6 +79,7 @@ const ROUTE_PLUGINS: [FastifyPluginAsync, string][] = [
   [sendTextMessageRoutes, '/send-text-message'],
   [shellRoutes, '/shell'],
   [speechToTextRoutes, '/speech-to-text'],
+  [spotifyRoutes, '/spotify'],
   [speedTestRoutes, '/speed-test'],
   [sshKeyRoutes, '/ssh-key'],
   [stripeRoutes, '/stripe'],

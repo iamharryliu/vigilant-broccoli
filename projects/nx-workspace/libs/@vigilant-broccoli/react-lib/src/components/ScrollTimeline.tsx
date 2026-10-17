@@ -2,7 +2,7 @@
 
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { Text } from './Text';
-import { useAnimatedNumber } from '../leaderboard/useAnimatedNumber';
+import { useAnimatedNumber } from '../hooks/useAnimatedNumber';
 import { cn } from '../utils/cn';
 
 export interface ScrollTimelineEntry {

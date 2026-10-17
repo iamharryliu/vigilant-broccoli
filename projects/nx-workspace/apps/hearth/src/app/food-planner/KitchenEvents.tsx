@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { CalendarListView, Text } from '@vigilant-broccoli/react-lib';
+import { CalendarListView } from '@vigilant-broccoli/react-lib-calendar';
+import { Text } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { CalendarEvent } from '../../lib/types';

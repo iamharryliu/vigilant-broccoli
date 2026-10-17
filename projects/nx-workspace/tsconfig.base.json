@@ -1,6 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "resolveJsonModule": true,
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
@@ -15,9 +16,6 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@vigilant-broccoli/vibecheck-lite": [
-        "./libs/@vigilant-broccoli/vibecheck-lite/src/index.ts"
-      ],
       "@vigilant-broccoli/common-browser": [
         "./libs/@vigilant-broccoli/common-browser/src/index.ts"
       ],
@@ -42,11 +40,23 @@
       "@vigilant-broccoli/react-lib": [
         "./libs/@vigilant-broccoli/react-lib/src/index.ts"
       ],
-      "@vigilant-broccoli/react-lib/live-location-map": [
-        "./libs/@vigilant-broccoli/react-lib/src/live-location/LiveUserMap.tsx"
-      ],
       "@vigilant-broccoli/react-lib/toaster": [
         "./libs/@vigilant-broccoli/react-lib/src/components/Toaster.tsx"
+      ],
+      "@vigilant-broccoli/react-lib-auth": [
+        "./libs/@vigilant-broccoli/react-lib-auth/src/index.ts"
+      ],
+      "@vigilant-broccoli/react-lib-calendar": [
+        "./libs/@vigilant-broccoli/react-lib-calendar/src/index.ts"
+      ],
+      "@vigilant-broccoli/react-lib-media": [
+        "./libs/@vigilant-broccoli/react-lib-media/src/index.ts"
+      ],
+      "@vigilant-broccoli/react-lib-higher-level": [
+        "./libs/@vigilant-broccoli/react-lib-higher-level/src/index.ts"
+      ],
+      "@vigilant-broccoli/react-lib-higher-level/live-location-map": [
+        "./libs/@vigilant-broccoli/react-lib-higher-level/src/lib/live-location/LiveUserMap.tsx"
       ],
       "@vigilant-broccoli/personal-common-js": [
         "./libs/@vigilant-broccoli/personal-common-js/src/index.ts"

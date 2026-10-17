@@ -4,3 +4,4 @@ export * from './tailwind/tailwind.const';
 export * from './google-calendar/google-calendar.models';
 export * from './google-calendar/google-calendar.utils';
 export * from './google-calendar/google-calendar.const';
+export * from './device/mobile-user-agent';

@@ -487,8 +487,8 @@ export default function ChoresPage() {
                           Recurrence
                         </Text>
                         <Select
-                          selectedOption={formData.recurrence}
-                          setValue={recurrence =>
+                          value={formData.recurrence}
+                          onValueChange={recurrence =>
                             setFormData({ ...formData, recurrence })
                           }
                           options={RECURRENCE_OPTIONS}

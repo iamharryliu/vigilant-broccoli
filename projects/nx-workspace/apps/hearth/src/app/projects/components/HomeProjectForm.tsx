@@ -86,8 +86,8 @@ export function HomeProjectForm({
             Category
           </Text>
           <Select
-            selectedOption={category}
-            setValue={setCategory}
+            value={category}
+            onValueChange={setCategory}
             options={PROJECT_CATEGORIES as unknown as ProjectCategory[]}
           />
         </div>
@@ -97,8 +97,8 @@ export function HomeProjectForm({
             Status
           </Text>
           <Select
-            selectedOption={status}
-            setValue={setStatus}
+            value={status}
+            onValueChange={setStatus}
             options={PROJECT_STATUSES as unknown as ProjectStatus[]}
           />
         </div>

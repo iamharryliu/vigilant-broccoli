@@ -1,7 +1,8 @@
+import { useTranslation } from '../i18n';
+import { DemoSection } from './DemoSection';
 import {
   ScrollTimeline,
   ScrollTimelineEntry,
-  Text,
 } from '@vigilant-broccoli/react-lib';
 
 const CURRENCY_FORMATTER = new Intl.NumberFormat(undefined, {
@@ -58,28 +59,31 @@ const COMMIT_TIMELINE: ScrollTimelineEntry[] = [
 const formatBalance = (value: number) => CURRENCY_FORMATTER.format(value);
 const formatLineCount = (value: number) => `${Math.round(value)} lines`;
 
-export const ScrollTimelineDemo = () => (
-  <div className="flex flex-col gap-8 sm:flex-row">
-    <div className="flex-1">
-      <Text size="2" weight="bold" mb="2">
-        Bank balance
-      </Text>
-      <ScrollTimeline
-        entries={BANK_TRANSACTIONS}
-        valueLabel="Balance"
-        formatValue={formatBalance}
-      />
-    </div>
+export const ScrollTimelineDemo = () => {
+  const { t } = useTranslation();
+  return (
+    <div className="grid gap-6 sm:grid-cols-2">
+      <DemoSection
+        title={t('DEMO_SECTION.SCROLL_TIMELINE.BANK_BALANCE')}
+        className="flex-1"
+      >
+        <ScrollTimeline
+          entries={BANK_TRANSACTIONS}
+          valueLabel="Balance"
+          formatValue={formatBalance}
+        />
+      </DemoSection>
 
-    <div className="flex-1">
-      <Text size="2" weight="bold" mb="2">
-        Git commit history
-      </Text>
-      <ScrollTimeline
-        entries={COMMIT_TIMELINE}
-        valueLabel="Lines of code"
-        formatValue={formatLineCount}
-      />
+      <DemoSection
+        title={t('DEMO_SECTION.SCROLL_TIMELINE.GIT_COMMIT_HISTORY')}
+        className="flex-1"
+      >
+        <ScrollTimeline
+          entries={COMMIT_TIMELINE}
+          valueLabel="Lines of code"
+          formatValue={formatLineCount}
+        />
+      </DemoSection>
     </div>
-  </div>
-);
+  );
+};

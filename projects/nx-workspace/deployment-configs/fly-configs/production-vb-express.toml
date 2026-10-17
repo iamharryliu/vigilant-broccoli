@@ -10,6 +10,7 @@ primary_region = 'yyz'
   LLM_SERVICE_URL = 'http://production-llm-service.flycast'
   STORAGE_SERVICE_URL = 'http://production-storage-service.flycast'
   DATABASE_PATH = '/data/vb-express.sqlite'
+  SUPABASE_URL = 'https://jrdosjjgmsoodpjmjqxx.supabase.co'
   BETTER_AUTH_URL = 'https://api.harryliu.dev'
 
 [mounts]
@@ -19,7 +20,7 @@ primary_region = 'yyz'
 [http_service]
   internal_port = 3000
   force_https = true
-  auto_stop_machines = 'stop'
+  auto_stop_machines = 'suspend'
   auto_start_machines = true
   min_machines_running = 0
   processes = ['app']

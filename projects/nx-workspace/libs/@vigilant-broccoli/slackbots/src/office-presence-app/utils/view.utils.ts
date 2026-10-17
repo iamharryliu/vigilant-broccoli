@@ -18,6 +18,7 @@ import {
   getWeekNumber,
 } from './date.utils';
 import { APP_ACTION } from '../consts/app.consts';
+import { formatUserMention } from './mention.utils';
 
 export function createPublishHomeView(appConfig: AppConfig) {
   return async function publishHomeView(
@@ -269,7 +270,7 @@ function buildEventBlocks(
     const isAttending = event.attendees?.includes(currentUserId) || false;
     const isCreator = event.creatorId === currentUserId;
 
-    const mainText = `${event.name} @ ${event.time} by <@${event.creatorId}> - (${attendeeCount} attending)`;
+    const mainText = `${event.name} @ ${event.time} by ${formatUserMention(event.creatorId)} - (${attendeeCount} attending)`;
     const checkboxOption = {
       text: SlackViewBuilder.generatePlainText(mainText),
       ...(event.description && {
@@ -370,7 +371,7 @@ function formatPresence(
   eventsForDay: OfficeEvent[],
   copy: AppCopy,
 ): string {
-  if (!presence) return `<@${u}>`;
+  if (!presence) return formatUserMention(u);
 
   const parts: string[] = [];
   if (presence.isBringingDog) parts.push(' 🐶');
@@ -392,5 +393,5 @@ function formatPresence(
     parts.push(` | Attending: ${eventNames}`);
   }
 
-  return `<@${u}> ${parts.join(' ')}`.trim();
+  return `${formatUserMention(u)} ${parts.join(' ')}`.trim();
 }

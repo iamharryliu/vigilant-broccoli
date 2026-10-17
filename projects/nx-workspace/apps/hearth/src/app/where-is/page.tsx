@@ -2,13 +2,8 @@
 
 import { Suspense, useState, useEffect } from 'react';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import {
-  CRUDItemList,
-  Input,
-  Text,
-  Badge,
-  cn,
-} from '@vigilant-broccoli/react-lib';
+import { Input, Text, Badge, cn } from '@vigilant-broccoli/react-lib';
+import { CRUDItemList } from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';

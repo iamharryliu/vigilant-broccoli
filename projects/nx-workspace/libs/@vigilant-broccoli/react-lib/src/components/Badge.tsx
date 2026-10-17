@@ -32,24 +32,22 @@ export const badgeVariants = cva(
       {
         color: 'gray',
         variant: 'soft',
-        class: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
+        class: 'bg-muted text-muted-foreground',
       },
       {
         color: 'gray',
         variant: 'solid',
-        class: 'bg-gray-600 text-white dark:bg-gray-500',
+        class: 'bg-primary text-primary-foreground',
       },
       {
         color: 'gray',
         variant: 'outline',
-        class:
-          'border border-gray-300 text-gray-700 dark:border-gray-600 dark:text-gray-300',
+        class: 'border border-border text-foreground',
       },
       {
         color: 'gray',
         variant: 'surface',
-        class:
-          'border border-gray-200 bg-gray-50 text-gray-700 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300',
+        class: 'border border-border bg-card text-card-foreground',
       },
       {
         color: 'red',
