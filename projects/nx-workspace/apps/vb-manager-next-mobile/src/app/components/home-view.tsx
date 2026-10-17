@@ -30,7 +30,6 @@ import {
   TabbedViewTab,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import {
-  VisuallyHidden,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -47,9 +46,9 @@ import {
 import { QUICK_LINKS } from '../constants/quick-links';
 import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
 
-// Split into its own chunk, and only mounted while its tab is active, so the
-// weather card's code, geolocation prompt and requests stay off the initial
-// page load.
+// Split into its own chunk so the weather card's code stays off the critical
+// path. The tab force-mounts it, so once the chunk loads it locates and
+// fetches once and switching to Weather is instant.
 const WeatherView = dynamic(
   () => import('./weather-view').then(module => module.WeatherView),
   { ssr: false },
@@ -68,7 +67,12 @@ const EVENT_CALENDARS_API = '/api/event-calendars';
 
 const HIDDEN_CALENDARS_STORAGE_KEY = 'vb-manager-hidden-event-calendars';
 
+const TAB_STORAGE_KEY = 'vb-manager-mobile-tab';
+
 const TAB_ICON_SIZE = 18;
+
+// Tailwind's sm breakpoint, where the dialog stops being full screen.
+const DESKTOP_MEDIA_QUERY = '(min-width: 640px)';
 
 // Tab content isn't a flex child, so size the editor to the viewport minus
 // the top bar and tab row.
@@ -78,6 +82,37 @@ const CALENDAR_TABS = Object.values(CALENDAR_TAB);
 
 const EVENTS_API = '/api/calendar/events';
 const FETCH_ERROR = 'Failed to load calendar events.';
+
+const findTab = (value: string | null | undefined) =>
+  CALENDAR_TABS.find(name => name === value);
+
+const readStoredTab = () => {
+  try {
+    return findTab(window.localStorage.getItem(TAB_STORAGE_KEY));
+  } catch {
+    return undefined;
+  }
+};
+
+const writeStoredTab = (value: CalendarTab) => {
+  try {
+    window.localStorage.setItem(TAB_STORAGE_KEY, value);
+  } catch {
+    // Storage can be unavailable (private mode); the tab just isn't remembered.
+  }
+};
+
+const replaceTabQueryParam = (value: CalendarTab) => {
+  const params = new URLSearchParams(window.location.search);
+  if (value === CALENDAR_TAB.CALENDAR) params.delete(CALENDAR_TAB_QUERY_PARAM);
+  else params.set(CALENDAR_TAB_QUERY_PARAM, value);
+  const query = params.toString();
+  window.history.replaceState(
+    null,
+    '',
+    query ? `?${query}` : window.location.pathname,
+  );
+};
 
 const eventsApiUrl = (extraCalendarIds: string[]) => {
   const params = new URLSearchParams();
@@ -110,14 +145,30 @@ export const HomeView = () => {
   const [eventCalendarsLoaded, setEventCalendarsLoaded] = useState(false);
   const [eventCalendarsError, setEventCalendarsError] = useState(false);
   const searchParams = useSearchParams();
-  const [tab, setTab] = useState<CalendarTab>(() => {
-    const requested = searchParams.get(CALENDAR_TAB_QUERY_PARAM);
-    return (
-      CALENDAR_TABS.find(name => name === requested) ?? CALENDAR_TAB.CALENDAR
-    );
-  });
+  const [tab, setTab] = useState<CalendarTab>(
+    () =>
+      findTab(searchParams.get(CALENDAR_TAB_QUERY_PARAM)) ??
+      CALENDAR_TAB.CALENDAR,
+  );
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
   const isMobile = useIsMobileBrowser();
+
+  // localStorage is read after mount, not in the useState initializer, so the
+  // server-rendered markup matches the first client render.
+  useEffect(() => {
+    if (
+      findTab(
+        new URLSearchParams(window.location.search).get(
+          CALENDAR_TAB_QUERY_PARAM,
+        ),
+      )
+    )
+      return;
+    const stored = readStoredTab();
+    if (!stored || stored === CALENDAR_TAB.CALENDAR) return;
+    setTab(stored);
+    replaceTabQueryParam(stored);
+  }, []);
 
   useEffect(() => {
     setHiddenIds(new Set(readHiddenCalendarIds(HIDDEN_CALENDARS_STORAGE_KEY)));
@@ -217,15 +268,8 @@ export const HomeView = () => {
 
   const handleTabChange = (next: CalendarTab) => {
     setTab(next);
-    const params = new URLSearchParams(window.location.search);
-    if (next === CALENDAR_TAB.CALENDAR) params.delete(CALENDAR_TAB_QUERY_PARAM);
-    else params.set(CALENDAR_TAB_QUERY_PARAM, next);
-    const query = params.toString();
-    window.history.replaceState(
-      null,
-      '',
-      query ? `?${query}` : window.location.pathname,
-    );
+    writeStoredTab(next);
+    replaceTabQueryParam(next);
   };
 
   const tabs: TabbedViewTab<CalendarTab>[] = [
@@ -293,6 +337,8 @@ export const HomeView = () => {
       value: CALENDAR_TAB.WEATHER,
       label: CALENDAR_TAB.WEATHER,
       icon: <CloudSun size={TAB_ICON_SIZE} />,
+      // Force-mounted so the weather loads once on page load, not per visit.
+      forceMount: true,
       content: <WeatherView />,
     },
   ];
@@ -304,38 +350,50 @@ export const HomeView = () => {
         value={tab}
         onValueChange={handleTabChange}
         actions={
-          tab !== CALENDAR_TAB.TASKS && (
-            <button
-              type="button"
-              onClick={() => setCreateOpen(true)}
-              aria-label="Create calendar event"
-              title="Create calendar event"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
-            >
-              <CalendarPlus size={18} />
-            </button>
-          )
+          <button
+            type="button"
+            onClick={() => setCreateOpen(true)}
+            aria-label="Create calendar event"
+            title="Create calendar event"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
+          >
+            <CalendarPlus size={18} />
+          </button>
         }
       />
 
       <Dialog open={createOpen} onOpenChange={handleCreateOpenChange}>
         <DialogContent
-          className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+          fullScreenOnMobile
+          className="flex flex-col gap-0 overflow-hidden p-0 max-sm:!overflow-hidden sm:max-h-[90dvh] sm:w-[calc(100%-2rem)] sm:max-w-[600px]"
           aria-describedby={undefined}
           showCloseButton={false}
-          style={{
-            maxWidth: '95vw',
-            width: '95vw',
-            maxHeight: '90vh',
-            overflowY: 'auto',
+          onOpenAutoFocus={event => {
+            // Focusing the textarea on a phone pops the keyboard before the
+            // user asks for it; Radix would otherwise focus the Close button.
+            event.preventDefault();
+            if (!window.matchMedia(DESKTOP_MEDIA_QUERY).matches) return;
+            (event.currentTarget as HTMLElement)
+              .querySelector('textarea')
+              ?.focus();
           }}
         >
-          <VisuallyHidden>
-            <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
-              Create Calendar Event
-            </DialogTitle>
-          </VisuallyHidden>
-          <CalendarInput />
+          <CalendarInput
+            header={
+              <div className="flex shrink-0 items-center justify-between gap-3 border-b border-gray-200 px-4 pb-3 pt-[max(env(safe-area-inset-top),0.75rem)] sm:px-6 sm:pt-6">
+                <DialogTitle className="text-xl font-bold leading-7 tracking-normal">
+                  Create Calendar Event
+                </DialogTitle>
+                <button
+                  type="button"
+                  onClick={() => handleCreateOpenChange(false)}
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100"
+                >
+                  Close
+                </button>
+              </div>
+            }
+          />
         </DialogContent>
       </Dialog>
     </>

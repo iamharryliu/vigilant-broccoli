@@ -195,23 +195,33 @@ export const CalendarAgenda = ({
     [events, hiddenIds],
   );
 
-  // Scrolls once, when events first render. Later renders (the minute tick,
-  // refetches, visibility toggles) must not move the list under the user.
+  // Scrolls once, when events first render with layout. Later renders (the
+  // minute tick, refetches, visibility toggles) must not move the list under
+  // the user. When the force-mounted Calendar tab is hidden (a restored
+  // non-Calendar tab) there is no layout yet, so wait until it is shown.
   useLayoutEffect(() => {
     if (hasAutoScrolledRef.current || agendaGroups === null) return;
-    hasAutoScrolledRef.current = true;
     const scroller = scrollerRef.current;
     const nowLine = nowLineRef.current;
     const todayHeading = todayHeadingRef.current;
-    // No layout while the force-mounted Calendar tab is hidden.
-    if (
-      !scroller ||
-      !nowLine ||
-      !todayHeading ||
-      nowLine.getClientRects().length === 0
-    )
+    if (!scroller || !nowLine || !todayHeading) {
+      hasAutoScrolledRef.current = true;
       return;
-    scrollNowLineIntoView(scroller, nowLine, todayHeading);
+    }
+
+    const scrollIfLaidOut = () => {
+      if (nowLine.getClientRects().length === 0) return false;
+      hasAutoScrolledRef.current = true;
+      scrollNowLineIntoView(scroller, nowLine, todayHeading);
+      return true;
+    };
+
+    if (scrollIfLaidOut()) return;
+    const observer = new ResizeObserver(() => {
+      if (scrollIfLaidOut()) observer.disconnect();
+    });
+    observer.observe(scroller);
+    return () => observer.disconnect();
   }, [agendaGroups]);
 
   return (
