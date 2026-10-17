@@ -281,7 +281,12 @@ export function useOnlineRoom({
           : snapshotRef.current.wins;
       const next = { ...snapshotRef.current, wins, match: state };
       snapshotRef.current = next;
-      if (over || state.tick % SNAPSHOT_EVERY_TICKS === 0) publish(next);
+      // `tick` is frozen during the start countdown, so pace by both.
+      if (
+        over ||
+        (state.tick + state.startCountdown) % SNAPSHOT_EVERY_TICKS === 0
+      )
+        publish(next);
       else setSnapshot(next);
     }, TICK_MS);
     return () => window.clearInterval(interval);

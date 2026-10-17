@@ -19,12 +19,13 @@ A Bomberman-style arena game at `balloono.harryliu.dev`: drop water balloons, so
 
 Balloono requires a desktop or laptop with a keyboard and a browser viewport at least 1024 CSS pixels wide. Narrow viewports and devices whose primary pointer is coarse with no hover show a desktop-required message. The device check runs before mounting auth, room presence or gameplay, and responds to viewport/input changes. Touch controls are removed.
 
-The home screen places the account control and name field above a two-column layout. The main column shows room creation, joining by room name and available rooms immediately, followed by expandable offline CPU settings. Room cards show player counts, the number still needed, countdown seconds or an in-progress Watch action. Hosts advertise the countdown deadline only when it changes; each viewer updates the displayed seconds locally. Older advertisements without a deadline still render.
+The home screen places the account control, a settings button and the name field above a two-column layout. The main column shows room creation, joining by room name and available rooms immediately, followed by expandable offline CPU settings. Room cards show player counts, the number still needed, countdown seconds or an in-progress Watch action. Hosts advertise the countdown deadline only when it changes; each viewer updates the displayed seconds locally. Older advertisements without a deadline still render.
 
-The sidebar shows three personal counters with an expandable full breakdown, a top-five leaderboard preview with a full ranking dialog, and keyboard controls. The dialog uses shared `react-lib` components, retains ten-row pagination and refresh, and follows the active light/dark theme.
+The sidebar shows three personal counters with an expandable full breakdown, a top-five leaderboard preview with a full ranking dialog, and a Controls button that opens the controls guide. The dialog uses shared `react-lib` components, retains ten-row pagination and refresh, and follows the active light/dark theme.
 
 ## Rules
 
+- Every round opens with a 3-2-1 countdown over the board. Nobody can move or drop balloons and the match clock stays at zero until it ends.
 - Arena size is selected at the start of each round: 13×11 for 1–4 contenders, 15×13 for 5–7, and 17×15 for 8. Humans, local players, and CPUs count; spectators do not. Dimensions stay fixed if players leave and are recalculated for the next round.
 - Fixed pillars and random crates fill the arena. Spawns occupy the four corners and the middle of each edge, with neighbouring tiles kept clear around occupied spawns. Up to eight contenders: online rooms seat human players only; offline matches support CPUs.
 - A balloon pops 2.5 s after it is dropped and splashes in a plus shape up to its range, which starts at one tile. The splash stops at pillars, and also at the first crate it breaks. It sets off any balloon it reaches. Power-ups stay until a player picks them up.
@@ -37,7 +38,7 @@ The sidebar shows three personal counters with an expandable full breakdown, a t
 `src/app/engine/` is pure TypeScript with no React and no network, so the same code runs the local game and an online host.
 
 - Match state carries its arena dimensions, round id, a two-second history of numbered pop, pickup, and splash-hit events, and a per-player `tally` (balloons dropped, opponents soaked, pickups by type, ticks alive). Board helpers, CPU paths, closure order, and canvas rendering use those dimensions.
-- `advanceMatch` (`match.ts`) steps one 50 ms tick from a state and a map of inputs, and returns a new state.
+- `advanceMatch` (`match.ts`) steps one 50 ms tick from a state and a map of inputs, and returns a new state. While `startCountdown` is above zero it only decrements that, so `tick`, sudden death and `ticksAlive` start after the countdown; the online host paces snapshots by `tick + startCountdown`.
 - Movement is continuous. A player is a box slightly narrower than a tile and can sit between tiles, sliding toward a lane's centre to cut corners. They count as standing on the tile their centre is over (`occupiedTile`). CPU bots send `snap` inputs so they stop on tile centres, which is where they decide.
 - `dangerMap` (`board.ts`) gives the ticks until each tile is soaked. It follows chain reactions and includes sudden-death closures. The CPU uses it, and so does the renderer's warning overlay.
 
@@ -93,12 +94,14 @@ Supabase shares the project’s 500 MB database, 5 GB monthly egress, 50,000 mon
 
 ## Controls
 
-- Keyboard: arrow keys or WASD to move, Space, Enter or X to drop a balloon. The most recently pressed held direction wins.
-- Local second player (Versus CPU only): ticking **Add local player** gives player 1 the arrow keys and Enter, and player 2 WASD and Space. It leaves room for six CPUs.
+- Keyboard: by default arrow keys or WASD to move, Enter or Space to drop a balloon. The most recently pressed held direction wins.
+- Settings: the gear in the home header (home screen only) opens a dialog for rebinding keys. Player 1 has two keys per action and player 2 one; clicking a slot waits for the next key, Escape cancels, and binding a key clears it from that player's other actions. Bindings persist in `localStorage` (`balloono-key-bindings`) and can be reset to defaults.
+- Local second player (Versus CPU only): ticking **Add local player** activates player 2's keys, which take priority over any matching player 1 keys; the defaults leave player 1 on the arrow keys and Enter, and player 2 on WASD and Space. It leaves room for six CPUs.
+- Controls guide: the `?` button beside the power-up legend in every match opens a dialog with each active player's effective keys, animated keycaps and a looping demo of moving and dropping a balloon. Animations stop under reduced motion.
 
 ## Sound effects
 
-Short synthesized Web Audio effects distinguish balloon pops, power-up pickups, and players getting soaked by a splash. They play in CPU matches, local multiplayer, and online rooms. No audio assets or background music are downloaded.
+Short synthesized Web Audio effects distinguish balloon pops, power-up pickups, and players getting soaked by a splash. The start countdown beeps on 3, 2 and 1 and plays a higher tone on go; each client derives the beeps from the countdown seconds in its own state, so guests hear them from snapshots. They play in CPU matches, local multiplayer, and online rooms. No audio assets or background music are downloaded.
 
 Audio unlocks after a pointer or keyboard gesture. The match panel provides a mute/unmute button whose preference persists. Concurrent effects are limited to six voices so chain reactions stay quiet enough to follow.
 
@@ -109,6 +112,8 @@ Numbered events travel in snapshots so guests do not miss a pop between broadcas
 - CPU match at each difficulty: bots break crates, collect power-ups, flee their own balloons, and sudden death starts at 2:00.
 - Four browsers in one room: the room appears in the other browser's directory, and a guest's moves and balloons show on the host. Closing the host tab mid-match hands the game to the guest.
 - Arena tiers: start rounds with 4, 5, 6, 7, and 8 contenders; verify dimensions, spawns, free movement, bot navigation, closure warnings, and canvas aspect ratio.
+- Controls: rebind keys in Settings, then check CPU, local 2-player and online matches use them, the `?` guide shows the effective keys, Escape cancels a rebind without closing the dialog, and bindings survive a reload.
+- Countdown: CPU, local 2-player and online rounds show 3, 2, 1 with a beep each and a go tone; inputs are ignored until it ends, and sudden death still starts 2:00 after it.
 - Audio: pop a balloon, collect an item, and get hit by a splash; verify distinct sounds, chain reactions, mute persistence, and no duplicate playback online.
 - Light and dark OS theme: the board redraws in the matching palette.
 - Accounts: with a Supabase env, sign in; the header shows your name and a sign-out button, and the stats panel appears. Signed out or without env, neither shows and CPU play is unchanged.

@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
+import { CircleHelp, Dices } from 'lucide-react';
 import { Button, CardContainer, Input } from '@vigilant-broccoli/react-lib';
 import { APP_NAME, normalizeRoomName, ONLINE_AVAILABLE } from '../app.consts';
 import { Difficulty } from '../engine/game.types';
@@ -9,12 +10,12 @@ import { RoomListing } from '../hooks/useRoomDirectory';
 import { useTranslation } from '../i18n';
 import { usePageTitle } from '../use-page-title';
 import { AccountControl } from './AccountControl';
+import { ControlsHelpDialog } from './ControlsHelpDialog';
 import { StatsPanel } from './StatsPanel';
 import { LeaderboardPanel } from './LeaderboardPanel';
 import { OfflinePractice } from './OfflinePractice';
 import { RoomDirectory } from './RoomDirectory';
-
-const RANDOMIZE_ICON = '🎲';
+import { SettingsDialog } from './SettingsDialog';
 
 export function HomeScreen({
   username,
@@ -51,7 +52,10 @@ export function HomeScreen({
             {t('HOME.TAGLINE')}
           </p>
         </div>
-        <AccountControl />
+        <div className="flex items-center gap-2">
+          <AccountControl />
+          <SettingsDialog />
+        </div>
       </header>
       <div className="flex items-center gap-3">
         <label htmlFor="player-name" className="shrink-0 text-sm font-medium">
@@ -72,7 +76,7 @@ export function HomeScreen({
             title={t('PROFILE.RANDOM_NAME')}
             onClick={() => onUsernameChange(randomPhrase())}
           >
-            {RANDOMIZE_ICON}
+            <Dices className="h-4 w-4" aria-hidden />
           </Button>
         </div>
       </div>
@@ -126,9 +130,14 @@ export function HomeScreen({
           <LeaderboardPanel />
           <CardContainer title={t('HOME.HOW_TO_PLAY')}>
             <p className="text-sm text-muted-foreground">{t('HOME.GOAL')}</p>
-            <p className="text-xs text-muted-foreground">
-              {t('MATCH.CONTROLS_HINT')}
-            </p>
+            <ControlsHelpDialog
+              trigger={
+                <Button variant="outline" size="sm" className="self-start">
+                  <CircleHelp className="h-4 w-4" aria-hidden />
+                  {t('HOME.CONTROLS')}
+                </Button>
+              }
+            />
           </CardContainer>
         </aside>
       </div>
