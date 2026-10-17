@@ -3,6 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
+source "${SCRIPT_DIR}/lib/vault-ops-token.sh"
 source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
 
 INIT_OUTPUT=$(gcloud compute ssh "${VM_NAME}" \
@@ -42,6 +43,22 @@ else
   VAULT_TOKEN="$ROOT_TOKEN"
 fi
 
+# After revoke-vault-root-token.sh the stored root token is dead; tf:apply runs
+# this script on every apply, so skip the root-only bootstrap instead of failing.
+ROOT_TOKEN_STATUS=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
+export VAULT_ADDR=https://127.0.0.1:8200
+export VAULT_CACERT=/etc/vault/tls/vault.crt
+vault token lookup >/dev/null 2>&1 && echo VALID || echo INVALID
+' VAULT_TOKEN "$VAULT_TOKEN" 2>/dev/null | tr -d '[:space:]' || true)
+if [ "$ROOT_TOKEN_STATUS" != "VALID" ]; then
+  echo "Root token revoked/unavailable — skipping Vault policy/role bootstrap."
+  echo "To re-run it, mint one with 'vault operator generate-root' (recovery keys in VB_VM_VAULT_UNSEAL_KEYS) and run: VAULT_TOKEN=<token> pnpm gcp:vm:post-init"
+  exit 0
+fi
+
+# The root token is only ever used here, to bootstrap auth methods/policies/roles,
+# and in revoke-vault-root-token.sh. It's piped over stdin rather than
+# interpolated into --command so it never appears in `ps` on the VM.
 echo "Configuring Vault..."
 gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" "
 set -e
@@ -82,6 +99,34 @@ path \"${VAULT_KV_PATH}/data/test\" {
 }
 POLICY
 
+echo 'Writing policy ${VAULT_OPS_POLICY_NAME}...'
+vault policy write ${VAULT_OPS_POLICY_NAME} - <<POLICY
+path \"${VAULT_KV_PATH}/data/secrets\" {
+  capabilities = [\"read\", \"create\", \"update\", \"patch\"]
+}
+path \"${VAULT_KV_PATH}/data/secrets/*\" {
+  capabilities = [\"read\", \"create\", \"update\", \"patch\"]
+}
+path \"${VAULT_KV_PATH}/data/ci-pr-check\" {
+  capabilities = [\"create\", \"update\", \"patch\"]
+}
+path \"${VAULT_KV_PATH}/data/deploy-preview\" {
+  capabilities = [\"create\", \"update\", \"patch\"]
+}
+path \"${VAULT_KV_PATH}/data/production-promotion\" {
+  capabilities = [\"create\", \"update\", \"patch\"]
+}
+path \"sys/seal\" {
+  capabilities = [\"update\", \"sudo\"]
+}
+path \"auth/approle/role/${VAULT_OPS_ROLE_NAME}/secret-id\" {
+  capabilities = [\"update\"]
+}
+path \"auth/approle/role/${VAULT_OPS_ROLE_NAME}/secret-id/destroy\" {
+  capabilities = [\"update\"]
+}
+POLICY
+
 # ref is bound alongside repository: without it any job in the repo -- including
 # a pull_request run of a branch-edited workflow, which the agent-sandbox /
 # code-server GitHub App can push -- could read every deploy secret. main and
@@ -118,6 +163,18 @@ vault write auth/jwt/role/${VAULT_ROTATE_ROLE_NAME} - <<ROLE
   \"ttl\": \"30m\"
 }
 ROLE
+
+echo 'Enabling AppRole auth...'
+vault auth enable approle 2>/dev/null || echo '  already enabled'
+
+echo 'Creating AppRole ${VAULT_OPS_ROLE_NAME}...'
+vault write auth/approle/role/${VAULT_OPS_ROLE_NAME} \
+  token_policies=${VAULT_OPS_POLICY_NAME} \
+  token_ttl=15m \
+  token_max_ttl=30m \
+  secret_id_ttl=90d \
+  secret_id_bound_cidrs=${VAULT_OPS_BOUND_CIDRS} \
+  token_bound_cidrs=${VAULT_OPS_BOUND_CIDRS}
 
 # ci-pr-check.yml is pull_request-triggered — it runs the workflow YAML from
 # the PR branch itself, so (unlike every other consumer of this script's
@@ -255,3 +312,38 @@ vault kv put ${VAULT_KV_PATH}/test test=test
 
 echo 'Done.'
 " VAULT_TOKEN "$VAULT_TOKEN"
+
+echo "Fetching AppRole role_id for ${VAULT_OPS_ROLE_NAME}..."
+OPS_ROLE_ID=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
+set -e
+export VAULT_ADDR=https://127.0.0.1:8200
+export VAULT_CACERT=/etc/vault/tls/vault.crt
+
+vault read -field=role_id auth/approle/role/'"${VAULT_OPS_ROLE_NAME}"'/role-id
+' VAULT_TOKEN "$VAULT_TOKEN" 2>/dev/null | tr -d '[:space:]')
+require_value "${VAULT_OPS_ROLE_NAME} role_id" "$OPS_ROLE_ID"
+
+echo -n "$OPS_ROLE_ID" | gcloud secrets versions add VB_VM_VAULT_OPS_ROLE_ID \
+  --data-file=- --project="${GCP_PROJECT}"
+
+if gcloud secrets versions list VB_VM_VAULT_OPS_SECRET_ID --project="${GCP_PROJECT}" \
+  --format="value(name)" 2>/dev/null | grep -q .; then
+  echo "AppRole secret_id already present in Secret Manager — leaving it in place (rotate with pnpm secret-rotation:vault-ops)."
+else
+  echo "Generating AppRole secret_id for ${VAULT_OPS_ROLE_NAME}..."
+  OPS_SECRET_ID=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
+set -e
+export VAULT_ADDR=https://127.0.0.1:8200
+export VAULT_CACERT=/etc/vault/tls/vault.crt
+
+vault write -f -field=secret_id auth/approle/role/'"${VAULT_OPS_ROLE_NAME}"'/secret-id
+' VAULT_TOKEN "$VAULT_TOKEN" 2>/dev/null | tr -d '[:space:]')
+  require_value "${VAULT_OPS_ROLE_NAME} secret_id" "$OPS_SECRET_ID"
+
+  echo -n "$OPS_SECRET_ID" | gcloud secrets versions add VB_VM_VAULT_OPS_SECRET_ID \
+    --data-file=- --project="${GCP_PROJECT}"
+  echo "AppRole role_id/secret_id saved to Secret Manager."
+fi
+
+echo "Operator scripts now authenticate via ${VAULT_OPS_ROLE_NAME} instead of the root token."
+echo "Once you've verified them, run ./revoke-vault-root-token.sh to revoke the root token (recovery keys stay valid)."

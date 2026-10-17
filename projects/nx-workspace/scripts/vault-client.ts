@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { getVaultToken } from './gcp-vault-token';
+import { getVaultOpsCredentials } from './gcp-vault-token';
 
 const DEFAULT_VAULT_ADDR = 'https://10.0.1.1:8200';
 const VAULT_CA_CERT = path.join(
@@ -15,7 +15,8 @@ export const VAULT_SECRET_PATH = 'kv/data/secrets';
 
 // CI reaches Vault at vault.harryliu.dev behind a Cloudflare Access service
 // token (VAULT_ADDR + CF_ACCESS_* env). Local runs default to the WireGuard
-// address with the self-signed CA.
+// address with the self-signed CA and log in via the vb-ops AppRole unless
+// VAULT_TOKEN is already set.
 export async function createVaultClient() {
   const vaultAddr = process.env.VAULT_ADDR || DEFAULT_VAULT_ADDR;
   const cfAccessClientId = process.env.CF_ACCESS_CLIENT_ID;
@@ -33,13 +34,15 @@ export async function createVaultClient() {
 
   console.error(`Connecting to Vault at ${vaultAddr}...`);
 
+  const envToken = process.env.VAULT_TOKEN;
   const nodeVault = await import('node-vault');
   const client = nodeVault.default({
     apiVersion: 'v1',
     endpoint: vaultAddr,
-    token: getVaultToken(),
+    token: envToken,
     requestOptions,
   });
+  if (!envToken) await client.approleLogin(getVaultOpsCredentials());
 
   // node-vault's built-in update() (KV v2 patch) overwrites the request
   // headers outright instead of merging, which drops the CF-Access-* headers

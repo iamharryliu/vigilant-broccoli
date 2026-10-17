@@ -66,10 +66,7 @@
       }
     },
     "serve": {
-      "dependsOn": [
-        "generate-openapi",
-        "generate-repo-timeline"
-      ],
+      "dependsOn": ["generate-openapi", "generate-repo-timeline"],
       "defaultConfiguration": "development",
       "configurations": {
         "development": {},

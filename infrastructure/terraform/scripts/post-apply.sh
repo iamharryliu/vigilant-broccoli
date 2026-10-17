@@ -3,6 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../config.sh"
+source "${SCRIPT_DIR}/../packer/scripts/lib/vault-ops-token.sh"
 source "${SCRIPT_DIR}/../../lib/ssh-secrets.sh"
 source "${SCRIPT_DIR}/../../lib/oci-local-config.sh"
 
@@ -14,9 +15,6 @@ CURRENT_IP=$(grep 'Endpoint' "$WG_CONF" | sed 's/.*= \(.*\):.*/\1/')
 
 sync_secrets_to_vault() {
   echo "Syncing secrets to Vault..."
-
-  local vm_name="${VM_NAME}"
-  local vm_zone="${GCP_ZONE}"
 
   cd "$TERRAFORM_DIR"
   local state_json
@@ -67,11 +65,8 @@ sync_secrets_to_vault() {
     return
   fi
 
-  local vault_token
-  vault_token=$(gcloud secrets versions access latest --secret="VB_VM_VAULT_ROOT_TOKEN" 2>/dev/null || echo "")
-
-  if [ -z "$vault_token" ]; then
-    echo "Warning: Vault root token not found in GCP Secret Manager. Skipping Vault sync."
+  if ! fetch_vault_ops_credentials 2>/dev/null; then
+    echo "Warning: Vault ops AppRole credentials not found in GCP Secret Manager. Skipping Vault sync."
     return
   fi
 
@@ -115,92 +110,68 @@ sync_secrets_to_vault() {
     echo "Broker rejects the Terraform password (rotation owns it) — leaving RABBITMQ_CONNECTION_STRING in Vault untouched."
   fi
 
-  local rmq_conn_patch_arg=""
-  if [ "$rmq_conn_patch_needed" = true ]; then
-    rmq_conn_patch_arg='RABBITMQ_CONNECTION_STRING="$RMQ_CONN_STR"'
-  fi
+  local ca_cert_b64=$(echo "$ca_cert" | base64 -w 0)
+  # Trailing newline is required — $(...) strips it, and OpenSSH/libcrypto reject a key without it.
+  local ci_ssh_key_b64=$(printf '%s\n' "$ci_ssh_private_key" | base64 -w 0)
+  local socket_server_url="https://socket.harryliu.dev"
+
+  local kv_json
+  kv_json=$(jq -n \
+    --arg RABBITMQ_CA_CERT "$ca_cert_b64" \
+    --arg EMAIL_SERVICE_API_KEY "$email_api_key" \
+    --arg GOOGLE_GCS_SA_CREDENTIALS "$gcs_sa_credentials" \
+    --arg GOOGLE_CALENDAR_SA_CREDENTIALS "$google_calendar_sa_credentials" \
+    --arg CODE_SERVER_PASSWORD "$code_server_password" \
+    --arg SOCKET_SERVER_URL "$socket_server_url" \
+    --arg OCI_VM_SSH_KEY "$ci_ssh_key_b64" \
+    --arg GITEA_CF_ACCESS_CLIENT_ID "$gitea_cf_access_client_id" \
+    --arg GITEA_CF_ACCESS_CLIENT_SECRET "$gitea_cf_access_client_secret" \
+    --arg GITEA_VM_IP "$gitea_ip" \
+    --arg CODE_SERVER_CF_ACCESS_CLIENT_ID "$code_server_cf_access_client_id" \
+    --arg CODE_SERVER_CF_ACCESS_CLIENT_SECRET "$code_server_cf_access_client_secret" \
+    --arg CODE_SERVER_VM_IP "$code_server_ip" \
+    '$ARGS.named')
 
   # nx-cache tokens aren't in the required-secrets guard above (they're
   # unrelated to VM bootstrap) so they can legitimately be absent — e.g.
-  # before cloudflare-nx-cache.tf has ever been applied. ssh-secrets.sh
-  # aborts the whole remote script on any empty secret value, so each arg
-  # (and its matching NAME/VALUE pair below) must be omitted entirely rather
-  # than passed as an empty string.
+  # before cloudflare-nx-cache.tf has ever been applied.
   #
   # The read token deliberately does NOT go into kv/secrets (-> kv/data/secrets)
   # alongside the write token: ci-pr-check.yml (pull_request-triggered, so
   # reachable by anyone who gets a PR check to run) reads it from the
   # isolated kv/ci-pr-check path instead, via github-actions-pr-check-role,
   # whose policy can only read that one path — not the whole secret store.
-  local nx_cache_write_patch_arg=""
   if [ -n "$nx_cache_write_token" ]; then
-    nx_cache_write_patch_arg='NX_CACHE_WRITE_TOKEN="$NX_CACHE_WRITE_TOKEN"'
+    kv_json=$(jq --arg v "$nx_cache_write_token" '. + {NX_CACHE_WRITE_TOKEN: $v}' <<<"$kv_json")
   fi
 
-  # Same optional treatment as the nx-cache tokens: absent until
-  # aws-grafana.tf has been applied. Consumed by `pnpm logs:shipper:deploy`.
-  local loki_push_patch_arg=""
+  # Same optional treatment: absent until aws-grafana.tf has been applied.
+  # Consumed by `pnpm logs:shipper:deploy`.
   if [ -n "$loki_push_password" ]; then
-    loki_push_patch_arg='LOKI_PUSH_PASSWORD="$LOKI_PUSH_PASSWORD"'
+    kv_json=$(jq --arg v "$loki_push_password" '. + {LOKI_PUSH_PASSWORD: $v}' <<<"$kv_json")
   fi
 
-  local nx_cache_read_put_cmd=""
-  if [ -n "$nx_cache_read_token" ]; then
-    nx_cache_read_put_cmd='vault kv put kv/ci-pr-check NX_CACHE_READ_TOKEN="$NX_CACHE_READ_TOKEN"'
+  # First-run seed always sets RABBITMQ_CONNECTION_STRING; an update only does
+  # when the broker accepts the Terraform password (see above).
+  local kv_put_json
+  kv_put_json=$(jq --arg v "$conn_str" '. + {RABBITMQ_CONNECTION_STRING: $v}' <<<"$kv_json")
+  local kv_patch_json="$kv_json"
+  if [ "$rmq_conn_patch_needed" = true ]; then
+    kv_patch_json="$kv_put_json"
   fi
 
-  local ca_cert_b64=$(echo "$ca_cert" | base64 -w 0)
-  # Trailing newline is required — $(...) strips it, and OpenSSH/libcrypto reject a key without it.
-  local ci_ssh_key_b64=$(printf '%s\n' "$ci_ssh_private_key" | base64 -w 0)
-  local socket_server_url="https://socket.harryliu.dev"
-
-  # Everything below is sent to the remote shell as literal (single-quoted)
-  # text — no local variable ever gets embedded into the command string.
-  # Actual values are decoded from stdin by gcloud_ssh_secrets before this
-  # script body runs, so they never appear in `ps`/`/proc/*/cmdline`.
+  # Payloads are decoded from stdin by gcloud_ssh_secrets and piped into
+  # `vault kv put/patch ... -`, so no secret value reaches any argv on the VM.
   local vault_script='
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-
 if vault kv get kv/secrets >/dev/null 2>&1; then
-  vault kv patch kv/secrets \
-    RABBITMQ_CA_CERT="$CA_CERT_B64" \
-    '"${rmq_conn_patch_arg}"' \
-    EMAIL_SERVICE_API_KEY="$EMAIL_API_KEY" \
-    GOOGLE_GCS_SA_CREDENTIALS="$GCS_SA_CREDENTIALS" \
-    GOOGLE_CALENDAR_SA_CREDENTIALS="$GOOGLE_CALENDAR_SA_CREDENTIALS" \
-    CODE_SERVER_PASSWORD="$CODE_SERVER_PASSWORD" \
-    SOCKET_SERVER_URL="$SOCKET_SERVER_URL" \
-    OCI_VM_SSH_KEY="$CI_SSH_KEY_B64" \
-    GITEA_CF_ACCESS_CLIENT_ID="$GITEA_CF_ACCESS_CLIENT_ID" \
-    GITEA_CF_ACCESS_CLIENT_SECRET="$GITEA_CF_ACCESS_CLIENT_SECRET" \
-    GITEA_VM_IP="$GITEA_IP" \
-    CODE_SERVER_CF_ACCESS_CLIENT_ID="$CODE_SERVER_CF_ACCESS_CLIENT_ID" \
-    CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
-    CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
-    '"${nx_cache_write_patch_arg}"' \
-    '"${loki_push_patch_arg}"'
+  printf "%s" "$KV_PATCH_JSON" | vault kv patch kv/secrets -
 else
-  vault kv put kv/secrets \
-    RABBITMQ_CA_CERT="$CA_CERT_B64" \
-    RABBITMQ_CONNECTION_STRING="$RMQ_CONN_STR" \
-    EMAIL_SERVICE_API_KEY="$EMAIL_API_KEY" \
-    GOOGLE_GCS_SA_CREDENTIALS="$GCS_SA_CREDENTIALS" \
-    GOOGLE_CALENDAR_SA_CREDENTIALS="$GOOGLE_CALENDAR_SA_CREDENTIALS" \
-    CODE_SERVER_PASSWORD="$CODE_SERVER_PASSWORD" \
-    SOCKET_SERVER_URL="$SOCKET_SERVER_URL" \
-    OCI_VM_SSH_KEY="$CI_SSH_KEY_B64" \
-    GITEA_CF_ACCESS_CLIENT_ID="$GITEA_CF_ACCESS_CLIENT_ID" \
-    GITEA_CF_ACCESS_CLIENT_SECRET="$GITEA_CF_ACCESS_CLIENT_SECRET" \
-    GITEA_VM_IP="$GITEA_IP" \
-    CODE_SERVER_CF_ACCESS_CLIENT_ID="$CODE_SERVER_CF_ACCESS_CLIENT_ID" \
-    CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
-    CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
-    '"${nx_cache_write_patch_arg}"' \
-    '"${loki_push_patch_arg}"'
+  printf "%s" "$KV_PUT_JSON" | vault kv put kv/secrets -
 fi
 
-'"${nx_cache_read_put_cmd}"'
+if [ -n "${NX_CACHE_READ_TOKEN:-}" ]; then
+  printf "%s" "$NX_CACHE_READ_TOKEN" | vault kv put kv/ci-pr-check NX_CACHE_READ_TOKEN=-
+fi
 
 # deploy-preview.yml can only read kv/data/deploy-preview, so the two
 # Cloudflare Pages credentials it needs are mirrored there. Read back out of
@@ -221,40 +192,17 @@ fi
 echo "Secrets synced to Vault"
 '
 
-  # _secrets_prelude aborts the whole remote script on any empty value, so
-  # each pair is only appended when that token actually exists — independent
-  # of each other, since they now go to two different Vault paths.
+  # _secrets_prelude aborts the whole remote script on any empty value, so the
+  # read token pair is only appended when it actually exists.
   local nx_cache_secret_args=()
-  if [ -n "$nx_cache_write_token" ]; then
-    nx_cache_secret_args+=(NX_CACHE_WRITE_TOKEN "$nx_cache_write_token")
-  fi
   if [ -n "$nx_cache_read_token" ]; then
     nx_cache_secret_args+=(NX_CACHE_READ_TOKEN "$nx_cache_read_token")
   fi
 
-  local loki_push_secret_args=()
-  if [ -n "$loki_push_password" ]; then
-    loki_push_secret_args+=(LOKI_PUSH_PASSWORD "$loki_push_password")
-  fi
-
-  gcloud_ssh_secrets "${vm_name}" "${vm_zone}" "$vault_script" \
-    VAULT_TOKEN "$vault_token" \
-    CA_CERT_B64 "$ca_cert_b64" \
-    RMQ_CONN_STR "$conn_str" \
-    EMAIL_API_KEY "$email_api_key" \
-    GCS_SA_CREDENTIALS "$gcs_sa_credentials" \
-    GOOGLE_CALENDAR_SA_CREDENTIALS "$google_calendar_sa_credentials" \
-    CODE_SERVER_PASSWORD "$code_server_password" \
-    SOCKET_SERVER_URL "$socket_server_url" \
-    CI_SSH_KEY_B64 "$ci_ssh_key_b64" \
-    GITEA_CF_ACCESS_CLIENT_ID "$gitea_cf_access_client_id" \
-    GITEA_CF_ACCESS_CLIENT_SECRET "$gitea_cf_access_client_secret" \
-    GITEA_IP "$gitea_ip" \
-    CODE_SERVER_CF_ACCESS_CLIENT_ID "$code_server_cf_access_client_id" \
-    CODE_SERVER_CF_ACCESS_CLIENT_SECRET "$code_server_cf_access_client_secret" \
-    CODE_SERVER_IP "$code_server_ip" \
-    "${nx_cache_secret_args[@]}" \
-    "${loki_push_secret_args[@]}"
+  vault_ops_ssh "$vault_script" \
+    KV_PATCH_JSON "$kv_patch_json" \
+    KV_PUT_JSON "$kv_put_json" \
+    "${nx_cache_secret_args[@]}"
   echo "✓ Synced RABBITMQ_CA_CERT, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, GOOGLE_CALENDAR_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP to kv/data/secrets (RABBITMQ_CONNECTION_STRING synced only when broker holds the Terraform password — see above; SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
   if [ -n "$nx_cache_write_token" ]; then
     echo "✓ Synced NX_CACHE_WRITE_TOKEN to kv/data/secrets"

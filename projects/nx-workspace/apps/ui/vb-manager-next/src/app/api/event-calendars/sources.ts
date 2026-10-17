@@ -9,8 +9,7 @@ interface IncomingSource {
 }
 
 export type NormalizeSourcesResult =
-  | { ok: true; sources: EventCalendarSource[] }
-  | { ok: false; error: string };
+  { ok: true; sources: EventCalendarSource[] } | { ok: false; error: string };
 
 // The client sends raw URLs; the source type is inferred so adding a new
 // scraper only means teaching detectEventSourceType about its URL shape. A

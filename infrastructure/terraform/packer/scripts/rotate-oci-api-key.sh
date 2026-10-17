@@ -4,6 +4,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../../config.sh"
 source "${SCRIPT_DIR}/../../../lib/ssh-secrets.sh"
+source "${SCRIPT_DIR}/lib/vault-ops-token.sh"
 source "${SCRIPT_DIR}/../../../lib/oci-local-config.sh"
 
 OCI_API_VERSION="20160918"
@@ -18,20 +19,16 @@ REVOKE_ATTEMPTS=20
 WORK_DIR=$(umask 077 && mktemp -d)
 trap 'rm -rf "${WORK_DIR}"' EXIT
 
-echo "Fetching root token from Secret Manager..."
-VAULT_TOKEN=$(gcloud secrets versions access latest \
-  --secret=VB_VM_VAULT_ROOT_TOKEN \
-  --project="${GCP_PROJECT}")
+echo "Fetching vb-ops AppRole credentials from Secret Manager..."
+fetch_vault_ops_credentials
 
 echo "Reading current OCI credentials from Vault..."
 # Both fields are multi-line, so they come back base64-encoded rather than as
 # bare `KEY=value` lines the way the single-line rotators read theirs.
-CREDS=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
+CREDS=$(vault_ops_ssh '
 echo "CONFIG=$(vault kv get -field=OCI_CONFIG '"${VAULT_KV_PATH}"'/secrets | base64 -w 0)"
 echo "KEY=$(vault kv get -field=OCI_PRIVATE_KEY '"${VAULT_KV_PATH}"'/secrets | base64 -w 0)"
-' VAULT_TOKEN "$VAULT_TOKEN" 2>/dev/null)
+' 2>/dev/null)
 CURRENT_CONFIG=$(sed -n 's/^CONFIG=//p' <<< "$CREDS" | tr -d '[:space:]' | base64 -d)
 CURRENT_PRIVATE_KEY=$(sed -n 's/^KEY=//p' <<< "$CREDS" | tr -d '[:space:]' | base64 -d)
 
@@ -184,12 +181,9 @@ fi
 NEW_PRIVATE_KEY=$(cat "${NEW_KEY_FILE}")
 
 echo "Updating Vault with new config and key..."
-gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-
+vault_ops_ssh '
 vault kv patch '"${VAULT_KV_PATH}"'/secrets OCI_CONFIG="$NEW_CONFIG" OCI_PRIVATE_KEY="$NEW_PRIVATE_KEY"
-' VAULT_TOKEN "$VAULT_TOKEN" NEW_CONFIG "$NEW_CONFIG" NEW_PRIVATE_KEY "$NEW_PRIVATE_KEY"
+' NEW_CONFIG "$NEW_CONFIG" NEW_PRIVATE_KEY "$NEW_PRIVATE_KEY"
 
 write_oci_local_config "$NEW_CONFIG" "$NEW_PRIVATE_KEY"
 

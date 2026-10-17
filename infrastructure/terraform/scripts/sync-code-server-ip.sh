@@ -11,20 +11,16 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "${SCRIPT_DIR}/../../config.sh"
 source "${SCRIPT_DIR}/../../lib/ssh-secrets.sh"
+source "${SCRIPT_DIR}/../packer/scripts/lib/vault-ops-token.sh"
 
 CODE_SERVER_IP=$(cd "${SCRIPT_DIR}/.." && terraform output -raw oci_code_server_public_ip)
 
-echo "Fetching Vault root token from Secret Manager..."
-VAULT_TOKEN=$(gcloud secrets versions access latest \
-  --secret=VB_VM_VAULT_ROOT_TOKEN \
-  --project="${GCP_PROJECT}")
+echo "Fetching vb-ops AppRole credentials from Secret Manager..."
+fetch_vault_ops_credentials
 
 echo "Patching CODE_SERVER_VM_IP=${CODE_SERVER_IP} into Vault..."
-gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
-
+vault_ops_ssh '
 vault kv patch '"${VAULT_KV_PATH}"'/secrets CODE_SERVER_VM_IP="$CODE_SERVER_VM_IP"
-' VAULT_TOKEN "$VAULT_TOKEN" CODE_SERVER_VM_IP "$CODE_SERVER_IP"
+' CODE_SERVER_VM_IP "$CODE_SERVER_IP"
 
 echo "✓ Synced CODE_SERVER_VM_IP to Vault"

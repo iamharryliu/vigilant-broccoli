@@ -57,7 +57,14 @@ alias wg-status='sudo wg show'
 
 # Vault
 alias vbvault="open 'https://10.0.1.1:8200'"
-alias cpvaulttoken="gcloud secrets versions access latest --secret=VB_VM_VAULT_ROOT_TOKEN --project=vigilant-broccoli | pbcopy && echo 'Vault root token copied to clipboard.'"
+cpvaulttoken() {
+  setopt localoptions pipefail
+  printf '{"role_id":"%s","secret_id":"%s"}' \
+    "$(gcloud secrets versions access latest --secret=VB_VM_VAULT_OPS_ROLE_ID --project=vigilant-broccoli)" \
+    "$(gcloud secrets versions access latest --secret=VB_VM_VAULT_OPS_SECRET_ID --project=vigilant-broccoli)" \
+    | curl -sk -X POST -d @- https://10.0.1.1:8200/v1/auth/approle/login \
+    | jq -er '.auth.client_token' | tr -d '\n' | pbcopy && echo 'Vault vb-ops token (15m TTL) copied to clipboard.'
+}
 alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell/backup-repo.sh'
 
 # Hobby Code

@@ -26,3 +26,11 @@ export VAULT_UPPTIME_SYNC_ROLE_NAME="github-actions-upptime-sync-role"
 export VAULT_PROMOTION_POLICY_NAME="github-actions-production-promotion-policy"
 export VAULT_PROMOTION_ROLE_NAME="github-actions-production-promotion-role"
 export VAULT_JWT_ISSUER="https://token.actions.githubusercontent.com"
+
+# AppRole used by operator scripts (run-vault-*.sh, rotate-*.sh, post-apply.sh)
+# so routine operations mint short-TTL tokens instead of using the
+# never-expiring root token.
+export VAULT_OPS_POLICY_NAME="vb-ops-policy"
+export VAULT_OPS_ROLE_NAME="vb-ops-role"
+# Loopback (IAP-SSH scripts on the VM) + WireGuard (laptop scripts via 10.0.1.1).
+export VAULT_OPS_BOUND_CIDRS="127.0.0.1/32,10.0.1.0/24"
