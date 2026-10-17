@@ -41,7 +41,13 @@ export function createOfficePresenceHttpRuntime(
   const { receiver, handleRequest } = createSlackHttpReceiver(
     env.SLACK_SIGNING_SECRET as string,
   );
-  const app = new App({ token: env.SLACK_BOT_TOKEN, receiver });
+  // Bolt otherwise calls auth.test in the constructor and an unreachable Slack
+  // or bad token crashes the process as an unhandled rejection; defer it to the first request.
+  const app = new App({
+    token: env.SLACK_BOT_TOKEN,
+    receiver,
+    tokenVerificationEnabled: false,
+  });
   registerOfficePresenceHandlers(app, appConfig, previewReminder);
 
   let cachedMembers: { expiresAt: number; members: DirectoryUser[] } | null =
