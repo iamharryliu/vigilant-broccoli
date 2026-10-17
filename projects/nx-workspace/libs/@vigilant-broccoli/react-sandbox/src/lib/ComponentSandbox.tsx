@@ -1,10 +1,14 @@
 import { ReactNode, useEffect, useMemo, useState } from 'react';
 import {
   Blocks,
+  CalendarDays,
   Eye,
+  Image as ImageIcon,
+  KeyRound,
+  Layers,
   Menu,
   Moon,
-  Smartphone,
+  Music,
   Settings as SettingsIcon,
   Sun,
   Wrench,
@@ -28,6 +32,11 @@ import {
   TimerUtilityContent,
 } from '@vigilant-broccoli/react-utility';
 import { AlertDialogDemo } from './demos/AlertDialogDemo';
+import { AudioButtonDemo } from './demos/AudioButtonDemo';
+import { CalendarListDemo } from './demos/CalendarListDemo';
+import { GoogleSignInPageDemo } from './demos/GoogleSignInPageDemo';
+import { ImageCarouselDemo } from './demos/ImageCarouselDemo';
+import { MetronomeDemo } from './demos/MetronomeDemo';
 import {
   I18nProvider as SandboxI18nProvider,
   useTranslation as useSandboxTranslation,
@@ -95,23 +104,34 @@ const SETTINGS_LABEL = {
   ICON_MODE_OFF: 'Icons: Off',
 } as const;
 
-const CATEGORY = {
-  COMPONENTS: 'Components',
-  UTILITIES: 'Utilities',
-  MOBILE: 'Mobile',
+const PACKAGE_SCOPE = '@vigilant-broccoli/';
+
+// Declaration order is sidebar order: low-level libs first.
+const LIB = {
+  REACT_LIB: 'react-lib',
+  HIGHER_LEVEL: 'react-lib-higher-level',
+  CALENDAR: 'react-lib-calendar',
+  AUTH: 'react-lib-auth',
+  MEDIA: 'react-lib-media',
+  MUSIC: 'react-music-lib',
+  UTILITY: 'react-utility',
 } as const;
-type Category = (typeof CATEGORY)[keyof typeof CATEGORY];
-const CATEGORY_ICON = {
-  [CATEGORY.COMPONENTS]: Blocks,
-  [CATEGORY.UTILITIES]: Wrench,
-  [CATEGORY.MOBILE]: Smartphone,
+type Lib = (typeof LIB)[keyof typeof LIB];
+const LIB_ICON = {
+  [LIB.REACT_LIB]: Blocks,
+  [LIB.HIGHER_LEVEL]: Layers,
+  [LIB.CALENDAR]: CalendarDays,
+  [LIB.AUTH]: KeyRound,
+  [LIB.MEDIA]: ImageIcon,
+  [LIB.MUSIC]: Music,
+  [LIB.UTILITY]: Wrench,
 } as const;
 
 interface SandboxEntry {
   id: string;
   label: string;
   description: string;
-  category: Category;
+  lib: Lib;
   foundationKey?: keyof typeof sandboxEn.FOUNDATIONS;
   content: ReactNode;
 }
@@ -178,12 +198,12 @@ const CRUDListSection = () => {
   );
 };
 
-const COMPONENT_ENTRIES: SandboxEntry[] = [
+const ALL_ENTRIES: SandboxEntry[] = [
   {
     id: 'alert-dialog',
     label: sandboxEn.ALERT_DIALOG.NAME,
     description: sandboxEn.ALERT_DIALOG.SUMMARY,
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     content: <AlertDialogDemo />,
   },
   {
@@ -191,14 +211,14 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Avatar',
     description:
       'Avatar sizes, image and initial fallbacks, generated boring-avatar variants and the editable overlay.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     content: <AvatarDemo />,
   },
   {
     id: 'badge',
     label: sandboxEn.FOUNDATIONS.BADGE.NAME,
     description: sandboxEn.FOUNDATIONS.BADGE.SUMMARY,
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     foundationKey: 'BADGE',
     content: <BadgeDemo />,
   },
@@ -207,14 +227,14 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Buttons',
     description:
       'The full button set - variants, icon buttons, copy and close buttons, provider sign-in buttons and button lists.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     content: <ButtonDemo />,
   },
   {
     id: 'card',
     label: sandboxEn.FOUNDATIONS.CARD.NAME,
     description: sandboxEn.FOUNDATIONS.CARD.SUMMARY,
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     foundationKey: 'CARD',
     content: <CardDemo />,
   },
@@ -222,7 +242,7 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     id: 'checkbox',
     label: sandboxEn.FOUNDATIONS.CHECKBOX.NAME,
     description: sandboxEn.FOUNDATIONS.CHECKBOX.SUMMARY,
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     foundationKey: 'CHECKBOX',
     content: <CheckboxDemo />,
   },
@@ -231,7 +251,7 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Checklist',
     description:
       'Checkable rows with inline editing, drag reorder and a collapsible completed section, driven entirely by caller-supplied render props.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     content: <CheckListDemo />,
   },
   {
@@ -239,7 +259,7 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Collapsible List Item',
     description:
       'Accordion and collapsible list rows, with plain text and rich content inside.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     content: <CollapsibleListItemDemo />,
   },
   {
@@ -247,7 +267,7 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'CRUD List Management',
     description:
       'List and card layouts for create/read/update/delete management, with optional images, ellipsis menus and full-width thumbnails.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.HIGHER_LEVEL,
     content: <CRUDListSection />,
   },
   {
@@ -255,7 +275,7 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Empty Leaderboard',
     description:
       'The leaderboard in its loading and empty states, before any rows hydrate.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.HIGHER_LEVEL,
     content: <EmptyLeaderboardDemo />,
   },
   {
@@ -263,7 +283,7 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Error Handling',
     description:
       'Error surfaces - inline callouts, a transient alert and a blocking dialog.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     content: <ErrorDemo />,
   },
   {
@@ -271,7 +291,7 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'GitHub Actions Badges',
     description:
       'Workflow status badges for a repo, plain and wrapped in a card container.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.MEDIA,
     content: <GithubActionsBadgesDemo />,
   },
   {
@@ -279,7 +299,7 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Group Leaderboard',
     description:
       'Team leaderboard with period switching, sortable metrics and polled refreshes against mock data.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.HIGHER_LEVEL,
     content: <GroupLeaderboardDemo />,
   },
   {
@@ -287,14 +307,14 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Scroll Timeline',
     description:
       'A running balance timeline, scroll-linked to a series of dated entries.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     content: <ScrollTimelineDemo />,
   },
   {
     id: 'input',
     label: sandboxEn.FOUNDATIONS.INPUT.NAME,
     description: sandboxEn.FOUNDATIONS.INPUT.SUMMARY,
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     foundationKey: 'INPUT',
     content: <InputDemo />,
   },
@@ -303,14 +323,14 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Link Card',
     description:
       'Clickable card with title, description and icon, with a subtle lift on hover; renders an anchor or a router link.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     content: <LinkCardDemo />,
   },
   {
     id: 'segmented-control',
     label: sandboxEn.FOUNDATIONS.SEGMENTED_CONTROL.NAME,
     description: sandboxEn.FOUNDATIONS.SEGMENTED_CONTROL.SUMMARY,
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     foundationKey: 'SEGMENTED_CONTROL',
     content: <SegmentedControlDemo />,
   },
@@ -319,7 +339,7 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Select',
     description:
       'Select bound to string, number and object options, each with its own selected-value rendering.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     content: <SelectDemo />,
   },
   {
@@ -327,7 +347,7 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Status Card List',
     description:
       'Status rows with badges, monospace detail text and per-row actions, flat or grouped.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     content: <StatusCardListDemo />,
   },
   {
@@ -335,7 +355,7 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Switch',
     description:
       'Switch in its default, checked, disabled and controlled forms.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     content: <SwitchDemo />,
   },
   {
@@ -343,7 +363,7 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Tabs',
     description:
       'Tabs with panel content, driven by the react-lib shim over the underlying primitive.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     content: <TabsDemo />,
   },
   {
@@ -351,7 +371,7 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Toaster',
     description:
       'Toast notifications - info, success, warning, error and promise-driven toasts.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     content: <ToasterDemo />,
   },
   {
@@ -359,14 +379,14 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'Tooltip',
     description:
       'Tooltips on each side of a trigger, with the provider wiring they need.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     content: <TooltipDemo />,
   },
   {
     id: 'typography',
     label: sandboxEn.FOUNDATIONS.TYPOGRAPHY.NAME,
     description: sandboxEn.FOUNDATIONS.TYPOGRAPHY.SUMMARY,
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     foundationKey: 'TYPOGRAPHY',
     content: <TypographyDemo />,
   },
@@ -375,7 +395,7 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'User Avatar',
     description:
       'The user avatar with upload handling, generated variants and the states around a pending image.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.REACT_LIB,
     content: <UserAvatarDemo />,
   },
   {
@@ -383,25 +403,22 @@ const COMPONENT_ENTRIES: SandboxEntry[] = [
     label: 'User Leaderboard',
     description:
       'User leaderboard with sortable metrics, column toggles, paging and live rank changes.',
-    category: CATEGORY.COMPONENTS,
+    lib: LIB.HIGHER_LEVEL,
     content: <UserLeaderboardDemo />,
   },
-];
-
-const UTILITY_ENTRIES: SandboxEntry[] = [
   {
     id: 'alarm',
     label: 'Alarm',
     description:
       'Set alarms that persist locally and fire with an audible alert.',
-    category: CATEGORY.UTILITIES,
+    lib: LIB.UTILITY,
     content: <AlarmUtilityContent />,
   },
   {
     id: 'calculator',
     label: 'Calculator',
     description: 'Basic arithmetic calculator with a keyboard-driven keypad.',
-    category: CATEGORY.UTILITIES,
+    lib: LIB.UTILITY,
     content: <CalculatorUtilityContent />,
   },
   {
@@ -409,7 +426,7 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     label: 'Cooking Conversions',
     description:
       'Convert between cooking volumes, weights and temperatures, both directions.',
-    category: CATEGORY.UTILITIES,
+    lib: LIB.UTILITY,
     content: <CookingConversionsUtilityContent />,
   },
   {
@@ -417,7 +434,7 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     label: 'Currency Converter',
     description:
       'Convert between currencies against live rates, with a locally stored conversion history.',
-    category: CATEGORY.UTILITIES,
+    lib: LIB.UTILITY,
     content: <CurrencyConverterUtilityContent />,
   },
   {
@@ -425,7 +442,7 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     label: 'Weather Clock Card',
     description:
       'Clock, weather with details, preparation badges and a day-by-day forecast carousel (click the weather tile), the next sunrise/sunset and the current moon phase. Sun times and moon phase are computed locally from the location.',
-    category: CATEGORY.UTILITIES,
+    lib: LIB.UTILITY,
     content: <WeatherClockCardDemo />,
   },
   {
@@ -433,7 +450,7 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     label: 'Docs Explorer',
     description:
       'The docs explorer is the file-tree + search shell behind docs.harryliu.dev. It is not mounted here - it needs a notes tree to browse - so this page links to the live site and shows what it looks like there.',
-    category: CATEGORY.UTILITIES,
+    lib: LIB.HIGHER_LEVEL,
     content: <DocsExplorerDemo />,
   },
   {
@@ -441,14 +458,14 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     label: 'Notepad',
     description:
       'A synced text editor with syntax highlighting, standing in for the notepad surface.',
-    category: CATEGORY.UTILITIES,
+    lib: LIB.REACT_LIB,
     content: <NotepadDemo />,
   },
   {
     id: 'pastebin',
     label: pastebinEn.PASTEBIN.TITLE,
     description: pastebinEn.PASTEBIN.DESCRIPTION,
-    category: CATEGORY.UTILITIES,
+    lib: LIB.HIGHER_LEVEL,
     content: <PastebinDemo />,
   },
   {
@@ -456,14 +473,14 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     label: 'Quick Links',
     description:
       'Fuzzy-searchable link launcher, as a command dialog and as an inline panel.',
-    category: CATEGORY.UTILITIES,
+    lib: LIB.HIGHER_LEVEL,
     content: <QuickLinksDemo />,
   },
   {
     id: 'stopwatch',
     label: 'Stopwatch',
     description: 'Stopwatch with lap splits.',
-    category: CATEGORY.UTILITIES,
+    lib: LIB.UTILITY,
     content: <StopwatchUtilityContent />,
   },
   {
@@ -471,33 +488,63 @@ const UTILITY_ENTRIES: SandboxEntry[] = [
     label: 'Tasks',
     description:
       'Runs the shared tasks component against an in-memory tasks API with simulated latency. Voice input calls the mocked transcription and parse endpoints.',
-    category: CATEGORY.UTILITIES,
+    lib: LIB.HIGHER_LEVEL,
     content: <TasksDemo />,
   },
   {
     id: 'timer',
     label: 'Timer',
     description: 'Countdown timer with presets and an audible finish.',
-    category: CATEGORY.UTILITIES,
+    lib: LIB.UTILITY,
     content: <TimerUtilityContent />,
   },
-];
-
-const MOBILE_ENTRIES: SandboxEntry[] = [
   {
     id: 'mobile-home',
     label: 'Mobile Home',
     description:
       'The vb-manager-next-mobile home page inside an iPhone-sized frame: the top bar with a menu button that opens the sidebar drawer, and the pinned layout where each tab panel scrolls on its own. The tab shell, agenda, event calendars list, tasks, quick links and sidebar are the real react-lib-higher-level components fed with sample data; the Create calendar event dialog and task voice input are mocked.',
-    category: CATEGORY.MOBILE,
+    lib: LIB.HIGHER_LEVEL,
     content: <MobileHomeDemo />,
   },
-];
-
-const ALL_ENTRIES: SandboxEntry[] = [
-  ...COMPONENT_ENTRIES,
-  ...UTILITY_ENTRIES,
-  ...MOBILE_ENTRIES,
+  {
+    id: 'audio-button',
+    label: 'Audio Button',
+    description:
+      'Speak buttons in their idle, loading and disabled-while-another-plays states, with a mocked speak handler.',
+    lib: LIB.MEDIA,
+    content: <AudioButtonDemo />,
+  },
+  {
+    id: 'image-carousel',
+    label: 'Image Carousel',
+    description:
+      'Image filmstrip thumbnails that open the full-screen carousel dialog, using local placeholder images.',
+    lib: LIB.MEDIA,
+    content: <ImageCarouselDemo />,
+  },
+  {
+    id: 'calendar-list',
+    label: 'Calendar List',
+    description:
+      'Month-by-month event list grouped by day with sample events, plus its loading skeleton.',
+    lib: LIB.CALENDAR,
+    content: <CalendarListDemo />,
+  },
+  {
+    id: 'google-sign-in-page',
+    label: 'Google Sign-In Page',
+    description:
+      'The sign-in page with a stubbed handler. It performs no real auth and never creates a Supabase client.',
+    lib: LIB.AUTH,
+    content: <GoogleSignInPageDemo />,
+  },
+  {
+    id: 'metronome',
+    label: 'Metronome',
+    description: 'Tempo metronome with BPM controls and an audible click.',
+    lib: LIB.MUSIC,
+    content: <MetronomeDemo />,
+  },
 ];
 
 const ENTRY_STAGE_CLASS = 'flex flex-col gap-3 mt-2';
@@ -539,16 +586,16 @@ const buildSidebarItems = ({
   onSelect,
   iconMode,
 }: BuildSidebarItemsArgs): SidebarCTA[] =>
-  Object.values(CATEGORY)
-    .map(category => ({
-      category,
-      items: entries.filter(entry => entry.category === category),
+  Object.values(LIB)
+    .map(lib => ({
+      lib,
+      items: entries.filter(entry => entry.lib === lib),
     }))
     .filter(group => group.items.length > 0)
     .map(group => ({
-      id: group.category,
-      label: group.category,
-      icon: iconMode ? CATEGORY_ICON[group.category] : undefined,
+      id: group.lib,
+      label: group.lib,
+      icon: iconMode ? LIB_ICON[group.lib] : undefined,
       isActive: group.items.some(entry => entry.id === selectedId),
       children: group.items.map(entry => ({
         label: entry.label,
@@ -607,6 +654,9 @@ const SandboxEntryFrame = ({ entry }: { entry: SandboxEntry }) => (
       </Heading>
       <Text size="2" color="gray">
         {entry.description}
+      </Text>
+      <Text size="1" color="gray">
+        Import from <code>{`${PACKAGE_SCOPE}${entry.lib}`}</code>
       </Text>
     </header>
     <div className={ENTRY_STAGE_CLASS}>{entry.content}</div>
@@ -740,7 +790,7 @@ const SandboxBody = ({
         className={SIDEBAR_POSITION_CLASS}
         mobileOpen={sidebarOpen}
         onMobileClose={() => setSidebarOpen(false)}
-        defaultOpenId={selectedEntry.category}
+        defaultOpenId={selectedEntry.lib}
       />
       <SandboxTopbar
         title={title ?? selectedEntry.label}
