@@ -957,6 +957,12 @@ const VB_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
+    label: HARRYLIU_APP_URL.OFFICE_PRESENCE_DEMO.NAME,
+    target: HARRYLIU_APP_URL.OFFICE_PRESENCE_DEMO.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
     label: 'Code Server',
     target: 'https://code.harryliu.dev/',
     type: OPEN_TYPE.BROWSER,
@@ -1077,15 +1083,23 @@ const VB_LINKS = [
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
+    label: HARRYLIU_INFRA_URL.CAREER.NAME,
+    target: HARRYLIU_INFRA_URL.CAREER.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
     label: HARRYLIU_INFRA_URL.STATUS.NAME,
     target: HARRYLIU_INFRA_URL.STATUS.URL,
     type: OPEN_TYPE.BROWSER,
+    embed: true,
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
     label: HARRYLIU_INFRA_URL.UPTIME.NAME,
     target: HARRYLIU_INFRA_URL.UPTIME.URL,
     type: OPEN_TYPE.BROWSER,
+    embed: true,
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
@@ -1124,6 +1138,12 @@ const UTILITY_LINKS = [
   {
     label: 'Slack Browser',
     target: UTILITY_URL.SLACK.URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.UTILITY,
+  },
+  {
+    label: UTILITY_URL.SLACK_API_APPS.NAME,
+    target: UTILITY_URL.SLACK_API_APPS.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.UTILITY,
   },

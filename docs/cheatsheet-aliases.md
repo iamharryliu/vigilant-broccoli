@@ -8,6 +8,11 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   cheatsheet                  Print this cheatsheet
   explain_shell '<cmd>'       Open the command on explainshell.com
   spellcheck                  Run codespell
+  (on new shell)              Start `pnpm event-calendars:sync` in the background once a day, logging to ~/.vb-manager/event-calendars-sync.log (non-login failures retry hourly)
+
+🤖 CODING AGENTS
+  codexotp                   Open the Codex device authentication page
+  codexyolo [args...]         Run Codex with approvals and sandbox disabled
 
 📁 FILES & DIRS
   la / lt / ltr               List all / by newest / by oldest

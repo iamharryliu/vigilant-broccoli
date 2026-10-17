@@ -42,6 +42,7 @@
 | to have                   | att ha             | avoir           | tener          |
 | to have an opinion        | att tycka          |                 |                |
 | to hire                   | att anställa       | embaucher       | contratar      |
+| to hope                   | att hoppas         | espérer         | esperar        |
 | to include                | att ingå           |                 |                |
 | to know                   | att veta           | savoir          | saber          |
 | to learn                  | att lära           |                 | apprendido     |

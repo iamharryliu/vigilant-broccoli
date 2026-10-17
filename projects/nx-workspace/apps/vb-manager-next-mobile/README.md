@@ -1,6 +1,6 @@
 # VB Manager Next Mobile
 
-Mobile-friendly dashboard for managing personal tasks and calendars.
+Mobile-friendly dashboard for personal tasks and calendars, with voice input, a notepad and local weather.
 
 ## Table of Contents
 
@@ -9,20 +9,24 @@ Mobile-friendly dashboard for managing personal tasks and calendars.
 ## Stack
 
 - Language - TypeScript
-- Framework - Next.js (React)
+- Framework - Next.js
 - Build Tool - Next.js
 - External libs
   - Zod
-  - Tesseract.js
 - Internal libs
   - `common-browser`
   - `common-js`
   - `common-node`
   - `google-workspace`
   - `links`
+  - `personal-common-js`
   - `react-lib`
+  - `react-lib-auth`
+  - `react-lib-higher-level`
   - `react-utility`
 - Cloud services
-  - Supabase
   - Google Workspace APIs
-  - Vercel
+  - Nominatim / OpenStreetMap
+  - Open-Meteo
+  - Supabase
+  - vb-express

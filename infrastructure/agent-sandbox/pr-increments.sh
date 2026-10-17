@@ -41,6 +41,7 @@ inc_emit_record() {
   printf 'PR_URL::%s\n' "$url"
   printf 'PR_STATE::%s\n' "$state"
   printf 'PR_BASE::%s\n' "$pr_base"
+  printf 'PR_FILES::%s\n' "$(inc_changed_files "$base_sha")"
   printf 'PR_DEPENDS_ON::%s\n' "$depends_url"
   echo 'PR_SUMMARY_BEGIN'
   printf '%s\n' "$summary"
@@ -48,6 +49,16 @@ inc_emit_record() {
   echo 'PR_DIFF_BEGIN'
   git --no-pager diff --no-color --no-ext-diff "$base_sha" HEAD
   echo 'PR_DIFF_END'
+}
+
+# One-line JSON array of {file, summary} for the run summary's changed-files
+# table. The file list comes from git; each summary is the agent's
+# file_changes entry, blank when it gave none.
+inc_changed_files() {
+  local base_sha=$1
+  git --no-pager diff --name-only "$base_sha" HEAD | jq -Rsc \
+    --slurpfile meta <(jq -c '.file_changes // []' "$META_FILE" 2>/dev/null || echo '[]') \
+    'split("\n") | map(select(length > 0)) | map(. as $f | {file: $f, summary: ((($meta[0] // []) | map(select(type == "object" and .file == $f)) | .[0].summary) // "")})'
 }
 
 inc_emit_unpublished() {
@@ -307,7 +318,9 @@ Sandbox execution rules:
   - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
   - pr_summary: markdown bullet points for the PR "## Summary" section, describing only this increment
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — remaining actions for the human for this increment, or "- [ ] Merge once CI is green" when nothing else is left
-  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section, or "" when there are none
+  - pr_concerns: markdown bullet points for the PR "## Concerns" section (risks, known limitations, unverified behavior, unresolved questions), or "" when there are none
+  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section (optional follow-up work only), or "" when there are none
+  - file_changes: array of objects {"file": "<repo-relative path of each file you changed>", "summary": "<one line on what changed or was implemented>"}, shown as a table in the run summary
 EOF
 }
 
@@ -365,7 +378,7 @@ inc_refresh_stacks() {
 # Reads $META_FILE; prints this increment's record on success.
 inc_publish() {
   local id=$1 branch=$2 pr_base=$3 base_sha=$4 history_prompt=$5 fallback_subject=$6 fallback_summary=$7
-  local commit_type commit_scope commit_message trailer pr_title pr_summary pr_next_steps pr_suggestions subject
+  local commit_type commit_scope commit_message trailer pr_title pr_summary pr_next_steps pr_concerns pr_suggestions subject
   commit_type=$(jq -r '.commit_type // empty' "$META_FILE" 2>/dev/null || true)
   commit_scope=$(jq -r '.commit_scope // empty' "$META_FILE" 2>/dev/null || true)
   commit_message=$(jq -r '.commit_message // empty' "$META_FILE" 2>/dev/null || true)
@@ -373,6 +386,7 @@ inc_publish() {
   pr_title=$(jq -r '.pr_title // empty' "$META_FILE" 2>/dev/null || true)
   pr_summary=$(jq -r '.pr_summary // empty' "$META_FILE" 2>/dev/null || true)
   pr_next_steps=$(jq -r '.pr_next_steps // empty' "$META_FILE" 2>/dev/null || true)
+  pr_concerns=$(jq -r '.pr_concerns // empty' "$META_FILE" 2>/dev/null || true)
   pr_suggestions=$(jq -r '.pr_suggestions // empty' "$META_FILE" 2>/dev/null || true)
 
   case " $INC_COMMIT_TYPES " in *" $commit_type "*) ;; *) commit_type="" ;; esac
@@ -397,7 +411,7 @@ inc_publish() {
   INC_TITLE[$id]=$pr_title
   local stack="" body url
   if [ "${#INC_ORDER[@]}" -gt 1 ]; then stack=$(inc_stack_markdown "$id"); fi
-  body=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$pr_summary" PR_NEXT_STEPS="$pr_next_steps" PR_SUGGESTIONS="$pr_suggestions" PR_STACK="$stack" \
+  body=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$pr_summary" PR_NEXT_STEPS="$pr_next_steps" PR_CONCERNS="$pr_concerns" PR_SUGGESTIONS="$pr_suggestions" PR_STACK="$stack" \
     HISTORY_SOURCE="$INC_HISTORY_SOURCE" HISTORY_COMMAND="$INC_HISTORY_COMMAND" HISTORY_PROMPT="$history_prompt" \
     HISTORY_SUMMARY="$subject" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
     python3 "$MERGE_BODY_HELPER") || return 1

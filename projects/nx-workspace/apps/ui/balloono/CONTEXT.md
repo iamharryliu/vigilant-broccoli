@@ -4,32 +4,14 @@
 
 - [Nuances](#nuances)
   - [CPU balance measured without shuffled spawn slots is misleading](#cpu-balance-measured-without-shuffled-spawn-slots-is-misleading)
+  - [Chain-reaction soaks credit the root balloon's owner](#chain-reaction-soaks-credit-the-root-balloons-owner)
 
 ## Nuances
 
-Non-obvious traps in this directory — read the relevant entry **before**
-working on the surface it names, not only when something breaks.
-[nuance-pattern.md](../../../../../docs/nuance-pattern.md) is the convention.
-
 ### CPU balance measured without shuffled spawn slots is misleading
 
-When tuning `BOT_PROFILES` in `src/app/engine/cpu.ts`, a headless
-CPU-vs-CPU loop (`createMatch` → `decideCpuInput` → `advanceMatch` until
-`status` is `over`) is the only practical measure. Spawn slot alone can swing
-the result, though: four identical easy bots once won 14 of 20 matches from
-slot 0. Slot 0 spawns top-left, where the sudden-death spiral in `board.ts`
-starts. Together with tie-breaking in `neighbours` order, that decided the
-endgame regardless of skill. An early run with hard always in slot 0 reported
-hard beating medium 37–3; with slots shuffled it was close to even.
+Measure `BOT_PROFILES` (`src/app/engine/cpu.ts`) with headless matches: `createMatch` → `decideCpuInput` → `advanceMatch` until `status` is `over`. Shuffle contender slots on every run: slot 0's position relative to the sudden-death spiral and neighbour tie-breaking can outweigh skill. Count draws separately, since simultaneous final-tile closure is common.
 
-Two traps also came out of that tuning, and both are now guarded in code:
+### Chain-reaction soaks credit the root balloon's owner
 
-- `isCalm` uses `CALM_HORIZON_TICKS` rather than "no danger at all". Once
-  sudden death schedules every tile, nothing is ever fully calm, and bots
-  stopped playing.
-- Crate and enemy targets require `canEscapeAfterDrop` from the target tile.
-  Otherwise a bot walks into a pocket where it cannot safely drop, then idles
-  there until the walls close.
-
-Always shuffle contender order when measuring. Also count draws separately:
-the last tiles closing on everyone end about a third of bot-only matches.
+`popBalloons` (`src/app/engine/match.ts`) tags each queued balloon with the owner of the balloon whose fuse ran out, and stores it on the splash tiles (`Splash.ownerIds`, one entry per distinct chain reaching the tile). A player soaked by a chained pop credits that root owner, not the owner of the balloon that physically splashed them; if chains from several owners overlap the tile, each is credited once. Self-soaks credit nobody, and arena closure or leaving players credit nobody. The tally lives on `Player.tally` so snapshots carry it across host migration; keep any new counter there rather than in host-only state.

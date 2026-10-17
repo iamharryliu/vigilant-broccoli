@@ -15,7 +15,6 @@
     "OBJECT": "Object options",
     "DISABLED": "Disabled",
     "LONG_LABEL": "Long labels",
-    "LEGACY": "Legacy props",
     "PLACEHOLDER": "Choose an option",
     "CLEAR": "Clear selection",
     "LONG_OPTION": "A deliberately long option label to demonstrate truncation within a fixed-width control",
@@ -185,7 +184,8 @@
       "EMPTY_STATE": "Empty state"
     },
     "CHECK_LIST": {
-      "GENERIC_CHECKLIST": "Generic checklist"
+      "GENERIC_CHECKLIST": "Generic checklist",
+      "PRESENTATIONAL_CHECKLIST": "Presentational checklist (no drag and drop)"
     },
     "SWITCH": {
       "LABEL": "Receive updates"

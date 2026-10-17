@@ -5,8 +5,6 @@ import { Draggable } from '@fullcalendar/interaction';
 import {
   Badge,
   Button,
-  EllipsisAction,
-  EllipsisCTA,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Text,
   Dialog,
@@ -14,6 +12,10 @@ import {
   DialogTitle,
   cn,
 } from '@vigilant-broccoli/react-lib';
+import {
+  EllipsisAction,
+  EllipsisCTA,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { CalendarEvent, LeisureActivity } from '../../../lib/types';
 import {
   CalendarEventForm,
@@ -49,9 +51,7 @@ const SCHEDULED_SUFFIX = 'scheduled';
 const EMPTY_TEXT = 'No activities yet. Add one to get started.';
 
 type ModalState =
-  | { type: 'create' }
-  | { type: 'edit'; activity: LeisureActivity }
-  | null;
+  { type: 'create' } | { type: 'edit'; activity: LeisureActivity } | null;
 
 interface Props {
   activities: LeisureActivity[];

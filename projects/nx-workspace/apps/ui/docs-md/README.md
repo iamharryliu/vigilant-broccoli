@@ -12,9 +12,8 @@ Renders repo markdown docs fetched at build/runtime.
 - Framework - React
 - Build Tool - Vite
 - External libs
+  - Mermaid
   - Tailwind CSS
 - Internal libs
   - `react-lib`
-  - `react-utility`
-- Cloud services
-  - Cloudflare Pages (docs.harryliu.dev)
+  - `react-lib-higher-level`

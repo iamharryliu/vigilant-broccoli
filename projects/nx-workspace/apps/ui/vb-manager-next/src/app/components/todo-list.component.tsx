@@ -6,13 +6,13 @@ import {
   Table,
   Callout,
   CalloutText,
-  EllipsisCTA,
   IconButton,
   Select,
   Textarea,
   Heading,
   Text,
 } from '@vigilant-broccoli/react-lib';
+import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import {
   CONTENT_TYPE_HEADER,
   HTTP_METHOD,
@@ -220,8 +220,8 @@ export const TodoListComponent = () => {
                     </Table.Cell>
                     <Table.Cell>
                       <Select
-                        selectedOption={row.priority}
-                        setValue={priority =>
+                        value={row.priority}
+                        onValueChange={priority =>
                           updateRow(section.heading, rowIdx, { priority })
                         }
                         options={PRIORITY_OPTIONS}

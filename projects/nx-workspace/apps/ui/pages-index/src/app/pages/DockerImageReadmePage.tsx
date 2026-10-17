@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from '../i18n';
 import { PARSE_KIND, ReadmePage } from '../components/ReadmePage';
 import { findDockerImage, toDockerImageUrl } from '../consts/dockerImages';
-import { toRawGithubUrl } from '../consts/repo';
+import { toRawGithubUrl, toRepoLinkBase } from '../consts/repo';
 
 export function DockerImageReadmePage() {
   const { t } = useTranslation();
@@ -20,6 +20,7 @@ export function DockerImageReadmePage() {
             }
           : null
       }
+      repoLinkBase={image ? toRepoLinkBase(image.readmePath) : undefined}
       externalHref={image ? toDockerImageUrl(image.slug) : undefined}
       externalLabel={t('README_PAGE.VIEW_ON_DOCKER_HUB')}
       notFoundMessage={t('README_PAGE.NOT_FOUND')}

@@ -51,7 +51,7 @@ Preferences → Docker Engine → paste contents of `docker-daemon-config.json` 
 - Tooling
   - Docker Compose
 - Services
-  - nginx
-  - Loki
-  - Promtail
   - Grafana
+  - Loki
+  - nginx
+  - Promtail

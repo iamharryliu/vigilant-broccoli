@@ -135,7 +135,3 @@ class SpotifyToMp3Service:
             error = e.stderr or e.stdout or str(e)
             logger.error(f"Failed '{playlist_name}': {error}")
             return {"name": playlist_name, "failed_tracks": [], "error": error}
-
-    @staticmethod
-    def convert_to_slug_case(text):
-        return "-".join(text.lower().split())

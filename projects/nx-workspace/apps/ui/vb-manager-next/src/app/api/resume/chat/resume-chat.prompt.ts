@@ -51,7 +51,7 @@ const RESUME_SCHEMA = {
     summary: {
       type: 'string',
       description:
-        'Optional follow-up for the professional summary (one or two sentences) built only from supported facts about the work most relevant to the target. Do not write the opening role-and-years sentence: the server prepends "ROLE with N years of experience in software development." itself. Omit it when there is nothing supported to say.',
+        'Optional follow-up for the professional summary (one or two sentences) a single general sentence starting "Expertise in" and listing the confirmed skill areas most relevant to the target, with no specific projects or implementation details. Do not write the opening role-and-years sentence: the server prepends "ROLE with N years of software experience." itself, so never restate years or say you have been doing something for N years. Omit it when there is nothing supported to say.',
     },
     workExperience: { type: 'array', items: EXPERIENCE_SCHEMA },
     projectExperience: { type: 'array', items: EXPERIENCE_SCHEMA },
@@ -236,7 +236,7 @@ const describeExperience = (resume: ResumeData): string => {
   const skipped = skippedRoles.length
     ? ` Roles with unreadable dates were skipped: ${skippedRoles.join('; ')}.`
     : '';
-  return `Calculated work experience from the resume dates, overlapping roles merged and gaps excluded: ${totalMonths} months (${fullYears} years ${remainderMonths} months). Claim at most "${fullYears}+ years" total; never round up.${skipped}`;
+  return `Calculated work experience from the resume dates, overlapping roles merged and gaps excluded: ${totalMonths} months (${fullYears} years ${remainderMonths} months). Claim at most "more than ${fullYears} years" total; never round up.${skipped}`;
 };
 
 export const buildSystemPrompt = (
@@ -269,13 +269,22 @@ export const buildSystemPrompt = (
     '- Keep name, contact details, employers, job roles, dates and the factual meaning of every bullet unless the user explicitly changes them.',
     '- Never add, remove or change basics.links; return them exactly as in the current resume. The user edits links outside this editor.',
     '- Update the experience lines for the target, not only the skills line. The Skills table is an index of skill names and employers, not evidence of particular responsibilities or outcomes. For each requirement with a skill row, reword an existing bullet under a listed employer to name that skill, or add a new bullet only if the page has room and the job or project record provides concrete implementation details. If no such detail is recorded, only name the skill inside an existing bullet about real work; invent no project, metric or outcome. Only place a skill under an employer supported by its Used In entry, an explicit project contribution or user-confirmed experience.',
-    '- Tailor the summary to the target role as well as the skills: write only the follow-up after the opening role-and-years sentence the server adds, covering the experience most relevant to the target using only supported facts, instead of keeping a generic or previous framing. Bold target keywords in it with **double asterisks**.',
+    '- For a requirement that is unconfirmed, find the closest confirmed skills in the skills note that do the same job (for example GitHub Actions and CI/CD pipelines for a Jenkins or Harness request, Terraform for another IaC tool, AWS for another cloud, Elasticsearch for another search or log stack) and move the bullets, summary wording and skills-line entries that show them toward the front. Name each by its real, confirmed name and never write the unconfirmed tool as used or imply it, and do not add a related skill the career note does not confirm. List the unconfirmed requirement in update_resume.unconfirmed with the related confirmed skills you surfaced in its reason, so the user sees it is adjacent experience and not a match.',
+    '- Tailor the summary to the target role as well as the skills: write only the follow-up after the opening role-and-years sentence the server adds, as a general "Expertise in …" sentence covering the confirmed skill areas most relevant to the target, instead of keeping a previous framing. Bold target keywords in it with **double asterisks**.',
     '- basics.title may be changed to suit the target role, but only to one of the allowed titles in the skills note; otherwise leave it as is.',
+    "- Bold phrases in the current bullets (for example **Saved QA teams hundreds of hours weekly**) are the strongest facts. Keep the text of each phrase verbatim, and condense the surrounding wording first when space is short. The server reports every missing phrase. The bold itself follows the target: move it to the evidence for the target's requirements.",
+    '- Bold is a reader aid for the target, not a keyword dump. For each important requirement the resume supports (including soft requirements such as mentoring, ownership or customer communication), bold the short phrase (two to six words) that evidences it, for example "**shared knowledge in Code With Me and Show and Tell sessions**" for mentoring. At most two bold phrases per bullet and none on generic single words such as "production" or "communication".',
+    "- Coverage check before you answer: for each top requirement of the target, find the project contribution rows that evidence it (for example a recorded end-to-end UI regression testing row for a role that asks for testing) and make sure the resume states it under that row's company, replacing the weakest or most generic bullet if the page is full.",
+    '- When a job record gives a generic line and a project contribution gives the concrete version of the same work (tools, systems, outcomes), write the concrete one.',
+    '- Figures are checked mechanically: any number that is not already in the current resume, the career note or a user message is rejected. Copy figures exactly (15 stays 15).',
+    '- Skills entries are short labels in the style of the current line (for example "AWS/GCP", "Terraform/IaC", "CI/CD"). Never paste skill-table rows or add parentheses, and keep the line to one line.',
+    '- When the target is customer-facing, embedded or consulting, surface the confirmed client communication, product ownership and delivery evidence in the job and project records within the existing bullets and summary, without claiming any customer-side title or access.',
+    '- The summary follow-up is a single general sentence that opens with "Expertise in" followed by the target-relevant confirmed skill areas (three or four, for example "Expertise in **Java**, **Spring Boot**, system integration and event-driven services."). Keep it broad: no specific projects, employers, integrations, systems or implementation details, and no vague phrases about ambiguity or partnering.',
     '- The skills line sits at the bottom of the resume. Aim for a single line: put the most job-relevant confirmed skills first, then keep every other skill already on the line; remove one only if the line would otherwise wrap, and then only the least relevant.',
     `- Every wrapped line (bullet, summary, skills) should end at least ${Math.round(RESUME_PDF_MIN_LAST_LINE_RATIO * PERCENT)}% full. A bullet whose last line is only a few words should be tightened to one line or extended with supported detail; the server reports these lines and you must fix them.`,
     '- When over one page, trim in this order: condense older or less relevant bullets first, then drop the least relevant bullets of the earliest roles. Keep every employer and role, and the bullets that match the target.',
     '- When there is unused space, first restore material that was on the earlier resume or in the skills note and is relevant, before writing anything new. Prefer a full one-line bullet to a half-empty wrapped one.',
-    '- When the calculated experience is just under a whole number of years, write "nearly N years" rather than rounding up.',
+    '- When the calculated experience is not a whole number of years, write "more than N years" with N the whole years; never round up or write "nearly".',
     '- The optional summary is a concise professional summary of at most three sentences from supported facts. Bullets may use **bold** markdown.',
     `- Call ${RESUME_CHAT_TOOL_NAME.RECORD_TAILORING_CONTEXT} whenever the ledger changes, and ${RESUME_CHAT_TOOL_NAME.UPDATE_RESUME} with the complete resume only when an edit or draft is wanted. Keep suggestions concise and focused on impact.`,
     '',

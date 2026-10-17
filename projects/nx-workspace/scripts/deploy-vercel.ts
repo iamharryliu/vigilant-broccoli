@@ -124,6 +124,36 @@ async function applyProjectSettings(
   }
 }
 
+// "all" also covers production-target deployments, which every staging project
+// is, including its immutable URLs.
+const VERCEL_AUTHENTICATION_ALL_DEPLOYMENTS = {
+  ssoProtection: { deploymentType: 'all' },
+};
+
+async function enableVercelAuthentication(
+  projectId: string,
+  teamId: string,
+  token: string,
+): Promise<void> {
+  const res = await fetch(
+    `https://api.vercel.com/v9/projects/${projectId}?teamId=${teamId}`,
+    {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(VERCEL_AUTHENTICATION_ALL_DEPLOYMENTS),
+    },
+  );
+  if (!res.ok) {
+    throw new Error(
+      `Failed to enable Vercel Authentication: ${res.status} ${await res.text()}`,
+    );
+  }
+  console.log('✓ Vercel Authentication enabled for all deployments');
+}
+
 async function vercelEnvAdd(
   key: string,
   value: string,
@@ -213,13 +243,23 @@ async function pruneStaleVercelEnvVars(
   await Promise.all(staleKeys.map(key => vercelEnvRemove(key, environment)));
 }
 
-function parseEnvKeys(filePath: string): string[] {
+interface EnvKey {
+  key: string;
+  optional: boolean;
+}
+
+const OPTIONAL_MARKER = '# optional';
+
+function parseEnvKeys(filePath: string): EnvKey[] {
   if (!existsSync(filePath)) return [];
-  return readFileSync(filePath, 'utf-8')
+  const lines = readFileSync(filePath, 'utf-8')
     .split('\n')
-    .filter(line => line && !line.startsWith('#'))
-    .map(line => line.split('=')[0].trim())
-    .filter(Boolean);
+    .map(line => line.trim());
+  return lines.flatMap((line, i) => {
+    if (!line || line.startsWith('#')) return [];
+    const key = line.split('=')[0].trim();
+    return key ? [{ key, optional: lines[i - 1] === OPTIONAL_MARKER }] : [];
+  });
 }
 
 async function main() {
@@ -296,14 +336,6 @@ async function main() {
         'dist/apps/ui/employee-handler-ui/.next',
       ),
     },
-    findme: {
-      hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
-      settings: NX_VERCEL_SETTINGS('findme', 'dist/apps/findme/.next'),
-    },
-    whiteboard: {
-      hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
-      settings: NX_VERCEL_SETTINGS('whiteboard', 'dist/apps/whiteboard/.next'),
-    },
     balloono: {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
       settings: NX_VERCEL_SETTINGS('balloono', 'dist/apps/ui/balloono/.next'),
@@ -339,8 +371,12 @@ async function main() {
   }
 
   const { hardcodedSecrets, envExamplePath, settings } = config;
-  const allKeys = envExamplePath ? parseEnvKeys(resolve(envExamplePath)) : [];
-  const keysFromVault = allKeys.filter(k => !(k in (hardcodedSecrets ?? {})));
+  const envKeys = envExamplePath ? parseEnvKeys(resolve(envExamplePath)) : [];
+  const allKeys = envKeys.map(({ key }) => key);
+  const entriesFromVault = envKeys.filter(
+    ({ key }) => !(key in (hardcodedSecrets ?? {})),
+  );
+  const keysFromVault = entriesFromVault.map(({ key }) => key);
 
   console.log(
     `\nDeploying secrets for ${projectName} to Vercel (${environment})...\n`,
@@ -356,13 +392,23 @@ async function main() {
       vercelEnv.VERCEL_TOKEN = vaultSecrets.VERCEL_TOKEN;
     }
 
-    for (const key of keysFromVault) {
+    const missingRequired: string[] = [];
+    for (const { key, optional } of entriesFromVault) {
       const value = vaultSecrets[key];
       if (value) {
         allSecrets[key] = value;
+      } else if (optional) {
+        console.warn(`⚠ ${key}: optional, not found in vault, skipping`);
       } else {
-        console.warn(`⚠ ${key}: not found in vault, skipping`);
+        missingRequired.push(key);
       }
+    }
+
+    if (missingRequired.length) {
+      console.error(
+        `✗ Required key(s) missing from vault: ${missingRequired.join(', ')}`,
+      );
+      process.exit(1);
     }
   }
 
@@ -381,12 +427,22 @@ async function main() {
     );
   }
 
+  if (environment === STAGING) {
+    await enableVercelAuthentication(
+      vercelEnv.VERCEL_PROJECT_ID,
+      vercelEnv.VERCEL_ORG_ID,
+      vercelEnv.VERCEL_TOKEN,
+    );
+  }
+
   await pruneStaleVercelEnvVars(
     vercelEnv.VERCEL_PROJECT_ID,
     vercelEnv.VERCEL_ORG_ID,
     vercelEnv.VERCEL_TOKEN,
     VERCEL_ENV,
-    new Set(Object.keys(allSecrets)),
+    // .env.example keys stay expected even when absent from Vault, so a missing
+    // optional key is neither added nor pruned from a live deployment.
+    new Set([...Object.keys(allSecrets), ...allKeys]),
   );
 
   console.log('Deploying secrets...');
@@ -422,10 +478,12 @@ async function main() {
     );
 
     console.log(`\nDeploying ${projectName} to Vercel...\n`);
-    execSync(`npx vercel deploy --prebuilt --prod --yes --cwd "${repoRoot}"`, {
-      stdio: 'inherit',
-      env: vercelEnv,
-    });
+    // tgz uploads one archive instead of every output file; per-file uploads
+    // exhaust the free plan's 5000 uploads/24h ("api-upload-free") mid-run.
+    execSync(
+      `npx vercel deploy --prebuilt --prod --yes --archive=tgz --cwd "${repoRoot}"`,
+      { stdio: 'inherit', env: vercelEnv },
+    );
   });
 
   console.log('\nDone!');

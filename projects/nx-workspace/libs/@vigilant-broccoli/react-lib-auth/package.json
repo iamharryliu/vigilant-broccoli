@@ -1,0 +1,12 @@
+{
+  "name": "@vigilant-broccoli/react-lib-auth",
+  "version": "0.0.1",
+  "private": true,
+  "sideEffects": false,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.1",
+    "@vigilant-broccoli/common-js": "workspace:*",
+    "@vigilant-broccoli/react-lib": "workspace:*",
+    "react": "19.2.7"
+  }
+}

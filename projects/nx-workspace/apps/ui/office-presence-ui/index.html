@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Home | OK-IN Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Try the OK-IN office presence Slack app in the browser, backed by the live demo service."
+    />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="%BASE_URL%apple-touch-icon.png"
+    />
+    <style>
+      body {
+        margin: 0;
+      }
+      @media (prefers-color-scheme: dark) {
+        body {
+          background: #1a1d21;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

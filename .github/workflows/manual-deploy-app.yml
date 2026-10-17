@@ -9,9 +9,11 @@ on:
         type: choice
         options:
           - socket-server-socketio
-          - office-presence-socket-server-demo
+          - office-presence-service
+          - office-presence-ui
           - vb-manager-next-mobile
           - findme
+          - whiteboard
           - weather-next
           - balloono
           - calendars
@@ -29,7 +31,7 @@ on:
           - bucket-service
           - email-subscription-service
       environment:
-        description: "Deployment environment (production only exists for fly services; employee-handler-ui only has demo)"
+        description: 'Deployment environment (production only exists for fly services; employee-handler-ui, office-presence-service and office-presence-ui only have demo)'
         type: choice
         default: staging
         options:

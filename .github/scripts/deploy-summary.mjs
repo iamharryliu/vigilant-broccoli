@@ -27,16 +27,26 @@ const PROJECT_HOSTING = {
   'weather-next': { platform: 'vercel', name: 'weather-next' },
   balloono: { platform: 'vercel', name: 'balloono' },
   calendars: { platform: 'pages', name: 'calendars' },
-  whiteboard: { platform: 'vercel', name: 'whiteboard' },
+  whiteboard: { platform: 'pages', name: 'whiteboard' },
   'vb-manager-next-mobile': {
     platform: 'vercel',
     name: 'vb-manager-next-mobile',
   },
-  findme: { platform: 'vercel', name: 'findme' },
+  findme: { platform: 'pages', name: 'findme' },
   hearth: { platform: 'vercel', name: 'hearth' },
   'employee-handler-ui': {
     platform: 'vercel',
     name: 'employee-handler-ui',
+    environments: ['demo'],
+  },
+  'office-presence-ui': {
+    platform: 'pages',
+    name: 'office-presence-ui',
+    environments: ['demo'],
+  },
+  'office-presence-service': {
+    platform: 'fly',
+    name: 'office-presence-service',
     environments: ['demo'],
   },
   'vb-express': { platform: 'fly', name: 'vb-express' },

@@ -209,6 +209,21 @@ const renderUnpublished = unpublished => {
   return [label('Not published', '').trimEnd(), '', ...items].join('\n');
 };
 
+const cell = value => escapeInline(value).replace(/\n/g, ' ');
+
+const renderChangedFiles = pulls => {
+  const files = pulls.flatMap(pull =>
+    (Array.isArray(pull.files) ? pull.files : []).filter(
+      file => file && typeof file.file === 'string' && file.file,
+    ),
+  );
+  if (files.length === 0) return '';
+  const rows = files.map(
+    file => `| ${cell(file.file)} | ${cell(text(file.summary))} |`,
+  );
+  return ['| File changed | Summary |', '| --- | --- |', ...rows].join('\n');
+};
+
 const headlineFor = (outcome, pulls) => {
   if (outcome === 'failed' && pulls.length) {
     const published = pulls.filter(
@@ -240,6 +255,7 @@ const renderResult = () => {
     label('Outcome', headlineFor(outcome, pulls)),
     renderPullRequests(pulls),
     renderUnpublished(unpublished),
+    renderChangedFiles(pulls),
     childRun && label('Child run', urlOrText(childRun)),
     exitCode && exitCode !== '0' && label('Exit code', escapeInline(exitCode)),
     note && label('Details', escapeInline(note)),

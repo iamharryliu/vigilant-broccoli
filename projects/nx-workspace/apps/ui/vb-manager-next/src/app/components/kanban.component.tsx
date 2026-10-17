@@ -3,16 +3,10 @@
 import {
   Button,
   CloseButton,
-  EllipsisCTA,
-  EisenhowerQuadrant,
   getCommitType,
-  getEisenhowerQuadrant,
-  GoogleTasksComponent,
   Input,
   Select,
   Skeleton,
-  SortMode,
-  SORT_MODE,
   Text,
   Dialog,
   DialogTrigger,
@@ -20,6 +14,14 @@ import {
   DialogTitle,
   DialogClose,
 } from '@vigilant-broccoli/react-lib';
+import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
+import {
+  EisenhowerQuadrant,
+  getEisenhowerQuadrant,
+  GoogleTasksComponent,
+  SortMode,
+  SORT_MODE,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { CreateTasksDialogTrigger } from './create-tasks-dialog.component';
 import { useEffect, useState, useCallback } from 'react';
@@ -129,8 +131,7 @@ const createDefaultBoard = (): Board => ({
 });
 
 type KanbanFetchResult =
-  | { ok: true; state: KanbanState | null }
-  | { ok: false };
+  { ok: true; state: KanbanState | null } | { ok: false };
 
 const fetchKanbanState = async (): Promise<KanbanFetchResult> => {
   const response = await authFetch(API_ENDPOINTS.KANBAN_BOARDS);
@@ -1310,12 +1311,14 @@ export const KanbanComponent = () => {
                         ) : (
                           <>
                             <Select
-                              selectedOption={availableTaskLists.find(
+                              value={availableTaskLists.find(
                                 l => l.id === selectedTaskListId,
                               )}
-                              setValue={list => setSelectedTaskListId(list.id)}
+                              onValueChange={list =>
+                                setSelectedTaskListId(list.id)
+                              }
                               options={availableTaskLists}
-                              optionIdenfifier="id"
+                              optionIdentifier="id"
                               optionDisplayKey="title"
                               placeholder={
                                 availableTaskLists.length === 0

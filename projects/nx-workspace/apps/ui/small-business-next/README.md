@@ -1,17 +1,22 @@
 # Small Business Next
 
+## Table of Contents
+
+- [Stack](#stack)
+
 ## Stack
 
 - Language - TypeScript
-- Framework - Next.js (React)
+- Framework - Next.js
 - Build Tool - Next.js
 - External libs
+  - AWS SDK
   - Tailwind CSS
-  - AWS SDK (S3 client, for Cloudflare R2)
 - Internal libs
   - `common-js`
   - `common-node`
+  - `react-lib`
+  - `react-lib-auth`
 - Cloud services
-  - Supabase (auth)
   - Cloudflare R2
-  - Vercel
+  - Supabase

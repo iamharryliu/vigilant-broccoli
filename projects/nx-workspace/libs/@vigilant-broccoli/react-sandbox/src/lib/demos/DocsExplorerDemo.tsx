@@ -1,12 +1,9 @@
 import { DemoSection } from './DemoSection';
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
-import {
-  ImageCarouselDialog,
-  Text,
-  buttonVariants,
-} from '@vigilant-broccoli/react-lib';
-import { MarkdownViewer } from '@vigilant-broccoli/react-utility';
+import { ImageCarouselDialog } from '@vigilant-broccoli/react-lib-media';
+import { Text, buttonVariants } from '@vigilant-broccoli/react-lib';
+import { MarkdownViewer } from '@vigilant-broccoli/react-lib-higher-level';
 import checklistScreenshot from '../assets/docs-explorer/checklist.webp';
 import graphScreenshot from '../assets/docs-explorer/graph.webp';
 import searchScreenshot from '../assets/docs-explorer/search.webp';
@@ -14,7 +11,7 @@ import treeScreenshot from '../assets/docs-explorer/tree.webp';
 
 const DOCS_URL = 'https://docs.harryliu.dev/';
 const README_PATH =
-  'projects/nx-workspace/libs/@vigilant-broccoli/react-lib/docs/features/docs-explorer.md';
+  'projects/nx-workspace/libs/@vigilant-broccoli/react-lib-higher-level/docs/features/docs-explorer.md';
 const README_URL = `https://raw.githubusercontent.com/iamharryliu/vigilant-broccoli/main/${README_PATH}`;
 const REPO_BLOB_URL =
   'https://github.com/iamharryliu/vigilant-broccoli/blob/main/';

@@ -320,6 +320,11 @@ variable "projects_domain" {
   default = "projects.harryliu.dev"
 }
 
+variable "career_domain" {
+  type    = string
+  default = "career.harryliu.dev"
+}
+
 variable "status_domain" {
   type    = string
   default = "status.harryliu.dev"

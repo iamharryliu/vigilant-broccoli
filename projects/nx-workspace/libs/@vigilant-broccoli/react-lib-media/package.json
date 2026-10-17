@@ -1,0 +1,11 @@
+{
+  "name": "@vigilant-broccoli/react-lib-media",
+  "version": "0.0.1",
+  "private": true,
+  "sideEffects": false,
+  "dependencies": {
+    "@vigilant-broccoli/react-lib": "workspace:*",
+    "lucide-react": "^0.513.0",
+    "react": "19.2.7"
+  }
+}

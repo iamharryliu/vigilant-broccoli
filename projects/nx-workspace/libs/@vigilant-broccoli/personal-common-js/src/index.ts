@@ -1,3 +1,7 @@
+import { EMAIL_ADDRESS } from './email-address.const';
+
+export { EMAIL_ADDRESS };
+
 export const APP_NAME = {
   HARRYLIU_DESIGN: 'HARRYLIU_DESIGN',
   CLOUD_8_SKATE: 'CLOUD_8_SKATE',
@@ -61,8 +65,6 @@ export const PERSONAL_URL = {
     URL: 'https://outlook.live.com/host/0/0d5c91ee-5be2-4b79-81ed-23e6c4580427/ToDoId',
   },
 } as const;
-
-export const EMAIL_ADDRESS = 'harryliu1995@gmail.com';
 
 export const SENDER_EMAIL_ADDRESS = 'contact@harryliu.dev';
 
@@ -166,3 +168,6 @@ export const MAC_OS_APP = {
     NAME: 'WhatsApp',
   },
 } as const;
+
+export * from './personal-calendar.const';
+export * from './personal-calendar-embed';

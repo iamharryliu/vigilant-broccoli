@@ -1,6 +1,6 @@
 # Agent Context — .github
 
-Workflow conventions — filename routing, action and runner pinning, `timeout-minutes`, `concurrency` groups, cron staggering and where toolchain versions come from — are in [workflow-conventions.md](../docs/ci/workflow-conventions.md). Read it before adding or changing a workflow; none of it is enforced by CI.
+Read [workflow-conventions.md](../docs/ci/workflow-conventions.md) before workflow changes.
 
 ## Table of Contents
 
@@ -9,30 +9,6 @@ Workflow conventions — filename routing, action and runner pinning, `timeout-m
 
 ## Nuances
 
-Non-obvious traps in this directory — read the relevant entry **before**
-working on the surface it names, not only when something breaks.
-[nuance-pattern.md](../docs/nuance-pattern.md) is the convention.
-
 ### A double-quoted font family silently kills the whole `style="..."` attribute
 
-`.github/scripts/agentic-solve-email.mjs` builds email HTML by string
-concatenation, and the sans stack was written the way every CSS snippet on the
-web writes it:
-
-```js
-const SANS_FONT =
-  '-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif';
-```
-
-Interpolated into `style="font-family:${SANS_FONT};..."`, the `"` before
-`Segoe` closes the attribute. Everything after it — the font size, the colours,
-the margins — becomes stray attributes the parser discards, so the element
-renders with browser defaults. The symptom is bizarre: headings and body text
-come out in a serif face while the class-styled parts of the same document look
-fine, and nothing in the CSS is wrong. There is no error anywhere; the HTML is
-still well-formed enough to parse.
-
-Any family name needing quotes (`'Segoe UI'`, `'SF Mono'`, `'Helvetica Neue'`)
-must use single quotes when the stack can land inside a double-quoted HTML
-attribute. Single quotes are equally valid CSS, so the same constant stays
-usable in a `<style>` block.
+In `.github/scripts/agentic-solve-email.mjs`, font stacks are interpolated into double-quoted HTML `style` attributes. Double quotes around a font name terminate the attribute, silently discarding later styles. Use single quotes for names such as `'Segoe UI'`; the same stack also works in `<style>` blocks.

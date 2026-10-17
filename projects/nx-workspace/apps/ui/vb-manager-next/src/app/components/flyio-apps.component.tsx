@@ -5,18 +5,22 @@ import {
   Button,
   ButtonConfig,
   ButtonList,
-  CardContainer,
-  StatusCardList,
   StatusCardListItem,
   Text,
   WINDOW_OPEN_FEATURES,
-  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
 import { FLYIO_LINK } from '@vigilant-broccoli/links';
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
 import { usePollingInterval } from '../hooks/usePollingInterval';
+import { StatusListCard } from './status-list-card.component';
+import {
+  DotColor,
+  StatusDot,
+  StatusLegendEntry,
+  getDotBorder,
+} from './status-dot.component';
 
 interface FlyApp {
   name: string;
@@ -52,16 +56,7 @@ const MACHINE_STATE = {
 
 const DOWN_STATES: string[] = [MACHINE_STATE.stopped, MACHINE_STATE.failed];
 
-type DotColor = 'green' | 'yellow' | 'red' | 'gray';
-
-const DOT_CLASS: Record<DotColor, string> = {
-  green: 'bg-green-500',
-  yellow: 'bg-yellow-500',
-  red: 'bg-red-500',
-  gray: 'bg-gray-400',
-};
-
-const LEGEND: { color: DotColor; label: string }[] = [
+const LEGEND: StatusLegendEntry[] = [
   { color: 'green', label: 'Started' },
   { color: 'yellow', label: 'Suspended / partial' },
   { color: 'red', label: 'Stopped / failed' },
@@ -75,13 +70,6 @@ const getMachineColor = (states: string[]): DotColor => {
   return 'yellow';
 };
 
-const StatusDot = ({ color, title }: { color: DotColor; title?: string }) => (
-  <span
-    title={title}
-    className={`inline-block h-3 w-3 shrink-0 rounded-full mt-0.5 ${DOT_CLASS[color]}`}
-  />
-);
-
 const DASHBOARD_LINK = {
   href: FLYIO_LINK.DASHBOARD.URL,
   label: 'Dashboard',
@@ -93,27 +81,31 @@ const getAppUrls = (appName: string) => ({
   Monitoring: `${FLY_BASE}/${appName}/monitoring`,
 });
 
-const toItem = (app: FlyApp): StatusCardListItem => ({
-  id: app.name,
-  label: app.name,
-  badges: (
-    <StatusDot
-      color={getMachineColor(app.machineStates)}
-      title={`${app.status}: ${app.machineStates.join(', ') || 'no machines'}`}
-    />
-  ),
-  children: (
-    <ButtonList
-      buttons={Object.entries(getAppUrls(app.name)).map(
-        ([label, url]): ButtonConfig => ({
-          label,
-          onClick: () => window.open(url, '_blank', WINDOW_OPEN_FEATURES),
-          isExternal: true,
-        }),
-      )}
-    />
-  ),
-});
+const toItem = (app: FlyApp): StatusCardListItem => {
+  const color = getMachineColor(app.machineStates);
+  return {
+    id: app.name,
+    label: app.name,
+    borderClassName: getDotBorder(color),
+    badges: (
+      <StatusDot
+        color={color}
+        title={`${app.status}: ${app.machineStates.join(', ') || 'no machines'}`}
+      />
+    ),
+    children: (
+      <ButtonList
+        buttons={Object.entries(getAppUrls(app.name)).map(
+          ([label, url]): ButtonConfig => ({
+            label,
+            onClick: () => window.open(url, '_blank', WINDOW_OPEN_FEATURES),
+            isExternal: true,
+          }),
+        )}
+      />
+    ),
+  };
+};
 
 export const FlyIoAppsComponent = () => {
   const [appsData, setAppsData] = useState<FlyApp[]>([]);
@@ -170,12 +162,19 @@ export const FlyIoAppsComponent = () => {
     await fetchFlyApps();
   };
 
-  if (loading) return <CardSkeleton title="Fly.io Apps" rows={5} />;
-
-  if (error) {
-    return (
-      <CardContainer title="Fly.io Apps" gap="3" headerLink={DASHBOARD_LINK}>
-        {authRequired ? (
+  return (
+    <StatusListCard
+      title="Fly.io Apps"
+      gap="3"
+      loading={loading}
+      error={error}
+      skeletonRows={5}
+      headerLink={DASHBOARD_LINK}
+      legend={LEGEND}
+      items={appsData.map(toItem)}
+      emptyMessage="No apps found"
+      errorContent={
+        authRequired ? (
           <div className="flex flex-col gap-2 items-start">
             <Text size="2">Not logged in to Fly.io.</Text>
             <Button
@@ -208,27 +207,8 @@ export const FlyIoAppsComponent = () => {
           </div>
         ) : (
           <Badge color="red">{error}</Badge>
-        )}
-      </CardContainer>
-    );
-  }
-
-  return (
-    <CardContainer title="Fly.io Apps" gap="3" headerLink={DASHBOARD_LINK}>
-      <StatusCardList
-        items={appsData.map(toItem)}
-        emptyMessage="No apps found"
-      />
-      <div className="flex flex-wrap gap-x-4 gap-y-1">
-        {LEGEND.map(({ color, label }) => (
-          <div key={color} className="flex items-center gap-1">
-            <StatusDot color={color} />
-            <Text size="1" color="gray">
-              {label}
-            </Text>
-          </div>
-        ))}
-      </div>
-    </CardContainer>
+        )
+      }
+    />
   );
 };

@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
-import tsconfigPaths from 'vite-tsconfig-paths';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig(() => ({
@@ -15,9 +14,9 @@ export default defineConfig(() => ({
     port: 3000,
     host: 'localhost',
   },
+  resolve: { tsconfigPaths: true },
   plugins: [
     react(),
-    tsconfigPaths(),
     viteStaticCopy({ targets: [{ src: '*.md', dest: '.' }], silent: true }),
   ],
   build: {

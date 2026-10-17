@@ -4,12 +4,24 @@ import {
   EventCalendar,
   EventCalendarSource,
   EventSourceType,
+  SYNC_RUN_STATUS,
+  SyncRun,
+  SyncRunResult,
+  SyncRunStatus,
+  SyncRunTrigger,
 } from '../app/constants/event-calendars';
 
 // Tracking lives in shared Supabase (not per-machine SQLite) so every machine
 // reads the same list; see the create_event_calendars migration.
 const CALENDARS_TABLE = 'event_calendars';
 const SOURCES_TABLE = 'event_calendar_sources';
+const SYNC_RUNS_TABLE = 'event_calendar_sync_runs';
+const MINUTE_MS = 60_000;
+const DAY_MS = 24 * 60 * MINUTE_MS;
+// The runner heartbeats far more often than this (sync-runner.ts), so a
+// running row this quiet belongs to a process that died mid-run.
+const SYNC_RUN_STALE_MS = 30 * MINUTE_MS;
+const SYNC_RUN_RETENTION_MS = 30 * DAY_MS;
 
 interface EventCalendarRow {
   id: string;
@@ -27,6 +39,23 @@ interface EventCalendarSourceRow {
   calendar_id: string;
   url: string;
   source_type: string;
+}
+
+interface SyncRunResultRow {
+  calendar_id: string;
+  ok: boolean;
+  message: string;
+}
+
+interface SyncRunRow {
+  id: string;
+  trigger: SyncRunTrigger;
+  status: SyncRunStatus;
+  started_at: string;
+  finished_at: string | null;
+  updated_at: string;
+  current_calendar_id: string | null;
+  results: SyncRunResultRow[];
 }
 
 const unwrap = <T>({ data, error }: { data: T; error: unknown }): T => {
@@ -222,5 +251,111 @@ export const recordSyncResult = async (id: string, message: string) => {
         last_sync_message: message,
       })
       .eq('id', id),
+  );
+};
+
+const toSyncRunResultRows = (results: SyncRunResult[]): SyncRunResultRow[] =>
+  results.map(({ calendarId, ok, message }) => ({
+    calendar_id: calendarId,
+    ok,
+    message,
+  }));
+
+const toSyncRun = (row: SyncRunRow, now: number): SyncRun => {
+  const stale =
+    row.status === SYNC_RUN_STATUS.RUNNING &&
+    now - new Date(row.updated_at).getTime() > SYNC_RUN_STALE_MS;
+  return {
+    id: row.id,
+    trigger: row.trigger,
+    status: stale ? SYNC_RUN_STATUS.FAILED : row.status,
+    stale,
+    startedAt: row.started_at,
+    finishedAt: row.finished_at ?? undefined,
+    currentCalendarId: stale
+      ? undefined
+      : (row.current_calendar_id ?? undefined),
+    results: row.results.map(result => ({
+      calendarId: result.calendar_id,
+      ok: result.ok,
+      message: result.message,
+    })),
+  };
+};
+
+export const startSyncRun = async (trigger: SyncRunTrigger) => {
+  const row = unwrap(
+    await supabaseAdmin
+      .from(SYNC_RUNS_TABLE)
+      .insert({ trigger, status: SYNC_RUN_STATUS.RUNNING })
+      .select('id')
+      .single(),
+  ) as { id: string };
+  return row.id;
+};
+
+// Also the run's heartbeat: every call bumps updated_at.
+export const updateSyncRun = async (
+  id: string,
+  {
+    currentCalendarId,
+    results,
+  }: { currentCalendarId?: string; results?: SyncRunResult[] } = {},
+) => {
+  unwrap(
+    await supabaseAdmin
+      .from(SYNC_RUNS_TABLE)
+      .update({
+        updated_at: new Date().toISOString(),
+        ...(currentCalendarId !== undefined && {
+          current_calendar_id: currentCalendarId,
+        }),
+        ...(results && { results: toSyncRunResultRows(results) }),
+      })
+      .eq('id', id),
+  );
+};
+
+export const finishSyncRun = async (
+  id: string,
+  status: SyncRunStatus,
+  results: SyncRunResult[],
+) => {
+  const now = new Date().toISOString();
+  unwrap(
+    await supabaseAdmin
+      .from(SYNC_RUNS_TABLE)
+      .update({
+        status,
+        results: toSyncRunResultRows(results),
+        finished_at: now,
+        updated_at: now,
+        current_calendar_id: null,
+      })
+      .eq('id', id),
+  );
+};
+
+export const listSyncRuns = async (limit: number): Promise<SyncRun[]> => {
+  const rows = unwrap(
+    await supabaseAdmin
+      .from(SYNC_RUNS_TABLE)
+      .select('*')
+      .order('started_at', { ascending: false })
+      .limit(limit),
+  ) as SyncRunRow[];
+  const now = Date.now();
+  return rows.map(row => toSyncRun(row, now));
+};
+
+export const pruneSyncRuns = async () => {
+  unwrap(
+    await supabaseAdmin
+      .from(SYNC_RUNS_TABLE)
+      .delete()
+      .lt(
+        'started_at',
+        new Date(Date.now() - SYNC_RUN_RETENTION_MS).toISOString(),
+      ),
   );
 };

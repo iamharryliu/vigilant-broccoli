@@ -98,6 +98,10 @@ export const UTILITY_URL = {
     NAME: 'Slack',
     URL: 'https://app.slack.com/client/',
   },
+  SLACK_API_APPS: {
+    NAME: 'Slack API Apps',
+    URL: 'https://api.slack.com/apps',
+  },
   AMAZON: {
     NAME: 'Amazon',
     URL: 'https://www.amazon.com',
@@ -618,12 +622,12 @@ export const HARRYLIU_APP_URL = {
   FIND_ME: {
     NAME: 'Find Me',
     URL: 'https://findme.harryliu.dev/',
-    STAGING_URL: 'https://staging-findme.vercel.app/',
+    STAGING_URL: 'https://staging-findme.pages.dev/',
   },
   WHITEBOARD: {
     NAME: 'Whiteboard',
     URL: 'https://whiteboard.harryliu.dev/',
-    STAGING_URL: 'https://staging-whiteboard.vercel.app/',
+    STAGING_URL: 'https://staging-whiteboard.pages.dev/',
   },
   BALLOONO: {
     NAME: 'Balloono',
@@ -674,6 +678,10 @@ export const HARRYLIU_APP_URL = {
     NAME: 'Employee Handler Demo',
     URL: 'https://demo-employee-handler-ui.vercel.app/',
   },
+  OFFICE_PRESENCE_DEMO: {
+    NAME: 'Office Presence Demo',
+    URL: 'https://demo-office-presence-ui.pages.dev/',
+  },
 } as const;
 
 export const HARRYLIU_INFRA_URL = {
@@ -692,6 +700,10 @@ export const HARRYLIU_INFRA_URL = {
   SOCKET_SERVER: {
     NAME: 'Socket Server Health',
     URL: 'https://socket.harryliu.dev/health',
+  },
+  CAREER: {
+    NAME: 'Career',
+    URL: 'https://career.harryliu.dev/',
   },
   STATUS: {
     NAME: 'Status',

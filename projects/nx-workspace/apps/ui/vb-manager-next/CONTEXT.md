@@ -5,97 +5,32 @@
 - [Nuances](#nuances)
   - [`@nx/next` build doesn't copy `deprecation.js` into `dist/.nx-helpers`](#nxnext-build-doesnt-copy-deprecationjs-into-distnx-helpers)
   - [PM2 reload needs `pm2 save` for boot resurrect](#pm2-reload-needs-pm2-save-for-boot-resurrect)
+  - [Lib-only class changes ship stale CSS from Next's build cache](#lib-only-class-changes-ship-stale-css-from-nexts-build-cache)
   - [A failed kanban board fetch used to look like a brand-new account](#a-failed-kanban-board-fetch-used-to-look-like-a-brand-new-account)
   - [Kanban's cross-lane drag reads CheckList's internal dnd-kit payload](#kanbans-cross-lane-drag-reads-checklists-internal-dnd-kit-payload)
 
-## Nuances
+- Keyboard shortcuts cheatsheet (Settings page, see [docs/features/settings.md](./docs/features/settings.md)): when adding, changing, or removing a global keyboard shortcut in `src/app/(pages)/layout.tsx` (`processKeyboardInput`), update `KEYBOARD_SHORTCUTS_MARKDOWN` in `src/app/content/keyboard-shortcuts.md.ts` to match.
 
-Non-obvious traps in this directory — read the relevant entry **before**
-working on the surface it names, not only when something breaks.
-[nuance-pattern.md](../../../../../docs/nuance-pattern.md) is the convention.
+## Nuances
 
 ### `@nx/next` build doesn't copy `deprecation.js` into `dist/.nx-helpers`
 
-`@nx/next@23.0.1`'s build step copies its own `compose-plugins.js` helper into
-`dist/apps/ui/vb-manager-next/.nx-helpers/` so the built app doesn't depend on
-`@nx/next` at runtime. In this version, `compose-plugins.js` itself does
-`require('./deprecation')` — but Nx's copy logic
-(`create-next-config-file.js`) only walks and copies the relative imports of
-the app's own `next.config.js`, not the imports of the helper file it just
-copied. So `deprecation.js` never lands in `dist/.nx-helpers/`, and
-`next start` throws `Error: Cannot find module './deprecation'` on every
-boot — PM2 crash-loops the process (`errored`, restart count climbing, pid 0),
-which surfaces as a 502 from anything proxying to it (e.g.
-`manager.vigilant-broccoli.app` → `host.docker.internal:1337`).
-
-This isn't caused by anything in this repo — it's an upstream Nx bug that
-hits any fresh build of `vb-manager-next` with this `@nx/next` version.
-
-Worked around in `projects/nx-workspace/apps/ui/vb-manager-next/project.json`:
-the `build` target now chains
-`node scripts/fix-next-config-helpers.js dist/apps/ui/vb-manager-next/.nx-helpers`
-after `nx run vb-manager-next:build:next`, which copies the missing
-`deprecation.js` from the installed `@nx/next` package (resolved via
-`require.resolve('@nx/next/package.json')` rather than a hardcoded pnpm
-content-hash path, since that hash changes across installs). Since
-`pm2:start`/`pm2:reload` both `dependsOn: ["build"]`, this fixes it
-transparently without patching vendored `node_modules` code.
+`@nx/next@23.0.1` copies `compose-plugins.js` but misses its `./deprecation` dependency, so `next start` throws `Error: Cannot find module './deprecation'` and PM2 crash-loops (a 502 through `manager.vigilant-broccoli.app`). Keep the post-build `scripts/fix-next-config-helpers.js` step in `project.json` until the upstream copy logic is fixed. It resolves the installed package rather than relying on pnpm's changing hash paths; both PM2 targets depend on the patched build.
 
 ### PM2 reload needs `pm2 save` for boot resurrect
 
-`pnpm vb-manager-next:start` and `pnpm vb-manager-next:reload` both register
-the process from `ecosystem.config.js`, but PM2's boot restore path reads the
-saved dump file, not the current in-memory process list. After changing either
-target, keep `pm2 save` as the final successful step, or a machine restart can
-come back from an older saved list that does not include the fresh
-`vb-manager-next` process/env. This assumes `pm2 startup` has already installed
-the OS-level boot hook on the host.
+Keep `pm2 save` as the final successful step of start/reload: boot restore reads the saved dump, not PM2's current process list. The host also needs `pm2 startup`. The reload wrapper first runs `git pull --ff-only` and aborts if it fails.
+
+### Lib-only class changes ship stale CSS from Next's build cache
+
+Next's webpack cache can miss Tailwind classes added only in workspace libs. `next.config.js` includes lib source paths, mtimes and sizes in `cache.version` to invalidate it on lib changes. If CSS remains stale, remove `dist/apps/ui/vb-manager-next/.next/cache` and rebuild.
 
 ### A failed kanban board fetch used to look like a brand-new account
 
-`vb-manager-next`'s kanban board (`src/app/components/kanban.component.tsx`,
-`useBoards`) persists boards to MongoDB per `userEmail`
-(`src/app/api/kanban/db.ts`). `fetchKanbanState` used to return `null` for
-_any_ non-OK HTTP response from `GET /api/kanban/boards` — collapsing a real
-error (an expired/invalid auth token, a transient failure in
-`getUserEmail`'s `supabase.auth.getUser(token)` call, a Mongo connection
-blip) into the exact same value as "this user has never saved a board."
-
-`hydrate()` treated that value as license to fall through its full
-first-time-user path: check `localStorage` (empty, since existing users'
-local boards were already migrated and cleared), find nothing, then create a
-default empty board and immediately `PUT` it — upserting over the real saved
-document. One transient GET failure was enough to permanently wipe a user's
-boards on the very next write, with no merge or backup: `saveKanbanState`
-does a plain `$set` upsert.
-
-Fixed by making `fetchKanbanState` return a tagged result
-(`{ ok: true, state } | { ok: false }`) so `hydrate()` can bail out on a
-failed fetch without ever reaching the default-board-creation/persist path.
-Any other client-side hydration flow that falls back to "create and save a
-default" needs to make the same distinction between a failed load and a
-confirmed-empty one.
+Keep failed loads distinct from confirmed-empty state in `kanban.component.tsx`: `fetchKanbanState` returns `{ ok: false }` on failure and hydration exits. Falling through to default-board creation would immediately upsert over the user's saved MongoDB boards. The same distinction is necessary in any new hydration flow that saves defaults.
 
 ### Kanban's cross-lane drag reads CheckList's internal dnd-kit payload
 
-`kanban.component.tsx` wraps one `GoogleTasksComponent` per lane (each with
-`disableInternalDndContext`) in its own top-level `DndContext`, and its own
-handlers (`handleDragStart`/`handleDragOver`/`handleTaskDragEnd`,
-`TaskDragOverlay`) read the raw, untyped dnd-kit drag payload directly:
-`active.data.current?.type === 'task'`, `.task`, `.taskListId`, and a
-droppable `type: 'taskList'`. That payload isn't part of any component's
-TypeScript props — it's set internally by
-`@vigilant-broccoli/react-lib`'s `CheckList` (`CheckListRow`'s `useSortable`
-and `CheckList`'s own `useDroppable` calls in
-`libs/@vigilant-broccoli/react-lib/src/components/CheckList.tsx`), which
-`GoogleTasksComponent` renders under the hood.
+`kanban.component.tsx` owns the `DndContext` around lanes using `GoogleTasksComponent` with `disableInternalDndContext`. Its handlers and `TaskDragOverlay` read CheckList's untyped payload: `type: 'task'`, `task`, `taskListId`, and droppable `type: 'taskList'`.
 
-`CheckList` is otherwise fully generic (Google-Tasks-agnostic
-`CheckListItem`/`listId` naming throughout its typed props), but this one
-internal payload literal was deliberately left as `'task'`/`task`/
-`'taskList'`/`taskListId` instead of being genericized, specifically so this
-file's cross-lane handlers keep working unmodified. Renaming or restructuring
-that payload inside `CheckList` will silently break drag-and-drop between
-lanes here — there's no test coverage over it, so it fails only as "dragging
-a task to another lane does nothing." Update this file's handlers in the same
-change if that payload shape ever changes.
+Despite CheckList's generic typed props, these literals remain task-specific for this consumer. If changing `libs/@vigilant-broccoli/react-lib/src/components/CheckList.tsx`'s payload, update the kanban handlers together; TypeScript does not check this coupling.

@@ -18,7 +18,5 @@ Email queue producer/consumer.
   - `fastify`
   - `messaging`
 - Cloud services
-  - RabbitMQ (email queue)
+  - RabbitMQ
   - Resend
-  - Docker Hub
-  - Fly.io

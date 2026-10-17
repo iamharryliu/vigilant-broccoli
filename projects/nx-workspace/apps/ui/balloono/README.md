@@ -1,27 +1,24 @@
 # Balloono
 
-Bomberman-style water balloon battles in the browser: online rooms with friends, or matches against CPU opponents at three difficulty levels.
+Bomberman-style water balloon battles on desktop: online rooms for four or more people with automatic countdowns and public rankings, or offline matches against CPU opponents at three difficulty levels.
 
 ## Table of Contents
 
-- [Deployment URLs](#deployment-urls)
 - [Stack](#stack)
-
-## Deployment URLs
-
-- [balloono.harryliu.dev](https://balloono.harryliu.dev)
 
 ## Stack
 
 - Language - TypeScript
-- Framework - Next.js (React)
+- Framework - Next.js
 - Build Tool - Next.js
 - External libs
+  - Lucide
+  - Supabase JS
   - Tailwind CSS
-  - Supabase JS (Realtime broadcast and presence)
-  - Lucide (touch controls)
 - Internal libs
+  - `common-js`
   - `react-lib`
+  - `react-lib-auth`
+  - `react-lib-higher-level`
 - Cloud services
   - Supabase
-  - Vercel

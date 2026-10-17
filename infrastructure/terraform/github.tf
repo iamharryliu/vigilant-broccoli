@@ -78,9 +78,16 @@ resource "github_repository_ruleset" "main" {
   # `update` restricts every ref update on main -- including merging a PR --
   # to the bypass actors above. Without it the agent-sandbox/code-server App
   # (Contents RW, which is also the permission that merges PRs) could push a
-  # branch, open a PR and merge it itself; there are no required reviews or
-  # status checks to slow that down. The App has no bypass, so it can only ever
-  # get as far as an open PR. You merge as admin, which bypasses the rule.
+  # branch, open a PR and merge it itself. The App has no bypass, so it can only
+  # ever get as far as an open PR. You merge as admin, which bypasses the rule.
+  #
+  # The admin bypass is `always`, not `pull_request`: the GitHub mobile app has
+  # no "bypass rules" merge option, so `pull_request` left the `update` rule
+  # blocking every mobile merge. The cost is that admins can merge past a red
+  # required check without an explicit prompt and push directly to main. The
+  # required checks are the ci-pr-check.yml job ids; each runs on every PR, and a job skipped by its
+  # `if` (nx-affected/pre-commit on `edited`, commitlint for bot authors) counts
+  # as passing. strict is off so a PR need not be rebased on every merge.
   rules {
     deletion         = true
     non_fast_forward = true
@@ -88,6 +95,20 @@ resource "github_repository_ruleset" "main" {
 
     pull_request {
       required_approving_review_count = 0
+    }
+
+    required_status_checks {
+      strict_required_status_checks_policy = false
+
+      required_check {
+        context = "nx-affected"
+      }
+      required_check {
+        context = "pre-commit"
+      }
+      required_check {
+        context = "commitlint"
+      }
     }
   }
 }

@@ -77,8 +77,8 @@ export function LeisureActivityForm({
             Category
           </Text>
           <Select
-            selectedOption={category}
-            setValue={setCategory}
+            value={category}
+            onValueChange={setCategory}
             options={LEISURE_CATEGORIES as unknown as LeisureCategory[]}
           />
         </div>

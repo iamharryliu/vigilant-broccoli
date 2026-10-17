@@ -16,31 +16,64 @@ if [ -z "${TF_TOKEN_app_terraform_io:-}" ] && [ -z "$TF_TOKEN" ]; then
   exit 1
 fi
 
-BW_STATUS=$(bw status | jq -r '.status')
-if [ "$BW_STATUS" = "unauthenticated" ]; then
-  echo "Bitwarden CLI is not logged in. Run: bw login ${BW_LOGIN_EMAIL}" >&2
-  exit 1
+VAULT_URL="https://vault.harryliu.dev"
+VAULT_TIMEOUT_SECONDS=5
+
+gcp_secret() {
+  gcloud secrets versions access latest --secret="$1" --project="${GCP_PROJECT}" 2>/dev/null
+}
+
+# Live Vault is the source of truth: the Bitwarden note is only as fresh as the
+# last backup-secrets.sh run, so a rotation not followed by a backup leaves it stale.
+# Credentials go to curl on stdin so they never appear in argv.
+load_secrets_from_vault() {
+  local vault_token cf_id cf_secret response
+  vault_token=$(gcp_secret VB_VM_VAULT_ROOT_TOKEN) || return 1
+  cf_id=$(gcp_secret VAULT_CF_ACCESS_CLIENT_ID) || return 1
+  cf_secret=$(gcp_secret VAULT_CF_ACCESS_CLIENT_SECRET) || return 1
+  [ -n "$vault_token" ] && [ -n "$cf_id" ] && [ -n "$cf_secret" ] || return 1
+  response=$(printf 'header = "X-Vault-Token: %s"\nheader = "CF-Access-Client-Id: %s"\nheader = "CF-Access-Client-Secret: %s"\n' \
+    "$vault_token" "$cf_id" "$cf_secret" \
+    | curl -sf --max-time "$VAULT_TIMEOUT_SECONDS" --config - "${VAULT_URL}/v1/${VAULT_KV_PATH}/data/secrets") || return 1
+  SECRETS=$(echo "$response" | jq -e '.data.data') || return 1
+}
+
+load_secrets_from_bitwarden() {
+  BW_STATUS=$(bw status | jq -r '.status')
+  if [ "$BW_STATUS" = "unauthenticated" ]; then
+    echo "Bitwarden CLI is not logged in. Run: bw login ${BW_LOGIN_EMAIL}" >&2
+    exit 1
+  fi
+
+  export BITWARDEN_PASSWORD
+  BITWARDEN_PASSWORD=$(gcloud secrets versions access latest \
+    --secret=BITWARDEN_PASSWORD \
+    --project="${GCP_PROJECT}")
+
+  BW_SESSION=$(bw unlock --passwordenv BITWARDEN_PASSWORD --raw)
+  export BW_SESSION
+
+  FOLDER_ID=$(bw list folders --session "$BW_SESSION" | jq -r ".[] | select(.name == \"$BW_FOLDER\") | .id")
+
+  ITEMS=$(bw list items --folderid "$FOLDER_ID" --session "$BW_SESSION")
+  LATEST_DATE=$(echo "$ITEMS" \
+    | jq -r --arg base "$BW_FOLDER" '[.[] | .name | capture("^" + $base + "-(?<date>[0-9]{4}-[0-9]{2}-[0-9]{2})(-part[0-9]+)?$")? | .date] | sort | last')
+  echo "Using Bitwarden note: ${BW_FOLDER}-${LATEST_DATE}" >&2
+  NOTES=$(echo "$ITEMS" \
+    | jq -r --arg base "${BW_FOLDER}-${LATEST_DATE}" '[.[] | select(.name == $base or (.name | startswith($base + "-part")))]
+      | sort_by(((.name | capture("-part(?<n>[0-9]+)$") | .n | tonumber)? // 0))
+      | map(.notes) | join("")')
+  SECRETS=$(echo "$NOTES" | sed -n '/^{/,$p' | jq '.')
+}
+
+if load_secrets_from_vault; then
+  SECRET_SOURCE="Vault"
+  echo "Using live Vault (${VAULT_URL}/v1/${VAULT_KV_PATH}/data/secrets)" >&2
+else
+  SECRET_SOURCE="the Bitwarden note"
+  echo "Vault unreachable at ${VAULT_URL} (${VAULT_TIMEOUT_SECONDS}s timeout or credentials unavailable) — falling back to the Bitwarden backup, which may be stale if a rotation was not followed by backup-secrets.sh." >&2
+  load_secrets_from_bitwarden
 fi
-
-export BITWARDEN_PASSWORD
-BITWARDEN_PASSWORD=$(gcloud secrets versions access latest \
-  --secret=BITWARDEN_PASSWORD \
-  --project="${GCP_PROJECT}")
-
-BW_SESSION=$(bw unlock --passwordenv BITWARDEN_PASSWORD --raw)
-export BW_SESSION
-
-FOLDER_ID=$(bw list folders --session "$BW_SESSION" | jq -r ".[] | select(.name == \"$BW_FOLDER\") | .id")
-
-ITEMS=$(bw list items --folderid "$FOLDER_ID" --session "$BW_SESSION")
-LATEST_DATE=$(echo "$ITEMS" \
-  | jq -r --arg base "$BW_FOLDER" '[.[] | .name | capture("^" + $base + "-(?<date>[0-9]{4}-[0-9]{2}-[0-9]{2})(-part[0-9]+)?$")? | .date] | sort | last')
-echo "Using Bitwarden note: ${BW_FOLDER}-${LATEST_DATE}" >&2
-NOTES=$(echo "$ITEMS" \
-  | jq -r --arg base "${BW_FOLDER}-${LATEST_DATE}" '[.[] | select(.name == $base or (.name | startswith($base + "-part")))]
-    | sort_by(((.name | capture("-part(?<n>[0-9]+)$") | .n | tonumber)? // 0))
-    | map(.notes) | join("")')
-SECRETS=$(echo "$NOTES" | sed -n '/^{/,$p' | jq '.')
 
 KEY_MAP=(
   "CLOUDFLARE_API_TOKEN:CLOUDFLARE_API_TOKEN"
@@ -71,6 +104,6 @@ for mapping in "${KEY_MAP[@]}"; do
   elif [[ " ${WARN_IF_MISSING_KEYS[*]} " == *" ${VAULT_KEY} "* ]]; then
     # Otherwise the aws provider quietly falls back to whatever is left in
     # ~/.aws -- usually an expired SSO cache, which fails mid-plan instead of here.
-    echo "Warning: ${VAULT_KEY} missing from the Bitwarden note — its consumer (aws provider or code-server's claude) will run unauthenticated. Add it to Vault, then re-run backup-secrets.sh." >&2
+    echo "Warning: ${VAULT_KEY} missing from ${SECRET_SOURCE} — its consumer (aws provider or code-server's claude) will run unauthenticated. Add it to Vault, then re-run backup-secrets.sh." >&2
   fi
 done

@@ -8,6 +8,7 @@ What every UI app in this workspace must have, and the shared building blocks to
 - [Shared components (react-lib)](#shared-components-react-lib)
 - [i18n (required)](#i18n-required)
 - [Page titles (required)](#page-titles-required)
+- [Home screen icons (required)](#home-screen-icons-required)
 - [Theme (system light/dark)](#theme-system-lightdark)
   - [Consistency requirements](#consistency-requirements)
   - [Avoiding a wrong-theme flash](#avoiding-a-wrong-theme-flash)
@@ -19,14 +20,15 @@ What every UI app in this workspace must have, and the shared building blocks to
 ## Where UI apps live
 
 - Static UIs → `apps/ui/*`, Vite + React → Cloudflare Pages.
-- Next.js apps → `apps/*` (`hearth`, `findme`, `whiteboard`) or `apps/ui/*` (`employee-handler-ui`, `weather-next`, `balloono`) → Vercel; `employee-handler-ui`'s `deploy`/`deploy:production` only push the Docker image; its only Vercel deploy is `deploy:demo` (project `demo-employee-handler-ui`), run by `deploy-demo-apps`. `vb-manager-next` is the exception: PM2 on the VM, no nx `deploy` target.
+- Next.js static exports (`apps/findme`, `apps/whiteboard`) → Cloudflare Pages.
+- Next.js server apps → `apps/*` (`hearth`) or `apps/ui/*` (`employee-handler-ui`, `weather-next`, `balloono`) → Vercel; `employee-handler-ui`'s `deploy`/`deploy:production` only push the Docker image; its only Vercel deploy is `deploy:demo` (project `demo-employee-handler-ui`), run by `deploy-demo-apps`. `vb-manager-next` is the exception: PM2 on the VM, no nx `deploy` target.
 - GitHub Pages hosts only the `pages-index` landing site; `component-library` is a Cloudflare Pages site like the other static UIs.
 
 ## Shared components (react-lib)
 
-Check the `libs/@vigilant-broccoli/react-lib/src/components` barrel before building new UI — prefer existing shared components over hand-rolled equivalents, unless told otherwise. Frequently needed: `CRUDItemList` (CRUD list management, exported from `CRUDListManagement.tsx`), `CardContainer`, `Button`, `IconButton`, `Dialog`, `Sidebar`, `Tabs`, `Select`, `Input`, `ThemeProvider`.
+Check the `libs/@vigilant-broccoli/react-lib/src/components` barrel (atoms), the `react-lib-auth`, `react-lib-calendar` and `react-lib-media` domain libs, and the `react-lib-higher-level` lib (composites) before building new UI — prefer existing shared components over hand-rolled equivalents, unless told otherwise. Frequently needed: `CardContainer`, `Button`, `IconButton`, `Dialog`, `Tabs`, `Select`, `Input`, `ThemeProvider` from `react-lib`; `CRUDItemList` (CRUD list management, exported from `CRUDListManagement.tsx`) and `Sidebar` from `react-lib-higher-level`.
 
-User-facing auth is `createSupabaseAuth` from the same lib — read [supabase-auth-pattern.md](./auth/supabase-auth-pattern.md) first, never hand-roll per-app auth. Supabase auth is UI-app-only: its server half (bearer-token middleware, admin client, per-route helpers) lives inside the Next.js apps, and no fly API service uses it.
+User-facing auth is `createSupabaseAuth` from `react-lib-auth` — read [supabase-auth-pattern.md](./auth/supabase-auth-pattern.md) first, never hand-roll per-app auth. Supabase auth is UI-app-only: its server half (bearer-token middleware, admin client, per-route helpers) lives inside the Next.js apps, and no fly API service uses it.
 
 ## i18n (required)
 
@@ -47,6 +49,17 @@ Every route-level page sets a document title of `Page Name | Site Name`, so brow
 - Home, login, callback, and error pages follow the same convention; initial HTML/root metadata defaults also include both names. Keep Open Graph and Twitter title tags consistent where present.
 - `DocsViewer` and `ComponentSandbox` accept `siteName` so their selected document/component titles retain the hosting app suffix. Pass it from the app; the viewer must not overwrite a formatted title with a bare document name.
 - Detail pages title themselves after the record they render (doc name, project title, org name), falling back to a generic label while loading.
+
+## Home screen icons (required)
+
+Every UI app provides an opaque 180×180 PNG for Safari’s Add to Home Screen, using its existing favicon or logo with padding on a solid background. SVG browser favicons alone do not provide the Apple home screen icon.
+
+- Vite apps: keep `public/apple-touch-icon.png` and declare `<link rel="apple-touch-icon" sizes="180x180" href="%BASE_URL%apple-touch-icon.png" />` in `index.html`. Vite replaces `%BASE_URL%` with the configured deployment base, so the icon resolves on nested routes and deployments under a subpath.
+- Next.js apps: keep `src/app/apple-icon.png`. The App Router automatically serves the image and adds the Apple touch icon link on every route, including login pages. Keep metadata image routes accessible without authentication.
+- When changing an app’s favicon or logo, regenerate its PNG to keep the home screen icon consistent. Preserve a square canvas and let iOS apply the corner mask.
+- Verify the deployed icon URL returns a PNG, then use Safari → Share → Add to Home Screen on an iPhone or iPad. Remove and re-add an existing shortcut when checking a changed icon, because installed shortcuts may retain their previous image.
+
+References: [Apple web application configuration](https://developer.apple.com/library/archive/documentation/AppleApplications/Reference/SafariWebContent/ConfiguringWebApplications/ConfiguringWebApplications.html), [Next.js app icon conventions](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/app-icons).
 
 ## Theme (system light/dark)
 
@@ -110,3 +123,4 @@ Every UI application with a public URL appears as a card in `apps/ui/pages-index
 3. Per-page document titles via `usePageTitle` (above).
 4. Web Applications card in `WebApplicationsPage.tsx`, plus the Upptime and quick-links entries above.
 5. Theme follows the system via `<ThemeProvider followSystem>` unless told otherwise (above).
+6. Apple home screen PNG and link via the framework convention above.

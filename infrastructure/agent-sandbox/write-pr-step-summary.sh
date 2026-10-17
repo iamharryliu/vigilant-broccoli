@@ -22,13 +22,14 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 . "$SCRIPT_DIR/no-changes.sh"
 
 PULL_REQUESTS=$(awk '
-  function flush() { if (url != "") print url "\t" title "\t" state "\t" base; url = title = state = base = "" }
+  function flush() { if (url != "") print url "\t" title "\t" state "\t" base "\t" files; url = title = state = base = files = "" }
   /^PR_TITLE::/ { flush(); title = substr($0, 11) }
   /^PR_URL::/ { if (url != "") flush(); url = substr($0, 9) }
   /^PR_STATE::/ { state = substr($0, 11) }
   /^PR_BASE::/ { base = substr($0, 10) }
+  /^PR_FILES::/ { files = substr($0, 11) }
   END { flush() }
-' "$LOG_FILE" 2>/dev/null | jq -Rsc 'split("\n") | map(select(length > 0) | split("\t") | {url: .[0], title: .[1], state: .[2], base: .[3]})')
+' "$LOG_FILE" 2>/dev/null | jq -Rsc 'split("\n") | map(select(length > 0) | split("\t") | {url: .[0], title: .[1], state: .[2], base: .[3], files: ((.[4] // "") | if . == "" then [] else (fromjson? // []) end)})')
 UNPUBLISHED=$({ grep '^INCREMENT_UNPUBLISHED::' "$LOG_FILE" 2>/dev/null || true; } | sed 's/^INCREMENT_UNPUBLISHED:://' | jq -sc .)
 PR_URL=$(jq -r '.[0].url // empty' <<<"$PULL_REQUESTS")
 RESULT_MARKER=$(grep -m1 '^RESULT::' "$LOG_FILE" 2>/dev/null | sed 's/^RESULT:://' || true)

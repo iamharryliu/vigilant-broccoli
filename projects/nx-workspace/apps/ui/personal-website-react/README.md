@@ -1,20 +1,24 @@
 # Personal Website (React)
 
+## Table of Contents
+
+- [Stack](#stack)
+
 ## Stack
 
 - Language - TypeScript
 - Framework - React
 - Build Tool - Vite
 - External libs
-  - Tailwind CSS
-  - React Router
   - marked
+  - React Router
+  - Tailwind CSS
 - Internal libs
   - `common-browser`
   - `personal-common-js`
   - `react-lib`
+  - `react-lib-higher-level`
   - `resume`
 - Cloud services
-  - Cloudflare Pages
   - Google Analytics
   - Google reCAPTCHA

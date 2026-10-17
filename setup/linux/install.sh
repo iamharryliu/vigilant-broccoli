@@ -33,3 +33,7 @@ fi
 RC_LINE='source $HOME/vigilant-broccoli/setup/dotfiles/bash/.rc.bash'
 grep -qxF "$RC_LINE" "$HOME/.bashrc" 2>/dev/null || echo "$RC_LINE" >> "$HOME/.bashrc"
 echo "Added rc hook to ~/.bashrc"
+
+ZSH_RC_LINE='source $HOME/vigilant-broccoli/setup/dotfiles/zsh/.rc.linux.zsh'
+grep -qxF "$ZSH_RC_LINE" "$HOME/.zshrc" 2>/dev/null || echo "$ZSH_RC_LINE" >> "$HOME/.zshrc"
+echo "Added rc hook to ~/.zshrc"

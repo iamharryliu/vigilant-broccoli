@@ -4,17 +4,48 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 ## Table of Contents
 
+- [Shell and toolchain](#shell-and-toolchain)
+- [Local Ollama agent](#local-ollama-agent)
 - [Running in CI](#running-in-ci)
 - [Publishing several pull requests](#publishing-several-pull-requests)
 - [Ending without changes](#ending-without-changes)
 - [Auditing the backlog](#auditing-the-backlog)
 - [Pruning dead code and stale docs](#pruning-dead-code-and-stale-docs)
 - [Auditing legacy documentation](#auditing-legacy-documentation)
+- [Auditing agent context](#auditing-agent-context)
 - [Stack](#stack)
+
+## Shell and toolchain
+
+- Start the container with `pnpm agentic:dev-sandbox:up`, then open a CLI with one of:
+  - `pnpm agentic:dev-sandbox:claude:auto`: Claude auto permission mode.
+  - `pnpm agentic:dev-sandbox:codex:auto`: Codex workspace-write sandbox with on-request approvals and [Auto-review](https://developers.openai.com/codex/concepts/sandboxing/auto-review).
+  - `pnpm agentic:dev-sandbox:claude:yolo`: Claude with permission checks bypassed.
+  - `pnpm agentic:dev-sandbox:codex:yolo`: Codex with approvals and its sandbox disabled.
+- `pnpm agentic:dev-sandbox:shell` opens Bash directly. Interactive shell and CLI launchers treat status 130 (Ctrl-C, including a subsequent bare `exit` in Bash) as a normal exit so pnpm does not print a lifecycle error. Other failure statuses are preserved, and Docker CLI hints are disabled for these launchers.
+- Each command creates or reattaches its own `<agent>-<mode>` tmux session in the sandbox checkout. CLI arguments apply when creating the session; Claude defaults to Sonnet and accepts `--model <model>` overrides. Existing `cli` and `codexyolo` sessions are left running; the new commands use separate sessions.
+
+- The image installs `zsh` from apt and a pinned `mise` (`MISE_VERSION` build arg in the Dockerfile) at `/usr/local/bin/mise`. Both are fetched at build time, outside the egress firewall.
+- `agent` keeps bash as its login shell because the runners and entrypoint are bash scripts. The entrypoint runs `setup/linux/install.sh -y`, which hooks `setup/dotfiles/bash/.rc.bash` into `~/.bashrc` and `setup/dotfiles/zsh/.rc.linux.zsh` into `~/.zshrc`; both activate mise. Run `zsh` for an interactive zsh session with the repo aliases.
+- Tool versions come from the root `mise.toml`. Run `mise install` in the checkout to fetch them; the default allowlist covers the hosts these tools download from: `mise.jdx.dev` and `mise-versions.jdx.dev` (version metadata), `releases.hashicorp.com` (Terraform, Packer), `nodejs.org` (Node) and the GitHub release asset hosts `objects.githubusercontent.com` and `release-assets.githubusercontent.com` (standalone Python). A newly pinned tool that downloads elsewhere needs its host added via `SANDBOX_ALLOWED_DOMAINS`, or run with the firewall off.
+
+## Local Ollama agent
+
+- Select local inference with `pnpm agentic-pr-create --agent ollama --prompt "<task>"` or `pnpm agentic-pr-create --local <TODO_ID...>`.
+- The default is `qwen3-coder:30b`, Ollama's approximately 19 GB quantized coding model. It is a starting choice for an M3 MacBook Pro with 36 GB unified memory; actual memory use includes context, macOS and Docker. Run one solve at a time, close memory-heavy apps and inspect `ollama ps` and Activity Monitor for GPU offloading or swap. See the [model](https://ollama.com/library/qwen3-coder) and [context guidance](https://docs.ollama.com/context-length).
+- Install Ollama on the Mac, then run `ollama pull qwen3-coder:30b`. Run inference natively for Metal acceleration; Docker runs the coding tools only. Quit the Ollama app (or `brew services stop ollama`) before starting the server manually to avoid a port conflict:
+  ```bash
+  OLLAMA_CONTEXT_LENGTH=65536 OLLAMA_NUM_PARALLEL=1 OLLAMA_FLASH_ATTENTION=1 OLLAMA_KV_CACHE_TYPE=q8_0 ollama serve
+  ```
+- Keep Ollama on its default `127.0.0.1` listener: Docker Desktop on macOS reaches it through its built-in `host.docker.internal`, and the LAN cannot. On Linux the adapter adds `--add-host host.docker.internal:host-gateway`, which only a non-loopback listener answers, so there set `OLLAMA_HOST=0.0.0.0:11434`; that exposes Ollama to the LAN, so restrict port 11434 with the host firewall (Ollama's API has no authentication). The sandbox keeps its egress firewall enabled and allows the host Ollama port.
+- Ollama uses the image's existing Claude Code tool harness through its [Anthropic-compatible API](https://docs.ollama.com/integrations/claude-code). Model inference is free and self hosted; no Claude subscription or model API credentials are needed. Local mode rejects cloud tags and cloud-backed models, strips model-provider credentials and disables the harness's nonessential traffic and hosted web tools. GitHub and package registries remain available for checkout and tooling; this is not an offline sandbox.
+- Preview runs do not fetch Vault credentials, commit, push or open PRs. Each run clones fresh remote main into a separate checkout under the printed `/tmp/vb-local-solve.*` directory, retaining code, `.git/solve-meta.json` and `run.log` after success or failure. Your current checkout and uncommitted edits are not inputs. Review with `git -C <printed-checkout> diff`; preview runs implement only the first increment and record follow-ups in metadata.
+- `--agent ollama --publish` explicitly enables the existing GitHub PR/increment pipeline, using an exported `GH_TOKEN` or the existing Vault GitHub credentials. It still uses only the local model. TODO jobs run sequentially in both modes to limit inference memory pressure.
+- Override the model with `--ollama-model <local-tag>` or `OLLAMA_MODEL`; override the host port with `OLLAMA_BASE_URL=http://host.docker.internal:<port>`. The model must already be pulled and support tools. The adapter rebuilds the Docker image and checks model availability before every batch. `--local` is shorthand for `--agent ollama`; Actions retains its existing hosted agent choices.
 
 ## Running in CI
 
-Plan- and Develop-phase agents, backlog auditing, documentation auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-audit`, `agentic-pr-create-prune`, `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
+Plan- and Develop-phase agents, backlog auditing, documentation and context auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-audit`, `agentic-pr-create-context-audit`, `agentic-pr-create-prune`, `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
 
 `pnpm agentic-pr-create <ID...>` runs `solve-todo.sh` locally. The same solve runs in GitHub Actions via the
 `manual-agentic-pr-create` workflow (`workflow_dispatch`) — it builds and runs this container on the `ubuntu-24.04`
@@ -67,11 +98,13 @@ outlive the addresses it captured; if a Codex run dies mid-way on network errors
 `solve-todo-runner.sh` runs it with `GH_TOKEN`/`GITHUB_TOKEN` stripped from the environment. Branching, committing,
 pushing and opening the PR stay with the runner for both agents.
 
-`pnpm agentic-pr-update --with-ci-logs <pr> "<instruction>"` makes `update-pr-runner.sh` collect `gh pr checks` and the failed-step logs (`gh run view --log-failed`) of the branch's recent failing runs, keep the last 20 KB, and add them to the prompt. The agent cannot run `gh` itself, so this is how it sees why CI failed.
+`pnpm agentic-pr-update --with-ci-logs <pr> "<instruction>"` makes `update-pr-runner.sh` collect `gh pr checks` and the failed-step logs (`gh run view --log-failed`) of the branch's recent failing runs, add them to the prompt within a 20 KB budget split across the failing runs (an over-budget run keeps the first third and the rest from its end). The agent cannot run `gh` itself, so this is how it sees why CI failed. Checks still running are waited on for up to 10 minutes (`CI_WAIT_SECONDS`) first. `manual-agentic-pr-update` exposes this as the `with_ci_logs` input. Without it, a `change` run still lists the PR's failing, cancelled and pending check names in the prompt (no logs), so the agent reports a branch that already fails CI instead of building on it silently.
 
-`pnpm agentic-pr-update-fix-ci <pr> ["<instruction>"]` runs `fix-pr-ci.sh`, also used by `manual-agentic-pr-update` with `operation=fix-ci`. It calls `update-pr.sh --with-ci-logs` with a fixed CI-fix instruction and selects the shared CI-fix skill; the optional instruction is appended as extra guidance. It accepts a PR number or URL and optional `--model <model>`.
+`pnpm agentic-pr-update --operation fix-ci <pr> ["<instruction>"]` is also used by `manual-agentic-pr-update` with `operation=fix-ci`. It implies `--with-ci-logs`, uses a fixed CI-fix instruction with the optional instruction appended as extra guidance, and selects the shared CI-fix skill. A failing PR-title check (commitlint) is fixed through the optional `pr_title` metadata field, which the runner normalizes and applies with `gh pr edit --title`; a title-only fix exits successfully without a commit.
 
-`pnpm agentic-pr-update-resolve-conflicts <pr>` runs `resolve-pr-conflicts.sh`, also used by `manual-agentic-pr-update` with `operation=resolve-conflicts`. It accepts a PR number or URL and optional `--model <model>`, enables the merge of `origin/main`, and selects the shared conflict-resolution skill in the existing PR-update runner.
+A `change` instruction can be TODO-only: naming a `TODO.md` row id and asking to drop it (a stale row, or one that was never checked off) is valid with no other file change. The agent declares the id in `todo_ids`, and the runner validates that the request names it and that the row exists, removes it and commits the removal. `agentic-pr-create` still requires real changes beyond `TODO.md`.
+
+`pnpm agentic-pr-update --operation resolve-conflicts <pr>` is also used by `manual-agentic-pr-update` with `operation=resolve-conflicts`. It accepts no instruction, enables the merge of `origin/main`, and selects the shared conflict-resolution skill in the existing PR-update runner.
 
 ## Publishing several pull requests
 
@@ -154,7 +187,7 @@ repo-wide grep shows has zero references. `cron-agentic-pr-create-prune` runs th
   `notes/` was added, deleted or renamed, or if more than 50 files changed. The skill asks for about 40; the runner's cap
   is the backstop that keeps a runaway sweep from becoming an unreviewable PR.
 
-The `CLAUDE.md` and `AGENTS.md` adapters are committed symlinks to `CONTEXT.md`, so the entrypoint's clone carries them and no step regenerates them per branch. The entrypoint still runs the Linux installer to install the shared skills. See [agent support](../../docs/agent-support.md).
+The `AGENTS.md` adapters are committed symlinks to `CONTEXT.md`, which Claude Code reads directly from v2.1.277 (the image installs at least that version), so the entrypoint's clone carries them and no step regenerates them per branch. The entrypoint still runs the Linux installer to install the shared skills. See [agent support](../../docs/agent-support.md).
 
 ## Auditing legacy documentation
 
@@ -169,18 +202,34 @@ runs the same script on dispatch; it has no schedule.
   `TODO.md` or a changelog changed, or if more than 15 files changed. The skill fills the cap highest-value first and
   lists the rest as skipped in the PR body, so a re-run picks them up.
 
+## Auditing agent context
+
+`pnpm agentic-pr-create-context-audit` runs `audit-context.sh`, which slims every `CONTEXT.md`, shared skill body and
+root Doc Map or required-reading document by replacing restated rules with links to their owner and compressing incident narratives, then
+opens one PR citing where each removed fact is retained. It runs Opus by default (`--model` overrides).
+`cron-agentic-pr-create-context-audit` runs the same script weekly.
+
+- Dispatch: `gh workflow run cron-agentic-pr-create-context-audit.yml` (optional `-f model=`, `-f firewall=off`).
+- A clean run opens no PR — `audit-context-runner.sh` prints `AUDIT_CLEAN` and exits 0.
+- The runner refuses to commit if any file outside that scope changed (including `notes/`, `docs/rnd/`,
+  `docs/learning-timeline.md` and `TODO.md`), if a file was created, deleted or changed type (an adapter symlink
+  rewritten as a regular file), if a `SKILL.md` frontmatter block changed, or if more than 15 files changed.
+
 ## Stack
 
 - Language - Bash
 - Tooling
   - Docker
   - Docker Compose
+  - mise
+  - Zsh
+- Cloud providers
+  - GitHub
 - Services
   - Claude Code
   - Codex CLI
+  - Ollama
   - Resend
-- Cloud providers
-  - GitHub
 - Secrets
-  - HashiCorp Vault
   - Google Secret Manager
+  - HashiCorp Vault

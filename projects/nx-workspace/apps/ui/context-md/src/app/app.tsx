@@ -4,7 +4,7 @@ import {
   createDocsSnapshotSource,
   DocsViewer,
   FILE_PARAM,
-} from '@vigilant-broccoli/react-utility';
+} from '@vigilant-broccoli/react-lib-higher-level';
 
 const SITE_NAME = 'Agent Context';
 const PAGE_TITLE = 'Browse';

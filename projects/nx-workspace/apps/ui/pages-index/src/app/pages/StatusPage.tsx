@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
-import { CircleHelp, History } from 'lucide-react';
+import { CircleHelp, ExternalLink } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DotPaths,
-  GithubActionsBadges,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from '@vigilant-broccoli/react-lib';
+import { GithubActionsBadges } from '@vigilant-broccoli/react-lib-media';
 import { useTranslation } from '../i18n';
 import en from '../i18n/en.json';
 import { PageHeader } from '../components/PageHeader';
-import { CardGrid } from '../components/CardGrid';
-import { CardLink } from '../components/CardLink';
 import { SectionHeading } from '../components/SectionHeading';
 import {
   REPO_URL,
@@ -21,10 +23,11 @@ import {
   UPTIME_SUMMARY_URL,
 } from '../consts/repo';
 import { PAGE_CLASS } from '../consts/layout';
+import { STATUS_TAB } from '../consts/statusTabs';
 import { STATUS_ROUTE } from '../consts/routes';
 
 const ACTIONS_URL = `${REPO_URL}/actions`;
-const ICON_CLASS = 'h-5 w-5 shrink-0';
+const ICON_CLASS = 'h-4 w-4 shrink-0';
 
 interface ServiceStatus {
   name: string;
@@ -32,6 +35,12 @@ interface ServiceStatus {
   status: 'up' | 'down' | 'degraded' | 'unknown';
   uptime?: string;
   time?: number;
+  uptimeDay?: string;
+  uptimeWeek?: string;
+  uptimeMonth?: string;
+  uptimeYear?: string;
+  // UTC YYYY-MM-DD -> minutes down; days without downtime are absent.
+  dailyMinutesDown?: Record<string, number>;
 }
 
 const STATUS_COLORS: Record<
@@ -160,6 +169,100 @@ function ServiceListItem({ svc }: { svc: ServiceStatus }) {
   );
 }
 
+const UPTIME_BAR_DAYS = 30;
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const AMBER_MINUTES_LIMIT = 60;
+
+const getLastUtcDays = (): string[] => {
+  const today = Date.now();
+  return Array.from({ length: UPTIME_BAR_DAYS }, (_, i) =>
+    new Date(today - (UPTIME_BAR_DAYS - 1 - i) * MS_PER_DAY)
+      .toISOString()
+      .slice(0, 10),
+  );
+};
+
+const getBarClass = (minutes: number): string => {
+  if (minutes === 0) return STATUS_COLORS.up.dot;
+  if (minutes < AMBER_MINUTES_LIMIT) return STATUS_COLORS.degraded.dot;
+  return STATUS_COLORS.down.dot;
+};
+
+const UPTIME_COLUMN_CLASS = 'shrink-0 font-mono text-gray-400 w-14 text-right';
+
+function UptimeListItem({ svc, days }: { svc: ServiceStatus; days: string[] }) {
+  const { t } = useTranslation();
+  const status = STATUS_COLORS[svc.status] ?? STATUS_COLORS.unknown;
+  return (
+    <li>
+      <a
+        href={svc.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
+      >
+        <span
+          className={`h-2 w-2 rounded-full ${status.dot} shrink-0`}
+          title={status.label}
+        />
+        <span className="flex-1 font-medium truncate">
+          {getDisplayText(svc)}
+        </span>
+        <span className="hidden md:flex shrink-0 items-center gap-px">
+          {days.map(day => {
+            const minutes = svc.dailyMinutesDown?.[day] ?? 0;
+            return (
+              <span
+                key={day}
+                className={`h-4 w-1 ${getBarClass(minutes)}`}
+                title={t('STATUS_PAGE.UPTIME_BAR_LABEL', {
+                  date: day,
+                  minutes,
+                })}
+              />
+            );
+          })}
+        </span>
+        <span className={`hidden sm:block ${UPTIME_COLUMN_CLASS}`}>
+          {svc.uptimeDay || '—'}
+        </span>
+        <span className={`hidden sm:block ${UPTIME_COLUMN_CLASS}`}>
+          {svc.uptimeWeek || '—'}
+        </span>
+        <span className={UPTIME_COLUMN_CLASS}>{svc.uptimeMonth || '—'}</span>
+        <span className={`hidden sm:block ${UPTIME_COLUMN_CLASS}`}>
+          {svc.uptimeYear || '—'}
+        </span>
+      </a>
+    </li>
+  );
+}
+
+function UptimeColumnHeader() {
+  const { t } = useTranslation();
+  return (
+    <div className="mb-2 flex items-center gap-3 px-4 text-xs text-gray-400">
+      <span className="w-2 shrink-0" />
+      <span className="flex-1" />
+      <span className="hidden md:block shrink-0 text-center w-[7.25rem]">
+        {t('STATUS_PAGE.UPTIME_BAR_HEADER')}
+      </span>
+      <span className={`hidden sm:block ${UPTIME_COLUMN_CLASS}`}>
+        {t('STATUS_PAGE.UPTIME_RANGE_DAY')}
+      </span>
+      <span className={`hidden sm:block ${UPTIME_COLUMN_CLASS}`}>
+        {t('STATUS_PAGE.UPTIME_RANGE_WEEK')}
+      </span>
+      <span className={UPTIME_COLUMN_CLASS}>
+        {t('STATUS_PAGE.UPTIME_RANGE_MONTH')}
+      </span>
+      <span className={`hidden sm:block ${UPTIME_COLUMN_CLASS}`}>
+        {t('STATUS_PAGE.UPTIME_RANGE_YEAR')}
+      </span>
+    </div>
+  );
+}
+
 function StatusLegendDialog({
   open,
   onOpenChange,
@@ -206,6 +309,7 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
   const [servicesError, setServicesError] = useState<string | null>(null);
   const [updated, setUpdated] = useState<string | null>(null);
   const [legendOpen, setLegendOpen] = useState(false);
+  const days = getLastUtcDays();
   const grouped = services ? groupServices(services) : null;
 
   useEffect(() => {
@@ -248,93 +352,144 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
           <p className="mt-2 text-gray-600 dark:text-gray-400">{updated}</p>
         )}
       </header>
-      <div className="mb-4">
-        <CardGrid>
-          <li>
-            <CardLink
+      <Tabs defaultValue={STATUS_TAB.STATUS}>
+        <TabsList>
+          <TabsTrigger value={STATUS_TAB.STATUS}>
+            {t('STATUS_PAGE.TAB_STATUS')}
+          </TabsTrigger>
+          <TabsTrigger value={STATUS_TAB.UPTIME}>
+            {t('STATUS_PAGE.TAB_UPTIME')}
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value={STATUS_TAB.STATUS}>
+          <StatusLegendDialog open={legendOpen} onOpenChange={setLegendOpen} />
+
+          {servicesError && (
+            <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+              <li className="px-4 py-2 text-red-500">{servicesError}</li>
+            </ul>
+          )}
+          {!servicesError && services === null && (
+            <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+              <li className="px-4 py-2 text-gray-400">
+                {t('STATUS_PAGE.LOADING_SERVICES')}
+              </li>
+            </ul>
+          )}
+          {!servicesError && services?.length === 0 && (
+            <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+              <li className="px-4 py-2 text-gray-400">
+                {t('STATUS_PAGE.NO_SERVICES')}
+              </li>
+            </ul>
+          )}
+          {!servicesError &&
+            grouped &&
+            STATUS_GROUP_ORDER.filter(group => grouped[group].length > 0).map(
+              group => (
+                <section key={group} className="mb-4 last:mb-0">
+                  <div className="flex items-center justify-between mb-4">
+                    <SectionHeading className="mb-0">
+                      {t(STATUS_GROUP_LABEL_KEY[group])}
+                    </SectionHeading>
+                    {LEGEND_GROUPS.includes(group) && (
+                      <button
+                        type="button"
+                        onClick={() => setLegendOpen(true)}
+                        aria-label={t('STATUS_PAGE.LEGEND_BUTTON_LABEL')}
+                        className="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                      >
+                        <CircleHelp className="h-4 w-4" />
+                      </button>
+                    )}
+                  </div>
+                  <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700 text-sm">
+                    {grouped[group].map(svc => (
+                      <ServiceListItem key={svc.url} svc={svc} />
+                    ))}
+                  </ul>
+                </section>
+              ),
+            )}
+
+          <section className="mt-6">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                {t('STATUS_PAGE.GITHUB_ACTIONS')}
+              </h2>
+              <a
+                href={ACTIONS_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-gray-400 hover:underline"
+              >
+                {t('STATUS_PAGE.VIEW_ALL')}
+              </a>
+            </div>
+            <div
+              className={
+                wrapped
+                  ? 'flex flex-wrap gap-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3'
+                  : 'flex flex-wrap gap-1.5'
+              }
+            >
+              <GithubActionsBadges repoUrl={REPO_URL} />
+              <GithubActionsBadges repoUrl={UPTIME_REPO_URL} />
+            </div>
+          </section>
+        </TabsContent>
+        <TabsContent value={STATUS_TAB.UPTIME}>
+          <div className="mb-2 flex justify-end">
+            <a
               href={UPTIME_SITE_URL}
-              title={t('STATUS_PAGE.UPTIME_SITE.TITLE')}
-              description={t('STATUS_PAGE.UPTIME_SITE.DESCRIPTION')}
-              icon={<History className={ICON_CLASS} aria-hidden="true" />}
-            />
-          </li>
-        </CardGrid>
-      </div>
-      <StatusLegendDialog open={legendOpen} onOpenChange={setLegendOpen} />
-
-      {servicesError && (
-        <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
-          <li className="px-4 py-2 text-red-500">{servicesError}</li>
-        </ul>
-      )}
-      {!servicesError && services === null && (
-        <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
-          <li className="px-4 py-2 text-gray-400">
-            {t('STATUS_PAGE.LOADING_SERVICES')}
-          </li>
-        </ul>
-      )}
-      {!servicesError && services?.length === 0 && (
-        <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
-          <li className="px-4 py-2 text-gray-400">
-            {t('STATUS_PAGE.NO_SERVICES')}
-          </li>
-        </ul>
-      )}
-      {!servicesError &&
-        grouped &&
-        STATUS_GROUP_ORDER.filter(group => grouped[group].length > 0).map(
-          group => (
-            <section key={group} className="mb-4 last:mb-0">
-              <div className="flex items-center justify-between mb-4">
-                <SectionHeading className="mb-0">
-                  {t(STATUS_GROUP_LABEL_KEY[group])}
-                </SectionHeading>
-                {LEGEND_GROUPS.includes(group) && (
-                  <button
-                    type="button"
-                    onClick={() => setLegendOpen(true)}
-                    aria-label={t('STATUS_PAGE.LEGEND_BUTTON_LABEL')}
-                    className="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                  >
-                    <CircleHelp className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-              <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700 text-sm">
-                {grouped[group].map(svc => (
-                  <ServiceListItem key={svc.url} svc={svc} />
-                ))}
-              </ul>
-            </section>
-          ),
-        )}
-
-      <section className="mt-6">
-        <div className="flex items-center justify-between mb-2">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-            {t('STATUS_PAGE.GITHUB_ACTIONS')}
-          </h2>
-          <a
-            href={ACTIONS_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs text-gray-400 hover:underline"
-          >
-            {t('STATUS_PAGE.VIEW_ALL')}
-          </a>
-        </div>
-        <div
-          className={
-            wrapped
-              ? 'flex flex-wrap gap-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3'
-              : 'flex flex-wrap gap-1.5'
-          }
-        >
-          <GithubActionsBadges repoUrl={REPO_URL} />
-          <GithubActionsBadges repoUrl={UPTIME_REPO_URL} />
-        </div>
-      </section>
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 text-sm text-gray-500 hover:underline dark:text-gray-400"
+            >
+              {t('STATUS_PAGE.OPEN_UPTIME_IN_NEW_TAB')}
+              <ExternalLink className={ICON_CLASS} aria-hidden="true" />
+            </a>
+          </div>
+          {servicesError && (
+            <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+              <li className="px-4 py-2 text-red-500">{servicesError}</li>
+            </ul>
+          )}
+          {!servicesError && services === null && (
+            <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+              <li className="px-4 py-2 text-gray-400">
+                {t('STATUS_PAGE.LOADING_SERVICES')}
+              </li>
+            </ul>
+          )}
+          {!servicesError && services?.length === 0 && (
+            <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm">
+              <li className="px-4 py-2 text-gray-400">
+                {t('STATUS_PAGE.NO_SERVICES')}
+              </li>
+            </ul>
+          )}
+          {!servicesError && grouped && services && services.length > 0 && (
+            <>
+              <UptimeColumnHeader />
+              {STATUS_GROUP_ORDER.filter(
+                group => grouped[group].length > 0,
+              ).map(group => (
+                <section key={group} className="mb-4 last:mb-0">
+                  <SectionHeading>
+                    {t(STATUS_GROUP_LABEL_KEY[group])}
+                  </SectionHeading>
+                  <ul className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700 text-sm">
+                    {grouped[group].map(svc => (
+                      <UptimeListItem key={svc.url} svc={svc} days={days} />
+                    ))}
+                  </ul>
+                </section>
+              ))}
+            </>
+          )}
+        </TabsContent>
+      </Tabs>
     </main>
   );
 }

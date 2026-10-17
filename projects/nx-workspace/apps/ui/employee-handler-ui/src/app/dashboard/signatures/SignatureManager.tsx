@@ -3,8 +3,6 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import {
   Button,
-  CRUDFormProps,
-  CRUDItemList,
   Input,
   Tabs,
   TabsContent,
@@ -13,6 +11,10 @@ import {
   Textarea,
   Text,
 } from '@vigilant-broccoli/react-lib';
+import {
+  CRUDFormProps,
+  CRUDItemList,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import {
   DEMO_SIGNATURE,

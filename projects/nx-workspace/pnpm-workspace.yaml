@@ -18,4 +18,3 @@ allowBuilds:
   unrs-resolver: true
   workerd: true
   '@scarf/scarf': false
-  tesseract.js: false

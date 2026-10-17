@@ -142,26 +142,6 @@ async function getOrgRepositories(org: string): Promise<GithubOrgRepository[]> {
   const repos = JSON.parse(reposData);
   return Array.isArray(repos) ? repos : [];
 }
-async function getTeamMemberMembership(
-  organizationName: string,
-  teamSlug: string,
-  memberUsername: string,
-): Promise<GithubTeamMember> {
-  const data = (await ShellUtils.runShellCommand(
-    GithubCLICommand.getTeamMemberMembership(
-      organizationName,
-      teamSlug,
-      memberUsername,
-    ),
-    true,
-  )) as string;
-  const membershipData = JSON.parse(data);
-  return {
-    username: memberUsername,
-    role: membershipData.role,
-    avatar_url: membershipData.member?.avatar_url || '',
-  };
-}
 function getTeamAndDescendants(
   all: GithubTeamsDTO[],
   slug: string,
@@ -352,7 +332,7 @@ export const GithubService = {
   getOrgMembers,
   getOrgMembersCount,
   getOrgRepositories,
-  getTeamMemberMembership,
+  getTeamMemberMembership: GithubUtils.getTeamMemberMembership,
   getTeamAndDescendants,
   listPagesSites,
   updateTeamRepositories,

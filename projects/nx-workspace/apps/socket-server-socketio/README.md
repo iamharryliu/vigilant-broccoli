@@ -15,5 +15,3 @@ WebSocket server for real-time bidirectional communication.
   - Zod
 - Internal libs
   - `common-js`
-- Cloud services
-  - Docker Hub (`iamharryliu/socket-server-socketio`)

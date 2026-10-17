@@ -4,6 +4,7 @@
 
 - [Browser Rendering](#browser-rendering)
   - [Browser UI Approaches](#browser-ui-approaches)
+  - [Embedding and Composition](#embedding-and-composition)
 - [Styling and UI Components](#styling-and-ui-components)
   - [Styling Languages and Utilities](#styling-languages-and-utilities)
   - [UI Component Tools](#ui-component-tools)
@@ -11,6 +12,7 @@
   - [State Management](#state-management)
   - [Templating](#templating)
   - [Frameworks and Libraries](#frameworks-and-libraries)
+  - [Angular vs React vs Vue](#angular-vs-react-vs-vue)
 - [Mobile Development](#mobile-development)
 
 ## Browser Rendering
@@ -50,6 +52,21 @@ These browser-level approaches can be combined with frameworks and libraries: a 
 
 Native Web Components use built-in browser APIs rather than an installed library or framework.
 
+### Embedding and Composition
+
+Ways to bring content that lives elsewhere into a page. They trade isolation against integration, so choose by how much you trust the content: untrusted third-party content belongs in an iframe or fenced frame, while content from your own teams usually fits Shadow DOM, Module Federation, or fragment swaps. Shadow DOM is covered under [Browser UI Approaches](#browser-ui-approaches).
+
+| Approach                        | What It Is                                                                  | Isolation                                           | Integration                                                      |
+| ------------------------------- | --------------------------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------- |
+| `<embed>` / `<object>`          | Older elements for plugins, PDFs, SVG, and other media.                     | Moderate, depending on content type.                | Weak; largely superseded by iframes and native elements.         |
+| Fenced frames                   | A privacy-focused iframe with no communication channel to the embedder.     | Very strong, deliberately one-way.                  | Minimal; used for ads and Privacy Sandbox.                       |
+| Fragment swaps (htmx, `fetch`)  | The client fetches an HTML fragment and swaps it into the page.             | None.                                               | Highest, but you must trust the fragment.                        |
+| [`<iframe>`](./iframe.md)       | A separate document nested in the page, optionally restricted by `sandbox`. | Strongest: own DOM, JS, CSS, and origin.            | Weakest: fixed sizing; messages go through `postMessage`.        |
+| Micro-frontends                 | Separately deployed apps composed into one shell.                           | Varies: iframes strongest, Module Federation none.  | Varies with technique; iframes need extra routing and auth work. |
+| Server-side or edge composition | Server, CDN, or ESI stitches HTML fragments before sending.                 | None in the browser.                                | High: the browser sees a single page.                            |
+| Shadow DOM                      | Encapsulated DOM and styles inside the same document.                       | Style and DOM only; shares the JS realm and origin. | High: same page, events bubble, themable with CSS variables.     |
+| Third-party script tags         | A `<script>` that injects its own widget, as with analytics and chat.       | None: runs with full page privileges.               | High, with the highest security risk.                            |
+
 ## Styling and UI Components
 
 ### Styling Languages and Utilities
@@ -81,6 +98,32 @@ Native Web Components use built-in browser APIs rather than an installed library
 ### Frameworks and Libraries
 
 - [Web Frameworks and Libraries](../frameworks-and-libraries.md)
+
+### Angular vs React vs Vue
+
+| Task                         | Angular                                                 | React                                               | Vue 3                                                |
+| ---------------------------- | ------------------------------------------------------- | --------------------------------------------------- | ---------------------------------------------------- |
+| Component definition         | Class with `@Component` decorator                       | Function returning JSX                              | Single-file component (`.vue`) with `<script setup>` |
+| Local state                  | `signal()`                                              | `useState`                                          | `ref()` / `reactive()`                               |
+| Derived state                | `computed()`                                            | `useMemo` (or compute inline)                       | `computed()`                                         |
+| Side effects                 | `effect()`, lifecycle hooks (`ngOnInit`, `ngOnDestroy`) | `useEffect`                                         | `watch` / `watchEffect`, `onMounted` / `onUnmounted` |
+| Props / inputs               | `input()` signal (or `@Input()`)                        | Function arguments (props object)                   | `defineProps()`                                      |
+| Events / outputs             | `output()` (or `@Output()` with `EventEmitter`)         | Callback props                                      | `defineEmits()`                                      |
+| Two-way binding              | `[(ngModel)]` or `model()`                              | Controlled input (`value` + `onChange`)             | `v-model`                                            |
+| Conditionals                 | `@if` / `@else`                                         | `{cond && <X/>}`, ternary                           | `v-if` / `v-else`                                    |
+| Loops                        | `@for (item of items; track item.id)`                   | `items.map(...)` with `key`                         | `v-for` with `:key`                                  |
+| Event binding                | `(click)="handler()"`                                   | `onClick={handler}`                                 | `@click="handler"`                                   |
+| Attribute / property binding | `[prop]="value"`                                        | `prop={value}`                                      | `:prop="value"`                                      |
+| Content projection           | `<ng-content>`                                          | `children` prop                                     | `<slot>`                                             |
+| Shared logic                 | Services and `inject()`; plain functions                | Custom hooks                                        | Composables                                          |
+| Dependency injection         | Built-in hierarchical DI (`inject()`, `providedIn`)     | Context (`createContext` / `useContext`)            | `provide` / `inject`                                 |
+| Global state                 | Services with signals; NgRx for large apps              | Context, Redux Toolkit, or Zustand                  | Pinia                                                |
+| Routing                      | `@angular/router` (official, built in)                  | React Router, or the router in Next.js              | Vue Router (official)                                |
+| HTTP / data fetching         | `HttpClient` (RxJS or signals); interceptors            | `fetch` / axios; TanStack Query                     | `fetch` / axios; TanStack Query                      |
+| Forms                        | Reactive Forms or Template-driven Forms (built in)      | React Hook Form or Formik; controlled inputs        | `v-model` plus VeeValidate or FormKit                |
+| Async streams                | RxJS (core to the framework)                            | Not built in; usually promises and hooks            | Not built in; usually promises and composables       |
+| Change detection             | Zone.js (or zoneless with signals)                      | Virtual DOM re-render, with `memo` for optimization | Fine-grained reactivity via proxies                  |
+| Meta-framework / SSR         | Angular SSR (built in)                                  | Next.js, Remix / React Router                       | Nuxt                                                 |
 
 ## Mobile Development
 

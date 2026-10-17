@@ -1,5 +1,9 @@
 # LLM Service
 
+## Table of Contents
+
+- [Stack](#stack)
+
 ## Stack
 
 - Language - TypeScript
@@ -12,8 +16,7 @@
   - `llm-tools`
 - Cloud services
   - Anthropic API
-  - OpenAI API
   - DeepSeek API
-  - xAI (Grok) API
   - Google Gemini API
-  - Fly.io
+  - OpenAI API
+  - xAI API

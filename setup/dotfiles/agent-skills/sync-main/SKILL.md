@@ -3,18 +3,12 @@ name: sync-main
 description: In vigilant-broccoli, merge origin/main into the current branch (or fast-forward main) without pushing.
 ---
 
-Use the current vigilant-broccoli checkout and resolve repository paths from its Git root. If the current directory is outside that repo, ask which checkout to use; do not operate on the skill installation checkout by default.
+Use the current vigilant-broccoli Git root. Outside this repo, ask which checkout to use; never default to the skill installation checkout.
 
-Bring the current branch up to date with `origin/main` so work doesn't drift into a stale branch or a pile-up of merge conflicts.
+Sync locally under `docs/git-workflow.md`; do not push or update PRs.
 
-1. Fetch without touching the working tree: `git fetch origin main`.
-2. Report the drift both ways with `git rev-list --left-right --count origin/main...HEAD` (left: commits this branch is missing; right: commits it adds). Zero on the left: already current, stop here and say so.
-3. If the working tree is dirty (`git status --porcelain` is non-empty), establish exclusive use before stashing. Follow `## Concurrent Agent Sessions` in `docs/git-workflow.md`; session tools may not expose other conversations. Only in an exclusively owned checkout, stash with `git stash push -u -m "sync-main"` and remember to restore that stash at the end. If the checkout is shared or ownership is uncertain, stop before integration and report that syncing needs a clean, exclusive checkout. This skill does not authorize committing the user's pending changes.
-4. Integrate, based on where HEAD is:
-   - On `main`: `git pull --ff-only origin main`. If that fails, `main` has local commits that never went through a PR — stop and report rather than merging.
-   - On a feature branch: `git merge --no-edit origin/main`. Merge, never rebase — `docs/git-workflow.md`'s `## Staying Current With main` section explains why.
-5. If the merge conflicts, resolve each file now while the conflict is small, `git add` it, then `git commit --no-edit`. If a conflict genuinely needs the user's judgement, leave the merge in progress and ask rather than guessing.
-6. Pop the stash if step 3 created one, and resolve any conflicts it raises.
-7. Report: commits pulled in, files that conflicted (if any), and whether the branch is now clean relative to `origin/main`.
-
-Do not push, and do not open or update a PR — syncing is a local operation. The `ship-pr` skill handles publishing.
+1. `git fetch origin main`, then `git rev-list --left-right --count origin/main...HEAD` (missing/additional commits). Stop if none are missing.
+2. Establish checkout ownership before integration. If dirty, stash with `git stash push -u -m "sync-main"` only in an exclusively owned checkout; shared or uncertain trees require a clean, exclusive checkout. Do not commit pending work to clean it.
+3. On main, `git pull --ff-only origin main`; report failure without merging. On a feature branch, `git merge --no-edit origin/main`; never rebase.
+4. Resolve conflicts, stage only owned resolutions and `git commit --no-edit`. Leave the merge in progress and ask if intent requires user judgment. Restore this operation's stash and resolve any resulting conflicts.
+5. Report incoming commits, conflicted files and remaining drift/working-tree changes.

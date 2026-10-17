@@ -57,6 +57,7 @@ case "$AGENT_RUNNER" in
       exit 1
     fi
     ;;
+  ollama) ;;
   codex)
     if [ -z "$AGENT_CODEX_ACCESS_TOKEN" ]; then
       echo "ERROR: AGENT_CODEX_ACCESS_TOKEN not found in Vault (${VAULT_KV_PATH}/secrets)." >&2
@@ -64,7 +65,7 @@ case "$AGENT_RUNNER" in
     fi
     ;;
   *)
-    echo "ERROR: AGENT_RUNNER must be 'claude' or 'codex'." >&2
+    echo "ERROR: AGENT_RUNNER must be 'claude', 'codex' or 'ollama'." >&2
     exit 1
     ;;
 esac

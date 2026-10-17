@@ -10,16 +10,36 @@ import { DockerImagesPage } from './pages/DockerImagesPage';
 import { DockerImageReadmePage } from './pages/DockerImageReadmePage';
 import { NpmPackagesPage } from './pages/NpmPackagesPage';
 import { NpmPackageReadmePage } from './pages/NpmPackageReadmePage';
+import { WebApplicationReadmePage } from './pages/WebApplicationReadmePage';
 import { WebApplicationsPage } from './pages/WebApplicationsPage';
 import { ApiServicesPage } from './pages/ApiServicesPage';
 import { ApiServiceDocsPage } from './pages/ApiServiceDocsPage';
-import { isStatusHost } from './consts/hosts';
-import { STATUS_ROUTE } from './consts/routes';
+import { CareerPage } from './pages/CareerPage';
+import { CareerExperiencePage } from './pages/CareerExperiencePage';
+import { isCareerHost, isStatusHost } from './consts/hosts';
+import {
+  CAREER_EXPERIENCE_ROUTE,
+  STATUS_ROUTE,
+  WEB_APPLICATIONS_ROUTE,
+} from './consts/routes';
 
 function StatusHostRoutes() {
   return (
     <Routes>
       <Route path="/" element={<StatusPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
+function CareerHostRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<CareerPage />} />
+      <Route
+        path={CAREER_EXPERIENCE_ROUTE}
+        element={<CareerExperiencePage />}
+      />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
@@ -41,7 +61,11 @@ function ProjectsRoutes() {
       />
       <Route path="/open-source/npm" element={<NpmPackagesPage />} />
       <Route path="/open-source/npm/:pkg" element={<NpmPackageReadmePage />} />
-      <Route path="/web-applications" element={<WebApplicationsPage />} />
+      <Route path={WEB_APPLICATIONS_ROUTE} element={<WebApplicationsPage />} />
+      <Route
+        path={`${WEB_APPLICATIONS_ROUTE}/:app`}
+        element={<WebApplicationReadmePage />}
+      />
       <Route path="/api-services" element={<ApiServicesPage />} />
       <Route path="/api-services/:service" element={<ApiServiceDocsPage />} />
     </Routes>
@@ -53,7 +77,13 @@ export function App() {
     <I18nProvider>
       <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-dvh">
         <HashRouter>
-          {isStatusHost() ? <StatusHostRoutes /> : <ProjectsRoutes />}
+          {isStatusHost() ? (
+            <StatusHostRoutes />
+          ) : isCareerHost() ? (
+            <CareerHostRoutes />
+          ) : (
+            <ProjectsRoutes />
+          )}
         </HashRouter>
       </div>
     </I18nProvider>

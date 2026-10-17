@@ -126,11 +126,11 @@ export const CurrencyConverterUtilityContent = () => {
         <div className="flex gap-2 items-center">
           <Select
             options={POPULAR_CURRENCIES}
-            selectedOption={POPULAR_CURRENCIES.find(
+            value={POPULAR_CURRENCIES.find(
               currency => currency.code === fromCurrency,
             )}
-            setValue={currency => handleFromCurrencyChange(currency.code)}
-            optionIdenfifier="code"
+            onValueChange={currency => handleFromCurrencyChange(currency.code)}
+            optionIdentifier="code"
             optionDisplayKey="code"
           />
           <Input
@@ -143,11 +143,11 @@ export const CurrencyConverterUtilityContent = () => {
           />
           <Select
             options={POPULAR_CURRENCIES}
-            selectedOption={POPULAR_CURRENCIES.find(
+            value={POPULAR_CURRENCIES.find(
               currency => currency.code === toCurrency,
             )}
-            setValue={currency => handleToCurrencyChange(currency.code)}
-            optionIdenfifier="code"
+            onValueChange={currency => handleToCurrencyChange(currency.code)}
+            optionIdentifier="code"
             optionDisplayKey="code"
           />
         </div>

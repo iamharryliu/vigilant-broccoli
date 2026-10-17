@@ -1,6 +1,6 @@
 # Supabase Auth Pattern
 
-Single shared Supabase project (`vb-supabase`, ref `jrdosjjgmsoodpjmjqxx`) provides Google-provider sign-in for all user-facing apps: `hearth`, `employee-handler-ui`, `small-business-next`, `vb-manager-next`, `vb-manager-next-mobile`. All apps share one auth user pool — the same Google account is the same user everywhere.
+Single shared Supabase project (`vb-supabase`, ref `jrdosjjgmsoodpjmjqxx`) provides Google-provider sign-in for all user-facing apps: `hearth`, `employee-handler-ui`, `small-business-next`, `vb-manager-next`, `vb-manager-next-mobile`, `balloono` (optional sign-in). All apps share one auth user pool — the same Google account is the same user everywhere.
 
 Reference implementation: **vb-manager-next** (the only app on the shared lib so far).
 
@@ -16,15 +16,15 @@ A sign-in whose `redirectTo` is **not** matched by `uri_allow_list` does not err
 
 1. Get the app's real deployed domains from [`network-management.md`](../../../infrastructure/network-management.md) — the source of truth. **Every deployed app follows the `staging-<name>` / `production-<name>` prefix pattern** (e.g. `staging-hearth.vercel.app`, `production-hearth.vercel.app`). Do **not** guess a bare `<name>.vercel.app` — that domain usually does not exist, so its sign-in silently falls through to `site_url`. This exact mistake was live for hearth and employee-handler-ui.
 2. Add one entry per app **per environment** to `uri_allow_list` in `supabase-auth.tf`: the local dev URL(s) plus each real staging and production URL. Use the `https://<domain>/*` wildcard form for Vercel/PM2 apps (matches any callback path); use the exact `.../auth/callback` path form for fly.io mobile shells. Keep entries grouped and commented by app, matching the existing style.
-3. Only add apps that actually use Supabase sign-in (`signInWithOAuth` / `createSupabaseAuth`). Apps deployed to Vercel but without Supabase auth (e.g. `findme`, `whiteboard`) do **not** belong here. Apps not yet deployed (not in `network-management.md`) get added when they ship.
+3. Only add apps that actually use Supabase sign-in (`signInWithOAuth` / `createSupabaseAuth`). Apps without Supabase auth (e.g. `findme`, `whiteboard`) do **not** belong here. Apps not yet deployed (not in `network-management.md`) get added when they ship.
 4. `pnpm tf:plan` — confirm the **only** change is the `auth` attribute (the other blocks must show as unchanged; see the resource's own comment about why `api`/`database`/`network`/`storage` are pinned). Then `pnpm tf:apply`.
 5. If a new local dev port is used, add both `http://localhost:<port>/*` and `http://127.0.0.1:<port>/*` — Supabase treats them as distinct origins and matches literally.
 
 ## Client side
 
-- Instantiate `createSupabaseAuth` from `@vigilant-broccoli/react-lib` (`libs/@vigilant-broccoli/react-lib/src/auth`) once per app — see `apps/ui/vb-manager-next/libs/auth.ts`. Config: Supabase env vars, optional extra Google scopes (e.g. Tasks/Calendar), and the app's home/login/callback routes.
+- Instantiate `createSupabaseAuth` from `@vigilant-broccoli/react-lib-auth` (`libs/@vigilant-broccoli/react-lib-auth/src/lib/createSupabaseAuth.tsx`) once per app — see `apps/ui/vb-manager-next/libs/auth.ts`. Config: Supabase env vars, optional extra Google scopes (e.g. Tasks/Calendar), and the app's home/login/callback routes.
 - The factory returns `AuthProvider`, `useAuth`, `useAuthStatus` (`'loading' | 'authenticated' | 'unauthenticated'`), `useGoogleToken`, `signInWithGoogle`, `signOut`, `getSupabaseAccessToken`, `buildAuthHeaders`, `authFetch`, and `AuthCallbackPage`.
-- Wrap the root layout in `AuthProvider`; for a Google-only login page, render `GoogleSignInPage` from `react-lib` (`appName`, optional `tagline`, `onSignIn`) — it wraps `GoogleSigninButton` in the shared page layout, used by `vb-manager-next`, `vb-manager-next-mobile`, `hearth`, `employee-handler-ui`, and `small-business-next`. Apps with additional sign-in methods (e.g. hearth's email/password signup) compose `GoogleSigninButton` directly instead. The `/auth/callback` page renders `AuthCallbackPage`.
+- Wrap the root layout in `AuthProvider`; for a Google-only login page, render `GoogleSignInPage` from `react-lib-auth` (`appName`, optional `tagline`, `onSignIn`) — it wraps `GoogleSigninButton` in the shared page layout, used by `vb-manager-next`, `vb-manager-next-mobile`, `hearth`, `employee-handler-ui`, and `small-business-next`. Apps with additional sign-in methods (e.g. hearth's email/password signup) compose `GoogleSigninButton` directly instead. The `/auth/callback` page renders `AuthCallbackPage`.
 - The session lives in the Supabase JS client (localStorage), **not** an httpOnly cookie — the server never sees it implicitly. Every same-origin `/api/*` request must go through `authFetch`, which attaches `Authorization: Bearer <supabase access token>` and `x-google-token` headers. A plain `fetch()` to `/api/*` gets a 401 from middleware.
 - The Google `provider_token` is captured once at sign-in (`onAuthStateChange`) into localStorage under `google_provider_token`. There is no refresh — it expires after ~1 hour, well before the Supabase session does. Keep it in localStorage, not sessionStorage: a tab-scoped Google token expires on every app restart while the Supabase session survives, which reads as two unrelated logins.
 - **Google-token expiry must not end the Supabase session.** The two lifetimes are independent: the Supabase session refreshes for as long as the refresh token stays valid, while the Google token dies hourly. On a 401 from a Google-backed route, clear only `google_provider_token` and prompt re-consent via `signInWithGoogle` (see `GoogleReconnectView` in `GoogleTasks.tsx`, and `reconnectGoogle` in `vb-manager-next-mobile`'s hand-rolled provider) — never call `signOut`. Calling `signOut` here is what made sessions look ~1 hour long after the NextAuth migration.
@@ -52,6 +52,6 @@ A sign-in whose `redirectTo` is **not** matched by `uri_allow_list` does not err
 
 ## Migration status
 
-- `vb-manager-next` — on the shared `react-lib` auth module.
+- `vb-manager-next` — on the shared `react-lib-auth` module.
 - `hearth`, `employee-handler-ui`, `small-business-next`, `vb-manager-next-mobile` — same pattern, but hand-rolled per-app copies predating the shared module; consolidation pending.
 - `vb-express` (Fastify) — still on better-auth + API-key plugin; not part of this pattern yet.

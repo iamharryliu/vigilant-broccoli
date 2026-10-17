@@ -6,6 +6,7 @@ Manage monitoring from vigilant-broccoli while running Upptime with credentials 
 
 - [Architecture](#architecture)
 - [Managed files and runtime behavior](#managed-files-and-runtime-behavior)
+- [Staging UI access](#staging-ui-access)
 - [Setup and migration](#setup-and-migration)
 - [HTTPS certificate recovery](#https-certificate-recovery)
 - [Operations](#operations)
@@ -20,14 +21,14 @@ Manage monitoring from vigilant-broccoli while running Upptime with credentials 
 - The sync App is installed **only on the monitoring repo**, with Contents and Workflows read/write. It has no installation or ruleset bypass in vigilant-broccoli. Each sync mints a repository-restricted installation token with those two permissions.
 - Monitoring workflows use the monitoring repo's temporary `GITHUB_TOKEN`, with Contents and Issues write and no OIDC permission. The monitoring repo receives no private key, Vault/GCP credentials, or application secrets.
 - GitHub Pages serves the monitoring repo's `gh-pages` branch at `uptime.harryliu.dev` (Terraform `github_repository_pages.upptime`, DNS-only CNAME to `<owner>.github.io` in `cloudflare-harryliu-dev.tf`). `cron-upptime-site.yml` builds Upptime's static status site with `upptime/uptime-monitor`'s `site` command (daily at 01:40 UTC, manual, or `static_site` dispatch) and force-pushes the export to `gh-pages` using the temporary `GITHUB_TOKEN`; the `status-website` block in `.upptimerc.yml` sets the domain. The branch is created from `main` by Terraform, so the page is empty until the first workflow run. Apply locally with `pnpm tf:apply`, then enable HTTPS enforcement once the certificate is issued ([HTTPS recovery](#https-certificate-recovery)). The workflow's last step polls `https://<cname>/` for up to 10 minutes with certificate verification on, so a green run means a valid certificate.
-- `status.harryliu.dev` is a different surface: the Pages Index `StatusPage` (the same component as `projects.harryliu.dev/#/status`), served through the `status-proxy` Cloudflare Worker ([network-management.md](./network-management.md#dns-urls)). Its "Full uptime history" card opens `uptime.harryliu.dev`, the Upptime site above.
+- `status.harryliu.dev` is a different surface: the Pages Index `StatusPage` (the same component as `projects.harryliu.dev/#/status`), served through the `status-proxy` Cloudflare Worker ([network-management.md](./network-management.md#dns-urls)). Its Uptime tab renders a native list (24h/7d/30d/1y uptime and a 30-day strip) from the same `history/summary.json`, with a link to `uptime.harryliu.dev`, the Upptime site above.
 - The Pages Index status page reads the monitoring repo's public `history/summary.json` and shows workflow badges from both repos. Missing or failed monitoring data displays an error; archived source-repository data is never used as a fallback.
 
 ## Managed files and runtime behavior
 
 The sync publishes an explicit allowlist through GitHub's Git database API:
 
-- `.upptimerc.yml` — same endpoints and names; `owner` and `repo` are rendered from Terraform's `UPPTIME_REPOSITORY` variable.
+- `.upptimerc.yml` — registered endpoints and stable names; `owner` and `repo` are rendered from Terraform's `UPPTIME_REPOSITORY` variable.
 - `.nvmrc` — Node version from the workspace root for the graph runtime.
 - `.github/workflows/cron-upptime.yml` — hourly at minute 7, plus manual/dispatch triggers; updates uptime and then refreshes the summary.
 - `.github/workflows/cron-upptime-response-time.yml` — daily at 00:25 UTC, plus manual/dispatch triggers; records response times, refreshes the summary, then generates and verifies README graphs and badge endpoints.
@@ -46,6 +47,19 @@ Upptime's summary command writes the README table and `history/summary.json`; it
 
 These assets supply the README's all-time, day, week, month, and year metrics ([badges](https://upptime.js.org/docs/badges/)). Run the response-time workflow manually after initializing a repository to populate them. Sync preserves generated assets.
 
+## Staging UI access
+
+Staging UI checks use no credentials. They disable redirects and require HTTP 302, checking the anonymous login redirect rather than following it to a login page that returns 200. Their names and slugs stay unchanged so existing history continues. This measures the availability of the gate; it does not prove that the protected app or its backend is healthy, and response times measure the gate. The staging VB Express API, production and demo checks keep their existing behavior.
+
+Two mechanisms produce the 302:
+
+- The eleven staging Pages projects are gated by Cloudflare Access in `cloudflare-staging-ui.tf` on the root and the immutable/branch aliases. Browser access is limited to `staging_ui_allowed_emails` (default: the existing owner identity).
+- The four staging Vercel projects are gated by Vercel Authentication, which `deploy-vercel.ts` enables on each staging deploy ([details](../app-development/ui/deployment/vercel-deploy-pattern.md#staging-access)). Its 302 check fails until the project's first staging deploy after this change.
+
+The staging probes in local and CI health checks also expect the unauthenticated HTTP 302. Monitoring adds no service token, secrets, GCP identity or OIDC permission. Do not add a Vercel protection-bypass secret or bypass Access on application health paths to make monitoring work.
+
+Coordinate Terraform apply and the staging Vercel deploys with configuration sync so the HTTP 302 expectations start when each gate is active. Run the configuration sync, uptime and response-time workflows and verify the redirects. Check the apps behind the gates through an owner browser session when verifying deployment health.
+
 ## Setup and migration
 
 1. For a new monitoring repository, set `upptime_migration_complete = false` to keep schedules disabled while initializing it. Also set `upptime_https_enforced = false`: it defaults to `true`, and GitHub rejects enforcement until the custom domain's certificate exists, so flip it back to `true` once the certificate issues ([step 3 of certificate recovery](#https-certificate-recovery)). Run `pnpm tf:plan`, then apply reviewed changes locally with `pnpm tf:apply`. Terraform creates the public repository, action restrictions, dedicated sync identity, source variables, and Vault role through post-apply. An App ID of zero keeps configuration sync disabled. The action restrictions allowlist pins each action by SHA (`github_actions_repository_permissions` in `github-upptime.tf`, including `actions/setup-node`); when a published workflow starts using a new or bumped action SHA, apply the updated allowlist before the workflow runs, or the run is rejected.
@@ -61,7 +75,7 @@ These assets supply the README's all-time, day, week, month, and year metrics ([
    Fetch unshallow history first if needed. Import into an uninitialized monitoring dataset before running checks. The importer uses a temporary bare repo, preserves target files, refuses existing history, and pushes only a fast-forward merge. `iamharryliu/uptime` is already populated; do not re-import.
 
 4. Run `gh workflow run ci-sync-upptime --ref main`, then manually run both monitoring workflows. Verify refreshed history, `history/summary.json`, all services on Pages Index `/#/status`, and README graphs and badges. Subscribe to incident issues in the new repository when configuring notifications.
-5. Set `upptime_migration_complete = true` and apply the reviewed plan to enable schedules. This flag now controls only the monitoring repository's schedule gate. Verify a successful scheduled uptime run; GitHub may delay cron jobs. Application credentials and observability infrastructure require no changes.
+5. Set `upptime_migration_complete = true` and apply the reviewed plan to enable schedules. This flag now controls only the monitoring repository's schedule gate. Verify a successful scheduled uptime run; GitHub may delay cron jobs. Application credentials and observability infrastructure require no changes; staging UI monitoring checks the Access gate without credentials.
 
 App creation and installation are account setup; Terraform manages repository configuration.
 
@@ -92,13 +106,15 @@ Do not proxy the record or disable TLS verification; neither changes certificate
 
 ## Security limits
 
-A compromised monitoring action can falsify history, alter repository contents other than workflow files, manipulate incident issues, and send arbitrary outbound requests from its hosted runner. It cannot use the monitoring token to authorize writes to vigilant-broccoli or authenticate to Vault/GCP. Public endpoints remain reachable just as they are from any internet client.
+A compromised monitoring action can falsify history, alter repository contents other than workflow files, manipulate incident issues, and send arbitrary outbound requests from its hosted runner. It cannot use the monitoring token to authorize writes to vigilant-broccoli or authenticate to Vault/GCP. Public endpoints remain reachable just as they are from any internet client; staging UIs require owner authentication and monitoring can only observe their gate.
 
 The sync App's private key is still a sensitive management credential; it can modify monitoring workflows. Only trusted source code executes in its workflow, and the monitoring repository must never be added to the App's installation scope alongside vigilant-broccoli. SHA pinning reduces upstream replacement risk, but does not prove the pinned code is vulnerability-free ([GitHub action security](https://docs.github.com/en/actions/reference/security/secure-use)).
 
 Warm-up intentionally measures warmed availability and response time; it does not capture user cold-start latency. Hourly polling can miss short outages, and successful login-page responses do not prove backend health. Those are existing coverage limitations, separate from credential isolation.
 
 ## Free Tier
+
+Cloudflare Access remains free for up to 50 users; staging reuses the owner identity. Gate monitoring adds no service token, secret versions or secret-read operations.
 
 - GitHub-hosted standard runners are free for public repositories ([GitHub billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions)). Monitoring uses roughly 25 scheduled workflow runs per day; sync runs only on configuration changes or manual dispatch. The daily static-site build adds one more scheduled run; GitHub Pages is free for public repositories, including the automatic HTTPS certificate; the verify step adds at most 10 minutes of runner time to a failing daily run. Pages Index continues displaying the public summary.
 - Graph and badge generation runs within the existing daily response-time workflow, adding dependency installation and rendering time without another scheduled run.

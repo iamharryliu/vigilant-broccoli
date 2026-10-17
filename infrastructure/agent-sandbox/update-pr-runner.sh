@@ -11,7 +11,12 @@ FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 PRE_COMMIT_HELPER=/tmp/run-pre-commit.sh
 MERGE_BODY_HELPER=/tmp/merge-pr-body.py
 CI_LOG=/tmp/pr-ci-failures.log
+RUN_LOG=/tmp/pr-ci-run.log
 CI_LOG_BUDGET=20000
+# A just-pushed branch still has checks running; a CI-log run waits this long for them
+# so it sees their result instead of an empty failure list.
+CI_WAIT_SECONDS=${CI_WAIT_SECONDS:-600}
+CI_POLL_SECONDS=30
 
 cd "$REPO_DIR"
 SKILL_NAME=agentic-pr-update
@@ -77,10 +82,41 @@ salvage_on_failure() {
 }
 trap salvage_on_failure EXIT
 
+# A failure's cause usually sits where its step starts and the summary where it ends, so
+# an over-budget log keeps both ends instead of only the last bytes of the whole file.
+slice_log() {
+  local file=$1 budget=$2 size head_bytes
+  size=$(wc -c < "$file")
+  if [ "$size" -le "$budget" ]; then
+    cat "$file"
+    return
+  fi
+  head_bytes=$((budget / 3))
+  head -c "$head_bytes" "$file"
+  printf '\n... [%d bytes omitted] ...\n' $((size - budget))
+  tail -c $((budget - head_bytes)) "$file"
+}
+
+count_checks() {
+  gh pr checks "$PR" --json bucket -q "[.[] | select(.bucket == \"$1\")] | length" 2>/dev/null || echo 0
+}
+
+wait_for_pending_checks() {
+  local waited=0
+  while [ "$(count_checks pending)" -gt 0 ] && [ "$waited" -lt "$CI_WAIT_SECONDS" ]; do
+    sleep "$CI_POLL_SECONDS"
+    waited=$((waited + CI_POLL_SECONDS))
+  done
+  if [ "$(count_checks pending)" -gt 0 ]; then
+    echo "WARNING: checks were still running after ${CI_WAIT_SECONDS}s; their results are not in the CI output." >&2
+  fi
+}
+
 # The agent cannot call gh, so failing CI output has to be collected here and
 # handed over in the prompt.
 CI_SECTION=""
 if [ -n "${SANDBOX_CI_LOGS:-}" ]; then
+  wait_for_pending_checks
   : > "$CI_LOG"
   gh pr checks "$PR" >> "$CI_LOG" 2>&1 || true
   # A token without Actions read access makes this fail; say so rather than
@@ -90,19 +126,41 @@ if [ -n "${SANDBOX_CI_LOGS:-}" ]; then
     echo "WARNING: could not list workflow runs for ${BRANCH}; the agent gets no failed-step logs." >&2
     FAILED_RUN_IDS=""
   fi
-  for run_id in $FAILED_RUN_IDS; do
+  # shellcheck disable=SC2086
+  set -- $FAILED_RUN_IDS
+  for run_id in "$@"; do
     echo "===== failing run $run_id =====" >> "$CI_LOG"
-    gh run view "$run_id" --log-failed >> "$CI_LOG" 2>&1 || true
+    gh run view "$run_id" --log-failed > "$RUN_LOG" 2>&1 || true
+    slice_log "$RUN_LOG" $((CI_LOG_BUDGET / $#)) >> "$CI_LOG"
   done
   CI_SECTION=$(cat <<EOF
 
-Failing CI output for this PR (checks summary followed by failed-step logs, truncated to the last ${CI_LOG_BUDGET} bytes):
+Failing CI output for this PR (checks summary followed by failed-step logs, each run's log trimmed to its start and end, about ${CI_LOG_BUDGET} bytes in total):
 
-$(tail -c "$CI_LOG_BUDGET" "$CI_LOG")
+$(tail -c "$((CI_LOG_BUDGET * 2))" "$CI_LOG")
 
 Formatting failures from the pre-commit job (trailing-whitespace, end-of-file-fixer, black) are auto-fixed by the calling script; spend your effort on real lint, test, build, or logic failures.
 EOF
 )
+fi
+
+# A plain change skips the log collection above, but still starts from the PR's check
+# state: a branch that already fails CI should be reported, not silently built on.
+# Conflict resolution is excluded because a conflicting PR runs no CI.
+if [ -z "$CI_SECTION" ] && [ "$SKILL_NAME" = agentic-pr-update ]; then
+  NON_PASSING_CHECKS=$(gh pr checks "$PR" --json name,bucket \
+    -q '.[] | select(.bucket == "fail" or .bucket == "pending" or .bucket == "cancel") | "- \(.name): \(.bucket)"' 2>/dev/null || true)
+  if [ -n "$NON_PASSING_CHECKS" ]; then
+    CI_SECTION=$(cat <<EOF
+
+Checks on this PR that are not passing before your change (fail, cancel or still pending):
+
+${NON_PASSING_CHECKS}
+
+You have no logs for these. Do not try to fix them unless the instruction asks; if your change could affect one, say so in your report.
+EOF
+)
+  fi
 fi
 
 PLAN_RULES=""
@@ -139,11 +197,13 @@ ${PLAN_RULES}
 - When finished, write $META_FILE containing only a JSON object with these fields (strings unless noted):
   - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure
   - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
+  - pr_title: only when a failing check is about the PR title itself (e.g. commitlint), the corrected title in the form "<committype>(<scope>): <Message>." — otherwise omit it; the calling script applies it, so make no file changes for a title-only failure
   - commit_message: capitalized, concise, focused on why not what, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
   - pr_summary: markdown bullet points replacing the PR's "## Summary" section — rewrite it to describe the PR's full, cumulative state (prior work plus this change), not just this increment
   - pr_next_steps: markdown checklist replacing the PR's "## Next steps" section — same rule, cover the whole PR as it now stands: remaining manual commands, spot checks, CI status, merging, and one ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\` item per piece of work deliberately left out of every increment, or "- [ ] Merge once CI is green" when nothing else is left
-  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none — rewrite it to cover the whole PR as it now stands${PLAN_FIELDS}
+  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none — rewrite it to cover the whole PR as it now stands. Keep every suggestion already in the PR body that this change did not implement and the instruction did not reject, and name any you drop in your report; omit the field to leave the section untouched${PLAN_FIELDS}
+  - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none; keep these out of pr_suggestions, which is only optional follow-up work. Rewrite it to cover the whole PR as it now stands, keep every concern already in the PR body that this change did not resolve, and name any you drop in your report; omit the field to leave the section untouched
 $NO_CHANGES_FIELD
 EOF
 )
@@ -203,30 +263,43 @@ else
   INC_HISTORY_SOURCE="Docker sandbox (local)"
 fi
 
-# A request that only rewords TODO rows leaves the tree clean until the runner
-# applies todo_edits.
-if [ "$PLAN_ENABLED" = 1 ] && { [ -n "$(git status --porcelain)" ] || inc_has_todo_edits "$META_FILE"; }; then
-  # Checked before anything is pushed, so a bad plan never leaves a partial set behind.
-  inc_validate_plan "$META_FILE" "$BASE_SHA" "$INSTRUCTION" ""
-  inc_load_plan "$META_FILE"
-  RESOLVED_IDS=()
+RESOLVED_IDS=()
+if [ "$PLAN_ENABLED" = 1 ]; then
   while IFS= read -r resolved_id; do
     [ -z "$resolved_id" ] || RESOLVED_IDS+=("$resolved_id")
   done < <(inc_current_todo_ids "$META_FILE")
+fi
+
+# Declared ids open this block on a clean tree too: dropping a stale row, or one that was
+# never checked off, is a TODO-only update. inc_validate_plan still requires the request to
+# name each id, so the user's instruction is what authorizes the removal.
+# A request that only rewords TODO rows leaves the tree clean until todo_edits is applied.
+if [ "$PLAN_ENABLED" = 1 ] && { [ -n "$(git status --porcelain)" ] || [ "${#RESOLVED_IDS[@]}" -gt 0 ] || inc_has_todo_edits "$META_FILE"; }; then
+  # Checked before anything is pushed, so a bad plan never leaves a partial set behind.
+  inc_validate_plan "$META_FILE" "$BASE_SHA" "$INSTRUCTION" ""
+  inc_load_plan "$META_FILE"
   inc_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
   inc_apply_todo_edits "$META_FILE" "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"} || exit 1
-  if [ "${#RESOLVED_IDS[@]}" -gt 0 ] && [ -z "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
-    finish_without_changes "no changes besides TODO.md — ${RESOLVED_IDS[*]} not resolved."
-  fi
 fi
 
 bash "$PRE_COMMIT_HELPER"
 
+read_meta() { jq -r "$1 // empty" "$META_FILE" 2>/dev/null || true; }
+
+# The title lives on GitHub, not in the branch, so a title-only failure (commitlint) leaves
+# the tree clean; the runner applies the agent's pr_title because the agent cannot call gh.
+NEW_PR_TITLE=$(normalize_pr_title "$(read_meta .pr_title)")
+[ "$NEW_PR_TITLE" != "$PR_TITLE" ] || NEW_PR_TITLE=""
+
 if [ -z "$(git status --porcelain)" ]; then
+  if [ -n "$NEW_PR_TITLE" ]; then
+    gh pr edit "$PR" --title "$NEW_PR_TITLE"
+    echo "PR #${PR} title updated to: ${NEW_PR_TITLE}"
+    SALVAGE_ENABLED=0
+    exit 0
+  fi
   finish_without_changes "no changes produced — PR #${PR} was not updated."
 fi
-
-read_meta() { jq -r "$1 // empty" "$META_FILE" 2>/dev/null || true; }
 
 COMMIT_TYPE=$(read_meta .commit_type)
 COMMIT_SCOPE=$(read_meta .commit_scope)
@@ -234,7 +307,21 @@ COMMIT_MESSAGE=$(normalize_commit_message "$(read_meta .commit_message)")
 TRAILER=$(read_meta .co_authored_by)
 PR_SUMMARY=$(read_meta .pr_summary)
 PR_NEXT_STEPS=$(read_meta .pr_next_steps)
-PR_SUGGESTIONS=$(read_meta .pr_suggestions)
+# merge-pr-body.py clears the Suggestions and Concerns sections when PR_SUGGESTIONS/PR_CONCERNS is set
+# but empty, so a missing or non-string field must leave the variable unset
+# rather than let a skipped field delete entries nobody addressed.
+if jq -e '(.pr_suggestions | type) == "string"' "$META_FILE" >/dev/null 2>&1; then
+  PR_SUGGESTIONS=$(read_meta .pr_suggestions)
+  export PR_SUGGESTIONS
+else
+  unset PR_SUGGESTIONS
+fi
+if jq -e '(.pr_concerns | type) == "string"' "$META_FILE" >/dev/null 2>&1; then
+  PR_CONCERNS=$(read_meta .pr_concerns)
+  export PR_CONCERNS
+else
+  unset PR_CONCERNS
+fi
 
 case "$COMMIT_TYPE" in
   feat | fix | ci | chore | docs | refactor | enhancement | security | infrastructure) ;;
@@ -261,11 +348,12 @@ SALVAGE_ENABLED=0
 
 HISTORY_SOURCE=$INC_HISTORY_SOURCE
 
-NEW_BODY=$(CURRENT_BODY="$CURRENT_BODY" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
+NEW_BODY=$(CURRENT_BODY="$CURRENT_BODY" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" \
   HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="$SKILL_NAME" HISTORY_PROMPT="$INSTRUCTION" \
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
   python3 "$MERGE_BODY_HELPER")
 gh pr edit "$PR" --body "$NEW_BODY"
+[ -z "$NEW_PR_TITLE" ] || gh pr edit "$PR" --title "$NEW_PR_TITLE"
 
 # The target PR is already updated and pushed; follow-up increments are
 # separate PRs, so a failure here leaves it untouched.

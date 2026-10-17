@@ -39,6 +39,7 @@ Sandbox execution rules:
   - pr_summary: markdown bullet points for the PR "## Summary" section
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (review, then merge)
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
+  - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none. Keep these out of pr_suggestions, which is only for optional follow-up work
 $NO_CHANGES_FIELD
 EOF
 )
@@ -68,6 +69,7 @@ TRAILER=$(read_meta .co_authored_by)
 PR_TITLE=$(normalize_pr_title "$(read_meta .pr_title)")
 PR_SUMMARY=$(read_meta .pr_summary)
 PR_NEXT_STEPS=$(read_meta .pr_next_steps)
+PR_CONCERNS=$(read_meta .pr_concerns)
 PR_SUGGESTIONS=$(read_meta .pr_suggestions)
 
 if [ -n "$COMMIT_MESSAGE" ]; then
@@ -93,7 +95,7 @@ else
   HISTORY_SOURCE="Docker sandbox (local)"
 fi
 
-PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
+PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_CONCERNS="$PR_CONCERNS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
   HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic-pr-create-rnd" HISTORY_PROMPT="$QUESTION" \
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
   python3 "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py")
@@ -101,3 +103,4 @@ PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_
 PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
 echo "$PR_URL"
 printf 'PR_URL::%s\n' "$PR_URL"
+emit_pr_files "$BASE_SHA"

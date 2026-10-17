@@ -79,6 +79,17 @@
         "ensure-cf-project:production",
         "prune-deployments:production"
       ]
+    },
+    "ensure-cf-project:preview": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw preview-cloud-8-skate-react || npx wrangler pages project create preview-cloud-8-skate-react --production-branch main"
+    },
+    "prune-deployments:preview": {
+      "command": "npx tsx scripts/prune-wrangler-preview-deployments.ts preview-cloud-8-skate-react",
+      "dependsOn": ["ensure-cf-project:preview"]
+    },
+    "deploy:preview": {
+      "command": "npx wrangler pages deploy dist/apps/ui/cloud-8-skate-react --project-name preview-cloud-8-skate-react --branch \"$PREVIEW_BRANCH\" --commit-hash \"${PREVIEW_COMMIT:-$(git rev-parse HEAD)}\"",
+      "dependsOn": ["generate-sitemap", "ensure-cf-project:preview"]
     }
   }
 }
