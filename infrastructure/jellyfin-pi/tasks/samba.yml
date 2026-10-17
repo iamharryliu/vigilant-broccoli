@@ -1,0 +1,123 @@
+---
+# A writable SMB share of the media library, so content is added by dragging
+# into Finder rather than by getting an rsync invocation right. Jellyfin's own
+# mount of the same directory stays read-only — the share writes to the host
+# path, not through the container.
+#
+# Imported after tasks/jellyfin.yml: that step creates media_library_dir, and
+# testparm only warns about a share path that does not exist, so a first run
+# in the other order would install a share pointing at nothing.
+- name: Install Samba and the mDNS responder
+  ansible.builtin.apt:
+    name: '{{ samba_packages }}'
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install the Samba configuration
+  ansible.builtin.template:
+    src: smb.conf.j2
+    dest: '{{ samba_config_path }}'
+    owner: root
+    group: root
+    mode: '0644'
+    # A bad smb.conf takes the share down until someone SSHes in, and testparm
+    # catches every syntax error and most semantic ones before it is installed.
+    validate: testparm --suppress-prompt %s
+  notify: Restart samba
+
+# Without this the share is reachable only by address. Finder lists an
+# advertised host in its sidebar, which is the difference between "mount the
+# media drive" being a bookmark and being a remembered IP.
+- name: Advertise the share over mDNS
+  ansible.builtin.template:
+    src: avahi-samba.service.j2
+    dest: '{{ samba_avahi_service_path }}'
+    owner: root
+    group: root
+    mode: '0644'
+  when: samba_advertise_mdns
+
+- name: Withdraw the mDNS advertisement
+  ansible.builtin.file:
+    path: '{{ samba_avahi_service_path }}'
+    state: absent
+  when: not samba_advertise_mdns
+
+- name: Read the Samba account database
+  ansible.builtin.command: pdbedit --list
+  register: samba_accounts
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+# Samba keeps its own password database (tdbsam) separate from /etc/shadow, so
+# the account has to be created there even though the Unix user already exists.
+# Gating on the account's absence is what keeps routine converge runs working
+# with Vault unreachable, the same way tailscale.yml gates on enrolment.
+- name: Set the Samba account flags
+  ansible.builtin.set_fact:
+    samba_account_exists: >-
+      {{ samba_accounts.stdout_lines | default([])
+         | select('match', samba_user ~ ':') | list | length > 0 }}
+    # --check never performs the install above, so on a host without the
+    # package pdbedit is genuinely missing and the account state is unknown
+    # rather than "absent". Asserting on that would fail every dry run against
+    # a fresh Pi. A real run installs first, so this is always true there.
+    samba_db_readable: '{{ samba_accounts.rc == 0 }}'
+
+- name: Decide whether the Samba password is needed
+  ansible.builtin.set_fact:
+    samba_password_needed: >-
+      {{ samba_db_readable and (not samba_account_exists or samba_reset_password) }}
+
+- name: Require a password when the Samba account still needs creating
+  ansible.builtin.assert:
+    that:
+      - samba_password | default('', true) | length > 0
+    fail_msg: >-
+      The Samba account '{{ samba_user }}' does not exist yet and SMB_PASSWORD
+      is unset. Run the playbook through provision.sh
+      (pnpm jellyfin:provision), which loads it from Vault, or export
+      SMB_PASSWORD yourself. Skip the share entirely with
+      --skip-tags samba.
+    quiet: true
+  when: samba_password_needed
+
+# smbpasswd -s reads the new password twice from stdin rather than taking it as
+# an argument, and the staging file is tmpfs: the password never reaches the
+# Pi's argv (world-readable through /proc) or the boot card.
+- name: Set the Samba password
+  when: samba_password_needed
+  block:
+    - name: Stage the Samba password in tmpfs
+      ansible.builtin.copy:
+        content: |
+          {{ samba_password }}
+          {{ samba_password }}
+        dest: '{{ samba_password_path }}'
+        owner: root
+        group: root
+        mode: '0600'
+      no_log: true
+
+    - name: Create or update the Samba account
+      ansible.builtin.shell: >-
+        smbpasswd -s {{ '-a' if not samba_account_exists else '' }} {{ samba_user }}
+        < {{ samba_password_path }}
+      changed_when: true
+  always:
+    - name: Drop the staged Samba password
+      ansible.builtin.file:
+        path: '{{ samba_password_path }}'
+        state: absent
+
+- name: Enable Samba at boot
+  ansible.builtin.service:
+    name: '{{ samba_service_name }}'
+    enabled: true
+    state: started
+  # --check only simulates the install above, so on a host that does not have
+  # the package yet there is genuinely no unit to enable. Real runs install
+  # first, as in tasks/base.yml.
+  ignore_errors: '{{ ansible_check_mode }}'
