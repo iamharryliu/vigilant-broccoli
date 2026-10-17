@@ -1,12 +1,13 @@
 # Home Tabs
 
-- The home page uses the `@vigilant-broccoli/react-lib` `Tabs` pattern (as `HomeCalendarTabs` in `vb-manager-next`) with icon-only Calendar, Event Calendars, Tasks, Notepad, Quick Links and Weather tabs (each has an `aria-label` and `title`), sized for touch.
+- The home page uses the `@vigilant-broccoli/react-lib` `Tabs` pattern (as `HomeCalendarTabs` in `vb-manager-next`) with icon-only Calendar, Event Calendars, Tasks, Notepad, Quick Links, Agentic and Weather tabs (each has an `aria-label` and `title`), sized for touch.
 - `TabbedView` (from `@vigilant-broccoli/react-lib-higher-level`) is the generic tab shell: a tab list with an optional actions slot, and per-tab `forceMount`. `HomeView` supplies the tabs.
 - The active tab is mirrored in the `?tab=` query param (omitted for Calendar), so `/?tab=Tasks` deep-links, and saved in `localStorage` (`vb-manager-mobile-tab`). On load a valid `?tab=` wins; otherwise the stored tab is restored after mount (avoiding a hydration mismatch) and mirrored into `?tab=`, falling back to Calendar. `/task-list` redirects there.
 - Tasks renders `GoogleTasksView` with drag and drop disabled, as this is a touch view. It unmounts when inactive and refetches on return. The create-event button is shown on this tab too, alongside its own Create tasks button.
 - The page is fixed to the viewport (the document never scrolls). The tab row stays on top and each tab panel fills the rest and scrolls inside itself only when its content overflows; the phone agenda is its own scroll container with a hidden scrollbar, overscroll containment and bottom safe-area padding, and the desktop iframe fills its panel.
 - The Calendar tab is force-mounted and hidden with `display: none` plus `aria-hidden`, so the Google Calendar iframe is not reloaded when switching tabs.
 - Notepad renders `NotepadEditor` inline and Quick Links renders the react-lib-higher-level `QuickLinksPanel` (the body of `QuickLinksDialog`); neither has a sidebar entry.
+- Agentic renders a second `QuickLinksPanel` with the links registry's `Agentic` subgroup: one link per manual agentic workflow's GitHub Actions page, where the workflow is started with "Run workflow". The app never dispatches workflows itself. Quick Links excludes that subgroup so the links are listed once.
 - Weather renders the same `WeatherClockCardUtilityContent` card as weather.harryliu.dev (`react-utility`), fed by the auth-guarded `/api/weather` (Open-Meteo plus Nominatim city) and `/api/preparation` routes. `WeatherView` is loaded with `next/dynamic` (`ssr: false`) so its chunk stays off the critical path, and the tab is force-mounted so the card locates and fetches once on load; switching to Weather is instant.
 - Event Calendars is read-only: a list with per-calendar visibility toggles, with no sync, untracked or edit actions.
 - Hidden Google calendar ids are saved in local storage under `vb-manager-hidden-event-calendars`.
