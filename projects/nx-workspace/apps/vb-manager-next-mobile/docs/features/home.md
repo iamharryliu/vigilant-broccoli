@@ -1,6 +1,6 @@
 # Home Tabs
 
-- The home page uses the `@vigilant-broccoli/react-lib` `Tabs` pattern (as `HomeCalendarTabs` in `vb-manager-next`) with icon-only Calendar, Event Calendars, Tasks, Notepad, Quick Links and Weather tabs (each has an `aria-label` and `title`), sized for touch.
+- The home page uses the `@vigilant-broccoli/react-lib` `Tabs` pattern (as `HomeCalendarTabs` in `vb-manager-local-react`) with icon-only Calendar, Event Calendars, Tasks, Notepad, Quick Links and Weather tabs (each has an `aria-label` and `title`), sized for touch.
 - `TabbedView` (from `@vigilant-broccoli/react-lib-higher-level`) is the generic tab shell: a tab list with an optional actions slot, and per-tab `forceMount`. `HomeView` supplies the tabs.
 - The active tab is mirrored in the `?tab=` query param (omitted for Calendar), so `/?tab=Tasks` deep-links. `/task-list` redirects there.
 - Tasks renders `GoogleTasksView` with drag and drop disabled, as this is a touch view. It unmounts when inactive and refetches on return. The create-event button is hidden on this tab, which has its own Create tasks button.
@@ -10,6 +10,6 @@
 - Weather renders the same `WeatherClockCardUtilityContent` card as weather.harryliu.dev (`react-utility`), fed by the auth-guarded `/api/weather` (Open-Meteo plus Nominatim city) and `/api/preparation` routes. `WeatherView` is loaded with `next/dynamic` and only mounts while its tab is active, so its code, location prompt and requests stay off the initial page load.
 - Event Calendars is read-only: a list with per-calendar visibility toggles, with no sync, untracked or edit actions.
 - Hidden Google calendar ids are saved in local storage under `vb-manager-hidden-event-calendars`.
-- The embed URL, base config, event calendar colors and hidden-id helpers come from `@vigilant-broccoli/personal-common-js` and are shared with `vb-manager-next`.
+- The embed URL, base config, event calendar colors and hidden-id helpers come from `@vigilant-broccoli/personal-common-js` and are shared with `vb-manager-local-react`.
 - The phone agenda (`CalendarAgenda` in `react-lib-higher-level`) draws a red "now" line with a left dot in the Today group, above the first upcoming timed event (below all events when none remain, never above all-day events). The clock refreshes every minute. When events first render with the Calendar tab visible, the agenda's own scroll container instantly scrolls so the line sits about 18% down the area below the sticky Today heading (stuck to the container's top), clamped to the scroll range; later renders, including the minute tick, never re-scroll.
 - The agenda, Event Calendars list and `TabbedView` live in `@vigilant-broccoli/react-lib-higher-level`, which the component library's Mobile Home entry renders with sample data (including the Weather tab), so UI edits there change the deployed page. `HomeView` keeps the fetching, auth and Google reconnect.

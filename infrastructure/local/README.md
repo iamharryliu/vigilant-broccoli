@@ -21,7 +21,7 @@ Docker Compose stack for self-hosted local services (photos, logs, dashboards) b
 
 **Sources:**
 
-- PM2 apps (vb-manager-next) → `/Users/harryliu/.pm2/logs/`
+- PM2 apps (vb-manager-local-fastify) → `/Users/harryliu/.pm2/logs/`
 - Docker containers → json-file driver logs
 - System logs → `/var/log/`
 

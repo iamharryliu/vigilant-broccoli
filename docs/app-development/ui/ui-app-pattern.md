@@ -21,14 +21,14 @@ What every UI app in this workspace must have, and the shared building blocks to
 
 - Static UIs → `apps/ui/*`, Vite + React → Cloudflare Pages.
 - Next.js static exports (`apps/findme`, `apps/whiteboard`) → Cloudflare Pages.
-- Next.js server apps → `apps/*` (`hearth`) or `apps/ui/*` (`employee-handler-ui`, `weather-next`, `balloono`) → Vercel; `employee-handler-ui`'s `deploy`/`deploy:production` only push the Docker image; its only Vercel deploy is `deploy:demo` (project `demo-employee-handler-ui`), run by `deploy-demo-apps`. `vb-manager-next` is the exception: PM2 on the VM, no nx `deploy` target.
+- Next.js server apps → `apps/*` (`hearth`) or `apps/ui/*` (`employee-handler-ui`, `weather-next`, `balloono`) → Vercel; `employee-handler-ui`'s `deploy`/`deploy:production` only push the Docker image; its only Vercel deploy is `deploy:demo` (project `demo-employee-handler-ui`), run by `deploy-demo-apps`. `vb-manager-local-react` is the exception: a Vite SPA served under PM2 by `vb-manager-local-fastify`, no nx `deploy` target.
 - GitHub Pages hosts only the `pages-index` landing site; `component-library` is a Cloudflare Pages site like the other static UIs.
 
 ## Shared components (react-lib)
 
 Check the `libs/@vigilant-broccoli/react-lib/src/components` barrel (atoms), the `react-lib-auth`, `react-lib-calendar` and `react-lib-media` domain libs, and the `react-lib-higher-level` lib (composites) before building new UI — prefer existing shared components over hand-rolled equivalents, unless told otherwise. Frequently needed: `CardContainer`, `Button`, `IconButton`, `Dialog`, `Tabs`, `Select`, `Input`, `ThemeProvider` from `react-lib`; `CRUDItemList` (CRUD list management, exported from `CRUDListManagement.tsx`) and `Sidebar` from `react-lib-higher-level`.
 
-User-facing auth is `createSupabaseAuth` from `react-lib-auth` — read [supabase-auth-pattern.md](./auth/supabase-auth-pattern.md) first, never hand-roll per-app auth. Supabase auth is UI-app-only: its server half (bearer-token middleware, admin client, per-route helpers) lives inside the Next.js apps, and no fly API service uses it.
+User-facing auth is `createSupabaseAuth` from `react-lib-auth` — read [supabase-auth-pattern.md](./auth/supabase-auth-pattern.md) first, never hand-roll per-app auth. Supabase auth is UI-app-only: its server half (bearer-token gate, admin client, per-route helpers) lives inside the Next.js apps and the local-only `vb-manager-local-fastify`, and no fly API service uses it.
 
 ## i18n (required)
 
