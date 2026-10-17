@@ -304,31 +304,23 @@ export const HomeView = () => {
         value={tab}
         onValueChange={handleTabChange}
         actions={
-          tab !== CALENDAR_TAB.TASKS && (
-            <button
-              type="button"
-              onClick={() => setCreateOpen(true)}
-              aria-label="Create calendar event"
-              title="Create calendar event"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
-            >
-              <CalendarPlus size={18} />
-            </button>
-          )
+          <button
+            type="button"
+            onClick={() => setCreateOpen(true)}
+            aria-label="Create calendar event"
+            title="Create calendar event"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
+          >
+            <CalendarPlus size={18} />
+          </button>
         }
       />
 
       <Dialog open={createOpen} onOpenChange={handleCreateOpenChange}>
         <DialogContent
-          className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+          className="top-[max(env(safe-area-inset-top),0.5rem)] block w-[calc(100%-1rem)] max-w-[600px] max-h-[calc(100svh-env(safe-area-inset-top)-1rem)] translate-y-0 gap-0 overflow-y-auto overscroll-contain"
           aria-describedby={undefined}
           showCloseButton={false}
-          style={{
-            maxWidth: '95vw',
-            width: '95vw',
-            maxHeight: '90vh',
-            overflowY: 'auto',
-          }}
         >
           <VisuallyHidden>
             <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
