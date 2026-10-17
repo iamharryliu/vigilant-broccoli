@@ -25,6 +25,7 @@ import {
 import {
   CalendarAgenda,
   CalendarEvent,
+  CalendarEventDetails,
   EventCalendarLink,
   EventCalendarsList,
   TabbedView,
@@ -63,6 +64,10 @@ const BASE_CALENDAR_COLOR_BY_ID = new Map(
     source.id,
     decodeURIComponent(source.color),
   ]),
+);
+
+const BASE_CALENDAR_NAME_BY_ID = new Map(
+  PERSONAL_CALENDAR_SOURCES.map(source => [source.id, source.label]),
 );
 
 const EVENT_CALENDARS_API = '/api/event-calendars';
@@ -138,6 +143,9 @@ const useIsMobileBrowser = () => {
 export const HomeView = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const [events, setEvents] = useState<CalendarEvent[] | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [eventCalendars, setEventCalendars] = useState<EventCalendarLink[]>([]);
@@ -229,6 +237,14 @@ export const HomeView = () => {
     return colors;
   }, [eventCalendarColorById]);
 
+  const calendarNameById = useMemo(() => {
+    const names = new Map(BASE_CALENDAR_NAME_BY_ID);
+    eventCalendars.forEach(calendar =>
+      names.set(calendar.googleCalendarId, calendar.name),
+    );
+    return names;
+  }, [eventCalendars]);
+
   useEffect(() => {
     if (!isMobile || !eventCalendarsLoaded) return;
 
@@ -299,6 +315,7 @@ export const HomeView = () => {
               error={error}
               hiddenIds={hiddenIds}
               colorByCalendarId={calendarColorById}
+              onEventClick={setSelectedEvent}
             />
           )}
         </>
@@ -368,6 +385,13 @@ export const HomeView = () => {
             <CalendarPlus size={18} />
           </button>
         }
+      />
+
+      <CalendarEventDetails
+        event={selectedEvent}
+        colorByCalendarId={calendarColorById}
+        nameByCalendarId={calendarNameById}
+        onClose={() => setSelectedEvent(null)}
       />
 
       <Dialog open={createOpen} onOpenChange={handleCreateOpenChange}>

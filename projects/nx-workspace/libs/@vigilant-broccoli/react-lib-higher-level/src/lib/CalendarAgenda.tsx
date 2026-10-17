@@ -9,6 +9,19 @@ import {
   useState,
 } from 'react';
 
+export interface CalendarEventPerson {
+  displayName?: string;
+  email?: string;
+}
+
+export interface CalendarEventAttendee extends CalendarEventPerson {
+  responseStatus?: string;
+  self?: boolean;
+  organizer?: boolean;
+}
+
+// Mirrors GoogleCalendarEvent from google-workspace, a Node lib this browser
+// lib must not depend on.
 export interface CalendarEvent {
   id: string;
   calendarId: string;
@@ -17,19 +30,30 @@ export interface CalendarEvent {
   end: string;
   allDay: boolean;
   htmlLink?: string;
+  location?: string;
+  description?: string;
+  hangoutLink?: string;
+  attendees?: CalendarEventAttendee[];
+  organizer?: CalendarEventPerson;
+  recurringEventId?: string;
+}
+
+// A per-day row; source is the event it was split from, which clicks report.
+interface AgendaEntry extends CalendarEvent {
+  source: CalendarEvent;
 }
 
 interface EventDayGroup {
   key: string;
   date: Date;
-  events: CalendarEvent[];
+  events: AgendaEntry[];
 }
 
 const LOADING_MESSAGE = 'Loading…';
 const EMPTY_MESSAGE = 'No upcoming events.';
 const ALL_DAY_LABEL = 'All day';
 const TODAY_LABEL = 'Today';
-const FALLBACK_COLOR = '#9ca3af';
+export const CALENDAR_EVENT_FALLBACK_COLOR = '#9ca3af';
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 const NOW_REFRESH_MS = 60 * 1000;
 // Leaves some earlier events in view above the "now" line.
@@ -54,9 +78,9 @@ const daySpan = (event: CalendarEvent) => {
   return event.allDay ? days : days + 1;
 };
 
-const expandMultiDayEvent = (event: CalendarEvent): CalendarEvent[] => {
+const expandMultiDayEvent = (event: CalendarEvent): AgendaEntry[] => {
   const span = daySpan(event);
-  if (span <= 1) return [event];
+  if (span <= 1) return [{ ...event, source: event }];
 
   const startDay = dateOnly(new Date(event.start));
   return Array.from({ length: span }, (_, index) => {
@@ -68,6 +92,7 @@ const expandMultiDayEvent = (event: CalendarEvent): CalendarEvent[] => {
       summary: `${event.summary} (Day ${index + 1}/${span})`,
       start: occurrenceDate.toISOString(),
       allDay: true,
+      source: event,
     };
   });
 };
@@ -89,8 +114,8 @@ const formatDateHeading = (date: Date) => {
   });
 };
 
-const groupEventsByDay = (events: CalendarEvent[]): EventDayGroup[] => {
-  const groups = new Map<string, CalendarEvent[]>();
+const groupEventsByDay = (events: AgendaEntry[]): EventDayGroup[] => {
+  const groups = new Map<string, AgendaEntry[]>();
   events.forEach(event => {
     const key = dateOnly(new Date(event.start)).toISOString();
     const group = groups.get(key);
@@ -134,6 +159,34 @@ const findNowLineIndex = (events: CalendarEvent[], now: Date) => {
   );
 };
 
+const AGENDA_ROW_CLASS =
+  'flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-gray-50';
+
+const AgendaRowContent = ({
+  event,
+  colorByCalendarId,
+}: {
+  event: AgendaEntry;
+  colorByCalendarId: Map<string, string>;
+}) => (
+  <>
+    <span
+      className="h-2.5 w-2.5 shrink-0 rounded-full"
+      style={{
+        backgroundColor:
+          colorByCalendarId.get(event.calendarId) ??
+          CALENDAR_EVENT_FALLBACK_COLOR,
+      }}
+    />
+    <span className="flex min-w-0 flex-1 flex-col">
+      <span className="truncate text-sm font-medium text-gray-900">
+        {event.summary}
+      </span>
+      <span className="text-xs text-gray-500">{formatEventTime(event)}</span>
+    </span>
+  </>
+);
+
 const NowLine = ({ ref }: { ref: Ref<HTMLLIElement> }) => (
   <li ref={ref} aria-label="Now" className="flex items-center py-0 pl-3 pr-4">
     <span className="h-2 w-2 shrink-0 rounded-full bg-red-500" />
@@ -169,6 +222,9 @@ interface CalendarAgendaProps {
   error?: string | null;
   hiddenIds: Set<string>;
   colorByCalendarId: Map<string, string>;
+  // When set, rows are buttons reporting the original (unsplit) event instead
+  // of links to Google Calendar.
+  onEventClick?: (event: CalendarEvent) => void;
 }
 
 export const CalendarAgenda = ({
@@ -176,6 +232,7 @@ export const CalendarAgenda = ({
   error,
   hiddenIds,
   colorByCalendarId,
+  onEventClick,
 }: CalendarAgendaProps) => {
   const now = useNow();
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -250,29 +307,30 @@ export const CalendarAgenda = ({
                     <NowLine key="now-line" ref={nowLineRef} />
                   ),
                 <li key={`${event.calendarId}-${event.id}`}>
-                  <a
-                    href={event.htmlLink ?? '#'}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50"
-                  >
-                    <span
-                      className="h-2.5 w-2.5 shrink-0 rounded-full"
-                      style={{
-                        backgroundColor:
-                          colorByCalendarId.get(event.calendarId) ??
-                          FALLBACK_COLOR,
-                      }}
-                    />
-                    <span className="flex min-w-0 flex-1 flex-col">
-                      <span className="truncate text-sm font-medium text-gray-900">
-                        {event.summary}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {formatEventTime(event)}
-                      </span>
-                    </span>
-                  </a>
+                  {onEventClick ? (
+                    <button
+                      type="button"
+                      onClick={() => onEventClick(event.source)}
+                      className={AGENDA_ROW_CLASS}
+                    >
+                      <AgendaRowContent
+                        event={event}
+                        colorByCalendarId={colorByCalendarId}
+                      />
+                    </button>
+                  ) : (
+                    <a
+                      href={event.htmlLink ?? '#'}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={AGENDA_ROW_CLASS}
+                    >
+                      <AgendaRowContent
+                        event={event}
+                        colorByCalendarId={colorByCalendarId}
+                      />
+                    </a>
+                  )}
                 </li>,
               ])}
               {isSameDay(group.date, now) &&

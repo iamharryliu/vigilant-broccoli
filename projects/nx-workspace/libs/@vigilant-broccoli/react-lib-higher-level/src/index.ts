@@ -1,4 +1,5 @@
 export * from './lib/CalendarAgenda';
+export * from './lib/CalendarEventDetails';
 export * from './lib/EventCalendarsList';
 export * from './lib/TabbedView';
 export * from './lib/CreateTasksDialog';
