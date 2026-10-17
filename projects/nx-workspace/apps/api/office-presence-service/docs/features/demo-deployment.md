@@ -37,6 +37,7 @@ The UI keeps a random session id in `localStorage` and sends it as `X-Demo-Sessi
 - Seeded members use ids prefixed `U_DEMO_`; the prefix is the "seeded" flag, so the SQLite schema is unchanged and existing `state.db` files stay compatible.
 - In Slack modes no API call targets a fake id: lunch asks drop them before `conversations.open`, and views render them as plain-text names instead of `<@id>`. Only the per-visitor mock client may address them.
 - The seeder only deletes `U_DEMO_` presences, events they created, and their settings. `DEMO_REAL_USER_IDS` lets it also add presences for real members; it uses `INSERT OR IGNORE`, so a member's own entries are never overwritten and those added rows are never removed.
+- Seeded members have no Slack timezone, so their "today" is `REMINDER_TIMEZONE`; real members use their own Slack `tz`.
 - The workspace is private and test-only, so the UI lists every workspace member (via `users.list`, cached 5 minutes) and can act as any of them; actions then write that member's real rows.
 
 ## Routes
@@ -53,7 +54,8 @@ Socket Mode exposes no HTTP surface. Demo routes are limited to 120 requests/min
 
 ## Seeding
 
-- `POST /internal/seed` replaces seeded rows for the coming week (Monday to Friday, or to Sunday with `INCLUDE_WEEKENDS`, in `REMINDER_TIMEZONE`) and deletes seeded rows older than the current week. `{"includeCurrentWeek": true}` also reseeds this week. Repeat calls give the same data.
+- `POST /internal/seed` replaces seeded rows for the coming week (Monday to Friday, or to Sunday with `INCLUDE_WEEKENDS`, in `REMINDER_TIMEZONE`, `America/Toronto` on the demo) and deletes seeded rows older than the current week, plus any rows of seeded ids no longer in the roster. `{"includeCurrentWeek": true}` also reseeds this week. Repeat calls give the same data.
+- The seeded team is deliberately quiet: five members, one to three in the office per day from a fixed weekly plan, two notes, one dog, and two events placed by weekday ("Team lunch" on Wednesday, "Demo Friday" on Friday; at most one event per day) on the first such day not already past.
 - `cron-seed-office-presence-demo` calls it weekly (Sunday evening UTC) with `OFFICE_PRESENCE_INTERNAL_TOKEN` read from Vault by the vault-secrets action — no repo secret.
 - The UI's "Reset demo data" calls `POST /demo/reset`, which reseeds the current and coming week and clears the visitor's session. Because every visitor shares the rows, it is rate limited.
 - On boot, an empty volume is seeded once so a first deploy is not blank.

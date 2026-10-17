@@ -7,12 +7,14 @@ import {
 import { PRESENCE_TIME, UserPresence } from '../types';
 import {
   formatISODateInTimeZone,
+  getISOWeekday,
   getWeekDates,
   getWeekStart,
 } from '../utils/date.utils';
 import {
   deleteSeededRows,
   deleteSeededRowsBefore,
+  deleteSeededRowsOfOtherUsers,
   deleteSeededSettings,
   hasSeededRows,
   runInTransaction,
@@ -39,116 +41,129 @@ export type SeedResult = {
   events: number;
 };
 
-const NOTES = [
-  'Bringing surdeg!',
-  'Pairing on the release all morning',
-  'Leaving at 3 for a dentist appointment',
-  'Come find me for coffee ☕',
-  'Heads-down day, ping me on Slack',
-  'Hosting the candidate interviews',
-];
-const PRESENCE_TIMES = [
-  PRESENCE_TIME.WHOLE_DAY,
-  PRESENCE_TIME.WHOLE_DAY,
-  PRESENCE_TIME.WHOLE_DAY,
-  PRESENCE_TIME.MORNING,
-  PRESENCE_TIME.AFTERNOON,
-  PRESENCE_TIME.UNDECIDED,
-];
+const ISO_WEEKDAY = {
+  MONDAY: 1,
+  TUESDAY: 2,
+  WEDNESDAY: 3,
+  THURSDAY: 4,
+  FRIDAY: 5,
+  SATURDAY: 6,
+  SUNDAY: 7,
+} as const;
+
 const demoId = (name: string) => `${DEMO_USER_ID_PREFIX}${name}`;
-const DOG_OWNERS = new Set([demoId('PRIYA'), demoId('NOAH')]);
+const homeOfficeOf = (userId: string) =>
+  DEMO_USERS.find(user => user.id === userId)?.homeOffice;
 
-// Deterministic so the seeded week looks the same on every run.
-const isInOffice = (
-  userIndex: number,
-  dayIndex: number,
-  isFirstVisibleDay: boolean,
-) => isFirstVisibleDay || (userIndex * 3 + dayIndex * 5) % 7 < 4;
-
-const buildPresence = (
-  userId: string,
-  homeOffice: string,
-  userIndex: number,
-  dayIndex: number,
-): UserPresence => {
-  const visitsOtherOffice = (userIndex + dayIndex) % 9 === 0;
-  const office = visitsOtherOffice
-    ? DEMO_OFFICES[(DEMO_OFFICES.indexOf(homeOffice) + 1) % DEMO_OFFICES.length]
-    : homeOffice;
-  const hasNote = (userIndex + dayIndex * 2) % 6 === 0;
-  return {
-    office,
-    presenceTime:
-      PRESENCE_TIMES[(userIndex + dayIndex) % PRESENCE_TIMES.length],
-    isBringingDog: DOG_OWNERS.has(userId) && dayIndex % 2 === 0,
-    message: hasNote ? NOTES[(userIndex + dayIndex) % NOTES.length] : undefined,
-  };
+type SeededVisit = Omit<UserPresence, 'office'> & {
+  name: string;
+  office?: string;
 };
 
+// Kept small (1-3 people a day, few notes) so a visitor can follow what the app shows.
+// The same week repeats, so every run produces the same rows.
+const WEEKLY_VISITS: Record<number, SeededVisit[]> = {
+  [ISO_WEEKDAY.MONDAY]: [
+    { name: 'ASTRID', presenceTime: PRESENCE_TIME.WHOLE_DAY },
+    { name: 'MATEO', presenceTime: PRESENCE_TIME.MORNING },
+  ],
+  [ISO_WEEKDAY.TUESDAY]: [
+    {
+      name: 'PRIYA',
+      presenceTime: PRESENCE_TIME.WHOLE_DAY,
+      isBringingDog: true,
+      message: 'Come find me for coffee ☕',
+    },
+  ],
+  [ISO_WEEKDAY.WEDNESDAY]: [
+    { name: 'ASTRID', presenceTime: PRESENCE_TIME.WHOLE_DAY },
+    { name: 'PRIYA', presenceTime: PRESENCE_TIME.AFTERNOON },
+    {
+      name: 'LUCAS',
+      office: 'Stockholm',
+      presenceTime: PRESENCE_TIME.WHOLE_DAY,
+      message: 'Visiting from Paris for the team lunch',
+    },
+  ],
+  [ISO_WEEKDAY.THURSDAY]: [
+    { name: 'MATEO', presenceTime: PRESENCE_TIME.WHOLE_DAY },
+    { name: 'EBBA', presenceTime: PRESENCE_TIME.AFTERNOON },
+  ],
+  [ISO_WEEKDAY.FRIDAY]: [
+    { name: 'ASTRID', presenceTime: PRESENCE_TIME.MORNING },
+    { name: 'MATEO', presenceTime: PRESENCE_TIME.WHOLE_DAY },
+    { name: 'EBBA', presenceTime: PRESENCE_TIME.WHOLE_DAY },
+  ],
+  [ISO_WEEKDAY.SATURDAY]: [
+    { name: 'LUCAS', presenceTime: PRESENCE_TIME.MORNING },
+  ],
+  [ISO_WEEKDAY.SUNDAY]: [
+    { name: 'EBBA', presenceTime: PRESENCE_TIME.UNDECIDED },
+  ],
+};
+
+// One event per weekday, and attendees are already in that day's visits, so events
+// never share a day and never add people to it.
 const EVENTS = [
   {
     name: 'Team lunch at Tre Kronor',
-    dayIndex: 1,
+    weekday: ISO_WEEKDAY.WEDNESDAY,
     time: '12:00',
     creatorId: demoId('ASTRID'),
     description: 'Booked a long table, vegetarian options available',
-    attendees: ['ASTRID', 'PRIYA', 'EBBA', 'MATEO'],
+    attendees: ['ASTRID', 'PRIYA', 'LUCAS'],
   },
   {
     name: 'Demo Friday',
-    dayIndex: 3,
+    weekday: ISO_WEEKDAY.FRIDAY,
     time: '15:30',
-    creatorId: demoId('KENJI'),
+    creatorId: demoId('MATEO'),
     description: 'Each squad shows one thing they shipped this sprint',
-    attendees: ['KENJI', 'MATEO', 'LUCAS', 'HANNA', 'NOAH'],
-  },
-  {
-    name: 'Board games night',
-    dayIndex: 4,
-    time: '18:00',
-    creatorId: demoId('SOFIA'),
-    description: 'Pizza on the company, bring your favourite game',
-    attendees: ['SOFIA', 'FELIX', 'LUCAS'],
-  },
-  {
-    name: 'New joiner coffee',
-    dayIndex: 6,
-    time: '10:00',
-    creatorId: demoId('SOFIA'),
-    description: 'Meet the new hires from the Paris and New York offices',
-    attendees: ['SOFIA', 'OLIVER', 'AMARA'],
+    attendees: ['MATEO', 'ASTRID', 'EBBA'],
   },
 ];
 
-const seedPresences = (days: string[], firstVisibleDay: string) => {
+// Real members, if configured, drop in on a couple of days a week.
+const isRealMemberInOffice = (userIndex: number, weekday: number) =>
+  (userIndex + weekday) % 3 === 0;
+
+const seedPresences = (days: string[]) => {
   let count = 0;
-  DEMO_USERS.forEach((user, userIndex) => {
-    days.forEach((day, dayIndex) => {
-      const isFirstVisibleDay = day === firstVisibleDay && userIndex < 8;
-      if (!isInOffice(userIndex, dayIndex, isFirstVisibleDay)) return;
-      savePresence(
-        user.id,
-        day,
-        buildPresence(user.id, user.homeOffice, userIndex, dayIndex),
-      );
+  days.forEach(day => {
+    WEEKLY_VISITS[getISOWeekday(day)].forEach(({ name, office, ...visit }) => {
+      const userId = demoId(name);
+      savePresence(userId, day, {
+        ...visit,
+        office: office ?? homeOfficeOf(userId),
+      });
       count++;
     });
   });
   return count;
 };
 
-const seedEvents = (days: string[]) => {
-  EVENTS.forEach(({ dayIndex, attendees, ...event }) => {
-    const date = days[dayIndex % days.length];
+// The first matching day still ahead of today, so an event is not seeded into the past.
+const findEventDate = (days: string[], weekday: number, todayISO: string) => {
+  const matching = days.filter(day => getISOWeekday(day) === weekday);
+  return matching.find(day => day >= todayISO) ?? matching[0];
+};
+
+const seedEvents = (days: string[], todayISO: string) => {
+  let count = 0;
+  EVENTS.forEach(({ weekday, attendees, ...event }) => {
+    const date = findEventDate(days, weekday, todayISO);
+    if (!date) return;
     const attendeeIds = attendees.map(demoId);
     saveEvent({ ...event, date, attendees: attendeeIds });
     attendeeIds.forEach(userId =>
       savePresenceIfMissing(userId, date, {
+        office: homeOfficeOf(userId),
         presenceTime: PRESENCE_TIME.WHOLE_DAY,
       }),
     );
+    count++;
   });
-  return EVENTS.length;
+  return count;
 };
 
 const seedSettings = () => {
@@ -166,13 +181,12 @@ const seedRealMembers = (
   homeOffice: string,
 ) => {
   realUserIds.forEach((userId, userIndex) => {
-    days.forEach((day, dayIndex) => {
-      if (!isInOffice(userIndex + 3, dayIndex, false)) return;
-      savePresenceIfMissing(
-        userId,
-        day,
-        buildPresence(userId, homeOffice, userIndex + 3, dayIndex),
-      );
+    days.forEach(day => {
+      if (!isRealMemberInOffice(userIndex, getISOWeekday(day))) return;
+      savePresenceIfMissing(userId, day, {
+        office: homeOffice,
+        presenceTime: PRESENCE_TIME.WHOLE_DAY,
+      });
     });
   });
 };
@@ -192,14 +206,17 @@ export function seedDemoData({
     getWeekDates(todayISO, offset, includeWeekends),
   );
   const prunedBefore = getWeekStart(todayISO);
-  const firstVisibleDay = days.find(day => day >= todayISO) ?? days[0];
 
   return runInTransaction(() => {
     deleteSeededRowsBefore(DEMO_USER_ID_PREFIX, prunedBefore);
     deleteSeededRows(DEMO_USER_ID_PREFIX, days[0], days[days.length - 1]);
+    deleteSeededRowsOfOtherUsers(
+      DEMO_USER_ID_PREFIX,
+      DEMO_USERS.map(user => user.id),
+    );
     deleteSeededSettings(DEMO_USER_ID_PREFIX);
-    const presences = seedPresences(days, firstVisibleDay);
-    const events = seedEvents(days);
+    const presences = seedPresences(days);
+    const events = seedEvents(days, todayISO);
     seedSettings();
     seedRealMembers(realUserIds, days, DEMO_OFFICES[0]);
     return { days, prunedBefore, presences, events };

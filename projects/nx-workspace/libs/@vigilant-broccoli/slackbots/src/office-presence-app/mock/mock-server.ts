@@ -13,7 +13,6 @@ import {
 import { MOCK_UI_HTML } from './mock-ui';
 
 const DEFAULT_MOCK_PORT = 3100;
-const DEFAULT_TIME_ZONE = 'Europe/Stockholm';
 const IN_MEMORY_DB = ':memory:';
 const API_PREFIX = '/api/';
 
@@ -47,7 +46,7 @@ export async function runOfficePresenceMock(
   const demo = createDemoApi({
     appConfig,
     seed: {
-      timeZone: config.reminderTimezone ?? DEFAULT_TIME_ZONE,
+      timeZone: appConfig.timeZone,
       includeWeekends: appConfig.includeWeekends,
     },
   });

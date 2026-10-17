@@ -177,6 +177,8 @@ export function createMockSlack({ nameOf, isAdmin }: MockDirectory) {
           user: { id: userId },
           trigger_id: triggerFor(userId),
           actions: [action],
+          // Like Slack, the view the action came from: the open modal, else the Home tab.
+          view: (modals.get(userId) ?? []).slice(-1)[0] ?? homes.get(userId),
         },
       })),
     submitView: async (

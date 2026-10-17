@@ -13,43 +13,77 @@ import { SlackViewBuilder } from '@vigilant-broccoli/slack-workspace';
 import { AppCopy } from '../consts/app-copy.const';
 import {
   formatDateLong,
-  formatISODateLocal,
+  getISOWeekday,
   getUpcomingWeekdays,
   getWeekNumber,
 } from './date.utils';
 import { APP_ACTION } from '../consts/app.consts';
+import { BLOCK_ID } from '../consts/data.consts';
 import { formatUserMention } from './mention.utils';
+import { GetUserTodayISO } from './time-zone.utils';
 
-export function createPublishHomeView(appConfig: AppConfig) {
-  return async function publishHomeView(
+type PublishQueue = { tail: Promise<void>; latestTicket: number };
+
+// Handlers run concurrently, so publishes are chained per user: each one builds its view
+// from the database right before views.publish, and one already superseded by a newer
+// queued publish is skipped, so an older view can never overwrite a newer one.
+export function createPublishHomeView(
+  appConfig: AppConfig,
+  getUserTodayISO: GetUserTodayISO,
+) {
+  const queues = new Map<string, PublishQueue>();
+  let nextTicket = 0;
+
+  return function publishHomeView(
     client: WebClient,
     source: BlockAction | AppHomeOpenedEvent | SlackViewAction,
-  ) {
+  ): Promise<void> {
     const userId =
       typeof source.user === 'string' ? source.user : source.user.id;
-    await client.views.publish({
-      user_id: userId,
-      view: getHomeView(userId, appConfig),
+    const ticket = ++nextTicket;
+    const queue = queues.get(userId) ?? {
+      tail: Promise.resolve(),
+      latestTicket: ticket,
+    };
+    queue.latestTicket = ticket;
+    queues.set(userId, queue);
+
+    const publish = queue.tail.then(async () => {
+      if (queue.latestTicket !== ticket) return;
+      const todayISO = await getUserTodayISO(client, userId);
+      await client.views.publish({
+        user_id: userId,
+        view: getHomeView(userId, appConfig, todayISO),
+      });
     });
+    // A failed publish must not block the ones queued behind it; the caller still sees the error.
+    queue.tail = publish
+      .catch(() => undefined)
+      .finally(() => {
+        if (queue.latestTicket === ticket) queues.delete(userId);
+      });
+    return publish;
   };
 }
 
+export type PublishHomeView = ReturnType<typeof createPublishHomeView>;
+
 const MONDAY = 1;
 
-function formatDateWithWeek(date: Date, index: number): string {
-  const showWeek = index === 0 || date.getDay() === MONDAY;
+function formatDateWithWeek(isoDate: string, index: number): string {
+  const showWeek = index === 0 || getISOWeekday(isoDate) === MONDAY;
   return showWeek
-    ? `${formatDateLong(date)} - Week ${getWeekNumber(date)}`
-    : formatDateLong(date);
+    ? `${formatDateLong(isoDate)} - Week ${getWeekNumber(isoDate)}`
+    : formatDateLong(isoDate);
 }
 
-export function buildModalDateOptionSlackBlocks(dates: Date[]): {
+export function buildModalDateOptionSlackBlocks(dates: string[]): {
   text: { type: string; text: string };
   value: string;
 }[] {
   return dates.map((date, index) => ({
     text: SlackViewBuilder.generatePlainText(formatDateWithWeek(date, index)),
-    value: formatISODateLocal(date),
+    value: date,
   }));
 }
 
@@ -77,7 +111,11 @@ function buildLocationSelect(
   };
 }
 
-function getHomeView(userId: string, appConfig: AppConfig): View {
+function getHomeView(
+  userId: string,
+  appConfig: AppConfig,
+  todayISO: string,
+): View {
   const userSettings = loadUserSettings(userId);
   const copy = appConfig.getCopy(userSettings.language);
 
@@ -88,20 +126,24 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
 
   const includeWeekends = !showWeekdaysOnly;
 
-  const userPresences = loadAllPresences();
+  const userPresences = loadAllPresences(todayISO);
   if (!userPresences[userId]) {
     userPresences[userId] = {};
   }
   const selected = Object.keys(userPresences[userId]);
-  const checkboxDates = getUpcomingWeekdays(14, includeWeekends).slice(0, 10);
+  const checkboxDates = getUpcomingWeekdays(
+    todayISO,
+    14,
+    includeWeekends,
+  ).slice(0, 10);
   const presenceDates = getUpcomingWeekdays(
+    todayISO,
     appConfig.defaultWeeksAhead * 7,
     includeWeekends,
   );
   const options = buildModalDateOptionSlackBlocks(checkboxDates);
   const initial = options.filter(opt => selected.includes(opt.value));
-  const today = formatISODateLocal(new Date());
-  const isCheckedInToday = selected.includes(today);
+  const isCheckedInToday = selected.includes(todayISO);
 
   const locationSelect = buildLocationSelect(
     appConfig,
@@ -151,6 +193,7 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
         ...SlackViewBuilder.generateMarkdownSection(
           copy.HOME_VIEW.SELECT_OFFICE_DAYS_MARKDOWN,
         ),
+        block_id: BLOCK_ID.WORKDAY_CHECKBOXES,
         accessory: {
           type: 'checkboxes',
           action_id: APP_ACTION.WORKDAY_CHECKBOXES,
@@ -204,27 +247,28 @@ function getHomeView(userId: string, appConfig: AppConfig): View {
         userId,
         copy,
         showTeamCount,
+        todayISO,
       ),
     ],
   } as View;
 }
 
 function buildPresenceBlocks(
-  days: Date[],
+  days: string[],
   userPresences: UserPresences,
   currentUserId: string,
   copy: AppCopy,
   showTeamCount: boolean,
+  todayISO: string,
 ): KnownBlock[] {
   const blocks: KnownBlock[] = [
     SlackViewBuilder.generateMarkdownSection(
       copy.HOME_VIEW.WHO_IS_IN_OFFICE_MARKDOWN,
     ) as KnownBlock,
   ];
-  const allEvents = loadAllEvents();
+  const allEvents = loadAllEvents(todayISO);
 
-  days.forEach((date, index) => {
-    const iso = formatISODateLocal(date);
+  days.forEach((iso, index) => {
     const eventsForDay = allEvents
       .filter(event => event.date === iso)
       .sort((a, b) => a.time.localeCompare(b.time));
@@ -237,7 +281,7 @@ function buildPresenceBlocks(
       formatPresence(userId, presence, eventsForDay, copy),
     );
 
-    const datePrefix = `*${formatDateWithWeek(date, index)}*`;
+    const datePrefix = `*${formatDateWithWeek(iso, index)}*`;
     const sectionText = buildDaySectionText(
       datePrefix,
       dayPresences.map(({ presence }) => presence),
