@@ -1,6 +1,5 @@
 'use client';
 
-import { Dialog } from '@radix-ui/themes';
 import {
   Badge,
   Button,
@@ -9,6 +8,11 @@ import {
   StatusCardListItem,
   Text,
   CardSkeleton,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
 } from '@vigilant-broccoli/react-lib';
 import { useCallback, useEffect, useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -88,19 +92,24 @@ const ScanDialog = ({ device }: { device: LanDevice }) => {
   }, [device.ip]);
 
   return (
-    <Dialog.Root onOpenChange={open => open && !state.ports && runScan()}>
-      <Dialog.Trigger>
+    <Dialog onOpenChange={open => open && !state.ports && runScan()}>
+      <DialogTrigger asChild>
         <Button size="sm" variant="secondary">
           {SCAN_BUTTON_LABEL}
         </Button>
-      </Dialog.Trigger>
-      <Dialog.Content maxWidth="480px">
-        <Dialog.Title>
+      </DialogTrigger>
+      <DialogContent
+        className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+        aria-describedby={undefined}
+        showCloseButton={false}
+        style={{ maxWidth: '480px' }}
+      >
+        <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
           {device.hostname ?? device.ip}{' '}
           <Text size="2" color="gray" weight="regular">
             ({device.ip})
           </Text>
-        </Dialog.Title>
+        </DialogTitle>
         <div className="flex flex-col gap-2 mt-2">
           <Text size="2" color="gray">
             {device.vendor ?? UNKNOWN_VENDOR} · {device.deviceType}
@@ -159,14 +168,14 @@ const ScanDialog = ({ device }: { device: LanDevice }) => {
           >
             {RESCAN_BUTTON_LABEL}
           </Button>
-          <Dialog.Close>
+          <DialogClose asChild>
             <Button size="sm" variant="secondary">
               {CLOSE_BUTTON_LABEL}
             </Button>
-          </Dialog.Close>
+          </DialogClose>
         </div>
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 };
 

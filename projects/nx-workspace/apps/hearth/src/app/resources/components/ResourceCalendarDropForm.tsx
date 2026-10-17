@@ -1,19 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { type DateRange } from 'react-day-picker';
 
 import { Button, Input, Textarea, Text } from '@vigilant-broccoli/react-lib';
+import { DateRangePicker } from '../../calendar/components/DateRangePicker';
+import { toYmd } from '../../../lib/date-utils';
 import { ResourceBookingFormData } from './ResourceBookingForm';
-
-const inputStyle: React.CSSProperties = {
-  padding: '6px 10px',
-  borderRadius: '6px',
-  border: '1px solid var(--gray-6)',
-  background: 'var(--color-background)',
-  color: 'inherit',
-  fontSize: '14px',
-  width: '100%',
-};
 
 interface Props {
   initialData: ResourceBookingFormData;
@@ -28,12 +21,21 @@ export function ResourceCalendarDropForm({
 }: Props) {
   const [title, setTitle] = useState(initialData.title);
   const [description, setDescription] = useState(initialData.description);
-  const [startDate, setStartDate] = useState(initialData.startDate);
-  const [endDate, setEndDate] = useState(initialData.endDate);
+  const [range, setRange] = useState<DateRange | undefined>({
+    from: new Date(`${initialData.startDate}T00:00:00`),
+    to: new Date(`${initialData.endDate}T00:00:00`),
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onConfirm({ ...initialData, title, description, startDate, endDate });
+    if (!range?.from) return;
+    onConfirm({
+      ...initialData,
+      title,
+      description,
+      startDate: toYmd(range.from),
+      endDate: toYmd(range.to ?? range.from),
+    });
   };
 
   return (
@@ -61,32 +63,11 @@ export function ResourceCalendarDropForm({
           />
         </div>
 
-        <div className="flex gap-3">
-          <div style={{ flex: 1 }}>
-            <Text size="1" weight="medium" as="p" mb="1">
-              Start Date
-            </Text>
-            <input
-              type="date"
-              value={startDate}
-              onChange={e => setStartDate(e.target.value)}
-              required
-              style={inputStyle}
-            />
-          </div>
-          <div style={{ flex: 1 }}>
-            <Text size="1" weight="medium" as="p" mb="1">
-              End Date
-            </Text>
-            <input
-              type="date"
-              value={endDate}
-              min={startDate}
-              onChange={e => setEndDate(e.target.value)}
-              required
-              style={inputStyle}
-            />
-          </div>
+        <div>
+          <Text size="1" weight="medium" as="p" mb="1">
+            Dates
+          </Text>
+          <DateRangePicker value={range} onChange={setRange} />
         </div>
 
         <div className="flex justify-end gap-2 pt-2">
@@ -98,7 +79,11 @@ export function ResourceCalendarDropForm({
           >
             Cancel
           </Button>
-          <Button type="submit" className="cursor-pointer">
+          <Button
+            type="submit"
+            disabled={!range?.from}
+            className="cursor-pointer"
+          >
             Book Resource
           </Button>
         </div>

@@ -1,6 +1,7 @@
 import os
 import argparse
 import json
+import sys
 from spotify_to_mp3_service import SpotifyToMp3Service
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
@@ -80,14 +81,15 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    # Use provided playlists JSON if available, otherwise fetch from Spotify
     if args.playlists:
         playlists = json.loads(args.playlists)
     else:
         playlists = get_spotify_playlists(description_filter=args.filter)
     print(playlists)
     service = SpotifyToMp3Service(output=args.output, parallel_downloads=args.parallel)
-    service.download_playlists(playlists)
+    failed = service.download_playlists(playlists)
+    if failed:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

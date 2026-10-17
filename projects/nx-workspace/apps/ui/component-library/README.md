@@ -1,5 +1,11 @@
 # Component Library
 
+Browsable sandbox of the shared `react-lib` components and `react-utility` utilities, including a Weather Display entry seeded from live Open-Meteo weather, with controls for temperature, humidity, wind, condition, day/night, units and preparation badges.
+
+## Table of Contents
+
+- [Stack](#stack)
+
 ## Stack
 
 - Language - TypeScript
@@ -7,8 +13,7 @@
 - Build Tool - Vite
 - External libs
   - Tailwind CSS
-  - Radix Themes
 - Internal libs
   - `react-sandbox`
 - Cloud services
-  - GitHub Pages
+  - Open-Meteo

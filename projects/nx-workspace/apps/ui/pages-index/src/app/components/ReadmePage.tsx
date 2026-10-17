@@ -1,12 +1,16 @@
-import { useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
-import { MarkdownViewer } from '@vigilant-broccoli/react-utility';
+import {
+  MarkdownViewer,
+  type RepoLinkBase,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { useTranslation } from '../i18n';
 import { PageHeader } from './PageHeader';
 import { PAGE_CLASS } from '../consts/layout';
 
 export const PARSE_KIND = {
   TEXT: 'text',
+  GITHUB_README: 'github-readme',
   NPM_REGISTRY: 'npm-registry',
 } as const;
 type ParseKind = (typeof PARSE_KIND)[keyof typeof PARSE_KIND];
@@ -18,7 +22,9 @@ interface ReadmeSource {
 
 interface ReadmePageProps {
   title: string;
+  beforeReadme?: ReactNode;
   source: ReadmeSource | null;
+  repoLinkBase?: RepoLinkBase;
   externalHref?: string;
   externalLabel?: string;
   notFoundMessage?: string;
@@ -43,7 +49,9 @@ const parseResponse = (
 
 export function ReadmePage({
   title,
+  beforeReadme,
   source,
+  repoLinkBase,
   externalHref,
   externalLabel,
   notFoundMessage,
@@ -57,7 +65,12 @@ export function ReadmePage({
     let cancelled = false;
     setContent(null);
     setError(null);
-    fetch(source.url)
+    fetch(
+      source.url,
+      source.parseKind === PARSE_KIND.GITHUB_README
+        ? { headers: { Accept: 'application/vnd.github.raw+json' } }
+        : undefined,
+    )
       .then(res => parseResponse(res, source.parseKind))
       .then(text => {
         if (!cancelled) setContent(text);
@@ -76,6 +89,8 @@ export function ReadmePage({
   return (
     <main className={PAGE_CLASS}>
       <PageHeader title={title} />
+
+      {beforeReadme}
 
       {!source && notFoundMessage && (
         <p className="text-sm text-red-500">{notFoundMessage}</p>
@@ -110,7 +125,14 @@ export function ReadmePage({
               {t('README_PAGE.LOADING')}
             </p>
           )}
-          {!error && content && <MarkdownViewer content={content} />}
+          {!error && content === '' && (
+            <p className={`${STATUS_CLASS} text-gray-400`}>
+              {t('README_PAGE.EMPTY')}
+            </p>
+          )}
+          {!error && content && (
+            <MarkdownViewer content={content} repoLinkBase={repoLinkBase} />
+          )}
         </div>
       )}
     </main>

@@ -1,5 +1,9 @@
 # Visual Studio Code
 
+## Table of Contents
+
+- [Keyboard Shortcuts](#keyboard-shortcuts)
+
 ## Keyboard Shortcuts
 
 | **Action**                | **Shortcut (Mac)**   |

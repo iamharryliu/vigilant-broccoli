@@ -1,5 +1,6 @@
 import {
   AllMiddlewareArgs,
+  App,
   BlockAction,
   SlackActionMiddlewareArgs,
 } from '@slack/bolt';
@@ -39,6 +40,7 @@ import {
   resolveAppCopyForLanguage,
 } from './consts/app-copy.const';
 import { loadUserSettings } from './utils/db.utils';
+import { SLACK_MODE, validateSlackEnv } from './slack-mode';
 
 export type OfficePresenceAppRunConfig = {
   APP_NAME?: string;
@@ -63,10 +65,9 @@ const DEFAULT_SHOW_WEEKDAYS_ONLY = true;
 const DEFAULT_SHOW_TEAM_COUNT = true;
 const DEFAULT_WEEKS_AHEAD = 3;
 
-// eslint-disable-next-line complexity
-export async function runOfficePresenceApp(
+export function createAppConfig(
   config: OfficePresenceAppRunConfig = {},
-) {
+): AppConfig {
   const {
     APP_NAME,
     OFFICES,
@@ -78,7 +79,7 @@ export async function runOfficePresenceApp(
   } = config;
   const getCopy = (language?: Language) =>
     resolveAppCopyForLanguage(language ?? DEFAULT_LANGUAGE, copy);
-  const appConfig: AppConfig = {
+  return {
     APP_NAME: APP_NAME ?? DEFAULT_APP_NAME,
     OFFICES: OFFICES ?? DEFAULT_OFFICES,
     includeWeekends,
@@ -89,6 +90,25 @@ export async function runOfficePresenceApp(
     copy: getCopy(DEFAULT_LANGUAGE),
     getCopy,
   };
+}
+
+export type OfficePresenceHandlerApp = Pick<
+  App,
+  'event' | 'action' | 'view' | 'command'
+>;
+
+export type RegisterHandlersOptions = {
+  // Only the mock client may address seeded members; real Slack clients must not.
+  allowDemoRecipients?: boolean;
+};
+
+// Shared by Socket Mode, HTTP mode and the mock so all three run the same handlers.
+export function registerOfficePresenceHandlers(
+  app: OfficePresenceHandlerApp,
+  appConfig: AppConfig,
+  previewReminder: (userId: string) => Promise<void>,
+  { allowDemoRecipients = false }: RegisterHandlersOptions = {},
+) {
   const publishHomeView = createPublishHomeView(appConfig);
   const getInputScheduleModal = createInputScheduleModal(appConfig);
   const getAskLunchModal = createAskLunchModal(appConfig);
@@ -96,10 +116,6 @@ export async function runOfficePresenceApp(
   const getHelpModal = createHelpModal(appConfig);
   const getCreateEventModal = createCreateEventModal(appConfig);
   const getEditEventModal = createEditEventModal(appConfig);
-  const sendReminders = createReminderSender(appConfig);
-  const previewReminder = createReminderPreviewer(appConfig);
-
-  const app = SlackUtils.getSocketApp();
 
   app.event(SLACK_EVENT.HOME_OPENED, async ({ event, client }) => {
     await publishHomeView(client, event);
@@ -216,7 +232,13 @@ export async function runOfficePresenceApp(
       }
     }
     const copy = appConfig.getCopy(loadUserSettings(userId).language);
-    await handleAskLunchAction(userId, selectedUsers, client, copy);
+    await handleAskLunchAction(
+      userId,
+      selectedUsers,
+      client,
+      copy,
+      allowDemoRecipients,
+    );
   });
 
   app.action(
@@ -277,6 +299,20 @@ export async function runOfficePresenceApp(
     await ack();
     await previewReminder(command.user_id);
   });
+}
+
+// Socket Mode only: it needs no public URL and owns the reminder cron. HTTP mode is
+// hosted by the service app (see createOfficePresenceHttpRuntime).
+export async function runOfficePresenceApp(
+  config: OfficePresenceAppRunConfig = {},
+) {
+  validateSlackEnv(SLACK_MODE.SOCKET);
+  const appConfig = createAppConfig(config);
+  const sendReminders = createReminderSender(appConfig);
+  const previewReminder = createReminderPreviewer(appConfig);
+
+  const app = SlackUtils.getSocketApp();
+  registerOfficePresenceHandlers(app, appConfig, previewReminder);
 
   await app.start(config.port ?? DEFAULT_PORT);
   console.log(`⚡️ ${appConfig.APP_NAME} is running!`);

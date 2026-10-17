@@ -1,6 +1,6 @@
 # Lingo Files Pattern
 
-Template convention for glossary files under `notes/` (e.g. `tech-lingo.md`, `software-lingo.md`, `computer-hardware-lingo.md`, `network-security-lingo.md`). The universal link-hygiene rules that apply to all of `notes/` are in [notes-pattern.md](../notes-pattern.md) — this doc only covers what's specific to lingo files.
+Template convention for glossary files under `notes/` (e.g. `tech-lingo.md`, `software-lingo.md`, `computer-hardware-lingo.md`, `network-security-lingo.md`). The universal link-hygiene rules that apply to all of `notes/` are in [notes/CONTEXT.md](../../notes/CONTEXT.md) — this doc only covers what's specific to lingo files.
 
 ## Structure
 

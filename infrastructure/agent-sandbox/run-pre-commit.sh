@@ -6,4 +6,9 @@ set -euo pipefail
 # clean or the caller aborts. Run from the repo root (where .pre-commit-config.yaml lives).
 export SKIP=grind-75-tests,lint-staged
 
+# --all-files only covers tracked files, so a brand-new file would pass here and
+# then fail the commit-time hooks. Intent-to-add puts untracked, non-ignored
+# files in the index without staging their content.
+git ls-files --others --exclude-standard -z | xargs -0 -r git add -N --
+
 pre-commit run --all-files || pre-commit run --all-files

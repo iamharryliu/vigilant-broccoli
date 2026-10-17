@@ -2,14 +2,12 @@
 
 ## Stack
 
-- Supabase Auth — Google OAuth
-- Email whitelist — hardcoded in `src/lib/whitelist.ts`
+- Supabase Auth — Google OAuth and email/password signup
 
 ## Auth Flow
 
 - Google OAuth → `/auth/callback` → redirect to home
 - Unauthenticated users redirected to `/login`
-- Non-whitelisted users signed out immediately
 
 ## Routes
 

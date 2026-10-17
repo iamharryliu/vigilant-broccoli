@@ -9,10 +9,8 @@
 - [Pizza](./pizza.md)
 - [Sandwiches](./sandwiches.md)
 - [Soups](./soups.md)
-- [Sourdough](./sourdough.md)
 - [Sprinkles](./spinkles.md)
 - [Tofu](./tofu.md)
-- [Vegetables](./vegetables.md)
 
 ## Seasonal Produce
 

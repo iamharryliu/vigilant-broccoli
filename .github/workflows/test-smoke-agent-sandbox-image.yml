@@ -1,0 +1,38 @@
+name: test-smoke-agent-sandbox-image
+
+# Build only, never pushed: the image is built locally by the sandbox scripts, so
+# this catches a broken mise pin, a failed mise.run download or an apt error
+# before the next sandbox rebuild does.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - infrastructure/agent-sandbox/**
+      - .github/workflows/test-smoke-agent-sandbox-image.yml
+  pull_request:
+    paths:
+      - infrastructure/agent-sandbox/**
+      - .github/workflows/test-smoke-agent-sandbox-image.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-smoke-agent-sandbox-image-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Build the agent sandbox image
+        run: docker build --tag vb-agent-sandbox infrastructure/agent-sandbox
+
+      - name: Verify the pinned mise installed
+        run: docker run --rm --entrypoint mise vb-agent-sandbox --version

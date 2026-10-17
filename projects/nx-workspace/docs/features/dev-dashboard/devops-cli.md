@@ -14,7 +14,7 @@
   - `GcloudService` — auth status, projects, reauth probe, active account/project switching, Vault root token to clipboard
   - `DockerService` — compose-project and standalone container status, start/stop/remove
   - `Pm2Service` — process list, start/stop/restart/delete
-  - `FlyioService` — app list, `flyctl auth login`, auth-error detection
+  - `FlyioService` — app list with per-app machine states (`flyctl machines list --app <name> --json`), `flyctl auth login`, auth-error detection
   - `VercelService` — projects plus the current team slug
   - `WranglerService` — Pages project list, deployment prune/teardown, project delete, login
   - `TailscaleService` — local tailnet IPs

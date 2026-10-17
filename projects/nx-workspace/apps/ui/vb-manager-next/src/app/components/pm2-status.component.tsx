@@ -1,21 +1,23 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import {
-  BORDER_ACTIVE,
-  Badge,
-  CardContainer,
   DeleteIconButton,
   IconButton,
-  StatusCardList,
   StatusCardListItem,
   Text,
-  CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
 import { useState } from 'react';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
-import { usePollingInterval } from '../hooks/usePollingInterval';
+import { StatusListCard } from './status-list-card.component';
+import { usePolledResource } from '../hooks/usePolledResource';
+import {
+  DotColor,
+  StatusDot,
+  StatusLegendEntry,
+  getDotBorder,
+} from './status-dot.component';
 
 const PM2_POLL_INTERVAL_MS = 30000;
 
@@ -29,9 +31,14 @@ interface PM2Process {
   uptime: number;
 }
 
-const getBadgeColor = (
-  status: string,
-): 'green' | 'yellow' | 'red' | 'gray' | 'blue' => {
+const LEGEND: StatusLegendEntry[] = [
+  { color: 'green', label: 'Online' },
+  { color: 'blue', label: 'Launching' },
+  { color: 'yellow', label: 'Stopping' },
+  { color: 'red', label: 'Stopped / errored' },
+];
+
+const getStatusColor = (status: string): DotColor => {
   switch (status) {
     case 'online':
       return 'green';
@@ -71,31 +78,19 @@ const formatUptime = (ms: number): string => {
 };
 
 export const PM2StatusComponent = () => {
-  const [pm2Processes, setPm2Processes] = useState<PM2Process[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: pm2Processes,
+    loading,
+    error,
+    refetch: fetchPM2Status,
+  } = usePolledResource<PM2Process[]>({
+    endpoint: API_ENDPOINTS.PM2_PROCESSES,
+    intervalMs: PM2_POLL_INTERVAL_MS,
+    errorMessage: 'Failed to fetch PM2 process status',
+  });
   const [actionInProgress, setActionInProgress] = useState<Set<number>>(
     new Set(),
   );
-
-  const fetchPM2Status = async () => {
-    try {
-      const response = await authFetch(API_ENDPOINTS.PM2_PROCESSES);
-      if (!response.ok) throw new Error('Failed to fetch PM2 process status');
-      const data = await response.json();
-      setPm2Processes(data);
-      setError(null);
-      setLoading(false);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : 'Failed to fetch PM2 process status',
-      );
-      setLoading(false);
-      console.error('PM2 status error:', err);
-    }
-  };
 
   const withAction = async (processId: number, fn: () => Promise<Response>) => {
     setActionInProgress(prev => new Set(prev).add(processId));
@@ -150,11 +145,12 @@ export const PM2StatusComponent = () => {
   const toItem = (process: PM2Process): StatusCardListItem => ({
     id: String(process.pm_id),
     label: process.name,
-    borderClassName: process.status === 'online' ? BORDER_ACTIVE : undefined,
+    borderClassName: getDotBorder(getStatusColor(process.status)),
     badges: (
-      <Badge color={getBadgeColor(process.status)} size="1">
-        {process.status.charAt(0).toUpperCase() + process.status.slice(1)}
-      </Badge>
+      <StatusDot
+        color={getStatusColor(process.status)}
+        title={process.status.charAt(0).toUpperCase() + process.status.slice(1)}
+      />
     ),
     actions: (
       <div className="flex gap-1">
@@ -217,26 +213,14 @@ export const PM2StatusComponent = () => {
     ),
   });
 
-  usePollingInterval(fetchPM2Status, PM2_POLL_INTERVAL_MS);
-
-  if (loading) return <CardSkeleton title="PM2 Processes" rows={3} />;
-
-  if (error) {
-    return (
-      <CardContainer title="PM2 Processes">
-        <Text className="text-gray-500">{error}</Text>
-      </CardContainer>
-    );
-  }
-
   return (
-    <CardContainer
+    <StatusListCard
       title={`PM2 Processes${pm2Processes ? ` (${pm2Processes.length})` : ''}`}
-    >
-      <StatusCardList
-        items={(pm2Processes ?? []).map(toItem)}
-        emptyMessage="No PM2 processes found"
-      />
-    </CardContainer>
+      loading={loading}
+      error={error}
+      legend={LEGEND}
+      items={(pm2Processes ?? []).map(toItem)}
+      emptyMessage="No PM2 processes found"
+    />
   );
 };

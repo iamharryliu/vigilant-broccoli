@@ -1,0 +1,78 @@
+name: cron-upptime-response-time
+
+on:
+  schedule:
+    - cron: '25 0 * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [response_time]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: upptime
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    if: github.event_name == 'workflow_dispatch' || vars.UPPTIME_MONITORING_ENABLED == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Warm Fly services
+        run: bash scripts/warm-fly.sh
+      - name: Configure monitoring repository credentials
+        env:
+          GH_PAT: ${{ github.token }}
+        run: git remote set-url origin "https://x-access-token:${GH_PAT}@github.com/${GITHUB_REPOSITORY}.git"
+      - uses: upptime/uptime-monitor@8be193bbcb957a3a917d2bb16a0c96959778a889 # v1.44.1
+        with:
+          command: response-time
+        env:
+          GH_PAT: ${{ github.token }}
+      - uses: upptime/uptime-monitor@8be193bbcb957a3a917d2bb16a0c96959778a889 # v1.44.1
+        with:
+          command: summary
+        env:
+          GH_PAT: ${{ github.token }}
+      - name: Set up graph runtime
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: .nvmrc
+      - name: Install graph dependencies
+        run: npm ci --prefix scripts/graphs --no-audit --no-fund --foreground-scripts
+      - name: Generate README graphs and badge endpoints
+        run: node scripts/graphs/node_modules/@upptime/graphs/dist/cli.js
+        env:
+          GH_PAT: ${{ github.token }}
+      - name: Verify README assets
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          for service in json.loads(Path('history/summary.json').read_text()):
+              slug = service['slug']
+              for metric in ('uptime', 'response-time'):
+                  for period in ('', '-day', '-week', '-month', '-year'):
+                      path = Path('api') / slug / f'{metric}{period}.json'
+                      badge = json.loads(path.read_text())
+                      assert badge['schemaVersion'] == 1 and badge['message'], path
+              graph = Path('graphs') / slug / 'response-time-week.png'
+              assert graph.read_bytes().startswith(b'\x89PNG\r\n\x1a\n'), graph
+          PY
+      - name: Publish README assets
+        run: |
+          git config user.name 'Upptime Bot'
+          git config user.email 'upptime@koj.co'
+          git add api graphs
+          if ! git diff --cached --quiet; then
+            git commit -m ':bento: Update graphs and badges [skip ci] [upptime]'
+            git push origin HEAD:main
+          fi

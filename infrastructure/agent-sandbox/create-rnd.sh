@@ -21,7 +21,7 @@ done
 
 QUESTION="${ARGS[*]:-}"
 if [ -z "$QUESTION" ]; then
-  echo "Usage: pnpm agentic:rnd [--model <model>] \"<research question>\"" >&2
+  echo "Usage: pnpm agentic-pr-create-rnd [--model <model>] \"<research question>\"" >&2
   exit 1
 fi
 
@@ -34,6 +34,10 @@ if [ -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
 elif [ -n "${AGENT_GH_APP_ID:-}" ] && [ -n "${AGENT_GH_APP_PRIVATE_KEY:-}" ]; then
   echo "Minting fresh GitHub App installation token..." >&2
   GH_TOKEN=$("$SCRIPT_DIR/mint-github-app-token.sh" "$AGENT_GH_APP_ID" <(printf '%s\n' "$AGENT_GH_APP_PRIVATE_KEY"))
+  # export so `docker run -e GH_TOKEN` forwards it into the container (the
+  # load-env-from-vault.sh path above exports it too); without this the sandbox
+  # gets no token and `git push` fails with "could not read Username".
+  export GH_TOKEN
 fi
 
 if [ -z "${GH_TOKEN:-}" ]; then
@@ -43,6 +47,8 @@ if [ -z "${GH_TOKEN:-}" ]; then
 fi
 
 echo "Researching R&D note for: $QUESTION"
+STATUS=0
+LOG_FILE=$(mktemp /tmp/vb-rnd.XXXXXX)
 docker run --rm --init --name "vb-rnd-$(date +%s)" \
   --cap-add NET_ADMIN --cap-add NET_RAW \
   -e CLAUDE_CODE_OAUTH_TOKEN \
@@ -52,4 +58,7 @@ docker run --rm --init --name "vb-rnd-$(date +%s)" \
   -e SANDBOX_ALLOWED_DOMAINS \
   -e SOLVE_MODEL="$MODEL" \
   "$IMAGE" \
-  bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/create-rnd-runner.sh" "$1"' _ "$QUESTION"
+  bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/create-rnd-runner.sh" "$1"' _ "$QUESTION" \
+  2>&1 | tee "$LOG_FILE" || STATUS="${PIPESTATUS[0]}"
+bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_FILE" "$STATUS"
+exit "$STATUS"

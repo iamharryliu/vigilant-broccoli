@@ -1,13 +1,50 @@
 import { execSync, execFileSync } from 'child_process';
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync, mkdirSync, rmSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { createVaultClient, VAULT_SECRET_PATH } from './vault-client';
 
 const STAGING = 'staging';
 const PRODUCTION = 'production';
-const ENVIRONMENTS = [STAGING, PRODUCTION];
+const DEMO = 'demo';
+const ENVIRONMENTS = [STAGING, PRODUCTION, DEMO];
 const VERCEL_ENV = PRODUCTION;
+
+const VERCEL_ROOT_DIRECTORY = 'projects/nx-workspace';
+const VERCEL_DIR = '.vercel';
+const VERCEL_OUTPUT_DIR = `${VERCEL_DIR}/output`;
+const BUILD_LOCK_DIR = `${VERCEL_ROOT_DIRECTORY}/dist/.vercel-deploy-lock`;
+
+// Standalone output can't be packaged from an Nx cache restore — see
+// docs/app-development/ui/deployment/vercel-deploy-pattern.md
+const STANDALONE_OUTPUT_PROJECTS = new Set(['employee-handler-ui']);
+
+const BUILD_LOCK_TIMEOUT_MS = 20 * 60 * 1000;
+const BUILD_LOCK_POLL_MS = 500;
+
+// All apps share one .vercel directory, so build and upload are serialised as
+// a unit (see vercel-deploy-pattern.md). mkdir is the atomic primitive: it
+// fails if the directory exists.
+async function withBuildLock<T>(lockDir: string, fn: () => T): Promise<T> {
+  mkdirSync(dirname(lockDir), { recursive: true });
+  const deadline = Date.now() + BUILD_LOCK_TIMEOUT_MS;
+  for (;;) {
+    try {
+      mkdirSync(lockDir);
+      break;
+    } catch {
+      if (Date.now() >= deadline) {
+        throw new Error(`Timed out waiting for the build lock at ${lockDir}`);
+      }
+      await new Promise(done => setTimeout(done, BUILD_LOCK_POLL_MS));
+    }
+  }
+  try {
+    return fn();
+  } finally {
+    rmSync(lockDir, { recursive: true, force: true });
+  }
+}
 
 interface VaultSecrets {
   [key: string]: string;
@@ -85,6 +122,36 @@ async function applyProjectSettings(
   } else {
     console.log('✓ Project settings applied');
   }
+}
+
+// "all" also covers production-target deployments, which every staging project
+// is, including its immutable URLs.
+const VERCEL_AUTHENTICATION_ALL_DEPLOYMENTS = {
+  ssoProtection: { deploymentType: 'all' },
+};
+
+async function enableVercelAuthentication(
+  projectId: string,
+  teamId: string,
+  token: string,
+): Promise<void> {
+  const res = await fetch(
+    `https://api.vercel.com/v9/projects/${projectId}?teamId=${teamId}`,
+    {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(VERCEL_AUTHENTICATION_ALL_DEPLOYMENTS),
+    },
+  );
+  if (!res.ok) {
+    throw new Error(
+      `Failed to enable Vercel Authentication: ${res.status} ${await res.text()}`,
+    );
+  }
+  console.log('✓ Vercel Authentication enabled for all deployments');
 }
 
 async function vercelEnvAdd(
@@ -176,13 +243,23 @@ async function pruneStaleVercelEnvVars(
   await Promise.all(staleKeys.map(key => vercelEnvRemove(key, environment)));
 }
 
-function parseEnvKeys(filePath: string): string[] {
+interface EnvKey {
+  key: string;
+  optional: boolean;
+}
+
+const OPTIONAL_MARKER = '# optional';
+
+function parseEnvKeys(filePath: string): EnvKey[] {
   if (!existsSync(filePath)) return [];
-  return readFileSync(filePath, 'utf-8')
+  const lines = readFileSync(filePath, 'utf-8')
     .split('\n')
-    .filter(line => line && !line.startsWith('#'))
-    .map(line => line.split('=')[0].trim())
-    .filter(Boolean);
+    .map(line => line.trim());
+  return lines.flatMap((line, i) => {
+    if (!line || line.startsWith('#')) return [];
+    const key = line.split('=')[0].trim();
+    return key ? [{ key, optional: lines[i - 1] === OPTIONAL_MARKER }] : [];
+  });
 }
 
 async function main() {
@@ -192,7 +269,7 @@ async function main() {
 
   if (!projectName) {
     console.error(
-      'Usage: npx tsx scripts/deploy-vercel.ts <project-name> [staging|production]',
+      'Usage: npx tsx scripts/deploy-vercel.ts <project-name> [staging|production|demo]',
     );
     process.exit(1);
   }
@@ -234,7 +311,9 @@ async function main() {
   const NX_VERCEL_SETTINGS = (nxProject: string, outputDirectory: string) => ({
     framework: 'nextjs',
     rootDirectory: 'projects/nx-workspace',
-    buildCommand: `nx build ${nxProject}`,
+    buildCommand: `nx build ${nxProject}${
+      STANDALONE_OUTPUT_PROJECTS.has(nxProject) ? ' --skip-nx-cache' : ''
+    }`,
     installCommand: 'pnpm install --frozen-lockfile',
     outputDirectory,
   });
@@ -257,13 +336,19 @@ async function main() {
         'dist/apps/ui/employee-handler-ui/.next',
       ),
     },
-    findme: {
+    balloono: {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
-      settings: NX_VERCEL_SETTINGS('findme', 'dist/apps/findme/.next'),
+      settings: NX_VERCEL_SETTINGS('balloono', 'dist/apps/ui/balloono/.next'),
     },
-    whiteboard: {
-      hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
-      settings: NX_VERCEL_SETTINGS('whiteboard', 'dist/apps/whiteboard/.next'),
+    'weather-next': {
+      hardcodedSecrets: {
+        VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
+      },
+      envExamplePath: 'apps/ui/weather-next/.env.example',
+      settings: NX_VERCEL_SETTINGS(
+        'weather-next',
+        'dist/apps/ui/weather-next/.next',
+      ),
     },
     'vb-manager-next-mobile': {
       hardcodedSecrets: {
@@ -286,8 +371,12 @@ async function main() {
   }
 
   const { hardcodedSecrets, envExamplePath, settings } = config;
-  const allKeys = envExamplePath ? parseEnvKeys(resolve(envExamplePath)) : [];
-  const keysFromVault = allKeys.filter(k => !(k in (hardcodedSecrets ?? {})));
+  const envKeys = envExamplePath ? parseEnvKeys(resolve(envExamplePath)) : [];
+  const allKeys = envKeys.map(({ key }) => key);
+  const entriesFromVault = envKeys.filter(
+    ({ key }) => !(key in (hardcodedSecrets ?? {})),
+  );
+  const keysFromVault = entriesFromVault.map(({ key }) => key);
 
   console.log(
     `\nDeploying secrets for ${projectName} to Vercel (${environment})...\n`,
@@ -303,13 +392,23 @@ async function main() {
       vercelEnv.VERCEL_TOKEN = vaultSecrets.VERCEL_TOKEN;
     }
 
-    for (const key of keysFromVault) {
+    const missingRequired: string[] = [];
+    for (const { key, optional } of entriesFromVault) {
       const value = vaultSecrets[key];
       if (value) {
         allSecrets[key] = value;
+      } else if (optional) {
+        console.warn(`⚠ ${key}: optional, not found in vault, skipping`);
       } else {
-        console.warn(`⚠ ${key}: not found in vault, skipping`);
+        missingRequired.push(key);
       }
+    }
+
+    if (missingRequired.length) {
+      console.error(
+        `✗ Required key(s) missing from vault: ${missingRequired.join(', ')}`,
+      );
+      process.exit(1);
     }
   }
 
@@ -328,12 +427,22 @@ async function main() {
     );
   }
 
+  if (environment === STAGING) {
+    await enableVercelAuthentication(
+      vercelEnv.VERCEL_PROJECT_ID,
+      vercelEnv.VERCEL_ORG_ID,
+      vercelEnv.VERCEL_TOKEN,
+    );
+  }
+
   await pruneStaleVercelEnvVars(
     vercelEnv.VERCEL_PROJECT_ID,
     vercelEnv.VERCEL_ORG_ID,
     vercelEnv.VERCEL_TOKEN,
     VERCEL_ENV,
-    new Set(Object.keys(allSecrets)),
+    // .env.example keys stay expected even when absent from Vault, so a missing
+    // optional key is neither added nor pruned from a live deployment.
+    new Set([...Object.keys(allSecrets), ...allKeys]),
   );
 
   console.log('Deploying secrets...');
@@ -349,11 +458,32 @@ async function main() {
   }
 
   const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
-  const deployArgs = ['deploy', '--prod', '--yes', `"${repoRoot}"`].join(' ');
-  console.log(`\nTriggering Vercel deployment for ${projectName}...\n`);
-  execSync(`npx vercel ${deployArgs}`, {
-    stdio: 'inherit',
-    env: vercelEnv,
+
+  // The cwd, --output, buildEnv and .vercel clearing below are each
+  // load-bearing — see "The build runs on the runner, not on Vercel" in
+  // docs/app-development/ui/deployment/vercel-deploy-pattern.md.
+  const buildEnv = { ...vercelEnv, ...allSecrets };
+
+  const outputDir = resolve(repoRoot, VERCEL_OUTPUT_DIR);
+
+  await withBuildLock(resolve(repoRoot, BUILD_LOCK_DIR), () => {
+    // The whole .vercel directory, not just output: a stale project.json link
+    // silently builds the previous app's project under this one's name.
+    rmSync(resolve(repoRoot, VERCEL_DIR), { recursive: true, force: true });
+
+    console.log(`\nBuilding ${projectName}...\n`);
+    execSync(
+      `npx vercel build --prod --yes --cwd "${repoRoot}" --output "${outputDir}"`,
+      { stdio: 'inherit', env: buildEnv },
+    );
+
+    console.log(`\nDeploying ${projectName} to Vercel...\n`);
+    // tgz uploads one archive instead of every output file; per-file uploads
+    // exhaust the free plan's 5000 uploads/24h ("api-upload-free") mid-run.
+    execSync(
+      `npx vercel deploy --prebuilt --prod --yes --archive=tgz --cwd "${repoRoot}"`,
+      { stdio: 'inherit', env: vercelEnv },
+    );
   });
 
   console.log('\nDone!');

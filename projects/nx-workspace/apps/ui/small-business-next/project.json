@@ -32,7 +32,7 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/small-business-next/.env.local.example 'cd apps/ui/small-business-next && next dev --port 4200'"
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/small-business-next/.env.local.example 'cd apps/ui/small-business-next && next dev --port 3000'"
       }
     },
     "serve:no-vault": {
@@ -40,7 +40,7 @@
       "defaultConfiguration": "development",
       "options": {
         "cwd": "apps/ui/small-business-next",
-        "command": "next dev --webpack --port 4201"
+        "command": "next dev --webpack --port 3000"
       },
       "configurations": {
         "development": {},

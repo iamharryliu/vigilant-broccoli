@@ -1,5 +1,5 @@
 # cloud8skate.com — Cloudflare Pages site (project + deploys owned by the nx
-# `cloud-8-skate-angular` deploy target via wrangler). Terraform owns the custom
+# `cloud-8-skate-react` deploy target via wrangler). Terraform owns the custom
 # domain attachment and its DNS. The zone predates Terraform, so first apply
 # requires the domain to be free: remove the custom domain (and its apex CNAME,
 # if Pages leaves one behind) from the old `cloud-8-skate-angular` project first.

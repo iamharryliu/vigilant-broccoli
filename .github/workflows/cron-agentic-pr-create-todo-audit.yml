@@ -1,0 +1,117 @@
+name: cron-agentic-pr-create-todo-audit
+
+# Re-verifies every TODO.md row against the current tree and opens a PR that
+# deletes the resolved ones and corrects the drifted ones. Same container and
+# credentials as `manual-agentic-pr-create`; the local equivalent is
+# `pnpm agentic-pr-create-todo-audit`. The backlog goes stale silently — rows keep citing
+# files that moved and line numbers that shifted — so this runs on a schedule
+# rather than waiting for someone to notice.
+#
+# A clean audit opens no PR and still succeeds: the runner prints AUDIT_CLEAN
+# and exits 0.
+
+on:
+  schedule:
+    - cron: '50 4 * * 0'
+  workflow_dispatch:
+    inputs:
+      model:
+        description: 'Claude model to run the agent with.'
+        type: choice
+        default: sonnet
+        options:
+          - sonnet
+          - opus
+          - haiku
+      firewall:
+        description: 'In-container egress firewall (turn off if iptables/ipset fails on the runner).'
+        type: choice
+        default: 'on'
+        options:
+          - 'on'
+          - 'off'
+
+permissions:
+  contents: read
+  id-token: write
+
+# Static group: the audit rewrites one file and opens one PR, so a second run
+# must not interleave with it, and the branch a half-finished run already
+# pushed is not something a newer run should cancel out from under.
+concurrency:
+  group: cron-agentic-pr-create-todo-audit
+  cancel-in-progress: false
+
+jobs:
+  overview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      model: ${{ steps.config.outputs.model }}
+      firewall: ${{ steps.config.outputs.firewall }}
+    steps:
+      # Scheduled runs carry no inputs, so the defaults are resolved once here
+      # and both the overview and the audit job read the same values.
+      - name: Resolve effective configuration
+        id: config
+        env:
+          MODEL: ${{ inputs.model || 'sonnet' }}
+          FIREWALL: ${{ inputs.firewall || 'on' }}
+        run: |
+          set -euo pipefail
+          echo "model=$MODEL" >> "$GITHUB_OUTPUT"
+          echo "firewall=$FIREWALL" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout summary helper
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Publish overview
+        continue-on-error: true
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: overview
+          title: Audit the TODO backlog
+          agent: claude
+          model: ${{ steps.config.outputs.model }}
+          firewall: ${{ steps.config.outputs.firewall }}
+          description: Re-verify every TODO.md row against the current tree, remove resolved entries and correct drifted references without adding tasks. Opens a pull request only when something changes.
+
+  audit:
+    needs: overview
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | CLAUDE_CODE_OAUTH_TOKEN ;
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+
+      - name: Audit TODO.md
+        id: audit
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
+          AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
+          AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
+          SANDBOX_FIREWALL: ${{ needs.overview.outputs.firewall }}
+          MODEL: ${{ needs.overview.outputs.model }}
+        run: |
+          set -euo pipefail
+          bash infrastructure/agent-sandbox/audit-todo.sh --model "$MODEL"
+
+      - name: Report result when the audit could not
+        if: ${{ always() && steps.audit.outcome != 'success' && steps.audit.outputs.result_reported != 'true' }}
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: result
+          outcome: ${{ job.status == 'cancelled' && 'cancelled' || 'failed' }}
+          note: ${{ steps.audit.outcome == 'skipped' && 'A step before the audit failed, so the agent never started.' || 'The audit stopped before it could report a result; see its step log.' }}

@@ -1,7 +1,11 @@
 # Journal
 JOURNAL_DIR="$HOME/journal"
 alias cdjournal="cd '$JOURNAL_DIR'"
-alias pushJournal="cdjournal && git add . && gc docs 'Update journal.' && gpush"
+pushjournal() {
+  pushd "$JOURNAL_DIR" > /dev/null || return 1
+  git add . && gc docs 'Update journal.' && gpush
+  popd > /dev/null
+}
 alias pulljournal="cdjournal && gpull"
 
 # VB
@@ -29,19 +33,11 @@ alias pushsnippets="cdvb && git add $SNIPPETS_DIR && gc docs snippets 'Update sn
 alias pushactions="cdvb && git add $GIT_WORKFLOWS_DIR && gc ci github-actions 'Update Github actions.' && gpush"
 alias pushsetup="cdvb && git add $SETUP_DIR && gc feat setup 'Update setup scripts.' && gpush"
 alias pushdotfiles="cdvb && git add $DOTFILES_DIR && gc feat dotfiles 'Update dotfiles.' && gpush"
-# Projects
-alias deploypersonalfrontend="cdnx && nx manual-deploy personal-website-frontend"
 # Grind 75
 alias testgrind75py="python -m unittest discover -s $GRIND75_DIR/python"
 alias testgrind75ts="cdgrind75ts && npx jest $GRIND75_DIR/typescript"
 alias testgrind75go="go test $GRIND75_DIR/..."
 alias testgrind75="testgrind75py && testgrind75ts && testgrind75go"
-
-# Cloud8
-alias servecloud8="cdnx && nx serve cloud-8-skate-angular"
-
-# Employee Handler
-alias npmEmployeeHandler="npm i $PROJECTS_DIR/nx-workspace/dist/libs/@vigilant-broccoli/employee-handler"
 
 # OCI VM
 sshocivm() {
@@ -63,7 +59,6 @@ alias wg-status='sudo wg show'
 alias vbvault="open 'https://10.0.1.1:8200'"
 alias cpvaulttoken="gcloud secrets versions access latest --secret=VB_VM_VAULT_ROOT_TOKEN --project=vigilant-broccoli | pbcopy && echo 'Vault root token copied to clipboard.'"
 alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell/backup-repo.sh'
-# alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell/backup-repo.sh && rsync -av --delete --exclude=".*" ~/resilio-sync/backup/ ~/My\ Drive/resilio-backup/'
 
 # Hobby Code
 alias dldjmusic="$NX_DIR/scripts/shell/run-spotify-to-mp3.sh --output '$HOME/My Drive/DJ Music Library' --filter mix --parallel 5"

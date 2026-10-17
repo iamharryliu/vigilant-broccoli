@@ -1,0 +1,88 @@
+{
+  "name": "context-md",
+  "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/context-md/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "build-snapshot": {
+      "command": "node scripts/build-docs-snapshot.mjs apps/ui/context-md/snapshot.config.json",
+      "outputs": ["{projectRoot}/public"]
+    },
+    "build": {
+      "dependsOn": ["^build", "build-snapshot"],
+      "inputs": [
+        "production",
+        "^production",
+        { "dependentTasksOutputFiles": "**/*" }
+      ],
+      "outputs": [
+        "{projectRoot}/{options.outDir}",
+        "{workspaceRoot}/dist/context-md"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "outDir": "../../../dist/context-md"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "defaultConfiguration": "development",
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "ensure-cf-project": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw staging-context-md || npx wrangler pages project create staging-context-md --production-branch main"
+    },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-context-md 10",
+      "dependsOn": ["ensure-cf-project"]
+    },
+    "deploy": {
+      "command": "npx wrangler pages deploy dist/context-md --project-name staging-context-md --branch main",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    },
+    "manual-deploy": {
+      "command": "npx wrangler pages deploy dist/context-md --project-name staging-context-md --branch main",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    },
+    "ensure-cf-project:production": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-context-md || npx wrangler pages project create production-context-md --production-branch production"
+    },
+    "prune-deployments:production": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts production-context-md 10",
+      "dependsOn": ["ensure-cf-project:production"]
+    },
+    "deploy:production": {
+      "command": "npx wrangler pages deploy dist/context-md --project-name production-context-md --branch production",
+      "dependsOn": [
+        "build",
+        "ensure-cf-project:production",
+        "prune-deployments:production"
+      ]
+    },
+    "ensure-cf-project:preview": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw preview-context-md || npx wrangler pages project create preview-context-md --production-branch main"
+    },
+    "prune-deployments:preview": {
+      "command": "npx tsx scripts/prune-wrangler-preview-deployments.ts preview-context-md",
+      "dependsOn": ["ensure-cf-project:preview"]
+    },
+    "deploy:preview": {
+      "command": "npx wrangler pages deploy dist/context-md --project-name preview-context-md --branch \"$PREVIEW_BRANCH\" --commit-hash \"${PREVIEW_COMMIT:-$(git rev-parse HEAD)}\"",
+      "dependsOn": ["build", "ensure-cf-project:preview"]
+    }
+  }
+}

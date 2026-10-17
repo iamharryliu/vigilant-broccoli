@@ -71,7 +71,7 @@ jobs:
           unzip -tq repo-backup.zip
           unzip -q repo-backup.zip -d restored
           ROOT=$(find restored -maxdepth 1 -mindepth 1 -type d)
-          for FILE in CLAUDE.md README.md TODO.md package.json infrastructure/terraform/main.tf; do
+          for FILE in CONTEXT.md README.md TODO.md package.json infrastructure/terraform/main.tf; do
             [ -s "$ROOT/$FILE" ] || { echo "::error::$FILE missing from the repo backup"; exit 1; }
           done
 

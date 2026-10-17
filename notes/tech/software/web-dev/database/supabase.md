@@ -1,6 +1,6 @@
 # Supabase
 
-Open-source Postgres backend-as-a-service: managed Postgres plus Auth, Storage, Realtime, and Edge Functions. Used by [hearth](../../../../../projects/nx-workspace/apps/hearth/README.md) for auth + data.
+Open-source Postgres backend-as-a-service: managed Postgres plus Auth, Storage, Realtime, and Edge Functions.
 
 ## Free Tier
 

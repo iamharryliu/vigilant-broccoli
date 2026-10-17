@@ -101,8 +101,8 @@ export function HomeDocForm({
             Category
           </Text>
           <Select
-            selectedOption={category}
-            setValue={setCategory}
+            value={category}
+            onValueChange={setCategory}
             options={DOC_CATEGORIES as unknown as DocCategory[]}
           />
         </div>

@@ -63,6 +63,33 @@ export const TIMELINE_METRIC_OPTIONS: {
   },
 ];
 
+export const TIMELINE_RANGE = {
+  WEEK_1: '1W',
+  MONTH_1: '1M',
+  MONTH_3: '3M',
+  MONTH_6: '6M',
+  YTD: 'YTD',
+  YEAR_1: '1Y',
+  YEAR_2: '2Y',
+  ALL: 'ALL',
+} as const;
+export type TimelineRange =
+  (typeof TIMELINE_RANGE)[keyof typeof TIMELINE_RANGE];
+
+export const TIMELINE_RANGE_OPTIONS: {
+  value: TimelineRange;
+  labelKey: TranslationKey;
+}[] = [
+  { value: TIMELINE_RANGE.WEEK_1, labelKey: 'REPO_TIMELINE_PAGE.RANGE_1W' },
+  { value: TIMELINE_RANGE.MONTH_1, labelKey: 'REPO_TIMELINE_PAGE.RANGE_1M' },
+  { value: TIMELINE_RANGE.MONTH_3, labelKey: 'REPO_TIMELINE_PAGE.RANGE_3M' },
+  { value: TIMELINE_RANGE.MONTH_6, labelKey: 'REPO_TIMELINE_PAGE.RANGE_6M' },
+  { value: TIMELINE_RANGE.YTD, labelKey: 'REPO_TIMELINE_PAGE.RANGE_YTD' },
+  { value: TIMELINE_RANGE.YEAR_1, labelKey: 'REPO_TIMELINE_PAGE.RANGE_1Y' },
+  { value: TIMELINE_RANGE.YEAR_2, labelKey: 'REPO_TIMELINE_PAGE.RANGE_2Y' },
+  { value: TIMELINE_RANGE.ALL, labelKey: 'REPO_TIMELINE_PAGE.RANGE_ALL' },
+];
+
 export const TIMELINE_GRANULARITY_OPTIONS: {
   value: TimelineGranularity;
   labelKey: TranslationKey;
@@ -187,16 +214,45 @@ export const buildTimeline = (
   return buckets;
 };
 
+const RANGE_DAYS: Partial<Record<TimelineRange, number>> = {
+  [TIMELINE_RANGE.WEEK_1]: 7,
+  [TIMELINE_RANGE.MONTH_1]: 30,
+  [TIMELINE_RANGE.MONTH_3]: 90,
+  [TIMELINE_RANGE.MONTH_6]: 182,
+  [TIMELINE_RANGE.YEAR_1]: 365,
+  [TIMELINE_RANGE.YEAR_2]: 730,
+};
+
+export const getGraphWindowSize = (
+  range: TimelineRange,
+  bucketCount: number,
+): number => {
+  if (bucketCount === 0) return 0;
+  if (range === TIMELINE_RANGE.ALL) return bucketCount;
+  if (range === TIMELINE_RANGE.YTD) {
+    const now = new Date();
+    const startOfYear = Date.UTC(now.getUTCFullYear(), 0, 1);
+    const daysElapsed =
+      Math.floor((now.getTime() - startOfYear) / MS_PER_DAY) + 1;
+    return Math.min(bucketCount, Math.max(1, daysElapsed));
+  }
+  return Math.min(bucketCount, RANGE_DAYS[range] ?? bucketCount);
+};
+
 const NICE_STEPS = [1, 2, 2.5, 5, 10];
 const TICK_COUNT = 4;
 
-export const toNiceTicks = (max: number) => {
-  if (max <= 0) return [0, 1];
-  const rawStep = max / TICK_COUNT;
+export const toNiceTicks = (min: number, max: number): number[] => {
+  if (max <= min) {
+    const base = Math.max(0, Math.floor(min));
+    return [base, base + 1];
+  }
+  const rawStep = (max - min) / TICK_COUNT;
   const magnitude = 10 ** Math.floor(Math.log10(rawStep));
   const step =
     (NICE_STEPS.find(s => s * magnitude >= rawStep) ?? 10) * magnitude;
-  const ticks = [0];
+  const niceMin = Math.max(0, Math.floor(min / step) * step);
+  const ticks = [niceMin];
   while (ticks[ticks.length - 1] < max) {
     ticks.push(ticks[ticks.length - 1] + step);
   }

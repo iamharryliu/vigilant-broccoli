@@ -8,6 +8,11 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   cheatsheet                  Print this cheatsheet
   explain_shell '<cmd>'       Open the command on explainshell.com
   spellcheck                  Run codespell
+  (on new shell)              Start `pnpm event-calendars:sync` in the background once a day, logging to ~/.vb-manager/event-calendars-sync.log (non-login failures retry hourly)
+
+🤖 CODING AGENTS
+  codexotp                   Open the Codex device authentication page
+  codexyolo [args...]         Run Codex with approvals and sandbox disabled
 
 📁 FILES & DIRS
   la / lt / ltr               List all / by newest / by oldest
@@ -52,6 +57,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   neovidetmuxvb               Launch Neovide attached to the vb session
   neovideterminal             Launch Neovide straight into :terminal
   fzfvim                      fzf-pick a file and open it in vim
+  y [dir]                     Open yazi; cd to where you quit it
   pnpm cheatsheet:tmux-nvim   Print the tmux/nvim keybindings (from the repo)
 
 📦 NODE
@@ -110,20 +116,18 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   pushactions / pushsetup     Commit and push workflows / setup scripts
   pushdotfiles                Commit and push dotfiles
   pushleetcode                Commit and push grind-75
-  pushJournal / pulljournal   Push / pull the journal repo
+  pushjournal / pulljournal   Push / pull the journal repo
 
 🧪 VB PROJECTS
   testgrind75                 Run grind-75 tests (py + ts + go)
   testgrind75py|ts|go         Run grind-75 tests for one language
-  deploypersonalfrontend      Manually deploy the personal website frontend
-  servecloud8                 Serve cloud-8-skate-angular
-  npmEmployeeHandler          Install the local employee-handler build
   dldjmusic                   Download DJ music from Spotify playlists
 
 🍺 HOMEBREW & DEPS
   brewinit / brewup           Install from Brewfile / update + upgrade + cleanup
-  brewsync / brewdump         Sync to Brewfile / dump Brewfile
+  brewsync / brewdump         Sync to Brewfile (uninstalls extras) / dump Brewfile
   npminit / npmdump           Install from npmfile / dump npmfile
+  npmsync                     Uninstall globals not listed in npmfile
   depsdump / pushdeps         Dump both / dump both, commit and push
   pushbrew / pushnpm          Commit and push Brewfile / npmfile
 
@@ -145,7 +149,10 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   pingtest                    Ping google.com
   check_network [-v]          Exit 0 if 8.8.8.8 is reachable (-v prints)
 
-🔍 VS CODE & SEARCH
+🔍 EDITORS & SEARCH
+  fzfzed                      fzf-pick a file and open it in Zed
+  zedwsls                     List saved workspace folder sets, numbered
+  zedws [name] / zedwsn <n>   Open workspace folders in Zed by name / number
   fzfcode                     fzf-pick a file and open it in VS Code
   vswsls                      List VS Code workspaces, numbered
   vsws [name] / vswsn <n>     Open a workspace by name / number

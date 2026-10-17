@@ -1,5 +1,4 @@
 import type { Viewport } from 'next';
-import '@radix-ui/themes/styles.css';
 import './global.css';
 import AuthProvider from './providers/auth-provider';
 import HomeProvider from './providers/home-provider';
@@ -7,7 +6,7 @@ import AppLayout from './components/AppLayout';
 import { RootThemeWrapper } from './components/RootThemeWrapper';
 
 export const metadata = {
-  title: 'Hearth',
+  title: 'Home | Hearth',
   description: 'Shared life for homes, communes, and communities.',
 };
 

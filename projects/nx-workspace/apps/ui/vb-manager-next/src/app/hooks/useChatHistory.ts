@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { Message } from '../components/chatbot-dialog.component';
+import type { Message } from '../components/chatbot-panel.component';
 
 export interface Chat {
   id: string;
@@ -80,6 +80,7 @@ export function useChatHistory(): UseChatHistoryResult {
   const [sessionKey, setSessionKey] = useState<string>(() => generateId());
   const [isHydrated, setIsHydrated] = useState(false);
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingChats = useRef<Chat[] | null>(null);
 
   useEffect(() => {
     const loaded = sortByUpdated(loadChats());
@@ -102,11 +103,18 @@ export function useChatHistory(): UseChatHistoryResult {
   useEffect(() => {
     if (!isHydrated) return;
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
+    pendingChats.current = chats;
     saveTimeout.current = setTimeout(() => saveChats(chats), SAVE_DEBOUNCE_MS);
     return () => {
       if (saveTimeout.current) clearTimeout(saveTimeout.current);
     };
   }, [chats, isHydrated]);
+
+  useEffect(() => {
+    return () => {
+      if (pendingChats.current) saveChats(pendingChats.current);
+    };
+  }, []);
 
   const selectChat = useCallback((id: string) => {
     setActiveChatId(id);

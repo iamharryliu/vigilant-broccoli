@@ -1,6 +1,6 @@
 'use client';
 
-import { GoogleSignInPage } from '@vigilant-broccoli/react-lib';
+import { GoogleSignInPage } from '@vigilant-broccoli/react-lib-auth';
 import { supabase } from '../../../libs/supabase';
 import { APP_NAME, PAGE_TITLE } from '../app.const';
 import { usePageTitle } from '../use-page-title';

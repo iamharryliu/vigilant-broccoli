@@ -1,3 +1,7 @@
+import { EMAIL_ADDRESS } from './email-address.const';
+
+export { EMAIL_ADDRESS };
+
 export const APP_NAME = {
   HARRYLIU_DESIGN: 'HARRYLIU_DESIGN',
   CLOUD_8_SKATE: 'CLOUD_8_SKATE',
@@ -62,8 +66,6 @@ export const PERSONAL_URL = {
   },
 } as const;
 
-export const EMAIL_ADDRESS = 'harryliu1995@gmail.com';
-
 export const SENDER_EMAIL_ADDRESS = 'contact@harryliu.dev';
 
 export const EMAIL_LINK = {
@@ -116,7 +118,7 @@ export const COMMUNITY_LINK = {
 export const PROJECT_LINK = {
   SOFTWARE_PROJECTS: {
     NAME: 'Software Projects',
-    URL: 'https://iamharryliu.github.io/vigilant-broccoli/',
+    URL: 'https://projects.harryliu.dev/',
   },
 } as const;
 
@@ -166,3 +168,6 @@ export const MAC_OS_APP = {
     NAME: 'WhatsApp',
   },
 } as const;
+
+export * from './personal-calendar.const';
+export * from './personal-calendar-embed';

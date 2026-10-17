@@ -11,6 +11,7 @@ PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
 FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 
 cd "$REPO_DIR"
+SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create-rnd/SKILL.md")
 
 git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
@@ -21,19 +22,22 @@ You are running non-interactively in a fresh clone of vigilant-broccoli, on a de
 
 $QUESTION
 
-Rules:
-- Read docs/rnd/rnd-template.md first and follow its template and rules EXACTLY: sections in order — # R&D title, a one-line blockquote restating the question with today's date, ## Context, ## Alternatives (a markdown table with columns Option | Pros | Cons | Cost | Security | Scalability, at least two options, every cell filled or "—"), ## Recommendation, ## Sample Implementation.
-- Be brief. Favor the table and short sentences over prose. No filler, no preamble, no conclusion beyond the recommendation.
-- Research before writing. When the question touches this repo, grep for the relevant files, patterns, and docs and cite concrete paths (e.g. path/to/file.ext:12) in Context and Sample Implementation. Prefer patterns already used in the repo (check CLAUDE.md and the docs it links).
-- Write the note to a NEW file docs/rnd/<concise-kebab-slug>.md — pick a short descriptive slug from the question. Do not modify any file outside docs/rnd/.
+Follow these shared task instructions:
+
+$SKILL_INSTRUCTIONS
+
+Sandbox execution rules:
+- You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
 - Do not run any git or gh commands and do not commit — branching, committing, pushing, and opening the PR are handled by the calling script.
-- When finished, write $META_FILE containing only a JSON object with these string fields:
+- The only exception to the skill's output scope is $META_FILE, outside the checkout. When finished, write it containing only a JSON object with these string fields:
   - note_path: the repo-relative path of the note you created (e.g. docs/rnd/mobile-development-options.md)
   - commit_message: capitalized, concise, focused on what was researched, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
-  - pr_title: the pull request title
+  - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
   - pr_summary: markdown bullet points for the PR "## Summary" section
-  - pr_test_plan: markdown checklist for the PR "## Test plan" section
+  - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (review, then merge)
+  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
+  - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none. Keep these out of pr_suggestions, which is only for optional follow-up work
 EOF
 )
 
@@ -53,14 +57,18 @@ if [ -n "$(git status --porcelain -- ':(exclude)docs/rnd')" ]; then
   exit 1
 fi
 
+# shellcheck source=commit-subject.sh
+. "$REPO_DIR/infrastructure/agent-sandbox/commit-subject.sh"
 read_meta() { jq -r "$1 // empty" "$META_FILE" 2>/dev/null || true; }
 
 NOTE_PATH=$(read_meta .note_path)
-COMMIT_MESSAGE=$(read_meta .commit_message)
+COMMIT_MESSAGE=$(normalize_commit_message "$(read_meta .commit_message)")
 TRAILER=$(read_meta .co_authored_by)
-PR_TITLE=$(read_meta .pr_title)
+PR_TITLE=$(normalize_pr_title "$(read_meta .pr_title)")
 PR_SUMMARY=$(read_meta .pr_summary)
-PR_TEST_PLAN=$(read_meta .pr_test_plan)
+PR_NEXT_STEPS=$(read_meta .pr_next_steps)
+PR_CONCERNS=$(read_meta .pr_concerns)
+PR_SUGGESTIONS=$(read_meta .pr_suggestions)
 
 if [ -n "$COMMIT_MESSAGE" ]; then
   COMMIT_SUBJECT="docs(rnd): ${COMMIT_MESSAGE}"
@@ -71,7 +79,7 @@ fi
 echo "$TRAILER" | grep -Eqi '^co-authored-by: .+ <.+>$' || TRAILER="$FALLBACK_TRAILER"
 [ -n "$PR_TITLE" ] || PR_TITLE="$COMMIT_SUBJECT"
 [ -n "$PR_SUMMARY" ] || PR_SUMMARY="- Add R&D note${NOTE_PATH:+ (${NOTE_PATH})} for: ${QUESTION}"
-[ -n "$PR_TEST_PLAN" ] || PR_TEST_PLAN="- [ ] Note reviewed for accuracy, alternatives, and a clear recommendation"
+[ -n "$PR_NEXT_STEPS" ] || PR_NEXT_STEPS="- [ ] Review note for accuracy, alternatives, and a clear recommendation, then merge"
 
 bash "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh"
 
@@ -79,17 +87,18 @@ git add docs/rnd
 git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
 git push -u origin "$BRANCH"
 
-PR_BODY=$(cat <<EOF
-## Summary
+if [ -n "${GITHUB_ACTIONS:-}" ]; then
+  HISTORY_SOURCE="GitHub Actions"
+else
+  HISTORY_SOURCE="Docker sandbox (local)"
+fi
 
-$PR_SUMMARY
+PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_CONCERNS="$PR_CONCERNS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
+  HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic-pr-create-rnd" HISTORY_PROMPT="$QUESTION" \
+  HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
+  python3 "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py")
 
-## Test plan
-
-$PR_TEST_PLAN
-
-$PR_FOOTER
-EOF
-)
-
-gh pr create --title "$PR_TITLE" --body "$PR_BODY"
+PR_URL=$(gh pr create --title "$PR_TITLE" --body "$PR_BODY")
+echo "$PR_URL"
+printf 'PR_URL::%s\n' "$PR_URL"
+emit_pr_files "$BASE_SHA"

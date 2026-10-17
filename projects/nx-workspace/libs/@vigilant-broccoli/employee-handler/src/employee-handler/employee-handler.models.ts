@@ -57,6 +57,10 @@ export interface EmployeeHandlerConfig {
   absenceUtilities: AbsenceUtilities;
   birthdaySyncUtilities?: BirthdaySyncUtilities;
   leaveSyncUtilities?: LeaveSyncUtilities;
+  updateEmployeeMetadata?: (
+    email: string,
+    updates: EmployeeMetadata,
+  ) => Promise<(EmployeeMetadata & { email: string }) | null | undefined>;
   customFunctions?: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     [key: string]: (...args: any[]) => Promise<void>;
@@ -79,12 +83,26 @@ export interface WorkspaceGroup {
   ROLES: string[];
 }
 
-export interface EmployeeEmailSignature {
+export interface EmployeeMetadata {
+  githubUrl?: string;
+  linkedInURL?: string;
+  resumeUrl?: string;
+}
+
+export const EMPLOYEE_METADATA_KEYS = [
+  'githubUrl',
+  'linkedInURL',
+  'resumeUrl',
+] as const satisfies readonly (keyof EmployeeMetadata)[];
+
+export interface EmployeeEmailSignature extends Pick<
+  EmployeeMetadata,
+  'linkedInURL'
+> {
   displayName: string;
   title: string;
   office: string;
   image: string;
   phoneNumber: string;
   email: string;
-  linkedInURL?: string;
 }

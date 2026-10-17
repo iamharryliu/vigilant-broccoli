@@ -1,23 +1,17 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { Theme } from '@radix-ui/themes';
-import {
-  ThemeProvider,
-  useTheme,
-  useThemeKeybind,
-} from '@vigilant-broccoli/react-lib';
+import { ThemeProvider, useThemeKeybind } from '@vigilant-broccoli/react-lib';
 
-function ThemedRadixWrapper({ children }: { children: ReactNode }) {
-  const { appearance } = useTheme();
+function ThemeKeybindWrapper({ children }: { children: ReactNode }) {
   useThemeKeybind();
-  return <Theme appearance={appearance}>{children}</Theme>;
+  return <>{children}</>;
 }
 
 export function RootThemeWrapper({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
-      <ThemedRadixWrapper>{children}</ThemedRadixWrapper>
+      <ThemeKeybindWrapper>{children}</ThemeKeybindWrapper>
     </ThemeProvider>
   );
 }

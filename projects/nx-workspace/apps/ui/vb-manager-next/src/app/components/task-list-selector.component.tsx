@@ -1,21 +1,27 @@
 'use client';
 
-import { GoogleTasksComponent } from '@vigilant-broccoli/react-lib';
-import {
-  authFetch,
-  useAuthStatus,
-  useGoogleToken,
-  signInWithGoogle,
-} from '../../../libs/auth';
+import { useState } from 'react';
+import { GoogleTasksComponent } from '@vigilant-broccoli/react-lib-higher-level';
+import { googleTasksAuth } from '../../../libs/auth';
+import { CreateTasksDialogTrigger } from './create-tasks-dialog.component';
 
 export const TaskListSelectorComponent = ({
   taskListId,
 }: { taskListId?: string } = {}) => {
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+
   return (
     <GoogleTasksComponent
-      auth={{ authFetch, useAuthStatus, useGoogleToken, signInWithGoogle }}
+      auth={googleTasksAuth}
       taskListId={taskListId}
       showSelector={!taskListId}
+      refreshTrigger={refreshTrigger}
+      addTaskActions={
+        <CreateTasksDialogTrigger
+          taskListId={taskListId}
+          onCreated={() => setRefreshTrigger(prev => prev + 1)}
+        />
+      }
     />
   );
 };

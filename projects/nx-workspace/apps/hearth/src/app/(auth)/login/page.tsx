@@ -2,7 +2,7 @@
 
 import { supabase } from '../../../../libs/supabase';
 import { ROUTES } from '../../../lib/routes';
-import { GoogleSignInPage } from '@vigilant-broccoli/react-lib';
+import { GoogleSignInPage } from '@vigilant-broccoli/react-lib-auth';
 import { APP_NAME, PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
 
 const GOOGLE_TASKS_SCOPE = 'https://www.googleapis.com/auth/tasks';

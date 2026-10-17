@@ -32,7 +32,7 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/vb-manager-next-mobile/.env.example 'cd apps/vb-manager-next-mobile && next dev --webpack --port 4200'",
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/vb-manager-next-mobile/.env.example 'cd apps/vb-manager-next-mobile && next dev --webpack --port 3000'",
         "env": {
           "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev"
         }
@@ -43,7 +43,7 @@
       "defaultConfiguration": "development",
       "options": {
         "cwd": "apps/vb-manager-next-mobile",
-        "command": "next dev --webpack --port 4200"
+        "command": "next dev --webpack --port 3000"
       },
       "configurations": {
         "development": {},

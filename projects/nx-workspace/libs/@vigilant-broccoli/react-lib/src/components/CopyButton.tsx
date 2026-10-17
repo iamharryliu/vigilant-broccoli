@@ -7,10 +7,12 @@ export const CopyButton = ({
   text,
   disabled,
   skipBrowserCopy,
+  label,
 }: {
   text: string | (() => Promise<string>);
   disabled?: boolean;
   skipBrowserCopy?: boolean;
+  label?: string;
 }) => {
   const [copied, setCopied] = useState(false);
 
@@ -29,6 +31,8 @@ export const CopyButton = ({
       icon={copied ? 'check' : 'copy'}
       onClick={handleCopy}
       disabled={disabled}
+      aria-label={label}
+      title={label}
     />
   );
 };

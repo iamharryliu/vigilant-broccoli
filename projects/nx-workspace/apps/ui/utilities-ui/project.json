@@ -1,0 +1,95 @@
+{
+  "name": "utilities-ui",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/utilities-ui/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "build": {
+      "outputs": [
+        "{projectRoot}/{options.outDir}",
+        "{workspaceRoot}/dist/apps/ui/utilities-ui"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "outDir": "../../../dist/apps/ui/utilities-ui"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      }
+    },
+    "serve": {
+      "defaultConfiguration": "development",
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "ensure-cf-project": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw staging-utilities-ui || npx wrangler pages project create staging-utilities-ui --production-branch main"
+    },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-utilities-ui 10",
+      "dependsOn": [
+        "ensure-cf-project"
+      ]
+    },
+    "deploy": {
+      "command": "npx wrangler pages deploy dist/apps/ui/utilities-ui --project-name staging-utilities-ui --branch main",
+      "dependsOn": [
+        "build",
+        "ensure-cf-project",
+        "prune-deployments"
+      ]
+    },
+    "manual-deploy": {
+      "command": "npx wrangler pages deploy dist/apps/ui/utilities-ui --project-name staging-utilities-ui --branch main",
+      "dependsOn": [
+        "build",
+        "ensure-cf-project",
+        "prune-deployments"
+      ]
+    },
+    "ensure-cf-project:production": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-utilities-ui || npx wrangler pages project create production-utilities-ui --production-branch production"
+    },
+    "prune-deployments:production": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts production-utilities-ui 10",
+      "dependsOn": [
+        "ensure-cf-project:production"
+      ]
+    },
+    "deploy:production": {
+      "command": "npx wrangler pages deploy dist/apps/ui/utilities-ui --project-name production-utilities-ui --branch production",
+      "dependsOn": [
+        "build",
+        "ensure-cf-project:production",
+        "prune-deployments:production"
+      ]
+    },
+    "ensure-cf-project:preview": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw preview-utilities-ui || npx wrangler pages project create preview-utilities-ui --production-branch main"
+    },
+    "prune-deployments:preview": {
+      "command": "npx tsx scripts/prune-wrangler-preview-deployments.ts preview-utilities-ui",
+      "dependsOn": [
+        "ensure-cf-project:preview"
+      ]
+    },
+    "deploy:preview": {
+      "command": "npx wrangler pages deploy dist/apps/ui/utilities-ui --project-name preview-utilities-ui --branch \"$PREVIEW_BRANCH\" --commit-hash \"${PREVIEW_COMMIT:-$(git rev-parse HEAD)}\"",
+      "dependsOn": [
+        "build",
+        "ensure-cf-project:preview"
+      ]
+    }
+  }
+}

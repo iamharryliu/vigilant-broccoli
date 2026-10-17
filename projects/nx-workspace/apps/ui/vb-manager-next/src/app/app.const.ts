@@ -1,5 +1,9 @@
-import { NextNavRoute } from '@vigilant-broccoli/next-lib';
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
+
+type NextNavRoute = {
+  path: string;
+  title: string;
+};
 
 type ExtendedNavRoute = {
   title: string;
@@ -33,10 +37,6 @@ export const SIDEBAR_ROUTE = {
     title: 'Chatbot',
     path: '/chatbot',
   },
-  EVENT_CALENDARS: {
-    title: 'Event Calendars',
-    path: '/event-calendars',
-  },
   LANGUAGE_LEARNING: {
     title: 'Language Learning',
     path: '/language-learning',
@@ -44,6 +44,10 @@ export const SIDEBAR_ROUTE = {
   CAREER: {
     title: 'Career',
     path: '/career',
+  },
+  MUSIC: {
+    title: 'Music',
+    path: '/music',
   },
 } satisfies Record<string, ExtendedNavRoute>;
 

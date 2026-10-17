@@ -12,6 +12,11 @@ if command -v mise >/dev/null; then
     fi
 fi
 
+# After mise activation: the background sync inherits PATH when it forks, and pnpm comes from mise.
+if [ "$IS_CRON" != "true" ]; then
+    source "$REPO_DIR/setup/dotfiles/zsh/scripts/event_calendars_autosync.zsh"
+fi
+
 if [ "$IS_CRON" != "true" ]; then
     setopt interactive_comments
     # Setting zsh-autosuggestions for Apple Silicon (M series

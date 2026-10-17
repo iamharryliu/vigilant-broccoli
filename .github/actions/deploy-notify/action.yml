@@ -30,7 +30,15 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Cache socket.io-client
+      id: cache-socket-io-client
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: node_modules
+        key: deploy-notify-socket.io-client-4.8.3
+
     - name: Install socket.io-client
+      if: steps.cache-socket-io-client.outputs.cache-hit != 'true'
       shell: bash
       run: npm install --no-save --ignore-scripts socket.io-client@4.8.3
 

@@ -1,4 +1,4 @@
-import { Receipt, ReceiptItem, ReceiptTax } from '../../lib/types';
+import { Receipt, ReceiptItem } from '../../lib/types';
 
 export const RECEIPTS_API = {
   BASE: '/api/receipts',
@@ -61,6 +61,3 @@ export const parseNumber = (value: string): number | null => {
   const parsed = parseFloat(value);
   return isNaN(parsed) ? null : parsed;
 };
-
-export const taxLabel = (tax: ReceiptTax, taxInclusive: boolean) =>
-  `${formatRate(tax.rate)}${taxInclusive ? ' incl.' : ''}`;

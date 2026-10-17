@@ -62,7 +62,7 @@ see a plain `http://jellyfin-pi.echidna-rohu.ts.net:8096`, nothing is published
 to the internet, no ports are forwarded on the home router, and the Pi keeps no
 inbound public surface. Free tier (3 users, 100 devices, unmetered
 peer-to-peer traffic) is documented in
-[tailscale.md](../../notes/tech/software/web-dev/network-security/tailscale.md#free-tier);
+[tailscale.md](../../notes/tech/software/web-dev/networking/tailscale.md#free-tier);
 one more node costs nothing.
 
 ## Prerequisites
@@ -83,7 +83,7 @@ Hardware:
   One or two direct-play streams are fine. Several are not.
 - Ethernet, not Wi-Fi. Beyond the shared-bus limit, Raspberry Pi OS ships the
   Wi-Fi radio rfkill-soft-blocked until a WLAN country is set, which is an easy
-  trap on a headless box (see [CLAUDE.md](../../infrastructure/jellyfin-pi/CLAUDE.md#a-headless-pi-boots-pings-and-has-no-user-account)).
+  trap on a headless box (see [CONTEXT.md](../../infrastructure/jellyfin-pi/CONTEXT.md#a-headless-pi-boots-pings-and-has-no-user-account)).
 - A reliable boot device (SD card or, better, USB SSD) holding the OS, config,
   cache **and the media library** — there is no external drive. **Size it for
   the library plus headroom; 128GB is the verified configuration.** Jellyfin
@@ -247,7 +247,7 @@ tailnet yet, so routine converge runs work with Vault unreachable.
    Fix `meta-data` in the same pass: the shipped file spells the key
    `instance_id`, which the NoCloud datasource does not read, so the id falls
    back to the literal `nocloud` and never changes — see
-   [CLAUDE.md](../../infrastructure/jellyfin-pi/CLAUDE.md#a-headless-pi-boots-pings-and-has-no-user-account).
+   [CONTEXT.md](../../infrastructure/jellyfin-pi/CONTEXT.md#a-headless-pi-boots-pings-and-has-no-user-account).
    Replace it with `instance-id: jellyfin-pi-<date>`. Also `touch
 /Volumes/bootfs/ssh`: Raspberry Pi OS keeps `sshd` disabled until
    `sshswitch.service` finds that file, independent of cloud-init.

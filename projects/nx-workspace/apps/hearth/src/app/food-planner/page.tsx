@@ -14,8 +14,6 @@ import {
   Text,
 } from '@vigilant-broccoli/react-lib';
 import { I18nProvider, useTranslation } from '../i18n';
-import { useIsMobile } from '../../lib/use-is-mobile';
-import { TopbarSlot } from '../providers/topbar-slot-provider';
 import { GroceryList } from '../grocery/GroceryList';
 import { KitchenChoresList } from '../kitchen-chores/KitchenChoresList';
 import { KitchenNotes } from '../kitchen-notes/KitchenNotes';
@@ -46,7 +44,6 @@ const FOOD_CHAT_OPEN_VALUE = '1';
 
 function FoodPlannerContent() {
   const { t } = useTranslation();
-  const isMobile = useIsMobile();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -118,7 +115,7 @@ function FoodPlannerContent() {
   return (
     <div
       className={cn(
-        'flex w-full flex-col p-4 sm:p-6 md:px-8 md:py-8 transition-[padding] duration-300',
+        'flex w-full flex-col px-4 pb-4 pt-2 sm:px-6 sm:pb-6 sm:pt-3 md:px-8 md:pb-8 md:pt-4 transition-[padding] duration-300',
         chatOpen && 'lg:pr-[29rem]',
       )}
     >
@@ -127,17 +124,11 @@ function FoodPlannerContent() {
         onValueChange={handleTabChange}
         className="flex w-full flex-col"
       >
-        {isMobile ? (
-          <TabsList className="self-start">{tabTriggers}</TabsList>
-        ) : (
-          <TopbarSlot>
-            <TabsList>{tabTriggers}</TabsList>
-          </TopbarSlot>
-        )}
+        <TabsList className="self-start">{tabTriggers}</TabsList>
 
         <TabsContent
           value={PLANNER_TAB}
-          className="md:mt-0 lg:h-[calc(100dvh_-_var(--topbar-h)_-_4rem)]"
+          className="mt-6 lg:h-[calc(100dvh_-_var(--topbar-h)_-_4rem)]"
         >
           <div className="grid h-full grid-cols-1 items-stretch gap-6 lg:min-h-0 lg:grid-cols-3">
             <div className="flex min-h-0 flex-col lg:overflow-y-auto">
@@ -214,7 +205,7 @@ function FoodPlannerContent() {
 
         <TabsContent
           value={RECIPES_TAB}
-          className="md:mt-0 md:h-[calc(100dvh_-_var(--topbar-h)_-_4rem)]"
+          className="mt-6 md:h-[calc(100dvh_-_var(--topbar-h)_-_4rem)]"
         >
           <RecipeList
             onGroceryAdded={bumpGrocery}
@@ -222,7 +213,7 @@ function FoodPlannerContent() {
           />
         </TabsContent>
 
-        <TabsContent value={CALENDAR_TAB} className="md:mt-0">
+        <TabsContent value={CALENDAR_TAB} className="mt-6">
           <KitchenEventCalendar
             refreshSignal={calendarRefresh}
             onChanged={bumpCalendar}

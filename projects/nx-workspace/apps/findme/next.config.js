@@ -15,7 +15,8 @@ const options = {
  **/
 const nextConfig = {
   nx: { ...options },
-  distDir: '../../dist/apps/findme/.next',
+  output: 'export',
+  distDir: '../../dist/apps/findme',
   agentRules: false,
 };
 const plugins = [withNx];

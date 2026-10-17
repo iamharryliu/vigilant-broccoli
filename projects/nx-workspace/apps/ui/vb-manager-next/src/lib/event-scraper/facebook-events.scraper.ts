@@ -62,7 +62,7 @@ const EVENT_DETAIL_VISIT_DELAY_MS = 1000;
 const DEFAULT_CONCURRENCY = 4;
 const MIN_DETAIL_TEXT_LENGTH = 30;
 const DATE_TIME_PATTERN =
-  /^[A-Za-z]+,\s+[A-Za-z]+\s+\d{1,2}(,\s*\d{4})?\s+at\s+\d{1,2}:\d{2}\s*[AP]M/;
+  /^([A-Za-z]+,\s+)?[A-Za-z]+\s+\d{1,2}(,\s*\d{4})?\s+at\s+\d{1,2}:\d{2}\s*[AP]M/;
 const PRIVACY_LINE_PATTERN = /^(Public|Private|Friends)\b.*·/;
 const LOCATION_ARIA_LABEL = 'Location information for this event';
 // Listing cards don't reliably put the event name on a fixed line (a page's
@@ -224,8 +224,8 @@ const extractEvents = (page: Page): Promise<ListedEvent[]> =>
           !pastHeading ||
           Boolean(
             card &&
-              card.compareDocumentPosition(pastHeading) &
-                Node.DOCUMENT_POSITION_FOLLOWING,
+            card.compareDocumentPosition(pastHeading) &
+              Node.DOCUMENT_POSITION_FOLLOWING,
           );
 
         events.push({
@@ -394,6 +394,10 @@ export const scrapeFacebookEvents = async ({
   });
 
   try {
+    // The tsx CLI compiles with esbuild keepNames, which wraps nested arrow
+    // functions in __name(); that helper does not exist inside the page, so
+    // page.evaluate callbacks throw "__name is not defined" without this shim.
+    await context.addInitScript('window.__name = window.__name || (fn => fn);');
     const page = context.pages()[0] ?? (await context.newPage());
     await page.goto(eventsUrl, { waitUntil: NAV_WAIT_UNTIL });
 

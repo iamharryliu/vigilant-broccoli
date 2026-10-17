@@ -27,6 +27,11 @@ export async function proxy(request: NextRequest) {
   return NextResponse.next();
 }
 
+// /api/spotify/auth/* is exempt too: Spotify's OAuth callback is a plain
+// browser redirect with no Authorization header, so it authenticates via
+// the signed `state` param instead (see libs/spotify-oauth-state.ts). The
+// /login route under the same prefix re-checks the bearer token itself,
+// mirroring how /api/auth/google-token does its own getUserEmail check.
 export const config = {
-  matcher: ['/api/((?!auth).*)'],
+  matcher: ['/api/((?!auth|spotify/auth).*)'],
 };

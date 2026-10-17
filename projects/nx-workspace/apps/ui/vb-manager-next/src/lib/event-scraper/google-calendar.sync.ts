@@ -26,10 +26,13 @@ const MONTH_NAMES = [
 // only the latter and silently fails to match every real event.
 // Numbered rather than named capture groups: tsconfig.base.json targets es2015,
 // which predates named groups.
+// The weekday and year are optional (Facebook drops them for the current year,
+// e.g. "Oct 17 at 10:00 PM – Oct 18 at 11:45 PM CEST"), and the range end is
+// either a bare time or a full date and time when the event crosses midnight.
 const DATE_TIME_RANGE_PATTERN =
-  /^\w+,\s(\w+)\s(\d{1,2}),\s(\d{4})\sat\s(\d{1,2}):(\d{2})\s(AM|PM)\s*[–-]\s*(\d{1,2}):(\d{2})\s(AM|PM)/;
+  /^(?:\w+,\s)?(\w+)\s(\d{1,2})(?:,\s(\d{4}))?\sat\s(\d{1,2}):(\d{2})\s(AM|PM)\s*[–-]\s*(?:(?:\w+,\s)?(\w+)\s(\d{1,2})(?:,\s(\d{4}))?\sat\s)?(\d{1,2}):(\d{2})\s(AM|PM)/;
 const DATE_TIME_SINGLE_PATTERN =
-  /^\w+,\s(\w+)\s(\d{1,2}),\s(\d{4})\sat\s(\d{1,2}):(\d{2})\s(AM|PM)/;
+  /^(?:\w+,\s)?(\w+)\s(\d{1,2})(?:,\s(\d{4}))?\sat\s(\d{1,2}):(\d{2})\s(AM|PM)/;
 // Multi-day events shown with no time and no year, e.g. "Fri, Sep 25 - Sep 26".
 const DATE_ONLY_RANGE_PATTERN =
   /^\w+,\s(\w+)\s(\d{1,2})\s*-\s*(?:(\w+)\s)?(\d{1,2})/;
@@ -67,13 +70,30 @@ const inferYearForMonthDay = (monthNumber: number, day: number) => {
   return candidate < today ? now.getFullYear() + 1 : now.getFullYear();
 };
 
+// Facebook omits the year for the current one, so pick the year that puts the
+// date nearest today; unlike inferYearForMonthDay this keeps just-past events
+// in the past instead of pushing them a year ahead.
+const inferNearestYear = (monthNumber: number, day: number) => {
+  const now = Date.now();
+  const currentYear = new Date().getFullYear();
+  return [currentYear - 1, currentYear, currentYear + 1].reduce((best, year) =>
+    Math.abs(Date.UTC(year, monthNumber - 1, day) - now) <
+    Math.abs(Date.UTC(best, monthNumber - 1, day) - now)
+      ? year
+      : best,
+  );
+};
+
 interface RangeGroups {
   month: string;
   day: string;
-  year: string;
+  year?: string;
   startHour: string;
   startMinute: string;
   startPeriod: string;
+  endMonth?: string;
+  endDay?: string;
+  endYear?: string;
   endHour: string;
   endMinute: string;
   endPeriod: string;
@@ -82,7 +102,7 @@ interface RangeGroups {
 interface SingleGroups {
   month: string;
   day: string;
-  year: string;
+  year?: string;
   startHour: string;
   startMinute: string;
   startPeriod: string;
@@ -97,38 +117,54 @@ interface DateOnlyGroups {
 
 const buildRangeFromMatch = (groups: RangeGroups): EventDateRange | null => {
   const monthNumber = findMonthNumber(groups.month);
-  if (!monthNumber) return null;
+  const endMonthNumber = groups.endMonth
+    ? findMonthNumber(groups.endMonth)
+    : monthNumber;
+  if (!monthNumber || !endMonthNumber) return null;
 
   const startHour24 = to24Hour(groups.startHour, groups.startPeriod);
   const endHour24 = to24Hour(groups.endHour, groups.endPeriod);
+  const startYear = groups.year
+    ? Number(groups.year)
+    : inferNearestYear(monthNumber, Number(groups.day));
 
-  let endYear = Number(groups.year);
-  let endMonth = monthNumber;
-  let endDay = Number(groups.day);
+  const endYear = groups.endYear
+    ? Number(groups.endYear)
+    : endMonthNumber < monthNumber
+      ? startYear + 1
+      : startYear;
+  const end = new Date(
+    Date.UTC(
+      endYear,
+      endMonthNumber - 1,
+      Number(groups.endDay ?? groups.day),
+      endHour24,
+      Number(groups.endMinute),
+    ),
+  );
+  // A bare end time at or before the start (9 PM - 1 AM) ends the next day.
   if (
+    !groups.endDay &&
     endHour24 * 60 + Number(groups.endMinute) <=
-    startHour24 * 60 + Number(groups.startMinute)
+      startHour24 * 60 + Number(groups.startMinute)
   ) {
-    const nextDay = new Date(Date.UTC(endYear, endMonth - 1, endDay + 1));
-    endYear = nextDay.getUTCFullYear();
-    endMonth = nextDay.getUTCMonth() + 1;
-    endDay = nextDay.getUTCDate();
+    end.setUTCDate(end.getUTCDate() + 1);
   }
 
   return {
     start: buildLocalDateTime(
-      groups.year,
+      startYear,
       monthNumber,
       groups.day,
       startHour24,
       groups.startMinute,
     ),
     end: buildLocalDateTime(
-      endYear,
-      endMonth,
-      endDay,
-      endHour24,
-      groups.endMinute,
+      end.getUTCFullYear(),
+      end.getUTCMonth() + 1,
+      end.getUTCDate(),
+      end.getUTCHours(),
+      end.getUTCMinutes(),
     ),
   };
 };
@@ -140,9 +176,12 @@ const buildDefaultDurationRange = (
   if (!monthNumber) return null;
 
   const startHour24 = to24Hour(groups.startHour, groups.startPeriod);
+  const startYear = groups.year
+    ? Number(groups.year)
+    : inferNearestYear(monthNumber, Number(groups.day));
   const endDate = new Date(
     Date.UTC(
-      Number(groups.year),
+      startYear,
       monthNumber - 1,
       Number(groups.day),
       startHour24 + DEFAULT_EVENT_DURATION_HOURS,
@@ -152,7 +191,7 @@ const buildDefaultDurationRange = (
 
   return {
     start: buildLocalDateTime(
-      groups.year,
+      startYear,
       monthNumber,
       groups.day,
       startHour24,
@@ -208,6 +247,9 @@ export const parseEventDateTimeRange = (
       startHour,
       startMinute,
       startPeriod,
+      endMonth,
+      endDay,
+      endYear,
       endHour,
       endMinute,
       endPeriod,
@@ -219,6 +261,9 @@ export const parseEventDateTimeRange = (
       startHour,
       startMinute,
       startPeriod,
+      endMonth,
+      endDay,
+      endYear,
       endHour,
       endMinute,
       endPeriod,
@@ -291,17 +336,30 @@ const deleteStaleEvents = async (
   calendarId: string,
   currentEventIds: Set<string>,
 ) => {
+  // Facebook drops past events from the scrape, so only events that have not
+  // ended yet can be judged stale; past ones stay on the calendar.
   const { data } = await calendar.events.list({
     calendarId,
+    timeMin: new Date().toISOString(),
     showDeleted: false,
     maxResults: EVENTS_LIST_MAX_RESULTS,
   });
 
-  const staleEvents = (data.items || []).filter(
-    item =>
-      item.id?.startsWith(FACEBOOK_EVENT_ID_PREFIX) &&
-      !currentEventIds.has(item.id),
+  const existingEvents = (data.items || []).filter(item =>
+    item.id?.startsWith(FACEBOOK_EVENT_ID_PREFIX),
   );
+  const staleEvents = existingEvents.filter(
+    item => !currentEventIds.has(item.id as string),
+  );
+
+  // A partial or empty scrape (expired login, layout change) would otherwise
+  // wipe the calendar.
+  if (staleEvents.length && currentEventIds.size * 2 < existingEvents.length) {
+    return {
+      removed: 0,
+      staleDeletionSkipped: `scrape returned ${currentEventIds.size} of ${existingEvents.length} synced events`,
+    };
+  }
 
   for (const staleEvent of staleEvents) {
     await calendar.events.delete({
@@ -309,7 +367,7 @@ const deleteStaleEvents = async (
       eventId: staleEvent.id as string,
     });
   }
-  return staleEvents.length;
+  return { removed: staleEvents.length };
 };
 
 export const syncEventsToCalendar = async (
@@ -332,7 +390,16 @@ export const syncEventsToCalendar = async (
     syncedEventIds.add(buildCalendarEventId(event.id));
   }
 
-  const removed = await deleteStaleEvents(calendar, calendarId, syncedEventIds);
+  const { removed, staleDeletionSkipped } = await deleteStaleEvents(
+    calendar,
+    calendarId,
+    syncedEventIds,
+  );
 
-  return { synced: syncedEventIds.size, skipped, removed };
+  return {
+    synced: syncedEventIds.size,
+    skipped,
+    removed,
+    staleDeletionSkipped,
+  };
 };

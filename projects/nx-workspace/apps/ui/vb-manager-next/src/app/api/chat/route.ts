@@ -1,16 +1,11 @@
-import { getVbExpressApiKey } from '../../../lib/vb-express';
 import { NextRequest } from 'next/server';
 import OpenAI from 'openai';
-import {
-  HTTP_STATUS_CODES,
-  LLM_MODEL,
-  LLM_MODELS,
-  LLMModel,
-  VB_EXPRESS_ENDPOINT,
-} from '@vigilant-broccoli/common-js';
+import { HTTP_STATUS_CODES, LLMModel } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import {
   CALENDAR_DRAFT_MARKER,
+  CHAT_MODELS,
+  DEFAULT_CHAT_MODEL,
   CHAT_RESPONSE_TYPE,
   CHAT_TOOL_NAME,
 } from '../../constants/chatbot.consts';
@@ -136,7 +131,21 @@ const buildOpenAIMessages = (
   { role: 'system', content: systemPrompt },
   ...messages
     .filter(m => m.role === 'user' || m.role === 'assistant')
-    .map(m => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+    .map(m => {
+      if (m.role === 'user' && m.images?.length) {
+        return {
+          role: 'user' as const,
+          content: [
+            { type: 'text' as const, text: m.content },
+            ...m.images.map(image => ({
+              type: 'image_url' as const,
+              image_url: { url: `data:${image.mimeType};base64,${image.data}` },
+            })),
+          ],
+        };
+      }
+      return { role: m.role as 'user' | 'assistant', content: m.content };
+    }),
 ];
 
 const tryCalendarToolCall = async (
@@ -190,8 +199,12 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const selectedModel =
-    model && LLM_MODELS.includes(model) ? model : LLM_MODEL.GPT_4O;
+  if (model && !CHAT_MODELS.includes(model)) {
+    return new Response('Unsupported chatbot model', {
+      status: HTTP_STATUS_CODES.BAD_REQUEST,
+    });
+  }
+  const selectedModel = model || DEFAULT_CHAT_MODEL;
 
   const now = new Date();
   const currentDate = now.toLocaleDateString(DATE_LOCALE, DATE_OPTIONS);
@@ -212,23 +225,47 @@ export async function POST(request: NextRequest) {
     if (toolCallResponse) return toolCallResponse;
   }
 
-  const res = await fetch(
-    `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.CHAT}`,
+  const openai = new OpenAI({
+    apiKey: getEnvironmentVariable('OPENAI_API_KEY'),
+  });
+  const completion = await openai.chat.completions.create(
     {
-      method: 'POST',
-      headers: {
-        'x-api-key': getVbExpressApiKey(),
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        messages,
-        systemPrompt: finalSystemPrompt,
-        model: selectedModel,
-      }),
+      model: selectedModel,
+      messages: buildOpenAIMessages(messages, finalSystemPrompt),
+      stream: true,
     },
+    { signal: request.signal },
   );
+  const iterator = completion[Symbol.asyncIterator]();
+  const encoder = new TextEncoder();
+  let cancelled = false;
+  const bodyStream = new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      try {
+        while (!cancelled) {
+          const { done, value } = await iterator.next();
+          if (cancelled) return;
+          if (done) {
+            controller.close();
+            return;
+          }
+          const content = value.choices[0]?.delta.content;
+          if (content) {
+            controller.enqueue(encoder.encode(content));
+            return;
+          }
+        }
+      } catch (error) {
+        if (!cancelled) controller.error(error);
+      }
+    },
+    cancel() {
+      cancelled = true;
+      completion.controller.abort();
+    },
+  });
 
-  return new Response(res.body, {
+  return new Response(bodyStream, {
     headers: {
       'Content-Type': 'text/plain; charset=utf-8',
       'Cache-Control': 'no-cache',

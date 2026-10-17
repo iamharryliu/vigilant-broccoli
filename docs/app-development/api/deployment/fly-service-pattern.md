@@ -9,11 +9,30 @@ Reference apps (each demonstrates a different combination):
 - `apps/api/email-service/`, `apps/api/email-subscription-service/` — bundled + Docker Hub roundtrip
 - `apps/api/vb-express/` — pruned + `flyctl deploy --dockerfile`, with a fly volume mount (`[mounts]`) for its SQLite db.
 
+## Table of Contents
+
+- [Environments](#environments)
+- [Local dev](#local-dev)
+- [Two orthogonal axes](#two-orthogonal-axes)
+- [Transitive-dep gotcha (pruned only)](#transitive-dep-gotcha-pruned-only)
+- [pnpm `overrides` gotcha (pruned only)](#pnpm-overrides-gotcha-pruned-only)
+- [Smoke target](#smoke-target)
+- [Health check](#health-check)
+- [Machine count](#machine-count)
+- [Secrets](#secrets)
+- [Private-only services](#private-only-services)
+
 ## Environments
 
 Deployed instances follow the repo-wide `staging-` / `production-` prefix convention. Fly specifics: the app name (`staging-llm-service`) and config filename (`deployment-configs/fly-configs/<env>-llm-service.toml`) are prefixed; nx project names stay unprefixed (`llm-service`).
 
+`office-presence-service` is the single-environment exception: only `demo` exists (`demo-office-presence-service`, config `deployment-configs/fly-configs/demo-office-presence-service.toml`, targets `deploy:demo` / `deploy:secrets:demo`, run by `deploy-demo-apps` and `manual-deploy-app` with `environment: demo`). It follows the bundled + Docker Hub roundtrip shape and shares one image, `iamharryliu/office-presence-socket-server-demo`, with self-hosters; the Fly config selects HTTP mode with `SLACK_MODE=http`.
+
 Each service defines a target pair: `deploy` (staging) and `deploy:production`, with mirrored `deploy:secrets` / `deploy:secrets:production` chains. `scripts/secrets-mapping.config.ts` stores the env-less `flyAppBaseName`; `deploy-flyio-secrets.ts <project> <env>` composes `<env>-<base>`. Cross-service URLs (`EMAIL_SERVICE_URL`, `LLM_SERVICE_URL`, `BETTER_AUTH_URL`, build args) live in the per-env fly config / deploy command so each environment talks only to its own siblings. Post-deploy checks run in the environment-matrix `test-*` workflows (e.g. `test-e2e-llm.yml`).
+
+## Local dev
+
+Every service's `PORT` fallback (used when `nx serve` runs with no `PORT` set) defaults to 3001 — UI apps default to 3000 (see [ui-app-pattern.md](../../ui/ui-app-pattern.md#local-dev)). Deployed instances are unaffected: `deployment-configs/fly-configs/*.toml` and each service's `Dockerfile` set `PORT`/`internal_port` to 3000 explicitly, which always wins over the code fallback. A new service's `main.ts` should default to 3001 the same way, not pick its own port.
 
 ## Two orthogonal axes
 
@@ -50,7 +69,7 @@ Wiring: pruned `smoke` depends on `prune`; bundled `smoke` depends on `build`. `
 ## Health check
 
 - `GET /` must be unauthenticated, fast, no DB/LLM calls. Pattern: `reply.send({ service: SERVICE_NAME, docs: DOCS_PATH })`.
-- `grace_period = '30s'` is required to cover cold-start under `auto_stop_machines = 'stop'`.
+- `grace_period = '30s'` is a safe margin for resume or cold-start; every service (`vb-express`, `bucket-service`, `llm-service`, and the email services) uses `auto_stop_machines = 'suspend'` and resumes from a memory snapshot in under a second. The email services' amqplib publish connections and consumers survived a staging resume (2026-10-11, one short suspend); a long suspend where the broker drops the connection is untested, and their `setTimeout` reconnect loops are the fallback. Use `'stop'` instead if a service holds connections or timers that do not survive a resume.
 - Failed checks on a new machine abort the deploy and keep the previous machine running — don't skip the `[[http_service.checks]]` block.
 
 ## Machine count
@@ -61,6 +80,8 @@ count currently exists, so a manual `fly scale count N` persists across deploys 
 If you bump an app to more than 1 for redundancy, note it here so it doesn't get silently scaled back down.
 
 ## Secrets
+
+Public routes (no API key) are the exception to the keyed `/api/*` services and stay rare: `vb-express` serves `GET /api/public/event-calendars` from its own scope with a hard-coded server-side filter and minimal projection, and creates its Supabase client lazily per request so smoke needs no credentials. The non-secret Supabase project URL is owned by `SUPABASE_URL` in `@vigilant-broccoli/common-node` (`getSupabaseUrl()` returns an explicit `SUPABASE_URL` env var when set, else that constant), so `nx serve vb-express` needs only `SUPABASE_SECRET_KEY` (Vault, via `.env.example`). The fly `[env]` block still carries `SUPABASE_URL` for both vb-express environments because TOML cannot import TypeScript; it is an explicit per-environment override and must be changed together with the constant if the project ever moves.
 
 Declare in `projects/nx-workspace/scripts/secrets-mapping.config.ts`. The service's `.env.example` is the key list: `deploy-flyio-secrets.ts` parses it, pulls those keys from the service's Vault path, and pushes them with `flyctl secrets set`. `nx deploy:secrets <svc>` creates the fly app first if it doesn't exist yet (`flyctl apps create`); `deploy` depends on `deploy:secrets`, so a first deploy to a brand-new app works end-to-end (volumes declared in `[mounts]` are auto-created on first deploy).
 

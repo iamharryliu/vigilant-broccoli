@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useDocumentTitle } from '@vigilant-broccoli/react-lib';
 import {
   cursorColor,
   PeerCaretsOverlay,
   PeerCursorsOverlay,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import {
   CONNECTION_STATUS,
   useWhiteboardRoom,
@@ -81,6 +82,7 @@ export function WhiteboardApp() {
   const [username, setUsername] = useState('');
   const [roomDraft, setRoomDraft] = useState('');
   const [activeRoom, setActiveRoom] = useState('');
+  useDocumentTitle(`${activeRoom || t('BOARD.TITLE')} | ${t('APP.TITLE')}`);
 
   useEffect(() => {
     setUserId(getOrCreate(USER_ID_STORAGE_KEY, randomUserId));

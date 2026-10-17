@@ -1,6 +1,9 @@
 {
   "HOME": {
+    "PAGE_TITLE": "Home",
     "TITLE": "vigilant-broccoli",
+    "SECTION_MONITORING": "Monitoring",
+    "SECTION_SOFTWARE_PROJECTS": "Software Projects",
     "STATUS": {
       "TITLE": "Status",
       "DESCRIPTION": "Live health of deployed services and applications."
@@ -11,31 +14,68 @@
     },
     "OPEN_SOURCE": {
       "TITLE": "Open Source",
-      "DESCRIPTION": "GitHub, Docker Hub, and npm packages."
+      "DESCRIPTION": "GitHub repos, Docker Hub images, npm packages."
     },
     "WEB_APPLICATIONS": {
       "TITLE": "Web Applications",
       "DESCRIPTION": "Deployed apps and demos."
     },
     "UI": {
-      "TITLE": "UI",
+      "TITLE": "Component Library",
       "DESCRIPTION": "React component library."
     },
     "API_SERVICES": {
-      "TITLE": "API Services",
+      "TITLE": "API Documentation",
       "DESCRIPTION": "Swagger docs for internal services."
     },
+    "README": {
+      "TITLE": "README",
+      "DESCRIPTION": "Browse the repository README."
+    },
     "CLAUDE_CONTEXT": {
-      "TITLE": "Claude Context",
-      "DESCRIPTION": "How CLAUDE.md, docs, and skills link together."
+      "TITLE": "Agent Context",
+      "DESCRIPTION": "How repository context, docs, and shared skills link together."
     }
   },
-  "CLAUDE_CONTEXT_PAGE": {
-    "TITLE": "Claude Context",
-    "LOADING": "Loading viewer…"
+  "CAREER_PAGE": {
+    "PAGE_TITLE": "Career",
+    "TITLE": "Career",
+    "SECTION_PROFILE": "Profile",
+    "SECTION_LINKS": "Links",
+    "RESUME": {
+      "TITLE": "Resume",
+      "DESCRIPTION": "Current resume on harryliu.dev."
+    },
+    "EXPERIENCE": {
+      "TITLE": "Personal Software Career Experience",
+      "DESCRIPTION": "Skills, jobs, and project contributions."
+    },
+    "PROJECTS": {
+      "TITLE": "projects.harryliu.dev",
+      "DESCRIPTION": "Software projects, open source, and deployed apps."
+    },
+    "PERSONAL_WEBSITE": {
+      "TITLE": "harryliu.dev",
+      "DESCRIPTION": "Personal website."
+    },
+    "GITHUB": {
+      "TITLE": "GitHub",
+      "DESCRIPTION": "Code and open source contributions."
+    },
+    "LINKEDIN": {
+      "TITLE": "LinkedIn",
+      "DESCRIPTION": "Professional profile."
+    }
+  },
+  "CAREER_EXPERIENCE_PAGE": {
+    "TITLE": "Personal Software Career Experience"
   },
   "WEB_APPLICATIONS_PAGE": {
     "TITLE": "Web Applications",
+    "CAREER": {
+      "TITLE": "Career",
+      "DESCRIPTION": "Resume, career experience, and professional links."
+    },
     "SECTION_APPS": "Apps",
     "SECTION_DEMO": "Demo",
     "HARRY_LIU": {
@@ -45,6 +85,10 @@
     "CLOUD_8_SKATE": {
       "TITLE": "Cloud8Skate",
       "DESCRIPTION": "Toronto skate community."
+    },
+    "CONTEXT_MD": {
+      "TITLE": "Agent Context",
+      "DESCRIPTION": "Browse the repo's agent context, docs, and shared skills."
     },
     "DOCS_MD": {
       "TITLE": "Docs (Markdown)",
@@ -58,10 +102,43 @@
       "TITLE": "Whiteboard",
       "DESCRIPTION": "Live collaborative whiteboard rooms deployed on Vercel."
     },
+    "CALENDARS": {
+      "TITLE": "Calendars",
+      "DESCRIPTION": "Public personal and event calendar directory, deployed on Vercel."
+    },
+    "WEATHER": {
+      "TITLE": "Weather",
+      "DESCRIPTION": "Current weather for your location, deployed on Vercel."
+    },
+    "BALLOONO": {
+      "TITLE": "Balloono",
+      "DESCRIPTION": "Bomberman-style water balloon battles in online rooms or against CPUs, deployed on Vercel."
+    },
+    "UTILITIES": {
+      "TITLE": "Utilities",
+      "DESCRIPTION": "Searchable page of everyday utilities."
+    },
+    "WAITING_GAMES": {
+      "TITLE": "Waiting Games",
+      "DESCRIPTION": "Hands-free cup, quiz and estimation games to watch while you wait."
+    },
+    "COMPONENT_LIBRARY": {
+      "TITLE": "Component Library",
+      "DESCRIPTION": "Interactive shared React component sandbox."
+    },
+    "LINKS": {
+      "TITLE": "Links",
+      "DESCRIPTION": "Public pastebin of personal links and contact details."
+    },
     "EMPLOYEE_HANDLER": {
       "TITLE": "Employee Handler",
       "DESCRIPTION": "Employee management app deployed on Vercel."
-    }
+    },
+    "OFFICE_PRESENCE": {
+      "TITLE": "Office Presence",
+      "DESCRIPTION": "Browser demo of the OK-IN office presence Slack app."
+    },
+    "OPEN_APPLICATION": "Open application"
   },
   "STATUS_PAGE": {
     "TITLE": "Status",
@@ -69,13 +146,24 @@
     "NO_SERVICES": "No services configured.",
     "GITHUB_ACTIONS": "GitHub Actions",
     "VIEW_ALL": "View all →",
-    "RAW_HISTORY": "Raw history:",
+    "TAB_STATUS": "Status",
+    "TAB_UPTIME": "Uptime",
+    "OPEN_UPTIME_IN_NEW_TAB": "Full uptime history",
+    "UPTIME_BAR_HEADER": "30 days",
+    "UPTIME_BAR_LABEL": "{date}: {minutes} min down",
+    "UPTIME_RANGE_DAY": "24h",
+    "UPTIME_RANGE_WEEK": "7d",
+    "UPTIME_RANGE_MONTH": "30d",
+    "UPTIME_RANGE_YEAR": "1y",
     "ERROR_STATUS_UNAVAILABLE": "Status data unavailable (HTTP {status}).",
     "ERROR_STATUS_FAILED": "Failed to load status: {message}",
     "UPDATED": "Updated {date}",
     "GROUP_PRODUCTION": "Production",
     "GROUP_STAGING": "Staging",
-    "GROUP_PERSONAL": "Personal Apps"
+    "GROUP_DEMO": "Demo",
+    "GROUP_PERSONAL": "Personal Apps",
+    "LEGEND_BUTTON_LABEL": "Status legend",
+    "LEGEND_TITLE": "Status Legend"
   },
   "REPO_TIMELINE_PAGE": {
     "TITLE": "Repo Timeline",
@@ -95,7 +183,16 @@
     "GRANULARITY_DAY_SHORT": "D",
     "GRANULARITY_MONTH_SHORT": "M",
     "GRANULARITY_YEAR_SHORT": "Y",
-    "ENTRY_SUMMARY": "{commits} commits · {pullRequests} PRs · +{added} / −{deleted}"
+    "RANGE_LABEL": "Range",
+    "RANGE_1W": "1W",
+    "RANGE_1M": "1M",
+    "RANGE_3M": "3M",
+    "RANGE_6M": "6M",
+    "RANGE_YTD": "YTD",
+    "RANGE_1Y": "1Y",
+    "RANGE_2Y": "2Y",
+    "RANGE_ALL": "ALL",
+    "ENTRY_SUMMARY": "{commits} commits · {pullRequests} PRs"
   },
   "OPEN_SOURCE_PAGE": {
     "TITLE": "Open Source",
@@ -113,20 +210,22 @@
     }
   },
   "README_PAGE": {
+    "TITLE": "README",
     "README_LABEL": "README",
     "VIEW_ON_GITHUB": "View on GitHub",
     "VIEW_ON_NPM": "View on npm",
     "VIEW_ON_DOCKER_HUB": "View on Docker Hub",
     "LOADING": "Loading README…",
     "ERROR": "Failed to load README: {message}",
-    "NOT_FOUND": "Unknown item."
+    "NOT_FOUND": "Unknown item.",
+    "EMPTY": "No README content available."
   },
   "GITHUB_REPOS_PAGE": {
     "TITLE": "GitHub",
-    "VIGILANT_BROCCOLI": {
-      "TITLE": "vigilant-broccoli",
-      "DESCRIPTION": "Monorepo of apps, libraries, notes, and infrastructure."
-    }
+    "LOADING": "Loading public repositories…",
+    "EMPTY": "No public repositories found.",
+    "ERROR": "Failed to load repositories: {message}",
+    "NO_DESCRIPTION": "No description provided."
   },
   "DOCKER_IMAGES_PAGE": {
     "TITLE": "Docker Hub",
@@ -148,7 +247,7 @@
     },
     "OFFICE_PRESENCE_SOCKET_SERVER_DEMO": {
       "TITLE": "office-presence-socket-server-demo",
-      "DESCRIPTION": "Slack bot for sharing office presence status via Socket Mode."
+      "DESCRIPTION": "Slack bot for sharing office presence status via Socket Mode or the HTTP Events API."
     },
     "SOCKET_SERVER_SOCKETIO": {
       "TITLE": "socket-server-socketio",
@@ -178,19 +277,23 @@
     "TITLE": "API Services",
     "EMAIL_SERVICE": {
       "TITLE": "Email Service",
-      "DESCRIPTION": "staging-vb-email-service.flycast — private"
+      "DESCRIPTION": "Email queue producer/consumer."
     },
     "EMAIL_SUBSCRIPTION_SERVICE": {
       "TITLE": "Email Subscription Service",
-      "DESCRIPTION": "staging-email-subscription-service.flycast — private"
+      "DESCRIPTION": "Email subscription management and broadcast."
     },
     "LLM_SERVICE": {
       "TITLE": "LLM Service",
-      "DESCRIPTION": "staging-llm-service.flycast — private"
+      "DESCRIPTION": "LLM proxy for Anthropic and OpenAI."
     },
     "STORAGE_SERVICE": {
       "TITLE": "Storage Service",
-      "DESCRIPTION": "staging-storage-service.flycast — private"
+      "DESCRIPTION": "Object storage proxy across multiple bucket providers."
+    },
+    "EMPLOYEE_HANDLER": {
+      "TITLE": "Employee Handler",
+      "DESCRIPTION": "Employee lifecycle, absences and signature API contract implemented by custom upstreams."
     }
   },
   "API_SERVICE_DOCS_PAGE": {

@@ -1,4 +1,6 @@
 #!/bin/bash
+source "$SETUP_DIR/common/agent-skills.sh"
+
 create_symlink() {
     local target=$1
     local link_name=$2
@@ -23,9 +25,8 @@ symlink_common_dotfiles() {
     create_symlink "$DOTFILES_DIR/.vimrc" "$HOME/.vimrc"
     mkdir -p "$HOME/.config"
     create_symlink "$DOTFILES_DIR/.config/nvim" "$HOME/.config/nvim"
-    mkdir -p "$HOME/.claude"
-    create_symlink "$CLAUDE_COMMANDS_DIR" "$HOME/.claude/commands"
-    create_symlink "$CLAUDE_SKILLS_DIR" "$HOME/.claude/skills"
+    create_symlink "$DOTFILES_DIR/.config/yazi" "$HOME/.config/yazi"
     chmod -R +x "$HOME/shell-aliases/"
     chmod -R +x "$HOME/shell-scripts/"
+    symlink_agent_skills
 }

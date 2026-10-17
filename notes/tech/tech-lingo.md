@@ -1,17 +1,21 @@
 # Tech Lingo
 
-- [Software Lingo](./software/software-lingo.md)
-- [Computer Hardware Lingo](./hardware/computer-hardware-lingo.md)
-
+- [Lingo](#lingo)
 - [Build Systems & CI/CD](#build-systems--cicd)
 - [Roles](#roles)
 - [Hot Takes](#hot-takes)
+
+## Lingo
+
+- [Software Lingo](./software/software-lingo.md)
+- [Computer Hardware Lingo](./hardware/computer-hardware-lingo.md)
 
 | Term                           | Description                                                                                                                                                                                         |
 | ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Brownfield Project             | A type of initiative that involves working with or building on top of existing systems, infrastructure, or legacy code, requiring consideration of prior constraints and technical debt.            |
 | Content Delivery Network (CDN) | A distributed network of servers that deliver web content to users based on their geographic location.                                                                                              |
 | Greenfield Project             | A type of initiative (often in construction, software, or business) that is built from scratch, without needing to work within the constraints of existing systems, infrastructure, or legacy code. |
+| Kanban                         | A visual workflow method that tracks work as cards moving across columns (e.g. To Do, In Progress, Done), limiting work in progress to expose bottlenecks.                                          |
 | Keys                           | Unique identifiers or cryptographic components used for secure access, data encryption, or mapping data structures.                                                                                 |
 | On-Prem                        | Short for “on-premises,” meaning software, hardware, or infrastructure hosted locally within an organization’s facilities.                                                                          |
 | Starlink                       | SpaceX’s satellite internet constellation, providing broadband via a network of low Earth orbit (LEO) satellites.                                                                                   |
@@ -24,7 +28,7 @@
 | Bazel          | Google's open-source build and test tool for multi-language monorepos, with fine-grained incremental builds and caching based on a declarative dependency graph.    |
 | Gerrit         | A web-based code review tool built on Git, using a change/patch-set model instead of long-lived PR branches, with formal reviewer approval workflows.               |
 | GitHub Actions | GitHub's built-in CI/CD platform for automating build, test, and deploy workflows via YAML-defined jobs triggered by repository events.                             |
-| Nx             | A build system and monorepo tool with computation caching, task orchestration, and dependency-graph-aware "affected" builds (used in this repo).                    |
+| Nx             | A build system and monorepo tool with computation caching, task orchestration, and dependency-graph-aware "affected" builds.                                        |
 | Turborepo      | A high-performance build system for JavaScript/TypeScript monorepos, with remote caching and declarative task pipelines.                                            |
 | Zuul           | A gated CI system that speculatively tests changes in their prospective merge order before merging, originally built for OpenStack and commonly paired with Gerrit. |
 

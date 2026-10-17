@@ -11,6 +11,7 @@ import {
   JSON_CONTENT_TYPE,
   QUEUE,
 } from '@vigilant-broccoli/common-js';
+import { SUPABASE_URL } from '@vigilant-broccoli/common-node';
 import { Email } from '@vigilant-broccoli/messaging';
 import { SENDER_EMAIL_ADDRESS } from '@vigilant-broccoli/personal-common-js';
 import {
@@ -25,7 +26,7 @@ import { swaggerSpec } from './swagger';
 const SERVICE_NAME = 'email-subscription-service';
 
 const HOST = process.env.HOST ?? 'localhost';
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 const API_KEY = process.env.SHARED_APP_TOKEN;
 const RABBITMQ_CONNECTION_STRING = process.env.RABBITMQ_CONNECTION_STRING;
 const RABBITMQ_CA_CERT = process.env.RABBITMQ_CA_CERT;
@@ -57,7 +58,7 @@ const RABBITMQ_SOCKET_OPTIONS = RABBITMQ_CA_CERT
   : undefined;
 
 const supabase = createClient(
-  'https://jrdosjjgmsoodpjmjqxx.supabase.co',
+  SUPABASE_URL,
   process.env.SUPABASE_SECRET_KEY as string,
 );
 

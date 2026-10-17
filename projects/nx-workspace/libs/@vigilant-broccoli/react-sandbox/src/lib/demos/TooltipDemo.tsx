@@ -8,7 +8,7 @@ import {
 
 export const TooltipDemo = () => (
   <TooltipProvider>
-    <div className="flex gap-4">
+    <div className="flex flex-wrap gap-3">
       <Tooltip>
         <TooltipTrigger asChild>
           <Button variant="outline">Top</Button>

@@ -1,5 +1,9 @@
 'use client';
 
+import {
+  apiPath,
+  EMPLOYEE_HANDLER_ROUTES,
+} from '@vigilant-broccoli/employee-handler/contract';
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Card, Text, useTheme } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
@@ -18,7 +22,7 @@ import {
 } from './absences.utils';
 import { usePageTitle } from '../../use-page-title';
 
-const ABSENCES_ENDPOINT = '/api/absences';
+const ABSENCES_ENDPOINT = apiPath(EMPLOYEE_HANDLER_ROUTES.absences);
 const PAGE_CONTAINER = 'max-w-6xl mx-auto p-8 space-y-4';
 const SIDEBAR_WIDTH = 240;
 

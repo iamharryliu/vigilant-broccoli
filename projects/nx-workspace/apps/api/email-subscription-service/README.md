@@ -12,15 +12,14 @@ Email subscription management and broadcast.
 - Framework - Fastify
 - Build Tool - esbuild
 - External libs
-  - `amqplib`
   - `@supabase/supabase-js`
+  - `amqplib`
 - Internal libs
   - `common-js`
+  - `common-node`
   - `fastify`
   - `messaging`
 - Cloud services
-  - Supabase (subscriptions table)
-  - RabbitMQ (email queue)
-  - Email Service (HTTP)
-  - Docker Hub
-  - Fly.io
+  - Email Service
+  - RabbitMQ
+  - Supabase

@@ -1,18 +1,15 @@
 'use client';
 
-import {
-  BORDER_ACTIVE,
-  Badge,
-  CardContainer,
-  StatusCardList,
-  StatusCardListItem,
-  Text,
-  CardSkeleton,
-} from '@vigilant-broccoli/react-lib';
-import { useState } from 'react';
+import { Badge, StatusCardListItem, Text } from '@vigilant-broccoli/react-lib';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
-import { authFetch } from '../../../libs/auth';
-import { usePollingInterval } from '../hooks/usePollingInterval';
+import { StatusListCard } from './status-list-card.component';
+import { usePolledResource } from '../hooks/usePolledResource';
+import {
+  DotColor,
+  StatusDot,
+  StatusLegendEntry,
+  getDotBorder,
+} from './status-dot.component';
 
 interface TailscaleMachine {
   id: string;
@@ -35,6 +32,17 @@ const TITLE = 'Tailscale Machines';
 const ERR_FETCH_FAILED = 'Failed to fetch Tailscale machines';
 const EMPTY_MESSAGE = 'No Tailscale machines found';
 
+const LEGEND: StatusLegendEntry[] = [
+  { color: 'green', label: 'Online' },
+  { color: 'gray', label: 'Offline' },
+  { color: 'red', label: 'Unauthorized' },
+];
+
+const getMachineColor = (m: TailscaleMachine): DotColor => {
+  if (!m.authorized) return 'red';
+  return m.online ? 'green' : 'gray';
+};
+
 const formatLastSeen = (iso: string): string => {
   const mins = Math.floor((Date.now() - new Date(iso).getTime()) / MS_PER_MIN);
   if (mins < 1) return 'just now';
@@ -44,83 +52,62 @@ const formatLastSeen = (iso: string): string => {
   return `${Math.floor(hours / HOURS_PER_DAY)}d ago`;
 };
 
-const toItem = (m: TailscaleMachine): StatusCardListItem => ({
-  id: m.id,
-  label: m.name,
-  borderClassName: m.online ? BORDER_ACTIVE : undefined,
-  badges: (
-    <>
-      <Badge color={m.online ? 'green' : 'gray'} size="1">
-        {m.online ? 'Online' : 'Offline'}
-      </Badge>
-      <Badge color="blue" size="1">
-        {m.os}
-      </Badge>
-      {m.isCurrent && (
-        <Badge color="purple" size="1">
-          This machine
+const toItem = (m: TailscaleMachine): StatusCardListItem => {
+  const color = getMachineColor(m);
+  return {
+    id: m.id,
+    label: m.name,
+    borderClassName: getDotBorder(color),
+    badges: (
+      <>
+        <StatusDot
+          color={color}
+          title={
+            !m.authorized ? 'Unauthorized' : m.online ? 'Online' : 'Offline'
+          }
+        />
+        <Badge color="blue" size="1">
+          {m.os}
         </Badge>
-      )}
-      {!m.authorized && (
-        <Badge color="red" size="1">
-          Unauthorized
-        </Badge>
-      )}
-    </>
-  ),
-  children: (
-    <>
-      <Text size="1" color="gray">
-        Address: {m.address}
-      </Text>
-      <Text size="1" color="gray">
-        Host: {m.hostname}
-      </Text>
-      <Text size="1" color="gray">
-        Last seen: {formatLastSeen(m.lastSeen)}
-      </Text>
-    </>
-  ),
-});
+        {m.isCurrent && (
+          <Badge color="purple" size="1">
+            This machine
+          </Badge>
+        )}
+      </>
+    ),
+    children: (
+      <>
+        <Text size="1" color="gray">
+          Address: {m.address}
+        </Text>
+        <Text size="1" color="gray">
+          Host: {m.hostname}
+        </Text>
+        <Text size="1" color="gray">
+          Last seen: {formatLastSeen(m.lastSeen)}
+        </Text>
+      </>
+    ),
+  };
+};
 
 export const TailscaleMachinesComponent = () => {
-  const [machines, setMachines] = useState<TailscaleMachine[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchMachines = async () => {
-    try {
-      const response = await authFetch(API_ENDPOINTS.TAILSCALE_MACHINES);
-      if (!response.ok) throw new Error(ERR_FETCH_FAILED);
-      const data = await response.json();
-      setMachines(data.machines ?? []);
-      setError(null);
-      setLoading(false);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : ERR_FETCH_FAILED);
-      setLoading(false);
-      console.error(ERR_FETCH_FAILED, err);
-    }
-  };
-
-  usePollingInterval(fetchMachines, REFRESH_MS);
-
-  if (loading) return <CardSkeleton title={TITLE} rows={3} />;
-
-  if (error) {
-    return (
-      <CardContainer title={TITLE}>
-        <Text color="red">{error}</Text>
-      </CardContainer>
-    );
-  }
+  const { data, loading, error } = usePolledResource<TailscaleMachine[]>({
+    endpoint: API_ENDPOINTS.TAILSCALE_MACHINES,
+    intervalMs: REFRESH_MS,
+    errorMessage: ERR_FETCH_FAILED,
+    select: json => json.machines ?? [],
+  });
 
   return (
-    <CardContainer title={TITLE}>
-      <StatusCardList
-        items={(machines ?? []).map(toItem)}
-        emptyMessage={EMPTY_MESSAGE}
-      />
-    </CardContainer>
+    <StatusListCard
+      title={TITLE}
+      loading={loading}
+      error={error}
+      legend={LEGEND}
+      items={(data ?? []).map(toItem)}
+      emptyMessage={EMPTY_MESSAGE}
+    />
   );
 };

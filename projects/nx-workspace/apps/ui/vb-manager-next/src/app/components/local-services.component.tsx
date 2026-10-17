@@ -1,16 +1,8 @@
 'use client';
-import {
-  Badge,
-  CardContainer,
-  StatusCardList,
-  StatusCardListItem,
-  Text,
-  CardSkeleton,
-} from '@vigilant-broccoli/react-lib';
-import { useState } from 'react';
+import { Badge, StatusCardListItem, Text } from '@vigilant-broccoli/react-lib';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
-import { authFetch } from '../../../libs/auth';
-import { usePollingInterval } from '../hooks/usePollingInterval';
+import { StatusListCard } from './status-list-card.component';
+import { usePolledResource } from '../hooks/usePolledResource';
 
 const TITLE = 'Local Services';
 const FETCH_ERROR = 'Failed to fetch local services';
@@ -39,42 +31,19 @@ const toItem = (service: LocalService): StatusCardListItem => ({
 });
 
 export const LocalServicesComponent = () => {
-  const [services, setServices] = useState<LocalService[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchServices = async () => {
-    try {
-      const response = await authFetch(API_ENDPOINTS.LOCAL_SERVICES);
-      if (!response.ok) throw new Error(FETCH_ERROR);
-      const data = await response.json();
-      setServices(data);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : FETCH_ERROR);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  usePollingInterval(fetchServices, LOCAL_SERVICES_POLL_INTERVAL_MS);
-
-  if (loading) return <CardSkeleton title={TITLE} rows={3} />;
-
-  if (error) {
-    return (
-      <CardContainer title={TITLE}>
-        <Text className="text-gray-500">{error}</Text>
-      </CardContainer>
-    );
-  }
+  const { data, loading, error } = usePolledResource<LocalService[]>({
+    endpoint: API_ENDPOINTS.LOCAL_SERVICES,
+    intervalMs: LOCAL_SERVICES_POLL_INTERVAL_MS,
+    errorMessage: FETCH_ERROR,
+  });
 
   return (
-    <CardContainer title={`${TITLE}${services ? ` (${services.length})` : ''}`}>
-      <StatusCardList
-        items={(services ?? []).map(toItem)}
-        emptyMessage="No services exposed on 0.0.0.0"
-      />
-    </CardContainer>
+    <StatusListCard
+      title={`${TITLE}${data ? ` (${data.length})` : ''}`}
+      loading={loading}
+      error={error}
+      items={(data ?? []).map(toItem)}
+      emptyMessage="No services exposed on 0.0.0.0"
+    />
   );
 };

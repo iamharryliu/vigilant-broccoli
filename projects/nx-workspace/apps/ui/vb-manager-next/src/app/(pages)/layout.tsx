@@ -1,5 +1,7 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
+import { SIDEBAR_ROUTE } from '../app.const';
 import { ReactNode, useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../libs/auth';
 import { useThemeKeybind } from '@vigilant-broccoli/react-lib';
@@ -26,10 +28,9 @@ const shouldIgnoreKeystroke = (e: KeyboardEvent): boolean => {
 type KeyboardHandlers = {
   setSearchDialogOpen: (open: boolean) => void;
   setEmailDialogOpen: (open: boolean) => void;
-  setChatbotDialogOpen: (open: boolean) => void;
+  openChatbot: () => void;
   setCalendarDialogOpen: (open: boolean) => void;
   setNotepadDialogOpen: (open: boolean) => void;
-  setWeatherDialogOpen: (open: boolean) => void;
   setPomodoroDialogOpen: (open: boolean) => void;
   setUtilitiesDialogOpen: (open: boolean) => void;
 };
@@ -49,7 +50,7 @@ const processKeyboardInput = (
       return true;
     case 'c':
       if (!isShift) {
-        handlers.setChatbotDialogOpen(true);
+        handlers.openChatbot();
         return true;
       }
       if (isShift) {
@@ -59,9 +60,6 @@ const processKeyboardInput = (
       return false;
     case 'n':
       handlers.setNotepadDialogOpen(true);
-      return true;
-    case 'w':
-      handlers.setWeatherDialogOpen(true);
       return true;
     case 'p':
       if (isShift) {
@@ -92,6 +90,7 @@ const handleKeyboardShortcut = (
 
 export default function Layout({ children }: { children: ReactNode }) {
   useThemeKeybind();
+  const router = useRouter();
   const _session = useAuth();
   const { notifications, unreadCount, add, markAllRead, clear } =
     useNotificationHistory();
@@ -114,11 +113,9 @@ export default function Layout({ children }: { children: ReactNode }) {
     [markAllRead],
   );
   const [searchDialogOpen, setSearchDialogOpen] = useState(false);
-  const [chatbotDialogOpen, setChatbotDialogOpen] = useState(false);
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [calendarDialogOpen, setCalendarDialogOpen] = useState(false);
   const [notepadDialogOpen, setNotepadDialogOpen] = useState(false);
-  const [weatherDialogOpen, setWeatherDialogOpen] = useState(false);
   const [pomodoroDialogOpen, setPomodoroDialogOpen] = useState(false);
   const [utilitiesDialogOpen, setUtilitiesDialogOpen] = useState(false);
   const [shortcutsOverlayOpen, setShortcutsOverlayOpen] = useState(false);
@@ -138,10 +135,9 @@ export default function Layout({ children }: { children: ReactNode }) {
       handleKeyboardShortcut(e, {
         setSearchDialogOpen,
         setEmailDialogOpen,
-        setChatbotDialogOpen,
+        openChatbot: () => router.push(SIDEBAR_ROUTE.CHATBOT.path),
         setCalendarDialogOpen,
         setNotepadDialogOpen,
-        setWeatherDialogOpen,
         setPomodoroDialogOpen,
         setUtilitiesDialogOpen,
       });
@@ -169,7 +165,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('blur', handleBlur);
     };
-  }, []);
+  }, [router]);
 
   return (
     <NotificationContext.Provider value={add}>
@@ -180,7 +176,6 @@ export default function Layout({ children }: { children: ReactNode }) {
           </main>
           <div className="print:hidden">
             <RightSidebar
-              setChatbotDialogOpen={setChatbotDialogOpen}
               setPomodoroDialogOpen={setPomodoroDialogOpen}
               setSearchDialogOpen={setSearchDialogOpen}
               notificationsOpen={notificationsOpen}
@@ -196,16 +191,12 @@ export default function Layout({ children }: { children: ReactNode }) {
           <FloatingIslandComponent
             searchDialogOpen={searchDialogOpen}
             setSearchDialogOpen={setSearchDialogOpen}
-            chatbotDialogOpen={chatbotDialogOpen}
-            setChatbotDialogOpen={setChatbotDialogOpen}
             emailDialogOpen={emailDialogOpen}
             setEmailDialogOpen={setEmailDialogOpen}
             calendarDialogOpen={calendarDialogOpen}
             setCalendarDialogOpen={setCalendarDialogOpen}
             notepadDialogOpen={notepadDialogOpen}
             setNotepadDialogOpen={setNotepadDialogOpen}
-            weatherDialogOpen={weatherDialogOpen}
-            setWeatherDialogOpen={setWeatherDialogOpen}
             pomodoroDialogOpen={pomodoroDialogOpen}
             setPomodoroDialogOpen={setPomodoroDialogOpen}
             utilitiesDialogOpen={utilitiesDialogOpen}

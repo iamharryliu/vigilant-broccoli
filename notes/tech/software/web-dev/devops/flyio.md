@@ -9,6 +9,7 @@
   - Flycast (private IPv6, `fly ips allocate-v6 --private`): free — private-only apps cost nothing in IP terms.
   - Dedicated IPv4: $2/mo — the only IP that costs money, so release it when an app goes private.
 - Machines: `shared-cpu-1x` 256MB ≈ $0.0028/hr (~$2.02/mo if always on). `auto_stop_machines = 'stop'` with `min_machines_running = 0` is what keeps idle services near $0. A long-lived subscriber such as a log shipper can't auto-stop, so budget the full ~$2/mo for it and deploy it with `--ha=false` so there is one machine, not two.
+- Webhook receivers (e.g. Slack's 3-second ack): a suspended machine resumes in well under a second, so `auto_stop_machines = 'suspend'` with `min_machines_running = 0` usually still meets the deadline and keeps idle cost near $0; a stopped machine cold-boots and can miss it. `min_machines_running = 1` removes the risk for roughly the always-on machine price.
 - Volumes: $0.15/GB/mo provisioned (billed hourly). Snapshots $0.08/GB/mo, first 10GB/mo free.
 - Bandwidth: inbound and same-region transfer free; North America/Europe egress $0.02/GB. Service-to-service calls over flycast stay on the private network and skip egress billing.
 
@@ -137,7 +138,6 @@ cron
 
 - Make sure you have set all environment variables before deploying.
 - `flyctl auth login` exits 1 with `requires an interactive terminal` when stdin is not a TTY, so it cannot be shelled out to from a server process directly. Wrap it in `script` to allocate a pty (`script -q /dev/null flyctl auth login` on macOS, `script -qec "flyctl auth login" /dev/null` on Linux). `script` itself runs `tcgetattr` on its own stdin, so that stdin must be `/dev/null` rather than a pipe, otherwise it fails with `Operation not supported on socket`.
-- In this repo that pty wrapper is `runCliInPty` in `@vigilant-broccoli/devops-cli`; reach for it rather than `runCliToCompletion` for any CLI that insists on a terminal.
 - For genuinely headless use, set `FLY_API_TOKEN` to a token from `fly tokens create` instead of logging in.
 
 ## References

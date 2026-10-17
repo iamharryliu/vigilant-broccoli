@@ -2,7 +2,7 @@ import { HTMLAttributes, forwardRef } from 'react';
 import { cn } from '../utils/cn';
 
 const CARD_CLASS =
-  'rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden';
+  'rounded-lg border border-border bg-card text-card-foreground overflow-hidden';
 
 export type CardProps = HTMLAttributes<HTMLDivElement>;
 

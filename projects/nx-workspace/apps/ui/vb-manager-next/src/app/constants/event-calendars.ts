@@ -9,11 +9,6 @@ export const EVENT_SOURCE_TYPE = {
 export type EventSourceType =
   (typeof EVENT_SOURCE_TYPE)[keyof typeof EVENT_SOURCE_TYPE];
 
-export const EVENT_SOURCE_TYPE_LABEL: Record<EventSourceType, string> = {
-  [EVENT_SOURCE_TYPE.FACEBOOK_GROUP]: 'Facebook group',
-  [EVENT_SOURCE_TYPE.FACEBOOK_PAGE]: 'Facebook page',
-};
-
 export const EVENT_SOURCE_TYPES = Object.values(EVENT_SOURCE_TYPE);
 
 const FACEBOOK_GROUP_URL_PATTERN =
@@ -72,3 +67,55 @@ const GOOGLE_CALENDAR_EMBED_URL = 'https://calendar.google.com/calendar/embed';
 
 export const buildGoogleCalendarUrl = (googleCalendarId: string) =>
   `${GOOGLE_CALENDAR_EMBED_URL}?src=${encodeURIComponent(googleCalendarId)}`;
+
+// Order is the step order shown while a sync runs.
+export const SYNC_PHASE = {
+  SCRAPING: 'scraping',
+  LOCALIZING: 'localizing',
+  WRITING: 'writing',
+} as const;
+
+export type SyncPhase = (typeof SYNC_PHASE)[keyof typeof SYNC_PHASE];
+
+export const SYNC_PHASE_ORDER: SyncPhase[] = [
+  SYNC_PHASE.SCRAPING,
+  SYNC_PHASE.LOCALIZING,
+  SYNC_PHASE.WRITING,
+];
+
+export const SYNC_RUN_TRIGGER = {
+  CLI: 'cli',
+  UI: 'ui',
+} as const;
+
+export type SyncRunTrigger =
+  (typeof SYNC_RUN_TRIGGER)[keyof typeof SYNC_RUN_TRIGGER];
+
+export const SYNC_RUN_STATUS = {
+  RUNNING: 'running',
+  SUCCESS: 'success',
+  PARTIAL: 'partial',
+  FAILED: 'failed',
+} as const;
+
+export type SyncRunStatus =
+  (typeof SYNC_RUN_STATUS)[keyof typeof SYNC_RUN_STATUS];
+
+export interface SyncRunResult {
+  calendarId: string;
+  ok: boolean;
+  message: string;
+}
+
+export interface SyncRun {
+  id: string;
+  trigger: SyncRunTrigger;
+  status: SyncRunStatus;
+  // A 'running' row with no heartbeat for SYNC_RUN_STALE_MS is reported as
+  // failed with stale set, since its process is gone.
+  stale: boolean;
+  startedAt: string;
+  finishedAt?: string;
+  currentCalendarId?: string;
+  results: SyncRunResult[];
+}

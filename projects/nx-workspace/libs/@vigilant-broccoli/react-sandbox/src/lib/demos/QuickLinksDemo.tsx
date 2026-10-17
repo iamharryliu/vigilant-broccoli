@@ -1,12 +1,12 @@
+import { DemoSection } from './DemoSection';
 import { useState } from 'react';
 import { OPEN_TYPE, type QuickLink } from '@vigilant-broccoli/common-js';
+import { Button, Text } from '@vigilant-broccoli/react-lib';
 import {
-  Button,
   QuickLinksDialog,
   QuickLinksPanel,
-  Text,
   type ShellExecuteHandler,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { toast, Toaster } from '@vigilant-broccoli/react-lib/toaster';
 import {
   CLAUDE_LINK,
@@ -106,7 +106,7 @@ export const QuickLinksDemo = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6 items-start w-full">
+    <div className="flex min-w-0 flex-col gap-6 w-full">
       <Toaster richColors />
 
       <div className="flex flex-col gap-3 items-start">
@@ -122,10 +122,10 @@ export const QuickLinksDemo = () => {
         />
       </div>
 
-      <div className="flex flex-col gap-3 items-start w-full">
-        <Text size="3" weight="medium">
-          {INLINE_HEADING}
-        </Text>
+      <DemoSection
+        title={INLINE_HEADING}
+        className="flex flex-col gap-3 items-start w-full"
+      >
         <Text size="2" color="gray">
           {INLINE_HINT}
         </Text>
@@ -133,7 +133,7 @@ export const QuickLinksDemo = () => {
           links={DEMO_LINKS}
           onShellExecute={handleShellExecute}
         />
-      </div>
+      </DemoSection>
     </div>
   );
 };

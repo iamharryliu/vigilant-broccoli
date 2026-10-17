@@ -1,0 +1,102 @@
+name: test-smoke-api-keys
+
+on:
+  schedule:
+    - cron: '15 2 * * *'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test-api-keys:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets SANITY_AUTH_TOKEN | SANITY_AUTH_TOKEN ;
+            kv/data/secrets RESEND_API_KEY | RESEND_API_KEY ;
+            kv/data/secrets ELEVENLABS_API_KEY | ELEVENLABS_API_KEY ;
+            kv/data/secrets GITEA_TOKEN | GITEA_TOKEN ;
+            kv/data/secrets GITEA_CF_ACCESS_CLIENT_ID | GITEA_CF_ACCESS_CLIENT_ID ;
+            kv/data/secrets GITEA_CF_ACCESS_CLIENT_SECRET | GITEA_CF_ACCESS_CLIENT_SECRET ;
+
+      - name: Run API key validity checks
+        env:
+          SANITY_AUTH_TOKEN: ${{ env.SANITY_AUTH_TOKEN }}
+          RESEND_API_KEY: ${{ env.RESEND_API_KEY }}
+          ELEVENLABS_API_KEY: ${{ env.ELEVENLABS_API_KEY }}
+          GITEA_TOKEN: ${{ env.GITEA_TOKEN }}
+          GITEA_CF_ACCESS_CLIENT_ID: ${{ env.GITEA_CF_ACCESS_CLIENT_ID }}
+          GITEA_CF_ACCESS_CLIENT_SECRET: ${{ env.GITEA_CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          PASS=0
+          FAIL=0
+
+          check() {
+            local name="$1"
+            local status="$2"
+            if [ "$status" = "ok" ]; then
+              echo "  ✓ $name"
+              PASS=$((PASS + 1))
+            else
+              echo "  ✗ $name — $status"
+              FAIL=$((FAIL + 1))
+            fi
+          }
+
+          # Retries tolerate a transient network blip without failing the run;
+          # a key that is actually expired/revoked returns the same 401/403
+          # on every attempt, so retrying never masks a real failure.
+          auth_check() {
+            local name="$1"
+            local url="$2"
+            shift 2
+            local code
+            for attempt in 1 2; do
+              code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 "$@" "$url" 2>/dev/null) || code="timeout"
+              [ "$code" = "200" ] && break
+              [ "$attempt" -lt 2 ] && sleep 5
+            done
+            if [ "$code" = "200" ]; then
+              check "$name" "ok"
+            else
+              check "$name" "HTTP $code (expected 200)"
+            fi
+          }
+
+          echo "=== API Key Validity Check ==="
+          echo ""
+
+          echo "[Sanity — cloud8skate project]"
+          auth_check "sanity" "https://akt6kw0u.api.sanity.io/v2021-06-07/users/me" \
+            -H "Authorization: Bearer ${SANITY_AUTH_TOKEN}"
+
+          echo ""
+          echo "[Resend]"
+          auth_check "resend" "https://api.resend.com/api-keys" \
+            -H "Authorization: Bearer ${RESEND_API_KEY}"
+
+          echo ""
+          echo "[ElevenLabs]"
+          auth_check "elevenlabs" "https://api.elevenlabs.io/v1/user" \
+            -H "xi-api-key: ${ELEVENLABS_API_KEY}"
+
+          echo ""
+          echo "[Gitea — GITEA_TOKEN]"
+          auth_check "gitea (GITEA_TOKEN)" "https://git.harryliu.dev/api/v1/repos/iamharryliu/journal" \
+            -H "CF-Access-Client-Id: ${GITEA_CF_ACCESS_CLIENT_ID}" \
+            -H "CF-Access-Client-Secret: ${GITEA_CF_ACCESS_CLIENT_SECRET}" \
+            -H "Authorization: token ${GITEA_TOKEN}"
+
+          echo ""
+          echo "=== Results: $PASS passed, $FAIL failed ==="
+          [ "$FAIL" -eq 0 ] || exit 1

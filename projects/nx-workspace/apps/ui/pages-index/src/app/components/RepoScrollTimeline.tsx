@@ -1,10 +1,17 @@
-import '@radix-ui/themes/styles.css';
-import { Theme } from '@radix-ui/themes';
+import { CSSProperties } from 'react';
 import {
+  ThemeScope,
   ScrollTimeline,
   ScrollTimelineEntry,
 } from '@vigilant-broccoli/react-lib';
-import { useRadixAppearance } from '../use-prefers-dark';
+import { useThemeAppearance } from '../use-prefers-dark';
+
+const PAGE_THEME_STYLE = {
+  minHeight: 0,
+  '--background': 'var(--pages-background)',
+  '--primary': 'var(--pages-primary)',
+  '--border': 'var(--pages-border)',
+} as CSSProperties;
 
 interface RepoScrollTimelineProps {
   entries: ScrollTimelineEntry[];
@@ -13,16 +20,17 @@ interface RepoScrollTimelineProps {
 }
 
 export default function RepoScrollTimeline(props: RepoScrollTimelineProps) {
-  const appearance = useRadixAppearance();
+  const appearance = useThemeAppearance();
 
   return (
-    <Theme
+    <ThemeScope
       appearance={appearance}
       hasBackground={false}
       accentColor="sky"
       className="flex min-h-0 flex-1 flex-col"
+      style={PAGE_THEME_STYLE}
     >
       <ScrollTimeline {...props} fill />
-    </Theme>
+    </ThemeScope>
   );
 }
