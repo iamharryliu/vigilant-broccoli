@@ -30,7 +30,6 @@ import {
   TabbedViewTab,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import {
-  VisuallyHidden,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -69,6 +68,9 @@ const EVENT_CALENDARS_API = '/api/event-calendars';
 const HIDDEN_CALENDARS_STORAGE_KEY = 'vb-manager-hidden-event-calendars';
 
 const TAB_ICON_SIZE = 18;
+
+// Tailwind's sm breakpoint, where the dialog stops being full screen.
+const DESKTOP_MEDIA_QUERY = '(min-width: 640px)';
 
 // Tab content isn't a flex child, so size the editor to the viewport minus
 // the top bar and tab row.
@@ -318,16 +320,36 @@ export const HomeView = () => {
 
       <Dialog open={createOpen} onOpenChange={handleCreateOpenChange}>
         <DialogContent
-          className="top-[max(env(safe-area-inset-top),0.5rem)] block w-[calc(100%-1rem)] max-w-[600px] max-h-[calc(100svh-env(safe-area-inset-top)-1rem)] translate-y-0 gap-0 overflow-y-auto overscroll-contain"
+          fullScreenOnMobile
+          className="flex flex-col gap-0 overflow-hidden p-0 max-sm:!overflow-hidden sm:max-h-[90dvh] sm:w-[calc(100%-2rem)] sm:max-w-[600px]"
           aria-describedby={undefined}
           showCloseButton={false}
+          onOpenAutoFocus={event => {
+            // Focusing the textarea on a phone pops the keyboard before the
+            // user asks for it; Radix would otherwise focus the Close button.
+            event.preventDefault();
+            if (!window.matchMedia(DESKTOP_MEDIA_QUERY).matches) return;
+            (event.currentTarget as HTMLElement)
+              .querySelector('textarea')
+              ?.focus();
+          }}
         >
-          <VisuallyHidden>
-            <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
-              Create Calendar Event
-            </DialogTitle>
-          </VisuallyHidden>
-          <CalendarInput />
+          <CalendarInput
+            header={
+              <div className="flex shrink-0 items-center justify-between gap-3 border-b border-gray-200 px-4 pb-3 pt-[max(env(safe-area-inset-top),0.75rem)] sm:px-6 sm:pt-6">
+                <DialogTitle className="text-xl font-bold leading-7 tracking-normal">
+                  Create Calendar Event
+                </DialogTitle>
+                <button
+                  type="button"
+                  onClick={() => handleCreateOpenChange(false)}
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100"
+                >
+                  Close
+                </button>
+              </div>
+            }
+          />
         </DialogContent>
       </Dialog>
     </>
