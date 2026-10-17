@@ -46,21 +46,9 @@ const SHEET_CLASS =
 
 const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const URL_PATTERN = /(https?:\/\/[^\s<>"()]+[^\s<>"().,;:!?\]'])/g;
-const ANCHOR_PATTERN = /<a\b[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
-const LINE_BREAK_TAG_PATTERN = /<br\s*\/?>|<\/?(p|div|li|h[1-6])\b[^>]*>/gi;
-const TAG_PATTERN = /<[^>]+>/g;
-const NUMERIC_ENTITY_PATTERN = /&#(x?)([0-9a-f]+);/gi;
-const NAMED_ENTITY_PATTERN = /&(amp|lt|gt|quot|apos|nbsp);/g;
+const NON_TEXT_SELECTOR = 'script, style';
+const LINE_BREAK_SELECTOR = 'br, p, div, li, h1, h2, h3, h4, h5, h6';
 const EXTRA_BLANK_LINES_PATTERN = /\n{3,}/g;
-
-const NAMED_ENTITIES: Record<string, string> = {
-  amp: '&',
-  apos: "'",
-  gt: '>',
-  lt: '<',
-  nbsp: ' ',
-  quot: '"',
-};
 
 // All-day events carry a bare date, which Date would parse as UTC midnight.
 const parseEventDate = (value: string) => {
@@ -99,28 +87,24 @@ const formatEventWhen = (event: CalendarEvent) => {
     : `${formatDate(start)}, ${formatTime(start)} – ${formatDate(end)}, ${formatTime(end)}`;
 };
 
-const decodeEntities = (text: string) =>
-  text
-    .replace(NUMERIC_ENTITY_PATTERN, (_, hex: string, code: string) =>
-      String.fromCodePoint(parseInt(code, hex ? 16 : 10)),
-    )
-    .replace(NAMED_ENTITY_PATTERN, (_, name: string) => NAMED_ENTITIES[name]);
-
-// Google stores descriptions as HTML; reduce them to text so nothing from an
-// invitation is ever rendered as markup. Anchors keep their target as text so
-// it is linkified below.
-const descriptionToText = (description: string) =>
-  decodeEntities(
-    description
-      .replace(ANCHOR_PATTERN, (_, href: string, label: string) => {
-        const text = label.replace(TAG_PATTERN, '').trim();
-        return !text || text === href ? href : `${text} (${href})`;
-      })
-      .replace(LINE_BREAK_TAG_PATTERN, '\n')
-      .replace(TAG_PATTERN, ''),
-  )
+// Google stores descriptions as HTML; DOMParser documents are inert (no
+// scripts or resource loads), so reading textContent never renders markup.
+// Anchors keep their target as text so it is linkified below.
+const descriptionToText = (description: string) => {
+  const { body } = new DOMParser().parseFromString(description, 'text/html');
+  body.querySelectorAll(NON_TEXT_SELECTOR).forEach(element => element.remove());
+  body.querySelectorAll('a[href]').forEach(anchor => {
+    const href = anchor.getAttribute('href') ?? '';
+    const text = anchor.textContent?.trim() ?? '';
+    anchor.replaceWith(!text || text === href ? href : `${text} (${href})`);
+  });
+  body
+    .querySelectorAll(LINE_BREAK_SELECTOR)
+    .forEach(element => element.after('\n'));
+  return (body.textContent ?? '')
     .replace(EXTRA_BLANK_LINES_PATTERN, '\n\n')
     .trim();
+};
 
 const LinkifiedText = ({ text }: { text: string }) => (
   <>
