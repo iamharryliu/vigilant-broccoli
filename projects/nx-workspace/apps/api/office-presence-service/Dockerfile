@@ -11,14 +11,13 @@ WORKDIR /app
 
 COPY . .
 
+# main.js requires both at runtime (they are esbuild externals), so they must stay in node_modules.
 RUN apk add --no-cache su-exec \
     && apk add --no-cache --virtual .build-deps python3 make g++ \
-    && npm install --no-package-lock --no-save better-sqlite3@${BETTER_SQLITE3_VERSION} \
-    && mkdir -p /app/build/Release \
-    && cp /app/node_modules/better-sqlite3/build/Release/better_sqlite3.node /app/build/Release/ \
-    && rm -rf /app/node_modules \
+    && npm install --no-package-lock --no-save --omit=dev \
+       better-sqlite3@${BETTER_SQLITE3_VERSION} node-cron@${NODE_CRON_VERSION} \
+    && npm cache clean --force \
     && apk del .build-deps \
-    && npm install --no-package-lock --no-save node-cron@${NODE_CRON_VERSION} \
     && chown -R node:node /app
 
 # Mount a volume at /data and set OFFICE_PRESENCE_DB=/data/state.db to keep the SQLite state.
