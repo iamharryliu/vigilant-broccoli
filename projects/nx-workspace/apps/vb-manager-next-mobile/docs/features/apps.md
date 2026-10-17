@@ -6,4 +6,4 @@
 - Desktop: `webUrl` opens in a new tab.
 - iOS (including iPadOS reporting as Mac with touch): with `iosUrl`, navigates to the scheme and falls back to `webUrl` after about 1.2s only if the page is still visible (`visibilitychange`/`pagehide` cancel it); without it, opens `webUrl`.
 - Android: with `androidPackage`, navigates to an `intent://` URL with `S.browser_fallback_url` so Android handles the fallback; without one, opens `webUrl`, which an installed PWA captures within its scope.
-- Docs has no native app. Home-screen web apps cannot be launched from another app on iOS, so it opens in Safari.
+- Docs and Projects have no native app. Home-screen web apps cannot be launched from another app on iOS, so they open in Safari.

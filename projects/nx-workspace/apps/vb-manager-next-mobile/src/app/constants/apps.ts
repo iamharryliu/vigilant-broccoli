@@ -1,4 +1,4 @@
-import { Mail, FileText, Play, type LucideIcon } from 'lucide-react';
+import { Mail, FileText, FolderGit2, Play, type LucideIcon } from 'lucide-react';
 
 export type AppEntry = {
   label: string;
@@ -39,5 +39,11 @@ export const APPS: AppEntry[] = [
     webUrl: 'https://docs.harryliu.dev',
     tileColor: 'bg-blue-600',
     icon: FileText,
+  },
+  {
+    label: 'Projects',
+    webUrl: 'https://projects.harryliu.dev',
+    tileColor: 'bg-emerald-600',
+    icon: FolderGit2,
   },
 ];
