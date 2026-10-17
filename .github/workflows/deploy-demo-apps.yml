@@ -65,7 +65,9 @@ jobs:
           VAULT_ADDR: https://vault.harryliu.dev
           CF_ACCESS_CLIENT_ID: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_ID }}
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
-        run: pnpm exec nx affected -t deploy:demo
+        # Serial: deploy-vercel.ts runs a nested `nx build`, and concurrent sibling deploys
+        # make Nx abort it with "Recursive task invocation detected".
+        run: pnpm exec nx affected -t deploy:demo --parallel=1
 
       - name: Summarize deployed apps
         if: success()
