@@ -5,9 +5,10 @@ import {
   ViewStateSelectedOption,
 } from '@slack/bolt';
 import {
-  loadAllPresences,
   savePresence,
+  savePresenceIfMissing,
   deletePresence,
+  runInTransaction,
   saveEvent,
   loadEventById,
   loadUserSettings,
@@ -23,33 +24,39 @@ import { ACTION_ID, BLOCK_ID } from '../consts/data.consts';
 import { validateInput } from './input-validation.utils';
 import { isDemoUserId } from '../consts/demo-users.const';
 
+type RenderedCheckboxBlock = {
+  block_id?: string;
+  accessory?: { options?: { value?: string }[] };
+};
+
+// Only the dates the clicked block rendered: future presences it never showed (weekends
+// hidden by the weekdays-only setting, later weeks) must survive the click.
+const getRenderedOptionValues = (body: BlockAction, blockId: string) => {
+  const blocks = (body.view?.blocks ?? []) as RenderedCheckboxBlock[];
+  const block = blocks.find(b => b.block_id === blockId);
+  return (block?.accessory?.options ?? []).flatMap(option =>
+    option.value ? [option.value] : [],
+  );
+};
+
 export function handleCheckboxAction(body: BlockAction) {
   const action = body.actions[0];
   if (action.type !== 'checkboxes') return;
-  const selectedDates = action.selected_options.map(opt => opt.value as string);
+  const userId = body.user.id;
+  const selectedDates = new Set(
+    action.selected_options.map(opt => opt.value as string),
+  );
+  const { defaultOffice } = loadUserSettings(userId);
 
-  const userPresences = loadAllPresences();
-
-  if (!userPresences[body.user.id]) {
-    userPresences[body.user.id] = {};
-  }
-
-  const { defaultOffice } = loadUserSettings(body.user.id);
-
-  for (const date of selectedDates) {
-    savePresence(
-      body.user.id,
-      date,
-      userPresences[body.user.id][date] ||
-        ({ office: defaultOffice } as UserPresence),
-    );
-  }
-  for (const date of Object.keys(userPresences[body.user.id])) {
-    if (!selectedDates.includes(date)) {
-      delete userPresences[body.user.id][date];
-      deletePresence(body.user.id, date);
+  runInTransaction(() => {
+    for (const date of getRenderedOptionValues(body, action.block_id)) {
+      if (selectedDates.has(date)) {
+        savePresenceIfMissing(userId, date, { office: defaultOffice });
+      } else {
+        deletePresence(userId, date);
+      }
     }
-  }
+  });
 }
 
 export function handleScheduleModalSubmit(
@@ -234,13 +241,7 @@ export function handleEventAttendanceToggle(body: BlockAction) {
       attendees.push(userId);
     }
 
-    const allPresences = loadAllPresences();
-    const userPresences = allPresences[userId];
-    const hasPresence = userPresences && userPresences[event.date];
-
-    if (!hasPresence) {
-      savePresence(userId, event.date, {} as UserPresence);
-    }
+    savePresenceIfMissing(userId, event.date, {});
   } else {
     attendees = attendees.filter(id => id !== userId);
   }

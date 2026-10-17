@@ -91,7 +91,7 @@ The entrypoint chowns `/data` for the `node` user at boot, so a root-owned volum
 | `OFFICE_PRESENCE_DB`             | No                      | `state.db`                      | SQLite file path                                                                        |
 | `OFFICES`                        | No                      | 4 sample cities                 | Comma-separated list of offices                                                         |
 | `ENABLE_REMINDERS`               | No                      | `false`                         | Schedule the weekly reminder (`socket` only)                                            |
-| `REMINDER_TIMEZONE`              | No                      | `Europe/Stockholm`              | Reminder cron timezone and week boundaries for seeding                                  |
+| `REMINDER_TIMEZONE`              | No                      | `Europe/Stockholm`              | Reminder cron, seeding weeks, and "today" when a member's Slack timezone is unknown     |
 | `INCLUDE_WEEKENDS`               | No                      | `false`                         | Include weekends                                                                        |
 | `PORT` / `HOST`                  | No                      | `3000` / `0.0.0.0` in the image | Listen address (`http`)                                                                 |
 | `OFFICE_PRESENCE_INTERNAL_TOKEN` | `http` with `DEMO_MODE` | -                               | Bearer token for `/internal/*`; `/internal/reminders` is registered only when it is set |
@@ -102,4 +102,5 @@ The entrypoint chowns `/data` for the `node` user at boot, so a root-owned volum
 ## Nuances
 
 - `Dockerfile` pins `better-sqlite3` and `node-cron` and installs them in the image; the esbuild bundle keeps both external.
+- The server runs in UTC, so "today" (Home view dates, the past-date cutoff, check-out and modal date pickers) comes from each member's Slack `users.info` `tz`, cached for an hour. Seeded `U_DEMO_` members, the mock client and failed lookups fall back to `REMINDER_TIMEZONE`.
 - The demo deployment (Fly, Cloudflare Pages, seeding) is in [demo-deployment.md](./demo-deployment.md).

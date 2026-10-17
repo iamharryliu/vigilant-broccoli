@@ -75,7 +75,18 @@ const Demo = () => {
   );
 
   useEffect(() => {
-    run(user => demoClient.state(user));
+    run(async user => {
+      try {
+        return await demoClient.state(user);
+      } catch (error) {
+        // A stored id can name a seeded member a later roster dropped.
+        if (!user) throw error;
+        const next = await demoClient.state(null);
+        setUserId(next.users[0].id);
+        storeUserId(next.users[0].id);
+        return next;
+      }
+    });
     // Load once; later calls come from user interaction.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
