@@ -1,4 +1,10 @@
-import { Mail, FileText, FolderGit2, Play, type LucideIcon } from 'lucide-react';
+import {
+  Mail,
+  FileText,
+  FolderGit2,
+  Play,
+  type LucideIcon,
+} from 'lucide-react';
 
 export type AppEntry = {
   label: string;
