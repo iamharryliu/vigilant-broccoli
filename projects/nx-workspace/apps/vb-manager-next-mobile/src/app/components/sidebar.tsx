@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { House, LogOut } from 'lucide-react';
+import { House, LayoutGrid, LogOut } from 'lucide-react';
 import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { signOut } from '../providers/auth-provider';
 import { PAGE_TITLE } from '../app.const';
@@ -19,6 +19,7 @@ const FOOTER_LABEL_VISIBLE = 'flex-1 opacity-100';
 
 const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
   { href: '/', label: PAGE_TITLE.HOME, icon: House },
+  { href: '/apps', label: PAGE_TITLE.APPS, icon: LayoutGrid },
 ];
 
 type AppSidebarProps = {
