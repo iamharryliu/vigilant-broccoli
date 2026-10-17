@@ -862,6 +862,15 @@ importers:
       '@vigilant-broccoli/react-lib':
         specifier: workspace:*
         version: link:../../libs/@vigilant-broccoli/react-lib
+      '@vigilant-broccoli/react-lib-auth':
+        specifier: workspace:*
+        version: link:../../libs/@vigilant-broccoli/react-lib-auth
+      '@vigilant-broccoli/react-lib-calendar':
+        specifier: workspace:*
+        version: link:../../libs/@vigilant-broccoli/react-lib-calendar
+      '@vigilant-broccoli/react-lib-media':
+        specifier: workspace:*
+        version: link:../../libs/@vigilant-broccoli/react-lib-media
       leaflet:
         specifier: '*'
         version: 1.9.4
@@ -1158,9 +1167,6 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: '*'
         version: 1.2.12(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@supabase/supabase-js':
-        specifier: ^2.110.1
-        version: 2.110.1
       '@vigilant-broccoli/common-js':
         specifier: workspace:*
         version: link:../common-js
@@ -1170,12 +1176,6 @@ importers:
       class-variance-authority:
         specifier: '*'
         version: 0.7.1
-      clsx:
-        specifier: '*'
-        version: 2.1.1
-      framer-motion:
-        specifier: '*'
-        version: 12.40.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       lucide-react:
         specifier: '*'
         version: 0.513.0(react@19.2.7)
@@ -1191,9 +1191,45 @@ importers:
       tailwind-merge:
         specifier: '*'
         version: 3.6.0
-      yjs:
-        specifier: ^13.6.31
-        version: 13.6.31
+
+  libs/@vigilant-broccoli/react-lib-auth:
+    dependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.110.1
+        version: 2.110.1
+      '@vigilant-broccoli/common-js':
+        specifier: workspace:*
+        version: link:../common-js
+      '@vigilant-broccoli/react-lib':
+        specifier: workspace:*
+        version: link:../react-lib
+      react:
+        specifier: 19.2.7
+        version: 19.2.7
+
+  libs/@vigilant-broccoli/react-lib-calendar:
+    dependencies:
+      '@vigilant-broccoli/react-lib':
+        specifier: workspace:*
+        version: link:../react-lib
+      lucide-react:
+        specifier: ^0.513.0
+        version: 0.513.0(react@19.2.7)
+      react:
+        specifier: 19.2.7
+        version: 19.2.7
+
+  libs/@vigilant-broccoli/react-lib-media:
+    dependencies:
+      '@vigilant-broccoli/react-lib':
+        specifier: workspace:*
+        version: link:../react-lib
+      lucide-react:
+        specifier: ^0.513.0
+        version: 0.513.0(react@19.2.7)
+      react:
+        specifier: 19.2.7
+        version: 19.2.7
 
   libs/@vigilant-broccoli/react-music-lib:
     dependencies:

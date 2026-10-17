@@ -1,6 +1,6 @@
 import { View } from '@slack/types';
 import { OfficePresenceHandlerApp } from '../office-presence-app';
-import { MOCK_BOT_USER_ID, MOCK_USERS } from './mock-users.const';
+import { DEMO_BOT_USER_ID } from '../consts/demo-users.const';
 
 export type MockMessage = {
   id: number;
@@ -26,12 +26,15 @@ const GROUP_PREFIX = 'G_MOCK_';
 const matches = (matcher: string | RegExp, value: string) =>
   typeof matcher === 'string' ? matcher === value : matcher.test(value);
 
-const nameOf = (userId: string) =>
-  MOCK_USERS.find(u => u.id === userId)?.realName ?? userId;
+export type MockDirectory = {
+  nameOf: (userId: string) => string;
+  isAdmin: (userId: string) => boolean | undefined;
+};
 
 // Stands in for Bolt's `App` and Slack's `WebClient` so the real handlers run
 // unchanged; the mock only records what the app would have sent to Slack.
-export function createMockSlack() {
+// All state held here is per visitor: callers create one instance per session.
+export function createMockSlack({ nameOf, isAdmin }: MockDirectory) {
   const registrations: Registration[] = [];
   const homes = new Map<string, View>();
   const modals = new Map<string, View[]>();
@@ -125,10 +128,10 @@ export function createMockSlack() {
     },
     users: {
       info: async ({ user }: { user: string }) => ({
-        user: { is_admin: MOCK_USERS.find(u => u.id === user)?.isAdmin },
+        user: { is_admin: isAdmin(user) },
       }),
     },
-    auth: { test: async () => ({ user_id: MOCK_BOT_USER_ID }) },
+    auth: { test: async () => ({ user_id: DEMO_BOT_USER_ID }) },
   };
 
   const run = async (

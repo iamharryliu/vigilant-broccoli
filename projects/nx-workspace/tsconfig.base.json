@@ -43,6 +43,15 @@
       "@vigilant-broccoli/react-lib/toaster": [
         "./libs/@vigilant-broccoli/react-lib/src/components/Toaster.tsx"
       ],
+      "@vigilant-broccoli/react-lib-auth": [
+        "./libs/@vigilant-broccoli/react-lib-auth/src/index.ts"
+      ],
+      "@vigilant-broccoli/react-lib-calendar": [
+        "./libs/@vigilant-broccoli/react-lib-calendar/src/index.ts"
+      ],
+      "@vigilant-broccoli/react-lib-media": [
+        "./libs/@vigilant-broccoli/react-lib-media/src/index.ts"
+      ],
       "@vigilant-broccoli/react-lib-higher-level": [
         "./libs/@vigilant-broccoli/react-lib-higher-level/src/index.ts"
       ],

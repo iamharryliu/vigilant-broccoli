@@ -2,22 +2,20 @@ import { createServer, IncomingMessage, ServerResponse } from 'http';
 import {
   OfficePresenceAppRunConfig,
   createAppConfig,
-  registerOfficePresenceHandlers,
 } from '../office-presence-app';
-import { loadUserSettings } from '../utils/db.utils';
-import { createMockSlack } from './mock-slack';
-import { seedMockData } from './mock-seed';
-import { MOCK_UI_HTML } from './mock-ui';
+import { DEMO_OFFICES } from '../consts/demo-users.const';
 import {
-  MOCK_BOT_NAME,
-  MOCK_BOT_USER_ID,
-  MOCK_OFFICES,
-  MOCK_USERS,
-} from './mock-users.const';
-import { APP_COMMAND } from '../consts/app.consts';
+  DEMO_OPERATION,
+  DemoApiError,
+  DemoOperation,
+  createDemoApi,
+} from '../demo/demo-api';
+import { MOCK_UI_HTML } from './mock-ui';
 
 const DEFAULT_MOCK_PORT = 3100;
+const DEFAULT_TIME_ZONE = 'Europe/Stockholm';
 const IN_MEMORY_DB = ':memory:';
+const API_PREFIX = '/api/';
 
 type JsonBody = Record<string, unknown>;
 
@@ -33,6 +31,9 @@ const sendJson = (res: ServerResponse, status: number, payload: unknown) => {
   res.end(JSON.stringify(payload));
 };
 
+const isOperation = (value: string): value is DemoOperation =>
+  (Object.values(DEMO_OPERATION) as string[]).includes(value);
+
 export async function runOfficePresenceMock(
   config: OfficePresenceAppRunConfig = {},
 ) {
@@ -41,61 +42,16 @@ export async function runOfficePresenceMock(
       `The mock must run with OFFICE_PRESENCE_DB=${IN_MEMORY_DB} so it never writes the real state.db.`,
     );
   }
-  const appConfig = createAppConfig({ OFFICES: MOCK_OFFICES, ...config });
-  const slack = createMockSlack();
-  registerOfficePresenceHandlers(slack.app, appConfig, async userId => {
-    const copy = appConfig.getCopy(loadUserSettings(userId).language);
-    await slack.sendMessage({
-      channel: userId,
-      text: copy.getReminderDmText(appConfig.APP_NAME, MOCK_BOT_USER_ID),
-    });
+  const appConfig = createAppConfig({ OFFICES: DEMO_OFFICES, ...config });
+  // One browser, one session: the page sends no session id.
+  const demo = createDemoApi({
+    appConfig,
+    seed: {
+      timeZone: config.reminderTimezone ?? DEFAULT_TIME_ZONE,
+      includeWeekends: appConfig.includeWeekends,
+    },
   });
-  seedMockData();
-
-  const snapshot = (userId: string) => ({
-    appName: appConfig.APP_NAME,
-    botUserId: MOCK_BOT_USER_ID,
-    users: [
-      ...MOCK_USERS,
-      { id: MOCK_BOT_USER_ID, realName: MOCK_BOT_NAME, title: 'App' },
-    ],
-    home: slack.getHome(userId),
-    modals: slack.getModals(userId),
-    messages: slack.getMessages(userId),
-  });
-
-  const handleApi = async (path: string, body: JsonBody) => {
-    const userId = String(body.user ?? MOCK_USERS[0].id);
-    switch (path) {
-      case '/api/state':
-        await slack.openHome(userId);
-        break;
-      case '/api/action':
-        await slack.triggerAction(userId, body.action as { action_id: string });
-        break;
-      case '/api/submit':
-        await slack.submitView(
-          userId,
-          String(body.callbackId),
-          body.state as { values: Record<string, Record<string, unknown>> },
-        );
-        break;
-      case '/api/close-modal':
-        slack.closeTopModal(userId);
-        break;
-      case '/api/preview-reminder':
-        await slack.runCommand(userId, APP_COMMAND.PREVIEW_REMINDER);
-        break;
-      case '/api/reset':
-        slack.reset();
-        seedMockData();
-        await slack.openHome(userId);
-        break;
-      default:
-        return null;
-    }
-    return snapshot(userId);
-  };
+  demo.reseed();
 
   const server = createServer(async (req, res) => {
     const path = (req.url ?? '/').split('?')[0];
@@ -104,11 +60,20 @@ export async function runOfficePresenceMock(
       res.end(MOCK_UI_HTML);
       return;
     }
+    const operation = path.startsWith(API_PREFIX)
+      ? path.slice(API_PREFIX.length)
+      : '';
+    if (!isOperation(operation)) {
+      sendJson(res, 404, { error: `Not found: ${path}` });
+      return;
+    }
     try {
-      const result = await handleApi(path, await readJson(req));
-      if (result) sendJson(res, 200, result);
-      else sendJson(res, 404, { error: `Not found: ${path}` });
+      sendJson(res, 200, await demo.handle(operation, await readJson(req)));
     } catch (error) {
+      if (error instanceof DemoApiError) {
+        sendJson(res, error.statusCode, { error: error.message });
+        return;
+      }
       console.error('[mock]', error);
       sendJson(res, 500, {
         error: error instanceof Error ? error.message : String(error),

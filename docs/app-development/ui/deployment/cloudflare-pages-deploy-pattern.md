@@ -30,6 +30,8 @@ Reference apps:
 
 Project names are environment-prefixed (`staging-docs-md`, `production-cloud-8-skate-react`); production mirrors the trio as `:production` target variants. Each app also carries a `manual-deploy` target (same command as `deploy`) — `manual-deploy-app.yml` dispatches whichever target name is chosen via `nx run-many -t $DEPLOY_TARGET`.
 
+`office-presence-ui` is a demo-only site: one `demo-office-presence-ui` project (`--production-branch main`, `--branch main`), the trio plus `deploy:demo` (builds with `--configuration=production-env` to bake in the single demo API host) and `manual-deploy`, with no `:preview` trio because every build would call the one demo backend. `deploy-demo-apps` deploys it.
+
 ## Branch matching: every deploy passes `--branch` explicitly
 
 Cloudflare files a deploy as a **Production** deployment only when its branch equals the project's `production_branch`; anything else becomes a **Preview**. Only Production deployments are served by the root `pages.dev` URL and by any attached custom domain. So the two settings must agree per environment, and they mirror the branches `deploy.yml` deploys from:

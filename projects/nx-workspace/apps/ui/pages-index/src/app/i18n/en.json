@@ -134,6 +134,10 @@
       "TITLE": "Employee Handler",
       "DESCRIPTION": "Employee management app deployed on Vercel."
     },
+    "OFFICE_PRESENCE": {
+      "TITLE": "Office Presence",
+      "DESCRIPTION": "Browser demo of the OK-IN office presence Slack app."
+    },
     "OPEN_APPLICATION": "Open application"
   },
   "STATUS_PAGE": {
@@ -243,7 +247,7 @@
     },
     "OFFICE_PRESENCE_SOCKET_SERVER_DEMO": {
       "TITLE": "office-presence-socket-server-demo",
-      "DESCRIPTION": "Slack bot for sharing office presence status via Socket Mode."
+      "DESCRIPTION": "Slack bot for sharing office presence status via Socket Mode or the HTTP Events API."
     },
     "SOCKET_SERVER_SOCKETIO": {
       "TITLE": "socket-server-socketio",

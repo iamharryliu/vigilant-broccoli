@@ -1,4 +1,4 @@
-import { createSupabaseAuth } from '@vigilant-broccoli/react-lib';
+import { createSupabaseAuth } from '@vigilant-broccoli/react-lib-auth';
 import { GoogleTasksAuthAdapter } from '@vigilant-broccoli/react-lib-higher-level';
 import {
   AUTHORIZATION_HEADER,

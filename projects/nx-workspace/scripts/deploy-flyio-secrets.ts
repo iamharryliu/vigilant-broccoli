@@ -45,7 +45,9 @@ const FLY_ORG = 'personal';
 
 const STAGING = 'staging';
 const PRODUCTION = 'production';
-const ENVIRONMENTS = [STAGING, PRODUCTION];
+// `demo` is the only environment of single-environment demo services such as office-presence-service.
+const DEMO = 'demo';
+const ENVIRONMENTS = [STAGING, PRODUCTION, DEMO];
 
 const PRIVATE_V6_TYPE = 'private_v6';
 

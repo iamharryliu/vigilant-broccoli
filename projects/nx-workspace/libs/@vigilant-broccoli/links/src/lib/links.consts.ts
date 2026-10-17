@@ -678,6 +678,10 @@ export const HARRYLIU_APP_URL = {
     NAME: 'Employee Handler Demo',
     URL: 'https://demo-employee-handler-ui.vercel.app/',
   },
+  OFFICE_PRESENCE_DEMO: {
+    NAME: 'Office Presence Demo',
+    URL: 'https://demo-office-presence-ui.pages.dev/',
+  },
 } as const;
 
 export const HARRYLIU_INFRA_URL = {

@@ -6,12 +6,12 @@ import {
   DialogHeader,
   DialogTitle,
   DotPaths,
-  GithubActionsBadges,
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from '@vigilant-broccoli/react-lib';
+import { GithubActionsBadges } from '@vigilant-broccoli/react-lib-media';
 import { useTranslation } from '../i18n';
 import en from '../i18n/en.json';
 import { PageHeader } from '../components/PageHeader';

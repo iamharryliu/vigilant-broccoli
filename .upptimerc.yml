@@ -122,6 +122,8 @@ sites:
     url: https://links.harryliu.dev/
   - name: demo-employee-handler-ui
     url: https://demo-employee-handler-ui.vercel.app/
+  - name: demo-office-presence-ui
+    url: https://demo-office-presence-ui.pages.dev/
 
 user-agent: upptime-vigilant-broccoli
 status-website:
