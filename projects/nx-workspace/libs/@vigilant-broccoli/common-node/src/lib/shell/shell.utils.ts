@@ -20,7 +20,7 @@ const runShellCommand = (
     childProcess.stdout?.on('data', data => {
       const output = data.toString();
       if (hasOutput) {
-        stdout += output.trim();
+        stdout += output;
       }
     });
 
@@ -39,7 +39,7 @@ const runShellCommand = (
     childProcess.on('close', code => {
       if (timer) clearTimeout(timer);
       if (code === 0) {
-        resolve(hasOutput ? stdout : undefined);
+        resolve(hasOutput ? stdout.trim() : undefined);
       } else {
         const errorMessage = stderr
           ? `Command failed with code ${code}: ${stderr}`
