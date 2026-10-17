@@ -2,10 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { House, LayoutGrid, LogOut } from 'lucide-react';
+import { Bot, House, LayoutGrid, LogOut } from 'lucide-react';
+import { LINK_GROUP_SUBGROUP } from '@vigilant-broccoli/links';
+import { WINDOW_OPEN_FEATURES } from '@vigilant-broccoli/react-lib';
 import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { signOut } from '../providers/auth-provider';
 import { PAGE_TITLE } from '../app.const';
+import { AGENTIC_LINKS } from '../constants/quick-links';
 
 const SIDEBAR_POSITION = 'peer fixed top-0 left-0 bottom-0 z-30';
 
@@ -17,10 +20,29 @@ const FOOTER_LABEL_COLLAPSIBLE =
   'w-0 opacity-0 group-hover/sidebar:w-auto group-hover/sidebar:flex-1 group-hover/sidebar:opacity-100';
 const FOOTER_LABEL_VISIBLE = 'flex-1 opacity-100';
 
+const WINDOW_TARGET_BLANK = '_blank';
+
 const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
   { href: '/', label: PAGE_TITLE.HOME, icon: House },
   { href: '/apps', label: PAGE_TITLE.APPS, icon: LayoutGrid },
 ];
+
+// Sidebar rows have no target attribute, so external workflow pages are opened
+// in a new tab from onClick while href keeps long-press and no-JS working.
+const AGENTIC_ITEM: SidebarCTA = {
+  id: LINK_GROUP_SUBGROUP.AGENTIC,
+  label: LINK_GROUP_SUBGROUP.AGENTIC,
+  icon: Bot,
+  children: AGENTIC_LINKS.map(link => ({
+    label: link.label,
+    title: link.label,
+    href: link.target,
+    onClick: e => {
+      e.preventDefault();
+      window.open(link.target, WINDOW_TARGET_BLANK, WINDOW_OPEN_FEATURES);
+    },
+  })),
+};
 
 type AppSidebarProps = {
   mobileOpen: boolean;
@@ -30,10 +52,13 @@ type AppSidebarProps = {
 export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
   const pathname = usePathname();
 
-  const items: SidebarCTA[] = NAV_ITEMS.map(item => ({
-    ...item,
-    isActive: pathname === item.href,
-  }));
+  const items: SidebarCTA[] = [
+    ...NAV_ITEMS.map(item => ({
+      ...item,
+      isActive: pathname === item.href,
+    })),
+    AGENTIC_ITEM,
+  ];
 
   return (
     <>

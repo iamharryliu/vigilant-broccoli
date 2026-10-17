@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import {
-  Bot,
   CalendarDays,
   CalendarPlus,
   CloudSun,
@@ -44,7 +43,7 @@ import {
   CALENDAR_TAB_QUERY_PARAM,
   CalendarTab,
 } from '../app.const';
-import { AGENTIC_LINKS, QUICK_LINKS } from '../constants/quick-links';
+import { QUICK_LINKS } from '../constants/quick-links';
 import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
 
 // Split into its own chunk so the weather card's code stays off the critical
@@ -333,12 +332,6 @@ export const HomeView = () => {
       label: CALENDAR_TAB.QUICK_LINKS,
       icon: <Link2 size={TAB_ICON_SIZE} />,
       content: <QuickLinksPanel links={QUICK_LINKS} />,
-    },
-    {
-      value: CALENDAR_TAB.AGENTIC,
-      label: CALENDAR_TAB.AGENTIC,
-      icon: <Bot size={TAB_ICON_SIZE} />,
-      content: <QuickLinksPanel links={AGENTIC_LINKS} />,
     },
     {
       value: CALENDAR_TAB.WEATHER,

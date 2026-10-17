@@ -11,7 +11,7 @@ const BROWSER_QUICK_LINKS = EXTERNAL_QUICK_LINKS.filter(
 const isAgenticLink = (link: QuickLink) =>
   link.subgroup === LINK_GROUP_SUBGROUP.AGENTIC;
 
-// The Agentic tab owns these, so Quick Links leaves them out.
+// The sidebar's Agentic group owns these, so Quick Links leaves them out.
 export const QUICK_LINKS: QuickLink[] = BROWSER_QUICK_LINKS.filter(
   link => !isAgenticLink(link),
 );
