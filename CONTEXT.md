@@ -28,6 +28,7 @@ Read the relevant document before working on its subject. Before editing a direc
 | [career experience](./notes/personal/personal-software-career-experience.md)     | New skill or area (e.g. mobile development) absent from its Skills or contributions: add it.               |
 | [code-quality-tools.md](./docs/code-quality-tools.md)                            | Quality tooling; update its inventory when adding/removing a tool.                                         |
 | [database-migrations.md](./docs/ci/database-migrations.md)                       | Database migrations.                                                                                       |
+| [fork-identity-inventory.md](./docs/fork-identity-inventory.md)                  | Making the repo forkable; update when adding or removing a hardcoded account, domain or identity value.    |
 | [free-tier-infrastructure.md](./docs/infrastructure/free-tier-infrastructure.md) | New cloud services or VM sizing; update the affected allowance row.                                        |
 | [git-workflow.md](./docs/git-workflow.md)                                        | Branching, staging, commits, PRs and syncing main.                                                         |
 | [github-repo-protection.md](./docs/infrastructure/github-repo-protection.md)     | GitHub protection, bypass actors or push rejections.                                                       |
