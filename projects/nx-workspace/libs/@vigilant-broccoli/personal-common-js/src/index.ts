@@ -116,6 +116,10 @@ export const COMMUNITY_LINK = {
 } as const;
 
 export const PROJECT_LINK = {
+  CALENDAR: {
+    NAME: 'Calendar',
+    URL: 'https://calendar.harryliu.dev/',
+  },
   SOFTWARE_PROJECTS: {
     NAME: 'Software Projects',
     URL: 'https://projects.harryliu.dev/',

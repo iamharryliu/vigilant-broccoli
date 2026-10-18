@@ -23,7 +23,7 @@ export const PERSONAL_SITE_LINK = {
   },
   CALENDAR: {
     NAME: 'Calendar',
-    URL: 'https://harryliu.dev/calendar',
+    URL: 'https://calendar.harryliu.dev/',
   },
   CONTACT: {
     NAME: 'Contact',
