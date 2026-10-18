@@ -300,7 +300,7 @@ export const HomeView = () => {
       content: (
         <>
           {isMobile === false && (
-            <div className="w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200">
+            <div className="w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
               <iframe
                 src={calendarSrc}
                 className="h-full w-full dark:invert dark:hue-rotate-180"
@@ -412,14 +412,14 @@ export const HomeView = () => {
         >
           <CalendarInput
             header={
-              <div className="flex shrink-0 items-center justify-between gap-3 border-b border-gray-200 px-4 pb-3 pt-[max(env(safe-area-inset-top),0.75rem)] sm:px-6 sm:pt-6">
+              <div className="flex shrink-0 items-center justify-between gap-3 border-b border-gray-200 px-4 pb-3 pt-[max(env(safe-area-inset-top),0.75rem)] sm:px-6 sm:pt-6 dark:border-gray-700">
                 <DialogTitle className="text-xl font-bold leading-7 tracking-normal">
                   Create Calendar Event
                 </DialogTitle>
                 <button
                   type="button"
                   onClick={() => handleCreateOpenChange(false)}
-                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100"
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:active:bg-gray-700"
                 >
                   Close
                 </button>

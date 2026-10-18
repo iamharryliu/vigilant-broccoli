@@ -70,9 +70,9 @@ const PHONE_FRAME_CLASS =
 
 // Same as Topbar in vb-manager-next-mobile; the safe-area inset is 0 here.
 const TOPBAR_CLASS =
-  'z-20 flex h-14 shrink-0 items-center gap-3 border-b border-gray-100 bg-white px-4';
+  'z-20 flex h-14 shrink-0 items-center gap-3 border-b border-gray-100 bg-white px-4 dark:border-gray-800 dark:bg-gray-900';
 const MENU_BUTTON_CLASS =
-  'shrink-0 cursor-pointer rounded-md p-1.5 text-gray-500 hover:bg-gray-50 hover:text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400';
+  'shrink-0 cursor-pointer rounded-md p-1.5 text-gray-500 hover:bg-gray-50 hover:text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white';
 
 // The app pins the drawer with fixed; here it is absolute inside the frame.
 // md:!w-64 keeps the drawer expanded instead of the desktop icon rail.
@@ -252,7 +252,7 @@ const MOCK_VOICE_TRANSCRIPT = 'Pick up the dry cleaning tomorrow at noon.';
 const MOCK_EVENT_TRANSCRIPT = 'Dinner with Alex on Friday at 7pm.';
 
 const VOICE_BUTTON_CLASS =
-  'flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 active:bg-gray-100';
+  'flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:active:bg-gray-700';
 
 // Stands in for the app's recorder-backed voice button: inserts a canned
 // transcript instead of using the microphone.
@@ -285,7 +285,7 @@ const MockCalendarInput = () => {
         onChange={e => setText(e.target.value)}
         placeholder="Paste event text, email, or image here..."
         rows={4}
-        className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
+        className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 dark:border-gray-700 dark:bg-gray-900"
       />
       <div className="flex gap-2">
         <button type="button" className={VOICE_BUTTON_CLASS}>
@@ -310,7 +310,7 @@ const MockCalendarInput = () => {
         Extract events
       </button>
       {extracted && (
-        <p className="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-500">
+        <p className="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-500 dark:bg-gray-950 dark:text-gray-400">
           Event extraction is mocked in the component library.
         </p>
       )}
@@ -448,7 +448,9 @@ export const MobileHomeDemo = () => {
         >
           <Menu size={20} />
         </button>
-        <span className="text-sm font-semibold text-gray-800">{APP_NAME}</span>
+        <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+          {APP_NAME}
+        </span>
       </header>
 
       <main className="flex min-h-0 flex-1 flex-col px-4 py-5">
