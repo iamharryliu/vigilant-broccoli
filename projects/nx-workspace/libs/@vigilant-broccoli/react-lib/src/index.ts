@@ -4,6 +4,7 @@ export * from './hooks/useAnimatedNumber';
 export * from './hooks/useGeolocation';
 export * from './hooks/useSpeechToText';
 export * from './hooks/useThemeKeybind';
+export * from './hooks/useThemePreference';
 export * from './i18n';
 export * from './utils/browser.utils';
 export * from './utils/cn';

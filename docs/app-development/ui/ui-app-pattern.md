@@ -63,31 +63,30 @@ References: [Apple web application configuration](https://developer.apple.com/li
 
 ## Theme (system light/dark)
 
-New UI apps follow the OS/browser `prefers-color-scheme` by default, using the shared `ThemeProvider` in system mode. This is a convention for new apps: `ThemeProvider`'s own default (light, persisted override, cross-tab sync) is unchanged, and apps with an established manual theme selection pattern keep it unless separately asked to change. Deviate in a new app only when the user explicitly requests another behavior.
+UI apps follow the OS/browser `prefers-color-scheme` through the shared `ThemeProvider`. A manual toggle is optional: it saves an override, and toggling back to the system appearance clears it. Deviate only when the user explicitly requests another behavior.
 
 ```tsx
 import { ThemeProvider } from '@vigilant-broccoli/react-lib';
 
 export function App() {
   return (
-    <ThemeProvider followSystem>
+    <ThemeProvider>
       <div className="bg-white dark:bg-gray-900">{/* app */}</div>
     </ThemeProvider>
   );
 }
 ```
 
-Reference implementations: `docs-md`, `context-md` and `links-react` (`src/app/app.tsx`). The component is `libs/@vigilant-broccoli/react-lib/src/components/ThemeProvider.tsx`; shared behavior is documented in [theme.md](../../../projects/nx-workspace/libs/@vigilant-broccoli/react-lib/docs/features/theme.md).
+Reference implementations: `docs-md`, `context-md` and `links-react` (`src/app/app.tsx`); `hearth` adds a toggle. The component is `libs/@vigilant-broccoli/react-lib/src/components/ThemeProvider.tsx`; shared behavior is documented in [theme.md](../../../projects/nx-workspace/libs/@vigilant-broccoli/react-lib/docs/features/theme.md).
 
-What `followSystem` does today:
+Behavior (`useThemePreference`, shared by `ThemeProvider` and apps that own their theme context):
 
-- The initial appearance is read from `prefers-color-scheme` on first render.
-- It tracks later OS/browser changes live through a media-query listener that is removed on unmount or when the prop changes. The page is not reloaded, so UI state survives a switch.
-- The stored `theme` value in `localStorage` and cross-tab `storage` updates are ignored, and `toggleTheme` from `useTheme` is a no-op. Do not combine `followSystem` with a visible manual toggle. A system/light/dark selector is not implemented; it is separate future work.
+- Without a saved `theme` in `localStorage`, the appearance tracks `prefers-color-scheme` live through a media-query listener. The page is not reloaded, so UI state survives a switch.
+- `toggleTheme` from `useTheme` saves the opposite appearance as an override; toggling back to the system appearance removes it. Cross-tab `storage` updates apply the override everywhere.
 
 ### Consistency requirements
 
-- Use the existing `light`/`dark` classes and `ThemeScope` tokens that `ThemeProvider` renders; do not add app-specific theme state or duplicate class toggling.
+- Use the existing `light`/`dark` classes and `ThemeScope` tokens that `ThemeProvider` renders; do not add app-specific theme state or duplicate class toggling. An app that must put the class on `<html>` builds on `useThemePreference` (see `personal-website-react`'s `theme-context.tsx`).
 - Tailwind only emits classes it scans, so add the shared lib globs (`react-lib`, `react-utility`, ...) the app imports to its `content` — see the workspace [Nuances](../../../projects/nx-workspace/CONTEXT.md#a-react-lib-component-renders-unstyled-in-an-app-that-never-scanned-it).
 - Give `dark:` variants to every surface: page background, text, markdown and code blocks, and native controls (inputs, scrollbars, `color-scheme`).
 - Overlays rendered through portals must use the shared primitives (`Dialog`, `Popover`, `Select`, `DropdownMenu`, `Tooltip`; see `usePortalTheme`), which copy the originating scope's variables and dark class.
@@ -102,9 +101,8 @@ What `followSystem` does today:
 
 - Initial load in OS light and in OS dark.
 - Switch the OS preference while the app is open: the theme follows live and open dialogs, filters and scroll position are kept.
-- With `localStorage.theme` set to the opposite value, the app still follows the system.
+- With a toggle: toggling saves an override that survives reloads; toggling back follows the system again.
 - Portals (dialogs, popovers, menus) and canvas/graph visuals redraw on a switch, and text and lines stay legible in both themes.
-- Unrelated apps that use `ThemeProvider` without `followSystem` keep their manual toggle and persistence.
 
 ## pages-index card (required)
 
@@ -122,5 +120,5 @@ Every UI application with a public URL appears as a card in `apps/ui/pages-index
 2. i18n wired via `createI18n` (above).
 3. Per-page document titles via `usePageTitle` (above).
 4. Web Applications card in `WebApplicationsPage.tsx`, plus the Upptime and quick-links entries above.
-5. Theme follows the system via `<ThemeProvider followSystem>` unless told otherwise (above).
+5. Theme follows the system via `<ThemeProvider>` unless told otherwise (above).
 6. Apple home screen PNG and link via the framework convention above.

@@ -17,7 +17,11 @@ export function PeopleTab({ users, currentUserId }: PeopleTabProps) {
   const others = users.filter(user => user.userId !== currentUserId);
 
   if (others.length === 0) {
-    return <p className="p-4 text-sm text-gray-400">{t('USERS.EMPTY')}</p>;
+    return (
+      <p className="p-4 text-sm text-gray-400 dark:text-gray-500">
+        {t('USERS.EMPTY')}
+      </p>
+    );
   }
 
   return (
@@ -25,12 +29,12 @@ export function PeopleTab({ users, currentUserId }: PeopleTabProps) {
       {others.map(user => (
         <li
           key={user.userId}
-          className="flex flex-wrap items-center justify-between gap-2 rounded border border-gray-200 px-3 py-2 text-sm"
+          className="flex flex-wrap items-center justify-between gap-2 rounded border border-gray-200 px-3 py-2 text-sm dark:border-gray-800"
         >
           <span className="font-medium">{user.username}</span>
           {isSharingUser(user) ? (
             <span className="flex items-center gap-3">
-              <span className="text-gray-500">
+              <span className="text-gray-500 dark:text-gray-400">
                 {t('PEOPLE.STATUS_SHARING')} ·{' '}
                 {user.lat.toFixed(COORDINATE_DECIMALS)},{' '}
                 {user.lng.toFixed(COORDINATE_DECIMALS)}
@@ -39,13 +43,13 @@ export function PeopleTab({ users, currentUserId }: PeopleTabProps) {
                 href={`${GOOGLE_MAPS_BASE}${user.lat},${user.lng}`}
                 target={WINDOW_TARGET_BLANK}
                 rel="noreferrer"
-                className="text-xs text-blue-600 underline"
+                className="text-xs text-blue-600 underline dark:text-blue-400"
               >
                 {t('SHARING.VIEW_ON_GOOGLE_MAPS')}
               </a>
             </span>
           ) : (
-            <span className="text-xs italic text-gray-400">
+            <span className="text-xs italic text-gray-400 dark:text-gray-500">
               {t('PEOPLE.STATUS_VIEWING')}
             </span>
           )}
