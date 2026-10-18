@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import {
+  Bot,
   CalendarDays,
   CalendarPlus,
   CloudSun,
@@ -35,6 +36,7 @@ import {
   DialogTitle,
 } from '@vigilant-broccoli/react-lib';
 import { QuickLinksPanel } from '@vigilant-broccoli/react-lib-higher-level';
+import { AgenticView } from './agentic-view';
 import { CalendarInput } from './calendar-input';
 import { GoogleTasksView } from './google-tasks-view';
 import { NotepadEditor } from './notepad-editor';
@@ -332,6 +334,12 @@ export const HomeView = () => {
       label: CALENDAR_TAB.QUICK_LINKS,
       icon: <Link2 size={TAB_ICON_SIZE} />,
       content: <QuickLinksPanel links={QUICK_LINKS} />,
+    },
+    {
+      value: CALENDAR_TAB.AGENTIC,
+      label: CALENDAR_TAB.AGENTIC,
+      icon: <Bot size={TAB_ICON_SIZE} />,
+      content: <AgenticView />,
     },
     {
       value: CALENDAR_TAB.WEATHER,

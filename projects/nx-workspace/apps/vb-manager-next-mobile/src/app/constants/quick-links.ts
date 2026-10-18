@@ -4,17 +4,10 @@ import {
   LINK_GROUP_SUBGROUP,
 } from '@vigilant-broccoli/links';
 
-const BROWSER_QUICK_LINKS = EXTERNAL_QUICK_LINKS.filter(
-  link => link.type === OPEN_TYPE.BROWSER,
+// The home Agentic tab renders these from the README table, so Quick Links
+// leaves them out.
+export const QUICK_LINKS: QuickLink[] = EXTERNAL_QUICK_LINKS.filter(
+  link =>
+    link.type === OPEN_TYPE.BROWSER &&
+    link.subgroup !== LINK_GROUP_SUBGROUP.AGENTIC,
 );
-
-const isAgenticLink = (link: QuickLink) =>
-  link.subgroup === LINK_GROUP_SUBGROUP.AGENTIC;
-
-// The sidebar's Agentic group owns these, so Quick Links leaves them out.
-export const QUICK_LINKS: QuickLink[] = BROWSER_QUICK_LINKS.filter(
-  link => !isAgenticLink(link),
-);
-
-export const AGENTIC_LINKS: QuickLink[] =
-  BROWSER_QUICK_LINKS.filter(isAgenticLink);

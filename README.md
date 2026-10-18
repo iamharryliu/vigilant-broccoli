@@ -57,6 +57,8 @@ See more:
 
 The update workflow selects `change`, `fix-ci`, or `resolve-conflicts` through its `operation` input. Instructions are required for `change`, optional for `fix-ci`, and left blank for `resolve-conflicts`. All three operations share a concurrency group per normalized PR number.
 
+The Phase, Description and Actions columns also feed the Agentic tab of `vb-manager-next-mobile` at build time. Keep the `### Agentic` heading, the `Phase | Description | Actions` column order, each Description as `` `name` — summary `` and each Actions cell as one markdown link (or `N/A` to omit the row), otherwise that build fails; see its [home tabs doc](./projects/nx-workspace/apps/vb-manager-next-mobile/docs/features/home.md).
+
 Entry points in one row share a task contract and differ only where [entry-point parity](./docs/agent-support.md#entry-point-parity) documents it.
 
 _Command notation: `/name` for Claude; `$name` for Codex._
