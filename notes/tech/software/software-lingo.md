@@ -54,11 +54,12 @@
 
 ## Networking
 
-| Term          | Definition                                                                                                                     |
-| :------------ | :----------------------------------------------------------------------------------------------------------------------------- |
-| Edge Requests | Requests served/handled at edge servers close to users. Benefits are lower latency, faster response, smarter request handling. |
-| URI           | Uniform Resource Identifier.                                                                                                   |
-| URL           | Uniform Resource Locator.                                                                                                      |
+| Term          | Definition                                                                                                                              |
+| :------------ | :-------------------------------------------------------------------------------------------------------------------------------------- |
+| Deep link     | A URL that opens a specific page or screen inside a website or app (e.g. a product page or a mobile app view) instead of its home page. |
+| Edge Requests | Requests served/handled at edge servers close to users. Benefits are lower latency, faster response, smarter request handling.          |
+| URI           | Uniform Resource Identifier.                                                                                                            |
+| URL           | Uniform Resource Locator.                                                                                                               |
 
 ## Web Rendering
 
