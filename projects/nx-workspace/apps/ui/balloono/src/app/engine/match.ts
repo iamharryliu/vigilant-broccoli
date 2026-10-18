@@ -21,6 +21,7 @@ import {
   DIRECTION,
   DIRECTION_VECTORS,
   MATCH_STATUS,
+  START_COUNTDOWN_TICKS,
   MAX_BALLOONS,
   MAX_RANGE,
   MAX_SPEED_LEVEL,
@@ -117,6 +118,7 @@ export const createMatch = (contenders: Contender[]): MatchState => {
     events: [],
     nextEventId: 1,
     tick: 0,
+    startCountdown: START_COUNTDOWN_TICKS,
     ...createBoard(board, spawns),
     powerUps: [],
     players: contenders.map((contender, slot) =>
@@ -331,6 +333,8 @@ export const advanceMatch = (
   inputs: Record<string, PlayerInput>,
 ): MatchState => {
   if (previous.status !== MATCH_STATUS.PLAYING) return previous;
+  if (previous.startCountdown > 0)
+    return { ...previous, startCountdown: previous.startCountdown - 1 };
   const state: MatchState = structuredClone(previous);
   state.tick++;
   state.events = state.events.filter(

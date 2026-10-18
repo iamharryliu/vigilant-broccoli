@@ -2,6 +2,7 @@ import {
   Mail,
   FileText,
   FolderGit2,
+  GitBranch,
   Play,
   type LucideIcon,
 } from 'lucide-react';
@@ -39,6 +40,14 @@ export const APPS: AppEntry[] = [
     androidPackage: 'ch.protonmail.android',
     tileColor: 'bg-violet-600',
     icon: Mail,
+  },
+  {
+    label: 'GitHub',
+    webUrl: 'https://github.com',
+    iosUrl: 'github://',
+    androidPackage: 'com.github.android',
+    tileColor: 'bg-gray-900',
+    icon: GitBranch,
   },
   {
     label: 'Docs',

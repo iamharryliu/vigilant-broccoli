@@ -41,7 +41,12 @@ export const LINK_GROUP_SUBGROUP = {
   VIGILANT_BROCCOLI: 'vigilant-broccoli',
   MESSAGING: 'Messaging',
   UI_APPS: 'UI Apps',
+  AGENTIC: 'Agentic',
 } as const;
+
+const VB_GITHUB_REPO_URL = 'https://github.com/iamharryliu/vigilant-broccoli';
+const VB_GITHUB_ACTIONS_URL = `${VB_GITHUB_REPO_URL}/actions`;
+const VB_GITHUB_WORKFLOWS_URL = `${VB_GITHUB_ACTIONS_URL}/workflows`;
 
 const DEV_LINKS = [
   {
@@ -813,32 +818,25 @@ const VB_LINKS = [
   },
   {
     label: 'VB - GitHub Repo',
-    target: 'https://github.com/iamharryliu/vigilant-broccoli',
+    target: VB_GITHUB_REPO_URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
     label: 'VB - GitHub Actions',
-    target: 'https://github.com/iamharryliu/vigilant-broccoli/actions',
+    target: VB_GITHUB_ACTIONS_URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
     label: 'VB - GitHub Pull Requests',
-    target: 'https://github.com/iamharryliu/vigilant-broccoli/pulls',
-    type: OPEN_TYPE.BROWSER,
-    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
-  },
-  {
-    label: 'VB - Manual Agentic PR Create',
-    target:
-      'https://github.com/iamharryliu/vigilant-broccoli/actions/workflows/manual-agentic-pr-create.yml',
+    target: `${VB_GITHUB_REPO_URL}/pulls`,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
   {
     label: 'VB - GitHub Projects',
-    target: 'https://github.com/iamharryliu/vigilant-broccoli/projects',
+    target: `${VB_GITHUB_REPO_URL}/projects`,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
   },
@@ -1597,6 +1595,36 @@ const HOME_LINKS = [
   },
 ];
 
+const AGENTIC_WORKFLOW = {
+  PR_CREATE: {
+    NAME: 'VB - Manual Agentic PR Create',
+    FILE: 'manual-agentic-pr-create.yml',
+  },
+  PR_UPDATE: {
+    NAME: 'VB - Manual Agentic PR Update',
+    FILE: 'manual-agentic-pr-update.yml',
+  },
+  PR_CREATE_AUDIT: {
+    NAME: 'VB - Manual Agentic PR Create Audit',
+    FILE: 'manual-agentic-pr-create-audit.yml',
+  },
+  PR_CREATE_RND: {
+    NAME: 'VB - Manual Agentic PR Create R&D',
+    FILE: 'manual-agentic-pr-create-rnd.yml',
+  },
+  PR_CREATE_SMOKE: {
+    NAME: 'VB - Manual Agentic PR Create Smoke',
+    FILE: 'manual-agentic-pr-create-smoke.yml',
+  },
+} as const;
+
+const AGENTIC_LINKS = Object.values(AGENTIC_WORKFLOW).map(({ NAME, FILE }) => ({
+  label: NAME,
+  target: `${VB_GITHUB_WORKFLOWS_URL}/${FILE}`,
+  type: OPEN_TYPE.BROWSER,
+  subgroup: LINK_GROUP_SUBGROUP.AGENTIC,
+}));
+
 const UI_APP_LINKS = [
   {
     label: HARRYLIU_APP_URL.COMPONENT_LIBRARY.NAME,
@@ -1617,6 +1645,7 @@ export type { QuickLink };
 export const EXTERNAL_QUICK_LINKS: QuickLink[] = [
   ...UI_APP_LINKS,
   ...VB_LINKS,
+  ...AGENTIC_LINKS,
   ...DEV_LINKS,
   ...UTILITY_LINKS,
   ...CAREER_LINKS,
