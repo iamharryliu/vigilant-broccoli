@@ -27,9 +27,14 @@ const EDIT_MODE_LABEL = 'Back to editing';
 const ICON_SIZE = 16;
 const PREVIEW_CLASS_NAME = 'overflow-auto pt-10';
 const PANE_STYLE: CSSProperties = { flex: 1, minHeight: 0 };
+// iOS Safari zooms the page into any focused field under 16px.
+const TEXTAREA_STYLE: CSSProperties = { fontSize: '16px' };
 // The editor's default 200px textarea floor would push the caret behind the
 // on-screen keyboard once the page shrinks to the visual viewport.
-const INLINE_TEXTAREA_STYLE: CSSProperties = { minHeight: 0 };
+const INLINE_TEXTAREA_STYLE: CSSProperties = {
+  ...TEXTAREA_STYLE,
+  minHeight: 0,
+};
 const DEFAULT_PLACEHOLDER = 'Shared family notes...';
 const CURSOR_SEND_INTERVAL_MS = 60;
 
@@ -192,7 +197,7 @@ export function WhiteboardEditor({
           <WhiteboardPane
             content={content}
             isLoading={isLoading}
-            renderEditor={() => renderEditor(dialogTextareaRef)}
+            renderEditor={() => renderEditor(dialogTextareaRef, TEXTAREA_STYLE)}
           />
         }
       />
