@@ -25,25 +25,27 @@ export const CollapsibleList = ({
   chevronPosition = 'right',
   triggerClassName = 'py-3',
 }: CollapsibleListProps) => {
-  const [mounted, setMounted] = useState(false);
-  const [openItems, setOpenItems] = useState<string[]>([]);
+  // Render the defaults immediately and apply saved state after mount: reading
+  // localStorage during render would break SSR hydration, and rendering nothing
+  // until mount made every section pop in and shift the layout.
+  const [openItems, setOpenItems] = useState<string[]>(() =>
+    items.filter(item => item.defaultOpen).map(item => item.id),
+  );
 
   const storageKey = (id: string) => `${storageKeyPrefix}-${id}`;
 
   useEffect(() => {
-    const initial = items
-      .filter(item => {
-        if (storageKeyPrefix) {
+    if (!storageKeyPrefix) return;
+    setOpenItems(
+      items
+        .filter(item => {
           const saved = localStorage.getItem(storageKey(item.id));
           return saved !== null
             ? saved === 'true'
             : (item.defaultOpen ?? false);
-        }
-        return item.defaultOpen ?? false;
-      })
-      .map(item => item.id);
-    setOpenItems(initial);
-    setMounted(true);
+        })
+        .map(item => item.id),
+    );
   }, []);
 
   const handleValueChange = (values: string[]) => {
@@ -57,8 +59,6 @@ export const CollapsibleList = ({
       });
     }
   };
-
-  if (!mounted) return null;
 
   return (
     <AccordionPrimitive.Root
