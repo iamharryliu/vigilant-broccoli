@@ -46,7 +46,7 @@ export const APPS: AppEntry[] = [
     webUrl: 'https://github.com',
     iosUrl: 'github://',
     androidPackage: 'com.github.android',
-    tileColor: 'bg-gray-900',
+    tileColor: 'bg-gray-900 dark:bg-gray-700',
     icon: GitBranch,
   },
   {

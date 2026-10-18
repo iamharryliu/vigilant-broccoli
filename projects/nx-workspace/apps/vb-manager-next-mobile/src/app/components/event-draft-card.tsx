@@ -102,7 +102,7 @@ export const EventDraftCard = ({
   };
 
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
+    <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3 dark:bg-blue-950 dark:border-blue-900">
       <p className="text-sm font-medium text-blue-800">Calendar Event</p>
 
       <input
@@ -113,11 +113,13 @@ export const EventDraftCard = ({
           setEditable(prev => ({ ...prev, summary: e.target.value }))
         }
         disabled={isReadOnly}
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 disabled:text-gray-400"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 disabled:text-gray-400 dark:border-gray-700 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
       />
 
       <div className="flex items-center gap-3">
-        <span className="text-xs text-gray-500 w-8">Start</span>
+        <span className="text-xs text-gray-500 w-8 dark:text-gray-400">
+          Start
+        </span>
         <input
           type={editable.allDay ? 'date' : 'datetime-local'}
           value={toInputValue(editable.start, editable.allDay)}
@@ -128,12 +130,14 @@ export const EventDraftCard = ({
             }))
           }
           disabled={isReadOnly}
-          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50"
+          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 dark:border-gray-700 dark:disabled:bg-gray-800"
         />
       </div>
 
       <div className="flex items-center gap-3">
-        <span className="text-xs text-gray-500 w-8">End</span>
+        <span className="text-xs text-gray-500 w-8 dark:text-gray-400">
+          End
+        </span>
         <input
           type={editable.allDay ? 'date' : 'datetime-local'}
           value={toInputValue(editable.end, editable.allDay)}
@@ -144,16 +148,18 @@ export const EventDraftCard = ({
             }))
           }
           disabled={isReadOnly}
-          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50"
+          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 dark:border-gray-700 dark:disabled:bg-gray-800"
         />
       </div>
 
       <div className="flex items-center gap-3">
-        <span className="text-xs text-gray-500">All day</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">
+          All day
+        </span>
         <button
           onClick={() => handleAllDayChange(!editable.allDay)}
           disabled={isReadOnly}
-          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${editable.allDay ? 'bg-blue-500' : 'bg-gray-200'} disabled:opacity-50`}
+          className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${editable.allDay ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700'} disabled:opacity-50`}
         >
           <span
             className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${editable.allDay ? 'translate-x-5' : 'translate-x-1'}`}
@@ -162,7 +168,9 @@ export const EventDraftCard = ({
       </div>
 
       <div className="flex items-center gap-3">
-        <span className="text-xs text-gray-500 w-14">Repeats</span>
+        <span className="text-xs text-gray-500 w-14 dark:text-gray-400">
+          Repeats
+        </span>
         <select
           value={editable.recurrence[0] ?? NO_RECURRENCE_VALUE}
           onChange={e =>
@@ -172,7 +180,7 @@ export const EventDraftCard = ({
             }))
           }
           disabled={isReadOnly}
-          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50"
+          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 dark:border-gray-700 dark:disabled:bg-gray-800"
         >
           {buildRecurrencePresets(editable.start).map(preset => (
             <option key={preset.value} value={preset.value}>
@@ -198,7 +206,7 @@ export const EventDraftCard = ({
           setEditable(prev => ({ ...prev, location: e.target.value }))
         }
         disabled={isReadOnly}
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 disabled:text-gray-400"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 disabled:text-gray-400 dark:border-gray-700 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
       />
 
       <textarea
@@ -209,11 +217,11 @@ export const EventDraftCard = ({
         }
         disabled={isReadOnly}
         rows={2}
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 disabled:text-gray-400 resize-none"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 disabled:text-gray-400 resize-none dark:border-gray-700 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
       />
 
       {status === 'error' && errorMessage && (
-        <p className="text-xs text-red-600">{errorMessage}</p>
+        <p className="text-xs text-red-600 dark:text-red-300">{errorMessage}</p>
       )}
 
       {status === 'created' && (
@@ -246,7 +254,7 @@ export const EventDraftCard = ({
           <button
             onClick={onCancel}
             disabled={isReadOnly}
-            className="px-4 bg-gray-100 text-gray-600 rounded-lg py-2 text-sm font-medium hover:bg-gray-200 disabled:opacity-50 transition-colors"
+            className="px-4 bg-gray-100 text-gray-600 rounded-lg py-2 text-sm font-medium hover:bg-gray-200 disabled:opacity-50 transition-colors dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
           >
             Cancel
           </button>

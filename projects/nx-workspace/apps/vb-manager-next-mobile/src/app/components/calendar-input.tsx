@@ -173,7 +173,7 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
           onPaste={handlePaste}
           placeholder="Paste event text, email, or image here..."
           rows={4}
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none bg-white"
+          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none bg-white dark:border-gray-700 dark:bg-gray-900"
         />
 
         {images.length > 0 && (
@@ -183,7 +183,7 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
                 <img
                   src={img.previewUrl}
                   alt=""
-                  className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                  className="w-20 h-20 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
                 />
                 <button
                   onClick={() => removeImage(i)}
@@ -199,7 +199,7 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
         <div className="flex gap-2">
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:active:bg-gray-700"
           >
             <svg
               className="w-4 h-4"
@@ -218,7 +218,7 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
           </button>
           <button
             onClick={() => cameraInputRef.current?.click()}
-            className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:active:bg-gray-700"
           >
             <svg
               className="w-4 h-4"
@@ -246,8 +246,8 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
             disabled={recordingState === 'transcribing'}
             className={`flex-1 flex items-center justify-center gap-2 border rounded-lg px-3 py-2 text-sm transition-colors ${
               recordingState === 'recording'
-                ? 'border-red-300 bg-red-50 text-red-600'
-                : 'border-gray-200 text-gray-600 hover:bg-gray-50 active:bg-gray-100'
+                ? 'border-red-300 bg-red-50 text-red-600 dark:border-red-800 dark:bg-red-950 dark:text-red-300'
+                : 'border-gray-200 text-gray-600 hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:active:bg-gray-700'
             } disabled:opacity-50`}
           >
             <svg
@@ -272,13 +272,13 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
         </div>
 
         {recordingState === 'recording' && interimTranscript && (
-          <p className="text-sm text-gray-400 italic px-1">
+          <p className="text-sm text-gray-400 italic px-1 dark:text-gray-500">
             {interimTranscript}
           </p>
         )}
 
         {voiceError && (
-          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
+          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 dark:text-red-300 dark:bg-red-950">
             {voiceError}
           </p>
         )}
@@ -301,7 +301,7 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
         />
 
         {parseError && (
-          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
+          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 dark:text-red-300 dark:bg-red-950">
             {parseError}
           </p>
         )}
@@ -320,7 +320,7 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
         ))}
       </div>
 
-      <div className="shrink-0 border-t border-gray-200 px-4 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-3 sm:px-6 sm:pb-6">
+      <div className="shrink-0 border-t border-gray-200 px-4 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-3 sm:px-6 sm:pb-6 dark:border-gray-700">
         <button
           onClick={handleParse}
           disabled={!canParse}

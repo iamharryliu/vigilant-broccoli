@@ -11,7 +11,7 @@ export default function AppsPage() {
   return (
     <ProtectedRoute>
       <main
-        className={`flex ${PAGE_HEIGHT} flex-col overflow-hidden bg-gray-50`}
+        className={`flex ${PAGE_HEIGHT} flex-col overflow-hidden bg-gray-50 dark:bg-gray-950`}
       >
         <div className="flex min-h-0 flex-1 flex-col px-4 py-5">
           <AppsView />

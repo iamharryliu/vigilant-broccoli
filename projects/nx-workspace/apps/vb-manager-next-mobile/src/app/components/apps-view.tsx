@@ -27,7 +27,7 @@ export const AppsView = () => {
           >
             <app.icon size={28} />
           </span>
-          <span className="w-full truncate text-xs text-gray-700">
+          <span className="w-full truncate text-xs text-gray-700 dark:text-gray-300">
             {app.label}
           </span>
         </a>
