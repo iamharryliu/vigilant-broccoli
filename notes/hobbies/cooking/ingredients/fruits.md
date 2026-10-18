@@ -7,7 +7,6 @@ Peak season for a temperate Northern Hemisphere climate (e.g. the continental US
 - [Seasonality](#seasonality)
   - [In Season by Month](#in-season-by-month)
   - [Seasonal Timeline](#seasonal-timeline)
-- [See Also](#see-also)
 
 ## Seasonality
 
