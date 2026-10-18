@@ -81,14 +81,14 @@ Hardware:
   One or two direct-play streams are fine. Several are not.
 - Ethernet, not Wi-Fi. Beyond the shared-bus limit, Raspberry Pi OS ships the
   Wi-Fi radio rfkill-soft-blocked until a WLAN country is set, which is an easy
-  trap on a headless box (see [CONTEXT.md](../../infrastructure/jellyfin-pi/CONTEXT.md#a-headless-pi-boots-pings-and-has-no-user-account)).
+  trap on a headless box (see [CONTEXT.md](../../infrastructure/jellyfin-pi/CONTEXT.md#a-pis-wi-fi-radio-is-rfkill-blocked-until-the-wlan-country-is-set)).
 - A reliable boot device (SD card or, better, USB SSD) for the OS, config and
   cache. **Size it at 32GB or more.** Jellyfin refuses to start when its data
   path has less than 2GiB free, and the Docker image alone is ~1.3GB: a 8GB
   card leaves no headroom, and the failure arrives weeks later as a service
   that crash-loops with `SQLite Error 8` or
   `insufficient free space ... Available: 2GiB, Required: 2GiB` rather than as
-  anything that looks like a disk problem. `tasks/preflight.yml` now refuses to
+  anything that looks like a disk problem. `tasks/preflight.yml` refuses to
   provision below `pi_min_free_gib` (3GiB) for this reason.
 - An external USB drive for the media library, already partitioned and
   formatted (the playbook never formats — see [From scratch](#from-scratch)).
@@ -176,19 +176,13 @@ everything host-specific is operator-supplied and gitignored.
 | `tailnet_domain`, `tailscale_hostname` | `group_vars/jellyfin_pi.yml`             | Non-secret identifiers, hardcoded like the account/zone ids in `variables.tf`               |
 | `TAILSCALE_AUTH_KEY`                   | Vault `kv/data/secrets`                  | The only secret. Never in the repo, never in the inventory                                  |
 
-`TAILSCALE_AUTH_KEY` is a reusable, pre-approved, non-ephemeral auth key minted
-in the Tailscale admin console (ephemeral keys delete the node when it goes
-offline — wrong for a server that reboots for unattended upgrades). Store it
-the same way as every other Vault secret — `pnpm gcp:vm:vault:save-secrets-local`,
-add the key to `~/Desktop/vault-secrets.json`, `pnpm gcp:vm:vault:set-secrets`
-— and see [secret-management.md](./secret-management.md) for rotation.
-
-`provision.sh` fetches it through `load-tailscale-authkey.sh` and hands it to
-the playbook as the `TS_AUTHKEY` environment variable, never as `--extra-vars`;
-on the Pi it is staged in `/run` (tmpfs, `0600`) and passed as
-`tailscale up --auth-key file:…`, so the key is never in anyone's `argv` and
-never written to the SD card. It is only read when the node is not on the
-tailnet yet, so routine converge runs work with Vault unreachable.
+Store `TAILSCALE_AUTH_KEY` the same way as every other Vault secret —
+`pnpm gcp:vm:vault:save-secrets-local`, add the key to
+`~/Desktop/vault-secrets.json`, `pnpm gcp:vm:vault:set-secrets`. Its required
+key type (reusable, pre-approved, non-ephemeral), how `provision.sh` passes it
+through `load-tailscale-authkey.sh` without exposing it in `argv` or on disk,
+why routine converge runs work with Vault unreachable, and rotation are in
+[secret-management.md](./secret-management.md#other).
 
 ## From scratch
 

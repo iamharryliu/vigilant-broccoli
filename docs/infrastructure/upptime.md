@@ -54,7 +54,7 @@ Staging UI checks use no credentials. They disable redirects and require HTTP 30
 Two mechanisms produce the 302:
 
 - The eleven staging Pages projects are gated by Cloudflare Access in `cloudflare-staging-ui.tf` on the root and the immutable/branch aliases. Browser access is limited to `staging_ui_allowed_emails` (default: the existing owner identity).
-- The four staging Vercel projects are gated by Vercel Authentication, which `deploy-vercel.ts` enables on each staging deploy ([details](../app-development/ui/deployment/vercel-deploy-pattern.md#staging-access)). Its 302 check fails until the project's first staging deploy after this change.
+- The four staging Vercel projects are gated by Vercel Authentication, which `deploy-vercel.ts` enables on each staging deploy ([details](../app-development/ui/deployment/vercel-deploy-pattern.md#staging-access)). A project's 302 check fails until its first staging deploy enables it.
 
 The staging probes in local and CI health checks also expect the unauthenticated HTTP 302. Monitoring adds no service token, secrets, GCP identity or OIDC permission. Do not add a Vercel protection-bypass secret or bypass Access on application health paths to make monitoring work.
 
@@ -75,7 +75,7 @@ Coordinate Terraform apply and the staging Vercel deploys with configuration syn
    Fetch unshallow history first if needed. Import into an uninitialized monitoring dataset before running checks. The importer uses a temporary bare repo, preserves target files, refuses existing history, and pushes only a fast-forward merge. `iamharryliu/uptime` is already populated; do not re-import.
 
 4. Run `gh workflow run ci-sync-upptime --ref main`, then manually run both monitoring workflows. Verify refreshed history, `history/summary.json`, all services on Pages Index `/#/status`, and README graphs and badges. Subscribe to incident issues in the new repository when configuring notifications.
-5. Set `upptime_migration_complete = true` and apply the reviewed plan to enable schedules. This flag now controls only the monitoring repository's schedule gate. Verify a successful scheduled uptime run; GitHub may delay cron jobs. Application credentials and observability infrastructure require no changes; staging UI monitoring checks the Access gate without credentials.
+5. Set `upptime_migration_complete = true` and apply the reviewed plan to enable schedules. This flag controls only the monitoring repository's schedule gate. Verify a successful scheduled uptime run; GitHub may delay cron jobs. Application credentials and observability infrastructure require no changes; staging UI monitoring checks the Access gate without credentials.
 
 App creation and installation are account setup; Terraform manages repository configuration.
 
@@ -85,7 +85,7 @@ Keep sync App `5202397`, installed only on `uptime`. Refresh the Bitwarden backu
 
 GitHub provisions the Let's Encrypt certificate for a Pages custom domain once DNS resolves to Pages, and it can take up to an hour ([GitHub docs](https://docs.github.com/en/pages/getting-started-with-github-pages/securing-your-github-pages-site-with-https)). Until then GitHub serves its `*.github.io` certificate, which browsers reject for `uptime.harryliu.dev` (`ERR_CERT_COMMON_NAME_INVALID`). The `uptime` Pages API reports `https_enforced=false` and no `https_certificate` in that state. Renaming the hostname or re-creating the repository can leave the certificate unissued with no visible blocker in the API, so expect to run this recovery after a redeploy.
 
-The pinned GitHub provider (6.13.0) supports `https_enforced` on `github_repository_pages`, exposed as `upptime_https_enforced` (default `true`, matching the live site now that its certificate is approved). GitHub rejects enforcement before a certificate exists, so set it `false` while recovering a missing certificate and back to `true` at step 3.
+The pinned GitHub provider (6.13.0) supports `https_enforced` on `github_repository_pages`, exposed as `upptime_https_enforced` (default `true`). GitHub rejects enforcement before a certificate exists, so set it `false` while recovering a missing certificate and back to `true` at step 3.
 
 1. Confirm DNS: `dig +short CNAME uptime.harryliu.dev` returns `iamharryliu.github.io.`, the record is DNS-only, and `dig CAA uptime.harryliu.dev` permits `letsencrypt.org`.
 2. Force re-provisioning by removing and re-adding the domain, with reviewed local applies. Temporarily set `cname = null` in `github_repository_pages.upptime`, run `pnpm tf:plan` then `pnpm tf:apply`, restore the line and apply again. Wait for the domain check to pass and the certificate to issue. If it still does not issue within an hour, ask GitHub Support to re-provision the certificate for `uptime.harryliu.dev`; that step has no API.
@@ -110,7 +110,7 @@ A compromised monitoring action can falsify history, alter repository contents o
 
 The sync App's private key is still a sensitive management credential; it can modify monitoring workflows. Only trusted source code executes in its workflow, and the monitoring repository must never be added to the App's installation scope alongside vigilant-broccoli. SHA pinning reduces upstream replacement risk, but does not prove the pinned code is vulnerability-free ([GitHub action security](https://docs.github.com/en/actions/reference/security/secure-use)).
 
-Warm-up intentionally measures warmed availability and response time; it does not capture user cold-start latency. Hourly polling can miss short outages, and successful login-page responses do not prove backend health. Those are existing coverage limitations, separate from credential isolation.
+Warm-up intentionally measures warmed availability and response time; it does not capture user cold-start latency. Hourly polling can miss short outages, and successful login-page responses do not prove backend health.
 
 ## Free Tier
 

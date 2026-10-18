@@ -83,7 +83,7 @@ that one is for services a browser should reach from anywhere, this one is for
 services only the owner's devices need.
 
 ```
-jellyfin-pi.echidna-rohu.ts.net:8096   Jellyfin — Raspberry Pi on the home LAN (`infrastructure/jellyfin-pi/`, Ansible-provisioned, no Terraform). MagicDNS only. On Access-gated tunnels instead of the tailnet, the native clients (Android TV, iOS, Kodi) could not log in — the same constraint that put loki.harryliu.dev on basic auth. The node enrols non-interactively with the reusable `TAILSCALE_AUTH_KEY` from Vault; see [jellyfin-pi.md](./jellyfin-pi.md)
+jellyfin-pi.echidna-rohu.ts.net:8096   Jellyfin — Raspberry Pi on the home LAN (`infrastructure/jellyfin-pi/`, Ansible-provisioned, no Terraform). MagicDNS only: native clients (Android TV, iOS, Kodi) cannot complete a Cloudflare Access login. The node enrols non-interactively with the reusable `TAILSCALE_AUTH_KEY` from Vault; see [jellyfin-pi.md](./jellyfin-pi.md)
 ```
 
 `vb-manager-next`'s dev dashboard lists the tailnet's machines through the
