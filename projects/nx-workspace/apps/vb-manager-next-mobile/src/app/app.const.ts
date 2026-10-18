@@ -13,6 +13,7 @@ export const CALENDAR_TAB = {
   TASKS: 'Tasks',
   NOTEPAD: 'Notepad',
   QUICK_LINKS: 'Quick Links',
+  AGENTIC: 'Agentic',
   WEATHER: 'Weather',
 } as const;
 
