@@ -563,21 +563,6 @@ resource "google_service_account_key" "gcs_manager" {
   }
 }
 
-resource "google_secret_manager_secret" "google_gcs_sa_credentials" {
-  secret_id = "GOOGLE_GCS_SA_CREDENTIALS"
-
-  replication {
-    auto {}
-  }
-
-  depends_on = [google_project_service.secretmanager]
-}
-
-resource "google_secret_manager_secret_version" "google_gcs_sa_credentials" {
-  secret      = google_secret_manager_secret.google_gcs_sa_credentials.id
-  secret_data = google_service_account_key.gcs_manager.private_key
-}
-
 resource "google_project_service" "calendar" {
   service            = "calendar-json.googleapis.com"
   disable_on_destroy = false
@@ -602,21 +587,6 @@ resource "google_service_account_key" "google_calendar_manager" {
   keepers = {
     rotation_time = time_rotating.google_calendar_manager_key.rotation_rfc3339
   }
-}
-
-resource "google_secret_manager_secret" "google_calendar_sa_credentials" {
-  secret_id = "GOOGLE_CALENDAR_SA_CREDENTIALS"
-
-  replication {
-    auto {}
-  }
-
-  depends_on = [google_project_service.secretmanager]
-}
-
-resource "google_secret_manager_secret_version" "google_calendar_sa_credentials" {
-  secret      = google_secret_manager_secret.google_calendar_sa_credentials.id
-  secret_data = google_service_account_key.google_calendar_manager.private_key
 }
 
 resource "cloudflare_r2_bucket" "vigilant_broccoli" {
