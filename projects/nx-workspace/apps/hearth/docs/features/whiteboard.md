@@ -13,6 +13,7 @@ Shared real-time notes per home and board, with an AI document editing assistant
 
 - `WhiteboardEditor` is shared by the home page (`family`), food planner `KitchenNotes` (`kitchen`), activity planner `ActivityNotes` (`activity`) and the standalone whiteboard page
 - Each `homeId` + `boardKey` pair is a separate document, synced through `useWhiteboard` (Supabase broadcast room, debounced autosave, undo/redo)
+- `WhiteboardEditor` flex-fills its flex-column parent. Hosts size it with `FULL_HEIGHT_PAGE_CLASS` or `PAGE_BODY_HEIGHT_CLASS` (`src/lib/page-layout.ts`), which are based on `--page-h`: the visible viewport minus the topbar and the bottom safe area. `AppLayout`'s `useVisualViewportHeight` sets that viewport height from `window.visualViewport`, so the inline editor and preview shrink above the on-screen keyboard (falling back to `100dvh`). Below `lg`, the activity planner's stacked notes take one page-body height
 
 ## Markdown Preview
 

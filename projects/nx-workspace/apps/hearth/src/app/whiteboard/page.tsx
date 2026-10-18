@@ -1,9 +1,11 @@
 'use client';
 
+import { cn } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { WhiteboardEditor } from './components/WhiteboardEditor';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
+import { FULL_HEIGHT_PAGE_CLASS } from '../../lib/page-layout';
 
 export default function WhiteboardPage() {
   usePageTitle(PAGE_TITLES.WHITEBOARD);
@@ -14,13 +16,17 @@ export default function WhiteboardPage() {
   if (!homeId || !session?.user.id) return null;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 h-[calc(100dvh_-_var(--topbar-h)_-_5rem)]">
+    <div
+      className={cn(
+        'mx-auto flex max-w-3xl flex-col p-6',
+        FULL_HEIGHT_PAGE_CLASS,
+      )}
+    >
       <WhiteboardEditor
         homeId={homeId}
         token={token}
         userId={session.user.id}
         username={session.user.email ?? session.user.id}
-        style={{ height: '100%' }}
       />
     </div>
   );
