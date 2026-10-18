@@ -13,9 +13,7 @@ const isIgnoredInputElement = (target: EventTarget | null): boolean =>
 const shouldIgnoreKeystroke = (e: KeyboardEvent): boolean =>
   isIgnoredInputElement(e.target) || e.ctrlKey || e.metaKey || e.altKey;
 
-export function useThemeKeybind() {
-  const { toggleTheme } = useTheme();
-
+export function useToggleThemeKeybind(toggleTheme: () => void) {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (shouldIgnoreKeystroke(e)) {
@@ -30,4 +28,8 @@ export function useThemeKeybind() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [toggleTheme]);
+}
+
+export function useThemeKeybind() {
+  useToggleThemeKeybind(useTheme().toggleTheme);
 }

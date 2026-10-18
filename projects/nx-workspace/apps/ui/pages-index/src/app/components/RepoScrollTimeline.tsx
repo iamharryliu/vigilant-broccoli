@@ -3,8 +3,8 @@ import {
   ThemeScope,
   ScrollTimeline,
   ScrollTimelineEntry,
+  useSystemAppearance,
 } from '@vigilant-broccoli/react-lib';
-import { useThemeAppearance } from '../use-prefers-dark';
 
 const PAGE_THEME_STYLE = {
   minHeight: 0,
@@ -20,7 +20,7 @@ interface RepoScrollTimelineProps {
 }
 
 export default function RepoScrollTimeline(props: RepoScrollTimelineProps) {
-  const appearance = useThemeAppearance();
+  const appearance = useSystemAppearance();
 
   return (
     <ThemeScope

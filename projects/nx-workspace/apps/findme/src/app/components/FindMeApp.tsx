@@ -2,7 +2,7 @@
 
 import { KeyboardEvent, useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useGeolocation } from '@vigilant-broccoli/react-lib';
+import { ThemeProvider, useGeolocation } from '@vigilant-broccoli/react-lib';
 import {
   CONNECTION_STATUS,
   isSharingUser,
@@ -108,7 +108,7 @@ const getOrCreateUsername = () => {
   return name;
 };
 
-export function FindMeApp() {
+function FindMe() {
   const { t } = useTranslation();
   const [userId, setUserId] = useState('');
   const [username, setUsername] = useState('');
@@ -208,20 +208,20 @@ export function FindMeApp() {
 
   return (
     <div className="flex flex-col h-[100dvh]">
-      <div className="p-3 sm:p-4 flex flex-col gap-3 bg-white border-b border-gray-200">
+      <div className="p-3 sm:p-4 flex flex-col gap-3 bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800">
         {connectionStatus === CONNECTION_STATUS.ERROR && (
-          <div className="rounded bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">
+          <div className="rounded bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:border-red-900 dark:text-red-300">
             {t('CONNECTION.ERROR')}
           </div>
         )}
         {connectionStatus === CONNECTION_STATUS.CONNECTING && (
-          <div className="rounded bg-amber-50 border border-amber-200 px-3 py-2 text-sm text-amber-700">
+          <div className="rounded bg-amber-50 border border-amber-200 px-3 py-2 text-sm text-amber-700 dark:bg-amber-950 dark:border-amber-900 dark:text-amber-300">
             {t('CONNECTION.CONNECTING')}
           </div>
         )}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="text-sm text-gray-500 shrink-0">
+            <span className="text-sm text-gray-500 shrink-0 dark:text-gray-400">
               {t('USER.YOU_FIELD')}
             </span>
             <input
@@ -229,14 +229,14 @@ export function FindMeApp() {
               value={username}
               placeholder={t('USER.USERNAME_PLACEHOLDER')}
               onChange={e => updateUsername(e.target.value)}
-              className="min-w-0 flex-1 rounded border border-gray-300 px-2 py-1 text-sm font-medium text-gray-800 focus:border-blue-500 focus:outline-none"
+              className="min-w-0 flex-1 rounded border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-800 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
             />
             <button
               type="button"
               aria-label={t('USER.RANDOMIZE')}
               title={t('USER.RANDOMIZE')}
               onClick={() => updateUsername(randomUsername())}
-              className="shrink-0 rounded border border-gray-300 px-2 py-1 text-sm hover:bg-gray-50"
+              className="shrink-0 rounded border border-gray-300 px-2 py-1 text-sm hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
             >
               {RANDOMIZE_ICON}
             </button>
@@ -256,12 +256,12 @@ export function FindMeApp() {
 
         {geoError && (
           <div className="text-sm">
-            <p className="text-red-500">{geoError}</p>
+            <p className="text-red-500 dark:text-red-400">{geoError}</p>
             <details className="mt-1">
-              <summary className="text-blue-600 cursor-pointer text-xs">
+              <summary className="text-blue-600 cursor-pointer text-xs dark:text-blue-400">
                 {t('LOCATION.FIX_SETTINGS')}
               </summary>
-              <ul className="mt-2 list-disc pl-5 text-gray-600 text-xs space-y-1">
+              <ul className="mt-2 list-disc pl-5 text-gray-600 text-xs space-y-1 dark:text-gray-400">
                 {LOCATION_HELP_STEP_KEYS.map(key => (
                   <li key={key}>{t(key)}</li>
                 ))}
@@ -274,7 +274,7 @@ export function FindMeApp() {
       <div
         role="tablist"
         aria-label={t('TABS.LABEL')}
-        className="flex border-b border-gray-200 bg-white"
+        className="flex border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900"
       >
         {TABS.map(({ id, labelKey }, index) => {
           const selected = activeTab === id;
@@ -291,8 +291,8 @@ export function FindMeApp() {
               onKeyDown={e => handleTabKeyDown(e, index)}
               className={`flex-1 px-3 py-3 text-sm font-medium border-b-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500 ${
                 selected
-                  ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-600 hover:bg-gray-50'
+                  ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                  : 'border-transparent text-gray-600 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-gray-800'
               }`}
             >
               {t(labelKey)}
@@ -321,17 +321,17 @@ export function FindMeApp() {
           {mapNotice && (
             <div
               role="status"
-              className={`absolute z-[1000] text-sm text-gray-600 ${
+              className={`absolute z-[1000] text-sm text-gray-600 dark:text-gray-300 ${
                 showMapEmptyState
-                  ? 'inset-0 flex items-center justify-center bg-white/90 p-6 text-center'
-                  : 'left-3 right-3 top-3 rounded bg-white/95 px-3 py-2 shadow'
+                  ? 'inset-0 flex items-center justify-center bg-white/90 p-6 text-center dark:bg-gray-900/90'
+                  : 'left-3 right-3 top-3 rounded bg-white/95 px-3 py-2 shadow dark:bg-gray-900/95'
               }`}
             >
               {mapNotice}
             </div>
           )}
           {hasLocation && !sharing && (
-            <p className="absolute bottom-6 left-3 right-3 z-[1000] rounded bg-white/95 px-3 py-1 text-xs text-gray-600 shadow sm:right-auto">
+            <p className="absolute bottom-6 left-3 right-3 z-[1000] rounded bg-white/95 px-3 py-1 text-xs text-gray-600 shadow sm:right-auto dark:bg-gray-900/95 dark:text-gray-300">
               {t('MAP.SELF_LOCAL_ONLY')}
             </p>
           )}
@@ -341,7 +341,7 @@ export function FindMeApp() {
           id={`${PANEL_ID_PREFIX}${TAB.NEARBY}`}
           aria-labelledby={`${TAB_ID_PREFIX}${TAB.NEARBY}`}
           hidden={activeTab !== TAB.NEARBY}
-          className="absolute inset-0 overflow-y-auto bg-white"
+          className="absolute inset-0 overflow-y-auto bg-white dark:bg-gray-900"
         >
           <NearbyTab
             places={places}
@@ -357,11 +357,19 @@ export function FindMeApp() {
           id={`${PANEL_ID_PREFIX}${TAB.PEOPLE}`}
           aria-labelledby={`${TAB_ID_PREFIX}${TAB.PEOPLE}`}
           hidden={activeTab !== TAB.PEOPLE}
-          className="absolute inset-0 overflow-y-auto bg-white"
+          className="absolute inset-0 overflow-y-auto bg-white dark:bg-gray-900"
         >
           <PeopleTab users={liveUsers} currentUserId={userId} />
         </div>
       </div>
     </div>
+  );
+}
+
+export function FindMeApp() {
+  return (
+    <ThemeProvider>
+      <FindMe />
+    </ThemeProvider>
   );
 }

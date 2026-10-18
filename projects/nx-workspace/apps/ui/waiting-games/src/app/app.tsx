@@ -5,7 +5,7 @@ import { I18nProvider } from './i18n';
 export function App() {
   return (
     <I18nProvider>
-      <ThemeProvider followSystem>
+      <ThemeProvider>
         <WaitingGames />
       </ThemeProvider>
     </I18nProvider>

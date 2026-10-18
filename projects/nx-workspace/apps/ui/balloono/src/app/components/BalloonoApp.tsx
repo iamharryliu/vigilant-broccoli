@@ -125,7 +125,7 @@ const AccountProvider = ONLINE_AVAILABLE
 export function BalloonoApp() {
   return (
     <I18nProvider>
-      <ThemeProvider followSystem>
+      <ThemeProvider>
         <DesktopOnly>
           <AccountProvider>
             <GameAudioProvider>
