@@ -18,7 +18,6 @@ interface WhiteboardEditorProps {
   username: string;
   boardKey?: string;
   placeholder?: string;
-  style?: CSSProperties;
 }
 
 const DEFAULT_BOARD_KEY = 'family';
@@ -28,6 +27,9 @@ const EDIT_MODE_LABEL = 'Back to editing';
 const ICON_SIZE = 16;
 const PREVIEW_CLASS_NAME = 'overflow-auto pt-10';
 const PANE_STYLE: CSSProperties = { flex: 1, minHeight: 0 };
+// The editor's default 200px textarea floor would push the caret behind the
+// on-screen keyboard once the page shrinks to the visual viewport.
+const INLINE_TEXTAREA_STYLE: CSSProperties = { minHeight: 0 };
 const DEFAULT_PLACEHOLDER = 'Shared family notes...';
 const CURSOR_SEND_INTERVAL_MS = 60;
 
@@ -93,7 +95,6 @@ export function WhiteboardEditor({
   username,
   boardKey = DEFAULT_BOARD_KEY,
   placeholder = DEFAULT_PLACEHOLDER,
-  style,
 }: WhiteboardEditorProps) {
   const {
     content,
@@ -140,14 +141,15 @@ export function WhiteboardEditor({
 
   const renderEditor = (
     ref: RefObject<HTMLTextAreaElement | null>,
-    editorStyle?: CSSProperties,
+    textareaStyle?: CSSProperties,
   ) => (
     <SyncedTextEditor
       content={content}
       onChange={setContent}
       isLoading={isLoading}
       placeholder={placeholder}
-      style={editorStyle}
+      style={PANE_STYLE}
+      textareaStyle={textareaStyle}
       textareaRef={ref}
       onTextareaSelect={() => sendTextCursorIndex(ref)}
       onTextareaBlur={handleTextareaBlur}
@@ -170,14 +172,11 @@ export function WhiteboardEditor({
   );
 
   return (
-    <div
-      className="relative flex flex-col"
-      style={{ display: 'flex', flexDirection: 'column', ...style }}
-    >
+    <div className="relative flex min-h-0 flex-1 flex-col">
       <WhiteboardPane
         content={content}
         isLoading={isLoading}
-        renderEditor={() => renderEditor(textareaRef, PANE_STYLE)}
+        renderEditor={() => renderEditor(textareaRef, INLINE_TEXTAREA_STYLE)}
         onOpenChat={() => setAssistantOpen(true)}
         chatDisabled={!homeId}
       />
@@ -193,7 +192,7 @@ export function WhiteboardEditor({
           <WhiteboardPane
             content={content}
             isLoading={isLoading}
-            renderEditor={() => renderEditor(dialogTextareaRef, PANE_STYLE)}
+            renderEditor={() => renderEditor(dialogTextareaRef)}
           />
         }
       />

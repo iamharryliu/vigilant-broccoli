@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../providers/auth-provider';
 import { TopbarSlotProvider } from '../providers/topbar-slot-provider';
 import { ROUTES } from '../../lib/routes';
+import { useVisualViewportHeight } from '../../lib/use-visual-viewport-height';
 import Topbar from './Topbar';
 import Sidebar from './Sidebar';
 
@@ -73,6 +74,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
  * missing provider throws instead of simply rendering nothing.
  */
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+  useVisualViewportHeight();
   return (
     <TopbarSlotProvider>
       <AppLayoutContent>{children}</AppLayoutContent>

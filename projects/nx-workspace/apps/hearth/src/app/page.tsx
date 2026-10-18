@@ -19,6 +19,7 @@ import {
 } from './calendar/components/CalendarEventForm';
 import { WhiteboardEditor } from './whiteboard/components/WhiteboardEditor';
 import { PAGE_TITLES, usePageTitle } from '../lib/page-title';
+import { PAGE_BODY_HEIGHT_CLASS, PAGE_PADDING_CLASS } from '../lib/page-layout';
 
 type ModalState =
   | { type: 'create'; start: string; end: string; allDay: boolean }
@@ -108,16 +109,15 @@ export default function HomePage() {
   };
 
   return (
-    <div className="p-4 sm:p-6 md:px-8 md:py-8">
+    <div className={PAGE_PADDING_CLASS}>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="h-[calc(100dvh_-_var(--topbar-h)_-_5rem)]">
+        <div className={cn('flex flex-col', PAGE_BODY_HEIGHT_CLASS)}>
           {homeId && session?.user.id && (
             <WhiteboardEditor
               homeId={homeId}
               token={token}
               userId={session.user.id}
               username={session.user.email ?? session.user.id}
-              style={{ height: '100%' }}
             />
           )}
         </div>
