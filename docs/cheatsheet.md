@@ -133,7 +133,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   secret-rotation:calendar-sa  Replace the Google Calendar service-account key, sync it to Vault, reload vb-manager-next
   rabbitmq:password           Copy RabbitMQ admin password to clipboard (login user: admin)
 
-🐳 LOCAL
+☸️  LOCAL K3S (k3d cluster: proxy, Grafana, Loki, Alloy, Headlamp)
   local:k3s:up                Create the local k3d (k3s in Docker) cluster
   local:k3s:down              Delete the local k3d cluster and its data
   local:k3s:start             Start the stopped local k3d cluster
@@ -147,6 +147,8 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   local:k3s:alloy:logs        Tail local Alloy (log collector) logs
   local:k3s:loki:logs         Tail local Loki logs
   local:k3s:traefik:logs      Tail local Traefik (ingress) logs
+
+🐳 LOCAL
   immich:docker:up            Start the standalone Immich Docker Compose stack
   immich:docker:down          Stop the standalone Immich Docker Compose stack
   immich:docker:restart       Restart the standalone Immich Docker Compose stack
