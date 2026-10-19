@@ -27,6 +27,20 @@ volumes:
     nodeFilters:
       - server:0
 options:
+  # Compose labels make Docker Desktop and the vb-manager-next Docker card
+  # group these containers as one `local-platform` project, matching the namespace.
+  runtime:
+    labels:
+      - label: com.docker.compose.project=local-platform
+        nodeFilters:
+          - server:*
+          - loadbalancer
+      - label: com.docker.compose.service=server
+        nodeFilters:
+          - server:*
+      - label: com.docker.compose.service=loadbalancer
+        nodeFilters:
+          - loadbalancer
   kubeconfig:
     updateDefaultKubeconfig: true
     switchCurrentContext: false
