@@ -133,13 +133,13 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   secret-rotation:calendar-sa  Replace the Google Calendar service-account key, sync it to Vault, reload vb-manager-next
   rabbitmq:password           Copy RabbitMQ admin password to clipboard (login user: admin)
 
-☸️  LOCAL K3S (k3d cluster: proxy, Grafana, Loki, Alloy, Headlamp)
+☸️  LOCAL K3S (k3d cluster: proxy, Grafana, Loki, Prometheus, Alloy, Headlamp, Argo CD)
   local:k3s:up                Create the local k3d (k3s in Docker) cluster
   local:k3s:down              Delete the local k3d cluster and its data
   local:k3s:start             Start the stopped local k3d cluster
   local:k3s:stop              Stop the local k3d cluster, keeping its state
-  local:k3s:apply             Apply local platform manifests plus the mkcert TLS secret
-  local:k3s:status            Show nodes, platform workloads and Helm releases
+  local:k3s:apply             Bootstrap: apply the working tree, the mkcert TLS secret and the Argo CD Application
+  local:k3s:status            Show nodes, platform workloads, Argo CD sync state and Helm releases
   local:k3s:ui                Open k9s on the local cluster's platform namespace
   local:k3s:grafana:password  Copy the local Grafana admin password and open Grafana
   local:k3s:grafana:logs      Tail local Grafana logs
@@ -147,6 +147,9 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   local:k3s:alloy:logs        Tail local Alloy (log collector) logs
   local:k3s:loki:logs         Tail local Loki logs
   local:k3s:traefik:logs      Tail local Traefik (ingress) logs
+  local:k3s:argocd:password   Copy the Argo CD admin password and open Argo CD
+  local:k3s:argocd:pause      Stop Argo CD auto-sync so working-tree applies stick
+  local:k3s:argocd:resume     Re-enable Argo CD auto-sync from main
 
 🐳 LOCAL
   immich:docker:up            Start the standalone Immich Docker Compose stack

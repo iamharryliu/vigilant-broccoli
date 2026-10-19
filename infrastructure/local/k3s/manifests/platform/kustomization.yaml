@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: local-platform
 resources:
   - namespace.yaml
+  - argocd.yaml
   - redirect-https.yaml
   - host-services.yaml
   - ingresses.yaml

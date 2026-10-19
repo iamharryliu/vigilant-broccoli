@@ -6,6 +6,7 @@ kind: Kustomization
 namespace: kube-system
 resources:
   - alloy.yaml
+  - argo-cd.yaml
   - grafana.yaml
   - headlamp.yaml
   - loki.yaml

@@ -18,3 +18,12 @@ kubectl --context "$CONTEXT" apply -k k3s/manifests
 kubectl --context "$CONTEXT" -n local-platform create secret tls local-tls \
   --cert certs/app.crt --key certs/app.key --dry-run=client -o yaml \
   | kubectl --context "$CONTEXT" apply -f -
+
+for _ in $(seq 1 60); do
+  kubectl --context "$CONTEXT" get crd applications.argoproj.io >/dev/null 2>&1 && break
+  sleep 3
+done
+# Created once: re-running apply.sh to test working-tree edits must not
+# re-enable a paused auto-sync, which would revert them to main.
+kubectl --context "$CONTEXT" -n argocd get application local-platform >/dev/null 2>&1 \
+  || kubectl --context "$CONTEXT" apply -f k3s/argocd/application.yaml
