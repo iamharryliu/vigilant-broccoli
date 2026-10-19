@@ -57,6 +57,10 @@ inputs:
     description: 'Short plain-text detail (result).'
     required: false
     default: ''
+  reason:
+    description: 'Why the agent deliberately made no change, rendered as escaped prose (result, no-changes).'
+    required: false
+    default: ''
   label:
     description: 'Section label when one run reports several results (result).'
     required: false
@@ -87,6 +91,7 @@ runs:
         AGENTIC_PR_URL: ${{ inputs.result_pr_url }}
         AGENTIC_CHILD_RUN_URL: ${{ inputs.child_run_url }}
         AGENTIC_NOTE: ${{ inputs.note }}
+        AGENTIC_REASON: ${{ inputs.reason }}
         AGENTIC_LABEL: ${{ inputs.label }}
         AGENTIC_REQUEST_FILE: ${{ runner.temp }}/agentic-request.txt
         MODE: ${{ inputs.mode }}

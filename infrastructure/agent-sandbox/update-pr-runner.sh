@@ -31,6 +31,8 @@ SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/$SKILL_NAME/SKIL
 # Sourced before the PR checkout: the PR branch may predate this file.
 # shellcheck source=pr-increments.sh
 . "$(dirname "${BASH_SOURCE[0]}")/pr-increments.sh"
+# shellcheck source=no-changes.sh
+. "$(dirname "${BASH_SOURCE[0]}")/no-changes.sh"
 
 # Only a change instruction can ask for follow-up increments; CI fixes and
 # conflict resolution stay on the one PR.
@@ -201,12 +203,34 @@ ${PLAN_RULES}
   - pr_next_steps: markdown checklist replacing the PR's "## Next steps" section — same rule, cover the whole PR as it now stands: remaining manual commands, spot checks, CI status, merging, and one ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\` item per piece of work deliberately left out of every increment, or "- [ ] Merge once CI is green" when nothing else is left
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none — rewrite it to cover the whole PR as it now stands. Keep every suggestion already in the PR body that this change did not implement and the instruction did not reject, and name any you drop in your report; omit the field to leave the section untouched${PLAN_FIELDS}
   - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none; keep these out of pr_suggestions, which is only optional follow-up work. Rewrite it to cover the whole PR as it now stands, keep every concern already in the PR body that this change did not resolve, and name any you drop in your report; omit the field to leave the section untouched
+$NO_CHANGES_FIELD
 EOF
 )
 
 agent_invoke() {
   claude -p "$1" --dangerously-skip-permissions --model "$MODEL" \
     --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
+}
+
+# The reason is also left on the PR, where the requester looks for the update.
+finish_without_changes() {
+  local reason
+  reason=$(no_changes_reason "$META_FILE")
+  if [ -n "$reason" ]; then
+    gh pr comment "$PR" --body "$(cat <<COMMENT
+\`${SKILL_NAME}\` made no changes to this pull request.
+
+**Request:**
+
+$(printf '%s\n' "$INSTRUCTION" | sed 's/^/> /')
+
+**Reason:** ${reason}
+
+${PR_FOOTER}
+COMMENT
+)" || echo "WARNING: could not comment the reason on PR #${PR}." >&2
+  fi
+  no_changes_exit "$META_FILE" "$1"
 }
 
 agent_invoke "$PROMPT"
@@ -271,8 +295,7 @@ if [ -z "$(git status --porcelain)" ]; then
     SALVAGE_ENABLED=0
     exit 0
   fi
-  echo "ERROR: no changes produced — PR #${PR} was not updated." >&2
-  exit 1
+  finish_without_changes "no changes produced — PR #${PR} was not updated."
 fi
 
 COMMIT_TYPE=$(read_meta .commit_type)

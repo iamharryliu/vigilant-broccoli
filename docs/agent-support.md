@@ -44,6 +44,8 @@ Each [README lifecycle row](../README.md#agentic) represents one operation acros
 
 Entry points must agree on canonical instructions, request/file scope, TODO handling, increment rules, required checks and reported results. Workflows, wrappers and runner prompts must not redefine task policy. Runners may enforce the skill's file/ID limits.
 
+**No-change decisions:** when the request should not change anything (already done, out of scope, or wrong for the repo), the agent makes no edits and says why. A sandbox agent writes `no_changes_reason` in its metadata; the runner prints `RESULT::no-changes` and a JSON-encoded `NO_CHANGES_REASON::` line ([no-changes.sh](../infrastructure/agent-sandbox/no-changes.sh)) and exits 0, so the run reports _Completed with no changes_ with the reason. No changes and no reason still fails, so a crashed agent is never reported as a decision. Audits and prune keep their `*_CLEAN` markers and add the reason when given; `agentic-pr-update` also comments it on the PR. Local sessions report the reason.
+
 Checks include the task's existing validation, the cleanup checklist when required by the skill, and pre-commit. PR results follow [Git conventions](./git-workflow.md#conventions) and emit `PR_URL::`; reports include changes, verification, assumptions and remaining work.
 
 ### Execution adapters

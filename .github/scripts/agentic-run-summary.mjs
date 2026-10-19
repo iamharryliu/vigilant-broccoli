@@ -2,7 +2,8 @@
 //
 //   overview  the requested work and effective configuration, published before
 //             the long agent job starts
-//   result    the truthful outcome of a finished run, with its PR link
+//   result    the truthful outcome of a finished run, with its PR link and,
+//             for a run that deliberately changed nothing, the agent's reason
 //
 // Input is structured data in AGENTIC_* environment variables, never a
 // pre-formatted string, so the layout lives here once. Free text (the prompt,
@@ -248,6 +249,7 @@ const renderResult = () => {
   const single = env('AGENTIC_PR_URL');
   const pulls = listed.length ? listed : single ? [{ url: single }] : [];
   const unpublished = readJsonList('AGENTIC_UNPUBLISHED');
+  const reason = renderProse(process.env.AGENTIC_REASON ?? '');
 
   const lines = [
     label('Outcome', headlineFor(outcome, pulls)),
@@ -257,6 +259,7 @@ const renderResult = () => {
     childRun && label('Child run', urlOrText(childRun)),
     exitCode && exitCode !== '0' && label('Exit code', escapeInline(exitCode)),
     note && label('Details', escapeInline(note)),
+    reason && `${label('Reason', '').trimEnd()}\n\n${reason}`,
   ].filter(Boolean);
 
   // A list needs blank lines around it, or the hard-break line that follows
