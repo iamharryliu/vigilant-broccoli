@@ -14,6 +14,7 @@ Local k3s cluster, run by k3d, for self-hosted services (photos, logs, dashboard
 - [grafana.vigilant-broccoli.app](https://grafana.vigilant-broccoli.app) - Log dashboards
 - [loki.vigilant-broccoli.app](https://loki.vigilant-broccoli.app) - Log aggregation
 - [headlamp.vigilant-broccoli.app](https://headlamp.vigilant-broccoli.app) - Kubernetes dashboard
+- [argocd.vigilant-broccoli.app](https://argocd.vigilant-broccoli.app) - GitOps sync of the cluster manifests
 - [images.vigilant-broccoli.app](https://images.vigilant-broccoli.app) - Immich photo management (proxied to the standalone [immich stack](../immich/) via `host.k3d.internal:2283`)
 
 ## Observability
@@ -59,6 +60,7 @@ Preferences → Docker Engine → paste contents of `docker-daemon-config.json` 
   - Kustomize
 - Services
   - Alloy
+  - Argo CD
   - Grafana
   - Headlamp
   - Loki
