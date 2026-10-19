@@ -353,18 +353,18 @@ export const HomeView = () => {
       content: <QuickLinksPanel links={QUICK_LINKS} />,
     },
     {
-      value: CALENDAR_TAB.AGENTIC,
-      label: CALENDAR_TAB.AGENTIC,
-      icon: <Bot size={TAB_ICON_SIZE} />,
-      content: <AgenticView />,
-    },
-    {
       value: CALENDAR_TAB.WEATHER,
       label: CALENDAR_TAB.WEATHER,
       icon: <CloudSun size={TAB_ICON_SIZE} />,
       // Force-mounted so the weather loads once on page load, not per visit.
       forceMount: true,
       content: <WeatherView />,
+    },
+    {
+      value: CALENDAR_TAB.AGENTIC,
+      label: CALENDAR_TAB.AGENTIC,
+      icon: <Bot size={TAB_ICON_SIZE} />,
+      content: <AgenticView />,
     },
   ];
 

@@ -18,7 +18,7 @@ const REQUIRED_COLUMNS = ['Phase', 'Description', 'Actions'];
 const NOT_APPLICABLE = 'N/A';
 const NAME_SEPARATOR = ' — ';
 const NAME_PATTERN = /^`([^`]+)`$/;
-const ACTIONS_LINK_PATTERN = /^\[[^\]]+\]\((https:\/\/[^)\s]+)\)$/;
+const ACTIONS_LINK_PATTERN = /^\[([^\]]+)\]\((https:\/\/[^)\s]+)\)$/;
 
 function fail(message: string): never {
   console.error(
@@ -54,14 +54,14 @@ const parseRow = (cells: string[], columns: string[], line: string) => {
   const [phase, description, actions] = cells;
   const [codeName, ...summaryParts] = description.split(NAME_SEPARATOR);
   const summary = summaryParts.join(NAME_SEPARATOR);
-  const name = NAME_PATTERN.exec(codeName)?.[1];
-  if (!phase || !name || !summary)
+  if (!phase || !NAME_PATTERN.test(codeName) || !summary)
     fail(
       `Description must be "\`name\`${NAME_SEPARATOR}summary" with a Phase in row: ${line}`,
     );
   if (actions === NOT_APPLICABLE) return null;
-  const url = ACTIONS_LINK_PATTERN.exec(actions)?.[1];
-  if (!url)
+  // The link text is the workflow name shown in GitHub Actions.
+  const [, name, url] = ACTIONS_LINK_PATTERN.exec(actions) ?? [];
+  if (!name || !url)
     fail(
       `Actions must be "${NOT_APPLICABLE}" or a markdown link in row: ${line}`,
     );
