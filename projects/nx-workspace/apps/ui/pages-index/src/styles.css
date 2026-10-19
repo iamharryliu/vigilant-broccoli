@@ -33,3 +33,12 @@
   margin: 0.25rem 0.5rem 0.25rem 0;
   vertical-align: middle;
 }
+
+/* App icons prefixing names in the README Applications tables: Tailwind's
+   preflight makes images block-level and prose adds a 2em margin, which
+   would push each icon onto its own line above the name. */
+.prose img[align='absmiddle'] {
+  display: inline-block;
+  margin: 0 0.5rem 0 0;
+  vertical-align: middle;
+}
