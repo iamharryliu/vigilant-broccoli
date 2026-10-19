@@ -1,8 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY!;
-const ITEM_ID = process.env.ITEM_ID!;
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const SUPABASE_SECRET_KEY = process.env.SUPABASE_SECRET_KEY;
+const ITEM_ID = process.env.ITEM_ID;
 
 if (!SUPABASE_URL || !SUPABASE_SECRET_KEY || !ITEM_ID) {
   console.error(

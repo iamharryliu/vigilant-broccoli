@@ -16,6 +16,7 @@ import {
   PAGE_BODY_HEIGHT_CLASS,
   PAGE_PADDING_CLASS,
 } from '../../lib/page-layout';
+import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
 
 const LEISURE_ENDPOINT = '/api/leisure';
 const CALENDAR_EVENTS_ENDPOINT = '/api/calendar/events';
@@ -31,28 +32,26 @@ function ActivityPlannerContent() {
   const [eventsRefresh, setEventsRefresh] = useState(0);
 
   const token = session?.access_token ?? '';
-  const authHeader = (extra?: Record<string, string>) => ({
-    Authorization: `Bearer ${token}`,
-    ...extra,
-  });
+  const authHeader = useAuthHeader();
+  const jsonHeaders = useJsonAuthHeaders();
 
   const fetchActivities = useCallback(async () => {
     if (!homeId || !token) return;
     const res = await fetch(`${LEISURE_ENDPOINT}?homeId=${homeId}`, {
-      headers: authHeader(),
+      headers: await authHeader(),
     });
     const data = await res.json();
     setActivities(Array.isArray(data) ? data : []);
-  }, [homeId, token]);
+  }, [homeId, token, authHeader]);
 
   const fetchCalendarEvents = useCallback(async () => {
     if (!homeId || !token) return;
     const res = await fetch(`${CALENDAR_EVENTS_ENDPOINT}?homeId=${homeId}`, {
-      headers: authHeader(),
+      headers: await authHeader(),
     });
     const data = await res.json();
     setCalendarEvents(Array.isArray(data) ? data : []);
-  }, [homeId, token]);
+  }, [homeId, token, authHeader]);
 
   useEffect(() => {
     fetchActivities();
@@ -62,7 +61,7 @@ function ActivityPlannerContent() {
   const handleAdd = async (data: LeisureActivityFormData) => {
     await fetch(LEISURE_ENDPOINT, {
       method: 'POST',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ ...data, homeId }),
     });
     fetchActivities();
@@ -71,7 +70,7 @@ function ActivityPlannerContent() {
   const handleEdit = async (id: string, data: LeisureActivityFormData) => {
     await fetch(LEISURE_ENDPOINT, {
       method: 'PATCH',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id, ...data }),
     });
     fetchActivities();
@@ -80,7 +79,7 @@ function ActivityPlannerContent() {
   const handleDelete = async (id: string) => {
     await fetch(LEISURE_ENDPOINT, {
       method: 'DELETE',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id }),
     });
     fetchActivities();
@@ -92,7 +91,7 @@ function ActivityPlannerContent() {
   ) => {
     await fetch(CALENDAR_EVENTS_ENDPOINT, {
       method: 'POST',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ ...data, homeId, leisureActivityId: activityId }),
     });
     fetchCalendarEvents();

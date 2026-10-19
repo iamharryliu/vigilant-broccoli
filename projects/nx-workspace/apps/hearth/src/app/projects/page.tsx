@@ -23,6 +23,7 @@ import { HomeProjectList } from './components/HomeProjectList';
 import { HomeProjectCalendarDropForm } from './components/HomeProjectCalendarDropForm';
 import { HomeProjectFormData } from './components/HomeProjectForm';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
+import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
 
 type PendingDrop = CalendarEventFormData & { projectId?: string };
 
@@ -41,28 +42,26 @@ export default function ProjectsPage() {
   const [calendarModal, setCalendarModal] = useState<CalendarModal>(null);
 
   const token = session?.access_token ?? '';
-  const authHeader = (extra?: Record<string, string>) => ({
-    Authorization: `Bearer ${token}`,
-    ...extra,
-  });
+  const authHeader = useAuthHeader();
+  const jsonHeaders = useJsonAuthHeaders();
 
   const fetchProjects = useCallback(async () => {
     if (!homeId || !token) return;
     const res = await fetch(`/api/projects?homeId=${homeId}`, {
-      headers: authHeader(),
+      headers: await authHeader(),
     });
     const data = await res.json();
     setProjects(Array.isArray(data) ? data : []);
-  }, [homeId, token]);
+  }, [homeId, token, authHeader]);
 
   const fetchCalendarEvents = useCallback(async () => {
     if (!homeId || !token) return;
     const res = await fetch(`/api/calendar/events?homeId=${homeId}`, {
-      headers: authHeader(),
+      headers: await authHeader(),
     });
     const data = await res.json();
     setCalendarEvents(Array.isArray(data) ? data : []);
-  }, [homeId, token]);
+  }, [homeId, token, authHeader]);
 
   useEffect(() => {
     fetchProjects();
@@ -72,7 +71,7 @@ export default function ProjectsPage() {
   const handleAdd = async (data: HomeProjectFormData) => {
     await fetch('/api/projects', {
       method: 'POST',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ ...data, homeId }),
     });
     fetchProjects();
@@ -81,7 +80,7 @@ export default function ProjectsPage() {
   const handleEdit = async (id: string, data: HomeProjectFormData) => {
     await fetch('/api/projects', {
       method: 'PATCH',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id, ...data }),
     });
     fetchProjects();
@@ -90,7 +89,7 @@ export default function ProjectsPage() {
   const handleDelete = async (id: string) => {
     await fetch('/api/projects', {
       method: 'DELETE',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id }),
     });
     fetchProjects();
@@ -122,7 +121,7 @@ export default function ProjectsPage() {
   ) => {
     await fetch('/api/calendar/events', {
       method: 'PATCH',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id, start, end, allDay }),
     });
     fetchCalendarEvents();
@@ -131,7 +130,7 @@ export default function ProjectsPage() {
   const handleConfirmDrop = async (data: CalendarEventFormData) => {
     await fetch('/api/calendar/events', {
       method: 'POST',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({
         ...data,
         homeId,
@@ -145,7 +144,7 @@ export default function ProjectsPage() {
   const handleCalendarCreate = async (data: CalendarEventFormData) => {
     await fetch('/api/calendar/events', {
       method: 'POST',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ ...data, homeId }),
     });
     setCalendarModal(null);
@@ -156,7 +155,7 @@ export default function ProjectsPage() {
     if (calendarModal?.type !== 'edit') return;
     await fetch('/api/calendar/events', {
       method: 'PATCH',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id: calendarModal.event.id, ...data }),
     });
     setCalendarModal(null);
@@ -167,7 +166,7 @@ export default function ProjectsPage() {
     if (calendarModal?.type !== 'edit') return;
     await fetch('/api/calendar/events', {
       method: 'DELETE',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id: calendarModal.event.id }),
     });
     setCalendarModal(null);
