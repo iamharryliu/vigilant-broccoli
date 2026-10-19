@@ -87,12 +87,6 @@ export default [
     },
   },
   ...nx.configs['flat/typescript'],
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    rules: {
-      'no-extra-semi': 'error',
-    },
-  },
   ...nx.configs['flat/javascript'],
   {
     files: ['**/*.js', '**/*.jsx'],
@@ -115,8 +109,5 @@ export default [
     .map(config => ({
       ...config,
       files: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.spec.js', '**/*.spec.jsx'],
-      rules: {
-        ...config.rules,
-      },
     })),
 ];
