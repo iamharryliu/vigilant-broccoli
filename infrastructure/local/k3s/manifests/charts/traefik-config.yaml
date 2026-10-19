@@ -1,0 +1,13 @@
+# HelmChartConfig is how k3s overrides values of a chart it bundles; the name
+# must match the bundled HelmChart.
+apiVersion: helm.cattle.io/v1
+kind: HelmChartConfig
+metadata:
+  name: traefik
+spec:
+  valuesContent: |-
+    providers:
+      kubernetesIngress:
+        # The manager and images Ingresses route to apps on the Mac through
+        # ExternalName Services, which Traefik ignores by default.
+        allowExternalNameServices: true

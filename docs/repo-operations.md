@@ -42,8 +42,8 @@ Backups: `cron-backup.yml` runs nightly, one job per store (repo zip, Gitea repo
 
 ## Local Dev Environment
 
-- `infrastructure/local/docker-compose.yml` — local service stack (Grafana, Prometheus, Loki/Promtail, Resilio, nginx with local certs via `setup-certs.sh`). Managed with `pnpm local:docker:up|down|restart|reload`.
-- `infrastructure/immich/docker-compose.yml` — standalone Immich stack (server, machine-learning, Redis, Postgres) exposed on `:2283`; local nginx proxies `images.vigilant-broccoli.app` to it via `host.docker.internal:2283`. Managed with `pnpm immich:docker:up|down|restart|reload|logs`.
+- `infrastructure/local/k3s/` — local k3d (k3s in Docker) cluster: Traefik HTTPS proxy with local certs via `setup-certs.sh`, Grafana, Loki, Alloy and Headlamp. Managed with `pnpm local:k3s:*`; guide in [k3s-cluster.md](../infrastructure/local/docs/features/k3s-cluster.md).
+- `infrastructure/immich/docker-compose.yml` — standalone Immich stack (server, machine-learning, Redis, Postgres) exposed on `:2283`; the local cluster's Traefik proxies `images.vigilant-broccoli.app` to it via `host.k3d.internal:2283`. Managed with `pnpm immich:docker:up|down|restart|reload|logs`.
 - Mock backends for UI development live under `apps/api/mock/` (e.g. `mock-employee-handler-service`) — prefer extending a mock over pointing local UIs at live services.
 - Running a service with real secrets locally: use its `serve` target (Vault-wrapped; see [app-development.md](./app-development/app-development.md#choosing-a-home)).
 

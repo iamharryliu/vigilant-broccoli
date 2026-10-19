@@ -134,10 +134,19 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   rabbitmq:password           Copy RabbitMQ admin password to clipboard (login user: admin)
 
 🐳 LOCAL
-  local:docker:up             Start local Docker Compose services
-  local:docker:down           Stop local Docker Compose services
-  local:docker:restart        Restart local Docker Compose services
-  local:docker:reload         Reload local Docker Compose services
+  local:k3s:up                Create the local k3d (k3s in Docker) cluster
+  local:k3s:down              Delete the local k3d cluster and its data
+  local:k3s:start             Start the stopped local k3d cluster
+  local:k3s:stop              Stop the local k3d cluster, keeping its state
+  local:k3s:apply             Apply local platform manifests plus the mkcert TLS secret
+  local:k3s:status            Show nodes, platform workloads and Helm releases
+  local:k3s:ui                Open k9s on the local cluster's platform namespace
+  local:k3s:grafana:password  Copy the local Grafana admin password and open Grafana
+  local:k3s:grafana:logs      Tail local Grafana logs
+  local:k3s:headlamp:token    Copy a 24h Headlamp login token and open Headlamp
+  local:k3s:alloy:logs        Tail local Alloy (log collector) logs
+  local:k3s:loki:logs         Tail local Loki logs
+  local:k3s:traefik:logs      Tail local Traefik (ingress) logs
   immich:docker:up            Start the standalone Immich Docker Compose stack
   immich:docker:down          Stop the standalone Immich Docker Compose stack
   immich:docker:restart       Restart the standalone Immich Docker Compose stack
@@ -149,7 +158,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   vb-manager-next:delete      Delete vb-manager-next PM2 process
   vb-manager-next:logs        Tail vb-manager-next PM2 logs
   vb-manager-next:status      Show PM2 process status
-  deploy:local-services       Bring up local Docker services + reload vb-manager-next
+  deploy:local-services       Bring up the local k3s cluster + reload vb-manager-next
   health-check                Run health check script
   dldjmusic                   Download DJ music from Spotify playlists (secrets pulled from Vault)
 
