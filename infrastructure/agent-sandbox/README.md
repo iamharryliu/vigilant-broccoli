@@ -8,6 +8,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 - [Local Ollama agent](#local-ollama-agent)
 - [Running in CI](#running-in-ci)
 - [Publishing several pull requests](#publishing-several-pull-requests)
+- [Ending without changes](#ending-without-changes)
 - [Auditing the backlog](#auditing-the-backlog)
 - [Pruning dead code and stale docs](#pruning-dead-code-and-stale-docs)
 - [Auditing legacy documentation](#auditing-legacy-documentation)
@@ -134,7 +135,22 @@ targeting the original PR branch. Recovery restores unresolved TODO rows and res
 publication fail, the log reports that recovery failed rather than claiming the work was saved. Git, pushes and PR creation stay in the runner with the credentials it already
 has; branches are only created and pushed, never force-pushed. Squash-merge implications of stacked PRs are in
 [Stacked pull requests](../../docs/git-workflow.md#stacked-pull-requests). The container copies `solve-todo-runner.sh`,
-`pr-increments.sh` and `commit-subject.sh` into the image, so rebuild it (`docker compose build`) after changing any of them when running locally. Every runner sources `commit-subject.sh` to capitalize commit messages and PR titles, end them with a period and strip trailing ellipses, so they pass the CI `commitlint` job.
+`pr-increments.sh`, `commit-subject.sh` and `no-changes.sh` into the image, so rebuild it (`docker compose build`) after changing any of them when running locally. Every runner sources `commit-subject.sh` to capitalize commit messages and PR titles, end them with a period and strip trailing ellipses, so they pass the CI `commitlint` job.
+
+## Ending without changes
+
+A request the agent judges should change nothing is a decision, not a failure, when the agent says why
+([no-change decisions](../../docs/agent-support.md#task-contract)). Every runner that can end with no changes asks for an
+optional `no_changes_reason` in its metadata file and handles it through `no-changes.sh`:
+
+- no changes and a non-empty reason: the runner prints `RESULT::no-changes` and `NO_CHANGES_REASON::<JSON string>` and
+  exits 0; `write-pr-step-summary.sh` reports _Completed with no changes_ with the reason. `update-pr.sh` sets `outcome`
+  and `no_changes_reason` step outputs for `manual-agentic-pr-update`'s own result step, and `update-pr-runner.sh` also
+  comments the reason on the target PR;
+- no changes and no reason: the run fails as before;
+- the audits and prune keep their `AUDIT_CLEAN`/`PRUNE_CLEAN` exit 0 and add the reason when the agent gave one.
+
+`pnpm agentic-pr-create <id...>` prints the reason for such an id and does not count it as failed.
 
 ## Auditing the backlog
 
