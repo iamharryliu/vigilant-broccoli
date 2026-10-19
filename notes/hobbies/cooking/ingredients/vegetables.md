@@ -5,7 +5,6 @@ Peak season for a temperate Northern Hemisphere climate (e.g. the continental US
 ## Table of Contents
 
 - [Seasonality](#seasonality)
-  - [In Season by Month](#in-season-by-month)
   - [Seasonal Timeline](#seasonal-timeline)
 - [📊 Density Order (densest → most tender)](#-density-order-densest--most-tender)
   - [🟤 Hard / Dense Vegetables](#-hard--dense-vegetables)
@@ -15,46 +14,6 @@ Peak season for a temperate Northern Hemisphere climate (e.g. the continental US
 - [See Also](#see-also)
 
 ## Seasonality
-
-### In Season by Month
-
-| Vegetable                        | Season         | Peak Months      |
-| -------------------------------- | -------------- | ---------------- |
-| Artichoke                        | Spring         | Mar–May          |
-| Asparagus                        | Spring         | Apr–Jun          |
-| Beet                             | Summer, Fall   | Jun–Oct          |
-| Bell Pepper                      | Summer         | Jul–Sep          |
-| Broccoli                         | Fall, Spring   | Oct–Apr          |
-| Brussels Sprouts                 | Fall, Winter   | Sep–Feb          |
-| Cabbage                          | Fall, Winter   | Sep–Mar          |
-| Carrot                           | Fall           | Sep–Dec          |
-| Cauliflower                      | Fall           | Sep–Nov          |
-| Celery                           | Summer, Fall   | Jun–Nov          |
-| Corn (Sweet Corn)                | Summer         | Jun–Sep          |
-| Cucumber                         | Summer         | Jun–Aug          |
-| Eggplant                         | Summer         | Jul–Sep          |
-| Fennel                           | Fall, Winter   | Oct–Feb          |
-| Garlic                           | Summer         | Jul–Sep          |
-| Green Bean                       | Summer         | Jun–Sep          |
-| Kale                             | Fall, Winter   | Oct–Mar          |
-| Leek                             | Fall, Winter   | Sep–Apr          |
-| Lettuce                          | Spring, Summer | Apr–Jul          |
-| Mushroom                         | Year-round     | —                |
-| Okra                             | Summer         | Jun–Sep          |
-| Onion                            | Summer         | Jul–Sep          |
-| Parsnip                          | Fall, Winter   | Oct–Mar          |
-| Pea (Sugar Snap / Snow)          | Spring         | Apr–Jun          |
-| Potato                           | Fall           | Sep–Oct          |
-| Pumpkin                          | Fall           | Sep–Nov          |
-| Radish                           | Spring         | Apr–Jun          |
-| Rutabaga                         | Fall, Winter   | Oct–Feb          |
-| Spinach                          | Spring, Fall   | Mar–May, Sep–Nov |
-| Summer Squash (Zucchini)         | Summer         | Jun–Sep          |
-| Sweet Potato                     | Fall           | Sep–Nov          |
-| Swiss Chard                      | Summer, Fall   | Jun–Oct          |
-| Tomato                           | Summer         | Jul–Sep          |
-| Turnip                           | Fall, Winter   | Oct–Feb          |
-| Winter Squash (Butternut, Acorn) | Fall           | Sep–Dec          |
 
 ### Seasonal Timeline
 
