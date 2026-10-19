@@ -16,6 +16,13 @@ spec:
     grafana.ini:
       server:
         root_url: https://grafana.vigilant-broccoli.app
+    # Loads ConfigMaps labelled grafana_dashboard=1 from local-platform, so
+    # dashboards are code and survive cluster rebuilds.
+    sidecar:
+      dashboards:
+        enabled: true
+        label: grafana_dashboard
+        labelValue: '1'
     persistence:
       enabled: true
       size: 1Gi

@@ -11,3 +11,9 @@ spec:
         # The manager and images Ingresses route to apps on the Mac through
         # ExternalName Services, which Traefik ignores by default.
         allowExternalNameServices: true
+    # JSON access logs reach Loki as pod logs; the vb-manager-next dashboard
+    # parses RequestHost, DownstreamStatus, Duration and RequestPath from them.
+    logs:
+      access:
+        enabled: true
+        format: json

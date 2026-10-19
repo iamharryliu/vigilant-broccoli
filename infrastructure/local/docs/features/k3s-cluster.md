@@ -13,6 +13,7 @@ The local platform (HTTPS proxy, Grafana, Loki, log collection, Headlamp) on one
   - [`kubectl apply` never deletes](#kubectl-apply-never-deletes)
   - [Host mounts and ports are fixed at cluster creation](#host-mounts-and-ports-are-fixed-at-cluster-creation)
   - [The redirect loops on a non-443 test port](#the-redirect-loops-on-a-non-443-test-port)
+  - [Pinning a `uid` on the provisioned datasource crash-loops Grafana](#pinning-a-uid-on-the-provisioned-datasource-crash-loops-grafana)
 
 ## Layout
 
@@ -24,7 +25,8 @@ The local platform (HTTPS proxy, Grafana, Loki, log collection, Headlamp) on one
 | `k3s/manifests/charts/grafana.yaml`          | Grafana with the Loki datasource provisioned                                                     |
 | `k3s/manifests/charts/headlamp.yaml`         | Headlamp web UI at `headlamp.vigilant-broccoli.app`                                              |
 | `k3s/manifests/charts/loki.yaml`             | Single-binary Loki on the filesystem, 30-day retention                                           |
-| `k3s/manifests/charts/traefik-config.yaml`   | Override for k3s's bundled Traefik allowing ExternalName Services                                |
+| `k3s/manifests/charts/traefik-config.yaml`   | Override for k3s's bundled Traefik: ExternalName Services and JSON access logs                   |
+| `k3s/manifests/platform/dashboards/`         | Grafana dashboards as JSON, loaded through a `grafana_dashboard`-labelled ConfigMap              |
 | `k3s/manifests/platform/host-services.yaml`  | ExternalName Services for `vb-manager-next` (1337) and Immich (2283) on the Mac                  |
 | `k3s/manifests/platform/ingresses.yaml`      | `*.vigilant-broccoli.app` Ingresses with TLS                                                     |
 | `k3s/manifests/platform/redirect-https.yaml` | Traefik Middleware redirecting those hosts from HTTP to HTTPS                                    |
@@ -61,6 +63,7 @@ All pinned in the root `mise.toml`; run `mise install`.
   | `pm2`        | `~/.pm2/logs/vb-manager-next-*.log`                                             |
   | `varlogs`    | `/var/log/*log` on the Mac                                                      |
 
+- **Dashboards:** Grafana's sidecar loads every ConfigMap labelled `grafana_dashboard=1` in `local-platform`; add a JSON file under `platform/dashboards/` and list it in that kustomization's `configMapGenerator`. Dashboards pick the Loki datasource through a `datasource` variable. `vb-manager-next (Local)` charts requests, status codes, latency and top paths for `manager.vigilant-broccoli.app` from Traefik's JSON access logs (`{namespace="kube-system", container="traefik"} | json`), alongside the PM2 error and output logs.
 - **Storage:** Grafana and Loki use `local-path` PVCs, which live inside the node containers. They survive `stop`/`start` and Docker restarts, not `local:k3s:down`.
 
 ## Nuances
@@ -80,3 +83,7 @@ k3d applies `ports` and `volumes` only when it creates the node containers. Afte
 ### The redirect loops on a non-443 test port
 
 Traefik's `redirectScheme` builds the HTTPS URL without the request's port, so a cluster created on a test port such as 28443 answers HTTPS requests with a 301 to port 443. Test with the real hostname instead, for example `curl --connect-to ::127.0.0.1:28443 https://grafana.vigilant-broccoli.app/`.
+
+### Pinning a `uid` on the provisioned datasource crash-loops Grafana
+
+Adding `uid` to the existing Loki datasource in `charts/grafana.yaml` makes provisioning look it up by the new uid, fail with `Datasource provisioning error: data source not found`, and restart in a loop; the old pod keeps serving because the rollout never completes. Reference the datasource from dashboards through a `datasource` template variable instead, or delete the datasource with `deleteDatasources` in the same provisioning file before pinning a uid.
