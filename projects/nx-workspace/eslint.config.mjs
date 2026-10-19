@@ -11,6 +11,21 @@ const compat = new FlatCompat({
   recommendedConfig: js.configs.recommended,
 });
 
+// Apply after Nx language and React presets, which downgrade this rule to a warning.
+export const unusedVariablesConfig = {
+  files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+  rules: {
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
+  },
+};
+
 export default [
   {
     ignores: ['**/dist', '**/out-tsc', '**/assets/**', '**/next-env.d.ts'],
@@ -67,14 +82,6 @@ export default [
           ],
         },
       ],
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
       // A cycle can pass typecheck and lint yet crash at runtime once bundled
       // (a constant read before its module initializes), so fail it here.
       'import/no-cycle': 'error',
@@ -88,6 +95,7 @@ export default [
   },
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
+  unusedVariablesConfig,
   {
     files: ['**/*.js', '**/*.jsx'],
     rules: {
