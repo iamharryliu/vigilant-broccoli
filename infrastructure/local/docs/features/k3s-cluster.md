@@ -1,6 +1,6 @@
 # Local k3s Cluster
 
-The local platform (HTTPS proxy, Grafana, Loki, log collection, Headlamp) on one k3s cluster run by k3d (each node is a Docker container). Immich and the agent sandbox stay on Docker Compose.
+The local platform (HTTPS proxy, Grafana, Loki, Prometheus, log collection, Headlamp) on one k3s cluster run by k3d (each node is a Docker container). Immich and the agent sandbox stay on Docker Compose.
 
 ## Table of Contents
 
@@ -23,10 +23,11 @@ The local platform (HTTPS proxy, Grafana, Loki, log collection, Headlamp) on one
 | `k3s/apply.sh`                               | Generates mkcert certs if missing, applies the Kustomize tree and creates the `local-tls` Secret                                                         |
 | `k3s/k3d-config.yaml`                        | Cluster `vb-local`: one server node, loopback 80/443 to Traefik, host-log mounts, Compose labels grouping its containers as the `local-platform` project |
 | `k3s/manifests/charts/alloy.yaml`            | Alloy log collector: host files, PM2, Docker containers and pod logs to Loki                                                                             |
-| `k3s/manifests/charts/grafana.yaml`          | Grafana with the Loki datasource provisioned                                                                                                             |
+| `k3s/manifests/charts/grafana.yaml`          | Grafana with the Loki and Prometheus datasources provisioned                                                                                             |
 | `k3s/manifests/charts/headlamp.yaml`         | Headlamp web UI at `headlamp.vigilant-broccoli.app`                                                                                                      |
 | `k3s/manifests/charts/loki.yaml`             | Single-binary Loki on the filesystem, 30-day retention                                                                                                   |
-| `k3s/manifests/charts/traefik-config.yaml`   | Override for k3s's bundled Traefik: ExternalName Services and JSON access logs                                                                           |
+| `k3s/manifests/charts/prometheus.yaml`       | Single Prometheus server plus kube-state-metrics, 15-day retention                                                                                       |
+| `k3s/manifests/charts/traefik-config.yaml`   | Override for k3s's bundled Traefik: ExternalName Services, JSON access logs and latency buckets                                                          |
 | `k3s/manifests/platform/dashboards/`         | Grafana dashboards as JSON, loaded through a `grafana_dashboard`-labelled ConfigMap                                                                      |
 | `k3s/manifests/platform/host-services.yaml`  | ExternalName Services for `vb-manager-next` (1337) and Immich (2283) on the Mac                                                                          |
 | `k3s/manifests/platform/ingresses.yaml`      | `*.vigilant-broccoli.app` Ingresses with TLS                                                                                                             |
@@ -64,8 +65,9 @@ All pinned in the root `mise.toml`; run `mise install`.
   | `pm2`        | `~/.pm2/logs/vb-manager-next-*.log`                                             |
   | `varlogs`    | `/var/log/*log` on the Mac                                                      |
 
-- **Dashboards:** Grafana's sidecar loads every ConfigMap labelled `grafana_dashboard=1` in `local-platform`; add a JSON file under `platform/dashboards/` and list it in that kustomization's `configMapGenerator`. Dashboards pick the Loki datasource through a `datasource` variable. `vb-manager-next (Local)` charts requests, status codes, latency and top paths for `manager.vigilant-broccoli.app` from Traefik's JSON access logs (`{namespace="kube-system", container="traefik"} | json`), alongside the PM2 error and output logs.
-- **Storage:** Grafana and Loki use `local-path` PVCs, which live inside the node containers. They survive `stop`/`start` and Docker restarts, not `local:k3s:down`.
+- **Metrics:** Prometheus scrapes the apiserver, kubelet/cAdvisor (container CPU and memory), kube-state-metrics and every pod annotated `prometheus.io/scrape`, which includes k3s's bundled Traefik. Query it in Grafana Explore through the `Prometheus` datasource; it has no Ingress. Traefik's `traefik_service_*` series are labelled `service="<namespace>-<service>-<port>@kubernetes"`, e.g. `local-platform-vb-manager-next-1337@kubernetes`.
+- **Dashboards:** Grafana's sidecar loads every ConfigMap labelled `grafana_dashboard=1` in `local-platform`; add a JSON file under `platform/dashboards/` and list it in that kustomization's `configMapGenerator`. Dashboards pick the Loki datasource through a `datasource` variable. `vb-manager-next (Local)` charts requests, status codes, latency and top paths for `manager.vigilant-broccoli.app` from Traefik's JSON access logs (`{namespace="kube-system", container="traefik"} | json`), alongside the PM2 error and output logs; its `Traefik metrics (Prometheus)` row charts the same request rate and latency from Traefik's metrics, picked through a `metrics` datasource variable.
+- **Storage:** Grafana, Loki and Prometheus use `local-path` PVCs, which live inside the node containers. They survive `stop`/`start` and Docker restarts, not `local:k3s:down`.
 
 ## Nuances
 

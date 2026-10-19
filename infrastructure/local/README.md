@@ -62,4 +62,5 @@ Preferences → Docker Engine → paste contents of `docker-daemon-config.json` 
   - Grafana
   - Headlamp
   - Loki
+  - Prometheus
   - Traefik

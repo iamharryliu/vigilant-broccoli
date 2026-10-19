@@ -9,4 +9,5 @@ resources:
   - grafana.yaml
   - headlamp.yaml
   - loki.yaml
+  - prometheus.yaml
   - traefik-config.yaml
