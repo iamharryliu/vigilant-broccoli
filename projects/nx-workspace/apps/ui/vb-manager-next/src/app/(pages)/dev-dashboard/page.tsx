@@ -22,6 +22,7 @@ import { WireguardStatusComponent } from '../../components/wireguard-status.comp
 import { WranglerPagesComponent } from '../../components/wrangler-pages.component';
 import { VercelAppsComponent } from '../../components/vercel-apps.component';
 import { LocalServicesComponent } from '../../components/local-services.component';
+import { LocalCredentialsComponent } from '../../components/local-credentials.component';
 import { LanDevicesComponent } from '../../components/lan-devices.component';
 import { OutboundConnectionsComponent } from '../../components/outbound-connections.component';
 import { TextToolsPage } from '../../components/pages/TextToolsPage';
@@ -93,6 +94,7 @@ export default function Page() {
           </div>
           <div className="flex flex-col gap-4">
             <LocalServicesComponent />
+            <LocalCredentialsComponent />
           </div>
           <div className="flex flex-col gap-4">
             <DockerStatusComponent />
