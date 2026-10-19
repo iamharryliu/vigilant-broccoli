@@ -36,3 +36,8 @@ spec:
             url: http://loki.local-platform.svc:3100
             isDefault: true
             editable: true
+          - name: Prometheus
+            type: prometheus
+            access: proxy
+            url: http://prometheus-server.local-platform.svc
+            editable: true
