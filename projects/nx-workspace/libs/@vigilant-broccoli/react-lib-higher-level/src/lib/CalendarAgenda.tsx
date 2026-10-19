@@ -63,7 +63,7 @@ const NOW_LINE_VIEWPORT_FRACTION = 0.18;
 // scrollbar is hidden because Chromium paints sticky headings over a nested
 // scroller's overlay scrollbar, leaving a gap in its thumb at each heading.
 const AGENDA_SCROLLER_CLASS =
-  'min-h-0 w-full flex-1 overflow-y-auto overscroll-contain rounded-lg border border-gray-200 pb-[env(safe-area-inset-bottom)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden';
+  'min-h-0 w-full flex-1 overflow-y-auto overscroll-contain rounded-lg border border-gray-200 dark:border-gray-700 pb-[env(safe-area-inset-bottom)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden';
 
 const dateOnly = (date: Date) =>
   new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -160,7 +160,7 @@ const findNowLineIndex = (events: CalendarEvent[], now: Date) => {
 };
 
 const AGENDA_ROW_CLASS =
-  'flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-gray-50';
+  'flex w-full items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800';
 
 const AgendaRowContent = ({
   event,
@@ -179,10 +179,12 @@ const AgendaRowContent = ({
       }}
     />
     <span className="flex min-w-0 flex-1 flex-col">
-      <span className="truncate text-sm font-medium text-gray-900">
+      <span className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
         {event.summary}
       </span>
-      <span className="text-xs text-gray-500">{formatEventTime(event)}</span>
+      <span className="text-xs text-gray-500 dark:text-gray-400">
+        {formatEventTime(event)}
+      </span>
     </span>
   </>
 );
@@ -283,12 +285,18 @@ export const CalendarAgenda = ({
 
   return (
     <div ref={scrollerRef} className={AGENDA_SCROLLER_CLASS}>
-      {error && <p className="p-4 text-sm text-red-600">{error}</p>}
+      {error && (
+        <p className="p-4 text-sm text-red-600 dark:text-red-300">{error}</p>
+      )}
       {!error && agendaGroups === null && (
-        <p className="p-4 text-sm text-gray-500">{LOADING_MESSAGE}</p>
+        <p className="p-4 text-sm text-gray-500 dark:text-gray-400">
+          {LOADING_MESSAGE}
+        </p>
       )}
       {!error && agendaGroups !== null && agendaGroups.length === 0 && (
-        <p className="p-4 text-sm text-gray-500">{EMPTY_MESSAGE}</p>
+        <p className="p-4 text-sm text-gray-500 dark:text-gray-400">
+          {EMPTY_MESSAGE}
+        </p>
       )}
       {!error &&
         agendaGroups !== null &&
@@ -296,11 +304,11 @@ export const CalendarAgenda = ({
           <div key={group.key}>
             <p
               ref={isSameDay(group.date, now) ? todayHeadingRef : undefined}
-              className="sticky top-0 z-10 bg-gray-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500"
+              className="sticky top-0 z-10 bg-gray-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:bg-gray-950 dark:text-gray-400"
             >
               {formatDateHeading(group.date)}
             </p>
-            <ul className="divide-y divide-gray-100">
+            <ul className="divide-y divide-gray-100 dark:divide-gray-800">
               {group.events.flatMap((event, index) => [
                 isSameDay(group.date, now) &&
                   index === findNowLineIndex(group.events, now) && (
