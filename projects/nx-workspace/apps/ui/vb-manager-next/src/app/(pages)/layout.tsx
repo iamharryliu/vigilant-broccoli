@@ -35,7 +35,6 @@ type KeyboardHandlers = {
   setUtilitiesDialogOpen: (open: boolean) => void;
 };
 
-// eslint-disable-next-line complexity
 const processKeyboardInput = (
   key: string,
   isShift: boolean,

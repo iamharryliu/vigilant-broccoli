@@ -91,7 +91,6 @@ export function useAnimatedMetrics(
 
     frameId = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(frameId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetMetrics, isChanging, durationMs]);
 
   return displayMetrics;

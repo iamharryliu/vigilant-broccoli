@@ -86,7 +86,13 @@ export const UserRow = ({
       nameSize={textConfig.nameSize}
       rankChange={rankChange}
       rankChangeDurationMs={rankChangeDurationMs}
-      leadingIcon={isTeammate ? <span className="mr-1">⭐</span> : undefined}
+      leadingIcon={
+        isTeammate ? (
+          <span className="mr-1" role="img" aria-label="Teammate">
+            ⭐
+          </span>
+        ) : undefined
+      }
     >
       <div
         className="grid w-full gap-x-1 gap-y-0"

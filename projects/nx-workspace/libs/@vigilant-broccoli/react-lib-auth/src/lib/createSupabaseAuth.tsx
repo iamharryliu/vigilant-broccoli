@@ -222,7 +222,6 @@ export function createSupabaseAuth(
         });
       });
       return () => subscription.unsubscribe();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return createElement('p', null, loadingLabel ?? 'Signing you in...');

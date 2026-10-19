@@ -22,6 +22,7 @@ import {
 import { ResourceFormData } from './components/ResourceForm';
 import { toDateLocal } from '../../lib/date-utils';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
+import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
 
 type BookingModal =
   | { type: 'create'; startDate: string; endDate: string }
@@ -57,28 +58,26 @@ export default function ResourcesPage() {
   const [bookingModal, setBookingModal] = useState<BookingModal>(null);
 
   const token = session?.access_token ?? '';
-  const authHeader = (extra?: Record<string, string>) => ({
-    Authorization: `Bearer ${token}`,
-    ...extra,
-  });
+  const authHeader = useAuthHeader();
+  const jsonHeaders = useJsonAuthHeaders();
 
   const fetchResources = useCallback(async () => {
     if (!homeId || !token) return;
     const res = await fetch(`/api/resources?homeId=${homeId}`, {
-      headers: authHeader(),
+      headers: await authHeader(),
     });
     const data = await res.json();
     setResources(Array.isArray(data) ? data : []);
-  }, [homeId, token]);
+  }, [homeId, token, authHeader]);
 
   const fetchBookings = useCallback(async () => {
     if (!homeId || !token) return;
     const res = await fetch(`/api/resources/bookings?homeId=${homeId}`, {
-      headers: authHeader(),
+      headers: await authHeader(),
     });
     const data = await res.json();
     setBookings(Array.isArray(data) ? data : []);
-  }, [homeId, token]);
+  }, [homeId, token, authHeader]);
 
   useEffect(() => {
     fetchResources();
@@ -88,7 +87,7 @@ export default function ResourcesPage() {
   const handleAddResource = async (data: ResourceFormData) => {
     await fetch('/api/resources', {
       method: 'POST',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ ...data, homeId }),
     });
     fetchResources();
@@ -97,7 +96,7 @@ export default function ResourcesPage() {
   const handleEditResource = async (id: string, data: ResourceFormData) => {
     await fetch('/api/resources', {
       method: 'PATCH',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id, ...data }),
     });
     fetchResources();
@@ -106,7 +105,7 @@ export default function ResourcesPage() {
   const handleDeleteResource = async (id: string) => {
     await fetch('/api/resources', {
       method: 'DELETE',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id }),
     });
     await fetchResources();
@@ -128,22 +127,17 @@ export default function ResourcesPage() {
   const handleConfirmDrop = async (data: ResourceBookingFormData) => {
     await fetch('/api/resources/bookings', {
       method: 'POST',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ ...data, homeId }),
     });
     setPendingDrop(null);
     fetchBookings();
   };
 
-  const handleEventDrop = async (
-    id: string,
-    start: string,
-    end: string,
-    _allDay: any,
-  ) => {
+  const handleEventDrop = async (id: string, start: string, end: string) => {
     await fetch('/api/resources/bookings', {
       method: 'PATCH',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({
         id,
         startDate: toDateLocal(start),
@@ -169,7 +163,7 @@ export default function ResourcesPage() {
   const handleBookingCreate = async (data: ResourceBookingFormData) => {
     await fetch('/api/resources/bookings', {
       method: 'POST',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ ...data, homeId }),
     });
     setBookingModal(null);
@@ -180,7 +174,7 @@ export default function ResourcesPage() {
     if (bookingModal?.type !== 'edit') return;
     await fetch('/api/resources/bookings', {
       method: 'PATCH',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id: bookingModal.booking.id, ...data }),
     });
     setBookingModal(null);
@@ -191,7 +185,7 @@ export default function ResourcesPage() {
     if (bookingModal?.type !== 'edit') return;
     await fetch('/api/resources/bookings', {
       method: 'DELETE',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id: bookingModal.booking.id }),
     });
     setBookingModal(null);
