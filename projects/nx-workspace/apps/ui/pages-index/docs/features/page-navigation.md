@@ -17,7 +17,7 @@ Non-obvious routing and data-source details for pages-index. Routes live in `src
 
 ## Status and repo timeline
 
-- `/status` — service health grouped by Production / Staging / Demo / Personal Apps from `iamharryliu/uptime`; unavailable monitoring data displays an error. The Status tab shows GitHub Actions badges for both repositories. The Uptime tab lists the same services with 24h/7d/30d/1y uptime and a 30-day downtime strip from `summary.json`, plus a "Full uptime history" link to `uptime.harryliu.dev` (the Upptime site).
+- `/status` — service health grouped by Production / Staging / Demo / Personal Apps from `iamharryliu/uptime`; unavailable monitoring data displays an error. Each service row shows 24h/7d/30d/1y uptime, a 30-day downtime strip and the response time from `summary.json`. A "Full uptime history" card links to `uptime.harryliu.dev` (the Upptime site), and GitHub Actions badges for both repositories follow the list.
 - `/repo-timeline` — lines of code, commits, PRs merged, lines added/deleted per day / month / year, shown as a horizontally scrollable bar chart or as react-lib's `ScrollTimeline`. Data is `public/repo-timeline.json`, generated from `git log --numstat` by the `generate-repo-timeline` target (`scripts/generate-repo-timeline.ts`, lockfiles and >100K-line single-file changes excluded) and copied into `_site` on each Pages deploy.
 
 ## Open source
