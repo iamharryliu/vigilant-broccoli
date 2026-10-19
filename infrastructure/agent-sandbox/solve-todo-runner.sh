@@ -144,7 +144,7 @@ salvage_on_failure() {
   local exit_code=$?
   trap - EXIT
   set +e
-  [ -z "${CODEX_HOME:-}" ] || rm -rf "$CODEX_HOME"
+  [ -z "${CODEX_RUN_HOME:-}" ] || rm -rf "$CODEX_RUN_HOME"
   [ "$exit_code" -eq 0 ] && exit 0
   [ "$SALVAGE_ENABLED" = 1 ] || exit "$exit_code"
 
@@ -213,15 +213,17 @@ agent_invoke() {
         --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
       ;;
     codex)
-      if [ "$CODEX_LOGGED_IN" = 0 ]; then
+      # CODEX_SIGNED_IN: the dev sandbox's own Codex login (~/.codex) and sessions
+      # are used as-is, so there is no access token and no throwaway home.
+      if [ "$CODEX_LOGGED_IN" = 0 ] && [ "${CODEX_SIGNED_IN:-0}" != 1 ]; then
         if [ -z "${AGENT_CODEX_ACCESS_TOKEN:-}" ]; then
           echo "ERROR: AGENT_CODEX_ACCESS_TOKEN is required for SOLVE_AGENT=codex." >&2
           return 1
         fi
         # Not under /tmp: workspace-write leaves /tmp writable for $META_FILE, so
         # the agent could read the access token out of $CODEX_HOME/auth.json.
-        CODEX_HOME=$(mktemp -d "$HOME/.codex-run.XXXXXX")
-        export CODEX_HOME
+        CODEX_RUN_HOME=$(mktemp -d "$HOME/.codex-run.XXXXXX")
+        export CODEX_HOME=$CODEX_RUN_HOME
         printf '%s\n' "$AGENT_CODEX_ACCESS_TOKEN" | codex login --with-access-token >/dev/null
         unset AGENT_CODEX_ACCESS_TOKEN CODEX_ACCESS_TOKEN OPENAI_API_KEY CODEX_API_KEY
         CODEX_LOGGED_IN=1
@@ -235,11 +237,12 @@ agent_invoke() {
         # the root CONTEXT.md is over the 32 KiB default and would be silently
         # truncated.
         -c project_doc_max_bytes=65536
-        --sandbox workspace-write
+        # --approve-for-me selects the workspace-write sandbox itself and Codex
+        # rejects combining it with --sandbox.
         --approve-for-me
-        --ephemeral
-        --output-last-message /tmp/codex-last-message.txt
+        --output-last-message "${CODEX_LAST_MESSAGE_FILE:-/tmp/codex-last-message.txt}"
       )
+      [ "${CODEX_SIGNED_IN:-0}" = 1 ] || codex_args+=(--ephemeral)
       [ -z "$MODEL" ] || codex_args+=(--model "$MODEL")
       # No GitHub credentials: codex exec has no tool deny-list of its own, so
       # dropping the token is what keeps the agent off the push/PR path that the
