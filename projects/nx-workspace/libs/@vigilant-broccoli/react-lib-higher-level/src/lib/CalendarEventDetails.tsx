@@ -116,7 +116,7 @@ const LinkifiedText = ({ text }: { text: string }) => (
           href={part}
           target="_blank"
           rel="noreferrer"
-          className="text-blue-600 underline"
+          className="text-blue-600 underline dark:text-blue-400"
         >
           {part}
         </a>
@@ -148,8 +148,10 @@ const DetailRow = ({
   icon: ReactNode;
   children: ReactNode;
 }) => (
-  <div className="flex gap-3 px-4 py-3 text-sm text-gray-700 sm:px-6">
-    <span className="mt-0.5 shrink-0 text-gray-400">{icon}</span>
+  <div className="flex gap-3 px-4 py-3 text-sm text-gray-700 sm:px-6 dark:text-gray-300">
+    <span className="mt-0.5 shrink-0 text-gray-400 dark:text-gray-500">
+      {icon}
+    </span>
     <div className="min-w-0 flex-1">{children}</div>
   </div>
 );
@@ -169,20 +171,22 @@ const AttendeeList = ({
     <ul className="flex flex-col gap-2">
       {organizer && !listsOrganizer && (
         <li className="flex flex-col">
-          <span className="truncate text-gray-900">
+          <span className="truncate text-gray-900 dark:text-gray-100">
             {personName(organizer)}
           </span>
-          <span className="text-xs text-gray-500">{ORGANIZER_LABEL}</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            {ORGANIZER_LABEL}
+          </span>
         </li>
       )}
       {attendees.map((attendee, index) => (
         <li key={attendee.email ?? index} className="flex flex-col">
-          <span className="truncate text-gray-900">
+          <span className="truncate text-gray-900 dark:text-gray-100">
             {personName(attendee)}
             {attendee.self && SELF_SUFFIX}
           </span>
           {attendeeDetail(attendee) && (
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
               {attendeeDetail(attendee)}
             </span>
           )}
@@ -203,10 +207,10 @@ const SheetHeader = ({
   calendarColor: string;
   onClose: () => void;
 }) => (
-  <div className="flex shrink-0 items-start gap-3 border-b border-gray-200 px-4 pb-3 pt-4 sm:px-6 sm:pt-6">
+  <div className="flex shrink-0 items-start gap-3 border-b border-gray-200 dark:border-gray-700 px-4 pb-3 pt-4 sm:px-6 sm:pt-6">
     <div className="min-w-0 flex-1">
       {calendarName && (
-        <p className="mb-1 flex items-center gap-2 text-xs font-medium text-gray-500">
+        <p className="mb-1 flex items-center gap-2 text-xs font-medium text-gray-500 dark:text-gray-400">
           <span
             className="h-2.5 w-2.5 shrink-0 rounded-full"
             style={{ backgroundColor: calendarColor }}
@@ -221,7 +225,7 @@ const SheetHeader = ({
     <button
       type="button"
       onClick={onClose}
-      className="shrink-0 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100"
+      className="shrink-0 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:active:bg-gray-700"
     >
       {CLOSE_LABEL}
     </button>
@@ -240,7 +244,7 @@ const SheetBody = ({ event }: { event: CalendarEvent }) => {
       <DetailRow icon={<Clock size={ICON_SIZE} />}>
         <p>{formatEventWhen(event)}</p>
         {event.recurringEventId && (
-          <p className="mt-1 flex items-center gap-1 text-xs text-gray-500">
+          <p className="mt-1 flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
             <Repeat size={12} />
             {REPEATING_LABEL}
           </p>
@@ -266,7 +270,7 @@ const SheetBody = ({ event }: { event: CalendarEvent }) => {
             href={`${GOOGLE_MAPS_SEARCH_URL}&query=${encodeURIComponent(event.location)}`}
             target="_blank"
             rel="noreferrer"
-            className="break-words text-blue-600 underline"
+            className="break-words text-blue-600 underline dark:text-blue-400"
           >
             {event.location}
           </a>
@@ -294,12 +298,12 @@ const SheetBody = ({ event }: { event: CalendarEvent }) => {
 };
 
 const SheetFooter = ({ htmlLink }: { htmlLink: string }) => (
-  <div className="shrink-0 border-t border-gray-200 px-4 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-3 sm:px-6 sm:pb-6">
+  <div className="shrink-0 border-t border-gray-200 dark:border-gray-700 px-4 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-3 sm:px-6 sm:pb-6">
     <a
       href={htmlLink}
       target="_blank"
       rel="noreferrer"
-      className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100"
+      className="flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:active:bg-gray-700"
     >
       <ExternalLink size={16} />
       {OPEN_IN_GOOGLE_CALENDAR_LABEL}
