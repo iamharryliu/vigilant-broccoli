@@ -75,6 +75,7 @@
 | IoT                                  | vigilant-broccoli                                      |
 | Java                                 | Capco                                                  |
 | Jest                                 | Capco; ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
+| Kubernetes                           | vigilant-broccoli                                      |
 | Library development                  | Capco; ELVA11; Tretton37; vigilant-broccoli            |
 | Linux                                | vigilant-broccoli                                      |
 | LLM integration                      | ELVA11; Tillmobil; vigilant-broccoli                   |

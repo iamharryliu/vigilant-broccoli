@@ -1,0 +1,38 @@
+# The grafana/helm-charts copy of this chart is deprecated in favour of the
+# grafana-community repository.
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: grafana
+spec:
+  repo: https://grafana-community.github.io/helm-charts
+  chart: grafana
+  version: 14.0.1
+  targetNamespace: local-platform
+  createNamespace: true
+  valuesContent: |-
+    adminUser: admin
+    adminPassword: admin
+    grafana.ini:
+      server:
+        root_url: https://grafana.vigilant-broccoli.app
+    # Loads ConfigMaps labelled grafana_dashboard=1 from local-platform, so
+    # dashboards are code and survive cluster rebuilds.
+    sidecar:
+      dashboards:
+        enabled: true
+        label: grafana_dashboard
+        labelValue: '1'
+    persistence:
+      enabled: true
+      size: 1Gi
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        datasources:
+          - name: Loki
+            type: loki
+            access: proxy
+            url: http://loki.local-platform.svc:3100
+            isDefault: true
+            editable: true
