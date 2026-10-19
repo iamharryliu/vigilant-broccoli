@@ -95,6 +95,8 @@ The egress firewall allows `api.openai.com`, `auth.openai.com` and `chatgpt.com`
 behind a CDN and `init-firewall.sh` resolves the allowlist into an ipset once at container start, so a long solve can
 outlive the addresses it captured; if a Codex run dies mid-way on network errors, retry with `-f firewall=off`.
 
+Locally, `pnpm agentic-pr-create --agent codex` skips the access token and instead runs in the running dev sandbox (`pnpm agentic:dev-sandbox:up`) with the Codex login you made there (`pnpm agentic:dev-sandbox:codex:auto`, OTP sign-in); sessions are not ephemeral. Each run uses a throwaway clone of origin inside the container, so the interactive checkout is untouched, and each run keeps its own metadata files, so separate commands and several TODO ids can run in parallel. The command detaches after its preflight checks and prints a `tail -f` log path; pass `--foreground` to stay attached. The current runner scripts are streamed into the container per run, so no image rebuild is needed. Actions still uses the Vault access token in a fresh container. The agent can read `~/.codex/auth.json` here, as in any dev sandbox session.
+
 `codex exec` has no tool deny-list equivalent to Claude's `--disallowedTools`, so the Codex branch of
 `solve-todo-runner.sh` runs it with `GH_TOKEN`/`GITHUB_TOKEN` stripped from the environment. Branching, committing,
 pushing and opening the PR stay with the runner for both agents.
