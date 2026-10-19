@@ -57,3 +57,4 @@ export * from './Table';
 export * from './ThemeScope';
 export * from './Popover';
 export * from './HighlightMatch';
+export * from './UpptimeStatusList';
