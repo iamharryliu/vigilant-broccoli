@@ -3,43 +3,38 @@
 import { ExternalLink } from 'lucide-react';
 import { AGENTIC_PHASES } from '../constants/agentic-workflows';
 
-const NOTE =
-  'Opens the workflow page on GitHub. Tap Run workflow there. This app never starts workflows itself.';
-const OPEN_LABEL = 'Open in GitHub Actions';
-
-const LINK_ICON_SIZE = 18;
+const LINK_ICON_SIZE = 16;
 
 export const AgenticView = () => (
-  <div className="flex flex-col gap-5 pb-4">
-    <p className="text-sm text-gray-600 dark:text-gray-400">{NOTE}</p>
-
+  <div className="flex flex-col gap-3 pb-4">
     {AGENTIC_PHASES.map(phase => (
-      <section key={phase.name} className="flex flex-col gap-3">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+      <section key={phase.name} className="flex flex-col gap-1">
+        <h2 className="px-1 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
           {phase.name}
         </h2>
-        <ul className="flex flex-col gap-3">
+        <ul className="divide-y divide-gray-200 overflow-hidden rounded-lg border border-gray-200 bg-white dark:divide-gray-700 dark:border-gray-700 dark:bg-gray-900">
           {phase.workflows.map(workflow => (
-            <li
-              key={workflow.url}
-              className="flex w-full flex-col gap-3 rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900"
-            >
-              <div className="flex flex-col gap-1">
-                <h3 className="break-words text-base font-semibold text-gray-900 dark:text-gray-100">
-                  {workflow.name}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {workflow.summary}
-                </p>
-              </div>
+            <li key={workflow.url}>
               <a
                 href={workflow.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-blue-500 px-4 text-sm font-medium text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
+                title={workflow.summary}
+                className="flex min-h-11 items-center gap-2 px-3 py-1.5 transition-colors hover:bg-gray-50 active:bg-gray-100 dark:hover:bg-gray-800 dark:active:bg-gray-800"
               >
-                {OPEN_LABEL}
-                <ExternalLink size={LINK_ICON_SIZE} aria-hidden="true" />
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {workflow.name}
+                  </span>
+                  <span className="truncate text-xs text-gray-500 dark:text-gray-400">
+                    {workflow.summary}
+                  </span>
+                </span>
+                <ExternalLink
+                  size={LINK_ICON_SIZE}
+                  aria-hidden="true"
+                  className="shrink-0 text-gray-400"
+                />
               </a>
             </li>
           ))}
