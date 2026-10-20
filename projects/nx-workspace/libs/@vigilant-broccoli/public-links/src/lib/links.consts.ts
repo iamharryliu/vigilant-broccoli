@@ -1,3 +1,5 @@
+import { PROJECT_LINK } from '@vigilant-broccoli/personal-common-js';
+
 export const GOOGLE_SERVICES = {
   PHOTOS: {
     NAME: 'Google Photos',
@@ -535,7 +537,7 @@ export const HARRYLIU_APP_URL = {
   },
   CALENDARS: {
     NAME: 'Calendars',
-    URL: 'https://calendar.harryliu.dev/',
+    URL: PROJECT_LINK.CALENDAR.URL,
     STAGING_URL: 'https://staging-calendars.pages.dev/',
   },
   WEATHER: {
