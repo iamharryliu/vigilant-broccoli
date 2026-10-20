@@ -27,8 +27,12 @@
 
 /* GitHub Actions status badges in README.md render as one paragraph of
    hard-line-break-separated <img>s; the typography plugin's default 2em
-   img margin doesn't push the following <br> line, so badges collide. */
-.prose img[src$='badge.svg'] {
+   img margin doesn't push the following <br> line, so badges collide.
+   Shields.io badges (e.g. the iamharryliu profile README's link table) would
+   otherwise stack one per line, since Tailwind's preflight makes images
+   block-level. */
+.prose img[src$='badge.svg'],
+.prose img[src^='https://img.shields.io/'] {
   display: inline-block;
   margin: 0.25rem 0.5rem 0.25rem 0;
   vertical-align: middle;
