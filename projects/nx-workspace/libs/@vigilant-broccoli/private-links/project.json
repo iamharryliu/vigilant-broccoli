@@ -1,7 +1,7 @@
 {
-  "name": "@vigilant-broccoli/links",
+  "name": "@vigilant-broccoli/private-links",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "libs/@vigilant-broccoli/links/src",
+  "sourceRoot": "libs/@vigilant-broccoli/private-links/src",
   "projectType": "library",
   "tags": ["type:util", "visibility:private"],
   "targets": {
@@ -9,9 +9,9 @@
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/libs/@vigilant-broccoli/links",
-        "main": "libs/@vigilant-broccoli/links/src/index.ts",
-        "tsConfig": "libs/@vigilant-broccoli/links/tsconfig.lib.json",
+        "outputPath": "dist/libs/@vigilant-broccoli/private-links",
+        "main": "libs/@vigilant-broccoli/private-links/src/index.ts",
+        "tsConfig": "libs/@vigilant-broccoli/private-links/tsconfig.lib.json",
         "assets": []
       }
     },

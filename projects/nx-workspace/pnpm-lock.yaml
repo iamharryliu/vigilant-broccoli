@@ -1036,21 +1036,6 @@ importers:
         specifier: ^154.1.0
         version: 154.1.0
 
-  libs/@vigilant-broccoli/links:
-    dependencies:
-      '@vigilant-broccoli/common-js':
-        specifier: workspace:*
-        version: link:../common-js
-      '@vigilant-broccoli/personal-private-js':
-        specifier: workspace:*
-        version: link:../personal-private-js
-      '@vigilant-broccoli/public-links':
-        specifier: workspace:*
-        version: link:../public-links
-      tslib:
-        specifier: ^2.3.0
-        version: 2.8.1
-
   libs/@vigilant-broccoli/llm-schemas:
     dependencies:
       json-schema-to-ts:
@@ -1122,6 +1107,21 @@ importers:
       '@vigilant-broccoli/personal-common-js':
         specifier: workspace:*
         version: link:../personal-common-js
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  libs/@vigilant-broccoli/private-links:
+    dependencies:
+      '@vigilant-broccoli/common-js':
+        specifier: workspace:*
+        version: link:../common-js
+      '@vigilant-broccoli/personal-private-js':
+        specifier: workspace:*
+        version: link:../personal-private-js
+      '@vigilant-broccoli/public-links':
+        specifier: workspace:*
+        version: link:../public-links
       tslib:
         specifier: ^2.3.0
         version: 2.8.1

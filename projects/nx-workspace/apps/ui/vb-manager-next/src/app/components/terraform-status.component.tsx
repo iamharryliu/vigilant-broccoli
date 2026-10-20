@@ -5,7 +5,7 @@ import {
   StatusCardListItem,
   Text,
 } from '@vigilant-broccoli/react-lib';
-import { TERRAFORM_ORG_LINK } from '@vigilant-broccoli/links';
+import { TERRAFORM_ORG_LINK } from '@vigilant-broccoli/private-links';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { StatusListCard } from './status-list-card.component';
 import { usePolledResource } from '../hooks/usePolledResource';

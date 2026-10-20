@@ -76,8 +76,8 @@
       "@vigilant-broccoli/github-workspace-js": [
         "./libs/@vigilant-broccoli/github-workspace-js/src/index.ts"
       ],
-      "@vigilant-broccoli/links": [
-        "./libs/@vigilant-broccoli/links/src/index.ts"
+      "@vigilant-broccoli/private-links": [
+        "./libs/@vigilant-broccoli/private-links/src/index.ts"
       ],
       "@vigilant-broccoli/public-links": [
         "./libs/@vigilant-broccoli/public-links/src/index.ts"

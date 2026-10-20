@@ -1,5 +1,5 @@
 {
-  "name": "@vigilant-broccoli/links",
+  "name": "@vigilant-broccoli/private-links",
   "version": "0.0.1",
   "private": true,
   "type": "commonjs",

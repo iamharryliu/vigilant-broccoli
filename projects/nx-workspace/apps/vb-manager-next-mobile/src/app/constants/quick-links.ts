@@ -2,7 +2,7 @@ import { OPEN_TYPE, type QuickLink } from '@vigilant-broccoli/common-js';
 import {
   EXTERNAL_QUICK_LINKS,
   LINK_GROUP_SUBGROUP,
-} from '@vigilant-broccoli/links';
+} from '@vigilant-broccoli/private-links';
 
 // The home Agentic tab renders these from the README table, so Quick Links
 // leaves them out.
