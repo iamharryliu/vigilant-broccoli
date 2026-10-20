@@ -256,6 +256,10 @@
       "TITLE": "vb-code-server",
       "DESCRIPTION": "code-server with this repo's toolchain and Claude Code baked in (linux/arm64)."
     },
+    "VB_EXPRESS": {
+      "TITLE": "vb-express",
+      "DESCRIPTION": "Fastify API gateway for auth, API keys, Google Tasks, LLM parsing, messaging and audio."
+    },
     "WAITING_GAMES": {
       "TITLE": "waiting-games",
       "DESCRIPTION": "Hands-free games to watch while queuing or travelling, served by nginx."

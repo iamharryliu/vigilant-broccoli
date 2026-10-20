@@ -15,7 +15,7 @@ RUN addgroup --system vb-express && \
           adduser --system --home /home/vb-express --shell /sbin/nologin -G vb-express vb-express && \
           mkdir -p /home/vb-express
 
-COPY dist/apps/api/vb-express vb-express/
+COPY . vb-express/
 RUN chown -R vb-express:vb-express /app /home/vb-express
 
 USER vb-express

@@ -81,6 +81,14 @@ export function DockerImagesPage() {
       icon: <DockerIcon />,
     },
     {
+      key: 'vb-express',
+      route: true,
+      href: '/docker/vb-express',
+      title: t('DOCKER_IMAGES_PAGE.VB_EXPRESS.TITLE'),
+      description: t('DOCKER_IMAGES_PAGE.VB_EXPRESS.DESCRIPTION'),
+      icon: <DockerIcon />,
+    },
+    {
       key: 'waiting-games',
       route: true,
       href: '/docker/waiting-games',

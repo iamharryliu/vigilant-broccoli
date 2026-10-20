@@ -86,6 +86,10 @@
     "lint": {
       "executor": "@nx/eslint:lint"
     },
+    "deploy-container": {
+      "dependsOn": ["build", "prune", "smoke"],
+      "command": "docker buildx build --platform linux/amd64 -f apps/api/vb-express/Dockerfile -t iamharryliu/vb-express:latest -t iamharryliu/vb-express:${COMMIT_SHA:-latest} --push dist/apps/api/vb-express"
+    },
     "deploy:secrets": {
       "executor": "nx:run-commands",
       "options": {
@@ -93,8 +97,8 @@
       }
     },
     "deploy": {
-      "command": "flyctl deploy --dockerfile ./apps/api/vb-express/Dockerfile --config ./deployment-configs/fly-configs/staging-vb-express.toml",
-      "dependsOn": ["build", "lint", "prune", "smoke", "deploy:secrets"]
+      "dependsOn": ["deploy-container", "lint", "deploy:secrets"],
+      "command": "flyctl deploy --config ./deployment-configs/fly-configs/staging-vb-express.toml --image iamharryliu/vb-express:${COMMIT_SHA:-latest}"
     },
     "deploy:secrets:production": {
       "executor": "nx:run-commands",
@@ -103,14 +107,8 @@
       }
     },
     "deploy:production": {
-      "command": "flyctl deploy --dockerfile ./apps/api/vb-express/Dockerfile --config ./deployment-configs/fly-configs/production-vb-express.toml",
-      "dependsOn": [
-        "build",
-        "lint",
-        "prune",
-        "smoke",
-        "deploy:secrets:production"
-      ]
+      "dependsOn": ["deploy-container", "lint", "deploy:secrets:production"],
+      "command": "flyctl deploy --config ./deployment-configs/fly-configs/production-vb-express.toml --image iamharryliu/vb-express:${COMMIT_SHA:-latest}"
     }
   }
 }

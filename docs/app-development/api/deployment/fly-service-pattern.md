@@ -6,7 +6,7 @@ Reference apps (each demonstrates a different combination):
 
 - `apps/api/bucket-service/`, `apps/api/llm-service/` — pruned + Docker Hub roundtrip (`deploy-container` pushes to `iamharryliu/<svc>`, then `flyctl deploy --image`). Note: bucket-service outputs to `dist/bucket-service`, not `dist/apps/api/bucket-service`.
 - `apps/api/email-service/`, `apps/api/email-subscription-service/` — bundled + Docker Hub roundtrip
-- `apps/api/vb-express/` — pruned + `flyctl deploy --dockerfile`, with a fly volume mount (`[mounts]`) for its SQLite db.
+- `apps/api/vb-express/` — pruned + Docker Hub roundtrip, with a fly volume mount (`[mounts]`) for its SQLite db.
 
 ## Table of Contents
 
@@ -40,10 +40,7 @@ Every service's `PORT` fallback (used when `nx serve` runs with no `PORT` set) d
 - **Bundled** (`@nx/esbuild:esbuild`, `bundle: true, thirdParty: true`): single `main.js`, no Dockerfile install.
 - **Pruned** (`@nx/webpack:webpack` + `prune-lockfile` + `copy-workspace-modules`): `main.js` + `package.json` + `pnpm-lock.yaml` + `workspace_modules/`, Dockerfile runs `pnpm install --frozen-lockfile --prod`. Pick only when bundling is impractical.
 
-**Image delivery:**
-
-- **Direct**: `deploy` runs `flyctl deploy --dockerfile ...`, fly builds the image.
-- **Docker Hub roundtrip**: `deploy-container` runs `docker buildx ... --push iamharryliu/<svc>` (tags `latest` and `${COMMIT_SHA}`), then `deploy` runs `flyctl deploy --image iamharryliu/<svc>:${COMMIT_SHA}`.
+**Image delivery:** every service uses the Docker Hub roundtrip: `deploy-container` runs `docker buildx ... --push iamharryliu/<svc>` (tags `latest` and `${COMMIT_SHA}`), then `deploy` runs `flyctl deploy --image iamharryliu/<svc>:${COMMIT_SHA}`.
 
 ## Transitive-dep gotcha (pruned only)
 

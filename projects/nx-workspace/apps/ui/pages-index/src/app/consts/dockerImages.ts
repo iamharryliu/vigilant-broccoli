@@ -45,6 +45,11 @@ export const DOCKER_IMAGES: DockerImageInfo[] = [
     readmePath: 'infrastructure/code-server/README.md',
   },
   {
+    slug: 'vb-express',
+    readmePath:
+      'projects/nx-workspace/apps/api/vb-express/docs/features/self-hosting.md',
+  },
+  {
     slug: 'waiting-games',
     readmePath: 'projects/nx-workspace/apps/ui/waiting-games/README.md',
   },
