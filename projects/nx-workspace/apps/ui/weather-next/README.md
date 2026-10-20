@@ -5,6 +5,7 @@ Current weather for the browser's location.
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -23,3 +24,7 @@ Current weather for the browser's location.
   - Nominatim / OpenStreetMap
   - Open-Meteo
   - vb-express
+
+## Environment
+
+- [.env.example](./.env.example)
