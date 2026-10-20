@@ -24,13 +24,29 @@ export const DOCKER_IMAGES: DockerImageInfo[] = [
     readmePath: 'projects/nx-workspace/apps/ui/employee-handler-ui/README.md',
   },
   {
-    slug: 'office-presence-socket-server-demo',
+    slug: 'llm-service',
+    readmePath: 'projects/nx-workspace/apps/api/llm-service/README.md',
+  },
+  {
+    slug: 'office-presence-service',
     readmePath:
       'projects/nx-workspace/apps/api/office-presence-service/README.md',
   },
   {
     slug: 'socket-server-socketio',
     readmePath: 'projects/nx-workspace/apps/socket-server-socketio/README.md',
+  },
+  {
+    slug: 'utilities-ui',
+    readmePath: 'projects/nx-workspace/apps/ui/utilities-ui/README.md',
+  },
+  {
+    slug: 'vb-code-server',
+    readmePath: 'infrastructure/code-server/README.md',
+  },
+  {
+    slug: 'waiting-games',
+    readmePath: 'projects/nx-workspace/apps/ui/waiting-games/README.md',
   },
 ];
 

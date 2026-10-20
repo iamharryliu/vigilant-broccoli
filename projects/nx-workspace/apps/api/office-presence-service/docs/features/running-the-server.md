@@ -39,7 +39,7 @@ The `build` and `deploy-container` targets in `project.json` bundle the app and 
 docker run --platform linux/amd64 \
   -e SLACK_BOT_TOKEN=xoxb-... \
   -e SLACK_APP_TOKEN=xapp-... \
-  iamharryliu/office-presence-socket-server-demo:latest
+  iamharryliu/office-presence-service:latest
 ```
 
 Nothing listens for inbound traffic that matters, so no port needs publishing.
@@ -51,7 +51,7 @@ docker run --platform linux/amd64 -p 3000:3000 \
   -e SLACK_MODE=http \
   -e SLACK_BOT_TOKEN=xoxb-... \
   -e SLACK_SIGNING_SECRET=... \
-  iamharryliu/office-presence-socket-server-demo:latest
+  iamharryliu/office-presence-service:latest
 ```
 
 Slack must reach the container over **public HTTPS**: put a reverse proxy or a tunnel in front of port 3000 and set the app's Request URLs to `https://<host>/slack/events`, `/slack/interactivity` and `/slack/commands`. Requests are verified with the signing secret and must be acknowledged within 3 seconds; Slack retries (`X-Slack-Retry-Num`) are acknowledged and ignored.
@@ -67,7 +67,7 @@ docker run --platform linux/amd64 \
   -e OFFICES=London,Stockholm,NYC \
   -e ENABLE_REMINDERS=true \
   -e INCLUDE_WEEKENDS=true \
-  iamharryliu/office-presence-socket-server-demo:latest
+  iamharryliu/office-presence-service:latest
 ```
 
 ## Persisting State

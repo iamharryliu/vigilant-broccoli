@@ -4,8 +4,7 @@ Niche gotchas for `projects/nx-workspace/apps/api/*` fly.io services. For boiler
 
 Reference apps (each demonstrates a different combination):
 
-- `apps/api/llm-service/` — pruned + `flyctl deploy --dockerfile` (fly builds image)
-- `apps/api/bucket-service/` — pruned + Docker Hub roundtrip (`deploy-container` pushes to `iamharryliu/bucket-service`, then `flyctl deploy --image`). Note: outputs to `dist/bucket-service`, not `dist/apps/api/bucket-service`.
+- `apps/api/bucket-service/`, `apps/api/llm-service/` — pruned + Docker Hub roundtrip (`deploy-container` pushes to `iamharryliu/<svc>`, then `flyctl deploy --image`). Note: bucket-service outputs to `dist/bucket-service`, not `dist/apps/api/bucket-service`.
 - `apps/api/email-service/`, `apps/api/email-subscription-service/` — bundled + Docker Hub roundtrip
 - `apps/api/vb-express/` — pruned + `flyctl deploy --dockerfile`, with a fly volume mount (`[mounts]`) for its SQLite db.
 
@@ -26,7 +25,7 @@ Reference apps (each demonstrates a different combination):
 
 Deployed instances follow the repo-wide `staging-` / `production-` prefix convention. Fly specifics: the app name (`staging-llm-service`) and config filename (`deployment-configs/fly-configs/<env>-llm-service.toml`) are prefixed; nx project names stay unprefixed (`llm-service`).
 
-`office-presence-service` is the single-environment exception: only `demo` exists (`demo-office-presence-service`, config `deployment-configs/fly-configs/demo-office-presence-service.toml`, targets `deploy:demo` / `deploy:secrets:demo`, run by `deploy-demo-apps` and `manual-deploy-app` with `environment: demo`). It follows the bundled + Docker Hub roundtrip shape and shares one image, `iamharryliu/office-presence-socket-server-demo`, with self-hosters; the Fly config selects HTTP mode with `SLACK_MODE=http`.
+`office-presence-service` is the single-environment exception: only `demo` exists (`demo-office-presence-service`, config `deployment-configs/fly-configs/demo-office-presence-service.toml`, targets `deploy:demo` / `deploy:secrets:demo`, run by `deploy-demo-apps` and `manual-deploy-app` with `environment: demo`). It follows the bundled + Docker Hub roundtrip shape and shares one image, `iamharryliu/office-presence-service`, with self-hosters; the Fly config selects HTTP mode with `SLACK_MODE=http`.
 
 Each service defines a target pair: `deploy` (staging) and `deploy:production`, with mirrored `deploy:secrets` / `deploy:secrets:production` chains. `scripts/secrets-mapping.config.ts` stores the env-less `flyAppBaseName`; `deploy-flyio-secrets.ts <project> <env>` composes `<env>-<base>`. Cross-service URLs (`EMAIL_SERVICE_URL`, `LLM_SERVICE_URL`, `BETTER_AUTH_URL`, build args) live in the per-env fly config / deploy command so each environment talks only to its own siblings. Post-deploy checks run in the environment-matrix `test-*` workflows (e.g. `test-e2e-llm.yml`).
 

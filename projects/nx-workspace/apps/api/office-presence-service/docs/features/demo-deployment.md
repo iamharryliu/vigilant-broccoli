@@ -63,7 +63,7 @@ Socket Mode exposes no HTTP surface. Demo routes are limited to 120 requests/min
 
 ## Fly Service
 
-`deployment-configs/fly-configs/demo-office-presence-service.toml`: one machine (256 MB), `[mounts]` volume `office_presence_data` at `/data`, `OFFICE_PRESENCE_DB=/data/state.db`, `auto_stop_machines = 'suspend'`, health check `GET /`. The image is the self-hosters' image (`iamharryliu/office-presence-socket-server-demo`); `deploy:demo` pushes it, sets secrets from Vault (`.env.example`) and runs `flyctl deploy --image`. Keep the count at one machine: SQLite on a volume cannot be shared across machines.
+`deployment-configs/fly-configs/demo-office-presence-service.toml`: one machine (256 MB), `[mounts]` volume `office_presence_data` at `/data`, `OFFICE_PRESENCE_DB=/data/state.db`, `auto_stop_machines = 'suspend'`, health check `GET /`. The image is the self-hosters' image (`iamharryliu/office-presence-service`); `deploy:demo` pushes it, sets secrets from Vault (`.env.example`) and runs `flyctl deploy --image`. Keep the count at one machine: SQLite on a volume cannot be shared across machines.
 
 ## Suspend vs the 3-Second Ack
 

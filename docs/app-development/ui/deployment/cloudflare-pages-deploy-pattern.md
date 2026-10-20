@@ -30,6 +30,8 @@ Reference apps:
 
 Project names are environment-prefixed (`staging-docs-md`, `production-cloud-8-skate-react`); production mirrors the trio as `:production` target variants. Each app also carries a `manual-deploy` target (same command as `deploy`) — `manual-deploy-app.yml` dispatches whichever target name is chosen via `nx run-many -t $DEPLOY_TARGET`.
 
+`utilities-ui` and `waiting-games` also publish a self-hostable image: `deploy` and `deploy:production` depend on `deploy-container`, which pushes `iamharryliu/<app>` (`latest` and `${COMMIT_SHA}`, amd64 + arm64) from the Vite dist folder onto `nginx-unprivileged` (port 8080). Only apps with no per-environment build config fit this, since the image carries whichever build ran. `manual-deploy` and `deploy:preview` do not push.
+
 `office-presence-ui` is a demo-only site: one `demo-office-presence-ui` project (`--production-branch main`, `--branch main`), the trio plus `deploy:demo` (builds with `--configuration=production-env` to bake in the single demo API host) and `manual-deploy`, with no `:preview` trio because every build would call the one demo backend. `deploy-demo-apps` deploys it.
 
 ## Branch matching: every deploy passes `--branch` explicitly

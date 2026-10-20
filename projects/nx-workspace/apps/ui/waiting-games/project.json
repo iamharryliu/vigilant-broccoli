@@ -39,6 +39,10 @@
         "production": {}
       }
     },
+    "deploy-container": {
+      "dependsOn": ["build"],
+      "command": "docker buildx build --platform linux/amd64,linux/arm64 -f apps/ui/waiting-games/Dockerfile -t iamharryliu/waiting-games:latest -t iamharryliu/waiting-games:${COMMIT_SHA:-latest} --push dist/waiting-games"
+    },
     "ensure-cf-project": {
       "command": "npx wrangler pages project list 2>&1 | grep -qw staging-waiting-games || npx wrangler pages project create staging-waiting-games --production-branch main"
     },
@@ -48,7 +52,12 @@
     },
     "deploy": {
       "command": "npx wrangler pages deploy dist/waiting-games --project-name staging-waiting-games --branch main",
-      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+      "dependsOn": [
+        "build",
+        "deploy-container",
+        "ensure-cf-project",
+        "prune-deployments"
+      ]
     },
     "manual-deploy": {
       "command": "npx wrangler pages deploy dist/waiting-games --project-name staging-waiting-games --branch main",
@@ -65,6 +74,7 @@
       "command": "npx wrangler pages deploy dist/waiting-games --project-name production-waiting-games --branch production",
       "dependsOn": [
         "build",
+        "deploy-container",
         "ensure-cf-project:production",
         "prune-deployments:production"
       ]
