@@ -5,7 +5,6 @@ Real-time location sharing for friends and family.
 ## Table of Contents
 
 - [Stack](#stack)
-- [Environment](#environment)
 
 ## Stack
 
@@ -22,8 +21,3 @@ Real-time location sharing for friends and family.
   - `react-lib-higher-level`
 - Cloud services
   - Supabase
-
-## Environment
-
-- [.env.development](./.env.development)
-- [.env.production](./.env.production)

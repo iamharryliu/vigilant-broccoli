@@ -3,6 +3,7 @@ const { createHash } = require('crypto');
 const { readdirSync, statSync } = require('fs');
 const { join } = require('path');
 const { composePlugins, withNx } = require('@nx/next');
+const SUPABASE_NEXT_ENV = require('../../../libs/@vigilant-broccoli/infrastructure/src/lib/supabase-next-env.js');
 const configValues = {
   default: {},
   development: {},
@@ -54,6 +55,7 @@ const libSourcesHash = () =>
  **/
 const nextConfig = {
   nx: { ...options },
+  env: SUPABASE_NEXT_ENV,
   distDir: '../../../dist/apps/ui/vb-manager-next/.next',
   agentRules: false,
   serverExternalPackages: ['socket.io-client', 'better-sqlite3'],

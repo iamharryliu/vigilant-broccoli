@@ -729,6 +729,9 @@ importers:
       '@vigilant-broccoli/fastify':
         specifier: workspace:*
         version: link:../../../libs/@vigilant-broccoli/fastify
+      '@vigilant-broccoli/infrastructure':
+        specifier: workspace:*
+        version: link:../../../libs/@vigilant-broccoli/infrastructure
       '@vigilant-broccoli/llm-schemas':
         specifier: workspace:*
         version: link:../../../libs/@vigilant-broccoli/llm-schemas

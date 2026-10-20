@@ -9,7 +9,7 @@
       "executor": "nx:run-commands",
       "cache": false,
       "options": {
-        "command": "NEXT_PUBLIC_SUPABASE_URL=https://jrdosjjgmsoodpjmjqxx.supabase.co NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0 NEXT_PUBLIC_SOCKET_SERVER_URL=https://socket.harryliu.dev nx run vb-manager-next:build:next"
+        "command": "NEXT_PUBLIC_SOCKET_SERVER_URL=https://socket.harryliu.dev nx run vb-manager-next:build:next"
       }
     },
     "build:next": {
@@ -42,7 +42,7 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "env -u GITHUB_TOKEN NEXT_PUBLIC_SUPABASE_URL=https://jrdosjjgmsoodpjmjqxx.supabase.co NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0 NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/vb-manager-next/.env.local.example --env-file scripts/.env.scripts.example --map SOCKET_SERVER_URL:NEXT_PUBLIC_SOCKET_SERVER_URL 'node --import tsx scripts/migrate.ts --migrations-dir=apps/ui/vb-manager-next/supabase/migrations && cd apps/ui/vb-manager-next && next dev --webpack --hostname 127.0.0.1'",
+        "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/vb-manager-next/.env.local.example --env-file scripts/.env.scripts.example --map SOCKET_SERVER_URL:NEXT_PUBLIC_SOCKET_SERVER_URL 'node --import tsx scripts/migrate.ts --migrations-dir=apps/ui/vb-manager-next/supabase/migrations && cd apps/ui/vb-manager-next && next dev --webpack --hostname 127.0.0.1'",
         "env": {
           "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev"
         }

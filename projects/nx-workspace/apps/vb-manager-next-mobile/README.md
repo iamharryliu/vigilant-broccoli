@@ -36,6 +36,4 @@ Mobile-friendly dashboard for personal tasks and calendars, with voice input, a 
 
 ## Environment
 
-- [.env.development](./.env.development)
 - [.env.example](./.env.example)
-- [.env.production](./.env.production)
