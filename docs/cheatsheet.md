@@ -80,6 +80,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   grafana:open                Open grafana.harryliu.dev
   grafana:password            Copy Grafana admin password to clipboard
   grafana:ssh                 SSH into Grafana/Loki VM
+  grafana:dashboards:push     Sync grafana-dashboards/*.json to the VM
   grafana:logs                Follow Grafana container logs
   grafana:logs:loki           Follow Loki container logs
   grafana:logs:cloud-init     Follow VM provisioning log
