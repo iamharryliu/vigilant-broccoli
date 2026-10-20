@@ -24,7 +24,7 @@
           "label": "fly_app_name",
           "type": 1
         },
-        "regex": "/^(staging|production)-/",
+        "regex": "/^(?:staging|production)-/",
         "refresh": 2,
         "multi": true,
         "includeAll": false,
