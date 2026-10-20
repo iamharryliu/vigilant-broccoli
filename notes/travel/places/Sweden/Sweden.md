@@ -17,6 +17,7 @@
 - [Accommodation](#accommodation)
 - [Swedish Migration](#swedish-migration)
 - [Finance](#finance)
+  - [Swish](#swish)
 - [Leaning Swedish](#leaning-swedish)
 - [Souvenirs/Gifts](#souvenirsgifts)
 - [Sustainability](#sustainability)
@@ -92,6 +93,14 @@
     - [About](https://www.willys.se/artikel/om-oss/willys-plus)
     - [Signup](https://www.willys.se/registrera/privat/identifiera)
   - [COOP Medlem](https://www.coop.se/medlem/bli-medlem/)
+
+### Swish
+
+#### Updating Your Swish Number
+
+1. Unlink the old number: in your internet or mobile bank, open the Swish settings (often under Other services or Swish) and remove or terminate the connection to the old number.
+2. Link the new number: in the same Swish settings, connect the new mobile number to your bank account and sign the change with Mobile BankID.
+3. Reactivate the Swish app: open the app, enter the new number, verify it via text message and complete the activation with Mobile BankID.
 
 ## Leaning Swedish
 

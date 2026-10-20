@@ -139,6 +139,7 @@
 | IaC                     | Infrastructure as Code. Defining servers, networks and clusters in version-controlled files (Terraform, Ansible) so environments are reproducible and reviewable.                                           |
 | Ingress                 | A Kubernetes object that routes external HTTP(S) traffic to services inside the cluster by host or path, implemented by an ingress controller such as NGINX or Traefik.                                     |
 | k3s                     | A lightweight, certified Kubernetes distribution packaged as a single small binary, suited to edge, homelab and CI clusters.                                                                                |
+| KMS                     | Key Management Service. A system used to securely create, store, and control cryptographic keys used for encryption.                                                                                        |
 | Kube Proxy              | A node component that maintains network rules so traffic to a Service reaches the right pods, load balancing across them.                                                                                   |
 | kubectl                 | The command-line client for the Kubernetes API, used to apply manifests, inspect resources and read logs.                                                                                                   |
 | kubelet                 | The agent on each node that takes pod specs from the API server, has the container runtime run them and reports status back.                                                                                |
@@ -149,12 +150,16 @@
 | Namespace               | A Kubernetes scope that groups and isolates resources within one cluster, commonly per team or environment.                                                                                                 |
 | Node                    | A worker machine (VM or physical) in a Kubernetes cluster. Runs the kubelet, kube-proxy, a container runtime and the pods.                                                                                  |
 | Operator                | A Kubernetes controller that encodes operational knowledge for an application, managing it through custom resources (e.g. a database operator handling backups and failover).                               |
+| p95                     | 95th percentile: the value that 95% of measurements fall at or below, so only the slowest 5% exceed it. Used for latency, where it shows the slow tail that the average hides.                              |
 | Platform engineering    | Building an internal developer platform of self-service tooling and paved paths so product teams can ship and run software without managing the underlying infrastructure.                                  |
 | Pod                     | The smallest deployable Kubernetes unit: one or more containers that share networking and storage and are scheduled together onto one node.                                                                 |
 | Prometheus              | An open-source monitoring system that scrapes numeric metrics from services on an interval, stores them as time series and is queried with PromQL. Commonly feeds Grafana and alerts.                       |
 | Rancher                 | A management platform for running many Kubernetes clusters from one UI and API, adding centralized authentication, RBAC, policy and provisioning across clouds and on-prem. Also the maker of k3s and RKE2. |
 | Scheduler               | The control plane component that assigns each new pod to a node based on available resources and constraints.                                                                                               |
 | Service                 | A stable network address and load balancer in front of a changing set of pods, so other workloads reach them by name.                                                                                       |
+| SLA                     | Service Level Agreement — a contract between a provider and a customer promising a measurable level of service (e.g. 99.9% uptime), with penalties such as service credits when it is missed.               |
+| SLI                     | Service Level Indicator — the actual measured metric an SLO and SLA are judged on, e.g. the percentage of successful requests or requests served under 200 ms.                                              |
+| SLO                     | Service Level Objective — the internal target for an SLI, usually set stricter than the SLA so the team has headroom before the contractual promise is broken.                                              |
 
 ## AI and LLMs
 
