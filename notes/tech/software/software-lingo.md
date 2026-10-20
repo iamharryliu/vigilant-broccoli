@@ -9,6 +9,7 @@
 - [Testing](#testing)
 - [Development Approaches](#development-approaches)
 - [Tooling](#tooling)
+- [Platform Engineering](#platform-engineering)
 - [AI and LLMs](#ai-and-llms)
 
 ## Programming Concepts
@@ -118,6 +119,42 @@
 | Redis           | An in-memory data structure store used as a database, cache, and message broker for high-performance applications.     |
 | Runtime         | The environment in which a program or script executes, including the necessary tools and resources.                    |
 | tree shaking    | A code optimization technique that removes unused code (dead code) from the final bundle during the build process.     |
+
+## Platform Engineering
+
+| Term                    | Definition                                                                                                                                                                                                  |
+| :---------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| API server              | The Kubernetes control plane front door. Every client (`kubectl`, the scheduler, kubelets) reads and writes cluster state through its REST API.                                                             |
+| Argo CD                 | A GitOps continuous delivery tool for Kubernetes. It watches a Git repo and syncs the cluster to match it, flagging and optionally reverting drift.                                                         |
+| Container orchestration | Automating how containers are scheduled, scaled, networked and restarted across a cluster of machines. Kubernetes is the dominant implementation.                                                           |
+| Container runtime       | The software on each node that pulls images and starts, stops and manages containers (e.g. containerd, CRI-O).                                                                                              |
+| Control plane           | The part of a Kubernetes cluster that decides what runs where and keeps it that way. Made of the API server, etcd, scheduler and controller manager, as opposed to the worker nodes that run the workloads. |
+| Controller manager      | The control plane process that runs controllers, loops that compare actual state to desired state and act to close the gap (e.g. keeping a Deployment at 3 replicas).                                       |
+| Deployment              | A Kubernetes object that declares how many replicas of a pod to run and handles rolling updates and rollbacks.                                                                                              |
+| etcd                    | A distributed key-value store that holds all Kubernetes cluster state. The API server is its only client.                                                                                                   |
+| GitOps                  | Using Git as the single source of truth for infrastructure and app config. Changes are made by pull request and an automated agent (Argo CD, Flux) applies them to the environment.                         |
+| Grafana                 | A dashboard and alerting UI that queries data sources such as Prometheus (metrics) and Loki (logs) and visualizes them in one place.                                                                        |
+| Helm                    | The package manager for Kubernetes. A chart bundles templated manifests plus default values, and installing it creates a versioned release you can upgrade or roll back.                                    |
+| Helm chart              | A Helm package: a directory of templated Kubernetes manifests and a `values.yaml` of defaults that you override per environment.                                                                            |
+| IaC                     | Infrastructure as Code. Defining servers, networks and clusters in version-controlled files (Terraform, Ansible) so environments are reproducible and reviewable.                                           |
+| Ingress                 | A Kubernetes object that routes external HTTP(S) traffic to services inside the cluster by host or path, implemented by an ingress controller such as NGINX or Traefik.                                     |
+| k3s                     | A lightweight, certified Kubernetes distribution packaged as a single small binary, suited to edge, homelab and CI clusters.                                                                                |
+| Kube Proxy              | A node component that maintains network rules so traffic to a Service reaches the right pods, load balancing across them.                                                                                   |
+| kubectl                 | The command-line client for the Kubernetes API, used to apply manifests, inspect resources and read logs.                                                                                                   |
+| kubelet                 | The agent on each node that takes pod specs from the API server, has the container runtime run them and reports status back.                                                                                |
+| Kubernetes              | Often written K8s. An open-source container orchestrator that runs workloads declaratively: you describe the desired state and controllers keep the cluster matching it.                                    |
+| Loki                    | A log aggregation system from Grafana Labs. It indexes only labels, not full log text, which keeps it cheap, and is queried with LogQL.                                                                     |
+| Managed Kubernetes      | A cloud-hosted Kubernetes where the provider runs the control plane: GKE (Google), EKS (AWS) and AKS (Azure).                                                                                               |
+| minikube                | A tool that runs a single-node Kubernetes cluster on a laptop for local development and learning.                                                                                                           |
+| Namespace               | A Kubernetes scope that groups and isolates resources within one cluster, commonly per team or environment.                                                                                                 |
+| Node                    | A worker machine (VM or physical) in a Kubernetes cluster. Runs the kubelet, kube-proxy, a container runtime and the pods.                                                                                  |
+| Operator                | A Kubernetes controller that encodes operational knowledge for an application, managing it through custom resources (e.g. a database operator handling backups and failover).                               |
+| Platform engineering    | Building an internal developer platform of self-service tooling and paved paths so product teams can ship and run software without managing the underlying infrastructure.                                  |
+| Pod                     | The smallest deployable Kubernetes unit: one or more containers that share networking and storage and are scheduled together onto one node.                                                                 |
+| Prometheus              | An open-source monitoring system that scrapes numeric metrics from services on an interval, stores them as time series and is queried with PromQL. Commonly feeds Grafana and alerts.                       |
+| Rancher                 | A management platform for running many Kubernetes clusters from one UI and API, adding centralized authentication, RBAC, policy and provisioning across clouds and on-prem. Also the maker of k3s and RKE2. |
+| Scheduler               | The control plane component that assigns each new pod to a node based on available resources and constraints.                                                                                               |
+| Service                 | A stable network address and load balancer in front of a changing set of pods, so other workloads reach them by name.                                                                                       |
 
 ## AI and LLMs
 

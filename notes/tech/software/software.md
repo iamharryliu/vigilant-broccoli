@@ -2,6 +2,7 @@
 
 - [Software Lingo](./software-lingo.md)
 - [Software Timeline](./software-timeline.md)
+  - [Social Media Timeline](./social-media-timeline.md)
 - [Software Breakdown](./general/software-breakdown.md)
 - [Software Lifecycle](./general/software-lifecycle.md)
 - [Software Roadmap](./software-roadmap.md)
