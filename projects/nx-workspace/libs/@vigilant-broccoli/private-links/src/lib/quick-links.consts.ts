@@ -25,10 +25,11 @@ import {
   SLACK_WORKSPACE_LINK,
   SUPABASE_PROJECT_LINK,
   TERRAFORM_ORG_LINK,
-} from './account-links.consts';
+} from './account.consts';
+import { LOCAL_HOST_URL } from './local-host.consts';
+import { PERSONAL_ACCOUNT_LINK, PERSONAL_URL } from './personal-account.consts';
 import {
   JOURNAL_PATH,
-  PERSONAL_URL,
   VB_REPO_PATH,
 } from '@vigilant-broccoli/personal-private-js';
 
@@ -57,16 +58,7 @@ const DEV_LINKS: QuickLink[] = [
     ROBOFLOW_WORKSPACE_LINK.USAGE,
     SANITY_ORG_LINK.APPLICATIONS,
   ]),
-  ...toQuickLinks(LINK_GROUP_SUBGROUP.UTILITY, [
-    { NAME: 'Immich (Local)', URL: 'https://images.vigilant-broccoli.app' },
-    { NAME: 'Grafana (Local)', URL: 'https://grafana.vigilant-broccoli.app' },
-    { NAME: 'Loki (Local)', URL: 'https://loki.vigilant-broccoli.app/ready' },
-    { NAME: 'Headlamp (Local)', URL: 'https://headlamp.vigilant-broccoli.app' },
-    {
-      NAME: 'vb-manager-next (Local)',
-      URL: 'https://manager.vigilant-broccoli.app',
-    },
-  ]),
+  ...toQuickLinks(LINK_GROUP_SUBGROUP.UTILITY, Object.values(LOCAL_HOST_URL)),
 ];
 
 const UTILITY_LINKS: QuickLink[] = [
@@ -115,30 +107,21 @@ const UTILITY_LINKS: QuickLink[] = [
   },
   ...toQuickLinks(LINK_GROUP_SUBGROUP.UTILITY, [
     { NAME: 'Speedtest', URL: 'https://www.speedtest.net/' },
-    { NAME: 'KarmaNow', URL: 'https://www.karmanow.com/my-items' },
+    PERSONAL_ACCOUNT_LINK.KARMANOW,
     { NAME: 'QR Code Generator', URL: 'https://www.qr-code-generator.com/' },
     { NAME: 'TinyURL', URL: 'https://tinyurl.com/' },
-    { NAME: 'Freedom Usage', URL: 'https://myaccount.freedommobile.ca/usage' },
-    { NAME: 'Presto', URL: 'https://www.prestocard.ca/en/account-dashboard' },
-    {
-      NAME: 'TD EasyWeb',
-      URL: 'https://authentication.td.com/uap-ui/?consumer=easyweb&locale=en_CA#/uap/login',
-    },
-    { NAME: 'Questrade', URL: 'https://login.questrade.com/account/login' },
+    PERSONAL_ACCOUNT_LINK.FREEDOM_USAGE,
+    PERSONAL_ACCOUNT_LINK.PRESTO,
+    PERSONAL_ACCOUNT_LINK.TD_EASYWEB,
+    PERSONAL_ACCOUNT_LINK.QUESTRADE,
     {
       NAME: 'TFSA Room Calculator',
       URL: 'https://www.moneysense.ca/save/investing/tfsa-contribution-room-calculator/',
     },
-    { NAME: 'Neo Financial', URL: 'https://member.neofinancial.com/login' },
-    { NAME: 'MBNA', URL: 'https://www.mbna.ca/en' },
-    {
-      NAME: 'CT Triangle',
-      URL: 'https://www.ctfs.com/content/dash/en/public/login.html',
-    },
-    {
-      NAME: 'Home Depot',
-      URL: 'https://citiretailservices.citibankonline.com/RSnextgen/svc/launch/index.action?siteId=CACN_HOMEDEPOT#signon',
-    },
+    PERSONAL_ACCOUNT_LINK.NEO_FINANCIAL,
+    PERSONAL_ACCOUNT_LINK.MBNA,
+    PERSONAL_ACCOUNT_LINK.CT_TRIANGLE,
+    PERSONAL_ACCOUNT_LINK.HOME_DEPOT,
     GOOGLE_SERVICES.GMAIL,
     GOOGLE_SERVICES.GMAIL.FILTERS,
     GOOGLE_SERVICES.GMAIL.SIGNATURE,

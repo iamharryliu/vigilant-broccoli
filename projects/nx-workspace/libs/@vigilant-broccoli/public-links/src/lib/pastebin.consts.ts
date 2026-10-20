@@ -7,11 +7,8 @@ import {
   PROJECT_LINK,
   SOCIAL_LINK,
 } from '@vigilant-broccoli/personal-common-js';
-import { HARRYLIU_APP_URL } from './links.consts';
-import {
-  LINK_GROUP_SUBGROUP,
-  PUBLIC_QUICK_LINKS,
-} from './public-quick-links.consts';
+import { HARRYLIU_APP_URL } from './app.consts';
+import { LINK_GROUP_SUBGROUP, PUBLIC_QUICK_LINKS } from './quick-links.consts';
 
 export const PERSONAL_SITE_LINK = {
   INDEX: {

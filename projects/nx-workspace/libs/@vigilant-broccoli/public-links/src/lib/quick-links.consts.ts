@@ -1,4 +1,10 @@
 import { OPEN_TYPE, type QuickLink } from '@vigilant-broccoli/common-js';
+import { HARRYLIU_APP_URL } from './app.consts';
+import {
+  HARRYLIU_INFRA_URL,
+  VB_GITHUB_ACTIONS_URL,
+  VB_GITHUB_REPO_URL,
+} from './infra.consts';
 import {
   ANTHROPIC_LINK,
   CLAUDE_LINK,
@@ -11,8 +17,6 @@ import {
   GITHUB_LINK,
   GOOGLE_SERVICES,
   GROK_LINK,
-  HARRYLIU_APP_URL,
-  HARRYLIU_INFRA_URL,
   OPENAI_LINK,
   OPENWEATHER_LINK,
   ROBOFLOW_LINK,
@@ -20,7 +24,7 @@ import {
   TAILSCALE_LINK,
   TERRAFORM_LINK,
   TWILIO_LINK,
-} from './links.consts';
+} from './vendor.consts';
 
 export const LINK_GROUP_SUBGROUP = {
   UTILITY: 'Utility',
@@ -49,10 +53,6 @@ export const toQuickLinks = (
     type: OPEN_TYPE.BROWSER,
     subgroup,
   }));
-
-const VB_GITHUB_REPO_URL = 'https://github.com/iamharryliu/vigilant-broccoli';
-const VB_GITHUB_ACTIONS_URL = `${VB_GITHUB_REPO_URL}/actions`;
-export const VB_GITHUB_WORKFLOWS_URL = `${VB_GITHUB_ACTIONS_URL}/workflows`;
 
 export const GENERIC_DEV_LINKS: QuickLink[] = [
   ...toQuickLinks(LINK_GROUP_SUBGROUP.DEV, [
