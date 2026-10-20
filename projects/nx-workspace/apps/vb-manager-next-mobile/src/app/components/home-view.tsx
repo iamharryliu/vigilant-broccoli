@@ -84,6 +84,10 @@ const DESKTOP_MEDIA_QUERY = '(min-width: 640px)';
 // Tab content isn't a flex child, so size the editor to the viewport minus
 // the top bar and tab row.
 const NOTEPAD_HEIGHT = 'calc(100dvh - var(--topbar-h) - 8rem)';
+// Force-mounted panels fill without scrolling (the calendar scrolls itself),
+// so panels that need the default scrolling and safe-area padding wrap in this.
+const SCROLL_PANEL =
+  'min-h-0 flex-1 overflow-y-auto pb-[env(safe-area-inset-bottom)]';
 
 const CALENDAR_TABS = Object.values(CALENDAR_TAB);
 
@@ -338,13 +342,26 @@ export const HomeView = () => {
       value: CALENDAR_TAB.TASKS,
       label: CALENDAR_TAB.TASKS,
       icon: <ListTodo size={TAB_ICON_SIZE} />,
-      content: <GoogleTasksView />,
+      // Force-mounted so tasks load with the page; refetched on each visit.
+      forceMount: true,
+      content: (
+        <div className={SCROLL_PANEL}>
+          <GoogleTasksView active={tab === CALENDAR_TAB.TASKS} />
+        </div>
+      ),
     },
     {
       value: CALENDAR_TAB.NOTEPAD,
       label: CALENDAR_TAB.NOTEPAD,
       icon: <StickyNote size={TAB_ICON_SIZE} />,
-      content: <NotepadEditor style={{ height: NOTEPAD_HEIGHT }} />,
+      // Force-mounted so the notepad loads with the page and keeps its cursor
+      // and scroll position between visits.
+      forceMount: true,
+      content: (
+        <div className={SCROLL_PANEL}>
+          <NotepadEditor style={{ height: NOTEPAD_HEIGHT }} />
+        </div>
+      ),
     },
     {
       value: CALENDAR_TAB.QUICK_LINKS,
