@@ -20,9 +20,6 @@ export const Topbar = ({ onMenuClick }: TopbarProps) => {
       >
         <Menu size={20} />
       </button>
-      <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">
-        VB Manager
-      </span>
     </header>
   );
 };
