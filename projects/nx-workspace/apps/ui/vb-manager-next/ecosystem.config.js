@@ -20,7 +20,7 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 1337,
-        VB_EXPRESS_URL: 'https://staging-vb-express.fly.dev',
+        VB_EXPRESS_URL: 'https://api.harryliu.dev',
         NEXT_PUBLIC_SUPABASE_URL: 'https://jrdosjjgmsoodpjmjqxx.supabase.co',
         NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
           'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
