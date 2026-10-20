@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { getSupabase } from '../../../libs/supabase';
+import { getRuntimeConfig, getSupabase } from '../../../libs/supabase';
 import {
   AUTHORIZATION_HEADER,
   BEARER_PREFIX,
@@ -13,13 +13,20 @@ import {
 
 const GOOGLE_TOKEN_KEY = 'google_provider_token';
 
-const AuthContext = createContext<Session | null>(null);
+interface AuthState {
+  session: Session | null;
+  isDemo: boolean;
+}
+
+const AuthContext = createContext<AuthState>({ session: null, isDemo: false });
 
 export const useAuth = () => useContext(AuthContext);
 
 export const getGoogleToken = () => localStorage.getItem(GOOGLE_TOKEN_KEY);
 
 export const getSupabaseAccessToken = async () => {
+  const { demo } = await getRuntimeConfig();
+  if (demo) return null;
   const supabase = await getSupabase();
   const { data } = await supabase.auth.getSession();
   return data.session?.access_token ?? null;
@@ -47,17 +54,24 @@ export default function AuthProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [session, setSession] = useState<Session | null | undefined>(undefined);
+  const [auth, setAuth] = useState<AuthState | undefined>(undefined);
 
   useEffect(() => {
     let unsubscribe: (() => void) | undefined;
     let cancelled = false;
 
-    getSupabase().then(supabase => {
+    getRuntimeConfig().then(async ({ demo }) => {
+      if (cancelled) return;
+      if (demo) {
+        setAuth({ session: null, isDemo: true });
+        return;
+      }
+
+      const supabase = await getSupabase();
       if (cancelled) return;
 
       supabase.auth.getSession().then(({ data }) => {
-        if (!cancelled) setSession(data.session);
+        if (!cancelled) setAuth({ session: data.session, isDemo: false });
       });
 
       const {
@@ -66,7 +80,7 @@ export default function AuthProvider({
         if (session?.provider_token) {
           localStorage.setItem(GOOGLE_TOKEN_KEY, session.provider_token);
         }
-        setSession(session);
+        setAuth({ session, isDemo: false });
       });
       unsubscribe = () => subscription.unsubscribe();
     });
@@ -77,9 +91,7 @@ export default function AuthProvider({
     };
   }, []);
 
-  if (session === undefined) return null;
+  if (auth === undefined) return null;
 
-  return (
-    <AuthContext.Provider value={session}>{children}</AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 }

@@ -9,6 +9,7 @@ import {
   SidebarCTA,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import { getSupabase } from '../../../libs/supabase';
+import { useAuth } from '../providers/auth-provider';
 import { NAV_LINKS } from '../app.consts';
 import { useTranslation } from '../i18n';
 
@@ -19,6 +20,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { t } = useTranslation();
   const { appearance, toggleTheme } = useTheme();
+  const { isDemo } = useAuth();
   const isDark = appearance === DARK;
 
   const navItems: SidebarCTA[] = NAV_LINKS.map(({ labelKey, href, icon }) => ({
@@ -43,7 +45,10 @@ export default function Sidebar() {
     },
   };
 
-  const items = [...navItems, themeItem, logoutItem];
+  // Demo visitors never signed in, so there is no session to log out of.
+  const items = isDemo
+    ? [...navItems, themeItem]
+    : [...navItems, themeItem, logoutItem];
 
   return (
     <SharedSidebar
