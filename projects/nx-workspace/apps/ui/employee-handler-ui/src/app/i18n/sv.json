@@ -149,5 +149,9 @@
     "ERROR": {
       "LOAD_FAILED": "Det gick inte att hämta signaturer"
     }
+  },
+  "DEMO": {
+    "LABEL": "Demo",
+    "MESSAGE": "Inloggning är avstängd och all data är exempeldata. Ändringar delas med andra besökare och återställs med jämna mellanrum."
   }
 }

@@ -329,7 +329,10 @@ async function main() {
       settings: NX_VERCEL_SETTINGS('hearth', 'dist/apps/hearth/.next'),
     },
     'employee-handler-ui': {
-      hardcodedSecrets: { ...EMPLOYEE_HANDLER_UI_SUPABASE_SECRETS },
+      hardcodedSecrets: {
+        ...EMPLOYEE_HANDLER_UI_SUPABASE_SECRETS,
+        ...(environment === DEMO && { DEMO_MODE: 'true' }),
+      },
       envExamplePath: 'apps/ui/employee-handler-ui/.env.example',
       settings: NX_VERCEL_SETTINGS(
         'employee-handler-ui',
