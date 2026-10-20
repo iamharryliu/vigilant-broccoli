@@ -3,7 +3,7 @@ import { readFileSync, existsSync, mkdirSync, rmSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { createVaultClient, VAULT_SECRET_PATH } from './vault-client';
-import SUPABASE_PUBLIC from '../libs/@vigilant-broccoli/common-node/src/lib/supabase/supabase-public.json' with { type: 'json' };
+import SUPABASE_PUBLIC from '../libs/@vigilant-broccoli/infrastructure/src/lib/supabase-public.json' with { type: 'json' };
 
 const STAGING = 'staging';
 const PRODUCTION = 'production';

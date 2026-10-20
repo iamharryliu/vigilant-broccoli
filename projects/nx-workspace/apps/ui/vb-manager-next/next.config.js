@@ -3,7 +3,7 @@ const { createHash } = require('crypto');
 const { readdirSync, statSync } = require('fs');
 const { join } = require('path');
 const { composePlugins, withNx } = require('@nx/next');
-const SUPABASE_NEXT_ENV = require('../../../libs/@vigilant-broccoli/common-node/src/lib/supabase/supabase-next-env.js');
+const SUPABASE_NEXT_ENV = require('../../../libs/@vigilant-broccoli/infrastructure/src/lib/supabase-next-env.js');
 const configValues = {
   default: {},
   development: {},

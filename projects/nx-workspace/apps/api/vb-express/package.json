@@ -13,6 +13,7 @@
     "@vigilant-broccoli/common-js": "workspace:*",
     "@vigilant-broccoli/common-node": "workspace:*",
     "@vigilant-broccoli/fastify": "workspace:*",
+    "@vigilant-broccoli/infrastructure": "workspace:*",
     "@vigilant-broccoli/llm-schemas": "workspace:*",
     "@vigilant-broccoli/messaging": "workspace:*",
     "archiver": "*",

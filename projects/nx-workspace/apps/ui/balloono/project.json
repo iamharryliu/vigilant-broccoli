@@ -18,9 +18,7 @@
         {
           "dependentTasksOutputFiles": "**/*.d.ts",
           "transitive": true
-        },
-        "{workspaceRoot}/libs/@vigilant-broccoli/common-node/src/lib/supabase/supabase-public.json",
-        "{workspaceRoot}/libs/@vigilant-broccoli/common-node/src/lib/supabase/supabase-next-env.js"
+        }
       ],
       "outputs": [
         "{workspaceRoot}/dist/apps/ui/balloono/.next/!(cache)/**/*",
