@@ -1,6 +1,6 @@
 import { ThemeProvider, useDocumentTitle } from '@vigilant-broccoli/react-lib';
 import { Pastebin } from '@vigilant-broccoli/react-lib-higher-level';
-import { PASTEBIN_GROUPS } from '@vigilant-broccoli/links';
+import { PASTEBIN_GROUPS } from '@vigilant-broccoli/public-links';
 
 const PAGE_TITLE = 'Links';
 const SEARCH_PLACEHOLDER = 'Search links...';

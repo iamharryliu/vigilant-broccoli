@@ -1,0 +1,22 @@
+{
+  "name": "@vigilant-broccoli/public-links",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@vigilant-broccoli/public-links/src",
+  "projectType": "library",
+  "tags": ["type:util", "visibility:public"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/@vigilant-broccoli/public-links",
+        "main": "libs/@vigilant-broccoli/public-links/src/index.ts",
+        "tsConfig": "libs/@vigilant-broccoli/public-links/tsconfig.lib.json",
+        "assets": []
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

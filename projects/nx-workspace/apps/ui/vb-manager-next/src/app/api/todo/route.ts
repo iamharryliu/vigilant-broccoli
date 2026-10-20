@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { readFile } from 'fs/promises';
 import { FileSystemUtils } from '@vigilant-broccoli/common-node';
-import { VB_REPO_PATH } from '@vigilant-broccoli/personal-common-js';
+import { VB_REPO_PATH } from '@vigilant-broccoli/personal-private-js';
 import {
   parseTodoMarkdown,
   serializeTodoMarkdown,

@@ -22,7 +22,7 @@ module.exports = {
     '../../../libs/@vigilant-broccoli/llm-schemas/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/llm-tools/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/money-movement/src/**/*.{tsx,ts,jsx,js,html}',
-    '../../../libs/@vigilant-broccoli/links/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/private-links/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/deployment/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/resume/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/react-music-lib/src/**/*.{tsx,ts,jsx,js,html}',
