@@ -1,5 +1,9 @@
 import { google, calendar_v3 } from 'googleapis';
-import { GoogleCalendarEvent } from './google-calendar-events.model';
+import {
+  GoogleCalendarEvent,
+  GoogleCalendarEventAttendee,
+  GoogleCalendarEventPerson,
+} from './google-calendar-events.model';
 
 const createClient = (accessToken: string) => {
   const auth = new google.auth.OAuth2();
@@ -9,6 +13,26 @@ const createClient = (accessToken: string) => {
 
 const eventTime = (time?: calendar_v3.Schema$EventDateTime | null) =>
   time?.dateTime ?? time?.date ?? '';
+
+const mapPerson = (
+  person?: calendar_v3.Schema$Event['organizer'] | null,
+): GoogleCalendarEventPerson | undefined =>
+  person
+    ? {
+        displayName: person.displayName ?? undefined,
+        email: person.email ?? undefined,
+      }
+    : undefined;
+
+const mapAttendee = (
+  attendee: calendar_v3.Schema$EventAttendee,
+): GoogleCalendarEventAttendee => ({
+  displayName: attendee.displayName ?? undefined,
+  email: attendee.email ?? undefined,
+  responseStatus: attendee.responseStatus ?? undefined,
+  self: attendee.self ?? undefined,
+  organizer: attendee.organizer ?? undefined,
+});
 
 const mapEvent =
   (calendarId: string) =>
@@ -20,6 +44,12 @@ const mapEvent =
     end: eventTime(event.end),
     allDay: !event.start?.dateTime,
     htmlLink: event.htmlLink ?? undefined,
+    location: event.location ?? undefined,
+    description: event.description ?? undefined,
+    hangoutLink: event.hangoutLink ?? undefined,
+    attendees: event.attendees?.map(mapAttendee),
+    organizer: mapPerson(event.organizer),
+    recurringEventId: event.recurringEventId ?? undefined,
   });
 
 export const listCalendarEvents = async (

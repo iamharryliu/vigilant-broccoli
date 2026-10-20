@@ -8,7 +8,7 @@ import { useTranslation } from '../i18n';
 const OSM_COPYRIGHT_URL = 'https://www.openstreetmap.org/copyright';
 const WINDOW_TARGET_BLANK = '_blank';
 const BUTTON_CLASS =
-  'rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50 disabled:opacity-50';
+  'rounded border border-gray-300 px-3 py-1 text-sm hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:hover:bg-gray-800';
 
 interface NearbyTabProps {
   places: PlaceWithDistance[];
@@ -34,7 +34,7 @@ export function NearbyTab({
   return (
     <div className="flex flex-col gap-3 p-4">
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-gray-700">
+        <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
           {t('NEARBY.TITLE', { radius: NEARBY_RADIUS_METRES })}
         </h2>
         <button
@@ -48,13 +48,13 @@ export function NearbyTab({
       </div>
 
       {!hasLocation && (
-        <p role="status" className="text-sm text-gray-500">
+        <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
           {t('NEARBY.LOCATION_UNAVAILABLE')}
         </p>
       )}
 
       {hasLocation && isLoading && (
-        <p role="status" className="text-sm text-gray-500">
+        <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
           {t('NEARBY.LOADING')}
         </p>
       )}
@@ -62,7 +62,7 @@ export function NearbyTab({
       {hasLocation && hasError && (
         <div
           role="alert"
-          className="flex items-center justify-between gap-3 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+          className="flex items-center justify-between gap-3 rounded border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
         >
           <span>
             {hasLoaded ? t('NEARBY.ERROR_CACHED') : t('NEARBY.ERROR')}
@@ -74,7 +74,7 @@ export function NearbyTab({
       )}
 
       {hasLocation && hasLoaded && places.length === 0 && !isLoading && (
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           {t('NEARBY.EMPTY', { radius: NEARBY_RADIUS_METRES })}
         </p>
       )}
@@ -86,18 +86,18 @@ export function NearbyTab({
             return (
               <li
                 key={place.id}
-                className="flex flex-wrap items-center justify-between gap-2 rounded border border-gray-200 px-3 py-2 text-sm"
+                className="flex flex-wrap items-center justify-between gap-2 rounded border border-gray-200 px-3 py-2 text-sm dark:border-gray-800"
               >
                 <div className="flex min-w-0 flex-col">
                   <span className="truncate font-medium">
                     {place.name ?? t('NEARBY.UNNAMED', { category })}
                   </span>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
                     {category} · {place.subtype}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-gray-600">
+                  <span className="text-gray-600 dark:text-gray-300">
                     {t('NEARBY.DISTANCE', {
                       distance: Math.round(place.distanceMetres),
                     })}
@@ -116,7 +116,7 @@ export function NearbyTab({
         </ul>
       )}
 
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-gray-400 dark:text-gray-500">
         {t('NEARBY.APPROXIMATE')} {t('NEARBY.ATTRIBUTION_PREFIX')}{' '}
         <a
           href={OSM_COPYRIGHT_URL}

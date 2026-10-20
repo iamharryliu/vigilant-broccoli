@@ -1,6 +1,6 @@
 # Balloono
 
-Bomberman-style water balloon battles in the browser: online rooms with friends, or matches against CPU opponents at three difficulty levels.
+Bomberman-style water balloon battles on desktop: online rooms for four or more people with automatic countdowns and public rankings, or offline matches against CPU opponents at three difficulty levels.
 
 ## Table of Contents
 
@@ -16,6 +16,9 @@ Bomberman-style water balloon battles in the browser: online rooms with friends,
   - Supabase JS
   - Tailwind CSS
 - Internal libs
+  - `common-js`
   - `react-lib`
+  - `react-lib-auth`
+  - `react-lib-higher-level`
 - Cloud services
   - Supabase

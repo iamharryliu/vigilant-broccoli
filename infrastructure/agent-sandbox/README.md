@@ -8,6 +8,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 - [Local Ollama agent](#local-ollama-agent)
 - [Running in CI](#running-in-ci)
 - [Publishing several pull requests](#publishing-several-pull-requests)
+- [Ending without changes](#ending-without-changes)
 - [Auditing the backlog](#auditing-the-backlog)
 - [Pruning dead code and stale docs](#pruning-dead-code-and-stale-docs)
 - [Auditing legacy documentation](#auditing-legacy-documentation)
@@ -23,6 +24,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
   - `pnpm agentic:dev-sandbox:codex:yolo`: Codex with approvals and its sandbox disabled.
 - `pnpm agentic:dev-sandbox:shell` opens Bash directly. Interactive shell and CLI launchers treat status 130 (Ctrl-C, including a subsequent bare `exit` in Bash) as a normal exit so pnpm does not print a lifecycle error. Other failure statuses are preserved, and Docker CLI hints are disabled for these launchers.
 - Each command creates or reattaches its own `<agent>-<mode>` tmux session in the sandbox checkout. CLI arguments apply when creating the session; Claude defaults to Sonnet and accepts `--model <model>` overrides. Existing `cli` and `codexyolo` sessions are left running; the new commands use separate sessions.
+- Container dev-server ports 3000, 4200 and 8080 are published on the Mac loopback as `127.0.0.1:13000`, `14200` and `18080`, so they never collide with app dev servers running on the host (e.g. `vb-manager-next-mobile` on 3000). Open `http://localhost:13000` for an app listening on 3000 inside the sandbox; bind the app to `0.0.0.0` in the container.
 
 - The image installs `zsh` from apt and a pinned `mise` (`MISE_VERSION` build arg in the Dockerfile) at `/usr/local/bin/mise`. Both are fetched at build time, outside the egress firewall.
 - `agent` keeps bash as its login shell because the runners and entrypoint are bash scripts. The entrypoint runs `setup/linux/install.sh -y`, which hooks `setup/dotfiles/bash/.rc.bash` into `~/.bashrc` and `setup/dotfiles/zsh/.rc.linux.zsh` into `~/.zshrc`; both activate mise. Run `zsh` for an interactive zsh session with the repo aliases.
@@ -93,6 +95,8 @@ The egress firewall allows `api.openai.com`, `auth.openai.com` and `chatgpt.com`
 behind a CDN and `init-firewall.sh` resolves the allowlist into an ipset once at container start, so a long solve can
 outlive the addresses it captured; if a Codex run dies mid-way on network errors, retry with `-f firewall=off`.
 
+Locally, `pnpm agentic-pr-create --agent codex` skips the access token and instead runs in the running dev sandbox (`pnpm agentic:dev-sandbox:up`) with the Codex login you made there (`pnpm agentic:dev-sandbox:codex:auto`, OTP sign-in); sessions are not ephemeral. Each run uses a throwaway clone of origin inside the container, so the interactive checkout is untouched, and each run keeps its own metadata files, so separate commands and several TODO ids can run in parallel. The command detaches after its preflight checks and prints a `tail -f` log path; pass `--foreground` to stay attached. The current runner scripts are streamed into the container per run, so no image rebuild is needed. Actions still uses the Vault access token in a fresh container. The agent can read `~/.codex/auth.json` here, as in any dev sandbox session.
+
 `codex exec` has no tool deny-list equivalent to Claude's `--disallowedTools`, so the Codex branch of
 `solve-todo-runner.sh` runs it with `GH_TOKEN`/`GITHUB_TOKEN` stripped from the environment. Branching, committing,
 pushing and opening the PR stay with the runner for both agents.
@@ -133,7 +137,22 @@ targeting the original PR branch. Recovery restores unresolved TODO rows and res
 publication fail, the log reports that recovery failed rather than claiming the work was saved. Git, pushes and PR creation stay in the runner with the credentials it already
 has; branches are only created and pushed, never force-pushed. Squash-merge implications of stacked PRs are in
 [Stacked pull requests](../../docs/git-workflow.md#stacked-pull-requests). The container copies `solve-todo-runner.sh`,
-`pr-increments.sh` and `commit-subject.sh` into the image, so rebuild it (`docker compose build`) after changing any of them when running locally. Every runner sources `commit-subject.sh` to capitalize commit messages and PR titles, end them with a period and strip trailing ellipses, so they pass the CI `commitlint` job.
+`pr-increments.sh`, `commit-subject.sh` and `no-changes.sh` into the image, so rebuild it (`docker compose build`) after changing any of them when running locally. Every runner sources `commit-subject.sh` to capitalize commit messages and PR titles, end them with a period and strip trailing ellipses, so they pass the CI `commitlint` job.
+
+## Ending without changes
+
+A request the agent judges should change nothing is a decision, not a failure, when the agent says why
+([no-change decisions](../../docs/agent-support.md#task-contract)). Every runner that can end with no changes asks for an
+optional `no_changes_reason` in its metadata file and handles it through `no-changes.sh`:
+
+- no changes and a non-empty reason: the runner prints `RESULT::no-changes` and `NO_CHANGES_REASON::<JSON string>` and
+  exits 0; `write-pr-step-summary.sh` reports _Completed with no changes_ with the reason. `update-pr.sh` sets `outcome`
+  and `no_changes_reason` step outputs for `manual-agentic-pr-update`'s own result step, and `update-pr-runner.sh` also
+  comments the reason on the target PR;
+- no changes and no reason: the run fails as before;
+- the audits and prune keep their `AUDIT_CLEAN`/`PRUNE_CLEAN` exit 0 and add the reason when the agent gave one.
+
+`pnpm agentic-pr-create <id...>` prints the reason for such an id and does not count it as failed.
 
 ## Auditing the backlog
 

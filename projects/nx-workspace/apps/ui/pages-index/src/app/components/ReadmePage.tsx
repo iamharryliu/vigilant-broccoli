@@ -1,6 +1,9 @@
 import { type ReactNode, useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
-import { MarkdownViewer } from '@vigilant-broccoli/react-utility';
+import {
+  MarkdownViewer,
+  type RepoLinkBase,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { useTranslation } from '../i18n';
 import { PageHeader } from './PageHeader';
 import { PAGE_CLASS } from '../consts/layout';
@@ -21,6 +24,7 @@ interface ReadmePageProps {
   title: string;
   beforeReadme?: ReactNode;
   source: ReadmeSource | null;
+  repoLinkBase?: RepoLinkBase;
   externalHref?: string;
   externalLabel?: string;
   notFoundMessage?: string;
@@ -47,6 +51,7 @@ export function ReadmePage({
   title,
   beforeReadme,
   source,
+  repoLinkBase,
   externalHref,
   externalLabel,
   notFoundMessage,
@@ -125,7 +130,9 @@ export function ReadmePage({
               {t('README_PAGE.EMPTY')}
             </p>
           )}
-          {!error && content && <MarkdownViewer content={content} />}
+          {!error && content && (
+            <MarkdownViewer content={content} repoLinkBase={repoLinkBase} />
+          )}
         </div>
       )}
     </main>

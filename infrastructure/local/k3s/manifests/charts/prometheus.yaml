@@ -1,0 +1,26 @@
+# Lean single-server Prometheus. The chart's default scrape jobs cover the
+# apiserver, kubelet/cAdvisor (container CPU and memory) and every pod
+# annotated prometheus.io/scrape, which includes k3s's bundled Traefik.
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: prometheus
+spec:
+  repo: https://prometheus-community.github.io/helm-charts
+  chart: prometheus
+  version: 29.37.0
+  targetNamespace: local-platform
+  createNamespace: true
+  # node-exporter would report the Docker Desktop VM, not the Mac, and
+  # nothing here alerts or pushes.
+  valuesContent: |-
+    server:
+      retention: 15d
+      persistentVolume:
+        size: 5Gi
+    alertmanager:
+      enabled: false
+    prometheus-node-exporter:
+      enabled: false
+    prometheus-pushgateway:
+      enabled: false

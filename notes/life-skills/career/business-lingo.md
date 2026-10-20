@@ -10,3 +10,4 @@
 | LTV   | Lifetime Value — the total revenue a business expects to earn from a customer over the life of the relationship.                     |
 | MRR   | Monthly Recurring Revenue — the monthly value of a company's recurring subscription revenue.                                         |
 | SaaS  | Software as a Service — software licensed on a subscription basis and hosted centrally, accessed by users over the internet.         |
+| VC    | Venture Capital — investor funding given to early-stage, high-growth startups in exchange for equity.                                |

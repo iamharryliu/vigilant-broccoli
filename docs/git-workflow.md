@@ -18,8 +18,8 @@ Branching, publishing and synchronization conventions for this repository.
 - **Types:** `feat`, `fix`, `ci`, `chore`, `docs`, `refactor`, `enhancement`, `security`, `infrastructure`. Add a type only if none fits.
 - **Commits and PR titles:** `<type>(<scope>): <Capitalized message>.` Scope is the affected app/service/lib, omitted for unscoped changes. Explain why concisely; end with a period. Commits use the authoring environment's `Co-Authored-By` trailer, never a hardcoded model name.
 - **PR body:** keep `## Summary` bullets and `## Next steps` checkboxes current for the full PR. Next steps are remaining manual commands, UI checks, CI and merge; if only merging remains, say so. For UI checks, name apps/routes/components, affected shared consumers and expected behavior. Check off only completed work and record blockers. Use the environment's attribution when provided. Update an existing branch PR instead of opening another.
-- **Suggestions and history:** all publishing flows use `infrastructure/agent-sandbox/merge-pr-body.py` for optional `## Suggestions` and appended `## Agentic Change History` rows (`Date | Source | Command | Prompt | Summary`). Sources are `Local agent (Claude Code)`, `Local agent (Codex)`, `GitHub Actions` or `Docker sandbox (local)`.
-- **Publishing parity:** changes to body sections, `pr_title`/`pr_summary`/`pr_next_steps`/`pr_suggestions`, fallbacks or history fields must be mirrored across `ship-pr`, sandbox runners, `pr-increments.sh`, `commit-subject.sh` and `merge-pr-body.py`. Search consumers before changing the contract; follow [entry-point parity](./agent-support.md#entry-point-parity).
+- **Concerns, suggestions and history:** all publishing flows use `infrastructure/agent-sandbox/merge-pr-body.py` for optional `## Concerns` (risks, limitations, unverified behavior, open questions the reviewer must weigh), `## Suggestions` (optional follow-up work only) and appended `## Agentic Change History` rows (`Date | Source | Command | Prompt | Summary`). Sources are `Local agent (Claude Code)`, `Local agent (Codex)`, `GitHub Actions` or `Docker sandbox (local)`.
+- **Publishing parity:** changes to body sections, `pr_title`/`pr_summary`/`pr_next_steps`/`pr_concerns`/`pr_suggestions`, fallbacks or history fields must be mirrored across `ship-pr`, sandbox runners, `pr-increments.sh`, `commit-subject.sh` and `merge-pr-body.py`. Search consumers before changing the contract; follow [entry-point parity](./agent-support.md#entry-point-parity).
 
 ## Commit message enforcement
 
@@ -31,9 +31,9 @@ Enforcement is CI-only: `ci-pr-check` checks PR titles and commits; there is no 
 
 Sessions attached to one checkout share `HEAD`, the index and stash.
 
-- Establish ownership before branching, staging, committing, stashing or switching. A subagent list does not enumerate independent sessions and cannot prove exclusive use.
-- Coordinate paths and Git operations with known peers and wait for acknowledgement, using communication only as authorized. If ownership is uncertain, use a separate worktree carrying only this session's changes.
-- If peer work is staged, use `git commit -m "<message>" -- <your paths>`; it commits the named working-tree files and leaves other index entries alone.
+- Establish ownership before branching, staging, committing, stashing or switching. A subagent list does not enumerate independent sessions; an empty `ListAgents` result never proves exclusive use and is at most a best-effort hint.
+- Default to a separate worktree: unless the checkout is provably exclusive to this session, create one off freshly fetched `origin/main` and apply only this session's changes there. Do not hold for peer acknowledgement.
+- In an exclusively owned checkout, commit by pathspec, never stash and restore the original branch. If peer work is staged, use `git commit -m "<message>" -- <your paths>`; it commits the named working-tree files and leaves other index entries alone.
 - Never stash shared/uncertain work. `sync-main` requires a clean, exclusive checkout in that case and does not authorize committing pending work to clean it.
 - Restore a branch only if your workflow switched it in an exclusive checkout; do not switch a peer's branch during cleanup.
 

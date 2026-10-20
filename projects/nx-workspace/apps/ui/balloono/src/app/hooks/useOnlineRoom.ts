@@ -7,14 +7,9 @@ import {
   NO_INPUT,
   TICK_MS,
 } from '../engine/game.consts';
-import {
-  Contender,
-  Difficulty,
-  MatchState,
-  PlayerInput,
-} from '../engine/game.types';
+import { Contender, MatchState, PlayerInput } from '../engine/game.types';
 import { createMatch, eliminatePlayers } from '../engine/match';
-import { cpuContenders, fillSeats, runTick } from '../engine/runner';
+import { runTick } from '../engine/runner';
 import { supabase } from '../../lib/supabase';
 import { Controls } from './useControls';
 
@@ -33,6 +28,10 @@ const SNAPSHOT_EVERY_TICKS = 2;
 // A newcomer whose clock runs early could out-rank the real host by join time;
 // waiting for the host's first snapshot before claiming the room avoids that.
 const HOST_CLAIM_GRACE_MS = 1500;
+export const MIN_ONLINE_PLAYERS = 4;
+const START_COUNTDOWN_MS = 30_000;
+const JOIN_EXTENSION_MS = 5_000;
+const COUNTDOWN_POLL_MS = 250;
 
 const SUBSCRIBE_STATUS = {
   SUBSCRIBED: 'SUBSCRIBED',
@@ -56,7 +55,8 @@ export interface RoomMember {
 
 export interface RoomSnapshot {
   hostId: string;
-  cpus: Difficulty[];
+  startsAt: number | null;
+  countdownMemberIds: string[];
   wins: Record<string, number>;
   match: MatchState | null;
 }
@@ -67,7 +67,8 @@ interface InputMessage {
 }
 
 const EMPTY_SNAPSHOT: Omit<RoomSnapshot, 'hostId'> = {
-  cpus: [],
+  startsAt: null,
+  countdownMemberIds: [],
   wins: {},
   match: null,
 };
@@ -83,13 +84,11 @@ export function useOnlineRoom({
   userId,
   username,
   controls,
-  cpuName,
 }: {
   room: string;
   userId: string;
   username: string;
   controls: Controls;
-  cpuName: (difficulty: Difficulty, index: number) => string;
 }) {
   const [connection, setConnection] = useState<Connection>(
     CONNECTION.CONNECTING,
@@ -125,6 +124,7 @@ export function useOnlineRoom({
 
   const publish = useCallback(
     (next: typeof EMPTY_SNAPSHOT) => {
+      snapshotRef.current = next;
       setSnapshot(next);
       broadcast(ROOM_EVENT, { ...next, hostId: userId });
     },
@@ -164,7 +164,8 @@ export function useOnlineRoom({
       }
       setKnownHostId(incoming.hostId);
       setSnapshot({
-        cpus: incoming.cpus,
+        startsAt: incoming.startsAt ?? null,
+        countdownMemberIds: incoming.countdownMemberIds ?? [],
         wins: incoming.wins,
         match: incoming.match,
       });
@@ -280,7 +281,12 @@ export function useOnlineRoom({
           : snapshotRef.current.wins;
       const next = { ...snapshotRef.current, wins, match: state };
       snapshotRef.current = next;
-      if (over || state.tick % SNAPSHOT_EVERY_TICKS === 0) publish(next);
+      // `tick` is frozen during the start countdown, so pace by both.
+      if (
+        over ||
+        (state.tick + state.startCountdown) % SNAPSHOT_EVERY_TICKS === 0
+      )
+        publish(next);
       else setSnapshot(next);
     }, TICK_MS);
     return () => window.clearInterval(interval);
@@ -301,37 +307,88 @@ export function useOnlineRoom({
 
   const seated = members.slice(0, MAX_PLAYERS);
 
-  const setCpus = useCallback(
-    (cpus: Difficulty[]) => {
-      if (!isHost) return;
-      publish({
-        ...snapshotRef.current,
-        cpus: cpus.slice(0, MAX_PLAYERS - 1),
-      });
-    },
-    [isHost, publish],
-  );
-
   const startMatch = useCallback(() => {
-    if (!isHost) return;
-    const humans: Contender[] = membersRef.current
+    const current = snapshotRef.current;
+    if (
+      !isHostRef.current ||
+      current.match ||
+      current.startsAt === null ||
+      Date.now() < current.startsAt ||
+      membersRef.current.length < MIN_ONLINE_PLAYERS
+    )
+      return;
+    const contenders: Contender[] = membersRef.current
       .slice(0, MAX_PLAYERS)
       .map(member => ({
         id: member.userId,
         name: member.username,
         difficulty: null,
       }));
-    const contenders = fillSeats(
-      humans,
-      cpuContenders(snapshotRef.current.cpus, cpuName),
-    );
     remoteInputsRef.current = {};
-    publish({ ...snapshotRef.current, match: createMatch(contenders) });
-  }, [isHost, publish, cpuName]);
+    publish({
+      ...current,
+      startsAt: null,
+      countdownMemberIds: [],
+      match: createMatch(contenders),
+    });
+  }, [publish]);
+
+  useEffect(() => {
+    if (!isHost || connection !== CONNECTION.CONNECTED || snapshot.match)
+      return;
+    const updateCountdown = () => {
+      const current = snapshotRef.current;
+      const playerIds = membersRef.current
+        .slice(0, MAX_PLAYERS)
+        .map(member => member.userId);
+      if (playerIds.length < MIN_ONLINE_PLAYERS) {
+        if (current.startsAt !== null) {
+          publish({ ...current, startsAt: null, countdownMemberIds: [] });
+        }
+        return;
+      }
+      if (current.startsAt === null) {
+        publish({
+          ...current,
+          startsAt:
+            Date.now() +
+            START_COUNTDOWN_MS +
+            (playerIds.length - MIN_ONLINE_PLAYERS) * JOIN_EXTENSION_MS,
+          countdownMemberIds: playerIds,
+        });
+        return;
+      }
+      const joins = playerIds.filter(
+        id => !current.countdownMemberIds.includes(id),
+      ).length;
+      if (
+        joins ||
+        playerIds.some(
+          (id, index) => id !== current.countdownMemberIds[index],
+        ) ||
+        playerIds.length !== current.countdownMemberIds.length
+      ) {
+        publish({
+          ...current,
+          startsAt: current.startsAt + joins * JOIN_EXTENSION_MS,
+          countdownMemberIds: playerIds,
+        });
+      }
+      startMatch();
+    };
+    updateCountdown();
+    const interval = window.setInterval(updateCountdown, COUNTDOWN_POLL_MS);
+    return () => window.clearInterval(interval);
+  }, [isHost, connection, snapshot.match, members, publish, startMatch]);
 
   const backToLobby = useCallback(() => {
     if (!isHost) return;
-    publish({ ...snapshotRef.current, match: null });
+    publish({
+      ...snapshotRef.current,
+      match: null,
+      startsAt: null,
+      countdownMemberIds: [],
+    });
   }, [isHost, publish]);
 
   return {
@@ -342,8 +399,6 @@ export function useOnlineRoom({
     isHost,
     snapshot,
     snapshotReady,
-    setCpus,
-    startMatch,
     backToLobby,
   };
 }

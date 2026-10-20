@@ -3,7 +3,6 @@ import { GithubCLICommand } from './github-commands';
 import { GithubUtils } from './github.utils';
 import {
   GithubTeam,
-  GithubTeamMember,
   GithubTeamsDTO,
   GithubOrgMember,
   GithubOrgBasic,

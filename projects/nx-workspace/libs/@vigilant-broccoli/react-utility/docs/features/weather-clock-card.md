@@ -1,13 +1,13 @@
 # Weather Clock Card
 
 - One card for the clock, the current weather with its details, an optional forecast carousel, the next sunrise/sunset and the moon phase.
-- Single weather UI consumed by `weather-next` (weather.harryliu.dev), `vb-manager-next`'s dashboard; production and staging of each app share one codebase.
+- Single weather UI consumed by `weather-next` (weather.harryliu.dev), `vb-manager-next`'s dashboard and `vb-manager-next-mobile`'s Weather tab; production and staging of each app share one codebase.
 
 ## Usage
 
 - `WeatherClockCardUtilityContent` runs in one of two modes:
   - **Injected data**: pass `weather` (`LocalWeather` plus optional `preparation`), `location` and `timezoneOffsetSeconds`; use `loading`, `error` (a `LocalWeatherFailure`) and `onRetry` for the other states.
-  - **Self-locating**: pass `fetchWeather(location)` and optionally `fetchPreparation(weather)`. The card asks the browser for its location through `useLocalWeather` (`react-lib`) and renders the locating/loading skeleton, the denied/unavailable/error message with a retry button (`LocalWeatherMessage`), then the weather. Sun times use the browser's UTC offset unless `timezoneOffsetSeconds` is passed.
+  - **Self-locating**: pass `fetchWeather(location)` and optionally `fetchPreparation(weather)`. The card asks the browser for its location through `useLocalWeather` (`react-utility`) and renders the locating/loading skeleton, the denied/unavailable/error message with a retry button (`LocalWeatherMessage`), then the weather. Sun times use the browser's UTC offset unless `timezoneOffsetSeconds` is passed.
 - The card always calls the latest `fetchWeather` / `fetchPreparation`, so inline functions do not reload the weather. Only adding or removing `fetchPreparation` changes whether badges are requested; a failed or `null` result renders no badges, and the badge skeleton shows while it is pending, and once loaded with no badges the badge row is removed so no empty space remains.
 - `fetchPreparation` receives the weather without its `forecast`.
 - The card wraps itself in the internal weather i18n provider and carries the Open-Meteo / OpenStreetMap attribution footer once weather is shown, so apps need no provider or footer.
@@ -35,5 +35,6 @@ The card is styled with Tailwind classes and the Radix Themes variables the apps
 
 ## Data fetching per app
 
-- `weather-next`: its own `/api/weather` (Open-Meteo plus Nominatim city) and rate-limited `/api/preparation`.
+- `weather-next`: its own `/api/weather` (`getLocalWeather` from `common-node`: Open-Meteo plus Nominatim city) and rate-limited `/api/preparation`.
+- `vb-manager-next-mobile`: `WeatherView` over auth-guarded `/api/weather` (`getLocalWeather` from `common-node`, as in `weather-next`) and `/api/preparation` (`fetchWeatherPreparation` / `isPreparationWeather`).
 - `vb-manager-next`: `fetchLocalWeather` over auth-guarded `/api/weather` plus `/api/weather/city`, and `fetchLocalPreparation` over `/api/preparation` (`fetchWeatherPreparation` / `isPreparationWeather` from `common-node`). City names come from `reverseGeocodeCity` from `common-node` with the app's Nominatim User-Agent.

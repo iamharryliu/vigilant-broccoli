@@ -2,20 +2,18 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { Badge, Button, Input, Text } from '@vigilant-broccoli/react-lib';
 import {
-  Badge,
-  Button,
   CRUDFormProps,
   CRUDItemList,
-  Input,
-  Text,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { PriceItem } from '../../lib/types';
 import { ROUTES } from '../../lib/routes';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
+import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
 
 type ParsedLineItem = {
   name: string;
@@ -513,22 +511,22 @@ export default function PriceTrackerPage() {
   const [query, setQuery] = useState('');
   const [loaded, setLoaded] = useState(false);
 
-  const authHeader = () => ({
-    Authorization: `Bearer ${session?.access_token ?? ''}`,
-  });
+  const authHeader = useAuthHeader();
+  const jsonHeaders = useJsonAuthHeaders();
 
   useEffect(() => {
     if (!selectedHomeId) return;
     setLoaded(false);
-    fetch(`/api/price-tracker?homeId=${selectedHomeId}`, {
-      headers: authHeader(),
-    })
+    authHeader()
+      .then(headers =>
+        fetch(`/api/price-tracker?homeId=${selectedHomeId}`, { headers }),
+      )
       .then(r => r.json())
       .then(data => {
         setItems(Array.isArray(data) ? data : []);
         setLoaded(true);
       });
-  }, [selectedHomeId, session?.access_token]);
+  }, [selectedHomeId, session?.access_token, authHeader]);
 
   const createItem = async (
     form: PriceItemFormValues & {
@@ -554,14 +552,12 @@ export default function PriceTrackerPage() {
         purchasedAt: string;
       }[];
 
+      const headers = await jsonHeaders();
       await Promise.all(
         receiptEntries.map(entry =>
           fetch('/api/price-tracker', {
             method: 'POST',
-            headers: {
-              ...authHeader(),
-              'Content-Type': 'application/json',
-            },
+            headers,
             body: JSON.stringify({
               name: entry.name,
               category: entry.category,
@@ -582,7 +578,7 @@ export default function PriceTrackerPage() {
     } else {
       await fetch('/api/price-tracker', {
         method: 'POST',
-        headers: { ...authHeader(), 'Content-Type': 'application/json' },
+        headers: await jsonHeaders(),
         body: JSON.stringify({
           name: form.name,
           category: form.category,
@@ -595,7 +591,7 @@ export default function PriceTrackerPage() {
     }
 
     const res = await fetch(`/api/price-tracker?homeId=${selectedHomeId}`, {
-      headers: authHeader(),
+      headers: await authHeader(),
     });
     const updated: PriceItem[] = await res.json();
     setItems(updated);
@@ -605,7 +601,7 @@ export default function PriceTrackerPage() {
   const updateItem = async (form: PriceItemFormValues): Promise<void> => {
     await fetch('/api/price-tracker', {
       method: 'PATCH',
-      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      headers: await jsonHeaders(),
       body: JSON.stringify({
         id: form.id,
         name: form.name,
@@ -618,7 +614,7 @@ export default function PriceTrackerPage() {
   const deleteItem = async (id: string | number) => {
     await fetch('/api/price-tracker', {
       method: 'DELETE',
-      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id }),
     });
   };

@@ -1,11 +1,6 @@
 import { EnvUtils } from '@vigilant-broccoli/common-js';
-import {
-  Card,
-  ConversionForm,
-  Textarea,
-  Heading,
-  Text,
-} from '@vigilant-broccoli/react-lib';
+import { Card, Textarea, Heading, Text } from '@vigilant-broccoli/react-lib';
+import { ConversionForm } from '../ConversionForm';
 import { useState } from 'react';
 import { countWords } from '@vigilant-broccoli/common-js';
 

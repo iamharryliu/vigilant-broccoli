@@ -3,9 +3,14 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+# shellcheck source=no-changes.sh
+. "$SCRIPT_DIR/no-changes.sh"
 IMAGE=vb-agent-sandbox
+DEV_SANDBOX_CONTAINER=vb-agent-sandbox
 
+ORIG_ARGS=("$@")
 AGENT_RUNNER=claude
+FOREGROUND=0
 MODEL=sonnet
 CODEX_MODEL=""
 PROMPT=""
@@ -18,6 +23,10 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --local)
       LOCAL=1
+      shift
+      ;;
+    --foreground)
+      FOREGROUND=1
       shift
       ;;
     --publish)
@@ -75,7 +84,7 @@ if [ -n "$PROMPT" ] && [ ${#IDS[@]} -gt 0 ]; then
   exit 1
 fi
 if [ -z "$PROMPT" ] && [ ${#IDS[@]} -eq 0 ]; then
-  echo "Usage: pnpm agentic-pr-create [--local [--publish] [--ollama-model <model>]] [--agent claude|codex|ollama] [--model <claude-model>] [--codex-model <codex-model>] (<TODO_ID> [TODO_ID...] | --prompt \"<task description>\")" >&2
+  echo "Usage: pnpm agentic-pr-create [--local [--publish] [--ollama-model <model>]] [--foreground] [--agent claude|codex|ollama] [--model <claude-model>] [--codex-model <codex-model>] (<TODO_ID> [TODO_ID...] | --prompt \"<task description>\")" >&2
   exit 1
 fi
 
@@ -120,7 +129,20 @@ write_pr_details() {
     | jq -c --arg runlabel "$label" '. + {kind: "unpublished", "label": $runlabel}' >> "$out_file"
 }
 
-if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
+# A workstation Codex solve runs in the long-lived dev sandbox, where Codex is
+# already signed in (OTP), instead of a throwaway container with an access token.
+DEV_SANDBOX=0
+if [ "$AGENT_RUNNER" = codex ] && [ -z "${GITHUB_ACTIONS:-}" ]; then
+  DEV_SANDBOX=1
+  if ! docker ps --format '{{.Names}}' | grep -qx "$DEV_SANDBOX_CONTAINER"; then
+    echo "ERROR: ${DEV_SANDBOX_CONTAINER} is not running — start it with: pnpm agentic:dev-sandbox:up" >&2
+    exit 1
+  fi
+  if ! docker exec -u agent "$DEV_SANDBOX_CONTAINER" codex login status >/dev/null 2>&1; then
+    echo "ERROR: Codex is not signed in inside ${DEV_SANDBOX_CONTAINER} — run pnpm agentic:dev-sandbox:codex:auto and sign in." >&2
+    exit 1
+  fi
+elif ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
   docker compose -f "$SCRIPT_DIR/docker-compose.yml" build
 fi
 
@@ -128,7 +150,7 @@ NEEDS_VAULT=0
 if [ "$AGENT_RUNNER" = claude ] && [ -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
   NEEDS_VAULT=1
 fi
-if [ "$AGENT_RUNNER" = codex ] && [ -z "${AGENT_CODEX_ACCESS_TOKEN:-}" ]; then
+if [ "$AGENT_RUNNER" = codex ] && [ "$DEV_SANDBOX" = 0 ] && [ -z "${AGENT_CODEX_ACCESS_TOKEN:-}" ]; then
   NEEDS_VAULT=1
 fi
 if [ -z "${GH_TOKEN:-}" ] && { [ -z "${AGENT_GH_APP_ID:-}" ] || [ -z "${AGENT_GH_APP_PRIVATE_KEY:-}" ]; }; then
@@ -140,7 +162,7 @@ if [ "$NEEDS_VAULT" = "1" ]; then
     echo "ERROR: required sandbox secrets were not imported from Vault for agent '$AGENT_RUNNER'." >&2
     exit 1
   fi
-  AGENT_RUNNER="$AGENT_RUNNER" . "$SCRIPT_DIR/load-env-from-vault.sh"
+  AGENT_RUNNER="$AGENT_RUNNER" CODEX_SIGNED_IN="$DEV_SANDBOX" . "$SCRIPT_DIR/load-env-from-vault.sh"
 elif [ -n "${AGENT_GH_APP_ID:-}" ] && [ -n "${AGENT_GH_APP_PRIVATE_KEY:-}" ]; then
   echo "Minting fresh GitHub App installation token for this batch..." >&2
   GH_TOKEN=$("$SCRIPT_DIR/mint-github-app-token.sh" "$AGENT_GH_APP_ID" <(printf '%s\n' "$AGENT_GH_APP_PRIVATE_KEY"))
@@ -154,7 +176,7 @@ if [ "$AGENT_RUNNER" = claude ] && [ -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
   echo "ERROR: no Claude Code OAuth token available for --agent claude." >&2
   exit 1
 fi
-if [ "$AGENT_RUNNER" = codex ] && [ -z "${AGENT_CODEX_ACCESS_TOKEN:-}" ]; then
+if [ "$AGENT_RUNNER" = codex ] && [ "$DEV_SANDBOX" = 0 ] && [ -z "${AGENT_CODEX_ACCESS_TOKEN:-}" ]; then
   echo "ERROR: no AGENT_CODEX_ACCESS_TOKEN available for --agent codex." >&2
   echo "Add AGENT_CODEX_ACCESS_TOKEN to Vault (${VAULT_KV_PATH:-kv/data/secrets}) or export it locally before running." >&2
   exit 1
@@ -189,8 +211,53 @@ DOCKER_ENV_ARGS=(
 )
 if [ "$AGENT_RUNNER" = claude ]; then
   DOCKER_ENV_ARGS+=(-e CLAUDE_CODE_OAUTH_TOKEN)
+elif [ "$DEV_SANDBOX" = 1 ]; then
+  DOCKER_ENV_ARGS+=(-e CODEX_SIGNED_IN=1)
 else
   DOCKER_ENV_ARGS+=(-e AGENT_CODEX_ACCESS_TOKEN)
+fi
+
+# Dev sandbox solves share its /tmp and Codex login, so each run gets a throwaway
+# clone of origin (the runner expects a fresh checkout and must not touch the
+# interactive one) and its own metadata, plan and last-message files, which lets
+# runs overlap. They stay under /tmp, the writable root beside the clone. The
+# current runner scripts are streamed in as a tar on stdin, so a stale image
+# cannot run an old runner. The shell is inside single quotes on purpose: it
+# expands in the container.
+# shellcheck disable=SC2016
+DEV_SANDBOX_SCRIPT='set -euo pipefail
+WORK=$(mktemp -d /tmp/vb-solve.XXXXXX)
+trap '"'"'rm -rf "$WORK"'"'"' EXIT
+export META_FILE="$WORK/solve-meta.json" INC_PLAN_FILE="$WORK/increment-plan.json" CODEX_LAST_MESSAGE_FILE="$WORK/codex-last-message.txt"
+mkdir "$WORK/bin"
+tar --warning=no-unknown-keyword -xf - -C "$WORK/bin"
+git clone --quiet "$(git -C "$HOME/vigilant-broccoli" remote get-url origin)" "$WORK/repo"
+git -C "$WORK/repo" config credential.helper "!gh auth git-credential"
+REPO_DIR="$WORK/repo" bash "$WORK/bin/solve-todo-runner.sh" "$@"'
+
+run_solver() {
+  local name=$1 flag=$2 value=$3
+  if [ "$DEV_SANDBOX" = 1 ]; then
+    tar -C "$SCRIPT_DIR" -cf - solve-todo-runner.sh pr-increments.sh commit-subject.sh no-changes.sh \
+      | docker exec -i -u agent "${DOCKER_ENV_ARGS[@]}" "$DEV_SANDBOX_CONTAINER" \
+        bash -c "$DEV_SANDBOX_SCRIPT" _ "$flag" "$value"
+  else
+    docker run --rm --init --name "$name" \
+      --cap-add NET_ADMIN --cap-add NET_RAW \
+      "${DOCKER_ENV_ARGS[@]}" \
+      "$IMAGE" \
+      bash "$RUNNER_PATH" "$flag" "$value"
+  fi
+}
+
+# Secrets are exported by now, so the detached copy skips Vault and only
+# re-mints the GitHub token. VB_SOLVE_DETACHED stops it detaching again.
+if [ "$DEV_SANDBOX" = 1 ] && [ "$FOREGROUND" = 0 ] && [ -z "${VB_SOLVE_DETACHED:-}" ]; then
+  BG_LOG=$(mktemp /tmp/vb-solve-bg.XXXXXX)
+  VB_SOLVE_DETACHED=1 nohup bash "$0" "${ORIG_ARGS[@]}" </dev/null >"$BG_LOG" 2>&1 &
+  echo "Started in the background (pid $!). Follow it with: tail -f $BG_LOG"
+  echo "Pass --foreground to run attached to this terminal."
+  exit 0
 fi
 
 if [ -n "$PROMPT" ]; then
@@ -199,11 +266,7 @@ if [ -n "$PROMPT" ]; then
   STATUS=0
   echo "Solving free-text task (agent: $AGENT_RUNNER, model: $RUNNER_MODEL): $PROMPT"
   echo "Log: $LOG_FILE"
-  docker run --rm --init --name "vb-solve-prompt-$(date +%s)" \
-    --cap-add NET_ADMIN --cap-add NET_RAW \
-    "${DOCKER_ENV_ARGS[@]}" \
-    "$IMAGE" \
-    bash -c 'exec bash "$0" --prompt "$1"' "$RUNNER_PATH" "$PROMPT" \
+  run_solver "vb-solve-prompt-$(date +%s)" --prompt "$PROMPT" \
     2>&1 | tee "$LOG_FILE" || STATUS="${PIPESTATUS[0]}"
   write_pr_details "$LOG_FILE" "$LOG_DIR/pr-details.jsonl"
   bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_FILE" "$STATUS"
@@ -219,12 +282,7 @@ echo "Logs: $LOG_DIR"
 PIDS=()
 for id in "${IDS[@]}"; do
   grep -qE "^\|[[:space:]]*${id}[[:space:]]*\|" "$REPO_ROOT/TODO.md" || echo "WARNING: no '${id}' row in local TODO.md (sandbox clones fresh main)" >&2
-  docker run --rm --init --name "vb-solve-${id}" \
-    --cap-add NET_ADMIN --cap-add NET_RAW \
-    "${DOCKER_ENV_ARGS[@]}" \
-    "$IMAGE" \
-    bash -c 'exec bash "$0" --id "$1"' "$RUNNER_PATH" "$id" \
-    > "$LOG_DIR/solve-${id}.log" 2>&1 &
+  run_solver "vb-solve-${id}" --id "$id" > "$LOG_DIR/solve-${id}.log" 2>&1 &
   PIDS+=($!)
   echo "Started vb-solve-${id} (agent: $AGENT_RUNNER, model: $RUNNER_MODEL, log: $LOG_DIR/solve-${id}.log)"
 done
@@ -253,6 +311,8 @@ for i in "${!PIDS[@]}"; do
       FAILED=1
       echo "✗ TODO ${id}: ${UNPUBLISHED} planned increment(s) were not published (see $LOG_DIR/solve-${id}.log)" >&2
     fi
+  elif grep -qx "$NO_CHANGES_MARKER" "$LOG_DIR/solve-${id}.log"; then
+    echo "– TODO ${id}: no changes made — $(no_changes_reason_in_log "$LOG_DIR/solve-${id}.log")"
   else
     FAILED=1
     echo "✗ TODO ${id}: completed without opening a PR (see $LOG_DIR/solve-${id}.log)" >&2

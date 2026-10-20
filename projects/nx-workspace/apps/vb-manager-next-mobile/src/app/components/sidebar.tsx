@@ -2,26 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
-import {
-  CalendarDays,
-  Link2,
-  ListTodo,
-  Mic,
-  ScanLine,
-  StickyNote,
-  LogOut,
-} from 'lucide-react';
-import {
-  QuickLinksDialog,
-  Sidebar,
-  SidebarCTA,
-} from '@vigilant-broccoli/react-lib';
+import { House, LayoutGrid, LogOut } from 'lucide-react';
+import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { signOut } from '../providers/auth-provider';
 import { PAGE_TITLE } from '../app.const';
-import { QUICK_LINKS } from '../constants/quick-links';
-
-const QUICK_LINKS_LABEL = 'Quick Links';
 
 const SIDEBAR_POSITION = 'peer fixed top-0 left-0 bottom-0 z-30';
 
@@ -34,11 +18,8 @@ const FOOTER_LABEL_COLLAPSIBLE =
 const FOOTER_LABEL_VISIBLE = 'flex-1 opacity-100';
 
 const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
-  { href: '/', label: PAGE_TITLE.HOME, icon: CalendarDays },
-  { href: '/task-list', label: PAGE_TITLE.TASK_LIST, icon: ListTodo },
-  { href: '/transcribe', label: PAGE_TITLE.TRANSCRIBE, icon: Mic },
-  { href: '/ocr', label: PAGE_TITLE.OCR, icon: ScanLine },
-  { href: '/notepad', label: PAGE_TITLE.NOTEPAD, icon: StickyNote },
+  { href: '/', label: PAGE_TITLE.HOME, icon: House },
+  { href: '/apps', label: PAGE_TITLE.APPS, icon: LayoutGrid },
 ];
 
 type AppSidebarProps = {
@@ -48,30 +29,14 @@ type AppSidebarProps = {
 
 export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
   const pathname = usePathname();
-  const [quickLinksOpen, setQuickLinksOpen] = useState(false);
 
-  const items: SidebarCTA[] = [
-    ...NAV_ITEMS.map(item => ({
-      ...item,
-      isActive: pathname === item.href,
-    })),
-    {
-      label: QUICK_LINKS_LABEL,
-      icon: Link2,
-      onClick: () => {
-        setQuickLinksOpen(true);
-        onMobileClose();
-      },
-    },
-  ];
+  const items: SidebarCTA[] = NAV_ITEMS.map(item => ({
+    ...item,
+    isActive: pathname === item.href,
+  }));
 
   return (
     <>
-      <QuickLinksDialog
-        links={QUICK_LINKS}
-        open={quickLinksOpen}
-        onOpenChange={setQuickLinksOpen}
-      />
       <Sidebar
         items={items}
         LinkComponent={Link}

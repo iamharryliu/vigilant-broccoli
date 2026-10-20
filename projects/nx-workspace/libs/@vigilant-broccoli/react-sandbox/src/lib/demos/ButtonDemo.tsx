@@ -19,7 +19,6 @@ import {
   MicrosoftSigninButton,
   SpeechToTextButton,
 } from '@vigilant-broccoli/react-lib';
-import { AudioButtonDemo } from './AudioButtonDemo';
 
 const BUTTON_LIST_BUTTONS: ButtonConfig[] = [
   'GitHub',
@@ -209,10 +208,6 @@ export function ButtonDemo() {
 
         <DemoSection title={t('DEMO_SECTION.BUTTON.SPEECH_TO_TEXT_BUTTON')}>
           <SpeechToTextButtonDemo />
-        </DemoSection>
-
-        <DemoSection title={t('DEMO_SECTION.BUTTON.AUDIO_BUTTON')}>
-          <AudioButtonDemo />
         </DemoSection>
       </div>
 

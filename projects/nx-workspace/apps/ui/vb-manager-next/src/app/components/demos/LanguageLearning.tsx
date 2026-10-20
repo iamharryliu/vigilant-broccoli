@@ -1,8 +1,8 @@
 'use client';
 
 import { ReactNode, useEffect, useState } from 'react';
+import { AudioButton } from '@vigilant-broccoli/react-lib-media';
 import {
-  AudioButton,
   Badge,
   Button,
   Checkbox,

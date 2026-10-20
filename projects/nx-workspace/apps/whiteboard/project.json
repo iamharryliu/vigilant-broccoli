@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/whiteboard",
   "projectType": "application",
-  "tags": [],
+  "tags": ["visibility:public"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
@@ -12,13 +12,21 @@
       "inputs": [
         "default",
         "^default",
-        { "externalDependencies": ["next"] },
-        { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true }
+        {
+          "externalDependencies": ["next"]
+        },
+        {
+          "dependentTasksOutputFiles": "**/*.d.ts",
+          "transitive": true
+        },
+        {
+          "env": "NEXT_PUBLIC_SUPABASE_URL"
+        },
+        {
+          "env": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+        }
       ],
-      "outputs": [
-        "{workspaceRoot}/dist/apps/whiteboard/.next/!(cache)/**/*",
-        "{workspaceRoot}/dist/apps/whiteboard/.next/!(cache)"
-      ],
+      "outputs": ["{workspaceRoot}/dist/apps/whiteboard"],
       "options": {
         "cwd": "apps/whiteboard",
         "tty": false,
@@ -44,16 +52,34 @@
       "executor": "@nx/eslint:lint"
     },
     "deploy": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "VERCEL_PROJECT_ID=staging-whiteboard VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts whiteboard staging"
-      }
+      "command": "npx wrangler pages deploy dist/apps/whiteboard --project-name staging-whiteboard --branch main",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
     },
     "deploy:production": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "VERCEL_PROJECT_ID=production-whiteboard VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts whiteboard production"
-      }
+      "command": "npx wrangler pages deploy dist/apps/whiteboard --project-name production-whiteboard --branch production",
+      "dependsOn": [
+        "build",
+        "ensure-cf-project:production",
+        "prune-deployments:production"
+      ]
+    },
+    "ensure-cf-project": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw staging-whiteboard || npx wrangler pages project create staging-whiteboard --production-branch main"
+    },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-whiteboard 10",
+      "dependsOn": ["ensure-cf-project"]
+    },
+    "manual-deploy": {
+      "command": "npx wrangler pages deploy dist/apps/whiteboard --project-name staging-whiteboard --branch main",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    },
+    "ensure-cf-project:production": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-whiteboard || npx wrangler pages project create production-whiteboard --production-branch production"
+    },
+    "prune-deployments:production": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts production-whiteboard 10",
+      "dependsOn": ["ensure-cf-project:production"]
     }
   }
 }

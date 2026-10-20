@@ -243,13 +243,23 @@ async function pruneStaleVercelEnvVars(
   await Promise.all(staleKeys.map(key => vercelEnvRemove(key, environment)));
 }
 
-function parseEnvKeys(filePath: string): string[] {
+interface EnvKey {
+  key: string;
+  optional: boolean;
+}
+
+const OPTIONAL_MARKER = '# optional';
+
+function parseEnvKeys(filePath: string): EnvKey[] {
   if (!existsSync(filePath)) return [];
-  return readFileSync(filePath, 'utf-8')
+  const lines = readFileSync(filePath, 'utf-8')
     .split('\n')
-    .filter(line => line && !line.startsWith('#'))
-    .map(line => line.split('=')[0].trim())
-    .filter(Boolean);
+    .map(line => line.trim());
+  return lines.flatMap((line, i) => {
+    if (!line || line.startsWith('#')) return [];
+    const key = line.split('=')[0].trim();
+    return key ? [{ key, optional: lines[i - 1] === OPTIONAL_MARKER }] : [];
+  });
 }
 
 async function main() {
@@ -319,20 +329,15 @@ async function main() {
       settings: NX_VERCEL_SETTINGS('hearth', 'dist/apps/hearth/.next'),
     },
     'employee-handler-ui': {
-      hardcodedSecrets: { ...EMPLOYEE_HANDLER_UI_SUPABASE_SECRETS },
+      hardcodedSecrets: {
+        ...EMPLOYEE_HANDLER_UI_SUPABASE_SECRETS,
+        ...(environment === DEMO && { DEMO_MODE: 'true' }),
+      },
       envExamplePath: 'apps/ui/employee-handler-ui/.env.example',
       settings: NX_VERCEL_SETTINGS(
         'employee-handler-ui',
         'dist/apps/ui/employee-handler-ui/.next',
       ),
-    },
-    findme: {
-      hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
-      settings: NX_VERCEL_SETTINGS('findme', 'dist/apps/findme/.next'),
-    },
-    whiteboard: {
-      hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
-      settings: NX_VERCEL_SETTINGS('whiteboard', 'dist/apps/whiteboard/.next'),
     },
     balloono: {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
@@ -369,8 +374,12 @@ async function main() {
   }
 
   const { hardcodedSecrets, envExamplePath, settings } = config;
-  const allKeys = envExamplePath ? parseEnvKeys(resolve(envExamplePath)) : [];
-  const keysFromVault = allKeys.filter(k => !(k in (hardcodedSecrets ?? {})));
+  const envKeys = envExamplePath ? parseEnvKeys(resolve(envExamplePath)) : [];
+  const allKeys = envKeys.map(({ key }) => key);
+  const entriesFromVault = envKeys.filter(
+    ({ key }) => !(key in (hardcodedSecrets ?? {})),
+  );
+  const keysFromVault = entriesFromVault.map(({ key }) => key);
 
   console.log(
     `\nDeploying secrets for ${projectName} to Vercel (${environment})...\n`,
@@ -386,13 +395,23 @@ async function main() {
       vercelEnv.VERCEL_TOKEN = vaultSecrets.VERCEL_TOKEN;
     }
 
-    for (const key of keysFromVault) {
+    const missingRequired: string[] = [];
+    for (const { key, optional } of entriesFromVault) {
       const value = vaultSecrets[key];
       if (value) {
         allSecrets[key] = value;
+      } else if (optional) {
+        console.warn(`⚠ ${key}: optional, not found in vault, skipping`);
       } else {
-        console.warn(`⚠ ${key}: not found in vault, skipping`);
+        missingRequired.push(key);
       }
+    }
+
+    if (missingRequired.length) {
+      console.error(
+        `✗ Required key(s) missing from vault: ${missingRequired.join(', ')}`,
+      );
+      process.exit(1);
     }
   }
 
@@ -424,7 +443,9 @@ async function main() {
     vercelEnv.VERCEL_ORG_ID,
     vercelEnv.VERCEL_TOKEN,
     VERCEL_ENV,
-    new Set(Object.keys(allSecrets)),
+    // .env.example keys stay expected even when absent from Vault, so a missing
+    // optional key is neither added nor pruned from a live deployment.
+    new Set([...Object.keys(allSecrets), ...allKeys]),
   );
 
   console.log('Deploying secrets...');

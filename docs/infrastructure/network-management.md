@@ -21,8 +21,8 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── uptime.harryliu.dev                   Upptime historical site — GitHub Pages `gh-pages` branch of `iamharryliu/uptime` (CNAME to iamharryliu.github.io, DNS-only: Terraform `cloudflare-harryliu-dev.tf`; Pages custom domain set by `github_repository_pages.upptime`; see [upptime.md](./upptime.md))
 ├── api.harryliu.dev                      VB Express (production) — proxied CNAME to `production-vb-express.fly.dev` (Terraform, infrastructure/terraform/); the fly app needs a matching cert, which the `deploy.yml` "Ensure fly cert" step adds idempotently (`flyctl certs add api.harryliu.dev -a production-vb-express`) so Cloudflare's origin TLS handshake succeeds. All production clients and Upptime use this hostname
 ├── www.harryliu.dev                      301 redirect to apex (Cloudflare ruleset)
-├── findme.harryliu.dev                   FindMe — Vercel `production-findme` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
-├── whiteboard.harryliu.dev               Whiteboard — Vercel `production-whiteboard` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
+├── findme.harryliu.dev                   FindMe — Cloudflare Pages `production-findme` (domain + CNAME: Terraform, infrastructure/terraform/)
+├── whiteboard.harryliu.dev               Whiteboard — Cloudflare Pages `production-whiteboard` (domain + CNAME: Terraform, infrastructure/terraform/)
 ├── weather.harryliu.dev           Weather — Vercel `production-weather-next` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
 ├── balloono.harryliu.dev                 Balloono — Vercel `production-balloono` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; online rooms run over public Supabase Realtime channels, no backend of its own)
 ├── links.harryliu.dev                    Links — Cloudflare Pages `production-links-react` (domain + CNAME: Terraform, infrastructure/terraform/; public pastebin page, no Access gating)
@@ -46,6 +46,7 @@ cloud8skate.com                           Cloudflare Pages `production-cloud-8-s
 └── cloud8skate.com                       Cloud 8 Skate
 
 fly.dev                                   Fly.io API services (production apps created on first production dispatch)
+├── demo-office-presence-service.fly.dev          Office Presence Service (demo only) — Slack Events API Request URLs and the demo UI API
 ├── staging-vb-express.fly.dev                    VB Express (staging)
 ├── production-vb-express.fly.dev                 VB Express (production) — origin behind `api.harryliu.dev`; clients should not call it directly
 └── vb-log-shipper                                Fly log shipper (no hostname, no public IP — outbound only: Fly NATS log stream → https://loki.harryliu.dev)
@@ -54,16 +55,17 @@ vercel.app                                Vercel (production projects created on
 ├── staging-hearth.vercel.app                 Hearth (staging)
 ├── production-hearth.vercel.app              Hearth (production)
 ├── demo-employee-handler-ui.vercel.app       Employee Handler UI (demo — its only Vercel deploy)
-├── staging-findme.vercel.app                 FindMe (staging)
-├── production-findme.vercel.app              FindMe (production)
-├── staging-whiteboard.vercel.app             Whiteboard (staging)
-├── production-whiteboard.vercel.app          Whiteboard (production)
 ├── staging-weather-next.vercel.app    Weather (staging)
 ├── production-weather-next.vercel.app Weather (production)
 ├── staging-balloono.vercel.app               Balloono (staging)
 └── production-balloono.vercel.app            Balloono (production)
 
 pages.dev                                 Cloudflare Pages URLs for the environment not attached to a custom domain above
+├── demo-office-presence-ui.pages.dev        Office Presence UI (demo only — its only deploy)
+├── staging-findme.pages.dev                 FindMe (staging)
+├── production-findme.pages.dev              FindMe (production)
+├── staging-whiteboard.pages.dev                 Whiteboard (staging)
+├── production-whiteboard.pages.dev              Whiteboard (production)
 ├── staging-cloud-8-skate-react.pages.dev      Cloud 8 Skate (staging — cloud8skate.com is on production, the exception)
 └── staging-harryliu-dev-react.pages.dev       Personal website React (staging — harryliu.dev is on production)
 
@@ -81,7 +83,7 @@ that one is for services a browser should reach from anywhere, this one is for
 services only the owner's devices need.
 
 ```
-jellyfin-pi.echidna-rohu.ts.net:8096   Jellyfin — Raspberry Pi on the home LAN (`infrastructure/jellyfin-pi/`, Ansible-provisioned, no Terraform). MagicDNS only. On Access-gated tunnels instead of the tailnet, the native clients (Android TV, iOS, Kodi) could not log in — the same constraint that put loki.harryliu.dev on basic auth. The node enrols non-interactively with the reusable `TAILSCALE_AUTH_KEY` from Vault; see [jellyfin-pi.md](./jellyfin-pi.md)
+jellyfin-pi.echidna-rohu.ts.net:8096   Jellyfin — Raspberry Pi on the home LAN (`infrastructure/jellyfin-pi/`, Ansible-provisioned, no Terraform). MagicDNS only: native clients (Android TV, iOS, Kodi) cannot complete a Cloudflare Access login. The node enrols non-interactively with the reusable `TAILSCALE_AUTH_KEY` from Vault; see [jellyfin-pi.md](./jellyfin-pi.md)
 ```
 
 `vb-manager-next`'s dev dashboard lists the tailnet's machines through the
@@ -107,7 +109,7 @@ production-email-subscription-service.flycast  Email Subscription Service (produ
 
 CI e2e/security suites reach these from GitHub-hosted Ubuntu runners via the `.github/actions/fly-private-tunnel` composite action, which installs flyctl and opens a `flyctl proxy 3000:80 <app>.flycast -a <app>` WireGuard tunnel; the job then hits `http://127.0.0.1:3000`. Used by `test-e2e-llm.yml`, `test-security-llm.yml`, `test-e2e-storage-service.yml`, `test-security-storage-service.yml`, `test-smoke-email-service.yml`, `test-e2e-email-subscription-service.yml`, `test-security-email.yml`, `test-security-email-subscription-service.yml`. The job must also import `FLY_API_TOKEN` from Vault for flyctl to authenticate.
 
-Locally-run apps need the same tunnel: `vb-manager-next` (pm2, not deployed) reaches bucket-service via `flyctl proxy 3001:80 staging-storage-service.flycast -a staging-storage-service` with `VB_STORAGE_SERVICE_URL=http://127.0.0.1:3001`, and reaches email-service via `flyctl proxy 3002:80 staging-vb-email-service.flycast -a staging-vb-email-service` with `EMAIL_SERVICE_URL=http://127.0.0.1:3002`. `small-business-next` (also local-only) needs the same email-service tunnel and `EMAIL_SERVICE_URL` pointed at it. Port 3001/3002, not 3000 — `nx serve vb-manager-next` runs `next dev` on 3000.
+`vb-manager-next` (pm2, not deployed) needs no tunnel: its storage and email demos call public vb-express (`/api/storage/*`, `/api/messaging/send-email`), which forwards over 6PN. `small-business-next` (also local-only) still calls email-service directly, so it needs `flyctl proxy 3002:80 staging-vb-email-service.flycast -a staging-vb-email-service` with `EMAIL_SERVICE_URL=http://127.0.0.1:3002`.
 
 The storage-service and llm-service apps dropped their `vb-` prefix (old: `<env>-vb-storage-service`, `<env>-vb-llm-service`). Fly has no rename, so these are new apps; the originals were destroyed after cutover. Only deployed instances carry the `<env>-` prefix — the nx projects stay `bucket-service` and `llm-service`.
 

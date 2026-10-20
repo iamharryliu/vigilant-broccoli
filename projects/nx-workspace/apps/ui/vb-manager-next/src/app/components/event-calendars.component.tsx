@@ -15,9 +15,6 @@ import {
   CalloutText,
   Card,
   CopyButton,
-  CRUDFormProps,
-  CRUDItemList,
-  DeleteItemConfirmationDialog,
   Input,
   Select,
   Switch,
@@ -27,6 +24,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@vigilant-broccoli/react-lib';
+import {
+  CRUDFormProps,
+  CRUDItemList,
+  DeleteItemConfirmationDialog,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -636,8 +638,8 @@ export const EventCalendarsComponent = () => {
               )}
             </div>
           </div>
-          <div className="flex flex-wrap items-center gap-6">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="contents">
               <a
                 href={buildGoogleCalendarUrl(item.googleCalendarId)}
                 target="_blank"

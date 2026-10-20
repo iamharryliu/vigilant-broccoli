@@ -1,0 +1,12 @@
+# The chart binds its ServiceAccount to cluster-admin; logging in still needs
+# the token from `pnpm local:k3s:headlamp:token`, and Traefik listens on loopback only.
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: headlamp
+spec:
+  repo: https://kubernetes-sigs.github.io/headlamp/
+  chart: headlamp
+  version: 0.46.0
+  targetNamespace: local-platform
+  createNamespace: true

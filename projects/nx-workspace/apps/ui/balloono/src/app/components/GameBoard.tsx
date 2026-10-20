@@ -1,19 +1,21 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { createElement, useEffect, useRef } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { useTheme } from '@vigilant-broccoli/react-lib';
 import { closingTick, suddenDeathOrder } from '../engine/board';
 import {
   BALLOON_FUSE_TICKS,
   CELL,
   DIRECTION_VECTORS,
+  POWER_UP_TYPES,
   SUDDEN_DEATH_WARNING_TICKS,
 } from '../engine/game.consts';
-import { MatchState, Player } from '../engine/game.types';
+import { MatchState, Player, PowerUpType } from '../engine/game.types';
 import {
   PLAYER_COLORS,
   POWER_UP_COLORS,
-  POWER_UP_GLYPHS,
+  POWER_UP_ICONS,
 } from './game-visuals.consts';
 
 const PALETTE = {
@@ -49,6 +51,27 @@ const EASE_PER_SECOND = 18;
 const SNAP_DISTANCE = 1.5;
 const MS_PER_SECOND = 1000;
 const FONT_FAMILY = 'system-ui, sans-serif';
+const POWER_UP_ICON_SIZE = 0.4;
+const POWER_UP_ICON_STROKE = 2.5;
+
+// Canvas cannot draw React components, so each Lucide icon is rasterised once
+// from its SVG markup; until an image loads the tile shows only its discs.
+let powerUpImages: Record<PowerUpType, HTMLImageElement> | null = null;
+const getPowerUpImages = () =>
+  (powerUpImages ??= Object.fromEntries(
+    POWER_UP_TYPES.map(type => {
+      const image = new Image();
+      image.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+        renderToStaticMarkup(
+          createElement(POWER_UP_ICONS[type], {
+            color: POWER_UP_COLORS[type],
+            strokeWidth: POWER_UP_ICON_STROKE,
+          }),
+        ),
+      )}`;
+      return [type, image];
+    }),
+  ) as Record<PowerUpType, HTMLImageElement>);
 
 type Palette = (typeof PALETTE)[keyof typeof PALETTE];
 type Position = { x: number; y: number };
@@ -153,9 +176,8 @@ const drawPowerUps = (
   tile: number,
   palette: Palette,
 ) => {
-  context.textAlign = 'center';
-  context.textBaseline = 'middle';
-  context.font = `${Math.floor(tile * 0.55)}px ${FONT_FAMILY}`;
+  const images = getPowerUpImages();
+  const iconSize = tile * POWER_UP_ICON_SIZE;
   match.powerUps.forEach(powerUp => {
     const centerX = (powerUp.x + 0.5) * tile;
     const centerY = (powerUp.y + 0.5) * tile;
@@ -167,7 +189,15 @@ const drawPowerUps = (
     context.beginPath();
     context.arc(centerX, centerY, tile * 0.3, 0, Math.PI * 2);
     context.fill();
-    context.fillText(POWER_UP_GLYPHS[powerUp.type], centerX, centerY);
+    const image = images[powerUp.type];
+    if (image.complete)
+      context.drawImage(
+        image,
+        centerX - iconSize / 2,
+        centerY - iconSize / 2,
+        iconSize,
+        iconSize,
+      );
   });
 };
 

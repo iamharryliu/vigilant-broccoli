@@ -21,6 +21,7 @@ import {
   DIRECTION,
   DIRECTION_VECTORS,
   MATCH_STATUS,
+  START_COUNTDOWN_TICKS,
   MAX_BALLOONS,
   MAX_RANGE,
   MAX_SPEED_LEVEL,
@@ -95,6 +96,16 @@ const createPlayer = (
     maxBalloons: STARTING_BALLOONS,
     range: STARTING_RANGE,
     speedLevel: 0,
+    tally: {
+      balloonsDropped: 0,
+      soaks: 0,
+      pickups: {
+        [POWER_UP.BALLOON]: 0,
+        [POWER_UP.RANGE]: 0,
+        [POWER_UP.SPEED]: 0,
+      },
+      ticksAlive: 0,
+    },
   };
 };
 
@@ -107,6 +118,7 @@ export const createMatch = (contenders: Contender[]): MatchState => {
     events: [],
     nextEventId: 1,
     tick: 0,
+    startCountdown: START_COUNTDOWN_TICKS,
     ...createBoard(board, spawns),
     powerUps: [],
     players: contenders.map((contender, slot) =>
@@ -221,6 +233,7 @@ const placeBalloon = (state: MatchState, player: Player) => {
     range: player.range,
     fuse: BALLOON_FUSE_TICKS,
   });
+  player.tally.balloonsDropped++;
 };
 
 const applyPowerUp = (player: Player, powerUp: PowerUp) => {
@@ -238,23 +251,29 @@ const applyPowerUp = (player: Player, powerUp: PowerUp) => {
 const samePoint = (a: Point, b: Point) => a.x === b.x && a.y === b.y;
 
 const popBalloons = (state: MatchState) => {
-  const queue = state.balloons.filter(balloon => balloon.fuse <= 0);
+  // Every queued balloon carries the owner of the chain's root, so a chain
+  // reaction credits whoever dropped the balloon whose fuse actually ran out.
+  const queue = state.balloons
+    .filter(balloon => balloon.fuse <= 0)
+    .map(balloon => ({ balloon, rootOwnerId: balloon.ownerId }));
   const popped = new Set<number>();
-  const soaked: Point[] = [];
+  const soaked: (Point & { ownerId: string })[] = [];
   const cratesHit: Point[] = [];
 
   while (queue.length) {
-    const balloon = queue.shift() as (typeof queue)[number];
+    const { balloon, rootOwnerId } = queue.shift() as (typeof queue)[number];
     if (popped.has(balloon.id)) continue;
     popped.add(balloon.id);
     recordEvent(state, MATCH_EVENT.POP);
     splashCells(state, balloon, balloon.range).forEach(point => {
-      soaked.push(point);
+      soaked.push({ x: point.x, y: point.y, ownerId: rootOwnerId });
       if (state.cells[cellIndex(state, point.x, point.y)] === CELL.CRATE) {
         cratesHit.push(point);
       }
       const chained = balloonAt(state.balloons, point.x, point.y);
-      if (chained && !popped.has(chained.id)) queue.push(chained);
+      if (chained && !popped.has(chained.id)) {
+        queue.push({ balloon: chained, rootOwnerId });
+      }
     });
   }
 
@@ -273,8 +292,19 @@ const popBalloons = (state: MatchState) => {
   });
   soaked.forEach(point => {
     const existing = state.splashes.find(splash => samePoint(splash, point));
-    if (existing) existing.ttl = SPLASH_TICKS;
-    else state.splashes.push({ ...point, ttl: SPLASH_TICKS });
+    if (existing) {
+      existing.ttl = SPLASH_TICKS;
+      if (!existing.ownerIds.includes(point.ownerId)) {
+        existing.ownerIds.push(point.ownerId);
+      }
+    } else {
+      state.splashes.push({
+        x: point.x,
+        y: point.y,
+        ttl: SPLASH_TICKS,
+        ownerIds: [point.ownerId],
+      });
+    }
   });
 };
 
@@ -303,6 +333,8 @@ export const advanceMatch = (
   inputs: Record<string, PlayerInput>,
 ): MatchState => {
   if (previous.status !== MATCH_STATUS.PLAYING) return previous;
+  if (previous.startCountdown > 0)
+    return { ...previous, startCountdown: previous.startCountdown - 1 };
   const state: MatchState = structuredClone(previous);
   state.tick++;
   state.events = state.events.filter(
@@ -316,6 +348,7 @@ export const advanceMatch = (
   state.players
     .filter(player => player.alive)
     .forEach(player => {
+      player.tally.ticksAlive++;
       const input = inputs[player.id] ?? NO_INPUT;
       if (input.placeBalloon) placeBalloon(state, player);
       movePlayer(state, player, input);
@@ -330,15 +363,24 @@ export const advanceMatch = (
     .filter(player => player.alive)
     .forEach(player => {
       const tile = occupiedTile(player);
-      if (state.splashes.some(splash => samePoint(splash, tile))) {
+      const splash = state.splashes.find(item => samePoint(item, tile));
+      if (splash) {
         recordEvent(state, MATCH_EVENT.SPLASH);
         player.alive = false;
+        state.players
+          .filter(
+            item => splash.ownerIds.includes(item.id) && item.id !== player.id,
+          )
+          .forEach(dropper => {
+            dropper.tally.soaks++;
+          });
         return;
       }
       const powerUp = state.powerUps.find(item => samePoint(item, tile));
       if (!powerUp) return;
       recordEvent(state, MATCH_EVENT.PICKUP);
       applyPowerUp(player, powerUp);
+      player.tally.pickups[powerUp.type]++;
       state.powerUps = state.powerUps.filter(item => item !== powerUp);
     });
 

@@ -26,6 +26,9 @@ const plugin: FastifyPluginAsync = async app => {
       requestId: req._loggerRequestId,
       method: req.method,
       path: req.url,
+      // Route template (`/api/tasks/:id`): dashboards group by it, since
+      // `path` carries ids and query strings. Undefined on unmatched (404) URLs.
+      route: req.routeOptions.url,
       status: reply.statusCode,
       latency_ms: Date.now() - (req._loggerStart ?? Date.now()),
     };

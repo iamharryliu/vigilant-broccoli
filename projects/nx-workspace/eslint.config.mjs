@@ -11,6 +11,21 @@ const compat = new FlatCompat({
   recommendedConfig: js.configs.recommended,
 });
 
+// Apply after Nx language and React presets, which downgrade this rule to a warning.
+export const unusedVariablesConfig = {
+  files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+  rules: {
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
+  },
+};
+
 export default [
   {
     ignores: ['**/dist', '**/out-tsc', '**/assets/**', '**/next-env.d.ts'],
@@ -37,15 +52,41 @@ export default [
               sourceTag: '*',
               onlyDependOnLibsWithTags: ['*'],
             },
+            // Layering: apps may use anything. Composite UI lives in
+            // type:higher-level libs and narrow-audience UI (auth, calendar,
+            // media) in type:domain libs, so editing one does not redeploy
+            // every app that consumes the atomic type:primitive react-lib.
+            // Domain libs may not import each other, or one domain edit would
+            // again fan out to every other domain's consumers.
+            {
+              sourceTag: 'type:util',
+              onlyDependOnLibsWithTags: ['type:util'],
+            },
+            {
+              sourceTag: 'type:primitive',
+              onlyDependOnLibsWithTags: ['type:util', 'type:primitive'],
+            },
+            {
+              sourceTag: 'type:domain',
+              onlyDependOnLibsWithTags: ['type:util', 'type:primitive'],
+            },
+            {
+              sourceTag: 'type:higher-level',
+              onlyDependOnLibsWithTags: [
+                'type:util',
+                'type:primitive',
+                'type:domain',
+                'type:higher-level',
+              ],
+            },
+            // Public projects ship client bundles anyone can download, and a
+            // private lib's barrel lands in the bundle whichever names are
+            // imported. Nx also checks this transitively.
+            {
+              sourceTag: 'visibility:public',
+              notDependOnLibsWithTags: ['visibility:private'],
+            },
           ],
-        },
-      ],
-      '@typescript-eslint/no-unused-vars': [
-        'error',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
         },
       ],
       // A cycle can pass typecheck and lint yet crash at runtime once bundled
@@ -60,13 +101,8 @@ export default [
     },
   },
   ...nx.configs['flat/typescript'],
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    rules: {
-      'no-extra-semi': 'error',
-    },
-  },
   ...nx.configs['flat/javascript'],
+  unusedVariablesConfig,
   {
     files: ['**/*.js', '**/*.jsx'],
     rules: {
@@ -88,8 +124,5 @@ export default [
     .map(config => ({
       ...config,
       files: ['**/*.spec.ts', '**/*.spec.tsx', '**/*.spec.js', '**/*.spec.jsx'],
-      rules: {
-        ...config.rules,
-      },
     })),
 ];

@@ -4,11 +4,11 @@ import { useState } from 'react';
 import {
   Button,
   Checkbox,
-  CRUDFormProps,
   Input,
   Text,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
+import { CRUDFormProps } from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import { useRecipeTranslation } from './useRecipeTranslation';
 import { Recipe } from './recipes.types';

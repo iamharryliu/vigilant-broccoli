@@ -10,6 +10,7 @@
 - [Media](./media/media.md)
 - [Outdoor](./outdoor/outdoor.md)
 - [Philosophy](./philosophy.md)
+- [Photo Management](./photo-management.md)
 - [Reading](./reading/reading.md)
 - [Self Defense](./self-defense/self-defense.md)
 - [Skate](./skate/skate.md)

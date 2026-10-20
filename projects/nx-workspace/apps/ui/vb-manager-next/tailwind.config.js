@@ -7,6 +7,9 @@ module.exports = {
     './{src,pages,components,app}/**/*.{ts,tsx,js,jsx,html}',
     '!./{src,pages,components,app}/**/*.{stories,spec}.{ts,tsx,js,jsx,html}',
     '../../../libs/@vigilant-broccoli/react-lib/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/react-lib-auth/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/react-lib-media/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/react-lib-higher-level/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/common-js/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/common-browser/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/common-node/src/**/*.{tsx,ts,jsx,js,html}',
@@ -19,11 +22,11 @@ module.exports = {
     '../../../libs/@vigilant-broccoli/llm-schemas/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/llm-tools/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/money-movement/src/**/*.{tsx,ts,jsx,js,html}',
-    '../../../libs/@vigilant-broccoli/links/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/manager/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/deployment/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/resume/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/react-music-lib/src/**/*.{tsx,ts,jsx,js,html}',
-    '../../../libs/@vigilant-broccoli/personal-common-js/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@harry/personal/src/**/*.{tsx,ts,jsx,js,html}',
   ],
   theme: {
     extend: {

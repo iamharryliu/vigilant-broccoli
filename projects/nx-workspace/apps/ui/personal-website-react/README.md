@@ -15,8 +15,9 @@
   - Tailwind CSS
 - Internal libs
   - `common-browser`
-  - `personal-common-js`
+  - `@harry/personal`
   - `react-lib`
+  - `react-lib-higher-level`
   - `resume`
 - Cloud services
   - Google Analytics

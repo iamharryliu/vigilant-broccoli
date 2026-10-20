@@ -10,8 +10,9 @@ import {
   useRef,
   useState,
 } from 'react';
-import { MatchEvent, MatchState } from '../engine/game.types';
-import { createGameAudio } from '../game-audio';
+import { TICKS_PER_SECOND } from '../engine/game.consts';
+import { MatchState } from '../engine/game.types';
+import { COUNTDOWN_CUE, createGameAudio, SoundType } from '../game-audio';
 
 const MUTE_STORAGE_KEY = 'balloono-muted';
 const POINTER_EVENT = 'pointerdown';
@@ -21,7 +22,7 @@ const VISIBILITY_EVENT = 'visibilitychange';
 interface GameAudio {
   muted: boolean;
   toggleMuted: () => void;
-  play: (type: MatchEvent['type']) => void;
+  play: (type: SoundType) => void;
 }
 
 const GameAudioContext = createContext<GameAudio | null>(null);
@@ -55,7 +56,7 @@ export function GameAudioProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const play = useCallback((type: MatchEvent['type']) => {
+  const play = useCallback((type: SoundType) => {
     try {
       if (!mutedRef.current) audioRef.current?.play(type);
     } catch {
@@ -115,4 +116,20 @@ export const useMatchSounds = (match: MatchState, enabled: boolean) => {
       .forEach(event => play(event.type));
     cursor.eventId = Math.max(cursor.eventId, match.nextEventId - 1);
   }, [match, play, enabled]);
+};
+
+export const countdownSeconds = (match: MatchState) =>
+  Math.ceil((match.startCountdown ?? 0) / TICKS_PER_SECOND);
+
+export const useCountdownSounds = (match: MatchState, enabled: boolean) => {
+  const { play } = useGameAudio();
+  const seconds = countdownSeconds(match);
+  const previousRef = useRef<number | null>(null);
+  useEffect(() => {
+    const previous = previousRef.current;
+    previousRef.current = seconds;
+    if (!enabled || document.hidden || previous === seconds) return;
+    if (seconds > 0) play(COUNTDOWN_CUE.TICK);
+    else if (previous !== null && previous > 0) play(COUNTDOWN_CUE.GO);
+  }, [seconds, play, enabled]);
 };

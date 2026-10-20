@@ -7,7 +7,7 @@ import {
 } from 'react';
 import { cn } from '../utils/cn';
 import semanticTokens from '../theme-tokens.json';
-import type { ThemeAppearance } from './ThemeProvider';
+import type { ThemeAppearance } from '../hooks/useThemePreference';
 
 const LIGHT = 'light';
 const DARK = 'dark';

@@ -4,18 +4,18 @@ import {
   SupabaseBroadcastLike,
   WhiteboardRoomState,
   useWhiteboardRoom as useSharedWhiteboardRoom,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { supabase } from '../../lib/supabase';
 
 const CHANNEL_PREFIX = 'whiteboard-room:';
 
-export { CONNECTION_STATUS } from '@vigilant-broccoli/react-lib';
+export { CONNECTION_STATUS } from '@vigilant-broccoli/react-lib-higher-level';
 export type {
   ConnectionStatus,
   WhiteboardCursor,
   WhiteboardMember,
   WhiteboardRoomState,
-} from '@vigilant-broccoli/react-lib';
+} from '@vigilant-broccoli/react-lib-higher-level';
 
 export function useWhiteboardRoom(
   roomId: string,

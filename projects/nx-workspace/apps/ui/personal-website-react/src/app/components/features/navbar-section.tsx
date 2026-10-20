@@ -1,12 +1,11 @@
 import { NavLink } from 'react-router-dom';
-import { Calendar, Mail, Moon, Sun, User } from 'lucide-react';
+import { Mail, Moon, Sun, User } from 'lucide-react';
 import { LINKS } from '../../core/consts/routes.const';
 import { DARK_MODE_LABELS, useTheme } from '../../core/services/theme-context';
 import { IconActionLink } from '../global/icon-action-link';
 
 const NAV_LINKS = [
   { ...LINKS.ABOUT_PAGE, icon: User },
-  { ...LINKS.CALENDAR_PAGE, icon: Calendar },
   { ...LINKS.CONTACT_PAGE, icon: Mail },
 ];
 

@@ -15,6 +15,8 @@ FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 
 cd "$REPO_DIR"
 SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create-todo-audit/SKILL.md")
+# shellcheck source=no-changes.sh
+. "$REPO_DIR/infrastructure/agent-sandbox/no-changes.sh"
 
 git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
@@ -42,6 +44,8 @@ When finished, write $META_FILE containing only a JSON object with these fields:
   - pr_summary: markdown bullet points for the PR "## Summary" section, listing each resolved and drifted row by id with its evidence
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (review, then merge)
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
+  - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none. Keep these out of pr_suggestions, which is only for optional follow-up work
+$NO_CHANGES_FIELD
 EOF
 )
 
@@ -61,6 +65,7 @@ fi
 # PR machinery rather than opening an empty PR for the owner to close.
 if [ -z "$(git status --porcelain -- TODO.md)" ]; then
   echo "AUDIT_CLEAN: every TODO.md row still matches the codebase — no PR opened."
+  no_changes_report "$META_FILE" || true
   exit 0
 fi
 
@@ -73,6 +78,7 @@ TRAILER=$(read_meta .co_authored_by)
 PR_TITLE=$(normalize_pr_title "$(read_meta .pr_title)")
 PR_SUMMARY=$(read_meta .pr_summary)
 PR_NEXT_STEPS=$(read_meta .pr_next_steps)
+PR_CONCERNS=$(read_meta .pr_concerns)
 PR_SUGGESTIONS=$(read_meta .pr_suggestions)
 RESOLVED_COUNT=$(read_meta '.resolved | length')
 DRIFTED_COUNT=$(read_meta '.drifted | length')
@@ -120,7 +126,7 @@ else
   HISTORY_SOURCE="Docker sandbox (local)"
 fi
 
-PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
+PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_CONCERNS="$PR_CONCERNS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
   HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic-pr-create-todo-audit" \
   HISTORY_PROMPT="Audit every row in every section." \
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \

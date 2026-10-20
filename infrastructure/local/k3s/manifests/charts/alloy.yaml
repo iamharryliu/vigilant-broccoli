@@ -1,0 +1,132 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: alloy
+spec:
+  repo: https://grafana.github.io/helm-charts
+  chart: alloy
+  version: 1.14.0
+  targetNamespace: local-platform
+  createNamespace: true
+  # One replica pinned to the server node, which holds the host-log mounts
+  # from k3d-config.yaml; an agent node added later would lack them. Pod logs
+  # come from the Kubernetes API, so they need no per-node collector.
+  valuesContent: |-
+    controller:
+      type: deployment
+      replicas: 1
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: 'true'
+      volumes:
+        extra:
+          - name: host-var-log
+            hostPath:
+              path: /host/var/log
+          - name: pm2-logs
+            hostPath:
+              path: /host/pm2-logs
+          - name: docker-sock
+            hostPath:
+              path: /var/run/docker.sock
+    alloy:
+      mounts:
+        extra:
+          - name: host-var-log
+            mountPath: /host/var/log
+            readOnly: true
+          - name: pm2-logs
+            mountPath: /host/pm2-logs
+            readOnly: true
+          - name: docker-sock
+            mountPath: /var/run/docker.sock
+      configMap:
+        content: |
+          loki.write "local" {
+            endpoint {
+              url = "http://loki.local-platform.svc:3100/loki/api/v1/push"
+            }
+          }
+
+          // tail_from_end: positions live in the pod, so a restarted pod
+          // would otherwise re-ship whole files.
+          local.file_match "system" {
+            path_targets = [{"__path__" = "/host/var/log/*log", "job" = "varlogs"}]
+          }
+
+          loki.source.file "system" {
+            targets       = local.file_match.system.targets
+            tail_from_end = true
+            forward_to    = [loki.write.local.receiver]
+          }
+
+          local.file_match "pm2" {
+            path_targets = [{"__path__" = "/host/pm2-logs/vb-manager-next-*.log", "job" = "pm2", "app" = "vb-manager-next"}]
+          }
+
+          loki.source.file "pm2" {
+            targets       = local.file_match.pm2.targets
+            tail_from_end = true
+            forward_to    = [loki.write.local.receiver]
+          }
+
+          discovery.docker "host" {
+            host = "unix:///var/run/docker.sock"
+          }
+
+          // k3d node containers are dropped: their pods are collected below.
+          discovery.relabel "docker" {
+            targets = []
+
+            rule {
+              source_labels = ["__meta_docker_container_name"]
+              regex         = "/k3d-.*"
+              action        = "drop"
+            }
+
+            rule {
+              source_labels = ["__meta_docker_container_name"]
+              regex         = "/(.*)"
+              target_label  = "container"
+            }
+          }
+
+          loki.source.docker "host" {
+            host          = "unix:///var/run/docker.sock"
+            targets       = discovery.docker.host.targets
+            relabel_rules = discovery.relabel.docker.rules
+            labels        = {"job" = "docker"}
+            forward_to    = [loki.write.local.receiver]
+          }
+
+          discovery.kubernetes "pods" {
+            role = "pod"
+          }
+
+          discovery.relabel "pods" {
+            targets = discovery.kubernetes.pods.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              target_label  = "namespace"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_name"]
+              target_label  = "pod"
+            }
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_container_name"]
+              target_label  = "container"
+            }
+
+            rule {
+              target_label = "job"
+              replacement  = "kubernetes"
+            }
+          }
+
+          loki.source.kubernetes "pods" {
+            targets    = discovery.relabel.pods.output
+            forward_to = [loki.write.local.receiver]
+          }

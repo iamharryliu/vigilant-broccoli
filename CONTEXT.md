@@ -25,6 +25,7 @@ Read the relevant document before working on its subject. Before editing a direc
 | [agent-support.md](./docs/agent-support.md)                                      | Agentic operations, skills, adapters and entry-point parity.                                               |
 | [app-development.md](./docs/app-development/app-development.md)                  | Adding apps/libs, deployment, public URLs or npm publishing.                                               |
 | [app-readme-pattern.md](./docs/app-readme-pattern.md)                            | README edits and generated repo counts.                                                                    |
+| [career experience](./notes/personal/personal-software-career-experience.md)     | New skill or area (e.g. mobile development) absent from its Skills or contributions: add it.               |
 | [code-quality-tools.md](./docs/code-quality-tools.md)                            | Quality tooling; update its inventory when adding/removing a tool.                                         |
 | [database-migrations.md](./docs/ci/database-migrations.md)                       | Database migrations.                                                                                       |
 | [fork-identity-inventory.md](./docs/fork-identity-inventory.md)                  | Making the repo forkable; update when adding or removing a hardcoded account, domain or identity value.    |
@@ -61,7 +62,7 @@ Never add GitHub Actions repo secrets; remove unused ones. Only `GCP_SERVICE_ACC
 ## App Development
 
 - Prefer HTTP consts from `@vigilant-broccoli/common-js` (`HTTP_METHOD`, `HTTP_HEADERS`, `HTTP_STATUS_CODES`).
-- Personal links and contact details belong in `@vigilant-broccoli/personal-common-js`. Keep auth allowlists and API-key seed identities literal so a contact change cannot change access. Never import the `@vigilant-broccoli/links` ops registry into public client bundles. Personal calendar ids (`PERSONAL_GOOGLE_CALENDAR`, `PERSONAL_CALENDAR_SOURCES`) live there too; `@vigilant-broccoli/common-browser` stays public and personal-detail free.
+- Link and personal data libs are split public/private, enforced by `visibility:public`/`visibility:private` tags in `@nx/enforce-module-boundaries`; tag every app with a publicly served client bundle `visibility:public`. Which lib a link belongs in: [Choosing a home](./docs/app-development/app-development.md#choosing-a-home).
 - Prefer `getEnvironmentVariable` from `@vigilant-broccoli/common-node` for server environment variables. Client-side Next.js variables require direct `process.env.NEXT_PUBLIC_*` access for build-time inlining.
 - App/lib dependencies already pinned in the workspace root must mirror its caret range; no `"*"` or divergent pins. pnpm re-resolves an importer only when its own specifier changes, so a stray copy drifts after root bumps and surfaces as confusing duplicate-type errors (e.g. incompatible `FastifyInstance` types). Do not force Fly service dependencies through `pnpm-workspace.yaml` overrides: pruned installs fail.
 - New or changed public URLs require synchronized Upptime entries, pages-index cards and browser quick links for every environment and demo; follow [public URL registration](./docs/app-development/app-development.md#deployment).
@@ -87,7 +88,7 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 
 - Never commit or push unless explicitly instructed. Never force-push, skip hooks or amend existing commits.
 - Stage only files created or edited in this session; never `git add -A`, `git add .`, or files already modified/untracked before the session.
-- Treat the checkout as shared: establish ownership before branching, staging, committing, stashing or switching branches. Never stash in a shared or uncertain checkout. If others' work is staged, commit only your paths with `git commit -m "<message>" -- <your paths>`.
+- Treat the checkout as shared unless provably exclusive; if not provable, use a separate worktree off fresh `origin/main` with only your changes. Establish ownership before branching, staging, committing, stashing or switching branches. Never stash in a shared or uncertain checkout. If others' work is staged, commit only your paths with `git commit -m "<message>" -- <your paths>`.
 - Read [git-workflow.md](./docs/git-workflow.md) before changing Git state or publishing PRs.
 
 ## Coding Conventions

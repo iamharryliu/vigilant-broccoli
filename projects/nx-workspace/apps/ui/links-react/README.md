@@ -14,5 +14,6 @@ Public single-page pastebin of personal links, contact details, and the develope
 - External libs
   - Tailwind CSS
 - Internal libs
-  - `links`
+  - `public-links`
   - `react-lib`
+  - `react-lib-higher-level`

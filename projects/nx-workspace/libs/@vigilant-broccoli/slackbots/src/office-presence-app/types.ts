@@ -7,6 +7,8 @@ export type AppConfig = {
   defaultShowWeekdaysOnly: boolean;
   defaultShowTeamCount: boolean;
   defaultWeeksAhead: number;
+  // Reminder schedule zone; also "today" for seeded members and failed Slack timezone lookups.
+  timeZone: string;
   copy: AppCopy;
   getCopy: (language?: Language) => AppCopy;
 };

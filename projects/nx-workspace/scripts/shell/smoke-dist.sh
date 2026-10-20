@@ -13,6 +13,9 @@
 #   sufficient to clear top-level module init for every service in this
 #   repo (RESEND_API_KEY, SUPABASE_SECRET_KEY, SHARED_APP_TOKEN, and a
 #   tmp DATABASE_PATH for services with a local SQLite db).
+# - SMOKE_EXTRA_ENV (space-separated KEY=value pairs) adds service-specific
+#   env, and SMOKE_NODE_PATH points at a node_modules directory for bundles
+#   that keep native modules external (e.g. better-sqlite3).
 # - Polls GET / for up to 20s. Exits 0 on first 2xx, 1 if the process
 #   dies or the timeout elapses.
 set -euo pipefail
@@ -82,12 +85,17 @@ if [ -f "$SMOKE_DIR/package.json" ] && [ ! -d "$SMOKE_DIR/node_modules" ]; then
   )
 fi
 
-PORT="$PORT" \
-HOST=127.0.0.1 \
-SHARED_APP_TOKEN=smoke-test \
-RESEND_API_KEY=re_smoke_dummy \
-SUPABASE_SECRET_KEY=smoke-dummy \
-DATABASE_PATH="$SMOKE_ROOT/smoke.sqlite" \
+# shellcheck disable=SC2086 # SMOKE_EXTRA_ENV is intentionally word-split.
+env \
+  PORT="$PORT" \
+  HOST=127.0.0.1 \
+  SHARED_APP_TOKEN=smoke-test \
+  RESEND_API_KEY=re_smoke_dummy \
+  SUPABASE_SECRET_KEY=smoke-dummy \
+  DATABASE_PATH="$SMOKE_ROOT/smoke.sqlite" \
+  OFFICE_PRESENCE_DB="$SMOKE_ROOT/office-presence.sqlite" \
+  NODE_PATH="${SMOKE_NODE_PATH:-}" \
+  ${SMOKE_EXTRA_ENV:-} \
   node "$SMOKE_DIR/main.js" &
 SERVER_PID=$!
 

@@ -22,6 +22,15 @@ export interface PowerUp extends Point {
   type: PowerUpType;
 }
 
+// Kept on the player (not beside the match) so it travels in every snapshot
+// and a new host or late guest reconstructs it.
+export interface PlayerTally {
+  balloonsDropped: number;
+  soaks: number;
+  pickups: Record<PowerUpType, number>;
+  ticksAlive: number;
+}
+
 export interface Player {
   id: string;
   name: string;
@@ -34,6 +43,7 @@ export interface Player {
   maxBalloons: number;
   range: number;
   speedLevel: number;
+  tally: PlayerTally;
 }
 
 export interface Balloon extends Point {
@@ -45,6 +55,8 @@ export interface Balloon extends Point {
 
 export interface Splash extends Point {
   ttl: number;
+  // Owners of the balloons that started each chain reaching this tile; each is credited if it soaks someone.
+  ownerIds: string[];
 }
 
 export interface ArenaSize {
@@ -63,6 +75,8 @@ export interface MatchState extends ArenaSize {
   events: MatchEvent[];
   nextEventId: number;
   tick: number;
+  // Ticks left in the 3-2-1 countdown; `tick` stays at 0 until it reaches 0.
+  startCountdown: number;
   cells: Cell[];
   hiddenPowerUps: PowerUp[];
   powerUps: PowerUp[];

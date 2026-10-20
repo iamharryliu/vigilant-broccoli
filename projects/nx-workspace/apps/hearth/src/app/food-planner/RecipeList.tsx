@@ -6,12 +6,6 @@ import {
   Button,
   Callout,
   Checkbox,
-  CRUDItemFormDialog,
-  CRUDItemList,
-  DocsExplorer,
-  type DocsExplorerAction,
-  type DocsNode,
-  type DocsSearchResult,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Input,
   Text,
@@ -20,6 +14,16 @@ import {
   DialogTitle,
   cn,
 } from '@vigilant-broccoli/react-lib';
+import {
+  CRUDItemFormDialog,
+  CRUDItemList,
+} from '@vigilant-broccoli/react-lib-higher-level';
+import {
+  DocsExplorer,
+  type DocsExplorerAction,
+  type DocsNode,
+  type DocsSearchResult,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import {
   FORM_TYPE,
   HTTP_METHOD,

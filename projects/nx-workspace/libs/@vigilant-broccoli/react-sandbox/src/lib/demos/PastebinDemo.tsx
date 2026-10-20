@@ -1,5 +1,6 @@
 import type { PastebinGroup } from '@vigilant-broccoli/common-js';
-import { Pastebin, Text } from '@vigilant-broccoli/react-lib';
+import { Text } from '@vigilant-broccoli/react-lib';
+import { Pastebin } from '@vigilant-broccoli/react-lib-higher-level';
 import { I18nProvider, useTranslation } from './pastebin/i18n';
 
 const SAMPLE_VALUE = {

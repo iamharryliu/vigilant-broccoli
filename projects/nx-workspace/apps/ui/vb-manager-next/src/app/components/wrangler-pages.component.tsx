@@ -4,11 +4,11 @@ import {
   Badge,
   Button,
   ButtonList,
-  EllipsisCTA,
   StatusCardListItem,
   Text,
 } from '@vigilant-broccoli/react-lib';
-import { CLOUDFLARE_LINK } from '@vigilant-broccoli/links';
+import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
+import { CLOUDFLARE_ACCOUNT_LINK } from '@vigilant-broccoli/private-infrastructure';
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
@@ -66,7 +66,7 @@ const pollDeletionStatus = (projectName: string): Promise<void> =>
   });
 
 const DASHBOARD_LINK = {
-  href: CLOUDFLARE_LINK.DASHBOARD.URL,
+  href: CLOUDFLARE_ACCOUNT_LINK.DASHBOARD.URL,
   label: 'Dashboard',
 };
 

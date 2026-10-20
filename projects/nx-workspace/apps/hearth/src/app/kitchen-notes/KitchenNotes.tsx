@@ -22,7 +22,6 @@ export function KitchenNotes() {
       username={session.user.email ?? session.user.id}
       boardKey={BOARD_KEY}
       placeholder={PLACEHOLDER}
-      style={{ height: '100%' }}
     />
   );
 }

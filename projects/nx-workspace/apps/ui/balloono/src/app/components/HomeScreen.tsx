@@ -1,42 +1,21 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import {
-  Badge,
-  Button,
-  CardContainer,
-  Input,
-  SegmentedControl,
-} from '@vigilant-broccoli/react-lib';
-import {
-  DIFFICULTY_LABEL_KEY,
-  normalizeRoomName,
-  ONLINE_AVAILABLE,
-} from '../app.consts';
-import { DIFFICULTIES, DIFFICULTY, MAX_PLAYERS } from '../engine/game.consts';
+import { CircleHelp, Dices } from 'lucide-react';
+import { Button, CardContainer, Input } from '@vigilant-broccoli/react-lib';
+import { APP_NAME, normalizeRoomName, ONLINE_AVAILABLE } from '../app.consts';
 import { Difficulty } from '../engine/game.types';
 import { MAX_NAME_LENGTH, randomPhrase } from '../hooks/usePlayerIdentity';
 import { RoomListing } from '../hooks/useRoomDirectory';
 import { useTranslation } from '../i18n';
 import { usePageTitle } from '../use-page-title';
-
-const RANDOMIZE_ICON = '🎲';
-const opponentCounts = (humans: number) =>
-  Array.from({ length: MAX_PLAYERS - humans }, (_, index) => String(index + 1));
-const DEFAULT_OPPONENTS = '3';
-
-const STEP = {
-  GAMES: 'games',
-  START: 'start',
-} as const;
-
-const MODE = {
-  CPU: 'cpu',
-  ONLINE: 'online',
-} as const;
-
-type Step = (typeof STEP)[keyof typeof STEP];
-type Mode = (typeof MODE)[keyof typeof MODE];
+import { AccountControl } from './AccountControl';
+import { ControlsHelpDialog } from './ControlsHelpDialog';
+import { StatsPanel } from './StatsPanel';
+import { LeaderboardPanel } from './LeaderboardPanel';
+import { OfflinePractice } from './OfflinePractice';
+import { RoomDirectory } from './RoomDirectory';
+import { SettingsDialog } from './SettingsDialog';
 
 export function HomeScreen({
   username,
@@ -57,17 +36,7 @@ export function HomeScreen({
 }) {
   const { t } = useTranslation();
   usePageTitle(t('PAGE.HOME'));
-  const [opponents, setOpponents] = useState(DEFAULT_OPPONENTS);
-  const [difficulty, setDifficulty] = useState<Difficulty>(DIFFICULTY.MEDIUM);
-  const [step, setStep] = useState<Step>(STEP.GAMES);
-  const [mode, setMode] = useState<Mode>(MODE.CPU);
-  const [localPlayer, setLocalPlayer] = useState(false);
-  const counts = opponentCounts(localPlayer ? 2 : 1);
-  const selectedOpponents = counts.includes(opponents)
-    ? opponents
-    : counts[counts.length - 1];
   const [roomDraft, setRoomDraft] = useState('');
-
   const joinDraft = (event: FormEvent) => {
     event.preventDefault();
     const room = normalizeRoomName(roomDraft);
@@ -76,10 +45,25 @@ export function HomeScreen({
 
   return (
     <div className="flex flex-col gap-6">
-      <CardContainer title={t('PROFILE.NAME_LABEL')}>
-        <div className="flex gap-2">
+      <header className="flex items-center justify-between gap-6 border-b border-border pb-5">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">{APP_NAME}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t('HOME.TAGLINE')}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <AccountControl />
+          <SettingsDialog />
+        </div>
+      </header>
+      <div className="flex items-center gap-3">
+        <label htmlFor="player-name" className="shrink-0 text-sm font-medium">
+          {t('PROFILE.NAME_LABEL')}
+        </label>
+        <div className="flex w-80 gap-2">
           <Input
-            aria-label={t('PROFILE.NAME_LABEL')}
+            id="player-name"
             placeholder={t('PROFILE.NAME_PLACEHOLDER')}
             value={username}
             maxLength={MAX_NAME_LENGTH}
@@ -92,178 +76,71 @@ export function HomeScreen({
             title={t('PROFILE.RANDOM_NAME')}
             onClick={() => onUsernameChange(randomPhrase())}
           >
-            {RANDOMIZE_ICON}
+            <Dices className="h-4 w-4" aria-hidden />
           </Button>
         </div>
-      </CardContainer>
-
-      {step === STEP.GAMES && (
-        <CardContainer
-          title={t('GAMES.TITLE')}
-          headerAction={
-            <Button onClick={() => setStep(STEP.START)}>
-              {t('START.BUTTON')}
-            </Button>
-          }
+      </div>
+      <div className="grid grid-cols-[minmax(0,1fr)_22rem] items-start gap-6">
+        <section
+          className="flex min-w-0 flex-col gap-6"
+          aria-label={t('HOME.PLAY')}
         >
-          {rooms.length ? (
-            <ul className="flex flex-col gap-2">
-              {rooms.map(listing => (
-                <li key={listing.room}>
-                  <button
-                    type="button"
-                    onClick={() => onJoinRoom(listing.room)}
-                    className="flex w-full items-center justify-between gap-3 rounded-md border border-border px-3 py-2 text-left hover:bg-accent"
+          <CardContainer title={t('HOME.ONLINE')}>
+            <p className="text-sm text-muted-foreground">
+              {t('HOME.ONLINE_HINT')}
+            </p>
+            {ONLINE_AVAILABLE ? (
+              <>
+                <form onSubmit={joinDraft} className="flex gap-2">
+                  <Input
+                    aria-label={t('ONLINE.ROOM_LABEL')}
+                    placeholder={t('ONLINE.ROOM_PLACEHOLDER')}
+                    value={roomDraft}
+                    onChange={event => setRoomDraft(event.target.value)}
+                  />
+                  <Button
+                    variant="outline"
+                    type="submit"
+                    disabled={!normalizeRoomName(roomDraft)}
                   >
-                    <span className="min-w-0">
-                      <span className="block truncate font-medium">
-                        {listing.room}
-                      </span>
-                      <span className="block truncate text-xs text-muted-foreground">
-                        {t('ONLINE.HOSTED_BY', { name: listing.hostName })}
-                      </span>
-                    </span>
-                    <span className="flex shrink-0 flex-col items-end gap-1">
-                      <span className="text-xs">
-                        {t('ONLINE.ROOM_PLAYERS', {
-                          count: listing.players,
-                          max: MAX_PLAYERS,
-                        })}
-                      </span>
-                      <Badge
-                        size="1"
-                        variant="soft"
-                        color={listing.playing ? 'amber' : 'green'}
-                      >
-                        {listing.playing
-                          ? t('ONLINE.ROOM_PLAYING')
-                          : t('ONLINE.ROOM_WAITING')}
-                      </Badge>
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-sm text-muted-foreground">{t('GAMES.EMPTY')}</p>
-          )}
-        </CardContainer>
-      )}
-
-      {step === STEP.START && (
-        <div className="flex flex-col gap-6">
-          <div className="flex items-center gap-3">
-            <Button variant="outline" onClick={() => setStep(STEP.GAMES)}>
-              {t('START.BACK')}
-            </Button>
-            <SegmentedControl
-              label={t('START.MODE')}
-              value={mode}
-              options={[
-                { value: MODE.CPU, label: t('CPU.TITLE') },
-                { value: MODE.ONLINE, label: t('ONLINE.TITLE') },
-              ]}
-              onChange={setMode}
-            />
-          </div>
-
-          {mode === MODE.CPU && (
-            <CardContainer title={t('CPU.TITLE')}>
-              <p className="text-sm text-muted-foreground">
-                {t('CPU.DESCRIPTION')}
+                    {t('ONLINE.JOIN')}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => onJoinRoom(randomPhrase())}
+                  >
+                    {t('HOME.CREATE_ROOM')}
+                  </Button>
+                </form>
+                <RoomDirectory rooms={rooms} onJoinRoom={onJoinRoom} />
+              </>
+            ) : (
+              <p role="status" className="text-sm text-muted-foreground">
+                {t('ONLINE.UNAVAILABLE')}
               </p>
-              <div className="flex flex-col gap-2">
-                <span className="text-sm font-medium">
-                  {t('CPU.OPPONENTS')}
-                </span>
-                <SegmentedControl
-                  label={t('CPU.OPPONENTS')}
-                  value={selectedOpponents}
-                  options={counts.map(count => ({
-                    value: count,
-                    label: count,
-                  }))}
-                  onChange={setOpponents}
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <span className="text-sm font-medium">
-                  {t('CPU.DIFFICULTY')}
-                </span>
-                <SegmentedControl
-                  label={t('CPU.DIFFICULTY')}
-                  value={difficulty}
-                  options={DIFFICULTIES.map(value => ({
-                    value,
-                    label: t(DIFFICULTY_LABEL_KEY[value]),
-                  }))}
-                  onChange={setDifficulty}
-                />
-              </div>
-              <label className="flex items-center gap-2 text-sm">
-                <input
-                  type="checkbox"
-                  checked={localPlayer}
-                  onChange={event => setLocalPlayer(event.target.checked)}
-                />
-                <span>
-                  <span className="font-medium">{t('LOCAL.ADD')}</span>
-                  <span className="block text-xs text-muted-foreground">
-                    {t('LOCAL.DESCRIPTION')}
-                  </span>
-                </span>
-              </label>
-              <Button
-                onClick={() =>
-                  onStartCpu(Number(selectedOpponents), difficulty, localPlayer)
-                }
-              >
-                {t('CPU.START')}
-              </Button>
-            </CardContainer>
-          )}
-
-          {mode === MODE.ONLINE && (
-            <CardContainer title={t('ONLINE.TITLE')}>
-              {ONLINE_AVAILABLE ? (
-                <>
-                  <p className="text-sm text-muted-foreground">
-                    {t('ONLINE.DESCRIPTION')}
-                  </p>
-                  <form className="flex gap-2" onSubmit={joinDraft}>
-                    <Input
-                      aria-label={t('ONLINE.ROOM_LABEL')}
-                      placeholder={t('ONLINE.ROOM_PLACEHOLDER')}
-                      value={roomDraft}
-                      onChange={event => setRoomDraft(event.target.value)}
-                    />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="icon"
-                      aria-label={t('ONLINE.RANDOM_ROOM')}
-                      title={t('ONLINE.RANDOM_ROOM')}
-                      onClick={() => setRoomDraft(randomPhrase())}
-                    >
-                      {RANDOMIZE_ICON}
-                    </Button>
-                    <Button
-                      type="submit"
-                      disabled={!normalizeRoomName(roomDraft)}
-                    >
-                      {t('ONLINE.JOIN')}
-                    </Button>
-                  </form>
-                </>
-              ) : (
-                <p className="text-sm text-muted-foreground">
-                  {t('ONLINE.UNAVAILABLE')}
-                </p>
-              )}
-            </CardContainer>
-          )}
-        </div>
-      )}
+            )}
+          </CardContainer>
+          <OfflinePractice onStartCpu={onStartCpu} />
+        </section>
+        <aside
+          className="flex min-w-0 flex-col gap-6"
+          aria-label={t('HOME.PROGRESS')}
+        >
+          <StatsPanel />
+          <LeaderboardPanel />
+          <CardContainer title={t('HOME.HOW_TO_PLAY')}>
+            <p className="text-sm text-muted-foreground">{t('HOME.GOAL')}</p>
+            <ControlsHelpDialog
+              trigger={
+                <Button variant="outline" size="sm" className="self-start">
+                  <CircleHelp className="h-4 w-4" aria-hidden />
+                  {t('HOME.CONTROLS')}
+                </Button>
+              }
+            />
+          </CardContainer>
+        </aside>
+      </div>
     </div>
   );
 }

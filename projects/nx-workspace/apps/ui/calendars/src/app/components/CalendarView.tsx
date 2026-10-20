@@ -4,7 +4,7 @@ import {
   buildEventCalendarEmbedUrl,
   EmbedEventCalendar,
   PUBLIC_BASE_CALENDAR_CONFIG,
-} from '@vigilant-broccoli/personal-common-js';
+} from '@harry/personal';
 import { CALENDAR_VIEW_MODE } from '../../lib/calendars.consts';
 import { CalendarViewMode } from '../../lib/calendars.types';
 import { useTranslation } from '../i18n';

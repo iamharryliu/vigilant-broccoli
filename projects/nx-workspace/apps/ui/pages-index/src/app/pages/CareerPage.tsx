@@ -1,8 +1,5 @@
 import { Briefcase, FileText, FolderGit2, User } from 'lucide-react';
-import {
-  PROJECT_LINK,
-  SOCIAL_LINK,
-} from '@vigilant-broccoli/personal-common-js';
+import { PROJECT_LINK, SOCIAL_LINK } from '@harry/personal';
 import { useTranslation } from '../i18n';
 import { CardLink } from '../components/CardLink';
 import { CardGrid } from '../components/CardGrid';

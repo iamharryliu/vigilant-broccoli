@@ -106,6 +106,13 @@
       "titleKey": "WEB_APPLICATIONS_PAGE.EMPLOYEE_HANDLER.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.EMPLOYEE_HANDLER.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/employee-handler-ui/README.md"
+    },
+    {
+      "id": "office-presence",
+      "href": "https://demo-office-presence-ui.pages.dev",
+      "titleKey": "WEB_APPLICATIONS_PAGE.OFFICE_PRESENCE.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.OFFICE_PRESENCE.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/office-presence-ui/README.md"
     }
   ]
 }

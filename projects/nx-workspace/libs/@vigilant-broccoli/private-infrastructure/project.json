@@ -1,0 +1,22 @@
+{
+  "name": "@vigilant-broccoli/private-infrastructure",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@vigilant-broccoli/private-infrastructure/src",
+  "projectType": "library",
+  "tags": ["type:util", "visibility:private"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/@vigilant-broccoli/private-infrastructure",
+        "main": "libs/@vigilant-broccoli/private-infrastructure/src/index.ts",
+        "tsConfig": "libs/@vigilant-broccoli/private-infrastructure/tsconfig.lib.json",
+        "assets": []
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

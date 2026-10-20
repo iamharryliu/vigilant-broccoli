@@ -3,8 +3,6 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import {
   Button,
-  CRUDFormProps,
-  CRUDItemList,
   Input,
   Tabs,
   TabsContent,
@@ -13,6 +11,10 @@ import {
   Textarea,
   Text,
 } from '@vigilant-broccoli/react-lib';
+import {
+  CRUDFormProps,
+  CRUDItemList,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
 import {
   DEMO_SIGNATURE,
@@ -94,8 +96,8 @@ const SignatureForm = ({
                 onClick={() => selectPreset(preset)}
                 className={`flex items-center justify-between gap-3 text-left border rounded-md p-3 transition-colors cursor-pointer ${
                   preset.id === selectedPresetId
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-400'
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-950'
+                    : 'border-gray-200 hover:border-gray-400 dark:border-gray-700'
                 }`}
               >
                 <Text size="1" weight="medium">
@@ -119,7 +121,7 @@ const SignatureForm = ({
         <Text size="1" weight="medium" as="p" mb="1">
           {t('SIGNATURES.FORM.PREVIEW')}
         </Text>
-        <div className="border border-gray-200 rounded-md p-4 min-h-16">
+        <div className="border border-gray-200 rounded-md p-4 min-h-16 dark:border-gray-700">
           {template.trim() ? (
             <SignatureHtml template={template} />
           ) : (

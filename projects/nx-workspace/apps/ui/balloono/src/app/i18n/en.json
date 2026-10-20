@@ -9,19 +9,33 @@
     "NAME_PLACEHOLDER": "Pick a name",
     "RANDOM_NAME": "Pick a random name"
   },
+  "ACCOUNT": {
+    "SIGN_IN": "Sign in with Google",
+    "SIGN_OUT": "Sign out"
+  },
+  "STATS": {
+    "TITLE": "Your online stats",
+    "EMPTY": "Play an online room match to start your stats.",
+    "WINS": "Wins",
+    "LOSSES": "Losses",
+    "DRAWS": "Draws",
+    "TIME_PLAYED": "Minutes played",
+    "BALLOONS_DROPPED": "Balloons dropped",
+    "PLAYERS_SOAKED": "Players soaked",
+    "ITEMS_BALLOON": "Extra balloons",
+    "ITEMS_RANGE": "Bigger splashes",
+    "ITEMS_SPEED": "Faster feet",
+    "DISCLAIMER": "Only online room matches count. Stats are self-reported and unverified.",
+    "SAVE_FAILED": "Couldn't save your stats for this match."
+  },
   "LOCAL": {
     "ADD": "Add local player",
-    "DESCRIPTION": "A second person on this keyboard plays with WASD and Space; you switch to the arrow keys and Enter.",
+    "DESCRIPTION": "A second person shares this keyboard. By default they use WASD and Space and you use the arrow keys and Enter; change both in Settings.",
     "NAME": "Player 2"
   },
   "GAMES": {
     "TITLE": "Games",
     "EMPTY": "No games right now. Start one!"
-  },
-  "START": {
-    "BUTTON": "Start game",
-    "BACK": "Back",
-    "MODE": "Game mode"
   },
   "CPU": {
     "TITLE": "Versus CPU",
@@ -55,15 +69,11 @@
     "HOST_BADGE": "Host",
     "YOU_BADGE": "You",
     "SPECTATOR_BADGE": "Watching",
-    "CPUS": "CPU opponents",
-    "NO_CPUS": "No CPU opponents.",
-    "ADD_CPU": "Add CPU",
-    "REMOVE_CPU": "Remove {name}",
-    "START": "Start match",
-    "WAITING_FOR_HOST": "Waiting for {name} to start the match…",
-    "NEED_PLAYERS": "Add a CPU or invite a friend to start.",
+    "NEED_PLAYERS": "Waiting for at least {count} online players.",
     "SHARE_HINT": "Share the room name “{room}” so friends can join.",
-    "SEATS_FULL": "All {count} seats are taken. Anyone else watches."
+    "SEATS_FULL": "All {count} seats are taken. Anyone else watches.",
+    "COUNTDOWN": "Match starts in {seconds}s",
+    "COUNTDOWN_HINT": "Four players starts a 30-second countdown. Each additional player adds 5 seconds. Dropping below four cancels the countdown. Online rooms have no CPU opponents."
   },
   "CONNECTION": {
     "CONNECTING": "Connecting to the room…",
@@ -71,6 +81,8 @@
   },
   "MATCH": {
     "BOARD_LABEL": "Balloono arena",
+    "YOU": "You",
+    "STARTS_IN": "Match starts in {seconds}",
     "SUDDEN_DEATH_IN": "Sudden death in {time}",
     "SUDDEN_DEATH": "Sudden death! The arena is closing in.",
     "WINS": "{count} wins",
@@ -83,8 +95,6 @@
     "QUIT": "Quit",
     "WAITING_FOR_HOST": "Waiting for the host to start the next round…",
     "SPECTATING": "You're watching this round. You'll get a seat in the next one if one is free.",
-    "LOCAL_CONTROLS_HINT": "Player 1: arrow keys + Enter. Player 2: WASD + Space.",
-    "CONTROLS_HINT": "Move with the arrow keys or WASD. Drop a balloon with Space.",
     "STATS": "Balloons {balloons} · Range {range} · Speed {speed}"
   },
   "POWER_UP": {
@@ -92,15 +102,73 @@
     "RANGE": "Bigger splash",
     "SPEED": "Faster feet"
   },
-  "TOUCH": {
+  "AUDIO": {
+    "MUTE": "Mute sounds",
+    "UNMUTE": "Unmute sounds"
+  },
+  "LEADERBOARD": {
+    "TITLE": "Online leaderboard",
+    "MATCHES": "Matches",
+    "REFRESH": "Refresh rankings",
+    "EMPTY": "No online results yet.",
+    "DESCRIPTION": "Top 50 lifetime players by wins, then players soaked. Player codes protect account details.",
+    "LOADING": "Loading rankings…",
+    "ERROR": "Rankings could not be loaded. Try refreshing.",
+    "PLAYER": "Player {code}",
+    "PREVIOUS": "Previous",
+    "NEXT": "Next",
+    "PAGE": "{page} / {total}",
+    "PREVIEW_TITLE": "Top 5 players",
+    "VIEW_ALL": "Full leaderboard"
+  },
+  "HOME": {
+    "TAGLINE": "Drop balloons. Soak rivals. Stay dry.",
+    "PLAY": "Play Balloono",
+    "PROGRESS": "Stats and rankings",
+    "ONLINE": "Play online",
+    "ONLINE_HINT": "4–8 players · No CPUs · Matches start automatically after the countdown.",
+    "CREATE_ROOM": "Create room",
+    "AVAILABLE_ROOMS": "Available rooms",
+    "NO_ROOMS": "No rooms yet. Create one and invite your friends.",
+    "PRACTICE": "Practice offline",
+    "PRACTICE_BUTTON": "Play against CPUs",
+    "HIDE_SETTINGS": "Hide settings",
+    "ALL_STATS": "View all stats",
+    "HIDE_STATS": "Show fewer stats",
+    "IN_PROGRESS": "In progress",
+    "STARTING": "Starting in {seconds}s",
+    "NEEDS_PLAYERS": "Needs {count} more to start",
+    "JOIN": "Join",
+    "WATCH": "Watch",
+    "JOIN_ROOM": "Join {room}",
+    "WATCH_ROOM": "Watch {room}",
+    "HOW_TO_PLAY": "How to play",
+    "GOAL": "Drop water balloons, collect power-ups and be the last player dry.",
+    "CONTROLS": "Controls"
+  },
+  "DEVICE": {
+    "TITLE": "Desktop required",
+    "DESCRIPTION": "Balloono does not support mobile devices. Please play on a desktop or laptop with a keyboard and a browser window at least 1024 pixels wide.",
+    "CHECKING": "Checking device support…"
+  },
+  "SETTINGS": {
+    "TITLE": "Settings",
+    "DESCRIPTION": "Choose your keys. Click a key, then press the new one, or press Escape to cancel.",
+    "PRESS_KEY": "Press a key…",
+    "UNBOUND": "None",
+    "REBIND": "Change the key for {action}",
+    "LOCAL_PRIORITY": "Player 2 keys only apply in local 2-player matches, where they take priority over Player 1's matching keys.",
+    "RESET": "Reset to defaults"
+  },
+  "CONTROLS": {
+    "TITLE": "Controls",
+    "DESCRIPTION": "Your keys for this match. Change them in Settings on the home screen.",
+    "PLAYER_ONE": "Player 1",
+    "PLAYER_TWO": "Player 2",
     "UP": "Move up",
     "DOWN": "Move down",
     "LEFT": "Move left",
     "RIGHT": "Move right",
-    "BALLOON": "Drop balloon"
-  },
-  "AUDIO": {
-    "MUTE": "Mute sounds",
-    "UNMUTE": "Unmute sounds"
+    "DROP": "Drop a balloon"
   }
 }

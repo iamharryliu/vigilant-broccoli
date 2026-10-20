@@ -134,6 +134,10 @@
       "TITLE": "Employee Handler",
       "DESCRIPTION": "Employee management app deployed on Vercel."
     },
+    "OFFICE_PRESENCE": {
+      "TITLE": "Office Presence",
+      "DESCRIPTION": "Browser demo of the OK-IN office presence Slack app."
+    },
     "OPEN_APPLICATION": "Open application"
   },
   "STATUS_PAGE": {
@@ -142,15 +146,13 @@
     "NO_SERVICES": "No services configured.",
     "GITHUB_ACTIONS": "GitHub Actions",
     "VIEW_ALL": "View all →",
-    "TAB_STATUS": "Status",
-    "TAB_UPTIME": "Uptime",
     "OPEN_UPTIME_IN_NEW_TAB": "Full uptime history",
-    "UPTIME_BAR_HEADER": "30 days",
+    "OPEN_UPTIME_DESCRIPTION": "Response times, incidents and per-service uptime on the Upptime site.",
     "UPTIME_BAR_LABEL": "{date}: {minutes} min down",
-    "UPTIME_RANGE_DAY": "24h",
-    "UPTIME_RANGE_WEEK": "7d",
-    "UPTIME_RANGE_MONTH": "30d",
-    "UPTIME_RANGE_YEAR": "1y",
+    "UPTIME_RANGE_DAY": "24H",
+    "UPTIME_RANGE_WEEK": "7D",
+    "UPTIME_RANGE_MONTH": "30D",
+    "UPTIME_RANGE_YEAR": "1Y",
     "ERROR_STATUS_UNAVAILABLE": "Status data unavailable (HTTP {status}).",
     "ERROR_STATUS_FAILED": "Failed to load status: {message}",
     "UPDATED": "Updated {date}",
@@ -243,7 +245,7 @@
     },
     "OFFICE_PRESENCE_SOCKET_SERVER_DEMO": {
       "TITLE": "office-presence-socket-server-demo",
-      "DESCRIPTION": "Slack bot for sharing office presence status via Socket Mode."
+      "DESCRIPTION": "Slack bot for sharing office presence status via Socket Mode or the HTTP Events API."
     },
     "SOCKET_SERVER_SOCKETIO": {
       "TITLE": "socket-server-socketio",

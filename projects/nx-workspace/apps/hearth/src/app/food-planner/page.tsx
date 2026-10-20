@@ -176,7 +176,7 @@ function FoodPlannerContent() {
               </Tabs>
             </div>
 
-            <div className="h-96 min-h-0 lg:h-full">
+            <div className="flex h-96 min-h-0 flex-col lg:h-full">
               <KitchenNotes />
             </div>
 

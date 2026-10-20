@@ -1,11 +1,10 @@
-# vb-manager-next
+# VB Manager Next
 
 Management dashboard app.
 
 ## Table of Contents
 
 - [Stack](#stack)
-- [Agent Context](#agent-context)
 
 ## Stack
 
@@ -29,11 +28,17 @@ Management dashboard app.
   - `github-workspace`
   - `github-workspace-js`
   - `google-workspace`
-  - `links`
+  - `@harry/personal`
+  - `@harry/private`
   - `llm-schemas`
+  - `manager`
   - `money-movement`
-  - `personal-common-js`
+  - `private-infrastructure`
+  - `public-links`
   - `react-lib`
+  - `react-lib-auth`
+  - `react-lib-higher-level`
+  - `react-lib-media`
   - `react-music-lib`
   - `react-utility`
   - `resume`
@@ -47,7 +52,3 @@ Management dashboard app.
   - Spotify Web API
   - Stripe
   - Supabase
-
-## Agent Context
-
-- Keyboard shortcuts cheatsheet (Settings page, see [docs/features/settings.md](./docs/features/settings.md)): when adding, changing, or removing a global keyboard shortcut in `src/app/(pages)/layout.tsx` (`processKeyboardInput`), update `KEYBOARD_SHORTCUTS_MARKDOWN` in `src/app/content/keyboard-shortcuts.md.ts` to match.

@@ -1,6 +1,6 @@
 'use client';
 
-import { GoogleSignInPage } from '@vigilant-broccoli/react-lib';
+import { GoogleSignInPage } from '@vigilant-broccoli/react-lib-auth';
 import { signInWithGoogle } from '../providers/auth-provider';
 import { APP_NAME } from '../app.const';
 

@@ -17,6 +17,7 @@ export * from './lib/encryption/encryption.utils';
 export * from './lib/recaptcha/recaptcha.service';
 export * from './lib/weather/weather.service';
 export * from './lib/weather/geocode.service';
+export * from './lib/weather/local-weather.service';
 export * from './lib/weather/preparation.service';
 export * from './lib/audio/audio.service';
 export * from './lib/qr-code/qr-code.service';

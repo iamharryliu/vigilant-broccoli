@@ -19,7 +19,15 @@ module.exports = {
     ),
     join(
       __dirname,
+      '../../../libs/@vigilant-broccoli/react-lib-higher-level/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+    ),
+    join(
+      __dirname,
       '../../../libs/@vigilant-broccoli/react-lib/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+    ),
+    join(
+      __dirname,
+      '../../../libs/@vigilant-broccoli/react-lib-media/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
     ),
     join(
       __dirname,
@@ -28,6 +36,18 @@ module.exports = {
     join(
       __dirname,
       '../../../libs/@vigilant-broccoli/common-browser/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+    ),
+    join(
+      __dirname,
+      '../../../libs/@vigilant-broccoli/react-lib-auth/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+    ),
+    join(
+      __dirname,
+      '../../../libs/@vigilant-broccoli/react-lib-calendar/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+    ),
+    join(
+      __dirname,
+      '../../../libs/@vigilant-broccoli/react-music-lib/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
     ),
     join(
       __dirname,

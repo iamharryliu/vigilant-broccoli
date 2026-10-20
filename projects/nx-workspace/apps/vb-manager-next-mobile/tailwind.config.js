@@ -5,12 +5,35 @@ module.exports = {
     '!./{src,pages,components,app}/**/*.{stories,spec}.{ts,tsx,js,jsx,html}',
     '../../libs/@vigilant-broccoli/common-js/src/**/*.{tsx,ts,jsx,js,html}',
     '../../libs/@vigilant-broccoli/common-node/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../libs/@vigilant-broccoli/react-lib-higher-level/src/**/*.{tsx,ts,jsx,js,html}',
     '../../libs/@vigilant-broccoli/react-lib/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../libs/@vigilant-broccoli/react-lib-auth/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../libs/@vigilant-broccoli/react-utility/src/**/*.{tsx,ts,jsx,js,html}',
     '../../libs/@vigilant-broccoli/common-browser/src/**/*.{tsx,ts,jsx,js,html}',
   ],
   darkMode: 'class',
   theme: {
     extend: {
+      // The bottom sheet's slide; no tailwindcss-animate plugin is installed, so
+      // react-lib's Dialog animate-in/animate-out classes are inert here. It
+      // animates `translate`, not `transform`: the sheet pins its transform with
+      // !important, which would override a transform animation.
+      keyframes: {
+        'sheet-in': {
+          from: { translate: '0 100%' },
+          to: { translate: '0 0' },
+        },
+        'sheet-out': {
+          from: { translate: '0 0' },
+          to: { translate: '0 100%' },
+        },
+      },
+      animation: {
+        'sheet-in': 'sheet-in 500ms cubic-bezier(0.32, 0.72, 0, 1)',
+        // forwards holds the sheet off-screen until Radix unmounts it on
+        // animationend, instead of flashing back for a frame.
+        'sheet-out': 'sheet-out 350ms ease-in forwards',
+      },
       colors: {
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',

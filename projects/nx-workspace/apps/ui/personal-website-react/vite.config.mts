@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
-import tsconfigPaths from 'vite-tsconfig-paths';
 
 const PRODUCTION_ENV_MODE = 'production-env';
 
@@ -23,6 +22,7 @@ export default defineConfig(({ mode }) => ({
     host: 'localhost',
   },
   resolve: {
+    tsconfigPaths: true,
     alias:
       mode === PRODUCTION_ENV_MODE
         ? [
@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => ({
           ]
         : [],
   },
-  plugins: [react(), tsconfigPaths()],
+  plugins: [react()],
   build: {
     outDir: '../../../dist/apps/ui/personal-website-react',
     emptyOutDir: true,

@@ -8,7 +8,6 @@ Banchan (반찬) are the small shared side dishes set out with a Korean meal of 
 - [Common Banchan](#common-banchan)
 - [Naming Key](#naming-key)
 - [Building a Table](#building-a-table)
-- [See Also](#see-also)
 
 ## Recipes
 

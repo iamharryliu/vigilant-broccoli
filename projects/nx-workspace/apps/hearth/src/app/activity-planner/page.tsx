@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Button, CardContainer, Text } from '@vigilant-broccoli/react-lib';
+import { Button, CardContainer, Text, cn } from '@vigilant-broccoli/react-lib';
 import { I18nProvider, useTranslation } from '../i18n';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
@@ -12,6 +12,11 @@ import { CalendarEventFormData } from '../calendar/components/CalendarEventForm'
 import { ActivityNotes } from './ActivityNotes';
 import { ActivityEvents } from './ActivityEvents';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
+import {
+  PAGE_BODY_HEIGHT_CLASS,
+  PAGE_PADDING_CLASS,
+} from '../../lib/page-layout';
+import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
 
 const LEISURE_ENDPOINT = '/api/leisure';
 const CALENDAR_EVENTS_ENDPOINT = '/api/calendar/events';
@@ -27,28 +32,26 @@ function ActivityPlannerContent() {
   const [eventsRefresh, setEventsRefresh] = useState(0);
 
   const token = session?.access_token ?? '';
-  const authHeader = (extra?: Record<string, string>) => ({
-    Authorization: `Bearer ${token}`,
-    ...extra,
-  });
+  const authHeader = useAuthHeader();
+  const jsonHeaders = useJsonAuthHeaders();
 
   const fetchActivities = useCallback(async () => {
     if (!homeId || !token) return;
     const res = await fetch(`${LEISURE_ENDPOINT}?homeId=${homeId}`, {
-      headers: authHeader(),
+      headers: await authHeader(),
     });
     const data = await res.json();
     setActivities(Array.isArray(data) ? data : []);
-  }, [homeId, token]);
+  }, [homeId, token, authHeader]);
 
   const fetchCalendarEvents = useCallback(async () => {
     if (!homeId || !token) return;
     const res = await fetch(`${CALENDAR_EVENTS_ENDPOINT}?homeId=${homeId}`, {
-      headers: authHeader(),
+      headers: await authHeader(),
     });
     const data = await res.json();
     setCalendarEvents(Array.isArray(data) ? data : []);
-  }, [homeId, token]);
+  }, [homeId, token, authHeader]);
 
   useEffect(() => {
     fetchActivities();
@@ -58,7 +61,7 @@ function ActivityPlannerContent() {
   const handleAdd = async (data: LeisureActivityFormData) => {
     await fetch(LEISURE_ENDPOINT, {
       method: 'POST',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ ...data, homeId }),
     });
     fetchActivities();
@@ -67,7 +70,7 @@ function ActivityPlannerContent() {
   const handleEdit = async (id: string, data: LeisureActivityFormData) => {
     await fetch(LEISURE_ENDPOINT, {
       method: 'PATCH',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id, ...data }),
     });
     fetchActivities();
@@ -76,7 +79,7 @@ function ActivityPlannerContent() {
   const handleDelete = async (id: string) => {
     await fetch(LEISURE_ENDPOINT, {
       method: 'DELETE',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id }),
     });
     fetchActivities();
@@ -88,7 +91,7 @@ function ActivityPlannerContent() {
   ) => {
     await fetch(CALENDAR_EVENTS_ENDPOINT, {
       method: 'POST',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ ...data, homeId, leisureActivityId: activityId }),
     });
     fetchCalendarEvents();
@@ -96,7 +99,12 @@ function ActivityPlannerContent() {
   };
 
   return (
-    <div className="flex h-[calc(100dvh_-_var(--topbar-h)_-_3rem)] w-full flex-col p-4 sm:p-6 md:px-8 md:py-8">
+    <div
+      className={cn(
+        'flex w-full flex-col lg:h-[var(--page-h)]',
+        PAGE_PADDING_CLASS,
+      )}
+    >
       <div className="grid min-h-0 flex-1 grid-cols-1 items-stretch gap-6 lg:grid-cols-3">
         <div className="flex min-h-0 flex-col lg:overflow-y-auto">
           <CardContainer
@@ -124,7 +132,12 @@ function ActivityPlannerContent() {
           </CardContainer>
         </div>
 
-        <div className="min-h-0 lg:h-full">
+        <div
+          className={cn(
+            'flex min-h-0 flex-col lg:h-full',
+            PAGE_BODY_HEIGHT_CLASS,
+          )}
+        >
           <ActivityNotes />
         </div>
 
