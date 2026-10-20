@@ -5,6 +5,7 @@ Slack bot for sharing office presence status, over Socket Mode or the HTTP Event
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -22,3 +23,7 @@ Slack bot for sharing office presence status, over Socket Mode or the HTTP Event
   - `slackbots`
 - Cloud services
   - Slack
+
+## Environment
+
+- [.env.example](./.env.example)

@@ -5,6 +5,7 @@ Management dashboard app.
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -52,3 +53,7 @@ Management dashboard app.
   - Spotify Web API
   - Stripe
   - Supabase
+
+## Environment
+
+- [.env.local.example](./.env.local.example)

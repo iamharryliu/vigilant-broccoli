@@ -5,6 +5,7 @@ Shared life for homes, communes, and communities.
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -30,3 +31,7 @@ Shared life for homes, communes, and communities.
   - Cloudflare R2
   - Supabase
   - VB Express
+
+## Environment
+
+- [.env.local.example](./.env.local.example)

@@ -5,6 +5,7 @@ Collaborative drawing and brainstorming canvas.
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -17,3 +18,8 @@ Collaborative drawing and brainstorming canvas.
   - `react-lib-higher-level`
 - Cloud services
   - Supabase
+
+## Environment
+
+- [.env.development](./.env.development)
+- [.env.production](./.env.production)

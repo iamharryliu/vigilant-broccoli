@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -29,3 +30,7 @@
   - LLM Service
   - Supabase
   - Twilio
+
+## Environment
+
+- [.env.example](./.env.example)
