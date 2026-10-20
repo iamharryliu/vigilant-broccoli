@@ -9,7 +9,7 @@ export function DockerImagesPage() {
     {
       key: 'bucket-service',
       route: true,
-      href: '/open-source/docker/bucket-service',
+      href: '/docker/bucket-service',
       title: t('DOCKER_IMAGES_PAGE.BUCKET_SERVICE.TITLE'),
       description: t('DOCKER_IMAGES_PAGE.BUCKET_SERVICE.DESCRIPTION'),
       icon: <DockerIcon />,
@@ -17,7 +17,7 @@ export function DockerImagesPage() {
     {
       key: 'email-service',
       route: true,
-      href: '/open-source/docker/email-service',
+      href: '/docker/email-service',
       title: t('DOCKER_IMAGES_PAGE.EMAIL_SERVICE.TITLE'),
       description: t('DOCKER_IMAGES_PAGE.EMAIL_SERVICE.DESCRIPTION'),
       icon: <DockerIcon />,
@@ -25,7 +25,7 @@ export function DockerImagesPage() {
     {
       key: 'email-subscription-service',
       route: true,
-      href: '/open-source/docker/email-subscription-service',
+      href: '/docker/email-subscription-service',
       title: t('DOCKER_IMAGES_PAGE.EMAIL_SUBSCRIPTION_SERVICE.TITLE'),
       description: t(
         'DOCKER_IMAGES_PAGE.EMAIL_SUBSCRIPTION_SERVICE.DESCRIPTION',
@@ -35,7 +35,7 @@ export function DockerImagesPage() {
     {
       key: 'employee-handler-next',
       route: true,
-      href: '/open-source/docker/employee-handler-next',
+      href: '/docker/employee-handler-next',
       title: t('DOCKER_IMAGES_PAGE.EMPLOYEE_HANDLER_NEXT.TITLE'),
       description: t('DOCKER_IMAGES_PAGE.EMPLOYEE_HANDLER_NEXT.DESCRIPTION'),
       icon: <DockerIcon />,
@@ -43,7 +43,7 @@ export function DockerImagesPage() {
     {
       key: 'llm-service',
       route: true,
-      href: '/open-source/docker/llm-service',
+      href: '/docker/llm-service',
       title: t('DOCKER_IMAGES_PAGE.LLM_SERVICE.TITLE'),
       description: t('DOCKER_IMAGES_PAGE.LLM_SERVICE.DESCRIPTION'),
       icon: <DockerIcon />,
@@ -51,7 +51,7 @@ export function DockerImagesPage() {
     {
       key: 'office-presence-service',
       route: true,
-      href: '/open-source/docker/office-presence-service',
+      href: '/docker/office-presence-service',
       title: t('DOCKER_IMAGES_PAGE.OFFICE_PRESENCE_SERVICE.TITLE'),
       description: t('DOCKER_IMAGES_PAGE.OFFICE_PRESENCE_SERVICE.DESCRIPTION'),
       icon: <DockerIcon />,
@@ -59,7 +59,7 @@ export function DockerImagesPage() {
     {
       key: 'socket-server-socketio',
       route: true,
-      href: '/open-source/docker/socket-server-socketio',
+      href: '/docker/socket-server-socketio',
       title: t('DOCKER_IMAGES_PAGE.SOCKET_SERVER_SOCKETIO.TITLE'),
       description: t('DOCKER_IMAGES_PAGE.SOCKET_SERVER_SOCKETIO.DESCRIPTION'),
       icon: <DockerIcon />,
@@ -67,7 +67,7 @@ export function DockerImagesPage() {
     {
       key: 'utilities-ui',
       route: true,
-      href: '/open-source/docker/utilities-ui',
+      href: '/docker/utilities-ui',
       title: t('DOCKER_IMAGES_PAGE.UTILITIES_UI.TITLE'),
       description: t('DOCKER_IMAGES_PAGE.UTILITIES_UI.DESCRIPTION'),
       icon: <DockerIcon />,
@@ -75,7 +75,7 @@ export function DockerImagesPage() {
     {
       key: 'vb-code-server',
       route: true,
-      href: '/open-source/docker/vb-code-server',
+      href: '/docker/vb-code-server',
       title: t('DOCKER_IMAGES_PAGE.VB_CODE_SERVER.TITLE'),
       description: t('DOCKER_IMAGES_PAGE.VB_CODE_SERVER.DESCRIPTION'),
       icon: <DockerIcon />,
@@ -83,7 +83,7 @@ export function DockerImagesPage() {
     {
       key: 'waiting-games',
       route: true,
-      href: '/open-source/docker/waiting-games',
+      href: '/docker/waiting-games',
       title: t('DOCKER_IMAGES_PAGE.WAITING_GAMES.TITLE'),
       description: t('DOCKER_IMAGES_PAGE.WAITING_GAMES.DESCRIPTION'),
       icon: <DockerIcon />,

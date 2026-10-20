@@ -1,9 +1,14 @@
-import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
+import {
+  HashRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
 import { I18nProvider } from './i18n';
 import { HomePage } from './pages/HomePage';
 import { StatusPage } from './pages/StatusPage';
 import { RepoTimelinePage } from './pages/RepoTimelinePage';
-import { OpenSourcePage } from './pages/OpenSourcePage';
 import { GithubReposPage } from './pages/GithubReposPage';
 import { GithubReadmePage } from './pages/GithubReadmePage';
 import { DockerImagesPage } from './pages/DockerImagesPage';
@@ -22,6 +27,19 @@ import {
   STATUS_ROUTE,
   WEB_APPLICATIONS_ROUTE,
 } from './consts/routes';
+
+const LEGACY_OPEN_SOURCE_PREFIX = '/open-source';
+
+// Keeps shared links to the removed /open-source hub and its sub-pages working.
+function LegacyOpenSourceRedirect() {
+  const { pathname } = useLocation();
+  return (
+    <Navigate
+      to={pathname.slice(LEGACY_OPEN_SOURCE_PREFIX.length) || '/'}
+      replace
+    />
+  );
+}
 
 function StatusHostRoutes() {
   return (
@@ -51,16 +69,16 @@ function ProjectsRoutes() {
       <Route path="/" element={<HomePage />} />
       <Route path={STATUS_ROUTE} element={<StatusPage />} />
       <Route path="/repo-timeline" element={<RepoTimelinePage />} />
-      <Route path="/open-source" element={<OpenSourcePage />} />
-      <Route path="/open-source/github" element={<GithubReposPage />} />
-      <Route path="/open-source/github/:repo" element={<GithubReadmePage />} />
-      <Route path="/open-source/docker" element={<DockerImagesPage />} />
       <Route
-        path="/open-source/docker/:image"
-        element={<DockerImageReadmePage />}
+        path={`${LEGACY_OPEN_SOURCE_PREFIX}/*`}
+        element={<LegacyOpenSourceRedirect />}
       />
-      <Route path="/open-source/npm" element={<NpmPackagesPage />} />
-      <Route path="/open-source/npm/:pkg" element={<NpmPackageReadmePage />} />
+      <Route path="/github" element={<GithubReposPage />} />
+      <Route path="/github/:repo" element={<GithubReadmePage />} />
+      <Route path="/docker" element={<DockerImagesPage />} />
+      <Route path="/docker/:image" element={<DockerImageReadmePage />} />
+      <Route path="/npm" element={<NpmPackagesPage />} />
+      <Route path="/npm/:pkg" element={<NpmPackageReadmePage />} />
       <Route path={WEB_APPLICATIONS_ROUTE} element={<WebApplicationsPage />} />
       <Route
         path={`${WEB_APPLICATIONS_ROUTE}/:app`}
