@@ -24,13 +24,13 @@ jobs:
       # Dedicated read-only identity (github-actions-tf-drift.tf) instead of
       # secrets.GCP_SERVICE_ACCOUNT: refreshing the Google resources needs
       # project-wide read that the shared SA deliberately lacks. The provider
-      # only accepts this workflow on main, so the literals grant nothing
-      # elsewhere (see the github_actions_tf_drift_* outputs).
+      # only accepts this workflow on main, so these variables grant nothing
+      # elsewhere.
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
         with:
-          gcp_workload_identity_provider: projects/88091895337/locations/global/workloadIdentityPools/github-actions/providers/github-tf-drift
-          gcp_service_account: github-actions-tf-drift@vigilant-broccoli.iam.gserviceaccount.com
+          gcp_workload_identity_provider: ${{ vars.TF_DRIFT_WIF_PROVIDER }}
+          gcp_service_account: ${{ vars.TF_DRIFT_SERVICE_ACCOUNT }}
           secrets: |
             kv/data/secrets TF_CLOUD_TOKEN | TF_TOKEN_app_terraform_io ;
             kv/data/secrets CLOUDFLARE_API_TOKEN | CLOUDFLARE_API_TOKEN ;

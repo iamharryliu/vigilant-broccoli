@@ -94,8 +94,8 @@ jobs:
         if: steps.check.outputs.projects != ''
         uses: ./.github/actions/vault-secrets
         with:
-          gcp_workload_identity_provider: projects/88091895337/locations/global/workloadIdentityPools/github-actions/providers/github-deploy-preview
-          gcp_service_account: github-actions-deploy-preview@vigilant-broccoli.iam.gserviceaccount.com
+          gcp_workload_identity_provider: ${{ vars.DEPLOY_PREVIEW_WIF_PROVIDER }}
+          gcp_service_account: ${{ vars.DEPLOY_PREVIEW_SERVICE_ACCOUNT }}
           role: github-actions-deploy-preview-role
           secrets: |
             kv/data/deploy-preview CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
