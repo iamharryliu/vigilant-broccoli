@@ -12,9 +12,17 @@
       "TITLE": "Repo Timeline",
       "DESCRIPTION": "Lines of code, commits, and PRs over time."
     },
-    "OPEN_SOURCE": {
-      "TITLE": "Open Source",
-      "DESCRIPTION": "GitHub repos, Docker Hub images, npm packages."
+    "GITHUB": {
+      "TITLE": "GitHub",
+      "DESCRIPTION": "iamharryliu GitHub repositories."
+    },
+    "DOCKER_HUB": {
+      "TITLE": "Docker Hub",
+      "DESCRIPTION": "iamharryliu Docker images."
+    },
+    "NPM": {
+      "TITLE": "npm",
+      "DESCRIPTION": "vigilant-broccoli npm packages."
     },
     "WEB_APPLICATIONS": {
       "TITLE": "Web Applications",
@@ -191,21 +199,6 @@
     "RANGE_2Y": "2Y",
     "RANGE_ALL": "ALL",
     "ENTRY_SUMMARY": "{commits} commits · {pullRequests} PRs"
-  },
-  "OPEN_SOURCE_PAGE": {
-    "TITLE": "Open Source",
-    "GITHUB": {
-      "TITLE": "GitHub",
-      "DESCRIPTION": "iamharryliu GitHub repositories."
-    },
-    "DOCKER_HUB": {
-      "TITLE": "Docker Hub",
-      "DESCRIPTION": "iamharryliu Docker images."
-    },
-    "NPM": {
-      "TITLE": "npm",
-      "DESCRIPTION": "vigilant-broccoli npm packages."
-    }
   },
   "README_PAGE": {
     "TITLE": "README",

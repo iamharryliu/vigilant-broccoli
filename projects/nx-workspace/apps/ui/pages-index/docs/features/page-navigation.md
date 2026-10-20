@@ -22,9 +22,11 @@ Non-obvious routing and data-source details for pages-index. Routes live in `src
 
 ## Open source
 
-- `/open-source/github` — all public `iamharryliu` repositories, fetched from the paginated GitHub API. `/open-source/github/:repo` fetches the README through the GitHub API from the default branch, with a link to the repository; loading, empty and fetch errors are displayed.
-- `/open-source/docker/:image` — README fetched from this repo's app README via `raw.githubusercontent.com`: Docker Hub itself has no description set and its API has no CORS support for browser fetches, so content can't come from Docker Hub directly. Links out to the image's Docker Hub page.
-- `/open-source/npm/:pkg` — README fetched from `registry.npmjs.org`, links out to the npm package.
+The home page's Software Projects section links straight to GitHub, Docker Hub and npm; these lists live at `/github`, `/docker` and `/npm`, and each breadcrumb returns home. Legacy `/open-source/*` links redirect with the prefix stripped (`/open-source` itself to `/`).
+
+- `/github` — all public `iamharryliu` repositories, fetched from the paginated GitHub API. `/github/:repo` fetches the README through the GitHub API from the default branch, with a link to the repository; loading, empty and fetch errors are displayed.
+- `/docker/:image` — README fetched from this repo's app README via `raw.githubusercontent.com`: Docker Hub itself has no description set and its API has no CORS support for browser fetches, so content can't come from Docker Hub directly. Links out to the image's Docker Hub page.
+- `/npm/:pkg` — README fetched from `registry.npmjs.org`, links out to the npm package.
 
 ## Web applications and API services
 

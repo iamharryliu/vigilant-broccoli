@@ -3,7 +3,6 @@ import {
   Bot,
   ChartColumn,
   FileText,
-  GitBranch,
   Globe,
   LayoutGrid,
   Server,
@@ -12,6 +11,7 @@ import { useTranslation } from '../i18n';
 import { CardLink } from '../components/CardLink';
 import { CardGrid } from '../components/CardGrid';
 import { SectionHeading } from '../components/SectionHeading';
+import { DockerIcon, GithubIcon, NpmIcon } from '../components/BrandIcons';
 import { usePageTitle } from '../use-page-title';
 import { PAGE_CLASS } from '../consts/layout';
 
@@ -32,7 +32,7 @@ export function HomePage() {
           <li>
             <CardLink
               route
-              href="/open-source/github/vigilant-broccoli"
+              href="/github/vigilant-broccoli"
               title={t('HOME.README.TITLE')}
               description={t('HOME.README.DESCRIPTION')}
               icon={<FileText className={ICON_CLASS} />}
@@ -79,10 +79,28 @@ export function HomePage() {
           <li>
             <CardLink
               route
-              href="/open-source"
-              title={t('HOME.OPEN_SOURCE.TITLE')}
-              description={t('HOME.OPEN_SOURCE.DESCRIPTION')}
-              icon={<GitBranch className={ICON_CLASS} />}
+              href="/github"
+              title={t('HOME.GITHUB.TITLE')}
+              description={t('HOME.GITHUB.DESCRIPTION')}
+              icon={<GithubIcon />}
+            />
+          </li>
+          <li>
+            <CardLink
+              route
+              href="/docker"
+              title={t('HOME.DOCKER_HUB.TITLE')}
+              description={t('HOME.DOCKER_HUB.DESCRIPTION')}
+              icon={<DockerIcon />}
+            />
+          </li>
+          <li>
+            <CardLink
+              route
+              href="/npm"
+              title={t('HOME.NPM.TITLE')}
+              description={t('HOME.NPM.DESCRIPTION')}
+              icon={<NpmIcon />}
             />
           </li>
           <li>

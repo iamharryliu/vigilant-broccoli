@@ -22,18 +22,17 @@ const BREADCRUMB_TREE: Record<string, BreadcrumbNode> = {
     parent: '/',
   },
   '/repo-timeline': { labelKey: 'REPO_TIMELINE_PAGE.TITLE', parent: '/' },
-  '/open-source': { labelKey: 'OPEN_SOURCE_PAGE.TITLE', parent: '/' },
-  '/open-source/github': {
+  '/github': {
     labelKey: 'GITHUB_REPOS_PAGE.TITLE',
-    parent: '/open-source',
+    parent: '/',
   },
-  '/open-source/docker': {
+  '/docker': {
     labelKey: 'DOCKER_IMAGES_PAGE.TITLE',
-    parent: '/open-source',
+    parent: '/',
   },
-  '/open-source/npm': {
+  '/npm': {
     labelKey: 'NPM_PACKAGES_PAGE.TITLE',
-    parent: '/open-source',
+    parent: '/',
   },
   '/web-applications': { labelKey: 'WEB_APPLICATIONS_PAGE.TITLE', parent: '/' },
   '/api-services': { labelKey: 'API_SERVICES_PAGE.TITLE', parent: '/' },

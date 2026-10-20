@@ -4,7 +4,7 @@ import { toProjectsUrl } from './hosts';
 import { toWebApplicationRoute } from './routes';
 import WEB_APPLICATIONS from './webApplications.json';
 
-const DOCKER_IMAGES_ROUTE = '/open-source/docker';
+const DOCKER_IMAGES_ROUTE = '/docker';
 
 export const REPO_OWNER = 'iamharryliu';
 export const REPO_NAME = 'vigilant-broccoli';
