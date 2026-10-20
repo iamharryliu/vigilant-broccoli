@@ -14,7 +14,7 @@ import {
   EMAIL_ADDRESS,
   MessageRequest,
   SENDER_EMAIL_ADDRESS,
-} from '@vigilant-broccoli/personal-common-js';
+} from '@harry/personal';
 
 let textMessageService: TextMessageService | undefined;
 const getTextMessageService = () => {

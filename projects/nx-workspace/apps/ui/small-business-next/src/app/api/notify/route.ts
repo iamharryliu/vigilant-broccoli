@@ -6,7 +6,7 @@ import {
   HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
-import { SENDER_EMAIL_ADDRESS } from '@vigilant-broccoli/personal-common-js';
+import { SENDER_EMAIL_ADDRESS } from '@harry/personal';
 
 const FROM = `Harry Liu <${SENDER_EMAIL_ADDRESS}>`;
 

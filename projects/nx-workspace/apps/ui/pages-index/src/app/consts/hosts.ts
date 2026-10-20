@@ -1,4 +1,4 @@
-import { PROJECT_LINK } from '@vigilant-broccoli/personal-common-js';
+import { PROJECT_LINK } from '@harry/personal';
 
 export const STATUS_HOST = 'status.harryliu.dev';
 

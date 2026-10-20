@@ -14,8 +14,8 @@ export type PersonalCalendarSource = {
 
 // The only sources safe for public sites: the personal calendar is already
 // linked there and the rest are Google's public calendars. Keep private
-// shared calendars (@vigilant-broccoli/personal-private-js) out of this list
-// so they never reach a public bundle.
+// shared calendars (@harry/private) out of this list so they never reach a
+// public bundle.
 export const PUBLIC_CALENDAR_SOURCES: readonly PersonalCalendarSource[] = [
   {
     id: PERSONAL_GOOGLE_CALENDAR.PERSONAL,

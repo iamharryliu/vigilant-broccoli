@@ -1,5 +1,5 @@
 // URLs that embed an account, org, project or workspace id, so they stay out
-// of @vigilant-broccoli/public-links.
+// of the public link libs.
 export const CLOUDFLARE_ACCOUNT_LINK = {
   DASHBOARD: {
     NAME: 'Cloudflare Dashboard',

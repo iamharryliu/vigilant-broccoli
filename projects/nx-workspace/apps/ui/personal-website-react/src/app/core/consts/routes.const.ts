@@ -5,7 +5,7 @@ import {
   INTEREST_LINK,
   PROJECT_LINK,
   SOCIAL_LINK,
-} from '@vigilant-broccoli/personal-common-js';
+} from '@harry/personal';
 import { ENVIRONMENT } from '../../../environments/environment';
 
 export const SITE_NAME = 'harryliu.dev';

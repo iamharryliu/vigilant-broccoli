@@ -1,7 +1,7 @@
 'use client';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
 import { Button, Input, Textarea } from '@vigilant-broccoli/react-lib';
-import { EMAIL_ADDRESS } from '@vigilant-broccoli/personal-common-js';
+import { EMAIL_ADDRESS } from '@harry/personal';
 import { useState } from 'react';
 import { authFetch } from '../../../libs/auth';
 

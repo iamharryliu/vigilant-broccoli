@@ -28,11 +28,13 @@ Management dashboard app.
   - `github-workspace`
   - `github-workspace-js`
   - `google-workspace`
+  - `@harry/personal`
+  - `@harry/private`
   - `llm-schemas`
+  - `manager`
   - `money-movement`
-  - `personal-common-js`
-  - `personal-private-js`
-  - `private-links`
+  - `private-infrastructure`
+  - `public-links`
   - `react-lib`
   - `react-lib-auth`
   - `react-lib-higher-level`

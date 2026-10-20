@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { HONEYPOT_FIELD_NAME } from '@vigilant-broccoli/common-js';
-import { APP_NAME } from '@vigilant-broccoli/personal-common-js';
+import { APP_NAME } from '@harry/personal';
 import { HoneypotField } from '@vigilant-broccoli/react-lib';
 import { useTranslation } from '../../i18n';
 import { EXTERNAL_URL } from '../../core/consts/routes.const';

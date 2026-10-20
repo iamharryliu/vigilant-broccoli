@@ -1,7 +1,7 @@
 import { execFileSync, execSync } from 'child_process';
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { EMAIL_ADDRESS } from '@vigilant-broccoli/personal-common-js';
+import { EMAIL_ADDRESS } from '@harry/personal';
 
 const NAME_TOKEN_PATTERN = /[a-z0-9][a-z0-9-]*/g;
 const DECLARATION_PATHSPECS = [

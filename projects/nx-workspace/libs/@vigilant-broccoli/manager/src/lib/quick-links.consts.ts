@@ -11,27 +11,24 @@ import {
   PROTON_LINK,
   UI_APP_LINKS,
   UTILITY_URL,
-  VB_GITHUB_WORKFLOWS_URL,
   VB_LINKS,
   toQuickLinks,
 } from '@vigilant-broccoli/public-links';
+import { VB_GITHUB_WORKFLOWS_URL } from '@vigilant-broccoli/infrastructure';
 import {
   CLOUDFLARE_ACCOUNT_LINK,
   FLYIO_ACCOUNT_LINK,
   GCP_PROJECT_LINK,
+  LOCAL_HOST_URL,
   NPM_USER_LINK,
   ROBOFLOW_WORKSPACE_LINK,
   SANITY_ORG_LINK,
   SLACK_WORKSPACE_LINK,
   SUPABASE_PROJECT_LINK,
   TERRAFORM_ORG_LINK,
-} from './account.consts';
-import { LOCAL_HOST_URL } from './local-host.consts';
+} from '@vigilant-broccoli/private-infrastructure';
 import { PERSONAL_ACCOUNT_LINK, PERSONAL_URL } from './personal-account.consts';
-import {
-  JOURNAL_PATH,
-  VB_REPO_PATH,
-} from '@vigilant-broccoli/personal-private-js';
+import { JOURNAL_PATH, VB_REPO_PATH } from '@harry/private';
 
 const DEV_LINKS: QuickLink[] = [
   ...toQuickLinks(LINK_GROUP_SUBGROUP.DEV, [

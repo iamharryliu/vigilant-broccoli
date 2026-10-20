@@ -21,6 +21,7 @@ Personal monorepo, supporting **16 applications**, **6 API services**, **7 Docke
   - [Public](#public)
   - [Private](#private)
   - [Local](#local)
+- [Libraries](#libraries)
 - [CI Actions](#ci-actions)
 - [Stack](#stack)
 
@@ -120,6 +121,44 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [Spotify to MP3](./scripts/python/dj-scripts/spotify-to-mp3)                                                                                                                                               | Command-line music download utility.                 |
 | <img src="./vday-godot-game/icon.svg" width="20" height="20" align="absmiddle"> [Valentine’s Day Adventure Game](./vday-godot-game)                                                                        | Godot adventure game with heart collection.          |
 | <img src="./projects/nx-workspace/apps/ui/vb-manager-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [VB Manager](./projects/nx-workspace/apps/ui/vb-manager-next)                  | Personal management dashboard.                       |
+
+## Libraries
+
+| Library                                                                                                             | Description                                                                                   | Tags                              |
+| ------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- | --------------------------------- |
+| [@harry/personal](./projects/nx-workspace/libs/@harry/personal)                                                     | Contact details, socials, contact-form contract and public calendar sources.                  | `type:util`, `visibility:public`  |
+| [@harry/private](./projects/nx-workspace/libs/@harry/private)                                                       | Local paths, private calendar ids and base calendar config.                                   | `type:util`, `visibility:private` |
+| [@vigilant-broccoli/common-browser](./projects/nx-workspace/libs/@vigilant-broccoli/common-browser)                 | Browser locale, location, Google Calendar and Tailwind helpers.                               | `type:util`                       |
+| [@vigilant-broccoli/common-js](./projects/nx-workspace/libs/@vigilant-broccoli/common-js)                           | Isomorphic HTTP, audio, honeypot and quick-link consts, types and utilities.                  | `type:util`                       |
+| [@vigilant-broccoli/common-node](./projects/nx-workspace/libs/@vigilant-broccoli/common-node)                       | Node environment variable, HTTP, date, encryption and audio utilities.                        | `type:util`                       |
+| [@vigilant-broccoli/deployment](./projects/nx-workspace/libs/@vigilant-broccoli/deployment)                         | Deploy notification constants for vb-manager-next.                                            | `type:util`                       |
+| [@vigilant-broccoli/devops-cli](./projects/nx-workspace/libs/@vigilant-broccoli/devops-cli)                         | Typed wrappers for the aws, gcloud, docker, pm2, flyctl, vercel, wrangler and tailscale CLIs. | `type:util`                       |
+| [@vigilant-broccoli/employee-handler](./projects/nx-workspace/libs/@vigilant-broccoli/employee-handler)             | Employee lifecycle automation for onboarding, offboarding, signatures and data sync.          | `type:util`                       |
+| [@vigilant-broccoli/fastify](./projects/nx-workspace/libs/@vigilant-broccoli/fastify)                               | Fastify docs, API key, reCAPTCHA, honeypot, request logging and ping plugins.                 | `type:util`                       |
+| [@vigilant-broccoli/github-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/github-workspace)             | GitHub CLI commands and models for Node.                                                      | `type:util`                       |
+| [@vigilant-broccoli/github-workspace-js](./projects/nx-workspace/libs/@vigilant-broccoli/github-workspace-js)       | GitHub constants and types for browser and Node.                                              | `type:util`                       |
+| [@vigilant-broccoli/google-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/google-workspace)             | Google OAuth, Tasks, Calendar and GAM services.                                               | `type:util`                       |
+| [@vigilant-broccoli/infrastructure](./projects/nx-workspace/libs/@vigilant-broccoli/infrastructure)                 | Repo app, GitHub and monitoring URLs.                                                         | `type:util`, `visibility:public`  |
+| [@vigilant-broccoli/llm-schemas](./projects/nx-workspace/libs/@vigilant-broccoli/llm-schemas)                       | Zod schemas for structured LLM output.                                                        | `type:util`                       |
+| [@vigilant-broccoli/llm-tools](./projects/nx-workspace/libs/@vigilant-broccoli/llm-tools)                           | Multi-provider LLM service and utilities.                                                     | `type:util`                       |
+| [@vigilant-broccoli/manager](./projects/nx-workspace/libs/@vigilant-broccoli/manager)                               | Personal account links and the full quick-link list for vb-manager.                           | `type:util`, `visibility:private` |
+| [@vigilant-broccoli/messaging](./projects/nx-workspace/libs/@vigilant-broccoli/messaging)                           | Email and text message services.                                                              | `type:util`                       |
+| [@vigilant-broccoli/money-movement](./projects/nx-workspace/libs/@vigilant-broccoli/money-movement)                 | Stripe payment service.                                                                       | `type:util`                       |
+| [@vigilant-broccoli/private-infrastructure](./projects/nx-workspace/libs/@vigilant-broccoli/private-infrastructure) | URLs embedding an account, org, project or workspace id, and private-network hosts.           | `type:util`, `visibility:private` |
+| [@vigilant-broccoli/public-links](./projects/nx-workspace/libs/@vigilant-broccoli/public-links)                     | Generic vendor links, public quick links and the pastebin.                                    | `type:util`, `visibility:public`  |
+| [@vigilant-broccoli/react-lib](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib)                           | Shared React component library.                                                               | `type:primitive`                  |
+| [@vigilant-broccoli/react-lib-auth](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-auth)                 | Supabase auth provider factory and Google sign-in page for React apps.                        | `type:domain`                     |
+| [@vigilant-broccoli/react-lib-calendar](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-calendar)         | Month-paged calendar list view and date grouping helpers.                                     | `type:domain`                     |
+| [@vigilant-broccoli/react-lib-higher-level](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-higher-level) | Composite React components such as Sidebar, Pastebin and the calendar agenda.                 | `type:higher-level`               |
+| [@vigilant-broccoli/react-lib-media](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-media)               | Audio, image and GitHub Actions badge display components.                                     | `type:domain`                     |
+| [@vigilant-broccoli/react-music-lib](./projects/nx-workspace/libs/@vigilant-broccoli/react-music-lib)               | Metronome component.                                                                          | `type:higher-level`               |
+| [@vigilant-broccoli/react-sandbox](./projects/nx-workspace/libs/@vigilant-broccoli/react-sandbox)                   | Component sandbox and demos for the component library.                                        | `type:higher-level`               |
+| [@vigilant-broccoli/react-utility](./projects/nx-workspace/libs/@vigilant-broccoli/react-utility)                   | QR code, audio, clock and weather display utilities for React.                                | `type:higher-level`               |
+| [@vigilant-broccoli/resume](./projects/nx-workspace/libs/@vigilant-broccoli/resume)                                 | Resume schema, experience data and PDF generation.                                            | `type:util`                       |
+| [@vigilant-broccoli/slack-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/slack-workspace)               | Slack Web API client and view-builder utilities.                                              | `type:util`                       |
+| [@vigilant-broccoli/slackbots](./projects/nx-workspace/libs/@vigilant-broccoli/slackbots)                           | Slack bot apps built on slack-workspace, including Office Presence.                           | `type:util`                       |
+| [@vigilant-broccoli/storage](./projects/nx-workspace/libs/@vigilant-broccoli/storage)                               | Multi-provider object storage bucket service.                                                 | `type:util`                       |
+| [@vigilant-broccoli/vercel-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/vercel-workspace)             | Vercel API types and utilities.                                                               | `type:util`                       |
 
 ## CI Actions
 

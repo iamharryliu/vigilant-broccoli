@@ -19,11 +19,11 @@ import {
   getEventCalendarColor,
   readHiddenCalendarIds,
   writeHiddenCalendarIds,
-} from '@vigilant-broccoli/personal-common-js';
+} from '@harry/personal';
 import {
   BASE_CALENDAR_CONFIG,
   PERSONAL_CALENDAR_SOURCES,
-} from '@vigilant-broccoli/personal-private-js';
+} from '@harry/private';
 import {
   CalendarAgenda,
   CalendarEvent,

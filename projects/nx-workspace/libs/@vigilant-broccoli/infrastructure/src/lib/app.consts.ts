@@ -1,6 +1,6 @@
-import { PROJECT_LINK } from '@vigilant-broccoli/personal-common-js';
+import { PROJECT_LINK } from '@harry/personal';
 
-export const HARRYLIU_APP_URL = {
+export const VB_APP_URL = {
   COMPONENT_LIBRARY: {
     NAME: 'Component Library',
     URL: 'https://components.harryliu.dev/',
@@ -93,5 +93,13 @@ export const HARRYLIU_APP_URL = {
   OFFICE_PRESENCE_DEMO: {
     NAME: 'Office Presence Demo',
     URL: 'https://demo-office-presence-ui.pages.dev/',
+  },
+  CAREER: {
+    NAME: 'Career',
+    URL: 'https://career.harryliu.dev/',
+  },
+  DRIVE: {
+    NAME: 'Drive',
+    URL: 'https://drive.harryliu.dev/',
   },
 } as const;
