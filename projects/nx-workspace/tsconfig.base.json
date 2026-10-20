@@ -61,6 +61,9 @@
       "@vigilant-broccoli/personal-common-js": [
         "./libs/@vigilant-broccoli/personal-common-js/src/index.ts"
       ],
+      "@vigilant-broccoli/personal-private-js": [
+        "./libs/@vigilant-broccoli/personal-private-js/src/index.ts"
+      ],
       "@vigilant-broccoli/slack-workspace": [
         "./libs/@vigilant-broccoli/slack-workspace/src/index.ts"
       ],
@@ -75,6 +78,9 @@
       ],
       "@vigilant-broccoli/links": [
         "./libs/@vigilant-broccoli/links/src/index.ts"
+      ],
+      "@vigilant-broccoli/public-links": [
+        "./libs/@vigilant-broccoli/public-links/src/index.ts"
       ],
       "@vigilant-broccoli/llm-tools": [
         "./libs/@vigilant-broccoli/llm-tools/src/index.ts"

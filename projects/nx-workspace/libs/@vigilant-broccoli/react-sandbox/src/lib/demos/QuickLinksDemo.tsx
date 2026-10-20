@@ -11,10 +11,11 @@ import { toast, Toaster } from '@vigilant-broccoli/react-lib/toaster';
 import {
   CLAUDE_LINK,
   FLYIO_LINK,
+  GCP_LINK,
   GITHUB_LINK,
   GOOGLE_SERVICES,
   UTILITY_URL,
-} from '@vigilant-broccoli/links';
+} from '@vigilant-broccoli/public-links';
 
 const OPEN_BUTTON_LABEL = 'Open Quick Links (dialog)';
 const DIALOG_HINT =
@@ -55,8 +56,8 @@ const DEMO_LINKS: QuickLink[] = [
     subgroup: DEMO_SUBGROUP.DEV,
   },
   {
-    label: GOOGLE_SERVICES.GCP.NAME,
-    target: GOOGLE_SERVICES.GCP.URL,
+    label: GCP_LINK.CONSOLE.NAME,
+    target: GCP_LINK.CONSOLE.URL,
     type: OPEN_TYPE.BROWSER,
     subgroup: DEMO_SUBGROUP.DEV,
   },

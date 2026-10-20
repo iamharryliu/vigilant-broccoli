@@ -79,6 +79,13 @@ export default [
                 'type:higher-level',
               ],
             },
+            // Public projects ship client bundles anyone can download, and a
+            // private lib's barrel lands in the bundle whichever names are
+            // imported. Nx also checks this transitively.
+            {
+              sourceTag: 'visibility:public',
+              notDependOnLibsWithTags: ['visibility:private'],
+            },
           ],
         },
       ],

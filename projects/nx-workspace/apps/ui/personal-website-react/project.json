@@ -3,7 +3,7 @@
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/ui/personal-website-react/src",
   "projectType": "application",
-  "tags": [],
+  "tags": ["visibility:public"],
   "targets": {
     "pre-build": {
       "executor": "nx:run-commands",

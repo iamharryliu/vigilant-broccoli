@@ -59,10 +59,6 @@ export const GOOGLE_SERVICES = {
     NAME: 'Google Storage',
     URL: 'https://one.google.com/storage/management',
   },
-  GCP: {
-    NAME: 'GCP',
-    URL: 'https://console.cloud.google.com',
-  },
   ADSENSE: {
     NAME: 'Google AdSense',
     URL: 'https://adsense.google.com/start/',
@@ -97,10 +93,6 @@ export const UTILITY_URL = {
   SLACK: {
     NAME: 'Slack',
     URL: 'https://app.slack.com/client/',
-  },
-  OK_IN_SLACK_DEMO: {
-    NAME: 'OK-IN Slack Demo',
-    URL: 'https://app.slack.com/client/T0C9JSXB8UR/D0C9XA53B8E',
   },
   SLACK_API_APPS: {
     NAME: 'Slack API Apps',
@@ -168,20 +160,12 @@ export const CLAUDE_LINK = {
     NAME: 'Claude Code',
     URL: 'https://claude.ai/code',
   },
-  DASHBOARD: {
-    NAME: 'Claude Dashboard',
-    URL: 'https://claude.ai/',
-  },
   INCOGNITO: {
     NAME: 'Claude Incognito',
     URL: 'https://claude.ai/new?incognito',
   },
   BILLING: {
     NAME: 'Claude Billing',
-    URL: 'https://claude.ai/settings/billing',
-  },
-  PAYMENT_HISTORY: {
-    NAME: 'Claude Payment History',
     URL: 'https://claude.ai/settings/billing',
   },
   USAGE: {
@@ -204,7 +188,7 @@ export const GITHUB_LINK = {
     URL: 'https://github.com',
   },
   DASHBOARD: {
-    NAME: 'Github Dashboard',
+    NAME: 'GitHub Dashboard',
     URL: 'https://github.com/dashboard',
   },
   TOKENS: {
@@ -220,11 +204,11 @@ export const GITHUB_LINK = {
     URL: 'https://github.com/settings/billing',
   },
   PAYMENT_HISTORY: {
-    NAME: 'Github Payment History',
+    NAME: 'GitHub Payment History',
     URL: 'https://github.com/account/billing/history',
   },
   USAGE: {
-    NAME: 'Github Usage',
+    NAME: 'GitHub Usage',
     URL: 'https://github.com/settings/billing/usage',
   },
   STATUS: {
@@ -272,22 +256,6 @@ export const TWILIO_LINK = {
 } as const;
 
 export const CLOUDFLARE_LINK = {
-  DASHBOARD: {
-    NAME: 'Cloudflare Dashboard',
-    URL: 'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/home/domains',
-  },
-  BILLING: {
-    NAME: 'Cloudflare Billing',
-    URL: 'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/billing',
-  },
-  PAYMENT_HISTORY: {
-    NAME: 'Cloudflare Payment History',
-    URL: 'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/billing',
-  },
-  USAGE: {
-    NAME: 'Cloudflare Usage',
-    URL: 'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/billing/billable-usage',
-  },
   STATUS: {
     NAME: 'Cloudflare Status',
     URL: 'https://www.cloudflarestatus.com/',
@@ -316,27 +284,15 @@ export const CLOUDFLARE_LINK = {
 
 export const FLYIO_LINK = {
   DASHBOARD: {
-    NAME: 'FlyIO Dashboard',
+    NAME: 'Fly.io Dashboard',
     URL: 'https://fly.io/dashboard',
   },
   BILLING: {
-    NAME: 'FlyIO Billing',
+    NAME: 'Fly.io Billing',
     URL: 'https://fly.io/dashboard/personal/billing',
-  },
-  PAYMENT_HISTORY: {
-    NAME: 'Fly.io Payment History',
-    URL: 'https://fly.io/dashboard/personal/billing',
-  },
-  USAGE: {
-    NAME: 'Fly.io Usage',
-    URL: 'https://fly.io/dashboard/harry-560/billing/cost-explorer',
-  },
-  STATUS: {
-    NAME: 'Fly.io Status',
-    URL: 'https://fly.io/dashboard/harry-560/status',
   },
   DOCS: {
-    NAME: 'FlyIO Docs',
+    NAME: 'Fly.io Docs',
     URL: 'https://fly.io/docs/',
   },
 } as const;
@@ -349,10 +305,6 @@ export const VERCEL_LINK = {
 } as const;
 
 export const GCP_LINK = {
-  DASHBOARD: {
-    NAME: 'GCP Dashboard',
-    URL: 'https://console.cloud.google.com/home/dashboard?project=vigilant-broccoli',
-  },
   CONSOLE: {
     NAME: 'GCP Console',
     URL: 'https://console.cloud.google.com/',
@@ -396,25 +348,9 @@ export const OPENWEATHER_LINK = {
     NAME: 'OpenWeather Payment History',
     URL: 'https://home.openweathermap.org/payments',
   },
-  STATUS: {
-    NAME: 'OpenWeather Status',
-    URL: 'https://openweathermap.org/',
-  },
 } as const;
 
 export const TERRAFORM_LINK = {
-  DASHBOARD: {
-    NAME: 'Terraform Dashboard',
-    URL: 'https://app.terraform.io/app/vigilant-broccoli/workspaces',
-  },
-  BILLING: {
-    NAME: 'Terraform Billing',
-    URL: 'https://app.terraform.io/app/vigilant-broccoli/settings/billing',
-  },
-  USAGE: {
-    NAME: 'Terraform Usage',
-    URL: 'https://app.terraform.io/app/vigilant-broccoli/usage',
-  },
   STATUS: {
     NAME: 'Terraform Status',
     URL: 'https://status.hashicorp.com/',
@@ -449,31 +385,15 @@ export const ROBOFLOW_LINK = {
     NAME: 'Roboflow Dashboard',
     URL: 'https://app.roboflow.com/',
   },
-  BILLING: {
-    NAME: 'Roboflow Billing',
-    URL: 'https://app.roboflow.com/vigilantbroccoli/settings/plan',
-  },
-  PAYMENT_HISTORY: {
-    NAME: 'Roboflow Payment History',
-    URL: 'https://app.roboflow.com/vigilantbroccoli/settings/plan',
-  },
-  USAGE: {
-    NAME: 'Roboflow Usage',
-    URL: 'https://app.roboflow.com/vigilantbroccoli/settings/usage',
-  },
 } as const;
 
 export const DEEPSEEK_LINK = {
   DASHBOARD: {
     NAME: 'DeepSeek Dashboard',
-    URL: 'https://platform.deepseek.com/sign_in',
+    URL: 'https://platform.deepseek.com/',
   },
   BILLING: {
     NAME: 'DeepSeek Billing',
-    URL: 'https://platform.deepseek.com/transactions',
-  },
-  PAYMENT_HISTORY: {
-    NAME: 'DeepSeek Payment History',
     URL: 'https://platform.deepseek.com/transactions',
   },
   USAGE: {
@@ -716,5 +636,26 @@ export const HARRYLIU_INFRA_URL = {
   UPTIME: {
     NAME: 'Uptime',
     URL: 'https://uptime.harryliu.dev/',
+  },
+} as const;
+
+export const MAC_OS_APP = {
+  CHROME: {
+    NAME: 'Google Chrome',
+  },
+  FIREFOX: {
+    NAME: 'Firefox',
+  },
+  SPOTIFY: {
+    NAME: 'Spotify',
+  },
+  SLACK: {
+    NAME: 'Slack',
+  },
+  MESSAGES: {
+    NAME: 'Messages',
+  },
+  WHATSAPP: {
+    NAME: 'WhatsApp',
   },
 } as const;

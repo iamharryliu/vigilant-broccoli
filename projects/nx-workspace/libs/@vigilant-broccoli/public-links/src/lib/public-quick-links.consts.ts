@@ -1,0 +1,315 @@
+import { OPEN_TYPE, type QuickLink } from '@vigilant-broccoli/common-js';
+import {
+  ANTHROPIC_LINK,
+  CLAUDE_LINK,
+  CLOUDFLARE_LINK,
+  DEEPSEEK_LINK,
+  ELEVENLABS_LINK,
+  FLYIO_LINK,
+  GCP_LINK,
+  GEMINI_LINK,
+  GITHUB_LINK,
+  GOOGLE_SERVICES,
+  GROK_LINK,
+  HARRYLIU_APP_URL,
+  HARRYLIU_INFRA_URL,
+  OPENAI_LINK,
+  OPENWEATHER_LINK,
+  ROBOFLOW_LINK,
+  STRIPE_LINK,
+  TAILSCALE_LINK,
+  TERRAFORM_LINK,
+  TWILIO_LINK,
+} from './links.consts';
+
+export const LINK_GROUP_SUBGROUP = {
+  UTILITY: 'Utility',
+  CAREER: 'Career',
+  LEISURE: 'Leisure',
+  LEARN: 'Learn',
+  FOR_LATER: 'For Later',
+  HOME: 'Home',
+  DEV: 'Dev',
+  VIGILANT_BROCCOLI: 'vigilant-broccoli',
+  MESSAGING: 'Messaging',
+  UI_APPS: 'UI Apps',
+  AGENTIC: 'Agentic',
+} as const;
+
+type LinkGroupSubgroup =
+  (typeof LINK_GROUP_SUBGROUP)[keyof typeof LINK_GROUP_SUBGROUP];
+
+export const toQuickLinks = (
+  subgroup: LinkGroupSubgroup,
+  links: readonly { NAME: string; URL: string }[],
+): QuickLink[] =>
+  links.map(({ NAME, URL }) => ({
+    label: NAME,
+    target: URL,
+    type: OPEN_TYPE.BROWSER,
+    subgroup,
+  }));
+
+const VB_GITHUB_REPO_URL = 'https://github.com/iamharryliu/vigilant-broccoli';
+const VB_GITHUB_ACTIONS_URL = `${VB_GITHUB_REPO_URL}/actions`;
+export const VB_GITHUB_WORKFLOWS_URL = `${VB_GITHUB_ACTIONS_URL}/workflows`;
+
+export const GENERIC_DEV_LINKS: QuickLink[] = [
+  ...toQuickLinks(LINK_GROUP_SUBGROUP.DEV, [
+    GCP_LINK.CONSOLE,
+    GCP_LINK.COMPUTE,
+    GCP_LINK.FIREWALL,
+    GCP_LINK.AUTH_AUDIENCE,
+    GCP_LINK.CREDENTIALS,
+    GOOGLE_SERVICES.ANALYTICS,
+    GOOGLE_SERVICES.RECAPTCHA,
+    { NAME: 'Cron Guru', URL: 'https://crontab.guru/' },
+    GITHUB_LINK.GITHUB,
+    GITHUB_LINK.DASHBOARD,
+    GITHUB_LINK.TOKENS,
+    GITHUB_LINK.APPS,
+    GITHUB_LINK.ACTIONS_PRICING,
+    GITHUB_LINK.BILLING,
+    GITHUB_LINK.PAYMENT_HISTORY,
+    GITHUB_LINK.USAGE,
+    GITHUB_LINK.STATUS,
+    FLYIO_LINK.DASHBOARD,
+    FLYIO_LINK.BILLING,
+    FLYIO_LINK.DOCS,
+    { NAME: 'AWS Free Tier', URL: 'https://aws.amazon.com/free/' },
+    CLOUDFLARE_LINK.STATUS,
+    {
+      NAME: 'Cloudflare R2 Pricing',
+      URL: 'https://developers.cloudflare.com/r2/pricing/',
+    },
+    CLOUDFLARE_LINK.DNS_DOCS,
+    CLOUDFLARE_LINK.PAGES_DOCS,
+    CLOUDFLARE_LINK.WORKERS_DOCS,
+    CLOUDFLARE_LINK.R2_STORAGE_DOCS,
+    CLOUDFLARE_LINK.TURNSTILE_DOCS,
+    { NAME: 'OpenWeather API', URL: 'https://openweathermap.org/api' },
+    { NAME: 'OpenWeather Pricing', URL: 'https://openweathermap.org/price' },
+    { NAME: 'OpenWeather City Search', URL: 'https://openweathermap.org/find' },
+    { NAME: 'MongoDB Console', URL: 'https://cloud.mongodb.com/v2/' },
+    GOOGLE_SERVICES.ADSENSE,
+    { NAME: 'Search Console', URL: 'https://search.google.com/search-console' },
+    OPENAI_LINK.DASHBOARD,
+    OPENAI_LINK.BILLING,
+    OPENAI_LINK.PAYMENT_HISTORY,
+    OPENAI_LINK.USAGE,
+    OPENAI_LINK.STATUS,
+    OPENAI_LINK.DOCS,
+    TWILIO_LINK.BILLING,
+    TWILIO_LINK.USAGE,
+    TWILIO_LINK.STATUS,
+    TWILIO_LINK.PHONE_NUMBERS,
+    TWILIO_LINK.DOCS,
+    CLAUDE_LINK.CODE,
+    CLAUDE_LINK.BILLING,
+    CLAUDE_LINK.USAGE,
+    CLAUDE_LINK.STATUS,
+    GCP_LINK.BILLING,
+    GCP_LINK.STATUS,
+    OPENWEATHER_LINK.DASHBOARD,
+    OPENWEATHER_LINK.BILLING,
+    OPENWEATHER_LINK.PAYMENT_HISTORY,
+    TERRAFORM_LINK.STATUS,
+    TERRAFORM_LINK.TOKENS,
+    ROBOFLOW_LINK.DASHBOARD,
+    DEEPSEEK_LINK.DASHBOARD,
+    DEEPSEEK_LINK.BILLING,
+    DEEPSEEK_LINK.USAGE,
+    GROK_LINK.DASHBOARD,
+    GEMINI_LINK.DASHBOARD,
+    GEMINI_LINK.API_KEYS,
+    GEMINI_LINK.BILLING,
+    GEMINI_LINK.USAGE,
+    ANTHROPIC_LINK.DASHBOARD,
+    ANTHROPIC_LINK.BILLING,
+    ANTHROPIC_LINK.PAYMENT_HISTORY,
+    ANTHROPIC_LINK.USAGE,
+    STRIPE_LINK.DASHBOARD,
+    STRIPE_LINK.BILLING,
+    STRIPE_LINK.PAYMENT_HISTORY,
+    STRIPE_LINK.USAGE,
+    STRIPE_LINK.API_MANAGEMENT,
+    STRIPE_LINK.STATUS,
+    ELEVENLABS_LINK.DASHBOARD,
+    ELEVENLABS_LINK.API_KEYS,
+    {
+      NAME: 'Spotify Developer Dashboard',
+      URL: 'https://developer.spotify.com/dashboard',
+    },
+    { NAME: 'Resend Emails', URL: 'https://resend.com/emails' },
+    { NAME: 'Resend API Keys', URL: 'https://resend.com/api-keys' },
+    { NAME: 'Oracle Cloud', URL: 'https://cloud.oracle.com/' },
+    {
+      NAME: 'Oracle Cloud Auth Tokens',
+      URL: 'https://cloud.oracle.com/identity/domains/my-profile/auth-tokens',
+    },
+    {
+      NAME: 'Oracle Cloud Billing',
+      URL: 'https://cloud.oracle.com/billing/subscriptions',
+    },
+    {
+      NAME: 'Oracle Cloud Payment History',
+      URL: 'https://cloud.oracle.com/invoices-and-orders/upgrade-and-payment',
+    },
+    {
+      NAME: 'Docker Hub Repositories',
+      URL: 'https://hub.docker.com/repositories',
+    },
+    TAILSCALE_LINK.ADMIN,
+    TAILSCALE_LINK.KEYS,
+    TAILSCALE_LINK.DNS,
+    TAILSCALE_LINK.ACLS,
+  ]),
+];
+
+export const VB_LINKS: QuickLink[] = [
+  ...toQuickLinks(LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI, [
+    {
+      NAME: 'VB - NPM Packages',
+      URL: 'https://www.npmjs.com/settings/vigilant-broccoli/packages',
+    },
+    { NAME: 'VB - GitHub Repo', URL: VB_GITHUB_REPO_URL },
+    { NAME: 'VB - GitHub Actions', URL: VB_GITHUB_ACTIONS_URL },
+    { NAME: 'VB - GitHub Pull Requests', URL: `${VB_GITHUB_REPO_URL}/pulls` },
+    { NAME: 'VB - GitHub Projects', URL: `${VB_GITHUB_REPO_URL}/projects` },
+    { NAME: 'Git', URL: 'https://git.harryliu.dev/' },
+    HARRYLIU_APP_URL.PERSONAL_WEBSITE,
+    HARRYLIU_APP_URL.UTILITIES,
+    {
+      NAME: `${HARRYLIU_APP_URL.UTILITIES.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.UTILITIES.STAGING_URL,
+    },
+    HARRYLIU_APP_URL.WAITING_GAMES,
+    {
+      NAME: `${HARRYLIU_APP_URL.WAITING_GAMES.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.WAITING_GAMES.STAGING_URL,
+    },
+    HARRYLIU_APP_URL.LINKS,
+    {
+      NAME: `${HARRYLIU_APP_URL.LINKS.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.LINKS.STAGING_URL,
+    },
+    HARRYLIU_APP_URL.CALENDARS,
+    {
+      NAME: `${HARRYLIU_APP_URL.CALENDARS.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.CALENDARS.STAGING_URL,
+    },
+    HARRYLIU_APP_URL.WEATHER,
+    {
+      NAME: `${HARRYLIU_APP_URL.WEATHER.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.WEATHER.STAGING_URL,
+    },
+    HARRYLIU_APP_URL.FIND_ME,
+    {
+      NAME: `${HARRYLIU_APP_URL.FIND_ME.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.FIND_ME.STAGING_URL,
+    },
+    HARRYLIU_APP_URL.WHITEBOARD,
+    {
+      NAME: `${HARRYLIU_APP_URL.WHITEBOARD.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.WHITEBOARD.STAGING_URL,
+    },
+    HARRYLIU_APP_URL.BALLOONO,
+    {
+      NAME: `${HARRYLIU_APP_URL.BALLOONO.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.BALLOONO.STAGING_URL,
+    },
+    HARRYLIU_APP_URL.EMPLOYEE_HANDLER_DEMO,
+    HARRYLIU_APP_URL.OFFICE_PRESENCE_DEMO,
+    { NAME: 'Code Server', URL: 'https://code.harryliu.dev/' },
+    HARRYLIU_APP_URL.DOCS,
+    HARRYLIU_APP_URL.CONTEXT,
+    {
+      NAME: `${HARRYLIU_APP_URL.DOCS.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.DOCS.STAGING_URL,
+    },
+    {
+      NAME: `${HARRYLIU_APP_URL.CONTEXT.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.CONTEXT.STAGING_URL,
+    },
+    {
+      NAME: `${HARRYLIU_APP_URL.PERSONAL_WEBSITE.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.PERSONAL_WEBSITE.STAGING_URL,
+    },
+    HARRYLIU_APP_URL.RESUME,
+    {
+      NAME: `${HARRYLIU_APP_URL.RESUME.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.RESUME.STAGING_URL,
+    },
+    HARRYLIU_APP_URL.CLOUD_8_SKATE,
+    {
+      NAME: `${HARRYLIU_APP_URL.CLOUD_8_SKATE.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.CLOUD_8_SKATE.STAGING_URL,
+    },
+    HARRYLIU_APP_URL.HEARTH,
+    {
+      NAME: `${HARRYLIU_APP_URL.HEARTH.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.HEARTH.STAGING_URL,
+    },
+    HARRYLIU_APP_URL.SERVICE_MANAGER,
+    {
+      NAME: `${HARRYLIU_APP_URL.SERVICE_MANAGER.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.SERVICE_MANAGER.STAGING_URL,
+    },
+    HARRYLIU_APP_URL.VB_MANAGER_NEXT_MOBILE,
+    {
+      NAME: `${HARRYLIU_APP_URL.VB_MANAGER_NEXT_MOBILE.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.VB_MANAGER_NEXT_MOBILE.STAGING_URL,
+    },
+    HARRYLIU_INFRA_URL.DRIVE,
+    HARRYLIU_INFRA_URL.NX_CACHE,
+    HARRYLIU_INFRA_URL.LOKI,
+    HARRYLIU_INFRA_URL.SOCKET_SERVER,
+    HARRYLIU_INFRA_URL.CAREER,
+  ]),
+  {
+    label: HARRYLIU_INFRA_URL.STATUS.NAME,
+    target: HARRYLIU_INFRA_URL.STATUS.URL,
+    type: OPEN_TYPE.BROWSER,
+    embed: true,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
+    label: HARRYLIU_INFRA_URL.UPTIME.NAME,
+    target: HARRYLIU_INFRA_URL.UPTIME.URL,
+    type: OPEN_TYPE.BROWSER,
+    embed: true,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  ...toQuickLinks(LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI, [
+    { NAME: 'Grafana (Cloud)', URL: 'https://grafana.harryliu.dev/' },
+  ]),
+];
+
+export const LEARN_LINKS: QuickLink[] = [
+  ...toQuickLinks(LINK_GROUP_SUBGROUP.LEARN, [
+    { NAME: 'Udemy', URL: 'https://www.udemy.com/' },
+    { NAME: 'Memrise', URL: 'https://app.memrise.com/dashboard' },
+    {
+      NAME: 'Memrise (Community Version)',
+      URL: 'https://community-courses.memrise.com/dashboard',
+    },
+  ]),
+];
+
+export const UI_APP_LINKS: QuickLink[] = [
+  ...toQuickLinks(LINK_GROUP_SUBGROUP.UI_APPS, [
+    HARRYLIU_APP_URL.COMPONENT_LIBRARY,
+    {
+      NAME: `${HARRYLIU_APP_URL.COMPONENT_LIBRARY.NAME} (Staging)`,
+      URL: HARRYLIU_APP_URL.COMPONENT_LIBRARY.STAGING_URL,
+    },
+  ]),
+];
+
+// Safe for public bundles: no account ids, personal accounts or local paths.
+export const PUBLIC_QUICK_LINKS: QuickLink[] = [
+  ...UI_APP_LINKS,
+  ...VB_LINKS,
+  ...GENERIC_DEV_LINKS,
+  ...LEARN_LINKS,
+];

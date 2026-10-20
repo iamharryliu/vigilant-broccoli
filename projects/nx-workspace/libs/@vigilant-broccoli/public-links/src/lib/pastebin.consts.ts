@@ -7,15 +7,16 @@ import {
   PROJECT_LINK,
   SOCIAL_LINK,
 } from '@vigilant-broccoli/personal-common-js';
+import { HARRYLIU_APP_URL } from './links.consts';
 import {
-  EXTERNAL_QUICK_LINKS,
   LINK_GROUP_SUBGROUP,
-} from './quick-links.consts';
+  PUBLIC_QUICK_LINKS,
+} from './public-quick-links.consts';
 
 export const PERSONAL_SITE_LINK = {
   INDEX: {
     NAME: 'Index',
-    URL: 'https://harryliu.dev/',
+    URL: HARRYLIU_APP_URL.PERSONAL_WEBSITE.URL,
   },
   LINKS: {
     NAME: 'Links',
@@ -23,7 +24,7 @@ export const PERSONAL_SITE_LINK = {
   },
   CALENDAR: {
     NAME: 'Calendar',
-    URL: 'https://calendar.harryliu.dev/',
+    URL: PROJECT_LINK.CALENDAR.URL,
   },
   CONTACT: {
     NAME: 'Contact',
@@ -31,7 +32,7 @@ export const PERSONAL_SITE_LINK = {
   },
   RESUME: {
     NAME: 'Resume',
-    URL: 'https://harryliu.dev/resume',
+    URL: HARRYLIU_APP_URL.RESUME.URL,
   },
 } as const;
 
@@ -68,7 +69,7 @@ const SHARED_QUICK_LINK_SUBGROUPS = [
 const SHARED_QUICK_LINK_GROUPS: PastebinGroup[] =
   SHARED_QUICK_LINK_SUBGROUPS.map(subgroup => ({
     name: subgroup,
-    entries: EXTERNAL_QUICK_LINKS.filter(
+    entries: PUBLIC_QUICK_LINKS.filter(
       link => link.subgroup === subgroup && link.type === OPEN_TYPE.BROWSER,
     ).map(link => ({ label: link.label, value: link.target.trim() })),
   }));

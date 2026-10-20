@@ -4,12 +4,11 @@ import {
   GOOGLE_CALENDAR,
 } from '@vigilant-broccoli/common-browser';
 import {
-  PERSONAL_CALENDAR_SOURCES,
   PersonalCalendarSource,
   PUBLIC_CALENDAR_SOURCES,
 } from './personal-calendar.const';
 
-const buildBaseCalendarConfig = (
+export const buildBaseCalendarConfig = (
   sources: readonly PersonalCalendarSource[],
   title?: string,
 ): Omit<CalendarConfig, 'mode'> => ({
@@ -26,17 +25,11 @@ const buildBaseCalendarConfig = (
     .map(source => ({ id: source.id, color: source.color })),
 });
 
-export const BASE_CALENDAR_CONFIG = /* @__PURE__ */ buildBaseCalendarConfig(
-  PERSONAL_CALENDAR_SOURCES,
-  'Personal Calendar',
-);
-
-// For public sites: same layout as BASE_CALENDAR_CONFIG but only
-// PUBLIC_CALENDAR_SOURCES, and no title.
+// For public sites: only PUBLIC_CALENDAR_SOURCES, and no title.
 export const PUBLIC_BASE_CALENDAR_CONFIG =
   /* @__PURE__ */ buildBaseCalendarConfig(PUBLIC_CALENDAR_SOURCES);
 
-// Colors not already claimed by PERSONAL_CALENDAR_SOURCES, so an event
+// Colors not already claimed by the personal calendar sources, so an event
 // calendar never visually matches a personal/public one. Cycled if
 // there are more event calendars than spare colors.
 export const EVENT_CALENDAR_COLORS = [
@@ -79,12 +72,12 @@ export const buildEventCalendarEmbedUrl = ({
   mode,
   eventCalendars,
   hiddenKeys,
-  baseConfig = BASE_CALENDAR_CONFIG,
+  baseConfig,
 }: {
   mode: CalendarConfig['mode'];
   eventCalendars: readonly EmbedEventCalendar[];
   hiddenKeys: Iterable<string>;
-  baseConfig?: Omit<CalendarConfig, 'mode'>;
+  baseConfig: Omit<CalendarConfig, 'mode'>;
 }) => {
   const hidden = new Set(hiddenKeys);
   return buildCalendarUrl({

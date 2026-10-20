@@ -15,13 +15,15 @@ import {
 } from 'lucide-react';
 import { isMobileUserAgent } from '@vigilant-broccoli/common-browser';
 import {
-  BASE_CALENDAR_CONFIG,
   buildEventCalendarEmbedUrl,
   getEventCalendarColor,
-  PERSONAL_CALENDAR_SOURCES,
   readHiddenCalendarIds,
   writeHiddenCalendarIds,
 } from '@vigilant-broccoli/personal-common-js';
+import {
+  BASE_CALENDAR_CONFIG,
+  PERSONAL_CALENDAR_SOURCES,
+} from '@vigilant-broccoli/personal-private-js';
 import {
   CalendarAgenda,
   CalendarEvent,
@@ -229,6 +231,7 @@ export const HomeView = () => {
           googleCalendarId: calendar.googleCalendarId,
         })),
         hiddenKeys: hiddenIds,
+        baseConfig: BASE_CALENDAR_CONFIG,
       }),
     [eventCalendars, hiddenIds],
   );
