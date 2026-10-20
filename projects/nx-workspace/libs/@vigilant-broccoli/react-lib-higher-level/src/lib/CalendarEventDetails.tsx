@@ -40,9 +40,11 @@ const RESPONSE_STATUS_LABEL: Record<string, string> = {
 };
 
 // Bottom sheet below Tailwind's sm breakpoint, the default centered dialog
-// from sm up.
+// from sm up. The sheet-in/sheet-out animations are keyframes the consuming
+// app's Tailwind config must define (vb-manager-next-mobile does); Radix keeps
+// the sheet mounted until the closing animation ends.
 const SHEET_CLASS =
-  'flex max-h-[85dvh] flex-col gap-0 overflow-hidden p-0 max-sm:!bottom-0 max-sm:!top-auto max-sm:!max-w-none max-sm:!translate-y-0 max-sm:rounded-t-2xl sm:w-[calc(100%-2rem)] sm:max-w-[480px]';
+  'flex max-h-[85dvh] flex-col gap-0 overflow-hidden p-0 max-sm:!bottom-0 max-sm:!top-auto max-sm:!max-w-none max-sm:!translate-y-0 max-sm:rounded-t-2xl max-sm:motion-safe:data-[state=open]:animate-sheet-in max-sm:motion-safe:data-[state=closed]:animate-sheet-out sm:w-[calc(100%-2rem)] sm:max-w-[480px]';
 
 const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const URL_PATTERN = /(https?:\/\/[^\s<>"()]+[^\s<>"().,;:!?\]'])/g;
