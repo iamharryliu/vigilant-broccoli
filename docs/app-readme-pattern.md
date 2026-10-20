@@ -28,7 +28,7 @@ Each app under `projects/nx-workspace/apps/*`, and each `libs/@vigilant-broccoli
   - **Internal libs** — the `@vigilant-broccoli/*` VB libs it consumes
   - **Cloud services** — hosted/managed platforms and external APIs it calls at runtime (e.g. Supabase, Sanity, AWS S3, Stripe). Never list where it is hosted or published (Vercel, Cloudflare Pages, Fly.io, Docker Hub, npm, GitHub Pages): the README is deployment-agnostic.
 
-- `## Environment` — apps only, after Stack: one `- [<file>](./<file>)` bullet per committed `.env*` file in the app directory (`.env.example`, `.env.local.example`, `.env.development`, `.env.production`), sorted by file name. Never link gitignored local files (`.env`, `.env.local`): they do not exist on GitHub. Omit the section when the app has none.
+- `## Environment` — apps only, after Stack: one `- [<file>](./<file>)` bullet per committed `.env*` file in the app directory (e.g. `.env.example`, `.env.local.example`), sorted by file name. Never link gitignored local files (`.env`, `.env.local`): they do not exist on GitHub. Omit the section when the app has none.
 
 Language, Framework, and Build Tool each hold a single value, written inline (`- Language - TypeScript`). External libs, Internal libs, and Cloud services are nested bullet lists.
 

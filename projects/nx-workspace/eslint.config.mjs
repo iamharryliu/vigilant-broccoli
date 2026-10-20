@@ -110,7 +110,9 @@ export default [
     },
   },
   {
-    files: ['**/tailwind.config.js'],
+    // Build configs load before any TS path mapping exists, so they require
+    // lib files by relative path.
+    files: ['**/tailwind.config.js', '**/next.config.js'],
     rules: {
       '@nx/enforce-module-boundaries': 'off',
     },

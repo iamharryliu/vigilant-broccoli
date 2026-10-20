@@ -7,7 +7,7 @@ export const supabaseAdmin = new Proxy({} as SupabaseClient, {
   get(_, prop) {
     if (!_supabaseAdmin) {
       _supabaseAdmin = createClient(
-        getEnvironmentVariable('NEXT_PUBLIC_SUPABASE_URL'),
+        process.env.NEXT_PUBLIC_SUPABASE_URL as string,
         getEnvironmentVariable('SUPABASE_SECRET_KEY'),
         { auth: { persistSession: false } },
       );

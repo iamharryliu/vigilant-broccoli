@@ -1,5 +1,6 @@
 //@ts-check
 const { composePlugins, withNx } = require('@nx/next');
+const SUPABASE_NEXT_ENV = require('../../libs/@vigilant-broccoli/common-node/src/lib/supabase/supabase-next-env.js');
 const configValues = {
   default: {},
   development: {},
@@ -15,6 +16,7 @@ const options = {
  **/
 const nextConfig = {
   nx: { ...options },
+  env: SUPABASE_NEXT_ENV,
   output: 'export',
   distDir: '../../dist/apps/whiteboard',
   agentRules: false,

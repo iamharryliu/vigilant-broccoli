@@ -24,5 +24,4 @@
 
 ## Environment
 
-- [.env.development](./.env.development)
 - [.env.local.example](./.env.local.example)

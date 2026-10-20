@@ -71,7 +71,7 @@ A new stateless site opts in by adding the trio — the workflows discover it vi
 
 `findme` and `whiteboard` use `output: 'export'` and export to `dist/apps/<app>`. Their build targets cache that complete directory; Wrangler uploads it using the same staging/production trio as `docs-md`.
 
-Next.js loads each app's tracked `.env.production`, which contains only the public Supabase URL and publishable key. `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` environment variables override those defaults at build time. The app files and both variables are Nx build inputs so changes invalidate cached bundles. No Pages runtime variables or Supabase service-role keys are needed.
+Each app's `next.config.js` sets `env` from `common-node`'s `supabase-next-env.js`, which reads the public Supabase URL and publishable key from `supabase-public.json`, the single committed copy of both. `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` environment variables override those defaults at build time. Both files and both variables are Nx build inputs so changes invalidate cached bundles. No Pages runtime variables or Supabase service-role keys are needed.
 
 For the hosting cutover, apply the staging Access additions in `cloudflare-staging-ui.tf` before publishing staging. Deploy the production Pages projects before applying the domain attachments and DNS updates in `cloudflare-collaboration-apps.tf`. Its `moved` blocks retain the existing DNS records. Keep the old Vercel projects until the custom domains serve the Pages builds and collaboration has been checked in two browsers; remove the old projects afterward. Terraform applies stay local.
 

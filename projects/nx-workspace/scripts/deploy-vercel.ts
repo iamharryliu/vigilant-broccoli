@@ -3,6 +3,7 @@ import { readFileSync, existsSync, mkdirSync, rmSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { createVaultClient, VAULT_SECRET_PATH } from './vault-client';
+import SUPABASE_PUBLIC from '../libs/@vigilant-broccoli/common-node/src/lib/supabase/supabase-public.json' with { type: 'json' };
 
 const STAGING = 'staging';
 const PRODUCTION = 'production';
@@ -293,9 +294,8 @@ async function main() {
   }
 
   const SUPABASE_PUBLIC_SECRETS = {
-    NEXT_PUBLIC_SUPABASE_URL: 'https://jrdosjjgmsoodpjmjqxx.supabase.co',
-    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
-      'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
+    NEXT_PUBLIC_SUPABASE_URL: SUPABASE_PUBLIC.url,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: SUPABASE_PUBLIC.publishableKey,
   };
 
   // employee-handler-ui reads these unprefixed (see libs/supabase.ts) so its

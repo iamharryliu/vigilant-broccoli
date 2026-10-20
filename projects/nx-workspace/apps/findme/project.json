@@ -24,7 +24,9 @@
         },
         {
           "env": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
-        }
+        },
+        "{workspaceRoot}/libs/@vigilant-broccoli/common-node/src/lib/supabase/supabase-public.json",
+        "{workspaceRoot}/libs/@vigilant-broccoli/common-node/src/lib/supabase/supabase-next-env.js"
       ],
       "outputs": ["{workspaceRoot}/dist/apps/findme"],
       "options": {
