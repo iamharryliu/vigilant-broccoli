@@ -94,9 +94,13 @@
         "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-flyio-secrets.ts llm-service staging"
       }
     },
+    "deploy-container": {
+      "dependsOn": ["build", "prune", "smoke"],
+      "command": "docker buildx build --platform linux/amd64 -f apps/api/llm-service/Dockerfile -t iamharryliu/llm-service:latest -t iamharryliu/llm-service:${COMMIT_SHA:-latest} --push dist/apps/api/llm-service"
+    },
     "deploy": {
-      "command": "flyctl deploy --dockerfile ./apps/api/llm-service/Dockerfile --config ./deployment-configs/fly-configs/staging-llm-service.toml",
-      "dependsOn": ["build", "lint", "prune", "smoke", "deploy:secrets"]
+      "dependsOn": ["lint", "deploy-container", "deploy:secrets"],
+      "command": "flyctl deploy --config ./deployment-configs/fly-configs/staging-llm-service.toml --image iamharryliu/llm-service:${COMMIT_SHA:-latest}"
     },
     "deploy:secrets:production": {
       "executor": "nx:run-commands",
@@ -105,14 +109,8 @@
       }
     },
     "deploy:production": {
-      "command": "flyctl deploy --dockerfile ./apps/api/llm-service/Dockerfile --config ./deployment-configs/fly-configs/production-llm-service.toml",
-      "dependsOn": [
-        "build",
-        "lint",
-        "prune",
-        "smoke",
-        "deploy:secrets:production"
-      ]
+      "dependsOn": ["lint", "deploy-container", "deploy:secrets:production"],
+      "command": "flyctl deploy --config ./deployment-configs/fly-configs/production-llm-service.toml --image iamharryliu/llm-service:${COMMIT_SHA:-latest}"
     }
   }
 }

@@ -42,8 +42,8 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "docker ps -q --filter ancestor=iamharryliu/office-presence-socket-server-demo | xargs -r docker rm -f",
-          "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts 'docker run --pull=always --platform linux/amd64 -p 3000:3000 -v office-presence-data:/data -e OFFICE_PRESENCE_DB=/data/state.db -e SLACK_MODE=${SLACK_MODE:-socket} -e SLACK_BOT_TOKEN=$SLACK_BOT_TOKEN -e SLACK_APP_TOKEN=$SLACK_APP_TOKEN -e SLACK_SIGNING_SECRET=$SLACK_SIGNING_SECRET -e OFFICES=$OFFICES -e ENABLE_REMINDERS=$ENABLE_REMINDERS -e INCLUDE_WEEKENDS=$INCLUDE_WEEKENDS iamharryliu/office-presence-socket-server-demo:latest'"
+          "docker ps -q --filter ancestor=iamharryliu/office-presence-service | xargs -r docker rm -f",
+          "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts 'docker run --pull=always --platform linux/amd64 -p 3000:3000 -v office-presence-data:/data -e OFFICE_PRESENCE_DB=/data/state.db -e SLACK_MODE=${SLACK_MODE:-socket} -e SLACK_BOT_TOKEN=$SLACK_BOT_TOKEN -e SLACK_APP_TOKEN=$SLACK_APP_TOKEN -e SLACK_SIGNING_SECRET=$SLACK_SIGNING_SECRET -e OFFICES=$OFFICES -e ENABLE_REMINDERS=$ENABLE_REMINDERS -e INCLUDE_WEEKENDS=$INCLUDE_WEEKENDS iamharryliu/office-presence-service:latest'"
         ],
         "parallel": false
       }
@@ -128,8 +128,8 @@
       "dependsOn": ["build", "smoke"],
       "options": {
         "commands": [
-          "docker buildx build --platform linux/amd64 -f apps/api/office-presence-service/Dockerfile -t iamharryliu/office-presence-socket-server-demo:latest -t iamharryliu/office-presence-socket-server-demo:${COMMIT_SHA:-latest} --push dist/apps/api/office-presence-service",
-          "docker rmi $(docker images iamharryliu/office-presence-socket-server-demo --filter 'dangling=true' -q) 2>/dev/null || true"
+          "docker buildx build --platform linux/amd64 -f apps/api/office-presence-service/Dockerfile -t iamharryliu/office-presence-service:latest -t iamharryliu/office-presence-service:${COMMIT_SHA:-latest} --push dist/apps/api/office-presence-service",
+          "docker rmi $(docker images iamharryliu/office-presence-service --filter 'dangling=true' -q) 2>/dev/null || true"
         ],
         "parallel": false
       }
@@ -153,7 +153,7 @@
     },
     "deploy:demo": {
       "dependsOn": ["deploy-container", "deploy:secrets:demo"],
-      "command": "flyctl deploy --config ./deployment-configs/fly-configs/demo-office-presence-service.toml --image iamharryliu/office-presence-socket-server-demo:${COMMIT_SHA:-latest}"
+      "command": "flyctl deploy --config ./deployment-configs/fly-configs/demo-office-presence-service.toml --image iamharryliu/office-presence-service:${COMMIT_SHA:-latest}"
     }
   }
 }

@@ -2,7 +2,7 @@ app = 'demo-office-presence-service'
 primary_region = 'yyz'
 
 [build]
-  image = 'iamharryliu/office-presence-socket-server-demo:latest'
+  image = 'iamharryliu/office-presence-service:latest'
 
 [env]
   PORT = '3000'
