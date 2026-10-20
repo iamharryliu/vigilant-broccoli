@@ -29,10 +29,10 @@ module.exports = {
         },
       },
       animation: {
-        'sheet-in': 'sheet-in 300ms cubic-bezier(0.32, 0.72, 0, 1)',
+        'sheet-in': 'sheet-in 500ms cubic-bezier(0.32, 0.72, 0, 1)',
         // forwards holds the sheet off-screen until Radix unmounts it on
         // animationend, instead of flashing back for a frame.
-        'sheet-out': 'sheet-out 200ms ease-in forwards',
+        'sheet-out': 'sheet-out 350ms ease-in forwards',
       },
       colors: {
         background: 'hsl(var(--background))',
