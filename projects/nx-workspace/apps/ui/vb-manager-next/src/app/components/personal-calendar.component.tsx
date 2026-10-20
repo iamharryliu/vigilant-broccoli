@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { CalendarConfig } from '@vigilant-broccoli/common-browser';
-import { buildEventCalendarEmbedUrl } from '@vigilant-broccoli/personal-common-js';
-import { BASE_CALENDAR_CONFIG } from '@vigilant-broccoli/personal-private-js';
+import { buildEventCalendarEmbedUrl } from '@harry/personal';
+import { BASE_CALENDAR_CONFIG } from '@harry/private';
 import { authFetch } from '../../../libs/auth';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { EventCalendar } from '../constants/event-calendars';

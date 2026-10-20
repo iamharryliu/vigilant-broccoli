@@ -13,7 +13,7 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { SUPABASE_URL } from '@vigilant-broccoli/common-node';
 import { Email } from '@vigilant-broccoli/messaging';
-import { SENDER_EMAIL_ADDRESS } from '@vigilant-broccoli/personal-common-js';
+import { SENDER_EMAIL_ADDRESS } from '@harry/personal';
 import {
   createApiKeyPlugin,
   createDocsPlugin,

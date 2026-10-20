@@ -3,7 +3,7 @@ import {
   buildBaseCalendarConfig,
   PersonalCalendarSource,
   PUBLIC_CALENDAR_SOURCES,
-} from '@vigilant-broccoli/personal-common-js';
+} from '@harry/personal';
 
 export const PRIVATE_GOOGLE_CALENDAR = {
   BIRTHDAYS:

@@ -714,6 +714,9 @@ importers:
       '@fastify/rate-limit':
         specifier: ^11.2.0
         version: 11.2.0
+      '@harry/personal':
+        specifier: workspace:*
+        version: link:../../../libs/@harry/personal
       '@supabase/supabase-js':
         specifier: ^2.110.1
         version: 2.110.1
@@ -732,9 +735,6 @@ importers:
       '@vigilant-broccoli/messaging':
         specifier: workspace:*
         version: link:../../../libs/@vigilant-broccoli/messaging
-      '@vigilant-broccoli/personal-common-js':
-        specifier: workspace:*
-        version: link:../../../libs/@vigilant-broccoli/personal-common-js
       archiver:
         specifier: '*'
         version: 7.0.1
@@ -917,6 +917,27 @@ importers:
         specifier: '*'
         version: 19.2.7
 
+  libs/@harry/personal:
+    dependencies:
+      '@vigilant-broccoli/common-browser':
+        specifier: workspace:*
+        version: link:../../@vigilant-broccoli/common-browser
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  libs/@harry/private:
+    dependencies:
+      '@harry/personal':
+        specifier: workspace:*
+        version: link:../personal
+      '@vigilant-broccoli/common-browser':
+        specifier: workspace:*
+        version: link:../../@vigilant-broccoli/common-browser
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
   libs/@vigilant-broccoli/common-browser:
     dependencies:
       '@vigilant-broccoli/common-js':
@@ -1036,6 +1057,15 @@ importers:
         specifier: ^154.1.0
         version: 154.1.0
 
+  libs/@vigilant-broccoli/infrastructure:
+    dependencies:
+      '@harry/personal':
+        specifier: workspace:*
+        version: link:../../@harry/personal
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
   libs/@vigilant-broccoli/llm-schemas:
     dependencies:
       json-schema-to-ts:
@@ -1056,6 +1086,27 @@ importers:
       openai:
         specifier: ^4.26.0
         version: 4.104.0(encoding@0.1.13)(ws@8.21.3)(zod@3.25.76)
+      tslib:
+        specifier: ^2.3.0
+        version: 2.8.1
+
+  libs/@vigilant-broccoli/manager:
+    dependencies:
+      '@harry/private':
+        specifier: workspace:*
+        version: link:../../@harry/private
+      '@vigilant-broccoli/common-js':
+        specifier: workspace:*
+        version: link:../common-js
+      '@vigilant-broccoli/infrastructure':
+        specifier: workspace:*
+        version: link:../infrastructure
+      '@vigilant-broccoli/private-infrastructure':
+        specifier: workspace:*
+        version: link:../private-infrastructure
+      '@vigilant-broccoli/public-links':
+        specifier: workspace:*
+        version: link:../public-links
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
@@ -1090,50 +1141,23 @@ importers:
         specifier: ^20.1.0
         version: 20.4.1(@types/node@26.1.1)
 
-  libs/@vigilant-broccoli/personal-common-js:
+  libs/@vigilant-broccoli/private-infrastructure:
     dependencies:
-      '@vigilant-broccoli/common-browser':
-        specifier: workspace:*
-        version: link:../common-browser
-      tslib:
-        specifier: ^2.3.0
-        version: 2.8.1
-
-  libs/@vigilant-broccoli/personal-private-js:
-    dependencies:
-      '@vigilant-broccoli/common-browser':
-        specifier: workspace:*
-        version: link:../common-browser
-      '@vigilant-broccoli/personal-common-js':
-        specifier: workspace:*
-        version: link:../personal-common-js
-      tslib:
-        specifier: ^2.3.0
-        version: 2.8.1
-
-  libs/@vigilant-broccoli/private-links:
-    dependencies:
-      '@vigilant-broccoli/common-js':
-        specifier: workspace:*
-        version: link:../common-js
-      '@vigilant-broccoli/personal-private-js':
-        specifier: workspace:*
-        version: link:../personal-private-js
-      '@vigilant-broccoli/public-links':
-        specifier: workspace:*
-        version: link:../public-links
       tslib:
         specifier: ^2.3.0
         version: 2.8.1
 
   libs/@vigilant-broccoli/public-links:
     dependencies:
+      '@harry/personal':
+        specifier: workspace:*
+        version: link:../../@harry/personal
       '@vigilant-broccoli/common-js':
         specifier: workspace:*
         version: link:../common-js
-      '@vigilant-broccoli/personal-common-js':
+      '@vigilant-broccoli/infrastructure':
         specifier: workspace:*
-        version: link:../personal-common-js
+        version: link:../infrastructure
       tslib:
         specifier: ^2.3.0
         version: 2.8.1

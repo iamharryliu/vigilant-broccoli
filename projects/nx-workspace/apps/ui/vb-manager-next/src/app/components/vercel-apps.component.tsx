@@ -6,7 +6,7 @@ import {
   StatusCardListItem,
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
-import { VERCEL_LINK } from '@vigilant-broccoli/private-links';
+import { VERCEL_LINK } from '@vigilant-broccoli/public-links';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { StatusListCard } from './status-list-card.component';
 import { usePolledResource } from '../hooks/usePolledResource';

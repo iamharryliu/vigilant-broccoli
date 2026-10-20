@@ -6,14 +6,14 @@ import {
   INTEREST_LINK,
   PROJECT_LINK,
   SOCIAL_LINK,
-} from '@vigilant-broccoli/personal-common-js';
-import { HARRYLIU_APP_URL } from './app.consts';
+} from '@harry/personal';
+import { VB_APP_URL } from '@vigilant-broccoli/infrastructure';
 import { LINK_GROUP_SUBGROUP, PUBLIC_QUICK_LINKS } from './quick-links.consts';
 
 export const PERSONAL_SITE_LINK = {
   INDEX: {
     NAME: 'Index',
-    URL: HARRYLIU_APP_URL.PERSONAL_WEBSITE.URL,
+    URL: VB_APP_URL.PERSONAL_WEBSITE.URL,
   },
   LINKS: {
     NAME: 'Links',
@@ -29,7 +29,7 @@ export const PERSONAL_SITE_LINK = {
   },
   RESUME: {
     NAME: 'Resume',
-    URL: HARRYLIU_APP_URL.RESUME.URL,
+    URL: VB_APP_URL.RESUME.URL,
   },
 } as const;
 

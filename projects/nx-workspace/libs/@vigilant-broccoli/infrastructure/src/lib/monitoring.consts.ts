@@ -1,13 +1,4 @@
-export const VB_GITHUB_REPO_URL =
-  'https://github.com/iamharryliu/vigilant-broccoli';
-export const VB_GITHUB_ACTIONS_URL = `${VB_GITHUB_REPO_URL}/actions`;
-export const VB_GITHUB_WORKFLOWS_URL = `${VB_GITHUB_ACTIONS_URL}/workflows`;
-
-export const HARRYLIU_INFRA_URL = {
-  DRIVE: {
-    NAME: 'Drive',
-    URL: 'https://drive.harryliu.dev/',
-  },
+export const VB_MONITORING_URL = {
   NX_CACHE: {
     NAME: 'Nx Cache Health',
     URL: 'https://nx-cache.harryliu.dev/health',
@@ -19,10 +10,6 @@ export const HARRYLIU_INFRA_URL = {
   SOCKET_SERVER: {
     NAME: 'Socket Server Health',
     URL: 'https://socket.harryliu.dev/health',
-  },
-  CAREER: {
-    NAME: 'Career',
-    URL: 'https://career.harryliu.dev/',
   },
   STATUS: {
     NAME: 'Status',

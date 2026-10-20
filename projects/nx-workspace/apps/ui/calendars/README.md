@@ -15,7 +15,7 @@ Public, login-free calendar page for personal and public event calendars.
   - Tailwind CSS
 - Internal libs
   - `common-browser`
-  - `personal-common-js`
+  - `@harry/personal`
   - `react-lib`
 - Cloud services
   - Google Calendar

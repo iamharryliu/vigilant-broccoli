@@ -13,7 +13,7 @@ import {
   WINDOW_OPEN_FEATURES,
   CardSkeleton,
 } from '@vigilant-broccoli/react-lib';
-import { GCP_LINK } from '@vigilant-broccoli/private-links';
+import { GCP_LINK } from '@vigilant-broccoli/public-links';
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';

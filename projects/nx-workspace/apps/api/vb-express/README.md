@@ -17,9 +17,9 @@
   - `common-js`
   - `common-node`
   - `fastify`
+  - `@harry/personal`
   - `llm-schemas`
   - `messaging`
-  - `personal-common-js`
 - Cloud services
   - ElevenLabs
   - Email Service

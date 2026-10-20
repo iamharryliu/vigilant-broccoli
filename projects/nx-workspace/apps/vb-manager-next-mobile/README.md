@@ -18,9 +18,10 @@ Mobile-friendly dashboard for personal tasks and calendars, with voice input, a 
   - `common-js`
   - `common-node`
   - `google-workspace`
-  - `personal-common-js`
-  - `personal-private-js`
-  - `private-links`
+  - `@harry/personal`
+  - `@harry/private`
+  - `manager`
+  - `public-links`
   - `react-lib`
   - `react-lib-auth`
   - `react-lib-higher-level`
