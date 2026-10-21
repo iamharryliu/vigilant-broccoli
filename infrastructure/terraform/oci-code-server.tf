@@ -83,6 +83,13 @@ resource "random_password" "code_server_password" {
   special = false
 }
 
+# Distinct from the web login password so a leaked login does not grant
+# container root. Read it from Terraform state when sudo is needed.
+resource "random_password" "code_server_sudo_password" {
+  length  = 32
+  special = false
+}
+
 resource "oci_core_instance" "code_server" {
   compartment_id      = local.oci_tenancy_ocid
   availability_domain = data.oci_identity_availability_domains.ads.availability_domains[0].name
@@ -114,6 +121,7 @@ resource "oci_core_instance" "code_server" {
       code_server_domain      = var.code_server_domain
       code_server_image       = var.code_server_image
       code_server_password    = random_password.code_server_password.result
+      code_server_sudo_password = random_password.code_server_sudo_password.result
       code_server_origin_cert = cloudflare_origin_ca_certificate.code_server.certificate
       code_server_origin_key  = tls_private_key.code_server_origin.private_key_pem
       claude_code_oauth_token = var.claude_code_oauth_token

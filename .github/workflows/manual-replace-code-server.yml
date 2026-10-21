@@ -62,7 +62,7 @@ jobs:
           terraform init -input=false
           REPLACE_FLAGS="-replace=oci_core_instance.code_server"
           if [ "${{ inputs.rotate_password }}" = "true" ]; then
-            REPLACE_FLAGS="$REPLACE_FLAGS -replace=random_password.code_server_password"
+            REPLACE_FLAGS="$REPLACE_FLAGS -replace=random_password.code_server_password -replace=random_password.code_server_sudo_password"
           fi
           # -target keeps the refresh to just this VM and its DNS record: the
           # github_actions SA (de-privileged in #361) can't read the unrelated

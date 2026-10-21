@@ -71,7 +71,7 @@ write_files:
             PGID: "1000"
             TZ: America/Toronto
             PASSWORD: ${code_server_password}
-            SUDO_PASSWORD: ${code_server_password}
+            SUDO_PASSWORD: ${code_server_sudo_password}
             DEFAULT_WORKSPACE: /config/vigilant-broccoli
             CLAUDE_CODE_OAUTH_TOKEN: "${claude_code_oauth_token}"
             GH_TOKEN_FILE: /run/secrets/gh-token.json
