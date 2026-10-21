@@ -31,7 +31,6 @@ type KeyboardHandlers = {
   openChatbot: () => void;
   setCalendarDialogOpen: (open: boolean) => void;
   setNotepadDialogOpen: (open: boolean) => void;
-  setPomodoroDialogOpen: (open: boolean) => void;
   setUtilitiesDialogOpen: (open: boolean) => void;
 };
 
@@ -60,12 +59,6 @@ const processKeyboardInput = (
     case 'n':
       handlers.setNotepadDialogOpen(true);
       return true;
-    case 'p':
-      if (isShift) {
-        handlers.setPomodoroDialogOpen(true);
-        return true;
-      }
-      return false;
     case 'u':
       handlers.setUtilitiesDialogOpen(true);
       return true;
@@ -115,7 +108,6 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [calendarDialogOpen, setCalendarDialogOpen] = useState(false);
   const [notepadDialogOpen, setNotepadDialogOpen] = useState(false);
-  const [pomodoroDialogOpen, setPomodoroDialogOpen] = useState(false);
   const [utilitiesDialogOpen, setUtilitiesDialogOpen] = useState(false);
   const [shortcutsOverlayOpen, setShortcutsOverlayOpen] = useState(false);
 
@@ -137,7 +129,6 @@ export default function Layout({ children }: { children: ReactNode }) {
         openChatbot: () => router.push(SIDEBAR_ROUTE.CHATBOT.path),
         setCalendarDialogOpen,
         setNotepadDialogOpen,
-        setPomodoroDialogOpen,
         setUtilitiesDialogOpen,
       });
     };
@@ -175,7 +166,6 @@ export default function Layout({ children }: { children: ReactNode }) {
           </main>
           <div className="print:hidden">
             <RightSidebar
-              setPomodoroDialogOpen={setPomodoroDialogOpen}
               setSearchDialogOpen={setSearchDialogOpen}
               notificationsOpen={notificationsOpen}
               setNotificationsOpen={handleSetNotificationsOpen}
@@ -196,8 +186,6 @@ export default function Layout({ children }: { children: ReactNode }) {
             setCalendarDialogOpen={setCalendarDialogOpen}
             notepadDialogOpen={notepadDialogOpen}
             setNotepadDialogOpen={setNotepadDialogOpen}
-            pomodoroDialogOpen={pomodoroDialogOpen}
-            setPomodoroDialogOpen={setPomodoroDialogOpen}
             utilitiesDialogOpen={utilitiesDialogOpen}
             setUtilitiesDialogOpen={setUtilitiesDialogOpen}
           />

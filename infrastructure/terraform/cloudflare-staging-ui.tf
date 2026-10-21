@@ -8,6 +8,7 @@ locals {
     "staging-docs-md",
     "staging-findme",
     "staging-harryliu-dev-react",
+    "staging-pomodoro-react",
     "staging-utilities-ui",
     "staging-waiting-games",
     "staging-whiteboard",

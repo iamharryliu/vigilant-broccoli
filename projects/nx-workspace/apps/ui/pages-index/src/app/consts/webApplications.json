@@ -97,6 +97,13 @@
       "titleKey": "WEB_APPLICATIONS_PAGE.BOOKMARKS.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.BOOKMARKS.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/bookmarks-react/README.md"
+    },
+    {
+      "id": "pomodoro",
+      "href": "https://pomodoro.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.POMODORO.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.POMODORO.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/pomodoro-react/README.md"
     }
   ],
   "demos": [

@@ -143,6 +143,10 @@
       "DESCRIPTION": "Browser demo of the OK-IN office presence Slack app."
     },
     "OPEN_APPLICATION": "Open application",
+    "POMODORO": {
+      "TITLE": "Pomodoro",
+      "DESCRIPTION": "Focus timer with configurable work and break sessions, sound and notifications."
+    },
     "BOOKMARKS": {
       "TITLE": "Bookmarks",
       "DESCRIPTION": "Personal bookmarks saved in your browser, with search, groups and JSON import/export."

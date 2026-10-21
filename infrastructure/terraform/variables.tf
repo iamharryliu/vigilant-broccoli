@@ -371,6 +371,21 @@ variable "bookmarks_pages_subdomain" {
   default = "production-bookmarks-react.pages.dev"
 }
 
+variable "pomodoro_domain" {
+  type    = string
+  default = "pomodoro.harryliu.dev"
+}
+
+variable "pomodoro_pages_project" {
+  type    = string
+  default = "production-pomodoro-react"
+}
+
+variable "pomodoro_pages_subdomain" {
+  type    = string
+  default = "production-pomodoro-react.pages.dev"
+}
+
 variable "cloud8skate_domain" {
   type    = string
   default = "cloud8skate.com"

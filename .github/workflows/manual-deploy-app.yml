@@ -17,6 +17,7 @@ on:
           - weather-next
           - balloono
           - bookmarks-react
+          - pomodoro-react
           - calendars
           - hearth
           - cloud-8-skate-react

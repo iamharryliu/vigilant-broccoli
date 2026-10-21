@@ -21,6 +21,11 @@ export const VB_APP_URL = {
     URL: 'https://bookmarks.harryliu.dev/',
     STAGING_URL: 'https://staging-bookmarks-react.pages.dev/',
   },
+  POMODORO: {
+    NAME: 'Pomodoro',
+    URL: 'https://pomodoro.harryliu.dev/',
+    STAGING_URL: 'https://staging-pomodoro-react.pages.dev/',
+  },
   CALENDARS: {
     NAME: 'Calendars',
     URL: PROJECT_LINK.CALENDAR.URL,

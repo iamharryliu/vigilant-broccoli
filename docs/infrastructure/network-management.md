@@ -26,6 +26,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── weather.harryliu.dev           Weather — Vercel `production-weather-next` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
 ├── balloono.harryliu.dev                 Balloono — Vercel `production-balloono` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; online rooms run over public Supabase Realtime channels, no backend of its own)
 ├── bookmarks.harryliu.dev                Bookmarks — Cloudflare Pages `production-bookmarks-react` (domain + CNAME: Terraform `cloudflare-bookmarks.tf`; browser-local data, no backend or auth)
+├── pomodoro.harryliu.dev                 Pomodoro — Cloudflare Pages `production-pomodoro-react` (domain + CNAME: Terraform `cloudflare-pomodoro.tf`; browser-local settings, no backend or auth)
 ├── docs.harryliu.dev                     Docs MD — Cloudflare Pages `production-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-docs-md.yml, which mirrors `deploy.yml`'s environment selection because the notes snapshot lives outside the nx graph; public, no Access gating)
 ├── context.harryliu.dev                  Agent Context — Cloudflare Pages `production-context-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-context-md.yml because the agent-context snapshot lives outside the nx graph; public, no Access gating)
 ├── components.harryliu.dev        Component Library — Cloudflare Pages `production-component-library` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating).
@@ -64,6 +65,9 @@ pages.dev                                 Cloudflare Pages URLs for the environm
 ├── staging-bookmarks-react.pages.dev         Bookmarks (staging, Cloudflare Access)
 ├── production-bookmarks-react.pages.dev      Bookmarks (production origin)
 ├── preview-bookmarks-react.pages.dev         Bookmarks (PR previews)
+├── staging-pomodoro-react.pages.dev          Pomodoro (staging, Cloudflare Access)
+├── production-pomodoro-react.pages.dev       Pomodoro (production origin)
+├── preview-pomodoro-react.pages.dev          Pomodoro (PR previews)
 ├── demo-office-presence-ui.pages.dev        Office Presence UI (demo only — its only deploy)
 ├── staging-findme.pages.dev                 FindMe (staging)
 ├── production-findme.pages.dev              FindMe (production)
