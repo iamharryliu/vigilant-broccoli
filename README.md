@@ -2,7 +2,7 @@
 
 <!-- managed:repo-stats:start -->
 
-Personal monorepo, supporting **16 applications**, **6 API services**, **11 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
+Personal monorepo, supporting **17 applications**, **6 API services**, **11 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
 
 <!-- managed:repo-stats:end -->
 
@@ -83,6 +83,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | <img src="./projects/nx-workspace/apps/ui/office-presence-ui/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Office Presence UI](./projects/nx-workspace/apps/ui/office-presence-ui)       | Browser demo of the Office Presence Slack app.                      | [demo-office-presence-ui.pages.dev](https://demo-office-presence-ui.pages.dev/)     |
 | <img src="./projects/nx-workspace/apps/ui/pages-index/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Pages Index](./projects/nx-workspace/apps/ui/pages-index)                            | Repository applications, packages, status, and agent documentation. | [projects.harryliu.dev](https://projects.harryliu.dev/)                             |
 | <img src="./projects/nx-workspace/apps/ui/personal-website-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Personal Website](./projects/nx-workspace/apps/ui/personal-website-react) | Personal profile, links, calendar, and resume.                      | [harryliu.dev](https://harryliu.dev/)                                               |
+| <img src="./projects/nx-workspace/apps/ui/pomodoro-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Pomodoro](./projects/nx-workspace/apps/ui/pomodoro-react)                         | Focus timer with work and break sessions.                           | [pomodoro.harryliu.dev](https://pomodoro.harryliu.dev/)                             |
 | <img src="./projects/nx-workspace/apps/ui/utilities-ui/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Utilities UI](./projects/nx-workspace/apps/ui/utilities-ui)                         | Searchable page of everyday utilities.                              | [utilities.harryliu.dev](https://utilities.harryliu.dev/)                           |
 | <img src="./projects/nx-workspace/apps/ui/waiting-games/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Waiting Games](./projects/nx-workspace/apps/ui/waiting-games)                      | Hands-free cup, quiz and estimation games to watch while you wait.  | [waiting.harryliu.dev](https://waiting.harryliu.dev/)                               |
 | <img src="./projects/nx-workspace/apps/ui/weather-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Weather](./projects/nx-workspace/apps/ui/weather-next)                                   | Current weather for your location at a glance.                      | [weather.harryliu.dev](https://weather.harryliu.dev/)                               |

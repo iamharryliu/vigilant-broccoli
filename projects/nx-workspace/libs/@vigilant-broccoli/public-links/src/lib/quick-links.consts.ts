@@ -193,6 +193,11 @@ export const VB_LINKS: QuickLink[] = [
       NAME: `${VB_APP_URL.BOOKMARKS.NAME} (Staging)`,
       URL: VB_APP_URL.BOOKMARKS.STAGING_URL,
     },
+    VB_APP_URL.POMODORO,
+    {
+      NAME: `${VB_APP_URL.POMODORO.NAME} (Staging)`,
+      URL: VB_APP_URL.POMODORO.STAGING_URL,
+    },
     VB_APP_URL.CALENDARS,
     {
       NAME: `${VB_APP_URL.CALENDARS.NAME} (Staging)`,

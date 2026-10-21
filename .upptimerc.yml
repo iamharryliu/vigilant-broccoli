@@ -14,6 +14,10 @@ sites:
     url: https://staging-bookmarks-react.pages.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
+  - name: staging-pomodoro
+    url: https://staging-pomodoro-react.pages.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [302]
   - name: staging-cloud-8-skate
     url: https://staging-cloud-8-skate-react.pages.dev/
     maxRedirects: 0
@@ -120,6 +124,8 @@ sites:
     url: https://context.harryliu.dev/
   - name: production-bookmarks
     url: https://bookmarks.harryliu.dev/
+  - name: production-pomodoro
+    url: https://pomodoro.harryliu.dev/
   - name: demo-employee-handler-ui
     url: https://demo-employee-handler-ui.vercel.app/
   - name: demo-office-presence-ui
