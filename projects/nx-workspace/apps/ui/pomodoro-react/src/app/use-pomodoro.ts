@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
 const STORAGE_KEY = 'pomodoro:v1';
+const STATE_STORAGE_KEY = 'pomodoro:v1:state';
 const SECONDS_PER_MINUTE = 60;
 const TICK_MS = 250;
 const SESSION_BEEP_HZ = 880;
@@ -58,6 +59,58 @@ function readSettings(): Settings {
   }
 }
 
+type TimerState = {
+  mode: Mode;
+  completed: number;
+  running: boolean;
+  remaining: number;
+  endsAt: number;
+};
+
+const MODES = Object.values(MODE);
+
+function nextModeAfter(mode: Mode, count: number, settings: Settings): Mode {
+  if (mode !== MODE.WORK) return MODE.WORK;
+  return count % settings.longBreakEvery === 0
+    ? MODE.LONG_BREAK
+    : MODE.SHORT_BREAK;
+}
+
+function freshState(settings: Settings, mode: Mode, completed: number) {
+  const remaining = settings[mode] * SECONDS_PER_MINUTE;
+  return { mode, completed, running: false, remaining, endsAt: 0 };
+}
+
+function readState(settings: Settings): TimerState {
+  const fresh = freshState(settings, MODE.WORK, 0);
+  try {
+    const stored = JSON.parse(localStorage.getItem(STATE_STORAGE_KEY) ?? '{}');
+    if (!MODES.includes(stored.mode)) return fresh;
+    const mode: Mode = stored.mode;
+    const completed = Math.max(0, Math.floor(Number(stored.completed)) || 0);
+    if (stored.running === true && Number.isFinite(stored.endsAt)) {
+      if (stored.endsAt > Date.now()) {
+        return {
+          mode,
+          completed,
+          running: true,
+          remaining: Math.ceil((stored.endsAt - Date.now()) / 1000),
+          endsAt: stored.endsAt,
+        };
+      }
+      // The session ended while the page was closed: finish it without a late alert.
+      const count = mode === MODE.WORK ? completed + 1 : completed;
+      return freshState(settings, nextModeAfter(mode, count, settings), count);
+    }
+    const remaining = Math.floor(Number(stored.remaining));
+    if (!(remaining >= 1 && remaining <= settings[mode] * SECONDS_PER_MINUTE))
+      return freshState(settings, mode, completed);
+    return { mode, completed, running: false, remaining, endsAt: 0 };
+  } catch {
+    return fresh;
+  }
+}
+
 export function formatTime(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / SECONDS_PER_MINUTE);
   const seconds = totalSeconds % SECONDS_PER_MINUTE;
@@ -87,13 +140,12 @@ function beep() {
 export function usePomodoro(notify: (mode: Mode) => string) {
   const [settings, setSettingsState] = useState(readSettings);
   const [storageError, setStorageError] = useState(false);
-  const [mode, setMode] = useState<Mode>(MODE.WORK);
-  const [completed, setCompleted] = useState(0);
-  const [running, setRunning] = useState(false);
-  const [remaining, setRemaining] = useState(
-    settings.work * SECONDS_PER_MINUTE,
-  );
-  const endsAt = useRef(0);
+  const [initial] = useState(() => readState(settings));
+  const [mode, setMode] = useState<Mode>(initial.mode);
+  const [completed, setCompleted] = useState(initial.completed);
+  const [running, setRunning] = useState(initial.running);
+  const [remaining, setRemaining] = useState(initial.remaining);
+  const endsAt = useRef(initial.endsAt);
   const notifyRef = useRef(notify);
   notifyRef.current = notify;
 
@@ -107,17 +159,10 @@ export function usePomodoro(notify: (mode: Mode) => string) {
     setRunning(autoStart);
   };
 
-  const nextMode = (count: number): Mode =>
-    mode !== MODE.WORK
-      ? MODE.WORK
-      : count % settings.longBreakEvery === 0
-        ? MODE.LONG_BREAK
-        : MODE.SHORT_BREAK;
-
   const advance = (finished: boolean) => {
     const count = mode === MODE.WORK ? completed + 1 : completed;
     if (mode === MODE.WORK) setCompleted(count);
-    const target = nextMode(count);
+    const target = nextModeAfter(mode, count, settings);
     if (finished) {
       if (settings.sound) beep();
       if (settings.notifications && 'Notification' in window) {
@@ -139,6 +184,23 @@ export function usePomodoro(notify: (mode: Mode) => string) {
     }, TICK_MS);
     return () => clearInterval(id);
   }, [running]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        STATE_STORAGE_KEY,
+        JSON.stringify({
+          mode,
+          completed,
+          running,
+          remaining,
+          endsAt: running ? endsAt.current : 0,
+        }),
+      );
+    } catch {
+      // Timer state is best-effort; settings writes already surface storage errors.
+    }
+  }, [mode, completed, running, remaining]);
 
   const start = () => {
     endsAt.current = Date.now() + remaining * 1000;
