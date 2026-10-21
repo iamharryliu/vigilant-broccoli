@@ -36,7 +36,7 @@ pre-commit install                 # Install the pre-commit git hooks
 pnpm local:install:machine-setup   # Install tools and dotfiles for this machine (macOS or Linux)
 ```
 
-See more:
+See more documentation:
 
 - [Cheatsheet](https://context.harryliu.dev/?file=docs/cheatsheet.md) — useful infra-level CLI commands
 - [Code quality tools](./docs/code-quality-tools.md) — linters, formatters, hooks and scanners with their local/CI enforcement
