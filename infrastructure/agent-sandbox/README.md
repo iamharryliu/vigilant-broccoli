@@ -6,6 +6,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 - [Shell and toolchain](#shell-and-toolchain)
 - [Local Ollama agent](#local-ollama-agent)
+- [Running on the code-server VM](#running-on-the-code-server-vm)
 - [Running in CI](#running-in-ci)
 - [Publishing several pull requests](#publishing-several-pull-requests)
 - [Ending without changes](#ending-without-changes)
@@ -43,6 +44,14 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 - Preview runs do not fetch Vault credentials, commit, push or open PRs. Each run clones fresh remote main into a separate checkout under the printed `/tmp/vb-local-solve.*` directory, retaining code, `.git/solve-meta.json` and `run.log` after success or failure. Your current checkout and uncommitted edits are not inputs. Review with `git -C <printed-checkout> diff`; preview runs implement only the first increment and record follow-ups in metadata.
 - `--agent ollama --publish` explicitly enables the existing GitHub PR/increment pipeline, using an exported `GH_TOKEN` or the existing Vault GitHub credentials. It still uses only the local model. TODO jobs run sequentially in both modes to limit inference memory pressure.
 - Override the model with `--ollama-model <local-tag>` or `OLLAMA_MODEL`; override the host port with `OLLAMA_BASE_URL=http://host.docker.internal:<port>`. The model must already be pulled and support tools. The adapter rebuilds the Docker image and checks model availability before every batch. `--local` is shorthand for `--agent ollama`; Actions retains its existing hosted agent choices.
+
+## Running on the code-server VM
+
+- `pnpm agentic-pr-create --vm <id...>` or `--vm --prompt "<task>"` runs the solve in the code-server container on the OCI VM instead of a local Docker sandbox, so the Mac can sleep or disconnect while it runs. Claude only; `--model` still applies.
+- `solve-vm.sh` loads the GitHub App credentials from Vault, delivers a fresh 1-hour installation token to the VM (the same file `manual-refresh-code-server-github-token` writes), then streams `solve-vm-session.sh` into the container over `pnpm code-server:ssh`'s SSH path. Every request gets its own worktree of `/config/vigilant-broccoli` off fresh `origin/main` and a detached tmux session running `solve-todo-runner.sh`, which publishes PRs exactly as the sandbox does.
+- Concurrent runs are isolated by worktree, run directory and tmux session; fetches are serialized with `flock`. All runs share one token file, so each launch extends earlier runs, but a run still has to push within an hour of the latest launch. The VM's 2 OCPUs and 14 GB, shared with code-server, are the practical limit: about two or three solves at once.
+- Logs live in `/config/agentic-runs/<run>/run.log` (ending with `RUN_EXIT::<status>`); in the code-server terminal, `tmux ls` lists running solves and `tmux attach -t <run>` follows one. A successful run removes its worktree and local `agent/*` branches; a failed one keeps the worktree for inspection.
+- Unlike the Docker sandbox there is no egress firewall: the agent runs with permission checks bypassed as the container's `abc` user, alongside the code-server password and Claude token in its environment. Runner and skill updates take effect from `main`, since each worktree checks out `origin/main`.
 
 ## Running in CI
 
