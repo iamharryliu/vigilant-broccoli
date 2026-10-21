@@ -66,6 +66,8 @@ from Vault, the script skips the local Vault-over-SSH load and mints the install
   (`PR_TITLE::`, `PR_URL::`, `PR_STATE::`, `PR_BASE::`, `PR_DEPENDS_ON::`, `PR_SUMMARY_*` and `PR_DIFF_BEGIN`/`PR_DIFF_END`),
   `solve-todo.sh` collects them into a JSON Lines file, and `.github/scripts/agentic-solve-email.mjs` renders and sends it.
 
+Unattended Claude runs for the create, update, audit and prune operations use `--permission-mode auto` by default, so the auto-mode classifier blocks exfiltration, credential reads and running downloaded code. Set `SOLVE_PERMISSION_MODE=bypass` in the launching environment to pass `--dangerously-skip-permissions` instead; the wrappers forward the variable into the container. Headless runs refuse blocked actions with nobody to approve them.
+
 `pnpm agentic-pr-create-rnd "<question>"` runs `create-rnd.sh` locally. The `manual-agentic-pr-create-rnd` workflow runs the same command
 on a hosted runner using the existing Claude and GitHub App credentials from Vault. It researches the question,
 writes a new note under `docs/rnd/`, and opens a PR; changes outside `docs/rnd/` fail the run.
