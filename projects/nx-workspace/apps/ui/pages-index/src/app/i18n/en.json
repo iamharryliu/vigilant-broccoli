@@ -154,10 +154,10 @@
   },
   "STATUS_PAGE": {
     "TITLE": "Status",
-    "LOADING_SERVICES": "Loading status\u2026",
+    "LOADING_SERVICES": "Loading status…",
     "NO_SERVICES": "No services configured.",
     "GITHUB_ACTIONS": "GitHub Actions",
-    "VIEW_ALL": "View all \u2192",
+    "VIEW_ALL": "View all →",
     "OPEN_UPTIME_IN_NEW_TAB": "Full uptime history",
     "OPEN_UPTIME_DESCRIPTION": "Response times, incidents and per-service uptime on the Upptime site.",
     "UPTIME_BAR_LABEL": "{date}: {minutes} min down",
@@ -177,7 +177,7 @@
   },
   "REPO_TIMELINE_PAGE": {
     "TITLE": "Repo Timeline",
-    "LOADING": "Loading timeline\u2026",
+    "LOADING": "Loading timeline…",
     "ERROR": "Failed to load timeline: {message}",
     "VIEW_LABEL": "View",
     "VIEW_GRAPH": "Graph",
@@ -202,7 +202,7 @@
     "RANGE_1Y": "1Y",
     "RANGE_2Y": "2Y",
     "RANGE_ALL": "ALL",
-    "ENTRY_SUMMARY": "{commits} commits \u00b7 {pullRequests} PRs"
+    "ENTRY_SUMMARY": "{commits} commits · {pullRequests} PRs"
   },
   "README_PAGE": {
     "TITLE": "README",
@@ -210,14 +210,14 @@
     "VIEW_ON_GITHUB": "View on GitHub",
     "VIEW_ON_NPM": "View on npm",
     "VIEW_ON_DOCKER_HUB": "View on Docker Hub",
-    "LOADING": "Loading README\u2026",
+    "LOADING": "Loading README…",
     "ERROR": "Failed to load README: {message}",
     "NOT_FOUND": "Unknown item.",
     "EMPTY": "No README content available."
   },
   "GITHUB_REPOS_PAGE": {
     "TITLE": "GitHub",
-    "LOADING": "Loading public repositories\u2026",
+    "LOADING": "Loading public repositories…",
     "EMPTY": "No public repositories found.",
     "ERROR": "Failed to load repositories: {message}",
     "NO_DESCRIPTION": "No description provided."
@@ -277,7 +277,7 @@
     },
     "EMPLOYEE_HANDLER": {
       "TITLE": "employee-handler",
-      "DESCRIPTION": "Employee lifecycle automation \u2014 onboarding, offboarding, signatures, data sync."
+      "DESCRIPTION": "Employee lifecycle automation — onboarding, offboarding, signatures, data sync."
     },
     "SLACK_WORKSPACE": {
       "TITLE": "slack-workspace",
