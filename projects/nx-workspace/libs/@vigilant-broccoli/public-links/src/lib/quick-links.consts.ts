@@ -188,6 +188,11 @@ export const VB_LINKS: QuickLink[] = [
       NAME: `${VB_APP_URL.WAITING_GAMES.NAME} (Staging)`,
       URL: VB_APP_URL.WAITING_GAMES.STAGING_URL,
     },
+    VB_APP_URL.BOOKMARKS,
+    {
+      NAME: `${VB_APP_URL.BOOKMARKS.NAME} (Staging)`,
+      URL: VB_APP_URL.BOOKMARKS.STAGING_URL,
+    },
     VB_APP_URL.CALENDARS,
     {
       NAME: `${VB_APP_URL.CALENDARS.NAME} (Staging)`,

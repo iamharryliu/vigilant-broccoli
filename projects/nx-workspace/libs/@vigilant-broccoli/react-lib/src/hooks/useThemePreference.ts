@@ -15,8 +15,12 @@ const isAppearance = (value: unknown): value is ThemeAppearance =>
   value === LIGHT || value === DARK;
 
 const readStoredAppearance = (): ThemeAppearance | null => {
-  const saved = localStorage.getItem(THEME_STORAGE_KEY);
-  return isAppearance(saved) ? saved : null;
+  try {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    return isAppearance(saved) ? saved : null;
+  } catch {
+    return null;
+  }
 };
 
 // Starts light and resolves in a layout effect so server and client renders
@@ -58,13 +62,13 @@ export function useThemePreference() {
     const next: ThemeAppearance = appearance === LIGHT ? DARK : LIGHT;
     // Toggling back to the system appearance clears the override, so later
     // OS changes apply again.
-    if (next === systemAppearance) {
-      localStorage.removeItem(THEME_STORAGE_KEY);
-      setOverride(null);
-      return;
+    setOverride(next === systemAppearance ? null : next);
+    try {
+      if (next === systemAppearance) localStorage.removeItem(THEME_STORAGE_KEY);
+      else localStorage.setItem(THEME_STORAGE_KEY, next);
+    } catch {
+      // Keep the in-memory preference when browser storage is unavailable.
     }
-    localStorage.setItem(THEME_STORAGE_KEY, next);
-    setOverride(next);
   }, [appearance, systemAppearance]);
 
   return { appearance, toggleTheme };

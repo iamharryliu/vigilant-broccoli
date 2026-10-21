@@ -1,5 +1,6 @@
 locals {
   staging_pages_projects = toset([
+    "staging-bookmarks-react",
     "staging-calendars",
     "staging-cloud-8-skate-react",
     "staging-component-library",

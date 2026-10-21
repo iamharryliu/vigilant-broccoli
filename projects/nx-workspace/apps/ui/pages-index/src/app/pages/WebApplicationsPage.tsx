@@ -1,6 +1,7 @@
 import {
   Bike,
   BookOpen,
+  Bookmark,
   Bot,
   Briefcase,
   CalendarDays,
@@ -40,6 +41,7 @@ const FALLBACK_ICON: LucideIcon = Globe;
 
 const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
   balloono: Gamepad2,
+  bookmarks: Bookmark,
   calendars: CalendarDays,
   career: Briefcase,
   'context-md': Bot,

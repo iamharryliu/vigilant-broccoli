@@ -183,8 +183,12 @@ export const SearchableList = ({
 
   useEffect(() => {
     if (!storageKey) return;
-    const savedView = localStorage.getItem(storageKey);
-    if (isSearchableListView(savedView)) setView(savedView);
+    try {
+      const savedView = localStorage.getItem(storageKey);
+      if (isSearchableListView(savedView)) setView(savedView);
+    } catch {
+      // Keep the default view when browser storage is unavailable.
+    }
   }, [storageKey]);
 
   useEffect(() => {
@@ -195,7 +199,11 @@ export const SearchableList = ({
 
   const handleViewChange = (nextView: SearchableListView) => {
     setView(nextView);
-    if (storageKey) localStorage.setItem(storageKey, nextView);
+    try {
+      if (storageKey) localStorage.setItem(storageKey, nextView);
+    } catch {
+      // View changes still work without persistence.
+    }
   };
 
   const query = searchQuery.trim();

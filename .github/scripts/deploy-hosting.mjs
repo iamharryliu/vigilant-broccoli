@@ -19,6 +19,7 @@ export const PROJECT_HOSTING = {
   'docs-md': { platform: 'pages', name: 'docs-md' },
   'context-md': { platform: 'pages', name: 'context-md' },
   'utilities-ui': { platform: 'pages', name: 'utilities-ui' },
+  'bookmarks-react': { platform: 'pages', name: 'bookmarks-react' },
   'waiting-games': { platform: 'pages', name: 'waiting-games' },
   'weather-next': { platform: 'vercel', name: 'weather-next' },
   balloono: { platform: 'vercel', name: 'balloono' },

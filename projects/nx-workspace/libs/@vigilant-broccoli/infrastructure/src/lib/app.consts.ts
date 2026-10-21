@@ -16,6 +16,11 @@ export const VB_APP_URL = {
     URL: 'https://waiting.harryliu.dev/',
     STAGING_URL: 'https://staging-waiting-games.pages.dev/',
   },
+  BOOKMARKS: {
+    NAME: 'Bookmarks',
+    URL: 'https://bookmarks.harryliu.dev/',
+    STAGING_URL: 'https://staging-bookmarks-react.pages.dev/',
+  },
   CALENDARS: {
     NAME: 'Calendars',
     URL: PROJECT_LINK.CALENDAR.URL,

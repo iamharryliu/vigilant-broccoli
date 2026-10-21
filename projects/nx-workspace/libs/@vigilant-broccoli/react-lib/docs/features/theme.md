@@ -2,7 +2,7 @@
 
 ## Appearance
 
-- `ThemeProvider` renders a `ThemeScope` from `useThemePreference`, which every app shares: with no saved `theme` in `localStorage` the appearance follows `prefers-color-scheme` live, a manual toggle (`useTheme().toggleTheme`) saves an override, and toggling back to the system appearance clears it so later OS changes apply again. The saved value syncs across tabs.
+- `ThemeProvider` renders a `ThemeScope` from `useThemePreference`, which every app shares: with no saved `theme` in `localStorage` the appearance follows `prefers-color-scheme` live, a manual toggle (`useTheme().toggleTheme`) saves an override, and toggling back to the system appearance clears it so later OS changes apply again. The saved value syncs across tabs. If browser storage is unavailable, the system appearance and in-memory overrides still work.
 - `useSystemAppearance` exposes the live media-query appearance alone (pages-index's ScrollTimeline), and `useToggleThemeKeybind` binds the `d` shortcut to any toggle, so apps that own their theme context (personal-website-react sets the `dark` class on `<html>`) reuse both hooks instead of duplicating them.
 - Both values resolve in a layout effect before the first client paint, keeping the initial render compatible with server-rendered light HTML. Component-library avoids global color transitions so switches do not animate through intermediate gray colors; individual controls retain their hover and focus transitions.
 - `ThemeScope` supports an explicit appearance for system-driven embedded views without replacing the surrounding application's theme context.
