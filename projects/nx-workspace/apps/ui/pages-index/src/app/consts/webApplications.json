@@ -64,13 +64,6 @@
       "readmePath": "projects/nx-workspace/apps/ui/calendars/README.md"
     },
     {
-      "id": "links",
-      "href": "https://links.harryliu.dev/",
-      "titleKey": "WEB_APPLICATIONS_PAGE.LINKS.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.LINKS.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/links-react/README.md"
-    },
-    {
       "id": "utilities",
       "href": "https://utilities.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.UTILITIES.TITLE",

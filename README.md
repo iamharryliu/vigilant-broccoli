@@ -2,7 +2,7 @@
 
 <!-- managed:repo-stats:start -->
 
-Personal monorepo, supporting **17 applications**, **6 API services**, **11 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
+Personal monorepo, supporting **16 applications**, **6 API services**, **11 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
 
 <!-- managed:repo-stats:end -->
 
@@ -80,7 +80,6 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | <img src="./projects/nx-workspace/apps/ui/employee-handler-ui/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Employee Handler UI](./projects/nx-workspace/apps/ui/employee-handler-ui)         | Employee management demo.                                           | [demo-employee-handler-ui.vercel.app](https://demo-employee-handler-ui.vercel.app/) |
 | <img src="./projects/nx-workspace/apps/findme/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [FindMe](./projects/nx-workspace/apps/findme)                                                      | Live location sharing for friends and family.                       | [findme.harryliu.dev](https://findme.harryliu.dev/)                                 |
 | <img src="./projects/nx-workspace/apps/hearth/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Hearth](./projects/nx-workspace/apps/hearth)                                                      | Shared home and community management.                               | [production-hearth.vercel.app](https://production-hearth.vercel.app/)               |
-| <img src="./projects/nx-workspace/apps/ui/links-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Links React](./projects/nx-workspace/apps/ui/links-react)                            | Public pastebin of personal links and contact details.              | [links.harryliu.dev](https://links.harryliu.dev/)                                   |
 | <img src="./projects/nx-workspace/apps/ui/office-presence-ui/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Office Presence UI](./projects/nx-workspace/apps/ui/office-presence-ui)       | Browser demo of the Office Presence Slack app.                      | [demo-office-presence-ui.pages.dev](https://demo-office-presence-ui.pages.dev/)     |
 | <img src="./projects/nx-workspace/apps/ui/pages-index/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Pages Index](./projects/nx-workspace/apps/ui/pages-index)                            | Repository applications, packages, status, and agent documentation. | [projects.harryliu.dev](https://projects.harryliu.dev/)                             |
 | <img src="./projects/nx-workspace/apps/ui/personal-website-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Personal Website](./projects/nx-workspace/apps/ui/personal-website-react) | Personal profile, links, calendar, and resume.                      | [harryliu.dev](https://harryliu.dev/)                                               |
