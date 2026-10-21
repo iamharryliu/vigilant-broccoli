@@ -28,6 +28,8 @@ import {
   CalculatorUtilityContent,
   CookingConversionsUtilityContent,
   CurrencyConverterUtilityContent,
+  PomodoroEngine,
+  PomodoroUtilityContent,
   StopwatchUtilityContent,
   TimerUtilityContent,
 } from '@vigilant-broccoli/react-utility';
@@ -407,6 +409,19 @@ const ALL_ENTRIES: SandboxEntry[] = [
       'Set alarms that persist locally and fire with an audible alert.',
     lib: LIB.UTILITY,
     content: <AlarmUtilityContent />,
+  },
+  {
+    id: 'pomodoro',
+    label: 'Pomodoro',
+    description:
+      'Focus and break timer that survives reloads, with alerts and browser notifications.',
+    lib: LIB.UTILITY,
+    content: (
+      <>
+        <PomodoroEngine />
+        <PomodoroUtilityContent />
+      </>
+    ),
   },
   {
     id: 'calculator',
