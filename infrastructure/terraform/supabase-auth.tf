@@ -54,6 +54,7 @@ resource "supabase_settings" "vb_auth" {
       "https://balloono.harryliu.dev/*",                                    # balloono prod (custom domain)
       "https://staging-vb-manager-next-mobile.vercel.app/auth/callback",    # vb-manager-next mobile staging
       "https://production-vb-manager-next-mobile.vercel.app/auth/callback", # vb-manager-next mobile prod
+      "https://manager.harryliu.dev/auth/callback",                         # vb-manager-next mobile prod (custom domain)
     ])
 
     external_google_enabled          = true

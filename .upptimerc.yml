@@ -111,7 +111,9 @@ sites:
   - name: production-calendars
     url: https://calendar.harryliu.dev/
   - name: production-vb-manager-next-mobile
-    url: https://production-vb-manager-next-mobile.vercel.app/login
+    url: https://manager.harryliu.dev/login
+    maxRedirects: 0
+    expectedStatusCodes: [302]
   - name: production-career
     url: https://career.harryliu.dev/
   - name: production-status
