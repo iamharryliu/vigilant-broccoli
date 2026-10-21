@@ -1,4 +1,4 @@
-import { OPEN_TYPE, type PastebinGroup } from '@vigilant-broccoli/common-js';
+import { OPEN_TYPE, type QuickLink } from '@vigilant-broccoli/common-js';
 import {
   BUSINESS_LINK,
   COMMUNITY_LINK,
@@ -51,10 +51,15 @@ const PASTEBIN_GROUP_NAME = {
   INTERESTS_AND_HOBBIES: 'Interests and Hobbies',
 } as const;
 
-const toEntry = ({ NAME, URL }: { NAME: string; URL: string }) => ({
-  label: NAME,
-  value: URL,
-});
+const toLinks =
+  (subgroup: string) =>
+  (links: { NAME: string; URL: string }[]): QuickLink[] =>
+    links.map(({ NAME, URL }) => ({
+      label: NAME,
+      target: URL,
+      type: OPEN_TYPE.BROWSER,
+      subgroup,
+    }));
 
 const SHARED_QUICK_LINK_SUBGROUPS = [
   LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
@@ -63,62 +68,47 @@ const SHARED_QUICK_LINK_SUBGROUPS = [
   LINK_GROUP_SUBGROUP.LEARN,
 ];
 
-const SHARED_QUICK_LINK_GROUPS: PastebinGroup[] =
-  SHARED_QUICK_LINK_SUBGROUPS.map(subgroup => ({
-    name: subgroup,
-    entries: PUBLIC_QUICK_LINKS.filter(
+const SHARED_QUICK_LINKS: QuickLink[] = SHARED_QUICK_LINK_SUBGROUPS.flatMap(
+  subgroup =>
+    PUBLIC_QUICK_LINKS.filter(
       link => link.subgroup === subgroup && link.type === OPEN_TYPE.BROWSER,
-    ).map(link => ({ label: link.label, value: link.target.trim() })),
-  }));
+    ).map(link => ({ ...link, target: link.target.trim() })),
+);
 
-export const PASTEBIN_GROUPS: PastebinGroup[] = [
-  {
-    name: PASTEBIN_GROUP_NAME.PERSONAL,
-    entries: [
-      PERSONAL_SITE_LINK.INDEX,
-      PERSONAL_SITE_LINK.LINKS,
-      PERSONAL_SITE_LINK.CALENDAR,
-      SOCIAL_LINK.INSTAGRAM_PRETTYDAMNTIRED,
-    ].map(toEntry),
-  },
-  {
-    name: PASTEBIN_GROUP_NAME.CONTACT,
-    entries: [PERSONAL_SITE_LINK.CONTACT, EMAIL_LINK].map(toEntry),
-  },
-  {
-    name: PASTEBIN_GROUP_NAME.ADDRESS,
-    entries: [ADDRESS_LINK.ADDRESS].map(toEntry),
-  },
-  {
-    name: PASTEBIN_GROUP_NAME.CAREER,
-    entries: [PERSONAL_SITE_LINK.RESUME, SOCIAL_LINK.LINKEDIN].map(toEntry),
-  },
-  {
-    name: PASTEBIN_GROUP_NAME.SOFTWARE,
-    entries: [SOCIAL_LINK.GITHUB, PROJECT_LINK.SOFTWARE_PROJECTS].map(toEntry),
-  },
-  {
-    name: PASTEBIN_GROUP_NAME.BUSINESS,
-    entries: [BUSINESS_LINK.SECONDHAND_STORE].map(toEntry),
-  },
-  {
-    name: PASTEBIN_GROUP_NAME.COMMUNITY,
-    entries: [
-      COMMUNITY_LINK.CLOUD8SKATE,
-      SOCIAL_LINK.INSTAGRAM_CLOUD8SKATE,
-      SOCIAL_LINK.INSTAGRAM_TORONTOCITYSKATE,
-      SOCIAL_LINK.INSTAGRAM_MALMOURBANSKATE,
-      SOCIAL_LINK.INSTAGRAM_HUSTLEMALMO,
-    ].map(toEntry),
-  },
-  {
-    name: PASTEBIN_GROUP_NAME.INTERESTS_AND_HOBBIES,
-    entries: [
-      INTEREST_LINK.SPOTIFY,
-      INTEREST_LINK.GOODREADS,
-      INTEREST_LINK.MYANIMELIST,
-      INTEREST_LINK.IMDB,
-    ].map(toEntry),
-  },
-  ...SHARED_QUICK_LINK_GROUPS,
+/** Ordered by subgroup; render with `preserveOrder`. */
+export const PASTEBIN_LINKS: QuickLink[] = [
+  ...toLinks(PASTEBIN_GROUP_NAME.PERSONAL)([
+    PERSONAL_SITE_LINK.INDEX,
+    PERSONAL_SITE_LINK.LINKS,
+    PERSONAL_SITE_LINK.CALENDAR,
+    SOCIAL_LINK.INSTAGRAM_PRETTYDAMNTIRED,
+  ]),
+  ...toLinks(PASTEBIN_GROUP_NAME.CONTACT)([
+    PERSONAL_SITE_LINK.CONTACT,
+    EMAIL_LINK,
+  ]),
+  ...toLinks(PASTEBIN_GROUP_NAME.ADDRESS)([ADDRESS_LINK.ADDRESS]),
+  ...toLinks(PASTEBIN_GROUP_NAME.CAREER)([
+    PERSONAL_SITE_LINK.RESUME,
+    SOCIAL_LINK.LINKEDIN,
+  ]),
+  ...toLinks(PASTEBIN_GROUP_NAME.SOFTWARE)([
+    SOCIAL_LINK.GITHUB,
+    PROJECT_LINK.SOFTWARE_PROJECTS,
+  ]),
+  ...toLinks(PASTEBIN_GROUP_NAME.BUSINESS)([BUSINESS_LINK.SECONDHAND_STORE]),
+  ...toLinks(PASTEBIN_GROUP_NAME.COMMUNITY)([
+    COMMUNITY_LINK.CLOUD8SKATE,
+    SOCIAL_LINK.INSTAGRAM_CLOUD8SKATE,
+    SOCIAL_LINK.INSTAGRAM_TORONTOCITYSKATE,
+    SOCIAL_LINK.INSTAGRAM_MALMOURBANSKATE,
+    SOCIAL_LINK.INSTAGRAM_HUSTLEMALMO,
+  ]),
+  ...toLinks(PASTEBIN_GROUP_NAME.INTERESTS_AND_HOBBIES)([
+    INTEREST_LINK.SPOTIFY,
+    INTEREST_LINK.GOODREADS,
+    INTEREST_LINK.MYANIMELIST,
+    INTEREST_LINK.IMDB,
+  ]),
+  ...SHARED_QUICK_LINKS,
 ];

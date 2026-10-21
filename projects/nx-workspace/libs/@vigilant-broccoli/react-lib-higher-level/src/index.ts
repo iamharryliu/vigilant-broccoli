@@ -5,7 +5,6 @@ export * from './lib/TabbedView';
 export * from './lib/CreateTasksDialog';
 export * from './lib/DocsExplorer';
 export * from './lib/GoogleTasks';
-export * from './lib/Pastebin';
 export * from './lib/QuickLinksDialog';
 export * from './lib/QuickLinksPanel';
 export * from './lib/TaskCapture';

@@ -71,12 +71,6 @@ import { GroupLeaderboardDemo } from './demos/GroupLeaderboardDemo';
 import { EmptyLeaderboardDemo } from './demos/EmptyLeaderboardDemo';
 import { MobileHomeDemo } from './demos/MobileHomeDemo';
 import { NotepadDemo } from './demos/NotepadDemo';
-import { PastebinDemo } from './demos/PastebinDemo';
-import {
-  I18nProvider as PastebinI18nProvider,
-  useTranslation as usePastebinTranslation,
-} from './demos/pastebin/i18n';
-import pastebinEn from './demos/pastebin/en.json';
 import { QuickLinksDemo } from './demos/QuickLinksDemo';
 import { ScrollTimelineDemo } from './demos/ScrollTimelineDemo';
 import { TasksDemo } from './demos/TasksDemo';
@@ -462,13 +456,6 @@ const ALL_ENTRIES: SandboxEntry[] = [
     content: <NotepadDemo />,
   },
   {
-    id: 'pastebin',
-    label: pastebinEn.PASTEBIN.TITLE,
-    description: pastebinEn.PASTEBIN.DESCRIPTION,
-    lib: LIB.HIGHER_LEVEL,
-    content: <PastebinDemo />,
-  },
-  {
     id: 'quick-links',
     label: 'Quick Links',
     description:
@@ -716,7 +703,6 @@ const SandboxBody = ({
   setDark,
   showThemeToggle,
 }: SandboxBodyProps) => {
-  const { t } = usePastebinTranslation();
   const { t: translateSandbox } = useSandboxTranslation();
   const entries = useMemo(
     () =>
@@ -731,21 +717,15 @@ const SandboxBody = ({
                 `FOUNDATIONS.${entry.foundationKey}.SUMMARY`,
               ),
             }
-          : entry.id === 'pastebin'
+          : entry.id === 'alert-dialog'
             ? {
                 ...entry,
-                label: t('PASTEBIN.TITLE'),
-                description: t('PASTEBIN.DESCRIPTION'),
+                label: translateSandbox('ALERT_DIALOG.NAME'),
+                description: translateSandbox('ALERT_DIALOG.SUMMARY'),
               }
-            : entry.id === 'alert-dialog'
-              ? {
-                  ...entry,
-                  label: translateSandbox('ALERT_DIALOG.NAME'),
-                  description: translateSandbox('ALERT_DIALOG.SUMMARY'),
-                }
-              : entry,
+            : entry,
       ),
-    [t, translateSandbox],
+    [translateSandbox],
   );
   const [selectedId, setSelectedId] = useState(readStoredSelectedId);
   const [iconMode, setIconMode] = useState(readStoredIconMode);
@@ -859,10 +839,8 @@ function ComponentSandboxContent({
 
 export function ComponentSandbox(props: ComponentSandboxProps): ReactNode {
   return (
-    <PastebinI18nProvider>
-      <SandboxI18nProvider>
-        <ComponentSandboxContent {...props} />
-      </SandboxI18nProvider>
-    </PastebinI18nProvider>
+    <SandboxI18nProvider>
+      <ComponentSandboxContent {...props} />
+    </SandboxI18nProvider>
   );
 }
