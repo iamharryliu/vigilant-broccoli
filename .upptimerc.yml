@@ -10,6 +10,10 @@ sites:
     url: https://staging-context-md.pages.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
+  - name: staging-bookmarks
+    url: https://staging-bookmarks-react.pages.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [302]
   - name: staging-links
     url: https://staging-links-react.pages.dev/
     maxRedirects: 0
@@ -118,6 +122,8 @@ sites:
     url: https://docs.harryliu.dev/
   - name: production-context
     url: https://context.harryliu.dev/
+  - name: production-bookmarks
+    url: https://bookmarks.harryliu.dev/
   - name: production-links
     url: https://links.harryliu.dev/
   - name: demo-employee-handler-ui

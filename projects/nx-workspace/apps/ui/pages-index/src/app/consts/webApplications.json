@@ -97,6 +97,13 @@
       "titleKey": "WEB_APPLICATIONS_PAGE.WHITEBOARD.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.WHITEBOARD.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/whiteboard/README.md"
+    },
+    {
+      "id": "bookmarks",
+      "href": "https://bookmarks.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.BOOKMARKS.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.BOOKMARKS.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/bookmarks-react/README.md"
     }
   ],
   "demos": [

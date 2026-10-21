@@ -17,7 +17,7 @@ Searchable, grouped link launcher. `QuickLinksDialog` wraps `QuickLinksPanel` in
 ## SearchableList
 
 - Groups of `{ name, entries }`; an entry is `{ label, value, onOpen?, isExternal? }` and an empty group `name` renders no heading.
-- Views: `rows` (copy/open rows), `grouped` (buttons under headings) and `list` (flat buttons), switched by a segmented control. `storageKey` persists the choice in localStorage.
+- Views: `rows` (copy/open rows), `grouped` (buttons under headings) and `list` (flat buttons), switched by a segmented control. `storageKey` persists the choice in localStorage. When storage is unavailable, the default view and in-memory view switching remain usable.
 - An entry's primary action is `onOpen`, then opening `value` when it starts with `http`, then copying it.
 - Search fuzzy-matches the label and substring-matches the value. Results are ordered by score, and Enter in the search box runs the best match and clears the query.
 - Arrow keys move focus between items (`data-quick-link-item`) and back to the search box in every view. In `rows`, Enter on a focused row runs its primary action; keys bubbling from the inner copy/open buttons are ignored.

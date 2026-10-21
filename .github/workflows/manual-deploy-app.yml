@@ -16,6 +16,7 @@ on:
           - whiteboard
           - weather-next
           - balloono
+          - bookmarks-react
           - calendars
           - hearth
           - cloud-8-skate-react

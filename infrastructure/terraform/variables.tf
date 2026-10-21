@@ -371,6 +371,21 @@ variable "links_pages_subdomain" {
   default = "production-links-react.pages.dev"
 }
 
+variable "bookmarks_domain" {
+  type    = string
+  default = "bookmarks.harryliu.dev"
+}
+
+variable "bookmarks_pages_project" {
+  type    = string
+  default = "production-bookmarks-react"
+}
+
+variable "bookmarks_pages_subdomain" {
+  type    = string
+  default = "production-bookmarks-react.pages.dev"
+}
+
 variable "cloud8skate_domain" {
   type    = string
   default = "cloud8skate.com"
