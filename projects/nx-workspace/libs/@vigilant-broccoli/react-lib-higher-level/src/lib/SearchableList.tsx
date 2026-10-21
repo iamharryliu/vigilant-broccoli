@@ -21,28 +21,29 @@ import {
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
 
-export const PASTEBIN_VIEW = {
+export const SEARCHABLE_LIST_VIEW = {
   ROWS: 'rows',
   GROUPED: 'grouped',
   LIST: 'list',
 } as const;
 
-export type PastebinView = (typeof PASTEBIN_VIEW)[keyof typeof PASTEBIN_VIEW];
+export type SearchableListView =
+  (typeof SEARCHABLE_LIST_VIEW)[keyof typeof SEARCHABLE_LIST_VIEW];
 
-export type PastebinItem = {
+export type SearchableListItem = {
   label: string;
   value: string;
   onOpen?: () => void;
   isExternal?: boolean;
 };
 
-export type PastebinItemGroup = {
+export type SearchableListGroup = {
   /** An empty name renders the entries without a heading. */
   name: string;
-  entries: PastebinItem[];
+  entries: SearchableListItem[];
 };
 
-const SEARCH_PLACEHOLDER = 'Search pastebin...';
+const SEARCH_PLACEHOLDER = 'Search...';
 const EMPTY_MESSAGE = 'No entries found.';
 const VIEW_TOGGLE_LABEL = 'View';
 const WINDOW_TARGET_BLANK = '_blank';
@@ -50,25 +51,25 @@ const URL_PREFIX = 'http';
 const ENTER_KEY = 'Enter';
 
 const VIEW_OPTIONS: {
-  value: PastebinView;
+  value: SearchableListView;
   label: string;
   description: string;
   Icon: LucideIcon;
 }[] = [
   {
-    value: PASTEBIN_VIEW.LIST,
+    value: SEARCHABLE_LIST_VIEW.LIST,
     label: 'List',
     description: 'List: all entries as badges',
     Icon: List,
   },
   {
-    value: PASTEBIN_VIEW.GROUPED,
+    value: SEARCHABLE_LIST_VIEW.GROUPED,
     label: 'Grouped',
     description: 'Grouped: badges under group titles',
     Icon: LayoutList,
   },
   {
-    value: PASTEBIN_VIEW.ROWS,
+    value: SEARCHABLE_LIST_VIEW.ROWS,
     label: 'Rows',
     description: 'Rows: detailed rows with open and copy buttons',
     Icon: Rows3,
@@ -86,21 +87,23 @@ const ARROW_DIRECTION: Record<string, Direction> = {
 
 const isUrl = (value: string) => value.startsWith(URL_PREFIX);
 
-const isPastebinView = (value: string | null): value is PastebinView =>
+const isSearchableListView = (
+  value: string | null,
+): value is SearchableListView =>
   VIEW_OPTIONS.some(option => option.value === value);
 
 const openUrl = (url: string) =>
   window.open(url, WINDOW_TARGET_BLANK, WINDOW_OPEN_FEATURES);
 
-type ScoredEntry = { entry: PastebinItem; score: number };
+type ScoredEntry = { entry: SearchableListItem; score: number };
 
-const scoreEntry = (entry: PastebinItem, query: string) => {
+const scoreEntry = (entry: SearchableListItem, query: string) => {
   const labelMatch = fuzzyMatch(query, entry.label);
   if (labelMatch.matched) return labelMatch.score;
   return entry.value.toLowerCase().includes(query.toLowerCase()) ? 0 : null;
 };
 
-const searchGroups = (groups: PastebinItemGroup[], query: string) => {
+const searchGroups = (groups: SearchableListGroup[], query: string) => {
   if (!query) {
     return groups.map(group => ({
       name: group.name,
@@ -121,12 +124,12 @@ const searchGroups = (groups: PastebinItemGroup[], query: string) => {
     .sort((a, b) => b.scored[0].score - a.scored[0].score);
 };
 
-const PastebinRow = ({
+const SearchableListRow = ({
   entry,
   onActivate,
   onKeyDown,
 }: {
-  entry: PastebinItem;
+  entry: SearchableListItem;
   onActivate: () => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => void;
 }) => (
@@ -157,31 +160,31 @@ const PastebinRow = ({
   </div>
 );
 
-export const Pastebin = ({
+export const SearchableList = ({
   groups,
   searchPlaceholder = SEARCH_PLACEHOLDER,
-  defaultView = PASTEBIN_VIEW.ROWS,
+  defaultView = SEARCHABLE_LIST_VIEW.ROWS,
   storageKey,
   onEntryOpen,
   autoFocusSearch = false,
 }: {
-  groups: PastebinItemGroup[];
+  groups: SearchableListGroup[];
   searchPlaceholder?: string;
-  defaultView?: PastebinView;
+  defaultView?: SearchableListView;
   /** Persists the chosen view in localStorage under this key. */
   storageKey?: string;
   onEntryOpen?: () => void;
   autoFocusSearch?: boolean;
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [view, setView] = useState<PastebinView>(defaultView);
+  const [view, setView] = useState<SearchableListView>(defaultView);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!storageKey) return;
     const savedView = localStorage.getItem(storageKey);
-    if (isPastebinView(savedView)) setView(savedView);
+    if (isSearchableListView(savedView)) setView(savedView);
   }, [storageKey]);
 
   useEffect(() => {
@@ -190,7 +193,7 @@ export const Pastebin = ({
     }
   }, [autoFocusSearch]);
 
-  const handleViewChange = (nextView: PastebinView) => {
+  const handleViewChange = (nextView: SearchableListView) => {
     setView(nextView);
     if (storageKey) localStorage.setItem(storageKey, nextView);
   };
@@ -205,7 +208,7 @@ export const Pastebin = ({
       null,
     )?.entry;
 
-  const activate = (entry: PastebinItem) => {
+  const activate = (entry: SearchableListItem) => {
     if (entry.onOpen) {
       entry.onOpen();
     } else if (isUrl(entry.value)) {
@@ -241,7 +244,7 @@ export const Pastebin = ({
   };
 
   const handleRowKeyDown =
-    (entry: PastebinItem) => (e: React.KeyboardEvent<HTMLElement>) => {
+    (entry: SearchableListItem) => (e: React.KeyboardEvent<HTMLElement>) => {
       // Ignore keys bubbling from the row's inner copy/open buttons.
       if (e.target !== e.currentTarget) return;
       if (e.key === ENTER_KEY) {
@@ -252,13 +255,13 @@ export const Pastebin = ({
       moveFocus(e);
     };
 
-  const toButtonConfig = (entry: PastebinItem): ButtonConfig => ({
+  const toButtonConfig = (entry: SearchableListItem): ButtonConfig => ({
     label: entry.label,
     onClick: () => activate(entry),
     isExternal: entry.isExternal ?? (!entry.onOpen && isUrl(entry.value)),
   });
 
-  const renderButtons = (items: PastebinItem[]) => (
+  const renderButtons = (items: SearchableListItem[]) => (
     <ButtonList
       buttons={items.map(toButtonConfig)}
       navigationRootRef={contentRef}
@@ -275,9 +278,9 @@ export const Pastebin = ({
             {group.name}
           </Text>
         )}
-        {view === PASTEBIN_VIEW.ROWS
+        {view === SEARCHABLE_LIST_VIEW.ROWS
           ? items.map((entry, entryIndex) => (
-              <PastebinRow
+              <SearchableListRow
                 key={`${entry.label}-${entryIndex}`}
                 entry={entry}
                 onActivate={() => activate(entry)}
@@ -334,7 +337,7 @@ export const Pastebin = ({
       ) : (
         <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
           <div ref={contentRef} className="flex flex-col gap-4 py-3">
-            {view === PASTEBIN_VIEW.LIST
+            {view === SEARCHABLE_LIST_VIEW.LIST
               ? renderButtons(entries)
               : searched.map(renderGroup)}
           </div>

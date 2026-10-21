@@ -6,13 +6,18 @@ import {
   type QuickLink,
 } from '@vigilant-broccoli/common-js';
 import {
-  Pastebin,
-  PASTEBIN_VIEW,
-  type PastebinItem,
-  type PastebinItemGroup,
-  type PastebinView,
-} from './Pastebin';
+  SearchableList,
+  SEARCHABLE_LIST_VIEW,
+  type SearchableListGroup,
+  type SearchableListItem,
+  type SearchableListView,
+} from './SearchableList';
 import { WINDOW_OPEN_FEATURES } from '@vigilant-broccoli/react-lib';
+
+export {
+  SEARCHABLE_LIST_VIEW as QUICK_LINKS_VIEW,
+  type SearchableListView as QuickLinksView,
+};
 
 const STORAGE_KEY = 'quick-links-view';
 const SEARCH_PLACEHOLDER = 'Search...';
@@ -31,7 +36,9 @@ export type QuickLinksPanelProps = {
   onLinkOpen?: () => void;
   onEmbedOpen?: (link: QuickLink) => void;
   canEmbed?: () => boolean;
-  defaultView?: PastebinView;
+  defaultView?: SearchableListView;
+  /** Keeps the input order of links and subgroups instead of sorting them alphabetically. */
+  preserveOrder?: boolean;
 };
 
 const NON_BROWSER_TYPES = [
@@ -44,16 +51,17 @@ const isShellLink = (link: QuickLink) =>
   NON_BROWSER_TYPES.includes(link.type as (typeof NON_BROWSER_TYPES)[number]);
 
 const toGroups = (
-  entriesWithSubgroup: { link: QuickLink; entry: PastebinItem }[],
-): PastebinItemGroup[] => {
-  const bySubgroup = new Map<string, PastebinItem[]>();
+  entriesWithSubgroup: { link: QuickLink; entry: SearchableListItem }[],
+  preserveOrder: boolean,
+): SearchableListGroup[] => {
+  const bySubgroup = new Map<string, SearchableListItem[]>();
   for (const { link, entry } of entriesWithSubgroup) {
     const name = link.subgroup ?? '';
     bySubgroup.set(name, [...(bySubgroup.get(name) ?? []), entry]);
   }
-  return [...bySubgroup.entries()]
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([name, entries]) => ({ name, entries }));
+  const subgroups = [...bySubgroup.entries()];
+  if (!preserveOrder) subgroups.sort(([a], [b]) => a.localeCompare(b));
+  return subgroups.map(([name, entries]) => ({ name, entries }));
 };
 
 export function QuickLinksPanel({
@@ -63,9 +71,10 @@ export function QuickLinksPanel({
   onLinkOpen,
   onEmbedOpen,
   canEmbed,
-  defaultView = PASTEBIN_VIEW.GROUPED,
+  defaultView = SEARCHABLE_LIST_VIEW.GROUPED,
+  preserveOrder = false,
 }: QuickLinksPanelProps) {
-  const toEntry = (link: QuickLink): PastebinItem => ({
+  const toEntry = (link: QuickLink): SearchableListItem => ({
     label: link.label,
     value: link.target,
     isExternal: !isShellLink(link),
@@ -80,14 +89,16 @@ export function QuickLinksPanel({
     },
   });
 
+  const orderedLinks = preserveOrder
+    ? links
+    : [...links].sort((a, b) => a.label.localeCompare(b.label));
   const groups = toGroups(
-    [...links]
-      .sort((a, b) => a.label.localeCompare(b.label))
-      .map(link => ({ link, entry: toEntry(link) })),
+    orderedLinks.map(link => ({ link, entry: toEntry(link) })),
+    preserveOrder,
   );
 
   return (
-    <Pastebin
+    <SearchableList
       groups={groups}
       searchPlaceholder={SEARCH_PLACEHOLDER}
       defaultView={defaultView}
