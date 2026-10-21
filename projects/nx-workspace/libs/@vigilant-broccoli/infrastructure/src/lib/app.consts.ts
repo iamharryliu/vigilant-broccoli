@@ -88,7 +88,7 @@ export const VB_APP_URL = {
   },
   VB_MANAGER_NEXT_MOBILE: {
     NAME: 'VB Manager Mobile',
-    URL: 'https://production-vb-manager-next-mobile.vercel.app/login',
+    URL: 'https://manager.harryliu.dev/login',
     STAGING_URL: 'https://staging-vb-manager-next-mobile.vercel.app/login',
   },
   EMPLOYEE_HANDLER_DEMO: {
