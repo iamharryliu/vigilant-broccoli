@@ -652,6 +652,19 @@ resource "cloudflare_r2_bucket_lifecycle" "home_docs" {
           max_age = local.r2_staging_expiry_seconds
         }
       }
+    },
+    {
+      id      = "expire-abandoned-doc-staging"
+      enabled = true
+      conditions = {
+        prefix = "staging/docs/"
+      }
+      delete_objects_transition = {
+        condition = {
+          type    = "Age"
+          max_age = local.r2_staging_expiry_seconds
+        }
+      }
     }
   ]
 }
