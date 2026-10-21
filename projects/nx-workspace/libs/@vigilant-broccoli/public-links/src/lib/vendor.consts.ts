@@ -489,6 +489,21 @@ export const ELEVENLABS_LINK = {
   },
 } as const;
 
+export const RESEND_LINK = {
+  DOMAINS: {
+    NAME: 'Resend Domains',
+    URL: 'https://resend.com/domains',
+  },
+  EMAILS: {
+    NAME: 'Resend Emails',
+    URL: 'https://resend.com/emails',
+  },
+  API_KEYS: {
+    NAME: 'Resend API Keys',
+    URL: 'https://resend.com/api-keys',
+  },
+} as const;
+
 export const PROTON_LINK = {
   MAIL: {
     NAME: 'Proton Mail',
