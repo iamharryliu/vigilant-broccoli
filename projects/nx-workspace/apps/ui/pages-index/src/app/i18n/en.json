@@ -134,10 +134,6 @@
       "TITLE": "Component Library",
       "DESCRIPTION": "Interactive shared React component sandbox."
     },
-    "LINKS": {
-      "TITLE": "Links",
-      "DESCRIPTION": "Public pastebin of personal links and contact details."
-    },
     "EMPLOYEE_HANDLER": {
       "TITLE": "Employee Handler",
       "DESCRIPTION": "Employee management app deployed on Vercel."

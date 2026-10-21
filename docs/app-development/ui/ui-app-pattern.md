@@ -77,7 +77,7 @@ export function App() {
 }
 ```
 
-Reference implementations: `docs-md`, `context-md` and `links-react` (`src/app/app.tsx`); `hearth` adds a toggle. The component is `libs/@vigilant-broccoli/react-lib/src/components/ThemeProvider.tsx`; shared behavior is documented in [theme.md](../../../projects/nx-workspace/libs/@vigilant-broccoli/react-lib/docs/features/theme.md).
+Reference implementations: `docs-md` and `context-md` (`src/app/app.tsx`); `hearth` adds a toggle. The component is `libs/@vigilant-broccoli/react-lib/src/components/ThemeProvider.tsx`; shared behavior is documented in [theme.md](../../../projects/nx-workspace/libs/@vigilant-broccoli/react-lib/docs/features/theme.md).
 
 Behavior (`useThemePreference`, shared by `ThemeProvider` and apps that own their theme context):
 
