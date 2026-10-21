@@ -2,7 +2,7 @@
 
 <!-- managed:repo-stats:start -->
 
-Personal monorepo, supporting **16 applications**, **6 API services**, **11 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
+Personal monorepo, supporting **17 applications**, **6 API services**, **11 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
 
 <!-- managed:repo-stats:end -->
 
@@ -72,6 +72,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
 | <img src="./projects/nx-workspace/apps/ui/context-md/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Agent Context](./projects/nx-workspace/apps/ui/context-md)                            | Repo agent context, docs and skills with search and link graph.     | [context.harryliu.dev](https://context.harryliu.dev/)                               |
 | <img src="./projects/nx-workspace/apps/ui/balloono/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Balloono](./projects/nx-workspace/apps/ui/balloono)                                          | Water balloon battles in online rooms or against CPU opponents.     | [balloono.harryliu.dev](https://balloono.harryliu.dev/)                             |
+| <img src="./projects/nx-workspace/apps/ui/bookmarks-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Bookmarks](./projects/nx-workspace/apps/ui/bookmarks-react)                      | Personal bookmarks stored in the browser.                           | [bookmarks.harryliu.dev](https://bookmarks.harryliu.dev/)                           |
 | <img src="./projects/nx-workspace/apps/ui/calendars/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Calendars](./projects/nx-workspace/apps/ui/calendars)                                  | Public personal and event calendar directory.                       | [calendar.harryliu.dev](https://calendar.harryliu.dev/)                             |
 | <img src="./projects/nx-workspace/apps/ui/cloud-8-skate-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Cloud8Skate](./projects/nx-workspace/apps/ui/cloud-8-skate-react)            | Toronto skating community website.                                  | [cloud8skate.com](https://cloud8skate.com/)                                         |
 | <img src="./projects/nx-workspace/apps/ui/component-library/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Component Library](./projects/nx-workspace/apps/ui/component-library)          | Interactive shared React component sandbox.                         | [components.harryliu.dev](https://components.harryliu.dev/)                         |

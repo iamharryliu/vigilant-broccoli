@@ -146,7 +146,11 @@
       "TITLE": "Office Presence",
       "DESCRIPTION": "Browser demo of the OK-IN office presence Slack app."
     },
-    "OPEN_APPLICATION": "Open application"
+    "OPEN_APPLICATION": "Open application",
+    "BOOKMARKS": {
+      "TITLE": "Bookmarks",
+      "DESCRIPTION": "Personal bookmarks saved in your browser, with search, groups and JSON import/export."
+    }
   },
   "STATUS_PAGE": {
     "TITLE": "Status",
