@@ -22,7 +22,7 @@ export default function RootLayout({
           <ThemeProvider style={{ fontSize: '0.9rem' }}>
             <I18nProvider>
               {children}
-              <Toaster richColors position="bottom-right" />
+              <Toaster richColors closeButton position="bottom-right" />
             </I18nProvider>
           </ThemeProvider>
         </AuthProvider>
