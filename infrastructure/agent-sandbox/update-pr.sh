@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=no-changes.sh
 . "$SCRIPT_DIR/no-changes.sh"
+. "$SCRIPT_DIR/resource-limits.sh"
 IMAGE=vb-agent-sandbox
 
 MODEL=sonnet
@@ -101,6 +102,7 @@ LOG_FILE="$LOG_DIR/update-pr.log"
 STATUS=0
 echo "Updating PR (model: $MODEL): #$PR — $INSTRUCTION"
 docker run --rm --init --name "vb-update-pr-$(date +%s)" \
+  ${SANDBOX_RESOURCE_LIMITS[@]+"${SANDBOX_RESOURCE_LIMITS[@]}"} \
   --cap-add NET_ADMIN --cap-add NET_RAW \
   -e CLAUDE_CODE_OAUTH_TOKEN \
   -e GH_TOKEN \

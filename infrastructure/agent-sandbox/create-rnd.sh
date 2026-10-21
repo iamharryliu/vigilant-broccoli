@@ -2,6 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+. "$SCRIPT_DIR/resource-limits.sh"
 IMAGE=vb-agent-sandbox
 
 MODEL=sonnet
@@ -50,6 +51,7 @@ echo "Researching R&D note for: $QUESTION"
 STATUS=0
 LOG_FILE=$(mktemp /tmp/vb-rnd.XXXXXX)
 docker run --rm --init --name "vb-rnd-$(date +%s)" \
+  ${SANDBOX_RESOURCE_LIMITS[@]+"${SANDBOX_RESOURCE_LIMITS[@]}"} \
   --cap-add NET_ADMIN --cap-add NET_RAW \
   -e CLAUDE_CODE_OAUTH_TOKEN \
   -e GH_TOKEN \

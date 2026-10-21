@@ -14,6 +14,10 @@ services:
       - NET_ADMIN
       - NET_RAW
     init: true
+    # Same caps as resource-limits.sh; see its header for why.
+    mem_limit: ${SANDBOX_MEMORY:-4g}
+    memswap_limit: ${SANDBOX_MEMORY:-4g}
+    cpus: ${SANDBOX_CPUS:-4}
     ports:
       - '127.0.0.1:13000:3000'
       - '127.0.0.1:14200:4200'

@@ -6,6 +6,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 - [Shell and toolchain](#shell-and-toolchain)
 - [Local Ollama agent](#local-ollama-agent)
+- [Resource limits](#resource-limits)
 - [Running in CI](#running-in-ci)
 - [Publishing several pull requests](#publishing-several-pull-requests)
 - [Ending without changes](#ending-without-changes)
@@ -43,6 +44,14 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 - Preview runs do not fetch Vault credentials, commit, push or open PRs. Each run clones fresh remote main into a separate checkout under the printed `/tmp/vb-local-solve.*` directory, retaining code, `.git/solve-meta.json` and `run.log` after success or failure. Your current checkout and uncommitted edits are not inputs. Review with `git -C <printed-checkout> diff`; preview runs implement only the first increment and record follow-ups in metadata.
 - `--agent ollama --publish` explicitly enables the existing GitHub PR/increment pipeline, using an exported `GH_TOKEN` or the existing Vault GitHub credentials. It still uses only the local model. TODO jobs run sequentially in both modes to limit inference memory pressure.
 - Override the model with `--ollama-model <local-tag>` or `OLLAMA_MODEL`; override the host port with `OLLAMA_BASE_URL=http://host.docker.internal:<port>`. The model must already be pulled and support tools. The adapter rebuilds the Docker image and checks model availability before every batch. `--local` is shorthand for `--agent ollama`; Actions retains its existing hosted agent choices.
+
+## Resource limits
+
+Every `docker run` sandbox container and the compose `agent-sandbox` service are capped at 4 GiB of memory (no swap) and 4 CPUs, defined in [resource-limits.sh](./resource-limits.sh) and mirrored in `docker-compose.yml`. One `vb-manager-next` build peaks near 4 GiB, and uncapped it starved the shared Docker Desktop VM until k3s and Traefik stalled. A run that hits the cap is OOM-killed (exit 137) instead.
+
+- Override with `SANDBOX_MEMORY` (for example `6g`) and `SANDBOX_CPUS`. The `CI` environment variable disables the default caps, since hosted runners are sized for these builds; setting either variable re-enables that cap.
+- Restart the compose service with `pnpm agentic:dev-sandbox:up` to apply a changed limit.
+- Per-container caps do not make parallel runs fit: two 4 GiB runs plus k3s still exceed an 8 GiB VM. Raise Docker Desktop memory or run one at a time.
 
 ## Running in CI
 

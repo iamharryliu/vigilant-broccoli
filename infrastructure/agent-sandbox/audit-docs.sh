@@ -2,6 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+. "$SCRIPT_DIR/resource-limits.sh"
 IMAGE=vb-agent-sandbox
 
 MODEL=opus
@@ -47,6 +48,7 @@ echo "Auditing documentation for legacy implementations that no longer apply"
 STATUS=0
 LOG_FILE=$(mktemp /tmp/vb-audit-docs.XXXXXX)
 docker run --rm --init --name "vb-audit-docs-$(date +%s)" \
+  ${SANDBOX_RESOURCE_LIMITS[@]+"${SANDBOX_RESOURCE_LIMITS[@]}"} \
   --cap-add NET_ADMIN --cap-add NET_RAW \
   -e CLAUDE_CODE_OAUTH_TOKEN \
   -e GH_TOKEN \

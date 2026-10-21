@@ -5,6 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 # shellcheck source=no-changes.sh
 . "$SCRIPT_DIR/no-changes.sh"
+. "$SCRIPT_DIR/resource-limits.sh"
 IMAGE=vb-agent-sandbox
 DEV_SANDBOX_CONTAINER=vb-agent-sandbox
 
@@ -243,6 +244,7 @@ run_solver() {
         bash -c "$DEV_SANDBOX_SCRIPT" _ "$flag" "$value"
   else
     docker run --rm --init --name "$name" \
+      ${SANDBOX_RESOURCE_LIMITS[@]+"${SANDBOX_RESOURCE_LIMITS[@]}"} \
       --cap-add NET_ADMIN --cap-add NET_RAW \
       "${DOCKER_ENV_ARGS[@]}" \
       "$IMAGE" \
