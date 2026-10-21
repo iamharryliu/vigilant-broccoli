@@ -1,6 +1,8 @@
 # Standbaden
 
-- [One.com](https://www.one.com/admin/managedwp/www.strandbadensvagforening.se/managed-wp-dashboard.do)
+- [One.com](https://www.one.com/admin)
+  - [DNS Records](https://www.one.com/admin/dns.do?route=dsrecords)
+  - [WP](https://www.one.com/admin/managedwp/www.strandbadensvagforening.se/managed-wp-dashboard.do)
 - [WP Admin Dashboard](https://cms.strandbadensvagforening.se/wp-admin/)
   - [Posts](https://cms.strandbadensvagforening.se/wp-admin/edit.php)
   - [Media](https://cms.strandbadensvagforening.se/wp-admin/upload.php)
