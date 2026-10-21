@@ -77,7 +77,7 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 
 ### Documentation
 
-- Keep requested Markdown-table content in the table; add no surrounding prose unless requested.
+- Keep requested Markdown-table content in the table; add no surrounding prose unless requested. That includes a lead-in sentence under the heading that restates, introduces or summarizes what the table shows; keep only prose that adds facts the table cannot hold.
 - Alphabetize unordered tables by their first column. Preserve meaningful order for steps, progressions, diagram labels and fixed side-by-side comparisons whose heading names the order.
 - Check relative links and section anchors after moving files or renaming headings.
 - This file and Doc Map documents with at least three `##` sections need a `## Table of Contents` after the one-line purpose. Derive it from headings in document order, nesting `###` entries and ignoring fenced examples; rebuild it when headings change and add a missing one when touching a listed doc. READMEs follow `app-readme-pattern.md` and stay deployment-agnostic (no hosted URLs or deploy targets; Stack groups ordered, items sorted, no parentheticals, optional ` - description` only when the name is ambiguous); notes follow [notes/CONTEXT.md](./notes/CONTEXT.md). Do not add ToCs to unrelated files.
