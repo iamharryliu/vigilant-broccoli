@@ -92,6 +92,8 @@ fi
 
 if [ -n "${GITHUB_ACTIONS:-}" ]; then
   REQUEST_SOURCE="GitHub Actions (manual-agentic-pr-create workflow, ${RUNNER_LABEL})"
+elif [ -n "${SOLVE_ON_CODE_SERVER:-}" ]; then
+  REQUEST_SOURCE="code-server VM (pnpm agentic-pr-create --vm, ${RUNNER_LABEL})"
 else
   REQUEST_SOURCE="Local CLI (pnpm agentic-pr-create, ${RUNNER_LABEL})"
 fi
@@ -118,6 +120,8 @@ INC_ORDER=("$INC_CURRENT")
 INC_BRANCH[$INC_CURRENT]=$BRANCH
 if [ -n "${GITHUB_ACTIONS:-}" ]; then
   INC_HISTORY_SOURCE="GitHub Actions"
+elif [ -n "${SOLVE_ON_CODE_SERVER:-}" ]; then
+  INC_HISTORY_SOURCE="code-server VM"
 else
   INC_HISTORY_SOURCE="Docker sandbox (local)"
 fi
@@ -209,7 +213,12 @@ agent_invoke() {
         --disallowedTools "Bash(git:*)" "Bash(gh:*)" "WebSearch" "WebFetch"
       ;;
     claude)
-      claude -p "$prompt" --dangerously-skip-permissions --model "$MODEL" \
+      # Auto mode's classifier blocks exfiltration, credential reads and remote
+      # code execution, which matters most on the firewall-less --vm path.
+      # SOLVE_PERMISSION_MODE=bypass restores --dangerously-skip-permissions.
+      local permission_args=(--permission-mode auto)
+      [ "${SOLVE_PERMISSION_MODE:-auto}" != bypass ] || permission_args=(--dangerously-skip-permissions)
+      claude -p "$prompt" "${permission_args[@]}" --model "$MODEL" \
         --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
       ;;
     codex)

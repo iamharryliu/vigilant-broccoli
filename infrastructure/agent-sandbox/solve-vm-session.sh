@@ -1,0 +1,60 @@
+#!/bin/bash
+# Streamed by solve-vm.sh into the code-server container (as abc, HOME=/config):
+#   solve-vm-session.sh <model> (--id <TODO_ID> | --prompt <task>)...
+# Each request gets its own worktree off fresh origin/main and a detached tmux
+# session running solve-todo-runner.sh, which publishes the PRs. There is no
+# egress firewall here, unlike the Docker sandbox.
+set -euo pipefail
+
+MODEL=$1
+shift
+REPO=/config/vigilant-broccoli
+RUNS_DIR=/config/agentic-runs
+
+# The tmux body: serialized with `declare -f`, because this script arrives on
+# stdin and has no file a session could run.
+run_solve() {
+  local repo=$1 run_dir=$2 flag=$3 value=$4 model=$5
+  local worktree="$run_dir/repo" status=0 branches
+  cd "$worktree"
+  set -o pipefail
+  REPO_DIR=$worktree META_FILE="$run_dir/solve-meta.json" INC_PLAN_FILE="$run_dir/increment-plan.json" \
+    SOLVE_AGENT=claude SOLVE_MODEL=$model SOLVE_ON_CODE_SERVER=1 \
+    bash infrastructure/agent-sandbox/solve-todo-runner.sh "$flag" "$value" 2>&1 | tee "$run_dir/run.log" || status=$?
+  # Worktrees share the repository's branches, so the agent/* branches this
+  # run checked out are deleted with it (they are pushed by then); otherwise a
+  # re-run of the same TODO id fails on `git checkout -b agent/todo-<id>`.
+  branches=$(git reflog --format=%gs HEAD | sed -n 's/^checkout: moving from .* to \(agent\/.*\)$/\1/p' | sort -u)
+  if [ "$status" = 0 ]; then
+    cd "$repo"
+    git worktree remove --force "$worktree"
+    for branch in $branches; do git branch -D "$branch" >/dev/null || true; done
+  else
+    echo "Kept $worktree for inspection; remove it with: git -C $repo worktree remove --force $worktree" | tee -a "$run_dir/run.log"
+  fi
+  echo "RUN_EXIT::$status" | tee -a "$run_dir/run.log"
+}
+
+# Parallel launches share one repository, and concurrent fetches race on the
+# refs/remotes/origin/main lock.
+flock "$REPO/.git/agentic-fetch.lock" git -C "$REPO" fetch --quiet origin main
+mkdir -p "$RUNS_DIR"
+
+while [ $# -gt 0 ]; do
+  flag=$1
+  value=$2
+  shift 2
+  if [ "$flag" = --id ]; then
+    label="todo-$value"
+  else
+    label="task-$(echo "$value" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-*//;s/-*$//' | cut -c1-30)"
+  fi
+  run_dir=$(mktemp -d "$RUNS_DIR/$(date +%Y%m%d-%H%M%S)-${label}.XXXX")
+  session=$(basename "$run_dir" | tr '.' '-')
+  git -C "$REPO" worktree add --quiet --detach "$run_dir/repo" origin/main
+  printf -v body '%s; run_solve %q %q %q %q %q' "$(declare -f run_solve)" "$REPO" "$run_dir" "$flag" "$value" "$MODEL"
+  tmux new-session -d -s "$session" bash -c "$body"
+  echo "Started $session (model: $MODEL)"
+  echo "  log:    $run_dir/run.log"
+  echo "  attach: tmux attach -t $session   (in the code-server terminal)"
+done

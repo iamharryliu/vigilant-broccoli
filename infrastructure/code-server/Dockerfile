@@ -27,6 +27,10 @@ RUN apt-get update \
     gnupg \
     ca-certificates \
     openssl \
+    python3 \
+    python3-pip \
+    python3-venv \
+  && pip3 install --no-cache-dir --break-system-packages pre-commit \
   && xargs apt-get install -y --no-install-recommends < /tmp/apt-packages.txt \
   && rm -f /tmp/apt-packages.txt \
   && rm -rf /var/lib/apt/lists/*
@@ -50,7 +54,9 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg -o 
   && apt-get install -y --no-install-recommends gh \
   && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g @anthropic-ai/claude-code \
+# pnpm and pre-commit (above) are what solve-todo-runner.sh needs for
+# `agentic-pr-create --vm` solves, matching the agent sandbox image's pins.
+RUN npm install -g @anthropic-ai/claude-code pnpm@11.9.0 \
   && npm cache clean --force
 
 # GitHub access reuses the agent sandbox's GitHub App (Contents + Pull requests
