@@ -1,6 +1,6 @@
 # In Season Produce
 
-The `InSeasonCard` lists the fruits and vegetables in season as badges, on its own `/in-season` page, linked as "In Season" under Food Planner after Grocery List.
+The `InSeasonCard` lists the fruits and vegetables in season as badges, on the food planner (under the grocery list in the Grocery tab) and on its own `/in-season` page, linked as "In Season" under Food Planner after Grocery List.
 
 ## Data source
 
@@ -20,7 +20,7 @@ The `InSeasonCard` lists the fruits and vegetables in season as badges, on its o
 
 ## Grocery list
 
-- Each badge is a button that adds the item to the selected home's grocery list through `/api/grocery` (the `grocery_items` table the grocery page uses). Nothing new is stored.
+- Each badge is a button that adds the item to the selected home's grocery list through `/api/grocery` (the `grocery_items` table the grocery page uses). Nothing new is stored. On the food planner the card's `onGroceryAdded` callback refreshes the grocery list after a successful add.
 - Names already on the uncompleted list (case-insensitive) render as a solid badge with a check, disabled so they cannot be added twice. The badge state change is the add feedback; a failed add reverts it.
 
 ## Season status
