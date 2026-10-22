@@ -8,6 +8,7 @@
 - [Styling and UI Components](#styling-and-ui-components)
   - [Styling Languages and Utilities](#styling-languages-and-utilities)
   - [UI Component Tools](#ui-component-tools)
+  - [UI Component Names](#ui-component-names)
   - [Organizing Component Libraries](#organizing-component-libraries)
 - [Tools](#tools)
   - [State Management](#state-management)
@@ -85,6 +86,39 @@ Ways to bring content that lives elsewhere into a page. They trade isolation aga
 | [Bootstrap](./bootstrap.md) | CSS framework with styled components, a responsive grid, and JavaScript plugins for interactions.                           | Ready-made controls and consistent defaults speed up development.                 | Distinctive designs require customization; unused styles and scripts can add weight.               | Prototypes, internal tools, and sites that fit conventional component layouts.              |
 | Radix UI                    | Unstyled React primitives providing interaction behavior and accessibility features for controls such as dialogs and menus. | Handles many keyboard, focus, and ARIA patterns; flexible styling.                | Requires React and your own styling; composition still needs accessibility checks.                 | Custom React design systems needing reusable interaction primitives.                        |
 | shadcn/ui                   | Styled component source code distributed into your project for direct customization.                                        | Useful defaults; editable source; control over component behavior and appearance. | You maintain copied code and reconcile upstream changes; dependencies and setup vary by component. | Applications needing ready-made components that can be adapted into a custom design system. |
+
+### UI Component Names
+
+| Component      | What It Is                                                                | Typical Use                                   |
+| -------------- | ------------------------------------------------------------------------- | --------------------------------------------- |
+| Accordion      | Stacked headers that each expand or collapse their own content panel.     | FAQs, settings groups.                        |
+| Alert          | Inline banner that communicates a status or message within the page flow. | Form errors, warnings, info notes.            |
+| Alert dialog   | Modal that interrupts to demand a confirm or cancel decision.             | Delete confirmation.                          |
+| Avatar         | Small image or initials representing a user or entity.                    | Profile menus, comment threads.               |
+| Badge          | Small label or count attached to another element.                         | Unread counts, status tags.                   |
+| Breadcrumb     | Trail of links showing the current page's place in a hierarchy.           | Deep navigation, file paths.                  |
+| Card           | Bordered container grouping related content and actions.                  | Product tiles, dashboard widgets.             |
+| Carousel       | Horizontally sliding set of items shown one or a few at a time.           | Image galleries, featured content.            |
+| Checkbox       | Control toggling an option on or off; several can be selected.            | Multi-select options, consent.                |
+| Combobox       | Text input paired with a filterable dropdown list of options.             | Searchable selects, autocomplete.             |
+| Dialog / Modal | Overlay window that blocks the page behind it until closed.               | Forms, confirmations, detail views.           |
+| Drawer / Sheet | Panel that slides in from a screen edge over or beside the page.          | Mobile menus, filters, detail panes.          |
+| Dropdown menu  | List of actions revealed from a trigger button.                           | Overflow (`...`) menus, user menus.           |
+| Pagination     | Controls for moving between pages of a long list.                         | Search results, tables.                       |
+| Popover        | Floating panel anchored to a trigger, closed by clicking away.            | Date pickers, small forms.                    |
+| Progress bar   | Bar showing how much of a task is complete.                               | Uploads, multi-step flows.                    |
+| Radio group    | Set of options where exactly one can be selected.                         | Plan or size selection.                       |
+| Select         | Control choosing one option from a collapsed list.                        | Country or language pickers.                  |
+| Skeleton       | Grey placeholder shaped like content while it loads.                      | Loading lists and cards without layout shift. |
+| Slider         | Draggable handle selecting a value or range along a track.                | Volume, price range.                          |
+| Snackbar       | Material Design name for a toast, often with one action.                  | "Undo" after a delete.                        |
+| Spinner        | Rotating indicator for an operation of unknown duration.                  | Button or page loading.                       |
+| Stepper        | Indicator or flow showing progress through ordered steps.                 | Checkout, onboarding.                         |
+| Switch         | Control toggling a setting on or off immediately.                         | Dark mode, notifications.                     |
+| Table          | Rows and columns of structured data, often sortable.                      | Admin lists, reports.                         |
+| Tabs           | Row of headers that swap which content panel is visible.                  | Settings sections, views of one record.       |
+| Toast          | Brief, non-blocking message that appears and auto-dismisses.              | "Saved" confirmations.                        |
+| Tooltip        | Small text bubble shown on hover or focus to explain an element.          | Icon button labels.                           |
 
 ### Organizing Component Libraries
 

@@ -16,6 +16,7 @@
 
 ## Content Management Systems
 
+- [CMS Types and Products](./cms.md) — architecture and product comparison.
 - [Sanity](./sanity.md)
 
 ## Photo and Video Management
