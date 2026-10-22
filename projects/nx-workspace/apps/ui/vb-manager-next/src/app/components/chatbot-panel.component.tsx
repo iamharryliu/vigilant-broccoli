@@ -106,11 +106,22 @@ const USER_MESSAGE_STYLE: CSSProperties = {
 };
 
 const ASSISTANT_MESSAGE_STYLE: CSSProperties = {
-  padding: '0.75rem 1rem',
-  borderRadius: '0.75rem',
-  border: '1px solid var(--gray-6)',
-  backgroundColor: 'var(--color-panel-solid)',
-  boxShadow: 'var(--shadow-2)',
+  padding: '0.25rem 0',
+};
+
+const LINK_PATTERN = /https?:\/\/\S+/i;
+const CALENDAR_WORDS_PATTERN =
+  /\b(calendar|event|schedule|rsvp|add this|put this)\b/i;
+
+// The chat model cannot open links, so a pasted link that is bare or mentions
+// calendar intent goes to the calendar parser, which fetches the page.
+const isCalendarLinkMessage = (text: string): boolean => {
+  const trimmed = text.trim();
+  if (!LINK_PATTERN.test(trimmed)) return false;
+  const withoutLinks = trimmed
+    .replace(new RegExp(LINK_PATTERN, 'gi'), '')
+    .trim();
+  return !withoutLinks || CALENDAR_WORDS_PATTERN.test(withoutLinks);
 };
 
 const TASKS_PARSING_MESSAGE = 'Parsing tasks...';
@@ -287,7 +298,7 @@ const MessagesArea = ({
             <div
               key={index}
               style={{
-                maxWidth: '85%',
+                maxWidth: isUser ? '85%' : '100%',
                 alignSelf: isUser ? 'flex-end' : 'flex-start',
                 ...(isUser ? USER_MESSAGE_STYLE : ASSISTANT_MESSAGE_STYLE),
               }}
@@ -957,6 +968,10 @@ export const ChatbotPanel = ({
     if ((!textToSend.trim() && uploadedImages.length === 0) || isStreaming)
       return;
     if (!messageText && parseSlashQuery(input) !== null) return;
+    if (!messageText && isCalendarLinkMessage(input)) {
+      await handleParseEvent();
+      return;
+    }
 
     const userMessage: Message = {
       role: 'user',
