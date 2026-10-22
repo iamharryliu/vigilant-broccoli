@@ -175,6 +175,8 @@
     "TITLE": "In Season",
     "FRUITS": "Fruits",
     "VEGETABLES": "Vegetables",
-    "NONE": "Nothing in season"
+    "NONE": "Nothing in season",
+    "ADD_LABEL": "Add {name} to grocery list",
+    "ON_LIST_LABEL": "{name} is on the grocery list"
   }
 }
