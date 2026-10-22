@@ -14,6 +14,7 @@ import {
   Text,
 } from '@vigilant-broccoli/react-lib';
 import { I18nProvider, useTranslation } from '../i18n';
+import { InSeasonCard } from '../components/InSeasonCard';
 import { GroceryList } from '../grocery/GroceryList';
 import { KitchenChoresList } from '../kitchen-chores/KitchenChoresList';
 import { KitchenNotes } from '../kitchen-notes/KitchenNotes';
@@ -161,6 +162,9 @@ function FoodPlannerContent() {
                       onCalendarEventAdded={bumpCalendar}
                     />
                   </CardContainer>
+                  <div className="mt-6">
+                    <InSeasonCard />
+                  </div>
                 </TabsContent>
 
                 <TabsContent value={KITCHEN_CHORES_LIST_TAB}>
