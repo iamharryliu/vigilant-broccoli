@@ -63,6 +63,40 @@ interface PendingEdit {
   selectionEnd: number;
 }
 
+interface ViewState {
+  selectionStart: number;
+  selectionEnd: number;
+  scrollTop: number;
+}
+
+// Maps an index in `previous` to `next` around the single changed span found
+// by a common prefix/suffix diff: positions before it stay, positions after it
+// shift by the length delta, positions inside it clamp to the new span.
+const mapIndexThroughEdit = (previous: string, next: string, index: number) => {
+  let start = 0;
+  while (
+    start < previous.length &&
+    start < next.length &&
+    previous[start] === next[start]
+  ) {
+    start++;
+  }
+  let previousEnd = previous.length;
+  let nextEnd = next.length;
+  while (
+    previousEnd > start &&
+    nextEnd > start &&
+    previous[previousEnd - 1] === next[nextEnd - 1]
+  ) {
+    previousEnd--;
+    nextEnd--;
+  }
+
+  if (index <= start) return index;
+  if (index >= previousEnd) return index + next.length - previous.length;
+  return Math.min(index, nextEnd);
+};
+
 const getLineBounds = (value: string, index: number) => {
   const start = index === 0 ? 0 : value.lastIndexOf('\n', index - 1) + 1;
   const nextNewline = value.indexOf('\n', index);
@@ -224,11 +258,50 @@ export const SyncedTextEditor = ({
     null,
   );
 
+  // A controlled textarea jumps its caret to the end (and scrolls) whenever
+  // `value` changes from outside its own onChange — a peer's live edit, a
+  // conflict merge, undo or an applied AI edit. The view is tracked from
+  // events because by the layout effect React has already reset it.
+  const renderedContentRef = useRef(content);
+  const emittedContentRef = useRef(content);
+  const viewStateRef = useRef<ViewState>({
+    selectionStart: 0,
+    selectionEnd: 0,
+    scrollTop: 0,
+  });
+
+  const recordViewState = (textarea: HTMLTextAreaElement) => {
+    viewStateRef.current = {
+      selectionStart: textarea.selectionStart,
+      selectionEnd: textarea.selectionEnd,
+      scrollTop: textarea.scrollTop,
+    };
+  };
+
   useLayoutEffect(() => {
+    const previous = renderedContentRef.current;
+    renderedContentRef.current = content;
+    const textarea = internalRef.current;
+    if (!textarea) return;
+
     const pending = pendingSelectionRef.current;
-    if (!pending || !internalRef.current) return;
-    pendingSelectionRef.current = null;
-    internalRef.current.setSelectionRange(pending.start, pending.end);
+    if (pending) {
+      pendingSelectionRef.current = null;
+      textarea.setSelectionRange(pending.start, pending.end);
+      return;
+    }
+
+    const isExternal =
+      content !== previous && content !== emittedContentRef.current;
+    if (!isExternal || document.activeElement !== textarea) return;
+
+    const { selectionStart, selectionEnd, scrollTop } = viewStateRef.current;
+    textarea.setSelectionRange(
+      mapIndexThroughEdit(previous, content, selectionStart),
+      mapIndexThroughEdit(previous, content, selectionEnd),
+    );
+    textarea.scrollTop = scrollTop;
+    recordViewState(textarea);
   }, [content]);
 
   const setRefs = (node: HTMLTextAreaElement | null) => {
@@ -239,6 +312,7 @@ export const SyncedTextEditor = ({
   };
 
   const applyEdit = (edit: PendingEdit) => {
+    emittedContentRef.current = edit.value;
     pendingSelectionRef.current = {
       start: edit.selectionStart,
       end: edit.selectionEnd,
@@ -274,11 +348,17 @@ export const SyncedTextEditor = ({
           ref={setRefs}
           value={content}
           onChange={e => {
+            emittedContentRef.current = e.target.value;
+            recordViewState(e.target);
             onChange(e.target.value);
             onTextareaSelect?.();
           }}
           onKeyDown={handleKeyDown}
-          onSelect={onTextareaSelect}
+          onSelect={e => {
+            recordViewState(e.currentTarget);
+            onTextareaSelect?.();
+          }}
+          onScroll={e => recordViewState(e.currentTarget)}
           onBlur={onTextareaBlur}
           disabled={isLoading}
           placeholder={isLoading ? LOADING_LABEL : placeholder}
