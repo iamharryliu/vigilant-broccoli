@@ -1,6 +1,6 @@
 # In Season Produce
 
-The `InSeasonCard` lists the fruits and vegetables in season as badges, under the grocery list in the Food Planner (desktop) and on the `/grocery` page (mobile).
+The `InSeasonCard` lists the fruits and vegetables in season as badges, on its own `/in-season` page, linked as "In Season" under Food Planner after Grocery List.
 
 ## Data source
 

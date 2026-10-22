@@ -1,8 +1,6 @@
 'use client';
 
 import { Text } from '@vigilant-broccoli/react-lib';
-import { I18nProvider } from '../i18n';
-import { InSeasonCard } from '../components/InSeasonCard';
 import { GroceryList } from './GroceryList';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
@@ -14,9 +12,6 @@ export default function GroceryPage() {
         Grocery List
       </Text>
       <GroceryList />
-      <I18nProvider>
-        <InSeasonCard />
-      </I18nProvider>
     </div>
   );
 }
