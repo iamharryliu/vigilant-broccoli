@@ -36,6 +36,7 @@ Type `/` to open command menu (arrow keys, Enter/Tab to select, Escape to dismis
 ## Calendar Integration
 
 - A message that is only a link, or a link plus calendar words (`calendar`, `event`, `schedule`, `rsvp`, `add this`, `put this`), goes straight to the `/calendar` parser because the chat model cannot open links
+- A calendar-worded message without a link ("add that to my calendar") reuses the link from the last 6 user messages, unless an event draft is still pending
 - Also triggered automatically when message contains intent keywords (`add to calendar`, `create event`, `schedule this`, etc.)
 - LLM extracts event details via function calling; presents editable draft card before creating
 - Multiple/recurring events produce multiple draft cards

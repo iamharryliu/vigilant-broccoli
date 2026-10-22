@@ -124,6 +124,27 @@ const isCalendarLinkMessage = (text: string): boolean => {
   return !withoutLinks || CALENDAR_WORDS_PATTERN.test(withoutLinks);
 };
 
+const RECENT_LINK_MESSAGE_COUNT = 6;
+
+// "Add that to my calendar" has no link of its own, so reuse one from a recent
+// user message. A pending draft means the user is correcting it, not starting
+// a new extraction.
+const findRecentLink = (messages: Message[], text: string): string | null => {
+  if (LINK_PATTERN.test(text) || !CALENDAR_WORDS_PATTERN.test(text))
+    return null;
+  if (messages.some(m => m.eventDraft && m.eventStatus === 'draft'))
+    return null;
+  const recentUserMessages = messages
+    .filter(m => m.role === 'user')
+    .slice(-RECENT_LINK_MESSAGE_COUNT)
+    .reverse();
+  for (const message of recentUserMessages) {
+    const link = message.content.match(LINK_PATTERN)?.[0];
+    if (link) return link;
+  }
+  return null;
+};
+
 const TASKS_PARSING_MESSAGE = 'Parsing tasks...';
 const TASKS_PARSE_ERROR_MESSAGE = 'Failed to parse tasks';
 const TASKS_CREATE_ERROR_MESSAGE = 'Failed to create tasks';
@@ -972,6 +993,11 @@ export const ChatbotPanel = ({
       await handleParseEvent();
       return;
     }
+    const recentLink = messageText ? null : findRecentLink(messages, input);
+    if (recentLink) {
+      await handleParseEvent(`${input.trim()}\n${recentLink}`);
+      return;
+    }
 
     const userMessage: Message = {
       role: 'user',
@@ -998,9 +1024,14 @@ export const ChatbotPanel = ({
     await sendChatRequest(compactedMessages, selectedModel);
   };
 
-  const handleParseEvent = async () => {
+  const handleParseEvent = async (textOverride?: unknown) => {
     if (isStreaming) return;
-    const inputSnapshot = parseSlashQuery(input) !== null ? '' : input;
+    const inputSnapshot =
+      typeof textOverride === 'string'
+        ? textOverride
+        : parseSlashQuery(input) !== null
+          ? ''
+          : input;
     const imagesSnapshot = uploadedImages;
     if (!inputSnapshot.trim() && imagesSnapshot.length === 0) return;
 
