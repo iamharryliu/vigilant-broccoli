@@ -1,6 +1,6 @@
 # Vegetables
 
-Peak season for a temperate Northern Hemisphere climate (e.g. the continental US); actual availability varies by region and is wider wherever imports or greenhouse growing are common.
+Peak season for a temperate Northern Hemisphere climate (e.g. the continental US); actual availability varies by region and is wider wherever imports or greenhouse growing are common. The hearth app reads the Seasonal Timeline below to build its In Season card, so the gantt format must stay parseable.
 
 ## Table of Contents
 
