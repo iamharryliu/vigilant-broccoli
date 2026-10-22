@@ -1044,6 +1044,9 @@ importers:
 
   libs/@vigilant-broccoli/github-workspace-js:
     dependencies:
+      '@vigilant-broccoli/common-js':
+        specifier: workspace:*
+        version: link:../common-js
       tslib:
         specifier: ^2.3.0
         version: 2.8.1

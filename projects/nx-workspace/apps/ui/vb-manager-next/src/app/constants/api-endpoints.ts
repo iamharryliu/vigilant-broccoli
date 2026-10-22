@@ -1,3 +1,5 @@
+import { PREVIEW_DEPLOYMENTS_API_PATH } from '@vigilant-broccoli/github-workspace-js';
+
 export const API_ENDPOINTS = {
   DOCKER_CONTAINERS: '/api/docker/containers',
   DOCKER_START: '/api/docker/start',
@@ -29,6 +31,7 @@ export const API_ENDPOINTS = {
   TERRAFORM_STATUS: '/api/terraform/status',
 
   GITHUB_PAGES: '/api/github/pages',
+  PREVIEW_DEPLOYMENTS: PREVIEW_DEPLOYMENTS_API_PATH,
 
   WIREGUARD_STATUS: '/api/wireguard/status',
 

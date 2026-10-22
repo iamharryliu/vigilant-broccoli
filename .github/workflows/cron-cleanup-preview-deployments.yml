@@ -11,12 +11,14 @@ on:
     branches: [main]
     paths:
       - .github/workflows/cron-cleanup-preview-deployments.yml
+      - .github/scripts/deactivate-preview-deployments.mjs
   schedule:
     - cron: '45 3 * * *'
   workflow_dispatch:
 
 permissions:
   contents: read
+  deployments: write
   id-token: write
   pull-requests: read
 
@@ -32,6 +34,14 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
       - uses: ./.github/actions/setup-nx-workspace
+
+      # Before the Vault import, which this step doesn't need. Tidies the PR
+      # and environment UI only: the manager apps already hide closed PRs.
+      - name: Mark closed PRs' GitHub Deployments inactive
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node .github/scripts/deactivate-preview-deployments.mjs
 
       - name: Import Secrets from Vault
         uses: ./.github/actions/vault-secrets
