@@ -11,6 +11,7 @@ import {
 } from '@vigilant-broccoli/react-lib';
 
 const DARK = 'dark';
+const THEME_STORAGE_KEY = 'personal-website-react-theme';
 
 export const DARK_MODE_LABELS = {
   toLight: 'Switch to light mode',
@@ -32,7 +33,7 @@ export const useTheme = () => useContext(ThemeContext);
 // The site styles html/body with `dark:` classes, so the class goes on the
 // document root rather than react-lib's ThemeScope wrapper.
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const { appearance, toggleTheme } = useThemePreference();
+  const { appearance, toggleTheme } = useThemePreference(THEME_STORAGE_KEY);
   const isDark = appearance === DARK;
   useToggleThemeKeybind(toggleTheme);
 

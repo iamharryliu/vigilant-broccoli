@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { CollapsibleList, ThemeProvider } from '@vigilant-broccoli/react-lib';
 import { UTILITY_ITEMS } from './utilities.const';
 
+const THEME_STORAGE_KEY = 'utilities-ui-theme';
 const STORAGE_KEY_PREFIX = 'utilities';
 const SEARCH_PLACEHOLDER = 'Search utilities...';
 const NO_RESULTS_TEXT = 'No utilities match your search.';
@@ -14,7 +15,7 @@ export const App = () => {
   );
 
   return (
-    <ThemeProvider>
+    <ThemeProvider storageKey={THEME_STORAGE_KEY}>
       <main className="mx-auto w-full max-w-xl px-4 py-6">
         <h1 className="mb-4 text-2xl font-bold">Utilities</h1>
         <input
