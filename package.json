@@ -177,8 +177,8 @@
   },
   "homepage": "https://github.com/iamharryliu/vigilant-broccoli#readme",
   "devDependencies": {
-    "@commitlint/cli": "^21.2.3",
-    "@commitlint/config-conventional": "^21.2.3",
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
     "lint-staged": "^17.6.0",
     "prettier": "^3.9.10"
   },
