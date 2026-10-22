@@ -4,7 +4,7 @@ import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 
 const LIGHT = 'light';
 const DARK = 'dark';
-const THEME_STORAGE_KEY = 'theme';
+export const THEME_STORAGE_KEY = 'theme';
 const STORAGE_EVENT = 'storage';
 const CHANGE_EVENT = 'change';
 const PREFERS_DARK_QUERY = '(prefers-color-scheme: dark)';

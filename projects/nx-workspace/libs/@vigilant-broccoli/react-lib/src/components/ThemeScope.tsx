@@ -50,6 +50,8 @@ const DARK_TOKENS = {
 type AccentColor = 'blue' | 'sky';
 type ThemeStyle = CSSProperties & Record<`--${string}`, string>;
 
+const PREFERS_DARK_QUERY = '(prefers-color-scheme: dark)';
+
 const getThemeStyle = (
   appearance: ThemeAppearance,
   accentColor: AccentColor,
@@ -75,6 +77,29 @@ const getThemeStyle = (
     fontFamily: 'system-ui, sans-serif',
     color: 'hsl(var(--foreground))',
   };
+};
+
+const toInlineScriptJson = (value: unknown) =>
+  JSON.stringify(value).replace(/</g, '\\u003c');
+
+/**
+ * Inline script for the first child of a server-rendered `ThemeScope`: it
+ * applies a saved or system dark appearance to the parent before first paint,
+ * leaving `style` overrides intact. Mirrors `useThemePreference`, which then
+ * re-renders the scope to the same props after hydration.
+ */
+export const getThemeRestoreScript = (
+  storageKey: string,
+  style: CSSProperties = {},
+) => {
+  const darkVariables = Object.fromEntries(
+    Object.entries(getThemeStyle(DARK, 'blue')).filter(
+      ([key]) => key.startsWith('--') && !(key in style),
+    ),
+  );
+  const setColorScheme = 'colorScheme' in style ? '' : `s.colorScheme=d;`;
+
+  return `(function(){var e=document.currentScript.parentElement,d;try{d=localStorage.getItem(${toInlineScriptJson(storageKey)})}catch(x){}if(d!=='${LIGHT}'&&d!=='${DARK}')d=window.matchMedia&&matchMedia('${PREFERS_DARK_QUERY}').matches?'${DARK}':'${LIGHT}';if(d!=='${DARK}')return;var s=e.style,v=${toInlineScriptJson(darkVariables)};e.classList.replace('${LIGHT}',d);for(var k in v)s.setProperty(k,v[k]);${setColorScheme}})();`;
 };
 
 export const ThemeScope = forwardRef<
