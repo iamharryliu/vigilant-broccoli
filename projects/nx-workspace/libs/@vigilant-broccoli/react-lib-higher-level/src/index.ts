@@ -7,6 +7,7 @@ export * from './lib/DocsExplorer';
 export * from './lib/GoogleTasks';
 export * from './lib/QuickLinksDialog';
 export * from './lib/QuickLinksPanel';
+export * from './lib/PreviewDeployments';
 export * from './lib/TaskCapture';
 export * from './lib/TaskChecklist';
 export * from './lib/docs-snapshot-source';

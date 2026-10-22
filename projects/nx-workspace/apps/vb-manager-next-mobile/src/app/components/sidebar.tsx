@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { House, LayoutGrid, LogOut } from 'lucide-react';
+import { GitPullRequest, House, LayoutGrid, LogOut } from 'lucide-react';
 import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { signOut } from '../providers/auth-provider';
-import { PAGE_TITLE } from '../app.const';
+import { APP_ROUTE, PAGE_TITLE } from '../app.const';
 
 const SIDEBAR_POSITION = 'peer fixed top-0 left-0 bottom-0 z-30';
 
@@ -18,8 +18,13 @@ const FOOTER_LABEL_COLLAPSIBLE =
 const FOOTER_LABEL_VISIBLE = 'flex-1 opacity-100';
 
 const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
-  { href: '/', label: PAGE_TITLE.HOME, icon: House },
-  { href: '/apps', label: PAGE_TITLE.APPS, icon: LayoutGrid },
+  { href: APP_ROUTE.HOME, label: PAGE_TITLE.HOME, icon: House },
+  { href: APP_ROUTE.APPS, label: PAGE_TITLE.APPS, icon: LayoutGrid },
+  {
+    href: APP_ROUTE.PREVIEW_DEPLOYMENTS,
+    label: PAGE_TITLE.PREVIEW_DEPLOYMENTS,
+    icon: GitPullRequest,
+  },
 ];
 
 type AppSidebarProps = {

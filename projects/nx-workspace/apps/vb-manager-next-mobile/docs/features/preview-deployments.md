@@ -1,0 +1,8 @@
+# Preview Deployments
+
+- `/preview-deployments` (sidebar entry, `APP_ROUTE.PREVIEW_DEPLOYMENTS`, title via `metadata`) lists every open PR with a deployed Cloudflare Pages preview, newest PR first. Each card links the PR (number and title) and shows its author and head branch, then each app with links to its alias (follows the PR) and immutable build URL, sized as 44px tap targets.
+- The UI is `PreviewDeployments` from `@vigilant-broccoli/react-lib-higher-level` with `PREVIEW_DEPLOYMENTS_LAYOUT.STACK`. `components/preview-deployments-view.tsx` is only the client boundary that passes `authFetch`, since the page is a server component exporting `metadata`.
+- Source of truth is GitHub Deployments, written by `deploy-preview.yml` with environment `pr-<n>/<app>` and a `payload` carrying the URLs; see [workflow-conventions.md](../../../../../../docs/ci/workflow-conventions.md#pr-previews).
+- `GET /api/preview-deployments` (`src/app/api/preview-deployments/route.ts`, `requireAuth`) calls `getPreviewDeployments` from `@vigilant-broccoli/github-workspace-js`, shared with `vb-manager-next`: two GitHub calls, newest deployment per environment, open PRs only. Successful results are cached for 3 minutes per warm Vercel instance.
+- Fetches on load and on Refresh only, never polls: unauthenticated GitHub calls are limited to 60 per hour per IP (Vercel's egress IPs may be shared). A rate-limited fetch shows an error with the reset time.
+- Optional read-only `GITHUB_TOKEN` lifts the limit; it is documented, commented out, in `.env.example` so `fetch-secrets` never injects one. Set it as a Vercel environment variable if needed.

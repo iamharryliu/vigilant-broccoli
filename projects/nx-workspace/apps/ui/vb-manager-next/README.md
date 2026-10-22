@@ -44,6 +44,7 @@ Management dashboard app.
   - `react-utility`
   - `resume`
 - Cloud services
+  - GitHub REST API
   - Google OAuth
   - Google Tasks & Calendar
   - MongoDB
