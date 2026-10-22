@@ -22,3 +22,15 @@ The `InSeasonCard` lists the fruits and vegetables in season as badges, on its o
 
 - Each badge is a button that adds the item to the selected home's grocery list through `/api/grocery` (the `grocery_items` table the grocery page uses). Nothing new is stored.
 - Names already on the uncompleted list (case-insensitive) render as a solid badge with a check, disabled so they cannot be added twice. The badge state change is the add feedback; a failed add reverts it.
+
+## Season status
+
+- `getSeasonStatus` in `src/lib/in-season.ts` uses the same hemisphere month shift as `getInSeason`. A month is "just in" when the previous month is not in the item's months and "last chance" when the next month is not, wrapping across December (Nov-Feb works). All-year items and mid-run months are regular, with no marker; a one-month run counts as just in.
+- The badge is prefixed with 🌱 (just in) or ⏳ (last chance); the aria-label and title append the status text.
+- A help icon beside the card title opens a legend dialog listing each emoji and its meaning.
+
+## Month browsing
+
+- ‹ › icon buttons beside the month name step through the year, wrapping across December. The card defaults to the current month; the name comes from `Intl.DateTimeFormat`.
+- A "Back to this month" control appears only while another month is shown.
+- Items, season statuses and the add-to-grocery action all use the browsed month, with the same hemisphere shift. Browsing is local state and resets on reload.
