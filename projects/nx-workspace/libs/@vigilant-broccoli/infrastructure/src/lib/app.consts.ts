@@ -78,7 +78,7 @@ export const VB_APP_URL = {
   },
   HEARTH: {
     NAME: 'Hearth',
-    URL: 'https://production-hearth.vercel.app/login',
+    URL: 'https://hearth.harryliu.dev/login',
     STAGING_URL: 'https://staging-hearth.vercel.app/login',
   },
   SERVICE_MANAGER: {

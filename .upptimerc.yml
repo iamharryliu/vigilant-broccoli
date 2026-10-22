@@ -93,7 +93,7 @@ sites:
   - name: production-findme
     url: https://findme.harryliu.dev/
   - name: production-hearth
-    url: https://production-hearth.vercel.app/login
+    url: https://hearth.harryliu.dev/login
   - name: production-service-manager
     url: https://api.harryliu.dev/
   - name: production-component-library
