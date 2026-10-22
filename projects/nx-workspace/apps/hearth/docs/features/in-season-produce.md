@@ -16,4 +16,4 @@ The `InSeasonCard` lists the fruits and vegetables in season as badges, under th
 
 - `src/lib/in-season.ts` holds the pure logic. Latitude from `useGeolocation` decides the hemisphere; until it arrives, or if denied or unsupported, the browser time zone decides (known Southern zones, otherwise Northern).
 - Rendering never waits for the permission prompt; the card updates when latitude arrives. Longitude is ignored.
-- Northern uses the note months as-is; Southern shifts each month window by 6 months. The current month selects items, and the caption shows the detected hemisphere and month.
+- Northern uses the note months as-is; Southern shifts each month window by 6 months. The current month selects items.
