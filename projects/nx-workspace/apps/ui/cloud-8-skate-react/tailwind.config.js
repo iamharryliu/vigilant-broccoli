@@ -5,9 +5,7 @@ module.exports = {
   presets: [
     require('../../../libs/@vigilant-broccoli/react-lib/tailwind.preset.cjs'),
   ],
-  // No dark mode toggle in this app; pin to 'class' (never applied) rather
-  // than the 'media' default so react-lib's dark: classes never activate off
-  // the OS color scheme and mismatch the rest of the light-only site.
+  // The `d` toggle sets the class on <html> and can override the OS setting.
   darkMode: 'class',
   content: [
     join(__dirname, 'index.html'),

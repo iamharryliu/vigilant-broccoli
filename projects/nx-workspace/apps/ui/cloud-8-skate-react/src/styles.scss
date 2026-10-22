@@ -2,6 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply dark:bg-gray-950 dark:text-gray-100;
+  }
+}
+
+.sky-background {
+  background: linear-gradient(
+    #1565a8,
+    #2e86c1 28%,
+    #5dade2 58%,
+    #85c1e9 82%,
+    #d0eaf8
+  );
+}
+
+.dark .sky-background {
+  background: linear-gradient(
+    #0b1530,
+    #13254a 28%,
+    #1d3a66 58%,
+    #2a4f7f 82%,
+    #3d6593
+  );
+}
+
 .grecaptcha-badge {
   visibility: hidden;
 }
@@ -230,6 +260,34 @@
     color: #333;
     margin-bottom: 1rem;
     display: block;
+  }
+
+  .dark & {
+    a {
+      color: #60a5fa;
+    }
+
+    a:hover {
+      color: #93c5fd;
+    }
+
+    th,
+    td {
+      border-color: #374151;
+    }
+
+    th {
+      background-color: #1f2937;
+    }
+
+    tr:hover {
+      background-color: #111827;
+    }
+
+    code {
+      background-color: #1f2937;
+      color: #e5e7eb;
+    }
   }
 
   pre {

@@ -13,15 +13,14 @@
     --border: var(--pages-border);
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --pages-background: 215 28% 17%;
-      --background: var(--pages-background);
-      --pages-primary: 198 93% 60%;
-      --primary: var(--pages-primary);
-      --pages-border: 217 19% 27%;
-      --border: var(--pages-border);
-    }
+  :root.dark {
+    --pages-background: 215 28% 17%;
+    --background: var(--pages-background);
+    --pages-primary: 198 93% 60%;
+    --primary: var(--pages-primary);
+    --pages-border: 217 19% 27%;
+    --border: var(--pages-border);
+    color-scheme: dark;
   }
 }
 

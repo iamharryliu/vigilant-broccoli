@@ -24,7 +24,7 @@ export function PlaylistsPage() {
             {playlistsPage.title}
           </h1>
           {playlistsPage.intro && (
-            <p className="text-base leading-7 text-gray-700 mb-8 reveal-up reveal-up-delay-2">
+            <p className="text-base leading-7 text-gray-700 dark:text-gray-300 mb-8 reveal-up reveal-up-delay-2">
               {playlistsPage.intro}
             </p>
           )}
@@ -32,23 +32,23 @@ export function PlaylistsPage() {
             {(playlistsPage.playlistItems ?? []).map(item => (
               <article
                 key={item._key ?? item.title}
-                className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm surface-card reveal-up"
+                className="rounded-2xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 p-5 shadow-sm surface-card reveal-up"
               >
                 <a
                   href={item.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xl font-semibold text-blue-600 underline-offset-4 hover:underline interactive-link"
+                  className="text-xl font-semibold text-blue-600 dark:text-blue-400 underline-offset-4 hover:underline interactive-link"
                 >
                   {item.title}
                 </a>
                 {item.curator && (
-                  <p className="mt-2 text-sm font-medium text-gray-500">
+                  <p className="mt-2 text-sm font-medium text-gray-500 dark:text-gray-400">
                     {t('PLAYLISTS.CURATED_BY', { curator: item.curator })}
                   </p>
                 )}
                 {item.description && (
-                  <p className="mt-3 text-base leading-7 text-gray-700 whitespace-pre-line">
+                  <p className="mt-3 text-base leading-7 text-gray-700 dark:text-gray-300 whitespace-pre-line">
                     {item.description}
                   </p>
                 )}
@@ -58,11 +58,11 @@ export function PlaylistsPage() {
         </section>
       ) : (
         !isLoading && (
-          <section className="mb-8 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm reveal-up">
+          <section className="mb-8 rounded-2xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 p-5 shadow-sm reveal-up">
             <h1 className="text-3xl font-bold mb-4 lg:text-4xl">
               {t('PLAYLISTS.TITLE')}
             </h1>
-            <p className="text-base leading-7 text-gray-700">
+            <p className="text-base leading-7 text-gray-700 dark:text-gray-300">
               {t('PLAYLISTS.UNAVAILABLE')}
             </p>
           </section>
