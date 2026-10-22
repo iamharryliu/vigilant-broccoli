@@ -9,10 +9,50 @@ export type Hemisphere = (typeof HEMISPHERE)[keyof typeof HEMISPHERE];
 
 export type SeasonalItem = { name: string; months: number[] };
 
-export const SEASONAL_PRODUCE: Record<
-  'fruits' | 'vegetables',
-  SeasonalItem[]
-> = produce;
+export const SEASONAL_PRODUCE: Record<'fruits' | 'vegetables', SeasonalItem[]> =
+  produce;
+
+// Only items with a matching Unicode emoji; the rest render as plain badges.
+const PRODUCE_EMOJI: Record<string, string> = {
+  Apple: '🍎',
+  Avocado: '🥑',
+  Blueberry: '🫐',
+  Broccoli: '🥦',
+  'Bell Pepper': '🫑',
+  Cantaloupe: '🍈',
+  Carrot: '🥕',
+  Cherry: '🍒',
+  Corn: '🌽',
+  Cucumber: '🥒',
+  Eggplant: '🍆',
+  Garlic: '🧄',
+  Grape: '🍇',
+  'Green Bean': '🫘',
+  'Honeydew Melon': '🍈',
+  Kale: '🥬',
+  Kiwi: '🥝',
+  Lemon: '🍋',
+  Lettuce: '🥬',
+  Lime: '🍋‍🟩',
+  Mango: '🥭',
+  Mushroom: '🍄',
+  Onion: '🧅',
+  Orange: '🍊',
+  Pea: '🫛',
+  Peach: '🍑',
+  Pear: '🍐',
+  Pineapple: '🍍',
+  Potato: '🥔',
+  Pumpkin: '🎃',
+  Strawberry: '🍓',
+  'Sweet Potato': '🍠',
+  'Tangerine / Mandarin': '🍊',
+  Tomato: '🍅',
+  Watermelon: '🍉',
+};
+
+export const getProduceEmoji = (name: string): string | undefined =>
+  PRODUCE_EMOJI[name];
 
 const MONTHS_IN_YEAR = 12;
 const SOUTHERN_SEASON_SHIFT_MONTHS = 6;

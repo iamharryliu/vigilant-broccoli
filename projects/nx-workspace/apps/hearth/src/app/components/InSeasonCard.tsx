@@ -11,6 +11,7 @@ import { useTranslation } from '../i18n';
 import {
   detectHemisphere,
   getInSeason,
+  getProduceEmoji,
   SEASONAL_PRODUCE,
 } from '../../lib/in-season';
 
@@ -55,11 +56,14 @@ export function InSeasonCard() {
           </Text>
           <div className="flex flex-wrap gap-1.5">
             {names.length ? (
-              names.map(name => (
-                <Badge key={name} color="green">
-                  {name}
-                </Badge>
-              ))
+              names.map(name => {
+                const emoji = getProduceEmoji(name);
+                return (
+                  <Badge key={name} color="green">
+                    {emoji ? `${emoji} ${name}` : name}
+                  </Badge>
+                );
+              })
             ) : (
               <Text size="1" color="gray">
                 {t('IN_SEASON.NONE')}
