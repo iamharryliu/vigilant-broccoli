@@ -15,6 +15,7 @@ import { ChecklistItem } from '../../lib/types';
 import {
   detectHemisphere,
   getInSeason,
+  getProduceEmoji,
   SEASONAL_PRODUCE,
 } from '../../lib/in-season';
 
@@ -106,35 +107,38 @@ export function InSeasonCard() {
           </Text>
           <div className="flex flex-wrap gap-1.5">
             {names.length ? (
-              names.map(name => (
-                <button
-                  key={name}
-                  type="button"
-                  disabled={!homeId || onList(name)}
-                  onClick={() => addToGrocery(name)}
-                  aria-label={t(
-                    onList(name)
-                      ? 'IN_SEASON.ON_LIST_LABEL'
-                      : 'IN_SEASON.ADD_LABEL',
-                    { name },
-                  )}
-                  title={t(
-                    onList(name)
-                      ? 'IN_SEASON.ON_LIST_LABEL'
-                      : 'IN_SEASON.ADD_LABEL',
-                    { name },
-                  )}
-                  className="rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 enabled:cursor-pointer"
-                >
-                  <Badge
-                    color="green"
-                    variant={onList(name) ? 'solid' : 'soft'}
+              names.map(name => {
+                const emoji = getProduceEmoji(name);
+                return (
+                  <button
+                    key={name}
+                    type="button"
+                    disabled={!homeId || onList(name)}
+                    onClick={() => addToGrocery(name)}
+                    aria-label={t(
+                      onList(name)
+                        ? 'IN_SEASON.ON_LIST_LABEL'
+                        : 'IN_SEASON.ADD_LABEL',
+                      { name },
+                    )}
+                    title={t(
+                      onList(name)
+                        ? 'IN_SEASON.ON_LIST_LABEL'
+                        : 'IN_SEASON.ADD_LABEL',
+                      { name },
+                    )}
+                    className="rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 enabled:cursor-pointer"
                   >
-                    {onList(name) ? '✓ ' : ''}
-                    {name}
-                  </Badge>
-                </button>
-              ))
+                    <Badge
+                      color="green"
+                      variant={onList(name) ? 'solid' : 'soft'}
+                    >
+                      {onList(name) ? '✓ ' : ''}
+                      {emoji ? `${emoji} ${name}` : name}
+                    </Badge>
+                  </button>
+                );
+              })
             ) : (
               <Text size="1" color="gray">
                 {t('IN_SEASON.NONE')}
