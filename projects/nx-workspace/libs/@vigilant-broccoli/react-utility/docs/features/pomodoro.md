@@ -5,7 +5,7 @@
 
 ## Modes
 
-- Focus and short break alternate, each with configurable minutes (1-180).
+- Focus and break alternate, each with configurable minutes (1-180).
 - Duration edits are disabled while running and apply immediately to a session that has not been started or paused part-way.
 - A session ending beeps until dismissed, then dismissing starts the next session. Skip and Reset are silent.
 
@@ -15,7 +15,7 @@
 
 ## Settings dialog
 
-- The gear Settings button opens a dialog holding only the Focus and Short break minute inputs; the main view shows the timer, stage sequence and controls.
+- The gear Settings button opens a dialog holding only the Focus and Break minute inputs; the main view shows the timer, stage sequence and controls.
 
 ## Persistence
 

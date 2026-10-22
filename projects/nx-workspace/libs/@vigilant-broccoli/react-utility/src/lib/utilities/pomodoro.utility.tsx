@@ -62,7 +62,7 @@ const MODES = Object.values(POMODORO_MODE);
 
 const MODE_LABELS: Record<PomodoroMode, string> = {
   [POMODORO_MODE.WORK]: 'Focus Time',
-  [POMODORO_MODE.SHORT_BREAK]: 'Short Break',
+  [POMODORO_MODE.SHORT_BREAK]: 'Break',
 };
 
 const MODE_BADGE_COLOR: Record<PomodoroMode, 'blue' | 'green'> = {
@@ -77,12 +77,12 @@ const MODE_STROKE: Record<PomodoroMode, string> = {
 
 const MODE_NOTIFICATION: Record<PomodoroMode, string> = {
   [POMODORO_MODE.WORK]: 'Break over. Time to focus.',
-  [POMODORO_MODE.SHORT_BREAK]: 'Time for a short break.',
+  [POMODORO_MODE.SHORT_BREAK]: 'Time for a break.',
 };
 
 const MINUTE_FIELDS: { key: MinutesKey; label: string }[] = [
   { key: POMODORO_MODE.WORK, label: 'Focus (min)' },
-  { key: POMODORO_MODE.SHORT_BREAK, label: 'Short break (min)' },
+  { key: POMODORO_MODE.SHORT_BREAK, label: 'Break (min)' },
 ];
 
 const LABEL_SETTINGS = 'Settings';
