@@ -22,6 +22,11 @@ import { KitchenEvents } from './KitchenEvents';
 import { KitchenEventCalendar } from './KitchenEventCalendar';
 import { FoodChatPanel } from './FoodChatPanel';
 import { RecipeList } from './RecipeList';
+import {
+  getFirstMobileChildHref,
+  useMobileRedirect,
+} from '../../lib/use-mobile-redirect';
+import { ROUTES } from '../../lib/routes';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 const PLANNER_TAB = 'planner';
@@ -235,6 +240,10 @@ function FoodPlannerContent() {
 
 export default function FoodPlannerPage() {
   usePageTitle(PAGE_TITLES.FOOD_PLANNER);
+  const { shouldRender } = useMobileRedirect(
+    getFirstMobileChildHref(ROUTES.FOOD_PLANNER),
+  );
+  if (!shouldRender) return null;
   return (
     <I18nProvider>
       <Suspense fallback={null}>
