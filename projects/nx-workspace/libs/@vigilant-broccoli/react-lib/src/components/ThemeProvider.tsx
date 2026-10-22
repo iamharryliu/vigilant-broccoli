@@ -12,6 +12,7 @@ import {
   useThemePreference,
   type ThemeAppearance,
 } from '../hooks/useThemePreference';
+import { useToggleThemeKeybind } from '../hooks/useThemeKeybind';
 
 const USE_THEME_ERROR = 'useTheme must be used within a ThemeProvider';
 
@@ -25,11 +26,18 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({
   children,
   style,
+  storageKey,
+  keybind = true,
 }: {
   children: ReactNode;
   style?: CSSProperties;
+  /** Per-app `localStorage` key for the saved override. */
+  storageKey?: string;
+  /** Binds the global `d` toggle; disable it where `d` is taken and call `useThemeKeybind` where it is free. */
+  keybind?: boolean;
 }) {
-  const { appearance, toggleTheme } = useThemePreference();
+  const { appearance, toggleTheme } = useThemePreference(storageKey);
+  useToggleThemeKeybind(toggleTheme, keybind);
 
   return (
     <ThemeContext.Provider value={{ appearance, toggleTheme }}>
@@ -46,4 +54,8 @@ export function useTheme() {
     throw new Error(USE_THEME_ERROR);
   }
   return context;
+}
+
+export function useThemeKeybind(enabled = true) {
+  useToggleThemeKeybind(useTheme().toggleTheme, enabled);
 }

@@ -14,6 +14,7 @@ import { I18nProvider, useTranslation } from './i18n';
 import { usePageTitle } from './use-page-title';
 import { parseBookmarks, TAB, useBookmarks } from './use-bookmarks';
 
+const THEME_STORAGE_KEY = 'bookmarks-react-theme';
 const EMPTY_FORM = { label: '', target: '', subgroup: '' };
 const EXPORT_FILENAME = 'bookmarks.json';
 const JSON_TYPE = 'application/json';
@@ -254,7 +255,7 @@ function BookmarksPage() {
 export function App() {
   return (
     <I18nProvider>
-      <ThemeProvider>
+      <ThemeProvider storageKey={THEME_STORAGE_KEY}>
         <BookmarksPage />
       </ThemeProvider>
     </I18nProvider>

@@ -7,6 +7,8 @@ import { AuthProvider } from '../../libs/auth';
 import { APP_NAME, SIDEBAR_ROUTE } from './app.const';
 import { I18nProvider } from './i18n';
 
+const THEME_STORAGE_KEY = 'vb-manager-next-theme';
+
 export default function RootLayout({
   children,
 }: {
@@ -19,7 +21,10 @@ export default function RootLayout({
       </head>
       <body>
         <AuthProvider>
-          <ThemeProvider style={{ fontSize: '0.9rem' }}>
+          <ThemeProvider
+            storageKey={THEME_STORAGE_KEY}
+            style={{ fontSize: '0.9rem' }}
+          >
             <I18nProvider>
               {children}
               <Toaster richColors closeButton position="bottom-right" />

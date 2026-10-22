@@ -16,7 +16,6 @@ import {
 import {
   ThemeProvider,
   useTheme,
-  useThemeKeybind,
   useDocumentTitle,
   Switch,
   Heading,
@@ -573,6 +572,7 @@ export interface ComponentSandboxProps {
   title?: string;
   subtitle?: string;
   wrapInTheme?: boolean;
+  themeStorageKey?: string;
 }
 
 type BuildSidebarItemsArgs = {
@@ -818,7 +818,6 @@ function ThemedSandbox({
   siteName,
 }: ComponentSandboxProps): ReactNode {
   const { appearance, toggleTheme } = useTheme();
-  useThemeKeybind();
   return (
     <div className="w-full h-screen overflow-hidden">
       <SandboxBody
@@ -835,11 +834,12 @@ function ThemedSandbox({
 
 function ComponentSandboxContent({
   wrapInTheme = false,
+  themeStorageKey,
   ...props
 }: ComponentSandboxProps): ReactNode {
   const [dark, setDark] = useState(false);
   return wrapInTheme ? (
-    <ThemeProvider>
+    <ThemeProvider storageKey={themeStorageKey}>
       <ThemedSandbox {...props} />
     </ThemeProvider>
   ) : (
