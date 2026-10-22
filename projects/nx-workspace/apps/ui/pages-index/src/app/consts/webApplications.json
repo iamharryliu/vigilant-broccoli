@@ -50,6 +50,13 @@
       "readmePath": "projects/nx-workspace/apps/findme/README.md"
     },
     {
+      "id": "hearth",
+      "href": "https://hearth.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.HEARTH.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.HEARTH.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/hearth/README.md"
+    },
+    {
       "id": "harry-liu",
       "href": "https://harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.HARRY_LIU.TITLE",

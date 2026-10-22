@@ -84,6 +84,7 @@ locals {
     "http://localhost:4200",
     "https://staging-hearth.vercel.app",
     "https://production-hearth.vercel.app",
+    "https://hearth.harryliu.dev",
   ]
 }
 

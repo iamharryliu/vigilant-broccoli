@@ -106,6 +106,10 @@
       "TITLE": "FindMe",
       "DESCRIPTION": "Live location sharing app deployed on Vercel."
     },
+    "HEARTH": {
+      "TITLE": "Hearth",
+      "DESCRIPTION": "Shared home and community management app deployed on Vercel."
+    },
     "WHITEBOARD": {
       "TITLE": "Whiteboard",
       "DESCRIPTION": "Live collaborative whiteboard rooms deployed on Vercel."
