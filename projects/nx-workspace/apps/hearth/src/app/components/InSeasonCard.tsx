@@ -1,9 +1,14 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { CircleHelp } from 'lucide-react';
 import {
   Badge,
   CardContainer,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
   Text,
   useGeolocation,
 } from '@vigilant-broccoli/react-lib';
@@ -14,13 +19,22 @@ import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
 import { ChecklistItem } from '../../lib/types';
 import {
   detectHemisphere,
-  getInSeason,
+  getInSeasonItems,
+  getSeasonStatus,
+  SEASON_STATUS,
+  SEASON_STATUS_EMOJI,
+  SEASON_STATUS_LABEL_KEY,
   SEASONAL_PRODUCE,
 } from '../../lib/in-season';
 
 const GROCERY_ENDPOINT = '/api/grocery';
 
 type Now = { month: number; timeZone: string };
+
+const LEGEND_STATUSES = [
+  SEASON_STATUS.JUST_IN,
+  SEASON_STATUS.LAST_CHANCE,
+] as const;
 
 export function InSeasonCard() {
   const { t } = useTranslation();
@@ -32,6 +46,7 @@ export function InSeasonCard() {
   const authHeader = useAuthHeader();
   const jsonHeaders = useJsonAuthHeaders();
   const [groceryNames, setGroceryNames] = useState<Set<string>>(new Set());
+  const [legendOpen, setLegendOpen] = useState(false);
   const [now, setNow] = useState<Now | null>(null);
 
   const fetchGroceryNames = useCallback(async () => {
@@ -89,41 +104,80 @@ export function InSeasonCard() {
   const groups = [
     {
       label: t('IN_SEASON.FRUITS'),
-      names: getInSeason(SEASONAL_PRODUCE.fruits, hemisphere, now.month),
+      items: getInSeasonItems(SEASONAL_PRODUCE.fruits, hemisphere, now.month),
     },
     {
       label: t('IN_SEASON.VEGETABLES'),
-      names: getInSeason(SEASONAL_PRODUCE.vegetables, hemisphere, now.month),
+      items: getInSeasonItems(
+        SEASONAL_PRODUCE.vegetables,
+        hemisphere,
+        now.month,
+      ),
     },
   ];
 
   return (
-    <CardContainer title={t('IN_SEASON.TITLE')}>
-      {groups.map(({ label, names }) => (
+    <CardContainer
+      title={t('IN_SEASON.TITLE')}
+      titleAction={
+        <button
+          type="button"
+          onClick={() => setLegendOpen(true)}
+          aria-label={t('IN_SEASON.LEGEND_LABEL')}
+          title={t('IN_SEASON.LEGEND_LABEL')}
+          className="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+        >
+          <CircleHelp className="h-4 w-4" />
+        </button>
+      }
+    >
+      <Dialog open={legendOpen} onOpenChange={setLegendOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('IN_SEASON.LEGEND_TITLE')}</DialogTitle>
+          </DialogHeader>
+          <ul className="space-y-3 text-sm">
+            {LEGEND_STATUSES.map(status => (
+              <li key={status} className="flex items-center gap-3">
+                <span aria-hidden>{SEASON_STATUS_EMOJI[status]}</span>
+                <span>{t(SEASON_STATUS_LABEL_KEY[status])}</span>
+              </li>
+            ))}
+          </ul>
+        </DialogContent>
+      </Dialog>
+      {groups.map(({ label, items }) => (
         <div key={label} className="space-y-2">
           <Text size="2" weight="bold">
             {label}
           </Text>
           <div className="flex flex-wrap gap-1.5">
-            {names.length ? (
-              names.map(name => (
+            {items.length ? (
+              items.map(item => {
+                const { name } = item;
+                const status = getSeasonStatus(item, hemisphere, now.month);
+                const emoji =
+                  status === SEASON_STATUS.REGULAR
+                    ? null
+                    : SEASON_STATUS_EMOJI[status];
+                const actionLabel = t(
+                  onList(name)
+                    ? 'IN_SEASON.ON_LIST_LABEL'
+                    : 'IN_SEASON.ADD_LABEL',
+                  { name },
+                );
+                const fullLabel =
+                  status === SEASON_STATUS.REGULAR
+                    ? actionLabel
+                    : `${actionLabel} (${t(SEASON_STATUS_LABEL_KEY[status])})`;
+                return (
                 <button
                   key={name}
                   type="button"
                   disabled={!homeId || onList(name)}
                   onClick={() => addToGrocery(name)}
-                  aria-label={t(
-                    onList(name)
-                      ? 'IN_SEASON.ON_LIST_LABEL'
-                      : 'IN_SEASON.ADD_LABEL',
-                    { name },
-                  )}
-                  title={t(
-                    onList(name)
-                      ? 'IN_SEASON.ON_LIST_LABEL'
-                      : 'IN_SEASON.ADD_LABEL',
-                    { name },
-                  )}
+                  aria-label={fullLabel}
+                  title={fullLabel}
                   className="rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 enabled:cursor-pointer"
                 >
                   <Badge
@@ -131,10 +185,12 @@ export function InSeasonCard() {
                     variant={onList(name) ? 'solid' : 'soft'}
                   >
                     {onList(name) ? '✓ ' : ''}
+                    {emoji ? `${emoji} ` : ''}
                     {name}
                   </Badge>
                 </button>
-              ))
+                );
+              })
             ) : (
               <Text size="1" color="gray">
                 {t('IN_SEASON.NONE')}
