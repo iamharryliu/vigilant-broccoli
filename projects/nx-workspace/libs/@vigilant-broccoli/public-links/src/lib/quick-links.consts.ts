@@ -274,6 +274,13 @@ export const VB_LINKS: QuickLink[] = [
     VB_APP_URL.CAREER,
   ]),
   {
+    label: VB_MONITORING_URL.DEPLOYMENTS.NAME,
+    target: VB_MONITORING_URL.DEPLOYMENTS.URL,
+    type: OPEN_TYPE.BROWSER,
+    embed: true,
+    subgroup: LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI,
+  },
+  {
     label: VB_MONITORING_URL.STATUS.NAME,
     target: VB_MONITORING_URL.STATUS.URL,
     type: OPEN_TYPE.BROWSER,

@@ -8,6 +8,10 @@
       "TITLE": "Status",
       "DESCRIPTION": "Live health of deployed services and applications."
     },
+    "DEPLOYMENTS": {
+      "TITLE": "Deployments",
+      "DESCRIPTION": "Preview deployments for open pull requests."
+    },
     "REPO_TIMELINE": {
       "TITLE": "Repo Timeline",
       "DESCRIPTION": "Lines of code, commits, and PRs over time."
@@ -155,6 +159,9 @@
       "TITLE": "Bookmarks",
       "DESCRIPTION": "Personal bookmarks saved in your browser, with search, groups and JSON import/export."
     }
+  },
+  "DEPLOYMENTS_PAGE": {
+    "TITLE": "Deployments"
   },
   "STATUS_PAGE": {
     "TITLE": "Status",

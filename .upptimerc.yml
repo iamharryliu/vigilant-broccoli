@@ -116,6 +116,8 @@ sites:
     expectedStatusCodes: [302]
   - name: production-career
     url: https://career.harryliu.dev/
+  - name: production-deployments
+    url: https://deployments.harryliu.dev/
   - name: production-status
     url: https://status.harryliu.dev/
   - name: production-uptime
