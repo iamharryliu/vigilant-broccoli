@@ -181,6 +181,9 @@
     "JUST_IN": "Just in season",
     "LAST_CHANCE": "Last chance, season ends this month",
     "LEGEND_LABEL": "Show season legend",
-    "LEGEND_TITLE": "Season legend"
+    "LEGEND_TITLE": "Season legend",
+    "PREVIOUS_MONTH": "Show previous month",
+    "NEXT_MONTH": "Show next month",
+    "CURRENT_MONTH": "Back to this month"
   }
 }

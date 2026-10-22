@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { CircleHelp } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CircleHelp } from 'lucide-react';
 import {
   Badge,
   CardContainer,
@@ -25,9 +25,17 @@ import {
   SEASON_STATUS_EMOJI,
   SEASON_STATUS_LABEL_KEY,
   SEASONAL_PRODUCE,
+  shiftMonth,
 } from '../../lib/in-season';
 
 const GROCERY_ENDPOINT = '/api/grocery';
+
+const MONTH_STEP = { PREVIOUS: -1, NEXT: 1 } as const;
+
+const formatMonthName = (month: number) =>
+  new Intl.DateTimeFormat(undefined, { month: 'long' }).format(
+    new Date(2000, month - 1, 1),
+  );
 
 type Now = { month: number; timeZone: string };
 
@@ -47,6 +55,7 @@ export function InSeasonCard() {
   const jsonHeaders = useJsonAuthHeaders();
   const [groceryNames, setGroceryNames] = useState<Set<string>>(new Set());
   const [legendOpen, setLegendOpen] = useState(false);
+  const [browsedMonth, setBrowsedMonth] = useState<number | null>(null);
   const [now, setNow] = useState<Now | null>(null);
 
   const fetchGroceryNames = useCallback(async () => {
@@ -97,6 +106,10 @@ export function InSeasonCard() {
 
   if (!now) return null;
 
+  const month = browsedMonth ?? now.month;
+  const isBrowsing = month !== now.month;
+  const stepMonth = (step: number) => setBrowsedMonth(shiftMonth(month, step));
+
   const hemisphere = detectHemisphere({
     latitude: lat,
     timeZone: now.timeZone,
@@ -104,15 +117,11 @@ export function InSeasonCard() {
   const groups = [
     {
       label: t('IN_SEASON.FRUITS'),
-      items: getInSeasonItems(SEASONAL_PRODUCE.fruits, hemisphere, now.month),
+      items: getInSeasonItems(SEASONAL_PRODUCE.fruits, hemisphere, month),
     },
     {
       label: t('IN_SEASON.VEGETABLES'),
-      items: getInSeasonItems(
-        SEASONAL_PRODUCE.vegetables,
-        hemisphere,
-        now.month,
-      ),
+      items: getInSeasonItems(SEASONAL_PRODUCE.vegetables, hemisphere, month),
     },
   ];
 
@@ -146,6 +155,42 @@ export function InSeasonCard() {
           </ul>
         </DialogContent>
       </Dialog>
+      <div className="flex items-center justify-between gap-2">
+        <button
+          type="button"
+          onClick={() => stepMonth(MONTH_STEP.PREVIOUS)}
+          aria-label={t('IN_SEASON.PREVIOUS_MONTH')}
+          title={t('IN_SEASON.PREVIOUS_MONTH')}
+          className="rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </button>
+        <div className="flex items-center gap-2">
+          <span aria-live="polite">
+            <Text size="2" weight="bold">
+              {formatMonthName(month)}
+            </Text>
+          </span>
+          {isBrowsing && (
+            <button
+              type="button"
+              onClick={() => setBrowsedMonth(null)}
+              className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+            >
+              {t('IN_SEASON.CURRENT_MONTH')}
+            </button>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={() => stepMonth(MONTH_STEP.NEXT)}
+          aria-label={t('IN_SEASON.NEXT_MONTH')}
+          title={t('IN_SEASON.NEXT_MONTH')}
+          className="rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+        >
+          <ChevronRight className="h-5 w-5" />
+        </button>
+      </div>
       {groups.map(({ label, items }) => (
         <div key={label} className="space-y-2">
           <Text size="2" weight="bold">
@@ -155,7 +200,7 @@ export function InSeasonCard() {
             {items.length ? (
               items.map(item => {
                 const { name } = item;
-                const status = getSeasonStatus(item, hemisphere, now.month);
+                const status = getSeasonStatus(item, hemisphere, month);
                 const emoji =
                   status === SEASON_STATUS.REGULAR
                     ? null
@@ -171,24 +216,24 @@ export function InSeasonCard() {
                     ? actionLabel
                     : `${actionLabel} (${t(SEASON_STATUS_LABEL_KEY[status])})`;
                 return (
-                <button
-                  key={name}
-                  type="button"
-                  disabled={!homeId || onList(name)}
-                  onClick={() => addToGrocery(name)}
-                  aria-label={fullLabel}
-                  title={fullLabel}
-                  className="rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 enabled:cursor-pointer"
-                >
-                  <Badge
-                    color="green"
-                    variant={onList(name) ? 'solid' : 'soft'}
+                  <button
+                    key={name}
+                    type="button"
+                    disabled={!homeId || onList(name)}
+                    onClick={() => addToGrocery(name)}
+                    aria-label={fullLabel}
+                    title={fullLabel}
+                    className="rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 enabled:cursor-pointer"
                   >
-                    {onList(name) ? '✓ ' : ''}
-                    {emoji ? `${emoji} ` : ''}
-                    {name}
-                  </Badge>
-                </button>
+                    <Badge
+                      color="green"
+                      variant={onList(name) ? 'solid' : 'soft'}
+                    >
+                      {onList(name) ? '✓ ' : ''}
+                      {emoji ? `${emoji} ` : ''}
+                      {name}
+                    </Badge>
+                  </button>
                 );
               })
             ) : (
