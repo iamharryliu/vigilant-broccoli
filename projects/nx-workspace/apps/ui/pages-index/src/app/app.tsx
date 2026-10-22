@@ -20,11 +20,13 @@ import { WebApplicationReadmePage } from './pages/WebApplicationReadmePage';
 import { WebApplicationsPage } from './pages/WebApplicationsPage';
 import { ApiServicesPage } from './pages/ApiServicesPage';
 import { ApiServiceDocsPage } from './pages/ApiServiceDocsPage';
+import { DeploymentsPage } from './pages/DeploymentsPage';
 import { CareerPage } from './pages/CareerPage';
 import { CareerExperiencePage } from './pages/CareerExperiencePage';
-import { isCareerHost, isStatusHost } from './consts/hosts';
+import { isCareerHost, isDeploymentsHost, isStatusHost } from './consts/hosts';
 import {
   CAREER_EXPERIENCE_ROUTE,
+  DEPLOYMENTS_ROUTE,
   STATUS_ROUTE,
   WEB_APPLICATIONS_ROUTE,
 } from './consts/routes';
@@ -51,6 +53,15 @@ function StatusHostRoutes() {
   );
 }
 
+function DeploymentsHostRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<DeploymentsPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
 function CareerHostRoutes() {
   return (
     <Routes>
@@ -69,6 +80,7 @@ function ProjectsRoutes() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path={STATUS_ROUTE} element={<StatusPage />} />
+      <Route path={DEPLOYMENTS_ROUTE} element={<DeploymentsPage />} />
       <Route path="/repo-timeline" element={<RepoTimelinePage />} />
       <Route
         path={`${LEGACY_OPEN_SOURCE_PREFIX}/*`}
@@ -99,6 +111,8 @@ export function App() {
           <HashRouter>
             {isStatusHost() ? (
               <StatusHostRoutes />
+            ) : isDeploymentsHost() ? (
+              <DeploymentsHostRoutes />
             ) : isCareerHost() ? (
               <CareerHostRoutes />
             ) : (

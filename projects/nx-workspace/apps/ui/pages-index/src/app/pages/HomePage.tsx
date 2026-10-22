@@ -3,6 +3,7 @@ import {
   Bot,
   ChartColumn,
   FileText,
+  GitPullRequestArrow,
   Globe,
   LayoutGrid,
   Server,
@@ -59,6 +60,15 @@ export function HomePage() {
               title={t('HOME.STATUS.TITLE')}
               description={t('HOME.STATUS.DESCRIPTION')}
               icon={<Activity className={ICON_CLASS} />}
+            />
+          </li>
+          <li>
+            <CardLink
+              route
+              href="/deployments"
+              title={t('HOME.DEPLOYMENTS.TITLE')}
+              description={t('HOME.DEPLOYMENTS.DESCRIPTION')}
+              icon={<GitPullRequestArrow className={ICON_CLASS} />}
             />
           </li>
           <li>

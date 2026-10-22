@@ -10,7 +10,6 @@ import {
   Text,
 } from '@vigilant-broccoli/react-lib';
 import {
-  PREVIEW_DEPLOYMENTS_API_PATH,
   PREVIEW_DEPLOYMENTS_ERROR,
   PreviewDeploymentPullRequest,
   PreviewDeploymentsResult,
@@ -37,7 +36,8 @@ const MESSAGE = {
   EMPTY: 'No open pull requests have a deployed preview.',
   UPSTREAM: 'Could not load preview deployments from GitHub.',
   RATE_LIMITED:
-    'GitHub API rate limit reached (60 unauthenticated requests per hour). Set GITHUB_TOKEN on the server to lift it.',
+    'GitHub API rate limit reached (60 unauthenticated requests per hour).',
+  RATE_LIMITED_SERVER_HINT: 'Set GITHUB_TOKEN on the server to lift it.',
   RATE_LIMIT_RESET: 'Try again after',
 };
 
@@ -81,9 +81,10 @@ const formatTime = (iso: string) => new Date(iso).toLocaleTimeString();
 
 const errorMessage = (
   result: Extract<PreviewDeploymentsResult, { ok: false }>,
+  showServerHint: boolean,
 ) =>
   result.error === PREVIEW_DEPLOYMENTS_ERROR.RATE_LIMITED
-    ? `${MESSAGE.RATE_LIMITED}${result.rateLimitResetAt ? ` ${MESSAGE.RATE_LIMIT_RESET} ${formatTime(result.rateLimitResetAt)}.` : ''}`
+    ? `${MESSAGE.RATE_LIMITED}${showServerHint ? ` ${MESSAGE.RATE_LIMITED_SERVER_HINT}` : ''}${result.rateLimitResetAt ? ` ${MESSAGE.RATE_LIMIT_RESET} ${formatTime(result.rateLimitResetAt)}.` : ''}`
     : MESSAGE.UPSTREAM;
 
 const PullRequestCard = ({
@@ -137,15 +138,18 @@ const PullRequestCard = ({
 );
 
 interface PreviewDeploymentsProps {
-  // The app's authenticated fetch; its /api/preview-deployments route sits
-  // behind the app's auth.
-  authFetch: (path: string) => Promise<Response>;
+  // Resolves the result however the host app reaches GitHub: through its
+  // authenticated /api/preview-deployments route, or straight from the browser.
+  loadPreviewDeployments: () => Promise<PreviewDeploymentsResult>;
   layout?: PreviewDeploymentsLayout;
+  // Public viewers cannot set the server's GITHUB_TOKEN, so they get no hint.
+  showServerTokenHint?: boolean;
 }
 
 export const PreviewDeployments = ({
-  authFetch,
+  loadPreviewDeployments,
   layout = PREVIEW_DEPLOYMENTS_LAYOUT.GRID,
+  showServerTokenHint = true,
 }: PreviewDeploymentsProps) => {
   const [result, setResult] = useState<PreviewDeploymentsResult | null>(null);
   const [loading, setLoading] = useState(true);
@@ -156,8 +160,7 @@ export const PreviewDeployments = ({
   const refresh = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await authFetch(PREVIEW_DEPLOYMENTS_API_PATH);
-      setResult(await response.json());
+      setResult(await loadPreviewDeployments());
     } catch {
       setResult({
         ok: false,
@@ -166,7 +169,7 @@ export const PreviewDeployments = ({
       });
     }
     setLoading(false);
-  }, [authFetch]);
+  }, [loadPreviewDeployments]);
 
   useEffect(() => {
     refresh();
@@ -194,7 +197,7 @@ export const PreviewDeployments = ({
         <Text color="gray">{MESSAGE.LOADING}</Text>
       ) : result && !result.ok ? (
         <Callout color="red">
-          <CalloutText>{errorMessage(result)}</CalloutText>
+          <CalloutText>{errorMessage(result, showServerTokenHint)}</CalloutText>
         </Callout>
       ) : result?.pullRequests.length ? (
         <div className={style.list}>
