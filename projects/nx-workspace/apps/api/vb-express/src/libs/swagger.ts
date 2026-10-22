@@ -589,7 +589,8 @@ export const swaggerSpec = createSwaggerSpec({
     },
     '/api/calendar/parse': {
       post: {
-        summary: 'Extract calendar events from text and/or images via LLM',
+        summary:
+          'Extract calendar events from text, images and http(s) links in the text via LLM. Linked pages are fetched server-side (public hosts only).',
         requestBody: jsonBody({
           type: 'object',
           properties: {
