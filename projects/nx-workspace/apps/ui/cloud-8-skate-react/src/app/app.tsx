@@ -3,7 +3,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import { I18nProvider } from './i18n';
 import { ROUTE_PATH } from './core/consts/routes.const';
 import { initAnalytics, usePageviewTracking } from './core/services/analytics';
-import { useDocumentTheme } from './core/services/theme';
+import { useDocumentThemeClass } from '@vigilant-broccoli/react-lib';
 import { GeneralLayout } from './components/layouts/general-layout';
 import { HomePage } from './components/pages/home.page';
 import { ContactPage } from './components/pages/contact.page';
@@ -14,6 +14,8 @@ import { PlaylistsPage } from './components/pages/playlists.page';
 import { AlbumsPage } from './components/pages/albums.page';
 import { AlbumPage } from './components/pages/album.page';
 import { NotFoundPage } from './components/pages/not-found.page';
+
+const THEME_STORAGE_KEY = 'cloud-8-skate-react-theme';
 
 initAnalytics();
 
@@ -29,7 +31,7 @@ function NavigationEffects() {
 }
 
 export function App() {
-  useDocumentTheme();
+  useDocumentThemeClass(THEME_STORAGE_KEY);
 
   return (
     <I18nProvider>

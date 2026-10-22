@@ -1,5 +1,6 @@
 export * from './components';
 export * from './hooks/useDocumentTitle';
+export * from './hooks/useDocumentThemeClass';
 export * from './hooks/useAnimatedNumber';
 export * from './hooks/useGeolocation';
 export * from './hooks/useSpeechToText';
