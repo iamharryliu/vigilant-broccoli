@@ -112,7 +112,7 @@ const SETTINGS_PANEL_STYLE: CSSProperties = {
   gridTemplateColumns: '1fr auto',
   alignItems: 'center',
   columnGap: 'var(--space-4)',
-  rowGap: 'var(--space-3)',
+  rowGap: 'var(--space-5)',
   marginTop: 'var(--space-3)',
 };
 
@@ -664,7 +664,7 @@ export const PomodoroUtilityContent = () => {
             {LABEL_SETTINGS}
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent onOpenAutoFocus={event => event.preventDefault()}>
           <DialogTitle>{LABEL_SETTINGS}</DialogTitle>
           <DialogDescription className="sr-only">
             {LABEL_SETTINGS}
