@@ -3,12 +3,14 @@
 import {
   createContext,
   useContext,
+  useSyncExternalStore,
   ReactNode,
   type CSSProperties,
 } from 'react';
 
-import { ThemeScope } from './ThemeScope';
+import { getThemeRestoreScript, ThemeScope } from './ThemeScope';
 import {
+  THEME_STORAGE_KEY,
   useThemePreference,
   type ThemeAppearance,
 } from '../hooks/useThemePreference';
@@ -23,10 +25,21 @@ type ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+const subscribeNever = () => () => undefined;
+
+// True for server and hydration renders, false for client-created trees: React
+// never executes scripts it creates on the client and warns about them in Next.
+const useIsServerRendered = () =>
+  useSyncExternalStore(
+    subscribeNever,
+    () => false,
+    () => true,
+  );
+
 export function ThemeProvider({
   children,
   style,
-  storageKey,
+  storageKey = THEME_STORAGE_KEY,
   keybind = true,
 }: {
   children: ReactNode;
@@ -38,10 +51,23 @@ export function ThemeProvider({
 }) {
   const { appearance, toggleTheme } = useThemePreference(storageKey);
   useToggleThemeKeybind(toggleTheme, keybind);
+  const isServerRendered = useIsServerRendered();
 
   return (
     <ThemeContext.Provider value={{ appearance, toggleTheme }}>
-      <ThemeScope appearance={appearance} style={style}>
+      {/* The restore script rewrites the server-rendered scope before hydration. */}
+      <ThemeScope
+        appearance={appearance}
+        style={style}
+        suppressHydrationWarning
+      >
+        {isServerRendered && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: getThemeRestoreScript(storageKey, style),
+            }}
+          />
+        )}
         {children}
       </ThemeScope>
     </ThemeContext.Provider>
