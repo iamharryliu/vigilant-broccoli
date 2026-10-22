@@ -20,6 +20,7 @@ import { ChecklistItem } from '../../lib/types';
 import {
   detectHemisphere,
   getInSeasonItems,
+  getProduceEmoji,
   getSeasonStatus,
   SEASON_STATUS,
   SEASON_STATUS_EMOJI,
@@ -201,7 +202,8 @@ export function InSeasonCard() {
               items.map(item => {
                 const { name } = item;
                 const status = getSeasonStatus(item, hemisphere, month);
-                const emoji =
+                const produceEmoji = getProduceEmoji(name);
+                const statusEmoji =
                   status === SEASON_STATUS.REGULAR
                     ? null
                     : SEASON_STATUS_EMOJI[status];
@@ -230,8 +232,8 @@ export function InSeasonCard() {
                       variant={onList(name) ? 'solid' : 'soft'}
                     >
                       {onList(name) ? '✓ ' : ''}
-                      {emoji ? `${emoji} ` : ''}
-                      {name}
+                      {statusEmoji ? `${statusEmoji} ` : ''}
+                      {produceEmoji ? `${produceEmoji} ${name}` : name}
                     </Badge>
                   </button>
                 );
