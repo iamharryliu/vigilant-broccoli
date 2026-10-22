@@ -28,5 +28,4 @@
 
 ## Gotchas
 
-- `RepoScrollTimeline.tsx` pins `style={{ minHeight: 0 }}` on the Radix `Theme` wrapper — `.radix-themes` sets `min-height: 100%` and wins the cascade over the `min-h-0` Tailwind class, which otherwise lets the list grow past the viewport and get clipped
 - `ScrollTimeline.tsx`'s active-row detection pins row 0 when `scrollTop <= 0` — on a tall container the fixed activation line can sit below row 0's midpoint, so nearest-line matching alone would never select it

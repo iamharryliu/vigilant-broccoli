@@ -7,7 +7,6 @@ import {
 import { useAppearance } from '../theme';
 
 const PAGE_THEME_STYLE = {
-  minHeight: 0,
   '--background': 'var(--pages-background)',
   '--primary': 'var(--pages-primary)',
   '--border': 'var(--pages-border)',
