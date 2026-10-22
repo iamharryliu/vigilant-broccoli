@@ -18,3 +18,5 @@ allowBuilds:
   unrs-resolver: true
   workerd: true
   '@scarf/scarf': false
+minimumReleaseAgeExclude:
+  - verdaccio@6.10.7
