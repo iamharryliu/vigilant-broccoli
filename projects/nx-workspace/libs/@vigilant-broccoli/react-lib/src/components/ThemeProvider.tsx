@@ -3,6 +3,7 @@
 import {
   createContext,
   useContext,
+  useLayoutEffect,
   useSyncExternalStore,
   ReactNode,
   type CSSProperties,
@@ -52,6 +53,13 @@ export function ThemeProvider({
   const { appearance, toggleTheme } = useThemePreference(storageKey);
   useToggleThemeKeybind(toggleTheme, keybind);
   const isServerRendered = useIsServerRendered();
+
+  // The scope only covers its own box, so scrollbars and overscroll follow the
+  // root. A client-only effect leaves server markup untouched (no hydration
+  // mismatch); it runs before first paint, after the head/restore scripts.
+  useLayoutEffect(() => {
+    document.documentElement.style.colorScheme = appearance;
+  }, [appearance]);
 
   return (
     <ThemeContext.Provider value={{ appearance, toggleTheme }}>
