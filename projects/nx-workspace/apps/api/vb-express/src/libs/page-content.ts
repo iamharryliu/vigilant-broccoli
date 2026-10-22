@@ -119,14 +119,16 @@ const fetchHtml = async (startUrl: string): Promise<string> => {
   throw new Error('Too many redirects');
 };
 
+// `&amp;` must be decoded last: decoding it first would turn `&amp;lt;` into
+// `<` (double unescaping).
 const decodeEntities = (s: string): string =>
   s
-    .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&#x27;/g, "'")
     .replace(/&quot;/g, '"')
-    .replace(/&#0?39;/g, "'");
+    .replace(/&#0?39;/g, "'")
+    .replace(/&amp;/g, '&');
 
 const htmlToText = (html: string): string =>
   decodeEntities(
@@ -160,10 +162,18 @@ const summarizeHtml = (url: string, html: string): string => {
   return parts.join('\n');
 };
 
+const TRAILING_PUNCTUATION = new Set(['.', ',', ';']);
+
+// A loop instead of `/[.,;]+$/`, which backtracks quadratically on long runs
+// of punctuation in user-supplied links.
+const stripTrailingPunctuation = (url: string): string => {
+  let end = url.length;
+  while (end > 0 && TRAILING_PUNCTUATION.has(url[end - 1])) end--;
+  return url.slice(0, end);
+};
+
 export const extractUrls = (text: string): string[] => [
-  ...new Set(
-    (text.match(URL_PATTERN) ?? []).map(u => u.replace(/[.,;]+$/, '')),
-  ),
+  ...new Set((text.match(URL_PATTERN) ?? []).map(stripTrailingPunctuation)),
 ];
 
 // Returns readable summaries of linked pages; unreachable or blocked links are
