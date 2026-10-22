@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { startThemeTransition } from '../utils/theme-transition';
 
 const LIGHT = 'light';
 const DARK = 'dark';
@@ -64,6 +65,7 @@ export function useThemePreference(storageKey = THEME_STORAGE_KEY) {
 
   const toggleTheme = useCallback(() => {
     const next: ThemeAppearance = appearance === LIGHT ? DARK : LIGHT;
+    startThemeTransition();
     // Toggling back to the system appearance clears the override, so later
     // OS changes apply again.
     setOverride(next === systemAppearance ? null : next);
