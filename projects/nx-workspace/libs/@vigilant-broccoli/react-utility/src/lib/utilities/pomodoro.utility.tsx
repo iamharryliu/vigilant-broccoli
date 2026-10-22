@@ -104,16 +104,16 @@ const STAGE_SEQUENCE_STYLE: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  gap: 'var(--space-3)',
+  gap: '0.75rem',
 };
 
 const SETTINGS_PANEL_STYLE: CSSProperties = {
   display: 'grid',
   gridTemplateColumns: '1fr auto',
   alignItems: 'center',
-  columnGap: 'var(--space-4)',
-  rowGap: 'var(--space-5)',
-  marginTop: 'var(--space-3)',
+  columnGap: '1rem',
+  rowGap: '1.5rem',
+  marginTop: '0.75rem',
 };
 
 const NUMBER_INPUT_STYLE: CSSProperties = { width: '5rem' };
