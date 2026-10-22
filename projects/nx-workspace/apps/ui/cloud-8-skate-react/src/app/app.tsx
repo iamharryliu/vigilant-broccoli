@@ -3,6 +3,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import { I18nProvider } from './i18n';
 import { ROUTE_PATH } from './core/consts/routes.const';
 import { initAnalytics, usePageviewTracking } from './core/services/analytics';
+import { useDocumentTheme } from './core/services/theme';
 import { GeneralLayout } from './components/layouts/general-layout';
 import { HomePage } from './components/pages/home.page';
 import { ContactPage } from './components/pages/contact.page';
@@ -28,6 +29,8 @@ function NavigationEffects() {
 }
 
 export function App() {
+  useDocumentTheme();
+
   return (
     <I18nProvider>
       <NavigationEffects />

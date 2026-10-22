@@ -19,7 +19,7 @@ const FIELD_ID = {
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const INPUT_CLASSES =
-  'w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300';
+  'w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300 dark:border-gray-700 dark:bg-gray-900';
 
 const SOCIAL_LINKS = [
   { href: EXTERNAL_URL.CLOUD_8_SKATE_IG, labelKey: 'LINKS.CLOUD_8_SKATE_IG' },
@@ -68,7 +68,9 @@ export function ContactSection() {
   };
 
   const buttonStateClasses = [
-    disabled ? 'bg-gray-300' : 'bg-black hover:bg-blue-600',
+    disabled
+      ? 'bg-gray-300 dark:bg-gray-700'
+      : 'bg-black hover:bg-blue-600 dark:bg-gray-800',
     loading ? 'cursor-not-allowed' : '',
   ].join(' ');
 
@@ -79,7 +81,9 @@ export function ContactSection() {
           {t('CONTACT.HEADER')}
         </h2>
         {submitted ? (
-          <p className="text-green-600">{t('CONTACT.SUBMITTED')}</p>
+          <p className="text-green-600 dark:text-green-400">
+            {t('CONTACT.SUBMITTED')}
+          </p>
         ) : (
           <form onSubmit={submitForm}>
             <HoneypotField value={honeypot} onChange={setHoneypot} />

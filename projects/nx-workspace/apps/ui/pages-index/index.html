@@ -4,6 +4,20 @@
     <meta charset="utf-8" />
     <title>Home | vigilant-broccoli</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script>
+      (function () {
+        var theme;
+        try {
+          theme = localStorage.getItem('pages-index-theme');
+        } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+        }
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link
       rel="apple-touch-icon"

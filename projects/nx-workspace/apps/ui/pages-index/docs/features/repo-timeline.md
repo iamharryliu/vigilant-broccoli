@@ -24,6 +24,7 @@
 - Granularity selector (Day/Month/Year) controls bucket size; no range selector here
 - Entries list only periods with commits, newest first
 - Line-change summary colors `+added` green and `−deleted` red (`ScrollTimelineEntry.sublabel` is a `ReactNode` to allow this)
+- The list's `ThemeScope` follows the page appearance (`useAppearance` from `src/app/theme.tsx`, which the `d` toggle and saved `pages-index-theme` override drive) rather than `prefers-color-scheme` alone, and maps its scope tokens to the page's `--pages-*` palette
 
 ## Gotchas
 

@@ -99,7 +99,9 @@ export function NavbarSection() {
         <hr />
       </nav>
 
-      <div className={`lg:hidden bg-white z-10 fixed w-full ${fadeClasses}`}>
+      <div
+        className={`lg:hidden bg-white dark:bg-gray-900 z-10 fixed w-full ${fadeClasses}`}
+      >
         <div className="flex justify-between ml-4 mr-8 pt-3 pb-3">
           <div>
             <Link to={ROUTE_PATH.HOME} aria-label={t('APP.HOME_LINK_LABEL')}>
@@ -120,7 +122,7 @@ export function NavbarSection() {
             onClick={() => setIsMobileNavOpen(open => !open)}
             aria-label={t('NAV.TOGGLE_MENU')}
             aria-expanded={isMobileNavOpen}
-            className="text-gray-600 focus:outline-none"
+            className="text-gray-600 dark:text-gray-300 focus:outline-none"
           >
             <Menu size={MENU_ICON_SIZE} aria-hidden="true" />
           </button>

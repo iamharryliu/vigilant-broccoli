@@ -8,6 +8,7 @@ import { MessagesPage } from './components/MessagesPage';
 import { ModalDialog } from './components/ModalDialog';
 import { Sidebar, TAB, Tab } from './components/Sidebar';
 import { I18nProvider, useTranslation } from './i18n';
+import { useDocumentTheme } from './theme';
 
 const TOAST_MS = 3500;
 
@@ -211,10 +212,14 @@ const Demo = () => {
   );
 };
 
-export const App = () => (
-  <I18nProvider>
-    <Demo />
-  </I18nProvider>
-);
+export const App = () => {
+  useDocumentTheme();
+
+  return (
+    <I18nProvider>
+      <Demo />
+    </I18nProvider>
+  );
+};
 
 export default App;

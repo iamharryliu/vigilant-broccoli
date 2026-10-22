@@ -29,11 +29,11 @@ export function AlbumPage() {
       {album ? (
         <section className="mb-8">
           <h1 className="mb-4 text-3xl font-bold lg:text-4xl">{album.name}</h1>
-          <p className="mb-2 text-sm text-gray-500">
+          <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
             {formatAlbumDate(album.date)}
           </p>
           {album.description && (
-            <p className="mb-8 text-base leading-7 text-gray-700">
+            <p className="mb-8 text-base leading-7 text-gray-700 dark:text-gray-300">
               {album.description}
             </p>
           )}
@@ -41,8 +41,8 @@ export function AlbumPage() {
         </section>
       ) : (
         !isLoading && (
-          <section className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-            <p className="text-base leading-7 text-gray-700">
+          <section className="rounded-2xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 p-5 shadow-sm">
+            <p className="text-base leading-7 text-gray-700 dark:text-gray-300">
               {t('GALLERY.ALBUM_UNAVAILABLE')}
             </p>
           </section>

@@ -6,6 +6,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { I18nProvider } from './i18n';
+import { ThemeProvider } from './theme';
 import { HomePage } from './pages/HomePage';
 import { StatusPage } from './pages/StatusPage';
 import { RepoTimelinePage } from './pages/RepoTimelinePage';
@@ -93,17 +94,19 @@ function ProjectsRoutes() {
 export function App() {
   return (
     <I18nProvider>
-      <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-dvh">
-        <HashRouter>
-          {isStatusHost() ? (
-            <StatusHostRoutes />
-          ) : isCareerHost() ? (
-            <CareerHostRoutes />
-          ) : (
-            <ProjectsRoutes />
-          )}
-        </HashRouter>
-      </div>
+      <ThemeProvider>
+        <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-dvh">
+          <HashRouter>
+            {isStatusHost() ? (
+              <StatusHostRoutes />
+            ) : isCareerHost() ? (
+              <CareerHostRoutes />
+            ) : (
+              <ProjectsRoutes />
+            )}
+          </HashRouter>
+        </div>
+      </ThemeProvider>
     </I18nProvider>
   );
 }
