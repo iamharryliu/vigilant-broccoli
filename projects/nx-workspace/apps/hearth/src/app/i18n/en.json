@@ -173,11 +173,6 @@
   },
   "IN_SEASON": {
     "TITLE": "In Season",
-    "CAPTION": "{hemisphere} Hemisphere · {month}",
-    "HEMISPHERE": {
-      "northern": "Northern",
-      "southern": "Southern"
-    },
     "FRUITS": "Fruits",
     "VEGETABLES": "Vegetables",
     "NONE": "Nothing in season"

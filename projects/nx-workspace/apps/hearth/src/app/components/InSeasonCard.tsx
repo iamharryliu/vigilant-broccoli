@@ -35,9 +35,6 @@ export function InSeasonCard() {
     latitude: lat,
     timeZone: now.timeZone,
   });
-  const monthName = new Date(2000, now.month - 1, 1).toLocaleString('en', {
-    month: 'long',
-  });
   const groups = [
     {
       label: t('IN_SEASON.FRUITS'),
@@ -51,12 +48,6 @@ export function InSeasonCard() {
 
   return (
     <CardContainer title={t('IN_SEASON.TITLE')}>
-      <Text size="1" color="gray">
-        {t('IN_SEASON.CAPTION', {
-          hemisphere: t(`IN_SEASON.HEMISPHERE.${hemisphere}`),
-          month: monthName,
-        })}
-      </Text>
       {groups.map(({ label, names }) => (
         <div key={label} className="space-y-2">
           <Text size="2" weight="bold">
