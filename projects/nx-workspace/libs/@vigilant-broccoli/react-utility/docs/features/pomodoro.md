@@ -5,23 +5,23 @@
 
 ## Modes
 
-- Focus, short break and long break, each with configurable minutes (1-180). Every `longBreakEvery` completed focus sessions (default 4, max 12) the next break is long.
+- Focus and short break alternate, each with configurable minutes (1-180).
 - Duration edits are disabled while running and apply immediately to a session that has not been started or paused part-way.
-- A session ending plays the beep loop (timed 15 s or persistent alert mode) and, with notifications on, shows a browser `Notification`; dismissing or the timed alert expiring starts the next session. Skip and Reset are silent.
+- A session ending beeps until dismissed, then dismissing starts the next session. Skip and Reset are silent.
 
 ## Stage sequence
 
-- The badge row shows the previous and next stage faded on either side of the current stage, derived from the completed count and `longBreakEvery` (e.g. previous break, current focus, next long break). The previous slot is empty before the first focus session completes; after a break the neighbours are both focus.
+- The badge row shows the other stage faded on either side of the current stage (e.g. break, focus, break).
 
 ## Settings dialog
 
-- The gear Settings button opens a dialog holding the Persistent Alert and Browser notifications toggles and the Focus, Short break, Long break and Long break every inputs; the main view only shows the timer, stage sequence and controls.
+- The gear Settings button opens a dialog holding only the Focus and Short break minute inputs; the main view shows the timer, stage sequence and controls.
 
 ## Persistence
 
-- Settings (minutes, long-break interval, alert mode, notifications) persist under `vb-pomodoro-settings`.
-- Timer state (mode, remaining time, running or paused, completed count) persists under `vb-pomodoro-timer` with an absolute end timestamp while running, so a reload resumes with the correct remaining time. A session that ended while the page was closed is finished silently on load: the counter advances and the next session waits paused.
+- Settings (minutes) persist under `vb-pomodoro-settings`; leftover long-break fields are ignored on load.
+- Timer state (mode, remaining time, running or paused, completed count) persists under `vb-pomodoro-timer` with an absolute end timestamp while running, so a reload resumes with the correct remaining time. A stored long-break mode falls back to focus. A session that ended while the page was closed is finished silently on load: the counter advances and the next session waits paused.
 
 ## Notifications
 
-- Enabling the switch requests browser permission; it is disabled with a hint when permission is denied or unsupported.
+- The first Start click requests browser notification permission when it is still undecided; a notification is sent at stage end when granted. Nothing happens when denied or unsupported.
