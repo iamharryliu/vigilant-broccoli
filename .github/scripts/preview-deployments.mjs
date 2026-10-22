@@ -6,6 +6,7 @@ const DEPLOY_LOG_PATH = 'projects/nx-workspace/deploy.log';
 const PREVIEW_URL_PATTERN =
   /https:\/\/[a-z0-9-]+\.preview-[a-z0-9-]+\.pages\.dev/g;
 const PREVIEW_PROJECT_PREFIX = 'preview-';
+const NO_CONTENT = 204;
 const GITHUB_API = env('GITHUB_API_URL') || 'https://api.github.com';
 
 export const PREVIEW_ENVIRONMENT_PATTERN = /^pr-(\d+)\/[a-z0-9-]+$/;
@@ -50,7 +51,8 @@ export const githubApi = async (path, { method = 'GET', body } = {}) => {
     throw new Error(
       `${method} ${path} failed: ${response.status} ${await response.text()}`,
     );
-  return response.json();
+  // DELETE answers 204 with no body.
+  return response.status === NO_CONTENT ? null : response.json();
 };
 
 const PAGE_SIZE = 100;

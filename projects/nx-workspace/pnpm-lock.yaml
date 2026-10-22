@@ -1047,6 +1047,9 @@ importers:
       '@vigilant-broccoli/common-js':
         specifier: workspace:*
         version: link:../common-js
+      '@vigilant-broccoli/infrastructure':
+        specifier: workspace:*
+        version: link:../infrastructure
       tslib:
         specifier: ^2.3.0
         version: 2.8.1

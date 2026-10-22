@@ -20,19 +20,16 @@ const stale = (
   return match && !openPullNumbers.has(Number(match[1]));
 });
 
-let deactivated = 0;
+// Deleting keeps history bounded, so this run's cost and the readers' newest-100
+// window don't fill up with closed PRs. GitHub only deletes inactive deployments,
+// and an already-inactive status can be posted again.
 for (const deployment of stale) {
-  const [latestStatus] = await githubApi(
-    `/repos/${repository}/deployments/${deployment.id}/statuses?per_page=1`,
-  );
-  if (latestStatus?.state === INACTIVE) continue;
-  await githubApi(
-    `/repos/${repository}/deployments/${deployment.id}/statuses`,
-    { method: 'POST', body: { state: INACTIVE } },
-  );
-  deactivated++;
+  const deploymentPath = `/repos/${repository}/deployments/${deployment.id}`;
+  await githubApi(`${deploymentPath}/statuses`, {
+    method: 'POST',
+    body: { state: INACTIVE },
+  });
+  await githubApi(deploymentPath, { method: 'DELETE' });
 }
 
-console.log(
-  `Marked ${deactivated} preview deployment(s) of closed PRs inactive (${stale.length} checked).`,
-);
+console.log(`Deleted ${stale.length} preview deployment(s) of closed PRs.`);

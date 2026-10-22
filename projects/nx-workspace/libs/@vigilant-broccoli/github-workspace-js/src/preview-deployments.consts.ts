@@ -1,12 +1,12 @@
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { VB_GITHUB_REPO } from '@vigilant-broccoli/infrastructure';
 
 const GITHUB_API_BASE = 'https://api.github.com';
-const PREVIEW_DEPLOYMENTS_REPOSITORY = 'iamharryliu/vigilant-broccoli';
 const GITHUB_PAGE_SIZE = 100;
 
 export const PREVIEW_DEPLOYMENTS_GITHUB_URL = {
-  DEPLOYMENTS: `${GITHUB_API_BASE}/repos/${PREVIEW_DEPLOYMENTS_REPOSITORY}/deployments?per_page=${GITHUB_PAGE_SIZE}`,
-  OPEN_PULLS: `${GITHUB_API_BASE}/repos/${PREVIEW_DEPLOYMENTS_REPOSITORY}/pulls?state=open&per_page=${GITHUB_PAGE_SIZE}`,
+  DEPLOYMENTS: `${GITHUB_API_BASE}/repos/${VB_GITHUB_REPO}/deployments?per_page=${GITHUB_PAGE_SIZE}`,
+  OPEN_PULLS: `${GITHUB_API_BASE}/repos/${VB_GITHUB_REPO}/pulls?state=open&per_page=${GITHUB_PAGE_SIZE}`,
 } as const;
 
 export const PREVIEW_DEPLOYMENTS_API_PATH = '/api/preview-deployments';
