@@ -9,10 +9,8 @@ export type Hemisphere = (typeof HEMISPHERE)[keyof typeof HEMISPHERE];
 
 export type SeasonalItem = { name: string; months: number[] };
 
-export const SEASONAL_PRODUCE: Record<
-  'fruits' | 'vegetables',
-  SeasonalItem[]
-> = produce;
+export const SEASONAL_PRODUCE: Record<'fruits' | 'vegetables', SeasonalItem[]> =
+  produce;
 
 const MONTHS_IN_YEAR = 12;
 const SOUTHERN_SEASON_SHIFT_MONTHS = 6;
@@ -145,3 +143,8 @@ export const getSeasonStatus = (
   if (!item.months.includes(next)) return SEASON_STATUS.LAST_CHANCE;
   return SEASON_STATUS.REGULAR;
 };
+
+// `month` is 1-12; `step` may be negative and wraps across December.
+export const shiftMonth = (month: number, step: number): number =>
+  ((((month - 1 + step) % MONTHS_IN_YEAR) + MONTHS_IN_YEAR) % MONTHS_IN_YEAR) +
+  1;
