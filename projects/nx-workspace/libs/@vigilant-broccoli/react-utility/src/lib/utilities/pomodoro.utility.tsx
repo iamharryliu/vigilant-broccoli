@@ -1,7 +1,24 @@
 'use client';
 
-import { Badge, Button, Input, Switch } from '@vigilant-broccoli/react-lib';
-import { BellOff, Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
+import {
+  Badge,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+  Input,
+  Switch,
+} from '@vigilant-broccoli/react-lib';
+import {
+  BellOff,
+  Pause,
+  Play,
+  RotateCcw,
+  Settings,
+  SkipForward,
+} from 'lucide-react';
 import { CSSProperties, useEffect, useRef, useState } from 'react';
 import { playBeep } from '../audio';
 
@@ -87,6 +104,7 @@ const LABEL_NOTIFICATIONS_DENIED =
 const LABEL_NOTIFICATIONS_UNSUPPORTED =
   'This browser does not support notifications.';
 const LABEL_LONG_BREAK_EVERY = 'Long break every';
+const LABEL_SETTINGS = 'Settings';
 const LABEL_START = 'Start';
 const LABEL_PAUSE = 'Pause';
 const LABEL_RESET = 'Reset';
@@ -99,7 +117,8 @@ const PERMISSION_DENIED = 'denied';
 const PERMISSION_DEFAULT = 'default';
 const PERMISSION_UNSUPPORTED = 'unsupported';
 
-type NotificationSupport = NotificationPermission | typeof PERMISSION_UNSUPPORTED;
+type NotificationSupport =
+  NotificationPermission | typeof PERMISSION_UNSUPPORTED;
 
 const CURSOR_POINTER: CSSProperties = { cursor: 'pointer' };
 
@@ -108,6 +127,27 @@ const SETTINGS_LABEL_STYLE: CSSProperties = {
   alignItems: 'center',
   gap: '0.5rem',
   fontSize: '0.85rem',
+};
+
+const FADED_STAGE_OPACITY = 0.4;
+
+const SETTINGS_PANEL_STYLE: CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '1rem',
+};
+
+const STAGE_SEQUENCE_STYLE: CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '0.75rem',
+};
+
+// Equal-width slots keep the current stage centered when there is no previous stage.
+const STAGE_SLOT_STYLE: CSSProperties = {
+  display: 'flex',
+  minWidth: '6rem',
 };
 
 const NUMBER_INPUT_STYLE: CSSProperties = { width: '5rem' };
@@ -166,6 +206,27 @@ const getNextMode = (
     ? POMODORO_MODE.LONG_BREAK
     : POMODORO_MODE.SHORT_BREAK;
 };
+
+// Stage before the current one; null before the first focus session ends.
+const getPreviousMode = (
+  mode: PomodoroMode,
+  completedCount: number,
+  settings: PomodoroSettings,
+): PomodoroMode | null => {
+  if (mode !== POMODORO_MODE.WORK) return POMODORO_MODE.WORK;
+  return completedCount > 0
+    ? getNextMode(POMODORO_MODE.WORK, completedCount, settings)
+    : null;
+};
+
+const getFollowingMode = (
+  mode: PomodoroMode,
+  completedCount: number,
+  settings: PomodoroSettings,
+): PomodoroMode =>
+  mode === POMODORO_MODE.WORK
+    ? getNextMode(mode, completedCount + 1, settings)
+    : POMODORO_MODE.WORK;
 
 const getNotificationSupport = (): NotificationSupport =>
   typeof window !== 'undefined' && 'Notification' in window
@@ -273,7 +334,8 @@ const loadTimer = (
         endsAt,
       };
     }
-    const count = mode === POMODORO_MODE.WORK ? completedCount + 1 : completedCount;
+    const count =
+      mode === POMODORO_MODE.WORK ? completedCount + 1 : completedCount;
     return {
       state: freshState(settings, getNextMode(mode, count, settings), count),
       endsAt: null,
@@ -281,7 +343,8 @@ const loadTimer = (
   }
   const secondsLeft = Math.floor(Number(stored.secondsLeft));
   const state = freshState(settings, mode, completedCount);
-  if (secondsLeft >= 1 && secondsLeft <= duration) state.secondsLeft = secondsLeft;
+  if (secondsLeft >= 1 && secondsLeft <= duration)
+    state.secondsLeft = secondsLeft;
   return { state, endsAt: null };
 };
 
@@ -547,6 +610,8 @@ export const PomodoroUtilityContent = () => {
     updateSettings({ notifications: enabled });
   };
 
+  const previousMode = getPreviousMode(mode, completedCount, settings);
+  const nextMode = getFollowingMode(mode, completedCount, settings);
   const totalSeconds = getDuration(mode, settings);
   const progress = ((totalSeconds - secondsLeft) / totalSeconds) * 100;
   const strokeDashoffset =
@@ -622,9 +687,31 @@ export const PomodoroUtilityContent = () => {
           gap: '0.4rem',
         }}
       >
-        <Badge color={MODE_BADGE_COLOR[mode]} size="2" variant="soft">
-          {MODE_LABELS[mode]}
-        </Badge>
+        <div style={STAGE_SEQUENCE_STYLE}>
+          <div style={{
+              ...STAGE_SLOT_STYLE,
+              justifyContent: 'flex-end',
+              opacity: FADED_STAGE_OPACITY,
+            }}>
+            {previousMode && (
+              <Badge
+                color={MODE_BADGE_COLOR[previousMode]}
+                size="1"
+                variant="soft"
+              >
+                {MODE_LABELS[previousMode]}
+              </Badge>
+            )}
+          </div>
+          <Badge color={MODE_BADGE_COLOR[mode]} size="2" variant="soft">
+            {MODE_LABELS[mode]}
+          </Badge>
+          <div style={{ ...STAGE_SLOT_STYLE, opacity: FADED_STAGE_OPACITY }}>
+            <Badge color={MODE_BADGE_COLOR[nextMode]} size="1" variant="soft">
+              {MODE_LABELS[nextMode]}
+            </Badge>
+          </div>
+        </div>
         <div style={{ fontSize: '0.85rem', color: 'var(--gray-10)' }}>
           {completedCount} {LABEL_COMPLETED_SUFFIX}
         </div>
@@ -675,63 +762,91 @@ export const PomodoroUtilityContent = () => {
         )}
       </div>
 
-      <label style={{ ...SETTINGS_LABEL_STYLE, cursor: 'pointer' }}>
-        <Switch
-          checked={settings.alertMode === ALERT_MODE_PERSISTENT}
-          onCheckedChange={checked =>
-            updateSettings({
-              alertMode: checked ? ALERT_MODE_PERSISTENT : ALERT_MODE_TIMED,
-            })
-          }
-        />
-        {LABEL_PERSISTENT_ALERT}
-      </label>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            variant="secondary"
+            aria-label={LABEL_SETTINGS}
+            style={CURSOR_POINTER}
+          >
+            <Settings size={ICON_SIZE} />
+            {LABEL_SETTINGS}
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogTitle>{LABEL_SETTINGS}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {LABEL_SETTINGS}
+          </DialogDescription>
+          <div style={SETTINGS_PANEL_STYLE}>
+            <label style={{ ...SETTINGS_LABEL_STYLE, cursor: 'pointer' }}>
+              <Switch
+                checked={settings.alertMode === ALERT_MODE_PERSISTENT}
+                onCheckedChange={checked =>
+                  updateSettings({
+                    alertMode: checked
+                      ? ALERT_MODE_PERSISTENT
+                      : ALERT_MODE_TIMED,
+                  })
+                }
+              />
+              {LABEL_PERSISTENT_ALERT}
+            </label>
 
-      <label style={{ ...SETTINGS_LABEL_STYLE, cursor: 'pointer' }}>
-        <Switch
-          checked={settings.notifications && permission === PERMISSION_GRANTED}
-          disabled={notificationsUnavailable}
-          onCheckedChange={toggleNotifications}
-        />
-        {LABEL_NOTIFICATIONS}
-      </label>
-      {permission === PERMISSION_DENIED && (
-        <div style={{ fontSize: '0.85rem', color: 'var(--gray-10)' }}>
-          {LABEL_NOTIFICATIONS_DENIED}
-        </div>
-      )}
-      {permission === PERMISSION_UNSUPPORTED && (
-        <div style={{ fontSize: '0.85rem', color: 'var(--gray-10)' }}>
-          {LABEL_NOTIFICATIONS_UNSUPPORTED}
-        </div>
-      )}
+            <label style={{ ...SETTINGS_LABEL_STYLE, cursor: 'pointer' }}>
+              <Switch
+                checked={
+                  settings.notifications && permission === PERMISSION_GRANTED
+                }
+                disabled={notificationsUnavailable}
+                onCheckedChange={toggleNotifications}
+              />
+              {LABEL_NOTIFICATIONS}
+            </label>
+            {permission === PERMISSION_DENIED && (
+              <div style={{ fontSize: '0.85rem', color: 'var(--gray-10)' }}>
+                {LABEL_NOTIFICATIONS_DENIED}
+              </div>
+            )}
+            {permission === PERMISSION_UNSUPPORTED && (
+              <div style={{ fontSize: '0.85rem', color: 'var(--gray-10)' }}>
+                {LABEL_NOTIFICATIONS_UNSUPPORTED}
+              </div>
+            )}
 
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '0.5rem',
-          alignItems: 'flex-end',
-        }}
-      >
-        {MINUTE_FIELDS.map(({ key, label }) => (
-          <MinutesSetting
-            key={key}
-            label={label}
-            value={settings[key]}
-            max={MAX_MINUTES}
-            disabled={isRunning}
-            onCommit={value => updateSettings({ [key]: value } as Partial<PomodoroSettings>)}
-          />
-        ))}
-        <MinutesSetting
-          label={LABEL_LONG_BREAK_EVERY}
-          value={settings.longBreakEvery}
-          max={MAX_LONG_BREAK_EVERY}
-          disabled={isRunning}
-          onCommit={value => updateSettings({ longBreakEvery: value })}
-        />
-      </div>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.5rem',
+                alignItems: 'flex-end',
+              }}
+            >
+              {MINUTE_FIELDS.map(({ key, label }) => (
+                <MinutesSetting
+                  key={key}
+                  label={label}
+                  value={settings[key]}
+                  max={MAX_MINUTES}
+                  disabled={isRunning}
+                  onCommit={value =>
+                    updateSettings({
+                      [key]: value,
+                    } as Partial<PomodoroSettings>)
+                  }
+                />
+              ))}
+              <MinutesSetting
+                label={LABEL_LONG_BREAK_EVERY}
+                value={settings.longBreakEvery}
+                max={MAX_LONG_BREAK_EVERY}
+                disabled={isRunning}
+                onCommit={value => updateSettings({ longBreakEvery: value })}
+              />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

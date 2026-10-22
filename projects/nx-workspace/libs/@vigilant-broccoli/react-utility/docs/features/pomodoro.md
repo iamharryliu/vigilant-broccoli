@@ -9,6 +9,14 @@
 - Duration edits are disabled while running and apply immediately to a session that has not been started or paused part-way.
 - A session ending plays the beep loop (timed 15 s or persistent alert mode) and, with notifications on, shows a browser `Notification`; dismissing or the timed alert expiring starts the next session. Skip and Reset are silent.
 
+## Stage sequence
+
+- The badge row shows the previous and next stage faded on either side of the current stage, derived from the completed count and `longBreakEvery` (e.g. previous break, current focus, next long break). The previous slot is empty before the first focus session completes; after a break the neighbours are both focus.
+
+## Settings dialog
+
+- The gear Settings button opens a dialog holding the Persistent Alert and Browser notifications toggles and the Focus, Short break, Long break and Long break every inputs; the main view only shows the timer, stage sequence and controls.
+
 ## Persistence
 
 - Settings (minutes, long-break interval, alert mode, notifications) persist under `vb-pomodoro-settings`.
