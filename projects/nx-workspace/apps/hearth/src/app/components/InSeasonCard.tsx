@@ -45,7 +45,9 @@ const LEGEND_STATUSES = [
   SEASON_STATUS.LAST_CHANCE,
 ] as const;
 
-export function InSeasonCard() {
+type Props = { onGroceryAdded?: () => void };
+
+export function InSeasonCard({ onGroceryAdded }: Props) {
   const { t } = useTranslation();
   const { lat } = useGeolocation();
   // Read after mount: the server's clock and zone would mismatch hydration.
@@ -102,7 +104,9 @@ export function InSeasonCard() {
         next.delete(name.toLowerCase());
         return next;
       });
+      return;
     }
+    onGroceryAdded?.();
   };
 
   if (!now) return null;
