@@ -10,6 +10,7 @@ The local platform (HTTPS proxy, Grafana, Loki, Prometheus, log collection, Head
 - [Platform](#platform)
 - [Nuances](#nuances)
   - [`HelmChart` resources live in `kube-system`](#helmchart-resources-live-in-kube-system)
+  - [CoreDNS pins `host.k3d.internal` through a `.server` block, not `.override`](#coredns-pins-hostk3dinternal-through-a-server-block-not-override)
   - [Argo CD deploys `main`, not the working tree](#argo-cd-deploys-main-not-the-working-tree)
   - [Changing `targetRevision` prunes what the new revision lacks](#changing-targetrevision-prunes-what-the-new-revision-lacks)
   - [`kubectl apply` never deletes](#kubectl-apply-never-deletes)
@@ -32,6 +33,7 @@ The local platform (HTTPS proxy, Grafana, Loki, Prometheus, log collection, Head
 | `k3s/manifests/charts/loki.yaml`             | Single-binary Loki on the filesystem, 30-day retention                                                                                                   |
 | `k3s/manifests/charts/prometheus.yaml`       | Single Prometheus server plus kube-state-metrics, 15-day retention                                                                                       |
 | `k3s/manifests/charts/traefik-config.yaml`   | Override for k3s's bundled Traefik: ExternalName Services, JSON access logs and latency buckets                                                          |
+| `k3s/manifests/coredns-custom.yaml`          | CoreDNS `.server` block that pins `host.k3d.internal`, so a Docker restart that drops k3d's entry no longer 502s the host services                       |
 | `k3s/manifests/platform/argocd.yaml`         | ExternalName Service and Ingress for `argocd.vigilant-broccoli.app`                                                                                      |
 | `k3s/manifests/platform/dashboards/`         | Grafana dashboards as JSON, loaded through a `grafana_dashboard`-labelled ConfigMap                                                                      |
 | `k3s/manifests/platform/host-services.yaml`  | ExternalName Services for `vb-manager-next` (1337) and Immich (2283) on the Mac                                                                          |
@@ -80,6 +82,10 @@ All pinned in the root `mise.toml`; run `mise install`.
 ### `HelmChart` resources live in `kube-system`
 
 k3s's helm-controller runs each chart's install job in the `HelmChart`'s own namespace, and that job requests 32 CPU / 32G limits. A namespace under a ResourceQuota rejects it (`exceeded quota: ..., requested: limits.cpu=32`), and deleting that `HelmChart` then hangs on its `wrangler.cattle.io/on-helm-chart-remove` finalizer because the uninstall job is rejected too. Keep `HelmChart`s in `kube-system` and set `targetNamespace`; if one is already stuck, `pnpm local:k3s:down` and recreate.
+
+### CoreDNS pins `host.k3d.internal` through a `.server` block, not `.override`
+
+k3d writes `host.k3d.internal` into CoreDNS's `NodeHosts` only when it creates or starts the nodes, and a Docker Desktop restart can drop it; every `host-services.yaml` Service then answers 502 while the app is healthy. `coredns-custom.yaml` defines its own `host.k3d.internal:53` server block. A `*.override` file would be imported into the default block, which already uses `hosts` (one per block), and CoreDNS crash-loops with `plugin/hosts: this plugin can only be used once per Server Block`. CoreDNS reads the ConfigMap only at pod start, so restart it after changing the file. The address is what `host.docker.internal` resolves to inside the nodes; update it if Docker changes that.
 
 ### Argo CD deploys `main`, not the working tree
 
