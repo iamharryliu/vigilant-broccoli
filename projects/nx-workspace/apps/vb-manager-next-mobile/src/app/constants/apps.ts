@@ -1,4 +1,5 @@
 import {
+  Activity,
   Mail,
   FileText,
   FolderGit2,
@@ -54,6 +55,12 @@ export const APPS: AppEntry[] = [
     webUrl: 'https://docs.harryliu.dev',
     tileColor: 'bg-blue-600',
     icon: FileText,
+  },
+  {
+    label: 'Status',
+    webUrl: 'https://status.harryliu.dev',
+    tileColor: 'bg-teal-600',
+    icon: Activity,
   },
   {
     label: 'Projects',
