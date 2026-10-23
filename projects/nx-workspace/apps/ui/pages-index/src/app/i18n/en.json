@@ -122,6 +122,10 @@
       "TITLE": "Calendars",
       "DESCRIPTION": "Public personal and event calendar directory, deployed on Vercel."
     },
+    "WEB_TERMINAL": {
+      "TITLE": "Web Terminal",
+      "DESCRIPTION": "Phone-friendly browser shell with an on-screen key toolbar, behind owner-only access."
+    },
     "WEATHER": {
       "TITLE": "Weather",
       "DESCRIPTION": "Current weather for your location, deployed on Vercel."

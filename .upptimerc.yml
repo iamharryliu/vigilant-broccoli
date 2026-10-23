@@ -82,6 +82,10 @@ sites:
     url: https://git.harryliu.dev/
   - name: production-code-server
     url: https://code.harryliu.dev/login
+  - name: production-web-terminal
+    url: https://shell.harryliu.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [302]
   - name: production-drive
     url: https://drive.harryliu.dev/
   - name: production-nx-cache

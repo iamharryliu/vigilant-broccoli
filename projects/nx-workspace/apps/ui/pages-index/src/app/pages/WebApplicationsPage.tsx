@@ -10,6 +10,7 @@ import {
   Globe,
   Hourglass,
   Home,
+  Terminal,
   Timer,
   LayoutGrid,
   type LucideIcon,
@@ -57,6 +58,7 @@ const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
   utilities: Wrench,
   'waiting-games': Hourglass,
   weather: CloudSun,
+  'web-terminal': Terminal,
   whiteboard: PenTool,
   'employee-handler': Users,
 };

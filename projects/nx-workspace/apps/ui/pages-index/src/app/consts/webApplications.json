@@ -99,6 +99,13 @@
       "readmePath": "projects/nx-workspace/apps/whiteboard/README.md"
     },
     {
+      "id": "web-terminal",
+      "href": "https://shell.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.WEB_TERMINAL.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.WEB_TERMINAL.DESCRIPTION",
+      "readmePath": "infrastructure/code-server/README.md"
+    },
+    {
       "id": "bookmarks",
       "href": "https://bookmarks.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.BOOKMARKS.TITLE",

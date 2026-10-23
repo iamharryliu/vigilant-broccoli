@@ -1,0 +1,14 @@
+#!/usr/bin/with-contenv bash
+# longrun service supervised by s6-overlay; stdout/stderr land in `docker logs`
+# like the base image's svc-code-server. Runs as abc (uid 1000) with
+# HOME=/config, the same account and volume as the code-server terminal.
+cd /opt/web-terminal || exit 1
+
+# Fail closed: without the Access team and AUD the server could not verify
+# JWTs, so it stays down instead of serving an unauthenticated shell.
+if [ -z "${CF_ACCESS_TEAM_DOMAIN:-}" ] || [ -z "${CF_ACCESS_AUD:-}" ]; then
+  echo "web-terminal: CF_ACCESS_TEAM_DOMAIN or CF_ACCESS_AUD unset; not starting" >&2
+  exec sleep infinity
+fi
+
+exec s6-setuidgid abc env HOME=/config node server.mjs
