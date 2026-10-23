@@ -228,6 +228,7 @@ export const VB_LINKS: QuickLink[] = [
     VB_APP_URL.EMPLOYEE_HANDLER_DEMO,
     VB_APP_URL.OFFICE_PRESENCE_DEMO,
     { NAME: 'Code Server', URL: 'https://code.harryliu.dev/' },
+    VB_APP_URL.WEB_TERMINAL,
     VB_APP_URL.DOCS,
     VB_APP_URL.CONTEXT,
     {

@@ -107,4 +107,8 @@ export const VB_APP_URL = {
     NAME: 'Drive',
     URL: 'https://drive.harryliu.dev/',
   },
+  WEB_TERMINAL: {
+    NAME: 'Web Terminal',
+    URL: 'https://shell.harryliu.dev/',
+  },
 } as const;

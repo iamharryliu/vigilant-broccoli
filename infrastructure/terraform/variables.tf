@@ -140,6 +140,13 @@ variable "code_server_domain" {
   default = "code.harryliu.dev"
 }
 
+# Served by the web-terminal s6 service inside the code-server image, behind the
+# same Caddy and its own Access application.
+variable "web_terminal_domain" {
+  type    = string
+  default = "shell.harryliu.dev"
+}
+
 # Built and pushed by .github/workflows/deploy-code-server-image.yml, which
 # also publishes an immutable sha-<commit> tag -- set this to one of those to
 # pin the VM to a known build or roll back.
