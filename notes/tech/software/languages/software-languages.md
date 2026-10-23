@@ -13,6 +13,7 @@
 - [Programming Paradigms](#programming-paradigms)
   - [Imperative vs Declarative](#imperative-vs-declarative)
   - [Procedural vs Functional vs Object-Oriented](#procedural-vs-functional-vs-object-oriented)
+  - [Static vs Dynamic Typing](#static-vs-dynamic-typing)
 - [Language Comparison Table](#language-comparison-table)
 - [Language Conversion Table](#language-conversion-table)
 - [Framework Conversion Table](#framework-conversion-table)
@@ -98,6 +99,20 @@ flowchart LR
 | Code reuse                 | Calling shared functions                                                                                            | Higher-order functions and composition                                                             | Inheritance and polymorphism                                                                                                                                                                                                                                    |
 | Side effects               | Common                                                                                                              | Avoided or isolated                                                                                | Common, contained by encapsulation                                                                                                                                                                                                                              |
 | Code (sum of even squares) | `int total = 0;`<br>`for (int i = 0; i < n; i++) {`<br>`  if (nums[i] % 2 == 0) total += nums[i] * nums[i];`<br>`}` | `nums`<br>`  .filter(x => x % 2 === 0)`<br>`  .map(x => x * x)`<br>`  .reduce((a, b) => a + b, 0)` | `class Nums {`<br>`  constructor(values) { this.values = values; }`<br>`  sumEvenSquares() {`<br>`    return this.values`<br>`      .filter(x => x % 2 === 0)`<br>`      .reduce((a, x) => a + x * x, 0);`<br>`  }`<br>`}`<br>`new Nums(nums).sumEvenSquares()` |
+
+### Static vs Dynamic Typing
+
+| Aspect         | Static                                                                                                        | Dynamic                                                                         |
+| :------------- | :------------------------------------------------------------------------------------------------------------ | :------------------------------------------------------------------------------ |
+| Core idea      | Types are checked at compile time                                                                             | Types are checked at runtime                                                    |
+| Variable types | Fixed once declared or inferred                                                                               | A variable can hold values of any type over its lifetime                        |
+| Type errors    | Caught before the program runs                                                                                | Surface only when the offending line executes                                   |
+| Annotations    | Declared, or inferred (Go, Kotlin, Rust, Swift, TypeScript)                                                   | Usually none; optional hints (Python type hints)                                |
+| Tooling        | Precise autocomplete, refactoring and navigation                                                              | Weaker static analysis; relies on tests and runtime checks                      |
+| Speed          | Faster; the compiler can optimize with known types                                                            | Slower; type checks and dispatch happen at runtime                              |
+| Flexibility    | More upfront ceremony; generics needed for reuse                                                              | Quick prototyping and duck typing                                               |
+| Examples       | C, Go, Java, Kotlin, Rust, Swift, TypeScript                                                                  | JavaScript, Lua, Perl, PHP, Python, Ruby                                        |
+| Code (add)     | `function add(a: number, b: number): number {`<br>`  return a + b;`<br>`}`<br>`add(1, "2"); // compile error` | `def add(a, b):`<br>`    return a + b`<br>`add(1, "2")  # TypeError at runtime` |
 
 ## Language Comparison Table
 
