@@ -1,4 +1,3 @@
-import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { VB_GITHUB_REPO } from '@vigilant-broccoli/infrastructure';
 
 const GITHUB_API_BASE = 'https://api.github.com';
@@ -8,8 +7,6 @@ export const PREVIEW_DEPLOYMENTS_GITHUB_URL = {
   DEPLOYMENTS: `${GITHUB_API_BASE}/repos/${VB_GITHUB_REPO}/deployments?per_page=${GITHUB_PAGE_SIZE}`,
   OPEN_PULLS: `${GITHUB_API_BASE}/repos/${VB_GITHUB_REPO}/pulls?state=open&per_page=${GITHUB_PAGE_SIZE}`,
 } as const;
-
-export const PREVIEW_DEPLOYMENTS_API_PATH = '/api/preview-deployments';
 
 // Written by .github/scripts/record-preview-deployments.mjs as pr-<n>/<app>.
 export const PREVIEW_ENVIRONMENT_PATTERN = /^pr-(\d+)\/([a-z0-9-]+)$/;
@@ -30,11 +27,3 @@ export const PREVIEW_DEPLOYMENTS_ERROR = {
 
 export type PreviewDeploymentsError =
   (typeof PREVIEW_DEPLOYMENTS_ERROR)[keyof typeof PREVIEW_DEPLOYMENTS_ERROR];
-
-export const PREVIEW_DEPLOYMENTS_ERROR_STATUS: Record<
-  PreviewDeploymentsError,
-  number
-> = {
-  [PREVIEW_DEPLOYMENTS_ERROR.RATE_LIMITED]: HTTP_STATUS_CODES.TOO_MANY_REQUESTS,
-  [PREVIEW_DEPLOYMENTS_ERROR.UPSTREAM]: HTTP_STATUS_CODES.BAD_GATEWAY,
-};

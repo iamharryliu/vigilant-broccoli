@@ -18,7 +18,6 @@ Mobile-friendly dashboard for personal tasks and calendars, with voice input, a 
   - `common-browser`
   - `common-js`
   - `common-node`
-  - `github-workspace-js`
   - `google-workspace`
   - `@harry/personal`
   - `@harry/private`
@@ -29,7 +28,6 @@ Mobile-friendly dashboard for personal tasks and calendars, with voice input, a 
   - `react-lib-higher-level`
   - `react-utility`
 - Cloud services
-  - GitHub REST API
   - Google Workspace APIs
   - Nominatim / OpenStreetMap
   - Open-Meteo

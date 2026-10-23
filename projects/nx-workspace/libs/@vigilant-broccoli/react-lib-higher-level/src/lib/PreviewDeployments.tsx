@@ -15,14 +15,6 @@ import {
   PreviewDeploymentsResult,
 } from '@vigilant-broccoli/github-workspace-js';
 
-export const PREVIEW_DEPLOYMENTS_LAYOUT = {
-  GRID: 'grid',
-  STACK: 'stack',
-} as const;
-
-type PreviewDeploymentsLayout =
-  (typeof PREVIEW_DEPLOYMENTS_LAYOUT)[keyof typeof PREVIEW_DEPLOYMENTS_LAYOUT];
-
 const LABEL = {
   REFRESH: 'Refresh',
   ALIAS: 'Latest',
@@ -37,43 +29,20 @@ const MESSAGE = {
   UPSTREAM: 'Could not load preview deployments from GitHub.',
   RATE_LIMITED:
     'GitHub API rate limit reached (60 unauthenticated requests per hour).',
-  RATE_LIMITED_SERVER_HINT: 'Set GITHUB_TOKEN on the server to lift it.',
   RATE_LIMIT_RESET: 'Try again after',
 };
 
 const LINK_CLASS = 'text-blue-600 hover:underline dark:text-blue-400';
 const SHORT_SHA_LENGTH = 7;
 
-// GRID suits a wide desktop pane; STACK is one scrolling column with Apple's
-// 44px minimum touch targets.
-const LAYOUT_STYLE = {
-  [PREVIEW_DEPLOYMENTS_LAYOUT.GRID]: {
-    root: 'h-full overflow-auto flex flex-col gap-4',
-    list: 'grid grid-cols-1 lg:grid-cols-2 gap-4',
-    card: 'p-4 flex flex-col gap-3',
-    apps: 'flex flex-col gap-2',
-    appRow: 'flex flex-wrap items-baseline gap-x-3 gap-y-1',
-    appName: '',
-    appLink: `${LINK_CLASS} break-all`,
-    buttonSize: 'sm',
-    iconSize: 14,
-    showCommit: true,
-  },
-  [PREVIEW_DEPLOYMENTS_LAYOUT.STACK]: {
-    root: 'mx-auto flex min-h-0 w-full max-w-xl flex-1 flex-col gap-4',
-    list: 'flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto pb-[env(safe-area-inset-bottom)]',
-    card: 'flex flex-col gap-2 p-4',
-    apps: 'flex flex-col divide-y divide-gray-100 dark:divide-gray-800',
-    appRow: 'flex items-center gap-4',
-    appName: 'flex-1 truncate',
-    appLink: `${LINK_CLASS} inline-flex min-h-[44px] items-center`,
-    buttonSize: 'default',
-    iconSize: 16,
-    showCommit: false,
-  },
-} as const;
-
-type LayoutStyle = (typeof LAYOUT_STYLE)[PreviewDeploymentsLayout];
+const STYLE = {
+  root: 'h-full overflow-auto flex flex-col gap-4',
+  list: 'grid grid-cols-1 lg:grid-cols-2 gap-4',
+  card: 'p-4 flex flex-col gap-3',
+  apps: 'flex flex-col gap-2',
+  appRow: 'flex flex-wrap items-baseline gap-x-3 gap-y-1',
+  appLink: `${LINK_CLASS} break-all`,
+};
 
 const externalLinkProps = { target: '_blank', rel: 'noopener noreferrer' };
 
@@ -81,20 +50,13 @@ const formatTime = (iso: string) => new Date(iso).toLocaleTimeString();
 
 const errorMessage = (
   result: Extract<PreviewDeploymentsResult, { ok: false }>,
-  showServerHint: boolean,
 ) =>
   result.error === PREVIEW_DEPLOYMENTS_ERROR.RATE_LIMITED
-    ? `${MESSAGE.RATE_LIMITED}${showServerHint ? ` ${MESSAGE.RATE_LIMITED_SERVER_HINT}` : ''}${result.rateLimitResetAt ? ` ${MESSAGE.RATE_LIMIT_RESET} ${formatTime(result.rateLimitResetAt)}.` : ''}`
+    ? `${MESSAGE.RATE_LIMITED}${result.rateLimitResetAt ? ` ${MESSAGE.RATE_LIMIT_RESET} ${formatTime(result.rateLimitResetAt)}.` : ''}`
     : MESSAGE.UPSTREAM;
 
-const PullRequestCard = ({
-  pull,
-  style,
-}: {
-  pull: PreviewDeploymentPullRequest;
-  style: LayoutStyle;
-}) => (
-  <Card className={style.card}>
+const PullRequestCard = ({ pull }: { pull: PreviewDeploymentPullRequest }) => (
+  <Card className={STYLE.card}>
     <div className="flex flex-col gap-1">
       <a href={pull.url} {...externalLinkProps} className={LINK_CLASS}>
         <Text weight="bold">
@@ -106,31 +68,29 @@ const PullRequestCard = ({
         <code>{pull.headRef}</code>
       </Text>
     </div>
-    <ul className={style.apps}>
+    <ul className={STYLE.apps}>
       {pull.apps.map(app => (
-        <li key={app.app} className={style.appRow}>
-          <Text size="2" weight="medium" className={style.appName}>
+        <li key={app.app} className={STYLE.appRow}>
+          <Text size="2" weight="medium">
             {app.app}
           </Text>
           <a
             href={app.aliasUrl}
             {...externalLinkProps}
-            className={style.appLink}
+            className={STYLE.appLink}
           >
             <Text size="2">{LABEL.ALIAS}</Text>
           </a>
           <a
             href={app.buildUrl}
             {...externalLinkProps}
-            className={style.appLink}
+            className={STYLE.appLink}
           >
             <Text size="2">{LABEL.BUILD}</Text>
           </a>
-          {style.showCommit && (
-            <Text size="1" color="gray">
-              <code>{app.commit.slice(0, SHORT_SHA_LENGTH)}</code>
-            </Text>
-          )}
+          <Text size="1" color="gray">
+            <code>{app.commit.slice(0, SHORT_SHA_LENGTH)}</code>
+          </Text>
         </li>
       ))}
     </ul>
@@ -138,22 +98,15 @@ const PullRequestCard = ({
 );
 
 interface PreviewDeploymentsProps {
-  // Resolves the result however the host app reaches GitHub: through its
-  // authenticated /api/preview-deployments route, or straight from the browser.
+  // Resolves the result however the host app reaches GitHub.
   loadPreviewDeployments: () => Promise<PreviewDeploymentsResult>;
-  layout?: PreviewDeploymentsLayout;
-  // Public viewers cannot set the server's GITHUB_TOKEN, so they get no hint.
-  showServerTokenHint?: boolean;
 }
 
 export const PreviewDeployments = ({
   loadPreviewDeployments,
-  layout = PREVIEW_DEPLOYMENTS_LAYOUT.GRID,
-  showServerTokenHint = true,
 }: PreviewDeploymentsProps) => {
   const [result, setResult] = useState<PreviewDeploymentsResult | null>(null);
   const [loading, setLoading] = useState(true);
-  const style = LAYOUT_STYLE[layout];
 
   // On load and on demand only: unauthenticated GitHub calls are limited to
   // 60 per hour per IP, so no polling.
@@ -176,7 +129,7 @@ export const PreviewDeployments = ({
   }, [refresh]);
 
   return (
-    <div className={style.root}>
+    <div className={STYLE.root}>
       <div className="flex items-center justify-end gap-3">
         {result?.ok && (
           <Text size="1" color="gray">
@@ -185,11 +138,11 @@ export const PreviewDeployments = ({
         )}
         <Button
           variant="outline"
-          size={style.buttonSize}
+          size="sm"
           onClick={refresh}
           disabled={loading}
         >
-          <RefreshCw size={style.iconSize} />
+          <RefreshCw size={14} />
           {LABEL.REFRESH}
         </Button>
       </div>
@@ -197,12 +150,12 @@ export const PreviewDeployments = ({
         <Text color="gray">{MESSAGE.LOADING}</Text>
       ) : result && !result.ok ? (
         <Callout color="red">
-          <CalloutText>{errorMessage(result, showServerTokenHint)}</CalloutText>
+          <CalloutText>{errorMessage(result)}</CalloutText>
         </Callout>
       ) : result?.pullRequests.length ? (
-        <div className={style.list}>
+        <div className={STYLE.list}>
           {result.pullRequests.map(pull => (
-            <PullRequestCard key={pull.number} pull={pull} style={style} />
+            <PullRequestCard key={pull.number} pull={pull} />
           ))}
         </div>
       ) : (
