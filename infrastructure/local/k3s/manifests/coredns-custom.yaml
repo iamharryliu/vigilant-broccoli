@@ -1,0 +1,20 @@
+# k3d writes host.k3d.internal into CoreDNS's NodeHosts only when it creates or
+# starts the node containers; a Docker Desktop restart can drop it, and every
+# host-services.yaml Service then returns 502. k3s doesn't manage this
+# ConfigMap, and its coredns mounts it at /etc/coredns/custom. A .server file
+# is needed: the default server block already uses `hosts`, which allows one
+# per block, so a .override crash-loops CoreDNS.
+# 192.168.65.254 is what host.docker.internal resolves to inside the nodes.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom
+  namespace: kube-system
+data:
+  host-k3d-internal.server: |
+    host.k3d.internal:53 {
+      errors
+      hosts {
+        192.168.65.254 host.k3d.internal
+      }
+    }
