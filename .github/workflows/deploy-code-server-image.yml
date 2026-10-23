@@ -77,5 +77,5 @@ jobs:
             echo "- \`$IMAGE:latest\`"
             echo "- \`$IMAGE:sha-${GITHUB_SHA}\`"
             echo
-            echo "Run \`manual-replace-code-server\` to roll the VM onto it."
+            echo "The VM's code-server-update timer pulls it within 15 minutes."
           } >> "$GITHUB_STEP_SUMMARY"
