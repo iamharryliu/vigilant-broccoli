@@ -32,6 +32,8 @@ Personal monorepo, supporting **19 applications**, **6 API services**, **11 Dock
 ```
 pnpm i                             # Install root dependencies, then projects/nx-workspace via the root postinstall hook
 pnpm cheatsheet                    # Print the CLI command cheatsheet
+pnpm cheatsheet:aliases            # Print the shell alias cheatsheet
+pnpm format                        # Format the repo with Prettier
 pre-commit install                 # Install the pre-commit git hooks
 pnpm local:install:machine-setup   # Install tools and dotfiles for this machine (macOS or Linux)
 ```
@@ -40,6 +42,7 @@ See more:
 
 - [Cheatsheet](https://context.harryliu.dev/?file=docs/cheatsheet.md) — useful infra-level CLI commands
 - [Code quality tools](./docs/code-quality-tools.md) — linters, formatters, hooks and scanners with their local/CI enforcement
+- [Git workflow](./docs/git-workflow.md) — branching, commits, PRs and syncing with main
 - [Alias cheatsheet](https://context.harryliu.dev/?file=docs/cheatsheet-aliases.md) — shell aliases from `setup/dotfiles/`
 
 ### Agentic
