@@ -18,10 +18,7 @@ export function DeploymentsPage() {
         title={t('DEPLOYMENTS_PAGE.TITLE')}
         route={DEPLOYMENTS_ROUTE}
       />
-      <PreviewDeployments
-        loadPreviewDeployments={loadPreviewDeployments}
-        showServerTokenHint={false}
-      />
+      <PreviewDeployments loadPreviewDeployments={loadPreviewDeployments} />
     </main>
   );
 }

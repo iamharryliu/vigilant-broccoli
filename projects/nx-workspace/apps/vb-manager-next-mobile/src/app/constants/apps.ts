@@ -2,6 +2,7 @@ import {
   Mail,
   FileText,
   FolderGit2,
+  GitPullRequest,
   GitBranch,
   Play,
   type LucideIcon,
@@ -60,5 +61,11 @@ export const APPS: AppEntry[] = [
     webUrl: 'https://projects.harryliu.dev',
     tileColor: 'bg-emerald-600',
     icon: FolderGit2,
+  },
+  {
+    label: 'Deployments',
+    webUrl: 'https://deployments.harryliu.dev',
+    tileColor: 'bg-amber-600',
+    icon: GitPullRequest,
   },
 ];
