@@ -147,6 +147,14 @@ variable "web_terminal_domain" {
   default = "shell.harryliu.dev"
 }
 
+# Cloudflare Zero Trust team domain the web-terminal server validates Access JWT
+# issuers and signing keys against. A variable, not a data source: the Terraform
+# API token cannot read Zero Trust organizations (403 code 10000).
+variable "access_team_domain" {
+  type    = string
+  default = "vigilant-broccoli.cloudflareaccess.com"
+}
+
 # Built and pushed by .github/workflows/deploy-code-server-image.yml, which
 # also publishes an immutable sha-<commit> tag -- set this to one of those to
 # pin the VM to a known build or roll back.

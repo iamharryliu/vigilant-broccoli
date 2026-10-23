@@ -114,7 +114,7 @@ resource "oci_core_instance" "code_server" {
       code_server_domain      = var.code_server_domain
       web_terminal_domain     = var.web_terminal_domain
       web_terminal_aud        = cloudflare_zero_trust_access_application.web_terminal.aud
-      access_team_domain      = data.cloudflare_zero_trust_organization.this.auth_domain
+      access_team_domain      = var.access_team_domain
       code_server_image       = var.code_server_image
       code_server_password    = random_password.code_server_password.result
       code_server_origin_cert = cloudflare_origin_ca_certificate.code_server.certificate
@@ -207,12 +207,6 @@ resource "cloudflare_dns_record" "web_terminal" {
   type    = "A"
   ttl     = 1
   proxied = true
-}
-
-# The Access team domain (<team>.cloudflareaccess.com) the web-terminal server
-# validates JWT issuers and signing keys against.
-data "cloudflare_zero_trust_organization" "this" {
-  account_id = var.cloudflare_account_id
 }
 
 # Owner only, no CI service token: the terminal is a root-equivalent shell and
