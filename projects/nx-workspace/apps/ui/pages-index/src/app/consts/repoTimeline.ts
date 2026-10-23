@@ -22,6 +22,20 @@ export const TIMELINE_GRANULARITY = {
 export type TimelineGranularity =
   (typeof TIMELINE_GRANULARITY)[keyof typeof TIMELINE_GRANULARITY];
 
+export const TIMELINE_MODE = {
+  TOTAL: 'total',
+  PERIOD: 'period',
+} as const;
+export type TimelineMode = (typeof TIMELINE_MODE)[keyof typeof TIMELINE_MODE];
+
+export const TIMELINE_MODE_OPTIONS: {
+  value: TimelineMode;
+  labelKey: TranslationKey;
+}[] = [
+  { value: TIMELINE_MODE.TOTAL, labelKey: 'REPO_TIMELINE_PAGE.MODE_TOTAL' },
+  { value: TIMELINE_MODE.PERIOD, labelKey: 'REPO_TIMELINE_PAGE.MODE_PERIOD' },
+];
+
 export const TIMELINE_VIEW = {
   GRAPH: 'graph',
   TIMELINE: 'timeline',
@@ -93,22 +107,18 @@ export const TIMELINE_RANGE_OPTIONS: {
 export const TIMELINE_GRANULARITY_OPTIONS: {
   value: TimelineGranularity;
   labelKey: TranslationKey;
-  shortLabelKey: TranslationKey;
 }[] = [
   {
     value: TIMELINE_GRANULARITY.DAY,
     labelKey: 'REPO_TIMELINE_PAGE.GRANULARITY_DAY',
-    shortLabelKey: 'REPO_TIMELINE_PAGE.GRANULARITY_DAY_SHORT',
   },
   {
     value: TIMELINE_GRANULARITY.MONTH,
     labelKey: 'REPO_TIMELINE_PAGE.GRANULARITY_MONTH',
-    shortLabelKey: 'REPO_TIMELINE_PAGE.GRANULARITY_MONTH_SHORT',
   },
   {
     value: TIMELINE_GRANULARITY.YEAR,
     labelKey: 'REPO_TIMELINE_PAGE.GRANULARITY_YEAR',
-    shortLabelKey: 'REPO_TIMELINE_PAGE.GRANULARITY_YEAR_SHORT',
   },
 ];
 
@@ -134,6 +144,20 @@ export interface TimelineBucket {
   linesAdded: number;
   linesDeleted: number;
 }
+
+// Per-period lines is churn (added + deleted) rather than net change, which
+// can be negative and would break the zero-based bar scale.
+export const getBucketValue = (
+  bucket: TimelineBucket,
+  metric: TimelineMetric,
+  mode: TimelineMode,
+): number => {
+  if (mode === TIMELINE_MODE.TOTAL) return bucket[metric];
+  if (metric === TIMELINE_METRIC.COMMITS) return bucket.periodCommits;
+  if (metric === TIMELINE_METRIC.PULL_REQUESTS)
+    return bucket.periodPullRequests;
+  return bucket.linesAdded + bucket.linesDeleted;
+};
 
 export const DAY_KEY_LENGTH = 10;
 const MONTH_KEY_LENGTH = 7;
