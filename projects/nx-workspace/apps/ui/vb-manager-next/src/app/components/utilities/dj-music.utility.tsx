@@ -141,11 +141,7 @@ export const DjMusicUtilityContent = () => {
 
       {playlistsExpanded && (
         <div className="flex flex-col gap-2">
-          {loadingPlaylists ? (
-            <Text size="2" color="gray">
-              Loading playlists...
-            </Text>
-          ) : playlists.length === 0 ? (
+          {loadingPlaylists ? null : playlists.length === 0 ? (
             <Text size="2" color="gray">
               No playlists found
             </Text>
