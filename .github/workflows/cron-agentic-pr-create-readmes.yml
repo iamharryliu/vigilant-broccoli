@@ -1,0 +1,116 @@
+name: cron-agentic-pr-create-readmes
+
+# Refreshes every README.md against docs/app-readme-pattern.md and the current
+# code, and reconciles the generated repo counts, opening one conservative PR
+# only when something drifted. Same container and credentials as
+# `cron-agentic-pr-create-prune`; the local equivalent is
+# `pnpm agentic-pr-create-readmes`.
+#
+# A clean run opens no PR and still succeeds: the runner prints README_CLEAN
+# and exits 0.
+
+on:
+  schedule:
+    - cron: '25 6 * * 0'
+  workflow_dispatch:
+    inputs:
+      model:
+        description: 'Claude model to run the agent with.'
+        type: choice
+        default: sonnet
+        options:
+          - sonnet
+          - opus
+          - haiku
+      firewall:
+        description: 'In-container egress firewall (turn off if iptables/ipset fails on the runner).'
+        type: choice
+        default: 'on'
+        options:
+          - 'on'
+          - 'off'
+
+permissions:
+  contents: read
+  id-token: write
+
+# Static group: two overlapping refreshes would open competing PRs editing the
+# same files, and a half-finished run's pushed branch is not something a newer
+# run should cancel out from under.
+concurrency:
+  group: cron-agentic-pr-create-readmes
+  cancel-in-progress: false
+
+jobs:
+  overview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      model: ${{ steps.config.outputs.model }}
+      firewall: ${{ steps.config.outputs.firewall }}
+    steps:
+      # Scheduled runs carry no inputs, so the defaults are resolved once here
+      # and both the overview and the readmes job read the same values.
+      - name: Resolve effective configuration
+        id: config
+        env:
+          MODEL: ${{ inputs.model || 'sonnet' }}
+          FIREWALL: ${{ inputs.firewall || 'on' }}
+        run: |
+          set -euo pipefail
+          echo "model=$MODEL" >> "$GITHUB_OUTPUT"
+          echo "firewall=$FIREWALL" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout summary helper
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Publish overview
+        continue-on-error: true
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: overview
+          title: Refresh READMEs and generated repo counts
+          agent: claude
+          model: ${{ steps.config.outputs.model }}
+          firewall: ${{ steps.config.outputs.firewall }}
+          description: Refresh every README.md against docs/app-readme-pattern.md and the current code, and reconcile the generated repo counts. Opens a pull request only when a README or count drifted.
+
+  readmes:
+    needs: overview
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | CLAUDE_CODE_OAUTH_TOKEN ;
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+
+      - name: Refresh READMEs
+        id: readmes
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
+          AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
+          AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
+          SANDBOX_FIREWALL: ${{ needs.overview.outputs.firewall }}
+          MODEL: ${{ needs.overview.outputs.model }}
+        run: |
+          set -euo pipefail
+          bash infrastructure/agent-sandbox/readmes.sh --model "$MODEL"
+
+      - name: Report result when the refresh could not
+        if: ${{ always() && steps.readmes.outcome != 'success' && steps.readmes.outputs.result_reported != 'true' }}
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: result
+          outcome: ${{ job.status == 'cancelled' && 'cancelled' || 'failed' }}
+          note: ${{ steps.readmes.outcome == 'skipped' && 'A step before the refresh failed, so the agent never started.' || 'The refresh stopped before it could report a result; see its step log.' }}
