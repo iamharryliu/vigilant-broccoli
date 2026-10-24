@@ -19,7 +19,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: vb-manager-next
+                name: vb-manager-local-fastify
                 port:
                   number: 1337
 ---

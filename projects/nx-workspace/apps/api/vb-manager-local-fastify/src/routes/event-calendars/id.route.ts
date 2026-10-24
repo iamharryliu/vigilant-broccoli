@@ -1,0 +1,116 @@
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { getUserEmail } from '../../libs/server-auth';
+import {
+  deleteEventCalendar,
+  getEventCalendar,
+  updateEventCalendar,
+} from '../../libs/event-calendars.db';
+import {
+  deleteGoogleCalendar,
+  getCalendarAdminClient,
+  renameGoogleCalendar,
+  setGoogleCalendarPublic,
+} from '../../libs/google-calendar-admin';
+import { normalizeSources } from './sources';
+import { EVENT_LANGUAGES } from '@vigilant-broccoli/vb-manager-local-common';
+
+const UNSUPPORTED_LANGUAGE_ERROR = `Language must be one of: ${EVENT_LANGUAGES.join(', ')}`;
+
+type RouteContext = { params: { id: string } };
+
+const unauthorized = () =>
+  Response.json(
+    { error: 'Unauthorized' },
+    { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+  );
+
+const notFound = () =>
+  Response.json(
+    { error: 'Calendar not found' },
+    { status: HTTP_STATUS_CODES.INVALID_PATH },
+  );
+
+const serverError = (error: unknown) => {
+  console.error('[event-calendars]', error);
+  return Response.json(
+    { error: error instanceof Error ? error.message : 'Unexpected error' },
+    { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+  );
+};
+
+export async function PATCH(request: Request, { params }: RouteContext) {
+  const userEmail = await getUserEmail(request);
+  if (!userEmail) return unauthorized();
+
+  const { id } = params;
+  const existing = await getEventCalendar(id);
+  if (!existing) return notFound();
+
+  const { name, isPublic, language, sources } = await request.json();
+
+  if (language && !EVENT_LANGUAGES.includes(language)) {
+    return Response.json(
+      { error: UNSUPPORTED_LANGUAGE_ERROR },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
+    );
+  }
+
+  const normalizedSources = sources ? normalizeSources(sources) : undefined;
+  if (normalizedSources && !normalizedSources.ok) {
+    return Response.json(
+      { error: normalizedSources.error },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
+    );
+  }
+
+  try {
+    const calendar = getCalendarAdminClient();
+
+    if (name && name.trim() !== existing.name) {
+      await renameGoogleCalendar(
+        calendar,
+        existing.googleCalendarId,
+        name.trim(),
+      );
+    }
+
+    if (isPublic !== undefined && isPublic !== existing.isPublic) {
+      await setGoogleCalendarPublic(
+        calendar,
+        existing.googleCalendarId,
+        isPublic,
+      );
+    }
+
+    return Response.json({
+      calendar: await updateEventCalendar(id, {
+        name: name?.trim(),
+        isPublic,
+        language,
+        sources: normalizedSources?.ok ? normalizedSources.sources : undefined,
+      }),
+    });
+  } catch (error) {
+    return serverError(error);
+  }
+}
+
+export async function DELETE(request: Request, { params }: RouteContext) {
+  const userEmail = await getUserEmail(request);
+  if (!userEmail) return unauthorized();
+
+  const { id } = params;
+  const existing = await getEventCalendar(id);
+  if (!existing) return notFound();
+
+  try {
+    await deleteGoogleCalendar(
+      getCalendarAdminClient(),
+      existing.googleCalendarId,
+    );
+    await deleteEventCalendar(id);
+    return new Response(null, { status: HTTP_STATUS_CODES.NO_CONTENT });
+  } catch (error) {
+    return serverError(error);
+  }
+}

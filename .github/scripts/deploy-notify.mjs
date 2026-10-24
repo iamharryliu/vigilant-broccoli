@@ -3,7 +3,7 @@ import { io } from 'socket.io-client';
 const URL = process.env.SOCKET_SERVER_URL;
 const TOKEN = process.env.SHARED_APP_TOKEN;
 
-const DEPLOY_APP = 'vb-manager-next';
+const DEPLOY_APP = 'vb-manager-local';
 const DEPLOY_RECEIVER_ID = 'deploy';
 const TIMEOUT_MS = 10000;
 

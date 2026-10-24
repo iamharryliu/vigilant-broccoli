@@ -23,7 +23,7 @@ Local k3s cluster, run by k3d, for self-hosted services (photos, logs, dashboard
 
 **Sources:**
 
-- PM2 apps (vb-manager-next) → `~/.pm2/logs/`
+- PM2 apps (vb-manager-local-fastify) → `~/.pm2/logs/`
 - Docker containers outside the cluster → Docker socket
 - Cluster pods → Kubernetes API
 - System logs → `/var/log/`

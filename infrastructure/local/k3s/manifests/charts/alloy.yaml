@@ -60,7 +60,7 @@ spec:
           }
 
           local.file_match "pm2" {
-            path_targets = [{"__path__" = "/host/pm2-logs/vb-manager-next-*.log", "job" = "pm2", "app" = "vb-manager-next"}]
+            path_targets = [{"__path__" = "/host/pm2-logs/vb-manager-local-fastify-*.log", "job" = "pm2", "app" = "vb-manager-local-fastify"}]
           }
 
           loki.source.file "pm2" {

@@ -121,7 +121,8 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | <img src="./projects/nx-workspace/apps/ui/small-business-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Small Business Next](./projects/nx-workspace/apps/ui/small-business-next) | Subscription and subscriber notification management. |
 | [Spotify to MP3](./scripts/python/dj-scripts/spotify-to-mp3)                                                                                                                                               | Command-line music download utility.                 |
 | <img src="./vday-godot-game/icon.svg" width="20" height="20" align="absmiddle"> [Valentine’s Day Adventure Game](./vday-godot-game)                                                                        | Godot adventure game with heart collection.          |
-| <img src="./projects/nx-workspace/apps/ui/vb-manager-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [VB Manager](./projects/nx-workspace/apps/ui/vb-manager-next)                  | Personal management dashboard.                       |
+| <img src="./projects/nx-workspace/apps/ui/vb-manager-local-react/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [VB Manager](./projects/nx-workspace/apps/ui/vb-manager-local-react) | Personal management dashboard. |
+| [VB Manager Local API](./projects/nx-workspace/apps/api/vb-manager-local-fastify) | API and static host behind VB Manager. |
 
 ## Libraries
 
@@ -132,7 +133,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [@vigilant-broccoli/common-browser](./projects/nx-workspace/libs/@vigilant-broccoli/common-browser)                 | Browser locale, location, Google Calendar and Tailwind helpers.                               | `type:util`                       |
 | [@vigilant-broccoli/common-js](./projects/nx-workspace/libs/@vigilant-broccoli/common-js)                           | Isomorphic HTTP, audio, honeypot and quick-link consts, types and utilities.                  | `type:util`                       |
 | [@vigilant-broccoli/common-node](./projects/nx-workspace/libs/@vigilant-broccoli/common-node)                       | Node environment variable, HTTP, date, encryption and audio utilities.                        | `type:util`                       |
-| [@vigilant-broccoli/deployment](./projects/nx-workspace/libs/@vigilant-broccoli/deployment)                         | Deploy notification constants for vb-manager-next.                                            | `type:util`                       |
+| [@vigilant-broccoli/deployment](./projects/nx-workspace/libs/@vigilant-broccoli/deployment)                         | Deploy notification constants for vb-manager.                                            | `type:util`                       |
 | [@vigilant-broccoli/devops-cli](./projects/nx-workspace/libs/@vigilant-broccoli/devops-cli)                         | Typed wrappers for the aws, gcloud, docker, pm2, flyctl, vercel, wrangler and tailscale CLIs. | `type:util`                       |
 | [@vigilant-broccoli/employee-handler](./projects/nx-workspace/libs/@vigilant-broccoli/employee-handler)             | Employee lifecycle automation for onboarding, offboarding, signatures and data sync.          | `type:util`                       |
 | [@vigilant-broccoli/fastify](./projects/nx-workspace/libs/@vigilant-broccoli/fastify)                               | Fastify docs, API key, reCAPTCHA, honeypot, request logging and ping plugins.                 | `type:util`                       |
@@ -159,6 +160,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [@vigilant-broccoli/slack-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/slack-workspace)               | Slack Web API client and view-builder utilities.                                              | `type:util`                       |
 | [@vigilant-broccoli/slackbots](./projects/nx-workspace/libs/@vigilant-broccoli/slackbots)                           | Slack bot apps built on slack-workspace, including Office Presence.                           | `type:util`                       |
 | [@vigilant-broccoli/storage](./projects/nx-workspace/libs/@vigilant-broccoli/storage)                               | Multi-provider object storage bucket service.                                                 | `type:util`                       |
+| [@vigilant-broccoli/vb-manager-local-common](./projects/nx-workspace/libs/@vigilant-broccoli/vb-manager-local-common) | Types and constants shared by the VB Manager SPA and API. | `type:util` |
 | [@vigilant-broccoli/vercel-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/vercel-workspace)             | Vercel API types and utilities.                                                               | `type:util`                       |
 
 ## CI Actions

@@ -10,7 +10,7 @@ resources:
 configMapGenerator:
   - name: grafana-dashboards
     files:
-      - dashboards/vb-manager-next.json
+      - dashboards/vb-manager-local-fastify.json
     options:
       # The Grafana sidecar watches this label; a fixed name keeps re-applies
       # from leaving hash-suffixed copies behind.

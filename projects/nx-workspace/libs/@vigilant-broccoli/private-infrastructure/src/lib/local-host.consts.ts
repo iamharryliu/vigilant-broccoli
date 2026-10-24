@@ -17,7 +17,7 @@ export const LOCAL_HOST_URL = {
     URL: 'https://headlamp.vigilant-broccoli.app',
   },
   VB_MANAGER_NEXT: {
-    NAME: 'vb-manager-next (Local)',
+    NAME: 'VB Manager (Local)',
     URL: 'https://manager.vigilant-broccoli.app',
   },
 } as const;
