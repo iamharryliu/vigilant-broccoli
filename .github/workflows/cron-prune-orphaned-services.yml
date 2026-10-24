@@ -106,7 +106,7 @@ jobs:
           {
             echo "## Summary"
             echo
-            echo "Daily \`cron-prune-orphaned-services\` run ${ACTION} the orphaned-services row in the TODO.md Chore section."
+            echo "Daily \`cron-prune-orphaned-services\` run ${ACTION} the TODO.md orphaned-services row (Type \`Chore\`)."
             echo
             cat "$RUNNER_TEMP/orphans.md"
             echo
