@@ -1,6 +1,6 @@
 # Local Infrastructure
 
-Docker Compose stack for self-hosted local services (photos, logs, dashboards) behind an nginx proxy.
+Local k3s cluster, run by k3d, for self-hosted services (photos, logs, dashboards) behind Traefik. See [k3s-cluster.md](./docs/features/k3s-cluster.md).
 
 ## Table of Contents
 
@@ -13,7 +13,9 @@ Docker Compose stack for self-hosted local services (photos, logs, dashboards) b
 - [manager.vigilant-broccoli.app](https://manager.vigilant-broccoli.app) - Main application
 - [grafana.vigilant-broccoli.app](https://grafana.vigilant-broccoli.app) - Log dashboards
 - [loki.vigilant-broccoli.app](https://loki.vigilant-broccoli.app) - Log aggregation
-- [images.vigilant-broccoli.app](https://images.vigilant-broccoli.app) - Immich photo management (proxied to the standalone [immich stack](../immich/) via `host.docker.internal:2283`)
+- [headlamp.vigilant-broccoli.app](https://headlamp.vigilant-broccoli.app) - Kubernetes dashboard
+- [argocd.vigilant-broccoli.app](https://argocd.vigilant-broccoli.app) - GitOps sync of the cluster manifests
+- [images.vigilant-broccoli.app](https://images.vigilant-broccoli.app) - Immich photo management (proxied to the standalone [immich stack](../immich/) via `host.k3d.internal:2283`)
 
 ## Observability
 
@@ -21,13 +23,14 @@ Docker Compose stack for self-hosted local services (photos, logs, dashboards) b
 
 **Sources:**
 
-- PM2 apps (vb-manager-local-fastify) → `/Users/harryliu/.pm2/logs/`
-- Docker containers → json-file driver logs
+- PM2 apps (vb-manager-local-fastify) → `~/.pm2/logs/`
+- Docker containers outside the cluster → Docker socket
+- Cluster pods → Kubernetes API
 - System logs → `/var/log/`
 
 **Pipeline:**
 
-1. Promtail scrapes logs from mounted volumes and Docker socket
+1. Alloy reads the host paths and Docker socket that k3d mounts into the server node, and pod logs through the Kubernetes API
 2. Sends to Loki via HTTP push API
 3. Queryable in Grafana Explore (Loki datasource)
 
@@ -41,7 +44,7 @@ Preferences → Docker Engine → paste contents of `docker-daemon-config.json` 
 - `log-driver: json-file` — standard Docker logging
 - `max-size: 10m` — rotate logs at 10MB
 - `max-file: 3` — keep 3 log files (~30MB per container)
-  **Why:** Prevents old logs from exceeding Loki's 3-day retention, causing timestamp rejection errors.
+  **Why:** Alloy backfills each container's retained log on first start; Loki rejects entries older than its 7-day ingestion window, so smaller retained logs mean fewer rejected batches.
 
 ## Stack
 
@@ -49,9 +52,17 @@ Preferences → Docker Engine → paste contents of `docker-daemon-config.json` 
   - YAML
   - Bash
 - Tooling
-  - Docker Compose
+  - Helm
+  - k3d
+  - k3s
+  - k9s
+  - kubectl
+  - Kustomize
 - Services
+  - Alloy
+  - Argo CD
   - Grafana
+  - Headlamp
   - Loki
-  - nginx
-  - Promtail
+  - Prometheus
+  - Traefik

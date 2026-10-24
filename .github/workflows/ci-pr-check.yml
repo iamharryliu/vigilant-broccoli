@@ -45,8 +45,8 @@ jobs:
         uses: ./.github/actions/vault-secrets
         continue-on-error: true
         with:
-          gcp_workload_identity_provider: projects/88091895337/locations/global/workloadIdentityPools/github-actions/providers/github-pr-check
-          gcp_service_account: github-actions-pr-check@vigilant-broccoli.iam.gserviceaccount.com
+          gcp_workload_identity_provider: ${{ vars.PR_CHECK_WIF_PROVIDER }}
+          gcp_service_account: ${{ vars.PR_CHECK_SERVICE_ACCOUNT }}
           role: github-actions-pr-check-role
           secrets: |
             kv/data/ci-pr-check NX_CACHE_READ_TOKEN | NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN ;
@@ -137,7 +137,7 @@ jobs:
           done
           exit "$STATUS"
 
-      - uses: jdx/mise-action@08ae2a091c038e1e05ec6f5115dc5c69d5a2a6b8 # v5.1.2
+      - uses: jdx/mise-action@fc42bcc7ddbf51124c30f95a877a0c5168a3bfde # v5.2.1
         with:
           version: 2026.9.10
           install_args: python

@@ -7,7 +7,7 @@ import {
   Text,
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
-import { FLYIO_LINK } from '@vigilant-broccoli/links';
+import { FLYIO_LINK } from '@vigilant-broccoli/public-links';
 import { useState } from 'react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../libs/auth';

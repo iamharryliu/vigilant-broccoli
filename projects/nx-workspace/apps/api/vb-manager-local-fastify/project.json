@@ -65,11 +65,7 @@
         "command": "env -u GITHUB_TOKEN node --watch --import tsx src/main.ts",
         "env": {
           "PORT": "3003",
-          "SUPABASE_URL": "https://jrdosjjgmsoodpjmjqxx.supabase.co",
-          "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0",
-          "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev",
-          "VB_STORAGE_SERVICE_URL": "http://127.0.0.1:3001",
-          "EMAIL_SERVICE_URL": "http://127.0.0.1:3002"
+          "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev"
         }
       }
     },

@@ -1,8 +1,6 @@
-import {
-  EMAIL_SERVICE_ENDPOINT,
-  HTTP_STATUS_CODES,
-} from '@vigilant-broccoli/common-js';
+import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import { getVbExpressApiKey } from '../../libs/vb-express';
 
 export async function POST(request: Request) {
   const { from, to, subject, text, html } = await request.json();
@@ -15,12 +13,12 @@ export async function POST(request: Request) {
   }
 
   const response = await fetch(
-    `${getEnvironmentVariable('EMAIL_SERVICE_URL')}/${EMAIL_SERVICE_ENDPOINT.SEND_EMAIL}`,
+    `${getEnvironmentVariable('VB_EXPRESS_URL')}/api/messaging/send-email`,
     {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': getEnvironmentVariable('SHARED_APP_TOKEN'),
+        'x-api-key': getVbExpressApiKey(),
       },
       body: JSON.stringify({ from, to, subject, text, html }),
     },

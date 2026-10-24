@@ -28,6 +28,7 @@ Read the relevant document before working on its subject. Before editing a direc
 | [career experience](./notes/personal/personal-software-career-experience.md)     | New skill or area (e.g. mobile development) absent from its Skills or contributions: add it.               |
 | [code-quality-tools.md](./docs/code-quality-tools.md)                            | Quality tooling; update its inventory when adding/removing a tool.                                         |
 | [database-migrations.md](./docs/ci/database-migrations.md)                       | Database migrations.                                                                                       |
+| [fork-identity-inventory.md](./docs/fork-identity-inventory.md)                  | Making the repo forkable; update when adding or removing a hardcoded account, domain or identity value.    |
 | [free-tier-infrastructure.md](./docs/infrastructure/free-tier-infrastructure.md) | New cloud services or VM sizing; update the affected allowance row.                                        |
 | [git-workflow.md](./docs/git-workflow.md)                                        | Branching, staging, commits, PRs and syncing main.                                                         |
 | [github-repo-protection.md](./docs/infrastructure/github-repo-protection.md)     | GitHub protection, bypass actors or push rejections.                                                       |
@@ -61,7 +62,7 @@ Never add GitHub Actions repo secrets; remove unused ones. Only `GCP_SERVICE_ACC
 ## App Development
 
 - Prefer HTTP consts from `@vigilant-broccoli/common-js` (`HTTP_METHOD`, `HTTP_HEADERS`, `HTTP_STATUS_CODES`).
-- Personal links and contact details belong in `@vigilant-broccoli/personal-common-js`. Keep auth allowlists and API-key seed identities literal so a contact change cannot change access. Never import the `@vigilant-broccoli/links` ops registry into public client bundles. Personal calendar ids (`PERSONAL_GOOGLE_CALENDAR`, `PERSONAL_CALENDAR_SOURCES`) live there too; `@vigilant-broccoli/common-browser` stays public and personal-detail free.
+- Link and personal data libs are split public/private, enforced by `visibility:public`/`visibility:private` tags in `@nx/enforce-module-boundaries`; tag every app with a publicly served client bundle `visibility:public`. Which lib a link belongs in: [Choosing a home](./docs/app-development/app-development.md#choosing-a-home).
 - Prefer `getEnvironmentVariable` from `@vigilant-broccoli/common-node` for server environment variables. Client-side Next.js variables require direct `process.env.NEXT_PUBLIC_*` access for build-time inlining.
 - App/lib dependencies already pinned in the workspace root must mirror its caret range; no `"*"` or divergent pins. pnpm re-resolves an importer only when its own specifier changes, so a stray copy drifts after root bumps and surfaces as confusing duplicate-type errors (e.g. incompatible `FastifyInstance` types). Do not force Fly service dependencies through `pnpm-workspace.yaml` overrides: pruned installs fail.
 - New or changed public URLs require synchronized Upptime entries, pages-index cards and browser quick links for every environment and demo; follow [public URL registration](./docs/app-development/app-development.md#deployment).
@@ -76,7 +77,7 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 
 ### Documentation
 
-- Keep requested Markdown-table content in the table; add no surrounding prose unless requested.
+- Keep requested Markdown-table content in the table; add no surrounding prose unless requested. That includes a lead-in sentence under the heading that restates, introduces or summarizes what the table shows; keep only prose that adds facts the table cannot hold.
 - Alphabetize unordered tables by their first column. Preserve meaningful order for steps, progressions, diagram labels and fixed side-by-side comparisons whose heading names the order.
 - Check relative links and section anchors after moving files or renaming headings.
 - This file and Doc Map documents with at least three `##` sections need a `## Table of Contents` after the one-line purpose. Derive it from headings in document order, nesting `###` entries and ignoring fenced examples; rebuild it when headings change and add a missing one when touching a listed doc. READMEs follow `app-readme-pattern.md` and stay deployment-agnostic (no hosted URLs or deploy targets; Stack groups ordered, items sorted, no parentheticals, optional ` - description` only when the name is ambiguous); notes follow [notes/CONTEXT.md](./notes/CONTEXT.md). Do not add ToCs to unrelated files.

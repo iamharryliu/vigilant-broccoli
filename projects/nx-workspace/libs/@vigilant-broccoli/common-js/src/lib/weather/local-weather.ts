@@ -63,6 +63,6 @@ export const toLocalWeather = (
 };
 
 export const omitForecast = ({
-  forecast,
+  forecast: _forecast,
   ...today
 }: LocalWeather): LocalWeather => today;

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useDocumentTitle } from '@vigilant-broccoli/react-lib';
+import { ThemeProvider, useDocumentTitle } from '@vigilant-broccoli/react-lib';
 import {
   cursorColor,
   PeerCaretsOverlay,
@@ -76,7 +76,7 @@ const getOrCreate = (key: string, create: () => string) => {
   return value;
 };
 
-export function WhiteboardApp() {
+function Whiteboard() {
   const { t } = useTranslation();
   const [userId, setUserId] = useState('');
   const [username, setUsername] = useState('');
@@ -153,17 +153,19 @@ export function WhiteboardApp() {
       : t('MEMBERS.COUNT_MANY', { count: members.length });
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-gray-50">
-      <header className="px-4 py-3 bg-white border-b border-gray-200">
-        <h1 className="text-lg font-semibold text-gray-800">
+    <div className="flex flex-col h-[100dvh] bg-gray-50 dark:bg-gray-950">
+      <header className="px-4 py-3 bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800">
+        <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
           {t('APP.TITLE')}
         </h1>
-        <p className="text-sm text-gray-500">{t('APP.SUBTITLE')}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {t('APP.SUBTITLE')}
+        </p>
       </header>
 
-      <div className="px-4 py-3 flex flex-col gap-3 bg-white border-b border-gray-200">
+      <div className="px-4 py-3 flex flex-col gap-3 bg-white border-b border-gray-200 dark:bg-gray-900 dark:border-gray-800">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-sm text-gray-500 shrink-0">
+          <span className="text-sm text-gray-500 shrink-0 dark:text-gray-400">
             {t('USER.YOU_FIELD')}
           </span>
           <input
@@ -171,21 +173,21 @@ export function WhiteboardApp() {
             value={username}
             placeholder={t('USER.USERNAME_PLACEHOLDER')}
             onChange={e => updateUsername(e.target.value)}
-            className="min-w-0 flex-1 rounded border border-gray-300 px-2 py-1 text-sm font-medium text-gray-800 focus:border-blue-500 focus:outline-none"
+            className="min-w-0 flex-1 rounded border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-800 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
           />
           <button
             type="button"
             aria-label={t('USER.RANDOMIZE')}
             title={t('USER.RANDOMIZE')}
             onClick={() => updateUsername(randomUsername())}
-            className="shrink-0 rounded border border-gray-300 px-2 py-1 text-sm hover:bg-gray-50"
+            className="shrink-0 rounded border border-gray-300 px-2 py-1 text-sm hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
           >
             {RANDOMIZE_ICON}
           </button>
         </div>
 
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-sm text-gray-500 shrink-0">
+          <span className="text-sm text-gray-500 shrink-0 dark:text-gray-400">
             {t('ROOM.LABEL')}
           </span>
           <input
@@ -197,7 +199,7 @@ export function WhiteboardApp() {
               if (e.key === 'Enter') joinRoom();
             }}
             disabled={Boolean(activeRoom)}
-            className="min-w-0 flex-1 rounded border border-gray-300 px-2 py-1 text-sm font-medium text-gray-800 focus:border-blue-500 focus:outline-none disabled:bg-gray-100 disabled:text-gray-500"
+            className="min-w-0 flex-1 rounded border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-800 focus:border-blue-500 focus:outline-none disabled:bg-gray-100 disabled:text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800 dark:disabled:text-gray-400"
           />
           <button
             type="button"
@@ -205,7 +207,7 @@ export function WhiteboardApp() {
             title={t('ROOM.RANDOMIZE')}
             onClick={() => setRoomDraft(randomRoom())}
             disabled={Boolean(activeRoom)}
-            className="shrink-0 rounded border border-gray-300 px-2 py-1 text-sm hover:bg-gray-50 disabled:opacity-50"
+            className="shrink-0 rounded border border-gray-300 px-2 py-1 text-sm hover:bg-gray-50 disabled:opacity-50 dark:border-gray-700 dark:hover:bg-gray-800"
           >
             {RANDOMIZE_ICON}
           </button>
@@ -231,27 +233,29 @@ export function WhiteboardApp() {
       </div>
 
       {!activeRoom ? (
-        <div className="flex-1 flex items-center justify-center p-6 text-center text-sm text-gray-400">
+        <div className="flex-1 flex items-center justify-center p-6 text-center text-sm text-gray-400 dark:text-gray-500">
           {t('ROOM.EMPTY_STATE')}
         </div>
       ) : (
         <div className="flex-1 flex flex-col gap-3 p-4 min-h-0">
           {connectionStatus === CONNECTION_STATUS.ERROR && (
-            <div className="rounded bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">
+            <div className="rounded bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:border-red-900 dark:text-red-300">
               {t('CONNECTION.ERROR')}
             </div>
           )}
           {connectionStatus === CONNECTION_STATUS.CONNECTING && (
-            <div className="rounded bg-amber-50 border border-amber-200 px-3 py-2 text-sm text-amber-700">
+            <div className="rounded bg-amber-50 border border-amber-200 px-3 py-2 text-sm text-amber-700 dark:bg-amber-950 dark:border-amber-900 dark:text-amber-300">
               {t('CONNECTION.CONNECTING')}
             </div>
           )}
 
           <div className="flex items-center justify-between text-sm">
-            <span className="font-medium text-gray-700">
+            <span className="font-medium text-gray-700 dark:text-gray-200">
               {t('BOARD.TITLE')}
             </span>
-            <span className="text-gray-500">{membersLabel}</span>
+            <span className="text-gray-500 dark:text-gray-400">
+              {membersLabel}
+            </span>
           </div>
 
           <div
@@ -271,7 +275,7 @@ export function WhiteboardApp() {
               onBlur={handleTextBlur}
               placeholder={t('BOARD.PLACEHOLDER')}
               disabled={connectionStatus !== CONNECTION_STATUS.CONNECTED}
-              className="h-full w-full resize-none rounded border border-gray-300 p-3 font-mono text-sm leading-relaxed text-gray-800 focus:border-blue-500 focus:outline-none disabled:bg-gray-100"
+              className="h-full w-full resize-none rounded border border-gray-300 bg-white p-3 font-mono text-sm leading-relaxed text-gray-800 focus:border-blue-500 focus:outline-none disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800"
             />
             <PeerCaretsOverlay
               cursors={cursors}
@@ -282,16 +286,18 @@ export function WhiteboardApp() {
             <PeerCursorsOverlay cursors={cursors} currentUserId={userId} />
           </div>
 
-          <p className="text-xs text-gray-400">{t('ROOM.SHARE_HINT')}</p>
+          <p className="text-xs text-gray-400 dark:text-gray-500">
+            {t('ROOM.SHARE_HINT')}
+          </p>
 
           <div className="flex flex-col gap-1 max-h-32 overflow-y-auto">
-            <span className="text-xs font-medium text-gray-500">
+            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
               {t('MEMBERS.TITLE')}
             </span>
             {members.map(member => (
               <div
                 key={member.userId}
-                className="flex items-center gap-2 text-sm text-gray-700"
+                className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200"
               >
                 <span
                   style={{ backgroundColor: cursorColor(member.userId) }}
@@ -308,5 +314,13 @@ export function WhiteboardApp() {
         </div>
       )}
     </div>
+  );
+}
+
+export function WhiteboardApp() {
+  return (
+    <ThemeProvider>
+      <Whiteboard />
+    </ThemeProvider>
   );
 }

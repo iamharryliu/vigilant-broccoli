@@ -10,7 +10,7 @@
 
 - Button at the top of the settings page, using `useTheme()` from `@vigilant-broccoli/react-lib`
 - Label/icon flip between "Dark mode" (Moon icon) and "Light mode" (Sun icon) depending on `appearance`
-- The `d` global keyboard shortcut (`src/app/layouts/main.layout.tsx`) still toggles the same theme state independently of this button
+- The `d` global keyboard shortcut (`src/app/layouts/main.layout.tsx`) still toggles the same theme state independently of this button; the choice persists as `vb-manager-local-react-theme`
 
 ## Keyboard Shortcuts Cheatsheet
 

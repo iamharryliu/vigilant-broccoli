@@ -21,13 +21,7 @@ module.exports = {
         PORT: 1337,
         HOST: '127.0.0.1',
         STATIC_DIR: path.join(WORKSPACE_ROOT, 'dist/vb-manager-local-react'),
-        VB_EXPRESS_URL: 'https://staging-vb-express.fly.dev',
-        VB_STORAGE_SERVICE_URL: 'https://staging-vb-storage-service.fly.dev',
-        EMAIL_SERVICE_URL: 'https://staging-vb-email-service.fly.dev',
-        LLM_SERVICE_URL: 'https://staging-vb-llm-service.fly.dev',
-        SUPABASE_URL: 'https://jrdosjjgmsoodpjmjqxx.supabase.co',
-        SUPABASE_PUBLISHABLE_KEY:
-          'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
+        VB_EXPRESS_URL: 'https://api.harryliu.dev',
         // Not derived from request.nextUrl.origin: the reverse proxy fronting
         // this PM2 process doesn't forward a Host header Next can trust, so
         // that resolves to the internal bind address (127.0.0.1:1337)

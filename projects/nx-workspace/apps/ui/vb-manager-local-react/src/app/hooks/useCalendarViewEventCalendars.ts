@@ -1,8 +1,5 @@
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
-import {
-  readHiddenCalendarIds,
-  writeHiddenCalendarIds,
-} from '@vigilant-broccoli/personal-common-js';
+import { readHiddenCalendarIds, writeHiddenCalendarIds } from '@harry/personal';
 
 // Per-browser, like the selected calendar tab. Stores the hidden ids rather
 // than the shown ones so a newly created event calendar shows up by default.

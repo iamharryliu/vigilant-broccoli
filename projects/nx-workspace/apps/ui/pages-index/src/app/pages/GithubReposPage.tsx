@@ -42,7 +42,7 @@ export function GithubReposPage() {
   const items: CardListItem[] = repos.map(repo => ({
     key: repo.name,
     route: true,
-    href: `/open-source/github/${encodeURIComponent(repo.name)}`,
+    href: `/github/${encodeURIComponent(repo.name)}`,
     title: repo.name,
     description: repo.description ?? t('GITHUB_REPOS_PAGE.NO_DESCRIPTION'),
     icon: <GithubIcon />,

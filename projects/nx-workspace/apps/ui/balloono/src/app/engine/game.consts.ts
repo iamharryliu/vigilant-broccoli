@@ -15,6 +15,7 @@ export const MAX_PLAYERS = 8;
 export const TICK_MS = 50;
 export const TICKS_PER_SECOND = 1000 / TICK_MS;
 
+export const START_COUNTDOWN_TICKS = 3 * TICKS_PER_SECOND;
 export const BALLOON_FUSE_TICKS = 50;
 export const SPLASH_TICKS = 10;
 export const SUDDEN_DEATH_TICK = 120 * TICKS_PER_SECOND;

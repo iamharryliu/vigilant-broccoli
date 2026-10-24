@@ -35,6 +35,42 @@ kubectl delete pod POD_NAME
 kubectl delete -f minikube.yaml
 ```
 
+## How It Works
+
+```mermaid
+flowchart LR
+  User["kubectl / Admin UI"] -->|"1. apply desired state"| API
+
+  subgraph CP["Control Plane"]
+    API["API server"]
+    ETCD[("etcd")]
+    SCH["Scheduler"]
+    CM["Controller Manager"]
+    API <-->|"2. store state"| ETCD
+    SCH -->|"3. assign pod to node"| API
+    CM -->|"watch and reconcile"| API
+  end
+
+  subgraph WN["Worker Node"]
+    KL["Kubelet"]
+    RT["Container runtime"]
+    KP["Kube Proxy"]
+    POD["Pods"]
+    KL -->|"5. start containers"| RT
+    RT --> POD
+    KP -->|"route traffic"| POD
+  end
+
+  API -->|"4. pod spec"| KL
+  KL -->|"report status"| API
+```
+
+1. You declare the desired state (e.g. 3 replicas) with `kubectl apply`.
+2. The API server validates it and saves it in etcd.
+3. The scheduler picks a node with enough resources for each unscheduled pod.
+4. The kubelet on that node sees its assigned pods and tells the container runtime to start them.
+5. Controllers and kubelets keep comparing actual to desired state and fix any drift, such as restarting a crashed pod.
+
 ## Components
 
 **Admin UI and CLI** -> **Control Plane** <-> **Worker Nodes** > **Pods**
@@ -57,12 +93,9 @@ kubectl delete -f minikube.yaml
   - **Kube Proxy** - routes traffic to correct paths, load balances
   - **Pods** - The smallest deployable units of a k8s cluster. Pods host 1 or more containers and provides storage and network for the containers.
 
-
 ## Deploying
 
-- Managed Services
-  - GCP GKE
-  - AWS EKS
-  - Azure AKS
-- Local
-  - minikube
+| Category         | Options                     |
+| ---------------- | --------------------------- |
+| Local            | minikube                    |
+| Managed Services | AWS EKS, Azure AKS, GCP GKE |

@@ -1,8 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import {
-  getEnvironmentVariable,
-  getSupabaseUrl,
-} from '@vigilant-broccoli/common-node';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import { getSupabaseUrl } from '@vigilant-broccoli/infrastructure';
 
 const EVENT_CALENDARS_TABLE = 'event_calendars';
 const PUBLIC_COLUMNS = 'id, name, google_calendar_id';

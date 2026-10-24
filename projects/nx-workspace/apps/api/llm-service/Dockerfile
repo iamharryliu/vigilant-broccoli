@@ -13,7 +13,7 @@ RUN addgroup --system llm-service && \
           adduser --system --home /home/llm-service --shell /sbin/nologin -G llm-service llm-service && \
           mkdir -p /home/llm-service
 
-COPY dist/apps/api/llm-service llm-service/
+COPY . llm-service/
 RUN chown -R llm-service:llm-service /app /home/llm-service
 
 USER llm-service

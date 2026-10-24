@@ -5,3 +5,7 @@ idiomatic_version_file_enable_tools = ["node"]
 python = "3.13"
 terraform = "1.14.8"
 packer = "1.15.1"
+k3d = "5.9.0"
+kubectl = "1.37.1"
+helm = "4.3.1"
+k9s = "0.51.0"

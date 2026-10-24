@@ -27,12 +27,18 @@ RUN apt-get update \
     gnupg \
     ca-certificates \
     openssl \
+    python3 \
+    python3-pip \
+    python3-venv \
+  && pip3 install --no-cache-dir --break-system-packages pre-commit \
   && xargs apt-get install -y --no-install-recommends < /tmp/apt-packages.txt \
   && rm -f /tmp/apt-packages.txt \
   && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - \
-  && apt-get install -y --no-install-recommends nodejs \
+# Node major tracks the repo's .nvmrc. build-essential is for node-pty, which
+# has no Linux prebuilds and compiles with node-gyp at install time.
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
+  && apt-get install -y --no-install-recommends nodejs build-essential \
   && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg \
@@ -50,7 +56,9 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg -o 
   && apt-get install -y --no-install-recommends gh \
   && rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g @anthropic-ai/claude-code \
+# pnpm and pre-commit (above) are what solve-todo-runner.sh needs for
+# `agentic-pr-create --vm` solves, matching the agent sandbox image's pins.
+RUN npm install -g @anthropic-ai/claude-code pnpm@11.9.0 \
   && npm cache clean --force
 
 # GitHub access reuses the agent sandbox's GitHub App (Contents + Pull requests
@@ -66,3 +74,13 @@ COPY infrastructure/code-server/gh-wrapper.sh /usr/local/bin/gh
 # Gives the abc service account a usable login shell in the code-server
 # terminal.
 RUN usermod -s /bin/bash abc
+
+# Mobile-friendly web terminal (tmux itself comes from apt-packages.txt). The
+# server is an s6 longrun service next to svc-code-server; Caddy reaches it on
+# TERMINAL_PORT, which is never published on the host. See web-terminal/.
+COPY infrastructure/code-server/web-terminal/package.json infrastructure/code-server/web-terminal/package-lock.json /opt/web-terminal/
+RUN cd /opt/web-terminal && npm ci --omit=dev && npm cache clean --force
+COPY infrastructure/code-server/web-terminal/server.mjs /opt/web-terminal/server.mjs
+COPY infrastructure/code-server/web-terminal/public /opt/web-terminal/public
+COPY infrastructure/code-server/s6/svc-web-terminal /etc/s6-overlay/s6-rc.d/svc-web-terminal
+RUN touch /etc/s6-overlay/s6-rc.d/user/contents.d/svc-web-terminal

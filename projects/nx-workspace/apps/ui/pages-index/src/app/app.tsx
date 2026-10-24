@@ -1,9 +1,15 @@
-import { HashRouter, Navigate, Route, Routes } from 'react-router-dom';
+import {
+  HashRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
 import { I18nProvider } from './i18n';
+import { ThemeProvider } from './theme';
 import { HomePage } from './pages/HomePage';
 import { StatusPage } from './pages/StatusPage';
 import { RepoTimelinePage } from './pages/RepoTimelinePage';
-import { OpenSourcePage } from './pages/OpenSourcePage';
 import { GithubReposPage } from './pages/GithubReposPage';
 import { GithubReadmePage } from './pages/GithubReadmePage';
 import { DockerImagesPage } from './pages/DockerImagesPage';
@@ -14,19 +20,43 @@ import { WebApplicationReadmePage } from './pages/WebApplicationReadmePage';
 import { WebApplicationsPage } from './pages/WebApplicationsPage';
 import { ApiServicesPage } from './pages/ApiServicesPage';
 import { ApiServiceDocsPage } from './pages/ApiServiceDocsPage';
+import { DeploymentsPage } from './pages/DeploymentsPage';
 import { CareerPage } from './pages/CareerPage';
 import { CareerExperiencePage } from './pages/CareerExperiencePage';
-import { isCareerHost, isStatusHost } from './consts/hosts';
+import { isCareerHost, isDeploymentsHost, isStatusHost } from './consts/hosts';
 import {
   CAREER_EXPERIENCE_ROUTE,
+  DEPLOYMENTS_ROUTE,
   STATUS_ROUTE,
   WEB_APPLICATIONS_ROUTE,
 } from './consts/routes';
+
+const LEGACY_OPEN_SOURCE_PREFIX = '/open-source';
+
+// Keeps shared links to the removed /open-source hub and its sub-pages working.
+function LegacyOpenSourceRedirect() {
+  const { pathname } = useLocation();
+  return (
+    <Navigate
+      to={pathname.slice(LEGACY_OPEN_SOURCE_PREFIX.length) || '/'}
+      replace
+    />
+  );
+}
 
 function StatusHostRoutes() {
   return (
     <Routes>
       <Route path="/" element={<StatusPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
+function DeploymentsHostRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<DeploymentsPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
@@ -50,17 +80,18 @@ function ProjectsRoutes() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path={STATUS_ROUTE} element={<StatusPage />} />
+      <Route path={DEPLOYMENTS_ROUTE} element={<DeploymentsPage />} />
       <Route path="/repo-timeline" element={<RepoTimelinePage />} />
-      <Route path="/open-source" element={<OpenSourcePage />} />
-      <Route path="/open-source/github" element={<GithubReposPage />} />
-      <Route path="/open-source/github/:repo" element={<GithubReadmePage />} />
-      <Route path="/open-source/docker" element={<DockerImagesPage />} />
       <Route
-        path="/open-source/docker/:image"
-        element={<DockerImageReadmePage />}
+        path={`${LEGACY_OPEN_SOURCE_PREFIX}/*`}
+        element={<LegacyOpenSourceRedirect />}
       />
-      <Route path="/open-source/npm" element={<NpmPackagesPage />} />
-      <Route path="/open-source/npm/:pkg" element={<NpmPackageReadmePage />} />
+      <Route path="/github" element={<GithubReposPage />} />
+      <Route path="/github/:repo" element={<GithubReadmePage />} />
+      <Route path="/docker" element={<DockerImagesPage />} />
+      <Route path="/docker/:image" element={<DockerImageReadmePage />} />
+      <Route path="/npm" element={<NpmPackagesPage />} />
+      <Route path="/npm/:pkg" element={<NpmPackageReadmePage />} />
       <Route path={WEB_APPLICATIONS_ROUTE} element={<WebApplicationsPage />} />
       <Route
         path={`${WEB_APPLICATIONS_ROUTE}/:app`}
@@ -75,17 +106,21 @@ function ProjectsRoutes() {
 export function App() {
   return (
     <I18nProvider>
-      <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-dvh">
-        <HashRouter>
-          {isStatusHost() ? (
-            <StatusHostRoutes />
-          ) : isCareerHost() ? (
-            <CareerHostRoutes />
-          ) : (
-            <ProjectsRoutes />
-          )}
-        </HashRouter>
-      </div>
+      <ThemeProvider>
+        <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-dvh">
+          <HashRouter>
+            {isStatusHost() ? (
+              <StatusHostRoutes />
+            ) : isDeploymentsHost() ? (
+              <DeploymentsHostRoutes />
+            ) : isCareerHost() ? (
+              <CareerHostRoutes />
+            ) : (
+              <ProjectsRoutes />
+            )}
+          </HashRouter>
+        </div>
+      </ThemeProvider>
     </I18nProvider>
   );
 }

@@ -6,3 +6,4 @@ export * from './lib/resume-chat.consts';
 export * from './lib/resume-chat.schema';
 export * from './lib/spotify.consts';
 export * from './lib/todo-markdown.utils';
+export * from './lib/local-credentials';

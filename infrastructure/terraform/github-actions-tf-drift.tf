@@ -17,12 +17,10 @@
 
 locals {
   tf_drift_readable_secret_ids = {
-    cloudflared_tunnel_token       = google_secret_manager_secret.cloudflared_tunnel_token.id
-    vault_cf_access_client_id      = google_secret_manager_secret.vault_cf_access_client_id.id
-    vault_cf_access_client_secret  = google_secret_manager_secret.vault_cf_access_client_secret.id
-    wg_personal_mbp_public_key     = google_secret_manager_secret.wg_personal_mbp_public_key.id
-    google_gcs_sa_credentials      = google_secret_manager_secret.google_gcs_sa_credentials.id
-    google_calendar_sa_credentials = google_secret_manager_secret.google_calendar_sa_credentials.id
+    cloudflared_tunnel_token      = google_secret_manager_secret.cloudflared_tunnel_token.id
+    vault_cf_access_client_id     = google_secret_manager_secret.vault_cf_access_client_id.id
+    vault_cf_access_client_secret = google_secret_manager_secret.vault_cf_access_client_secret.id
+    wg_personal_mbp_public_key    = google_secret_manager_secret.wg_personal_mbp_public_key.id
   }
 }
 
@@ -81,4 +79,20 @@ resource "google_secret_manager_secret_iam_member" "github_actions_tf_drift_secr
   secret_id = each.value
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.github_actions_tf_drift.email}"
+}
+
+# Variables, not secrets: the provider path and SA email grant nothing without
+# the attribute_condition above.
+locals {
+  tf_drift_variables = {
+    TF_DRIFT_WIF_PROVIDER    = google_iam_workload_identity_pool_provider.github_tf_drift.name
+    TF_DRIFT_SERVICE_ACCOUNT = google_service_account.github_actions_tf_drift.email
+  }
+}
+
+resource "github_actions_variable" "tf_drift" {
+  for_each      = local.tf_drift_variables
+  repository    = github_repository.vigilant_broccoli.name
+  variable_name = each.key
+  value         = each.value
 }

@@ -8,7 +8,6 @@ import {
   UserSettingsRow,
 } from '../types';
 import Database from 'better-sqlite3';
-import { formatISODateLocal } from './date.utils';
 import { Language } from '../consts/app-copy.const';
 
 // The local mock points this at ':memory:' so it never touches the real state.
@@ -67,14 +66,13 @@ for (const [col, type] of [
   }
 }
 
-export function loadAllPresences(): UserPresences {
+// `todayISO` is the viewer's today: the server's own (UTC) date can be a day off.
+export function loadAllPresences(todayISO: string): UserPresences {
   const rows = db
-    .prepare('SELECT * FROM user_presences')
-    .all() as UserPresenceRow[];
+    .prepare('SELECT * FROM user_presences WHERE date >= ?')
+    .all(todayISO) as UserPresenceRow[];
   const result: UserPresences = {};
-  const todayISO = formatISODateLocal(new Date());
   for (const r of rows) {
-    if (r.date < todayISO) continue;
     if (!result[r.user_id]) result[r.user_id] = {};
     result[r.user_id][r.date] = {
       office: r.office,
@@ -136,8 +134,7 @@ export function loadEventsByDate(date: string): OfficeEvent[] {
   }));
 }
 
-export function loadAllEvents(): OfficeEvent[] {
-  const todayISO = formatISODateLocal(new Date());
+export function loadAllEvents(todayISO: string): OfficeEvent[] {
   const rows = db
     .prepare('SELECT * FROM office_events WHERE date >= ? ORDER BY date, time')
     .all(todayISO) as OfficeEventRow[];
@@ -286,6 +283,22 @@ export function deleteSeededRowsBefore(prefix: string, date: string) {
   ).run(params);
   db.prepare(
     'DELETE FROM office_events WHERE creator_id GLOB @pattern AND date < @date',
+  ).run(params);
+}
+
+// Members dropped from the seeded roster would otherwise linger as raw ids until their dates pass.
+export function deleteSeededRowsOfOtherUsers(
+  prefix: string,
+  userIds: string[],
+) {
+  const params = { pattern: `${prefix}*`, userIds: JSON.stringify(userIds) };
+  db.prepare(
+    `DELETE FROM user_presences WHERE user_id GLOB @pattern
+     AND user_id NOT IN (SELECT value FROM json_each(@userIds))`,
+  ).run(params);
+  db.prepare(
+    `DELETE FROM office_events WHERE creator_id GLOB @pattern
+     AND creator_id NOT IN (SELECT value FROM json_each(@userIds))`,
   ).run(params);
 }
 

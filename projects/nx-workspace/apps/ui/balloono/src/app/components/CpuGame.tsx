@@ -3,7 +3,8 @@
 import { useMemo } from 'react';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { Contender } from '../engine/game.types';
-import { CONTROL_SCHEME, useControls } from '../hooks/useControls';
+import { useControls } from '../hooks/useControls';
+import { usePlayerKeyMaps } from '../hooks/useKeyBindings';
 import { useCpuMatch } from '../hooks/useCpuMatch';
 import { useTranslation } from '../i18n';
 import { usePageTitle } from '../use-page-title';
@@ -23,11 +24,9 @@ export function CpuGame({
   const { t } = useTranslation();
   usePageTitle(t('PAGE.CPU'));
   const hasLocalPlayer = contenders.some(({ id }) => id === localPlayerId);
-  const controls = useControls(
-    true,
-    hasLocalPlayer ? CONTROL_SCHEME.ARROWS : CONTROL_SCHEME.ALL,
-  );
-  const localControls = useControls(hasLocalPlayer, CONTROL_SCHEME.WASD);
+  const keyMaps = usePlayerKeyMaps(hasLocalPlayer);
+  const controls = useControls(true, keyMaps.one);
+  const localControls = useControls(hasLocalPlayer, keyMaps.two);
   const localPlayer = useMemo(
     () =>
       hasLocalPlayer
@@ -54,9 +53,7 @@ export function CpuGame({
         match={match}
         localPlayerId={playerId}
         wins={wins}
-        controlsHint={
-          hasLocalPlayer ? t('MATCH.LOCAL_CONTROLS_HINT') : undefined
-        }
+        hasLocalPlayer={hasLocalPlayer}
         actions={
           <>
             <Button onClick={restart}>{t('MATCH.PLAY_AGAIN')}</Button>

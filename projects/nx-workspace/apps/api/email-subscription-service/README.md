@@ -5,6 +5,7 @@ Email subscription management and broadcast.
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -23,3 +24,7 @@ Email subscription management and broadcast.
   - Email Service
   - RabbitMQ
   - Supabase
+
+## Environment
+
+- [.env.example](./.env.example)

@@ -5,6 +5,7 @@ Email queue producer/consumer.
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -20,3 +21,7 @@ Email queue producer/consumer.
 - Cloud services
   - RabbitMQ
   - Resend
+
+## Environment
+
+- [.env.example](./.env.example)

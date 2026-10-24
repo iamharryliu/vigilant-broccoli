@@ -1,0 +1,23 @@
+# Apps that run on the Mac, outside the cluster. k3d adds host.k3d.internal to
+# CoreDNS, the cluster-side equivalent of host.docker.internal.
+apiVersion: v1
+kind: Service
+metadata:
+  name: vb-manager-local-fastify
+spec:
+  type: ExternalName
+  externalName: host.k3d.internal
+  ports:
+    - name: http
+      port: 1337
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich
+spec:
+  type: ExternalName
+  externalName: host.k3d.internal
+  ports:
+    - name: http
+      port: 2283

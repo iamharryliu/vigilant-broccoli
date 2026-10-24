@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CalendarConfig } from '@vigilant-broccoli/common-browser';
-import { buildEventCalendarEmbedUrl } from '@vigilant-broccoli/personal-common-js';
+import { buildEventCalendarEmbedUrl } from '@harry/personal';
+import { BASE_CALENDAR_CONFIG } from '@harry/private';
 import { EventCalendar } from '@vigilant-broccoli/vb-manager-local-common';
 import { authFetch } from '../../libs/auth';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -50,6 +51,7 @@ export const PersonalCalendarComponent = ({
           googleCalendarId: calendar.googleCalendarId,
         })),
         hiddenKeys: hiddenIds,
+        baseConfig: BASE_CALENDAR_CONFIG,
       }),
     [mode, autoMode, eventCalendars, hiddenIds],
   );

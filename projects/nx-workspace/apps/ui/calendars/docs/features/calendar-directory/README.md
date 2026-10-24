@@ -21,7 +21,7 @@ The public, login-free `calendars` home page: three tabs (`CalendarTabs`, modell
 
 ## Embed
 
-`CalendarView` builds the iframe URL with `buildEventCalendarEmbedUrl` and `PUBLIC_BASE_CALENDAR_CONFIG` from `personal-common-js`. Hidden calendars are filtered out of the URL (colours are assigned before filtering, so the rest keep theirs). The Google calendar id comes from the `src` parameter of each public event calendar URL (`getGoogleCalendarId`), so VB Express returns no extra field. The iframe mounts once the event calendars request settles (success or failure) and the tab is force-mounted (`display: none` and `aria-hidden` when inactive) to avoid reloads. Mode is MONTH on desktop and AGENDA when `isMobileUserAgent` (`common-browser`, shared with `vb-manager-next-mobile`) matches, because the authenticated custom agenda is unavailable here.
+`CalendarView` builds the iframe URL with `buildEventCalendarEmbedUrl` and `PUBLIC_BASE_CALENDAR_CONFIG` from `@harry/personal`. Hidden calendars are filtered out of the URL (colours are assigned before filtering, so the rest keep theirs). The Google calendar id comes from the `src` parameter of each public event calendar URL (`getGoogleCalendarId`), so VB Express returns no extra field. The iframe mounts once the event calendars request settles (success or failure) and the tab is force-mounted (`display: none` and `aria-hidden` when inactive) to avoid reloads. Mode is MONTH on desktop and AGENDA when `isMobileUserAgent` (`common-browser`, shared with `vb-manager-next-mobile`) matches, because the authenticated custom agenda is unavailable here.
 
 **Public bundle:** `PUBLIC_BASE_CALENDAR_CONFIG` uses only `PUBLIC_CALENDAR_SOURCES` (the already-linked personal calendar and Google's public calendars); the private birthdays and shared calendars in `PERSONAL_CALENDAR_SOURCES` must not be used here. The embed only exposes what each calendar's sharing settings already make public.
 
@@ -39,10 +39,11 @@ The app is a static bundle: no credential, API key or database snapshot is in it
 
 ## Browser storage
 
-Both keys live in `src/lib/calendars.consts.ts` and are read and written through `try/catch`, so the page renders (default tab, nothing hidden) when storage is unavailable.
+The tab and hidden-calendar keys live in `src/lib/calendars.consts.ts` and are read and written through `try/catch`, so the page renders (default tab, nothing hidden) when storage is unavailable.
 
 - `calendars-active-tab` — active tab id.
-- `calendars-hidden-event-calendars` — JSON array of hidden event calendar ids, via `readHiddenCalendarIds`/`writeHiddenCalendarIds` from `personal-common-js`. The bundle already imports that lib for the personal calendar id, so this adds no personal data. Hidden ids filter the embed.
+- `calendars-theme` — light/dark override saved by react-lib's `ThemeProvider` when `d` toggles away from `prefers-color-scheme`; `index.html` reads it before first paint. Tailwind uses class-based dark mode so the toggle overrides the system setting.
+- `calendars-hidden-event-calendars` — JSON array of hidden event calendar ids, via `readHiddenCalendarIds`/`writeHiddenCalendarIds` from `@harry/personal`. The bundle already imports that lib for the personal calendar id, so this adds no personal data. Hidden ids filter the embed.
 
 ## States
 

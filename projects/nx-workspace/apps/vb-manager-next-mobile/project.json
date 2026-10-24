@@ -8,12 +8,20 @@
     "build": {
       "executor": "nx:run-commands",
       "cache": true,
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "generate-agentic-workflows"],
       "inputs": [
         "default",
         "^default",
-        { "externalDependencies": ["next"] },
-        { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true }
+        {
+          "externalDependencies": ["next"]
+        },
+        {
+          "dependentTasksOutputFiles": "**/*.d.ts",
+          "transitive": true
+        },
+        {
+          "dependentTasksOutputFiles": "**/agentic-workflows.json"
+        }
       ],
       "outputs": [
         "{workspaceRoot}/dist/apps/vb-manager-next-mobile/.next/!(cache)/**/*",
@@ -36,7 +44,8 @@
         "env": {
           "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev"
         }
-      }
+      },
+      "dependsOn": ["generate-agentic-workflows"]
     },
     "serve:no-vault": {
       "executor": "nx:run-commands",
@@ -48,10 +57,12 @@
       "configurations": {
         "development": {},
         "production": {}
-      }
+      },
+      "dependsOn": ["generate-agentic-workflows"]
     },
     "lint": {
-      "executor": "@nx/eslint:lint"
+      "executor": "@nx/eslint:lint",
+      "dependsOn": ["generate-agentic-workflows"]
     },
     "deploy": {
       "executor": "nx:run-commands",
@@ -63,6 +74,40 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "VERCEL_PROJECT_ID=production-vb-manager-next-mobile VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts vb-manager-next-mobile production"
+      }
+    },
+    "generate-agentic-workflows": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/scripts/generate-agentic-workflows.ts",
+        {
+          "runtime": "node -p \"require('crypto').createHash('sha1').update(require('fs').readFileSync('../../README.md')).digest('hex')\""
+        }
+      ],
+      "outputs": ["{projectRoot}/src/app/generated/agentic-workflows.json"],
+      "options": {
+        "cwd": "apps/vb-manager-next-mobile",
+        "command": "node --import tsx scripts/generate-agentic-workflows.ts"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["generate-agentic-workflows"],
+      "inputs": [
+        "default",
+        "^default",
+        {
+          "externalDependencies": ["typescript"]
+        },
+        {
+          "dependentTasksOutputFiles": "**/agentic-workflows.json"
+        }
+      ],
+      "options": {
+        "cwd": "apps/vb-manager-next-mobile",
+        "command": "tsc --noEmit -p tsconfig.json"
       }
     }
   }

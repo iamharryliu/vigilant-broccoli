@@ -1,0 +1,22 @@
+{
+  "name": "@harry/private",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@harry/private/src",
+  "projectType": "library",
+  "tags": ["type:util", "visibility:private"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/@harry/private",
+        "main": "libs/@harry/private/src/index.ts",
+        "tsConfig": "libs/@harry/private/tsconfig.lib.json",
+        "assets": []
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

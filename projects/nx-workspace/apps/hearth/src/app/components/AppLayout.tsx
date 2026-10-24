@@ -5,6 +5,10 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '../providers/auth-provider';
 import { TopbarSlotProvider } from '../providers/topbar-slot-provider';
 import { ROUTES } from '../../lib/routes';
+import {
+  APP_CONTENT_ATTRIBUTE,
+  useVisualViewportHeight,
+} from '../../lib/use-visual-viewport-height';
 import Topbar from './Topbar';
 import Sidebar from './Sidebar';
 
@@ -60,7 +64,10 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
         onMobileClose={() => setSidebarOpen(false)}
       />
       <Topbar onMenuClick={() => setSidebarOpen(open => !open)} />
-      <div className="pt-[var(--topbar-h)] pl-0 md:pl-14 md:peer-hover:pl-48 transition-[padding] duration-200">
+      <div
+        {...{ [APP_CONTENT_ATTRIBUTE]: true }}
+        className="pt-[var(--topbar-h)] pl-0 md:pl-14 md:peer-hover:pl-48 transition-[padding] duration-200"
+      >
         {children}
       </div>
     </>
@@ -73,6 +80,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
  * missing provider throws instead of simply rendering nothing.
  */
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+  useVisualViewportHeight();
   return (
     <TopbarSlotProvider>
       <AppLayoutContent>{children}</AppLayoutContent>

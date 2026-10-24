@@ -16,6 +16,7 @@ import githubRoutes from './github';
 import kanbanRoutes from './kanban';
 import languageLearningRoutes from './language-learning';
 import llmTestRoutes from './llm-test';
+import localCredentialsRoutes from './local-credentials';
 import localIpRoutes from './local-ip';
 import localMachineRoutes from './local-machine';
 import localServicesRoutes from './local-services';
@@ -64,6 +65,7 @@ const ROUTE_PLUGINS: [FastifyPluginAsync, string][] = [
   [kanbanRoutes, '/kanban'],
   [languageLearningRoutes, '/language-learning'],
   [llmTestRoutes, '/llm-test'],
+  [localCredentialsRoutes, '/local-credentials'],
   [localIpRoutes, '/local-ip'],
   [localMachineRoutes, '/local-machine'],
   [localServicesRoutes, '/local-services'],

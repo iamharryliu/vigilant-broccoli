@@ -2,7 +2,7 @@ import { HONEYPOT_FIELD_NAME } from '@vigilant-broccoli/common-js';
 import {
   PERSONAL_WEBSITE_BACKEND_ENDPOINTS,
   type MessageRequest,
-} from '@vigilant-broccoli/personal-common-js';
+} from '@harry/personal';
 import { ENVIRONMENT } from '../../../environments/environment';
 
 export const SEND_MESSAGE_ERROR = {

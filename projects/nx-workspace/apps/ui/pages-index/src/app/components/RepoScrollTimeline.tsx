@@ -4,10 +4,9 @@ import {
   ScrollTimeline,
   ScrollTimelineEntry,
 } from '@vigilant-broccoli/react-lib';
-import { useThemeAppearance } from '../use-prefers-dark';
+import { useAppearance } from '../theme';
 
 const PAGE_THEME_STYLE = {
-  minHeight: 0,
   '--background': 'var(--pages-background)',
   '--primary': 'var(--pages-primary)',
   '--border': 'var(--pages-border)',
@@ -20,7 +19,7 @@ interface RepoScrollTimelineProps {
 }
 
 export default function RepoScrollTimeline(props: RepoScrollTimelineProps) {
-  const appearance = useThemeAppearance();
+  const appearance = useAppearance();
 
   return (
     <ThemeScope

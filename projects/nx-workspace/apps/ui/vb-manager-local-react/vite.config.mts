@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
+import SUPABASE_PUBLIC from '../../../libs/@vigilant-broccoli/infrastructure/src/lib/supabase-public.json' with { type: 'json' };
 
 const API_PATH = '/api';
 const API_DEV_SERVER_URL = 'http://127.0.0.1:3003';
@@ -31,6 +32,13 @@ export default defineConfig(() => ({
     },
   },
   define: {
+    // A set environment variable still overrides the committed public defaults.
+    'import.meta.env.VITE_SUPABASE_URL': JSON.stringify(
+      process.env.VITE_SUPABASE_URL || SUPABASE_PUBLIC.url,
+    ),
+    'import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY': JSON.stringify(
+      process.env.VITE_SUPABASE_PUBLISHABLE_KEY || SUPABASE_PUBLIC.publishableKey,
+    ),
     'import.meta.vitest': undefined,
   },
 }));

@@ -18,6 +18,7 @@ import {
   CalendarEventFormData,
 } from '../calendar/components/CalendarEventForm';
 import { MockMealList } from './MockMealList';
+import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type EventReceiveArg = any;
@@ -161,20 +162,18 @@ export function KitchenEventCalendar({ refreshSignal, onChanged }: Props) {
   );
 
   const token = session?.access_token ?? '';
-  const authHeader = (extra?: Record<string, string>) => ({
-    Authorization: `Bearer ${token}`,
-    ...extra,
-  });
+  const authHeader = useAuthHeader();
+  const jsonHeaders = useJsonAuthHeaders();
 
   const fetchEvents = useCallback(async () => {
     if (!homeId || !token) return;
     const res = await fetch(`${EVENTS_ENDPOINT}?homeId=${homeId}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: await authHeader(),
     });
     const data = await res.json();
     const rows: CalendarEvent[] = Array.isArray(data) ? data : [];
     setEvents(rows.filter(e => e.kitchenEvent));
-  }, [homeId, token]);
+  }, [homeId, token, authHeader]);
 
   useEffect(() => {
     fetchEvents();
@@ -189,7 +188,7 @@ export function KitchenEventCalendar({ refreshSignal, onChanged }: Props) {
     setModal(null);
     await fetch(EVENTS_ENDPOINT, {
       method,
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify(body),
     });
     afterChange();

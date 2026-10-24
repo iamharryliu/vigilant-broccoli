@@ -19,6 +19,13 @@ import {
 } from './calendar/components/CalendarEventForm';
 import { WhiteboardEditor } from './whiteboard/components/WhiteboardEditor';
 import { PAGE_TITLES, usePageTitle } from '../lib/page-title';
+import { PAGE_BODY_HEIGHT_CLASS, PAGE_PADDING_CLASS } from '../lib/page-layout';
+import {
+  getFirstMobileChildHref,
+  useMobileRedirect,
+} from '../lib/use-mobile-redirect';
+import { ROUTES } from '../lib/routes';
+import { useAuthHeader, useJsonAuthHeaders } from './hooks/use-auth-headers';
 
 type ModalState =
   | { type: 'create'; start: string; end: string; allDay: boolean }
@@ -26,9 +33,8 @@ type ModalState =
   | null;
 
 const EVENTS_ENDPOINT = '/api/calendar/events';
-const JSON_CONTENT_TYPE_HEADER = { 'Content-Type': 'application/json' };
 
-export default function HomePage() {
+function HomeDashboard() {
   usePageTitle(PAGE_TITLES.HOME);
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
@@ -39,10 +45,8 @@ export default function HomePage() {
   );
 
   const token = session?.access_token ?? '';
-  const authHeader = (extra?: Record<string, string>) => ({
-    Authorization: `Bearer ${token}`,
-    ...extra,
-  });
+  const authHeader = useAuthHeader();
+  const jsonHeaders = useJsonAuthHeaders();
 
   const fetchEvents = useCallback(async () => {
     if (!token || !range) return;
@@ -51,11 +55,11 @@ export default function HomePage() {
       end: range.end,
     });
     const res = await fetch(`${EVENTS_ENDPOINT}?${params}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: await authHeader(),
     });
     const data = await res.json();
     setEvents(Array.isArray(data) ? data : []);
-  }, [token, range]);
+  }, [token, range, authHeader]);
 
   useEffect(() => {
     fetchEvents();
@@ -64,7 +68,7 @@ export default function HomePage() {
   const handleCreate = async (data: CalendarEventFormData) => {
     await fetch(EVENTS_ENDPOINT, {
       method: 'POST',
-      headers: authHeader(JSON_CONTENT_TYPE_HEADER),
+      headers: await jsonHeaders(),
       body: JSON.stringify(data),
     });
     setModal(null);
@@ -75,7 +79,7 @@ export default function HomePage() {
     if (modal?.type !== 'edit') return;
     await fetch(EVENTS_ENDPOINT, {
       method: 'PATCH',
-      headers: authHeader(JSON_CONTENT_TYPE_HEADER),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id: modal.event.id, ...data }),
     });
     setModal(null);
@@ -86,7 +90,7 @@ export default function HomePage() {
     if (modal?.type !== 'edit') return;
     await fetch(EVENTS_ENDPOINT, {
       method: 'DELETE',
-      headers: authHeader(JSON_CONTENT_TYPE_HEADER),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id: modal.event.id }),
     });
     setModal(null);
@@ -101,23 +105,22 @@ export default function HomePage() {
   ) => {
     await fetch(EVENTS_ENDPOINT, {
       method: 'PATCH',
-      headers: authHeader(JSON_CONTENT_TYPE_HEADER),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id: evId, start, end, allDay }),
     });
     fetchEvents();
   };
 
   return (
-    <div className="p-4 sm:p-6 md:px-8 md:py-8">
+    <div className={PAGE_PADDING_CLASS}>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="h-[calc(100dvh_-_var(--topbar-h)_-_5rem)]">
+        <div className={cn('flex flex-col', PAGE_BODY_HEIGHT_CLASS)}>
           {homeId && session?.user.id && (
             <WhiteboardEditor
               homeId={homeId}
               token={token}
               userId={session.user.id}
               username={session.user.email ?? session.user.id}
-              style={{ height: '100%' }}
             />
           )}
         </div>
@@ -193,4 +196,11 @@ export default function HomePage() {
       </Dialog>
     </div>
   );
+}
+
+export default function HomePage() {
+  const { shouldRender } = useMobileRedirect(
+    getFirstMobileChildHref(ROUTES.HOME),
+  );
+  return shouldRender ? <HomeDashboard /> : null;
 }

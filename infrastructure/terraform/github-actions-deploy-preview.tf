@@ -59,3 +59,19 @@ resource "google_secret_manager_secret_iam_member" "github_actions_deploy_previe
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.github_actions_deploy_preview.email}"
 }
+
+# Variables, not secrets: the provider path and SA email grant nothing without
+# the attribute_condition above.
+locals {
+  deploy_preview_variables = {
+    DEPLOY_PREVIEW_WIF_PROVIDER    = google_iam_workload_identity_pool_provider.github_deploy_preview.name
+    DEPLOY_PREVIEW_SERVICE_ACCOUNT = google_service_account.github_actions_deploy_preview.email
+  }
+}
+
+resource "github_actions_variable" "deploy_preview" {
+  for_each      = local.deploy_preview_variables
+  repository    = github_repository.vigilant_broccoli.name
+  variable_name = each.key
+  value         = each.value
+}

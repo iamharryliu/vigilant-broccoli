@@ -18,7 +18,7 @@ export function WaiverPage() {
         <h1 className="text-3xl font-bold mb-4 lg:text-4xl reveal-up reveal-up-delay-1">
           {t('WAIVER.TITLE')}
         </h1>
-        <p className="text-base leading-7 text-gray-700 mb-8 reveal-up reveal-up-delay-2">
+        <p className="text-base leading-7 text-gray-700 dark:text-gray-300 mb-8 reveal-up reveal-up-delay-2">
           {t('WAIVER.DESCRIPTION')}
         </p>
         <div className="text-center reveal-up">

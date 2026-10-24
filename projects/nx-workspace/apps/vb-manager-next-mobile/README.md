@@ -5,6 +5,7 @@ Mobile-friendly dashboard for personal tasks and calendars, with voice input, a 
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -18,8 +19,10 @@ Mobile-friendly dashboard for personal tasks and calendars, with voice input, a 
   - `common-js`
   - `common-node`
   - `google-workspace`
-  - `links`
-  - `personal-common-js`
+  - `@harry/personal`
+  - `@harry/private`
+  - `manager`
+  - `public-links`
   - `react-lib`
   - `react-lib-auth`
   - `react-lib-higher-level`
@@ -30,3 +33,7 @@ Mobile-friendly dashboard for personal tasks and calendars, with voice input, a 
   - Open-Meteo
   - Supabase
   - vb-express
+
+## Environment
+
+- [.env.example](./.env.example)

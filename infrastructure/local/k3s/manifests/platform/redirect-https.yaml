@@ -1,0 +1,10 @@
+# Attached per Ingress: Traefik's global entrypoint redirect would also catch
+# hosts that have no certificate here.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: redirect-https
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true

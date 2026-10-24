@@ -23,7 +23,7 @@ export function FaqPage() {
             {faqPage.title}
           </h1>
           {faqPage.intro && (
-            <p className="text-base leading-7 text-gray-700 mb-8 reveal-up reveal-up-delay-2">
+            <p className="text-base leading-7 text-gray-700 dark:text-gray-300 mb-8 reveal-up reveal-up-delay-2">
               {faqPage.intro}
             </p>
           )}
@@ -31,10 +31,10 @@ export function FaqPage() {
             {(faqPage.faqItems ?? []).map(item => (
               <article
                 key={item._key ?? item.question}
-                className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm surface-card reveal-up"
+                className="rounded-2xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 p-5 shadow-sm surface-card reveal-up"
               >
                 <h2 className="text-xl font-semibold mb-2">{item.question}</h2>
-                <p className="text-base leading-7 text-gray-700 whitespace-pre-line">
+                <p className="text-base leading-7 text-gray-700 dark:text-gray-300 whitespace-pre-line">
                   {item.answer}
                 </p>
                 {!!item.links?.length && (
@@ -58,11 +58,11 @@ export function FaqPage() {
         </section>
       ) : (
         !isLoading && (
-          <section className="mb-8 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm reveal-up">
+          <section className="mb-8 rounded-2xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 p-5 shadow-sm reveal-up">
             <h1 className="text-3xl font-bold mb-4 lg:text-4xl">
               {t('FAQ.TITLE')}
             </h1>
-            <p className="text-base leading-7 text-gray-700">
+            <p className="text-base leading-7 text-gray-700 dark:text-gray-300">
               {t('FAQ.UNAVAILABLE')}
             </p>
           </section>

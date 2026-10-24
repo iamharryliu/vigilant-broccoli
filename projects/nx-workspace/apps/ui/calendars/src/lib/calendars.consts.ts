@@ -1,4 +1,4 @@
-import { PERSONAL_GOOGLE_CALENDAR } from '@vigilant-broccoli/personal-common-js';
+import { PERSONAL_GOOGLE_CALENDAR } from '@harry/personal';
 
 export const GOOGLE_CALENDAR_EMBED_URL =
   'https://calendar.google.com/calendar/embed';

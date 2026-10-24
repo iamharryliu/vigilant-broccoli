@@ -3,12 +3,10 @@ import { EmailModalComponent } from './email-modal.component';
 import { SearchDialogComponent } from './search-dialog.component';
 import { CalendarDialog } from './calendar-dialog.component';
 import { NotepadDialog } from './notepad-dialog.component';
-import { PomodoroDialog } from './pomodoro-dialog.component';
 import { UtilitiesDialog } from './utilities-dialog.component';
 import {
   AlarmEngine,
   ClockComponent,
-  PomodoroEngine,
   TimerEngine,
 } from '@vigilant-broccoli/react-utility';
 import { useDrag } from '../hooks/useDrag';
@@ -22,8 +20,6 @@ interface FloatingIslandProps {
   setCalendarDialogOpen?: (open: boolean) => void;
   notepadDialogOpen?: boolean;
   setNotepadDialogOpen?: (open: boolean) => void;
-  pomodoroDialogOpen?: boolean;
-  setPomodoroDialogOpen?: (open: boolean) => void;
   utilitiesDialogOpen?: boolean;
   setUtilitiesDialogOpen?: (open: boolean) => void;
 }
@@ -43,8 +39,6 @@ export const FloatingIslandComponent = ({
   setCalendarDialogOpen: externalSetCalendarOpen,
   notepadDialogOpen: externalNotepadOpen,
   setNotepadDialogOpen: externalSetNotepadOpen,
-  pomodoroDialogOpen: externalPomodoroOpen,
-  setPomodoroDialogOpen: externalSetPomodoroOpen,
   utilitiesDialogOpen: externalUtilitiesOpen,
   setUtilitiesDialogOpen: externalSetUtilitiesOpen,
 }: FloatingIslandProps = {}) => {
@@ -56,8 +50,6 @@ export const FloatingIslandComponent = ({
   const [internalCalendarDialogOpen, setInternalCalendarDialogOpen] =
     useState(false);
   const [internalNotepadDialogOpen, setInternalNotepadDialogOpen] =
-    useState(false);
-  const [internalPomodoroDialogOpen, setInternalPomodoroDialogOpen] =
     useState(false);
   const [internalUtilitiesDialogOpen, setInternalUtilitiesDialogOpen] =
     useState(false);
@@ -84,12 +76,6 @@ export const FloatingIslandComponent = ({
   );
   const setNotepadDialogOpen =
     externalSetNotepadOpen ?? setInternalNotepadDialogOpen;
-  const pomodoroDialogOpen = getDialogState(
-    externalPomodoroOpen,
-    internalPomodoroDialogOpen,
-  );
-  const setPomodoroDialogOpen =
-    externalSetPomodoroOpen ?? setInternalPomodoroDialogOpen;
   const utilitiesDialogOpen = getDialogState(
     externalUtilitiesOpen,
     internalUtilitiesDialogOpen,
@@ -156,17 +142,12 @@ export const FloatingIslandComponent = ({
         open={notepadDialogOpen}
         onOpenChange={setNotepadDialogOpen}
       />
-      <PomodoroDialog
-        open={pomodoroDialogOpen}
-        onOpenChange={setPomodoroDialogOpen}
-      />
       <UtilitiesDialog
         open={utilitiesDialogOpen}
         onOpenChange={setUtilitiesDialogOpen}
       />
       <AlarmEngine />
       <TimerEngine />
-      <PomodoroEngine />
     </>
   );
 };

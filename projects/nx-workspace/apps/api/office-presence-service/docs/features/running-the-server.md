@@ -39,7 +39,7 @@ The `build` and `deploy-container` targets in `project.json` bundle the app and 
 docker run --platform linux/amd64 \
   -e SLACK_BOT_TOKEN=xoxb-... \
   -e SLACK_APP_TOKEN=xapp-... \
-  iamharryliu/office-presence-socket-server-demo:latest
+  iamharryliu/office-presence-service:latest
 ```
 
 Nothing listens for inbound traffic that matters, so no port needs publishing.
@@ -51,7 +51,7 @@ docker run --platform linux/amd64 -p 3000:3000 \
   -e SLACK_MODE=http \
   -e SLACK_BOT_TOKEN=xoxb-... \
   -e SLACK_SIGNING_SECRET=... \
-  iamharryliu/office-presence-socket-server-demo:latest
+  iamharryliu/office-presence-service:latest
 ```
 
 Slack must reach the container over **public HTTPS**: put a reverse proxy or a tunnel in front of port 3000 and set the app's Request URLs to `https://<host>/slack/events`, `/slack/interactivity` and `/slack/commands`. Requests are verified with the signing secret and must be acknowledged within 3 seconds; Slack retries (`X-Slack-Retry-Num`) are acknowledged and ignored.
@@ -67,7 +67,7 @@ docker run --platform linux/amd64 \
   -e OFFICES=London,Stockholm,NYC \
   -e ENABLE_REMINDERS=true \
   -e INCLUDE_WEEKENDS=true \
-  iamharryliu/office-presence-socket-server-demo:latest
+  iamharryliu/office-presence-service:latest
 ```
 
 ## Persisting State
@@ -91,7 +91,7 @@ The entrypoint chowns `/data` for the `node` user at boot, so a root-owned volum
 | `OFFICE_PRESENCE_DB`             | No                      | `state.db`                      | SQLite file path                                                                        |
 | `OFFICES`                        | No                      | 4 sample cities                 | Comma-separated list of offices                                                         |
 | `ENABLE_REMINDERS`               | No                      | `false`                         | Schedule the weekly reminder (`socket` only)                                            |
-| `REMINDER_TIMEZONE`              | No                      | `Europe/Stockholm`              | Reminder cron timezone and week boundaries for seeding                                  |
+| `REMINDER_TIMEZONE`              | No                      | `Europe/Stockholm`              | Reminder cron, seeding weeks, and "today" when a member's Slack timezone is unknown     |
 | `INCLUDE_WEEKENDS`               | No                      | `false`                         | Include weekends                                                                        |
 | `PORT` / `HOST`                  | No                      | `3000` / `0.0.0.0` in the image | Listen address (`http`)                                                                 |
 | `OFFICE_PRESENCE_INTERNAL_TOKEN` | `http` with `DEMO_MODE` | -                               | Bearer token for `/internal/*`; `/internal/reminders` is registered only when it is set |
@@ -102,4 +102,5 @@ The entrypoint chowns `/data` for the `node` user at boot, so a root-owned volum
 ## Nuances
 
 - `Dockerfile` pins `better-sqlite3` and `node-cron` and installs them in the image; the esbuild bundle keeps both external.
+- The server runs in UTC, so "today" (Home view dates, the past-date cutoff, check-out and modal date pickers) comes from each member's Slack `users.info` `tz`, cached for an hour. Seeded `U_DEMO_` members, the mock client and failed lookups fall back to `REMINDER_TIMEZONE`.
 - The demo deployment (Fly, Cloudflare Pages, seeding) is in [demo-deployment.md](./demo-deployment.md).

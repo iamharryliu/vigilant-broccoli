@@ -114,7 +114,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   pushdocs / pushnotes        Commit and push docs/ / notes/
   pushvbtodo / pushsnippets   Commit and push TODO.md / snippets
   pushactions / pushsetup     Commit and push workflows / setup scripts
-  pushdotfiles                Commit and push dotfiles
+  pushdotfiles / pushbruno    Commit and push dotfiles / bruno/
   pushleetcode                Commit and push grind-75
   pushjournal / pulljournal   Push / pull the journal repo
 

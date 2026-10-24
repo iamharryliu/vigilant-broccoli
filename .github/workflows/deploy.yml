@@ -88,6 +88,7 @@ jobs:
     timeout-minutes: 15
     outputs:
       has_packages: ${{ steps.check.outputs.has_packages }}
+      packages: ${{ steps.names.outputs.packages }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -132,6 +133,18 @@ jobs:
         working-directory: ./projects/nx-workspace
         run: pnpm exec nx run-many -t publish-package --projects="${{ steps.check.outputs.projects }}"
 
+      - name: Collect published package names
+        id: names
+        if: steps.check.outputs.has_packages == 'true'
+        working-directory: ./projects/nx-workspace
+        run: |
+          NAMES=""
+          for PROJECT in $(echo "${{ steps.check.outputs.projects }}" | tr ',' ' '); do
+            ROOT=$(pnpm exec nx show project "$PROJECT" --json | jq -r .root)
+            NAMES="$NAMES,$(jq -r .name "$ROOT/package.json")"
+          done
+          echo "packages=${NAMES#,}" >> $GITHUB_OUTPUT
+
   deploy-apps:
     needs: gitleaks
     runs-on: ubuntu-24.04
@@ -139,6 +152,7 @@ jobs:
     outputs:
       has_deployments: ${{ steps.check.outputs.has_deployments }}
       projects: ${{ steps.check.outputs.projects }}
+      migrations_outcome: ${{ steps.migrate.outcome }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -226,6 +240,7 @@ jobs:
       # pending. Runs against the pooler over the public internet with the DB
       # password — no Vault/WireGuard tunnel needed beyond fetching the secret.
       - name: Apply Supabase migrations
+        id: migrate
         if: steps.check.outputs.has_deployments == 'true'
         working-directory: ./projects/nx-workspace
         env:
@@ -261,13 +276,6 @@ jobs:
           flyctl certs show api.harryliu.dev -a production-vb-express >/dev/null 2>&1 \
             || flyctl certs add api.harryliu.dev -a production-vb-express
 
-      - name: Summarize deployed apps
-        if: steps.check.outputs.has_deployments == 'true'
-        env:
-          DEPLOY_PROJECTS: ${{ steps.check.outputs.projects }}
-          DEPLOY_ENVIRONMENT: ${{ env.DEPLOY_ENVIRONMENT }}
-        run: node .github/scripts/deploy-summary.mjs
-
   deploy-github-pages:
     needs: gitleaks
     if: ${{ github.ref_name == 'main' && !inputs.skip_pages }}
@@ -281,6 +289,7 @@ jobs:
       cancel-in-progress: false
     outputs:
       has_deployments: ${{ steps.check.outputs.has_deployments }}
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -352,6 +361,7 @@ jobs:
       contents: write
     steps:
       - name: Dispatch deploy-fanout
+        id: dispatch
         env:
           GH_TOKEN: ${{ github.token }}
           GITLEAKS_RESULT: ${{ needs.gitleaks.result }}
@@ -397,3 +407,30 @@ jobs:
             --arg commit_sha "$COMMIT_SHA" \
             '{event_type: "deploy-fanout", client_payload: {conclusion: $conclusion, deployed: $deployed, deployed_apps: $deployed_apps, environment: $environment, run_id: $run_id, run_url: $run_url, started_at: $started_at, commit_message: $commit_message, commit_sha: $commit_sha}}' \
             | gh api repos/${{ github.repository }}/dispatches --input -
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        if: always()
+        continue-on-error: true
+        with:
+          sparse-checkout: .github/scripts
+
+      - name: Summarize deploy run
+        if: always()
+        continue-on-error: true
+        env:
+          GITLEAKS_RESULT: ${{ needs.gitleaks.result }}
+          NPM_RESULT: ${{ needs.deploy-npm-packages.result }}
+          APPS_RESULT: ${{ needs.deploy-apps.result }}
+          PAGES_RESULT: ${{ needs.deploy-github-pages.result }}
+          DISPATCH_OUTCOME: ${{ steps.dispatch.outcome }}
+          HAS_PACKAGES: ${{ needs.deploy-npm-packages.outputs.has_packages }}
+          NPM_PACKAGES: ${{ needs.deploy-npm-packages.outputs.packages }}
+          HAS_APPS: ${{ needs.deploy-apps.outputs.has_deployments }}
+          APP_PROJECTS: ${{ needs.deploy-apps.outputs.projects }}
+          MIGRATIONS_OUTCOME: ${{ needs.deploy-apps.outputs.migrations_outcome }}
+          HAS_PAGES: ${{ needs.deploy-github-pages.outputs.has_deployments }}
+          PAGE_URL: ${{ needs.deploy-github-pages.outputs.page_url }}
+          DEPLOY_ENVIRONMENT: ${{ env.DEPLOY_ENVIRONMENT }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_SHA: ${{ github.sha }}
+        run: node .github/scripts/deploy-run-summary.mjs

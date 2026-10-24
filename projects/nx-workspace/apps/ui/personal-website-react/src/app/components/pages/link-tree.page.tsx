@@ -40,7 +40,7 @@ const LINK_TREE_SECTIONS: LinkTreeSection[] = [
       },
       {
         text: 'Calendar',
-        url: LINKS.CALENDAR_PAGE.url.external!,
+        url: LINKS.CALENDAR.url.external!,
         icon: Calendar,
       },
       {

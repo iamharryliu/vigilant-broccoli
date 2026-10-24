@@ -43,6 +43,8 @@ const DEFAULT_LIST_ID = 'default';
 
 const DEFAULT_EMPTY_LABEL = 'No items to display';
 
+const DRAG_HANDLE_LABEL_PREFIX = 'Reorder ';
+
 export interface CheckListItem extends CheckListBaseItem {
   notes?: string;
   due?: string;
@@ -131,6 +133,7 @@ const SortableRowFrame = ({
         <div
           {...listeners}
           {...attributes}
+          aria-label={`${DRAG_HANDLE_LABEL_PREFIX}${item.title}`}
           className="cursor-grab active:cursor-grabbing opacity-50 hover:opacity-100 transition-opacity"
         >
           <DragHandleDots2Icon />

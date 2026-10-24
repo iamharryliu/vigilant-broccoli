@@ -22,9 +22,11 @@ export const SubscribeWidget = ({ service, onSubscribe }: Props) => {
   };
 
   return (
-    <div className="border rounded-xl p-5 bg-white shadow-sm">
-      <h2 className="font-semibold text-gray-800 mb-1">{service.name}</h2>
-      <p className="text-sm text-gray-500 mb-4">Subscribe for updates</p>
+    <div className="border rounded-xl p-5 bg-card shadow-sm">
+      <h2 className="font-semibold text-foreground mb-1">{service.name}</h2>
+      <p className="text-sm text-muted-foreground mb-4">
+        Subscribe for updates
+      </p>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <input
           type="email"

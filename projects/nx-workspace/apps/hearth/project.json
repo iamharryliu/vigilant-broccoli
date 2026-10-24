@@ -3,7 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/hearth",
   "projectType": "application",
-  "tags": [],
+  "tags": ["visibility:public"],
   "targets": {
     "build": {
       "executor": "nx:run-commands",
@@ -12,6 +12,7 @@
       "inputs": [
         "default",
         "^default",
+        { "runtime": "cat ../../notes/hobbies/cooking/ingredients/fruits.md ../../notes/hobbies/cooking/ingredients/vegetables.md" },
         { "externalDependencies": ["next"] },
         { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true }
       ],
@@ -22,7 +23,7 @@
       "options": {
         "cwd": "apps/hearth",
         "tty": false,
-        "command": "next build --webpack"
+        "command": "node --import tsx scripts/generate-in-season-produce.ts && next build --webpack"
       },
       "configurations": {
         "development": {}
@@ -32,7 +33,7 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "NEXT_PUBLIC_SUPABASE_URL=https://jrdosjjgmsoodpjmjqxx.supabase.co NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0 VB_EXPRESS_URL=https://staging-vb-express.fly.dev NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/hearth/.env.local.example --env-file scripts/.env.scripts.example 'node --import tsx scripts/migrate.ts --migrations-dir=apps/hearth/supabase/migrations && nx serve:local hearth'"
+        "command": "VB_EXPRESS_URL=https://staging-vb-express.fly.dev NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/hearth/.env.local.example --env-file scripts/.env.scripts.example 'node --import tsx scripts/migrate.ts --migrations-dir=apps/hearth/supabase/migrations && nx serve:local hearth'"
       }
     },
     "serve:local": {
@@ -40,15 +41,32 @@
       "defaultConfiguration": "development",
       "options": {
         "cwd": "apps/hearth",
-        "command": "next dev --webpack"
+        "command": "node --import tsx scripts/generate-in-season-produce.ts && next dev --webpack"
       },
       "configurations": {
         "development": {},
         "production": {}
       }
     },
+    "generate-in-season-produce": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/scripts/generate-in-season-produce.ts",
+        { "runtime": "cat ../../notes/hobbies/cooking/ingredients/fruits.md ../../notes/hobbies/cooking/ingredients/vegetables.md" }
+      ],
+      "outputs": ["{projectRoot}/src/lib/generated"],
+      "options": {
+        "cwd": "apps/hearth",
+        "command": "node --import tsx scripts/generate-in-season-produce.ts"
+      }
+    },
+    "typecheck": {
+      "dependsOn": ["generate-in-season-produce"]
+    },
     "lint": {
-      "executor": "@nx/eslint:lint"
+      "executor": "@nx/eslint:lint",
+      "dependsOn": ["generate-in-season-produce"]
     },
     "deploy": {
       "executor": "nx:run-commands",

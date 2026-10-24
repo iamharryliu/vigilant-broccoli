@@ -2,7 +2,7 @@ import {
   WEATHER_CONDITION_LABEL,
   type WeatherSnapshot,
 } from '@vigilant-broccoli/common-js';
-import { PERSONAL_GOOGLE_CALENDAR } from '@vigilant-broccoli/personal-common-js';
+import { PERSONAL_GOOGLE_CALENDAR } from '@harry/personal';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../libs/auth';
 import {

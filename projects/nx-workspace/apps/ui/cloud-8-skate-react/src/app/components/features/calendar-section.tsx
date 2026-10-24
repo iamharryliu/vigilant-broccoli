@@ -33,19 +33,19 @@ export function CalendarSection() {
   });
 
   return (
-    <div className="lg:rounded-2xl lg:bg-white/70 lg:backdrop-blur-md lg:shadow-lg lg:p-10">
+    <div className="lg:rounded-2xl lg:bg-white/70 lg:dark:bg-gray-900/70 lg:backdrop-blur-md lg:shadow-lg lg:p-10">
       <section className="mb-6 reveal-up hidden lg:block">
         <h2 className="mb-3 text-3xl font-bold lg:text-4xl">
           {t('CALENDAR.TITLE')}
         </h2>
-        <p className="text-base leading-7 text-gray-700">
+        <p className="text-base leading-7 text-gray-700 dark:text-gray-300">
           {t('CALENDAR.DESCRIPTION')}
         </p>
       </section>
       <iframe
         src={`${CALENDAR_EMBED_URL}?${params}`}
         title={t('CALENDAR.EMBED_TITLE')}
-        className="reveal-up reveal-up-delay-1 rounded-xl shadow-sm"
+        className="reveal-up reveal-up-delay-1 rounded-xl shadow-sm dark:invert dark:hue-rotate-180"
         style={{ border: 'solid 1px #777' }}
         width="100%"
         height="500"

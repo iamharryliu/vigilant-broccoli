@@ -13,6 +13,8 @@ on:
       - 'projects/nx-workspace/**'
       - '.github/workflows/deploy-preview.yml'
       - '.github/scripts/deploy-preview-summary.mjs'
+      - '.github/scripts/preview-deployments.mjs'
+      - '.github/scripts/record-preview-deployments.mjs'
       # Snapshot sources rendered by context-md (agent context) and docs-md (notes)
       - 'CONTEXT.md'
       - 'TODO.md'
@@ -31,6 +33,9 @@ on:
 
 permissions:
   contents: read
+  # Records each deployed preview as a GitHub Deployment, which
+  # vb-manager-local-react and vb-manager-next-mobile read back.
+  deployments: write
   id-token: write
   pull-requests: read
 
@@ -65,7 +70,7 @@ jobs:
         working-directory: ./projects/nx-workspace
         run: |
           CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
-          WORKFLOW_CHANGED=$(echo "$CHANGED_FILES" | grep -cE "^\.github/(workflows/deploy-preview\.yml|scripts/deploy-preview-summary\.mjs)$" || true)
+          WORKFLOW_CHANGED=$(echo "$CHANGED_FILES" | grep -cE "^\.github/(workflows/deploy-preview\.yml|scripts/(deploy-preview-summary|preview-deployments|record-preview-deployments)\.mjs)$" || true)
           # Snapshot sources live outside the nx workspace, so nx affected can't see them
           AGENT_CONTEXT_CHANGED=$(echo "$CHANGED_FILES" | grep -cE "^(CONTEXT\.md|TODO\.md|docs/|setup/dotfiles/agent-skills/)|/CONTEXT\.md$" || true)
           NOTES_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^notes/" || true)
@@ -94,8 +99,8 @@ jobs:
         if: steps.check.outputs.projects != ''
         uses: ./.github/actions/vault-secrets
         with:
-          gcp_workload_identity_provider: projects/88091895337/locations/global/workloadIdentityPools/github-actions/providers/github-deploy-preview
-          gcp_service_account: github-actions-deploy-preview@vigilant-broccoli.iam.gserviceaccount.com
+          gcp_workload_identity_provider: ${{ vars.DEPLOY_PREVIEW_WIF_PROVIDER }}
+          gcp_service_account: ${{ vars.DEPLOY_PREVIEW_SERVICE_ACCOUNT }}
           role: github-actions-deploy-preview-role
           secrets: |
             kv/data/deploy-preview CLOUDFLARE_ACCOUNT_ID | CLOUDFLARE_ACCOUNT_ID ;
@@ -129,6 +134,18 @@ jobs:
           CHECK_OUTCOME: ${{ steps.check.outcome }}
           DEPLOY_PROJECTS: ${{ steps.check.outputs.projects }}
         run: node .github/scripts/deploy-preview-summary.mjs
+
+      # Not always(): a cancelled run may have killed wrangler mid-deploy. A
+      # partly failed deploy still records the projects that did deploy.
+      # continue-on-error so a GitHub API failure doesn't skip the prune.
+      - name: Record deployed previews as GitHub Deployments
+        if: ${{ !cancelled() && steps.check.outputs.projects != '' }}
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr }}
+          PREVIEW_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node .github/scripts/record-preview-deployments.mjs
 
       # --output-style=static for the same reason as the deploy step: the
       # script's "deleting N stale" line is the only record of what the prune

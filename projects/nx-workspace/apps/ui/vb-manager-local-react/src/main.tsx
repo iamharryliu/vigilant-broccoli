@@ -7,13 +7,18 @@ import { AuthProvider } from './libs/auth';
 import { App } from './app/app';
 import './app/global.css';
 
+const THEME_STORAGE_KEY = 'vb-manager-local-react-theme';
+
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <ThemeProvider style={{ fontSize: '0.9rem' }}>
+        <ThemeProvider
+          storageKey={THEME_STORAGE_KEY}
+          style={{ fontSize: '0.9rem' }}
+        >
           <App />
-          <Toaster richColors position="bottom-right" />
+          <Toaster richColors closeButton position="bottom-right" />
         </ThemeProvider>
       </AuthProvider>
     </BrowserRouter>

@@ -55,6 +55,7 @@ const API_ROUTES: Record<string, HttpMethod[]> = {
   '/api/language-learning/reset': ['delete'],
   '/api/language-learning/words': ['post'],
   '/api/llm-test': ['post'],
+  '/api/local-credentials': ['get'],
   '/api/local-ip': ['get'],
   '/api/local-machine': ['get'],
   '/api/local-services': ['get'],

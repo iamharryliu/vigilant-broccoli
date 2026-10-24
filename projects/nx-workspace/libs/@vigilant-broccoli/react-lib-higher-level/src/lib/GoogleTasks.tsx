@@ -10,6 +10,7 @@ import {
 import {
   ReactNode,
   useEffect,
+  useRef,
   useState,
   useCallback,
   memo,
@@ -89,9 +90,12 @@ const useTasks = (
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const loadedTaskListId = useRef<string | null>(null);
 
+  // Only the first load of a list shows the skeleton; refetching the list
+  // already on screen keeps it visible so background refreshes don't flash.
   const fetchTasks = async () => {
-    setLoading(true);
+    if (loadedTaskListId.current !== taskListId) setLoading(true);
     setError(null);
     try {
       const response = await authFetch(
@@ -100,6 +104,7 @@ const useTasks = (
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Failed to fetch tasks');
       setTasks(data.tasks);
+      loadedTaskListId.current = taskListId;
     } catch (err) {
       setError(handleApiError(err, 'Failed to fetch tasks'));
     } finally {

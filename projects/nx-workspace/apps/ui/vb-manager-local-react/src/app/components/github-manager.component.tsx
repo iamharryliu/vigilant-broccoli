@@ -16,7 +16,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AlertCircle, ChevronRight, Users } from 'lucide-react';
 import { GithubOrgBasic } from '@vigilant-broccoli/github-workspace-js';
-import { GITHUB_LINK } from '@vigilant-broccoli/links';
+import { GITHUB_LINK } from '@vigilant-broccoli/public-links';
 import { authFetch } from '../../libs/auth';
 
 const TITLE = 'Github Organizations';

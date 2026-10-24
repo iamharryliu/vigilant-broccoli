@@ -1,7 +1,7 @@
 import { execFileSync, execSync } from 'child_process';
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { EMAIL_ADDRESS } from '@vigilant-broccoli/personal-common-js';
+import { EMAIL_ADDRESS } from '@harry/personal';
 
 const NAME_TOKEN_PATTERN = /[a-z0-9][a-z0-9-]*/g;
 const DECLARATION_PATHSPECS = [
@@ -23,6 +23,10 @@ interface Provider {
   name: string;
   list: () => Promise<string[]> | string[];
   destroy: (name: string) => Promise<void> | void;
+  // Resolved once per run so a lookup (the Vercel team slug) is not repeated
+  // per orphan.
+  settingsUrl: () =>
+    Promise<(name: string) => string> | ((name: string) => string);
 }
 
 const run = (command: string, args: string[]): string =>
@@ -70,6 +74,8 @@ const cloudflarePages: Provider = {
   destroy: name => {
     run('npx', ['wrangler', 'pages', 'project', 'delete', name, '--yes']);
   },
+  settingsUrl: () => name =>
+    `https://dash.cloudflare.com/${process.env.CLOUDFLARE_ACCOUNT_ID}/pages/view/${name}/settings`,
 };
 
 const flyApps: Provider = {
@@ -83,6 +89,7 @@ const flyApps: Provider = {
   destroy: name => {
     run('flyctl', ['apps', 'destroy', name, '--yes']);
   },
+  settingsUrl: () => name => `https://fly.io/apps/${name}/settings`,
 };
 
 function vercelHeaders(): Record<string, string> {
@@ -116,6 +123,14 @@ const vercelProjects: Provider = {
     );
     if (!res.ok) throw new Error(`${res.status} ${await res.text()}`);
   },
+  settingsUrl: async () => {
+    const res = await fetch(`${VERCEL_API}/v2/teams/${VERCEL_ORG_ID}`, {
+      headers: vercelHeaders(),
+    });
+    if (!res.ok) throw new Error(`Vercel team lookup failed: ${res.status}`);
+    const { slug } = (await res.json()) as { slug: string };
+    return name => `https://vercel.com/${slug}/${name}/settings`;
+  },
 };
 
 interface ProviderReport {
@@ -123,6 +138,7 @@ interface ProviderReport {
   live: string[];
   declaredCount: number;
   orphans: string[];
+  orphanLinks: { name: string; url: string | null }[];
   errors: string[];
   warnings: string[];
 }
@@ -144,6 +160,7 @@ async function inspectProvider(
     live: [],
     declaredCount: 0,
     orphans: [],
+    orphanLinks: [],
     errors: [],
     warnings: [],
   };
@@ -162,6 +179,14 @@ async function inspectProvider(
   }
   report.orphans = report.live.filter(name => !declared.has(name));
   report.declaredCount = report.live.length - report.orphans.length;
+  // A failed lookup only costs the links; the orphans are still reported.
+  const urlFor = report.orphans.length
+    ? await Promise.resolve(provider.settingsUrl()).catch(() => null)
+    : null;
+  report.orphanLinks = report.orphans.map(name => ({
+    name,
+    url: urlFor ? urlFor(name) : null,
+  }));
   return report;
 }
 

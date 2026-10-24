@@ -30,7 +30,7 @@
   },
   "LOCAL": {
     "ADD": "Add local player",
-    "DESCRIPTION": "A second person on this keyboard plays with WASD and Space; you switch to the arrow keys and Enter.",
+    "DESCRIPTION": "A second person shares this keyboard. By default they use WASD and Space and you use the arrow keys and Enter; change both in Settings.",
     "NAME": "Player 2"
   },
   "GAMES": {
@@ -81,6 +81,8 @@
   },
   "MATCH": {
     "BOARD_LABEL": "Balloono arena",
+    "YOU": "You",
+    "STARTS_IN": "Match starts in {seconds}",
     "SUDDEN_DEATH_IN": "Sudden death in {time}",
     "SUDDEN_DEATH": "Sudden death! The arena is closing in.",
     "WINS": "{count} wins",
@@ -93,8 +95,6 @@
     "QUIT": "Quit",
     "WAITING_FOR_HOST": "Waiting for the host to start the next round…",
     "SPECTATING": "You're watching this round. You'll get a seat in the next one if one is free.",
-    "LOCAL_CONTROLS_HINT": "Player 1: arrow keys + Enter. Player 2: WASD + Space.",
-    "CONTROLS_HINT": "Move with the arrow keys or WASD. Drop a balloon with Space.",
     "STATS": "Balloons {balloons} · Range {range} · Speed {speed}"
   },
   "POWER_UP": {
@@ -143,11 +143,32 @@
     "JOIN_ROOM": "Join {room}",
     "WATCH_ROOM": "Watch {room}",
     "HOW_TO_PLAY": "How to play",
-    "GOAL": "Drop water balloons, collect power-ups and be the last player dry."
+    "GOAL": "Drop water balloons, collect power-ups and be the last player dry.",
+    "CONTROLS": "Controls"
   },
   "DEVICE": {
     "TITLE": "Desktop required",
     "DESCRIPTION": "Balloono does not support mobile devices. Please play on a desktop or laptop with a keyboard and a browser window at least 1024 pixels wide.",
     "CHECKING": "Checking device support…"
+  },
+  "SETTINGS": {
+    "TITLE": "Settings",
+    "DESCRIPTION": "Choose your keys. Click a key, then press the new one, or press Escape to cancel.",
+    "PRESS_KEY": "Press a key…",
+    "UNBOUND": "None",
+    "REBIND": "Change the key for {action}",
+    "LOCAL_PRIORITY": "Player 2 keys only apply in local 2-player matches, where they take priority over Player 1's matching keys.",
+    "RESET": "Reset to defaults"
+  },
+  "CONTROLS": {
+    "TITLE": "Controls",
+    "DESCRIPTION": "Your keys for this match. Change them in Settings on the home screen.",
+    "PLAYER_ONE": "Player 1",
+    "PLAYER_TWO": "Player 2",
+    "UP": "Move up",
+    "DOWN": "Move down",
+    "LEFT": "Move left",
+    "RIGHT": "Move right",
+    "DROP": "Drop a balloon"
   }
 }

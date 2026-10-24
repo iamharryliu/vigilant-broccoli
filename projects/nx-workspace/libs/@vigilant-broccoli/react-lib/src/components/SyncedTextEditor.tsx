@@ -43,6 +43,7 @@ interface SyncedTextEditorProps {
   isLoading: boolean;
   placeholder?: string;
   style?: CSSProperties;
+  textareaStyle?: CSSProperties;
   textareaRef?: Ref<HTMLTextAreaElement>;
   onTextareaSelect?: () => void;
   onTextareaBlur?: () => void;
@@ -208,6 +209,7 @@ export const SyncedTextEditor = ({
   isLoading,
   placeholder = DEFAULT_PLACEHOLDER,
   style,
+  textareaStyle,
   textareaRef,
   onTextareaSelect,
   onTextareaBlur,
@@ -282,6 +284,7 @@ export const SyncedTextEditor = ({
           placeholder={isLoading ? LOADING_LABEL : placeholder}
           style={{
             ...styles.textarea,
+            ...textareaStyle,
             opacity: isLoading ? 0.6 : 1,
             cursor: isLoading ? 'wait' : 'text',
           }}

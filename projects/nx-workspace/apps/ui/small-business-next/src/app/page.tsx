@@ -43,8 +43,8 @@ export default function Page() {
 
   return (
     <ProtectedRoute>
-      <main className="min-h-screen bg-gray-50 p-6">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-8">
+      <main className="min-h-screen bg-background p-6">
+        <h1 className="text-2xl font-semibold text-foreground mb-8">
           {PAGE_TITLE.HOME}
         </h1>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">

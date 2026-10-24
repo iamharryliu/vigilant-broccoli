@@ -8,13 +8,25 @@
       "TITLE": "Status",
       "DESCRIPTION": "Live health of deployed services and applications."
     },
+    "DEPLOYMENTS": {
+      "TITLE": "Deployments",
+      "DESCRIPTION": "Preview deployments for open pull requests."
+    },
     "REPO_TIMELINE": {
       "TITLE": "Repo Timeline",
       "DESCRIPTION": "Lines of code, commits, and PRs over time."
     },
-    "OPEN_SOURCE": {
-      "TITLE": "Open Source",
-      "DESCRIPTION": "GitHub repos, Docker Hub images, npm packages."
+    "GITHUB": {
+      "TITLE": "GitHub",
+      "DESCRIPTION": "iamharryliu GitHub repositories."
+    },
+    "DOCKER_HUB": {
+      "TITLE": "Docker Hub",
+      "DESCRIPTION": "iamharryliu Docker images."
+    },
+    "NPM": {
+      "TITLE": "npm",
+      "DESCRIPTION": "vigilant-broccoli npm packages."
     },
     "WEB_APPLICATIONS": {
       "TITLE": "Web Applications",
@@ -98,6 +110,10 @@
       "TITLE": "FindMe",
       "DESCRIPTION": "Live location sharing app deployed on Vercel."
     },
+    "HEARTH": {
+      "TITLE": "Hearth",
+      "DESCRIPTION": "Shared home and community management app deployed on Vercel."
+    },
     "WHITEBOARD": {
       "TITLE": "Whiteboard",
       "DESCRIPTION": "Live collaborative whiteboard rooms deployed on Vercel."
@@ -105,6 +121,10 @@
     "CALENDARS": {
       "TITLE": "Calendars",
       "DESCRIPTION": "Public personal and event calendar directory, deployed on Vercel."
+    },
+    "WEB_TERMINAL": {
+      "TITLE": "Web Terminal",
+      "DESCRIPTION": "Phone-friendly browser shell with an on-screen key toolbar, behind owner-only access."
     },
     "WEATHER": {
       "TITLE": "Weather",
@@ -126,10 +146,6 @@
       "TITLE": "Component Library",
       "DESCRIPTION": "Interactive shared React component sandbox."
     },
-    "LINKS": {
-      "TITLE": "Links",
-      "DESCRIPTION": "Public pastebin of personal links and contact details."
-    },
     "EMPLOYEE_HANDLER": {
       "TITLE": "Employee Handler",
       "DESCRIPTION": "Employee management app deployed on Vercel."
@@ -138,7 +154,18 @@
       "TITLE": "Office Presence",
       "DESCRIPTION": "Browser demo of the OK-IN office presence Slack app."
     },
-    "OPEN_APPLICATION": "Open application"
+    "OPEN_APPLICATION": "Open application",
+    "POMODORO": {
+      "TITLE": "Pomodoro",
+      "DESCRIPTION": "Focus timer with configurable work and break sessions, sound and notifications."
+    },
+    "BOOKMARKS": {
+      "TITLE": "Bookmarks",
+      "DESCRIPTION": "Personal bookmarks saved in your browser, with search, groups and JSON import/export."
+    }
+  },
+  "DEPLOYMENTS_PAGE": {
+    "TITLE": "Deployments"
   },
   "STATUS_PAGE": {
     "TITLE": "Status",
@@ -146,15 +173,13 @@
     "NO_SERVICES": "No services configured.",
     "GITHUB_ACTIONS": "GitHub Actions",
     "VIEW_ALL": "View all →",
-    "TAB_STATUS": "Status",
-    "TAB_UPTIME": "Uptime",
     "OPEN_UPTIME_IN_NEW_TAB": "Full uptime history",
-    "UPTIME_BAR_HEADER": "30 days",
+    "OPEN_UPTIME_DESCRIPTION": "Response times, incidents and per-service uptime on the Upptime site.",
     "UPTIME_BAR_LABEL": "{date}: {minutes} min down",
-    "UPTIME_RANGE_DAY": "24h",
-    "UPTIME_RANGE_WEEK": "7d",
-    "UPTIME_RANGE_MONTH": "30d",
-    "UPTIME_RANGE_YEAR": "1y",
+    "UPTIME_RANGE_DAY": "24H",
+    "UPTIME_RANGE_WEEK": "7D",
+    "UPTIME_RANGE_MONTH": "30D",
+    "UPTIME_RANGE_YEAR": "1Y",
     "ERROR_STATUS_UNAVAILABLE": "Status data unavailable (HTTP {status}).",
     "ERROR_STATUS_FAILED": "Failed to load status: {message}",
     "UPDATED": "Updated {date}",
@@ -180,9 +205,10 @@
     "GRANULARITY_DAY": "Day",
     "GRANULARITY_MONTH": "Month",
     "GRANULARITY_YEAR": "Year",
-    "GRANULARITY_DAY_SHORT": "D",
-    "GRANULARITY_MONTH_SHORT": "M",
-    "GRANULARITY_YEAR_SHORT": "Y",
+    "CHART_LABEL": "Repo timeline chart",
+    "MODE_LABEL": "Value",
+    "MODE_TOTAL": "Cumulative",
+    "MODE_PERIOD": "Per day",
     "RANGE_LABEL": "Range",
     "RANGE_1W": "1W",
     "RANGE_1M": "1M",
@@ -193,21 +219,6 @@
     "RANGE_2Y": "2Y",
     "RANGE_ALL": "ALL",
     "ENTRY_SUMMARY": "{commits} commits · {pullRequests} PRs"
-  },
-  "OPEN_SOURCE_PAGE": {
-    "TITLE": "Open Source",
-    "GITHUB": {
-      "TITLE": "GitHub",
-      "DESCRIPTION": "iamharryliu GitHub repositories."
-    },
-    "DOCKER_HUB": {
-      "TITLE": "Docker Hub",
-      "DESCRIPTION": "iamharryliu Docker images."
-    },
-    "NPM": {
-      "TITLE": "npm",
-      "DESCRIPTION": "vigilant-broccoli npm packages."
-    }
   },
   "README_PAGE": {
     "TITLE": "README",
@@ -245,13 +256,33 @@
       "TITLE": "employee-handler-next",
       "DESCRIPTION": "Employee lifecycle automation UI built on Next.js."
     },
-    "OFFICE_PRESENCE_SOCKET_SERVER_DEMO": {
-      "TITLE": "office-presence-socket-server-demo",
+    "LLM_SERVICE": {
+      "TITLE": "llm-service",
+      "DESCRIPTION": "Fastify gateway to Anthropic, OpenAI, Gemini, DeepSeek and xAI models."
+    },
+    "OFFICE_PRESENCE_SERVICE": {
+      "TITLE": "office-presence-service",
       "DESCRIPTION": "Slack bot for sharing office presence status via Socket Mode or the HTTP Events API."
     },
     "SOCKET_SERVER_SOCKETIO": {
       "TITLE": "socket-server-socketio",
       "DESCRIPTION": "WebSocket server for real-time bidirectional communication."
+    },
+    "UTILITIES_UI": {
+      "TITLE": "utilities-ui",
+      "DESCRIPTION": "Searchable page of everyday utilities, served by nginx."
+    },
+    "VB_CODE_SERVER": {
+      "TITLE": "vb-code-server",
+      "DESCRIPTION": "code-server with this repo's toolchain and Claude Code baked in (linux/arm64)."
+    },
+    "VB_EXPRESS": {
+      "TITLE": "vb-express",
+      "DESCRIPTION": "Fastify API gateway for auth, API keys, Google Tasks, LLM parsing, messaging and audio."
+    },
+    "WAITING_GAMES": {
+      "TITLE": "waiting-games",
+      "DESCRIPTION": "Hands-free games to watch while queuing or travelling, served by nginx."
     }
   },
   "NPM_PACKAGES_PAGE": {

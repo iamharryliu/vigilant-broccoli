@@ -36,7 +36,7 @@ const CHIP_CLASSES =
   'inline-flex items-center justify-center px-5 py-3 font-medium text-center text-white bg-blue-500 rounded-full hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-900 text-base interactive-chip';
 
 const CARD_CLASSES =
-  'rounded-2xl bg-white/70 backdrop-blur-md shadow-lg p-6 lg:p-10';
+  'rounded-2xl bg-white/70 dark:bg-gray-900/70 backdrop-blur-md shadow-lg p-6 lg:p-10';
 
 const scrollToSection = (sectionId: SectionId) =>
   document.getElementById(sectionId)?.scrollIntoView(SCROLL_OPTIONS);
@@ -105,10 +105,10 @@ export function HomePage() {
           className={`absolute top-1/2 left-1/2 w-[90vw] max-w-[800px] -translate-x-1/2 -translate-y-1/2 text-center ${CARD_CLASSES}`}
         >
           <header className="mb-2 reveal-up reveal-up-delay-1">
-            <h1 className="text-gray-900 text-center text-2xl lg:text-5xl font-extrabold">
+            <h1 className="text-gray-900 dark:text-gray-100 text-center text-2xl lg:text-5xl font-extrabold">
               {t('HOME.TITLE')}
             </h1>
-            <p className="text-gray-600 mb-4 text-lg lg:text-xl text-center italic">
+            <p className="text-gray-600 dark:text-gray-400 mb-4 text-lg lg:text-xl text-center italic">
               {t('HOME.TAGLINE')}
             </p>
           </header>

@@ -1,9 +1,12 @@
 export * from './components';
 export * from './hooks/useDocumentTitle';
+export * from './hooks/useDocumentThemeClass';
 export * from './hooks/useAnimatedNumber';
 export * from './hooks/useGeolocation';
 export * from './hooks/useSpeechToText';
 export * from './hooks/useThemeKeybind';
+export * from './hooks/useThemePreference';
+export * from './hooks/useUpptimeSummary';
 export * from './i18n';
 export * from './utils/browser.utils';
 export * from './utils/cn';
@@ -11,3 +14,4 @@ export * from './utils/commit-type.utils';
 export * from './utils/focus-navigation.utils';
 export * from './utils/fuzzy-match.utils';
 export * from './utils/resizeImage';
+export * from './utils/upptime.utils';

@@ -51,6 +51,7 @@ All original API URLs and methods remain registered beneath the Fastify `/api` p
 | `/api/language-learning/reset`               | DELETE                   | `src/routes/language-learning/index.ts`  |
 | `/api/language-learning/words`               | POST                     | `src/routes/language-learning/index.ts`  |
 | `/api/llm-test`                              | POST                     | `src/routes/llm-test/index.ts`           |
+| `/api/local-credentials`                     | GET                      | `src/routes/local-credentials/index.ts`  |
 | `/api/local-ip`                              | GET                      | `src/routes/local-ip/index.ts`           |
 | `/api/local-machine`                         | GET                      | `src/routes/local-machine/index.ts`      |
 | `/api/local-services`                        | GET                      | `src/routes/local-services/index.ts`     |

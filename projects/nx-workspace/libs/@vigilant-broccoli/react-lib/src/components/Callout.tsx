@@ -25,11 +25,14 @@ export const calloutVariants = cva(
 export type CalloutProps = VariantProps<typeof calloutVariants> &
   HTMLAttributes<HTMLDivElement>;
 
+// Only errors should interrupt a screen reader; other callouts announce politely.
+const ALERT_COLOR = 'red';
+
 export const Callout = forwardRef<HTMLDivElement, CalloutProps>(
   ({ color, className, ...props }, ref) => (
     <div
       ref={ref}
-      role="alert"
+      role={color === ALERT_COLOR ? 'alert' : 'status'}
       className={cn(calloutVariants({ color }), className)}
       {...props}
     />

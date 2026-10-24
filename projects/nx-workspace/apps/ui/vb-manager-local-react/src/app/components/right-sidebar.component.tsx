@@ -3,7 +3,6 @@ import { signInWithGoogle, signOut, useAuth } from '../../libs/auth';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Search,
-  Timer,
   LogOut,
   LogIn,
   Bell,
@@ -56,7 +55,6 @@ const BellIconWithBadge = ({ unreadCount }: { unreadCount: number }) => (
 );
 
 type Props = {
-  setPomodoroDialogOpen: (open: boolean) => void;
   setSearchDialogOpen: (open: boolean) => void;
   notificationsOpen: boolean;
   setNotificationsOpen: (open: boolean) => void;
@@ -66,7 +64,6 @@ type Props = {
 };
 
 export const RightSidebar = ({
-  setPomodoroDialogOpen,
   setSearchDialogOpen,
   notificationsOpen,
   setNotificationsOpen,
@@ -95,12 +92,6 @@ export const RightSidebar = ({
       onClick: () => navigate(route.path),
       isActive: pathname === route.path,
     })),
-    {
-      label: 'Pomodoro',
-      icon: Timer,
-      title: 'Pomodoro (Shift+P)',
-      onClick: () => setPomodoroDialogOpen(true),
-    },
     {
       label: 'Search',
       icon: Search,

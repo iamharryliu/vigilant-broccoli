@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { IconButton } from '@vigilant-broccoli/react-lib';
 import {
   GoogleTasksComponent,
@@ -11,8 +11,20 @@ import { TaskVoiceButton } from './task-voice-button';
 
 const CREATE_TASKS_LABEL = 'Create tasks';
 
-export const GoogleTasksView = () => {
+interface GoogleTasksViewProps {
+  active: boolean;
+}
+
+export const GoogleTasksView = ({ active }: GoogleTasksViewProps) => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const wasActive = useRef(active);
+
+  // The tab stays mounted so tasks load with the page; refetch each time it
+  // is reopened. The mount itself already fetches, so only re-activation counts.
+  useEffect(() => {
+    if (active && !wasActive.current) setRefreshTrigger(n => n + 1);
+    wasActive.current = active;
+  }, [active]);
 
   return (
     <GoogleTasksComponent

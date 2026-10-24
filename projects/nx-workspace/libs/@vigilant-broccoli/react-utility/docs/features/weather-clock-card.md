@@ -26,7 +26,8 @@
 ## Forecast carousel
 
 - The whole card is the toggle (`role="button"`, `aria-expanded`, Enter/Space) only when `weather.forecast` has entries and the weather is loaded; otherwise it is plain. There is no caret. Clicks on inner buttons/links and inside the carousel do not toggle.
-- Clicking the card toggles a horizontally scrolling list built on native scroll with scroll-snap. It is swipeable on touch, draggable with a mouse, scrollable by wheel/trackpad, and the focusable list scrolls with the arrow keys. There are no previous/next buttons and the scrollbar is hidden.
+- Clicking the card expands and collapses a horizontally scrolling list built on native scroll with scroll-snap. It is swipeable on touch, draggable with a mouse, scrollable by wheel/trackpad, and the focusable list scrolls with the arrow keys. There are no previous/next buttons and the scrollbar is hidden.
+- The carousel stays mounted and animates both ways: a `grid-template-rows` 0fr/1fr transition with opacity (300ms), so no height is measured. Collapsed, it is `inert`, `aria-hidden` and `invisible` (visibility flips after the transition) and a negative top margin cancels the card's flex gap; `aria-controls` always points at it. `prefers-reduced-motion` disables the transition (`motion-reduce:transition-none`) so it toggles instantly.
 - State is internal (`defaultExpanded`) and optionally controlled through `expanded` / `onExpandedChange`.
 
 ## Tailwind

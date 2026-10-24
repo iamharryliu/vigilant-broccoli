@@ -16,10 +16,10 @@ Browser mock of the Office Presence Slack app, for trying the UI without Slack. 
 ## How it works
 
 - `registerOfficePresenceHandlers` in `office-presence-app.ts` is shared by the Socket Mode app, the HTTP receiver and the mock, so the mock runs the real view builders and action handlers. Its `allowDemoRecipients` option is set only for mock clients; real Slack clients never address seeded `U_DEMO_` members.
-- `mock/mock-slack.ts` stands in for Bolt's `App` and Slack's `WebClient`; it records `views.*`, `chat.*` and `conversations.open` calls instead of sending them. One instance holds one visitor's home view, modals, messages and group chats.
+- `mock/mock-slack.ts` stands in for Bolt's `App` and Slack's `WebClient`; it records `views.*`, `chat.*` and `conversations.open` calls instead of sending them. Like Slack, block actions carry the `view` they came from (top modal, else Home), which the office-days checkbox handler reads to know which dates it rendered. One instance holds one visitor's home view, modals, messages and group chats.
 - `demo/demo-api.ts` (`createDemoApi`) owns a bounded, expiring map of those instances keyed by session id and exposes `state`, `action`, `submit`, `close-modal`, `preview-reminder` and `reset`. Presences, events and settings are not in the session: handlers write them to SQLite as usual.
 - `mock/mock-server.ts` serves the page (`mock/mock-ui.ts`) and maps `/api/<operation>` onto `createDemoApi` with a single anonymous session. The hosted service maps `/demo/<operation>` onto the same function, with the browser's `X-Demo-Session`; the static React UI in `apps/ui/office-presence-ui` is a port of `mock-ui.ts` that talks to it.
-- `demo/demo-seed.ts` seeds the team from `consts/demo-users.const.ts` (ids prefixed `U_DEMO_`) for the current and coming week, relative to today in the reminder timezone.
+- `demo/demo-seed.ts` seeds the five-member team from `consts/demo-users.const.ts` (ids prefixed `U_DEMO_`) for the current and coming week from a fixed weekly plan, relative to today in the reminder timezone. The mock client's `users.info` has no `tz`, so every mock user's "today" is that timezone too.
 
 ## Behaviour
 

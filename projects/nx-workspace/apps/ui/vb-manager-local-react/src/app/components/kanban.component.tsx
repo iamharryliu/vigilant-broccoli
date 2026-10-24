@@ -355,6 +355,12 @@ interface DragOverTask {
   title: string;
 }
 
+// Mirrors CheckList's dnd-kit `task` payload; see CONTEXT.md before changing.
+interface TaskDragData {
+  task: { id: string; title: string; notes?: string; due?: string };
+  taskListId: string;
+}
+
 interface SortableLaneProps {
   lane: Lane;
   taskList: TaskList | undefined;
@@ -635,7 +641,7 @@ export const KanbanComponent = () => {
     reorderBoards,
   } = useBoards(status === 'authenticated');
   const [selectedTaskListId, setSelectedTaskListId] = useState<string>('');
-  const [activeTask, setActiveTask] = useState<any>(null);
+  const [activeTask, setActiveTask] = useState<TaskDragData | null>(null);
   const [activeLane, setActiveLane] = useState<Lane | null>(null);
   const [activeBoard_dnd, setActiveBoard_dnd] = useState<Board | null>(null);
   const [overTaskListId, setOverTaskListId] = useState<string | null>(null);
@@ -780,7 +786,7 @@ export const KanbanComponent = () => {
       const dragType = active.data.current?.type;
 
       if (dragType === DRAG_TYPE.TASK) {
-        setActiveTask(active.data.current);
+        setActiveTask(active.data.current as TaskDragData);
       } else if (dragType === DRAG_TYPE.LANE) {
         setActiveLane(active.data.current?.lane);
         setDraggingLanes(activeBoard?.lanes ?? null);
@@ -869,7 +875,11 @@ export const KanbanComponent = () => {
   );
 
   const handleTaskCrossListMove = useCallback(
-    async (taskData: any, sourceListId: string, targetListId: string) => {
+    async (
+      taskData: TaskDragData,
+      sourceListId: string,
+      targetListId: string,
+    ) => {
       const createResponse = await authFetch(API_ENDPOINTS.TASKS, {
         method: HTTP_METHOD.POST,
         headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
@@ -902,11 +912,11 @@ export const KanbanComponent = () => {
       const overType = over.data.current?.type;
       if (overType !== 'task' && overType !== 'taskList') return;
 
-      const taskData = active.data.current;
+      const taskData = active.data.current as TaskDragData | undefined;
       const sourceListId = taskData?.taskListId;
       const targetListId = over.data.current?.taskListId;
 
-      if (!sourceListId || !targetListId) return;
+      if (!taskData || !sourceListId || !targetListId) return;
 
       if (sourceListId === targetListId) {
         if (overType === 'task') {

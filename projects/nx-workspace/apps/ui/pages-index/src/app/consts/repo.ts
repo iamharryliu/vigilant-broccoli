@@ -1,9 +1,10 @@
+import { toUpptimeSummaryUrl } from '@vigilant-broccoli/react-lib';
 import { DOCKER_IMAGES } from './dockerImages';
 import { toProjectsUrl } from './hosts';
 import { toWebApplicationRoute } from './routes';
 import WEB_APPLICATIONS from './webApplications.json';
 
-const DOCKER_IMAGES_ROUTE = '/open-source/docker';
+const DOCKER_IMAGES_ROUTE = '/docker';
 
 export const REPO_OWNER = 'iamharryliu';
 export const REPO_NAME = 'vigilant-broccoli';
@@ -13,7 +14,10 @@ export const UPTIME_REPO_URL = `https://github.com/${REPO_OWNER}/${UPTIME_REPO_N
 
 export const UPTIME_SITE_URL = 'https://uptime.harryliu.dev';
 
-export const UPTIME_SUMMARY_URL = `https://raw.githubusercontent.com/${REPO_OWNER}/${UPTIME_REPO_NAME}/main/history/summary.json`;
+export const UPTIME_SUMMARY_URL = toUpptimeSummaryUrl(
+  REPO_OWNER,
+  UPTIME_REPO_NAME,
+);
 
 export const toRawGithubUrl = (path: string) =>
   `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main/${path}`;

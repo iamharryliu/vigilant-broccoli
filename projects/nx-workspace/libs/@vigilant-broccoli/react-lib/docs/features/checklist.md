@@ -11,6 +11,7 @@ Layered checklist components in `libs/@vigilant-broccoli/react-lib`.
 
 - Generic over `CheckListBaseItem` (`id`, `title`, `checked`, optional `completedAt`, `updatedAt`, `isNew`, `isRemoving`); all state is controlled by the caller (`editingItemId`, `editingItemTitle`, `onToggleCheck`, `onStartEdit`, `onEditChange`, `onSaveEdit`, `onCancelEdit`).
 - `editor` — `'textarea'` (default, Enter saves, Shift+Enter newline) or `'input'`; Escape cancels, blur saves.
+- Editable titles render as buttons so keyboard users can start editing; each checkbox is labeled with its item's title.
 - `rowVariant` — `'card'` (default, hover highlight) or `'dense'` (centered rows with divider lines); `size` sets the title's text size; `editCompleted={false}` makes completed titles read-only.
 - Slots: `renderItemAccessory` (trailing), `renderItemMeta`/`renderItemDetails` (under the title), `itemClassName`, `emptyLabel` (rendered as given when no active rows).
 - Extension points used by `CheckList`: `rowFrame` replaces each row's outer element, `wrapActiveItems` wraps the active rows, `activeFooter` follows them.

@@ -26,8 +26,6 @@
       "options": {
         "outDir": "../../../dist/vb-manager-local-react",
         "env": {
-          "VITE_SUPABASE_URL": "https://jrdosjjgmsoodpjmjqxx.supabase.co",
-          "VITE_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0",
           "VITE_SOCKET_SERVER_URL": "https://socket.harryliu.dev"
         }
       },
@@ -55,11 +53,7 @@
       ],
       "options": {
         "cwd": "apps/ui/vb-manager-local-react",
-        "command": "vite",
-        "env": {
-          "VITE_SUPABASE_URL": "https://jrdosjjgmsoodpjmjqxx.supabase.co",
-          "VITE_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0"
-        }
+        "command": "vite"
       }
     },
     "e2e": {

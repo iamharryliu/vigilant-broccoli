@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { ExternalLink, Trash2 } from 'lucide-react';
 import { Button } from '@vigilant-broccoli/react-lib';
 import {
@@ -20,6 +21,13 @@ const STATUS_STYLES: Record<string, string> = {
     'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300',
 };
 
+const EXIT_DURATION_MS = 300;
+const EXIT_STAGGER_MS = 40;
+const EXIT_STAGGER_MAX_ITEMS = 8;
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+const ITEM_EXIT_CLASSES =
+  'opacity-0 translate-x-8 max-h-0 !py-0 overflow-hidden';
+
 const formatTime = (ts: number) =>
   new Date(ts).toLocaleString(undefined, {
     month: 'short',
@@ -34,6 +42,32 @@ interface Props {
 }
 
 export function NotificationsDialog({ notifications, onClear }: Props) {
+  const [clearing, setClearing] = useState(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
+
+  useEffect(() => () => clearTimeout(timeoutRef.current), []);
+
+  // Re-arm after the history empties so later notifications aren't rendered as exiting.
+  useEffect(() => {
+    if (notifications.length === 0) setClearing(false);
+  }, [notifications.length]);
+
+  const handleClear = () => {
+    if (window.matchMedia(REDUCED_MOTION_QUERY).matches) {
+      onClear();
+      return;
+    }
+    setClearing(true);
+    const staggerSteps =
+      Math.min(notifications.length, EXIT_STAGGER_MAX_ITEMS) - 1;
+    timeoutRef.current = setTimeout(
+      onClear,
+      EXIT_DURATION_MS + staggerSteps * EXIT_STAGGER_MS,
+    );
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-800 shrink-0">
@@ -42,7 +76,8 @@ export function NotificationsDialog({ notifications, onClear }: Props) {
           <Button
             variant="ghost"
             size="xs"
-            onClick={onClear}
+            onClick={handleClear}
+            disabled={clearing}
             title={CLEAR_ALL_LABEL}
           >
             <Trash2 size={14} />
@@ -58,10 +93,17 @@ export function NotificationsDialog({ notifications, onClear }: Props) {
           </p>
         ) : (
           <ul className="flex flex-col divide-y divide-gray-100 dark:divide-gray-800">
-            {notifications.map(n => (
+            {notifications.map((n, i) => (
               <li
                 key={n.id}
-                className={`flex flex-col gap-1 px-4 py-3 text-sm ${!n.read ? 'bg-gray-50 dark:bg-gray-900/50' : ''}`}
+                style={
+                  clearing
+                    ? {
+                        transitionDelay: `${Math.min(i, EXIT_STAGGER_MAX_ITEMS - 1) * EXIT_STAGGER_MS}ms`,
+                      }
+                    : undefined
+                }
+                className={`flex flex-col gap-1 px-4 py-3 text-sm max-h-96 transition-all duration-300 ease-in-out motion-reduce:transition-none ${clearing ? ITEM_EXIT_CLASSES : ''} ${!n.read ? 'bg-gray-50 dark:bg-gray-900/50' : ''}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <span

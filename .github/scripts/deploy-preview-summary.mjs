@@ -1,5 +1,6 @@
-import { appendFileSync, existsSync, readFileSync } from 'node:fs';
+import { appendFileSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
+import { parseDeployedSites } from './preview-deployments.mjs';
 
 const env = name => process.env[name] ?? '';
 const escapeInline = text =>
@@ -65,20 +66,7 @@ const lines = [
   '',
 ];
 
-const logPath = 'projects/nx-workspace/deploy.log';
-const log = existsSync(logPath) ? readFileSync(logPath, 'utf8') : '';
-const urls = [
-  ...new Set(
-    log.match(/https:\/\/[a-z0-9-]+\.preview-[a-z0-9-]+\.pages\.dev/g) ?? [],
-  ),
-];
-const sites = new Map();
-for (const url of urls) {
-  const [deployment, site] = new URL(url).hostname.split('.');
-  const links = sites.get(site) ?? {};
-  links[deployment === env('PREVIEW_BRANCH') ? 'latest' : 'build'] = url;
-  sites.set(site, links);
-}
+const sites = parseDeployedSites(env('PREVIEW_BRANCH'));
 
 if (sites.size) {
   lines.push(

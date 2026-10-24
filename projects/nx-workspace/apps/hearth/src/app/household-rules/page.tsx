@@ -6,6 +6,7 @@ import { useHome } from '../providers/home-provider';
 import { HouseholdRule } from '../../lib/types';
 import { HouseholdRuleList } from './components/HouseholdRuleList';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
+import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
 
 export default function HouseholdRulesPage() {
   usePageTitle(PAGE_TITLES.HOUSEHOLD_RULES);
@@ -14,16 +15,17 @@ export default function HouseholdRulesPage() {
   const [rules, setRules] = useState<HouseholdRule[]>([]);
 
   const token = session?.access_token ?? '';
-  const authHeader = () => ({ Authorization: `Bearer ${token}` });
+  const authHeader = useAuthHeader();
+  const jsonHeaders = useJsonAuthHeaders();
 
   const fetchRules = useCallback(async () => {
     if (!homeId || !token) return;
     const res = await fetch(`/api/household-rules?homeId=${homeId}`, {
-      headers: authHeader(),
+      headers: await authHeader(),
     });
     const data = await res.json();
     setRules(Array.isArray(data) ? data : []);
-  }, [homeId, token]);
+  }, [homeId, token, authHeader]);
 
   useEffect(() => {
     fetchRules();
@@ -32,7 +34,7 @@ export default function HouseholdRulesPage() {
   const createRule = async (form: HouseholdRule): Promise<HouseholdRule> => {
     const res = await fetch('/api/household-rules', {
       method: 'POST',
-      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      headers: await jsonHeaders(),
       body: JSON.stringify({ ...form, homeId }),
     });
     return res.json();
@@ -41,7 +43,7 @@ export default function HouseholdRulesPage() {
   const updateRule = async (form: HouseholdRule): Promise<void> => {
     await fetch('/api/household-rules', {
       method: 'PATCH',
-      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      headers: await jsonHeaders(),
       body: JSON.stringify({
         id: form.id,
         name: form.name,
@@ -54,7 +56,7 @@ export default function HouseholdRulesPage() {
   const deleteRule = async (id: string | number): Promise<void> => {
     await fetch('/api/household-rules', {
       method: 'DELETE',
-      headers: { ...authHeader(), 'Content-Type': 'application/json' },
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id }),
     });
   };

@@ -19,6 +19,7 @@
   - [Crutons](./crutons.md)
   - [Flour](./flour.md)
   - [Kidney Beans](./kidney-beans.md)
+  - [Lentils](./lentils.md)
   - [Rice](./rice.md)
 - **Seafood**
   - [Caviar](./caviar.md)

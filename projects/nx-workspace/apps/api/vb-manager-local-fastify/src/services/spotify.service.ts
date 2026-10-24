@@ -2,7 +2,7 @@ import {
   getEnvironmentVariable,
   ShellUtils,
 } from '@vigilant-broccoli/common-node';
-import { VB_REPO_PATH } from '@vigilant-broccoli/personal-common-js';
+import { VB_REPO_PATH } from '@harry/private';
 
 export interface SpotifyPlaylist {
   name: string;

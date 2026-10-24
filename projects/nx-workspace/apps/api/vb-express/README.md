@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -17,9 +18,9 @@
   - `common-js`
   - `common-node`
   - `fastify`
+  - `@harry/personal`
   - `llm-schemas`
   - `messaging`
-  - `personal-common-js`
 - Cloud services
   - ElevenLabs
   - Email Service
@@ -29,3 +30,7 @@
   - LLM Service
   - Supabase
   - Twilio
+
+## Environment
+
+- [.env.example](./.env.example)
