@@ -17,6 +17,11 @@ export interface WhiteboardCursor {
 export interface WhiteboardRoomState {
   content: string;
   setContent: (content: string) => void;
+  // Applies a server snapshot without adding it to this client's undo stack.
+  replaceContent: (content: string) => void;
+  // Whether the latest text change came from this client's own edit or
+  // undo/redo rather than a peer or a replaced snapshot.
+  lastEditIsLocal: boolean;
   members: WhiteboardMember[];
   cursors: WhiteboardCursor[];
   setCursorPosition: (x: number | null, y: number | null) => void;

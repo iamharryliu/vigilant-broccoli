@@ -2,7 +2,7 @@
 
 import { CSSProperties, ReactNode, useRef, useState, RefObject } from 'react';
 import { MessageSquare, Eye, Pencil } from 'lucide-react';
-import { Button, SyncedTextEditor } from '@vigilant-broccoli/react-lib';
+import { Button, SyncedTextEditor, Text } from '@vigilant-broccoli/react-lib';
 import {
   PeerCaretsOverlay,
   PeerCursorsOverlay,
@@ -37,6 +37,8 @@ const INLINE_TEXTAREA_STYLE: CSSProperties = {
 };
 const DEFAULT_PLACEHOLDER = 'Shared family notes...';
 const CURSOR_SEND_INTERVAL_MS = 60;
+const LOAD_ERROR_TEXT = "Couldn't load these notes; editing is paused.";
+const RETRY_LABEL = 'Retry';
 
 interface WhiteboardPaneProps {
   content: string;
@@ -105,6 +107,8 @@ export function WhiteboardEditor({
     content,
     setContent,
     isLoading,
+    loadError,
+    retryLoad,
     undo,
     redo,
     cursors,
@@ -178,6 +182,16 @@ export function WhiteboardEditor({
 
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">
+      {loadError && (
+        <div className="mb-2 flex items-center gap-2" role="alert">
+          <Text size="2" color="red">
+            {LOAD_ERROR_TEXT}
+          </Text>
+          <Button size="sm" variant="outline" onClick={retryLoad}>
+            {RETRY_LABEL}
+          </Button>
+        </div>
+      )}
       <WhiteboardPane
         content={content}
         isLoading={isLoading}
