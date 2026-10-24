@@ -12,6 +12,7 @@ Searchable, grouped link launcher. `QuickLinksDialog` wraps `QuickLinksPanel` in
 ## QuickLinksDialog
 
 - Focuses the search box when opened and closes after a link opens.
+- Animates its height as search filtering changes the row count (`sm:` and up, honors reduced motion); the full-screen mobile layout is unchanged.
 - Owns the embedded link and renders it in `EmbedDialog`.
 
 ## SearchableList
