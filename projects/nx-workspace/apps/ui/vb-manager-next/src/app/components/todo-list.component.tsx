@@ -4,8 +4,14 @@ import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import {
   Table,
+  Button,
   Callout,
   CalloutText,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogClose,
   Heading,
   Text,
 } from '@vigilant-broccoli/react-lib';
@@ -17,9 +23,17 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
-import type { TodoSection } from '../api/todo/_lib/todo-markdown.utils';
+import type {
+  TodoRow,
+  TodoSection,
+} from '../api/todo/_lib/todo-markdown.utils';
 
 const STATUS_SEPARATOR = ' · ';
+const DESCRIPTION_TITLE = 'Description';
+const RECOMMENDED_FIX_TITLE = 'Recommended Fix';
+const CLOSE_BUTTON_LABEL = 'Close';
+const CELL_LINE_BREAK_RE = /<br\s*\/?>/g;
+const ESCAPED_PIPE_RE = /\\\|/g;
 const FETCH_ERROR = 'Failed to load TODO.md';
 const RUN_ERROR = 'Failed to trigger agentic solve workflow';
 const RUN_TITLE = 'Run agentic solve';
@@ -28,6 +42,69 @@ const CELL_TEXT_CLASS = 'text-xs';
 const TABLE_OF_CONTENTS_TITLE = 'Table of Contents';
 const NON_SLUG_CHARS_RE = /[^a-z0-9]+/g;
 const EDGE_DASHES_RE = /^-+|-+$/g;
+
+// TODO.md cells hold one physical line, so steps are joined with <br> and
+// pipes are escaped; restore both so the Markdown renders lists and pipes.
+const cellToMarkdown = (cell: string) =>
+  cell.replace(CELL_LINE_BREAK_RE, '\n').replace(ESCAPED_PIPE_RE, '|');
+
+const formatStatus = (row: TodoRow) =>
+  [row.priority, row.effort, row.agent].join(STATUS_SEPARATOR);
+
+const TodoDetailSection = ({
+  title,
+  cell,
+}: {
+  title: string;
+  cell: string;
+}) => (
+  <div className="flex flex-col gap-1">
+    <Heading size="2">{title}</Heading>
+    <div className="prose prose-sm dark:prose-invert max-w-none break-words">
+      <ReactMarkdown>{cellToMarkdown(cell)}</ReactMarkdown>
+    </div>
+  </div>
+);
+
+const TodoDetailsDialog = ({ row }: { row: TodoRow }) => (
+  <Dialog>
+    <DialogTrigger asChild>
+      <button
+        type="button"
+        className={`block w-full min-w-[16rem] whitespace-pre-wrap text-left cursor-pointer hover:underline ${CELL_TEXT_CLASS}`}
+      >
+        {row.brief}
+      </button>
+    </DialogTrigger>
+    <DialogContent
+      className="block w-[calc(100%-2rem)] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+      aria-describedby={undefined}
+      showCloseButton={false}
+      style={{ maxWidth: '720px' }}
+    >
+      <DialogTitle className="mb-1 text-xl font-bold leading-7 tracking-normal">
+        <span className="font-mono">{row.id}</span>
+      </DialogTitle>
+      <Text size="2" color="gray">
+        {formatStatus(row)}
+      </Text>
+      <div className="flex flex-col gap-4 mt-4">
+        <TodoDetailSection title={DESCRIPTION_TITLE} cell={row.description} />
+        <TodoDetailSection
+          title={RECOMMENDED_FIX_TITLE}
+          cell={row.recommendedFix}
+        />
+      </div>
+      <div className="flex justify-end mt-4">
+        <DialogClose asChild>
+          <Button size="sm" variant="secondary">
+            {CLOSE_BUTTON_LABEL}
+          </Button>
+        </DialogClose>
+      </div>
+    </DialogContent>
+  </Dialog>
+);
 
 const slugify = (heading: string) =>
   heading
@@ -147,17 +224,11 @@ export const TodoListComponent = () => {
                     </Table.Cell>
                     <Table.Cell>
                       <Text className={`whitespace-nowrap ${CELL_TEXT_CLASS}`}>
-                        {[row.priority, row.effort, row.agent].join(
-                          STATUS_SEPARATOR,
-                        )}
+                        {formatStatus(row)}
                       </Text>
                     </Table.Cell>
                     <Table.Cell>
-                      <Text
-                        className={`block w-full min-w-[16rem] whitespace-pre-wrap ${CELL_TEXT_CLASS}`}
-                      >
-                        {row.brief}
-                      </Text>
+                      <TodoDetailsDialog row={row} />
                     </Table.Cell>
                     <Table.Cell>
                       <EllipsisCTA
