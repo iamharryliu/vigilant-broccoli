@@ -8,7 +8,7 @@
     "@vigilant-broccoli/common-js": "workspace:*",
     "@vigilant-broccoli/common-node": "workspace:*",
     "@vigilant-broccoli/github-workspace-js": "workspace:*",
-    "tslib": "^2.3.0"
+    "tslib": "^2.8.1"
   },
   "publishConfig": {
     "access": "public"

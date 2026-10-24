@@ -34,7 +34,7 @@ Operations use `agentic-<resource>-<verb>[-<variant>]` for the root pnpm script 
 
 Task policy belongs in the canonical `SKILL.md`. Runners load it before PR checkout (older branches may lack it) and embed it in prompts. Runners own checkout setup, credentials, merge preparation, metadata, validation and publishing; skills state preparation needed only in local sessions. Local invocation alone does not authorize publishing. Agentic workflows use the [shared run summary](./ci/workflow-conventions.md#agentic-run-summaries).
 
-Maintenance scopes differ: prune removes verified dead code/docs, audit rewrites obsolete implementation documentation, context audit slims duplicated agent guidance without losing facts, TODO audit changes only backlog rows, and [refactor cleanup](./refactor-code-cleanup.md) reviews only the current diff. Smoke is Actions-only.
+Maintenance scopes differ: prune removes verified dead code/docs, audit rewrites obsolete implementation documentation, context audit slims duplicated agent guidance without losing facts, TODO audit changes only backlog rows, and [refactor cleanup](./refactor-code-cleanup.md) reviews only the current diff. Smoke is Actions-only. Deterministic maintenance such as dependency pin drift (`cron-dependency-pin-drift`) uses a script, not an agent, so it has no `agentic-` command or skill.
 
 ## Entry-point parity
 

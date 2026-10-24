@@ -1,0 +1,93 @@
+name: cron-dependency-pin-drift
+
+# Weekly deterministic audit of the root CONTEXT.md rule that app/lib
+# dependencies already pinned in the nx-workspace root mirror its range. No
+# agent runs: `scripts/node/align-dependency-pins.mjs` rewrites at most 40 pins,
+# `pnpm install --lockfile-only` refreshes the lockfile, and one PR is opened.
+# Candidates needing judgment (a different major) are listed in the PR, never
+# edited. The local equivalent is `pnpm deps:align-pins`.
+#
+# A clean run opens no PR and still succeeds.
+
+on:
+  schedule:
+    - cron: '10 7 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+# Static group: overlapping runs would push competing branches with the same edits.
+concurrency:
+  group: cron-dependency-pin-drift
+  cancel-in-progress: false
+
+jobs:
+  align:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Setup Nx workspace
+        uses: ./.github/actions/setup-nx-workspace
+
+      - name: Align drifted pins
+        id: align
+        env:
+          REPORT: ${{ runner.temp }}/pin-drift-report.md
+        run: |
+          set -euo pipefail
+          node scripts/node/align-dependency-pins.mjs --report "$REPORT"
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          (cd projects/nx-workspace && pnpm install --lockfile-only)
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Import Secrets from Vault
+        if: ${{ steps.align.outputs.changed == 'true' }}
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+
+      # The App token, not GITHUB_TOKEN, so the PR triggers `ci-pr-check`
+      # (events from GITHUB_TOKEN never start workflows).
+      - name: Open pull request
+        if: ${{ steps.align.outputs.changed == 'true' }}
+        env:
+          AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
+          AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
+          REPORT: ${{ runner.temp }}/pin-drift-report.md
+        run: |
+          set -euo pipefail
+          GH_TOKEN=$(bash infrastructure/agent-sandbox/mint-github-app-token.sh "$AGENT_GH_APP_ID" <(printf '%s\n' "$AGENT_GH_APP_PRIVATE_KEY"))
+          export GH_TOKEN
+          BRANCH="chore/dependency-pin-drift-$(date +%s)"
+          TITLE="chore: Align drifted dependency pins with the nx-workspace root."
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git checkout -b "$BRANCH"
+          git add projects/nx-workspace
+          git commit -m "$TITLE"
+          git push -u origin "$BRANCH"
+          {
+            echo "## Summary"
+            echo
+            echo "Weekly \`cron-dependency-pin-drift\` run: app/lib dependencies already pinned in the nx-workspace root now mirror its range, and the lockfile was refreshed with \`pnpm install --lockfile-only\`."
+            echo
+            cat "$REPORT"
+            echo
+            echo "## Next steps"
+            echo
+            echo "- [ ] Merge once CI is green"
+          } > "$RUNNER_TEMP/pr-body.md"
+          gh pr create --title "$TITLE" --body-file "$RUNNER_TEMP/pr-body.md"
