@@ -6,8 +6,8 @@ set -euo pipefail
 # run can open several (one PR_URL:: record per increment, with PR_TITLE::,
 # PR_STATE:: and PR_BASE::), and lists each increment it could not publish from
 # INCREMENT_UNPUBLISHED:: lines. Reads the runner's markers, never a loose
-# pull-URL match, since the log can carry diffs and notes that cite PRs. A *_CLEAN:: marker (AUDIT_CLEAN, URL_AUDIT_CLEAN,
-# PRUNE_CLEAN) means the run found nothing to change, which is not a failure, and
+# pull-URL match, since the log can carry diffs and notes that cite PRs. A *_CLEAN:: marker (AUDIT_CLEAN,
+# COMMENT_CLEAN, PRUNE_CLEAN, URL_AUDIT_CLEAN) means the run found nothing to change, which is not a failure, and
 # so does RESULT::no-changes, which a runner prints only with the agent's reason.
 # A failed solve run also prints a RESULT:: marker (salvaged, salvage-nothing,
 # salvage-push-failed, salvage-pr-failed) saying what became of its partial work.

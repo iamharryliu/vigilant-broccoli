@@ -56,7 +56,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 ## Running in CI
 
-Plan- and Develop-phase agents, backlog auditing, documentation and context auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-audit`, `agentic-pr-create-context-audit`, `agentic-pr-create-prune`, `agentic-pr-create-url-audit`, `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
+Plan- and Develop-phase agents, backlog auditing, documentation and context auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-audit`, `agentic-pr-create-context-audit`, `agentic-pr-create-comment-audit`, `agentic-pr-create-prune`, `agentic-pr-create-url-audit`, `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
 
 `agentic-pr-create` Claude solves run in auto permission mode (`--permission-mode auto`): a classifier approves routine edits and checks and blocks risky actions such as exfiltration, credential reads or running downloaded code. Headless runs have nobody to approve a blocked action, so the agent must work around it, and repeated blocks can end the run early. Export `SOLVE_PERMISSION_MODE=bypass` before a Docker sandbox run to restore `--dangerously-skip-permissions`; Ollama solves always bypass, since the classifier needs an Anthropic model.
 
@@ -162,7 +162,7 @@ optional `no_changes_reason` in its metadata file and handles it through `no-cha
   and `no_changes_reason` step outputs for `manual-agentic-pr-update`'s own result step, and `update-pr-runner.sh` also
   comments the reason on the target PR;
 - no changes and no reason: the run fails as before;
-- the audits and prune keep their `AUDIT_CLEAN`/`PRUNE_CLEAN` exit 0 and add the reason when the agent gave one.
+- the audits and prune keep their `AUDIT_CLEAN`/`COMMENT_CLEAN`/`PRUNE_CLEAN` exit 0 and add the reason when the agent gave one.
 
 `pnpm agentic-pr-create <id...>` prints the reason for such an id and does not count it as failed.
 
@@ -179,6 +179,19 @@ rows whose paths, line numbers, counts or scope have drifted. `cron-agentic-pr-c
 - The runner refuses to commit if an id disappeared without being reported as resolved, if an id was added or renumbered,
   or if any file other than `TODO.md` changed. Ids are the handle `pnpm agentic-pr-create <id>` resolves, so a table
   rewrite that quietly drops one is treated as a failure, not a diff to review.
+
+## Auditing code comments
+
+`pnpm agentic-pr-create-comment-audit` runs `comment-audit.sh`, which enforces the root `CONTEXT.md` comment rule across the
+whole tree: it removes redundant comments and generator scaffolding with comment-only edits, keeping comments that explain
+non-obvious reasons, constraints or traps, comments that are an empty block's only body, and `TODO`/`FIXME`/lint
+directives. `cron-agentic-pr-create-comment-audit` runs the same script weekly (`10 6 * * 0`).
+
+- Dispatch: `gh workflow run cron-agentic-pr-create-comment-audit.yml` (optional `-f model=`, `-f firewall=off`).
+- A clean run opens no PR — `comment-audit-runner.sh` prints `COMMENT_CLEAN` and exits 0 rather than raising an empty PR.
+- The runner refuses to commit if `TODO.md`, a `migrations/` directory or Terraform state changed, if any file was added,
+  deleted or renamed, or if more than 30 files changed. The skill asks for about 20, so skipped candidates become the
+  next week's run.
 
 ## Pruning dead code and stale docs
 
