@@ -169,7 +169,6 @@
   },
   "STATUS_PAGE": {
     "TITLE": "Status",
-    "LOADING_SERVICES": "Loading status…",
     "NO_SERVICES": "No services configured.",
     "GITHUB_ACTIONS": "GitHub Actions",
     "VIEW_ALL": "View all →",
