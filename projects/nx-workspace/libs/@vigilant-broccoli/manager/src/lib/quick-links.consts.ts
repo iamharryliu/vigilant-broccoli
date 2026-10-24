@@ -263,6 +263,10 @@ const AGENTIC_WORKFLOW = {
     NAME: 'VB - Manual Agentic PR Create R&D',
     FILE: 'manual-agentic-pr-create-rnd.yml',
   },
+  PR_CREATE_TODO: {
+    NAME: 'VB - Manual Agentic PR Create TODO',
+    FILE: 'manual-agentic-pr-create-todo.yml',
+  },
   PR_CREATE_SMOKE: {
     NAME: 'VB - Manual Agentic PR Create Smoke',
     FILE: 'manual-agentic-pr-create-smoke.yml',
