@@ -7,6 +7,6 @@
   "types": "./src/index.d.ts",
   "dependencies": {
     "@harry/personal": "workspace:*",
-    "tslib": "^2.3.0"
+    "tslib": "^2.8.1"
   }
 }

@@ -4,7 +4,7 @@ name: cron-agentic-pr-create-context-audit
 # docs) by removing duplicated rules and incident narrative without losing any
 # rule, workaround, recovery step or exact error string, and opens one PR of at
 # most 15 files. Same container and credentials as
-# `manual-agentic-pr-create-audit`; the local equivalent is
+# `cron-agentic-pr-create-audit`; the local equivalent is
 # `pnpm agentic-pr-create-context-audit`. Every change adds guidance, so the
 # context agents read on each session grows unless something trims it on a
 # schedule.
