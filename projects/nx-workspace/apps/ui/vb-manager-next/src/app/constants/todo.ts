@@ -1,0 +1,1 @@
+export const MAX_TODO_REMOVAL_REASON_LENGTH = 500;
