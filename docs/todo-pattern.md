@@ -11,7 +11,7 @@ Source of truth for the shape of the repo root `TODO.md`. `/agentic-pr-create-to
 
 ## Structure
 
-- A Table of Contents, then one `## <Category>` section per category: `Security`, `Performance`, `Maintenance`, `Refactor`, `Feature Enhancements`, `UI Cleanup`, `Not so serious`.
+- A Table of Contents, then one `## <Category>` section per category: `Security`, `Performance`, `Maintenance`, `Chore`, `Refactor`, `Feature Enhancements`, `UI Cleanup`, `Not so serious`.
 - A section may open with a short prose paragraph giving its context before the table.
 - Each section is one markdown table with the columns `ID | Priority | Agent | Effort | Brief | Description | Recommended Fix`.
 - Rows are ordered by priority: `P1` (highest) → `P2` → `P3`, then `NA`.
@@ -21,7 +21,7 @@ Source of truth for the shape of the repo root `TODO.md`. `/agentic-pr-create-to
 
 - **Bar for a row**: a row has to be worth a session of someone's time. A micro-optimization whose whole payoff is a few kB of bundle, a few forked processes per shell, or seconds on a manual operator command does not clear it, and neither does a warning with no demonstrated build, deploy, or runtime defect behind it — those are accepted, not deferred. Do not file a grab-bag row collecting several such nits under one id; each would be declined on its own, and bundling them only makes the row harder to decline. A real defect stays a row no matter how small the diff that fixes it.
 - `ID`: a unique, bare 6-hex id (no link). Generate with `python3 -c "import random; print(format(random.randint(0, 0xffffff), '06x'))"` and confirm it does not already appear in the file.
-- `Priority`: `P1`/`P2`/`P3` for Security, Performance, Maintenance, Refactor, and UI Cleanup items; `NA` for Feature Enhancements and Not so serious items (nice-to-have or deliberately-accepted risk).
+- `Priority`: `P1`/`P2`/`P3` for Security, Performance, Maintenance, Chore, Refactor, and UI Cleanup items; `NA` for Feature Enhancements and Not so serious items (nice-to-have or deliberately-accepted risk).
 - `Agent`: who can carry the fix to done. `auto` when an agent can implement and verify it entirely in a PR; `assisted` when an agent can write the change but a person must finish it outside the PR (a local `pnpm tf:apply`, secret rotation, npm publish, console setting); `human` when the work is mostly hands-on (hardware, third-party account setup) and an agent can at most update docs afterwards.
 - `Effort`: `S` (one file or config block, under an hour), `M` (several files or one service, about a session), `L` (spans services or needs ordered increments).
 - `Brief`: two or three plain sentences summarizing the problem and the fix, without file paths or line numbers; the read-only dev-dashboard TODO view shows only this, so it must stand alone. Keep it in sync whenever Description or Recommended Fix changes.
