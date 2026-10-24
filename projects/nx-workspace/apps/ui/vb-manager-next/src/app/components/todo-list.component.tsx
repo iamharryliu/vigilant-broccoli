@@ -6,7 +6,6 @@ import {
   Table,
   Callout,
   CalloutText,
-  Select,
   Textarea,
   Heading,
   Text,
@@ -24,8 +23,7 @@ import type {
   TodoSection,
 } from '../api/todo/_lib/todo-markdown.utils';
 
-const AGENT_OPTIONS = ['auto', 'assisted', 'human'];
-const EFFORT_OPTIONS = ['S', 'M', 'L'];
+const STATUS_SEPARATOR = ' · ';
 const FETCH_ERROR = 'Failed to load TODO.md';
 const SAVE_ERROR = 'Failed to save TODO.md';
 const RUN_ERROR = 'Failed to trigger agentic solve workflow';
@@ -182,14 +180,8 @@ export const TodoListComponent = () => {
                   <Table.ColumnHeaderCell className="w-24">
                     ID
                   </Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell className="w-24">
-                    Priority
-                  </Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell className="w-28">
-                    Agent
-                  </Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell className="w-20">
-                    Effort
+                  <Table.ColumnHeaderCell className="w-36">
+                    Status
                   </Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Brief</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell className="w-10" />
@@ -204,27 +196,11 @@ export const TodoListComponent = () => {
                       </Text>
                     </Table.Cell>
                     <Table.Cell>
-                      <Text className={CELL_TEXT_CLASS}>{row.priority}</Text>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Select
-                        value={row.agent}
-                        onValueChange={agent =>
-                          updateRow(section.heading, rowIdx, { agent })
-                        }
-                        options={AGENT_OPTIONS}
-                        triggerClassName={`h-8 ${CELL_TEXT_CLASS}`}
-                      />
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Select
-                        value={row.effort}
-                        onValueChange={effort =>
-                          updateRow(section.heading, rowIdx, { effort })
-                        }
-                        options={EFFORT_OPTIONS}
-                        triggerClassName={`h-8 ${CELL_TEXT_CLASS}`}
-                      />
+                      <Text className={`whitespace-nowrap ${CELL_TEXT_CLASS}`}>
+                        {[row.priority, row.effort, row.agent].join(
+                          STATUS_SEPARATOR,
+                        )}
+                      </Text>
                     </Table.Cell>
                     <Table.Cell>
                       {editingCell ===
