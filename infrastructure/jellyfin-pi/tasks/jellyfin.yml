@@ -1,7 +1,6 @@
 ---
-# Config and cache stay on the Pi's internal storage: they are small, rebuilt
-# from the library on demand, and keeping them off the external drive means a
-# drive swap never drags a stale server identity along with it.
+# Config and cache live in the stack directory, separate from the media library
+# under media_library_dir.
 # The stack directory holds root-owned files (the compose file and .env), so it
 # is never chowned recursively - doing so fights the copy/template tasks below
 # and the pair flip-flop forever, restarting Jellyfin on every run.
@@ -33,6 +32,18 @@
   # --check only simulates the service-user creation in tasks/user.yml, so the
   # chown here has no such user to resolve and errors on a host this playbook
   # has not provisioned yet. Real runs create the user first.
+  ignore_errors: '{{ ansible_check_mode }}'
+
+# Group-writable so a member of the jellyfin group can drop files in without
+# sudo, and never recursive - the playbook does not rewrite ownership of media
+# already there.
+- name: Create the media library directory
+  ansible.builtin.file:
+    path: '{{ media_library_dir }}'
+    state: directory
+    owner: '{{ jellyfin_service_user }}'
+    group: '{{ jellyfin_service_group }}'
+    mode: '0775'
   ignore_errors: '{{ ansible_check_mode }}'
 
 - name: Install the Jellyfin compose file

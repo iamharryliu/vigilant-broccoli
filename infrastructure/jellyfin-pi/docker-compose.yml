@@ -25,10 +25,10 @@ services:
         target: /media
         read_only: true
         bind:
-          # Without this, an unmounted media drive makes Docker helpfully
-          # create an empty /mnt/media/library on the SD card and Jellyfin
-          # starts with an empty library that looks like data loss. Failing to
-          # start is the better outcome.
+          # The playbook creates this directory. Without the flag, a run that
+          # failed to would leave Docker helpfully creating an empty one, and
+          # Jellyfin would start with an empty library that looks exactly like
+          # data loss. Failing to start is the better outcome.
           create_host_path: false
     environment:
       JELLYFIN_PublishedServerUrl: ${JELLYFIN_PUBLISHED_SERVER_URL}
