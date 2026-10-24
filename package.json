@@ -138,6 +138,7 @@
     "agentic-pr-create-todo": "./infrastructure/agent-sandbox/create-todo.sh",
     "agentic-pr-create-todo-audit": "./infrastructure/agent-sandbox/audit-todo.sh",
     "agentic-pr-create-prune": "./infrastructure/agent-sandbox/prune.sh",
+    "agentic-pr-create-url-audit": "./infrastructure/agent-sandbox/audit-urls.sh",
     "agentic-pr-create-rnd": "./infrastructure/agent-sandbox/create-rnd.sh",
     "agentic-pr-update": "./infrastructure/agent-sandbox/update-pr.sh",
     "vb-manager-next:start": "cd projects/nx-workspace && nx run vb-manager-next:pm2:start",
