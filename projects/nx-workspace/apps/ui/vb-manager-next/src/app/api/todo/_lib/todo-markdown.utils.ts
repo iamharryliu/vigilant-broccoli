@@ -14,9 +14,8 @@ export interface TodoSection {
   rows: TodoRow[];
 }
 
-// Serialization regenerates each table from the parsed rows, so a row the parser
-// does not understand would be erased on the next write. Refusing to parse it is
-// what keeps an unrecognized row from silently disappearing.
+// A row with the wrong cell count is reported instead of skipped, so a
+// malformed TODO.md row surfaces on the page rather than silently vanishing.
 export class TodoParseError extends Error {}
 
 const SECTION_HEADING_REGEX = /^##\s+(.+)$/;
@@ -33,7 +32,6 @@ const COLUMN_HEADERS = [
   'Description',
   'Recommended Fix',
 ];
-const MIN_COLUMN_WIDTH = 3;
 
 const malformedRowError = (
   heading: string,
@@ -47,39 +45,6 @@ const malformedRowError = (
 const splitRowCells = (line: string): string[] => {
   const inner = line.trim().slice(1, -1);
   return inner.split(UNESCAPED_PIPE_REGEX).map(cell => cell.trim());
-};
-
-const escapeCell = (value: string): string =>
-  value.replace(/\r?\n/g, '<br>').replace(UNESCAPED_PIPE_REGEX, '\\|');
-
-const padCell = (value: string, width: number): string =>
-  value + ' '.repeat(Math.max(0, width - value.length));
-
-const renderTableLines = (rows: TodoRow[]): string[] => {
-  const cells = rows.map(row => [
-    row.id,
-    row.priority,
-    row.agent,
-    row.effort,
-    escapeCell(row.brief),
-    escapeCell(row.description),
-    escapeCell(row.recommendedFix),
-  ]);
-  const widths = COLUMN_HEADERS.map((header, colIdx) =>
-    Math.max(
-      MIN_COLUMN_WIDTH,
-      header.length,
-      ...cells.map(cell => cell[colIdx].length),
-    ),
-  );
-  const buildLine = (values: string[]) =>
-    `| ${values.map((value, idx) => padCell(value, widths[idx])).join(' | ')} |`;
-
-  return [
-    buildLine(COLUMN_HEADERS),
-    buildLine(widths.map(width => '-'.repeat(width))),
-    ...cells.map(buildLine),
-  ];
 };
 
 export const parseTodoMarkdown = (content: string): TodoSection[] => {
@@ -146,63 +111,4 @@ export const parseTodoMarkdown = (content: string): TodoSection[] => {
   }
 
   return sections;
-};
-
-export const serializeTodoMarkdown = (
-  content: string,
-  sections: TodoSection[],
-): string => {
-  const sectionByHeading = new Map(
-    sections.map(section => [section.heading, section]),
-  );
-  const lines = content.split('\n');
-  const output: string[] = [];
-  let i = 0;
-
-  while (i < lines.length) {
-    const headingMatch = lines[i].match(SECTION_HEADING_REGEX);
-    if (!headingMatch) {
-      output.push(lines[i]);
-      i++;
-      continue;
-    }
-    output.push(lines[i]);
-    const heading = headingMatch[1].trim();
-    i++;
-
-    let headerIdx = -1;
-    while (i < lines.length && !SECTION_HEADING_REGEX.test(lines[i])) {
-      if (HEADER_ID_CELL_REGEX.test(lines[i])) {
-        headerIdx = i;
-        break;
-      }
-      output.push(lines[i]);
-      i++;
-    }
-    if (headerIdx === -1) continue;
-
-    let cursor = headerIdx + 1;
-    if (!(cursor < lines.length && SEPARATOR_ROW_REGEX.test(lines[cursor]))) {
-      output.push(lines[headerIdx]);
-      i = headerIdx + 1;
-      continue;
-    }
-    cursor++;
-    while (
-      cursor < lines.length &&
-      lines[cursor].trim().startsWith(TABLE_ROW_PREFIX)
-    ) {
-      cursor++;
-    }
-
-    const section = sectionByHeading.get(heading);
-    output.push(
-      ...(section
-        ? renderTableLines(section.rows)
-        : lines.slice(headerIdx, cursor)),
-    );
-    i = cursor;
-  }
-
-  return output.join('\n');
 };

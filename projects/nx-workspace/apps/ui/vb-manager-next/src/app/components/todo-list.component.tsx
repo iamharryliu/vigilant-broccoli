@@ -6,7 +6,6 @@ import {
   Table,
   Callout,
   CalloutText,
-  Textarea,
   Heading,
   Text,
 } from '@vigilant-broccoli/react-lib';
@@ -18,14 +17,10 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { authFetch } from '../../../libs/auth';
-import type {
-  TodoRow,
-  TodoSection,
-} from '../api/todo/_lib/todo-markdown.utils';
+import type { TodoSection } from '../api/todo/_lib/todo-markdown.utils';
 
 const STATUS_SEPARATOR = ' · ';
 const FETCH_ERROR = 'Failed to load TODO.md';
-const SAVE_ERROR = 'Failed to save TODO.md';
 const RUN_ERROR = 'Failed to trigger agentic solve workflow';
 const RUN_TITLE = 'Run agentic solve';
 const LOADING_MESSAGE = 'Loading TODO.md…';
@@ -41,14 +36,10 @@ const slugify = (heading: string) =>
     .replace(NON_SLUG_CHARS_RE, '-')
     .replace(EDGE_DASHES_RE, '');
 
-const editingCellKey = (heading: string, rowIdx: number) =>
-  `${heading}-${rowIdx}`;
-
 export const TodoListComponent = () => {
   const [sections, setSections] = useState<TodoSection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editingCell, setEditingCell] = useState<string | null>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const scrollToSection = (heading: string) =>
@@ -72,47 +63,6 @@ export const TodoListComponent = () => {
     };
     fetchTodo();
   }, []);
-
-  const updateSection = (
-    heading: string,
-    updateRows: (rows: TodoRow[]) => TodoRow[],
-  ) => {
-    setSections(current =>
-      current.map(section =>
-        section.heading === heading
-          ? { ...section, rows: updateRows(section.rows) }
-          : section,
-      ),
-    );
-  };
-
-  const updateRow = (
-    heading: string,
-    rowIdx: number,
-    patch: Partial<TodoRow>,
-  ) =>
-    updateSection(heading, rows =>
-      rows.map((row, idx) => (idx === rowIdx ? { ...row, ...patch } : row)),
-    );
-
-  const deleteRow = (heading: string, rowIdx: number) =>
-    updateSection(heading, rows => rows.filter((_, idx) => idx !== rowIdx));
-
-  const save = async () => {
-    setError(null);
-    try {
-      const response = await authFetch(API_ENDPOINTS.TODO, {
-        method: HTTP_METHOD.PUT,
-        headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
-        body: JSON.stringify({ sections }),
-      });
-      if (!response.ok) throw new Error(SAVE_ERROR);
-      const data = await response.json();
-      setSections(data.sections);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : SAVE_ERROR);
-    }
-  };
 
   const runTodo = async (id: string) => {
     setError(null);
@@ -203,44 +153,16 @@ export const TodoListComponent = () => {
                       </Text>
                     </Table.Cell>
                     <Table.Cell>
-                      {editingCell ===
-                      editingCellKey(section.heading, rowIdx) ? (
-                        <Textarea
-                          className={`min-h-[64px] w-full min-w-[16rem] ${CELL_TEXT_CLASS}`}
-                          value={row.brief}
-                          onChange={event =>
-                            updateRow(section.heading, rowIdx, {
-                              brief: event.target.value,
-                            })
-                          }
-                          onBlur={() => {
-                            setEditingCell(null);
-                            save();
-                          }}
-                          autoFocus
-                        />
-                      ) : (
-                        <Text
-                          className={`block min-h-[64px] w-full min-w-[16rem] whitespace-pre-wrap cursor-text ${CELL_TEXT_CLASS}`}
-                          onClick={() =>
-                            setEditingCell(
-                              editingCellKey(section.heading, rowIdx),
-                            )
-                          }
-                        >
-                          {row.brief}
-                        </Text>
-                      )}
+                      <Text
+                        className={`block w-full min-w-[16rem] whitespace-pre-wrap ${CELL_TEXT_CLASS}`}
+                      >
+                        {row.brief}
+                      </Text>
                     </Table.Cell>
                     <Table.Cell>
                       <EllipsisCTA
                         actions={[
                           { label: RUN_TITLE, onSelect: () => runTodo(row.id) },
-                          {
-                            label: 'Delete',
-                            color: 'red',
-                            onSelect: () => deleteRow(section.heading, rowIdx),
-                          },
                         ]}
                       />
                     </Table.Cell>
