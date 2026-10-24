@@ -65,7 +65,7 @@ SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-creat
 
 if [ "$MODE" = id ]; then
   # TODO items live as rows of one markdown table (ID | Type | Priority |
-  # Agent | Effort | Brief | Description | Recommended Fix). Extract the table
+  # Agent | Effort | Model | Brief | Description | Recommended Fix). Extract the table
   # header plus the matching row, expanding <br> step separators and unescaping \| pipes so the
   # solver reads clean prose.
   TASK=$(awk -v id="$ID" '

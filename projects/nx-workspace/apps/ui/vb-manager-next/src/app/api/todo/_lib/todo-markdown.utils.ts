@@ -4,6 +4,7 @@ export interface TodoRow {
   priority: string;
   agent: string;
   effort: string;
+  model: string;
   brief: string;
   description: string;
   recommendedFix: string;
@@ -23,6 +24,7 @@ const COLUMN_HEADERS = [
   'Priority',
   'Agent',
   'Effort',
+  'Model',
   'Brief',
   'Description',
   'Recommended Fix',
@@ -63,13 +65,15 @@ export const parseTodoMarkdown = (content: string): TodoRow[] => {
         malformedRowError(cursor + 1, cells.length, lines[cursor]),
       );
     }
-    const [id, type, priority, agent, effort, brief, description, fix] = cells;
+    const [id, type, priority, agent, effort, model, brief, description, fix] =
+      cells;
     rows.push({
       id,
       type,
       priority,
       agent,
       effort,
+      model,
       brief,
       description,
       recommendedFix: fix,

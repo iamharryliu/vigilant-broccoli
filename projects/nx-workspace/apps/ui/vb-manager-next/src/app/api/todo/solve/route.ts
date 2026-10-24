@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
-import { dispatchTodoSolve, isTodoId } from '../_lib/todo-dispatch';
+import {
+  dispatchTodoSolve,
+  isDispatchModel,
+  isTodoId,
+} from '../_lib/todo-dispatch';
 
 export async function POST(request: NextRequest) {
-  const { id } = await request.json();
+  const { id, model } = await request.json();
 
   if (!isTodoId(id)) {
     return NextResponse.json(
@@ -12,7 +16,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  await dispatchTodoSolve(id);
+  await dispatchTodoSolve(id, isDispatchModel(model) ? model : undefined);
 
   return NextResponse.json({ success: true });
 }

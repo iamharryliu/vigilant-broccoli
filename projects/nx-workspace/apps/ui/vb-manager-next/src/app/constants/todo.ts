@@ -1,5 +1,9 @@
 export const MAX_TODO_REMOVAL_REASON_LENGTH = 500;
 
+// The `model` choices manual-agentic-pr-create accepts; a row's Model outside
+// these (`NA`) dispatches with the workflow default.
+export const TODO_DISPATCH_MODELS = ['haiku', 'sonnet', 'opus'];
+
 // Mirrors the Type order in docs/todo-pattern.md; types missing here are listed
 // after these, alphabetically.
 export const TODO_TYPE_ORDER = [
@@ -53,6 +57,25 @@ export const TODO_STATUS_LEGEND = [
         value: 'human',
         meaning:
           'Hands-on work such as hardware or third-party account setup; an agent can at most update docs afterwards.',
+      },
+    ],
+  },
+  {
+    field: 'Model',
+    values: [
+      {
+        value: 'haiku',
+        meaning: 'Mechanical edit that copies an existing pattern.',
+      },
+      { value: 'sonnet', meaning: 'Default for ordinary implementation.' },
+      {
+        value: 'opus',
+        meaning:
+          'Security-sensitive design, subtle correctness, or large cross-service work.',
+      },
+      {
+        value: 'NA',
+        meaning: 'Human rows; Run agentic solve uses the workflow default.',
       },
     ],
   },

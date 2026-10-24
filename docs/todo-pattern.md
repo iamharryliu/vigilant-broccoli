@@ -11,7 +11,7 @@ Source of truth for the shape of the repo root `TODO.md`. `/agentic-pr-create-to
 
 ## Structure
 
-- A title and one intro paragraph, then a single markdown table with the columns `ID | Type | Priority | Agent | Effort | Brief | Description | Recommended Fix`. No `##` sections or Table of Contents: the dev-dashboard TODO view builds both from `Type`.
+- A title and one intro paragraph, then a single markdown table with the columns `ID | Type | Priority | Agent | Effort | Model | Brief | Description | Recommended Fix`. No `##` sections or Table of Contents: the dev-dashboard TODO view builds both from `Type`.
 - Rows are grouped by `Type` in the order listed under Row Rules, then ordered by priority within a Type: `P1` (highest) → `P2` → `P3`, then `NA`.
 - New `Type` values are only added when the user asks for one; add them to `TODO_TYPE_ORDER` in `projects/nx-workspace/apps/ui/vb-manager-next/src/app/constants/todo.ts` too, or the dashboard lists them after the known ones.
 
@@ -23,6 +23,7 @@ Source of truth for the shape of the repo root `TODO.md`. `/agentic-pr-create-to
 - `Priority`: `P1`/`P2`/`P3` for Security, Performance, Maintenance, Chore, Refactor, and UI Cleanup items; `NA` for Feature Enhancements and Not so serious items (nice-to-have or deliberately-accepted risk).
 - `Agent`: who can carry the fix to done. `auto` when an agent can implement and verify it entirely in a PR; `assisted` when an agent can write the change but a person must finish it outside the PR (a local `pnpm tf:apply`, secret rotation, npm publish, console setting); `human` when the work is mostly hands-on (hardware, third-party account setup) and an agent can at most update docs afterwards.
 - `Effort`: `S` (one file or config block, under an hour), `M` (several files or one service, about a session), `L` (spans services or needs ordered increments).
+- `Model`: the Claude model "Run agentic solve" dispatches `manual-agentic-pr-create` with. `haiku` for a mechanical edit that copies an existing pattern; `sonnet` (default) for ordinary implementation; `opus` for security-sensitive design, subtle correctness (SSRF guards, auth, IAM), or `L` work that needs judgment across services; `NA` when `Agent` is `human`.
 - `Brief`: two or three plain sentences summarizing the problem and the fix, without file paths or line numbers; the read-only dev-dashboard TODO view shows only this, so it must stand alone. Keep it in sync whenever Description or Recommended Fix changes.
 - `Description`: current state with concrete file references (`path/to/file.ext:12` where useful) and why it matters. Not so serious items migrated from an accepted-risk finding are prefixed `[security · non-risk]` / `[performance · non-risk]`.
 - `Recommended Fix`: the desired end state and remediation, naming an existing repo pattern to follow when one exists. Multi-step fixes are written `1. …<br>2. …<br>3. …` (a table cell cannot hold a real newline) and include the reference-update/cleanup steps (docs, workflows, links, status checks) so nothing dangles.

@@ -26,11 +26,12 @@ const TYPE_ORDER = [
   'Not so serious',
 ];
 const TYPE_CELL_INDEX = 1;
-const GENERATED_CELLS_START = 5;
+const GENERATED_CELLS_START = 6;
 const DESCRIPTION_MARKER = '`cron-prune-orphaned-services` found';
 const NEW_ROW_PRIORITY = 'P3';
 const NEW_ROW_AGENT = 'human';
 const NEW_ROW_EFFORT = 'S';
+const NEW_ROW_MODEL = 'NA';
 const APPLY_COMMAND =
   'cd projects/nx-workspace && pnpm exec tsx scripts/prune-orphaned-services.ts --apply';
 const TODO_ROW_RE = /^\|\s*[0-9a-f]{6}\s*\|/;
@@ -126,12 +127,13 @@ if (orphanTotal === 0) {
       NEW_ROW_PRIORITY,
       NEW_ROW_AGENT,
       NEW_ROW_EFFORT,
+      NEW_ROW_MODEL,
       ...contentCells(),
     ]),
   );
   action = ACTION.ADDED;
 } else {
-  // Id, Type, Priority, Agent and Effort may have been adjusted by hand; only
+  // Id, Type, Priority, Agent, Effort and Model may have been adjusted by hand; only
   // the generated cells are rewritten.
   const cells = splitCells(lines[existingIdx]);
   const updated = renderRow([

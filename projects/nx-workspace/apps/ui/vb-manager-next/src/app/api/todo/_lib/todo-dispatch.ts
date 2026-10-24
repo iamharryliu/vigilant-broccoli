@@ -1,4 +1,5 @@
 import { GithubService } from '@vigilant-broccoli/github-workspace';
+import { TODO_DISPATCH_MODELS } from '../../../constants/todo';
 
 const TODO_REPO = 'iamharryliu/vigilant-broccoli';
 const MANUAL_AGENTIC_PR_CREATE_WORKFLOW = 'manual-agentic-pr-create.yml';
@@ -15,13 +16,17 @@ export const normalizeRemovalReason = (reason: unknown): string =>
     ? reason.replace(WHITESPACE_RUN_RE, ' ').trim()
     : '';
 
-const dispatchAgenticPrCreate = (prompt: string) =>
+export const isDispatchModel = (model: unknown): model is string =>
+  typeof model === 'string' && TODO_DISPATCH_MODELS.includes(model);
+
+const dispatchAgenticPrCreate = (prompt: string, model?: string) =>
   GithubService.dispatchWorkflow(TODO_REPO, MANUAL_AGENTIC_PR_CREATE_WORKFLOW, {
     prompt,
+    ...(model ? { model } : {}),
   });
 
-export const dispatchTodoSolve = (id: string) =>
-  dispatchAgenticPrCreate(`solve ${id.toLowerCase()}`);
+export const dispatchTodoSolve = (id: string, model?: string) =>
+  dispatchAgenticPrCreate(`solve ${id.toLowerCase()}`, model);
 
 // Must match TODO_REMOVAL_REQUEST_RE in infrastructure/agent-sandbox/solve-todo-runner.sh,
 // which is what lets this TODO-only PR past the runner's "no changes" guard.

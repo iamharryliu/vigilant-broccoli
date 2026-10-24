@@ -5,8 +5,6 @@ import ReactMarkdown from 'react-markdown';
 import {
   Table,
   Button,
-  Callout,
-  CalloutText,
   Dialog,
   DialogTrigger,
   DialogContent,
@@ -18,6 +16,7 @@ import {
   Text,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
+import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { EllipsisCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import {
   CONTENT_TYPE_HEADER,
@@ -27,6 +26,7 @@ import {
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import {
   MAX_TODO_REMOVAL_REASON_LENGTH,
+  TODO_DISPATCH_MODELS,
   TODO_SORT_RANKS,
   TODO_STATUS_LEGEND,
   TODO_TYPE_ORDER,
@@ -38,7 +38,7 @@ import type { TodoRow } from '../api/todo/_lib/todo-markdown.utils';
 const STATUS_SEPARATOR = ' · ';
 const STATUS_LEGEND_TITLE = 'Status legend';
 const STATUS_LEGEND_INTRO =
-  'Each row shows Priority · Effort · Agent. Sort by any of them with the selector above the tables.';
+  'Each row shows Priority · Effort · Agent · Model. Sort by any of them with the selector above the tables.';
 const SORT_LABEL = 'Sort by';
 const DEFAULT_SORT_FIELD: TodoStatusField = 'Priority';
 const SORT_OPTIONS: TodoStatusField[] = TODO_STATUS_LEGEND.map(
@@ -48,6 +48,7 @@ const SORT_FIELD_KEY = {
   Priority: 'priority',
   Effort: 'effort',
   Agent: 'agent',
+  Model: 'model',
 } as const satisfies Record<TodoStatusField, keyof TodoRow>;
 const BRIEF_TITLE = 'Brief';
 const DESCRIPTION_TITLE = 'Description';
@@ -58,7 +59,10 @@ const ESCAPED_PIPE_RE = /\\\|/g;
 const FETCH_ERROR = 'Failed to load TODO.md';
 const RUN_ERROR = 'Failed to trigger agentic solve workflow';
 const RUN_TITLE = 'Run agentic solve';
-const RUN_DISPATCHED = (id: string) => `Agentic solve dispatched for ${id}`;
+const RUN_DISPATCHED = (id: string, model: string) =>
+  TODO_DISPATCH_MODELS.includes(model)
+    ? `Agentic solve dispatched for ${id} with ${model}`
+    : `Agentic solve dispatched for ${id}`;
 const REMOVE_TITLE = 'Delete';
 const REMOVE_DIALOG_TITLE = (id: string) => `Remove TODO ${id}`;
 const REMOVE_REASON_PLACEHOLDER =
@@ -80,7 +84,7 @@ const cellToMarkdown = (cell: string) =>
   cell.replace(CELL_LINE_BREAK_RE, '\n').replace(ESCAPED_PIPE_RE, '|');
 
 const formatStatus = (row: TodoRow) =>
-  [row.priority, row.effort, row.agent].join(STATUS_SEPARATOR);
+  [row.priority, row.effort, row.agent, row.model].join(STATUS_SEPARATOR);
 
 const TodoDetailSection = ({
   title,
@@ -149,19 +153,16 @@ const RemoveTodoDialog = ({
 }) => {
   const [reason, setReason] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const trimmedReason = reason.trim();
 
   const close = () => {
     setReason('');
-    setError(null);
     onClose();
   };
 
   const submit = async () => {
     if (!row || !trimmedReason) return;
     setSubmitting(true);
-    setError(null);
     try {
       const response = await authFetch(API_ENDPOINTS.TODO_REMOVE, {
         method: HTTP_METHOD.POST,
@@ -172,7 +173,7 @@ const RemoveTodoDialog = ({
       onDispatched(row.id);
       close();
     } catch (err) {
-      setError(err instanceof Error ? err.message : REMOVE_ERROR);
+      toast.error(err instanceof Error ? err.message : REMOVE_ERROR);
     } finally {
       setSubmitting(false);
     }
@@ -202,11 +203,6 @@ const RemoveTodoDialog = ({
               onChange={event => setReason(event.target.value)}
               autoFocus
             />
-            {error && (
-              <Text size="2" color="red" className="mt-2 block">
-                {error}
-              </Text>
-            )}
             <div className="flex justify-end gap-2 mt-4">
               <DialogClose asChild>
                 <Button size="sm" variant="secondary">
@@ -321,8 +317,6 @@ const StatusLegendDialog = () => (
 export const TodoListComponent = () => {
   const [rows, setRows] = useState<TodoRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
   const [removalTarget, setRemovalTarget] = useState<TodoRow | null>(null);
   const [sortField, setSortField] =
     useState<TodoStatusField>(DEFAULT_SORT_FIELD);
@@ -343,7 +337,11 @@ export const TodoListComponent = () => {
         const data = await response.json();
         setRows(data.rows);
       } catch (err) {
-        setError(err instanceof Error ? err.message : FETCH_ERROR);
+        // The page has nothing else to show, so the reason (often a parse error
+        // naming the bad TODO.md row) stays until dismissed.
+        toast.error(err instanceof Error ? err.message : FETCH_ERROR, {
+          duration: Infinity,
+        });
       } finally {
         setLoading(false);
       }
@@ -351,19 +349,17 @@ export const TodoListComponent = () => {
     fetchTodo();
   }, []);
 
-  const runTodo = async (id: string) => {
-    setError(null);
-    setNotice(null);
+  const runTodo = async ({ id, model }: TodoRow) => {
     try {
       const response = await authFetch(API_ENDPOINTS.TODO_SOLVE, {
         method: HTTP_METHOD.POST,
         headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ id, model }),
       });
       if (!response.ok) throw new Error(RUN_ERROR);
-      setNotice(RUN_DISPATCHED(id));
+      toast.success(RUN_DISPATCHED(id, model));
     } catch (err) {
-      setError(err instanceof Error ? err.message : RUN_ERROR);
+      toast.error(err instanceof Error ? err.message : RUN_ERROR);
     }
   };
 
@@ -371,23 +367,10 @@ export const TodoListComponent = () => {
 
   return (
     <div className="flex flex-col gap-5">
-      {error && (
-        <Callout color="red">
-          <CalloutText>{error}</CalloutText>
-        </Callout>
-      )}
-      {notice && (
-        <Callout color="green">
-          <CalloutText>{notice}</CalloutText>
-        </Callout>
-      )}
       <RemoveTodoDialog
         row={removalTarget}
         onClose={() => setRemovalTarget(null)}
-        onDispatched={id => {
-          setError(null);
-          setNotice(REMOVE_DISPATCHED(id));
-        }}
+        onDispatched={id => toast.success(REMOVE_DISPATCHED(id))}
       />
       {groups.length > 0 && (
         <div className="flex flex-wrap items-start justify-between gap-4">
@@ -441,7 +424,7 @@ export const TodoListComponent = () => {
                   <Table.ColumnHeaderCell className="w-24">
                     ID
                   </Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell className="w-40">
+                  <Table.ColumnHeaderCell className="w-52">
                     <span className="inline-flex items-center gap-1">
                       Status
                       <StatusLegendDialog />
@@ -470,7 +453,7 @@ export const TodoListComponent = () => {
                     <Table.Cell>
                       <EllipsisCTA
                         actions={[
-                          { label: RUN_TITLE, onSelect: () => runTodo(row.id) },
+                          { label: RUN_TITLE, onSelect: () => runTodo(row) },
                           {
                             label: REMOVE_TITLE,
                             color: 'red',
