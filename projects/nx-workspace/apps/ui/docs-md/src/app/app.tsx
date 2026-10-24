@@ -6,6 +6,7 @@ import {
   FILE_PARAM,
 } from '@vigilant-broccoli/react-lib-higher-level';
 
+const THEME_STORAGE_KEY = 'docs-md-theme';
 const SITE_NAME = 'Docs';
 const PAGE_TITLE = 'Browse';
 
@@ -30,7 +31,7 @@ export function App() {
   const urlSync = useMemo(() => ({ get: getFileParam, set: setFileParam }), []);
 
   return (
-    <ThemeProvider followSystem>
+    <ThemeProvider storageKey={THEME_STORAGE_KEY}>
       <div className="h-dvh p-2 sm:p-4 bg-white dark:bg-gray-900">
         <DocsViewer
           siteName={SITE_NAME}

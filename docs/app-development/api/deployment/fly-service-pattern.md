@@ -4,10 +4,9 @@ Niche gotchas for `projects/nx-workspace/apps/api/*` fly.io services. For boiler
 
 Reference apps (each demonstrates a different combination):
 
-- `apps/api/llm-service/` — pruned + `flyctl deploy --dockerfile` (fly builds image)
-- `apps/api/bucket-service/` — pruned + Docker Hub roundtrip (`deploy-container` pushes to `iamharryliu/bucket-service`, then `flyctl deploy --image`). Note: outputs to `dist/bucket-service`, not `dist/apps/api/bucket-service`.
+- `apps/api/bucket-service/`, `apps/api/llm-service/` — pruned + Docker Hub roundtrip (`deploy-container` pushes to `iamharryliu/<svc>`, then `flyctl deploy --image`). Note: bucket-service outputs to `dist/bucket-service`, not `dist/apps/api/bucket-service`.
 - `apps/api/email-service/`, `apps/api/email-subscription-service/` — bundled + Docker Hub roundtrip
-- `apps/api/vb-express/` — pruned + `flyctl deploy --dockerfile`, with a fly volume mount (`[mounts]`) for its SQLite db.
+- `apps/api/vb-express/` — pruned + Docker Hub roundtrip, with a fly volume mount (`[mounts]`) for its SQLite db.
 
 ## Table of Contents
 
@@ -26,6 +25,8 @@ Reference apps (each demonstrates a different combination):
 
 Deployed instances follow the repo-wide `staging-` / `production-` prefix convention. Fly specifics: the app name (`staging-llm-service`) and config filename (`deployment-configs/fly-configs/<env>-llm-service.toml`) are prefixed; nx project names stay unprefixed (`llm-service`).
 
+`office-presence-service` is the single-environment exception: only `demo` exists (`demo-office-presence-service`, config `deployment-configs/fly-configs/demo-office-presence-service.toml`, targets `deploy:demo` / `deploy:secrets:demo`, run by `deploy-demo-apps` and `manual-deploy-app` with `environment: demo`). It follows the bundled + Docker Hub roundtrip shape and shares one image, `iamharryliu/office-presence-service`, with self-hosters; the Fly config selects HTTP mode with `SLACK_MODE=http`.
+
 Each service defines a target pair: `deploy` (staging) and `deploy:production`, with mirrored `deploy:secrets` / `deploy:secrets:production` chains. `scripts/secrets-mapping.config.ts` stores the env-less `flyAppBaseName`; `deploy-flyio-secrets.ts <project> <env>` composes `<env>-<base>`. Cross-service URLs (`EMAIL_SERVICE_URL`, `LLM_SERVICE_URL`, `BETTER_AUTH_URL`, build args) live in the per-env fly config / deploy command so each environment talks only to its own siblings. Post-deploy checks run in the environment-matrix `test-*` workflows (e.g. `test-e2e-llm.yml`).
 
 ## Local dev
@@ -39,10 +40,7 @@ Every service's `PORT` fallback (used when `nx serve` runs with no `PORT` set) d
 - **Bundled** (`@nx/esbuild:esbuild`, `bundle: true, thirdParty: true`): single `main.js`, no Dockerfile install.
 - **Pruned** (`@nx/webpack:webpack` + `prune-lockfile` + `copy-workspace-modules`): `main.js` + `package.json` + `pnpm-lock.yaml` + `workspace_modules/`, Dockerfile runs `pnpm install --frozen-lockfile --prod`. Pick only when bundling is impractical.
 
-**Image delivery:**
-
-- **Direct**: `deploy` runs `flyctl deploy --dockerfile ...`, fly builds the image.
-- **Docker Hub roundtrip**: `deploy-container` runs `docker buildx ... --push iamharryliu/<svc>` (tags `latest` and `${COMMIT_SHA}`), then `deploy` runs `flyctl deploy --image iamharryliu/<svc>:${COMMIT_SHA}`.
+**Image delivery:** every service uses the Docker Hub roundtrip: `deploy-container` runs `docker buildx ... --push iamharryliu/<svc>` (tags `latest` and `${COMMIT_SHA}`), then `deploy` runs `flyctl deploy --image iamharryliu/<svc>:${COMMIT_SHA}`.
 
 ## Transitive-dep gotcha (pruned only)
 
@@ -68,6 +66,7 @@ Wiring: pruned `smoke` depends on `prune`; bundled `smoke` depends on `build`. `
 
 - `GET /` must be unauthenticated, fast, no DB/LLM calls. Pattern: `reply.send({ service: SERVICE_NAME, docs: DOCS_PATH })`.
 - `grace_period = '30s'` is a safe margin for resume or cold-start; every service (`vb-express`, `bucket-service`, `llm-service`, and the email services) uses `auto_stop_machines = 'suspend'` and resumes from a memory snapshot in under a second. The email services' amqplib publish connections and consumers survived a staging resume (2026-10-11, one short suspend); a long suspend where the broker drops the connection is untested, and their `setTimeout` reconnect loops are the fallback. Use `'stop'` instead if a service holds connections or timers that do not survive a resume.
+- The email services' AMQP consumers run in the web process, and outbound AMQP traffic does not keep a Fly machine awake. Messages still queued when the machine suspends wait until the next inbound HTTP request resumes it (resume measured at 196–373 ms on staging, consumer reattached and acked within about 1 s). This delay is accepted to keep idle cost near $0: each service is its queue's only publisher, and the HTTP request that enqueues also wakes the machine, so only a backlog left when the machine suspends is delayed. If delivery latency starts to matter, set `min_machines_running = 1` (about $2/month per app) or move the consumers to the always-on VM.
 - Failed checks on a new machine abort the deploy and keep the previous machine running — don't skip the `[[http_service.checks]]` block.
 
 ## Machine count

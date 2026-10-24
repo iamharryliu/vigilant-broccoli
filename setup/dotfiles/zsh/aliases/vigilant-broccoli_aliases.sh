@@ -26,6 +26,7 @@ alias cdnx="cd $NX_DIR"
 alias vbactions="cdvb && npm run open:repo:actions"
 alias vbnpm="cdvb && npm run npm:packages"
 # vb push
+alias pushbruno="cdvb && git add $BRUNO_DIR && gc docs bruno 'Update Bruno collections.' && gpush"
 alias pushdocs="cdvb && git add $DOCS_DIR && gc docs notes 'Update Markdown docs.' && gpush"
 alias pushnotes="cdvb && git add $NOTES_DIR && gc docs notes 'Update Markdown notes.' && gpush"
 alias pushvbtodo="cdvb && git add $TODO_FILEPATH && gc docs todo 'Update TODO.md file.' && gpush"

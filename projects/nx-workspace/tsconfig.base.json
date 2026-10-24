@@ -43,15 +43,23 @@
       "@vigilant-broccoli/react-lib/toaster": [
         "./libs/@vigilant-broccoli/react-lib/src/components/Toaster.tsx"
       ],
+      "@vigilant-broccoli/react-lib-auth": [
+        "./libs/@vigilant-broccoli/react-lib-auth/src/index.ts"
+      ],
+      "@vigilant-broccoli/react-lib-calendar": [
+        "./libs/@vigilant-broccoli/react-lib-calendar/src/index.ts"
+      ],
+      "@vigilant-broccoli/react-lib-media": [
+        "./libs/@vigilant-broccoli/react-lib-media/src/index.ts"
+      ],
       "@vigilant-broccoli/react-lib-higher-level": [
         "./libs/@vigilant-broccoli/react-lib-higher-level/src/index.ts"
       ],
       "@vigilant-broccoli/react-lib-higher-level/live-location-map": [
         "./libs/@vigilant-broccoli/react-lib-higher-level/src/lib/live-location/LiveUserMap.tsx"
       ],
-      "@vigilant-broccoli/personal-common-js": [
-        "./libs/@vigilant-broccoli/personal-common-js/src/index.ts"
-      ],
+      "@harry/personal": ["./libs/@harry/personal/src/index.ts"],
+      "@harry/private": ["./libs/@harry/private/src/index.ts"],
       "@vigilant-broccoli/slack-workspace": [
         "./libs/@vigilant-broccoli/slack-workspace/src/index.ts"
       ],
@@ -64,8 +72,17 @@
       "@vigilant-broccoli/github-workspace-js": [
         "./libs/@vigilant-broccoli/github-workspace-js/src/index.ts"
       ],
-      "@vigilant-broccoli/links": [
-        "./libs/@vigilant-broccoli/links/src/index.ts"
+      "@vigilant-broccoli/infrastructure": [
+        "./libs/@vigilant-broccoli/infrastructure/src/index.ts"
+      ],
+      "@vigilant-broccoli/private-infrastructure": [
+        "./libs/@vigilant-broccoli/private-infrastructure/src/index.ts"
+      ],
+      "@vigilant-broccoli/manager": [
+        "./libs/@vigilant-broccoli/manager/src/index.ts"
+      ],
+      "@vigilant-broccoli/public-links": [
+        "./libs/@vigilant-broccoli/public-links/src/index.ts"
       ],
       "@vigilant-broccoli/llm-tools": [
         "./libs/@vigilant-broccoli/llm-tools/src/index.ts"

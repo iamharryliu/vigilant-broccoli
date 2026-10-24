@@ -13,8 +13,8 @@
 
 ## Dialogs
 
-- Hosts email, calendar, notepad, search, pomodoro, and utilities dialogs, opened through the page layout's controls and keyboard shortcuts
-- Runs the shared alarm, timer, and pomodoro engines
+- Hosts email, calendar, notepad, search, and utilities dialogs, opened through the page layout's controls and keyboard shortcuts
+- Runs the shared alarm and timer engines
 - See [Settings](./settings.md) for the keyboard shortcuts cheatsheet
 
 ## Drag Behavior

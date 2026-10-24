@@ -10,15 +10,10 @@
 ## Commands
 
 ```sh
-codex # open the terminal UI in the current directory
 codex "Explain this project" # start a chat with an initial prompt
 codex -C ~/code/app "Fix the bug" # use another workspace root
 codex -i screenshot.png "Recreate this UI" # attach an image to the first prompt
 codex --search "Check current docs, then update this integration" # enable live web search
-
-# SESSION CONTROL
-codex resume --last # continue the most recent interactive session
-codex fork --last "Try another approach" # branch the latest session into a new chat
 
 # NON-INTERACTIVE
 codex exec "Fix the failing lint rule" # run Codex without opening the TUI
@@ -29,12 +24,8 @@ codex review --uncommitted # review staged, unstaged, and untracked changes
 codex review --base main # review current branch against main
 
 # COMMON SLASH COMMANDS
-/status # inspect chat id, model, workspace, context, and rate limits
-/permissions # adjust sandbox and approval boundaries mid-session
-/model # choose the active model for the chat
 /plan # toggle plan mode before implementation
 /review # review local changes or compare against a base branch
-/compact # compress a long chat context
 ```
 
 ## config.toml

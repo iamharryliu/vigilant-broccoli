@@ -1,0 +1,22 @@
+{
+  "name": "@vigilant-broccoli/infrastructure",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@vigilant-broccoli/infrastructure/src",
+  "projectType": "library",
+  "tags": ["type:util", "visibility:public"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/@vigilant-broccoli/infrastructure",
+        "main": "libs/@vigilant-broccoli/infrastructure/src/index.ts",
+        "tsConfig": "libs/@vigilant-broccoli/infrastructure/tsconfig.lib.json",
+        "assets": []
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

@@ -14,6 +14,11 @@ write_files:
         reverse_proxy code-server:8443
       }
 
+      ${web_terminal_domain} {
+        tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
+        reverse_proxy code-server:7681
+      }
+
   - path: /opt/code-server/certs/origin.pem
     permissions: '0644'
     content: |
@@ -59,6 +64,42 @@ write_files:
       fi
       chown abc:abc "$CLAUDE_STATE"
 
+  # Tracks the image tag in docker-compose.yml so a deploy-code-server-image
+  # push reaches the VM without replacing it. A pinned sha- tag pulls nothing
+  # new, so pinning still holds. `up -d` recreates the container only when the
+  # pulled image differs, which ends any live tmux session in it.
+  - path: /opt/code-server/update-image.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      set -e
+      docker compose -f /opt/code-server/docker-compose.yml pull code-server
+      docker compose -f /opt/code-server/docker-compose.yml up -d code-server
+
+  - path: /etc/systemd/system/code-server-update.service
+    content: |
+      [Unit]
+      Description=Pull the code-server image and recreate the container if it changed
+      After=docker.service
+      Requires=docker.service
+
+      [Service]
+      Type=oneshot
+      ExecStart=/opt/code-server/update-image.sh
+
+  # Anonymous Docker Hub pulls allow 100 per 6h per IP; every 15 minutes is 24.
+  - path: /etc/systemd/system/code-server-update.timer
+    content: |
+      [Unit]
+      Description=Check Docker Hub for a new code-server image
+
+      [Timer]
+      OnBootSec=10min
+      OnUnitActiveSec=15min
+
+      [Install]
+      WantedBy=timers.target
+
   - path: /opt/code-server/docker-compose.yml
     content: |
       services:
@@ -75,6 +116,12 @@ write_files:
             DEFAULT_WORKSPACE: /config/vigilant-broccoli
             CLAUDE_CODE_OAUTH_TOKEN: "${claude_code_oauth_token}"
             GH_TOKEN_FILE: /run/secrets/gh-token.json
+            # Not a secret: the team domain and AUD are in every Access JWT.
+            # The web-terminal service verifies them; port 7681 is only
+            # reachable from Caddy over the compose network, never published.
+            CF_ACCESS_TEAM_DOMAIN: ${access_team_domain}
+            CF_ACCESS_AUD: ${web_terminal_aud}
+            TERMINAL_PORT: "7681"
           volumes:
             - code_server_config:/config
             - /opt/code-server/custom-init:/custom-cont-init.d:ro
@@ -106,3 +153,5 @@ runcmd:
   # read what manual-refresh-code-server-github-token.yml drops here.
   - install -d -m 0700 -o 1000 -g 1000 /opt/code-server/secrets
   - docker compose -f /opt/code-server/docker-compose.yml up -d
+  - systemctl daemon-reload
+  - systemctl enable --now code-server-update.timer

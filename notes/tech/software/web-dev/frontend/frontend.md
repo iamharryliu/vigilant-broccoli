@@ -8,6 +8,8 @@
 - [Styling and UI Components](#styling-and-ui-components)
   - [Styling Languages and Utilities](#styling-languages-and-utilities)
   - [UI Component Tools](#ui-component-tools)
+  - [UI Component Names](#ui-component-names)
+  - [Organizing Component Libraries](#organizing-component-libraries)
 - [Tools](#tools)
   - [State Management](#state-management)
   - [Templating](#templating)
@@ -84,6 +86,53 @@ Ways to bring content that lives elsewhere into a page. They trade isolation aga
 | [Bootstrap](./bootstrap.md) | CSS framework with styled components, a responsive grid, and JavaScript plugins for interactions.                           | Ready-made controls and consistent defaults speed up development.                 | Distinctive designs require customization; unused styles and scripts can add weight.               | Prototypes, internal tools, and sites that fit conventional component layouts.              |
 | Radix UI                    | Unstyled React primitives providing interaction behavior and accessibility features for controls such as dialogs and menus. | Handles many keyboard, focus, and ARIA patterns; flexible styling.                | Requires React and your own styling; composition still needs accessibility checks.                 | Custom React design systems needing reusable interaction primitives.                        |
 | shadcn/ui                   | Styled component source code distributed into your project for direct customization.                                        | Useful defaults; editable source; control over component behavior and appearance. | You maintain copied code and reconcile upstream changes; dependencies and setup vary by component. | Applications needing ready-made components that can be adapted into a custom design system. |
+
+### UI Component Names
+
+| Component      | What It Is                                                                | Typical Use                                   |
+| -------------- | ------------------------------------------------------------------------- | --------------------------------------------- |
+| Accordion      | Stacked headers that each expand or collapse their own content panel.     | FAQs, settings groups.                        |
+| Alert          | Inline banner that communicates a status or message within the page flow. | Form errors, warnings, info notes.            |
+| Alert dialog   | Modal that interrupts to demand a confirm or cancel decision.             | Delete confirmation.                          |
+| Avatar         | Small image or initials representing a user or entity.                    | Profile menus, comment threads.               |
+| Badge          | Small label or count attached to another element.                         | Unread counts, status tags.                   |
+| Breadcrumb     | Trail of links showing the current page's place in a hierarchy.           | Deep navigation, file paths.                  |
+| Card           | Bordered container grouping related content and actions.                  | Product tiles, dashboard widgets.             |
+| Carousel       | Horizontally sliding set of items shown one or a few at a time.           | Image galleries, featured content.            |
+| Checkbox       | Control toggling an option on or off; several can be selected.            | Multi-select options, consent.                |
+| Combobox       | Text input paired with a filterable dropdown list of options.             | Searchable selects, autocomplete.             |
+| Dialog / Modal | Overlay window that blocks the page behind it until closed.               | Forms, confirmations, detail views.           |
+| Drawer / Sheet | Panel that slides in from a screen edge over or beside the page.          | Mobile menus, filters, detail panes.          |
+| Dropdown menu  | List of actions revealed from a trigger button.                           | Overflow (`...`) menus, user menus.           |
+| Pagination     | Controls for moving between pages of a long list.                         | Search results, tables.                       |
+| Popover        | Floating panel anchored to a trigger, closed by clicking away.            | Date pickers, small forms.                    |
+| Progress bar   | Bar showing how much of a task is complete.                               | Uploads, multi-step flows.                    |
+| Radio group    | Set of options where exactly one can be selected.                         | Plan or size selection.                       |
+| Select         | Control choosing one option from a collapsed list.                        | Country or language pickers.                  |
+| Skeleton       | Grey placeholder shaped like content while it loads.                      | Loading lists and cards without layout shift. |
+| Slider         | Draggable handle selecting a value or range along a track.                | Volume, price range.                          |
+| Snackbar       | Material Design name for a toast, often with one action.                  | "Undo" after a delete.                        |
+| Spinner        | Rotating indicator for an operation of unknown duration.                  | Button or page loading.                       |
+| Stepper        | Indicator or flow showing progress through ordered steps.                 | Checkout, onboarding.                         |
+| Switch         | Control toggling a setting on or off immediately.                         | Dark mode, notifications.                     |
+| Table          | Rows and columns of structured data, often sortable.                      | Admin lists, reports.                         |
+| Tabs           | Row of headers that swap which content panel is visible.                  | Settings sections, views of one record.       |
+| Toast          | Brief, non-blocking message that appears and auto-dismisses.              | "Saved" confirmations.                        |
+| Tooltip        | Small text bubble shown on hover or focus to explain an element.          | Icon button labels.                           |
+
+### Organizing Component Libraries
+
+Ways to structure UI components in a codebase, independent of the tools above. They combine: a shared package can use Atomic Design internally while the app around it is organized by feature.
+
+| Approach                      | What It Is                                                                                                               | Pros                                                                                         | Cons                                                                                                          | Best Used For                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| Atomic Design                 | Components grouped by composition level: atoms (button), molecules (search field), organisms (header), templates, pages. | Shared vocabulary; encourages small reusable parts; clear build-up from primitives to pages. | Levels are subjective (is it a molecule or an organism?); deep folders; feature code gets scattered by level. | Design systems and component libraries with a broad, reusable UI kit.          |
+| Copy-in components            | Component source copied into your repo (such as shadcn/ui) and edited directly.                                          | Full ownership and customization; no library version lock.                                   | You maintain the copied code and merge upstream changes by hand.                                              | Apps that want ready-made starting points but a fully custom final design.     |
+| Design system package         | A separately versioned library of tokens and components consumed by one or more apps, often with Storybook docs.         | One source of truth; consistent look across apps; isolated testing and documentation.        | Versioning and release overhead; slows one-off changes; needs ownership and governance.                       | Multiple apps or teams that must share the same look and behavior.             |
+| Feature or domain folders     | Components colocated with the feature that uses them (`checkout/`, `profile/`); only truly shared parts are promoted.    | Related code changes together; easy ownership and deletion; no premature abstraction.        | Duplication can creep in; promoting to shared needs discipline.                                               | Product applications with distinct features and several contributors.          |
+| Flat or type-based folders    | A single `components/` folder, or folders by kind (`buttons/`, `forms/`, `layouts/`).                                    | Zero ceremony; everything is easy to find at small scale.                                    | Becomes a dumping ground as it grows; no signal of what is shared versus feature-specific.                    | Small apps, prototypes, and early-stage projects.                              |
+| Headless primitives + styling | Unstyled behavior and accessibility primitives (such as Radix UI) wrapped in your own styled components.                 | Accessibility handled; full visual control; swappable styling layer.                         | You build and maintain the styled layer; requires a design direction up front.                                | Custom design systems that need accessible behavior without a prescribed look. |
+| Third-party component library | An installed package of finished components (Bootstrap, MUI, Ant Design) used as-is with theming.                        | Fastest to start; consistent, tested components; upstream fixes arrive with upgrades.        | Distinct branding needs overrides; bundle weight; coupled to the library's roadmap and conventions.           | Internal tools, admin dashboards, and MVPs where speed beats a unique look.    |
 
 ## Tools
 

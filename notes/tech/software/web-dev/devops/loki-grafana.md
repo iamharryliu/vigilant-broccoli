@@ -41,6 +41,7 @@ sum(count_over_time({app="api"} |= "honeypot_triggered" [$__range]))            
 sum by (fly_app_name) (count_over_time({app=~".+"} |= "x" [$__auto]))           # per-app bar chart
 sum by (status) (count_over_time({app="api"} | json | path="/contact" [1h]))    # status breakdown
 rate({container="nginx"} |= "error" [5m])                                       # errors per second
+quantile_over_time(0.95, {app="api"} |= "latency_ms" | json | unwrap latency_ms | __error__="" [$__auto]) by (route)  # p95 per route
 ```
 
 `$__range`, `$__auto`, and `$__interval` are Grafana variables; use `[$__range]` with an instant query for totals and `[$__auto]` for time series.
@@ -51,6 +52,9 @@ rate({container="nginx"} |= "error" [5m])                                       
 - Retention needs the compactor with `retention_enabled: true`; `retention_period` alone does nothing.
 - Basic auth via `htpasswd`: `openssl passwd -apr1` produces a hash nginx accepts without installing `apache2-utils`. Generating the hash in Terraform (`bcrypt()`) re-salts every plan and churns anything that embeds it.
 - The Vector Loki sink used by fly-log-shipper only supports basic auth, so an identity-aware proxy that expects custom headers (Cloudflare Access service tokens, for instance) cannot sit in front of the push URL.
+- `unwrap` fails the whole query on any line missing the field (a plain-text error log, a platform line). Pre-filter with a substring the structured lines carry (`|= "latency_ms"`) and drop leftovers with `| __error__=""` after `unwrap`.
+- Group by a route template, never the raw URL: ids and query strings in the path turn one endpoint into thousands of series.
+- Keep large dashboard JSON out of VM user data (cloud-init): it counts against the provider's size cap, and on hosts that replace the VM when user data changes every dashboard edit rebuilds the box. Point the file provider at a directory on the persistent data disk and sync the JSON there; with `updateIntervalSeconds` set, Grafana picks up edits and removals without a restart.
 - Provisioned dashboards are read-only in the UI unless `allowUiUpdates: true`; edit the JSON at the source instead.
 - A full disk takes Loki and Grafana down together, so an alert that queries Loki to report low disk space goes silent exactly when it fires. Check disk from outside the stack — a timer writing a marker file that a web server turns into a health status works, and any external uptime monitor can then poll it.
 - Bound the inflow as well as watching the outflow: `limits_config.ingestion_rate_mb`, `ingestion_burst_size_mb` and `max_global_streams_per_user` stop one looping producer filling the volume. Container logs land on the host's root disk, not Loki's, so set `log-opts.max-size`/`max-file` in `/etc/docker/daemon.json` too.

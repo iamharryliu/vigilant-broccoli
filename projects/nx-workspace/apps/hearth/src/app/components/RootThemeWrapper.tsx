@@ -1,17 +1,8 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { ThemeProvider, useThemeKeybind } from '@vigilant-broccoli/react-lib';
-
-function ThemeKeybindWrapper({ children }: { children: ReactNode }) {
-  useThemeKeybind();
-  return <>{children}</>;
-}
+import { ThemeProvider } from '@vigilant-broccoli/react-lib';
 
 export function RootThemeWrapper({ children }: { children: ReactNode }) {
-  return (
-    <ThemeProvider>
-      <ThemeKeybindWrapper>{children}</ThemeKeybindWrapper>
-    </ThemeProvider>
-  );
+  return <ThemeProvider>{children}</ThemeProvider>;
 }

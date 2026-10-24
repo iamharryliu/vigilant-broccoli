@@ -21,6 +21,12 @@ export const secretsMapping: SecretsMapping = {
     vaultPath: COMMON_VAULT_PATH,
     excludeEnvVars: COMMON_EXCLUDED_VARS,
   },
+  'office-presence-service': {
+    flyAppBaseName: 'office-presence-service',
+    appPath: './apps/api/office-presence-service',
+    vaultPath: COMMON_VAULT_PATH,
+    excludeEnvVars: COMMON_EXCLUDED_VARS,
+  },
   'llm-service': {
     flyAppBaseName: 'llm-service',
     appPath: './apps/api/llm-service',

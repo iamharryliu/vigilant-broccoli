@@ -20,7 +20,7 @@ INC_MAX_LATER=4
 INC_SKIP_COMMIT_HOOKS=lint-staged
 INC_DEFAULT_BASE=${INC_DEFAULT_BASE:-main}
 INC_CURRENT=current
-INC_PLAN_FILE=/tmp/increment-plan.json
+INC_PLAN_FILE=${INC_PLAN_FILE:-/tmp/increment-plan.json}
 INC_COMMIT_TYPES='feat fix ci chore docs refactor enhancement security infrastructure'
 
 declare -A INC_BRANCH=() INC_URL=() INC_TITLE=() INC_DEP=() INC_TASK=() INC_STATE=() INC_REASON=()

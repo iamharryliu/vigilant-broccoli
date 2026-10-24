@@ -1,49 +1,13 @@
 # Fruits
 
-Peak season for a temperate Northern Hemisphere climate (e.g. the continental US); actual availability varies by region and is wider wherever imports or greenhouse growing are common.
+Peak season for a temperate Northern Hemisphere climate (e.g. the continental US); actual availability varies by region and is wider wherever imports or greenhouse growing are common. The hearth app reads the Seasonal Timeline below to build its In Season card, so the gantt format must stay parseable.
 
 ## Table of Contents
 
 - [Seasonality](#seasonality)
-  - [In Season by Month](#in-season-by-month)
   - [Seasonal Timeline](#seasonal-timeline)
-- [See Also](#see-also)
 
 ## Seasonality
-
-### In Season by Month
-
-| Fruit                | Season         | Peak Months |
-| -------------------- | -------------- | ----------- |
-| Apple                | Fall           | Sep–Nov     |
-| Apricot              | Summer         | Jun–Jul     |
-| Avocado              | Winter, Spring | Jan–Apr     |
-| Blackberry           | Summer         | Jun–Aug     |
-| Blueberry            | Summer         | Jun–Aug     |
-| Cantaloupe           | Summer         | Jun–Aug     |
-| Cherry               | Summer         | May–Jul     |
-| Cranberry            | Fall           | Oct–Nov     |
-| Fig                  | Summer, Fall   | Jun–Sep     |
-| Grape                | Fall           | Aug–Oct     |
-| Grapefruit           | Winter         | Jan–Apr     |
-| Honeydew Melon       | Summer         | Jun–Aug     |
-| Kiwi                 | Fall, Winter   | Oct–Mar     |
-| Lemon                | Winter, Spring | Jan–May     |
-| Lime                 | Summer         | Jun–Aug     |
-| Mango                | Summer         | May–Aug     |
-| Nectarine            | Summer         | Jun–Aug     |
-| Orange               | Winter         | Dec–Apr     |
-| Peach                | Summer         | Jun–Aug     |
-| Pear                 | Fall           | Sep–Nov     |
-| Persimmon            | Fall, Winter   | Oct–Dec     |
-| Pineapple            | Spring, Summer | Mar–Jul     |
-| Plum                 | Summer         | Jun–Sep     |
-| Pomegranate          | Fall           | Sep–Nov     |
-| Raspberry            | Summer         | Jun–Sep     |
-| Rhubarb              | Spring         | Apr–Jun     |
-| Strawberry           | Spring, Summer | Apr–Jun     |
-| Tangerine / Mandarin | Winter         | Nov–Feb     |
-| Watermelon           | Summer         | Jun–Aug     |
 
 ### Seasonal Timeline
 

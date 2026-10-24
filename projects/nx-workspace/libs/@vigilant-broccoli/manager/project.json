@@ -1,0 +1,22 @@
+{
+  "name": "@vigilant-broccoli/manager",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@vigilant-broccoli/manager/src",
+  "projectType": "library",
+  "tags": ["type:util", "visibility:private"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/@vigilant-broccoli/manager",
+        "main": "libs/@vigilant-broccoli/manager/src/index.ts",
+        "tsConfig": "libs/@vigilant-broccoli/manager/tsconfig.lib.json",
+        "assets": []
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

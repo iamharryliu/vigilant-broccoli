@@ -9,7 +9,7 @@ export function ToasterDemo() {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-6">
-      <Toaster richColors duration={DEMO_DURATION_MS} />
+      <Toaster richColors closeButton duration={DEMO_DURATION_MS} />
 
       <DemoSection title={t('DEMO_SECTION.TOASTER.TOAST_TYPES')}>
         <div className="flex gap-3 flex-wrap">

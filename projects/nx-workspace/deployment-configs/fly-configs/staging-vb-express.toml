@@ -2,6 +2,7 @@ app = 'staging-vb-express'
 primary_region = 'yyz'
 
 [build]
+  image = 'iamharryliu/vb-express:latest'
 
 [env]
   PORT = '3000'

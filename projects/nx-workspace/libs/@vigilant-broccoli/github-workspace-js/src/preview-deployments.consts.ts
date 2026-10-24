@@ -1,0 +1,29 @@
+import { VB_GITHUB_REPO } from '@vigilant-broccoli/infrastructure';
+
+const GITHUB_API_BASE = 'https://api.github.com';
+const GITHUB_PAGE_SIZE = 100;
+
+export const PREVIEW_DEPLOYMENTS_GITHUB_URL = {
+  DEPLOYMENTS: `${GITHUB_API_BASE}/repos/${VB_GITHUB_REPO}/deployments?per_page=${GITHUB_PAGE_SIZE}`,
+  OPEN_PULLS: `${GITHUB_API_BASE}/repos/${VB_GITHUB_REPO}/pulls?state=open&per_page=${GITHUB_PAGE_SIZE}`,
+} as const;
+
+// Written by .github/scripts/record-preview-deployments.mjs as pr-<n>/<app>.
+export const PREVIEW_ENVIRONMENT_PATTERN = /^pr-(\d+)\/([a-z0-9-]+)$/;
+
+// Unauthenticated GitHub calls are limited to 60 per hour per IP; each fetch
+// spends two.
+export const PREVIEW_DEPLOYMENTS_CACHE_TTL_MS = 3 * 60 * 1000;
+
+export const GITHUB_RATE_LIMIT_HEADER = {
+  REMAINING: 'x-ratelimit-remaining',
+  RESET: 'x-ratelimit-reset',
+} as const;
+
+export const PREVIEW_DEPLOYMENTS_ERROR = {
+  RATE_LIMITED: 'rate_limited',
+  UPSTREAM: 'upstream',
+} as const;
+
+export type PreviewDeploymentsError =
+  (typeof PREVIEW_DEPLOYMENTS_ERROR)[keyof typeof PREVIEW_DEPLOYMENTS_ERROR];

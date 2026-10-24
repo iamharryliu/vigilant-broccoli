@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { SIDEBAR_ROUTE } from '../app.const';
 import { ReactNode, useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../libs/auth';
-import { useThemeKeybind } from '@vigilant-broccoli/react-lib';
 import { FloatingIslandComponent } from '../components/floating-island.component';
 import { RightSidebar } from '../components/right-sidebar.component';
 import { ShortcutsOverlay } from '../components/shortcuts-overlay.component';
@@ -31,11 +30,9 @@ type KeyboardHandlers = {
   openChatbot: () => void;
   setCalendarDialogOpen: (open: boolean) => void;
   setNotepadDialogOpen: (open: boolean) => void;
-  setPomodoroDialogOpen: (open: boolean) => void;
   setUtilitiesDialogOpen: (open: boolean) => void;
 };
 
-// eslint-disable-next-line complexity
 const processKeyboardInput = (
   key: string,
   isShift: boolean,
@@ -61,12 +58,6 @@ const processKeyboardInput = (
     case 'n':
       handlers.setNotepadDialogOpen(true);
       return true;
-    case 'p':
-      if (isShift) {
-        handlers.setPomodoroDialogOpen(true);
-        return true;
-      }
-      return false;
     case 'u':
       handlers.setUtilitiesDialogOpen(true);
       return true;
@@ -89,7 +80,6 @@ const handleKeyboardShortcut = (
 };
 
 export default function Layout({ children }: { children: ReactNode }) {
-  useThemeKeybind();
   const router = useRouter();
   const _session = useAuth();
   const { notifications, unreadCount, add, markAllRead, clear } =
@@ -116,7 +106,6 @@ export default function Layout({ children }: { children: ReactNode }) {
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [calendarDialogOpen, setCalendarDialogOpen] = useState(false);
   const [notepadDialogOpen, setNotepadDialogOpen] = useState(false);
-  const [pomodoroDialogOpen, setPomodoroDialogOpen] = useState(false);
   const [utilitiesDialogOpen, setUtilitiesDialogOpen] = useState(false);
   const [shortcutsOverlayOpen, setShortcutsOverlayOpen] = useState(false);
 
@@ -138,7 +127,6 @@ export default function Layout({ children }: { children: ReactNode }) {
         openChatbot: () => router.push(SIDEBAR_ROUTE.CHATBOT.path),
         setCalendarDialogOpen,
         setNotepadDialogOpen,
-        setPomodoroDialogOpen,
         setUtilitiesDialogOpen,
       });
     };
@@ -176,7 +164,6 @@ export default function Layout({ children }: { children: ReactNode }) {
           </main>
           <div className="print:hidden">
             <RightSidebar
-              setPomodoroDialogOpen={setPomodoroDialogOpen}
               setSearchDialogOpen={setSearchDialogOpen}
               notificationsOpen={notificationsOpen}
               setNotificationsOpen={handleSetNotificationsOpen}
@@ -197,8 +184,6 @@ export default function Layout({ children }: { children: ReactNode }) {
             setCalendarDialogOpen={setCalendarDialogOpen}
             notepadDialogOpen={notepadDialogOpen}
             setNotepadDialogOpen={setNotepadDialogOpen}
-            pomodoroDialogOpen={pomodoroDialogOpen}
-            setPomodoroDialogOpen={setPomodoroDialogOpen}
             utilitiesDialogOpen={utilitiesDialogOpen}
             setUtilitiesDialogOpen={setUtilitiesDialogOpen}
           />

@@ -8,7 +8,9 @@ import {
   TabsTrigger,
 } from '@vigilant-broccoli/react-lib';
 
-const TAB_TOUCH_CLASS = 'px-4';
+// px-2 keeps seven 36px-wide, 44px-tall triggers plus the actions button
+// inside a 360px phone without horizontal overflow; px-3 needs about 34px more.
+const TAB_TOUCH_CLASS = 'px-2';
 
 export interface TabbedViewTab<T extends string> {
   value: T;
@@ -36,7 +38,7 @@ export const TabbedView = <T extends string>({
   <Tabs
     value={value}
     onValueChange={next => onValueChange(next as T)}
-    className="flex h-full w-full flex-col gap-3"
+    className="flex h-full min-h-0 w-full flex-col gap-3"
   >
     <div className="flex shrink-0 items-center justify-between gap-2">
       <TabsList className="h-11">
@@ -68,7 +70,11 @@ export const TabbedView = <T extends string>({
           {tab.content}
         </TabsContent>
       ) : (
-        <TabsContent key={tab.value} value={tab.value} className="mt-0">
+        <TabsContent
+          key={tab.value}
+          value={tab.value}
+          className="mt-0 min-h-0 flex-1 overflow-y-auto pb-[env(safe-area-inset-bottom)]"
+        >
           {tab.content}
         </TabsContent>
       ),

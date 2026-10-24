@@ -5,7 +5,7 @@ import {
   StatusCardListItem,
   Text,
 } from '@vigilant-broccoli/react-lib';
-import { TERRAFORM_LINK } from '@vigilant-broccoli/links';
+import { TERRAFORM_ORG_LINK } from '@vigilant-broccoli/private-infrastructure';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { StatusListCard } from './status-list-card.component';
 import { usePolledResource } from '../hooks/usePolledResource';
@@ -17,7 +17,7 @@ import {
 
 const TERRAFORM_POLL_INTERVAL_MS = 30000;
 const TERRAFORM_DASHBOARD_LINK = {
-  href: TERRAFORM_LINK.DASHBOARD.URL,
+  href: TERRAFORM_ORG_LINK.DASHBOARD.URL,
   label: 'Dashboard',
 };
 

@@ -6,7 +6,7 @@
   - `Session` - A top-level entity. Contains one or more windows and allows users to persist terminal states.
   - `Window` - Similar to a tab. It exists within a session and contains one or more panes.
   - `Pane` - A pane is a subdivision of a window, essentially a split terminal within the window.
-- [Keyboard Commands](#keyboard-commands)
+- [CLI Commands](#cli-commands)
 - [Keybind Commands](#keybind-commands)
 
 ## CLI Commands

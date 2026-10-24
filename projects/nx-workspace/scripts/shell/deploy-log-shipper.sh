@@ -33,3 +33,22 @@ for ip in $(flyctl ips list --app "$APP_NAME" --json | jq -r '.[].Address'); do
   echo "Releasing unused ingress $ip from $APP_NAME..."
   flyctl ips release "$ip" --app "$APP_NAME"
 done
+
+# `flyctl deploy` updates a stopped machine in place but leaves it stopped, and
+# Fly stops this one for good once Vector exhausts its restart budget (a
+# rejected ACCESS_TOKEN exits 78 on every boot), so the redeploy meant as the
+# fix would otherwise ship nothing.
+for id in $(flyctl machines list --app "$APP_NAME" --json | jq -r '.[] | select(.state == "stopped") | .id'); do
+  echo "Starting stopped machine $id..."
+  flyctl machine start "$id" --app "$APP_NAME"
+done
+
+# A crash-looping Vector burns through its 10 restarts in under a minute and
+# ends stopped, so judge health after that window rather than right away.
+echo "Waiting 60s to confirm Vector stays up..."
+sleep 60
+not_started=$(flyctl machines list --app "$APP_NAME" --json | jq -r '.[] | select(.state != "started") | "\(.id) \(.state)"')
+if [ -n "$not_started" ]; then
+  echo "deploy-log-shipper: machine not running after deploy: $not_started. Check \`flyctl logs --app $APP_NAME\` (an Authorization Violation means ACCESS_TOKEN was rejected)." >&2
+  exit 1
+fi

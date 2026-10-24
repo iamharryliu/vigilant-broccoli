@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { Star } from 'lucide-react';
 import { Badge, Button, Card } from '@vigilant-broccoli/react-lib';
 import {
   MATCH_STATUS,
@@ -9,13 +10,19 @@ import {
   TICKS_PER_SECOND,
 } from '../engine/game.consts';
 import { MatchState } from '../engine/game.types';
-import { useGameAudio, useMatchSounds } from '../hooks/useGameAudio';
+import {
+  countdownSeconds,
+  useCountdownSounds,
+  useGameAudio,
+  useMatchSounds,
+} from '../hooks/useGameAudio';
 import { useTranslation } from '../i18n';
+import { ControlsHelpDialog } from './ControlsHelpDialog';
 import { GameBoard } from './GameBoard';
 import {
   PLAYER_COLORS,
   POWER_UP_COLORS,
-  POWER_UP_GLYPHS,
+  POWER_UP_ICONS,
   POWER_UP_LABEL_KEY,
 } from './game-visuals.consts';
 
@@ -53,7 +60,7 @@ export function MatchView({
   wins,
   actions,
   note,
-  controlsHint,
+  hasLocalPlayer = false,
   soundsEnabled = true,
 }: {
   match: MatchState;
@@ -61,12 +68,14 @@ export function MatchView({
   wins: Record<string, number>;
   actions: ReactNode;
   note?: string;
-  controlsHint?: string;
+  hasLocalPlayer?: boolean;
   soundsEnabled?: boolean;
 }) {
   const { t } = useTranslation();
   const { muted, toggleMuted } = useGameAudio();
   useMatchSounds(match, soundsEnabled);
+  useCountdownSounds(match, soundsEnabled);
+  const startsIn = countdownSeconds(match);
   const over = match.status === MATCH_STATUS.OVER;
   const ticksToSuddenDeath = SUDDEN_DEATH_TICK - match.tick;
 
@@ -89,6 +98,18 @@ export function MatchView({
             localPlayerId={localPlayerId}
             label={t('MATCH.BOARD_LABEL')}
           />
+          {startsIn > 0 && (
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center rounded-lg bg-background/40">
+              <p
+                key={startsIn}
+                className="animate-countdown-pop motion-reduce:animate-none text-8xl font-black drop-shadow-lg"
+                role="status"
+                aria-label={t('MATCH.STARTS_IN', { seconds: startsIn })}
+              >
+                {startsIn}
+              </p>
+            </div>
+          )}
           {over && (
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 rounded-lg bg-background/80 p-4 text-center backdrop-blur-sm">
               <p className="text-2xl font-bold" role="status">
@@ -100,22 +121,25 @@ export function MatchView({
             </div>
           )}
         </div>
-        <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-          {POWER_UP_TYPES.map(type => (
-            <li key={type} className="flex items-center gap-1.5">
-              <span
-                className="flex h-5 w-5 items-center justify-center rounded-full text-[0.65rem]"
-                style={{ backgroundColor: POWER_UP_COLORS[type] }}
-              >
-                {POWER_UP_GLYPHS[type]}
-              </span>
-              {t(POWER_UP_LABEL_KEY[type])}
-            </li>
-          ))}
-        </ul>
-        <p className="text-center text-xs text-muted-foreground">
-          {controlsHint ?? t('MATCH.CONTROLS_HINT')}
-        </p>
+        <div className="flex items-center justify-center gap-3">
+          <ul className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
+            {POWER_UP_TYPES.map(type => {
+              const Icon = POWER_UP_ICONS[type];
+              return (
+                <li key={type} className="flex items-center gap-1.5">
+                  <span
+                    className="flex h-5 w-5 items-center justify-center rounded-full text-slate-900"
+                    style={{ backgroundColor: POWER_UP_COLORS[type] }}
+                  >
+                    <Icon className="h-3 w-3" aria-hidden />
+                  </span>
+                  {t(POWER_UP_LABEL_KEY[type])}
+                </li>
+              );
+            })}
+          </ul>
+          <ControlsHelpDialog hasLocalPlayer={hasLocalPlayer} />
+        </div>
         {note && (
           <p className="text-center text-sm text-muted-foreground">{note}</p>
         )}
@@ -139,9 +163,14 @@ export function MatchView({
               style={{ backgroundColor: PLAYER_COLORS[player.slot] }}
             />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold">
-                {player.name}
-                {player.id === localPlayerId && ' ★'}
+              <p className="flex items-center gap-1 text-sm font-semibold">
+                <span className="truncate">{player.name}</span>
+                {player.id === localPlayerId && (
+                  <Star
+                    className="h-3.5 w-3.5 shrink-0 fill-current"
+                    aria-label={t('MATCH.YOU')}
+                  />
+                )}
               </p>
               <p className="text-xs text-muted-foreground">
                 {t('MATCH.STATS', {

@@ -80,6 +80,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   grafana:open                Open grafana.harryliu.dev
   grafana:password            Copy Grafana admin password to clipboard
   grafana:ssh                 SSH into Grafana/Loki VM
+  grafana:dashboards:push     Sync grafana-dashboards/*.json to the VM
   grafana:logs                Follow Grafana container logs
   grafana:logs:loki           Follow Loki container logs
   grafana:logs:cloud-init     Follow VM provisioning log
@@ -135,11 +136,25 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   secret-rotation:calendar-sa  Replace the Google Calendar service-account key, sync it to Vault, reload vb-manager-next
   rabbitmq:password           Copy RabbitMQ admin password to clipboard (login user: admin)
 
+☸️  LOCAL K3S (k3d cluster: proxy, Grafana, Loki, Prometheus, Alloy, Headlamp, Argo CD)
+  local:k3s:up                Create the local k3d (k3s in Docker) cluster
+  local:k3s:down              Delete the local k3d cluster and its data
+  local:k3s:start             Start the stopped local k3d cluster
+  local:k3s:stop              Stop the local k3d cluster, keeping its state
+  local:k3s:apply             Bootstrap: apply the working tree, the mkcert TLS secret and the Argo CD Application
+  local:k3s:status            Show nodes, platform workloads, Argo CD sync state and Helm releases
+  local:k3s:ui                Open k9s on the local cluster's platform namespace
+  local:k3s:grafana:password  Copy the local Grafana admin password and open Grafana
+  local:k3s:grafana:logs      Tail local Grafana logs
+  local:k3s:headlamp:token    Copy a 24h Headlamp login token and open Headlamp
+  local:k3s:alloy:logs        Tail local Alloy (log collector) logs
+  local:k3s:loki:logs         Tail local Loki logs
+  local:k3s:traefik:logs      Tail local Traefik (ingress) logs
+  local:k3s:argocd:password   Copy the Argo CD admin password and open Argo CD
+  local:k3s:argocd:pause      Stop Argo CD auto-sync so working-tree applies stick
+  local:k3s:argocd:resume     Re-enable Argo CD auto-sync from main
+
 🐳 LOCAL
-  local:docker:up             Start local Docker Compose services
-  local:docker:down           Stop local Docker Compose services
-  local:docker:restart        Restart local Docker Compose services
-  local:docker:reload         Reload local Docker Compose services
   immich:docker:up            Start the standalone Immich Docker Compose stack
   immich:docker:down          Stop the standalone Immich Docker Compose stack
   immich:docker:restart       Restart the standalone Immich Docker Compose stack
@@ -151,7 +166,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   vb-manager-next:delete      Delete vb-manager-next PM2 process
   vb-manager-next:logs        Tail vb-manager-next PM2 logs
   vb-manager-next:status      Show PM2 process status
-  deploy:local-services       Bring up local Docker services + reload vb-manager-next
+  deploy:local-services       Bring up the local k3s cluster + reload vb-manager-next
   health-check                Run health check script
   dldjmusic                   Download DJ music from Spotify playlists (secrets pulled from Vault)
 
@@ -175,9 +190,10 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   agentic-pr-create <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers, one run per id; each opens a PR, or several when the request splits into increments (sonnet; --model <m> to override, or --agent codex [--codex-model <m>])
                                (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express"; TODO ids named in the task are resolved the same way)
   agentic-pr-create --agent ollama --prompt "<task>"  Use native host Ollama/Qwen in Docker; retain a preview checkout without publishing (--local shorthand, --ollama-model <tag>, --publish to open PRs)
+  agentic-pr-create --vm (<id...> | --prompt "<task>")  Solve in detached tmux sessions, one worktree each, in the code-server container on the OCI VM instead of local Docker; Claude only
   agentic-pr-create-todo <desc>  Headlessly refine <desc> into a repo-informed task prompt and add a TODO.md entry in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
   agentic-pr-create-todo-audit  Headlessly re-verify TODO.md rows against the codebase in an ephemeral sandbox container — deletes resolved rows, corrects drifted paths/line numbers/counts — then open a PR; opens none if every row still holds (sonnet; --model <m> to override)
-  agentic-pr-create-audit  Headlessly audit docs/, every CONTEXT.md and README.md for passages about legacy implementations that no longer apply (removed apps/scripts/workflows/env vars, "previously/migrated from/no longer" backstory) in an ephemeral sandbox container, remove or rewrite to the current state only what grep verification supports, then open one PR of at most 15 files listing each removal and the skipped candidates for a re-run; opens none if nothing qualifies (opus; --model <m> to override)
+  agentic-pr-create-audit  Headlessly audit docs/, every CONTEXT.md and README.md for passages about legacy implementations that no longer apply (removed apps/scripts/workflows/env vars, "previously/migrated from/no longer" backstory) and for current claims the tree contradicts (commands, script names, env vars, file paths, Swagger specs vs routes) in an ephemeral sandbox container, remove or rewrite to the current state only what grep verification supports, then open one PR of at most 15 files listing each removal and the skipped candidates for a re-run; opens none if nothing qualifies (opus; --model <m> to override)
   agentic-pr-create-context-audit  Headlessly slim every CONTEXT.md, shared skill body, Doc Map and required-reading doc by replacing restated rules with links to their owner and compressing incident narratives, never losing rules, workarounds, recovery steps or exact error strings, in an ephemeral sandbox container, then open one PR of at most 15 files citing where each removed fact is retained; opens none if nothing can be slimmed safely (opus; --model <m> to override)
   agentic-pr-create-prune  Headlessly sweep the repo for dead code, unused dependencies, broken doc links/anchors, orphaned docs/scripts/workflows and cheatsheet drift in an ephemeral sandbox container, remove only items grep shows have zero references, then open one capped PR listing the evidence and skipped candidates; opens none if nothing is provably dead (sonnet; --model <m> to override)
   agentic-pr-create-rnd "<question>"    Headlessly research a concise R&D note (alternatives table + recommendation + sample) under docs/rnd/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)

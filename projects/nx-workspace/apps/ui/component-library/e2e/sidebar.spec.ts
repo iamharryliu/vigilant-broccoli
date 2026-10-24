@@ -3,8 +3,8 @@ import { test, expect } from '@playwright/test';
 const MOBILE_VIEWPORT = { width: 390, height: 844 };
 const DESKTOP_VIEWPORT = { width: 1280, height: 800 };
 const OPEN_MENU_LABEL = 'Open menu';
-const COMPONENTS_GROUP_LABEL = 'Components';
-const UTILITIES_GROUP_LABEL = 'Utilities';
+const COMPONENTS_GROUP_LABEL = 'react-lib';
+const UTILITIES_GROUP_LABEL = 'react-utility';
 const ALARM_LABEL = 'Alarm';
 const SETTINGS_GROUP_LABEL = 'Settings';
 const ICON_MODE_OFF_LABEL = 'Icons: Off';
@@ -21,10 +21,11 @@ test.describe('component-library Sidebar (icon-less nav)', () => {
     const aside = page.locator('aside');
     const utilitiesToggle = page.getByRole('button', {
       name: UTILITIES_GROUP_LABEL,
+      exact: true,
     });
 
-    // The sandbox loads with the "Components" group open by default
-    // (selectedId defaults to its first entry) - expand "Utilities" instead,
+    // The sandbox loads with the "react-lib" group open by default
+    // (selectedId defaults to its first entry) - expand "react-utility" instead,
     // without selecting anything in it, so defaultOpenId never changes.
     await menuButton.click();
     await utilitiesToggle.click();
@@ -37,7 +38,7 @@ test.describe('component-library Sidebar (icon-less nav)', () => {
     await page.mouse.click(350, 100);
     await expect(aside).toHaveClass(/max-md:-translate-x-full/);
 
-    // None of the Sidebar/Utilities items in this app carry an `icon`, so
+    // None of the Sidebar/react-utility items in this app carry an `icon`, so
     // `canCollapse` is false and `forceExpanded` is permanently true (see
     // libs/@vigilant-broccoli/react-lib/docs/features/sidebar.md) - a
     // collapsed icon-only rail would be entirely blank. That means the
@@ -62,14 +63,15 @@ test.describe('component-library Sidebar (icon-less nav)', () => {
     const menuButton = page.getByRole('button', { name: OPEN_MENU_LABEL });
     const utilitiesToggle = page.getByRole('button', {
       name: UTILITIES_GROUP_LABEL,
+      exact: true,
     });
 
-    // "Components" is open by default; Utilities starts collapsed.
+    // "react-lib" is open by default; react-utility starts collapsed.
     await menuButton.click();
     await expect(utilitiesToggle).toHaveAttribute('aria-expanded', 'false');
 
-    // Selecting a Utilities item via search (flat results list, no manual
-    // expand) should re-open Utilities via defaultOpenId reactivity, per
+    // Selecting a react-utility item via search (flat results list, no manual
+    // expand) should re-open react-utility via defaultOpenId reactivity, per
     // libs/@vigilant-broccoli/react-lib/docs/features/sidebar.md.
     await page.getByPlaceholder('Search...').fill(ALARM_LABEL);
     await page.getByRole('button', { name: ALARM_LABEL }).click();
@@ -90,7 +92,9 @@ test.describe('component-library Sidebar (icon-less nav, desktop)', () => {
     const content = page.locator('div.h-full.overflow-y-auto');
     await expect(content).toHaveCSS('padding-left', '192px');
 
-    await page.getByRole('button', { name: COMPONENTS_GROUP_LABEL }).hover();
+    await page
+      .getByRole('button', { name: COMPONENTS_GROUP_LABEL, exact: true })
+      .hover();
     await expect(content).toHaveCSS('padding-left', '192px');
   });
 });
@@ -107,6 +111,7 @@ test.describe('component-library Sidebar (icon-bearing nav, via Settings > Icons
     const aside = page.locator('aside');
     const utilitiesToggle = page.getByRole('button', {
       name: UTILITIES_GROUP_LABEL,
+      exact: true,
     });
 
     // Flip every sidebar item to icon-bearing via Settings > Icons - this is
@@ -167,15 +172,17 @@ test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)'
 
     const componentsToggle = page.getByRole('button', {
       name: COMPONENTS_GROUP_LABEL,
+      exact: true,
     });
     const utilitiesToggle = page.getByRole('button', {
       name: UTILITIES_GROUP_LABEL,
+      exact: true,
     });
 
-    // "Components" is the active group (selectedId defaults to
-    // ALL_ENTRIES[0], an Avatar/Components entry) - hovering "Utilities"
+    // "react-lib" is the active group (selectedId defaults to
+    // ALL_ENTRIES[0], an alert-dialog/react-lib entry) - hovering "react-utility"
     // directly, e.g. while looking at Avatar and wanting to browse
-    // Utilities next, should open Utilities, not the active Components.
+    // react-utility next, should open react-utility, not the active react-lib.
     await utilitiesToggle.hover();
     await expect(utilitiesToggle).toHaveAttribute('aria-expanded', 'true');
     await expect(componentsToggle).toHaveAttribute('aria-expanded', 'false');
@@ -190,9 +197,11 @@ test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)'
 
     const componentsToggle = page.getByRole('button', {
       name: COMPONENTS_GROUP_LABEL,
+      exact: true,
     });
     const utilitiesToggle = page.getByRole('button', {
       name: UTILITIES_GROUP_LABEL,
+      exact: true,
     });
 
     await utilitiesToggle.hover();
@@ -217,7 +226,9 @@ test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)'
     const content = page.locator('div.h-full.overflow-y-auto');
     await expect(content).toHaveCSS('padding-left', '56px');
 
-    await page.getByRole('button', { name: COMPONENTS_GROUP_LABEL }).hover();
+    await page
+      .getByRole('button', { name: COMPONENTS_GROUP_LABEL, exact: true })
+      .hover();
     await expect(content).toHaveCSS('padding-left', '192px');
   });
 
@@ -232,9 +243,11 @@ test.describe('component-library Sidebar (icon-bearing nav, desktop rail hover)'
 
     const componentsToggle = page.getByRole('button', {
       name: COMPONENTS_GROUP_LABEL,
+      exact: true,
     });
     const utilitiesToggle = page.getByRole('button', {
       name: UTILITIES_GROUP_LABEL,
+      exact: true,
     });
 
     // Before any hover: openId must NOT be pre-seeded from defaultOpenId

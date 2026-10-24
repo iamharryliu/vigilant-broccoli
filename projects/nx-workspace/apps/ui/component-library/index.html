@@ -4,6 +4,20 @@
     <meta charset="utf-8" />
     <title>Components | Component Library</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <style>
+      body {
+        background-color: light-dark(#ffffff, #020617);
+      }
+    </style>
+    <script>
+      try {
+        var theme = localStorage.getItem('component-library-theme');
+        if (theme === 'light' || theme === 'dark') {
+          document.documentElement.style.colorScheme = theme;
+        }
+      } catch (e) {}
+    </script>
     <link rel="canonical" href="https://components.harryliu.dev" />
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <link

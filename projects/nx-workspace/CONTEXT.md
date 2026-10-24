@@ -26,11 +26,11 @@ When editing one of these, check all three; their URLs are shared but their sect
 
 - `apps/ui/personal-website-react/src/app/content/about.md` (also the GitHub profile README).
 - `apps/ui/personal-website-react/src/app/components/pages/link-tree.page.tsx` (`LINK_TREE_SECTIONS`).
-- `libs/@vigilant-broccoli/links/src/lib/pastebin.consts.ts` (`PASTEBIN_GROUPS`).
+- `libs/@vigilant-broccoli/public-links/src/lib/pastebin.consts.ts` (`PASTEBIN_LINKS`, grouped by `subgroup` in array order).
 
 Keep matching links under the same headings and order: Personal, Contact, Address, Career, Software, Business, Community, Interests and Hobbies. Exceptions: Address is pastebin-only, Maps is `about.md`-only, and no surface links to itself.
 
-Use `libs/@vigilant-broccoli/personal-common-js/src/index.ts` for URLs; manually check `about.md` against those consts because Markdown cannot import them.
+Use `libs/@harry/personal/src/index.ts` for URLs; manually check `about.md` against those consts because Markdown cannot import them.
 
 ### Nx formatting must not hand the agent symlinks to Prettier
 

@@ -14,6 +14,7 @@ export const BLOCK_ID = {
   EVENT_TIME_MINUTE: 'event_time_minute_block',
   EVENT_DESCRIPTION: 'event_description_block',
   EVENT_ATTENDEES: 'event_attendees_block',
+  WORKDAY_CHECKBOXES: 'workday_checkboxes_block',
 };
 
 export const ACTION_ID = {

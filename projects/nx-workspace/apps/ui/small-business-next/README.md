@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -15,6 +16,12 @@
 - Internal libs
   - `common-js`
   - `common-node`
+  - `react-lib`
+  - `react-lib-auth`
 - Cloud services
   - Cloudflare R2
   - Supabase
+
+## Environment
+
+- [.env.local.example](./.env.local.example)

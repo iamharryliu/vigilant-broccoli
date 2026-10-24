@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: local-platform
+resources:
+  - namespace.yaml
+  - argocd.yaml
+  - redirect-https.yaml
+  - host-services.yaml
+  - ingresses.yaml
+configMapGenerator:
+  - name: grafana-dashboards
+    files:
+      - dashboards/vb-manager-next.json
+    options:
+      # The Grafana sidecar watches this label; a fixed name keeps re-applies
+      # from leaving hash-suffixed copies behind.
+      disableNameSuffixHash: true
+      labels:
+        grafana_dashboard: '1'

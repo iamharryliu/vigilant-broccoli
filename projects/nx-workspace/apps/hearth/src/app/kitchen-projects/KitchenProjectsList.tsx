@@ -32,6 +32,7 @@ import {
   getStatusDetail,
   sortByUrgency,
 } from './kitchen-projects.consts';
+import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
 
 const ENDPOINT = '/api/kitchen-projects';
 const STORAGE_KEY_PREFIX = 'kitchen-projects';
@@ -64,20 +65,17 @@ export function KitchenProjectsList({ refreshSignal }: Props) {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   const token = session?.access_token ?? '';
-  const authHeader = () => ({ Authorization: `Bearer ${token}` });
-  const jsonHeaders = () => ({
-    ...authHeader(),
-    'Content-Type': 'application/json',
-  });
+  const authHeader = useAuthHeader();
+  const jsonHeaders = useJsonAuthHeaders();
 
   const fetchItems = useCallback(async () => {
     if (!homeId || !token) return;
     const res = await fetch(`${ENDPOINT}?homeId=${homeId}`, {
-      headers: authHeader(),
+      headers: await authHeader(),
     });
     const data = await res.json();
     setItems(Array.isArray(data) ? data : []);
-  }, [homeId, token]);
+  }, [homeId, token, authHeader]);
 
   useEffect(() => {
     fetchItems();
@@ -94,7 +92,7 @@ export function KitchenProjectsList({ refreshSignal }: Props) {
     if (!homeId) return;
     const res = await fetch(ENDPOINT, {
       method: 'POST',
-      headers: jsonHeaders(),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ ...data, homeId }),
     });
     const created = await res.json();
@@ -107,7 +105,7 @@ export function KitchenProjectsList({ refreshSignal }: Props) {
     );
     await fetch(ENDPOINT, {
       method: 'PATCH',
-      headers: jsonHeaders(),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id, ...body }),
     });
   };
@@ -129,7 +127,7 @@ export function KitchenProjectsList({ refreshSignal }: Props) {
     setItems(prev => prev.filter(item => item.id !== id));
     await fetch(ENDPOINT, {
       method: 'DELETE',
-      headers: jsonHeaders(),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id }),
     });
   };

@@ -149,5 +149,9 @@
     "ERROR": {
       "LOAD_FAILED": "Failed to load signatures"
     }
+  },
+  "DEMO": {
+    "LABEL": "Demo",
+    "MESSAGE": "Sign-in is disabled and all data is sample data. Changes are shared with other visitors and reset periodically."
   }
 }

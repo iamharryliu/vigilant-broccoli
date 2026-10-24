@@ -397,7 +397,7 @@ function renderSidebar() {
     S.data.users.filter(function (u) { return u.id !== S.data.botUserId; }).forEach(function (u) {
       var o = document.createElement('option');
       o.value = u.id;
-      o.textContent = u.realName + ' (' + u.homeOffice + ')';
+      o.textContent = u.realName + (u.homeOffice ? ' (' + u.homeOffice + ')' : '');
       select.appendChild(o);
     });
   }
@@ -444,8 +444,13 @@ document.getElementById('reset').onclick = function () {
 
 var saved = null;
 try { saved = localStorage.getItem('okin-mock-user'); } catch (e) { /* storage unavailable */ }
-S.user = saved || 'U01ASTRID';
-api('/api/state').then(function (d) {
+var DEFAULT_USER = 'U_DEMO_ASTRID';
+S.user = saved || DEFAULT_USER;
+// A saved id can name a seeded member a later roster dropped; fall back to the default user.
+api('/api/state').catch(function () {
+  S.user = DEFAULT_USER;
+  return api('/api/state');
+}).then(function (d) {
   S.data = d;
   if (!userById(S.user) || S.user === d.botUserId) S.user = d.users[0].id;
   render();

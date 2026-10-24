@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import {
+  Bot,
   CalendarDays,
   CalendarPlus,
+  CloudSun,
   Link2,
   ListTodo,
   Rows3,
@@ -12,28 +15,31 @@ import {
 } from 'lucide-react';
 import { isMobileUserAgent } from '@vigilant-broccoli/common-browser';
 import {
-  BASE_CALENDAR_CONFIG,
   buildEventCalendarEmbedUrl,
   getEventCalendarColor,
-  PERSONAL_CALENDAR_SOURCES,
   readHiddenCalendarIds,
   writeHiddenCalendarIds,
-} from '@vigilant-broccoli/personal-common-js';
+} from '@harry/personal';
+import {
+  BASE_CALENDAR_CONFIG,
+  PERSONAL_CALENDAR_SOURCES,
+} from '@harry/private';
 import {
   CalendarAgenda,
   CalendarEvent,
+  CalendarEventDetails,
   EventCalendarLink,
   EventCalendarsList,
   TabbedView,
   TabbedViewTab,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import {
-  VisuallyHidden,
   Dialog,
   DialogContent,
   DialogTitle,
 } from '@vigilant-broccoli/react-lib';
 import { QuickLinksPanel } from '@vigilant-broccoli/react-lib-higher-level';
+import { AgenticView } from './agentic-view';
 import { CalendarInput } from './calendar-input';
 import { GoogleTasksView } from './google-tasks-view';
 import { NotepadEditor } from './notepad-editor';
@@ -45,6 +51,14 @@ import {
 import { QUICK_LINKS } from '../constants/quick-links';
 import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
 
+// Split into its own chunk so the weather card's code stays off the critical
+// path. The tab force-mounts it, so once the chunk loads it locates and
+// fetches once and switching to Weather is instant.
+const WeatherView = dynamic(
+  () => import('./weather-view').then(module => module.WeatherView),
+  { ssr: false },
+);
+
 const CALENDAR_TITLE = BASE_CALENDAR_CONFIG.title;
 
 const BASE_CALENDAR_COLOR_BY_ID = new Map(
@@ -54,20 +68,64 @@ const BASE_CALENDAR_COLOR_BY_ID = new Map(
   ]),
 );
 
+const BASE_CALENDAR_NAME_BY_ID = new Map(
+  PERSONAL_CALENDAR_SOURCES.map(source => [source.id, source.label]),
+);
+
 const EVENT_CALENDARS_API = '/api/event-calendars';
 
 const HIDDEN_CALENDARS_STORAGE_KEY = 'vb-manager-hidden-event-calendars';
 
+const TAB_STORAGE_KEY = 'vb-manager-mobile-tab';
+
 const TAB_ICON_SIZE = 18;
+
+// Tailwind's sm breakpoint, where the dialog stops being full screen.
+const DESKTOP_MEDIA_QUERY = '(min-width: 640px)';
 
 // Tab content isn't a flex child, so size the editor to the viewport minus
 // the top bar and tab row.
 const NOTEPAD_HEIGHT = 'calc(100dvh - var(--topbar-h) - 8rem)';
+// Force-mounted panels fill without scrolling (the calendar scrolls itself),
+// so panels that need the default scrolling and safe-area padding wrap in this.
+const SCROLL_PANEL =
+  'min-h-0 flex-1 overflow-y-auto pb-[env(safe-area-inset-bottom)]';
 
 const CALENDAR_TABS = Object.values(CALENDAR_TAB);
 
 const EVENTS_API = '/api/calendar/events';
 const FETCH_ERROR = 'Failed to load calendar events.';
+
+const findTab = (value: string | null | undefined) =>
+  CALENDAR_TABS.find(name => name === value);
+
+const readStoredTab = () => {
+  try {
+    return findTab(window.localStorage.getItem(TAB_STORAGE_KEY));
+  } catch {
+    return undefined;
+  }
+};
+
+const writeStoredTab = (value: CalendarTab) => {
+  try {
+    window.localStorage.setItem(TAB_STORAGE_KEY, value);
+  } catch {
+    // Storage can be unavailable (private mode); the tab just isn't remembered.
+  }
+};
+
+const replaceTabQueryParam = (value: CalendarTab) => {
+  const params = new URLSearchParams(window.location.search);
+  if (value === CALENDAR_TAB.CALENDAR) params.delete(CALENDAR_TAB_QUERY_PARAM);
+  else params.set(CALENDAR_TAB_QUERY_PARAM, value);
+  const query = params.toString();
+  window.history.replaceState(
+    null,
+    '',
+    query ? `?${query}` : window.location.pathname,
+  );
+};
 
 const eventsApiUrl = (extraCalendarIds: string[]) => {
   const params = new URLSearchParams();
@@ -91,6 +149,9 @@ const useIsMobileBrowser = () => {
 export const HomeView = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const [events, setEvents] = useState<CalendarEvent[] | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [eventCalendars, setEventCalendars] = useState<EventCalendarLink[]>([]);
@@ -100,14 +161,30 @@ export const HomeView = () => {
   const [eventCalendarsLoaded, setEventCalendarsLoaded] = useState(false);
   const [eventCalendarsError, setEventCalendarsError] = useState(false);
   const searchParams = useSearchParams();
-  const [tab, setTab] = useState<CalendarTab>(() => {
-    const requested = searchParams.get(CALENDAR_TAB_QUERY_PARAM);
-    return (
-      CALENDAR_TABS.find(name => name === requested) ?? CALENDAR_TAB.CALENDAR
-    );
-  });
+  const [tab, setTab] = useState<CalendarTab>(
+    () =>
+      findTab(searchParams.get(CALENDAR_TAB_QUERY_PARAM)) ??
+      CALENDAR_TAB.CALENDAR,
+  );
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
   const isMobile = useIsMobileBrowser();
+
+  // localStorage is read after mount, not in the useState initializer, so the
+  // server-rendered markup matches the first client render.
+  useEffect(() => {
+    if (
+      findTab(
+        new URLSearchParams(window.location.search).get(
+          CALENDAR_TAB_QUERY_PARAM,
+        ),
+      )
+    )
+      return;
+    const stored = readStoredTab();
+    if (!stored || stored === CALENDAR_TAB.CALENDAR) return;
+    setTab(stored);
+    replaceTabQueryParam(stored);
+  }, []);
 
   useEffect(() => {
     setHiddenIds(new Set(readHiddenCalendarIds(HIDDEN_CALENDARS_STORAGE_KEY)));
@@ -154,6 +231,7 @@ export const HomeView = () => {
           googleCalendarId: calendar.googleCalendarId,
         })),
         hiddenKeys: hiddenIds,
+        baseConfig: BASE_CALENDAR_CONFIG,
       }),
     [eventCalendars, hiddenIds],
   );
@@ -165,6 +243,14 @@ export const HomeView = () => {
     );
     return colors;
   }, [eventCalendarColorById]);
+
+  const calendarNameById = useMemo(() => {
+    const names = new Map(BASE_CALENDAR_NAME_BY_ID);
+    eventCalendars.forEach(calendar =>
+      names.set(calendar.googleCalendarId, calendar.name),
+    );
+    return names;
+  }, [eventCalendars]);
 
   useEffect(() => {
     if (!isMobile || !eventCalendarsLoaded) return;
@@ -207,15 +293,8 @@ export const HomeView = () => {
 
   const handleTabChange = (next: CalendarTab) => {
     setTab(next);
-    const params = new URLSearchParams(window.location.search);
-    if (next === CALENDAR_TAB.CALENDAR) params.delete(CALENDAR_TAB_QUERY_PARAM);
-    else params.set(CALENDAR_TAB_QUERY_PARAM, next);
-    const query = params.toString();
-    window.history.replaceState(
-      null,
-      '',
-      query ? `?${query}` : window.location.pathname,
-    );
+    writeStoredTab(next);
+    replaceTabQueryParam(next);
   };
 
   const tabs: TabbedViewTab<CalendarTab>[] = [
@@ -228,7 +307,7 @@ export const HomeView = () => {
       content: (
         <>
           {isMobile === false && (
-            <div className="w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200">
+            <div className="w-full min-h-0 flex-1 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
               <iframe
                 src={calendarSrc}
                 className="h-full w-full dark:invert dark:hue-rotate-180"
@@ -243,6 +322,7 @@ export const HomeView = () => {
               error={error}
               hiddenIds={hiddenIds}
               colorByCalendarId={calendarColorById}
+              onEventClick={setSelectedEvent}
             />
           )}
         </>
@@ -265,19 +345,46 @@ export const HomeView = () => {
       value: CALENDAR_TAB.TASKS,
       label: CALENDAR_TAB.TASKS,
       icon: <ListTodo size={TAB_ICON_SIZE} />,
-      content: <GoogleTasksView />,
+      // Force-mounted so tasks load with the page; refetched on each visit.
+      forceMount: true,
+      content: (
+        <div className={SCROLL_PANEL}>
+          <GoogleTasksView active={tab === CALENDAR_TAB.TASKS} />
+        </div>
+      ),
     },
     {
       value: CALENDAR_TAB.NOTEPAD,
       label: CALENDAR_TAB.NOTEPAD,
       icon: <StickyNote size={TAB_ICON_SIZE} />,
-      content: <NotepadEditor style={{ height: NOTEPAD_HEIGHT }} />,
+      // Force-mounted so the notepad loads with the page and keeps its cursor
+      // and scroll position between visits.
+      forceMount: true,
+      content: (
+        <div className={SCROLL_PANEL}>
+          <NotepadEditor style={{ height: NOTEPAD_HEIGHT }} />
+        </div>
+      ),
     },
     {
       value: CALENDAR_TAB.QUICK_LINKS,
       label: CALENDAR_TAB.QUICK_LINKS,
       icon: <Link2 size={TAB_ICON_SIZE} />,
       content: <QuickLinksPanel links={QUICK_LINKS} />,
+    },
+    {
+      value: CALENDAR_TAB.WEATHER,
+      label: CALENDAR_TAB.WEATHER,
+      icon: <CloudSun size={TAB_ICON_SIZE} />,
+      // Force-mounted so the weather loads once on page load, not per visit.
+      forceMount: true,
+      content: <WeatherView />,
+    },
+    {
+      value: CALENDAR_TAB.AGENTIC,
+      label: CALENDAR_TAB.AGENTIC,
+      icon: <Bot size={TAB_ICON_SIZE} />,
+      content: <AgenticView />,
     },
   ];
 
@@ -288,38 +395,57 @@ export const HomeView = () => {
         value={tab}
         onValueChange={handleTabChange}
         actions={
-          tab !== CALENDAR_TAB.TASKS && (
-            <button
-              type="button"
-              onClick={() => setCreateOpen(true)}
-              aria-label="Create calendar event"
-              title="Create calendar event"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
-            >
-              <CalendarPlus size={18} />
-            </button>
-          )
+          <button
+            type="button"
+            onClick={() => setCreateOpen(true)}
+            aria-label="Create calendar event"
+            title="Create calendar event"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
+          >
+            <CalendarPlus size={18} />
+          </button>
         }
+      />
+
+      <CalendarEventDetails
+        event={selectedEvent}
+        colorByCalendarId={calendarColorById}
+        nameByCalendarId={calendarNameById}
+        onClose={() => setSelectedEvent(null)}
       />
 
       <Dialog open={createOpen} onOpenChange={handleCreateOpenChange}>
         <DialogContent
-          className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
+          fullScreenOnMobile
+          className="flex flex-col gap-0 overflow-hidden p-0 max-sm:!overflow-hidden sm:max-h-[90dvh] sm:w-[calc(100%-2rem)] sm:max-w-[600px]"
           aria-describedby={undefined}
           showCloseButton={false}
-          style={{
-            maxWidth: '95vw',
-            width: '95vw',
-            maxHeight: '90vh',
-            overflowY: 'auto',
+          onOpenAutoFocus={event => {
+            // Focusing the textarea on a phone pops the keyboard before the
+            // user asks for it; Radix would otherwise focus the Close button.
+            event.preventDefault();
+            if (!window.matchMedia(DESKTOP_MEDIA_QUERY).matches) return;
+            (event.currentTarget as HTMLElement)
+              .querySelector('textarea')
+              ?.focus();
           }}
         >
-          <VisuallyHidden>
-            <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
-              Create Calendar Event
-            </DialogTitle>
-          </VisuallyHidden>
-          <CalendarInput />
+          <CalendarInput
+            header={
+              <div className="flex shrink-0 items-center justify-between gap-3 border-b border-gray-200 px-4 pb-3 pt-[max(env(safe-area-inset-top),0.75rem)] sm:px-6 sm:pt-6 dark:border-gray-700">
+                <DialogTitle className="text-xl font-bold leading-7 tracking-normal">
+                  Create Calendar Event
+                </DialogTitle>
+                <button
+                  type="button"
+                  onClick={() => handleCreateOpenChange(false)}
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:active:bg-gray-700"
+                >
+                  Close
+                </button>
+              </div>
+            }
+          />
         </DialogContent>
       </Dialog>
     </>

@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
-import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig(() => ({
   root: import.meta.dirname,
@@ -14,7 +13,8 @@ export default defineConfig(() => ({
     port: 3000,
     host: 'localhost',
   },
-  plugins: [react(), tsconfigPaths()],
+  plugins: [react()],
+  resolve: { tsconfigPaths: true },
   build: {
     outDir: '../../../dist/pages-index',
     emptyOutDir: true,

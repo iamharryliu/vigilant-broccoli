@@ -1,10 +1,11 @@
 # VB Manager Next Mobile
 
-Mobile-friendly dashboard for personal tasks and calendars, with voice input and a notepad.
+Mobile-friendly dashboard for personal tasks and calendars, with voice input, a notepad and local weather.
 
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -18,10 +19,21 @@ Mobile-friendly dashboard for personal tasks and calendars, with voice input and
   - `common-js`
   - `common-node`
   - `google-workspace`
-  - `links`
-  - `personal-common-js`
+  - `@harry/personal`
+  - `@harry/private`
+  - `manager`
+  - `public-links`
   - `react-lib`
+  - `react-lib-auth`
   - `react-lib-higher-level`
+  - `react-utility`
 - Cloud services
   - Google Workspace APIs
+  - Nominatim / OpenStreetMap
+  - Open-Meteo
   - Supabase
+  - vb-express
+
+## Environment
+
+- [.env.example](./.env.example)

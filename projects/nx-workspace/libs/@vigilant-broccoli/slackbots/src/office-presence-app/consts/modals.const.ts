@@ -7,8 +7,9 @@ import {
   loadEventById,
   loadUserSettings,
 } from '../utils/db.utils';
-import { getUpcomingWeekdays, formatISODateLocal } from '../utils/date.utils';
+import { getUpcomingWeekdays } from '../utils/date.utils';
 import { buildModalDateOptionSlackBlocks } from '../utils/view.utils';
+import { formatUserMention } from '../utils/mention.utils';
 import { ACTION_ID, BLOCK_ID, INPUT_MAX_LENGTH } from './data.consts';
 import { LANGUAGE, LANGUAGE_DISPLAY_NAME, Language } from './app-copy.const';
 
@@ -21,10 +22,10 @@ const chunkArray = <T>(arr: T[], size: number): T[][] => {
 };
 
 export function createInputScheduleModal(appConfig: AppConfig) {
-  return function getInputScheduleModal(userId: string) {
+  return function getInputScheduleModal(userId: string, todayISO: string) {
     const settings = loadUserSettings(userId);
     const copy = appConfig.getCopy(settings.language);
-    const dates = getUpcomingWeekdays(10);
+    const dates = getUpcomingWeekdays(todayISO, 10);
     const options = buildModalDateOptionSlackBlocks(dates);
     const officeBlocks =
       appConfig.OFFICES.length > 0
@@ -398,10 +399,9 @@ export function createHelpModal(appConfig: AppConfig) {
 }
 
 export function createAskLunchModal(appConfig: AppConfig) {
-  return function getAskLunchModal(userId: string) {
+  return function getAskLunchModal(userId: string, today: string) {
     const copy = appConfig.getCopy(loadUserSettings(userId).language);
-    const userPresences = loadAllPresences();
-    const today = new Date().toISOString().split('T')[0];
+    const userPresences = loadAllPresences(today);
 
     const usersInOffice: { label: string; value: string }[] = [];
 
@@ -409,8 +409,8 @@ export function createAskLunchModal(appConfig: AppConfig) {
       if (presences[today] && uid !== userId) {
         usersInOffice.push({
           label: presences[today].office
-            ? `<@${uid}> | 🏢 ${presences[today].office}`
-            : `<@${uid}>`,
+            ? `${formatUserMention(uid)} | 🏢 ${presences[today].office}`
+            : formatUserMention(uid),
           value: uid,
         });
       }
@@ -465,11 +465,10 @@ export function createAskLunchModal(appConfig: AppConfig) {
 }
 
 export function createCreateEventModal(appConfig: AppConfig) {
-  return function getCreateEventModal(userId: string) {
+  return function getCreateEventModal(userId: string, todayISO: string) {
     const copy = appConfig.getCopy(loadUserSettings(userId).language);
-    const dates = getUpcomingWeekdays(10);
+    const dates = getUpcomingWeekdays(todayISO, 10);
     const options = buildModalDateOptionSlackBlocks(dates);
-    const todayISO = formatISODateLocal(new Date());
     const initialOptions = options.filter(opt => opt.value === todayISO);
 
     const hourOptions = Array.from({ length: 24 }, (_, i) => ({
@@ -564,12 +563,16 @@ export function createCreateEventModal(appConfig: AppConfig) {
 }
 
 export function createEditEventModal(appConfig: AppConfig) {
-  return function getEditEventModal(eventId: number, userId: string) {
+  return function getEditEventModal(
+    eventId: number,
+    userId: string,
+    todayISO: string,
+  ) {
     const copy = appConfig.getCopy(loadUserSettings(userId).language);
     const event = loadEventById(eventId);
     if (!event) return null;
 
-    const dates = getUpcomingWeekdays(10);
+    const dates = getUpcomingWeekdays(todayISO, 10);
     const options = buildModalDateOptionSlackBlocks(dates);
     const initialDateOption = options.find(opt => opt.value === event.date);
 

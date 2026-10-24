@@ -12,6 +12,8 @@ FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 
 cd "$REPO_DIR"
 SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create-todo/SKILL.md")
+# shellcheck source=no-changes.sh
+. "$REPO_DIR/infrastructure/agent-sandbox/no-changes.sh"
 
 git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
@@ -39,6 +41,7 @@ Sandbox execution rules:
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (review, then merge)
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
   - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none. Keep these out of pr_suggestions, which is only for optional follow-up work
+$NO_CHANGES_FIELD
 EOF
 )
 
@@ -48,6 +51,9 @@ claude -p "$PROMPT" --dangerously-skip-permissions --model "$MODEL" \
 git checkout "$BRANCH"
 [ "$(git rev-parse HEAD)" = "$BASE_SHA" ] || git reset --soft "$BASE_SHA"
 
+if [ -z "$(git status --porcelain)" ]; then
+  no_changes_exit "$META_FILE" "TODO.md was not modified — no entry was added."
+fi
 if [ -z "$(git status --porcelain -- TODO.md)" ]; then
   echo "ERROR: TODO.md was not modified — no entry was added." >&2
   exit 1

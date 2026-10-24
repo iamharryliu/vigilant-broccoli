@@ -28,9 +28,13 @@ import {
   handleDeleteEvent,
   handleEditEventSubmit,
 } from './utils/action.utils';
-import { createPublishHomeView } from './utils/view.utils';
+import { PublishHomeView, createPublishHomeView } from './utils/view.utils';
 import { APP_ACTION, APP_COMMAND } from './consts/app.consts';
 import { loadAllPresences, savePresence } from './utils/db.utils';
+import {
+  GetUserTodayISO,
+  createUserTodayResolver,
+} from './utils/time-zone.utils';
 import { createReminderSender, createReminderPreviewer } from './app-reminder';
 import { AppConfig } from './types';
 import {
@@ -40,6 +44,7 @@ import {
   resolveAppCopyForLanguage,
 } from './consts/app-copy.const';
 import { loadUserSettings } from './utils/db.utils';
+import { SLACK_MODE, validateSlackEnv } from './slack-mode';
 
 export type OfficePresenceAppRunConfig = {
   APP_NAME?: string;
@@ -74,6 +79,7 @@ export function createAppConfig(
     defaultShowWeekdaysOnly,
     defaultShowTeamCount,
     defaultWeeksAhead,
+    reminderTimezone,
     copy,
   } = config;
   const getCopy = (language?: Language) =>
@@ -86,6 +92,7 @@ export function createAppConfig(
       defaultShowWeekdaysOnly ?? DEFAULT_SHOW_WEEKDAYS_ONLY,
     defaultShowTeamCount: defaultShowTeamCount ?? DEFAULT_SHOW_TEAM_COUNT,
     defaultWeeksAhead: defaultWeeksAhead ?? DEFAULT_WEEKS_AHEAD,
+    timeZone: reminderTimezone ?? DEFAULT_REMINDER_TIMEZONE,
     copy: getCopy(DEFAULT_LANGUAGE),
     getCopy,
   };
@@ -96,13 +103,20 @@ export type OfficePresenceHandlerApp = Pick<
   'event' | 'action' | 'view' | 'command'
 >;
 
-// Shared by the Socket Mode app and the local mock so both run the same handlers.
+export type RegisterHandlersOptions = {
+  // Only the mock client may address seeded members; real Slack clients must not.
+  allowDemoRecipients?: boolean;
+};
+
+// Shared by Socket Mode, HTTP mode and the mock so all three run the same handlers.
 export function registerOfficePresenceHandlers(
   app: OfficePresenceHandlerApp,
   appConfig: AppConfig,
   previewReminder: (userId: string) => Promise<void>,
+  { allowDemoRecipients = false }: RegisterHandlersOptions = {},
 ) {
-  const publishHomeView = createPublishHomeView(appConfig);
+  const getUserTodayISO = createUserTodayResolver(appConfig.timeZone);
+  const publishHomeView = createPublishHomeView(appConfig, getUserTodayISO);
   const getInputScheduleModal = createInputScheduleModal(appConfig);
   const getAskLunchModal = createAskLunchModal(appConfig);
   const getUserSettingsModal = createUserSettingsModal(appConfig);
@@ -129,9 +143,25 @@ export function registerOfficePresenceHandlers(
     await publishHomeView(client, body);
   });
 
+  // Date pickers start at the member's today, so these modals resolve it before opening.
+  const openModal =
+    (modalFactory: (userId: string, todayISO: string) => View) =>
+    async ({
+      ack,
+      body,
+      client,
+    }: SlackActionMiddlewareArgs<BlockAction> & AllMiddlewareArgs) => {
+      await ack();
+      const todayISO = await getUserTodayISO(client, body.user.id);
+      await client.views.open({
+        trigger_id: body.trigger_id,
+        view: modalFactory(body.user.id, todayISO),
+      });
+    };
+
   app.action<BlockAction>(
     APP_ACTION.OPEN_SCHEDULE_MODAL,
-    SlackModalUtils.createModalHandlerWithUserId(getInputScheduleModal),
+    openModal(getInputScheduleModal),
   );
 
   app.action<BlockAction>(
@@ -154,14 +184,15 @@ export function registerOfficePresenceHandlers(
   );
 
   const pushModal =
-    (modalFactory: (userId: string) => View | null) =>
+    (modalFactory: (userId: string, todayISO: string) => View | null) =>
     async ({
       ack,
       body,
       client,
     }: SlackActionMiddlewareArgs<BlockAction> & AllMiddlewareArgs) => {
       await ack();
-      const view = modalFactory(body.user.id);
+      const todayISO = await getUserTodayISO(client, body.user.id);
+      const view = modalFactory(body.user.id, todayISO);
       if (view) {
         await client.views.push({ trigger_id: body.trigger_id, view });
       }
@@ -192,12 +223,12 @@ export function registerOfficePresenceHandlers(
 
   app.action<BlockAction>(
     APP_ACTION.OPEN_ASK_LUNCH_MODAL,
-    SlackModalUtils.createModalHandlerWithUserId(getAskLunchModal),
+    openModal(getAskLunchModal),
   );
 
   app.action<BlockAction>(
     APP_ACTION.OPEN_CREATE_EVENT_MODAL,
-    SlackModalUtils.createModalHandlerWithUserId(getCreateEventModal),
+    openModal(getCreateEventModal),
   );
 
   app.view(
@@ -225,12 +256,18 @@ export function registerOfficePresenceHandlers(
       }
     }
     const copy = appConfig.getCopy(loadUserSettings(userId).language);
-    await handleAskLunchAction(userId, selectedUsers, client, copy);
+    await handleAskLunchAction(
+      userId,
+      selectedUsers,
+      client,
+      copy,
+      allowDemoRecipients,
+    );
   });
 
   app.action(
     APP_ACTION.SUBMIT_CHECKOUT,
-    createCheckoutAction(appConfig, publishHomeView),
+    createCheckoutAction(appConfig, publishHomeView, getUserTodayISO),
   );
 
   app.action<BlockAction>(
@@ -259,7 +296,8 @@ export function registerOfficePresenceHandlers(
       const eventIdStr = actionId.split('_').pop();
       if (!eventIdStr) return;
       const eventId = parseInt(eventIdStr, 10);
-      const modal = getEditEventModal(eventId, body.user.id);
+      const todayISO = await getUserTodayISO(client, body.user.id);
+      const modal = getEditEventModal(eventId, body.user.id, todayISO);
       if (modal) {
         await client.views.open({
           trigger_id: body.trigger_id,
@@ -288,9 +326,12 @@ export function registerOfficePresenceHandlers(
   });
 }
 
+// Socket Mode only: it needs no public URL and owns the reminder cron. HTTP mode is
+// hosted by the service app (see createOfficePresenceHttpRuntime).
 export async function runOfficePresenceApp(
   config: OfficePresenceAppRunConfig = {},
 ) {
+  validateSlackEnv(SLACK_MODE.SOCKET);
   const appConfig = createAppConfig(config);
   const sendReminders = createReminderSender(appConfig);
   const previewReminder = createReminderPreviewer(appConfig);
@@ -308,7 +349,7 @@ export async function runOfficePresenceApp(
         await sendReminders();
       },
       {
-        timezone: config.reminderTimezone ?? DEFAULT_REMINDER_TIMEZONE,
+        timezone: appConfig.timeZone,
       },
     );
   }
@@ -316,7 +357,8 @@ export async function runOfficePresenceApp(
 
 function createCheckoutAction(
   appConfig: AppConfig,
-  publishHomeView: ReturnType<typeof createPublishHomeView>,
+  publishHomeView: PublishHomeView,
+  getUserTodayISO: GetUserTodayISO,
 ) {
   return async function handleCheckoutAction({
     body,
@@ -326,14 +368,16 @@ function createCheckoutAction(
     await ack();
 
     const userId = body.user.id;
-    const today = new Date().toISOString().split('T')[0];
-
-    const allPresences = loadAllPresences();
-    const userPresences = allPresences[userId];
-    const presence = userPresences[today];
-    const copy = appConfig.getCopy(loadUserSettings(userId).language);
-    presence.message = copy.ACTIONS.CHECKED_OUT_MESSAGE;
-    savePresence(userId, today, presence);
+    const today = await getUserTodayISO(client, userId);
+    // A stale Home view can still show the button after today's presence was removed.
+    const presence = loadAllPresences(today)[userId]?.[today];
+    if (presence) {
+      const copy = appConfig.getCopy(loadUserSettings(userId).language);
+      savePresence(userId, today, {
+        ...presence,
+        message: copy.ACTIONS.CHECKED_OUT_MESSAGE,
+      });
+    }
     await publishHomeView(client, body);
   };
 }

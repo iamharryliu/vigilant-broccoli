@@ -1,5 +1,5 @@
 import { HONEYPOT_FIELD_NAME } from '@vigilant-broccoli/common-js';
-import { PERSONAL_WEBSITE_BACKEND_ENDPOINTS } from '@vigilant-broccoli/personal-common-js';
+import { PERSONAL_WEBSITE_BACKEND_ENDPOINTS } from '@harry/personal';
 import { ENVIRONMENT } from '../../../environments/environment';
 
 const NETWORK_ERROR_MESSAGE =

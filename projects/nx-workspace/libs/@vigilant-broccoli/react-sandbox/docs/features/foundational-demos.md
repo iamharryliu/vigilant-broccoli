@@ -13,7 +13,7 @@ Dedicated component-library examples for shared controls, surfaces and typograph
 
 ## Navigation and review
 
-- Each demo has a dedicated entry under Components. Avatar and User Avatar remain separate entries.
+- Each demo has a dedicated entry under the `react-lib` group. Avatar and User Avatar remain separate entries.
 - DemoSection supplies consistent section headings and spacing across foundational and older multi-example demos, including buttons, avatars, notifications, collapsible lists, status lists, timelines and Select. Preview rows wrap on narrow screens; Avatar and User Avatar keep their independent examples.
 - All new section labels, descriptions and status messages use the sandbox's shared i18n dictionary. Selected-value displays remain beside Select controls; option dumps remain omitted.
 - Review the entries in both themes with `d`, including while typing into fields, and at mobile widths. Labels and validation messages remain associated with their controls, and disabled controls retain native behavior.

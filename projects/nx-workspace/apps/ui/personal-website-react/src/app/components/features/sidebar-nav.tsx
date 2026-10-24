@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import type { ComponentProps } from 'react';
-import { Calendar, Mail, User } from 'lucide-react';
+import { Mail, User } from 'lucide-react';
 import {
   Sidebar,
   type SidebarCTA,
@@ -16,11 +16,6 @@ const NAV_ITEMS: Omit<SidebarCTA, 'isActive'>[] = [
     href: LINKS.ABOUT_PAGE.url.internal ?? '/',
     label: LINKS.ABOUT_PAGE.text,
     icon: User,
-  },
-  {
-    href: LINKS.CALENDAR_PAGE.url.internal ?? '/',
-    label: LINKS.CALENDAR_PAGE.text,
-    icon: Calendar,
   },
   {
     href: LINKS.CONTACT_PAGE.url.internal ?? '/',

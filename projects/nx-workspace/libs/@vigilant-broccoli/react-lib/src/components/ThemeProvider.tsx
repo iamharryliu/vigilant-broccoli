@@ -3,24 +3,21 @@
 import {
   createContext,
   useContext,
-  useState,
-  useEffect,
   useLayoutEffect,
+  useSyncExternalStore,
   ReactNode,
   type CSSProperties,
 } from 'react';
 
-import { ThemeScope } from './ThemeScope';
+import { getThemeRestoreScript, ThemeScope } from './ThemeScope';
+import {
+  THEME_STORAGE_KEY,
+  useThemePreference,
+  type ThemeAppearance,
+} from '../hooks/useThemePreference';
+import { useToggleThemeKeybind } from '../hooks/useThemeKeybind';
 
-const LIGHT = 'light';
-const DARK = 'dark';
-const THEME_STORAGE_KEY = 'theme';
 const USE_THEME_ERROR = 'useTheme must be used within a ThemeProvider';
-const STORAGE_EVENT = 'storage';
-const CHANGE_EVENT = 'change';
-const PREFERS_DARK_QUERY = '(prefers-color-scheme: dark)';
-
-export type ThemeAppearance = typeof LIGHT | typeof DARK;
 
 type ThemeContextType = {
   appearance: ThemeAppearance;
@@ -29,69 +26,56 @@ type ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const isAppearance = (value: unknown): value is ThemeAppearance =>
-  value === LIGHT || value === DARK;
+const subscribeNever = () => () => undefined;
 
-const getSystemAppearance = (): ThemeAppearance =>
-  typeof window !== 'undefined' &&
-  window.matchMedia?.(PREFERS_DARK_QUERY).matches
-    ? DARK
-    : LIGHT;
+// True for server and hydration renders, false for client-created trees: React
+// never executes scripts it creates on the client and warns about them in Next.
+const useIsServerRendered = () =>
+  useSyncExternalStore(
+    subscribeNever,
+    () => false,
+    () => true,
+  );
 
 export function ThemeProvider({
   children,
   style,
-  followSystem = false,
+  storageKey = THEME_STORAGE_KEY,
+  keybind = true,
 }: {
   children: ReactNode;
   style?: CSSProperties;
-  /** Track `prefers-color-scheme` live; ignores the stored override and cross-tab sync. */
-  followSystem?: boolean;
+  /** Per-app `localStorage` key for the saved override. */
+  storageKey?: string;
+  /** Binds the global `d` toggle; disable it where `d` is taken and call `useThemeKeybind` where it is free. */
+  keybind?: boolean;
 }) {
-  const [appearance, setAppearance] = useState<ThemeAppearance>(
-    followSystem ? getSystemAppearance : LIGHT,
-  );
+  const { appearance, toggleTheme } = useThemePreference(storageKey);
+  useToggleThemeKeybind(toggleTheme, keybind);
+  const isServerRendered = useIsServerRendered();
 
-  useEffect(() => {
-    if (!followSystem) return;
-    const media = window.matchMedia?.(PREFERS_DARK_QUERY);
-    if (!media) return;
-    const sync = () => setAppearance(media.matches ? DARK : LIGHT);
-    sync();
-    media.addEventListener(CHANGE_EVENT, sync);
-    return () => media.removeEventListener(CHANGE_EVENT, sync);
-  }, [followSystem]);
-
+  // The scope only covers its own box, so scrollbars and overscroll follow the
+  // root. A client-only effect leaves server markup untouched (no hydration
+  // mismatch); it runs before first paint, after the head/restore scripts.
   useLayoutEffect(() => {
-    if (followSystem) return;
-    const saved = localStorage.getItem(THEME_STORAGE_KEY);
-    if (isAppearance(saved)) {
-      setAppearance(saved);
-    }
-  }, [followSystem]);
-
-  useEffect(() => {
-    if (followSystem) return;
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === THEME_STORAGE_KEY && isAppearance(e.newValue)) {
-        setAppearance(e.newValue);
-      }
-    };
-
-    window.addEventListener(STORAGE_EVENT, handleStorageChange);
-    return () => window.removeEventListener(STORAGE_EVENT, handleStorageChange);
-  }, [followSystem]);
-
-  const toggleTheme = () => {
-    if (followSystem) return;
-    const next: ThemeAppearance = appearance === LIGHT ? DARK : LIGHT;
-    setAppearance(next);
-    localStorage.setItem(THEME_STORAGE_KEY, next);
-  };
+    document.documentElement.style.colorScheme = appearance;
+  }, [appearance]);
 
   return (
     <ThemeContext.Provider value={{ appearance, toggleTheme }}>
-      <ThemeScope appearance={appearance} style={style}>
+      {/* The restore script rewrites the server-rendered scope before hydration. */}
+      <ThemeScope
+        appearance={appearance}
+        style={style}
+        suppressHydrationWarning
+      >
+        {isServerRendered && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: getThemeRestoreScript(storageKey, style),
+            }}
+          />
+        )}
         {children}
       </ThemeScope>
     </ThemeContext.Provider>
@@ -104,4 +88,8 @@ export function useTheme() {
     throw new Error(USE_THEME_ERROR);
   }
   return context;
+}
+
+export function useThemeKeybind(enabled = true) {
+  useToggleThemeKeybind(useTheme().toggleTheme, enabled);
 }

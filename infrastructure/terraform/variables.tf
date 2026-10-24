@@ -140,6 +140,21 @@ variable "code_server_domain" {
   default = "code.harryliu.dev"
 }
 
+# Served by the web-terminal s6 service inside the code-server image, behind the
+# same Caddy and its own Access application.
+variable "web_terminal_domain" {
+  type    = string
+  default = "shell.harryliu.dev"
+}
+
+# Cloudflare Zero Trust team domain the web-terminal server validates Access JWT
+# issuers and signing keys against. A variable, not a data source: the Terraform
+# API token cannot read Zero Trust organizations (403 code 10000).
+variable "access_team_domain" {
+  type    = string
+  default = "vigilant-broccoli.cloudflareaccess.com"
+}
+
 # Built and pushed by .github/workflows/deploy-code-server-image.yml, which
 # also publishes an immutable sha-<commit> tag -- set this to one of those to
 # pin the VM to a known build or roll back.
@@ -325,6 +340,11 @@ variable "career_domain" {
   default = "career.harryliu.dev"
 }
 
+variable "deployments_domain" {
+  type    = string
+  default = "deployments.harryliu.dev"
+}
+
 variable "status_domain" {
   type    = string
   default = "status.harryliu.dev"
@@ -356,19 +376,34 @@ variable "component_library_pages_subdomain" {
   default = "production-component-library.pages.dev"
 }
 
-variable "links_domain" {
+variable "bookmarks_domain" {
   type    = string
-  default = "links.harryliu.dev"
+  default = "bookmarks.harryliu.dev"
 }
 
-variable "links_pages_project" {
+variable "bookmarks_pages_project" {
   type    = string
-  default = "production-links-react"
+  default = "production-bookmarks-react"
 }
 
-variable "links_pages_subdomain" {
+variable "bookmarks_pages_subdomain" {
   type    = string
-  default = "production-links-react.pages.dev"
+  default = "production-bookmarks-react.pages.dev"
+}
+
+variable "pomodoro_domain" {
+  type    = string
+  default = "pomodoro.harryliu.dev"
+}
+
+variable "pomodoro_pages_project" {
+  type    = string
+  default = "production-pomodoro-react"
+}
+
+variable "pomodoro_pages_subdomain" {
+  type    = string
+  default = "production-pomodoro-react.pages.dev"
 }
 
 variable "cloud8skate_domain" {

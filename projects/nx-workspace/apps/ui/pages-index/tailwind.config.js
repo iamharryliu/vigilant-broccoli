@@ -7,7 +7,7 @@ module.exports = {
   presets: [
     require('../../../libs/@vigilant-broccoli/react-lib/tailwind.preset.cjs'),
   ],
-  darkMode: 'media',
+  darkMode: 'class',
   content: [
     join(
       __dirname,
@@ -16,6 +16,10 @@ module.exports = {
     join(
       __dirname,
       '../../../libs/@vigilant-broccoli/react-lib/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+    ),
+    join(
+      __dirname,
+      '../../../libs/@vigilant-broccoli/react-lib-media/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
     ),
     join(
       __dirname,

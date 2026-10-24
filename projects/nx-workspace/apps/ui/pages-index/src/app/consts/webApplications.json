@@ -50,6 +50,13 @@
       "readmePath": "projects/nx-workspace/apps/findme/README.md"
     },
     {
+      "id": "hearth",
+      "href": "https://hearth.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.HEARTH.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.HEARTH.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/hearth/README.md"
+    },
+    {
       "id": "harry-liu",
       "href": "https://harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.HARRY_LIU.TITLE",
@@ -62,13 +69,6 @@
       "titleKey": "WEB_APPLICATIONS_PAGE.CALENDARS.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.CALENDARS.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/calendars/README.md"
-    },
-    {
-      "id": "links",
-      "href": "https://links.harryliu.dev/",
-      "titleKey": "WEB_APPLICATIONS_PAGE.LINKS.TITLE",
-      "descriptionKey": "WEB_APPLICATIONS_PAGE.LINKS.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/links-react/README.md"
     },
     {
       "id": "utilities",
@@ -97,6 +97,27 @@
       "titleKey": "WEB_APPLICATIONS_PAGE.WHITEBOARD.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.WHITEBOARD.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/whiteboard/README.md"
+    },
+    {
+      "id": "web-terminal",
+      "href": "https://shell.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.WEB_TERMINAL.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.WEB_TERMINAL.DESCRIPTION",
+      "readmePath": "infrastructure/code-server/README.md"
+    },
+    {
+      "id": "bookmarks",
+      "href": "https://bookmarks.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.BOOKMARKS.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.BOOKMARKS.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/bookmarks-react/README.md"
+    },
+    {
+      "id": "pomodoro",
+      "href": "https://pomodoro.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.POMODORO.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.POMODORO.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/pomodoro-react/README.md"
     }
   ],
   "demos": [
@@ -106,6 +127,13 @@
       "titleKey": "WEB_APPLICATIONS_PAGE.EMPLOYEE_HANDLER.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.EMPLOYEE_HANDLER.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/employee-handler-ui/README.md"
+    },
+    {
+      "id": "office-presence",
+      "href": "https://demo-office-presence-ui.pages.dev",
+      "titleKey": "WEB_APPLICATIONS_PAGE.OFFICE_PRESENCE.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.OFFICE_PRESENCE.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/office-presence-ui/README.md"
     }
   ]
 }

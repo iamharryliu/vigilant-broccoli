@@ -9,3 +9,9 @@
 .findme-self-marker {
   filter: hue-rotate(-60deg);
 }
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #020617;
+  }
+}

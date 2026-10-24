@@ -3,7 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/ui/cloud-8-skate-react/src",
   "projectType": "application",
-  "tags": [],
+  "tags": ["visibility:public"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint"

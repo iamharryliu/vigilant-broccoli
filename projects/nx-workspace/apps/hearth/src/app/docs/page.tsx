@@ -21,6 +21,7 @@ import { HomeDocForm, HomeDocFormData } from './components/HomeDocForm';
 import { uploadFormFiles } from './upload-files';
 import { ROUTES } from '../../lib/routes';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
+import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
 
 const CATEGORY_COLORS: Record<DocCategory, string> = {
   Insurance: 'blue',
@@ -61,20 +62,18 @@ export default function DocsPage() {
   const [loaded, setLoaded] = useState(false);
 
   const token = session?.access_token ?? '';
-  const authHeader = (extra?: Record<string, string>) => ({
-    Authorization: `Bearer ${token}`,
-    ...extra,
-  });
+  const authHeader = useAuthHeader();
+  const jsonHeaders = useJsonAuthHeaders();
 
   const fetchDocs = useCallback(async () => {
     if (!homeId || !token) return;
     const res = await fetch(`/api/docs?homeId=${homeId}`, {
-      headers: authHeader(),
+      headers: await authHeader(),
     });
     const data = await res.json();
     setDocs(Array.isArray(data) ? data : []);
     setLoaded(true);
-  }, [homeId, token]);
+  }, [homeId, token, authHeader]);
 
   useEffect(() => {
     fetchDocs();
@@ -84,7 +83,7 @@ export default function DocsPage() {
     const files = await uploadFormFiles(data.files, token);
     await fetch('/api/docs', {
       method: 'POST',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ ...data, files, homeId }),
     });
     setModal(null);
@@ -95,7 +94,7 @@ export default function DocsPage() {
     if (modal?.type !== 'edit') return;
     await fetch('/api/docs', {
       method: 'PATCH',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({
         id: modal.doc.id,
         name: data.name,
@@ -111,7 +110,7 @@ export default function DocsPage() {
     if (modal?.type !== 'edit') return;
     await fetch('/api/docs', {
       method: 'DELETE',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id: modal.doc.id }),
     });
     setModal(null);
@@ -229,9 +228,7 @@ export default function DocsPage() {
                   onDelete={async () => {
                     await fetch('/api/docs', {
                       method: 'DELETE',
-                      headers: authHeader({
-                        'Content-Type': 'application/json',
-                      }),
+                      headers: await jsonHeaders(),
                       body: JSON.stringify({ id: doc.id }),
                     });
                     fetchDocs();

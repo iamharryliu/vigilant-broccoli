@@ -71,35 +71,3 @@ output "docs_url" {
 output "nx_cache_url" {
   value = "https://${var.nx_cache_domain}"
 }
-
-# Not sensitive: a WIF provider path or SA email grants nothing by itself —
-# the actual boundary is the attribute_condition + IAM bindings. Paste these
-# literally into ci-pr-check.yml's vault-secrets step (not a repo secret —
-# see the comment there for why).
-output "github_actions_pr_check_workload_identity_provider" {
-  value = google_iam_workload_identity_pool_provider.github_pr_check.name
-}
-
-output "github_actions_pr_check_service_account_email" {
-  value = google_service_account.github_actions_pr_check.email
-}
-
-# Pasted literally into cron-terraform-drift.yml's vault-secrets step, same
-# reasoning as the github_actions_pr_check_* outputs above.
-output "github_actions_tf_drift_workload_identity_provider" {
-  value = google_iam_workload_identity_pool_provider.github_tf_drift.name
-}
-
-output "github_actions_tf_drift_service_account_email" {
-  value = google_service_account.github_actions_tf_drift.email
-}
-
-# Pasted literally into deploy-preview.yml's vault-secrets step, same
-# reasoning as the github_actions_pr_check_* outputs above.
-output "github_actions_deploy_preview_workload_identity_provider" {
-  value = google_iam_workload_identity_pool_provider.github_deploy_preview.name
-}
-
-output "github_actions_deploy_preview_service_account_email" {
-  value = google_service_account.github_actions_deploy_preview.email
-}

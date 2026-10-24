@@ -23,8 +23,8 @@ RUN curl -fsSL https://mise.run | MISE_VERSION="$MISE_VERSION" MISE_INSTALL_PATH
 # bash stays the login shell: the runners exec bash scripts, and the entrypoint wires both rc files.
 RUN useradd -m -s /bin/bash agent
 
-COPY init-firewall.sh entrypoint.sh solve-todo-runner.sh pr-increments.sh commit-subject.sh /usr/local/bin/
-RUN chmod 755 /usr/local/bin/init-firewall.sh /usr/local/bin/entrypoint.sh /usr/local/bin/solve-todo-runner.sh /usr/local/bin/pr-increments.sh /usr/local/bin/commit-subject.sh
+COPY init-firewall.sh entrypoint.sh solve-todo-runner.sh pr-increments.sh commit-subject.sh no-changes.sh /usr/local/bin/
+RUN chmod 755 /usr/local/bin/init-firewall.sh /usr/local/bin/entrypoint.sh /usr/local/bin/solve-todo-runner.sh /usr/local/bin/pr-increments.sh /usr/local/bin/commit-subject.sh /usr/local/bin/no-changes.sh
 
 WORKDIR /home/agent
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

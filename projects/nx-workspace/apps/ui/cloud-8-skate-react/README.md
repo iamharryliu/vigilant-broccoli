@@ -18,7 +18,7 @@ The Cloud8 Toronto skating community site.
   - Tailwind CSS
 - Internal libs
   - `common-js`
-  - `personal-common-js`
+  - `@harry/personal`
   - `react-lib`
   - `react-lib-higher-level`
 - Cloud services

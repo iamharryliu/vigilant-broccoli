@@ -5,6 +5,7 @@ Object storage proxy across multiple bucket providers.
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -23,3 +24,7 @@ Object storage proxy across multiple bucket providers.
   - AWS S3
   - Cloudflare R2
   - Google Cloud Storage
+
+## Environment
+
+- [.env.example](./.env.example)

@@ -33,14 +33,16 @@ export const SubscriptionsManager = ({
   };
 
   return (
-    <div className="border rounded-xl p-5 bg-white shadow-sm">
-      <h2 className="font-semibold text-gray-800 mb-4">Manage Subscriptions</h2>
+    <div className="border rounded-xl p-5 bg-card shadow-sm">
+      <h2 className="font-semibold text-foreground mb-4">
+        Manage Subscriptions
+      </h2>
       {subscriptions.length === 0 ? (
-        <p className="text-sm text-gray-400">No subscriptions yet.</p>
+        <p className="text-sm text-muted-foreground">No subscriptions yet.</p>
       ) : (
         <table className="w-full text-sm">
           <thead>
-            <tr className="text-left text-gray-500 border-b">
+            <tr className="text-left text-muted-foreground border-b">
               <th className="pb-2 pr-4">Service</th>
               <th className="pb-2 pr-4">Email</th>
               <th className="pb-2" />
@@ -49,7 +51,7 @@ export const SubscriptionsManager = ({
           <tbody>
             {subscriptions.map(sub => (
               <tr key={sub.id} className="border-b last:border-0">
-                <td className="py-2 pr-4 text-gray-700">
+                <td className="py-2 pr-4 text-foreground">
                   {serviceName(sub.serviceId)}
                 </td>
                 <td className="py-2 pr-4">
@@ -61,7 +63,7 @@ export const SubscriptionsManager = ({
                       className="border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
                     />
                   ) : (
-                    <span className="text-gray-700">{sub.email}</span>
+                    <span className="text-foreground">{sub.email}</span>
                   )}
                 </td>
                 <td className="py-2">
@@ -76,7 +78,7 @@ export const SubscriptionsManager = ({
                         </button>
                         <button
                           onClick={() => setEditingId(null)}
-                          className="text-xs text-gray-400 hover:underline"
+                          className="text-xs text-muted-foreground hover:underline"
                         >
                           Cancel
                         </button>
@@ -85,7 +87,7 @@ export const SubscriptionsManager = ({
                       <>
                         <button
                           onClick={() => startEdit(sub)}
-                          className="text-xs text-gray-500 hover:underline"
+                          className="text-xs text-muted-foreground hover:underline"
                         >
                           Edit
                         </button>

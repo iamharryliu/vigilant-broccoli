@@ -29,6 +29,7 @@ import {
   CalendarEventForm,
   CalendarEventFormData,
 } from '../calendar/components/CalendarEventForm';
+import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
 
 const DELETE_LABEL = 'Delete';
 const ADD_TO_CALENDAR_LABEL = 'Add to calendar';
@@ -70,20 +71,17 @@ export function Checklist({
   const [calendarItem, setCalendarItem] = useState<ChecklistItem | null>(null);
 
   const token = session?.access_token ?? '';
-  const authHeader = () => ({ Authorization: `Bearer ${token}` });
-  const jsonHeaders = () => ({
-    ...authHeader(),
-    'Content-Type': 'application/json',
-  });
+  const authHeader = useAuthHeader();
+  const jsonHeaders = useJsonAuthHeaders();
 
   const fetchItems = useCallback(async () => {
     if (!homeId || !token) return;
     const res = await fetch(`${endpoint}?homeId=${homeId}`, {
-      headers: authHeader(),
+      headers: await authHeader(),
     });
     const data = await res.json();
     setItems(Array.isArray(data) ? data : []);
-  }, [endpoint, homeId, token]);
+  }, [endpoint, homeId, token, authHeader]);
 
   useEffect(() => {
     fetchItems();
@@ -95,7 +93,7 @@ export function Checklist({
     setNewItem('');
     const res = await fetch(endpoint, {
       method: 'POST',
-      headers: jsonHeaders(),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ name, homeId }),
     });
     const created = await res.json();
@@ -116,7 +114,7 @@ export function Checklist({
     );
     await fetch(endpoint, {
       method: 'PATCH',
-      headers: jsonHeaders(),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id, completed }),
     });
   };
@@ -125,7 +123,7 @@ export function Checklist({
     setItems(prev => prev.filter(item => item.id !== id));
     await fetch(endpoint, {
       method: 'DELETE',
-      headers: jsonHeaders(),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id }),
     });
   };
@@ -135,7 +133,7 @@ export function Checklist({
     if (!homeId) return;
     await fetch(CALENDAR_EVENTS_ENDPOINT, {
       method: 'POST',
-      headers: jsonHeaders(),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ ...data, homeId, kitchenEvent: true }),
     });
     onCalendarEventAdded?.();
@@ -157,7 +155,7 @@ export function Checklist({
     );
     await fetch(endpoint, {
       method: 'PATCH',
-      headers: jsonHeaders(),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id, name }),
     });
   };

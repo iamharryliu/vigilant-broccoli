@@ -1,11 +1,36 @@
 import { useState } from 'react';
-import { CalendarDays, Link2, ListTodo, Rows3, StickyNote } from 'lucide-react';
-import { OPEN_TYPE, type QuickLink } from '@vigilant-broccoli/common-js';
-import { IconButton } from '@vigilant-broccoli/react-lib';
+import {
+  CalendarDays,
+  CalendarPlus,
+  CloudSun,
+  House,
+  LayoutGrid,
+  Link2,
+  ListTodo,
+  LogOut,
+  Menu,
+  Rows3,
+  StickyNote,
+} from 'lucide-react';
+import {
+  OPEN_METEO_MAX_FORECAST_DAYS,
+  OPEN_TYPE,
+  type QuickLink,
+} from '@vigilant-broccoli/common-js';
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  VisuallyHidden,
+} from '@vigilant-broccoli/react-lib';
+import { WeatherClockCardUtilityContent } from '@vigilant-broccoli/react-utility';
 import {
   CreateTasksDialog,
   GoogleTasksComponent,
   QuickLinksPanel,
+  Sidebar,
+  type SidebarCTA,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import {
   CalendarAgenda,
@@ -17,6 +42,11 @@ import {
 } from '@vigilant-broccoli/react-lib-higher-level';
 import { NotepadDemo } from './NotepadDemo';
 import { SCENARIO, useMockTasksAuth } from './TasksDemo';
+import {
+  buildWeather,
+  DEMO_LOCATION,
+  DEMO_TIMEZONE_OFFSET_SECONDS,
+} from './WeatherClockCardDemo';
 
 const TAB = {
   CALENDAR: 'Calendar',
@@ -24,17 +54,35 @@ const TAB = {
   TASKS: 'Tasks',
   NOTEPAD: 'Notepad',
   QUICK_LINKS: 'Quick Links',
+  WEATHER: 'Weather',
 } as const;
 
 type Tab = (typeof TAB)[keyof typeof TAB];
 
 const TAB_ICON_SIZE = 18;
 
-// iPhone 14/15 viewport (390x844 CSS px); the frame scrolls like the phone
-// screen does and shrinks on narrower windows. Padding and background match
-// the real page shell (page.tsx in vb-manager-next-mobile).
+// iPhone 14/15 viewport (390x844 CSS px), shrinking on narrower windows. Like
+// the real page, the frame never scrolls: the top bar stays put and each tab
+// panel scrolls on its own. The transform makes the frame the containing block
+// for the drawer's fixed backdrop.
 const PHONE_FRAME_CLASS =
-  'h-[844px] w-[390px] max-w-full overflow-y-auto rounded-[2.5rem] border-8 border-gray-800 bg-gray-50 px-4 py-5 shadow-lg dark:border-gray-600';
+  'relative flex h-[844px] w-[390px] max-w-full flex-col overflow-hidden rounded-[2.5rem] border-8 border-gray-800 bg-gray-50 shadow-lg [transform:translateZ(0)] dark:border-gray-600';
+
+// Same as Topbar in vb-manager-next-mobile; the safe-area inset is 0 here.
+const TOPBAR_CLASS =
+  'z-20 flex h-14 shrink-0 items-center gap-3 border-b border-gray-100 bg-white px-4 dark:border-gray-800 dark:bg-gray-900';
+const MENU_BUTTON_CLASS =
+  'shrink-0 cursor-pointer rounded-md p-1.5 text-gray-500 hover:bg-gray-50 hover:text-black focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white';
+
+// The app pins the drawer with fixed; here it is absolute inside the frame.
+// md:!w-64 keeps the drawer expanded instead of the desktop icon rail.
+const DRAWER_CLASS = 'absolute top-0 left-0 bottom-0 z-30 md:!w-64';
+// Sidebar's own backdrop is md:hidden, so draw one for wide windows.
+const DRAWER_BACKDROP_CLASS = 'absolute inset-0 z-20 bg-black/50 max-md:hidden';
+const SIGN_OUT_ROW_CLASS =
+  'm-2 flex w-[calc(100%-1rem)] items-center gap-3 rounded-md px-2 py-2 text-left text-sm text-gray-500 transition-colors hover:bg-gray-50 hover:text-black dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white';
+
+const APP_NAME = 'VB Manager';
 
 const PHONE_HEIGHT_PX = 844;
 const PHONE_BORDER_PX = 8;
@@ -194,8 +242,81 @@ const MOCK_QUICK_LINKS: QuickLink[] = [
   },
 ];
 
+const WEATHER_FORECAST_DAYS = OPEN_METEO_MAX_FORECAST_DAYS;
+
 const CREATE_TASKS_LABEL = 'Create tasks';
+const CREATE_EVENT_LABEL = 'Create calendar event';
 const noop = () => undefined;
+
+const MOCK_VOICE_TRANSCRIPT = 'Pick up the dry cleaning tomorrow at noon.';
+const MOCK_EVENT_TRANSCRIPT = 'Dinner with Alex on Friday at 7pm.';
+
+const VOICE_BUTTON_CLASS =
+  'flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:active:bg-gray-700';
+
+// Stands in for the app's recorder-backed voice button: inserts a canned
+// transcript instead of using the microphone.
+const MockVoiceButton = ({
+  transcript,
+  onTranscript,
+}: {
+  transcript: string;
+  onTranscript: (text: string) => void;
+}) => (
+  <button
+    type="button"
+    onClick={() => onTranscript(transcript)}
+    className={VOICE_BUTTON_CLASS}
+  >
+    Voice
+  </button>
+);
+
+// Same layout as CalendarInput in vb-manager-next-mobile, without uploads,
+// the microphone or the parse/create network calls.
+const MockCalendarInput = () => {
+  const [text, setText] = useState('');
+  const [extracted, setExtracted] = useState(false);
+
+  return (
+    <div className="space-y-4">
+      <textarea
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder="Paste event text, email, or image here..."
+        rows={4}
+        className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 dark:border-gray-700 dark:bg-gray-900"
+      />
+      <div className="flex gap-2">
+        <button type="button" className={VOICE_BUTTON_CLASS}>
+          Gallery
+        </button>
+        <button type="button" className={VOICE_BUTTON_CLASS}>
+          Camera
+        </button>
+        <MockVoiceButton
+          transcript={MOCK_EVENT_TRANSCRIPT}
+          onTranscript={transcript =>
+            setText(prev => (prev ? `${prev}\n${transcript}` : transcript))
+          }
+        />
+      </div>
+      <button
+        type="button"
+        disabled={!text.trim()}
+        onClick={() => setExtracted(true)}
+        className="w-full rounded-lg bg-blue-500 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50"
+      >
+        Extract events
+      </button>
+      {extracted && (
+        <p className="rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-500 dark:bg-gray-950 dark:text-gray-400">
+          Event extraction is mocked in the component library.
+        </p>
+      )}
+    </div>
+  );
+};
 
 // Mirrors GoogleTasksView in vb-manager-next-mobile, on the mocked tasks API.
 const MobileTasks = () => {
@@ -219,6 +340,12 @@ const MobileTasks = () => {
           }
           auth={auth}
           onCreated={() => setRefreshTrigger(n => n + 1)}
+          renderVoiceAction={onTranscript => (
+            <MockVoiceButton
+              transcript={MOCK_VOICE_TRANSCRIPT}
+              onTranscript={onTranscript}
+            />
+          )}
         />
       }
     />
@@ -228,7 +355,17 @@ const MobileTasks = () => {
 export const MobileHomeDemo = () => {
   const [tab, setTab] = useState<Tab>(TAB.CALENDAR);
   const [events] = useState(buildMockEvents);
+  const [weather] = useState(() => buildWeather(WEATHER_FORECAST_DAYS));
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+
+  const closeDrawer = () => setDrawerOpen(false);
+
+  const navItems: SidebarCTA[] = [
+    { label: 'Home', icon: House, isActive: true, onClick: closeDrawer },
+    { label: 'Apps', icon: LayoutGrid, onClick: closeDrawer },
+  ];
 
   const toggleHidden = (googleCalendarId: string) =>
     setHiddenIds(current => {
@@ -284,11 +421,97 @@ export const MobileHomeDemo = () => {
       icon: <Link2 size={TAB_ICON_SIZE} />,
       content: <QuickLinksPanel links={MOCK_QUICK_LINKS} />,
     },
+    {
+      value: TAB.WEATHER,
+      label: TAB.WEATHER,
+      icon: <CloudSun size={TAB_ICON_SIZE} />,
+      content: (
+        <div className="mx-auto w-full max-w-xl">
+          <WeatherClockCardUtilityContent
+            location={DEMO_LOCATION}
+            timezoneOffsetSeconds={DEMO_TIMEZONE_OFFSET_SECONDS}
+            weather={weather}
+          />
+        </div>
+      ),
+    },
   ];
 
   return (
     <div className={PHONE_FRAME_CLASS}>
-      <TabbedView tabs={tabs} value={tab} onValueChange={setTab} />
+      <header className={TOPBAR_CLASS}>
+        <button
+          type="button"
+          aria-label="Open menu"
+          onClick={() => setDrawerOpen(open => !open)}
+          className={MENU_BUTTON_CLASS}
+        >
+          <Menu size={20} />
+        </button>
+        <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">
+          {APP_NAME}
+        </span>
+      </header>
+
+      <main className="flex min-h-0 flex-1 flex-col px-4 py-5">
+        <TabbedView
+          tabs={tabs}
+          value={tab}
+          onValueChange={setTab}
+          actions={
+            tab !== TAB.TASKS && (
+              <button
+                type="button"
+                onClick={() => setCreateOpen(true)}
+                aria-label={CREATE_EVENT_LABEL}
+                title={CREATE_EVENT_LABEL}
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500 text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
+              >
+                <CalendarPlus size={18} />
+              </button>
+            )
+          }
+        />
+      </main>
+
+      {drawerOpen && (
+        <>
+          <div className={DRAWER_BACKDROP_CLASS} onClick={closeDrawer} />
+          <Sidebar
+            items={navItems}
+            className={DRAWER_CLASS}
+            mobileOpen
+            onMobileClose={closeDrawer}
+            footer={
+              <button
+                type="button"
+                onClick={closeDrawer}
+                className={SIGN_OUT_ROW_CLASS}
+              >
+                <span className="shrink-0">
+                  <LogOut size={18} />
+                </span>
+                <span className="flex-1 whitespace-nowrap">Sign out</span>
+              </button>
+            }
+          />
+        </>
+      )}
+
+      {/* Radix portals the dialog to the page, so it covers the whole window
+          rather than just the phone frame. */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent
+          className="block max-h-[90vh] w-[calc(100%-2rem)] max-w-[600px] gap-0 overflow-y-auto"
+          aria-describedby={undefined}
+          showCloseButton={false}
+        >
+          <VisuallyHidden>
+            <DialogTitle>Create Calendar Event</DialogTitle>
+          </VisuallyHidden>
+          <MockCalendarInput />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

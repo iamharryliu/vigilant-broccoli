@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AudioButton } from '@vigilant-broccoli/react-lib';
+import { AudioButton } from '@vigilant-broccoli/react-lib-media';
 
 const MOCK_SPEAK_MS = 2000;
 

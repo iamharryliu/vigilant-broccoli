@@ -1,6 +1,7 @@
 import {
   Bike,
   BookOpen,
+  Bookmark,
   Bot,
   Briefcase,
   CalendarDays,
@@ -8,8 +9,10 @@ import {
   Gamepad2,
   Globe,
   Hourglass,
+  Home,
+  Terminal,
+  Timer,
   LayoutGrid,
-  Link as LinkIcon,
   type LucideIcon,
   MapPin,
   PenTool,
@@ -41,6 +44,7 @@ const FALLBACK_ICON: LucideIcon = Globe;
 
 const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
   balloono: Gamepad2,
+  bookmarks: Bookmark,
   calendars: CalendarDays,
   career: Briefcase,
   'context-md': Bot,
@@ -49,10 +53,12 @@ const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
   'docs-md': BookOpen,
   'find-me': MapPin,
   'harry-liu': User,
-  links: LinkIcon,
+  hearth: Home,
+  pomodoro: Timer,
   utilities: Wrench,
   'waiting-games': Hourglass,
   weather: CloudSun,
+  'web-terminal': Terminal,
   whiteboard: PenTool,
   'employee-handler': Users,
 };

@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -18,7 +19,12 @@
   - `common-js`
   - `employee-handler`
   - `react-lib`
+  - `react-lib-auth`
   - `react-lib-higher-level`
 - Cloud services
   - Google APIs
   - Supabase
+
+## Environment
+
+- [.env.example](./.env.example)
