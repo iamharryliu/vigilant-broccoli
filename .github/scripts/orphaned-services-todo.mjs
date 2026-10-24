@@ -12,7 +12,21 @@ const REPORT_JSON_PATH = process.env.REPORT_JSON_PATH ?? '';
 const TODO_PATH = process.env.TODO_PATH ?? 'TODO.md';
 const GITHUB_OUTPUT = process.env.GITHUB_OUTPUT ?? '';
 
-const CHORE_HEADING = '## Chore';
+const CHORE_TYPE = 'Chore';
+// Mirrors the Type order in docs/todo-pattern.md, which keeps rows grouped by
+// Type; a new row lands after the last row of Chore or an earlier Type.
+const TYPE_ORDER = [
+  'Security',
+  'Performance',
+  'Maintenance',
+  CHORE_TYPE,
+  'Refactor',
+  'Feature Enhancements',
+  'UI Cleanup',
+  'Not so serious',
+];
+const TYPE_CELL_INDEX = 1;
+const GENERATED_CELLS_START = 5;
 const DESCRIPTION_MARKER = '`cron-prune-orphaned-services` found';
 const NEW_ROW_PRIORITY = 'P3';
 const NEW_ROW_AGENT = 'human';
@@ -72,18 +86,20 @@ const existingIdx = lines.findIndex(
   line => TODO_ROW_RE.test(line) && line.includes(DESCRIPTION_MARKER),
 );
 
-const choreTableEnd = () => {
-  const headingIdx = lines.findIndex(line => line.trim() === CHORE_HEADING);
-  if (headingIdx === -1) {
-    throw new Error(`TODO.md has no "${CHORE_HEADING}" section.`);
-  }
-  let idx = headingIdx + 1;
-  while (idx < lines.length && !lines[idx].startsWith(TABLE_LINE_PREFIX)) idx++;
-  if (idx === lines.length) {
-    throw new Error(`"${CHORE_HEADING}" in TODO.md has no table.`);
-  }
-  while (idx < lines.length && lines[idx].startsWith(TABLE_LINE_PREFIX)) idx++;
-  return idx;
+const choreInsertIdx = () => {
+  const tableStart = lines.findIndex(line =>
+    line.startsWith(TABLE_LINE_PREFIX),
+  );
+  if (tableStart === -1) throw new Error('TODO.md has no table.');
+  const choreRank = TYPE_ORDER.indexOf(CHORE_TYPE);
+  // Header and separator rows come first, so the default slot is after them.
+  let insertAt = tableStart + 2;
+  lines.forEach((line, idx) => {
+    if (!TODO_ROW_RE.test(line)) return;
+    const rank = TYPE_ORDER.indexOf(splitCells(line)[TYPE_CELL_INDEX]);
+    if (rank !== -1 && rank <= choreRank) insertAt = idx + 1;
+  });
+  return insertAt;
 };
 
 const newId = () => {
@@ -102,10 +118,11 @@ if (orphanTotal === 0) {
   }
 } else if (existingIdx === -1) {
   lines.splice(
-    choreTableEnd(),
+    choreInsertIdx(),
     0,
     renderRow([
       newId(),
+      CHORE_TYPE,
       NEW_ROW_PRIORITY,
       NEW_ROW_AGENT,
       NEW_ROW_EFFORT,
@@ -114,10 +131,13 @@ if (orphanTotal === 0) {
   );
   action = ACTION.ADDED;
 } else {
-  // Id, Priority, Agent and Effort may have been adjusted by hand; only the
-  // generated cells are rewritten.
+  // Id, Type, Priority, Agent and Effort may have been adjusted by hand; only
+  // the generated cells are rewritten.
   const cells = splitCells(lines[existingIdx]);
-  const updated = renderRow([...cells.slice(0, 4), ...contentCells()]);
+  const updated = renderRow([
+    ...cells.slice(0, GENERATED_CELLS_START),
+    ...contentCells(),
+  ]);
   if (renderRow(cells) !== updated) {
     lines[existingIdx] = updated;
     action = ACTION.UPDATED;

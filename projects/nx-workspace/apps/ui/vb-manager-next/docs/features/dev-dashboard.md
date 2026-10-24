@@ -9,6 +9,6 @@
 
 ## TODO
 
-- The TODO tab is read-only: it parses the main checkout's `TODO.md` (`GET /api/todo`) and shows each row's Status (priority · effort · agent) and Brief. Clicking a Brief opens the full Description and Recommended Fix.
+- The TODO tab is read-only: it parses the main checkout's `TODO.md` (`GET /api/todo`), groups rows into sections and a table of contents by `Type` (ordered by `TODO_TYPE_ORDER` in `src/app/constants/todo.ts`), and sorts each section by Priority, Effort or Agent. Rows show Status (priority · effort · agent) and Brief; the help icon on the Status header explains the values, and clicking a Brief opens the full Description and Recommended Fix. The legend and sort ranks both come from `TODO_STATUS_LEGEND`, so keep it in step with `docs/todo-pattern.md`.
 - Run agentic solve dispatches `manual-agentic-pr-create` with `prompt: solve <id>`.
 - Delete asks for a reason and dispatches the same workflow with `Remove TODO.md row <id>. Reason: <reason>`; that exact form is what `solve-todo-runner.sh` lets through as a TODO-only PR, so keep `dispatchTodoRemoval` in `src/app/api/todo/_lib/todo-dispatch.ts` and `TODO_REMOVAL_REQUEST_RE` in sync. The row stays on the page until that PR merges and the checkout is pulled.

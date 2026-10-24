@@ -16,7 +16,7 @@ const errorMessage = (error: unknown, fallback: string): string =>
 export async function GET() {
   try {
     const content = await readFile(TODO_FILE_PATH, 'utf-8');
-    return NextResponse.json({ sections: parseTodoMarkdown(content) });
+    return NextResponse.json({ rows: parseTodoMarkdown(content) });
   } catch (error) {
     return NextResponse.json(
       { error: errorMessage(error, READ_ERROR) },

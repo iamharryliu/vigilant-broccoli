@@ -64,12 +64,12 @@ SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-creat
 . "$(dirname "${BASH_SOURCE[0]}")/no-changes.sh"
 
 if [ "$MODE" = id ]; then
-  # TODO items live as rows in per-section markdown tables (ID | Priority |
-  # Agent | Effort | Brief | Description | Recommended Fix). Extract the nearest table header plus the
-  # matching row, expanding <br> step separators and unescaping \| pipes so the
+  # TODO items live as rows of one markdown table (ID | Type | Priority |
+  # Agent | Effort | Brief | Description | Recommended Fix). Extract the table
+  # header plus the matching row, expanding <br> step separators and unescaping \| pipes so the
   # solver reads clean prose.
   TASK=$(awk -v id="$ID" '
-    /^\|[[:space:]]*ID[[:space:]]*\|[[:space:]]*Priority[[:space:]]*\|/ { header=$0 }
+    /^\|[[:space:]]*ID[[:space:]]*\|[[:space:]]*Type[[:space:]]*\|/ { header=$0 }
     $0 ~ ("^\\|[[:space:]]*" id "[[:space:]]*\\|") { print header; print; found=1; exit }
     END { if (!found) exit 1 }
   ' TODO.md | sed 's/<br>/\n/g; s/\\|/|/g')

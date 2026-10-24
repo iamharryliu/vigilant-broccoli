@@ -15,7 +15,7 @@ For each row:
 
 Open cited files and surrounding code. A missing path alone proves nothing: search basename/symbol and inspect `git log --oneline -5 -- <path>` for moves. Check ignore rules/build targets before treating generated paths as source. Recheck cited line numbers.
 
-Preserve IDs, sections (even empty ones), ToC and priority ordering. Add no rows; change Priority, Agent or Effort only when the row's evidence changes. Use the pattern's one-line rows, `<br>` steps and escaped pipes. Leave accurate files untouched.
+Preserve IDs and the Type-then-priority row order. Add no rows; change Type, Priority, Agent or Effort only when the row's evidence changes. Use the pattern's one-line rows, `<br>` steps and escaped pipes. Leave accurate files untouched.
 
 Report resolved/drifted IDs with evidence, the accurate count and unrelated findings without adding them to the backlog.
 
