@@ -3,6 +3,7 @@ import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { getGoogleAccessTokenForRequest } from '../../../../../libs/google-token';
 import {
   listTaskLists,
+  listTasks,
   isExpiredError,
 } from '@vigilant-broccoli/google-workspace';
 
@@ -12,7 +13,18 @@ export async function GET(req: NextRequest) {
   try {
     const accessToken = await getGoogleAccessTokenForRequest(req);
     const taskLists = await listTaskLists(accessToken);
-    return NextResponse.json({ taskLists });
+    if (req.nextUrl.searchParams.get('includeActiveCounts') !== 'true') {
+      return NextResponse.json({ taskLists });
+    }
+    const activeTaskCounts = Object.fromEntries(
+      await Promise.all(
+        taskLists.map(async list => [
+          list.id,
+          (await listTasks(accessToken, list.id)).length,
+        ]),
+      ),
+    );
+    return NextResponse.json({ taskLists, activeTaskCounts });
   } catch (error) {
     if (isExpiredError(error)) {
       return NextResponse.json(
