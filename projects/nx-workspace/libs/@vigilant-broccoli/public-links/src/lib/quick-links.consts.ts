@@ -178,7 +178,6 @@ export const VB_LINKS: QuickLink[] = [
     { NAME: 'VB - GitHub Actions', URL: VB_GITHUB_ACTIONS_URL },
     { NAME: 'VB - GitHub Pull Requests', URL: `${VB_GITHUB_REPO_URL}/pulls` },
     { NAME: 'VB - GitHub Projects', URL: `${VB_GITHUB_REPO_URL}/projects` },
-    { NAME: 'Git', URL: 'https://git.harryliu.dev/' },
     VB_APP_URL.PERSONAL_WEBSITE,
     VB_APP_URL.UTILITIES,
     {
@@ -227,8 +226,6 @@ export const VB_LINKS: QuickLink[] = [
     },
     VB_APP_URL.EMPLOYEE_HANDLER_DEMO,
     VB_APP_URL.OFFICE_PRESENCE_DEMO,
-    { NAME: 'Code Server', URL: 'https://code.harryliu.dev/' },
-    VB_APP_URL.WEB_TERMINAL,
     VB_APP_URL.DOCS,
     VB_APP_URL.CONTEXT,
     {
@@ -263,12 +260,6 @@ export const VB_LINKS: QuickLink[] = [
       NAME: `${VB_APP_URL.SERVICE_MANAGER.NAME} (Staging)`,
       URL: VB_APP_URL.SERVICE_MANAGER.STAGING_URL,
     },
-    VB_APP_URL.VB_MANAGER_NEXT_MOBILE,
-    {
-      NAME: `${VB_APP_URL.VB_MANAGER_NEXT_MOBILE.NAME} (Staging)`,
-      URL: VB_APP_URL.VB_MANAGER_NEXT_MOBILE.STAGING_URL,
-    },
-    VB_APP_URL.DRIVE,
     VB_MONITORING_URL.NX_CACHE,
     VB_MONITORING_URL.LOKI,
     VB_MONITORING_URL.SOCKET_SERVER,
