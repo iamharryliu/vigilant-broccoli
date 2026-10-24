@@ -160,7 +160,6 @@ const COPY = {
   EMPTY_MESSAGE: 'Select a file to view its contents',
   SEARCHING: 'Searching...',
   NO_RESULTS: 'No results found',
-  LOADING_CONTENT: 'Loading file content...',
   LOAD_CONTENT_ERROR: 'Failed to load file content',
   COPY_MARKDOWN: 'Copy markdown',
   EDIT: 'Edit',
@@ -173,7 +172,6 @@ const COPY = {
   DELETE_SELECTED_TITLE: 'Delete selected files',
   DELETE_SELECTED_DESCRIPTION:
     'Are you sure you want to delete the selected files? This cannot be undone.',
-  LOADING_AGGREGATE: 'Loading selected files...',
   SIDEBAR_ACTIONS: 'Sidebar actions',
   CREATE_FILE: 'Create file',
   SELECT_MULTIPLE: 'Select multiple',
@@ -595,11 +593,9 @@ export const DocsExplorer = ({
             </div>
           ) : !selectedPath && !hasSelection ? (
             <CenteredMessage>{emptyMessage}</CenteredMessage>
-          ) : (hasSelection ? isLoadingAggregate : isLoadingContent) ? (
-            <CenteredMessage>
-              {hasSelection ? COPY.LOADING_AGGREGATE : COPY.LOADING_CONTENT}
-            </CenteredMessage>
-          ) : (hasSelection ? aggregateError : contentError) ? (
+          ) : (hasSelection ? isLoadingAggregate : isLoadingContent) ? null : (
+              hasSelection ? aggregateError : contentError
+            ) ? (
             <CenteredMessage tone="error">
               {hasSelection ? aggregateError : contentError}
             </CenteredMessage>

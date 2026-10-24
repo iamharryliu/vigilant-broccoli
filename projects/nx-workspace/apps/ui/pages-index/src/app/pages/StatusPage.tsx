@@ -55,7 +55,6 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
   ];
 
   const labels: Partial<UpptimeStatusListLabels> = {
-    loading: t('STATUS_PAGE.LOADING_SERVICES'),
     empty: t('STATUS_PAGE.NO_SERVICES'),
     legendTitle: t('STATUS_PAGE.LEGEND_TITLE'),
     legendButton: t('STATUS_PAGE.LEGEND_BUTTON_LABEL'),

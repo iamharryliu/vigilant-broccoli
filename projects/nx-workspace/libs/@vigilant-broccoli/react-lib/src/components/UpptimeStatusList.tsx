@@ -17,7 +17,6 @@ import {
 } from '../utils/upptime.utils';
 
 export interface UpptimeStatusListLabels {
-  loading: string;
   empty: string;
   legendTitle: string;
   legendButton: string;
@@ -32,7 +31,6 @@ export interface UpptimeStatusListLabels {
 }
 
 export const DEFAULT_UPPTIME_STATUS_LIST_LABELS: UpptimeStatusListLabels = {
-  loading: 'Loading status…',
   empty: 'No services configured.',
   legendTitle: 'Status Legend',
   legendButton: 'Status legend',
@@ -259,9 +257,7 @@ export function UpptimeStatusList({
   if (!services || services.length === 0)
     return (
       <ul className={LIST_CLASS}>
-        <li className="px-4 py-2 text-gray-400">
-          {services ? labels.empty : labels.loading}
-        </li>
+        <li className="px-4 py-2 text-gray-400">{services && labels.empty}</li>
       </ul>
     );
 
