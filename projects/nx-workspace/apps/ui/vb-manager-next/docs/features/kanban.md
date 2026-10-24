@@ -23,7 +23,7 @@
 
 ### Task Lists
 
-- Manage Task Lists dialog (☰ button in sidebar header) for viewing all Google Task lists
+- Manage Task Lists dialog (☰ button in sidebar header) for viewing all Google Task lists with each list's active (incomplete) task count, fetched when the dialog opens; Name/Count buttons sort the list, clicking the active one flips direction
 - Rename lists (double-click or edit button) via Google Tasks API PATCH
 - Delete lists with confirmation (permanently deletes from Google, removes associated lanes from all boards)
 - Create new list from the Add Lane dialog (+ Create new list)
