@@ -24,7 +24,6 @@ const LABEL = {
 };
 
 const MESSAGE = {
-  LOADING: 'Loading preview deployments…',
   EMPTY: 'No open pull requests have a deployed preview.',
   UPSTREAM: 'Could not load preview deployments from GitHub.',
   RATE_LIMITED:
@@ -146,9 +145,7 @@ export const PreviewDeployments = ({
           {LABEL.REFRESH}
         </Button>
       </div>
-      {loading && !result ? (
-        <Text color="gray">{MESSAGE.LOADING}</Text>
-      ) : result && !result.ok ? (
+      {loading && !result ? null : result && !result.ok ? (
         <Callout color="red">
           <CalloutText>{errorMessage(result)}</CalloutText>
         </Callout>
