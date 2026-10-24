@@ -1,16 +1,18 @@
-name: manual-agentic-pr-create-audit
+name: cron-agentic-pr-create-audit
 
-# Audits the documentation for passages about legacy implementations that no
-# longer apply to the current codebase, and opens one PR of at most 15 files
-# removing or rewriting them. Same container and credentials as
-# `cron-agentic-pr-create-prune`; the local equivalent is
-# `pnpm agentic-pr-create-audit`. Dispatch-only: what counts as stale history
-# is a judgement call worth asking for, not a sweep worth scheduling.
+# Audits the documentation for legacy-implementation narratives and for current
+# claims (commands, script names, env vars, file paths, Swagger specs) that the
+# tree no longer backs, and opens one PR of at most 15 files fixing them. Same
+# container and credentials as `cron-agentic-pr-create-prune`; the local
+# equivalent is `pnpm agentic-pr-create-audit`. Docs drift with every change
+# elsewhere, so a weekly sweep catches what per-change cleanup never revisits.
 #
 # A clean run opens no PR and still succeeds: the runner prints AUDIT_CLEAN
 # and exits 0.
 
 on:
+  schedule:
+    - cron: '40 6 * * 0'
   workflow_dispatch:
     inputs:
       model:
@@ -37,14 +39,29 @@ permissions:
 # same docs, and a half-finished run's pushed branch is not something a newer
 # run should cancel out from under.
 concurrency:
-  group: manual-agentic-pr-create-audit
+  group: cron-agentic-pr-create-audit
   cancel-in-progress: false
 
 jobs:
   overview:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
+    outputs:
+      model: ${{ steps.config.outputs.model }}
+      firewall: ${{ steps.config.outputs.firewall }}
     steps:
+      # Scheduled runs carry no inputs, so the defaults are resolved once here
+      # and both the overview and the audit job read the same values.
+      - name: Resolve effective configuration
+        id: config
+        env:
+          MODEL: ${{ inputs.model || 'opus' }}
+          FIREWALL: ${{ inputs.firewall || 'on' }}
+        run: |
+          set -euo pipefail
+          echo "model=$MODEL" >> "$GITHUB_OUTPUT"
+          echo "firewall=$FIREWALL" >> "$GITHUB_OUTPUT"
+
       - name: Checkout summary helper
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -55,11 +72,11 @@ jobs:
         uses: ./.github/actions/agentic-summary
         with:
           mode: overview
-          title: Audit documentation for legacy implementations
+          title: Audit documentation accuracy
           agent: claude
-          model: ${{ inputs.model }}
-          firewall: ${{ inputs.firewall }}
-          description: Remove or rewrite documentation that describes legacy implementations which no longer apply to the current codebase, verifying each candidate against the tree. Opens one pull request of at most 15 files, highest-value first, listing skipped candidates for a re-run, and only when something is changed.
+          model: ${{ steps.config.outputs.model }}
+          firewall: ${{ steps.config.outputs.firewall }}
+          description: Remove or rewrite documentation that describes legacy implementations, and correct current claims (commands, script names, env vars, file paths, Swagger specs) that no longer match the tree, verifying each candidate against it. Opens one pull request of at most 15 files, highest-value first, listing skipped candidates for a re-run, and only when something is changed.
 
   audit:
     needs: overview
@@ -79,14 +96,14 @@ jobs:
             kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
             kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
 
-      - name: Audit legacy documentation
+      - name: Audit documentation accuracy
         id: audit
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
           AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
           AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
-          SANDBOX_FIREWALL: ${{ inputs.firewall }}
-          MODEL: ${{ inputs.model }}
+          SANDBOX_FIREWALL: ${{ needs.overview.outputs.firewall }}
+          MODEL: ${{ needs.overview.outputs.model }}
         run: |
           set -euo pipefail
           bash infrastructure/agent-sandbox/audit-docs.sh --model "$MODEL"
