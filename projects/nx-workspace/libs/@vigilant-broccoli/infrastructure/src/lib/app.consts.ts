@@ -86,11 +86,6 @@ export const VB_APP_URL = {
     URL: 'https://api.harryliu.dev/',
     STAGING_URL: 'https://staging-vb-express.fly.dev/',
   },
-  VB_MANAGER_NEXT_MOBILE: {
-    NAME: 'VB Manager Mobile',
-    URL: 'https://manager.harryliu.dev/login',
-    STAGING_URL: 'https://staging-vb-manager-next-mobile.vercel.app/login',
-  },
   EMPLOYEE_HANDLER_DEMO: {
     NAME: 'Employee Handler Demo',
     URL: 'https://demo-employee-handler-ui.vercel.app/',
@@ -102,13 +97,5 @@ export const VB_APP_URL = {
   CAREER: {
     NAME: 'Career',
     URL: 'https://career.harryliu.dev/',
-  },
-  DRIVE: {
-    NAME: 'Drive',
-    URL: 'https://drive.harryliu.dev/',
-  },
-  WEB_TERMINAL: {
-    NAME: 'Web Terminal',
-    URL: 'https://shell.harryliu.dev/',
   },
 } as const;
