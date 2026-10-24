@@ -137,6 +137,7 @@
     "agentic-pr-create-context-audit": "./infrastructure/agent-sandbox/audit-context.sh",
     "agentic-pr-create-todo": "./infrastructure/agent-sandbox/create-todo.sh",
     "agentic-pr-create-todo-audit": "./infrastructure/agent-sandbox/audit-todo.sh",
+    "agentic-pr-create-free-tier-audit": "./infrastructure/agent-sandbox/audit-free-tier.sh",
     "agentic-pr-create-prune": "./infrastructure/agent-sandbox/prune.sh",
     "agentic-pr-create-readmes": "./infrastructure/agent-sandbox/readmes.sh",
     "agentic-pr-create-url-audit": "./infrastructure/agent-sandbox/audit-urls.sh",
