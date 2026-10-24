@@ -55,7 +55,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 ## Running in CI
 
-Plan- and Develop-phase agents, backlog auditing, documentation and context auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-audit`, `agentic-pr-create-context-audit`, `agentic-pr-create-prune`, `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
+Plan- and Develop-phase agents, backlog auditing, documentation and context auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-audit`, `agentic-pr-create-context-audit`, `agentic-pr-create-prune`, `update-readmes` (run by `agentic-pr-create-readmes`), `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
 
 `agentic-pr-create` Claude solves run in auto permission mode (`--permission-mode auto`): a classifier approves routine edits and checks and blocks risky actions such as exfiltration, credential reads or running downloaded code. Headless runs have nobody to approve a blocked action, so the agent must work around it, and repeated blocks can end the run early. Export `SOLVE_PERMISSION_MODE=bypass` before a Docker sandbox run to restore `--dangerously-skip-permissions`; Ollama solves always bypass, since the classifier needs an Anthropic model.
 
@@ -190,6 +190,14 @@ repo-wide grep shows has zero references. `cron-agentic-pr-create-prune` runs th
 - The runner refuses to commit if `TODO.md`, a `migrations/` directory or Terraform state changed, if a file under
   `notes/` was added, deleted or renamed, or if more than 50 files changed. The skill asks for about 40; the runner's cap
   is the backstop that keeps a runaway sweep from becoming an unreviewable PR.
+
+## Refreshing READMEs
+
+`pnpm agentic-pr-create-readmes` runs `readmes.sh`, which applies the `update-readmes` skill against `docs/app-readme-pattern.md` and `pnpm repo-stats`, then opens one PR only when a README or generated repo count drifted. `cron-agentic-pr-create-readmes` runs the same script weekly (`25 6 * * 0`).
+
+- Dispatch: `gh workflow run cron-agentic-pr-create-readmes.yml` (optional `-f model=`, `-f firewall=off`).
+- A clean run opens no PR — `readmes-runner.sh` prints `README_CLEAN` and exits 0.
+- The runner refuses to commit if any file other than a `README.md` or a repo-stats copy changed (so `TODO.md` is never touched), or if more than 20 files changed; the skipped candidates are listed in the PR.
 
 The `AGENTS.md` adapters are committed symlinks to `CONTEXT.md`, which Claude Code reads directly from v2.1.277 (the image installs at least that version), so the entrypoint's clone carries them and no step regenerates them per branch. The entrypoint still runs the Linux installer to install the shared skills. See [agent support](../../docs/agent-support.md).
 
