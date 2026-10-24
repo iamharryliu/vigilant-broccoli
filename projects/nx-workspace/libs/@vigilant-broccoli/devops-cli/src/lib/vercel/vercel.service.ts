@@ -20,8 +20,7 @@ interface VercelProjectJson {
 
 // `vercel project ls` has shipped both a bare array and a `{ projects }` envelope.
 type VercelProjectsResponse =
-  | VercelProjectJson[]
-  | { projects: VercelProjectJson[] };
+  VercelProjectJson[] | { projects: VercelProjectJson[] };
 
 interface VercelTeamsResponse {
   teams?: { slug: string; current: boolean }[];

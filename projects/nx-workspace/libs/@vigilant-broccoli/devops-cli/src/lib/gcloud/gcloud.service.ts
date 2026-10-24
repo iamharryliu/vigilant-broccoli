@@ -1,3 +1,4 @@
+import { request } from 'https';
 import {
   copyToClipboard,
   probeCli,
@@ -14,8 +15,10 @@ import {
   REAUTH_ERROR_STRINGS,
   REAUTH_HINT,
   REAUTH_PROBE_TIMEOUT_MS,
+  VAULT_APPROLE_LOGIN_URL,
+  VAULT_OPS_ROLE_ID_SECRET,
+  VAULT_OPS_SECRET_ID_SECRET,
   VAULT_TOKEN_GCP_PROJECT,
-  VAULT_TOKEN_SECRET,
 } from './gcloud.consts';
 
 export type GcloudAccountStatus =
@@ -122,12 +125,43 @@ const setProject = async (projectId: string): Promise<void> => {
   await runCli(GCLOUD_CLI, GcloudCommand.setProject(projectId));
 };
 
-const copyVaultTokenToClipboard = async (): Promise<void> => {
+const accessVaultSecret = async (name: string): Promise<string> => {
   const { stdout } = await runCli(
     GCLOUD_CLI,
-    GcloudCommand.accessSecret(VAULT_TOKEN_SECRET, VAULT_TOKEN_GCP_PROJECT),
+    GcloudCommand.accessSecret(name, VAULT_TOKEN_GCP_PROJECT),
   );
-  await copyToClipboard(stdout);
+  return stdout.trim();
+};
+
+// The body goes over stdin of the request, never argv. Vault's cert is
+// self-signed and the host is a WireGuard-only address.
+const loginWithVaultOpsAppRole = (body: string): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const req = request(
+      VAULT_APPROLE_LOGIN_URL,
+      { method: 'POST', rejectUnauthorized: false },
+      res => {
+        let data = '';
+        res.on('data', chunk => (data += chunk));
+        res.on('end', () => {
+          const token = JSON.parse(data)?.auth?.client_token;
+          if (token) resolve(token);
+          else reject(new Error('Vault AppRole login returned no token'));
+        });
+      },
+    );
+    req.on('error', reject);
+    req.end(body);
+  });
+
+const copyVaultTokenToClipboard = async (): Promise<void> => {
+  const [role_id, secret_id] = await Promise.all([
+    accessVaultSecret(VAULT_OPS_ROLE_ID_SECRET),
+    accessVaultSecret(VAULT_OPS_SECRET_ID_SECRET),
+  ]);
+  await copyToClipboard(
+    await loginWithVaultOpsAppRole(JSON.stringify({ role_id, secret_id })),
+  );
 };
 
 export const GcloudService = {

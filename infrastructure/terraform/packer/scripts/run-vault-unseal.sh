@@ -14,14 +14,16 @@ KEY1=$(echo "$UNSEAL_KEYS" | sed -n '1p')
 KEY2=$(echo "$UNSEAL_KEYS" | sed -n '2p')
 KEY3=$(echo "$UNSEAL_KEYS" | sed -n '3p')
 
+# Keys arrive over stdin (ssh-secrets.sh) and are fed to `vault write
+# sys/unseal key=-` on stdin too, so they never land on a remote argv.
 echo "Unsealing Vault..."
 gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
 export VAULT_ADDR=https://127.0.0.1:8200
 export VAULT_CACERT=/etc/vault/tls/vault.crt
 
-vault operator unseal "$UNSEAL_KEY1" > /dev/null
-vault operator unseal "$UNSEAL_KEY2" > /dev/null
-vault operator unseal "$UNSEAL_KEY3" > /dev/null
+printf "%s" "$UNSEAL_KEY1" | vault write sys/unseal key=- > /dev/null
+printf "%s" "$UNSEAL_KEY2" | vault write sys/unseal key=- > /dev/null
+printf "%s" "$UNSEAL_KEY3" | vault write sys/unseal key=- > /dev/null
 
 if vault status 2>&1 | grep -q "Sealed.*false"; then
   echo "Vault unsealed successfully."

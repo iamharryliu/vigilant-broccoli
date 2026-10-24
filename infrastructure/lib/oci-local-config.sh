@@ -7,6 +7,8 @@
 # rotation the local files name a fingerprint OCI has already deleted, and
 # every `tf:*` command fails with a 401 until they are refreshed.
 
+source "$(dirname "${BASH_SOURCE[0]}")/../terraform/packer/scripts/lib/vault-ops-token.sh"
+
 OCI_LOCAL_CONFIG_FILE="${HOME}/.oci/config"
 OCI_LOCAL_KEY_FILE="${HOME}/.ssh/oci_api_key.pem"
 
@@ -45,18 +47,13 @@ sync_oci_config_from_vault() {
     return 0
   fi
 
-  local vault_token creds config private_key
-  vault_token=$(gcloud secrets versions access latest \
-    --secret=VB_VM_VAULT_ROOT_TOKEN \
-    --project="${GCP_PROJECT}" 2>/dev/null || echo "")
+  local creds config private_key
 
-  if [ -n "$vault_token" ]; then
-    creds=$(gcloud_ssh_secrets "${VM_NAME}" "${GCP_ZONE}" '
-export VAULT_ADDR=https://127.0.0.1:8200
-export VAULT_CACERT=/etc/vault/tls/vault.crt
+  if fetch_vault_ops_credentials 2>/dev/null; then
+    creds=$(vault_ops_ssh '
 echo "CONFIG=$(vault kv get -field=OCI_CONFIG '"${VAULT_KV_PATH}"'/secrets | base64 -w 0)"
 echo "KEY=$(vault kv get -field=OCI_PRIVATE_KEY '"${VAULT_KV_PATH}"'/secrets | base64 -w 0)"
-' VAULT_TOKEN "$vault_token" 2>/dev/null || echo "")
+' 2>/dev/null || echo "")
     config=$(sed -n 's/^CONFIG=//p' <<< "$creds" | tr -d '[:space:]' | base64 -d 2>/dev/null || echo "")
     private_key=$(sed -n 's/^KEY=//p' <<< "$creds" | tr -d '[:space:]' | base64 -d 2>/dev/null || echo "")
   fi

@@ -119,6 +119,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   gcp:vm:vault:seal           Seal Vault
   gcp:vm:vault:save-secrets-local     Save Vault secrets locally
   gcp:vm:vault:set-secrets    Set secrets in Vault
+  gcp:vm:vault:revoke-root-token      Revoke Vault root token (after verifying vb-ops AppRole)
   vault:store-promotion-key <pem>  Store the production-promotion GitHub App key in Vault
 
 🔑 SECRETS
@@ -130,6 +131,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   secret-rotation:resend      Rotate Resend API key (single-key swap, pushes to fly app)
   secret-rotation:rabbitmq    Rotate RabbitMQ password, push connection string to fly consumers
   secret-rotation:twilio      Rotate Twilio auth token (two-phase secondary-token promotion)
+  secret-rotation:vault-ops   Rotate vb-ops AppRole secret_id (90d TTL; mint → store → destroy old)
   secret-rotation:oci         Rotate the OCI API key (local-only); refreshes ~/.oci, ~5min propagation wait
   secret-rotation:calendar-sa  Replace the Google Calendar service-account key, sync it to Vault, reload vb-manager-next
   rabbitmq:password           Copy RabbitMQ admin password to clipboard (login user: admin)

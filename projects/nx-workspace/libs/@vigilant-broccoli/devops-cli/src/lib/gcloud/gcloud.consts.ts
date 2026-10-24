@@ -52,4 +52,8 @@ export const REAUTH_ERROR_STRINGS = [
 ] as const;
 
 export const VAULT_TOKEN_GCP_PROJECT = 'vigilant-broccoli';
-export const VAULT_TOKEN_SECRET = 'VB_VM_VAULT_ROOT_TOKEN';
+export const VAULT_OPS_ROLE_ID_SECRET = 'VB_VM_VAULT_OPS_ROLE_ID';
+export const VAULT_OPS_SECRET_ID_SECRET = 'VB_VM_VAULT_OPS_SECRET_ID';
+// WireGuard address of the Vault VM; the AppRole is CIDR-bound to that subnet.
+export const VAULT_APPROLE_LOGIN_URL =
+  'https://10.0.1.1:8200/v1/auth/approle/login';

@@ -27,11 +27,17 @@ gcp_secret() {
 # last backup-secrets.sh run, so a rotation not followed by a backup leaves it stale.
 # Credentials go to curl on stdin so they never appear in argv.
 load_secrets_from_vault() {
-  local vault_token cf_id cf_secret response
-  vault_token=$(gcp_secret VB_VM_VAULT_ROOT_TOKEN) || return 1
+  local role_id secret_id cf_id cf_secret login vault_token response
+  role_id=$(gcp_secret VB_VM_VAULT_OPS_ROLE_ID) || return 1
+  secret_id=$(gcp_secret VB_VM_VAULT_OPS_SECRET_ID) || return 1
   cf_id=$(gcp_secret VAULT_CF_ACCESS_CLIENT_ID) || return 1
   cf_secret=$(gcp_secret VAULT_CF_ACCESS_CLIENT_SECRET) || return 1
-  [ -n "$vault_token" ] && [ -n "$cf_id" ] && [ -n "$cf_secret" ] || return 1
+  [ -n "$role_id" ] && [ -n "$secret_id" ] && [ -n "$cf_id" ] && [ -n "$cf_secret" ] || return 1
+  login=$(jq -n --arg r "$role_id" --arg s "$secret_id" '{role_id: $r, secret_id: $s}' \
+    | curl -sf --max-time "$VAULT_TIMEOUT_SECONDS" \
+        --config <(printf 'header = "CF-Access-Client-Id: %s"\nheader = "CF-Access-Client-Secret: %s"\n' "$cf_id" "$cf_secret") \
+        -X POST --data @- "${VAULT_URL}/v1/auth/approle/login") || return 1
+  vault_token=$(jq -er '.auth.client_token' <<<"$login") || return 1
   response=$(printf 'header = "X-Vault-Token: %s"\nheader = "CF-Access-Client-Id: %s"\nheader = "CF-Access-Client-Secret: %s"\n' \
     "$vault_token" "$cf_id" "$cf_secret" \
     | curl -sf --max-time "$VAULT_TIMEOUT_SECONDS" --config - "${VAULT_URL}/v1/${VAULT_KV_PATH}/data/secrets") || return 1
