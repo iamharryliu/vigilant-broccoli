@@ -13,7 +13,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 - [Auditing the backlog](#auditing-the-backlog)
 - [Pruning dead code and stale docs](#pruning-dead-code-and-stale-docs)
 - [Auditing the inventories](#auditing-the-inventories)
-- [Auditing legacy documentation](#auditing-legacy-documentation)
+- [Auditing documentation accuracy](#auditing-documentation-accuracy)
 - [Auditing agent context](#auditing-agent-context)
 - [Stack](#stack)
 
@@ -207,14 +207,15 @@ verifies each and covers the rest. `cron-agentic-pr-create-inventory-audit` runs
 - The runner refuses to commit if any file other than the two inventory docs changed. The skill caps a run at 10 rows
   and reports the remainder as skipped candidates. Secret values are never read: the script and agent handle names only.
 
-## Auditing legacy documentation
+## Auditing documentation accuracy
 
 `pnpm agentic-pr-create-audit` runs `audit-docs.sh`, which audits `docs/`, every `CONTEXT.md` and `README.md` and
-code-adjacent docs for passages about legacy implementations that no longer apply, then opens one PR removing them or
-rewriting them to the current state. It runs Opus by default (`--model` overrides). `manual-agentic-pr-create-audit`
-runs the same script on dispatch; it has no schedule.
+code-adjacent docs for passages about legacy implementations that no longer apply and for current claims (commands,
+script names, env vars, file paths, Swagger specs vs routes) the tree no longer backs, then opens one PR removing or
+correcting them. It runs Opus by default (`--model` overrides). `cron-agentic-pr-create-audit` runs the same script
+weekly (Sunday 06:40 UTC) and on dispatch. Spec/route drift lives in code, so it is reported as skipped, not edited.
 
-- Dispatch: `gh workflow run manual-agentic-pr-create-audit.yml` (optional `-f model=`, `-f firewall=off`).
+- Dispatch: `gh workflow run cron-agentic-pr-create-audit.yml` (optional `-f model=`, `-f firewall=off`).
 - A clean run opens no PR — `audit-docs-runner.sh` prints `AUDIT_CLEAN` and exits 0.
 - The runner refuses to commit if any non-Markdown file changed, if `notes/`, `docs/rnd/`, `docs/learning-timeline.md`,
   `TODO.md` or a changelog changed, or if more than 15 files changed. The skill fills the cap highest-value first and

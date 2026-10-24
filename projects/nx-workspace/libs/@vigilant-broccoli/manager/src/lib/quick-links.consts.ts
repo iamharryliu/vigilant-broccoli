@@ -256,8 +256,8 @@ const AGENTIC_WORKFLOW = {
     FILE: 'manual-agentic-pr-update.yml',
   },
   PR_CREATE_AUDIT: {
-    NAME: 'VB - Manual Agentic PR Create Audit',
-    FILE: 'manual-agentic-pr-create-audit.yml',
+    NAME: 'VB - Cron Agentic PR Create Audit',
+    FILE: 'cron-agentic-pr-create-audit.yml',
   },
   PR_CREATE_RND: {
     NAME: 'VB - Manual Agentic PR Create R&D',
