@@ -10,7 +10,7 @@ Verify every row in root `TODO.md` against current source, following `docs/todo-
 For each row:
 
 - **RESOLVED:** positively confirm the condition was fixed or removed, then delete the row.
-- **DRIFTED:** the issue remains; correct only inaccurate Description/Recommended Fix claims, paths, lines or counts. Partly resolved rows retain their remaining claims.
+- **DRIFTED:** the issue remains; correct only inaccurate Description/Recommended Fix claims, paths, lines or counts, and update the Brief when its summary no longer holds. Partly resolved rows retain their remaining claims.
 - **ACCURATE:** leave byte-identical.
 
 Open cited files and surrounding code. A missing path alone proves nothing: search basename/symbol and inspect `git log --oneline -5 -- <path>` for moves. Check ignore rules/build targets before treating generated paths as source. Recheck cited line numbers.

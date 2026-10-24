@@ -43,13 +43,8 @@ const slugify = (heading: string) =>
     .replace(NON_SLUG_CHARS_RE, '-')
     .replace(EDGE_DASHES_RE, '');
 
-type EditableField = 'description' | 'recommendedFix';
-
-const editingCellKey = (
-  heading: string,
-  rowIdx: number,
-  field: EditableField,
-) => `${heading}-${rowIdx}-${field}`;
+const editingCellKey = (heading: string, rowIdx: number) =>
+  `${heading}-${rowIdx}`;
 
 export const TodoListComponent = () => {
   const [sections, setSections] = useState<TodoSection[]>([]);
@@ -196,10 +191,7 @@ export const TodoListComponent = () => {
                   <Table.ColumnHeaderCell className="w-20">
                     Effort
                   </Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>Description</Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell>
-                    Recommended Fix
-                  </Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell>Brief</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell className="w-10" />
                 </Table.Row>
               </Table.Header>
@@ -236,13 +228,13 @@ export const TodoListComponent = () => {
                     </Table.Cell>
                     <Table.Cell>
                       {editingCell ===
-                      editingCellKey(section.heading, rowIdx, 'description') ? (
+                      editingCellKey(section.heading, rowIdx) ? (
                         <Textarea
                           className={`min-h-[64px] w-full min-w-[16rem] ${CELL_TEXT_CLASS}`}
-                          value={row.description}
+                          value={row.brief}
                           onChange={event =>
                             updateRow(section.heading, rowIdx, {
-                              description: event.target.value,
+                              brief: event.target.value,
                             })
                           }
                           onBlur={() => {
@@ -256,53 +248,11 @@ export const TodoListComponent = () => {
                           className={`block min-h-[64px] w-full min-w-[16rem] whitespace-pre-wrap cursor-text ${CELL_TEXT_CLASS}`}
                           onClick={() =>
                             setEditingCell(
-                              editingCellKey(
-                                section.heading,
-                                rowIdx,
-                                'description',
-                              ),
+                              editingCellKey(section.heading, rowIdx),
                             )
                           }
                         >
-                          {row.description}
-                        </Text>
-                      )}
-                    </Table.Cell>
-                    <Table.Cell>
-                      {editingCell ===
-                      editingCellKey(
-                        section.heading,
-                        rowIdx,
-                        'recommendedFix',
-                      ) ? (
-                        <Textarea
-                          className={`min-h-[64px] w-full min-w-[16rem] ${CELL_TEXT_CLASS}`}
-                          value={row.recommendedFix}
-                          onChange={event =>
-                            updateRow(section.heading, rowIdx, {
-                              recommendedFix: event.target.value,
-                            })
-                          }
-                          onBlur={() => {
-                            setEditingCell(null);
-                            save();
-                          }}
-                          autoFocus
-                        />
-                      ) : (
-                        <Text
-                          className={`block min-h-[64px] w-full min-w-[16rem] whitespace-pre-wrap cursor-text ${CELL_TEXT_CLASS}`}
-                          onClick={() =>
-                            setEditingCell(
-                              editingCellKey(
-                                section.heading,
-                                rowIdx,
-                                'recommendedFix',
-                              ),
-                            )
-                          }
-                        >
-                          {row.recommendedFix}
+                          {row.brief}
                         </Text>
                       )}
                     </Table.Cell>

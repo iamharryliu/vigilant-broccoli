@@ -3,6 +3,7 @@ export interface TodoRow {
   priority: string;
   agent: string;
   effort: string;
+  brief: string;
   description: string;
   recommendedFix: string;
 }
@@ -28,6 +29,7 @@ const COLUMN_HEADERS = [
   'Priority',
   'Agent',
   'Effort',
+  'Brief',
   'Description',
   'Recommended Fix',
 ];
@@ -59,6 +61,7 @@ const renderTableLines = (rows: TodoRow[]): string[] => {
     row.priority,
     row.agent,
     row.effort,
+    escapeCell(row.brief),
     escapeCell(row.description),
     escapeCell(row.recommendedFix),
   ]);
@@ -127,8 +130,9 @@ export const parseTodoMarkdown = (content: string): TodoSection[] => {
         priority: cells[1],
         agent: cells[2],
         effort: cells[3],
-        description: cells[4],
-        recommendedFix: cells[5],
+        brief: cells[4],
+        description: cells[5],
+        recommendedFix: cells[6],
       });
       cursor++;
     }
