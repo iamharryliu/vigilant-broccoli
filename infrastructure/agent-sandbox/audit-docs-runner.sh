@@ -24,7 +24,7 @@ BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"
 
 PROMPT=$(cat <<EOF
-You are running non-interactively in a fresh clone of vigilant-broccoli, on a dedicated branch. Remove or rewrite documentation that describes legacy implementations which no longer apply to the current codebase.
+You are running non-interactively in a fresh clone of vigilant-broccoli, on a dedicated branch. Remove or rewrite documentation that describes legacy implementations, and correct current claims (commands, script names, env vars, file paths, Swagger specs vs routes) that the tree no longer backs.
 
 Follow these shared task instructions:
 
@@ -37,13 +37,13 @@ Sandbox execution rules:
 - The only exception to the skill's output scope is $META_FILE, outside the checkout. Even for a clean run, write the metadata with empty removed/skipped lists; the calling script exits without opening a PR.
 
 When finished, write $META_FILE containing only a JSON object with these fields:
-  - removed: array of objects {path, change, reason} for every removal or rewrite, change being a short quote or description of what was removed or rewritten and reason a one-line reason with its verification evidence
-  - skipped: array of objects {path, reason} for candidates you left in place, including every candidate over the file cap
+  - removed: array of objects {path, change, reason} for every removal, rewrite or correction, change being a short quote or description of what was removed or rewritten and reason a one-line reason with its verification evidence
+  - skipped: array of objects {path, reason} for candidates you left in place, including every candidate over the file cap and every spec/route drift in code you must not edit
   - commit_message: capitalized, concise, focused on why the documentation needed the cleanup, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
   - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
   - pr_summary: markdown for the PR "## Summary" section — one bullet per removal or rewrite with its path and one-line reason, then a "### Skipped candidates" subsection listing each skipped candidate with its reason
-  - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (spot-check the removals, watch CI to green, then merge, and re-run \`pnpm agentic-pr-create-audit\` when candidates were skipped over the file cap)
+  - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (spot-check the removals and corrections, watch CI to green, then merge, and re-run \`pnpm agentic-pr-create-audit\` when candidates were skipped over the file cap)
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (uncertain candidates worth a human decision, related cleanups worth a separate PR), or "" when there are none
   - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none. Keep these out of pr_suggestions, which is only for optional follow-up work
 $NO_CHANGES_FIELD
@@ -59,7 +59,7 @@ git checkout "$BRANCH"
 # Finding nothing worth removing is a success: exit before the PR machinery
 # rather than opening an empty PR for the owner to close.
 if [ -z "$(git status --porcelain)" ]; then
-  echo "AUDIT_CLEAN: no legacy documentation survived verification — no PR opened."
+  echo "AUDIT_CLEAN: no inaccurate or legacy documentation survived verification — no PR opened."
   no_changes_report "$META_FILE" || true
   exit 0
 fi
@@ -102,12 +102,12 @@ SKIPPED_COUNT=$(read_meta '.skipped | length')
 if [ -n "$COMMIT_MESSAGE" ]; then
   COMMIT_SUBJECT="docs: ${COMMIT_MESSAGE}"
 else
-  COMMIT_SUBJECT="docs: Remove documentation of legacy implementations that no longer apply."
+  COMMIT_SUBJECT="docs: Correct documentation that no longer matches the codebase."
 fi
 
 echo "$TRAILER" | grep -Eqi '^co-authored-by: .+ <.+>$' || TRAILER="$FALLBACK_TRAILER"
 [ -n "$PR_TITLE" ] || PR_TITLE="$COMMIT_SUBJECT"
-[ -n "$PR_SUMMARY" ] || PR_SUMMARY="- Removed or rewrote ${REMOVED_COUNT:-0} legacy passages and skipped ${SKIPPED_COUNT:-0} candidates across ${CHANGED_COUNT} files."
+[ -n "$PR_SUMMARY" ] || PR_SUMMARY="- Removed, rewrote or corrected ${REMOVED_COUNT:-0} passages and skipped ${SKIPPED_COUNT:-0} candidates across ${CHANGED_COUNT} files."
 [ -n "$PR_NEXT_STEPS" ] || PR_NEXT_STEPS="- [ ] Spot-check each removal against its reason, then merge once CI is green"
 
 bash "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh"
@@ -124,7 +124,7 @@ fi
 
 PR_BODY=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" PR_CONCERNS="$PR_CONCERNS" PR_SUGGESTIONS="$PR_SUGGESTIONS" \
   HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="agentic-pr-create-audit" \
-  HISTORY_PROMPT="Remove or rewrite documentation of legacy implementations that no longer apply." \
+  HISTORY_PROMPT="Remove or rewrite legacy documentation and correct claims the codebase no longer backs." \
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
   python3 "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py")
 
