@@ -1,6 +1,8 @@
 export interface TodoRow {
   id: string;
   priority: string;
+  agent: string;
+  effort: string;
   description: string;
   recommendedFix: string;
 }
@@ -21,7 +23,14 @@ const HEADER_ID_CELL_REGEX = /^\|\s*ID\s*\|/i;
 const SEPARATOR_ROW_REGEX = /^\|[\s:-]+\|/;
 const UNESCAPED_PIPE_REGEX = /(?<!\\)\|/g;
 const TABLE_ROW_PREFIX = '|';
-const COLUMN_HEADERS = ['ID', 'Priority', 'Description', 'Recommended Fix'];
+const COLUMN_HEADERS = [
+  'ID',
+  'Priority',
+  'Agent',
+  'Effort',
+  'Description',
+  'Recommended Fix',
+];
 const MIN_COLUMN_WIDTH = 3;
 
 const malformedRowError = (
@@ -48,6 +57,8 @@ const renderTableLines = (rows: TodoRow[]): string[] => {
   const cells = rows.map(row => [
     row.id,
     row.priority,
+    row.agent,
+    row.effort,
     escapeCell(row.description),
     escapeCell(row.recommendedFix),
   ]);
@@ -114,8 +125,10 @@ export const parseTodoMarkdown = (content: string): TodoSection[] => {
       rows.push({
         id: cells[0],
         priority: cells[1],
-        description: cells[2],
-        recommendedFix: cells[3],
+        agent: cells[2],
+        effort: cells[3],
+        description: cells[4],
+        recommendedFix: cells[5],
       });
       cursor++;
     }

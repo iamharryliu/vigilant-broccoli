@@ -6,7 +6,6 @@ import {
   Table,
   Callout,
   CalloutText,
-  IconButton,
   Select,
   Textarea,
   Heading,
@@ -25,12 +24,8 @@ import type {
   TodoSection,
 } from '../api/todo/_lib/todo-markdown.utils';
 
-const PRIORITY_OPTIONS = ['P1', 'P2', 'P3', 'NA'];
-const NEW_ROW_DEFAULTS = {
-  priority: 'NA',
-  description: '',
-  recommendedFix: '',
-};
+const AGENT_OPTIONS = ['auto', 'assisted', 'human'];
+const EFFORT_OPTIONS = ['S', 'M', 'L'];
 const FETCH_ERROR = 'Failed to load TODO.md';
 const SAVE_ERROR = 'Failed to save TODO.md';
 const RUN_ERROR = 'Failed to trigger agentic solve workflow';
@@ -47,8 +42,6 @@ const slugify = (heading: string) =>
     .trim()
     .replace(NON_SLUG_CHARS_RE, '-')
     .replace(EDGE_DASHES_RE, '');
-
-const generateRowId = () => crypto.randomUUID().replace(/-/g, '').slice(0, 6);
 
 type EditableField = 'description' | 'recommendedFix';
 
@@ -108,12 +101,6 @@ export const TodoListComponent = () => {
     updateSection(heading, rows =>
       rows.map((row, idx) => (idx === rowIdx ? { ...row, ...patch } : row)),
     );
-
-  const addRow = (heading: string) =>
-    updateSection(heading, rows => [
-      ...rows,
-      { id: generateRowId(), ...NEW_ROW_DEFAULTS },
-    ]);
 
   const deleteRow = (heading: string, rowIdx: number) =>
     updateSection(heading, rows => rows.filter((_, idx) => idx !== rowIdx));
@@ -203,6 +190,12 @@ export const TodoListComponent = () => {
                   <Table.ColumnHeaderCell className="w-24">
                     Priority
                   </Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="w-28">
+                    Agent
+                  </Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className="w-20">
+                    Effort
+                  </Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>Description</Table.ColumnHeaderCell>
                   <Table.ColumnHeaderCell>
                     Recommended Fix
@@ -219,12 +212,25 @@ export const TodoListComponent = () => {
                       </Text>
                     </Table.Cell>
                     <Table.Cell>
+                      <Text className={CELL_TEXT_CLASS}>{row.priority}</Text>
+                    </Table.Cell>
+                    <Table.Cell>
                       <Select
-                        value={row.priority}
-                        onValueChange={priority =>
-                          updateRow(section.heading, rowIdx, { priority })
+                        value={row.agent}
+                        onValueChange={agent =>
+                          updateRow(section.heading, rowIdx, { agent })
                         }
-                        options={PRIORITY_OPTIONS}
+                        options={AGENT_OPTIONS}
+                        triggerClassName={`h-8 ${CELL_TEXT_CLASS}`}
+                      />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <Select
+                        value={row.effort}
+                        onValueChange={effort =>
+                          updateRow(section.heading, rowIdx, { effort })
+                        }
+                        options={EFFORT_OPTIONS}
                         triggerClassName={`h-8 ${CELL_TEXT_CLASS}`}
                       />
                     </Table.Cell>
@@ -317,12 +323,6 @@ export const TodoListComponent = () => {
               </Table.Body>
             </Table.Root>
           </div>
-          <IconButton
-            icon="plus"
-            variant="ghost"
-            className="w-min"
-            onClick={() => addRow(section.heading)}
-          />
         </div>
       ))}
     </div>
