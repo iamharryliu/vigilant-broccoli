@@ -69,7 +69,6 @@ const CANCEL_BUTTON_LABEL = 'Cancel';
 const REMOVE_ERROR = 'Failed to dispatch the TODO removal workflow';
 const REMOVE_DISPATCHED = (id: string) =>
   `Removal PR dispatched for ${id}; the row disappears once it merges.`;
-const LOADING_MESSAGE = 'Loading TODO.md…';
 const CELL_TEXT_CLASS = 'text-xs';
 const TABLE_OF_CONTENTS_TITLE = 'Table of Contents';
 const NON_SLUG_CHARS_RE = /[^a-z0-9]+/g;
@@ -368,7 +367,7 @@ export const TodoListComponent = () => {
     }
   };
 
-  if (loading) return <Text size="2">{LOADING_MESSAGE}</Text>;
+  if (loading) return null;
 
   return (
     <div className="flex flex-col gap-5">
