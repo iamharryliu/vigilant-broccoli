@@ -16,16 +16,16 @@
     "@vigilant-broccoli/infrastructure": "workspace:*",
     "@vigilant-broccoli/llm-schemas": "workspace:*",
     "@vigilant-broccoli/messaging": "workspace:*",
-    "archiver": "*",
+    "archiver": "^7.0.1",
     "better-auth": "^1.6.23",
     "ejs": "^6.0.1",
     "fastify": "^5.12.5",
     "fastify-plugin": "^5.1.0",
-    "json-schema-to-ts": "*",
+    "json-schema-to-ts": "^3.1.1",
     "nodemailer": "^10.0.13",
     "qrcode": "*",
-    "resend": "*",
-    "tslib": "*",
-    "twilio": "*"
+    "resend": "^6.17.2",
+    "tslib": "^2.8.1",
+    "twilio": "^4.23.0"
   }
 }

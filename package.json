@@ -165,6 +165,8 @@
     "cheatsheet:aliases": "./scripts/shell/cheatsheet-aliases.sh",
     "repo-stats": "node scripts/node/repo-stats.mjs",
     "repo-stats:check": "node scripts/node/repo-stats.mjs --check",
+    "deps:align-pins": "node scripts/node/align-dependency-pins.mjs",
+    "deps:align-pins:check": "node scripts/node/align-dependency-pins.mjs --check",
     "audit": "python3 scripts/python/vuln_tree.py .",
     "nx": "pnpm -C projects/nx-workspace exec nx",
     "nx:migrate": "cd projects/nx-workspace && nx migrate latest",

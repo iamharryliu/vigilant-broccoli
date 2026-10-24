@@ -9,17 +9,17 @@
   ],
   "dependencies": {
     "@sanity/vision": "^5.31.2",
-    "react": "^19.1",
-    "react-dom": "^19.1",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
     "sanity": "^5.31.2",
     "styled-components": "^6.1.18"
   },
   "devDependencies": {
     "@sanity/eslint-config-studio": "^6.0.0",
-    "@types/react": "^19.1",
+    "@types/react": "19.2.17",
     "eslint": "^9.28",
-    "prettier": "^3.5",
-    "typescript": "^5.8"
+    "prettier": "^3.9.9",
+    "typescript": "~5.9.3"
   },
   "prettier": {
     "semi": false,

@@ -13,6 +13,8 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   cheatsheet:aliases          Print the shell alias cheatsheet
   repo-stats                  Regenerate the managed repo-stats line in README.md and about.md
   repo-stats:check            Fail if a managed repo-stats copy (README, about, resume) is stale
+  deps:align-pins             Align app/lib dependency ranges with the nx-workspace root (40-edit cap); run `pnpm -C projects/nx-workspace install --lockfile-only` after
+  deps:align-pins:check       Report app/lib dependency pin drift without editing
 
 📈 UPTIME
   upptime:config:render <dir> Render managed monitoring files locally (empty external directory)
