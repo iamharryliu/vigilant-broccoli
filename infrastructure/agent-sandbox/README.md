@@ -169,7 +169,10 @@ optional `no_changes_reason` in its metadata file and handles it through `no-cha
 
 ## Auditing the backlog
 
-`pnpm agentic-pr-create-todo "<description>"` runs `create-todo.sh`. It refines the initial request using repo research, writes one actionable TODO entry, and includes the refined prompt in the PR summary. Use `/agentic-pr-create-todo <description>` locally; there is no dedicated Actions workflow.
+`pnpm agentic-pr-create-todo "<description>"` runs `create-todo.sh`. It refines the initial request using repo research, writes one actionable TODO entry, and includes the refined prompt in the PR summary. Use `/agentic-pr-create-todo <description>` locally. The `manual-agentic-pr-create-todo` workflow runs the same command on a hosted runner; runs queue behind an active one so rows do not conflict.
+
+- CLI: `gh workflow run manual-agentic-pr-create-todo.yml -f description="<description>"`, with optional `-f model=opus` or `-f firewall=off`.
+- From a Claude Code or Codex session, `/create-todo [description]` writes a self-contained description from the request or, without one, the conversation's latest identified improvement, then dispatches it.
 
 `pnpm agentic-pr-create-todo-audit` runs `audit-todo.sh`, the counterpart to `create-todo.sh`: instead of adding a row it
 re-verifies the ones already there against the current tree, deleting rows whose problem is genuinely fixed and correcting
