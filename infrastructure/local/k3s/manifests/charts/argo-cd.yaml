@@ -1,0 +1,27 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: argo-cd
+spec:
+  repo: https://argoproj.github.io/argo-helm
+  chart: argo-cd
+  version: 10.10.5
+  targetNamespace: argocd
+  createNamespace: true
+  # Traefik terminates TLS, so the server serves plain HTTP. Dex SSO,
+  # notifications and ApplicationSets have no use with one admin and one app.
+  # fullnameOverride drops the release-name prefix, so the server Service is
+  # argocd-server as platform/argocd.yaml expects.
+  valuesContent: |-
+    fullnameOverride: argocd
+    global:
+      domain: argocd.vigilant-broccoli.app
+    configs:
+      params:
+        server.insecure: true
+    dex:
+      enabled: false
+    notifications:
+      enabled: false
+    applicationSet:
+      replicas: 0

@@ -83,7 +83,7 @@ Hardware:
   One or two direct-play streams are fine. Several are not.
 - Ethernet, not Wi-Fi. Beyond the shared-bus limit, Raspberry Pi OS ships the
   Wi-Fi radio rfkill-soft-blocked until a WLAN country is set, which is an easy
-  trap on a headless box (see [CONTEXT.md](../../infrastructure/jellyfin-pi/CONTEXT.md#a-headless-pi-boots-pings-and-has-no-user-account)).
+  trap on a headless box (see [CONTEXT.md](../../infrastructure/jellyfin-pi/CONTEXT.md#a-pis-wi-fi-radio-is-rfkill-blocked-until-the-wlan-country-is-set)).
 - A reliable boot device (SD card or, better, USB SSD) holding the OS, config,
   cache **and the media library** — there is no external drive. **Size it for
   the library plus headroom; 128GB is the verified configuration.** Jellyfin
@@ -183,19 +183,13 @@ everything host-specific is operator-supplied and gitignored.
 | `JELLYFIN_API_KEY`                     | Vault `kv/data/secrets`                  | Minted in Dashboard → API Keys; used by `pnpm jellyfin:scan`, never by the playbook         |
 | `samba_*`                              | `group_vars/jellyfin_pi.yml`             | Share name, path, allowed networks, mDNS — all non-secret                                   |
 
-`TAILSCALE_AUTH_KEY` is a reusable, pre-approved, non-ephemeral auth key minted
-in the Tailscale admin console (ephemeral keys delete the node when it goes
-offline — wrong for a server that reboots for unattended upgrades). Store it
-the same way as every other Vault secret — `pnpm gcp:vm:vault:save-secrets-local`,
-add the key to `~/Desktop/vault-secrets.json`, `pnpm gcp:vm:vault:set-secrets`
-— and see [secret-management.md](./secret-management.md) for rotation.
-
-`provision.sh` fetches it through `load-tailscale-authkey.sh` and hands it to
-the playbook as the `TS_AUTHKEY` environment variable, never as `--extra-vars`;
-on the Pi it is staged in `/run` (tmpfs, `0600`) and passed as
-`tailscale up --auth-key file:…`, so the key is never in anyone's `argv` and
-never written to the SD card. It is only read when the node is not on the
-tailnet yet, so routine converge runs work with Vault unreachable.
+Store `TAILSCALE_AUTH_KEY` the same way as every other Vault secret —
+`pnpm gcp:vm:vault:save-secrets-local`, add the key to
+`~/Desktop/vault-secrets.json`, `pnpm gcp:vm:vault:set-secrets`. Its required
+key type (reusable, pre-approved, non-ephemeral), how `provision.sh` passes it
+through `load-tailscale-authkey.sh` without exposing it in `argv` or on disk,
+why routine converge runs work with Vault unreachable, and rotation are in
+[secret-management.md](./secret-management.md#other).
 
 ## From scratch
 

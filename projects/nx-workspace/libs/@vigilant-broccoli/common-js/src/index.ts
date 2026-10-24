@@ -32,16 +32,6 @@ export type QuickLink = {
   embed?: boolean;
 };
 
-export type PastebinEntry = {
-  label: string;
-  value: string;
-};
-
-export type PastebinGroup = {
-  name: string;
-  entries: PastebinEntry[];
-};
-
 export * from './lib/audio/audio.consts';
 
 export * from './lib/llm/llm.consts';

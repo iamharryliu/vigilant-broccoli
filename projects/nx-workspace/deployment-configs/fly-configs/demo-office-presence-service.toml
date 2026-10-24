@@ -2,7 +2,7 @@ app = 'demo-office-presence-service'
 primary_region = 'yyz'
 
 [build]
-  image = 'iamharryliu/office-presence-socket-server-demo:latest'
+  image = 'iamharryliu/office-presence-service:latest'
 
 [env]
   PORT = '3000'
@@ -11,6 +11,8 @@ primary_region = 'yyz'
   DEMO_MODE = 'true'
   DEMO_UI_ORIGIN = 'https://demo-office-presence-ui.pages.dev'
   OFFICE_PRESENCE_DB = '/data/state.db'
+  # Seed week, seeded members' "today" and the fallback when a member's Slack timezone is unknown.
+  REMINDER_TIMEZONE = 'America/Toronto'
 
 [mounts]
   source = 'office_presence_data'

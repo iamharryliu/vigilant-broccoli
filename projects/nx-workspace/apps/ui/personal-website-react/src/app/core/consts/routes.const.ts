@@ -5,7 +5,7 @@ import {
   INTEREST_LINK,
   PROJECT_LINK,
   SOCIAL_LINK,
-} from '@vigilant-broccoli/personal-common-js';
+} from '@harry/personal';
 import { ENVIRONMENT } from '../../../environments/environment';
 
 export const SITE_NAME = 'harryliu.dev';
@@ -51,12 +51,6 @@ export const LINK_TREE_ROUTE: RouteMeta = {
   description: "Harry Liu's links - social media, projects, and more.",
 };
 
-export const CALENDAR_ROUTE: RouteMeta = {
-  path: '/calendar',
-  title: 'Calendar',
-  description: "Harry Liu's calendar.",
-};
-
 const internalUrl = (path: string) =>
   path === '/' ? '/' : path.startsWith('/') ? path : `/${path}`;
 
@@ -80,12 +74,9 @@ const CONTACT_PAGE: Link = {
   },
   text: 'Contact',
 };
-const CALENDAR_PAGE: Link = {
-  url: {
-    internal: CALENDAR_ROUTE.path,
-    external: externalUrl(CALENDAR_ROUTE.path),
-  },
-  text: 'Calendar',
+const CALENDAR: Link = {
+  url: { external: PROJECT_LINK.CALENDAR.URL },
+  text: PROJECT_LINK.CALENDAR.NAME,
 };
 const EMAIL: Link = {
   url: { external: EMAIL_LINK.URL },
@@ -156,7 +147,7 @@ const IMDB: Link = {
 export const LINKS = {
   INDEX_PAGE,
   ABOUT_PAGE,
-  CALENDAR_PAGE,
+  CALENDAR,
   CONTACT_PAGE,
   EMAIL,
   LINKEDIN,
@@ -181,5 +172,4 @@ export const ROUTES: RouteMeta[] = [
   ABOUT_ROUTE,
   CONTACT_ROUTE,
   LINK_TREE_ROUTE,
-  CALENDAR_ROUTE,
 ];

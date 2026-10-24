@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -23,3 +24,7 @@
 - Cloud services
   - Google APIs
   - Supabase
+
+## Environment
+
+- [.env.example](./.env.example)

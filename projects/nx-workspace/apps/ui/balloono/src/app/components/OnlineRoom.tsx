@@ -5,6 +5,7 @@ import { Button } from '@vigilant-broccoli/react-lib';
 import { MATCH_STATUS } from '../engine/game.consts';
 import { useMatchStats } from '../hooks/useMatchStats';
 import { useControls } from '../hooks/useControls';
+import { usePlayerKeyMaps } from '../hooks/useKeyBindings';
 import { CONNECTION, useOnlineRoom } from '../hooks/useOnlineRoom';
 import { RoomListing } from '../hooks/useRoomDirectory';
 import { useTranslation } from '../i18n';
@@ -29,7 +30,7 @@ export function OnlineRoom({
   usePageTitle(t('PAGE.ROOM', { room }));
 
   const [controlsEnabled, setControlsEnabled] = useState(false);
-  const controls = useControls(controlsEnabled);
+  const controls = useControls(controlsEnabled, usePlayerKeyMaps(false).one);
   const {
     connection,
     members,

@@ -1,7 +1,6 @@
 ---
-# Config and cache stay on the Pi's internal storage: they are small, rebuilt
-# from the library on demand, and keeping them off the external drive means a
-# drive swap never drags a stale server identity along with it.
+# Config and cache live in the stack directory, separate from the media library
+# under media_library_dir.
 # The stack directory holds root-owned files (the compose file and .env), so it
 # is never chowned recursively - doing so fights the copy/template tasks below
 # and the pair flip-flop forever, restarting Jellyfin on every run.

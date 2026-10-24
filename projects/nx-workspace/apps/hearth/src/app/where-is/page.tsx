@@ -16,6 +16,7 @@ import {
 } from './where-is-form';
 import { uploadPreviewImages } from './upload-images';
 import { WhereIsDetailPanel } from './where-is-detail-panel';
+import { useMobileRedirect } from '../../lib/use-mobile-redirect';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 const WHERE_IS_ENDPOINT = '/api/where-is';
@@ -257,11 +258,19 @@ function WhereIsPageContent() {
   );
 }
 
+function WhereIsMobileGate() {
+  const itemId = useSearchParams().get(WHERE_IS_ITEM_PARAM);
+  const { shouldRender } = useMobileRedirect(
+    itemId ? ROUTES.WHERE_IS_DETAIL(itemId) : null,
+  );
+  return shouldRender ? <WhereIsPageContent /> : null;
+}
+
 export default function WhereIsPage() {
   usePageTitle(PAGE_TITLES.WHERE_IS);
   return (
     <Suspense fallback={null}>
-      <WhereIsPageContent />
+      <WhereIsMobileGate />
     </Suspense>
   );
 }

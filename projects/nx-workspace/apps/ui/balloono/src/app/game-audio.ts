@@ -1,6 +1,13 @@
 import { MATCH_EVENT } from './engine/game.consts';
 import { MatchEvent } from './engine/game.types';
 
+export const COUNTDOWN_CUE = {
+  TICK: 'countdown-tick',
+  GO: 'countdown-go',
+} as const;
+export type SoundType =
+  MatchEvent['type'] | (typeof COUNTDOWN_CUE)[keyof typeof COUNTDOWN_CUE];
+
 const MAX_VOICES = 6;
 const SILENT_GAIN = 0.001;
 const VOLUME = 0.12;
@@ -23,6 +30,18 @@ const EFFECT = {
     endFrequency: 350,
     noise: true,
   },
+  [COUNTDOWN_CUE.TICK]: {
+    duration: 0.15,
+    frequency: 660,
+    endFrequency: 660,
+    noise: false,
+  },
+  [COUNTDOWN_CUE.GO]: {
+    duration: 0.4,
+    frequency: 1320,
+    endFrequency: 1320,
+    noise: false,
+  },
 } as const;
 
 export const createGameAudio = () => {
@@ -44,7 +63,7 @@ export const createGameAudio = () => {
     voices.clear();
   };
 
-  const play = (type: MatchEvent['type']) => {
+  const play = (type: SoundType) => {
     if (!context || context.state !== 'running' || voices.size >= MAX_VOICES)
       return;
     const effect = EFFECT[type];

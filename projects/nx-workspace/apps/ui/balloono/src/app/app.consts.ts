@@ -22,8 +22,8 @@ export const normalizeRoomName = (raw: string) =>
     .replace(/^-+|-+$/g, '')
     .slice(0, MAX_ROOM_NAME_LENGTH);
 
-// Online rooms need the Supabase public pair; CPU play works without it, so a
-// local `nx serve` with no env still runs.
+// Online rooms need the Supabase public pair. next.config.js always supplies
+// it, so this is false only when an override blanks a value.
 export const ONLINE_AVAILABLE = Boolean(
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,

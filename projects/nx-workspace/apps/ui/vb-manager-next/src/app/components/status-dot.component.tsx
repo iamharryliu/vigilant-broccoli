@@ -6,7 +6,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  Text,
 } from '@vigilant-broccoli/react-lib';
 
 export type DotColor = 'green' | 'yellow' | 'red' | 'blue' | 'gray';

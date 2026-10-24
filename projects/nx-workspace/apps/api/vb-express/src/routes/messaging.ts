@@ -14,7 +14,7 @@ import {
   EMAIL_ADDRESS,
   MessageRequest,
   SENDER_EMAIL_ADDRESS,
-} from '@vigilant-broccoli/personal-common-js';
+} from '@harry/personal';
 
 let textMessageService: TextMessageService | undefined;
 const getTextMessageService = () => {
@@ -23,6 +23,9 @@ const getTextMessageService = () => {
 };
 const EMAIL_SERVICE_URL = getEnvironmentVariable('EMAIL_SERVICE_URL');
 const SHARED_APP_TOKEN = getEnvironmentVariable('SHARED_APP_TOKEN');
+// Self-hosted images set these so contact forms do not route to the defaults below.
+const CONTACT_FORM_SENDER = getEnvironmentVariable('CONTACT_FORM_SENDER');
+const CONTACT_FORM_RECIPIENT = getEnvironmentVariable('CONTACT_FORM_RECIPIENT');
 
 const APP_EMAIL_CONFIG: Record<string, { from: string; to: string }> = {
   [APP_NAME.HARRYLIU_DESIGN]: {
@@ -56,8 +59,8 @@ const buildEmails = (
   const safeMessage = escapeHtml(message);
   return [
     {
-      from: config.from,
-      to: config.to,
+      from: CONTACT_FORM_SENDER || config.from,
+      to: CONTACT_FORM_RECIPIENT || config.to,
       subject: `Contact form message from ${safeName}`,
       html: `<p><strong>Name:</strong> ${safeName}</p><p><strong>Email:</strong> ${safeEmail}</p><p><strong>Message:</strong></p><p>${safeMessage}</p>`,
     },

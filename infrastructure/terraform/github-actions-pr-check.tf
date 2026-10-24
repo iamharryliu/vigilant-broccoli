@@ -56,3 +56,19 @@ resource "google_secret_manager_secret_iam_member" "github_actions_pr_check_cf_a
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.github_actions_pr_check.email}"
 }
+
+# Variables, not secrets: the provider path and SA email grant nothing without
+# the attribute_condition above.
+locals {
+  pr_check_variables = {
+    PR_CHECK_WIF_PROVIDER    = google_iam_workload_identity_pool_provider.github_pr_check.name
+    PR_CHECK_SERVICE_ACCOUNT = google_service_account.github_actions_pr_check.email
+  }
+}
+
+resource "github_actions_variable" "pr_check" {
+  for_each      = local.pr_check_variables
+  repository    = github_repository.vigilant_broccoli.name
+  variable_name = each.key
+  value         = each.value
+}

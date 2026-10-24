@@ -164,8 +164,8 @@ write_files:
         }
 
         # Liveness for the whole VM, written by observability-health.sh:
-        # 200 while disk headroom is fine and every container is running,
-        # 503 otherwise. Unauthenticated so Upptime can poll it; it exposes
+        # 200 while disk headroom is fine, every container is running and Fly
+        # logs arrived in the last 6h, 503 otherwise. Unauthenticated so Upptime can poll it; it exposes
         # only that one bit.
         location = /health {
           root /var/www/health;
@@ -239,206 +239,42 @@ write_files:
     content: |
       apiVersion: 1
 
+      # Dashboard JSON lives on the persistent data volume, not in this file:
+      # inlining it pushed user_data past EC2's 16KB ceiling and replaced the
+      # VM on every dashboard edit. `pnpm grafana:dashboards:push` syncs
+      # infrastructure/terraform/grafana-dashboards/ there, and the provider
+      # rescans it, so edits land without a restart and survive replacement.
       providers:
         - name: provisioned
           type: file
           disableDeletion: true
+          updateIntervalSeconds: 30
           options:
-            path: /etc/grafana/provisioning/dashboards/json
-
-  - path: /opt/observability/grafana/provisioning/dashboards/json/honeypot.json
-    permissions: '0644'
-    content: |
-      {
-        "uid": "honeypot",
-        "title": "Honeypot",
-        "tags": ["security", "fly"],
-        "timezone": "browser",
-        "schemaVersion": 39,
-        "refresh": "1m",
-        "time": { "from": "now-7d", "to": "now" },
-        "templating": {
-          "list": [
-            {
-              "name": "app",
-              "label": "Fly app",
-              "type": "query",
-              "datasource": { "type": "loki", "uid": "loki" },
-              "query": { "label": "fly_app_name", "type": 1 },
-              "refresh": 2,
-              "multi": true,
-              "includeAll": true,
-              "allValue": ".+",
-              "current": { "text": "All", "value": "$__all" }
-            }
-          ]
-        },
-        "panels": [
-          {
-            "id": 1,
-            "type": "stat",
-            "title": "Honeypot hits in range",
-            "gridPos": { "x": 0, "y": 0, "w": 8, "h": 5 },
-            "datasource": { "type": "loki", "uid": "loki" },
-            "targets": [
-              {
-                "refId": "A",
-                "queryType": "instant",
-                "expr": "sum(count_over_time({fly_app_name=~\"$app\"} |= \"honeypot_triggered\" [$__range]))"
-              }
-            ],
-            "options": {
-              "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-              "colorMode": "value",
-              "graphMode": "none",
-              "textMode": "value"
-            },
-            "fieldConfig": {
-              "defaults": {
-                "unit": "short",
-                "noValue": "0",
-                "color": { "mode": "thresholds" },
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    { "color": "green", "value": null },
-                    { "color": "orange", "value": 1 },
-                    { "color": "red", "value": 50 }
-                  ]
-                }
-              },
-              "overrides": []
-            }
-          },
-          {
-            "id": 2,
-            "type": "stat",
-            "title": "Contact submissions accepted in range",
-            "gridPos": { "x": 8, "y": 0, "w": 8, "h": 5 },
-            "datasource": { "type": "loki", "uid": "loki" },
-            "targets": [
-              {
-                "refId": "A",
-                "queryType": "instant",
-                "expr": "sum(count_over_time({fly_app_name=~\"$app\"} | json | path=\"/contact/send-message\" | status=\"200\" [$__range]))"
-              }
-            ],
-            "options": {
-              "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-              "colorMode": "value",
-              "graphMode": "none",
-              "textMode": "value"
-            },
-            "fieldConfig": {
-              "defaults": { "unit": "short", "noValue": "0", "color": { "mode": "fixed", "fixedColor": "blue" } },
-              "overrides": []
-            }
-          },
-          {
-            "id": 3,
-            "type": "stat",
-            "title": "Contact submissions rejected (403) in range",
-            "gridPos": { "x": 16, "y": 0, "w": 8, "h": 5 },
-            "datasource": { "type": "loki", "uid": "loki" },
-            "targets": [
-              {
-                "refId": "A",
-                "queryType": "instant",
-                "expr": "sum(count_over_time({fly_app_name=~\"$app\"} | json | path=\"/contact/send-message\" | status=\"403\" [$__range]))"
-              }
-            ],
-            "options": {
-              "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-              "colorMode": "value",
-              "graphMode": "none",
-              "textMode": "value"
-            },
-            "fieldConfig": {
-              "defaults": { "unit": "short", "noValue": "0", "color": { "mode": "fixed", "fixedColor": "orange" } },
-              "overrides": []
-            }
-          },
-          {
-            "id": 4,
-            "type": "timeseries",
-            "title": "Honeypot hits over time",
-            "gridPos": { "x": 0, "y": 5, "w": 24, "h": 8 },
-            "datasource": { "type": "loki", "uid": "loki" },
-            "targets": [
-              {
-                "refId": "A",
-                "expr": "sum by (fly_app_name) (count_over_time({fly_app_name=~\"$app\"} |= \"honeypot_triggered\" [$__auto]))",
-                "legendFormat": "{{fly_app_name}}"
-              }
-            ],
-            "fieldConfig": {
-              "defaults": {
-                "unit": "short",
-                "custom": { "drawStyle": "bars", "fillOpacity": 80, "lineWidth": 1 }
-              },
-              "overrides": []
-            },
-            "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } }
-          },
-          {
-            "id": 5,
-            "type": "timeseries",
-            "title": "/contact/send-message responses by status",
-            "gridPos": { "x": 0, "y": 13, "w": 24, "h": 8 },
-            "datasource": { "type": "loki", "uid": "loki" },
-            "targets": [
-              {
-                "refId": "A",
-                "expr": "sum by (status) (count_over_time({fly_app_name=~\"$app\"} | json | path=\"/contact/send-message\" [$__auto]))",
-                "legendFormat": "{{status}}"
-              }
-            ],
-            "fieldConfig": {
-              "defaults": {
-                "unit": "short",
-                "custom": { "drawStyle": "bars", "fillOpacity": 80, "lineWidth": 1, "stacking": { "mode": "normal" } }
-              },
-              "overrides": []
-            },
-            "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } }
-          },
-          {
-            "id": 6,
-            "type": "logs",
-            "title": "Honeypot log lines",
-            "gridPos": { "x": 0, "y": 21, "w": 24, "h": 12 },
-            "datasource": { "type": "loki", "uid": "loki" },
-            "targets": [
-              {
-                "refId": "A",
-                "expr": "{fly_app_name=~\"$app\"} |= \"honeypot_triggered\""
-              }
-            ],
-            "options": {
-              "showTime": true,
-              "wrapLogMessage": true,
-              "sortOrder": "Descending",
-              "dedupStrategy": "none",
-              "enableLogDetails": true
-            }
-          }
-        ]
-      }
+            path: /var/lib/grafana/dashboards
 
   - path: /opt/observability/observability-health.sh
     permissions: '0755'
     content: |
       #!/bin/bash
       # Liveness for the whole stack, surfaced by nginx at /health and polled
-      # by Upptime. Deliberately independent of Grafana and Loki: a full disk
-      # is exactly what breaks those two, so an alert that queries them would
-      # go quiet at the moment it matters.
+      # by Upptime. The disk and container checks are deliberately independent
+      # of Grafana and Loki: a full disk is exactly what breaks those two, so an
+      # alert that queries them would go quiet at the moment it matters. The
+      # one Loki query below fails closed, so a broken Loki still reads degraded.
       set -uo pipefail
 
       DISK_THRESHOLD_PCT=80
       HEALTH_DIR=/opt/observability/health
       LOG_FILE=/var/log/observability-health.log
       CONTAINERS="grafana loki loki-gateway alloy cloudflared"
+      # Fly app logs arrive only through the vb-log-shipper Fly app, whose
+      # failure is otherwise silent: a rejected token once stopped it for weeks
+      # unnoticed. Healthy traffic still has ~4.5h stretches with no Fly line
+      # at all, hence the 6h window. URL-encoded by hand because busybox wget
+      # in loki-gateway (the only container with a client and a route to Loki)
+      # has no --data-urlencode:
+      # sum(count_over_time({fly_app_name=~".+"}[6h]))
+      FLY_LOGS_QUERY="sum%28count_over_time%28%7Bfly_app_name%3D~%22.%2B%22%7D%5B6h%5D%29%29"
 
       # df -P + awk rather than GNU-only --output=pcent, so the same script
       # can be exercised outside Ubuntu.
@@ -469,6 +305,16 @@ write_files:
         [ "$running" = "true" ] || problems="$problems $c-down"
       done
 
+      # An empty result means zero lines in the window, so it counts as stale;
+      # a failed request (Loki down or still starting) counts as unreadable.
+      fly_lines=""
+      if fly_resp=$(docker exec loki-gateway wget -qO- -T 20 "http://loki:3100/loki/api/v1/query?query=$FLY_LOGS_QUERY" 2>/dev/null); then
+        fly_lines=$(printf '%s' "$fly_resp" | grep -o '"value":\[[^]]*\]' | grep -o '"[0-9]*"' | tr -d '"')
+        [ "$${fly_lines:-0}" -gt 0 ] || problems="$problems fly-logs-stale"
+      else
+        problems="$problems fly-logs-unreadable"
+      fi
+
       mkdir -p "$HEALTH_DIR"
       if [ -z "$problems" ]; then
         echo ok > "$HEALTH_DIR/ok"
@@ -478,7 +324,7 @@ write_files:
         status=degraded
       fi
 
-      echo "ts=$(date -u +%Y-%m-%dT%H:%M:%SZ) status=$status root_used_pct=$root_pct data_used_pct=$data_pct problems=\"$problems\"" >> "$LOG_FILE"
+      echo "ts=$(date -u +%Y-%m-%dT%H:%M:%SZ) status=$status root_used_pct=$root_pct data_used_pct=$data_pct fly_log_lines_6h=$${fly_lines:-0} problems=\"$problems\"" >> "$LOG_FILE"
 
   - path: /etc/systemd/system/observability-health.service
     permissions: '0644'
@@ -543,7 +389,7 @@ write_files:
       fi
 
       # Container uids: grafana runs as 472, loki as 10001.
-      mkdir -p /mnt/observability/grafana /mnt/observability/loki
+      mkdir -p /mnt/observability/grafana/dashboards /mnt/observability/loki
       chown -R 472:472 /mnt/observability/grafana
       chown -R 10001:10001 /mnt/observability/loki
 

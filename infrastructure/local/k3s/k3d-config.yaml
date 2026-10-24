@@ -1,0 +1,46 @@
+# k3d runs each k3s node as a Docker container; one server node runs
+# everything.
+apiVersion: k3d.io/v1alpha5
+kind: Simple
+metadata:
+  name: vb-local
+servers: 1
+agents: 0
+ports:
+  # Host loopback 80/443 -> the k3d load balancer -> k3s's bundled Traefik.
+  - port: 127.0.0.1:80:80
+    nodeFilters:
+      - loadbalancer
+  - port: 127.0.0.1:443:443
+    nodeFilters:
+      - loadbalancer
+# Alloy collects host logs through these mounts; on Docker
+# Desktop the sources resolve on the Mac, as Compose bind mounts do.
+volumes:
+  - volume: /var/log:/host/var/log:ro
+    nodeFilters:
+      - server:0
+  - volume: ${HOME}/.pm2/logs:/host/pm2-logs:ro
+    nodeFilters:
+      - server:0
+  - volume: /var/run/docker.sock:/var/run/docker.sock
+    nodeFilters:
+      - server:0
+options:
+  # Compose labels make Docker Desktop and the vb-manager-next Docker card
+  # group these containers as one `local-platform` project, matching the namespace.
+  runtime:
+    labels:
+      - label: com.docker.compose.project=local-platform
+        nodeFilters:
+          - server:*
+          - loadbalancer
+      - label: com.docker.compose.service=server
+        nodeFilters:
+          - server:*
+      - label: com.docker.compose.service=loadbalancer
+        nodeFilters:
+          - loadbalancer
+  kubeconfig:
+    updateDefaultKubeconfig: true
+    switchCurrentContext: false

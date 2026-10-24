@@ -10,8 +10,12 @@ sites:
     url: https://staging-context-md.pages.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
-  - name: staging-links
-    url: https://staging-links-react.pages.dev/
+  - name: staging-bookmarks
+    url: https://staging-bookmarks-react.pages.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [302]
+  - name: staging-pomodoro
+    url: https://staging-pomodoro-react.pages.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-cloud-8-skate
@@ -78,6 +82,10 @@ sites:
     url: https://git.harryliu.dev/
   - name: production-code-server
     url: https://code.harryliu.dev/login
+  - name: production-web-terminal
+    url: https://shell.harryliu.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [302]
   - name: production-drive
     url: https://drive.harryliu.dev/
   - name: production-nx-cache
@@ -89,7 +97,7 @@ sites:
   - name: production-findme
     url: https://findme.harryliu.dev/
   - name: production-hearth
-    url: https://production-hearth.vercel.app/login
+    url: https://hearth.harryliu.dev/login
   - name: production-service-manager
     url: https://api.harryliu.dev/
   - name: production-component-library
@@ -107,9 +115,13 @@ sites:
   - name: production-calendars
     url: https://calendar.harryliu.dev/
   - name: production-vb-manager-next-mobile
-    url: https://production-vb-manager-next-mobile.vercel.app/login
+    url: https://manager.harryliu.dev/login
+    maxRedirects: 0
+    expectedStatusCodes: [302]
   - name: production-career
     url: https://career.harryliu.dev/
+  - name: production-deployments
+    url: https://deployments.harryliu.dev/
   - name: production-status
     url: https://status.harryliu.dev/
   - name: production-uptime
@@ -118,8 +130,10 @@ sites:
     url: https://docs.harryliu.dev/
   - name: production-context
     url: https://context.harryliu.dev/
-  - name: production-links
-    url: https://links.harryliu.dev/
+  - name: production-bookmarks
+    url: https://bookmarks.harryliu.dev/
+  - name: production-pomodoro
+    url: https://pomodoro.harryliu.dev/
   - name: demo-employee-handler-ui
     url: https://demo-employee-handler-ui.vercel.app/
   - name: demo-office-presence-ui

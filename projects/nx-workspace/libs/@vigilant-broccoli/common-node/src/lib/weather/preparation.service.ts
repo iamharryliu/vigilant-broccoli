@@ -51,14 +51,16 @@ export const isPreparationWeather = (
   value: Partial<PreparationWeather> | null,
 ): value is PreparationWeather =>
   !!value &&
-  isFiniteNumber(value.temperatureC) &&
-  isFiniteNumber(value.feelsLikeC) &&
-  isFiniteNumber(value.highC) &&
-  isFiniteNumber(value.lowC) &&
-  isFiniteNumber(value.windSpeedKph) &&
-  isFiniteNumber(value.windMaxKph) &&
-  isFiniteNumber(value.precipitationMm) &&
-  isFiniteNumber(value.precipitationSumMm) &&
+  [
+    value.temperatureC,
+    value.feelsLikeC,
+    value.highC,
+    value.lowC,
+    value.windSpeedKph,
+    value.windMaxKph,
+    value.precipitationMm,
+    value.precipitationSumMm,
+  ].every(isFiniteNumber) &&
   typeof value.isDay === 'boolean' &&
   WEATHER_CONDITIONS.includes(value.condition as never);
 

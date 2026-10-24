@@ -1,10 +1,12 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-interface SupabaseRuntimeConfig {
+interface RuntimeConfig {
   supabaseUrl: string;
   supabasePublishableKey: string;
+  demo: boolean;
 }
 
+let configPromise: Promise<RuntimeConfig> | null = null;
 let clientPromise: Promise<SupabaseClient> | null = null;
 
 /**
@@ -17,13 +19,21 @@ let clientPromise: Promise<SupabaseClient> | null = null;
  * deployment point at its own Supabase project purely through container
  * env vars.
  */
+export const getRuntimeConfig = (): Promise<RuntimeConfig> => {
+  if (!configPromise) {
+    configPromise = fetch('/api/config').then(
+      res => res.json() as Promise<RuntimeConfig>,
+    );
+  }
+  return configPromise;
+};
+
 export const getSupabase = (): Promise<SupabaseClient> => {
   if (!clientPromise) {
-    clientPromise = fetch('/api/config')
-      .then(res => res.json() as Promise<SupabaseRuntimeConfig>)
-      .then(({ supabaseUrl, supabasePublishableKey }) =>
+    clientPromise = getRuntimeConfig().then(
+      ({ supabaseUrl, supabasePublishableKey }) =>
         createClient(supabaseUrl, supabasePublishableKey),
-      );
+    );
   }
   return clientPromise;
 };

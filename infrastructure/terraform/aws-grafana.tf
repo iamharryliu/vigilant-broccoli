@@ -86,8 +86,9 @@ resource "aws_instance" "grafana" {
   user_data_replace_on_change = true
 
   # base64gzip + user_data_base64, unlike the plain base64encode + user_data
-  # the other VMs use: this cloud-init carries a provisioned dashboard and is
-  # ~19KB, past EC2's 16KB user_data ceiling. cloud-init detects the gzip magic
+  # the other VMs use: this cloud-init is ~13KB, close to EC2's 16KB user_data
+  # ceiling (dashboards already moved out to grafana-dashboards/ for that
+  # reason; keep them out). cloud-init detects the gzip magic
   # bytes and decompresses, and `user_data_base64` is the documented attribute
   # for already-encoded binary payloads. base64gzip is deterministic (it zeroes
   # the gzip mtime), so this does not churn the VM on every apply.

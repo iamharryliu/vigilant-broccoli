@@ -2,6 +2,7 @@
 // removed in Nx v24; the lib globs below mirror its last computed output.
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   presets: [
     require('../../libs/@vigilant-broccoli/react-lib/tailwind.preset.cjs'),
   ],

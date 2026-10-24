@@ -112,6 +112,9 @@ resource "oci_core_instance" "code_server" {
     ssh_authorized_keys = "${var.ssh_public_key}${tls_private_key.oci_vm_ci_ssh.public_key_openssh}"
     user_data = base64encode(templatefile("${path.module}/cloud-init-code-server.yaml", {
       code_server_domain      = var.code_server_domain
+      web_terminal_domain     = var.web_terminal_domain
+      web_terminal_aud        = cloudflare_zero_trust_access_application.web_terminal.aud
+      access_team_domain      = var.access_team_domain
       code_server_image       = var.code_server_image
       code_server_password    = random_password.code_server_password.result
       code_server_origin_cert = cloudflare_origin_ca_certificate.code_server.certificate
@@ -137,7 +140,7 @@ resource "tls_cert_request" "code_server_origin" {
 # 15-year Cloudflare Origin CA cert — replaces ACME, which can't complete behind Access
 resource "cloudflare_origin_ca_certificate" "code_server" {
   csr                = tls_cert_request.code_server_origin.cert_request_pem
-  hostnames          = [var.code_server_domain]
+  hostnames          = [var.code_server_domain, var.web_terminal_domain]
   request_type       = "origin-rsa"
   requested_validity = 5475
 }
@@ -193,6 +196,39 @@ resource "cloudflare_zero_trust_access_application" "code_server" {
     {
       id         = cloudflare_zero_trust_access_policy.code_server_ci.id
       precedence = 2
+    },
+  ]
+}
+
+resource "cloudflare_dns_record" "web_terminal" {
+  zone_id = var.cloudflare_zone_id
+  name    = var.web_terminal_domain
+  content = oci_core_instance.code_server.public_ip
+  type    = "A"
+  ttl     = 1
+  proxied = true
+}
+
+# Owner only, no CI service token: the terminal is a root-equivalent shell and
+# nothing automated needs to reach it.
+resource "cloudflare_zero_trust_access_policy" "web_terminal" {
+  account_id = var.cloudflare_account_id
+  name       = "web-terminal-allow-owner"
+  decision   = "allow"
+  include    = [for email in var.code_server_allowed_emails : { email = { email = email } }]
+}
+
+resource "cloudflare_zero_trust_access_application" "web_terminal" {
+  account_id       = var.cloudflare_account_id
+  name             = "web-terminal"
+  domain           = var.web_terminal_domain
+  type             = "self_hosted"
+  session_duration = "4h"
+
+  policies = [
+    {
+      id         = cloudflare_zero_trust_access_policy.web_terminal.id
+      precedence = 1
     },
   ]
 }

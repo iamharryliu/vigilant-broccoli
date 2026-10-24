@@ -3,6 +3,7 @@ import { readFileSync, existsSync, mkdirSync, rmSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { createVaultClient, VAULT_SECRET_PATH } from './vault-client';
+import SUPABASE_PUBLIC from '../libs/@vigilant-broccoli/infrastructure/src/lib/supabase-public.json' with { type: 'json' };
 
 const STAGING = 'staging';
 const PRODUCTION = 'production';
@@ -290,12 +291,13 @@ async function main() {
     hardcodedSecrets?: Record<string, string>;
     envExamplePath?: string;
     settings?: Record<string, unknown>;
+    // Gates every environment behind Vercel Authentication, not just staging.
+    privateApp?: boolean;
   }
 
   const SUPABASE_PUBLIC_SECRETS = {
-    NEXT_PUBLIC_SUPABASE_URL: 'https://jrdosjjgmsoodpjmjqxx.supabase.co',
-    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
-      'sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0',
+    NEXT_PUBLIC_SUPABASE_URL: SUPABASE_PUBLIC.url,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: SUPABASE_PUBLIC.publishableKey,
   };
 
   // employee-handler-ui reads these unprefixed (see libs/supabase.ts) so its
@@ -329,7 +331,10 @@ async function main() {
       settings: NX_VERCEL_SETTINGS('hearth', 'dist/apps/hearth/.next'),
     },
     'employee-handler-ui': {
-      hardcodedSecrets: { ...EMPLOYEE_HANDLER_UI_SUPABASE_SECRETS },
+      hardcodedSecrets: {
+        ...EMPLOYEE_HANDLER_UI_SUPABASE_SECRETS,
+        ...(environment === DEMO && { DEMO_MODE: 'true' }),
+      },
       envExamplePath: 'apps/ui/employee-handler-ui/.env.example',
       settings: NX_VERCEL_SETTINGS(
         'employee-handler-ui',
@@ -356,6 +361,7 @@ async function main() {
         VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
       },
       envExamplePath: 'apps/vb-manager-next-mobile/.env.example',
+      privateApp: true,
       settings: NX_VERCEL_SETTINGS(
         'vb-manager-next-mobile',
         'dist/apps/vb-manager-next-mobile/.next',
@@ -370,7 +376,7 @@ async function main() {
     process.exit(1);
   }
 
-  const { hardcodedSecrets, envExamplePath, settings } = config;
+  const { hardcodedSecrets, envExamplePath, settings, privateApp } = config;
   const envKeys = envExamplePath ? parseEnvKeys(resolve(envExamplePath)) : [];
   const allKeys = envKeys.map(({ key }) => key);
   const entriesFromVault = envKeys.filter(
@@ -427,7 +433,7 @@ async function main() {
     );
   }
 
-  if (environment === STAGING) {
+  if (environment === STAGING || privateApp) {
     await enableVercelAuthentication(
       vercelEnv.VERCEL_PROJECT_ID,
       vercelEnv.VERCEL_ORG_ID,

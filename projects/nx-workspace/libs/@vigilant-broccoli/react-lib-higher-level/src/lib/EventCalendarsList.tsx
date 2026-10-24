@@ -42,12 +42,23 @@ export const EventCalendarsList = ({
   hiddenIds,
   onToggleHidden,
 }: EventCalendarsListProps) => {
-  if (error) return <p className="text-sm text-red-600">{FETCH_ERROR}</p>;
+  if (error)
+    return (
+      <p className="text-sm text-red-600 dark:text-red-400">{FETCH_ERROR}</p>
+    );
   if (calendars === null) {
-    return <p className="text-sm text-gray-500">{LOADING_MESSAGE}</p>;
+    return (
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        {LOADING_MESSAGE}
+      </p>
+    );
   }
   if (calendars.length === 0) {
-    return <p className="text-sm text-gray-500">{EMPTY_MESSAGE}</p>;
+    return (
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        {EMPTY_MESSAGE}
+      </p>
+    );
   }
 
   return (
@@ -59,13 +70,13 @@ export const EventCalendarsList = ({
         return (
           <li
             key={calendar.id}
-            className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3"
+            className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-900"
           >
             <a
               href={calendar.url}
               target="_blank"
               rel="noreferrer"
-              className="text-sm font-medium text-blue-600 hover:underline"
+              className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
             >
               {calendar.name}
             </a>
@@ -76,7 +87,7 @@ export const EventCalendarsList = ({
                 aria-label={visibilityLabel}
                 aria-pressed={!hidden}
                 title={visibilityLabel}
-                className="rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+                className="rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
               >
                 <VisibilityIcon size={16} />
               </button>
@@ -88,7 +99,7 @@ export const EventCalendarsList = ({
                   rel="noreferrer"
                   title={label}
                   aria-label={`Open ${calendar.name} in ${label} view`}
-                  className="rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700"
+                  className="rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                 >
                   <Icon size={16} />
                 </a>

@@ -3,6 +3,10 @@
 import { ReactNode } from 'react';
 import { ThemeProvider } from '@vigilant-broccoli/react-lib';
 
+const THEME_STORAGE_KEY = 'employee-handler-ui-theme';
+
 export function RootThemeWrapper({ children }: { children: ReactNode }) {
-  return <ThemeProvider>{children}</ThemeProvider>;
+  return (
+    <ThemeProvider storageKey={THEME_STORAGE_KEY}>{children}</ThemeProvider>
+  );
 }

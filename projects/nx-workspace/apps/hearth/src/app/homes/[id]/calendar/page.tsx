@@ -19,6 +19,10 @@ import {
   CalendarEventFormData,
 } from '../../../calendar/components/CalendarEventForm';
 import { PAGE_TITLES, usePageTitle } from '../../../../lib/page-title';
+import {
+  useAuthHeader,
+  useJsonAuthHeaders,
+} from '../../../hooks/use-auth-headers';
 
 type ModalState =
   | { type: 'create'; start: string; end: string; allDay: boolean }
@@ -42,10 +46,8 @@ export default function HomeCalendarPage({
   );
 
   const token = session?.access_token ?? '';
-  const authHeader = (extra?: Record<string, string>) => ({
-    Authorization: `Bearer ${token}`,
-    ...extra,
-  });
+  const authHeader = useAuthHeader();
+  const jsonHeaders = useJsonAuthHeaders();
 
   const fetchEvents = useCallback(async () => {
     if (!token || !range) return;
@@ -55,11 +57,11 @@ export default function HomeCalendarPage({
       end: range.end,
     });
     const res = await fetch(`/api/calendar/events?${params}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: await authHeader(),
     });
     const data = await res.json();
     setEvents(Array.isArray(data) ? data : []);
-  }, [homeId, token, range]);
+  }, [homeId, token, range, authHeader]);
 
   useEffect(() => {
     fetchEvents();
@@ -68,7 +70,7 @@ export default function HomeCalendarPage({
   const handleCreate = async (data: CalendarEventFormData) => {
     await fetch('/api/calendar/events', {
       method: 'POST',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ ...data, homeId }),
     });
     setModal(null);
@@ -79,7 +81,7 @@ export default function HomeCalendarPage({
     if (modal?.type !== 'edit') return;
     await fetch('/api/calendar/events', {
       method: 'PATCH',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id: modal.event.id, ...data }),
     });
     setModal(null);
@@ -90,7 +92,7 @@ export default function HomeCalendarPage({
     if (modal?.type !== 'edit') return;
     await fetch('/api/calendar/events', {
       method: 'DELETE',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id: modal.event.id }),
     });
     setModal(null);
@@ -105,7 +107,7 @@ export default function HomeCalendarPage({
   ) => {
     await fetch('/api/calendar/events', {
       method: 'PATCH',
-      headers: authHeader({ 'Content-Type': 'application/json' }),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id: evId, start, end, allDay }),
     });
     fetchEvents();

@@ -117,6 +117,12 @@ const CHECKBOX_CLASS = {
   [ROW_VARIANT.DENSE]: 'h-5 w-5 shrink-0',
 } as const;
 
+// A real button so keyboard users can reach and start editing a title.
+const EDITABLE_TITLE_CLASS =
+  'cursor-pointer text-left rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
+
+const COMPLETED_TITLE_CLASS = 'line-through text-muted-foreground';
+
 const BODY_CLASS = {
   [ROW_VARIANT.CARD]: 'items-start gap-2',
   [ROW_VARIANT.DENSE]: 'items-center gap-3',
@@ -201,19 +207,29 @@ export const CheckListBase = <T extends CheckListBaseItem>({
           onCheckedChange={() => onToggleCheck(item)}
           disabled={item.isRemoving}
           className={CHECKBOX_CLASS[rowVariant]}
+          aria-label={item.title}
         />
         <div className={cn('flex flex-1', BODY_CLASS[rowVariant])}>
           <div className="flex flex-col gap-1 flex-1">
             {isEditing ? (
               renderEditor()
+            ) : canEdit ? (
+              <Text
+                asChild
+                size={size}
+                className={cn(
+                  EDITABLE_TITLE_CLASS,
+                  item.checked && COMPLETED_TITLE_CLASS,
+                )}
+              >
+                <button type="button" onClick={() => onStartEdit(item)}>
+                  {item.title}
+                </button>
+              </Text>
             ) : (
               <Text
                 size={size}
-                className={cn(
-                  canEdit ? 'cursor-pointer' : 'cursor-default',
-                  item.checked && 'line-through text-muted-foreground',
-                )}
-                onClick={() => canEdit && onStartEdit(item)}
+                className={cn(item.checked && COMPLETED_TITLE_CLASS)}
               >
                 {item.title}
               </Text>

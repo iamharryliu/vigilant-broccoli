@@ -45,6 +45,22 @@ const audioMultipartBody = (extraProperties: Record<string, unknown> = {}) => ({
 });
 
 const UNAUTHORIZED_RESPONSE = { description: 'Unauthorized' };
+const queryParam = (name: string, required = true) => ({
+  name,
+  in: 'query',
+  required,
+  schema: { type: 'string' },
+});
+const STORAGE_PROVIDER_PARAM = {
+  ...queryParam('provider'),
+  schema: { type: 'string', enum: ['local', 'cloudflare-r2', 'aws-s3', 'gcs'] },
+};
+const STORAGE_BUCKET_NAME_PARAM = queryParam('bucketName', false);
+const STORAGE_FILE_NAME_PARAM = queryParam('fileName');
+const STORAGE_EXPIRES_IN_SECONDS_PARAM = queryParam('expiresInSeconds');
+const STORAGE_ERROR_RESPONSE = {
+  description: 'storage-service error (message includes its status)',
+};
 const TASK_ID_REQUIRED_RESPONSE = { description: 'taskId is required' };
 const GOOGLE_TASKS_ERROR_RESPONSE = {
   description: "Google Tasks API error, with Google's status passed through",
@@ -274,6 +290,135 @@ export const swaggerSpec = createSwaggerSpec({
         },
       },
     },
+    '/api/messaging/send-email': {
+      post: {
+        summary: 'Send an email via email-service',
+        requestBody: jsonBody({
+          type: 'object',
+          required: ['to', 'subject'],
+          properties: {
+            from: { type: 'string' },
+            to: { type: 'string' },
+            subject: { type: 'string' },
+            text: { type: 'string' },
+            html: { type: 'string' },
+          },
+        }),
+        responses: {
+          '200': { description: '{ success }' },
+          '400': { description: 'Missing to or subject' },
+          '401': UNAUTHORIZED_RESPONSE,
+          '500': { description: 'email-service error' },
+        },
+      },
+    },
+    '/api/storage/upload-url': {
+      get: {
+        summary: 'Get a presigned upload URL from storage-service',
+        parameters: [
+          STORAGE_PROVIDER_PARAM,
+          STORAGE_BUCKET_NAME_PARAM,
+          STORAGE_FILE_NAME_PARAM,
+          queryParam('contentType'),
+          STORAGE_EXPIRES_IN_SECONDS_PARAM,
+        ],
+        responses: {
+          '200': { description: '{ url }' },
+          '401': UNAUTHORIZED_RESPONSE,
+          '500': STORAGE_ERROR_RESPONSE,
+        },
+      },
+    },
+    '/api/storage/download-url': {
+      get: {
+        summary: 'Get a presigned download URL from storage-service',
+        parameters: [
+          STORAGE_PROVIDER_PARAM,
+          STORAGE_BUCKET_NAME_PARAM,
+          STORAGE_FILE_NAME_PARAM,
+          STORAGE_EXPIRES_IN_SECONDS_PARAM,
+        ],
+        responses: {
+          '200': { description: '{ url }' },
+          '401': UNAUTHORIZED_RESPONSE,
+          '500': STORAGE_ERROR_RESPONSE,
+        },
+      },
+    },
+    '/api/storage/files': {
+      get: {
+        summary: 'List files in a storage-service bucket',
+        parameters: [STORAGE_PROVIDER_PARAM, STORAGE_BUCKET_NAME_PARAM],
+        responses: {
+          '200': { description: 'Array of { name, size, updatedAt }' },
+          '401': UNAUTHORIZED_RESPONSE,
+          '500': STORAGE_ERROR_RESPONSE,
+        },
+      },
+      post: {
+        summary: 'Upload files to a storage-service bucket',
+        parameters: [STORAGE_PROVIDER_PARAM, STORAGE_BUCKET_NAME_PARAM],
+        requestBody: {
+          required: true,
+          content: {
+            [MULTIPART_CONTENT]: {
+              schema: {
+                type: 'object',
+                required: ['files'],
+                properties: {
+                  files: {
+                    type: 'array',
+                    items: { type: 'string', format: 'binary' },
+                  },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          '200': { description: '{ message, files }' },
+          '400': { description: 'No valid files provided' },
+          '401': UNAUTHORIZED_RESPONSE,
+          '500': STORAGE_ERROR_RESPONSE,
+        },
+      },
+    },
+    '/api/storage/file': {
+      get: {
+        summary: 'Download a file from a storage-service bucket',
+        parameters: [
+          STORAGE_PROVIDER_PARAM,
+          STORAGE_BUCKET_NAME_PARAM,
+          STORAGE_FILE_NAME_PARAM,
+        ],
+        responses: {
+          '200': {
+            description: 'File bytes as an attachment',
+            content: {
+              'application/octet-stream': {
+                schema: { type: 'string', format: 'binary' },
+              },
+            },
+          },
+          '400': { description: 'fileName query parameter is required' },
+          '401': UNAUTHORIZED_RESPONSE,
+          '500': STORAGE_ERROR_RESPONSE,
+        },
+      },
+      delete: {
+        summary: 'Delete a file from a storage-service bucket',
+        parameters: [
+          STORAGE_PROVIDER_PARAM,
+          STORAGE_BUCKET_NAME_PARAM,
+          STORAGE_FILE_NAME_PARAM,
+        ],
+        responses: {
+          '200': { description: '{ success }' },
+          '401': UNAUTHORIZED_RESPONSE,
+          '500': STORAGE_ERROR_RESPONSE,
+        },
+      },
+    },
     '/api/tasks/lists': {
       get: {
         summary: 'List Google Task lists (better-auth session cookie)',
@@ -444,7 +589,8 @@ export const swaggerSpec = createSwaggerSpec({
     },
     '/api/calendar/parse': {
       post: {
-        summary: 'Extract calendar events from text and/or images via LLM',
+        summary:
+          'Extract calendar events from text, images and http(s) links in the text via LLM. Linked pages are fetched server-side (public hosts only).',
         requestBody: jsonBody({
           type: 'object',
           properties: {

@@ -3,7 +3,7 @@
   "$schema": "../../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "apps/ui/pages-index/src",
   "projectType": "application",
-  "tags": [],
+  "tags": ["visibility:public"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint"
@@ -66,10 +66,7 @@
       }
     },
     "serve": {
-      "dependsOn": [
-        "generate-openapi",
-        "generate-repo-timeline"
-      ],
+      "dependsOn": ["generate-openapi", "generate-repo-timeline"],
       "defaultConfiguration": "development",
       "configurations": {
         "development": {},

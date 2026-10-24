@@ -9,6 +9,7 @@ export interface Chat {
   messages: Message[];
   updatedAt: number;
   createdAt: number;
+  pinned?: boolean;
 }
 
 const STORAGE_KEY_CHATS = 'vb-manager-chats';
@@ -59,6 +60,20 @@ const saveCurrentId = (id: string | null) =>
 const sortByUpdated = (chats: Chat[]): Chat[] =>
   [...chats].sort((a, b) => b.updatedAt - a.updatedAt);
 
+// Drops the oldest unpinned chats first so pinning protects against the cap.
+const capChats = (chats: Chat[]): Chat[] => {
+  let excess = chats.length - MAX_CHATS;
+  if (excess <= 0) return chats;
+  const dropped = new Set<string>();
+  for (let i = chats.length - 1; i >= 0 && excess > 0; i--) {
+    if (!chats[i].pinned) {
+      dropped.add(chats[i].id);
+      excess--;
+    }
+  }
+  return chats.filter(c => !dropped.has(c.id));
+};
+
 const countUserMessages = (messages: Message[]): number =>
   messages.reduce((count, m) => (m.role === 'user' ? count + 1 : count), 0);
 
@@ -70,6 +85,8 @@ export interface UseChatHistoryResult {
   selectChat: (id: string) => void;
   newChat: () => void;
   deleteChat: (id: string) => void;
+  renameChat: (id: string, title: string) => void;
+  togglePinChat: (id: string) => void;
   updateCurrentMessages: (messages: Message[]) => void;
   isHydrated: boolean;
 }
@@ -137,6 +154,20 @@ export function useChatHistory(): UseChatHistoryResult {
     [activeChatId],
   );
 
+  const renameChat = useCallback((id: string, title: string) => {
+    const trimmed = title.trim().slice(0, MAX_TITLE_LENGTH);
+    if (!trimmed) return;
+    setChats(prev =>
+      prev.map(c => (c.id === id ? { ...c, title: trimmed } : c)),
+    );
+  }, []);
+
+  const togglePinChat = useCallback((id: string) => {
+    setChats(prev =>
+      prev.map(c => (c.id === id ? { ...c, pinned: !c.pinned } : c)),
+    );
+  }, []);
+
   const updateCurrentMessages = useCallback(
     (messages: Message[]) => {
       if (!isHydrated) return;
@@ -158,7 +189,7 @@ export function useChatHistory(): UseChatHistoryResult {
           updatedAt: now,
           createdAt: now,
         };
-        setChats(prev => [chat, ...prev].slice(0, MAX_CHATS));
+        setChats(prev => capChats([chat, ...prev]));
         setActiveChatId(id);
         return;
       }
@@ -174,7 +205,7 @@ export function useChatHistory(): UseChatHistoryResult {
             updatedAt: now,
             createdAt: now,
           };
-          return [chat, ...prev].slice(0, MAX_CHATS);
+          return capChats([chat, ...prev]);
         }
         const userCountChanged =
           countUserMessages(messages) !== countUserMessages(existing.messages);
@@ -210,6 +241,8 @@ export function useChatHistory(): UseChatHistoryResult {
     selectChat,
     newChat,
     deleteChat,
+    renameChat,
+    togglePinChat,
     updateCurrentMessages,
     isHydrated,
   };

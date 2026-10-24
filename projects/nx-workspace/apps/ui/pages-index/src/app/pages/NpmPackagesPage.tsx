@@ -9,7 +9,7 @@ export function NpmPackagesPage() {
     {
       key: 'react-lib',
       route: true,
-      href: '/open-source/npm/react-lib',
+      href: '/npm/react-lib',
       title: t('NPM_PACKAGES_PAGE.REACT_LIB.TITLE'),
       description: t('NPM_PACKAGES_PAGE.REACT_LIB.DESCRIPTION'),
       icon: <NpmIcon />,
@@ -17,7 +17,7 @@ export function NpmPackagesPage() {
     {
       key: 'employee-handler',
       route: true,
-      href: '/open-source/npm/employee-handler',
+      href: '/npm/employee-handler',
       title: t('NPM_PACKAGES_PAGE.EMPLOYEE_HANDLER.TITLE'),
       description: t('NPM_PACKAGES_PAGE.EMPLOYEE_HANDLER.DESCRIPTION'),
       icon: <NpmIcon />,
@@ -25,7 +25,7 @@ export function NpmPackagesPage() {
     {
       key: 'slack-workspace',
       route: true,
-      href: '/open-source/npm/slack-workspace',
+      href: '/npm/slack-workspace',
       title: t('NPM_PACKAGES_PAGE.SLACK_WORKSPACE.TITLE'),
       description: t('NPM_PACKAGES_PAGE.SLACK_WORKSPACE.DESCRIPTION'),
       icon: <NpmIcon />,
@@ -33,7 +33,7 @@ export function NpmPackagesPage() {
     {
       key: 'slackbots',
       route: true,
-      href: '/open-source/npm/slackbots',
+      href: '/npm/slackbots',
       title: t('NPM_PACKAGES_PAGE.SLACKBOTS.TITLE'),
       description: t('NPM_PACKAGES_PAGE.SLACKBOTS.DESCRIPTION'),
       icon: <NpmIcon />,

@@ -36,7 +36,7 @@ resource "supabase_settings" "vb_auth" {
     # Fallback redirect target when redirectTo isn't on the allow list below.
     # A dead domain here silently 404s any such sign-in instead of erroring
     # loudly.
-    site_url = "https://production-hearth.vercel.app"
+    site_url = "https://hearth.harryliu.dev"
 
     # One allow-listed entry per app per environment. Comma-separated per the
     # Management API's wire format (not a JSON array).
@@ -44,6 +44,7 @@ resource "supabase_settings" "vb_auth" {
       "http://localhost:4200/*",                                            # hearth local dev
       "https://staging-hearth.vercel.app/*",                                # hearth staging
       "https://production-hearth.vercel.app/*",                             # hearth prod
+      "https://hearth.harryliu.dev/*",                                      # hearth prod (custom domain)
       "http://localhost:4000/auth/callback",                                # employee-handler-ui local dev
       "https://demo-employee-handler-ui.vercel.app/*",                      # employee-handler-ui demo (its only deploy)
       "http://localhost:3000/*",                                            # vb-manager-next local dev
@@ -54,6 +55,7 @@ resource "supabase_settings" "vb_auth" {
       "https://balloono.harryliu.dev/*",                                    # balloono prod (custom domain)
       "https://staging-vb-manager-next-mobile.vercel.app/auth/callback",    # vb-manager-next mobile staging
       "https://production-vb-manager-next-mobile.vercel.app/auth/callback", # vb-manager-next mobile prod
+      "https://manager.harryliu.dev/auth/callback",                         # vb-manager-next mobile prod (custom domain)
     ])
 
     external_google_enabled          = true

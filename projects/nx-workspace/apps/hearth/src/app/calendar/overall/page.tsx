@@ -19,6 +19,10 @@ import {
   CalendarEventFormData,
 } from '../components/CalendarEventForm';
 import { PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
+import {
+  useAuthHeader,
+  useJsonAuthHeaders,
+} from '../../hooks/use-auth-headers';
 
 type ModalState =
   | { type: 'create'; start: string; end: string; allDay: boolean }
@@ -26,7 +30,6 @@ type ModalState =
   | null;
 
 const EVENTS_ENDPOINT = '/api/calendar/events';
-const JSON_CONTENT_TYPE_HEADER = { 'Content-Type': 'application/json' };
 
 export default function OverallCalendarPage() {
   usePageTitle(PAGE_TITLES.OVERALL_CALENDAR);
@@ -39,10 +42,8 @@ export default function OverallCalendarPage() {
   );
 
   const token = session?.access_token ?? '';
-  const authHeader = (extra?: Record<string, string>) => ({
-    Authorization: `Bearer ${token}`,
-    ...extra,
-  });
+  const authHeader = useAuthHeader();
+  const jsonHeaders = useJsonAuthHeaders();
 
   const fetchEvents = useCallback(async () => {
     if (!token || !range) return;
@@ -51,11 +52,11 @@ export default function OverallCalendarPage() {
       end: range.end,
     });
     const res = await fetch(`${EVENTS_ENDPOINT}?${params}`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: await authHeader(),
     });
     const data = await res.json();
     setEvents(Array.isArray(data) ? data : []);
-  }, [token, range]);
+  }, [token, range, authHeader]);
 
   useEffect(() => {
     fetchEvents();
@@ -65,7 +66,7 @@ export default function OverallCalendarPage() {
     if (!selectedHomeId) return;
     await fetch(EVENTS_ENDPOINT, {
       method: 'POST',
-      headers: authHeader(JSON_CONTENT_TYPE_HEADER),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ ...data, homeId: selectedHomeId }),
     });
     setModal(null);
@@ -76,7 +77,7 @@ export default function OverallCalendarPage() {
     if (modal?.type !== 'edit') return;
     await fetch(EVENTS_ENDPOINT, {
       method: 'PATCH',
-      headers: authHeader(JSON_CONTENT_TYPE_HEADER),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id: modal.event.id, ...data }),
     });
     setModal(null);
@@ -87,7 +88,7 @@ export default function OverallCalendarPage() {
     if (modal?.type !== 'edit') return;
     await fetch(EVENTS_ENDPOINT, {
       method: 'DELETE',
-      headers: authHeader(JSON_CONTENT_TYPE_HEADER),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id: modal.event.id }),
     });
     setModal(null);
@@ -102,7 +103,7 @@ export default function OverallCalendarPage() {
   ) => {
     await fetch(EVENTS_ENDPOINT, {
       method: 'PATCH',
-      headers: authHeader(JSON_CONTENT_TYPE_HEADER),
+      headers: await jsonHeaders(),
       body: JSON.stringify({ id: evId, start, end, allDay }),
     });
     fetchEvents();

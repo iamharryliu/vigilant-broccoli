@@ -37,6 +37,7 @@ export const API_ENDPOINTS = {
   PUBLIC_IP: '/api/public-ip',
   LOCAL_IP: '/api/local-ip',
   LOCAL_SERVICES: '/api/local-services',
+  LOCAL_CREDENTIALS: '/api/local-credentials',
   NETWORK_MONITOR_LAN_DEVICES: '/api/network-monitor/lan-devices',
   NETWORK_MONITOR_OUTBOUND_CONNECTIONS:
     '/api/network-monitor/outbound-connections',

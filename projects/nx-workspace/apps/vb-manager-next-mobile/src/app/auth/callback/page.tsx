@@ -19,7 +19,7 @@ export default function AuthCallbackPage() {
 
   return (
     <main
-      className={`${PAGE_MIN_HEIGHT} flex items-center justify-center bg-gray-50`}
+      className={`${PAGE_MIN_HEIGHT} flex items-center justify-center bg-gray-50 dark:bg-gray-950`}
     >
       <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
     </main>

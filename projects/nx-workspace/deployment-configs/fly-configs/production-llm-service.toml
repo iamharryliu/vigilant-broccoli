@@ -2,6 +2,7 @@ app = 'production-llm-service'
 primary_region = 'yyz'
 
 [build]
+  image = 'iamharryliu/llm-service:latest'
 
 [env]
   PORT = '3000'

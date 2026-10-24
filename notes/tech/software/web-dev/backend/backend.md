@@ -9,8 +9,6 @@
     - [Django](./frameworks/django.md)
   - **C#**
     - [Dotnet](./frameworks/dotnet.md)
-  - **Java**
-  - [Spring Boot](./frameworks/spring-boot.md)
 - **APIs**
   - [GraphQL](./graphql.md)
 

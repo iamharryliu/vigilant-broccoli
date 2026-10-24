@@ -1,7 +1,8 @@
 name: cron-prune-orphaned-services
 
 # Report-only: lists Cloudflare Pages, Vercel and Fly services that nothing in
-# the repo declares and emails the result. Deleting stays a manual local
+# the repo declares and emails the result only when there is an orphan or a
+# listing error. Deleting stays a manual local
 # `--apply` run of scripts/prune-orphaned-services.ts.
 on:
   schedule:
@@ -50,15 +51,25 @@ jobs:
         if: always()
         run: '[ -f "$RUNNER_TEMP/orphans.md" ] && cat "$RUNNER_TEMP/orphans.md" >> "$GITHUB_STEP_SUMMARY" || true'
 
+      - name: Check whether to email
+        id: report
+        run: |
+          if jq -e '[.providers[] | .orphans[], .errors[]] | length > 0' "$RUNNER_TEMP/orphans.json" > /dev/null; then
+            echo "send=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Nothing to report; skipping email."
+          fi
+
       - name: Tunnel to email service
+        if: steps.report.outputs.send == 'true'
         uses: ./.github/actions/fly-private-tunnel
         with:
           app: staging-vb-email-service
 
       - name: Email report
+        if: steps.report.outputs.send == 'true'
         env:
           SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
           REPORT_JSON_PATH: ${{ runner.temp }}/orphans.json
-          REPORT_MD_PATH: ${{ runner.temp }}/orphans.md
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: node .github/scripts/orphaned-services-email.mjs

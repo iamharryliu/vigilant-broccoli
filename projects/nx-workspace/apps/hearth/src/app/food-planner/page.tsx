@@ -14,6 +14,7 @@ import {
   Text,
 } from '@vigilant-broccoli/react-lib';
 import { I18nProvider, useTranslation } from '../i18n';
+import { InSeasonCard } from '../components/InSeasonCard';
 import { GroceryList } from '../grocery/GroceryList';
 import { KitchenChoresList } from '../kitchen-chores/KitchenChoresList';
 import { KitchenNotes } from '../kitchen-notes/KitchenNotes';
@@ -22,6 +23,11 @@ import { KitchenEvents } from './KitchenEvents';
 import { KitchenEventCalendar } from './KitchenEventCalendar';
 import { FoodChatPanel } from './FoodChatPanel';
 import { RecipeList } from './RecipeList';
+import {
+  getFirstMobileChildHref,
+  useMobileRedirect,
+} from '../../lib/use-mobile-redirect';
+import { ROUTES } from '../../lib/routes';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 const PLANNER_TAB = 'planner';
@@ -156,6 +162,9 @@ function FoodPlannerContent() {
                       onCalendarEventAdded={bumpCalendar}
                     />
                   </CardContainer>
+                  <div className="mt-6">
+                    <InSeasonCard onGroceryAdded={bumpGrocery} />
+                  </div>
                 </TabsContent>
 
                 <TabsContent value={KITCHEN_CHORES_LIST_TAB}>
@@ -176,7 +185,7 @@ function FoodPlannerContent() {
               </Tabs>
             </div>
 
-            <div className="h-96 min-h-0 lg:h-full">
+            <div className="flex h-96 min-h-0 flex-col lg:h-full">
               <KitchenNotes />
             </div>
 
@@ -235,6 +244,10 @@ function FoodPlannerContent() {
 
 export default function FoodPlannerPage() {
   usePageTitle(PAGE_TITLES.FOOD_PLANNER);
+  const { shouldRender } = useMobileRedirect(
+    getFirstMobileChildHref(ROUTES.FOOD_PLANNER),
+  );
+  if (!shouldRender) return null;
   return (
     <I18nProvider>
       <Suspense fallback={null}>

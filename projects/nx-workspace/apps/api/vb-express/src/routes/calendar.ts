@@ -5,6 +5,7 @@ import {
   CalendarParseResult,
 } from '@vigilant-broccoli/llm-schemas';
 import { callLlm } from '../libs/llm-service.client';
+import { extractUrls, fetchLinkedPages } from '../libs/page-content';
 
 const DEFAULT_TIME_ZONE = 'America/New_York';
 
@@ -16,6 +17,13 @@ type ParseBody = {
   images?: { name: string; base64: string; mimeType: string }[];
   timeZone?: string;
 };
+
+// Appended deterministically rather than via the prompt so the pasted link
+// always survives into the event description.
+const withLinks = (description: string | undefined, links: string[]): string =>
+  [description?.trim(), ...links.filter(l => !description?.includes(l))]
+    .filter(Boolean)
+    .join('\n\n');
 
 const buildSystemPrompt = (timeZone: string) => {
   const now = new Date();
@@ -57,8 +65,13 @@ const calendarRoutes: FastifyPluginAsync = async app => {
         .send({ error: ERROR_NO_INPUT });
     }
 
-    const userPrompt = text?.trim()
-      ? `Extract all calendar events from the following content:\n\n${text.trim()}`
+    const linkedPages = text?.trim() ? await fetchLinkedPages(text) : [];
+    const content = [text?.trim(), ...linkedPages]
+      .filter(Boolean)
+      .join('\n\n--- Linked page ---\n');
+
+    const userPrompt = content
+      ? `Extract all calendar events from the following content:\n\n${content}`
       : 'Extract all calendar events from the attached image(s).';
 
     const { outputs } = await callLlm<{ outputs: CalendarParseResult[] }>({
@@ -69,7 +82,10 @@ const calendarRoutes: FastifyPluginAsync = async app => {
       jsonSchema: calendarParseSchema,
     });
 
-    const events = outputs[0].events.filter(e => e.summary && e.start);
+    const links = text ? extractUrls(text) : [];
+    const events = outputs[0].events
+      .filter(e => e.summary && e.start)
+      .map(e => ({ ...e, description: withLinks(e.description, links) }));
     if (events.length === 0) {
       return reply
         .code(HTTP_STATUS_CODES.UNPROCESSABLE_ENTITY)

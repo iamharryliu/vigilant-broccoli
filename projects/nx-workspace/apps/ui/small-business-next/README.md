@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -20,3 +21,7 @@
 - Cloud services
   - Cloudflare R2
   - Supabase
+
+## Environment
+
+- [.env.local.example](./.env.local.example)

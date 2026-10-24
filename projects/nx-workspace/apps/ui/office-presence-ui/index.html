@@ -19,12 +19,24 @@
       body {
         margin: 0;
       }
-      @media (prefers-color-scheme: dark) {
-        body {
-          background: #1a1d21;
-        }
+      .dark body {
+        background: #1a1d21;
       }
     </style>
+    <script>
+      (function () {
+        var theme;
+        try {
+          theme = localStorage.getItem('office-presence-ui-theme');
+        } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+        }
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

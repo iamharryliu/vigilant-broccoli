@@ -1,40 +1,35 @@
 'use client';
 
-import { Button, Select, Switch, Badge } from '@vigilant-broccoli/react-lib';
-import { BellOff, Pause, Play, RotateCcw, SkipForward } from 'lucide-react';
-import { CSSProperties, useEffect, useRef, useState } from 'react';
+import {
+  Badge,
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+  Input,
+} from '@vigilant-broccoli/react-lib';
+import {
+  BellOff,
+  Pause,
+  Play,
+  RotateCcw,
+  Settings,
+  SkipForward,
+} from 'lucide-react';
+import { CSSProperties, useEffect, useId, useRef, useState } from 'react';
 import { playBeep } from '../audio';
 
-interface DurationOption {
-  id: string;
-  label: string;
-  seconds: number;
-}
-
-const DURATION_OPTIONS: DurationOption[] = [
-  { id: '3s', label: '3s', seconds: 3 },
-  { id: '5m', label: '5m', seconds: 5 * 60 },
-  { id: '10m', label: '10m', seconds: 10 * 60 },
-  { id: '15m', label: '15m', seconds: 15 * 60 },
-  { id: '20m', label: '20m', seconds: 20 * 60 },
-  { id: '25m', label: '25m', seconds: 25 * 60 },
-  { id: '30m', label: '30m', seconds: 30 * 60 },
-];
-
-const DEFAULT_FOCUS_OPTION_ID = '25m';
-const DEFAULT_BREAK_OPTION_ID = '10m';
-
-const findOption = (id: string): DurationOption =>
-  DURATION_OPTIONS.find(o => o.id === id) ?? DURATION_OPTIONS[0];
 const NOTIFICATION_FREQUENCY = 880;
 const NOTIFICATION_DURATION = 0.15;
 const NOTIFICATION_BEEP_COUNT = 3;
 const NOTIFICATION_BEEP_GAP = 0.2;
 const BREAK_BEEP_INTERVAL_MS = 1500;
-const TIMED_ALERT_DURATION_MS = 15000;
 const TICK_INTERVAL_MS = 250;
 const MS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
+const MAX_MINUTES = 180;
 
 const CIRCLE_SIZE = 200;
 const CIRCLE_CENTER = CIRCLE_SIZE / 2;
@@ -45,69 +40,110 @@ const ICON_SIZE = 16;
 
 const POMODORO_STATE_EVENT = 'vb-pomodoro-state';
 const POMODORO_COMMAND_EVENT = 'vb-pomodoro-command';
-const STORAGE_KEY = 'vb-pomodoro-settings';
+const SETTINGS_STORAGE_KEY = 'vb-pomodoro-settings';
+const TIMER_STORAGE_KEY = 'vb-pomodoro-timer';
 const CMD_TOGGLE = 'toggle';
 const CMD_RESET = 'reset';
 const CMD_SKIP = 'skip';
 const CMD_DISMISS = 'dismiss';
-const CMD_SET_FOCUS_DURATION = 'setFocusDuration';
-const CMD_SET_BREAK_DURATION = 'setBreakDuration';
-const CMD_SET_ALERT_MODE = 'setAlertMode';
+const CMD_UPDATE_SETTINGS = 'updateSettings';
 const CMD_REQUEST_STATE = 'requestState';
 
-const PHASE_TASK = 'task';
-const PHASE_BREAK = 'break';
-const ALERT_MODE_TIMED = 'timed';
-const ALERT_MODE_PERSISTENT = 'persistent';
+export const POMODORO_MODE = {
+  WORK: 'work',
+  SHORT_BREAK: 'shortBreak',
+} as const;
 
-export type PomodoroPhase = typeof PHASE_TASK | typeof PHASE_BREAK;
-export type AlertMode = typeof ALERT_MODE_TIMED | typeof ALERT_MODE_PERSISTENT;
+export type PomodoroMode = (typeof POMODORO_MODE)[keyof typeof POMODORO_MODE];
 
-const LABEL_PERSISTENT_ALERT = 'Persistent Alert';
+type MinutesKey = PomodoroMode;
 
-const PHASE_LABELS: Record<PomodoroPhase, string> = {
-  [PHASE_TASK]: 'Focus Time',
-  [PHASE_BREAK]: 'Break Time',
+const MODES = Object.values(POMODORO_MODE);
+
+const MODE_LABELS: Record<PomodoroMode, string> = {
+  [POMODORO_MODE.WORK]: 'Focus Time',
+  [POMODORO_MODE.SHORT_BREAK]: 'Break',
 };
 
-const PHASE_BADGE_COLOR: Record<PomodoroPhase, 'blue' | 'green'> = {
-  [PHASE_TASK]: 'blue',
-  [PHASE_BREAK]: 'green',
+const MODE_BADGE_COLOR: Record<PomodoroMode, 'blue' | 'green'> = {
+  [POMODORO_MODE.WORK]: 'blue',
+  [POMODORO_MODE.SHORT_BREAK]: 'green',
 };
 
-const PHASE_STROKE: Record<PomodoroPhase, string> = {
-  [PHASE_TASK]: 'var(--blue-9)',
-  [PHASE_BREAK]: 'var(--green-9)',
+const MODE_STROKE: Record<PomodoroMode, string> = {
+  [POMODORO_MODE.WORK]: 'var(--blue-9)',
+  [POMODORO_MODE.SHORT_BREAK]: 'var(--green-9)',
 };
 
+const MODE_NOTIFICATION: Record<PomodoroMode, string> = {
+  [POMODORO_MODE.WORK]: 'Break over. Time to focus.',
+  [POMODORO_MODE.SHORT_BREAK]: 'Time for a break.',
+};
+
+const MINUTE_FIELDS: { key: MinutesKey; label: string }[] = [
+  { key: POMODORO_MODE.WORK, label: 'Focus (min)' },
+  { key: POMODORO_MODE.SHORT_BREAK, label: 'Break (min)' },
+];
+
+const LABEL_SETTINGS = 'Settings';
 const LABEL_START = 'Start';
 const LABEL_PAUSE = 'Pause';
 const LABEL_RESET = 'Reset';
 const LABEL_SKIP = 'Skip';
 const LABEL_DISMISS = 'Dismiss';
-const LABEL_FOCUS = 'Focus';
-const LABEL_BREAK = 'Break';
 const LABEL_COMPLETED_SUFFIX = 'completed';
+
+const PERMISSION_GRANTED = 'granted';
+const PERMISSION_DEFAULT = 'default';
 
 const CURSOR_POINTER: CSSProperties = { cursor: 'pointer' };
 
-const SETTINGS_LABEL_STYLE: CSSProperties = {
+const FADED_STAGE_OPACITY = 0.4;
+
+const STAGE_SEQUENCE_STYLE: CSSProperties = {
   display: 'flex',
   alignItems: 'center',
-  gap: '0.5rem',
-  fontSize: '0.85rem',
+  justifyContent: 'center',
+  gap: '0.75rem',
 };
 
+const SETTINGS_PANEL_STYLE: CSSProperties = {
+  display: 'grid',
+  gridTemplateColumns: '1fr auto',
+  alignItems: 'center',
+  columnGap: '1rem',
+  rowGap: '1.5rem',
+  marginTop: '0.75rem',
+};
+
+const NUMBER_INPUT_STYLE: CSSProperties = { width: '5rem' };
+
+interface PomodoroSettings {
+  work: number;
+  shortBreak: number;
+}
+
 interface PomodoroState {
-  phase: PomodoroPhase;
+  mode: PomodoroMode;
   secondsLeft: number;
   isRunning: boolean;
   completedCount: number;
-  alertMode: AlertMode;
   isAlerting: boolean;
-  focusDurationId: string;
-  breakDurationId: string;
+  settings: PomodoroSettings;
 }
+
+interface StoredTimer {
+  mode: PomodoroMode;
+  completedCount: number;
+  isRunning: boolean;
+  secondsLeft: number;
+  endsAt: number;
+}
+
+const DEFAULT_SETTINGS: PomodoroSettings = {
+  work: 25,
+  shortBreak: 5,
+};
 
 const formatTime = (totalSeconds: number): string => {
   const minutes = Math.floor(totalSeconds / SECONDS_PER_MINUTE);
@@ -115,15 +151,11 @@ const formatTime = (totalSeconds: number): string => {
   return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 };
 
-const getOppositePhase = (phase: PomodoroPhase): PomodoroPhase =>
-  phase === PHASE_TASK ? PHASE_BREAK : PHASE_TASK;
+const getDuration = (mode: PomodoroMode, settings: PomodoroSettings): number =>
+  settings[mode] * SECONDS_PER_MINUTE;
 
-const getDuration = (
-  phase: PomodoroPhase,
-  focusDurationId: string,
-  breakDurationId: string,
-): number =>
-  findOption(phase === PHASE_TASK ? focusDurationId : breakDurationId).seconds;
+const getOtherMode = (mode: PomodoroMode): PomodoroMode =>
+  mode === POMODORO_MODE.WORK ? POMODORO_MODE.SHORT_BREAK : POMODORO_MODE.WORK;
 
 const playNotificationSound = (): void => {
   playBeep({
@@ -146,86 +178,141 @@ const sendCommand = (command: string, payload?: unknown) => {
   );
 };
 
-interface PomodoroSettings {
-  focusDurationId: string;
-  breakDurationId: string;
-  alertMode: AlertMode;
-}
-
-const isAlertMode = (v: unknown): v is AlertMode =>
-  v === ALERT_MODE_TIMED || v === ALERT_MODE_PERSISTENT;
-
-const isValidDurationId = (id: unknown): id is string =>
-  typeof id === 'string' && DURATION_OPTIONS.some(o => o.id === id);
-
-const loadSettings = (): Partial<PomodoroSettings> => {
-  if (typeof window === 'undefined') return {};
-  const raw = localStorage.getItem(STORAGE_KEY);
-  if (!raw) return {};
-  const parsed = JSON.parse(raw) as Partial<PomodoroSettings>;
-  const settings: Partial<PomodoroSettings> = {};
-  if (isValidDurationId(parsed.focusDurationId)) {
-    settings.focusDurationId = parsed.focusDurationId;
-  }
-  if (isValidDurationId(parsed.breakDurationId)) {
-    settings.breakDurationId = parsed.breakDurationId;
-  }
-  if (isAlertMode(parsed.alertMode)) {
-    settings.alertMode = parsed.alertMode;
-  }
-  return settings;
+const clampInt = (value: unknown, fallback: number, max: number): number => {
+  const n = Math.floor(Number(value));
+  return Number.isFinite(n) && n >= 1 ? Math.min(n, max) : fallback;
 };
 
-const saveSettings = (state: PomodoroState) => {
-  const settings: PomodoroSettings = {
-    focusDurationId: state.focusDurationId,
-    breakDurationId: state.breakDurationId,
-    alertMode: state.alertMode,
+const readJson = (key: string): Record<string, unknown> => {
+  const raw = localStorage.getItem(key);
+  return raw ? JSON.parse(raw) : {};
+};
+
+const loadSettings = (): PomodoroSettings => {
+  const stored = readJson(SETTINGS_STORAGE_KEY);
+  return {
+    work: clampInt(stored.work, DEFAULT_SETTINGS.work, MAX_MINUTES),
+    shortBreak: clampInt(
+      stored.shortBreak,
+      DEFAULT_SETTINGS.shortBreak,
+      MAX_MINUTES,
+    ),
   };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
 };
 
-const initialState: PomodoroState = {
-  phase: PHASE_TASK,
-  secondsLeft: findOption(DEFAULT_FOCUS_OPTION_ID).seconds,
+const freshState = (
+  settings: PomodoroSettings,
+  mode: PomodoroMode,
+  completedCount: number,
+): PomodoroState => ({
+  mode,
+  secondsLeft: getDuration(mode, settings),
   isRunning: false,
-  completedCount: 0,
-  alertMode: ALERT_MODE_TIMED,
+  completedCount,
   isAlerting: false,
-  focusDurationId: DEFAULT_FOCUS_OPTION_ID,
-  breakDurationId: DEFAULT_BREAK_OPTION_ID,
+  settings,
+});
+
+// Resumes a running timer from its absolute end time. A session that ended
+// while the page was closed finishes silently so no stale alert fires.
+const loadTimer = (
+  settings: PomodoroSettings,
+): { state: PomodoroState; endsAt: number | null } => {
+  const stored = readJson(TIMER_STORAGE_KEY) as Partial<StoredTimer>;
+  const mode = stored.mode;
+  if (!mode || !MODES.includes(mode)) {
+    return { state: freshState(settings, POMODORO_MODE.WORK, 0), endsAt: null };
+  }
+  const completedCount = Math.max(
+    0,
+    Math.floor(Number(stored.completedCount)) || 0,
+  );
+  const duration = getDuration(mode, settings);
+  if (stored.isRunning === true && Number.isFinite(stored.endsAt)) {
+    const endsAt = stored.endsAt as number;
+    if (endsAt > Date.now()) {
+      return {
+        state: {
+          ...freshState(settings, mode, completedCount),
+          isRunning: true,
+          secondsLeft: Math.min(
+            duration,
+            Math.ceil((endsAt - Date.now()) / MS_PER_SECOND),
+          ),
+        },
+        endsAt,
+      };
+    }
+    const count =
+      mode === POMODORO_MODE.WORK ? completedCount + 1 : completedCount;
+    return {
+      state: freshState(settings, getOtherMode(mode), count),
+      endsAt: null,
+    };
+  }
+  const secondsLeft = Math.floor(Number(stored.secondsLeft));
+  const state = freshState(settings, mode, completedCount);
+  if (secondsLeft >= 1 && secondsLeft <= duration)
+    state.secondsLeft = secondsLeft;
+  return { state, endsAt: null };
 };
+
+const saveTimer = (state: PomodoroState, endsAt: number | null) => {
+  const timer: StoredTimer = {
+    mode: state.mode,
+    completedCount: state.completedCount,
+    isRunning: state.isRunning,
+    secondsLeft: state.secondsLeft,
+    endsAt: state.isRunning && endsAt ? endsAt : 0,
+  };
+  localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify(timer));
+};
+
+const hasNotifications = (): boolean =>
+  typeof window !== 'undefined' && 'Notification' in window;
+
+const showNotification = (mode: PomodoroMode) => {
+  if (hasNotifications() && Notification.permission === PERMISSION_GRANTED) {
+    new Notification(MODE_NOTIFICATION[mode]);
+  }
+};
+
+const initialState: PomodoroState = freshState(
+  DEFAULT_SETTINGS,
+  POMODORO_MODE.WORK,
+  0,
+);
 
 export const PomodoroEngine = () => {
   const stateRef = useRef<PomodoroState>(initialState);
   const endTimeRef = useRef<number | null>(null);
-  const isPausedRef = useRef(false);
   const beepIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const beepTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const stored = loadSettings();
-    const hydrated: PomodoroState = { ...initialState, ...stored };
-    hydrated.secondsLeft = findOption(hydrated.focusDurationId).seconds;
-    stateRef.current = hydrated;
+    const persist = () => {
+      localStorage.setItem(
+        SETTINGS_STORAGE_KEY,
+        JSON.stringify(stateRef.current.settings),
+      );
+      saveTimer(stateRef.current, endTimeRef.current);
+    };
 
     const updateState = (patch: Partial<PomodoroState>) => {
       stateRef.current = { ...stateRef.current, ...patch };
       emitState(stateRef.current);
+      saveTimer(stateRef.current, endTimeRef.current);
     };
 
-    const persist = () => saveSettings(stateRef.current);
+    const hydrated = loadTimer(loadSettings());
+    stateRef.current = hydrated.state;
+    endTimeRef.current = hydrated.endsAt;
 
     const stopBeep = () => {
       if (beepIntervalRef.current) {
         clearInterval(beepIntervalRef.current);
         beepIntervalRef.current = null;
       }
-      if (beepTimeoutRef.current) {
-        clearTimeout(beepTimeoutRef.current);
-        beepTimeoutRef.current = null;
-      }
-      updateState({ isAlerting: false });
+      if (stateRef.current.isAlerting) updateState({ isAlerting: false });
     };
 
     const dismissAndResume = () => {
@@ -237,7 +324,7 @@ export const PomodoroEngine = () => {
       }
     };
 
-    const startBeepLoop = (mode: AlertMode) => {
+    const startBeepLoop = () => {
       stopBeep();
       updateState({ isAlerting: true });
       playNotificationSound();
@@ -245,58 +332,43 @@ export const PomodoroEngine = () => {
         playNotificationSound,
         BREAK_BEEP_INTERVAL_MS,
       );
-      if (mode === ALERT_MODE_TIMED) {
-        beepTimeoutRef.current = setTimeout(
-          dismissAndResume,
-          TIMED_ALERT_DURATION_MS,
-        );
-      }
     };
 
-    const advancePhase = (autoTransition: boolean) => {
+    const advanceMode = (finished: boolean) => {
       const s = stateRef.current;
-      const nextPhase = getOppositePhase(s.phase);
       const completedCount =
-        s.phase === PHASE_TASK ? s.completedCount + 1 : s.completedCount;
-      const duration = getDuration(
-        nextPhase,
-        s.focusDurationId,
-        s.breakDurationId,
-      );
-      isPausedRef.current = false;
-      if (autoTransition) {
-        if (!s.isAlerting) startBeepLoop(s.alertMode);
+        s.mode === POMODORO_MODE.WORK ? s.completedCount + 1 : s.completedCount;
+      const nextMode = getOtherMode(s.mode);
+      const secondsLeft = getDuration(nextMode, s.settings);
+      if (finished) {
+        if (!s.isAlerting) startBeepLoop();
+        showNotification(nextMode);
         endTimeRef.current = null;
         updateState({
-          phase: nextPhase,
-          secondsLeft: duration,
+          mode: nextMode,
+          secondsLeft,
           isRunning: false,
           completedCount,
         });
       } else {
         endTimeRef.current = s.isRunning
-          ? Date.now() + duration * MS_PER_SECOND
+          ? Date.now() + secondsLeft * MS_PER_SECOND
           : null;
-        updateState({
-          phase: nextPhase,
-          secondsLeft: duration,
-          completedCount,
-        });
+        updateState({ mode: nextMode, secondsLeft, completedCount });
       }
     };
 
-    const applyDurationChange = (
-      payload: unknown,
-      field: 'focusDurationId' | 'breakDurationId',
-      activePhase: PomodoroPhase,
-    ) => {
+    // Editing a duration only reshapes a session that has not been started
+    // or paused part-way, so a paused countdown keeps its remaining time.
+    const applySettings = (patch: Partial<PomodoroSettings>) => {
       const s = stateRef.current;
-      const option = findOption(payload as string);
-      const patch: Partial<PomodoroState> = { [field]: option.id };
-      if (!s.isRunning && !isPausedRef.current && s.phase === activePhase) {
-        patch.secondsLeft = option.seconds;
-      }
-      updateState(patch);
+      const settings = { ...s.settings, ...patch };
+      const untouched =
+        !s.isRunning && s.secondsLeft === getDuration(s.mode, s.settings);
+      updateState({
+        settings,
+        ...(untouched ? { secondsLeft: getDuration(s.mode, settings) } : {}),
+      });
       persist();
     };
 
@@ -312,7 +384,7 @@ export const PomodoroEngine = () => {
         (endTimeRef.current - Date.now()) / MS_PER_SECOND,
       );
       if (remaining <= 0) {
-        advancePhase(true);
+        advanceMode(true);
       } else if (remaining !== s.secondsLeft) {
         updateState({ secondsLeft: remaining });
       }
@@ -326,11 +398,9 @@ export const PomodoroEngine = () => {
           return;
         }
         if (s.isRunning) {
-          isPausedRef.current = true;
           endTimeRef.current = null;
           updateState({ isRunning: false });
         } else {
-          isPausedRef.current = false;
           endTimeRef.current = Date.now() + s.secondsLeft * MS_PER_SECOND;
           updateState({ isRunning: true });
         }
@@ -338,30 +408,19 @@ export const PomodoroEngine = () => {
       [CMD_RESET]: () => {
         const s = stateRef.current;
         stopBeep();
-        isPausedRef.current = false;
         endTimeRef.current = null;
         updateState({
           isRunning: false,
-          secondsLeft: getDuration(
-            s.phase,
-            s.focusDurationId,
-            s.breakDurationId,
-          ),
+          secondsLeft: getDuration(s.mode, s.settings),
         });
       },
       [CMD_SKIP]: () => {
         stopBeep();
-        advancePhase(false);
+        advanceMode(false);
       },
       [CMD_DISMISS]: dismissAndResume,
-      [CMD_SET_FOCUS_DURATION]: payload =>
-        applyDurationChange(payload, 'focusDurationId', PHASE_TASK),
-      [CMD_SET_BREAK_DURATION]: payload =>
-        applyDurationChange(payload, 'breakDurationId', PHASE_BREAK),
-      [CMD_SET_ALERT_MODE]: payload => {
-        updateState({ alertMode: payload as AlertMode });
-        persist();
-      },
+      [CMD_UPDATE_SETTINGS]: payload =>
+        applySettings(payload as Partial<PomodoroSettings>),
       [CMD_REQUEST_STATE]: () => emitState(stateRef.current),
     };
 
@@ -382,32 +441,49 @@ export const PomodoroEngine = () => {
   return null;
 };
 
-interface DurationSettingProps {
+interface MinutesSettingProps {
   label: string;
-  value: string;
+  value: number;
+  max: number;
   disabled: boolean;
-  command: string;
+  onCommit: (value: number) => void;
 }
 
-const DurationSetting = ({
+// Keeps a draft so the field can be cleared while typing; only valid
+// whole numbers reach the engine.
+const MinutesSetting = ({
   label,
   value,
+  max,
   disabled,
-  command,
-}: DurationSettingProps) => (
-  <div style={SETTINGS_LABEL_STYLE}>
-    {label}
-    <Select
-      value={value}
-      options={DURATION_OPTIONS.map(o => o.id)}
-      onValueChange={id => sendCommand(command, id)}
-      disabled={disabled}
-      displayMapper={Object.fromEntries(
-        DURATION_OPTIONS.map(o => [o.id, o.label]),
-      )}
-    />
-  </div>
-);
+  onCommit,
+}: MinutesSettingProps) => {
+  const id = useId();
+  const [draft, setDraft] = useState(String(value));
+
+  useEffect(() => setDraft(String(value)), [value]);
+
+  return (
+    <>
+      <label htmlFor={id}>{label}</label>
+      <Input
+        id={id}
+        type="number"
+        min={1}
+        max={max}
+        value={draft}
+        disabled={disabled}
+        style={NUMBER_INPUT_STYLE}
+        onChange={e => {
+          setDraft(e.target.value);
+          const n = Math.floor(Number(e.target.value));
+          if (n >= 1 && n <= max) onCommit(n);
+        }}
+        onBlur={() => setDraft(String(value))}
+      />
+    </>
+  );
+};
 
 export const PomodoroUtilityContent = () => {
   const [state, setState] = useState<PomodoroState>(initialState);
@@ -420,18 +496,26 @@ export const PomodoroUtilityContent = () => {
     return () => window.removeEventListener(POMODORO_STATE_EVENT, onState);
   }, []);
 
-  const {
-    phase,
-    secondsLeft,
-    isRunning,
-    completedCount,
-    alertMode,
-    isAlerting,
-    focusDurationId,
-    breakDurationId,
-  } = state;
+  const { mode, secondsLeft, isRunning, completedCount, isAlerting, settings } =
+    state;
 
-  const totalSeconds = getDuration(phase, focusDurationId, breakDurationId);
+  const updateSettings = (patch: Partial<PomodoroSettings>) =>
+    sendCommand(CMD_UPDATE_SETTINGS, patch);
+
+  // Permission prompts need a user gesture, so ask on the first Start click.
+  const toggleTimer = () => {
+    if (
+      !isRunning &&
+      hasNotifications() &&
+      Notification.permission === PERMISSION_DEFAULT
+    ) {
+      void Notification.requestPermission();
+    }
+    sendCommand(CMD_TOGGLE);
+  };
+
+  const otherMode = getOtherMode(mode);
+  const totalSeconds = getDuration(mode, settings);
   const progress = ((totalSeconds - secondsLeft) / totalSeconds) * 100;
   const strokeDashoffset =
     CIRCLE_CIRCUMFERENCE - (progress / 100) * CIRCLE_CIRCUMFERENCE;
@@ -471,7 +555,7 @@ export const PomodoroUtilityContent = () => {
             cy={CIRCLE_CENTER}
             r={CIRCLE_RADIUS}
             fill="none"
-            stroke={PHASE_STROKE[phase]}
+            stroke={MODE_STROKE[mode]}
             strokeWidth={CIRCLE_STROKE_WIDTH}
             strokeLinecap="round"
             strokeDasharray={CIRCLE_CIRCUMFERENCE}
@@ -480,6 +564,7 @@ export const PomodoroUtilityContent = () => {
           />
         </svg>
         <div
+          role="timer"
           style={{
             position: 'absolute',
             inset: 0,
@@ -503,9 +588,21 @@ export const PomodoroUtilityContent = () => {
           gap: '0.4rem',
         }}
       >
-        <Badge color={PHASE_BADGE_COLOR[phase]} size="2" variant="soft">
-          {PHASE_LABELS[phase]}
-        </Badge>
+        <div style={STAGE_SEQUENCE_STYLE}>
+          <div style={{ opacity: FADED_STAGE_OPACITY }}>
+            <Badge color={MODE_BADGE_COLOR[otherMode]} size="1" variant="soft">
+              {MODE_LABELS[otherMode]}
+            </Badge>
+          </div>
+          <Badge color={MODE_BADGE_COLOR[mode]} size="2" variant="soft">
+            {MODE_LABELS[mode]}
+          </Badge>
+          <div style={{ opacity: FADED_STAGE_OPACITY }}>
+            <Badge color={MODE_BADGE_COLOR[otherMode]} size="1" variant="soft">
+              {MODE_LABELS[otherMode]}
+            </Badge>
+          </div>
+        </div>
         <div style={{ fontSize: '0.85rem', color: 'var(--gray-10)' }}>
           {completedCount} {LABEL_COMPLETED_SUFFIX}
         </div>
@@ -522,7 +619,7 @@ export const PomodoroUtilityContent = () => {
       >
         <Button
           variant="secondary"
-          onClick={() => sendCommand(CMD_TOGGLE)}
+          onClick={toggleTimer}
           style={CURSOR_POINTER}
         >
           {isRunning ? <Pause size={ICON_SIZE} /> : <Play size={ICON_SIZE} />}
@@ -556,48 +653,38 @@ export const PomodoroUtilityContent = () => {
         )}
       </div>
 
-      <label
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          fontSize: '0.85rem',
-          cursor: 'pointer',
-        }}
-      >
-        <Switch
-          checked={alertMode === ALERT_MODE_PERSISTENT}
-          onCheckedChange={checked =>
-            sendCommand(
-              CMD_SET_ALERT_MODE,
-              checked ? ALERT_MODE_PERSISTENT : ALERT_MODE_TIMED,
-            )
-          }
-        />
-        {LABEL_PERSISTENT_ALERT}
-      </label>
-
-      <div
-        style={{
-          display: 'flex',
-          gap: '1rem',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <DurationSetting
-          label={LABEL_FOCUS}
-          value={focusDurationId}
-          disabled={isRunning}
-          command={CMD_SET_FOCUS_DURATION}
-        />
-        <DurationSetting
-          label={LABEL_BREAK}
-          value={breakDurationId}
-          disabled={isRunning}
-          command={CMD_SET_BREAK_DURATION}
-        />
-      </div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button
+            variant="secondary"
+            aria-label={LABEL_SETTINGS}
+            style={CURSOR_POINTER}
+          >
+            <Settings size={ICON_SIZE} />
+            {LABEL_SETTINGS}
+          </Button>
+        </DialogTrigger>
+        <DialogContent onOpenAutoFocus={event => event.preventDefault()}>
+          <DialogTitle>{LABEL_SETTINGS}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {LABEL_SETTINGS}
+          </DialogDescription>
+          <div style={SETTINGS_PANEL_STYLE}>
+            {MINUTE_FIELDS.map(({ key, label }) => (
+              <MinutesSetting
+                key={key}
+                label={label}
+                value={settings[key]}
+                max={MAX_MINUTES}
+                disabled={isRunning}
+                onCommit={value =>
+                  updateSettings({ [key]: value } as Partial<PomodoroSettings>)
+                }
+              />
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -1,0 +1,37 @@
+# The Ingress lives in local-platform beside the local-tls Secret and the
+# redirect-https Middleware, which Traefik will not reference across
+# namespaces; this Service forwards to the server in the argocd namespace.
+apiVersion: v1
+kind: Service
+metadata:
+  name: argocd-server
+spec:
+  type: ExternalName
+  externalName: argocd-server.argocd.svc.cluster.local
+  ports:
+    - name: http
+      port: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: local-platform-redirect-https@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - argocd.vigilant-broccoli.app
+      secretName: local-tls
+  rules:
+    - host: argocd.vigilant-broccoli.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 80

@@ -15,8 +15,9 @@ All public URLs for deployed applications, grouped by domain/provider. Staging U
 ```
 harryliu.dev                              Cloudflare zone (Terraform: infrastructure/terraform/)
 ├── harryliu.dev                          Personal website — Cloudflare Pages `production-harryliu-dev-react` (domain + CNAME: Terraform, infrastructure/terraform/)
-├── projects.harryliu.dev                 GitHub Pages index (CNAME to iamharryliu.github.io, DNS-only: Terraform, infrastructure/terraform/; also the upstream of `status.harryliu.dev`, so it must stay DNS-only; the Pages custom domain is set by `github_repository_pages` in `github.tf`; the CNAME file staged by `pages-index:deploy-github-pages` keeps deploys from clearing it)
+├── projects.harryliu.dev                 GitHub Pages index (CNAME to iamharryliu.github.io, DNS-only: Terraform, infrastructure/terraform/; also the upstream of `status.harryliu.dev`, `career.harryliu.dev` and `deployments.harryliu.dev`, so it must stay DNS-only; the Pages custom domain is set by `github_repository_pages` in `github.tf`; the CNAME file staged by `pages-index:deploy-github-pages` keeps deploys from clearing it)
 ├── career.harryliu.dev                   Career links — the pages-index `CareerPage` at the host root (resume, career experience note, profile links). Same `status-proxy` Worker and Terraform file as `status.harryliu.dev` (second custom domain, `career_domain`); the app picks `CareerPage` because `window.location.hostname` is this host
+├── deployments.harryliu.dev              Preview deployments — the pages-index `DeploymentsPage` at the host root (open PRs with a deployed Cloudflare Pages preview, fetched client-side from the GitHub API without a token). Same `status-proxy` Worker and Terraform file as `status.harryliu.dev` (third custom domain, `deployments_domain`); the app picks `DeploymentsPage` because `window.location.hostname` is this host
 ├── status.harryliu.dev                   Status summary — the pages-index `StatusPage` at the host root. Cloudflare Worker `status-proxy` (`infrastructure/cloudflare-workers/status-proxy/`, custom domain + script: Terraform `cloudflare-status.tf`; Cloudflare creates the DNS record) reverse-proxies GET/HEAD to `projects.harryliu.dev`, rewrites upstream redirect `Location`s to the status host and passes status codes and content types through. The app picks `StatusPage` because `window.location.hostname` is this host — a URL fragment never reaches the network, so no proxy could select the route
 ├── uptime.harryliu.dev                   Upptime historical site — GitHub Pages `gh-pages` branch of `iamharryliu/uptime` (CNAME to iamharryliu.github.io, DNS-only: Terraform `cloudflare-harryliu-dev.tf`; Pages custom domain set by `github_repository_pages.upptime`; see [upptime.md](./upptime.md))
 ├── api.harryliu.dev                      VB Express (production) — proxied CNAME to `production-vb-express.fly.dev` (Terraform, infrastructure/terraform/); the fly app needs a matching cert, which the `deploy.yml` "Ensure fly cert" step adds idempotently (`flyctl certs add api.harryliu.dev -a production-vb-express`) so Cloudflare's origin TLS handshake succeeds. All production clients and Upptime use this hostname
@@ -25,7 +26,10 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── whiteboard.harryliu.dev               Whiteboard — Cloudflare Pages `production-whiteboard` (domain + CNAME: Terraform, infrastructure/terraform/)
 ├── weather.harryliu.dev           Weather — Vercel `production-weather-next` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
 ├── balloono.harryliu.dev                 Balloono — Vercel `production-balloono` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; online rooms run over public Supabase Realtime channels, no backend of its own)
-├── links.harryliu.dev                    Links — Cloudflare Pages `production-links-react` (domain + CNAME: Terraform, infrastructure/terraform/; public pastebin page, no Access gating)
+├── manager.harryliu.dev                  VB Manager Mobile — Vercel `production-vb-manager-next-mobile` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; gated by Vercel Authentication)
+├── hearth.harryliu.dev                   Hearth — Vercel `production-hearth` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; public, sign-in via Supabase)
+├── bookmarks.harryliu.dev                Bookmarks — Cloudflare Pages `production-bookmarks-react` (domain + CNAME: Terraform `cloudflare-bookmarks.tf`; browser-local data, no backend or auth)
+├── pomodoro.harryliu.dev                 Pomodoro — Cloudflare Pages `production-pomodoro-react` (domain + CNAME: Terraform `cloudflare-pomodoro.tf`; browser-local settings, no backend or auth)
 ├── docs.harryliu.dev                     Docs MD — Cloudflare Pages `production-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-docs-md.yml, which mirrors `deploy.yml`'s environment selection because the notes snapshot lives outside the nx graph; public, no Access gating)
 ├── context.harryliu.dev                  Agent Context — Cloudflare Pages `production-context-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-context-md.yml because the agent-context snapshot lives outside the nx graph; public, no Access gating)
 ├── components.harryliu.dev        Component Library — Cloudflare Pages `production-component-library` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating).
@@ -34,6 +38,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── waiting.harryliu.dev                  Waiting Games — Cloudflare Pages `production-waiting-games` (domain + CNAME: Terraform, infrastructure/terraform/; public, no Access gating; stateless passive games, no backend)
 ├── git.harryliu.dev                      Gitea — OCI VM (A record, proxied + Cloudflare Access; web UI gated by owner email, git/CI over HTTPS via service token, git-SSH on :2222 direct). Also the read surface for the private journal notes — browsed directly in Gitea rather than mirrored to a Pages site, so the notes never leave the VM
 ├── code.harryliu.dev                     code-server — OCI VM (A record, proxied + Cloudflare Access; owner-email + non-identity CI service token for ci-health-check /healthz origin probes)
+├── shell.harryliu.dev                    Web terminal — same OCI VM and Caddy as code-server, served by the `web-terminal` s6 service in the code-server image on internal port 7681, never published on the host (A record, proxied + its own owner-only Cloudflare Access application with a 4h session; the server re-verifies the Access JWT on every request and WebSocket upgrade; Terraform `oci-code-server.tf`)
 ├── drive.harryliu.dev                    Seafile — AWS EC2 VM (A record, proxied + Cloudflare Access, owner-email only; kept off the OCI Ampere pool — its 50GB-per-boot-volume floor left no free-tier storage headroom for a 4th/5th OCI VM)
 ├── images.harryliu.dev                   Immich — AWS EC2 VM (CNAME to cfargotunnel.com, proxied + Cloudflare Access owner-email only; reached via an outbound-only cloudflared tunnel like vault.harryliu.dev, not a direct A record like drive — no inbound 80/443 on the box at all)
 ├── grafana.harryliu.dev                  Grafana — AWS EC2 observability VM (`aws-grafana.tf`; CNAME to cfargotunnel.com, proxied + Cloudflare Access owner-email only; same tunnel pattern as images)
@@ -61,6 +66,12 @@ vercel.app                                Vercel (production projects created on
 └── production-balloono.vercel.app            Balloono (production)
 
 pages.dev                                 Cloudflare Pages URLs for the environment not attached to a custom domain above
+├── staging-bookmarks-react.pages.dev         Bookmarks (staging, Cloudflare Access)
+├── production-bookmarks-react.pages.dev      Bookmarks (production origin)
+├── preview-bookmarks-react.pages.dev         Bookmarks (PR previews)
+├── staging-pomodoro-react.pages.dev          Pomodoro (staging, Cloudflare Access)
+├── production-pomodoro-react.pages.dev       Pomodoro (production origin)
+├── preview-pomodoro-react.pages.dev          Pomodoro (PR previews)
 ├── demo-office-presence-ui.pages.dev        Office Presence UI (demo only — its only deploy)
 ├── staging-findme.pages.dev                 FindMe (staging)
 ├── production-findme.pages.dev              FindMe (production)
@@ -83,7 +94,7 @@ that one is for services a browser should reach from anywhere, this one is for
 services only the owner's devices need.
 
 ```
-jellyfin-pi.echidna-rohu.ts.net:8096   Jellyfin — Raspberry Pi on the home LAN (`infrastructure/jellyfin-pi/`, Ansible-provisioned, no Terraform). MagicDNS only. On Access-gated tunnels instead of the tailnet, the native clients (Android TV, iOS, Kodi) could not log in — the same constraint that put loki.harryliu.dev on basic auth. The node enrols non-interactively with the reusable `TAILSCALE_AUTH_KEY` from Vault; see [jellyfin-pi.md](./jellyfin-pi.md)
+jellyfin-pi.echidna-rohu.ts.net:8096   Jellyfin — Raspberry Pi on the home LAN (`infrastructure/jellyfin-pi/`, Ansible-provisioned, no Terraform). MagicDNS only: native clients (Android TV, iOS, Kodi) cannot complete a Cloudflare Access login. The node enrols non-interactively with the reusable `TAILSCALE_AUTH_KEY` from Vault; see [jellyfin-pi.md](./jellyfin-pi.md)
 ```
 
 `vb-manager-next`'s dev dashboard lists the tailnet's machines through the
@@ -109,7 +120,7 @@ production-email-subscription-service.flycast  Email Subscription Service (produ
 
 CI e2e/security suites reach these from GitHub-hosted Ubuntu runners via the `.github/actions/fly-private-tunnel` composite action, which installs flyctl and opens a `flyctl proxy 3000:80 <app>.flycast -a <app>` WireGuard tunnel; the job then hits `http://127.0.0.1:3000`. Used by `test-e2e-llm.yml`, `test-security-llm.yml`, `test-e2e-storage-service.yml`, `test-security-storage-service.yml`, `test-smoke-email-service.yml`, `test-e2e-email-subscription-service.yml`, `test-security-email.yml`, `test-security-email-subscription-service.yml`. The job must also import `FLY_API_TOKEN` from Vault for flyctl to authenticate.
 
-Locally-run apps need the same tunnel: `vb-manager-next` (pm2, not deployed) reaches bucket-service via `flyctl proxy 3001:80 staging-storage-service.flycast -a staging-storage-service` with `VB_STORAGE_SERVICE_URL=http://127.0.0.1:3001`, and reaches email-service via `flyctl proxy 3002:80 staging-vb-email-service.flycast -a staging-vb-email-service` with `EMAIL_SERVICE_URL=http://127.0.0.1:3002`. `small-business-next` (also local-only) needs the same email-service tunnel and `EMAIL_SERVICE_URL` pointed at it. Port 3001/3002, not 3000 — `nx serve vb-manager-next` runs `next dev` on 3000.
+`vb-manager-next` (pm2, not deployed) needs no tunnel: its storage and email demos call public vb-express (`/api/storage/*`, `/api/messaging/send-email`), which forwards over 6PN. `small-business-next` (also local-only) still calls email-service directly, so it needs `flyctl proxy 3002:80 staging-vb-email-service.flycast -a staging-vb-email-service` with `EMAIL_SERVICE_URL=http://127.0.0.1:3002`.
 
 The storage-service and llm-service apps dropped their `vb-` prefix (old: `<env>-vb-storage-service`, `<env>-vb-llm-service`). Fly has no rename, so these are new apps; the originals were destroyed after cutover. Only deployed instances carry the `<env>-` prefix — the nx projects stay `bucket-service` and `llm-service`.
 

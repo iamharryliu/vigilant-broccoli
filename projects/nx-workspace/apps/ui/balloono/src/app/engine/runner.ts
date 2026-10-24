@@ -23,6 +23,7 @@ export const runTick = (
   humanInputs: Record<string, PlayerInput>,
   botMemory: BotMemory,
 ): MatchState => {
+  if (state.startCountdown > 0) return advanceMatch(state, humanInputs);
   const inputs = { ...humanInputs };
   state.players
     .filter(player => player.difficulty)

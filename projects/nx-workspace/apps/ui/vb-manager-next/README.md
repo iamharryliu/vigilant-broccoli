@@ -5,6 +5,7 @@ Management dashboard app.
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -28,10 +29,13 @@ Management dashboard app.
   - `github-workspace`
   - `github-workspace-js`
   - `google-workspace`
-  - `links`
+  - `@harry/personal`
+  - `@harry/private`
   - `llm-schemas`
+  - `manager`
   - `money-movement`
-  - `personal-common-js`
+  - `private-infrastructure`
+  - `public-links`
   - `react-lib`
   - `react-lib-auth`
   - `react-lib-higher-level`
@@ -40,6 +44,7 @@ Management dashboard app.
   - `react-utility`
   - `resume`
 - Cloud services
+  - GitHub REST API
   - Google OAuth
   - Google Tasks & Calendar
   - MongoDB
@@ -49,3 +54,7 @@ Management dashboard app.
   - Spotify Web API
   - Stripe
   - Supabase
+
+## Environment
+
+- [.env.local.example](./.env.local.example)

@@ -5,6 +5,7 @@ import {
   BEARER_PREFIX,
   HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
+import { isDemoMode } from './lib/handler-backend';
 
 const ALLOWED_DOMAINS_ENV = 'ALLOWED_EMAIL_DOMAINS';
 const ALLOWED_EMAILS_ENV = 'ALLOWED_EMAILS';
@@ -45,6 +46,7 @@ const unauthorized = (): NextResponse =>
 
 export const proxy = async (req: NextRequest): Promise<NextResponse> => {
   if (req.nextUrl.pathname === PUBLIC_API_PATH) return NextResponse.next();
+  if (isDemoMode()) return NextResponse.next();
 
   const auth = req.headers.get(AUTHORIZATION_HEADER);
   if (!auth?.startsWith(BEARER_PREFIX)) return unauthorized();

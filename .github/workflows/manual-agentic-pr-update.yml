@@ -22,7 +22,7 @@ on:
         type: string
         default: ''
       with_ci_logs:
-        description: 'Feed the PR''s failing checks and failed-step logs to the agent (always on for fix-ci).'
+        description: "Feed the PR's failing checks and failed-step logs to the agent (always on for fix-ci)."
         type: boolean
         default: false
       model:
@@ -169,6 +169,7 @@ jobs:
         uses: ./.github/actions/agentic-summary
         with:
           mode: result
-          outcome: ${{ (steps.update.outcome == 'success' && 'pr-updated') || (job.status == 'cancelled' && 'cancelled') || 'failed' }}
+          outcome: ${{ (steps.update.outputs.outcome == 'no-changes' && 'no-changes') || (steps.update.outcome == 'success' && 'pr-updated') || (job.status == 'cancelled' && 'cancelled') || 'failed' }}
           result_pr_url: https://github.com/${{ github.repository }}/pull/${{ needs.key.outputs.pr }}
           note: ${{ steps.update.outcome == 'skipped' && 'A step before the update failed, so the agent never started.' || '' }}
+          reason: ${{ steps.update.outputs.no_changes_reason }}

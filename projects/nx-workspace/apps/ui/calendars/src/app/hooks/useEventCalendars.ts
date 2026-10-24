@@ -3,7 +3,7 @@ import {
   EmbedEventCalendar,
   readHiddenCalendarIds,
   writeHiddenCalendarIds,
-} from '@vigilant-broccoli/personal-common-js';
+} from '@harry/personal';
 import { getGoogleCalendarId } from '../../lib/calendar-links';
 import {
   CALENDAR_SECTION_STATE,

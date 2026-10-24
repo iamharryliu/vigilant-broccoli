@@ -34,4 +34,6 @@ Both register the same handlers through `registerOfficePresenceHandlers`.
 ## Nuances
 
 - `db.utils.ts` is synchronous `better-sqlite3`, opened at import time from `OFFICE_PRESENCE_DB` (default `state.db`); both modes use it unchanged.
+- Handlers run concurrently in both modes, so `createPublishHomeView` chains Home view publishes per user, builds each view right before `views.publish`, and skips one already superseded by a newer queued publish; an older view never overwrites a newer one.
+- The office-days checkbox handler only adds or deletes the dates its block rendered (read from `body.view.blocks`), so presences on hidden weekends or later weeks survive a click.
 - Responding at the ack and finishing later means a handler can still be running when a Fly machine suspends; see the trade-off in the service's `demo-deployment.md`.

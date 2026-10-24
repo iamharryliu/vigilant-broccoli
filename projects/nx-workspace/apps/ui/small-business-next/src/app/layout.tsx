@@ -1,5 +1,7 @@
+import './global.css';
 import AuthProvider from './providers/auth-provider';
 import { APP_NAME, PAGE_TITLE } from './app.const';
+import { RootThemeWrapper } from './components/RootThemeWrapper';
 
 export const metadata = {
   title: `${PAGE_TITLE.HOME} | ${APP_NAME}`,
@@ -14,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <RootThemeWrapper>
+          <AuthProvider>{children}</AuthProvider>
+        </RootThemeWrapper>
       </body>
     </html>
   );

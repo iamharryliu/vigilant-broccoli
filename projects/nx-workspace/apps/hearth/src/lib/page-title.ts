@@ -25,6 +25,7 @@ export const PAGE_TITLES = {
   FOOD_CALENDAR: 'Kitchen Events',
   ACTIVITY_PLANNER: 'Activity Planner',
   GROCERY: 'Grocery List',
+  IN_SEASON: 'In Season',
   KITCHEN_CHORES: 'Kitchen Chores',
   KITCHEN_NOTES: 'Kitchen Notes',
   KITCHEN_PROJECTS: 'Kitchen Projects',

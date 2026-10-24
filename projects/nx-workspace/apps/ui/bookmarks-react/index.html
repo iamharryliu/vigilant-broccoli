@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Bookmarks | Bookmarks</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <style>
+      body {
+        background-color: light-dark(#ffffff, #020617);
+      }
+    </style>
+    <script>
+      try {
+        var theme = localStorage.getItem('bookmarks-react-theme');
+        if (theme === 'light' || theme === 'dark') {
+          document.documentElement.style.colorScheme = theme;
+        }
+      } catch (e) {}
+    </script>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="%BASE_URL%apple-touch-icon.png"
+    />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./src/main.tsx"></script>
+  </body>
+</html>

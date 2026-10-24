@@ -3,6 +3,7 @@
 ## Table of Contents
 
 - [Stack](#stack)
+- [Environment](#environment)
 
 ## Stack
 
@@ -20,3 +21,7 @@
   - Google Gemini API
   - OpenAI API
   - xAI API
+
+## Environment
+
+- [.env.example](./.env.example)

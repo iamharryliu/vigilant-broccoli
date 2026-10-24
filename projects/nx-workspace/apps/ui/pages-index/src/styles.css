@@ -13,23 +13,35 @@
     --border: var(--pages-border);
   }
 
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --pages-background: 215 28% 17%;
-      --background: var(--pages-background);
-      --pages-primary: 198 93% 60%;
-      --primary: var(--pages-primary);
-      --pages-border: 217 19% 27%;
-      --border: var(--pages-border);
-    }
+  :root.dark {
+    --pages-background: 215 28% 17%;
+    --background: var(--pages-background);
+    --pages-primary: 198 93% 60%;
+    --primary: var(--pages-primary);
+    --pages-border: 217 19% 27%;
+    --border: var(--pages-border);
+    color-scheme: dark;
   }
 }
 
 /* GitHub Actions status badges in README.md render as one paragraph of
    hard-line-break-separated <img>s; the typography plugin's default 2em
-   img margin doesn't push the following <br> line, so badges collide. */
-.prose img[src$='badge.svg'] {
+   img margin doesn't push the following <br> line, so badges collide.
+   Shields.io badges (e.g. the iamharryliu profile README's link table) would
+   otherwise stack one per line, since Tailwind's preflight makes images
+   block-level. */
+.prose img[src$='badge.svg'],
+.prose img[src^='https://img.shields.io/'] {
   display: inline-block;
   margin: 0.25rem 0.5rem 0.25rem 0;
+  vertical-align: middle;
+}
+
+/* App icons prefixing names in the README Applications tables: Tailwind's
+   preflight makes images block-level and prose adds a 2em margin, which
+   would push each icon onto its own line above the name. */
+.prose img[align='absmiddle'] {
+  display: inline-block;
+  margin: 0 0.5rem 0 0;
   vertical-align: middle;
 }

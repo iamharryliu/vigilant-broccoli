@@ -24,4 +24,8 @@ if [ -n "$STORED_KEYS" ] && [ -n "$SCANNED_KEYS" ]; then
   fi
 fi
 
-exec ssh -t -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=accept-new ubuntu@"$IP" "$@"
+# A pseudo-terminal only for an interactive caller; with piped stdin (a streamed
+# script or token) -t only makes ssh warn that it cannot allocate one.
+TTY_FLAG=-T
+[ ! -t 0 ] || TTY_FLAG=-t
+exec ssh "$TTY_FLAG" -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=accept-new ubuntu@"$IP" "$@"

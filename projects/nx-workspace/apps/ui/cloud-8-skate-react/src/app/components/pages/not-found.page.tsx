@@ -18,7 +18,7 @@ export function NotFoundPage() {
         <h1 className="text-6xl font-bold mb-4 reveal-up">
           {t('NOT_FOUND.CODE')}
         </h1>
-        <p className="text-xl text-gray-700 mb-8 reveal-up reveal-up-delay-1">
+        <p className="text-xl text-gray-700 dark:text-gray-300 mb-8 reveal-up reveal-up-delay-1">
           {t('NOT_FOUND.MESSAGE')}
         </p>
         <Link

@@ -53,8 +53,8 @@ export const NotifyDemo = ({ services, subscriptions }: Props) => {
   };
 
   return (
-    <div className="border rounded-xl p-5 bg-white shadow-sm">
-      <h2 className="font-semibold text-gray-800 mb-4">Notify</h2>
+    <div className="border rounded-xl p-5 bg-card shadow-sm">
+      <h2 className="font-semibold text-foreground mb-4">Notify</h2>
       <div className="flex gap-2 mb-4 flex-wrap">
         {services.map(s => (
           <button
@@ -63,16 +63,16 @@ export const NotifyDemo = ({ services, subscriptions }: Props) => {
             className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
               selectedId === s.id
                 ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                : 'bg-muted text-muted-foreground hover:bg-accent'
             }`}
           >
             {s.name}
           </button>
         ))}
       </div>
-      <p className="text-sm text-gray-500 mb-3">
+      <p className="text-sm text-muted-foreground mb-3">
         {targets.length} subscriber{targets.length !== 1 ? 's' : ''} for{' '}
-        <span className="font-medium text-gray-700">
+        <span className="font-medium text-foreground">
           {selectedService?.name}
         </span>
       </p>
@@ -84,7 +84,7 @@ export const NotifyDemo = ({ services, subscriptions }: Props) => {
         {status === 'sending' ? 'Sending…' : 'Send Notification'}
       </button>
       {status === 'success' && result && (
-        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-xs text-green-700">
+        <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-xs text-green-700 dark:bg-green-950 dark:border-green-900 dark:text-green-300">
           ✓ Sent to {result.sent} subscriber{result.sent !== 1 ? 's' : ''}
           {result.failed.length > 0 && (
             <p className="mt-1 text-red-500">
@@ -94,7 +94,7 @@ export const NotifyDemo = ({ services, subscriptions }: Props) => {
         </div>
       )}
       {status === 'error' && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600">
+        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-xs text-red-600 dark:bg-red-950 dark:border-red-900 dark:text-red-300">
           Failed to send notifications.
         </div>
       )}

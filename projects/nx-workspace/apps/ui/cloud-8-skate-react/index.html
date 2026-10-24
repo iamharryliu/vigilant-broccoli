@@ -14,6 +14,20 @@
     />
     <meta name="author" content="Cloud8Skate" />
     <meta name="theme-color" content="#000000" />
+    <script>
+      (function () {
+        var theme;
+        try {
+          theme = localStorage.getItem('cloud-8-skate-react-theme');
+        } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light';
+        }
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+      })();
+    </script>
 
     <meta
       property="og:title"

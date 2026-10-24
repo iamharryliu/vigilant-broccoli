@@ -59,7 +59,8 @@ case "$AGENT_RUNNER" in
     ;;
   ollama) ;;
   codex)
-    if [ -z "$AGENT_CODEX_ACCESS_TOKEN" ]; then
+    # CODEX_SIGNED_IN=1: the dev sandbox's own Codex login is used, no token.
+    if [ -z "$AGENT_CODEX_ACCESS_TOKEN" ] && [ "${CODEX_SIGNED_IN:-0}" != 1 ]; then
       echo "ERROR: AGENT_CODEX_ACCESS_TOKEN not found in Vault (${VAULT_KV_PATH}/secrets)." >&2
       exit 1
     fi

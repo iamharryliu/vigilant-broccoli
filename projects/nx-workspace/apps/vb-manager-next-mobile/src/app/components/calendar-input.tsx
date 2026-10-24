@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
 import { resizeImage } from '@vigilant-broccoli/react-lib';
 import {
@@ -24,7 +24,11 @@ interface EventState {
   eventLink?: string;
 }
 
-export const CalendarInput = () => {
+interface CalendarInputProps {
+  header: ReactNode;
+}
+
+export const CalendarInput = ({ header }: CalendarInputProps) => {
   const [text, setText] = useState('');
   const [images, setImages] = useState<ImagePreview[]>([]);
   const [parsing, setParsing] = useState(false);
@@ -32,10 +36,22 @@ export const CalendarInput = () => {
   const [eventStates, setEventStates] = useState<EventState[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const firstDraftRef = useRef<HTMLDivElement>(null);
+  const [parsedCount, setParsedCount] = useState(0);
   const { recordingState, voiceError, interimTranscript, toggleRecording } =
     useVoiceInput(transcript =>
       setText(prev => (prev ? `${prev}\n${transcript}` : transcript)),
     );
+
+  // Wait for the drafts to render before scrolling to the first one.
+  useEffect(() => {
+    if (parsedCount === 0) return;
+    firstDraftRef.current?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  }, [parsedCount]);
 
   const addImageFile = async (file: File) => {
     const { base64, mimeType, previewUrl } = await resizeImage(file);
@@ -89,6 +105,8 @@ export const CalendarInput = () => {
           status: 'draft' as EventDraftStatus,
         })),
       );
+      textareaRef.current?.blur();
+      setParsedCount(count => count + 1);
     } finally {
       setParsing(false);
     }
@@ -145,163 +163,172 @@ export const CalendarInput = () => {
   const canParse = (text.trim().length > 0 || images.length > 0) && !parsing;
 
   return (
-    <div className="space-y-4">
-      <textarea
-        value={text}
-        onChange={e => setText(e.target.value)}
-        onPaste={handlePaste}
-        placeholder="Paste event text, email, or image here..."
-        rows={4}
-        className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none bg-white"
-      />
+    <>
+      {header}
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain p-4 sm:p-6">
+        <textarea
+          ref={textareaRef}
+          value={text}
+          onChange={e => setText(e.target.value)}
+          onPaste={handlePaste}
+          placeholder="Paste event text, email, or image here..."
+          rows={4}
+          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none bg-white dark:border-gray-700 dark:bg-gray-900"
+        />
 
-      {images.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {images.map((img, i) => (
-            <div key={i} className="relative">
-              <img
-                src={img.previewUrl}
-                alt=""
-                className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+        {images.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {images.map((img, i) => (
+              <div key={i} className="relative">
+                <img
+                  src={img.previewUrl}
+                  alt=""
+                  className="w-20 h-20 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
+                />
+                <button
+                  onClick={() => removeImage(i)}
+                  className="absolute -top-1.5 -right-1.5 bg-gray-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs leading-none"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="flex gap-2">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:active:bg-gray-700"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
-              <button
-                onClick={() => removeImage(i)}
-                className="absolute -top-1.5 -right-1.5 bg-gray-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs leading-none"
-              >
-                ×
-              </button>
-            </div>
-          ))}
+            </svg>
+            Gallery
+          </button>
+          <button
+            onClick={() => cameraInputRef.current?.click()}
+            className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition-colors dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:active:bg-gray-700"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+            Camera
+          </button>
+          <button
+            onClick={toggleRecording}
+            disabled={recordingState === 'transcribing'}
+            className={`flex-1 flex items-center justify-center gap-2 border rounded-lg px-3 py-2 text-sm transition-colors ${
+              recordingState === 'recording'
+                ? 'border-red-300 bg-red-50 text-red-600 dark:border-red-800 dark:bg-red-950 dark:text-red-300'
+                : 'border-gray-200 text-gray-600 hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:active:bg-gray-700'
+            } disabled:opacity-50`}
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+              />
+            </svg>
+            {recordingState === 'recording'
+              ? 'Stop'
+              : recordingState === 'transcribing'
+                ? '...'
+                : 'Voice'}
+          </button>
         </div>
-      )}
 
-      <div className="flex gap-2">
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition-colors"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+        {recordingState === 'recording' && interimTranscript && (
+          <p className="text-sm text-gray-400 italic px-1 dark:text-gray-500">
+            {interimTranscript}
+          </p>
+        )}
+
+        {voiceError && (
+          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 dark:text-red-300 dark:bg-red-950">
+            {voiceError}
+          </p>
+        )}
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleFileChange}
+          className="hidden"
+        />
+        <input
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+
+        {parseError && (
+          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 dark:text-red-300 dark:bg-red-950">
+            {parseError}
+          </p>
+        )}
+
+        {eventStates.map((state, index) => (
+          <div key={index} ref={index === 0 ? firstDraftRef : undefined}>
+            <EventDraftCard
+              draft={state.draft}
+              status={state.status}
+              errorMessage={state.errorMessage}
+              eventLink={state.eventLink}
+              onCreate={draft => handleCreate(index, draft)}
+              onCancel={() => handleCancel(index)}
             />
-          </svg>
-          Gallery
-        </button>
-        <button
-          onClick={() => cameraInputRef.current?.click()}
-          className="flex-1 flex items-center justify-center gap-2 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 transition-colors"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-            />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-          Camera
-        </button>
-        <button
-          onClick={toggleRecording}
-          disabled={recordingState === 'transcribing'}
-          className={`flex-1 flex items-center justify-center gap-2 border rounded-lg px-3 py-2 text-sm transition-colors ${
-            recordingState === 'recording'
-              ? 'border-red-300 bg-red-50 text-red-600'
-              : 'border-gray-200 text-gray-600 hover:bg-gray-50 active:bg-gray-100'
-          } disabled:opacity-50`}
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-            />
-          </svg>
-          {recordingState === 'recording'
-            ? 'Stop'
-            : recordingState === 'transcribing'
-              ? '...'
-              : 'Voice'}
-        </button>
+          </div>
+        ))}
       </div>
 
-      {recordingState === 'recording' && interimTranscript && (
-        <p className="text-sm text-gray-400 italic px-1">{interimTranscript}</p>
-      )}
-
-      <button
-        onClick={handleParse}
-        disabled={!canParse}
-        className="w-full bg-blue-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50 transition-colors"
-      >
-        {parsing ? 'Extracting...' : 'Extract events'}
-      </button>
-
-      {voiceError && (
-        <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
-          {voiceError}
-        </p>
-      )}
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={handleFileChange}
-        className="hidden"
-      />
-      <input
-        ref={cameraInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        onChange={handleFileChange}
-        className="hidden"
-      />
-
-      {parseError && (
-        <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
-          {parseError}
-        </p>
-      )}
-
-      {eventStates.map((state, index) => (
-        <EventDraftCard
-          key={index}
-          draft={state.draft}
-          status={state.status}
-          errorMessage={state.errorMessage}
-          eventLink={state.eventLink}
-          onCreate={draft => handleCreate(index, draft)}
-          onCancel={() => handleCancel(index)}
-        />
-      ))}
-    </div>
+      <div className="shrink-0 border-t border-gray-200 px-4 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-3 sm:px-6 sm:pb-6 dark:border-gray-700">
+        <button
+          onClick={handleParse}
+          disabled={!canParse}
+          className="w-full bg-blue-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50 transition-colors"
+        >
+          {parsing ? 'Extracting...' : 'Extract events'}
+        </button>
+      </div>
+    </>
   );
 };

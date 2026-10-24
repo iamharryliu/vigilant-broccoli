@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_METHOD, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
 const ENV_KEY = 'EMPLOYEE_HANDLER_URL';
+const DEMO_MODE_ENV = 'DEMO_MODE';
+const DEMO_MODE_ENABLED = 'true';
 
 const HOP_BY_HOP = new Set([
   'host',
@@ -30,6 +32,12 @@ const forwardableHeaders = (incoming: Headers): Headers => {
 };
 
 export const hasUpstream = (): boolean => getUpstreamUrl() !== null;
+
+// Demo mode skips sign-in, so it only applies to the in-process mock: a
+// deployment pointed at a real upstream always requires auth, even if
+// DEMO_MODE leaks into its environment.
+export const isDemoMode = (): boolean =>
+  process.env[DEMO_MODE_ENV] === DEMO_MODE_ENABLED && !hasUpstream();
 
 export const forwardToUpstream = async (
   request: NextRequest,

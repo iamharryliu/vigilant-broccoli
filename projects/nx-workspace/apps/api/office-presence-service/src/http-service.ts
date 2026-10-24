@@ -42,7 +42,6 @@ const DEMO_RATE_LIMIT = { max: 120, timeWindow: '1 minute' };
 // Reseeding rewrites the database every visitor shares.
 const DEMO_RESET_RATE_LIMIT = { max: 5, timeWindow: '1 minute' };
 const INTERNAL_RATE_LIMIT = { max: 10, timeWindow: '1 minute' };
-const DEFAULT_TIME_ZONE = 'Europe/Stockholm';
 
 export type HttpServiceConfig = {
   appRunConfig: OfficePresenceAppRunConfig;
@@ -101,7 +100,7 @@ export async function buildHttpService(
 
   const runtime = createOfficePresenceHttpRuntime(appRunConfig);
   const seedOptions: Omit<SeedOptions, 'includeCurrentWeek' | 'now'> = {
-    timeZone: appRunConfig.reminderTimezone ?? DEFAULT_TIME_ZONE,
+    timeZone: runtime.appConfig.timeZone,
     includeWeekends: runtime.appConfig.includeWeekends,
     realUserIds,
   };

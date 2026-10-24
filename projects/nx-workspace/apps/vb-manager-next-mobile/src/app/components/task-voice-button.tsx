@@ -15,8 +15,8 @@ export const TaskVoiceButton = ({
       disabled={recordingState === 'transcribing'}
       className={`flex-1 flex items-center justify-center gap-2 border rounded-lg px-3 py-2 text-sm transition-colors ${
         recordingState === 'recording'
-          ? 'border-red-300 bg-red-50 text-red-600'
-          : 'border-gray-200 text-gray-600 hover:bg-gray-50 active:bg-gray-100'
+          ? 'border-red-300 bg-red-50 text-red-600 dark:border-red-800 dark:bg-red-950 dark:text-red-300'
+          : 'border-gray-200 text-gray-600 hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:active:bg-gray-700'
       } disabled:opacity-50`}
     >
       <svg
