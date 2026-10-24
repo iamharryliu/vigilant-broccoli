@@ -49,7 +49,12 @@ $NO_CHANGES_FIELD
 EOF
 )
 
-claude -p "$PROMPT" --dangerously-skip-permissions --model "$MODEL" \
+permission_args=(--permission-mode auto)
+if [ "${SOLVE_PERMISSION_MODE:-auto}" = bypass ]; then
+  permission_args=(--dangerously-skip-permissions)
+fi
+
+claude -p "$PROMPT" "${permission_args[@]}" --model "$MODEL" \
   --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
 
 git checkout "$BRANCH"

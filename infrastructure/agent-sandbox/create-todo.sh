@@ -57,6 +57,7 @@ docker run --rm --init --name "vb-create-$(date +%s)" \
   -e SANDBOX_FIREWALL \
   -e SANDBOX_ALLOWED_DOMAINS \
   -e SOLVE_MODEL="$MODEL" \
+  -e SOLVE_PERMISSION_MODE \
   "$IMAGE" \
   bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/create-todo-runner.sh" "$1"' _ "$DESCRIPTION" \
   2>&1 | tee "$LOG_FILE" || STATUS="${PIPESTATUS[0]}"
