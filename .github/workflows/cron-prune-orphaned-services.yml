@@ -67,11 +67,7 @@ jobs:
         if: steps.listing.outputs.failed != 'true'
         env:
           REPORT_JSON_PATH: ${{ runner.temp }}/orphans.json
-        run: |
-          node .github/scripts/orphaned-services-todo.mjs
-          if [ -n "$(git status --porcelain -- TODO.md)" ]; then
-            (cd projects/nx-workspace && pnpm exec prettier --write ../../TODO.md)
-          fi
+        run: node .github/scripts/orphaned-services-todo.mjs
 
       # The App token, not GITHUB_TOKEN, so the PR triggers `ci-pr-check`
       # (events from GITHUB_TOKEN never start workflows).
