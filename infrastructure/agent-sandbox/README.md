@@ -55,7 +55,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 ## Running in CI
 
-Plan- and Develop-phase agents, backlog auditing, documentation and context auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-audit`, `agentic-pr-create-context-audit`, `agentic-pr-create-prune`, `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
+Plan- and Develop-phase agents, backlog auditing, documentation and context auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-audit`, `agentic-pr-create-context-audit`, `agentic-pr-create-free-tier-audit`, `agentic-pr-create-prune`, `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
 
 `agentic-pr-create` Claude solves run in auto permission mode (`--permission-mode auto`): a classifier approves routine edits and checks and blocks risky actions such as exfiltration, credential reads or running downloaded code. Headless runs have nobody to approve a blocked action, so the agent must work around it, and repeated blocks can end the run early. Export `SOLVE_PERMISSION_MODE=bypass` before a Docker sandbox run to restore `--dangerously-skip-permissions`; Ollama solves always bypass, since the classifier needs an Anthropic model.
 
@@ -205,6 +205,18 @@ runs the same script on dispatch; it has no schedule.
 - The runner refuses to commit if any non-Markdown file changed, if `notes/`, `docs/rnd/`, `docs/learning-timeline.md`,
   `TODO.md` or a changelog changed, or if more than 15 files changed. The skill fills the cap highest-value first and
   lists the rest as skipped in the PR body, so a re-run picks them up.
+
+## Auditing free-tier documentation
+
+`pnpm agentic-pr-create-free-tier-audit` runs `audit-free-tier.sh`, which checks that every cloud service in use has a
+`## Free Tier` section in its notes/docs and a row in `docs/infrastructure/free-tier-infrastructure.md`, then opens one
+PR adding or correcting entries only from verifiable sources. `cron-agentic-pr-create-free-tier-audit` runs the same
+script weekly.
+
+- Dispatch: `gh workflow run cron-agentic-pr-create-free-tier-audit.yml` (optional `-f model=`, `-f firewall=off`).
+- A clean run opens no PR — `audit-free-tier-runner.sh` prints `AUDIT_CLEAN` and exits 0.
+- The runner refuses to commit if any non-Markdown file or `TODO.md` changed, if a file was added, deleted or renamed,
+  or if more than 10 files changed; candidates over the cap or without a verifiable source are reported as skipped.
 
 ## Auditing agent context
 
