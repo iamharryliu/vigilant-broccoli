@@ -10,9 +10,48 @@ import {
   useVisualViewportHeight,
 } from '../../lib/use-visual-viewport-height';
 import Topbar from './Topbar';
-import Sidebar from './Sidebar';
+import Sidebar, { SIDEBAR_POSITION } from './Sidebar';
 
 const PUBLIC_ROUTES = [ROUTES.LOGIN, ROUTES.SIGNUP, ROUTES.AUTH_CALLBACK];
+const SPINNER_DELAY_MS = 300;
+
+/**
+ * Frame-only stand-in for Topbar and Sidebar while auth resolves. It mirrors
+ * their position, size and colors so the real chrome replaces it without a
+ * layout shift; the real components stay unmounted until a session exists.
+ */
+function AuthLoadingFrame() {
+  const [showSpinner, setShowSpinner] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowSpinner(true), SPINNER_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <>
+      <aside
+        aria-hidden
+        className={`${SIDEBAR_POSITION} hidden md:block md:w-14 border-r border-border bg-background`}
+      />
+      <header
+        aria-hidden
+        className="fixed top-0 left-0 right-0 z-20 h-[var(--topbar-h)] border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-950"
+      />
+      <div className="pt-[var(--topbar-h)] md:pl-14">
+        {showSpinner && (
+          <div className="flex justify-center pt-24">
+            <div
+              role="status"
+              aria-label="Loading"
+              className="h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 dark:border-gray-700 dark:border-t-gray-300"
+            />
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
 
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const session = useAuth();
@@ -41,14 +80,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
   }
 
   if (isLoading) {
-    return (
-      <div className="pt-[var(--topbar-h)] px-6">
-        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-8 w-48 mt-4" />
-        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-4 w-full mt-3" />
-        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-4 w-full mt-2" />
-        <div className="animate-pulse bg-gray-300 dark:bg-gray-700 rounded h-4 w-3/4 mt-2" />
-      </div>
-    );
+    return <AuthLoadingFrame />;
   }
 
   const authenticated = session && !isPublic;
