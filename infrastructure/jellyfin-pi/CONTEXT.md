@@ -6,7 +6,6 @@
   - [A Pi that boots, takes a DHCP lease, then vanishes is browning out](#a-pi-that-boots-takes-a-dhcp-lease-then-vanishes-is-browning-out)
   - [Raspberry Pi Imager can write the card and apply none of its customisation](#raspberry-pi-imager-can-write-the-card-and-apply-none-of-its-customisation)
   - [A headless Pi boots, pings, and has no user account](#a-headless-pi-boots-pings-and-has-no-user-account)
-  - [A Pi's Wi-Fi radio is rfkill-blocked until the WLAN country is set](#a-pis-wi-fi-radio-is-rfkill-blocked-until-the-wlan-country-is-set)
 
 ## Nuances
 
@@ -29,9 +28,3 @@ Before first boot, with the card still in the reader, run `grep -E '^(hostname|u
 The affected Raspberry Pi OS NoCloud seed uses `instance_id`; cloud-init expects `instance-id`. The ignored key falls back to `nocloud`, so subsequent edits to `user-data` skip per-instance user/network setup even though the hostname still updates. Symptoms include `sshd` refusing logins with "SSH may not work until a valid user has been set up", empty `/etc/netplan/`, and `cloud-init status --long` reporting `degraded done`. Check `/var/lib/cloud/data/instance-id`.
 
 Set `instance-id` (hyphen) correctly and cloud-init treats the card as a new instance; the shipped `instance_id` works exactly once, on a card that has never booted. For an already-booted card, use the Pi-native boot files: `userconf.txt` containing `username:<sha512crypt>` (`openssl passwd -6`) and an empty `ssh` file on `/boot/firmware`. They create the user and enable SSH independently of cloud-init. Use Raspberry Pi Imager customisation for a fresh flash; see [recovery details](../../docs/infrastructure/jellyfin-pi.md).
-
-### A Pi's Wi-Fi radio is rfkill-blocked until the WLAN country is set
-
-A fresh Pi can have a loaded `brcmfmac` driver but `wlan0` unavailable and `nmcli radio` showing Wi-Fi disabled until its regulatory domain is set. Check `/sys/class/rfkill/rfkill*/soft` (`1` means blocked; Lite images may lack the `rfkill` CLI). `sudo raspi-config nonint do_wifi_country SE` clears the block for this host.
-
-Hidden SSIDs also require `802-11-wireless.hidden yes` on the NetworkManager connection; without it, correct credentials still fail with "The Wi-Fi network could not be found".

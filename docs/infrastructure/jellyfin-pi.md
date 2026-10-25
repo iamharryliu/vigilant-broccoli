@@ -81,9 +81,7 @@ Hardware:
   capping the network near 300Mbit. The microSD slot is separate (SDIO), so
   the library does not contend with the network the way the old USB drive did.
   One or two direct-play streams are fine. Several are not.
-- Ethernet, not Wi-Fi. Beyond the shared-bus limit, Raspberry Pi OS ships the
-  Wi-Fi radio rfkill-soft-blocked until a WLAN country is set, which is an easy
-  trap on a headless box (see [CONTEXT.md](../../infrastructure/jellyfin-pi/CONTEXT.md#a-pis-wi-fi-radio-is-rfkill-blocked-until-the-wlan-country-is-set)).
+- Wired Ethernet only. The playbook configures no Wi-Fi.
 - A reliable boot device (SD card or, better, USB SSD) holding the OS, config,
   cache **and the media library** — there is no external drive. **Size it for
   the library plus headroom; 128GB is the verified configuration.** Jellyfin
@@ -195,8 +193,8 @@ why routine converge runs work with Vault unreachable, and rotation are in
 
 1. **Flash.** Raspberry Pi Imager → Raspberry Pi OS Lite (64-bit). In OS
    customisation set the hostname (`jellyfin-pi`), create the admin user, paste
-   your SSH public key, and enable SSH with public-key auth only. Prefer
-   Ethernet over Wi-Fi; leave "Configure wireless LAN" unchecked.
+   your SSH public key, and enable SSH with public-key auth only. Leave
+   "Configure wireless LAN" unchecked; the Pi is wired-only.
 
    Use Imager's customisation rather than hand-writing config, because the
    first-boot mechanism keeps moving: `custom.toml` (Bookworm era), then

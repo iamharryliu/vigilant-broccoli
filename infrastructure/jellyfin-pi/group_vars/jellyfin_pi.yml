@@ -22,10 +22,6 @@ pi_base_packages:
   # the Docker and Tailscale repositories are both declared with that module
   # later in the same run.
   - python3-debian
-# Empty disables the step. Raspberry Pi OS ships the Wi-Fi radio rfkill
-# soft-blocked until a WLAN regulatory domain is set, so a headless Pi with no
-# country configured has a working driver and an unusable radio.
-pi_wifi_country: ''
 # Jellyfin refuses to start with less than 2GiB free and its metadata and cache
 # only grow, so provisioning stops short of a boot device that cannot sustain
 # it rather than letting the service fail mysteriously weeks later.
