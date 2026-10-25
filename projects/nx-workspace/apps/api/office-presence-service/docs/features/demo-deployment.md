@@ -48,7 +48,7 @@ The UI keeps a random session id in `localStorage` and sends it as `X-Demo-Sessi
 | `POST /slack/events`, `/slack/interactivity`, `/slack/commands` | `http` | Slack signing secret |
 | `POST /demo/{state,action,submit,close-modal,preview-reminder,reset}` | `http` + `DEMO_MODE` | CORS to `DEMO_UI_ORIGIN` |
 | `POST /internal/seed` | `http` + `DEMO_MODE` | bearer token |
-| `POST /internal/reminders` | `http`, token configured | bearer token |
+| `POST /internal/reminders` | `http` | bearer token |
 
 Socket Mode exposes no HTTP surface. Demo routes are limited to 120 requests/minute per client (`reset`: 5/minute) with a 32 KB body limit; the swagger spec in `src/libs/swagger.ts` documents every route.
 

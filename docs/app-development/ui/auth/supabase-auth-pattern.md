@@ -32,7 +32,7 @@ A sign-in whose `redirectTo` is **not** matched by `uri_allow_list` does not err
 
 ## Server side
 
-- `src/middleware.ts` gates all `/api/*` routes by verifying the bearer token with `supabase.auth.getUser(token)` (see `vb-manager-next`; `employee-handler-ui`'s `src/proxy.ts` is the same check plus an `ALLOWED_EMAILS` / `ALLOWED_EMAIL_DOMAINS` allowlist).
+- `src/proxy.ts` gates all `/api/*` routes by verifying the bearer token with `supabase.auth.getUser(token)` (see `vb-manager-next`; `employee-handler-ui`'s is the same check plus an `ALLOWED_EMAILS` / `ALLOWED_EMAIL_DOMAINS` allowlist).
 - Per-route helpers (`apps/ui/vb-manager-next/libs/server-auth.ts`):
   - `getGoogleAccessToken(req)` — reads `x-google-token` for Google API calls (Tasks, Calendar).
   - `getUserEmail(req)` — re-verifies the bearer token and returns the email used as the per-user data key.
@@ -46,7 +46,7 @@ A sign-in whose `redirectTo` is **not** matched by `uri_allow_list` does not err
 
 1. `libs/auth.ts` instantiating `createSupabaseAuth` with the app's routes/scopes.
 2. `AuthProvider` in the root layout; login page; `auth/callback` page.
-3. `src/middleware.ts` bearer-token guard on `/api/*`.
+3. `src/proxy.ts` bearer-token guard on `/api/*`.
 4. All same-origin `/api/*` calls via `authFetch`.
 5. Callback URLs added to `uri_allow_list` in `supabase-auth.tf`, then `tf:apply` — follow [Adding / changing redirect URLs](#adding--changing-redirect-urls) exactly (real staging + production domains from `network-management.md`, not a guessed bare domain).
 
