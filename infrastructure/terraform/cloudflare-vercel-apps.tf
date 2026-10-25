@@ -1,12 +1,14 @@
-# weather and balloono subdomains of harryliu.dev — Vercel
+# weather, balloono, manager and hearth subdomains of harryliu.dev — Vercel
 # apps (projects and deploys owned by the nx deploy targets). Terraform owns
 # only the DNS; the domain must also be added to each production Vercel
 # project. DNS-only so Vercel can issue and renew its own certificate.
 
 locals {
   vercel_app_subdomains = {
-    weather-next = "weather.harryliu.dev"
-    balloono     = "balloono.harryliu.dev"
+    weather-next           = "weather.harryliu.dev"
+    balloono               = "balloono.harryliu.dev"
+    vb-manager-next-mobile = "manager.harryliu.dev"
+    hearth                 = "hearth.harryliu.dev"
   }
 }
 

@@ -20,6 +20,11 @@ import {
 import { WhiteboardEditor } from './whiteboard/components/WhiteboardEditor';
 import { PAGE_TITLES, usePageTitle } from '../lib/page-title';
 import { PAGE_BODY_HEIGHT_CLASS, PAGE_PADDING_CLASS } from '../lib/page-layout';
+import {
+  getFirstMobileChildHref,
+  useMobileRedirect,
+} from '../lib/use-mobile-redirect';
+import { ROUTES } from '../lib/routes';
 import { useAuthHeader, useJsonAuthHeaders } from './hooks/use-auth-headers';
 
 type ModalState =
@@ -29,7 +34,7 @@ type ModalState =
 
 const EVENTS_ENDPOINT = '/api/calendar/events';
 
-export default function HomePage() {
+function HomeDashboard() {
   usePageTitle(PAGE_TITLES.HOME);
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
@@ -191,4 +196,11 @@ export default function HomePage() {
       </Dialog>
     </div>
   );
+}
+
+export default function HomePage() {
+  const { shouldRender } = useMobileRedirect(
+    getFirstMobileChildHref(ROUTES.HOME),
+  );
+  return shouldRender ? <HomeDashboard /> : null;
 }

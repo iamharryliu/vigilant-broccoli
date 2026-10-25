@@ -19,8 +19,8 @@
 
 ## Transferring Desktop Media to iPhone
 
-| Method        | Speed     | Best For                 | Limitations                                                |
-| ------------- | --------- | ------------------------ | ---------------------------------------------------------- |
-| AirDrop       | Instant   | Occasional transfers     | Requires nearby Apple devices                              |
-| iCloud Drive  | Quick     | File-based workflows     | Requires opening the file in Files and saving it to Photos |
-| iCloud Photos | Automatic | Frequent content uploads | Requires iCloud sync and storage                           |
+| Method | Speed | Best For | Limitations |
+| --- | --- | --- | --- |
+| AirDrop | Instant | Occasional transfers | Requires nearby Apple devices |
+| iCloud Drive | Quick | File-based workflows | Requires opening the file in Files and saving it to Photos |
+| iCloud Photos | Automatic | Frequent content uploads | Requires iCloud sync and storage |

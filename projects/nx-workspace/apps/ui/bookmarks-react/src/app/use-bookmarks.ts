@@ -1,11 +1,16 @@
 import { useState } from 'react';
 import { OPEN_TYPE, type QuickLink } from '@vigilant-broccoli/common-js';
+import { DEFAULT_BOOKMARKS } from './default-bookmarks';
 
 const STORAGE_KEY = 'bookmarks:v1';
 export const TAB = { BOOKMARKS: 'bookmarks', MANAGE: 'manage' } as const;
 type Tab = (typeof TAB)[keyof typeof TAB];
 type StoredState = { bookmarks: QuickLink[]; tab: Tab };
 const EMPTY_STATE: StoredState = { bookmarks: [], tab: TAB.BOOKMARKS };
+const DEFAULT_STATE: StoredState = {
+  bookmarks: DEFAULT_BOOKMARKS,
+  tab: TAB.BOOKMARKS,
+};
 const INVALID_BOOKMARK = 'Invalid bookmark';
 
 export function parseBookmarks(value: unknown): QuickLink[] {
@@ -41,7 +46,8 @@ export function parseBookmarks(value: unknown): QuickLink[] {
 function readState(): StoredState {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return EMPTY_STATE;
+    // A missing key means first visit; a cleared list is stored as [] and must not be re-seeded.
+    if (!raw) return DEFAULT_STATE;
     const stored = JSON.parse(raw);
     return {
       bookmarks: parseBookmarks(stored.bookmarks),

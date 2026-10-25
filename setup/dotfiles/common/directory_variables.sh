@@ -1,6 +1,7 @@
 export REPO_DIR=$HOME/vigilant-broccoli
 export GIT_WORKFLOWS_DIR="$REPO_DIR/.github/workflows"
 export DOCS_DIR="$REPO_DIR/docs"
+export BRUNO_DIR="$REPO_DIR/bruno"
 export SETUP_DIR="$REPO_DIR/setup"
 export NOTES_DIR="$REPO_DIR/notes"
 export LANGUAGE_LEARNING_DIR="$NOTES_DIR/hobbies/language-learning"

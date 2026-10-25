@@ -6,13 +6,16 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 - [Shell and toolchain](#shell-and-toolchain)
 - [Local Ollama agent](#local-ollama-agent)
+- [Running on the code-server VM](#running-on-the-code-server-vm)
 - [Running in CI](#running-in-ci)
 - [Publishing several pull requests](#publishing-several-pull-requests)
 - [Ending without changes](#ending-without-changes)
 - [Auditing the backlog](#auditing-the-backlog)
 - [Pruning dead code and stale docs](#pruning-dead-code-and-stale-docs)
-- [Auditing legacy documentation](#auditing-legacy-documentation)
+- [Auditing the inventories](#auditing-the-inventories)
+- [Auditing documentation accuracy](#auditing-documentation-accuracy)
 - [Auditing agent context](#auditing-agent-context)
+- [Auditing the public URL registry](#auditing-the-public-url-registry)
 - [Stack](#stack)
 
 ## Shell and toolchain
@@ -44,9 +47,19 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 - `--agent ollama --publish` explicitly enables the existing GitHub PR/increment pipeline, using an exported `GH_TOKEN` or the existing Vault GitHub credentials. It still uses only the local model. TODO jobs run sequentially in both modes to limit inference memory pressure.
 - Override the model with `--ollama-model <local-tag>` or `OLLAMA_MODEL`; override the host port with `OLLAMA_BASE_URL=http://host.docker.internal:<port>`. The model must already be pulled and support tools. The adapter rebuilds the Docker image and checks model availability before every batch. `--local` is shorthand for `--agent ollama`; Actions retains its existing hosted agent choices.
 
+## Running on the code-server VM
+
+- `pnpm agentic-pr-create --vm <id...>` or `--vm --prompt "<task>"` runs the solve in the code-server container on the OCI VM instead of a local Docker sandbox, so the Mac can sleep or disconnect while it runs. Claude only; `--model` still applies.
+- `solve-vm.sh` loads the GitHub App credentials from Vault, delivers a fresh 1-hour installation token to the VM (the same file `manual-refresh-code-server-github-token` writes), then streams `solve-vm-session.sh` into the container over `pnpm code-server:ssh`'s SSH path. Every request gets its own worktree of `/config/vigilant-broccoli` off fresh `origin/main` and a detached tmux session running `solve-todo-runner.sh`, which publishes PRs exactly as the sandbox does.
+- Concurrent runs are isolated by worktree, run directory and tmux session; fetches are serialized with `flock`. All runs share one token file, so each launch extends earlier runs, but a run still has to push within an hour of the latest launch. The VM's 2 OCPUs and 14 GB, shared with code-server, are the practical limit: about two or three solves at once.
+- Logs live in `/config/agentic-runs/<run>/run.log` (ending with `RUN_EXIT::<status>`); in the code-server terminal, `tmux ls` lists running solves and `tmux attach -t <run>` follows one. A successful run removes its worktree and local `agent/*` branches; a failed one keeps the worktree for inspection.
+- Unlike the Docker sandbox there is no egress firewall: the agent runs as the container's `abc` user, alongside the code-server password and Claude token in its environment, so the runner's default auto permission mode (see [Running in CI](#running-in-ci)) is the main guard. Runner and skill updates take effect from `main`, since each worktree checks out `origin/main`.
+
 ## Running in CI
 
-Plan- and Develop-phase agents, backlog auditing, documentation and context auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-audit`, `agentic-pr-create-context-audit`, `agentic-pr-create-prune`, `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
+Plan- and Develop-phase agents, backlog auditing, documentation and context auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-audit`, `agentic-pr-create-context-audit`, `agentic-pr-create-comment-audit`, `agentic-pr-create-free-tier-audit`, `agentic-pr-create-inventory-audit`, `agentic-pr-create-prune`, `agentic-pr-create-url-audit`, `update-readmes` (run by `agentic-pr-create-readmes`), `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
+
+`agentic-pr-create` Claude solves run in auto permission mode (`--permission-mode auto`): a classifier approves routine edits and checks and blocks risky actions such as exfiltration, credential reads or running downloaded code. Headless runs have nobody to approve a blocked action, so the agent must work around it, and repeated blocks can end the run early. Export `SOLVE_PERMISSION_MODE=bypass` before a Docker sandbox run to restore `--dangerously-skip-permissions`; Ollama solves always bypass, since the classifier needs an Anthropic model.
 
 `pnpm agentic-pr-create <ID...>` runs `solve-todo.sh` locally. The same solve runs in GitHub Actions via the
 `manual-agentic-pr-create` workflow (`workflow_dispatch`) — it builds and runs this container on the `ubuntu-24.04`
@@ -107,7 +120,7 @@ pushing and opening the PR stay with the runner for both agents.
 
 `pnpm agentic-pr-update --operation fix-ci <pr> ["<instruction>"]` is also used by `manual-agentic-pr-update` with `operation=fix-ci`. It implies `--with-ci-logs`, uses a fixed CI-fix instruction with the optional instruction appended as extra guidance, and selects the shared CI-fix skill. A failing PR-title check (commitlint) is fixed through the optional `pr_title` metadata field, which the runner normalizes and applies with `gh pr edit --title`; a title-only fix exits successfully without a commit.
 
-A `change` instruction can be TODO-only: naming a `TODO.md` row id and asking to drop it (a stale row, or one that was never checked off) is valid with no other file change. The agent declares the id in `todo_ids`, and the runner validates that the request names it and that the row exists, removes it and commits the removal. `agentic-pr-create` still requires real changes beyond `TODO.md`.
+A `change` instruction can be TODO-only: naming a `TODO.md` row id and asking to drop it (a stale row, or one that was never checked off) is valid with no other file change. The agent declares the id in `todo_ids`, and the runner validates that the request names it and that the row exists, removes it and commits the removal. `agentic-pr-create` still requires real changes beyond `TODO.md`, except for a prompt matching `TODO_REMOVAL_REQUEST_RE` in `solve-todo-runner.sh` (`Remove TODO.md row <id>. Reason: <reason>`, sent by the dev-dashboard TODO view's Delete): that run must remove exactly the named row and change nothing else.
 
 `pnpm agentic-pr-update --operation resolve-conflicts <pr>` is also used by `manual-agentic-pr-update` with `operation=resolve-conflicts`. It accepts no instruction, enables the merge of `origin/main`, and selects the shared conflict-resolution skill in the existing PR-update runner.
 
@@ -141,6 +154,10 @@ has; branches are only created and pushed, never force-pushed. Squash-merge impl
 [Stacked pull requests](../../docs/git-workflow.md#stacked-pull-requests). The container copies `solve-todo-runner.sh`,
 `pr-increments.sh`, `commit-subject.sh` and `no-changes.sh` into the image, so rebuild it (`docker compose build`) after changing any of them when running locally. Every runner sources `commit-subject.sh` to capitalize commit messages and PR titles, end them with a period and strip trailing ellipses, so they pass the CI `commitlint` job.
 
+## Metadata file
+
+Agents write a JSON metadata file (`/tmp/solve-meta.json` and the per-operation `/tmp/*-meta.json`). Raw newlines or tabs inside string values, typically in the multi-line markdown fields, make `jq` fail. Right after the agent finishes, every runner calls `normalize_meta` from `no-changes.sh`: a file `jq` already parses is untouched, otherwise it is re-parsed with Python's non-strict `json.loads` and rewritten as valid JSON in place, and a file that still does not parse is left for the runner's own error or salvage path.
+
 ## Ending without changes
 
 A request the agent judges should change nothing is a decision, not a failure, when the agent says why
@@ -152,13 +169,16 @@ optional `no_changes_reason` in its metadata file and handles it through `no-cha
   and `no_changes_reason` step outputs for `manual-agentic-pr-update`'s own result step, and `update-pr-runner.sh` also
   comments the reason on the target PR;
 - no changes and no reason: the run fails as before;
-- the audits and prune keep their `AUDIT_CLEAN`/`PRUNE_CLEAN` exit 0 and add the reason when the agent gave one.
+- the audits and prune keep their `AUDIT_CLEAN`/`COMMENT_CLEAN`/`INVENTORY_AUDIT_CLEAN`/`PRUNE_CLEAN` exit 0 and add the reason when the agent gave one.
 
 `pnpm agentic-pr-create <id...>` prints the reason for such an id and does not count it as failed.
 
 ## Auditing the backlog
 
-`pnpm agentic-pr-create-todo "<description>"` runs `create-todo.sh`. It refines the initial request using repo research, writes one actionable TODO entry, and includes the refined prompt in the PR summary. Use `/agentic-pr-create-todo <description>` locally; there is no dedicated Actions workflow.
+`pnpm agentic-pr-create-todo "<description>"` runs `create-todo.sh`. It refines the initial request using repo research, writes one actionable TODO entry, and includes the refined prompt in the PR summary. Use `/agentic-pr-create-todo <description>` locally. The `manual-agentic-pr-create-todo` workflow runs the same command on a hosted runner; runs queue behind an active one so rows do not conflict.
+
+- CLI: `gh workflow run manual-agentic-pr-create-todo.yml -f description="<description>"`, with optional `-f model=opus` or `-f firewall=off`.
+- From a Claude Code or Codex session, `/create-todo [description]` writes a self-contained description from the request or, without one, the conversation's latest identified improvement, then dispatches it.
 
 `pnpm agentic-pr-create-todo-audit` runs `audit-todo.sh`, the counterpart to `create-todo.sh`: instead of adding a row it
 re-verifies the ones already there against the current tree, deleting rows whose problem is genuinely fixed and correcting
@@ -169,6 +189,19 @@ rows whose paths, line numbers, counts or scope have drifted. `cron-agentic-pr-c
 - The runner refuses to commit if an id disappeared without being reported as resolved, if an id was added or renumbered,
   or if any file other than `TODO.md` changed. Ids are the handle `pnpm agentic-pr-create <id>` resolves, so a table
   rewrite that quietly drops one is treated as a failure, not a diff to review.
+
+## Auditing code comments
+
+`pnpm agentic-pr-create-comment-audit` runs `comment-audit.sh`, which enforces the root `CONTEXT.md` comment rule across the
+whole tree: it removes redundant comments and generator scaffolding with comment-only edits, keeping comments that explain
+non-obvious reasons, constraints or traps, comments that are an empty block's only body, and `TODO`/`FIXME`/lint
+directives. `cron-agentic-pr-create-comment-audit` runs the same script weekly (`10 6 * * 0`).
+
+- Dispatch: `gh workflow run cron-agentic-pr-create-comment-audit.yml` (optional `-f model=`, `-f firewall=off`).
+- A clean run opens no PR — `comment-audit-runner.sh` prints `COMMENT_CLEAN` and exits 0 rather than raising an empty PR.
+- The runner refuses to commit if `TODO.md`, a `migrations/` directory or Terraform state changed, if any file was added,
+  deleted or renamed, or if more than 30 files changed. The skill asks for about 20, so skipped candidates become the
+  next week's run.
 
 ## Pruning dead code and stale docs
 
@@ -182,20 +215,54 @@ repo-wide grep shows has zero references. `cron-agentic-pr-create-prune` runs th
   `notes/` was added, deleted or renamed, or if more than 50 files changed. The skill asks for about 40; the runner's cap
   is the backstop that keeps a runaway sweep from becoming an unreviewable PR.
 
+## Refreshing READMEs
+
+`pnpm agentic-pr-create-readmes` runs `readmes.sh`, which applies the `update-readmes` skill against `docs/app-readme-pattern.md` and `pnpm repo-stats`, then opens one PR only when a README or generated repo count drifted. `cron-agentic-pr-create-readmes` runs the same script weekly (`25 6 * * 0`).
+
+- Dispatch: `gh workflow run cron-agentic-pr-create-readmes.yml` (optional `-f model=`, `-f firewall=off`).
+- A clean run opens no PR — `readmes-runner.sh` prints `README_CLEAN` and exits 0.
+- The runner refuses to commit if any file other than a `README.md` or a repo-stats copy changed (so `TODO.md` is never touched), or if more than 20 files changed; the skipped candidates are listed in the PR.
+
 The `AGENTS.md` adapters are committed symlinks to `CONTEXT.md`, which Claude Code reads directly from v2.1.277 (the image installs at least that version), so the entrypoint's clone carries them and no step regenerates them per branch. The entrypoint still runs the Linux installer to install the shared skills. See [agent support](../../docs/agent-support.md).
 
-## Auditing legacy documentation
+## Auditing the inventories
+
+`pnpm agentic-pr-create-inventory-audit` runs `inventory-audit.sh`, which checks `docs/fork-identity-inventory.md` and the
+Secret Inventory in `docs/infrastructure/secret-management.md` against the tree, then opens one PR adding or correcting
+missing and stale rows. `scripts/ci/inventory-drift.sh` supplies the greppable candidates (Vault and GCP Secret Manager
+names read by workflows and Terraform, base identity values, identity-shaped values the doc never mentions); the agent
+verifies each and covers the rest. `cron-agentic-pr-create-inventory-audit` runs it weekly (`25 7 * * 0`).
+
+- Dispatch: `gh workflow run cron-agentic-pr-create-inventory-audit.yml` (optional `-f model=`, `-f firewall=off`).
+- A clean run opens no PR — `inventory-audit-runner.sh` prints `INVENTORY_AUDIT_CLEAN` and exits 0.
+- The runner refuses to commit if any file other than the two inventory docs changed. The skill caps a run at 10 rows
+  and reports the remainder as skipped candidates. Secret values are never read: the script and agent handle names only.
+
+## Auditing documentation accuracy
 
 `pnpm agentic-pr-create-audit` runs `audit-docs.sh`, which audits `docs/`, every `CONTEXT.md` and `README.md` and
-code-adjacent docs for passages about legacy implementations that no longer apply, then opens one PR removing them or
-rewriting them to the current state. It runs Opus by default (`--model` overrides). `manual-agentic-pr-create-audit`
-runs the same script on dispatch; it has no schedule.
+code-adjacent docs for passages about legacy implementations that no longer apply and for current claims (commands,
+script names, env vars, file paths, Swagger specs vs routes) the tree no longer backs, then opens one PR removing or
+correcting them. It runs Opus by default (`--model` overrides). `cron-agentic-pr-create-audit` runs the same script
+weekly (Sunday 06:40 UTC) and on dispatch. Spec/route drift lives in code, so it is reported as skipped, not edited.
 
-- Dispatch: `gh workflow run manual-agentic-pr-create-audit.yml` (optional `-f model=`, `-f firewall=off`).
+- Dispatch: `gh workflow run cron-agentic-pr-create-audit.yml` (optional `-f model=`, `-f firewall=off`).
 - A clean run opens no PR — `audit-docs-runner.sh` prints `AUDIT_CLEAN` and exits 0.
 - The runner refuses to commit if any non-Markdown file changed, if `notes/`, `docs/rnd/`, `docs/learning-timeline.md`,
   `TODO.md` or a changelog changed, or if more than 15 files changed. The skill fills the cap highest-value first and
   lists the rest as skipped in the PR body, so a re-run picks them up.
+
+## Auditing free-tier documentation
+
+`pnpm agentic-pr-create-free-tier-audit` runs `audit-free-tier.sh`, which checks that every cloud service in use has a
+`## Free Tier` section in its notes/docs and a row in `docs/infrastructure/free-tier-infrastructure.md`, then opens one
+PR adding or correcting entries only from verifiable sources. `cron-agentic-pr-create-free-tier-audit` runs the same
+script weekly.
+
+- Dispatch: `gh workflow run cron-agentic-pr-create-free-tier-audit.yml` (optional `-f model=`, `-f firewall=off`).
+- A clean run opens no PR — `audit-free-tier-runner.sh` prints `AUDIT_CLEAN` and exits 0.
+- The runner refuses to commit if any non-Markdown file or `TODO.md` changed, if a file was added, deleted or renamed,
+  or if more than 10 files changed; candidates over the cap or without a verifiable source are reported as skipped.
 
 ## Auditing agent context
 
@@ -209,6 +276,17 @@ opens one PR citing where each removed fact is retained. It runs Opus by default
 - The runner refuses to commit if any file outside that scope changed (including `notes/`, `docs/rnd/`,
   `docs/learning-timeline.md` and `TODO.md`), if a file was created, deleted or changed type (an adapter symlink
   rewritten as a regular file), if a `SKILL.md` frontmatter block changed, or if more than 15 files changed.
+
+## Auditing the public URL registry
+
+`pnpm agentic-pr-create-url-audit` runs `audit-urls.sh`, which checks that every public URL (each environment and demo) has
+an Upptime entry, a pages-index card and a browser quick link, then opens one PR fixing drift.
+`cron-agentic-pr-create-url-audit` runs the same script weekly (`55 6 * * 0`).
+
+- Dispatch: `gh workflow run cron-agentic-pr-create-url-audit.yml` (optional `-f model=`, `-f firewall=off`).
+- A clean run opens no PR — `audit-urls-runner.sh` prints `URL_AUDIT_CLEAN` and exits 0.
+- The runner refuses to commit if `TODO.md`, a `migrations/` directory or Terraform state changed, if a file under
+  `notes/` was added, deleted or renamed, or if more than 15 files changed; drift beyond the cap is reported as skipped.
 
 ## Stack
 

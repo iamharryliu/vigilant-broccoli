@@ -15,5 +15,6 @@ Personal bookmark manager with browser-local storage and JSON import/export.
   - Tailwind CSS
 - Internal libs
   - `common-js`
+  - `public-links`
   - `react-lib`
   - `react-lib-higher-level`

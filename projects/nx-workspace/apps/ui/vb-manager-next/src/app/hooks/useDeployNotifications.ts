@@ -22,9 +22,8 @@ const description = (p: DeployPayload) =>
   [
     p.job,
     p.commit.slice(0, DEPLOY_COMMIT_SHORT_LENGTH),
-    p.commit_message,
+    p.commit_message?.split('\n')[0],
     p.duration_s != null ? formatDuration(p.duration_s) : undefined,
-    p.affected_projects,
   ]
     .filter(Boolean)
     .join(' · ');

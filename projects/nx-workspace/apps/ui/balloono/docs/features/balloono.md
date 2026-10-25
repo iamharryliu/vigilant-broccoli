@@ -52,11 +52,11 @@ The sidebar shows three personal counters with an expandable full breakdown, a t
 
 Difficulty is a profile (`BOT_PROFILES`):
 
-| Difficulty | Behaviour                                                                                                                                                                  |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Easy       | Hesitates often, wanders, drops only some of the time, ignores power-ups, does not foresee chain reactions, hunts players only once crates run out                         |
-| Medium     | Occasional hesitation, collects power-ups, foresees chains, keeps a small safety margin                                                                                    |
-| Hard       | No hesitation, hunts from the start, drops balloons that leave an enemy no escape, avoids sheltering in dead ends or next to enemies, where one more balloon would trap it |
+| Difficulty | Behaviour |
+| --- | --- |
+| Easy | Hesitates often, wanders, drops only some of the time, ignores power-ups, does not foresee chain reactions, hunts players only once crates run out |
+| Medium | Occasional hesitation, collects power-ups, foresees chains, keeps a small safety margin |
+| Hard | No hesitation, hunts from the start, drops balloons that leave an enemy no escape, avoids sheltering in dead ends or next to enemies, where one more balloon would trap it |
 
 Every bot targets only crate or enemy spots it could escape from after dropping. A threat counts only once it is closer than a fresh balloon's fuse plus splash, so bots keep playing while sudden death is scheduled. In headless one-on-one runs with shuffled spawns (30 matches each, draws excluded), hard beat medium 13–7, hard beat easy 19–2, and medium beat easy 19–1. See this app's [CONTEXT.md](../../CONTEXT.md) before retuning.
 
@@ -97,6 +97,7 @@ Supabase shares the project’s 500 MB database, 5 GB monthly egress, 50,000 mon
 - Keyboard: by default arrow keys or WASD to move, Enter or Space to drop a balloon. The most recently pressed held direction wins.
 - Settings: the gear in the home header (home screen only) opens a dialog for rebinding keys. Player 1 has two keys per action and player 2 one; clicking a slot waits for the next key, Escape cancels, and binding a key clears it from that player's other actions. Bindings persist in `localStorage` (`balloono-key-bindings`) and can be reset to defaults.
 - Local second player (Versus CPU only): ticking **Add local player** activates player 2's keys, which take priority over any matching player 1 keys; the defaults leave player 1 on the arrow keys and Enter, and player 2 on WASD and Space. It leaves room for six CPUs.
+- Theme: `d` toggles light/dark on the home screen only (shared `ThemeProvider` shortcut, saved as `balloono-theme`); rooms and matches leave it unbound because `KeyD` steers right by default.
 - Controls guide: the `?` button beside the power-up legend in every match opens a dialog with each active player's effective keys, animated keycaps and a looping demo of moving and dropping a balloon. Animations stop under reduced motion.
 
 ## Sound effects

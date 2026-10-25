@@ -6,6 +6,7 @@ import {
   useLocation,
 } from 'react-router-dom';
 import { I18nProvider } from './i18n';
+import { ThemeProvider } from './theme';
 import { HomePage } from './pages/HomePage';
 import { StatusPage } from './pages/StatusPage';
 import { RepoTimelinePage } from './pages/RepoTimelinePage';
@@ -19,11 +20,13 @@ import { WebApplicationReadmePage } from './pages/WebApplicationReadmePage';
 import { WebApplicationsPage } from './pages/WebApplicationsPage';
 import { ApiServicesPage } from './pages/ApiServicesPage';
 import { ApiServiceDocsPage } from './pages/ApiServiceDocsPage';
+import { DeploymentsPage } from './pages/DeploymentsPage';
 import { CareerPage } from './pages/CareerPage';
 import { CareerExperiencePage } from './pages/CareerExperiencePage';
-import { isCareerHost, isStatusHost } from './consts/hosts';
+import { isCareerHost, isDeploymentsHost, isStatusHost } from './consts/hosts';
 import {
   CAREER_EXPERIENCE_ROUTE,
+  DEPLOYMENTS_ROUTE,
   STATUS_ROUTE,
   WEB_APPLICATIONS_ROUTE,
 } from './consts/routes';
@@ -50,6 +53,15 @@ function StatusHostRoutes() {
   );
 }
 
+function DeploymentsHostRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<DeploymentsPage />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
 function CareerHostRoutes() {
   return (
     <Routes>
@@ -68,6 +80,7 @@ function ProjectsRoutes() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path={STATUS_ROUTE} element={<StatusPage />} />
+      <Route path={DEPLOYMENTS_ROUTE} element={<DeploymentsPage />} />
       <Route path="/repo-timeline" element={<RepoTimelinePage />} />
       <Route
         path={`${LEGACY_OPEN_SOURCE_PREFIX}/*`}
@@ -93,17 +106,21 @@ function ProjectsRoutes() {
 export function App() {
   return (
     <I18nProvider>
-      <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-dvh">
-        <HashRouter>
-          {isStatusHost() ? (
-            <StatusHostRoutes />
-          ) : isCareerHost() ? (
-            <CareerHostRoutes />
-          ) : (
-            <ProjectsRoutes />
-          )}
-        </HashRouter>
-      </div>
+      <ThemeProvider>
+        <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-dvh">
+          <HashRouter>
+            {isStatusHost() ? (
+              <StatusHostRoutes />
+            ) : isDeploymentsHost() ? (
+              <DeploymentsHostRoutes />
+            ) : isCareerHost() ? (
+              <CareerHostRoutes />
+            ) : (
+              <ProjectsRoutes />
+            )}
+          </HashRouter>
+        </div>
+      </ThemeProvider>
     </I18nProvider>
   );
 }

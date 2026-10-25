@@ -36,14 +36,14 @@ export function AlbumsPage() {
                     loading="lazy"
                   />
                 ) : (
-                  <div className="flex aspect-square items-center justify-center bg-gray-100 text-gray-500">
+                  <div className="flex aspect-square items-center justify-center bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
                     {t('GALLERY.NO_COVER')}
                   </div>
                 )}
-                <p className="mt-2 text-center text-base font-semibold text-gray-900">
+                <p className="mt-2 text-center text-base font-semibold text-gray-900 dark:text-gray-100">
                   {album.name}
                 </p>
-                <p className="mt-1 text-center text-sm text-gray-500">
+                <p className="mt-1 text-center text-sm text-gray-500 dark:text-gray-400">
                   {formatAlbumDate(album.date)}
                 </p>
               </Link>
@@ -51,8 +51,8 @@ export function AlbumsPage() {
           </div>
         ) : (
           !isLoading && (
-            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm reveal-up">
-              <p className="text-base leading-7 text-gray-700">
+            <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900 p-5 shadow-sm reveal-up">
+              <p className="text-base leading-7 text-gray-700 dark:text-gray-300">
                 {t('GALLERY.UNAVAILABLE')}
               </p>
             </div>

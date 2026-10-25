@@ -11,6 +11,10 @@ export const VB_MONITORING_URL = {
     NAME: 'Socket Server Health',
     URL: 'https://socket.harryliu.dev/health',
   },
+  DEPLOYMENTS: {
+    NAME: 'Deployments',
+    URL: 'https://deployments.harryliu.dev/',
+  },
   STATUS: {
     NAME: 'Status',
     URL: 'https://status.harryliu.dev/',

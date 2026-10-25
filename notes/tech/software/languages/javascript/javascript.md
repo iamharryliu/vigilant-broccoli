@@ -89,16 +89,16 @@ throw new Error("STOP");
 
 ## Array
 
-| Method                                                        | Example Input                       | Example Output |
-| ------------------------------------------------------------- | ----------------------------------- | -------------- |
-| `arr.map((val) => val);`                                      | `[1, 2, 3]`                         | `[1, 2, 3]`    |
-| `arr.filter((val) => condition);`                             | `[1, 2, 3, 4]` with `val > 2`       | `[3, 4]`       |
-| `arr.reduce((total, val) => val + total, total_start_value);` | `[1, 2, 3]` with `0` as start       | `6`            |
-| `arr.forEach((val) => do_something);`                         | `[1, 2, 3]` with `console.log(val)` | Logs `1 2 3`   |
-| `arr.find((val) => value);`                                   | `[1, 2, 3, 4]` with `val > 2`       | `3`            |
-| `arr.some((val) => condition);`                               | `[1, 2, 3]` with `val > 2`          | `true`         |
-| `arr.every((val) => condition);`                              | `[2, 4, 6]` with `val % 2 === 0`    | `true`         |
-| `arr.includes(value);`                                        | `[1, 2, 3]` with `2`                | `true`         |
+| Method | Example Input | Example Output |
+| --- | --- | --- |
+| `arr.map((val) => val);` | `[1, 2, 3]` | `[1, 2, 3]` |
+| `arr.filter((val) => condition);` | `[1, 2, 3, 4]` with `val > 2` | `[3, 4]` |
+| `arr.reduce((total, val) => val + total, total_start_value);` | `[1, 2, 3]` with `0` as start | `6` |
+| `arr.forEach((val) => do_something);` | `[1, 2, 3]` with `console.log(val)` | Logs `1 2 3` |
+| `arr.find((val) => value);` | `[1, 2, 3, 4]` with `val > 2` | `3` |
+| `arr.some((val) => condition);` | `[1, 2, 3]` with `val > 2` | `true` |
+| `arr.every((val) => condition);` | `[2, 4, 6]` with `val % 2 === 0` | `true` |
+| `arr.includes(value);` | `[1, 2, 3]` with `2` | `true` |
 
 ## Objects
 

@@ -1,20 +1,27 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useTheme } from '../components/ThemeProvider';
 
 const TOGGLE_KEY = 'd';
+const KEYDOWN_EVENT = 'keydown';
 const IGNORED_TAGS = ['INPUT', 'TEXTAREA', 'SELECT'];
 
 const isIgnoredInputElement = (target: EventTarget | null): boolean =>
   target instanceof HTMLElement &&
   (IGNORED_TAGS.includes(target.tagName) || target.isContentEditable);
 
+// `defaultPrevented` lets React handlers (dispatched from the root container,
+// before this window listener) claim `d` for themselves.
 const shouldIgnoreKeystroke = (e: KeyboardEvent): boolean =>
-  isIgnoredInputElement(e.target) || e.ctrlKey || e.metaKey || e.altKey;
+  e.defaultPrevented ||
+  isIgnoredInputElement(e.target) ||
+  e.ctrlKey ||
+  e.metaKey ||
+  e.altKey;
 
-export function useToggleThemeKeybind(toggleTheme: () => void) {
+export function useToggleThemeKeybind(toggleTheme: () => void, enabled = true) {
   useEffect(() => {
+    if (!enabled) return;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (shouldIgnoreKeystroke(e)) {
         return;
@@ -25,11 +32,7 @@ export function useToggleThemeKeybind(toggleTheme: () => void) {
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [toggleTheme]);
-}
-
-export function useThemeKeybind() {
-  useToggleThemeKeybind(useTheme().toggleTheme);
+    window.addEventListener(KEYDOWN_EVENT, handleKeyDown);
+    return () => window.removeEventListener(KEYDOWN_EVENT, handleKeyDown);
+  }, [toggleTheme, enabled]);
 }

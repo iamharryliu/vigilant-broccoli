@@ -4,7 +4,6 @@ import { useRouter } from 'next/navigation';
 import { SIDEBAR_ROUTE } from '../app.const';
 import { ReactNode, useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../libs/auth';
-import { useThemeKeybind } from '@vigilant-broccoli/react-lib';
 import { FloatingIslandComponent } from '../components/floating-island.component';
 import { RightSidebar } from '../components/right-sidebar.component';
 import { ShortcutsOverlay } from '../components/shortcuts-overlay.component';
@@ -81,7 +80,6 @@ const handleKeyboardShortcut = (
 };
 
 export default function Layout({ children }: { children: ReactNode }) {
-  useThemeKeybind();
   const router = useRouter();
   const _session = useAuth();
   const { notifications, unreadCount, add, markAllRead, clear } =

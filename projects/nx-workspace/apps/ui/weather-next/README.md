@@ -15,7 +15,6 @@ Current weather for the browser's location.
 - External libs
   - Tailwind CSS
 - Internal libs
-  - `common-browser`
   - `common-js`
   - `common-node`
   - `react-lib`

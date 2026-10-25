@@ -4,6 +4,8 @@ set -euo pipefail
 MODE=""
 ID=""
 TASK=""
+REMOVAL_ID=""
+TODO_REMOVAL_REQUEST_RE='^Remove TODO\.md row ([0-9a-f]{6})([.:[:space:]]|$)'
 while [ $# -gt 0 ]; do
   case "$1" in
     --id)
@@ -62,12 +64,12 @@ SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-creat
 . "$(dirname "${BASH_SOURCE[0]}")/no-changes.sh"
 
 if [ "$MODE" = id ]; then
-  # TODO items live as rows in per-section markdown tables (ID | Priority |
-  # Description | Recommended Fix). Extract the nearest table header plus the
-  # matching row, expanding <br> step separators and unescaping \| pipes so the
+  # TODO items live as rows of one markdown table (ID | Type | Priority |
+  # Agent | Effort | Model | Brief | Description | Recommended Fix). Extract the table
+  # header plus the matching row, expanding <br> step separators and unescaping \| pipes so the
   # solver reads clean prose.
   TASK=$(awk -v id="$ID" '
-    /^\|[[:space:]]*ID[[:space:]]*\|[[:space:]]*Priority[[:space:]]*\|/ { header=$0 }
+    /^\|[[:space:]]*ID[[:space:]]*\|[[:space:]]*Type[[:space:]]*\|/ { header=$0 }
     $0 ~ ("^\\|[[:space:]]*" id "[[:space:]]*\\|") { print header; print; found=1; exit }
     END { if (!found) exit 1 }
   ' TODO.md | sed 's/<br>/\n/g; s/\\|/|/g')
@@ -85,6 +87,15 @@ elif [ "$MODE" = prompt ]; then
   INTRO="Accomplish this task:"
   PLAN_REQUEST=$TASK
   SCOPE_RULE="- Do not run any git or gh commands and do not edit TODO.md — branching, TODO.md cleanup, committing, pushing, and opening the PR are all handled by the calling script."
+  # A request in this exact form is the user's authorization for a TODO-only
+  # PR, the one case the "no changes besides TODO.md" guard below must let
+  # through. Matching the request, not trusting the agent, keeps an agent from
+  # dropping a row it merely failed to fix.
+  if [[ $TASK =~ $TODO_REMOVAL_REQUEST_RE ]]; then
+    REMOVAL_ID=${BASH_REMATCH[1]}
+    BRANCH="agent/remove-todo-${REMOVAL_ID}"
+    SCOPE_RULE="- This is a TODO-only removal: change no files, and declare ${REMOVAL_ID} in todo_ids so the calling script removes its TODO.md row. Base pr_title and summary on the stated reason. Do not run any git or gh commands."
+  fi
 else
   echo "Usage: solve-todo-runner.sh (--id <TODO_ID> | --prompt <text>)" >&2
   exit 1
@@ -92,6 +103,8 @@ fi
 
 if [ -n "${GITHUB_ACTIONS:-}" ]; then
   REQUEST_SOURCE="GitHub Actions (manual-agentic-pr-create workflow, ${RUNNER_LABEL})"
+elif [ -n "${SOLVE_ON_CODE_SERVER:-}" ]; then
+  REQUEST_SOURCE="code-server VM (pnpm agentic-pr-create --vm, ${RUNNER_LABEL})"
 else
   REQUEST_SOURCE="Local CLI (pnpm agentic-pr-create, ${RUNNER_LABEL})"
 fi
@@ -118,6 +131,8 @@ INC_ORDER=("$INC_CURRENT")
 INC_BRANCH[$INC_CURRENT]=$BRANCH
 if [ -n "${GITHUB_ACTIONS:-}" ]; then
   INC_HISTORY_SOURCE="GitHub Actions"
+elif [ -n "${SOLVE_ON_CODE_SERVER:-}" ]; then
+  INC_HISTORY_SOURCE="code-server VM"
 else
   INC_HISTORY_SOURCE="Docker sandbox (local)"
 fi
@@ -209,7 +224,12 @@ agent_invoke() {
         --disallowedTools "Bash(git:*)" "Bash(gh:*)" "WebSearch" "WebFetch"
       ;;
     claude)
-      claude -p "$prompt" --dangerously-skip-permissions --model "$MODEL" \
+      # Auto mode's classifier blocks exfiltration, credential reads and remote
+      # code execution, which matters most on the firewall-less --vm path.
+      # SOLVE_PERMISSION_MODE=bypass restores --dangerously-skip-permissions.
+      local permission_args=(--permission-mode auto)
+      [ "${SOLVE_PERMISSION_MODE:-auto}" != bypass ] || permission_args=(--dangerously-skip-permissions)
+      claude -p "$prompt" "${permission_args[@]}" --model "$MODEL" \
         --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
       ;;
     codex)
@@ -253,6 +273,7 @@ agent_invoke() {
 }
 
 agent_invoke "$PROMPT"
+normalize_meta "$META_FILE"
 
 if [ "$AGENT_RUNNER" = ollama ]; then
   jq -e 'type == "object"' "$META_FILE" >/dev/null || {
@@ -264,7 +285,7 @@ fi
 git checkout "$BRANCH"
 [ "$(git rev-parse HEAD)" = "$BASE_SHA" ] || git reset --soft "$BASE_SHA"
 
-if [ -z "$(git status --porcelain)" ]; then
+if [ -z "$REMOVAL_ID" ] && [ -z "$(git status --porcelain)" ]; then
   no_changes_exit "$META_FILE" "no changes produced — task was not completed."
 fi
 
@@ -278,7 +299,11 @@ while IFS= read -r resolved_id; do
   [ -z "$resolved_id" ] || RESOLVED_IDS+=("$resolved_id")
 done < <(inc_current_todo_ids "$META_FILE" "${ID:-}")
 inc_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
-if [ "${#RESOLVED_IDS[@]}" -gt 0 ] && [ -z "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
+if [ -n "$REMOVAL_ID" ]; then
+  if [ "${RESOLVED_IDS[*]-}" != "$REMOVAL_ID" ] || [ -n "$(git status --porcelain -- ':(exclude)TODO.md')" ] || [ -z "$(git status --porcelain -- TODO.md)" ]; then
+    no_changes_exit "$META_FILE" "TODO-only removal of ${REMOVAL_ID} must remove exactly that row and change nothing else."
+  fi
+elif [ "${#RESOLVED_IDS[@]}" -gt 0 ] && [ -z "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
   no_changes_exit "$META_FILE" "no changes besides TODO.md — ${RESOLVED_IDS[*]} not resolved."
 fi
 

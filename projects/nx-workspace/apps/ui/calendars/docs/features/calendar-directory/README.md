@@ -39,9 +39,10 @@ The app is a static bundle: no credential, API key or database snapshot is in it
 
 ## Browser storage
 
-Both keys live in `src/lib/calendars.consts.ts` and are read and written through `try/catch`, so the page renders (default tab, nothing hidden) when storage is unavailable.
+The tab and hidden-calendar keys live in `src/lib/calendars.consts.ts` and are read and written through `try/catch`, so the page renders (default tab, nothing hidden) when storage is unavailable.
 
 - `calendars-active-tab` — active tab id.
+- `calendars-theme` — light/dark override saved by react-lib's `ThemeProvider` when `d` toggles away from `prefers-color-scheme`; `index.html` reads it before first paint. Tailwind uses class-based dark mode so the toggle overrides the system setting.
 - `calendars-hidden-event-calendars` — JSON array of hidden event calendar ids, via `readHiddenCalendarIds`/`writeHiddenCalendarIds` from `@harry/personal`. The bundle already imports that lib for the personal calendar id, so this adds no personal data. Hidden ids filter the embed.
 
 ## States

@@ -7,15 +7,15 @@
 
 ## Moves
 
-| Move Name              | Category    |
-| ---------------------- | ----------- |
+| Move Name | Category |
+| --- | --- |
 | Forward and back basic | Basic Steps |
-| Side to side basic     | Basic Steps |
-| Open break             | Basic Steps |
-| Right turn             | Turns       |
-| Reverse turn           | Turns       |
-| Hook turn              | Turns       |
-| Crossbody turn         | Turns       |
+| Side to side basic | Basic Steps |
+| Open break | Basic Steps |
+| Right turn | Turns |
+| Reverse turn | Turns |
+| Hook turn | Turns |
+| Crossbody turn | Turns |
 
 - **Exits to Shines**
   - breakback and push turn

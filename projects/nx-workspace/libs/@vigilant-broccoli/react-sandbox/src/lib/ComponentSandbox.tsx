@@ -16,7 +16,6 @@ import {
 import {
   ThemeProvider,
   useTheme,
-  useThemeKeybind,
   useDocumentTitle,
   Switch,
   Heading,
@@ -28,6 +27,8 @@ import {
   CalculatorUtilityContent,
   CookingConversionsUtilityContent,
   CurrencyConverterUtilityContent,
+  PomodoroEngine,
+  PomodoroUtilityContent,
   StopwatchUtilityContent,
   TimerUtilityContent,
 } from '@vigilant-broccoli/react-utility';
@@ -409,6 +410,19 @@ const ALL_ENTRIES: SandboxEntry[] = [
     content: <AlarmUtilityContent />,
   },
   {
+    id: 'pomodoro',
+    label: 'Pomodoro',
+    description:
+      'Focus and break timer that survives reloads, with alerts and browser notifications.',
+    lib: LIB.UTILITY,
+    content: (
+      <>
+        <PomodoroEngine />
+        <PomodoroUtilityContent />
+      </>
+    ),
+  },
+  {
     id: 'calculator',
     label: 'Calculator',
     description: 'Basic arithmetic calculator with a keyboard-driven keypad.',
@@ -558,6 +572,7 @@ export interface ComponentSandboxProps {
   title?: string;
   subtitle?: string;
   wrapInTheme?: boolean;
+  themeStorageKey?: string;
 }
 
 type BuildSidebarItemsArgs = {
@@ -803,7 +818,6 @@ function ThemedSandbox({
   siteName,
 }: ComponentSandboxProps): ReactNode {
   const { appearance, toggleTheme } = useTheme();
-  useThemeKeybind();
   return (
     <div className="w-full h-screen overflow-hidden">
       <SandboxBody
@@ -820,11 +834,12 @@ function ThemedSandbox({
 
 function ComponentSandboxContent({
   wrapInTheme = false,
+  themeStorageKey,
   ...props
 }: ComponentSandboxProps): ReactNode {
   const [dark, setDark] = useState(false);
   return wrapInTheme ? (
-    <ThemeProvider>
+    <ThemeProvider storageKey={themeStorageKey}>
       <ThemedSandbox {...props} />
     </ThemeProvider>
   ) : (

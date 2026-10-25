@@ -2,6 +2,7 @@ import {
   ArrowLeft,
   Bell,
   Bot,
+  CircleHelp,
   Check,
   Copy,
   Download,
@@ -67,6 +68,7 @@ export const ICON_BUTTON_ICONS = {
   'qr-code': QrCode,
   bell: Bell,
   bot: Bot,
+  help: CircleHelp,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconButtonIcon = keyof typeof ICON_BUTTON_ICONS;
@@ -105,6 +107,7 @@ const ICON_BUTTON_DEFAULT_LABELS = {
   'qr-code': 'QR code',
   bell: 'Notifications',
   bot: 'Assistant',
+  help: 'Help',
 } as const satisfies Record<IconButtonIcon, string>;
 
 const DEFAULT_ICON_SIZE = 16;

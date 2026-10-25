@@ -12,6 +12,7 @@
       "inputs": [
         "default",
         "^default",
+        { "runtime": "cat ../../notes/hobbies/cooking/ingredients/fruits.md ../../notes/hobbies/cooking/ingredients/vegetables.md" },
         { "externalDependencies": ["next"] },
         { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true }
       ],
@@ -22,7 +23,7 @@
       "options": {
         "cwd": "apps/hearth",
         "tty": false,
-        "command": "next build --webpack"
+        "command": "node --import tsx scripts/generate-in-season-produce.ts && next build --webpack"
       },
       "configurations": {
         "development": {}
@@ -40,15 +41,32 @@
       "defaultConfiguration": "development",
       "options": {
         "cwd": "apps/hearth",
-        "command": "next dev --webpack"
+        "command": "node --import tsx scripts/generate-in-season-produce.ts && next dev --webpack"
       },
       "configurations": {
         "development": {},
         "production": {}
       }
     },
+    "generate-in-season-produce": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/scripts/generate-in-season-produce.ts",
+        { "runtime": "cat ../../notes/hobbies/cooking/ingredients/fruits.md ../../notes/hobbies/cooking/ingredients/vegetables.md" }
+      ],
+      "outputs": ["{projectRoot}/src/lib/generated"],
+      "options": {
+        "cwd": "apps/hearth",
+        "command": "node --import tsx scripts/generate-in-season-produce.ts"
+      }
+    },
+    "typecheck": {
+      "dependsOn": ["generate-in-season-produce"]
+    },
     "lint": {
-      "executor": "@nx/eslint:lint"
+      "executor": "@nx/eslint:lint",
+      "dependsOn": ["generate-in-season-produce"]
     },
     "deploy": {
       "executor": "nx:run-commands",

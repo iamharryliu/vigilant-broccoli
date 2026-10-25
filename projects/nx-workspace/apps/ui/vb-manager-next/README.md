@@ -31,6 +31,7 @@ Management dashboard app.
   - `google-workspace`
   - `@harry/personal`
   - `@harry/private`
+  - `infrastructure`
   - `llm-schemas`
   - `manager`
   - `money-movement`
@@ -44,6 +45,7 @@ Management dashboard app.
   - `react-utility`
   - `resume`
 - Cloud services
+  - GitHub REST API
   - Google OAuth
   - Google Tasks & Calendar
   - MongoDB

@@ -17,13 +17,6 @@ interface Cloud {
 
 const CLOUD_COUNT = 10;
 const MAX_DEVICE_PIXEL_RATIO = 2;
-const SKY_GRADIENT_STOPS: [number, string][] = [
-  [0, '#1565a8'],
-  [0.28, '#2e86c1'],
-  [0.58, '#5dade2'],
-  [0.82, '#85c1e9'],
-  [1, '#d0eaf8'],
-];
 
 const buildCloud = (baseR: number, towerHeight: number): Puff[] => {
   const puffs: Puff[] = [];
@@ -76,19 +69,6 @@ const spawnClouds = (width: number, height: number): Cloud[] =>
   Array.from({ length: CLOUD_COUNT }, () =>
     spawnCloud(Math.random() * width, Math.random(), height),
   ).sort((a, b) => a.speed - b.speed);
-
-const drawSky = (
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-) => {
-  const grad = ctx.createLinearGradient(0, 0, 0, height);
-  SKY_GRADIENT_STOPS.forEach(([offset, color]) =>
-    grad.addColorStop(offset, color),
-  );
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, width, height);
-};
 
 const drawCloud = (ctx: CanvasRenderingContext2D, { x, y, puffs }: Cloud) => {
   for (const p of puffs) {
@@ -149,7 +129,6 @@ export function SkyCanvas() {
 
     const loop = () => {
       ctx.clearRect(0, 0, width, height);
-      drawSky(ctx, width, height);
 
       clouds = clouds.map(cloud => {
         const moved = { ...cloud, x: cloud.x + cloud.speed };
@@ -171,9 +150,11 @@ export function SkyCanvas() {
     };
   }, []);
 
+  // The sky gradient is CSS so the dark toggle repaints it without restarting
+  // the animation; clouds dim at night.
   return (
-    <div className="fixed inset-0 -z-10" aria-hidden="true">
-      <canvas ref={canvasRef} className="w-full h-full" />
+    <div className="fixed inset-0 -z-10 sky-background" aria-hidden="true">
+      <canvas ref={canvasRef} className="w-full h-full dark:opacity-40" />
     </div>
   );
 }

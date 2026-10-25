@@ -96,6 +96,13 @@ const PLACEHOLDER_WEATHER: LocalWeather = {
   isDay: true,
 };
 const INVISIBLE_CLASS = 'invisible';
+// Animates 0fr -> 1fr so the forecast height needs no measuring. The card's
+// gap-4 would still apply around a collapsed row, so the collapsed state pulls
+// it back with a negative margin; visibility flips after the transition ends.
+const FORECAST_COLLAPSIBLE_CLASS =
+  'grid transition-[grid-template-rows,opacity,margin-top,visibility] duration-300 ease-in-out motion-reduce:transition-none';
+const FORECAST_EXPANDED_CLASS = 'visible grid-rows-[1fr] opacity-100';
+const FORECAST_COLLAPSED_CLASS = 'invisible -mt-4 grid-rows-[0fr] opacity-0';
 const DETAIL_TILES_CLASS = 'flex flex-wrap justify-center gap-x-5 gap-y-3';
 
 export interface WeatherClockCardWeather extends LocalWeather {
@@ -423,7 +430,7 @@ const WeatherClockCardView = ({
         tabIndex: 0,
         title: t('FORECAST.LABEL'),
         'aria-expanded': isExpanded,
-        'aria-controls': isExpanded ? forecastId : undefined,
+        'aria-controls': forecastId,
         onClick: handleCardClick,
         onKeyDown: handleCardKeyDown,
       })}
@@ -444,8 +451,19 @@ const WeatherClockCardView = ({
         />
       )}
 
-      {isExpanded && hasForecast && forecast && (
-        <ForecastCarousel id={forecastId} forecast={forecast} />
+      {hasForecast && forecast && (
+        <div
+          className={cn(
+            FORECAST_COLLAPSIBLE_CLASS,
+            isExpanded ? FORECAST_EXPANDED_CLASS : FORECAST_COLLAPSED_CLASS,
+          )}
+          aria-hidden={!isExpanded || undefined}
+          inert={!isExpanded}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <ForecastCarousel id={forecastId} forecast={forecast} />
+          </div>
+        </div>
       )}
 
       {!error && (

@@ -14,16 +14,16 @@ Ansible provisioning for the homelab Raspberry Pi that runs Jellyfin from Docker
 
 ## Layout
 
-| Path                                   | What                                                                      |
-| -------------------------------------- | ------------------------------------------------------------------------- |
-| `ansible.cfg`                          | Inventory path and SSH defaults for every `ansible-*` call in this folder |
-| `docker-compose.yml`                   | The Jellyfin stack, copied to `/opt/jellyfin/` on the Pi                  |
-| `group_vars/jellyfin_pi.yml`           | Committed non-secret defaults                                             |
-| `inventory/*.example.yml`              | Templates for the gitignored, operator-supplied inventory and host vars   |
-| `load-tailscale-authkey.sh`            | Vault → `TS_AUTHKEY`, session only                                        |
-| `pi-ssh.sh`                            | SSH using the inventory's address (`pnpm jellyfin:ssh`)                   |
-| `playbook.yml`, `tasks/`, `templates/` | The provisioning run itself                                               |
-| `provision.sh`                         | Entry point (`pnpm jellyfin:provision`)                                   |
+| Path | What |
+| --- | --- |
+| `ansible.cfg` | Inventory path and SSH defaults for every `ansible-*` call in this folder |
+| `docker-compose.yml` | The Jellyfin stack, copied to `/opt/jellyfin/` on the Pi |
+| `group_vars/jellyfin_pi.yml` | Committed non-secret defaults |
+| `inventory/*.example.yml` | Templates for the gitignored, operator-supplied inventory and host vars |
+| `load-tailscale-authkey.sh` | Vault → `TS_AUTHKEY`, session only |
+| `pi-ssh.sh` | SSH using the inventory's address (`pnpm jellyfin:ssh`) |
+| `playbook.yml`, `tasks/`, `templates/` | The provisioning run itself |
+| `provision.sh` | Entry point (`pnpm jellyfin:provision`) |
 
 Prerequisites, every variable and secret, the from-scratch sequence, and
 re-provisioning onto a replacement Pi:

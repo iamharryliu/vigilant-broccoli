@@ -38,8 +38,8 @@ export const ServicesManager = ({
   };
 
   return (
-    <div className="border rounded-xl p-5 bg-white shadow-sm">
-      <h2 className="font-semibold text-gray-800 mb-4">Manage Services</h2>
+    <div className="border rounded-xl p-5 bg-card shadow-sm">
+      <h2 className="font-semibold text-foreground mb-4">Manage Services</h2>
       <form onSubmit={handleCreate} className="flex gap-2 mb-4">
         <input
           value={newName}
@@ -55,7 +55,7 @@ export const ServicesManager = ({
         </button>
       </form>
       {services.length === 0 ? (
-        <p className="text-sm text-gray-400">No services yet.</p>
+        <p className="text-sm text-muted-foreground">No services yet.</p>
       ) : (
         <ul className="space-y-2">
           {services.map(service => (
@@ -78,19 +78,19 @@ export const ServicesManager = ({
                   </button>
                   <button
                     onClick={() => setEditingId(null)}
-                    className="text-xs text-gray-400 hover:underline"
+                    className="text-xs text-muted-foreground hover:underline"
                   >
                     Cancel
                   </button>
                 </>
               ) : (
                 <>
-                  <span className="flex-1 text-sm text-gray-700">
+                  <span className="flex-1 text-sm text-foreground">
                     {service.name}
                   </span>
                   <button
                     onClick={() => startEdit(service)}
-                    className="text-xs text-gray-500 hover:underline"
+                    className="text-xs text-muted-foreground hover:underline"
                   >
                     Edit
                   </button>

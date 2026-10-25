@@ -114,17 +114,17 @@ recorded rather than routed through Vault — so they are written down here to
 keep rebuilding independent of any one machine. The Tailscale auth key is the
 only real secret and stays in Vault.
 
-| Value                 | Current                                                                     | Where it goes           |
-| --------------------- | --------------------------------------------------------------------------- | ----------------------- |
-| Board                 | Raspberry Pi 3 Model B+ Rev 1.3, Debian 13 trixie arm64                     | —                       |
-| `ansible_host`        | `192.168.0.11` (DHCP lease)                                                 | `inventory/hosts.yml`   |
-| `ansible_user`        | `hliu`                                                                      | `inventory/hosts.yml`   |
-| Ethernet MAC          | `b8:27:eb:23:4d:e0`                                                         | router DHCP reservation |
-| `media_drive_uuid`    | `6628-EBD7` (Kingston DataTraveler 3.0, 29.2GB)                             | `host_vars/`            |
-| `media_fs_type`       | `exfat`                                                                     | `host_vars/`            |
-| `media_mount_options` | `defaults,nofail,uid=2000,gid=2000,umask=0022,x-systemd.device-timeout=30s` | `host_vars/`            |
-| `pi_timezone`         | `Europe/Stockholm`                                                          | `host_vars/`            |
-| `ssh_authorized_keys` | the operator's `id_ed25519.pub`                                             | `host_vars/`            |
+| Value | Current | Where it goes |
+| --- | --- | --- |
+| Board | Raspberry Pi 3 Model B+ Rev 1.3, Debian 13 trixie arm64 | — |
+| `ansible_host` | `192.168.0.11` (DHCP lease) | `inventory/hosts.yml` |
+| `ansible_user` | `hliu` | `inventory/hosts.yml` |
+| Ethernet MAC | `b8:27:eb:23:4d:e0` | router DHCP reservation |
+| `media_drive_uuid` | `6628-EBD7` (Kingston DataTraveler 3.0, 29.2GB) | `host_vars/` |
+| `media_fs_type` | `exfat` | `host_vars/` |
+| `media_mount_options` | `defaults,nofail,uid=2000,gid=2000,umask=0022,x-systemd.device-timeout=30s` | `host_vars/` |
+| `pi_timezone` | `Europe/Stockholm` | `host_vars/` |
+| `ssh_authorized_keys` | the operator's `id_ed25519.pub` | `host_vars/` |
 
 The address is a DHCP lease and every client hardcodes it, so **reserve it on
 the router against the MAC above**. Without that, the lease eventually moves
@@ -137,14 +137,14 @@ gitignored in [infrastructure/jellyfin-pi/.gitignore](../../infrastructure/jelly
 the repo carries only the playbook, the compose file and the `.example`
 inventory.
 
-| Path on the Pi                     | Storage         | Contents                                                                 |
-| ---------------------------------- | --------------- | ------------------------------------------------------------------------ |
-| `/opt/jellyfin/docker-compose.yml` | Internal (boot) | Copy of the repo's compose file                                          |
-| `/opt/jellyfin/.env`               | Internal (boot) | Rendered from `templates/jellyfin.env.j2` — uids, paths, timezone, URL   |
-| `/opt/jellyfin/config`             | Internal (boot) | Jellyfin config, users, library database, metadata (container `/config`) |
-| `/var/cache/jellyfin`              | Internal (boot) | Transcode and image cache (container `/cache`) — disposable              |
-| `/mnt/media`                       | External USB    | Mount point for the media drive, in `/etc/fstab` by UUID                 |
-| `/mnt/media/library`               | External USB    | The media library, bind-mounted read-only into the container at `/media` |
+| Path on the Pi | Storage | Contents |
+| --- | --- | --- |
+| `/opt/jellyfin/docker-compose.yml` | Internal (boot) | Copy of the repo's compose file |
+| `/opt/jellyfin/.env` | Internal (boot) | Rendered from `templates/jellyfin.env.j2` — uids, paths, timezone, URL |
+| `/opt/jellyfin/config` | Internal (boot) | Jellyfin config, users, library database, metadata (container `/config`) |
+| `/var/cache/jellyfin` | Internal (boot) | Transcode and image cache (container `/cache`) — disposable |
+| `/mnt/media` | External USB | Mount point for the media drive, in `/etc/fstab` by UUID |
+| `/mnt/media/library` | External USB | The media library, bind-mounted read-only into the container at `/media` |
 
 Config and cache stay on internal storage on purpose: they are small, they are
 rebuildable from the library, and keeping them off the external drive means the
@@ -165,16 +165,16 @@ Committed defaults live in
 [group_vars/jellyfin_pi.yml](../../infrastructure/jellyfin-pi/group_vars/jellyfin_pi.yml);
 everything host-specific is operator-supplied and gitignored.
 
-| Value                                  | Where it goes                            | Notes                                                                                       |
-| -------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `ansible_host`, `ansible_user`         | `inventory/hosts.yml`                    | The Pi's LAN address (or MagicDNS name after enrolment) and the admin account from flashing |
-| `media_drive_uuid`                     | `inventory/host_vars/<host>.yml`         | `lsblk -f` on the Pi. Required — preflight fails without it                                 |
-| `media_fs_type`                        | `inventory/host_vars/<host>.yml`         | Must match the drive's existing filesystem; defaults to `ext4`                              |
-| `ssh_authorized_keys`                  | `inventory/host_vars/<host>.yml`         | Required — the same run disables password authentication                                    |
-| `pi_timezone`                          | `inventory/host_vars/<host>.yml`         | Also becomes the container's `TZ`, which is what Jellyfin schedules tasks against           |
-| `jellyfin_uid` / `jellyfin_gid`        | `group_vars/jellyfin_pi.yml` (2000/2000) | Pinned, not system-assigned — they are baked into file ownership on the media drive         |
-| `tailnet_domain`, `tailscale_hostname` | `group_vars/jellyfin_pi.yml`             | Non-secret identifiers, hardcoded like the account/zone ids in `variables.tf`               |
-| `TAILSCALE_AUTH_KEY`                   | Vault `kv/data/secrets`                  | The only secret. Never in the repo, never in the inventory                                  |
+| Value | Where it goes | Notes |
+| --- | --- | --- |
+| `ansible_host`, `ansible_user` | `inventory/hosts.yml` | The Pi's LAN address (or MagicDNS name after enrolment) and the admin account from flashing |
+| `media_drive_uuid` | `inventory/host_vars/<host>.yml` | `lsblk -f` on the Pi. Required — preflight fails without it |
+| `media_fs_type` | `inventory/host_vars/<host>.yml` | Must match the drive's existing filesystem; defaults to `ext4` |
+| `ssh_authorized_keys` | `inventory/host_vars/<host>.yml` | Required — the same run disables password authentication |
+| `pi_timezone` | `inventory/host_vars/<host>.yml` | Also becomes the container's `TZ`, which is what Jellyfin schedules tasks against |
+| `jellyfin_uid` / `jellyfin_gid` | `group_vars/jellyfin_pi.yml` (2000/2000) | Pinned, not system-assigned — they are baked into file ownership on the media drive |
+| `tailnet_domain`, `tailscale_hostname` | `group_vars/jellyfin_pi.yml` | Non-secret identifiers, hardcoded like the account/zone ids in `variables.tf` |
+| `TAILSCALE_AUTH_KEY` | Vault `kv/data/secrets` | The only secret. Never in the repo, never in the inventory |
 
 Store `TAILSCALE_AUTH_KEY` the same way as every other Vault secret —
 `pnpm gcp:vm:vault:save-secrets-local`, add the key to

@@ -43,7 +43,7 @@ if [ -z "${GH_TOKEN:-}" ]; then
   exit 1
 fi
 
-echo "Auditing documentation for legacy implementations that no longer apply"
+echo "Auditing documentation for legacy implementations and claims the codebase no longer backs"
 STATUS=0
 LOG_FILE=$(mktemp /tmp/vb-audit-docs.XXXXXX)
 docker run --rm --init --name "vb-audit-docs-$(date +%s)" \

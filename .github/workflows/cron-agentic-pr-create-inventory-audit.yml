@@ -1,25 +1,27 @@
-name: manual-agentic-pr-create-audit
+name: cron-agentic-pr-create-inventory-audit
 
-# Audits the documentation for passages about legacy implementations that no
-# longer apply to the current codebase, and opens one PR of at most 15 files
-# removing or rewriting them. Same container and credentials as
-# `cron-agentic-pr-create-prune`; the local equivalent is
-# `pnpm agentic-pr-create-audit`. Dispatch-only: what counts as stale history
-# is a judgement call worth asking for, not a sweep worth scheduling.
+# Weekly drift audit of docs/fork-identity-inventory.md and the Secret Inventory
+# in docs/infrastructure/secret-management.md against the tree: a deterministic
+# script (`scripts/ci/inventory-drift.sh`) greps the candidates and the agent
+# fixes missing or stale rows, never touching secret values. Same container and
+# credentials as `cron-agentic-pr-create-prune`; the local equivalent is
+# `pnpm agentic-pr-create-inventory-audit`.
 #
-# A clean run opens no PR and still succeeds: the runner prints AUDIT_CLEAN
+# A clean run opens no PR and still succeeds: the runner prints INVENTORY_AUDIT_CLEAN
 # and exits 0.
 
 on:
+  schedule:
+    - cron: '25 7 * * 0'
   workflow_dispatch:
     inputs:
       model:
         description: 'Claude model to run the agent with.'
         type: choice
-        default: opus
+        default: sonnet
         options:
-          - opus
           - sonnet
+          - opus
           - haiku
       firewall:
         description: 'In-container egress firewall (turn off if iptables/ipset fails on the runner).'
@@ -33,18 +35,33 @@ permissions:
   contents: read
   id-token: write
 
-# Static group: two overlapping audits would open competing PRs rewriting the
-# same docs, and a half-finished run's pushed branch is not something a newer
+# Static group: two overlapping audits would open competing PRs editing the
+# same rows, and a half-finished run's pushed branch is not something a newer
 # run should cancel out from under.
 concurrency:
-  group: manual-agentic-pr-create-audit
+  group: cron-agentic-pr-create-inventory-audit
   cancel-in-progress: false
 
 jobs:
   overview:
     runs-on: ubuntu-24.04
     timeout-minutes: 5
+    outputs:
+      model: ${{ steps.config.outputs.model }}
+      firewall: ${{ steps.config.outputs.firewall }}
     steps:
+      # Scheduled runs carry no inputs, so the defaults are resolved once here
+      # and both the overview and the audit job read the same values.
+      - name: Resolve effective configuration
+        id: config
+        env:
+          MODEL: ${{ inputs.model || 'sonnet' }}
+          FIREWALL: ${{ inputs.firewall || 'on' }}
+        run: |
+          set -euo pipefail
+          echo "model=$MODEL" >> "$GITHUB_OUTPUT"
+          echo "firewall=$FIREWALL" >> "$GITHUB_OUTPUT"
+
       - name: Checkout summary helper
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -55,11 +72,11 @@ jobs:
         uses: ./.github/actions/agentic-summary
         with:
           mode: overview
-          title: Audit documentation for legacy implementations
+          title: Audit fork identity and secret inventories
           agent: claude
-          model: ${{ inputs.model }}
-          firewall: ${{ inputs.firewall }}
-          description: Remove or rewrite documentation that describes legacy implementations which no longer apply to the current codebase, verifying each candidate against the tree. Opens one pull request of at most 15 files, highest-value first, listing skipped candidates for a re-run, and only when something is changed.
+          model: ${{ steps.config.outputs.model }}
+          firewall: ${{ steps.config.outputs.firewall }}
+          description: Compare the fork identity inventory and the secret inventory with the accounts, domains and secret references actually used in code, Terraform and workflows, then add or correct missing and stale rows without touching secret values. Opens a pull request only when a row changes.
 
   audit:
     needs: overview
@@ -79,17 +96,17 @@ jobs:
             kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
             kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
 
-      - name: Audit legacy documentation
+      - name: Audit inventories for drift
         id: audit
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
           AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
           AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
-          SANDBOX_FIREWALL: ${{ inputs.firewall }}
-          MODEL: ${{ inputs.model }}
+          SANDBOX_FIREWALL: ${{ needs.overview.outputs.firewall }}
+          MODEL: ${{ needs.overview.outputs.model }}
         run: |
           set -euo pipefail
-          bash infrastructure/agent-sandbox/audit-docs.sh --model "$MODEL"
+          bash infrastructure/agent-sandbox/inventory-audit.sh --model "$MODEL"
 
       - name: Report result when the audit could not
         if: ${{ always() && steps.audit.outcome != 'success' && steps.audit.outputs.result_reported != 'true' }}

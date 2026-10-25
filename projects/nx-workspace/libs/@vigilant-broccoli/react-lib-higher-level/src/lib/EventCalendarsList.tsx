@@ -3,7 +3,6 @@
 import { CalendarDays, CalendarRange, Eye, EyeOff, List } from 'lucide-react';
 import { CopyButton } from '@vigilant-broccoli/react-lib';
 
-const LOADING_MESSAGE = 'Loading…';
 const EMPTY_MESSAGE = 'No event calendars yet.';
 const FETCH_ERROR = 'Failed to load event calendars.';
 
@@ -46,13 +45,7 @@ export const EventCalendarsList = ({
     return (
       <p className="text-sm text-red-600 dark:text-red-400">{FETCH_ERROR}</p>
     );
-  if (calendars === null) {
-    return (
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        {LOADING_MESSAGE}
-      </p>
-    );
-  }
+  if (calendars === null) return null;
   if (calendars.length === 0) {
     return (
       <p className="text-sm text-gray-500 dark:text-gray-400">

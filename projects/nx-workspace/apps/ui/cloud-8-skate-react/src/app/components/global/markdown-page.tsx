@@ -49,7 +49,11 @@ export function MarkdownPage({ filepath }: Props) {
   }, [html, hash]);
 
   if (hasError)
-    return <p className="mb-8 text-gray-700">{t('MARKDOWN.LOAD_ERROR')}</p>;
+    return (
+      <p className="mb-8 text-gray-700 dark:text-gray-300">
+        {t('MARKDOWN.LOAD_ERROR')}
+      </p>
+    );
 
   return (
     <div

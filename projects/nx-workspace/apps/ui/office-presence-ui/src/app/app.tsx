@@ -1,5 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useDocumentTitle } from '@vigilant-broccoli/react-lib';
+import {
+  useDocumentThemeClass,
+  useDocumentTitle,
+} from '@vigilant-broccoli/react-lib';
 import { BlockAction, demoClient } from '../lib/demo-client';
 import { getStoredUserId, storeUserId } from '../lib/demo-session';
 import { DemoSnapshot } from '../lib/demo.types';
@@ -9,6 +12,7 @@ import { ModalDialog } from './components/ModalDialog';
 import { Sidebar, TAB, Tab } from './components/Sidebar';
 import { I18nProvider, useTranslation } from './i18n';
 
+const THEME_STORAGE_KEY = 'office-presence-ui-theme';
 const TOAST_MS = 3500;
 
 type Toast = { id: number; message: string; isError: boolean };
@@ -211,10 +215,14 @@ const Demo = () => {
   );
 };
 
-export const App = () => (
-  <I18nProvider>
-    <Demo />
-  </I18nProvider>
-);
+export const App = () => {
+  useDocumentThemeClass(THEME_STORAGE_KEY);
+
+  return (
+    <I18nProvider>
+      <Demo />
+    </I18nProvider>
+  );
+};
 
 export default App;

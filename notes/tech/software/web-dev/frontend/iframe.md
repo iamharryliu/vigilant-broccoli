@@ -25,16 +25,16 @@
 
 ## Common Attributes
 
-| Attribute         | Purpose                                                                               |
-| ----------------- | ------------------------------------------------------------------------------------- |
-| `allow`           | Permissions policy for features such as `fullscreen`, `camera`, or `clipboard-write`. |
-| `allowfullscreen` | Lets the embedded page request fullscreen.                                            |
-| `loading`         | `lazy` defers loading until the frame nears the viewport.                             |
-| `referrerpolicy`  | Controls the `Referer` header sent when loading the frame.                            |
-| `sandbox`         | Restricts what the embedded page can do (see [Security](#security)).                  |
-| `src`             | URL of the page to embed.                                                             |
-| `srcdoc`          | Inline HTML to render instead of loading a URL.                                       |
-| `title`           | Accessible name describing the frame's content; required for screen readers.          |
+| Attribute | Purpose |
+| --- | --- |
+| `allow` | Permissions policy for features such as `fullscreen`, `camera`, or `clipboard-write`. |
+| `allowfullscreen` | Lets the embedded page request fullscreen. |
+| `loading` | `lazy` defers loading until the frame nears the viewport. |
+| `referrerpolicy` | Controls the `Referer` header sent when loading the frame. |
+| `sandbox` | Restricts what the embedded page can do (see [Security](#security)). |
+| `src` | URL of the page to embed. |
+| `srcdoc` | Inline HTML to render instead of loading a URL. |
+| `title` | Accessible name describing the frame's content; required for screen readers. |
 
 ## Security
 
@@ -63,8 +63,8 @@ A site opts out of being framed with `X-Frame-Options: DENY | SAMEORIGIN` or `Co
 
 ## Pros and Cons
 
-| Pros                                                            | Cons                                                                                   |
-| --------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Strong isolation of styles, scripts, and crashes.               | Each frame loads a full document, which costs memory and network.                      |
-| Easy way to embed third-party widgets (maps, videos, payments). | Sizing to content is awkward; it needs `postMessage` or fixed dimensions.              |
-| Sandboxing limits what untrusted content can do.                | Poor for SEO and accessibility unless titled; deep links and history can be confusing. |
+| Pros | Cons |
+| --- | --- |
+| Strong isolation of styles, scripts, and crashes. | Each frame loads a full document, which costs memory and network. |
+| Easy way to embed third-party widgets (maps, videos, payments). | Sizing to content is awkward; it needs `postMessage` or fixed dimensions. |
+| Sandboxing limits what untrusted content can do. | Poor for SEO and accessibility unless titled; deep links and history can be confusing. |

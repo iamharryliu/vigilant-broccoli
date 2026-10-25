@@ -38,10 +38,10 @@ Project names are environment-prefixed (`staging-docs-md`, `production-cloud-8-s
 
 Cloudflare files a deploy as a **Production** deployment only when its branch equals the project's `production_branch`; anything else becomes a **Preview**. Only Production deployments are served by the root `pages.dev` URL and by any attached custom domain. So the two settings must agree per environment, and they mirror the branches `deploy.yml` deploys from:
 
-| Target              | Project        | `--production-branch` | `--branch`   |
-| ------------------- | -------------- | --------------------- | ------------ |
-| `deploy`            | `staging-*`    | `main`                | `main`       |
-| `deploy:production` | `production-*` | `production`          | `production` |
+| Target | Project | `--production-branch` | `--branch` |
+| --- | --- | --- | --- |
+| `deploy` | `staging-*` | `main` | `main` |
+| `deploy:production` | `production-*` | `production` | `production` |
 
 Never leave `--branch` off and let wrangler infer it. It reads `GITHUB_REF_NAME`, which follows whichever trigger fired the run rather than the environment being deployed — `ci-rotate-secrets` calls `deploy.yml` with `environment: production` from a dispatch off `main`, and a `workflow_dispatch` with `environment: staging` can run from the `production` branch. Both mislabel the deploy and silently demote it to a Preview.
 
@@ -60,6 +60,8 @@ The failure is invisible: CI stays green, and the live URL keeps serving the las
 **The alias is keyed on the PR, not the branch, for two reasons.** Cloudflare sanitises a branch name into the alias host and truncates it to 28 characters, so `agent/task-implement-preview-branches-for-stateless-1790107341` collapsed to `agent-task-implement-preview` — two branches agreeing on the first 28 sanitised characters would silently share one alias. `pr-<n>` is short, unique, and readable. It also gives the prune a liveness signal that matches what a preview is for: a PR being closed, rather than a branch eventually being deleted.
 
 `deploy-preview.yml` runs `deploy:preview` for the affected projects on every pull request (plus `pages-index`/`docs-md` when their out-of-workspace snapshot sources change), writes a table of the alias and per-deployment URLs to the job summary, then prunes. It is `pull_request`-triggered because a `push` event carries no PR number. `cron-cleanup-preview-deployments.yml` runs the prune for every project daily, collecting the previews of PRs that have since closed. Previews build with `--skip-nx-cache`: `VITE_BASE_PATH` isn't a build input, so a cached `/vigilant-broccoli/`-based Pages build could otherwise be served. Both workflows pass `--output-style=static`, since nx hides successful tasks' output and that output is the only record of the URLs deployed and the deployments deleted.
+
+After the summary, `deploy-preview.yml` records each project that deployed as a GitHub Deployment with environment `pr-<n>/<app>` (`.github/scripts/record-preview-deployments.mjs`, sharing the `deploy.log` parsing in `preview-deployments.mjs`), whose `payload` carries the alias and immutable URLs. `vb-manager-next` and `vb-manager-next-mobile` read those records back for their Preview Deployments pages; the daily cleanup deletes closed PRs' deployments.
 
 A new stateless site opts in by adding the trio — the workflows discover it via `nx show projects --withTarget=deploy:preview`. Previews deploy static frontend bundles; they do not provision isolated backends. `calendars` reads the staging VB Express public event-calendar endpoint, whose read-only, credential-free CORS policy accepts the stable and immutable `preview-calendars` subdomains. `cloud-8-skate-react` also uses its staging API configuration and generates its sitemap before deployment. Its contact form retains the existing API CORS and reCAPTCHA restrictions; preview origins do not gain write access to the API. PR-scoped URLs are published in the workflow summary and removed when the PR closes; they are not permanent application URLs for monitoring or the application directory.
 

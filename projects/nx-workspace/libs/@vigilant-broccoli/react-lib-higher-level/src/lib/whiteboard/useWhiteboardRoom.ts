@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as Y from 'yjs';
+import { findChangedSpan } from '@vigilant-broccoli/react-lib';
 import {
   CONNECTION_STATUS,
   ConnectionStatus,
@@ -22,6 +23,10 @@ const YJS_UPDATE_EVENT = 'yjs-update';
 const REQUEST_STATE_EVENT = 'request-state';
 const YJS_TEXT_NAME = 'content';
 const REMOTE_UPDATE_ORIGIN = 'remote';
+// Server snapshots (bootstrap seed, conflict merge) are applied with this
+// origin so the UndoManager, which only tracks `null`, never reverts them —
+// otherwise undo in a fresh tab deletes the whole seeded document.
+const REPLACE_ORIGIN = 'replace';
 const CURSOR_CHANNEL_SUFFIX = ':cursors';
 const STACK_ITEM_ADDED_EVENT = 'stack-item-added';
 const STACK_ITEM_POPPED_EVENT = 'stack-item-popped';
@@ -62,34 +67,22 @@ const decodeUpdate = (encoded: string): Uint8Array => {
 // the CRDT's current text to recover the minimal insert/delete op — this is
 // what keeps concurrent edits at different positions from clobbering each
 // other, unlike broadcasting the full string.
-const applyTextDiff = (yText: Y.Text, nextValue: string) => {
+const applyTextDiff = (
+  yText: Y.Text,
+  nextValue: string,
+  origin: unknown = null,
+) => {
   const previousValue = yText.toString();
   if (previousValue === nextValue) return;
-
-  let start = 0;
-  while (
-    start < previousValue.length &&
-    start < nextValue.length &&
-    previousValue[start] === nextValue[start]
-  ) {
-    start++;
-  }
-
-  let previousEnd = previousValue.length;
-  let nextEnd = nextValue.length;
-  while (
-    previousEnd > start &&
-    nextEnd > start &&
-    previousValue[previousEnd - 1] === nextValue[nextEnd - 1]
-  ) {
-    previousEnd--;
-    nextEnd--;
-  }
+  const { start, previousEnd, nextEnd } = findChangedSpan(
+    previousValue,
+    nextValue,
+  );
 
   yText.doc?.transact(() => {
     if (previousEnd > start) yText.delete(start, previousEnd - start);
     if (nextEnd > start) yText.insert(start, nextValue.slice(start, nextEnd));
-  });
+  }, origin);
 };
 
 export function useWhiteboardRoom(
@@ -112,6 +105,7 @@ export function useWhiteboardRoom(
   );
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
+  const [lastChangeIsEdit, setLastChangeIsEdit] = useState(false);
   const channelRef = useRef<BroadcastPresenceChannel | null>(null);
   const usernameRef = useRef<string>(username);
   const docRef = useRef<Y.Doc | null>(null);
@@ -148,7 +142,8 @@ export function useWhiteboardRoom(
 
     // Tracks only this client's own edits (origin `null`, the default for
     // local transactions) — remote peers' updates are applied with
-    // REMOTE_UPDATE_ORIGIN below, so undo never reverts someone else's text.
+    // REMOTE_UPDATE_ORIGIN below and server snapshots with REPLACE_ORIGIN, so
+    // undo never reverts someone else's text or the loaded document.
     const undoManager = new Y.UndoManager(yText);
     undoManagerRef.current = undoManager;
     const handleUndoStackChange = () => {
@@ -166,7 +161,12 @@ export function useWhiteboardRoom(
       },
     });
 
-    const handleTextChange = () => setContentState(yText.toString());
+    // Typing, undo/redo and peers' updates are edits; replaced server
+    // snapshots aren't, and a rebuilt room resets this to false below.
+    const handleTextChange = (_: Y.YTextEvent, transaction: Y.Transaction) => {
+      setContentState(yText.toString());
+      setLastChangeIsEdit(transaction.origin !== REPLACE_ORIGIN);
+    };
     yText.observe(handleTextChange);
 
     const handleDocUpdate = (update: Uint8Array, origin: unknown) => {
@@ -243,6 +243,7 @@ export function useWhiteboardRoom(
       doc.destroy();
       docRef.current = null;
       setContentState('');
+      setLastChangeIsEdit(false);
       setCanUndo(false);
       setCanRedo(false);
     };
@@ -256,6 +257,12 @@ export function useWhiteboardRoom(
     applyTextDiff(doc.getText(YJS_TEXT_NAME), next);
   }, []);
 
+  const replaceContent = useCallback((next: string) => {
+    const doc = docRef.current;
+    if (!doc) return;
+    applyTextDiff(doc.getText(YJS_TEXT_NAME), next, REPLACE_ORIGIN);
+  }, []);
+
   const undo = useCallback(() => {
     undoManagerRef.current?.undo();
   }, []);
@@ -267,6 +274,8 @@ export function useWhiteboardRoom(
   return {
     content,
     setContent,
+    replaceContent,
+    lastChangeIsEdit,
     members,
     cursors,
     setCursorPosition,

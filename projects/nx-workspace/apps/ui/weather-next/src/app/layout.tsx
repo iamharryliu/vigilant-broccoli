@@ -1,6 +1,7 @@
 import './global.css';
 import type { Metadata, Viewport } from 'next';
 import { APP_DESCRIPTION, APP_NAME, PAGE_TITLE } from './app.const';
+import { RootThemeWrapper } from './components/RootThemeWrapper';
 
 const DEFAULT_TITLE = `${PAGE_TITLE.HOME} | ${APP_NAME}`;
 const TITLE_TEMPLATE = `%s | ${APP_NAME}`;
@@ -32,7 +33,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">
+        <RootThemeWrapper>{children}</RootThemeWrapper>
+      </body>
     </html>
   );
 }

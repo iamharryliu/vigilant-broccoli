@@ -7,6 +7,11 @@ export const PAGE_TITLE = {
   AUTH_CALLBACK: 'Signing In',
 } as const;
 
+export const APP_ROUTE = {
+  HOME: '/',
+  APPS: '/apps',
+} as const;
+
 export const CALENDAR_TAB = {
   CALENDAR: 'Calendar',
   EVENT_CALENDARS: 'Event Calendars',

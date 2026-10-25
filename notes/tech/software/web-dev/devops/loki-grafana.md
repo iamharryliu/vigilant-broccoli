@@ -13,12 +13,12 @@ Self-hosted log aggregation: Loki stores and indexes log streams by label, Grafa
 
 ## Stack
 
-| Component | Role                                                              | Notes                                                                                                                      |
-| --------- | ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| Alloy     | Collector: tails files/containers, relabels, pushes to Loki       | Successor to Promtail (EOL March 2026); config is River syntax (`discovery.docker`, `loki.source.docker`, `loki.write`)    |
-| Grafana   | UI: Explore, dashboards, alerting                                 | Provision datasources and dashboards from files under `/etc/grafana/provisioning` so a fresh container comes up configured |
-| Loki      | Log store: index on labels only, chunks on disk or object storage | Single-binary mode with filesystem storage is fine for one VM; `auth_enabled: false` means no tenant header is needed      |
-| nginx     | Optional auth shim in front of Loki's push API                    | Loki has no built-in auth — put basic auth (or mTLS) in front before exposing `/loki/api/v1/push` to remote clients        |
+| Component | Role | Notes |
+| --- | --- | --- |
+| Alloy | Collector: tails files/containers, relabels, pushes to Loki | Successor to Promtail (EOL March 2026); config is River syntax (`discovery.docker`, `loki.source.docker`, `loki.write`) |
+| Grafana | UI: Explore, dashboards, alerting | Provision datasources and dashboards from files under `/etc/grafana/provisioning` so a fresh container comes up configured |
+| Loki | Log store: index on labels only, chunks on disk or object storage | Single-binary mode with filesystem storage is fine for one VM; `auth_enabled: false` means no tenant header is needed |
+| nginx | Optional auth shim in front of Loki's push API | Loki has no built-in auth — put basic auth (or mTLS) in front before exposing `/loki/api/v1/push` to remote clients |
 
 ## Free Tier
 

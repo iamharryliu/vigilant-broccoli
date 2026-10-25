@@ -31,7 +31,6 @@ const UPDATE_ERROR = 'Failed to update API key';
 const DELETE_ERROR = 'Failed to delete API key';
 const SHOW_ONCE_NOTICE =
   'Copy this key now — it is only shown once and cannot be recovered.';
-const LOADING_MESSAGE = 'Loading…';
 const EMPTY_MESSAGE = 'No API keys.';
 
 const LIST_COPY = {
@@ -225,7 +224,7 @@ export const ApiKeysComponent = () => {
           ...LIST_COPY,
           LIST: {
             ...LIST_COPY.LIST,
-            EMPTY_MESSAGE: loading ? LOADING_MESSAGE : EMPTY_MESSAGE,
+            EMPTY_MESSAGE: loading ? '' : EMPTY_MESSAGE,
           },
         }}
         isCards

@@ -27,12 +27,12 @@ Optional, additive AI tagging of Food Planner recipes by flavour, serving temper
 
 Machine values are stable snake_case strings; labels live under `FOOD_PLANNER.RECIPES.TAGS` in `i18n/en.json`.
 
-| Category (`key`)                     | Values                                                                                                                                                                                                                |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Flavour (`flavours`)                 | sweet, salty, sour, bitter, umami, spicy, smoky, tangy, earthy, fruity, herbal, nutty                                                                                                                                 |
-| Serving temperature (`temperatures`) | hot, warm, room_temperature, cold, frozen                                                                                                                                                                             |
-| Cooking method (`methods`)           | baking, roasting, grilling, broiling, frying, deep_frying, stir_frying, sauteing, boiling, simmering, steaming, poaching, braising, stewing, slow_cooking, pressure_cooking, sous_vide, fermenting, pickling, no_cook |
-| Texture (`textures`)                 | crispy, crunchy, creamy, smooth, chewy, tender, juicy, soft, firm, flaky, crumbly, fluffy, sticky                                                                                                                     |
+| Category (`key`) | Values |
+| --- | --- |
+| Flavour (`flavours`) | sweet, salty, sour, bitter, umami, spicy, smoky, tangy, earthy, fruity, herbal, nutty |
+| Serving temperature (`temperatures`) | hot, warm, room_temperature, cold, frozen |
+| Cooking method (`methods`) | baking, roasting, grilling, broiling, frying, deep_frying, stir_frying, sauteing, boiling, simmering, steaming, poaching, braising, stewing, slow_cooking, pressure_cooking, sous_vide, fermenting, pickling, no_cook |
+| Texture (`textures`) | crispy, crunchy, creamy, smooth, chewy, tender, juicy, soft, firm, flaky, crumbly, fluffy, sticky |
 
 Each category holds any number of values. Generated values are appended in vocabulary order; stored order is otherwise preserved.
 

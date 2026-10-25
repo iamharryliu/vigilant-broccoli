@@ -9,10 +9,14 @@
 ## Chat
 
 - Streaming responses with typing indicator; stop mid-stream supported
+- User messages render as bubbles; assistant responses render as plain text without a card container
 - Conversation history compacted after 20 messages (oldest dropped)
 - Model selector uses the 17 models listed in the account’s complimentary-token allowance; the chat API rejects other model IDs
 - Automatically switches to an eligible vision model when images are attached; `o3-mini` is text-only
-- Saved conversations in browser local storage, with new, select, and delete controls in the history sidebar
+- Saved conversations in browser local storage, with new and select controls in the history sidebar; each chat's ellipsis menu offers rename, pin/unpin and delete
+- Search box at the top of the history sidebar, above New chat, filters chats by title or message text (Escape clears it)
+- Pinned chats list first and are the last to be dropped when the 50-chat cap is reached
+- History sidebar toggles open and closed with a button at the top-left of the chat area; the choice persists in local storage
 
 ## Input
 
@@ -25,12 +29,14 @@
 
 Type `/` to open command menu (arrow keys, Enter/Tab to select, Escape to dismiss).
 
-- `/calendar` — parse text/images into a Google Calendar event draft
+- `/calendar` — parse text/images into a Google Calendar event draft; http(s) links in the text (up to 3) are fetched by vb-express and parsed too, using page JSON-LD, meta tags, embedded start/end fields and visible text; the pasted links are appended to each draft event's description
 - `/tasks` — extract task list from text/images into a Google Tasks draft
 - `/help` — list commands
 
 ## Calendar Integration
 
+- A message that is only a link, or a link plus calendar words (`calendar`, `event`, `schedule`, `rsvp`, `add this`, `put this`), goes straight to the `/calendar` parser because the chat model cannot open links
+- A calendar-worded message without a link ("add that to my calendar") reuses the link from the last 6 user messages, unless an event draft is still pending
 - Also triggered automatically when message contains intent keywords (`add to calendar`, `create event`, `schedule this`, etc.)
 - LLM extracts event details via function calling; presents editable draft card before creating
 - Multiple/recurring events produce multiple draft cards

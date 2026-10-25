@@ -1,6 +1,6 @@
 # Vegetables
 
-Peak season for a temperate Northern Hemisphere climate (e.g. the continental US); actual availability varies by region and is wider wherever imports or greenhouse growing are common.
+Peak season for a temperate Northern Hemisphere climate (e.g. the continental US); actual availability varies by region and is wider wherever imports or greenhouse growing are common. The hearth app reads the Seasonal Timeline below to build its In Season card, so the gantt format must stay parseable.
 
 ## Table of Contents
 
@@ -84,27 +84,27 @@ gantt
 
 _Add to the pan top-to-bottom. Times are for medium-heat stir-fry with a typical cut._
 
-| #   | Vegetable                          | Band   | Stir-fry              | Boil       |
-| --- | ---------------------------------- | ------ | --------------------- | ---------- |
-| 1   | Potato / sweet potato              | Hard   | 8–10 min (thin slice) | 15–25 min  |
-| 2   | Beet / turnip / rutabaga           | Hard   | par-cook first        | 20–30 min  |
-| 3   | Carrot                             | Hard   | 6–8 min               | 10–15 min  |
-| 4   | Winter squash (butternut, kabocha) | Hard   | 6–8 min               | 10–15 min  |
-| 5   | Cauliflower / broccoli stem        | Medium | 5–7 min               | 5–8 min    |
-| 6   | Green bean                         | Medium | 4–6 min               | 4–6 min    |
-| 7   | Onion / fennel                     | Medium | 4–6 min               | 5–8 min    |
-| 8   | Bell pepper                        | Medium | 3–5 min               | 3–5 min    |
-| 9   | Eggplant                           | Medium | 3–5 min               | 4–6 min    |
-| 10  | Zucchini                           | Medium | 3–4 min               | 3–4 min    |
-| 11  | Chinese cabbage stems (napa)       | Medium | 2–3 min               | 3–4 min    |
-| 12  | Broccoli florets / asparagus       | Light  | 2–3 min               | 2–3 min    |
-| 13  | Mushroom                           | Light  | 2–3 min               | n/a        |
-| 14  | Snow peas / sugar snap peas        | Light  | 1–2 min               | 1–2 min    |
-| 15  | Bok choy                           | Light  | 1–2 min               | 1–2 min    |
-| 16  | Chinese cabbage leaves (napa)      | Light  | 1 min                 | 1 min      |
-| 17  | Tomato                             | Light  | 1–2 min               | n/a        |
-| 18  | Spinach / kale / chard             | Light  | 30 s–1 min            | 30 s–1 min |
-| 19  | Fresh herbs                        | Light  | off heat              | n/a        |
+| # | Vegetable | Band | Stir-fry | Boil |
+| --- | --- | --- | --- | --- |
+| 1 | Potato / sweet potato | Hard | 8–10 min (thin slice) | 15–25 min |
+| 2 | Beet / turnip / rutabaga | Hard | par-cook first | 20–30 min |
+| 3 | Carrot | Hard | 6–8 min | 10–15 min |
+| 4 | Winter squash (butternut, kabocha) | Hard | 6–8 min | 10–15 min |
+| 5 | Cauliflower / broccoli stem | Medium | 5–7 min | 5–8 min |
+| 6 | Green bean | Medium | 4–6 min | 4–6 min |
+| 7 | Onion / fennel | Medium | 4–6 min | 5–8 min |
+| 8 | Bell pepper | Medium | 3–5 min | 3–5 min |
+| 9 | Eggplant | Medium | 3–5 min | 4–6 min |
+| 10 | Zucchini | Medium | 3–4 min | 3–4 min |
+| 11 | Chinese cabbage stems (napa) | Medium | 2–3 min | 3–4 min |
+| 12 | Broccoli florets / asparagus | Light | 2–3 min | 2–3 min |
+| 13 | Mushroom | Light | 2–3 min | n/a |
+| 14 | Snow peas / sugar snap peas | Light | 1–2 min | 1–2 min |
+| 15 | Bok choy | Light | 1–2 min | 1–2 min |
+| 16 | Chinese cabbage leaves (napa) | Light | 1 min | 1 min |
+| 17 | Tomato | Light | 1–2 min | n/a |
+| 18 | Spinach / kale / chard | Light | 30 s–1 min | 30 s–1 min |
+| 19 | Fresh herbs | Light | off heat | n/a |
 
 ### 🟤 Hard / Dense Vegetables
 

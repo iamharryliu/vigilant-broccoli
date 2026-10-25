@@ -48,60 +48,60 @@ b                                           # Jump to previous word
 
 ## Movement
 
-| Description                                     | Command |
-| ----------------------------------------------- | ------- |
-| **Search forward** for _text_.                  | `/text` |
-| **Search backward** for _text_.                 | `?text` |
-| Jump to the **next match**.                     | `n`     |
-| Jump to the **previous match**.                 | `N`     |
-| Jump to the **first non-whitespace character**. | `^`     |
+| Description | Command |
+| --- | --- |
+| **Search forward** for _text_. | `/text` |
+| **Search backward** for _text_. | `?text` |
+| Jump to the **next match**. | `n` |
+| Jump to the **previous match**. | `N` |
+| Jump to the **first non-whitespace character**. | `^` |
 
 ## Delete / Undo
 
-| Description                   | Command    |
-| ----------------------------- | ---------- |
-| **Delete character**          | `x`        |
-| **Delete line.**              | `dd`       |
-| **Delete _n_ lines.**         | `[n]dd`    |
-| Normal mode **undo change**.  | `u`        |
-| Normal mode **redo change**.  | `ctrl + r` |
-| Command mode **undo change**. | `:undo`    |
-| Command mode **redo change**. | `:redo`    |
+| Description | Command |
+| --- | --- |
+| **Delete character** | `x` |
+| **Delete line.** | `dd` |
+| **Delete _n_ lines.** | `[n]dd` |
+| Normal mode **undo change**. | `u` |
+| Normal mode **redo change**. | `ctrl + r` |
+| Command mode **undo change**. | `:undo` |
+| Command mode **redo change**. | `:redo` |
 
 ## Copy and Paste
 
-| Description             | Command |
-| ----------------------- | ------- |
-| **Copy the line.**      | `yy`    |
-| **Paste below** cursor. | `p`     |
-| **Paste above** cursor. | `P`     |
+| Description | Command |
+| --- | --- |
+| **Copy the line.** | `yy` |
+| **Paste below** cursor. | `p` |
+| **Paste above** cursor. | `P` |
 
 ## Replace
 
-| Description                                      | Command          |
-| ------------------------------------------------ | ---------------- |
-| **Replace all occurrences** of _old_ with _new_. | `:%s/old/new/g`  |
-| **Replace all occurrences** with confirmation.   | `:%s/old/new/gc` |
+| Description | Command |
+| --- | --- |
+| **Replace all occurrences** of _old_ with _new_. | `:%s/old/new/g` |
+| **Replace all occurrences** with confirmation. | `:%s/old/new/gc` |
 
 ## Visual Commands
 
-| Description               | Command       |
-| ------------------------- | ------------- |
-| Adds **line numbers**.    | :set number   |
+| Description | Command |
+| --- | --- |
+| Adds **line numbers**. | :set number |
 | Removes **line numbers**. | :set nonumber |
 
 ### Window
 
-| Description             | Command |
-| ----------------------- | ------- |
-| Split **horizontally**. | `:sp`   |
-| Split **vertically**.   | `:vsp`  |
+| Description | Command |
+| --- | --- |
+| Split **horizontally**. | `:sp` |
+| Split **vertically**. | `:vsp` |
 
 ## Other Commands
 
-| Description                    | Command     |
-| ------------------------------ | ----------- |
-| Help documentation.            | `:help`     |
+| Description | Command |
+| --- | --- |
+| Help documentation. | `:help` |
 | Run shell command (ie `!pwd`). | `:!command` |
 
 ## Vscode Extension

@@ -1,6 +1,6 @@
 # Pomodoro React
 
-Static Pomodoro timer with configurable sessions and browser-local settings.
+Static Pomodoro timer using the shared `react-utility` Pomodoro component.
 
 ## Table of Contents
 
@@ -15,3 +15,4 @@ Static Pomodoro timer with configurable sessions and browser-local settings.
   - Tailwind CSS
 - Internal libs
   - `react-lib`
+  - `react-utility`

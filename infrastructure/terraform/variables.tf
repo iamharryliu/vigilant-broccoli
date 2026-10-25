@@ -140,6 +140,21 @@ variable "code_server_domain" {
   default = "code.harryliu.dev"
 }
 
+# Served by the web-terminal s6 service inside the code-server image, behind the
+# same Caddy and its own Access application.
+variable "web_terminal_domain" {
+  type    = string
+  default = "shell.harryliu.dev"
+}
+
+# Cloudflare Zero Trust team domain the web-terminal server validates Access JWT
+# issuers and signing keys against. A variable, not a data source: the Terraform
+# API token cannot read Zero Trust organizations (403 code 10000).
+variable "access_team_domain" {
+  type    = string
+  default = "vigilant-broccoli.cloudflareaccess.com"
+}
+
 # Built and pushed by .github/workflows/deploy-code-server-image.yml, which
 # also publishes an immutable sha-<commit> tag -- set this to one of those to
 # pin the VM to a known build or roll back.
@@ -323,6 +338,11 @@ variable "projects_domain" {
 variable "career_domain" {
   type    = string
   default = "career.harryliu.dev"
+}
+
+variable "deployments_domain" {
+  type    = string
+  default = "deployments.harryliu.dev"
 }
 
 variable "status_domain" {

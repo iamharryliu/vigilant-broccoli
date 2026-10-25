@@ -21,17 +21,17 @@ Build the highest scoring city of 15 cards over 4 seasons, using workers to gath
 
 ## Limitations
 
-| Limit                     | Value                          | Notes                                                                                  |
-| ------------------------- | ------------------------------ | -------------------------------------------------------------------------------------- |
-| City size                 | 15 cards                       | Constructions and critters combined; cards like Wanderer state they take no city space |
-| Forest locations revealed | 3 (2 players), 4 (3–4 players) | Each holds 1 worker with 2 players, 2 workers with 3–4 players                         |
-| Hand size                 | 8 cards                        | Excess drawn cards are discarded immediately                                           |
-| Journey entry             | City must hold 15 cards        | Autumn only                                                                            |
-| Meadow                    | 8 face-up cards                | Refilled immediately whenever a card is taken                                          |
-| Resources                 | Unlimited                      | Twigs, resin, pebbles, berries have no personal cap                                    |
-| Special events            | 4 per game                     | Drawn from the event deck during setup                                                 |
-| Unique cards              | 1 copy per city                | Common cards may be duplicated in the same city                                        |
-| Workers                   | 6 by Autumn                    | Start 2, +1 in Spring, +1 in Summer, +2 in Autumn                                      |
+| Limit | Value | Notes |
+| --- | --- | --- |
+| City size | 15 cards | Constructions and critters combined; cards like Wanderer state they take no city space |
+| Forest locations revealed | 3 (2 players), 4 (3–4 players) | Each holds 1 worker with 2 players, 2 workers with 3–4 players |
+| Hand size | 8 cards | Excess drawn cards are discarded immediately |
+| Journey entry | City must hold 15 cards | Autumn only |
+| Meadow | 8 face-up cards | Refilled immediately whenever a card is taken |
+| Resources | Unlimited | Twigs, resin, pebbles, berries have no personal cap |
+| Special events | 4 per game | Drawn from the event deck during setup |
+| Unique cards | 1 copy per city | Common cards may be duplicated in the same city |
+| Workers | 6 by Autumn | Start 2, +1 in Spring, +1 in Summer, +2 in Autumn |
 
 ## Setup
 
@@ -69,13 +69,13 @@ Do exactly 1 action:
 
 ## Card Types
 
-| Type        | Color  | Effect                                             |
-| ----------- | ------ | -------------------------------------------------- |
-| Destination | Red    | Provides a worker space, usable by any player      |
-| Governance  | Blue   | Triggers when other cards are played               |
-| Production  | Green  | Produces when played and at each season activation |
-| Prosperity  | Purple | Scores bonus points at game end                    |
-| Traveler    | Tan    | One-time effect when played                        |
+| Type | Color | Effect |
+| --- | --- | --- |
+| Destination | Red | Provides a worker space, usable by any player |
+| Governance | Blue | Triggers when other cards are played |
+| Production | Green | Produces when played and at each season activation |
+| Prosperity | Purple | Scores bonus points at game end |
+| Traveler | Tan | One-time effect when played |
 
 ## Events
 

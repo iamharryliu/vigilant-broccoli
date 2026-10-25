@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode, useCallback, useEffect, useState } from 'react';
-import { ThemeProvider } from '@vigilant-broccoli/react-lib';
+import { ThemeProvider, useThemeKeybind } from '@vigilant-broccoli/react-lib';
 import { AuthProvider } from '../../lib/auth';
 import { DIFFICULTY_LABEL_KEY, ONLINE_AVAILABLE } from '../app.consts';
 import { Contender, Difficulty } from '../engine/game.types';
@@ -21,6 +21,7 @@ import { OnlineRoom } from './OnlineRoom';
 const LOCAL_PLAYER_SUFFIX = '-local';
 
 const PREFILLED_USER_KEY = 'balloono-prefilled-user';
+const THEME_STORAGE_KEY = 'balloono-theme';
 
 const SCREEN = {
   HOME: 'home',
@@ -43,6 +44,8 @@ function Balloono() {
   const localPlayerId = `${userId}${LOCAL_PLAYER_SUFFIX}`;
   const accountId = session?.user.id;
   const accountName = displayNameOf(session);
+  // `KeyD` steers right in matches, so the theme shortcut is home-screen only.
+  useThemeKeybind(screen.name === SCREEN.HOME);
 
   // Once per account per device, so a name the player later edits sticks.
   // Presence keys stay the per-page-load `userId`.
@@ -125,7 +128,7 @@ const AccountProvider = ONLINE_AVAILABLE
 export function BalloonoApp() {
   return (
     <I18nProvider>
-      <ThemeProvider>
+      <ThemeProvider storageKey={THEME_STORAGE_KEY} keybind={false}>
         <DesktopOnly>
           <AccountProvider>
             <GameAudioProvider>

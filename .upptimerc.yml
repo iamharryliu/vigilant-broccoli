@@ -82,6 +82,10 @@ sites:
     url: https://git.harryliu.dev/
   - name: production-code-server
     url: https://code.harryliu.dev/login
+  - name: production-web-terminal
+    url: https://shell.harryliu.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [302]
   - name: production-drive
     url: https://drive.harryliu.dev/
   - name: production-nx-cache
@@ -93,7 +97,7 @@ sites:
   - name: production-findme
     url: https://findme.harryliu.dev/
   - name: production-hearth
-    url: https://production-hearth.vercel.app/login
+    url: https://hearth.harryliu.dev/login
   - name: production-service-manager
     url: https://api.harryliu.dev/
   - name: production-component-library
@@ -111,9 +115,13 @@ sites:
   - name: production-calendars
     url: https://calendar.harryliu.dev/
   - name: production-vb-manager-next-mobile
-    url: https://production-vb-manager-next-mobile.vercel.app/login
+    url: https://manager.harryliu.dev/login
+    maxRedirects: 0
+    expectedStatusCodes: [302]
   - name: production-career
     url: https://career.harryliu.dev/
+  - name: production-deployments
+    url: https://deployments.harryliu.dev/
   - name: production-status
     url: https://status.harryliu.dev/
   - name: production-uptime

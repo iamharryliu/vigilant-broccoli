@@ -2,7 +2,7 @@
 
 ## Moves
 
-| Move Name     | Category    |
-| ------------- | ----------- |
-| Madrid step   | Basic Steps |
+| Move Name | Category |
+| --- | --- |
+| Madrid step | Basic Steps |
 | Diagonal step | Basic Steps |

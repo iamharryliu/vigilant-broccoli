@@ -49,7 +49,6 @@ interface EventDayGroup {
   events: AgendaEntry[];
 }
 
-const LOADING_MESSAGE = 'Loading…';
 const EMPTY_MESSAGE = 'No upcoming events.';
 const ALL_DAY_LABEL = 'All day';
 const TODAY_LABEL = 'Today';
@@ -287,11 +286,6 @@ export const CalendarAgenda = ({
     <div ref={scrollerRef} className={AGENDA_SCROLLER_CLASS}>
       {error && (
         <p className="p-4 text-sm text-red-600 dark:text-red-300">{error}</p>
-      )}
-      {!error && agendaGroups === null && (
-        <p className="p-4 text-sm text-gray-500 dark:text-gray-400">
-          {LOADING_MESSAGE}
-        </p>
       )}
       {!error && agendaGroups !== null && agendaGroups.length === 0 && (
         <p className="p-4 text-sm text-gray-500 dark:text-gray-400">

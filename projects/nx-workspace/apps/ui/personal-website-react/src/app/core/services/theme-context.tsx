@@ -1,16 +1,8 @@
-import {
-  createContext,
-  useContext,
-  useLayoutEffect,
-  useMemo,
-  type ReactNode,
-} from 'react';
-import {
-  useThemePreference,
-  useToggleThemeKeybind,
-} from '@vigilant-broccoli/react-lib';
+import { createContext, useContext, useMemo, type ReactNode } from 'react';
+import { useDocumentThemeClass } from '@vigilant-broccoli/react-lib';
 
 const DARK = 'dark';
+const THEME_STORAGE_KEY = 'personal-website-react-theme';
 
 export const DARK_MODE_LABELS = {
   toLight: 'Switch to light mode',
@@ -29,16 +21,9 @@ const ThemeContext = createContext<ThemeContextValue>({
 
 export const useTheme = () => useContext(ThemeContext);
 
-// The site styles html/body with `dark:` classes, so the class goes on the
-// document root rather than react-lib's ThemeScope wrapper.
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const { appearance, toggleTheme } = useThemePreference();
+  const { appearance, toggleTheme } = useDocumentThemeClass(THEME_STORAGE_KEY);
   const isDark = appearance === DARK;
-  useToggleThemeKeybind(toggleTheme);
-
-  useLayoutEffect(() => {
-    document.documentElement.classList.toggle(DARK, isDark);
-  }, [isDark]);
 
   const value = useMemo(
     () => ({ isDark, toggleDarkMode: toggleTheme }),

@@ -15,34 +15,36 @@ Shared repository guidance. Edit `CONTEXT.md`; `AGENTS.md` is a relative symlink
   - [Documentation](#documentation)
 - [Git](#git)
 - [Coding Conventions](#coding-conventions)
+- [Nuances](#nuances)
+  - [`git status` shows a Markdown file modified while `git diff` is empty](#git-status-shows-a-markdown-file-modified-while-git-diff-is-empty)
 
 ## Doc Map
 
 Read the relevant document before working on its subject. Before editing a directory, read every `CONTEXT.md` along its path, including applicable `## Nuances` entries, and follow any `## Agent Context` upkeep instructions in its `README.md`.
 
-| Doc                                                                              | When to read / upkeep                                                                                      |
-| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| [agent-support.md](./docs/agent-support.md)                                      | Agentic operations, skills, adapters and entry-point parity.                                               |
-| [app-development.md](./docs/app-development/app-development.md)                  | Adding apps/libs, deployment, public URLs or npm publishing.                                               |
-| [app-readme-pattern.md](./docs/app-readme-pattern.md)                            | README edits and generated repo counts.                                                                    |
-| [career experience](./notes/personal/personal-software-career-experience.md)     | New skill or area (e.g. mobile development) absent from its Skills or contributions: add it.               |
-| [code-quality-tools.md](./docs/code-quality-tools.md)                            | Quality tooling; update its inventory when adding/removing a tool.                                         |
-| [database-migrations.md](./docs/ci/database-migrations.md)                       | Database migrations.                                                                                       |
-| [fork-identity-inventory.md](./docs/fork-identity-inventory.md)                  | Making the repo forkable; update when adding or removing a hardcoded account, domain or identity value.    |
-| [free-tier-infrastructure.md](./docs/infrastructure/free-tier-infrastructure.md) | New cloud services or VM sizing; update the affected allowance row.                                        |
-| [git-workflow.md](./docs/git-workflow.md)                                        | Branching, staging, commits, PRs and syncing main.                                                         |
-| [github-repo-protection.md](./docs/infrastructure/github-repo-protection.md)     | GitHub protection, bypass actors or push rejections.                                                       |
-| [jellyfin-pi.md](./docs/infrastructure/jellyfin-pi.md)                           | LAN hardware provisioning via Ansible.                                                                     |
-| [learning-timeline.md](./docs/learning-timeline.md)                              | Extend the current month when work introduces a new topic.                                                 |
-| [network-management.md](./docs/infrastructure/network-management.md)             | DNS, domains, proxies, tunnels or VPN.                                                                     |
-| [nuance-pattern.md](./docs/nuance-pattern.md)                                    | Directory context edits or recording a non-obvious trap.                                                   |
-| [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md)                      | Diff cleanup checklist.                                                                                    |
-| [repo-operations.md](./docs/repo-operations.md)                                  | Infrastructure inventory, persistence, backups, local stack and service auth.                              |
-| [secret-management.md](./docs/infrastructure/secret-management.md)               | Secrets, local `.env`/`.tfvars` or Terraform GitHub tokens; update its secret inventory as secrets change. |
-| [terraform.md](./docs/ci/terraform.md)                                           | Infrastructure changes, local applies and drift detection.                                                 |
-| [todo-pattern.md](./docs/todo-pattern.md)                                        | [TODO.md](./TODO.md) backlog edits and the id contract.                                                    |
-| [upptime.md](./docs/infrastructure/upptime.md)                                   | Monitoring configuration and its isolated repository.                                                      |
-| [workflow-conventions.md](./docs/ci/workflow-conventions.md)                     | Workflow changes, including agentic run summaries.                                                         |
+| Doc | When to read / upkeep |
+| --- | --- |
+| [agent-support.md](./docs/agent-support.md) | Agentic operations, skills, adapters and entry-point parity. |
+| [app-development.md](./docs/app-development/app-development.md) | Adding apps/libs, deployment, public URLs or npm publishing. |
+| [app-readme-pattern.md](./docs/app-readme-pattern.md) | README edits and generated repo counts. |
+| [career experience](./notes/personal/personal-software-career-experience.md) | New skill or area (e.g. mobile development) absent from its Skills or contributions: add it. |
+| [code-quality-tools.md](./docs/code-quality-tools.md) | Quality tooling; update its inventory when adding/removing a tool. |
+| [database-migrations.md](./docs/ci/database-migrations.md) | Database migrations. |
+| [fork-identity-inventory.md](./docs/fork-identity-inventory.md) | Making the repo forkable; update when adding or removing a hardcoded account, domain or identity value. |
+| [free-tier-infrastructure.md](./docs/infrastructure/free-tier-infrastructure.md) | New cloud services or VM sizing; update the affected allowance row. |
+| [git-workflow.md](./docs/git-workflow.md) | Branching, staging, commits, PRs and syncing main. |
+| [github-repo-protection.md](./docs/infrastructure/github-repo-protection.md) | GitHub protection, bypass actors or push rejections. |
+| [jellyfin-pi.md](./docs/infrastructure/jellyfin-pi.md) | LAN hardware provisioning via Ansible. |
+| [learning-timeline.md](./docs/learning-timeline.md) | Extend the current month when work introduces a new topic. |
+| [network-management.md](./docs/infrastructure/network-management.md) | DNS, domains, proxies, tunnels or VPN. |
+| [nuance-pattern.md](./docs/nuance-pattern.md) | Directory context edits or recording a non-obvious trap. |
+| [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md) | Diff cleanup checklist. |
+| [repo-operations.md](./docs/repo-operations.md) | Infrastructure inventory, persistence, backups, local stack and service auth. |
+| [secret-management.md](./docs/infrastructure/secret-management.md) | Secrets, local `.env`/`.tfvars` or Terraform GitHub tokens; update its secret inventory as secrets change. |
+| [terraform.md](./docs/ci/terraform.md) | Infrastructure changes, local applies and drift detection. |
+| [todo-pattern.md](./docs/todo-pattern.md) | [TODO.md](./TODO.md) backlog edits and the id contract. |
+| [upptime.md](./docs/infrastructure/upptime.md) | Monitoring configuration and its isolated repository. |
+| [workflow-conventions.md](./docs/ci/workflow-conventions.md) | Workflow changes, including agentic run summaries. |
 
 ## Dev Tooling
 
@@ -77,7 +79,7 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 
 ### Documentation
 
-- Keep requested Markdown-table content in the table; add no surrounding prose unless requested.
+- Keep requested Markdown-table content in the table; add no surrounding prose unless requested. That includes a lead-in sentence under the heading that restates, introduces or summarizes what the table shows; keep only prose that adds facts the table cannot hold.
 - Alphabetize unordered tables by their first column. Preserve meaningful order for steps, progressions, diagram labels and fixed side-by-side comparisons whose heading names the order.
 - Check relative links and section anchors after moving files or renaming headings.
 - This file and Doc Map documents with at least three `##` sections need a `## Table of Contents` after the one-line purpose. Derive it from headings in document order, nesting `###` entries and ignoring fenced examples; rebuild it when headings change and add a missing one when touching a listed doc. READMEs follow `app-readme-pattern.md` and stay deployment-agnostic (no hosted URLs or deploy targets; Stack groups ordered, items sorted, no parentheticals, optional ` - description` only when the name is ambiguous); notes follow [notes/CONTEXT.md](./notes/CONTEXT.md). Do not add ToCs to unrelated files.
@@ -97,3 +99,9 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 - Do not write tests unless explicitly asked.
 - Never create import cycles; `import/no-cycle` fails lint. Inside a lib, import from the sibling module, never from the lib's own `index.ts`.
 - Comments should explain non-obvious reasons, constraints or traps. Remove redundant comments and generator scaffolding when touching a file. Preserve comments that are an empty block's sole body, and `TODO`/`FIXME`/lint directives.
+
+## Nuances
+
+### `git status` shows a Markdown file modified while `git diff` is empty
+
+Committed Markdown tables are unpadded and the working tree is re-aligned on checkout by the `mdtable` filter ([code-quality-tools.md](./docs/code-quality-tools.md)). Git treats a working file whose size differs from the size it recorded at `git add` or checkout as modified without running the filter, so re-padding alone (format-on-save on a file left compact on disk, Prettier after staging) reports ` M` with no diff. If that file is also staged, lint-staged aborts the commit with `Failed to restore unstaged changes!`. Run `git add <file>` to re-record it; the content is unchanged. Read committed rows with `git show HEAD:<file>`, not the working file.

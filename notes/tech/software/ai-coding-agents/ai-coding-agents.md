@@ -1,101 +1,91 @@
 # AI Coding Agents
 
-Terminal coding agents: how they are used day to day, and how their subscription plans translate into automated, unattended runs. Per-agent command and config reference lives in [Claude Code](./claude-code.md) and [Codex](./codex.md).
-
 ## Table of Contents
 
-- [Usage](#usage)
+- [Shared Features](#shared-features)
 - [Commands](#commands)
-- [PR Workflow Performance](#pr-workflow-performance)
-- [Tips](#tips)
+- [Permission Modes](#permission-modes)
+- [Performance](#performance)
 - [Plans and Billing](#plans-and-billing)
 - [Non-Interactive Authentication](#non-interactive-authentication)
 - [Why the Sandbox Credential Matters](#why-the-sandbox-credential-matters)
+- [Nuances](#nuances)
 - [References](#references)
 
-## Usage
+## Shared Features
 
-Both agents have converged on the same primitives — a markdown instruction file, `SKILL.md` skills, MCP servers, lifecycle hooks, subagents — so the differences are in where files live, how a capability is invoked, and how much the agent does without being asked.
-
-| Dimension                 | Claude Code                                                                                                                                                                                                         | Codex                                                                                                                                                                                                            |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Context compaction        | Auto-compacts when the window fills, or on demand with `/compact`. Compaction re-attaches the most recent invocation of each skill after the summary, keeping the first 5,000 tokens each within a 25,000 budget.   | Auto-compacts at a threshold capped at 90% of the context window and lowerable in config, firing before the next user message or at a tool-loop boundary. `/compact` forces it.                                  |
-| Hooks                     | Lifecycle hooks declared in settings; an individual skill can also carry its own `hooks` entries.                                                                                                                   | Lifecycle shell scripts (beta) on events such as pre-tool-use, post-tool-use, and turn end. `/hooks` lists them, and untrusted projects skip them.                                                               |
-| MCP servers               | Added with `claude mcp add` or committed per project; `/mcp` inspects the connected servers.                                                                                                                        | Added with `codex mcp add` and recorded in `config.toml`; `/mcp` inspects the connected servers.                                                                                                                 |
-| Permissions and approvals | Per-tool permission prompts, pre-approved through settings rules or a skill's `allowed-tools`.                                                                                                                      | An explicit `sandbox_mode` paired with a separate `approval_policy`, changeable mid-session with `/permissions`. See [Sandbox](./codex.md#sandbox).                                                              |
-| Project instructions      | `CLAUDE.md` (or `AGENTS.md` from v2.1.277), read at session start and merged from the user-level file down through the directory tree.                                                                              | `AGENTS.md`, found by walking up to the project root, with a 32 KiB default byte cap and configurable fallback filenames. See [config.toml](./codex.md#configtoml).                                              |
-| Session resume            | `/resume` picks up an earlier conversation; `/rewind` rolls back to an earlier checkpoint; `/clear` starts fresh.                                                                                                   | `codex resume --last` continues the most recent session; `codex fork --last` branches a copy so an alternative approach doesn't cost the original.                                                               |
-| Skills                    | `SKILL.md` under `.claude/skills/`, `~/.claude/skills/`, a nested directory, managed settings, or a plugin. Frontmatter can restrict tools, bind arguments, scope to file globs, or fork the skill into a subagent. | `SKILL.md` under `.agents/skills/` in the repo or a parent, `$HOME/.agents/skills/`, `/etc/codex/skills`, plus the set bundled with the CLI. `/skills` browses what is loaded.                                   |
-| Skill invocation          | Typed as `/<name>`, or chosen by the model from the skill's `description`.                                                                                                                                          | Typed as `$<name>`, or chosen by the model from the skill's `description`.                                                                                                                                       |
-| Slash commands            | Built-ins cover session control; custom commands _are_ skills, so `/<name>` comes from the skill directory. Arguments substitute as `$ARGUMENTS` or by name, and a command can inject shell output before the turn. | Built-ins cover session control. Reusable prompt files under `~/.codex/prompts/` still appear as `/prompts:<name>`, but skills are now the recommended authoring format for them.                                |
-| Subagents                 | Markdown definitions in `.claude/agents/`. The main agent can delegate on its own judgement, and a skill can fork into one.                                                                                         | TOML definitions in `.codex/agents/` or `~/.codex/agents/`, requiring `name`, `description`, and `developer_instructions`. Local releases spawn one only on an explicit request or an instruction asking for it. |
-
-Two differences matter more than the file paths:
-
-- **Invocation sigil.** Claude Code collapses custom commands and skills into one `/` namespace; Codex keeps `/` for built-ins and uses `$` for skills, so a skill and a built-in can never shadow each other.
-- **How much is automatic.** Claude Code will delegate to a subagent on its own reading of the task. Codex spawns one only when asked, or when `AGENTS.md` or a skill tells it to, which makes parallelism explicit rather than emergent.
+| Dimension | Claude Code and Codex |
+| --- | --- |
+| Context compaction | Auto-compacts as the window fills; `/compact` forces it. |
+| Hooks | Lifecycle hooks that run scripts around tool use and turn end. |
+| MCP servers | Added with `<agent> mcp add`; `/mcp` inspects the connected servers. |
+| Project instructions | A markdown file read at session start (`AGENTS.md` in both; `CLAUDE.md` also in Claude Code). |
+| Session resume | Continue an earlier conversation from the CLI or a slash command. |
+| Skills | A `SKILL.md` per skill, chosen by the model from its `description` or typed explicitly. `/skills` browses what is loaded in Codex. |
+| Subagents | Named definitions in an agents directory, each with a description and instructions, delegated to for focused or parallel work. |
 
 ## Commands
 
-The commands from [Claude Code](./claude-code.md) next to their [Codex](./codex.md#commands) counterparts.
+| Purpose | Claude Code | Codex |
+| --- | --- | --- |
+| Change settings | `/config` | Edit `~/.codex/config.toml`; `/permissions` for sandbox and approvals |
+| Choose the active model | `/model` | `/model` |
+| Continue an earlier conversation | `/resume` | `codex resume --last` |
+| Open the interactive session | `claude` | `codex` |
+| Project instructions file | `CLAUDE.md` or `AGENTS.md` (v2.1.277+) | `AGENTS.md` |
+| Roll back to an earlier checkpoint | `/rewind` | No checkpoint rollback; `codex fork` branches a session instead |
+| Show version, model, account, and limits | `/status`, `/usage` | `/status` |
+| Sign in or switch accounts | `/login` | `codex login` |
+| Sign out | `/logout` | `codex logout` |
+| Start a fresh conversation | `/clear` | `/new` |
+| Summarize context to free up space | `/compact` | `/compact` |
 
-| Purpose                                  | Claude Code                            | Codex                                                                 |
-| ---------------------------------------- | -------------------------------------- | --------------------------------------------------------------------- |
-| Open the interactive session             | `claude`                               | `codex`                                                               |
-| Show version, model, account, and limits | `/status`, `/usage`                    | `/status`                                                             |
-| Sign in or switch accounts               | `/login`                               | `codex login`                                                         |
-| Sign out                                 | `/logout`                              | `codex logout`                                                        |
-| Summarize context to free up space       | `/compact`                             | `/compact`                                                            |
-| Start a fresh conversation               | `/clear`                               | `/new`                                                                |
-| Roll back to an earlier checkpoint       | `/rewind`                              | No checkpoint rollback; `codex fork` branches a session instead       |
-| Continue an earlier conversation         | `/resume`                              | `codex resume --last`                                                 |
-| Choose the active model                  | `/model`                               | `/model`                                                              |
-| Change settings                          | `/config`                              | Edit `~/.codex/config.toml`; `/permissions` for sandbox and approvals |
-| Project instructions file                | `CLAUDE.md` or `AGENTS.md` (v2.1.277+) | `AGENTS.md`                                                           |
+## Permission Modes
 
-## PR Workflow Performance
+| Mode | Claude Code | Codex | Use for |
+| --- | --- | --- | --- |
+| Plan | `plan`: reads and explores but makes no edits or state-changing commands; ends with a proposed plan to approve. | `--sandbox read-only`, so the agent can inspect but not write. | Scoping unfamiliar or risky work before any change lands. |
+| Default | `manual`: prompts before every edit and command not already allowed by settings rules. | `--ask-for-approval untrusted`: prompts before anything outside a trusted read-only set. | Unfamiliar repos and sensitive machines. |
+| Accept edits | `acceptEdits`: file edits in the working directory go through; other commands still prompt. | `--sandbox workspace-write --ask-for-approval on-request` (`--full-auto`): writes in the workspace freely. | Routine interactive coding where you review the diff afterwards. |
+| Auto | `auto`: a classifier reviews each action, approving routine edits and checks and blocking risky ones such as exfiltration, credential reads or running downloaded code. Headless, a blocked action is refused rather than asked. | `approvals_reviewer = "auto_review"`: an automated reviewer answers on-request approvals. | Long or unattended runs where nobody is watching but a guard is still wanted. |
+| Allow-list only | `dontAsk`: anything not pre-approved by allow rules is denied instead of prompted. | `--ask-for-approval never` inside a sandbox: failures return to the model instead of prompting. | Locked-down headless jobs with a known, fixed tool set. |
+| Dangerous / bypass | `bypassPermissions` (`--dangerously-skip-permissions`): no checks at all; the CLI recommends it only for sandboxes without internet access. | `--dangerously-bypass-approvals-and-sandbox`: no sandbox and no approvals. | Disposable, network-restricted containers where the container is the guard. |
+
+## Performance
 
 For an unattended `issue/prompt → inspect repo → implement → test → commit → PR` loop (e.g. both run as GitHub Actions agents), the gap is agent behavior more than raw model speed: Codex is tuned for long-horizon autonomy and leans on repeated implement → verify → repair cycles, where Claude Code tends to start editing sooner and reach a PR faster on straightforward tasks.
 
-| Dimension                       | Claude Code    | Codex                                                 |
-| ------------------------------- | -------------- | ----------------------------------------------------- |
-| Repo exploration                | Fast           | More methodical                                       |
-| Starts editing                  | Usually sooner | Usually later                                         |
-| Tool calls                      | Moderate       | Often more                                            |
-| Testing/verification            | Good           | Very thorough — implement → verify → repair, repeated |
-| Time to PR on routine tasks     | Usually faster | Often slower                                          |
-| Complex, long-horizon debugging | Excellent      | Excellent — this is the case it's optimized for       |
-| Risk of over-investigating      | Moderate       | Higher                                                |
-
-## Tips
-
-- Tune Codex's reasoning effort to the task instead of running every automated job at the same level — see [Reasoning Effort](./codex.md#reasoning-effort).
+| Dimension | Claude Code | Codex |
+| --- | --- | --- |
+| Complex, long-horizon debugging | Excellent | Excellent — this is the case it's optimized for |
+| Repo exploration | Fast | More methodical |
+| Risk of over-investigating | Moderate | Higher |
+| Starts editing | Usually sooner | Usually later |
+| Testing/verification | Good | Very thorough — implement → verify → repair, repeated |
+| Time to PR on routine tasks | Usually faster | Often slower |
+| Tool calls | Moderate | Often more |
 
 ## Plans and Billing
 
-Both agents are bundled into the vendor's consumer chat subscription rather than sold separately, and both also accept a pay-per-token API key instead.
-
-| Dimension           | Claude Code                                                                                   | Codex                                                                                                                        |
-| ------------------- | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| Free access         | None — the agent requires a paid plan.                                                        | Included on the free ChatGPT tier at small limits.                                                                           |
-| Metered alternative | An Anthropic API key, billed to the Console organization at API rates.                        | An OpenAI Platform API key, billed to the Platform account at API rates.                                                     |
-| Overage             | No top-up — wait for the window to reset or switch that session to API billing.               | Plus and Pro can buy credits to keep working past the included allowance.                                                    |
-| Paid plans          | Pro, Max 5x, and Max 20x on individual accounts; Team and Enterprise seats for organizations. | ChatGPT Plus and Pro on individual accounts; Business, Edu, and Enterprise seats for organizations.                          |
-| Shared allowance    | Agent usage draws on the same subscription limits as the chat product.                        | Agent usage draws on the same plan allowance as the chat product.                                                            |
-| Usage limits        | A rolling five-hour window plus a per-account weekly cap that applies across models.          | A rolling five-hour window on the lower tiers; the Pro tiers lift most five-hour limits, and the top tiers meter by credits. |
+| Dimension | Claude Code | Codex |
+| --- | --- | --- |
+| Free access | None — the agent requires a paid plan. | Included on the free ChatGPT tier at small limits. |
+| Metered alternative | An Anthropic API key, billed to the Console organization at API rates. | An OpenAI Platform API key, billed to the Platform account at API rates. |
+| Overage | No top-up — wait for the window to reset or switch that session to API billing. | Plus and Pro can buy credits to keep working past the included allowance. |
+| Paid plans | Pro, Max 5x, and Max 20x on individual accounts; Team and Enterprise seats for organizations. | ChatGPT Plus and Pro on individual accounts; Business, Edu, and Enterprise seats for organizations. |
+| Shared allowance | Agent usage draws on the same subscription limits as the chat product. | Agent usage draws on the same plan allowance as the chat product. |
+| Usage limits | A rolling five-hour window plus a per-account weekly cap that applies across models. | A rolling five-hour window on the lower tiers; the Pro tiers lift most five-hour limits, and the top tiers meter by credits. |
 
 ## Non-Interactive Authentication
 
-This is where the two diverge most. Interactive login is a browser flow in both, but only one of them hands an individual subscriber a credential that an unattended container can use while still billing against the subscription.
-
-| Dimension                     | Claude Code                                                                                                             | Codex                                                                                                                                   |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| Available on individual plans | Yes — any Pro or Max subscriber can mint one.                                                                           | No — Plus and Pro do not get Codex access tokens; they are supported for Business and Enterprise workspaces.                            |
-| Credential for headless runs  | `claude setup-token` mints an OAuth token, consumed as `CLAUDE_CODE_OAUTH_TOKEN`.                                       | A workspace Codex access token for `codex exec`, or otherwise an API key.                                                               |
-| Draws on the subscription     | Yes — runs authenticated with the OAuth token count against the plan's limits instead of API billing.                   | Only through a workspace access token. An API key is separate API billing, not subscription usage.                                      |
-| Official CI action            | `anthropics/claude-code-action`, which accepts either the OAuth token or an API key.                                    | `openai/codex-action`, which fronts an API key with a proxy so shell steps never see it.                                                |
-| Scope restrictions            | Model requests only — no remote-control sessions or account-side connectors. Some fast-start modes ignore the variable. | Documented for trusted local automation; the vendor warns against exposing them to public CI, forked pull requests, or shared machines. |
-| Token lifetime                | One year.                                                                                                               | Finite and workspace-capped, on the order of weeks to a few months.                                                                     |
+| Dimension | Claude Code | Codex |
+| --- | --- | --- |
+| Available on individual plans | Yes — any Pro or Max subscriber can mint one. | No — Plus and Pro do not get Codex access tokens; they are supported for Business and Enterprise workspaces. |
+| Credential for headless runs | `claude setup-token` mints an OAuth token, consumed as `CLAUDE_CODE_OAUTH_TOKEN`. | A workspace Codex access token for `codex exec`, or otherwise an API key. |
+| Draws on the subscription | Yes — runs authenticated with the OAuth token count against the plan's limits instead of API billing. | Only through a workspace access token. An API key is separate API billing, not subscription usage. |
+| Official CI action | `anthropics/claude-code-action`, which accepts either the OAuth token or an API key. | `openai/codex-action`, which fronts an API key with a proxy so shell steps never see it. |
+| Scope restrictions | Model requests only — no remote-control sessions or account-side connectors. Some fast-start modes ignore the variable. | Documented for trusted local automation; the vendor warns against exposing them to public CI, forked pull requests, or shared machines. |
+| Token lifetime | One year. | Finite and workspace-capped, on the order of weeks to a few months. |
 
 ## Why the Sandbox Credential Matters
 
@@ -107,11 +97,22 @@ An agentic sandbox — a disposable container or CI runner that clones a repo, r
 
 The practical consequence is that unattended, high-volume agent loops are cheap to prototype on a Claude subscription and carry a variable per-token bill on Codex unless the account sits on a business workspace.
 
+## Nuances
+
+| Dimension | Claude Code | Codex |
+| --- | --- | --- |
+| Context compaction | Re-attaches the most recent invocation of each skill after the summary, keeping the first 5,000 tokens each within a 25,000 budget. | Threshold capped at 90% of the context window and lowerable in config, firing before the next user message or at a tool-loop boundary. |
+| Hooks | Declared in settings; an individual skill can also carry its own `hooks` entries. | Shell scripts (beta) on events such as pre-tool-use, post-tool-use, and turn end. `/hooks` lists them, and untrusted projects skip them. |
+| MCP servers | Can be committed per project. | Recorded in `config.toml`. |
+| Permissions and approvals | Named session modes, cycled with Shift+Tab or set with `--permission-mode <mode>` at launch. Per-tool prompts are pre-approved through settings rules or a skill's `allowed-tools`. Deny rules (`--disallowedTools`) apply in every mode, bypass included, so a headless run in auto can still keep `git push` out of the agent's hands. | No named modes; the same spectrum is composed from an explicit `sandbox_mode` paired with a separate `approval_policy`, changeable mid-session with `/permissions`. See [Sandbox](./codex.md#sandbox). |
+| Project instructions | `CLAUDE.md` (or `AGENTS.md` from v2.1.277), merged from the user-level file down through the directory tree. | `AGENTS.md`, found by walking up to the project root, with a 32 KiB default byte cap and configurable fallback filenames. See [config.toml](./codex.md#configtoml). |
+| Session resume | `/resume` picks up an earlier conversation; `/rewind` rolls back to an earlier checkpoint; `/clear` starts fresh. | `codex resume --last` continues the most recent session; `codex fork --last` branches a copy so an alternative approach doesn't cost the original. |
+| Skill invocation | Typed as `/<name>`; custom commands and skills share one `/` namespace. | Typed as `$<name>`; `/` stays reserved for built-ins, so a skill and a built-in never shadow each other. |
+| Skill locations | `.claude/skills/`, `~/.claude/skills/`, a nested directory, managed settings, or a plugin. Frontmatter can restrict tools, bind arguments, scope to file globs, or fork the skill into a subagent. | `.agents/skills/` in the repo or a parent, `$HOME/.agents/skills/`, `/etc/codex/skills`, plus the set bundled with the CLI. |
+| Slash commands | Custom commands _are_ skills, so `/<name>` comes from the skill directory. Arguments substitute as `$ARGUMENTS` or by name, and a command can inject shell output before the turn. | Reusable prompt files under `~/.codex/prompts/` still appear as `/prompts:<name>`, but skills are now the recommended authoring format for them. |
+| Subagents | Markdown definitions in `.claude/agents/`. The main agent delegates on its own reading of the task, and a skill can fork into one. | TOML definitions in `.codex/agents/` or `~/.codex/agents/`, requiring `name`, `description`, and `developer_instructions`. Spawns one only on an explicit request, or when `AGENTS.md` or a skill says to, which makes parallelism explicit rather than emergent. |
+
 ## References
 
-- [Claude Code](./claude-code.md) — commands, context handling, settings
 - [Codex](./codex.md) — commands, `config.toml`, sandbox modes
 - [LLM Chat Services](../llm-chat-services.md) — the chat products these subscriptions also cover
-- [OpenAI Codex access tokens](https://learn.chatgpt.com/docs/enterprise/access-tokens) — Business/Enterprise token availability
-- [OpenAI Codex authentication](https://learn.chatgpt.com/docs/auth) — API-key billing and headless login fallbacks
-- [OpenAI Codex pricing](https://learn.chatgpt.com/docs/pricing) — plan feature availability

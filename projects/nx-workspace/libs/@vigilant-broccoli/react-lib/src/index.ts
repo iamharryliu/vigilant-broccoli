@@ -1,5 +1,6 @@
 export * from './components';
 export * from './hooks/useDocumentTitle';
+export * from './hooks/useDocumentThemeClass';
 export * from './hooks/useAnimatedNumber';
 export * from './hooks/useGeolocation';
 export * from './hooks/useSpeechToText';
@@ -13,4 +14,6 @@ export * from './utils/commit-type.utils';
 export * from './utils/focus-navigation.utils';
 export * from './utils/fuzzy-match.utils';
 export * from './utils/resizeImage';
+export * from './utils/text-diff.utils';
 export * from './utils/upptime.utils';
+export * from './utils/keyboard-accessory.utils';

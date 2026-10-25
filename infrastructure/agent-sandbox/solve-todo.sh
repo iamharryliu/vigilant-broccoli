@@ -15,6 +15,7 @@ MODEL=sonnet
 CODEX_MODEL=""
 PROMPT=""
 LOCAL=0
+VM=0
 PUBLISH=0
 OLLAMA_MODEL=${OLLAMA_MODEL:-qwen3-coder:30b}
 OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
@@ -23,6 +24,10 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --local)
       LOCAL=1
+      shift
+      ;;
+    --vm)
+      VM=1
       shift
       ;;
     --foreground)
@@ -61,6 +66,10 @@ while [ $# -gt 0 ]; do
 done
 
 [ "$AGENT_RUNNER" != ollama ] || LOCAL=1
+if [ "$VM" = 1 ] && { [ "$LOCAL" = 1 ] || [ "$AGENT_RUNNER" != claude ]; }; then
+  echo "ERROR: --vm runs Claude only; it cannot be combined with --local or --agent codex|ollama." >&2
+  exit 1
+fi
 if [ "$LOCAL" = 1 ]; then
   if [ "$AGENT_RUNNER" != claude ] && [ "$AGENT_RUNNER" != ollama ]; then
     echo "ERROR: --local cannot be combined with --agent codex." >&2
@@ -84,10 +93,13 @@ if [ -n "$PROMPT" ] && [ ${#IDS[@]} -gt 0 ]; then
   exit 1
 fi
 if [ -z "$PROMPT" ] && [ ${#IDS[@]} -eq 0 ]; then
-  echo "Usage: pnpm agentic-pr-create [--local [--publish] [--ollama-model <model>]] [--foreground] [--agent claude|codex|ollama] [--model <claude-model>] [--codex-model <codex-model>] (<TODO_ID> [TODO_ID...] | --prompt \"<task description>\")" >&2
+  echo "Usage: pnpm agentic-pr-create [--vm | --local [--publish] [--ollama-model <model>]] [--foreground] [--agent claude|codex|ollama] [--model <claude-model>] [--codex-model <codex-model>] (<TODO_ID> [TODO_ID...] | --prompt \"<task description>\")" >&2
   exit 1
 fi
 
+if [ "$VM" = 1 ]; then
+  exec bash "$SCRIPT_DIR/solve-vm.sh" "$MODEL" "$PROMPT" ${IDS[@]+"${IDS[@]}"}
+fi
 if [ "$LOCAL" = 1 ]; then
   exec bash "$SCRIPT_DIR/solve-local.sh" "$PUBLISH" "$OLLAMA_MODEL" "$OLLAMA_BASE_URL" "$PROMPT" ${IDS[@]+"${IDS[@]}"}
 fi
@@ -206,6 +218,7 @@ DOCKER_ENV_ARGS=(
   -e SANDBOX_ALLOWED_DOMAINS
   -e SOLVE_AGENT="$AGENT_RUNNER"
   -e SOLVE_MODEL="$MODEL"
+  -e SOLVE_PERMISSION_MODE
   -e CODEX_MODEL="$CODEX_MODEL"
   -e GITHUB_ACTIONS
 )

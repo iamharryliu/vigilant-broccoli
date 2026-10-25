@@ -1,17 +1,21 @@
 # DNS
 
+## Table of Contents
+
+- [Record Types](#record-types)
+- [TTL](#ttl)
+
 ## Record Types
 
-- A Record - used to map domain to IPv4 address
-- AAAA Record - used to map domain to IPv6 address
-- CNAME (Canonical name) Record - used to alias one domain to another domain
-- MX (Main Exchange) Record - specified mail server responsible for receiving mail on behalf of the domain
+| Record | Name | Purpose |
+| --- | --- | --- |
+| A | Address | Maps a domain to an IPv4 address. |
+| AAAA | IPv6 Address | Maps a domain to an IPv6 address. |
+| CNAME | Canonical Name | Aliases one domain to another domain. |
+| MX | Mail Exchange | Specifies the mail server that receives mail on behalf of the domain. |
+| TXT | Text | Holds arbitrary text, such as SPF, DKIM and DMARC email-authentication policies and domain-ownership verification tokens. |
 
-## Subdomain
+## TTL
 
-- Propagation may take time.
-- Make sure to setup connection on both ends, the DNS registrar and the server end.
-
-## References
-
-[FlyIO and Cloudflare DNS](https://www.mkartchner.com/blog/hosting-flyio-cloudflare-dns)
+- Every record has a TTL (time to live): the number of seconds resolvers may cache it before querying again.
+- Lower the TTL (e.g. to 300) a day before changing a record so the change propagates quickly, then raise it again afterwards.
