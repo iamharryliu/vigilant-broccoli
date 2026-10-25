@@ -97,7 +97,7 @@ echo "$TRAILER" | grep -Eqi '^co-authored-by: .+ <.+>$' || TRAILER="$FALLBACK_TR
 bash "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh"
 
 git add docs/rnd
-git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
+SKIP=$SKIP_COMMIT_HOOKS git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
 git push -u origin "$BRANCH"
 
 if [ -n "${GITHUB_ACTIONS:-}" ]; then
