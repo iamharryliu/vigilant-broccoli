@@ -1,5 +1,5 @@
 import unittest
-from array.largest_number import Solution
+from arrays.largest_number import Solution
 
 
 class TestSolution(unittest.TestCase):

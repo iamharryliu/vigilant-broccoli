@@ -1,5 +1,5 @@
 import unittest
-from array.contains_duplicate import Solution
+from arrays.contains_duplicate import Solution
 
 
 class TestSolution(unittest.TestCase):

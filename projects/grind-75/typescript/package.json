@@ -22,12 +22,13 @@
     "@types/jest": "^29.5.12",
     "eslint": "^9.4.0",
     "jest": "^29.7.0",
+    "prettier": "^3.9.10",
     "ts-jest": "^29.1.4",
     "typescript": "^5.4.5"
   },
   "scripts": {
     "lint:commit": "pnpm run lint:commit",
-    "format:commit": "prettier --write .",
+    "format:commit": "prettier --write",
     "test:commit": "pnpm exec jest"
   },
   "keywords": [],

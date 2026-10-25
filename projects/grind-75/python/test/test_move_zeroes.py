@@ -1,5 +1,5 @@
 import unittest
-from array.move_zeroes import Solution
+from arrays.move_zeroes import Solution
 
 
 class TestSolution(unittest.TestCase):
