@@ -21,6 +21,11 @@ Personal monorepo, supporting **19 applications**, **6 API services**, **11 Dock
   - [Public](#public)
   - [Private](#private)
   - [Local](#local)
+- [Deployment](#deployment)
+  - [Environments](#environments)
+  - [`main`](#main)
+  - [`production`](#production)
+  - [Demo](#demo)
 - [Libraries](#libraries)
 - [CI Actions](#ci-actions)
 - [Stack](#stack)
@@ -127,6 +132,83 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [Spotify to MP3](./scripts/python/dj-scripts/spotify-to-mp3) | Command-line music download utility. |
 | <img src="./vday-godot-game/icon.svg" width="20" height="20" align="absmiddle"> [Valentine’s Day Adventure Game](./vday-godot-game) | Godot adventure game with heart collection. |
 | <img src="./projects/nx-workspace/apps/ui/vb-manager-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [VB Manager](./projects/nx-workspace/apps/ui/vb-manager-next) | Personal management dashboard. |
+
+## Deployment
+
+### Environments
+
+| Environment | Trigger | Targets | Workflow |
+| --- | --- | --- | --- |
+| Preview | Pull request touching `projects/nx-workspace/**` or docs/agent context; previews of closed PRs are swept daily | Affected `deploy:preview` targets, as Cloudflare Pages `pr-<number>` branches | `deploy-preview`, `cron-cleanup-preview-deployments` |
+| Staging | Push to `main` touching `projects/nx-workspace/**`, or docs/agent context (Agent Context) or `notes/**` (Docs MD); manual dispatch (defaults to staging) | Affected `deploy` targets (all of them on dispatch), plus Pages Index on GitHub Pages | `deploy`, `deploy-context-md`, `deploy-docs-md`, `manual-deploy-app` |
+| Demo | Successful staging deploy; manual dispatch | Every `deploy:demo` target | `deploy-demo-apps`, `manual-deploy-app` |
+| Production | Push to the `production` branch; manual dispatch with `environment: production` | Every `deploy:production` target, plus npm package publishing | `deploy`, `deploy-context-md`, `deploy-docs-md`, `manual-deploy-app` |
+
+### `main`
+
+| Application | Destination | Dependencies |
+| --- | --- | --- |
+| [Agent Context](./projects/nx-workspace/apps/ui/context-md) | Cloudflare Pages | None |
+| [Balloono](./projects/nx-workspace/apps/ui/balloono) | Vercel | Supabase |
+| [Bookmarks](./projects/nx-workspace/apps/ui/bookmarks-react) | Cloudflare Pages | None |
+| [Bucket Service](./projects/nx-workspace/apps/api/bucket-service) | Fly.io | Cloudflare R2, Google Cloud Storage |
+| [Calendars](./projects/nx-workspace/apps/ui/calendars) | Cloudflare Pages | Google Calendar, VB Express |
+| [Cloud8Skate](./projects/nx-workspace/apps/ui/cloud-8-skate-react) | Cloudflare Pages | Cloud8Skate Sanity, Google Calendar, reCAPTCHA, VB Express |
+| [Cloud8Skate Sanity](./projects/nx-workspace/apps/cms/cloud8skate-sanity) | Sanity | None |
+| [Component Library](./projects/nx-workspace/apps/ui/component-library) | Cloudflare Pages | None |
+| [Docs MD](./projects/nx-workspace/apps/ui/docs-md) | Cloudflare Pages | None |
+| [Email Service](./projects/nx-workspace/apps/api/email-service) | Fly.io | RabbitMQ, Resend |
+| [Email Subscription Service](./projects/nx-workspace/apps/api/email-subscription-service) | Fly.io | Email Service, RabbitMQ, Supabase |
+| [Employee Handler UI](./projects/nx-workspace/apps/ui/employee-handler-ui) | Docker Hub | Supabase |
+| [FindMe](./projects/nx-workspace/apps/findme) | Cloudflare Pages | Supabase |
+| [Hearth](./projects/nx-workspace/apps/hearth) | Vercel | Google Tasks, Supabase, VB Express |
+| [LLM Service](./projects/nx-workspace/apps/api/llm-service) | Fly.io | Anthropic, DeepSeek, Gemini, Grok, OpenAI |
+| [Office Presence Service](./projects/nx-workspace/apps/api/office-presence-service) | Docker Hub | Slack |
+| [Pages Index](./projects/nx-workspace/apps/ui/pages-index) | GitHub Pages | GitHub API |
+| [Personal Website](./projects/nx-workspace/apps/ui/personal-website-react) | Cloudflare Pages | reCAPTCHA, VB Express |
+| [Pomodoro](./projects/nx-workspace/apps/ui/pomodoro-react) | Cloudflare Pages | None |
+| [Socket Server (Socket.IO)](./projects/nx-workspace/apps/socket-server-socketio) | Docker Hub, OCI VM | None |
+| [Utilities UI](./projects/nx-workspace/apps/ui/utilities-ui) | Cloudflare Pages, Docker Hub | None |
+| [VB Express](./projects/nx-workspace/apps/api/vb-express) | Fly.io | Bucket Service, ElevenLabs, Email Service, Google OAuth, LLM Service, reCAPTCHA, Supabase, Twilio |
+| [VB Manager Mobile](./projects/nx-workspace/apps/vb-manager-next-mobile) | Vercel | Google Workspace APIs, Supabase, VB Express |
+| [Waiting Games](./projects/nx-workspace/apps/ui/waiting-games) | Cloudflare Pages, Docker Hub | None |
+| [Weather](./projects/nx-workspace/apps/ui/weather-next) | Vercel | Open-Meteo, VB Express |
+| [Whiteboard](./projects/nx-workspace/apps/whiteboard) | Cloudflare Pages | Supabase |
+
+### `production`
+
+| Application | Destination | Dependencies |
+| --- | --- | --- |
+| [Agent Context](./projects/nx-workspace/apps/ui/context-md) | Cloudflare Pages | None |
+| [Balloono](./projects/nx-workspace/apps/ui/balloono) | Vercel | Supabase |
+| [Bookmarks](./projects/nx-workspace/apps/ui/bookmarks-react) | Cloudflare Pages | None |
+| [Bucket Service](./projects/nx-workspace/apps/api/bucket-service) | Fly.io | Cloudflare R2, Google Cloud Storage |
+| [Calendars](./projects/nx-workspace/apps/ui/calendars) | Cloudflare Pages | Google Calendar, VB Express |
+| [Cloud8Skate](./projects/nx-workspace/apps/ui/cloud-8-skate-react) | Cloudflare Pages | Cloud8Skate Sanity, Google Calendar, reCAPTCHA, VB Express |
+| [Component Library](./projects/nx-workspace/apps/ui/component-library) | Cloudflare Pages | None |
+| [Docs MD](./projects/nx-workspace/apps/ui/docs-md) | Cloudflare Pages | None |
+| [Email Service](./projects/nx-workspace/apps/api/email-service) | Fly.io | RabbitMQ, Resend |
+| [Email Subscription Service](./projects/nx-workspace/apps/api/email-subscription-service) | Fly.io | Email Service, RabbitMQ, Supabase |
+| [Employee Handler UI](./projects/nx-workspace/apps/ui/employee-handler-ui) | Docker Hub | Supabase |
+| [FindMe](./projects/nx-workspace/apps/findme) | Cloudflare Pages | Supabase |
+| [Hearth](./projects/nx-workspace/apps/hearth) | Vercel | Google Tasks, Supabase, VB Express |
+| [LLM Service](./projects/nx-workspace/apps/api/llm-service) | Fly.io | Anthropic, DeepSeek, Gemini, Grok, OpenAI |
+| [Personal Website](./projects/nx-workspace/apps/ui/personal-website-react) | Cloudflare Pages | reCAPTCHA, VB Express |
+| [Pomodoro](./projects/nx-workspace/apps/ui/pomodoro-react) | Cloudflare Pages | None |
+| [Utilities UI](./projects/nx-workspace/apps/ui/utilities-ui) | Cloudflare Pages, Docker Hub | None |
+| [VB Express](./projects/nx-workspace/apps/api/vb-express) | Fly.io | Bucket Service, ElevenLabs, Email Service, Google OAuth, LLM Service, reCAPTCHA, Supabase, Twilio |
+| [VB Manager Mobile](./projects/nx-workspace/apps/vb-manager-next-mobile) | Vercel | Google Workspace APIs, Supabase, VB Express |
+| [Waiting Games](./projects/nx-workspace/apps/ui/waiting-games) | Cloudflare Pages, Docker Hub | None |
+| [Weather](./projects/nx-workspace/apps/ui/weather-next) | Vercel | Open-Meteo, VB Express |
+| [Whiteboard](./projects/nx-workspace/apps/whiteboard) | Cloudflare Pages | Supabase |
+
+### Demo
+
+| Application | Destination | Dependencies |
+| --- | --- | --- |
+| [Employee Handler UI](./projects/nx-workspace/apps/ui/employee-handler-ui) | Vercel | Supabase |
+| [Office Presence Service](./projects/nx-workspace/apps/api/office-presence-service) | Fly.io | Slack |
+| [Office Presence UI](./projects/nx-workspace/apps/ui/office-presence-ui) | Cloudflare Pages | Office Presence Service |
 
 ## Libraries
 
