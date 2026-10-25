@@ -29,10 +29,7 @@ function buildAnthropicContent(request: LLMPromptRequest) {
         source: {
           type: 'base64',
           media_type: img.mimeType as
-            | 'image/jpeg'
-            | 'image/png'
-            | 'image/gif'
-            | 'image/webp',
+            'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
           data: img.base64,
         },
       });

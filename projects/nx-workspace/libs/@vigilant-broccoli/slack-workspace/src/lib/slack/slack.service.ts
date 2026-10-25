@@ -3,7 +3,10 @@ import { SLACK_API_URL } from './slack.consts';
 import { SlackMessage } from './slack.models';
 import { createSlackHeaders, stringifyQuery } from './slack.utils';
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
-import { HttpUtils, getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import {
+  HttpUtils,
+  getEnvironmentVariable,
+} from '@vigilant-broccoli/common-node';
 import { Member } from '@slack/web-api/dist/types/response/UsersListResponse';
 
 const sendSlackMessage = async (slackMessage: SlackMessage): Promise<void> => {
@@ -13,10 +16,7 @@ const sendSlackMessage = async (slackMessage: SlackMessage): Promise<void> => {
   };
 
   const query = stringifyQuery(slackMessage);
-  await HttpUtils.makeHttpRequest(
-    `${SLACK_API_URL}?${query}`,
-    REQUEST_OPTIONS,
-  );
+  await HttpUtils.makeHttpRequest(`${SLACK_API_URL}?${query}`, REQUEST_OPTIONS);
 };
 
 const getSlackUsers = async (

@@ -17,7 +17,6 @@ const COLUMN_BY_FIELD: Record<string, string> = {
   resolution: 'resolution',
 };
 
-
 const getSupabase = (req: NextRequest) =>
   createServerClient(getBearerToken(req));
 

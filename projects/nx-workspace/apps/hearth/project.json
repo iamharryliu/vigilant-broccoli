@@ -12,7 +12,9 @@
       "inputs": [
         "default",
         "^default",
-        { "runtime": "cat ../../notes/hobbies/cooking/ingredients/fruits.md ../../notes/hobbies/cooking/ingredients/vegetables.md" },
+        {
+          "runtime": "cat ../../notes/hobbies/cooking/ingredients/fruits.md ../../notes/hobbies/cooking/ingredients/vegetables.md"
+        },
         { "externalDependencies": ["next"] },
         { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true }
       ],
@@ -53,7 +55,9 @@
       "cache": true,
       "inputs": [
         "{projectRoot}/scripts/generate-in-season-produce.ts",
-        { "runtime": "cat ../../notes/hobbies/cooking/ingredients/fruits.md ../../notes/hobbies/cooking/ingredients/vegetables.md" }
+        {
+          "runtime": "cat ../../notes/hobbies/cooking/ingredients/fruits.md ../../notes/hobbies/cooking/ingredients/vegetables.md"
+        }
       ],
       "outputs": ["{projectRoot}/src/lib/generated"],
       "options": {
