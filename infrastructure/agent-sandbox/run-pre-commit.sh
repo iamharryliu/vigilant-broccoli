@@ -11,4 +11,9 @@ export SKIP=grind-75-tests,lint-staged
 # files in the index without staging their content.
 git ls-files --others --exclude-standard -z | xargs -0 -r git add -N --
 
+# Stands in for the skipped lint-staged hook, as ci-pr-check's format step does.
+# update-pr-runner points FORMAT_CHANGED_HELPER at a copy taken before checkout,
+# since the PR branch may predate the script.
+bash "${FORMAT_CHANGED_HELPER:-scripts/shell/format-changed.sh}"
+
 pre-commit run --all-files || pre-commit run --all-files

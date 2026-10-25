@@ -40,29 +40,32 @@ export const ButtonList = ({
 }: ButtonListProps) => {
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLElement>) => {
-    if (e.key === 'Enter') {
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLElement>) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        e.currentTarget.click();
+        return;
+      }
+      if (!(ARROW_KEYS as readonly string[]).includes(e.key)) return;
       e.preventDefault();
-      e.currentTarget.click();
-      return;
-    }
-    if (!(ARROW_KEYS as readonly string[]).includes(e.key)) return;
-    e.preventDefault();
-    const direction: Direction =
-      e.key === 'ArrowDown'
-        ? 'down'
-        : e.key === 'ArrowUp'
-          ? 'up'
-          : e.key === 'ArrowRight'
-            ? 'right'
-            : 'left';
-    moveQuickLinkFocusByDirection({
-      contentRoot: navigationRootRef?.current ?? contentRef.current,
-      searchInput: searchInputRef?.current ?? null,
-      currentElement: e.currentTarget,
-      direction,
-    });
-  }, [navigationRootRef, searchInputRef]);
+      const direction: Direction =
+        e.key === 'ArrowDown'
+          ? 'down'
+          : e.key === 'ArrowUp'
+            ? 'up'
+            : e.key === 'ArrowRight'
+              ? 'right'
+              : 'left';
+      moveQuickLinkFocusByDirection({
+        contentRoot: navigationRootRef?.current ?? contentRef.current,
+        searchInput: searchInputRef?.current ?? null,
+        currentElement: e.currentTarget,
+        direction,
+      });
+    },
+    [navigationRootRef, searchInputRef],
+  );
 
   return (
     <div ref={contentRef} className={`flex flex-wrap gap-2 ${className ?? ''}`}>

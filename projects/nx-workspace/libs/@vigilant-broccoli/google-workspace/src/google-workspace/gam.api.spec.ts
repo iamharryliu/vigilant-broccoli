@@ -109,7 +109,7 @@ describe('GamCommand.createCalendarEvent', () => {
         input.startDate,
         input.endDate,
         input.attendees,
-        input.allday
+        input.allday,
       );
       expect(result).toBe(expected);
     });
@@ -125,7 +125,7 @@ describe('GamCommand.createCalendarEvent', () => {
         input.startDate,
         input.endDate,
         input.attendees,
-        input.allday
+        input.allday,
       );
       // Should end on Dec 23 (exclusive end)
       expect(result).toBe(expected);
@@ -140,7 +140,7 @@ describe('GamCommand.createCalendarEvent', () => {
         input.startDate,
         input.endDate,
         input.attendees,
-        input.allday
+        input.allday,
       );
       // Should end on Dec 25 (exclusive end)
       expect(result).toBe(expected);
@@ -155,7 +155,7 @@ describe('GamCommand.createCalendarEvent', () => {
         input.startDate,
         input.endDate,
         input.attendees,
-        input.allday
+        input.allday,
       );
       // Should roll over to next month
       expect(result).toBe(expected);
@@ -170,7 +170,7 @@ describe('GamCommand.createCalendarEvent', () => {
         input.startDate,
         input.endDate,
         input.attendees,
-        input.allday
+        input.allday,
       );
       // Should roll over to next year
       expect(result).toBe(expected);
@@ -185,7 +185,7 @@ describe('GamCommand.createCalendarEvent', () => {
         input.startDate,
         input.endDate,
         input.attendees,
-        input.allday
+        input.allday,
       );
       // Should correctly move to March 1
       expect(result).toBe(expected);
@@ -200,7 +200,7 @@ describe('GamCommand.createCalendarEvent', () => {
         input.startDate,
         input.endDate,
         input.attendees,
-        input.allday
+        input.allday,
       );
       // Should NOT add a day - end stays as Dec 23
       expect(result).toBe(expected);
@@ -214,7 +214,7 @@ describe('GamCommand.createCalendarEvent', () => {
         input.startDate,
         input.endDate,
         input.attendees,
-        input.allday
+        input.allday,
       );
       // Should NOT add a day when allday is undefined
       expect(result).toBe(expected);

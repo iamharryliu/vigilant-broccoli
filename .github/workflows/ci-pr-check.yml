@@ -189,6 +189,20 @@ jobs:
           SKIP: grind-75-tests,lint-staged
         run: pre-commit run --show-diff-on-failure --color=always --all-files
 
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+
+      # Stands in for the lint-staged hook skipped above, which needs a
+      # workspace install. Only the PR's changed files are checked, so existing
+      # drift elsewhere does not fail unrelated PRs.
+      - name: Check Prettier formatting of changed files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
+          bash scripts/shell/format-changed.sh "$BASE_SHA" --check
+
   commitlint:
     if: ${{ !contains(fromJSON('["dependabot[bot]","renovate[bot]"]'), github.event.pull_request.user.login) }}
     runs-on: ubuntu-24.04

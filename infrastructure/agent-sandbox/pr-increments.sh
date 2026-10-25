@@ -17,7 +17,6 @@
 . "$(dirname "${BASH_SOURCE[0]}")/commit-subject.sh"
 
 INC_MAX_LATER=4
-INC_SKIP_COMMIT_HOOKS=lint-staged
 INC_DEFAULT_BASE=${INC_DEFAULT_BASE:-main}
 INC_CURRENT=current
 INC_PLAN_FILE=${INC_PLAN_FILE:-/tmp/increment-plan.json}
@@ -320,7 +319,7 @@ inc_publish() {
 
   bash "$PRE_COMMIT_HELPER" || return 1
   git add -A || return 1
-  SKIP=$INC_SKIP_COMMIT_HOOKS git commit -m "$subject" -m "$trailer" || return 1
+  SKIP=$SKIP_COMMIT_HOOKS git commit -m "$subject" -m "$trailer" || return 1
   git push -u origin "$branch" || return 1
 
   INC_BRANCH[$id]=$branch
@@ -365,7 +364,7 @@ inc_salvage() {
     return 0
   fi
   if [ -n "$(git status --porcelain)" ]; then
-    if ! git add -A || ! SKIP=$INC_SKIP_COMMIT_HOOKS git commit -m "chore: Save partial progress from an incomplete agent run." -m "$FALLBACK_TRAILER"; then
+    if ! git add -A || ! SKIP=$SKIP_COMMIT_HOOKS git commit -m "chore: Save partial progress from an incomplete agent run." -m "$FALLBACK_TRAILER"; then
       echo "Failed to commit salvage work on $branch; hooks were not bypassed." >&2
       printf 'RESULT::salvage-commit-failed\n'
       return 0
