@@ -104,9 +104,7 @@ export function SpotifyPlaylistGraphComponent() {
     : undefined;
 
   if (status === 'loading') {
-    return (
-      <div className="flex h-full items-center justify-center" />
-    );
+    return <div className="flex h-full items-center justify-center" />;
   }
 
   if (status === 'error') {
