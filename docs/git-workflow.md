@@ -42,7 +42,7 @@ Sessions attached to one checkout share `HEAD`, the index and stash.
 Sync when starting work, before pushing and when main moves while a branch is open. `ship-pr` uses `sync-main` before publishing.
 
 - Fetch first; `git rev-list --left-right --count origin/main...HEAD` reports missing/additional commits.
-- On a feature branch, merge with `git merge --no-edit origin/main`. Never rebase: publishing a rewritten branch would require a forbidden force-push. PRs squash-merge, so these integration commits do not enter main's history.
+- On a feature branch, merge with `git merge --no-edit origin/main`. A branch whose Markdown tables are still padded (cut before the [`mdtable` filter](./code-quality-tools.md)) merges with `git merge --no-edit -X renormalize origin/main`, which compacts both sides before comparing them. Never rebase: publishing a rewritten branch would require a forbidden force-push. PRs squash-merge, so these integration commits do not enter main's history.
 - On main, use `git pull --ff-only origin main`; report divergence instead of merging over it.
 - Enable `git rerere` (`git config rerere.enabled true`) to reuse conflict resolutions.
 

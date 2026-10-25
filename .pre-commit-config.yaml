@@ -30,6 +30,13 @@ repos:
         always_run: true
   - repo: local
     hooks:
+      - id: md-table-compact
+        name: Keep committed Markdown tables compact.
+        entry: node scripts/node/md-table-compact.mjs
+        language: system
+        files: \.md$
+  - repo: local
+    hooks:
       - id: repo-stats
         name: Refresh the managed repo-stats counts.
         entry: node scripts/node/repo-stats.mjs
