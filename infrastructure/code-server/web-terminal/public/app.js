@@ -63,7 +63,38 @@ term.onData(data => {
 });
 
 const DISMISS_KEYBOARD_KEYS = new Set(['pageUp', 'pageDown']);
+const REPEAT_KEYS = new Set(['pageUp', 'pageDown']);
+const REPEAT = { DELAY_MS: 400, INTERVAL_MS: 100 };
 let terminalWasFocused = false;
+let repeatTimer = null;
+// Set once a hold has sent keys, so the click that ends it adds no extra key.
+let repeated = false;
+
+const sendKey = key =>
+  sendInput(
+    encodeKey(key, {
+      ...modifiers,
+      appCursor: term.modes.applicationCursorKeysMode,
+    }),
+  );
+
+const startRepeat = key => {
+  const tick = delayMs => {
+    repeatTimer = setTimeout(() => {
+      repeated = true;
+      sendKey(key);
+      tick(REPEAT.INTERVAL_MS);
+    }, delayMs);
+  };
+  tick(REPEAT.DELAY_MS);
+};
+
+const stopRepeat = () => {
+  clearTimeout(repeatTimer);
+  repeatTimer = null;
+  // A hold released off the button gets no click, so modifiers are cleared here.
+  if (repeated) clearModifiers();
+};
 
 toolbar.addEventListener('pointerdown', event => {
   // Keeps focus (and the soft keyboard) on the terminal instead of the button.
@@ -71,7 +102,18 @@ toolbar.addEventListener('pointerdown', event => {
   // PgUp/PgDn blur instead, dismissing the keyboard to give scrolling more rows.
   terminalWasFocused = document.activeElement === term.textarea;
   event.preventDefault();
+  stopRepeat();
+  repeated = false;
+  const key = event.target.closest('button')?.dataset.key;
+  if (REPEAT_KEYS.has(key)) startRepeat(key);
 });
+
+// pointercancel also fires when a touch turns into a toolbar scroll.
+['pointerup', 'pointercancel', 'pointerout'].forEach(type =>
+  toolbar.addEventListener(type, stopRepeat),
+);
+toolbar.addEventListener('contextmenu', event => event.preventDefault());
+document.addEventListener('visibilitychange', stopRepeat);
 
 toolbar.addEventListener('click', async event => {
   const button = event.target.closest('button');
@@ -80,12 +122,8 @@ toolbar.addEventListener('click', async event => {
   if (toggle) {
     setModifier(toggle, !modifiers[toggle]);
   } else if (key) {
-    sendInput(
-      encodeKey(key, {
-        ...modifiers,
-        appCursor: term.modes.applicationCursorKeysMode,
-      }),
-    );
+    if (!repeated) sendKey(key);
+    repeated = false;
     clearModifiers();
   } else if (ctrl) {
     sendInput(CTRL_SHORTCUT[ctrl.toUpperCase()]);
