@@ -15,6 +15,7 @@
   - React Router
   - Tailwind CSS
 - Internal libs
+  - `github-workspace-js`
   - `react-lib`
   - `react-lib-higher-level`
   - `react-lib-media`

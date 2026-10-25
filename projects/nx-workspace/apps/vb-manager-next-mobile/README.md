@@ -19,6 +19,7 @@ Mobile-friendly dashboard for personal tasks and calendars, with voice input, a 
   - `common-js`
   - `common-node`
   - `google-workspace`
+  - `llm-schemas`
   - `@harry/personal`
   - `@harry/private`
   - `manager`

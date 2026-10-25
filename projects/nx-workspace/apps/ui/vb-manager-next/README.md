@@ -31,6 +31,7 @@ Management dashboard app.
   - `google-workspace`
   - `@harry/personal`
   - `@harry/private`
+  - `infrastructure`
   - `llm-schemas`
   - `manager`
   - `money-movement`
