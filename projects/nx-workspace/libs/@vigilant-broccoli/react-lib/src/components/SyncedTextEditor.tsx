@@ -6,6 +6,7 @@ import {
   useLayoutEffect,
   useRef,
 } from 'react';
+import { findChangedSpan } from '../utils/text-diff.utils';
 
 const DEFAULT_PLACEHOLDER = 'Quick notes...';
 const UNDO_KEY = 'z';
@@ -61,6 +62,22 @@ interface PendingEdit {
   selectionStart: number;
   selectionEnd: number;
 }
+
+interface ViewState {
+  selectionStart: number;
+  selectionEnd: number;
+  scrollTop: number;
+}
+
+// Maps an index in `previous` to `next` around the changed span: positions
+// before it stay, positions after it shift by the length delta, positions
+// inside it clamp to the new span.
+const mapIndexThroughEdit = (previous: string, next: string, index: number) => {
+  const { start, previousEnd, nextEnd } = findChangedSpan(previous, next);
+  if (index <= start) return index;
+  if (index >= previousEnd) return index + next.length - previous.length;
+  return Math.min(index, nextEnd);
+};
 
 const getLineBounds = (value: string, index: number) => {
   const start = index === 0 ? 0 : value.lastIndexOf('\n', index - 1) + 1;
@@ -223,11 +240,50 @@ export const SyncedTextEditor = ({
     null,
   );
 
+  // A controlled textarea jumps its caret to the end (and scrolls) whenever
+  // `value` changes from outside its own onChange — a peer's live edit, a
+  // conflict merge, undo or an applied AI edit. The view is tracked from
+  // events because by the layout effect React has already reset it.
+  const renderedContentRef = useRef(content);
+  const emittedContentRef = useRef(content);
+  const viewStateRef = useRef<ViewState>({
+    selectionStart: 0,
+    selectionEnd: 0,
+    scrollTop: 0,
+  });
+
+  const recordViewState = (textarea: HTMLTextAreaElement) => {
+    viewStateRef.current = {
+      selectionStart: textarea.selectionStart,
+      selectionEnd: textarea.selectionEnd,
+      scrollTop: textarea.scrollTop,
+    };
+  };
+
   useLayoutEffect(() => {
+    const previous = renderedContentRef.current;
+    renderedContentRef.current = content;
+    const textarea = internalRef.current;
+    if (!textarea) return;
+
     const pending = pendingSelectionRef.current;
-    if (!pending || !internalRef.current) return;
-    pendingSelectionRef.current = null;
-    internalRef.current.setSelectionRange(pending.start, pending.end);
+    if (pending) {
+      pendingSelectionRef.current = null;
+      textarea.setSelectionRange(pending.start, pending.end);
+      return;
+    }
+
+    const isExternal =
+      content !== previous && content !== emittedContentRef.current;
+    if (!isExternal || document.activeElement !== textarea) return;
+
+    const { selectionStart, selectionEnd, scrollTop } = viewStateRef.current;
+    textarea.setSelectionRange(
+      mapIndexThroughEdit(previous, content, selectionStart),
+      mapIndexThroughEdit(previous, content, selectionEnd),
+    );
+    textarea.scrollTop = scrollTop;
+    recordViewState(textarea);
   }, [content]);
 
   const setRefs = (node: HTMLTextAreaElement | null) => {
@@ -238,6 +294,7 @@ export const SyncedTextEditor = ({
   };
 
   const applyEdit = (edit: PendingEdit) => {
+    emittedContentRef.current = edit.value;
     pendingSelectionRef.current = {
       start: edit.selectionStart,
       end: edit.selectionEnd,
@@ -273,11 +330,17 @@ export const SyncedTextEditor = ({
           ref={setRefs}
           value={content}
           onChange={e => {
+            emittedContentRef.current = e.target.value;
+            recordViewState(e.target);
             onChange(e.target.value);
             onTextareaSelect?.();
           }}
           onKeyDown={handleKeyDown}
-          onSelect={onTextareaSelect}
+          onSelect={e => {
+            recordViewState(e.currentTarget);
+            onTextareaSelect?.();
+          }}
+          onScroll={e => recordViewState(e.currentTarget)}
           onBlur={onTextareaBlur}
           disabled={isLoading}
           placeholder={placeholder}
