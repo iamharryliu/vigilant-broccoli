@@ -10,12 +10,20 @@
     # Sourced from the environment rather than --extra-vars so the key never
     # lands in the local argv (same reason as infrastructure/lib/ssh-secrets.sh).
     ts_authkey: "{{ lookup('ansible.builtin.env', 'TS_AUTHKEY') }}"
+    samba_password: "{{ lookup('ansible.builtin.env', 'SMB_PASSWORD') }}"
 
   handlers:
     - name: Reload sshd
       ansible.builtin.service:
         name: ssh
         state: reloaded
+
+    - name: Restart samba
+      ansible.builtin.service:
+        name: '{{ samba_service_name }}'
+        state: restarted
+      # The unit only exists after a real run has installed the package.
+      ignore_errors: '{{ ansible_check_mode }}'
 
     - name: Restart docker
       ansible.builtin.service:
@@ -48,10 +56,6 @@
       ansible.builtin.import_tasks: tasks/ssh.yml
       tags: [ssh]
 
-    - name: Media drive
-      ansible.builtin.import_tasks: tasks/storage.yml
-      tags: [storage]
-
     - name: Docker
       ansible.builtin.import_tasks: tasks/docker.yml
       tags: [docker]
@@ -63,3 +67,7 @@
     - name: Jellyfin stack
       ansible.builtin.import_tasks: tasks/jellyfin.yml
       tags: [jellyfin]
+
+    - name: Media share
+      ansible.builtin.import_tasks: tasks/samba.yml
+      tags: [samba]
