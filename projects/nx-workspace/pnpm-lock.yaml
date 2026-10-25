@@ -660,6 +660,9 @@ importers:
       nodemailer:
         specifier: ^10.0.13
         version: 10.0.13
+      pg:
+        specifier: ^8.22.0
+        version: 8.22.0
       qrcode:
         specifier: '*'
         version: 1.5.4

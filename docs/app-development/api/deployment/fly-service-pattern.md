@@ -6,7 +6,8 @@ Reference apps (each demonstrates a different combination):
 
 - `apps/api/bucket-service/`, `apps/api/llm-service/` — pruned + Docker Hub roundtrip (`deploy-container` pushes to `iamharryliu/<svc>`, then `flyctl deploy --image`). Note: bucket-service outputs to `dist/bucket-service`, not `dist/apps/api/bucket-service`.
 - `apps/api/email-service/`, `apps/api/email-subscription-service/` — bundled + Docker Hub roundtrip
-- `apps/api/vb-express/` — pruned + Docker Hub roundtrip, with a fly volume mount (`[mounts]`) for its SQLite db.
+- `apps/api/vb-express/` — pruned + Docker Hub roundtrip, with Better Auth on the shared Supabase Postgres.
+- `apps/api/office-presence-service/` — bundled + Docker Hub roundtrip, with a fly volume mount (`[mounts]`) for its SQLite db.
 
 ## Table of Contents
 
@@ -56,7 +57,7 @@ Every service must have `smoke` between build and deploy. Runs `scripts/shell/sm
 
 1. rsyncs dist to `/tmp` **excluding `node_modules`** — prevents Node's resolver from walking up into the workspace root's `node_modules` and masking missing deps.
 2. If `package.json` present, runs `pnpm install --frozen-lockfile --prod --ignore-workspace --ignore-scripts`.
-3. Boots with dummy `SHARED_APP_TOKEN`, `RESEND_API_KEY`, `SUPABASE_SECRET_KEY`, and a tmp `DATABASE_PATH`. Polls `GET /` for 20s.
+3. Boots with dummy `SHARED_APP_TOKEN`, `RESEND_API_KEY`, `SUPABASE_SECRET_KEY`, `BETTER_AUTH_SECRET`, and a tmp `OFFICE_PRESENCE_DB`. No database is reachable, so boot must not query one; vb-express's Postgres pool connects lazily and its schema comes from `supabase/migrations`, not boot-time migrations. Polls `GET /` for 20s.
 
 If a new service needs more env vars to clear top-level init, add them to the script. **Top-level module init must not require live network or secrets** — defer to per-request.
 

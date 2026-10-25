@@ -12,7 +12,7 @@
 - Build Tool - webpack
 - External libs
   - better-auth
-  - SQLite
+  - node-postgres
   - Supabase JS
 - Internal libs
   - `common-js`

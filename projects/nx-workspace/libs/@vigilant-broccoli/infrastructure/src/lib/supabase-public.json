@@ -1,4 +1,6 @@
 {
   "url": "https://jrdosjjgmsoodpjmjqxx.supabase.co",
-  "publishableKey": "sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0"
+  "publishableKey": "sb_publishable_RuDKhGPtVemZN8USy9j0vA_kn42h7S0",
+  "dbHost": "aws-1-eu-west-1.pooler.supabase.com",
+  "dbUser": "postgres.jrdosjjgmsoodpjmjqxx"
 }
