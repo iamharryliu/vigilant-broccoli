@@ -273,6 +273,7 @@ agent_invoke() {
 }
 
 agent_invoke "$PROMPT"
+normalize_meta "$META_FILE"
 
 if [ "$AGENT_RUNNER" = ollama ]; then
   jq -e 'type == "object"' "$META_FILE" >/dev/null || {
