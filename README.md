@@ -22,6 +22,7 @@ Personal monorepo, supporting **19 applications**, **6 API services**, **11 Dock
   - [Private](#private)
   - [Local](#local)
 - [Deployment](#deployment)
+  - [Environments](#environments)
   - [`main`](#main)
   - [`production`](#production)
   - [Demo](#demo)
@@ -134,9 +135,16 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 
 ## Deployment
 
-### `main`
+### Environments
 
-Every push to `main` deploys the affected `deploy` targets to staging; Pages Index deploys to GitHub Pages from `main` only.
+| Environment | Trigger | Targets | Workflow |
+| --- | --- | --- | --- |
+| Preview | Pull request touching `projects/nx-workspace/**` or docs/agent context; previews of closed PRs are swept daily | Affected `deploy:preview` targets, as Cloudflare Pages `pr-<number>` branches | `deploy-preview`, `cron-cleanup-preview-deployments` |
+| Staging | Push to `main` touching `projects/nx-workspace/**`, or docs/agent context (Agent Context) or `notes/**` (Docs MD); manual dispatch (defaults to staging) | Affected `deploy` targets (all of them on dispatch), plus Pages Index on GitHub Pages | `deploy`, `deploy-context-md`, `deploy-docs-md`, `manual-deploy-app` |
+| Demo | Successful staging deploy; manual dispatch | Every `deploy:demo` target | `deploy-demo-apps`, `manual-deploy-app` |
+| Production | Push to the `production` branch; manual dispatch with `environment: production` | Every `deploy:production` target, plus npm package publishing | `deploy`, `deploy-context-md`, `deploy-docs-md`, `manual-deploy-app` |
+
+### `main`
 
 | Application | Destination | Dependencies |
 | --- | --- | --- |
@@ -169,8 +177,6 @@ Every push to `main` deploys the affected `deploy` targets to staging; Pages Ind
 
 ### `production`
 
-Every push to the `production` branch runs every `deploy:production` target and publishes the npm packages.
-
 | Application | Destination | Dependencies |
 | --- | --- | --- |
 | [Agent Context](./projects/nx-workspace/apps/ui/context-md) | Cloudflare Pages | None |
@@ -197,8 +203,6 @@ Every push to the `production` branch runs every `deploy:production` target and 
 | [Whiteboard](./projects/nx-workspace/apps/whiteboard) | Cloudflare Pages | Supabase |
 
 ### Demo
-
-`deploy-demo-apps` runs each `deploy:demo` target after a successful staging deploy.
 
 | Application | Destination | Dependencies |
 | --- | --- | --- |
