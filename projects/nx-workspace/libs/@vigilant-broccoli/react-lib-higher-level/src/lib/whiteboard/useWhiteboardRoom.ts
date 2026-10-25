@@ -120,7 +120,7 @@ export function useWhiteboardRoom(
   );
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
-  const [lastEditIsLocal, setLastEditIsLocal] = useState(false);
+  const [lastChangeIsEdit, setLastChangeIsEdit] = useState(false);
   const channelRef = useRef<BroadcastPresenceChannel | null>(null);
   const usernameRef = useRef<string>(username);
   const docRef = useRef<Y.Doc | null>(null);
@@ -176,13 +176,11 @@ export function useWhiteboardRoom(
       },
     });
 
-    // Typing/setContent (`null`) and this client's undo/redo (origin is the
-    // UndoManager) count as local edits; remote and replaced snapshots don't.
+    // Typing, undo/redo and peers' updates are edits; replaced server
+    // snapshots aren't, and a rebuilt room resets this to false below.
     const handleTextChange = (_: Y.YTextEvent, transaction: Y.Transaction) => {
       setContentState(yText.toString());
-      setLastEditIsLocal(
-        transaction.origin === null || transaction.origin === undoManager,
-      );
+      setLastChangeIsEdit(transaction.origin !== REPLACE_ORIGIN);
     };
     yText.observe(handleTextChange);
 
@@ -260,7 +258,7 @@ export function useWhiteboardRoom(
       doc.destroy();
       docRef.current = null;
       setContentState('');
-      setLastEditIsLocal(false);
+      setLastChangeIsEdit(false);
       setCanUndo(false);
       setCanRedo(false);
     };
@@ -292,7 +290,7 @@ export function useWhiteboardRoom(
     content,
     setContent,
     replaceContent,
-    lastEditIsLocal,
+    lastChangeIsEdit,
     members,
     cursors,
     setCursorPosition,

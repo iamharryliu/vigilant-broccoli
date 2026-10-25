@@ -51,9 +51,9 @@ const fetchWhiteboard = (
     .eq('board_key', boardKey)
     .maybeSingle();
 
-// Clients only flag an empty write when their own edit emptied the board, and
-// only a write based on the current row may clear it; anything else (fresh
-// tab, failed load, reset room) gets the saved text back as a 409 instead.
+// Clients only flag an empty write when an edit (theirs or a peer's) emptied
+// the board, and only a write based on the current row may clear it; anything
+// else (fresh tab, failed load, reset room) gets the saved text back as a 409.
 const refuseEmptyOverwrite = async (
   supabase: ReturnType<typeof getSupabase>,
   homeId: string,

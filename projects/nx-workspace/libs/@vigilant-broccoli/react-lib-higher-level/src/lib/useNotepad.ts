@@ -86,8 +86,8 @@ export const useNotepad = ({
 
   const roomContentRef = useRef(room.content);
   roomContentRef.current = room.content;
-  const lastEditIsLocalRef = useRef(room.lastEditIsLocal);
-  lastEditIsLocalRef.current = room.lastEditIsLocal;
+  const lastChangeIsEditRef = useRef(room.lastChangeIsEdit);
+  lastChangeIsEditRef.current = room.lastChangeIsEdit;
 
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const updatedAt = useRef<string | null>(null);
@@ -112,9 +112,10 @@ export const useNotepad = ({
 
   const persist = useCallback(
     (text: string) => {
-      const allowEmpty = !text && lastEditIsLocalRef.current;
-      // An empty doc this client didn't empty itself (a fresh or reset room)
-      // must never overwrite saved text; whoever cleared it persists that.
+      // Persisting only starts after a successful load, so any client may save
+      // a board that this client or a peer cleared; a rebuilt, empty room
+      // must never overwrite saved text. The server still 409s a stale base.
+      const allowEmpty = !text && lastChangeIsEditRef.current;
       if (!text && !allowEmpty && lastPersisted.current) return;
 
       setIsSaving(true);
