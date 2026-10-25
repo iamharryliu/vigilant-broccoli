@@ -13,6 +13,7 @@ const CURSOR_KEYS = {
 const TILDE_KEYS = { pageUp: '5', pageDown: '6' };
 
 export const KEY = {
+  ENTER: 'enter',
   ESC: 'esc',
   TAB: 'tab',
   ...Object.fromEntries(
@@ -31,6 +32,7 @@ export const encodeKey = (
   { appCursor = false, ctrl = false, alt = false } = {},
 ) => {
   const mod = modifierParam({ ctrl, alt });
+  if (key === KEY.ENTER) return alt ? `${ESC}\r` : '\r';
   if (key === KEY.ESC) return alt ? ESC + ESC : ESC;
   if (key === KEY.TAB) return alt ? `${ESC}\t` : '\t';
   if (key in CURSOR_KEYS) {
