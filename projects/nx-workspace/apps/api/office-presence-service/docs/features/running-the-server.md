@@ -56,7 +56,7 @@ docker run --platform linux/amd64 -p 3000:3000 \
 
 Slack must reach the container over **public HTTPS**: put a reverse proxy or a tunnel in front of port 3000 and set the app's Request URLs to `https://<host>/slack/events`, `/slack/interactivity` and `/slack/commands`. Requests are verified with the signing secret and must be acknowledged within 3 seconds; Slack retries (`X-Slack-Retry-Num`) are acknowledged and ignored.
 
-In this mode the container serves `GET /` and `/docs`, the Slack routes, and `POST /internal/reminders` when `OFFICE_PRESENCE_INTERNAL_TOKEN` is set (send it as `Authorization: Bearer <token>`). The `/demo/*` routes and `/internal/seed` stay off unless `DEMO_MODE=true`, so a self-hoster never exposes a public mock API by accident.
+In this mode the container serves `GET /` and `/docs`, the Slack routes, and `POST /internal/reminders`, which returns 401 until `OFFICE_PRESENCE_INTERNAL_TOKEN` is set (send it as `Authorization: Bearer <token>`). The `/demo/*` routes and `/internal/seed` stay off unless `DEMO_MODE=true`, so a self-hoster never exposes a public mock API by accident.
 
 ### With Optional Args
 
@@ -94,7 +94,7 @@ The entrypoint chowns `/data` for the `node` user at boot, so a root-owned volum
 | `REMINDER_TIMEZONE` | No | `Europe/Stockholm` | Reminder cron, seeding weeks, and "today" when a member's Slack timezone is unknown |
 | `INCLUDE_WEEKENDS` | No | `false` | Include weekends |
 | `PORT` / `HOST` | No | `3000` / `0.0.0.0` in the image | Listen address (`http`) |
-| `OFFICE_PRESENCE_INTERNAL_TOKEN` | `http` with `DEMO_MODE` | - | Bearer token for `/internal/*`; `/internal/reminders` is registered only when it is set |
+| `OFFICE_PRESENCE_INTERNAL_TOKEN` | `http` with `DEMO_MODE` | - | Bearer token for `/internal/*`; without it `/internal/reminders` returns 401 |
 | `DEMO_MODE` | No | `false` | `http` only: enable `/demo/*` and `/internal/seed` |
 | `DEMO_UI_ORIGIN` | `DEMO_MODE` | - | Comma-separated browser origins allowed to call `/demo/*` |
 | `DEMO_REAL_USER_IDS` | No | - | Real member ids the seeder also fills presences for |
