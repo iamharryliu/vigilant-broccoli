@@ -1,0 +1,1 @@
+# Temporary stub so GitHub drops this stale manifest from the dependency graph; deleted in the follow-up PR.
