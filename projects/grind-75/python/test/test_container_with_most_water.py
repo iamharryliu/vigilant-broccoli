@@ -1,5 +1,5 @@
 import unittest
-from array.container_with_most_water import Solution
+from arrays.container_with_most_water import Solution
 
 
 class TestSolution(unittest.TestCase):

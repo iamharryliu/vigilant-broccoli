@@ -1,5 +1,5 @@
 import unittest
-from array.merge_intervals import Solution
+from arrays.merge_intervals import Solution
 
 
 class TestSolution(unittest.TestCase):

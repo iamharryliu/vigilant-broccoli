@@ -1,5 +1,5 @@
 import unittest
-from array.maximum_subarray import Solution
+from arrays.maximum_subarray import Solution
 
 
 class TestSolution(unittest.TestCase):

@@ -1,5 +1,5 @@
 import unittest
-from array.insert_interval import Solution
+from arrays.insert_interval import Solution
 
 
 class TestSolution(unittest.TestCase):

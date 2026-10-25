@@ -1,5 +1,5 @@
 import unittest
-from array.best_time_to_buy_and_sell_stock import Solution
+from arrays.best_time_to_buy_and_sell_stock import Solution
 
 
 class TestSolution(unittest.TestCase):
