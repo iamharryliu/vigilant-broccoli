@@ -62,8 +62,12 @@ term.onData(data => {
   clearModifiers();
 });
 
+let terminalWasFocused = false;
+
 toolbar.addEventListener('pointerdown', event => {
   // Keeps focus (and the soft keyboard) on the terminal instead of the button.
+  // Focus is only restored if it was there, so keys don't open a closed keyboard.
+  terminalWasFocused = document.activeElement === term.textarea;
   event.preventDefault();
 });
 
@@ -92,7 +96,7 @@ toolbar.addEventListener('click', async event => {
       if (text) term.paste(text);
     }
   }
-  term.focus();
+  if (terminalWasFocused) term.focus();
 });
 
 const showStatus = text => {
