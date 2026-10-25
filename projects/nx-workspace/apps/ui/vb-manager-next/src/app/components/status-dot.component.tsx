@@ -65,7 +65,7 @@ export const StatusLegendButton = ({
         onClick={() => setOpen(true)}
         aria-label="Show status legend"
         title="Show status legend"
-        className="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+        className="shrink-0 text-muted-foreground hover:text-foreground"
       >
         <CircleHelp className="h-4 w-4" />
       </button>

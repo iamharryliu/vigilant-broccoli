@@ -47,7 +47,7 @@ export default function ReceiptDetailPage() {
     <div className="max-w-3xl mx-auto p-4 sm:p-6 space-y-6">
       <Link
         href={ROUTES.RECEIPTS}
-        className="text-sm text-gray-500 hover:text-gray-700"
+        className="text-sm text-muted-foreground hover:text-foreground"
       >
         ← Back
       </Link>
@@ -89,7 +89,7 @@ export default function ReceiptDetailPage() {
         <div className="overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="text-left text-gray-500 border-b border-gray-200 dark:border-gray-700">
+              <tr className="text-left text-muted-foreground border-b border-border dark:border-gray-700">
                 <th className="py-2 pr-2 font-medium">Item</th>
                 <th className="py-2 px-2 font-medium text-right">Qty</th>
                 <th className="py-2 px-2 font-medium text-right">Unit</th>
@@ -113,7 +113,7 @@ export default function ReceiptDetailPage() {
                       {item.priceItemId && (
                         <Link
                           href={ROUTES.PRICE_TRACKER_DETAIL(item.priceItemId)}
-                          className="text-gray-400 hover:text-blue-500"
+                          className="text-muted-foreground hover:text-blue-500"
                           aria-label={`Price history for ${item.name}`}
                         >
                           <LineChart size={13} />

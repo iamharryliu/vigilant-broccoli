@@ -314,7 +314,7 @@ const PriceItemForm = ({
               className={`flex items-center gap-3 p-2 rounded border cursor-pointer ${
                 item.confirmed
                   ? 'border-blue-400 bg-blue-50'
-                  : 'border-gray-200 opacity-50'
+                  : 'border-border opacity-50'
               }`}
               onClick={() =>
                 setPendingItems(prev =>

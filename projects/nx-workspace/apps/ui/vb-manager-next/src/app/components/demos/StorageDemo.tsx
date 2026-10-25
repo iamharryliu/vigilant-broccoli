@@ -158,10 +158,10 @@ export function StorageDemo() {
               {files.map(file => (
                 <tr key={file.name}>
                   <td className="px-4 py-2 text-sm">{file.name}</td>
-                  <td className="px-4 py-2 text-sm text-gray-500">
+                  <td className="px-4 py-2 text-sm text-muted-foreground">
                     {file.size ? `${(file.size / 1024).toFixed(2)} KB` : '-'}
                   </td>
-                  <td className="px-4 py-2 text-sm text-gray-500">
+                  <td className="px-4 py-2 text-sm text-muted-foreground">
                     {file.updatedAt
                       ? new Date(file.updatedAt).toLocaleString()
                       : '-'}

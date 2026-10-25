@@ -121,12 +121,12 @@ export function ReadmePage({
             </p>
           )}
           {!error && content === null && (
-            <p className={`${STATUS_CLASS} text-gray-400`}>
+            <p className={`${STATUS_CLASS} text-muted-foreground`}>
               {t('README_PAGE.LOADING')}
             </p>
           )}
           {!error && content === '' && (
-            <p className={`${STATUS_CLASS} text-gray-400`}>
+            <p className={`${STATUS_CLASS} text-muted-foreground`}>
               {t('README_PAGE.EMPTY')}
             </p>
           )}

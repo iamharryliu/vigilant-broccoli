@@ -68,7 +68,9 @@ export const ResumeDiffComponent = ({
   current: string;
 }) => {
   if (original.trimEnd() === current.trimEnd()) {
-    return <p className="text-sm text-gray-500">{NO_CHANGES_MESSAGE}</p>;
+    return (
+      <p className="text-sm text-muted-foreground">{NO_CHANGES_MESSAGE}</p>
+    );
   }
   return (
     <pre className="h-full overflow-auto rounded border text-xs font-mono">

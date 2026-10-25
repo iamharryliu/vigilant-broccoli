@@ -375,7 +375,7 @@ export const GcloudAuthStatusComponent = () => {
       ) : (
         <div className="flex items-center gap-2">
           <StatusDot color="red" />
-          <Text size="2" className="text-gray-500">
+          <Text size="2" className="text-muted-foreground">
             No active gcloud account
           </Text>
         </div>

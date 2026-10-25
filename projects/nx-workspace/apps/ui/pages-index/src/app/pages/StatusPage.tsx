@@ -102,7 +102,7 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
             href={ACTIONS_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-gray-400 hover:underline"
+            className="text-xs text-muted-foreground hover:underline"
           >
             {t('STATUS_PAGE.VIEW_ALL')}
           </a>

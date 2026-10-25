@@ -127,7 +127,9 @@ export const DocsExplorerDemo = () => {
             </p>
           )}
           {!error && content === null && (
-            <p className={`${STATUS_CLASS} text-gray-400`}>{COPY.LOADING}</p>
+            <p className={`${STATUS_CLASS} text-muted-foreground`}>
+              {COPY.LOADING}
+            </p>
           )}
           {!error && content && (
             <MarkdownViewer

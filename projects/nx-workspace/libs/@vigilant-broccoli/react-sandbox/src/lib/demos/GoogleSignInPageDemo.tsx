@@ -17,7 +17,9 @@ export const GoogleSignInPageDemo = () => {
           onSignIn={() => setMessage(SIGN_IN_STUB_MESSAGE)}
         />
       </div>
-      <p className="text-sm text-gray-500">{message ?? 'Click the button'}</p>
+      <p className="text-sm text-muted-foreground">
+        {message ?? 'Click the button'}
+      </p>
     </div>
   );
 };

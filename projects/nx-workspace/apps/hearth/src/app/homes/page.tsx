@@ -66,7 +66,7 @@ const HomeFormComponent = ({
 const HomeListItem = ({ item }: { item: Home }) => (
   <div>
     <p className="font-medium">{item.name}</p>
-    <p className="text-sm text-gray-500">{item.description}</p>
+    <p className="text-sm text-muted-foreground">{item.description}</p>
   </div>
 );
 
@@ -136,7 +136,7 @@ export default function HomesPage() {
       />
       {memberHomes.length > 0 && (
         <div className="space-y-3">
-          <p className="text-sm font-medium text-gray-500">Member of</p>
+          <p className="text-sm font-medium text-muted-foreground">Member of</p>
           {memberHomes.map(h => (
             <Link
               key={h.id}
@@ -144,7 +144,7 @@ export default function HomesPage() {
               className="block rounded border p-3 hover:opacity-70"
             >
               <p className="font-medium">{h.name}</p>
-              <p className="text-sm text-gray-500">{h.description}</p>
+              <p className="text-sm text-muted-foreground">{h.description}</p>
             </Link>
           ))}
         </div>

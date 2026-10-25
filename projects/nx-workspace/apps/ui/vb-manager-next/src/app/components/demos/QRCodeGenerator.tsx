@@ -40,7 +40,7 @@ export function QRCodeGenerator() {
           onChange={e => setUrl(e.target.value)}
           placeholder="https://example.com"
           required
-          className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-3 py-2 border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <Button type="submit" disabled={loading || !url}>
           {loading ? 'Generating...' : 'Generate'}

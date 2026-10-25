@@ -187,6 +187,7 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
                 />
                 <button
                   onClick={() => removeImage(i)}
+                  // eslint-disable-next-line vigilant-broccoli/require-dark-variant -- remove badge overlays a photo thumbnail, not a themed surface
                   className="absolute -top-1.5 -right-1.5 bg-gray-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs leading-none"
                 >
                   ×

@@ -5,6 +5,7 @@ import js from '@eslint/js';
 import nx from '@nx/eslint-plugin';
 import importPlugin from 'eslint-plugin-import';
 import reactHooks from 'eslint-plugin-react-hooks';
+import darkVariantConfig from './tools/eslint-rules/dark-variant-config.cjs';
 
 const compat = new FlatCompat({
   baseDirectory: dirname(fileURLToPath(import.meta.url)),
@@ -103,6 +104,7 @@ export default [
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   unusedVariablesConfig,
+  darkVariantConfig,
   {
     files: ['**/*.js', '**/*.jsx'],
     rules: {

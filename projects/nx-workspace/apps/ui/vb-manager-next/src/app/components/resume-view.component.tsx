@@ -52,6 +52,7 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
 
   return (
     <div
+      // eslint-disable-next-line vigilant-broccoli/require-dark-variant -- printable resume is intentionally white paper in both themes
       className="bg-white text-black text-[13px] leading-snug p-8 shadow-md print:shadow-none print:p-0 max-w-[850px] print:max-w-none print:w-full"
       style={{ fontFamily: RESUME_FONT_FAMILY }}
     >

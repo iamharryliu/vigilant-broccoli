@@ -208,7 +208,7 @@ export const DockerStatusComponent = () => {
                 {service.name}
               </Badge>
               {service.ports && (
-                <Text size="1" className="text-gray-600 font-mono">
+                <Text size="1" className="text-muted-foreground font-mono">
                   {service.ports}
                 </Text>
               )}

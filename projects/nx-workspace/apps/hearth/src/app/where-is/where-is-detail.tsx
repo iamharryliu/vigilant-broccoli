@@ -124,7 +124,7 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
     <div className="space-y-6">
       <div className="print:hidden space-y-6">
         {variant === 'page' && (
-          <div className="flex items-center gap-1 text-sm text-gray-500">
+          <div className="flex items-center gap-1 text-sm text-muted-foreground">
             <Link href={ROUTES.WHERE_IS} className="hover:text-gray-700">
               Storage Areas
             </Link>

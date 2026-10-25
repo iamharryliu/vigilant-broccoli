@@ -24,4 +24,5 @@ module.exports = [
       ],
     },
   },
+  require('../../../tools/eslint-rules/dark-variant-config.cjs'),
 ];
