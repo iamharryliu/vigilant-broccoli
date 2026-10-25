@@ -9,6 +9,7 @@ META_FILE=${META_FILE:-/tmp/update-meta.json}
 PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
 FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 PRE_COMMIT_HELPER=/tmp/run-pre-commit.sh
+export FORMAT_CHANGED_HELPER=/tmp/format-changed.sh
 MERGE_BODY_HELPER=/tmp/merge-pr-body.py
 CI_LOG=/tmp/pr-ci-failures.log
 RUN_LOG=/tmp/pr-ci-run.log
@@ -42,9 +43,18 @@ PLAN_ENABLED=0
 # Stash the helpers outside the working tree before checkout — the PR branch may predate them,
 # and gh pr checkout would otherwise leave us on a branch where the helper paths don't exist.
 cp "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh" "$PRE_COMMIT_HELPER"
+cp "$REPO_DIR/scripts/shell/format-changed.sh" "$FORMAT_CHANGED_HELPER"
 cp "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py" "$MERGE_BODY_HELPER"
 
 git fetch origin --quiet
+# Checked here rather than at dispatch because a PR can merge while the image
+# builds, and checking out a merged PR's deleted branch only reports git's
+# exit status 128.
+PR_STATE=$(gh pr view "$PR" --json state -q .state)
+if [ "$PR_STATE" != OPEN ]; then
+  echo "ERROR: PR #${PR} is ${PR_STATE}; only open pull requests can be updated." >&2
+  exit 1
+fi
 gh pr checkout "$PR"
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 BASE_SHA=$(git rev-parse HEAD)
@@ -345,7 +355,7 @@ echo "$TRAILER" | grep -Eqi '^co-authored-by: .+ <.+>$' || TRAILER="$FALLBACK_TR
 
 git add -A
 [ -z "$MERGE_HEAD_SHA" ] || echo "$MERGE_HEAD_SHA" >"$(git rev-parse --git-path MERGE_HEAD)"
-SKIP=$INC_SKIP_COMMIT_HOOKS git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
+SKIP=$SKIP_COMMIT_HOOKS git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
 git push
 SALVAGE_ENABLED=0
 

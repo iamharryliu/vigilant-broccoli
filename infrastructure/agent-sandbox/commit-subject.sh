@@ -4,6 +4,11 @@
 # ci-pr-check commitlint job enforces. Agents sometimes truncate a message with
 # an ellipsis or omit the period, so both are fixed here rather than trusted.
 
+# The lint-staged hook needs a workspace install the sandbox clone does not
+# have; run-pre-commit.sh formats changed files with Prettier instead.
+# shellcheck disable=SC2034 # read by the runners that source this file
+SKIP_COMMIT_HOOKS=lint-staged
+
 normalize_commit_message() {
   local message=$1
   message=${message%"${message##*[![:space:]]}"}
