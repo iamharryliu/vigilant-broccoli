@@ -1,5 +1,6 @@
 # Kitchen Management
 
+- [Cookware Materials](./cookware-materials.md)
 - [Kitchen Cleaning](./kitchen-cleaning.md)
 - [Kitchen Knives](./kitchen-knives.md)
 - [Kitchen Tool Management](./kitchen-tool-management.md)
