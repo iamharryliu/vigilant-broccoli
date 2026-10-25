@@ -50,6 +50,11 @@ body {
     15px system-ui,
     sans-serif;
   touch-action: manipulation;
+  /* Holding PgUp/PgDn repeats, so a long press must not select text or open
+     the iOS callout. */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #toolbar button:active,
