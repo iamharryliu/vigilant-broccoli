@@ -71,6 +71,7 @@ from Vault, the script skips the local Vault-over-SSH load and mints the install
   `-f model=` for Claude, `-f codex_model=` for Codex, and `-f firewall=off`. The workflow has no separate TODO id input:
   mention ids in the prompt (`-f prompt="solve a1b2c3"`) and the agent resolves those `TODO.md` rows and the runner removes the ones it fully resolved
   once done. Use `pnpm agentic-pr-create <id...>` locally to solve several ids as parallel runs, one per id (each may itself publish more than one PR).
+- From a Claude Code or Codex session, `/create-pr [request]` researches the request locally, asks any blocking questions, then dispatches the workflow with a self-contained prompt (after your confirmation when it asked).
 - Smoke test: dispatch `manual-agentic-pr-create-smoke` (`gh workflow run manual-agentic-pr-create-smoke.yml`) to run the whole
   pipeline against a canned one-line prompt and check the notification email. Pass `-f agent=codex` to smoke-test the
   Codex path. It opens a disposable PR; close it after.
