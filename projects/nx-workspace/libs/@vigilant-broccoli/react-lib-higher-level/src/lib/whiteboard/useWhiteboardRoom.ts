@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import * as Y from 'yjs';
+import { findChangedSpan } from '@vigilant-broccoli/react-lib';
 import {
   CONNECTION_STATUS,
   ConnectionStatus,
@@ -73,26 +74,10 @@ const applyTextDiff = (
 ) => {
   const previousValue = yText.toString();
   if (previousValue === nextValue) return;
-
-  let start = 0;
-  while (
-    start < previousValue.length &&
-    start < nextValue.length &&
-    previousValue[start] === nextValue[start]
-  ) {
-    start++;
-  }
-
-  let previousEnd = previousValue.length;
-  let nextEnd = nextValue.length;
-  while (
-    previousEnd > start &&
-    nextEnd > start &&
-    previousValue[previousEnd - 1] === nextValue[nextEnd - 1]
-  ) {
-    previousEnd--;
-    nextEnd--;
-  }
+  const { start, previousEnd, nextEnd } = findChangedSpan(
+    previousValue,
+    nextValue,
+  );
 
   yText.doc?.transact(() => {
     if (previousEnd > start) yText.delete(start, previousEnd - start);

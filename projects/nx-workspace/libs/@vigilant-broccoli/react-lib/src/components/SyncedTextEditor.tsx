@@ -6,6 +6,7 @@ import {
   useLayoutEffect,
   useRef,
 } from 'react';
+import { findChangedSpan } from '../utils/text-diff.utils';
 
 const DEFAULT_PLACEHOLDER = 'Quick notes...';
 const UNDO_KEY = 'z';
@@ -68,29 +69,11 @@ interface ViewState {
   scrollTop: number;
 }
 
-// Maps an index in `previous` to `next` around the single changed span found
-// by a common prefix/suffix diff: positions before it stay, positions after it
-// shift by the length delta, positions inside it clamp to the new span.
+// Maps an index in `previous` to `next` around the changed span: positions
+// before it stay, positions after it shift by the length delta, positions
+// inside it clamp to the new span.
 const mapIndexThroughEdit = (previous: string, next: string, index: number) => {
-  let start = 0;
-  while (
-    start < previous.length &&
-    start < next.length &&
-    previous[start] === next[start]
-  ) {
-    start++;
-  }
-  let previousEnd = previous.length;
-  let nextEnd = next.length;
-  while (
-    previousEnd > start &&
-    nextEnd > start &&
-    previous[previousEnd - 1] === next[nextEnd - 1]
-  ) {
-    previousEnd--;
-    nextEnd--;
-  }
-
+  const { start, previousEnd, nextEnd } = findChangedSpan(previous, next);
   if (index <= start) return index;
   if (index >= previousEnd) return index + next.length - previous.length;
   return Math.min(index, nextEnd);
