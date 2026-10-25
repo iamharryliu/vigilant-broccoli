@@ -44,6 +44,11 @@ export const auth = betterAuth({
   secret: getEnvironmentVariable('BETTER_AUTH_SECRET'),
   database: createPool(),
   trustedOrigins: CLIENT_ORIGINS,
+  // Google refresh tokens grant ongoing Tasks access and otherwise sit in
+  // plaintext in the shared database and its nightly pg_dump backups.
+  account: {
+    encryptOAuthTokens: true,
+  },
   socialProviders: {
     google: {
       clientId: getEnvironmentVariable(

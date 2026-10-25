@@ -30,7 +30,7 @@ The container is stateless and runs as a non-root user; users, sessions and API 
 
 | Variable | Purpose |
 | --- | --- |
-| `BETTER_AUTH_SECRET` | Session signing secret. Required in production; changing it signs every user out. |
+| `BETTER_AUTH_SECRET` | Session signing and OAuth token encryption secret. Required in production; changing it signs every user out and invalidates stored Google tokens. |
 | `CONTACT_FORM_RECIPIENT` | Address that receives `POST /contact/send-message` messages. Unset, messages go to the maintainer's address. |
 | `CONTACT_FORM_SENDER` | `From` header for contact-form email, e.g. `Me <noreply@example.com>`. |
 | `DATABASE_URL` | Postgres connection string for the auth tables. Unset, it connects to the maintainer's Supabase pooler with `SUPABASE_DB_PASSWORD`. |
@@ -62,7 +62,7 @@ The full contract is served at `/docs`.
 
 ## Auth Database
 
-Better Auth's `user`, `session`, `account`, `verification` and `apikey` tables live in the `vb_express_auth` schema, which every pooled connection sets as its `search_path`. The app does not create them at boot: apply `supabase/migrations/*.sql` first (the repo's `scripts/migrate.ts` does this on deploy and `nx serve`). A Better Auth or `@better-auth/api-key` upgrade that adds columns needs a new migration; generate its SQL with Better Auth's `getMigrations(...).compileMigrations()` against a database already at the current schema.
+Better Auth's `user`, `session`, `account`, `verification` and `apikey` tables live in the `vb_express_auth` schema, which every pooled connection sets as its `search_path`. Google access and refresh tokens in `account` are encrypted with `BETTER_AUTH_SECRET`; API keys are stored hashed. The app does not create them at boot: apply `supabase/migrations/*.sql` first (the repo's `scripts/migrate.ts` does this on deploy and `nx serve`). A Better Auth or `@better-auth/api-key` upgrade that adds columns needs a new migration; generate its SQL with Better Auth's `getMigrations(...).compileMigrations()` against a database already at the current schema.
 
 ## Supabase Table
 
