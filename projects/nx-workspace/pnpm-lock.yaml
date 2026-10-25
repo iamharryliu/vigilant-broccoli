@@ -1147,7 +1147,7 @@ importers:
         specifier: ^0.513.0
         version: 0.513.0(react@19.2.7)
       react:
-        specifier: 19.2.7
+        specifier: ^19
         version: 19.2.7
       react-easy-crop:
         specifier: ^5.5.7
@@ -1201,7 +1201,7 @@ importers:
   libs/@vigilant-broccoli/react-music-lib:
     dependencies:
       react:
-        specifier: 19.2.7
+        specifier: ^19
         version: 19.2.7
 
   libs/@vigilant-broccoli/resume:
