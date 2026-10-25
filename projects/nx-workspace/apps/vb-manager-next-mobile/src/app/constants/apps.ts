@@ -6,6 +6,8 @@ import {
   GitPullRequest,
   GitBranch,
   Play,
+  Rocket,
+  Workflow,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -18,7 +20,7 @@ export type AppEntry = {
   icon: LucideIcon;
 };
 
-export const APPS: AppEntry[] = [
+const PERSONAL_APPS: AppEntry[] = [
   {
     label: 'YouTube',
     webUrl: 'https://www.youtube.com',
@@ -43,6 +45,9 @@ export const APPS: AppEntry[] = [
     tileColor: 'bg-violet-600',
     icon: Mail,
   },
+];
+
+const DEVELOPMENT_APPS: AppEntry[] = [
   {
     label: 'GitHub',
     webUrl: 'https://github.com',
@@ -50,6 +55,18 @@ export const APPS: AppEntry[] = [
     androidPackage: 'com.github.android',
     tileColor: 'bg-gray-900 dark:bg-gray-700',
     icon: GitBranch,
+  },
+  {
+    label: 'Pulls',
+    webUrl: 'https://github.com/iamharryliu/vigilant-broccoli/pulls',
+    tileColor: 'bg-indigo-600',
+    icon: GitPullRequest,
+  },
+  {
+    label: 'Actions',
+    webUrl: 'https://github.com/iamharryliu/vigilant-broccoli/actions',
+    tileColor: 'bg-sky-600',
+    icon: Workflow,
   },
   {
     label: 'Docs',
@@ -73,6 +90,16 @@ export const APPS: AppEntry[] = [
     label: 'Deployments',
     webUrl: 'https://deployments.harryliu.dev',
     tileColor: 'bg-amber-600',
-    icon: GitPullRequest,
+    icon: Rocket,
   },
+];
+
+export type AppSection = {
+  title?: string;
+  apps: AppEntry[];
+};
+
+export const APP_SECTIONS: AppSection[] = [
+  { apps: PERSONAL_APPS },
+  { title: 'Development', apps: DEVELOPMENT_APPS },
 ];
