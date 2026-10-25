@@ -168,7 +168,7 @@ export const TaskListDraftCard = ({
           optionIdentifier="id"
           optionDisplayKey="title"
           disabled={isReadOnly || listsLoading}
-          placeholder={listsLoading ? 'Loading lists...' : 'Select a list'}
+          placeholder="Select a list"
         />
         {selectedListId === NEW_LIST_VALUE && (
           <Input

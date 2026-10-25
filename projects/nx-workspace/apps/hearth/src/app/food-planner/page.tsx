@@ -163,7 +163,7 @@ function FoodPlannerContent() {
                     />
                   </CardContainer>
                   <div className="mt-6">
-                    <InSeasonCard />
+                    <InSeasonCard onGroceryAdded={bumpGrocery} />
                   </div>
                 </TabsContent>
 

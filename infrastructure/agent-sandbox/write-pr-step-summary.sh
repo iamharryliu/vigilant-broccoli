@@ -7,7 +7,7 @@ set -euo pipefail
 # PR_STATE:: and PR_BASE::), and lists each increment it could not publish from
 # INCREMENT_UNPUBLISHED:: lines. Reads the runner's markers, never a loose
 # pull-URL match, since the log can carry diffs and notes that cite PRs. A *_CLEAN:: marker (AUDIT_CLEAN,
-# PRUNE_CLEAN) means the run found nothing to change, which is not a failure, and
+# COMMENT_CLEAN, PRUNE_CLEAN, README_CLEAN, URL_AUDIT_CLEAN) means the run found nothing to change, which is not a failure, and
 # so does RESULT::no-changes, which a runner prints only with the agent's reason.
 # A failed solve run also prints a RESULT:: marker (salvaged, salvage-nothing,
 # salvage-push-failed, salvage-pr-failed) saying what became of its partial work.
@@ -49,7 +49,7 @@ elif [ -n "$PR_URL" ] && [ "$(jq 'length' <<<"$UNPUBLISHED")" -gt 0 ]; then
   OUTCOME=failed
 elif [ -n "$PR_URL" ]; then
   OUTCOME=pr-created
-elif grep -qE '^[A-Z]+_CLEAN:' "$LOG_FILE" 2>/dev/null || grep -qx "$NO_CHANGES_MARKER" "$LOG_FILE" 2>/dev/null; then
+elif grep -qE '^[A-Z_]+_CLEAN:' "$LOG_FILE" 2>/dev/null || grep -qx "$NO_CHANGES_MARKER" "$LOG_FILE" 2>/dev/null; then
   OUTCOME=no-changes
 else
   OUTCOME=no-pr

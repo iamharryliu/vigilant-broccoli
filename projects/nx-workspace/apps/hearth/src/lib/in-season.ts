@@ -9,10 +9,50 @@ export type Hemisphere = (typeof HEMISPHERE)[keyof typeof HEMISPHERE];
 
 export type SeasonalItem = { name: string; months: number[] };
 
-export const SEASONAL_PRODUCE: Record<
-  'fruits' | 'vegetables',
-  SeasonalItem[]
-> = produce;
+export const SEASONAL_PRODUCE: Record<'fruits' | 'vegetables', SeasonalItem[]> =
+  produce;
+
+// Only items with a matching Unicode emoji; the rest render as plain badges.
+const PRODUCE_EMOJI: Record<string, string> = {
+  Apple: '🍎',
+  Avocado: '🥑',
+  Blueberry: '🫐',
+  Broccoli: '🥦',
+  'Bell Pepper': '🫑',
+  Cantaloupe: '🍈',
+  Carrot: '🥕',
+  Cherry: '🍒',
+  Corn: '🌽',
+  Cucumber: '🥒',
+  Eggplant: '🍆',
+  Garlic: '🧄',
+  Grape: '🍇',
+  'Green Bean': '🫘',
+  'Honeydew Melon': '🍈',
+  Kale: '🥬',
+  Kiwi: '🥝',
+  Lemon: '🍋',
+  Lettuce: '🥬',
+  Lime: '🍋‍🟩',
+  Mango: '🥭',
+  Mushroom: '🍄',
+  Onion: '🧅',
+  Orange: '🍊',
+  Pea: '🫛',
+  Peach: '🍑',
+  Pear: '🍐',
+  Pineapple: '🍍',
+  Potato: '🥔',
+  Pumpkin: '🎃',
+  Strawberry: '🍓',
+  'Sweet Potato': '🍠',
+  'Tangerine / Mandarin': '🍊',
+  Tomato: '🍅',
+  Watermelon: '🍉',
+};
+
+export const getProduceEmoji = (name: string): string | undefined =>
+  PRODUCE_EMOJI[name];
 
 const MONTHS_IN_YEAR = 12;
 const SOUTHERN_SEASON_SHIFT_MONTHS = 6;
@@ -89,16 +129,64 @@ export const detectHemisphere = ({
     ? hemisphereFromTimeZone(timeZone)
     : hemisphereFromLatitude(latitude);
 
-// `month` is 1-12. The notes describe a Northern climate, so the Southern
-// Hemisphere looks up the month six months away.
+export const SEASON_STATUS = {
+  JUST_IN: 'just-in',
+  LAST_CHANCE: 'last-chance',
+  REGULAR: 'regular',
+} as const;
+
+export type SeasonStatus = (typeof SEASON_STATUS)[keyof typeof SEASON_STATUS];
+
+export const SEASON_STATUS_EMOJI = {
+  [SEASON_STATUS.JUST_IN]: '🌱',
+  [SEASON_STATUS.LAST_CHANCE]: '⏳',
+} as const;
+
+export const SEASON_STATUS_LABEL_KEY = {
+  [SEASON_STATUS.JUST_IN]: 'IN_SEASON.JUST_IN',
+  [SEASON_STATUS.LAST_CHANCE]: 'IN_SEASON.LAST_CHANCE',
+} as const;
+
+// The notes describe a Northern climate, so the Southern Hemisphere looks up
+// the month six months away.
+const toNoteMonth = (hemisphere: Hemisphere, month: number): number =>
+  hemisphere === HEMISPHERE.SOUTHERN
+    ? ((month - 1 + SOUTHERN_SEASON_SHIFT_MONTHS) % MONTHS_IN_YEAR) + 1
+    : month;
+
+// `month` is 1-12.
+export const getInSeasonItems = (
+  items: SeasonalItem[],
+  hemisphere: Hemisphere,
+  month: number,
+): SeasonalItem[] => {
+  const noteMonth = toNoteMonth(hemisphere, month);
+  return items.filter(i => i.months.includes(noteMonth));
+};
+
 export const getInSeason = (
   items: SeasonalItem[],
   hemisphere: Hemisphere,
   month: number,
-): string[] => {
-  const noteMonth =
-    hemisphere === HEMISPHERE.SOUTHERN
-      ? ((month - 1 + SOUTHERN_SEASON_SHIFT_MONTHS) % MONTHS_IN_YEAR) + 1
-      : month;
-  return items.filter(i => i.months.includes(noteMonth)).map(i => i.name);
+): string[] => getInSeasonItems(items, hemisphere, month).map(i => i.name);
+
+// A run is consecutive months and wraps across December. All-year items have
+// no start or end, so they stay regular; a one-month run counts as just in.
+export const getSeasonStatus = (
+  item: SeasonalItem,
+  hemisphere: Hemisphere,
+  month: number,
+): SeasonStatus => {
+  const noteMonth = toNoteMonth(hemisphere, month);
+  if (!item.months.includes(noteMonth)) return SEASON_STATUS.REGULAR;
+  const previous = ((noteMonth + MONTHS_IN_YEAR - 2) % MONTHS_IN_YEAR) + 1;
+  const next = (noteMonth % MONTHS_IN_YEAR) + 1;
+  if (!item.months.includes(previous)) return SEASON_STATUS.JUST_IN;
+  if (!item.months.includes(next)) return SEASON_STATUS.LAST_CHANCE;
+  return SEASON_STATUS.REGULAR;
 };
+
+// `month` is 1-12; `step` may be negative and wraps across December.
+export const shiftMonth = (month: number, step: number): number =>
+  ((((month - 1 + step) % MONTHS_IN_YEAR) + MONTHS_IN_YEAR) % MONTHS_IN_YEAR) +
+  1;

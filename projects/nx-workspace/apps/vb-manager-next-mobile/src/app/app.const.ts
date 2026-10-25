@@ -3,7 +3,6 @@ export const APP_NAME = 'VB Manager';
 export const PAGE_TITLE = {
   HOME: 'Home',
   APPS: 'Apps',
-  PREVIEW_DEPLOYMENTS: 'Preview Deployments',
   LOGIN: 'Login',
   AUTH_CALLBACK: 'Signing In',
 } as const;
@@ -11,7 +10,6 @@ export const PAGE_TITLE = {
 export const APP_ROUTE = {
   HOME: '/',
   APPS: '/apps',
-  PREVIEW_DEPLOYMENTS: '/preview-deployments',
 } as const;
 
 export const CALENDAR_TAB = {

@@ -73,9 +73,7 @@ const CLS = {
 } as const;
 
 const COPY = {
-  LOADING_TREE: 'Loading file structure...',
   EMPTY: 'Select a markdown file to view its contents',
-  LOADING_GRAPH: 'Loading graph...',
   GRAPH_ERROR: 'Failed to load graph',
   ORPHAN_NOTE: 'This note has no links',
   FORCES: 'Forces',
@@ -201,8 +199,7 @@ function GraphPanel({
   }, [graph, isLocal, activePath, depth]);
 
   if (error) return <div className={CLS.CENTERED_ERR}>{error}</div>;
-  if (!graph)
-    return <div className={CLS.CENTERED_MSG}>{COPY.LOADING_GRAPH}</div>;
+  if (!graph) return null;
 
   const isOrphan = isLocal && (displayGraph?.nodes.length ?? 0) <= 1;
 
@@ -387,9 +384,7 @@ export function DocsViewer({
     );
   };
 
-  if (isLoadingTree) {
-    return <div className={CLS.CENTERED_MSG}>{COPY.LOADING_TREE}</div>;
-  }
+  if (isLoadingTree) return null;
   if (treeError) {
     return <div className={CLS.CENTERED_ERR}>{treeError}</div>;
   }

@@ -1,6 +1,5 @@
 import {
-  Dispatch,
-  SetStateAction,
+  KeyboardEvent,
   lazy,
   Suspense,
   useEffect,
@@ -8,6 +7,7 @@ import {
   useState,
 } from 'react';
 import { LucideIcon } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { cn } from '@vigilant-broccoli/react-lib';
 import { useTranslation } from '../i18n';
 import { PageHeader } from '../components/PageHeader';
@@ -22,6 +22,8 @@ import {
   TIMELINE_GRANULARITY_OPTIONS,
   TIMELINE_METRIC,
   TIMELINE_METRIC_OPTIONS,
+  TIMELINE_MODE,
+  TIMELINE_MODE_OPTIONS,
   TIMELINE_RANGE,
   TIMELINE_RANGE_OPTIONS,
   TIMELINE_VIEW,
@@ -29,9 +31,11 @@ import {
   TimelineBucket,
   TimelineGranularity,
   TimelineMetric,
+  TimelineMode,
   TimelineRange,
   TimelineView,
   buildTimeline,
+  getBucketValue,
   getGraphWindowSize,
   toMonthNumber,
   toNiceTicks,
@@ -42,38 +46,112 @@ const RepoScrollTimeline = lazy(
   () => import('../components/RepoScrollTimeline'),
 );
 
-const SESSION_STORAGE_KEY = {
-  VIEW: 'repo-timeline:view',
-  RANGE: 'repo-timeline:range',
-  GRANULARITY: 'repo-timeline:granularity',
-  METRIC: 'repo-timeline:metric',
+const SESSION_STORAGE_PREFIX = 'repo-timeline:';
+
+const readSession = (param: string) => {
+  try {
+    return window.sessionStorage.getItem(SESSION_STORAGE_PREFIX + param);
+  } catch {
+    return null;
+  }
+};
+
+const writeSession = (param: string, value: string) => {
+  try {
+    window.sessionStorage.setItem(SESSION_STORAGE_PREFIX + param, value);
+  } catch {
+    // sessionStorage unavailable — not persisted this session
+  }
+};
+
+const isOneOf = <T extends string>(
+  value: string | null,
+  validValues: readonly T[],
+): value is T =>
+  value !== null && (validValues as readonly string[]).includes(value);
+
+const PARAM = {
+  VIEW: 'view',
+  RANGE: 'range',
+  GRANULARITY: 'granularity',
+  METRIC: 'metric',
+  MODE: 'mode',
 } as const;
 
-function useSessionState<T extends string>(
-  key: string,
-  defaultValue: T,
-  validValues: readonly T[],
-): [T, Dispatch<SetStateAction<T>>] {
-  const [value, setValue] = useState<T>(() => {
-    try {
-      const stored = window.sessionStorage.getItem(key);
-      return stored && (validValues as readonly string[]).includes(stored)
-        ? (stored as T)
-        : defaultValue;
-    } catch {
-      return defaultValue;
-    }
-  });
+// URL query wins so links are shareable, then the tab's last choice, then the
+// default. All params are mirrored into the URL once resolved.
+function useTimelineParams() {
+  const [searchParams, setSearchParams] = useSearchParams();
 
+  const resolve = <T extends string>(
+    param: string,
+    defaultValue: T,
+    validValues: readonly T[],
+  ): T => {
+    const fromUrl = searchParams.get(param);
+    if (isOneOf(fromUrl, validValues)) return fromUrl;
+    const fromSession = readSession(param);
+    return isOneOf(fromSession, validValues) ? fromSession : defaultValue;
+  };
+
+  const values = {
+    [PARAM.VIEW]: resolve<TimelineView>(
+      PARAM.VIEW,
+      TIMELINE_VIEW.GRAPH,
+      Object.values(TIMELINE_VIEW),
+    ),
+    [PARAM.RANGE]: resolve<TimelineRange>(
+      PARAM.RANGE,
+      TIMELINE_RANGE.ALL,
+      Object.values(TIMELINE_RANGE),
+    ),
+    [PARAM.GRANULARITY]: resolve<TimelineGranularity>(
+      PARAM.GRANULARITY,
+      TIMELINE_GRANULARITY.MONTH,
+      Object.values(TIMELINE_GRANULARITY),
+    ),
+    [PARAM.METRIC]: resolve<TimelineMetric>(
+      PARAM.METRIC,
+      TIMELINE_METRIC.LINES_OF_CODE,
+      Object.values(TIMELINE_METRIC),
+    ),
+    [PARAM.MODE]: resolve<TimelineMode>(
+      PARAM.MODE,
+      TIMELINE_MODE.TOTAL,
+      Object.values(TIMELINE_MODE),
+    ),
+  };
+
+  const serialized = JSON.stringify(values);
   useEffect(() => {
-    try {
-      window.sessionStorage.setItem(key, value);
-    } catch {
-      // sessionStorage unavailable — not persisted this session
-    }
-  }, [key, value]);
+    const next = new URLSearchParams(searchParams);
+    let changed = false;
+    Object.entries(values).forEach(([param, value]) => {
+      writeSession(param, value);
+      if (next.get(param) !== value) {
+        next.set(param, value);
+        changed = true;
+      }
+    });
+    if (changed) setSearchParams(next, { replace: true });
+  }, [serialized]);
 
-  return [value, setValue];
+  const setParam = (param: string) => (value: string) => {
+    const next = new URLSearchParams(searchParams);
+    next.set(param, value);
+    setSearchParams(next, { replace: true });
+  };
+
+  return {
+    ...values,
+    setView: setParam(PARAM.VIEW) as (value: TimelineView) => void,
+    setRange: setParam(PARAM.RANGE) as (value: TimelineRange) => void,
+    setGranularity: setParam(PARAM.GRANULARITY) as (
+      value: TimelineGranularity,
+    ) => void,
+    setMetric: setParam(PARAM.METRIC) as (value: TimelineMetric) => void,
+    setMode: setParam(PARAM.MODE) as (value: TimelineMode) => void,
+  };
 }
 
 const ICON_CLASS = 'h-4 w-4 shrink-0';
@@ -182,7 +260,6 @@ interface SegmentedControlProps<T extends string> {
   options: {
     value: T;
     labelKey: DotPaths<typeof en>;
-    shortLabelKey?: DotPaths<typeof en>;
     Icon?: LucideIcon;
   }[];
   onChange: (value: T) => void;
@@ -220,14 +297,7 @@ function SegmentedControl<T extends string>({
             )}
           >
             {option.Icon && <option.Icon className={ICON_CLASS} />}
-            {option.shortLabelKey && (
-              <span className="sm:hidden">{t(option.shortLabelKey)}</span>
-            )}
-            <span
-              className={cn(
-                (option.Icon || option.shortLabelKey) && 'hidden sm:inline',
-              )}
-            >
+            <span className={cn(option.Icon && 'hidden sm:inline')}>
               {optionLabel}
             </span>
           </button>
@@ -237,20 +307,27 @@ function SegmentedControl<T extends string>({
   );
 }
 
-interface RangeSelectorProps {
-  value: TimelineRange;
-  onChange: (value: TimelineRange) => void;
+interface ChipSelectorProps<T extends string> {
+  labelKey: DotPaths<typeof en>;
+  value: T;
+  options: { value: T; labelKey: DotPaths<typeof en> }[];
+  onChange: (value: T) => void;
 }
 
-function RangeSelector({ value, onChange }: RangeSelectorProps) {
+function ChipSelector<T extends string>({
+  labelKey,
+  value,
+  options,
+  onChange,
+}: ChipSelectorProps<T>) {
   const { t } = useTranslation();
   return (
     <div
       role="radiogroup"
-      aria-label={t('REPO_TIMELINE_PAGE.RANGE_LABEL')}
-      className="mb-2 flex shrink-0 gap-0.5 overflow-x-auto"
+      aria-label={t(labelKey)}
+      className="flex shrink-0 gap-0.5 overflow-x-auto"
     >
-      {TIMELINE_RANGE_OPTIONS.map(option => (
+      {options.map(option => (
         <button
           key={option.value}
           type="button"
@@ -274,6 +351,7 @@ function RangeSelector({ value, onChange }: RangeSelectorProps) {
 interface TimelineChartProps {
   buckets: TimelineBucket[];
   metric: TimelineMetric;
+  mode: TimelineMode;
   granularity: TimelineGranularity;
   range: TimelineRange;
   activeIndex: number;
@@ -283,16 +361,21 @@ interface TimelineChartProps {
 function TimelineChart({
   buckets,
   metric,
+  mode,
   granularity,
   range,
   activeIndex,
   onActiveIndexChange,
 }: TimelineChartProps) {
+  const { t } = useTranslation();
   const [isHovering, setIsHovering] = useState(false);
 
-  const values = buckets.map(b => b[metric]);
+  const values = buckets.map(b => getBucketValue(b, metric, mode));
   const ticks = toNiceTicks(
-    values.length > 0 ? Math.min(...values) : 0,
+    // Per-period bars are anchored at zero; running totals zoom to the window.
+    mode === TIMELINE_MODE.PERIOD || values.length === 0
+      ? 0
+      : Math.min(...values),
     values.length > 0 ? Math.max(...values) : 0,
   );
   const scaleMin = ticks[0];
@@ -302,10 +385,35 @@ function TimelineChart({
   const slotPercent = buckets.length > 0 ? 100 / buckets.length : 0;
 
   const hoverBucket = isHovering ? buckets[activeIndex] : undefined;
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    const last = buckets.length - 1;
+    const target = {
+      ArrowLeft: activeIndex - 1,
+      ArrowRight: activeIndex + 1,
+      Home: 0,
+      End: last,
+    }[event.key];
+    if (target === undefined) return;
+    event.preventDefault();
+    setIsHovering(true);
+    onActiveIndexChange(Math.min(last, Math.max(0, target)));
+  };
+
   const hoverX = `${(activeIndex + 0.5) * slotPercent}%`;
 
   return (
-    <div className="flex min-h-0 flex-1 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 pt-6 pb-4 pr-2 sm:pr-4">
+    <div
+      role="group"
+      aria-label={t('REPO_TIMELINE_PAGE.CHART_LABEL')}
+      tabIndex={0}
+      onKeyDown={onKeyDown}
+      onFocus={() => setIsHovering(true)}
+      onBlur={() => {
+        setIsHovering(false);
+        onActiveIndexChange(buckets.length - 1);
+      }}
+      className="flex min-h-0 flex-1 rounded-lg border border-gray-200 bg-white pt-6 pb-4 pr-2 focus-visible:outline-2 focus-visible:outline-sky-500 dark:border-gray-700 dark:bg-gray-800 sm:pr-4"
+    >
       <div
         className="flex w-9 shrink-0 flex-col text-[10px] text-gray-500 dark:text-gray-400 sm:w-12"
         aria-hidden
@@ -333,7 +441,14 @@ function TimelineChart({
               style={{ left: hoverX }}
             >
               {formatPeriod(hoverBucket.key, granularity)} ·{' '}
-              {NUMBER_FORMAT.format(hoverBucket[metric])}
+              {NUMBER_FORMAT.format(getBucketValue(hoverBucket, metric, mode))}
+              {metric === TIMELINE_METRIC.LINES_OF_CODE && (
+                <>
+                  {' '}
+                  · +{NUMBER_FORMAT.format(hoverBucket.linesAdded)} / −
+                  {NUMBER_FORMAT.format(hoverBucket.linesDeleted)}
+                </>
+              )}
             </span>
           )}
         </div>
@@ -375,8 +490,8 @@ function TimelineChart({
                       : 'bg-sky-500 dark:bg-sky-400',
                   )}
                   style={{
-                    height: `${toPercent(bucket[metric])}%`,
-                    minHeight: bucket[metric] > scaleMin ? 1 : 0,
+                    height: `${toPercent(values[index])}%`,
+                    minHeight: values[index] > scaleMin ? 1 : 0,
                   }}
                 />
               </div>
@@ -415,6 +530,7 @@ function TimelineChart({
 interface GraphViewProps {
   buckets: TimelineBucket[];
   metric: TimelineMetric;
+  mode: TimelineMode;
   range: TimelineRange;
 }
 
@@ -428,7 +544,7 @@ interface ListViewProps {
 const formatTimelineValue = (value: number) =>
   NUMBER_FORMAT.format(Math.round(value));
 
-function GraphView({ buckets, metric, range }: GraphViewProps) {
+function GraphView({ buckets, metric, mode, range }: GraphViewProps) {
   const windowedBuckets = useMemo(() => {
     const windowSize = getGraphWindowSize(range, buckets.length);
     return buckets.slice(-windowSize);
@@ -446,6 +562,7 @@ function GraphView({ buckets, metric, range }: GraphViewProps) {
       <TimelineChart
         buckets={windowedBuckets}
         metric={metric}
+        mode={mode}
         granularity={TIMELINE_GRANULARITY.DAY}
         range={range}
         activeIndex={activeIndex}
@@ -514,26 +631,18 @@ export function RepoTimelinePage() {
   const { t } = useTranslation();
   const [data, setData] = useState<RepoTimelineData | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [metric, setMetric] = useSessionState<TimelineMetric>(
-    SESSION_STORAGE_KEY.METRIC,
-    TIMELINE_METRIC.LINES_OF_CODE,
-    Object.values(TIMELINE_METRIC),
-  );
-  const [granularity, setGranularity] = useSessionState<TimelineGranularity>(
-    SESSION_STORAGE_KEY.GRANULARITY,
-    TIMELINE_GRANULARITY.MONTH,
-    Object.values(TIMELINE_GRANULARITY),
-  );
-  const [view, setView] = useSessionState<TimelineView>(
-    SESSION_STORAGE_KEY.VIEW,
-    TIMELINE_VIEW.GRAPH,
-    Object.values(TIMELINE_VIEW),
-  );
-  const [range, setRange] = useSessionState<TimelineRange>(
-    SESSION_STORAGE_KEY.RANGE,
-    TIMELINE_RANGE.MONTH_1,
-    Object.values(TIMELINE_RANGE),
-  );
+  const {
+    view,
+    range,
+    granularity,
+    metric,
+    mode,
+    setView,
+    setRange,
+    setGranularity,
+    setMetric,
+    setMode,
+  } = useTimelineParams();
 
   useEffect(() => {
     (async () => {
@@ -581,7 +690,7 @@ export function RepoTimelinePage() {
 
       {data && (
         <>
-          <div className="mb-4 flex shrink-0 flex-wrap items-center justify-between gap-2">
+          <div className="mb-2 flex shrink-0 flex-wrap items-center gap-2">
             <SegmentedControl
               labelKey="REPO_TIMELINE_PAGE.VIEW_LABEL"
               value={view}
@@ -594,8 +703,26 @@ export function RepoTimelinePage() {
               onChange={setMetric}
               options={TIMELINE_METRIC_OPTIONS}
             />
-            {view === TIMELINE_VIEW.TIMELINE && (
-              <SegmentedControl
+          </div>
+
+          <div className="mb-4 flex min-h-10 shrink-0 flex-wrap items-center justify-between gap-2">
+            {view === TIMELINE_VIEW.GRAPH ? (
+              <>
+                <ChipSelector
+                  labelKey="REPO_TIMELINE_PAGE.RANGE_LABEL"
+                  value={range}
+                  onChange={setRange}
+                  options={TIMELINE_RANGE_OPTIONS}
+                />
+                <ChipSelector
+                  labelKey="REPO_TIMELINE_PAGE.MODE_LABEL"
+                  value={mode}
+                  onChange={setMode}
+                  options={TIMELINE_MODE_OPTIONS}
+                />
+              </>
+            ) : (
+              <ChipSelector
                 labelKey="REPO_TIMELINE_PAGE.GRANULARITY_LABEL"
                 value={granularity}
                 onChange={setGranularity}
@@ -604,12 +731,13 @@ export function RepoTimelinePage() {
             )}
           </div>
 
-          {view === TIMELINE_VIEW.GRAPH && (
-            <RangeSelector value={range} onChange={setRange} />
-          )}
-
           {view === TIMELINE_VIEW.GRAPH ? (
-            <GraphView buckets={dayBuckets} metric={metric} range={range} />
+            <GraphView
+              buckets={dayBuckets}
+              metric={metric}
+              mode={mode}
+              range={range}
+            />
           ) : (
             <ListView
               buckets={listBuckets}

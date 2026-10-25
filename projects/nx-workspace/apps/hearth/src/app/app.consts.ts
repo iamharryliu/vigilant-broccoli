@@ -12,6 +12,7 @@ import {
   FlaskConical,
   ShoppingCart,
   Sparkles,
+  Leaf,
   StickyNote,
   MessageCircle,
   Home,
@@ -86,6 +87,7 @@ export const NAV_LINKS: NavLink[] = [
     mobileOnlyChildren: true,
     children: [
       { label: 'Grocery List', href: ROUTES.GROCERY, icon: ShoppingCart },
+      { label: 'In Season', href: ROUTES.IN_SEASON, icon: Leaf },
       { label: 'Kitchen Chores', href: ROUTES.KITCHEN_CHORES, icon: Sparkles },
       { label: 'Kitchen Notes', href: ROUTES.KITCHEN_NOTES, icon: StickyNote },
       {

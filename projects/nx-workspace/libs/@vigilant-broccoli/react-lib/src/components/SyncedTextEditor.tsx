@@ -7,7 +7,6 @@ import {
   useRef,
 } from 'react';
 
-const LOADING_LABEL = 'Loading...';
 const DEFAULT_PLACEHOLDER = 'Quick notes...';
 const UNDO_KEY = 'z';
 const REDO_KEY = 'y';
@@ -361,7 +360,7 @@ export const SyncedTextEditor = ({
           onScroll={e => recordViewState(e.currentTarget)}
           onBlur={onTextareaBlur}
           disabled={isLoading}
-          placeholder={isLoading ? LOADING_LABEL : placeholder}
+          placeholder={placeholder}
           style={{
             ...styles.textarea,
             ...textareaStyle,

@@ -8,6 +8,7 @@
 ## Job Hunting
 
 - [Interview Prep](./interview-prep.md)
+- [Job Hunt](./job-hunt.md)
 - [Interviewer Prep](./interviewer-prep.md)
 
 ## Job Boards

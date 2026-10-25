@@ -172,6 +172,18 @@ function BookmarksPage() {
                   onChange={readImport}
                 />
               </label>
+              <Button
+                variant="destructive"
+                disabled={!bookmarks.length}
+                onClick={() => {
+                  if (window.confirm(t('CONFIRM_CLEAR_ALL'))) {
+                    setBookmarks([]);
+                    reset();
+                  }
+                }}
+              >
+                {t('CLEAR_ALL')}
+              </Button>
               {pendingImport && (
                 <div className="space-y-2">
                   <p>{t('IMPORT_READY', { count: pendingImport.length })}</p>

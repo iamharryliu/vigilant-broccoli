@@ -27,6 +27,7 @@ import {
   SUPABASE_PROJECT_LINK,
   TERRAFORM_ORG_LINK,
 } from '@vigilant-broccoli/private-infrastructure';
+import { ACCESS_GATED_URL } from './access-gated.consts';
 import { PERSONAL_ACCOUNT_LINK, PERSONAL_URL } from './personal-account.consts';
 import { JOURNAL_PATH, VB_REPO_PATH } from '@harry/private';
 
@@ -56,6 +57,13 @@ const DEV_LINKS: QuickLink[] = [
     SANITY_ORG_LINK.APPLICATIONS,
   ]),
   ...toQuickLinks(LINK_GROUP_SUBGROUP.UTILITY, Object.values(LOCAL_HOST_URL)),
+  ...toQuickLinks(LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI, [
+    ...Object.values(ACCESS_GATED_URL),
+    {
+      NAME: `${ACCESS_GATED_URL.VB_MANAGER_NEXT_MOBILE.NAME} (Staging)`,
+      URL: ACCESS_GATED_URL.VB_MANAGER_NEXT_MOBILE.STAGING_URL,
+    },
+  ]),
 ];
 
 const UTILITY_LINKS: QuickLink[] = [
@@ -248,12 +256,16 @@ const AGENTIC_WORKFLOW = {
     FILE: 'manual-agentic-pr-update.yml',
   },
   PR_CREATE_AUDIT: {
-    NAME: 'VB - Manual Agentic PR Create Audit',
-    FILE: 'manual-agentic-pr-create-audit.yml',
+    NAME: 'VB - Cron Agentic PR Create Audit',
+    FILE: 'cron-agentic-pr-create-audit.yml',
   },
   PR_CREATE_RND: {
     NAME: 'VB - Manual Agentic PR Create R&D',
     FILE: 'manual-agentic-pr-create-rnd.yml',
+  },
+  PR_CREATE_TODO: {
+    NAME: 'VB - Manual Agentic PR Create TODO',
+    FILE: 'manual-agentic-pr-create-todo.yml',
   },
   PR_CREATE_SMOKE: {
     NAME: 'VB - Manual Agentic PR Create Smoke',

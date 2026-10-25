@@ -1,5 +1,10 @@
 import { GithubTeamMember } from '@vigilant-broccoli/github-workspace-js';
 
+// Workflow inputs can be free text (a solve prompt, a removal reason) and run
+// through a real shell, so they are single-quoted with embedded quotes closed,
+// escaped and reopened; nothing inside single quotes is expanded.
+const quoteShellArg = (value: string) => `'${value.replace(/'/g, `'\\''`)}'`;
+
 export const GithubCLICommand = {
   createTeam: (
     organizationName: string,
@@ -70,6 +75,6 @@ export const GithubCLICommand = {
     inputs: Record<string, string>,
   ) =>
     `gh workflow run ${workflowFile} -R ${repo} ${Object.entries(inputs)
-      .map(([key, value]) => `-f ${key}="${value}"`)
+      .map(([key, value]) => `-f ${quoteShellArg(`${key}=${value}`)}`)
       .join(' ')}`,
 };

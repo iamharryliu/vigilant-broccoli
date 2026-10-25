@@ -28,6 +28,7 @@ export const ROUTES = {
   RECEIPTS_DETAIL: (id: string) => `/receipts/${id}`,
   CHORES: '/chores',
   GROCERY: '/grocery',
+  IN_SEASON: '/in-season',
   KITCHEN_CHORES: '/kitchen-chores',
   KITCHEN_NOTES: '/kitchen-notes',
   KITCHEN_PROJECTS: '/kitchen-projects',

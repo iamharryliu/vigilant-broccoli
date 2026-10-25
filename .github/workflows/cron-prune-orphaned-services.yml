@@ -1,9 +1,12 @@
 name: cron-prune-orphaned-services
 
 # Report-only: lists Cloudflare Pages, Vercel and Fly services that nothing in
-# the repo declares and emails the result only when there is an orphan or a
-# listing error. Deleting stays a manual local
-# `--apply` run of scripts/prune-orphaned-services.ts.
+# the repo declares and keeps one Chore row in TODO.md in step with the result
+# (`.github/scripts/orphaned-services-todo.mjs` adds, rewrites or removes it),
+# opening a PR whenever the row changes. Deleting stays a manual local
+# `--apply` run of scripts/prune-orphaned-services.ts. A listing error leaves
+# TODO.md alone, since a partial listing would misreport orphans, and fails
+# the run so GitHub's failed-workflow notification flags it.
 on:
   schedule:
     - cron: '55 3 * * *'
@@ -36,7 +39,8 @@ jobs:
             kv/data/secrets CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS | CLOUDFLARE_API_TOKEN ;
             kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
             kv/data/secrets VERCEL_TOKEN | VERCEL_TOKEN ;
-            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
 
       - uses: superfly/flyctl-actions/setup-flyctl@ed8efb33836e8b2096c7fd3ba1c8afe303ebbff1 # 1.6
 
@@ -51,25 +55,67 @@ jobs:
         if: always()
         run: '[ -f "$RUNNER_TEMP/orphans.md" ] && cat "$RUNNER_TEMP/orphans.md" >> "$GITHUB_STEP_SUMMARY" || true'
 
-      - name: Check whether to email
-        id: report
+      - name: Check for listing errors
+        id: listing
         run: |
-          if jq -e '[.providers[] | .orphans[], .errors[]] | length > 0' "$RUNNER_TEMP/orphans.json" > /dev/null; then
-            echo "send=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "Nothing to report; skipping email."
+          if jq -e '[.providers[].errors[]] | length > 0' "$RUNNER_TEMP/orphans.json" > /dev/null; then
+            echo "failed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Tunnel to email service
-        if: steps.report.outputs.send == 'true'
-        uses: ./.github/actions/fly-private-tunnel
-        with:
-          app: staging-vb-email-service
-
-      - name: Email report
-        if: steps.report.outputs.send == 'true'
+      - name: Update the orphaned-services TODO row
+        id: todo
+        if: steps.listing.outputs.failed != 'true'
         env:
-          SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
           REPORT_JSON_PATH: ${{ runner.temp }}/orphans.json
+        run: node .github/scripts/orphaned-services-todo.mjs
+
+      # The App token, not GITHUB_TOKEN, so the PR triggers `ci-pr-check`
+      # (events from GITHUB_TOKEN never start workflows).
+      - name: Open pull request
+        if: steps.todo.outputs.action == 'added' || steps.todo.outputs.action == 'updated' || steps.todo.outputs.action == 'removed'
+        env:
+          AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
+          AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
+          ACTION: ${{ steps.todo.outputs.action }}
+          ORPHAN_TOTAL: ${{ steps.todo.outputs.orphan_total }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: node .github/scripts/orphaned-services-email.mjs
+        run: |
+          set -euo pipefail
+          GH_TOKEN=$(bash infrastructure/agent-sandbox/mint-github-app-token.sh "$AGENT_GH_APP_ID" <(printf '%s\n' "$AGENT_GH_APP_PRIVATE_KEY"))
+          export GH_TOKEN
+          BRANCH_PREFIX="chore/orphaned-services-todo"
+          # A daily schedule would otherwise stack a PR per day; the next run
+          # after this one merges picks up any later change.
+          OPEN=$(gh pr list --state open --json headRefName --jq "[.[] | select(.headRefName | startswith(\"$BRANCH_PREFIX\"))] | length")
+          if [ "$OPEN" -gt 0 ]; then
+            echo "An orphaned-services TODO PR is already open; not opening another."
+            exit 0
+          fi
+          case "$ACTION" in
+            added) TITLE="chore: Add a TODO to remove ${ORPHAN_TOTAL} orphaned service(s)." ;;
+            updated) TITLE="chore: Update the orphaned services TODO to ${ORPHAN_TOTAL} service(s)." ;;
+            removed) TITLE="chore: Remove the orphaned services TODO now that none remain." ;;
+          esac
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git checkout -b "${BRANCH_PREFIX}-$(date +%s)"
+          git add TODO.md
+          git commit -m "$TITLE"
+          git push -u origin HEAD
+          {
+            echo "## Summary"
+            echo
+            echo "Daily \`cron-prune-orphaned-services\` run ${ACTION} the TODO.md orphaned-services row (Type \`Chore\`)."
+            echo
+            cat "$RUNNER_TEMP/orphans.md"
+            echo
+            echo "[Workflow run](${RUN_URL})"
+          } > "$RUNNER_TEMP/pr-body.md"
+          gh pr create --title "$TITLE" --body-file "$RUNNER_TEMP/pr-body.md"
+
+      - name: Fail on listing errors
+        if: steps.listing.outputs.failed == 'true'
+        run: |
+          jq -r '.providers[] | .provider as $p | .errors[] | "::error::could not list \($p): \(.)"' "$RUNNER_TEMP/orphans.json"
+          exit 1

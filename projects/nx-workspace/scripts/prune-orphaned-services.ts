@@ -1,7 +1,6 @@
 import { execFileSync, execSync } from 'child_process';
 import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
-import { EMAIL_ADDRESS } from '@harry/personal';
 
 const NAME_TOKEN_PATTERN = /[a-z0-9][a-z0-9-]*/g;
 const DECLARATION_PATHSPECS = [
@@ -146,7 +145,6 @@ interface ProviderReport {
 interface Report {
   generatedAt: string;
   commit: string;
-  emailTo: string;
   declaredNameCount: number;
   providers: ProviderReport[];
 }
@@ -252,7 +250,6 @@ async function main() {
   const report: Report = {
     generatedAt: new Date().toISOString(),
     commit: execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim(),
-    emailTo: EMAIL_ADDRESS,
     declaredNameCount: declared.size,
     providers: providerReports,
   };

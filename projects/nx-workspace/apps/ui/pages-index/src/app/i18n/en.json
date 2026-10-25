@@ -8,6 +8,10 @@
       "TITLE": "Status",
       "DESCRIPTION": "Live health of deployed services and applications."
     },
+    "DEPLOYMENTS": {
+      "TITLE": "Deployments",
+      "DESCRIPTION": "Preview deployments for open pull requests."
+    },
     "REPO_TIMELINE": {
       "TITLE": "Repo Timeline",
       "DESCRIPTION": "Lines of code, commits, and PRs over time."
@@ -118,6 +122,10 @@
       "TITLE": "Calendars",
       "DESCRIPTION": "Public personal and event calendar directory, deployed on Vercel."
     },
+    "WEB_TERMINAL": {
+      "TITLE": "Web Terminal",
+      "DESCRIPTION": "Phone-friendly browser shell with an on-screen key toolbar, behind owner-only access."
+    },
     "WEATHER": {
       "TITLE": "Weather",
       "DESCRIPTION": "Current weather for your location, deployed on Vercel."
@@ -156,9 +164,11 @@
       "DESCRIPTION": "Personal bookmarks saved in your browser, with search, groups and JSON import/export."
     }
   },
+  "DEPLOYMENTS_PAGE": {
+    "TITLE": "Deployments"
+  },
   "STATUS_PAGE": {
     "TITLE": "Status",
-    "LOADING_SERVICES": "Loading status…",
     "NO_SERVICES": "No services configured.",
     "GITHUB_ACTIONS": "GitHub Actions",
     "VIEW_ALL": "View all →",
@@ -194,9 +204,10 @@
     "GRANULARITY_DAY": "Day",
     "GRANULARITY_MONTH": "Month",
     "GRANULARITY_YEAR": "Year",
-    "GRANULARITY_DAY_SHORT": "D",
-    "GRANULARITY_MONTH_SHORT": "M",
-    "GRANULARITY_YEAR_SHORT": "Y",
+    "CHART_LABEL": "Repo timeline chart",
+    "MODE_LABEL": "Value",
+    "MODE_TOTAL": "Cumulative",
+    "MODE_PERIOD": "Per day",
     "RANGE_LABEL": "Range",
     "RANGE_1W": "1W",
     "RANGE_1M": "1M",
