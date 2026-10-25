@@ -95,7 +95,7 @@ flowchart LR
 
 ## Deploying
 
-| Category         | Options                     |
-| ---------------- | --------------------------- |
-| Local            | minikube                    |
+| Category | Options |
+| --- | --- |
+| Local | minikube |
 | Managed Services | AWS EKS, Azure AKS, GCP GKE |

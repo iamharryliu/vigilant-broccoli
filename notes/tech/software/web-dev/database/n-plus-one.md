@@ -28,13 +28,13 @@ SELECT * FROM users WHERE id = 2;
 
 ## Fixes
 
-| Fix                  | How it works                                                                          | Trade-off                                                             |
-| -------------------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------- |
-| Batch with `IN`      | Collect the ids, run one `WHERE id IN (...)` query, and match results in memory       | Two queries instead of one, and very large id lists need chunking     |
-| Batching loader      | A DataLoader-style helper collects lookups made in the same tick into one batch query | Extra abstraction; most useful for GraphQL resolvers                  |
-| Eager loading        | Ask the ORM to load the relation up front (for example `include` or `joinedload`)     | Can over-fetch when the relation is not always needed                 |
-| Join                 | Fetch posts and authors in a single `JOIN` query                                      | Repeats parent columns per child row, and wide joins can be slow      |
-| Denormalize or cache | Store the needed field on the parent row or cache the lookup                          | The copy can go stale, so it needs an invalidation or update strategy |
+| Fix | How it works | Trade-off |
+| --- | --- | --- |
+| Batch with `IN` | Collect the ids, run one `WHERE id IN (...)` query, and match results in memory | Two queries instead of one, and very large id lists need chunking |
+| Batching loader | A DataLoader-style helper collects lookups made in the same tick into one batch query | Extra abstraction; most useful for GraphQL resolvers |
+| Eager loading | Ask the ORM to load the relation up front (for example `include` or `joinedload`) | Can over-fetch when the relation is not always needed |
+| Join | Fetch posts and authors in a single `JOIN` query | Repeats parent columns per child row, and wide joins can be slow |
+| Denormalize or cache | Store the needed field on the parent row or cache the lookup | The copy can go stale, so it needs an invalidation or update strategy |
 
 ```sql
 -- Join: 1 query

@@ -59,15 +59,15 @@
 
 ### **SSG vs SSR vs CSR** (Static Site Generation, Server-Side Rendering, Client-Side Rendering)
 
-|      Feature       | **SSG** (Static Site Generation)       | **SSR** (Server-Side Rendering)        | **CSR** (Client-Side Rendering)           |
-| :----------------: | -------------------------------------- | -------------------------------------- | ----------------------------------------- |
-| **Rendering Time** | Build time (pre-rendered)              | Request time (server-rendered)         | Browser renders after fetching JavaScript |
-|  **Performance**   | Very fast (static files served by CDN) | Slower (server processes each request) | Depends on device/browser capabilities    |
-| **Data Freshness** | Requires a rebuild for updates         | Always up-to-date                      | Updates dynamically via API calls         |
-|      **SEO**       | Excellent (HTML pre-generated)         | Excellent (HTML rendered server-side)  | Can be poor without server-side hydration |
-|    **Hosting**     | Simple (CDN, static hosting)           | Requires a server                      | Simple (static hosting + API)             |
-| **Best Use Cases** | Blogs, marketing sites, documentation  | E-commerce, dynamic dashboards         | SPAs (e.g., dashboards, interactive apps) |
-|   **Complexity**   | Low                                    | Medium                                 | High                                      |
+| Feature | **SSG** (Static Site Generation) | **SSR** (Server-Side Rendering) | **CSR** (Client-Side Rendering) |
+| :-: | --- | --- | --- |
+| **Rendering Time** | Build time (pre-rendered) | Request time (server-rendered) | Browser renders after fetching JavaScript |
+| **Performance** | Very fast (static files served by CDN) | Slower (server processes each request) | Depends on device/browser capabilities |
+| **Data Freshness** | Requires a rebuild for updates | Always up-to-date | Updates dynamically via API calls |
+| **SEO** | Excellent (HTML pre-generated) | Excellent (HTML rendered server-side) | Can be poor without server-side hydration |
+| **Hosting** | Simple (CDN, static hosting) | Requires a server | Simple (static hosting + API) |
+| **Best Use Cases** | Blogs, marketing sites, documentation | E-commerce, dynamic dashboards | SPAs (e.g., dashboards, interactive apps) |
+| **Complexity** | Low | Medium | High |
 
 **Key Differences**
 

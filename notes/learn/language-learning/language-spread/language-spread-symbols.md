@@ -1,7 +1,7 @@
 # Symbols
 
-| English | Swedish  |
-| :------ | :------- |
-| @       | snabel-a |
-| .       | pont     |
-| -       | streck   |
+| English | Swedish |
+| :-- | :-- |
+| @ | snabel-a |
+| . | pont |
+| - | streck |

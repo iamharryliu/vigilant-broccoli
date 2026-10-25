@@ -27,18 +27,18 @@ Be the first to complete a hand of 4 sets and 1 pair that is worth at least the 
 
 ## Limitations
 
-| Limit               | Value                         | Notes                                                                 |
-| ------------------- | ----------------------------- | --------------------------------------------------------------------- |
-| Chow                | From the player on your left  | Pung and kong may be claimed from anyone                              |
-| Concealed hand      | 13 tiles, 14 mid-turn         | Exposed melds sit on the table and can no longer be changed           |
-| Flowers and seasons | 8 bonus tiles                 | Never part of the hand; replaced from the wall the moment they appear |
-| Game length         | 16 hands minimum              | 4 rounds of 4, longer whenever the dealer repeats                     |
-| Hand shape          | 4 sets + 1 pair               | Special hands such as Thirteen Orphans are the exception              |
-| Minimum to win      | 3 faan                        | A table rule; casual tables drop it to 1 or 0                         |
-| Players             | 4                             | Seated East, South, West, North counter-clockwise                     |
-| Scoring cap         | 13 faan                       | Tables often cap lower, at 8 or 10                                    |
-| Tiles               | 144                           | 136 playing tiles + 8 bonus tiles                                     |
-| Wall                | 36 tiles each, 18 stacks of 2 | Pushed together into a square                                         |
+| Limit | Value | Notes |
+| --- | --- | --- |
+| Chow | From the player on your left | Pung and kong may be claimed from anyone |
+| Concealed hand | 13 tiles, 14 mid-turn | Exposed melds sit on the table and can no longer be changed |
+| Flowers and seasons | 8 bonus tiles | Never part of the hand; replaced from the wall the moment they appear |
+| Game length | 16 hands minimum | 4 rounds of 4, longer whenever the dealer repeats |
+| Hand shape | 4 sets + 1 pair | Special hands such as Thirteen Orphans are the exception |
+| Minimum to win | 3 faan | A table rule; casual tables drop it to 1 or 0 |
+| Players | 4 | Seated East, South, West, North counter-clockwise |
+| Scoring cap | 13 faan | Tables often cap lower, at 8 or 10 |
+| Tiles | 144 | 136 playing tiles + 8 bonus tiles |
+| Wall | 36 tiles each, 18 stacks of 2 | Pushed together into a square |
 
 ## Setup
 
@@ -77,37 +77,37 @@ A turn is draw, optionally meld, then discard — always ending with a discard.
 
 Any player may interrupt the turn order to claim a discard:
 
-| Claim   | Who can claim                | Effect                                     |
-| ------- | ---------------------------- | ------------------------------------------ |
-| Chow    | The player to its right only | Completes a run; play resumes from you     |
-| Kong    | Anyone                       | Completes a four; draw a replacement tile  |
-| Mahjong | Anyone                       | Completes the winning hand                 |
-| Pung    | Anyone                       | Completes a triplet; play resumes from you |
+| Claim | Who can claim | Effect |
+| --- | --- | --- |
+| Chow | The player to its right only | Completes a run; play resumes from you |
+| Kong | Anyone | Completes a four; draw a replacement tile |
+| Mahjong | Anyone | Completes the winning hand |
+| Pung | Anyone | Completes a triplet; play resumes from you |
 
 - Priority: mahjong beats pung and kong, which beat chow.
 - A claim skips everyone between the discarder and the claimer.
 
 ## Tiles
 
-| Group               | Tiles                                   | Count |
-| ------------------- | --------------------------------------- | ----- |
-| Bamboo              | 1–9, 4 copies each                      | 36    |
-| Characters          | 1–9, 4 copies each                      | 36    |
-| Dots                | 1–9, 4 copies each                      | 36    |
-| Dragons             | Red, Green, White, 4 copies each        | 12    |
-| Flowers and seasons | 4 flowers + 4 seasons, 1 copy each      | 8     |
-| Winds               | East, South, West, North, 4 copies each | 16    |
+| Group | Tiles | Count |
+| --- | --- | --- |
+| Bamboo | 1–9, 4 copies each | 36 |
+| Characters | 1–9, 4 copies each | 36 |
+| Dots | 1–9, 4 copies each | 36 |
+| Dragons | Red, Green, White, 4 copies each | 12 |
+| Flowers and seasons | 4 flowers + 4 seasons, 1 copy each | 8 |
+| Winds | East, South, West, North, 4 copies each | 16 |
 
 Terminals are the 1s and 9s; honours are the winds and dragons.
 
 ## Sets
 
-| Set  | Shape                                |
-| ---- | ------------------------------------ |
-| Chow | 3 consecutive tiles in one suit      |
-| Kong | 4 identical tiles                    |
+| Set | Shape |
+| --- | --- |
+| Chow | 3 consecutive tiles in one suit |
+| Kong | 4 identical tiles |
 | Pair | 2 identical tiles, the hand's "eyes" |
-| Pung | 3 identical tiles                    |
+| Pung | 3 identical tiles |
 
 Honours cannot form chows.
 
@@ -135,15 +135,15 @@ Then:
 Faan from every condition the hand meets are added together, then converted to points:
 
 | Faan | Points |
-| ---- | ------ |
-| 3    | 8      |
-| 4    | 16     |
-| 5    | 24     |
-| 6    | 32     |
-| 7    | 48     |
-| 8    | 64     |
-| 9    | 96     |
-| 10+  | 128    |
+| --- | --- |
+| 3 | 8 |
+| 4 | 16 |
+| 5 | 24 |
+| 6 | 32 |
+| 7 | 48 |
+| 8 | 64 |
+| 9 | 96 |
+| 10+ | 128 |
 
 Payment:
 
@@ -152,18 +152,18 @@ Payment:
 
 Common faan sources:
 
-| Source                                   | Faan   |
-| ---------------------------------------- | ------ |
-| All chows, no honours                    | 1      |
-| All pungs                                | 3      |
-| Concealed hand                           | 1      |
-| Dragon pung                              | 1 each |
-| Full flush, one suit and nothing else    | 7      |
-| Great Dragons, all 3 dragon pungs        | 8      |
-| Half flush, one suit plus honours        | 3      |
+| Source | Faan |
+| --- | --- |
+| All chows, no honours | 1 |
+| All pungs | 3 |
+| Concealed hand | 1 |
+| Dragon pung | 1 each |
+| Full flush, one suit and nothing else | 7 |
+| Great Dragons, all 3 dragon pungs | 8 |
+| Half flush, one suit plus honours | 3 |
 | Pung of your seat wind or the round wind | 1 each |
-| Self-draw                                | 1      |
-| Thirteen Orphans                         | 13     |
+| Self-draw | 1 |
+| Thirteen Orphans | 13 |
 
 ## Table Rules
 

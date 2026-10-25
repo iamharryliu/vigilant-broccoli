@@ -18,10 +18,10 @@ Run the Slack bot from the published Docker image in Socket Mode or HTTP (Events
 
 `SLACK_MODE` picks the transport at startup; the same handlers, views and SQLite schema run in both.
 
-| Mode     | Needs                                     | Public URL | Reminders                                          |
-| -------- | ----------------------------------------- | ---------- | -------------------------------------------------- |
-| `socket` | `SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN`      | No         | `node-cron` when `ENABLE_REMINDERS=true`           |
-| `http`   | `SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET` | HTTPS      | `POST /internal/reminders` from your own scheduler |
+| Mode | Needs | Public URL | Reminders |
+| --- | --- | --- | --- |
+| `socket` | `SLACK_BOT_TOKEN`, `SLACK_APP_TOKEN` | No | `node-cron` when `ENABLE_REMINDERS=true` |
+| `http` | `SLACK_BOT_TOKEN`, `SLACK_SIGNING_SECRET` | HTTPS | `POST /internal/reminders` from your own scheduler |
 
 `socket` is the default, so existing deployments keep working. The process exits at startup with the missing variable names when required env is absent, and rejects any other `SLACK_MODE` value.
 
@@ -82,22 +82,22 @@ The entrypoint chowns `/data` for the `node` user at boot, so a root-owned volum
 
 ## Environment Variables
 
-| Variable                         | Required                | Default                         | Description                                                                             |
-| -------------------------------- | ----------------------- | ------------------------------- | --------------------------------------------------------------------------------------- |
-| `SLACK_MODE`                     | No                      | `socket`                        | `socket` or `http`                                                                      |
-| `SLACK_BOT_TOKEN`                | Yes                     | -                               | Slack bot token                                                                         |
-| `SLACK_APP_TOKEN`                | `socket`                | -                               | Slack app-level token                                                                   |
-| `SLACK_SIGNING_SECRET`           | `http`                  | -                               | Slack signing secret                                                                    |
-| `OFFICE_PRESENCE_DB`             | No                      | `state.db`                      | SQLite file path                                                                        |
-| `OFFICES`                        | No                      | 4 sample cities                 | Comma-separated list of offices                                                         |
-| `ENABLE_REMINDERS`               | No                      | `false`                         | Schedule the weekly reminder (`socket` only)                                            |
-| `REMINDER_TIMEZONE`              | No                      | `Europe/Stockholm`              | Reminder cron, seeding weeks, and "today" when a member's Slack timezone is unknown     |
-| `INCLUDE_WEEKENDS`               | No                      | `false`                         | Include weekends                                                                        |
-| `PORT` / `HOST`                  | No                      | `3000` / `0.0.0.0` in the image | Listen address (`http`)                                                                 |
-| `OFFICE_PRESENCE_INTERNAL_TOKEN` | `http` with `DEMO_MODE` | -                               | Bearer token for `/internal/*`; `/internal/reminders` is registered only when it is set |
-| `DEMO_MODE`                      | No                      | `false`                         | `http` only: enable `/demo/*` and `/internal/seed`                                      |
-| `DEMO_UI_ORIGIN`                 | `DEMO_MODE`             | -                               | Comma-separated browser origins allowed to call `/demo/*`                               |
-| `DEMO_REAL_USER_IDS`             | No                      | -                               | Real member ids the seeder also fills presences for                                     |
+| Variable | Required | Default | Description |
+| --- | --- | --- | --- |
+| `SLACK_MODE` | No | `socket` | `socket` or `http` |
+| `SLACK_BOT_TOKEN` | Yes | - | Slack bot token |
+| `SLACK_APP_TOKEN` | `socket` | - | Slack app-level token |
+| `SLACK_SIGNING_SECRET` | `http` | - | Slack signing secret |
+| `OFFICE_PRESENCE_DB` | No | `state.db` | SQLite file path |
+| `OFFICES` | No | 4 sample cities | Comma-separated list of offices |
+| `ENABLE_REMINDERS` | No | `false` | Schedule the weekly reminder (`socket` only) |
+| `REMINDER_TIMEZONE` | No | `Europe/Stockholm` | Reminder cron, seeding weeks, and "today" when a member's Slack timezone is unknown |
+| `INCLUDE_WEEKENDS` | No | `false` | Include weekends |
+| `PORT` / `HOST` | No | `3000` / `0.0.0.0` in the image | Listen address (`http`) |
+| `OFFICE_PRESENCE_INTERNAL_TOKEN` | `http` with `DEMO_MODE` | - | Bearer token for `/internal/*`; `/internal/reminders` is registered only when it is set |
+| `DEMO_MODE` | No | `false` | `http` only: enable `/demo/*` and `/internal/seed` |
+| `DEMO_UI_ORIGIN` | `DEMO_MODE` | - | Comma-separated browser origins allowed to call `/demo/*` |
+| `DEMO_REAL_USER_IDS` | No | - | Real member ids the seeder also fills presences for |
 
 ## Nuances
 

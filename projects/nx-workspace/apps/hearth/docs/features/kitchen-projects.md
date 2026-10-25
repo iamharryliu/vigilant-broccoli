@@ -23,12 +23,12 @@ clock.
 
 Computed client-side in `kitchen-projects.consts.ts`, re-evaluated every minute:
 
-| Status     | Condition                          | Badge |
-| ---------- | ---------------------------------- | ----- |
-| `WAITING`  | `now < ready_at`                   | blue  |
-| `READY`    | past `ready_at`, use-by > 24h away | green |
-| `USE_SOON` | use-by within 24h                  | amber |
-| `EXPIRED`  | `now >= use_by_at`                 | red   |
+| Status | Condition | Badge |
+| --- | --- | --- |
+| `WAITING` | `now < ready_at` | blue |
+| `READY` | past `ready_at`, use-by > 24h away | green |
+| `USE_SOON` | use-by within 24h | amber |
+| `EXPIRED` | `now >= use_by_at` | red |
 
 Active items sort by urgency (expired → use soon → ready → waiting), then by
 nearest deadline — the order a walk-in check reads in.

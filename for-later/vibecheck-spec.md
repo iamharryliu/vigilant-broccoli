@@ -87,44 +87,44 @@ REST-style JSON API. CORS enabled with credentials. All `/admin/*` routes requir
 
 ### Users
 
-| Method | Path                                            | Purpose                                           |
-| ------ | ----------------------------------------------- | ------------------------------------------------- |
-| POST   | `/users/register`                               | Create account, auto-login, create default filter |
-| POST   | `/users/login`                                  | Login by username or email                        |
-| POST   | `/users/logout`                                 | End session                                       |
-| GET    | `/users/loginStatus`                            | Return current user or unauthenticated            |
-| GET    | `/users/getUser?username=X`                     | Public profile                                    |
-| GET    | `/users/searchUsers/:term`                      | Autocomplete username search                      |
-| DELETE | `/users/deleteAccount`                          | Delete self + all data                            |
-| POST   | `/users/updateProfileImage`                     | Upload avatar (base64 or multipart)               |
-| POST   | `/users/passwordResetRequest`                   | Send reset email                                  |
-| GET    | `/users/checkForValidPasswordResetToken/:token` | Validate token                                    |
-| POST   | `/users/setNewPassword/:token`                  | Set password via token                            |
-| POST   | `/users/changePassword`                         | Change password (requires current)                |
-| PUT    | `/users/changeUsername`                         | Update username                                   |
-| PUT    | `/users/changeEmail`                            | Update email                                      |
-| PUT    | `/users/follow`                                 | Follow user                                       |
-| PUT    | `/users/unfollow`                               | Unfollow user                                     |
-| PUT    | `/users/removeFollower/:username`               | Remove a follower                                 |
-| POST   | `/users/setDefaultLocation`                     | Save lat/lon/city/country                         |
-| POST   | `/users/report`                                 | Report a user                                     |
-| POST   | `/users/reportProblem`                          | Report app issue                                  |
+| Method | Path | Purpose |
+| --- | --- | --- |
+| POST | `/users/register` | Create account, auto-login, create default filter |
+| POST | `/users/login` | Login by username or email |
+| POST | `/users/logout` | End session |
+| GET | `/users/loginStatus` | Return current user or unauthenticated |
+| GET | `/users/getUser?username=X` | Public profile |
+| GET | `/users/searchUsers/:term` | Autocomplete username search |
+| DELETE | `/users/deleteAccount` | Delete self + all data |
+| POST | `/users/updateProfileImage` | Upload avatar (base64 or multipart) |
+| POST | `/users/passwordResetRequest` | Send reset email |
+| GET | `/users/checkForValidPasswordResetToken/:token` | Validate token |
+| POST | `/users/setNewPassword/:token` | Set password via token |
+| POST | `/users/changePassword` | Change password (requires current) |
+| PUT | `/users/changeUsername` | Update username |
+| PUT | `/users/changeEmail` | Update email |
+| PUT | `/users/follow` | Follow user |
+| PUT | `/users/unfollow` | Unfollow user |
+| PUT | `/users/removeFollower/:username` | Remove a follower |
+| POST | `/users/setDefaultLocation` | Save lat/lon/city/country |
+| POST | `/users/report` | Report a user |
+| POST | `/users/reportProblem` | Report app issue |
 
 ### Outfits
 
-| Method | Path                                                                | Purpose                                                                                                                                                     |
-| ------ | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| POST   | `/outfits/create`                                                   | Create outfit (enforces daily limit of 3)                                                                                                                   |
-| PUT    | `/outfits/update`                                                   | Edit metadata                                                                                                                                               |
-| DELETE | `/outfits/delete/:id`                                               | Delete outfit                                                                                                                                               |
-| GET    | `/outfits/getOutfit/:id`                                            | Full outfit details                                                                                                                                         |
-| GET    | `/outfits/getSwipableOutfits`                                       | Paginated discovery stack. Query: `gender`, `season`, `minTemperature`, `maxTemperature`, `tags`, `sort_by`. Excludes own outfits and already-swiped items. |
-| GET    | `/outfits/getUserOutfits?username=X&listType=outfits\|likes&page=Y` | User's outfits or likes (9 per page)                                                                                                                        |
-| PUT    | `/outfits/like`                                                     | Like outfit (also records swipe)                                                                                                                            |
-| PUT    | `/outfits/unlike`                                                   | Unlike (supports bulk)                                                                                                                                      |
-| PUT    | `/outfits/swipe`                                                    | Record swipe without like                                                                                                                                   |
-| PUT    | `/outfits/updateFilter`                                             | Save user's filter preferences                                                                                                                              |
-| POST   | `/outfits/report`                                                   | Report outfit                                                                                                                                               |
+| Method | Path | Purpose |
+| --- | --- | --- |
+| POST | `/outfits/create` | Create outfit (enforces daily limit of 3) |
+| PUT | `/outfits/update` | Edit metadata |
+| DELETE | `/outfits/delete/:id` | Delete outfit |
+| GET | `/outfits/getOutfit/:id` | Full outfit details |
+| GET | `/outfits/getSwipableOutfits` | Paginated discovery stack. Query: `gender`, `season`, `minTemperature`, `maxTemperature`, `tags`, `sort_by`. Excludes own outfits and already-swiped items. |
+| GET | `/outfits/getUserOutfits?username=X&listType=outfits\|likes&page=Y` | User's outfits or likes (9 per page) |
+| PUT | `/outfits/like` | Like outfit (also records swipe) |
+| PUT | `/outfits/unlike` | Unlike (supports bulk) |
+| PUT | `/outfits/swipe` | Record swipe without like |
+| PUT | `/outfits/updateFilter` | Save user's filter preferences |
+| POST | `/outfits/report` | Report outfit |
 
 ### Images
 
@@ -137,18 +137,18 @@ REST-style JSON API. CORS enabled with credentials. All `/admin/*` routes requir
 
 ### Admin
 
-| Method | Path                         | Purpose                    |
-| ------ | ---------------------------- | -------------------------- |
-| GET    | `/admin/getAllUsers`         | List users                 |
-| GET    | `/admin/getUser/:id`         | User detail                |
-| DELETE | `/admin/deleteUser/:id`      | Delete user                |
-| GET    | `/admin/getAllOutfits`       | List outfits               |
-| GET    | `/admin/getOutfit/:id`       | Outfit detail              |
-| DELETE | `/admin/deleteOutfit/:id`    | Delete outfit              |
-| GET    | `/admin/getTags`             | All tags with usage counts |
-| GET    | `/admin/getAllOutfitReports` | Outfit reports             |
-| GET    | `/admin/getAllUserReports`   | User reports               |
-| GET    | `/admin/getProblems`         | App problem reports        |
+| Method | Path | Purpose |
+| --- | --- | --- |
+| GET | `/admin/getAllUsers` | List users |
+| GET | `/admin/getUser/:id` | User detail |
+| DELETE | `/admin/deleteUser/:id` | Delete user |
+| GET | `/admin/getAllOutfits` | List outfits |
+| GET | `/admin/getOutfit/:id` | Outfit detail |
+| DELETE | `/admin/deleteOutfit/:id` | Delete outfit |
+| GET | `/admin/getTags` | All tags with usage counts |
+| GET | `/admin/getAllOutfitReports` | Outfit reports |
+| GET | `/admin/getAllUserReports` | User reports |
+| GET | `/admin/getProblems` | App problem reports |
 
 ---
 

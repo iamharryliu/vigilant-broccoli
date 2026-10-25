@@ -29,9 +29,9 @@ app.listen(3000);
 
 ## Options
 
-| Option             | Type                  | Description                                                                |
-| ------------------ | --------------------- | -------------------------------------------------------------------------- |
-| `apiKey`           | `string`              | If set, all routes require matching `x-api-key` header.                    |
+| Option | Type | Description |
+| --- | --- | --- |
+| `apiKey` | `string` | If set, all routes require matching `x-api-key` header. |
 | `defaultTemplates` | `SignatureTemplate[]` | Seed templates for the in-memory signature templates store. Defaults `[]`. |
 
 ## Routes

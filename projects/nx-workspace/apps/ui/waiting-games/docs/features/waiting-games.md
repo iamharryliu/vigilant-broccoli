@@ -17,12 +17,12 @@ Passive, no-input games for `waiting.harryliu.dev`. Rounds start on load and cyc
 
 Every round runs four phases in order, driven by one clock (`engine/player.ts`, ticked by `hooks/useWaitingGame.ts`):
 
-| Phase  | Length                               | What is on screen                                 |
-| ------ | ------------------------------------ | ------------------------------------------------- |
-| Watch  | Per round (`promptMs`, about 5–10 s) | Question, statement, objects, or ball and shuffle |
-| Think  | Setting, default 8 s                 | Prompt to guess, countdown                        |
-| Answer | Setting, default 6 s                 | Highlighted answer and explanation                |
-| Next   | Setting, default 3 s                 | Answer stays up, then the next round begins       |
+| Phase | Length | What is on screen |
+| --- | --- | --- |
+| Watch | Per round (`promptMs`, about 5–10 s) | Question, statement, objects, or ball and shuffle |
+| Think | Setting, default 8 s | Prompt to guess, countdown |
+| Answer | Setting, default 6 s | Highlighted answer and explanation |
+| Next | Setting, default 3 s | Answer stays up, then the next round begins |
 
 A phase's length is fixed when it starts, so a settings change never resizes the phase on screen. It applies from the next phase to start. The progress bar shows the four phases proportionally with a seconds countdown.
 
@@ -43,11 +43,11 @@ Cup timing is a pure function of the elapsed time within Watch (`getCupStep`), s
 
 Three bounded timing settings, persisted to `localStorage` under `waiting-games.settings` (`settings.ts` validates and clamps on read):
 
-| Setting             | Meaning                                             | Default | Range |
-| ------------------- | --------------------------------------------------- | ------- | ----- |
-| Thinking time       | Time to think before the answer is revealed         | 8 s     | 3–30  |
-| Answer reveal time  | How long the answer and explanation stay on screen  | 6 s     | 3–20  |
-| Time between rounds | Pause after the reveal before the next round starts | 3 s     | 1–15  |
+| Setting | Meaning | Default | Range |
+| --- | --- | --- | --- |
+| Thinking time | Time to think before the answer is revealed | 8 s | 3–30 |
+| Answer reveal time | How long the answer and explanation stay on screen | 6 s | 3–20 |
+| Time between rounds | Pause after the reveal before the next round starts | 3 s | 1–15 |
 
 The dialog uses the shared `react-lib` `Dialog`. Number inputs keep a draft while typing and commit valid in-range values live; blur clamps. "Reset to defaults" restores the table above.
 
