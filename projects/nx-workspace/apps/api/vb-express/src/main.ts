@@ -1,8 +1,7 @@
 import Fastify, { FastifyInstance, FastifyPluginAsync } from 'fastify';
 import cors, { FastifyCorsOptionsDelegate } from '@fastify/cors';
 import multipart from '@fastify/multipart';
-import { auth, createServiceVerifier, verifyApiKey } from './auth';
-import { getMigrations } from 'better-auth/db/migration';
+import { createServiceVerifier, verifyApiKey } from './auth';
 import { syncLegacySharedApiKey } from './libs/api-key-seed';
 import authRoutes from './routes/auth';
 import apiKeysRoutes from './routes/api-keys';
@@ -194,8 +193,6 @@ const buildApp = async () => {
 };
 
 const startServer = async () => {
-  const { runMigrations } = await getMigrations(auth.options);
-  await runMigrations();
   await syncLegacySharedApiKey();
   const app = await buildApp();
   await app.listen({ port: APP_PORT, host: APP_HOST });

@@ -11,8 +11,9 @@
 #   `pnpm install --frozen-lockfile --prod` first (matches Dockerfile).
 # - Boots `node <dist-dir>/main.js` on a high port with dummy env values
 #   sufficient to clear top-level module init for every service in this
-#   repo (RESEND_API_KEY, SUPABASE_SECRET_KEY, SHARED_APP_TOKEN, and a
-#   tmp DATABASE_PATH for services with a local SQLite db).
+#   repo (RESEND_API_KEY, SUPABASE_SECRET_KEY, SHARED_APP_TOKEN,
+#   BETTER_AUTH_SECRET, and a tmp OFFICE_PRESENCE_DB for the SQLite-backed
+#   Slack service).
 # - SMOKE_EXTRA_ENV (space-separated KEY=value pairs) adds service-specific
 #   env, and SMOKE_NODE_PATH points at a node_modules directory for bundles
 #   that keep native modules external (e.g. better-sqlite3).
@@ -92,7 +93,7 @@ env \
   SHARED_APP_TOKEN=smoke-test \
   RESEND_API_KEY=re_smoke_dummy \
   SUPABASE_SECRET_KEY=smoke-dummy \
-  DATABASE_PATH="$SMOKE_ROOT/smoke.sqlite" \
+  BETTER_AUTH_SECRET=smoke-dummy-secret-at-least-32-characters \
   OFFICE_PRESENCE_DB="$SMOKE_ROOT/office-presence.sqlite" \
   NODE_PATH="${SMOKE_NODE_PATH:-}" \
   ${SMOKE_EXTRA_ENV:-} \
