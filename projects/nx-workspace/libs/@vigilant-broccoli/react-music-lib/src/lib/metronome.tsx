@@ -125,7 +125,7 @@ export const Metronome = ({
   return (
     <div className={className}>
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm text-gray-500">BPM</span>
+        <span className="text-sm text-muted-foreground">BPM</span>
         <span className="font-mono text-3xl font-bold">{bpm}</span>
       </div>
 
@@ -141,7 +141,7 @@ export const Metronome = ({
 
       <div className="mt-3 flex items-end gap-2">
         <div className="flex flex-col gap-1" style={{ width: '100px' }}>
-          <span className="text-xs text-gray-500">Set BPM</span>
+          <span className="text-xs text-muted-foreground">Set BPM</span>
           <input
             type="text"
             inputMode="numeric"

@@ -108,7 +108,7 @@ export function ChatDemo() {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center gap-2 text-sm text-gray-600">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <span>
           You: <strong>{sender || PLACEHOLDER_SENDER}</strong>
         </span>
@@ -119,10 +119,10 @@ export function ChatDemo() {
       </div>
       <div
         ref={listRef}
-        className="h-64 overflow-y-auto rounded border border-gray-300 bg-white p-3 flex flex-col gap-2"
+        className="h-64 overflow-y-auto rounded border border-border bg-card p-3 flex flex-col gap-2"
       >
         {messages.length === 0 ? (
-          <span className="text-gray-400 text-sm">
+          <span className="text-muted-foreground text-sm">
             No messages yet. Open this page in two browsers and say hi.
           </span>
         ) : (
@@ -132,12 +132,12 @@ export function ChatDemo() {
                 className={
                   m.sender === sender
                     ? 'font-semibold text-blue-700'
-                    : 'font-semibold text-gray-800'
+                    : 'font-semibold text-foreground'
                 }
               >
                 {m.sender}
               </span>
-              <span className="text-gray-500"> · </span>
+              <span className="text-muted-foreground"> · </span>
               <span>{m.text}</span>
             </div>
           ))
@@ -145,7 +145,7 @@ export function ChatDemo() {
       </div>
       <div className="flex gap-2">
         <input
-          className="flex-1 rounded border border-gray-300 px-3 py-2 text-sm"
+          className="flex-1 rounded border border-border px-3 py-2 text-sm"
           value={draft}
           onChange={e => setDraft(e.target.value)}
           onKeyDown={e => {

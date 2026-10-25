@@ -139,7 +139,7 @@ export function InSeasonCard({ onGroceryAdded }: Props) {
           onClick={() => setLegendOpen(true)}
           aria-label={t('IN_SEASON.LEGEND_LABEL')}
           title={t('IN_SEASON.LEGEND_LABEL')}
-          className="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          className="shrink-0 text-muted-foreground hover:text-foreground"
         >
           <CircleHelp className="h-4 w-4" />
         </button>
@@ -166,7 +166,7 @@ export function InSeasonCard({ onGroceryAdded }: Props) {
           onClick={() => stepMonth(MONTH_STEP.PREVIOUS)}
           aria-label={t('IN_SEASON.PREVIOUS_MONTH')}
           title={t('IN_SEASON.PREVIOUS_MONTH')}
-          className="rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          className="rounded-full text-muted-foreground hover:text-foreground"
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
@@ -191,7 +191,7 @@ export function InSeasonCard({ onGroceryAdded }: Props) {
           onClick={() => stepMonth(MONTH_STEP.NEXT)}
           aria-label={t('IN_SEASON.NEXT_MONTH')}
           title={t('IN_SEASON.NEXT_MONTH')}
-          className="rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          className="rounded-full text-muted-foreground hover:text-foreground"
         >
           <ChevronRight className="h-5 w-5" />
         </button>

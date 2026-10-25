@@ -116,7 +116,7 @@ function UptimeCell({
 }) {
   return (
     <span className={`${className} ${UPTIME_COLUMN_CLASS}`}>
-      <span className="shrink-0 text-xs text-gray-500">{label}</span>
+      <span className="shrink-0 text-xs text-muted-foreground">{label}</span>
       <span className="w-[7ch] shrink-0 text-right">{value || '—'}</span>
     </span>
   );
@@ -176,7 +176,7 @@ function UptimeListItem({
           label={labels.rangeYear}
           value={svc.uptimeYear}
         />
-        <span className="shrink-0 font-mono text-gray-400 w-14 text-right">
+        <span className="shrink-0 font-mono text-muted-foreground w-14 text-right">
           {typeof svc.time === 'number' ? `${svc.time}ms` : '—'}
         </span>
       </a>
@@ -257,7 +257,9 @@ export function UpptimeStatusList({
   if (!services || services.length === 0)
     return (
       <ul className={LIST_CLASS}>
-        <li className="px-4 py-2 text-gray-400">{services && labels.empty}</li>
+        <li className="px-4 py-2 text-muted-foreground">
+          {services && labels.empty}
+        </li>
       </ul>
     );
 
@@ -291,7 +293,7 @@ export function UpptimeStatusList({
                 type="button"
                 onClick={() => setLegendOpen(true)}
                 aria-label={labels.legendButton}
-                className="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                className="shrink-0 text-muted-foreground hover:text-foreground"
               >
                 <CircleHelp className="h-4 w-4" />
               </button>

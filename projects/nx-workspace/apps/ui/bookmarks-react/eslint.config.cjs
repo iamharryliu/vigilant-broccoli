@@ -8,4 +8,5 @@ module.exports = [
     files: ['**/*.js', '**/*.cjs', '**/*.mjs'],
     rules: { '@typescript-eslint/no-require-imports': 'off' },
   },
+  require('../../../tools/eslint-rules/dark-variant-config.cjs'),
 ];

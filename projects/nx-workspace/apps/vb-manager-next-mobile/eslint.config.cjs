@@ -22,4 +22,5 @@ module.exports = [
   {
     ignores: ['.next/**/*', 'apps/vb-manager-next-mobile/.next/**/*'],
   },
+  require('../../tools/eslint-rules/dark-variant-config.cjs'),
 ];

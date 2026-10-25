@@ -231,7 +231,7 @@ function MasterButton({
   return (
     <button
       onClick={onMaster}
-      className="p-1 rounded transition-colors hover:bg-gray-100 text-gray-400 hover:text-green-500"
+      className="p-1 rounded transition-colors hover:bg-muted text-muted-foreground hover:text-green-500"
       aria-label={LABEL_MARK_AS_MASTERED}
       title={LABEL_MARK_AS_MASTERED}
     >
@@ -301,7 +301,7 @@ function WordContent({
         </Text>
       )}
       {definitionLoading ? (
-        <Loader2 size={16} className="animate-spin text-gray-400" />
+        <Loader2 size={16} className="animate-spin text-muted-foreground" />
       ) : (
         <div className="flex items-start gap-1">
           <Text size="2" color="gray" className="flex-1">
@@ -909,7 +909,7 @@ export function LanguageLearning() {
                     </div>
                   ))}
                 </div>
-                <hr className="border-gray-200" />
+                <hr className="border-border" />
               </>
             )}
             {historyLanguages.length > 1 && (
@@ -929,12 +929,12 @@ export function LanguageLearning() {
               <div className="flex flex-col gap-4">
                 {[1, 2, 3].map(i => (
                   <div key={i} className="flex flex-col gap-3">
-                    <div className="h-4 w-32 bg-gray-200 rounded animate-pulse" />
+                    <div className="h-4 w-32 bg-muted rounded animate-pulse" />
                     <div className="flex gap-3">
-                      <div className="flex-1 border rounded-lg p-4 h-24 bg-gray-100 animate-pulse" />
-                      <div className="flex-1 border rounded-lg p-4 h-24 bg-gray-100 animate-pulse" />
+                      <div className="flex-1 border rounded-lg p-4 h-24 bg-muted animate-pulse" />
+                      <div className="flex-1 border rounded-lg p-4 h-24 bg-muted animate-pulse" />
                     </div>
-                    <div className="border rounded-lg p-4 h-16 bg-gray-100 animate-pulse" />
+                    <div className="border rounded-lg p-4 h-16 bg-muted animate-pulse" />
                   </div>
                 ))}
               </div>
@@ -1003,7 +1003,7 @@ export function LanguageLearning() {
                 {[1, 2, 3].map(i => (
                   <div
                     key={i}
-                    className="border rounded-lg p-4 h-20 bg-gray-100 animate-pulse"
+                    className="border rounded-lg p-4 h-20 bg-muted animate-pulse"
                   />
                 ))}
               </div>

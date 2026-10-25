@@ -55,7 +55,7 @@ const HomeRow = ({
           {isSelected ? 'Active' : 'Make active'}
         </button>
         {!home.isOwner && (
-          <span className="px-2 py-0.5 rounded-full border border-gray-200 dark:border-gray-700 text-xs text-gray-500">
+          <span className="px-2 py-0.5 rounded-full border border-border dark:border-gray-700 text-xs text-muted-foreground">
             member
           </span>
         )}
@@ -90,7 +90,7 @@ const HomeRow = ({
               onClick={async () => {
                 if (window.confirm(CONFIRM_DELETE)) await onDelete();
               }}
-              className="h-8 w-8 flex items-center justify-center rounded border border-gray-200 dark:border-gray-700 bg-transparent text-gray-500 hover:text-red-500 cursor-pointer"
+              className="h-8 w-8 flex items-center justify-center rounded border border-border dark:border-gray-700 bg-transparent text-muted-foreground hover:text-red-500 cursor-pointer"
               aria-label={`Delete ${home.name}`}
             >
               <Trash2 size={15} />
@@ -181,7 +181,7 @@ export default function UserSettingsPage() {
         <Text size="3" weight="medium">
           Account
         </Text>
-        <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
+        <div className="border border-border rounded-lg divide-y divide-border">
           <div className="flex items-center justify-between px-4 py-3">
             <Text size="2" color="gray">
               Email
@@ -203,7 +203,7 @@ export default function UserSettingsPage() {
         <Text size="3" weight="medium">
           Profile
         </Text>
-        <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
+        <div className="border border-border rounded-lg divide-y divide-border">
           <div className="flex items-center justify-between px-4 py-3 gap-4">
             <Text size="2" color="gray" className="shrink-0">
               Display Name
@@ -237,7 +237,7 @@ export default function UserSettingsPage() {
           </Text>
         </div>
 
-        <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
+        <div className="border border-border rounded-lg divide-y divide-border">
           {homes.length === 0 ? (
             <div className="px-4 py-3">
               <Text size="2" color="gray">

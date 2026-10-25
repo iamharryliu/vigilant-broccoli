@@ -74,7 +74,7 @@ export const WhereIsLabel = ({ itemId, title }: Props) => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-2 border border-gray-200 rounded-lg p-4 print:border-none print:justify-center print:h-screen">
+    <div className="flex flex-col items-center gap-2 border border-border rounded-lg p-4 print:border-none print:justify-center print:h-screen">
       <Text size="4" weight="bold" className="text-center">
         {title}
       </Text>

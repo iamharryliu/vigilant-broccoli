@@ -162,6 +162,7 @@ export const EventDraftCard = ({
           className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${editable.allDay ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700'} disabled:opacity-50`}
         >
           <span
+            // eslint-disable-next-line vigilant-broccoli/require-dark-variant -- switch knob sits on a fixed blue or gray track in both themes
             className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${editable.allDay ? 'translate-x-5' : 'translate-x-1'}`}
           />
         </button>

@@ -142,7 +142,7 @@ export function HomeDocForm({
                       onClick={() =>
                         setPendingFiles(prev => prev.filter((_, j) => j !== i))
                       }
-                      className="text-gray-400 hover:text-red-500 ml-2 cursor-pointer"
+                      className="text-muted-foreground hover:text-red-500 ml-2 cursor-pointer"
                     >
                       ✕
                     </button>

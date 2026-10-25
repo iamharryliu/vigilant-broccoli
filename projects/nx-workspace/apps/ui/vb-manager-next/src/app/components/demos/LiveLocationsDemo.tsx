@@ -51,18 +51,20 @@ export function LiveLocationsDemo() {
   );
 
   if (!hasSupabase) {
-    return <p className="text-sm text-gray-500">{NO_SUPABASE_MSG}</p>;
+    return <p className="text-sm text-muted-foreground">{NO_SUPABASE_MSG}</p>;
   }
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-3 flex-wrap">
-        <span className="text-sm text-gray-600">
+        <span className="text-sm text-muted-foreground">
           You: <strong>{userId}</strong>
         </span>
         {geoError && <span className="text-sm text-red-500">{geoError}</span>}
         {!geoError && !hasLocation && (
-          <span className="text-sm text-gray-400">{NO_LOCATION_MSG}</span>
+          <span className="text-sm text-muted-foreground">
+            {NO_LOCATION_MSG}
+          </span>
         )}
         <Button
           variant={sharing ? 'destructive' : 'default'}
@@ -79,17 +81,17 @@ export function LiveLocationsDemo() {
 
       <div className="flex flex-col gap-2">
         {usersToShow.length === 0 ? (
-          <p className="text-sm text-gray-400">{NO_LIVE_USERS_MSG}</p>
+          <p className="text-sm text-muted-foreground">{NO_LIVE_USERS_MSG}</p>
         ) : (
           usersToShow.map(user => (
             <div
               key={user.userId}
-              className="flex items-center justify-between rounded border border-gray-200 bg-white px-3 py-2 text-sm"
+              className="flex items-center justify-between rounded border border-border bg-card px-3 py-2 text-sm"
             >
               <span className="font-medium">
                 {user.userId === userId ? YOU_LABEL : user.userId}
               </span>
-              <span className="text-gray-500">
+              <span className="text-muted-foreground">
                 {user.lat.toFixed(4)}, {user.lng.toFixed(4)}
               </span>
               <a

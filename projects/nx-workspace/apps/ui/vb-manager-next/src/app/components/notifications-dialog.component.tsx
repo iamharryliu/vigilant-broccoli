@@ -144,7 +144,7 @@ export function NotificationsDialog({ notifications, onClear }: Props) {
                     href={n.payload.run_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="shrink-0 text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 ml-2"
+                    className="shrink-0 text-muted-foreground hover:text-foreground ml-2"
                   >
                     <ExternalLink size={12} />
                   </a>

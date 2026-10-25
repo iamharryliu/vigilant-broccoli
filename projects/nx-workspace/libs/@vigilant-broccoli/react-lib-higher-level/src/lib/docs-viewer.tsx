@@ -245,7 +245,7 @@ function GraphPanel({
                 <label key={key} className="flex flex-col gap-1">
                   <span className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300">
                     <span>{FORCE_LABEL[key]}</span>
-                    <span className="tabular-nums text-gray-400">
+                    <span className="tabular-nums text-muted-foreground">
                       {forces[key]}
                     </span>
                   </span>
@@ -264,7 +264,7 @@ function GraphPanel({
             <button
               type="button"
               onClick={resetForces}
-              className="self-end text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+              className="self-end text-xs text-muted-foreground hover:text-foreground"
             >
               {COPY.RESET}
             </button>
@@ -279,7 +279,7 @@ function GraphPanel({
           />
         )}
         {isOrphan && (
-          <div className="absolute bottom-2 inset-x-0 text-center text-xs text-gray-500 pointer-events-none">
+          <div className="absolute bottom-2 inset-x-0 text-center text-xs text-muted-foreground pointer-events-none">
             {COPY.ORPHAN_NOTE}
           </div>
         )}

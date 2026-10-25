@@ -211,7 +211,7 @@ export default function SettingsPage() {
         <Text size="3" weight="medium">
           Receipts
         </Text>
-        <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
+        <div className="border border-border rounded-lg divide-y divide-border">
           <div className="flex items-center justify-between px-4 py-3 gap-4">
             <div>
               <Text size="2" as="p">
@@ -259,7 +259,7 @@ export default function SettingsPage() {
         <Text size="3" weight="medium">
           Export Data
         </Text>
-        <div className="border border-gray-200 rounded-lg divide-y divide-gray-200">
+        <div className="border border-border rounded-lg divide-y divide-border">
           {EXPORT_OPTIONS.map(({ key, label }) => (
             <label
               key={key}
@@ -316,7 +316,7 @@ export default function SettingsPage() {
             </Text>
           </div>
           {seedResults && (
-            <div className="border border-gray-200 rounded-lg divide-y divide-gray-100">
+            <div className="border border-border rounded-lg divide-y divide-border">
               {Object.entries(seedResults).map(([key, status]) => (
                 <div
                   key={key}
@@ -374,7 +374,7 @@ export default function SettingsPage() {
             )}
           </div>
           {clearResults && (
-            <div className="border border-gray-200 rounded-lg divide-y divide-gray-100 mt-2">
+            <div className="border border-border rounded-lg divide-y divide-border mt-2">
               {Object.entries(clearResults).map(([key, status]) => (
                 <div
                   key={key}

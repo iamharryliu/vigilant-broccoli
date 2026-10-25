@@ -92,7 +92,7 @@ export function SwaggerDocs({ specUrl }: SwaggerDocsProps) {
         </p>
       )}
       {!error && !ready && (
-        <p className="px-4 sm:px-6 pt-6 pb-16 text-sm text-gray-400">
+        <p className="px-4 sm:px-6 pt-6 pb-16 text-sm text-muted-foreground">
           {t('README_PAGE.LOADING')}
         </p>
       )}

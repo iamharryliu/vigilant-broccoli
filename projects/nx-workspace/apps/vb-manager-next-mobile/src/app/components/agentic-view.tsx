@@ -33,7 +33,7 @@ export const AgenticView = () => (
                 <ExternalLink
                   size={LINK_ICON_SIZE}
                   aria-hidden="true"
-                  className="shrink-0 text-gray-400"
+                  className="shrink-0 text-muted-foreground"
                 />
               </a>
             </li>
