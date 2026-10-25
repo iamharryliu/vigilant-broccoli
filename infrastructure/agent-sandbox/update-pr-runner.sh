@@ -234,6 +234,7 @@ COMMENT
 }
 
 agent_invoke "$PROMPT"
+normalize_meta "$META_FILE"
 
 # Stage first: if the instruction involved resolving a merge conflict, the working
 # tree may hold a fix for it that was never `git add`-ed (the model is disallowed

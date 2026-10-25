@@ -152,6 +152,10 @@ has; branches are only created and pushed, never force-pushed. Squash-merge impl
 [Stacked pull requests](../../docs/git-workflow.md#stacked-pull-requests). The container copies `solve-todo-runner.sh`,
 `pr-increments.sh`, `commit-subject.sh` and `no-changes.sh` into the image, so rebuild it (`docker compose build`) after changing any of them when running locally. Every runner sources `commit-subject.sh` to capitalize commit messages and PR titles, end them with a period and strip trailing ellipses, so they pass the CI `commitlint` job.
 
+## Metadata file
+
+Agents write a JSON metadata file (`/tmp/solve-meta.json` and the per-operation `/tmp/*-meta.json`). Raw newlines or tabs inside string values, typically in the multi-line markdown fields, make `jq` fail. Right after the agent finishes, every runner calls `normalize_meta` from `no-changes.sh`: a file `jq` already parses is untouched, otherwise it is re-parsed with Python's non-strict `json.loads` and rewritten as valid JSON in place, and a file that still does not parse is left for the runner's own error or salvage path.
+
 ## Ending without changes
 
 A request the agent judges should change nothing is a decision, not a failure, when the agent says why

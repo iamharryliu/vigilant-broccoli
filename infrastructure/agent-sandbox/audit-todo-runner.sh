@@ -52,6 +52,8 @@ EOF
 claude -p "$PROMPT" --dangerously-skip-permissions --model "$MODEL" \
   --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
 
+normalize_meta "$META_FILE"
+
 git checkout "$BRANCH"
 [ "$(git rev-parse HEAD)" = "$BASE_SHA" ] || git reset --soft "$BASE_SHA"
 
