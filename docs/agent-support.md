@@ -46,6 +46,8 @@ Entry points must agree on canonical instructions, request/file scope, TODO hand
 
 **No-change decisions:** when the request should not change anything (already done, out of scope, or wrong for the repo), the agent makes no edits and says why. A sandbox agent writes `no_changes_reason` in its metadata; the runner prints `RESULT::no-changes` and a JSON-encoded `NO_CHANGES_REASON::` line ([no-changes.sh](../infrastructure/agent-sandbox/no-changes.sh)) and exits 0, so the run reports _Completed with no changes_ with the reason. No changes and no reason still fails, so a crashed agent is never reported as a decision. Audits and prune keep their `*_CLEAN` markers and add the reason when given; `agentic-pr-update` also comments it on the PR. Local sessions report the reason.
 
+**UI-changing PRs:** run `pnpm screenshot:themes -- <url>...` against the local dev server for each changed page ([manual verification](./app-development/ui/ui-app-pattern.md#manual-verification)) and mention or attach the light and dark screenshots in the PR body; when it cannot run (e.g. Chromium unavailable: `npx playwright install chromium`), state why in Concerns.
+
 Checks include the task's existing validation, the cleanup checklist when required by the skill, and pre-commit. PR results follow [Git conventions](./git-workflow.md#conventions) and emit `PR_URL::`; reports include changes, verification, assumptions and remaining work.
 
 ### Execution adapters
