@@ -129,7 +129,15 @@ const server = createServer(async (req, res) => {
 // dotfiles remap. tmux mouse mode would scroll on wheel events, but mobile
 // browsers never emit those for touch, and the outer xterm.js buffer has no
 // history of its own because tmux owns the screen.
-const runTmux = args => execFile('tmux', args, () => {});
+// Commands run strictly one after another: swipes fire a command per animation
+// frame, and concurrent tmux clients can apply their scrolls out of order,
+// leaving the view on different lines than the swipe distance implies.
+let tmuxQueue = Promise.resolve();
+const runTmux = args => {
+  tmuxQueue = tmuxQueue.then(
+    () => new Promise(resolve => execFile('tmux', args, () => resolve())),
+  );
+};
 
 const scrollPane = lines => {
   const count = Math.min(Math.abs(Math.trunc(lines)), MAX_SCROLL_LINES);
