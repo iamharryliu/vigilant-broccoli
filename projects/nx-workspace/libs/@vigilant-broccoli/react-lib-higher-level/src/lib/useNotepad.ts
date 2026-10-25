@@ -15,6 +15,7 @@ const NOTEPAD_ROOM_CHANNEL = 'notepad-room';
 const DEFAULT_API_PATH = '/api/notepad';
 const DEFAULT_STORAGE_KEY = 'notepad:content';
 const LOAD_ERROR_PREFIX = 'Failed to load notes: HTTP ';
+const PAGEHIDE_EVENT = 'pagehide';
 
 interface CachedNotepad {
   content: string;
@@ -111,7 +112,7 @@ export const useNotepad = ({
   );
 
   const persist = useCallback(
-    (text: string) => {
+    (text: string, keepalive = false) => {
       // Persisting only starts after a successful load, so any client may save
       // a board that this client or a peer cleared; a rebuilt, empty room
       // must never overwrite saved text. The server still 409s a stale base.
@@ -125,6 +126,7 @@ export const useNotepad = ({
         method: HTTP_METHOD.POST,
         headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
         body: JSON.stringify({ content: text, baseUpdatedAt, allowEmpty }),
+        keepalive,
       })
         .then(async res => {
           const data = await res.json();
@@ -216,14 +218,29 @@ export const useNotepad = ({
     if (!hasBootstrapped.current) return;
     if (room.content === lastPersisted.current) return;
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
-    saveTimeout.current = setTimeout(
-      () => persist(room.content),
-      SAVE_DEBOUNCE_MS,
-    );
+    saveTimeout.current = setTimeout(() => {
+      saveTimeout.current = null;
+      persist(room.content);
+    }, SAVE_DEBOUNCE_MS);
     return () => {
       if (saveTimeout.current) clearTimeout(saveTimeout.current);
+      saveTimeout.current = null;
     };
   }, [room.content, persist]);
+
+  // Closing the tab inside the debounce window would drop the last edit (a
+  // clear made with no other device open included); keepalive lets the
+  // request outlive the page.
+  useEffect(() => {
+    const flushPendingSave = () => {
+      if (!saveTimeout.current) return;
+      clearTimeout(saveTimeout.current);
+      saveTimeout.current = null;
+      persist(roomContentRef.current, true);
+    };
+    window.addEventListener(PAGEHIDE_EVENT, flushPendingSave);
+    return () => window.removeEventListener(PAGEHIDE_EVENT, flushPendingSave);
+  }, [persist]);
 
   // After a failed load the editor stays read-only; show this browser's last
   // saved copy rather than a blank board when no peer has sent the doc.
