@@ -34,6 +34,7 @@ Sandbox execution rules:
 - You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
 - Branching, committing, pushing, and opening the PR are handled by the calling script. Do not run mutating git commands or any gh commands.
 - The calling script rejects the run if any file outside the skill's scope changed (only CONTEXT.md files, shared SKILL.md files and root CONTEXT.md Doc Map and required-reading documents, minus notes/, docs/rnd/, docs/learning-timeline.md and TODO.md), if a file was created, deleted, renamed or changed type (including an AGENTS.md or command adapter symlink), if a SKILL.md frontmatter block changed, or if more than $MAX_CHANGED_FILES files changed.
+- Check everything the skill covers before choosing what to edit; do not stop after one kind of check. Record anything in scope you did not check or edit as a skipped candidate with the reason.
 - The only exception to the skill's output scope is $META_FILE, outside the checkout. Even for a clean run, write the metadata with empty cuts/skipped lists; the calling script exits without opening a PR.
 
 When finished, write $META_FILE containing only a JSON object with these fields:
@@ -43,8 +44,8 @@ When finished, write $META_FILE containing only a JSON object with these fields:
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
   - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
   - pr_summary: markdown for the PR "## Summary" section — one subsection per changed file listing what was cut and, for each removed fact, where it is retained, then a "### Skipped candidates" subsection listing each skipped candidate with its reason
-  - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (spot-check each cut against its retained evidence, watch CI to green, then merge, and re-run \`pnpm agentic-pr-create-context-audit\` when candidates were skipped over the file cap)
-  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (cuts worth a human decision, related cleanups worth a separate PR), or "" when there are none
+  - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (spot-check each cut against its retained evidence, watch CI to green, then merge)
+  - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — only optional follow-up for the reviewer (cuts worth a human decision, related cleanups worth a separate PR), or "" when there are none. Never suggest work this scheduled job covers, such as candidates over the cap or areas you did not check: list those as skipped candidates, since the next scheduled run picks them up.
   - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none. Keep these out of pr_suggestions, which is only for optional follow-up work
 $NO_CHANGES_FIELD
 EOF
