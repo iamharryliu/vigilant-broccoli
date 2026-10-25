@@ -1,83 +1,65 @@
 # Master Stock
 
-A reusable braising liquid that is strained and kept after each use, gaining depth every time something is cooked in it. Unlike a neutral [cooking stock](./cooking-stock.md), it is seasoned and meant to flavor what simmers in it.
-
 ## Table of Contents
 
-- [Seasoning Base](#seasoning-base)
-- [Spices](#spices)
-- [Vegetable Scraps](#vegetable-scraps)
-  - [Good Scraps](#good-scraps)
-  - [Scraps to Avoid](#scraps-to-avoid)
+- [Ingredients](#ingredients)
+  - [Seasoning Base](#seasoning-base)
+  - [Aromatics](#aromatics)
+  - [Spices](#spices)
 - [Instructions](#instructions)
-- [Keeping the Stock](#keeping-the-stock)
-- [Notes](#notes)
+- [Maintenance](#maintenance)
 
-## Seasoning Base
+## Ingredients
+
+### Seasoning Base
 
 | Ingredient | Effect |
 | --- | --- |
 | Dark Soy Sauce | Color and a molasses-like sweetness; little saltiness, so it tints not seasons |
-| Light Soy Sauce | The salt and primary savory backbone — see [soy sauce](../sauce-recipes/soy-sauce.md) |
+| Light Soy Sauce | The salt and primary savory backbone; see [soy sauce](../sauce-recipes/soy-sauce.md) |
 | Nutritional Yeast | Rounded, cheesy umami; a vegetarian stand-in for the depth meat would add |
+| Shaoxing Wine | Fragrant, slightly sweet depth that rounds out the soy and masks gamey notes |
 | Stock or Bouillon | The liquid body; a cube or paste works when there is no homemade stock |
+| Sugar | Balances the soy's salt and gives braises a glossy finish; rock sugar is traditional |
 
-## Spices
+### Aromatics
 
 | Ingredient | Effect |
 | --- | --- |
+| Dried Chilies | Gentle background heat; leave whole so the stock warms rather than burns |
+| Dried Tangerine Peel | Bittersweet citrus that lifts the soy and anise |
+| Garlic | Savory depth; smash whole cloves rather than mincing |
+| Ginger | Clean warmth that cuts richness; slice thick coins and smash them |
+| Scallions | Mild onion sweetness; knot whole stalks so they are easy to pull out |
+| Shallots | Rounder, sweeter allium note than onion; halve them with the skin on |
+
+### Spices
+
+| Ingredient | Effect |
+| --- | --- |
+| Allspice | Warm clove-cinnamon-nutmeg blend; a few berries round out the spice mix |
+| Bay Leaves | Subtle herbal, slightly floral background; two or three dried leaves |
+| Cassia Bark or Cinnamon | Warm, woody sweetness; cassia is bolder and more traditional |
+| Chinese Licorice Root | Mellow, lingering sweetness that softens the soy's saltiness; a few slices |
 | Cloves | Sweet and medicinal; two or three is plenty for a pot |
 | Peppercorns | Warm background heat; Sichuan peppercorns add citrus and tingle |
 | Star Anise | The dominant licorice note of a braise; one or two pods |
 
-- Use whole spices and tie them in a pouch or strainer so they can be pulled once the flavor is where you want it.
-- Cloves and star anise both build over repeated uses — add fewer than feels right on a reused batch.
-
-## Vegetable Scraps
-
-Trimmings that would otherwise be thrown out give the stock body and sweetness for free. Freeze them in a bag until there is enough for a pot.
-
-### Good Scraps
-
-| Scrap | Effect |
-| --- | --- |
-| Carrot Peels and Ends | Sweetness, color |
-| Celery Leaves and Butt | Vegetal backbone, mild bitterness |
-| Corn Cobs | Milky sweetness and a little starchy body |
-| Garlic Skins and Nubs | Savory depth without the harshness of cloves |
-| Ginger Peels | Bright, warming |
-| Herb Stems | Fresh herbal flavor; parsley and cilantro |
-| Leek and Scallion Tops | Fresh onion character |
-| Mushroom Stems | Major umami boost, especially shiitake |
-| Onion Skins and Ends | Sweetness, body, and a deep brown color |
-| Tomato Cores | Acidity and umami |
-
-### Scraps to Avoid
-
-| Scrap | Problem |
-| --- | --- |
-| Artichoke and Asparagus Trim | Sulfurous, overpowers everything else |
-| Beet Trim | Dyes the whole pot red |
-| Brassica Trim (broccoli, cabbage) | Turns sulfurous and bitter on a long simmer |
-| Potato Peels | Starch clouds the stock and makes it go off faster |
-| Anything Moldy or Slimy | Freezer scraps are for trimmings, not compost |
-
 ## Instructions
 
-- Combine the stock, soy sauces, nutritional yeast, spices, and scraps in a pot.
+- Roast the aromatics in the pot with a little oil until fragrant and lightly browned.
+- Add the stock, soy sauces, Shaoxing wine, sugar, nutritional yeast, and spices.
 - Bring to a boil, then drop to a bare simmer for 45-60 minutes.
 - Strain out the solids and discard them — they have given up what they have.
 - Braise or poach in the strained liquid, then strain again before storing.
-
-## Keeping the Stock
-
 - Cool it quickly, then refrigerate up to a week or freeze in portions indefinitely.
-- Bring it to a full boil before each use and before returning it to the fridge — that boil is what keeps it safe across many reuses.
-- Top up with fresh stock and a splash of soy sauce each round to replace what was absorbed; refresh the spices roughly every third use.
 - Skim any fat that sets on top after chilling.
 
-## Notes
+## Maintenance
 
-- Season the dish, not the pot — the stock is already salty, so taste before adding more salt at the end.
-- Dark soy sauce is easy to overdo; add it a teaspoon at a time until the color looks right.
-- A batch only becomes worth keeping after a few uses, so start it with something you cook often.
+| Task | When | How |
+| --- | --- | --- |
+| Boil | Before each use and before returning it to the fridge | Bring it to a full boil; this is what keeps it safe across many reuses |
+| Re-season | Periodically | Taste and adjust the soy sauce, sugar, and Shaoxing wine, since repeated use depletes them |
+| Refresh Aromatics and Spices | Every few uses | Add about a quarter of the original portion to keep the flavor bright |
+| Top Up | Each round | Add fresh stock or water to replace what evaporated or was absorbed |
