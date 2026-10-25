@@ -64,74 +64,74 @@
 
 ### Things that spark joy
 
-| Thing           | Description                                          | Activities              | Category       |
-| --------------- | ---------------------------------------------------- | ----------------------- | -------------- |
-| Community       | Community participation                              |                         | Relationships  |
-| Consumption     | Being able to consume what I find interesting        |                         | Nourishment    |
-| Dabbling        | Being able to dabble                                 |                         | Nourishment    |
-| Delivery        | Delivery                                             | Cooking, software       | Accomplishment |
-| Flow            | Entering flow state                                  | Skating, dance, reading | Flow state     |
-| Freedom         | Freedom of choice                                    |                         | Autonomy       |
-| Fresh air       | Fresh, crisp air                                     |                         | Health         |
-| Full heart      | Doing things with a full heart instead of half-assed |                         | Growth         |
-| Hobbies         | Integrating hobbies                                  |                         | Accomplishment |
-| Improvement     | Feeling or seeing improvement                        |                         | Growth         |
-| Learning        | Learning interesting things                          |                         | Nourishment    |
-| Meaningful time | Spending meaningful time                             |                         | Relationships  |
-| Water           | Being in water                                       | Freediving              | Health         |
+| Thing | Description | Activities | Category |
+| --- | --- | --- | --- |
+| Community | Community participation |  | Relationships |
+| Consumption | Being able to consume what I find interesting |  | Nourishment |
+| Dabbling | Being able to dabble |  | Nourishment |
+| Delivery | Delivery | Cooking, software | Accomplishment |
+| Flow | Entering flow state | Skating, dance, reading | Flow state |
+| Freedom | Freedom of choice |  | Autonomy |
+| Fresh air | Fresh, crisp air |  | Health |
+| Full heart | Doing things with a full heart instead of half-assed |  | Growth |
+| Hobbies | Integrating hobbies |  | Accomplishment |
+| Improvement | Feeling or seeing improvement |  | Growth |
+| Learning | Learning interesting things |  | Nourishment |
+| Meaningful time | Spending meaningful time |  | Relationships |
+| Water | Being in water | Freediving | Health |
 
 #### Activities
 
 There are activities that don't spark job unless they meet certain conditions / requirements such as rollerskating to at a rollerdisco vs rollerskating for point A to point B purposes. Inline skating in flow state vs not being able to freely skate how I want to.
 
-| Activity       | Categories |
-| -------------- | ---------- |
-| Cooking        |            |
-| Dance          | Movement   |
-| Freediving     | Movement   |
-| Ice Skating    | Movement   |
-| Inline Skate   | Movement   |
-| Reading        |            |
-| Skateboard     | Movement   |
-| Social Dancing | Movement   |
-| Software       |            |
-| Urban Skating  | Movement   |
+| Activity | Categories |
+| --- | --- |
+| Cooking |  |
+| Dance | Movement |
+| Freediving | Movement |
+| Ice Skating | Movement |
+| Inline Skate | Movement |
+| Reading |  |
+| Skateboard | Movement |
+| Social Dancing | Movement |
+| Software |  |
+| Urban Skating | Movement |
 
 ##### Want to get into but haven't
 
-| Activity           | Categories |
-| ------------------ | ---------- |
-| Bass               |            |
-| BJJ                | Movement   |
-| Blogging           |            |
-| DJing              |            |
-| Drawing            |            |
-| Guitar             |            |
-| Handstand training | Movement   |
-| Language learning  | Growth     |
-| Photography        |            |
-| Ping Pong          | Movement   |
-| Slackline          | Movement   |
-| Stretching         | Movement   |
-| Tennis             | Movement   |
-| Videography        |            |
-| Vlogging           |            |
-| Vocal training     |            |
+| Activity | Categories |
+| --- | --- |
+| Bass |  |
+| BJJ | Movement |
+| Blogging |  |
+| DJing |  |
+| Drawing |  |
+| Guitar |  |
+| Handstand training | Movement |
+| Language learning | Growth |
+| Photography |  |
+| Ping Pong | Movement |
+| Slackline | Movement |
+| Stretching | Movement |
+| Tennis | Movement |
+| Videography |  |
+| Vlogging |  |
+| Vocal training |  |
 
 ### Categories
 
-| Category       | Description                                                                                        |
-| -------------- | -------------------------------------------------------------------------------------------------- |
+| Category | Description |
+| --- | --- |
 | Accomplishment | The feeling of having made it or achieving something that would not be possible with prior efforts |
-| Autonomy       | Being able to do what I want when I want to                                                        |
-| Creativity     | Being able to express myself through something                                                     |
-| Flow state     | Being in a state of meditation and focus on a specific activity                                    |
-| Growth         | Either feeling or seeing improvement                                                               |
-| Health         |                                                                                                    |
-| Movement       | Being active and moving around.                                                                    |
-| Nourishment    |                                                                                                    |
-| Novelty        | Experiencing something new                                                                         |
-| Relationships  |                                                                                                    |
+| Autonomy | Being able to do what I want when I want to |
+| Creativity | Being able to express myself through something |
+| Flow state | Being in a state of meditation and focus on a specific activity |
+| Growth | Either feeling or seeing improvement |
+| Health |  |
+| Movement | Being active and moving around. |
+| Nourishment |  |
+| Novelty | Experiencing something new |
+| Relationships |  |
 
 ### Ideal conditions for an activity
 

@@ -38,10 +38,10 @@ Project names are environment-prefixed (`staging-docs-md`, `production-cloud-8-s
 
 Cloudflare files a deploy as a **Production** deployment only when its branch equals the project's `production_branch`; anything else becomes a **Preview**. Only Production deployments are served by the root `pages.dev` URL and by any attached custom domain. So the two settings must agree per environment, and they mirror the branches `deploy.yml` deploys from:
 
-| Target              | Project        | `--production-branch` | `--branch`   |
-| ------------------- | -------------- | --------------------- | ------------ |
-| `deploy`            | `staging-*`    | `main`                | `main`       |
-| `deploy:production` | `production-*` | `production`          | `production` |
+| Target | Project | `--production-branch` | `--branch` |
+| --- | --- | --- | --- |
+| `deploy` | `staging-*` | `main` | `main` |
+| `deploy:production` | `production-*` | `production` | `production` |
 
 Never leave `--branch` off and let wrangler infer it. It reads `GITHUB_REF_NAME`, which follows whichever trigger fired the run rather than the environment being deployed — `ci-rotate-secrets` calls `deploy.yml` with `environment: production` from a dispatch off `main`, and a `workflow_dispatch` with `environment: staging` can run from the `production` branch. Both mislabel the deploy and silently demote it to a Preview.
 

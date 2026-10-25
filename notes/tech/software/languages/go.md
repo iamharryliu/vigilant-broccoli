@@ -1,9 +1,9 @@
 # Go
 
-| Filename | Description                                    |
-| :------- | :--------------------------------------------- |
-| main.go  | Main file, entry to application.               |
-| mod.go   | Module file defining version and dependencies. |
+| Filename | Description |
+| :-- | :-- |
+| main.go | Main file, entry to application. |
+| mod.go | Module file defining version and dependencies. |
 
 ```
 go mod init APP_NAME

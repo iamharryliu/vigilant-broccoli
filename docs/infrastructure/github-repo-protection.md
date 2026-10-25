@@ -20,10 +20,10 @@ Upptime executes in `iamharryliu/uptime` using that repository's temporary `GITH
 
 `production` is only ever moved by `manual-promote-production.yml`, which fast-forwards it to the current `main` commit. Two Terraform-managed rulesets in `github.tf` cover the branch; they are separate because a bypass actor skips every rule in its ruleset.
 
-| Ruleset                 | Rules                          | Bypass actors                               |
-| ----------------------- | ------------------------------ | ------------------------------------------- |
+| Ruleset | Rules | Bypass actors |
+| --- | --- | --- |
 | `production-protection` | `deletion`, `non_fast_forward` | None — the promotion App and admins obey it |
-| `production-update`     | `update`                       | The `production-promotion` App (`always`)   |
+| `production-update` | `update` | The `production-promotion` App (`always`) |
 
 `main`'s ruleset is unchanged: admins stay its bypass actor, and merge commits already in `main`'s history promote normally (fast-forward is about `production` being an ancestor of the pushed commit, not about linear history).
 

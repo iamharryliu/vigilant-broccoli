@@ -19,19 +19,19 @@
 
 ## 3 Irregulars
 
-| Pronoun   | avoir | aller  | être   | prendre  |
-| --------- | ----- | ------ | ------ | -------- |
-| je/j'     | ai    | vais   | suis   | prends   |
-| tu        | as    | vas    | es     | prends   |
-| il/elle   | a     | va     | est    | prend    |
-| nous      | avons | allons | sommes | prenons  |
-| vous      | avez  | allez  | êtes   | prenez   |
-| ils/elles | ont   | vont   | sont   | prennent |
+| Pronoun | avoir | aller | être | prendre |
+| --- | --- | --- | --- | --- |
+| je/j' | ai | vais | suis | prends |
+| tu | as | vas | es | prends |
+| il/elle | a | va | est | prend |
+| nous | avons | allons | sommes | prenons |
+| vous | avez | allez | êtes | prenez |
+| ils/elles | ont | vont | sont | prennent |
 
 ## Irregular -ir Verbs
 
-| verb   | je   |
-| ------ | ---- |
+| verb | je |
+| --- | --- |
 | partir | pars |
 | sortir | sors |
 | sentir | sens |

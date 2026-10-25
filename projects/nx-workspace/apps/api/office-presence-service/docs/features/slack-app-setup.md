@@ -10,10 +10,10 @@ Manifests and the manual console steps for running the Office Presence app in So
 
 ## Manifests
 
-| File                                                                                                       | Mode   | Difference                                                             |
-| ---------------------------------------------------------------------------------------------------------- | ------ | ---------------------------------------------------------------------- |
-| [okin-manifest-socket.yml](../../../../../libs/@vigilant-broccoli/slackbots/docs/okin-manifest-socket.yml) | Socket | `socket_mode_enabled: true`, no Request URLs                           |
-| [okin-manifest-http.yml](../../../../../libs/@vigilant-broccoli/slackbots/docs/okin-manifest-http.yml)     | HTTP   | `socket_mode_enabled: false` and Request URLs on the demo service host |
+| File | Mode | Difference |
+| --- | --- | --- |
+| [okin-manifest-socket.yml](../../../../../libs/@vigilant-broccoli/slackbots/docs/okin-manifest-socket.yml) | Socket | `socket_mode_enabled: true`, no Request URLs |
+| [okin-manifest-http.yml](../../../../../libs/@vigilant-broccoli/slackbots/docs/okin-manifest-http.yml) | HTTP | `socket_mode_enabled: false` and Request URLs on the demo service host |
 
 Scopes, the Home tab, the `/preview-reminder` command and the `app_home_opened` event are identical. Self-hosters replace `demo-office-presence-service.fly.dev` with their own host.
 

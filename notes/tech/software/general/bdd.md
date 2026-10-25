@@ -6,14 +6,14 @@ In BDD, requirements are written as scenarios in plain language, often using a f
 
 Gherkin syntax is a plain-text language used to define structured, human-readable test scenarios in Behavior-Driven Development (BDD).
 
-| **Keyword** | **Description**                                                            |
-| ----------- | -------------------------------------------------------------------------- |
-| `Feature`   | Describes the functionality or feature under test.                         |
-| `Scenario`  | Defines a single test case with specific inputs and expected outcomes.     |
-| `Given`     | Sets up the initial context or preconditions for the test.                 |
-| `When`      | Describes an action or event that triggers a behavior.                     |
-| `Then`      | Specifies the expected outcome or result after the action.                 |
-| `And`       | Combines multiple `Given`, `When`, or `Then` steps for better readability. |
+| **Keyword** | **Description** |
+| --- | --- |
+| `Feature` | Describes the functionality or feature under test. |
+| `Scenario` | Defines a single test case with specific inputs and expected outcomes. |
+| `Given` | Sets up the initial context or preconditions for the test. |
+| `When` | Describes an action or event that triggers a behavior. |
+| `Then` | Specifies the expected outcome or result after the action. |
+| `And` | Combines multiple `Given`, `When`, or `Then` steps for better readability. |
 
 **Example**
 

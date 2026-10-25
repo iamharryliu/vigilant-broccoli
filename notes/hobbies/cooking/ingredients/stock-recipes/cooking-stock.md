@@ -12,42 +12,42 @@
 
 ## Base
 
-| Ingredient   | Effect                                                                                                                                 |
-| ------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| Carrot       | Sweetness, color                                                                                                                       |
-| Celery       | Vegetal backbone, mild bitterness                                                                                                      |
-| Garlic       | Savory depth                                                                                                                           |
+| Ingredient | Effect |
+| --- | --- |
+| Carrot | Sweetness, color |
+| Celery | Vegetal backbone, mild bitterness |
+| Garlic | Savory depth |
 | Napa Cabbage | Mild sweetness, light cabbage flavor, and umami from the thicker white stems; gives a clean, light rather than strongly aromatic stock |
-| Onion        | Sweetness, body                                                                                                                        |
+| Onion | Sweetness, body |
 
 - Napa + shiitake + scallion + ginger is particularly good for ramen and other Asian dishes.
 - Keep napa in proportion to the other vegetables or it dominates the broth.
 
 ## Aromatics
 
-| Ingredient        | Effect                           |
-| ----------------- | -------------------------------- |
-| Bay Leaf          | Herbaceous, savory               |
-| Black Peppercorns | Warm, peppery background         |
-| Dried Shiitake    | Major umami boost                |
-| Ginger            | Bright, warming; pairs with napa |
-| Scallion          | Fresh onion character            |
+| Ingredient | Effect |
+| --- | --- |
+| Bay Leaf | Herbaceous, savory |
+| Black Peppercorns | Warm, peppery background |
+| Dried Shiitake | Major umami boost |
+| Ginger | Bright, warming; pairs with napa |
+| Scallion | Fresh onion character |
 
 ## Optional
 
-| Ingredient     | Effect                                                    |
-| -------------- | --------------------------------------------------------- |
-| Kombu          | Umami; especially good for Asian-style stock              |
+| Ingredient | Effect |
+| --- | --- |
+| Kombu | Umami; especially good for Asian-style stock |
 | Smoked Paprika | Smoky depth, but pushes the stock toward a Western flavor |
-| Truffle Oil    | Finishing aroma; add off the heat                         |
+| Truffle Oil | Finishing aroma; add off the heat |
 
 ## Other Additions
 
-| Ingredient    | Effect                       |
-| ------------- | ---------------------------- |
-| Parsley Stems | Fresh herbal flavor          |
-| Rosemary      | Strong; use sparingly        |
-| Thyme         | Classic Western stock flavor |
+| Ingredient | Effect |
+| --- | --- |
+| Parsley Stems | Fresh herbal flavor |
+| Rosemary | Strong; use sparingly |
+| Thyme | Classic Western stock flavor |
 
 ## Instructions
 

@@ -2,18 +2,18 @@
 
 ## Language Mapping
 
-|      Operation       |              Python              |              Typescript               |
-| :------------------: | :------------------------------: | :-----------------------------------: |
-|       Infinity       |             math.inf             |               Infinity                |
-|       Min/Max        |      min(n1,n2), max(n1,n2)      |   Math.min(n1,n2), Math.max(n1,n2)    |
-|         Abs          |              abs(n)              |              Math.abs(n)              |
-|        Floor         |              int(n)              |      Math.floor(n)/Math.trunc(n)      |
-|       Sorting        |            arr.sort()            |              arr.sort()               |
-|       Hashmap        |            hmap = {}             | const hmap:{[key:string]:number} = {} |
-| Initialize Key Value | hmap[key] = hmap.get(key, 0) + 1 |  hmap[key] = (hmap[key] \|\| 0) + 1   |
-|   Hashmap Objects    |           hmap.items()           |         Object.entries(hmap)          |
-|     Hashmap Keys     |           hmap.keys()            |           Object.keys(hmap)           |
-|    Hashmap Values    |           hmap.items()           |          Object.values(hmap)          |
+| Operation | Python | Typescript |
+| :-: | :-: | :-: |
+| Infinity | math.inf | Infinity |
+| Min/Max | min(n1,n2), max(n1,n2) | Math.min(n1,n2), Math.max(n1,n2) |
+| Abs | abs(n) | Math.abs(n) |
+| Floor | int(n) | Math.floor(n)/Math.trunc(n) |
+| Sorting | arr.sort() | arr.sort() |
+| Hashmap | hmap = {} | const hmap:{[key:string]:number} = {} |
+| Initialize Key Value | hmap[key] = hmap.get(key, 0) + 1 | hmap[key] = (hmap[key] \|\| 0) + 1 |
+| Hashmap Objects | hmap.items() | Object.entries(hmap) |
+| Hashmap Keys | hmap.keys() | Object.keys(hmap) |
+| Hashmap Values | hmap.items() | Object.values(hmap) |
 
 ## Notes
 

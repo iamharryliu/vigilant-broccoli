@@ -39,12 +39,12 @@ docker image prune -a -f           # all unused images (larger)
 
 ## Use Caution
 
-| Target         | Risk       | Notes                                                              |
-| -------------- | ---------- | ------------------------------------------------------------------ |
-| `node_modules` | Medium     | Only remove if you can re-install; don't touch production app dirs |
-| `.nvm`         | High       | Node runtime lives here — removal breaks node                      |
-| snap revisions | Medium     | `snap list --all` then `snap remove --revision` old ones           |
-| log files      | Low-Medium | Truncate, don't delete: `> /var/log/somefile.log`                  |
+| Target | Risk | Notes |
+| --- | --- | --- |
+| `node_modules` | Medium | Only remove if you can re-install; don't touch production app dirs |
+| `.nvm` | High | Node runtime lives here — removal breaks node |
+| snap revisions | Medium | `snap list --all` then `snap remove --revision` old ones |
+| log files | Low-Medium | Truncate, don't delete: `> /var/log/somefile.log` |
 
 ## Avoid on Live VMs
 

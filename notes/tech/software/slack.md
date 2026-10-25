@@ -10,34 +10,34 @@
 
 ## API
 
-| **Use case**                        | **Bot Token** | **App Token** | **Signing Secret** |
-| :---------------------------------- | :-----------: | :-----------: | :----------------: |
-| Post messages / use Web API         |      ✅       |      ❌       |         ❌         |
-| Events API / Slash commands (HTTP)  |      ✅       |      ❌       |         ✅         |
-| Interactivity (HTTP actions/modals) |      ✅       |      ❌       |         ✅         |
-| Socket Mode (events via WebSocket)  |      ✅       |      ✅       |         ❌         |
-| App-level management (rare)         |      ❌       |      ✅       |         ❌         |
+| **Use case** | **Bot Token** | **App Token** | **Signing Secret** |
+| :-- | :-: | :-: | :-: |
+| Post messages / use Web API | ✅ | ❌ | ❌ |
+| Events API / Slash commands (HTTP) | ✅ | ❌ | ✅ |
+| Interactivity (HTTP actions/modals) | ✅ | ❌ | ✅ |
+| Socket Mode (events via WebSocket) | ✅ | ✅ | ❌ |
+| App-level management (rare) | ❌ | ✅ | ❌ |
 
 ## Formatting Messages
 
 [Reference](https://slack.com/help/articles/202288908-Format-your-messages)
 
-| **Format**        | **Example**                |
-| ----------------- | -------------------------- |
-| **Bold**          | `*your text*`              |
-| _Italics_         | `_your text_`              |
-| ~~Strikethrough~~ | `~your text~`              |
-| `Code`            | `` `your text` ``          |
-| > Blockquote      | `> your text`              |
-| `Code Block`      | ` ```your text``` `        |
-| Link              | [Slack](https://slack.com) |
+| **Format** | **Example** |
+| --- | --- |
+| **Bold** | `*your text*` |
+| _Italics_ | `_your text_` |
+| ~~Strikethrough~~ | `~your text~` |
+| `Code` | `` `your text` `` |
+| > Blockquote | `> your text` |
+| `Code Block` | ` ```your text``` ` |
+| Link | [Slack](https://slack.com) |
 
 ### Lists
 
-| **Format**                     | **Description**                                    | **Example**            |
-| ------------------------------ | -------------------------------------------------- | ---------------------- |
-| Ordered List                   | Add numbers with a period in front of text         | `1. your text`         |
-| Bulleted List                  | Add an asterisk or dash, then press space          | `* your text`          |
+| **Format** | **Description** | **Example** |
+| --- | --- | --- |
+| Ordered List | Add numbers with a period in front of text | `1. your text` |
+| Bulleted List | Add an asterisk or dash, then press space | `* your text` |
 | Indented List (for both types) | Press `Tab` to indent a line after a bullet/number | Indented example below |
 
 #### Example: Ordered List

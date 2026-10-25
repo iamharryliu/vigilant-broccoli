@@ -22,16 +22,16 @@ Be the first player to play out all your bones, or hold the lowest pip count whe
 
 ## Limitations
 
-| Limit        | Value                     | Notes                                                                         |
-| ------------ | ------------------------- | ----------------------------------------------------------------------------- |
-| Bones dealt  | 7 per player              | All 28 bones are dealt in partner play                                        |
-| Boneyard     | None                      | Nothing to draw from, so you either play or pass                              |
-| Doubles      | Played crosswise          | Layout convention only; a double still matches on its single number           |
-| Layout ends  | 2                         | Only the two ends of the line are ever playable                               |
-| Match length | 6 games                   | 6–0 is a "six love"                                                           |
-| Passing      | Only when you cannot play | You may never pass while holding a playable bone                              |
-| Players      | 4 in 2 fixed partnerships | Partners sit opposite each other; see [Cut Throat](#cut-throat) for solo play |
-| Set          | Double six, 28 bones      | Pip values 0–6, highest bone is 6-6                                           |
+| Limit | Value | Notes |
+| --- | --- | --- |
+| Bones dealt | 7 per player | All 28 bones are dealt in partner play |
+| Boneyard | None | Nothing to draw from, so you either play or pass |
+| Doubles | Played crosswise | Layout convention only; a double still matches on its single number |
+| Layout ends | 2 | Only the two ends of the line are ever playable |
+| Match length | 6 games | 6–0 is a "six love" |
+| Passing | Only when you cannot play | You may never pass while holding a playable bone |
+| Players | 4 in 2 fixed partnerships | Partners sit opposite each other; see [Cut Throat](#cut-throat) for solo play |
+| Set | Double six, 28 bones | Pip values 0–6, highest bone is 6-6 |
 
 ## Setup
 
@@ -87,11 +87,11 @@ Equal totals on a block is a tie: no points, and the double six poses the next g
 
 Every player for themselves, 2 to 4 players:
 
-| Players | Bones each | Notes                                                       |
-| ------- | ---------- | ----------------------------------------------------------- |
-| 2       | 14         | Some tables deal 7 and leave the rest as a boneyard to draw |
-| 3       | 9          | The double blank is removed from the set                    |
-| 4       | 7          | Same deal as partner play                                   |
+| Players | Bones each | Notes |
+| --- | --- | --- |
+| 2 | 14 | Some tables deal 7 and leave the rest as a boneyard to draw |
+| 3 | 9 | The double blank is removed from the set |
+| 4 | 7 | Same deal as partner play |
 
 First player out wins; on a block, the lowest pip count in a single hand wins.
 

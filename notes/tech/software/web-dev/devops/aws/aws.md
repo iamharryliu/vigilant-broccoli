@@ -28,17 +28,17 @@ aws sts get-caller-identity --profile PROFILE_NAME
 aws iam list-users
 ```
 
-| Term           | Description                                                                                                                                                      |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Term | Description |
+| --- | --- |
 | Security Group | A virtual firewall for your EC2 instances (and other resources like RDS, Lambda in VPCs, etc.). It controls what traffic is allowed in and out of your resource. |
 
 ## `~/.aws/config` vs `~/.aws/credentials`
 
-|                | `credentials`               | `config`                                         |
-| -------------- | --------------------------- | ------------------------------------------------ |
-| Purpose        | Auth secrets (keys, tokens) | Settings & behavior (region, output, roles, SSO) |
-| Profile header | `[profile-name]`            | `[profile profile-name]` (except `[default]`)    |
-| SDK reads      | Always                      | Always                                           |
+|  | `credentials` | `config` |
+| --- | --- | --- |
+| Purpose | Auth secrets (keys, tokens) | Settings & behavior (region, output, roles, SSO) |
+| Profile header | `[profile-name]` | `[profile profile-name]` (except `[default]`) |
+| SDK reads | Always | Always |
 
 Precedence: env vars > `~/.aws/credentials` > `~/.aws/config`
 
@@ -57,8 +57,8 @@ Rotating means two keys at once: create the second, swap consumers over, verify,
 
 ## Free Tier
 
-| Resource                           | Free tier                                                   |
-| ---------------------------------- | ----------------------------------------------------------- |
-| IAM users, groups, roles, policies | Always free, no cap                                         |
-| IAM access keys                    | Always free; 2 per user (a hard limit, not a free-tier one) |
-| IAM Identity Center (SSO)          | Always free                                                 |
+| Resource | Free tier |
+| --- | --- |
+| IAM users, groups, roles, policies | Always free, no cap |
+| IAM access keys | Always free; 2 per user (a hard limit, not a free-tier one) |
+| IAM Identity Center (SSO) | Always free |

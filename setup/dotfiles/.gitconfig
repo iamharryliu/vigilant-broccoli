@@ -18,3 +18,9 @@
 	required = true
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
+# Compacts Markdown table padding on `git add` and re-aligns it on checkout
+# for repos whose .gitattributes opt in (vigilant-broccoli). Not required, so
+# a failing filter passes content through and the md-table-compact pre-commit
+# hook catches what it left padded.
+[filter "mdtable"]
+	process = node \"$(git rev-parse --show-toplevel)/scripts/node/md-table-filter.mjs\"
