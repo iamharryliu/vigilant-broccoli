@@ -2,6 +2,6 @@
   "name": "@vigilant-broccoli/react-music-lib",
   "version": "0.0.1",
   "dependencies": {
-    "react": "*"
+    "react": "19.2.7"
   }
 }

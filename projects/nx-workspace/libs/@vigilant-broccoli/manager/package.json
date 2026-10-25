@@ -11,6 +11,6 @@
     "@vigilant-broccoli/infrastructure": "workspace:*",
     "@vigilant-broccoli/private-infrastructure": "workspace:*",
     "@vigilant-broccoli/public-links": "workspace:*",
-    "tslib": "^2.3.0"
+    "tslib": "^2.8.1"
   }
 }
