@@ -131,6 +131,7 @@
     "agentic:dev-sandbox:down": "docker compose -f infrastructure/agent-sandbox/docker-compose.yml down",
     "agentic:dev-sandbox:refresh-github-token": "./infrastructure/agent-sandbox/refresh-github-token.sh",
     "agentic:dev-sandbox:reset": "bash -c 'docker compose -f infrastructure/agent-sandbox/docker-compose.yml down -v && . ./infrastructure/agent-sandbox/load-env-from-vault.sh && docker compose -f infrastructure/agent-sandbox/docker-compose.yml up -d --build'",
+    "screenshot:themes": "cd projects/nx-workspace && npx tsx scripts/screenshot-themes.ts",
     "agentic-pr-create": "./infrastructure/agent-sandbox/solve-todo.sh",
     "agentic-pr-create-audit": "./infrastructure/agent-sandbox/audit-docs.sh",
     "agentic-pr-create-comment-audit": "./infrastructure/agent-sandbox/comment-audit.sh",

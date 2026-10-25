@@ -15,6 +15,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   repo-stats:check            Fail if a managed repo-stats copy (README, about, resume) is stale
   deps:align-pins             Align app/lib dependency ranges with the nx-workspace root (40-edit cap); run `pnpm -C projects/nx-workspace install --lockfile-only` after
   deps:align-pins:check       Report app/lib dependency pin drift without editing
+  screenshot:themes <url>...  Screenshot local pages in light and dark at phone and desktop widths (gitignored output)
 
 📈 UPTIME
   upptime:config:render <dir> Render managed monitoring files locally (empty external directory)
