@@ -81,7 +81,9 @@ Hardware:
   capping the network near 300Mbit. The microSD slot is separate (SDIO), so
   the library does not contend with the network the way the old USB drive did.
   One or two direct-play streams are fine. Several are not.
-- Wired Ethernet only. The playbook configures no Wi-Fi.
+- Wired Ethernet only. The playbook disables the Wi-Fi radio with
+  `dtoverlay=disable-wifi` in `/boot/firmware/config.txt`, effective from the
+  next reboot after the first provision.
 - A reliable boot device (SD card or, better, USB SSD) holding the OS, config,
   cache **and the media library** — there is no external drive. **Size it for
   the library plus headroom; 128GB is the verified configuration.** Jellyfin

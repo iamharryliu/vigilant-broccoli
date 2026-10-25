@@ -59,3 +59,16 @@
   # Tolerating it in check mode only is what lets --check reach the tasks that
   # matter (storage, docker, the stack itself).
   ignore_errors: '{{ ansible_check_mode }}'
+
+# The Pi is wired-only, so the radio is switched off in firmware rather than
+# left idle. Appended under its own [all] because config.txt ends in whatever
+# conditional section ([cm4], [pi5]...) the image last declared, which would
+# otherwise scope the overlay to other boards. Takes effect on the next reboot;
+# the playbook does not reboot.
+- name: Disable the Wi-Fi radio
+  ansible.builtin.blockinfile:
+    path: /boot/firmware/config.txt
+    marker: '# {mark} jellyfin-pi: Ethernet only'
+    block: |
+      [all]
+      dtoverlay=disable-wifi
