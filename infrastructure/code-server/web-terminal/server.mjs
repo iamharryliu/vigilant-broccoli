@@ -1,4 +1,3 @@
-import { execFile } from 'node:child_process';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
@@ -32,10 +31,7 @@ const getEnvironmentVariable = (name, fallback) => {
 const MESSAGE_TYPE = {
   INPUT: 'input',
   RESIZE: 'resize',
-  SCROLL: 'scroll',
-  COPY_MODE: 'copy-mode',
 };
-const MAX_SCROLL_LINES = 500;
 const WS_PATH = '/ws';
 const PUBLIC_DIR = fileURLToPath(new URL('./public/', import.meta.url));
 const VENDOR_DIR = fileURLToPath(new URL('./node_modules/', import.meta.url));
@@ -125,41 +121,6 @@ const server = createServer(async (req, res) => {
   }
 });
 
-// Scrolling drives tmux directly rather than sending its prefix key, which the
-// dotfiles remap. tmux mouse mode would scroll on wheel events, but mobile
-// browsers never emit those for touch, and the outer xterm.js buffer has no
-// history of its own because tmux owns the screen.
-// Commands run strictly one after another: swipes fire a command per animation
-// frame, and concurrent tmux clients can apply their scrolls out of order,
-// leaving the view on different lines than the swipe distance implies.
-let tmuxQueue = Promise.resolve();
-const runTmux = args => {
-  tmuxQueue = tmuxQueue.then(
-    () => new Promise(resolve => execFile('tmux', args, () => resolve())),
-  );
-};
-
-const scrollPane = lines => {
-  const count = Math.min(Math.abs(Math.trunc(lines)), MAX_SCROLL_LINES);
-  if (!Number.isFinite(count) || count === 0) return;
-  const scroll = [
-    'send-keys',
-    '-t',
-    TMUX_SESSION,
-    '-X',
-    '-N',
-    String(count),
-    lines > 0 ? 'scroll-up' : 'scroll-down',
-  ];
-  // -e leaves copy mode once scrolled back to the bottom; scrolling down
-  // outside copy mode fails harmlessly.
-  runTmux(
-    lines > 0
-      ? ['copy-mode', '-e', '-t', TMUX_SESSION, ';', ...scroll]
-      : scroll,
-  );
-};
-
 const attachShell = ws => {
   // The server already runs as abc (s6-setuidgid), so the shell inherits that
   // user. tmux keeps the session alive across dropped mobile connections;
@@ -197,13 +158,6 @@ const attachShell = ws => {
       if (Number.isFinite(cols) && Number.isFinite(rows)) {
         shell.resize(cols, rows);
       }
-    } else if (
-      message.type === MESSAGE_TYPE.SCROLL &&
-      typeof message.lines === 'number'
-    ) {
-      scrollPane(message.lines);
-    } else if (message.type === MESSAGE_TYPE.COPY_MODE) {
-      runTmux(['copy-mode', '-t', TMUX_SESSION]);
     }
   });
 
