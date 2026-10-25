@@ -81,12 +81,12 @@
   - Example: ** Delete a user.**
 
 | Methods | Query Parameters | Request Parameters | Idempotent |
-| ------- | ---------------- | ------------------ | ---------- |
-| GET     | ✅               | ❌                 | ✅         |
-| POST    | ❌               | ✅                 | ❌         |
-| PATCH   | ❌               | ✅                 |
-| PUT     | ❌               | ✅                 | ✅         |
-| DELETE  | ❌               | ✅                 | ✅         |
+| --- | --- | --- | --- |
+| GET | ✅ | ❌ | ✅ |
+| POST | ❌ | ✅ | ❌ |
+| PATCH | ❌ | ✅ |
+| PUT | ❌ | ✅ | ✅ |
+| DELETE | ❌ | ✅ | ✅ |
 
 A lot of REST API design is subjected and really depends on how the APIs are implemented by the developers. They will not always follow the rules above. Some examples would include:
 

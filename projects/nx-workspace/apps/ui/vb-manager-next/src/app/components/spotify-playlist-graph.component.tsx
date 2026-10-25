@@ -105,9 +105,7 @@ export function SpotifyPlaylistGraphComponent() {
 
   if (status === 'loading') {
     return (
-      <div className="flex h-full items-center justify-center">
-        <Text size="3">Loading…</Text>
-      </div>
+      <div className="flex h-full items-center justify-center" />
     );
   }
 

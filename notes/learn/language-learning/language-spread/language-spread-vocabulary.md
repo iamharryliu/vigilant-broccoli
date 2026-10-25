@@ -1,3 +1,3 @@
-| English        | Swedish | French          | Spanish         |
-| :------------- | :------ | :-------------- | :-------------- |
-| responsibility | ansvar  | responsabilité  | responsabilidad |
+| English | Swedish | French | Spanish |
+| :-- | :-- | :-- | :-- |
+| responsibility | ansvar | responsabilité | responsabilidad |

@@ -14,4 +14,6 @@ export * from './utils/commit-type.utils';
 export * from './utils/focus-navigation.utils';
 export * from './utils/fuzzy-match.utils';
 export * from './utils/resizeImage';
+export * from './utils/text-diff.utils';
 export * from './utils/upptime.utils';
+export * from './utils/press-enter.utils';

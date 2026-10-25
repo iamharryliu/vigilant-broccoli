@@ -1,4 +1,7 @@
 # Markdown
+# Commits store tables unpadded; the working tree is re-aligned on checkout.
+# Driver: [filter "mdtable"] in setup/dotfiles/.gitconfig.
+*.md filter=mdtable
 *.md linguist-detectable=true
 *.md linguist-documentation=false
 

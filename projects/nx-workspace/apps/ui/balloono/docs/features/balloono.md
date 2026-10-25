@@ -52,11 +52,11 @@ The sidebar shows three personal counters with an expandable full breakdown, a t
 
 Difficulty is a profile (`BOT_PROFILES`):
 
-| Difficulty | Behaviour                                                                                                                                                                  |
-| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Easy       | Hesitates often, wanders, drops only some of the time, ignores power-ups, does not foresee chain reactions, hunts players only once crates run out                         |
-| Medium     | Occasional hesitation, collects power-ups, foresees chains, keeps a small safety margin                                                                                    |
-| Hard       | No hesitation, hunts from the start, drops balloons that leave an enemy no escape, avoids sheltering in dead ends or next to enemies, where one more balloon would trap it |
+| Difficulty | Behaviour |
+| --- | --- |
+| Easy | Hesitates often, wanders, drops only some of the time, ignores power-ups, does not foresee chain reactions, hunts players only once crates run out |
+| Medium | Occasional hesitation, collects power-ups, foresees chains, keeps a small safety margin |
+| Hard | No hesitation, hunts from the start, drops balloons that leave an enemy no escape, avoids sheltering in dead ends or next to enemies, where one more balloon would trap it |
 
 Every bot targets only crate or enemy spots it could escape from after dropping. A threat counts only once it is closer than a fresh balloon's fuse plus splash, so bots keep playing while sudden death is scheduled. In headless one-on-one runs with shuffled spawns (30 matches each, draws excluded), hard beat medium 13–7, hard beat easy 19–2, and medium beat easy 19–1. See this app's [CONTEXT.md](../../CONTEXT.md) before retuning.
 

@@ -25,16 +25,16 @@ Brew the highest scoring potion by playing ingredient cards in front of you, pay
 
 ## Limitations
 
-| Limit            | Value                              | Notes                                                                        |
-| ---------------- | ---------------------------------- | ---------------------------------------------------------------------------- |
-| Actions per turn | 2 per turn                         | May be the same action twice                                                 |
-| Hand size        | 3 cards                            | Checked at the end of your turn, not during it                               |
-| Market           | 4 day cards + 4 night cards        | Face up; refilled as cards are taken                                         |
-| Players          | 2–4                                | Roughly 25 minutes                                                           |
-| Rune slots       | 4, then 5, then 6                  | Start with 4; the 4th card played unlocks the 5th slot, the 8th card the 6th |
-| Salt cards       | Must be played onto a card you own | Once placed it stays there                                                   |
-| Sickles          | 2 per player                       | Single use each; spending one is free and does not cost an action            |
-| Tableau          | 11 cards triggers the end          | The 6th and 10th cards each grant a bonus ingredient token                   |
+| Limit | Value | Notes |
+| --- | --- | --- |
+| Actions per turn | 2 per turn | May be the same action twice |
+| Hand size | 3 cards | Checked at the end of your turn, not during it |
+| Market | 4 day cards + 4 night cards | Face up; refilled as cards are taken |
+| Players | 2–4 | Roughly 25 minutes |
+| Rune slots | 4, then 5, then 6 | Start with 4; the 4th card played unlocks the 5th slot, the 8th card the 6th |
+| Salt cards | Must be played onto a card you own | Once placed it stays there |
+| Sickles | 2 per player | Single use each; spending one is free and does not cost an action |
+| Tableau | 11 cards triggers the end | The 6th and 10th cards each grant a bonus ingredient token |
 
 ## Setup
 
@@ -84,12 +84,12 @@ Take 2 actions, in any order, the same or different:
 
 ## Tableau Track
 
-| Card played | Unlock                   |
-| ----------- | ------------------------ |
-| 4th         | 1 extra rune slot        |
-| 6th         | 1 bonus ingredient token |
-| 8th         | 1 extra rune slot        |
-| 10th        | 1 bonus ingredient token |
+| Card played | Unlock |
+| --- | --- |
+| 4th | 1 extra rune slot |
+| 6th | 1 bonus ingredient token |
+| 8th | 1 extra rune slot |
+| 10th | 1 bonus ingredient token |
 
 ## Salt Cards
 

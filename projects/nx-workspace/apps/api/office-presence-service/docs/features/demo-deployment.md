@@ -25,10 +25,10 @@ The Pages site never touches the database; it only calls the service over HTTPS.
 
 ## Shared vs Per-Visitor State
 
-| State                                                   | Where                                        |
-| ------------------------------------------------------- | -------------------------------------------- |
-| Presences, events, user settings                        | SQLite, shared by Slack and every UI visitor |
-| Home view, modal stack, message transcript, group chats | In memory per session (`createMockSlack`)    |
+| State | Where |
+| --- | --- |
+| Presences, events, user settings | SQLite, shared by Slack and every UI visitor |
+| Home view, modal stack, message transcript, group chats | In memory per session (`createMockSlack`) |
 
 The UI keeps a random session id in `localStorage` and sends it as `X-Demo-Session`. Sessions expire after 30 minutes idle and at most 200 live at once (least recently used goes first), so a restart or eviction only loses a visitor's open dialogs and messages, never domain rows.
 
@@ -42,13 +42,13 @@ The UI keeps a random session id in `localStorage` and sends it as `X-Demo-Sessi
 
 ## Routes
 
-| Route                                                                 | Mode and flag            | Auth                     |
-| --------------------------------------------------------------------- | ------------------------ | ------------------------ |
-| `GET /`, `GET /docs`, `GET /docs/json`                                | `http`                   | none                     |
-| `POST /slack/events`, `/slack/interactivity`, `/slack/commands`       | `http`                   | Slack signing secret     |
-| `POST /demo/{state,action,submit,close-modal,preview-reminder,reset}` | `http` + `DEMO_MODE`     | CORS to `DEMO_UI_ORIGIN` |
-| `POST /internal/seed`                                                 | `http` + `DEMO_MODE`     | bearer token             |
-| `POST /internal/reminders`                                            | `http`, token configured | bearer token             |
+| Route | Mode and flag | Auth |
+| --- | --- | --- |
+| `GET /`, `GET /docs`, `GET /docs/json` | `http` | none |
+| `POST /slack/events`, `/slack/interactivity`, `/slack/commands` | `http` | Slack signing secret |
+| `POST /demo/{state,action,submit,close-modal,preview-reminder,reset}` | `http` + `DEMO_MODE` | CORS to `DEMO_UI_ORIGIN` |
+| `POST /internal/seed` | `http` + `DEMO_MODE` | bearer token |
+| `POST /internal/reminders` | `http`, token configured | bearer token |
 
 Socket Mode exposes no HTTP surface. Demo routes are limited to 120 requests/minute per client (`reset`: 5/minute) with a 32 KB body limit; the swagger spec in `src/libs/swagger.ts` documents every route.
 

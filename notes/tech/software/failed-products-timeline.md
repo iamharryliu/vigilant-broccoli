@@ -1,0 +1,26 @@
+# Failed Products Timeline
+
+| Year | Product | Maker | Category | Why it failed | Outcome |
+| --- | --- | --- | --- | --- | --- |
+| 1993 | Apple Newton | Apple | PDA | High price, unreliable handwriting recognition and a large form factor | Discontinued in 1998 |
+| 1995 | Virtual Boy | Nintendo | Game console | Red monochrome display, headaches and no real portability | Discontinued in 1996, less than a year after launch |
+| 1996 | Pippin | Apple, Bandai | Game console | High price, few games and a late entry against PlayStation and Nintendo 64 | Discontinued in 1997 |
+| 1998 | Dreamcast | Sega | Game console | Sega's earlier console missteps, then PlayStation 2 hype and weak third-party games | Production stopped in 2001; Sega left the hardware business |
+| 2003 | N-Gage | Nokia | Phone and console | Awkward "taco" phone ergonomics and a cartridge slot under the battery | Discontinued in 2005 |
+| 2006 | Zune | Microsoft | Music player | Late against the iPod and iTunes ecosystem | Hardware discontinued in 2011; service folded into Xbox Music |
+| 2009 | Google Wave | Google | Collaboration | Confusing concept that blended email, chat and documents | Development ended in 2010; shut down in 2012 |
+| 2010 | Kin | Microsoft | Phone | Missing basic features, a mandatory data plan and a high price | Pulled after about 48 days |
+| 2010 | Google Buzz | Google | Social network | Privacy backlash over auto-enrolled public contacts | Shut down in 2011 |
+| 2011 | HP TouchPad, webOS | HP | Tablet and OS | Slow performance, few apps and weak sales against the iPad | Discontinued after about 49 days; webOS sold to LG in 2013 |
+| 2011 | Google+ | Google | Social network | Never pulled users away from Facebook; low engagement | Consumer version shut down in 2019 |
+| 2013 | Firefox OS | Mozilla | Mobile OS | Late against Android and iOS, few apps and low-end phones | Smartphone sales ended in 2015–2016; code forked into KaiOS |
+| 2013 | Ubuntu Edge | Canonical | Phone | Crowdfunding fell well short of its target | Never built; Ubuntu Touch ended in 2017 and was continued by the UBports community |
+| 2013 | Google Glass | Google | Smart glasses | Privacy concerns, high price and unclear use case | Consumer version ended in 2015; enterprise version ended in 2023 |
+| 2013 | Vine | Twitter | Short video | Creators moved to Instagram and Snapchat; Twitter did not monetize it | Shut down in 2017 |
+| 2014 | Fire Phone | Amazon | Phone | Gimmick features, high price and a thin app ecosystem | Discontinued in 2015, with a large inventory write-down |
+| 2016 | Galaxy Note 7 | Samsung | Phone | Battery fires, including on replacement units | Recalled and discontinued within about two months |
+| 2016 | Allo | Google | Messaging | Launched without SMS support into a crowded messaging market | Shut down in 2019 |
+| 2016 | Juicero | Juicero | Kitchen appliance | Expensive press whose juice packs could be squeezed by hand | Company closed in 2017 |
+| 2019 | Stadia | Google | Game streaming | Few games, a pay-for-games model and doubts about Google's commitment | Shut down in 2023 |
+| 2020 | Quibi | Quibi | Video streaming | Mobile-only short episodes, no sharing and launched during lockdown | Shut down after about six months |
+| 2024 | AI Pin | Humane | AI wearable | Slow, unreliable responses and a high price plus subscription | Sold to HP in 2025; devices stopped working that year |

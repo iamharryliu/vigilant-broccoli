@@ -29,12 +29,11 @@ Enforcement is CI-only: `ci-pr-check` checks PR titles and commits; there is no 
 
 ## Concurrent Agent Sessions
 
-Sessions attached to one checkout share `HEAD`, the index and stash.
+Sessions attached to one checkout share `HEAD`, the index and stash. Ownership, worktree, stash and staged-peer-work rules are in [root context](../CONTEXT.md#git); additionally:
 
-- Establish ownership before branching, staging, committing, stashing or switching. A subagent list does not enumerate independent sessions; an empty `ListAgents` result never proves exclusive use and is at most a best-effort hint.
-- Default to a separate worktree: unless the checkout is provably exclusive to this session, create one off freshly fetched `origin/main` and apply only this session's changes there. Do not hold for peer acknowledgement.
-- In an exclusively owned checkout, commit by pathspec, never stash and restore the original branch. If peer work is staged, use `git commit -m "<message>" -- <your paths>`; it commits the named working-tree files and leaves other index entries alone.
-- Never stash shared/uncertain work. `sync-main` requires a clean, exclusive checkout in that case and does not authorize committing pending work to clean it.
+- A subagent list does not enumerate independent sessions; an empty `ListAgents` result never proves exclusive use and is at most a best-effort hint. Create the worktree without holding for peer acknowledgement.
+- In an exclusively owned checkout, commit by pathspec, never stash and restore the original branch. `git commit -m "<message>" -- <your paths>` commits the named working-tree files and leaves other index entries alone.
+- `sync-main` requires a clean, exclusive checkout and does not authorize committing pending work to clean it.
 - Restore a branch only if your workflow switched it in an exclusive checkout; do not switch a peer's branch during cleanup.
 
 ## Staying Current With `main`
@@ -42,7 +41,7 @@ Sessions attached to one checkout share `HEAD`, the index and stash.
 Sync when starting work, before pushing and when main moves while a branch is open. `ship-pr` uses `sync-main` before publishing.
 
 - Fetch first; `git rev-list --left-right --count origin/main...HEAD` reports missing/additional commits.
-- On a feature branch, merge with `git merge --no-edit origin/main`. Never rebase: publishing a rewritten branch would require a forbidden force-push. PRs squash-merge, so these integration commits do not enter main's history.
+- On a feature branch, merge with `git merge --no-edit origin/main`. A branch whose Markdown tables are still padded (cut before the [`mdtable` filter](./code-quality-tools.md)) merges with `git merge --no-edit -X renormalize origin/main`, which compacts both sides before comparing them. Never rebase: publishing a rewritten branch would require a forbidden force-push. PRs squash-merge, so these integration commits do not enter main's history.
 - On main, use `git pull --ff-only origin main`; report divergence instead of merging over it.
 - Enable `git rerere` (`git config rerere.enabled true`) to reuse conflict resolutions.
 

@@ -4,6 +4,7 @@ import { CSSProperties, ReactNode, useRef, useState, RefObject } from 'react';
 import { MessageSquare, Eye, Pencil } from 'lucide-react';
 import { Button, SyncedTextEditor } from '@vigilant-broccoli/react-lib';
 import {
+  NotepadLoadError,
   PeerCaretsOverlay,
   PeerCursorsOverlay,
 } from '@vigilant-broccoli/react-lib-higher-level';
@@ -105,6 +106,8 @@ export function WhiteboardEditor({
     content,
     setContent,
     isLoading,
+    loadError,
+    retryLoad,
     undo,
     redo,
     cursors,
@@ -178,6 +181,7 @@ export function WhiteboardEditor({
 
   return (
     <div className="relative flex min-h-0 flex-1 flex-col">
+      <NotepadLoadError loadError={loadError} onRetry={retryLoad} />
       <WhiteboardPane
         content={content}
         isLoading={isLoading}

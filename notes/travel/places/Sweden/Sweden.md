@@ -47,8 +47,8 @@
 
 ### Coffee
 
-| Cafe                                             | Description                                                                               |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| Cafe | Description |
+| --- | --- |
 | [Lykke Kaffegårdar](https://www.lykkegardar.se/) | Stockholm-based roastery growing, roasting, and selling coffee direct from its own farms. |
 
 ### Services

@@ -14,6 +14,8 @@ const BOOTSTRAP_WAIT_MS = 700;
 const NOTEPAD_ROOM_CHANNEL = 'notepad-room';
 const DEFAULT_API_PATH = '/api/notepad';
 const DEFAULT_STORAGE_KEY = 'notepad:content';
+const LOAD_ERROR_PREFIX = 'Failed to load notes: HTTP ';
+const PAGEHIDE_EVENT = 'pagehide';
 
 interface CachedNotepad {
   content: string;
@@ -24,7 +26,11 @@ export interface NotepadState {
   content: string;
   setContent: (content: string) => void;
   isSaving: boolean;
+  // Stays true until the server snapshot loads, including after a failed
+  // load, so editors stay disabled and nothing is persisted over the row.
   isLoading: boolean;
+  loadError: string | null;
+  retryLoad: () => void;
   lastSaved: Date | null;
   undo: () => void;
   redo: () => void;
@@ -75,13 +81,20 @@ export const useNotepad = ({
   );
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadAttempt, setLoadAttempt] = useState(0);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
   const roomContentRef = useRef(room.content);
   roomContentRef.current = room.content;
+  const lastChangeIsEditRef = useRef(room.lastChangeIsEdit);
+  lastChangeIsEditRef.current = room.lastChangeIsEdit;
 
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const updatedAt = useRef<string | null>(null);
+  // Text of the last successful save or loaded snapshot; only differing
+  // content is persisted, so re-renders and token refreshes never re-save.
+  const lastPersisted = useRef<string | null>(null);
   const hasBootstrapped = useRef(false);
 
   const readCache = useCallback((): CachedNotepad | null => {
@@ -99,29 +112,39 @@ export const useNotepad = ({
   );
 
   const persist = useCallback(
-    (text: string) => {
+    (text: string, keepalive = false) => {
+      // Persisting only starts after a successful load, so any client may save
+      // a board that this client or a peer cleared; a rebuilt, empty room
+      // must never overwrite saved text. The server still 409s a stale base.
+      const allowEmpty = !text && lastChangeIsEditRef.current;
+      if (!text && !allowEmpty && lastPersisted.current) return;
+
       setIsSaving(true);
       const baseUpdatedAt = updatedAt.current;
 
       authFetch(apiPath, {
         method: HTTP_METHOD.POST,
         headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
-        body: JSON.stringify({ content: text, baseUpdatedAt }),
+        body: JSON.stringify({ content: text, baseUpdatedAt, allowEmpty }),
+        keepalive,
       })
         .then(async res => {
           const data = await res.json();
 
           if (res.status === HTTP_STATUS_CODES.CONFLICT) {
-            // Another device persisted since our last sync — merge its
-            // snapshot into the live doc instead of discarding it; the
-            // resulting change re-triggers a save with the merged text.
+            // Another device persisted since our last sync (or the server
+            // refused an empty write) — adopt its snapshot into the live doc
+            // without making it undoable.
+            const latest = (data.content as string | undefined) ?? '';
             updatedAt.current = data.updatedAt;
-            room.setContent(data.content ?? '');
+            lastPersisted.current = latest;
+            room.replaceContent(latest);
             return;
           }
 
           if (!res.ok) return Promise.reject(res);
           updatedAt.current = data.updatedAt;
+          lastPersisted.current = text;
           writeCache({ content: text, updatedAt: data.updatedAt });
           setLastSaved(new Date());
         })
@@ -137,31 +160,38 @@ export const useNotepad = ({
   // it from the last durably-saved snapshot — seeding too early would insert
   // stale text alongside a peer's incoming state instead of joining it. Reruns
   // when apiPath/channelName change (e.g. switching boards) since that's a
-  // different notepad, not just a re-render.
+  // different notepad, not just a re-render. A failed load never falls back
+  // to an editable blank board: it stays unloaded until retryLoad succeeds.
   useEffect(() => {
     if (!userId) return;
     let cancelled = false;
     hasBootstrapped.current = false;
     updatedAt.current = null;
+    lastPersisted.current = null;
     setIsLoading(true);
+    setLoadError(null);
 
     authFetch(apiPath)
-      .then(res => (res.ok ? res.json() : Promise.reject(res)))
-      .then(data => ({
-        content: (data?.content as string) ?? '',
-        updatedAt: (data?.updatedAt as string | undefined) ?? null,
-      }))
-      .catch(() => readCache() ?? { content: '', updatedAt: null })
-      .then(seed => {
+      .then(res =>
+        res.ok
+          ? res.json()
+          : Promise.reject(new Error(`${LOAD_ERROR_PREFIX}${res.status}`)),
+      )
+      .then(data => {
         if (cancelled) return;
+        const seed: CachedNotepad = {
+          content: (data?.content as string) ?? '',
+          updatedAt: (data?.updatedAt as string | undefined) ?? null,
+        };
         updatedAt.current = seed.updatedAt;
 
         setTimeout(() => {
           if (cancelled || hasBootstrapped.current) return;
           hasBootstrapped.current = true;
+          lastPersisted.current = seed.content;
 
           if (!roomContentRef.current && seed.content) {
-            room.setContent(seed.content);
+            room.replaceContent(seed.content);
           } else if (roomContentRef.current !== seed.content) {
             // A peer answered with content newer than our last known save —
             // persist it promptly instead of waiting for the next local edit.
@@ -169,31 +199,61 @@ export const useNotepad = ({
           }
           setIsLoading(false);
         }, BOOTSTRAP_WAIT_MS);
+      })
+      .catch((error: Error) => {
+        if (!cancelled) setLoadError(error.message);
       });
 
     return () => {
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userId, apiPath, channelName]);
+  }, [userId, apiPath, channelName, loadAttempt]);
 
+  const retryLoad = useCallback(() => setLoadAttempt(prev => prev + 1), []);
+
+  // persist is a dependency so a token refresh retries a failed save, but the
+  // lastPersisted check keeps it from re-saving unchanged (or empty) text.
   useEffect(() => {
     if (!hasBootstrapped.current) return;
+    if (room.content === lastPersisted.current) return;
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
-    saveTimeout.current = setTimeout(
-      () => persist(room.content),
-      SAVE_DEBOUNCE_MS,
-    );
+    saveTimeout.current = setTimeout(() => {
+      saveTimeout.current = null;
+      persist(room.content);
+    }, SAVE_DEBOUNCE_MS);
     return () => {
       if (saveTimeout.current) clearTimeout(saveTimeout.current);
+      saveTimeout.current = null;
     };
   }, [room.content, persist]);
 
+  // Closing the tab inside the debounce window would drop the last edit (a
+  // clear made with no other device open included); keepalive lets the
+  // request outlive the page.
+  useEffect(() => {
+    const flushPendingSave = () => {
+      if (!saveTimeout.current) return;
+      clearTimeout(saveTimeout.current);
+      saveTimeout.current = null;
+      persist(roomContentRef.current, true);
+    };
+    window.addEventListener(PAGEHIDE_EVENT, flushPendingSave);
+    return () => window.removeEventListener(PAGEHIDE_EVENT, flushPendingSave);
+  }, [persist]);
+
+  // After a failed load the editor stays read-only; show this browser's last
+  // saved copy rather than a blank board when no peer has sent the doc.
+  const content =
+    loadError && !room.content ? (readCache()?.content ?? '') : room.content;
+
   return {
-    content: room.content,
+    content,
     setContent: room.setContent,
     isSaving,
     isLoading,
+    loadError,
+    retryLoad,
     lastSaved,
     undo: room.undo,
     redo: room.redo,

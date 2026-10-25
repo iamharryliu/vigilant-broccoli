@@ -54,6 +54,8 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { HTTP_METHOD, HTTP_HEADERS } from '@vigilant-broccoli/common-js';
@@ -62,6 +64,28 @@ interface TaskList {
   id: string;
   title: string;
 }
+
+const LIST_SORT_KEY = { NAME: 'name', COUNT: 'count' } as const;
+type ListSortKey = (typeof LIST_SORT_KEY)[keyof typeof LIST_SORT_KEY];
+
+interface ListSort {
+  key: ListSortKey;
+  ascending: boolean;
+}
+
+const sortTaskLists = (
+  lists: TaskList[],
+  sort: ListSort | null,
+  counts: Record<string, number>,
+): TaskList[] => {
+  if (!sort) return lists;
+  const direction = sort.ascending ? 1 : -1;
+  return [...lists].sort((a, b) =>
+    sort.key === LIST_SORT_KEY.NAME
+      ? direction * a.title.localeCompare(b.title)
+      : direction * ((counts[a.id] ?? 0) - (counts[b.id] ?? 0)),
+  );
+};
 
 interface Lane {
   id: string;
@@ -659,6 +683,10 @@ export const KanbanComponent = () => {
   const [showManageLists, setShowManageLists] = useState(false);
   const [editingListId, setEditingListId] = useState<string | null>(null);
   const [editingListName, setEditingListName] = useState('');
+  const [activeTaskCounts, setActiveTaskCounts] = useState<
+    Record<string, number>
+  >({});
+  const [listSort, setListSort] = useState<ListSort | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     if (typeof window === 'undefined') return true;
     const stored = localStorage.getItem(STORAGE_KEY_SIDEBAR_OPEN);
@@ -693,6 +721,26 @@ export const KanbanComponent = () => {
     };
     fetchTaskLists();
   }, [status]);
+
+  // Counting costs one Google Tasks call per list, so it runs only while the dialog is open.
+  useEffect(() => {
+    if (!showManageLists) return;
+
+    const fetchActiveTaskCounts = async () => {
+      try {
+        const response = await authFetch(
+          `${API_ENDPOINTS.TASKS_LISTS}?includeActiveCounts=true`,
+        );
+        const data = await response.json();
+        if (response.ok && data.activeTaskCounts) {
+          setActiveTaskCounts(data.activeTaskCounts);
+        }
+      } catch (err) {
+        console.error('Error fetching active task counts:', err);
+      }
+    };
+    fetchActiveTaskCounts();
+  }, [showManageLists]);
 
   const handleAddLane = useCallback(() => {
     if (selectedTaskListId && activeBoardId) {
@@ -1037,8 +1085,50 @@ export const KanbanComponent = () => {
                       <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
                         Manage Task Lists
                       </DialogTitle>
+                      {taskLists.length > 0 && (
+                        <div className="flex items-center gap-1 mb-2">
+                          <Text size="1" color="gray" className="mr-1">
+                            Sort by
+                          </Text>
+                          {[
+                            { key: LIST_SORT_KEY.NAME, label: 'Name' },
+                            { key: LIST_SORT_KEY.COUNT, label: 'Count' },
+                          ].map(({ key, label }) => {
+                            const isActive = listSort?.key === key;
+                            return (
+                              <Button
+                                key={key}
+                                size="sm"
+                                variant={isActive ? 'secondary' : 'ghost'}
+                                onClick={() =>
+                                  setListSort(prev =>
+                                    prev?.key === key
+                                      ? { key, ascending: !prev.ascending }
+                                      : {
+                                          key,
+                                          ascending: key === LIST_SORT_KEY.NAME,
+                                        },
+                                  )
+                                }
+                              >
+                                {label}
+                                {isActive &&
+                                  (listSort.ascending ? (
+                                    <ArrowUp size={12} />
+                                  ) : (
+                                    <ArrowDown size={12} />
+                                  ))}
+                              </Button>
+                            );
+                          })}
+                        </div>
+                      )}
                       <div className="flex flex-col gap-2">
-                        {taskLists.map(list => (
+                        {sortTaskLists(
+                          taskLists,
+                          listSort,
+                          activeTaskCounts,
+                        ).map(list => (
                           <div
                             className="flex justify-between items-center py-1 px-2 rounded hover:bg-gray-100 dark:hover:bg-gray-800"
                             key={list.id}
@@ -1073,6 +1163,15 @@ export const KanbanComponent = () => {
                                 }}
                               >
                                 {list.title}
+                              </Text>
+                            )}
+                            {list.id in activeTaskCounts && (
+                              <Text
+                                size="1"
+                                color="gray"
+                                className="mx-2 tabular-nums"
+                              >
+                                {activeTaskCounts[list.id]} active
                               </Text>
                             )}
                             <div className="flex gap-2">

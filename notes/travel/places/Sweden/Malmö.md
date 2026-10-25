@@ -27,11 +27,11 @@
 
 ### Transportation Services
 
-| Service                                            | Description | Extras                                                                                                                                                                                             |
-| -------------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [Skånetrafiken](https://www.skanetrafiken.se/)     |             | [Google Play Store](https://play.google.com/store/apps/details?id=se.skanetrafiken.washington&pcampaignid=web_share), [Apple Store](https://apps.apple.com/se/app/sk%C3%A5netrafiken/id1180539331) |
-| [Bike Share Malmo](https://www.malmobybike.se/en)  |             | [Pricing](https://www.malmobybike.se/en/subscriptions-and-rates), [Map](https://www.malmobybike.se/en/map)                                                                                         |
-| [Bike Share Lund](https://www.lundahoj.se/en/home) |             | [Pricing](https://www.lundahoj.se/en/offers/groups), [Map](https://www.lundahoj.se/en/mapping)                                                                                                     |
+| Service | Description | Extras |
+| --- | --- | --- |
+| [Skånetrafiken](https://www.skanetrafiken.se/) |  | [Google Play Store](https://play.google.com/store/apps/details?id=se.skanetrafiken.washington&pcampaignid=web_share), [Apple Store](https://apps.apple.com/se/app/sk%C3%A5netrafiken/id1180539331) |
+| [Bike Share Malmo](https://www.malmobybike.se/en) |  | [Pricing](https://www.malmobybike.se/en/subscriptions-and-rates), [Map](https://www.malmobybike.se/en/map) |
+| [Bike Share Lund](https://www.lundahoj.se/en/home) |  | [Pricing](https://www.lundahoj.se/en/offers/groups), [Map](https://www.lundahoj.se/en/mapping) |
 
 ### Library Services
 
@@ -59,12 +59,12 @@
 
 ### Coffee
 
-| Cafe                                                    | Description                                                         |
-| ------------------------------------------------------- | ------------------------------------------------------------------- |
+| Cafe | Description |
+| --- | --- |
 | [Lilla Kafferosteriet](https://lillakafferosteriet.se/) | Roastery and cafe in a courtyard off Baltzarsgatan in Gamla Väster. |
-| [Love Coffee Roasters](https://lovecoffee.se/)          | Local roaster with cafes around Malmö.                              |
-| [Solde Kafferosteri](https://solde.se/)                 | Specialty roaster with cafes at Davidshall and Västra Hamnen.       |
-| [Noir Kaffekultur](https://noirkaffekultur.se/)         | Specialty coffee bar in the city centre.                            |
+| [Love Coffee Roasters](https://lovecoffee.se/) | Local roaster with cafes around Malmö. |
+| [Solde Kafferosteri](https://solde.se/) | Specialty roaster with cafes at Davidshall and Västra Hamnen. |
+| [Noir Kaffekultur](https://noirkaffekultur.se/) | Specialty coffee bar in the city centre. |
 
 ## Stores
 
@@ -90,24 +90,24 @@
 
 ### Home
 
-| Store                                             | Description                                                                         |
-| ------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| [IKEA](https://www.ikea.com/se/sv/)               | Flat-pack furniture and home goods; the Malmö store is in Svågertorp.               |
-| [Clas Ohlson](https://www.clasohlson.com/se/)     | Hardware, electronics and household basics; small-format stores in the city centre. |
-| [Biltema](https://www.biltema.se/)                | Car parts, tools, and cheap home/garden goods.                                      |
-| [Jula](https://www.jula.se/)                      | Tools, hardware, and home improvement at discount prices.                           |
-| [Bauhaus](https://www.bauhaus.se/)                | Full-size builders merchant and DIY warehouse.                                      |
-| [Hornbach](https://www.hornbach.se/)              | DIY warehouse with a large timber and building-materials yard.                      |
-| [Byggmax](https://www.byggmax.se/)                | Drive-in lumber yard and building materials; no-frills pricing.                     |
-| [Beijer Byggmaterial](https://www.beijerbygg.se/) | Building materials aimed at trades, open to consumers.                              |
-| [Jem & Fix](https://www.jemfix.se/)               | Small-format DIY and hardware chain.                                                |
-| [Rusta](https://www.rusta.com/se/)                | Cheap homeware, storage, textiles, and seasonal goods.                              |
-| [Granit](https://www.granit.com/)                 | Minimalist storage and home organisation.                                           |
-| [Lagerhaus](https://www.lagerhaus.se/)            | Interior decor, kitchenware, and gifts.                                             |
-| [Åhléns](https://www.ahlens.se/)                  | Department store with a home and kitchen section.                                   |
-| [Designtorget](https://designtorget.se/)          | Swedish design objects and small homeware — see [Souvenirs/Gifts](#souvenirsgifts). |
-| [Plantagen](https://www.plantagen.se/)            | Plants, garden supplies, and pots.                                                  |
-| [Blomsterlandet](https://www.blomsterlandet.se/)  | Garden centre and plant nursery.                                                    |
+| Store | Description |
+| --- | --- |
+| [IKEA](https://www.ikea.com/se/sv/) | Flat-pack furniture and home goods; the Malmö store is in Svågertorp. |
+| [Clas Ohlson](https://www.clasohlson.com/se/) | Hardware, electronics and household basics; small-format stores in the city centre. |
+| [Biltema](https://www.biltema.se/) | Car parts, tools, and cheap home/garden goods. |
+| [Jula](https://www.jula.se/) | Tools, hardware, and home improvement at discount prices. |
+| [Bauhaus](https://www.bauhaus.se/) | Full-size builders merchant and DIY warehouse. |
+| [Hornbach](https://www.hornbach.se/) | DIY warehouse with a large timber and building-materials yard. |
+| [Byggmax](https://www.byggmax.se/) | Drive-in lumber yard and building materials; no-frills pricing. |
+| [Beijer Byggmaterial](https://www.beijerbygg.se/) | Building materials aimed at trades, open to consumers. |
+| [Jem & Fix](https://www.jemfix.se/) | Small-format DIY and hardware chain. |
+| [Rusta](https://www.rusta.com/se/) | Cheap homeware, storage, textiles, and seasonal goods. |
+| [Granit](https://www.granit.com/) | Minimalist storage and home organisation. |
+| [Lagerhaus](https://www.lagerhaus.se/) | Interior decor, kitchenware, and gifts. |
+| [Åhléns](https://www.ahlens.se/) | Department store with a home and kitchen section. |
+| [Designtorget](https://designtorget.se/) | Swedish design objects and small homeware — see [Souvenirs/Gifts](#souvenirsgifts). |
+| [Plantagen](https://www.plantagen.se/) | Plants, garden supplies, and pots. |
+| [Blomsterlandet](https://www.blomsterlandet.se/) | Garden centre and plant nursery. |
 
 ## Activities
 
@@ -161,32 +161,32 @@
 
 ## Entertainment
 
-| Venue                                          | Description                                                                              |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| [Tivoli Gardens](https://www.tivoli.dk/en)     | Historic amusement park in central Copenhagen, ~35 min over the Öresund bridge by train. |
-| [Liseberg](https://www.liseberg.com/)          | Sweden's largest amusement park, in Gothenburg — ~3 h by train from Malmö.               |
-| [Bakken](https://www.bakken.dk/)               | The world's oldest amusement park, in Klampenborg north of Copenhagen; free entry.       |
-| [Folkets Park](https://malmo.se/Folkets-Park)  | Malmö's old pleasure garden with a small funfair, mini golf, and open-air stages.        |
-| [Malmö Arena](https://www.malmoarena.com/)     | Large arena for concerts, hockey, and touring shows.                                     |
-| [Malmö Live](https://malmolive.se/program)     | Concert hall and congress centre.                                                        |
-| [Malmö Opera](https://www.malmoopera.se/)      | Opera and musical theatre.                                                               |
-| [Filmstaden Malmö](https://www.filmstaden.se/) | Main cinema chain in Sweden.                                                             |
-| [Panora](https://www.panora.se/)               | Independent arthouse cinema at Möllevången.                                              |
-| [Aq-va-kul](https://aqvakul.malmo.se/)         | Public swimming and water park.                                                          |
+| Venue | Description |
+| --- | --- |
+| [Tivoli Gardens](https://www.tivoli.dk/en) | Historic amusement park in central Copenhagen, ~35 min over the Öresund bridge by train. |
+| [Liseberg](https://www.liseberg.com/) | Sweden's largest amusement park, in Gothenburg — ~3 h by train from Malmö. |
+| [Bakken](https://www.bakken.dk/) | The world's oldest amusement park, in Klampenborg north of Copenhagen; free entry. |
+| [Folkets Park](https://malmo.se/Folkets-Park) | Malmö's old pleasure garden with a small funfair, mini golf, and open-air stages. |
+| [Malmö Arena](https://www.malmoarena.com/) | Large arena for concerts, hockey, and touring shows. |
+| [Malmö Live](https://malmolive.se/program) | Concert hall and congress centre. |
+| [Malmö Opera](https://www.malmoopera.se/) | Opera and musical theatre. |
+| [Filmstaden Malmö](https://www.filmstaden.se/) | Main cinema chain in Sweden. |
+| [Panora](https://www.panora.se/) | Independent arthouse cinema at Möllevången. |
+| [Aq-va-kul](https://aqvakul.malmo.se/) | Public swimming and water park. |
 
 ## Tourist Attractions
 
-| Place                          | Type                                        | Open hours                             | Free visit times                                                      |
-| ------------------------------- | --------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------ |
-| Alnarpsparken Arboretum         | Arboretum / botanical park                    | Open 24h                                | Always free                                                              |
-| Katrinetorp Landeri             | Historic estate / gardens                     | Grounds approximately 08:00–20:00       | Grounds generally free; events may differ                               |
-| Malmö Castle                    | Castle / museum                               | Tue–Sun 11:00–17:00; Thu until 19:00    | Included with Malmö Museum ticket; ages 0–19 free                       |
-| Malmö Konsthall                 | Contemporary art gallery                      | Tue–Sun 11:00–17:00; Wed until 19:00    | Always free                                                              |
-| Malmö Konstmuseum               | Art museum                                    | Thu–Fri 10:00–17:00; Sat–Sun 10:00–16:00 | Always free at current Kungsparken location                             |
-| Malmö Museum                    | History / natural history / aquarium          | Tue–Sun 11:00–17:00; Thu until 19:00    | Ages 0–19 free                                                           |
-| Moderna Museet Malmö            | Modern art museum                             | Tue–Sun 11:00–17:00; Thu until 19:00    | Check current exhibition                                                 |
-| Slottsträdgården                | Garden / park                                 | Open year-round                          | Always free                                                              |
-| Teknikens och Sjöfartens hus     | Technology / maritime museum                  | Tue–Sun 11:00–17:00; Thu until 19:00    | Ages 0–19 free                                                           |
+| Place | Type | Open hours | Free visit times |
+| --- | --- | --- | --- |
+| Alnarpsparken Arboretum | Arboretum / botanical park | Open 24h | Always free |
+| Katrinetorp Landeri | Historic estate / gardens | Grounds approximately 08:00–20:00 | Grounds generally free; events may differ |
+| Malmö Castle | Castle / museum | Tue–Sun 11:00–17:00; Thu until 19:00 | Included with Malmö Museum ticket; ages 0–19 free |
+| Malmö Konsthall | Contemporary art gallery | Tue–Sun 11:00–17:00; Wed until 19:00 | Always free |
+| Malmö Konstmuseum | Art museum | Thu–Fri 10:00–17:00; Sat–Sun 10:00–16:00 | Always free at current Kungsparken location |
+| Malmö Museum | History / natural history / aquarium | Tue–Sun 11:00–17:00; Thu until 19:00 | Ages 0–19 free |
+| Moderna Museet Malmö | Modern art museum | Tue–Sun 11:00–17:00; Thu until 19:00 | Check current exhibition |
+| Slottsträdgården | Garden / park | Open year-round | Always free |
+| Teknikens och Sjöfartens hus | Technology / maritime museum | Tue–Sun 11:00–17:00; Thu until 19:00 | Ages 0–19 free |
 
 ## Events
 

@@ -56,12 +56,12 @@ Instructions:
 5. Add cream.
 6. Salt and pepper to taste.
 
-| Soup                  | Origin      | Broth                                                    | Taste Profile                             | Key Ingredients                                                                             |
-| --------------------- | ----------- | -------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------- |
-| **Canh Chua**         | Vietnam     | Clear fish or shrimp stock                               | Sour, lightly sweet, herbal               | Tamarind, pineapple, tomato, okra, bean sprouts, rice paddy herb, fish                      |
-| **Hot and Sour Soup** | China       | Chicken or pork stock, starch-thickened                  | Sour (vinegar), peppery, savoury          | Wood ear mushroom, tofu, bamboo shoots, egg ribbons, white pepper                           |
-| **Laksa**             | Malaysia    | Coconut milk and spiced shrimp broth                     | Rich, spicy, aromatic                     | Laksa paste, rice noodles, shrimp, tofu puffs, bean sprouts                                 |
-| **Pho**               | Vietnam     | Long-simmered beef bone broth                            | Savoury, warmly spiced, clean             | Charred ginger and onion, star anise, cinnamon, rice noodles, herbs                         |
-| **Sinigang**          | Philippines | Clear pork, beef or shrimp broth                         | Sour, savoury                             | Tamarind, tomato, radish, water spinach, taro                                               |
-| **Tom Kha Gai**       | Thailand    | Coconut milk and chicken stock                           | Creamy, mildly sour, fragrant, less spicy | Galangal, lemongrass, kaffir lime leaves, chicken, mushrooms                                |
-| **Tom Yum**           | Thailand    | Clear stock (or creamy with evaporated milk, "nam khon") | Hot, sour, salty, aromatic                | Lemongrass, galangal, kaffir lime leaves, Thai chilies, lime, fish sauce, shrimp, mushrooms |
+| Soup | Origin | Broth | Taste Profile | Key Ingredients |
+| --- | --- | --- | --- | --- |
+| **Canh Chua** | Vietnam | Clear fish or shrimp stock | Sour, lightly sweet, herbal | Tamarind, pineapple, tomato, okra, bean sprouts, rice paddy herb, fish |
+| **Hot and Sour Soup** | China | Chicken or pork stock, starch-thickened | Sour (vinegar), peppery, savoury | Wood ear mushroom, tofu, bamboo shoots, egg ribbons, white pepper |
+| **Laksa** | Malaysia | Coconut milk and spiced shrimp broth | Rich, spicy, aromatic | Laksa paste, rice noodles, shrimp, tofu puffs, bean sprouts |
+| **Pho** | Vietnam | Long-simmered beef bone broth | Savoury, warmly spiced, clean | Charred ginger and onion, star anise, cinnamon, rice noodles, herbs |
+| **Sinigang** | Philippines | Clear pork, beef or shrimp broth | Sour, savoury | Tamarind, tomato, radish, water spinach, taro |
+| **Tom Kha Gai** | Thailand | Coconut milk and chicken stock | Creamy, mildly sour, fragrant, less spicy | Galangal, lemongrass, kaffir lime leaves, chicken, mushrooms |
+| **Tom Yum** | Thailand | Clear stock (or creamy with evaporated milk, "nam khon") | Hot, sour, salty, aromatic | Lemongrass, galangal, kaffir lime leaves, Thai chilies, lime, fish sauce, shrimp, mushrooms |

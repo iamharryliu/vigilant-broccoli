@@ -81,13 +81,13 @@ Social/
 
 ## 4. Important Distinctions
 
-| Term                    | Meaning                                                                                |
-| ----------------------- | -------------------------------------------------------------------------------------- |
-| Albums                  | Use for events and meaningful collections, not every possible category.                |
-| Favorites               | Photos you personally want to remember.                                                |
-| Originals               | Preserve separately; don't overwrite them with edits.                                  |
-| Social media candidates | Photos you might want to publish.                                                      |
-| Social media exports    | Store edited versions with their corresponding post, cropped per platform when needed. |
+| Term | Meaning |
+| --- | --- |
+| Albums | Use for events and meaningful collections, not every possible category. |
+| Favorites | Photos you personally want to remember. |
+| Originals | Preserve separately; don't overwrite them with edits. |
+| Social media candidates | Photos you might want to publish. |
+| Social media exports | Store edited versions with their corresponding post, cropped per platform when needed. |
 
 ## 5. Recommended Approach
 

@@ -19,6 +19,7 @@ export type { RepoLinkBase } from './lib/note-links';
 export * from './lib/CRUDListManagement';
 export * from './lib/Sidebar';
 export * from './lib/useNotepad';
+export * from './lib/NotepadLoadError';
 export * from './lib/leaderboard';
 export * from './lib/live-location';
 export * from './lib/whiteboard';

@@ -4,15 +4,15 @@ The sandbox sidebar has one group per `@vigilant-broccoli` React lib, labelled w
 
 ## Groups
 
-| Group                    | Entries                                                                                                                                                                                                                                                                      |
-| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `react-lib`              | Foundational controls and surfaces: alert dialog, avatars, badge, buttons, card, checkbox, checklist, collapsible list, error handling, input, link card, notepad, scroll timeline, segmented control, select, status card list, switch, tabs, toaster, tooltip, typography. |
-| `react-lib-higher-level` | CRUD lists, leaderboards, quick links, tasks, docs explorer and Mobile Home.                                                                                                                                                                                                 |
-| `react-lib-calendar`     | Calendar list view and its loading skeleton, with sample events.                                                                                                                                                                                                             |
-| `react-lib-auth`         | Google sign-in page with a stubbed handler; `createSupabaseAuth` is never called.                                                                                                                                                                                            |
-| `react-lib-media`        | Audio button, GitHub Actions badges, image filmstrip and carousel dialog (local placeholder images).                                                                                                                                                                         |
-| `react-music-lib`        | Metronome.                                                                                                                                                                                                                                                                   |
-| `react-utility`          | Alarm, calculator, cooking conversions, currency converter, stopwatch, timer and weather clock card.                                                                                                                                                                         |
+| Group | Entries |
+| --- | --- |
+| `react-lib` | Foundational controls and surfaces: alert dialog, avatars, badge, buttons, card, checkbox, checklist, collapsible list, error handling, input, link card, notepad, scroll timeline, segmented control, select, status card list, switch, tabs, toaster, tooltip, typography. |
+| `react-lib-higher-level` | CRUD lists, leaderboards, quick links, tasks, docs explorer and Mobile Home. |
+| `react-lib-calendar` | Calendar list view and its loading skeleton, with sample events. |
+| `react-lib-auth` | Google sign-in page with a stubbed handler; `createSupabaseAuth` is never called. |
+| `react-lib-media` | Audio button, GitHub Actions badges, image filmstrip and carousel dialog (local placeholder images). |
+| `react-music-lib` | Metronome. |
+| `react-utility` | Alarm, calculator, cooking conversions, currency converter, stopwatch, timer and weather clock card. |
 
 ## Assignment rules
 

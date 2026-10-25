@@ -5,6 +5,8 @@ Shared real-time notes per home and board, with an AI document editing assistant
 ## Table of Contents
 
 - [Boards](#boards)
+- [Sync Safety](#sync-safety)
+- [Version History](#version-history)
 - [Markdown Preview](#markdown-preview)
 - [AI Edit](#ai-edit)
 - [Routes](#routes)
@@ -14,6 +16,32 @@ Shared real-time notes per home and board, with an AI document editing assistant
 - `WhiteboardEditor` is shared by the home page (`family`), food planner `KitchenNotes` (`kitchen`), activity planner `ActivityNotes` (`activity`) and the standalone whiteboard page
 - Each `homeId` + `boardKey` pair is a separate document, synced through `useWhiteboard` (Supabase broadcast room, debounced autosave, undo/redo)
 - `WhiteboardEditor` flex-fills its flex-column parent. Hosts size it with `FULL_HEIGHT_PAGE_CLASS` or `PAGE_BODY_HEIGHT_CLASS` (`src/lib/page-layout.ts`), which are based on `--page-h`: the visible viewport minus the topbar and the bottom safe area. `AppLayout`'s `useVisualViewportHeight` sets that viewport height from `window.visualViewport`, so the inline editor and preview shrink above the on-screen keyboard (falling back to `100dvh`). While the keyboard is open and the page fits the visible height, it also resets the scroll iOS applies to reveal the caret, which would otherwise leave the shrunk board above the visible area, and centers the focused textarea's caret line (`src/lib/center-textarea-caret.ts`) so a tapped spot stays visible as the board shrinks. Below `lg`, the activity planner's stacked notes take one page-body height
+
+## Sync Safety
+
+- Undo/redo only covers this client's own typing and applied AI edits. The loaded snapshot and 409 conflict snapshots are applied with `replaceContent` (a non-tracked Yjs origin), so undo in a fresh tab cannot delete the seeded document
+- `isLoading` stays true until `GET /api/whiteboard` succeeds; a failed load sets `loadError`, keeps the editor disabled (showing this browser's cached copy, if any) and shows a Retry button that calls `retryLoad`. Nothing is saved before a successful load
+- Autosave only runs when the text differs from the last saved or loaded snapshot, so re-renders and token refreshes never re-save. A save still waiting on the autosave debounce is sent on `pagehide` with `fetch` `keepalive`, so closing the tab right after an edit keeps it. An empty board is saved, with `allowEmpty: true`, only when an edit emptied it: this client's typing or undo/redo, or a peer's update. Any loaded client can therefore save a clear, so it persists even if the clearing device closes first. An empty doc from a replaced snapshot or a rebuilt room is never saved. vb-manager-next's `/api/notepad` (web and mobile) applies the same empty-write rule
+- `SyncedTextEditor` keeps the focused textarea's selection and scroll position when the text changes from elsewhere (a peer, conflict merge, undo or AI edit), shifting the caret by the length of an edit made before it
+
+## Version History
+
+- `whiteboard_history` (`home_id`, `board_key`, `content`, `created_at`) receives the previous non-empty `content` from an `AFTER UPDATE` trigger on `whiteboards` whenever the content changes, keeping the 50 newest rows per board. Home members can read it; clients cannot write it
+- There is no UI. To recover a board, find the version in the Supabase SQL editor and copy it back; the restore itself is recorded as history:
+
+```sql
+select id, created_at, left(content, 80)
+from whiteboard_history
+where home_id = 2 and board_key = 'kitchen'
+order by id desc;
+
+update whiteboards
+set content = (select content from whiteboard_history where id = <id>),
+    updated_at = now()
+where home_id = 2 and board_key = 'kitchen';
+```
+
+- Open tabs keep their live document, so reload them after a restore; otherwise their next save gets a 409 and they adopt the restored text
 
 ## Markdown Preview
 
@@ -30,4 +58,6 @@ Shared real-time notes per home and board, with an AI document editing assistant
 
 ## Routes
 
+- `GET /api/whiteboard?homeId=&boardKey=` — returns `{ content, homeId, boardKey, updatedAt }` (`updatedAt` is `null` when the board has no row yet)
+- `POST /api/whiteboard?homeId=&boardKey=` — body `{ content, baseUpdatedAt, allowEmpty }`; updates only when `baseUpdatedAt` matches the row, otherwise returns `409` with the current row. An empty `content` is refused with `409` when the row has text unless both `allowEmpty` and `baseUpdatedAt` are sent
 - `POST /api/whiteboard/assistant` — body `{ homeId, boardKey, document, messages }`; requires a bearer token and an accepted membership of the home (`401`/`403` otherwise); returns `{ reply, updatedDocument }` where `updatedDocument` is `null` when no edit is proposed; `502` when the LLM gateway is unavailable. Uses the vb-express LLM gateway like `/api/food-planner/chat`, which is unchanged

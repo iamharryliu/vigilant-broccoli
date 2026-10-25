@@ -54,7 +54,6 @@ const FETCH_ERROR = 'Failed to fetch calendars';
 const CREATE_ERROR = 'Failed to create calendar';
 const UPDATE_ERROR = 'Failed to update calendar';
 const DELETE_ERROR = 'Failed to delete calendar';
-const LOADING_MESSAGE = 'Loading…';
 const EMPTY_MESSAGE = 'No event calendars yet.';
 const SYNC_ERROR = 'Failed to start sync';
 const UNTRACKED_FETCH_ERROR = 'Failed to load untracked calendars';
@@ -764,7 +763,7 @@ export const EventCalendarsComponent = () => {
           ...LIST_COPY,
           LIST: {
             ...LIST_COPY.LIST,
-            EMPTY_MESSAGE: loading ? LOADING_MESSAGE : EMPTY_MESSAGE,
+            EMPTY_MESSAGE: loading ? '' : EMPTY_MESSAGE,
           },
         }}
         isCards

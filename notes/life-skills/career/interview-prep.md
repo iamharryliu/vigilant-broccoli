@@ -17,17 +17,17 @@
 
 ## Ask Yourself
 
-| Factor              | Category   | Ask Yourself                                                                                          |
-| ------------------- | ---------- | ----------------------------------------------------------------------------------------------------- |
-| Product quality     | Delivery   | Is the product reliable, useful, and something you would be proud to work on?                         |
-| Project opportunity | Delivery   | Is the project greenfield or brownfield? Will you have opportunities to make architectural decisions? |
-| Autonomy            | Management | Will you be trusted to make decisions and choose how to approach your work without micromanagement?   |
-| Management          | Management | Does management set clear expectations, provide support, and communicate openly?                      |
-| Work arrangement    | Management | Does the role offer flexible hybrid or remote work?                                                   |
-| Work-life balance   | Management | Are the working hours, workload, and expectations compatible with the life you want?                  |
-| Team                | People     | Is the team collaborative and supportive, with people you can learn from and work well with?          |
-| Company security    | Stability  | Is the company financially stable, growing sustainably, and well positioned for the future?           |
-| Role security       | Stability  | How secure is the role given the company's financial health, priorities, and potential restructuring? |
+| Factor | Category | Ask Yourself |
+| --- | --- | --- |
+| Product quality | Delivery | Is the product reliable, useful, and something you would be proud to work on? |
+| Project opportunity | Delivery | Is the project greenfield or brownfield? Will you have opportunities to make architectural decisions? |
+| Autonomy | Management | Will you be trusted to make decisions and choose how to approach your work without micromanagement? |
+| Management | Management | Does management set clear expectations, provide support, and communicate openly? |
+| Work arrangement | Management | Does the role offer flexible hybrid or remote work? |
+| Work-life balance | Management | Are the working hours, workload, and expectations compatible with the life you want? |
+| Team | People | Is the team collaborative and supportive, with people you can learn from and work well with? |
+| Company security | Stability | Is the company financially stable, growing sustainably, and well positioned for the future? |
+| Role security | Stability | How secure is the role given the company's financial health, priorities, and potential restructuring? |
 
 ## What I Care About
 
@@ -51,28 +51,28 @@
 
 ## Tell Me About Yourself
 
-| Theme         | What to Present                                            | Talking Points                                                              |
-| ------------- | ---------------------------------------------------------- | --------------------------------------------------------------------------- |
-| Collaboration | You work well with engineers, designers and stakeholders.  | Pairing, code reviews, clear communication and early alignment.             |
-| Culture       | You build community and share knowledge.                   | Mentoring, onboarding newcomers, documenting, demos and internal talks.     |
-| Delivery      | You take work from idea to production and keep it running. | Shipping end to end, owning deployment and operating what you build.        |
-| Growth        | You learn quickly and keep widening your range.            | Picking up new tools, working across the stack and acting on feedback.      |
-| Impact        | Your work saves time and moves a business metric.          | Automating manual work, improving performance and tying work to outcomes.   |
-| Ownership     | You take responsibility for outcomes, not only tasks.      | Driving requirements, making decisions and following through after release. |
-| Reliability   | You build things that stay up and can be recovered.        | Monitoring, alerting, backups, testing and calm incident handling.          |
+| Theme | What to Present | Talking Points |
+| --- | --- | --- |
+| Collaboration | You work well with engineers, designers and stakeholders. | Pairing, code reviews, clear communication and early alignment. |
+| Culture | You build community and share knowledge. | Mentoring, onboarding newcomers, documenting, demos and internal talks. |
+| Delivery | You take work from idea to production and keep it running. | Shipping end to end, owning deployment and operating what you build. |
+| Growth | You learn quickly and keep widening your range. | Picking up new tools, working across the stack and acting on feedback. |
+| Impact | Your work saves time and moves a business metric. | Automating manual work, improving performance and tying work to outcomes. |
+| Ownership | You take responsibility for outcomes, not only tasks. | Driving requirements, making decisions and following through after release. |
+| Reliability | You build things that stay up and can be recovered. | Monitoring, alerting, backups, testing and calm incident handling. |
 
 ## Questions
 
-| Type                                      | Purpose                                                        |
-| ----------------------------------------- | -------------------------------------------------------------- |
-| [Opening](#opening-questions)             | Why the role exists, to start the conversation.                |
-| [Product](#product-questions)             | The product, its tech stack, engineering practices and debt.   |
-| [Team](#team-questions)                   | Who you work with, how they operate and onboarding.            |
-| [Performance](#performance-questions)     | What success looks like and how it is measured.                |
-| [Culture](#culture-questions)             | How the company works day to day and how people are supported. |
-| [Stability](#stability-questions)         | Company risks and long-term outlook.                           |
-| [Interview End](#interview-end-questions) | Closing the interview and learning what happens next.          |
-| [Negotiation](#negotiation-questions)     | Pay, perks and tools once an offer is likely.                  |
+| Type | Purpose |
+| --- | --- |
+| [Opening](#opening-questions) | Why the role exists, to start the conversation. |
+| [Product](#product-questions) | The product, its tech stack, engineering practices and debt. |
+| [Team](#team-questions) | Who you work with, how they operate and onboarding. |
+| [Performance](#performance-questions) | What success looks like and how it is measured. |
+| [Culture](#culture-questions) | How the company works day to day and how people are supported. |
+| [Stability](#stability-questions) | Company risks and long-term outlook. |
+| [Interview End](#interview-end-questions) | Closing the interview and learning what happens next. |
+| [Negotiation](#negotiation-questions) | Pay, perks and tools once an offer is likely. |
 
 ### Opening Questions
 

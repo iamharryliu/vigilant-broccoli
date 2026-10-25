@@ -3,8 +3,6 @@ import { CTRL_SHORTCUT, applyModifiers, encodeKey } from './keys.js';
 const MESSAGE_TYPE = {
   INPUT: 'input',
   RESIZE: 'resize',
-  SCROLL: 'scroll',
-  COPY_MODE: 'copy-mode',
 };
 const BACKOFF = { INITIAL_MS: 500, MAX_MS: 10_000, FACTOR: 2 };
 // Failed handshakes without ever connecting usually mean the Access session
@@ -54,51 +52,6 @@ const sendInput = data => send({ type: MESSAGE_TYPE.INPUT, data });
 const sendResize = () =>
   send({ type: MESSAGE_TYPE.RESIZE, cols: term.cols, rows: term.rows });
 
-// Swipes become tmux scroll commands (see server.mjs); a finger moving down
-// reveals older output. Taps are left alone so they still focus the terminal.
-const terminalElement = document.getElementById('terminal');
-let touchY = null;
-let pendingLines = 0;
-let scrollFrame = null;
-
-const lineHeight = () =>
-  (term.element.querySelector('.xterm-screen')?.clientHeight ?? 0) /
-    term.rows || 16;
-
-const flushScroll = () => {
-  scrollFrame = null;
-  const lines = Math.trunc(pendingLines);
-  if (lines === 0) return;
-  pendingLines -= lines;
-  send({ type: MESSAGE_TYPE.SCROLL, lines });
-};
-
-terminalElement.addEventListener(
-  'touchstart',
-  event => {
-    touchY = event.touches.length === 1 ? event.touches[0].clientY : null;
-    pendingLines = 0;
-  },
-  { passive: true },
-);
-
-terminalElement.addEventListener(
-  'touchmove',
-  event => {
-    if (touchY === null || event.touches.length !== 1) return;
-    event.preventDefault();
-    const { clientY } = event.touches[0];
-    pendingLines += (clientY - touchY) / lineHeight();
-    touchY = clientY;
-    scrollFrame ??= requestAnimationFrame(flushScroll);
-  },
-  { capture: true, passive: false },
-);
-
-terminalElement.addEventListener('touchend', () => {
-  touchY = null;
-});
-
 const fitTerminal = () => {
   fit.fit();
   sendResize();
@@ -131,8 +84,6 @@ toolbar.addEventListener('click', async event => {
   } else if (ctrl) {
     sendInput(CTRL_SHORTCUT[ctrl.toUpperCase()]);
     clearModifiers();
-  } else if (action === 'scroll') {
-    send({ type: MESSAGE_TYPE.COPY_MODE });
   } else if (action === 'paste') {
     try {
       term.paste(await navigator.clipboard.readText());

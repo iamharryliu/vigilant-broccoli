@@ -19,16 +19,16 @@ Bean-->RM[Roast Method]-->BM[Brew Method]-->Coffee
 
 ## Parameters
 
-| Parameter               | **Lower Value Effect**                         | **Higher Value Effect**                             |
-| ----------------------- | ---------------------------------------------- | --------------------------------------------------- |
-| **Grind Size**          | Coarser grind → weaker, sour, under-extracted  | Finer grind → stronger, more bitter, over-extracted |
-| **Brew Time**           | Shorter time → sour, thin, under-extracted     | Longer time → bitter, heavy body, over-extracted    |
-| **Water Temp**          | Cooler (<90°C / 195°F) → sour, under-extracted | Hotter (>96°C / 205°F) → bitter, burnt taste        |
-| **Coffee Dose**         | Less coffee → weaker, thinner body             | More coffee → stronger, heavier, bolder taste       |
-| **Water Ratio**         | More water → diluted, weak                     | Less water → concentrated, intense                  |
-| **Pressure (Espresso)** | Lower pressure → sour, weak shot               | Higher pressure → more body, bitterness             |
-| **Roast Level**         | Light roast → acidic, fruity, floral           | Dark roast → bold, bitter, smoky                    |
-| **Brew Method**         | Filter (pour-over) → clean, bright, lighter    | Immersion (French press) → fuller body, oils        |
+| Parameter | **Lower Value Effect** | **Higher Value Effect** |
+| --- | --- | --- |
+| **Grind Size** | Coarser grind → weaker, sour, under-extracted | Finer grind → stronger, more bitter, over-extracted |
+| **Brew Time** | Shorter time → sour, thin, under-extracted | Longer time → bitter, heavy body, over-extracted |
+| **Water Temp** | Cooler (<90°C / 195°F) → sour, under-extracted | Hotter (>96°C / 205°F) → bitter, burnt taste |
+| **Coffee Dose** | Less coffee → weaker, thinner body | More coffee → stronger, heavier, bolder taste |
+| **Water Ratio** | More water → diluted, weak | Less water → concentrated, intense |
+| **Pressure (Espresso)** | Lower pressure → sour, weak shot | Higher pressure → more body, bitterness |
+| **Roast Level** | Light roast → acidic, fruity, floral | Dark roast → bold, bitter, smoky |
+| **Brew Method** | Filter (pour-over) → clean, bright, lighter | Immersion (French press) → fuller body, oils |
 
 ## Brewing Methods
 

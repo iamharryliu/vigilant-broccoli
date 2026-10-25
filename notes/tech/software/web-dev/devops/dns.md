@@ -7,13 +7,13 @@
 
 ## Record Types
 
-| Record | Name           | Purpose                                                                                                                   |
-| ------ | -------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| A      | Address        | Maps a domain to an IPv4 address.                                                                                         |
-| AAAA   | IPv6 Address   | Maps a domain to an IPv6 address.                                                                                         |
-| CNAME  | Canonical Name | Aliases one domain to another domain.                                                                                     |
-| MX     | Mail Exchange  | Specifies the mail server that receives mail on behalf of the domain.                                                     |
-| TXT    | Text           | Holds arbitrary text, such as SPF, DKIM and DMARC email-authentication policies and domain-ownership verification tokens. |
+| Record | Name | Purpose |
+| --- | --- | --- |
+| A | Address | Maps a domain to an IPv4 address. |
+| AAAA | IPv6 Address | Maps a domain to an IPv6 address. |
+| CNAME | Canonical Name | Aliases one domain to another domain. |
+| MX | Mail Exchange | Specifies the mail server that receives mail on behalf of the domain. |
+| TXT | Text | Holds arbitrary text, such as SPF, DKIM and DMARC email-authentication policies and domain-ownership verification tokens. |
 
 ## TTL
 

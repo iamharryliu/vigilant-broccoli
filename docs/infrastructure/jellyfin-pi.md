@@ -117,16 +117,16 @@ recorded rather than routed through Vault — so they are written down here to
 keep rebuilding independent of any one machine. The three real secrets — the
 Tailscale auth key, the SMB password and the Jellyfin API key — stay in Vault.
 
-| Value                 | Current                                                    | Where it goes           |
-| --------------------- | ---------------------------------------------------------- | ----------------------- |
-| Board                 | Raspberry Pi 3 Model B+ Rev 1.3, Debian 13 trixie arm64    | —                       |
-| `ansible_host`        | `192.168.0.11` (DHCP lease)                                | `inventory/hosts.yml`   |
-| `ansible_user`        | `hliu`                                                     | `inventory/hosts.yml`   |
-| Ethernet MAC          | `b8:27:eb:23:4d:e0`                                        | router DHCP reservation |
-| Boot device           | 128GB microSD, ext4, holding OS + config + cache + library | —                       |
-| `media_library_dir`   | `/srv/media/library` (the committed default)               | `group_vars/`           |
-| `pi_timezone`         | `Europe/Stockholm`                                         | `host_vars/`            |
-| `ssh_authorized_keys` | the operator's `id_ed25519.pub`                            | `host_vars/`            |
+| Value | Current | Where it goes |
+| --- | --- | --- |
+| Board | Raspberry Pi 3 Model B+ Rev 1.3, Debian 13 trixie arm64 | — |
+| `ansible_host` | `192.168.0.11` (DHCP lease) | `inventory/hosts.yml` |
+| `ansible_user` | `hliu` | `inventory/hosts.yml` |
+| Ethernet MAC | `b8:27:eb:23:4d:e0` | router DHCP reservation |
+| Boot device | 128GB microSD, ext4, holding OS + config + cache + library | — |
+| `media_library_dir` | `/srv/media/library` (the committed default) | `group_vars/` |
+| `pi_timezone` | `Europe/Stockholm` | `host_vars/` |
+| `ssh_authorized_keys` | the operator's `id_ed25519.pub` | `host_vars/` |
 
 The address is a DHCP lease and every client hardcodes it, so **reserve it on
 the router against the MAC above**. Without that, the lease eventually moves
@@ -140,13 +140,13 @@ below is in Git: media files and Jellyfin's runtime state are gitignored in
 and the repo carries only the playbook, the compose file and the `.example`
 inventory.
 
-| Path on the Pi                     | Contents                                                                 |
-| ---------------------------------- | ------------------------------------------------------------------------ |
-| `/opt/jellyfin/docker-compose.yml` | Copy of the repo's compose file                                          |
-| `/opt/jellyfin/.env`               | Rendered from `templates/jellyfin.env.j2` — uids, paths, timezone, URL   |
-| `/opt/jellyfin/config`             | Jellyfin config, users, library database, metadata (container `/config`) |
-| `/var/cache/jellyfin`              | Transcode and image cache (container `/cache`) — disposable              |
-| `/srv/media/library`               | The media library, bind-mounted read-only into the container at `/media` |
+| Path on the Pi | Contents |
+| --- | --- |
+| `/opt/jellyfin/docker-compose.yml` | Copy of the repo's compose file |
+| `/opt/jellyfin/.env` | Rendered from `templates/jellyfin.env.j2` — uids, paths, timezone, URL |
+| `/opt/jellyfin/config` | Jellyfin config, users, library database, metadata (container `/config`) |
+| `/var/cache/jellyfin` | Transcode and image cache (container `/cache`) — disposable |
+| `/srv/media/library` | The media library, bind-mounted read-only into the container at `/media` |
 
 The library is under `/srv` rather than `/mnt/media` deliberately. `/srv` is
 where Debian puts data a host serves, and `/mnt` is for mount points — so if a
@@ -170,18 +170,18 @@ Committed defaults live in
 [group_vars/jellyfin_pi.yml](../../infrastructure/jellyfin-pi/group_vars/jellyfin_pi.yml);
 everything host-specific is operator-supplied and gitignored.
 
-| Value                                  | Where it goes                            | Notes                                                                                       |
-| -------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `ansible_host`, `ansible_user`         | `inventory/hosts.yml`                    | The Pi's LAN address (or MagicDNS name after enrolment) and the admin account from flashing |
-| `media_library_dir`                    | `group_vars/jellyfin_pi.yml`             | `/srv/media/library` on the boot device; the container and the SMB share both resolve it    |
-| `ssh_authorized_keys`                  | `inventory/host_vars/<host>.yml`         | Required — the same run disables password authentication                                    |
-| `pi_timezone`                          | `inventory/host_vars/<host>.yml`         | Also becomes the container's `TZ`, which is what Jellyfin schedules tasks against           |
-| `jellyfin_uid` / `jellyfin_gid`        | `group_vars/jellyfin_pi.yml` (2000/2000) | Pinned, not system-assigned — they are baked into the library's file ownership              |
-| `tailnet_domain`, `tailscale_hostname` | `group_vars/jellyfin_pi.yml`             | Non-secret identifiers, hardcoded like the account/zone ids in `variables.tf`               |
-| `TAILSCALE_AUTH_KEY`                   | Vault `kv/data/secrets`                  | Never in the repo, never in the inventory                                                   |
-| `SAMBA_PASSWORD`                       | Vault `kv/data/secrets`                  | Login for the `jellyfin` SMB account; read only when the account does not exist yet         |
-| `JELLYFIN_API_KEY`                     | Vault `kv/data/secrets`                  | Minted in Dashboard → API Keys; used by `pnpm jellyfin:scan`, never by the playbook         |
-| `samba_*`                              | `group_vars/jellyfin_pi.yml`             | Share name, path, allowed networks, mDNS — all non-secret                                   |
+| Value | Where it goes | Notes |
+| --- | --- | --- |
+| `ansible_host`, `ansible_user` | `inventory/hosts.yml` | The Pi's LAN address (or MagicDNS name after enrolment) and the admin account from flashing |
+| `media_library_dir` | `group_vars/jellyfin_pi.yml` | `/srv/media/library` on the boot device; the container and the SMB share both resolve it |
+| `ssh_authorized_keys` | `inventory/host_vars/<host>.yml` | Required — the same run disables password authentication |
+| `pi_timezone` | `inventory/host_vars/<host>.yml` | Also becomes the container's `TZ`, which is what Jellyfin schedules tasks against |
+| `jellyfin_uid` / `jellyfin_gid` | `group_vars/jellyfin_pi.yml` (2000/2000) | Pinned, not system-assigned — they are baked into the library's file ownership |
+| `tailnet_domain`, `tailscale_hostname` | `group_vars/jellyfin_pi.yml` | Non-secret identifiers, hardcoded like the account/zone ids in `variables.tf` |
+| `TAILSCALE_AUTH_KEY` | Vault `kv/data/secrets` | Never in the repo, never in the inventory |
+| `SAMBA_PASSWORD` | Vault `kv/data/secrets` | Login for the `jellyfin` SMB account; read only when the account does not exist yet |
+| `JELLYFIN_API_KEY` | Vault `kv/data/secrets` | Minted in Dashboard → API Keys; used by `pnpm jellyfin:scan`, never by the playbook |
+| `samba_*` | `group_vars/jellyfin_pi.yml` | Share name, path, allowed networks, mDNS — all non-secret |
 
 Store `TAILSCALE_AUTH_KEY` the same way as every other Vault secret —
 `pnpm gcp:vm:vault:save-secrets-local`, add the key to
