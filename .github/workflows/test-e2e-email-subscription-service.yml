@@ -21,7 +21,7 @@ permissions:
   id-token: write
 
 env:
-  TEST_EMAIL: harryliu1995@gmail.com
+  TEST_EMAIL: delivered@resend.dev
   TEST_SUBSCRIPTION: ci-test
 
 jobs:
