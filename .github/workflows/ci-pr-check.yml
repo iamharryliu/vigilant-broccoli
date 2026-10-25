@@ -18,6 +18,10 @@ jobs:
     if: github.event.action != 'edited'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -35,6 +39,26 @@ jobs:
 
       - uses: ./.github/actions/setup-nx-workspace
         if: steps.check.outputs.nx-workspace-changed == 'true'
+
+      # Same project selection as deploy.yml's staging run, so the list matches
+      # what merging redeploys. Only agentic PRs get it; it never fails the job.
+      - name: Record redeploys in the PR body
+        if: startsWith(github.head_ref, 'agent/')
+        continue-on-error: true
+        working-directory: ./projects/nx-workspace
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          NX_WORKSPACE_CHANGED: ${{ steps.check.outputs.nx-workspace-changed }}
+        run: |
+          if git diff --name-only "$BASE_SHA" "${{ github.sha }}" | grep -qx '.github/workflows/deploy.yml'; then
+            export DEPLOY_ALL=true
+          elif [ "$NX_WORKSPACE_CHANGED" = true ]; then
+            DEPLOY_PROJECTS=$(pnpm exec nx show projects --affected --withTarget=deploy --base="$NX_BASE" --head="$NX_HEAD" --json | jq -r 'join(",")')
+            export DEPLOY_PROJECTS
+          fi
+          node ../../.github/scripts/pr-redeploy-section.mjs
 
       # pull_request runs this YAML from the PR branch, so it uses its own
       # narrow WIF provider/SA/Vault role instead of the shared ones — see

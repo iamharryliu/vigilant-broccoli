@@ -39,7 +39,7 @@ jobs:
 
       - name: Look up deployed PR
         id: pr
-        if: github.event.client_payload.commit_sha != ''
+        if: github.event.client_payload.conclusion != 'success' && github.event.client_payload.commit_sha != ''
         env:
           GH_TOKEN: ${{ github.token }}
           COMMIT_SHA: ${{ github.event.client_payload.commit_sha }}
@@ -53,12 +53,15 @@ jobs:
             } >> "$GITHUB_OUTPUT"
           fi
 
+      # Every outcome already goes to the socket server above; only failures are emailed.
       - name: Tunnel to email service
+        if: github.event.client_payload.conclusion != 'success'
         uses: ./.github/actions/fly-private-tunnel
         with:
           app: staging-vb-email-service
 
       - name: Notify deploy complete by email
+        if: github.event.client_payload.conclusion != 'success'
         env:
           SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
           DEPLOY_CONCLUSION: ${{ github.event.client_payload.conclusion }}
