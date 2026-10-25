@@ -75,9 +75,12 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `ANTHROPIC_API_KEY` | Vault `kv/data/secrets` → Fly | Claude API key for `llm-service`. |
 | `BITWARDEN_PASSWORD` | GCP Secret Manager (Tier 0) | Unlocks the Bitwarden vault holding the Vault secrets backup. |
 | `CLAUDE_CODE_OAUTH_TOKEN` | Vault `kv/data/secrets` | Long-lived `claude setup-token` login for agent containers and the code-server VM. |
+| `CLOUDFLARE_ACCOUNT_ID` | Vault `kv/data/secrets` | Cloudflare account id for Pages deploys and preview cleanup; `deploy-demo-apps` and `manual-deploy-app` also export it as `CLOUDFLARE_ID`. |
 | `CLOUDFLARE_API_TOKEN` | Vault `kv/data/secrets`; Bitwarden backup (local Terraform env) | Cloudflare provider token for Terraform. |
 | `CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS` | Vault `kv/data/secrets`, mirrored to `kv/data/deploy-preview` | Publishes Cloudflare Pages deploys, including PR previews. Account-level `Pages:Edit`. |
 | `CLOUDFLARE_R2_ACCESS_KEY_ID` / `CLOUDFLARE_R2_SECRET_ACCESS_KEY` | Vault `kv/data/secrets` → Fly | R2 object storage credentials for `bucket-service` and deploy scripts. |
+| `CODE_SERVER_CF_ACCESS_CLIENT_ID` / `CODE_SERVER_CF_ACCESS_CLIENT_SECRET` | Vault `kv/data/secrets` (synced by `tf:post-apply`) | Cloudflare Access service token that `ci-health-check` presents to reach the code-server hostname. |
+| `CODE_SERVER_VM_IP` | Vault `kv/data/secrets` (synced by `tf:post-apply`) | Origin IP of the code-server VM; SSH target for `manual-refresh-code-server-github-token` and origin-bypass check in `test-security-cloudflare-access`. |
 | `DEEPSEEK_API_KEY` | Vault `kv/data/secrets` → Fly | DeepSeek API key for `llm-service`. |
 | `DOCKERHUB_TOKEN` | Vault `kv/data/secrets` | Pushes images to Docker Hub from CI. |
 | `ELEVENLABS_API_KEY` | Vault `kv/data/secrets` → Fly | ElevenLabs text-to-speech for `vb-express`. |
@@ -85,21 +88,26 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `FLY_LOG_SHIPPER_ACCESS_TOKEN` | Vault `kv/data/secrets` → Fly (`ACCESS_TOKEN`) | Read-only Fly org token; `vb-log-shipper` subscribes to the org NATS log stream. |
 | `GCP_SERVICE_ACCOUNT` / `GCP_WORKLOAD_IDENTITY_PROVIDER` | GitHub Actions repo secrets (Terraform-managed) | Workload Identity Federation bootstrap: how CI authenticates to GCP and then reaches Vault. |
 | `GEMINI_API_KEY` | Vault `kv/data/secrets` → Fly | Gemini API key for `llm-service`. |
+| `GITEA_CF_ACCESS_CLIENT_ID` / `GITEA_CF_ACCESS_CLIENT_SECRET` | Vault `kv/data/secrets` (synced by `tf:post-apply`) | Cloudflare Access service token that `ci-health-check` and `test-smoke-api-keys` present to reach the Gitea hostname. |
 | `GITEA_TOKEN` | Vault `kv/data/secrets` | Gitea API access. |
+| `GITEA_VM_IP` | Vault `kv/data/secrets` (synced by `tf:post-apply`) | Origin IP of the Gitea VM; SSH target for the `cron-backup` Gitea dump and origin-bypass check in `test-security-cloudflare-access`. |
 | `GOOGLE_AUTH_PROVIDER_CLIENT_SECRET` | Vault `kv/data/secrets` → Fly; Terraform as `TF_VAR_supabase_google_client_secret` | Google OAuth client secret for sign-in (`vb-express`, Supabase auth). |
 | `GOOGLE_CALENDAR_SA_CREDENTIALS` | Vault `kv/data/secrets` | Base64 service-account key owning the scraped event calendars; used by `vb-manager-next`. |
 | `GOOGLE_GCS_SA_CREDENTIALS` | Vault `kv/data/secrets` → Fly | Service-account key for Google Cloud Storage in `bucket-service`. |
 | `GROK_API_KEY` | Vault `kv/data/secrets` → Fly | xAI Grok API key for `llm-service`. |
 | `LOKI_PUSH_PASSWORD` | Vault `kv/data/secrets` → Fly (`LOKI_PASSWORD`) | Terraform-minted basic-auth password for pushing logs to `loki.harryliu.dev`. |
 | `MONGODB_URI` | Vault `kv/data/secrets` | MongoDB connection string. |
+| `NPM_TOKEN` | Vault `kv/data/secrets` | npm automation token; `deploy.yml` exports it as `NODE_AUTH_TOKEN` to publish `@vigilant-broccoli/*` libs. |
 | `NX_CACHE_READ_TOKEN` | Vault `kv/data/ci-pr-check` | Read-only bearer token for the `nx-cache` Worker; used by `ci-pr-check.yml`. |
 | `NX_CACHE_WRITE_TOKEN` | Vault `kv/data/secrets` | Read/write bearer token for the `nx-cache` Worker; used by `deploy.yml`. |
 | `OCI_CONFIG` / `OCI_PRIVATE_KEY` | Vault `kv/data/secrets`; local `~/.oci` | Oracle Cloud API credentials for Terraform and VM management. |
 | `OCI_VM_SSH_KEY` | Vault `kv/data/secrets` | Terraform-minted base64 ed25519 SSH key for the socket-server and code-server VMs. |
 | `OFFICE_PRESENCE_INTERNAL_TOKEN` | Vault `kv/data/secrets` → Fly | Bearer token for `office-presence-service`'s `/internal/seed` and `/internal/reminders`; read by `cron-seed-office-presence-demo` through the Vault action, never a repo secret. |
 | `OPENAI_API_KEY` | Vault `kv/data/secrets` → Fly | OpenAI API key for `llm-service`. |
+| `OPENWEATHER_API_KEY` | Vault `kv/data/secrets` | OpenWeather API key for the weather snapshot in `test-e2e-weather`; also read by `vb-manager-next` locally. |
 | `PRODUCTION_PROMOTION_GH_APP_PRIVATE_KEY` | Vault `kv/production-promotion` | Private key of the `production-promotion` GitHub App; bypass actor that promotes `main` to `production`. |
 | `PROFILE_REPO_DEPLOY_KEY` | Vault `kv/data/secrets` | Deploy key for pushing to the GitHub profile repository. |
+| `RABBITMQ_CA_CERT` | Vault `kv/data/secrets` (synced by `tf:post-apply`) | Base64 CA certificate for TLS to the RabbitMQ broker; used by `ci-health-check` and `test-e2e-rabbitmq`. |
 | `RABBITMQ_CONNECTION_STRING` | Vault `kv/data/secrets` → Fly | RabbitMQ connection string for `email-service` and `email-subscription-service`. |
 | `RECAPTCHA_V3_SECRET_KEY` | Vault `kv/data/secrets` → Fly | Server-side reCAPTCHA v3 verification in `vb-express`. |
 | `RESEND_API_KEY` | Vault `kv/data/secrets` → Fly | Resend email API key for `email-service`. |
@@ -108,6 +116,7 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `SLACK_APP_TOKEN` | Vault `kv/data/secrets` (local/self-hosted) | Slack app-level token (`xapp-`) for Socket Mode; not used by the HTTP-mode demo service. |
 | `SLACK_BOT_TOKEN` | Vault `kv/data/secrets` → Fly | Slack bot token (`xoxb-`) for the Office Presence app, in both Socket and HTTP mode. |
 | `SLACK_SIGNING_SECRET` | Vault `kv/data/secrets` → Fly | Slack app signing secret; `office-presence-service` verifies every HTTP-mode request with it. |
+| `SOCKET_SERVER_URL` | Vault `kv/data/secrets` (synced by `tf:post-apply`) | Socket server URL that `deploy-notify` (via `notify-complete`) and `ci-health-check` post to. |
 | `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` | Vault `kv/data/secrets` (local-only) | Spotify API credentials for the `dldjmusic` script; never deployed to Fly. |
 | `SUPABASE_ACCESS_TOKEN` | Vault `kv/data/secrets`; Bitwarden backup (local Terraform env) | Supabase Management API token for the `supabase` Terraform provider. |
 | `SUPABASE_DB_PASSWORD` / `SUPABASE_SECRET_KEY` | Vault `kv/data/secrets` → Fly | Supabase database password and server-side secret key (`vb-express`, `email-subscription-service`). |
