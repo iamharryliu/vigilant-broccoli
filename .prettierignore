@@ -1,3 +1,0 @@
-# Prettier pads every Markdown table column to its widest cell, so one edited
-# TODO.md row re-pads the whole table and parallel agent PRs conflict on it.
-TODO.md
