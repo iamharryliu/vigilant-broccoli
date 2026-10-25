@@ -62,11 +62,13 @@ term.onData(data => {
   clearModifiers();
 });
 
+const DISMISS_KEYBOARD_KEYS = new Set(['pageUp', 'pageDown']);
 let terminalWasFocused = false;
 
 toolbar.addEventListener('pointerdown', event => {
   // Keeps focus (and the soft keyboard) on the terminal instead of the button.
   // Focus is only restored if it was there, so keys don't open a closed keyboard.
+  // PgUp/PgDn blur instead, dismissing the keyboard to give scrolling more rows.
   terminalWasFocused = document.activeElement === term.textarea;
   event.preventDefault();
 });
@@ -96,7 +98,8 @@ toolbar.addEventListener('click', async event => {
       if (text) term.paste(text);
     }
   }
-  if (terminalWasFocused) term.focus();
+  if (DISMISS_KEYBOARD_KEYS.has(key)) term.blur();
+  else if (terminalWasFocused) term.focus();
 });
 
 const showStatus = text => {
