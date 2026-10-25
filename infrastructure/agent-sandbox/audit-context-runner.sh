@@ -51,7 +51,15 @@ $NO_CHANGES_FIELD
 EOF
 )
 
-claude -p "$PROMPT" --dangerously-skip-permissions --model "$MODEL" \
+# Auto mode: its classifier blocks exfiltration, credential reads and running downloaded
+# code, which the egress firewall cannot stop because GitHub stays reachable and
+# GH_TOKEN is in the container environment. SOLVE_PERMISSION_MODE=bypass opts out.
+permission_args=(--permission-mode auto)
+if [ "${SOLVE_PERMISSION_MODE:-auto}" = bypass ]; then
+  permission_args=(--dangerously-skip-permissions)
+fi
+
+claude -p "$PROMPT" "${permission_args[@]}" --model "$MODEL" \
   --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
 
 normalize_meta "$META_FILE"

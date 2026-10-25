@@ -111,6 +111,7 @@ docker run --rm --init --name "vb-update-pr-$(date +%s)" \
   -e SANDBOX_FIX_CI \
   -e SANDBOX_ALLOWED_DOMAINS \
   -e SOLVE_MODEL="$MODEL" \
+  -e SOLVE_PERMISSION_MODE \
   "$IMAGE" \
   bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/update-pr-runner.sh" "$1" "$2"' _ "$PR" "$INSTRUCTION" \
   2>&1 | tee "$LOG_FILE" || STATUS="${PIPESTATUS[0]}"

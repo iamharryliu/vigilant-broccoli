@@ -207,8 +207,13 @@ $NO_CHANGES_FIELD
 EOF
 )
 
+permission_args=(--permission-mode auto)
+if [ "${SOLVE_PERMISSION_MODE:-auto}" = bypass ]; then
+  permission_args=(--dangerously-skip-permissions)
+fi
+
 agent_invoke() {
-  claude -p "$1" --dangerously-skip-permissions --model "$MODEL" \
+  claude -p "$1" "${permission_args[@]}" --model "$MODEL" \
     --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
 }
 
