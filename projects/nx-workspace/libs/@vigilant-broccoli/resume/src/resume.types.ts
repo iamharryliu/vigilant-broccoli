@@ -1,3 +1,5 @@
+export const RESUME_LOCATION = 'Malmö, Sweden';
+
 export interface ResumeLink {
   label: string;
   url: string;

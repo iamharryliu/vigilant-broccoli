@@ -1,0 +1,1 @@
+../../agent-skills/job-application/SKILL.md

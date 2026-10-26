@@ -16,6 +16,7 @@
   - [Capco — UI/UX Refresh — 2020-2023](#capco--uiux-refresh--2020-2023)
   - [Capco — Banking IVR System QA — 2019-2020](#capco--banking-ivr-system-qa--2019-2020)
 - [Languages](#languages)
+- [Education](#education)
 
 ## Skills
 
@@ -25,7 +26,9 @@
 | Accessibility (WCAG) | Capco |
 | Agentic AI development | Tillmobil; vigilant-broccoli |
 | Agile | Capco |
+| AI guardrails | vigilant-broccoli |
 | Angular | Capco |
+| Ansible | vigilant-broccoli |
 | Asynchronous development | Tillmobil; vigilant-broccoli |
 | Automated testing | Capco; ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
 | Automation | Capco; ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
@@ -62,7 +65,9 @@
 | Express | Capco; vigilant-broccoli |
 | Fastify | vigilant-broccoli |
 | Figma | Capco; Tillmobil |
+| Flask | Capco |
 | Fly.io | vigilant-broccoli |
+| Frontend performance optimization | Tillmobil |
 | GCP | ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
 | GCP Secret Manager | Tillmobil; vigilant-broccoli |
 | Git | Capco; ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
@@ -84,7 +89,7 @@
 | Lovable | Strandbadens Vägförening |
 | Management | Tillmobil |
 | Message-driven architecture | Tillmobil; vigilant-broccoli |
-| Microservices | ELVA11; vigilant-broccoli |
+| Microservices | Capco; ELVA11; vigilant-broccoli |
 | Migration / modernization | Capco; Tillmobil |
 | Mobile development | Capco; vigilant-broccoli |
 | MongoDB | vigilant-broccoli |
@@ -96,6 +101,7 @@
 | Nx | ELVA11; Tretton37; vigilant-broccoli |
 | Observability | ELVA11; Tillmobil; vigilant-broccoli |
 | OIDC / SSO authentication | ELVA11; Tillmobil |
+| OpenAPI / Swagger | vigilant-broccoli |
 | Pair programming | Capco; ELVA11; Tillmobil; Tretton37 |
 | Peer review | Capco; ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
 | Platform engineering | ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
@@ -105,7 +111,7 @@
 | Product engineering | ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
 | Product ownership | ELVA11; Tillmobil; Tretton37 |
 | Project management | Tillmobil |
-| Python | Capco; vigilant-broccoli |
+| Python | Capco; Tillmobil; vigilant-broccoli |
 | RabbitMQ | Tillmobil; vigilant-broccoli |
 | Radix UI | ELVA11; Tillmobil; vigilant-broccoli |
 | React | Capco; vigilant-broccoli |
@@ -143,7 +149,7 @@
 
 | Company | Role | Dates | Context |
 | --- | --- | --- | --- |
-| Capco | Banking Fullstack Developer; Backend Developer; Frontend Developer; Fullstack Developer; Software Engineer | September 2019 - July 2024 | Worked in Agile teams to define and implement user stories and tasks across client engagements; Used Java, Spring and Spring Boot to build backend service APIs; Maintained and migrated legacy Spring services with Express endpoints; Onboarded developers to projects; Viewed Figma design specifications for UI development |
+| Capco | Banking Fullstack Developer; Backend Developer; Frontend Developer; Fullstack Developer; Software Engineer | September 2019 - July 2024 | Worked in Agile teams to define and implement user stories and tasks across client engagements; Used Java, Spring and Spring Boot to build backend service APIs; Maintained and migrated legacy Spring services with Express endpoints; Onboarded developers to projects; Viewed Figma design specifications for UI development; Developed Python microservices with Flask for the bank |
 | ELVA11 | DevOps Engineer; Backend Developer; Cloud Engineer; Frontend Developer; Fullstack Developer; Platform Engineer; Software Engineer; Staff Engineer; UI/UX Designer | March 2025 - August 2026 | Designed and implemented internal services and self-hosted solutions supporting engineering and operational workflows; Built internal developer tools and reusable services to standardize workflows, automate tasks, and improve productivity; Developed internal AI tools and products, integrating LLMs and automated workflows into business and engineering use cases; Contributed to proprietary AI IP, exploring and productizing AI capabilities into reusable solutions and internal platforms; Deployed and operated on-premise and self-hosted services, handling configuration, networking, monitoring, and maintenance; Built and managed AWS resources (EC2, S3, IAM) to host internal services and support engineering workflows; Collaborated with engineering teams to turn infrastructure, tooling, and AI opportunities into maintainable solutions; Built microservices for internal applications and AI tools; Used health checks and email alerts for observability; Participated in technical knowledge-sharing initiatives such as Code With Me and Show and Tell; Promoted culture-building activities such as internal employee AMAs; Managed GCP resources; Separated the social media AI tool into local, staging and production environments and added cloud OIDC sign-in for CLI access to non-production environments |
 | Strandbadens Vägförening | Backend Developer; DevOps Engineer; Frontend Developer; Fullstack Developer; Software Engineer | 2025-2026 | Migrated the association's WordPress site to a headless setup, keeping WordPress as the CMS with a Lovable-built UI application; Connected the application to Resend for email handling, sending notification emails to subscribers; Managed WordPress hosting, form notifications and backups |
 | Tillmobil | Fullstack Developer; Backend Developer; Cloud Engineer; DevOps Engineer; Frontend Developer; Platform Engineer; Site Reliability Engineer; Software Engineer; Staff Engineer; UI/UX Designer | March 2025 - March 2026 | Adopted AI-driven development workflows with tools like Claude Code to accelerate feature delivery and code review; Managed cloud services on GCP with Terraform and CI/CD pipelines, including automated testing and monitoring; Onboarded developers to projects; Managed the team and project costs, coordinated client communications, tracked tasks and issues, and delegated work; Used health checks and email alerts for observability; Viewed Figma design specifications for UI development; Led the two production systems from architecture and development through deployment and day-to-day operation; Owned cloud infrastructure for the call analysis SaaS platform and trading card marketplace API using GCP and Terraform ; Communicated with the client on deliverables, building business requirements and preparing solutions for the client; Separated both production systems into local, staging and production environments and added cloud OIDC sign-in for CLI access to non-production environments |
@@ -171,11 +177,12 @@
 | Build TypeScript API backends | Backend Developer | Ran TypeScript Node.js backends for the API services. |
 | Containerize the local stack and agent environment | Platform Engineer | Ran Nginx, Grafana, Loki and Promtail in a local Docker Compose stack and packaged the agent development environment in Docker. |
 | Coordinate workspace builds with Nx | Platform Engineer | Used Nx for dependency-aware builds, cached tasks and affected-project CI. |
-| Deploy documented Fastify microservices | Backend Developer | Built Fastify microservices on Fly.io with Swagger docs |
-| Deploy independent API services | DevOps Engineer | Deployed five independent Fastify services (VB Express, LLM, bucket, email and email subscription) with staging/production Fly.io configs, shared plugins and Swagger docs describing routes, request/response shapes and authentication. |
+| Deploy documented Fastify microservices | Backend Developer | Built Fastify microservices on Fly.io with OpenAPI (Swagger) docs |
+| Deploy independent API services | DevOps Engineer | Deployed five independent Fastify services (VB Express, LLM, bucket, email and email subscription) with staging/production Fly.io configs, shared plugins and OpenAPI (Swagger) docs describing routes, request/response shapes and authentication. |
 | Deploy the document workspace | DevOps Engineer | Deployed Hearth to Vercel |
 | Design app UI and UX | Product Designer | Designed the interface and interaction patterns for the apps: semantic light/dark theming that follows the system theme, phone-first layouts and agendas in the mobile dashboard, and a shared component library with consistent dialog, form and navigation behavior. |
 | Detect infrastructure drift | Site Reliability Engineer | Ran a daily read-only Terraform plan that fails when configuration, state and real infrastructure disagree, using a least-privilege identity restricted to the workflow and reporting changed resources without exposing plan details. |
+| Guard autonomous agent runs | Platform Engineer | Constrained unattended Claude Code and Codex runs with an egress firewall allowlist, auto permission mode and runners that own Git and publishing so agents never push; runners cap and scope the files an agent may change, protect backlog, migration and state files, validate multi-PR plans, stop publishing at the first failure and fail a run that ends with no changes and no stated reason; publishing skills run only when explicitly invoked. |
 | Implement accessible UI primitives | Frontend Developer | Wrapped Radix UI accordion, dialog, select, popover, switch and other primitives, including keyboard and focus handling for accessibility (ARIA). |
 | Implement algorithm solutions | Software Engineer | Implemented Python algorithm solutions in Grind 75. |
 | Implement asynchronous email delivery | Backend Developer | Connected email-subscription-service to email-service over HTTP and separated HTTP enqueueing from asynchronous delivery through RabbitMQ consumers, using durable queues, persistent messages, publisher confirms, acknowledgements, bounded retries and dead-letter queues. |
@@ -202,6 +209,7 @@
 | Serve HTTP and real-time connections | Backend Developer | Ran Express HTTP handling with Socket.IO in socket-server-socketio. |
 | Share theme design tokens | Frontend Developer | Shared semantic light/dark design tokens for colors, radii and shadows through ThemeScope and a Tailwind preset, mapping tokens into utility classes for UI apps. |
 | Store documents and images | Backend Developer | Stored Hearth documents and images in R2. |
+| Validate AI-generated resume edits | Fullstack Developer | Built guardrails around the AI resume editor in vb-manager-next: a rule-based system prompt, mechanical checks that reject figures not found in the resume, career note or user messages, protected-field checks that block unrequested changes to links, employers, roles and dates, and a CLI check that renders the PDF and enforces the one-page limit. |
 | Verify Kanban API and UI flows | Software Engineer | Used Playwright for vb-manager-next Kanban API/UI scenarios. |
 | Verify RabbitMQ delivery over TLS | DevOps Engineer | Verified RabbitMQ publish/consume delivery over TLS in CI. |
 | Verify React utilities | Software Engineer | Wrote Vitest utility tests in jsdom with V8 coverage for react-lib, including commit-type parsing and edge cases. |
@@ -300,7 +308,8 @@
 | Manage secrets with GCP Secret Manager | Platform Engineer | Stored application secrets in GCP Secret Manager with per-environment configuration. |
 | Migrate CI to infrastructure as code | DevOps Engineer | Migrated the call center AI tool's CI pipelines to infrastructure as code. |
 | Monitor service health and alert on failures | Site Reliability Engineer | Monitored the production system with uptime checks, health checks and email alerts, watched GCP and GitHub Actions dashboards, and responded to incidents while operating it day to day after delivery. |
-| Optimize database queries | Backend Developer | Improved MySQL-backed recording and leaderboard queries in TypeScript repositories, addressed N+1 requests and join multiplication, and added database indexes. |
+| Optimize database queries | Backend Developer | Noticed slow page loads in production visually and diagnosed them in the browser dev tools network tab, then improved MySQL-backed recording and leaderboard queries in TypeScript repositories, addressed N+1 requests and join multiplication, and added database indexes; leaderboard dashboard load times dropped from over 2 seconds to about 200 ms. |
+| Optimize frontend performance | Frontend Developer | Improved the performance of the call center AI tool frontend with code splitting and lazy loading, memoization, reduced re-renders, list virtualization, image optimization, caching and debouncing of API calls, and bundle size reduction. |
 | Own end-to-end production delivery | Staff Engineer | Owned architecture, frontend, backend and cloud infrastructure from design through deployment and day-to-day operation of this production system. |
 | Process recorded calls through RabbitMQ | Backend Developer | Used RabbitMQ for processing recorded call center calls |
 | Provision GCP infrastructure with Terraform | Platform Engineer | Implemented Terraform-managed GCP resources for Cloud Run application and socket services, MySQL, Cloud Storage, Speech-to-Text, Pub/Sub and secrets. Set up DNS and communication between services with security in mind. |
@@ -353,3 +362,9 @@
 | Language | Proficiency |
 | --- | --- |
 | English | Fluent, both verbal and written (native) |
+
+## Education
+
+| Institution | Program | Dates |
+| --- | --- | --- |
+| Toronto Metropolitan University | Civil Engineering | 2013-2017 |
