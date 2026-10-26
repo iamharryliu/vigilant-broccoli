@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readdir, stat } from 'fs/promises';
-import { join } from 'path';
+import { readdir, rm, stat } from 'fs/promises';
+import { dirname, join, normalize } from 'path';
 import {
   FILE_ENTRY_KIND,
   FileEntry,
@@ -13,6 +13,7 @@ import {
 
 const HIDDEN_FILE_PREFIX = '.';
 const NOT_FOUND = 'ENOENT';
+const CURRENT_DIR = '.';
 
 export async function GET(req: NextRequest) {
   const relativePath = req.nextUrl.searchParams.get(PATH_PARAM) ?? '';
@@ -69,4 +70,31 @@ export async function GET(req: NextRequest) {
       { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
     );
   }
+}
+
+// Deletes one application folder with everything in it. Only a direct child
+// of the Job Applications folder qualifies, never the root itself or a file or
+// folder inside an application.
+export async function DELETE(req: NextRequest) {
+  const relativePath = req.nextUrl.searchParams.get(PATH_PARAM) ?? '';
+  const folder = resolveJobApplicationsPath(relativePath);
+  if (
+    !folder ||
+    !relativePath ||
+    dirname(normalize(relativePath)) !== CURRENT_DIR
+  ) {
+    return NextResponse.json(
+      { error: 'Invalid application folder' },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
+    );
+  }
+  const stats = await stat(folder).catch(() => null);
+  if (!stats?.isDirectory()) {
+    return NextResponse.json(
+      { error: 'Application not found' },
+      { status: HTTP_STATUS_CODES.INVALID_PATH },
+    );
+  }
+  await rm(folder, { recursive: true });
+  return NextResponse.json({ ok: true });
 }

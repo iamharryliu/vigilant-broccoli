@@ -9,7 +9,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@vigilant-broccoli/react-lib';
-import { buildBookmarklet } from '../utils/bookmarklet.utils';
+import {
+  buildBookmarklet,
+  readBookmarkletTarget,
+} from '../utils/bookmarklet.utils';
 import { useTranslation } from '../i18n';
 
 type JobApplicationHelpDialogProps = {
@@ -33,7 +36,7 @@ export const JobApplicationHelpDialog = ({
     const id = requestAnimationFrame(() =>
       bookmarkletRef.current?.setAttribute(
         'href',
-        buildBookmarklet(window.location.origin),
+        buildBookmarklet(readBookmarkletTarget()),
       ),
     );
     return () => cancelAnimationFrame(id);

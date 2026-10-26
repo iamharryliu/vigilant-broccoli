@@ -6,10 +6,16 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
+  type ReactNode,
 } from 'react';
-import { Copy, FileText, Mail, type LucideIcon } from 'lucide-react';
-import { FILE_ENTRY_KIND, FileEntry } from '@vigilant-broccoli/common-js';
+import { Copy, FileText, Mail, Trash2, type LucideIcon } from 'lucide-react';
+import {
+  FILE_ENTRY_KIND,
+  FileEntry,
+  HTTP_METHOD,
+} from '@vigilant-broccoli/common-js';
 import {
   Button,
   Dialog,
@@ -200,17 +206,21 @@ const ExpandedDetails = ({ item }: { item: ApplicationItem }) => {
   return (
     <div className="flex gap-4 border-t border-border pt-3">
       <div className="flex w-36 shrink-0 flex-col gap-1 sm:w-44">
-        {actionsFor(item).map(({ label, icon: Icon, onSelect }) => (
-          <Button
-            key={label}
-            variant="ghost"
-            className="justify-start"
-            onClick={() => onSelect()}
-          >
-            <Icon size={14} />
-            {label}
-          </Button>
-        ))}
+        {/* Actions that need a confirm step stay in the card's ellipsis menu,
+            which shows it; these buttons run on click. */}
+        {actionsFor(item)
+          .filter(action => !action.confirm)
+          .map(({ label, icon: Icon, onSelect }) => (
+            <Button
+              key={label}
+              variant="ghost"
+              className="justify-start"
+              onClick={() => onSelect()}
+            >
+              <Icon size={14} />
+              {label}
+            </Button>
+          ))}
       </div>
       {details ? (
         <div className="flex min-w-0 flex-1 flex-col gap-4">
@@ -223,12 +233,14 @@ const ExpandedDetails = ({ item }: { item: ApplicationItem }) => {
                 {t('APPLICATIONS.TAB_GAPS')}
               </TabsTrigger>
             </TabsList>
-            <TabsContent value={POSTING_TAB.TEXT} className="pt-3">
-              <DescriptionView description={details.description} />
-            </TabsContent>
-            <TabsContent value={POSTING_TAB.GAPS} className="pt-3">
-              <GapsList gaps={details.gaps} />
-            </TabsContent>
+            <AnimatedHeight>
+              <TabsContent value={POSTING_TAB.TEXT} className="pt-3">
+                <DescriptionView description={details.description} />
+              </TabsContent>
+              <TabsContent value={POSTING_TAB.GAPS} className="pt-3">
+                <GapsList gaps={details.gaps} />
+              </TabsContent>
+            </AnimatedHeight>
           </Tabs>
         </div>
       ) : (
@@ -236,6 +248,33 @@ const ExpandedDetails = ({ item }: { item: ApplicationItem }) => {
           {error || t('APPLICATIONS.LOADING')}
         </p>
       )}
+    </div>
+  );
+};
+
+// Switching between Posting and Gaps changes the card's height in one jump;
+// this eases the wrapper to the content's measured height instead. The first
+// measurement goes from `auto` to pixels, which does not animate.
+const AnimatedHeight = ({ children }: { children: ReactNode }) => {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState<number>();
+
+  useEffect(() => {
+    const content = contentRef.current;
+    if (!content) return;
+    const observer = new ResizeObserver(([entry]) =>
+      setHeight(entry.borderBoxSize[0].blockSize),
+    );
+    observer.observe(content);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      className="overflow-hidden transition-[height] duration-200 ease-in-out motion-reduce:transition-none"
+      style={{ height }}
+    >
+      <div ref={contentRef}>{children}</div>
     </div>
   );
 };
@@ -356,7 +395,34 @@ export const JobApplicationList = () => {
           true,
         ),
     },
+    {
+      label: t('APPLICATIONS.DELETE'),
+      icon: Trash2,
+      color: 'red',
+      onSelect: () => deleteApplication(item),
+      confirm: {
+        title: t('APPLICATIONS.DELETE_TITLE'),
+        description: t('APPLICATIONS.DELETE_DESCRIPTION', {
+          label: item.label,
+        }),
+        confirmLabel: t('APPLICATIONS.DELETE'),
+      },
+    },
   ];
+
+  const deleteApplication = async (item: ApplicationItem) => {
+    try {
+      const response = await fetch(
+        `${API_ENDPOINTS.JOB_APPLICATIONS}?path=${encodeURIComponent(item.id)}`,
+        { method: HTTP_METHOD.DELETE },
+      );
+      if (!response.ok) throw new Error((await response.json()).error);
+      setItems(previous => previous.filter(entry => entry.id !== item.id));
+      toast.success(t('APPLICATIONS.DELETED'));
+    } catch (error) {
+      toast.error(errorMessage(error, t('APPLICATIONS.DELETE_FAILED')));
+    }
+  };
 
   const copyCoverLetter = async (path: string) => {
     try {

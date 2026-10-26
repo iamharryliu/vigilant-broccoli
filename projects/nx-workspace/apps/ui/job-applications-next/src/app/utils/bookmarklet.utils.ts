@@ -45,11 +45,58 @@ export const isBookmarkletMessage = (
   data !== null &&
   (data as BookmarkletMessage).source === BOOKMARKLET_MESSAGE_SOURCE;
 
+export const BOOKMARKLET_PARAM = 'bookmarklet';
+const BOOKMARKLET_TARGET_KEY = 'job-applications-bookmarklet-target';
+
+const framingOrigin = () => {
+  const ancestor = window.location.ancestorOrigins?.[0];
+  if (ancestor) return ancestor;
+  try {
+    return new URL(document.referrer).origin;
+  } catch {
+    return '';
+  }
+};
+
+const isUrlOnOrigin = (url: string, origin: string) => {
+  try {
+    return new URL(url).origin === origin;
+  } catch {
+    return false;
+  }
+};
+
+// An embedding page (vb-manager-next's Job Hunt) passes its own URL in
+// `?bookmarklet=` so the bookmarklet opens it and the page relays the posting
+// into this frame. It is honoured only while framed by that same origin, so a
+// crafted link opened directly cannot point the bookmarklet at another site.
+// Links inside the app drop the param, so the accepted URL is kept for the
+// tab; call this once on load.
+export const readBookmarkletTarget = () => {
+  const own = `${window.location.origin}${ROOT_PATH}`;
+  if (window.parent === window) return own;
+  const requested = new URLSearchParams(window.location.search).get(
+    BOOKMARKLET_PARAM,
+  );
+  try {
+    if (requested && isUrlOnOrigin(requested, framingOrigin())) {
+      sessionStorage.setItem(BOOKMARKLET_TARGET_KEY, requested);
+    }
+    return sessionStorage.getItem(BOOKMARKLET_TARGET_KEY) ?? own;
+  } catch {
+    return requested && isUrlOnOrigin(requested, framingOrigin())
+      ? requested
+      : own;
+  }
+};
+
 // Runs on the job posting's page, so it cannot call the API (no bearer token,
-// and the page's CSP may block it). It opens this app first, inside the click,
-// so popup blockers allow it, then expands collapsed sections ("… more"),
-// which keep their text out of the page until opened. It posts the page until
-// the app acknowledges, since the new tab may still be loading or redirecting
-// to login.
-export const buildBookmarklet = (origin: string) =>
-  `javascript:(function(){var o=${escapeUnsafeJsChars(JSON.stringify(origin))};var w=window.open(o+'${ROOT_PATH}');document.querySelectorAll('[aria-expanded="false"]').forEach(function(b){if(${BOOKMARKLET_EXPANDER_PATTERN}.test(b.innerText))b.click()});setTimeout(function(){var m={source:'${BOOKMARKLET_MESSAGE_SOURCE}',url:location.href,title:document.title,text:document.body.innerText.slice(0,${BOOKMARKLET_TEXT_LIMIT})};var t=setInterval(function(){w.postMessage(m,o)},${BOOKMARKLET_RETRY_MS});window.addEventListener('message',function(e){if(e.origin===o&&e.data==='${BOOKMARKLET_ACK}')clearInterval(t)});setTimeout(function(){clearInterval(t)},${BOOKMARKLET_GIVE_UP_MS})},${BOOKMARKLET_EXPAND_WAIT_MS})})()`;
+// and the page's CSP may block it). It opens the target first, inside the
+// click, so popup blockers allow it, then expands collapsed sections
+// ("… more"), which keep their text out of the page until opened. It posts the
+// page to the target's origin until it acknowledges, since the new tab may
+// still be loading or redirecting to login.
+export const buildBookmarklet = (target: string) => {
+  const origin = new URL(target).origin;
+  return `javascript:(function(){var o=${escapeUnsafeJsChars(JSON.stringify(origin))};var w=window.open(${escapeUnsafeJsChars(JSON.stringify(target))});document.querySelectorAll('[aria-expanded="false"]').forEach(function(b){if(${BOOKMARKLET_EXPANDER_PATTERN}.test(b.innerText))b.click()});setTimeout(function(){var m={source:'${BOOKMARKLET_MESSAGE_SOURCE}',url:location.href,title:document.title,text:document.body.innerText.slice(0,${BOOKMARKLET_TEXT_LIMIT})};var t=setInterval(function(){w.postMessage(m,o)},${BOOKMARKLET_RETRY_MS});window.addEventListener('message',function(e){if(e.origin===o&&e.data==='${BOOKMARKLET_ACK}')clearInterval(t)});setTimeout(function(){clearInterval(t)},${BOOKMARKLET_GIVE_UP_MS})},${BOOKMARKLET_EXPAND_WAIT_MS})})()`;
+};
