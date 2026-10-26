@@ -1,0 +1,34 @@
+# Docker Image
+
+## Overview
+
+- `nx run job-applications-next:docker:up` builds the app and skill workdir, then `docker compose up -d --build` with `docker-compose.yml`. `docker:down` and `docker:logs` wrap compose; in this repo `pnpm job-applications:docker:up` loads `CLAUDE_CODE_OAUTH_TOKEN` from Vault first
+- The image (`node:24-bookworm-slim`) adds Claude Code, `@playwright/test` with Chromium and its system libraries, the skill workdir and the standalone Next.js server. It listens on 3000, published as `127.0.0.1:${JOB_APPLICATIONS_PORT:-4300}`
+- No personal data is baked in: the build replaces the resume lib's `resume.json` with `templates/resume.json` in both bundles and excludes it from file tracing, and the Dockerfile copies only build output and `templates/`. The user's files arrive through the mounts
+
+## Setup
+
+1. Run `claude setup-token` and export `CLAUDE_CODE_OAUTH_TOKEN` in the shell that starts the container. Runs bill that Claude subscription
+2. Optionally copy `.env.example` to `.env` next to the compose file and set:
+   - `JOB_APPLICATIONS_DIR`: host folder for application folders, default `~/Desktop/Job Applications`
+   - `CAREER_DIR`: host folder holding `career-experience.md` and `resume.json`. Unset, a `career` volume starts from the blank templates
+   - `JOB_APPLICATIONS_PORT`: host port, default 4300
+3. Run `nx run job-applications-next:docker:up` from `projects/nx-workspace` and open `http://localhost:4300`
+4. Fill in the resume's name, email and contact details and the career experience on `/career` before the first run
+
+## Using files with other names
+
+`CAREER_DIR` expects the two default file names. To mount files kept elsewhere, add a `docker-compose.override.yml` next to the compose file:
+
+```yaml
+services:
+  job-applications:
+    environment:
+      - CAREER_EXPERIENCE_PATH=/career-files/career-experience.md
+      - RESUME_PATH=/career-files/resume.json
+    volumes:
+      - /path/to/my-career.md:/career-files/career-experience.md
+      - /path/to/my-resume.json:/career-files/resume.json
+```
+
+The run's `--add-dir` covers the directories of both paths.

@@ -130,6 +130,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 
 | Application | Description |
 | --- | --- |
+| <img src="./projects/nx-workspace/apps/ui/job-applications-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Job Applications](./projects/nx-workspace/apps/ui/job-applications-next) | Self-hostable job application tailoring with Claude Code. |
 | [Mock Employee Handler Service](./projects/nx-workspace/apps/api/mock/mock-employee-handler-service) | Local mock employee API for development. |
 | <img src="./projects/nx-workspace/apps/ui/small-business-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Small Business Next](./projects/nx-workspace/apps/ui/small-business-next) | Subscription and subscriber notification management. |
 | [Spotify to MP3](./scripts/python/dj-scripts/spotify-to-mp3) | Command-line music download utility. |

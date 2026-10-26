@@ -44,6 +44,7 @@ Backups: `cron-backup.yml` runs nightly, one job per store (repo zip, Gitea repo
 
 - `infrastructure/local/k3s/` — local k3d (k3s in Docker) cluster: Traefik HTTPS proxy with local certs via `setup-certs.sh`, Grafana, Loki, Prometheus, Alloy and Headlamp, synced from `main` by Argo CD. Managed with `pnpm local:k3s:*`; guide in [k3s-cluster.md](../infrastructure/local/docs/features/k3s-cluster.md).
 - `infrastructure/immich/docker-compose.yml` — standalone Immich stack (server, machine-learning, Redis, Postgres) exposed on `:2283`; the local cluster's Traefik proxies `images.vigilant-broccoli.app` to it via `host.k3d.internal:2283`. Managed with `pnpm immich:docker:up|down|restart|reload|logs`.
+- `projects/nx-workspace/apps/ui/job-applications-next/docker-compose.yml` — self-hostable job applications container on `127.0.0.1:4300`; its career files, run history and application folders stay on the host's mounts and volumes, outside the backup jobs. Managed with `pnpm job-applications:docker:up|down|logs` ([docker-image.md](../projects/nx-workspace/apps/ui/job-applications-next/docs/features/docker-image.md)).
 - Mock backends for UI development live under `apps/api/mock/` (e.g. `mock-employee-handler-service`) — prefer extending a mock over pointing local UIs at live services.
 - Running a service with real secrets locally: use its `serve` target (Vault-wrapped; see [app-development.md](./app-development/app-development.md#choosing-a-home)).
 

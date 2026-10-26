@@ -1,0 +1,25 @@
+# Started by `nx run job-applications-next:docker:up`, which builds the app
+# first. Settings come from `.env` next to this file (see .env.example).
+services:
+  job-applications:
+    build:
+      context: ../../..
+      dockerfile: apps/ui/job-applications-next/Dockerfile
+    image: job-applications-next
+    container_name: job-applications-next
+    restart: unless-stopped
+    init: true
+    environment:
+      - CLAUDE_CODE_OAUTH_TOKEN
+    ports:
+      - '127.0.0.1:${JOB_APPLICATIONS_PORT:-4300}:3000'
+    volumes:
+      - '${JOB_APPLICATIONS_DIR:-${HOME}/Desktop/Job Applications}:/data'
+      # A path bind-mounts your own career-experience.md and resume.json; unset,
+      # the named volume starts from the blank templates.
+      - '${CAREER_DIR:-career}:/career'
+      - state:/state
+
+volumes:
+  career:
+  state:

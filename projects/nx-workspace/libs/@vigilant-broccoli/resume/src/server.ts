@@ -136,7 +136,7 @@ const buildResumeHtml = (resume: ResumeData): string => {
     <div class="contact">
       <a href="mailto:${escapeHtml(basics.email)}">${escapeHtml(basics.email)}</a>
       <a href="tel:${escapeHtml(basics.phone.replace(PHONE_DIAL_STRIP_PATTERN, ''))}">${escapeHtml(basics.phone)}</a>
-      <span>${escapeHtml(RESUME_LOCATION)}</span>
+      <span>${escapeHtml(basics.location ?? RESUME_LOCATION)}</span>
     </div>
   </div>
 

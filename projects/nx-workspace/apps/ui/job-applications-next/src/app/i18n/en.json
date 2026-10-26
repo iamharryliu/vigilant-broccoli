@@ -1,0 +1,74 @@
+{
+  "APP": {
+    "LABEL": "Job Applications"
+  },
+  "NAV": {
+    "APPLICATIONS": "Applications",
+    "CAREER": "Career",
+    "RUNS": "Runs"
+  },
+  "APPLICATIONS": {
+    "NEW": "New job application",
+    "EMPTY": "No job applications yet.",
+    "LOADING": "Loading…",
+    "LOAD_FAILED": "Failed to load job applications",
+    "DETAILS_FAILED": "Failed to load",
+    "TAB_POSTING": "Posting",
+    "TAB_GAPS": "Gaps",
+    "ABOUT_JOB": "About the job",
+    "ABOUT_COMPANY": "About the company",
+    "NO_POSTING": "No posting saved for this application.",
+    "NO_GAPS_FILE": "No gaps document saved for this application.",
+    "NO_GAPS": "No gaps found against the posting.",
+    "VIEW_RESUME": "View resume",
+    "VIEW_COVER_LETTER": "View cover letter",
+    "RESUME": "Resume",
+    "COVER_LETTER": "Cover letter",
+    "NOT_SAVED": "No {label} saved.",
+    "OPEN_FAILED": "Failed to open {label}",
+    "COPY": "Copy",
+    "COPIED": "Copied",
+    "COPY_FAILED": "Failed to copy cover letter",
+    "FILE_DESCRIPTION": "Job application file"
+  },
+  "DIALOG": {
+    "TITLE": "New job application",
+    "DESCRIPTION_BEFORE": "Paste a posting or an application question, or drag",
+    "BOOKMARKLET": "Send to Job Applications",
+    "DESCRIPTION_AFTER": "to your bookmarks bar and click it on a job posting.",
+    "URL_PLACEHOLDER": "Posting URL (optional)",
+    "TEXT_PLACEHOLDER": "Job posting or application question, with optional notes",
+    "RUN": "Run",
+    "STARTED": "Job application started",
+    "VIEW_PROGRESS": "View progress",
+    "RUN_FAILED": "Run failed"
+  },
+  "RUNS": {
+    "EMPTY": "No runs yet.",
+    "LOAD_FAILED": "Failed to load runs",
+    "STARTED_AT": "Started {time}",
+    "FINISHED": "Job application finished",
+    "FAILED": "Job application failed",
+    "VIEW_APPLICATION": "View application",
+    "STATUS": {
+      "RUNNING": "Running",
+      "SUCCEEDED": "Succeeded",
+      "FAILED": "Failed"
+    }
+  },
+  "CAREER": {
+    "TAB_CAREER_EXPERIENCE": "Career experience",
+    "TAB_RESUME": "Resume",
+    "EDIT": "Edit",
+    "PREVIEW": "Preview",
+    "VIEW_MODE": "View mode",
+    "SAVE": "Save",
+    "SAVED": "Saved",
+    "SAVE_FAILED": "Save failed",
+    "LOAD_FAILED": "Failed to load the file",
+    "FILE_LOCATION": "Stored at {path}",
+    "PROBLEMS": "Fix these before saving:",
+    "CAREER_EXPERIENCE_HINT": "Every fact a run may use. Keep the section headings and table columns; the skill reads them by name.",
+    "RESUME_HINT": "Your resume as JSON. Runs tailor it to each posting and keep name, contact details and links unchanged."
+  }
+}

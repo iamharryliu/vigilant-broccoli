@@ -10,6 +10,8 @@ export interface ResumeBasics {
   title: string;
   email: string;
   phone: string;
+  // Shown in the PDF headers; falls back to RESUME_LOCATION.
+  location?: string;
   links: ResumeLink[];
 }
 
