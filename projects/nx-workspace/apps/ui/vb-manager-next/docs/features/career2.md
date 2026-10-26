@@ -7,8 +7,7 @@
 - Click selects; double-click opens a folder or opens a file in a new tab
 - The open folder is kept in `?path=`, so a page reload or browser back/forward stays in place
 
-- Running a job application moved to the [Sample](./sample.md#new-job-application) page: its dialog takes pasted posting text or an application question (plus an optional posting URL) and runs the `/job-application` skill; Run closes the dialog and shows a toast linking to [Background Tasks](./background-tasks.md), where the run's progress streams. The explorer's refresh button picks up the new folder
-- The dialog offers a draggable "Send to Job Applications" bookmarklet. Clicked on a posting (e.g. LinkedIn), it first clicks collapsed "… more" / "Show more" toggles (their text is not in the page until opened), then opens `/sample` and `postMessage`s the page URL and text (whole page, capped at 300k characters) until the dialog acks and prefills. The dialog trims LinkedIn's page chrome with `extractJobPosting`, keeping the page title, the text from "About the job" to the Premium upsell, and the "About the company" block (other sites pass through untrimmed); nothing runs until Run is pressed. It cannot call the API itself since the bearer token lives on the manager's origin
+- New job applications are made in job-applications-next, embedded on the [Job Hunt](./job-hunt.md) page. Nothing in the UI calls `POST /api/job-applications/run` any more; its runs still show in [Background Tasks](./background-tasks.md)
 - Only works on the host running vb-manager-next (needs the `claude` CLI, the repo checkout and `~/Desktop`); an application question's answer lands on the host's clipboard, not the browser's
 
 ## API

@@ -21,3 +21,14 @@ spec:
   ports:
     - name: http
       port: 2283
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: job-applications-next
+spec:
+  type: ExternalName
+  externalName: host.k3d.internal
+  ports:
+    - name: http
+      port: 4300
