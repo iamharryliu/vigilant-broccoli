@@ -13,10 +13,12 @@ import type {
   ResumePdfSectionLayout,
   ResumePdfShortLine,
 } from './resume.pdf.types';
+import { RESUME_LOCATION } from './resume.types';
 import type { ResumeData, ResumeWorkExperience } from './resume.types';
 
 const LINK_COLOR = '#1155cc';
 const HEADING_COLOR = '#3d85c6';
+const PHONE_DIAL_STRIP_PATTERN = /[^\d+]/g;
 const SKILL_SEPARATOR = ' · ';
 const GOOGLE_FONTS_URL =
   'https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap';
@@ -133,7 +135,8 @@ const buildResumeHtml = (resume: ResumeData): string => {
     </div>
     <div class="contact">
       <a href="mailto:${escapeHtml(basics.email)}">${escapeHtml(basics.email)}</a>
-      <span>${escapeHtml(basics.phone)}</span>
+      <a href="tel:${escapeHtml(basics.phone.replace(PHONE_DIAL_STRIP_PATTERN, ''))}">${escapeHtml(basics.phone)}</a>
+      <span>${escapeHtml(RESUME_LOCATION)}</span>
     </div>
   </div>
 
