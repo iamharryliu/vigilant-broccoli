@@ -8,7 +8,11 @@ import {
   SOCIAL_LINK,
 } from '@harry/personal';
 import { VB_APP_URL } from '@vigilant-broccoli/infrastructure';
-import { LINK_GROUP_SUBGROUP, PUBLIC_QUICK_LINKS } from './quick-links.consts';
+import {
+  LINK_GROUP_SUBGROUP,
+  PUBLIC_QUICK_LINKS,
+  toQuickLinks,
+} from './quick-links.consts';
 
 export const PERSONAL_SITE_LINK = {
   INDEX: {
@@ -32,6 +36,22 @@ export const PERSONAL_SITE_LINK = {
     URL: VB_APP_URL.RESUME.URL,
   },
 } as const;
+
+export const PERSONAL_QUICK_LINKS: QuickLink[] = [
+  ...toQuickLinks(LINK_GROUP_SUBGROUP.PERSONAL, [
+    { NAME: 'Personal Website', URL: PERSONAL_SITE_LINK.INDEX.URL },
+    PERSONAL_SITE_LINK.LINKS,
+    PERSONAL_SITE_LINK.CONTACT,
+    EMAIL_LINK,
+    SOCIAL_LINK.GITHUB,
+    PROJECT_LINK.SOFTWARE_PROJECTS,
+    SOCIAL_LINK.INSTAGRAM_PRETTYDAMNTIRED,
+  ]),
+  ...toQuickLinks(LINK_GROUP_SUBGROUP.CAREER, [
+    { NAME: 'LinkedIn Profile', URL: SOCIAL_LINK.LINKEDIN.URL },
+    PERSONAL_SITE_LINK.RESUME,
+  ]),
+];
 
 const ADDRESS_LINK = {
   ADDRESS: {

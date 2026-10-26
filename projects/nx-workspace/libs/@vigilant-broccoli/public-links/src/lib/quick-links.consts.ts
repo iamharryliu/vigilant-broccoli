@@ -30,6 +30,7 @@ import {
 export const LINK_GROUP_SUBGROUP = {
   UTILITY: 'Utility',
   CAREER: 'Career',
+  PERSONAL: 'Personal',
   LEISURE: 'Leisure',
   LEARN: 'Learn',
   FOR_LATER: 'For Later',
