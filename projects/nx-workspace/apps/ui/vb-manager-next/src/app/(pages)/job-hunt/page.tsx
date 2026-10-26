@@ -1,25 +1,19 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import {
+  JOB_APPLICATION_BOOKMARKLET,
+  isJobApplicationBookmarkletMessage,
+} from '@vigilant-broccoli/common-js';
 import { LOCAL_HOST_URL } from '@vigilant-broccoli/private-infrastructure';
 import { SIDEBAR_ROUTE } from '../../app.const';
 import { usePageTitle } from '../../use-page-title';
-
-// Must match job-applications-next's src/app/utils/bookmarklet.utils.ts.
-const BOOKMARKLET_MESSAGE_SOURCE = 'job-application-bookmarklet';
-const BOOKMARKLET_ACK = 'job-application-ack';
-const BOOKMARKLET_PARAM = 'bookmarklet';
 
 const JOB_HUNT_ORIGIN = new URL(LOCAL_HOST_URL.JOB_HUNT.URL).origin;
 // The embedded app builds its bookmarklet from this, so the bookmarklet opens
 // this page and the relay below hands the posting to the frame.
 const JOB_HUNT_PAGE_URL = `${LOCAL_HOST_URL.VB_MANAGER_NEXT.URL}${SIDEBAR_ROUTE.JOB_HUNT.path}`;
-const FRAME_SRC = `${LOCAL_HOST_URL.JOB_HUNT.URL}/?${BOOKMARKLET_PARAM}=${encodeURIComponent(JOB_HUNT_PAGE_URL)}`;
-
-const isBookmarkletMessage = (data: unknown) =>
-  typeof data === 'object' &&
-  data !== null &&
-  (data as { source?: unknown }).source === BOOKMARKLET_MESSAGE_SOURCE;
+const FRAME_SRC = `${LOCAL_HOST_URL.JOB_HUNT.URL}/?${JOB_APPLICATION_BOOKMARKLET.TARGET_PARAM}=${encodeURIComponent(JOB_HUNT_PAGE_URL)}`;
 
 type PostingTab = { window: MessageEventSource; origin: string };
 
@@ -38,14 +32,15 @@ export default function Page() {
       const frame = frameRef.current?.contentWindow;
       if (!frame) return;
       if (event.source === frame) {
-        if (event.data === BOOKMARKLET_ACK && postingTab) {
-          postingTab.window.postMessage(BOOKMARKLET_ACK, {
+        if (event.data === JOB_APPLICATION_BOOKMARKLET.ACK && postingTab) {
+          postingTab.window.postMessage(JOB_APPLICATION_BOOKMARKLET.ACK, {
             targetOrigin: postingTab.origin,
           });
         }
         return;
       }
-      if (!event.source || !isBookmarkletMessage(event.data)) return;
+      if (!event.source || !isJobApplicationBookmarkletMessage(event.data))
+        return;
       postingTab = { window: event.source, origin: event.origin };
       frame.postMessage(event.data, JOB_HUNT_ORIGIN);
     };

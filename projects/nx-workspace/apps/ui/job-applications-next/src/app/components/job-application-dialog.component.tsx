@@ -14,12 +14,10 @@ import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import {
   CONTENT_TYPE_HEADER,
   HTTP_METHOD,
+  JOB_APPLICATION_BOOKMARKLET,
   JSON_CONTENT_TYPE,
+  isJobApplicationBookmarkletMessage,
 } from '@vigilant-broccoli/common-js';
-import {
-  BOOKMARKLET_ACK,
-  isBookmarkletMessage,
-} from '../utils/bookmarklet.utils';
 import { extractJobPosting } from '../utils/job-posting.utils';
 import { RUNS_TAB_URL } from '../app.const';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -45,9 +43,9 @@ export const JobApplicationDialog = ({
 
   useEffect(() => {
     const prefill = (event: MessageEvent) => {
-      if (!isBookmarkletMessage(event.data)) return;
+      if (!isJobApplicationBookmarkletMessage(event.data)) return;
       (event.source as Window | null)?.postMessage(
-        BOOKMARKLET_ACK,
+        JOB_APPLICATION_BOOKMARKLET.ACK,
         event.origin,
       );
       setUrl(event.data.url);

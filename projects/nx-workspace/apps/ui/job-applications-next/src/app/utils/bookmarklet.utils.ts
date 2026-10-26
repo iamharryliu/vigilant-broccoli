@@ -1,7 +1,6 @@
+import { JOB_APPLICATION_BOOKMARKLET } from '@vigilant-broccoli/common-js';
 import { ROOT_PATH } from '../app.const';
 
-const BOOKMARKLET_MESSAGE_SOURCE = 'job-application-bookmarklet';
-export const BOOKMARKLET_ACK = 'job-application-ack';
 // Cleanup happens in `extractJobPosting`, so send the whole page, not a slice.
 const BOOKMARKLET_TEXT_LIMIT = 300000;
 const BOOKMARKLET_EXPAND_WAIT_MS = 600;
@@ -31,21 +30,6 @@ const escapeUnsafeJsChars = (value: string) =>
     char => UNSAFE_JS_CHAR_MAP[char],
   );
 
-type BookmarkletMessage = {
-  source: typeof BOOKMARKLET_MESSAGE_SOURCE;
-  url: string;
-  title?: string;
-  text: string;
-};
-
-export const isBookmarkletMessage = (
-  data: unknown,
-): data is BookmarkletMessage =>
-  typeof data === 'object' &&
-  data !== null &&
-  (data as BookmarkletMessage).source === BOOKMARKLET_MESSAGE_SOURCE;
-
-export const BOOKMARKLET_PARAM = 'bookmarklet';
 const BOOKMARKLET_TARGET_KEY = 'job-applications-bookmarklet-target';
 
 const framingOrigin = () => {
@@ -76,7 +60,7 @@ export const readBookmarkletTarget = () => {
   const own = `${window.location.origin}${ROOT_PATH}`;
   if (window.parent === window) return own;
   const requested = new URLSearchParams(window.location.search).get(
-    BOOKMARKLET_PARAM,
+    JOB_APPLICATION_BOOKMARKLET.TARGET_PARAM,
   );
   try {
     if (requested && isUrlOnOrigin(requested, framingOrigin())) {
@@ -98,5 +82,5 @@ export const readBookmarkletTarget = () => {
 // still be loading or redirecting to login.
 export const buildBookmarklet = (target: string) => {
   const origin = new URL(target).origin;
-  return `javascript:(function(){var o=${escapeUnsafeJsChars(JSON.stringify(origin))};var w=window.open(${escapeUnsafeJsChars(JSON.stringify(target))});document.querySelectorAll('[aria-expanded="false"]').forEach(function(b){if(${BOOKMARKLET_EXPANDER_PATTERN}.test(b.innerText))b.click()});setTimeout(function(){var m={source:'${BOOKMARKLET_MESSAGE_SOURCE}',url:location.href,title:document.title,text:document.body.innerText.slice(0,${BOOKMARKLET_TEXT_LIMIT})};var t=setInterval(function(){w.postMessage(m,o)},${BOOKMARKLET_RETRY_MS});window.addEventListener('message',function(e){if(e.origin===o&&e.data==='${BOOKMARKLET_ACK}')clearInterval(t)});setTimeout(function(){clearInterval(t)},${BOOKMARKLET_GIVE_UP_MS})},${BOOKMARKLET_EXPAND_WAIT_MS})})()`;
+  return `javascript:(function(){var o=${escapeUnsafeJsChars(JSON.stringify(origin))};var w=window.open(${escapeUnsafeJsChars(JSON.stringify(target))});document.querySelectorAll('[aria-expanded="false"]').forEach(function(b){if(${BOOKMARKLET_EXPANDER_PATTERN}.test(b.innerText))b.click()});setTimeout(function(){var m={source:'${JOB_APPLICATION_BOOKMARKLET.MESSAGE_SOURCE}',url:location.href,title:document.title,text:document.body.innerText.slice(0,${BOOKMARKLET_TEXT_LIMIT})};var t=setInterval(function(){w.postMessage(m,o)},${BOOKMARKLET_RETRY_MS});window.addEventListener('message',function(e){if(e.origin===o&&e.data==='${JOB_APPLICATION_BOOKMARKLET.ACK}')clearInterval(t)});setTimeout(function(){clearInterval(t)},${BOOKMARKLET_GIVE_UP_MS})},${BOOKMARKLET_EXPAND_WAIT_MS})})()`;
 };

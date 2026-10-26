@@ -5,6 +5,7 @@ export * from './lib/honeypot/honeypot.utils';
 export * from './lib/location/location.model';
 export * from './lib/services/services.consts';
 export * from './lib/socket/socket.consts';
+export * from './lib/job-application-bookmarklet/job-application-bookmarklet.consts';
 
 export const FORM_TYPE = {
   CREATE: 'CREATE',
