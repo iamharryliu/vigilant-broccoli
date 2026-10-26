@@ -12,6 +12,7 @@ services:
     environment:
       - CLAUDE_CODE_OAUTH_TOKEN
       - JOB_APPLICATIONS_MODEL
+      - JOB_APPLICATIONS_FRAME_ANCESTORS
     ports:
       - '127.0.0.1:${JOB_APPLICATIONS_PORT:-4300}:3000'
     volumes:
