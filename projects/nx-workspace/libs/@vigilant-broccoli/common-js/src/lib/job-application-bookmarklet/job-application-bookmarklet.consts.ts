@@ -1,4 +1,4 @@
-// The job-application bookmarklet posts a job page to job-applications-next,
+// The job-application bookmarklet posts a job page to job-hunt-next,
 // which acknowledges it; a page embedding the app (vb-manager-next's Job Hunt)
 // relays both. Installed bookmarklets carry these values, so changing one
 // breaks them until they are reinstalled.

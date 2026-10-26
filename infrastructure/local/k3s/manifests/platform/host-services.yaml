@@ -25,7 +25,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: job-applications-next
+  name: job-hunt-next
 spec:
   type: ExternalName
   externalName: host.k3d.internal

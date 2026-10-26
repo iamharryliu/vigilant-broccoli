@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 const APP_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const WORKDIR = resolve(
   APP_DIR,
-  '../../../dist/apps/ui/job-applications-next/skill-workdir',
+  '../../../dist/apps/ui/job-hunt-next/skill-workdir',
 );
 const SCRIPTS = [
   'check-resume.ts',

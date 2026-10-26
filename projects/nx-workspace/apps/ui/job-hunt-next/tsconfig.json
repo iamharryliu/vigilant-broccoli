@@ -26,8 +26,8 @@
     "**/*.jsx",
     "**/*.ts",
     "**/*.tsx",
-    "../../../apps/ui/job-applications-next/.next/types/**/*.ts",
-    "../../../dist/apps/ui/job-applications-next/.next/types/**/*.ts",
+    "../../../apps/ui/job-hunt-next/.next/types/**/*.ts",
+    "../../../dist/apps/ui/job-hunt-next/.next/types/**/*.ts",
     "next-env.d.ts",
     ".next/types/**/*.ts"
   ],

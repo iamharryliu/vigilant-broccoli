@@ -1,6 +1,6 @@
 {
   "APP": {
-    "LABEL": "Job Applications"
+    "LABEL": "Job Hunt"
   },
   "NAV": {
     "APPLICATIONS": "Applications",
@@ -50,7 +50,7 @@
     "LABEL": "Help",
     "TITLE": "Adding a job application",
     "DESCRIPTION_BEFORE": "Drag",
-    "BOOKMARKLET": "Send to Job Applications",
+    "BOOKMARKLET": "Send to Job Hunt",
     "DESCRIPTION_AFTER": "to your bookmarks bar, then click it on a job posting to open the new job application form filled in from the page.",
     "MANUAL": "Or paste a posting or an application question yourself.",
     "PASTE_MANUALLY": "Paste manually"

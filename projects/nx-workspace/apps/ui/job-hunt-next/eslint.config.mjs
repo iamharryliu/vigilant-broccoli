@@ -13,11 +13,7 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: [
-      '**/dist',
-      '**/out-tsc',
-      'apps/ui/job-applications-next/.next/**',
-    ],
+    ignores: ['**/dist', '**/out-tsc', 'apps/ui/job-hunt-next/.next/**'],
   },
   ...baseConfig,
   nextPlugin.configs.recommended,

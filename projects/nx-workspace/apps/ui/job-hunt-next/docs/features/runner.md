@@ -9,16 +9,16 @@
 - Career import runs ([Career](./career.md)) share the same process handling and run list. Each works in its own `imports/<id>` folder in the state directory, holding the sources and copies of the blank and sample files, which is deleted when the run ends; tools are limited to Read, Edit, Write and the `validate-career-file` script, and `--add-dir` grants only that folder
 - Application questions finish with the answer as the last message; the Runs section (`/?tab=runs`) lists the 20 newest runs with their output and a Copy button, polling every 3 seconds. A toast reports a finished or failed run in any section
 - Run history is SQLite (`node:sqlite`) in the state directory
-- Runs use the model in `JOB_APPLICATIONS_MODEL` (any `claude --model` value), default `sonnet`
+- Runs use the model in `JOB_HUNT_MODEL` (any `claude --model` value), default `sonnet`
 
 ## Locations
 
 | Variable | Container | `nx serve` default |
 | --- | --- | --- |
-| `CAREER_DIR` | `/career` | `~/.job-applications/career` |
+| `CAREER_DIR` | `/career` | `~/.job-hunt/career` |
 | `CAREER_EXPERIENCE_PATH` | `$CAREER_DIR/career-experience.md` | same |
 | `JOB_APPLICATIONS_DIR` | `/data` | `~/Desktop/Job Applications` |
 | `RESUME_PATH` | `$CAREER_DIR/resume.json` | same |
-| `SKILL_WORKDIR` | `/opt/skill-workdir` | `dist/apps/ui/job-applications-next/skill-workdir` |
-| `STATE_DIR` | `/state` | `~/.job-applications` |
+| `SKILL_WORKDIR` | `/opt/skill-workdir` | `dist/apps/ui/job-hunt-next/skill-workdir` |
+| `STATE_DIR` | `/state` | `~/.job-hunt` |
 | `TEMPLATES_DIR` | `/app/templates` | `templates` |

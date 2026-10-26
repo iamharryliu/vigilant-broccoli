@@ -1,9 +1,9 @@
 ---
 name: job-application
-description: Tailor the user's resume.json to a pasted job posting and generate the resume and cover letter PDFs into a per-application folder, or answer a pasted application question, using the job-applications-next app's mounted career files.
+description: Tailor the user's resume.json to a pasted job posting and generate the resume and cover letter PDFs into a per-application folder, or answer a pasted application question, using the job-hunt-next app's mounted career files.
 ---
 
-Portable copy of the vigilant-broccoli `job-application` skill for the job-applications-next image. Every file location comes from the prompt's runner note; use those paths, never `~/Desktop` or repo paths. The resume schema and PDF rendering come from `@vigilant-broccoli/resume`, bundled into the scripts.
+Portable copy of the vigilant-broccoli `job-application` skill for the job-hunt-next image. Every file location comes from the prompt's runner note; use those paths, never `~/Desktop` or repo paths. The resume schema and PDF rendering come from `@vigilant-broccoli/resume`, bundled into the scripts.
 
 The arguments are either a pasted job posting (optionally with notes such as target title, company or extra facts) or an application question (see [Answering application questions](#answering-application-questions)).
 

@@ -139,6 +139,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: job-applications-next
+                name: job-hunt-next
                 port:
                   number: 4300

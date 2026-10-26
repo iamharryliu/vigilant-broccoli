@@ -2,7 +2,7 @@
 
 <!-- managed:repo-stats:start -->
 
-Personal monorepo, supporting **19 applications**, **6 API services**, **11 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
+Personal monorepo, supporting **19 applications**, **6 API services**, **12 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
 
 <!-- managed:repo-stats:end -->
 
@@ -130,7 +130,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 
 | Application | Description |
 | --- | --- |
-| <img src="./projects/nx-workspace/apps/ui/job-applications-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Job Applications](./projects/nx-workspace/apps/ui/job-applications-next) | Self-hostable job application tailoring with Claude Code. |
+| <img src="./projects/nx-workspace/apps/ui/job-hunt-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Job Applications](./projects/nx-workspace/apps/ui/job-hunt-next) | Self-hostable job application tailoring with Claude Code. |
 | [Mock Employee Handler Service](./projects/nx-workspace/apps/api/mock/mock-employee-handler-service) | Local mock employee API for development. |
 | <img src="./projects/nx-workspace/apps/ui/small-business-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Small Business Next](./projects/nx-workspace/apps/ui/small-business-next) | Subscription and subscriber notification management. |
 | [Spotify to MP3](./scripts/python/dj-scripts/spotify-to-mp3) | Command-line music download utility. |
@@ -222,6 +222,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [`iamharryliu/email-service`](https://hub.docker.com/r/iamharryliu/email-service) | [Email Service](./projects/nx-workspace/apps/api/email-service) | `deploy-container` target | Fly.io (staging, production) |
 | [`iamharryliu/email-subscription-service`](https://hub.docker.com/r/iamharryliu/email-subscription-service) | [Email Subscription Service](./projects/nx-workspace/apps/api/email-subscription-service) | `deploy-container` target | Fly.io (staging, production) |
 | [`iamharryliu/employee-handler-next`](https://hub.docker.com/r/iamharryliu/employee-handler-next) | [Employee Handler UI](./projects/nx-workspace/apps/ui/employee-handler-ui) | `deploy-container` target | None; published for self-hosting |
+| [`iamharryliu/job-hunt-next`](https://hub.docker.com/r/iamharryliu/job-hunt-next) | [Job Hunt](./projects/nx-workspace/apps/ui/job-hunt-next) | `deploy-container` target | None; published for self-hosting |
 | [`iamharryliu/llm-service`](https://hub.docker.com/r/iamharryliu/llm-service) | [LLM Service](./projects/nx-workspace/apps/api/llm-service) | `deploy-container` target | Fly.io (staging, production) |
 | [`iamharryliu/office-presence-service`](https://hub.docker.com/r/iamharryliu/office-presence-service) | [Office Presence Service](./projects/nx-workspace/apps/api/office-presence-service) | `deploy-container` target | Fly.io (demo) |
 | [`iamharryliu/socket-server-socketio`](https://hub.docker.com/r/iamharryliu/socket-server-socketio) | [Socket Server (Socket.IO)](./projects/nx-workspace/apps/socket-server-socketio) | `deploy-container` target | OCI VM, updated by Watchtower |

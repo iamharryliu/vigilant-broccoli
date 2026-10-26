@@ -30,7 +30,7 @@ const escapeUnsafeJsChars = (value: string) =>
     char => UNSAFE_JS_CHAR_MAP[char],
   );
 
-const BOOKMARKLET_TARGET_KEY = 'job-applications-bookmarklet-target';
+const BOOKMARKLET_TARGET_KEY = 'job-hunt-bookmarklet-target';
 
 const framingOrigin = () => {
   const ancestor = window.location.ancestorOrigins?.[0];

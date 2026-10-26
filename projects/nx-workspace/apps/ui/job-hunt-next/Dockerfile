@@ -1,4 +1,4 @@
-# Built from projects/nx-workspace after `nx run job-applications-next:build`,
+# Built from projects/nx-workspace after `nx run job-hunt-next:build`,
 # which also assembles the skill workdir. Personal data never enters the image:
 # the build swaps the lib's resume.json for templates/resume.json, and the
 # user's files arrive through the /career and /data mounts.
@@ -26,12 +26,12 @@ RUN npm init -y >/dev/null \
     && npm install --omit=dev "@playwright/test@${PLAYWRIGHT_VERSION}" \
     && npx playwright install --with-deps chromium \
     && rm -rf /var/lib/apt/lists/*
-COPY dist/apps/ui/job-applications-next/skill-workdir ./
+COPY dist/apps/ui/job-hunt-next/skill-workdir ./
 
 WORKDIR /app
-COPY dist/apps/ui/job-applications-next/.next/standalone ./
-COPY dist/apps/ui/job-applications-next/.next/static ./dist/apps/ui/job-applications-next/.next/static
-COPY apps/ui/job-applications-next/templates ./templates
+COPY dist/apps/ui/job-hunt-next/.next/standalone ./
+COPY dist/apps/ui/job-hunt-next/.next/static ./dist/apps/ui/job-hunt-next/.next/static
+COPY apps/ui/job-hunt-next/templates ./templates
 
 RUN mkdir -p /data /career /state \
     && chown -R node:node /data /career /state /opt/skill-workdir
@@ -40,4 +40,4 @@ USER node
 
 EXPOSE 3000
 
-CMD ["node", "apps/ui/job-applications-next/server.js"]
+CMD ["node", "apps/ui/job-hunt-next/server.js"]
