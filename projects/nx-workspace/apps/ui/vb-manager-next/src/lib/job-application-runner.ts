@@ -1,5 +1,6 @@
 import { execFile, spawn } from 'child_process';
 import { randomUUID } from 'crypto';
+import { join } from 'path';
 import { promisify } from 'util';
 import {
   BackgroundTask,
@@ -18,20 +19,30 @@ import {
 const execFileAsync = promisify(execFile);
 
 const SKILL_COMMAND = '/job-application';
-// Headless runs cannot answer permission prompts, so list what the skill's
-// workflow needs: resume.json edits, PDF generation and the clipboard answer.
+// The skill's commands run from here; the script rules below are relative to it.
+const WORKSPACE_DIR = join('projects', 'nx-workspace');
+const SCRIPTS_DIR = 'apps/ui/vb-manager-next/scripts';
+const SKILL_SCRIPTS = [
+  'check-resume.ts',
+  'generate-resume-pdf.ts',
+  'generate-cover-letter-pdf.ts',
+];
+// Headless runs cannot answer permission prompts, so anything not listed is
+// denied. The posting is untrusted text, so Bash is limited to the skill's own
+// scripts: a bare `npx` rule would let an injected posting run any package.
 const ALLOWED_TOOLS = [
   'Read',
   'Edit',
   'Write',
-  'Bash(npx:*)',
-  'Bash(pnpm:*)',
+  ...SKILL_SCRIPTS.map(script => `Bash(npx tsx ${SCRIPTS_DIR}/${script}:*)`),
   'Bash(mkdir:*)',
   'Bash(ls:*)',
   'Bash(date:*)',
   'Bash(pbcopy:*)',
   'Bash(pbpaste:*)',
 ];
+// Tells the agent up front so it does not spend turns on blocked commands.
+const RUNNER_NOTE = `Runner note: the working directory is already ${WORKSPACE_DIR}. Run the scripts exactly as \`npx tsx ${SCRIPTS_DIR}/<script>.ts <args>\` from it, without \`cd\`; other shell commands are blocked.`;
 const PERSIST_THROTTLE_MS = 2000;
 const HOMEBREW_BIN = '/opt/homebrew/bin';
 const OUTPUT_LIMIT = 20000;
@@ -68,7 +79,7 @@ const describeStreamLine = (line: string): string => {
 // The URL is only context for the skill (company, source); the posting text
 // itself comes from the request, since login-gated pages cannot be fetched here.
 const buildPrompt = (postingUrl: string, text: string) =>
-  [SKILL_COMMAND, postingUrl && `Posting URL: ${postingUrl}`, text]
+  [SKILL_COMMAND, postingUrl && `Posting URL: ${postingUrl}`, text, RUNNER_NOTE]
     .filter(Boolean)
     .join('\n\n');
 
@@ -123,7 +134,7 @@ export const startJobApplicationRun = async (
       ...ALLOWED_TOOLS,
     ],
     {
-      cwd: stdout.trim(),
+      cwd: join(stdout.trim(), WORKSPACE_DIR),
       env: {
         ...process.env,
         PATH: `${HOMEBREW_BIN}:${process.env.PATH ?? ''}`,
