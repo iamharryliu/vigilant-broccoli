@@ -95,6 +95,9 @@ export const API_ENDPOINTS = {
   TODO_SOLVE: '/api/todo/solve',
   TODO_REMOVE: '/api/todo/remove',
 
+  JOB_APPLICATIONS: '/api/job-applications',
+  JOB_APPLICATIONS_FILE: '/api/job-applications/file',
+
   // Spotify
   SPOTIFY_AUTH_LOGIN: '/api/spotify/auth/login',
   SPOTIFY_GRAPH: '/api/spotify/graph',
