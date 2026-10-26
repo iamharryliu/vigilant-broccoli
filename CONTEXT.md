@@ -24,7 +24,7 @@ Read the relevant document before working on its subject. Before editing a direc
 
 | Doc | When to read / upkeep |
 | --- | --- |
-| [agent-support.md](./docs/agent-support.md) | Agentic operations, skills, adapters and entry-point parity. |
+| [agent-support.md](./docs/agent-support.md) | Agentic operations, skills, adapters, entry-point parity, and where a new rule or instruction belongs. |
 | [app-development.md](./docs/app-development/app-development.md) | Adding apps/libs, deployment, public URLs or npm publishing. |
 | [app-readme-pattern.md](./docs/app-readme-pattern.md) | README edits and generated repo counts. |
 | [career experience](./notes/personal/personal-software-career-experience.md) | New skill or area (e.g. mobile development) absent from its Skills or contributions: add it. |
@@ -37,7 +37,7 @@ Read the relevant document before working on its subject. Before editing a direc
 | [jellyfin-pi.md](./docs/infrastructure/jellyfin-pi.md) | LAN hardware provisioning via Ansible. |
 | [learning-timeline.md](./docs/learning-timeline.md) | Extend the current month when work introduces a new topic. |
 | [network-management.md](./docs/infrastructure/network-management.md) | DNS, domains, proxies, tunnels or VPN. |
-| [nuance-pattern.md](./docs/nuance-pattern.md) | Directory context edits or recording a non-obvious trap. |
+| [nuance-pattern.md](./docs/nuance-pattern.md) | Any `CONTEXT.md` edit, including root, or recording a non-obvious trap. |
 | [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md) | Diff cleanup checklist. |
 | [repo-operations.md](./docs/repo-operations.md) | Infrastructure inventory, persistence, backups, local stack and service auth. |
 | [secret-management.md](./docs/infrastructure/secret-management.md) | Secrets, local `.env`/`.tfvars` or Terraform GitHub tokens; update its secret inventory as secrets change. |
