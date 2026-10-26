@@ -63,6 +63,10 @@ export const SIDEBAR_ROUTE = {
   },
 } satisfies Record<string, ExtendedNavRoute>;
 
+// Opening `/sample?expand=latest` expands the newest job application.
+export const SAMPLE_EXPAND_PARAM = 'expand';
+export const SAMPLE_EXPAND_LATEST = 'latest';
+
 export const APP_NAME = 'VB Manager';
 
 export const PAGE_TITLE = {

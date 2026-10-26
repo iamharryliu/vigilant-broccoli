@@ -1,11 +1,27 @@
 import { authFetch } from '../../../libs/auth';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 
-const OBJECT_URL_REVOKE_DELAY_MS = 60_000;
 const DATED_FOLDER_PATTERN = /^(\d{4}-\d{2}-\d{2})-(.+)$/;
-const POSTING_FILE_MARKER = '-job-posting-';
-const COPYABLE_EXTENSIONS = ['txt', 'md', 'json'];
 const MARKDOWN_BOLD = /\*\*/g;
+
+export const APPLICATION_FILE = {
+  POSTING: { marker: '-job-posting-', extension: '.txt' },
+  RESUME: { marker: '-resume-', extension: '.pdf' },
+  GAPS: { marker: '-gaps-', extension: '.txt' },
+  COVER_LETTER_PDF: { marker: '-cover-letter-', extension: '.pdf' },
+  COVER_LETTER_TEXT: { marker: '-cover-letter-', extension: '.txt' },
+} as const;
+
+type ApplicationFileKind =
+  (typeof APPLICATION_FILE)[keyof typeof APPLICATION_FILE];
+
+export const findApplicationFile = <T extends { name: string }>(
+  files: T[],
+  { marker, extension }: ApplicationFileKind,
+) =>
+  files.find(
+    file => file.name.includes(marker) && file.name.endsWith(extension),
+  );
 
 const fetchFile = async (path: string) => {
   const response = await authFetch(
@@ -15,28 +31,14 @@ const fetchFile = async (path: string) => {
   return response;
 };
 
-// The file route needs the bearer token, so a plain link cannot open it.
-export const openJobApplicationFile = async (path: string) => {
-  const preview = window.open('', '_blank');
-  try {
-    const url = URL.createObjectURL(await (await fetchFile(path)).blob());
-    if (preview) preview.location.href = url;
-    setTimeout(() => URL.revokeObjectURL(url), OBJECT_URL_REVOKE_DELAY_MS);
-  } catch (error) {
-    preview?.close();
-    throw error;
-  }
-};
+// The file route needs the bearer token, so a plain link cannot load it. The
+// caller revokes the URL.
+export const createJobApplicationObjectUrl = async (path: string) =>
+  URL.createObjectURL(await (await fetchFile(path)).blob());
 
 // Letters written before the plain-text rule still carry `**bold**` markers.
 export const readJobApplicationText = async (path: string) =>
   (await (await fetchFile(path)).text()).replace(MARKDOWN_BOLD, '');
-
-export const isCopyableFile = (name: string) =>
-  COPYABLE_EXTENSIONS.includes((name.split('.').pop() ?? '').toLowerCase());
-
-export const isPostingFile = (name: string) =>
-  name.includes(POSTING_FILE_MARKER) && name.endsWith('.txt');
 
 const TIME_FORMAT: Intl.DateTimeFormatOptions = {
   hour: '2-digit',
@@ -61,9 +63,23 @@ export const parseApplicationFolder = (
     ? {
         date: match[1],
         title: `${match[1]} ${time} ${match[2].replace(/-/g, ' ')}`,
+        label: match[2].replace(/-/g, ' '),
       }
     : {
         date: modified.slice(0, 10),
         title: `${modified.slice(0, 10)} ${time} ${name}`,
+        label: name,
       };
 };
+
+const GAP_BULLET = /^\s*[-*•]\s+(.*\S)\s*$/;
+const NO_GAPS_BULLET = /^none\.?$/i;
+
+// The gaps file is a `- ` bullet list; a lone `- None` means no gaps.
+export const parseGaps = (text: string) =>
+  text
+    .split('\n')
+    .map(line => GAP_BULLET.exec(line)?.[1])
+    .filter(
+      (gap): gap is string => gap !== undefined && !NO_GAPS_BULLET.test(gap),
+    );

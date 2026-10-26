@@ -50,3 +50,42 @@ export const extractJobPosting = (title: string, pageText: string): string => {
     .join('\n\n')
     .replace(BLANK_LINES, '\n\n');
 };
+
+const SAVED_POSTING_URL_LINE = /^Posting URL:[^\n]*\n*/;
+const TITLE_SEPARATOR = /\s+\|\s+/;
+const MAX_TITLE_LENGTH = 200;
+
+export type JobDescription = {
+  role: string;
+  company: string;
+  description: string;
+  companyBlurb: string;
+};
+
+// Splits a saved posting (see `extractJobPosting`) into its parts: the page
+// title line ("Role | Company"), the description and the "About the company"
+// block. Anything that does not fit stays in `description`.
+export const parseJobDescription = (posting: string): JobDescription => {
+  const text = posting.replace(SAVED_POSTING_URL_LINE, '').trim();
+  const [firstBlock, ...rest] = text.split('\n\n');
+  const hasTitle =
+    rest.length > 0 &&
+    !firstBlock.includes('\n') &&
+    firstBlock.length <= MAX_TITLE_LENGTH &&
+    !firstBlock.startsWith(LINKEDIN_COMPANY_START);
+  const [role = '', company = ''] = hasTitle
+    ? firstBlock.split(TITLE_SEPARATOR)
+    : [];
+  const body = hasTitle ? rest.join('\n\n') : text;
+
+  const blurbStart = body.indexOf(LINKEDIN_COMPANY_START);
+  const hasBlurb = blurbStart !== -1;
+  return {
+    role: role.trim(),
+    company: company.trim(),
+    description: (hasBlurb ? body.slice(0, blurbStart) : body).trim(),
+    companyBlurb: hasBlurb
+      ? body.slice(blurbStart + LINKEDIN_COMPANY_START.length).trim()
+      : '',
+  };
+};
