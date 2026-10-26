@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
               name: dirent.name,
               path,
               modified: stats.mtime.toISOString(),
+              created: stats.birthtime.toISOString(),
               itemCount: children.filter(
                 child => !child.startsWith(HIDDEN_FILE_PREFIX),
               ).length,
@@ -46,6 +47,7 @@ export async function GET(req: NextRequest) {
             name: dirent.name,
             path,
             modified: stats.mtime.toISOString(),
+            created: stats.birthtime.toISOString(),
             size: stats.size,
           };
         }),

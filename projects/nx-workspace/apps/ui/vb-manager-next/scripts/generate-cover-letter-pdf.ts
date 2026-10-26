@@ -27,8 +27,10 @@ const escapeHtml = (text: string): string =>
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
 
+// Letters are plain text; markers left in an older letter are dropped rather
+// than rendered, so the PDF matches the .txt.
 const renderInline = (text: string): string =>
-  escapeHtml(text).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  escapeHtml(text).replace(/\*\*/g, '');
 
 const renderBlock = (block: string): string => {
   const lines = block.split('\n');

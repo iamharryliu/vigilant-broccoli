@@ -53,6 +53,10 @@ export const SIDEBAR_ROUTE = {
     title: 'Music',
     path: '/music',
   },
+  SAMPLE: {
+    title: 'Sample',
+    path: '/sample',
+  },
   BACKGROUND_TASKS: {
     title: 'Background Tasks',
     path: '/background-tasks',
