@@ -18,6 +18,7 @@ import {
   FolderOpen,
   Music,
   ListChecks,
+  ClipboardList,
 } from 'lucide-react';
 import { NotificationRecord } from '../hooks/useNotificationHistory';
 import { NotificationsDialog } from './notifications-dialog.component';
@@ -33,6 +34,7 @@ const SIDEBAR_ROUTE_ITEMS = [
   { route: SIDEBAR_ROUTE.LANGUAGE_LEARNING, icon: Languages },
   { route: SIDEBAR_ROUTE.CAREER, icon: Briefcase },
   { route: SIDEBAR_ROUTE.CAREER2, icon: FolderOpen },
+  { route: SIDEBAR_ROUTE.SAMPLE, icon: ClipboardList },
   { route: SIDEBAR_ROUTE.MUSIC, icon: Music },
   { route: SIDEBAR_ROUTE.BACKGROUND_TASKS, icon: ListChecks },
 ];

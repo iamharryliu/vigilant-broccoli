@@ -8,6 +8,8 @@ type FileEntryBase = {
   // Relative to the explorer root, e.g. `Acme/cover-letter.pdf`.
   path: string;
   modified: string;
+  // Creation time (ISO), for lists ordered by when an item first appeared.
+  created: string;
 };
 
 export type FileEntry =
