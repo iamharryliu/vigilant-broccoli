@@ -21,7 +21,11 @@ const PHONE_DIAL_STRIP_PATTERN = /[^\d+]/g;
 const BULLET_PREFIX = '- ';
 
 const escapeHtml = (text: string): string =>
-  text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 
 const renderInline = (text: string): string =>
   escapeHtml(text).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
