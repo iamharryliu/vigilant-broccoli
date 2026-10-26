@@ -13,10 +13,15 @@ const COMMIT_TYPES = [
 const ERROR = 2;
 const DISABLED = 0;
 
+// GitHub's Copilot Autofix commits its suggestion under this fixed message when
+// a reviewer accepts it in the UI; it cannot be reworded without a force-push.
+const AUTOFIX_COMMIT_PREFIX = 'Potential fix for pull request finding';
+
 const startsWithCapital = parsed => /^\p{Lu}/u.test(parsed.subject ?? '');
 
 export default {
   extends: ['@commitlint/config-conventional'],
+  ignores: [message => message.startsWith(AUTOFIX_COMMIT_PREFIX)],
   plugins: [
     {
       rules: {

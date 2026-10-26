@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ArrowUp,
   ChevronDown,
@@ -15,24 +15,22 @@ import {
   RefreshCw,
   Search,
 } from 'lucide-react';
-import { toast } from '@vigilant-broccoli/react-lib/toaster';
-import { authFetch } from '../../../libs/auth';
-import { FILE_ENTRY_KIND, FileEntry } from './file-explorer.types';
+import { FILE_ENTRY_KIND, FileEntry } from '@vigilant-broccoli/common-js';
 
 const VIEW_MODE = { LIST: 'list', GRID: 'grid' } as const;
 type ViewMode = (typeof VIEW_MODE)[keyof typeof VIEW_MODE];
 
-const SORT_COLUMN = {
+export const SORT_COLUMN = {
   NAME: 'name',
   SIZE: 'size',
   MODIFIED: 'modified',
 } as const;
 type SortColumn = (typeof SORT_COLUMN)[keyof typeof SORT_COLUMN];
 
-const SORT_DIRECTION = { ASC: 'asc', DESC: 'desc' } as const;
+export const SORT_DIRECTION = { ASC: 'asc', DESC: 'desc' } as const;
 type SortDirection = (typeof SORT_DIRECTION)[keyof typeof SORT_DIRECTION];
 
-type SortState = { column: SortColumn; direction: SortDirection };
+export type SortState = { column: SortColumn; direction: SortDirection };
 
 const COLUMNS: { column: SortColumn; label: string; className: string }[] = [
   { column: SORT_COLUMN.NAME, label: 'Name', className: '' },
@@ -132,14 +130,31 @@ const itemClassName = (selected: boolean) =>
 
 type FileExplorerProps = {
   rootLabel: string;
+  // GET `?path=<relative>` -> `{ entries: FileEntry[] }`, or `{ error }` on failure.
   listEndpoint: string;
+  // GET `?path=<relative>` -> the file's bytes, or `{ error }` on failure.
   fileEndpoint: string;
+  // Swap in an authenticated fetch when the endpoints need credentials.
+  fetcher?: typeof fetch;
+  // Receives failures to open a file; list failures render in the empty state.
+  onError?: (message: string) => void;
+  defaultSort?: SortState;
+  toolbarAction?: ReactNode;
+};
+
+const DEFAULT_SORT: SortState = {
+  column: SORT_COLUMN.NAME,
+  direction: SORT_DIRECTION.ASC,
 };
 
 export const FileExplorer = ({
   rootLabel,
   listEndpoint,
   fileEndpoint,
+  fetcher = fetch,
+  onError,
+  defaultSort = DEFAULT_SORT,
+  toolbarAction,
 }: FileExplorerProps) => {
   // null until mounted: the folder lives in `?path=` so a page reload or the
   // browser's back/forward keeps it, and `window` is unavailable during SSR.
@@ -149,10 +164,7 @@ export const FileExplorer = ({
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>(VIEW_MODE.LIST);
-  const [sort, setSort] = useState<SortState>({
-    column: SORT_COLUMN.NAME,
-    direction: SORT_DIRECTION.ASC,
-  });
+  const [sort, setSort] = useState<SortState>(defaultSort);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
 
   const loadEntries = useCallback(
@@ -160,7 +172,7 @@ export const FileExplorer = ({
       setLoading(true);
       setError(null);
       try {
-        const response = await authFetch(
+        const response = await fetcher(
           `${listEndpoint}?path=${encodeURIComponent(path)}`,
         );
         const data = await response.json();
@@ -173,7 +185,7 @@ export const FileExplorer = ({
         setLoading(false);
       }
     },
-    [listEndpoint],
+    [listEndpoint, fetcher],
   );
 
   useEffect(() => {
@@ -204,7 +216,7 @@ export const FileExplorer = ({
   const openFile = async (entry: FileEntry) => {
     const preview = window.open('', '_blank');
     try {
-      const response = await authFetch(
+      const response = await fetcher(
         `${fileEndpoint}?path=${encodeURIComponent(entry.path)}`,
       );
       if (!response.ok) throw new Error((await response.json()).error);
@@ -213,7 +225,7 @@ export const FileExplorer = ({
       setTimeout(() => URL.revokeObjectURL(url), OBJECT_URL_REVOKE_DELAY_MS);
     } catch (err) {
       preview?.close();
-      toast.error(err instanceof Error ? err.message : 'Failed to open file');
+      onError?.(err instanceof Error ? err.message : 'Failed to open file');
     }
   };
 
@@ -247,7 +259,7 @@ export const FileExplorer = ({
         path: parts.slice(0, index + 1).join(PATH_SEPARATOR),
       }))
     : [];
-  const parentPath = segments.slice(0, -1).at(-1)?.path ?? '';
+  const parentPath = segments[segments.length - 2]?.path ?? '';
   const selectedEntry = entries.find(entry => entry.path === selectedPath);
   const emptyText =
     error ?? (query ? 'No matching files' : 'This folder is empty');
@@ -295,6 +307,7 @@ export const FileExplorer = ({
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          {toolbarAction}
           <div className="relative w-[180px]">
             <Search
               size={12}

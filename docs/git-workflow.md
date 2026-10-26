@@ -23,7 +23,7 @@ Branching, publishing and synchronization conventions for this repository.
 
 ## Commit message enforcement
 
-[commitlint.config.mjs](../commitlint.config.mjs) requires the types above, optional lower-case scope and capitalized subject ending in a period. Merge commits are ignored; header/body/footer lengths and attribution footers are unconstrained.
+[commitlint.config.mjs](../commitlint.config.mjs) requires the types above, optional lower-case scope and capitalized subject ending in a period. Merge commits and GitHub Copilot Autofix commits (`Potential fix for pull request finding …`) are ignored; header/body/footer lengths and attribution footers are unconstrained.
 
 Enforcement is CI-only: `ci-pr-check` checks PR titles and commits; there is no local `commit-msg` hook. See [workflow checks](./ci/workflow-conventions.md#commit-message-checks) and the [quality-tool inventory](./code-quality-tools.md). Check a message locally with `printf '%s\n' 'feat(hearth): Add a page.' | npx commitlint`.
 

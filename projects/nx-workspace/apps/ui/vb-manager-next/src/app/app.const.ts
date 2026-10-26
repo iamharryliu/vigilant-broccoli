@@ -53,6 +53,10 @@ export const SIDEBAR_ROUTE = {
     title: 'Music',
     path: '/music',
   },
+  BACKGROUND_TASKS: {
+    title: 'Background Tasks',
+    path: '/background-tasks',
+  },
 } satisfies Record<string, ExtendedNavRoute>;
 
 export const APP_NAME = 'VB Manager';

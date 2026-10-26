@@ -6,10 +6,7 @@ import {
   PATH_PARAM,
   resolveJobApplicationsPath,
 } from './job-applications.server';
-import {
-  FILE_ENTRY_KIND,
-  FileEntry,
-} from '../../components/file-explorer.types';
+import { FILE_ENTRY_KIND, FileEntry } from '@vigilant-broccoli/common-js';
 
 const HIDDEN_FILE_PREFIX = '.';
 

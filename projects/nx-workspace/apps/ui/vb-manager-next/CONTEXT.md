@@ -7,6 +7,7 @@
   - [Lib-only class changes ship stale CSS from Next's build cache](#lib-only-class-changes-ship-stale-css-from-nexts-build-cache)
   - [A failed kanban board fetch must not look like a brand-new account](#a-failed-kanban-board-fetch-must-not-look-like-a-brand-new-account)
   - [Kanban's cross-lane drag reads CheckList's internal dnd-kit payload](#kanbans-cross-lane-drag-reads-checklists-internal-dnd-kit-payload)
+  - [Server SQLite uses `node:sqlite`, not `better-sqlite3`](#server-sqlite-uses-nodesqlite-not-better-sqlite3)
 
 - Keyboard shortcuts cheatsheet (Settings page, see [docs/features/settings.md](./docs/features/settings.md)): when adding, changing, or removing a global keyboard shortcut in `src/app/(pages)/layout.tsx` (`processKeyboardInput`), update `KEYBOARD_SHORTCUTS_MARKDOWN` in `src/app/content/keyboard-shortcuts.md.ts` to match.
 
@@ -29,3 +30,7 @@ Keep failed loads distinct from confirmed-empty state in `kanban.component.tsx`:
 `kanban.component.tsx` owns the `DndContext` around lanes using `GoogleTasksComponent` with `disableInternalDndContext`. Its handlers and `TaskDragOverlay` read CheckList's untyped payload: `type: 'task'`, `task`, `taskListId`, and droppable `type: 'taskList'`.
 
 Despite CheckList's generic typed props, these literals remain task-specific for this consumer. If changing `libs/@vigilant-broccoli/react-lib/src/components/CheckList.tsx`'s payload, update the kanban handlers together; TypeScript does not check this coupling.
+
+### Server SQLite uses `node:sqlite`, not `better-sqlite3`
+
+PM2 runs the app with `NODE_INTERPRETER` (`/opt/homebrew/bin/node`), which can be a different major than the shell's Node. `better-sqlite3`'s native binding is built for the shell's Node and fails to load under PM2's, and the failure only appears after `pnpm deploy:vb-manager`. `src/lib/job-application-runs.db.ts` uses Node's built-in `node:sqlite` instead, and `next.config.js` lists `node:sqlite` in `SERVER_ONLY_EXTERNALS` because webpack does not know it as a builtin. Check a new native dependency with `/opt/homebrew/bin/node -e "require('<pkg>')"` before using it in a server route.

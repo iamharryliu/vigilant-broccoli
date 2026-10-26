@@ -10,6 +10,7 @@ import { ShortcutsOverlay } from '../components/shortcuts-overlay.component';
 import { useDeployNotifications } from '../hooks/useDeployNotifications';
 import { useNotificationHistory } from '../hooks/useNotificationHistory';
 import { useBrowserNotifications } from '../hooks/useBrowserNotifications';
+import { useBackgroundTaskNotifications } from '../hooks/useBackgroundTaskNotifications';
 import { useUnreadDocumentTitle } from '../hooks/useUnreadDocumentTitle';
 import { NotificationContext } from '../context/NotificationContext';
 
@@ -93,6 +94,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     [add, browserNotify],
   );
   useDeployNotifications(handleNotification);
+  useBackgroundTaskNotifications();
   useUnreadDocumentTitle(unreadCount);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const handleSetNotificationsOpen = useCallback(
