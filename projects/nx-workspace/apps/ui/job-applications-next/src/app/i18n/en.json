@@ -4,11 +4,11 @@
   },
   "NAV": {
     "APPLICATIONS": "Applications",
-    "CAREER": "Career",
+    "CAREER_EXPERIENCE": "Career experience",
+    "RESUME": "Resume",
     "RUNS": "Runs"
   },
   "APPLICATIONS": {
-    "NEW": "New job application",
     "EMPTY": "No job applications yet.",
     "LOADING": "Loading…",
     "LOAD_FAILED": "Failed to load job applications",
@@ -33,15 +33,22 @@
   },
   "DIALOG": {
     "TITLE": "New job application",
-    "DESCRIPTION_BEFORE": "Paste a posting or an application question, or drag",
-    "BOOKMARKLET": "Send to Job Applications",
-    "DESCRIPTION_AFTER": "to your bookmarks bar and click it on a job posting.",
+    "DESCRIPTION": "Paste a posting or an application question.",
     "URL_PLACEHOLDER": "Posting URL (optional)",
     "TEXT_PLACEHOLDER": "Job posting or application question, with optional notes",
     "RUN": "Run",
     "STARTED": "Job application started",
     "VIEW_PROGRESS": "View progress",
     "RUN_FAILED": "Run failed"
+  },
+  "HELP": {
+    "LABEL": "Help",
+    "TITLE": "Adding a job application",
+    "DESCRIPTION_BEFORE": "Drag",
+    "BOOKMARKLET": "Send to Job Applications",
+    "DESCRIPTION_AFTER": "to your bookmarks bar, then click it on a job posting to open the new job application form filled in from the page.",
+    "MANUAL": "Or paste a posting or an application question yourself.",
+    "PASTE_MANUALLY": "Paste manually"
   },
   "RUNS": {
     "EMPTY": "No runs yet.",
@@ -50,6 +57,9 @@
     "FINISHED": "Job application finished",
     "FAILED": "Job application failed",
     "VIEW_APPLICATION": "View application",
+    "IMPORTED": "{label} imported",
+    "IMPORT_FAILED": "{label} import failed",
+    "VIEW": "View",
     "STATUS": {
       "RUNNING": "Running",
       "SUCCEEDED": "Succeeded",
@@ -57,8 +67,6 @@
     }
   },
   "CAREER": {
-    "TAB_CAREER_EXPERIENCE": "Career experience",
-    "TAB_RESUME": "Resume",
     "EDIT": "Edit",
     "PREVIEW": "Preview",
     "VIEW_MODE": "View mode",
@@ -66,9 +74,25 @@
     "SAVED": "Saved",
     "SAVE_FAILED": "Save failed",
     "LOAD_FAILED": "Failed to load the file",
-    "FILE_LOCATION": "Stored at {path}",
     "PROBLEMS": "Fix these before saving:",
-    "CAREER_EXPERIENCE_HINT": "Every fact a run may use. Keep the section headings and table columns; the skill reads them by name.",
-    "RESUME_HINT": "Your resume as JSON. Runs tailor it to each posting and keep name, contact details and links unchanged."
+    "RESET": "Reset",
+    "RESET_TITLE": "Reset {label}",
+    "RESET_DESCRIPTION": "Choose how to replace the saved file.",
+    "RESET_DONE": "{label} replaced",
+    "RESET_FAILED": "Reset failed",
+    "UPLOAD_TITLE": "Upload",
+    "UPLOAD_HINT": "Paste text or upload a .txt, .md, .json or .pdf file, such as an existing resume. Claude formats it into this shape using only its facts, and the result replaces the saved file when the run finishes.",
+    "UPLOAD_PLACEHOLDER": "Paste a resume, profile or notes",
+    "UPLOAD": "Format with Claude",
+    "UPLOAD_STARTED": "{label} import started",
+    "UPLOAD_FAILED": "Upload failed",
+    "CLEAR_TITLE": "Clear",
+    "CLEAR_HINT": "Keep the required headings and fields with every entry removed.",
+    "CLEAR": "Clear",
+    "SAMPLE_TITLE": "Sample",
+    "SAMPLE_HINT": "A fictional mid-senior full stack developer that shows the expected detail.",
+    "SAMPLE": "Use sample",
+    "BACK": "Back",
+    "CONFIRM_REPLACE": "This replaces the saved {label} right away."
   }
 }

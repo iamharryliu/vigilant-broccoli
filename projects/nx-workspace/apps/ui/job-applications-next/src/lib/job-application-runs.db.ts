@@ -3,17 +3,21 @@ import { dirname } from 'path';
 import { DatabaseSync } from 'node:sqlite';
 import {
   JobApplicationRun,
+  RUN_KIND,
   RUN_STATUS,
+  RunKind,
   RunStatus,
 } from '../app/constants/runs';
 import { RUNS_DB_PATH } from './paths.server';
 
 const RUNS_TABLE = 'job_application_runs';
+const KIND_COLUMN = 'kind';
 const INTERRUPTED_NOTE =
   '\nInterrupted: the server restarted during this run\n';
 
 interface RunRow {
   id: string;
+  kind: RunKind;
   title: string;
   status: RunStatus;
   started_at: string;
@@ -40,6 +44,15 @@ const openDb = () => {
       output TEXT NOT NULL DEFAULT ''
     )
   `);
+  // Databases created before import runs existed lack the kind column.
+  const columns = db
+    .prepare(`PRAGMA table_info(${RUNS_TABLE})`)
+    .all() as unknown as { name: string }[];
+  if (!columns.some(({ name }) => name === KIND_COLUMN)) {
+    db.exec(
+      `ALTER TABLE ${RUNS_TABLE} ADD COLUMN ${KIND_COLUMN} TEXT NOT NULL DEFAULT '${RUN_KIND.JOB_APPLICATION}'`,
+    );
+  }
   // The db is opened once per server process, before any run of this process
   // starts, so a row still running belongs to a process that no longer exists.
   db.prepare(
@@ -59,6 +72,7 @@ const getDb = () => (globalStore.jobApplicationRunsDb ??= openDb());
 
 const toRun = (row: RunRow): JobApplicationRun => ({
   id: row.id,
+  kind: row.kind,
   title: row.title,
   status: row.status,
   startedAt: row.started_at,
@@ -69,10 +83,17 @@ const toRun = (row: RunRow): JobApplicationRun => ({
 export const insertJobApplicationRun = (task: JobApplicationRun) => {
   getDb()
     .prepare(
-      `INSERT INTO ${RUNS_TABLE} (id, title, status, started_at, output)
-       VALUES (?, ?, ?, ?, ?)`,
+      `INSERT INTO ${RUNS_TABLE} (id, ${KIND_COLUMN}, title, status, started_at, output)
+       VALUES (?, ?, ?, ?, ?, ?)`,
     )
-    .run(task.id, task.title, task.status, task.startedAt, task.output);
+    .run(
+      task.id,
+      task.kind,
+      task.title,
+      task.status,
+      task.startedAt,
+      task.output,
+    );
 };
 
 export const updateJobApplicationRunOutput = (id: string, output: string) => {

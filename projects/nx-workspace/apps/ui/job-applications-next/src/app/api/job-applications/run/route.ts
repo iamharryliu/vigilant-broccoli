@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { validateResume } from '@vigilant-broccoli/resume';
+import { readFile } from 'fs/promises';
 import {
   CAREER_FILE,
   readCareerFile,
@@ -13,16 +14,22 @@ export const dynamic = 'force-dynamic';
 
 const HTTP_URL_PATTERN = /^https?:\/\/\S+$/;
 
+const readResumeEmail = (content: string) => {
+  const result = validateResume(JSON.parse(content));
+  return result.ok && result.resume.basics.name
+    ? result.resume.basics.email
+    : '';
+};
+
 // The skill must keep the resume's identity as is, so a blank one would make
-// every run fail its checks.
+// every run fail its checks, and the sample's would apply as someone fictional.
 const hasResumeIdentity = async () => {
   try {
-    const result = validateResume(
-      JSON.parse(await readCareerFile(CAREER_FILE.RESUME)),
+    const email = readResumeEmail(await readCareerFile(CAREER_FILE.RESUME));
+    const sampleEmail = readResumeEmail(
+      await readFile(CAREER_FILE.RESUME.template.sample, 'utf-8'),
     );
-    return (
-      result.ok && !!result.resume.basics.name && !!result.resume.basics.email
-    );
+    return !!email && email !== sampleEmail;
   } catch {
     return false;
   }
@@ -48,14 +55,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error:
-          'Add your name and email to the resume on the Career page before running',
+          'Replace the sample or blank resume with your own name and email in the Resume section before running',
       },
       { status: HTTP_STATUS_CODES.BAD_REQUEST },
     );
   }
   if (hasRunningJobApplicationRun()) {
     return NextResponse.json(
-      { error: 'A job application run is already in progress' },
+      { error: 'Another run is already in progress' },
       { status: HTTP_STATUS_CODES.CONFLICT },
     );
   }

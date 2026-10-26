@@ -16,6 +16,7 @@ const SCRIPTS = [
   'check-resume.ts',
   'generate-cover-letter-pdf.ts',
   'generate-resume-pdf.ts',
+  'validate-career-file.ts',
 ];
 const LIB_RESUME_JSON = resolve(
   APP_DIR,

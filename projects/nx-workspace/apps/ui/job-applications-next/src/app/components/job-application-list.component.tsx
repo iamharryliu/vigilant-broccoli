@@ -403,7 +403,7 @@ export const JobApplicationList = () => {
           if (!open) setViewer(null);
         }}
       >
-        <DialogContent className="flex h-[85vh] max-w-4xl flex-col">
+        <DialogContent className="flex h-[95vh] w-[95vw] max-w-none flex-col">
           <DialogHeader className="pr-8">
             <div className="flex items-center justify-between gap-2">
               <DialogTitle className="min-w-0 truncate">

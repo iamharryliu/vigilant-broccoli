@@ -51,10 +51,23 @@ const TEMPLATES_DIR = fromEnv(
   join(process.cwd(), 'templates'),
 );
 
+const SAMPLE_DIR = join(TEMPLATES_DIR, 'sample');
+
+// Blank keeps only the required headings and fields; the sample is a
+// fictional profile that also seeds career files that do not exist yet.
 export const TEMPLATE_PATH = {
-  CAREER_EXPERIENCE: join(TEMPLATES_DIR, CAREER_EXPERIENCE_FILE),
-  RESUME: join(TEMPLATES_DIR, RESUME_FILE),
+  BLANK: {
+    CAREER_EXPERIENCE: join(TEMPLATES_DIR, CAREER_EXPERIENCE_FILE),
+    RESUME: join(TEMPLATES_DIR, RESUME_FILE),
+  },
+  SAMPLE: {
+    CAREER_EXPERIENCE: join(SAMPLE_DIR, CAREER_EXPERIENCE_FILE),
+    RESUME: join(SAMPLE_DIR, RESUME_FILE),
+  },
 } as const;
+
+// One folder per career import run, holding its sources and output.
+export const IMPORTS_DIR = join(STATE_DIR, 'imports');
 
 // Assembled by the build: `.claude/skills/job-application` plus the bundled
 // `skill-scripts`.

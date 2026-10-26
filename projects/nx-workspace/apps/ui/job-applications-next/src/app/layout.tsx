@@ -1,9 +1,10 @@
 'use client';
 
+import { Suspense } from 'react';
 import './global.css';
 import { ThemeProvider } from '@vigilant-broccoli/react-lib';
 import { Toaster } from '@vigilant-broccoli/react-lib/toaster';
-import { AppNav } from './components/app-nav.component';
+import { AppSidebar } from './components/app-sidebar.component';
 import { RunNotifications } from './components/run-notifications.component';
 import { I18nProvider } from './i18n';
 import en from './i18n/en.json';
@@ -23,10 +24,14 @@ export default function RootLayout({
       <body>
         <ThemeProvider storageKey={THEME_STORAGE_KEY}>
           <I18nProvider>
-            <AppNav />
-            <main className="mx-auto flex max-w-5xl flex-col gap-4 p-4">
-              {children}
-            </main>
+            <div className="flex h-screen">
+              <Suspense>
+                <AppSidebar />
+              </Suspense>
+              <main className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
+                {children}
+              </main>
+            </div>
             <RunNotifications />
             <Toaster richColors closeButton position="bottom-right" />
           </I18nProvider>

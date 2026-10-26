@@ -11,12 +11,13 @@ services:
     init: true
     environment:
       - CLAUDE_CODE_OAUTH_TOKEN
+      - JOB_APPLICATIONS_MODEL
     ports:
       - '127.0.0.1:${JOB_APPLICATIONS_PORT:-4300}:3000'
     volumes:
       - '${JOB_APPLICATIONS_DIR:-${HOME}/Desktop/Job Applications}:/data'
       # A path bind-mounts your own career-experience.md and resume.json; unset,
-      # the named volume starts from the blank templates.
+      # the named volume starts from the sample profile.
       - '${CAREER_DIR:-career}:/career'
       - state:/state
 

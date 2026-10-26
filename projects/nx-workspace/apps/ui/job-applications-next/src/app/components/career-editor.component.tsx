@@ -1,16 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { Eye, Pencil, RotateCcw, Save } from 'lucide-react';
 import {
   Button,
   Callout,
   SegmentedControl,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
@@ -20,7 +17,13 @@ import {
   JSON_CONTENT_TYPE,
 } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
-import { CAREER_FILE_KIND, CareerFileKind } from '../constants/career';
+import {
+  CAREER_FILE_CHANGED_EVENT,
+  CAREER_FILE_KIND,
+  CareerFileKind,
+} from '../constants/career';
+import { toTab } from '../app.const';
+import { CareerResetDialog } from './career-reset-dialog.component';
 import { useTranslation } from '../i18n';
 import { validateCareerExperience } from '../utils/career-experience.utils';
 
@@ -31,33 +34,36 @@ type View = (typeof VIEW)[keyof typeof VIEW];
 const careerFileUrl = (kind: CareerFileKind) =>
   `${API_ENDPOINTS.CAREER}?kind=${kind}`;
 
-const EDITOR_CLASS = 'min-h-[60vh] font-mono text-xs';
+// Fills the space under the toolbar; the floor keeps it usable in short windows.
+const ICON_SIZE = 14;
+
+const EDITOR_CLASS = 'min-h-[200px] flex-1 resize-none font-mono text-xs';
 
 type FileEditorProps = {
   kind: CareerFileKind;
-  hint: string;
   // Live problems shown while typing; the server checks again on save.
   validate?: (content: string) => string[];
   preview?: boolean;
 };
 
-const FileEditor = ({ kind, hint, validate, preview }: FileEditorProps) => {
+const FileEditor = ({ kind, validate, preview }: FileEditorProps) => {
   const { t } = useTranslation();
   const [saved, setSaved] = useState<string | null>(null);
   const [content, setContent] = useState('');
-  const [path, setPath] = useState('');
   const [serverErrors, setServerErrors] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [view, setView] = useState<View>(VIEW.EDIT);
+  const [resetOpen, setResetOpen] = useState(false);
+  const label = t(toTab(kind).titleKey);
 
-  useEffect(() => {
+  const load = useCallback(() => {
     fetch(careerFileUrl(kind))
       .then(async response => {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error);
         setSaved(data.content);
         setContent(data.content);
-        setPath(data.path);
+        setServerErrors([]);
       })
       .catch(error =>
         toast.error(
@@ -65,6 +71,17 @@ const FileEditor = ({ kind, hint, validate, preview }: FileEditorProps) => {
         ),
       );
   }, [kind, t]);
+
+  useEffect(load, [load]);
+
+  // An import run rewrites the file on the server when it finishes.
+  useEffect(() => {
+    const reload = (event: Event) => {
+      if ((event as CustomEvent<CareerFileKind>).detail === kind) load();
+    };
+    window.addEventListener(CAREER_FILE_CHANGED_EVENT, reload);
+    return () => window.removeEventListener(CAREER_FILE_CHANGED_EVENT, reload);
+  }, [kind, load]);
 
   const liveErrors = useMemo(
     () => (validate ? validate(content) : []),
@@ -97,12 +114,8 @@ const FileEditor = ({ kind, hint, validate, preview }: FileEditorProps) => {
   if (saved === null) return null;
 
   return (
-    <div className="flex flex-col gap-3">
-      <p className="text-sm text-muted-foreground">{hint}</p>
-      <div className="flex items-center justify-between gap-2">
-        <span className="min-w-0 truncate text-xs text-muted-foreground">
-          {t('CAREER.FILE_LOCATION', { path })}
-        </span>
+    <div className="flex min-h-0 flex-1 flex-col gap-3">
+      <div className="flex items-center justify-end gap-2">
         <div className="flex shrink-0 items-center gap-2">
           {preview && (
             <SegmentedControl<View>
@@ -110,17 +123,28 @@ const FileEditor = ({ kind, hint, validate, preview }: FileEditorProps) => {
               value={view}
               onChange={setView}
               options={[
-                { value: VIEW.EDIT, label: t('CAREER.EDIT') },
-                { value: VIEW.PREVIEW, label: t('CAREER.PREVIEW') },
+                {
+                  value: VIEW.EDIT,
+                  label: t('CAREER.EDIT'),
+                  icon: <Pencil size={ICON_SIZE} />,
+                },
+                {
+                  value: VIEW.PREVIEW,
+                  label: t('CAREER.PREVIEW'),
+                  icon: <Eye size={ICON_SIZE} />,
+                },
               ]}
             />
           )}
+          <Button variant="outline" onClick={() => setResetOpen(true)}>
+            <RotateCcw size={ICON_SIZE} /> {t('CAREER.RESET')}
+          </Button>
           <Button
             onClick={save}
             loading={saving}
             disabled={content === saved || liveErrors.length > 0}
           >
-            {t('CAREER.SAVE')}
+            <Save size={ICON_SIZE} /> {t('CAREER.SAVE')}
           </Button>
         </div>
       </div>
@@ -135,7 +159,7 @@ const FileEditor = ({ kind, hint, validate, preview }: FileEditorProps) => {
         </Callout>
       )}
       {view === VIEW.PREVIEW ? (
-        <div className="prose prose-sm max-w-none dark:prose-invert">
+        <div className="prose prose-sm min-h-0 max-w-none flex-1 overflow-y-auto dark:prose-invert">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
         </div>
       ) : (
@@ -146,36 +170,23 @@ const FileEditor = ({ kind, hint, validate, preview }: FileEditorProps) => {
           className={EDITOR_CLASS}
         />
       )}
+      <CareerResetDialog
+        kind={kind}
+        label={label}
+        open={resetOpen}
+        onOpenChange={setResetOpen}
+        onReset={load}
+      />
     </div>
   );
 };
 
-export const CareerEditor = () => {
-  const { t } = useTranslation();
-  return (
-    <Tabs defaultValue={CAREER_FILE_KIND.CAREER_EXPERIENCE}>
-      <TabsList>
-        <TabsTrigger value={CAREER_FILE_KIND.CAREER_EXPERIENCE}>
-          {t('CAREER.TAB_CAREER_EXPERIENCE')}
-        </TabsTrigger>
-        <TabsTrigger value={CAREER_FILE_KIND.RESUME}>
-          {t('CAREER.TAB_RESUME')}
-        </TabsTrigger>
-      </TabsList>
-      <TabsContent value={CAREER_FILE_KIND.CAREER_EXPERIENCE} className="pt-3">
-        <FileEditor
-          kind={CAREER_FILE_KIND.CAREER_EXPERIENCE}
-          hint={t('CAREER.CAREER_EXPERIENCE_HINT')}
-          validate={validateCareerExperience}
-          preview
-        />
-      </TabsContent>
-      <TabsContent value={CAREER_FILE_KIND.RESUME} className="pt-3">
-        <FileEditor
-          kind={CAREER_FILE_KIND.RESUME}
-          hint={t('CAREER.RESUME_HINT')}
-        />
-      </TabsContent>
-    </Tabs>
-  );
-};
+export const CareerExperienceEditor = () => (
+  <FileEditor
+    kind={CAREER_FILE_KIND.CAREER_EXPERIENCE}
+    validate={validateCareerExperience}
+    preview
+  />
+);
+
+export const ResumeEditor = () => <FileEditor kind={CAREER_FILE_KIND.RESUME} />;

@@ -1,10 +1,11 @@
-import { copyFile, mkdir, readFile, writeFile } from 'fs/promises';
+import { mkdir, readFile, writeFile } from 'fs/promises';
 import { dirname } from 'path';
 import {
   CAREER_EXPERIENCE_PATH,
   RESUME_PATH,
   TEMPLATE_PATH,
 } from './paths.server';
+import { CAREER_PRESET, CareerPreset } from '../app/constants/career';
 
 const FILE_ENCODING = 'utf-8';
 const NOT_FOUND = 'ENOENT';
@@ -12,25 +13,33 @@ const NOT_FOUND = 'ENOENT';
 export const CAREER_FILE = {
   CAREER_EXPERIENCE: {
     path: CAREER_EXPERIENCE_PATH,
-    template: TEMPLATE_PATH.CAREER_EXPERIENCE,
+    template: {
+      [CAREER_PRESET.BLANK]: TEMPLATE_PATH.BLANK.CAREER_EXPERIENCE,
+      [CAREER_PRESET.SAMPLE]: TEMPLATE_PATH.SAMPLE.CAREER_EXPERIENCE,
+    },
   },
-  RESUME: { path: RESUME_PATH, template: TEMPLATE_PATH.RESUME },
+  RESUME: {
+    path: RESUME_PATH,
+    template: {
+      [CAREER_PRESET.BLANK]: TEMPLATE_PATH.BLANK.RESUME,
+      [CAREER_PRESET.SAMPLE]: TEMPLATE_PATH.SAMPLE.RESUME,
+    },
+  },
 } as const;
 
-type CareerFile = (typeof CAREER_FILE)[keyof typeof CAREER_FILE];
+export type CareerFile = (typeof CAREER_FILE)[keyof typeof CAREER_FILE];
 
 const isNotFound = (error: unknown) =>
   (error as NodeJS.ErrnoException).code === NOT_FOUND;
 
-// A user who mounts nothing starts from the blank template, saved to the
-// career volume so in-app edits and the skill's runs share one copy.
-export const ensureCareerFile = async ({ path, template }: CareerFile) => {
+// A user who mounts nothing starts from the sample, saved to the career
+// volume so in-app edits and the skill's runs share one copy.
+export const ensureCareerFile = async (file: CareerFile) => {
   try {
-    await readFile(path);
+    await readFile(file.path);
   } catch (error) {
     if (!isNotFound(error)) throw error;
-    await mkdir(dirname(path), { recursive: true });
-    await copyFile(template, path);
+    await resetCareerFile(file, CAREER_PRESET.SAMPLE);
   }
 };
 
@@ -46,3 +55,8 @@ export const writeCareerFile = async (file: CareerFile, content: string) => {
   await mkdir(dirname(file.path), { recursive: true });
   await writeFile(file.path, content, FILE_ENCODING);
 };
+
+// Rewrites the file in place rather than replacing it, so a single-file bind
+// mount keeps pointing at the host file.
+export const resetCareerFile = async (file: CareerFile, preset: CareerPreset) =>
+  writeCareerFile(file, await readFile(file.template[preset], FILE_ENCODING));
