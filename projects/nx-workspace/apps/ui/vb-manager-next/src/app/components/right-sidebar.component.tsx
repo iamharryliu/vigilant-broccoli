@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Languages,
   Briefcase,
+  FolderOpen,
   Music,
 } from 'lucide-react';
 import { NotificationRecord } from '../hooks/useNotificationHistory';
@@ -30,6 +31,7 @@ const SIDEBAR_ROUTE_ITEMS = [
   { route: SIDEBAR_ROUTE.CHATBOT, icon: MessageSquare },
   { route: SIDEBAR_ROUTE.LANGUAGE_LEARNING, icon: Languages },
   { route: SIDEBAR_ROUTE.CAREER, icon: Briefcase },
+  { route: SIDEBAR_ROUTE.CAREER2, icon: FolderOpen },
   { route: SIDEBAR_ROUTE.MUSIC, icon: Music },
 ];
 
