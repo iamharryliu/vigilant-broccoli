@@ -1,0 +1,98 @@
+{
+  "APP": {
+    "LABEL": "Job Applications"
+  },
+  "NAV": {
+    "APPLICATIONS": "Applications",
+    "CAREER_EXPERIENCE": "Career experience",
+    "RESUME": "Resume",
+    "RUNS": "Runs"
+  },
+  "APPLICATIONS": {
+    "EMPTY": "No job applications yet.",
+    "LOADING": "Loading…",
+    "LOAD_FAILED": "Failed to load job applications",
+    "DETAILS_FAILED": "Failed to load",
+    "TAB_POSTING": "Posting",
+    "TAB_GAPS": "Gaps",
+    "ABOUT_JOB": "About the job",
+    "ABOUT_COMPANY": "About the company",
+    "NO_POSTING": "No posting saved for this application.",
+    "NO_GAPS_FILE": "No gaps document saved for this application.",
+    "NO_GAPS": "No gaps found against the posting.",
+    "VIEW_RESUME": "View resume",
+    "VIEW_COVER_LETTER": "View cover letter",
+    "RESUME": "Resume",
+    "COVER_LETTER": "Cover letter",
+    "NOT_SAVED": "No {label} saved.",
+    "OPEN_FAILED": "Failed to open {label}",
+    "COPY": "Copy",
+    "COPIED": "Copied",
+    "COPY_FAILED": "Failed to copy cover letter",
+    "FILE_DESCRIPTION": "Job application file"
+  },
+  "DIALOG": {
+    "TITLE": "New job application",
+    "DESCRIPTION": "Paste a posting or an application question.",
+    "URL_PLACEHOLDER": "Posting URL (optional)",
+    "TEXT_PLACEHOLDER": "Job posting or application question, with optional notes",
+    "RUN": "Run",
+    "STARTED": "Job application started",
+    "VIEW_PROGRESS": "View progress",
+    "RUN_FAILED": "Run failed"
+  },
+  "HELP": {
+    "LABEL": "Help",
+    "TITLE": "Adding a job application",
+    "DESCRIPTION_BEFORE": "Drag",
+    "BOOKMARKLET": "Send to Job Applications",
+    "DESCRIPTION_AFTER": "to your bookmarks bar, then click it on a job posting to open the new job application form filled in from the page.",
+    "MANUAL": "Or paste a posting or an application question yourself.",
+    "PASTE_MANUALLY": "Paste manually"
+  },
+  "RUNS": {
+    "EMPTY": "No runs yet.",
+    "LOAD_FAILED": "Failed to load runs",
+    "STARTED_AT": "Started {time}",
+    "FINISHED": "Job application finished",
+    "FAILED": "Job application failed",
+    "VIEW_APPLICATION": "View application",
+    "IMPORTED": "{label} imported",
+    "IMPORT_FAILED": "{label} import failed",
+    "VIEW": "View",
+    "STATUS": {
+      "RUNNING": "Running",
+      "SUCCEEDED": "Succeeded",
+      "FAILED": "Failed"
+    }
+  },
+  "CAREER": {
+    "EDIT": "Edit",
+    "PREVIEW": "Preview",
+    "VIEW_MODE": "View mode",
+    "SAVE": "Save",
+    "SAVED": "Saved",
+    "SAVE_FAILED": "Save failed",
+    "LOAD_FAILED": "Failed to load the file",
+    "PROBLEMS": "Fix these before saving:",
+    "RESET": "Reset",
+    "RESET_TITLE": "Reset {label}",
+    "RESET_DESCRIPTION": "Choose how to replace the saved file.",
+    "RESET_DONE": "{label} replaced",
+    "RESET_FAILED": "Reset failed",
+    "UPLOAD_TITLE": "Upload",
+    "UPLOAD_HINT": "Paste text or upload a .txt, .md, .json or .pdf file, such as an existing resume. Claude formats it into this shape using only its facts, and the result replaces the saved file when the run finishes.",
+    "UPLOAD_PLACEHOLDER": "Paste a resume, profile or notes",
+    "UPLOAD": "Format with Claude",
+    "UPLOAD_STARTED": "{label} import started",
+    "UPLOAD_FAILED": "Upload failed",
+    "CLEAR_TITLE": "Clear",
+    "CLEAR_HINT": "Keep the required headings and fields with every entry removed.",
+    "CLEAR": "Clear",
+    "SAMPLE_TITLE": "Sample",
+    "SAMPLE_HINT": "A fictional mid-senior full stack developer that shows the expected detail.",
+    "SAMPLE": "Use sample",
+    "BACK": "Back",
+    "CONFIRM_REPLACE": "This replaces the saved {label} right away."
+  }
+}

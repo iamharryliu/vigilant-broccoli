@@ -161,6 +161,10 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   immich:docker:restart       Restart the standalone Immich Docker Compose stack
   immich:docker:reload        Reload the standalone Immich Docker Compose stack
   immich:docker:logs          Tail the standalone Immich Docker Compose logs
+  job-applications:serve  Run job-applications-next with next dev on port 3000 against this repo's resume and career notes and ~/Desktop/Job Applications
+  job-applications:docker:up  Build job-applications-next and start its container with the Claude token from Vault and this repo's resume and career notes mounted
+  job-applications:docker:down  Stop the job-applications-next container
+  job-applications:docker:logs  Tail the job-applications-next container logs
   vb-manager-next:start       Start vb-manager-next via PM2 and save the process list
   event-calendars:sync        Sync every event calendar with sources from Facebook to Google Calendar (exits non-zero on failure, 3 when Facebook login is required; logs to ~/.vb-manager/event-calendars-sync.log)
   deploy:vb-manager           Pull latest (ff-only), then reload vb-manager-next via PM2 and save the process list

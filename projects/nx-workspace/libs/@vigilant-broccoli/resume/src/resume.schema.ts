@@ -22,6 +22,7 @@ export const resumeSchema = z.object({
     title: z.string(),
     email: z.string(),
     phone: z.string(),
+    location: z.string().optional(),
     links: z.array(linkSchema),
   }),
   summary: z.string().optional(),
