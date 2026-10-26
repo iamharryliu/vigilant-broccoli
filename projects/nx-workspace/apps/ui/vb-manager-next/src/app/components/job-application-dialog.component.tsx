@@ -47,7 +47,10 @@ const UNSAFE_JS_CHAR_MAP: Record<string, string> = {
 };
 
 const escapeUnsafeJsChars = (value: string) =>
-  value.replace(/[<>\/\b\f\n\r\t\0\u2028\u2029]/g, (char) => UNSAFE_JS_CHAR_MAP[char]);
+  value.replace(
+    /[<>\/\b\f\n\r\t\0\u2028\u2029]/g,
+    char => UNSAFE_JS_CHAR_MAP[char],
+  );
 
 type BookmarkletMessage = {
   source: typeof BOOKMARKLET_MESSAGE_SOURCE;
