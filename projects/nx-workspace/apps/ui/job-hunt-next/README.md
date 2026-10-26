@@ -1,4 +1,4 @@
-# Job Applications
+# Job Hunt
 
 Tailors a resume and cover letter to each job posting with Claude Code, from career files the user owns.
 

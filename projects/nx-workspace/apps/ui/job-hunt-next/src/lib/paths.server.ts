@@ -13,7 +13,7 @@ const ENV = {
   SKILL_WORKDIR: 'SKILL_WORKDIR',
 } as const;
 
-const STATE_DIR_NAME = '.job-applications';
+const STATE_DIR_NAME = '.job-hunt';
 const CAREER_EXPERIENCE_FILE = 'career-experience.md';
 const RESUME_FILE = 'resume.json';
 
@@ -73,10 +73,7 @@ export const IMPORTS_DIR = join(STATE_DIR, 'imports');
 // `skill-scripts`.
 export const SKILL_WORKDIR = fromEnv(
   ENV.SKILL_WORKDIR,
-  join(
-    process.cwd(),
-    '../../../dist/apps/ui/job-applications-next/skill-workdir',
-  ),
+  join(process.cwd(), '../../../dist/apps/ui/job-hunt-next/skill-workdir'),
 );
 
 export const PATH_PARAM = 'path';

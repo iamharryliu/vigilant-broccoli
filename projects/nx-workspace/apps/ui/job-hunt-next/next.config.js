@@ -18,7 +18,7 @@ const SERVER_ONLY_EXTERNALS = ['node:sqlite'];
  **/
 const nextConfig = {
   nx: {},
-  distDir: '../../../dist/apps/ui/job-applications-next/.next',
+  distDir: '../../../dist/apps/ui/job-hunt-next/.next',
   agentRules: false,
   output: 'standalone',
   // Tracing follows the lib's source imports and would copy the real

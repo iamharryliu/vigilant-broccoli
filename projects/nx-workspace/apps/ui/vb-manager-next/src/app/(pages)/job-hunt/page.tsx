@@ -17,7 +17,7 @@ const FRAME_SRC = `${LOCAL_HOST_URL.JOB_HUNT.URL}/?${JOB_APPLICATION_BOOKMARKLET
 
 type PostingTab = { window: MessageEventSource; origin: string };
 
-// job-applications-next runs as its own container behind the local k3s
+// job-hunt-next runs as its own container behind the local k3s
 // ingress; the frame needs clipboard access for its Copy buttons.
 export default function Page() {
   usePageTitle(SIDEBAR_ROUTE.JOB_HUNT.title);

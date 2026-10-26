@@ -26,6 +26,7 @@ on:
           - component-library
           - personal-website-react
           - employee-handler-ui
+          - job-hunt-next
           - cloud8skate-sanity
           - vb-express
           - llm-service

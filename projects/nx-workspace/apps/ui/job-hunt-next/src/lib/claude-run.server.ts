@@ -10,7 +10,7 @@ import {
 import { SKILL_WORKDIR } from './paths.server';
 
 // Any `claude --model` value: an alias such as `opus` or a full model ID.
-const MODEL = process.env.JOB_APPLICATIONS_MODEL || 'sonnet';
+const MODEL = process.env.JOB_HUNT_MODEL || 'sonnet';
 const PERSIST_THROTTLE_MS = 2000;
 const OUTPUT_LIMIT = 20000;
 const HISTORY_LIMIT = 20;

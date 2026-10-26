@@ -10,8 +10,7 @@ const WRITE_METHODS = [
 ];
 const SAME_ORIGIN = 'same-origin';
 // Who may embed the app, as CSP sources, e.g. `'self' https://manager.example`.
-const FRAME_ANCESTORS =
-  process.env.JOB_APPLICATIONS_FRAME_ANCESTORS || "'self'";
+const FRAME_ANCESTORS = process.env.JOB_HUNT_FRAME_ANCESTORS || "'self'";
 
 // The app has no login, so another site's page could otherwise post a form
 // or text body here (no preflight) and clear a career file or start a run.

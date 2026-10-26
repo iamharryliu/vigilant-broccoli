@@ -7,7 +7,7 @@
 - Click selects; double-click opens a folder or opens a file in a new tab
 - The open folder is kept in `?path=`, so a page reload or browser back/forward stays in place
 
-- New job applications are made in job-applications-next, embedded on the [Job Hunt](./job-hunt.md) page
+- New job applications are made in job-hunt-next, embedded on the [Job Hunt](./job-hunt.md) page
 
 ## API
 

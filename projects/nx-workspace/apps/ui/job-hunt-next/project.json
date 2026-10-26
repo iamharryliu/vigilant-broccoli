@@ -1,0 +1,86 @@
+{
+  "name": "job-hunt-next",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/job-hunt-next",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "default",
+        "^default",
+        {
+          "externalDependencies": ["next"]
+        },
+        {
+          "dependentTasksOutputFiles": "**/*.d.ts",
+          "transitive": true
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/apps/ui/job-hunt-next/.next/!(cache)/**/*",
+        "{workspaceRoot}/dist/apps/ui/job-hunt-next/.next/!(cache)",
+        "{workspaceRoot}/dist/apps/ui/job-hunt-next/skill-workdir"
+      ],
+      "options": {
+        "cwd": "apps/ui/job-hunt-next",
+        "tty": false,
+        "commands": [
+          "next build --webpack",
+          "node scripts/build-skill-scripts.mjs"
+        ],
+        "parallel": false
+      },
+      "configurations": {
+        "development": {}
+      }
+    },
+    "check-personal-data": {
+      "dependsOn": ["build"],
+      "command": "node apps/ui/job-hunt-next/scripts/check-personal-data.mjs"
+    },
+    "deploy-container": {
+      "dependsOn": ["check-personal-data"],
+      "command": "docker buildx build --platform linux/amd64 -f apps/ui/job-hunt-next/Dockerfile -t iamharryliu/job-hunt-next:latest -t iamharryliu/job-hunt-next:${COMMIT_SHA:-latest} --push ."
+    },
+    "deploy": {
+      "executor": "nx:noop",
+      "dependsOn": ["deploy-container"]
+    },
+    "deploy:production": {
+      "executor": "nx:noop",
+      "dependsOn": ["deploy-container"]
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/ui/job-hunt-next",
+        "command": "next dev --webpack --hostname 127.0.0.1 --port 3000"
+      }
+    },
+    "docker:up": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "docker compose -f apps/ui/job-hunt-next/docker-compose.yml up -d --build"
+      },
+      "configurations": {
+        "repo-files": {
+          "command": "docker compose -f apps/ui/job-hunt-next/docker-compose.yml -f apps/ui/job-hunt-next/docker-compose.repo-files.yml up -d --build"
+        }
+      }
+    },
+    "docker:down": {
+      "command": "docker compose -f apps/ui/job-hunt-next/docker-compose.yml down"
+    },
+    "docker:logs": {
+      "command": "docker compose -f apps/ui/job-hunt-next/docker-compose.yml logs -f"
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

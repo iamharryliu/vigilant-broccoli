@@ -9,7 +9,7 @@ import { RunNotifications } from './components/run-notifications.component';
 import { I18nProvider } from './i18n';
 import en from './i18n/en.json';
 
-const THEME_STORAGE_KEY = 'job-applications-next-theme';
+const THEME_STORAGE_KEY = 'job-hunt-next-theme';
 
 export default function RootLayout({
   children,
