@@ -26,7 +26,10 @@ Personal monorepo, supporting **19 applications**, **6 API services**, **11 Dock
   - [`main`](#main)
   - [`production`](#production)
   - [Demo](#demo)
+- [Containers](#containers)
 - [Libraries](#libraries)
+  - [Public](#public-1)
+  - [Private](#private-1)
 - [CI Actions](#ci-actions)
 - [Stack](#stack)
 
@@ -210,7 +213,34 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [Office Presence Service](./projects/nx-workspace/apps/api/office-presence-service) | Fly.io | Slack |
 | [Office Presence UI](./projects/nx-workspace/apps/ui/office-presence-ui) | Cloudflare Pages | Office Presence Service |
 
+## Containers
+
+| Image | Application | Pushed by | Runs on |
+| --- | --- | --- | --- |
+| [`iamharryliu/bucket-service`](https://hub.docker.com/r/iamharryliu/bucket-service) | [Bucket Service](./projects/nx-workspace/apps/api/bucket-service) | `deploy-container` target | Fly.io (staging, production) |
+| [`iamharryliu/email-service`](https://hub.docker.com/r/iamharryliu/email-service) | [Email Service](./projects/nx-workspace/apps/api/email-service) | `deploy-container` target | Fly.io (staging, production) |
+| [`iamharryliu/email-subscription-service`](https://hub.docker.com/r/iamharryliu/email-subscription-service) | [Email Subscription Service](./projects/nx-workspace/apps/api/email-subscription-service) | `deploy-container` target | Fly.io (staging, production) |
+| [`iamharryliu/employee-handler-next`](https://hub.docker.com/r/iamharryliu/employee-handler-next) | [Employee Handler UI](./projects/nx-workspace/apps/ui/employee-handler-ui) | `deploy-container` target | None; published for self-hosting |
+| [`iamharryliu/llm-service`](https://hub.docker.com/r/iamharryliu/llm-service) | [LLM Service](./projects/nx-workspace/apps/api/llm-service) | `deploy-container` target | Fly.io (staging, production) |
+| [`iamharryliu/office-presence-service`](https://hub.docker.com/r/iamharryliu/office-presence-service) | [Office Presence Service](./projects/nx-workspace/apps/api/office-presence-service) | `deploy-container` target | Fly.io (demo) |
+| [`iamharryliu/socket-server-socketio`](https://hub.docker.com/r/iamharryliu/socket-server-socketio) | [Socket Server (Socket.IO)](./projects/nx-workspace/apps/socket-server-socketio) | `deploy-container` target | OCI VM, updated by Watchtower |
+| [`iamharryliu/utilities-ui`](https://hub.docker.com/r/iamharryliu/utilities-ui) | [Utilities UI](./projects/nx-workspace/apps/ui/utilities-ui) | `deploy-container` target | None; published for self-hosting |
+| [`iamharryliu/vb-code-server`](https://hub.docker.com/r/iamharryliu/vb-code-server) | [code-server](./infrastructure/code-server) | `deploy-code-server-image` workflow | OCI code-server VM, pulled every 15 minutes |
+| [`iamharryliu/vb-express`](https://hub.docker.com/r/iamharryliu/vb-express) | [VB Express](./projects/nx-workspace/apps/api/vb-express) | `deploy-container` target | Fly.io (staging, production) |
+| [`iamharryliu/waiting-games`](https://hub.docker.com/r/iamharryliu/waiting-games) | [Waiting Games](./projects/nx-workspace/apps/ui/waiting-games) | `deploy-container` target | None; published for self-hosting |
+
 ## Libraries
+
+### Public
+
+| Library | Description | Tags |
+| --- | --- | --- |
+| [@vigilant-broccoli/employee-handler](./projects/nx-workspace/libs/@vigilant-broccoli/employee-handler) | Employee lifecycle automation for onboarding, offboarding, signatures and data sync. | `type:util` |
+| [@vigilant-broccoli/react-lib](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib) | Shared React component library. | `type:primitive` |
+| [@vigilant-broccoli/slack-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/slack-workspace) | Slack Web API client and view-builder utilities. | `type:util` |
+| [@vigilant-broccoli/slackbots](./projects/nx-workspace/libs/@vigilant-broccoli/slackbots) | Slack bot apps built on slack-workspace, including Office Presence. | `type:util` |
+
+### Private
 
 | Library | Description | Tags |
 | --- | --- | --- |
@@ -221,7 +251,6 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [@vigilant-broccoli/common-node](./projects/nx-workspace/libs/@vigilant-broccoli/common-node) | Node environment variable, HTTP, date, encryption and audio utilities. | `type:util` |
 | [@vigilant-broccoli/deployment](./projects/nx-workspace/libs/@vigilant-broccoli/deployment) | Deploy notification constants for vb-manager-next. | `type:util` |
 | [@vigilant-broccoli/devops-cli](./projects/nx-workspace/libs/@vigilant-broccoli/devops-cli) | Typed wrappers for the aws, gcloud, docker, pm2, flyctl, vercel, wrangler and tailscale CLIs. | `type:util` |
-| [@vigilant-broccoli/employee-handler](./projects/nx-workspace/libs/@vigilant-broccoli/employee-handler) | Employee lifecycle automation for onboarding, offboarding, signatures and data sync. | `type:util` |
 | [@vigilant-broccoli/fastify](./projects/nx-workspace/libs/@vigilant-broccoli/fastify) | Fastify docs, API key, reCAPTCHA, honeypot, request logging and ping plugins. | `type:util` |
 | [@vigilant-broccoli/github-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/github-workspace) | GitHub CLI commands and models for Node. | `type:util` |
 | [@vigilant-broccoli/github-workspace-js](./projects/nx-workspace/libs/@vigilant-broccoli/github-workspace-js) | GitHub constants and types for browser and Node. | `type:util` |
@@ -234,7 +263,6 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [@vigilant-broccoli/money-movement](./projects/nx-workspace/libs/@vigilant-broccoli/money-movement) | Stripe payment service. | `type:util` |
 | [@vigilant-broccoli/private-infrastructure](./projects/nx-workspace/libs/@vigilant-broccoli/private-infrastructure) | URLs embedding an account, org, project or workspace id, and private-network hosts. | `type:util`, `visibility:private` |
 | [@vigilant-broccoli/public-links](./projects/nx-workspace/libs/@vigilant-broccoli/public-links) | Generic vendor links, public quick links and the pastebin. | `type:util`, `visibility:public` |
-| [@vigilant-broccoli/react-lib](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib) | Shared React component library. | `type:primitive` |
 | [@vigilant-broccoli/react-lib-auth](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-auth) | Supabase auth provider factory and Google sign-in page for React apps. | `type:domain` |
 | [@vigilant-broccoli/react-lib-calendar](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-calendar) | Month-paged calendar list view and date grouping helpers. | `type:domain` |
 | [@vigilant-broccoli/react-lib-higher-level](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-higher-level) | Composite React components such as Sidebar, Pastebin and the calendar agenda. | `type:higher-level` |
@@ -243,8 +271,6 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [@vigilant-broccoli/react-sandbox](./projects/nx-workspace/libs/@vigilant-broccoli/react-sandbox) | Component sandbox and demos for the component library. | `type:higher-level` |
 | [@vigilant-broccoli/react-utility](./projects/nx-workspace/libs/@vigilant-broccoli/react-utility) | QR code, audio, clock and weather display utilities for React. | `type:higher-level` |
 | [@vigilant-broccoli/resume](./projects/nx-workspace/libs/@vigilant-broccoli/resume) | Resume schema, experience data and PDF generation. | `type:util` |
-| [@vigilant-broccoli/slack-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/slack-workspace) | Slack Web API client and view-builder utilities. | `type:util` |
-| [@vigilant-broccoli/slackbots](./projects/nx-workspace/libs/@vigilant-broccoli/slackbots) | Slack bot apps built on slack-workspace, including Office Presence. | `type:util` |
 | [@vigilant-broccoli/storage](./projects/nx-workspace/libs/@vigilant-broccoli/storage) | Multi-provider object storage bucket service. | `type:util` |
 | [@vigilant-broccoli/vercel-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/vercel-workspace) | Vercel API types and utilities. | `type:util` |
 
