@@ -7,22 +7,15 @@ import { authFetch } from '../../../libs/auth';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import {
   BackgroundTask,
-  TASK_KIND,
   TASK_KIND_LABELS,
   TASK_STATUS,
   TaskStatus,
 } from '../constants/background-tasks';
-import {
-  SAMPLE_EXPAND_LATEST,
-  SAMPLE_EXPAND_PARAM,
-  SIDEBAR_ROUTE,
-} from '../app.const';
+import { SIDEBAR_ROUTE } from '../app.const';
 
 const IDLE_POLL_MS = 10_000;
 const ACTIVE_POLL_MS = 3000;
 const VIEW_LABEL = 'View';
-const VIEW_APPLICATION_LABEL = 'View application';
-const SAMPLE_LATEST_URL = `${SIDEBAR_ROUTE.SAMPLE.path}?${SAMPLE_EXPAND_PARAM}=${SAMPLE_EXPAND_LATEST}`;
 
 const OUTCOME_LABELS: Record<Exclude<TaskStatus, 'running'>, string> = {
   [TASK_STATUS.SUCCEEDED]: 'finished',
@@ -50,23 +43,7 @@ export const useBackgroundTaskNotifications = () => {
     let timer: ReturnType<typeof setTimeout>;
     let known: Map<string, TaskStatus> | null = null;
 
-    // A finished application links to its card on the Sample page. That page
-    // loads its list once, so when already there the page is reloaded.
-    const viewApplication = () => {
-      if (pathnameRef.current === SIDEBAR_ROUTE.SAMPLE.path) {
-        window.location.assign(SAMPLE_LATEST_URL);
-      } else {
-        router.push(SAMPLE_LATEST_URL);
-      }
-    };
-
-    const getAction = (task: BackgroundTask) => {
-      if (
-        task.kind === TASK_KIND.JOB_APPLICATION &&
-        task.status !== TASK_STATUS.FAILED
-      ) {
-        return { label: VIEW_APPLICATION_LABEL, onClick: viewApplication };
-      }
+    const getAction = () => {
       if (pathnameRef.current === SIDEBAR_ROUTE.BACKGROUND_TASKS.path) return;
       return {
         label: VIEW_LABEL,
@@ -78,7 +55,7 @@ export const useBackgroundTaskNotifications = () => {
       if (task.status === TASK_STATUS.RUNNING) return;
       OUTCOME_TOAST[task.status](
         `${TASK_KIND_LABELS[task.kind]} ${OUTCOME_LABELS[task.status]}`,
-        { description: task.title, action: getAction(task) },
+        { description: task.title, action: getAction() },
       );
     };
 

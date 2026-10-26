@@ -14,7 +14,7 @@
    - `CAREER_DIR`: host folder holding `career-experience.md` and `resume.json`. Unset, a `career` volume starts from the sample profile
    - `JOB_APPLICATIONS_MODEL`: Claude model for runs, default `sonnet`
    - `JOB_APPLICATIONS_PORT`: host port, default 4300
-   - `JOB_APPLICATIONS_FRAME_ANCESTORS`: CSP `frame-ancestors` sources allowed to embed the app, default `'self'`.
+   - `JOB_APPLICATIONS_FRAME_ANCESTORS`: CSP `frame-ancestors` sources allowed to embed the app, default `'self'`. In this repo `docker-compose.repo-files.yml` adds `https://manager.vigilant-broccoli.app`
 3. Run `nx run job-applications-next:docker:up` from `projects/nx-workspace` and open `http://localhost:4300`
 4. Fill in the resume's name, email and contact details in the Resume section and the career experience in the Career experience section before the first run
 
@@ -38,3 +38,4 @@ The run's `--add-dir` covers the directories of both paths.
 ## Embedding and request checks
 
 - `src/proxy.ts` sends `Content-Security-Policy: frame-ancestors <JOB_APPLICATIONS_FRAME_ANCESTORS>` on every page and refuses `POST`/`PUT`/`PATCH`/`DELETE` under `/api/` with 403 when `Sec-Fetch-Site` is not `same-origin` or `Origin` differs from the host (`X-Forwarded-Host` behind a proxy). The app has no login, so this is what stops another site's page from clearing a career file or starting a run; requests without either header (curl) pass
+- In this repo the container is served at `https://job-hunt.vigilant-broccoli.app` by the local k3s ingress (`infrastructure/local`), which vb-manager-next's Job Hunt page embeds. Requests from inside the iframe are same-origin to that host, so they pass

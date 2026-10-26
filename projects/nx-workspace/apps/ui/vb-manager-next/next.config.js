@@ -22,8 +22,6 @@ const SERVER_ONLY_EXTERNALS = [
   'playwright',
   'playwright-core',
   'chromium-bidi',
-  // Newer than the builtin list webpack knows, so it must be marked external.
-  'node:sqlite',
 ];
 const LIBS_DIR = join(__dirname, '../../../libs/@vigilant-broccoli');
 const LIB_SOURCE_PATTERN = /\.(tsx?|jsx?|html)$/;
