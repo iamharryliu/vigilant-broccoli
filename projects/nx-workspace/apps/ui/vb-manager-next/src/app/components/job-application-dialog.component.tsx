@@ -32,6 +32,23 @@ const BOOKMARKLET_RETRY_MS = 300;
 const BOOKMARKLET_GIVE_UP_MS = 15000;
 const BOOKMARKLET_LABEL = 'Send to Job Applications';
 
+const UNSAFE_JS_CHAR_MAP: Record<string, string> = {
+  '<': '\\u003C',
+  '>': '\\u003E',
+  '/': '\\u002F',
+  '\b': '\\b',
+  '\f': '\\f',
+  '\n': '\\n',
+  '\r': '\\r',
+  '\t': '\\t',
+  '\0': '\\0',
+  '\u2028': '\\u2028',
+  '\u2029': '\\u2029',
+};
+
+const escapeUnsafeJsChars = (value: string) =>
+  value.replace(/[<>\/\b\f\n\r\t\0\u2028\u2029]/g, (char) => UNSAFE_JS_CHAR_MAP[char]);
+
 type BookmarkletMessage = {
   source: typeof BOOKMARKLET_MESSAGE_SOURCE;
   url: string;
@@ -51,7 +68,7 @@ const isBookmarkletMessage = (data: unknown): data is BookmarkletMessage =>
 // the app acknowledges, since the new tab may still be loading or redirecting
 // to login.
 const buildBookmarklet = (origin: string) =>
-  `javascript:(function(){var o=${JSON.stringify(origin)};var w=window.open(o+'/career2');document.querySelectorAll('[aria-expanded="false"]').forEach(function(b){if(${BOOKMARKLET_EXPANDER_PATTERN}.test(b.innerText))b.click()});setTimeout(function(){var m={source:'${BOOKMARKLET_MESSAGE_SOURCE}',url:location.href,title:document.title,text:document.body.innerText.slice(0,${BOOKMARKLET_TEXT_LIMIT})};var t=setInterval(function(){w.postMessage(m,o)},${BOOKMARKLET_RETRY_MS});window.addEventListener('message',function(e){if(e.origin===o&&e.data==='${BOOKMARKLET_ACK}')clearInterval(t)});setTimeout(function(){clearInterval(t)},${BOOKMARKLET_GIVE_UP_MS})},${BOOKMARKLET_EXPAND_WAIT_MS})})()`;
+  `javascript:(function(){var o=${escapeUnsafeJsChars(JSON.stringify(origin))};var w=window.open(o+'/career2');document.querySelectorAll('[aria-expanded="false"]').forEach(function(b){if(${BOOKMARKLET_EXPANDER_PATTERN}.test(b.innerText))b.click()});setTimeout(function(){var m={source:'${BOOKMARKLET_MESSAGE_SOURCE}',url:location.href,title:document.title,text:document.body.innerText.slice(0,${BOOKMARKLET_TEXT_LIMIT})};var t=setInterval(function(){w.postMessage(m,o)},${BOOKMARKLET_RETRY_MS});window.addEventListener('message',function(e){if(e.origin===o&&e.data==='${BOOKMARKLET_ACK}')clearInterval(t)});setTimeout(function(){clearInterval(t)},${BOOKMARKLET_GIVE_UP_MS})},${BOOKMARKLET_EXPAND_WAIT_MS})})()`;
 
 const INPUT_CLASS_NAME =
   'w-full rounded border border-gray-200 bg-transparent p-2 text-sm dark:border-gray-700';
