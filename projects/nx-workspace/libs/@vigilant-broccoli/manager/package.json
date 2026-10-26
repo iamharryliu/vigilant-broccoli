@@ -6,6 +6,7 @@
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "dependencies": {
+    "@harry/personal": "workspace:*",
     "@harry/private": "workspace:*",
     "@vigilant-broccoli/common-js": "workspace:*",
     "@vigilant-broccoli/infrastructure": "workspace:*",

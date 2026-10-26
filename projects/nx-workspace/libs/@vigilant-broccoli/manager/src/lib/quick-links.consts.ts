@@ -8,13 +8,14 @@ import {
   LINK_GROUP_SUBGROUP,
   MAC_OS_APP,
   OPENAI_LINK,
-  PERSONAL_QUICK_LINKS,
+  PERSONAL_SITE_LINK,
   PROTON_LINK,
   UI_APP_LINKS,
   UTILITY_URL,
   VB_LINKS,
   toQuickLinks,
 } from '@vigilant-broccoli/public-links';
+import { EMAIL_LINK, PROJECT_LINK, SOCIAL_LINK } from '@harry/personal';
 import { VB_GITHUB_WORKFLOWS_URL } from '@vigilant-broccoli/infrastructure';
 import {
   CLOUDFLARE_ACCOUNT_LINK,
@@ -167,8 +168,22 @@ const UTILITY_LINKS: QuickLink[] = [
   ]),
 ];
 
+const PERSONAL_LINKS: QuickLink[] = [
+  ...toQuickLinks(LINK_GROUP_SUBGROUP.PERSONAL, [
+    { NAME: 'Personal Website', URL: PERSONAL_SITE_LINK.INDEX.URL },
+    PERSONAL_SITE_LINK.LINKS,
+    PERSONAL_SITE_LINK.CONTACT,
+    EMAIL_LINK,
+    SOCIAL_LINK.GITHUB,
+    PROJECT_LINK.SOFTWARE_PROJECTS,
+    SOCIAL_LINK.INSTAGRAM_PRETTYDAMNTIRED,
+  ]),
+];
+
 const CAREER_LINKS: QuickLink[] = [
   ...toQuickLinks(LINK_GROUP_SUBGROUP.CAREER, [
+    { NAME: 'LinkedIn Profile', URL: SOCIAL_LINK.LINKEDIN.URL },
+    PERSONAL_SITE_LINK.RESUME,
     { NAME: 'LinkedIn', URL: 'https://www.linkedin.com' },
   ]),
 ];
@@ -290,7 +305,7 @@ export const EXTERNAL_QUICK_LINKS: QuickLink[] = [
   ...GENERIC_DEV_LINKS,
   ...DEV_LINKS,
   ...UTILITY_LINKS,
-  ...PERSONAL_QUICK_LINKS,
+  ...PERSONAL_LINKS,
   ...CAREER_LINKS,
   ...MESSAGING_LINKS,
   ...LEISURE_LINKS,

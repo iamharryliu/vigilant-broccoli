@@ -1005,6 +1005,9 @@ importers:
 
   libs/@vigilant-broccoli/manager:
     dependencies:
+      '@harry/personal':
+        specifier: workspace:*
+        version: link:../../@harry/personal
       '@harry/private':
         specifier: workspace:*
         version: link:../../@harry/private
