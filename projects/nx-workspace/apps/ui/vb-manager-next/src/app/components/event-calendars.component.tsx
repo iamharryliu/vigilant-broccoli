@@ -79,22 +79,11 @@ const MAKE_PUBLIC_LABEL = 'Private — click to make public';
 const SYNC_POLL_INTERVAL_MS = 3000;
 // Catches CLI-started runs and their results while the page stays open.
 const SYNC_STATUS_REFRESH_INTERVAL_MS = 30_000;
-const SYNC_RUNS_FETCH_ERROR = 'Failed to load sync history';
-const SYNC_HISTORY_TITLE = 'Sync history';
-const SYNC_HISTORY_EMPTY = 'No sync runs recorded yet.';
 const STALE_LABEL = 'Stale';
-const STALE_RUN_SUFFIX = ' (stale)';
-const RUN_IN_PROGRESS_SUFFIX = ' so far';
 const SYNC_RUN_TRIGGER_LABELS: Record<string, string> = {
   [SYNC_RUN_TRIGGER.CLI]: 'CLI',
   [SYNC_RUN_TRIGGER.UI]: 'UI',
 };
-const SYNC_RUN_STATUS_COLORS = {
-  [SYNC_RUN_STATUS.RUNNING]: 'blue',
-  [SYNC_RUN_STATUS.SUCCESS]: 'green',
-  [SYNC_RUN_STATUS.PARTIAL]: 'amber',
-  [SYNC_RUN_STATUS.FAILED]: 'red',
-} as const;
 const SYNC_RUNNING = 'running';
 const SYNC_FAILED = 'failed';
 const SYNC_SUCCEEDED = 'succeeded';
@@ -262,69 +251,6 @@ const formatRelativeTime = (iso: string) => {
   return `${Math.floor(elapsed / DAY_MS)}d ago`;
 };
 
-const formatRunDuration = (run: SyncRun) => {
-  if (run.finishedAt)
-    return formatElapsed(run.startedAt, new Date(run.finishedAt).getTime());
-  return run.stale
-    ? ''
-    : `${formatElapsed(run.startedAt, Date.now())}${RUN_IN_PROGRESS_SUFFIX}`;
-};
-
-const SyncHistory = ({
-  runs,
-  calendarNames,
-  error,
-}: {
-  runs: SyncRun[];
-  calendarNames: Record<string, string>;
-  error: string | null;
-}) => (
-  <div className="flex flex-col gap-2">
-    <Text weight="medium">{SYNC_HISTORY_TITLE}</Text>
-    {error && (
-      <Text size="1" color="red">
-        {error}
-      </Text>
-    )}
-    {!error && !runs.length && (
-      <Text size="1" color="gray">
-        {SYNC_HISTORY_EMPTY}
-      </Text>
-    )}
-    {runs.map(run => (
-      <Card key={run.id}>
-        <div className="flex flex-col gap-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge color={SYNC_RUN_STATUS_COLORS[run.status]} size="1">
-              {run.status}
-              {run.stale && STALE_RUN_SUFFIX}
-            </Badge>
-            <Text size="1" color="gray">
-              {[
-                SYNC_RUN_TRIGGER_LABELS[run.trigger],
-                new Date(run.startedAt).toLocaleString(),
-                formatRunDuration(run),
-              ]
-                .filter(Boolean)
-                .join(' · ')}
-            </Text>
-          </div>
-          {run.results.map(result => (
-            <Text
-              key={result.calendarId}
-              size="1"
-              color={result.ok ? 'gray' : 'red'}
-            >
-              {calendarNames[result.calendarId] ?? result.calendarId}:{' '}
-              {result.message}
-            </Text>
-          ))}
-        </div>
-      </Card>
-    ))}
-  </div>
-);
-
 const urlsToSources = (urls: string[]) =>
   urls
     .map(url => url.trim())
@@ -478,21 +404,14 @@ export const EventCalendarsComponent = () => {
   };
 
   const [syncRuns, setSyncRuns] = useState<SyncRun[]>([]);
-  const [syncRunsError, setSyncRunsError] = useState<string | null>(null);
 
   const refreshSyncRuns = async () => {
     const response = await authFetch(
       `${API_ENDPOINTS.EVENT_CALENDARS}/sync-runs`,
     );
-    if (!response.ok) {
-      setSyncRunsError(
-        await errorFromResponse(response, SYNC_RUNS_FETCH_ERROR),
-      );
-      return;
-    }
+    if (!response.ok) return;
     const data = await response.json();
     setSyncRuns(data.runs);
-    setSyncRunsError(null);
   };
 
   const refreshAllSyncStatus = () => {
@@ -767,13 +686,6 @@ export const EventCalendarsComponent = () => {
           },
         }}
         isCards
-      />
-      <SyncHistory
-        runs={syncRuns}
-        calendarNames={Object.fromEntries(
-          items.map(item => [item.id, item.name]),
-        )}
-        error={syncRunsError}
       />
       {!untrackedAvailable && (
         <Text size="1" color="gray">

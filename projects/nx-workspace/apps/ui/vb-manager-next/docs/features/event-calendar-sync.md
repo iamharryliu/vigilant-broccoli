@@ -10,7 +10,7 @@
 
 - Every CLI run and UI-started sync writes an `event_calendar_sync_runs` row: `trigger` (`cli`/`ui`), `status` (`running`/`success`/`partial`/`failed`), `results` (`[{calendar_id, ok, message}]`), `current_calendar_id` and an `updated_at` heartbeat bumped every 5 minutes and per calendar.
 - A `running` row with no heartbeat for 30 minutes is reported as failed and stale. Each run first deletes rows older than 30 days.
-- `GET /api/event-calendars/sync-runs` returns the 10 most recent runs. The Event Calendars page lists them, marks the calendar a live run is on as syncing (so CLI runs show too) and refetches every 30 seconds (every 3 seconds while a sync runs).
+- `GET /api/event-calendars/sync-runs` returns the 10 most recent runs. The Event Calendars page marks the calendar a live run is on as syncing (so CLI runs show too) and refetches every 30 seconds (every 3 seconds while a sync runs). The run history itself is shown on [Background Tasks](./background-tasks.md).
 - A calendar with sources gets a Stale badge when `last_synced_at` is missing or older than 36 hours.
 
 ## Autosync and Log

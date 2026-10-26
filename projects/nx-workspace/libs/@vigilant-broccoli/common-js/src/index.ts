@@ -61,3 +61,4 @@ export const DATE_CONST = {
     'Saturday',
   ],
 };
+export * from './lib/file-explorer/file-explorer.types';
