@@ -29,7 +29,12 @@
     "COPY": "Copy",
     "COPIED": "Copied",
     "COPY_FAILED": "Failed to copy cover letter",
-    "FILE_DESCRIPTION": "Job application file"
+    "FILE_DESCRIPTION": "Job application file",
+    "DELETE": "Delete",
+    "DELETE_TITLE": "Delete this application?",
+    "DELETE_DESCRIPTION": "Deletes the \"{label}\" folder with its posting, resume, cover letter and gaps file. This can't be undone.",
+    "DELETED": "Application deleted",
+    "DELETE_FAILED": "Failed to delete application"
   },
   "DIALOG": {
     "TITLE": "New job application",

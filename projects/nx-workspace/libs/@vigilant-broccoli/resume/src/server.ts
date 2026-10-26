@@ -370,3 +370,5 @@ export async function generateResumePdfBuffer(
   if (!layout.fits) throw new ResumePdfOverflowError(layout);
   return pdf;
 }
+
+export * from './cover-letter.server';

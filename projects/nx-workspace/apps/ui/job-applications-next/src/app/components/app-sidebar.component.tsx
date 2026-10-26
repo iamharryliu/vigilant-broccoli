@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import {
@@ -14,6 +14,7 @@ import {
 import { Sidebar } from '@vigilant-broccoli/react-lib-higher-level';
 import { APP_TAB, AppTab, ROOT_PATH, TAB_PARAM, toTab } from '../app.const';
 import { useTranslation } from '../i18n';
+import { readBookmarkletTarget } from '../utils/bookmarklet.utils';
 import { JobApplicationDialog } from './job-application-dialog.component';
 import { JobApplicationHelpDialog } from './job-application-help-dialog.component';
 
@@ -38,6 +39,12 @@ export const AppSidebar = () => {
   const activeTab = toTab(useSearchParams().get(TAB_PARAM));
   const [helpOpen, setHelpOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  // Captures the embedding page's `?bookmarklet=` before the first in-app
+  // link drops it.
+  useEffect(() => {
+    readBookmarkletTarget();
+  }, []);
   return (
     <>
       <Sidebar

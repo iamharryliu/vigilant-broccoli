@@ -1,18 +1,39 @@
 const LINKEDIN_DESCRIPTION_START = 'About the job';
-const LINKEDIN_DESCRIPTION_END = 'Job search faster with Premium';
 const LINKEDIN_COMPANY_START = 'About the company';
-// The company blurb ends at its expander, which reads "Show more" collapsed and
-// "Show less" once the bookmarklet has expanded it; "Navigating to" is the
-// page's trailing accessibility announcement.
+// The description ends at whichever panel follows it first: the Premium upsell
+// banner or, when that is missing, the hiring-insights chart and "Reactivate
+// Premium" ad, and at the latest the company block, extracted separately.
+const LINKEDIN_DESCRIPTION_END_MARKERS = [
+  'Job search faster with Premium',
+  'Unlock hiring insights',
+  'Reactivate Premium',
+  LINKEDIN_COMPANY_START,
+];
+// The company blurb ends at its expander, which reads "… more" or "Show more"
+// collapsed and "Show less" once the bookmarklet has expanded it. When the
+// expander is missing, the "Interested in working with us" prompt and the
+// "Trending employee content" feed of employees' posts follow it, and
+// "Navigating to" is the page's trailing accessibility announcement.
 const LINKEDIN_COMPANY_END_MARKERS = [
+  '\n… more',
   '\nShow more',
   '\nShow less',
+  '\nInterested in working with us',
+  '\nTrending employee content',
   '\nNavigating to',
 ];
 const TRAILING_MORE_LABEL = /\s*…\s*more\s*$/;
 const COMPANY_SECTION_LIMIT = 3000;
 const LINKEDIN_TITLE_SUFFIX = /\s*\|\s*LinkedIn\s*$/;
 const BLANK_LINES = /\n{3,}/g;
+
+const firstIndexOf = (text: string, markers: string[], from = 0) =>
+  Math.min(
+    ...markers.map(marker => {
+      const index = text.indexOf(marker, from);
+      return index === -1 ? text.length : index;
+    }),
+  );
 
 // LinkedIn's page text wraps the posting in the results list, navigation and
 // Premium upsells. Anchoring on its section headings is sturdier than class
@@ -24,9 +45,12 @@ export const extractJobPosting = (title: string, pageText: string): string => {
   if (start === -1) return pageText;
 
   const afterStart = start + LINKEDIN_DESCRIPTION_START.length;
-  const end = pageText.indexOf(LINKEDIN_DESCRIPTION_END, afterStart);
   const description = pageText
-    .slice(afterStart, end === -1 ? undefined : end)
+    .slice(
+      afterStart,
+      firstIndexOf(pageText, LINKEDIN_DESCRIPTION_END_MARKERS, afterStart),
+    )
+    .replace(TRAILING_MORE_LABEL, '')
     .trim();
 
   const companyStart = pageText.indexOf(LINKEDIN_COMPANY_START, afterStart);
@@ -34,14 +58,8 @@ export const extractJobPosting = (title: string, pageText: string): string => {
     companyStart === -1
       ? ''
       : pageText.slice(companyStart, companyStart + COMPANY_SECTION_LIMIT);
-  const companyEnd = Math.min(
-    ...LINKEDIN_COMPANY_END_MARKERS.map(marker => {
-      const index = companyText.indexOf(marker);
-      return index === -1 ? companyText.length : index;
-    }),
-  );
   const company = companyText
-    .slice(0, companyEnd)
+    .slice(0, firstIndexOf(companyText, LINKEDIN_COMPANY_END_MARKERS))
     .replace(TRAILING_MORE_LABEL, '')
     .trim();
 
