@@ -24,7 +24,7 @@ Read the relevant document before working on its subject. Before editing a direc
 
 | Doc | When to read / upkeep |
 | --- | --- |
-| [agent-support.md](./docs/agent-support.md) | Agentic operations, skills, adapters and entry-point parity. |
+| [agent-support.md](./docs/agent-support.md) | Agentic operations, skills, adapters, entry-point parity, and where a new rule or instruction belongs. |
 | [app-development.md](./docs/app-development/app-development.md) | Adding apps/libs, deployment, public URLs or npm publishing. |
 | [app-readme-pattern.md](./docs/app-readme-pattern.md) | README edits and generated repo counts. |
 | [career experience](./notes/personal/personal-software-career-experience.md) | New skill or area (e.g. mobile development) absent from its Skills or contributions: add it. |
@@ -37,7 +37,7 @@ Read the relevant document before working on its subject. Before editing a direc
 | [jellyfin-pi.md](./docs/infrastructure/jellyfin-pi.md) | LAN hardware provisioning via Ansible. |
 | [learning-timeline.md](./docs/learning-timeline.md) | Extend the current month when work introduces a new topic. |
 | [network-management.md](./docs/infrastructure/network-management.md) | DNS, domains, proxies, tunnels or VPN. |
-| [nuance-pattern.md](./docs/nuance-pattern.md) | Directory context edits or recording a non-obvious trap. |
+| [nuance-pattern.md](./docs/nuance-pattern.md) | Any `CONTEXT.md` edit, including root, or recording a non-obvious trap. |
 | [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md) | Diff cleanup checklist. |
 | [repo-operations.md](./docs/repo-operations.md) | Infrastructure inventory, persistence, backups, local stack and service auth. |
 | [secret-management.md](./docs/infrastructure/secret-management.md) | Secrets, local `.env`/`.tfvars` or Terraform GitHub tokens; update its secret inventory as secrets change. |
@@ -64,7 +64,7 @@ Never add GitHub Actions repo secrets; remove unused ones. Only `GCP_SERVICE_ACC
 ## App Development
 
 - Prefer HTTP consts from `@vigilant-broccoli/common-js` (`HTTP_METHOD`, `HTTP_HEADERS`, `HTTP_STATUS_CODES`).
-- Link and personal data libs are split public/private, enforced by `visibility:public`/`visibility:private` tags in `@nx/enforce-module-boundaries`; tag every app with a publicly served client bundle `visibility:public`. Keep `public-links` identity-agnostic: links that name the repo owner (profiles, personal site, resume, contact) go in `@harry/personal` or `manager`, never `public-links`. Which lib a link belongs in: [Choosing a home](./docs/app-development/app-development.md#choosing-a-home).
+- Link and personal data libs are split public/private, enforced by `visibility:public`/`visibility:private` tags in `@nx/enforce-module-boundaries`; tag every app with a publicly served client bundle `visibility:public`. Which lib a link belongs in: [Choosing a home](./docs/app-development/app-development.md#choosing-a-home).
 - Prefer `getEnvironmentVariable` from `@vigilant-broccoli/common-node` for server environment variables. Client-side Next.js variables require direct `process.env.NEXT_PUBLIC_*` access for build-time inlining.
 - App/lib dependencies already pinned in the workspace root must mirror its caret range; no `"*"` or divergent pins. pnpm re-resolves an importer only when its own specifier changes, so a stray copy drifts after root bumps and surfaces as confusing duplicate-type errors (e.g. incompatible `FastifyInstance` types). Do not force Fly service dependencies through `pnpm-workspace.yaml` overrides: pruned installs fail. Published React libs (`nx-release-publish`) declare `react` only in `peerDependencies` with a major range (`^19`), never in `dependencies`: a root-mirrored exact pin there gives npm consumers a second React copy ("Invalid hook call"). Pin-drift alignment ignores `peerDependencies`, so never move `react` back to satisfy it.
 - New or changed public URLs require synchronized Upptime entries, pages-index cards and browser quick links for every environment and demo; follow [public URL registration](./docs/app-development/app-development.md#deployment).
