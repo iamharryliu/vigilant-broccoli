@@ -99,7 +99,6 @@ export const API_ENDPOINTS = {
 
   JOB_APPLICATIONS: '/api/job-applications',
   JOB_APPLICATIONS_FILE: '/api/job-applications/file',
-  JOB_APPLICATIONS_RUN: '/api/job-applications/run',
 
   // Spotify
   SPOTIFY_AUTH_LOGIN: '/api/spotify/auth/login',

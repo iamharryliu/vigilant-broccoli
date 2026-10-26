@@ -5,7 +5,6 @@ import {
   listSyncRuns,
 } from '../../../lib/event-calendars.db';
 import { getSyncStatus } from '../../../lib/event-scraper/sync-runner';
-import { listJobApplicationTasks } from '../../../lib/job-application-runner';
 import {
   BackgroundTask,
   TASK_KIND,
@@ -68,10 +67,9 @@ export async function GET(req: NextRequest) {
     const calendarNames = Object.fromEntries(
       calendars.map(calendar => [calendar.id, calendar.name]),
     );
-    const tasks = [
-      ...listJobApplicationTasks(),
-      ...runs.map(run => toSyncTask(run, calendarNames)),
-    ].sort((a, b) => b.startedAt.localeCompare(a.startedAt));
+    const tasks = runs
+      .map(run => toSyncTask(run, calendarNames))
+      .sort((a, b) => b.startedAt.localeCompare(a.startedAt));
     // The completion poller only needs statuses; outputs are up to 20k
     // characters per run.
     return NextResponse.json({
