@@ -11,7 +11,7 @@ PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
 FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 
 cd "$REPO_DIR"
-SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create-rnd/SKILL.md")
+SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/local-pr-create-rnd/SKILL.md")
 # shellcheck source=no-changes.sh
 . "$REPO_DIR/infrastructure/agent-sandbox/no-changes.sh"
 

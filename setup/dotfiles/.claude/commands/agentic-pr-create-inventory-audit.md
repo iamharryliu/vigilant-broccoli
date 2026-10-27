@@ -1,1 +1,0 @@
-../../agent-skills/agentic-pr-create-inventory-audit/SKILL.md
