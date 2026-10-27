@@ -1,4 +1,4 @@
 # Tofu Recipes
 
-- [Marry Me Tofu](./marry-me-tofu.md)
+- [Pan Fry Tofu](./pan-fry-tofu.md)
 - [Whipped Tofu](./whipped-tofu.md)

@@ -6,6 +6,7 @@
 - **Preparations**
   - **Sauces**
     - [Garlic Confit](./sauce-recipes/garlic-confit.md)
+    - [Marry Me Sauce](./sauce-recipes/marry-me-sauce.md)
     - [Mayo](./sauce-recipes/mayo.md)
     - [Roux](./sauce-recipes/roux.md)
     - [Soy Sauce](./sauce-recipes/soy-sauce.md)
