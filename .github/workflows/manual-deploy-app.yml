@@ -11,7 +11,7 @@ on:
           - socket-server-socketio
           - office-presence-service
           - office-presence-ui
-          - vb-manager-next-mobile
+          - mobile-manager-next
           - findme
           - whiteboard
           - weather-next

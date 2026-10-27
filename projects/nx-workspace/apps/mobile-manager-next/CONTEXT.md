@@ -1,14 +1,14 @@
-# Agent Context — vb-manager-next-mobile
+# Agent Context — mobile-manager-next
 
 ## Table of Contents
 
 - [Nuances](#nuances)
-  - [`vb-manager-next-mobile` ran the shell and the Google task list on two different sessions](#vb-manager-next-mobile-ran-the-shell-and-the-google-task-list-on-two-different-sessions)
+  - [`mobile-manager-next` ran the shell and the Google task list on two different sessions](#mobile-manager-next-ran-the-shell-and-the-google-task-list-on-two-different-sessions)
   - [The phone agenda's scrollbar must stay hidden](#the-phone-agendas-scrollbar-must-stay-hidden)
 
 ## Nuances
 
-### `vb-manager-next-mobile` ran the shell and the Google task list on two different sessions
+### `mobile-manager-next` ran the shell and the Google task list on two different sessions
 
 The hand-written `src/app/providers/auth-provider.tsx` must follow the [Supabase auth pattern](../../../../docs/app-development/ui/auth/supabase-auth-pattern.md#client-side): persist the Google token in `localStorage` and reconnect Google without signing out of Supabase. The Google token expires independently; the Tasks tab (`/?tab=Tasks`) uses react-lib's auth handling, so provider drift makes the shell and task list disagree about login state.
 

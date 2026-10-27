@@ -1,4 +1,4 @@
-# VB Manager Next Mobile
+# Mobile Manager Next
 
 Mobile-friendly dashboard for personal tasks and calendars, with voice input, a notepad and local weather.
 

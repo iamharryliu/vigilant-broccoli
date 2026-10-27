@@ -68,7 +68,7 @@ const TAB_ICON_SIZE = 18;
 const PHONE_FRAME_CLASS =
   'relative flex h-[844px] w-[390px] max-w-full flex-col overflow-hidden rounded-[2.5rem] border-8 border-gray-800 bg-gray-50 shadow-lg [transform:translateZ(0)] dark:border-gray-600';
 
-// Same as Topbar in vb-manager-next-mobile; the safe-area inset is 0 here.
+// Same as Topbar in mobile-manager-next; the safe-area inset is 0 here.
 const TOPBAR_CLASS =
   'z-20 flex h-14 shrink-0 items-center gap-3 border-b border-gray-100 bg-white px-4 dark:border-gray-800 dark:bg-gray-900';
 const MENU_BUTTON_CLASS =
@@ -82,7 +82,7 @@ const DRAWER_BACKDROP_CLASS = 'absolute inset-0 z-20 bg-black/50 max-md:hidden';
 const SIGN_OUT_ROW_CLASS =
   'm-2 flex w-[calc(100%-1rem)] items-center gap-3 rounded-md px-2 py-2 text-left text-sm text-gray-500 transition-colors hover:bg-gray-50 hover:text-black dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white';
 
-const APP_NAME = 'VB Manager';
+const APP_NAME = 'Mobile Manager Next';
 
 const PHONE_HEIGHT_PX = 844;
 const PHONE_BORDER_PX = 8;
@@ -272,7 +272,7 @@ const MockVoiceButton = ({
   </button>
 );
 
-// Same layout as CalendarInput in vb-manager-next-mobile, without uploads,
+// Same layout as CalendarInput in mobile-manager-next, without uploads,
 // the microphone or the parse/create network calls.
 const MockCalendarInput = () => {
   const [text, setText] = useState('');
@@ -318,7 +318,7 @@ const MockCalendarInput = () => {
   );
 };
 
-// Mirrors GoogleTasksView in vb-manager-next-mobile, on the mocked tasks API.
+// Mirrors GoogleTasksView in mobile-manager-next, on the mocked tasks API.
 const MobileTasks = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const { auth } = useMockTasksAuth(SCENARIO.SIGNED_IN, false, noop);

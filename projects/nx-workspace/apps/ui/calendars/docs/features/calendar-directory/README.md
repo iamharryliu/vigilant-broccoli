@@ -1,6 +1,6 @@
 # Calendar Directory
 
-The public, login-free `calendars` home page: three tabs (`CalendarTabs`, modelled on `vb-manager-next`'s `HomeCalendarTabs`) of link rows modelled on `vb-manager-next-mobile`'s Event Calendars tab. Event rows link to Google Calendar with Schedule, Week and Month view links and a copy-link control. There is no page header.
+The public, login-free `calendars` home page: three tabs (`CalendarTabs`, modelled on `vb-manager-next`'s `HomeCalendarTabs`) of link rows modelled on `mobile-manager-next`'s Event Calendars tab. Event rows link to Google Calendar with Schedule, Week and Month view links and a copy-link control. There is no page header.
 
 ## Table of Contents
 
@@ -21,7 +21,7 @@ The public, login-free `calendars` home page: three tabs (`CalendarTabs`, modell
 
 ## Embed
 
-`CalendarView` builds the iframe URL with `buildEventCalendarEmbedUrl` and `PUBLIC_BASE_CALENDAR_CONFIG` from `@harry/personal`. Hidden calendars are filtered out of the URL (colours are assigned before filtering, so the rest keep theirs). The Google calendar id comes from the `src` parameter of each public event calendar URL (`getGoogleCalendarId`), so VB Express returns no extra field. The iframe mounts once the event calendars request settles (success or failure) and the tab is force-mounted (`display: none` and `aria-hidden` when inactive) to avoid reloads. Mode is MONTH on desktop and AGENDA when `isMobileUserAgent` (`common-browser`, shared with `vb-manager-next-mobile`) matches, because the authenticated custom agenda is unavailable here.
+`CalendarView` builds the iframe URL with `buildEventCalendarEmbedUrl` and `PUBLIC_BASE_CALENDAR_CONFIG` from `@harry/personal`. Hidden calendars are filtered out of the URL (colours are assigned before filtering, so the rest keep theirs). The Google calendar id comes from the `src` parameter of each public event calendar URL (`getGoogleCalendarId`), so VB Express returns no extra field. The iframe mounts once the event calendars request settles (success or failure) and the tab is force-mounted (`display: none` and `aria-hidden` when inactive) to avoid reloads. Mode is MONTH on desktop and AGENDA when `isMobileUserAgent` (`common-browser`, shared with `mobile-manager-next`) matches, because the authenticated custom agenda is unavailable here.
 
 **Public bundle:** `PUBLIC_BASE_CALENDAR_CONFIG` uses only `PUBLIC_CALENDAR_SOURCES` (the already-linked personal calendar and Google's public calendars); the private birthdays and shared calendars in `PERSONAL_CALENDAR_SOURCES` must not be used here. The embed only exposes what each calendar's sharing settings already make public.
 

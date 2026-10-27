@@ -8,7 +8,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 // Nominatim's usage policy rejects requests without an identifying User-Agent.
-const NOMINATIM_USER_AGENT = 'vb-manager-next-mobile (https://harryliu.dev)';
+const NOMINATIM_USER_AGENT = 'mobile-manager-next (https://harryliu.dev)';
 
 // ~1 km of precision is plenty for city-level weather and keeps the user's
 // exact position out of upstream logs.

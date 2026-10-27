@@ -503,7 +503,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     id: 'mobile-home',
     label: 'Mobile Home',
     description:
-      'The vb-manager-next-mobile home page inside an iPhone-sized frame: the top bar with a menu button that opens the sidebar drawer, and the pinned layout where each tab panel scrolls on its own. The tab shell, agenda, event calendars list, tasks, quick links and sidebar are the real react-lib-higher-level components fed with sample data; the Create calendar event dialog and task voice input are mocked.',
+      'The mobile-manager-next home page inside an iPhone-sized frame: the top bar with a menu button that opens the sidebar drawer, and the pinned layout where each tab panel scrolls on its own. The tab shell, agenda, event calendars list, tasks, quick links and sidebar are the real react-lib-higher-level components fed with sample data; the Create calendar event dialog and task voice input are mocked.',
     lib: LIB.HIGHER_LEVEL,
     content: <MobileHomeDemo />,
   },

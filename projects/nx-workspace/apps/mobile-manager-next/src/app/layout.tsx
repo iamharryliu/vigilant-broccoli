@@ -9,7 +9,7 @@ export const metadata = {
     default: `${PAGE_TITLE.HOME} | ${APP_NAME}`,
     template: `%s | ${APP_NAME}`,
   },
-  description: 'VB Manager Mobile',
+  description: 'Mobile Manager Next',
 };
 
 export const viewport = {

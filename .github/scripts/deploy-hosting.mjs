@@ -26,7 +26,8 @@ export const PROJECT_HOSTING = {
   balloono: { platform: 'vercel', name: 'balloono' },
   calendars: { platform: 'pages', name: 'calendars' },
   whiteboard: { platform: 'pages', name: 'whiteboard' },
-  'vb-manager-next-mobile': {
+  // Keep the deployed Vercel identity so summaries link to the existing projects.
+  'mobile-manager-next': {
     platform: 'vercel',
     name: 'vb-manager-next-mobile',
   },

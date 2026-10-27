@@ -38,7 +38,7 @@ Maintenance scopes differ: inventory audit fixes rows of the fork identity and s
 
 ## Entry-point parity
 
-Each [README lifecycle row](../README.md#agentic) represents one operation across its supported Actions, Docker Sandbox and Local entry points. The table's Phase, Description and Actions columns also generate the `vb-manager-next-mobile` Agentic tab, so edit them in the [documented format](../README.md#agentic).
+Each [README lifecycle row](../README.md#agentic) represents one operation across its supported Actions, Docker Sandbox and Local entry points. The table's Phase, Description and Actions columns also generate the `mobile-manager-next` Agentic tab, so edit them in the [documented format](../README.md#agentic).
 
 ### Task contract
 
