@@ -28,7 +28,8 @@ elif [ -n "${SANDBOX_FIX_CI:-}" ]; then
   SKILL_NAME=agentic-pr-update-fix-ci
   FALLBACK_SUBJECT="ci: Fix failing checks on PR #${PR}."
 fi
-SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/$SKILL_NAME/SKILL.md")
+# Skill directories carry the `local-` prefix of the skill command; SKILL_NAME stays the operation name.
+SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/local-${SKILL_NAME#agentic-}/SKILL.md")
 # Sourced before the PR checkout: the PR branch may predate this file.
 # shellcheck source=pr-increments.sh
 . "$(dirname "${BASH_SOURCE[0]}")/pr-increments.sh"

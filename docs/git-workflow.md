@@ -12,7 +12,7 @@ Branching, publishing and synchronization conventions for this repository.
 
 ## Conventions
 
-`ship-pr` and `sync-main` implement these rules; update this source first. Standing authorization and safety rules remain in [root context](../CONTEXT.md#git).
+`ship-pr` implements these rules; update this source first. Standing authorization and safety rules remain in [root context](../CONTEXT.md#git).
 
 - **Branches:** `<committype>/<short-kebab-case-description>`, from freshly fetched `origin/main` unless continuing the task's existing branch.
 - **Types:** `feat`, `fix`, `ci`, `chore`, `docs`, `refactor`, `enhancement`, `security`, `infrastructure`. Add a type only if none fits.
@@ -33,12 +33,12 @@ Sessions attached to one checkout share `HEAD`, the index and stash. Ownership, 
 
 - A subagent list does not enumerate independent sessions; an empty `ListAgents` result never proves exclusive use and is at most a best-effort hint. Create the worktree without holding for peer acknowledgement.
 - In an exclusively owned checkout, commit by pathspec, never stash and restore the original branch. `git commit -m "<message>" -- <your paths>` commits the named working-tree files and leaves other index entries alone.
-- `sync-main` requires a clean, exclusive checkout and does not authorize committing pending work to clean it.
+- Syncing in place requires a clean, exclusive checkout and does not authorize committing pending work to clean it.
 - Restore a branch only if your workflow switched it in an exclusive checkout; do not switch a peer's branch during cleanup.
 
 ## Staying Current With `main`
 
-Sync when starting work, before pushing and when main moves while a branch is open. `ship-pr` uses `sync-main` before publishing.
+Sync when starting work, before pushing and when main moves while a branch is open. `ship-pr` syncs before publishing.
 
 - Fetch first; `git rev-list --left-right --count origin/main...HEAD` reports missing/additional commits.
 - On a feature branch, merge with `git merge --no-edit origin/main`. A branch whose Markdown tables are still padded (cut before [table compaction](./code-quality-tools.md)) merges with `git merge --no-edit -X renormalize origin/main`, which compacts both sides before comparing them. Never rebase: publishing a rewritten branch would require a forbidden force-push. PRs squash-merge, so these integration commits do not enter main's history.

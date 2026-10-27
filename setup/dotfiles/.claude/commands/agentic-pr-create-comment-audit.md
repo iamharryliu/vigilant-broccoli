@@ -1,1 +1,0 @@
-../../agent-skills/agentic-pr-create-comment-audit/SKILL.md

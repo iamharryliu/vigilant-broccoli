@@ -1,0 +1,1 @@
+../../agent-skills/local-pr-update-resolve-conflicts/SKILL.md
