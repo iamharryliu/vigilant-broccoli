@@ -6,7 +6,7 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 // Nominatim's usage policy rejects requests without an identifying User-Agent.
-const NOMINATIM_USER_AGENT = 'vb-manager-next (https://harryliu.dev)';
+const NOMINATIM_USER_AGENT = 'local-manager-next (https://harryliu.dev)';
 
 const LAT_PARAM = 'lat';
 const LON_PARAM = 'lon';

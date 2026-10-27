@@ -1,7 +1,7 @@
 export default {
-  displayName: 'vb-manager-next',
+  displayName: 'local-manager-next',
   preset: '../../../jest.preset.js',
-  coverageDirectory: '../../../coverage/apps/ui/vb-manager-next',
+  coverageDirectory: '../../../coverage/apps/ui/local-manager-next',
   transform: {
     '^.+\\.(ts|tsx|js|jsx)$': [
       'ts-jest',

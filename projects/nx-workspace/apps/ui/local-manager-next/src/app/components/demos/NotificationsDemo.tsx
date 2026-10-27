@@ -34,7 +34,7 @@ const MOCK_PAYLOAD: DeployPayload = {
   workflow: 'Deploy',
   run_url: MOCK_RUN_URL,
   duration_s: 272,
-  affected_projects: 'vb-manager-next',
+  affected_projects: 'local-manager-next',
 };
 
 const description = (p: DeployPayload) =>

@@ -16,7 +16,7 @@
 - Split into two entry points so Next's client bundle for `/career` never pulls in Playwright
 - `validateResume` is the one structural check: the JSON editor, `PUT /api/resume`, `POST /api/resume/pdf`, the chat request and every model tool output go through it. Link URLs must be `http(s)`
 
-## `/career` Page (vb-manager-next)
+## `/career` Page (local-manager-next)
 
 - "Edit JSON" tab: edits parse and validate on every keystroke; invalid JSON or a structurally invalid resume shows the error, keeps the last valid preview and blocks save, download and Apply. Valid edits autosave (debounced) to `resume.json`. Nothing is truncated
 - "Diff" tab: a git-style line diff (`+`/`-`, green/red) of the JSON editor text against the committed (`HEAD`) `resume.json`, read by `GET /api/resume/baseline` (`git show`). Updates live as the editor or Apply changes the resume, and survives reloads. Until it loads (or if git fails) the baseline is the bundled `resume.json`, and trailing newlines are ignored
@@ -96,6 +96,6 @@
 ## Constraints
 
 - The React component (`resume-view.component.tsx`, Tailwind/`next/font`) and the PDF template (`server.ts`, plain HTML string) implement the same design twice — Next's bundler and the headless-Chromium script can't share one implementation. Styling changes must be applied in both places.
-- vb-manager-next isn't deployed to the cloud (runs locally via PM2) — the PDF generator can't render the live `/career` page, so it re-implements the layout standalone instead.
+- local-manager-next isn't deployed to the cloud (runs locally via PM2) — the PDF generator can't render the live `/career` page, so it re-implements the layout standalone instead.
 - The PDF template loads Roboto from Google Fonts. Loading is bounded (5 s); if it does not arrive the stylesheet is dropped and a fallback font is measured, which is reported as `fontsLoaded: false` and can change whether a resume fits.
-- `apps/ui/personal-website-react` declares no `implicitDependencies` on vb-manager-next — Nx's affected-graph correctly picks up resume.json changes via the real `@vigilant-broccoli/resume` import.
+- `apps/ui/personal-website-react` declares no `implicitDependencies` on local-manager-next — Nx's affected-graph correctly picks up resume.json changes via the real `@vigilant-broccoli/resume` import.

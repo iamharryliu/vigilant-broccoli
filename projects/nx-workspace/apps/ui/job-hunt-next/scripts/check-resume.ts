@@ -41,7 +41,7 @@ const historyKeys = (resume: ResumeData) =>
     .join('\n');
 
 /**
- * Holds a run to the same rules as vb-manager-next's resume editor, against
+ * Holds a run to the same rules as local-manager-next's resume editor, against
  * the resume as it was when the run started: identity and links never change,
  * the title is one the career experience lists, and employers, roles and dates
  * stay as they were. A resume with no work history yet may take its employers

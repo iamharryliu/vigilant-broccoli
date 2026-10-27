@@ -11,10 +11,10 @@ delete scrubbedEnv[GH_AUTH_ENV_VAR];
 module.exports = {
   apps: [
     {
-      name: 'vb-manager-next',
+      name: 'local-manager-next',
       script: path.join(WORKSPACE_ROOT, 'node_modules/next/dist/bin/next'),
       args: 'start --port 1337 --hostname 127.0.0.1',
-      cwd: path.join(WORKSPACE_ROOT, 'dist/apps/ui/vb-manager-next'),
+      cwd: path.join(WORKSPACE_ROOT, 'dist/apps/ui/local-manager-next'),
       exec_mode: 'fork',
       interpreter: NODE_INTERPRETER,
       env: {

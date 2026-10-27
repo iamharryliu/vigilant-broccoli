@@ -2,7 +2,7 @@
 
 ## Overview
 
-- Google Tasks-backed swimlane board in `vb-manager-next`
+- Google Tasks-backed swimlane board in `local-manager-next`
 - Board setup synced per user via MongoDB (cross-machine)
 - Requires Google OAuth session
 

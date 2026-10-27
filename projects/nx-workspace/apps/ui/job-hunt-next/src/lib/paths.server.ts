@@ -2,7 +2,7 @@ import { homedir } from 'os';
 import { join, relative, resolve, sep } from 'path';
 
 // The image sets these to its mount points; the defaults serve `nx serve` on
-// the host, sharing vb-manager-next's Job Applications folder.
+// the host, sharing local-manager-next's Job Applications folder.
 const ENV = {
   JOB_APPLICATIONS_DIR: 'JOB_APPLICATIONS_DIR',
   CAREER_DIR: 'CAREER_DIR',

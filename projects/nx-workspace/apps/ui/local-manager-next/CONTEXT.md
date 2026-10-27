@@ -1,4 +1,4 @@
-# Agent Context — vb-manager-next
+# Agent Context — local-manager-next
 
 ## Table of Contents
 
@@ -19,7 +19,7 @@ Keep `pm2 save` as the final successful step of start/reload: boot restore reads
 
 ### Lib-only class changes ship stale CSS from Next's build cache
 
-Next's webpack cache can miss Tailwind classes added only in workspace libs. `next.config.js` includes lib source paths, mtimes and sizes in `cache.version` to invalidate it on lib changes. If CSS remains stale, remove `dist/apps/ui/vb-manager-next/.next/cache` and rebuild.
+Next's webpack cache can miss Tailwind classes added only in workspace libs. `next.config.js` includes lib source paths, mtimes and sizes in `cache.version` to invalidate it on lib changes. If CSS remains stale, remove `dist/apps/ui/local-manager-next/.next/cache` and rebuild.
 
 ### A failed kanban board fetch must not look like a brand-new account
 

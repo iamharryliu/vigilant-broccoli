@@ -63,7 +63,7 @@ export const SIDEBAR_ROUTE = {
   },
 } satisfies Record<string, ExtendedNavRoute>;
 
-export const APP_NAME = 'VB Manager';
+export const APP_NAME = 'Local Manager Next';
 
 export const PAGE_TITLE = {
   SETTINGS: 'Settings',
@@ -71,7 +71,7 @@ export const PAGE_TITLE = {
   AUTH_CALLBACK: 'Signing In',
 } as const;
 
-const APP_ROUTE_SUBGROUP = 'vb-manager-next';
+const APP_ROUTE_SUBGROUP = 'local-manager-next';
 
 export const VIGILANT_BROCCOLI_ROOT_PATH = '~/vigilant-broccoli';
 

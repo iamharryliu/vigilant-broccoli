@@ -1,4 +1,4 @@
-# VB Manager Next
+# Local Manager Next
 
 Management dashboard app.
 

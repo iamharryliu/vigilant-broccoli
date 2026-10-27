@@ -1,6 +1,6 @@
 {
-  "uid": "vb-manager-next",
-  "title": "vb-manager-next (Local)",
+  "uid": "local-manager-next",
+  "title": "local-manager-next (Local)",
   "tags": ["vigilant-broccoli", "local"],
   "timezone": "browser",
   "schemaVersion": 39,
@@ -180,7 +180,7 @@
             "type": "loki",
             "uid": "${datasource}"
           },
-          "expr": "sum(count_over_time({job=\"pm2\", filename=~\".*/vb-manager-next-error.log\"} [$__range]))",
+          "expr": "sum(count_over_time({job=\"pm2\", filename=~\".*/local-manager-next-error.log\"} [$__range]))",
           "queryType": "instant"
         }
       ],
@@ -364,7 +364,7 @@
             "type": "loki",
             "uid": "${datasource}"
           },
-          "expr": "sum(count_over_time({job=\"pm2\", filename=~\".*/vb-manager-next-error.log\"} [$__auto]))",
+          "expr": "sum(count_over_time({job=\"pm2\", filename=~\".*/local-manager-next-error.log\"} [$__auto]))",
           "legendFormat": "stderr"
         }
       ],
@@ -400,7 +400,7 @@
             "type": "loki",
             "uid": "${datasource}"
           },
-          "expr": "{job=\"pm2\", filename=~\".*/vb-manager-next-error.log\"}"
+          "expr": "{job=\"pm2\", filename=~\".*/local-manager-next-error.log\"}"
         }
       ],
       "options": {
@@ -429,7 +429,7 @@
             "type": "loki",
             "uid": "${datasource}"
           },
-          "expr": "{job=\"pm2\", filename=~\".*/vb-manager-next-out.log\"}"
+          "expr": "{job=\"pm2\", filename=~\".*/local-manager-next-out.log\"}"
         }
       ],
       "options": {
@@ -471,7 +471,7 @@
             "type": "prometheus",
             "uid": "${metrics}"
           },
-          "expr": "sum by (code) (rate(traefik_service_requests_total{service=\"local-platform-vb-manager-next-1337@kubernetes\"}[$__rate_interval]))",
+          "expr": "sum by (code) (rate(traefik_service_requests_total{service=\"local-platform-local-manager-next-1337@kubernetes\"}[$__rate_interval]))",
           "legendFormat": "{{code}}"
         }
       ],
@@ -503,7 +503,7 @@
             "type": "prometheus",
             "uid": "${metrics}"
           },
-          "expr": "histogram_quantile(0.5, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{service=\"local-platform-vb-manager-next-1337@kubernetes\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.5, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{service=\"local-platform-local-manager-next-1337@kubernetes\"}[$__rate_interval])))",
           "legendFormat": "p50"
         },
         {
@@ -512,7 +512,7 @@
             "type": "prometheus",
             "uid": "${metrics}"
           },
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{service=\"local-platform-vb-manager-next-1337@kubernetes\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.95, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{service=\"local-platform-local-manager-next-1337@kubernetes\"}[$__rate_interval])))",
           "legendFormat": "p95"
         }
       ],

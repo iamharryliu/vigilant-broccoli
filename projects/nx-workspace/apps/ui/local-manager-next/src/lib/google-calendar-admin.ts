@@ -108,7 +108,7 @@ export const deleteGoogleCalendar = (
     if (error.code !== HTTP_NOT_FOUND) throw error;
   });
 
-// Calendars the service account owns that vb-manager-next has no row for —
+// Calendars the service account owns that local-manager-next has no row for —
 // e.g. left behind by a deleted row, or created before this page existed.
 //
 // calendarList.list is intermittently 404 for this service account —

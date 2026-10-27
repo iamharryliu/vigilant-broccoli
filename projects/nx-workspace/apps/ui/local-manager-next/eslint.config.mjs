@@ -13,7 +13,7 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ['**/dist', '**/out-tsc', 'apps/ui/vb-manager-next/.next/**'],
+    ignores: ['**/dist', '**/out-tsc', 'apps/ui/local-manager-next/.next/**'],
   },
   ...baseConfig,
   nextPlugin.configs.recommended,
@@ -24,7 +24,7 @@ export default [
     rules: {
       '@next/next/no-html-link-for-pages': [
         'error',
-        'apps/ui/vb-manager-next/pages',
+        'apps/ui/local-manager-next/pages',
       ],
     },
   },

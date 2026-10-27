@@ -1,7 +1,7 @@
 {
-  "name": "vb-manager-next",
+  "name": "local-manager-next",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/ui/vb-manager-next",
+  "sourceRoot": "apps/ui/local-manager-next",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -9,7 +9,7 @@
       "executor": "nx:run-commands",
       "cache": false,
       "options": {
-        "command": "NEXT_PUBLIC_SOCKET_SERVER_URL=https://socket.harryliu.dev nx run vb-manager-next:build:next"
+        "command": "NEXT_PUBLIC_SOCKET_SERVER_URL=https://socket.harryliu.dev nx run local-manager-next:build:next"
       }
     },
     "build:next": {
@@ -26,11 +26,11 @@
         { "env": "NEXT_PUBLIC_SOCKET_SERVER_URL" }
       ],
       "outputs": [
-        "{workspaceRoot}/dist/apps/ui/vb-manager-next/.next/!(cache)/**/*",
-        "{workspaceRoot}/dist/apps/ui/vb-manager-next/.next/!(cache)"
+        "{workspaceRoot}/dist/apps/ui/local-manager-next/.next/!(cache)/**/*",
+        "{workspaceRoot}/dist/apps/ui/local-manager-next/.next/!(cache)"
       ],
       "options": {
-        "cwd": "apps/ui/vb-manager-next",
+        "cwd": "apps/ui/local-manager-next",
         "tty": false,
         "command": "next build --webpack"
       },
@@ -42,7 +42,7 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/vb-manager-next/.env.local.example --env-file scripts/.env.scripts.example --map SOCKET_SERVER_URL:NEXT_PUBLIC_SOCKET_SERVER_URL 'node --import tsx scripts/migrate.ts --migrations-dir=apps/ui/vb-manager-next/supabase/migrations && cd apps/ui/vb-manager-next && next dev --webpack --hostname 127.0.0.1'",
+        "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/local-manager-next/.env.local.example --env-file scripts/.env.scripts.example --map SOCKET_SERVER_URL:NEXT_PUBLIC_SOCKET_SERVER_URL 'node --import tsx scripts/migrate.ts --migrations-dir=apps/ui/local-manager-next/supabase/migrations && cd apps/ui/local-manager-next && next dev --webpack --hostname 127.0.0.1'",
         "env": {
           "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev"
         }
@@ -52,7 +52,7 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "cwd": "apps/ui/vb-manager-next",
+        "cwd": "apps/ui/local-manager-next",
         "command": "env -u GITHUB_TOKEN next dev --webpack"
       },
       "configurations": {
@@ -62,9 +62,9 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/ui/vb-manager-next"],
+      "outputs": ["{workspaceRoot}/coverage/apps/ui/local-manager-next"],
       "options": {
-        "jestConfig": "apps/ui/vb-manager-next/jest.config.ts"
+        "jestConfig": "apps/ui/local-manager-next/jest.config.ts"
       }
     },
     "lint": {
@@ -73,19 +73,19 @@
     "e2e": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx playwright test --config=apps/ui/vb-manager-next/e2e/playwright.config.ts"
+        "command": "npx playwright test --config=apps/ui/local-manager-next/e2e/playwright.config.ts"
       }
     },
     "e2e:headed": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx playwright test --config=apps/ui/vb-manager-next/e2e/playwright.config.ts --headed"
+        "command": "npx playwright test --config=apps/ui/local-manager-next/e2e/playwright.config.ts --headed"
       }
     },
     "e2e:headed:slow": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx playwright test --config=apps/ui/vb-manager-next/e2e/playwright.config.ts --headed --project=slow"
+        "command": "npx playwright test --config=apps/ui/local-manager-next/e2e/playwright.config.ts --headed --project=slow"
       }
     },
     "pm2:start": {
@@ -95,7 +95,7 @@
         "parallel": false,
         "commands": [
           {
-            "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/ui/vb-manager-next/.env.local.example --env-file scripts/.env.scripts.example 'node --import tsx scripts/migrate.ts --migrations-dir=apps/ui/vb-manager-next/supabase/migrations && pm2 start apps/ui/vb-manager-next/ecosystem.config.js'"
+            "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/ui/local-manager-next/.env.local.example --env-file scripts/.env.scripts.example 'node --import tsx scripts/migrate.ts --migrations-dir=apps/ui/local-manager-next/supabase/migrations && pm2 start apps/ui/local-manager-next/ecosystem.config.js'"
           },
           {
             "command": "pm2 save"
@@ -110,7 +110,7 @@
         "parallel": false,
         "commands": [
           {
-            "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/ui/vb-manager-next/.env.local.example --env-file scripts/.env.scripts.example 'node --import tsx scripts/migrate.ts --migrations-dir=apps/ui/vb-manager-next/supabase/migrations && pm2 reload apps/ui/vb-manager-next/ecosystem.config.js'"
+            "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/ui/local-manager-next/.env.local.example --env-file scripts/.env.scripts.example 'node --import tsx scripts/migrate.ts --migrations-dir=apps/ui/local-manager-next/supabase/migrations && pm2 reload apps/ui/local-manager-next/ecosystem.config.js'"
           },
           {
             "command": "pm2 save"
@@ -121,13 +121,13 @@
     "pm2:delete": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pm2 delete vb-manager-next"
+        "command": "pm2 delete local-manager-next"
       }
     },
     "pm2:logs": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pm2 logs vb-manager-next"
+        "command": "pm2 logs local-manager-next"
       }
     },
     "pm2:status": {

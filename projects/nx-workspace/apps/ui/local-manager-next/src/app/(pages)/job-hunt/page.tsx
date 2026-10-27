@@ -12,7 +12,7 @@ import { usePageTitle } from '../../use-page-title';
 const JOB_HUNT_ORIGIN = new URL(LOCAL_HOST_URL.JOB_HUNT.URL).origin;
 // The embedded app builds its bookmarklet from this, so the bookmarklet opens
 // this page and the relay below hands the posting to the frame.
-const JOB_HUNT_PAGE_URL = `${LOCAL_HOST_URL.VB_MANAGER_NEXT.URL}${SIDEBAR_ROUTE.JOB_HUNT.path}`;
+const JOB_HUNT_PAGE_URL = `${LOCAL_HOST_URL.LOCAL_MANAGER_NEXT.URL}${SIDEBAR_ROUTE.JOB_HUNT.path}`;
 const FRAME_SRC = `${LOCAL_HOST_URL.JOB_HUNT.URL}/?${JOB_APPLICATION_BOOKMARKLET.TARGET_PARAM}=${encodeURIComponent(JOB_HUNT_PAGE_URL)}`;
 
 type PostingTab = { window: MessageEventSource; origin: string };
