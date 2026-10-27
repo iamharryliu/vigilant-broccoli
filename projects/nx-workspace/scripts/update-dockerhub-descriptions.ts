@@ -28,6 +28,9 @@ const MAX_FULL_DESCRIPTION_LENGTH = 25000;
 const ABSOLUTE_OR_ANCHOR = /^([a-z][a-z0-9+.-]*:|#|\/\/)/i;
 // [text](target) and ![alt](target); the target ends at whitespace or ")".
 const DRY_RUN_FLAG = '--dry-run';
+const RUN_FROM_REGISTRY_HEADING = /^## Run from Registry$/m;
+// The doc's own ToC anchors do not resolve on Docker Hub; it ends at the next "## " heading.
+const TABLE_OF_CONTENTS_BLOCK = /^## Table of Contents\n[\s\S]*?(?=^## )/m;
 const MARKDOWN_LINK = /(!?)\[([^\]]*)\]\(([^)\s]+)([^)]*)\)/g;
 
 type RegistryImage = {
@@ -65,11 +68,19 @@ const buildOverview = (
   summary: string,
 ) => {
   const doc = readFileSync(join(REPO_ROOT, readmePath), 'utf-8');
+  if (!RUN_FROM_REGISTRY_HEADING.test(doc)) {
+    throw new Error(
+      `${slug}: ${readmePath} has no "## Run from Registry" heading`,
+    );
+  }
   const overview = [
     `# ${slug}`,
     summary,
     `Source: [${readmePath}](${BLOB_BASE}/${readmePath}) in [vigilant-broccoli](${REPO_URL}).`,
-    absolutizeLinks(doc, readmePath).replace(/^# .*\n+/, ''),
+    absolutizeLinks(
+      doc.replace(TABLE_OF_CONTENTS_BLOCK, ''),
+      readmePath,
+    ).replace(/^# .*\n+/, ''),
   ].join('\n\n');
   if (overview.length > MAX_FULL_DESCRIPTION_LENGTH) {
     throw new Error(
