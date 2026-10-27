@@ -103,6 +103,12 @@ const FORECAST_COLLAPSIBLE_CLASS =
   'grid transition-[grid-template-rows,opacity,margin-top,visibility] duration-300 ease-in-out motion-reduce:transition-none';
 const FORECAST_EXPANDED_CLASS = 'visible grid-rows-[1fr] opacity-100';
 const FORECAST_COLLAPSED_CLASS = 'invisible -mt-4 grid-rows-[0fr] opacity-0';
+// Same 0fr -> 1fr technique as the forecast; the badge row sits below the
+// detail tiles, so its collapsed state cancels the 0.5rem gap with -mt-2.
+const BADGES_COLLAPSIBLE_CLASS =
+  'grid transition-[grid-template-rows,opacity,margin-top] duration-300 ease-in-out motion-reduce:transition-none';
+const BADGES_EXPANDED_CLASS = 'mt-2 grid-rows-[1fr] opacity-100';
+const BADGES_COLLAPSED_CLASS = 'mt-0 grid-rows-[0fr] opacity-0';
 const DETAIL_TILES_CLASS = 'flex flex-wrap justify-center gap-x-5 gap-y-3';
 
 export interface WeatherClockCardWeather extends LocalWeather {
@@ -116,7 +122,6 @@ export interface WeatherClockCardProps {
   loading?: boolean;
   error?: LocalWeatherFailure;
   onRetry?: () => void;
-  preparationLoading?: boolean;
   fetchWeather?: (location: Location) => Promise<LocalWeather | null>;
   fetchPreparation?: (weather: LocalWeather) => Promise<Preparation | null>;
   expanded?: boolean;
@@ -171,14 +176,9 @@ const getBrowserTimezoneOffsetSeconds = (): number =>
 interface WeatherDetailsProps {
   weather: WeatherClockCardWeather;
   loading: boolean;
-  preparationLoading: boolean;
 }
 
-const WeatherDetails = ({
-  weather,
-  loading,
-  preparationLoading,
-}: WeatherDetailsProps) => {
+const WeatherDetails = ({ weather, loading }: WeatherDetailsProps) => {
   const { t } = useWeatherTranslation();
   const {
     humidityPercent,
@@ -220,13 +220,9 @@ const WeatherDetails = ({
     ({ key, icon, labelKey }) => ({ key, icon, label: t(labelKey) }),
   );
 
-  // The details block stays rendered (hidden while loading) and the badge row
-  // keeps a fixed height while data is pending so the card does not jump; once
-  // loaded with no badges the row is dropped instead of leaving empty space.
-  const isBadgeRowPending = preparationLoading || loading;
-  const showBadgeRow = isBadgeRowPending || badges.length > 0;
+  const hasBadges = badges.length > 0;
   return (
-    <div className="flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center">
       <div
         className={cn(DETAIL_TILES_CLASS, loading && INVISIBLE_CLASS)}
         aria-hidden={loading || undefined}
@@ -235,22 +231,16 @@ const WeatherDetails = ({
           <StatTileView key={tile.key} tile={tile} />
         ))}
       </div>
-      {showBadgeRow && (
-        <div className="flex min-h-[1.75rem] items-center justify-center">
-          {isBadgeRowPending ? (
-            <div
-              className="flex gap-2"
-              role={loading ? undefined : 'status'}
-              aria-label={loading ? undefined : t('STATUS.LOADING_PREPARATION')}
-            >
-              <Skeleton className="h-7 w-32 rounded-full" />
-              <Skeleton className="h-7 w-24 rounded-full" />
-            </div>
-          ) : (
-            <WeatherBadgeList badges={badges} />
-          )}
+      <div
+        className={cn(
+          BADGES_COLLAPSIBLE_CLASS,
+          hasBadges ? BADGES_EXPANDED_CLASS : BADGES_COLLAPSED_CLASS,
+        )}
+      >
+        <div className="flex min-h-0 justify-center overflow-hidden">
+          {hasBadges && <WeatherBadgeList badges={badges} />}
         </div>
-      )}
+      </div>
     </div>
   );
 };
@@ -262,7 +252,6 @@ const WeatherClockCardView = ({
   loading = false,
   error,
   onRetry,
-  preparationLoading = false,
   expanded,
   defaultExpanded = false,
   onExpandedChange,
@@ -447,7 +436,6 @@ const WeatherClockCardView = ({
         <WeatherDetails
           weather={isLoading || !weather ? PLACEHOLDER_WEATHER : weather}
           loading={isLoading}
-          preparationLoading={preparationLoading}
         />
       )}
 
@@ -503,9 +491,6 @@ const SelfLocatingWeatherClockCard = ({
       weather={ready ? { ...ready.weather, preparation } : undefined}
       error={failure}
       onRetry={retry}
-      preparationLoading={
-        !!ready && !!fetchPreparation && preparation === undefined
-      }
     />
   );
 };
