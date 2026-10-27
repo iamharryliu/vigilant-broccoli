@@ -8,7 +8,7 @@
 - `WeatherClockCardUtilityContent` runs in one of two modes:
   - **Injected data**: pass `weather` (`LocalWeather` plus optional `preparation`), `location` and `timezoneOffsetSeconds`; use `loading`, `error` (a `LocalWeatherFailure`) and `onRetry` for the other states.
   - **Self-locating**: pass `fetchWeather(location)` and optionally `fetchPreparation(weather)`. The card asks the browser for its location through `useLocalWeather` (`react-utility`) and renders the locating/loading skeleton, the denied/unavailable/error message with a retry button (`LocalWeatherMessage`), then the weather. Sun times use the browser's UTC offset unless `timezoneOffsetSeconds` is passed.
-- The card always calls the latest `fetchWeather` / `fetchPreparation`, so inline functions do not reload the weather. Only adding or removing `fetchPreparation` changes whether badges are requested; a failed or `null` result renders no badges, and the badge skeleton shows while it is pending, and once loaded with no badges the badge row is removed so no empty space remains.
+- The card always calls the latest `fetchWeather` / `fetchPreparation`, so inline functions do not reload the weather. Only adding or removing `fetchPreparation` changes whether badges are requested; a failed or `null` result renders no badges, and nothing renders for the badges while it is pending, and the badge row expands open with a height/opacity transition (disabled under `prefers-reduced-motion`) only once there are badges, so no empty space remains.
 - `fetchPreparation` receives the weather without its `forecast`.
 - The card wraps itself in the internal weather i18n provider and carries the Open-Meteo / OpenStreetMap attribution footer once weather is shown, so apps need no provider or footer.
 
