@@ -34,7 +34,9 @@ fi
 # The VM never holds the GitHub App key, so each launch delivers a fresh
 # 1-hour installation token to the file the container's gh wrapper reads. All
 # sessions share that file, so a later launch also extends earlier runs.
-AGENT_RUNNER=$AGENT . "$SCRIPT_DIR/load-env-from-vault.sh"
+# A signed-in Codex solve needs no Vault token, so the loader must not require one.
+SIGNED_IN=${VM_CODEX_SIGNED_IN:-0}
+AGENT_RUNNER=$AGENT CODEX_SIGNED_IN=$SIGNED_IN . "$SCRIPT_DIR/load-env-from-vault.sh"
 if [ -z "${GH_TOKEN:-}" ]; then
   echo "ERROR: no GitHub token available — solves cannot push or open PRs." >&2
   exit 1
@@ -43,13 +45,28 @@ echo "Delivering a fresh GitHub App token to the code-server VM..." >&2
 jq -n --arg token "$GH_TOKEN" --argjson expires_at "$(($(date +%s) + 3600))" '{token: $token, expires_at: $expires_at}' \
   | "$OCI_SSH" "$VM_IP_OUTPUT" "sudo install -m 0600 -o 1000 -g 1000 /dev/stdin $TOKEN_FILE"
 
+# Without a Vault token (or with --codex-signed-in) Codex falls back to the
+# login made in the VM's terminal, kept in the persistent /config volume. Fail
+# before launching rather than inside a detached tmux session nobody watches.
+if [ "$AGENT" = codex ]; then
+  if [ "$SIGNED_IN" != 1 ] && [ -z "${AGENT_CODEX_ACCESS_TOKEN:-}" ]; then
+    SIGNED_IN=1
+    echo "No AGENT_CODEX_ACCESS_TOKEN in Vault; falling back to the Codex login on the VM." >&2
+  fi
+  if [ "$SIGNED_IN" = 1 ] && ! "$OCI_SSH" "$VM_IP_OUTPUT" \
+    "sudo docker exec -u abc -e HOME=/config code-server test -s /config/.codex/auth.json"; then
+    echo "ERROR: no Codex login on the VM and no AGENT_CODEX_ACCESS_TOKEN in Vault. Open https://shell.harryliu.dev/, run 'codex login --device-auth' (device-code sign-in works headless), then retry." >&2
+    exit 1
+  fi
+fi
+
 # The Codex access token rides the same SSH stdin as the session script, as a
 # variable assignment prepended to it: never argv (visible in ps) and never
 # Terraform state or cloud-init. solve-vm-session.sh hands it to each run
 # through a 0600 file that run_solve deletes before the runner starts.
-printf -v SESSION_ARGS '%q ' "$AGENT" "$MODEL" "$CODEX_MODEL" "${REQUESTS[@]}"
+printf -v SESSION_ARGS '%q ' "$AGENT" "$MODEL" "$CODEX_MODEL" "$SIGNED_IN" "${REQUESTS[@]}"
 {
-  [ "$AGENT" != codex ] || printf 'AGENT_CODEX_ACCESS_TOKEN=%q\n' "$AGENT_CODEX_ACCESS_TOKEN"
+  { [ "$AGENT" != codex ] || [ "$SIGNED_IN" = 1 ]; } || printf 'AGENT_CODEX_ACCESS_TOKEN=%q\n' "$AGENT_CODEX_ACCESS_TOKEN"
   cat "$SCRIPT_DIR/solve-vm-session.sh"
 } | "$OCI_SSH" "$VM_IP_OUTPUT" \
   "sudo docker exec -i -u abc -e HOME=/config -w /config code-server bash -s -- $SESSION_ARGS"

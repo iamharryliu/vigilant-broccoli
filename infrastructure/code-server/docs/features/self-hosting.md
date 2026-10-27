@@ -24,7 +24,7 @@ docker run -d --name code-server \
   iamharryliu/vb-code-server:latest
 ```
 
-The image adds Node.js 24, pnpm, Claude Code, Codex, `gh`, the Google Cloud CLI, `pre-commit` and tmux.
+The image adds Node.js 24, pnpm, Claude Code, Codex, `gh`, the Google Cloud CLI, `pre-commit` and tmux. Codex has no baked-in credential: sign in from the terminal with `codex login --device-auth`; the login lives in the `/config` volume.
 
 ## Environment Variables
 
