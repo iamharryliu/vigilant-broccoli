@@ -2,17 +2,17 @@
   "images": [
     {
       "slug": "bucket-service",
-      "readmePath": "projects/nx-workspace/apps/api/bucket-service/README.md",
+      "readmePath": "projects/nx-workspace/apps/api/bucket-service/docs/features/self-hosting.md",
       "descriptionKey": "DOCKER_IMAGES_PAGE.BUCKET_SERVICE.DESCRIPTION"
     },
     {
       "slug": "email-service",
-      "readmePath": "projects/nx-workspace/apps/api/email-service/README.md",
+      "readmePath": "projects/nx-workspace/apps/api/email-service/docs/features/self-hosting.md",
       "descriptionKey": "DOCKER_IMAGES_PAGE.EMAIL_SERVICE.DESCRIPTION"
     },
     {
       "slug": "email-subscription-service",
-      "readmePath": "projects/nx-workspace/apps/api/email-subscription-service/README.md",
+      "readmePath": "projects/nx-workspace/apps/api/email-subscription-service/docs/features/self-hosting.md",
       "descriptionKey": "DOCKER_IMAGES_PAGE.EMAIL_SUBSCRIPTION_SERVICE.DESCRIPTION"
     },
     {
@@ -27,17 +27,17 @@
     },
     {
       "slug": "llm-service",
-      "readmePath": "projects/nx-workspace/apps/api/llm-service/README.md",
+      "readmePath": "projects/nx-workspace/apps/api/llm-service/docs/features/self-hosting.md",
       "descriptionKey": "DOCKER_IMAGES_PAGE.LLM_SERVICE.DESCRIPTION"
     },
     {
       "slug": "office-presence-service",
-      "readmePath": "projects/nx-workspace/apps/api/office-presence-service/README.md",
+      "readmePath": "projects/nx-workspace/apps/api/office-presence-service/docs/features/self-hosting.md",
       "descriptionKey": "DOCKER_IMAGES_PAGE.OFFICE_PRESENCE_SERVICE.DESCRIPTION"
     },
     {
       "slug": "socket-server-socketio",
-      "readmePath": "projects/nx-workspace/apps/socket-server-socketio/README.md",
+      "readmePath": "projects/nx-workspace/apps/socket-server-socketio/docs/features/self-hosting.md",
       "descriptionKey": "DOCKER_IMAGES_PAGE.SOCKET_SERVER_SOCKETIO.DESCRIPTION"
     },
     {
