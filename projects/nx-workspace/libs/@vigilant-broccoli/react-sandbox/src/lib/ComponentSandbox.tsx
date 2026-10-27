@@ -695,11 +695,21 @@ interface SandboxBodyProps {
   showThemeToggle: boolean;
 }
 
+// The URL hash (`/#crud-list`) is the shareable deep link to an entry and wins
+// over the remembered selection, so READMEs can link straight to a component.
+const readHashSelectedId = () => {
+  const hashId = window.location.hash.slice(1);
+  return ALL_ENTRIES.find(entry => entry.id === hashId)?.id;
+};
+
 const readStoredSelectedId = () => {
   const saved = localStorage.getItem(SELECTED_ID_STORAGE_KEY);
-  return ALL_ENTRIES.some(entry => entry.id === saved)
-    ? (saved as string)
-    : ALL_ENTRIES[0].id;
+  return (
+    readHashSelectedId() ??
+    (ALL_ENTRIES.some(entry => entry.id === saved)
+      ? (saved as string)
+      : ALL_ENTRIES[0].id)
+  );
 };
 
 const readStoredIconMode = () =>
@@ -745,6 +755,16 @@ const SandboxBody = ({
   const [selectedId, setSelectedId] = useState(readStoredSelectedId);
   const [iconMode, setIconMode] = useState(readStoredIconMode);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const onHashChange = () => {
+      const hashId = readHashSelectedId();
+      if (hashId) setSelectedId(hashId);
+    };
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
   const selectedEntry =
     entries.find(entry => entry.id === selectedId) ?? entries[0];
 
@@ -755,6 +775,7 @@ const SandboxBody = ({
         selectedId,
         onSelect: id => {
           setSelectedId(id);
+          window.location.hash = id;
           localStorage.setItem(SELECTED_ID_STORAGE_KEY, id);
           setSidebarOpen(false);
         },
