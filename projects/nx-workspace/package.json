@@ -8,8 +8,12 @@
       "nx affected -t lint",
       "nx format:write"
     ],
-    "*.{json,md}": [
+    "*.json": [
       "nx format:write"
+    ],
+    "*.md": [
+      "nx format:write",
+      "node ../../scripts/node/md-table-compact.mjs --write"
     ]
   },
   "private": true,
