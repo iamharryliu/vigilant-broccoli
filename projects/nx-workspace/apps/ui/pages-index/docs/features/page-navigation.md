@@ -27,6 +27,7 @@ Non-obvious routing and data-source details for pages-index. Routes live in `src
 The home page's Software Projects section links straight to GitHub, Docker Hub and npm; these lists live at `/github`, `/docker` and `/npm`, and each breadcrumb returns home. Legacy `/open-source/*` links redirect with the prefix stripped (`/open-source` itself to `/`).
 
 - `/github` — all public `iamharryliu` repositories, fetched from the paginated GitHub API. `/github/:repo` fetches the README through the GitHub API from the default branch, with a link to the repository; loading, empty and fetch errors are displayed.
+- `/docker` renders one card per entry in `src/app/consts/dockerImages.json`, titled by the image slug with its `DOCKER_IMAGES_PAGE.<IMAGE>.DESCRIPTION` string; `scripts/node/repo-stats.mjs` fails when that registry differs from the `iamharryliu/*` images the repo's targets and workflows push.
 - `/docker/:image` — README fetched from this repo's app README (vb-express uses its `docs/features/self-hosting.md`) via `raw.githubusercontent.com`: Docker Hub itself has no description set and its API has no CORS support for browser fetches, so content can't come from Docker Hub directly. Links out to the image's Docker Hub page.
 - `/npm/:pkg` — README fetched from `registry.npmjs.org`, links out to the npm package.
 

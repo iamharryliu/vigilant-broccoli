@@ -1,0 +1,64 @@
+{
+  "images": [
+    {
+      "slug": "bucket-service",
+      "readmePath": "projects/nx-workspace/apps/api/bucket-service/README.md",
+      "descriptionKey": "DOCKER_IMAGES_PAGE.BUCKET_SERVICE.DESCRIPTION"
+    },
+    {
+      "slug": "email-service",
+      "readmePath": "projects/nx-workspace/apps/api/email-service/README.md",
+      "descriptionKey": "DOCKER_IMAGES_PAGE.EMAIL_SERVICE.DESCRIPTION"
+    },
+    {
+      "slug": "email-subscription-service",
+      "readmePath": "projects/nx-workspace/apps/api/email-subscription-service/README.md",
+      "descriptionKey": "DOCKER_IMAGES_PAGE.EMAIL_SUBSCRIPTION_SERVICE.DESCRIPTION"
+    },
+    {
+      "slug": "employee-handler-next",
+      "readmePath": "projects/nx-workspace/apps/ui/employee-handler-ui/README.md",
+      "descriptionKey": "DOCKER_IMAGES_PAGE.EMPLOYEE_HANDLER_NEXT.DESCRIPTION"
+    },
+    {
+      "slug": "job-hunt-next",
+      "readmePath": "projects/nx-workspace/apps/ui/job-hunt-next/README.md",
+      "descriptionKey": "DOCKER_IMAGES_PAGE.JOB_HUNT_NEXT.DESCRIPTION"
+    },
+    {
+      "slug": "llm-service",
+      "readmePath": "projects/nx-workspace/apps/api/llm-service/README.md",
+      "descriptionKey": "DOCKER_IMAGES_PAGE.LLM_SERVICE.DESCRIPTION"
+    },
+    {
+      "slug": "office-presence-service",
+      "readmePath": "projects/nx-workspace/apps/api/office-presence-service/README.md",
+      "descriptionKey": "DOCKER_IMAGES_PAGE.OFFICE_PRESENCE_SERVICE.DESCRIPTION"
+    },
+    {
+      "slug": "socket-server-socketio",
+      "readmePath": "projects/nx-workspace/apps/socket-server-socketio/README.md",
+      "descriptionKey": "DOCKER_IMAGES_PAGE.SOCKET_SERVER_SOCKETIO.DESCRIPTION"
+    },
+    {
+      "slug": "utilities-ui",
+      "readmePath": "projects/nx-workspace/apps/ui/utilities-ui/README.md",
+      "descriptionKey": "DOCKER_IMAGES_PAGE.UTILITIES_UI.DESCRIPTION"
+    },
+    {
+      "slug": "vb-code-server",
+      "readmePath": "infrastructure/code-server/README.md",
+      "descriptionKey": "DOCKER_IMAGES_PAGE.VB_CODE_SERVER.DESCRIPTION"
+    },
+    {
+      "slug": "vb-express",
+      "readmePath": "projects/nx-workspace/apps/api/vb-express/docs/features/self-hosting.md",
+      "descriptionKey": "DOCKER_IMAGES_PAGE.VB_EXPRESS.DESCRIPTION"
+    },
+    {
+      "slug": "waiting-games",
+      "readmePath": "projects/nx-workspace/apps/ui/waiting-games/README.md",
+      "descriptionKey": "DOCKER_IMAGES_PAGE.WAITING_GAMES.DESCRIPTION"
+    }
+  ]
+}

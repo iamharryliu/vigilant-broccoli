@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const NX_WORKSPACE = 'projects/nx-workspace';
 const WEB_APPLICATIONS_REGISTRY = `${NX_WORKSPACE}/apps/ui/pages-index/src/app/consts/webApplications.json`;
+const DOCKER_IMAGES_REGISTRY = `${NX_WORKSPACE}/apps/ui/pages-index/src/app/consts/dockerImages.json`;
 const API_APPS_DIR = `${NX_WORKSPACE}/apps/api/`;
 const NPM_LIBS_DIR = `${NX_WORKSPACE}/libs/@vigilant-broccoli/`;
 const WORKFLOWS_DIR = '.github/workflows/';
@@ -75,7 +76,7 @@ const countProjectsWithTarget = (dir, target) =>
     .filter(isDirectChild(dir))
     .filter(path => target in readTargets(path)).length;
 
-const countDockerImages = () =>
+const pushedDockerImages = () =>
   new Set([
     ...projectJsons.flatMap(path =>
       Object.values(readTargets(path))
@@ -85,12 +86,46 @@ const countDockerImages = () =>
     ...trackedFiles(`${WORKFLOWS_DIR}*.yml`).flatMap(path =>
       imagesIn(read(path)),
     ),
-  ]).size;
+  ]);
+
+// pages-index's Docker page renders from its registry, so an image pushed
+// without a registry entry (or an entry for an image nothing pushes) is a
+// missing or stale card.
+const registryDriftMessages = pushed => {
+  const listed = new Set(
+    JSON.parse(read(DOCKER_IMAGES_REGISTRY)).images.map(
+      ({ slug }) => `${DOCKER_HUB_NAMESPACE}/${slug}`,
+    ),
+  );
+  return [
+    ...[...pushed]
+      .filter(image => !listed.has(image))
+      .map(
+        image =>
+          `${image} is pushed but missing from ${DOCKER_IMAGES_REGISTRY}`,
+      ),
+    ...[...listed]
+      .filter(image => !pushed.has(image))
+      .map(
+        image =>
+          `${image} is in ${DOCKER_IMAGES_REGISTRY} but nothing pushes it`,
+      ),
+  ];
+};
+
+const pushedImages = pushedDockerImages();
+const drift = registryDriftMessages(pushedImages);
+if (drift.length) {
+  console.error(
+    `Docker image registry drift:\n${drift.map(line => `- ${line}`).join('\n')}`,
+  );
+  process.exit(1);
+}
 
 const computeStats = () => ({
   applications: countApplications(),
   services: countProjectsWithTarget(API_APPS_DIR, 'deploy'),
-  images: countDockerImages(),
+  images: pushedImages.size,
   packages: countProjectsWithTarget(NPM_LIBS_DIR, 'publish-package'),
 });
 
