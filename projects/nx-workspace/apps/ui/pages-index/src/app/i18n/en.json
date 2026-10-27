@@ -162,6 +162,10 @@
     "BOOKMARKS": {
       "TITLE": "Bookmarks",
       "DESCRIPTION": "Personal bookmarks saved in your browser, with search, groups and JSON import/export."
+    },
+    "JOB_HUNT": {
+      "TITLE": "Job Hunt",
+      "DESCRIPTION": "Explore fictional career files, a tailored resume, cover letter and application run history."
     }
   },
   "DEPLOYMENTS_PAGE": {

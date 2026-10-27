@@ -102,5 +102,9 @@
     "SAMPLE": "Use sample",
     "BACK": "Back",
     "CONFIRM_REPLACE": "This replaces the saved {label} right away."
+  },
+  "DEMO": {
+    "NOTICE": "Public demo · Explore a fictional application, resume, cover letter and run history. Saving, importing and live AI runs are disabled.",
+    "READ_ONLY": "This demo is read-only. Self-host Job Hunt to save career files or run Claude."
   }
 }

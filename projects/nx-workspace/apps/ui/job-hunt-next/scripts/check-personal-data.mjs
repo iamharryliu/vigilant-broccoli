@@ -13,10 +13,12 @@ const OWNER_RESUME = join(
   'libs/@vigilant-broccoli/resume/src/resume.json',
 );
 const SCANNED_DIRS = [
+  join(WORKSPACE_DIR, 'dist/apps/ui/job-hunt-next/.next/server'),
   join(WORKSPACE_DIR, 'dist/apps/ui/job-hunt-next/.next/standalone'),
   join(WORKSPACE_DIR, 'dist/apps/ui/job-hunt-next/.next/static'),
   join(WORKSPACE_DIR, 'dist/apps/ui/job-hunt-next/skill-workdir'),
   join(APP_DIR, 'templates'),
+  join(APP_DIR, 'public'),
 ];
 
 const listFiles = async dir =>

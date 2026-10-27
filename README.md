@@ -2,7 +2,7 @@
 
 <!-- managed:repo-stats:start -->
 
-Personal monorepo, supporting **19 applications**, **6 API services**, **12 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
+Personal monorepo, supporting **20 applications**, **6 API services**, **12 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
 
 <!-- managed:repo-stats:end -->
 
@@ -93,6 +93,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | <img src="./projects/nx-workspace/apps/ui/employee-handler-ui/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Employee Handler UI](./projects/nx-workspace/apps/ui/employee-handler-ui) | Employee management demo. | [demo-employee-handler-ui.vercel.app](https://demo-employee-handler-ui.vercel.app/) |
 | <img src="./projects/nx-workspace/apps/findme/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [FindMe](./projects/nx-workspace/apps/findme) | Live location sharing for friends and family. | [findme.harryliu.dev](https://findme.harryliu.dev/) |
 | <img src="./projects/nx-workspace/apps/hearth/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Hearth](./projects/nx-workspace/apps/hearth) | Shared home and community management. | [hearth.harryliu.dev](https://hearth.harryliu.dev/) |
+| <img src="./projects/nx-workspace/apps/ui/job-hunt-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Job Hunt](./projects/nx-workspace/apps/ui/job-hunt-next) | Read-only job application demo with fictional career files and documents. | [demo-job-hunt-next.vercel.app](https://demo-job-hunt-next.vercel.app/) |
 | <img src="./projects/nx-workspace/apps/ui/office-presence-ui/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Office Presence UI](./projects/nx-workspace/apps/ui/office-presence-ui) | Browser demo of the Office Presence Slack app. | [demo-office-presence-ui.pages.dev](https://demo-office-presence-ui.pages.dev/) |
 | <img src="./projects/nx-workspace/apps/ui/pages-index/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Pages Index](./projects/nx-workspace/apps/ui/pages-index) | Repository applications, packages, status, and agent documentation. | [projects.harryliu.dev](https://projects.harryliu.dev/) |
 | <img src="./projects/nx-workspace/apps/ui/personal-website-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Personal Website](./projects/nx-workspace/apps/ui/personal-website-react) | Personal profile, links, calendar, and resume. | [harryliu.dev](https://harryliu.dev/) |
@@ -130,7 +131,6 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 
 | Application | Description |
 | --- | --- |
-| <img src="./projects/nx-workspace/apps/ui/job-hunt-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Job Applications](./projects/nx-workspace/apps/ui/job-hunt-next) | Self-hostable job application tailoring with Claude Code. |
 | [Mock Employee Handler Service](./projects/nx-workspace/apps/api/mock/mock-employee-handler-service) | Local mock employee API for development. |
 | <img src="./projects/nx-workspace/apps/ui/small-business-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Small Business Next](./projects/nx-workspace/apps/ui/small-business-next) | Subscription and subscriber notification management. |
 | [Spotify to MP3](./scripts/python/dj-scripts/spotify-to-mp3) | Command-line music download utility. |
@@ -211,6 +211,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | Application | Destination | Dependencies |
 | --- | --- | --- |
 | [Employee Handler UI](./projects/nx-workspace/apps/ui/employee-handler-ui) | Vercel | Supabase |
+| [Job Hunt](./projects/nx-workspace/apps/ui/job-hunt-next) | Vercel | None |
 | [Office Presence Service](./projects/nx-workspace/apps/api/office-presence-service) | Fly.io | Slack |
 | [Office Presence UI](./projects/nx-workspace/apps/ui/office-presence-ui) | Cloudflare Pages | Office Presence Service |
 

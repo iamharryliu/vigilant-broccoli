@@ -34,7 +34,7 @@ on:
           - bucket-service
           - email-subscription-service
       environment:
-        description: 'Deployment environment (production only exists for fly services; employee-handler-ui, office-presence-service and office-presence-ui only have demo)'
+        description: 'Deployment environment (Job Hunt and Employee Handler publish containers in staging/production and public Vercel demos in demo)'
         type: choice
         default: staging
         options:

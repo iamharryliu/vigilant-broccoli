@@ -41,6 +41,7 @@ import {
   EllipsisAction,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import { EXPAND_LATEST, EXPAND_PARAM } from '../app.const';
+import { IS_DEMO } from '../constants/demo';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { useTranslation } from '../i18n';
 import {
@@ -276,12 +277,15 @@ const AnimatedHeight = ({ children }: { children: ReactNode }) => {
     return () => observer.disconnect();
   }, []);
 
+  // Contain tab-panel margins so the observed height includes them.
   return (
     <div
       className="overflow-hidden transition-[height] duration-200 ease-in-out motion-reduce:transition-none"
       style={{ height }}
     >
-      <div ref={contentRef}>{children}</div>
+      <div ref={contentRef} className="flow-root">
+        {children}
+      </div>
     </div>
   );
 };
@@ -448,6 +452,12 @@ export const JobApplicationList = () => {
     },
   ];
 
+  const visibleItemActions = (item: ApplicationItem) =>
+    itemActions(item).filter(
+      action =>
+        !IS_DEMO || (action.icon !== Trash2 && action.icon !== ExternalLink),
+    );
+
   const deleteApplication = async (item: ApplicationItem) => {
     try {
       const response = await fetch(
@@ -486,7 +496,7 @@ export const JobApplicationList = () => {
   return (
     <>
       <ExpansionContext.Provider
-        value={{ actionsFor: itemActions, loadDetails }}
+        value={{ actionsFor: visibleItemActions, loadDetails }}
       >
         {loaded && (
           <CRUDItemList
@@ -494,7 +504,7 @@ export const JobApplicationList = () => {
             defaultExpandedIds={defaultExpandedIds}
             setItems={setItems}
             ListItemComponent={ApplicationRow}
-            itemActions={itemActions}
+            itemActions={visibleItemActions}
             ExpandedComponent={ExpandedDetails}
             copy={copy}
             isCards
