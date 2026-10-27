@@ -11,6 +11,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   cheatsheet                  Print this cheatsheet
   cheatsheet:tmux-nvim        Print the tmux/nvim keybinding cheatsheet
   cheatsheet:aliases          Print the shell alias cheatsheet
+  dockerhub:descriptions      Push every Docker Hub repo's description and overview from the pages-index image registry (Vault DOCKERHUB_TOKEN)
   repo-stats                  Regenerate the managed repo-stats line in README.md and about.md
   repo-stats:check            Fail if a managed repo-stats copy (README, about, resume) is stale
   deps:align-pins             Align app/lib dependency ranges with the nx-workspace root (40-edit cap); run `pnpm -C projects/nx-workspace install --lockfile-only` after
