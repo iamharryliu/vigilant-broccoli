@@ -10,7 +10,14 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { Copy, FileText, Mail, Trash2, type LucideIcon } from 'lucide-react';
+import {
+  Copy,
+  ExternalLink,
+  FileText,
+  Mail,
+  Trash2,
+  type LucideIcon,
+} from 'lucide-react';
 import {
   FILE_ENTRY_KIND,
   FileEntry,
@@ -377,7 +384,38 @@ export const JobApplicationList = () => {
     }
   };
 
+  // The URL is only known once the posting file is read, and a tab opened
+  // after that await would be popup-blocked, so a blank tab opens inside the
+  // click and is pointed at the posting, or closed when it has no URL. Its
+  // opener is cleared first so the job site cannot script this app's tab.
+  const openPosting = async (item: ApplicationItem) => {
+    const tab = window.open('', '_blank');
+    try {
+      const posting = findFileOrThrow(
+        await listFiles(item.id),
+        APPLICATION_FILE.POSTING,
+        t('APPLICATIONS.NO_POSTING'),
+      );
+      const { url } = splitPosting(await readJobApplicationText(posting.path));
+      if (!url) throw new Error(t('APPLICATIONS.NO_POSTING_URL'));
+      if (!tab) {
+        window.open(url, '_blank', 'noopener');
+        return;
+      }
+      tab.opener = null;
+      tab.location.href = url;
+    } catch (error) {
+      tab?.close();
+      toast.error(errorMessage(error, t('APPLICATIONS.OPEN_POSTING_FAILED')));
+    }
+  };
+
   const itemActions = (item: ApplicationItem): ItemAction[] => [
+    {
+      label: t('APPLICATIONS.OPEN_POSTING'),
+      icon: ExternalLink,
+      onSelect: () => openPosting(item),
+    },
     {
       label: t('APPLICATIONS.VIEW_RESUME'),
       icon: FileText,
