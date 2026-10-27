@@ -1,6 +1,6 @@
 # Public demo
 
-Job Hunt's public Vercel demo lets visitors browse Jordan Rivera's fictional career profile, a sample job posting, identified gaps, resume and cover-letter PDFs, and illustrative run output.
+Job Hunt's public Vercel demo lets visitors browse Jordan Rivera's fictional career profile, four sample applications (postings, identified gaps and cover letters, with resume and cover-letter PDFs for the first), and illustrative run history including a failed run and import runs.
 
 ## Deployment
 
