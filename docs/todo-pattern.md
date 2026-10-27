@@ -27,7 +27,7 @@ Source of truth for the shape of the repo root `TODO.md`. `/agentic-pr-create-to
 - `Brief`: two or three plain sentences summarizing the problem and the fix, without file paths or line numbers; the read-only dev-dashboard TODO view shows only this, so it must stand alone. Keep it in sync whenever Description or Recommended Fix changes.
 - `Description`: current state with concrete file references (`path/to/file.ext:12` where useful) and why it matters. Not so serious items migrated from an accepted-risk finding are prefixed `[security · non-risk]` / `[performance · non-risk]`.
 - `Recommended Fix`: the desired end state and remediation, naming an existing repo pattern to follow when one exists. Multi-step fixes are written `1. …<br>2. …<br>3. …` (a table cell cannot hold a real newline) and include the reference-update/cleanup steps (docs, workflows, links, status checks) so nothing dangles.
-- Escape a literal `|` inside a cell as `\|` and keep the whole row on one physical line. Commits store rows unpadded (`| a | b |`, separator cells `---`) through the [`mdtable` filter](./code-quality-tools.md) while the working tree shows the table aligned, so editing a row changes only that line instead of re-padding the table and colliding with parallel agent PRs. Read or diff committed rows with `git show`/`git diff`, not the working file's column widths.
+- Escape a literal `|` inside a cell as `\|` and keep the whole row on one physical line. Rows are stored unpadded (`| a | b |`, separator cells `---`) in commits and the working tree ([Markdown table compaction](./code-quality-tools.md)), so editing a row changes only that line instead of re-padding the table and colliding with parallel agent PRs.
 
 ## Machine-Read Contract
 

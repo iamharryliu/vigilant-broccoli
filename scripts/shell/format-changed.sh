@@ -27,8 +27,19 @@ done < <(
 
 [ "${#FILES[@]}" -gt 0 ] || exit 0
 
+# Prettier pads Markdown tables, but they are kept compact everywhere.
+compact_markdown() {
+  local markdown=()
+  for file in "$@"; do
+    [[ $file != *.md ]] || markdown+=("$file")
+  done
+  [ "${#markdown[@]}" -eq 0 ] || node scripts/node/md-table-compact.mjs --write "${markdown[@]}"
+}
+
 if [ "$CHECK" = 0 ]; then
-  exec npx --yes "prettier@$PRETTIER_VERSION" --write "${FILES[@]}"
+  npx --yes "prettier@$PRETTIER_VERSION" --write "${FILES[@]}"
+  compact_markdown "${FILES[@]}"
+  exit 0
 fi
 
 # Check mode formats in place and then restores every file, comparing against
@@ -48,23 +59,7 @@ for file in "${FILES[@]}"; do
   cp "$ORIGINALS/$file" "$file"
 done
 
-# Prettier pads Markdown tables but committed tables are compact (the mdtable
-# filter), and a checkout with the filter has padded working files, so both
-# sides are compacted before comparing. The compact hook is not reused: it
-# leaves the working file alone wherever the filter is configured.
-compact_markdown_tables() {
-  node --input-type=module -e '
-import { readFileSync, writeFileSync } from "node:fs";
-import { compactMarkdownTables } from "./scripts/node/md-table-compact.mjs";
-for (const file of process.argv.slice(1)) {
-  writeFileSync(file, compactMarkdownTables(readFileSync(file, "utf8")));
-}' "$@"
-}
-MARKDOWN=()
-for file in "${FILES[@]}"; do
-  [[ $file != *.md ]] || MARKDOWN+=("$ORIGINALS/$file" "$EXPECTED/$file")
-done
-[ "${#MARKDOWN[@]}" -eq 0 ] || compact_markdown_tables "${MARKDOWN[@]}"
+compact_markdown "${FILES[@]/#/$EXPECTED/}"
 
 git --no-pager diff --no-index -- "$ORIGINALS" "$EXPECTED" || {
   echo "ERROR: changed files are not Prettier-formatted; run \`bash scripts/shell/format-changed.sh origin/main\` and commit the result." >&2
