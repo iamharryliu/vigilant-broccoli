@@ -11,6 +11,7 @@
 - [Web Dev](./web-dev/web-dev.md)
 - [Software Practices](./general/software-practices.md)
 - [Software Performance](./general/software-performance.md)
+  - [Cache](./general/cache.md)
 - [Software Business](./general/software-business.md)
 - [Software Architecture](./general/software-architecture.md)
   - [Software Design Patterns](./general/software-design-patterns.md)
