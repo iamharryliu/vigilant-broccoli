@@ -18,18 +18,12 @@ Personal monorepo, supporting **20 applications**, **6 API services**, **12 Dock
   - [Commands](#commands)
   - [Agentic](#agentic)
 - [Applications](#applications)
-  - [Public](#public)
-  - [Private](#private)
-  - [Local](#local)
 - [Deployment](#deployment)
   - [Environments](#environments)
-  - [`main`](#main)
-  - [`production`](#production)
-  - [Demo](#demo)
 - [Containers](#containers)
 - [Libraries](#libraries)
-  - [Public](#public-1)
-  - [Private](#private-1)
+  - [Public](#public)
+  - [Private](#private)
 - [CI Actions](#ci-actions)
 - [Stack](#stack)
 
@@ -79,63 +73,51 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 
 ## Applications
 
-### Public
-
-| Application | Description | URL |
-| --- | --- | --- |
-| <img src="./projects/nx-workspace/apps/ui/context-md/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Agent Context](./projects/nx-workspace/apps/ui/context-md) | Repo agent context, docs and skills with search and link graph. | [context.harryliu.dev](https://context.harryliu.dev/) |
-| <img src="./projects/nx-workspace/apps/ui/balloono/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Balloono](./projects/nx-workspace/apps/ui/balloono) | Water balloon battles in online rooms or against CPU opponents. | [balloono.harryliu.dev](https://balloono.harryliu.dev/) |
-| <img src="./projects/nx-workspace/apps/ui/bookmarks-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Bookmarks](./projects/nx-workspace/apps/ui/bookmarks-react) | Personal bookmarks stored in the browser. | [bookmarks.harryliu.dev](https://bookmarks.harryliu.dev/) |
-| <img src="./projects/nx-workspace/apps/ui/calendars/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Calendars](./projects/nx-workspace/apps/ui/calendars) | Public personal and event calendar directory. | [calendar.harryliu.dev](https://calendar.harryliu.dev/) |
-| <img src="./projects/nx-workspace/apps/ui/cloud-8-skate-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Cloud8Skate](./projects/nx-workspace/apps/ui/cloud-8-skate-react) | Toronto skating community website. | [cloud8skate.com](https://cloud8skate.com/) |
-| <img src="./projects/nx-workspace/apps/ui/component-library/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Component Library](./projects/nx-workspace/apps/ui/component-library) | Interactive shared React component sandbox. | [components.harryliu.dev](https://components.harryliu.dev/) |
-| <img src="./projects/nx-workspace/apps/ui/docs-md/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Docs MD](./projects/nx-workspace/apps/ui/docs-md) | Searchable Markdown notes with a file tree and link graph. | [docs.harryliu.dev](https://docs.harryliu.dev/) |
-| <img src="./projects/nx-workspace/apps/ui/employee-handler-ui/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Employee Handler UI](./projects/nx-workspace/apps/ui/employee-handler-ui) | Employee management demo. | [demo-employee-handler-ui.vercel.app](https://demo-employee-handler-ui.vercel.app/) |
-| <img src="./projects/nx-workspace/apps/findme/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [FindMe](./projects/nx-workspace/apps/findme) | Live location sharing for friends and family. | [findme.harryliu.dev](https://findme.harryliu.dev/) |
-| <img src="./projects/nx-workspace/apps/hearth/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Hearth](./projects/nx-workspace/apps/hearth) | Shared home and community management. | [hearth.harryliu.dev](https://hearth.harryliu.dev/) |
-| <img src="./projects/nx-workspace/apps/ui/job-hunt-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Job Hunt](./projects/nx-workspace/apps/ui/job-hunt-next) | Read-only job application demo with fictional career files and documents. | [demo-job-hunt-next.vercel.app](https://demo-job-hunt-next.vercel.app/) |
-| <img src="./projects/nx-workspace/apps/ui/office-presence-ui/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Office Presence UI](./projects/nx-workspace/apps/ui/office-presence-ui) | Browser demo of the Office Presence Slack app. | [demo-office-presence-ui.pages.dev](https://demo-office-presence-ui.pages.dev/) |
-| <img src="./projects/nx-workspace/apps/ui/pages-index/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Pages Index](./projects/nx-workspace/apps/ui/pages-index) | Repository applications, packages, status, and agent documentation. | [projects.harryliu.dev](https://projects.harryliu.dev/) |
-| <img src="./projects/nx-workspace/apps/ui/personal-website-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Personal Website](./projects/nx-workspace/apps/ui/personal-website-react) | Personal profile, links, calendar, and resume. | [harryliu.dev](https://harryliu.dev/) |
-| <img src="./projects/nx-workspace/apps/ui/pomodoro-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Pomodoro](./projects/nx-workspace/apps/ui/pomodoro-react) | Focus timer with work and break sessions. | [pomodoro.harryliu.dev](https://pomodoro.harryliu.dev/) |
-| <img src="./projects/nx-workspace/apps/ui/utilities-ui/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Utilities UI](./projects/nx-workspace/apps/ui/utilities-ui) | Searchable page of everyday utilities. | [utilities.harryliu.dev](https://utilities.harryliu.dev/) |
-| <img src="./projects/nx-workspace/apps/ui/waiting-games/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Waiting Games](./projects/nx-workspace/apps/ui/waiting-games) | Hands-free cup, quiz and estimation games to watch while you wait. | [waiting.harryliu.dev](https://waiting.harryliu.dev/) |
-| <img src="./projects/nx-workspace/apps/ui/weather-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Weather](./projects/nx-workspace/apps/ui/weather-next) | Current weather for your location at a glance. | [weather.harryliu.dev](https://weather.harryliu.dev/) |
-| <img src="./projects/nx-workspace/apps/whiteboard/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Whiteboard](./projects/nx-workspace/apps/whiteboard) | Collaborative writing in shared live rooms. | [whiteboard.harryliu.dev](https://whiteboard.harryliu.dev/) |
-
-### Private
-
-| Application | Description | Access |
-| --- | --- | --- |
-| [Bucket Service](./projects/nx-workspace/apps/api/bucket-service) | Multi-provider object storage proxy. | Fly Network - `production-storage-service` |
-| [Cloud8Skate Sanity](./projects/nx-workspace/apps/cms/cloud8skate-sanity) | Content studio for the skating community site. | Sanity Membership - [www.sanity.io/@ogjQYJiGp/studio/ek3f096j4gzjxyaci1n5dfrq/default/structure](https://www.sanity.io/@ogjQYJiGp/studio/ek3f096j4gzjxyaci1n5dfrq/default/structure) |
-| [code-server](./infrastructure/terraform/oci-code-server.tf) | Browser-based VS Code development environment. | Cloudflare Access - [code.harryliu.dev](https://code.harryliu.dev/) |
-| [Email Service](./projects/nx-workspace/apps/api/email-service) | Queued email delivery producer and consumer. | Fly Network - `production-vb-email-service` |
-| [Email Subscription Service](./projects/nx-workspace/apps/api/email-subscription-service) | Email subscription management and broadcasts. | Fly Network - `production-email-subscription-service` |
-| [Gitea](./infrastructure/terraform/oci-gitea.tf) | Git repository hosting. | Cloudflare Access - [git.harryliu.dev](https://git.harryliu.dev/) |
-| [Grafana](./infrastructure/terraform/aws-grafana.tf) | Metrics and log dashboards. | Cloudflare Access - [grafana.harryliu.dev](https://grafana.harryliu.dev/) |
-| [Immich](./infrastructure/terraform/aws-immich.tf) | Photo and video library management. | Cloudflare Access - [images.harryliu.dev](https://images.harryliu.dev/) |
-| [Jellyfin](./infrastructure/jellyfin-pi) | Homelab media streaming server. | LAN/Tailnet - [jellyfin-pi.echidna-rohu.ts.net:8096](http://jellyfin-pi.echidna-rohu.ts.net:8096/) |
-| [LLM Service](./projects/nx-workspace/apps/api/llm-service) | Unified API for multiple language model providers. | Fly Network - `production-llm-service` |
-| [Loki](./infrastructure/terraform/aws-grafana.tf) | Central log aggregation and ingestion. | Authenticated Ingestion - [loki.harryliu.dev](https://loki.harryliu.dev/) |
-| [Nx Cache](./infrastructure/terraform/cloudflare-nx-cache.tf) | Remote build cache backed by Cloudflare R2. | Token Required - [nx-cache.harryliu.dev](https://nx-cache.harryliu.dev/) |
-| [Office Presence Service](./projects/nx-workspace/apps/api/office-presence-service) | Slack bot for office presence status. | Slack Workspace - Socket Mode or HTTP Events API; Fly demo [demo-office-presence-service.fly.dev](https://demo-office-presence-service.fly.dev/docs) |
-| [RabbitMQ](./infrastructure/terraform/packer) | Message broker for queued email delivery. | VM Network - no public URL. |
-| [Seafile](./infrastructure/terraform/aws-seafile.tf) | File storage and synchronization. | Cloudflare Access - [drive.harryliu.dev](https://drive.harryliu.dev/) |
-| [Socket Server (Socket.IO)](./projects/nx-workspace/apps/socket-server-socketio) | Real-time bidirectional communication backend. | Service Token - [socket.harryliu.dev](https://socket.harryliu.dev/) |
-| [Vault](./infrastructure/terraform/cloudflare-vault.tf) | Secrets management for applications and CI. | Cloudflare Access - [vault.harryliu.dev](https://vault.harryliu.dev/) |
-| [VB Express](./projects/nx-workspace/apps/api/vb-express) | API gateway for tasks, messaging, and other services. | API Key - [api.harryliu.dev](https://api.harryliu.dev/) |
-| <img src="./projects/nx-workspace/apps/vb-manager-next-mobile/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [VB Manager Mobile](./projects/nx-workspace/apps/vb-manager-next-mobile) | Mobile calendar, tasks, and productivity tools. | [manager.harryliu.dev](https://manager.harryliu.dev/) |
-
-### Local
-
-| Application | Description |
-| --- | --- |
-| [Mock Employee Handler Service](./projects/nx-workspace/apps/api/mock/mock-employee-handler-service) | Local mock employee API for development. |
-| <img src="./projects/nx-workspace/apps/ui/small-business-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Small Business Next](./projects/nx-workspace/apps/ui/small-business-next) | Subscription and subscriber notification management. |
-| [Spotify to MP3](./scripts/python/dj-scripts/spotify-to-mp3) | Command-line music download utility. |
-| <img src="./vday-godot-game/icon.svg" width="20" height="20" align="absmiddle"> [Valentine’s Day Adventure Game](./vday-godot-game) | Godot adventure game with heart collection. |
-| <img src="./projects/nx-workspace/apps/ui/vb-manager-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [VB Manager](./projects/nx-workspace/apps/ui/vb-manager-next) | Personal management dashboard. |
+| Application | Description | Dependencies | Environments | Service | Access |
+| --- | --- | --- | --- | --- | --- |
+| <img src="./projects/nx-workspace/apps/ui/context-md/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Agent Context](./projects/nx-workspace/apps/ui/context-md) | Repo agent context, docs and skills with search and link graph. | None | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [context.harryliu.dev](https://context.harryliu.dev/) |
+| <img src="./projects/nx-workspace/apps/ui/balloono/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Balloono](./projects/nx-workspace/apps/ui/balloono) | Water balloon battles in online rooms or against CPU opponents. | Supabase | `main` `production` | ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white) | 🌐 [balloono.harryliu.dev](https://balloono.harryliu.dev/) |
+| <img src="./projects/nx-workspace/apps/ui/bookmarks-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Bookmarks](./projects/nx-workspace/apps/ui/bookmarks-react) | Personal bookmarks stored in the browser. | None | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [bookmarks.harryliu.dev](https://bookmarks.harryliu.dev/) |
+| [Bucket Service](./projects/nx-workspace/apps/api/bucket-service) | Multi-provider object storage proxy. | Cloudflare R2, Google Cloud Storage | `main` `production` | ![Fly.io](https://img.shields.io/badge/Fly.io-8B5CF6?style=flat-square&logo=flydotio&logoColor=white) | 🔒 Fly Network - `production-storage-service` |
+| <img src="./projects/nx-workspace/apps/ui/calendars/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Calendars](./projects/nx-workspace/apps/ui/calendars) | Public personal and event calendar directory. | Google Calendar, VB Express | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [calendar.harryliu.dev](https://calendar.harryliu.dev/) |
+| <img src="./projects/nx-workspace/apps/ui/cloud-8-skate-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Cloud8Skate](./projects/nx-workspace/apps/ui/cloud-8-skate-react) | Toronto skating community website. | Cloud8Skate Sanity, Google Calendar, reCAPTCHA, VB Express | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [cloud8skate.com](https://cloud8skate.com/) |
+| [Cloud8Skate Sanity](./projects/nx-workspace/apps/cms/cloud8skate-sanity) | Content studio for the skating community site. | None | `main` | ![Sanity](https://img.shields.io/badge/Sanity-F36458?style=flat-square&logo=sanity&logoColor=white) | 🔒 Sanity Membership - [www.sanity.io/@ogjQYJiGp/studio/ek3f096j4gzjxyaci1n5dfrq/default/structure](https://www.sanity.io/@ogjQYJiGp/studio/ek3f096j4gzjxyaci1n5dfrq/default/structure) |
+| [code-server](./infrastructure/terraform/oci-code-server.tf) | Browser-based VS Code development environment. | — | — | ![Oracle Cloud](https://img.shields.io/badge/Oracle%20Cloud-F80000?style=flat-square&logo=oracle&logoColor=white) | 🔒 Cloudflare Access - [code.harryliu.dev](https://code.harryliu.dev/) |
+| <img src="./projects/nx-workspace/apps/ui/component-library/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Component Library](./projects/nx-workspace/apps/ui/component-library) | Interactive shared React component sandbox. | None | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [components.harryliu.dev](https://components.harryliu.dev/) |
+| <img src="./projects/nx-workspace/apps/ui/docs-md/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Docs MD](./projects/nx-workspace/apps/ui/docs-md) | Searchable Markdown notes with a file tree and link graph. | None | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [docs.harryliu.dev](https://docs.harryliu.dev/) |
+| [Email Service](./projects/nx-workspace/apps/api/email-service) | Queued email delivery producer and consumer. | RabbitMQ, Resend | `main` `production` | ![Fly.io](https://img.shields.io/badge/Fly.io-8B5CF6?style=flat-square&logo=flydotio&logoColor=white) | 🔒 Fly Network - `production-vb-email-service` |
+| [Email Subscription Service](./projects/nx-workspace/apps/api/email-subscription-service) | Email subscription management and broadcasts. | Email Service, RabbitMQ, Supabase | `main` `production` | ![Fly.io](https://img.shields.io/badge/Fly.io-8B5CF6?style=flat-square&logo=flydotio&logoColor=white) | 🔒 Fly Network - `production-email-subscription-service` |
+| <img src="./projects/nx-workspace/apps/ui/employee-handler-ui/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Employee Handler UI](./projects/nx-workspace/apps/ui/employee-handler-ui) | Employee management demo. | Supabase | `main` `production` `demo` | ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white) | 🌐 [demo-employee-handler-ui.vercel.app](https://demo-employee-handler-ui.vercel.app/) |
+| <img src="./projects/nx-workspace/apps/findme/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [FindMe](./projects/nx-workspace/apps/findme) | Live location sharing for friends and family. | Supabase | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [findme.harryliu.dev](https://findme.harryliu.dev/) |
+| [Gitea](./infrastructure/terraform/oci-gitea.tf) | Git repository hosting. | — | — | ![Oracle Cloud](https://img.shields.io/badge/Oracle%20Cloud-F80000?style=flat-square&logo=oracle&logoColor=white) | 🔒 Cloudflare Access - [git.harryliu.dev](https://git.harryliu.dev/) |
+| [Grafana](./infrastructure/terraform/aws-grafana.tf) | Metrics and log dashboards. | — | — | ![AWS](https://img.shields.io/badge/AWS-FF9900?style=flat-square) | 🔒 Cloudflare Access - [grafana.harryliu.dev](https://grafana.harryliu.dev/) |
+| <img src="./projects/nx-workspace/apps/hearth/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Hearth](./projects/nx-workspace/apps/hearth) | Shared home and community management. | Google Tasks, Supabase, VB Express | `main` `production` | ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white) | 🌐 [hearth.harryliu.dev](https://hearth.harryliu.dev/) |
+| [Immich](./infrastructure/terraform/aws-immich.tf) | Photo and video library management. | — | — | ![AWS](https://img.shields.io/badge/AWS-FF9900?style=flat-square) | 🔒 Cloudflare Access - [images.harryliu.dev](https://images.harryliu.dev/) |
+| [Jellyfin](./infrastructure/jellyfin-pi) | Homelab media streaming server. | — | — | ![Raspberry Pi](https://img.shields.io/badge/Raspberry%20Pi-A22846?style=flat-square&logo=raspberrypi&logoColor=white) | 🔒 LAN/Tailnet - [jellyfin-pi.echidna-rohu.ts.net:8096](http://jellyfin-pi.echidna-rohu.ts.net:8096/) |
+| <img src="./projects/nx-workspace/apps/ui/job-hunt-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Job Hunt](./projects/nx-workspace/apps/ui/job-hunt-next) | Read-only job application demo with fictional career files and documents. | None | `demo` | ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white) | 🌐 [demo-job-hunt-next.vercel.app](https://demo-job-hunt-next.vercel.app/) |
+| [LLM Service](./projects/nx-workspace/apps/api/llm-service) | Unified API for multiple language model providers. | Anthropic, DeepSeek, Gemini, Grok, OpenAI | `main` `production` | ![Fly.io](https://img.shields.io/badge/Fly.io-8B5CF6?style=flat-square&logo=flydotio&logoColor=white) | 🔒 Fly Network - `production-llm-service` |
+| [Loki](./infrastructure/terraform/aws-grafana.tf) | Central log aggregation and ingestion. | — | — | ![AWS](https://img.shields.io/badge/AWS-FF9900?style=flat-square) | 🔒 Authenticated Ingestion - [loki.harryliu.dev](https://loki.harryliu.dev/) |
+| [Mock Employee Handler Service](./projects/nx-workspace/apps/api/mock/mock-employee-handler-service) | Local mock employee API for development. | — | — | ![Local machine](https://img.shields.io/badge/Local%20machine-555555?style=flat-square) | 💻 |
+| [Nx Cache](./infrastructure/terraform/cloudflare-nx-cache.tf) | Remote build cache backed by Cloudflare R2. | — | — | ![Cloudflare R2](https://img.shields.io/badge/Cloudflare%20R2-F38020?style=flat-square&logo=cloudflare&logoColor=white) | 🔒 Token Required - [nx-cache.harryliu.dev](https://nx-cache.harryliu.dev/) |
+| [Office Presence Service](./projects/nx-workspace/apps/api/office-presence-service) | Slack bot for office presence status. | Slack | `main` `demo` | ![Docker Hub](https://img.shields.io/badge/Docker%20Hub-2496ED?style=flat-square&logo=docker&logoColor=white) | 🔒 Slack Workspace - Socket Mode or HTTP Events API; Fly demo [demo-office-presence-service.fly.dev](https://demo-office-presence-service.fly.dev/docs) |
+| <img src="./projects/nx-workspace/apps/ui/office-presence-ui/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Office Presence UI](./projects/nx-workspace/apps/ui/office-presence-ui) | Browser demo of the Office Presence Slack app. | Office Presence Service | `demo` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [demo-office-presence-ui.pages.dev](https://demo-office-presence-ui.pages.dev/) |
+| <img src="./projects/nx-workspace/apps/ui/pages-index/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Pages Index](./projects/nx-workspace/apps/ui/pages-index) | Repository applications, packages, status, and agent documentation. | GitHub API | `main` | ![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-222222?style=flat-square&logo=githubpages&logoColor=white) | 🌐 [projects.harryliu.dev](https://projects.harryliu.dev/) |
+| <img src="./projects/nx-workspace/apps/ui/personal-website-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Personal Website](./projects/nx-workspace/apps/ui/personal-website-react) | Personal profile, links, calendar, and resume. | reCAPTCHA, VB Express | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [harryliu.dev](https://harryliu.dev/) |
+| <img src="./projects/nx-workspace/apps/ui/pomodoro-react/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Pomodoro](./projects/nx-workspace/apps/ui/pomodoro-react) | Focus timer with work and break sessions. | None | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [pomodoro.harryliu.dev](https://pomodoro.harryliu.dev/) |
+| [RabbitMQ](./infrastructure/terraform/packer) | Message broker for queued email delivery. | — | — | ![Oracle Cloud](https://img.shields.io/badge/Oracle%20Cloud-F80000?style=flat-square&logo=oracle&logoColor=white) | 🔒 Cloudflare Access - [queue.harryliu.dev](https://queue.harryliu.dev/) |
+| [Seafile](./infrastructure/terraform/aws-seafile.tf) | File storage and synchronization. | — | — | ![AWS](https://img.shields.io/badge/AWS-FF9900?style=flat-square) | 🔒 Cloudflare Access - [drive.harryliu.dev](https://drive.harryliu.dev/) |
+| <img src="./projects/nx-workspace/apps/ui/small-business-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Small Business Next](./projects/nx-workspace/apps/ui/small-business-next) | Subscription and subscriber notification management. | — | — | ![Local machine](https://img.shields.io/badge/Local%20machine-555555?style=flat-square) | 💻 |
+| [Socket Server (Socket.IO)](./projects/nx-workspace/apps/socket-server-socketio) | Real-time bidirectional communication backend. | None | `main` | ![Oracle Cloud](https://img.shields.io/badge/Oracle%20Cloud-F80000?style=flat-square&logo=oracle&logoColor=white) | 🔒 Service Token - [socket.harryliu.dev](https://socket.harryliu.dev/) |
+| [Spotify to MP3](./scripts/python/dj-scripts/spotify-to-mp3) | Command-line music download utility. | — | — | ![Local machine](https://img.shields.io/badge/Local%20machine-555555?style=flat-square) | 💻 |
+| <img src="./projects/nx-workspace/apps/ui/utilities-ui/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Utilities UI](./projects/nx-workspace/apps/ui/utilities-ui) | Searchable page of everyday utilities. | None | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [utilities.harryliu.dev](https://utilities.harryliu.dev/) |
+| <img src="./vday-godot-game/icon.svg" width="20" height="20" align="absmiddle"> [Valentine’s Day Adventure Game](./vday-godot-game) | Godot adventure game with heart collection. | — | — | ![Local machine](https://img.shields.io/badge/Local%20machine-555555?style=flat-square) | 💻 |
+| [Vault](./infrastructure/terraform/cloudflare-vault.tf) | Secrets management for applications and CI. | — | — | ![Google Cloud](https://img.shields.io/badge/Google%20Cloud-4285F4?style=flat-square&logo=googlecloud&logoColor=white) | 🔒 Cloudflare Access - [vault.harryliu.dev](https://vault.harryliu.dev/) |
+| [VB Express](./projects/nx-workspace/apps/api/vb-express) | API gateway for tasks, messaging, and other services. | Bucket Service, ElevenLabs, Email Service, Google OAuth, LLM Service, reCAPTCHA, Supabase, Twilio | `main` `production` | ![Fly.io](https://img.shields.io/badge/Fly.io-8B5CF6?style=flat-square&logo=flydotio&logoColor=white) | 🔒 API Key - [api.harryliu.dev](https://api.harryliu.dev/) |
+| <img src="./projects/nx-workspace/apps/ui/vb-manager-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [VB Manager](./projects/nx-workspace/apps/ui/vb-manager-next) | Personal management dashboard. | — | — | ![Local machine](https://img.shields.io/badge/Local%20machine-555555?style=flat-square) | 💻 |
+| <img src="./projects/nx-workspace/apps/vb-manager-next-mobile/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [VB Manager Mobile](./projects/nx-workspace/apps/vb-manager-next-mobile) | Mobile calendar, tasks, and productivity tools. | Google Workspace APIs, Supabase, VB Express | `main` `production` | ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white) | 🔒 [manager.harryliu.dev](https://manager.harryliu.dev/) |
+| <img src="./projects/nx-workspace/apps/ui/waiting-games/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Waiting Games](./projects/nx-workspace/apps/ui/waiting-games) | Hands-free cup, quiz and estimation games to watch while you wait. | None | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [waiting.harryliu.dev](https://waiting.harryliu.dev/) |
+| <img src="./projects/nx-workspace/apps/ui/weather-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Weather](./projects/nx-workspace/apps/ui/weather-next) | Current weather for your location at a glance. | Open-Meteo, VB Express | `main` `production` | ![Vercel](https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white) | 🌐 [weather.harryliu.dev](https://weather.harryliu.dev/) |
+| <img src="./projects/nx-workspace/apps/whiteboard/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Whiteboard](./projects/nx-workspace/apps/whiteboard) | Collaborative writing in shared live rooms. | Supabase | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [whiteboard.harryliu.dev](https://whiteboard.harryliu.dev/) |
 
 ## Deployment
 
@@ -147,73 +129,6 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | Staging | Push to `main` touching `projects/nx-workspace/**`, or docs/agent context (Agent Context) or `notes/**` (Docs MD); manual dispatch (defaults to staging) | Affected `deploy` targets (all of them on dispatch), plus Pages Index on GitHub Pages | `deploy`, `deploy-context-md`, `deploy-docs-md`, `manual-deploy-app` |
 | Demo | Successful staging deploy; manual dispatch | Every `deploy:demo` target | `deploy-demo-apps`, `manual-deploy-app` |
 | Production | Push to the `production` branch; manual dispatch with `environment: production` | Every `deploy:production` target, plus npm package publishing | `deploy`, `deploy-context-md`, `deploy-docs-md`, `manual-deploy-app` |
-
-### `main`
-
-| Application | Destination | Dependencies |
-| --- | --- | --- |
-| [Agent Context](./projects/nx-workspace/apps/ui/context-md) | Cloudflare Pages | None |
-| [Balloono](./projects/nx-workspace/apps/ui/balloono) | Vercel | Supabase |
-| [Bookmarks](./projects/nx-workspace/apps/ui/bookmarks-react) | Cloudflare Pages | None |
-| [Bucket Service](./projects/nx-workspace/apps/api/bucket-service) | Fly.io | Cloudflare R2, Google Cloud Storage |
-| [Calendars](./projects/nx-workspace/apps/ui/calendars) | Cloudflare Pages | Google Calendar, VB Express |
-| [Cloud8Skate](./projects/nx-workspace/apps/ui/cloud-8-skate-react) | Cloudflare Pages | Cloud8Skate Sanity, Google Calendar, reCAPTCHA, VB Express |
-| [Cloud8Skate Sanity](./projects/nx-workspace/apps/cms/cloud8skate-sanity) | Sanity | None |
-| [Component Library](./projects/nx-workspace/apps/ui/component-library) | Cloudflare Pages | None |
-| [Docs MD](./projects/nx-workspace/apps/ui/docs-md) | Cloudflare Pages | None |
-| [Email Service](./projects/nx-workspace/apps/api/email-service) | Fly.io | RabbitMQ, Resend |
-| [Email Subscription Service](./projects/nx-workspace/apps/api/email-subscription-service) | Fly.io | Email Service, RabbitMQ, Supabase |
-| [Employee Handler UI](./projects/nx-workspace/apps/ui/employee-handler-ui) | Docker Hub | Supabase |
-| [FindMe](./projects/nx-workspace/apps/findme) | Cloudflare Pages | Supabase |
-| [Hearth](./projects/nx-workspace/apps/hearth) | Vercel | Google Tasks, Supabase, VB Express |
-| [LLM Service](./projects/nx-workspace/apps/api/llm-service) | Fly.io | Anthropic, DeepSeek, Gemini, Grok, OpenAI |
-| [Office Presence Service](./projects/nx-workspace/apps/api/office-presence-service) | Docker Hub | Slack |
-| [Pages Index](./projects/nx-workspace/apps/ui/pages-index) | GitHub Pages | GitHub API |
-| [Personal Website](./projects/nx-workspace/apps/ui/personal-website-react) | Cloudflare Pages | reCAPTCHA, VB Express |
-| [Pomodoro](./projects/nx-workspace/apps/ui/pomodoro-react) | Cloudflare Pages | None |
-| [Socket Server (Socket.IO)](./projects/nx-workspace/apps/socket-server-socketio) | Docker Hub, OCI VM | None |
-| [Utilities UI](./projects/nx-workspace/apps/ui/utilities-ui) | Cloudflare Pages, Docker Hub | None |
-| [VB Express](./projects/nx-workspace/apps/api/vb-express) | Fly.io | Bucket Service, ElevenLabs, Email Service, Google OAuth, LLM Service, reCAPTCHA, Supabase, Twilio |
-| [VB Manager Mobile](./projects/nx-workspace/apps/vb-manager-next-mobile) | Vercel | Google Workspace APIs, Supabase, VB Express |
-| [Waiting Games](./projects/nx-workspace/apps/ui/waiting-games) | Cloudflare Pages, Docker Hub | None |
-| [Weather](./projects/nx-workspace/apps/ui/weather-next) | Vercel | Open-Meteo, VB Express |
-| [Whiteboard](./projects/nx-workspace/apps/whiteboard) | Cloudflare Pages | Supabase |
-
-### `production`
-
-| Application | Destination | Dependencies |
-| --- | --- | --- |
-| [Agent Context](./projects/nx-workspace/apps/ui/context-md) | Cloudflare Pages | None |
-| [Balloono](./projects/nx-workspace/apps/ui/balloono) | Vercel | Supabase |
-| [Bookmarks](./projects/nx-workspace/apps/ui/bookmarks-react) | Cloudflare Pages | None |
-| [Bucket Service](./projects/nx-workspace/apps/api/bucket-service) | Fly.io | Cloudflare R2, Google Cloud Storage |
-| [Calendars](./projects/nx-workspace/apps/ui/calendars) | Cloudflare Pages | Google Calendar, VB Express |
-| [Cloud8Skate](./projects/nx-workspace/apps/ui/cloud-8-skate-react) | Cloudflare Pages | Cloud8Skate Sanity, Google Calendar, reCAPTCHA, VB Express |
-| [Component Library](./projects/nx-workspace/apps/ui/component-library) | Cloudflare Pages | None |
-| [Docs MD](./projects/nx-workspace/apps/ui/docs-md) | Cloudflare Pages | None |
-| [Email Service](./projects/nx-workspace/apps/api/email-service) | Fly.io | RabbitMQ, Resend |
-| [Email Subscription Service](./projects/nx-workspace/apps/api/email-subscription-service) | Fly.io | Email Service, RabbitMQ, Supabase |
-| [Employee Handler UI](./projects/nx-workspace/apps/ui/employee-handler-ui) | Docker Hub | Supabase |
-| [FindMe](./projects/nx-workspace/apps/findme) | Cloudflare Pages | Supabase |
-| [Hearth](./projects/nx-workspace/apps/hearth) | Vercel | Google Tasks, Supabase, VB Express |
-| [LLM Service](./projects/nx-workspace/apps/api/llm-service) | Fly.io | Anthropic, DeepSeek, Gemini, Grok, OpenAI |
-| [Personal Website](./projects/nx-workspace/apps/ui/personal-website-react) | Cloudflare Pages | reCAPTCHA, VB Express |
-| [Pomodoro](./projects/nx-workspace/apps/ui/pomodoro-react) | Cloudflare Pages | None |
-| [Utilities UI](./projects/nx-workspace/apps/ui/utilities-ui) | Cloudflare Pages, Docker Hub | None |
-| [VB Express](./projects/nx-workspace/apps/api/vb-express) | Fly.io | Bucket Service, ElevenLabs, Email Service, Google OAuth, LLM Service, reCAPTCHA, Supabase, Twilio |
-| [VB Manager Mobile](./projects/nx-workspace/apps/vb-manager-next-mobile) | Vercel | Google Workspace APIs, Supabase, VB Express |
-| [Waiting Games](./projects/nx-workspace/apps/ui/waiting-games) | Cloudflare Pages, Docker Hub | None |
-| [Weather](./projects/nx-workspace/apps/ui/weather-next) | Vercel | Open-Meteo, VB Express |
-| [Whiteboard](./projects/nx-workspace/apps/whiteboard) | Cloudflare Pages | Supabase |
-
-### Demo
-
-| Application | Destination | Dependencies |
-| --- | --- | --- |
-| [Employee Handler UI](./projects/nx-workspace/apps/ui/employee-handler-ui) | Vercel | Supabase |
-| [Job Hunt](./projects/nx-workspace/apps/ui/job-hunt-next) | Vercel | None |
-| [Office Presence Service](./projects/nx-workspace/apps/api/office-presence-service) | Fly.io | Slack |
-| [Office Presence UI](./projects/nx-workspace/apps/ui/office-presence-ui) | Cloudflare Pages | Office Presence Service |
 
 ## Containers
 
