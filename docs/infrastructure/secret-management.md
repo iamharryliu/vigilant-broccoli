@@ -83,7 +83,7 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `CODE_SERVER_CF_ACCESS_CLIENT_ID` / `CODE_SERVER_CF_ACCESS_CLIENT_SECRET` | Vault `kv/data/secrets` (synced by `tf:post-apply`) | Cloudflare Access service token that `ci-health-check` presents to reach the code-server hostname. |
 | `CODE_SERVER_VM_IP` | Vault `kv/data/secrets` (synced by `tf:post-apply`) | Origin IP of the code-server VM; SSH target for `manual-refresh-code-server-github-token` and origin-bypass check in `test-security-cloudflare-access`. |
 | `DEEPSEEK_API_KEY` | Vault `kv/data/secrets` → Fly | DeepSeek API key for `llm-service`. |
-| `DOCKERHUB_TOKEN` | Vault `kv/data/secrets` | Pushes images to Docker Hub from CI. |
+| `DOCKERHUB_TOKEN` | Vault `kv/data/secrets` | Pushes images to Docker Hub from CI and updates each repository's description and overview (`scripts/update-dockerhub-descriptions.ts`), which needs repository write access. |
 | `ELEVENLABS_API_KEY` | Vault `kv/data/secrets` → Fly | ElevenLabs text-to-speech for `vb-express`. |
 | `FLY_API_TOKEN` | Vault `kv/data/secrets` | Fly.io org token for deploys and `deploy-flyio-secrets.ts`. |
 | `FLY_LOG_SHIPPER_ACCESS_TOKEN` | Vault `kv/data/secrets` → Fly (`ACCESS_TOKEN`) | Read-only Fly org token; `vb-log-shipper` subscribes to the org NATS log stream. |

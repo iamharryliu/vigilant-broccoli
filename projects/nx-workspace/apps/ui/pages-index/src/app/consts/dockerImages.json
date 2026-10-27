@@ -22,7 +22,7 @@
     },
     {
       "slug": "job-hunt-next",
-      "readmePath": "projects/nx-workspace/apps/ui/job-hunt-next/README.md",
+      "readmePath": "projects/nx-workspace/apps/ui/job-hunt-next/docs/features/docker-image.md",
       "descriptionKey": "DOCKER_IMAGES_PAGE.JOB_HUNT_NEXT.DESCRIPTION"
     },
     {

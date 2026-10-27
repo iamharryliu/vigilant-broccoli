@@ -265,6 +265,19 @@ jobs:
           NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
         run: ${{ steps.check.outputs.deploy_cmd }}
 
+      # Every Docker Hub repo's description and overview come from the
+      # pages-index image registry; syncing all of them is a dozen idempotent
+      # API calls, so it does not need to track which images this run pushed.
+      # Not load-bearing for the deploy, hence continue-on-error.
+      - name: Sync Docker Hub descriptions
+        if: steps.check.outputs.has_deployments == 'true'
+        continue-on-error: true
+        working-directory: ./projects/nx-workspace
+        env:
+          DOCKERHUB_USERNAME: ${{ env.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ env.DOCKERHUB_TOKEN }}
+        run: pnpm exec tsx scripts/update-dockerhub-descriptions.ts
+
       # Cloudflare proxies api.harryliu.dev to the fly app, so fly needs a cert
       # for that hostname or the origin TLS handshake fails. `certs add` errors
       # when the cert exists, so only add it when `certs show` finds none.

@@ -252,7 +252,7 @@
       "DESCRIPTION": "Employee lifecycle automation UI built on Next.js."
     },
     "JOB_HUNT_NEXT": {
-      "DESCRIPTION": "Self-hostable Next.js app that tailors a resume and cover letter to each job posting with Claude Code."
+      "DESCRIPTION": "Self-hostable Next.js app that tailors resumes and cover letters to job postings with Claude Code."
     },
     "LLM_SERVICE": {
       "DESCRIPTION": "Fastify gateway to Anthropic, OpenAI, Gemini, DeepSeek and xAI models."
