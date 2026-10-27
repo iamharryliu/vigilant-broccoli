@@ -122,6 +122,7 @@
 
 | Term | Definition |
 | :-- | :-- |
+| Bookmarklet | A bookmark whose URL is a `javascript:` snippet that runs against the current page when clicked. Limited by CORS and CSP, so it often opens a URL with data in the query string instead (related: userscript, browser extension). |
 | Bundler | A tool that packages multiple files and their dependencies into a single file or set of files for deployment. |
 | CPU bound | A condition where the speed of a program is limited by the processor's computation power. |
 | cron | Operating system utility used to schedule automation script executions. |
