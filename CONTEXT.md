@@ -15,8 +15,6 @@ Shared repository guidance. Edit `CONTEXT.md`; `AGENTS.md` is a relative symlink
   - [Documentation](#documentation)
 - [Git](#git)
 - [Coding Conventions](#coding-conventions)
-- [Nuances](#nuances)
-  - [`git status` shows a Markdown file modified while `git diff` is empty](#git-status-shows-a-markdown-file-modified-while-git-diff-is-empty)
 
 ## Doc Map
 
@@ -99,9 +97,3 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 - Do not write tests unless explicitly asked.
 - Never create import cycles; `import/no-cycle` fails lint. Inside a lib, import from the sibling module, never from the lib's own `index.ts`.
 - Comments should explain non-obvious reasons, constraints or traps. Remove redundant comments and generator scaffolding when touching a file. Preserve comments that are an empty block's sole body, and `TODO`/`FIXME`/lint directives.
-
-## Nuances
-
-### `git status` shows a Markdown file modified while `git diff` is empty
-
-Committed Markdown tables are unpadded and the working tree is re-aligned on checkout by the `mdtable` filter ([code-quality-tools.md](./docs/code-quality-tools.md)). Git treats a working file whose size differs from the size it recorded at `git add` or checkout as modified without running the filter, so re-padding alone (format-on-save on a file left compact on disk, Prettier after staging) reports ` M` with no diff. If that file is also staged, lint-staged aborts the commit with `Failed to restore unstaged changes!`. Run `git add <file>` to re-record it; the content is unchanged. Read committed rows with `git show HEAD:<file>`, not the working file.
