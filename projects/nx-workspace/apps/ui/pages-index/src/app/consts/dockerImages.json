@@ -17,7 +17,7 @@
     },
     {
       "slug": "employee-handler-next",
-      "readmePath": "projects/nx-workspace/apps/ui/employee-handler-ui/README.md",
+      "readmePath": "projects/nx-workspace/apps/ui/employee-handler-ui/docs/features/self-hosting.md",
       "descriptionKey": "DOCKER_IMAGES_PAGE.EMPLOYEE_HANDLER_NEXT.DESCRIPTION"
     },
     {
@@ -42,7 +42,7 @@
     },
     {
       "slug": "utilities-ui",
-      "readmePath": "projects/nx-workspace/apps/ui/utilities-ui/README.md",
+      "readmePath": "projects/nx-workspace/apps/ui/utilities-ui/docs/features/self-hosting.md",
       "descriptionKey": "DOCKER_IMAGES_PAGE.UTILITIES_UI.DESCRIPTION"
     },
     {
@@ -57,7 +57,7 @@
     },
     {
       "slug": "waiting-games",
-      "readmePath": "projects/nx-workspace/apps/ui/waiting-games/README.md",
+      "readmePath": "projects/nx-workspace/apps/ui/waiting-games/docs/features/self-hosting.md",
       "descriptionKey": "DOCKER_IMAGES_PAGE.WAITING_GAMES.DESCRIPTION"
     }
   ]
