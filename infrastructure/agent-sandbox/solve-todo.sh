@@ -66,8 +66,8 @@ while [ $# -gt 0 ]; do
 done
 
 [ "$AGENT_RUNNER" != ollama ] || LOCAL=1
-if [ "$VM" = 1 ] && { [ "$LOCAL" = 1 ] || [ "$AGENT_RUNNER" != claude ]; }; then
-  echo "ERROR: --vm runs Claude only; it cannot be combined with --local or --agent codex|ollama." >&2
+if [ "$VM" = 1 ] && { [ "$LOCAL" = 1 ] || [ "$AGENT_RUNNER" = ollama ]; }; then
+  echo "ERROR: --vm runs Claude or Codex only; it cannot be combined with --local or --agent ollama." >&2
   exit 1
 fi
 if [ "$LOCAL" = 1 ]; then
@@ -98,7 +98,7 @@ if [ -z "$PROMPT" ] && [ ${#IDS[@]} -eq 0 ]; then
 fi
 
 if [ "$VM" = 1 ]; then
-  exec bash "$SCRIPT_DIR/solve-vm.sh" "$MODEL" "$PROMPT" ${IDS[@]+"${IDS[@]}"}
+  exec bash "$SCRIPT_DIR/solve-vm.sh" "$AGENT_RUNNER" "$MODEL" "$CODEX_MODEL" "$PROMPT" ${IDS[@]+"${IDS[@]}"}
 fi
 if [ "$LOCAL" = 1 ]; then
   exec bash "$SCRIPT_DIR/solve-local.sh" "$PUBLISH" "$OLLAMA_MODEL" "$OLLAMA_BASE_URL" "$PROMPT" ${IDS[@]+"${IDS[@]}"}

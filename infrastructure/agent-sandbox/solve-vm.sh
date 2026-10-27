@@ -6,9 +6,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-MODEL=$1
-PROMPT=$2
-shift 2
+AGENT=$1
+MODEL=$2
+CODEX_MODEL=$3
+PROMPT=$4
+shift 4
 IDS=("$@")
 OCI_SSH="$REPO_ROOT/scripts/shell/oci-ssh.sh"
 VM_IP_OUTPUT=oci_code_server_public_ip
@@ -32,7 +34,7 @@ fi
 # The VM never holds the GitHub App key, so each launch delivers a fresh
 # 1-hour installation token to the file the container's gh wrapper reads. All
 # sessions share that file, so a later launch also extends earlier runs.
-AGENT_RUNNER=claude . "$SCRIPT_DIR/load-env-from-vault.sh"
+AGENT_RUNNER=$AGENT . "$SCRIPT_DIR/load-env-from-vault.sh"
 if [ -z "${GH_TOKEN:-}" ]; then
   echo "ERROR: no GitHub token available — solves cannot push or open PRs." >&2
   exit 1
@@ -41,7 +43,13 @@ echo "Delivering a fresh GitHub App token to the code-server VM..." >&2
 jq -n --arg token "$GH_TOKEN" --argjson expires_at "$(($(date +%s) + 3600))" '{token: $token, expires_at: $expires_at}' \
   | "$OCI_SSH" "$VM_IP_OUTPUT" "sudo install -m 0600 -o 1000 -g 1000 /dev/stdin $TOKEN_FILE"
 
-printf -v SESSION_ARGS '%q ' "$MODEL" "${REQUESTS[@]}"
-"$OCI_SSH" "$VM_IP_OUTPUT" \
-  "sudo docker exec -i -u abc -e HOME=/config -w /config code-server bash -s -- $SESSION_ARGS" \
-  <"$SCRIPT_DIR/solve-vm-session.sh"
+# The Codex access token rides the same SSH stdin as the session script, as a
+# variable assignment prepended to it: never argv (visible in ps) and never
+# Terraform state or cloud-init. solve-vm-session.sh hands it to each run
+# through a 0600 file that run_solve deletes before the runner starts.
+printf -v SESSION_ARGS '%q ' "$AGENT" "$MODEL" "$CODEX_MODEL" "${REQUESTS[@]}"
+{
+  [ "$AGENT" != codex ] || printf 'AGENT_CODEX_ACCESS_TOKEN=%q\n' "$AGENT_CODEX_ACCESS_TOKEN"
+  cat "$SCRIPT_DIR/solve-vm-session.sh"
+} | "$OCI_SSH" "$VM_IP_OUTPUT" \
+  "sudo docker exec -i -u abc -e HOME=/config -w /config code-server bash -s -- $SESSION_ARGS"

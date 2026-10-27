@@ -70,7 +70,7 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 
 | Secret | Location | Purpose |
 | --- | --- | --- |
-| `AGENT_CODEX_ACCESS_TOKEN` | Vault `kv/data/secrets` | ChatGPT/Codex access token for `agentic-pr-create --agent codex`; kept separate from `OPENAI_API_KEY`. |
+| `AGENT_CODEX_ACCESS_TOKEN` | Vault `kv/data/secrets` | ChatGPT/Codex access token for `agentic-pr-create --agent codex` (including `--vm`, delivered over SSH stdin per launch); kept separate from `OPENAI_API_KEY`. |
 | `AGENT_GH_APP_ID` / `AGENT_GH_APP_PRIVATE_KEY` | Vault `kv/data/secrets` | Agent sandbox GitHub App; mints 1-hour repo-scoped installation tokens (`GH_TOKEN`). Also used by code-server and the non-agent PR crons `cron-dependency-pin-drift` and `cron-prune-orphaned-services`. |
 | `ANTHROPIC_API_KEY` | Vault `kv/data/secrets` → Fly | Claude API key for `llm-service`. |
 | `BETTER_AUTH_SECRET` | Vault `kv/data/secrets` → Fly | Signs `vb-express` Better Auth sessions and encrypts its stored Google OAuth tokens; rotating it signs every user out and makes them sign in with Google again. |
