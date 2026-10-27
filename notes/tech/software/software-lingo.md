@@ -32,6 +32,7 @@
 | High-level language | A programming language that is closer to human language, abstracting away hardware details. Easier to read, write, and maintain (e.g., Python). |
 | immutable | Cannot be changed after it’s created. |
 | Imperative programming | A paradigm where you spell out the steps that change program state; procedural and object-oriented programming are imperative styles. |
+| Intellectual Property | Legal ownership of creations of the mind, such as source code, designs and brands, protected by copyright, patents, trademarks and licenses. |
 | Interpreted | Source code is executed directly at runtime by an interpreter, with no separate build step (e.g. Python, Ruby, Bash). |
 | Lazy loading | Deferring a load until first access, such as an ORM fetching a related entity only when it is read. Can cause N+1 queries. |
 | Logic programming | A declarative paradigm where you state facts and rules and the engine searches for answers that satisfy them (e.g. Prolog). |

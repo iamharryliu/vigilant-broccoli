@@ -1,71 +1,86 @@
 # Software Breakdown
 
-## Good Design
+## Table of Contents
 
-- Dynamic
-- Agnostic
-- Stateless
-- Handling silent failures.
-- Performance and optimization.
+- [Diagrams](#diagrams)
+  - [Software Solution Tree](#software-solution-tree)
+  - [Infrastructure](#infrastructure)
+  - [Frontend Design](#frontend-design)
+  - [Backend](#backend)
+- [Services](#services)
+- [Environments](#environments)
+- [Common Structures](#common-structures)
+- [Software Choices](#software-choices)
+- [Embellishments](#embellishments)
 
-## Implementation
+## Diagrams
 
-Should consider the following:
+### Software Solution Tree
 
-- Weighing alternative solutions
-- Scaling
-- Security
+```text
+📦 Software Solution
+└── 🤖 Agentic Context
+    └── 🏗️ Infrastructure Layer
+        ├── 🗄️ Databases
+        ├── Networking
+        ├── Storage
+        └── Apps
+            └── 🚀 Deployment Layer
+                └── CICD
+                    ├── App Images
+                    │   └── 🌿 Version Control
+                    │       ├── Branching
+                    │       ├── Code Review Process
+                    │       └── 🧩 Application Layer
+                    │           ├── ⚙️ Backend
+                    │           │   └── REST API
+                    │           │       ├── Parameters
+                    │           │       └── Request Types
+                    │           └── 🎨 Frontend
+                    │               └── HTML Page
+                    │                   ├── CSS
+                    │                   ├── HTML
+                    │                   └── JavaScript
+                    └── 🌐 Content Delivery Network
+```
 
-## Provisioning Resources
-
-- Bootstrapping
-- Application Access
-  - SSH/proxy access
-  - CI access
-  - Developer access
-- Secret Manager
-- Database
-- Service Account/Auth
-
-## Infrastructure
-
-- Security
-  - HTTPS TLS/SSL
-  - Service accounts
-  - Secret manager
-  - Permission levels
-- Cloud
-  - Availability
-- Deployment
-  - Immutability
-    Dev Experience
-- Infrastructure management
-  - Start/stop resources
-  - Health checks
-  - View logs
+### Infrastructure
 
 ```mermaid
 flowchart TB
 
-subgraph APPLICATION_LAYER[Application Layer]
-  CODE[Code]
-  DATA_STRUCTURES[Data Structures]
-  LIBRARIES[Libraries]
-  FRAMEWORKS[Frameworks]
-  RUNTIME[Runtime Environment]
-  BUILD_FILES[Build Files]
-  IMAGE[Image]
-  STATIC_FILES[Static Files]
+subgraph BUSINESS_LAYER[Business Layer]
+  REQUIREMENTS[Requirements]
+  STAKEHOLDERS[Stakeholders]
 end
 
-subgraph INFRASTRUCTURE_LAYER[Infrastructure Layer]
-    APP_CONTAINERS[App Containers]
-    INFRASTRUCTURE_LAYER_CDN[Content Delivery Network]
+SOLUTION_ARCHITECTURE[Solution Architecture]
+
+subgraph SOFTWARE_SOLUTION[Software Solution]
+  subgraph APPLICATION_LAYER[Application Layer]
+    CODE[Code]
+    DATA_STRUCTURES[Data Structures]
+    LIBRARIES[Libraries]
+    FRAMEWORKS[Frameworks]
+    RUNTIME[Runtime Environment]
+    BUILD_FILES[Build Files]
+    IMAGE[Image]
+    STATIC_FILES[Static Files]
+  end
+
+  subgraph DEPLOYMENT_LAYER[Deployment Layer]
+    CICD[CICD]
+    APP_IMAGES[App Images]
+    CONTENT_DELIVERY_NETWORK[Content Delivery Network]
+  end
+
+  subgraph INFRASTRUCTURE_LAYER[Infrastructure Layer]
+    APPS[Apps]
     INFRASTRUCTURE_LAYER_DATABASE[Databases]
     INFRASTRUCTURE_LAYER_STORAGE[Storage]
     INFRASTRUCTURE_LAYER_NETWORKING[Networking]
+  end
 end
-SOFTWARE_SOLUTION[Software Solution]
 
 CODE --> |Typescript|DATA_STRUCTURES
 DATA_STRUCTURES --> |Arrays, Hashmaps, etc..| LIBRARIES
@@ -73,101 +88,18 @@ LIBRARIES -->|npm Library| FRAMEWORKS
 FRAMEWORKS -->|React, Express| RUNTIME
 RUNTIME -->|Node.js| BUILD_FILES
 
-STATIC_FILES --> INFRASTRUCTURE_LAYER_CDN
-BUILD_FILES --> |Docker Image| IMAGE--> APP_CONTAINERS
+BUILD_FILES --> |Docker Image| IMAGE
 BUILD_FILES --> STATIC_FILES
-INFRASTRUCTURE_LAYER --> |Terraform + CI|SOFTWARE_SOLUTION
+IMAGE --> CICD
+STATIC_FILES --> CICD
+CICD --> APP_IMAGES
+CICD --> CONTENT_DELIVERY_NETWORK
+APP_IMAGES --> APPS
+BUSINESS_LAYER --> SOLUTION_ARCHITECTURE
+SOLUTION_ARCHITECTURE --> SOFTWARE_SOLUTION
 ```
 
-# Refactor
-
-- Environments
-- CICD Pipeline
-- Network Security
-- Project Management
-- Architecture
-- **Web Development**
-  - Database
-    - Schema
-    - SQL
-      - One to Many
-      - Many to Many
-    - NoSQL
-    - Backing up
-  - Devops
-    - Deployment
-      - Manual Deployment
-      - Automated Deployment
-    - IaC
-    - CICD
-    - Automation Scripting
-    - Containerization
-    - Cloud
-    - Networking
-  - Version Control
-    - Branching
-    - Code Review Process
-  - User Authentication System
-  - Content Management System (CMS)
-    - Headless vs Traditional CMS
-  - Analytics
-    - User Behavior Tracking
-  - Security
-    - Authentication Handling
-    - Data Encryption
-  - Code Maintenance
-    - Type Annotation
-    - Testing
-      - Unit Testing
-      - End to End (E2E)
-      - Integration Testing
-      - Performance Testing
-      - Security Testing
-  - Content Management
-    - SEO
-- **Application Monitoring**
-  - Distributed Tracing: Understanding the flow of requests across microservices.
-  - Performance Monitoring: Monitoring application performance through metrics.
-  - Logging: Contextualizing trace and metric data with relevant logs.
-- **Error Handling**
-- **Software**
-  - Stateless
-  - New products
-    - R&D Phase
-      - APIs
-      - Language
-    - Solution choices
-      - Long term support?
-      - Maintainability
-      - Accessibility
-      - Pricing
-      - Weight pros and cons
-    - Development
-      - Always start off overkill with base tooling
-      - App building SQLite database
-      - CI
-    - Final Product
-      - Documentation to reproduce
-  - IaC
-  - Personal dashboards
-  - Monorepo
-  - Library/OSS support
-  - Setup scripts
-  - Intellectual Property
-  - What is strong documentation?
-    - You are easily able to redeploy assets again.
-    - Common commands
-    - Setup commands
-    - References
-    - Useful links: Management settings, API docs, billing, etc
-  - Caveats
-    - Scaling
-      - Large automations susceptible to injection
-      - As interfaces grow there are more attack surfaces
-    - Security
-      - Can add friction to development.
-
-## Frontend Design
+### Frontend Design
 
 ```mermaid
 flowchart TD
@@ -274,7 +206,7 @@ JS --> REQUESTS
 JS --> STATE_MANAGEMENT
 ```
 
-## Backend
+### Backend
 
 ```mermaid
 flowchart TD
@@ -299,3 +231,47 @@ end
 
 REQUEST_TYPES --> PARAMETERS
 ```
+
+## Services
+
+| Service | Description |
+| --- | --- |
+| Cache | In-memory store for fast reads and rate limiting, such as Redis or Memcached. |
+| Database | Stores and queries the application's persistent data. |
+| Message Queue / Event Bus | Passes work and events between services asynchronously, such as RabbitMQ, SQS or Kafka. |
+| Monitoring | Collects metrics, logs and alerts to show how the system is running, such as Grafana or Datadog. |
+| Secret Manager | Stores credentials and API keys securely and serves them to apps and CI at runtime. |
+
+## Environments
+
+| Environment | Purpose | Deploys on | Data |
+| --- | --- | --- | --- |
+| Dev / Feature branches | Where changes are built and tried in isolation, one environment per branch or locally. | Pushes to a feature branch | Fake or seeded, never real user data |
+| Staging | Production-like environment for final checks, integration tests and stakeholder review before release. | Merge to the main branch | Production-like, anonymized or copied |
+| Production | The live environment real users depend on. | Promotion from a verified staging build | Real user data |
+
+## Common Structures
+
+| Structure | Description |
+| --- | --- |
+| Auth Management | Verifies who users are and what they may access, via sessions, tokens, OAuth and SSO. |
+| Log Management | Collects, stores and searches logs from every service in one place. |
+| User Management | Handles user accounts, sign-up and sign-in, roles and permissions. |
+
+## Software Choices
+
+| Options | Reasoning |
+| --- | --- |
+| Cloud vs On-prem | Cloud for elasticity, low upfront cost and less operations work; on-prem for data control, compliance or predictable high steady load. |
+| Headless vs Traditional CMS | Headless when content must reach several frontends or you want frontend freedom; traditional when one site and fast setup matter most. |
+| Manual vs Automated Deployment | Manual for one-off or throwaway setups; automated for repeatability, speed and fewer human errors. |
+| One to Many vs Many to Many | One to many when each child belongs to a single parent (foreign key); many to many when both sides can have several, using a join table. |
+| ORM vs Raw SQL | ORM for productivity, type safety and portability on typical CRUD; raw SQL for complex queries, tuning and full control over performance. |
+| SQL vs NoSQL | SQL for structured, relational data needing transactions and joins; NoSQL for flexible schemas, massive scale or simple key-based access. |
+
+## Embellishments
+
+| Embellishment | Description |
+| --- | --- |
+| Analytics | Tracks user behavior to understand how the product is used. |
+| SEO | Search engine optimization: makes pages easier for search engines to find and rank. |
