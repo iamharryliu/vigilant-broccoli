@@ -22,7 +22,7 @@
     },
     {
       "slug": "job-hunt-next",
-      "readmePath": "projects/nx-workspace/apps/ui/job-hunt-next/docs/features/docker-image.md",
+      "readmePath": "projects/nx-workspace/apps/ui/job-hunt-next/docs/features/self-hosting.md",
       "descriptionKey": "DOCKER_IMAGES_PAGE.JOB_HUNT_NEXT.DESCRIPTION"
     },
     {
@@ -47,7 +47,7 @@
     },
     {
       "slug": "vb-code-server",
-      "readmePath": "infrastructure/code-server/README.md",
+      "readmePath": "infrastructure/code-server/docs/features/self-hosting.md",
       "descriptionKey": "DOCKER_IMAGES_PAGE.VB_CODE_SERVER.DESCRIPTION"
     },
     {

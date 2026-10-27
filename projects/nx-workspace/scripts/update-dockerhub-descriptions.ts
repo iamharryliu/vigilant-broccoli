@@ -28,8 +28,6 @@ const MAX_FULL_DESCRIPTION_LENGTH = 25000;
 const ABSOLUTE_OR_ANCHOR = /^([a-z][a-z0-9+.-]*:|#|\/\/)/i;
 // [text](target) and ![alt](target); the target ends at whitespace or ")".
 const DRY_RUN_FLAG = '--dry-run';
-// Images not yet migrated to the self-hosting template keep their legacy doc and skip the heading check.
-const SELF_HOSTING_DOC_SUFFIX = '/docs/features/self-hosting.md';
 const RUN_FROM_REGISTRY_HEADING = /^## Run from Registry$/m;
 // The doc's own ToC anchors do not resolve on Docker Hub; it ends at the next "## " heading.
 const TABLE_OF_CONTENTS_BLOCK = /^## Table of Contents\n[\s\S]*?(?=^## )/m;
@@ -70,10 +68,7 @@ const buildOverview = (
   summary: string,
 ) => {
   const doc = readFileSync(join(REPO_ROOT, readmePath), 'utf-8');
-  if (
-    readmePath.endsWith(SELF_HOSTING_DOC_SUFFIX) &&
-    !RUN_FROM_REGISTRY_HEADING.test(doc)
-  ) {
+  if (!RUN_FROM_REGISTRY_HEADING.test(doc)) {
     throw new Error(
       `${slug}: ${readmePath} has no "## Run from Registry" heading`,
     );
