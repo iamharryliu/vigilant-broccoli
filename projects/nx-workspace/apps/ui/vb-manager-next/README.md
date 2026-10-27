@@ -1,6 +1,6 @@
 # VB Manager Next
 
-Management dashboard app.
+Management dashboard with calendar, notepad, quick links and Agentic home tabs.
 
 ## Table of Contents
 
@@ -21,6 +21,8 @@ Management dashboard app.
   - Socket.IO client
   - Tailwind CSS
 - Internal libs
+  - `@harry/personal`
+  - `@harry/private`
   - `common-browser`
   - `common-js`
   - `common-node`
@@ -29,8 +31,6 @@ Management dashboard app.
   - `github-workspace`
   - `github-workspace-js`
   - `google-workspace`
-  - `@harry/personal`
-  - `@harry/private`
   - `infrastructure`
   - `llm-schemas`
   - `manager`

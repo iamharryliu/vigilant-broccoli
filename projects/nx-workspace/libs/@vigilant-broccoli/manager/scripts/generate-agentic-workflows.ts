@@ -3,12 +3,12 @@ import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = resolve(SCRIPT_DIR, '../../../../..');
+const REPO_ROOT = resolve(SCRIPT_DIR, '../../../../../..');
 
 const README_PATH = process.argv[2] ?? resolve(REPO_ROOT, 'README.md');
 const OUTPUT_PATH =
   process.argv[3] ??
-  resolve(SCRIPT_DIR, '../src/app/generated/agentic-workflows.json');
+  resolve(SCRIPT_DIR, '../src/lib/generated/agentic-workflows.json');
 
 const SECTION_HEADING = '### Agentic';
 const HEADING_PATTERN = /^#{1,6}\s/;
@@ -22,7 +22,7 @@ const ACTIONS_LINK_PATTERN = /^\[([^\]]+)\]\((https:\/\/[^)\s]+)\)$/;
 
 function fail(message: string): never {
   console.error(
-    `generate-agentic-workflows: ${message}\nThe "${SECTION_HEADING}" table in ${README_PATH} feeds the mobile Agentic tab; see docs/features/home.md in vb-manager-next-mobile for the format it must keep.`,
+    `generate-agentic-workflows: ${message}\nThe "${SECTION_HEADING}" table in ${README_PATH} feeds the desktop and mobile Agentic tabs; see docs/features/home.md in vb-manager-next-mobile for the format it must keep.`,
   );
   process.exit(1);
 }

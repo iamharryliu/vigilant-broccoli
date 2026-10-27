@@ -1,6 +1,6 @@
 # VB Manager Next Mobile
 
-Mobile-friendly dashboard for personal tasks and calendars, with voice input, a notepad and local weather.
+Mobile dashboard with calendar, tasks, notepad, weather and shared Agentic workflow data.
 
 ## Table of Contents
 
@@ -15,13 +15,13 @@ Mobile-friendly dashboard for personal tasks and calendars, with voice input, a 
 - External libs
   - Zod
 - Internal libs
+  - `@harry/personal`
+  - `@harry/private`
   - `common-browser`
   - `common-js`
   - `common-node`
   - `google-workspace`
   - `llm-schemas`
-  - `@harry/personal`
-  - `@harry/private`
   - `manager`
   - `public-links`
   - `react-lib`

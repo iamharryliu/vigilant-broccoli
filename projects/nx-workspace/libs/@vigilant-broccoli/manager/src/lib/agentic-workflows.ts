@@ -1,4 +1,4 @@
-import generated from '../generated/agentic-workflows.json';
+import generated from './generated/agentic-workflows.json';
 
 export type AgenticWorkflow = {
   name: string;
@@ -25,7 +25,7 @@ const DEPLOY_PHASE: AgenticPhase = {
 };
 
 const MAINTAIN_PHASE_NAME = 'Maintain';
-// The smoke-test workflow only exercises the pipeline; not worth a phone row.
+// The smoke-test workflow only exercises the pipeline; omit it from the home workflow list.
 const HIDDEN_PHASE_NAMES = ['Test'];
 
 const readmePhases = generated.phases.filter(
