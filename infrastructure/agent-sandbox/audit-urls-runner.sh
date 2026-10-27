@@ -24,7 +24,7 @@ BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"
 
 PROMPT=$(cat <<EOF
-You are running non-interactively in a fresh clone of vigilant-broccoli, on a dedicated branch. Audit public URL registry consistency: every public URL needs synchronized Upptime entries, pages-index cards and browser quick links for every environment and demo, and fix drift.
+You are running non-interactively in a fresh clone of vigilant-broccoli, on a dedicated branch. Audit public URL registry consistency: every public URL needs synchronized Upptime entries, pages-index cards and browser quick links for every environment and demo, and every published Docker image its pages-index registry entry and README Containers row; fix drift.
 
 Follow these shared task instructions:
 
@@ -38,12 +38,12 @@ Sandbox execution rules:
 - The only exception to the skill's output scope is $META_FILE, outside the checkout. Even for a clean run, write the metadata with empty fixed/skipped lists; the calling script exits without opening a PR.
 
 When finished, write $META_FILE containing only a JSON object with these fields:
-  - fixed: array of objects {registry, path, evidence} for every entry added, corrected or removed, evidence being the deploy target or URL that proves the drift
+  - fixed: array of objects {registry, path, evidence} for every entry added, corrected or removed, evidence being the deploy target, pushing command or URL that proves the drift
   - skipped: array of objects {path, reason} for candidates you left in place
   - commit_message: capitalized, concise, focused on why the drift mattered, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
   - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
-  - pr_summary: markdown for the PR "## Summary" section — one "### <registry>" subsection per registry (Upptime, pages-index, quick links) with fixes, each item a bullet with its evidence, then a "### Skipped candidates" subsection listing each skipped candidate with its reason
+  - pr_summary: markdown for the PR "## Summary" section — one "### <registry>" subsection per registry (Upptime, pages-index, quick links, Docker images) with fixes, each item a bullet with its evidence, then a "### Skipped candidates" subsection listing each skipped candidate with its reason
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — what's left for the human (spot-check the evidence, watch CI to green, then merge)
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — only optional follow-up for the reviewer (related cleanups worth a separate PR), or "" when there are none. Never suggest work this scheduled job covers, such as candidates over the cap or areas you did not check: list those as skipped candidates, since the next scheduled run picks them up.
   - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none. Keep these out of pr_suggestions, which is only for optional follow-up work

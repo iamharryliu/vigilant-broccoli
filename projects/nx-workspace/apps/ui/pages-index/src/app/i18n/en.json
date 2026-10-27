@@ -240,47 +240,39 @@
   "DOCKER_IMAGES_PAGE": {
     "TITLE": "Docker Hub",
     "BUCKET_SERVICE": {
-      "TITLE": "bucket-service",
       "DESCRIPTION": "Object storage proxy across multiple bucket providers."
     },
     "EMAIL_SERVICE": {
-      "TITLE": "email-service",
       "DESCRIPTION": "Email queue producer/consumer."
     },
     "EMAIL_SUBSCRIPTION_SERVICE": {
-      "TITLE": "email-subscription-service",
       "DESCRIPTION": "Email subscription management and broadcast."
     },
     "EMPLOYEE_HANDLER_NEXT": {
-      "TITLE": "employee-handler-next",
       "DESCRIPTION": "Employee lifecycle automation UI built on Next.js."
     },
+    "JOB_HUNT_NEXT": {
+      "DESCRIPTION": "Self-hostable Next.js app that tailors a resume and cover letter to each job posting with Claude Code."
+    },
     "LLM_SERVICE": {
-      "TITLE": "llm-service",
       "DESCRIPTION": "Fastify gateway to Anthropic, OpenAI, Gemini, DeepSeek and xAI models."
     },
     "OFFICE_PRESENCE_SERVICE": {
-      "TITLE": "office-presence-service",
       "DESCRIPTION": "Slack bot for sharing office presence status via Socket Mode or the HTTP Events API."
     },
     "SOCKET_SERVER_SOCKETIO": {
-      "TITLE": "socket-server-socketio",
       "DESCRIPTION": "WebSocket server for real-time bidirectional communication."
     },
     "UTILITIES_UI": {
-      "TITLE": "utilities-ui",
       "DESCRIPTION": "Searchable page of everyday utilities, served by nginx."
     },
     "VB_CODE_SERVER": {
-      "TITLE": "vb-code-server",
       "DESCRIPTION": "code-server with this repo's toolchain and Claude Code baked in (linux/arm64)."
     },
     "VB_EXPRESS": {
-      "TITLE": "vb-express",
       "DESCRIPTION": "Fastify API gateway for auth, API keys, Google Tasks, LLM parsing, messaging and audio."
     },
     "WAITING_GAMES": {
-      "TITLE": "waiting-games",
       "DESCRIPTION": "Hands-free games to watch while queuing or travelling, served by nginx."
     }
   },
