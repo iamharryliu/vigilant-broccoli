@@ -16,6 +16,7 @@ CODEX_MODEL=""
 PROMPT=""
 LOCAL=0
 VM=0
+VM_CODEX_SIGNED_IN=0
 PUBLISH=0
 OLLAMA_MODEL=${OLLAMA_MODEL:-qwen3-coder:30b}
 OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
@@ -28,6 +29,10 @@ while [ $# -gt 0 ]; do
       ;;
     --vm)
       VM=1
+      shift
+      ;;
+    --codex-signed-in)
+      VM_CODEX_SIGNED_IN=1
       shift
       ;;
     --foreground)
@@ -66,8 +71,12 @@ while [ $# -gt 0 ]; do
 done
 
 [ "$AGENT_RUNNER" != ollama ] || LOCAL=1
-if [ "$VM" = 1 ] && { [ "$LOCAL" = 1 ] || [ "$AGENT_RUNNER" != claude ]; }; then
-  echo "ERROR: --vm runs Claude only; it cannot be combined with --local or --agent codex|ollama." >&2
+if [ "$VM" = 1 ] && { [ "$LOCAL" = 1 ] || [ "$AGENT_RUNNER" = ollama ]; }; then
+  echo "ERROR: --vm runs Claude or Codex only; it cannot be combined with --local or --agent ollama." >&2
+  exit 1
+fi
+if [ "$VM_CODEX_SIGNED_IN" = 1 ] && { [ "$VM" != 1 ] || [ "$AGENT_RUNNER" != codex ]; }; then
+  echo "ERROR: --codex-signed-in requires --vm --agent codex; the dev sandbox already uses its own Codex login." >&2
   exit 1
 fi
 if [ "$LOCAL" = 1 ]; then
@@ -93,12 +102,12 @@ if [ -n "$PROMPT" ] && [ ${#IDS[@]} -gt 0 ]; then
   exit 1
 fi
 if [ -z "$PROMPT" ] && [ ${#IDS[@]} -eq 0 ]; then
-  echo "Usage: pnpm agentic-pr-create [--vm | --local [--publish] [--ollama-model <model>]] [--foreground] [--agent claude|codex|ollama] [--model <claude-model>] [--codex-model <codex-model>] (<TODO_ID> [TODO_ID...] | --prompt \"<task description>\")" >&2
+  echo "Usage: pnpm agentic-pr-create [--vm [--codex-signed-in] | --local [--publish] [--ollama-model <model>]] [--foreground] [--agent claude|codex|ollama] [--model <claude-model>] [--codex-model <codex-model>] (<TODO_ID> [TODO_ID...] | --prompt \"<task description>\")" >&2
   exit 1
 fi
 
 if [ "$VM" = 1 ]; then
-  exec bash "$SCRIPT_DIR/solve-vm.sh" "$MODEL" "$PROMPT" ${IDS[@]+"${IDS[@]}"}
+  VM_CODEX_SIGNED_IN="$VM_CODEX_SIGNED_IN" exec bash "$SCRIPT_DIR/solve-vm.sh" "$AGENT_RUNNER" "$MODEL" "$CODEX_MODEL" "$PROMPT" ${IDS[@]+"${IDS[@]}"}
 fi
 if [ "$LOCAL" = 1 ]; then
   exec bash "$SCRIPT_DIR/solve-local.sh" "$PUBLISH" "$OLLAMA_MODEL" "$OLLAMA_BASE_URL" "$PROMPT" ${IDS[@]+"${IDS[@]}"}

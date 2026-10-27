@@ -57,8 +57,9 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg -o 
   && rm -rf /var/lib/apt/lists/*
 
 # pnpm and pre-commit (above) are what solve-todo-runner.sh needs for
-# `agentic-pr-create --vm` solves, matching the agent sandbox image's pins.
-RUN npm install -g @anthropic-ai/claude-code pnpm@11.9.0 \
+# `agentic-pr-create --vm` solves (Claude Code and Codex), matching the agent
+# sandbox image's pins.
+RUN npm install -g '@anthropic-ai/claude-code@>=2.1.277' @openai/codex pnpm@11.9.0 \
   && npm cache clean --force
 
 # GitHub access reuses the agent sandbox's GitHub App (Contents + Pull requests
