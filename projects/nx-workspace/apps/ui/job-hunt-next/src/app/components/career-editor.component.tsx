@@ -16,6 +16,7 @@ import {
   HTTP_METHOD,
   JSON_CONTENT_TYPE,
 } from '@vigilant-broccoli/common-js';
+import { IS_DEMO } from '../constants/demo';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import {
   CAREER_FILE_CHANGED_EVENT,
@@ -52,7 +53,9 @@ const FileEditor = ({ kind, validate, preview }: FileEditorProps) => {
   const [content, setContent] = useState('');
   const [serverErrors, setServerErrors] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
-  const [view, setView] = useState<View>(VIEW.EDIT);
+  const [view, setView] = useState<View>(
+    IS_DEMO && preview ? VIEW.PREVIEW : VIEW.EDIT,
+  );
   const [resetOpen, setResetOpen] = useState(false);
   const label = t(toTab(kind).titleKey);
 
@@ -136,13 +139,17 @@ const FileEditor = ({ kind, validate, preview }: FileEditorProps) => {
               ]}
             />
           )}
-          <Button variant="outline" onClick={() => setResetOpen(true)}>
+          <Button
+            variant="outline"
+            disabled={IS_DEMO}
+            onClick={() => setResetOpen(true)}
+          >
             <RotateCcw size={ICON_SIZE} /> {t('CAREER.RESET')}
           </Button>
           <Button
             onClick={save}
             loading={saving}
-            disabled={content === saved || liveErrors.length > 0}
+            disabled={IS_DEMO || content === saved || liveErrors.length > 0}
           >
             <Save size={ICON_SIZE} /> {t('CAREER.SAVE')}
           </Button>
@@ -164,6 +171,7 @@ const FileEditor = ({ kind, validate, preview }: FileEditorProps) => {
         </div>
       ) : (
         <Textarea
+          readOnly={IS_DEMO}
           value={content}
           onChange={event => setContent(event.target.value)}
           spellCheck={false}

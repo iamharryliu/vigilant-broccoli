@@ -61,6 +61,7 @@ const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
   'web-terminal': Terminal,
   whiteboard: PenTool,
   'employee-handler': Users,
+  'job-hunt': Briefcase,
 };
 
 export function WebApplicationsPage() {

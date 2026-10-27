@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_METHOD, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 
+import { IS_DEMO } from './app/constants/demo';
+import { demoResponse } from './lib/demo-data.server';
+
 const API_PREFIX = '/api/';
 const WRITE_METHODS = [
   HTTP_METHOD.POST,
@@ -43,7 +46,10 @@ export function proxy(request: NextRequest) {
       { status: HTTP_STATUS_CODES.FORBIDDEN },
     );
   }
-  const response = NextResponse.next();
+  const response =
+    IS_DEMO && request.nextUrl.pathname.startsWith(API_PREFIX)
+      ? demoResponse(request)
+      : NextResponse.next();
   response.headers.set(
     'Content-Security-Policy',
     `frame-ancestors ${FRAME_ANCESTORS}`,

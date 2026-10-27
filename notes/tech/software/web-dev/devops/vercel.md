@@ -27,6 +27,8 @@ Hobby plan — free, but restricted to non-commercial personal use (any deployme
 
 Pro is $20/developer-seat/month with usage-based overage on most of the above instead of a hard pause.
 
+Read-only demos can serve bundled fictional data without a database or paid AI API. Each demo still consumes a project slot and shares the team's transfer and compute limits.
+
 ## Prebuilt deploys
 
 Because a Hobby team gets one concurrent deployment, deploying several projects from one CI job serialises on Vercel's build queue. Building in CI and uploading the result avoids that entirely — `vercel build` produces a [Build Output API](https://vercel.com/docs/build-output-api/v3) directory and `vercel deploy --prebuilt` uploads it, so there is no build left for the queue to gate. The Vercel-side duration per deployment drops to a few seconds.
