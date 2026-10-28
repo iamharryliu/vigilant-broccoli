@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { LayoutList, List, Rows3, type LucideIcon } from 'lucide-react';
 import {
-  Button,
   type ButtonConfig,
   ButtonList,
   CopyButton,
@@ -14,10 +13,9 @@ import {
   moveQuickLinkFocusByDirection,
   QUICK_LINK_ITEM_ATTR,
   Text,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+  Tabs,
+  TabsList,
+  TabsTrigger,
   WINDOW_OPEN_FEATURES,
 } from '@vigilant-broccoli/react-lib';
 
@@ -317,31 +315,24 @@ export const SearchableList = ({
           onKeyDown={handleSearchKeyDown}
           className="flex-1"
         />
-        <TooltipProvider delayDuration={0}>
-          <div
-            role="group"
-            aria-label={VIEW_TOGGLE_LABEL}
-            className="flex gap-1"
-          >
+        <Tabs
+          value={view}
+          onValueChange={next => handleViewChange(next as SearchableListView)}
+        >
+          <TabsList aria-label={VIEW_TOGGLE_LABEL} className="h-11">
             {VIEW_OPTIONS.map(({ value, label, description, Icon }) => (
-              <Tooltip key={value}>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant={view === value ? 'default' : 'outline'}
-                    aria-label={label}
-                    aria-pressed={view === value}
-                    onClick={() => handleViewChange(value)}
-                  >
-                    <Icon size={VIEW_ICON_SIZE} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{description}</TooltipContent>
-              </Tooltip>
+              <TabsTrigger
+                key={value}
+                value={value}
+                aria-label={label}
+                title={description}
+                className="px-2"
+              >
+                <Icon size={VIEW_ICON_SIZE} />
+              </TabsTrigger>
             ))}
-          </div>
-        </TooltipProvider>
+          </TabsList>
+        </Tabs>
       </div>
 
       {entries.length === 0 ? (

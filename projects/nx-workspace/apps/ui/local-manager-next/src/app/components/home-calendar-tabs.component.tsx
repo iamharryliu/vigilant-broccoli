@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Bot, CalendarDays, Link2, Rows3, StickyNote } from 'lucide-react';
+import { CalendarDays, Link2, Rows3, StickyNote } from 'lucide-react';
 import {
   QuickLinksPanel,
   TabbedView,
@@ -10,7 +10,6 @@ import {
 import { PersonalCalendarComponent } from './personal-calendar.component';
 import { EventCalendarsComponent } from './event-calendars.component';
 import { NotepadEditorComponent } from './notepad-editor.component';
-import { AgenticView } from './agentic-view.component';
 import { handleShellExecute } from '../utils/quick-links.utils';
 import { QUICK_LINKS } from '../constants/quick-links';
 import { useTranslation } from '../i18n';
@@ -23,7 +22,6 @@ const TAB = {
   EVENT_CALENDARS: 'event-calendars',
   NOTEPAD: 'Notepad',
   QUICK_LINKS: 'Quick Links',
-  AGENTIC: 'Agentic',
 } as const;
 type Tab = (typeof TAB)[keyof typeof TAB];
 const isTab = (value: string | null): value is Tab =>
@@ -105,12 +103,6 @@ export const HomeCalendarTabs = () => {
           onShellExecute={handleShellExecute}
         />
       ),
-    },
-    {
-      value: TAB.AGENTIC,
-      label: t('HOME.AGENTIC'),
-      icon: <Bot size={TAB_ICON_SIZE} />,
-      content: <AgenticView />,
     },
   ];
 

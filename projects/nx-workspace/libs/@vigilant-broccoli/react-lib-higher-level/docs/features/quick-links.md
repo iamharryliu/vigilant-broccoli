@@ -18,7 +18,7 @@ Searchable, grouped link launcher. `QuickLinksDialog` wraps `QuickLinksPanel` in
 ## SearchableList
 
 - Groups of `{ name, entries }`; an entry is `{ label, value, onOpen?, isExternal? }` and an empty group `name` renders no heading.
-- Views: `rows` (copy/open rows), `grouped` (buttons under headings) and `list` (flat buttons), switched by a segmented control. `storageKey` persists the choice in localStorage. When storage is unavailable, the default view and in-memory view switching remain usable.
+- Views: `rows` (copy/open rows), `grouped` (buttons under headings) and `list` (flat buttons), switched by icon-only tabs (`Tabs`, the same style as `TabbedView`). `storageKey` persists the choice in localStorage. When storage is unavailable, the default view and in-memory view switching remain usable.
 - Rows use small uppercase muted headings and rounded bordered groups with compact, divided rows. Labels and destination values truncate on narrow screens; full values remain available through copy and hover titles. Shared theme tokens style surfaces, dividers and interaction states in light and dark themes.
 - An entry's primary action is `onOpen`, then opening `value` when it starts with `http`, then copying it.
 - Search fuzzy-matches the label and substring-matches the value. Results are ordered by score, and Enter in the search box runs the best match and clears the query.

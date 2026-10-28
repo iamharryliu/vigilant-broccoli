@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
 import {
-  Bot,
   CalendarDays,
   CalendarPlus,
   CloudSun,
@@ -39,7 +38,6 @@ import {
   DialogTitle,
 } from '@vigilant-broccoli/react-lib';
 import { QuickLinksPanel } from '@vigilant-broccoli/react-lib-higher-level';
-import { AgenticView } from './agentic-view';
 import { CalendarInput } from './calendar-input';
 import { GoogleTasksView } from './google-tasks-view';
 import { NotepadEditor } from './notepad-editor';
@@ -379,12 +377,6 @@ export const HomeView = () => {
       // Force-mounted so the weather loads once on page load, not per visit.
       forceMount: true,
       content: <WeatherView />,
-    },
-    {
-      value: CALENDAR_TAB.AGENTIC,
-      label: CALENDAR_TAB.AGENTIC,
-      icon: <Bot size={TAB_ICON_SIZE} />,
-      content: <AgenticView />,
     },
   ];
 

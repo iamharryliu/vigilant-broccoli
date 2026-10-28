@@ -1,5 +1,5 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'fs';
-import { dirname, resolve } from 'path';
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'fs';
+import { dirname, join, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
@@ -9,6 +9,12 @@ const README_PATH = process.argv[2] ?? resolve(REPO_ROOT, 'README.md');
 const OUTPUT_PATH =
   process.argv[3] ??
   resolve(SCRIPT_DIR, '../src/lib/generated/agentic-workflows.json');
+
+const WORKFLOWS_DIR = resolve(REPO_ROOT, '.github/workflows');
+const WORKFLOW_EXTENSION = '.yml';
+// Only prefixes whose workflows a person dispatches; test-* suites stay out of Quick Links.
+const WORKFLOW_NAME_PREFIXES = ['ci-', 'cron-', 'deploy', 'manual-'];
+const DISPATCH_TRIGGER = 'workflow_dispatch';
 
 const SECTION_HEADING = '### Agentic';
 const HEADING_PATTERN = /^#{1,6}\s/;
@@ -22,7 +28,7 @@ const ACTIONS_LINK_PATTERN = /^\[([^\]]+)\]\((https:\/\/[^)\s]+)\)$/;
 
 function fail(message: string): never {
   console.error(
-    `generate-agentic-workflows: ${message}\nThe "${SECTION_HEADING}" table in ${README_PATH} feeds the desktop and mobile Agentic tabs; see docs/features/home.md in mobile-manager-next for the format it must keep.`,
+    `generate-agentic-workflows: ${message}\nThe "${SECTION_HEADING}" table in ${README_PATH} feeds the mobile Agentic tab and the desktop Quick Links Agentic group; see docs/features/home.md in mobile-manager-next for the format it must keep.`,
   );
   process.exit(1);
 }
@@ -99,12 +105,27 @@ const groupByPhase = (workflows: ReturnType<typeof parseWorkflows>) => {
   }));
 };
 
+const readWorkflowNames = () =>
+  readdirSync(WORKFLOWS_DIR)
+    .filter(file => file.endsWith(WORKFLOW_EXTENSION))
+    .map(file => file.slice(0, -WORKFLOW_EXTENSION.length))
+    .filter(name =>
+      WORKFLOW_NAME_PREFIXES.some(prefix => name.startsWith(prefix)),
+    )
+    .filter(name =>
+      readFileSync(
+        join(WORKFLOWS_DIR, `${name}${WORKFLOW_EXTENSION}`),
+        'utf8',
+      ).includes(DISPATCH_TRIGGER),
+    )
+    .sort();
+
 const workflows = parseWorkflows(readFileSync(README_PATH, 'utf8'));
 if (!workflows.length) fail('the table has no workflows with an Actions link.');
 
 mkdirSync(dirname(OUTPUT_PATH), { recursive: true });
 writeFileSync(
   OUTPUT_PATH,
-  `${JSON.stringify({ phases: groupByPhase(workflows) }, null, 2)}\n`,
+  `${JSON.stringify({ phases: groupByPhase(workflows), workflowNames: readWorkflowNames() }, null, 2)}\n`,
 );
 console.log(`Wrote ${workflows.length} workflows to ${OUTPUT_PATH}`);

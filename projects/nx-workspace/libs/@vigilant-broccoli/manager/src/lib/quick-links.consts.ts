@@ -16,7 +16,6 @@ import {
   toQuickLinks,
 } from '@vigilant-broccoli/public-links';
 import { EMAIL_LINK, PROJECT_LINK, SOCIAL_LINK } from '@harry/personal';
-import { VB_GITHUB_WORKFLOWS_URL } from '@vigilant-broccoli/infrastructure';
 import {
   CLOUDFLARE_ACCOUNT_LINK,
   FLYIO_ACCOUNT_LINK,
@@ -32,6 +31,11 @@ import {
 import { ACCESS_GATED_URL } from './access-gated.consts';
 import { PERSONAL_ACCOUNT_LINK, PERSONAL_URL } from './personal-account.consts';
 import { JOURNAL_PATH, VB_REPO_PATH } from '@harry/private';
+import { VB_GITHUB_WORKFLOWS_URL } from '@vigilant-broccoli/infrastructure';
+import {
+  AGENTIC_PHASES,
+  DISPATCHABLE_WORKFLOW_NAMES,
+} from './agentic-workflows';
 
 const DEV_LINKS: QuickLink[] = [
   ...toQuickLinks(LINK_GROUP_SUBGROUP.DEV, [
@@ -262,39 +266,25 @@ const HOME_LINKS: QuickLink[] = [
   ...toQuickLinks(LINK_GROUP_SUBGROUP.HOME, [PERSONAL_URL.GROCERIES]),
 ];
 
-const AGENTIC_WORKFLOW = {
-  PR_CREATE: {
-    NAME: 'VB - Manual Agentic PR Create',
-    FILE: 'manual-agentic-pr-create.yml',
-  },
-  PR_UPDATE: {
-    NAME: 'VB - Manual Agentic PR Update',
-    FILE: 'manual-agentic-pr-update.yml',
-  },
-  PR_CREATE_AUDIT: {
-    NAME: 'VB - Cron Agentic PR Create Audit',
-    FILE: 'cron-agentic-pr-create-audit.yml',
-  },
-  PR_CREATE_RND: {
-    NAME: 'VB - Manual Agentic PR Create R&D',
-    FILE: 'manual-agentic-pr-create-rnd.yml',
-  },
-  PR_CREATE_TODO: {
-    NAME: 'VB - Manual Agentic PR Create TODO',
-    FILE: 'manual-agentic-pr-create-todo.yml',
-  },
-  PR_CREATE_SMOKE: {
-    NAME: 'VB - Manual Agentic PR Create Smoke',
-    FILE: 'manual-agentic-pr-create-smoke.yml',
-  },
-} as const;
+const AGENTIC_LINKS: QuickLink[] = AGENTIC_PHASES.flatMap(({ workflows }) =>
+  workflows.map(({ name, url }) => ({
+    label: name,
+    target: url,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.AGENTIC,
+  })),
+);
 
-const AGENTIC_LINKS = Object.values(AGENTIC_WORKFLOW).map(({ NAME, FILE }) => ({
-  label: NAME,
-  target: `${VB_GITHUB_WORKFLOWS_URL}/${FILE}`,
+const AGENTIC_URLS = new Set(
+  AGENTIC_PHASES.flatMap(({ workflows }) => workflows.map(({ url }) => url)),
+);
+
+const WORKFLOW_LINKS: QuickLink[] = DISPATCHABLE_WORKFLOW_NAMES.map(name => ({
+  label: name,
+  target: `${VB_GITHUB_WORKFLOWS_URL}/${name}.yml`,
   type: OPEN_TYPE.BROWSER,
-  subgroup: LINK_GROUP_SUBGROUP.AGENTIC,
-}));
+  subgroup: LINK_GROUP_SUBGROUP.WORKFLOWS,
+})).filter(({ target }) => !AGENTIC_URLS.has(target));
 
 export type { QuickLink };
 
@@ -302,6 +292,7 @@ export const EXTERNAL_QUICK_LINKS: QuickLink[] = [
   ...UI_APP_LINKS,
   ...VB_LINKS,
   ...AGENTIC_LINKS,
+  ...WORKFLOW_LINKS,
   ...GENERIC_DEV_LINKS,
   ...DEV_LINKS,
   ...UTILITY_LINKS,
