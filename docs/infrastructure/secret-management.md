@@ -102,7 +102,7 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `NX_CACHE_READ_TOKEN` | Vault `kv/data/ci-pr-check` | Read-only bearer token for the `nx-cache` Worker; used by `ci-pr-check.yml`. |
 | `NX_CACHE_WRITE_TOKEN` | Vault `kv/data/secrets` | Read/write bearer token for the `nx-cache` Worker; used by `deploy.yml` and the auth/immutability probe in `test-security-nx-cache`. |
 | `OCI_CONFIG` / `OCI_PRIVATE_KEY` | Vault `kv/data/secrets`; local `~/.oci` | Oracle Cloud API credentials for Terraform and VM management. |
-| `OCI_VM_SSH_KEY` | Vault `kv/data/secrets` | Terraform-minted base64 ed25519 SSH key for the socket-server and code-server VMs. |
+| `OCI_VM_SSH_KEY` | Vault `kv/data/secrets` | Terraform-minted base64 ed25519 SSH key for the RabbitMQ VM (also hosting socket-server), Gitea VM and code-server VM. |
 | `OFFICE_PRESENCE_INTERNAL_TOKEN` | Vault `kv/data/secrets` → Fly | Bearer token for `office-presence-service`'s `/internal/seed` and `/internal/reminders`; read by `cron-seed-office-presence-demo` through the Vault action, never a repo secret. |
 | `OPENAI_API_KEY` | Vault `kv/data/secrets` → Fly | OpenAI API key for `llm-service`. |
 | `OPENWEATHER_API_KEY` | Vault `kv/data/secrets` | OpenWeather API key for the weather snapshot in `test-e2e-weather`; also read by `local-manager-next` locally. |
