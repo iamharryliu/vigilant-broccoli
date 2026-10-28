@@ -19,7 +19,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: vb-manager-next
+                name: local-manager-next
                 port:
                   number: 1337
 ---

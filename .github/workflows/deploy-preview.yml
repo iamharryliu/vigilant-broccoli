@@ -34,7 +34,7 @@ on:
 permissions:
   contents: read
   # Records each deployed preview as a GitHub Deployment, which
-  # vb-manager-next and mobile-manager-next read back.
+  # local-manager-next and mobile-manager-next read back.
   deployments: write
   id-token: write
   pull-requests: read

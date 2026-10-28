@@ -1,8 +1,8 @@
 # Supabase Auth Pattern
 
-Single shared Supabase project (`vb-supabase`, ref `jrdosjjgmsoodpjmjqxx`) provides Google-provider sign-in for all user-facing apps: `hearth`, `employee-handler-ui`, `small-business-next`, `vb-manager-next`, `mobile-manager-next`, `balloono` (optional sign-in). All apps share one auth user pool — the same Google account is the same user everywhere.
+Single shared Supabase project (`vb-supabase`, ref `jrdosjjgmsoodpjmjqxx`) provides Google-provider sign-in for all user-facing apps: `hearth`, `employee-handler-ui`, `small-business-next`, `local-manager-next`, `mobile-manager-next`, `balloono` (optional sign-in). All apps share one auth user pool — the same Google account is the same user everywhere.
 
-Reference implementation: **vb-manager-next** (the only app on the shared lib so far).
+Reference implementation: **local-manager-next** (the only app on the shared lib so far).
 
 ## Supabase config is Terraform-managed
 
@@ -22,18 +22,18 @@ A sign-in whose `redirectTo` is **not** matched by `uri_allow_list` does not err
 
 ## Client side
 
-- Instantiate `createSupabaseAuth` from `@vigilant-broccoli/react-lib-auth` (`libs/@vigilant-broccoli/react-lib-auth/src/lib/createSupabaseAuth.tsx`) once per app — see `apps/ui/vb-manager-next/libs/auth.ts`. Config: Supabase env vars, optional extra Google scopes (e.g. Tasks/Calendar), and the app's home/login/callback routes.
+- Instantiate `createSupabaseAuth` from `@vigilant-broccoli/react-lib-auth` (`libs/@vigilant-broccoli/react-lib-auth/src/lib/createSupabaseAuth.tsx`) once per app — see `apps/ui/local-manager-next/libs/auth.ts`. Config: Supabase env vars, optional extra Google scopes (e.g. Tasks/Calendar), and the app's home/login/callback routes.
 - The factory returns `AuthProvider`, `useAuth`, `useAuthStatus` (`'loading' | 'authenticated' | 'unauthenticated'`), `useGoogleToken`, `signInWithGoogle`, `signOut`, `getSupabaseAccessToken`, `buildAuthHeaders`, `authFetch`, and `AuthCallbackPage`.
-- Wrap the root layout in `AuthProvider`; for a Google-only login page, render `GoogleSignInPage` from `react-lib-auth` (`appName`, optional `tagline`, `onSignIn`) — it wraps `GoogleSigninButton` in the shared page layout, used by `vb-manager-next`, `mobile-manager-next`, `hearth`, `employee-handler-ui`, and `small-business-next`. Apps with additional sign-in methods (e.g. hearth's email/password signup) compose `GoogleSigninButton` directly instead. The `/auth/callback` page renders `AuthCallbackPage`.
+- Wrap the root layout in `AuthProvider`; for a Google-only login page, render `GoogleSignInPage` from `react-lib-auth` (`appName`, optional `tagline`, `onSignIn`) — it wraps `GoogleSigninButton` in the shared page layout, used by `local-manager-next`, `mobile-manager-next`, `hearth`, `employee-handler-ui`, and `small-business-next`. Apps with additional sign-in methods (e.g. hearth's email/password signup) compose `GoogleSigninButton` directly instead. The `/auth/callback` page renders `AuthCallbackPage`.
 - The session lives in the Supabase JS client (localStorage), **not** an httpOnly cookie — the server never sees it implicitly. Every same-origin `/api/*` request must go through `authFetch`, which attaches `Authorization: Bearer <supabase access token>` and `x-google-token` headers. A plain `fetch()` to `/api/*` gets a 401 from middleware.
 - The Google `provider_token` is captured once at sign-in (`onAuthStateChange`) into localStorage under `google_provider_token`. There is no refresh — it expires after ~1 hour, well before the Supabase session does. Keep it in localStorage, not sessionStorage: a tab-scoped Google token expires on every app restart while the Supabase session survives, which reads as two unrelated logins.
 - **Google-token expiry must not end the Supabase session.** The two lifetimes are independent: the Supabase session refreshes for as long as the refresh token stays valid, while the Google token dies hourly. On a 401 from a Google-backed route, clear only `google_provider_token` and prompt re-consent via `signInWithGoogle` (see `GoogleReconnectView` in `GoogleTasks.tsx`, and `reconnectGoogle` in `mobile-manager-next`'s hand-rolled provider) — never call `signOut`. Calling `signOut` here is what made sessions look ~1 hour long after the NextAuth migration.
-- Only one Supabase client per browser context may own the stored session. Secondary clients (realtime, stateless server-side `getUser`) must be constructed with `persistSession: false`, `autoRefreshToken: false`, `detectSessionInUrl: false` — otherwise two auto-refresh tickers race on a rotating refresh token. See `apps/ui/vb-manager-next/src/lib/supabase.ts`.
+- Only one Supabase client per browser context may own the stored session. Secondary clients (realtime, stateless server-side `getUser`) must be constructed with `persistSession: false`, `autoRefreshToken: false`, `detectSessionInUrl: false` — otherwise two auto-refresh tickers race on a rotating refresh token. See `apps/ui/local-manager-next/src/lib/supabase.ts`.
 
 ## Server side
 
-- `src/proxy.ts` gates all `/api/*` routes by verifying the bearer token with `supabase.auth.getUser(token)` (see `vb-manager-next`; `employee-handler-ui`'s is the same check plus an `ALLOWED_EMAILS` / `ALLOWED_EMAIL_DOMAINS` allowlist).
-- Per-route helpers (`apps/ui/vb-manager-next/libs/server-auth.ts`):
+- `src/proxy.ts` gates all `/api/*` routes by verifying the bearer token with `supabase.auth.getUser(token)` (see `local-manager-next`; `employee-handler-ui`'s is the same check plus an `ALLOWED_EMAILS` / `ALLOWED_EMAIL_DOMAINS` allowlist).
+- Per-route helpers (`apps/ui/local-manager-next/libs/server-auth.ts`):
   - `getGoogleAccessToken(req)` — reads `x-google-token` for Google API calls (Tasks, Calendar).
   - `getUserEmail(req)` — re-verifies the bearer token and returns the email used as the per-user data key.
 - `hearth` variant: per-route Supabase server client scoped to the caller's token plus Postgres RLS (`apps/hearth/libs/supabase-server.ts`) instead of email-keyed lookups.
@@ -52,6 +52,6 @@ A sign-in whose `redirectTo` is **not** matched by `uri_allow_list` does not err
 
 ## Migration status
 
-- `vb-manager-next` — on the shared `react-lib-auth` module.
+- `local-manager-next` — on the shared `react-lib-auth` module.
 - `hearth`, `employee-handler-ui`, `small-business-next`, `mobile-manager-next` — same pattern, but hand-rolled per-app copies predating the shared module; consolidation pending.
 - `vb-express` (Fastify) — still on better-auth + API-key plugin; not part of this pattern yet.

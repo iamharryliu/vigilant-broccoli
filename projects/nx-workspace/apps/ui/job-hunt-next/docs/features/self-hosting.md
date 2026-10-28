@@ -30,11 +30,11 @@ Open `http://localhost:4300` and fill in the resume's name, email and contact de
 
 ## Environment Variables
 
-| Variable | Required | Description |
-| --- | --- | --- |
-| `CLAUDE_CODE_OAUTH_TOKEN` | Yes | Token from `claude setup-token` that the Claude Code runs authenticate with. |
-| `JOB_HUNT_FRAME_ANCESTORS` | No | CSP `frame-ancestors` sources allowed to embed the app; defaults to `'self'`. |
-| `JOB_HUNT_MODEL` | No | Claude model for runs; defaults to `sonnet`. |
+| Variable                   | Required | Description                                                                   |
+| -------------------------- | -------- | ----------------------------------------------------------------------------- |
+| `CLAUDE_CODE_OAUTH_TOKEN`  | Yes      | Token from `claude setup-token` that the Claude Code runs authenticate with.  |
+| `JOB_HUNT_FRAME_ANCESTORS` | No       | CSP `frame-ancestors` sources allowed to embed the app; defaults to `'self'`. |
+| `JOB_HUNT_MODEL`           | No       | Claude model for runs; defaults to `sonnet`.                                  |
 
 ## Run from Source
 
@@ -63,7 +63,7 @@ The run's `--add-dir` covers the directories of both paths.
 ## Embedding and Request Checks
 
 - `src/proxy.ts` sends `Content-Security-Policy: frame-ancestors <JOB_HUNT_FRAME_ANCESTORS>` on every page and refuses `POST`/`PUT`/`PATCH`/`DELETE` under `/api/` with 403 when `Sec-Fetch-Site` is not `same-origin` or `Origin` differs from the host (`X-Forwarded-Host` behind a proxy). The app has no login, so this is what stops another site's page from clearing a career file or starting a run; requests without either header (curl) pass
-- In this repo the container is served at `https://job-hunt.vigilant-broccoli.app` by the local k3s ingress (`infrastructure/local`), which vb-manager-next's Job Hunt page embeds. Requests from inside the iframe are same-origin to that host, so they pass
+- In this repo the container is served at `https://job-hunt.vigilant-broccoli.app` by the local k3s ingress (`infrastructure/local`), which local-manager-next's Job Hunt page embeds. Requests from inside the iframe are same-origin to that host, so they pass
 
 ## Nuances
 

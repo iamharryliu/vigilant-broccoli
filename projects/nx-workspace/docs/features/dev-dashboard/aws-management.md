@@ -2,7 +2,7 @@
 
 ## Overview
 
-- Dev dashboard card in `vb-manager-next`
+- Dev dashboard card in `local-manager-next`
 - Reads profiles from `~/.aws/config`
 - Fetches identity via `aws sts get-caller-identity` per profile (parallel, 5s timeout), through `@vigilant-broccoli/devops-cli` (see [devops-cli.md](./devops-cli.md))
 

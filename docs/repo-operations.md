@@ -31,7 +31,7 @@ Where state lives, per app:
 | Store | Used by | Notes |
 | --- | --- | --- |
 | Supabase Postgres | `hearth`, `vb-express` (Better Auth in the `vb_express_auth` schema) | Migrations via `scripts/migrate.ts --migrations-dir=...` (`SUPABASE_DB_PASSWORD`) |
-| MongoDB (`vb-manager` db) | `vb-manager-next` | `MONGODB_URI` |
+| MongoDB (`vb-manager` db) | `local-manager-next` | `MONGODB_URI` |
 | SQLite on a fly volume | `office-presence-service` (demo) | `[mounts]` in its fly config, `OFFICE_PRESENCE_DB` |
 | Cloudflare R2 buckets | `hearth` (`home-docs`, `where-is` buckets), `bucket-service` | Private buckets in `infrastructure/terraform/main.tf`; bucket names may predate app renames |
 | Gitea (`git.harryliu.dev`) | journal, strandbaden repos | Self-hosted on OCI |
@@ -43,7 +43,7 @@ Backups: `cron-backup.yml` runs nightly, one job per store (repo zip, Gitea repo
 ## Local Dev Environment
 
 - `infrastructure/local/k3s/` — local k3d (k3s in Docker) cluster: Traefik HTTPS proxy with local certs via `setup-certs.sh`, Grafana, Loki, Prometheus, Alloy and Headlamp, synced from `main` by Argo CD. Managed with `pnpm local:k3s:*`; guide in [k3s-cluster.md](../infrastructure/local/docs/features/k3s-cluster.md).
-- `projects/nx-workspace/apps/ui/job-hunt-next/docker-compose.yml` — self-hostable job-hunt-next container on `127.0.0.1:4300`; the local cluster's Traefik proxies `job-hunt.vigilant-broccoli.app` to it via `host.k3d.internal:4300`, and vb-manager-next's Job Hunt page embeds it. Its career files, run history and application folders stay on the host's mounts and volumes, outside the backup jobs. Managed with `pnpm job-hunt:docker:up|down|logs` ([self-hosting.md](../projects/nx-workspace/apps/ui/job-hunt-next/docs/features/self-hosting.md)).
+- `projects/nx-workspace/apps/ui/job-hunt-next/docker-compose.yml` — self-hostable job-hunt-next container on `127.0.0.1:4300`; the local cluster's Traefik proxies `job-hunt.vigilant-broccoli.app` to it via `host.k3d.internal:4300`, and local-manager-next's Job Hunt page embeds it. Its career files, run history and application folders stay on the host's mounts and volumes, outside the backup jobs. Managed with `pnpm job-hunt:docker:up|down|logs` ([self-hosting.md](../projects/nx-workspace/apps/ui/job-hunt-next/docs/features/self-hosting.md)).
 - `infrastructure/immich/docker-compose.yml` — standalone Immich stack (server, machine-learning, Redis, Postgres) exposed on `:2283`; the local cluster's Traefik proxies `images.vigilant-broccoli.app` to it via `host.k3d.internal:2283`. Managed with `pnpm immich:docker:up|down|restart|reload|logs`.
 - Mock backends for UI development live under `apps/api/mock/` (e.g. `mock-employee-handler-service`) — prefer extending a mock over pointing local UIs at live services.
 - Running a service with real secrets locally: use its `serve` target (Vault-wrapped; see [app-development.md](./app-development/app-development.md#choosing-a-home)).

@@ -6,7 +6,7 @@ services:
     environment:
       - CAREER_EXPERIENCE_PATH=/career-files/career-experience.md
       - RESUME_PATH=/career-files/resume.json
-      # vb-manager-next's Job Hunt page embeds the app.
+      # local-manager-next's Job Hunt page embeds the app.
       - JOB_HUNT_FRAME_ANCESTORS='self' https://manager.vigilant-broccoli.app
     volumes:
       - ../../../../../notes/personal/personal-software-career-experience.md:/career-files/career-experience.md

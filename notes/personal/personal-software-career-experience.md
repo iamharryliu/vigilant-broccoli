@@ -170,7 +170,7 @@
 | Automate repository operations with GitHub Actions | DevOps Engineer | Used GitHub Actions for affected lint/test/build checks, app deployments, npm publishing, backups and secret rotation. |
 | Back up and restore-test persistent stores | Site Reliability Engineer | Ran nightly backups of each persistent store to cloud storage with retention, and a weekly workflow that restores every dump into a throwaway container so stale or unrestorable backups fail visibly. |
 | Build fullstack document management | Fullstack Developer | Built Hearth with Next.js React pages and server-side API routes. |
-| Build fullstack management tools | Fullstack Developer | Built vb-manager-next with Next.js React pages and server-side API routes. |
+| Build fullstack management tools | Fullstack Developer | Built local-manager-next with Next.js React pages and server-side API routes. |
 | Build mobile dashboard | Fullstack Developer | Built mobile-manager-next, a phone-first Next.js dashboard with a schedule agenda, event calendars, Google Tasks, a notepad, quick links and voice input, authenticated through Supabase and deployed to Vercel. |
 | Build publishable library artifacts | Platform Engineer | Produced ES/CJS library artifacts and type declarations with Vite, used Vite for React app development and builds, and bundled react-music-lib with Rollup. |
 | Build shared React components | Frontend Developer | Built a shared TypeScript React component library used by the personal website, component gallery and Next.js apps, with reusable dialog, form, navigation and theme APIs |
@@ -195,7 +195,7 @@
 | Manage component library layering | Platform Engineer | Layered the shared UI into an atomic react-lib, narrow-audience auth, calendar and media libs, and a higher-level lib for composite components, enforced with Nx project tags and module-boundary lint rules so composite and domain edits do not redeploy every app, and maintained a component-library sandbox app with demos. |
 | Manage infrastructure and secrets | Platform Engineer | Provision and operate cloud infrastructure with Terraform, managing secrets through GCP Secret Manager and HashiCorp Vault |
 | Manage multi-cloud infrastructure | Platform Engineer | Managed AWS, GCP, Oracle Cloud, Cloudflare and Supabase resources with Terraform, including cloud VMs, networking, DNS, auth configuration and GitHub resources. |
-| Manage notepad and calendar data | Backend Developer | Defined PostgreSQL notepad and event-calendar tables, migrations and access policies for vb-manager-next. |
+| Manage notepad and calendar data | Backend Developer | Defined PostgreSQL notepad and event-calendar tables, migrations and access policies for local-manager-next. |
 | Monitor services | DevOps Engineer | Used health checks and email alerts for observability |
 | Monitor uptime and publish a status page | Site Reliability Engineer | Ran hourly Upptime checks of every public endpoint from an isolated monitoring repository holding limited credentials, tracked response times, opened incident issues, and published uptime history to a public status page. |
 | Operate self-hosted services | Platform Engineer | Self-hosted Gitea, RabbitMQ, code-server, Seafile and Grafana/Loki |
@@ -209,8 +209,8 @@
 | Serve HTTP and real-time connections | Backend Developer | Ran Express HTTP handling with Socket.IO in socket-server-socketio. |
 | Share theme design tokens | Frontend Developer | Shared semantic light/dark design tokens for colors, radii and shadows through ThemeScope and a Tailwind preset, mapping tokens into utility classes for UI apps. |
 | Store documents and images | Backend Developer | Stored Hearth documents and images in R2. |
-| Validate AI-generated resume edits | Fullstack Developer | Built guardrails around the AI resume editor in vb-manager-next: a rule-based system prompt, mechanical checks that reject figures not found in the resume, career note or user messages, protected-field checks that block unrequested changes to links, employers, roles and dates, and a CLI check that renders the PDF and enforces the one-page limit. |
-| Verify Kanban API and UI flows | Software Engineer | Used Playwright for vb-manager-next Kanban API/UI scenarios. |
+| Validate AI-generated resume edits | Fullstack Developer | Built guardrails around the AI resume editor in local-manager-next: a rule-based system prompt, mechanical checks that reject figures not found in the resume, career note or user messages, protected-field checks that block unrequested changes to links, employers, roles and dates, and a CLI check that renders the PDF and enforces the one-page limit. |
+| Verify Kanban API and UI flows | Software Engineer | Used Playwright for local-manager-next Kanban API/UI scenarios. |
 | Verify RabbitMQ delivery over TLS | DevOps Engineer | Verified RabbitMQ publish/consume delivery over TLS in CI. |
 | Verify React utilities | Software Engineer | Wrote Vitest utility tests in jsdom with V8 coverage for react-lib, including commit-type parsing and edge cases. |
 | Verify reCAPTCHA handling | Software Engineer | Wrote Jest reCAPTCHA tests mocking external fetch calls and validating verification behavior in common-node. |
