@@ -102,6 +102,19 @@
       "dependsOn": ["lint", "deploy-container", "deploy:secrets"],
       "command": "flyctl deploy --config ./deployment-configs/fly-configs/staging-llm-service.toml --image iamharryliu/llm-service:${COMMIT_SHA:-latest}"
     },
+    "deploy:render:secrets": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-render.ts secrets llm-service staging"
+      }
+    },
+    "deploy:render": {
+      "dependsOn": ["lint", "deploy-container", "deploy:render:secrets"],
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-render.ts deploy llm-service staging"
+      }
+    },
     "deploy:secrets:production": {
       "executor": "nx:run-commands",
       "options": {

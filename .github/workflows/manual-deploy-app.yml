@@ -104,6 +104,7 @@ jobs:
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
           DEPLOY_ENVIRONMENT: ${{ github.event.inputs.environment }}
           DEPLOY_PROJECT: ${{ github.event.inputs.project }}
+          RENDER_LLM_STAGING_ENABLED: ${{ vars.RENDER_LLM_STAGING_ENABLED }}
         run: |
           DEPLOY_TARGET="deploy"
           if [[ "$DEPLOY_ENVIRONMENT" != "staging" ]]; then
@@ -113,6 +114,9 @@ jobs:
           if ! pnpm exec nx show projects --withTarget="$DEPLOY_TARGET" --json | jq -e --arg p "$DEPLOY_PROJECT" 'index($p) != null' >/dev/null; then
             echo "::error::$DEPLOY_PROJECT has no $DEPLOY_TARGET target"
             exit 1
+          fi
+          if [[ "$DEPLOY_ENVIRONMENT" == "staging" && "$DEPLOY_PROJECT" == "llm-service" && "$RENDER_LLM_STAGING_ENABLED" == "true" ]]; then
+            DEPLOY_TARGET="deploy,deploy:render"
           fi
           pnpm exec nx run-many -t "$DEPLOY_TARGET" --projects="$DEPLOY_PROJECT"
 

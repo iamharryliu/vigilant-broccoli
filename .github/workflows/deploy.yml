@@ -163,6 +163,8 @@ jobs:
       - name: Check if deployment needed
         id: check
         working-directory: ./projects/nx-workspace
+        env:
+          RENDER_LLM_STAGING_ENABLED: ${{ vars.RENDER_LLM_STAGING_ENABLED }}
         run: |
           CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
           DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
@@ -172,17 +174,22 @@ jobs:
             DEPLOY_TARGET="deploy:production"
           fi
 
+          RUN_TARGETS="$DEPLOY_TARGET"
+          if [[ "$DEPLOY_ENVIRONMENT" == "staging" && "$RENDER_LLM_STAGING_ENABLED" == "true" ]]; then
+            RUN_TARGETS="deploy,deploy:render"
+          fi
+
           if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_ENVIRONMENT" == "production" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
             ALL_COMMA=$(pnpm exec nx show projects --withTarget=$DEPLOY_TARGET | tr '\n' ',' | sed 's/,$//')
             echo "has_deployments=true" >> $GITHUB_OUTPUT
             echo "projects=$ALL_COMMA" >> $GITHUB_OUTPUT
-            echo "deploy_cmd=pnpm exec nx run-many -t $DEPLOY_TARGET" >> $GITHUB_OUTPUT
+            echo "deploy_cmd=pnpm exec nx run-many -t $RUN_TARGETS" >> $GITHUB_OUTPUT
           else
             AFFECTED_COMMA=$(pnpm exec nx show projects --affected --withTarget=$DEPLOY_TARGET --base=$NX_BASE --head=$NX_HEAD | tr '\n' ',' | sed 's/,$//')
             if [[ -n "$AFFECTED_COMMA" ]]; then
               echo "has_deployments=true" >> $GITHUB_OUTPUT
               echo "projects=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
-              echo "deploy_cmd=pnpm exec nx run-many -t $DEPLOY_TARGET --projects=\"$AFFECTED_COMMA\"" >> $GITHUB_OUTPUT
+              echo "deploy_cmd=pnpm exec nx run-many -t $RUN_TARGETS --projects=\"$AFFECTED_COMMA\"" >> $GITHUB_OUTPUT
             else
               echo "has_deployments=false" >> $GITHUB_OUTPUT
             fi

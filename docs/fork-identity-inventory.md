@@ -13,6 +13,7 @@ Hardcoded identity and account values a fork must change, plus values that must 
 - [GitHub](#github)
 - [Other Cloud and SaaS](#other-cloud-and-saas)
 - [Public Hostnames and Domains](#public-hostnames-and-domains)
+- [Render](#render)
 - [Terraform Cloud](#terraform-cloud)
 - [Vault](#vault)
 - [Vercel](#vercel)
@@ -137,6 +138,12 @@ Hardcoded identity and account values a fork must change, plus values that must 
 | Second-level site domain | `cloud8skate.com` | 21 files outside `history/`: `infrastructure/terraform/cloudflare-cloud8skate.tf`, `variables.tf`, `apps/ui/cloud-8-skate-react/*`, `apps/cms/*`, `.upptimerc.yml` | Terraform, code, monitoring, docs | This is a separate Cloudflare zone, looked up by name. |
 | Subdomains (self-hosted) | `vault.`, `git.`, `ssh.git.`, `code.`, `drive.`, `images.`, `grafana.`, `loki.`, `queue.`, `nx-cache.`, `socket.`, `api.harryliu.dev` | `infrastructure/terraform/variables.tf` (`*_domain`), `cloudflare-*.tf`, `aws-*.tf`, `oci-*.tf`, `.github/workflows/*` (`VAULT_ADDR`, Gitea API), `deployment-configs/fly-configs/*`, `apps/ui/*/src/**` | Terraform, workflow, code, monitoring | Terraform reads them from variables. Workflows and app code repeat them as literals. |
 | Subdomains (static/Pages/Vercel) | `docs.`, `context.`, `components.`, `bookmarks.`, `pomodoro.`, `links.`, `utilities.`, `waiting.`, `calendar.`, `projects.`, `career.`, `deployments.`, `status.`, `uptime.`, `weather.`, `findme.`, `whiteboard.`, `balloono.`, `manager.`, `hearth.harryliu.dev` | `infrastructure/terraform/variables.tf`, `cloudflare-vercel-apps.tf`, `.upptimerc.yml`, `apps/ui/pages-index/src/app/consts/{hosts,webApplications}.*`, `libs/@vigilant-broccoli/public-links/src/lib/quick-links.consts.ts`, `apps/api/vb-express/src/main.ts` (`ALLOWED_ORIGINS`) | Terraform, code, monitoring, docs | Public URL changes require synchronized Upptime, pages-index and quick-link entries ([app-development.md](./app-development/app-development.md#deployment)). |
+
+## Render
+
+| Value kind | Example value found | Files/locations (count + representative paths) | Consumed by | Notes |
+| --- | --- | --- | --- | --- |
+| Service ids | `srv-...` (llm-service staging) | 1 file: `projects/nx-workspace/scripts/render-services.config.ts` | code | Non-secret; created in the Render dashboard. The API key comes from Vault. |
 
 ## Terraform Cloud
 
