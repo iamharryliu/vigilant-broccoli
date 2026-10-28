@@ -5,6 +5,7 @@ Changes to network infrastructure (DNS records, domains/subdomains, proxying, tu
 ## Table of Contents
 
 - [DNS URLs](#dns-urls)
+- [Staging UI custom domains](#staging-ui-custom-domains)
 - [Tailnet](#tailnet)
 - [Private-only Fly.io services](#private-only-flyio-services)
 
@@ -65,7 +66,7 @@ vercel.app                                Vercel (production projects created on
 ├── staging-balloono.vercel.app               Balloono (staging)
 └── production-balloono.vercel.app            Balloono (production)
 
-pages.dev                                 Cloudflare Pages URLs for the environment not attached to a custom domain above
+pages.dev                                 Cloudflare Pages provider aliases (retained alongside custom domains)
 ├── staging-bookmarks-react.pages.dev         Bookmarks (staging, Cloudflare Access)
 ├── production-bookmarks-react.pages.dev      Bookmarks (production origin)
 ├── preview-bookmarks-react.pages.dev         Bookmarks (PR previews)
@@ -83,6 +84,37 @@ pages.dev                                 Cloudflare Pages URLs for the environm
 github.io                                 GitHub Pages (custom domain projects.harryliu.dev)
 └── iamharryliu.github.io                     Pages origin for projects.harryliu.dev (pages-index/)
 ```
+
+## Staging UI custom domains
+
+| Production hostname | Staging hostname | Existing staging project | Provider |
+| --- | --- | --- | --- |
+| balloono.harryliu.dev | staging-balloono.harryliu.dev | `staging-balloono` | Vercel |
+| bookmarks.harryliu.dev | staging-bookmarks.harryliu.dev | `staging-bookmarks-react` | Pages |
+| calendar.harryliu.dev | staging-calendar.harryliu.dev | `staging-calendars` | Pages |
+| components.harryliu.dev | staging-components.harryliu.dev | `staging-component-library` | Pages |
+| context.harryliu.dev | staging-context.harryliu.dev | `staging-context-md` | Pages |
+| docs.harryliu.dev | staging-docs.harryliu.dev | `staging-docs-md` | Pages |
+| findme.harryliu.dev | staging-findme.harryliu.dev | `staging-findme` | Pages |
+| harryliu.dev | staging.harryliu.dev | `staging-harryliu-dev-react` | Pages |
+| hearth.harryliu.dev | staging-hearth.harryliu.dev | `staging-hearth` | Vercel |
+| manager.harryliu.dev | staging-manager.harryliu.dev | `staging-vb-manager-next-mobile` | Vercel |
+| pomodoro.harryliu.dev | staging-pomodoro.harryliu.dev | `staging-pomodoro-react` | Pages |
+| utilities.harryliu.dev | staging-utilities.harryliu.dev | `staging-utilities-ui` | Pages |
+| waiting.harryliu.dev | staging-waiting.harryliu.dev | `staging-waiting-games` | Pages |
+| weather.harryliu.dev | staging-weather.harryliu.dev | `staging-weather-next` | Vercel |
+| whiteboard.harryliu.dev | staging-whiteboard.harryliu.dev | `staging-whiteboard` | Pages |
+
+These are configured destinations, requiring the post-merge activation below; this inventory does not assert live DNS or certificate readiness. Provider aliases remain available and protected. `cloud8skate.com`, infrastructure/API hosts, demos and dedicated previews have no new staging domain. Pages Index has no separate staging deployment.
+
+After merging, run from the updated repository:
+
+1. Ensure the existing staging projects have deployments. For Vercel, a staging deploy enables Vercel Authentication with `deploymentType: all`; domain sync also enforces this before attachment. Do not rename projects, including `staging-vb-manager-next-mobile`.
+2. Run `pnpm tf:plan`, review the DNS/domain additions, Access destination additions, Supabase callback additions and Hearth R2 CORS changes, then `pnpm tf:apply`. Pages attachments and proxied CNAMEs depend on Access application updates. The automatic post-apply step reads both Vercel outputs, protects staging projects and attaches their hosts; it retains the production output keys. If domain sync needs retrying, run `pnpm tf:post-apply` after resolving the error.
+3. Redeploy staging Hearth and the personal website to bake in their new frontend URLs, and staging VB Express for the personal-site and public-calendar CORS additions: run `gh workflow run manual-deploy-app --ref main -f project=<project> -f environment=staging` for `hearth`, `personal-website-react` and `vb-express`, and wait for success. Existing per-environment API configuration stays on staging Fly backends. The shared Supabase project remains shared; new exact `/auth/callback` entries retain all provider callbacks.
+4. Wait for DNS and provider certificate issuance. Check every custom host and retained provider alias anonymously with `curl -sS -D - -o /dev/null https://<host>/` (do not follow redirects): expect HTTP 302 to Cloudflare Access or Vercel SSO, never application content. Also check immutable staging aliases remain protected. Run `gh workflow run test-security-cloudflare-access --ref main` to check the existing Pages provider and custom hosts.
+5. In an owner browser session, verify each app loads; test Hearth, Balloono and Manager OAuth callbacks at the custom hosts, Hearth invitations and R2 uploads, the personal contact form including reCAPTCHA, and Calendars' public data request. Confirm requests still target staging backends. reCAPTCHA domain acceptance and all live behavior require verification; no dashboard changes are part of this configuration PR.
+6. Run `gh workflow run ci-sync-upptime --ref main` only after activation, then `gh workflow run cron-upptime -R iamharryliu/uptime` and `gh workflow run cron-upptime-response-time -R iamharryliu/uptime`. Source URL changes retain site names/history and 302 expectations; no monitoring bypass credentials are needed. The merge-triggered config sync may precede apply, so temporary failing probes are possible. Check Pages Index staging cards, shared browser quick links and deployment summaries.
 
 ## Tailnet
 

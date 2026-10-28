@@ -3,19 +3,19 @@ repo: uptime
 
 sites:
   - name: staging-docs
-    url: https://staging-docs-md.pages.dev/
+    url: https://staging-docs.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-context
-    url: https://staging-context-md.pages.dev/
+    url: https://staging-context.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-bookmarks
-    url: https://staging-bookmarks-react.pages.dev/
+    url: https://staging-bookmarks.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-pomodoro
-    url: https://staging-pomodoro-react.pages.dev/
+    url: https://staging-pomodoro.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-cloud-8-skate
@@ -23,53 +23,53 @@ sites:
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-harryliu-dev
-    url: https://staging-harryliu-dev-react.pages.dev/
+    url: https://staging.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-harryliu-dev-resume
-    url: https://staging-harryliu-dev-react.pages.dev/resume
+    url: https://staging.harryliu.dev/resume
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-findme
-    url: https://staging-findme.pages.dev/
+    url: https://staging-findme.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-hearth
-    url: https://staging-hearth.vercel.app/login
+    url: https://staging-hearth.harryliu.dev/login
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-service-manager
     url: https://staging-vb-express.fly.dev/
   - name: staging-component-library
-    url: https://staging-component-library.pages.dev/
+    url: https://staging-components.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-utilities
-    url: https://staging-utilities-ui.pages.dev/
+    url: https://staging-utilities.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-waiting-games
-    url: https://staging-waiting-games.pages.dev/
+    url: https://staging-waiting.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-whiteboard
-    url: https://staging-whiteboard.pages.dev/
+    url: https://staging-whiteboard.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-weather
-    url: https://staging-weather-next.vercel.app/
+    url: https://staging-weather.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-balloono
-    url: https://staging-balloono.vercel.app/
+    url: https://staging-balloono.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-calendars
-    url: https://staging-calendars.pages.dev/
+    url: https://staging-calendar.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: staging-vb-manager-next-mobile
-    url: https://staging-vb-manager-next-mobile.vercel.app/login
+    url: https://staging-manager.harryliu.dev/login
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: production-cloud-8-skate

@@ -1,9 +1,3 @@
-// Shared by the deploy summary scripts. Hostnames follow each platform's `<environment>-<name>` naming,
-// so the table is derived rather than listing every app per environment.
-// Projects with no public URL (noop deploys, the Sanity studio) show "—", as
-// does a project outside the environments it is hosted in (employee-handler-ui
-// only ships to Vercel as `demo`).
-
 export const PLATFORM = {
   pages: name => `https://${name}.pages.dev`,
   vercel: name => `https://${name}.vercel.app`,
@@ -58,12 +52,33 @@ export const PROJECT_HOSTING = {
   },
 };
 
+const STAGING_HOSTS = {
+  'personal-website-react': 'staging.harryliu.dev',
+  'docs-md': 'staging-docs.harryliu.dev',
+  'context-md': 'staging-context.harryliu.dev',
+  'utilities-ui': 'staging-utilities.harryliu.dev',
+  'bookmarks-react': 'staging-bookmarks.harryliu.dev',
+  'pomodoro-react': 'staging-pomodoro.harryliu.dev',
+  'waiting-games': 'staging-waiting.harryliu.dev',
+  'weather-next': 'staging-weather.harryliu.dev',
+  balloono: 'staging-balloono.harryliu.dev',
+  calendars: 'staging-calendar.harryliu.dev',
+  whiteboard: 'staging-whiteboard.harryliu.dev',
+  'mobile-manager-next': 'staging-manager.harryliu.dev',
+  findme: 'staging-findme.harryliu.dev',
+  hearth: 'staging-hearth.harryliu.dev',
+  'component-library': 'staging-components.harryliu.dev',
+};
+
 export const NO_URL = '—';
 
 export const urlFor = (project, environment) => {
   const hosting = PROJECT_HOSTING[project];
   const hasEnvironment =
     hosting && (hosting.environments ?? [environment]).includes(environment);
+  if (environment === 'staging' && STAGING_HOSTS[project]) {
+    return `https://${STAGING_HOSTS[project]}`;
+  }
   return hasEnvironment && environment
     ? PLATFORM[hosting.platform](`${environment}-${hosting.name}`)
     : null;

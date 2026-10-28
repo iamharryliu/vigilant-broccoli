@@ -155,6 +155,7 @@
       "DESCRIPTION": "Browser demo of the OK-IN office presence Slack app."
     },
     "OPEN_APPLICATION": "Open application",
+    "OPEN_STAGING": "Open staging application",
     "POMODORO": {
       "TITLE": "Pomodoro",
       "DESCRIPTION": "Focus timer with configurable work and break sessions, sound and notifications."

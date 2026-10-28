@@ -26,7 +26,7 @@ export function WebApplicationReadmePage() {
       }
       beforeReadme={
         app && (
-          <div className="mb-6">
+          <div className="mb-6 grid gap-4">
             <CardLink
               href={app.href}
               title={t('WEB_APPLICATIONS_PAGE.OPEN_APPLICATION')}
@@ -35,6 +35,19 @@ export function WebApplicationReadmePage() {
                 <ExternalLink className="h-5 w-5 shrink-0" aria-hidden="true" />
               }
             />
+            {'stagingHref' in app && typeof app.stagingHref === 'string' && (
+              <CardLink
+                href={app.stagingHref}
+                title={t('WEB_APPLICATIONS_PAGE.OPEN_STAGING')}
+                description={app.stagingHref}
+                icon={
+                  <ExternalLink
+                    className="h-5 w-5 shrink-0"
+                    aria-hidden="true"
+                  />
+                }
+              />
+            )}
           </div>
         )
       }

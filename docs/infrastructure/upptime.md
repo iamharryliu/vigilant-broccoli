@@ -54,8 +54,10 @@ Staging UI checks use no credentials. They disable redirects and require HTTP 30
 
 Two mechanisms produce the 302:
 
-- The eleven staging Pages projects are gated by Cloudflare Access in `cloudflare-staging-ui.tf` on the root and the immutable/branch aliases. Browser access is limited to `staging_ui_allowed_emails` (default: the existing owner identity).
+- The twelve staging Pages projects are gated by Cloudflare Access in `cloudflare-staging-ui.tf` on the root, immutable/branch aliases and mapped custom staging hosts. Browser access is limited to `staging_ui_allowed_emails` (default: the existing owner identity).
 - The four staging Vercel projects are gated by Vercel Authentication, which `deploy-vercel.ts` enables on each staging deploy ([details](../app-development/ui/deployment/vercel-deploy-pattern.md#staging-access)). A project's 302 check fails until its first staging deploy enables it. `production-vb-manager-next-mobile` is gated the same way on every production deploy and expects the same 302.
+
+The in-scope staging UI checks use the custom hosts listed in [network management](./network-management.md#staging-ui-custom-domains); provider aliases remain gated. Apply and attach domains before manually resyncing probes. Site names and inferred history slugs remain unchanged.
 
 The staging probes in local and CI health checks also expect the unauthenticated HTTP 302. Monitoring adds no service token, secrets, GCP identity or OIDC permission. Do not add a Vercel protection-bypass secret or bypass Access on application health paths to make monitoring work.
 
@@ -115,7 +117,7 @@ Warm-up intentionally measures warmed availability and response time; it does no
 
 ## Free Tier
 
-Cloudflare Access remains free for up to 50 users; staging reuses the owner identity. Gate monitoring adds no service token, secret versions or secret-read operations.
+Cloudflare Access remains free for up to 50 users; staging reuses the owner identity. Gate monitoring adds no service token, secret versions or secret-read operations. The eleven Pages custom hosts reuse existing projects and Access applications; the four Vercel custom hosts reuse existing staging projects. [Vercel Authentication for all deployments is free on every plan](https://vercel.com/changelog/protect-production-deployments-for-free-on-every-plan). No project or seat allowance changes.
 
 - GitHub-hosted standard runners are free for public repositories ([GitHub billing](https://docs.github.com/en/billing/concepts/product-billing/github-actions)). Monitoring uses roughly 25 scheduled workflow runs per day; sync runs only on configuration changes or manual dispatch. The daily static-site build adds one more scheduled run; GitHub Pages is free for public repositories, including the automatic HTTPS certificate; the verify step adds at most 10 minutes of runner time to a failing daily run. Pages Index continues displaying the public summary.
 - Graph and badge generation runs within the existing daily response-time workflow, adding dependency installation and rendering time without another scheduled run.

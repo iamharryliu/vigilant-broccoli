@@ -39,10 +39,9 @@ jobs:
           - name: seafile
             hostname: drive.harryliu.dev
             origin_ip_secret: ''
-          # Mirrors local.staging_pages_projects in cloudflare-staging-ui.tf;
-          # add a project here when it gets a staging Access application.
+          # Mirrors the protected provider and custom hosts in cloudflare-staging-ui.tf.
           - name: staging-pages
-            hostname: staging-bookmarks-react.pages.dev,staging-calendars.pages.dev,staging-cloud-8-skate-react.pages.dev,staging-component-library.pages.dev,staging-context-md.pages.dev,staging-docs-md.pages.dev,staging-findme.pages.dev,staging-harryliu-dev-react.pages.dev,staging-pomodoro-react.pages.dev,staging-utilities-ui.pages.dev,staging-waiting-games.pages.dev,staging-whiteboard.pages.dev
+            hostname: staging-bookmarks-react.pages.dev,staging-calendars.pages.dev,staging-cloud-8-skate-react.pages.dev,staging-component-library.pages.dev,staging-context-md.pages.dev,staging-docs-md.pages.dev,staging-findme.pages.dev,staging-harryliu-dev-react.pages.dev,staging-pomodoro-react.pages.dev,staging-utilities-ui.pages.dev,staging-waiting-games.pages.dev,staging-whiteboard.pages.dev,staging-bookmarks.harryliu.dev,staging-calendar.harryliu.dev,staging-components.harryliu.dev,staging-context.harryliu.dev,staging-docs.harryliu.dev,staging-findme.harryliu.dev,staging.harryliu.dev,staging-pomodoro.harryliu.dev,staging-utilities.harryliu.dev,staging-waiting.harryliu.dev,staging-whiteboard.harryliu.dev
             origin_ip_secret: ''
           - name: vault
             hostname: vault.harryliu.dev
