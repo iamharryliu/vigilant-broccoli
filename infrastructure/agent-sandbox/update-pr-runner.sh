@@ -307,7 +307,7 @@ NEW_PR_TITLE=$(normalize_pr_title "$(read_meta .pr_title)")
 
 if [ -z "$(git status --porcelain)" ]; then
   if [ -n "$NEW_PR_TITLE" ]; then
-    gh pr edit "$PR" --title "$NEW_PR_TITLE"
+    gh pr edit "$PR" --title "$(guard_pr_title "$NEW_PR_TITLE" "$FALLBACK_SUBJECT")"
     echo "PR #${PR} title updated to: ${NEW_PR_TITLE}"
     SALVAGE_ENABLED=0
     exit 0
@@ -367,7 +367,7 @@ NEW_BODY=$(CURRENT_BODY="$CURRENT_BODY" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="
   HISTORY_SUMMARY="$COMMIT_SUBJECT" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
   python3 "$MERGE_BODY_HELPER")
 gh pr edit "$PR" --body "$NEW_BODY"
-[ -z "$NEW_PR_TITLE" ] || gh pr edit "$PR" --title "$NEW_PR_TITLE"
+[ -z "$NEW_PR_TITLE" ] || gh pr edit "$PR" --title "$(guard_pr_title "$NEW_PR_TITLE" "$FALLBACK_SUBJECT")"
 
 # The target PR is already updated and pushed; follow-up increments are
 # separate PRs, so a failure here leaves it untouched.

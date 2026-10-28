@@ -33,6 +33,28 @@ normalize_pr_title() {
   fi
 }
 
+# Prints $1 when commitlint accepts it as a PR title, else the conforming
+# fallback $2 (default: a fixed chore subject), so no generated title reaches
+# `gh pr create`/`gh pr edit` unlinted. A sandbox clone without a workspace
+# install cannot run commitlint; the title is then passed through unchanged
+# because the normalizers above are the only guard available.
+guard_pr_title() {
+  local title=$1 fallback=${2:-"chore: Complete agent task."} root status=0
+  root=$(git rev-parse --show-toplevel) || { printf '%s' "$title"; return 0; }
+  (cd "$root" && pnpm exec commitlint --version >/dev/null 2>&1) || {
+    echo "commitlint unavailable; PR title was not linted." >&2
+    printf '%s' "$title"
+    return 0
+  }
+  printf '%s\n' "$title" | (cd "$root" && pnpm exec commitlint --config commitlint.config.mjs >/dev/null 2>&1) || status=$?
+  if [ "$status" -eq 0 ]; then
+    printf '%s' "$title"
+  else
+    echo "PR title failed commitlint; using fallback: $fallback" >&2
+    printf '%s' "$fallback"
+  fi
+}
+
 # Prints the PR_FILES:: marker write-pr-step-summary.sh renders as a changed-files
 # table, listing what the run committed since $1. Runners without per-file agent
 # summaries leave the summary column blank.
