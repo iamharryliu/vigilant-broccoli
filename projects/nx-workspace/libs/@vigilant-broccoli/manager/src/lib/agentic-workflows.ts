@@ -43,3 +43,6 @@ export const AGENTIC_PHASES: AgenticPhase[] = [
   DEPLOY_PHASE,
   ...readmePhases.slice(deployIndex),
 ];
+
+// Dispatchable ci-, cron-, deploy- and manual- workflow names from .github/workflows.
+export const DISPATCHABLE_WORKFLOW_NAMES: string[] = generated.workflowNames;

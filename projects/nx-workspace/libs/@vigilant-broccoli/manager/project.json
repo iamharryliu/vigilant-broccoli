@@ -34,6 +34,9 @@
         "{projectRoot}/scripts/generate-agentic-workflows.ts",
         {
           "runtime": "node -p \"require('crypto').createHash('sha1').update(require('fs').readFileSync('../../README.md')).digest('hex')\""
+        },
+        {
+          "runtime": "node -p \"const fs=require('fs'),d='../../.github/workflows';require('crypto').createHash('sha1').update(fs.readdirSync(d).sort().map(f=>f+fs.readFileSync(d+'/'+f)).join()).digest('hex')\""
         }
       ],
       "outputs": ["{projectRoot}/src/lib/generated/agentic-workflows.json"],

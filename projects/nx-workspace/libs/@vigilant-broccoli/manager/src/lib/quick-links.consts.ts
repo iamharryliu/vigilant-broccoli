@@ -32,7 +32,10 @@ import { ACCESS_GATED_URL } from './access-gated.consts';
 import { PERSONAL_ACCOUNT_LINK, PERSONAL_URL } from './personal-account.consts';
 import { JOURNAL_PATH, VB_REPO_PATH } from '@harry/private';
 import { VB_GITHUB_WORKFLOWS_URL } from '@vigilant-broccoli/infrastructure';
-import { AGENTIC_PHASES } from './agentic-workflows';
+import {
+  AGENTIC_PHASES,
+  DISPATCHABLE_WORKFLOW_NAMES,
+} from './agentic-workflows';
 
 const DEV_LINKS: QuickLink[] = [
   ...toQuickLinks(LINK_GROUP_SUBGROUP.DEV, [
@@ -272,39 +275,16 @@ const AGENTIC_LINKS: QuickLink[] = AGENTIC_PHASES.flatMap(({ workflows }) =>
   })),
 );
 
-// Dispatchable workflows outside the README's Agentic table (the test-* suites
-// and manual-promote-production, which the Deploy phase already covers, are left out).
-const WORKFLOW_NAMES = [
-  'ci-health-check',
-  'ci-rotate-secrets',
-  'ci-sync-upptime',
-  'cron-backup',
-  'cron-cleanup-preview-deployments',
-  'cron-cleanup-workflow-runs',
-  'cron-dependency-pin-drift',
-  'cron-prune-orphaned-services',
-  'cron-seed-office-presence-demo',
-  'cron-terraform-drift',
-  'deploy',
-  'deploy-code-server-image',
-  'deploy-context-md',
-  'deploy-demo-apps',
-  'deploy-docs-md',
-  'deploy-github-profile',
-  'deploy-preview',
-  'manual-deploy-app',
-  'manual-kill-services',
-  'manual-refresh-code-server-github-token',
-  'manual-replace-code-server',
-  'manual-run-tests',
-] as const;
+const AGENTIC_URLS = new Set(
+  AGENTIC_PHASES.flatMap(({ workflows }) => workflows.map(({ url }) => url)),
+);
 
-const WORKFLOW_LINKS: QuickLink[] = WORKFLOW_NAMES.map(name => ({
+const WORKFLOW_LINKS: QuickLink[] = DISPATCHABLE_WORKFLOW_NAMES.map(name => ({
   label: name,
   target: `${VB_GITHUB_WORKFLOWS_URL}/${name}.yml`,
   type: OPEN_TYPE.BROWSER,
   subgroup: LINK_GROUP_SUBGROUP.WORKFLOWS,
-}));
+})).filter(({ target }) => !AGENTIC_URLS.has(target));
 
 export type { QuickLink };
 
