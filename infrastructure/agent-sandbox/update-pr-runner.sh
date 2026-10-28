@@ -205,7 +205,7 @@ Sandbox execution rules:
 - Do not run any git or gh commands — committing, pushing, and updating the PR body are handled by the calling script.
 ${PLAN_RULES}
 - When finished, write $META_FILE containing only a JSON object with these fields (strings unless noted):
-  - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure
+  - commit_type: one of ${COMMIT_TYPES// /, }
   - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
   - pr_title: only when a failing check is about the PR title itself (e.g. commitlint), the corrected title in the form "<committype>(<scope>): <Message>." — otherwise omit it; the calling script applies it, so make no file changes for a title-only failure
   - commit_message: capitalized, concise, focused on why not what, ending with a period
@@ -317,7 +317,7 @@ fi
 
 COMMIT_TYPE=$(read_meta .commit_type)
 COMMIT_SCOPE=$(read_meta .commit_scope)
-COMMIT_MESSAGE=$(normalize_commit_message "$(read_meta .commit_message)")
+COMMIT_MESSAGE=$(read_meta .commit_message)
 TRAILER=$(read_meta .co_authored_by)
 PR_SUMMARY=$(read_meta .pr_summary)
 PR_NEXT_STEPS=$(read_meta .pr_next_steps)
@@ -337,20 +337,8 @@ else
   unset PR_CONCERNS
 fi
 
-case "$COMMIT_TYPE" in
-  feat | fix | ci | chore | docs | refactor | enhancement | security | infrastructure) ;;
-  *) COMMIT_TYPE="" ;;
-esac
-
-if [ -n "$COMMIT_TYPE" ] && [ -n "$COMMIT_MESSAGE" ]; then
-  if [ -n "$COMMIT_SCOPE" ]; then
-    COMMIT_SUBJECT="${COMMIT_TYPE}(${COMMIT_SCOPE}): ${COMMIT_MESSAGE}"
-  else
-    COMMIT_SUBJECT="${COMMIT_TYPE}: ${COMMIT_MESSAGE}"
-  fi
-else
-  COMMIT_SUBJECT="$FALLBACK_SUBJECT"
-fi
+COMMIT_SUBJECT=$(commit_header "$COMMIT_TYPE" "$COMMIT_SCOPE" "$COMMIT_MESSAGE")
+[ -n "$COMMIT_SUBJECT" ] || COMMIT_SUBJECT="$FALLBACK_SUBJECT"
 
 echo "$TRAILER" | grep -Eqi '^co-authored-by: .+ <.+>$' || TRAILER="$FALLBACK_TRAILER"
 

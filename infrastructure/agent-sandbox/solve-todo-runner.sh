@@ -193,7 +193,7 @@ $SCOPE_RULE
 $PREVIEW_RULE
 $(inc_plan_instructions solve)
 - When finished, write $META_FILE containing only a JSON object with these fields (strings unless noted):
-  - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure
+  - commit_type: one of ${COMMIT_TYPES// /, }
   - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
   - commit_message: capitalized, concise, focused on why not what, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit, or "$FALLBACK_TRAILER" when no such trailer is specified

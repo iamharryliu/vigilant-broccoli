@@ -152,7 +152,7 @@ targeting the original PR branch. Recovery restores unresolved TODO rows and res
 publication fail, the log reports that recovery failed rather than claiming the work was saved. Git, pushes and PR creation stay in the runner with the credentials it already
 has; branches are only created and pushed, never force-pushed. Squash-merge implications of stacked PRs are in
 [Stacked pull requests](../../docs/git-workflow.md#stacked-pull-requests). The container copies `solve-todo-runner.sh`,
-`pr-increments.sh`, `commit-subject.sh` and `no-changes.sh` into the image, so rebuild it (`docker compose build`) after changing any of them when running locally. Every runner sources `commit-subject.sh` to capitalize commit messages and PR titles, end them with a period and strip trailing ellipses, so they pass the CI `commitlint` job.
+`pr-increments.sh`, `commit-subject.sh` and `no-changes.sh` into the image, so rebuild it (`docker compose build`) after changing any of them when running locally. Every runner sources `commit-subject.sh` to capitalize commit messages and PR titles, end them with a period, strip trailing ellipses, lower-case the scope and reject types outside `COMMIT_TYPES` (a mirror of `type-enum` in `commitlint.config.mjs`) in favor of the run's fallback subject, so they pass the CI `commitlint` job without a workspace install in the sandbox.
 
 ## Metadata file
 
