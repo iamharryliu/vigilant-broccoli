@@ -50,11 +50,20 @@ jobs:
           username: iamharryliu
           password: ${{ env.DOCKERHUB_TOKEN }}
 
+      # Lockfile bumps deliberately don't trigger this workflow; the version is
+      # read at build time, so the next image build picks up the current one.
+      - name: Read locked Playwright version
+        run: |
+          version=$(yq '.importers["."].dependencies.playwright.version' projects/nx-workspace/pnpm-lock.yaml)
+          test -n "$version" && [ "$version" != null ]
+          echo "PLAYWRIGHT_VERSION=$version" >> "$GITHUB_ENV"
+
       # Build context is the repo root so the Dockerfile can COPY
       # setup/linux/apt-packages.txt.
       - name: Build image
         run: |
           docker build \
+            --build-arg "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" \
             --platform linux/arm64 \
             -f infrastructure/code-server/Dockerfile \
             -t "$IMAGE:latest" \
