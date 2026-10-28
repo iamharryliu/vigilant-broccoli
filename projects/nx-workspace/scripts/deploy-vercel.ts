@@ -360,10 +360,7 @@ async function main() {
       settings: NX_VERCEL_SETTINGS('balloono', 'dist/apps/ui/balloono/.next'),
     },
     'weather-next': {
-      hardcodedSecrets: {
-        VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
-      },
-      envExamplePath: 'apps/ui/weather-next/.env.example',
+      hardcodedSecrets: {},
       settings: NX_VERCEL_SETTINGS(
         'weather-next',
         'dist/apps/ui/weather-next/.next',

@@ -107,7 +107,6 @@ export interface WeatherClockCardProps {
   error?: LocalWeatherFailure;
   onRetry?: () => void;
   fetchWeather?: (location: Location) => Promise<LocalWeather | null>;
-  fetchPreparation?: (weather: LocalWeather) => Promise<Preparation | null>;
   expanded?: boolean;
   defaultExpanded?: boolean;
   onExpandedChange?: (expanded: boolean) => void;
@@ -466,7 +465,6 @@ const WeatherClockCardView = ({
 
 const SelfLocatingWeatherClockCard = ({
   fetchWeather,
-  fetchPreparation,
   location,
   ...viewProps
 }: WeatherClockCardProps & {
@@ -474,7 +472,6 @@ const SelfLocatingWeatherClockCard = ({
 }) => {
   const { state, preparation, retry } = useLocalWeather({
     fetchWeather,
-    fetchPreparation,
   });
   const ready = state.status === LOCAL_WEATHER_STATUS.READY ? state : null;
   const failure = FAILURE_STATUSES.includes(state.status)
@@ -486,9 +483,6 @@ const SelfLocatingWeatherClockCard = ({
       {...viewProps}
       location={ready?.location ?? location}
       weather={ready ? { ...ready.weather, preparation } : undefined}
-      preparationLoading={
-        !!ready && !!fetchPreparation && preparation === undefined
-      }
       error={failure}
       onRetry={retry}
     />
