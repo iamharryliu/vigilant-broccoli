@@ -41,13 +41,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
   && apt-get install -y --no-install-recommends nodejs build-essential \
   && rm -rf /var/lib/apt/lists/*
 
-# Use the workspace lockfile's exact Playwright version and its distro-aware
-# dependency list. Browser binaries belong to the runtime user's persistent cache.
-COPY projects/nx-workspace/pnpm-lock.yaml /tmp/playwright-lock.yaml
-RUN PLAYWRIGHT_VERSION=$(awk '/^      playwright:$/ { found=1; next } found && /^        version:/ { print $2; exit }' /tmp/playwright-lock.yaml) \
-  && test -n "$PLAYWRIGHT_VERSION" \
+# Playwright's distro-aware dependency list, pinned to the workspace lockfile's
+# version (passed by the workflow). Browser binaries belong to the runtime
+# user's persistent cache.
+ARG PLAYWRIGHT_VERSION
+RUN test -n "$PLAYWRIGHT_VERSION" \
   && npm exec --yes --package="playwright@$PLAYWRIGHT_VERSION" -- playwright install-deps chromium \
-  && rm /tmp/playwright-lock.yaml \
   && npm cache clean --force \
   && rm -rf /var/lib/apt/lists/*
 
