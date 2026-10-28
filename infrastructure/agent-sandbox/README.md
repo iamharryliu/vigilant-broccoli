@@ -182,7 +182,7 @@ optional `no_changes_reason` in its metadata file and handles it through `no-cha
 
 `pnpm agentic-pr-create-todo-audit` runs `audit-todo.sh`, the counterpart to `create-todo.sh`: instead of adding a row it
 re-verifies the ones already there against the current tree, deleting rows whose problem is genuinely fixed and correcting
-rows whose paths, line numbers, counts or scope have drifted. `cron-agentic-pr-create-todo-audit` runs the same script weekly.
+rows whose paths, quoted snippets, counts or scope have drifted. `cron-agentic-pr-create-todo-audit` runs the same script weekly.
 
 - Dispatch: `gh workflow run cron-agentic-pr-create-todo-audit.yml` (optional `-f model=`, `-f firewall=off`).
 - A clean audit opens no PR — `audit-todo-runner.sh` prints `AUDIT_CLEAN` and exits 0 rather than raising an empty PR.

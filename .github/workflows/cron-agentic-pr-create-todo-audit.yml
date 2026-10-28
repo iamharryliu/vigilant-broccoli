@@ -4,7 +4,7 @@ name: cron-agentic-pr-create-todo-audit
 # deletes the resolved ones and corrects the drifted ones. Same container and
 # credentials as `manual-agentic-pr-create`; the local equivalent is
 # `pnpm agentic-pr-create-todo-audit`. The backlog goes stale silently — rows keep citing
-# files that moved and line numbers that shifted — so this runs on a schedule
+# files that moved and quoted snippets that were reworded — so this runs on a schedule
 # rather than waiting for someone to notice.
 #
 # A clean audit opens no PR and still succeeds: the runner prints AUDIT_CLEAN
