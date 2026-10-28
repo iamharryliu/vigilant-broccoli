@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Local Session Status'
+  short_description: "Brief status of this conversation's dispatched jobs"
+  default_prompt: "Use $local-session-status to briefly report on this conversation's dispatches."
