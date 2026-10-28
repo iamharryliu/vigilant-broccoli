@@ -2,8 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { LocationService } from '@vigilant-broccoli/common-browser';
-import { Location, omitForecast } from '@vigilant-broccoli/common-js';
-import { LocalWeather, Preparation } from './weather.types';
+import {
+  calculateWeatherPreparation,
+  Location,
+} from '@vigilant-broccoli/common-js';
+import { LocalWeather } from './weather.types';
 
 export const LOCAL_WEATHER_STATUS = {
   LOCATING: 'LOCATING',
@@ -69,29 +72,15 @@ const loadWeather = async (
 
 export interface UseLocalWeatherOptions {
   fetchWeather: (location: Location) => Promise<LocalWeather | null>;
-  fetchPreparation?: (weather: LocalWeather) => Promise<Preparation | null>;
 }
 
-/**
- * Always calls the latest `fetchWeather` / `fetchPreparation`, so inline
- * functions do not reload the weather. Only adding or removing
- * `fetchPreparation` changes whether preparation is requested. `preparation`
- * is `undefined` while pending and `null` when absent or failed.
- */
-export const useLocalWeather = ({
-  fetchWeather,
-  fetchPreparation,
-}: UseLocalWeatherOptions) => {
+export const useLocalWeather = ({ fetchWeather }: UseLocalWeatherOptions) => {
   const [state, setState] = useState<LocalWeatherViewState>({
     status: LOCAL_WEATHER_STATUS.LOCATING,
   });
-  const [preparation, setPreparation] = useState<Preparation | null>();
 
   const fetchWeatherRef = useRef(fetchWeather);
-  const fetchPreparationRef = useRef(fetchPreparation);
   fetchWeatherRef.current = fetchWeather;
-  fetchPreparationRef.current = fetchPreparation;
-  const hasPreparation = !!fetchPreparation;
 
   const load = useCallback(
     () =>
@@ -108,25 +97,16 @@ export const useLocalWeather = ({
 
   const readyWeather =
     state.status === LOCAL_WEATHER_STATUS.READY ? state.weather : null;
-  useEffect(() => {
-    setPreparation(hasPreparation ? undefined : null);
-    const fetchPreparationNow = fetchPreparationRef.current;
-    if (!readyWeather || !fetchPreparationNow) return;
-    let cancelled = false;
-    fetchPreparationNow(omitForecast(readyWeather))
-      .catch(() => null)
-      .then(result => {
-        if (!cancelled) setPreparation(result);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [readyWeather, hasPreparation]);
-
   const retry = useCallback(() => {
     setState({ status: LOCAL_WEATHER_STATUS.LOCATING });
     load();
   }, [load]);
 
-  return { state, preparation, retry };
+  return {
+    state,
+    preparation: readyWeather
+      ? calculateWeatherPreparation(readyWeather)
+      : null,
+    retry,
+  };
 };

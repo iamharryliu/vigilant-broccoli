@@ -18,3 +18,5 @@
 - The separate Calendar sidebar and search entries are removed. Existing `/calendar` links redirect to `/`.
 - Hidden event calendar ids are saved in browser local storage under `calendar-view-hidden-event-calendars`, so the choice is per browser and new calendars appear by default.
 - The Shift+C calendar dialog remains available.
+
+- The dashboard Weather card calculates preparation badges locally using the shared `common-js` calculator; see [thresholds](../../../weather-next/docs/features/preparation-badges/README.md). No preparation API request is made.

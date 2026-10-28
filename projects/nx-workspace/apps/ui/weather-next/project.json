@@ -33,10 +33,7 @@
       "defaultConfiguration": "development",
       "options": {
         "cwd": "apps/ui/weather-next",
-        "command": "next dev --webpack",
-        "env": {
-          "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev"
-        }
+        "command": "next dev --webpack"
       },
       "configurations": {
         "development": {},

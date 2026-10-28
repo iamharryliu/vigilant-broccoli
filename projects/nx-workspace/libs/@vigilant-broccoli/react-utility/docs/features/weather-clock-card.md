@@ -7,15 +7,15 @@
 
 - `WeatherClockCardUtilityContent` runs in one of two modes:
   - **Injected data**: pass `weather` (`LocalWeather` plus optional `preparation`), `location` and `timezoneOffsetSeconds`; use `loading`, `error` (a `LocalWeatherFailure`) and `onRetry` for the other states.
-  - **Self-locating**: pass `fetchWeather(location)` and optionally `fetchPreparation(weather)`. The card asks the browser for its location through `useLocalWeather` (`react-utility`) and shows the clock while locating/loading without skeletons or reserved weather space, the denied/unavailable/error message with a retry button (`LocalWeatherMessage`), then the weather. Sun times use the browser's UTC offset unless `timezoneOffsetSeconds` is passed.
-- The card always calls the latest `fetchWeather` / `fetchPreparation`, so inline functions do not reload the weather. Only adding or removing `fetchPreparation` changes whether badges are requested; a failed or `null` result renders no badges, and nothing renders for the badges while it is pending, and the badge row expands open with a height/opacity transition (disabled under `prefers-reduced-motion`) only once there are badges, so no empty space remains.
-- `fetchPreparation` receives the weather without its `forecast`.
+  - **Self-locating**: pass `fetchWeather(location)`. The card asks the browser for its location through `useLocalWeather` (`react-utility`) and shows the clock while locating/loading without skeletons or reserved weather space, the denied/unavailable/error message with a retry button (`LocalWeatherMessage`), then the weather. Sun times use the browser's UTC offset unless `timezoneOffsetSeconds` is passed.
+- The card calls the latest `fetchWeather`, so inline functions do not reload weather. `useLocalWeather` synchronously calculates preparation with `calculateWeatherPreparation` from `common-js` when weather is ready; there is no preparation request or separate failure/loading state.
+- All real consumers share the [preparation heuristics and thresholds](../../../../../apps/ui/weather-next/docs/features/preparation-badges/README.md). Injected sandbox data can supply preset `preparation` booleans.
 - The card wraps itself in the internal weather i18n provider and carries the Open-Meteo / OpenStreetMap attribution footer once weather is shown, so apps need no provider or footer.
 
 ## Layout
 
-- While locating or loading weather (including injected `loading` and retries), a soft blue radiant glow pulses around the outside of the card without fading the clock or changing layout. Errors and ready weather remove the highlight; the highlight continues while preparation badges (e.g. sunglasses) are still loading. Reduced-motion preferences replace the pulse with a subtle static highlight.
-- Loading shows the clock without skeleton tiles or invisible placeholder details. Actual weather tiles and details expand into view with a height/opacity transition; preparation badges arrive independently using their existing expansion transition. Reduced-motion preferences disable these transitions.
+- While locating or loading weather (including injected `loading` and retries), a soft blue radiant glow pulses around the outside of the card without fading the clock or changing layout. Errors and ready weather remove the highlight; injected `preparationLoading` also keeps the highlight active for sandbox previews. Reduced-motion preferences replace the pulse with a subtle static highlight.
+- Loading shows the clock without skeleton tiles or invisible placeholder details. Actual weather tiles and details expand into view with a height/opacity transition; preparation badges appear with weather using their existing expansion transition. Reduced-motion preferences disable these transitions.
 
 - The summary is a wrapping horizontal row: the clock hero on one side and a 2-column grid of stat tiles (weather, sunrise, moon, sunset) beside it. The grid only drops under the clock when the card is too narrow for both.
 - The humidity/wind/precipitation tiles, preparation badges, forecast carousel and attribution footer stack below the summary row; they never move the tiles into a vertical column.
@@ -39,6 +39,7 @@ The card is styled with Tailwind classes and the Radix Themes variables the apps
 
 ## Data fetching per app
 
-- `weather-next`: its own `/api/weather` (`getLocalWeather` from `common-node`: Open-Meteo plus Nominatim city) and rate-limited `/api/preparation`.
-- `mobile-manager-next`: `WeatherView` over auth-guarded `/api/weather` (`getLocalWeather` from `common-node`, as in `weather-next`) and `/api/preparation` (`fetchWeatherPreparation` / `isPreparationWeather`).
-- `local-manager-next`: `fetchLocalWeather` over auth-guarded `/api/weather` plus `/api/weather/city`, and `fetchLocalPreparation` over `/api/preparation` (`fetchWeatherPreparation` / `isPreparationWeather` from `common-node`). City names come from `reverseGeocodeCity` from `common-node` with the app's Nominatim User-Agent.
+- `weather-next`: `/api/weather` uses `getLocalWeather` from `common-node` (Open-Meteo plus Nominatim city).
+- `mobile-manager-next`: `WeatherView` uses auth-guarded `/api/weather` with `getLocalWeather` from `common-node`.
+- `local-manager-next`: `fetchLocalWeather` uses auth-guarded `/api/weather` plus `/api/weather/city`; city names use `reverseGeocodeCity` from `common-node` with the app's Nominatim User-Agent.
+- All three use the same local preparation calculator; no `/api/preparation` route is needed.
