@@ -5,6 +5,7 @@ Run the code-server image with this repo's toolchain, GitHub token handling and 
 ## Table of Contents
 
 - [Run from Registry](#run-from-registry)
+- [Browser Verification](#browser-verification)
 - [Environment Variables](#environment-variables)
 - [Web Terminal](#web-terminal)
 - [GitHub Token](#github-token)
@@ -25,6 +26,10 @@ docker run -d --name code-server \
 ```
 
 The image adds Node.js 24, pnpm, Claude Code, Codex, `gh`, the Google Cloud CLI, `pre-commit` and tmux. Codex has no baked-in credential: sign in from the terminal with `codex login --device-auth`; the login lives in the `/config` volume.
+
+## Browser Verification
+
+The image bakes in Chromium's OS libraries. As the terminal user (`abc`), run `pnpm -C projects/nx-workspace exec playwright install chromium`, then `pnpm screenshot:themes -- http://localhost:<port>`. Do not run the install as root: the browser would land in root's cache instead of `/config/.cache/ms-playwright`.
 
 ## Environment Variables
 
