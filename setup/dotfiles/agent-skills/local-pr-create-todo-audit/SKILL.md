@@ -10,10 +10,10 @@ Verify every row in root `TODO.md` against current source, following `docs/todo-
 For each row:
 
 - **RESOLVED:** positively confirm the condition was fixed or removed, then delete the row.
-- **DRIFTED:** the issue remains; correct only inaccurate Description/Recommended Fix claims, paths, lines or counts, and update the Brief when its summary no longer holds. Partly resolved rows retain their remaining claims.
+- **DRIFTED:** the issue remains; correct only inaccurate Description/Recommended Fix claims, paths, quoted snippets or counts, and update the Brief when its summary no longer holds. Partly resolved rows retain their remaining claims.
 - **ACCURATE:** leave byte-identical.
 
-Open cited files and surrounding code. A missing path alone proves nothing: search basename/symbol and inspect `git log --oneline -5 -- <path>` for moves. Check ignore rules/build targets before treating generated paths as source. Recheck cited line numbers.
+Open cited files and surrounding code. A missing path alone proves nothing: search basename/symbol and inspect `git log --oneline -5 -- <path>` for moves. Check ignore rules/build targets before treating generated paths as source. Verify each cited path exists, then grep that each quoted snippet or symbol still appears in the cited file. If a quote drifted, update it to the current text; if the claim it supports no longer holds, treat the row as DRIFTED or RESOLVED per the rules above. Replace any remaining line-number or line-range citation with the path plus a short quote, as a drift correction.
 
 Preserve IDs and the Type-then-priority row order. Add no rows; change Type, Priority, Agent, Effort or Model only when the row's evidence changes. Use the pattern's one-line rows, `<br>` steps and escaped pipes. Leave accurate files untouched.
 
