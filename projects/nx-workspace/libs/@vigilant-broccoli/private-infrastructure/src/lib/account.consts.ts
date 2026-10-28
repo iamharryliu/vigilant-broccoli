@@ -38,6 +38,17 @@ export const FLYIO_ACCOUNT_LINK = {
   },
 } as const;
 
+export const RENDER_ACCOUNT_LINK = {
+  BILLING: {
+    NAME: 'Render Billing',
+    URL: 'https://dashboard.render.com/w/tea-d98nviecjfls73evpnmg/billing',
+  },
+  SETTINGS: {
+    NAME: 'Render Account Settings',
+    URL: 'https://dashboard.render.com/u/usr-d98nviecjfls73evpnog/settings',
+  },
+} as const;
+
 export const GCP_PROJECT_LINK = {
   DASHBOARD: {
     NAME: 'GCP Dashboard',

@@ -143,8 +143,10 @@ Hardcoded identity and account values a fork must change, plus values that must 
 
 | Value kind | Example value found | Files/locations (count + representative paths) | Consumed by | Notes |
 | --- | --- | --- | --- | --- |
+| Account user ID | `usr-d98nviecjfls73evpnog` | 1 file: `projects/nx-workspace/libs/@vigilant-broccoli/private-infrastructure/src/lib/account.consts.ts` | code | Render account settings quick link; replace with the fork owner’s user ID. |
 | Registry credential name | `vb-render-dockerhub` | 1 file: `projects/nx-workspace/scripts/deploy-render.ts` | code | Reused or created in the selected workspace using the existing Docker Hub identity/token. |
 | Service name | `staging-llm-service` | 1 file: `projects/nx-workspace/scripts/render-services.config.ts` | code | Resolved by name and workspace; service IDs are discovered at runtime. The API key comes from Vault; optional `RENDER_OWNER_ID` selects a workspace. |
+| Workspace ID | `tea-d98nviecjfls73evpnmg` | 1 file: `projects/nx-workspace/libs/@vigilant-broccoli/private-infrastructure/src/lib/account.consts.ts` | code | Render workspace billing quick link; replace with the fork’s workspace ID. |
 
 ## Terraform Cloud
 

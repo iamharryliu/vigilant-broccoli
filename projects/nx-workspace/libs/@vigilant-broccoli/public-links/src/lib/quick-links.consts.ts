@@ -19,6 +19,7 @@ import {
   GROK_LINK,
   OPENAI_LINK,
   OPENWEATHER_LINK,
+  RENDER_LINK,
   RESEND_LINK,
   ROBOFLOW_LINK,
   STRIPE_LINK,
@@ -79,6 +80,7 @@ export const GENERIC_DEV_LINKS: QuickLink[] = [
     FLYIO_LINK.DASHBOARD,
     FLYIO_LINK.BILLING,
     FLYIO_LINK.DOCS,
+    RENDER_LINK.DASHBOARD,
     { NAME: 'AWS Free Tier', URL: 'https://aws.amazon.com/free/' },
     CLOUDFLARE_LINK.STATUS,
     {
