@@ -1,8 +1,10 @@
-# Home Calendar Tabs
+# Home Panel Tabs
 
 ## Overview
 
-- The home page’s calendar panel contains Calendar view and Event calendars tabs, alongside the existing info card and task list.
+- The home panel uses shared `TabbedView` icon-only tabs with translated accessible labels and titles: Calendar view, Event calendars, Notepad, Quick Links and Agentic. The existing Weather card and desktop task list stay alongside it, so neither is duplicated in a tab.
+- The tab row stays above the panel; content fills the remaining height and scrolls inside the panel.
+- Notepad reuses the desktop `NotepadEditorComponent` and stays mounted to preserve cursor, scroll and realtime state. Quick Links uses the shared `QuickLinksPanel` with desktop links. Agentic lists the same README-derived workflow phases as mobile, through `@vigilant-broccoli/manager`.
 - Calendar view keeps the home page’s Google Calendar agenda embed and its personal, shared, and event calendar sources.
 - Each event calendar has an eye / eye-off icon button (“Show in Calendar view”) on its Event calendars card, next to a lock / unlock icon button for public vs. private. Calendars are shown by default; hiding one removes it from the Calendar view embed (the iframe reloads, so its current navigation resets). Colors are assigned before hiding, so hiding one does not recolor the others.
 - Event calendars shows calendar management controls and external Google Calendar links, without embedded calendar previews.
@@ -12,7 +14,7 @@
 ## Navigation and State
 
 - Calendar view is the default when no tab preference exists.
-- The selected tab is saved in browser local storage using `calendar-page-tab`, preserving preferences from the former calendar page.
+- The selected tab is saved in browser local storage using `calendar-page-tab`, preserving the existing `personal` and `event-calendars` values. A valid `?tab=` takes precedence over storage; otherwise the stored preference is restored after mount and mirrored into the URL. Calendar view omits `tab`; other values are `event-calendars`, `Notepad`, `Quick Links` and `Agentic`. Unrelated query parameters and URL fragments are retained.
 - The separate Calendar sidebar and search entries are removed. Existing `/calendar` links redirect to `/`.
 - Hidden event calendar ids are saved in browser local storage under `calendar-view-hidden-event-calendars`, so the choice is per browser and new calendars appear by default.
 - The Shift+C calendar dialog remains available.

@@ -19,11 +19,22 @@
       "inputs": [
         "default",
         "^default",
-        { "externalDependencies": ["next"] },
-        { "dependentTasksOutputFiles": "**/*.d.ts", "transitive": true },
-        { "env": "NEXT_PUBLIC_SUPABASE_URL" },
-        { "env": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY" },
-        { "env": "NEXT_PUBLIC_SOCKET_SERVER_URL" }
+        {
+          "externalDependencies": ["next"]
+        },
+        {
+          "dependentTasksOutputFiles": "**/*.d.ts",
+          "transitive": true
+        },
+        {
+          "env": "NEXT_PUBLIC_SUPABASE_URL"
+        },
+        {
+          "env": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+        },
+        {
+          "env": "NEXT_PUBLIC_SOCKET_SERVER_URL"
+        }
       ],
       "outputs": [
         "{workspaceRoot}/dist/apps/ui/local-manager-next/.next/!(cache)/**/*",
@@ -46,7 +57,13 @@
         "env": {
           "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev"
         }
-      }
+      },
+      "dependsOn": [
+        {
+          "target": "generate-agentic-workflows",
+          "projects": ["@vigilant-broccoli/manager"]
+        }
+      ]
     },
     "serve:no-vault": {
       "executor": "nx:run-commands",
@@ -58,7 +75,13 @@
       "configurations": {
         "development": {},
         "production": {}
-      }
+      },
+      "dependsOn": [
+        {
+          "target": "generate-agentic-workflows",
+          "projects": ["@vigilant-broccoli/manager"]
+        }
+      ]
     },
     "test": {
       "executor": "@nx/jest:jest",
@@ -68,7 +91,13 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint"
+      "executor": "@nx/eslint:lint",
+      "dependsOn": [
+        {
+          "target": "generate-agentic-workflows",
+          "projects": ["@vigilant-broccoli/manager"]
+        }
+      ]
     },
     "e2e": {
       "executor": "nx:run-commands",

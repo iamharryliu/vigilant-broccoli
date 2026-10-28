@@ -1,7 +1,7 @@
 'use client';
 
 import { ExternalLink } from 'lucide-react';
-import { AGENTIC_PHASES } from '../constants/agentic-workflows';
+import { AGENTIC_PHASES } from '@vigilant-broccoli/manager';
 
 const LINK_ICON_SIZE = 16;
 

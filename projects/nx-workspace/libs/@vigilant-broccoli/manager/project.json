@@ -13,10 +13,34 @@
         "main": "libs/@vigilant-broccoli/manager/src/index.ts",
         "tsConfig": "libs/@vigilant-broccoli/manager/tsconfig.lib.json",
         "assets": []
-      }
+      },
+      "dependsOn": ["^build", "generate-agentic-workflows"],
+      "inputs": [
+        "default",
+        "^default",
+        {
+          "dependentTasksOutputFiles": "**/agentic-workflows.json"
+        }
+      ]
     },
     "lint": {
-      "executor": "@nx/eslint:lint"
+      "executor": "@nx/eslint:lint",
+      "dependsOn": ["generate-agentic-workflows"]
+    },
+    "generate-agentic-workflows": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/scripts/generate-agentic-workflows.ts",
+        {
+          "runtime": "node -p \"require('crypto').createHash('sha1').update(require('fs').readFileSync('../../README.md')).digest('hex')\""
+        }
+      ],
+      "outputs": ["{projectRoot}/src/lib/generated/agentic-workflows.json"],
+      "options": {
+        "cwd": "libs/@vigilant-broccoli/manager",
+        "command": "node --import tsx scripts/generate-agentic-workflows.ts"
+      }
     }
   }
 }
