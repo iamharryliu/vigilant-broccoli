@@ -67,14 +67,33 @@ write_files:
   # Tracks the image tag in docker-compose.yml so a deploy-code-server-image
   # push reaches the VM without replacing it. A pinned sha- tag pulls nothing
   # new, so pinning still holds. `up -d` recreates the container only when the
-  # pulled image differs, which ends any live tmux session in it.
+  # pulled image differs, which ends any live tmux session in it. Every new
+  # :latest leaves the previous image behind and the 50 GB boot volume cannot
+  # grow (OCI free storage is fully allocated), so a full disk fails the pull
+  # silently every 15 minutes. Images are pruned after each update and before a
+  # pull when space is short; never prune volumes, /config and caddy state live
+  # in them.
   - path: /opt/code-server/update-image.sh
     permissions: '0755'
     content: |
       #!/bin/bash
       set -e
-      docker compose -f /opt/code-server/docker-compose.yml pull code-server
-      docker compose -f /opt/code-server/docker-compose.yml up -d code-server
+      MIN_FREE_GB=8
+      COMPOSE="docker compose -f /opt/code-server/docker-compose.yml"
+
+      free_gb() { df --output=avail -B1G /var/lib/docker | tail -n1 | tr -d ' '; }
+
+      if [ "$(free_gb)" -lt "$MIN_FREE_GB" ]; then
+        docker image prune -a -f
+        if [ "$(free_gb)" -lt "$MIN_FREE_GB" ]; then
+          echo "update-image: only $(free_gb)G free on /var/lib/docker after pruning images, need $${MIN_FREE_GB}G; skipping pull" >&2
+          exit 1
+        fi
+      fi
+
+      $COMPOSE pull code-server
+      $COMPOSE up -d code-server
+      docker image prune -a -f
 
   - path: /etc/systemd/system/code-server-update.service
     content: |
