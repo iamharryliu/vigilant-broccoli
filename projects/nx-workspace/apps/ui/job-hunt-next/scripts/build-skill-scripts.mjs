@@ -20,7 +20,7 @@ const SCRIPTS = [
 ];
 const LIB_RESUME_JSON = resolve(
   APP_DIR,
-  '../../../libs/@vigilant-broccoli/resume/src/resume.json',
+  '../../../../../notes/personal/career/resume.json',
 );
 const TEMPLATE_RESUME_JSON = join(APP_DIR, 'templates/resume.json');
 

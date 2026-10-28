@@ -7,6 +7,7 @@ import type { SkillsNote } from '../../../../lib/resume-chat.skills-note';
 const SKILLS_NOTE_PATH = path.join(
   'notes',
   'personal',
+  'career',
   'personal-software-career-experience.md',
 );
 const FILE_ENCODING = 'utf-8';

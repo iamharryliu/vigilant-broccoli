@@ -27,7 +27,7 @@ const TARGETS = [
       `Proud maintainer of [vigilant-broccoli](${REPO_URL}) supporting **${applications} applications**, **${services} API services**, **${images} Docker images** and **${packages} npm packages**.`,
   },
 ];
-const RESUME_PATH = `${NX_WORKSPACE}/libs/@vigilant-broccoli/resume/src/resume.json`;
+const RESUME_PATH = 'notes/personal/career/resume.json';
 const RESUME_COUNTS =
   /(\*\*)?\d+ applications\1, (\*\*)?\d+ API services\2, (\*\*)?\d+ Docker images\3 and (\*\*)?\d+ npm packages\4/;
 const MARKER_START = '<!-- managed:repo-stats:start -->';

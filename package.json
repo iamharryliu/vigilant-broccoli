@@ -121,7 +121,7 @@
     "immich:docker:restart": "docker compose -f infrastructure/immich/docker-compose.yml restart",
     "immich:docker:reload": "docker compose -f infrastructure/immich/docker-compose.yml down && docker compose -f infrastructure/immich/docker-compose.yml up -d",
     "immich:docker:logs": "docker compose -f infrastructure/immich/docker-compose.yml logs -f",
-    "job-hunt:serve": "cd projects/nx-workspace && CAREER_EXPERIENCE_PATH=\"$PWD/../../notes/personal/personal-software-career-experience.md\" RESUME_PATH=\"$PWD/libs/@vigilant-broccoli/resume/src/resume.json\" JOB_APPLICATIONS_DIR=\"$HOME/Desktop/Job Applications\" nx run job-hunt-next:serve",
+    "job-hunt:serve": "cd projects/nx-workspace && CAREER_EXPERIENCE_PATH=\"$PWD/../../notes/personal/career/personal-software-career-experience.md\" RESUME_PATH=\"$PWD/../../notes/personal/career/resume.json\" JOB_APPLICATIONS_DIR=\"$HOME/Desktop/Job Applications\" nx run job-hunt-next:serve",
     "job-hunt:docker:up": "bash -c '. ./infrastructure/agent-sandbox/load-env-from-vault.sh && cd projects/nx-workspace && nx run job-hunt-next:docker:up:repo-files'",
     "job-hunt:docker:down": "cd projects/nx-workspace && nx run job-hunt-next:docker:down",
     "job-hunt:docker:logs": "cd projects/nx-workspace && nx run job-hunt-next:docker:logs",

@@ -127,6 +127,7 @@
 | Site reliability engineering | Tillmobil; vigilant-broccoli |
 | Spring | Capco |
 | Spring Boot | Capco |
+| SQL | ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
 | SQLite | ELVA11; Tretton37; vigilant-broccoli |
 | Storybook | Capco |
 | Supabase | vigilant-broccoli |

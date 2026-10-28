@@ -9,7 +9,7 @@ import { renderResumePdf } from '@vigilant-broccoli/resume/server';
 import { loadSkillsNote } from '../src/app/api/resume/chat/resume-chat.skills-note.server';
 import { findProtectedFieldIssues } from '../src/lib/resume-chat.protection';
 
-const RESUME_PATH = 'libs/@vigilant-broccoli/resume/src/resume.json';
+const RESUME_PATH = '../../notes/personal/career/resume.json';
 const DEFAULT_BASE_REF = 'HEAD';
 const FAILURE_EXIT_CODE = 1;
 const PREFIX = {

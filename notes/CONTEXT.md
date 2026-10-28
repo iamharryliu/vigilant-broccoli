@@ -11,7 +11,7 @@ General-reference Markdown notes linked through indexes; repository-specific gui
 
 ## Content Scope
 
-- Keep notes project-agnostic: no repo apps, paths or hostnames. Exemption: `personal/personal-software-career-experience.md` names employers, clients and projects.
+- Keep notes project-agnostic: no repo apps, paths or hostnames. Exemption: `personal/career/personal-software-career-experience.md` names employers, clients and projects.
 - Prefer existing local notes. Add external links only when requested; they may appear inline with internal index links.
 
 ## Links and Reachability

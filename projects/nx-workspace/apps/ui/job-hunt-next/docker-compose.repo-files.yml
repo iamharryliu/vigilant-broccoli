@@ -1,13 +1,14 @@
 # Layered on docker-compose.yml by `nx run job-hunt-next:docker:up:repo-files`
 # so the container edits this repo's own resume.json and career notes in place.
+# The directory is mounted, not the files: git and editors replace a file with a
+# new inode, which leaves a single-file bind mount pointing at the deleted copy.
 # Paths resolve from docker-compose.yml's directory.
 services:
   job-hunt:
     environment:
-      - CAREER_EXPERIENCE_PATH=/career-files/career-experience.md
+      - CAREER_EXPERIENCE_PATH=/career-files/personal-software-career-experience.md
       - RESUME_PATH=/career-files/resume.json
       # local-manager-next's Job Hunt page embeds the app.
       - JOB_HUNT_FRAME_ANCESTORS='self' https://manager.vigilant-broccoli.app
     volumes:
-      - ../../../../../notes/personal/personal-software-career-experience.md:/career-files/career-experience.md
-      - ../../../libs/@vigilant-broccoli/resume/src/resume.json:/career-files/resume.json
+      - ../../../../../notes/personal/career:/career-files

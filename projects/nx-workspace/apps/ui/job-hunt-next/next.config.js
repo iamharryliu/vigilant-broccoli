@@ -7,7 +7,7 @@ const { composePlugins, withNx } = require('@nx/next');
 // reads the user's resume from RESUME_PATH at runtime.
 const LIB_RESUME_JSON = join(
   __dirname,
-  '../../../libs/@vigilant-broccoli/resume/src/resume.json',
+  '../../../../../notes/personal/career/resume.json',
 );
 const TEMPLATE_RESUME_JSON = join(__dirname, 'templates/resume.json');
 // Newer than the builtin list webpack knows, so it must be marked external.
@@ -29,7 +29,7 @@ const nextConfig = {
   // resume.json into the standalone output despite the alias.
   outputFileTracingExcludes: {
     '*': [
-      '../../../libs/@vigilant-broccoli/resume/src/resume.json',
+      '../../../../../notes/personal/career/resume.json',
       '../../../../../package.json',
     ],
   },
