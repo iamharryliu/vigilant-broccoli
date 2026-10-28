@@ -1,0 +1,34 @@
+.loading {
+  position: relative;
+  isolation: isolate;
+}
+
+.loading::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border: 1px solid var(--gray-8);
+  border-radius: inherit;
+  background: var(--gray-a2);
+  box-shadow: 0 0 12px 2px var(--gray-a3);
+  pointer-events: none;
+  opacity: 0.65;
+  animation: loading-highlight 2.4s ease-in-out infinite;
+}
+
+@keyframes loading-highlight {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading::before {
+    animation: none;
+  }
+}

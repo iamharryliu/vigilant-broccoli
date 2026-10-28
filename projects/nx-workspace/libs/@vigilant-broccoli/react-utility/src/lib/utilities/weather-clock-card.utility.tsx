@@ -34,6 +34,7 @@ import { useWeatherTranslation, WeatherI18nProvider } from '../weather';
 import { WeatherBadgeList } from '../WeatherDisplay';
 import { ClockComponent } from '../clock';
 import { ForecastCarousel } from './weather-clock-card-forecast';
+import styles from './weather-clock-card.module.css';
 import {
   SUN_EVENT_LUCIDE_ICON,
   weatherLucideIcon,
@@ -237,7 +238,7 @@ const WeatherClockCardView = ({
   const isExpanded = expanded ?? internalExpanded;
   const forecast = weather?.forecast;
   const hasForecast = !!forecast?.length;
-  const isLoading = loading || (!weather && !error);
+  const isLoading = !error && (loading || !weather);
 
   const hasWeather = !!weather && !isLoading && !error;
 
@@ -400,7 +401,12 @@ const WeatherClockCardView = ({
     <div
       ref={cardRef}
       aria-busy={isLoading}
-      className={cn(CARD_CLASS, canToggle && CARD_TOGGLE_CLASS, className)}
+      className={cn(
+        CARD_CLASS,
+        isLoading && styles.loading,
+        canToggle && CARD_TOGGLE_CLASS,
+        className,
+      )}
       {...(canToggle && {
         role: 'button',
         tabIndex: 0,
