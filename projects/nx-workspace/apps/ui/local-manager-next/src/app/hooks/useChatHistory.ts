@@ -19,8 +19,7 @@ const MAX_TITLE_LENGTH = 60;
 const NEW_CHAT_TITLE = 'New chat';
 const SAVE_DEBOUNCE_MS = 400;
 
-const generateId = () =>
-  `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+const generateId = () => `${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
 
 const stripDisplayContent = (msg: Message): string =>
   (msg.displayContent || msg.content || '').trim();
