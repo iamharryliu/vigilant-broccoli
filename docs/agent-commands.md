@@ -10,6 +10,7 @@ Custom agent commands from `setup/dotfiles/agent-skills/<name>/SKILL.md`, invoke
 | `gh-create-pr` | Develop | Research a request locally, settle blocking questions, then dispatch the `manual-agentic-pr-create` workflow. |
 | `gh-create-todo` | Plan | Dispatch the `manual-agentic-pr-create-todo` workflow to open a PR adding a `TODO.md` row for the request or conversation. |
 | `gh-promote-production` | Release | Dispatch the `manual-promote-production` workflow to fast-forward `production` to the current `main` commit. |
+| `gh-update-pr` | Develop | Research a change, CI fix or conflict resolution for an existing PR locally, settle blocking questions, then dispatch the `manual-agentic-pr-update` workflow. |
 | `local-create-pr-claude` | Develop | Research a request, settle blocking questions, then start Claude in a detached tmux session on a fresh worktree to implement it and ship the PR. |
 | `local-create-pr-codex` | Develop | Research a request, settle blocking questions, then start Codex in a detached tmux session on a fresh worktree to implement it and ship the PR. |
 | `local-docker-create-pr-claude` | Develop | Research a request locally, settle blocking questions, then start a background local Docker sandbox solve with Claude. |
