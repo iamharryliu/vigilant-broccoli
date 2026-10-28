@@ -1,6 +1,6 @@
 # Local Manager Next
 
-Management dashboard with calendar, notepad, quick links and Agentic home tabs.
+Management dashboard with calendar, notepad and quick links home tabs.
 
 ## Table of Contents
 

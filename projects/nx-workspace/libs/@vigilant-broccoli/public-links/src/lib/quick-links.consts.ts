@@ -40,6 +40,7 @@ export const LINK_GROUP_SUBGROUP = {
   MESSAGING: 'Messaging',
   UI_APPS: 'UI Apps',
   AGENTIC: 'Agentic',
+  WORKFLOWS: 'Workflows',
 } as const;
 
 type LinkGroupSubgroup =
