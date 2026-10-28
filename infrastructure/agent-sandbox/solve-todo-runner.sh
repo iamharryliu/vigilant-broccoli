@@ -199,6 +199,7 @@ $(inc_plan_instructions solve)
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit, or "$FALLBACK_TRAILER" when no such trailer is specified
   - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
   - pr_summary: markdown bullet points for the PR "## Summary" section, describing only the increment you implemented
+  - pr_screenshots: array of repo-relative PNG paths captured for this increment under projects/nx-workspace/screenshots/; omit or [] when none. The runner commits these images and embeds them in the PR body
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — concrete remaining actions for the human (manual commands to run, UI/manual spot checks, watching CI to green, then one ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\` item per piece of work deliberately left out of every increment), or "- [ ] Merge once CI is green" when nothing else is left
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
   - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none. Keep these out of pr_suggestions, which is only for optional follow-up work

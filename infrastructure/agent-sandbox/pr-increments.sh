@@ -16,6 +16,8 @@
 # shellcheck source=commit-subject.sh
 . "$(dirname "${BASH_SOURCE[0]}")/commit-subject.sh"
 
+SCREENSHOTS_HELPER=${SCREENSHOTS_HELPER:-$(dirname "${BASH_SOURCE[0]}")/pr-screenshots.py}
+
 INC_MAX_LATER=4
 INC_DEFAULT_BASE=${INC_DEFAULT_BASE:-main}
 INC_CURRENT=current
@@ -224,7 +226,7 @@ Sandbox execution rules:
 - You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
 - Do not run any git or gh commands and do not edit TODO.md — branching, TODO.md cleanup, committing, pushing, and opening the PR are all handled by the calling script.
 - Implement only this increment and make it work with its declared prerequisite alone.
-- When finished, write $META_FILE containing only a JSON object with these string fields:
+- When finished, write $META_FILE containing only a JSON object with these fields (strings unless noted):
   - commit_type: one of ${COMMIT_TYPES// /, }
   - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
   - commit_message: capitalized, concise, focused on why not what, ending with a period
@@ -234,6 +236,7 @@ Sandbox execution rules:
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — remaining actions for the human for this increment, or "- [ ] Merge once CI is green" when nothing else is left
   - pr_concerns: markdown bullet points for the PR "## Concerns" section (risks, known limitations, unverified behavior, unresolved questions), or "" when there are none
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section (optional follow-up work only), or "" when there are none
+  - pr_screenshots: array of repo-relative PNG paths captured for this increment under projects/nx-workspace/screenshots/; omit or [] when none. The runner commits these images and embeds them in the PR body
   - file_changes: array of objects {"file": "<repo-relative path of each file you changed>", "summary": "<one line on what changed or was implemented>"}, shown as a table in the run summary
 EOF
 }
@@ -311,6 +314,7 @@ inc_publish() {
   [ -n "$pr_summary" ] || pr_summary=$fallback_summary
   [ -n "$pr_next_steps" ] || pr_next_steps='- [ ] Merge once CI is green'
 
+  python3 "$SCREENSHOTS_HELPER" --metadata "$META_FILE" --prepare || return 1
   bash "$PRE_COMMIT_HELPER" || return 1
   git add -A || return 1
   SKIP=$SKIP_COMMIT_HOOKS git commit -m "$subject" -m "$trailer" || return 1
@@ -318,9 +322,10 @@ inc_publish() {
 
   INC_BRANCH[$id]=$branch
   INC_TITLE[$id]=$pr_title
-  local stack="" body url
+  local stack="" body url screenshots
+  screenshots=$(python3 "$SCREENSHOTS_HELPER" --metadata "$META_FILE") || return 1
   if [ "${#INC_ORDER[@]}" -gt 1 ]; then stack=$(inc_stack_markdown "$id"); fi
-  body=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$pr_summary" PR_NEXT_STEPS="$pr_next_steps" PR_CONCERNS="$pr_concerns" PR_SUGGESTIONS="$pr_suggestions" PR_STACK="$stack" \
+  body=$(CURRENT_BODY="$PR_FOOTER" PR_SUMMARY="$pr_summary" PR_NEXT_STEPS="$pr_next_steps" PR_CONCERNS="$pr_concerns" PR_SUGGESTIONS="$pr_suggestions" PR_STACK="$stack" PR_SCREENSHOTS="$screenshots" \
     HISTORY_SOURCE="$INC_HISTORY_SOURCE" HISTORY_COMMAND="$INC_HISTORY_COMMAND" HISTORY_PROMPT="$history_prompt" \
     HISTORY_SUMMARY="$subject" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
     python3 "$MERGE_BODY_HELPER") || return 1

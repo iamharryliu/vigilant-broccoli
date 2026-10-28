@@ -9,6 +9,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 - [Running on the code-server VM](#running-on-the-code-server-vm)
 - [Running in CI](#running-in-ci)
 - [Publishing several pull requests](#publishing-several-pull-requests)
+- [PR screenshots](#pr-screenshots)
 - [Ending without changes](#ending-without-changes)
 - [Auditing the backlog](#auditing-the-backlog)
 - [Pruning dead code and stale docs](#pruning-dead-code-and-stale-docs)
@@ -157,6 +158,14 @@ has; branches are only created and pushed, never force-pushed. Squash-merge impl
 ## Metadata file
 
 Agents write a JSON metadata file (`/tmp/solve-meta.json` and the per-operation `/tmp/*-meta.json`). Raw newlines or tabs inside string values, typically in the multi-line markdown fields, make `jq` fail. Right after the agent finishes, every runner calls `normalize_meta` from `no-changes.sh`: a file `jq` already parses is untouched, otherwise it is re-parsed with Python's non-strict `json.loads` and rewritten as valid JSON in place, and a file that still does not parse is left for the runner's own error or salvage path.
+
+## PR screenshots
+
+For UI work, the agent lists the current task's captured PNG paths in the `pr_screenshots` metadata array, relative to the repository root (for example, `projects/nx-workspace/screenshots/localhost-3100-phone-light.png`). Create, update and follow-up increment runners copy only those selected files into `.github/pr-screenshots/<sha256>.png` before their normal checks and commit. Invalid paths and non-PNG files fail publishing. Identical captures reuse the same asset path.
+
+After committing, `pr-screenshots.py` verifies each asset's committed bytes and generates inline images for `merge-pr-body.py`'s `PR_SCREENSHOTS` input. Links use `../blob/<commit>/.github/pr-screenshots/<sha256>.png?raw=true`, following [GitHub's relative image syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#images). Captures remain available after VM cleanup and branch deletion, and become part of repository history. No upload service, extra credentials or Actions artifact download is needed.
+
+A new screenshot set replaces the PR's Screenshots section. Updates without captures preserve the existing section; an explicitly empty `PR_SCREENSHOTS` removes it. Local `ship-pr` uses the same helper with explicit paths, as described in the [UI task contract](../../docs/agent-support.md#task-contract).
 
 ## Ending without changes
 
