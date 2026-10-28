@@ -38,7 +38,7 @@ Open `http://localhost:4300` and fill in the resume's name, email and contact de
 
 ## Run from Source
 
-- `nx run job-hunt-next:docker:up` builds the app and skill workdir, then `docker compose up -d --build` with `docker-compose.yml`. `docker:down` and `docker:logs` wrap compose; in this repo `pnpm job-hunt:docker:up` loads `CLAUDE_CODE_OAUTH_TOKEN` from Vault first and runs the `repo-files` configuration, which layers `docker-compose.repo-files.yml` to mount the resume lib's `resume.json` and `notes/personal/personal-software-career-experience.md` read-write
+- `nx run job-hunt-next:docker:up` builds the app and skill workdir, then `docker compose up -d --build` with `docker-compose.yml`. `docker:down` and `docker:logs` wrap compose; in this repo `pnpm job-hunt:docker:up` loads `CLAUDE_CODE_OAUTH_TOKEN` from Vault first and runs the `repo-files` configuration, which layers `docker-compose.repo-files.yml` to mount `notes/personal/career/` (the owner's `resume.json` and `personal-software-career-experience.md`) read-write as one directory, because git and editors replace files with new inodes, which strands a single-file bind mount on a deleted copy until the container restarts
 - Copy `.env.example` to `.env` next to the compose file to set `JOB_APPLICATIONS_DIR` (host folder for application folders, default `~/Desktop/Job Applications`), `CAREER_DIR` (host folder holding `career-experience.md` and `resume.json`; unset, a `career` volume starts from the sample profile), `JOB_HUNT_PORT` (host port, default 4300), `JOB_HUNT_MODEL` and `JOB_HUNT_FRAME_ANCESTORS`. In this repo `docker-compose.repo-files.yml` adds `https://manager.vigilant-broccoli.app` to the frame ancestors
 - The image (`node:24-bookworm-slim`) adds Claude Code, `@playwright/test` with Chromium and its system libraries, the skill workdir and the standalone Next.js server
 - `deploy` (on every push to `main` that affects the app or its libs) and `deploy:production` push the image to Docker Hub through `deploy-container`, tagged `latest` and the commit SHA. `deploy-container` first runs `check-personal-data`, which fails if the resume lib's owner email or phone appears in the build output the image copies
@@ -67,5 +67,5 @@ The run's `--add-dir` covers the directories of both paths.
 
 ## Nuances
 
-- No personal data is baked in: the build replaces the resume lib's `resume.json` with `templates/resume.json` in both bundles and excludes it from file tracing, and the Dockerfile copies only build output and `templates/`. The user's files arrive through the mounts.
+- No personal data is baked in: the build replaces the owner's `notes/personal/career/resume.json` with `templates/resume.json` in both bundles and excludes it from file tracing, and the Dockerfile copies only build output and `templates/`. The user's files arrive through the mounts.
 - The app has no login; publish the port on `127.0.0.1` or put an authenticating proxy in front of it.
