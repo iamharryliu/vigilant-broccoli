@@ -90,6 +90,10 @@ export const VB_APP_URL = {
     NAME: 'Employee Handler Demo',
     URL: 'https://demo-employee-handler-ui.vercel.app/',
   },
+  JOB_HUNT_DEMO: {
+    NAME: 'Job Hunt Demo',
+    URL: 'https://demo-job-hunt-next.vercel.app/',
+  },
   OFFICE_PRESENCE_DEMO: {
     NAME: 'Office Presence Demo',
     URL: 'https://demo-office-presence-ui.pages.dev/',

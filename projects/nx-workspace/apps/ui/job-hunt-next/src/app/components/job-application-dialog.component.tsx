@@ -20,6 +20,7 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { extractJobPosting } from '../utils/job-posting.utils';
 import { RUNS_TAB_URL } from '../app.const';
+import { IS_DEMO } from '../constants/demo';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { useTranslation } from '../i18n';
 
@@ -104,7 +105,11 @@ export const JobApplicationDialog = ({
           className={`${INPUT_CLASS_NAME} min-h-0 flex-1 resize-none`}
         />
         <div className="flex justify-end">
-          <Button onClick={run} loading={running} disabled={!text.trim()}>
+          <Button
+            onClick={run}
+            loading={running}
+            disabled={IS_DEMO || !text.trim()}
+          >
             {t('DIALOG.RUN')}
           </Button>
         </div>

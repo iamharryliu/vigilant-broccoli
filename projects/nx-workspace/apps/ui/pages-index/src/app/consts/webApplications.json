@@ -129,6 +129,13 @@
       "readmePath": "projects/nx-workspace/apps/ui/employee-handler-ui/README.md"
     },
     {
+      "id": "job-hunt",
+      "href": "https://demo-job-hunt-next.vercel.app/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.JOB_HUNT.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.JOB_HUNT.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/job-hunt-next/README.md"
+    },
+    {
       "id": "office-presence",
       "href": "https://demo-office-presence-ui.pages.dev",
       "titleKey": "WEB_APPLICATIONS_PAGE.OFFICE_PRESENCE.TITLE",

@@ -30,7 +30,7 @@ Edit canonical sources, not adapters. Skills reference owning docs rather than c
 
 ## Agentic commands
 
-Operations use `agentic-<resource>-<verb>[-<variant>]` for the root pnpm script and skill. Claude invokes `/name`; Codex invokes `$name`. Actions adds `manual-`/`cron-` or routes related operations through a selector: `manual-agentic-pr-update` selects `change`, `fix-ci` or `resolve-conflicts`.
+Operations use `agentic-<resource>-<verb>[-<variant>]` for the root pnpm script; their skill and command use the same name with a `local-` prefix (`local-pr-create`) because they run in a local session. Skills that dispatch Actions use `gh-`. Claude invokes `/name`; Codex invokes `$name`. Actions adds `manual-`/`cron-` or routes related operations through a selector: `manual-agentic-pr-update` selects `change`, `fix-ci` or `resolve-conflicts`.
 
 Task policy belongs in the canonical `SKILL.md`. Runners load it before PR checkout (older branches may lack it) and embed it in prompts. Runners own checkout setup, credentials, merge preparation, metadata, validation and publishing; skills state preparation needed only in local sessions. Local invocation alone does not authorize publishing. Agentic workflows use the [shared run summary](./ci/workflow-conventions.md#agentic-run-summaries).
 
@@ -64,7 +64,7 @@ Checks include the task's existing validation, the cleanup checklist when requir
 
 | Operation | Difference |
 | --- | --- |
-| `agentic-pr-create` | Actions accepts free text; the `create-pr` skill dispatches the Actions run from a local session after research and blocking questions; local/sandbox positional IDs start separate runs per ID. Runnable entry points support `--agent codex`; locally it runs in the running dev sandbox with its signed-in Codex. Workstation solves also support `--agent ollama` (`--local`), with self hosted inference, retained preview checkouts by default and explicit `--publish`; see the [local adapter](../infrastructure/agent-sandbox/README.md#local-ollama-agent). `--vm` runs Claude (default) or `--agent codex` solves in the code-server container instead of Docker, without the egress firewall; see [the VM adapter](../infrastructure/agent-sandbox/README.md#running-on-the-code-server-vm). |
+| `agentic-pr-create` | Actions accepts free text; the `gh-create-pr` skill dispatches the Actions run from a local session after research and blocking questions; local/sandbox positional IDs start separate runs per ID. Runnable entry points support `--agent codex`; locally it runs in the running dev sandbox with its signed-in Codex. Workstation solves also support `--agent ollama` (`--local`), with self hosted inference, retained preview checkouts by default and explicit `--publish`; see the [local adapter](../infrastructure/agent-sandbox/README.md#local-ollama-agent). `--vm` runs Claude (default) or `--agent codex` solves in the code-server container instead of Docker, without the egress firewall; see [the VM adapter](../infrastructure/agent-sandbox/README.md#running-on-the-code-server-vm). |
 | `agentic-pr-create-audit` | Weekly/manual Actions plus Docker/Local; Claude, Opus by default. Runner caps 15 files and enforces Markdown/excluded-record scope. A clean audit opens no PR. |
 | `agentic-pr-create-comment-audit` | Weekly/manual Actions plus Docker/Local; Claude. Comment-only edits; skill targets about 20 files, runner caps 30 and protects TODO/migrations/state. A clean audit opens no PR. |
 | `agentic-pr-create-context-audit` | Weekly/manual Actions plus Docker/Local; Claude, Opus by default. Runner caps 15 files and guards context scope, skill frontmatter and adapters. A clean audit opens no PR. |
@@ -75,7 +75,7 @@ Checks include the task's existing validation, the cleanup checklist when requir
 | `agentic-pr-create-rnd` | Claude; writes proposed increments into the note rather than publishing them. |
 | `agentic-pr-create-smoke` | Actions-only dispatch check, with no separate local task. |
 | `agentic-pr-create-url-audit` | Weekly/manual Actions plus Docker/Local; Claude. Runner caps 15 files and protects TODO/migrations/state. A clean audit opens no PR. |
-| `agentic-pr-create-todo` | Manual Actions plus Docker/Local; Claude. The `create-todo` skill dispatches the Actions run from a local session, condensing the conversation into a self-contained description. Large tasks become ordered increments in a row or independent rows. |
+| `agentic-pr-create-todo` | Manual Actions plus Docker/Local; Claude. The `gh-create-todo` skill dispatches the Actions run from a local session, condensing the conversation into a self-contained description. Large tasks become ordered increments in a row or independent rows. |
 | `agentic-pr-create-todo-audit` | Weekly/manual Actions plus Docker/Local; Claude. Only TODO changes; new IDs or undeclared vanished IDs fail. |
 | `agentic-pr-update` | Actions selector `change`; Claude. `--operation` takes `change` (default), `fix-ci` or `resolve-conflicts`; `--with-ci-logs` (Actions input `with_ci_logs`). Follow-ups may split; failure recovery uses a separate draft targeting the original PR, retaining unresolved TODOs and hooks. |
 | `agentic-pr-update-fix-ci` | `agentic-pr-update --operation fix-ci` and Actions selector `fix-ci`; never splits. Runners supply failed logs; local sessions collect them. |

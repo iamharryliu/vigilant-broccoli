@@ -11,6 +11,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   (on new shell)              Start `pnpm event-calendars:sync` in the background once a day, logging to ~/.vb-manager/event-calendars-sync.log (non-login failures retry hourly)
 
 🤖 CODING AGENTS
+  codexauto [args...]         Run Codex with workspace-write sandbox and automatic approval review
   codexotp                   Open the Codex device authentication page
   codexyolo [args...]         Run Codex with approvals and sandbox disabled
 

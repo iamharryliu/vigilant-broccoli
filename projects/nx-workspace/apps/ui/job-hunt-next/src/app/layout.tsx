@@ -4,6 +4,7 @@ import { Suspense } from 'react';
 import './global.css';
 import { ThemeProvider } from '@vigilant-broccoli/react-lib';
 import { Toaster } from '@vigilant-broccoli/react-lib/toaster';
+import { DemoNotice } from './components/demo-notice.component';
 import { AppSidebar } from './components/app-sidebar.component';
 import { RunNotifications } from './components/run-notifications.component';
 import { I18nProvider } from './i18n';
@@ -29,6 +30,7 @@ export default function RootLayout({
                 <AppSidebar />
               </Suspense>
               <main className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
+                <DemoNotice />
                 {children}
               </main>
             </div>

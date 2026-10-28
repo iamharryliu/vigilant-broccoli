@@ -21,9 +21,8 @@ import {
   Location,
   Preparation,
   toDisplayTemperature,
-  WEATHER_CONDITION,
 } from '@vigilant-broccoli/common-js';
-import { cn, Skeleton, TextProps } from '@vigilant-broccoli/react-lib';
+import { cn, TextProps } from '@vigilant-broccoli/react-lib';
 import {
   LOCAL_WEATHER_STATUS,
   LocalWeatherFailure,
@@ -46,7 +45,6 @@ const TICK_MS = 60 * 1000;
 
 const TILE_ICON_SIZE = 22;
 const TILE_ICON_STROKE = 1.75;
-const TILE_COUNT = 4;
 const DEGREES_CELSIUS = '°C';
 // Viewport breakpoints ignore a narrow card on a wide screen (sandbox, sidebar
 // layouts), so the compact feels-like follows the card's own width.
@@ -81,21 +79,6 @@ const TILE_VALUE_CLASS = 'flex items-center gap-1 text-[0.85rem] font-semibold';
 const TILE_LABEL_CLASS =
   'overflow-hidden text-ellipsis whitespace-nowrap text-[0.7rem] text-[var(--gray-11)]';
 const ATTRIBUTION_CLASS = 'text-center text-[0.65rem] text-[var(--gray-11)]';
-const PLACEHOLDER_WEATHER: LocalWeather = {
-  city: null,
-  temperatureC: 0,
-  feelsLikeC: 0,
-  highC: 0,
-  lowC: 0,
-  humidityPercent: 0,
-  windSpeedKph: 0,
-  windMaxKph: 0,
-  precipitationMm: 0,
-  precipitationSumMm: 0,
-  condition: WEATHER_CONDITION.CLEAR,
-  isDay: true,
-};
-const INVISIBLE_CLASS = 'invisible';
 // Animates 0fr -> 1fr so the forecast height needs no measuring. The card's
 // gap-4 would still apply around a collapsed row, so the collapsed state pulls
 // it back with a negative margin; visibility flips after the transition ends.
@@ -103,6 +86,11 @@ const FORECAST_COLLAPSIBLE_CLASS =
   'grid transition-[grid-template-rows,opacity,margin-top,visibility] duration-300 ease-in-out motion-reduce:transition-none';
 const FORECAST_EXPANDED_CLASS = 'visible grid-rows-[1fr] opacity-100';
 const FORECAST_COLLAPSED_CLASS = 'invisible -mt-4 grid-rows-[0fr] opacity-0';
+// Badges expand only after preparation data provides recommendations.
+const BADGES_COLLAPSIBLE_CLASS =
+  'grid transition-[grid-template-rows,opacity,margin-top] duration-300 ease-in-out motion-reduce:transition-none';
+const BADGES_EXPANDED_CLASS = 'mt-2 grid-rows-[1fr] opacity-100';
+const BADGES_COLLAPSED_CLASS = 'mt-0 grid-rows-[0fr] opacity-0';
 const DETAIL_TILES_CLASS = 'flex flex-wrap justify-center gap-x-5 gap-y-3';
 
 export interface WeatherClockCardWeather extends LocalWeather {
@@ -116,7 +104,6 @@ export interface WeatherClockCardProps {
   loading?: boolean;
   error?: LocalWeatherFailure;
   onRetry?: () => void;
-  preparationLoading?: boolean;
   fetchWeather?: (location: Location) => Promise<LocalWeather | null>;
   fetchPreparation?: (weather: LocalWeather) => Promise<Preparation | null>;
   expanded?: boolean;
@@ -155,30 +142,14 @@ const StatTileView = ({ tile }: { tile: StatTile }) => (
   </div>
 );
 
-const SkeletonTileView = () => (
-  <div className={TILE_CLASS}>
-    <Skeleton className="h-6 w-6 rounded-full" />
-    <div className={cn(TILE_TEXT_CLASS, 'flex-1 gap-1')}>
-      <Skeleton className="h-3.5 w-10" />
-      <Skeleton className="h-2.5 w-14" />
-    </div>
-  </div>
-);
-
 const getBrowserTimezoneOffsetSeconds = (): number =>
   -new Date().getTimezoneOffset() * SECONDS_PER_MINUTE;
 
 interface WeatherDetailsProps {
   weather: WeatherClockCardWeather;
-  loading: boolean;
-  preparationLoading: boolean;
 }
 
-const WeatherDetails = ({
-  weather,
-  loading,
-  preparationLoading,
-}: WeatherDetailsProps) => {
+const WeatherDetails = ({ weather }: WeatherDetailsProps) => {
   const { t } = useWeatherTranslation();
   const {
     humidityPercent,
@@ -220,37 +191,24 @@ const WeatherDetails = ({
     ({ key, icon, labelKey }) => ({ key, icon, label: t(labelKey) }),
   );
 
-  // The details block stays rendered (hidden while loading) and the badge row
-  // keeps a fixed height while data is pending so the card does not jump; once
-  // loaded with no badges the row is dropped instead of leaving empty space.
-  const isBadgeRowPending = preparationLoading || loading;
-  const showBadgeRow = isBadgeRowPending || badges.length > 0;
+  const hasBadges = badges.length > 0;
   return (
-    <div className="flex flex-col items-center gap-2">
-      <div
-        className={cn(DETAIL_TILES_CLASS, loading && INVISIBLE_CLASS)}
-        aria-hidden={loading || undefined}
-      >
+    <div className="flex flex-col items-center">
+      <div className={DETAIL_TILES_CLASS}>
         {detailTiles.map(tile => (
           <StatTileView key={tile.key} tile={tile} />
         ))}
       </div>
-      {showBadgeRow && (
-        <div className="flex min-h-[1.75rem] items-center justify-center">
-          {isBadgeRowPending ? (
-            <div
-              className="flex gap-2"
-              role={loading ? undefined : 'status'}
-              aria-label={loading ? undefined : t('STATUS.LOADING_PREPARATION')}
-            >
-              <Skeleton className="h-7 w-32 rounded-full" />
-              <Skeleton className="h-7 w-24 rounded-full" />
-            </div>
-          ) : (
-            <WeatherBadgeList badges={badges} />
-          )}
+      <div
+        className={cn(
+          BADGES_COLLAPSIBLE_CLASS,
+          hasBadges ? BADGES_EXPANDED_CLASS : BADGES_COLLAPSED_CLASS,
+        )}
+      >
+        <div className="flex min-h-0 justify-center overflow-hidden">
+          {hasBadges && <WeatherBadgeList badges={badges} />}
         </div>
-      )}
+      </div>
     </div>
   );
 };
@@ -262,7 +220,6 @@ const WeatherClockCardView = ({
   loading = false,
   error,
   onRetry,
-  preparationLoading = false,
   expanded,
   defaultExpanded = false,
   onExpandedChange,
@@ -272,6 +229,7 @@ const WeatherClockCardView = ({
   const forecastId = useId();
   const cardRef = useRef<HTMLDivElement>(null);
   const [isCompact, setIsCompact] = useState(false);
+  const [showWeather, setShowWeather] = useState(false);
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
   const moonPhase = useMemo(() => getMoonPhase(new Date(nowMs)), [nowMs]);
@@ -280,6 +238,17 @@ const WeatherClockCardView = ({
   const forecast = weather?.forecast;
   const hasForecast = !!forecast?.length;
   const isLoading = loading || (!weather && !error);
+
+  const hasWeather = !!weather && !isLoading && !error;
+
+  useEffect(() => {
+    if (!hasWeather) {
+      setShowWeather(false);
+      return;
+    }
+    const frame = requestAnimationFrame(() => setShowWeather(true));
+    return () => cancelAnimationFrame(frame);
+  }, [hasWeather]);
 
   useEffect(() => {
     const card = cardRef.current;
@@ -406,17 +375,23 @@ const WeatherClockCardView = ({
     if (error) {
       return <LocalWeatherMessage failure={error} onRetry={onRetry} />;
     }
+    if (!hasWeather) return null;
     return (
       <div
-        className={TILE_GRID_CLASS}
-        role={isLoading ? 'status' : undefined}
-        aria-label={isLoading ? t('STATUS.LOADING_WEATHER') : undefined}
+        className={cn(
+          BADGES_COLLAPSIBLE_CLASS,
+          showWeather
+            ? 'grid-rows-[1fr] opacity-100'
+            : 'grid-rows-[0fr] opacity-0',
+        )}
       >
-        {isLoading
-          ? Array.from({ length: TILE_COUNT }, (_, index) => (
-              <SkeletonTileView key={index} />
-            ))
-          : tiles.map(tile => <StatTileView key={tile.key} tile={tile} />)}
+        <div className="min-h-0 overflow-hidden">
+          <div className={TILE_GRID_CLASS}>
+            {tiles.map(tile => (
+              <StatTileView key={tile.key} tile={tile} />
+            ))}
+          </div>
+        </div>
       </div>
     );
   };
@@ -424,6 +399,7 @@ const WeatherClockCardView = ({
   return (
     <div
       ref={cardRef}
+      aria-busy={isLoading}
       className={cn(CARD_CLASS, canToggle && CARD_TOGGLE_CLASS, className)}
       {...(canToggle && {
         role: 'button',
@@ -443,13 +419,17 @@ const WeatherClockCardView = ({
         {renderTiles()}
       </div>
 
-      {!error && (
-        <WeatherDetails
-          weather={isLoading || !weather ? PLACEHOLDER_WEATHER : weather}
-          loading={isLoading}
-          preparationLoading={preparationLoading}
-        />
-      )}
+      <div
+        className={cn(
+          FORECAST_COLLAPSIBLE_CLASS,
+          showWeather ? FORECAST_EXPANDED_CLASS : FORECAST_COLLAPSED_CLASS,
+        )}
+        aria-hidden={!showWeather || undefined}
+      >
+        <div className="min-h-0 overflow-hidden">
+          {hasWeather && weather && <WeatherDetails weather={weather} />}
+        </div>
+      </div>
 
       {hasForecast && forecast && (
         <div
@@ -466,11 +446,8 @@ const WeatherClockCardView = ({
         </div>
       )}
 
-      {!error && (
-        <footer
-          className={cn(ATTRIBUTION_CLASS, isLoading && INVISIBLE_CLASS)}
-          aria-hidden={isLoading || undefined}
-        >
+      {hasWeather && (
+        <footer className={ATTRIBUTION_CLASS}>
           {t('ATTRIBUTION.WEATHER')} <span aria-hidden>{SEPARATOR}</span>{' '}
           {t('ATTRIBUTION.LOCATION')}
         </footer>
@@ -503,9 +480,6 @@ const SelfLocatingWeatherClockCard = ({
       weather={ready ? { ...ready.weather, preparation } : undefined}
       error={failure}
       onRetry={retry}
-      preparationLoading={
-        !!ready && !!fetchPreparation && preparation === undefined
-      }
     />
   );
 };

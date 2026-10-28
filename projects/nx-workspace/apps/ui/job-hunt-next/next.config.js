@@ -18,15 +18,27 @@ const SERVER_ONLY_EXTERNALS = ['node:sqlite'];
  **/
 const nextConfig = {
   nx: {},
+  env: {
+    NEXT_PUBLIC_JOB_HUNT_DEMO:
+      process.env.NEXT_PUBLIC_JOB_HUNT_DEMO === 'true' ? 'true' : 'false',
+  },
   distDir: '../../../dist/apps/ui/job-hunt-next/.next',
   agentRules: false,
   output: 'standalone',
   // Tracing follows the lib's source imports and would copy the real
   // resume.json into the standalone output despite the alias.
   outputFileTracingExcludes: {
-    '*': ['../../../libs/@vigilant-broccoli/resume/src/resume.json'],
+    '*': [
+      '../../../libs/@vigilant-broccoli/resume/src/resume.json',
+      '../../../../../package.json',
+    ],
   },
   webpack: (config, { isServer }) => {
+    config.module.rules.push({
+      test: /\.md$/,
+      include: join(__dirname, 'templates/sample'),
+      type: 'asset/source',
+    });
     config.resolve.alias = {
       ...config.resolve.alias,
       [LIB_RESUME_JSON]: TEMPLATE_RESUME_JSON,
