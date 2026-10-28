@@ -1,5 +1,7 @@
 import {
   Activity,
+  Camera,
+  Images,
   Mail,
   MapPin,
   Music,
@@ -15,14 +17,36 @@ import {
 
 export type AppEntry = {
   label: string;
-  webUrl: string;
-  iosUrl?: string;
-  androidPackage?: string;
   tileColor: string;
   icon: LucideIcon;
-};
+} & (
+  | {
+      webUrl: string;
+      iosUrl?: string;
+      androidPackage?: string;
+      shortcutName?: never;
+    }
+  | {
+      shortcutName: string;
+      webUrl?: never;
+      iosUrl?: never;
+      androidPackage?: never;
+    }
+);
 
 const PERSONAL_APPS: AppEntry[] = [
+  {
+    label: 'Photos',
+    shortcutName: 'Mobile Manager Photos',
+    tileColor: 'bg-pink-600',
+    icon: Images,
+  },
+  {
+    label: 'Camera',
+    shortcutName: 'Mobile Manager Camera',
+    tileColor: 'bg-gray-700 dark:bg-gray-600',
+    icon: Camera,
+  },
   {
     label: 'Google Maps',
     webUrl: 'https://www.google.com/maps',

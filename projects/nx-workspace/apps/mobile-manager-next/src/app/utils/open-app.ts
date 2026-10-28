@@ -43,8 +43,21 @@ const buildAndroidIntent = (webUrl: string, androidPackage: string) => {
   return `intent://${host}${path}${search}#Intent;scheme=https;package=${androidPackage};S.browser_fallback_url=${encodeURIComponent(webUrl)};end`;
 };
 
-export const openApp = ({ webUrl, iosUrl, androidPackage }: AppEntry) => {
+export const openApp = ({
+  webUrl,
+  iosUrl,
+  androidPackage,
+  shortcutName,
+}: AppEntry) => {
+  if (typeof window === 'undefined') return;
   const platform = detectPlatform();
+  if (shortcutName) {
+    if (platform === PLATFORM.IOS) {
+      window.location.href = `shortcuts://run-shortcut?name=${encodeURIComponent(shortcutName)}`;
+    }
+    return;
+  }
+  if (!webUrl) return;
   if (platform === PLATFORM.IOS && iosUrl) return openIos(iosUrl, webUrl);
   if (platform === PLATFORM.ANDROID && androidPackage) {
     window.location.href = buildAndroidIntent(webUrl, androidPackage);

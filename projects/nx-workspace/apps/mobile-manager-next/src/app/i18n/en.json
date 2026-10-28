@@ -1,0 +1,8 @@
+{
+  "APPS": {
+    "SETUP": "iPhone shortcut setup",
+    "REQUIRES_SETUP": "Requires setup",
+    "SHORTCUT_HELP": "Photos and Camera require Apple Shortcuts on iPhone or iPad. In Shortcuts, create two shortcuts named exactly Mobile Manager Photos and Mobile Manager Camera. Add one Open App action to each, choosing Photos or Camera respectively. Run each in Shortcuts first, then tap its tile here and allow opening Shortcuts if asked.",
+    "LIMITATIONS": "These tiles are unavailable on Android and desktop. If a shortcut is missing or its app cannot be selected or opened, open the Apple app manually. This page cannot detect installed shortcuts or confirm launch success; there is no web fallback."
+  }
+}
