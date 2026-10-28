@@ -30,6 +30,8 @@ The `component-library` sandbox has a Utilities > Docs Explorer page that links 
 
 ## Behaviour
 
+- When a graph renderer is available, the initial desktop view (768px and wider, matching `md:`) opens the graph unless `urlSync` supplies a selected file. Mobile starts in the file browser. This default is applied after mount for SSR compatibility; resizing and subsequent renders preserve the user’s selection.
+
 - View mode (`markdown` / `checklist`) persists in `localStorage` (`docs-md:view-mode`) independent of which file is open; defaults to markdown
 - Checklist view renders the full document exactly like markdown view — only top-level lists become checkboxes; tables, prose, code, headings pass through unchanged
 - Checkbox state persists per file (`localStorage`, key `docs-checklist:<path>`), keyed by structural position (`list<N>.<itemIndex>`, nested via `.l.`) — not content, so state can go stale if list ordering changes; in aggregate mode (below) the key is a composite of every selected path joined with `|`, so the same set of files always shares one saved state
