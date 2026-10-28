@@ -14,6 +14,7 @@
 
 ## Layout
 
+- While locating or loading weather (including injected `loading` and retries), a soft blue radiant glow pulses around the outside of the card without fading the clock or changing layout. Errors and ready weather remove the highlight; the highlight continues while preparation badges (e.g. sunglasses) are still loading. Reduced-motion preferences replace the pulse with a subtle static highlight.
 - Loading shows the clock without skeleton tiles or invisible placeholder details. Actual weather tiles and details expand into view with a height/opacity transition; preparation badges arrive independently using their existing expansion transition. Reduced-motion preferences disable these transitions.
 
 - The summary is a wrapping horizontal row: the clock hero on one side and a 2-column grid of stat tiles (weather, sunrise, moon, sunset) beside it. The grid only drops under the clock when the card is too narrow for both.
