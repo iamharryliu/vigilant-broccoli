@@ -65,6 +65,7 @@
 | Dynamic | Behavior is driven by configuration and input rather than hardcoded values. |
 | Handling silent failures | Failures surface as errors, logs or alerts instead of being swallowed. |
 | Immutability | Deployed artifacts are replaced, not modified in place, so releases are reproducible and rollbacks are simple. |
+| Non-blocking/asynchronous | Slow work such as I/O or long tasks runs without holding up the caller, via async calls or queues. |
 | Performance and optimization | Meets speed and resource needs, optimizing measured bottlenecks. |
 | Stateless | Holds no state between requests, so instances are interchangeable and easy to scale. |
 
