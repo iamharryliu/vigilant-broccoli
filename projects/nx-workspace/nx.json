@@ -230,7 +230,7 @@
         "startTargetName": "start",
         "serveStaticTargetName": "serve-static"
       },
-      "include": ["apps/ui/vb-manager-next/**/*"]
+      "include": ["apps/ui/local-manager-next/**/*"]
     },
     {
       "plugin": "@nx/webpack/plugin",

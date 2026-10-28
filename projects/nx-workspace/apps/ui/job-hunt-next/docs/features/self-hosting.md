@@ -63,7 +63,7 @@ The run's `--add-dir` covers the directories of both paths.
 ## Embedding and Request Checks
 
 - `src/proxy.ts` sends `Content-Security-Policy: frame-ancestors <JOB_HUNT_FRAME_ANCESTORS>` on every page and refuses `POST`/`PUT`/`PATCH`/`DELETE` under `/api/` with 403 when `Sec-Fetch-Site` is not `same-origin` or `Origin` differs from the host (`X-Forwarded-Host` behind a proxy). The app has no login, so this is what stops another site's page from clearing a career file or starting a run; requests without either header (curl) pass
-- In this repo the container is served at `https://job-hunt.vigilant-broccoli.app` by the local k3s ingress (`infrastructure/local`), which vb-manager-next's Job Hunt page embeds. Requests from inside the iframe are same-origin to that host, so they pass
+- In this repo the container is served at `https://job-hunt.vigilant-broccoli.app` by the local k3s ingress (`infrastructure/local`), which local-manager-next's Job Hunt page embeds. Requests from inside the iframe are same-origin to that host, so they pass
 
 ## Nuances
 

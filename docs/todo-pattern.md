@@ -13,7 +13,7 @@ Source of truth for the shape of the repo root `TODO.md`. `/local-pr-create-todo
 
 - A title and one intro paragraph, then a single markdown table with the columns `ID | Type | Priority | Agent | Effort | Model | Brief | Description | Recommended Fix`. No `##` sections or Table of Contents: the dev-dashboard TODO view builds both from `Type`.
 - Rows are grouped by `Type` in the order listed under Row Rules, then ordered by priority within a Type: `P1` (highest) → `P2` → `P3`, then `NA`.
-- New `Type` values are only added when the user asks for one; add them to `TODO_TYPE_ORDER` in `projects/nx-workspace/apps/ui/vb-manager-next/src/app/constants/todo.ts` too, or the dashboard lists them after the known ones.
+- New `Type` values are only added when the user asks for one; add them to `TODO_TYPE_ORDER` in `projects/nx-workspace/apps/ui/local-manager-next/src/app/constants/todo.ts` too, or the dashboard lists them after the known ones.
 
 ## Row Rules
 

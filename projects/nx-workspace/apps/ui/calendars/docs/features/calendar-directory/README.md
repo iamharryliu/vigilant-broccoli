@@ -1,6 +1,6 @@
 # Calendar Directory
 
-The public, login-free `calendars` home page: three tabs (`CalendarTabs`, modelled on `vb-manager-next`'s `HomeCalendarTabs`) of link rows modelled on `vb-manager-next-mobile`'s Event Calendars tab. Event rows link to Google Calendar with Schedule, Week and Month view links and a copy-link control. There is no page header.
+The public, login-free `calendars` home page: three tabs (`CalendarTabs`, modelled on `local-manager-next`'s `HomeCalendarTabs`) of link rows modelled on `vb-manager-next-mobile`'s Event Calendars tab. Event rows link to Google Calendar with Schedule, Week and Month view links and a copy-link control. There is no page header.
 
 ## Table of Contents
 
