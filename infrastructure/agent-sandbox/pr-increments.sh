@@ -330,7 +330,7 @@ inc_publish() {
     HISTORY_SOURCE="$INC_HISTORY_SOURCE" HISTORY_COMMAND="$INC_HISTORY_COMMAND" HISTORY_PROMPT="$history_prompt" \
     HISTORY_SUMMARY="$subject" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
     python3 "$MERGE_BODY_HELPER") || return 1
-  url=$(gh pr create --base "$pr_base" --head "$branch" --title "$(guard_pr_title "$pr_title" "$fallback_subject")" --body "$body") || return 1
+  url=$(gh pr create --base "$pr_base" --head "$branch" --title "$pr_title" --body "$body") || return 1
   INC_URL[$id]=$url
   INC_STATE[$id]=created
   echo "$url"
@@ -389,8 +389,9 @@ To continue, run: \`pnpm agentic-pr-update <PR#> "finish the task"\`
 $PR_FOOTER
 BODY
 )
+  # The PR title is linted by commitlint, so it must be a conventional commit
+  # header ending in a full stop; the raw task text is not.
   title="chore: Save partial progress from an incomplete agent run: $(inc_one_line "$title" | cut -c1-60 | sed 's/[.[:space:]]*$//')."
-  title=$(guard_pr_title "$title" "chore: Save partial progress from an incomplete agent run.")
   if pr_url=$(gh pr create --draft --base "$pr_base" --head "$branch" --title "$title" --body "$body" 2>&1); then
     echo "Salvaged partial work: $pr_url" >&2
     echo "$pr_url"
