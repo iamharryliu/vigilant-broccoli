@@ -67,6 +67,34 @@ alias dldjmusic="$NX_DIR/scripts/shell/run-spotify-to-mp3.sh --output '$HOME/My 
 # Docker
 alias dockercleanup="$REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh"
 
+# Reclaim disk: Claude worktrees, Docker build cache/images, package-manager caches. Docker volumes are left alone.
+localcleanup() {
+    local worktrees_dir="$REPO_DIR/.claude/worktrees" worktree
+    local -a worktrees=("$worktrees_dir"/*(N/))
+
+    echo "Claude worktrees to remove (worktrees with uncommitted changes are skipped):"
+    printf '  %s\n' "${worktrees[@]}"
+    ask "Remove them, prune Docker, and clear npm/Yarn/Cypress/pip caches?" || {
+        echo "Cleanup canceled."
+        return 0
+    }
+
+    for worktree in "${worktrees[@]}"; do
+        git -C "$REPO_DIR" worktree remove "$worktree" || echo "  Skipped $worktree"
+    done
+    git -C "$REPO_DIR" worktree prune
+
+    if docker info &> /dev/null; then
+        docker builder prune -af
+        docker image prune -af
+        docker container prune -f
+    fi
+
+    npm cache clean --force
+    rm -rf ~/.npm/_npx ~/Library/Caches/{Yarn,Cypress,pip}
+    df -h /System/Volumes/Data
+}
+
 # Cheatsheet
 cheatsheet() {
     "$REPO_DIR/scripts/shell/cheatsheet-aliases.sh"
