@@ -15,7 +15,7 @@ export const ACCESS_GATED_URL = {
   MOBILE_MANAGER_NEXT: {
     NAME: 'Mobile Manager Next',
     URL: 'https://manager.harryliu.dev/login',
-    STAGING_URL: 'https://staging-vb-manager-next-mobile.vercel.app/login',
+    STAGING_URL: 'https://staging-manager.harryliu.dev/login',
   },
   WEB_TERMINAL: {
     NAME: 'Web Terminal',

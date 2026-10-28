@@ -5,14 +5,16 @@
       "href": "https://balloono.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.BALLOONO.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.BALLOONO.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/balloono/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/balloono/README.md",
+      "stagingHref": "https://staging-balloono.harryliu.dev/"
     },
     {
       "id": "context-md",
       "href": "https://context.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.CONTEXT_MD.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.CONTEXT_MD.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/context-md/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/context-md/README.md",
+      "stagingHref": "https://staging-context.harryliu.dev/"
     },
     {
       "id": "career",
@@ -33,70 +35,80 @@
       "href": "https://components.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.COMPONENT_LIBRARY.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.COMPONENT_LIBRARY.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/component-library/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/component-library/README.md",
+      "stagingHref": "https://staging-components.harryliu.dev/"
     },
     {
       "id": "docs-md",
       "href": "https://docs.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.DOCS_MD.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.DOCS_MD.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/docs-md/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/docs-md/README.md",
+      "stagingHref": "https://staging-docs.harryliu.dev/"
     },
     {
       "id": "find-me",
       "href": "https://findme.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.FIND_ME.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.FIND_ME.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/findme/README.md"
+      "readmePath": "projects/nx-workspace/apps/findme/README.md",
+      "stagingHref": "https://staging-findme.harryliu.dev/"
     },
     {
       "id": "hearth",
       "href": "https://hearth.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.HEARTH.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.HEARTH.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/hearth/README.md"
+      "readmePath": "projects/nx-workspace/apps/hearth/README.md",
+      "stagingHref": "https://staging-hearth.harryliu.dev/"
     },
     {
       "id": "harry-liu",
       "href": "https://harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.HARRY_LIU.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.HARRY_LIU.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/personal-website-react/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/personal-website-react/README.md",
+      "stagingHref": "https://staging.harryliu.dev/"
     },
     {
       "id": "calendars",
       "href": "https://calendar.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.CALENDARS.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.CALENDARS.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/calendars/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/calendars/README.md",
+      "stagingHref": "https://staging-calendar.harryliu.dev/"
     },
     {
       "id": "utilities",
       "href": "https://utilities.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.UTILITIES.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.UTILITIES.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/utilities-ui/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/utilities-ui/README.md",
+      "stagingHref": "https://staging-utilities.harryliu.dev/"
     },
     {
       "id": "waiting-games",
       "href": "https://waiting.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.WAITING_GAMES.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.WAITING_GAMES.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/waiting-games/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/waiting-games/README.md",
+      "stagingHref": "https://staging-waiting.harryliu.dev/"
     },
     {
       "id": "weather",
       "href": "https://weather.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.WEATHER.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.WEATHER.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/weather-next/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/weather-next/README.md",
+      "stagingHref": "https://staging-weather.harryliu.dev/"
     },
     {
       "id": "whiteboard",
       "href": "https://whiteboard.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.WHITEBOARD.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.WHITEBOARD.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/whiteboard/README.md"
+      "readmePath": "projects/nx-workspace/apps/whiteboard/README.md",
+      "stagingHref": "https://staging-whiteboard.harryliu.dev/"
     },
     {
       "id": "web-terminal",
@@ -110,14 +122,16 @@
       "href": "https://bookmarks.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.BOOKMARKS.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.BOOKMARKS.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/bookmarks-react/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/bookmarks-react/README.md",
+      "stagingHref": "https://staging-bookmarks.harryliu.dev/"
     },
     {
       "id": "pomodoro",
       "href": "https://pomodoro.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.POMODORO.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.POMODORO.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/pomodoro-react/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/pomodoro-react/README.md",
+      "stagingHref": "https://staging-pomodoro.harryliu.dev/"
     }
   ],
   "demos": [

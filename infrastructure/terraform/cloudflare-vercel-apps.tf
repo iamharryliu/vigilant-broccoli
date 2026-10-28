@@ -1,7 +1,7 @@
 # weather, balloono, manager and hearth subdomains of harryliu.dev — Vercel
 # apps (projects and deploys owned by the nx deploy targets). Terraform owns
-# only the DNS; the domain must also be added to each production Vercel
-# project. DNS-only so Vercel can issue and renew its own certificate.
+# only the DNS; post-apply attaches domains to existing production and staging
+# Vercel projects. DNS-only so Vercel can issue and renew its own certificate.
 
 locals {
   vercel_app_subdomains = {
@@ -29,4 +29,24 @@ resource "cloudflare_dns_record" "vercel_app" {
 # deploy-vercel.ts creates it on first deploy).
 output "vercel_app_subdomains" {
   value = local.vercel_app_subdomains
+}
+
+locals {
+  staging_vercel_app_subdomains = {
+    for project, domain in local.vercel_app_subdomains : project => "staging-${domain}"
+  }
+}
+
+resource "cloudflare_dns_record" "staging_vercel_app" {
+  for_each = local.staging_vercel_app_subdomains
+  zone_id  = var.cloudflare_zone_id
+  name     = each.value
+  content  = "cname.vercel-dns.com"
+  type     = "CNAME"
+  ttl      = 1
+  proxied  = false
+}
+
+output "staging_vercel_app_subdomains" {
+  value = local.staging_vercel_app_subdomains
 }
