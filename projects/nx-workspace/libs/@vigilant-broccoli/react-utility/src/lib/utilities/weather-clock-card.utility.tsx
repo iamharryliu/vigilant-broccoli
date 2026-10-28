@@ -103,6 +103,7 @@ export interface WeatherClockCardProps {
   timezoneOffsetSeconds?: number;
   weather?: WeatherClockCardWeather;
   loading?: boolean;
+  preparationLoading?: boolean;
   error?: LocalWeatherFailure;
   onRetry?: () => void;
   fetchWeather?: (location: Location) => Promise<LocalWeather | null>;
@@ -219,6 +220,7 @@ const WeatherClockCardView = ({
   timezoneOffsetSeconds,
   weather,
   loading = false,
+  preparationLoading = false,
   error,
   onRetry,
   expanded,
@@ -403,7 +405,7 @@ const WeatherClockCardView = ({
       aria-busy={isLoading}
       className={cn(
         CARD_CLASS,
-        isLoading && styles.loading,
+        (isLoading || (hasWeather && preparationLoading)) && styles.loading,
         canToggle && CARD_TOGGLE_CLASS,
         className,
       )}
@@ -484,6 +486,9 @@ const SelfLocatingWeatherClockCard = ({
       {...viewProps}
       location={ready?.location ?? location}
       weather={ready ? { ...ready.weather, preparation } : undefined}
+      preparationLoading={
+        !!ready && !!fetchPreparation && preparation === undefined
+      }
       error={failure}
       onRetry={retry}
     />

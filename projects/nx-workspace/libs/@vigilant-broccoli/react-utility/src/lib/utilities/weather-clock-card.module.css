@@ -1,34 +1,33 @@
-.loading {
-  position: relative;
-  isolation: isolate;
+/*
+ * ThemeScope defines only --blue-9, so the glow tints are derived from it.
+ * The doubled selector outranks the card's Tailwind `shadow-lg` regardless of
+ * CSS order.
+ */
+.loading.loading {
+  --glow: var(--blue-9, #3b82f6);
+  border-color: color-mix(in srgb, var(--glow) 35%, transparent);
+  animation: loading-glow 3s ease-in-out infinite;
 }
 
-.loading::before {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  z-index: -1;
-  border: 1px solid var(--gray-8);
-  border-radius: inherit;
-  background: var(--gray-a2);
-  box-shadow: 0 0 12px 2px var(--gray-a3);
-  pointer-events: none;
-  opacity: 0.65;
-  animation: loading-highlight 2.4s ease-in-out infinite;
-}
-
-@keyframes loading-highlight {
+@keyframes loading-glow {
   0%,
   100% {
-    opacity: 0.4;
+    box-shadow:
+      0 0 24px 0 color-mix(in srgb, var(--glow) 12%, transparent),
+      0 0 64px 8px color-mix(in srgb, var(--glow) 6%, transparent);
   }
   50% {
-    opacity: 1;
+    box-shadow:
+      0 0 40px 4px color-mix(in srgb, var(--glow) 28%, transparent),
+      0 0 96px 20px color-mix(in srgb, var(--glow) 16%, transparent);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .loading::before {
+  .loading.loading {
     animation: none;
+    box-shadow:
+      0 0 40px 4px color-mix(in srgb, var(--glow) 22%, transparent),
+      0 0 96px 20px color-mix(in srgb, var(--glow) 12%, transparent);
   }
 }
