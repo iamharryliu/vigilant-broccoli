@@ -44,6 +44,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   pushfile <file> <msg>       Find, add, commit and push a single file
   pushreadme / pushignore     Push README.md / .gitignore with a standard message
   pushtodo / pushcron         Push TODO.md / crontab with a standard message
+  gitcleanup                  Sync main, then droplocalbranches and prune worktrees (confirms)
   droplocalbranches           Delete every local branch except main (+ worktrees)
   dropremotebranches          Delete every remote branch except origin/main (confirms)
   gtagls / rmgtag <tag>       List / delete tags

@@ -92,6 +92,27 @@ droplocalbranches() {
   done <<< "$branches_to_delete"
 }
 
+# Local cleanup after merges: sync main, then drop every other branch and its worktree.
+gitcleanup() {
+  git fetch --prune origin || return 1
+  git switch main || {
+    echo "Could not switch to main; commit or move your changes first."
+    return 1
+  }
+  git pull --ff-only origin main || return 1
+
+  echo "Branches and worktrees to remove:"
+  git worktree list
+  git branch --format='%(refname:short)' | grep -vE "^main$"
+  ask "Remove every local branch except main and all their worktrees?" || {
+    echo "Cleanup canceled."
+    return 0
+  }
+
+  droplocalbranches
+  git worktree prune
+}
+
 dropremotebranches() {
   local branches_to_delete
   branches_to_delete=$(git branch -r | grep -v "origin/main" | sed "s/origin\///")
