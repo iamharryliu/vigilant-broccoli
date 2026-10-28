@@ -22,15 +22,7 @@ export type AppEntry = {
   icon: LucideIcon;
 };
 
-const PERSONAL_APPS: AppEntry[] = [
-  {
-    label: 'Google Maps',
-    webUrl: 'https://www.google.com/maps',
-    iosUrl: 'comgooglemaps://',
-    androidPackage: 'com.google.android.apps.maps',
-    tileColor: 'bg-blue-600',
-    icon: MapPin,
-  },
+const LEISURE_APPS: AppEntry[] = [
   {
     label: 'Spotify',
     webUrl: 'https://open.spotify.com',
@@ -47,6 +39,15 @@ const PERSONAL_APPS: AppEntry[] = [
     tileColor: 'bg-red-600',
     icon: Play,
   },
+];
+
+const UTILITY_APPS: AppEntry[] = [
+  {
+    label: 'Docs',
+    webUrl: 'https://docs.harryliu.dev',
+    tileColor: 'bg-blue-600',
+    icon: FileText,
+  },
   {
     label: 'Gmail',
     webUrl: 'https://mail.google.com',
@@ -54,6 +55,14 @@ const PERSONAL_APPS: AppEntry[] = [
     androidPackage: 'com.google.android.gm',
     tileColor: 'bg-rose-500',
     icon: Mail,
+  },
+  {
+    label: 'Google Maps',
+    webUrl: 'https://www.google.com/maps',
+    iosUrl: 'comgooglemaps://',
+    androidPackage: 'com.google.android.apps.maps',
+    tileColor: 'bg-blue-600',
+    icon: MapPin,
   },
   {
     label: 'Proton Mail',
@@ -67,6 +76,18 @@ const PERSONAL_APPS: AppEntry[] = [
 
 const DEVELOPMENT_APPS: AppEntry[] = [
   {
+    label: 'Actions',
+    webUrl: 'https://github.com/iamharryliu/vigilant-broccoli/actions',
+    tileColor: 'bg-sky-600',
+    icon: Workflow,
+  },
+  {
+    label: 'Deployments',
+    webUrl: 'https://deployments.harryliu.dev',
+    tileColor: 'bg-amber-600',
+    icon: Rocket,
+  },
+  {
     label: 'GitHub',
     webUrl: 'https://github.com',
     iosUrl: 'github://',
@@ -75,22 +96,16 @@ const DEVELOPMENT_APPS: AppEntry[] = [
     icon: GitBranch,
   },
   {
+    label: 'Projects',
+    webUrl: 'https://projects.harryliu.dev',
+    tileColor: 'bg-emerald-600',
+    icon: FolderGit2,
+  },
+  {
     label: 'Pulls',
     webUrl: 'https://github.com/iamharryliu/vigilant-broccoli/pulls',
     tileColor: 'bg-indigo-600',
     icon: GitPullRequest,
-  },
-  {
-    label: 'Actions',
-    webUrl: 'https://github.com/iamharryliu/vigilant-broccoli/actions',
-    tileColor: 'bg-sky-600',
-    icon: Workflow,
-  },
-  {
-    label: 'Docs',
-    webUrl: 'https://docs.harryliu.dev',
-    tileColor: 'bg-blue-600',
-    icon: FileText,
   },
   {
     label: 'Status',
@@ -98,26 +113,15 @@ const DEVELOPMENT_APPS: AppEntry[] = [
     tileColor: 'bg-teal-600',
     icon: Activity,
   },
-  {
-    label: 'Projects',
-    webUrl: 'https://projects.harryliu.dev',
-    tileColor: 'bg-emerald-600',
-    icon: FolderGit2,
-  },
-  {
-    label: 'Deployments',
-    webUrl: 'https://deployments.harryliu.dev',
-    tileColor: 'bg-amber-600',
-    icon: Rocket,
-  },
 ];
 
 export type AppSection = {
-  title?: string;
+  titleKey: 'APPS.LEISURE' | 'APPS.UTILITY' | 'APPS.DEVELOPMENT';
   apps: AppEntry[];
 };
 
 export const APP_SECTIONS: AppSection[] = [
-  { apps: PERSONAL_APPS },
-  { title: 'Development', apps: DEVELOPMENT_APPS },
+  { titleKey: 'APPS.LEISURE', apps: LEISURE_APPS },
+  { titleKey: 'APPS.UTILITY', apps: UTILITY_APPS },
+  { titleKey: 'APPS.DEVELOPMENT', apps: DEVELOPMENT_APPS },
 ];
