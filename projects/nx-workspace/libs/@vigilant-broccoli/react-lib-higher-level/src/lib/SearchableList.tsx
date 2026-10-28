@@ -133,31 +133,31 @@ const SearchableListRow = ({
   onActivate: () => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => void;
 }) => (
-  <div
-    tabIndex={0}
-    {...{ [QUICK_LINK_ITEM_ATTR]: 'true' }}
-    onKeyDown={onKeyDown}
-    className="flex items-center gap-2 rounded-md border border-border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring dark:border-border"
-  >
-    <div className="min-w-0 flex-1">
-      <Text as="div" size="2" weight="medium">
+  <li className="flex min-h-11 items-center bg-card text-card-foreground [&_button]:min-h-11 [&_button]:shrink-0 [&_button]:focus-visible:outline-none [&_button]:focus-visible:ring-2 [&_button]:focus-visible:ring-inset [&_button]:focus-visible:ring-ring [&_button]:active:bg-muted">
+    <button
+      type="button"
+      {...{ [QUICK_LINK_ITEM_ATTR]: 'true' }}
+      onClick={onActivate}
+      onKeyDown={onKeyDown}
+      className="flex min-w-0 flex-1 flex-col justify-center px-3 py-1.5 text-left transition-colors hover:bg-accent active:bg-muted"
+    >
+      <span className="w-full truncate text-sm font-medium" title={entry.label}>
         {entry.label}
-      </Text>
-      <Text
-        as="div"
-        size="1"
-        color="gray"
-        className="truncate font-mono"
+      </span>
+      <span
+        className="w-full truncate font-mono text-xs text-muted-foreground"
         title={entry.value}
       >
         {entry.value}
-      </Text>
+      </span>
+    </button>
+    <div className="flex shrink-0 items-center pr-1 [&_button]:min-w-11">
+      {(entry.onOpen || isUrl(entry.value)) && (
+        <IconButton variant="ghost" icon="external-link" onClick={onActivate} />
+      )}
+      <CopyButton text={entry.value} />
     </div>
-    {(entry.onOpen || isUrl(entry.value)) && (
-      <IconButton variant="ghost" icon="external-link" onClick={onActivate} />
-    )}
-    <CopyButton text={entry.value} />
-  </div>
+  </li>
 );
 
 export const SearchableList = ({
@@ -251,17 +251,10 @@ export const SearchableList = ({
     moveFocus(e);
   };
 
-  const handleRowKeyDown =
-    (entry: SearchableListItem) => (e: React.KeyboardEvent<HTMLElement>) => {
-      // Ignore keys bubbling from the row's inner copy/open buttons.
-      if (e.target !== e.currentTarget) return;
-      if (e.key === ENTER_KEY) {
-        e.preventDefault();
-        activate(entry);
-        return;
-      }
-      moveFocus(e);
-    };
+  const handleRowKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.target !== e.currentTarget) return;
+    moveFocus(e);
+  };
 
   const toButtonConfig = (entry: SearchableListItem): ButtonConfig => ({
     label: entry.label,
@@ -279,23 +272,36 @@ export const SearchableList = ({
 
   const renderGroup = (group: (typeof searched)[number], index: number) => {
     const items = group.scored.map(({ entry }) => entry);
+    const isRows = view === SEARCHABLE_LIST_VIEW.ROWS;
     return (
-      <div key={`${group.name}-${index}`} className="flex flex-col gap-2">
-        {group.name && (
-          <Text size="3" weight="medium">
-            {group.name}
-          </Text>
-        )}
-        {view === SEARCHABLE_LIST_VIEW.ROWS
-          ? items.map((entry, entryIndex) => (
+      <div
+        key={`${group.name}-${index}`}
+        className={`flex flex-col ${isRows ? 'gap-1' : 'gap-2'}`}
+      >
+        {group.name &&
+          (isRows ? (
+            <h2 className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {group.name}
+            </h2>
+          ) : (
+            <Text size="3" weight="medium">
+              {group.name}
+            </Text>
+          ))}
+        {isRows ? (
+          <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
+            {items.map((entry, entryIndex) => (
               <SearchableListRow
                 key={`${entry.label}-${entryIndex}`}
                 entry={entry}
                 onActivate={() => activate(entry)}
-                onKeyDown={handleRowKeyDown(entry)}
+                onKeyDown={handleRowKeyDown}
               />
-            ))
-          : renderButtons(items)}
+            ))}
+          </ul>
+        ) : (
+          renderButtons(items)
+        )}
       </div>
     );
   };
@@ -344,7 +350,10 @@ export const SearchableList = ({
         </Text>
       ) : (
         <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
-          <div ref={contentRef} className="flex flex-col gap-4 py-3">
+          <div
+            ref={contentRef}
+            className={`flex flex-col py-3 ${view === SEARCHABLE_LIST_VIEW.ROWS ? 'gap-3' : 'gap-4'}`}
+          >
             {view === SEARCHABLE_LIST_VIEW.LIST
               ? renderButtons(entries)
               : searched.map(renderGroup)}
