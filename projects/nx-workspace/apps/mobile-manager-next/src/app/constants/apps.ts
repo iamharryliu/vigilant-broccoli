@@ -121,7 +121,7 @@ export type AppSection = {
 };
 
 export const APP_SECTIONS: AppSection[] = [
-  { titleKey: 'APPS.LEISURE', apps: LEISURE_APPS },
   { titleKey: 'APPS.UTILITY', apps: UTILITY_APPS },
   { titleKey: 'APPS.DEVELOPMENT', apps: DEVELOPMENT_APPS },
+  { titleKey: 'APPS.LEISURE', apps: LEISURE_APPS },
 ];
