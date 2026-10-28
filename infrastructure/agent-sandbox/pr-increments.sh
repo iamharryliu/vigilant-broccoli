@@ -20,7 +20,6 @@ INC_MAX_LATER=4
 INC_DEFAULT_BASE=${INC_DEFAULT_BASE:-main}
 INC_CURRENT=current
 INC_PLAN_FILE=${INC_PLAN_FILE:-/tmp/increment-plan.json}
-INC_COMMIT_TYPES='feat fix ci chore docs refactor enhancement security infrastructure'
 
 declare -A INC_BRANCH=() INC_URL=() INC_TITLE=() INC_DEP=() INC_TASK=() INC_STATE=() INC_REASON=()
 INC_ORDER=()
@@ -226,7 +225,7 @@ Sandbox execution rules:
 - Do not run any git or gh commands and do not edit TODO.md — branching, TODO.md cleanup, committing, pushing, and opening the PR are all handled by the calling script.
 - Implement only this increment and make it work with its declared prerequisite alone.
 - When finished, write $META_FILE containing only a JSON object with these string fields:
-  - commit_type: one of ${INC_COMMIT_TYPES// /, }
+  - commit_type: one of ${COMMIT_TYPES// /, }
   - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
   - commit_message: capitalized, concise, focused on why not what, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit, or "$FALLBACK_TRAILER" when no such trailer is specified
@@ -304,13 +303,8 @@ inc_publish() {
   pr_concerns=$(jq -r '.pr_concerns // empty' "$META_FILE" 2>/dev/null || true)
   pr_suggestions=$(jq -r '.pr_suggestions // empty' "$META_FILE" 2>/dev/null || true)
 
-  case " $INC_COMMIT_TYPES " in *" $commit_type "*) ;; *) commit_type="" ;; esac
-  if [ -n "$commit_type" ] && [ -n "$commit_message" ]; then
-    commit_message=$(normalize_commit_message "$commit_message")
-    if [ -n "$commit_scope" ]; then subject="${commit_type}(${commit_scope}): ${commit_message}"; else subject="${commit_type}: ${commit_message}"; fi
-  else
-    subject=$fallback_subject
-  fi
+  subject=$(commit_header "$commit_type" "$commit_scope" "$commit_message")
+  [ -n "$subject" ] || subject=$fallback_subject
   echo "$trailer" | grep -Eqi '^co-authored-by: .+ <.+>$' || trailer=$FALLBACK_TRAILER
   pr_title=$(normalize_pr_title "$pr_title")
   [ -n "$pr_title" ] || pr_title=$subject
@@ -391,7 +385,7 @@ BODY
 )
   # The PR title is linted by commitlint, so it must be a conventional commit
   # header ending in a full stop; the raw task text is not.
-  title="chore: Save partial progress from an incomplete agent run: $(inc_one_line "$title" | cut -c1-60 | sed 's/[.[:space:]]*$//')."
+  title=$(normalize_pr_title "chore: Save partial progress from an incomplete agent run: $(inc_one_line "$title" | cut -c1-60)")
   if pr_url=$(gh pr create --draft --base "$pr_base" --head "$branch" --title "$title" --body "$body" 2>&1); then
     echo "Salvaged partial work: $pr_url" >&2
     echo "$pr_url"
