@@ -1,6 +1,7 @@
 import {
   Activity,
   Mail,
+  Music,
   FileText,
   FolderGit2,
   GitPullRequest,
@@ -21,6 +22,14 @@ export type AppEntry = {
 };
 
 const PERSONAL_APPS: AppEntry[] = [
+  {
+    label: 'Spotify',
+    webUrl: 'https://open.spotify.com',
+    iosUrl: 'spotify:',
+    androidPackage: 'com.spotify.music',
+    tileColor: 'bg-green-600',
+    icon: Music,
+  },
   {
     label: 'YouTube',
     webUrl: 'https://www.youtube.com',
