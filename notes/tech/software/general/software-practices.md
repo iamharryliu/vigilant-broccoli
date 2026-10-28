@@ -8,28 +8,26 @@
 - [Project Management](#project-management)
 - [Good Design](#good-design)
 - [Architecture](#architecture)
-- [Greenfield](#greenfield)
 - [Application Building](#application-building)
+  - [Greenfield](#greenfield)
 - [Implementation](#implementation)
+- [Performance Optimization](#performance-optimization)
 - [Database](#database)
 - [Version Control](#version-control)
 - [Code Maintenance](#code-maintenance)
+  - [Weekly](#weekly)
   - [Testing](#testing)
 - [Security](#security)
-- [Error Handling](#error-handling)
-  - [Triage](#triage)
 - [Documentation](#documentation)
 - [Developer Experience](#developer-experience)
 - [Reliability](#reliability)
-- [Concerns](#concerns)
-- [VM Management](#vm-management)
+  - [Error Handling](#error-handling)
 - [Infrastructure Management](#infrastructure-management)
+  - [VM Management](#vm-management)
   - [Monitoring](#monitoring)
 - [Delivery](#delivery)
   - [Handover](#handover)
   - [Library/OSS Support](#libraryoss-support)
-- [Software Maintenance](#software-maintenance)
-  - [Weekly](#weekly)
 
 ## Resources
 
@@ -91,7 +89,12 @@
   - Immediately writing documentation after implementing new code.
   - Using a **single source of truth** rather than multiple places that may need to be updated if any code changes such as a singular README.md.
 
-## Greenfield
+## Application Building
+
+- **POC**
+  - Interfaces > utils > tests > implementation > scaling
+
+### Greenfield
 
 - New products
   - R&D Phase
@@ -110,18 +113,27 @@
   - Final Product
     - Documentation to reproduce
 
-## Application Building
-
-- **POC**
-  - Interfaces > utils > tests > implementation > scaling
-
 ## Implementation
 
-| Consideration | Description |
+| Consideration | Description | Caveat |
+| --- | --- | --- |
+| Scaling | Handles growth in users, data and traffic without redesign. | Large automations are susceptible to injection. As interfaces grow there are more attack surfaces. |
+| Security | Protects data and access through authentication, encryption and least privilege. | Can add friction to development. |
+| Weighing alternative solutions | Compares options on trade-offs before committing to one. |  |
+
+## Performance Optimization
+
+| Type | Description |
 | --- | --- |
-| Scaling | Handles growth in users, data and traffic without redesign. |
-| Security | Protects data and access through authentication, encryption and least privilege. |
-| Weighing alternative solutions | Compares options on trade-offs before committing to one. |
+| Algorithmic | Uses better algorithms and data structures to reduce time or space complexity. |
+| Asset | Shrinks and defers images, fonts, CSS and JavaScript through compression, minification, lazy loading and code splitting. |
+| Caching | Stores computed or fetched results closer to the consumer, such as in memory, a CDN or the browser, to avoid repeated work. |
+| Concurrency | Runs independent work in parallel through threads, workers or async I/O. |
+| Database | Speeds up queries with indexes, query tuning, denormalization, connection pooling and avoiding N+1 queries. |
+| Hardware/Infrastructure | Right-sizes compute, memory and storage, and scales horizontally or vertically. |
+| Memory | Reduces allocations, leaks and garbage collection pressure through pooling and streaming. |
+| Network | Cuts latency and payload through compression, HTTP/2, keep-alive connections, batching and CDNs. |
+| Rendering | Avoids unnecessary UI re-renders and layout work through memoization, virtualization and debouncing. |
 
 ## Database
 
@@ -136,6 +148,12 @@
 ## Code Maintenance
 
 - Type Annotation
+- Test breakglass
+- Secret rotations
+
+### Weekly
+
+- Review and update dependencies for local code and repositories.
 
 ### Testing
 
@@ -153,10 +171,6 @@
 - Secret manager
 - Permission levels
 - Data encryption
-
-## Error Handling
-
-### Triage
 
 ## Documentation
 
@@ -179,24 +193,67 @@
 - Reliability is the system working correctly and staying available when users need it.
 - Availability
 
-## Concerns
+### Error Handling
 
-| Concern | Caveat |
-| --- | --- |
-| Scaling | Large automations are susceptible to injection. As interfaces grow there are more attack surfaces. |
-| Security | Can add friction to development. |
-
-## VM Management
-
-- Bootstrapping
-- Application Access
-  - SSH/proxy access
-  - CI access
-  - Developer access
+#### Triage
 
 ## Infrastructure Management
 
 - Start/stop resources
+
+### VM Management
+
+#### VM Setup
+
+- Bootstrapping
+
+#### VM Access
+
+- SSH/proxy access
+- CI access
+- Developer access
+
+#### VM Maintenance
+
+##### VM Cleanup
+
+| Type | Command | Notes |
+| --- | --- | --- |
+| Cache | `npm cache clean --force` | Often 1-5GB. |
+| Docker | `docker system prune -f`, `docker image prune -a -f` | The first removes stopped containers and dangling images; the second removes all unused images and frees more. |
+| Logs | `sudo journalctl --vacuum-time=7d` | Keeps the last 7 days of systemd journal. |
+| Packages | `sudo apt clean` | Removes downloaded package files, about 100-200MB. |
+
+**Use Caution**
+
+| Target | Risk | Notes |
+| --- | --- | --- |
+| `.nvm` | High | Node runtime lives here; removal breaks node. |
+| log files | Low-Medium | Truncate, don't delete: `> /var/log/somefile.log`. |
+| `node_modules` | Medium | Only remove if you can reinstall; don't touch production app dirs. |
+| snap revisions | Medium | `snap list --all`, then `snap remove --revision` old ones. |
+
+**Avoid on Live VMs**
+
+- Modifying running app directories.
+- Removing swap (`/swapfile`).
+- Clearing `/tmp` without checking for active sockets and locks.
+
+##### VM Checkup
+
+| Check | Command |
+| --- | --- |
+| Disk usage | `df -h` |
+| Disk usage by top-level directory | `du -sh /* 2>/dev/null \| sort -rh` |
+| Disk usage by user home | `du -sh /home/*/ \| sort -rh` |
+| Docker containers | `docker ps -a` |
+| Docker disk usage | `docker system df` |
+| Failed services | `systemctl --failed` |
+| Journal size | `journalctl --disk-usage` |
+| Listening ports | `ss -tlnp` |
+| Load and uptime | `uptime` |
+| Memory | `free -h` |
+| Swap | `swapon --show` |
 
 ### Monitoring
 
@@ -215,14 +272,3 @@
 - Secret rotation.
 
 ### Library/OSS Support
-
-## Software Maintenance
-
-- Test breakglass
-- Secret rotations
-- Security tests
-- Integration tests
-
-### Weekly
-
-- Review and update dependencies for local code and repositories.
