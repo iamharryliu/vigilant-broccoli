@@ -52,6 +52,7 @@ Management dashboard with calendar, notepad and quick links home tabs.
   - Open-Meteo
   - OpenAI API
   - OpenWeatherMap
+  - Render API
   - Spotify Web API
   - Stripe
   - Supabase

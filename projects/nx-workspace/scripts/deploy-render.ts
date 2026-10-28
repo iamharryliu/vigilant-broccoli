@@ -1,8 +1,3 @@
-// Render counterpart of deploy-flyio-secrets.ts and `flyctl deploy --image`.
-// Usage:
-//   npx tsx scripts/deploy-render.ts secrets <project> [environment] [--dry-run]
-//   npx tsx scripts/deploy-render.ts deploy <project> [environment] [--dry-run]
-// RENDER_API_KEY comes from the environment, else Vault kv/data/secrets.
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import {
@@ -11,8 +6,8 @@ import {
   CONTENT_TYPE_HEADER,
   HTTP_METHOD,
   JSON_CONTENT_TYPE,
-} from '../libs/@vigilant-broccoli/common-js/src/lib/http/http.consts';
-import { getEnvironmentVariable } from '../libs/@vigilant-broccoli/common-node/src/lib/utils';
+} from '@vigilant-broccoli/common-js';
+import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { renderServices, STAGING } from './render-services.config';
 import { secretsMapping } from './secrets-mapping.config';
 import { createVaultClient, VAULT_SECRET_PATH } from './vault-client';
@@ -22,7 +17,11 @@ const DOCKER_HUB_NAMESPACE = 'iamharryliu';
 const DRY_RUN_FLAG = '--dry-run';
 const SECRETS_COMMAND = 'secrets';
 const DEPLOY_COMMAND = 'deploy';
-const PLACEHOLDER_SERVICE_ID = /REPLACE/;
+const REGISTRY_CREDENTIAL_NAME = 'vb-render-dockerhub';
+const DOCKER_REGISTRY = 'DOCKER';
+const WEB_SERVICE = 'web_service';
+const IMAGE_RUNTIME = 'image';
+const PAGE_SIZE = 100;
 
 const LIVE_STATUS = 'live';
 const FAILED_STATUSES = [
@@ -37,6 +36,25 @@ const POLL_TIMEOUT_MS = 15 * 60 * 1000;
 
 interface VaultSecrets {
   [key: string]: string;
+}
+
+interface RenderService {
+  id: string;
+  name: string;
+  ownerId: string;
+  type: string;
+}
+
+interface RegistryCredential {
+  id: string;
+  name: string;
+  registry: string;
+  username: string;
+}
+
+interface ServiceResolution {
+  service: RenderService;
+  deployId?: string;
 }
 
 interface RenderDeploy {
@@ -65,7 +83,7 @@ const readVaultSecrets = async (vaultPath: string): Promise<VaultSecrets> => {
 };
 
 const getRenderApiKey = async (): Promise<string> => {
-  const fromEnv = process.env.RENDER_API_KEY;
+  const fromEnv = getEnvironmentVariable('RENDER_API_KEY');
   if (fromEnv) return fromEnv;
   const key = (await readVaultSecrets(VAULT_SECRET_PATH)).RENDER_API_KEY;
   if (!key) {
@@ -87,65 +105,209 @@ const renderRequest = async <T>(
       [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE,
     },
     body: body === undefined ? undefined : JSON.stringify(body),
+    signal: AbortSignal.timeout(30000),
   });
   if (!res.ok) {
-    throw new Error(
-      `Render ${method} ${path} failed: ${res.status} ${await res.text()}`,
-    );
+    throw new Error(`Render ${method} ${path} failed: ${res.status}`);
   }
   return (await res.json().catch(() => ({}))) as T;
 };
 
-const resolveServiceId = (project: string, environment: string): string => {
-  const serviceId = renderServices[project]?.[environment];
-  if (!serviceId) {
-    throw new Error(
-      `No Render service configured for ${project} (${environment}) in scripts/render-services.config.ts`,
+const listPages = async <T extends { cursor: string }>(
+  apiKey: string,
+  path: string,
+): Promise<T[]> => {
+  const entries: T[] = [];
+  let cursor = '';
+  do {
+    const query = new URLSearchParams({ limit: String(PAGE_SIZE) });
+    if (cursor) query.set('cursor', cursor);
+    const page = await renderRequest<T[]>(
+      apiKey,
+      HTTP_METHOD.GET,
+      `${path}${path.includes('?') ? '&' : '?'}${query}`,
     );
-  }
-  if (PLACEHOLDER_SERVICE_ID.test(serviceId)) {
-    throw new Error(
-      `Set the real srv-... id for ${project} (${environment}) in scripts/render-services.config.ts`,
-    );
-  }
-  return serviceId;
+    entries.push(...page);
+    const nextCursor = page.at(-1)?.cursor ?? '';
+    if (nextCursor === cursor) break;
+    cursor = page.length === PAGE_SIZE ? nextCursor : '';
+  } while (cursor);
+  return entries;
 };
 
-const pushEnvVars = async (
-  project: string,
-  serviceId: string,
-  dryRun: boolean,
-): Promise<void> => {
+const resolveOwnerId = async (apiKey: string): Promise<string> => {
+  const configured = getEnvironmentVariable('RENDER_OWNER_ID');
+  if (configured) return configured;
+  const owners = await listPages<{ owner: { id: string }; cursor: string }>(
+    apiKey,
+    '/owners',
+  );
+  if (owners.length !== 1) {
+    throw new Error(
+      'Set RENDER_OWNER_ID when the Render API key does not identify exactly one workspace.',
+    );
+  }
+  return owners[0].owner.id;
+};
+
+const readAppEnvVars = async (project: string) => {
   const config = secretsMapping[project];
   if (!config) throw new Error(`No configuration found for app "${project}"`);
-
   const keys = parseEnvExample(join(config.appPath, '.env.example')).filter(
     key => !config.excludeEnvVars?.includes(key),
   );
   const vaultSecrets = await readVaultSecrets(config.vaultPath);
-  const envVars = keys
-    .filter(key => vaultSecrets[key])
-    .map(key => ({
-      key,
-      value: vaultSecrets[key],
-    }));
+  if (!vaultSecrets.SHARED_APP_TOKEN) {
+    throw new Error(
+      'SHARED_APP_TOKEN must be configured before provisioning the public Render service.',
+    );
+  }
   keys
     .filter(key => !vaultSecrets[key])
     .forEach(key =>
       console.warn(`Warning: Secret "${key}" not found in Vault`),
     );
+  return keys
+    .filter(key => vaultSecrets[key])
+    .map(key => ({
+      key,
+      value: vaultSecrets[key],
+    }));
+};
 
+const ensureRegistryCredential = async (
+  apiKey: string,
+  ownerId: string,
+  dryRun: boolean,
+): Promise<string> => {
+  // This endpoint returns bare credentials rather than the cursor wrappers
+  // used by services and owners, despite accepting cursor/limit parameters.
+  const query = new URLSearchParams({
+    ownerId,
+    name: REGISTRY_CREDENTIAL_NAME,
+    limit: String(PAGE_SIZE),
+  });
+  const credentials = await renderRequest<RegistryCredential[]>(
+    apiKey,
+    HTTP_METHOD.GET,
+    `/registrycredentials?${query}`,
+  );
+  const existing = credentials.find(
+    credential => credential.name === REGISTRY_CREDENTIAL_NAME,
+  );
+  if (existing) {
+    if (
+      existing.registry !== DOCKER_REGISTRY ||
+      existing.username !== DOCKER_HUB_NAMESPACE
+    ) {
+      throw new Error(
+        `Registry credential ${REGISTRY_CREDENTIAL_NAME} does not match the expected Docker Hub account.`,
+      );
+    }
+    return existing.id;
+  }
   if (dryRun) {
     console.log(
-      `[DRY RUN] Would PUT env vars to ${serviceId}: ${envVars.map(v => `${v.key}=***`).join(' ')}`,
+      `[DRY RUN] Would create registry credential ${REGISTRY_CREDENTIAL_NAME}`,
     );
-    return;
+    return 'dry-run-registry-credential';
   }
+  const token =
+    getEnvironmentVariable('DOCKERHUB_TOKEN') ||
+    (await readVaultSecrets(VAULT_SECRET_PATH)).DOCKERHUB_TOKEN;
+  if (!token)
+    throw new Error('DOCKERHUB_TOKEN not found in Vault or environment.');
+  const credential = await renderRequest<RegistryCredential>(
+    apiKey,
+    HTTP_METHOD.POST,
+    '/registrycredentials',
+    {
+      name: REGISTRY_CREDENTIAL_NAME,
+      registry: DOCKER_REGISTRY,
+      username: DOCKER_HUB_NAMESPACE,
+      authToken: token,
+      ownerId,
+    },
+  );
+  console.log(`Created registry credential ${REGISTRY_CREDENTIAL_NAME}`);
+  return credential.id;
+};
 
-  // PUT replaces the service's whole env var set, like the Fly flow's
-  // unset-then-set, so keys removed from .env.example disappear too.
+const getImageUrl = (project: string) =>
+  `docker.io/${DOCKER_HUB_NAMESPACE}/${project}:${getEnvironmentVariable('COMMIT_SHA') || 'latest'}`;
+
+const ensureService = async (
+  apiKey: string,
+  ownerId: string,
+  config: (typeof renderServices)[string][string],
+  project: string,
+  envVars: Array<{ key: string; value: string }>,
+  dryRun: boolean,
+): Promise<ServiceResolution> => {
+  const query = new URLSearchParams({ ownerId, name: config.name });
+  const matches = await listPages<{ service: RenderService; cursor: string }>(
+    apiKey,
+    `/services?${query}`,
+  );
+  const existing = matches.find(
+    ({ service }) =>
+      service.name === config.name && service.ownerId === ownerId,
+  )?.service;
+  if (existing) {
+    if (existing.type !== WEB_SERVICE)
+      throw new Error(`Render service ${config.name} is not a web service.`);
+    return { service: existing };
+  }
+  const registryCredentialId = await ensureRegistryCredential(
+    apiKey,
+    ownerId,
+    dryRun,
+  );
+  if (dryRun) {
+    console.log(
+      `[DRY RUN] Would create ${config.name} in ${ownerId} (${config.plan}, ${config.region}) with ${getImageUrl(project)} and ${envVars.length} environment variables`,
+    );
+    return {
+      service: {
+        id: 'dry-run-service',
+        name: config.name,
+        ownerId,
+        type: WEB_SERVICE,
+      },
+    };
+  }
+  const created = await renderRequest<ServiceResolution>(
+    apiKey,
+    HTTP_METHOD.POST,
+    '/services',
+    {
+      type: WEB_SERVICE,
+      name: config.name,
+      ownerId,
+      autoDeployTrigger: 'off',
+      image: { ownerId, imagePath: getImageUrl(project), registryCredentialId },
+      envVars,
+      serviceDetails: {
+        runtime: IMAGE_RUNTIME,
+        plan: config.plan,
+        region: config.region,
+        healthCheckPath: config.healthCheckPath,
+        numInstances: 1,
+      },
+    },
+  );
+  console.log(`Created ${config.name}: ${created.service.id}`);
+  return created;
+};
+
+const pushEnvVars = async (
+  apiKey: string,
+  serviceId: string,
+  envVars: Array<{ key: string; value: string }>,
+): Promise<void> => {
+  // PUT replaces the whole set, so removed .env.example keys disappear too.
   await renderRequest(
-    await getRenderApiKey(),
+    apiKey,
     HTTP_METHOD.PUT,
     `/services/${serviceId}/env-vars`,
     envVars,
@@ -176,26 +338,31 @@ const waitForDeploy = async (
 };
 
 const triggerDeploy = async (
+  apiKey: string,
   project: string,
   serviceId: string,
-  dryRun: boolean,
 ): Promise<void> => {
-  const imageUrl = `${DOCKER_HUB_NAMESPACE}/${project}:${getEnvironmentVariable('COMMIT_SHA') || 'latest'}`;
-  if (dryRun) {
-    console.log(`[DRY RUN] Would deploy ${imageUrl} to ${serviceId}`);
-    return;
-  }
-
-  const apiKey = await getRenderApiKey();
   const deploy = await renderRequest<RenderDeploy>(
     apiKey,
     HTTP_METHOD.POST,
     `/services/${serviceId}/deploys`,
-    { imageUrl },
+    { imageUrl: getImageUrl(project) },
   );
-  console.log(`Triggered deploy ${deploy.id} of ${imageUrl}`);
+  console.log(`Triggered deploy ${deploy.id} of ${getImageUrl(project)}`);
   await waitForDeploy(apiKey, serviceId, deploy.id);
-  console.log('Deploy is live.');
+};
+
+const reportDryRun = (
+  command: string,
+  project: string,
+  name: string,
+  envCount: number,
+) => {
+  console.log(
+    `[DRY RUN] Would sync ${envCount} environment variables to ${name}`,
+  );
+  if (command === DEPLOY_COMMAND)
+    console.log(`[DRY RUN] Would deploy ${getImageUrl(project)} to ${name}`);
 };
 
 const main = async () => {
@@ -212,15 +379,40 @@ const main = async () => {
     process.exit(1);
   }
 
-  const serviceId = resolveServiceId(project, environment);
-  if (command === SECRETS_COMMAND) {
-    await pushEnvVars(project, serviceId, dryRun);
-  } else {
-    await triggerDeploy(project, serviceId, dryRun);
+  const config = renderServices[project]?.[environment];
+  if (!config) {
+    throw new Error(
+      `No Render service configured for ${project} (${environment}) in scripts/render-services.config.ts`,
+    );
+  }
+  const apiKey = await getRenderApiKey();
+  const ownerId = await resolveOwnerId(apiKey);
+  const envVars = await readAppEnvVars(project);
+  const { service, deployId } = await ensureService(
+    apiKey,
+    ownerId,
+    config,
+    project,
+    envVars,
+    dryRun,
+  );
+  if (dryRun) {
+    reportDryRun(command, project, service.name, envVars.length);
+    return;
+  }
+  if (!deployId) await pushEnvVars(apiKey, service.id, envVars);
+  if (command === DEPLOY_COMMAND) {
+    // Creation starts a deploy with the image and secrets above already set.
+    if (deployId) await waitForDeploy(apiKey, service.id, deployId);
+    else await triggerDeploy(apiKey, project, service.id);
+    console.log('Deploy is live.');
   }
 };
 
 main().catch(error => {
-  console.error('Render deploy failed.', error);
+  console.error(
+    'Render deploy failed.',
+    error instanceof Error ? error.message : 'Unknown error',
+  );
   process.exit(1);
 });
