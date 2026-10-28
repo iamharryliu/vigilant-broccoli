@@ -50,7 +50,7 @@ const isUrlOnOrigin = (url: string, origin: string) => {
   }
 };
 
-// An embedding page (vb-manager-next's Job Hunt) passes its own URL in
+// An embedding page (local-manager-next's Job Hunt) passes its own URL in
 // `?bookmarklet=` so the bookmarklet opens it and the page relays the posting
 // into this frame. It is honoured only while framed by that same origin, so a
 // crafted link opened directly cannot point the bookmarklet at another site.

@@ -135,7 +135,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   secret-rotation:rabbitmq    Rotate RabbitMQ password, push connection string to fly consumers
   secret-rotation:twilio      Rotate Twilio auth token (two-phase secondary-token promotion)
   secret-rotation:oci         Rotate the OCI API key (local-only); refreshes ~/.oci, ~5min propagation wait
-  secret-rotation:calendar-sa  Replace the Google Calendar service-account key, sync it to Vault, reload vb-manager-next
+  secret-rotation:calendar-sa  Replace the Google Calendar service-account key, sync it to Vault, reload local-manager-next
   rabbitmq:password           Copy RabbitMQ admin password to clipboard (login user: admin)
 
 ☸️  LOCAL K3S (k3d cluster: proxy, Grafana, Loki, Prometheus, Alloy, Headlamp, Argo CD)
@@ -166,13 +166,14 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   job-hunt:docker:up  Build job-hunt-next and start its container with the Claude token from Vault and this repo's resume and career notes mounted
   job-hunt:docker:down  Stop the job-hunt-next container
   job-hunt:docker:logs  Tail the job-hunt-next container logs
-  vb-manager-next:start       Start vb-manager-next via PM2 and save the process list
+  local-manager-next:start       Start local-manager-next via PM2 and save the process list
   event-calendars:sync        Sync every event calendar with sources from Facebook to Google Calendar (exits non-zero on failure, 3 when Facebook login is required; logs to ~/.vb-manager/event-calendars-sync.log)
-  deploy:vb-manager           Pull latest (ff-only), then reload vb-manager-next via PM2 and save the process list
-  vb-manager-next:delete      Delete vb-manager-next PM2 process
-  vb-manager-next:logs        Tail vb-manager-next PM2 logs
-  vb-manager-next:status      Show PM2 process status
-  deploy:local-services       Bring up the local k3s cluster + reload vb-manager-next
+  deploy:local-manager        Pull latest (ff-only), then reload local-manager-next via PM2 and save the process list
+  deploy:vb-manager           Compatibility alias for deploy:local-manager
+  local-manager-next:delete      Delete local-manager-next PM2 process
+  local-manager-next:logs        Tail local-manager-next PM2 logs
+  local-manager-next:status      Show PM2 process status
+  deploy:local-services       Bring up the local k3s cluster + reload local-manager-next
   health-check                Run health check script
   dldjmusic                   Download DJ music from Spotify playlists (secrets pulled from Vault)
 

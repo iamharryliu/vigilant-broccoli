@@ -97,7 +97,7 @@ services only the owner's devices need.
 jellyfin-pi.echidna-rohu.ts.net:8096   Jellyfin — Raspberry Pi on the home LAN (`infrastructure/jellyfin-pi/`, Ansible-provisioned, no Terraform). MagicDNS only: native clients (Android TV, iOS, Kodi) cannot complete a Cloudflare Access login. The node enrols non-interactively with the reusable `TAILSCALE_AUTH_KEY` from Vault; see [jellyfin-pi.md](./jellyfin-pi.md)
 ```
 
-`vb-manager-next`'s dev dashboard lists the tailnet's machines through the
+`local-manager-next`'s dev dashboard lists the tailnet's machines through the
 Tailscale API (`TAILSCALE_API_KEY`), so what is currently enrolled is visible
 there rather than only in the admin console.
 
@@ -120,7 +120,7 @@ production-email-subscription-service.flycast  Email Subscription Service (produ
 
 CI e2e/security suites reach these from GitHub-hosted Ubuntu runners via the `.github/actions/fly-private-tunnel` composite action, which installs flyctl and opens a `flyctl proxy 3000:80 <app>.flycast -a <app>` WireGuard tunnel; the job then hits `http://127.0.0.1:3000`. Used by `test-e2e-llm.yml`, `test-security-llm.yml`, `test-e2e-storage-service.yml`, `test-security-storage-service.yml`, `test-smoke-email-service.yml`, `test-e2e-email-subscription-service.yml`, `test-security-email.yml`, `test-security-email-subscription-service.yml`. The job must also import `FLY_API_TOKEN` from Vault for flyctl to authenticate.
 
-`vb-manager-next` (pm2, not deployed) needs no tunnel: its storage and email demos call public vb-express (`/api/storage/*`, `/api/messaging/send-email`), which forwards over 6PN. `small-business-next` (also local-only) still calls email-service directly, so it needs `flyctl proxy 3002:80 staging-vb-email-service.flycast -a staging-vb-email-service` with `EMAIL_SERVICE_URL=http://127.0.0.1:3002`.
+`local-manager-next` (pm2, not deployed) needs no tunnel: its storage and email demos call public vb-express (`/api/storage/*`, `/api/messaging/send-email`), which forwards over 6PN. `small-business-next` (also local-only) still calls email-service directly, so it needs `flyctl proxy 3002:80 staging-vb-email-service.flycast -a staging-vb-email-service` with `EMAIL_SERVICE_URL=http://127.0.0.1:3002`.
 
 The storage-service and llm-service apps dropped their `vb-` prefix (old: `<env>-vb-storage-service`, `<env>-vb-llm-service`). Fly has no rename, so these are new apps; the originals were destroyed after cutover. Only deployed instances carry the `<env>-` prefix — the nx projects stay `bucket-service` and `llm-service`.
 

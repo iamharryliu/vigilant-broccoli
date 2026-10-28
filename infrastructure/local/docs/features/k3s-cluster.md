@@ -36,7 +36,7 @@ The local platform (HTTPS proxy, Grafana, Loki, Prometheus, log collection, Head
 | `k3s/manifests/coredns-custom.yaml` | CoreDNS `.server` block that pins `host.k3d.internal`, so a Docker restart that drops k3d's entry no longer 502s the host services |
 | `k3s/manifests/platform/argocd.yaml` | ExternalName Service and Ingress for `argocd.vigilant-broccoli.app` |
 | `k3s/manifests/platform/dashboards/` | Grafana dashboards as JSON, loaded through a `grafana_dashboard`-labelled ConfigMap |
-| `k3s/manifests/platform/host-services.yaml` | ExternalName Services for `vb-manager-next` (1337) and Immich (2283) on the Mac |
+| `k3s/manifests/platform/host-services.yaml` | ExternalName Services for `local-manager-next` (1337) and Immich (2283) on the Mac |
 | `k3s/manifests/platform/ingresses.yaml` | `*.vigilant-broccoli.app` Ingresses with TLS |
 | `k3s/manifests/platform/redirect-https.yaml` | Traefik Middleware redirecting those hosts from HTTP to HTTPS |
 
@@ -70,11 +70,11 @@ All pinned in the root `mise.toml`; run `mise install`.
   | --- | --- |
   | `docker` | Docker containers outside the cluster (Immich, agent sandbox), via the socket |
   | `kubernetes` | Every pod, through the Kubernetes API; labelled `namespace`, `pod`, `container` |
-  | `pm2` | `~/.pm2/logs/vb-manager-next-*.log` |
+  | `pm2` | `~/.pm2/logs/local-manager-next-*.log` |
   | `varlogs` | `/var/log/*log` on the Mac |
 
-- **Metrics:** Prometheus scrapes the apiserver, kubelet/cAdvisor (container CPU and memory), kube-state-metrics and every pod annotated `prometheus.io/scrape`, which includes k3s's bundled Traefik. Query it in Grafana Explore through the `Prometheus` datasource; it has no Ingress. Traefik's `traefik_service_*` series are labelled `service="<namespace>-<service>-<port>@kubernetes"`, e.g. `local-platform-vb-manager-next-1337@kubernetes`.
-- **Dashboards:** Grafana's sidecar loads every ConfigMap labelled `grafana_dashboard=1` in `local-platform`; add a JSON file under `platform/dashboards/` and list it in that kustomization's `configMapGenerator`. Dashboards pick the Loki datasource through a `datasource` variable. `vb-manager-next (Local)` charts requests, status codes, latency and top paths for `manager.vigilant-broccoli.app` from Traefik's JSON access logs (`{namespace="kube-system", container="traefik"} | json`), alongside the PM2 error and output logs; its `Traefik metrics (Prometheus)` row charts the same request rate and latency from Traefik's metrics, picked through a `metrics` datasource variable.
+- **Metrics:** Prometheus scrapes the apiserver, kubelet/cAdvisor (container CPU and memory), kube-state-metrics and every pod annotated `prometheus.io/scrape`, which includes k3s's bundled Traefik. Query it in Grafana Explore through the `Prometheus` datasource; it has no Ingress. Traefik's `traefik_service_*` series are labelled `service="<namespace>-<service>-<port>@kubernetes"`, e.g. `local-platform-local-manager-next-1337@kubernetes`.
+- **Dashboards:** Grafana's sidecar loads every ConfigMap labelled `grafana_dashboard=1` in `local-platform`; add a JSON file under `platform/dashboards/` and list it in that kustomization's `configMapGenerator`. Dashboards pick the Loki datasource through a `datasource` variable. `local-manager-next (Local)` charts requests, status codes, latency and top paths for `manager.vigilant-broccoli.app` from Traefik's JSON access logs (`{namespace="kube-system", container="traefik"} | json`), alongside the PM2 error and output logs; its `Traefik metrics (Prometheus)` row charts the same request rate and latency from Traefik's metrics, picked through a `metrics` datasource variable.
 - **Storage:** Grafana, Loki and Prometheus use `local-path` PVCs, which live inside the node containers. They survive `stop`/`start` and Docker restarts, not `local:k3s:down`.
 
 ## Nuances

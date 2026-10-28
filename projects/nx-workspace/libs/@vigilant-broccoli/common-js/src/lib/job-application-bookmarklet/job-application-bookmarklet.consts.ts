@@ -1,5 +1,5 @@
 // The job-application bookmarklet posts a job page to job-hunt-next,
-// which acknowledges it; a page embedding the app (vb-manager-next's Job Hunt)
+// which acknowledges it; a page embedding the app (local-manager-next's Job Hunt)
 // relays both. Installed bookmarklets carry these values, so changing one
 // breaks them until they are reinstalled.
 export const JOB_APPLICATION_BOOKMARKLET = {
