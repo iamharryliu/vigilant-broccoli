@@ -52,8 +52,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   gitea:ssh                   SSH into Gitea VM
   gitea:backup:local          Dump Gitea to a local zip
   gitea:backup:cloud          Dump Gitea straight to GCS (timestamped)
-  gitea:restore:local <zip>   Restore Gitea from a local dump zip
-  gitea:restore:cloud [gs://]  Restore from GCS (default: latest backup)
+  gitea:restore [zip|gs://]   Restore Gitea from a local dump zip or GCS (default: latest GCS backup)
 
 💻 CODE SERVER
   code-server:open            Open code.harryliu.dev
@@ -170,7 +169,6 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   local-manager-next:start       Start local-manager-next via PM2 and save the process list
   event-calendars:sync        Sync every event calendar with sources from Facebook to Google Calendar (exits non-zero on failure, 3 when Facebook login is required; logs to ~/.vb-manager/event-calendars-sync.log)
   deploy:local-manager        Pull latest (ff-only), then reload local-manager-next via PM2 and save the process list
-  deploy:vb-manager           Compatibility alias for deploy:local-manager
   local-manager-next:delete      Delete local-manager-next PM2 process
   local-manager-next:logs        Tail local-manager-next PM2 logs
   local-manager-next:status      Show PM2 process status
