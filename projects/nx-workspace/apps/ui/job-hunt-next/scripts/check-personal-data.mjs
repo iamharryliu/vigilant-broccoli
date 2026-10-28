@@ -10,7 +10,7 @@ const APP_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const WORKSPACE_DIR = resolve(APP_DIR, '../../..');
 const OWNER_RESUME = join(
   WORKSPACE_DIR,
-  'libs/@vigilant-broccoli/resume/src/resume.json',
+  '../../notes/personal/career/resume.json',
 );
 const SCANNED_DIRS = [
   join(WORKSPACE_DIR, 'dist/apps/ui/job-hunt-next/.next/server'),

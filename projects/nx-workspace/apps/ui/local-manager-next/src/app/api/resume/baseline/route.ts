@@ -8,8 +8,7 @@ import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 const execFileAsync = promisify(execFile);
 
 const REPO_ROOT = join(homedir(), 'vigilant-broccoli');
-const RESUME_REPO_PATH =
-  'projects/nx-workspace/libs/@vigilant-broccoli/resume/src/resume.json';
+const RESUME_REPO_PATH = 'notes/personal/career/resume.json';
 const BASELINE_REF = 'HEAD';
 const MAX_BUFFER_BYTES = 5 * 1024 * 1024;
 const READ_FAILED = 'Failed to read the committed resume.json';

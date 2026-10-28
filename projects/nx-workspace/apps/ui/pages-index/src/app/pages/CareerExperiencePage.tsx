@@ -3,7 +3,7 @@ import { PARSE_KIND, ReadmePage } from '../components/ReadmePage';
 import { toRawGithubUrl } from '../consts/repo';
 
 const EXPERIENCE_NOTE_PATH =
-  'notes/personal/personal-software-career-experience.md';
+  'notes/personal/career/personal-software-career-experience.md';
 
 export function CareerExperiencePage() {
   const { t } = useTranslation();

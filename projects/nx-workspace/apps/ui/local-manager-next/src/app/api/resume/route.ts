@@ -8,12 +8,9 @@ import { validateResume } from '@vigilant-broccoli/resume';
 const RESUME_JSON_PATH = join(
   homedir(),
   'vigilant-broccoli',
-  'projects',
-  'nx-workspace',
-  'libs',
-  '@vigilant-broccoli',
-  'resume',
-  'src',
+  'notes',
+  'personal',
+  'career',
   'resume.json',
 );
 const ENCODING = 'utf-8';

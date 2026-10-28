@@ -25,7 +25,7 @@ Read the relevant document before working on its subject. Before editing a direc
 | [agent-support.md](./docs/agent-support.md) | Agentic operations, skills, adapters, entry-point parity, and where a new rule or instruction belongs. |
 | [app-development.md](./docs/app-development/app-development.md) | Adding apps/libs, deployment, public URLs or npm publishing. |
 | [app-readme-pattern.md](./docs/app-readme-pattern.md) | README edits and generated repo counts. |
-| [career experience](./notes/personal/personal-software-career-experience.md) | New skill or area (e.g. mobile development) absent from its Skills or contributions: add it. |
+| [career experience](./notes/personal/career/personal-software-career-experience.md) | New skill or area (e.g. mobile development) absent from its Skills or contributions: add it. |
 | [code-quality-tools.md](./docs/code-quality-tools.md) | Quality tooling; update its inventory when adding/removing a tool. |
 | [database-migrations.md](./docs/ci/database-migrations.md) | Database migrations. |
 | [fork-identity-inventory.md](./docs/fork-identity-inventory.md) | Making the repo forkable; update when adding or removing a hardcoded account, domain or identity value. |
