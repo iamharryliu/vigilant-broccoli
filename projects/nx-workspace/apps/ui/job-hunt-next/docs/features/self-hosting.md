@@ -30,11 +30,11 @@ Open `http://localhost:4300` and fill in the resume's name, email and contact de
 
 ## Environment Variables
 
-| Variable                   | Required | Description                                                                   |
-| -------------------------- | -------- | ----------------------------------------------------------------------------- |
-| `CLAUDE_CODE_OAUTH_TOKEN`  | Yes      | Token from `claude setup-token` that the Claude Code runs authenticate with.  |
-| `JOB_HUNT_FRAME_ANCESTORS` | No       | CSP `frame-ancestors` sources allowed to embed the app; defaults to `'self'`. |
-| `JOB_HUNT_MODEL`           | No       | Claude model for runs; defaults to `sonnet`.                                  |
+| Variable | Required | Description |
+| --- | --- | --- |
+| `CLAUDE_CODE_OAUTH_TOKEN` | Yes | Token from `claude setup-token` that the Claude Code runs authenticate with. |
+| `JOB_HUNT_FRAME_ANCESTORS` | No | CSP `frame-ancestors` sources allowed to embed the app; defaults to `'self'`. |
+| `JOB_HUNT_MODEL` | No | Claude model for runs; defaults to `sonnet`. |
 
 ## Run from Source
 
