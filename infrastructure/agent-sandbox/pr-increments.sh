@@ -389,7 +389,9 @@ To continue, run: \`pnpm agentic-pr-update <PR#> "finish the task"\`
 $PR_FOOTER
 BODY
 )
-  title="[WIP] $(inc_one_line "$title" | cut -c1-80) (agent run incomplete)"
+  # The PR title is linted by commitlint, so it must be a conventional commit
+  # header ending in a full stop; the raw task text is not.
+  title="chore: Save partial progress from an incomplete agent run: $(inc_one_line "$title" | cut -c1-60 | sed 's/[.[:space:]]*$//')."
   if pr_url=$(gh pr create --draft --base "$pr_base" --head "$branch" --title "$title" --body "$body" 2>&1); then
     echo "Salvaged partial work: $pr_url" >&2
     echo "$pr_url"
