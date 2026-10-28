@@ -45,6 +45,8 @@ const CONTENT_TYPES = {
   '.js': 'text/javascript; charset=utf-8',
   '.mjs': 'text/javascript; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
+  '.png': 'image/png',
+  '.svg': 'image/svg+xml',
 };
 
 const PORT = Number(getEnvironmentVariable('TERMINAL_PORT', '7681'));

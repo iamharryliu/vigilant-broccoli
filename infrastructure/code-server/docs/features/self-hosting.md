@@ -47,6 +47,8 @@ The image adds Node.js 24, pnpm, Claude Code, Codex, `gh`, the Google Cloud CLI,
 
 A mobile-friendly tmux terminal runs as an s6 service beside code-server on `TERMINAL_PORT`. It verifies the Cloudflare Access JWT on every request, so it needs a reverse proxy behind Cloudflare Access; do not publish its port on the host.
 
+The terminal provides a matching SVG favicon and opaque 180×180 Apple touch icon, with padded prompt artwork on a solid background. To regenerate the PNG from `web-terminal/public/favicon.svg`, render the SVG at 180×180 without transparency. After an image update, remove and re-add the Safari home screen shortcut on an iPhone or iPad; an existing shortcut may retain its old icon. Icon requests use the same Cloudflare Access authentication as other static assets.
+
 ## GitHub Token
 
 `gh` is shadowed by a wrapper that reads an installation token from `GH_TOKEN_FILE` (a JSON file with `token` and `expires_at`), so `gh` and git's `gh auth git-credential` helper carry it. Mount the file read-only at `/run/secrets/gh-token.json`. A `GH_TOKEN` already in the environment wins.
