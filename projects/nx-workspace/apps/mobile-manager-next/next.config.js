@@ -17,7 +17,7 @@ const options = {
 const nextConfig = {
   nx: { ...options },
   env: SUPABASE_NEXT_ENV,
-  distDir: '../../dist/apps/vb-manager-next-mobile/.next',
+  distDir: '../../dist/apps/mobile-manager-next/.next',
   agentRules: false,
 };
 const plugins = [withNx];

@@ -369,16 +369,16 @@ async function main() {
         'dist/apps/ui/weather-next/.next',
       ),
     },
-    'vb-manager-next-mobile': {
+    'mobile-manager-next': {
       hardcodedSecrets: {
         ...SUPABASE_PUBLIC_SECRETS,
         VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
       },
-      envExamplePath: 'apps/vb-manager-next-mobile/.env.example',
+      envExamplePath: 'apps/mobile-manager-next/.env.example',
       privateApp: true,
       settings: NX_VERCEL_SETTINGS(
-        'vb-manager-next-mobile',
-        'dist/apps/vb-manager-next-mobile/.next',
+        'mobile-manager-next',
+        'dist/apps/mobile-manager-next/.next',
       ),
     },
   };

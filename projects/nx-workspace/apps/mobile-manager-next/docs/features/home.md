@@ -22,3 +22,13 @@
 - The JSON is generated rather than committed because the Vercel deploy builds on the runner against the full checkout (`vercel build --cwd <repo root>`, see the [Vercel deploy pattern](../../../../../../docs/app-development/ui/deployment/vercel-deploy-pattern.md#the-build-runs-on-the-runner-not-on-vercel)), so the README is always present. Nx cannot hash a file outside the workspace root, so the target hashes the README through a `runtime` input.
 
 - `EXTERNAL_QUICK_LINKS` builds the Agentic group from `AGENTIC_PHASES`, so mobile and desktop Quick Links both pick up README table changes. Both apps generate the data before development, lint and builds.
+
+## Application identity compatibility
+
+- The Nx project and app directory are `mobile-manager-next`; the display name is Mobile Manager Next.
+- Deploy targets use the new Nx identity with the existing Vercel projects `staging-vb-manager-next-mobile` and `production-vb-manager-next-mobile`; hosting summaries map the new identity to that provider name.
+- `manager.harryliu.dev`, staging/production Vercel URLs, OAuth callbacks and Vercel Authentication remain unchanged; no cloud migration or Terraform apply is needed.
+- Terraform retains the `vb-manager-next-mobile` DNS map key because `post-apply.sh` derives `production-<key>` for domain attachment; renaming that key would also change resource addresses.
+- Upptime names, slugs and archived `history/` retain the legacy identity to preserve monitoring continuity. Historical SQL migrations also retain their original comments.
+- Auth configuration, Google token storage, theme and saved preference keys remain unchanged, so existing sessions and preferences survive on the same origins.
+- The local `local-manager-next` dashboard is a separate app.

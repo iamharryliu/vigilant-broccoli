@@ -1,4 +1,4 @@
-export const APP_NAME = 'VB Manager';
+export const APP_NAME = 'Mobile Manager Next';
 
 export const PAGE_TITLE = {
   HOME: 'Home',

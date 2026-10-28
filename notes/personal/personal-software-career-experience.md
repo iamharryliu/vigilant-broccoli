@@ -171,7 +171,7 @@
 | Back up and restore-test persistent stores | Site Reliability Engineer | Ran nightly backups of each persistent store to cloud storage with retention, and a weekly workflow that restores every dump into a throwaway container so stale or unrestorable backups fail visibly. |
 | Build fullstack document management | Fullstack Developer | Built Hearth with Next.js React pages and server-side API routes. |
 | Build fullstack management tools | Fullstack Developer | Built local-manager-next with Next.js React pages and server-side API routes. |
-| Build mobile dashboard | Fullstack Developer | Built vb-manager-next-mobile, a phone-first Next.js dashboard with a schedule agenda, event calendars, Google Tasks, a notepad, quick links and voice input, authenticated through Supabase and deployed to Vercel. |
+| Build mobile dashboard | Fullstack Developer | Built mobile-manager-next, a phone-first Next.js dashboard with a schedule agenda, event calendars, Google Tasks, a notepad, quick links and voice input, authenticated through Supabase and deployed to Vercel. |
 | Build publishable library artifacts | Platform Engineer | Produced ES/CJS library artifacts and type declarations with Vite, used Vite for React app development and builds, and bundled react-music-lib with Rollup. |
 | Build shared React components | Frontend Developer | Built a shared TypeScript React component library used by the personal website, component gallery and Next.js apps, with reusable dialog, form, navigation and theme APIs |
 | Build TypeScript API backends | Backend Developer | Ran TypeScript Node.js backends for the API services. |

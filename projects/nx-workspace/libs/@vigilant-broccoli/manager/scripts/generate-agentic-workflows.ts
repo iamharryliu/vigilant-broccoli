@@ -28,7 +28,7 @@ const ACTIONS_LINK_PATTERN = /^\[([^\]]+)\]\((https:\/\/[^)\s]+)\)$/;
 
 function fail(message: string): never {
   console.error(
-    `generate-agentic-workflows: ${message}\nThe "${SECTION_HEADING}" table in ${README_PATH} feeds the mobile Agentic tab and the desktop Quick Links Agentic group; see docs/features/home.md in vb-manager-next-mobile for the format it must keep.`,
+    `generate-agentic-workflows: ${message}\nThe "${SECTION_HEADING}" table in ${README_PATH} feeds the mobile Agentic tab and the desktop Quick Links Agentic group; see docs/features/home.md in mobile-manager-next for the format it must keep.`,
   );
   process.exit(1);
 }

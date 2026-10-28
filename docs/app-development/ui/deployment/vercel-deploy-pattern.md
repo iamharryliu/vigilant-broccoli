@@ -1,6 +1,6 @@
 # Vercel deploy pattern (Next.js apps)
 
-Deploys for `hearth`, `weather-next`, `balloono`, `vb-manager-next-mobile`. `employee-handler-ui` has no staging or production Vercel project (its `deploy` and `deploy:production` still push the Docker image) — it deploys to Vercel only through its `deploy:demo` target (project `demo-employee-handler-ui`), run by the `deploy-demo-apps` workflow on each successful staging `deploy-fanout` or by hand via `manual-deploy-app` with environment `demo`. `job-hunt-next` also has a public `deploy:demo` target (`demo-job-hunt-next`), serving bundled fictional data with `NEXT_PUBLIC_JOB_HUNT_DEMO=true`; its other deploy targets still publish the self-hostable Docker image. Everything runs through `scripts/deploy-vercel.ts`.
+Deploys for `hearth`, `weather-next`, `balloono`, `mobile-manager-next`. `employee-handler-ui` has no staging or production Vercel project (its `deploy` and `deploy:production` still push the Docker image) — it deploys to Vercel only through its `deploy:demo` target (project `demo-employee-handler-ui`), run by the `deploy-demo-apps` workflow on each successful staging `deploy-fanout` or by hand via `manual-deploy-app` with environment `demo`. `job-hunt-next` also has a public `deploy:demo` target (`demo-job-hunt-next`), serving bundled fictional data with `NEXT_PUBLIC_JOB_HUNT_DEMO=true`; its other deploy targets still publish the self-hostable Docker image. Everything runs through `scripts/deploy-vercel.ts`.
 
 ## Table of Contents
 
@@ -16,7 +16,7 @@ Deploys for `hearth`, `weather-next`, `balloono`, `vb-manager-next-mobile`. `emp
 
 Each app defines a `deploy` (staging) / `deploy:production` pair that sets `VERCEL_PROJECT_ID=<env>-<app>` and `VERCEL_ORG_ID`, then runs `NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts <app> <env>` (copy `hearth`'s targets). A demo-only app instead defines a single `deploy:demo` target with `VERCEL_PROJECT_ID=demo-<app>` and `<env>` = `demo` (see `employee-handler-ui`); `deploy.yml` does not run it, so a workflow on `deploy-fanout` has to.
 
-`VERCEL_PROJECT_ID` must be the project **name** (`staging-hearth`), never a `prj_` ID — `ensureProjectExists` creates the project by that name on first deploy, so a new (or renamed) app needs no manual console setup. Each repo environment is its own Vercel project.
+`VERCEL_PROJECT_ID` must be the project **name** (`staging-hearth`), never a `prj_` ID — `ensureProjectExists` creates the project by that name on first deploy, so a new (or renamed) app needs no manual console setup. Each repo environment is its own Vercel project. Repository-only renames can retain existing provider names: `mobile-manager-next` explicitly deploys to `staging-vb-manager-next-mobile` / `production-vb-manager-next-mobile`. Its Terraform DNS map key remains `vb-manager-next-mobile` so domain attachment still targets the existing production project; hosting summaries map the new Nx identity to the same legacy provider name.
 
 ## What the script does
 
@@ -47,7 +47,7 @@ A custom `harryliu.dev` subdomain for one of these apps is attached automaticall
 
 ## Staging Access
 
-`deploy-vercel.ts` enables [Vercel Authentication](https://vercel.com/docs/deployment-protection/methods-to-protect-deployments/vercel-authentication) with `ssoProtection.deploymentType: "all"` on every staging project before it deploys, and fails the deploy if the API call fails. `all` is required: staging projects deploy with `--prod`, and the default scope only covers previews. It covers the project's alias, immutable deployment URLs and every path, including API routes and assets, so no application code is involved. Only members of the Vercel team (the owner) can sign in. Production and demo projects stay public unless their `projectConfigs` entry sets `privateApp`, which gates every environment the same way (`vb-manager-next-mobile`, including its custom domain).
+`deploy-vercel.ts` enables [Vercel Authentication](https://vercel.com/docs/deployment-protection/methods-to-protect-deployments/vercel-authentication) with `ssoProtection.deploymentType: "all"` on every staging project before it deploys, and fails the deploy if the API call fails. `all` is required: staging projects deploy with `--prod`, and the default scope only covers previews. It covers the project's alias, immutable deployment URLs and every path, including API routes and assets, so no application code is involved. Only members of the Vercel team (the owner) can sign in. Production and demo projects stay public unless their `projectConfigs` entry sets `privateApp`, which gates every environment the same way (`mobile-manager-next`, including its custom domain).
 
 Anonymous requests receive HTTP 302 to `vercel.com/sso-api`. Upptime and the health checks expect that 302 with redirects disabled ([monitoring](../../../infrastructure/upptime.md#staging-ui-access)), so they need no bypass token. Do not add a protection-bypass secret for monitoring.
 

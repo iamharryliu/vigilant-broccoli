@@ -1,4 +1,4 @@
-# VB Manager Next Mobile
+# Mobile Manager Next
 
 Mobile dashboard with calendar, tasks, notepad, weather and quick links including Agentic workflows.
 

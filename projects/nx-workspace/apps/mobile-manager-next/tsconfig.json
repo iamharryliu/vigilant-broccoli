@@ -24,8 +24,8 @@
     "**/*.js",
     "**/*.jsx",
 
-    "../../apps/vb-manager-next-mobile/.next/types/**/*.ts",
-    "../../dist/apps/vb-manager-next-mobile/.next/types/**/*.ts",
+    "../../apps/mobile-manager-next/.next/types/**/*.ts",
+    "../../dist/apps/mobile-manager-next/.next/types/**/*.ts",
 
     "next-env.d.ts"
   ],

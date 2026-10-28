@@ -219,7 +219,7 @@
       },
       "include": [
         "apps/ui/small-business-next/**/*",
-        "apps/vb-manager-next-mobile/**/*"
+        "apps/mobile-manager-next/**/*"
       ]
     },
     {

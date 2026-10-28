@@ -1,7 +1,7 @@
 {
-  "name": "vb-manager-next-mobile",
+  "name": "mobile-manager-next",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/vb-manager-next-mobile",
+  "sourceRoot": "apps/mobile-manager-next",
   "projectType": "application",
   "tags": [],
   "targets": {
@@ -30,11 +30,11 @@
         }
       ],
       "outputs": [
-        "{workspaceRoot}/dist/apps/vb-manager-next-mobile/.next/!(cache)/**/*",
-        "{workspaceRoot}/dist/apps/vb-manager-next-mobile/.next/!(cache)"
+        "{workspaceRoot}/dist/apps/mobile-manager-next/.next/!(cache)/**/*",
+        "{workspaceRoot}/dist/apps/mobile-manager-next/.next/!(cache)"
       ],
       "options": {
-        "cwd": "apps/vb-manager-next-mobile",
+        "cwd": "apps/mobile-manager-next",
         "tty": false,
         "command": "next build --webpack"
       },
@@ -46,7 +46,7 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/vb-manager-next-mobile/.env.example 'cd apps/vb-manager-next-mobile && next dev --webpack --port 3000'",
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/mobile-manager-next/.env.example 'cd apps/mobile-manager-next && next dev --webpack --port 3000'",
         "env": {
           "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev"
         }
@@ -62,7 +62,7 @@
       "executor": "nx:run-commands",
       "defaultConfiguration": "development",
       "options": {
-        "cwd": "apps/vb-manager-next-mobile",
+        "cwd": "apps/mobile-manager-next",
         "command": "next dev --webpack --port 3000"
       },
       "configurations": {
@@ -88,13 +88,13 @@
     "deploy": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "VERCEL_PROJECT_ID=staging-vb-manager-next-mobile VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts vb-manager-next-mobile staging"
+        "command": "VERCEL_PROJECT_ID=staging-vb-manager-next-mobile VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts mobile-manager-next staging"
       }
     },
     "deploy:production": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "VERCEL_PROJECT_ID=production-vb-manager-next-mobile VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts vb-manager-next-mobile production"
+        "command": "VERCEL_PROJECT_ID=production-vb-manager-next-mobile VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts mobile-manager-next production"
       }
     },
     "typecheck": {
@@ -117,7 +117,7 @@
         }
       ],
       "options": {
-        "cwd": "apps/vb-manager-next-mobile",
+        "cwd": "apps/mobile-manager-next",
         "command": "tsc --noEmit -p tsconfig.json"
       }
     }
