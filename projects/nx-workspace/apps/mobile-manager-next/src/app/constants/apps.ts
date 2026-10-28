@@ -1,6 +1,7 @@
 import {
   Activity,
   Mail,
+  MapPin,
   Music,
   FileText,
   FolderGit2,
@@ -22,6 +23,14 @@ export type AppEntry = {
 };
 
 const PERSONAL_APPS: AppEntry[] = [
+  {
+    label: 'Google Maps',
+    webUrl: 'https://www.google.com/maps',
+    iosUrl: 'comgooglemaps://',
+    androidPackage: 'com.google.android.apps.maps',
+    tileColor: 'bg-blue-600',
+    icon: MapPin,
+  },
   {
     label: 'Spotify',
     webUrl: 'https://open.spotify.com',
