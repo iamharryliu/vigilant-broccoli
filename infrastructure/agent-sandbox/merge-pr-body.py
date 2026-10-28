@@ -4,7 +4,7 @@
 create-todo-runner.sh, create-rnd-runner.sh,
 audit-todo-runner.sh, audit-docs-runner.sh, audit-context-runner.sh,
 prune-runner.sh) to rewrite a PR body in place: replace the
-"## Summary" / "## Next steps" / "## Concerns" / "## Suggestions" sections with the agent's latest cumulative
+"## Summary" / "## Next steps" / "## Screenshots" / "## Concerns" / "## Suggestions" sections with the agent's latest cumulative
 description, and append a row to an "## Agentic Change History" table —
 creating either if the PR body doesn't have them yet. Reads everything from
 the environment (see the CURRENT_BODY/PR_*/HISTORY_* vars below; PR_STACK is the
@@ -76,6 +76,7 @@ if pr_next_steps and not replace_section("Next steps", pr_next_steps):
 pr_concerns = os.environ.get("PR_CONCERNS", "").strip()
 pr_suggestions = os.environ.get("PR_SUGGESTIONS", "").strip()
 pr_stack = os.environ.get("PR_STACK", "").strip()
+pr_screenshots = os.environ.get("PR_SCREENSHOTS", "").strip()
 
 
 def insert_after(*anchors):
@@ -87,16 +88,15 @@ def insert_after(*anchors):
     return 0
 
 
-# Concerns and Suggestions describe what is still open, so an explicitly empty
-# variable (set but blank) drops the stale section; an unset variable leaves
-# it alone.
+# Explicitly empty variables drop their sections; unset variables preserve them.
 for name, env_name, value, anchors in (
-    ("Concerns", "PR_CONCERNS", pr_concerns, ("Next steps", "Summary")),
+    ("Screenshots", "PR_SCREENSHOTS", pr_screenshots, ("Next steps", "Summary")),
+    ("Concerns", "PR_CONCERNS", pr_concerns, ("Screenshots", "Next steps", "Summary")),
     (
         "Suggestions",
         "PR_SUGGESTIONS",
         pr_suggestions,
-        ("Concerns", "Next steps", "Summary"),
+        ("Concerns", "Screenshots", "Next steps", "Summary"),
     ),
 ):
     if env_name in os.environ and not value:

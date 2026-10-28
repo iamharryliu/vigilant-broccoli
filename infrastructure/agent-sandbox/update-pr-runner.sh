@@ -11,6 +11,7 @@ FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 PRE_COMMIT_HELPER=/tmp/run-pre-commit.sh
 export FORMAT_CHANGED_HELPER=/tmp/format-changed.sh
 MERGE_BODY_HELPER=/tmp/merge-pr-body.py
+SCREENSHOTS_HELPER=/tmp/pr-screenshots.py
 CI_LOG=/tmp/pr-ci-failures.log
 RUN_LOG=/tmp/pr-ci-run.log
 CI_LOG_BUDGET=20000
@@ -46,6 +47,7 @@ PLAN_ENABLED=0
 cp "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh" "$PRE_COMMIT_HELPER"
 cp "$REPO_DIR/scripts/shell/format-changed.sh" "$FORMAT_CHANGED_HELPER"
 cp "$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py" "$MERGE_BODY_HELPER"
+cp "$REPO_DIR/infrastructure/agent-sandbox/pr-screenshots.py" "$SCREENSHOTS_HELPER"
 
 git fetch origin --quiet
 # Checked here rather than at dispatch because a PR can merge while the image
@@ -211,6 +213,7 @@ ${PLAN_RULES}
   - commit_message: capitalized, concise, focused on why not what, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
   - pr_summary: markdown bullet points replacing the PR's "## Summary" section — rewrite it to describe the PR's full, cumulative state (prior work plus this change), not just this increment
+  - pr_screenshots: array of repo-relative PNG paths captured for this increment under projects/nx-workspace/screenshots/; omit or [] when none. The runner commits these images and embeds them in the PR body
   - pr_next_steps: markdown checklist replacing the PR's "## Next steps" section — same rule, cover the whole PR as it now stands: remaining manual commands, spot checks, CI status, merging, and one ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\` item per piece of work deliberately left out of every increment, or "- [ ] Merge once CI is green" when nothing else is left
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none — rewrite it to cover the whole PR as it now stands. Keep every suggestion already in the PR body that this change did not implement and the instruction did not reject, and name any you drop in your report; omit the field to leave the section untouched${PLAN_FIELDS}
   - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none; keep these out of pr_suggestions, which is only optional follow-up work. Rewrite it to cover the whole PR as it now stands, keep every concern already in the PR body that this change did not resolve, and name any you drop in your report; omit the field to leave the section untouched
@@ -296,6 +299,7 @@ if [ "$PLAN_ENABLED" = 1 ] && { [ -n "$(git status --porcelain)" ] || [ "${#RESO
   inc_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
 fi
 
+python3 "$SCREENSHOTS_HELPER" --metadata "$META_FILE" --prepare
 bash "$PRE_COMMIT_HELPER"
 
 read_meta() { jq -r "$1 // empty" "$META_FILE" 2>/dev/null || true; }
@@ -349,6 +353,8 @@ git push
 SALVAGE_ENABLED=0
 
 HISTORY_SOURCE=$INC_HISTORY_SOURCE
+PR_SCREENSHOTS=$(python3 "$SCREENSHOTS_HELPER" --metadata "$META_FILE")
+[ -z "$PR_SCREENSHOTS" ] || export PR_SCREENSHOTS
 
 NEW_BODY=$(CURRENT_BODY="$CURRENT_BODY" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="$PR_NEXT_STEPS" \
   HISTORY_SOURCE="$HISTORY_SOURCE" HISTORY_COMMAND="$SKILL_NAME" HISTORY_PROMPT="$INSTRUCTION" \
