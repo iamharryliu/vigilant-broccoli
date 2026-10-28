@@ -1,0 +1,9 @@
+{
+  "APPS": {
+    "LEISURE": "Leisure",
+    "UTILITY": "Utility",
+    "DEVELOPMENT": "Development",
+    "SEARCH": "Search apps",
+    "NO_RESULTS": "No apps found. Try another name or clear your search."
+  }
+}
