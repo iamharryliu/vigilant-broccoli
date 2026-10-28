@@ -18,6 +18,8 @@ export const API_ENDPOINTS = {
   GCLOUD_SET_ACCOUNT: '/api/gcloud/set-account',
   GCLOUD_VAULT_TOKEN: '/api/gcloud/vault-token',
 
+  RENDER_SERVICES: '/api/render/services',
+
   VERCEL_PROJECTS: '/api/vercel/projects',
 
   FLYIO_APPS: '/api/flyio/apps',

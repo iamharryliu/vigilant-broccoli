@@ -36,9 +36,8 @@ concurrency:
   # push that happen to share a ref (e.g. production dispatched from `main`)
   # never land in the same group — one environment can never cancel the other.
   group: deploy-${{ github.ref }}-${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
-  # Staging's next run redeploys everything affected anyway, so cancelling a
-  # superseded one loses nothing; production is never interrupted midway.
-  cancel-in-progress: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) != 'production' }}
+  # Render provisioning must finish before another run can reuse its service.
+  cancel-in-progress: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) != 'production' && vars.RENDER_LLM_STAGING_ENABLED != 'true' }}
 
 env:
   DOCKERHUB_USERNAME: iamharryliu
@@ -146,6 +145,9 @@ jobs:
           echo "packages=${NAMES#,}" >> $GITHUB_OUTPUT
 
   deploy-apps:
+    concurrency:
+      group: ${{ vars.RENDER_LLM_STAGING_ENABLED == 'true' && (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) == 'staging' && 'render-llm-staging' || format('deploy-apps-{0}', github.run_id) }}
+      cancel-in-progress: false
     needs: gitleaks
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -270,6 +272,7 @@ jobs:
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
           NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
           NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
+          RENDER_OWNER_ID: ${{ vars.RENDER_OWNER_ID }}
         run: ${{ steps.check.outputs.deploy_cmd }}
 
       # Every Docker Hub repo's description and overview come from the

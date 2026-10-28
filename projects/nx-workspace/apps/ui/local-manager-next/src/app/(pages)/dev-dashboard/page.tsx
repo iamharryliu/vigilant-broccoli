@@ -20,6 +20,7 @@ import { TailscaleMachinesComponent } from '../../components/tailscale-machines.
 import { TerraformStatusComponent } from '../../components/terraform-status.component';
 import { WireguardStatusComponent } from '../../components/wireguard-status.component';
 import { WranglerPagesComponent } from '../../components/wrangler-pages.component';
+import { RenderServicesComponent } from '../../components/render-services.component';
 import { VercelAppsComponent } from '../../components/vercel-apps.component';
 import { LocalServicesComponent } from '../../components/local-services.component';
 import { LocalCredentialsComponent } from '../../components/local-credentials.component';
@@ -103,7 +104,7 @@ export default function Page() {
         </div>
       </TabsContent>
       <TabsContent value={TAB.CLOUD} className="pt-4 flex-1 min-h-0">
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="flex flex-col gap-4">
             <GcloudAuthStatusComponent />
             <AwsManagementComponent />
@@ -111,6 +112,7 @@ export default function Page() {
           </div>
           <div className="flex flex-col gap-4">
             <FlyIoAppsComponent />
+            <RenderServicesComponent />
           </div>
           <div className="flex flex-col gap-4">
             <VercelAppsComponent />

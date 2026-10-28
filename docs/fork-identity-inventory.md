@@ -143,7 +143,8 @@ Hardcoded identity and account values a fork must change, plus values that must 
 
 | Value kind | Example value found | Files/locations (count + representative paths) | Consumed by | Notes |
 | --- | --- | --- | --- | --- |
-| Service ids | `srv-...` (llm-service staging) | 1 file: `projects/nx-workspace/scripts/render-services.config.ts` | code | Non-secret; created in the Render dashboard. The API key comes from Vault. |
+| Registry credential name | `vb-render-dockerhub` | 1 file: `projects/nx-workspace/scripts/deploy-render.ts` | code | Reused or created in the selected workspace using the existing Docker Hub identity/token. |
+| Service name | `staging-llm-service` | 1 file: `projects/nx-workspace/scripts/render-services.config.ts` | code | Resolved by name and workspace; service IDs are discovered at runtime. The API key comes from Vault; optional `RENDER_OWNER_ID` selects a workspace. |
 
 ## Terraform Cloud
 
