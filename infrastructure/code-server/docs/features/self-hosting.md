@@ -5,6 +5,7 @@ Run the code-server image with this repo's toolchain, GitHub token handling and 
 ## Table of Contents
 
 - [Run from Registry](#run-from-registry)
+- [Browser Verification](#browser-verification)
 - [Environment Variables](#environment-variables)
 - [Web Terminal](#web-terminal)
 - [GitHub Token](#github-token)
@@ -25,6 +26,18 @@ docker run -d --name code-server \
 ```
 
 The image adds Node.js 24, pnpm, Claude Code, Codex, `gh`, the Google Cloud CLI, `pre-commit` and tmux. Codex has no baked-in credential: sign in from the terminal with `codex login --device-auth`; the login lives in the `/config` volume.
+
+## Browser Verification
+
+The image bakes in Chromium’s OS libraries using the exact Playwright version in the workspace lockfile and its [distro-aware dependency installer](https://playwright.dev/docs/browsers#install-system-dependencies). The Ubuntu-derived ARM64 base is supported by Playwright; no Ubuntu package list is shared with the Debian agent sandbox. Lockfile changes trigger an image rebuild so Playwright dependency updates reach recreated containers.
+
+After installing workspace dependencies, run `pnpm -C projects/nx-workspace exec playwright install chromium` as the terminal user (`abc`), then `pnpm screenshot:themes -- http://localhost:<port>`. Browser downloads stay in `/config/.cache/ms-playwright` on the persistent home volume, accessible to that user. The image installs only OS libraries, not a root-owned browser cache or global Playwright CLI. Re-run the browser install after Playwright upgrades.
+
+For an older image or another supported Linux host, `pnpm screenshot:setup` installs both the browser and OS libraries using workspace Playwright; apt requires sudo. Do not run the whole command as root, which would put the browser in root’s cache. Screenshot invocations never install packages automatically. See the [manual verification guide](../../../../docs/app-development/ui/ui-app-pattern.md#manual-verification).
+
+Rebuilding alone does not update an already running container. After merge, the image workflow publishes the ARM64 image and the VM’s update timer can recreate code-server within 15 minutes. Schedule that rollout around live tmux sessions; do not trigger replacement merely to run browser checks. Existing Debian agent-sandbox images are outside this provisioning change and need `pnpm screenshot:setup` with apt privileges separately.
+
+The [browser verification record](./browser-verification/verification.md) includes the matching-host runtime check, isolated #1319 lifecycle assertions and reviewed screenshots, with image-build limitations stated separately.
 
 ## Environment Variables
 

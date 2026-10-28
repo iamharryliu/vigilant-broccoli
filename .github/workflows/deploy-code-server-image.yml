@@ -14,6 +14,7 @@ on:
     paths:
       - infrastructure/code-server/**
       - setup/linux/apt-packages.txt
+      - projects/nx-workspace/pnpm-lock.yaml
       - .github/workflows/deploy-code-server-image.yml
   workflow_dispatch:
 
