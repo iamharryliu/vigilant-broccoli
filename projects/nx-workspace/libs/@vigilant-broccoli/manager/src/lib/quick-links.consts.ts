@@ -16,7 +16,6 @@ import {
   toQuickLinks,
 } from '@vigilant-broccoli/public-links';
 import { EMAIL_LINK, PROJECT_LINK, SOCIAL_LINK } from '@harry/personal';
-import { VB_GITHUB_WORKFLOWS_URL } from '@vigilant-broccoli/infrastructure';
 import {
   CLOUDFLARE_ACCOUNT_LINK,
   FLYIO_ACCOUNT_LINK,
@@ -32,6 +31,8 @@ import {
 import { ACCESS_GATED_URL } from './access-gated.consts';
 import { PERSONAL_ACCOUNT_LINK, PERSONAL_URL } from './personal-account.consts';
 import { JOURNAL_PATH, VB_REPO_PATH } from '@harry/private';
+import { VB_GITHUB_WORKFLOWS_URL } from '@vigilant-broccoli/infrastructure';
+import { AGENTIC_PHASES } from './agentic-workflows';
 
 const DEV_LINKS: QuickLink[] = [
   ...toQuickLinks(LINK_GROUP_SUBGROUP.DEV, [
@@ -262,38 +263,47 @@ const HOME_LINKS: QuickLink[] = [
   ...toQuickLinks(LINK_GROUP_SUBGROUP.HOME, [PERSONAL_URL.GROCERIES]),
 ];
 
-const AGENTIC_WORKFLOW = {
-  PR_CREATE: {
-    NAME: 'VB - Manual Agentic PR Create',
-    FILE: 'manual-agentic-pr-create.yml',
-  },
-  PR_UPDATE: {
-    NAME: 'VB - Manual Agentic PR Update',
-    FILE: 'manual-agentic-pr-update.yml',
-  },
-  PR_CREATE_AUDIT: {
-    NAME: 'VB - Cron Agentic PR Create Audit',
-    FILE: 'cron-agentic-pr-create-audit.yml',
-  },
-  PR_CREATE_RND: {
-    NAME: 'VB - Manual Agentic PR Create R&D',
-    FILE: 'manual-agentic-pr-create-rnd.yml',
-  },
-  PR_CREATE_TODO: {
-    NAME: 'VB - Manual Agentic PR Create TODO',
-    FILE: 'manual-agentic-pr-create-todo.yml',
-  },
-  PR_CREATE_SMOKE: {
-    NAME: 'VB - Manual Agentic PR Create Smoke',
-    FILE: 'manual-agentic-pr-create-smoke.yml',
-  },
-} as const;
+const AGENTIC_LINKS: QuickLink[] = AGENTIC_PHASES.flatMap(({ workflows }) =>
+  workflows.map(({ name, url }) => ({
+    label: name,
+    target: url,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.AGENTIC,
+  })),
+);
 
-const AGENTIC_LINKS = Object.values(AGENTIC_WORKFLOW).map(({ NAME, FILE }) => ({
-  label: NAME,
-  target: `${VB_GITHUB_WORKFLOWS_URL}/${FILE}`,
+// Dispatchable workflows outside the README's Agentic table (the test-* suites
+// and manual-promote-production, which the Deploy phase already covers, are left out).
+const WORKFLOW_NAMES = [
+  'ci-health-check',
+  'ci-rotate-secrets',
+  'ci-sync-upptime',
+  'cron-backup',
+  'cron-cleanup-preview-deployments',
+  'cron-cleanup-workflow-runs',
+  'cron-dependency-pin-drift',
+  'cron-prune-orphaned-services',
+  'cron-seed-office-presence-demo',
+  'cron-terraform-drift',
+  'deploy',
+  'deploy-code-server-image',
+  'deploy-context-md',
+  'deploy-demo-apps',
+  'deploy-docs-md',
+  'deploy-github-profile',
+  'deploy-preview',
+  'manual-deploy-app',
+  'manual-kill-services',
+  'manual-refresh-code-server-github-token',
+  'manual-replace-code-server',
+  'manual-run-tests',
+] as const;
+
+const WORKFLOW_LINKS: QuickLink[] = WORKFLOW_NAMES.map(name => ({
+  label: name,
+  target: `${VB_GITHUB_WORKFLOWS_URL}/${name}.yml`,
   type: OPEN_TYPE.BROWSER,
-  subgroup: LINK_GROUP_SUBGROUP.AGENTIC,
+  subgroup: LINK_GROUP_SUBGROUP.WORKFLOWS,
 }));
 
 export type { QuickLink };
@@ -302,6 +312,7 @@ export const EXTERNAL_QUICK_LINKS: QuickLink[] = [
   ...UI_APP_LINKS,
   ...VB_LINKS,
   ...AGENTIC_LINKS,
+  ...WORKFLOW_LINKS,
   ...GENERIC_DEV_LINKS,
   ...DEV_LINKS,
   ...UTILITY_LINKS,

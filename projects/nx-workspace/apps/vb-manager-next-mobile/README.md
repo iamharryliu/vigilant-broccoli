@@ -1,6 +1,6 @@
 # VB Manager Next Mobile
 
-Mobile dashboard with calendar, tasks, notepad, weather and shared Agentic workflow data.
+Mobile dashboard with calendar, tasks, notepad, weather and quick links including Agentic workflows.
 
 ## Table of Contents
 
