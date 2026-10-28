@@ -22,37 +22,26 @@ normalize_commit_message() {
   printf '%s.' "${message^}"
 }
 
-# Prints nothing for a title without a <type>(<scope>): prefix so callers fall
-# back to the commit subject instead of opening a PR the commit contract rejects.
-normalize_pr_title() {
-  local title=$1 prefix
-  local pattern='^([a-z]+(\([^)]*\))?: )(.+)$'
-  if [[ $title =~ $pattern ]]; then
-    prefix=${BASH_REMATCH[1]}
-    printf '%s%s' "$prefix" "$(normalize_commit_message "${BASH_REMATCH[3]}")"
-  fi
+# Mirrors type-enum in commitlint.config.mjs. The sandbox clone has no workspace
+# install to run commitlint itself, so the helpers below enforce its header rules.
+COMMIT_TYPES='feat fix ci chore docs refactor enhancement security infrastructure'
+
+# Prints "<type>(<scope>): <Message>." with a lower-case scope, or nothing for an
+# unknown type or empty message so callers use their fixed fallback subject.
+commit_header() {
+  local type=$1 scope=${2,,} message
+  case " $COMMIT_TYPES " in *" $type "*) ;; *) return 0 ;; esac
+  message=$(normalize_commit_message "$3")
+  [ -n "$message" ] || return 0
+  printf '%s%s: %s' "$type" "${scope:+($scope)}" "$message"
 }
 
-# Prints $1 when commitlint accepts it as a PR title, else the conforming
-# fallback $2 (default: a fixed chore subject), so no generated title reaches
-# `gh pr create`/`gh pr edit` unlinted. A sandbox clone without a workspace
-# install cannot run commitlint; the title is then passed through unchanged
-# because the normalizers above are the only guard available.
-guard_pr_title() {
-  local title=$1 fallback=${2:-"chore: Complete agent task."} root status=0
-  root=$(git rev-parse --show-toplevel) || { printf '%s' "$title"; return 0; }
-  (cd "$root" && pnpm exec commitlint --version >/dev/null 2>&1) || {
-    echo "commitlint unavailable; PR title was not linted." >&2
-    printf '%s' "$title"
-    return 0
-  }
-  printf '%s\n' "$title" | (cd "$root" && pnpm exec commitlint --config commitlint.config.mjs >/dev/null 2>&1) || status=$?
-  if [ "$status" -eq 0 ]; then
-    printf '%s' "$title"
-  else
-    echo "PR title failed commitlint; using fallback: $fallback" >&2
-    printf '%s' "$fallback"
-  fi
+# Prints nothing for a title commit_header cannot make conform, so callers fall
+# back to the commit subject instead of opening a PR the commit contract rejects.
+normalize_pr_title() {
+  local pattern='^([a-z]+)(\(([^)]*)\))?: (.+)$'
+  [[ $1 =~ $pattern ]] || return 0
+  commit_header "${BASH_REMATCH[1]}" "${BASH_REMATCH[3]}" "${BASH_REMATCH[4]}"
 }
 
 # Prints the PR_FILES:: marker write-pr-step-summary.sh renders as a changed-files
