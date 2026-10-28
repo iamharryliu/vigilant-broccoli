@@ -18,6 +18,7 @@ Exclude `notes/` (including `notes/CONTEXT.md`), `docs/rnd/`, `docs/learning-tim
 ## Candidates
 
 - A rule restated in several places: keep it in its owner per [documentation placement](../../../../docs/agent-support.md#documentation-placement) and link there from the others.
+- Misplaced consumer-specific or unrelated sibling details in standalone/leaf context or other in-scope guidance: apply the source-backed role, dependency/consumer and relocation checks in documentation placement. Preserve direct dependencies and necessary interoperability contracts; names alone are not defects.
 - Boilerplate repeated across files, such as identical preambles or restated root rules.
 - Incident narratives: compress to the mechanism, the current workaround and the recovery checks.
 - Implementation inventories derivable from code, and nuances whose trap an explanatory code comment now guards.
@@ -33,11 +34,14 @@ Exclude `notes/` (including `notes/CONTEXT.md`), `docs/rnd/`, `docs/learning-tim
 - Search heuristics in skills, such as `local-pr-create-audit`'s candidate phrases.
 - Live pending-work pointers (TODO IDs, follow-ups, pending migrations).
 
+Ownership repairs may relocate facts only between existing in-scope files, with a required reading link retaining discoverability from the original guidance. Do not change an obligation while relocating it. An out-of-scope caller README is not an authorized destination; retain and report the candidate when a safe move cannot fit the scope or cap.
+
 Compression must keep the same obligation: do not widen or narrow what a skill or rule asks for.
 
 ## Verification
 
 - For every removed fact, record one piece of evidence: the new text that retains it, the `file:line` where it already lives (and is reachable through a required reading link), or the code that makes it derivable. If none applies, keep the fact.
+- For ownership candidates, record source `file:line` evidence for the leaf role, relationship direction and destination owner per documentation placement, plus preservation and link checks. Report ambiguous roles/owners and excluded destinations as skipped rather than guessing.
 - Before "correcting" a claim, check it against the tree: count the cases it covers rather than trusting the document or your expectation. Leave the claim alone if the tree disagrees with the correction.
 - Rebuild changed ToCs per root `CONTEXT.md` Documentation rules, and repair incoming links and anchors after renaming headings.
 - Format changed files and apply `docs/refactor-code-cleanup.md`.

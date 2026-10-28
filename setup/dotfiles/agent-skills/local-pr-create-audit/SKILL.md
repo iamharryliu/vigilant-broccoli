@@ -5,7 +5,7 @@ description: In vigilant-broccoli, remove or rewrite documentation that describe
 
 Use the current vigilant-broccoli Git root. Outside this repo, ask which checkout to use; never default to the skill installation checkout.
 
-Remove or rewrite stale implementation history and correct inaccurate current claims in Markdown after verifying them against current code. This operation edits at most 15 files and never changes `TODO.md`.
+Remove or rewrite stale implementation history and correct inaccurate current claims in Markdown after verifying them against current code; repair misplaced leaf documentation using [documentation placement](../../../../docs/agent-support.md#documentation-placement). This operation edits at most 15 files and never changes `TODO.md`.
 
 ## Scope
 
@@ -17,17 +17,19 @@ Look for obsolete before/after narratives ("previously", "formerly", "used to", 
 
 Also check current claims against the tree: documented commands and `pnpm` scripts (vs `package.json` and project targets), script and workflow names, environment variable names, file and directory paths, and Swagger specs. For a service, compare the `createSwaggerSpec` in `src/libs/swagger.ts` (`src/swagger.ts` for email services) with the routes actually registered: paths, methods, request/response shapes and auth. Code is out of scope, so fix only Markdown that misstates them and report spec/route drift as a skipped candidate with both locations. Correct a claim only when the tree unambiguously shows the right value (a renamed script, moved path, differently named variable); when the tree is ambiguous or the intent is unclear, skip and report it.
 
+Check standalone/leaf app and service Markdown and context for misplaced consumer-specific or unrelated sibling details using the source-backed role and dependency/consumer checks in documentation placement. Preserve direct dependencies and necessary interoperability contracts; names alone are not defects.
+
 ## Verification
 
-- Verify each candidate against source before editing. Search names, filenames and paths across tracked and hidden repo files, including scripts, targets, workflows, deployment configs, infrastructure and dotfiles. A live reference or unresolved uncertainty means keep it.
+- Verify each candidate against source before editing. Search names, filenames and paths across tracked and hidden repo files, including scripts, targets, workflows, deployment configs, infrastructure and dotfiles. A live reference prevents treating a fact as obsolete; it does not establish its documentation owner. Unresolved uncertainty means keep it.
 - For a current claim, locate the defining source (script entry, route registration, env read, file on disk) and quote it as evidence. For before/after claims, confirm the new behavior and search for surviving old implementations.
 - Record searches/results or inspected source as evidence for each edit. Read-only Git history may help.
 
 ## Editing and report
 
-- Prioritize misleading instructions, wrong commands, paths or names, and widely read docs. Prefer fewer, certain edits over reaching the cap. Do not add documentation or change unrelated wording/style; prose and resulting link/ToC repairs are the only edits, all within the 15-file cap.
+- Prioritize misleading instructions, wrong commands, paths or names, and widely read docs. Prefer fewer, certain edits over reaching the cap. Do not add documentation except to relocate verified live facts into an existing in-scope owner and retain necessary links under documentation placement. Do not change unrelated wording/style; prose and resulting link/ToC repairs are the only edits, all within the 15-file cap.
 - Follow applicable context, repair incoming links/anchors and rebuild changed ToCs. Format changed files and apply `docs/refactor-code-cleanup.md`.
-- Report each edit with path, removed/replaced claim and evidence; list skipped candidates with reasons, including those over the cap. Report backlog findings without editing `TODO.md`.
+- Report each edit with path, removed/replaced claim and evidence; for ownership edits include role/relationship evidence, destination `file:line` and preservation/link checks; list skipped candidates with reasons, including ambiguous owners, excluded destinations and those over the cap. Report backlog findings without editing `TODO.md`.
 - Do not commit or publish. A verified clean audit makes no edits.
 
 Unattended entry point: `pnpm agentic-pr-create-audit`.
