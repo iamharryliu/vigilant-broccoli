@@ -2,8 +2,10 @@ import { Fragment } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { useTranslation } from '../i18n';
+import { GAMES_ROUTE } from '../consts/routes';
 import { getBreadcrumbAncestors } from '../consts/breadcrumbs';
 import {
+  isGamesHost,
   isCareerHost,
   isDeploymentsHost,
   isStatusHost,
@@ -19,7 +21,6 @@ export function Breadcrumb({ current, route }: BreadcrumbProps) {
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const ancestors = getBreadcrumbAncestors(route ?? pathname);
-  // Both hosts serve a single page, so ancestors live on the projects host.
   const onProjectsLinkHost = isStatusHost() || isDeploymentsHost();
   const onCareerHost = isCareerHost();
   // The career host root is the career page, not the projects Home.
@@ -35,7 +36,8 @@ export function Breadcrumb({ current, route }: BreadcrumbProps) {
     >
       {ancestors.map(crumb => (
         <Fragment key={crumb.path}>
-          {onProjectsLinkHost ? (
+          {onProjectsLinkHost ||
+          (isGamesHost() && crumb.path !== GAMES_ROUTE) ? (
             <a href={toProjectsUrl(crumb.path)} className="hover:underline">
               {crumbLabel(crumb)}
             </a>

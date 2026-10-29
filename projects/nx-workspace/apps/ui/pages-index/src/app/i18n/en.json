@@ -332,5 +332,11 @@
   },
   "API_SERVICE_DOCS_PAGE": {
     "ERROR": "Failed to load Swagger UI from {message}"
+  },
+  "GAMES_PAGE": {
+    "TITLE": "Games",
+    "DESCRIPTION": "Pick a game and play in your browser.",
+    "ABOUT": "About {title}",
+    "ALL_APPLICATIONS": "Browse all applications"
   }
 }
