@@ -223,7 +223,7 @@ button:focus-visible {
 }
 .guide-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 24px;
 }
 .guide-grid p {
@@ -239,12 +239,6 @@ button:focus-visible {
   font-size: 10px;
   font-weight: 800;
   padding-top: 2px;
-}
-footer {
-  font-size: 10px;
-  color: var(--muted);
-  padding-top: 18px;
-  border-top: 1px solid var(--line);
 }
 @media (max-width: 600px) {
   .gravity-app {
@@ -308,4 +302,338 @@ footer {
   body {
     background: #07111f;
   }
+}
+
+.settings {
+  margin-top: 20px;
+  padding: 16px 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  font-size: 13px;
+}
+.settings summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.settings label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  cursor: pointer;
+}
+.settings input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+.settings p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 8px 0 0 28px;
+}
+.settings :focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.masthead-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.masthead-actions button {
+  color: var(--text);
+  border-color: var(--line);
+}
+.flip-controls {
+  display: flex;
+  gap: 10px;
+}
+.secondary-flip {
+  background: #335dcb !important;
+  color: #fff !important;
+}
+.settings-page {
+  max-width: 680px;
+}
+.settings-page h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+.settings fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.settings-back {
+  margin-top: 24px;
+}
+@media (max-width: 600px) {
+  .masthead-actions {
+    justify-content: flex-start;
+    margin-top: 18px;
+  }
+  .masthead-actions .offline {
+    margin-top: 0;
+  }
+  .multiplayer-controls {
+    flex-wrap: wrap;
+  }
+  .multiplayer-controls > div {
+    width: 100%;
+  }
+  .multiplayer-controls .flip-button {
+    min-width: 0;
+    flex: 1;
+    padding-inline: 8px !important;
+    font-size: 11px !important;
+  }
+}
+
+.music-toggle {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+  box-shadow: 0 2px 8px #001c3020;
+}
+
+.settings-toggle {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 2;
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+.playfield,
+.flip-controls {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.orientation-notice {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 32px;
+  background: var(--page);
+  color: var(--text);
+  text-align: center;
+}
+.orientation-notice svg {
+  color: var(--accent);
+}
+.orientation-notice h2 {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 0;
+}
+.orientation-notice p {
+  max-width: 360px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin: 0;
+}
+.game-page:has(.orientation-notice) {
+  height: 100dvh;
+  overflow: hidden;
+}
+.settings-page .guide {
+  padding: 20px;
+}
+.settings-page .guide h2 {
+  margin-bottom: 18px;
+}
+.settings-page .guide-grid p {
+  margin: 0;
+}
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
+  .game-page {
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+    padding: max(6px, env(safe-area-inset-top))
+      max(8px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom))
+      max(8px, env(safe-area-inset-left));
+  }
+  .game-page .shell {
+    height: 100%;
+    max-width: none;
+  }
+  .game-page .masthead {
+    display: none;
+  }
+  .game-page .game-card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+  }
+  .game-page .dashboard {
+    padding: 5px 14px;
+    gap: 28px;
+    flex-shrink: 0;
+  }
+  .game-page .dashboard button {
+    min-height: 44px;
+  }
+  .game-page .dashboard strong {
+    font-size: 20px;
+  }
+  .game-page .stat-label {
+    font-size: 8px;
+    margin-bottom: 3px;
+  }
+  .game-page .playfield {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+  }
+  .game-page .control-bar {
+    padding: 4px 14px;
+    gap: 12px;
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+  }
+  .game-page .control-bar p {
+    font-size: 11px;
+  }
+  .game-page .control-bar > div {
+    width: auto;
+  }
+  .game-page .flip-button {
+    min-height: 48px;
+    min-width: 160px;
+  }
+  .game-page .multiplayer-controls .flip-controls {
+    flex: 1;
+    max-width: 400px;
+  }
+  .game-page .multiplayer-controls .flip-button {
+    min-width: 0;
+    flex: 1;
+    padding-inline: 8px !important;
+    font-size: 12px !important;
+  }
+  .game-page .overlay {
+    padding: 6px;
+  }
+  .game-page .overlay-card {
+    padding: 10px 20px;
+    width: min(440px, 75%);
+  }
+  .game-page .overlay .orbit-mark {
+    display: none;
+  }
+  .game-page .overlay h2 {
+    font-size: 22px;
+    margin: 2px 0 4px;
+  }
+  .game-page .overlay p {
+    font-size: 11px;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  .game-page .overlay .action {
+    min-height: 40px;
+  }
+  .game-page .music-toggle,
+  .game-page .settings-toggle {
+    top: 6px;
+    min-height: 44px;
+  }
+}
+
+.playfield-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+}
+.playfield-actions button,
+.settings-toggle {
+  width: 44px;
+  height: 44px;
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+.playfield-actions .music-toggle {
+  position: static;
+}
+.flip-controls {
+  margin-left: auto;
+}
+.run-hint {
+  font-size: 11px;
+  color: var(--muted);
+  max-width: 280px;
+}
+.help-dialog {
+  --muted: var(--gray-11);
+  --accent: var(--gray-12);
+  width: calc(100vw - 24px);
+  max-width: 650px;
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+}
+.help-dialog .guide-grid {
+  grid-template-columns: 1fr;
+}
+.help-pause {
+  margin: 20px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
+  .playfield-actions {
+    top: 6px;
+  }
+  .game-page .multiplayer-controls .flip-controls {
+    max-width: 500px;
+  }
+}
+.settings-toggle {
+  top: auto;
+  bottom: 12px;
+  right: 12px;
+  left: auto;
+}
+@media (pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
+  .game-page .settings-toggle {
+    top: auto;
+    bottom: 6px;
+    right: 12px;
+    left: auto;
+  }
+}
+.help-toggle {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
 }
