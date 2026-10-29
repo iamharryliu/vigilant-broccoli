@@ -3,13 +3,13 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
 import { resizeImage } from '@vigilant-broccoli/react-lib';
+import { EventDraftCard, EventDraft, EventDraftStatus } from './EventDraftCard';
 import {
-  EventDraftCard,
-  EventDraft,
-  EventDraftStatus,
-} from './event-draft-card';
-import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
-import { useVoiceInput } from '../hooks/use-voice-input';
+  HTTP_HEADERS,
+  HTTP_METHOD,
+  HTTP_STATUS_CODES,
+} from '@vigilant-broccoli/common-js';
+import { useCalendarEventTranslation } from './i18n';
 
 interface ImagePreview {
   data: string;
@@ -18,17 +18,30 @@ interface ImagePreview {
 }
 
 interface EventState {
+  id: string;
   draft: EventDraft;
   status: EventDraftStatus;
   errorMessage?: string;
   eventLink?: string;
 }
 
-interface CalendarInputProps {
+export interface CalendarInputProps {
   header: ReactNode;
+  authFetch: (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ) => Promise<Response>;
+  onUnauthorized?: () => Promise<void>;
+  renderVoiceAction?: (onTranscript: (text: string) => void) => ReactNode;
 }
 
-export const CalendarInput = ({ header }: CalendarInputProps) => {
+export const CalendarInput = ({
+  header,
+  authFetch,
+  onUnauthorized,
+  renderVoiceAction,
+}: CalendarInputProps) => {
+  const { t } = useCalendarEventTranslation();
   const [text, setText] = useState('');
   const [images, setImages] = useState<ImagePreview[]>([]);
   const [parsing, setParsing] = useState(false);
@@ -39,11 +52,6 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const firstDraftRef = useRef<HTMLDivElement>(null);
   const [parsedCount, setParsedCount] = useState(0);
-  const { recordingState, voiceError, interimTranscript, toggleRecording } =
-    useVoiceInput(transcript =>
-      setText(prev => (prev ? `${prev}\n${transcript}` : transcript)),
-    );
-
   // Wait for the drafts to render before scrolling to the first one.
   useEffect(() => {
     if (parsedCount === 0) return;
@@ -82,9 +90,9 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
     setParseError(null);
     setEventStates([]);
     try {
-      const res = await fetch('/api/calendar/parse', {
-        method: 'POST',
-        headers: await buildAuthHeaders({ json: true }),
+      const res = await authFetch('/api/calendar/parse', {
+        method: HTTP_METHOD.POST,
+        headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
         body: JSON.stringify({
           text: text.trim() || undefined,
           images:
@@ -96,71 +104,90 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
       });
       const data = await res.json();
       if (!res.ok) {
-        setParseError(data.error ?? 'Failed to parse');
+        setParseError(data.error ?? t('PARSE_ERROR'));
         return;
       }
       setEventStates(
         (data.events as EventDraft[]).map(draft => ({
+          id: crypto.randomUUID(),
           draft,
           status: 'draft' as EventDraftStatus,
         })),
       );
       textareaRef.current?.blur();
       setParsedCount(count => count + 1);
+    } catch {
+      setParseError(t('PARSE_ERROR'));
     } finally {
       setParsing(false);
     }
   };
 
-  const handleCreate = async (index: number, draft: EventDraft) => {
+  const handleCreate = async (id: string, draft: EventDraft) => {
     setEventStates(prev =>
-      prev.map((s, i) => (i === index ? { ...s, status: 'creating' } : s)),
+      prev.map(s => (s.id === id ? { ...s, status: 'creating' } : s)),
     );
 
-    const res = await fetch('/api/calendar/events', {
-      method: 'POST',
-      headers: await buildAuthHeaders({
-        includeGoogleToken: true,
-        json: true,
-      }),
-      body: JSON.stringify(draft),
-    });
+    try {
+      const res = await authFetch('/api/calendar/events', {
+        method: HTTP_METHOD.POST,
+        headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
+        body: JSON.stringify({
+          ...draft,
+          start: draft.allDay ? draft.start.slice(0, 10) : draft.start,
+          end: draft.allDay
+            ? (draft.end || draft.start).slice(0, 10)
+            : draft.end || draft.start,
+        }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) {
-      if (res.status === 401) {
-        await reconnectGoogle();
+      if (!res.ok) {
+        if (res.status === HTTP_STATUS_CODES.UNAUTHORIZED && onUnauthorized) {
+          await onUnauthorized();
+          return;
+        }
+        setEventStates(prev =>
+          prev.map(s =>
+            s.id === id
+              ? {
+                  ...s,
+                  status: 'error',
+                  errorMessage: data.error ?? t('CREATE_ERROR'),
+                }
+              : s,
+          ),
+        );
         return;
       }
+
       setEventStates(prev =>
-        prev.map((s, i) =>
-          i === index
-            ? {
-                ...s,
-                status: 'error',
-                errorMessage: data.error ?? 'Failed to create',
-              }
+        prev.map(s =>
+          s.id === id
+            ? { ...s, status: 'created', eventLink: data.event?.htmlLink }
             : s,
         ),
       );
-      return;
+    } catch {
+      setEventStates(prev =>
+        prev.map(event =>
+          event.id === id
+            ? { ...event, status: 'error', errorMessage: t('CREATE_ERROR') }
+            : event,
+        ),
+      );
     }
-
-    setEventStates(prev =>
-      prev.map((s, i) =>
-        i === index
-          ? { ...s, status: 'created', eventLink: data.event?.htmlLink }
-          : s,
-      ),
-    );
   };
 
-  const handleCancel = (index: number) => {
-    setEventStates(prev => prev.filter((_, i) => i !== index));
+  const handleCancel = (id: string) => {
+    setEventStates(prev => prev.filter(event => event.id !== id));
   };
 
-  const canParse = (text.trim().length > 0 || images.length > 0) && !parsing;
+  const canParse =
+    (text.trim().length > 0 || images.length > 0) &&
+    !parsing &&
+    !eventStates.some(event => event.status === 'creating');
 
   return (
     <>
@@ -171,7 +198,8 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
           value={text}
           onChange={e => setText(e.target.value)}
           onPaste={handlePaste}
-          placeholder="Paste event text, email, or image here..."
+          aria-label={t('INPUT')}
+          placeholder={t('INPUT')}
           rows={4}
           className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none bg-white dark:border-gray-700 dark:bg-gray-900"
         />
@@ -186,6 +214,7 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
                   className="w-20 h-20 object-cover rounded-lg border border-gray-200 dark:border-gray-700"
                 />
                 <button
+                  aria-label={t('REMOVE_IMAGE')}
                   onClick={() => removeImage(i)}
                   // eslint-disable-next-line vigilant-broccoli/require-dark-variant -- remove badge overlays a photo thumbnail, not a themed surface
                   className="absolute -top-1.5 -right-1.5 bg-gray-700 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs leading-none"
@@ -215,7 +244,7 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
                 d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-            Gallery
+            {t('GALLERY')}
           </button>
           <button
             onClick={() => cameraInputRef.current?.click()}
@@ -240,49 +269,12 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
                 d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-            Camera
+            {t('CAMERA')}
           </button>
-          <button
-            onClick={toggleRecording}
-            disabled={recordingState === 'transcribing'}
-            className={`flex-1 flex items-center justify-center gap-2 border rounded-lg px-3 py-2 text-sm transition-colors ${
-              recordingState === 'recording'
-                ? 'border-red-300 bg-red-50 text-red-600 dark:border-red-800 dark:bg-red-950 dark:text-red-300'
-                : 'border-gray-200 text-gray-600 hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:active:bg-gray-700'
-            } disabled:opacity-50`}
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-              />
-            </svg>
-            {recordingState === 'recording'
-              ? 'Stop'
-              : recordingState === 'transcribing'
-                ? '...'
-                : 'Voice'}
-          </button>
+          {renderVoiceAction?.(transcript =>
+            setText(prev => (prev ? `${prev}\n${transcript}` : transcript)),
+          )}
         </div>
-
-        {recordingState === 'recording' && interimTranscript && (
-          <p className="text-sm text-gray-400 italic px-1 dark:text-gray-500">
-            {interimTranscript}
-          </p>
-        )}
-
-        {voiceError && (
-          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2 dark:text-red-300 dark:bg-red-950">
-            {voiceError}
-          </p>
-        )}
 
         <input
           ref={fileInputRef}
@@ -308,26 +300,26 @@ export const CalendarInput = ({ header }: CalendarInputProps) => {
         )}
 
         {eventStates.map((state, index) => (
-          <div key={index} ref={index === 0 ? firstDraftRef : undefined}>
+          <div key={state.id} ref={index === 0 ? firstDraftRef : undefined}>
             <EventDraftCard
               draft={state.draft}
               status={state.status}
               errorMessage={state.errorMessage}
               eventLink={state.eventLink}
-              onCreate={draft => handleCreate(index, draft)}
-              onCancel={() => handleCancel(index)}
+              onCreate={draft => handleCreate(state.id, draft)}
+              onCancel={() => handleCancel(state.id)}
             />
           </div>
         ))}
       </div>
 
-      <div className="shrink-0 border-t border-gray-200 px-4 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-3 sm:px-6 sm:pb-6 dark:border-gray-700">
+      <div className="shrink-0 px-4 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-3 sm:px-6 sm:pb-6">
         <button
           onClick={handleParse}
           disabled={!canParse}
           className="w-full bg-blue-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50 transition-colors"
         >
-          {parsing ? 'Extracting...' : 'Extract events'}
+          {t(parsing ? 'EXTRACTING' : 'EXTRACT')}
         </button>
       </div>
     </>
