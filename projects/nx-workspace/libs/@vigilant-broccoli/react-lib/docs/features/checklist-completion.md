@@ -8,3 +8,4 @@
 - Write errors keep existing rows visible alongside the error so rollback remains usable.
 - Persistence remains optimistic; pending requests prevent repeated toggles and failed requests restore the original state.
 - Sortable membership follows the visible active rows without changing task drag payloads.
+- Expanding the Completed section fades its rows in with a short stagger (user toggles only, never the restored saved state; disabled under reduced motion).

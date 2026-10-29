@@ -36,9 +36,11 @@ const COMPLETION_STYLES = `
   .checklist-departing > .checklist-transition-content, .checklist-arriving > .checklist-transition-content { overflow: hidden; }
   .checklist-arriving { animation: checklist-arrive 150ms ease-out; }
   @keyframes checklist-arrive { from { grid-template-rows: 0fr; opacity: 0; translate: 0 -4px; } to { grid-template-rows: 1fr; opacity: 1; translate: 0 0; } }
+  .checklist-populating { animation: checklist-populate 200ms ease-out backwards; }
+  @keyframes checklist-populate { from { opacity: 0; translate: 0 -6px; } to { opacity: 1; translate: 0 0; } }
   @media (prefers-reduced-motion: reduce) {
     .checklist-transition { transition: none; }
-    .checklist-arriving { animation: none; }
+    .checklist-arriving, .checklist-populating { animation: none; }
   }
 `;
 
@@ -185,6 +187,7 @@ export const CheckListBase = <T extends CheckListBaseItem>({
   const timers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
   const [departing, setDeparting] = useState(new Map<string, boolean>());
   const [arriving, setArriving] = useState(new Set<string>());
+  const [populating, setPopulating] = useState(false);
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
@@ -301,7 +304,11 @@ export const CheckListBase = <T extends CheckListBaseItem>({
       />
     );
 
-  const renderRow = (presentationItem: T, isActive: boolean) => {
+  const renderRow = (
+    presentationItem: T,
+    isActive: boolean,
+    populateIndex?: number,
+  ) => {
     const item =
       items.find(current => current.id === presentationItem.id) ??
       presentationItem;
@@ -315,7 +322,13 @@ export const CheckListBase = <T extends CheckListBaseItem>({
           'checklist-transition',
           departing.has(item.id) && 'checklist-departing',
           arriving.has(item.id) && 'checklist-arriving',
+          populateIndex !== undefined && 'checklist-populating',
         )}
+        style={
+          populateIndex !== undefined
+            ? { animationDelay: `${Math.min(populateIndex, 8) * 30}ms` }
+            : undefined
+        }
       >
         <div className="checklist-transition-content">
           <Frame
@@ -396,13 +409,16 @@ export const CheckListBase = <T extends CheckListBaseItem>({
       {completedItems.length > 0 && (
         <CollapsibleList
           storageKeyPrefix={storageKeyPrefix}
+          onOpenChange={(_, open) => setPopulating(open)}
           items={[
             {
               id: completedSectionId,
               title: `Completed (${completedCount})`,
               content: (
                 <div className={LIST_CLASS[rowVariant]}>
-                  {completedItems.map(item => renderRow(item, false))}
+                  {completedItems.map((item, index) =>
+                    renderRow(item, false, populating ? index : undefined),
+                  )}
                 </div>
               ),
             },
