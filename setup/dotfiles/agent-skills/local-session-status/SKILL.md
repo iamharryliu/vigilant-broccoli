@@ -28,3 +28,5 @@ If credentials, network or tools fail, report local evidence and the lookup limi
 ## Response
 
 Return one brief bullet per dispatch: **task/session — best-supported state**; latest meaningful progress or blocker; PR URL when known. Use working, awaiting approval/input, validation/publishing blocked, PR open/completed, failed or unavailable/unknown as supported; explicitly qualify idle agents and pending/failing checks. Reserve completed for verified evidence and name what completed (for example, PR merged or run succeeded). Include lookup limitations in the affected bullet. Never expose secrets, full prompts or log dumps; use only short relevant excerpts if necessary.
+
+For an explicitly requested retry after a credential refresh, use the sibling [local-session-retry-publish](../local-session-retry-publish/SKILL.md). Status inspection itself remains read-only.
