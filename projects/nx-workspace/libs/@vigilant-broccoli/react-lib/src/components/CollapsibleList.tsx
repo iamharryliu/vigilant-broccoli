@@ -17,6 +17,8 @@ interface CollapsibleListProps {
   storageKeyPrefix?: string;
   chevronPosition?: 'left' | 'right';
   triggerClassName?: string;
+  /** Fires only for user toggles, not the saved state restored after mount. */
+  onOpenChange?: (id: string, open: boolean) => void;
 }
 
 export const CollapsibleList = ({
@@ -24,6 +26,7 @@ export const CollapsibleList = ({
   storageKeyPrefix,
   chevronPosition = 'right',
   triggerClassName = 'py-3',
+  onOpenChange,
 }: CollapsibleListProps) => {
   // Render the defaults immediately and apply saved state after mount: reading
   // localStorage during render would break SSR hydration, and rendering nothing
@@ -49,6 +52,10 @@ export const CollapsibleList = ({
   }, []);
 
   const handleValueChange = (values: string[]) => {
+    items.forEach(item => {
+      const open = values.includes(item.id);
+      if (open !== openItems.includes(item.id)) onOpenChange?.(item.id, open);
+    });
     setOpenItems(values);
     if (storageKeyPrefix) {
       items.forEach(item => {
