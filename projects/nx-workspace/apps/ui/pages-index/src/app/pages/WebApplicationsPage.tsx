@@ -52,6 +52,8 @@ const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
   'component-library': LayoutGrid,
   'docs-md': BookOpen,
   'find-me': MapPin,
+  'gravity-guy': Gamepad2,
+  'gravity-guy-staging': Gamepad2,
   'harry-liu': User,
   hearth: Home,
   pomodoro: Timer,

@@ -27,7 +27,7 @@
       "options": {
         "cwd": "apps/ui/gravity-guy",
         "tty": false,
-        "command": "next build --webpack"
+        "command": "NODE_ENV=production next build --webpack"
       },
       "configurations": {
         "development": {}
@@ -47,6 +47,18 @@
     },
     "lint": {
       "executor": "@nx/eslint:lint"
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "VERCEL_PROJECT_ID=staging-gravity-guy VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts gravity-guy staging"
+      }
+    },
+    "deploy:production": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "VERCEL_PROJECT_ID=production-gravity-guy VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts gravity-guy production"
+      }
     }
   }
 }

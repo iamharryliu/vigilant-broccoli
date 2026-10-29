@@ -359,6 +359,13 @@ async function main() {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
       settings: NX_VERCEL_SETTINGS('balloono', 'dist/apps/ui/balloono/.next'),
     },
+    'gravity-guy': {
+      hardcodedSecrets: {},
+      settings: NX_VERCEL_SETTINGS(
+        'gravity-guy',
+        'dist/apps/ui/gravity-guy/.next',
+      ),
+    },
     'weather-next': {
       hardcodedSecrets: {},
       settings: NX_VERCEL_SETTINGS(

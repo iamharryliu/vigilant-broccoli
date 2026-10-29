@@ -24,6 +24,7 @@ export const PROJECT_HOSTING = {
   'waiting-games': { platform: 'pages', name: 'waiting-games' },
   'weather-next': { platform: 'vercel', name: 'weather-next' },
   balloono: { platform: 'vercel', name: 'balloono' },
+  'gravity-guy': { platform: 'vercel', name: 'gravity-guy' },
   calendars: { platform: 'pages', name: 'calendars' },
   whiteboard: { platform: 'pages', name: 'whiteboard' },
   // Keep the deployed Vercel identity so summaries link to the existing projects.

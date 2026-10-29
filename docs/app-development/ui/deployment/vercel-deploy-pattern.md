@@ -1,6 +1,6 @@
 # Vercel deploy pattern (Next.js apps)
 
-Deploys for `hearth`, `weather-next`, `balloono`, `mobile-manager-next`. `employee-handler-ui` has no staging or production Vercel project (its `deploy` and `deploy:production` still push the Docker image) — it deploys to Vercel only through its `deploy:demo` target (project `demo-employee-handler-ui`), run by the `deploy-demo-apps` workflow on each successful staging `deploy-fanout` or by hand via `manual-deploy-app` with environment `demo`. `job-hunt-next` also has a public `deploy:demo` target (`demo-job-hunt-next`), serving bundled fictional data with `NEXT_PUBLIC_JOB_HUNT_DEMO=true`; its other deploy targets still publish the self-hostable Docker image. Everything runs through `scripts/deploy-vercel.ts`.
+Deploys for `hearth`, `weather-next`, `balloono`, `gravity-guy`, `mobile-manager-next`. `employee-handler-ui` has no staging or production Vercel project (its `deploy` and `deploy:production` still push the Docker image) — it deploys to Vercel only through its `deploy:demo` target (project `demo-employee-handler-ui`), run by the `deploy-demo-apps` workflow on each successful staging `deploy-fanout` or by hand via `manual-deploy-app` with environment `demo`. `job-hunt-next` also has a public `deploy:demo` target (`demo-job-hunt-next`), serving bundled fictional data with `NEXT_PUBLIC_JOB_HUNT_DEMO=true`; its other deploy targets still publish the self-hostable Docker image. Everything runs through `scripts/deploy-vercel.ts`.
 
 ## Table of Contents
 
