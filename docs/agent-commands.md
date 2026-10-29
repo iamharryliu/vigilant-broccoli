@@ -29,6 +29,7 @@ Custom agent commands from `setup/dotfiles/agent-skills/<name>/SKILL.md`, invoke
 | `local-pr-update` | Develop | Apply a requested change to an existing PR branch and verify its cumulative result. |
 | `local-pr-update-fix-ci` | Develop | Diagnose a PR's failing CI checks from their logs and fix the branch so the checks pass. |
 | `local-pr-update-resolve-conflicts` | Develop | Merge `origin/main` into a PR branch and resolve conflicts while preserving both sides. |
+| `remote-create-pr-codex` | Develop | Research a request locally, settle blocking questions, then start a Codex solve on the code-server VM. |
 | `ship-pr` | Develop | Branch, commit, sync with main, push and open a PR for files edited in the session. |
 | `update-feature-documentation` | Develop | Create or update the slim `docs/features` note under the affected app for the session's changes. |
 | `update-readmes` | Maintain | Refresh every `README.md` against the [README pattern](./app-readme-pattern.md) and the current code. |
