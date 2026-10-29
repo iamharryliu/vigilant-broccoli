@@ -1,6 +1,7 @@
 # Apps
 
 - `/apps` (sidebar entry) is a phone home-screen style picker: a grid of brand-coloured rounded-square tiles (4 columns on phones, more on wider screens) with the name underneath. The page is pinned to the viewport and only the list scrolls, so section headings scroll with their tiles.
+- On hover-capable devices, hovering a tile link subtly scales and lifts its icon tile with a 150ms ease-out transition; reduced-motion preferences disable transforms and transitions.
 - Tiles are grouped in `APP_SECTIONS` (`src/app/constants/apps.ts`) under visible Utility (Docs, Gmail, Google Maps, Proton Mail), Development (Actions, Deployments, GitHub, Projects, Pulls, Status), and Leisure (Spotify, YouTube) headings, in that section order. Keep each section’s entries alphabetical by label. Each app has `label`, `webUrl`, optional `iosUrl` and `androidPackage`, tile colour and lucide icon; add an entry to a section to add a tile.
 - The shared accessible search input stays above the scrolling list. It filters app names case-insensitively across all sections, ignoring surrounding whitespace without mutating the app constants. Matching apps retain their alphabetical order and section grouping; empty sections disappear. No matches shows a localized message; clearing search restores all apps. Headings and search copy use the shared `createI18n` English dictionary in `src/app/i18n`.
 - Tiles are plain `<a href={webUrl}>` links; `onClick` prevents default and calls `openApp` (`src/app/utils/open-app.ts`), so long-press and no-JS still work.

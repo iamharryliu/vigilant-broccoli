@@ -54,10 +54,10 @@ const AppsContent = () => {
                   key={app.label}
                   href={app.webUrl}
                   onClick={event => handleClick(event, app)}
-                  className="flex min-h-[44px] flex-col items-center gap-1.5 text-center"
+                  className="group flex min-h-[44px] flex-col items-center gap-1.5 text-center"
                 >
                   <span
-                    className={`flex aspect-square w-full max-w-16 items-center justify-center rounded-2xl text-white shadow-sm ${app.tileColor}`}
+                    className={`flex aspect-square w-full max-w-16 items-center justify-center rounded-2xl text-white shadow-sm transition-[transform,box-shadow] duration-150 ease-out [@media(hover:hover)]:motion-safe:group-hover:scale-105 [@media(hover:hover)]:group-hover:shadow-md motion-reduce:transform-none motion-reduce:transition-none ${app.tileColor}`}
                   >
                     <app.icon size={28} />
                   </span>
