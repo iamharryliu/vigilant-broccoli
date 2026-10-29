@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 import { Button, ThemeProvider } from '@vigilant-broccoli/react-lib';
 import { HowToPlay } from '../how-to-play';
 import { I18nProvider, useTranslation } from '../i18n';
@@ -11,15 +12,28 @@ function SettingsView() {
   const router = useRouter();
   const { scenery, players, music, sounds, updateSettings } = useGameSettings();
   return (
-    <main className="gravity-app">
+    <main className="gravity-app settings-app">
       <div className="shell settings-page">
-        <p className="eyebrow">{t('APP.NAME')}</p>
-        <h1>{t('APP.SETTINGS')}</h1>
+        <header className="settings-header">
+          <div>
+            <p className="eyebrow">{t('APP.NAME')}</p>
+            <h1>{t('APP.SETTINGS')}</h1>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="settings-back"
+            aria-label={t('APP.BACK_TO_GAME')}
+            title={t('APP.BACK_TO_GAME')}
+            onClick={() => router.push('/')}
+          >
+            <ArrowLeft size={22} aria-hidden="true" />
+          </Button>
+        </header>
         <p className="tagline">{t('APP.SETTINGS_COPY')}</p>
         <section className="settings" aria-labelledby="mode-title">
           <h2 id="mode-title">{t('APP.MODE')}</h2>
-          <fieldset>
-            <legend className="sr-only">{t('APP.MODE')}</legend>
+          <fieldset aria-labelledby="mode-title">
             {([1, 2] as const).map(count => (
               <label key={count}>
                 <input
@@ -76,13 +90,6 @@ function SettingsView() {
           <h2 id="guide-title">{t('APP.GUIDE_TITLE')}</h2>
           <HowToPlay />
         </section>
-        <Button
-          size="lg"
-          className="action settings-back"
-          onClick={() => router.push('/')}
-        >
-          {t('APP.BACK_TO_GAME')}
-        </Button>
       </div>
     </main>
   );

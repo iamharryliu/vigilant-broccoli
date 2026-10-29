@@ -73,6 +73,8 @@ queue_http_check "cloud8skate.com" "https://cloud8skate.com"
 queue_http_check "staging-hearth" "https://staging-hearth.vercel.app/login" 302
 queue_http_check "staging-findme" "https://staging-findme.pages.dev/" 302
 queue_http_check "staging-weather-next" "https://staging-weather-next.vercel.app/" 302
+queue_http_check "staging-gravity-guy" "https://staging-gravity-guy.vercel.app/" 302
+queue_http_check "production-gravity-guy" "https://gravity-guy.harryliu.dev/"
 queue_http_check "staging-calendars" "https://staging-calendars.pages.dev/" 302
 queue_http_check "git.harryliu.dev" "https://git.harryliu.dev"
 

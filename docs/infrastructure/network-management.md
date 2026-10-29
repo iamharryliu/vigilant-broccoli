@@ -26,6 +26,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── whiteboard.harryliu.dev               Whiteboard — Cloudflare Pages `production-whiteboard` (domain + CNAME: Terraform, infrastructure/terraform/)
 ├── weather.harryliu.dev           Weather — Vercel `production-weather-next` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
 ├── balloono.harryliu.dev                 Balloono — Vercel `production-balloono` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; online rooms run over public Supabase Realtime channels, no backend of its own)
+├── gravity-guy.harryliu.dev              Gravity Guy — Vercel `production-gravity-guy` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; stateless, browser-local settings and scores)
 ├── manager.harryliu.dev                  Mobile Manager Next — Vercel `production-vb-manager-next-mobile` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; gated by Vercel Authentication)
 ├── hearth.harryliu.dev                   Hearth — Vercel `production-hearth` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; public, sign-in via Supabase)
 ├── bookmarks.harryliu.dev                Bookmarks — Cloudflare Pages `production-bookmarks-react` (domain + CNAME: Terraform `cloudflare-bookmarks.tf`; browser-local data, no backend or auth)
@@ -63,7 +64,9 @@ vercel.app                                Vercel (production projects created on
 ├── staging-weather-next.vercel.app    Weather (staging)
 ├── production-weather-next.vercel.app Weather (production)
 ├── staging-balloono.vercel.app               Balloono (staging)
-└── production-balloono.vercel.app            Balloono (production)
+├── production-balloono.vercel.app            Balloono (production)
+├── staging-gravity-guy.vercel.app            Gravity Guy (staging)
+└── production-gravity-guy.vercel.app         Gravity Guy (production origin)
 
 pages.dev                                 Cloudflare Pages URLs for the environment not attached to a custom domain above
 ├── staging-bookmarks-react.pages.dev         Bookmarks (staging, Cloudflare Access)

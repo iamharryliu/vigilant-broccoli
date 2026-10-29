@@ -67,7 +67,7 @@ function Runner() {
   const [helpOpen, setHelpOpen] = useState(false);
   const clock = useRef({ last: 0, accumulator: 0 });
   const [status, setStatus] = useState<Status>('ready');
-  const { unlock, playDash, playPlatform } = useGameAudio(
+  const { unlock, playDash, playPlatform, playWoof } = useGameAudio(
     status === 'running',
     music,
     sounds,
@@ -238,7 +238,13 @@ function Runner() {
             run.current.surfaceEffect,
             run.current.partner?.surfaceEffect,
           ];
+          const previousBark = run.current.dog.barkTime ?? 0;
           advance(run.current);
+          if (
+            run.current.status === 'running' &&
+            (run.current.dog.barkTime ?? 0) > previousBark
+          )
+            playWoof();
           const currentEffects = [
             run.current.surfaceEffect,
             run.current.partner?.surfaceEffect,
@@ -295,7 +301,7 @@ function Runner() {
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [appearance, resetClock, scenery, playPlatform]);
+  }, [appearance, resetClock, scenery, playPlatform, playWoof]);
 
   const titleKey =
     status === 'paused'
@@ -375,7 +381,22 @@ function Runner() {
             aria-label={t('APP.PLAYFIELD')}
             aria-describedby="controls"
           >
-            <canvas ref={canvas} aria-hidden="true" />
+            <canvas
+              ref={canvas}
+              aria-hidden="true"
+              onPointerDown={event => {
+                if (event.pointerType === 'mouse') return;
+                event.preventDefault();
+                const bounds = event.currentTarget.getBoundingClientRect();
+                requestFlip(
+                  players === 2 &&
+                    event.clientX >= bounds.left + bounds.width / 2
+                    ? 2
+                    : 1,
+                );
+                field.current?.focus({ preventScroll: true });
+              }}
+            />
             <Button
               variant="outline"
               size="icon"
