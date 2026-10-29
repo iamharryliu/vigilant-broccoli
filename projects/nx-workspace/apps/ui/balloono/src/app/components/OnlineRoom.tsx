@@ -94,9 +94,11 @@ export function OnlineRoom({
   if (match) {
     return (
       <div className="flex flex-col gap-4">
-        {header}
         {connectionNotice}
         <MatchView
+          title={t('PAGE.ROOM', { room })}
+          onQuit={onLeave}
+          quitLabel={t('LOBBY.LEAVE')}
           match={match}
           localPlayerId={userId}
           wins={wins}

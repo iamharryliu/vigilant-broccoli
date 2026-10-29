@@ -1,15 +1,6 @@
 'use client';
 
-import { Bomb, CircleHelp } from 'lucide-react';
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@vigilant-broccoli/react-lib';
+import { Bomb } from 'lucide-react';
 import { DIRECTION } from '../engine/game.consts';
 import {
   CONTROL_ACTIONS,
@@ -105,42 +96,18 @@ function PlayerControls({
   );
 }
 
-export function ControlsHelpDialog({
+export function ControlsHelpContent({
   hasLocalPlayer = false,
-  trigger,
 }: {
   hasLocalPlayer?: boolean;
-  trigger?: React.ReactNode;
 }) {
-  const { t } = useTranslation();
   const keyMaps = usePlayerKeyMaps(hasLocalPlayer);
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        {trigger ?? (
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-6 w-6"
-            aria-label={t('CONTROLS.TITLE')}
-            title={t('CONTROLS.TITLE')}
-          >
-            <CircleHelp className="h-4 w-4" aria-hidden />
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent className="max-w-lg">
-        <DialogHeader>
-          <DialogTitle>{t('CONTROLS.TITLE')}</DialogTitle>
-          <DialogDescription>{t('CONTROLS.DESCRIPTION')}</DialogDescription>
-        </DialogHeader>
-        <div className="flex flex-col gap-6">
-          <PlayerControls player={KEY_PLAYER.ONE} keyMap={keyMaps.one} />
-          {hasLocalPlayer && (
-            <PlayerControls player={KEY_PLAYER.TWO} keyMap={keyMaps.two} />
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
+    <div className="flex flex-col gap-6">
+      <PlayerControls player={KEY_PLAYER.ONE} keyMap={keyMaps.one} />
+      {hasLocalPlayer && (
+        <PlayerControls player={KEY_PLAYER.TWO} keyMap={keyMaps.two} />
+      )}
+    </div>
   );
 }

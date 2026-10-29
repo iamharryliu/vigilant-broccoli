@@ -2,21 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
-import {
-  CardContainer,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  Button,
-} from '@vigilant-broccoli/react-lib';
-import {
-  Placement,
-  LeaderboardMetricDef,
-  UserRow,
-} from '@vigilant-broccoli/react-lib-higher-level';
+import { CardContainer, Button } from '@vigilant-broccoli/react-lib';
+import { Placement } from '@vigilant-broccoli/react-lib-higher-level';
 import { fetchLeaderboard, LeaderboardEntry } from '../../lib/stats';
 import { ONLINE_AVAILABLE } from '../app.consts';
 import { useTranslation } from '../i18n';
@@ -53,13 +40,20 @@ export function LeaderboardPanel() {
     };
   }, [revision]);
 
-  if (!ONLINE_AVAILABLE) return null;
+  if (!ONLINE_AVAILABLE)
+    return (
+      <CardContainer title={t('LEADERBOARD.TITLE')}>
+        <p role="status" className="text-sm text-muted-foreground">
+          {t('LEADERBOARD.UNAVAILABLE')}
+        </p>
+      </CardContainer>
+    );
 
-  const metrics: LeaderboardMetricDef[] = [
+  const metrics = [
     { key: 'wins', label: t('STATS.WINS') },
     { key: 'players_soaked', label: t('STATS.PLAYERS_SOAKED') },
     { key: 'matches', label: t('LEADERBOARD.MATCHES') },
-  ];
+  ] as const;
 
   const refresh = (
     <Button
@@ -81,101 +75,72 @@ export function LeaderboardPanel() {
   const hasRows = !loading && !failed && entries.length > 0;
 
   return (
-    <CardContainer
-      title={t('LEADERBOARD.PREVIEW_TITLE')}
-      headerAction={refresh}
-    >
-      {hasRows ? (
-        <ol className="flex flex-col gap-3">
-          {entries.slice(0, 5).map(entry => (
-            <li key={entry.player_code} className="flex items-center gap-3">
-              <Placement rank={entry.rank} />
-              <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                {t('LEADERBOARD.PLAYER', { code: entry.player_code })}
-              </span>
-              <span className="shrink-0 text-sm text-muted-foreground">
-                {t('MATCH.WINS', { count: entry.wins })}
-              </span>
-            </li>
-          ))}
-        </ol>
-      ) : (
+    <CardContainer title={t('LEADERBOARD.TITLE')} headerAction={refresh}>
+      <p className="text-sm text-muted-foreground">
+        {t('LEADERBOARD.DESCRIPTION')}
+      </p>
+      <p className="text-xs text-muted-foreground">{t('STATS.DISCLAIMER')}</p>
+      {!hasRows ? (
         <p role="status" className="text-sm text-muted-foreground">
           {t(status)}
         </p>
-      )}
-      <p className="text-xs text-muted-foreground">{t('STATS.DISCLAIMER')}</p>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="outline">{t('LEADERBOARD.VIEW_ALL')}</Button>
-        </DialogTrigger>
-        <DialogContent className="max-h-[85vh] max-w-5xl overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{t('LEADERBOARD.TITLE')}</DialogTitle>
-            <DialogDescription>
-              {t('LEADERBOARD.DESCRIPTION')}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-end pr-6">{refresh}</div>
-          <p className="mb-3 text-xs text-muted-foreground">
-            {t('STATS.DISCLAIMER')}
-          </p>
-          {!hasRows ? (
-            <p role="status" className="text-sm text-muted-foreground">
-              {t(status)}
-            </p>
-          ) : (
-            <>
-              {entries
-                .slice(page * ROWS_PER_PAGE, (page + 1) * ROWS_PER_PAGE)
-                .map(entry => (
-                  <UserRow
-                    key={entry.player_code}
-                    user={{
-                      id: entry.rank,
-                      email: '',
-                      displayName: t('LEADERBOARD.PLAYER', {
-                        code: entry.player_code,
-                      }),
-                      companyId: 0,
-                      rank: entry.rank,
-                      metrics: {
-                        wins: entry.wins,
-                        players_soaked: entry.players_soaked,
-                        matches: entry.matches,
-                      },
-                    }}
-                    metrics={metrics}
-                  />
-                ))}
-              {entries.length > ROWS_PER_PAGE && (
-                <div className="mt-3 flex items-center justify-center gap-3">
-                  <Button
-                    variant="outline"
-                    disabled={page === 0}
-                    onClick={() => setPage(value => value - 1)}
-                  >
-                    {t('LEADERBOARD.PREVIOUS')}
-                  </Button>
-                  <span className="text-sm">
-                    {t('LEADERBOARD.PAGE', {
-                      page: page + 1,
-                      total: Math.ceil(entries.length / ROWS_PER_PAGE),
-                    })}
-                  </span>
-                  <Button
-                    variant="outline"
-                    disabled={(page + 1) * ROWS_PER_PAGE >= entries.length}
-                    onClick={() => setPage(value => value + 1)}
-                  >
-                    {t('LEADERBOARD.NEXT')}
-                  </Button>
-                </div>
-              )}
-            </>
+      ) : (
+        <>
+          <ol className="flex flex-col divide-y divide-border">
+            {entries
+              .slice(page * ROWS_PER_PAGE, (page + 1) * ROWS_PER_PAGE)
+              .map(entry => (
+                <li
+                  key={entry.player_code}
+                  className="flex flex-col gap-2 py-3"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <Placement rank={entry.rank} />
+                    <span className="truncate text-sm font-semibold">
+                      {t('LEADERBOARD.PLAYER', { code: entry.player_code })}
+                    </span>
+                  </div>
+                  <dl className="grid grid-cols-3 gap-2">
+                    {metrics.map(metric => (
+                      <div key={metric.key} className="min-w-0">
+                        <dt className="text-xs text-muted-foreground">
+                          {metric.label}
+                        </dt>
+                        <dd className="text-sm font-medium">
+                          {entry[metric.key]}
+                        </dd>
+                      </div>
+                    ))}
+                  </dl>
+                </li>
+              ))}
+          </ol>
+          {entries.length > ROWS_PER_PAGE && (
+            <div className="mt-3 flex items-center justify-center gap-3">
+              <Button
+                variant="outline"
+                disabled={page === 0}
+                onClick={() => setPage(value => value - 1)}
+              >
+                {t('LEADERBOARD.PREVIOUS')}
+              </Button>
+              <span className="text-sm">
+                {t('LEADERBOARD.PAGE', {
+                  page: page + 1,
+                  total: Math.ceil(entries.length / ROWS_PER_PAGE),
+                })}
+              </span>
+              <Button
+                variant="outline"
+                disabled={(page + 1) * ROWS_PER_PAGE >= entries.length}
+                onClick={() => setPage(value => value + 1)}
+              >
+                {t('LEADERBOARD.NEXT')}
+              </Button>
+            </div>
           )}
-        </DialogContent>
-      </Dialog>
+        </>
+      )}
     </CardContainer>
   );
 }

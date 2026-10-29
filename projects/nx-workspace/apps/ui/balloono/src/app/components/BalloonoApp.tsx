@@ -39,13 +39,14 @@ function Balloono() {
   const { userId, username, setUsername } = usePlayerIdentity();
   const session = useSession();
   const [screen, setScreen] = useState<Screen>({ name: SCREEN.HOME });
+  const [practiceActive, setPracticeActive] = useState(false);
   const [advertisement, setAdvertisement] = useState<RoomListing | null>(null);
   const rooms = useRoomDirectory(ONLINE_AVAILABLE, userId, advertisement);
   const localPlayerId = `${userId}${LOCAL_PLAYER_SUFFIX}`;
   const accountId = session?.user.id;
   const accountName = displayNameOf(session);
   // `KeyD` steers right in matches, so the theme shortcut is home-screen only.
-  useThemeKeybind(screen.name === SCREEN.HOME);
+  useThemeKeybind(screen.name === SCREEN.HOME && !practiceActive);
 
   // Once per account per device, so a name the player later edits sticks.
   // Presence keys stay the per-page-load `userId`.
@@ -91,6 +92,7 @@ function Balloono() {
       <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6">
         {screen.name === SCREEN.HOME && (
           <HomeScreen
+            onPracticeActiveChange={setPracticeActive}
             username={username}
             onUsernameChange={setUsername}
             rooms={rooms}

@@ -43,26 +43,13 @@ export function CpuGame({
 
   if (!match) return null;
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
-        <Button variant="outline" size="sm" onClick={onQuit}>
-          {t('MATCH.QUIT')}
-        </Button>
-      </div>
-      <MatchView
-        match={match}
-        localPlayerId={playerId}
-        wins={wins}
-        hasLocalPlayer={hasLocalPlayer}
-        actions={
-          <>
-            <Button onClick={restart}>{t('MATCH.PLAY_AGAIN')}</Button>
-            <Button variant="outline" onClick={onQuit}>
-              {t('MATCH.QUIT')}
-            </Button>
-          </>
-        }
-      />
-    </div>
+    <MatchView
+      onQuit={onQuit}
+      match={match}
+      localPlayerId={playerId}
+      wins={wins}
+      hasLocalPlayer={hasLocalPlayer}
+      actions={<Button onClick={restart}>{t('MATCH.PLAY_AGAIN')}</Button>}
+    />
   );
 }

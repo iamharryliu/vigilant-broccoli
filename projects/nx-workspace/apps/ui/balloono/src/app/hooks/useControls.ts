@@ -5,6 +5,8 @@ import { DROP_ACTION, KeyMap } from './useKeyBindings';
 const KEYDOWN_EVENT = 'keydown';
 const KEYUP_EVENT = 'keyup';
 const BLUR_EVENT = 'blur';
+const isDialogOpen = () =>
+  document.querySelector('[role="dialog"][data-state="open"]') !== null;
 
 export interface Controls {
   takeInput: () => PlayerInput;
@@ -35,6 +37,13 @@ export function useControls(enabled: boolean, keyMap: KeyMap): Controls {
   }, []);
 
   const takeInput = useCallback((): PlayerInput => {
+    // Dialog keys must not also steer a player or leave a held direction
+    // queued for when the dialog closes.
+    if (isDialogOpen()) {
+      heldRef.current = [];
+      pendingBalloonRef.current = false;
+      return { direction: null, placeBalloon: false };
+    }
     const placeBalloon = pendingBalloonRef.current;
     pendingBalloonRef.current = false;
     return { direction: heldRef.current.at(-1) ?? null, placeBalloon };
@@ -47,7 +56,7 @@ export function useControls(enabled: boolean, keyMap: KeyMap): Controls {
       event.target instanceof HTMLTextAreaElement;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (isTyping(event)) return;
+      if (isTyping(event) || isDialogOpen()) return;
       const action = keyMap[event.code];
       if (!action) return;
       event.preventDefault();
