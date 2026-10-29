@@ -1,0 +1,52 @@
+{
+  "name": "gravity-guy",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/gravity-guy",
+  "projectType": "application",
+  "tags": ["visibility:public"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "default",
+        "^default",
+        {
+          "externalDependencies": ["next"]
+        },
+        {
+          "dependentTasksOutputFiles": "**/*.d.ts",
+          "transitive": true
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/apps/ui/gravity-guy/.next/!(cache)/**/*",
+        "{workspaceRoot}/dist/apps/ui/gravity-guy/.next/!(cache)"
+      ],
+      "options": {
+        "cwd": "apps/ui/gravity-guy",
+        "tty": false,
+        "command": "next build --webpack"
+      },
+      "configurations": {
+        "development": {}
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
+      "options": {
+        "cwd": "apps/ui/gravity-guy",
+        "command": "next dev --webpack"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}
