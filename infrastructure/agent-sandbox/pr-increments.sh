@@ -236,7 +236,7 @@ Sandbox execution rules:
   - pr_next_steps: markdown checklist for the PR "## Next steps" section — remaining actions for the human for this increment, or "- [ ] Merge once CI is green" when nothing else is left
   - pr_concerns: markdown bullet points for the PR "## Concerns" section (risks, known limitations, unverified behavior, unresolved questions), or "" when there are none
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section (optional follow-up work only), or "" when there are none
-  - pr_screenshots: array of repo-relative PNG paths captured for this increment under projects/nx-workspace/screenshots/; omit or [] when none. The runner commits these images and embeds them in the PR body
+  - pr_screenshots: array of repo-relative PNG paths captured for this increment under projects/nx-workspace/screenshots/; omit or [] when none. The runner commits these images and embeds them in the PR body. Screenshots are required only when the changed page or component is reachable and renderable without authentication. If authentication or unavailable dependencies (a missing backend or secrets, or port conflicts) prevent exercising it in a browser, do not attempt or retry screenshots and do not mention missing screenshots as a PR concern or in PR_CONCERNS.
   - file_changes: array of objects {"file": "<repo-relative path of each file you changed>", "summary": "<one line on what changed or was implemented>"}, shown as a table in the run summary
 EOF
 }
