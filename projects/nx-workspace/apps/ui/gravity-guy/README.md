@@ -1,6 +1,6 @@
 # Gravity Guy
 
-A single-player gravity-flipping arcade runner with offline local play.
+A gravity-flipping arcade runner with single-player and local two-player modes.
 
 ## Table of Contents
 

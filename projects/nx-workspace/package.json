@@ -4,16 +4,11 @@
   "license": "MIT",
   "packageManager": "pnpm@11.9.0",
   "lint-staged": {
-    "*.ts": [
-      "nx affected -t lint",
-      "nx format:write"
+    "*.{ts,tsx,js,jsx}": [
+      "nx affected -t lint"
     ],
-    "*.json": [
-      "nx format:write"
-    ],
-    "*.md": [
-      "nx format:write",
-      "node ../../scripts/node/md-table-compact.mjs --write"
+    "*.{ts,tsx,js,jsx,json,html,css,scss,md}": [
+      "bash ../../scripts/shell/format-staged.sh"
     ]
   },
   "private": true,
