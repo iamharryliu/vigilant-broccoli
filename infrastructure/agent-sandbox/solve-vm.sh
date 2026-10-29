@@ -17,12 +17,14 @@ VM_IP_OUTPUT=oci_code_server_public_ip
 TOKEN_FILE=/opt/code-server/secrets/gh-token.json
 
 if [ -n "${GITHUB_ACTIONS:-}" ]; then
-  echo "ERROR: --vm is a workstation entry point; Actions runs manual-agentic-pr-create." >&2
+  echo "ERROR: --vm is a workstation entry point; use the corresponding manual-agentic workflow in Actions." >&2
   exit 1
 fi
 
 REQUESTS=()
-if [ -n "$PROMPT" ]; then
+if [ "${IDS[0]:-}" = --update ]; then
+  REQUESTS=("${IDS[@]}")
+elif [ -n "$PROMPT" ]; then
   REQUESTS=(--prompt "$PROMPT")
 else
   for id in "${IDS[@]}"; do
@@ -67,6 +69,10 @@ fi
 printf -v SESSION_ARGS '%q ' "$AGENT" "$MODEL" "$CODEX_MODEL" "$SIGNED_IN" "${REQUESTS[@]}"
 {
   { [ "$AGENT" != codex ] || [ "$SIGNED_IN" = 1 ]; } || printf 'AGENT_CODEX_ACCESS_TOKEN=%q\n' "$AGENT_CODEX_ACCESS_TOKEN"
+  if [ "${REQUESTS[0]:-}" = --update ]; then
+    printf 'VM_UPDATE_RUNNER=%q\n' "$(cat "$SCRIPT_DIR/update-pr-runner.sh")"
+    printf 'VM_UPDATE_HELPER=%q\n' "$(cat "$SCRIPT_DIR/update-pr-vm-agent.sh")"
+  fi
   cat "$SCRIPT_DIR/solve-vm-session.sh"
 } | "$OCI_SSH" "$VM_IP_OUTPUT" \
   "sudo docker exec -i -u abc -e HOME=/config -w /config code-server bash -s -- $SESSION_ARGS"

@@ -30,9 +30,22 @@ run_solve() {
     rm -f "$run_dir/codex-token"
   fi
   set -o pipefail
-  REPO_DIR=$worktree META_FILE="$run_dir/solve-meta.json" INC_PLAN_FILE="$run_dir/increment-plan.json" \
-    SOLVE_AGENT=$agent SOLVE_MODEL=$model CODEX_MODEL=$codex_model CODEX_SIGNED_IN=$signed_in SOLVE_ON_CODE_SERVER=1 \
-    bash infrastructure/agent-sandbox/solve-todo-runner.sh "$flag" "$value" 2>&1 | tee "$run_dir/run.log" || status=$?
+  if [ "$flag" = --update ]; then
+    export UPDATE_PR_VM_HELPER="$run_dir/update-pr-vm-agent.sh"
+    SANDBOX_CI_LOGS=$(<"$run_dir/ci-logs")
+    export SANDBOX_CI_LOGS
+    case "$(<"$run_dir/operation")" in
+      fix-ci) export SANDBOX_FIX_CI=1 ;;
+      resolve-conflicts) export SANDBOX_MERGE_MAIN=1 ;;
+    esac
+    REPO_DIR=$worktree META_FILE="$run_dir/update-meta.json" INC_PLAN_FILE="$run_dir/increment-plan.json" \
+      SOLVE_AGENT=$agent SOLVE_MODEL=$model CODEX_MODEL=$codex_model CODEX_SIGNED_IN=$signed_in SOLVE_ON_CODE_SERVER=1 \
+      bash "$run_dir/update-pr-runner.sh" "$value" "$(<"$run_dir/instruction")" 2>&1 | tee "$run_dir/run.log" || status=$?
+  else
+    REPO_DIR=$worktree META_FILE="$run_dir/solve-meta.json" INC_PLAN_FILE="$run_dir/increment-plan.json" \
+      SOLVE_AGENT=$agent SOLVE_MODEL=$model CODEX_MODEL=$codex_model CODEX_SIGNED_IN=$signed_in SOLVE_ON_CODE_SERVER=1 \
+      bash infrastructure/agent-sandbox/solve-todo-runner.sh "$flag" "$value" 2>&1 | tee "$run_dir/run.log" || status=$?
+  fi
   # Worktrees share the repository's branches, so the agent/* branches this
   # run checked out are deleted with it (they are pushed by then); otherwise a
   # re-run of the same TODO id fails on `git checkout -b agent/todo-<id>`.
@@ -40,7 +53,9 @@ run_solve() {
   if [ "$status" = 0 ]; then
     cd "$repo"
     git worktree remove --force "$worktree"
-    for branch in $branches; do git branch -D "$branch" >/dev/null || true; done
+    if [ "$flag" != --update ]; then
+      for branch in $branches; do git branch -D "$branch" >/dev/null || true; done
+    fi
   else
     echo "Kept $worktree for inspection; remove it with: git -C $repo worktree remove --force $worktree" | tee -a "$run_dir/run.log"
   fi
@@ -56,7 +71,11 @@ while [ $# -gt 0 ]; do
   flag=$1
   value=$2
   shift 2
-  if [ "$flag" = --id ]; then
+  if [ "$flag" = --update ]; then
+    instruction=$1 operation=$2 ci_logs=$3
+    shift 3
+    label="update-pr-${value##*/}"
+  elif [ "$flag" = --id ]; then
     label="todo-$value"
   else
     label="task-$(echo "$value" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-*//;s/-*$//' | cut -c1-30)"
@@ -65,6 +84,15 @@ while [ $# -gt 0 ]; do
   session=$(basename "$run_dir" | tr '.' '-')
   if [ "$AGENT" = codex ] && [ "$CODEX_SIGNED_IN" != 1 ]; then
     (umask 077 && printf '%s' "$AGENT_CODEX_ACCESS_TOKEN" >"$run_dir/codex-token")
+  fi
+  if [ "$flag" = --update ]; then
+    printf '%s\n' "$VM_UPDATE_RUNNER" > "$run_dir/update-pr-runner.sh"
+    printf '%s\n' "$VM_UPDATE_HELPER" > "$run_dir/update-pr-vm-agent.sh"
+    # The streamed runner sources these before checking out the PR's branch.
+    cp "$REPO/infrastructure/agent-sandbox/"{pr-increments,no-changes,commit-subject}.sh "$run_dir/"
+    printf '%s' "$instruction" > "$run_dir/instruction"
+    printf '%s' "$operation" > "$run_dir/operation"
+    printf '%s' "$ci_logs" > "$run_dir/ci-logs"
   fi
   git -C "$REPO" worktree add --quiet --detach "$run_dir/repo" origin/main
   printf -v body '%s; run_solve %q %q %q %q %q %q %q %q' "$(declare -f run_solve)" "$REPO" "$run_dir" "$flag" "$value" "$AGENT" "$MODEL" "$CODEX_MODEL" "$CODEX_SIGNED_IN"

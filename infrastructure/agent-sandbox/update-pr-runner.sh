@@ -20,6 +20,11 @@ CI_LOG_BUDGET=20000
 CI_WAIT_SECONDS=${CI_WAIT_SECONDS:-600}
 CI_POLL_SECONDS=30
 
+if [ -n "${UPDATE_PR_VM_HELPER:-}" ]; then
+  # shellcheck source=update-pr-vm-agent.sh
+  . "$UPDATE_PR_VM_HELPER"
+  update_pr_vm_paths
+fi
 cd "$REPO_DIR"
 SKILL_NAME=agentic-pr-update
 FALLBACK_SUBJECT="chore: Apply requested update to PR #${PR}."
@@ -252,6 +257,10 @@ COMMENT
   no_changes_exit "$META_FILE" "$1"
 }
 
+if [ -n "${UPDATE_PR_VM_HELPER:-}" ]; then
+  # shellcheck source=update-pr-vm-agent.sh
+  . "$UPDATE_PR_VM_HELPER"
+fi
 agent_invoke "$PROMPT"
 normalize_meta "$META_FILE"
 
@@ -279,7 +288,7 @@ INC_HISTORY_COMMAND=$INC_HISTORY_BASE_COMMAND
 if [ -n "${GITHUB_ACTIONS:-}" ]; then
   INC_HISTORY_SOURCE="GitHub Actions"
 else
-  INC_HISTORY_SOURCE="Docker sandbox (local)"
+  INC_HISTORY_SOURCE="${UPDATE_PR_HISTORY_SOURCE:-Docker sandbox (local)}"
 fi
 
 RESOLVED_IDS=()
