@@ -152,7 +152,7 @@ const useTasks = (
     const nextStatus =
       originalStatus === 'completed' ? 'needsAction' : 'completed';
 
-    // Optimistically flip status and keep item visible while request is in-flight.
+    // The shared checklist owns visual timing; this flag only guards persistence.
     setTasks(prevTasks =>
       prevTasks.map(t =>
         t.id === task.id ? { ...t, status: nextStatus, isRemoving: true } : t,
@@ -803,7 +803,7 @@ export const GoogleTasksComponent = ({
       if (!over || active.id === over.id) return;
 
       const activeItems = checklistItems.filter(
-        item => !item.checked || item.isRemoving,
+        item => !item.checked && !item.isRemoving,
       );
       const activeIndex = activeItems.findIndex(item => item.id === active.id);
       const overIndex = activeItems.findIndex(item => item.id === over.id);
