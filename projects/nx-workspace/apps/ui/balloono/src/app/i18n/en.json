@@ -118,21 +118,14 @@
     "PREVIOUS": "Previous",
     "NEXT": "Next",
     "PAGE": "{page} / {total}",
-    "PREVIEW_TITLE": "Top 5 players",
-    "VIEW_ALL": "Full leaderboard"
+    "UNAVAILABLE": "Online rankings aren’t configured in this build. You can still play offline."
   },
   "HOME": {
     "TAGLINE": "Drop balloons. Soak rivals. Stay dry.",
-    "PLAY": "Play Balloono",
-    "PROGRESS": "Stats and rankings",
-    "ONLINE": "Play online",
     "ONLINE_HINT": "4–8 players · No CPUs · Matches start automatically after the countdown.",
     "CREATE_ROOM": "Create room",
     "AVAILABLE_ROOMS": "Available rooms",
     "NO_ROOMS": "No rooms yet. Create one and invite your friends.",
-    "PRACTICE": "Practice offline",
-    "PRACTICE_BUTTON": "Play against CPUs",
-    "HIDE_SETTINGS": "Hide settings",
     "ALL_STATS": "View all stats",
     "HIDE_STATS": "Show fewer stats",
     "IN_PROGRESS": "In progress",
@@ -144,7 +137,12 @@
     "WATCH_ROOM": "Watch {room}",
     "HOW_TO_PLAY": "How to play",
     "GOAL": "Drop water balloons, collect power-ups and be the last player dry.",
-    "CONTROLS": "Controls"
+    "NAVIGATION": "Balloono sections",
+    "ONLINE_MODE": "Online mode",
+    "OFFLINE_MODE": "Offline mode",
+    "RULE_SPLASH": "Balloons pop after 2.5 seconds in a plus-shaped splash. Crates stop the splash; other balloons trigger chain reactions.",
+    "RULE_POWER_UPS": "Break crates to find extra balloons, bigger splashes and faster feet. Stay out of every splash, including your own.",
+    "RULE_SUDDEN_DEATH": "After two minutes, the arena starts closing in. The last player dry wins."
   },
   "DEVICE": {
     "TITLE": "Desktop required",
@@ -157,12 +155,13 @@
     "PRESS_KEY": "Press a key…",
     "UNBOUND": "None",
     "REBIND": "Change the key for {action}",
-    "LOCAL_PRIORITY": "Player 2 keys only apply in local 2-player matches, where they take priority over Player 1's matching keys.",
-    "RESET": "Reset to defaults"
+    "LOCAL_PRIORITY": "Player 2 keys apply in local 2-player matches and the practice arena, where they take priority over Player 1's matching keys.",
+    "RESET": "Reset to defaults",
+    "KEY_BINDINGS": "Key bindings"
   },
   "CONTROLS": {
     "TITLE": "Controls",
-    "DESCRIPTION": "Your keys for this match. Change them in Settings on the home screen.",
+    "DESCRIPTION": "Use these keys to move and drop balloons. Change them with the gear button in-game or Key bindings in Settings.",
     "PLAYER_ONE": "Player 1",
     "PLAYER_TWO": "Player 2",
     "UP": "Move up",
@@ -170,5 +169,13 @@
     "LEFT": "Move left",
     "RIGHT": "Move right",
     "DROP": "Drop a balloon"
+  },
+  "PRACTICE": {
+    "RESET": "Reset arena",
+    "DESCRIPTION": "Try the controls together in this mini arena. Move around, drop water balloons, break crates and collect power-ups. Your current key bindings apply.",
+    "ARENA": "Practice arena",
+    "FOCUS": "Click the arena or choose Try controls to play.",
+    "ACTIVE": "Controls active · Escape or click outside the arena to pause.",
+    "TRY": "Try controls"
   }
 }
