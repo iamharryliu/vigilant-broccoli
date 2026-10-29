@@ -36,4 +36,5 @@
 - [Finance Lingo](./finance/finance-lingo.md)
 - [Project Management](./project-management.md)
 - [Habits](./self-improvement/habits.md)
+- [Transitional Skills](./transitional-skills.md)
 - [Tips](./tips.md)

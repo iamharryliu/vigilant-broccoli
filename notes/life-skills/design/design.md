@@ -2,6 +2,11 @@
 
 - Good Design
   - Minimal design with max utility.
+  - Enjoyment in doing
+    - Enjoyable to use
+    - Everything belongs somewhere
+    - Easy to access
+    - Simple
 - [Material](material.md)
 - Cool designs
   - Backpack hip belts.
