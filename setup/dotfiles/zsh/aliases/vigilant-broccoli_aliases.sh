@@ -70,7 +70,15 @@ alias dockercleanup="$REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh"
 # Reclaim disk: Claude worktrees, Docker build cache/images, package-manager caches. Docker volumes are left alone.
 localcleanup() {
     local worktrees_dir="$REPO_DIR/.claude/worktrees" worktree
-    local -a worktrees=("$worktrees_dir"/*(N/))
+    local -a worktrees=()
+    # Keep unmatched globs harmless in zsh without changing the caller's options.
+    if [ -n "${ZSH_VERSION:-}" ]; then
+        setopt local_options nonomatch
+    fi
+    for worktree in "$worktrees_dir"/*/; do
+        [ -d "$worktree" ] || continue
+        worktrees+=("${worktree%/}")
+    done
 
     echo "Claude worktrees to remove (worktrees with uncommitted changes are skipped):"
     printf '  %s\n' "${worktrees[@]}"
@@ -92,7 +100,9 @@ localcleanup() {
 
     npm cache clean --force
     rm -rf ~/.npm/_npx ~/Library/Caches/{Yarn,Cypress,pip}
-    df -h /System/Volumes/Data
+    if [ -d /System/Volumes/Data ]; then
+        df -h /System/Volumes/Data
+    fi
 }
 
 # Cheatsheet
