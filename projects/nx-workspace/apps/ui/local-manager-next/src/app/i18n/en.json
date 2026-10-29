@@ -8,6 +8,9 @@
     "NOTEPAD": "Notepad",
     "QUICK_LINKS": "Quick Links"
   },
+  "STATUS": {
+    "TITLE": "Status"
+  },
   "RENDER": {
     "TITLE": "Render Services",
     "FETCH_ERROR": "Unable to load Render services. Check RENDER_API_KEY in Vault and redeploy local-manager.",

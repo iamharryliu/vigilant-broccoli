@@ -1,6 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { SIDEBAR_ROUTE } from '../app.const';
 import { ReactNode, useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../libs/auth';
@@ -82,6 +82,7 @@ const handleKeyboardShortcut = (
 
 export default function Layout({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const isStatusPage = usePathname() === SIDEBAR_ROUTE.STATUS.path;
   const _session = useAuth();
   const { notifications, unreadCount, add, markAllRead, clear } =
     useNotificationHistory();
@@ -161,7 +162,9 @@ export default function Layout({ children }: { children: ReactNode }) {
     <NotificationContext.Provider value={add}>
       <div className="w-full h-screen flex flex-col overflow-hidden print:h-auto print:overflow-visible print:block">
         <div className="flex flex-1 overflow-hidden print:h-auto print:overflow-visible print:block">
-          <main className="flex-1 p-4 min-w-0 overflow-y-auto print:h-auto print:overflow-visible print:p-0 print:w-full">
+          <main
+            className={`flex-1 min-w-0 min-h-0 ${isStatusPage ? 'flex overflow-hidden' : 'p-4 overflow-y-auto'} print:h-auto print:overflow-visible print:p-0 print:w-full`}
+          >
             {children}
           </main>
           <div className="print:hidden">
