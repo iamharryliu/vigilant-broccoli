@@ -1,0 +1,6 @@
+interface:
+  display_name: 'Local Session Retry Publish'
+  short_description: 'Notify idle agents to retry blocked PR publishing'
+  default_prompt: 'Use $local-session-retry-publish to notify the selected publishing-blocked session that credentials were refreshed.'
+policy:
+  allow_implicit_invocation: false

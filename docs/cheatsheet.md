@@ -234,3 +234,8 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   nx:migrate                  nx migrate latest
   nx:migrate:run              nx migrate --run-migrations
 ```
+
+Local agent commands (Codex `$name`, Claude `/name`):
+
+- `local-session-status` — One read-only snapshot of known dispatches.
+- `local-session-retry-publish [session]` — After a reported token refresh, notify the single known publishing-blocked idle agent or an explicitly selected session. See [usage and limitations](../setup/dotfiles/agent-skills/local-session-retry-publish/SKILL.md).

@@ -38,6 +38,8 @@ Maintenance scopes differ: inventory audit fixes rows of the fork identity and s
 
 `local-session-status` (`$local-session-status` in Codex, `/local-session-status` in Claude) gives one brief, read-only status snapshot of dispatches known in the invoking conversation. Explicit session names, branches/worktrees, PRs, Actions run identifiers or Docker launch log paths can select jobs when conversation history is unavailable. It does not enumerate unrelated sessions or control jobs, and has no Actions/Docker runner equivalent. The [canonical skill](../setup/dotfiles/agent-skills/local-session-status/SKILL.md) defines evidence and reporting rules.
 
+`local-session-retry-publish` (`$local-session-retry-publish` in Codex, `/local-session-retry-publish` in Claude) notifies selected existing idle agents to retry already authorized publishing after a reported credential refresh. It shares status provenance boundaries and has no Actions/Docker equivalent. See the [canonical skill](../setup/dotfiles/agent-skills/local-session-retry-publish/SKILL.md) for selection, safe submission and limitations.
+
 ## Entry-point parity
 
 Each [README lifecycle row](../README.md#agentic) represents one operation across its supported Actions, Docker Sandbox and Local entry points. The table's Phase, Description and Actions columns also generate the `mobile-manager-next` Agentic tab, so edit them in the [documented format](../README.md#agentic).
