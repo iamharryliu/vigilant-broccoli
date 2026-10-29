@@ -26,7 +26,8 @@ export type Run = Player & {
   mapSpeedMultiplier: number;
   seed: number;
   partner?: Player;
-  winner: 1 | 2 | 'tie' | null;
+  onlinePlayers?: Player[];
+  winner: number | 'tie' | null;
   dog: {
     x: number;
     y: number;
@@ -49,6 +50,18 @@ export type Platform = {
   obstacle?: boolean;
   effect?: 'boost' | 'slow';
 };
+
+export const playersOf = (run: Run): Player[] =>
+  run.onlinePlayers
+    ? [run, ...run.onlinePlayers]
+    : run.partner
+      ? [run, run.partner]
+      : [run];
+export const createOnlineRun = (count: number): Run => ({
+  ...createRun(),
+  onlinePlayers: Array.from({ length: count - 1 }, () => createPlayer()),
+  status: 'running',
+});
 
 const DEFAULT_VIEW_WIDTH = 680;
 const centerOffset = (run: Run) =>
@@ -430,12 +443,12 @@ const supportingPlatform = (run: Run, player: Player = run) =>
             : player.y === platform.y + platform.height),
       )
     : undefined;
-export const touchingPlatform = (run: Run, playerNumber: 1 | 2 = 1) => {
-  const player = playerNumber === 1 ? run : run.partner;
+export const touchingPlatform = (run: Run, playerNumber = 1) => {
+  const player = playersOf(run)[playerNumber - 1];
   return Boolean(player && !player.out && supportingPlatform(run, player));
 };
-export const flip = (run: Run, playerNumber: 1 | 2 = 1) => {
-  const player = playerNumber === 1 ? run : run.partner;
+export const flip = (run: Run, playerNumber = 1) => {
+  const player = playersOf(run)[playerNumber - 1];
   if (
     run.status !== 'running' ||
     !player ||
@@ -508,16 +521,19 @@ const advancePlayer = (run: Run, player: Player, movement: number) => {
 };
 export const advance = (run: Run) => {
   if (run.status !== 'running') return;
-  const players = run.partner ? [run, run.partner] : [run];
+  const players = playersOf(run);
   const boostActive = players.some(
-    player => supportingPlatform(run, player)?.effect === 'boost',
+    player =>
+      !player.out && supportingPlatform(run, player)?.effect === 'boost',
   );
   const multiplier = run.mapSpeedMultiplier ?? 1;
   run.mapSpeedMultiplier =
     multiplier +
     ((boostActive ? 1.3 : 1) - multiplier) * (1 - Math.exp(-4 * WORLD.step));
   const movement = speedOf(run) * WORLD.step;
-  for (const player of players) advancePlayer(run, player, movement);
+  for (const player of players) {
+    if (!player.out) advancePlayer(run, player, movement);
+  }
   run.camera += movement;
   advanceDog(run, movement);
   for (const player of players) {
@@ -529,12 +545,19 @@ export const advance = (run: Run) => {
       player.y + WORLD.playerSize > run.dog.y &&
       player.y < run.dog.y + DOG_HEIGHT;
     player.out =
+      player.out ||
       caught ||
       x <= run.camera ||
       player.y > WORLD.height ||
       player.y + WORLD.playerSize < 0;
   }
-  if (players.some(player => player.out)) {
+  if (run.onlinePlayers) {
+    const remaining = players.filter(player => !player.out);
+    if (remaining.length <= 1) {
+      run.status = 'over';
+      run.winner = remaining.length ? players.indexOf(remaining[0]) + 1 : 'tie';
+    }
+  } else if (players.some(player => player.out)) {
     run.status = 'over';
     if (run.partner)
       run.winner = run.out && run.partner.out ? 'tie' : run.out ? 2 : 1;
@@ -698,10 +721,15 @@ const bestDogFlip = (run: Run, target: Player, hunting: boolean) => {
 
 const advanceDog = (run: Run, movement: number) => {
   const dog = run.dog;
-  const target =
-    run.partner && dogTargetGap(dog, run.partner) < dogTargetGap(dog, run)
-      ? run.partner
-      : run;
+  const target = playersOf(run)
+    .filter(player => !player.out)
+    .reduce(
+      (closest, player) =>
+        dogTargetGap(dog, player) < dogTargetGap(dog, closest)
+          ? player
+          : closest,
+      playersOf(run).find(player => !player.out) ?? run,
+    );
   const hunting =
     Math.abs(target.distance + WORLD.playerX - dog.x - DOG_WIDTH) < 220;
   if (dog.respawnTimer > 0) {
@@ -782,7 +810,11 @@ const advanceDog = (run: Run, movement: number) => {
 const respawnDog = (run: Run) => {
   const furthest = Math.min(
     run.camera + 20,
-    Math.min(run.distance, run.partner?.distance ?? run.distance) +
+    Math.min(
+      ...playersOf(run)
+        .filter(player => !player.out)
+        .map(player => player.distance),
+    ) +
       WORLD.playerX -
       DOG_WIDTH -
       100,
@@ -1068,10 +1100,13 @@ export const paint = (
   run: Run,
   dark: boolean,
   scenery = true,
+  fixedViewport = false,
 ) => {
   const context = canvas.getContext('2d');
   if (!context) return;
-  const width = Math.max(680, Math.min(1100, canvas.clientWidth * 1.5));
+  const width = fixedViewport
+    ? run.viewWidth
+    : Math.max(680, Math.min(1100, canvas.clientWidth * 1.5));
   // Preserve the runner's distance from center when the viewport changes.
   run.camera += (run.viewWidth - width) / 2;
   run.viewWidth = width;
@@ -1161,6 +1196,21 @@ export const paint = (
     );
   }
   paintShiba(context, run);
+  if (run.onlinePlayers) {
+    for (const [index, player] of playersOf(run).entries()) {
+      if (player.out) continue;
+      paintPlayer(context, run, player, dark, index + 1);
+      context.fillStyle = dark ? '#ffffff' : '#132f40';
+      context.font = 'bold 16px Arial';
+      context.textAlign = 'center';
+      context.fillText(
+        String(index + 1),
+        WORLD.playerX + player.distance - run.camera + 14,
+        player.y - 12 - index * 18,
+      );
+    }
+    return;
+  }
   paintPlayer(context, run, run, dark, 1);
   if (run.partner) {
     paintPlayer(context, run, run.partner, dark, 2);
@@ -1173,16 +1223,24 @@ const paintPlayer = (
   run: Run,
   player: Player,
   dark: boolean,
-  number: 1 | 2,
+  number: number,
 ) => {
   const accent =
-    number === 1
+    number === 3
       ? dark
-        ? '#60ead7'
-        : '#087f78'
-      : dark
-        ? '#8dbaff'
-        : '#335dcb';
+        ? '#ffc878'
+        : '#9e5500'
+      : number === 4
+        ? dark
+          ? '#e5a0ff'
+          : '#8b3bb2'
+        : number === 1
+          ? dark
+            ? '#60ead7'
+            : '#087f78'
+          : dark
+            ? '#8dbaff'
+            : '#335dcb';
   const playerX = WORLD.playerX + player.distance - run.camera;
   const bob =
     run.status === 'running' && player.velocity === 0

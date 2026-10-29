@@ -693,3 +693,31 @@ button:focus-visible {
     left: max(12px, env(safe-area-inset-left));
   }
 }
+
+.online-notice {
+  padding: 0.75rem 1rem;
+  color: var(--muted);
+}
+.online-lobby {
+  min-height: 20rem;
+  padding: 2rem;
+  text-align: center;
+}
+.online-lobby ol,
+.online-scores {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+.online-lobby li,
+.online-scores li {
+  padding: 0.5rem;
+}
+
+.online-dashboard {
+  flex-wrap: wrap;
+  gap: 1rem;
+}

@@ -1,6 +1,6 @@
 # Gravity runner
 
-Gravity Guy is a locally playable single-player or two-player endless runner inspired by gravity-flipping arcade games, with original code-drawn visuals.
+Gravity Guy is an endless runner with local single-player and two-player modes and online four-player rooms inspired by gravity-flipping arcade games, with original code-drawn visuals.
 
 ## Local play
 
@@ -12,7 +12,7 @@ pnpm install
 pnpm nx serve gravity-guy
 ```
 
-Open <http://localhost:3000>. If that port is occupied, Next.js prints its selected port; alternatively run `pnpm nx serve gravity-guy --port=3017` and open <http://localhost:3017>. No environment files, accounts, backend, credentials or external services are required. Gameplay runs entirely in the browser after the local app loads; this release does not install a service worker or cache the app for disconnected cold starts.
+Open <http://localhost:3000>. If that port is occupied, Next.js prints its selected port; alternatively run `pnpm nx serve gravity-guy --port=3017` and open <http://localhost:3017>. Local play needs no environment files, accounts, backend, credentials or external services. Online play uses the shared Supabase public configuration from `next.config.js`. Local gameplay runs entirely in the browser after the app loads; this release does not install a service worker or cache the app for disconnected cold starts.
 
 From the repository root, check the app with:
 
@@ -34,11 +34,25 @@ The build target explicitly sets `NODE_ENV=production` so Nx task environment de
 
 Terraform manages the production `gravity-guy.harryliu.dev` DNS-only CNAME in `cloudflare-vercel-apps.tf`. Its post-apply domain sync attaches the hostname to `production-gravity-guy`; Vercel serves HTTPS.
 
-Gravity Guy remains stateless on the server. There are no API routes, database, Supabase configuration, server sessions or application secrets. Game state and multiplayer stay inside one browser; best scores and settings use local storage, and paused-run snapshots use session storage. Staging and production use different origins, so browser data does not transfer between them. Only the existing Vercel deployment token is needed by the deployment runner; it is never sent to the game.
+Gravity Guy remains stateless on the server. There are no API routes, database tables, server sessions or application secrets. Online rooms use Supabase Realtime with the shared public URL and publishable key supplied at build time; no sign-in or OAuth redirect configuration is needed. Local game state stays inside one browser; best scores and settings use local storage, and paused-run snapshots use session storage. Staging and production use different origins, so browser data does not transfer between them. Only the existing Vercel deployment token is needed by the deployment runner; it is never sent to the game.
 
 ## Free Tier
 
 Gravity Guy uses two Vercel projects and shares the existing Hobby allowance: 200 projects, 100 deployments per day, 100 GB Fast Data Transfer, 10 GB Fast Origin Transfer and 1 million CDN requests per month. The game serves prerendered pages and local canvas/audio assets, with no database or persistent compute service. Its custom hostname uses the existing Cloudflare Free DNS zone and adds no paid service. Hobby is for personal, non-commercial use; exceeding a usage allowance can pause that feature. Limits: [Vercel Hobby](https://vercel.com/docs/plans/hobby).
+
+Online play also shares the existing Supabase Free project: 200 peak Realtime connections, 100 messages/second and 2 million Realtime messages/month across the organization. One four-player round sends 600 snapshots/minute; counting the host send and three guest deliveries, that is approximately 2,400 messages/minute before inputs and presence. A browser uses one Realtime connection with directory and room channels; no new project, database tables or paid service is added. These allowances are shared with Balloono and other consumers, not reserved for this game. Sources: [Supabase billing quotas](https://supabase.com/docs/guides/platform/billing-on-supabase), [Realtime limits](https://supabase.com/docs/guides/realtime/limits).
+
+## Online multiplayer
+
+Select **Play online** on the ready, paused or results screen. Matchmaking packs waiting players in arrival order into groups of four, consolidating partially filled rooms before opening another group. Four players trigger a five-second countdown; if someone leaves before the round begins, the countdown is cancelled until the room fills again. Simultaneous excess joins return to matchmaking. Running rounds do not accept new players. **Leave online game** returns to local play and restores any saved paused local run; **Back to matchmaking** starts a fresh search after a round.
+
+Each browser gets a new random presence identity, so separate tabs can occupy separate seats. Room discovery uses a shared presence directory (`gravity-guy-directory`), and room presence, inputs and snapshots use `gravity-guy-room:<room>`. Like Balloono, the elected browser host runs the authoritative simulation and guests send flip requests. The established host remains in charge until it leaves; a remaining client continues the latest snapshot and eliminates departed players. A silent host triggers a connection warning after eight seconds; use the retry action to start a new search if its presence has not expired. Rooms and their directory entries disappear when their channels disconnect. Restoring a tab from the browser back-forward cache retracks its presence and requests a current snapshot. Nothing is persisted to a database.
+
+All four runners share the course, camera and Shiba. Space, ArrowUp, the Flip button or a playfield tap controls only your numbered runner. Flips still require supporting contact. Caught, fallen or departed players are eliminated; the last surviving runner wins, and simultaneous elimination is a tie. Eliminated players can spectate. Online rounds cannot be individually paused, do not overwrite local bests and do not restore from local paused-run storage. Background-tab scheduling or network latency can affect the browser host; this is casual, client-hosted multiplayer without server-enforced anti-cheat. Public presence and broadcast payloads are not an authenticated identity or trusted competition boundary.
+
+The host advances the existing 120 Hz physics and broadcasts snapshots at 10 Hz; guests interpolate visual positions between snapshots without modifying authoritative state. Every device renders the same 680-unit logical viewport, so phone and desktop canvas sizes cannot change collisions or the shared camera. Existing independent music and effects preferences apply online; use **Enable audio** after joining if the browser requires a fresh gesture.
+
+Manual verification: open five separate browser contexts, join simultaneously and confirm one four-seat round plus a waiting room; leave during countdown, verify cancellation, then fill the seat and restart countdown. During a round, send guest flips and verify all clients agree, leave with the host and verify continued progress and elimination, then check results, replay and channel cleanup. Also exercise offline/reconnect handling, disabled audio preferences and phone/desktop rendering. An unavailable Supabase connection must show an error rather than quietly substituting a local game.
 
 ## Controls
 
@@ -84,7 +98,7 @@ Physics advances at 120 fixed steps per second. Frame accumulation is capped at 
 
 Phones and touch tablets require landscape orientation to play. Portrait shows a rotate-device screen, makes the game controls inert and pauses any running game. Settings remains accessible from that screen. Rotating back requires an explicit resume. Landscape touch layouts show only the playfield across the full dynamic viewport, with no surrounding card, dashboard or control bar. Overlay icons respect display safe areas. Tap anywhere on the canvas to flip in single-player; in multiplayer the left half flips Player 1 and the right half flips Player 2. Pointer-down controls accept independent simultaneous touches; desktop flip buttons and keyboard activation remain supported.
 
-The reusable `HowToPlay` component provides **Settings → How to play** and the bottom-left Help dialog, including pause keys. In-game controls use an icon-only Settings button at bottom-right, Help at bottom-left, and Music followed by Play/Pause at top-right. Opening Help pauses the run. Multiplayer flip buttons display their keyboard keys; accessible names retain player identity. The instructions live in **Settings → How to play**. The desktop version remains resizable without the orientation restriction. Local multiplayer shares one device; cross-device online play is not implemented.
+The reusable `HowToPlay` component provides **Settings → How to play** and the bottom-left Help dialog, including pause keys. In-game controls use an icon-only Settings button at bottom-right, Help at bottom-left, and Music followed by Play/Pause at top-right. Opening Help pauses the run. Multiplayer flip buttons display their keyboard keys; accessible names retain player identity. The instructions live in **Settings → How to play**. The desktop version remains resizable without the orientation restriction. Local multiplayer shares one device; the separate online mode connects four browsers through Supabase Realtime.
 
 ## Audio
 
