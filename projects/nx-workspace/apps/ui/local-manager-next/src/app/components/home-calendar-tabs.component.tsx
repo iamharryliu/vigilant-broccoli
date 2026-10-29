@@ -10,6 +10,7 @@ import {
 import { PersonalCalendarComponent } from './personal-calendar.component';
 import { EventCalendarsComponent } from './event-calendars.component';
 import { NotepadEditorComponent } from './notepad-editor.component';
+import { CreateCalendarEventDialogTrigger } from './create-calendar-event-dialog.component';
 import { handleShellExecute } from '../utils/quick-links.utils';
 import { QUICK_LINKS } from '../constants/quick-links';
 import { useTranslation } from '../i18n';
@@ -107,6 +108,11 @@ export const HomeCalendarTabs = () => {
   ];
 
   return (
-    <TabbedView tabs={tabs} value={activeTab} onValueChange={handleTabChange} />
+    <TabbedView
+      tabs={tabs}
+      value={activeTab}
+      onValueChange={handleTabChange}
+      actions={<CreateCalendarEventDialogTrigger />}
+    />
   );
 };

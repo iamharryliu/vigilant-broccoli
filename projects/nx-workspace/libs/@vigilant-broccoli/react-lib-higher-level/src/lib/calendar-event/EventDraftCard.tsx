@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useCalendarEventTranslation } from './i18n';
 
 export interface EventDraft {
   summary: string;
@@ -28,11 +29,11 @@ const ALL_DAY_INPUT_LENGTH = 10;
 const DATETIME_LOCAL_LENGTH = 16;
 
 const BYDAY_CODES = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
-const CUSTOM_RECURRENCE_LABEL = 'custom';
 const NO_RECURRENCE_VALUE = '';
 
 const buildRecurrencePresets = (
   startIso: string,
+  t: ReturnType<typeof useCalendarEventTranslation>['t'],
 ): { value: string; label: string }[] => {
   const date = startIso ? new Date(startIso) : null;
   const isValid = date && !Number.isNaN(date.getTime());
@@ -41,20 +42,20 @@ const buildRecurrencePresets = (
     ? date.toLocaleDateString(undefined, { weekday: 'long' })
     : null;
 
-  const presets = [{ value: NO_RECURRENCE_VALUE, label: 'Does not repeat' }];
+  const presets = [{ value: NO_RECURRENCE_VALUE, label: t('NO_RECURRENCE') }];
   if (!isValid) return presets;
 
   presets.push(
-    { value: 'RRULE:FREQ=DAILY', label: 'Daily' },
+    { value: 'RRULE:FREQ=DAILY', label: t('DAILY') },
     {
       value: `RRULE:FREQ=WEEKLY;BYDAY=${dayCode}`,
-      label: `Weekly on ${dayName}`,
+      label: t('WEEKLY', { day: dayName ?? '' }),
     },
-    { value: 'RRULE:FREQ=MONTHLY', label: 'Monthly' },
-    { value: 'RRULE:FREQ=YEARLY', label: 'Yearly' },
+    { value: 'RRULE:FREQ=MONTHLY', label: t('MONTHLY') },
+    { value: 'RRULE:FREQ=YEARLY', label: t('YEARLY') },
     {
       value: 'RRULE:FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR',
-      label: 'Every weekday (Mon-Fri)',
+      label: t('WEEKDAYS'),
     },
   );
   return presets;
@@ -86,6 +87,7 @@ export const EventDraftCard = ({
   onCreate,
   onCancel,
 }: EventDraftCardProps) => {
+  const { t } = useCalendarEventTranslation();
   const [editable, setEditable] = useState<EventDraft>(draft);
 
   const isReadOnly = status === 'creating' || status === 'created';
@@ -103,11 +105,14 @@ export const EventDraftCard = ({
 
   return (
     <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3 dark:bg-blue-950 dark:border-blue-900">
-      <p className="text-sm font-medium text-blue-800">Calendar Event</p>
+      <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+        {t('EVENT')}
+      </p>
 
       <input
         type="text"
-        placeholder="Title"
+        aria-label={t('TITLE_FIELD')}
+        placeholder={t('TITLE_FIELD')}
         value={editable.summary}
         onChange={e =>
           setEditable(prev => ({ ...prev, summary: e.target.value }))
@@ -118,7 +123,7 @@ export const EventDraftCard = ({
 
       <div className="flex items-center gap-3">
         <span className="text-xs text-gray-500 w-8 dark:text-gray-400">
-          Start
+          {t('START')}
         </span>
         <input
           type={editable.allDay ? 'date' : 'datetime-local'}
@@ -136,7 +141,7 @@ export const EventDraftCard = ({
 
       <div className="flex items-center gap-3">
         <span className="text-xs text-gray-500 w-8 dark:text-gray-400">
-          End
+          {t('END')}
         </span>
         <input
           type={editable.allDay ? 'date' : 'datetime-local'}
@@ -154,9 +159,12 @@ export const EventDraftCard = ({
 
       <div className="flex items-center gap-3">
         <span className="text-xs text-gray-500 dark:text-gray-400">
-          All day
+          {t('ALL_DAY')}
         </span>
         <button
+          role="switch"
+          aria-checked={editable.allDay}
+          aria-label={t('ALL_DAY')}
           onClick={() => handleAllDayChange(!editable.allDay)}
           disabled={isReadOnly}
           className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${editable.allDay ? 'bg-blue-500' : 'bg-gray-200 dark:bg-gray-700'} disabled:opacity-50`}
@@ -170,7 +178,7 @@ export const EventDraftCard = ({
 
       <div className="flex items-center gap-3">
         <span className="text-xs text-gray-500 w-14 dark:text-gray-400">
-          Repeats
+          {t('REPEATS')}
         </span>
         <select
           value={editable.recurrence[0] ?? NO_RECURRENCE_VALUE}
@@ -183,17 +191,17 @@ export const EventDraftCard = ({
           disabled={isReadOnly}
           className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 dark:border-gray-700 dark:disabled:bg-gray-800"
         >
-          {buildRecurrencePresets(editable.start).map(preset => (
+          {buildRecurrencePresets(editable.start, t).map(preset => (
             <option key={preset.value} value={preset.value}>
               {preset.label}
             </option>
           ))}
           {editable.recurrence[0] &&
-            !buildRecurrencePresets(editable.start).some(
+            !buildRecurrencePresets(editable.start, t).some(
               preset => preset.value === editable.recurrence[0],
             ) && (
               <option value={editable.recurrence[0]}>
-                {CUSTOM_RECURRENCE_LABEL}: {editable.recurrence[0]}
+                {t('CUSTOM')}: {editable.recurrence[0]}
               </option>
             )}
         </select>
@@ -201,7 +209,8 @@ export const EventDraftCard = ({
 
       <input
         type="text"
-        placeholder="Location"
+        aria-label={t('LOCATION')}
+        placeholder={t('LOCATION')}
         value={editable.location}
         onChange={e =>
           setEditable(prev => ({ ...prev, location: e.target.value }))
@@ -211,7 +220,8 @@ export const EventDraftCard = ({
       />
 
       <textarea
-        placeholder="Description"
+        aria-label={t('DESCRIPTION')}
+        placeholder={t('DESCRIPTION')}
         value={editable.description}
         onChange={e =>
           setEditable(prev => ({ ...prev, description: e.target.value }))
@@ -226,8 +236,8 @@ export const EventDraftCard = ({
       )}
 
       {status === 'created' && (
-        <p className="text-xs text-green-600">
-          Event created.{' '}
+        <p className="text-xs text-green-600 dark:text-green-300">
+          {t('CREATED')}{' '}
           {eventLink && (
             <a
               href={eventLink}
@@ -235,7 +245,7 @@ export const EventDraftCard = ({
               rel="noreferrer"
               className="underline"
             >
-              Open in Google Calendar
+              {t('OPEN')}
             </a>
           )}
         </p>
@@ -250,14 +260,14 @@ export const EventDraftCard = ({
             }
             className="flex-1 bg-blue-500 text-white rounded-lg py-2 text-sm font-medium hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50 transition-colors"
           >
-            {status === 'creating' ? 'Creating...' : 'Create event'}
+            {t(status === 'creating' ? 'CREATING' : 'CREATE')}
           </button>
           <button
             onClick={onCancel}
             disabled={isReadOnly}
             className="px-4 bg-gray-100 text-gray-600 rounded-lg py-2 text-sm font-medium hover:bg-gray-200 disabled:opacity-50 transition-colors dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
           >
-            Cancel
+            {t('CANCEL')}
           </button>
         </div>
       )}

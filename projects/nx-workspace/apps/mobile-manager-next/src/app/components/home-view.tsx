@@ -24,6 +24,7 @@ import {
   PERSONAL_CALENDAR_SOURCES,
 } from '@harry/private';
 import {
+  CreateCalendarEventDialog,
   CalendarAgenda,
   CalendarEvent,
   CalendarEventDetails,
@@ -32,13 +33,8 @@ import {
   TabbedView,
   TabbedViewTab,
 } from '@vigilant-broccoli/react-lib-higher-level';
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from '@vigilant-broccoli/react-lib';
 import { QuickLinksPanel } from '@vigilant-broccoli/react-lib-higher-level';
-import { CalendarInput } from './calendar-input';
+import { CalendarVoiceInput } from './calendar-voice-input';
 import { GoogleTasksView } from './google-tasks-view';
 import { NotepadEditor } from './notepad-editor';
 import {
@@ -47,7 +43,11 @@ import {
   CalendarTab,
 } from '../app.const';
 import { QUICK_LINKS } from '../constants/quick-links';
-import { buildAuthHeaders, reconnectGoogle } from '../providers/auth-provider';
+import {
+  authFetch,
+  buildAuthHeaders,
+  reconnectGoogle,
+} from '../providers/auth-provider';
 
 // Split into its own chunk so the weather card's code stays off the critical
 // path. The tab force-mounts it, so once the chunk loads it locates and
@@ -77,9 +77,6 @@ const HIDDEN_CALENDARS_STORAGE_KEY = 'vb-manager-hidden-event-calendars';
 const TAB_STORAGE_KEY = 'vb-manager-mobile-tab';
 
 const TAB_ICON_SIZE = 18;
-
-// Tailwind's sm breakpoint, where the dialog stops being full screen.
-const DESKTOP_MEDIA_QUERY = '(min-width: 640px)';
 
 // Tab content isn't a flex child, so size the editor to the viewport minus
 // the top bar and tab row.
@@ -406,40 +403,15 @@ export const HomeView = () => {
         onClose={() => setSelectedEvent(null)}
       />
 
-      <Dialog open={createOpen} onOpenChange={handleCreateOpenChange}>
-        <DialogContent
-          fullScreenOnMobile
-          className="flex flex-col gap-0 overflow-hidden p-0 max-sm:!overflow-hidden sm:max-h-[90dvh] sm:w-[calc(100%-2rem)] sm:max-w-[600px]"
-          aria-describedby={undefined}
-          showCloseButton={false}
-          onOpenAutoFocus={event => {
-            // Focusing the textarea on a phone pops the keyboard before the
-            // user asks for it; Radix would otherwise focus the Close button.
-            event.preventDefault();
-            if (!window.matchMedia(DESKTOP_MEDIA_QUERY).matches) return;
-            (event.currentTarget as HTMLElement)
-              .querySelector('textarea')
-              ?.focus();
-          }}
-        >
-          <CalendarInput
-            header={
-              <div className="flex shrink-0 items-center justify-between gap-3 border-b border-gray-200 px-4 pb-3 pt-[max(env(safe-area-inset-top),0.75rem)] sm:px-6 sm:pt-6 dark:border-gray-700">
-                <DialogTitle className="text-xl font-bold leading-7 tracking-normal">
-                  Create Calendar Event
-                </DialogTitle>
-                <button
-                  type="button"
-                  onClick={() => handleCreateOpenChange(false)}
-                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 active:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800 dark:active:bg-gray-700"
-                >
-                  Close
-                </button>
-              </div>
-            }
-          />
-        </DialogContent>
-      </Dialog>
+      <CreateCalendarEventDialog
+        open={createOpen}
+        onOpenChange={handleCreateOpenChange}
+        authFetch={authFetch}
+        onUnauthorized={reconnectGoogle}
+        renderVoiceAction={onTranscript => (
+          <CalendarVoiceInput onTranscript={onTranscript} />
+        )}
+      />
     </>
   );
 };
