@@ -50,6 +50,20 @@
       "readmePath": "projects/nx-workspace/apps/findme/README.md"
     },
     {
+      "id": "gravity-guy",
+      "href": "https://gravity-guy.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.GRAVITY_GUY.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.GRAVITY_GUY.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/gravity-guy/README.md"
+    },
+    {
+      "id": "gravity-guy-staging",
+      "href": "https://staging-gravity-guy.vercel.app/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.GRAVITY_GUY_STAGING.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.GRAVITY_GUY_STAGING.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/gravity-guy/README.md"
+    },
+    {
       "id": "hearth",
       "href": "https://hearth.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.HEARTH.TITLE",

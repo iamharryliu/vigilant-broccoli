@@ -36,6 +36,8 @@ export type Run = Player & {
     speedMultiplier: number;
     blockedFor: number;
     decisionIn: number;
+    barkIn?: number;
+    barkTime?: number;
   };
   status: Status;
 };
@@ -53,6 +55,7 @@ const centerOffset = (run: Run) =>
   (run.viewWidth - WORLD.playerSize) / 2 - WORLD.playerX;
 const DOG_WIDTH = 80;
 const DOG_HEIGHT = 49;
+const DOG_BARK_DURATION = 0.55;
 const PLATFORM_HEIGHT = 18;
 const GRAVITY_ACCELERATION = 2400;
 const FLIP_SPEED = 220;
@@ -94,6 +97,8 @@ export const createRun = (
     speedMultiplier: 1,
     blockedFor: 0,
     decisionIn: 0,
+    barkIn: 2.5 + (seed % 30) / 10,
+    barkTime: 0,
   },
   status: 'ready',
 });
@@ -524,7 +529,10 @@ export const advance = (run: Run) => {
       player.y + WORLD.playerSize > run.dog.y &&
       player.y < run.dog.y + DOG_HEIGHT;
     player.out =
-      caught || player.y > WORLD.height || player.y + WORLD.playerSize < 0;
+      caught ||
+      x <= run.camera ||
+      player.y > WORLD.height ||
+      player.y + WORLD.playerSize < 0;
   }
   if (players.some(player => player.out)) {
     run.status = 'over';
@@ -580,7 +588,20 @@ const moveDogBody = (
     }
   }
 };
-const bestDogFlip = (run: Run, target: Player) => {
+const dogTargetGap = (dog: DogBody, target: Player) => {
+  const x = target.distance + WORLD.playerX;
+  return Math.hypot(
+    Math.max(0, x - dog.x - DOG_WIDTH, dog.x - x - WORLD.playerSize),
+    Math.max(
+      0,
+      target.y - dog.y - DOG_HEIGHT,
+      dog.y - target.y - WORLD.playerSize,
+    ),
+  );
+};
+const dogPursuit = (run: Run) =>
+  (run.mapSpeedMultiplier ?? 1) > 1.01 ? 1 : 1.08;
+const bestDogFlip = (run: Run, target: Player, hunting: boolean) => {
   const platforms = platformsNear(run, run.dog.x, 1300);
   const step = 1 / 30;
   const pace = baseSpeedOf(run);
@@ -616,8 +637,19 @@ const bestDogFlip = (run: Run, target: Player) => {
           candidate,
           platforms,
           step,
-          pace * candidate.speedMultiplier * 1.04 * step,
+          pace * candidate.speedMultiplier * dogPursuit(run) * step,
         );
+        const predictedTarget = {
+          ...target,
+          distance:
+            target.distance +
+            (target.blocked
+              ? 0
+              : pace * target.speedMultiplier * (frame + 1) * step),
+        };
+        // A catch ends the chase before the landing beyond it matters.
+        if (hunting && dogTargetGap(candidate, predictedTarget) === 0)
+          return frame === 0 ? flipNow : route.firstFlip;
         if (candidate.y > WORLD.height || candidate.y + DOG_HEIGHT < 0)
           continue;
         const cost =
@@ -632,11 +664,14 @@ const bestDogFlip = (run: Run, target: Player) => {
           body: candidate,
           firstFlip: frame === 0 ? flipNow : route.firstFlip,
           cost,
-          score:
-            candidate.x -
-            run.dog.x -
-            cost -
-            Math.abs(candidate.y - target.y) * 0.04,
+          score: hunting
+            ? (candidate.x - run.dog.x) * 0.15 -
+              dogTargetGap(candidate, predictedTarget) * 2 -
+              cost * 0.15
+            : candidate.x -
+              run.dog.x -
+              cost -
+              Math.abs(candidate.y - target.y) * 0.04,
         });
       }
     }
@@ -664,7 +699,11 @@ const bestDogFlip = (run: Run, target: Player) => {
 const advanceDog = (run: Run, movement: number) => {
   const dog = run.dog;
   const target =
-    run.partner && run.partner.distance < run.distance ? run.partner : run;
+    run.partner && dogTargetGap(dog, run.partner) < dogTargetGap(dog, run)
+      ? run.partner
+      : run;
+  const hunting =
+    Math.abs(target.distance + WORLD.playerX - dog.x - DOG_WIDTH) < 220;
   if (dog.respawnTimer > 0) {
     dog.respawnTimer = Math.max(0, dog.respawnTimer - WORLD.step);
     if (dog.respawnTimer === 0) respawnDog(run);
@@ -677,6 +716,12 @@ const advanceDog = (run: Run, movement: number) => {
   ) {
     dog.respawnTimer = 2.5;
     return;
+  }
+  dog.barkTime = Math.max(0, (dog.barkTime ?? 0) - WORLD.step);
+  dog.barkIn = (dog.barkIn ?? 3) - WORLD.step;
+  if (dog.barkIn <= 0) {
+    dog.barkTime = DOG_BARK_DURATION;
+    dog.barkIn = 3.5 + randomSource(run.seed ^ Math.floor(run.camera))() * 3;
   }
   const lookAhead = Math.max(120, speedOf(run) * 0.28);
   const platforms = platformsNear(
@@ -704,12 +749,12 @@ const advanceDog = (run: Run, movement: number) => {
   dog.decisionIn = Math.max(0, (dog.decisionIn ?? 0) - WORLD.step);
   if (support && dog.decisionIn === 0) {
     dog.decisionIn = 0.1;
-    if (bestDogFlip(run, target)) {
+    if (bestDogFlip(run, target, hunting)) {
       dog.gravity = dog.gravity === 1 ? -1 : 1;
       dog.velocity = dog.gravity * FLIP_SPEED;
     }
   }
-  const pursuit = (run.mapSpeedMultiplier ?? 1) > 1.01 ? 1 : 1.08;
+  const pursuit = dogPursuit(run);
   const dogMovement =
     baseSpeedOf(run) * WORLD.step * dog.speedMultiplier * pursuit;
   const previousX = dog.x;
@@ -717,7 +762,18 @@ const advanceDog = (run: Run, movement: number) => {
     dog,
     platforms,
     WORLD.step,
-    Math.min(Math.max(0, run.camera + 8 - dog.x), dogMovement),
+    Math.min(
+      Math.max(
+        0,
+        (hunting
+          ? Math.max(
+              run.camera + 8,
+              target.distance + WORLD.playerX - DOG_WIDTH + 8,
+            )
+          : run.camera + 8) - dog.x,
+      ),
+      dogMovement,
+    ),
   );
   dog.blockedFor =
     dog.x <= previousX + 0.000001 ? (dog.blockedFor ?? 0) + WORLD.step : 0;
@@ -784,24 +840,58 @@ const paintShiba = (context: CanvasRenderingContext2D, run: Run) => {
     run.dog.y + (run.dog.gravity === 1 ? 32 : 17),
   );
   context.scale(1, run.dog.gravity);
-  context.strokeStyle = '#70422d';
+  if (run.status === 'running') {
+    const plume = 14 + (Math.sin(run.dog.x * 0.23) + 1) * 5;
+    context.fillStyle = '#28b9ff';
+    context.beginPath();
+    context.moveTo(-23, -25);
+    context.lineTo(-28 - plume, -21);
+    context.lineTo(-23, -16);
+    context.closePath();
+    context.fill();
+    context.fillStyle = '#c5f6ff';
+    context.beginPath();
+    context.moveTo(-23, -23);
+    context.lineTo(-29 - plume * 0.55, -21);
+    context.lineTo(-23, -19);
+    context.closePath();
+    context.fill();
+  }
+  context.fillStyle = '#60758d';
+  context.strokeStyle = '#142437';
   context.lineWidth = 2;
-  context.fillStyle = '#d98b43';
+  context.beginPath();
+  context.roundRect(-25, -30, 29, 20, 5);
+  context.fill();
+  context.stroke();
+  context.fillStyle = '#b9cddd';
+  context.fillRect(-28, -26, 7, 11);
+  context.fillStyle = '#60ead7';
+  context.fillRect(-15, -26, 12, 3);
+  context.strokeStyle = '#142437';
+  context.lineWidth = 4;
+  context.beginPath();
+  context.moveTo(-4, -12);
+  context.lineTo(0, 10);
+  context.stroke();
+  context.strokeStyle = '#080d16';
+  context.lineWidth = 2;
+  context.fillStyle = '#202937';
   context.beginPath();
   context.ellipse(-5, 0, 24, 12, 0, 0, Math.PI * 2);
   context.fill();
   context.stroke();
-  context.strokeStyle = '#e8a359';
+  context.strokeStyle = '#303c4e';
   context.lineWidth = 8;
   context.beginPath();
   context.arc(-29, -9, 9, 0.4, Math.PI * 2.1);
   context.stroke();
-  context.strokeStyle = '#fff0d4';
+  context.strokeStyle = '#f1e4cf';
   context.lineWidth = 3;
   context.beginPath();
   context.arc(-29, -9, 5, 0.6, Math.PI * 1.6);
   context.stroke();
-  context.fillStyle = '#fff0d4';
+  context.fillStyle = '#f1e4cf';
   context.beginPath();
   context.ellipse(-1, 5, 18, 6, 0, 0, Math.PI * 2);
   context.fill();
@@ -809,13 +899,13 @@ const paintShiba = (context: CanvasRenderingContext2D, run: Run) => {
     [-20, stride],
     [9, -stride],
   ]) {
-    context.fillStyle = '#d98b43';
+    context.fillStyle = '#202937';
     context.fillRect(x + swing, 6, 7, 10);
-    context.fillStyle = '#fff0d4';
+    context.fillStyle = '#f1e4cf';
     context.fillRect(x + swing, 13, 8, 4);
   }
-  context.fillStyle = '#d98b43';
-  context.strokeStyle = '#70422d';
+  context.fillStyle = '#202937';
+  context.strokeStyle = '#080d16';
   context.lineWidth = 2;
   context.beginPath();
   context.moveTo(9, -14);
@@ -830,7 +920,7 @@ const paintShiba = (context: CanvasRenderingContext2D, run: Run) => {
   context.ellipse(24, -9, 17, 15, 0, 0, Math.PI * 2);
   context.fill();
   context.stroke();
-  context.fillStyle = '#fff0d4';
+  context.fillStyle = '#f1e4cf';
   context.beginPath();
   context.ellipse(30, -2, 13, 8, -0.2, 0, Math.PI * 2);
   context.fill();
@@ -839,12 +929,40 @@ const paintShiba = (context: CanvasRenderingContext2D, run: Run) => {
   context.arc(29, -13, 2.3, 0, Math.PI * 2);
   context.arc(41, -5, 3, 0, Math.PI * 2);
   context.fill();
-  context.strokeStyle = '#fff0d4';
+  context.strokeStyle = '#f1e4cf';
   context.lineWidth = 3;
   context.beginPath();
   context.moveTo(23, -19);
   context.lineTo(29, -20);
   context.stroke();
+  const barkTime = run.dog.barkTime ?? 0;
+  if (barkTime > 0) {
+    const pulse = Math.sin(
+      ((DOG_BARK_DURATION - barkTime) * Math.PI) / DOG_BARK_DURATION,
+    );
+    context.fillStyle = '#080d16';
+    context.beginPath();
+    context.ellipse(38, 2, 5, 2 + pulse * 4, 0, 0, Math.PI * 2);
+    context.fill();
+    context.strokeStyle = '#60ead7';
+    context.lineWidth = 2;
+    for (const radius of [9, 16]) {
+      context.beginPath();
+      context.arc(43, -3, radius + pulse * 3, -0.6, 0.6);
+      context.stroke();
+    }
+    context.save();
+    context.translate(24, -45);
+    context.scale(1, run.dog.gravity);
+    context.font = 'bold 12px Arial';
+    context.textAlign = 'center';
+    context.fillStyle = '#142437';
+    context.strokeStyle = '#f1e4cf';
+    context.lineWidth = 3;
+    context.strokeText('WOOF!', 0, 0);
+    context.fillText('WOOF!', 0, 0);
+    context.restore();
+  }
   context.strokeStyle = '#e0574d';
   context.lineWidth = 4;
   context.beginPath();

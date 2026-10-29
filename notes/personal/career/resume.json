@@ -86,7 +86,7 @@
       "startDate": "July 2023",
       "endDate": "present",
       "bullets": [
-        "Open source maintainer of **20 applications**, **6 API services**, **12 Docker images** and **4 npm packages**.",
+        "Open source maintainer of **22 applications**, **6 API services**, **12 Docker images** and **4 npm packages**.",
         "Build and maintain **GitHub Actions** **CI/CD pipelines** for PR checks, deployments, npm publishing, backups and secret rotation.",
         "Provision multi-cloud infrastructure (AWS, GCP, Cloudflare) with **Terraform**, **Ansible** and **Bash**, with daily drift detection.",
         "Maintain operational checks in CI: health checks, cron jobs, and smoke, end-to-end, and security tests.",

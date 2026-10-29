@@ -64,6 +64,10 @@ sites:
     url: https://staging-balloono.vercel.app/
     maxRedirects: 0
     expectedStatusCodes: [302]
+  - name: staging-gravity-guy
+    url: https://staging-gravity-guy.vercel.app/
+    maxRedirects: 0
+    expectedStatusCodes: [302]
   - name: staging-calendars
     url: https://staging-calendars.pages.dev/
     maxRedirects: 0
@@ -112,6 +116,8 @@ sites:
     url: https://weather.harryliu.dev/
   - name: production-balloono
     url: https://balloono.harryliu.dev/
+  - name: production-gravity-guy
+    url: https://gravity-guy.harryliu.dev/
   - name: production-calendars
     url: https://calendar.harryliu.dev/
   - name: production-vb-manager-next-mobile

@@ -51,6 +51,11 @@ export const VB_APP_URL = {
     URL: 'https://balloono.harryliu.dev/',
     STAGING_URL: 'https://staging-balloono.vercel.app/',
   },
+  GRAVITY_GUY: {
+    NAME: 'Gravity Guy',
+    URL: 'https://gravity-guy.harryliu.dev/',
+    STAGING_URL: 'https://staging-gravity-guy.vercel.app/',
+  },
   DOCS: {
     NAME: 'Docs',
     URL: 'https://docs.harryliu.dev/',

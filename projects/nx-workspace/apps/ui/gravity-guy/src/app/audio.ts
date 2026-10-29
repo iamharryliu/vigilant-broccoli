@@ -183,6 +183,51 @@ export const useGameAudio = (
     };
   }, [sounds, unlock]);
 
+  const playWoof = useCallback(() => {
+    const audio = context.current;
+    if (
+      !active ||
+      !sounds ||
+      !audio ||
+      audio.state !== 'running' ||
+      !noise.current
+    )
+      return;
+    const time = audio.currentTime;
+    const voice = audio.createOscillator();
+    const breath = audio.createBufferSource();
+    const breathGain = audio.createGain();
+    const filter = audio.createBiquadFilter();
+    const gain = audio.createGain();
+    voice.type = 'sawtooth';
+    voice.frequency.setValueAtTime(165, time);
+    voice.frequency.exponentialRampToValueAtTime(78, time + 0.19);
+    breath.buffer = noise.current;
+    breathGain.gain.value = 0.28;
+    filter.type = 'bandpass';
+    filter.Q.value = 1.1;
+    filter.frequency.setValueAtTime(850, time);
+    filter.frequency.exponentialRampToValueAtTime(380, time + 0.2);
+    gain.gain.setValueAtTime(0.0001, time);
+    gain.gain.exponentialRampToValueAtTime(0.34, time + 0.018);
+    gain.gain.exponentialRampToValueAtTime(0.18, time + 0.07);
+    gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.22);
+    voice.connect(filter);
+    breath.connect(breathGain).connect(filter);
+    filter.connect(gain).connect(audio.destination);
+    voice.start(time);
+    breath.start(time);
+    voice.stop(time + 0.23);
+    breath.stop(time + 0.23);
+    voice.onended = () => {
+      voice.disconnect();
+      breath.disconnect();
+      breathGain.disconnect();
+      filter.disconnect();
+      gain.disconnect();
+    };
+  }, [active, sounds]);
+
   const playPlatform = useCallback(
     (effect: 'boost' | 'slow') => {
       if (!sounds) return;
@@ -242,5 +287,5 @@ export const useGameAudio = (
     },
     [],
   );
-  return { unlock, playDash, playPlatform };
+  return { unlock, playDash, playPlatform, playWoof };
 };
