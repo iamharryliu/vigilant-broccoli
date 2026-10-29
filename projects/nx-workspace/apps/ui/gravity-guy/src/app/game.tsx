@@ -10,6 +10,8 @@ import {
   VolumeX,
 } from 'lucide-react';
 import { useGameAudio } from './audio';
+import { OnlineGame } from './online-game';
+import { ONLINE_AVAILABLE } from './online-room';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -53,7 +55,7 @@ const readBest = () => {
   }
 };
 
-function Runner() {
+function Runner({ onOnline }: { onOnline: () => void }) {
   const { t } = useTranslation();
   const router = useRouter();
   const { scenery, players, music, sounds, updateSettings } = useGameSettings();
@@ -119,13 +121,16 @@ function Runner() {
   useEffect(() => {
     if (interrupted) pause();
   }, [interrupted, pause]);
-  const openSettings = () => {
+  const saveRun = () => {
     pause();
     try {
       window.sessionStorage.setItem(SAVED_RUN_KEY, JSON.stringify(run.current));
     } catch {
       /* Navigation still works without session storage. */
     }
+  };
+  const openSettings = () => {
+    saveRun();
     router.push('/settings');
   };
   useEffect(() => {
@@ -473,6 +478,17 @@ function Runner() {
                       {score.toLocaleString()} {t('APP.UNIT')}
                     </p>
                   )}
+                  {ONLINE_AVAILABLE && (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        saveRun();
+                        onOnline();
+                      }}
+                    >
+                      {t('ONLINE.PLAY')}
+                    </Button>
+                  )}
                   <Button
                     size="lg"
                     className="action"
@@ -598,11 +614,24 @@ function Runner() {
     </main>
   );
 }
+function GameMode() {
+  const [online, setOnline] = useState(false);
+  const [round, setRound] = useState(0);
+  return online ? (
+    <OnlineGame
+      key={round}
+      onLeave={() => setOnline(false)}
+      onAgain={() => setRound(value => value + 1)}
+    />
+  ) : (
+    <Runner onOnline={() => setOnline(true)} />
+  );
+}
 export default function Game() {
   return (
     <ThemeProvider keybind={false}>
       <I18nProvider>
-        <Runner />
+        <GameMode />
       </I18nProvider>
     </ThemeProvider>
   );

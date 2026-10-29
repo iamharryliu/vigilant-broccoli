@@ -73,5 +73,29 @@
     "HELP": "Help",
     "HELP_DESCRIPTION": "Learn the controls and how to stay ahead of the Shiba.",
     "GUIDE_PAUSE": "P / Esc to pause or resume. On touch devices, use the play/pause icon. Opening Help or Settings, switching tabs, or rotating upright pauses the run."
+  },
+  "ONLINE": {
+    "TITLE": "Online · Four-player rooms",
+    "PLAY": "Play online",
+    "LEAVE": "Leave online game",
+    "PLAYERS": "Players",
+    "YOU": "You",
+    "CONNECTING": "Connecting…",
+    "WAITING": "Finding four runners…",
+    "STARTS_IN": "Run starts in",
+    "CONNECTION_ERROR": "Connection lost. Leave and join again to retry.",
+    "MATCHMAKING": "We fill waiting rooms first. A round begins once four runners join.",
+    "PLAYER": "Player",
+    "JOINED": "Joined",
+    "OPEN_SEAT": "Waiting for a runner",
+    "ENABLE_AUDIO": "Enable audio",
+    "NO_PAUSE": "Online runs cannot be paused. Leaving or losing connection eliminates your runner.",
+    "RETRY": "Back to join again",
+    "WINS": "wins!",
+    "PLAY_AGAIN": "Back to matchmaking",
+    "SPECTATING": "Spectating",
+    "SCORES": "Runner scores",
+    "OUT": "Eliminated",
+    "RUNNING": "Running"
   }
 }

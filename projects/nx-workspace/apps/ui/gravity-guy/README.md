@@ -1,6 +1,6 @@
 # Gravity Guy
 
-A gravity-flipping arcade runner with single-player and local two-player modes.
+A gravity-flipping arcade runner with local play and online four-player rooms.
 
 ## Table of Contents
 
@@ -12,6 +12,9 @@ A gravity-flipping arcade runner with single-player and local two-player modes.
 - Framework - Next.js
 - Build Tool - Next.js
 - External libs
+  - Supabase JavaScript SDK
   - Tailwind CSS
 - Internal libs
   - `react-lib`
+- Cloud services
+  - Supabase
