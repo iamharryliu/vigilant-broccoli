@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const TRACKS = [
   {
@@ -33,6 +33,18 @@ const noiseBuffer = (context: AudioContext) => {
   for (let i = 0; i < samples.length; i++) samples[i] = Math.random() * 2 - 1;
   return buffer;
 };
+const voices = new WeakMap<AudioNode, Set<AudioScheduledSourceNode>>();
+const trackVoice = (source: AudioScheduledSourceNode, output: AudioNode) => {
+  let group = voices.get(output);
+  if (!group) voices.set(output, (group = new Set()));
+  group.add(source);
+  source.addEventListener('ended', () => group.delete(source), { once: true });
+};
+const stopVoices = (output: AudioNode) => {
+  voices.get(output)?.forEach(source => source.stop());
+  voices.delete(output);
+  output.disconnect();
+};
 const synthNote = (
   context: AudioContext,
   output: AudioNode,
@@ -54,6 +66,7 @@ const synthNote = (
   );
   gain.gain.exponentialRampToValueAtTime(0.0001, time + duration);
   oscillator.connect(gain).connect(output);
+  trackVoice(oscillator, output);
   oscillator.start(time);
   oscillator.stop(time + duration);
   oscillator.onended = () => {
@@ -102,6 +115,7 @@ const sequenceStep = (
     gain.gain.setValueAtTime(0.1, time);
     gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.14);
     kick.connect(gain).connect(output);
+    trackVoice(kick, output);
     kick.start(time);
     kick.stop(time + 0.15);
     kick.onended = () => {
@@ -119,6 +133,7 @@ const sequenceStep = (
     gain.gain.setValueAtTime(0.025, time);
     gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.045);
     hat.connect(filter).connect(gain).connect(output);
+    trackVoice(hat, output);
     hat.start(time);
     hat.stop(time + 0.05);
     hat.onended = () => {
@@ -149,18 +164,52 @@ export const useGameAudio = (
 ) => {
   const context = useRef<AudioContext | null>(null);
   const noise = useRef<AudioBuffer | null>(null);
+  const [ready, setReady] = useState(false);
+  const [interrupted, setInterrupted] = useState(false);
+  const effects = useRef<GainNode | null>(null);
   const unlock = useCallback(() => {
     if (!window.AudioContext) return;
-    context.current ??= new AudioContext();
-    noise.current ??= noiseBuffer(context.current);
-    if (context.current.state === 'suspended')
-      void context.current.resume().catch(() => undefined);
-  }, []);
-  const playDash = useCallback(() => {
-    if (!sounds) return;
-    unlock();
+    setInterrupted(false);
+    if (!context.current || context.current.state === 'closed') {
+      const audio = new AudioContext();
+      context.current = audio;
+      noise.current = noiseBuffer(audio);
+      let wasRunning = audio.state === 'running';
+      audio.onstatechange = () => {
+        const running = audio.state === 'running';
+        if (wasRunning && !running) setInterrupted(true);
+        wasRunning = running;
+        setReady(running);
+      };
+    }
     const audio = context.current;
-    if (!audio || !noise.current) return;
+    setReady(audio.state === 'running');
+    // Resume within the input handler, including Safari's interrupted state.
+    if (audio.state !== 'running')
+      void audio.resume().then(
+        () => {
+          if (context.current === audio) setReady(audio.state === 'running');
+        },
+        () => {
+          if (context.current === audio) setReady(false);
+        },
+      );
+  }, []);
+  useEffect(() => {
+    const audio = context.current;
+    if (!active || !sounds || !ready || !audio) return;
+    const bus = audio.createGain();
+    effects.current = bus;
+    bus.connect(audio.destination);
+    return () => {
+      effects.current = null;
+      stopVoices(bus);
+    };
+  }, [active, sounds, ready]);
+  const playDash = useCallback(() => {
+    if (!active || !sounds || !effects.current) return;
+    const audio = context.current;
+    if (!audio || audio.state !== 'running' || !noise.current) return;
     const time = audio.currentTime;
     const source = audio.createBufferSource();
     const filter = audio.createBiquadFilter();
@@ -173,7 +222,8 @@ export const useGameAudio = (
     gain.gain.setValueAtTime(0.0001, time);
     gain.gain.exponentialRampToValueAtTime(0.32, time + 0.025);
     gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.24);
-    source.connect(filter).connect(gain).connect(audio.destination);
+    source.connect(filter).connect(gain).connect(effects.current);
+    trackVoice(source, effects.current);
     source.start(time);
     source.stop(time + 0.25);
     source.onended = () => {
@@ -181,7 +231,7 @@ export const useGameAudio = (
       filter.disconnect();
       gain.disconnect();
     };
-  }, [sounds, unlock]);
+  }, [active, sounds]);
 
   const playWoof = useCallback(() => {
     const audio = context.current;
@@ -190,7 +240,8 @@ export const useGameAudio = (
       !sounds ||
       !audio ||
       audio.state !== 'running' ||
-      !noise.current
+      !noise.current ||
+      !effects.current
     )
       return;
     const time = audio.currentTime;
@@ -214,7 +265,9 @@ export const useGameAudio = (
     gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.22);
     voice.connect(filter);
     breath.connect(breathGain).connect(filter);
-    filter.connect(gain).connect(audio.destination);
+    filter.connect(gain).connect(effects.current);
+    trackVoice(voice, effects.current);
+    trackVoice(breath, effects.current);
     voice.start(time);
     breath.start(time);
     voice.stop(time + 0.23);
@@ -230,15 +283,14 @@ export const useGameAudio = (
 
   const playPlatform = useCallback(
     (effect: 'boost' | 'slow') => {
-      if (!sounds) return;
-      unlock();
+      if (!active || !sounds || !effects.current) return;
       const audio = context.current;
-      if (!audio) return;
+      if (!audio || audio.state !== 'running') return;
       const notes = effect === 'boost' ? [64, 71, 76] : [57, 50, 45];
       for (const [index, note] of notes.entries())
         synthNote(
           audio,
-          audio.destination,
+          effects.current,
           note,
           audio.currentTime + index * 0.055,
           0.13,
@@ -246,13 +298,13 @@ export const useGameAudio = (
           effect === 'boost' ? 'triangle' : 'sine',
         );
     },
-    [sounds, unlock],
+    [active, sounds],
   );
 
   useEffect(() => {
     const audio = context.current;
     const buffer = noise.current;
-    if (!active || !music || !audio || !buffer) return;
+    if (!active || !music || !ready || !audio || !buffer) return;
     const bus = audio.createGain();
     bus.gain.value = 0.55;
     bus.connect(audio.destination);
@@ -261,6 +313,8 @@ export const useGameAudio = (
     let step = 0;
     let nextAt = audio.currentTime + 0.03;
     const schedule = () => {
+      if (audio.state !== 'running') return;
+      nextAt = Math.max(nextAt, audio.currentTime);
       // A short lookahead keeps browser timer jitter out of the musical rhythm.
       while (nextAt < audio.currentTime + 0.12) {
         sequenceStep(audio, bus, buffer, step, nextAt, trackNumber);
@@ -272,20 +326,20 @@ export const useGameAudio = (
     const timer = window.setInterval(schedule, 40);
     return () => {
       window.clearInterval(timer);
-      bus.gain.cancelScheduledValues(audio.currentTime);
-      bus.gain.setTargetAtTime(0, audio.currentTime, 0.015);
-      window.setTimeout(() => bus.disconnect(), 80);
+      stopVoices(bus);
     };
-  }, [active, music, seed]);
+  }, [active, music, seed, ready]);
   useEffect(
     () => () => {
       const audio = context.current;
       context.current = null;
       noise.current = null;
-      if (audio && audio.state !== 'closed')
-        void audio.close().catch(() => undefined);
+      if (audio) {
+        audio.onstatechange = null;
+        if (audio.state !== 'closed') void audio.close().catch(() => undefined);
+      }
     },
     [],
   );
-  return { unlock, playDash, playPlatform, playWoof };
+  return { unlock, playDash, playPlatform, playWoof, interrupted };
 };

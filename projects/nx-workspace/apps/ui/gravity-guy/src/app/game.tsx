@@ -67,17 +67,15 @@ function Runner() {
   const [helpOpen, setHelpOpen] = useState(false);
   const clock = useRef({ last: 0, accumulator: 0 });
   const [status, setStatus] = useState<Status>('ready');
-  const { unlock, playDash, playPlatform, playWoof } = useGameAudio(
-    status === 'running',
-    music,
-    sounds,
-    run.current.seed,
-  );
+  const { unlock, playDash, playPlatform, playWoof, interrupted } =
+    useGameAudio(status === 'running', music, sounds, run.current.seed);
   const requestFlip = useCallback(
     (player: 1 | 2 = 1) => {
+      if (run.current.status !== 'running') return;
+      unlock();
       if (flip(run.current, player)) playDash();
     },
-    [playDash],
+    [playDash, unlock],
   );
   const [score, setScore] = useState(0);
   const [score2, setScore2] = useState(0);
@@ -118,6 +116,9 @@ function Runner() {
     setStatus('paused');
     resetClock();
   }, [resetClock]);
+  useEffect(() => {
+    if (interrupted) pause();
+  }, [interrupted, pause]);
   const openSettings = () => {
     pause();
     try {
@@ -376,6 +377,9 @@ function Runner() {
           <div
             className="playfield"
             ref={field}
+            onPointerUp={() => {
+              if (run.current.status === 'running') unlock();
+            }}
             tabIndex={0}
             role="group"
             aria-label={t('APP.PLAYFIELD')}
