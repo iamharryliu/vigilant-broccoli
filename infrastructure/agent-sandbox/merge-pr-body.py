@@ -7,8 +7,8 @@ prune-runner.sh) to rewrite a PR body in place: replace the
 "## Summary", "## Next steps", "## Concerns", "## Suggestions" and
 "## Screenshots" sections with the agent's latest cumulative description, and append a row to an "## Agentic Change History" table —
 creating either if the PR body doesn't have them yet. Screenshots are the last
-content section, wrapped in <details><summary>Screenshots</summary> with blank
-lines around images; history stays last, followed by the attribution footer.
+section, wrapped in <details><summary>Screenshots</summary> with blank lines
+around images, after the history table and before the attribution footer.
 Legacy screenshot sections are moved and wrapped even when PR_SCREENSHOTS is
 unset (preserve); nonempty replaces and explicitly empty removes the section.
 Reads everything from the environment (see the CURRENT_BODY/PR_*/HISTORY_* vars below; PR_STACK is the
@@ -158,7 +158,7 @@ if history_source and history_command and history_summary and history_date:
         )
 
 # Normalize preserved legacy sections too, without nesting an existing wrapper.
-for name in ("Screenshots", "Agentic Change History"):
+for name in ("Agentic Change History", "Screenshots"):
     trailing = [(h, c) for h, c in sections if h == name]
     sections[:] = [(h, c) for h, c in sections if h != name]
     for heading, content in trailing:

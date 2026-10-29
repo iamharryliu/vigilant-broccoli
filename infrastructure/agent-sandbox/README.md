@@ -165,7 +165,7 @@ Screenshots are required only when the changed page or component is reachable an
 
 After committing, `pr-screenshots.py` verifies each asset's committed bytes and generates inline images for `merge-pr-body.py`'s `PR_SCREENSHOTS` input. Links use `../blob/<commit>/.github/pr-screenshots/<sha256>.png?raw=true`, following [GitHub's relative image syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#images). Captures remain available after VM cleanup and branch deletion, and become part of repository history. No upload service, extra credentials or Actions artifact download is needed.
 
-The `## Screenshots` section contains a collapsible `<details><summary>Screenshots</summary>` block with blank lines around the images. It appears after all other content sections, including Concerns and Suggestions, immediately before `## Agentic Change History`; history stays last, followed by the footer. The merger moves and wraps existing legacy screenshot sections even when preserving their contents.
+The `## Screenshots` section contains a collapsible `<details><summary>Screenshots</summary>` block with blank lines around the images. It is the last section, after Concerns, Suggestions and `## Agentic Change History`, followed only by the footer. The merger moves and wraps existing legacy screenshot sections even when preserving their contents.
 
 A new screenshot set replaces the PR's Screenshots section. Updates without captures preserve the existing section; an explicitly empty `PR_SCREENSHOTS` removes it. Local `ship-pr` uses the same helper with explicit paths, as described in the [UI task contract](../../docs/agent-support.md#task-contract).
 
