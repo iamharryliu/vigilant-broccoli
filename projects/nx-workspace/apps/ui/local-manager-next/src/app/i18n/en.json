@@ -1,4 +1,7 @@
 {
+  "CALENDAR_CREATE": {
+    "TITLE": "Create calendar event"
+  },
   "HOME": {
     "CALENDAR_VIEW": "Calendar view",
     "EVENT_CALENDARS": "Event calendars",

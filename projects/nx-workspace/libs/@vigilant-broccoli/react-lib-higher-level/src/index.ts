@@ -23,3 +23,4 @@ export * from './lib/NotepadLoadError';
 export * from './lib/leaderboard';
 export * from './lib/live-location';
 export * from './lib/whiteboard';
+export * from './lib/calendar-event/CreateCalendarEventDialog';
