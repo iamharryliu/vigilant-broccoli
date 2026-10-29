@@ -92,6 +92,14 @@ Successful keyboard or touch gravity flips play a soft, airy noise whoosh with n
 
 The playfield's top-right music button toggles music without pausing or restarting a run. **Settings → Audio** also provides independent music and game-effect toggles. Preferences persist as `gravity-guy-music-v1` and `gravity-guy-sounds-v1`. No audio starts on page load.
 
+- Start, Resume, the music button and running-game flip input retry audio activation directly in the input handler.
+- Music waits for the context to be running; effects that occur before readiness are dropped rather than replayed later.
+- Pause, game over and navigation stop scheduled effect voices as well as music; disabling effects stops only effect voices.
+- An audio interruption pauses the run; returning from the background requires explicit Resume. Resume retries suspended or interrupted contexts, while the scheduler avoids replaying missed beats.
+- Browser or operating-system audio restrictions, device volume and output routing still apply; physical iOS Safari and Android Chrome audibility require device verification.
+
+Browser references: [Chrome Web Audio autoplay policy](https://developer.chrome.com/blog/web-audio-autoplay) and [audio context interruption states](https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/state).
+
 ## Presentation and verification
 
 The shared `ThemeProvider` tracks system appearance live, including canvas colours, without resetting a run. English copy uses shared `createI18n`; shared buttons provide accessible controls. Canvas artwork and SVG/opaque Apple PNG icons are original local assets. The playfield uses a minimum 680-unit logical view on narrow screens, preserving reaction time.
