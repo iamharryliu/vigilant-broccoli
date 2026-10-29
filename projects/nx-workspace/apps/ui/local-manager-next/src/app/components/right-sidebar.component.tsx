@@ -4,6 +4,7 @@ import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { signInWithGoogle, signOut, useAuth } from '../../../libs/auth';
 import { usePathname, useRouter } from 'next/navigation';
 import {
+  Activity,
   Search,
   LogOut,
   LogIn,
@@ -23,6 +24,7 @@ import {
 import { NotificationRecord } from '../hooks/useNotificationHistory';
 import { NotificationsDialog } from './notifications-dialog.component';
 import { SIDEBAR_ROUTE } from '../app.const';
+import { useTranslation } from '../i18n';
 
 const SETTINGS_PATH = '/settings';
 
@@ -36,6 +38,7 @@ const SIDEBAR_ROUTE_ITEMS = [
   { route: SIDEBAR_ROUTE.CAREER2, icon: FolderOpen },
   { route: SIDEBAR_ROUTE.JOB_HUNT, icon: ClipboardList },
   { route: SIDEBAR_ROUTE.MUSIC, icon: Music },
+  { route: SIDEBAR_ROUTE.STATUS, icon: Activity },
   { route: SIDEBAR_ROUTE.BACKGROUND_TASKS, icon: ListChecks },
 ];
 
@@ -79,6 +82,7 @@ export const RightSidebar = ({
   notifications,
   onClearNotifications,
 }: Props) => {
+  const { t } = useTranslation();
   const session = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -93,10 +97,14 @@ export const RightSidebar = ({
       isActive: notificationsOpen,
     },
     ...SIDEBAR_ROUTE_ITEMS.map(({ route, icon }) => ({
-      label: route.title,
+      label: route === SIDEBAR_ROUTE.STATUS ? t('STATUS.TITLE') : route.title,
       icon,
       title:
-        route === SIDEBAR_ROUTE.CHATBOT ? `${route.title} (C)` : route.title,
+        route === SIDEBAR_ROUTE.CHATBOT
+          ? `${route.title} (C)`
+          : route === SIDEBAR_ROUTE.STATUS
+            ? t('STATUS.TITLE')
+            : route.title,
       onClick: () => router.push(route.path),
       isActive: pathname === route.path,
     })),

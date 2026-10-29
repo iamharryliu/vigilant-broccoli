@@ -1,4 +1,5 @@
 import { OPEN_TYPE } from '@vigilant-broccoli/common-js';
+import en from './i18n/en.json';
 
 type NextNavRoute = {
   path: string;
@@ -56,6 +57,10 @@ export const SIDEBAR_ROUTE = {
   JOB_HUNT: {
     title: 'Job Hunt',
     path: '/job-hunt',
+  },
+  STATUS: {
+    title: en.STATUS.TITLE,
+    path: '/status',
   },
   BACKGROUND_TASKS: {
     title: 'Background Tasks',
