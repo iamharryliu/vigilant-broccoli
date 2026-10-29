@@ -4,10 +4,14 @@
 create-todo-runner.sh, create-rnd-runner.sh,
 audit-todo-runner.sh, audit-docs-runner.sh, audit-context-runner.sh,
 prune-runner.sh) to rewrite a PR body in place: replace the
-"## Summary" / "## Next steps" / "## Screenshots" / "## Concerns" / "## Suggestions" sections with the agent's latest cumulative
-description, and append a row to an "## Agentic Change History" table —
-creating either if the PR body doesn't have them yet. Reads everything from
-the environment (see the CURRENT_BODY/PR_*/HISTORY_* vars below; PR_STACK is the
+"## Summary", "## Next steps", "## Concerns", "## Suggestions" and
+"## Screenshots" sections with the agent's latest cumulative description, and append a row to an "## Agentic Change History" table —
+creating either if the PR body doesn't have them yet. Screenshots are the last
+section, wrapped in <details><summary>Screenshots</summary> with blank lines
+around images, after the history table and before the attribution footer.
+Legacy screenshot sections are moved and wrapped even when PR_SCREENSHOTS is
+unset (preserve); nonempty replaces and explicitly empty removes the section.
+Reads everything from the environment (see the CURRENT_BODY/PR_*/HISTORY_* vars below; PR_STACK is the
 "## Stack" section pr-increments.sh writes when one request is published as
 several pull requests) and prints
 the merged body to stdout; the caller passes it to `gh pr create --body` or
@@ -90,13 +94,18 @@ def insert_after(*anchors):
 
 # Explicitly empty variables drop their sections; unset variables preserve them.
 for name, env_name, value, anchors in (
-    ("Screenshots", "PR_SCREENSHOTS", pr_screenshots, ("Next steps", "Summary")),
-    ("Concerns", "PR_CONCERNS", pr_concerns, ("Screenshots", "Next steps", "Summary")),
+    ("Concerns", "PR_CONCERNS", pr_concerns, ("Next steps", "Summary")),
     (
         "Suggestions",
         "PR_SUGGESTIONS",
         pr_suggestions,
-        ("Concerns", "Screenshots", "Next steps", "Summary"),
+        ("Concerns", "Next steps", "Summary"),
+    ),
+    (
+        "Screenshots",
+        "PR_SCREENSHOTS",
+        pr_screenshots,
+        ("Suggestions", "Concerns", "Next steps", "Summary"),
     ),
 ):
     if env_name in os.environ and not value:
@@ -147,6 +156,25 @@ if history_source and history_command and history_summary and history_date:
             HISTORY_HEADING,
             "\n".join([HEADER_ROW, SEPARATOR_ROW] + data_rows),
         )
+
+# Normalize preserved legacy sections too, without nesting an existing wrapper.
+for name in ("Agentic Change History", "Screenshots"):
+    trailing = [(h, c) for h, c in sections if h == name]
+    sections[:] = [(h, c) for h, c in sections if h != name]
+    for heading, content in trailing:
+        if name == "Screenshots":
+            content = content.strip()
+            wrapped = re.fullmatch(
+                r"<details>\s*<summary>Screenshots</summary>\s*(.*?)\s*</details>",
+                content,
+                re.DOTALL,
+            )
+            if wrapped:
+                content = wrapped.group(1).strip()
+            content = (
+                f"<details><summary>Screenshots</summary>\n\n{content}\n\n</details>"
+            )
+        sections.append((heading, content))
 
 parts = []
 for heading, text in sections:
