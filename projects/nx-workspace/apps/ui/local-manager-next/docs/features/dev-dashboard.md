@@ -16,8 +16,9 @@
 ## Connection Map
 
 - The Network Tools tab's Connection Map draws great-circle arcs from this machine's public-IP location to every external TCP/UDP peer, coloured by direction, with a filterable flow list beside it. Clicking a flow highlights its arc.
-- `GET /api/network-monitor/connection-map` samples `lsof` on each 5-second poll. A socket is inbound when its local port is one this host is listening on. Loopback, private, CGNAT and link-local peers are dropped. Flows are held in process memory for 15 minutes so short-lived connections stay visible, which also means a PM2 reload clears them and nothing is sampled while no page polls.
-- `lsof` runs as the PM2 user, so other users' and root-owned processes' sockets are not visible.
+- An always-on collector (`_lib/connection-collector.ts`) samples `lsof` every second from server boot, started by `src/instrumentation.ts` and kept on `globalThis` so instrumentation and routes share one loop. A socket is inbound when its local port is one this host is listening on. Loopback, private, CGNAT and link-local peers are dropped.
+- Flows are upserted into SQLite (`node:sqlite`) at `~/.local/share/vigilant-broccoli/network-flows.sqlite` and pruned after 7 days, so history survives PM2 reloads. `GET /api/network-monitor/connection-map?window=15m|1h|24h|7d` reads flows seen in that window (newest 2,000) and marks those open in the latest sample.
+- Connections that open and close within one second can still be missed, and `lsof` runs as the PM2 user, so other users' and root-owned processes' sockets are not visible.
 - The basemap is OpenStreetMap's standard tiles, inverted by a CSS filter on Leaflet's tile pane: CARTO's dark basemap now serves "API KEY REQUIRED" placeholder tiles with a 200 status.
 - Geolocation is a local lookup against DB-IP Lite City (`_lib/mmdb.ts` is a minimal MaxMind DB reader). The first request downloads the ~60MB gzip into `~/.cache/vigilant-broccoli/dbip-city-lite.mmdb`, refreshed after 35 days. The map lists flows without locations until the download finishes. The ~120MB file is held in memory. DB-IP Lite is CC BY 4.0, so the map keeps the DB-IP attribution.
 

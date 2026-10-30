@@ -29,6 +29,19 @@ export const GEO_STATUS = {
 
 export type GeoStatus = (typeof GEO_STATUS)[keyof typeof GEO_STATUS];
 
+const MINUTE_MS = 60 * 1000;
+
+export const CONNECTION_MAP_WINDOW = {
+  '15m': 15 * MINUTE_MS,
+  '1h': 60 * MINUTE_MS,
+  '24h': 24 * 60 * MINUTE_MS,
+  '7d': 7 * 24 * 60 * MINUTE_MS,
+} as const;
+
+export type ConnectionMapWindow = keyof typeof CONNECTION_MAP_WINDOW;
+
+export const CONNECTION_MAP_WINDOW_PARAM = 'window';
+
 export interface MapLocation {
   lat: number;
   lng: number;
@@ -56,5 +69,6 @@ export interface ConnectionMapResponse {
   home: (MapLocation & { ip: string }) | null;
   geoStatus: GeoStatus;
   sampledAt: number;
+  collectorError: string | null;
   flows: ConnectionFlow[];
 }

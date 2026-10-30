@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
 import {
   Badge,
@@ -14,7 +14,10 @@ import {
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import {
   CONNECTION_DIRECTION,
+  CONNECTION_MAP_WINDOW,
+  CONNECTION_MAP_WINDOW_PARAM,
   ConnectionDirection,
+  ConnectionMapWindow,
   ConnectionFlow,
   ConnectionMapResponse,
   GEO_STATUS,
@@ -35,9 +38,14 @@ const ConnectionWorldMap = dynamic(
 
 const TITLE = 'Connection Map';
 const POLL_MS = 5000;
-const FETCH_ERROR = 'Failed to sample connections';
+const FETCH_ERROR = 'Failed to read connections';
+const COLLECTOR_ERROR_PREFIX = 'Collector error: ';
 const ALL_PROCESSES = 'All processes';
-const EMPTY_MESSAGE = 'No external connections in the last 15 minutes';
+const EMPTY_MESSAGE = 'No external connections in this window';
+const DEFAULT_WINDOW: ConnectionMapWindow = '15m';
+const WINDOW_OPTIONS = Object.keys(
+  CONNECTION_MAP_WINDOW,
+) as ConnectionMapWindow[];
 const GEO_STATUS_MESSAGE: Partial<Record<string, string>> = {
   [GEO_STATUS.LOADING]:
     'Downloading the DB-IP Lite database (~60MB, first run only); locations appear when it finishes.',
@@ -113,17 +121,37 @@ export const NetworkMapComponent = () => {
     DIRECTION_FILTER.ALL,
   );
   const [selectedFlowId, setSelectedFlowId] = useState<string | null>(null);
+  const [windowKey, setWindowKey] =
+    useState<ConnectionMapWindow>(DEFAULT_WINDOW);
+  const latestWindowKey = useRef(windowKey);
 
-  usePollingInterval(async () => {
+  const fetchConnections = async (key: ConnectionMapWindow) => {
     try {
-      const res = await authFetch(API_ENDPOINTS.NETWORK_MONITOR_CONNECTION_MAP);
+      const params = new URLSearchParams({
+        [CONNECTION_MAP_WINDOW_PARAM]: key,
+      });
+      const res = await authFetch(
+        `${API_ENDPOINTS.NETWORK_MONITOR_CONNECTION_MAP}?${params}`,
+      );
       if (!res.ok) throw new Error(FETCH_ERROR);
-      setData(await res.json());
+      const body: ConnectionMapResponse = await res.json();
+      // A slow response for a previously selected window must not overwrite
+      // the current one.
+      if (key !== latestWindowKey.current) return;
+      setData(body);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : FETCH_ERROR);
     }
-  }, POLL_MS);
+  };
+
+  usePollingInterval(() => fetchConnections(windowKey), POLL_MS);
+
+  const handleWindowChange = (key: ConnectionMapWindow) => {
+    latestWindowKey.current = key;
+    setWindowKey(key);
+    fetchConnections(key);
+  };
 
   const flows = useMemo(
     () =>
@@ -189,9 +217,22 @@ export const NetworkMapComponent = () => {
           aria-label="Process"
           className="w-56"
         />
+        <Select
+          value={windowKey}
+          onValueChange={handleWindowChange}
+          options={WINDOW_OPTIONS}
+          aria-label="Time window"
+          className="w-24"
+        />
         {error && (
           <Text size="1" color="red">
             {error}
+          </Text>
+        )}
+        {data.collectorError && (
+          <Text size="1" color="red">
+            {COLLECTOR_ERROR_PREFIX}
+            {data.collectorError}
           </Text>
         )}
       </div>
@@ -207,6 +248,7 @@ export const NetworkMapComponent = () => {
             destinations={destinations}
             highlightedKeys={highlightedKeys}
             now={data.sampledAt}
+            fadeWindowMs={CONNECTION_MAP_WINDOW[windowKey]}
           />
         </div>
         <div className="h-[480px] overflow-y-auto flex flex-col gap-0.5">

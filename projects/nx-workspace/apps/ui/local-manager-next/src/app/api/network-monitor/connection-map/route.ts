@@ -1,134 +1,25 @@
-import { NextResponse } from 'next/server';
-import { execFile } from 'child_process';
-import { promisify } from 'util';
+import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import {
-  CONNECTION_DIRECTION,
-  CONNECTION_SCOPE,
-  ConnectionFlow,
+  CONNECTION_MAP_WINDOW,
+  CONNECTION_MAP_WINDOW_PARAM,
   ConnectionMapResponse,
+  ConnectionMapWindow,
 } from '../../../constants/network-monitor';
-import { classifyIp, parseAddr } from '../_lib/lsof';
+import { startConnectionCollector } from '../_lib/connection-collector';
+import { listFlowsSince } from '../_lib/flow-store';
 import { ensureGeoIp, lookupGeo } from '../_lib/geoip';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-const execFileAsync = promisify(execFile);
-
-// +c 0 keeps full process names; -sTCP filters only TCP, so UDP sockets come
-// through unfiltered and unconnected ones are dropped while parsing.
-const LSOF_ARGS = [
-  '+c',
-  '0',
-  '-nP',
-  '-iTCP',
-  '-sTCP:ESTABLISHED,LISTEN',
-  '-iUDP',
-];
-const LSOF_MAX_BUFFER = 16 * 1024 * 1024;
-const LISTEN_STATE = '(LISTEN)';
-const ADDR_SEPARATOR = '->';
-const FLOW_RETENTION_MS = 15 * 60 * 1000;
+const MAX_FLOWS = 2000;
 const PUBLIC_IP_URL = 'https://api.ipify.org?format=json';
 const PUBLIC_IP_TTL_MS = 10 * 60 * 1000;
-const FETCH_ERROR = 'Failed to sample connections';
+const FETCH_ERROR = 'Failed to read connections';
 
-interface Socket {
-  process: string;
-  pid: number;
-  protocol: string;
-  localPort: number;
-  remoteIp: string;
-  remotePort: number;
-}
-
-const decodeLsofName = (name: string) =>
-  name.replace(/\\x([0-9a-f]{2})/gi, (_, hex) =>
-    String.fromCharCode(parseInt(hex, 16)),
-  );
-
-const parseLsof = (stdout: string) => {
-  const listenPorts = new Set<number>();
-  const sockets: Socket[] = [];
-  for (const line of stdout.trim().split('\n').slice(1)) {
-    const parts = line.split(/\s+/);
-    if (parts.length < 9) continue;
-    const [command, pidField, , , , , , protocol, name, state] = parts;
-    const pid = parseInt(pidField, 10);
-    if (isNaN(pid)) continue;
-
-    if (state === LISTEN_STATE) {
-      const local = parseAddr(name);
-      if (local) listenPorts.add(local.port);
-      continue;
-    }
-    if (!name.includes(ADDR_SEPARATOR)) continue;
-    const [localField, remoteField] = name.split(ADDR_SEPARATOR);
-    const local = parseAddr(localField);
-    const remote = parseAddr(remoteField);
-    if (!local || !remote) continue;
-    if (classifyIp(remote.ip) !== CONNECTION_SCOPE.EXTERNAL) continue;
-
-    sockets.push({
-      process: decodeLsofName(command),
-      pid,
-      protocol,
-      localPort: local.port,
-      remoteIp: remote.ip,
-      remotePort: remote.port,
-    });
-  }
-  return { listenPorts, sockets };
-};
-
-// Flows persist across polls so short-lived connections stay on the map for
-// the retention window instead of flickering out between samples.
-const flows = new Map<string, Omit<ConnectionFlow, 'location'>>();
-
-const recordSample = (stdout: string, now: number) => {
-  const { listenPorts, sockets } = parseLsof(stdout);
-  const socketCounts = new Map<string, number>();
-
-  for (const socket of sockets) {
-    const direction = listenPorts.has(socket.localPort)
-      ? CONNECTION_DIRECTION.INBOUND
-      : CONNECTION_DIRECTION.OUTBOUND;
-    // Inbound clients use ephemeral source ports, so key them by our listening
-    // port instead to keep one flow per client and service.
-    const remotePort =
-      direction === CONNECTION_DIRECTION.INBOUND ? 0 : socket.remotePort;
-    const id = [
-      socket.process,
-      socket.protocol,
-      direction,
-      socket.remoteIp,
-      remotePort,
-      direction === CONNECTION_DIRECTION.INBOUND ? socket.localPort : 0,
-    ].join('|');
-
-    socketCounts.set(id, (socketCounts.get(id) ?? 0) + 1);
-    const existing = flows.get(id);
-    flows.set(id, {
-      id,
-      process: socket.process,
-      pid: socket.pid,
-      protocol: socket.protocol,
-      direction,
-      localPort: socket.localPort,
-      remoteIp: socket.remoteIp,
-      remotePort: socket.remotePort,
-      sockets: 0,
-      firstSeen: existing?.firstSeen ?? now,
-      lastSeen: now,
-    });
-  }
-
-  for (const [id, flow] of flows) {
-    if (now - flow.lastSeen > FLOW_RETENTION_MS) flows.delete(id);
-    else flow.sockets = socketCounts.get(id) ?? 0;
-  }
-};
+const isWindow = (value: string | null): value is ConnectionMapWindow =>
+  value !== null && value in CONNECTION_MAP_WINDOW;
 
 let publicIp: { ip: string; fetchedAt: number } | null = null;
 
@@ -143,26 +34,31 @@ const getPublicIp = async (now: number): Promise<string | null> => {
   return ip;
 };
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const now = Date.now();
+    // Already started by instrumentation; this only returns its state.
+    const collector = startConnectionCollector();
     const geoStatus = ensureGeoIp();
-    const [{ stdout }, ip] = await Promise.all([
-      execFileAsync('lsof', LSOF_ARGS, { maxBuffer: LSOF_MAX_BUFFER }).catch(
-        err => ({ stdout: (err.stdout as string) ?? '' }),
-      ),
-      getPublicIp(now),
-    ]);
-    recordSample(stdout, now);
+    const windowParam = request.nextUrl.searchParams.get(
+      CONNECTION_MAP_WINDOW_PARAM,
+    );
+    const windowMs = isWindow(windowParam)
+      ? CONNECTION_MAP_WINDOW[windowParam]
+      : CONNECTION_MAP_WINDOW['15m'];
 
+    const ip = await getPublicIp(now);
     const homeLocation = ip ? lookupGeo(ip) : null;
     const body: ConnectionMapResponse = {
       home: ip && homeLocation ? { ip, ...homeLocation } : null,
       geoStatus,
-      sampledAt: now,
-      flows: [...flows.values()]
-        .sort((a, b) => b.lastSeen - a.lastSeen)
-        .map(flow => ({ ...flow, location: lookupGeo(flow.remoteIp) })),
+      sampledAt: collector.lastSampledAt ?? now,
+      collectorError: collector.lastError,
+      flows: listFlowsSince(now - windowMs, MAX_FLOWS).map(flow => ({
+        ...flow,
+        sockets: collector.openSockets.get(flow.id) ?? 0,
+        location: lookupGeo(flow.remoteIp),
+      })),
     };
     return NextResponse.json(body);
   } catch {

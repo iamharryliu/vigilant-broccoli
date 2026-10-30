@@ -83,6 +83,10 @@ export const dominantDirection = (d: Destination): ConnectionDirection =>
     ? CONNECTION_DIRECTION.INBOUND
     : CONNECTION_DIRECTION.OUTBOUND;
 
+export const activeDirections = (d: Destination): ConnectionDirection[] => [
+  ...new Set(d.flows.filter(f => f.sockets > 0).map(f => f.direction)),
+];
+
 export const formatPlace = (location: MapLocation | null): string => {
   if (!location) return '—';
   return [location.city, location.countryCode ?? location.country]
@@ -93,5 +97,9 @@ export const formatPlace = (location: MapLocation | null): string => {
 export const formatAge = (ms: number): string => {
   const seconds = Math.max(0, Math.round(ms / 1000));
   if (seconds < 60) return `${seconds}s`;
-  return `${Math.round(seconds / 60)}m`;
+  const minutes = Math.round(seconds / 60);
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `${hours}h`;
+  return `${Math.round(hours / 24)}d`;
 };
