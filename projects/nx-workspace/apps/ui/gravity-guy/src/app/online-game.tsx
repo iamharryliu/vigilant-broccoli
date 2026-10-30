@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { LogOut } from 'lucide-react';
+import { LogOut, Music2, Volume2, VolumeX } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,11 +15,36 @@ import {
   useTheme,
 } from '@vigilant-broccoli/react-lib';
 import { paint, playersOf, scoreOf, type Run } from './engine';
-import { useGameAudio } from './audio';
+import { GameCard } from './game-card';
+import { RunnerSprite } from './runner-sprite';
+import { CALM_MUSIC_SEED, useGameAudio, useUnlockOnInteraction } from './audio';
 import { useGameSettings } from './preferences';
 import { useTranslation } from './i18n';
 import { isLandscapeBlocked } from './orientation';
 import { ROOM_SIZE, useOnlineRoom } from './online-room';
+
+const Ellipsis = ({ label }: { label: string }) => {
+  const [dots, setDots] = useState(1);
+  useEffect(() => {
+    const timer = window.setInterval(
+      () => setDots(count => (count + 1) % 4),
+      450,
+    );
+    return () => window.clearInterval(timer);
+  }, []);
+  return (
+    <>
+      <span className="sr-only">{label}</span>
+      <span className="lobby-ellipsis" aria-hidden="true">
+        {[1, 2, 3].map(dot => (
+          <span key={dot} style={{ opacity: dot <= dots ? 1 : 0 }}>
+            .
+          </span>
+        ))}
+      </span>
+    </>
+  );
+};
 
 export function OnlineGame({
   onLeave,
@@ -40,13 +65,18 @@ export function OnlineGame({
 
   const running =
     connection === 'connected' && snapshot?.run?.status === 'running';
+  const lobby = !snapshot?.run && connection !== 'error';
   const { unlock, playDash, playPlatform, playWoof } = useGameAudio(
-    Boolean(running),
+    Boolean(running) || lobby,
     music,
     sounds,
-    snapshot?.run?.seed ?? 0,
+    snapshot?.run?.seed ?? CALM_MUSIC_SEED,
   );
+  useUnlockOnInteraction(unlock);
   const localIndex = snapshot?.seats.indexOf(userId) ?? -1;
+  const lobbyIndex = snapshot
+    ? localIndex
+    : members.findIndex(member => member.id === userId);
   const localPlayer = snapshot?.run && playersOf(snapshot.run)[localIndex];
   const alive = localPlayer && !localPlayer.out;
   const latest = useRef({ snapshot, appearance, scenery });
@@ -146,6 +176,8 @@ export function OnlineGame({
     return () => window.removeEventListener('keydown', keydown);
   }, [flip]);
 
+  const alone =
+    !snapshot?.run && (snapshot ? snapshot.seats.length : members.length) <= 1;
   const over = snapshot?.run?.status === 'over';
   const winner = snapshot?.run?.winner;
   const waiting = !snapshot?.run;
@@ -153,100 +185,112 @@ export function OnlineGame({
     ? Math.max(0, Math.ceil((snapshot.startsAt - now) / 1000))
     : null;
   const label =
-    connection === 'error'
-      ? t('ONLINE.CONNECTION_ERROR')
-      : connection === 'connecting'
-        ? t('ONLINE.CONNECTING')
-        : countdown !== null
-          ? `${t('ONLINE.STARTS_IN')} ${countdown}`
-          : t('ONLINE.WAITING');
+    connection === 'error' ? (
+      t('ONLINE.CONNECTION_ERROR')
+    ) : countdown !== null && connection !== 'connecting' ? (
+      `${t('ONLINE.STARTS_IN')} ${countdown}`
+    ) : (
+      <Ellipsis label={t('ONLINE.WAITING')} />
+    );
   return (
-    <main className="gravity-app online-page">
+    <main
+      className="gravity-app online-page"
+      data-scenery={scenery ? 'on' : 'off'}
+    >
       <div className="shell">
-        <header className="masthead">
-          <div>
-            <h1>{t('APP.NAME')}</h1>
-            <p>{t('ONLINE.TITLE')}</p>
-          </div>
-        </header>
-        <section className="game-card" aria-label={t('ONLINE.TITLE')}>
-          <AlertDialog open={leaveOpen} onOpenChange={setLeaveOpen}>
-            <AlertDialogTrigger asChild>
+        <GameCard label={t('ONLINE.TITLE')}>
+          <div className="online-stage">
+            <div className="online-stage-leave">
+              <AlertDialog
+                open={leaveOpen}
+                onOpenChange={open => {
+                  if (open && alone) onLeave();
+                  else setLeaveOpen(open);
+                }}
+              >
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="online-leave-toggle"
+                    aria-label={t('ONLINE.LEAVE')}
+                    title={t('ONLINE.LEAVE')}
+                  >
+                    <LogOut size={20} aria-hidden="true" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="leave-game-dialog">
+                  <AlertDialogTitle>
+                    {t('ONLINE.LEAVE_CONFIRM_TITLE')}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t('ONLINE.LEAVE_CONFIRM_DESCRIPTION')}
+                  </AlertDialogDescription>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel asChild>
+                      <Button variant="outline">{t('ONLINE.STAY')}</Button>
+                    </AlertDialogCancel>
+                    <AlertDialogAction asChild>
+                      <Button onClick={onLeave}>
+                        {t('ONLINE.CONFIRM_LEAVE')}
+                      </Button>
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+            <div className="online-hud-actions">
               <Button
                 variant="outline"
                 size="icon"
-                className="online-leave-toggle"
-                aria-label={t('ONLINE.LEAVE')}
-                title={t('ONLINE.LEAVE')}
+                aria-pressed={music}
+                aria-label={t(music ? 'APP.MUSIC_DISABLE' : 'APP.MUSIC_ENABLE')}
+                onClick={() => {
+                  unlock();
+                  updateSettings({ music: !music });
+                }}
               >
-                <LogOut size={20} aria-hidden="true" />
+                {music ? (
+                  <Music2 size={16} aria-hidden="true" />
+                ) : (
+                  <VolumeX size={16} aria-hidden="true" />
+                )}
               </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent className="leave-game-dialog">
-              <AlertDialogTitle>
-                {t('ONLINE.LEAVE_CONFIRM_TITLE')}
-              </AlertDialogTitle>
-              <AlertDialogDescription>
-                {t('ONLINE.LEAVE_CONFIRM_DESCRIPTION')}
-              </AlertDialogDescription>
-              <AlertDialogFooter>
-                <AlertDialogCancel asChild>
-                  <Button variant="outline">{t('ONLINE.STAY')}</Button>
-                </AlertDialogCancel>
-                <AlertDialogAction asChild>
-                  <Button onClick={onLeave}>{t('ONLINE.CONFIRM_LEAVE')}</Button>
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-          <div className="dashboard online-dashboard">
-            <p>
-              {t('ONLINE.PLAYERS')}{' '}
-              {snapshot?.seats.length ?? Math.min(members.length, ROOM_SIZE)} /{' '}
-              {ROOM_SIZE}
-            </p>
-            {localIndex >= 0 && (
-              <p>
-                {t('ONLINE.YOU')} {localIndex + 1}
-              </p>
-            )}
-            <Button
-              variant="outline"
-              aria-pressed={music}
-              onClick={() => {
-                unlock();
-                updateSettings({ music: !music });
-              }}
-            >
-              {t(music ? 'APP.MUSIC_ON' : 'APP.MUSIC_OFF')}
-            </Button>
-            <Button variant="outline" onClick={unlock}>
-              {t('ONLINE.ENABLE_AUDIO')}
-            </Button>
-          </div>
-          <p className="online-notice">{t('ONLINE.NO_PAUSE')}</p>
-          {waiting || connection === 'error' ? (
-            <div className="online-lobby" role="status">
-              <h2>{label}</h2>
-              <p>{t('ONLINE.MATCHMAKING')}</p>
-              <ol>
-                {Array.from({ length: ROOM_SIZE }, (_, index) => (
-                  <li key={index}>
-                    {t('ONLINE.PLAYER')} {index + 1}:{' '}
-                    {t(
-                      (snapshot ? snapshot.seats[index] : members[index])
-                        ? 'ONLINE.JOINED'
-                        : 'ONLINE.OPEN_SEAT',
-                    )}
-                  </li>
-                ))}
-              </ol>
-              {connection === 'error' && (
-                <Button onClick={onAgain}>{t('ONLINE.RETRY')}</Button>
-              )}
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label={t('ONLINE.ENABLE_AUDIO')}
+                title={t('ONLINE.ENABLE_AUDIO')}
+                onClick={unlock}
+              >
+                <Volume2 size={16} aria-hidden="true" />
+              </Button>
             </div>
-          ) : (
-            <>
+            {waiting || connection === 'error' ? (
+              <div className="online-lobby" role="status">
+                <h2>{label}</h2>
+                <ol>
+                  {Array.from({ length: ROOM_SIZE }, (_, index) => (
+                    <li
+                      key={index}
+                      className={
+                        (snapshot ? snapshot.seats[index] : members[index])
+                          ? 'seat-joined'
+                          : 'seat-open'
+                      }
+                    >
+                      <RunnerSprite number={index + 1} />
+                      {index === lobbyIndex && (
+                        <span className="seat-you">{t('ONLINE.YOU')}</span>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+                {connection === 'error' && (
+                  <Button onClick={onAgain}>{t('ONLINE.RETRY')}</Button>
+                )}
+              </div>
+            ) : (
               <div
                 ref={field}
                 className="playfield"
@@ -277,37 +321,20 @@ export function OnlineGame({
                   </div>
                 )}
               </div>
-              <div className="control-bar">
-                <Button
-                  size="lg"
-                  className="flip-button"
-                  disabled={!running || !alive}
-                  onPointerDown={event => {
-                    event.preventDefault();
-                    flip();
-                  }}
-                  onClick={event => {
-                    if (event.detail === 0) flip();
-                  }}
-                >
-                  {t(alive ? 'APP.FLIP' : 'ONLINE.SPECTATING')}
-                </Button>
-              </div>
-              <ol className="online-scores" aria-label={t('ONLINE.SCORES')}>
-                {snapshot?.run &&
-                  playersOf(snapshot.run).map((player, index) => (
-                    <li key={snapshot.seats[index]}>
-                      {t('ONLINE.PLAYER')} {index + 1}
-                      {index === localIndex
-                        ? ` (${t('ONLINE.YOU')})`
-                        : ''}: {scoreOf(player)} {t('APP.UNIT')} ·{' '}
-                      {t(player.out ? 'ONLINE.OUT' : 'ONLINE.RUNNING')}
-                    </li>
-                  ))}
-              </ol>
-            </>
-          )}
-        </section>
+            )}
+          </div>
+        </GameCard>
+        <ol className="online-scores" aria-label={t('ONLINE.SCORES')}>
+          {snapshot?.run &&
+            playersOf(snapshot.run).map((player, index) => (
+              <li key={snapshot.seats[index]}>
+                {t('ONLINE.PLAYER')} {index + 1}
+                {index === localIndex ? ` (${t('ONLINE.YOU')})` : ''}:{' '}
+                {scoreOf(player)} {t('APP.UNIT')} ·{' '}
+                {t(player.out ? 'ONLINE.OUT' : 'ONLINE.RUNNING')}
+              </li>
+            ))}
+        </ol>
       </div>
     </main>
   );

@@ -92,7 +92,7 @@ const createPlayer = (distance = 0): Player => ({
 });
 export const createRun = (
   seed = Math.floor(Math.random() * 0x100000000),
-  playerCount: 1 | 2 = 1,
+  playerCount: 1 | 2 | 3 | 4 = 1,
 ): Run => ({
   ...createPlayer(),
   camera: WORLD.playerX - (DEFAULT_VIEW_WIDTH - WORLD.playerSize) / 2,
@@ -100,6 +100,10 @@ export const createRun = (
   mapSpeedMultiplier: 1,
   seed,
   partner: playerCount === 2 ? createPlayer() : undefined,
+  onlinePlayers:
+    playerCount > 2
+      ? Array.from({ length: playerCount - 1 }, () => createPlayer())
+      : undefined,
   winner: null,
   dog: {
     x: WORLD.playerX - (DEFAULT_VIEW_WIDTH - WORLD.playerSize) / 2 + 8,
@@ -245,15 +249,16 @@ const shortZigzagPlatforms = (start: number): Platform[] => [
   {
     x: start,
     y: WORLD.ceiling - PLATFORM_HEIGHT,
-    width: 260,
+    width: 200,
     height: 116,
     obstacle: true,
   },
-  { x: start, y: 326, width: 260, height: 94, obstacle: true },
-  ...[306, 150, 286, 170, 306].map((y, step) => ({
-    x: start + 260 + step * 230,
+  { x: start, y: 326, width: 200, height: 94, obstacle: true },
+  // The first ledge shares the entry block's top so the runner walks straight on.
+  ...[326, 190, 326, 190, 326].map((y, step) => ({
+    x: start + 200 + step * 250,
     y,
-    width: 190,
+    width: 220,
     height: PLATFORM_HEIGHT,
   })),
   {
@@ -1201,6 +1206,7 @@ export const paint = (
     for (const [index, player] of playersOf(run).entries()) {
       if (player.out) continue;
       paintPlayer(context, run, player, dark, index + 1);
+      paintDangerMark(context, run, player, dark, 22 + index * 18);
       context.fillStyle = dark ? '#ffffff' : '#132f40';
       context.font = 'bold 16px Arial';
       context.textAlign = 'center';
@@ -1213,11 +1219,62 @@ export const paint = (
     return;
   }
   paintPlayer(context, run, run, dark, 1);
+  paintDangerMark(context, run, run, dark, 12);
   if (run.partner) {
     paintPlayer(context, run, run.partner, dark, 2);
+    paintDangerMark(context, run, run.partner, dark, 12);
     paintPlayerNumbers(context, run, dark);
   }
 };
+
+const DANGER_DISTANCE = 140;
+
+const paintDangerMark = (
+  context: CanvasRenderingContext2D,
+  run: Run,
+  player: Player,
+  dark: boolean,
+  lift: number,
+) => {
+  if (
+    run.status !== 'running' ||
+    player.out ||
+    run.dog.respawnTimer > 0 ||
+    dogTargetGap(run.dog, player) > DANGER_DISTANCE
+  )
+    return;
+  const x = WORLD.playerX + player.distance - run.camera + WORLD.playerSize / 2;
+  const y =
+    player.gravity === 1
+      ? player.y - lift
+      : player.y + WORLD.playerSize + lift + 12;
+  context.save();
+  context.font = '900 24px Arial';
+  context.textAlign = 'center';
+  context.lineWidth = 4;
+  context.strokeStyle = dark ? '#07111f' : '#ffffff';
+  context.fillStyle = dark ? '#ff7a7a' : '#d11a2a';
+  context.strokeText('!!', x, y + Math.sin(run.camera / 18) * 2);
+  context.fillText('!!', x, y + Math.sin(run.camera / 18) * 2);
+  context.restore();
+};
+
+export const playerAccent = (number: number, dark: boolean) =>
+  number === 3
+    ? dark
+      ? '#ffc878'
+      : '#9e5500'
+    : number === 4
+      ? dark
+        ? '#e5a0ff'
+        : '#8b3bb2'
+      : number === 1
+        ? dark
+          ? '#60ead7'
+          : '#087f78'
+        : dark
+          ? '#8dbaff'
+          : '#335dcb';
 
 const paintPlayer = (
   context: CanvasRenderingContext2D,
@@ -1226,22 +1283,7 @@ const paintPlayer = (
   dark: boolean,
   number: number,
 ) => {
-  const accent =
-    number === 3
-      ? dark
-        ? '#ffc878'
-        : '#9e5500'
-      : number === 4
-        ? dark
-          ? '#e5a0ff'
-          : '#8b3bb2'
-        : number === 1
-          ? dark
-            ? '#60ead7'
-            : '#087f78'
-          : dark
-            ? '#8dbaff'
-            : '#335dcb';
+  const accent = playerAccent(number, dark);
   const playerX = WORLD.playerX + player.distance - run.camera;
   const bob =
     run.status === 'running' && player.velocity === 0

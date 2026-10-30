@@ -1,15 +1,23 @@
 'use client';
 
 import {
+  ArrowLeft,
   CircleHelp,
+  Globe,
+  House,
+  LogOut,
   Pause,
   Play,
+  RotateCcw,
   Music2,
   Settings as SettingsIcon,
   VolumeX,
   X,
 } from 'lucide-react';
-import { useGameAudio } from './audio';
+import { GameCard } from './game-card';
+import { RunnerSprite } from './runner-sprite';
+import { ShibaSprite } from './shiba-sprite';
+import { CALM_MUSIC_SEED, useGameAudio, useUnlockOnInteraction } from './audio';
 import { OnlineGame } from './online-game';
 import { ONLINE_AVAILABLE } from './online-room';
 import { isLandscapeBlocked, useNeedsLandscape } from './orientation';
@@ -32,14 +40,39 @@ import {
   createRun,
   flip,
   paint,
+  playerAccent,
+  playersOf,
   scoreOf,
   speedOf,
-  touchingPlatform,
   WORLD,
   type Status,
 } from './engine';
 
 const BEST_KEY = 'gravity-guy-best-v1';
+const PLAYER_KEYS = [['Space', 'ArrowUp'], ['KeyW'], ['KeyJ'], ['KeyL']];
+// Tap areas as [left, top, width, height] percentages per player count.
+const TOUCH_ZONES: Record<number, number[][]> = {
+  2: [
+    [0, 0, 50, 100],
+    [50, 0, 50, 100],
+  ],
+  3: [
+    [0, 0, 50, 50],
+    [50, 0, 50, 50],
+    [0, 50, 100, 50],
+  ],
+  4: [
+    [0, 0, 50, 50],
+    [50, 0, 50, 50],
+    [0, 50, 50, 50],
+    [50, 50, 50, 50],
+  ],
+};
+const touchPlayer = (count: number, x: number, y: number) =>
+  (TOUCH_ZONES[count]?.findIndex(
+    ([left, top, width, height]) =>
+      x >= left && x < left + width && y >= top && y < top + height,
+  ) ?? 0) + 1 || 1;
 const STATUS_KEY = {
   ready: 'APP.STATUS_READY',
   running: 'APP.STATUS_RUNNING',
@@ -70,22 +103,26 @@ function Runner({ onOnline }: { onOnline: () => void }) {
   const clock = useRef({ last: 0, accumulator: 0 });
   const [status, setStatus] = useState<Status>('ready');
   const { unlock, playDash, playPlatform, playWoof, interrupted } =
-    useGameAudio(status === 'running', music, sounds, run.current.seed);
+    useGameAudio(
+      status === 'running' || status === 'ready',
+      music,
+      sounds,
+      status === 'ready' ? CALM_MUSIC_SEED : run.current.seed,
+    );
+  useUnlockOnInteraction(unlock);
   const requestFlip = useCallback(
-    (player: 1 | 2 = 1) => {
+    (player = 1) => {
       if (isLandscapeBlocked() || run.current.status !== 'running') return;
       unlock();
       if (flip(run.current, player)) playDash();
     },
     [playDash, unlock],
   );
-  const [score, setScore] = useState(0);
-  const [score2, setScore2] = useState(0);
-  const [canFlip2, setCanFlip2] = useState(false);
+  const [scores, setScores] = useState<number[]>([0]);
+  const score = scores[0] ?? 0;
   const [pace, setPace] = useState(1);
-  const [speedEffect, setSpeedEffect] = useState<'boost' | 'slow' | null>(null);
-  const [blocked, setBlocked] = useState(false);
-  const [canFlip, setCanFlip] = useState(false);
+  const [picking, setPicking] = useState(false);
+  const [picked, setPicked] = useState<1 | 2 | 3 | 4 | null>(null);
   const [best, setBest] = useState(0);
   useEffect(() => {
     if (restored.current) return;
@@ -98,11 +135,10 @@ function Runner({ onOnline }: { onOnline: () => void }) {
       window.sessionStorage.removeItem(SAVED_RUN_KEY);
       if (saved) {
         const previous = JSON.parse(saved) as typeof run.current;
-        if ((previous.partner ? 2 : 1) === settings.players) {
+        if (playersOf(previous).length === settings.players) {
           run.current = previous;
           setStatus(previous.status);
-          setScore(scoreOf(previous));
-          setScore2(previous.partner ? scoreOf(previous.partner) : 0);
+          setScores(playersOf(previous).map(scoreOf));
         }
       }
     } catch {
@@ -152,12 +188,21 @@ function Runner({ onOnline }: { onOnline: () => void }) {
     setStatus('running');
     field.current?.focus({ preventScroll: true });
   }, [resetClock, unlock]);
-  const start = () => {
+  const goHome = () => {
+    run.current = createRun(undefined, players);
+    setScores(Array(players).fill(0));
+    setPace(1);
+    setPicking(false);
+    setPicked(null);
+    setStatus('ready');
+    resetClock();
+  };
+  const start = (count: 1 | 2 | 3 | 4 = players) => {
     if (isLandscapeBlocked()) return;
     unlock();
-    run.current = { ...createRun(undefined, players), status: 'running' };
-    setScore(0);
-    setScore2(0);
+    run.current = { ...createRun(undefined, count), status: 'running' };
+    setScores(Array(count).fill(0));
+    setPicking(false);
     setPace(1);
     setStatus('running');
     resetClock();
@@ -179,20 +224,19 @@ function Runner({ onOnline }: { onOnline: () => void }) {
           ))
       )
         return;
-      const isFlip = event.code === 'Space' || event.code === 'ArrowUp';
-      const isSecondFlip =
-        Boolean(run.current.partner) && event.code === 'KeyW';
+      const flipper =
+        PLAYER_KEYS.findIndex(keys => keys.includes(event.code)) + 1;
+      const isFlip = flipper > 0 && flipper <= playersOf(run.current).length;
       const isPause = event.code === 'KeyP' || event.code === 'Escape';
       if (
-        (!isFlip && !isSecondFlip && !isPause) ||
+        (!isFlip && !isPause) ||
         (run.current.status !== 'running' && run.current.status !== 'paused')
       )
         return;
       event.preventDefault();
       if (event.repeat || pressed.has(event.code)) return;
       pressed.add(event.code);
-      if (isFlip) requestFlip();
-      else if (isSecondFlip) requestFlip(2);
+      if (isFlip) requestFlip(flipper);
       else if (run.current.status === 'running') pause();
       else resume();
     };
@@ -253,15 +297,11 @@ function Runner({ onOnline }: { onOnline: () => void }) {
           timing.accumulator -= WORLD.step;
         }
         if (run.current.status !== 'running') {
-          const result = scoreOf(run.current);
-          const secondResult = run.current.partner
-            ? scoreOf(run.current.partner)
-            : 0;
-          setScore2(secondResult);
-          setScore(result);
+          const results = playersOf(run.current).map(scoreOf);
+          setScores(results);
           setStatus('over');
           setBest(previous => {
-            const next = Math.max(previous, readBest(), result, secondResult);
+            const next = Math.max(previous, readBest(), ...results);
             try {
               window.localStorage.setItem(BEST_KEY, String(next));
             } catch {
@@ -271,26 +311,11 @@ function Runner({ onOnline }: { onOnline: () => void }) {
           });
         }
         if (now - hudAt > 100) {
-          setScore(scoreOf(run.current));
-          setScore2(run.current.partner ? scoreOf(run.current.partner) : 0);
+          setScores(playersOf(run.current).map(scoreOf));
           setPace(speedOf(run.current) / WORLD.startSpeed);
-          setSpeedEffect(
-            run.current.speedMultiplier > 1.04
-              ? 'boost'
-              : run.current.speedMultiplier < 0.96
-                ? 'slow'
-                : null,
-          );
           hudAt = now;
         }
       } else resetClock();
-      setBlocked(run.current.status === 'running' && run.current.blocked);
-      setCanFlip(
-        run.current.status === 'running' && touchingPlatform(run.current),
-      );
-      setCanFlip2(
-        run.current.status === 'running' && touchingPlatform(run.current, 2),
-      );
       if (canvas.current)
         paint(canvas.current, run.current, appearance === 'dark', scenery);
       frame = requestAnimationFrame(tick);
@@ -299,78 +324,140 @@ function Runner({ onOnline }: { onOnline: () => void }) {
     return () => cancelAnimationFrame(frame);
   }, [appearance, resetClock, scenery, playPlatform, playWoof]);
 
-  const titleKey =
+  const home = status === 'ready';
+  const winner = run.current.winner;
+  const title =
     status === 'paused'
-      ? 'APP.PAUSED_TITLE'
+      ? t('APP.PAUSED_TITLE')
       : status === 'over'
-        ? run.current.winner === 1
-          ? 'APP.P1_WINS'
-          : run.current.winner === 2
-            ? 'APP.P2_WINS'
-            : run.current.winner === 'tie'
-              ? 'APP.TIE'
-              : 'APP.OVER_TITLE'
-        : 'APP.START_TITLE';
+        ? typeof winner === 'number'
+          ? `${t('ONLINE.PLAYER')} ${winner} ${t('ONLINE.WINS')}`
+          : winner === 'tie'
+            ? t('APP.TIE')
+            : t('APP.OVER_TITLE')
+        : t('APP.START_TITLE');
   const copyKey =
-    status === 'paused'
-      ? 'APP.PAUSED_COPY'
-      : status === 'over'
-        ? players === 2
-          ? 'APP.MULTIPLAYER_OVER'
-          : 'APP.OVER_COPY'
-        : 'APP.START_COPY';
+    status === 'over' && players === 1
+      ? 'APP.OVER_COPY'
+      : status === 'ready'
+        ? 'APP.START_COPY'
+        : null;
   return (
-    <main className="gravity-app game-page">
+    <main
+      className="gravity-app game-page"
+      data-scenery={scenery ? 'on' : 'off'}
+    >
       <div
         className="shell"
         inert={needsLandscape}
         aria-hidden={needsLandscape || undefined}
       >
-        <header className="masthead">
-          <div>
-            <p className="eyebrow">{t('APP.EYEBROW')}</p>
-            <h1>
-              {t('APP.NAME')}
-              <span aria-hidden="true">↗</span>
-            </h1>
-          </div>
-          <div className="masthead-actions">
-            <span className="offline">
-              <span aria-hidden="true">●</span>{' '}
-              {t(players === 2 ? 'APP.LOCAL_PLAY' : 'APP.OFFLINE')}
-            </span>
-          </div>
-        </header>
-        <section className="game-card" aria-label={t('APP.NAME')}>
-          <div className="dashboard">
-            <div>
-              <span className="stat-label">
-                {t(players === 2 ? 'APP.PLAYER_ONE' : 'APP.DISTANCE')}
-              </span>
-              <strong>
-                {score.toLocaleString()}
-                <small>{t('APP.UNIT')}</small>
-              </strong>
+        <GameCard label={t('APP.NAME')}>
+          {home && picking && (
+            <div className="home-section player-picker">
+              <h2>{t('APP.PICK_PLAYERS')}</h2>
+              <div
+                className="picker-options"
+                role="radiogroup"
+                aria-label={t('APP.PICK_PLAYERS')}
+              >
+                {([1, 2, 3, 4] as const).map(count => (
+                  <label key={count} className="picker-option">
+                    <input
+                      type="radio"
+                      name="local-players"
+                      checked={picked === count}
+                      onChange={() => setPicked(count)}
+                    />
+                    <span className="picker-sprites" aria-hidden="true">
+                      {Array.from({ length: count }, (_, index) => (
+                        <RunnerSprite key={index} number={index + 1} running />
+                      ))}
+                    </span>
+                    {count === 1
+                      ? t('APP.SINGLE_PLAYER')
+                      : `${count} ${t('APP.PLAYERS_UNIT')}`}
+                  </label>
+                ))}
+              </div>
+              <Button
+                size="lg"
+                className="action picker-start"
+                style={{ visibility: picked ? 'visible' : 'hidden' }}
+                disabled={!picked}
+                onClick={() => {
+                  if (!picked) return;
+                  updateSettings({ players: picked });
+                  start(picked);
+                }}
+              >
+                <Play size={18} aria-hidden="true" />
+                {t('APP.START')}
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="picker-back"
+                aria-label={t('APP.BACK')}
+                title={t('APP.BACK')}
+                onClick={() => {
+                  setPicking(false);
+                  setPicked(null);
+                }}
+              >
+                <ArrowLeft size={20} aria-hidden="true" />
+              </Button>
             </div>
-            <div>
-              <span className="stat-label">
-                {t(players === 2 ? 'APP.PLAYER_TWO' : 'APP.BEST')}
-              </span>
-              <strong>
-                {(players === 2 ? score2 : best).toLocaleString()}
-                <small>{t('APP.UNIT')}</small>
-              </strong>
+          )}
+          {home && !picking && (
+            <div className="home-section">
+              <div className="home-intro">
+                <div className="home-copy">
+                  <p className="eyebrow">{t('APP.EYEBROW')}</p>
+                  <p className="home-brand">
+                    {t('APP.NAME')}
+                    <span aria-hidden="true">↗</span>
+                  </p>
+                  <h2>{t('APP.START_TITLE')}</h2>
+                  <p>{t('APP.START_COPY')}</p>
+                </div>
+                <div className="home-chase">
+                  <ShibaSprite running />
+                  <RunnerSprite number={1} running />
+                </div>
+              </div>
+              <div className="home-actions">
+                <Button
+                  size="lg"
+                  className="action"
+                  onClick={() => setPicking(true)}
+                >
+                  <Play size={18} aria-hidden="true" />
+                  {t('APP.START')}
+                </Button>
+                {ONLINE_AVAILABLE && (
+                  <Button
+                    size="lg"
+                    className="action"
+                    onClick={() => {
+                      saveRun();
+                      onOnline();
+                    }}
+                  >
+                    <Globe size={18} aria-hidden="true" />
+                    {t('ONLINE.PLAY')}
+                  </Button>
+                )}
+                <Button size="lg" className="action" onClick={openSettings}>
+                  <SettingsIcon size={18} aria-hidden="true" />
+                  {t('APP.SETTINGS')}
+                </Button>
+              </div>
             </div>
-            <div className="pace">
-              <span className="stat-label">{t('APP.PACE')}</span>
-              <strong>
-                {pace.toFixed(2)}
-                <small>×</small>
-              </strong>
-            </div>
-          </div>
+          )}
           <div
             className="playfield"
+            hidden={home}
             ref={field}
             onPointerUp={() => {
               if (run.current.status === 'running') unlock();
@@ -378,47 +465,101 @@ function Runner({ onOnline }: { onOnline: () => void }) {
             tabIndex={0}
             role="group"
             aria-label={t('APP.PLAYFIELD')}
-            aria-describedby="controls"
           >
+            <div className="playfield-stats">
+              {players === 1 ? (
+                <>
+                  <div>
+                    <span className="stat-label">{t('APP.DISTANCE')}</span>
+                    <strong>
+                      {score.toLocaleString()}
+                      <small>{t('APP.UNIT')}</small>
+                    </strong>
+                  </div>
+                  <div>
+                    <span className="stat-label">{t('APP.BEST')}</span>
+                    <strong>
+                      {best.toLocaleString()}
+                      <small>{t('APP.UNIT')}</small>
+                    </strong>
+                  </div>
+                </>
+              ) : (
+                Array.from({ length: players }, (_, index) => (
+                  <div key={index}>
+                    <span className="stat-label">
+                      {t('ONLINE.PLAYER').toUpperCase()} {index + 1}
+                    </span>
+                    <strong>
+                      {(scores[index] ?? 0).toLocaleString()}
+                      <small>{t('APP.UNIT')}</small>
+                    </strong>
+                  </div>
+                ))
+              )}
+              <div className="pace">
+                <span className="stat-label">{t('APP.PACE')}</span>
+                <strong>
+                  {pace.toFixed(2)}
+                  <small>×</small>
+                </strong>
+              </div>
+            </div>
+            {players > 1 && status === 'running' && (
+              <div className="touch-zones" aria-hidden="true">
+                {TOUCH_ZONES[players].map(
+                  ([left, top, width, height], index) => (
+                    <span
+                      key={index}
+                      style={
+                        {
+                          left: `${left}%`,
+                          top: `${top}%`,
+                          width: `${width}%`,
+                          height: `${height}%`,
+                          '--player': playerAccent(index + 1, true),
+                        } as React.CSSProperties
+                      }
+                    >
+                      {index + 1}
+                    </span>
+                  ),
+                )}
+              </div>
+            )}
             <canvas
               ref={canvas}
               aria-hidden="true"
               onPointerDown={event => {
-                if (event.pointerType === 'mouse') return;
                 event.preventDefault();
                 const bounds = event.currentTarget.getBoundingClientRect();
                 requestFlip(
-                  players === 2 &&
-                    event.clientX >= bounds.left + bounds.width / 2
-                    ? 2
-                    : 1,
+                  event.pointerType === 'mouse'
+                    ? 1
+                    : touchPlayer(
+                        players,
+                        ((event.clientX - bounds.left) / bounds.width) * 100,
+                        ((event.clientY - bounds.top) / bounds.height) * 100,
+                      ),
                 );
                 field.current?.focus({ preventScroll: true });
               }}
             />
-            <Button
-              variant="outline"
-              size="icon"
-              aria-label={t('APP.SETTINGS')}
-              title={t('APP.SETTINGS')}
-              className="settings-toggle"
-              onClick={openSettings}
-            >
-              <SettingsIcon size={18} aria-hidden="true" />
-            </Button>
 
             <Button
               variant="outline"
               size="icon"
-              className="help-toggle"
-              aria-label={t('APP.HELP')}
-              title={t('APP.HELP')}
-              onClick={() => {
-                pause();
-                setHelpOpen(true);
-              }}
+              className="pause-toggle"
+              aria-label={t(status === 'paused' ? 'APP.RESUME' : 'APP.PAUSE')}
+              title={t(status === 'paused' ? 'APP.RESUME' : 'APP.PAUSE')}
+              onClick={status === 'paused' ? resume : pause}
+              disabled={status === 'ready' || status === 'over'}
             >
-              <CircleHelp size={18} aria-hidden="true" />
+              {status === 'paused' ? (
+                <Play size={18} aria-hidden="true" />
+              ) : (
+                <Pause size={18} aria-hidden="true" />
+              )}
             </Button>
             <div className="playfield-actions">
               <Button
@@ -439,135 +580,66 @@ function Runner({ onOnline }: { onOnline: () => void }) {
                   <VolumeX size={16} aria-hidden="true" />
                 )}
               </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                className="pause-toggle"
-                aria-label={t(status === 'paused' ? 'APP.RESUME' : 'APP.PAUSE')}
-                title={t(status === 'paused' ? 'APP.RESUME' : 'APP.PAUSE')}
-                onClick={status === 'paused' ? resume : pause}
-                disabled={status === 'ready' || status === 'over'}
-              >
-                {status === 'paused' ? (
-                  <Play size={18} aria-hidden="true" />
-                ) : (
-                  <Pause size={18} aria-hidden="true" />
-                )}
-              </Button>
             </div>
-            {status !== 'running' && (
+            {status !== 'running' && !home && (
               <div className="overlay">
                 <div className="overlay-card">
                   <span className="orbit-mark" aria-hidden="true">
                     ⇅
                   </span>
-                  <h2>{t(titleKey)}</h2>
-                  <p>{t(copyKey)}</p>
+                  <h2>{title}</h2>
+                  {copyKey && <p>{t(copyKey)}</p>}
                   {status === 'over' && (
                     <p className="final-score">
                       {score.toLocaleString()} {t('APP.UNIT')}
                     </p>
                   )}
-                  {ONLINE_AVAILABLE && (
+                  <div className="overlay-actions">
+                    <Button variant="outline" size="lg" onClick={goHome}>
+                      {status === 'paused' ? (
+                        <LogOut size={18} aria-hidden="true" />
+                      ) : (
+                        <House size={18} aria-hidden="true" />
+                      )}
+                      {t(status === 'paused' ? 'APP.LEAVE' : 'APP.HOME')}
+                    </Button>
+                    {status === 'paused' ? (
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="help-action"
+                        aria-label={t('APP.HELP')}
+                        title={t('APP.HELP')}
+                        onClick={() => setHelpOpen(true)}
+                      >
+                        <CircleHelp size={20} aria-hidden="true" />
+                      </Button>
+                    ) : (
+                      <Button
+                        size="lg"
+                        className="action"
+                        onClick={() => start()}
+                      >
+                        <RotateCcw size={18} aria-hidden="true" />
+                        {t('APP.RESTART')}
+                      </Button>
+                    )}
+                  </div>
+                  {status === 'paused' && (
                     <Button
-                      variant="outline"
-                      onClick={() => {
-                        saveRun();
-                        onOnline();
-                      }}
+                      size="lg"
+                      className="action resume-action"
+                      onClick={resume}
                     >
-                      {t('ONLINE.PLAY')}
+                      <Play size={18} aria-hidden="true" />
+                      {t('APP.RESUME')}
                     </Button>
                   )}
-                  <Button
-                    size="lg"
-                    className="action"
-                    onClick={status === 'paused' ? resume : start}
-                  >
-                    {t(
-                      status === 'paused'
-                        ? 'APP.RESUME'
-                        : status === 'over'
-                          ? 'APP.RESTART'
-                          : 'APP.START',
-                    )}
-                    <span aria-hidden="true">→</span>
-                  </Button>
                 </div>
               </div>
             )}
           </div>
-          <div
-            className={
-              players === 2 ? 'control-bar multiplayer-controls' : 'control-bar'
-            }
-            id="controls"
-          >
-            {status === 'running' && (blocked || speedEffect) && (
-              <span className="run-hint" role="status">
-                {t(
-                  blocked
-                    ? 'APP.BLOCKED_HINT'
-                    : speedEffect === 'boost'
-                      ? 'APP.BOOST_HINT'
-                      : 'APP.SLOW_HINT',
-                )}
-              </span>
-            )}
-            <div className="flip-controls">
-              <Button
-                size="lg"
-                className="flip-button"
-                aria-label={t(players === 2 ? 'APP.P1_FLIP_LABEL' : 'APP.FLIP')}
-                onPointerDown={event => {
-                  event.preventDefault();
-                  requestFlip();
-                  field.current?.focus({ preventScroll: true });
-                }}
-                onClick={event => {
-                  if (event.detail === 0) requestFlip();
-                  field.current?.focus({ preventScroll: true });
-                }}
-                disabled={status !== 'running' || !canFlip}
-              >
-                <span aria-hidden="true">⇅</span>
-                {t(
-                  players === 2
-                    ? status === 'running' && !canFlip
-                      ? 'APP.P1_WAIT'
-                      : 'APP.P1_FLIP'
-                    : status === 'running' && !canFlip
-                      ? 'APP.LAND_TO_FLIP'
-                      : 'APP.FLIP',
-                )}
-              </Button>
-              {players === 2 && (
-                <Button
-                  size="lg"
-                  className="flip-button secondary-flip"
-                  aria-label={t('APP.P2_FLIP_LABEL')}
-                  disabled={status !== 'running' || !canFlip2}
-                  onPointerDown={event => {
-                    event.preventDefault();
-                    requestFlip(2);
-                    field.current?.focus({ preventScroll: true });
-                  }}
-                  onClick={event => {
-                    if (event.detail === 0) requestFlip(2);
-                    field.current?.focus({ preventScroll: true });
-                  }}
-                >
-                  <span aria-hidden="true">⇅</span>
-                  {t(
-                    status === 'running' && !canFlip2
-                      ? 'APP.P2_WAIT'
-                      : 'APP.P2_FLIP',
-                  )}
-                </Button>
-              )}
-            </div>
-          </div>
-        </section>
+        </GameCard>
         <p className="sr-only" role="status">
           {t(STATUS_KEY[status])}
           {status === 'over' ? ` · ${score} ${t('APP.UNIT')}` : ''}

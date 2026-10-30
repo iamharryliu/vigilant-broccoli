@@ -156,33 +156,99 @@ const sequenceStep = (
       );
 };
 
+// Seed 2 selects the slow, calm track used outside of runs.
+export const CALM_MUSIC_SEED = 2;
+
+export const useUnlockOnInteraction = (unlock: () => void) =>
+  useEffect(() => {
+    unlock();
+    window.addEventListener('pointerdown', unlock);
+    window.addEventListener('keydown', unlock);
+    return () => {
+      window.removeEventListener('pointerdown', unlock);
+      window.removeEventListener('keydown', unlock);
+    };
+  }, [unlock]);
+
+// The context and music loop outlive any one page so navigating between
+// screens never restarts the track.
+let sharedContext: AudioContext | null = null;
+let sharedNoise: AudioBuffer | null = null;
+let musicPlayer: { track: number; stop: () => void } | null = null;
+let musicStopTimer: number | undefined;
+
+const startMusic = (
+  audio: AudioContext,
+  buffer: AudioBuffer,
+  trackNumber: number,
+) => {
+  window.clearTimeout(musicStopTimer);
+  if (musicPlayer?.track === trackNumber) return;
+  musicPlayer?.stop();
+  const bus = audio.createGain();
+  bus.gain.value = 0.55;
+  bus.connect(audio.destination);
+  const stepDuration = 60 / TRACKS[trackNumber].tempo / 2;
+  let step = 0;
+  let nextAt = audio.currentTime + 0.03;
+  const schedule = () => {
+    if (audio.state !== 'running') return;
+    nextAt = Math.max(nextAt, audio.currentTime);
+    // A short lookahead keeps browser timer jitter out of the musical rhythm.
+    while (nextAt < audio.currentTime + 0.12) {
+      sequenceStep(audio, bus, buffer, step, nextAt, trackNumber);
+      step = (step + 1) % 64;
+      nextAt += stepDuration;
+    }
+  };
+  schedule();
+  const timer = window.setInterval(schedule, 40);
+  musicPlayer = {
+    track: trackNumber,
+    stop: () => {
+      window.clearInterval(timer);
+      stopVoices(bus);
+    },
+  };
+};
+
+// A short grace period lets the next screen claim the same track.
+const releaseMusic = () => {
+  window.clearTimeout(musicStopTimer);
+  musicStopTimer = window.setTimeout(() => {
+    musicPlayer?.stop();
+    musicPlayer = null;
+  }, 400);
+};
+
 export const useGameAudio = (
   active: boolean,
   music: boolean,
   sounds: boolean,
   seed: number,
 ) => {
-  const context = useRef<AudioContext | null>(null);
-  const noise = useRef<AudioBuffer | null>(null);
+  const context = useRef<AudioContext | null>(sharedContext);
+  const noise = useRef<AudioBuffer | null>(sharedNoise);
   const [ready, setReady] = useState(false);
   const [interrupted, setInterrupted] = useState(false);
   const effects = useRef<GainNode | null>(null);
   const unlock = useCallback(() => {
     if (!window.AudioContext) return;
     setInterrupted(false);
-    if (!context.current || context.current.state === 'closed') {
-      const audio = new AudioContext();
-      context.current = audio;
-      noise.current = noiseBuffer(audio);
-      let wasRunning = audio.state === 'running';
-      audio.onstatechange = () => {
-        const running = audio.state === 'running';
-        if (wasRunning && !running) setInterrupted(true);
-        wasRunning = running;
-        setReady(running);
-      };
+    if (!sharedContext || sharedContext.state === 'closed') {
+      sharedContext = new AudioContext();
+      sharedNoise = noiseBuffer(sharedContext);
     }
-    const audio = context.current;
+    context.current = sharedContext;
+    noise.current = sharedNoise;
+    const audio = sharedContext;
+    let wasRunning = audio.state === 'running';
+    audio.onstatechange = () => {
+      const running = audio.state === 'running';
+      if (wasRunning && !running) setInterrupted(true);
+      wasRunning = running;
+      setReady(running);
+    };
     setReady(audio.state === 'running');
     // Resume within the input handler, including Safari's interrupted state.
     if (audio.state !== 'running')
@@ -305,41 +371,8 @@ export const useGameAudio = (
     const audio = context.current;
     const buffer = noise.current;
     if (!active || !music || !ready || !audio || !buffer) return;
-    const bus = audio.createGain();
-    bus.gain.value = 0.55;
-    bus.connect(audio.destination);
-    const trackNumber = seed % TRACKS.length;
-    const stepDuration = 60 / TRACKS[trackNumber].tempo / 2;
-    let step = 0;
-    let nextAt = audio.currentTime + 0.03;
-    const schedule = () => {
-      if (audio.state !== 'running') return;
-      nextAt = Math.max(nextAt, audio.currentTime);
-      // A short lookahead keeps browser timer jitter out of the musical rhythm.
-      while (nextAt < audio.currentTime + 0.12) {
-        sequenceStep(audio, bus, buffer, step, nextAt, trackNumber);
-        step = (step + 1) % 64;
-        nextAt += stepDuration;
-      }
-    };
-    schedule();
-    const timer = window.setInterval(schedule, 40);
-    return () => {
-      window.clearInterval(timer);
-      stopVoices(bus);
-    };
+    startMusic(audio, buffer, seed % TRACKS.length);
+    return releaseMusic;
   }, [active, music, seed, ready]);
-  useEffect(
-    () => () => {
-      const audio = context.current;
-      context.current = null;
-      noise.current = null;
-      if (audio) {
-        audio.onstatechange = null;
-        if (audio.state !== 'closed') void audio.close().catch(() => undefined);
-      }
-    },
-    [],
-  );
   return { unlock, playDash, playPlatform, playWoof, interrupted };
 };
