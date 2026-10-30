@@ -77,7 +77,7 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
     <main className={PAGE_CLASS}>
       <header className="mb-4">
         <PageHeader title={t('STATUS_PAGE.TITLE')} route={STATUS_ROUTE} />
-        {(summary.lastModified || loading || !!summary.services?.length) && (
+        {(summary.lastModified || loading) && (
           <div
             className="mt-2 min-h-6 text-gray-600 dark:text-gray-400"
             aria-busy={loading}
@@ -86,11 +86,11 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
               t('STATUS_PAGE.UPDATED', {
                 date: summary.lastModified.toLocaleString(),
               })
-            ) : loading ? (
+            ) : (
               <span aria-hidden="true" className="flex h-6 items-center">
                 <Skeleton className="h-4 w-64 motion-reduce:animate-none" />
               </span>
-            ) : null}
+            )}
           </div>
         )}
       </header>

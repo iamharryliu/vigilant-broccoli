@@ -585,7 +585,7 @@ body:has(.orientation-notice) {
     left: auto;
   }
 
-  .game-page .online-page {
+  .online-page {
     height: 100dvh;
     min-height: 0;
     padding: env(safe-area-inset-top) env(safe-area-inset-right)
