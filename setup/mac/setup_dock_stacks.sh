@@ -4,7 +4,6 @@ STACKS=(Development Leisure Social Tools Utility)
 
 declare -a DEVELOPMENT_APPS=(
     "/Applications/Bruno.app"
-    "/Applications/DB Browser for SQLite.app"
     "/Applications/DBeaver.app"
     "/Applications/Docker.app"
     "/Applications/Godot.app"
