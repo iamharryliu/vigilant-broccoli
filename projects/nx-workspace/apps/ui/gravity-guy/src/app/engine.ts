@@ -435,19 +435,13 @@ const overlapsPlayer = (run: Player, platform: Platform) => {
   return x + WORLD.playerSize > platform.x && x < platform.x + platform.width;
 };
 const supportingPlatform = (run: Run, player: Player = run) =>
-  player.velocity === 0
-    ? platformsNear(
-        run,
-        player.distance,
-        WORLD.playerX + WORLD.playerSize,
-      ).find(
-        platform =>
-          overlapsPlayer(player, platform) &&
-          (player.gravity === 1
-            ? player.y + WORLD.playerSize === platform.y
-            : player.y === platform.y + platform.height),
-      )
-    : undefined;
+  platformsNear(run, player.distance, WORLD.playerX + WORLD.playerSize).find(
+    platform =>
+      overlapsPlayer(player, platform) &&
+      (player.gravity === 1
+        ? player.y + WORLD.playerSize === platform.y
+        : player.y === platform.y + platform.height),
+  );
 export const touchingPlatform = (run: Run, playerNumber = 1) => {
   const player = playersOf(run)[playerNumber - 1];
   return Boolean(player && !player.out && supportingPlatform(run, player));
