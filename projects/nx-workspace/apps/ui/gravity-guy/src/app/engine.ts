@@ -530,12 +530,13 @@ export const advance = (run: Run) => {
   run.mapSpeedMultiplier =
     multiplier +
     ((boostActive ? 1.3 : 1) - multiplier) * (1 - Math.exp(-4 * WORLD.step));
-  const movement = speedOf(run) * WORLD.step;
+  const pace = baseSpeedOf(run);
+  const movement = pace * run.mapSpeedMultiplier * WORLD.step;
   for (const player of players) {
     if (!player.out) advancePlayer(run, player, movement);
   }
   run.camera += movement;
-  advanceDog(run, movement);
+  advanceDog(run, movement, pace);
   for (const player of players) {
     const x = player.distance + WORLD.playerX;
     const caught =
@@ -622,12 +623,14 @@ const dogTargetGap = (dog: DogBody, target: Player) => {
     ),
   );
 };
-const dogPursuit = (run: Run) =>
-  (run.mapSpeedMultiplier ?? 1) > 1.01 ? 1 : 1.08;
-const bestDogFlip = (run: Run, target: Player, hunting: boolean) => {
+const bestDogFlip = (
+  run: Run,
+  target: Player,
+  hunting: boolean,
+  pace: number,
+) => {
   const platforms = platformsNear(run, run.dog.x, 1300);
   const step = 1 / 30;
-  const pace = baseSpeedOf(run);
   let routes = [
     { body: { ...run.dog } as DogBody, firstFlip: false, cost: 0, score: 0 },
   ];
@@ -660,7 +663,7 @@ const bestDogFlip = (run: Run, target: Player, hunting: boolean) => {
           candidate,
           platforms,
           step,
-          pace * candidate.speedMultiplier * dogPursuit(run) * step,
+          pace * candidate.speedMultiplier * step,
         );
         const predictedTarget = {
           ...target,
@@ -719,7 +722,7 @@ const bestDogFlip = (run: Run, target: Player, hunting: boolean) => {
   return routes[0]?.firstFlip ?? false;
 };
 
-const advanceDog = (run: Run, movement: number) => {
+const advanceDog = (run: Run, movement: number, pace: number) => {
   const dog = run.dog;
   const target = playersOf(run)
     .filter(player => !player.out)
@@ -777,14 +780,12 @@ const advanceDog = (run: Run, movement: number) => {
   dog.decisionIn = Math.max(0, (dog.decisionIn ?? 0) - WORLD.step);
   if (support && dog.decisionIn === 0) {
     dog.decisionIn = 0.1;
-    if (bestDogFlip(run, target, hunting)) {
+    if (bestDogFlip(run, target, hunting, pace)) {
       dog.gravity = dog.gravity === 1 ? -1 : 1;
       dog.velocity = dog.gravity * FLIP_SPEED;
     }
   }
-  const pursuit = dogPursuit(run);
-  const dogMovement =
-    baseSpeedOf(run) * WORLD.step * dog.speedMultiplier * pursuit;
+  const dogMovement = pace * WORLD.step * dog.speedMultiplier;
   const previousX = dog.x;
   moveDogBody(
     dog,
