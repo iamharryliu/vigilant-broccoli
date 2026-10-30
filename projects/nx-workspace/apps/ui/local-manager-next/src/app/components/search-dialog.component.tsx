@@ -16,6 +16,7 @@ export function SearchDialogComponent({
   return (
     <QuickLinksDialog
       links={QUICK_LINKS}
+      enableFavorites
       open={open}
       onOpenChange={onOpenChange}
       onShellExecute={handleShellExecute}

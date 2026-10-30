@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { LayoutList, List, Rows3, type LucideIcon } from 'lucide-react';
+import { LayoutList, List, Rows3, Star, type LucideIcon } from 'lucide-react';
 import {
   type ButtonConfig,
   ButtonList,
@@ -17,6 +17,7 @@ import {
   TabsList,
   TabsTrigger,
   WINDOW_OPEN_FEATURES,
+  Button,
 } from '@vigilant-broccoli/react-lib';
 
 export const SEARCHABLE_LIST_VIEW = {
@@ -33,6 +34,8 @@ export type SearchableListItem = {
   value: string;
   onOpen?: () => void;
   isExternal?: boolean;
+  isFavorite?: boolean;
+  onFavoriteToggle?: () => void;
 };
 
 export type SearchableListGroup = {
@@ -75,6 +78,10 @@ const VIEW_OPTIONS: {
 ];
 
 const VIEW_ICON_SIZE = 16;
+const FAVORITES_LABEL = 'Favorites';
+const ADD_FAVORITE_LABEL = (label: string) => `Add ${label} to favorites`;
+const REMOVE_FAVORITE_LABEL = (label: string) =>
+  `Remove ${label} from favorites`;
 
 const ARROW_DIRECTION: Record<string, Direction> = {
   ArrowDown: 'down',
@@ -150,6 +157,7 @@ const SearchableListRow = ({
       </span>
     </button>
     <div className="flex shrink-0 items-center pr-1 [&_button]:min-w-11">
+      {entry.onFavoriteToggle && <FavoriteButton entry={entry} />}
       {(entry.onOpen || isUrl(entry.value)) && (
         <IconButton variant="ghost" icon="external-link" onClick={onActivate} />
       )}
@@ -158,6 +166,34 @@ const SearchableListRow = ({
   </li>
 );
 
+const FavoriteButton = ({ entry }: { entry: SearchableListItem }) => {
+  const accessibleLabel = entry.isFavorite
+    ? REMOVE_FAVORITE_LABEL(entry.label)
+    : ADD_FAVORITE_LABEL(entry.label);
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      aria-label={accessibleLabel}
+      aria-pressed={entry.isFavorite ?? false}
+      title={accessibleLabel}
+      onClick={event => {
+        event.preventDefault();
+        event.stopPropagation();
+        entry.onFavoriteToggle?.();
+      }}
+      className="min-h-11 min-w-11 shrink-0"
+    >
+      <Star
+        size={16}
+        aria-hidden="true"
+        fill={entry.isFavorite ? 'currentColor' : 'none'}
+      />
+    </Button>
+  );
+};
+
 export const SearchableList = ({
   groups,
   searchPlaceholder = SEARCH_PLACEHOLDER,
@@ -165,6 +201,7 @@ export const SearchableList = ({
   storageKey,
   onEntryOpen,
   autoFocusSearch = false,
+  enableFavorites = false,
 }: {
   groups: SearchableListGroup[];
   searchPlaceholder?: string;
@@ -173,9 +210,11 @@ export const SearchableList = ({
   storageKey?: string;
   onEntryOpen?: () => void;
   autoFocusSearch?: boolean;
+  enableFavorites?: boolean;
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [view, setView] = useState<SearchableListView>(defaultView);
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -205,7 +244,15 @@ export const SearchableList = ({
   };
 
   const query = searchQuery.trim();
-  const searched = searchGroups(groups, query);
+  const visibleGroups = favoritesOnly
+    ? groups
+        .map(group => ({
+          ...group,
+          entries: group.entries.filter(entry => entry.isFavorite),
+        }))
+        .filter(group => group.entries.length > 0)
+    : groups;
+  const searched = searchGroups(visibleGroups, query);
   const entries = searched.flatMap(group => group.scored.map(s => s.entry));
   const bestEntry = searched
     .flatMap(group => group.scored)
@@ -260,13 +307,30 @@ export const SearchableList = ({
     isExternal: entry.isExternal ?? (!entry.onOpen && isUrl(entry.value)),
   });
 
-  const renderButtons = (items: SearchableListItem[]) => (
-    <ButtonList
-      buttons={items.map(toButtonConfig)}
-      navigationRootRef={contentRef}
-      searchInputRef={searchInputRef}
-    />
-  );
+  const renderButtons = (items: SearchableListItem[]) =>
+    items.some(entry => entry.onFavoriteToggle) ? (
+      <div className="flex flex-wrap gap-2">
+        {items.map((entry, index) => (
+          <div
+            className="inline-flex items-center gap-1"
+            key={`${entry.label}-${index}`}
+          >
+            <ButtonList
+              buttons={[toButtonConfig(entry)]}
+              navigationRootRef={contentRef}
+              searchInputRef={searchInputRef}
+            />
+            {entry.onFavoriteToggle && <FavoriteButton entry={entry} />}
+          </div>
+        ))}
+      </div>
+    ) : (
+      <ButtonList
+        buttons={items.map(toButtonConfig)}
+        navigationRootRef={contentRef}
+        searchInputRef={searchInputRef}
+      />
+    );
 
   const renderGroup = (group: (typeof searched)[number], index: number) => {
     const items = group.scored.map(({ entry }) => entry);
@@ -315,6 +379,18 @@ export const SearchableList = ({
           onKeyDown={handleSearchKeyDown}
           className="flex-1"
         />
+        {enableFavorites && (
+          <Button
+            type="button"
+            variant={favoritesOnly ? 'default' : 'outline'}
+            aria-pressed={favoritesOnly}
+            onClick={() => setFavoritesOnly(value => !value)}
+            className="min-h-11 shrink-0"
+          >
+            <Star size={16} aria-hidden="true" />
+            {FAVORITES_LABEL}
+          </Button>
+        )}
         <Tabs
           value={view}
           onValueChange={next => handleViewChange(next as SearchableListView)}

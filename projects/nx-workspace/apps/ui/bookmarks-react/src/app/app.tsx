@@ -104,7 +104,11 @@ function BookmarksPage() {
           </TabsList>
           <TabsContent value={TAB.BOOKMARKS}>
             {bookmarks.length ? (
-              <QuickLinksPanel links={bookmarks} autoFocusSearch />
+              <QuickLinksPanel
+                links={bookmarks}
+                autoFocusSearch
+                enableFavorites
+              />
             ) : (
               <p className="py-8">{t('EMPTY')}</p>
             )}

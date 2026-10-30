@@ -13,6 +13,7 @@ import {
   type SearchableListView,
 } from './SearchableList';
 import { WINDOW_OPEN_FEATURES } from '@vigilant-broccoli/react-lib';
+import { useQuickLinkFavorites } from './useQuickLinkFavorites';
 
 export {
   SEARCHABLE_LIST_VIEW as QUICK_LINKS_VIEW,
@@ -39,6 +40,8 @@ export type QuickLinksPanelProps = {
   defaultView?: SearchableListView;
   /** Keeps the input order of links and subgroups instead of sorting them alphabetically. */
   preserveOrder?: boolean;
+  /** Adds browser-local favorite controls and a favorites-only filter. */
+  enableFavorites?: boolean;
 };
 
 const NON_BROWSER_TYPES = [
@@ -73,21 +76,37 @@ export function QuickLinksPanel({
   canEmbed,
   defaultView = SEARCHABLE_LIST_VIEW.GROUPED,
   preserveOrder = false,
+  enableFavorites = false,
 }: QuickLinksPanelProps) {
-  const toEntry = (link: QuickLink): SearchableListItem => ({
-    label: link.label,
-    value: link.target,
-    isExternal: !isShellLink(link),
-    onOpen: () => {
-      if (isShellLink(link)) {
-        onShellExecute?.(link.type, link.target, link.args);
-      } else if (link.embed && onEmbedOpen && canEmbed?.()) {
-        onEmbedOpen(link);
-      } else {
-        window.open(link.target, WINDOW_TARGET_BLANK, WINDOW_OPEN_FEATURES);
-      }
-    },
-  });
+  const { favorites, toggleFavorite } = useQuickLinkFavorites(enableFavorites);
+  const toEntry = (link: QuickLink): SearchableListItem => {
+    const favoriteId = JSON.stringify([
+      link.label,
+      link.target,
+      link.type,
+      link.args ?? '',
+      link.subgroup ?? '',
+      link.embed ?? false,
+    ]);
+    return {
+      label: link.label,
+      value: link.target,
+      isExternal: !isShellLink(link),
+      isFavorite: favorites.has(favoriteId),
+      onFavoriteToggle: enableFavorites
+        ? () => toggleFavorite(favoriteId)
+        : undefined,
+      onOpen: () => {
+        if (isShellLink(link)) {
+          onShellExecute?.(link.type, link.target, link.args);
+        } else if (link.embed && onEmbedOpen && canEmbed?.()) {
+          onEmbedOpen(link);
+        } else {
+          window.open(link.target, WINDOW_TARGET_BLANK, WINDOW_OPEN_FEATURES);
+        }
+      },
+    };
+  };
 
   const orderedLinks = preserveOrder
     ? links
@@ -105,6 +124,7 @@ export function QuickLinksPanel({
       storageKey={STORAGE_KEY}
       onEntryOpen={onLinkOpen}
       autoFocusSearch={autoFocusSearch}
+      enableFavorites={enableFavorites}
     />
   );
 }

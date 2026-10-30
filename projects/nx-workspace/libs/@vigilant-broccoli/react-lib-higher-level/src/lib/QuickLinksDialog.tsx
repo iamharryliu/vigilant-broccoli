@@ -34,6 +34,7 @@ export type QuickLinksDialogProps = {
   onOpenChange: (open: boolean) => void;
   onShellExecute?: ShellExecuteHandler;
   canEmbed?: () => boolean;
+  enableFavorites?: boolean;
 };
 
 export function QuickLinksDialog({
@@ -42,6 +43,7 @@ export function QuickLinksDialog({
   onOpenChange,
   onShellExecute,
   canEmbed,
+  enableFavorites = false,
 }: QuickLinksDialogProps) {
   const [embedLink, setEmbedLink] = useState<QuickLink | null>(null);
   const [measured, setMeasured] = useState<HTMLDivElement | null>(null);
@@ -98,6 +100,7 @@ export function QuickLinksDialog({
 
               <QuickLinksPanel
                 links={links}
+                enableFavorites={enableFavorites}
                 onShellExecute={onShellExecute}
                 autoFocusSearch={open}
                 onLinkOpen={() => onOpenChange(false)}
