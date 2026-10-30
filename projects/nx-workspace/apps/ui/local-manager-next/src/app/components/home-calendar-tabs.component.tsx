@@ -101,6 +101,7 @@ export const HomeCalendarTabs = () => {
       content: (
         <QuickLinksPanel
           links={QUICK_LINKS}
+          enableFavorites
           onShellExecute={handleShellExecute}
         />
       ),

@@ -365,7 +365,7 @@ export const HomeView = () => {
       value: CALENDAR_TAB.QUICK_LINKS,
       label: CALENDAR_TAB.QUICK_LINKS,
       icon: <Link2 size={TAB_ICON_SIZE} />,
-      content: <QuickLinksPanel links={QUICK_LINKS} />,
+      content: <QuickLinksPanel links={QUICK_LINKS} enableFavorites />,
     },
     {
       value: CALENDAR_TAB.WEATHER,

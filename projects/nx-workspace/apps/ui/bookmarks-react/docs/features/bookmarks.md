@@ -1,6 +1,6 @@
 # Bookmarks
 
-The Bookmarks tab wraps `QuickLinksPanel` with search autofocus. Manage adds, edits and deletes bookmarks by subgroup; deletion requires confirmation. Existing subgroup names are offered as suggestions.
+The Bookmarks tab wraps `QuickLinksPanel` with search autofocus and browser-local favorite toggles plus a Favorites filter. Favorites use the shared `quick-links-favorites` key on this origin, separately from the bookmark list; identical links share a favorite state. Manage adds, edits and deletes bookmarks by subgroup; deletion requires confirmation. Existing subgroup names are offered as suggestions.
 
 `use-bookmarks.ts` stores `{ bookmarks: QuickLink[], tab }` under `bookmarks:v1`. Reads and writes are guarded: corrupt data falls back to an empty list, while failed writes keep the current session usable and show an export reminder. Data stays on this browser origin; there is no backend, auth or cross-device sync. Clearing browser data removes it, and staging, previews and production each have separate storage.
 
