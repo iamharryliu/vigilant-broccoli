@@ -440,3 +440,8 @@ variable "rabbitmq_allowed_emails" {
   type    = list(string)
   default = ["harryliu1995@gmail.com"]
 }
+
+variable "games_domain" {
+  type    = string
+  default = "games.harryliu.dev"
+}

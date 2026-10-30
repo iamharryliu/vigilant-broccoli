@@ -1,4 +1,5 @@
 import {
+  Gamepad2,
   Activity,
   Bot,
   ChartColumn,
@@ -15,6 +16,7 @@ import { SectionHeading } from '../components/SectionHeading';
 import { DockerIcon, GithubIcon, NpmIcon } from '../components/BrandIcons';
 import { usePageTitle } from '../use-page-title';
 import { PAGE_CLASS } from '../consts/layout';
+import { GAMES_ROUTE } from '../consts/routes';
 
 const ICON_CLASS = 'h-5 w-5 shrink-0';
 
@@ -86,6 +88,15 @@ export function HomePage() {
       <section>
         <SectionHeading>{t('HOME.SECTION_SOFTWARE_PROJECTS')}</SectionHeading>
         <CardGrid>
+          <li>
+            <CardLink
+              route
+              href={GAMES_ROUTE}
+              title={t('GAMES_PAGE.TITLE')}
+              description={t('GAMES_PAGE.DESCRIPTION')}
+              icon={<Gamepad2 className={ICON_CLASS} />}
+            />
+          </li>
           <li>
             <CardLink
               route

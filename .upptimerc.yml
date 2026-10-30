@@ -124,6 +124,8 @@ sites:
     url: https://manager.harryliu.dev/login
     maxRedirects: 0
     expectedStatusCodes: [302]
+  - name: production-games
+    url: https://games.harryliu.dev/
   - name: production-career
     url: https://career.harryliu.dev/
   - name: production-deployments

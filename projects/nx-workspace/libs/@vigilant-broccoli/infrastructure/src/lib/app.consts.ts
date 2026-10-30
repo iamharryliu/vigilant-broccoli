@@ -1,6 +1,7 @@
 import { PROJECT_LINK } from '@harry/personal';
 
 export const VB_APP_URL = {
+  GAMES: { NAME: 'Games', URL: 'https://games.harryliu.dev/' },
   COMPONENT_LIBRARY: {
     NAME: 'Component Library',
     URL: 'https://components.harryliu.dev/',
