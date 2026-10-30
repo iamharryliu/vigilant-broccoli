@@ -97,6 +97,10 @@
     "SPECTATING": "Spectating",
     "SCORES": "Runner scores",
     "OUT": "Eliminated",
-    "RUNNING": "Running"
+    "RUNNING": "Running",
+    "LEAVE_CONFIRM_TITLE": "Are you sure you want to leave?",
+    "LEAVE_CONFIRM_DESCRIPTION": "You will leave this room. An active round keeps going for the other runners.",
+    "STAY": "Stay in game",
+    "CONFIRM_LEAVE": "Leave game"
   }
 }
