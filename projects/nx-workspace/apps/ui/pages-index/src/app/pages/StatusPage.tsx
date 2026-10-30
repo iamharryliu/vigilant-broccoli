@@ -1,5 +1,6 @@
 import { Activity } from 'lucide-react';
 import {
+  Skeleton,
   UpptimeServiceGroup,
   UpptimeStatusList,
   UpptimeStatusListLabels,
@@ -19,6 +20,8 @@ import {
 import { PAGE_CLASS } from '../consts/layout';
 import { STATUS_ROUTE } from '../consts/routes';
 
+declare const __UPPTIME_SITES__: { name: string; url: string }[];
+
 const ACTIONS_URL = `${REPO_URL}/actions`;
 
 const PRODUCTION_PREFIX = 'production-';
@@ -32,6 +35,7 @@ interface StatusPageProps {
 export function StatusPage({ wrapped = true }: StatusPageProps) {
   const { t } = useTranslation();
   const summary = useUpptimeSummary(UPTIME_SUMMARY_URL);
+  const loading = summary.services === null && !summary.error;
 
   const groups: UpptimeServiceGroup[] = [
     {
@@ -73,12 +77,21 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
     <main className={PAGE_CLASS}>
       <header className="mb-4">
         <PageHeader title={t('STATUS_PAGE.TITLE')} route={STATUS_ROUTE} />
-        {summary.lastModified && (
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
-            {t('STATUS_PAGE.UPDATED', {
-              date: summary.lastModified.toLocaleString(),
-            })}
-          </p>
+        {(summary.lastModified || loading || !!summary.services?.length) && (
+          <div
+            className="mt-2 min-h-6 text-gray-600 dark:text-gray-400"
+            aria-busy={loading}
+          >
+            {summary.lastModified ? (
+              t('STATUS_PAGE.UPDATED', {
+                date: summary.lastModified.toLocaleString(),
+              })
+            ) : loading ? (
+              <span aria-hidden="true" className="flex h-6 items-center">
+                <Skeleton className="h-4 w-64 motion-reduce:animate-none" />
+              </span>
+            ) : null}
+          </div>
         )}
       </header>
       <CardGrid>
@@ -91,7 +104,12 @@ export function StatusPage({ wrapped = true }: StatusPageProps) {
           />
         </li>
       </CardGrid>
-      <UpptimeStatusList summary={summary} groups={groups} labels={labels} />
+      <UpptimeStatusList
+        summary={summary}
+        loadingServices={__UPPTIME_SITES__}
+        groups={groups}
+        labels={labels}
+      />
 
       <section className="mt-6">
         <div className="flex items-center justify-between mb-2">
