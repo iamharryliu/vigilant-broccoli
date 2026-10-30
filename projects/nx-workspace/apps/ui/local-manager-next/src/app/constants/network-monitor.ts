@@ -62,6 +62,10 @@ export interface ConnectionFlow {
   sockets: number;
   firstSeen: number;
   lastSeen: number;
+  bytesIn: number;
+  bytesOut: number;
+  rateIn: number;
+  rateOut: number;
   location: MapLocation | null;
 }
 

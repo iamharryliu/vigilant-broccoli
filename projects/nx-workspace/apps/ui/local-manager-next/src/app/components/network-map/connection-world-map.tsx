@@ -18,8 +18,12 @@ import {
 import {
   Destination,
   LatLng,
-  activeDirections,
+  SPEED_TIER_COUNT,
+  activeMovements,
   dominantDirection,
+  formatBytes,
+  formatRate,
+  speedTier,
   formatPlace,
   greatCircleArc,
 } from './network-map.utils';
@@ -47,24 +51,38 @@ const MAX_IDLE_OPACITY = 0.5;
 const DIMMED_OPACITY = 0.06;
 
 // Arcs run from this machine to the peer, so a decreasing dash offset moves
-// dashes outward and an increasing one moves them home. Injected as a <style>
-// rather than Tailwind so Next's CSS cache can't drop the keyframes.
+// dashes outward and an increasing one moves them home; each speed tier gets a
+// shorter cycle. Injected as a <style> rather than Tailwind so Next's CSS
+// cache can't drop the keyframes.
 const FLOW_DASH = 4;
 const FLOW_GAP = 14;
 const FLOW_CYCLE = FLOW_DASH + FLOW_GAP;
-const FLOW_CLASS: Record<ConnectionDirection, string> = {
+const FLOW_DURATIONS_S = [2.4, 1.4, 0.9, 0.5, 0.25];
+const FLOW_KEYFRAMES: Record<ConnectionDirection, string> = {
   [CONNECTION_DIRECTION.OUTBOUND]: 'connection-flow-out',
   [CONNECTION_DIRECTION.INBOUND]: 'connection-flow-in',
 };
-const FLOW_ANIMATION_CSS = `
-@keyframes connection-flow-out { to { stroke-dashoffset: -${FLOW_CYCLE}; } }
-@keyframes connection-flow-in { to { stroke-dashoffset: ${FLOW_CYCLE}; } }
-.${FLOW_CLASS[CONNECTION_DIRECTION.OUTBOUND]} { animation: connection-flow-out 0.9s linear infinite; }
-.${FLOW_CLASS[CONNECTION_DIRECTION.INBOUND]} { animation: connection-flow-in 0.9s linear infinite; }
-@media (prefers-reduced-motion: reduce) {
-  .${FLOW_CLASS[CONNECTION_DIRECTION.OUTBOUND]}, .${FLOW_CLASS[CONNECTION_DIRECTION.INBOUND]} { animation: none; }
-}
-`;
+const FLOW_OFFSET: Record<ConnectionDirection, number> = {
+  [CONNECTION_DIRECTION.OUTBOUND]: -FLOW_CYCLE,
+  [CONNECTION_DIRECTION.INBOUND]: FLOW_CYCLE,
+};
+const flowClass = (direction: ConnectionDirection, tier: number) =>
+  `${FLOW_KEYFRAMES[direction]}-${tier}`;
+const FLOW_ANIMATION_CSS = Object.values(CONNECTION_DIRECTION)
+  .map(direction =>
+    [
+      `@keyframes ${FLOW_KEYFRAMES[direction]} { to { stroke-dashoffset: ${FLOW_OFFSET[direction]}; } }`,
+      ...Array.from(
+        { length: SPEED_TIER_COUNT },
+        (_, tier) =>
+          `.${flowClass(direction, tier)} { animation: ${FLOW_KEYFRAMES[direction]} ${FLOW_DURATIONS_S[tier]}s linear infinite; }`,
+      ),
+    ].join('\n'),
+  )
+  .concat(
+    '@media (prefers-reduced-motion: reduce) { [class*="connection-flow-"] { animation: none; } }',
+  )
+  .join('\n');
 
 const DIRECTION_COLOR: Record<ConnectionDirection, string> = {
   [CONNECTION_DIRECTION.OUTBOUND]: '#38bdf8',
@@ -95,8 +113,17 @@ const DestinationTooltip = ({ destination }: { destination: Destination }) => {
       <span className="font-mono opacity-70">
         {ips.length === 1 ? ips[0] : `${ips.length} IPs`} ·{' '}
         {destination.flows.length} flow
-        {destination.flows.length === 1 ? '' : 's'}
+        {destination.flows.length === 1 ? '' : 's'} ·{' '}
+        {formatBytes(destination.totalBytes)}
       </span>
+      {activeMovements(destination)
+        .filter(m => m.rate > 0)
+        .map(m => (
+          <span key={m.direction} className="font-mono">
+            {m.direction === CONNECTION_DIRECTION.OUTBOUND ? '↑' : '↓'}{' '}
+            {formatRate(m.rate)}
+          </span>
+        ))}
     </div>
   );
 };
@@ -153,7 +180,7 @@ export const ConnectionWorldMap = ({
           const color = DIRECTION_COLOR[dominantDirection(d)];
           const point: LatLng = [d.location.lat, d.location.lng];
           const arc = homePoint ? greatCircleArc(homePoint, point) : null;
-          const weight = 1 + Math.log2(d.flows.length + 1);
+          const weight = 1 + Math.log10(1 + d.totalBytes) / 2;
           return (
             <Fragment key={d.key}>
               {arc && (
@@ -164,18 +191,18 @@ export const ConnectionWorldMap = ({
               )}
               {arc &&
                 !dimmed &&
-                activeDirections(d).map(direction => (
+                activeMovements(d).map(({ direction, rate }) => (
                   <Polyline
-                    key={direction}
+                    key={`${direction}-${speedTier(rate)}`}
                     positions={arc}
                     interactive={false}
                     pathOptions={{
-                      color: DIRECTION_COLOR[direction],
+                      color,
                       weight: weight + 1.5,
                       opacity: 1,
                       lineCap: 'round',
                       dashArray: `${FLOW_DASH} ${FLOW_GAP}`,
-                      className: FLOW_CLASS[direction],
+                      className: flowClass(direction, speedTier(rate)),
                     }}
                   />
                 ))}

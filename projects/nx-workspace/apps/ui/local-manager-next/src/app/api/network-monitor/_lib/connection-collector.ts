@@ -6,6 +6,7 @@ import {
 } from '../../../constants/network-monitor';
 import { pruneFlows, StoredFlow, upsertFlows } from './flow-store';
 import { classifyIp, parseAddr } from './lsof';
+import { ByteCounters, readSocketCounters, socketKey } from './nettop';
 
 const execFileAsync = promisify(execFile);
 
@@ -22,7 +23,7 @@ const LSOF_ARGS = [
 const LSOF_MAX_BUFFER = 16 * 1024 * 1024;
 const LISTEN_STATE = '(LISTEN)';
 const ADDR_SEPARATOR = '->';
-// lsof takes ~50ms; one-second samples catch most short-lived connections
+// lsof takes ~50ms and nettop ~20ms; one-second samples catch most short-lived connections
 // without measurable load.
 const SAMPLE_INTERVAL_MS = 1000;
 const PRUNE_INTERVAL_MS = 60 * 60 * 1000;
@@ -36,12 +37,21 @@ interface Socket {
   remotePort: number;
 }
 
+export interface FlowRate {
+  rateIn: number;
+  rateOut: number;
+}
+
 interface CollectorState {
   timer: NodeJS.Timeout;
   sampling: boolean;
   lastPrunedAt: number;
   lastSampledAt: number | null;
   openSockets: Map<string, number>;
+  flowRates: Map<string, FlowRate>;
+  // null until the first sample, which only sets the baseline: counters for
+  // sockets that predate the collector would otherwise count as one burst.
+  prevCounters: Map<string, ByteCounters> | null;
   lastError: string | null;
 }
 
@@ -90,13 +100,52 @@ const parseLsof = (stdout: string) => {
   return { listenPorts, sockets };
 };
 
+const byteDelta = (
+  current: ByteCounters | undefined,
+  previous: Map<string, ByteCounters> | null,
+  key: string,
+): ByteCounters => {
+  if (!current || !previous) return { bytesIn: 0, bytesOut: 0 };
+  const before = previous.get(key);
+  // A socket new since the last sample, or a reused 5-tuple whose counters
+  // restarted, carries only traffic from this interval.
+  if (
+    !before ||
+    current.bytesIn < before.bytesIn ||
+    current.bytesOut < before.bytesOut
+  ) {
+    return current;
+  }
+  return {
+    bytesIn: current.bytesIn - before.bytesIn,
+    bytesOut: current.bytesOut - before.bytesOut,
+  };
+};
+
 // Inbound clients use ephemeral source ports, so they are keyed by our
-// listening port instead to keep one flow per client and service.
-const toFlows = (stdout: string, now: number) => {
+// listening port instead to keep one flow per client and service. Flow byte
+// counts are this interval's deltas; the store adds them to its totals.
+const toFlows = (
+  stdout: string,
+  counters: Map<string, ByteCounters>,
+  previous: Map<string, ByteCounters> | null,
+  now: number,
+) => {
   const { listenPorts, sockets } = parseLsof(stdout);
   const flows = new Map<string, StoredFlow>();
   const openSockets = new Map<string, number>();
+  const seenSockets = new Set<string>();
   for (const socket of sockets) {
+    const key = socketKey(
+      socket.pid,
+      socket.protocol,
+      socket.localPort,
+      socket.remoteIp,
+      socket.remotePort,
+    );
+    // lsof lists a socket once per file descriptor sharing it.
+    if (seenSockets.has(key)) continue;
+    seenSockets.add(key);
     const inbound = listenPorts.has(socket.localPort);
     const direction = inbound
       ? CONNECTION_DIRECTION.INBOUND
@@ -109,6 +158,8 @@ const toFlows = (stdout: string, now: number) => {
       inbound ? 0 : socket.remotePort,
       inbound ? socket.localPort : 0,
     ].join('|');
+    const delta = byteDelta(counters.get(key), previous, key);
+    const existing = flows.get(id);
     openSockets.set(id, (openSockets.get(id) ?? 0) + 1);
     flows.set(id, {
       id,
@@ -116,21 +167,49 @@ const toFlows = (stdout: string, now: number) => {
       direction,
       firstSeen: now,
       lastSeen: now,
+      bytesIn: (existing?.bytesIn ?? 0) + delta.bytesIn,
+      bytesOut: (existing?.bytesOut ?? 0) + delta.bytesOut,
     });
   }
   return { flows: [...flows.values()], openSockets };
 };
+
+const toRates = (flows: StoredFlow[], elapsedMs: number | null) =>
+  new Map<string, FlowRate>(
+    flows.map(f => [
+      f.id,
+      elapsedMs
+        ? {
+            rateIn: (f.bytesIn * 1000) / elapsedMs,
+            rateOut: (f.bytesOut * 1000) / elapsedMs,
+          }
+        : { rateIn: 0, rateOut: 0 },
+    ]),
+  );
 
 const sample = async (state: CollectorState) => {
   if (state.sampling) return;
   state.sampling = true;
   try {
     const now = Date.now();
-    const { stdout } = await execFileAsync('lsof', LSOF_ARGS, {
-      maxBuffer: LSOF_MAX_BUFFER,
-    }).catch(err => ({ stdout: (err.stdout as string) ?? '' }));
-    const { flows, openSockets } = toFlows(stdout, now);
+    const [{ stdout }, counters] = await Promise.all([
+      execFileAsync('lsof', LSOF_ARGS, { maxBuffer: LSOF_MAX_BUFFER }).catch(
+        err => ({ stdout: (err.stdout as string) ?? '' }),
+      ),
+      readSocketCounters(),
+    ]);
+    const { flows, openSockets } = toFlows(
+      stdout,
+      counters,
+      state.prevCounters,
+      now,
+    );
     upsertFlows(flows);
+    state.flowRates = toRates(
+      flows,
+      state.lastSampledAt === null ? null : now - state.lastSampledAt,
+    );
+    state.prevCounters = counters;
     if (now - state.lastPrunedAt > PRUNE_INTERVAL_MS) {
       pruneFlows(now);
       state.lastPrunedAt = now;
@@ -155,6 +234,8 @@ export const startConnectionCollector = (): CollectorState => {
     lastPrunedAt: 0,
     lastSampledAt: null,
     openSockets: new Map(),
+    flowRates: new Map(),
+    prevCounters: null,
     lastError: null,
   };
   // Don't keep `next build` workers or scripts alive just for sampling.

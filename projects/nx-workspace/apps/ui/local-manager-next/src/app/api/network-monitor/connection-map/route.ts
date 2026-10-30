@@ -57,6 +57,8 @@ export async function GET(request: NextRequest) {
       flows: listFlowsSince(now - windowMs, MAX_FLOWS).map(flow => ({
         ...flow,
         sockets: collector.openSockets.get(flow.id) ?? 0,
+        rateIn: collector.flowRates.get(flow.id)?.rateIn ?? 0,
+        rateOut: collector.flowRates.get(flow.id)?.rateOut ?? 0,
         location: lookupGeo(flow.remoteIp),
       })),
     };

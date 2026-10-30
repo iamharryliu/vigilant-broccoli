@@ -18,7 +18,19 @@ export interface Destination {
   directions: Set<ConnectionDirection>;
   lastSeen: number;
   activeSockets: number;
+  totalBytes: number;
 }
+
+export interface Movement {
+  direction: ConnectionDirection;
+  rate: number;
+}
+
+const BYTE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB'];
+const BYTE_STEP = 1024;
+// Upper bounds in bytes/s for each animation speed tier; anything faster
+// lands in the last tier.
+const SPEED_TIER_BOUNDS = [1024, 10 * 1024, 100 * 1024, 1024 * 1024];
 
 const toVector = ([lat, lng]: LatLng) => [
   Math.cos(lat * DEG) * Math.cos(lng * DEG),
@@ -68,11 +80,13 @@ export const groupByDestination = (flows: ConnectionFlow[]): Destination[] => {
       directions: new Set<ConnectionDirection>(),
       lastSeen: 0,
       activeSockets: 0,
+      totalBytes: 0,
     };
     group.flows.push(flow);
     group.directions.add(flow.direction);
     group.lastSeen = Math.max(group.lastSeen, flow.lastSeen);
     group.activeSockets += flow.sockets;
+    group.totalBytes += flow.bytesIn + flow.bytesOut;
     groups.set(key, group);
   }
   return [...groups.values()];
@@ -83,9 +97,47 @@ export const dominantDirection = (d: Destination): ConnectionDirection =>
     ? CONNECTION_DIRECTION.INBOUND
     : CONNECTION_DIRECTION.OUTBOUND;
 
-export const activeDirections = (d: Destination): ConnectionDirection[] => [
-  ...new Set(d.flows.filter(f => f.sockets > 0).map(f => f.direction)),
-];
+// Dashes follow the bytes: uploads move out from this machine and downloads
+// move home. An open connection with no traffic this sample still trickles in
+// the direction it was opened, so open connections stay visibly alive.
+export const activeMovements = (d: Destination): Movement[] => {
+  const open = d.flows.filter(f => f.sockets > 0);
+  if (!open.length) return [];
+  const rateOut = open.reduce((sum, f) => sum + f.rateOut, 0);
+  const rateIn = open.reduce((sum, f) => sum + f.rateIn, 0);
+  const movements: Movement[] = [];
+  if (rateOut > 0) {
+    movements.push({ direction: CONNECTION_DIRECTION.OUTBOUND, rate: rateOut });
+  }
+  if (rateIn > 0) {
+    movements.push({ direction: CONNECTION_DIRECTION.INBOUND, rate: rateIn });
+  }
+  if (movements.length) return movements;
+  return [...new Set(open.map(f => f.direction))].map(direction => ({
+    direction,
+    rate: 0,
+  }));
+};
+
+export const speedTier = (rate: number): number => {
+  const tier = SPEED_TIER_BOUNDS.findIndex(bound => rate < bound);
+  return tier === -1 ? SPEED_TIER_BOUNDS.length : tier;
+};
+
+export const SPEED_TIER_COUNT = SPEED_TIER_BOUNDS.length + 1;
+
+export const formatBytes = (bytes: number): string => {
+  let value = bytes;
+  let unit = 0;
+  while (value >= BYTE_STEP && unit < BYTE_UNITS.length - 1) {
+    value /= BYTE_STEP;
+    unit++;
+  }
+  return `${unit === 0 ? value : value.toFixed(1)} ${BYTE_UNITS[unit]}`;
+};
+
+export const formatRate = (rate: number): string =>
+  `${formatBytes(Math.round(rate))}/s`;
 
 export const formatPlace = (location: MapLocation | null): string => {
   if (!location) return '—';

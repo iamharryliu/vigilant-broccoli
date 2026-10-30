@@ -26,6 +26,8 @@ import { authFetch } from '../../../../libs/auth';
 import { usePollingInterval } from '../../hooks/usePollingInterval';
 import {
   formatAge,
+  formatBytes,
+  formatRate,
   formatPlace,
   groupByDestination,
 } from './network-map.utils';
@@ -68,6 +70,12 @@ const flowEndpoint = (flow: ConnectionFlow) =>
     ? `${flow.remoteIp} → :${flow.localPort}`
     : `${flow.remoteIp}:${flow.remotePort}`;
 
+const flowStatus = (flow: ConnectionFlow, now: number) => {
+  if (flow.sockets === 0) return formatAge(now - flow.lastSeen);
+  if (flow.rateIn === 0 && flow.rateOut === 0) return `${flow.sockets} open`;
+  return `↓ ${formatRate(flow.rateIn)} ↑ ${formatRate(flow.rateOut)}`;
+};
+
 const FlowRow = ({
   flow,
   now,
@@ -101,14 +109,13 @@ const FlowRow = ({
         {flow.direction}
       </Badge>
       <Text size="1" color="gray" className="ml-auto shrink-0">
-        {flow.sockets > 0
-          ? `${flow.sockets} open`
-          : formatAge(now - flow.lastSeen)}
+        {flowStatus(flow, now)}
       </Text>
     </div>
     <Text size="1" color="gray" className="truncate">
       <span className="font-mono">{flowEndpoint(flow)}</span> · {flow.protocol}{' '}
-      · {formatPlace(flow.location)}
+      · {formatPlace(flow.location)} ·{' '}
+      {formatBytes(flow.bytesIn + flow.bytesOut)}
     </Text>
   </button>
 );
