@@ -962,3 +962,29 @@ body:has(.orientation-notice) {
     gap: 12px;
   }
 }
+
+.online-page .game-card {
+  position: relative;
+}
+.online-page .online-dashboard {
+  padding-left: 68px;
+}
+.online-leave-toggle {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 4;
+  width: 44px;
+  height: 44px;
+  background: var(--surface) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+}
+.leave-game-dialog {
+  width: min(28rem, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+}
+.leave-game-dialog button {
+  min-height: 44px;
+}

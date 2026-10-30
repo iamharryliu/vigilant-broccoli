@@ -1,7 +1,19 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Button, useTheme } from '@vigilant-broccoli/react-lib';
+import { LogOut } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  Button,
+  useTheme,
+} from '@vigilant-broccoli/react-lib';
 import { paint, playersOf, scoreOf, type Run } from './engine';
 import { useGameAudio } from './audio';
 import { useGameSettings } from './preferences';
@@ -24,6 +36,7 @@ export function OnlineGame({
   const canvas = useRef<HTMLCanvasElement>(null);
   const field = useRef<HTMLDivElement>(null);
   const [now, setNow] = useState(Date.now());
+  const [leaveOpen, setLeaveOpen] = useState(false);
 
   const running =
     connection === 'connected' && snapshot?.run?.status === 'running';
@@ -52,10 +65,10 @@ export function OnlineGame({
     };
   }, [snapshot]);
   const flip = useCallback(() => {
-    if (isLandscapeBlocked()) return;
+    if (leaveOpen || isLandscapeBlocked()) return;
     unlock();
     if (running && alive) requestFlip();
-  }, [alive, requestFlip, running, unlock]);
+  }, [alive, leaveOpen, requestFlip, running, unlock]);
 
   useEffect(() => {
     const interval = window.setInterval(() => setNow(Date.now()), 250);
@@ -157,10 +170,36 @@ export function OnlineGame({
           </div>
         </header>
         <section className="game-card" aria-label={t('ONLINE.TITLE')}>
+          <AlertDialog open={leaveOpen} onOpenChange={setLeaveOpen}>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="online-leave-toggle"
+                aria-label={t('ONLINE.LEAVE')}
+                title={t('ONLINE.LEAVE')}
+              >
+                <LogOut size={20} aria-hidden="true" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="leave-game-dialog">
+              <AlertDialogTitle>
+                {t('ONLINE.LEAVE_CONFIRM_TITLE')}
+              </AlertDialogTitle>
+              <AlertDialogDescription>
+                {t('ONLINE.LEAVE_CONFIRM_DESCRIPTION')}
+              </AlertDialogDescription>
+              <AlertDialogFooter>
+                <AlertDialogCancel asChild>
+                  <Button variant="outline">{t('ONLINE.STAY')}</Button>
+                </AlertDialogCancel>
+                <AlertDialogAction asChild>
+                  <Button onClick={onLeave}>{t('ONLINE.CONFIRM_LEAVE')}</Button>
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
           <div className="dashboard online-dashboard">
-            <Button variant="outline" onClick={onLeave}>
-              {t('ONLINE.LEAVE')}
-            </Button>
             <p>
               {t('ONLINE.PLAYERS')}{' '}
               {snapshot?.seats.length ?? Math.min(members.length, ROOM_SIZE)} /{' '}
