@@ -40,7 +40,7 @@ export type QuickLinksPanelProps = {
   defaultView?: SearchableListView;
   /** Keeps the input order of links and subgroups instead of sorting them alphabetically. */
   preserveOrder?: boolean;
-  /** Adds browser-local favorite controls and a favorites-only filter. */
+  /** Adds browser-local favorite controls and a Favorites group. */
   enableFavorites?: boolean;
 };
 
@@ -111,10 +111,24 @@ export function QuickLinksPanel({
   const orderedLinks = preserveOrder
     ? links
     : [...links].sort((a, b) => a.label.localeCompare(b.label));
-  const groups = toGroups(
+  const groupedLinks = toGroups(
     orderedLinks.map(link => ({ link, entry: toEntry(link) })),
     preserveOrder,
   );
+  const favoriteEntries = groupedLinks.flatMap(group =>
+    group.entries.filter(entry => entry.isFavorite),
+  );
+  const groups = [
+    ...(favoriteEntries.length > 0
+      ? [{ name: 'Favorites', isFavorites: true, entries: favoriteEntries }]
+      : []),
+    ...groupedLinks
+      .map(group => ({
+        ...group,
+        entries: group.entries.filter(entry => !entry.isFavorite),
+      }))
+      .filter(group => group.entries.length > 0),
+  ];
 
   return (
     <SearchableList
@@ -124,7 +138,6 @@ export function QuickLinksPanel({
       storageKey={STORAGE_KEY}
       onEntryOpen={onLinkOpen}
       autoFocusSearch={autoFocusSearch}
-      enableFavorites={enableFavorites}
     />
   );
 }
