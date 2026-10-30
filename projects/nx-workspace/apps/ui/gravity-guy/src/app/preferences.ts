@@ -11,7 +11,7 @@ const DEFAULT_SETTINGS = {
   scenery: true,
   music: true,
   sounds: true,
-  players: 1 as 1 | 2,
+  players: 1 as 1 | 2 | 3 | 4,
 };
 export const readSettings = () => {
   try {
@@ -19,8 +19,10 @@ export const readSettings = () => {
       scenery: window.localStorage.getItem(SCENERY_KEY) !== 'off',
       music: window.localStorage.getItem(MUSIC_KEY) !== 'off',
       sounds: window.localStorage.getItem(SOUNDS_KEY) !== 'off',
-      players: (window.localStorage.getItem(PLAYERS_KEY) === '2' ? 2 : 1) as
-        1 | 2,
+      players: (Math.min(
+        4,
+        Math.max(1, Number(window.localStorage.getItem(PLAYERS_KEY)) || 1),
+      ) || 1) as 1 | 2 | 3 | 4,
     };
   } catch {
     return DEFAULT_SETTINGS;
