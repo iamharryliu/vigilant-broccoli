@@ -41,6 +41,7 @@ export type SearchableListItem = {
 export type SearchableListGroup = {
   /** An empty name renders the entries without a heading. */
   name: string;
+  isFavorites?: boolean;
   entries: SearchableListItem[];
 };
 
@@ -112,12 +113,14 @@ const searchGroups = (groups: SearchableListGroup[], query: string) => {
   if (!query) {
     return groups.map(group => ({
       name: group.name,
+      isFavorites: group.isFavorites,
       scored: group.entries.map<ScoredEntry>(entry => ({ entry, score: 0 })),
     }));
   }
   return groups
     .map(group => ({
       name: group.name,
+      isFavorites: group.isFavorites,
       scored: group.entries
         .flatMap<ScoredEntry>(entry => {
           const score = scoreEntry(entry, query);
@@ -166,14 +169,20 @@ const SearchableListRow = ({
   </li>
 );
 
-const FavoriteButton = ({ entry }: { entry: SearchableListItem }) => {
+const FavoriteButton = ({
+  entry,
+  compact = false,
+}: {
+  entry: SearchableListItem;
+  compact?: boolean;
+}) => {
   const accessibleLabel = entry.isFavorite
     ? REMOVE_FAVORITE_LABEL(entry.label)
     : ADD_FAVORITE_LABEL(entry.label);
   return (
     <Button
       type="button"
-      variant="ghost"
+      variant={compact ? 'secondary' : 'ghost'}
       size="icon"
       aria-label={accessibleLabel}
       aria-pressed={entry.isFavorite ?? false}
@@ -183,7 +192,11 @@ const FavoriteButton = ({ entry }: { entry: SearchableListItem }) => {
         event.stopPropagation();
         entry.onFavoriteToggle?.();
       }}
-      className="min-h-11 min-w-11 shrink-0"
+      className={
+        compact
+          ? 'h-6 w-6 shrink-0 rounded-l-none border-l border-secondary-foreground/20 px-1'
+          : 'min-h-11 min-w-11 shrink-0'
+      }
     >
       <Star
         size={16}
@@ -201,7 +214,6 @@ export const SearchableList = ({
   storageKey,
   onEntryOpen,
   autoFocusSearch = false,
-  enableFavorites = false,
 }: {
   groups: SearchableListGroup[];
   searchPlaceholder?: string;
@@ -210,11 +222,9 @@ export const SearchableList = ({
   storageKey?: string;
   onEntryOpen?: () => void;
   autoFocusSearch?: boolean;
-  enableFavorites?: boolean;
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [view, setView] = useState<SearchableListView>(defaultView);
-  const [favoritesOnly, setFavoritesOnly] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -244,15 +254,10 @@ export const SearchableList = ({
   };
 
   const query = searchQuery.trim();
-  const visibleGroups = favoritesOnly
-    ? groups
-        .map(group => ({
-          ...group,
-          entries: group.entries.filter(entry => entry.isFavorite),
-        }))
-        .filter(group => group.entries.length > 0)
-    : groups;
-  const searched = searchGroups(visibleGroups, query);
+  const searched = searchGroups(groups, query).sort((a, b) => {
+    if (a.isFavorites !== b.isFavorites) return a.isFavorites ? -1 : 1;
+    return query ? b.scored[0].score - a.scored[0].score : 0;
+  });
   const entries = searched.flatMap(group => group.scored.map(s => s.entry));
   const bestEntry = searched
     .flatMap(group => group.scored)
@@ -305,32 +310,29 @@ export const SearchableList = ({
     label: entry.label,
     onClick: () => activate(entry),
     isExternal: entry.isExternal ?? (!entry.onOpen && isUrl(entry.value)),
+    ...(entry.onFavoriteToggle && {
+      buttonProps: { className: 'rounded-r-none' },
+    }),
   });
 
-  const renderButtons = (items: SearchableListItem[]) =>
-    items.some(entry => entry.onFavoriteToggle) ? (
-      <div className="flex flex-wrap gap-2">
-        {items.map((entry, index) => (
-          <div
-            className="inline-flex items-center gap-1"
-            key={`${entry.label}-${index}`}
-          >
-            <ButtonList
-              buttons={[toButtonConfig(entry)]}
-              navigationRootRef={contentRef}
-              searchInputRef={searchInputRef}
-            />
-            {entry.onFavoriteToggle && <FavoriteButton entry={entry} />}
-          </div>
-        ))}
-      </div>
-    ) : (
-      <ButtonList
-        buttons={items.map(toButtonConfig)}
-        navigationRootRef={contentRef}
-        searchInputRef={searchInputRef}
-      />
-    );
+  const renderButtons = (items: SearchableListItem[]) => (
+    <div className="flex flex-wrap gap-2">
+      {items.map((entry, index) => (
+        <div
+          className="inline-flex items-center"
+          key={`${entry.label}-${index}`}
+        >
+          <ButtonList
+            buttons={[toButtonConfig(entry)]}
+            className="gap-0"
+            navigationRootRef={contentRef}
+            searchInputRef={searchInputRef}
+          />
+          {entry.onFavoriteToggle && <FavoriteButton entry={entry} compact />}
+        </div>
+      ))}
+    </div>
+  );
 
   const renderGroup = (group: (typeof searched)[number], index: number) => {
     const items = group.scored.map(({ entry }) => entry);
@@ -379,18 +381,6 @@ export const SearchableList = ({
           onKeyDown={handleSearchKeyDown}
           className="flex-1"
         />
-        {enableFavorites && (
-          <Button
-            type="button"
-            variant={favoritesOnly ? 'default' : 'outline'}
-            aria-pressed={favoritesOnly}
-            onClick={() => setFavoritesOnly(value => !value)}
-            className="min-h-11 shrink-0"
-          >
-            <Star size={16} aria-hidden="true" />
-            {FAVORITES_LABEL}
-          </Button>
-        )}
         <Tabs
           value={view}
           onValueChange={next => handleViewChange(next as SearchableListView)}
@@ -421,9 +411,22 @@ export const SearchableList = ({
             ref={contentRef}
             className={`flex flex-col py-3 ${view === SEARCHABLE_LIST_VIEW.ROWS ? 'gap-3' : 'gap-4'}`}
           >
-            {view === SEARCHABLE_LIST_VIEW.LIST
-              ? renderButtons(entries)
-              : searched.map(renderGroup)}
+            {view === SEARCHABLE_LIST_VIEW.LIST ? (
+              <>
+                {entries.some(entry => entry.isFavorite) && (
+                  <div className="flex flex-col gap-2">
+                    <Text size="3" weight="medium">
+                      {FAVORITES_LABEL}
+                    </Text>
+                    {renderButtons(entries.filter(entry => entry.isFavorite))}
+                  </div>
+                )}
+                {entries.some(entry => !entry.isFavorite) &&
+                  renderButtons(entries.filter(entry => !entry.isFavorite))}
+              </>
+            ) : (
+              searched.map(renderGroup)
+            )}
           </div>
         </div>
       )}
