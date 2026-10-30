@@ -30,6 +30,9 @@ const ANIMATION_STYLES = `
   .checklist-item-new {
     animation: slideInAndFadeIn 0.3s ease-out;
   }
+  @media (prefers-reduced-motion: reduce) {
+    .checklist-item-new { animation: none; }
+  }
 `;
 
 const DRAG_OPACITY = {
@@ -118,7 +121,7 @@ const SortableRowFrame = ({
     // drag payload to move tasks across lanes. See the Nuances entry in
     // that app's CONTEXT.md before renaming any of these keys.
     data: { type: 'task', task: item, taskListId: listId },
-    disabled: !draggable || isEditing,
+    disabled: !draggable || isEditing || item.isRemoving,
   });
 
   const style = {
@@ -226,7 +229,7 @@ export const CheckList = memo(
       );
     }
 
-    if (error) {
+    if (error && items.length === 0) {
       return (
         <Text size="2" color="red">
           {error}
@@ -234,14 +237,10 @@ export const CheckList = memo(
       );
     }
 
-    const activeItems = items.filter(item => !item.checked || item.isRemoving);
+    const activeItems = items.filter(item => !item.checked);
 
     const showPlaceholder =
       dragOverItem && !activeItems.some(item => item.id === dragOverItem.id);
-
-    const sortableIds: string[] = activeItems.map(item => item.id);
-    if (showPlaceholder)
-      sortableIds.push(`${PLACEHOLDER_PREFIX}${dragOverItem.id}`);
 
     const highlightClass = isOver
       ? 'bg-blue-100 dark:bg-blue-900 ring-2 ring-blue-400 ring-inset'
@@ -252,6 +251,11 @@ export const CheckList = memo(
     return (
       <>
         <style>{ANIMATION_STYLES}</style>
+        {error && (
+          <Text size="2" color="red" role="alert">
+            {error}
+          </Text>
+        )}
         <div
           ref={setNodeRef}
           className={`rounded-lg transition-all duration-150 min-h-[60px] ${highlightClass}`}
@@ -278,9 +282,13 @@ export const CheckList = memo(
             renderItemDetails={renderItemDetails}
             itemClassName={itemClassName}
             rowFrame={rowFrame}
-            wrapActiveItems={rows => (
+            wrapActiveItems={(rows, activeIds) => (
               <SortableContext
-                items={sortableIds}
+                items={
+                  showPlaceholder
+                    ? [...activeIds, `${PLACEHOLDER_PREFIX}${dragOverItem.id}`]
+                    : activeIds
+                }
                 strategy={verticalListSortingStrategy}
               >
                 {rows}
