@@ -1,20 +1,29 @@
 import { ExternalLink } from 'lucide-react';
-import { useParams } from 'react-router-dom';
+import { Navigate, useLocation, useParams } from 'react-router-dom';
 import { useTranslation } from '../i18n';
 import { CardLink } from '../components/CardLink';
 import { PARSE_KIND, ReadmePage } from '../components/ReadmePage';
 import { REPO_URL, toRawGithubUrl, toRepoLinkBase } from '../consts/repo';
+import { GAMES_ROUTE } from '../consts/routes';
 import WEB_APPLICATIONS from '../consts/webApplications.json';
 
 type TranslationKey = Parameters<ReturnType<typeof useTranslation>['t']>[0];
 
 export function WebApplicationReadmePage() {
   const { t } = useTranslation();
+  const { pathname } = useLocation();
   const { app: id } = useParams<{ app: string }>();
   const app = [
     ...WEB_APPLICATIONS.applications,
     ...WEB_APPLICATIONS.demos,
   ].find(entry => entry.id === id);
+
+  if (
+    pathname.startsWith(`${GAMES_ROUTE}/`) &&
+    !(app && 'game' in app && app.game)
+  ) {
+    return <Navigate to={GAMES_ROUTE} replace />;
+  }
 
   return (
     <ReadmePage

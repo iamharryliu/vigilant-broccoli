@@ -5,7 +5,8 @@
       "href": "https://balloono.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.BALLOONO.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.BALLOONO.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/balloono/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/balloono/README.md",
+      "game": true
     },
     {
       "id": "context-md",
@@ -54,7 +55,8 @@
       "href": "https://gravity-guy.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.GRAVITY_GUY.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.GRAVITY_GUY.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/gravity-guy/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/gravity-guy/README.md",
+      "game": true
     },
     {
       "id": "gravity-guy-staging",
@@ -96,7 +98,8 @@
       "href": "https://waiting.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.WAITING_GAMES.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.WAITING_GAMES.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/waiting-games/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/waiting-games/README.md",
+      "game": true
     },
     {
       "id": "weather",
@@ -132,6 +135,13 @@
       "titleKey": "WEB_APPLICATIONS_PAGE.POMODORO.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.POMODORO.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/pomodoro-react/README.md"
+    },
+    {
+      "id": "games",
+      "href": "https://games.harryliu.dev/",
+      "titleKey": "GAMES_PAGE.TITLE",
+      "descriptionKey": "GAMES_PAGE.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/pages-index/README.md"
     }
   ],
   "demos": [

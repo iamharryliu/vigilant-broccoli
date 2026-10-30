@@ -223,6 +223,7 @@ export const VB_LINKS: QuickLink[] = [
       NAME: `${VB_APP_URL.WHITEBOARD.NAME} (Staging)`,
       URL: VB_APP_URL.WHITEBOARD.STAGING_URL,
     },
+    VB_APP_URL.GAMES,
     VB_APP_URL.BALLOONO,
     {
       NAME: `${VB_APP_URL.BALLOONO.NAME} (Staging)`,

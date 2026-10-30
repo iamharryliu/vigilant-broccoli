@@ -8,6 +8,8 @@ Non-obvious routing and data-source details for pages-index. Routes live in `src
 - [Deployments, status and repo timeline](#deployments-status-and-repo-timeline)
 - [Open source](#open-source)
 - [Web applications and API services](#web-applications-and-api-services)
+- [Games](#games)
+  - [Activation](#activation)
 
 ## Hosts
 
@@ -39,3 +41,18 @@ The home page's Software Projects section links straight to GitHub, Docker Hub a
 - `/api-services/:service` — Swagger UI rendered in-app against a spec published at build time to `public/openapi/<service>.json` by the `generate-openapi` target (`scripts/generate-openapi-specs.ts`). All five services (llm-service, bucket-service, email-service, email-subscription-service, employee-handler) are private-only (the first four are private Fly apps; employee-handler is a library-hosted contract with no public `/docs`), so this page is the only way to browse them. The employee-handler spec is generated from the zod contract in `libs/@vigilant-broccoli/employee-handler`, whose sources are `generate-openapi` inputs. Swagger UI itself loads from a pinned jsDelivr CDN rather than bundling `swagger-ui-dist`.
 
 The Job Hunt demo card opens the public, read-only sample deployment at `demo-job-hunt-next.vercel.app`; its detail page uses Job Hunt's README.
+
+## Games
+
+- `/games` shows production Balloono, Gravity Guy and Waiting Games, sorted by translated title, with direct play cards and separate About links to `/games/:app` README pages.
+- Membership is the `game: true` flag on entries in the shared applications registry; demos, staging duplicates and the Games portal itself are excluded. The full applications and demo lists retain their existing detail behavior.
+- Home links to Games; Games links to all applications, and its breadcrumb returns to Home.
+- `games.harryliu.dev` serves Games at `/` and `#/games`; `#/games/:app` keeps README navigation on this host, with Games as its local breadcrumb parent and Home linking to the projects host. Unknown hash routes return to root.
+- The Games portal also appears in the full applications registry and shared browser quick links, with a production Upptime check.
+
+### Activation
+
+- After merge, wait for the main pages-index GitHub Pages deployment, then verify `https://projects.harryliu.dev/#/games`.
+- From an authenticated local checkout run `pnpm tf:plan`; review the plan for `cloudflare_workers_custom_domain.games` and exclude unrelated drift before running `pnpm tf:apply`. The custom domain provisions DNS/TLS on the existing Worker; no new app or Worker script is needed.
+- Verify HTTPS at `https://games.harryliu.dev/`, `#/games`, a game About page and its breadcrumbs; open all three production games. Confirm status, career and deployments roots still render correctly.
+- Confirm the Upptime configuration sync and production-games check after merge; no provider dashboard edits are needed.

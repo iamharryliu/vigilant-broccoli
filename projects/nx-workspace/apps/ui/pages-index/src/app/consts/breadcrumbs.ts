@@ -1,6 +1,7 @@
 import { DotPaths } from '@vigilant-broccoli/react-lib';
 import en from '../i18n/en.json';
 import {
+  GAMES_ROUTE,
   CAREER_EXPERIENCE_ROUTE,
   DEPLOYMENTS_ROUTE,
   STATUS_ROUTE,
@@ -19,6 +20,7 @@ export interface BreadcrumbEntry {
 }
 
 const BREADCRUMB_TREE: Record<string, BreadcrumbNode> = {
+  [GAMES_ROUTE]: { labelKey: 'GAMES_PAGE.TITLE', parent: '/' },
   '/': { labelKey: 'HOME.TITLE', parent: null },
   [STATUS_ROUTE]: { labelKey: 'STATUS_PAGE.TITLE', parent: '/' },
   [DEPLOYMENTS_ROUTE]: { labelKey: 'DEPLOYMENTS_PAGE.TITLE', parent: '/' },
