@@ -125,6 +125,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   testgrind75                 Run grind-75 tests (py + ts + go)
   testgrind75py|ts|go         Run grind-75 tests for one language
   dldjmusic                   Download DJ music from Spotify playlists
+  syncbooks                   Copy Apple Books (iCloud) into Google Drive "Books" (rsync, never deletes)
 
 🍺 HOMEBREW & DEPS
   brewinit / brewup           Install from Brewfile / update + upgrade + cleanup

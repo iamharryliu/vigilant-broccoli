@@ -175,6 +175,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   deploy:local-services       Bring up the local k3s cluster + reload local-manager-next
   health-check                Run health check script
   dldjmusic                   Download DJ music from Spotify playlists (secrets pulled from Vault)
+  syncbooks                   Copy Apple Books (iCloud) into Google Drive "Books" (rsync, never deletes)
 
 🤖 AGENTIC — DEV SANDBOX (attended; you drive the persistent container)
   agentic:dev-sandbox:up      Fetch tokens from Vault into the current shell session (never written to disk), then build + start contained agent sandbox

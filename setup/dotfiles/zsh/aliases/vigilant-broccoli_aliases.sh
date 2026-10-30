@@ -62,7 +62,9 @@ alias cpvaulttoken="gcloud secrets versions access latest --secret=VB_VM_VAULT_R
 alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell/backup-repo.sh'
 
 # Hobby Code
-alias dldjmusic="$NX_DIR/scripts/shell/run-spotify-to-mp3.sh --output '$HOME/My Drive/DJ Music Library' --filter mix --parallel 5"
+alias dldjmusic="$NX_DIR/scripts/shell/run-spotify-to-mp3.sh --output '$HOME/Library/CloudStorage/GoogleDrive-harryliu1995@gmail.com/My Drive/DJ Music Library' --filter mix --parallel 5"
+# One-way copy (no --delete) so removing a book in Apple Books keeps the Drive backup.
+alias syncbooks='rsync -a --progress "$HOME/Library/Mobile Documents/iCloud~com~apple~iBooks/Documents/" "$HOME/Library/CloudStorage/GoogleDrive-harryliu1995@gmail.com/My Drive/Books/"'
 
 # Docker
 alias dockercleanup="$REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh"
