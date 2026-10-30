@@ -508,14 +508,14 @@ button:focus-visible {
 }
 .playfield,
 .flip-controls {
-  touch-action: none;
+  touch-action: manipulation;
   user-select: none;
   -webkit-user-select: none;
 }
 .orientation-notice {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 100;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -540,7 +540,7 @@ button:focus-visible {
   color: var(--muted);
   margin: 0;
 }
-.game-page:has(.orientation-notice) {
+body:has(.orientation-notice) {
   height: 100dvh;
   overflow: hidden;
 }
@@ -552,63 +552,6 @@ button:focus-visible {
 }
 .settings-page .guide-grid p {
   margin: 0;
-}
-@media (pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
-  .game-page {
-    height: 100dvh;
-    min-height: 100dvh;
-    overflow: hidden;
-    padding: 0;
-  }
-  .game-page .shell {
-    height: 100%;
-    max-width: none;
-  }
-  .game-page .masthead {
-    display: none;
-  }
-  .game-page .game-card {
-    height: 100%;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
-  .game-page .dashboard,
-  .game-page .control-bar {
-    display: none;
-  }
-  .game-page .playfield {
-    height: 100%;
-    min-height: 0;
-    border: 0;
-  }
-  .game-page .overlay {
-    padding: 6px;
-  }
-  .game-page .overlay-card {
-    padding: 10px 20px;
-    width: min(440px, 75%);
-  }
-  .game-page .overlay .orbit-mark {
-    display: none;
-  }
-  .game-page .overlay h2 {
-    font-size: 22px;
-    margin: 2px 0 4px;
-  }
-  .game-page .overlay p {
-    font-size: 11px;
-    line-height: 1.4;
-    margin-bottom: 8px;
-  }
-  .game-page .overlay .action {
-    min-height: 40px;
-  }
-  .game-page .music-toggle,
-  .game-page .settings-toggle {
-    top: 6px;
-    min-height: 44px;
-  }
 }
 
 .playfield-actions {
@@ -644,7 +587,26 @@ button:focus-visible {
   width: calc(100vw - 24px);
   max-width: 650px;
   max-height: calc(100dvh - 24px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.help-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 12px;
+}
+.help-header button {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+.help-content {
+  min-height: 0;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .help-dialog .guide-grid {
   grid-template-columns: 1fr;
@@ -655,26 +617,14 @@ button:focus-visible {
   font-size: 12px;
   line-height: 1.7;
 }
-@media (pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
-  .playfield-actions {
-    top: max(6px, env(safe-area-inset-top));
-    right: max(12px, env(safe-area-inset-right));
-  }
-}
+
 .settings-toggle {
   top: auto;
   bottom: 12px;
   right: 12px;
   left: auto;
 }
-@media (pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
-  .game-page .settings-toggle {
-    top: auto;
-    bottom: max(6px, env(safe-area-inset-bottom));
-    right: max(12px, env(safe-area-inset-right));
-    left: auto;
-  }
-}
+
 .help-toggle {
   position: absolute;
   bottom: 12px;
@@ -685,13 +635,6 @@ button:focus-visible {
   background: var(--surface) !important;
   color: var(--text) !important;
   border-color: var(--line) !important;
-}
-
-@media (pointer: coarse) and (orientation: landscape) and (max-width: 1100px) {
-  .game-page .help-toggle {
-    bottom: max(6px, env(safe-area-inset-bottom));
-    left: max(12px, env(safe-area-inset-left));
-  }
 }
 
 .online-notice {
@@ -720,4 +663,302 @@ button:focus-visible {
 .online-dashboard {
   flex-wrap: wrap;
   gap: 1rem;
+}
+
+.settings-sections {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  grid-column: 1 / -1;
+}
+.settings-sections button {
+  min-height: 44px;
+  color: var(--text);
+  border-color: var(--line);
+}
+.settings-sections button[aria-pressed='true'] {
+  background: var(--accent);
+  color: var(--page);
+}
+.settings-panels {
+  grid-column: 1 / -1;
+  min-height: 0;
+  min-width: 0;
+}
+.settings-panels:focus-visible,
+.help-content:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+}
+.settings-panels [hidden] {
+  display: none;
+}
+
+@media (any-pointer: coarse) and (orientation: landscape) {
+  .game-page {
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+    padding: 0;
+  }
+  .game-page .shell {
+    height: 100%;
+    max-width: none;
+  }
+  .game-page .masthead {
+    display: none;
+  }
+  .game-page .game-card {
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .game-page .dashboard,
+  .game-page .control-bar {
+    display: none;
+  }
+  .game-page .playfield {
+    height: 100%;
+    min-height: 0;
+    border: 0;
+  }
+  .game-page .overlay {
+    padding: 6px;
+  }
+  .game-page .overlay-card {
+    padding: 10px 20px;
+    width: min(440px, 75%);
+    max-height: calc(
+      100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+    );
+    overflow-y: auto;
+  }
+  .game-page .overlay .orbit-mark {
+    display: none;
+  }
+  .game-page .overlay h2 {
+    font-size: 22px;
+    margin: 2px 0 4px;
+  }
+  .game-page .overlay p {
+    font-size: 13px;
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  .game-page .overlay button {
+    min-height: 44px;
+  }
+  .game-page .music-toggle,
+  .game-page .settings-toggle {
+    top: 6px;
+    min-height: 44px;
+  }
+
+  .playfield-actions {
+    top: max(6px, env(safe-area-inset-top));
+    right: max(12px, env(safe-area-inset-right));
+  }
+
+  .game-page .settings-toggle {
+    top: auto;
+    bottom: max(6px, env(safe-area-inset-bottom));
+    right: max(12px, env(safe-area-inset-right));
+    left: auto;
+  }
+
+  .game-page .help-toggle {
+    bottom: max(6px, env(safe-area-inset-bottom));
+    left: max(12px, env(safe-area-inset-left));
+  }
+
+  .online-page {
+    height: 100dvh;
+    min-height: 0;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right)
+      env(safe-area-inset-bottom) env(safe-area-inset-left);
+    overflow: hidden;
+  }
+  .online-page .shell {
+    height: 100%;
+    max-width: none;
+  }
+  .online-page .masthead {
+    display: none;
+  }
+  .online-page .game-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    border: 0;
+    border-radius: 0;
+  }
+  .online-dashboard {
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+    gap: 8px;
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  .online-dashboard button {
+    min-height: 44px;
+    margin: 0;
+    padding-inline: 10px;
+    font-size: 12px;
+  }
+  .online-dashboard p {
+    white-space: nowrap;
+  }
+  .online-notice {
+    flex-shrink: 0;
+    padding: 2px 12px 6px;
+    font-size: 12px;
+    line-height: 1.3;
+  }
+  .online-lobby {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 8px 20px;
+    border-block: 8px solid var(--accent);
+    background: radial-gradient(
+      ellipse at center,
+      color-mix(in srgb, var(--accent) 12%, var(--surface)),
+      var(--surface)
+    );
+  }
+  .online-lobby > * {
+    flex-shrink: 0;
+  }
+  .online-lobby > :first-child {
+    margin-top: auto;
+  }
+  .online-lobby > :last-child {
+    margin-bottom: auto;
+  }
+  .online-lobby h2 {
+    font-size: 24px;
+    font-weight: 800;
+  }
+  .online-lobby p {
+    font-size: 13px;
+  }
+  .online-lobby ol {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    padding: 4px 0;
+  }
+  .online-lobby li {
+    padding: 12px 8px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    font-size: 13px;
+  }
+  .online-lobby button {
+    min-height: 44px;
+    align-self: center;
+  }
+  .online-page .playfield {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+  }
+  .online-page .control-bar {
+    padding: 4px 12px;
+    justify-content: center;
+  }
+  .online-page .flip-button {
+    min-height: 44px;
+  }
+  .online-scores {
+    flex-shrink: 0;
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  .online-scores li {
+    padding: 0;
+    flex: 1;
+    text-align: center;
+  }
+  .online-page .overlay {
+    padding: 6px;
+  }
+  .online-page .overlay-card {
+    padding: 8px;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+  .online-page .overlay button {
+    min-height: 44px;
+  }
+  .online-page .overlay h2 {
+    font-size: 22px;
+    margin: 0 0 6px;
+  }
+  .settings-app {
+    height: 100dvh;
+    min-height: 0;
+    overflow: hidden;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  .settings-page {
+    height: 100%;
+    min-height: 0;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto minmax(0, 1fr);
+    gap: 8px;
+    max-width: 1000px;
+  }
+  .settings-header {
+    padding-block: max(4px, env(safe-area-inset-top)) 4px;
+  }
+  .settings-header h1 {
+    font-size: 24px;
+  }
+  .settings-header .eyebrow {
+    display: none;
+  }
+  .settings-page .tagline {
+    font-size: 12px;
+  }
+  .settings-panels {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 4px;
+  }
+  .settings-page .settings {
+    padding: 12px;
+  }
+  .settings-page fieldset {
+    display: flex;
+    gap: 12px;
+  }
+  .settings-page .settings label {
+    margin-top: 4px;
+  }
+  .settings-page .guide-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .help-dialog {
+    max-height: calc(
+      100dvh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom)
+    );
+    width: calc(
+      100vw - 24px - env(safe-area-inset-left) - env(safe-area-inset-right)
+    );
+  }
+  .help-dialog .guide-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
 }

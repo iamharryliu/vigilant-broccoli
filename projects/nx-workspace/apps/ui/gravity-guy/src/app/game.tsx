@@ -5,25 +5,26 @@ import {
   Pause,
   Play,
   Music2,
-  RotateCw,
   Settings as SettingsIcon,
   VolumeX,
+  X,
 } from 'lucide-react';
 import { useGameAudio } from './audio';
 import { OnlineGame } from './online-game';
 import { ONLINE_AVAILABLE } from './online-room';
+import { isLandscapeBlocked, useNeedsLandscape } from './orientation';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Button,
   Dialog,
   DialogContent,
+  DialogClose,
   DialogDescription,
   DialogTitle,
-  ThemeProvider,
   useTheme,
 } from '@vigilant-broccoli/react-lib';
-import { I18nProvider, useTranslation } from './i18n';
+import { useTranslation } from './i18n';
 import { HowToPlay } from './how-to-play';
 import { readSettings, SAVED_RUN_KEY, useGameSettings } from './preferences';
 import {
@@ -64,8 +65,7 @@ function Runner({ onOnline }: { onOnline: () => void }) {
   const field = useRef<HTMLDivElement>(null);
   const run = useRef(createRun());
   const restored = useRef(false);
-  const landscapeBlocked = useRef(false);
-  const [needsLandscape, setNeedsLandscape] = useState(false);
+  const needsLandscape = useNeedsLandscape();
   const [helpOpen, setHelpOpen] = useState(false);
   const clock = useRef({ last: 0, accumulator: 0 });
   const [status, setStatus] = useState<Status>('ready');
@@ -73,7 +73,7 @@ function Runner({ onOnline }: { onOnline: () => void }) {
     useGameAudio(status === 'running', music, sounds, run.current.seed);
   const requestFlip = useCallback(
     (player: 1 | 2 = 1) => {
-      if (run.current.status !== 'running') return;
+      if (isLandscapeBlocked() || run.current.status !== 'running') return;
       unlock();
       if (flip(run.current, player)) playDash();
     },
@@ -134,26 +134,16 @@ function Runner({ onOnline }: { onOnline: () => void }) {
     router.push('/settings');
   };
   useEffect(() => {
-    const query = window.matchMedia(
-      '(pointer: coarse) and (orientation: portrait) and (max-width: 1024px)',
-    );
-    const update = () => {
-      landscapeBlocked.current = query.matches;
-      setNeedsLandscape(query.matches);
-      if (query.matches) {
-        pause();
-        setHelpOpen(false);
-      }
-    };
-    update();
-    query.addEventListener('change', update);
-    return () => query.removeEventListener('change', update);
-  }, [pause]);
+    if (needsLandscape) {
+      pause();
+      setHelpOpen(false);
+    }
+  }, [needsLandscape, pause]);
   const resume = useCallback(() => {
     if (
       run.current.status !== 'paused' ||
       document.hidden ||
-      landscapeBlocked.current
+      isLandscapeBlocked()
     )
       return;
     resetClock();
@@ -163,7 +153,7 @@ function Runner({ onOnline }: { onOnline: () => void }) {
     field.current?.focus({ preventScroll: true });
   }, [resetClock, unlock]);
   const start = () => {
-    if (landscapeBlocked.current) return;
+    if (isLandscapeBlocked()) return;
     unlock();
     run.current = { ...createRun(undefined, players), status: 'running' };
     setScore(0);
@@ -179,7 +169,7 @@ function Runner({ onOnline }: { onOnline: () => void }) {
     const down = (event: KeyboardEvent) => {
       if (
         helpOpen ||
-        landscapeBlocked.current ||
+        isLandscapeBlocked() ||
         event.ctrlKey ||
         event.metaKey ||
         event.altKey ||
@@ -583,32 +573,32 @@ function Runner({ onOnline }: { onOnline: () => void }) {
           {status === 'over' ? ` · ${score} ${t('APP.UNIT')}` : ''}
         </p>
       </div>
-      {needsLandscape && (
-        <div className="orientation-notice" role="alert">
-          <RotateCw size={52} aria-hidden="true" />
-          <h2>{t('APP.ROTATE_TITLE')}</h2>
-          <p>{t('APP.ROTATE_COPY')}</p>
-          <Button
-            variant="outline"
-            size="icon"
-            aria-label={t('APP.SETTINGS')}
-            onClick={openSettings}
-          >
-            <SettingsIcon size={18} aria-hidden="true" />
-          </Button>
-        </div>
-      )}
       <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
         <DialogContent
           className="help-dialog"
+          showCloseButton={false}
           onCloseAutoFocus={event => {
             event.preventDefault();
             field.current?.focus({ preventScroll: true });
           }}
         >
-          <DialogTitle>{t('APP.GUIDE_TITLE')}</DialogTitle>
+          <div className="help-header">
+            <DialogTitle>{t('APP.GUIDE_TITLE')}</DialogTitle>
+            <DialogClose asChild>
+              <Button variant="ghost" size="icon" aria-label={t('APP.CLOSE')}>
+                <X size={20} aria-hidden="true" />
+              </Button>
+            </DialogClose>
+          </div>
           <DialogDescription>{t('APP.HELP_DESCRIPTION')}</DialogDescription>
-          <HowToPlay />
+          <div
+            className="help-content"
+            tabIndex={0}
+            role="region"
+            aria-label={t('APP.GUIDE_TITLE')}
+          >
+            <HowToPlay />
+          </div>
         </DialogContent>
       </Dialog>
     </main>
@@ -628,11 +618,5 @@ function GameMode() {
   );
 }
 export default function Game() {
-  return (
-    <ThemeProvider keybind={false}>
-      <I18nProvider>
-        <GameMode />
-      </I18nProvider>
-    </ThemeProvider>
-  );
+  return <GameMode />;
 }
