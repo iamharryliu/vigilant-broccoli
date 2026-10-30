@@ -6,6 +6,7 @@ import { paint, playersOf, scoreOf, type Run } from './engine';
 import { useGameAudio } from './audio';
 import { useGameSettings } from './preferences';
 import { useTranslation } from './i18n';
+import { isLandscapeBlocked } from './orientation';
 import { ROOM_SIZE, useOnlineRoom } from './online-room';
 
 export function OnlineGame({
@@ -51,6 +52,7 @@ export function OnlineGame({
     };
   }, [snapshot]);
   const flip = useCallback(() => {
+    if (isLandscapeBlocked()) return;
     unlock();
     if (running && alive) requestFlip();
   }, [alive, requestFlip, running, unlock]);
@@ -146,21 +148,22 @@ export function OnlineGame({
           ? `${t('ONLINE.STARTS_IN')} ${countdown}`
           : t('ONLINE.WAITING');
   return (
-    <main className="gravity-app">
+    <main className="gravity-app online-page">
       <div className="shell">
         <header className="masthead">
           <div>
             <h1>{t('APP.NAME')}</h1>
             <p>{t('ONLINE.TITLE')}</p>
           </div>
-          <Button variant="outline" onClick={onLeave}>
-            {t('ONLINE.LEAVE')}
-          </Button>
         </header>
         <section className="game-card" aria-label={t('ONLINE.TITLE')}>
           <div className="dashboard online-dashboard">
+            <Button variant="outline" onClick={onLeave}>
+              {t('ONLINE.LEAVE')}
+            </Button>
             <p>
-              {t('ONLINE.PLAYERS')} {Math.min(members.length, ROOM_SIZE)} /{' '}
+              {t('ONLINE.PLAYERS')}{' '}
+              {snapshot?.seats.length ?? Math.min(members.length, ROOM_SIZE)} /{' '}
               {ROOM_SIZE}
             </p>
             {localIndex >= 0 && (
@@ -191,7 +194,11 @@ export function OnlineGame({
                 {Array.from({ length: ROOM_SIZE }, (_, index) => (
                   <li key={index}>
                     {t('ONLINE.PLAYER')} {index + 1}:{' '}
-                    {t(members[index] ? 'ONLINE.JOINED' : 'ONLINE.OPEN_SEAT')}
+                    {t(
+                      (snapshot ? snapshot.seats[index] : members[index])
+                        ? 'ONLINE.JOINED'
+                        : 'ONLINE.OPEN_SEAT',
+                    )}
                   </li>
                 ))}
               </ol>

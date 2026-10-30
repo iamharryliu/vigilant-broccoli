@@ -16,6 +16,7 @@ import {
 } from './engine';
 
 export const ROOM_SIZE = 4;
+const MIN_PLAYERS = 2;
 const DIRECTORY = 'gravity-guy-directory';
 const ROOM_PREFIX = 'gravity-guy-room:';
 const BROADCAST = 'broadcast';
@@ -36,6 +37,7 @@ type Member = {
   joinedAt: number;
   room: string | null;
   playing: boolean;
+  counting: boolean;
 };
 type Snapshot = {
   hostId: string;
@@ -89,13 +91,17 @@ export function useOnlineRoom() {
   const channelRef = useRef<RealtimeChannel | null>(null);
   const directoryRef = useRef<RealtimeChannel | null>(null);
   const directoryMembers = useRef<Member[]>([]);
+  const rematch = useRef<(() => void) | null>(null);
   const membersRef = useRef<Member[]>([]);
   const roomRef = useRef(room);
   roomRef.current = room;
   const pending = useRef(new Map<string, number>());
   const sequence = useRef(0);
   const lastInput = useRef(new Map<string, number>());
-  const playing = Boolean(snapshot?.startsAt || snapshot?.run);
+  const playing = Boolean(snapshot?.run);
+  const counting = Boolean(snapshot?.startsAt);
+  const countingRef = useRef(counting);
+  countingRef.current = counting;
   const playingRef = useRef(playing);
   playingRef.current = playing;
   const hostOf = useCallback(() => {
@@ -112,10 +118,21 @@ export function useOnlineRoom() {
     });
     directoryRef.current = directory;
     let disposed = false;
-    let matchmakingTimer: ReturnType<typeof setTimeout>;
     const matchmake = () => {
-      if (disposed || playingRef.current) return;
-      const listings = directoryMembers.current;
+      if (disposed || state.current?.run) return;
+      if (state.current?.startsAt && state.current.seats.includes(identity.id))
+        return;
+      // A rejected seat can requeue before its directory update arrives.
+      const listings = directoryMembers.current.map(member =>
+        member.id === identity.id
+          ? {
+              ...member,
+              room: roomRef.current,
+              playing: Boolean(state.current?.run),
+              counting: Boolean(state.current?.startsAt),
+            }
+          : member,
+      );
       const lockedRooms = new Set(
         listings.filter(member => member.playing).map(member => member.room),
       );
@@ -123,21 +140,47 @@ export function useOnlineRoom() {
         member =>
           !member.playing && (!member.room || !lockedRooms.has(member.room)),
       );
-      const index = waiting.findIndex(member => member.id === identity.id);
-      if (index < 0) return;
-      // Repack all waiting players, including partial rooms, so concurrent joins converge.
-      const next = waiting[Math.floor(index / ROOM_SIZE) * ROOM_SIZE].id;
+      // Countdown occupants keep their room and deadline while spare seats fill.
+      const reserved = [
+        ...new Set(
+          waiting.filter(member => member.counting).map(member => member.room),
+        ),
+      ].filter((id): id is string => Boolean(id));
+      const assignments = new Map<string, string>();
+      for (const id of reserved) {
+        for (const member of waiting
+          .filter(member => member.room === id)
+          .slice(0, ROOM_SIZE))
+          assignments.set(member.id, id);
+      }
+      const queue = waiting.filter(member => !assignments.has(member.id));
+      for (const id of reserved) {
+        const occupied = [...assignments.values()].filter(
+          room => room === id,
+        ).length;
+        for (const member of queue.splice(0, ROOM_SIZE - occupied))
+          assignments.set(member.id, id);
+      }
+      queue.forEach((member, index) =>
+        assignments.set(
+          member.id,
+          queue[Math.floor(index / ROOM_SIZE) * ROOM_SIZE].id,
+        ),
+      );
+      const next = assignments.get(identity.id);
+      if (!next) return;
       if (next === roomRef.current) return;
       state.current = null;
       setSnapshot(null);
       roomRef.current = next;
       setRoom(next);
     };
+    rematch.current = matchmake;
     directory.on('presence', { event: 'sync' }, () => {
       directoryMembers.current = membersOf(directory);
-      clearTimeout(matchmakingTimer);
-      matchmakingTimer = setTimeout(matchmake, 500);
     });
+    // Reconcile even if requeueing races the last directory presence event.
+    const matchmakingTimer = window.setInterval(matchmake, 500);
     directory.subscribe(status => {
       if (disposed) return;
       if (status === 'SUBSCRIBED') {
@@ -146,6 +189,7 @@ export function useOnlineRoom() {
           ...identity,
           room: roomRef.current,
           playing: playingRef.current,
+          counting: countingRef.current,
         });
       } else if (
         status === 'CHANNEL_ERROR' ||
@@ -164,12 +208,14 @@ export function useOnlineRoom() {
         ...identity,
         room: roomRef.current,
         playing: playingRef.current,
+        counting: countingRef.current,
       });
       if (channelRef.current) {
         void channelRef.current.track({
           ...identity,
           room: roomRef.current,
           playing: playingRef.current,
+          counting: countingRef.current,
         });
         void send(channelRef.current, REQUEST, {});
       }
@@ -178,18 +224,19 @@ export function useOnlineRoom() {
     window.addEventListener('pageshow', pageshow);
     return () => {
       disposed = true;
-      clearTimeout(matchmakingTimer);
+      clearInterval(matchmakingTimer);
       window.removeEventListener('pagehide', pagehide);
       window.removeEventListener('pageshow', pageshow);
       directoryRef.current = null;
+      rematch.current = null;
       void directory.untrack();
       void client.removeChannel(directory);
     };
   }, [identity]);
 
   useEffect(() => {
-    void directoryRef.current?.track({ ...identity, room, playing });
-  }, [identity, room, playing]);
+    void directoryRef.current?.track({ ...identity, room, playing, counting });
+  }, [identity, room, playing, counting]);
 
   useEffect(() => {
     if (!room) return;
@@ -219,7 +266,9 @@ export function useOnlineRoom() {
         ...identity,
         room: null,
         playing: false,
+        counting: false,
       });
+      rematch.current?.();
     };
     channel.on('presence', { event: 'sync' }, () => {
       if (disposed) return;
@@ -252,10 +301,7 @@ export function useOnlineRoom() {
           !Number.isFinite(incoming.run.camera))
       )
         return;
-      if (
-        (incoming.run || incoming.startsAt) &&
-        !incoming.seats.includes(identity.id)
-      ) {
+      if (incoming.run && !incoming.seats.includes(identity.id)) {
         requeue();
         return;
       }
@@ -294,7 +340,12 @@ export function useOnlineRoom() {
         ready = true;
         subscribedAt = Date.now();
         setConnection('connected');
-        void channel.track({ ...identity, room, playing: false });
+        void channel.track({
+          ...identity,
+          room,
+          playing: false,
+          counting: false,
+        });
         void send(channel, REQUEST, {});
       } else if (
         status === 'CHANNEL_ERROR' ||
@@ -324,11 +375,9 @@ export function useOnlineRoom() {
       };
       current = { ...current, hostId: identity.id };
       if (!current.run) {
-        const sameSeats = seats.join() === current.seats.join();
         const startsAt =
-          seats.length === ROOM_SIZE
-            ? ((sameSeats ? current.startsAt : null) ??
-              Date.now() + COUNTDOWN_MS)
+          seats.length >= MIN_PLAYERS
+            ? (current.startsAt ?? Date.now() + COUNTDOWN_MS)
             : null;
         current = { ...current, seats, startsAt };
         if (startsAt && Date.now() >= startsAt)

@@ -1,6 +1,7 @@
 import './global.css';
 import type { Metadata, Viewport } from 'next';
 import en from './i18n/en.json';
+import { LandscapeLayout } from './orientation';
 
 export const metadata: Metadata = {
   title: en.APP.TITLE,
@@ -19,7 +20,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <LandscapeLayout>{children}</LandscapeLayout>
+      </body>
     </html>
   );
 }
