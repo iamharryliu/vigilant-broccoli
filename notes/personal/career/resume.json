@@ -1,7 +1,7 @@
 {
   "basics": {
     "name": "Harry Liu",
-    "title": "Fullstack Developer",
+    "title": "Software Engineer",
     "email": "harryliu1995@gmail.com",
     "phone": "+46 76 008 72 96",
     "links": [
@@ -19,7 +19,7 @@
       }
     ]
   },
-  "summary": "Fullstack developer with nearly 7 years of experience building banking, SaaS, and AI applications across the stack, from React frontends and REST APIs to cloud infrastructure, CI/CD pipelines, and internal developer tooling.",
+  "summary": "Software engineer with 7 years of experience building backend services, APIs, and LLM-powered applications. Expertise in **LLM integration**, **agentic AI development**, **Elasticsearch** search, **Java** and **Python**, **AWS**, and performance optimization.",
   "workExperience": [
     {
       "company": "ELVA11",
@@ -27,13 +27,13 @@
       "startDate": "March 2025",
       "endDate": "August 2026",
       "bullets": [
-        "Designed and implemented internal services and self-hosted solutions supporting engineering and operational workflows.",
-        "Built internal developer tools and reusable services to standardize workflows, automate tasks, and improve productivity.",
-        "Developed internal AI tools and products, integrating LLMs and automated workflows into business and engineering use cases.",
-        "Contributed to proprietary AI IP, exploring and productizing AI capabilities into reusable solutions and internal platforms.",
-        "Deployed and operated on-premise and self-hosted services, handling configuration, networking, monitoring, and maintenance.",
-        "Built and managed **AWS** resources (EC2, S3, IAM) to host internal services and support engineering workflows.",
-        "Collaborated with engineering teams to turn infrastructure, tooling, and AI opportunities into maintainable solutions."
+        "Developed internal AI tools and products, integrating **LLMs** and automated workflows into business and engineering use cases.",
+        "Implemented a **LangGraph** workflow for AI post generation with PostgreSQL checkpoints and prompt orchestration.",
+        "Built S3-backed document ingestion for **retrieval-augmented generation**: PDF extraction, chunking and LLM summarization.",
+        "Implemented **AWS Lambda** microservices behind **API Gateway**, with CI on **ECS** containers.",
+        "Implemented cloud OIDC sign-in for short-lived CLI credentials; managed secrets with AWS Secrets Manager and Vault.",
+        "Contributed to proprietary AI IP, productizing AI capabilities into reusable solutions.",
+        "Built and managed **AWS** resources (EC2, S3, IAM) and internal developer tools, using health checks and email alerts for **observability**."
       ]
     },
     {
@@ -42,13 +42,15 @@
       "startDate": "March 2025",
       "endDate": "March 2026",
       "bullets": [
-        "Led two **scalable end-to-end production systems**—a call analysis SaaS platform and a trading card marketplace API—owning architecture, frontend, backend, and cloud infrastructure from design through deployment and day-to-day operation.",
-        "Built AI-driven transcription and insight pipelines for call centers.",
-        "Adopted **AI-driven development** workflows with tools like **Claude Code** to accelerate feature delivery and code review.",
-        "Delivered gamification features (leaderboards, achievements) to drive user engagement.",
-        "Built REST API for trading card marketplace aggregating multi-source pricing data.",
-        "Designed automated ingestion pipelines, search indexing, and cron-based synchronization.",
-        "Managed **cloud services on GCP** with **Terraform** and **CI/CD pipelines**, including automated testing and monitoring."
+        "Led two **end-to-end production systems**—a call analysis SaaS platform and a trading card marketplace API—owning architecture, backend, and cloud infrastructure from design through deployment and day-to-day operation, communicating directly with the client.",
+        "Built **AI-driven transcription and insight pipelines** for call centers, adding recording-event context to **LLM** prompts.",
+        "Set up **Elasticsearch** mappings, bulk indexing and search services, refining card search with tokenized queries and indexed fields.",
+        "Cut dashboard load times from over 2 seconds to about 200 ms by fixing N+1 queries and adding indexes (**performance optimization**).",
+        "Designed automated ingestion pipelines and cron-based synchronization of card data and prices, with retries.",
+        "Provisioned GCP resources with **Terraform**: Cloud Run, MySQL, Cloud Storage, Pub/Sub and Speech-to-Text.",
+        "Wrote end-to-end tests to prevent UI regressions; monitored production with health checks and Slack alerts.",
+        "Used **RabbitMQ** and asynchronous workers for event-driven call processing; built REST APIs aggregating pricing data.",
+        "Adopted **AI-driven development** with **Claude Code**; managed **GCP** with **Terraform** and **CI/CD pipelines**."
       ]
     },
     {
@@ -58,6 +60,7 @@
       "endDate": "March 2025",
       "bullets": [
         "Collaborated with leadership to design and automate the HR system infrastructure, eliminating tens of hours of weekly reporting.",
+        "Managed GitLab repositories and **CI/CD pipelines** for internal employee services.",
         "Developed reusable **internal tools** and libraries with standardized interfaces, streamlining development and reducing boilerplate."
       ]
     },
@@ -67,14 +70,12 @@
       "startDate": "September 2019",
       "endDate": "July 2024",
       "bullets": [
+        "Built backend service APIs with **Java**, **Spring Boot** and **Spring**; developed **Python** microservices with **Flask** for the bank.",
+        "Rebuilt legacy banking **REST API** services and modernized legacy banking applications using **Angular/Ionic** and **Express**.",
         "Built secure login for a cross-platform mobile banking app—challenge authentication, OTP login, and **session management**.",
-        "Rebuilt legacy banking **REST API** services spanning over 200 endpoints, and modernized legacy browser and mobile banking applications using **Angular/Ionic** and **Express** frameworks to meet evolving system requirements.",
-        "Implemented **state management** using **Redux** to maintain consistency and performance across the banking frontend.",
         "Established test environments and wrote **unit** and **end-to-end** tests to meet the banking client's **90% test coverage** requirement.",
-        "Provided **technical leadership** to team members through training and ongoing developer support on the banking application team.",
-        "Built a **reusable global component library** in **Storybook** with UI designers, improving consistency across banking applications.",
+        "Provided **technical leadership** through training and developer support; led UI architecture for a **React** proof of concept.",
         "**Saved QA teams hundreds of hours weekly** with **Python** scripts that parse phone IVR banking logs, replacing manual searches.",
-        "Built a **React** real estate proof of concept, designing the UI architecture and leading the team's design patterns.",
         "Worked in **Agile** teams to define and implement user stories and tasks across client engagements."
       ]
     }
@@ -87,20 +88,24 @@
       "endDate": "present",
       "bullets": [
         "Open source maintainer of **23 applications**, **6 API services**, **12 Docker images** and **4 npm packages**.",
-        "Design and run **agentic coding workflows** with **Claude Code**, building custom skills and slash commands for code review, refactor cleanup, documentation upkeep, and automated PR authoring that run consistently across Claude Code and Codex.",
-        "Provision and operate **cloud infrastructure** with **Terraform**, managing secrets through dedicated secret managers.",
-        "Build and maintain **CI/CD pipelines** for PR checks, health checks, cron jobs, and smoke, end-to-end, and security tests."
+        "Design and run **agentic coding workflows** with **Claude Code**, with custom skills and **AI guardrails** for unattended agent runs.",
+        "Integrated multiple **LLM** providers with streaming chat; built guardrails validating AI-generated resume edits.",
+        "Built **Fastify** microservices on Fly.io with **OpenAPI** docs and async email delivery over **RabbitMQ** with dead-letter queues.",
+        "Provision and operate **cloud infrastructure** with **Terraform**; build **CI/CD pipelines** with **GitHub Actions**."
       ]
     }
   ],
   "skills": {
     "technical": [
+      "LLM Integration",
       "Agentic AI Development",
-      "Solution Architecture",
-      "Web Development",
-      "DevOps/Platform",
-      "IaC",
-      "Testing"
+      "Java",
+      "Python",
+      "Elasticsearch",
+      "AWS",
+      "Terraform",
+      "GitHub Actions",
+      "Observability"
     ]
   }
 }
