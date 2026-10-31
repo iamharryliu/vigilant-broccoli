@@ -25,6 +25,7 @@ import {
 } from '@harry/private';
 import {
   CreateCalendarEventDialog,
+  useCalendarEventBookmarklet,
   CalendarAgenda,
   CalendarEvent,
   CalendarEventDetails,
@@ -143,6 +144,9 @@ const useIsMobileBrowser = () => {
 
 export const HomeView = () => {
   const [createOpen, setCreateOpen] = useState(false);
+  const { prefill, clearPrefill } = useCalendarEventBookmarklet(() =>
+    setCreateOpen(true),
+  );
   const [events, setEvents] = useState<CalendarEvent[] | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
     null,
@@ -283,7 +287,10 @@ export const HomeView = () => {
 
   const handleCreateOpenChange = (open: boolean) => {
     setCreateOpen(open);
-    if (!open) setRefreshKey(key => key + 1);
+    if (!open) {
+      clearPrefill();
+      setRefreshKey(key => key + 1);
+    }
   };
 
   const handleTabChange = (next: CalendarTab) => {
@@ -406,6 +413,8 @@ export const HomeView = () => {
       <CreateCalendarEventDialog
         open={createOpen}
         onOpenChange={handleCreateOpenChange}
+        initialText={prefill}
+        autoParse={!!prefill}
         authFetch={authFetch}
         onUnauthorized={reconnectGoogle}
         renderVoiceAction={onTranscript => (

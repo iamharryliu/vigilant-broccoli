@@ -21,3 +21,11 @@
 - The Shift+C calendar dialog remains available.
 
 - The dashboard Weather card calculates preparation badges locally using the shared `common-js` calculator; see [thresholds](../../../weather-next/docs/features/preparation-badges/README.md). No preparation API request is made.
+
+## Calendar event bookmarklet
+
+- The Create calendar event dialog shows a "Bookmarklet" link (`CalendarEventBookmarkletLink` in `react-lib-higher-level`, `href` set on the DOM node because React refuses `javascript:` hrefs). Dragging it to the bookmarks bar installs a bookmarklet built from the manager's own `window.location.origin`, so each app's bookmarklet targets itself.
+- Clicking it on an event page (Eventbrite, Facebook, Meetup, a venue page, webmail) opens `<origin>/?calendar-event-bookmarklet=1` inside the click, so popup blockers allow it, and posts `{ source, url, title, selection, structuredData, text }` to that origin every 300 ms until acknowledged, giving up after 15 seconds. `structuredData` is every `script[type="application/ld+json"]` (schema.org Event data, capped at 8000 chars) and `text` is `document.body.innerText` capped at 20000 chars, because the page is read by the extraction prompt as-is. It captures the page in the user's own browser, so login-walled and JS-rendered pages work and the server fetch's 6000-char cap does not apply.
+- `useCalendarEventBookmarklet` accepts the message only when `event.source === window.opener` and `isCalendarEventBookmarkletMessage` passes, ACKs it (`calendar-event-ack`) to the sender's origin, opens the dialog and prefills the text (title, URL, the selection when present otherwise the page text, structured data). `CalendarInput` then runs Extract once (`initialText` + `autoParse`). Drafts still need the per-event Create click. The query param is removed from the URL on load; closing the dialog clears the prefill.
+- The message names live in `CALENDAR_EVENT_BOOKMARKLET` in `@vigilant-broccoli/common-js`; installed bookmarklets embed them, so changing one requires reinstalling.
+- A logged-out manager drops the page (login redirect loses the opener and the bookmarklet stops after 15 seconds); sign in, then click the bookmarklet again. Each click opens a new manager tab. The server also fetches up to 3 URLs found in the text, including the page URL when publicly reachable.

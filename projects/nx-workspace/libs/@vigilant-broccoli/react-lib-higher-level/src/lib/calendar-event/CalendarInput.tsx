@@ -9,6 +9,7 @@ import {
   HTTP_METHOD,
   HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
+import { CalendarEventBookmarkletLink } from './CalendarEventBookmarkletLink';
 import { useCalendarEventTranslation } from './i18n';
 
 interface ImagePreview {
@@ -33,6 +34,9 @@ export interface CalendarInputProps {
   ) => Promise<Response>;
   onUnauthorized?: () => Promise<void>;
   renderVoiceAction?: (onTranscript: (text: string) => void) => ReactNode;
+  // Replaces the text when it changes; `autoParse` then runs Extract on it.
+  initialText?: string;
+  autoParse?: boolean;
 }
 
 export const CalendarInput = ({
@@ -40,6 +44,8 @@ export const CalendarInput = ({
   authFetch,
   onUnauthorized,
   renderVoiceAction,
+  initialText,
+  autoParse,
 }: CalendarInputProps) => {
   const { t } = useCalendarEventTranslation();
   const [text, setText] = useState('');
@@ -84,8 +90,9 @@ export const CalendarInput = ({
     setImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  const handleParse = async () => {
-    if (!text.trim() && images.length === 0) return;
+  const handleParse = async (override?: string) => {
+    const input = override ?? text;
+    if (!input.trim() && images.length === 0) return;
     setParsing(true);
     setParseError(null);
     setEventStates([]);
@@ -94,7 +101,7 @@ export const CalendarInput = ({
         method: HTTP_METHOD.POST,
         headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
         body: JSON.stringify({
-          text: text.trim() || undefined,
+          text: input.trim() || undefined,
           images:
             images.length > 0
               ? images.map(i => ({ data: i.data, mimeType: i.mimeType }))
@@ -122,6 +129,14 @@ export const CalendarInput = ({
       setParsing(false);
     }
   };
+
+  // Only a new `initialText` should re-run; `handleParse` is recreated each render.
+  useEffect(() => {
+    if (!initialText) return;
+    setText(initialText);
+    if (autoParse) handleParse(initialText);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialText]);
 
   const handleCreate = async (id: string, draft: EventDraft) => {
     setEventStates(prev =>
@@ -276,6 +291,8 @@ export const CalendarInput = ({
           )}
         </div>
 
+        <CalendarEventBookmarkletLink />
+
         <input
           ref={fileInputRef}
           type="file"
@@ -315,7 +332,7 @@ export const CalendarInput = ({
 
       <div className="shrink-0 px-4 pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-3 sm:px-6 sm:pb-6">
         <button
-          onClick={handleParse}
+          onClick={() => handleParse()}
           disabled={!canParse}
           className="w-full bg-blue-500 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50 transition-colors"
         >
