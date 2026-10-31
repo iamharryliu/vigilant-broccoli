@@ -182,7 +182,7 @@ const PERSONAL_LINKS: QuickLink[] = [
     PERSONAL_SITE_LINK.CONTACT,
     EMAIL_LINK,
     SOCIAL_LINK.GITHUB,
-    PROJECT_LINK.SOFTWARE_PROJECTS,
+    { ...PROJECT_LINK.SOFTWARE_PROJECTS, EMBED: true },
     SOCIAL_LINK.INSTAGRAM_PRETTYDAMNTIRED,
   ]),
 ];
@@ -190,7 +190,7 @@ const PERSONAL_LINKS: QuickLink[] = [
 const CAREER_LINKS: QuickLink[] = [
   ...toQuickLinks(LINK_GROUP_SUBGROUP.CAREER, [
     { NAME: 'LinkedIn Profile', URL: SOCIAL_LINK.LINKEDIN.URL },
-    PERSONAL_SITE_LINK.RESUME,
+    { ...PERSONAL_SITE_LINK.RESUME, EMBED: true },
     { NAME: 'LinkedIn', URL: 'https://www.linkedin.com' },
   ]),
 ];
