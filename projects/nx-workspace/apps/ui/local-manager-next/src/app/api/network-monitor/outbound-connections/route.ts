@@ -6,6 +6,7 @@ import {
   CONNECTION_SCOPE,
   ConnectionScope,
 } from '../../../constants/network-monitor';
+import { classifyIp, parseAddr } from '../_lib/lsof';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -14,7 +15,6 @@ const execAsync = promisify(exec);
 
 const LSOF_CMD = 'lsof -iTCP -sTCP:ESTABLISHED -n -P';
 const ADDR_REGEX = /^(.+)->(.+)$/;
-const IP_PORT_REGEX = /^(.+):(\d+)$/;
 const FETCH_ERROR = 'Failed to fetch outbound connections';
 
 export interface OutboundConnection {
@@ -26,30 +26,6 @@ export interface OutboundConnection {
   remotePort: number;
   scope: ConnectionScope;
 }
-
-const classifyIp = (ip: string): ConnectionScope => {
-  if (ip.startsWith('127.') || ip === '::1') return CONNECTION_SCOPE.LOOPBACK;
-  if (ip.startsWith('10.')) return CONNECTION_SCOPE.PRIVATE;
-  if (ip.startsWith('192.168.')) return CONNECTION_SCOPE.PRIVATE;
-  if (/^172\.(1[6-9]|2\d|3[01])\./.test(ip)) return CONNECTION_SCOPE.PRIVATE;
-  if (ip.startsWith('169.254.')) return CONNECTION_SCOPE.PRIVATE;
-  if (ip.startsWith('fe80:')) return CONNECTION_SCOPE.PRIVATE;
-  return CONNECTION_SCOPE.EXTERNAL;
-};
-
-const parseAddr = (addr: string): { ip: string; port: number } | null => {
-  if (addr.startsWith('[')) {
-    const end = addr.indexOf(']');
-    if (end < 0) return null;
-    const ip = addr.slice(1, end);
-    const port = parseInt(addr.slice(end + 2), 10);
-    return isNaN(port) ? null : { ip, port };
-  }
-  const m = addr.match(IP_PORT_REGEX);
-  if (!m) return null;
-  const port = parseInt(m[2], 10);
-  return isNaN(port) ? null : { ip: m[1], port };
-};
 
 export async function GET() {
   try {

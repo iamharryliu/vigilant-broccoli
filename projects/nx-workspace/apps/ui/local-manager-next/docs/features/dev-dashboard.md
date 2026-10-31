@@ -13,6 +13,17 @@
 - The service is matched against `LOCAL_CREDENTIAL_SERVICE` in `src/app/constants/local-credentials.ts`; add a service there and in the route's `READ_CREDENTIAL` map.
 - `kubectl` must be on PM2's `PATH` (Docker Desktop's `/usr/local/bin/kubectl` is) and `~/.kube/config` must hold the `k3d-vb-local` context, which `pnpm local:k3s:up` writes.
 
+## Connection Map
+
+- The Network Tools tab's Connection Map draws great-circle arcs from this machine's public-IP location to every external TCP/UDP peer, coloured by direction, with a filterable flow list beside it. Clicking a flow highlights its arc.
+- An always-on collector (`_lib/connection-collector.ts`) samples `lsof` every second from server boot, started by `src/instrumentation.ts` and kept on `globalThis` so instrumentation and routes share one loop. A socket is inbound when its local port is one this host is listening on. Loopback, private, CGNAT and link-local peers are dropped.
+- Flows are upserted into SQLite (`node:sqlite`) at `~/.local/share/vigilant-broccoli/network-flows.sqlite` and pruned after 7 days, so history survives PM2 reloads. `GET /api/network-monitor/connection-map?window=15m|1h|24h|7d` reads flows seen in that window (newest 2,000) and marks those open in the latest sample.
+- Each sample also reads per-socket cumulative byte counters from `nettop` (`_lib/nettop.ts`), joined to `lsof` sockets by PID, protocol and endpoints. The difference from the previous sample gives each flow's live bytes/s and is added to its `bytes_in`/`bytes_out` totals. The first sample after boot only sets the baseline, and bytes sent between a socket's last sample and its close are not counted, so totals run low.
+- Open connections animate dashes along their arc: outward for upload, homeward for download, faster in five tiers from under 1 KB/s to over 1 MB/s. An open but idle connection trickles slowly in the direction it was opened. Arc width scales with the destination's total bytes.
+- Connections that open and close within one second can still be missed, and `lsof` runs as the PM2 user, so other users' and root-owned processes' sockets are not visible.
+- The basemap is OpenStreetMap's standard tiles, inverted by a CSS filter on Leaflet's tile pane: CARTO's dark basemap now serves "API KEY REQUIRED" placeholder tiles with a 200 status.
+- Geolocation is a local lookup against DB-IP Lite City (`_lib/mmdb.ts` is a minimal MaxMind DB reader). The first request downloads the ~60MB gzip into `~/.cache/vigilant-broccoli/dbip-city-lite.mmdb`, refreshed after 35 days. The map lists flows without locations until the download finishes. The ~120MB file is held in memory. DB-IP Lite is CC BY 4.0, so the map keeps the DB-IP attribution.
+
 ## TODO
 
 - The TODO tab is read-only: it parses the main checkout's `TODO.md` (`GET /api/todo`), groups rows into sections and a table of contents by `Type` (ordered by `TODO_TYPE_ORDER` in `src/app/constants/todo.ts`), and sorts each section by Priority, Effort, Agent or Model. Rows show Status (priority · effort · agent · model) and Brief; the help icon on the Status header explains the values, and clicking a Brief opens the full Description and Recommended Fix. The legend and sort ranks both come from `TODO_STATUS_LEGEND`, so keep it in step with `docs/todo-pattern.md`.
