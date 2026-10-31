@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { CalendarDays, Link2, Rows3, StickyNote } from 'lucide-react';
-import { type QuickLink } from '@vigilant-broccoli/common-js';
-import { EmbedDialog } from '@vigilant-broccoli/react-lib';
 import {
   QuickLinksPanel,
   TabbedView,
@@ -13,7 +12,7 @@ import { PersonalCalendarComponent } from './personal-calendar.component';
 import { EventCalendarsComponent } from './event-calendars.component';
 import { NotepadEditorComponent } from './notepad-editor.component';
 import { CreateCalendarEventDialogTrigger } from './create-calendar-event-dialog.component';
-import { isDesktopEmbedEnvironment } from '../utils/embed.utils';
+import { isDesktopEmbedEnvironment, toEmbedRoute } from '../utils/embed.utils';
 import { handleShellExecute } from '../utils/quick-links.utils';
 import { QUICK_LINKS } from '../constants/quick-links';
 import { useTranslation } from '../i18n';
@@ -46,7 +45,7 @@ const replaceTabQueryParam = (value: Tab) => {
 export const HomeCalendarTabs = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<Tab>(TAB.CALENDAR_VIEW);
-  const [embedLink, setEmbedLink] = useState<QuickLink | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const queryTab = new URLSearchParams(window.location.search).get(
@@ -107,7 +106,8 @@ export const HomeCalendarTabs = () => {
           links={QUICK_LINKS}
           enableFavorites
           onShellExecute={handleShellExecute}
-          onEmbedOpen={setEmbedLink}
+          onEmbedOpen={link => router.push(toEmbedRoute(link))}
+          onInternalOpen={router.push}
           canEmbed={isDesktopEmbedEnvironment}
         />
       ),
@@ -115,18 +115,11 @@ export const HomeCalendarTabs = () => {
   ];
 
   return (
-    <>
-      <TabbedView
-        tabs={tabs}
-        value={activeTab}
-        onValueChange={handleTabChange}
-        actions={<CreateCalendarEventDialogTrigger />}
-      />
-      <EmbedDialog
-        title={embedLink?.label ?? ''}
-        url={embedLink?.target ?? null}
-        onOpenChange={open => !open && setEmbedLink(null)}
-      />
-    </>
+    <TabbedView
+      tabs={tabs}
+      value={activeTab}
+      onValueChange={handleTabChange}
+      actions={<CreateCalendarEventDialogTrigger />}
+    />
   );
 };

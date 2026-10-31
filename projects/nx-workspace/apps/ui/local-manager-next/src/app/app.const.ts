@@ -68,6 +68,9 @@ export const SIDEBAR_ROUTE = {
   },
 } satisfies Record<string, ExtendedNavRoute>;
 
+export const EMBED_ROUTE_PATH = '/embed';
+export const EMBED_TARGET_PARAM = 'target';
+
 export const APP_NAME = 'Local Manager Next';
 
 export const PAGE_TITLE = {
