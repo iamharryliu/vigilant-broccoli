@@ -1,4 +1,4 @@
-import { Cpu, Database, Mail, MailPlus, Users } from 'lucide-react';
+import { Cpu, Database, Image, Mail, MailPlus, Users } from 'lucide-react';
 import { useTranslation } from '../i18n';
 import { CardListPage, CardListItem } from '../components/CardListPage';
 import { toApiServiceDocsHref } from '../consts/apiServices';
@@ -31,6 +31,13 @@ export function ApiServicesPage() {
       href: toApiServiceDocsHref('llm-service'),
       title: t('API_SERVICES_PAGE.LLM_SERVICE.TITLE'),
       description: t('API_SERVICES_PAGE.LLM_SERVICE.DESCRIPTION'),
+    },
+    {
+      key: 'media-service',
+      icon: <Image className={ICON_CLASS} aria-hidden="true" />,
+      href: toApiServiceDocsHref('media-service'),
+      title: t('API_SERVICES_PAGE.MEDIA_SERVICE.TITLE'),
+      description: t('API_SERVICES_PAGE.MEDIA_SERVICE.DESCRIPTION'),
     },
     {
       key: 'bucket-service',

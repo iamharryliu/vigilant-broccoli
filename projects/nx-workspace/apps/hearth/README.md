@@ -30,6 +30,7 @@ Shared life for homes, communes, and communities.
   - `react-lib-media`
 - Cloud services
   - Cloudflare R2
+  - Media Service
   - Supabase
   - VB Express
 

@@ -92,6 +92,11 @@ export const VB_APP_URL = {
     URL: 'https://api.harryliu.dev/',
     STAGING_URL: 'https://staging-vb-express.fly.dev/',
   },
+  MEDIA_SERVICE: {
+    NAME: 'Media Service API',
+    URL: 'https://production-media-service.fly.dev/',
+    STAGING_URL: 'https://staging-media-service.fly.dev/',
+  },
   EMPLOYEE_HANDLER_DEMO: {
     NAME: 'Employee Handler Demo',
     URL: 'https://demo-employee-handler-ui.vercel.app/',

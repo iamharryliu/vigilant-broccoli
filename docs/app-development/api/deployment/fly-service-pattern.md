@@ -7,6 +7,7 @@ Reference apps (each demonstrates a different combination):
 - `apps/api/bucket-service/`, `apps/api/llm-service/` — pruned + Docker Hub roundtrip (`deploy-container` pushes to `iamharryliu/<svc>`, then `flyctl deploy --image`). Note: bucket-service outputs to `dist/bucket-service`, not `dist/apps/api/bucket-service`.
 - `apps/api/email-service/`, `apps/api/email-subscription-service/` — bundled + Docker Hub roundtrip
 - `apps/api/vb-express/` — pruned + Docker Hub roundtrip, with Better Auth on the shared Supabase Postgres.
+- `apps/api/media-service/` — pruned + Docker Hub roundtrip, public with API key and a rate limit; native `sharp` binaries, 1 GB machine.
 - `apps/api/office-presence-service/` — bundled + Docker Hub roundtrip, with a fly volume mount (`[mounts]`) for its SQLite db.
 
 ## Table of Contents
@@ -86,7 +87,7 @@ Declare in `projects/nx-workspace/scripts/secrets-mapping.config.ts`. The servic
 
 ## Private-only services
 
-Set `privateOnly: true` in `secrets-mapping.config.ts` (llm-service, bucket-service). `deploy:secrets` then reconciles the app's IPs before every deploy: allocates a private ingress IPv6 if missing, and releases any public `v4`/`v6`/`shared_v4` it finds. Because `deploy` depends on `deploy:secrets`, a brand-new private service never has a public edge, and a public IP that reappears (some flyctl versions auto-allocate on first deploy when the config declares an `http_service`) is cleaned up on the next deploy rather than needing a human to notice.
+Set `privateOnly: true` in `secrets-mapping.config.ts` (llm-service, bucket-service). A service called straight from a Vercel app stays public with API-key auth instead: Vercel functions cannot reach Flycast, so `media-service` (called by `hearth`) omits the flag, keeps `force_https = true`, and sits in `test-security-api`'s service matrix. `deploy:secrets` then reconciles the app's IPs before every deploy: allocates a private ingress IPv6 if missing, and releases any public `v4`/`v6`/`shared_v4` it finds. Because `deploy` depends on `deploy:secrets`, a brand-new private service never has a public edge, and a public IP that reappears (some flyctl versions auto-allocate on first deploy when the config declares an `http_service`) is cleaned up on the next deploy rather than needing a human to notice.
 
 Pair it with `[http_service].force_https = false` — see [network-management.md](../../../infrastructure/network-management.md) for why, and for how CI reaches these services.
 

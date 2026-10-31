@@ -15,6 +15,17 @@ export const LLM_SERVICE_ENDPOINT = {
   CHAT: 'api/chat',
 };
 
+export const MEDIA_SERVICE_ENDPOINT = {
+  RECEIPTS_IMAGE: 'api/receipts/image',
+  RECEIPTS_LLM_IMAGE: 'api/receipts/llm-image',
+  WHERE_IS_IMAGE: 'api/where-is/image',
+  WHERE_IS_LLM_IMAGE: 'api/where-is/llm-image',
+  DOCS_FILE: 'api/docs/file',
+};
+
+export const MEDIA_SERVICE_FILE_FIELD = 'file';
+export const MEDIA_SERVICE_FILE_NAME_HEADER = 'x-file-name';
+
 export const VB_EXPRESS_ENDPOINT = {
   SPEECH_TO_TEXT: 'api/speech-to-text',
   TEXT_TO_SPEECH: 'api/text-to-speech',

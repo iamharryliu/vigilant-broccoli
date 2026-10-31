@@ -51,6 +51,7 @@ export const PROJECT_HOSTING = {
   },
   'vb-express': { platform: 'fly', name: 'vb-express' },
   'llm-service': { platform: 'fly', name: 'llm-service' },
+  'media-service': { platform: 'fly', name: 'media-service' },
   'email-service': { platform: 'fly', name: 'email-service' },
   'bucket-service': { platform: 'fly', name: 'bucket-service' },
   'email-subscription-service': {

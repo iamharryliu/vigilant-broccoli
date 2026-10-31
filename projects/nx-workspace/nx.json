@@ -240,7 +240,11 @@
         "serveStaticTargetName": "serve-static",
         "serveTargetName": "serve"
       },
-      "include": ["apps/api/vb-express/**/*", "apps/api/llm-service/**/*"]
+      "include": [
+        "apps/api/vb-express/**/*",
+        "apps/api/llm-service/**/*",
+        "apps/api/media-service/**/*"
+      ]
     }
   ]
 }
