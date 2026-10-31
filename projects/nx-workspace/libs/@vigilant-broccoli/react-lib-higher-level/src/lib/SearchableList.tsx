@@ -80,6 +80,7 @@ const VIEW_OPTIONS: {
 
 const VIEW_ICON_SIZE = 16;
 const FAVORITES_LABEL = 'Favorites';
+const FAVORITE_BADGE_PREFIX = '★ ';
 const ADD_FAVORITE_LABEL = (label: string) => `Add ${label} to favorites`;
 const REMOVE_FAVORITE_LABEL = (label: string) =>
   `Remove ${label} from favorites`;
@@ -169,20 +170,14 @@ const SearchableListRow = ({
   </li>
 );
 
-const FavoriteButton = ({
-  entry,
-  compact = false,
-}: {
-  entry: SearchableListItem;
-  compact?: boolean;
-}) => {
+const FavoriteButton = ({ entry }: { entry: SearchableListItem }) => {
   const accessibleLabel = entry.isFavorite
     ? REMOVE_FAVORITE_LABEL(entry.label)
     : ADD_FAVORITE_LABEL(entry.label);
   return (
     <Button
       type="button"
-      variant={compact ? 'secondary' : 'ghost'}
+      variant="ghost"
       size="icon"
       aria-label={accessibleLabel}
       aria-pressed={entry.isFavorite ?? false}
@@ -192,11 +187,7 @@ const FavoriteButton = ({
         event.stopPropagation();
         entry.onFavoriteToggle?.();
       }}
-      className={
-        compact
-          ? 'h-6 w-6 shrink-0 rounded-l-none border-l border-secondary-foreground/20 px-1'
-          : 'min-h-11 min-w-11 shrink-0'
-      }
+      className="min-h-11 min-w-11 shrink-0"
     >
       <Star
         size={16}
@@ -307,29 +298,23 @@ export const SearchableList = ({
   };
 
   const toButtonConfig = (entry: SearchableListItem): ButtonConfig => ({
-    label: entry.label,
+    label: entry.isFavorite
+      ? `${FAVORITE_BADGE_PREFIX}${entry.label}`
+      : entry.label,
     onClick: () => activate(entry),
     isExternal: entry.isExternal ?? (!entry.onOpen && isUrl(entry.value)),
-    ...(entry.onFavoriteToggle && {
-      buttonProps: { className: 'rounded-r-none' },
-    }),
   });
 
   const renderButtons = (items: SearchableListItem[]) => (
     <div className="flex flex-wrap gap-2">
       {items.map((entry, index) => (
-        <div
-          className="inline-flex items-center"
+        <ButtonList
           key={`${entry.label}-${index}`}
-        >
-          <ButtonList
-            buttons={[toButtonConfig(entry)]}
-            className="gap-0"
-            navigationRootRef={contentRef}
-            searchInputRef={searchInputRef}
-          />
-          {entry.onFavoriteToggle && <FavoriteButton entry={entry} compact />}
-        </div>
+          buttons={[toButtonConfig(entry)]}
+          className="gap-0"
+          navigationRootRef={contentRef}
+          searchInputRef={searchInputRef}
+        />
       ))}
     </div>
   );

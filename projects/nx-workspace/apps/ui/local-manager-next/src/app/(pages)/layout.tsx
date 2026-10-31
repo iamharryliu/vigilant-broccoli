@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { SIDEBAR_ROUTE } from '../app.const';
+import { EMBED_ROUTE_PATH, SIDEBAR_ROUTE } from '../app.const';
 import { ReactNode, useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../libs/auth';
 import { FloatingIslandComponent } from '../components/floating-island.component';
@@ -82,7 +82,9 @@ const handleKeyboardShortcut = (
 
 export default function Layout({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const isStatusPage = usePathname() === SIDEBAR_ROUTE.STATUS.path;
+  const pathname = usePathname();
+  const isStatusPage =
+    pathname === SIDEBAR_ROUTE.STATUS.path || pathname === EMBED_ROUTE_PATH;
   const _session = useAuth();
   const { notifications, unreadCount, add, markAllRead, clear } =
     useNotificationHistory();
