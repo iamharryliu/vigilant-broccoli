@@ -14,6 +14,7 @@ Shared repository guidance. Edit `CONTEXT.md`; `AGENTS.md` is a relative symlink
   - [API](#api)
   - [Documentation](#documentation)
 - [Git](#git)
+- [Responses](#responses)
 - [Coding Conventions](#coding-conventions)
 
 ## Doc Map
@@ -90,6 +91,12 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 - Stage only files created or edited in this session; never `git add -A`, `git add .`, or files already modified/untracked before the session.
 - Treat the checkout as shared unless provably exclusive; if not provable, use a separate worktree off fresh `origin/main` with only your changes. Establish ownership before branching, staging, committing, stashing or switching branches. Never stash in a shared or uncertain checkout. If others' work is staged, commit only your paths with `git commit -m "<message>" -- <your paths>`.
 - Read [git-workflow.md](./docs/git-workflow.md) before changing Git state or publishing PRs.
+
+## Responses
+
+- Be concise: no preamble, no restating the request, no closing recap of what was just said.
+- Do not apologize; state the correction and continue.
+- Read files with `grep -n` or line ranges before reading them whole; don't `cat` several files in one call.
 
 ## Coding Conventions
 
