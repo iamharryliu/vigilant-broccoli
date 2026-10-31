@@ -35,6 +35,7 @@ jobs:
           # test-security-llm.yml, test-security-storage-service.yml,
           # test-security-email.yml, and test-security-email-subscription-service.yml
           - vb-express
+          - media-service
     name: ${{ matrix.environment }}-${{ matrix.service }}
     steps:
       - name: Checkout code

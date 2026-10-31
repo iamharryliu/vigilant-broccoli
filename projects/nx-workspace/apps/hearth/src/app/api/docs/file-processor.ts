@@ -1,5 +1,10 @@
-import sharp from 'sharp';
-import { MAX_FILE_SIZE_BYTES, MAX_FILES_PER_DOC } from './limits';
+import {
+  CONTENT_TYPE_HEADER,
+  MEDIA_SERVICE_ENDPOINT,
+  MEDIA_SERVICE_FILE_NAME_HEADER,
+} from '@vigilant-broccoli/common-js';
+import { callMediaService } from '../../../lib/media-service';
+import { MAX_FILES_PER_DOC } from './limits';
 
 export const ALLOWED_MIME_TYPES = new Set([
   'application/pdf',
@@ -9,9 +14,6 @@ export const ALLOWED_MIME_TYPES = new Set([
   'image/heic',
   'image/heif',
 ]);
-
-const MAX_IMAGE_DIMENSION = 2560;
-const JPEG_QUALITY = 85;
 
 export interface StagedFile {
   buffer: Buffer;
@@ -43,43 +45,18 @@ export const validateFileCount = <T>(files: T[]) => {
 };
 
 export const processFile = async (file: StagedFile): Promise<ProcessedFile> => {
-  if (!ALLOWED_MIME_TYPES.has(file.mimeType))
-    throw new FileValidationError(
-      `Unsupported file type: ${file.mimeType}. Allowed: PDF, JPEG, PNG, WebP, HEIC.`,
-    );
-
-  const buffer = file.buffer;
-
-  if (buffer.byteLength > MAX_FILE_SIZE_BYTES)
-    throw new FileValidationError(
-      `"${file.name}" exceeds the ${MAX_FILE_SIZE_BYTES / 1024 / 1024}MB limit.`,
-    );
-
-  if (file.mimeType === 'application/pdf') {
-    return {
-      buffer,
-      mimeType: 'application/pdf',
-      name: file.name,
-      sizeBytes: buffer.byteLength,
-    };
-  }
-
-  const processed = await sharp(buffer)
-    .rotate()
-    .resize({
-      width: MAX_IMAGE_DIMENSION,
-      height: MAX_IMAGE_DIMENSION,
-      fit: 'inside',
-      withoutEnlargement: true,
-    })
-    .jpeg({ quality: JPEG_QUALITY, mozjpeg: true })
-    .withMetadata({ orientation: undefined })
-    .toBuffer();
-
+  const res = await callMediaService(
+    MEDIA_SERVICE_ENDPOINT.DOCS_FILE,
+    file,
+    message => new FileValidationError(message),
+  );
+  const buffer = Buffer.from(await res.arrayBuffer());
   return {
-    buffer: processed,
-    mimeType: 'image/jpeg',
-    name: file.name.replace(/\.[^.]+$/, '.jpg'),
-    sizeBytes: processed.byteLength,
+    buffer,
+    mimeType: res.headers.get(CONTENT_TYPE_HEADER) ?? file.mimeType,
+    name: decodeURIComponent(
+      res.headers.get(MEDIA_SERVICE_FILE_NAME_HEADER) ?? file.name,
+    ),
+    sizeBytes: buffer.byteLength,
   };
 };

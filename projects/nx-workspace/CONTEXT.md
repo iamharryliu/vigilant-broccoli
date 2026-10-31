@@ -3,7 +3,6 @@
 ## Table of Contents
 
 - [Nuances](#nuances)
-  - [`sharp` must stay in the nx-workspace root `dependencies`](#sharp-must-stay-in-the-nx-workspace-root-dependencies)
   - [A `react-lib` component renders unstyled in an app that never scanned it](#a-react-lib-component-renders-unstyled-in-an-app-that-never-scanned-it)
   - [The three link surfaces share one section structure and drift silently](#the-three-link-surfaces-share-one-section-structure-and-drift-silently)
   - [Nx formatting must not hand the agent symlinks to Prettier](#nx-formatting-must-not-hand-the-agent-symlinks-to-prettier)
@@ -11,10 +10,6 @@
   - [`fileReplacements` in a Vite app's `project.json` is ignored](#filereplacements-in-a-vite-apps-projectjson-is-ignored)
 
 ## Nuances
-
-### `sharp` must stay in the nx-workspace root `dependencies`
-
-Keep `sharp` in `projects/nx-workspace/package.json`'s `dependencies`. Although only hearth's `/api/where-is` imports it, Vercel failed to bundle the native dependency when it was declared solely in hearth's `package.json`.
 
 ### A `react-lib` component renders unstyled in an app that never scanned it
 
@@ -40,7 +35,7 @@ Prettier rejects explicitly passed symlinks ("Explicitly specified pattern is a 
 
 The root and workspace `pnpm-lock.yaml` files trigger Next.js's "Next.js inferred your workspace root, but it may not be correct" warning. Keep both lockfiles and current configs; do not add `outputFileTracingRoot`/`turbopack.root` or reopen TODO `1f0a7e` solely to silence the warning.
 
-Revisit only for a reproduced build, file-tracing or deployed-dependency failure attributable to inference. Check the affected app's build/deploy; for hearth's missing `sharp`, check dependency placement first.
+Revisit only for a reproduced build, file-tracing or deployed-dependency failure attributable to inference. Check the affected app's build/deploy.
 
 ### `fileReplacements` in a Vite app's `project.json` is ignored
 

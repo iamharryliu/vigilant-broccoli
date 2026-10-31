@@ -87,7 +87,7 @@
       "startDate": "July 2023",
       "endDate": "present",
       "bullets": [
-        "Open source maintainer of **23 applications**, **6 API services**, **12 Docker images** and **4 npm packages**.",
+        "Open source maintainer of **23 applications**, **7 API services**, **13 Docker images** and **4 npm packages**.",
         "Design and run **agentic coding workflows** with **Claude Code**, with custom skills and **AI guardrails** for unattended agent runs.",
         "Integrated multiple **LLM** providers with streaming chat; built guardrails validating AI-generated resume edits.",
         "Built **Fastify** microservices on Fly.io with **OpenAPI** docs and async email delivery over **RabbitMQ** with dead-letter queues.",

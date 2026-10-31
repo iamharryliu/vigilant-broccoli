@@ -4,6 +4,8 @@ set -u
 URLS=(
   https://staging-vb-express.fly.dev/
   https://api.harryliu.dev/
+  https://staging-media-service.fly.dev/
+  https://production-media-service.fly.dev/
 )
 MAX_ATTEMPTS=3
 REQUEST_TIMEOUT=20

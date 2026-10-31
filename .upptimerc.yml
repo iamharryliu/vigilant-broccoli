@@ -40,6 +40,8 @@ sites:
     expectedStatusCodes: [302]
   - name: staging-service-manager
     url: https://staging-vb-express.fly.dev/
+  - name: staging-media-service
+    url: https://staging-media-service.fly.dev/
   - name: staging-component-library
     url: https://staging-component-library.pages.dev/
     maxRedirects: 0
@@ -104,6 +106,8 @@ sites:
     url: https://hearth.harryliu.dev/login
   - name: production-service-manager
     url: https://api.harryliu.dev/
+  - name: production-media-service
+    url: https://production-media-service.fly.dev/
   - name: production-component-library
     url: https://components.harryliu.dev/
   - name: production-utilities

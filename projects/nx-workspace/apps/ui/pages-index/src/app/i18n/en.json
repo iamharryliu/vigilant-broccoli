@@ -269,6 +269,9 @@
     "LLM_SERVICE": {
       "DESCRIPTION": "Fastify gateway to Anthropic, OpenAI, Gemini, DeepSeek and xAI models."
     },
+    "MEDIA_SERVICE": {
+      "DESCRIPTION": "Fastify service that resizes and re-encodes images and passes PDFs through."
+    },
     "OFFICE_PRESENCE_SERVICE": {
       "DESCRIPTION": "Slack bot for sharing office presence status via Socket Mode or the HTTP Events API."
     },
@@ -320,6 +323,10 @@
     "LLM_SERVICE": {
       "TITLE": "LLM Service",
       "DESCRIPTION": "LLM proxy for Anthropic and OpenAI."
+    },
+    "MEDIA_SERVICE": {
+      "TITLE": "Media Service",
+      "DESCRIPTION": "Image and file processing for resizing, re-encoding and stripping EXIF."
     },
     "STORAGE_SERVICE": {
       "TITLE": "Storage Service",
