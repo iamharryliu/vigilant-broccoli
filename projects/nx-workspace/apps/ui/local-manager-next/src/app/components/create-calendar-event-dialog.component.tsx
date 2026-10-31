@@ -3,7 +3,10 @@
 import { useState } from 'react';
 import { CalendarPlus } from 'lucide-react';
 import { Button } from '@vigilant-broccoli/react-lib';
-import { CreateCalendarEventDialog } from '@vigilant-broccoli/react-lib-higher-level';
+import {
+  CreateCalendarEventDialog,
+  useCalendarEventBookmarklet,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { authFetch } from '../../../libs/auth';
 import { TaskVoiceButton } from './task-voice-button.component';
 import { useTranslation } from '../i18n';
@@ -11,6 +14,9 @@ import { useTranslation } from '../i18n';
 export const CreateCalendarEventDialogTrigger = () => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const { prefill, clearPrefill } = useCalendarEventBookmarklet(() =>
+    setOpen(true),
+  );
   return (
     <>
       <Button
@@ -24,7 +30,12 @@ export const CreateCalendarEventDialogTrigger = () => {
       </Button>
       <CreateCalendarEventDialog
         open={open}
-        onOpenChange={setOpen}
+        onOpenChange={next => {
+          setOpen(next);
+          if (!next) clearPrefill();
+        }}
+        initialText={prefill}
+        autoParse={!!prefill}
         authFetch={authFetch}
         renderVoiceAction={onTranscript => (
           <TaskVoiceButton onTranscript={onTranscript} />

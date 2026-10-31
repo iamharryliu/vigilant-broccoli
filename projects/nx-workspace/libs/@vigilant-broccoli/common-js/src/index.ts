@@ -6,6 +6,7 @@ export * from './lib/location/location.model';
 export * from './lib/services/services.consts';
 export * from './lib/socket/socket.consts';
 export * from './lib/job-application-bookmarklet/job-application-bookmarklet.consts';
+export * from './lib/calendar-event-bookmarklet/calendar-event-bookmarklet.consts';
 
 export const FORM_TYPE = {
   CREATE: 'CREATE',
