@@ -40,11 +40,9 @@ import { CalendarVoiceInput } from './calendar-voice-input';
 import { GoogleTasksView } from './google-tasks-view';
 import { NotepadEditor } from './notepad-editor';
 import {
-  APP_ROUTE,
   CALENDAR_TAB,
   CALENDAR_TAB_QUERY_PARAM,
   CalendarTab,
-  EMBED_FROM_PARAM,
 } from '../app.const';
 import { QUICK_LINKS } from '../constants/quick-links';
 import {
@@ -383,11 +381,7 @@ export const HomeView = () => {
           links={QUICK_LINKS}
           enableFavorites
           canEmbed={canEmbed}
-          onEmbedOpen={link =>
-            router.push(
-              toEmbedRoute(link, { [EMBED_FROM_PARAM]: APP_ROUTE.HOME }),
-            )
-          }
+          onEmbedOpen={link => router.push(toEmbedRoute(link))}
         />
       ),
     },

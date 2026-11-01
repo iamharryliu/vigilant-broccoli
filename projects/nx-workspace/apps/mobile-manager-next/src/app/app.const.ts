@@ -12,10 +12,6 @@ export const APP_ROUTE = {
   APPS: '/apps',
 } as const;
 
-export const EMBED_FROM_PARAM = 'from';
-
-export const EMBED_BACK_ROUTES: readonly string[] = Object.values(APP_ROUTE);
-
 export const CALENDAR_TAB = {
   CALENDAR: 'Calendar',
   EVENT_CALENDARS: 'Event Calendars',
