@@ -21,6 +21,7 @@ Mobile dashboard with calendar, tasks, notepad, weather and quick links includin
   - `common-js`
   - `common-node`
   - `google-workspace`
+  - `infrastructure`
   - `llm-schemas`
   - `manager`
   - `public-links`
