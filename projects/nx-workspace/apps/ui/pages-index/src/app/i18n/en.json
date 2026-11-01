@@ -335,8 +335,6 @@
   },
   "GAMES_PAGE": {
     "TITLE": "Games",
-    "DESCRIPTION": "Pick a game and play in your browser.",
-    "ABOUT": "About {title}",
-    "ALL_APPLICATIONS": "Browse all applications"
+    "DESCRIPTION": "Pick a game and play in your browser."
   }
 }
