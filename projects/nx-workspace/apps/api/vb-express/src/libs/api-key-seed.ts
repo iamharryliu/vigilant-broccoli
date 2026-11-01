@@ -60,11 +60,14 @@ export const syncLegacySharedApiKey = async () => {
     await context.internalAdapter.findUserByEmail(SEED_ACCOUNT_EMAIL);
   const user =
     existingUser?.user ??
-    (await context.internalAdapter.createUser({
-      email: SEED_ACCOUNT_EMAIL,
-      name: SEED_ACCOUNT_EMAIL,
-      emailVerified: true,
-    }));
+    (await context.internalAdapter.createUser(
+      {
+        email: SEED_ACCOUNT_EMAIL,
+        name: SEED_ACCOUNT_EMAIL,
+        emailVerified: true,
+      },
+      { method: 'admin' },
+    ));
   const createdKey = await auth.api.createApiKey({
     body: { name: SEED_KEY_NAME, userId: user.id, permissions },
   });
