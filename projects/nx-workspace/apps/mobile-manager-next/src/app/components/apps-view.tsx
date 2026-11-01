@@ -6,7 +6,6 @@ import { toEmbedRoute } from '@vigilant-broccoli/common-js';
 import { SearchInput } from '@vigilant-broccoli/react-lib';
 import { I18nProvider, useTranslation } from '../i18n';
 import { APP_SECTIONS, type AppEntry } from '../constants/apps';
-import { APP_ROUTE, EMBED_FROM_PARAM } from '../app.const';
 import { findEmbedLink } from '../constants/quick-links';
 import { openApp } from '../utils/open-app';
 
@@ -31,9 +30,7 @@ const AppsContent = () => {
     event.preventDefault();
     const embedLink = findEmbedLink(app.webUrl);
     if (embedLink) {
-      router.push(
-        toEmbedRoute(embedLink, { [EMBED_FROM_PARAM]: APP_ROUTE.APPS }),
-      );
+      router.push(toEmbedRoute(embedLink));
       return;
     }
     openApp(app);
