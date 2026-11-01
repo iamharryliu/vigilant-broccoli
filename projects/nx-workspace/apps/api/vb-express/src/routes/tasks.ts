@@ -52,9 +52,19 @@ const getAuthenticatedAccessToken = async (req: FastifyRequest) => {
     throw new Error(ERROR_NOT_AUTHENTICATED);
   }
 
+  const accounts = await auth.api.listUserAccounts({
+    headers: req.headers as unknown as HeadersInit,
+  });
+  const googleAccount = accounts.find(
+    account => account.providerId === GOOGLE_PROVIDER_ID,
+  );
+  if (!googleAccount) {
+    throw new Error(ERROR_NO_ACCESS_TOKEN);
+  }
+
   const { accessToken } = await auth.api.getAccessToken({
     body: {
-      providerId: GOOGLE_PROVIDER_ID,
+      accountId: googleAccount.id,
     },
     headers: req.headers as unknown as HeadersInit,
   });
