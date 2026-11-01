@@ -52,4 +52,6 @@
 ```mermaid
 flowchart LR
     A["Apple<br/>Photos"] --> B["Images and<br/>Videos"] --> C["Media Backup<br/>Drive"]
+    D["Ricoh<br/>GR IIIx"] --> B
+    E["Insta360"] --> B
 ```
