@@ -1,8 +1,12 @@
 import { calendar_v3 } from 'googleapis';
-import { ScrapedEvent } from './facebook-events.scraper';
+import { ScrapedEvent } from './scraped-event.types';
+import { CALENDAR_TIME_ZONE, DEFAULT_EVENT_DURATION_HOURS } from './event-time';
 
-const CALENDAR_TIME_ZONE = 'Europe/Stockholm';
 const FACEBOOK_EVENT_ID_PREFIX = 'fbevent';
+// Google event ids allow only a-v and 0-9 (base32hex), so a prefix cannot
+// contain w-z: "ext" is rejected with "Invalid resource id value".
+const EXTERNAL_EVENT_ID_PREFIX = 'ical';
+const EVENT_ID_PREFIXES = [FACEBOOK_EVENT_ID_PREFIX, EXTERNAL_EVENT_ID_PREFIX];
 const HTTP_CONFLICT = 409;
 const EVENTS_LIST_MAX_RESULTS = 2500;
 
@@ -36,7 +40,6 @@ const DATE_TIME_SINGLE_PATTERN =
 // Multi-day events shown with no time and no year, e.g. "Fri, Sep 25 - Sep 26".
 const DATE_ONLY_RANGE_PATTERN =
   /^\w+,\s(\w+)\s(\d{1,2})\s*-\s*(?:(\w+)\s)?(\d{1,2})/;
-const DEFAULT_EVENT_DURATION_HOURS = 3;
 
 interface EventDateRange {
   start: string;
@@ -293,14 +296,14 @@ export const parseEventDateTimeRange = (
   return null;
 };
 
-const buildCalendarEventId = (facebookEventId: string) =>
-  `${FACEBOOK_EVENT_ID_PREFIX}${facebookEventId}`;
+const buildCalendarEventId = (event: ScrapedEvent) =>
+  `${event.external ? EXTERNAL_EVENT_ID_PREFIX : FACEBOOK_EVENT_ID_PREFIX}${event.id}`;
 
 const buildEventRequestBody = (
   event: ScrapedEvent,
   range: EventDateRange,
 ): calendar_v3.Schema$Event => ({
-  id: buildCalendarEventId(event.id),
+  id: buildCalendarEventId(event),
   summary: event.title,
   description: [event.description, event.url].filter(Boolean).join('\n\n'),
   location: event.location,
@@ -336,7 +339,7 @@ const deleteStaleEvents = async (
   calendarId: string,
   currentEventIds: Set<string>,
 ) => {
-  // Facebook drops past events from the scrape, so only events that have not
+  // Sources drop past events from the scrape, so only events that have not
   // ended yet can be judged stale; past ones stay on the calendar.
   const { data } = await calendar.events.list({
     calendarId,
@@ -346,7 +349,7 @@ const deleteStaleEvents = async (
   });
 
   const existingEvents = (data.items || []).filter(item =>
-    item.id?.startsWith(FACEBOOK_EVENT_ID_PREFIX),
+    EVENT_ID_PREFIXES.some(prefix => item.id?.startsWith(prefix)),
   );
   const staleEvents = existingEvents.filter(
     item => !currentEventIds.has(item.id as string),
@@ -370,6 +373,13 @@ const deleteStaleEvents = async (
   return { removed: staleEvents.length };
 };
 
+const getEventRange = (event: ScrapedEvent): EventDateRange | null => {
+  if (event.start && event.end) {
+    return { start: event.start, end: event.end, allDay: event.allDay };
+  }
+  return event.dateTime ? parseEventDateTimeRange(event.dateTime) : null;
+};
+
 export const syncEventsToCalendar = async (
   calendar: calendar_v3.Calendar,
   calendarId: string,
@@ -379,15 +389,13 @@ export const syncEventsToCalendar = async (
   let skipped = 0;
 
   for (const event of events) {
-    const range = event.dateTime
-      ? parseEventDateTimeRange(event.dateTime)
-      : null;
+    const range = getEventRange(event);
     if (!range) {
       skipped++;
       continue;
     }
     await upsertEvent(calendar, calendarId, event, range);
-    syncedEventIds.add(buildCalendarEventId(event.id));
+    syncedEventIds.add(buildCalendarEventId(event));
   }
 
   const { removed, staleDeletionSkipped } = await deleteStaleEvents(

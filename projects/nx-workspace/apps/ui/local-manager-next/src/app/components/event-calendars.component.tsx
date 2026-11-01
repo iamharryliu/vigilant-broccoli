@@ -31,12 +31,14 @@ import {
 } from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { ManagedCalendarBookmarkletLink } from './managed-calendar-bookmarklet-link.component';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { useCalendarViewEventCalendars } from '../hooks/useCalendarViewEventCalendars';
 import { authFetch } from '../../../libs/auth';
 import { supabase } from '../../lib/supabase';
 import {
   detectEventSourceType,
+  isWebPageSourceUrl,
   EVENT_LANGUAGES,
   EVENT_SOURCE_TYPE,
   EventCalendar,
@@ -93,6 +95,31 @@ const SYNC_PHASE_LABELS: Record<string, string> = {
   [SYNC_PHASE.WRITING]: 'Updating Google Calendar',
 };
 const DISMISS_LABEL = 'Dismiss';
+// The server keeps a finished sync's status in memory, so it comes back on
+// every reload; remembering which run was dismissed (per browser) keeps it
+// hidden. A new run has a new startedAt and shows again.
+const STORAGE_KEY_DISMISSED_SYNCS = 'event-calendar-dismissed-syncs';
+
+const readDismissedSyncs = (): Record<string, string> => {
+  try {
+    return JSON.parse(
+      localStorage.getItem(STORAGE_KEY_DISMISSED_SYNCS) ?? '{}',
+    );
+  } catch {
+    return {};
+  }
+};
+
+const writeDismissedSyncs = (dismissed: Record<string, string>) => {
+  try {
+    localStorage.setItem(
+      STORAGE_KEY_DISMISSED_SYNCS,
+      JSON.stringify(dismissed),
+    );
+  } catch {
+    // Storage can be blocked; the dismissal then lasts until reload.
+  }
+};
 const ELAPSED_TICK_MS = 1000;
 const MS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;
@@ -258,7 +285,10 @@ const urlsToSources = (urls: string[]) =>
     .map(url => ({
       url,
       sourceType:
-        detectEventSourceType(url) ?? EVENT_SOURCE_TYPE.FACEBOOK_GROUP,
+        detectEventSourceType(url) ??
+        (isWebPageSourceUrl(url)
+          ? EVENT_SOURCE_TYPE.WEB_PAGE
+          : EVENT_SOURCE_TYPE.FACEBOOK_GROUP),
     }));
 
 export const EventCalendarsComponent = () => {
@@ -384,6 +414,18 @@ export const EventCalendarsComponent = () => {
   const [dismissedSyncs, setDismissedSyncs] = useState<Record<string, string>>(
     {},
   );
+
+  // Read after mount so server and client render the same first markup.
+  useEffect(() => {
+    setDismissedSyncs(current => ({ ...readDismissedSyncs(), ...current }));
+  }, []);
+
+  const dismissSync = (id: string, startedAt: string) =>
+    setDismissedSyncs(current => {
+      const next = { ...current, [id]: startedAt };
+      writeDismissedSyncs(next);
+      return next;
+    });
 
   const refreshSyncStatus = async (id: string) => {
     const response = await authFetch(
@@ -583,10 +625,7 @@ export const EventCalendarsComponent = () => {
                 <SyncProgress
                   status={syncStatus}
                   onDismiss={() =>
-                    setDismissedSyncs(current => ({
-                      ...current,
-                      [item.id]: syncStatus.startedAt as string,
-                    }))
+                    dismissSync(item.id, syncStatus.startedAt as string)
                   }
                 />
               )}
@@ -668,6 +707,7 @@ export const EventCalendarsComponent = () => {
           <CalloutText>{error}</CalloutText>
         </Callout>
       )}
+      <ManagedCalendarBookmarkletLink />
       <CRUDItemList
         items={items}
         setItems={setItems}
