@@ -3,7 +3,7 @@
 ## Overview
 
 - `@vigilant-broccoli/devops-cli` (`libs/@vigilant-broccoli/devops-cli`) wraps every devops CLI the dev dashboard drives
-- Replaces the per-route `child_process` shell-outs the `local-manager-next` API routes used to carry
+- `local-manager-next` API routes call it instead of shelling out per route with `child_process`
 - Routes own HTTP concerns (request parsing, status codes, error payloads); the lib owns commands, parsing, and typed results
 
 ## Features
