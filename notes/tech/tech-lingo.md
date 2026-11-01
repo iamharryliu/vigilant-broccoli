@@ -12,6 +12,7 @@
 
 | Term | Description |
 | --- | --- |
+| 3-2-1 Backup Rule | A data protection guideline: keep 3 copies of your data (1 primary + 2 backups) on 2 different storage types (e.g. local drive + cloud), with 1 copy off-site, guarding against hardware failure, accidental deletion, and disasters like fire or theft. |
 | Brownfield Project | A type of initiative that involves working with or building on top of existing systems, infrastructure, or legacy code, requiring consideration of prior constraints and technical debt. |
 | Content Delivery Network (CDN) | A distributed network of servers that deliver web content to users based on their geographic location. |
 | Greenfield Project | A type of initiative (often in construction, software, or business) that is built from scratch, without needing to work within the constraints of existing systems, infrastructure, or legacy code. |
