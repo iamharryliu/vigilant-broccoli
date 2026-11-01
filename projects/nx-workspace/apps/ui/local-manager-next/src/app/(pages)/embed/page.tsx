@@ -2,7 +2,7 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { EMBED_TARGET_PARAM } from '../../app.const';
+import { EMBED_TARGET_PARAM } from '@vigilant-broccoli/common-js';
 import { QUICK_LINKS } from '../../constants/quick-links';
 import { usePageTitle } from '../../use-page-title';
 
