@@ -18,7 +18,7 @@ export function FoodChatPanel({ open, onClose, onAdded }: Props) {
     <SlideOverPanel open={open} onClose={onClose} className="flex flex-col">
       <div className="mb-4 shrink-0">
         <Text size="5" weight="bold">
-          {t('FOOD_PLANNER.COLUMNS.FOOD_CHAT')}
+          {t('KITCHEN_PLANNER.COLUMNS.FOOD_CHAT')}
         </Text>
       </div>
 

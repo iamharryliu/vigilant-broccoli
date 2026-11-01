@@ -34,7 +34,7 @@ const PLANNER_TAB = 'planner';
 const RECIPES_TAB = 'recipes';
 const CALENDAR_TAB = 'calendar';
 const TABS = [PLANNER_TAB, RECIPES_TAB, CALENDAR_TAB];
-const TAB_STORAGE_KEY = 'food-planner:active-tab';
+const TAB_STORAGE_KEY = 'kitchen-planner:active-tab';
 const GROCERY_LIST_TAB = 'grocery';
 const KITCHEN_CHORES_LIST_TAB = 'kitchen-chores';
 const KITCHEN_PROJECTS_LIST_TAB = 'kitchen-projects';
@@ -43,12 +43,12 @@ const LIST_TABS = [
   KITCHEN_CHORES_LIST_TAB,
   KITCHEN_PROJECTS_LIST_TAB,
 ];
-const LIST_TAB_STORAGE_KEY = 'food-planner:active-list-tab';
+const LIST_TAB_STORAGE_KEY = 'kitchen-planner:active-list-tab';
 const TAB_PARAM = 'tab';
 const FOOD_CHAT_PARAM = 'foodChat';
 const FOOD_CHAT_OPEN_VALUE = '1';
 
-function FoodPlannerContent() {
+function KitchenPlannerContent() {
   const { t } = useTranslation();
   const router = useRouter();
   const pathname = usePathname();
@@ -107,13 +107,13 @@ function FoodPlannerContent() {
   const tabTriggers = (
     <>
       <TabsTrigger value={PLANNER_TAB}>
-        {t('FOOD_PLANNER.TABS.PLANNER')}
+        {t('KITCHEN_PLANNER.TABS.PLANNER')}
       </TabsTrigger>
       <TabsTrigger value={RECIPES_TAB}>
-        {t('FOOD_PLANNER.TABS.RECIPES')}
+        {t('KITCHEN_PLANNER.TABS.RECIPES')}
       </TabsTrigger>
       <TabsTrigger value={CALENDAR_TAB}>
-        {t('FOOD_PLANNER.TABS.CALENDAR')}
+        {t('KITCHEN_PLANNER.TABS.CALENDAR')}
       </TabsTrigger>
     </>
   );
@@ -145,18 +145,18 @@ function FoodPlannerContent() {
               >
                 <TabsList className="self-start">
                   <TabsTrigger value={GROCERY_LIST_TAB}>
-                    {t('FOOD_PLANNER.LIST_TABS.GROCERY')}
+                    {t('KITCHEN_PLANNER.LIST_TABS.GROCERY')}
                   </TabsTrigger>
                   <TabsTrigger value={KITCHEN_CHORES_LIST_TAB}>
-                    {t('FOOD_PLANNER.LIST_TABS.KITCHEN_CHORES')}
+                    {t('KITCHEN_PLANNER.LIST_TABS.KITCHEN_CHORES')}
                   </TabsTrigger>
                   <TabsTrigger value={KITCHEN_PROJECTS_LIST_TAB}>
-                    {t('FOOD_PLANNER.LIST_TABS.KITCHEN_PROJECTS')}
+                    {t('KITCHEN_PLANNER.LIST_TABS.KITCHEN_PROJECTS')}
                   </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value={GROCERY_LIST_TAB}>
-                  <CardContainer title={t('FOOD_PLANNER.COLUMNS.GROCERY')}>
+                  <CardContainer title={t('KITCHEN_PLANNER.COLUMNS.GROCERY')}>
                     <GroceryList
                       refreshSignal={groceryRefresh}
                       onCalendarEventAdded={bumpCalendar}
@@ -169,7 +169,7 @@ function FoodPlannerContent() {
 
                 <TabsContent value={KITCHEN_CHORES_LIST_TAB}>
                   <CardContainer
-                    title={t('FOOD_PLANNER.COLUMNS.KITCHEN_CHORES')}
+                    title={t('KITCHEN_PLANNER.COLUMNS.KITCHEN_CHORES')}
                   >
                     <KitchenChoresList onCalendarEventAdded={bumpCalendar} />
                   </CardContainer>
@@ -177,7 +177,7 @@ function FoodPlannerContent() {
 
                 <TabsContent value={KITCHEN_PROJECTS_LIST_TAB}>
                   <CardContainer
-                    title={t('FOOD_PLANNER.COLUMNS.KITCHEN_PROJECTS')}
+                    title={t('KITCHEN_PLANNER.COLUMNS.KITCHEN_PROJECTS')}
                   >
                     <KitchenProjectsList />
                   </CardContainer>
@@ -192,12 +192,12 @@ function FoodPlannerContent() {
             <div className="flex min-h-0 flex-col gap-3">
               <div className="flex shrink-0 items-center justify-between">
                 <Text size="5" weight="bold">
-                  {t('FOOD_PLANNER.TABS.CALENDAR')}
+                  {t('KITCHEN_PLANNER.TABS.CALENDAR')}
                 </Text>
                 <Button
                   variant="outline"
                   size="icon"
-                  aria-label={t('FOOD_PLANNER.COLUMNS.FOOD_CHAT')}
+                  aria-label={t('KITCHEN_PLANNER.COLUMNS.FOOD_CHAT')}
                   onClick={toggleChat}
                 >
                   {chatOpen ? <X size={18} /> : <MessageCircle size={18} />}
@@ -242,16 +242,16 @@ function FoodPlannerContent() {
   );
 }
 
-export default function FoodPlannerPage() {
-  usePageTitle(PAGE_TITLES.FOOD_PLANNER);
+export default function KitchenPlannerPage() {
+  usePageTitle(PAGE_TITLES.KITCHEN_PLANNER);
   const { shouldRender } = useMobileRedirect(
-    getFirstMobileChildHref(ROUTES.FOOD_PLANNER),
+    getFirstMobileChildHref(ROUTES.KITCHEN_PLANNER),
   );
   if (!shouldRender) return null;
   return (
     <I18nProvider>
       <Suspense fallback={null}>
-        <FoodPlannerContent />
+        <KitchenPlannerContent />
       </Suspense>
     </I18nProvider>
   );

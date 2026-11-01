@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useTranslation } from '../i18n';
 
-const RECIPES_I18N_ROOT = 'FOOD_PLANNER.RECIPES';
+const RECIPES_I18N_ROOT = 'KITCHEN_PLANNER.RECIPES';
 
 type Translate = ReturnType<typeof useTranslation>['t'];
 type TranslationKey = Parameters<Translate>[0];

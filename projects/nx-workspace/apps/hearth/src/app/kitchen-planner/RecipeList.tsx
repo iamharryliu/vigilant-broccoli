@@ -46,7 +46,7 @@ import { createEmptyTags } from './recipe-tags.consts';
 import { useRecipeTagging } from './useRecipeTagging';
 import { useRecipeTranslation } from './useRecipeTranslation';
 
-const RECIPES_ENDPOINT = '/api/food-planner/recipes';
+const RECIPES_ENDPOINT = '/api/kitchen-planner/recipes';
 const IMPORT_ACCEPT = '.md,.markdown,text/markdown';
 const MARKDOWN_EXTENSION_RE = /\.(md|markdown)$/i;
 const TITLE_HEADING_RE = /^#\s+(.+)$/m;

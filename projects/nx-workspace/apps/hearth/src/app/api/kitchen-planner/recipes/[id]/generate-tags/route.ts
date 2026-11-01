@@ -23,7 +23,7 @@ import {
   RecipeTags,
   normalizeTags,
   orderByVocabulary,
-} from '../../../../../food-planner/recipe-tags.consts';
+} from '../../../../../kitchen-planner/recipe-tags.consts';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

@@ -1,6 +1,6 @@
 # Kitchen Projects
 
-Mise en place tracking for the Food Planner — the ferments, proofs, marinades and
+Mise en place tracking for the Kitchen Planner — the ferments, proofs, marinades and
 prepped components that are _in progress_ rather than done. Modelled on how a
 professional kitchen runs a prep list: every item carries a start time, a ready
 time and a use-by date instead of a checkbox, and status is derived from the
@@ -39,7 +39,7 @@ nearest deadline — the order a walk-in check reads in.
   retard, marinate, thaw, cooked component, stock, freezer)
 - Terminal actions are "Used it up" / "Tossed it", not "complete" — discards
   stay visible under Finished so waste is countable
-- Shown as the third sub-tab of the Food Planner list column (Grocery / Chores /
+- Shown as the third sub-tab of the Kitchen Planner list column (Grocery / Chores /
   Projects), and standalone at `/kitchen-projects`
 
 ## RLS

@@ -26,7 +26,7 @@ const USER_API = '/api/user';
 
 const EXPORT_OPTIONS = [
   { key: 'where-is', label: 'Where Is' },
-  { key: 'food-planner', label: 'Food Planner' },
+  { key: 'kitchen-planner', label: 'Kitchen Planner' },
 ] as const;
 
 type ExportKey = (typeof EXPORT_OPTIONS)[number]['key'];

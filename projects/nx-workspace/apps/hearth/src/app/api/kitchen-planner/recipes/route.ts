@@ -13,7 +13,7 @@ import {
   RECIPE_TAG_ERROR_CODE,
   RECIPE_TAG_VOCABULARY,
   normalizeTags,
-} from '../../../food-planner/recipe-tags.consts';
+} from '../../../kitchen-planner/recipe-tags.consts';
 
 export const runtime = 'nodejs';
 

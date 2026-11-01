@@ -23,7 +23,7 @@ const RECIPES_TAB_VALUE = 'recipes';
 const DIALOG_TITLE = 'Add to Calendar';
 
 const buildRecipeBacklink = (recipe: Recipe): string => {
-  const url = new URL('/food-planner', window.location.origin);
+  const url = new URL('/kitchen-planner', window.location.origin);
   url.searchParams.set(TAB_PARAM, RECIPES_TAB_VALUE);
   url.searchParams.set(RECIPE_PARAM, recipe.id);
   return `Recipe: ${recipe.title}\n${url.toString()}`;

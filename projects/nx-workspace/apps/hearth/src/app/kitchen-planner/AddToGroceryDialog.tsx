@@ -16,7 +16,7 @@ import { useHome } from '../providers/home-provider';
 import { Recipe } from './recipes.types';
 
 const GROCERY_ENDPOINT = '/api/grocery';
-const EXTRACT_ENDPOINT = '/api/food-planner/extract-ingredients';
+const EXTRACT_ENDPOINT = '/api/kitchen-planner/extract-ingredients';
 
 type IngredientItem = {
   text: string;

@@ -18,7 +18,7 @@ interface ImportChecklistItem {
   position?: number;
 }
 
-interface FoodPlannerImport {
+interface KitchenPlannerImport {
   version: number;
   groceryItems?: ImportChecklistItem[];
   kitchenChoreItems?: ImportChecklistItem[];
@@ -76,7 +76,7 @@ const validateImport = (
 
 export async function POST(request: NextRequest) {
   const { importData, homeId } = (await request.json()) as {
-    importData: FoodPlannerImport;
+    importData: KitchenPlannerImport;
     homeId: number;
   };
   const supabase = createServerClient(getBearerToken(request));
