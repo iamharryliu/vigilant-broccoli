@@ -1,7 +1,8 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { EMBED_ROUTE_PATH, SIDEBAR_ROUTE } from '../app.const';
+import { EMBED_ROUTE_PATH } from '@vigilant-broccoli/common-js';
+import { SIDEBAR_ROUTE } from '../app.const';
 import { ReactNode, useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../libs/auth';
 import { FloatingIslandComponent } from '../components/floating-island.component';

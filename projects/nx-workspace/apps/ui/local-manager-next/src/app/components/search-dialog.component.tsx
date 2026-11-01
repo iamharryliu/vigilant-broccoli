@@ -2,7 +2,8 @@
 import { useRouter } from 'next/navigation';
 import { QuickLinksDialog } from '@vigilant-broccoli/react-lib-higher-level';
 import { QUICK_LINKS } from '../constants/quick-links';
-import { isDesktopEmbedEnvironment, toEmbedRoute } from '../utils/embed.utils';
+import { toEmbedRoute } from '@vigilant-broccoli/common-js';
+import { isDesktopEmbedEnvironment } from '../utils/embed.utils';
 import { handleShellExecute } from '../utils/quick-links.utils';
 
 type SearchDialogComponentProps = {

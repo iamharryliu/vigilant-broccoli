@@ -35,6 +35,7 @@ export type QuickLink = {
 };
 
 export * from './lib/audio/audio.consts';
+export * from './lib/embed/embed.utils';
 
 export * from './lib/llm/llm.consts';
 export * from './lib/llm/llm.types';

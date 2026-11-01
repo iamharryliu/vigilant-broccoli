@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   CalendarDays,
   CalendarPlus,
@@ -13,6 +13,7 @@ import {
   StickyNote,
 } from 'lucide-react';
 import { isMobileUserAgent } from '@vigilant-broccoli/common-browser';
+import { toEmbedRoute } from '@vigilant-broccoli/common-js';
 import {
   buildEventCalendarEmbedUrl,
   getEventCalendarColor,
@@ -39,9 +40,11 @@ import { CalendarVoiceInput } from './calendar-voice-input';
 import { GoogleTasksView } from './google-tasks-view';
 import { NotepadEditor } from './notepad-editor';
 import {
+  APP_ROUTE,
   CALENDAR_TAB,
   CALENDAR_TAB_QUERY_PARAM,
   CalendarTab,
+  EMBED_FROM_PARAM,
 } from '../app.const';
 import { QUICK_LINKS } from '../constants/quick-links';
 import {
@@ -86,6 +89,8 @@ const NOTEPAD_HEIGHT = 'calc(100dvh - var(--topbar-h) - 8rem)';
 // so panels that need the default scrolling and safe-area padding wrap in this.
 const SCROLL_PANEL =
   'min-h-0 flex-1 overflow-y-auto pb-[env(safe-area-inset-bottom)]';
+
+const canEmbed = () => true;
 
 const CALENDAR_TABS = Object.values(CALENDAR_TAB);
 
@@ -160,6 +165,7 @@ export const HomeView = () => {
   const [eventCalendarsLoaded, setEventCalendarsLoaded] = useState(false);
   const [eventCalendarsError, setEventCalendarsError] = useState(false);
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [tab, setTab] = useState<CalendarTab>(
     () =>
       findTab(searchParams.get(CALENDAR_TAB_QUERY_PARAM)) ??
@@ -372,7 +378,18 @@ export const HomeView = () => {
       value: CALENDAR_TAB.QUICK_LINKS,
       label: CALENDAR_TAB.QUICK_LINKS,
       icon: <Link2 size={TAB_ICON_SIZE} />,
-      content: <QuickLinksPanel links={QUICK_LINKS} enableFavorites />,
+      content: (
+        <QuickLinksPanel
+          links={QUICK_LINKS}
+          enableFavorites
+          canEmbed={canEmbed}
+          onEmbedOpen={link =>
+            router.push(
+              toEmbedRoute(link, { [EMBED_FROM_PARAM]: APP_ROUTE.HOME }),
+            )
+          }
+        />
+      ),
     },
     {
       value: CALENDAR_TAB.WEATHER,
