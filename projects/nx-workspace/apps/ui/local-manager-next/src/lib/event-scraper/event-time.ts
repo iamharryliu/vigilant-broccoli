@@ -78,7 +78,7 @@ export const addDays = (utcMs: number, days: number) => utcMs + days * DAY_MS;
 
 // Google Calendar event ids only allow a-v and 0-9; hex digests fit.
 export const buildExternalEventId = (...parts: string[]) =>
-  createHash('sha1')
+  createHash('sha256')
     .update(parts.join('\n'))
     .digest('hex')
     .slice(0, EXTERNAL_ID_LENGTH);
