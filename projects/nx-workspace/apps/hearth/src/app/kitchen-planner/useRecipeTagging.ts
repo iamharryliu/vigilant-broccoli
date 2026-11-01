@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { HTTP_METHOD, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { Recipe } from './recipes.types';
 
-const RECIPES_ENDPOINT = '/api/food-planner/recipes';
+const RECIPES_ENDPOINT = '/api/kitchen-planner/recipes';
 const GENERATE_TAGS_PATH = 'generate-tags';
 const TAGGING_CONCURRENCY = 3;
 

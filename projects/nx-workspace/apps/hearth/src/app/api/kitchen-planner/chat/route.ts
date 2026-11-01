@@ -141,7 +141,7 @@ const runChatTurn = async (
   });
 
   if (!res.ok) {
-    console.warn(`food-planner chat LLM ${res.status}`);
+    console.warn(`kitchen-planner chat LLM ${res.status}`);
     return {
       reply: FALLBACK_REPLY,
       groceryItems: [],
@@ -170,7 +170,7 @@ const insertItems = async (
   const rows = names.map(name => ({ name, position: 0, home_id: homeId }));
   const { data, error } = await supabase.from(table).insert(rows).select();
   if (error) {
-    console.warn(`food-planner chat insert ${table}: ${error.message}`);
+    console.warn(`kitchen-planner chat insert ${table}: ${error.message}`);
     return [];
   }
   return (data ?? []).map(row => row.name as string);
@@ -197,7 +197,7 @@ const insertEvents = async (
     .insert(rows)
     .select();
   if (error) {
-    console.warn(`food-planner chat insert events: ${error.message}`);
+    console.warn(`kitchen-planner chat insert events: ${error.message}`);
     return [];
   }
   return (data ?? []).map(row => row.title as string);

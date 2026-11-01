@@ -5,7 +5,7 @@ Desktop-only dashboards redirect mobile users (`useIsMobile`, max-width 767px) t
 ## Routes
 
 - `/` — redirects to the first mobile child of the Home nav link (`/whiteboard`)
-- `/food-planner` — redirects to the first mobile child of the Food Planner nav link (`/grocery`)
+- `/kitchen-planner` — redirects to the first mobile child of the Kitchen Planner nav link (`/grocery`)
 - `/where-is?item=<id>` — redirects to `/where-is/<id>`; the mirror of the desktop redirect in `where-is/[id]/page.tsx`
 
 ## Architecture

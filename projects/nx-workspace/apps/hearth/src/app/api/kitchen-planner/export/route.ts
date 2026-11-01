@@ -16,7 +16,7 @@ interface ExportChecklistItem {
   position: number;
 }
 
-export interface FoodPlannerExport {
+export interface KitchenPlannerExport {
   version: 1;
   exportedAt: string;
   homeId: number;
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
       .maybeSingle(),
   ]);
 
-  const exportData: FoodPlannerExport = {
+  const exportData: KitchenPlannerExport = {
     version: 1,
     exportedAt: new Date().toISOString(),
     homeId: Number(homeId),
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
   return new Response(JSON.stringify(exportData), {
     headers: {
       'Content-Type': 'application/json',
-      'Content-Disposition': `attachment; filename="food-planner-export-${homeId}-${Date.now()}.json"`,
+      'Content-Disposition': `attachment; filename="kitchen-planner-export-${homeId}-${Date.now()}.json"`,
     },
   });
 }

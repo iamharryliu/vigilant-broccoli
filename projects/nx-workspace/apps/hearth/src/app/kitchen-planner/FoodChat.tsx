@@ -5,7 +5,7 @@ import { ChatSendButton, Text, Textarea } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 
-const CHAT_ENDPOINT = '/api/food-planner/chat';
+const CHAT_ENDPOINT = '/api/kitchen-planner/chat';
 const PLACEHOLDER = 'Ask about meals, or say what to buy or cook…';
 const EMPTY_TEXT =
   'Chat about food. I can add ingredients to your grocery list and tasks to kitchen chores.';

@@ -20,7 +20,7 @@ export const PAGE_TITLES = {
   MASTER_LIST: 'Master List',
   HOUSEHOLD_RULES: 'Household Rules',
   HOUSEHOLD_RULE_DETAIL: 'Household Rule',
-  FOOD_PLANNER: 'Food Planner',
+  KITCHEN_PLANNER: 'Kitchen Planner',
   FOOD_CHAT: 'Food Assistant',
   FOOD_CALENDAR: 'Kitchen Events',
   ACTIVITY_PLANNER: 'Activity Planner',

@@ -4,7 +4,7 @@ import { createServerClient, getBearerToken } from '../../libs/supabase-server';
 import {
   normalizeTags,
   RecipeTagsStatus,
-} from '../app/food-planner/recipe-tags.consts';
+} from '../app/kitchen-planner/recipe-tags.consts';
 
 export const getRecipesSupabase = (req: NextRequest) =>
   createServerClient(getBearerToken(req));
