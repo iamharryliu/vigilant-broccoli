@@ -47,7 +47,7 @@
 
 | Tool | Description | More |
 | --- | --- | --- |
-| GitLeaks | Scans git repositories for hardcoded secrets and credentials. | [gitleaks](./gitleaks.md) |
+| GitLeaks | Scans git repositories for hardcoded secrets and credentials. | [git](../../devops/git/git.md#commands) |
 
 ## Wireless Security
 

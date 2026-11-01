@@ -31,7 +31,7 @@
 
 ## Resources
 
-- [Conventional Commits](./conventional-commits.md)
+- [Conventional Commits](../web-dev/devops/git/git.md#conventional-commits)
 - [Software Code Quality](./software-code-quality.md)
 - [Software Conventions](./software-conventions.md)
 - [Folder Structure](./folder-structure.md)
