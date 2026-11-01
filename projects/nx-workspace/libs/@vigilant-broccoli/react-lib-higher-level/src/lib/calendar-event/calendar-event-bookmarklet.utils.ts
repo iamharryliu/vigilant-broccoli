@@ -1,5 +1,6 @@
 import {
   CALENDAR_EVENT_BOOKMARKLET,
+  CalendarEventBookmarkletIntent,
   CalendarEventBookmarkletMessage,
 } from '@vigilant-broccoli/common-js';
 
@@ -8,6 +9,12 @@ const BOOKMARKLET_TEXT_LIMIT = 20000;
 const BOOKMARKLET_RETRY_MS = 300;
 const BOOKMARKLET_GIVE_UP_MS = 15000;
 const STRUCTURED_DATA_LIMIT = 8000;
+// The manager probes these to find the master feed, so send plenty: per-event
+// files can outnumber the whole-calendar link.
+const FEED_URL_LIMIT = 30;
+const FEED_SELECTOR =
+  'link[type="text/calendar"],a[href$=".ics"],a[href^="webcal:"],a[data-feed]';
+const DECLARED_FEED_SELECTOR = 'link[type="text/calendar"]';
 
 const UNSAFE_JS_CHAR_MAP: Record<string, string> = {
   '<': '\\u003C',
@@ -38,9 +45,21 @@ const escapeUnsafeJsChars = (value: string) =>
 // popup blockers allow it, then posts the page to the manager's origin until
 // it acknowledges, since the new tab may still be loading or redirecting to
 // login.
-export const buildCalendarEventBookmarklet = (origin: string) => {
+// Only the managed-calendar bookmarklet looks for feeds; the one-off event
+// bookmarklet stays as small as it was.
+const FEED_FIELDS_SCRIPT = `feedUrls:[].map.call(document.querySelectorAll(${escapeUnsafeJsChars(JSON.stringify(FEED_SELECTOR))}),function(e){return e.href}).filter(function(u,i,a){return a.indexOf(u)===i}).slice(0,${FEED_URL_LIMIT}),declaredFeedUrls:[].map.call(document.querySelectorAll(${escapeUnsafeJsChars(JSON.stringify(DECLARED_FEED_SELECTOR))}),function(e){return e.href}),`;
+
+export const buildCalendarEventBookmarklet = (
+  origin: string,
+  intent: CalendarEventBookmarkletIntent = CALENDAR_EVENT_BOOKMARKLET.INTENT
+    .EVENT,
+) => {
   const target = `${origin}/?${CALENDAR_EVENT_BOOKMARKLET.TARGET_PARAM}=1`;
-  return `javascript:(function(){var o=${escapeUnsafeJsChars(JSON.stringify(origin))};var w=window.open(${escapeUnsafeJsChars(JSON.stringify(target))});if(!w)return;var m={source:'${CALENDAR_EVENT_BOOKMARKLET.MESSAGE_SOURCE}',url:location.href,title:document.title,selection:String(getSelection()).slice(0,${BOOKMARKLET_TEXT_LIMIT}),structuredData:[].map.call(document.querySelectorAll('script[type="application/ld+json"]'),function(s){return s.textContent.slice(0,${STRUCTURED_DATA_LIMIT})}),text:document.body.innerText.slice(0,${BOOKMARKLET_TEXT_LIMIT})};var t=setInterval(function(){w.postMessage(m,o)},${BOOKMARKLET_RETRY_MS});window.addEventListener('message',function(e){if(e.origin===o&&e.data==='${CALENDAR_EVENT_BOOKMARKLET.ACK}')clearInterval(t)});setTimeout(function(){clearInterval(t)},${BOOKMARKLET_GIVE_UP_MS})})()`;
+  const feedFields =
+    intent === CALENDAR_EVENT_BOOKMARKLET.INTENT.SOURCE
+      ? FEED_FIELDS_SCRIPT
+      : '';
+  return `javascript:(function(){var o=${escapeUnsafeJsChars(JSON.stringify(origin))};var w=window.open(${escapeUnsafeJsChars(JSON.stringify(target))});if(!w)return;var m={source:'${CALENDAR_EVENT_BOOKMARKLET.MESSAGE_SOURCE}',intent:'${intent}',url:location.href,title:document.title,selection:String(getSelection()).slice(0,${BOOKMARKLET_TEXT_LIMIT}),structuredData:[].map.call(document.querySelectorAll('script[type="application/ld+json"]'),function(s){return s.textContent.slice(0,${STRUCTURED_DATA_LIMIT})}),${feedFields}text:document.body.innerText.slice(0,${BOOKMARKLET_TEXT_LIMIT})};var t=setInterval(function(){w.postMessage(m,o)},${BOOKMARKLET_RETRY_MS});window.addEventListener('message',function(e){if(e.origin===o&&e.data==='${CALENDAR_EVENT_BOOKMARKLET.ACK}')clearInterval(t)});setTimeout(function(){clearInterval(t)},${BOOKMARKLET_GIVE_UP_MS})})()`;
 };
 
 // A selection is the user's own pick of the event, so it replaces the page text.

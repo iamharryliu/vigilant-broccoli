@@ -1,13 +1,5 @@
-import {
-  API_KEY_HEADER,
-  HTTP_HEADERS,
-  HTTP_METHOD,
-  LLM_MODEL,
-  VB_EXPRESS_ENDPOINT,
-} from '@vigilant-broccoli/common-js';
-import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
-import { getVbExpressApiKey } from '../vb-express';
-import { ScrapedEvent } from './facebook-events.scraper';
+import { requestLlmJson } from './llm-json';
+import { ScrapedEvent } from './scraped-event.types';
 
 const LOCALIZE_CONCURRENCY = 5;
 const VENUE_SEPARATOR = ' @ ';
@@ -15,7 +7,7 @@ const PLACE_PART_SEPARATOR = ', ';
 const SOURCE_LANGUAGE_FALLBACK =
   'the same language the source event is written in';
 
-const SYSTEM_PROMPT = `You write Google Calendar entries for events scraped from Facebook.
+const SYSTEM_PROMPT = `You write Google Calendar entries for events scraped from the web (Facebook, calendar feeds, event pages).
 Return a JSON object with "title", "venue", "city", and "description".
 - "title": the event's real name, concise, taken from the scraped title and description. Scraped titles can be UI text (e.g. "More", "Details") or a date — ignore those and name the event from the description instead. No dates, venue, emojis, or surrounding quotes.
 - "venue": the short name of the place it's held (e.g. a bar, studio, or hall name), from the location or description. Not a bare city, country, or street address. Empty string if no venue is named.
@@ -60,26 +52,11 @@ const localizeEvent = async (
   event: ScrapedEvent,
   language?: string,
 ): Promise<ScrapedEvent> => {
-  const response = await fetch(
-    `${getEnvironmentVariable('VB_EXPRESS_URL')}/${VB_EXPRESS_ENDPOINT.LLM}`,
-    {
-      method: HTTP_METHOD.POST,
-      headers: {
-        ...HTTP_HEADERS.CONTENT_TYPE.JSON,
-        [API_KEY_HEADER]: getVbExpressApiKey(),
-      },
-      body: JSON.stringify({
-        userPrompt: buildUserPrompt(event, language),
-        systemPrompt: SYSTEM_PROMPT,
-        model: LLM_MODEL.GPT_4O_MINI,
-        jsonSchema: LOCALIZE_SCHEMA,
-      }),
-    },
-  );
-  if (!response.ok) return event;
-
-  const { outputs } = (await response.json()) as { outputs: LocalizedText[] };
-  const [localized] = outputs ?? [];
+  const localized = await requestLlmJson<LocalizedText>({
+    userPrompt: buildUserPrompt(event, language),
+    systemPrompt: SYSTEM_PROMPT,
+    jsonSchema: LOCALIZE_SCHEMA,
+  });
   const title = localized?.title?.trim() || event.title;
   const place = [localized?.venue?.trim(), localized?.city?.trim()]
     .filter(Boolean)

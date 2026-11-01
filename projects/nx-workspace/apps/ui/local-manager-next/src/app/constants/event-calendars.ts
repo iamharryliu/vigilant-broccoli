@@ -1,9 +1,12 @@
-// Where a calendar's events get scraped from. Facebook group and page event
-// listings share one scraper today (src/lib/event-scraper), which just drives a
-// Facebook events URL; new source types get added here and taught to the scraper.
+// Where a calendar's events get scraped from (src/lib/event-scraper). Facebook
+// group and page listings share one scraper that drives a Facebook events URL;
+// iCal feeds are parsed directly; a web page is searched for a linked feed,
+// then schema.org markup, then read by an LLM.
 export const EVENT_SOURCE_TYPE = {
   FACEBOOK_GROUP: 'facebook_group',
   FACEBOOK_PAGE: 'facebook_page',
+  ICAL_FEED: 'ical_feed',
+  WEB_PAGE: 'web_page',
 } as const;
 
 export type EventSourceType =
@@ -18,14 +21,26 @@ const FACEBOOK_GROUP_URL_PATTERN =
 const FACEBOOK_PAGE_URL_PATTERN =
   /^https?:\/\/(www\.)?facebook\.com\/(?!groups\/)[^/?#]+\/events\b/;
 
-const SOURCE_TYPE_URL_PATTERN: Record<EventSourceType, RegExp> = {
+const ICAL_FEED_URL_PATTERN = /^(https?|webcal):\/\/[^?#\s]+\.ics(?:[?#]|$)/i;
+const HTTP_URL_PATTERN = /^https?:\/\//i;
+const FACEBOOK_URL_PATTERN = /^https?:\/\/([\w-]+\.)?(facebook|fb)\.com\//i;
+
+// A web page matches no URL shape, so it is never detected: the user opts in
+// with the explicit type (see isWebPageSourceUrl).
+const SOURCE_TYPE_URL_PATTERN: Partial<Record<EventSourceType, RegExp>> = {
   [EVENT_SOURCE_TYPE.FACEBOOK_GROUP]: FACEBOOK_GROUP_URL_PATTERN,
   [EVENT_SOURCE_TYPE.FACEBOOK_PAGE]: FACEBOOK_PAGE_URL_PATTERN,
+  [EVENT_SOURCE_TYPE.ICAL_FEED]: ICAL_FEED_URL_PATTERN,
 };
 
 export const detectEventSourceType = (url: string): EventSourceType | null =>
-  EVENT_SOURCE_TYPES.find(type => SOURCE_TYPE_URL_PATTERN[type].test(url)) ??
+  EVENT_SOURCE_TYPES.find(type => SOURCE_TYPE_URL_PATTERN[type]?.test(url)) ??
   null;
+
+// Facebook URLs that match no events-listing shape stay rejected: the web page
+// scraper cannot read them (login wall) and would silently return nothing.
+export const isWebPageSourceUrl = (url: string) =>
+  HTTP_URL_PATTERN.test(url) && !FACEBOOK_URL_PATTERN.test(url);
 
 // Stored as the language name since the sync's LLM prompt consumes it as-is.
 export const EVENT_LANGUAGE = {
