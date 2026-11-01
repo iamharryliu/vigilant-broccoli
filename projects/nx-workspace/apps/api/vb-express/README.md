@@ -18,6 +18,7 @@
   - `common-js`
   - `common-node`
   - `fastify`
+  - `infrastructure`
   - `@harry/personal`
   - `llm-schemas`
   - `messaging`
