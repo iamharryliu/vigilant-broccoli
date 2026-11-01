@@ -150,11 +150,24 @@ jobs:
           MONGODB_DB: vb-manager
         run: |
           set -euo pipefail
+          grep -m1 -o avx /proc/cpuinfo || echo "avx not present"
+          docker pull mongo:8
+          docker image inspect --format 'mongo:8 digest: {{index .RepoDigests 0}}' mongo:8
           docker run -d --name mongo-restore-test -p 27017:27017 mongo:8 > /dev/null
+          MONGO_READY=false
           for _ in $(seq 1 30); do
-            docker exec mongo-restore-test mongosh --quiet --eval 'db.runCommand({ ping: 1 })' > /dev/null 2>&1 && break
+            if docker exec mongo-restore-test mongosh --quiet --eval 'db.runCommand({ ping: 1 })' > /dev/null 2>&1; then
+              MONGO_READY=true
+              break
+            fi
             sleep 2
           done
+          if [ "$MONGO_READY" != true ]; then
+            docker logs mongo-restore-test || true
+            docker inspect --format 'status={{.State.Status}} exit_code={{.State.ExitCode}} OOMKilled={{.State.OOMKilled}}' mongo-restore-test
+            echo "::error::MongoDB did not become ready within 60 seconds"
+            exit 1
+          fi
 
           LATEST=$(gcloud storage ls "${BACKUP_BUCKET}/mongodb-backup-*.gz" | sort | tail -1)
           gcloud storage cp "$LATEST" mongodb-backup.gz
