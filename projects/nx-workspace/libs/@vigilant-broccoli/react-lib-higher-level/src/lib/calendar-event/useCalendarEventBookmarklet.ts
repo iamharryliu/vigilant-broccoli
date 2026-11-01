@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   CALENDAR_EVENT_BOOKMARKLET,
+  CalendarEventBookmarkletMessage,
   isCalendarEventBookmarkletMessage,
 } from '@vigilant-broccoli/common-js';
 import { composeCalendarEventText } from './calendar-event-bookmarklet.utils';
@@ -11,7 +12,10 @@ import { composeCalendarEventText } from './calendar-event-bookmarklet.utils';
 // Only the tab the bookmarklet opened (`window.opener`) is trusted, so a
 // foreign page cannot prefill the dialog. `onReceive` should open the dialog;
 // pass the returned `prefill` to it and call `clearPrefill` when it closes.
-export const useCalendarEventBookmarklet = (onReceive: () => void) => {
+// `onReceive` also gets the raw message for apps that offer other actions.
+export const useCalendarEventBookmarklet = (
+  onReceive: (message: CalendarEventBookmarkletMessage) => void,
+) => {
   const [prefill, setPrefill] = useState<string>();
   const onReceiveRef = useRef(onReceive);
   onReceiveRef.current = onReceive;
@@ -36,7 +40,7 @@ export const useCalendarEventBookmarklet = (onReceive: () => void) => {
         event.origin,
       );
       setPrefill(composeCalendarEventText(event.data));
-      onReceiveRef.current();
+      onReceiveRef.current(event.data);
     };
     window.addEventListener('message', receive);
     return () => window.removeEventListener('message', receive);

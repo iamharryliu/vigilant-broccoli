@@ -3,20 +3,34 @@
 import { useState } from 'react';
 import { CalendarPlus } from 'lucide-react';
 import { Button } from '@vigilant-broccoli/react-lib';
+import { CALENDAR_EVENT_BOOKMARKLET } from '@vigilant-broccoli/common-js';
 import {
   CreateCalendarEventDialog,
   useCalendarEventBookmarklet,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import { authFetch } from '../../../libs/auth';
+import {
+  AddEventSourceDialog,
+  SourceDetection,
+} from './add-event-source-dialog.component';
 import { TaskVoiceButton } from './task-voice-button.component';
 import { useTranslation } from '../i18n';
 
 export const CreateCalendarEventDialogTrigger = () => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
-  const { prefill, clearPrefill } = useCalendarEventBookmarklet(() =>
-    setOpen(true),
-  );
+  const [sourceDetection, setSourceDetection] =
+    useState<SourceDetection | null>(null);
+  // Two bookmarklets share this handshake: the managed-calendar one tracks the
+  // page as a calendar source; the other (and any installed before intents
+  // existed) imports events once.
+  const { prefill, clearPrefill } = useCalendarEventBookmarklet(message => {
+    if (message.intent === CALENDAR_EVENT_BOOKMARKLET.INTENT.SOURCE) {
+      setSourceDetection(message);
+    } else {
+      setOpen(true);
+    }
+  });
   return (
     <>
       <Button
@@ -40,6 +54,13 @@ export const CreateCalendarEventDialogTrigger = () => {
         renderVoiceAction={onTranscript => (
           <TaskVoiceButton onTranscript={onTranscript} />
         )}
+      />
+      <AddEventSourceDialog
+        detection={sourceDetection}
+        onClose={() => {
+          setSourceDetection(null);
+          clearPrefill();
+        }}
       />
     </>
   );

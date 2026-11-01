@@ -11,12 +11,15 @@ import {
 import {
   FACEBOOK_LOGIN_REQUIRED_ERROR,
   scrapeFacebookEvents,
-  ScrapedEvent,
 } from './facebook-events.scraper';
+import { scrapeIcalEvents } from './ical-events.scraper';
+import { scrapeWebPageEvents } from './web-page-events.scraper';
+import { ScrapedEvent } from './scraped-event.types';
 import { syncEventsToCalendar } from './google-calendar.sync';
 import { localizeEvents } from './event-localizer';
 import {
   EVENT_SOURCE_TYPE,
+  EventSourceType,
   SYNC_PHASE,
   SYNC_RUN_STATUS,
   SYNC_RUN_TRIGGER,
@@ -65,20 +68,13 @@ export interface SyncOutcome {
   loginRequired?: boolean;
 }
 
-const FACEBOOK_SOURCE_TYPES: string[] = [
-  EVENT_SOURCE_TYPE.FACEBOOK_GROUP,
-  EVENT_SOURCE_TYPE.FACEBOOK_PAGE,
-];
-
-const scrapeSource = (
+type SourceScraper = (
   url: string,
-  sourceType: string,
   onProgress: (progress: SyncProgress) => void,
-) => {
-  if (!FACEBOOK_SOURCE_TYPES.includes(sourceType)) {
-    throw new Error(`No scraper implemented for source type "${sourceType}"`);
-  }
-  return scrapeFacebookEvents({
+) => Promise<ScrapedEvent[]>;
+
+const scrapeFacebookSource: SourceScraper = (url, onProgress) =>
+  scrapeFacebookEvents({
     eventsUrl: url,
     onProgress: (done, total) =>
       onProgress({
@@ -88,6 +84,24 @@ const scrapeSource = (
         total,
       }),
   });
+
+const SOURCE_SCRAPERS: Record<EventSourceType, SourceScraper> = {
+  [EVENT_SOURCE_TYPE.FACEBOOK_GROUP]: scrapeFacebookSource,
+  [EVENT_SOURCE_TYPE.FACEBOOK_PAGE]: scrapeFacebookSource,
+  [EVENT_SOURCE_TYPE.ICAL_FEED]: url => scrapeIcalEvents({ feedUrl: url }),
+  [EVENT_SOURCE_TYPE.WEB_PAGE]: url => scrapeWebPageEvents({ pageUrl: url }),
+};
+
+const scrapeSource = (
+  url: string,
+  sourceType: string,
+  onProgress: (progress: SyncProgress) => void,
+) => {
+  const scraper = SOURCE_SCRAPERS[sourceType as EventSourceType];
+  if (!scraper) {
+    throw new Error(`No scraper implemented for source type "${sourceType}"`);
+  }
+  return scraper(url, onProgress);
 };
 
 const runSync = async (calendarId: string): Promise<SyncOutcome> => {
