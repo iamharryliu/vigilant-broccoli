@@ -17,11 +17,13 @@ const options = {
 // Playwright is a Node-only, server-side dependency of the event scraper.
 // serverExternalPackages alone did not stop the webpack build from tracing
 // into playwright-core and failing on its optional `chromium-bidi` require, so
-// force these to be required at runtime instead of bundled.
+// force these to be required at runtime instead of bundled. `node:sqlite` is a
+// builtin webpack doesn't recognize, so it needs the same treatment.
 const SERVER_ONLY_EXTERNALS = [
   'playwright',
   'playwright-core',
   'chromium-bidi',
+  'node:sqlite',
 ];
 const LIBS_DIR = join(__dirname, '../../../libs/@vigilant-broccoli');
 const LIB_SOURCE_PATTERN = /\.(tsx?|jsx?|html)$/;
