@@ -11,7 +11,9 @@ import { DragHandleDots2Icon } from '@radix-ui/react-icons';
 import {
   CheckListBase,
   CheckListBaseItem,
+  CheckListEditor,
   CheckListRowFrameProps,
+  CheckListRowVariant,
 } from './CheckListBase';
 import { Text } from './Text';
 
@@ -66,10 +68,16 @@ export interface CheckListProps {
   onEditChange: (title: string) => void;
   onSaveEdit: () => void;
   onCancelEdit: () => void;
+  editor?: CheckListEditor;
+  rowVariant?: CheckListRowVariant;
+  size?: '1' | '2' | '3';
+  editCompleted?: boolean;
+  storageKeyPrefix?: string;
+  completedSectionId?: string;
   enableDragDrop?: boolean;
   listId?: string;
   dragOverItem?: CheckListDragOverItem | null;
-  emptyLabel?: string;
+  emptyLabel?: ReactNode;
   renderItemAccessory?: (item: CheckListItem) => ReactNode;
   renderItemMeta?: (item: CheckListItem) => ReactNode;
   itemClassName?: (item: CheckListItem) => string;
@@ -134,7 +142,7 @@ const SortableRowFrame = ({
           {...listeners}
           {...attributes}
           aria-label={`${DRAG_HANDLE_LABEL_PREFIX}${item.title}`}
-          className="cursor-grab active:cursor-grabbing opacity-50 hover:opacity-100 transition-opacity"
+          className="cursor-grab touch-none active:cursor-grabbing opacity-50 hover:opacity-100 transition-opacity"
         >
           <DragHandleDots2Icon />
         </div>
@@ -190,6 +198,12 @@ export const CheckList = memo(
     onEditChange,
     onSaveEdit,
     onCancelEdit,
+    editor,
+    rowVariant,
+    size,
+    editCompleted,
+    storageKeyPrefix,
+    completedSectionId,
     enableDragDrop,
     listId,
     dragOverItem,
@@ -248,6 +262,10 @@ export const CheckList = memo(
       : '';
 
     const resolvedListId = listId ?? DEFAULT_LIST_ID;
+    const resolvedStorageKeyPrefix =
+      storageKeyPrefix ?? `checklist-${resolvedListId}`;
+    const resolvedCompletedSectionId =
+      completedSectionId ?? `${resolvedListId}-completed`;
 
     return (
       <>
@@ -265,13 +283,20 @@ export const CheckList = memo(
             onEditChange={onEditChange}
             onSaveEdit={onSaveEdit}
             onCancelEdit={onCancelEdit}
-            editor="textarea"
-            storageKeyPrefix={`checklist-${resolvedListId}`}
-            completedSectionId={`${resolvedListId}-completed`}
+            editor={editor}
+            rowVariant={rowVariant}
+            size={size}
+            editCompleted={editCompleted}
+            storageKeyPrefix={resolvedStorageKeyPrefix}
+            completedSectionId={resolvedCompletedSectionId}
             emptyLabel={
-              <Text size="2" color="gray">
-                {emptyLabel}
-              </Text>
+              typeof emptyLabel === 'string' ? (
+                <Text size="2" color="gray">
+                  {emptyLabel}
+                </Text>
+              ) : (
+                emptyLabel
+              )
             }
             renderItemAccessory={renderItemAccessory}
             renderItemMeta={renderItemMeta}
