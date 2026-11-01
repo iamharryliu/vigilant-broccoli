@@ -8,10 +8,10 @@
 # YAML from that branch, so — exactly like the pull_request case in
 # github-actions-pr-check.tf — anyone who can push a branch could edit it to
 # assume whatever identity it names and reach that access, bypassing any
-# Vault-side role/policy scoping. The shared 'github' provider's
-# attribute_condition only refuses pull_request, so it would hand this workflow
-# that broad SA; this one is pinned to the workflow file and can read nothing
-# but the two Cloudflare Access secrets needed to reach the Vault tunnel.
+# Vault-side role/policy scoping. The shared 'github' provider only allows
+# main and production refs; this one is pinned to the workflow file and can
+# read nothing but the two Cloudflare Access secrets needed to reach the Vault
+# tunnel.
 
 resource "google_service_account" "github_actions_deploy_preview" {
   account_id   = "github-actions-deploy-preview"
