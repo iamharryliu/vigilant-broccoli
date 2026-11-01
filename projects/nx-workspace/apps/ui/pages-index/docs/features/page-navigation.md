@@ -44,9 +44,9 @@ The Job Hunt demo card opens the public, read-only sample deployment at `demo-jo
 
 ## Games
 
-- `/games` shows production Balloono, Gravity Guy and Waiting Games, sorted by translated title, with direct play cards and separate About links to `/games/:app` README pages.
+- `/games` shows production Balloono, Gravity Guy and Waiting Games, sorted by translated title, with direct play cards. `/games/:app` README pages remain available by route.
 - Membership is the `game: true` flag on entries in the shared applications registry; demos, staging duplicates and the Games portal itself are excluded. The full applications and demo lists retain their existing detail behavior.
-- Home links to Games; Games links to all applications, and its breadcrumb returns to Home.
+- Home links to Games; the Games breadcrumb returns to Home.
 - `games.harryliu.dev` serves Games at `/` and `#/games`; `#/games/:app` keeps README navigation on this host, with Games as its local breadcrumb parent and Home linking to the projects host. Unknown hash routes return to root.
 - The Games portal also appears in the full applications registry and shared browser quick links, with a production Upptime check.
 
