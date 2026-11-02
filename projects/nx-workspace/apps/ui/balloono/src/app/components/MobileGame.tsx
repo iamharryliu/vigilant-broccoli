@@ -14,9 +14,32 @@ import {
   ChevronRight,
   ChevronUp,
   RotateCw,
+  Settings,
+  Volume2,
+  VolumeX,
 } from 'lucide-react';
-import { DIFFICULTY, DIRECTION, MATCH_STATUS } from '../engine/game.consts';
-import { Contender, Direction, MatchState } from '../engine/game.types';
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  SegmentedControl,
+} from '@vigilant-broccoli/react-lib';
+import {
+  DIFFICULTIES,
+  DIFFICULTY,
+  DIRECTION,
+  MATCH_STATUS,
+  MAX_PLAYERS,
+} from '../engine/game.consts';
+import {
+  Contender,
+  Difficulty,
+  Direction,
+  MatchState,
+} from '../engine/game.types';
 import { cpuContenders } from '../engine/runner';
 import { Controls, useControls } from '../hooks/useControls';
 import {
@@ -34,6 +57,13 @@ import { GameBoard } from './GameBoard';
 const PLAYER_ID = 'mobile-player';
 // Touch has no key bindings, so the shared controls hook gets an empty map.
 const NO_KEYS = {};
+const SETTINGS_STORAGE_KEY = 'balloono-mobile-settings';
+const DEFAULT_SETTINGS = { opponents: 1, difficulty: DIFFICULTY.MEDIUM };
+type MobileSettings = { opponents: number; difficulty: Difficulty };
+const OPPONENT_COUNTS = Array.from(
+  { length: MAX_PLAYERS - 1 },
+  (_, index) => index + 1,
+);
 const PORTRAIT_QUERY = '(any-pointer: coarse) and (orientation: portrait)';
 const PAD_DEAD_ZONE = 0.18;
 const DIRECTION_ICONS = {
@@ -48,6 +78,24 @@ const DIRECTION_CELL = {
   [DIRECTION.LEFT]: 'col-start-1 row-start-2 rounded-l-lg',
   [DIRECTION.RIGHT]: 'col-start-3 row-start-2 rounded-r-lg',
 } as const satisfies Record<Direction, string>;
+
+const readSettings = (): MobileSettings => {
+  try {
+    const stored = JSON.parse(
+      localStorage.getItem(SETTINGS_STORAGE_KEY) ?? 'null',
+    );
+    return {
+      opponents: OPPONENT_COUNTS.includes(stored?.opponents)
+        ? stored.opponents
+        : DEFAULT_SETTINGS.opponents,
+      difficulty: DIFFICULTIES.includes(stored?.difficulty)
+        ? stored.difficulty
+        : DEFAULT_SETTINGS.difficulty,
+    };
+  } catch {
+    return DEFAULT_SETTINGS;
+  }
+};
 
 const usePortraitBlocked = () => {
   const [blocked, setBlocked] = useState(false);
@@ -122,21 +170,80 @@ function DirectionPad({
   );
 }
 
-function PillButton({
-  label,
-  onClick,
+function SettingsMenu({
+  muted,
+  toggleMuted,
+  restart,
+  settings,
+  onSettingsChange,
 }: {
-  label: string;
-  onClick: () => void;
+  muted: boolean;
+  toggleMuted: () => void;
+  restart: () => void;
+  settings: MobileSettings;
+  onSettingsChange: (settings: MobileSettings) => void;
 }) {
+  const { t } = useTranslation();
+  const [open, setOpen] = useState(false);
+  const MuteIcon = muted ? VolumeX : Volume2;
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="-rotate-12 rounded-full bg-slate-500 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-slate-100 shadow active:bg-slate-700"
-    >
-      {label}
-    </button>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-[max(0.5rem,env(safe-area-inset-right))] top-1 z-10 h-9 w-9 text-slate-300 hover:bg-slate-800 hover:text-white"
+          aria-label={t('SETTINGS.TITLE')}
+        >
+          <Settings className="h-5 w-5" aria-hidden="true" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-xs">
+        <DialogHeader>
+          <DialogTitle>{t('SETTINGS.TITLE')}</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col gap-2">
+          <span className="text-sm font-medium">{t('CPU.OPPONENTS')}</span>
+          <SegmentedControl
+            label={t('CPU.OPPONENTS')}
+            value={String(settings.opponents)}
+            options={OPPONENT_COUNTS.map(count => ({
+              value: String(count),
+              label: String(count),
+            }))}
+            onChange={value =>
+              onSettingsChange({ ...settings, opponents: Number(value) })
+            }
+          />
+          <span className="text-sm font-medium">{t('CPU.DIFFICULTY')}</span>
+          <SegmentedControl
+            label={t('CPU.DIFFICULTY')}
+            value={settings.difficulty}
+            options={DIFFICULTIES.map(value => ({
+              value,
+              label: t(DIFFICULTY_LABEL_KEY[value]),
+            }))}
+            onChange={difficulty =>
+              onSettingsChange({ ...settings, difficulty })
+            }
+          />
+          <Button variant="outline" onClick={toggleMuted} aria-pressed={muted}>
+            <MuteIcon className="mr-2 h-4 w-4" aria-hidden="true" />
+            {t(muted ? 'MOBILE.UNMUTE' : 'MOBILE.MUTE')}
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              restart();
+              setOpen(false);
+            }}
+          >
+            <RotateCw className="mr-2 h-4 w-4" aria-hidden="true" />
+            {t('MOBILE.RESTART')}
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -144,17 +251,28 @@ function MobileMatch() {
   const { t } = useTranslation();
   const controls = useControls(false, NO_KEYS);
   const heldRef = useRef<Direction | null>(null);
+  const [settings, setSettings] = useState(readSettings);
+  const updateSettings = (next: MobileSettings) => {
+    setSettings(next);
+    try {
+      localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      // Private mode: the choice just lasts for this session.
+    }
+  };
   const contenders = useMemo<Contender[]>(
     () => [
       { id: PLAYER_ID, name: t('MATCH.YOU'), difficulty: null },
-      ...cpuContenders([DIFFICULTY.MEDIUM], (level, index) =>
-        t('CPU.NAME', {
-          number: index + 1,
-          difficulty: t(DIFFICULTY_LABEL_KEY[level]),
-        }),
+      ...cpuContenders(
+        Array.from({ length: settings.opponents }, () => settings.difficulty),
+        (level, index) =>
+          t('CPU.NAME', {
+            number: index + 1,
+            difficulty: t(DIFFICULTY_LABEL_KEY[level]),
+          }),
       ),
     ],
-    [t],
+    [t, settings],
   );
   const { match, restart } = useCpuMatch(contenders, PLAYER_ID, controls);
   if (!match) return null;
@@ -164,6 +282,8 @@ function MobileMatch() {
       restart={restart}
       controls={controls}
       heldRef={heldRef}
+      settings={settings}
+      onSettingsChange={updateSettings}
     />
   );
 }
@@ -173,11 +293,15 @@ function MobileScreen({
   restart,
   controls,
   heldRef,
+  settings,
+  onSettingsChange,
 }: {
   match: MatchState;
   restart: () => void;
   controls: Controls;
   heldRef: MutableRefObject<Direction | null>;
+  settings: MobileSettings;
+  onSettingsChange: (settings: MobileSettings) => void;
 }) {
   const { t } = useTranslation();
   const { muted, toggleMuted } = useGameAudio();
@@ -188,7 +312,7 @@ function MobileScreen({
   const winner = match.players.find(({ id }) => id === match.winnerId);
 
   return (
-    <main className="fixed inset-0 flex select-none items-center justify-between gap-2 bg-indigo-900 px-[max(1rem,env(safe-area-inset-left))] py-3 text-white">
+    <main className="fixed inset-0 flex select-none items-center justify-between gap-2 bg-indigo-900 px-[max(1rem,env(safe-area-inset-left))] py-1 text-white">
       <div className="flex h-full flex-1 items-center justify-center">
         <DirectionPad
           onChange={direction => {
@@ -198,7 +322,14 @@ function MobileScreen({
           }}
         />
       </div>
-      <div className="flex h-full min-w-0 flex-[2] flex-col items-center gap-2">
+      <SettingsMenu
+        muted={muted}
+        toggleMuted={toggleMuted}
+        restart={restart}
+        settings={settings}
+        onSettingsChange={onSettingsChange}
+      />
+      <div className="flex h-full min-w-0 flex-[2] flex-col items-center">
         <div className="flex min-h-0 w-full flex-1 items-center justify-center rounded-xl bg-slate-900 p-2 shadow-inner">
           <div
             className="relative max-h-full max-w-full"
@@ -240,13 +371,6 @@ function MobileScreen({
               </div>
             )}
           </div>
-        </div>
-        <div className="flex items-center gap-6">
-          <PillButton
-            label={t(muted ? 'MOBILE.UNMUTE' : 'MOBILE.MUTE')}
-            onClick={toggleMuted}
-          />
-          <PillButton label={t('MOBILE.RESTART')} onClick={restart} />
         </div>
       </div>
       <div className="flex h-full flex-1 items-center justify-center">
