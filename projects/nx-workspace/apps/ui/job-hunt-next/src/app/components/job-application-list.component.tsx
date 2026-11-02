@@ -249,7 +249,7 @@ const ExpandedDetails = ({ item }: { item: ApplicationItem }) => {
               className="justify-start"
               onClick={() => onSelect()}
             >
-              <Icon size={14} />
+              <Icon size={14} className="shrink-0" />
               {label}
             </Button>
           ))}
@@ -331,14 +331,6 @@ const AnimatedHeight = ({ children }: { children: ReactNode }) => {
     </div>
   );
 };
-
-const CARD_STATUS_CLASS = {
-  APPLIED: 'border-green-500/60 bg-green-500/10',
-  PENDING: 'border-amber-500/60 bg-amber-500/10',
-} as const;
-
-const cardClassName = (item: ApplicationItem) =>
-  item.applied ? CARD_STATUS_CLASS.APPLIED : CARD_STATUS_CLASS.PENDING;
 
 const ApplicationRow = ({ item }: { item: ApplicationItem }) => {
   const { t } = useTranslation();
@@ -614,7 +606,6 @@ export const JobApplicationList = () => {
             ExpandedComponent={ExpandedDetails}
             copy={copy}
             isCards
-            getCardClassName={cardClassName}
           />
         )}
       </ExpansionContext.Provider>
