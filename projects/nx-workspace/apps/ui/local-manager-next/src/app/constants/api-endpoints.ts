@@ -12,27 +12,7 @@ export const API_ENDPOINTS = {
 
   SHELL_EXECUTE: '/api/shell/execute',
 
-  GCLOUD_AUTH_STATUS: '/api/gcloud/auth-status',
-  GCLOUD_PROJECTS: '/api/gcloud/projects',
-  GCLOUD_SET_PROJECT: '/api/gcloud/set-project',
-  GCLOUD_SET_ACCOUNT: '/api/gcloud/set-account',
-  GCLOUD_VAULT_TOKEN: '/api/gcloud/vault-token',
-
-  RENDER_SERVICES: '/api/render/services',
-
-  VERCEL_PROJECTS: '/api/vercel/projects',
-
-  FLYIO_APPS: '/api/flyio/apps',
-  FLYIO_AUTH_LOGIN: '/api/flyio/auth/login',
-
-  WRANGLER_PAGES: '/api/wrangler/pages',
-  WRANGLER_LOGIN: '/api/wrangler/login',
-
-  TERRAFORM_STATUS: '/api/terraform/status',
-
   SECURITY_NEWS: '/api/security-news',
-
-  GITHUB_PAGES: '/api/github/pages',
 
   WIREGUARD_STATUS: '/api/wireguard/status',
 
@@ -77,8 +57,6 @@ export const API_ENDPOINTS = {
   SPEECH_TO_TEXT: '/api/speech-to-text',
   TEXT_TO_SPEECH: '/api/text-to-speech',
   VOICE_LIST: '/api/voice-list',
-
-  AWS_PROFILES: '/api/aws/profiles',
 
   SSH_KEY: '/api/ssh-key',
 

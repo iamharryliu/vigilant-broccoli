@@ -7,21 +7,13 @@ import {
   TabsTrigger,
   TabsContent,
 } from '@vigilant-broccoli/react-lib';
-import { AwsManagementComponent } from '../../components/aws-management.component';
 import { DockerStatusComponent } from '../../components/docker-status.component';
-import { FlyIoAppsComponent } from '../../components/flyio-apps.component';
-import { GcloudAuthStatusComponent } from '../../components/gcloud-auth-status.component';
 import { GithubRepoActionStatusBadges } from '../../components/github-actions-status.component';
 import { GithubTeamManager } from '../../components/github-manager.component';
-import { GithubPagesComponent } from '../../components/github-pages.component';
 import { PM2StatusComponent } from '../../components/pm2-status.component';
 import { PublicIpComponent } from '../../components/public-ip.component';
 import { TailscaleMachinesComponent } from '../../components/tailscale-machines.component';
-import { TerraformStatusComponent } from '../../components/terraform-status.component';
 import { WireguardStatusComponent } from '../../components/wireguard-status.component';
-import { WranglerPagesComponent } from '../../components/wrangler-pages.component';
-import { RenderServicesComponent } from '../../components/render-services.component';
-import { VercelAppsComponent } from '../../components/vercel-apps.component';
 import { LocalServicesComponent } from '../../components/local-services.component';
 import { LocalCredentialsComponent } from '../../components/local-credentials.component';
 import { LanDevicesComponent } from '../../components/lan-devices.component';
@@ -49,6 +41,9 @@ const TAB = {
 type Tab = (typeof TAB)[keyof typeof TAB];
 
 const TAB_STORAGE_KEY = 'dev-dashboard-tab';
+
+// Served by cloud-services-next through the rewrite in next.config.js.
+const CLOUD_SERVICES_PATH = '/dev-dashboard/cloud';
 
 const REPO_URL = 'https://github.com/iamharryliu/vigilant-broccoli';
 
@@ -105,22 +100,11 @@ export default function Page() {
         </div>
       </TabsContent>
       <TabsContent value={TAB.CLOUD} className="pt-4 flex-1 min-h-0">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-4">
-            <GcloudAuthStatusComponent />
-            <AwsManagementComponent />
-            <TerraformStatusComponent />
-          </div>
-          <div className="flex flex-col gap-4">
-            <FlyIoAppsComponent />
-            <RenderServicesComponent />
-          </div>
-          <div className="flex flex-col gap-4">
-            <VercelAppsComponent />
-            <WranglerPagesComponent />
-            <GithubPagesComponent />
-          </div>
-        </div>
+        <iframe
+          src={CLOUD_SERVICES_PATH}
+          title="Cloud Services"
+          className="block h-full min-h-[40rem] w-full border-0"
+        />
       </TabsContent>
       <TabsContent value={TAB.TEAM_MANAGEMENT} className="pt-4 flex-1 min-h-0">
         <div className="grid grid-cols-3 gap-4">

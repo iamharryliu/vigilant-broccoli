@@ -2,7 +2,7 @@
 
 ## Overview
 
-- Dev dashboard card in `local-manager-next`
+- Dev dashboard card in `cloud-services-next`, embedded in the `local-manager-next` Cloud Services tab
 - Reads auth state via `gcloud` CLI through `@vigilant-broccoli/devops-cli` (see [devops-cli.md](./devops-cli.md))
 
 ## Features
