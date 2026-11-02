@@ -8,7 +8,7 @@ export type FeedItem = {
   source: string;
   kev?: boolean;
   advisory?: boolean;
-  packages?: string[];
+  status?: boolean;
   severity?: string | null;
   cvss?: number | null;
 };
@@ -96,7 +96,11 @@ const parseXmlFeed = (xml: string, source: string): FeedItem[] =>
     .filter(({ title, link }) => title && link);
 
 export const parseFeed = (body: string, feed: Feed): FeedItem[] => {
-  if (feed.format === FEED_FORMAT.RSS) return parseXmlFeed(body, feed.name);
+  if (feed.format === FEED_FORMAT.RSS)
+    return parseXmlFeed(body, feed.name).map(item => ({
+      ...item,
+      status: feed.status,
+    }));
   if (feed.format === FEED_FORMAT.KEV) {
     const data = JSON.parse(body) as { vulnerabilities?: KevEntry[] };
     return (data.vulnerabilities ?? []).map(entry => ({
@@ -115,9 +119,6 @@ export const parseFeed = (body: string, feed: Feed): FeedItem[] => {
     link: entry.html_url,
     source: feed.name,
     advisory: true,
-    packages: (entry.vulnerabilities ?? []).flatMap(({ package: pkg }) =>
-      pkg?.name ? [pkg.name] : [],
-    ),
     severity: entry.severity,
     cvss: entry.cvss?.score,
   }));
