@@ -24,4 +24,4 @@
 ## Consumers
 
 - `cloud-services-next` API routes under `/dev-dashboard/cloud/api/{aws,gcloud,flyio,vercel,wrangler}`
-- `local-manager-next` API routes under `/api/{docker,pm2,tailscale,wireguard}`
+- `local-services-next` API routes under `/dev-dashboard/local/api/{docker,pm2,tailscale,wireguard}`

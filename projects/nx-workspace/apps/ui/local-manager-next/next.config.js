@@ -25,11 +25,15 @@ const SERVER_ONLY_EXTERNALS = [
   'chromium-bidi',
   'node:sqlite',
 ];
-// cloud-services-next (PM2, port 1338) is a Next.js zone: its basePath equals
-// this prefix, and the Cloud Services dashboard tab iframes it.
+// cloud-services-next (PM2, port 1338) and local-services-next (PM2, port
+// 1339) are Next.js zones: each basePath equals its prefix, and the matching
+// dashboard tab iframes it.
 const CLOUD_SERVICES_PATH = '/dev-dashboard/cloud';
 const CLOUD_SERVICES_ORIGIN =
   process.env.CLOUD_SERVICES_ORIGIN || 'http://127.0.0.1:1338';
+const LOCAL_SERVICES_PATH = '/dev-dashboard/local';
+const LOCAL_SERVICES_ORIGIN =
+  process.env.LOCAL_SERVICES_ORIGIN || 'http://127.0.0.1:1339';
 const LIBS_DIR = join(__dirname, '../../../libs/@vigilant-broccoli');
 const LIB_SOURCE_PATTERN = /\.(tsx?|jsx?|html)$/;
 // Tailwind scans lib sources by glob, but webpack's cache does not reliably
@@ -71,6 +75,10 @@ const nextConfig = {
       {
         source: `${CLOUD_SERVICES_PATH}/:path*`,
         destination: `${CLOUD_SERVICES_ORIGIN}${CLOUD_SERVICES_PATH}/:path*`,
+      },
+      {
+        source: `${LOCAL_SERVICES_PATH}/:path*`,
+        destination: `${LOCAL_SERVICES_ORIGIN}${LOCAL_SERVICES_PATH}/:path*`,
       },
     ];
   },
