@@ -62,7 +62,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 
 ## Running in CI
 
-Plan- and Develop-phase agents, backlog auditing, documentation and context auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`local-pr-create-todo-audit`, `local-pr-create-audit`, `local-pr-create-context-audit`, `local-pr-create-comment-audit`, `local-pr-create-free-tier-audit`, `local-pr-create-inventory-audit`, `local-pr-create-prune`, `local-pr-create-url-audit`, `update-readmes` (run by `agentic-pr-create-readmes`), `local-pr-create-todo`, `local-pr-create-rnd`, `local-pr-create`, `local-pr-update`, `local-pr-update-fix-ci`, `local-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
+Plan- and Develop-phase agents, backlog auditing, documentation and context auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`local-pr-create-todo-audit`, `local-pr-create-audit`, `local-pr-create-context-audit`, `local-pr-create-comment-audit`, `local-pr-create-free-tier-audit`, `local-pr-create-inventory-audit`, `local-pr-create-prune`, `local-pr-create-url-audit`, `update-readmes` (run by `agentic-pr-create-readmes`), `local-pr-create-todo`, `local-pr-create`, `local-pr-update`, `local-pr-update-fix-ci`, `local-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
 
 Unattended Claude runs (`agentic-pr-create` solves and every create, update, audit, prune and README runner) use auto permission mode (`--permission-mode auto`): a classifier approves routine edits and checks and blocks risky actions such as exfiltration, credential reads or running downloaded code. Headless runs have nobody to approve a blocked action, so the agent must work around it, and repeated blocks can end the run early. Export `SOLVE_PERMISSION_MODE=bypass` before a Docker sandbox run to restore `--dangerously-skip-permissions`; each wrapper forwards the variable into the container. Ollama solves always bypass, since the classifier needs an Anthropic model.
 
@@ -84,15 +84,6 @@ from Vault, the script skips the local Vault-over-SSH load and mints the install
   GitHub-style patch, and lists any planned increment that was not published. The runner prints one record per PR
   (`PR_TITLE::`, `PR_URL::`, `PR_STATE::`, `PR_BASE::`, `PR_DEPENDS_ON::`, `PR_SUMMARY_*` and `PR_DIFF_BEGIN`/`PR_DIFF_END`),
   `solve-todo.sh` collects them into a JSON Lines file, and `.github/scripts/agentic-solve-email.mjs` renders and sends it.
-
-`pnpm agentic-pr-create-rnd "<question>"` runs `create-rnd.sh` locally. The `manual-agentic-pr-create-rnd` workflow runs the same command
-on a hosted runner using the existing Claude and GitHub App credentials from Vault. It researches the question,
-writes a new note under `docs/rnd/`, and opens a PR; changes outside `docs/rnd/` fail the run.
-
-- GitHub UI: **Actions → manual-agentic-pr-create-rnd → Run workflow** on `main`; enter a research question and optionally choose a model
-  (default `sonnet`) or disable the firewall.
-- CLI: `gh workflow run manual-agentic-pr-create-rnd.yml -f question="<question>"`, with optional `-f model=opus` or `-f firewall=off`.
-- Runs queue behind an active R&D run; the job has a 60-minute timeout. The PR link is written to the run's job summary.
 
 Codex uses a dedicated ChatGPT/Codex access token, not the app's `OPENAI_API_KEY`:
 
@@ -262,7 +253,7 @@ weekly (Sunday 06:40 UTC) and on dispatch. Spec/route drift lives in code, so it
 
 - Dispatch: `gh workflow run cron-agentic-pr-create-audit.yml` (optional `-f model=`, `-f firewall=off`).
 - A clean run opens no PR — `audit-docs-runner.sh` prints `AUDIT_CLEAN` and exits 0.
-- The runner refuses to commit if any non-Markdown file changed, if `notes/`, `docs/rnd/`, `docs/learning-timeline.md`,
+- The runner refuses to commit if any non-Markdown file changed, if `notes/`, `docs/learning-timeline.md`,
   `TODO.md` or a changelog changed, or if more than 15 files changed. The skill fills the cap highest-value first and
   lists the rest as skipped in the PR body, so a re-run picks them up.
 
@@ -287,7 +278,7 @@ opens one PR citing where each removed fact is retained. It runs Opus by default
 
 - Dispatch: `gh workflow run cron-agentic-pr-create-context-audit.yml` (optional `-f model=`, `-f firewall=off`).
 - A clean run opens no PR — `audit-context-runner.sh` prints `AUDIT_CLEAN` and exits 0.
-- The runner refuses to commit if any file outside that scope changed (including `notes/`, `docs/rnd/`,
+- The runner refuses to commit if any file outside that scope changed (including `notes/`,
   `docs/learning-timeline.md` and `TODO.md`), if a file was created, deleted or changed type (an adapter symlink
   rewritten as a regular file), if a `SKILL.md` frontmatter block changed, or if more than 15 files changed.
 

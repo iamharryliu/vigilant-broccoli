@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Shared by every agentic-sandbox runner that opens or edits a PR
 (solve-todo-runner.sh, update-pr-runner.sh,
-create-todo-runner.sh, create-rnd-runner.sh,
+create-todo-runner.sh,
 audit-todo-runner.sh, audit-docs-runner.sh, audit-context-runner.sh,
 prune-runner.sh) to rewrite a PR body in place: replace the
 "## Summary", "## Next steps", "## Concerns", "## Suggestions" and
