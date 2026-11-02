@@ -1,10 +1,8 @@
 # Dev Dashboard
 
-## Render Services
+## Cloud Services
 
-- The Cloud Services tab lists Render services alphabetically, with service type, suspension status, and links to the service dashboard and public app URL when available. Not suspended does not imply a healthy deployment or an awake free instance.
-- `GET /api/render/services` uses the existing authenticated API proxy and a server-only `RENDER_API_KEY` injected from Vault by the app environment example. It follows the [Render service API](https://api-docs.render.com/reference/list-services) cursor pagination and returns only display fields.
-- The card refreshes every minute while visible, with loading, empty and error states. Provider failures do not appear as an empty account.
+- The Cloud Services tab iframes `cloud-services-next` at `/dev-dashboard/cloud`, which this app rewrites to the PM2 process on `127.0.0.1:1338` (`CLOUD_SERVICES_ORIGIN` overrides the target). See [cloud-services.md](../../../cloud-services-next/docs/features/cloud-services.md).
 
 ## Local Credentials
 
@@ -29,7 +27,3 @@
 - The TODO tab is read-only: it parses the main checkout's `TODO.md` (`GET /api/todo`), groups rows into sections and a table of contents by `Type` (ordered by `TODO_TYPE_ORDER` in `src/app/constants/todo.ts`), and sorts each section by Priority, Effort, Agent or Model. Rows show Status (priority · effort · agent · model) and Brief; the help icon on the Status header explains the values, and clicking a Brief opens the full Description and Recommended Fix. The legend and sort ranks both come from `TODO_STATUS_LEGEND`, so keep it in step with `docs/todo-pattern.md`.
 - Run agentic solve dispatches `manual-agentic-pr-create` with `prompt: solve <id>` and the row's Model as `model` when it is one of `TODO_DISPATCH_MODELS` (otherwise the workflow default). Dispatch results and load failures show as toasts.
 - Delete asks for a reason and dispatches the same workflow with `Remove TODO.md row <id>. Reason: <reason>`; that exact form is what `solve-todo-runner.sh` lets through as a TODO-only PR, so keep `dispatchTodoRemoval` in `src/app/api/todo/_lib/todo-dispatch.ts` and `TODO_REMOVAL_REQUEST_RE` in sync. The row stays on the page until that PR merges and the checkout is pulled.
-
-## Free Tier
-
-- This card creates no Render resources and polls the management API rather than the service URL. Render free web services share 750 instance-hours per workspace per calendar month and spin down after 15 minutes without inbound traffic ([Render free instance limits](https://render.com/docs/free)).

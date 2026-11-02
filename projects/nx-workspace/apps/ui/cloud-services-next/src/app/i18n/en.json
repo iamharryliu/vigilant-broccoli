@@ -1,0 +1,15 @@
+{
+  "CLOUD": {
+    "TITLE": "Cloud Services"
+  },
+  "RENDER": {
+    "TITLE": "Render Services",
+    "FETCH_ERROR": "Unable to load Render services. Check RENDER_API_KEY in Vault and redeploy cloud-services-next.",
+    "SUSPENDED": "Suspended",
+    "NOT_SUSPENDED": "Not suspended",
+    "SERVICE": "Service",
+    "APP": "App",
+    "DASHBOARD": "Dashboard",
+    "EMPTY": "No services found"
+  }
+}

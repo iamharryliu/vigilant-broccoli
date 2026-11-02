@@ -226,7 +226,7 @@ export const GcloudAuthStatusComponent = () => {
 
       const [authResponse, reauthResponse] = await Promise.all([
         authFetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS),
-        authFetch('/api/gcloud/reauth-needed?fresh=1'),
+        authFetch(`${API_ENDPOINTS.GCLOUD_REAUTH_NEEDED}?fresh=1`),
       ]);
 
       if (authResponse.ok) {
@@ -254,7 +254,7 @@ export const GcloudAuthStatusComponent = () => {
     try {
       const [authResponse, reauthResponse] = await Promise.all([
         authFetch(API_ENDPOINTS.GCLOUD_AUTH_STATUS),
-        authFetch('/api/gcloud/reauth-needed'),
+        authFetch(API_ENDPOINTS.GCLOUD_REAUTH_NEEDED),
       ]);
 
       if (!authResponse.ok) {

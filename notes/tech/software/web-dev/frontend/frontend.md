@@ -6,6 +6,7 @@
   - [Browser UI Approaches](#browser-ui-approaches)
   - [Embedding and Composition](#embedding-and-composition)
 - [Micro-frontends](#micro-frontends)
+  - [Multi-zone vs Iframe](#multi-zone-vs-iframe)
 - [Styling and UI Components](#styling-and-ui-components)
   - [Styling Languages and Utilities](#styling-languages-and-utilities)
   - [UI Component Tools](#ui-component-tools)
@@ -83,6 +84,23 @@ A micro-frontend splits one user-facing app into pieces that separate teams buil
 | Runtime orchestrator (single-spa, import maps) | A root config mounts and unmounts framework apps by route; import maps resolve URLs. | Yes. | None by default. | Mixes frameworks on one page; incremental migration between frameworks. | Lifecycle boilerplate per app; memory leaks and global CSS clashes are on you. | Migrating a legacy SPA piece by piece to a new framework. |
 | Server-side or edge composition | The server, CDN, or ESI/SSI stitches HTML fragments from each team before sending. | Yes. | None in the browser. | Fast first paint; SEO friendly; the browser sees one page. | Client interactivity still needs a hydration or JS integration strategy; fragment latency adds up. | Content-heavy, SEO-sensitive pages such as e-commerce. |
 | Web Components | Each team ships custom elements that the shell renders as tags. | Yes, when loaded from a URL at runtime. | Style and DOM via Shadow DOM; shared JS realm. | Framework-agnostic contract (attributes, properties, events). | SSR, forms, and theming across shadow roots need planning; each element may bundle its own framework. | Widgets reused across stacks with a stable, browser-native API. |
+
+### Multi-zone vs Iframe
+
+| Aspect | Multi-zone | Iframe |
+| --- | --- | --- |
+| Asset path collisions | Apps that share an origin need distinct `basePath` and `assetPrefix` values so `_next` bundles do not collide. | None: each document has its own origin and paths. |
+| Auth and cookies | One origin, so a session cookie is shared and each app can reuse the same login. | Separate origins mean separate cookies; each app needs its own auth, or cookies must be scoped to a shared parent domain. |
+| Best used for | Large sites split by section that share one domain and login. | Keeping the shell's navigation around an app that is hosted separately, or isolating untrusted content. |
+| Communication | Ordinary page navigation; shared state goes through cookies, the URL, or a backend. | `postMessage` between shell and frame, with origin checks. |
+| Composition level | Whole pages: each app owns every URL under its path prefix. | Any rectangle inside a page of the shell. |
+| Embedding policy | Not needed: the proxy serves each app as a normal page. | The embedded app must allow framing (`X-Frame-Options`, CSP `frame-ancestors`), and features such as clipboard need `allow` permissions. |
+| Failure blast radius | A crashed app breaks only its own paths. | A crashed app leaves a broken frame; the shell and its navigation keep working. |
+| Navigation | Full page load between apps; no client-side transition. | In-frame navigation is invisible to the shell URL, so deep links, back button, and reload need extra work. |
+| Routing mechanism | Reverse proxy, CDN, or framework rewrites map each path prefix to an app. | None: the shell points `src` at the app's own URL, so it needs its own hostname. |
+| Shell chrome | Each app renders its own header and sidebar, so they must be duplicated or shared through a library. | The shell keeps its header and sidebar around the embedded app. |
+| Sizing and scrolling | Native: the page scrolls and sizes like any other. | Fixed or script-managed height; nested scrollbars are common. |
+| Styling | Fully independent per app. | Fully independent per app; the shell theme does not reach the frame. |
 
 ## Styling and UI Components
 

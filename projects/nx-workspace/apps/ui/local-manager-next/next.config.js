@@ -25,6 +25,11 @@ const SERVER_ONLY_EXTERNALS = [
   'chromium-bidi',
   'node:sqlite',
 ];
+// cloud-services-next (PM2, port 1338) is a Next.js zone: its basePath equals
+// this prefix, and the Cloud Services dashboard tab iframes it.
+const CLOUD_SERVICES_PATH = '/dev-dashboard/cloud';
+const CLOUD_SERVICES_ORIGIN =
+  process.env.CLOUD_SERVICES_ORIGIN || 'http://127.0.0.1:1338';
 const LIBS_DIR = join(__dirname, '../../../libs/@vigilant-broccoli');
 const LIB_SOURCE_PATTERN = /\.(tsx?|jsx?|html)$/;
 // Tailwind scans lib sources by glob, but webpack's cache does not reliably
@@ -61,6 +66,14 @@ const nextConfig = {
   distDir: '../../../dist/apps/ui/local-manager-next/.next',
   agentRules: false,
   serverExternalPackages: ['socket.io-client', 'better-sqlite3'],
+  async rewrites() {
+    return [
+      {
+        source: `${CLOUD_SERVICES_PATH}/:path*`,
+        destination: `${CLOUD_SERVICES_ORIGIN}${CLOUD_SERVICES_PATH}/:path*`,
+      },
+    ];
+  },
   webpack: (config, { isServer }) => {
     if (config.cache && typeof config.cache === 'object') {
       config.cache.version = `${config.cache.version ?? ''}|${libSourcesHash()}`;
