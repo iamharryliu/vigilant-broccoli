@@ -7,7 +7,7 @@
 - The card's ellipsis menu has Delete, which asks for confirmation and then removes the whole application folder; it is left out of the expanded card's action buttons, which run without a confirm step. Switching between the Posting and Gaps tabs eases the card to the new height
 - Mark as applied (ellipsis menu and expanded card actions, toggling to Mark as not applied) records the status in a hidden `.applied` file in the application folder. Applied cards show an Applied badge. Demo mode shows two applied cards and hides the action
 - There is no Open in Finder action: the server may run in a container with no access to the user's desktop
-- `/?expand=latest` expands the newest card; the finished-run toast links to it
+- `/?expand=latest` expands the newest card; the finished-run toast links to it. The list reads the param only on mount; when a run finishes it re-fetches without changing which cards are expanded
 - A missing Job Applications folder lists as empty; the first run creates it
 
 ## Application resume

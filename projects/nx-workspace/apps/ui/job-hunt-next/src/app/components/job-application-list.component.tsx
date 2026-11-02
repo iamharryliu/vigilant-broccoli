@@ -44,6 +44,7 @@ import {
   EllipsisAction,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import { EXPAND_LATEST, EXPAND_PARAM } from '../app.const';
+import { JOB_APPLICATIONS_CHANGED_EVENT } from '../constants/career';
 import { IS_DEMO } from '../constants/demo';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { useTranslation } from '../i18n';
@@ -355,44 +356,58 @@ export const JobApplicationList = () => {
   const [defaultExpandedIds, setDefaultExpandedIds] = useState<string[]>([]);
   const [viewer, setViewer] = useState<Viewer | null>(null);
 
-  const load = useCallback(async () => {
-    try {
-      const [entries, applied] = await Promise.all([
-        listFolder(''),
-        listApplied(),
-      ]);
-      const folders = entries.filter(
-        entry => entry.kind === FILE_ENTRY_KIND.FOLDER,
-      );
-      const sorted = folders
-        .map(folder => ({
-          id: folder.path,
-          created: folder.created,
-          applied: applied.has(folder.path),
-          ...parseApplicationFolder(
-            folder.name,
-            folder.modified,
-            folder.created,
-          ),
-        }))
-        .sort(
-          (a, b) =>
-            b.date.localeCompare(a.date) || b.created.localeCompare(a.created),
+  const load = useCallback(
+    async (expandLatest: boolean) => {
+      try {
+        const [entries, applied] = await Promise.all([
+          listFolder(''),
+          listApplied(),
+        ]);
+        const folders = entries.filter(
+          entry => entry.kind === FILE_ENTRY_KIND.FOLDER,
         );
-      setItems(sorted);
-      const wantsLatest =
-        new URLSearchParams(window.location.search).get(EXPAND_PARAM) ===
-        EXPAND_LATEST;
-      if (wantsLatest && sorted.length) setDefaultExpandedIds([sorted[0].id]);
-    } catch (error) {
-      toast.error(errorMessage(error, t('APPLICATIONS.LOAD_FAILED')));
-    } finally {
-      setLoaded(true);
-    }
-  }, [t]);
+        const sorted = folders
+          .map(folder => ({
+            id: folder.path,
+            created: folder.created,
+            applied: applied.has(folder.path),
+            ...parseApplicationFolder(
+              folder.name,
+              folder.modified,
+              folder.created,
+            ),
+          }))
+          .sort(
+            (a, b) =>
+              b.date.localeCompare(a.date) ||
+              b.created.localeCompare(a.created),
+          );
+        setItems(sorted);
+        const wantsLatest =
+          expandLatest &&
+          new URLSearchParams(window.location.search).get(EXPAND_PARAM) ===
+            EXPAND_LATEST;
+        if (wantsLatest && sorted.length) setDefaultExpandedIds([sorted[0].id]);
+      } catch (error) {
+        toast.error(errorMessage(error, t('APPLICATIONS.LOAD_FAILED')));
+      } finally {
+        setLoaded(true);
+      }
+    },
+    [t],
+  );
 
   useEffect(() => {
-    load();
+    load(true);
+  }, [load]);
+
+  useEffect(() => {
+    const reload = () => {
+      load(false);
+    };
+    window.addEventListener(JOB_APPLICATIONS_CHANGED_EVENT, reload);
+    return () =>
+      window.removeEventListener(JOB_APPLICATIONS_CHANGED_EVENT, reload);
   }, [load]);
 
   const loadDetails = useCallback(
