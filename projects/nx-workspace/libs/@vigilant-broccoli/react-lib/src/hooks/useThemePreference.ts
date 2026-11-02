@@ -11,6 +11,7 @@ const CHANGE_EVENT = 'change';
 const PREFERS_DARK_QUERY = '(prefers-color-scheme: dark)';
 
 export type ThemeAppearance = typeof LIGHT | typeof DARK;
+export type ThemePreference = ThemeAppearance | 'system';
 
 const isAppearance = (value: unknown): value is ThemeAppearance =>
   value === LIGHT || value === DARK;
@@ -49,6 +50,7 @@ export function useSystemAppearance(): ThemeAppearance {
 export function useThemePreference(storageKey = THEME_STORAGE_KEY) {
   const systemAppearance = useSystemAppearance();
   const [override, setOverride] = useState<ThemeAppearance | null>(null);
+  const preference: ThemePreference = override ?? 'system';
   const appearance = override ?? systemAppearance;
 
   useLayoutEffect(() => {
@@ -77,5 +79,20 @@ export function useThemePreference(storageKey = THEME_STORAGE_KEY) {
     }
   }, [appearance, systemAppearance, storageKey]);
 
-  return { appearance, toggleTheme };
+  const setPreference = useCallback(
+    (next: ThemePreference) => {
+      const nextOverride = next === 'system' ? null : next;
+      startThemeTransition();
+      setOverride(nextOverride);
+      try {
+        if (nextOverride) localStorage.setItem(storageKey, nextOverride);
+        else localStorage.removeItem(storageKey);
+      } catch {
+        // Keep the in-memory preference when browser storage is unavailable.
+      }
+    },
+    [storageKey],
+  );
+
+  return { appearance, preference, setPreference, toggleTheme };
 }

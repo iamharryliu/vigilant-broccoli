@@ -6,7 +6,8 @@
     "APPLICATIONS": "Applications",
     "CAREER_EXPERIENCE": "Career experience",
     "RESUME": "Resume",
-    "RUNS": "Runs"
+    "RUNS": "Runs",
+    "SETTINGS": "Settings"
   },
   "APPLICATIONS": {
     "EMPTY": "No job applications yet.",
@@ -93,7 +94,9 @@
     "NO_CHANGES": "No differences between these versions.",
     "PDF_FAILED": "Saved, but the resume PDF could not be regenerated",
     "NONE": "This application has no editable resume. Applications generated from now on keep one.",
-    "NEED_TWO": "Save a change to start comparing versions."
+    "NEED_TWO": "Save a change to start comparing versions.",
+    "WORK_EXPERIENCE": "Work Experience",
+    "OPEN_SOURCE": "Open Source"
   },
   "CAREER": {
     "EDIT": "Edit",
@@ -127,5 +130,14 @@
   "DEMO": {
     "NOTICE": "Public demo · Explore a fictional application, resume, cover letter and run history. Saving, importing and live AI runs are disabled.",
     "READ_ONLY": "This demo is read-only. Self-host Job Hunt to save career files or run Claude."
+  },
+  "SETTINGS": {
+    "THEME": "Theme",
+    "LANGUAGE": "Language",
+    "SYSTEM": "System",
+    "LIGHT": "Light",
+    "DARK": "Dark",
+    "ENGLISH": "English",
+    "SWEDISH": "Svenska"
   }
 }
