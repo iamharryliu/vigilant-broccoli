@@ -5,6 +5,7 @@
 - A left sidebar switches `/` between the Applications, Career experience, Resume and Runs sections, kept in the `tab` query param. Applications lists the folders in the Job Applications folder as expandable cards, newest date first and, within a date, most recently created first.
 - Open posting (first card action, also in the ellipsis menu) opens the posting's original page from the `Posting URL:` line the run saves, in a new tab with no opener; a posting saved without a URL reports that instead. The tab opens inside the click and is pointed at the URL once the posting file is read, so popup blockers allow it
 - The card's ellipsis menu has Delete, which asks for confirmation and then removes the whole application folder; it is left out of the expanded card's action buttons, which run without a confirm step. Switching between the Posting and Gaps tabs eases the card to the new height
+- Mark as applied (ellipsis menu and expanded card actions, toggling to Mark as not applied) records the status in a hidden `.applied` file in the application folder. Applied cards are green with an Applied badge; the rest are amber. Demo mode shows two applied cards and hides the action
 - There is no Open in Finder action: the server may run in a container with no access to the user's desktop
 - `/?expand=latest` expands the newest card; the finished-run toast links to it
 - A missing Job Applications folder lists as empty; the first run creates it
@@ -25,4 +26,5 @@
 ## API
 
 - `GET /api/job-applications?path=` lists a folder, `GET /api/job-applications/file?path=` serves a file; both are confined to the Job Applications folder
+- `GET /api/job-applications/applied` lists the applied folder names; `PUT /api/job-applications/applied?path=<folder>[&applied=false]` marks or clears one (same direct-child rule as delete)
 - `DELETE /api/job-applications?path=<folder>` deletes one application folder recursively; only a direct child of the Job Applications folder is accepted (400 otherwise, 404 if missing)
