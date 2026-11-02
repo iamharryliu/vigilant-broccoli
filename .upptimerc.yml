@@ -44,6 +44,10 @@ sites:
     url: https://staging-component-library.pages.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
+  - name: staging-text-tools
+    url: https://staging-text-tools-ui.pages.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [302]
   - name: staging-utilities
     url: https://staging-utilities-ui.pages.dev/
     maxRedirects: 0
@@ -106,6 +110,8 @@ sites:
     url: https://api.harryliu.dev/
   - name: production-component-library
     url: https://components.harryliu.dev/
+  - name: production-text-tools
+    url: https://text-tools.harryliu.dev/
   - name: production-utilities
     url: https://utilities.harryliu.dev/
   - name: production-waiting-games

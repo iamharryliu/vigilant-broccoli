@@ -8,6 +8,10 @@
 
 - The Cloud Services tab iframes `cloud-services-next` at `/dev-dashboard/cloud`, which this app rewrites to the PM2 process on `127.0.0.1:1338` (`CLOUD_SERVICES_ORIGIN` overrides the target). See [cloud-services.md](../../../cloud-services-next/docs/features/cloud-services.md).
 
+## Text Tools
+
+- The Text Tools tab iframes the static `text-tools-ui` site (`VB_APP_URL.TEXT_TOOLS.URL`, `text-tools.harryliu.dev`). The site's `_headers` allows framing only from `https://manager.vigilant-broccoli.app`, so the tab does not render from other origins. See [text-tools.md](../../../text-tools-ui/docs/features/text-tools.md).
+
 ## Connection Map
 
 - The Network Tools tab's Connection Map draws great-circle arcs from this machine's public-IP location to every external TCP/UDP peer, coloured by direction, with a filterable flow list beside it. Clicking a flow highlights its arc.

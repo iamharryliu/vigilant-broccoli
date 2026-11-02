@@ -7,6 +7,11 @@ export const VB_APP_URL = {
     URL: 'https://components.harryliu.dev/',
     STAGING_URL: 'https://staging-component-library.pages.dev/',
   },
+  TEXT_TOOLS: {
+    NAME: 'Text Tools',
+    URL: 'https://text-tools.harryliu.dev/',
+    STAGING_URL: 'https://staging-text-tools-ui.pages.dev/',
+  },
   UTILITIES: {
     NAME: 'Utilities',
     URL: 'https://utilities.harryliu.dev/',

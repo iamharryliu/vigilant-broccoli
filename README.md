@@ -2,7 +2,7 @@
 
 <!-- managed:repo-stats:start -->
 
-Personal monorepo, supporting **23 applications**, **6 API services**, **12 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
+Personal monorepo, supporting **24 applications**, **6 API services**, **12 Docker images** and **4 npm packages**. Learn more at [projects.harryliu.dev](https://projects.harryliu.dev/).
 
 <!-- managed:repo-stats:end -->
 
@@ -112,6 +112,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | <img src="./projects/nx-workspace/apps/ui/small-business-next/src/app/apple-icon.png" width="20" height="20" align="absmiddle"> [Small Business Next](./projects/nx-workspace/apps/ui/small-business-next) | Subscription and subscriber notification management. | — | — | ![Local machine](https://img.shields.io/badge/Local%20machine-555555?style=flat-square) | 💻 |
 | [Socket Server (Socket.IO)](./projects/nx-workspace/apps/socket-server-socketio) | Real-time bidirectional communication backend. | None | `main` | ![Oracle Cloud](https://img.shields.io/badge/Oracle%20Cloud-F80000?style=flat-square&logo=oracle&logoColor=white) | 🔒 Service Token - [socket.harryliu.dev](https://socket.harryliu.dev/) |
 | [Spotify to MP3](./scripts/python/dj-scripts/spotify-to-mp3) | Command-line music download utility. | — | — | ![Local machine](https://img.shields.io/badge/Local%20machine-555555?style=flat-square) | 💻 |
+| <img src="./projects/nx-workspace/apps/ui/text-tools-ui/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Text Tools UI](./projects/nx-workspace/apps/ui/text-tools-ui) | Browser-only JSON, environment variable, Base64 and URL encoding converters. | None | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [text-tools.harryliu.dev](https://text-tools.harryliu.dev/) |
 | <img src="./projects/nx-workspace/apps/ui/utilities-ui/public/apple-touch-icon.png" width="20" height="20" align="absmiddle"> [Utilities UI](./projects/nx-workspace/apps/ui/utilities-ui) | Searchable page of everyday utilities. | None | `main` `production` | ![Cloudflare Pages](https://img.shields.io/badge/Cloudflare%20Pages-F38020?style=flat-square&logo=cloudflarepages&logoColor=white) | 🌐 [utilities.harryliu.dev](https://utilities.harryliu.dev/) |
 | <img src="./vday-godot-game/icon.svg" width="20" height="20" align="absmiddle"> [Valentine’s Day Adventure Game](./vday-godot-game) | Godot adventure game with heart collection. | — | — | ![Local machine](https://img.shields.io/badge/Local%20machine-555555?style=flat-square) | 💻 |
 | [Vault](./infrastructure/terraform/cloudflare-vault.tf) | Secrets management for applications and CI. | — | — | ![Google Cloud](https://img.shields.io/badge/Google%20Cloud-4285F4?style=flat-square&logo=googlecloud&logoColor=white) | 🔒 Cloudflare Access - [vault.harryliu.dev](https://vault.harryliu.dev/) |
