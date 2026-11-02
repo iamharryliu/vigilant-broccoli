@@ -152,6 +152,7 @@ function DirectionPad({
       }}
       onPointerUp={lift}
       onPointerCancel={lift}
+      onLostPointerCapture={lift}
       onContextMenu={event => event.preventDefault()}
     >
       {Object.values(DIRECTION).map(direction => {
@@ -310,9 +311,15 @@ function MobileScreen({
   const startsIn = countdownSeconds(match);
   const over = match.status === MATCH_STATUS.OVER;
   const winner = match.players.find(({ id }) => id === match.winnerId);
+  const self = match.players.find(({ id }) => id === PLAYER_ID);
+  const balloonsLeft =
+    (self?.maxBalloons ?? 0) -
+    match.balloons.filter(({ ownerId }) => ownerId === PLAYER_ID).length;
+  // Taps during the countdown are discarded, so the button dims until a drop can land.
+  const canDrop = startsIn === 0 && !over && balloonsLeft > 0;
 
   return (
-    <main className="fixed inset-0 flex select-none items-center justify-between gap-2 bg-indigo-900 px-[max(1rem,env(safe-area-inset-left))] py-1 text-white">
+    <main className="fixed inset-0 flex touch-none select-none overscroll-none items-center justify-between gap-2 bg-indigo-900 px-[max(1rem,env(safe-area-inset-left))] py-1 text-white">
       <div className="flex h-full flex-1 items-center justify-center">
         <DirectionPad
           onChange={direction => {
@@ -377,7 +384,7 @@ function MobileScreen({
         <button
           type="button"
           aria-label={t('MOBILE.DROP')}
-          className="h-24 w-24 touch-none select-none rounded-full bg-fuchsia-600 text-2xl font-black shadow-lg active:scale-95 active:bg-fuchsia-800"
+          className={`h-24 w-24 touch-none select-none rounded-full bg-fuchsia-600 text-2xl font-black shadow-lg active:scale-95 active:bg-fuchsia-800 ${canDrop ? '' : 'opacity-40'}`}
           onPointerDown={event => {
             event.preventDefault();
             controls.dropBalloon();
