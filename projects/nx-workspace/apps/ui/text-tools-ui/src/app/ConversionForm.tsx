@@ -41,9 +41,7 @@ export const ConversionForm = ({
       const reader = new FileReader();
       reader.onload = e => {
         const result = e.target?.result;
-        console.log(result);
         if (typeof result === 'string') {
-          console.log('hit ');
           setText(result);
         }
       };

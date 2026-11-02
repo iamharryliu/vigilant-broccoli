@@ -285,6 +285,21 @@ variable "context_pages_subdomain" {
   default = "production-context-md.pages.dev"
 }
 
+variable "text_tools_domain" {
+  type    = string
+  default = "text-tools.harryliu.dev"
+}
+
+variable "text_tools_pages_project" {
+  type    = string
+  default = "production-text-tools-ui"
+}
+
+variable "text_tools_pages_subdomain" {
+  type    = string
+  default = "production-text-tools-ui.pages.dev"
+}
+
 variable "utilities_domain" {
   type    = string
   default = "utilities.harryliu.dev"

@@ -134,6 +134,10 @@
       "TITLE": "Balloono",
       "DESCRIPTION": "Bomberman-style water balloon battles in online rooms or against CPUs, deployed on Vercel."
     },
+    "TEXT_TOOLS": {
+      "TITLE": "Text Tools",
+      "DESCRIPTION": "Convert and inspect text: JSON, environment variables, Base64, URL encoding and word counts."
+    },
     "UTILITIES": {
       "TITLE": "Utilities",
       "DESCRIPTION": "Searchable page of everyday utilities."

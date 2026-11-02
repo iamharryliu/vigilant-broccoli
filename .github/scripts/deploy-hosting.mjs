@@ -18,6 +18,7 @@ export const PROJECT_HOSTING = {
   },
   'docs-md': { platform: 'pages', name: 'docs-md' },
   'context-md': { platform: 'pages', name: 'context-md' },
+  'text-tools-ui': { platform: 'pages', name: 'text-tools-ui' },
   'utilities-ui': { platform: 'pages', name: 'utilities-ui' },
   'bookmarks-react': { platform: 'pages', name: 'bookmarks-react' },
   'pomodoro-react': { platform: 'pages', name: 'pomodoro-react' },

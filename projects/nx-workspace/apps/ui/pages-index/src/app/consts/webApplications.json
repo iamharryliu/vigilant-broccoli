@@ -87,6 +87,13 @@
       "readmePath": "projects/nx-workspace/apps/ui/calendars/README.md"
     },
     {
+      "id": "text-tools",
+      "href": "https://text-tools.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.TEXT_TOOLS.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.TEXT_TOOLS.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/text-tools-ui/README.md"
+    },
+    {
       "id": "utilities",
       "href": "https://utilities.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.UTILITIES.TITLE",

@@ -184,6 +184,11 @@ export const VB_LINKS: QuickLink[] = [
     { NAME: 'VB - GitHub Pull Requests', URL: `${VB_GITHUB_REPO_URL}/pulls` },
     { NAME: 'VB - GitHub Projects', URL: `${VB_GITHUB_REPO_URL}/projects` },
     VB_APP_URL.PERSONAL_WEBSITE,
+    VB_APP_URL.TEXT_TOOLS,
+    {
+      NAME: `${VB_APP_URL.TEXT_TOOLS.NAME} (Staging)`,
+      URL: VB_APP_URL.TEXT_TOOLS.STAGING_URL,
+    },
     { ...VB_APP_URL.UTILITIES, EMBED: true },
     {
       NAME: `${VB_APP_URL.UTILITIES.NAME} (Staging)`,

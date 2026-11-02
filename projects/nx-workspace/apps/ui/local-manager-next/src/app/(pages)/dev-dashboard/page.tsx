@@ -19,10 +19,10 @@ import { LocalCredentialsComponent } from '../../components/local-credentials.co
 import { LanDevicesComponent } from '../../components/lan-devices.component';
 import { OutboundConnectionsComponent } from '../../components/outbound-connections.component';
 import { NetworkMapComponent } from '../../components/network-map/network-map.component';
-import { TextToolsPage } from '../../components/pages/TextToolsPage';
 import { FeatureSandboxPage } from '../../components/pages/FeatureSandboxPage';
 import { ApiKeysComponent } from '../../components/api-keys.component';
 import { TodoListComponent } from '../../components/todo-list.component';
+import { VB_APP_URL } from '@vigilant-broccoli/infrastructure';
 import { SIDEBAR_ROUTE } from '../../app.const';
 import { usePageTitle } from '../../use-page-title';
 
@@ -44,6 +44,9 @@ const TAB_STORAGE_KEY = 'dev-dashboard-tab';
 
 // Served by cloud-services-next through the rewrite in next.config.js.
 const CLOUD_SERVICES_PATH = '/dev-dashboard/cloud';
+
+// Static Pages app; its _headers frame-ancestors allows only the manager origin.
+const TEXT_TOOLS_URL = VB_APP_URL.TEXT_TOOLS.URL;
 
 const REPO_URL = 'https://github.com/iamharryliu/vigilant-broccoli';
 
@@ -134,7 +137,11 @@ export default function Page() {
         </div>
       </TabsContent>
       <TabsContent value={TAB.TEXT_TOOLS} className="pt-4 flex-1 min-h-0">
-        <TextToolsPage />
+        <iframe
+          src={TEXT_TOOLS_URL}
+          title="Text Tools"
+          className="block h-full min-h-[40rem] w-full border-0"
+        />
       </TabsContent>
       <TabsContent value={TAB.API_KEYS} className="pt-4 flex-1 min-h-0">
         <ApiKeysComponent />

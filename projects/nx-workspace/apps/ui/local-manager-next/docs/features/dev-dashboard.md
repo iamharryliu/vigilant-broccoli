@@ -4,6 +4,10 @@
 
 - The Cloud Services tab iframes `cloud-services-next` at `/dev-dashboard/cloud`, which this app rewrites to the PM2 process on `127.0.0.1:1338` (`CLOUD_SERVICES_ORIGIN` overrides the target). See [cloud-services.md](../../../cloud-services-next/docs/features/cloud-services.md).
 
+## Text Tools
+
+- The Text Tools tab iframes the static `text-tools-ui` site (`VB_APP_URL.TEXT_TOOLS.URL`, `text-tools.harryliu.dev`). The site's `_headers` allows framing only from `https://manager.vigilant-broccoli.app`, so the tab does not render from other origins. See [text-tools.md](../../../text-tools-ui/docs/features/text-tools.md).
+
 ## Local Credentials
 
 - The Local Service tab's Local Credentials card copies the local k3s cluster's Grafana admin password and a 24-hour Headlamp login token, the same values as `pnpm local:k3s:grafana:password` and `pnpm local:k3s:headlamp:token`.
