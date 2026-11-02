@@ -9,6 +9,7 @@ import {
   ClipboardList,
   FileUser,
   ScrollText,
+  Settings,
   type LucideIcon,
 } from 'lucide-react';
 import { Sidebar } from '@vigilant-broccoli/react-lib-higher-level';
@@ -23,6 +24,7 @@ const TAB_ICON: Record<AppTab, LucideIcon> = {
   [APP_TAB.CAREER_EXPERIENCE.value]: ScrollText,
   [APP_TAB.RESUME.value]: FileUser,
   [APP_TAB.RUNS.value]: Activity,
+  [APP_TAB.SETTINGS.value]: Settings,
 };
 
 const HELP_ITEM_ID = 'help';
