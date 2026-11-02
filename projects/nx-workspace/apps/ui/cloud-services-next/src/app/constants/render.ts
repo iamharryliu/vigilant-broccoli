@@ -10,6 +10,7 @@ export interface RenderService {
 export interface RenderServicesResponse {
   success: boolean;
   services?: RenderService[];
+  authRequired?: boolean;
 }
 
 export const RENDER_SUSPENDED = 'suspended';
