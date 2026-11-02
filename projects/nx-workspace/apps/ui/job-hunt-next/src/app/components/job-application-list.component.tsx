@@ -36,6 +36,7 @@ import {
   TabsTrigger,
 } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
+import { applicationResumeSource, ResumeTab } from './resume-tab.component';
 import {
   CRUDItemList,
   EllipsisAction,
@@ -59,7 +60,7 @@ import {
 
 const POSTING_URL_LINE = /^Posting URL:\s*(\S+)\s*\n?/;
 const HTTP_URL = /^https?:\/\//i;
-const POSTING_TAB = { TEXT: 'text', GAPS: 'gaps' } as const;
+const POSTING_TAB = { TEXT: 'text', GAPS: 'gaps', RESUME: 'resume' } as const;
 const TITLE_SEPARATOR = ' · ';
 const SECTION_HEADING_CLASS =
   'text-xs font-medium uppercase tracking-wide text-muted-foreground';
@@ -82,6 +83,7 @@ type Viewer = {
 };
 
 type ApplicationDetails = {
+  hasResumeSource: boolean;
   description: JobDescription;
   // Null when the application has no gaps file (made before it existed).
   gaps: string[] | null;
@@ -189,6 +191,17 @@ const DescriptionView = ({ description }: { description: JobDescription }) => {
 
 const ExpansionContext = createContext<ExpansionContextValue | null>(null);
 
+const ApplicationResume = ({
+  folder,
+  toolbarSlot,
+}: {
+  folder: string;
+  toolbarSlot: HTMLElement | null;
+}) => {
+  const source = useMemo(() => applicationResumeSource(folder), [folder]);
+  return <ResumeTab source={source} embedded toolbarSlot={toolbarSlot} />;
+};
+
 const ExpandedDetails = ({ item }: { item: ApplicationItem }) => {
   const { t } = useTranslation();
   const { actionsFor, loadDetails } = useContext(
@@ -196,6 +209,7 @@ const ExpandedDetails = ({ item }: { item: ApplicationItem }) => {
   ) as ExpansionContextValue;
   const [details, setDetails] = useState<ApplicationDetails | null>(null);
   const [error, setError] = useState('');
+  const [toolbarSlot, setToolbarSlot] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -233,20 +247,38 @@ const ExpandedDetails = ({ item }: { item: ApplicationItem }) => {
       {details ? (
         <div className="flex min-w-0 flex-1 flex-col gap-4">
           <Tabs defaultValue={POSTING_TAB.TEXT}>
-            <TabsList>
-              <TabsTrigger value={POSTING_TAB.TEXT}>
-                {t('APPLICATIONS.TAB_POSTING')}
-              </TabsTrigger>
-              <TabsTrigger value={POSTING_TAB.GAPS}>
-                {t('APPLICATIONS.TAB_GAPS')}
-              </TabsTrigger>
-            </TabsList>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <TabsList>
+                <TabsTrigger value={POSTING_TAB.TEXT}>
+                  {t('APPLICATIONS.TAB_POSTING')}
+                </TabsTrigger>
+                <TabsTrigger value={POSTING_TAB.GAPS}>
+                  {t('APPLICATIONS.TAB_GAPS')}
+                </TabsTrigger>
+                <TabsTrigger value={POSTING_TAB.RESUME}>
+                  {t('APPLICATIONS.TAB_RESUME')}
+                </TabsTrigger>
+              </TabsList>
+              <div ref={setToolbarSlot} />
+            </div>
             <AnimatedHeight>
               <TabsContent value={POSTING_TAB.TEXT} className="pt-3">
                 <DescriptionView description={details.description} />
               </TabsContent>
               <TabsContent value={POSTING_TAB.GAPS} className="pt-3">
                 <GapsList gaps={details.gaps} />
+              </TabsContent>
+              <TabsContent value={POSTING_TAB.RESUME} className="pt-3">
+                {details.hasResumeSource ? (
+                  <ApplicationResume
+                    folder={item.id}
+                    toolbarSlot={toolbarSlot}
+                  />
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {t('RESUME.NONE')}
+                  </p>
+                )}
               </TabsContent>
             </AnimatedHeight>
           </Tabs>
@@ -352,6 +384,10 @@ export const JobApplicationList = () => {
       return {
         description: parseJobDescription(splitPosting(postingText).body),
         gaps: gapsText === null ? null : parseGaps(gapsText),
+        hasResumeSource: !!findApplicationFile(
+          files,
+          APPLICATION_FILE.RESUME_SOURCE,
+        ),
       };
     },
     [t],

@@ -332,6 +332,25 @@ export const demoResponse = (request: NextRequest): NextResponse => {
   switch (pathname) {
     case API_ENDPOINTS.CAREER:
       return careerResponse(searchParams.get('kind'));
+    case API_ENDPOINTS.RESUME_VERSIONS:
+      return NextResponse.json({
+        versions: [
+          {
+            id: 'demo',
+            createdAt: new Date().toISOString(),
+            content: JSON.stringify(resume, null, 2),
+          },
+        ],
+      });
+    case API_ENDPOINTS.JOB_APPLICATIONS_RESUME: {
+      const content = JSON.stringify(resume, null, 2);
+      return NextResponse.json({
+        content,
+        versions: [
+          { id: 'demo', createdAt: new Date().toISOString(), content },
+        ],
+      });
+    }
     case API_ENDPOINTS.JOB_APPLICATIONS_RUNS:
       return NextResponse.json({ runs: RUNS });
     case API_ENDPOINTS.JOB_APPLICATIONS:

@@ -5,6 +5,8 @@ import {
   readCareerFile,
   writeCareerFile,
 } from '../../../lib/career-files.server';
+import { CAREER_FILE_KIND } from '../../constants/career';
+import { syncResumeVersions } from '../../../lib/resume-versions.server';
 import { FILE_BY_KIND, invalidKind, parseKind } from './career-request';
 
 export const runtime = 'nodejs';
@@ -37,6 +39,9 @@ export async function PUT(req: NextRequest) {
       { status: HTTP_STATUS_CODES.BAD_REQUEST },
     );
   }
+  const isResume = kind === CAREER_FILE_KIND.RESUME;
+  if (isResume) await syncResumeVersions();
   await writeCareerFile(FILE_BY_KIND[kind], content);
+  if (isResume) await syncResumeVersions();
   return NextResponse.json({ ok: true });
 }
