@@ -1,8 +1,9 @@
-import { runCliInPty, runCliJson, tryRunCli } from '../cli/cli.utils';
+import { runCli, runCliInPty, runCliJson, tryRunCli } from '../cli/cli.utils';
 import {
   RENDER_AUTH_ERROR_STRINGS,
   RENDER_CLI,
   RENDER_LOGIN_FAILURE,
+  RENDER_NO_WORKSPACE_ERROR,
   RenderCommand,
   RenderLoginFailure,
 } from './render.consts';
@@ -40,11 +41,27 @@ export interface RenderLoginResult {
 const sleep = (ms: number): Promise<void> =>
   new Promise(resolve => setTimeout(resolve, ms));
 
-const listServices = async (): Promise<RenderService[]> => {
-  const services = await runCliJson<RenderServiceJson[]>(
+// A fresh login leaves `workspace` empty in the CLI config and `render services`
+// refuses to run until one is set.
+const selectFirstWorkspace = async (): Promise<void> => {
+  const [workspace] = await runCliJson<{ id: string }[]>(
     RENDER_CLI,
-    RenderCommand.listServices,
+    RenderCommand.listWorkspaces,
   );
+  if (workspace)
+    await runCli(RENDER_CLI, RenderCommand.setWorkspace(workspace.id));
+};
+
+const fetchServices = (): Promise<RenderServiceJson[]> =>
+  runCliJson<RenderServiceJson[]>(RENDER_CLI, RenderCommand.listServices);
+
+const listServices = async (): Promise<RenderService[]> => {
+  const services = await fetchServices().catch(async error => {
+    const { stderr = '' } = (error ?? {}) as { stderr?: string };
+    if (!stderr.toLowerCase().includes(RENDER_NO_WORKSPACE_ERROR)) throw error;
+    await selectFirstWorkspace();
+    return fetchServices();
+  });
   return services
     .map(service => ({
       id: service.id,
