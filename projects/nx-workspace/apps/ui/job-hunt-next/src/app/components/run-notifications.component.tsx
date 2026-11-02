@@ -15,6 +15,7 @@ import {
   CAREER_FILE_CHANGED_EVENT,
   CAREER_FILE_KIND,
   CareerFileKind,
+  JOB_APPLICATIONS_CHANGED_EVENT,
 } from '../constants/career';
 import { JobApplicationRun, RUN_KIND, RUN_STATUS } from '../constants/runs';
 import { useRuns } from '../hooks/use-runs';
@@ -74,6 +75,8 @@ export const RunNotifications = () => {
         notifyImport(run, importedFile);
         return;
       }
+      // A failed run can leave a partial folder, so refresh either way.
+      window.dispatchEvent(new CustomEvent(JOB_APPLICATIONS_CHANGED_EVENT));
       if (run.status === RUN_STATUS.FAILED) {
         toast.error(t('RUNS.FAILED'), {
           description: run.title,
