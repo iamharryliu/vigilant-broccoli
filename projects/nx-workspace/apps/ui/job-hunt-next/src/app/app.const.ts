@@ -8,6 +8,7 @@ export const APP_TAB = {
   },
   RESUME: { value: CAREER_FILE_KIND.RESUME, titleKey: 'NAV.RESUME' },
   RUNS: { value: 'runs', titleKey: 'NAV.RUNS' },
+  SETTINGS: { value: 'settings', titleKey: 'NAV.SETTINGS' },
 } as const;
 
 export type AppTab = (typeof APP_TAB)[keyof typeof APP_TAB]['value'];

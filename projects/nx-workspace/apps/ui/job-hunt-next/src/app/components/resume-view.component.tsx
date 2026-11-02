@@ -1,5 +1,6 @@
 import { Fragment, ReactNode } from 'react';
 import { ResumeData, ResumeWorkExperience } from '@vigilant-broccoli/resume';
+import { useTranslation } from '../i18n';
 
 const RESUME_FONT_FAMILY = "Roboto, 'Helvetica Neue', Arial, sans-serif";
 
@@ -71,6 +72,7 @@ const WorkExperienceEntry = ({ entry }: { entry: ResumeWorkExperience }) => (
 );
 
 export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
+  const { t } = useTranslation();
   const { basics, summary, workExperience, projectExperience, skills } = resume;
   const trimmedSummary = summary?.trim();
 
@@ -105,14 +107,14 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
       )}
 
       <section className="mb-2">
-        <SectionHeading>Work Experience</SectionHeading>
+        <SectionHeading>{t('RESUME.WORK_EXPERIENCE')}</SectionHeading>
         {workExperience.map((entry, index) => (
           <WorkExperienceEntry key={index} entry={entry} />
         ))}
       </section>
 
       <section className="mb-2">
-        <SectionHeading>Open Source</SectionHeading>
+        <SectionHeading>{t('RESUME.OPEN_SOURCE')}</SectionHeading>
         {projectExperience.map((entry, index) => (
           <WorkExperienceEntry key={index} entry={entry} />
         ))}

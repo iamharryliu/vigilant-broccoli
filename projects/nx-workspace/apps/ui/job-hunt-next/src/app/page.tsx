@@ -9,6 +9,7 @@ import {
 } from './components/resume-tab.component';
 import { JobApplicationList } from './components/job-application-list.component';
 import { RunList } from './components/run-list.component';
+import { SettingsPage } from './components/settings-page.component';
 import { APP_TAB, TAB_PARAM, toTab } from './app.const';
 import { useTranslation } from './i18n';
 import { usePageTitle } from './use-page-title';
@@ -20,6 +21,7 @@ const TAB_CONTENT = {
     <ResumeTab source={MASTER_RESUME_SOURCE} resettable />
   ),
   [APP_TAB.RUNS.value]: RunList,
+  [APP_TAB.SETTINGS.value]: SettingsPage,
 };
 
 // The active tab lives in the URL so the sidebar and run toasts can link to it.
