@@ -62,6 +62,10 @@ export const SIDEBAR_ROUTE = {
     title: en.STATUS.TITLE,
     path: '/status',
   },
+  SECURITY_NEWS: {
+    title: 'Security News',
+    path: '/security-news',
+  },
   BACKGROUND_TASKS: {
     title: 'Background Tasks',
     path: '/background-tasks',
