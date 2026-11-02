@@ -19,6 +19,7 @@ export const CALENDAR_TAB = {
   NOTEPAD: 'Notepad',
   QUICK_LINKS: 'Quick Links',
   WEATHER: 'Weather',
+  SECURITY_NEWS: 'Security',
 } as const;
 
 export type CalendarTab = (typeof CALENDAR_TAB)[keyof typeof CALENDAR_TAB];
