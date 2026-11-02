@@ -353,6 +353,10 @@ export const demoResponse = (request: NextRequest): NextResponse => {
     }
     case API_ENDPOINTS.JOB_APPLICATIONS_RUNS:
       return NextResponse.json({ runs: RUNS });
+    case API_ENDPOINTS.JOB_APPLICATIONS_APPLIED:
+      return NextResponse.json({
+        applied: APPLICATIONS.slice(1, 3).map(({ folder }) => folder),
+      });
     case API_ENDPOINTS.JOB_APPLICATIONS:
       return applicationsResponse(path);
     case API_ENDPOINTS.JOB_APPLICATIONS_FILE:

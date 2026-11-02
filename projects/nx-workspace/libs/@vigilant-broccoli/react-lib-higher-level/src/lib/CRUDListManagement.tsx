@@ -102,6 +102,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   onItemClick,
   copy = DEFAULT_COPY,
   isCards,
+  getCardClassName,
   showEllipsis = true,
   canShowEllipsis,
   itemActions,
@@ -125,6 +126,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   onItemClick?: (item: T) => void;
   copy?: ListManagementCopy;
   isCards?: boolean;
+  getCardClassName?: (item: T) => string | undefined;
   showEllipsis?: boolean;
   canShowEllipsis?: (item: T) => boolean;
   itemActions?: (item: T) => EllipsisAction[];
@@ -288,9 +290,10 @@ export const CRUDItemList = <T extends CRUDItem>({
               <Card
                 key={item.id}
                 onClick={() => handleItemClick(item)}
-                className={
-                  onItemClick || ExpandedComponent ? 'cursor-pointer' : ''
-                }
+                className={cn(
+                  (onItemClick || ExpandedComponent) && 'cursor-pointer',
+                  getCardClassName?.(item),
+                )}
               >
                 {renderItem(item)}
               </Card>

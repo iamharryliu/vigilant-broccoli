@@ -11,11 +11,13 @@ import {
   type ReactNode,
 } from 'react';
 import {
+  CircleCheck,
   Copy,
   ExternalLink,
   FileText,
   Mail,
   Trash2,
+  Undo2,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -73,6 +75,7 @@ type ApplicationItem = {
   label: string;
   date: string;
   created: string;
+  applied: boolean;
 };
 
 type Viewer = {
@@ -103,6 +106,13 @@ const listFolder = async (path: string): Promise<FileEntry[]> => {
   const data = await response.json();
   if (!response.ok) throw new Error(data.error);
   return data.entries;
+};
+
+const listApplied = async (): Promise<Set<string>> => {
+  const response = await fetch(API_ENDPOINTS.JOB_APPLICATIONS_APPLIED);
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error);
+  return new Set<string>(data.applied);
 };
 
 const listFiles = async (folder: string) =>
@@ -322,9 +332,29 @@ const AnimatedHeight = ({ children }: { children: ReactNode }) => {
   );
 };
 
-const ApplicationRow = ({ item }: { item: ApplicationItem }) => (
-  <span className="block truncate text-sm font-medium">{item.title}</span>
-);
+const CARD_STATUS_CLASS = {
+  APPLIED: 'border-green-500/60 bg-green-500/10',
+  PENDING: 'border-amber-500/60 bg-amber-500/10',
+} as const;
+
+const cardClassName = (item: ApplicationItem) =>
+  item.applied ? CARD_STATUS_CLASS.APPLIED : CARD_STATUS_CLASS.PENDING;
+
+const ApplicationRow = ({ item }: { item: ApplicationItem }) => {
+  const { t } = useTranslation();
+  return (
+    <span className="flex items-center gap-2">
+      <span className="block min-w-0 truncate text-sm font-medium">
+        {item.title}
+      </span>
+      {item.applied && (
+        <span className="shrink-0 rounded-full bg-green-500/20 px-2 py-0.5 text-xs font-medium text-green-700 dark:text-green-400">
+          {t('APPLICATIONS.APPLIED')}
+        </span>
+      )}
+    </span>
+  );
+};
 
 export const JobApplicationList = () => {
   const { t } = useTranslation();
@@ -335,13 +365,18 @@ export const JobApplicationList = () => {
 
   const load = useCallback(async () => {
     try {
-      const folders = (await listFolder('')).filter(
+      const [entries, applied] = await Promise.all([
+        listFolder(''),
+        listApplied(),
+      ]);
+      const folders = entries.filter(
         entry => entry.kind === FILE_ENTRY_KIND.FOLDER,
       );
       const sorted = folders
         .map(folder => ({
           id: folder.path,
           created: folder.created,
+          applied: applied.has(folder.path),
           ...parseApplicationFolder(
             folder.name,
             folder.modified,
@@ -474,6 +509,13 @@ export const JobApplicationList = () => {
         ),
     },
     {
+      label: item.applied
+        ? t('APPLICATIONS.MARK_NOT_APPLIED')
+        : t('APPLICATIONS.MARK_APPLIED'),
+      icon: item.applied ? Undo2 : CircleCheck,
+      onSelect: () => setApplied(item, !item.applied),
+    },
+    {
       label: t('APPLICATIONS.DELETE'),
       icon: Trash2,
       color: 'red',
@@ -491,8 +533,36 @@ export const JobApplicationList = () => {
   const visibleItemActions = (item: ApplicationItem) =>
     itemActions(item).filter(
       action =>
-        !IS_DEMO || (action.icon !== Trash2 && action.icon !== ExternalLink),
+        !IS_DEMO ||
+        (action.icon !== Trash2 &&
+          action.icon !== ExternalLink &&
+          action.icon !== CircleCheck &&
+          action.icon !== Undo2),
     );
+
+  const setApplied = async (item: ApplicationItem, applied: boolean) => {
+    try {
+      const response = await fetch(
+        `${API_ENDPOINTS.JOB_APPLICATIONS_APPLIED}?path=${encodeURIComponent(item.id)}&applied=${applied}`,
+        { method: HTTP_METHOD.PUT },
+      );
+      if (!response.ok) throw new Error((await response.json()).error);
+      setItems(previous =>
+        previous.map(entry =>
+          entry.id === item.id ? { ...entry, applied } : entry,
+        ),
+      );
+      toast.success(
+        t(
+          applied
+            ? 'APPLICATIONS.MARKED_APPLIED'
+            : 'APPLICATIONS.MARKED_NOT_APPLIED',
+        ),
+      );
+    } catch (error) {
+      toast.error(errorMessage(error, t('APPLICATIONS.APPLIED_FAILED')));
+    }
+  };
 
   const deleteApplication = async (item: ApplicationItem) => {
     try {
@@ -544,6 +614,7 @@ export const JobApplicationList = () => {
             ExpandedComponent={ExpandedDetails}
             copy={copy}
             isCards
+            getCardClassName={cardClassName}
           />
         )}
       </ExpansionContext.Provider>
