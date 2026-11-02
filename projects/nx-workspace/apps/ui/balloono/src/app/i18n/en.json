@@ -144,10 +144,14 @@
     "RULE_POWER_UPS": "Break crates to find extra balloons, bigger splashes and faster feet. Stay out of every splash, including your own.",
     "RULE_SUDDEN_DEATH": "After two minutes, the arena starts closing in. The last player dry wins."
   },
-  "DEVICE": {
-    "TITLE": "Desktop required",
-    "DESCRIPTION": "Balloono does not support mobile devices. Please play on a desktop or laptop with a keyboard and a browser window at least 1024 pixels wide.",
-    "CHECKING": "Checking device support…"
+  "MOBILE": {
+    "ROTATE_TITLE": "Rotate your device",
+    "ROTATE_COPY": "Balloono on mobile plays in landscape. Turn your phone sideways to start.",
+    "DIRECTION_PAD": "Direction pad",
+    "DROP": "Drop balloon",
+    "MUTE": "Mute",
+    "UNMUTE": "Unmute",
+    "RESTART": "Restart"
   },
   "SETTINGS": {
     "TITLE": "Settings",

@@ -14,8 +14,9 @@ import { usePlayerIdentity } from '../hooks/usePlayerIdentity';
 import { RoomListing, useRoomDirectory } from '../hooks/useRoomDirectory';
 import { I18nProvider, useTranslation } from '../i18n';
 import { CpuGame } from './CpuGame';
-import { DesktopOnly } from './DesktopOnly';
+import { DeviceGate } from './DeviceGate';
 import { HomeScreen } from './HomeScreen';
+import { MobileGame } from './MobileGame';
 import { OnlineRoom } from './OnlineRoom';
 
 const LOCAL_PLAYER_SUFFIX = '-local';
@@ -131,15 +132,22 @@ export function BalloonoApp() {
   return (
     <I18nProvider>
       <ThemeProvider storageKey={THEME_STORAGE_KEY} keybind={false}>
-        <DesktopOnly>
-          <AccountProvider>
+        <DeviceGate
+          desktop={
+            <AccountProvider>
+              <GameAudioProvider>
+                <KeyBindingsProvider>
+                  <Balloono />
+                </KeyBindingsProvider>
+              </GameAudioProvider>
+            </AccountProvider>
+          }
+          handheld={
             <GameAudioProvider>
-              <KeyBindingsProvider>
-                <Balloono />
-              </KeyBindingsProvider>
+              <MobileGame />
             </GameAudioProvider>
-          </AccountProvider>
-        </DesktopOnly>
+          }
+        />
       </ThemeProvider>
     </I18nProvider>
   );
