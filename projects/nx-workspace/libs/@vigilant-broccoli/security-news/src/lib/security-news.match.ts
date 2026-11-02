@@ -1,10 +1,8 @@
-import { PRODUCTS, Product } from './security-news.feeds';
 import { FeedItem } from './security-news.parse';
 
 export type SecurityNewsItem = {
   title: string;
   source: string;
-  product: string;
   reason: string;
   link: string;
   published: number;
@@ -53,38 +51,21 @@ const SIGNALS = [
 
 const ROUTINE_ONLY =
   /\b(new|announces?|introducing|release|released|launch(?:es|ed)?|feature|preview|beta)\b/i;
+const STATUS_OUTAGE =
+  /\boutage\b|\b(?:unavailable|unreachable)\b|\b(?:is|are|was|were)\s+down\b|\bmajor incident\b/i;
+const STATUS_REASON = 'major outage';
 const VULNERABILITY_ID = /cve-|ghsa-/i;
 
-const hasProduct = (text: string, keyword: string) => {
-  const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return new RegExp(
-    `(^|[^\\p{L}\\p{N}])${escaped}($|[^\\p{L}\\p{N}])`,
-    'iu',
-  ).test(text);
-};
-
-const hasPackage = (item: FeedItem, product: Product) =>
-  (item.packages ?? []).some(name =>
-    product.packages?.some(candidate =>
-      candidate.endsWith('/') ? name.startsWith(candidate) : name === candidate,
-    ),
-  );
-
-const findProduct = (item: FeedItem, text: string) =>
-  PRODUCTS.find(product =>
-    item.advisory
-      ? hasPackage(item, product)
-      : product.keywords.some(keyword => hasProduct(text, keyword)),
-  );
-
-// Advisory prose mentions unrelated products and loose words like "compromise",
-// so only the registry's own severity rating can flag one.
+// Status-page RSS carries no impact level, only prose, so outage wording in the
+// incident text is the signal. Advisory prose uses loose words like
+// "compromise", so only the registry's own severity rating can flag one.
 const getReason = (item: FeedItem, text: string) => {
   if (item.kev) return KEV_REASON;
   if ((item.cvss ?? 0) >= CRITICAL_CVSS)
     return `critical advisory (CVSS ${item.cvss})`;
   if (item.severity === CRITICAL_SEVERITY) return 'critical advisory';
   if (item.advisory) return undefined;
+  if (item.status) return STATUS_OUTAGE.test(text) ? STATUS_REASON : undefined;
   return SIGNALS.find(({ pattern }) => pattern.test(text))?.label;
 };
 
@@ -102,20 +83,18 @@ export const matchSecurityItems = (
     )
       return [];
     const text = `${item.title} ${item.description}`;
-    const product = findProduct(item, text);
-    if (!product) return [];
     const reason = getReason(item, text);
     const routine =
       ROUTINE_ONLY.test(item.title) &&
       !VULNERABILITY_ID.test(item.title) &&
       !item.kev &&
+      !item.status &&
       !SIGNALS.some(({ pattern }) => pattern.test(text));
     if (!reason || routine) return [];
     return [
       {
         title: item.title,
         source: item.source,
-        product: product.name,
         reason,
         link: item.link,
         published,

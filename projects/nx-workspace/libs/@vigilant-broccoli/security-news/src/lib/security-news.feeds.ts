@@ -6,12 +6,11 @@ export const FEED_FORMAT = {
 
 export type FeedFormat = (typeof FEED_FORMAT)[keyof typeof FEED_FORMAT];
 
-export type Feed = { name: string; url: string; format: FeedFormat };
-
-export type Product = {
+export type Feed = {
   name: string;
-  keywords: string[];
-  packages?: string[];
+  url: string;
+  format: FeedFormat;
+  status?: boolean;
 };
 
 export const FEEDS: Feed[] = [
@@ -34,16 +33,19 @@ export const FEEDS: Feed[] = [
     name: 'Fly.io Status',
     url: 'https://status.fly.io/history.rss',
     format: FEED_FORMAT.RSS,
+    status: true,
   },
   {
     name: 'Docker Status',
     url: 'https://www.dockerstatus.com/history.rss',
     format: FEED_FORMAT.RSS,
+    status: true,
   },
   {
     name: 'Proton Status',
     url: 'https://status.proton.me/history.rss',
     format: FEED_FORMAT.RSS,
+    status: true,
   },
   {
     name: 'Proton Blog',
@@ -59,63 +61,12 @@ export const FEEDS: Feed[] = [
     name: 'Cloudflare Status',
     url: 'https://www.cloudflarestatus.com/history.rss',
     format: FEED_FORMAT.RSS,
+    status: true,
   },
   {
     name: 'GitHub Status',
     url: 'https://www.githubstatus.com/history.rss',
     format: FEED_FORMAT.RSS,
-  },
-];
-
-export const PRODUCTS: Product[] = [
-  {
-    name: 'Cloudflare',
-    keywords: [
-      'cloudflare',
-      'cloudflare pages',
-      'cloudflare workers',
-      'cloudflare r2',
-      'wrangler',
-    ],
-  },
-  { name: 'Docker', keywords: ['docker', 'docker hub', 'containerd', 'moby'] },
-  {
-    name: 'Fastify',
-    keywords: ['fastify'],
-    packages: ['fastify', '@fastify/'],
-  },
-  { name: 'Fly.io', keywords: ['fly.io', 'flyio', 'flyctl'] },
-  {
-    name: 'GitHub',
-    keywords: ['github', 'github actions', 'github enterprise'],
-  },
-  { name: 'HashiCorp Vault', keywords: ['hashicorp vault', 'vault'] },
-  { name: 'Node.js', keywords: ['node.js', 'nodejs', 'node runtime'] },
-  {
-    name: 'npm / pnpm',
-    keywords: ['npm', 'pnpm', 'node package manager'],
-    packages: ['npm', 'pnpm'],
-  },
-  {
-    name: 'Next.js / Vercel',
-    keywords: ['next.js', 'nextjs', 'vercel'],
-    packages: ['next', '@next/', 'vercel'],
-  },
-  { name: 'Proton', keywords: ['proton', 'proton mail', 'protonmail'] },
-  { name: 'RabbitMQ', keywords: ['rabbitmq', 'rabbit mq'] },
-  { name: 'Resend', keywords: ['resend'] },
-  {
-    name: 'Supabase',
-    keywords: ['supabase', 'postgrest', 'gotrue'],
-    packages: ['@supabase/'],
-  },
-  {
-    name: 'Terraform',
-    keywords: [
-      'terraform',
-      'terraform cloud',
-      'hcp terraform',
-      'hashicorp terraform',
-    ],
+    status: true,
   },
 ];

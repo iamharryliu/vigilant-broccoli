@@ -40,9 +40,6 @@ export const SecurityNewsList = ({
           <Badge color="red" size="1">
             {item.reason}
           </Badge>
-          <Badge color="gray" size="1">
-            {item.product}
-          </Badge>
           <Text size="1" color="gray">
             {item.source} · {new Date(item.published).toLocaleDateString()}
           </Text>
