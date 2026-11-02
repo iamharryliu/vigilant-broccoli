@@ -30,6 +30,8 @@ export const API_ENDPOINTS = {
 
   TERRAFORM_STATUS: '/api/terraform/status',
 
+  SECURITY_NEWS: '/api/security-news',
+
   GITHUB_PAGES: '/api/github/pages',
 
   WIREGUARD_STATUS: '/api/wireguard/status',
