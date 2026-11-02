@@ -9,17 +9,11 @@ const HEADING_COLOR_CLASS = 'text-[#3d85c6]';
 const BOLD_PATTERN = /\*\*(.+?)\*\*/g;
 const SKILL_SEPARATOR = ' · ';
 
-const SAFE_LINK_PROTOCOLS = ['http:', 'https:'];
+const WEB_URL_PATTERN = /^https?:\/\/[^\s<>"]+$/i;
 const EMAIL_PATTERN = /^[^\s@<>"]+@[^\s@<>"]+$/;
 
 // The resume is editable JSON, so a `javascript:` URL must not become a link.
-const toSafeHref = (url: string) => {
-  try {
-    return SAFE_LINK_PROTOCOLS.includes(new URL(url).protocol) ? url : null;
-  } catch {
-    return null;
-  }
-};
+const toSafeHref = (url: string) => (WEB_URL_PATTERN.test(url) ? url : null);
 
 const toMailtoHref = (email: string) =>
   EMAIL_PATTERN.test(email) ? `mailto:${email}` : null;
