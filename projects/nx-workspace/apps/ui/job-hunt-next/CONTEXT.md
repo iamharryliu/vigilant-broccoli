@@ -5,7 +5,7 @@
 - [Nuances](#nuances)
   - [The image must not ship the owner's resume.json](#the-image-must-not-ship-the-owners-resumejson)
 
-Keep `skill/job-application/SKILL.md` in step with the job application workflow and cover letter template in `libs/@vigilant-broccoli/resume/src/CONTEXT.md`, minus the owner-specific details (name, city, repo paths, clipboard).
+Keep the cover letter template in `skill/job-application/SKILL.md` in step with the one in `libs/@vigilant-broccoli/resume/src/CONTEXT.md`, minus the owner-specific details (name, city, repo paths, clipboard). `SKILL.md` owns the job application workflow.
 
 ## Nuances
 
