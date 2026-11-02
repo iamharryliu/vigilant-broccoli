@@ -9,7 +9,7 @@ Remove or rewrite stale implementation history and correct inaccurate current cl
 
 ## Scope
 
-Audit `docs/`, `CONTEXT.md`, READMEs and code-adjacent Markdown. Exclude `notes/`, `docs/rnd/`, `docs/learning-timeline.md`, changelogs/release histories, generated files/sections, code, configuration, workflows and scripts.
+Audit `docs/`, `CONTEXT.md`, READMEs and code-adjacent Markdown. Exclude `notes/`, `docs/learning-timeline.md`, changelogs/release histories, generated files/sections, code, configuration, workflows and scripts.
 
 ## Candidates
 

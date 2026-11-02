@@ -22,7 +22,6 @@ Custom agent commands from `setup/dotfiles/agent-skills/<name>/SKILL.md`, invoke
 | `local-pr-create-free-tier-audit` | Maintain | Verify every cloud service has a Free Tier section and a free-tier-infrastructure.md row, correcting entries only from verifiable sources. |
 | `local-pr-create-inventory-audit` | Maintain | Find missing or stale rows in the fork identity and secret inventories and fix them without touching secret values. |
 | `local-pr-create-prune` | Maintain | Find dead code, unused dependencies and stale or broken documentation, and remove only what has verifiably zero references. |
-| `local-pr-create-rnd` | Plan | Research a question and write an R&D note under `docs/rnd/` from the R&D template. |
 | `local-pr-create-todo` | Plan | Refine a request using repo research into an actionable task prompt and add one well-cited row to `TODO.md`. |
 | `local-pr-create-todo-audit` | Maintain | Verify every `TODO.md` row against the tree, remove resolved entries and correct drifted references without adding tasks. |
 | `local-pr-create-url-audit` | Maintain | Verify public URLs have synchronized Upptime entries, pages-index cards and quick links, and published Docker images their card and README row. |

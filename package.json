@@ -147,7 +147,6 @@
     "agentic-pr-create-prune": "./infrastructure/agent-sandbox/prune.sh",
     "agentic-pr-create-readmes": "./infrastructure/agent-sandbox/readmes.sh",
     "agentic-pr-create-url-audit": "./infrastructure/agent-sandbox/audit-urls.sh",
-    "agentic-pr-create-rnd": "./infrastructure/agent-sandbox/create-rnd.sh",
     "agentic-pr-update": "./infrastructure/agent-sandbox/update-pr.sh",
     "local-manager-next:start": "cd projects/nx-workspace && nx run local-manager-next:pm2:start",
     "event-calendars:sync": "cd projects/nx-workspace && env -u GITHUB_TOKEN VB_EXPRESS_URL=https://staging-vb-express.fly.dev NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/ui/local-manager-next/.env.local.example --env-file scripts/.env.scripts.example 'tsx apps/ui/local-manager-next/scripts/sync-event-calendars.ts'",
