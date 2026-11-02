@@ -142,7 +142,11 @@ export const RenderServicesComponent = () => {
         authRequired ? (
           <div className="flex flex-col gap-2 items-start">
             <Text size="2">{t('RENDER.NOT_LOGGED_IN')}</Text>
-            <Button variant="secondary" loading={loggingIn} onClick={handleLogin}>
+            <Button
+              variant="secondary"
+              loading={loggingIn}
+              onClick={handleLogin}
+            >
               {t('RENDER.LOGIN')}
             </Button>
             {loggingIn && (
@@ -158,7 +162,9 @@ export const RenderServicesComponent = () => {
             {authUrl && (
               <Button
                 variant="secondary"
-                onClick={() => window.open(authUrl, '_blank', WINDOW_OPEN_FEATURES)}
+                onClick={() =>
+                  window.open(authUrl, '_blank', WINDOW_OPEN_FEATURES)
+                }
               >
                 {t('RENDER.OPEN_SIGN_IN')}
               </Button>

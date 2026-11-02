@@ -111,7 +111,7 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `RABBITMQ_CA_CERT` | Vault `kv/data/secrets` (synced by `tf:post-apply`) | Base64 CA certificate for TLS to the RabbitMQ broker; used by `ci-health-check` and `test-e2e-rabbitmq`. |
 | `RABBITMQ_CONNECTION_STRING` | Vault `kv/data/secrets` → Fly | RabbitMQ connection string for `email-service` and `email-subscription-service`. |
 | `RECAPTCHA_V3_SECRET_KEY` | Vault `kv/data/secrets` → Fly | Server-side reCAPTCHA v3 verification in `vb-express`. |
-| `RENDER_API_KEY` | Vault `kv/data/secrets` | Render API key for the cloud-services-next Render card (server-side service listing) and `deploy-render.ts` (llm-service staging pilot): discovers workspaces, provisions the service/registry credential, syncs env vars and triggers image deploys. Not a GitHub Actions secret; the script reads it from Vault, or from the `RENDER_API_KEY` env var for local runs. |
+| `RENDER_API_KEY` | Vault `kv/data/secrets` | Render API key for `deploy-render.ts` (llm-service staging pilot; the cloud-services-next Render card uses `render login` instead): discovers workspaces, provisions the service/registry credential, syncs env vars and triggers image deploys. Not a GitHub Actions secret; the script reads it from Vault, or from the `RENDER_API_KEY` env var for local runs. |
 | `RESEND_API_KEY` | Vault `kv/data/secrets` → Fly | Resend email API key for `email-service`. |
 | `SANITY_AUTH_TOKEN` | Vault `kv/data/secrets` | Sanity CMS project API token. |
 | `SHARED_APP_TOKEN` | Vault `kv/data/secrets` → Fly | Shared bearer token for service-to-service calls between Fly APIs. |

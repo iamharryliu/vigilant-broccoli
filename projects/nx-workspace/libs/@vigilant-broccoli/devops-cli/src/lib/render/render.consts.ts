@@ -4,7 +4,12 @@ export const RenderCommand = {
   login: ['login'],
   listServices: ['services', '--output', 'json', '--confirm'],
   whoami: ['whoami', '--output', 'json'],
+  listWorkspaces: ['workspaces', '--output', 'json', '--confirm'],
+  setWorkspace: (workspaceId: string) =>
+    ['workspace', 'set', workspaceId, '--confirm'] as const,
 } as const;
+
+export const RENDER_NO_WORKSPACE_ERROR = 'no workspace set';
 
 export const RENDER_AUTH_ERROR_STRINGS = [
   'not logged in',

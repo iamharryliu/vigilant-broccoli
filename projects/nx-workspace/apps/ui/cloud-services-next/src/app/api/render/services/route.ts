@@ -10,7 +10,11 @@ export async function GET() {
     console.error('Error fetching Render services:', error);
     const authRequired = RenderCliService.isAuthError(error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch Render services', authRequired },
+      {
+        success: false,
+        error: 'Failed to fetch Render services',
+        authRequired,
+      },
       {
         status: authRequired
           ? HTTP_STATUS_CODES.UNAUTHORIZED
