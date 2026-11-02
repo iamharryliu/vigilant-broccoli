@@ -3,6 +3,10 @@
     "allow": [
       "Bash(git *)",
       "Bash(gh run *)",
+      "Bash(gh pr view *)",
+      "Bash(gh pr list *)",
+      "Bash(gh pr checks *)",
+      "Bash(gh pr diff *)",
       "Bash(gh workflow *)",
       "Bash(pnpm install *)",
       "Bash(pnpm add *)",
@@ -16,6 +20,8 @@
       "Bash(docker compose *)",
       "Bash(docker-compose ps *)",
       "Bash(nslookup *)",
+      "Bash(sed -n *)",
+      "Bash(grep *)",
       "Bash(python3 -m json.tool)",
       "WebFetch(domain:iamharryliu.github.io)"
     ]

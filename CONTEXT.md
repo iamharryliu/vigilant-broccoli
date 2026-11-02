@@ -104,3 +104,6 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 - Do not write tests unless explicitly asked.
 - Never create import cycles; `import/no-cycle` fails lint. Inside a lib, import from the sibling module, never from the lib's own `index.ts`.
 - Comments should explain non-obvious reasons, constraints or traps. Remove redundant comments and generator scaffolding when touching a file. Preserve comments that are an empty block's sole body, and `TODO`/`FIXME`/lint directives.
+- Never prefix Bash commands with `cd <dir> &&` or `cd <dir>;`; compound commands trigger permission prompts. Use absolute paths, `git -C <dir>`, `pnpm nx run <project>:<target>` or `pnpm --filter`.
+- Change files with the Edit tool, not `python3 -` or `sed -i`; reserve Python for read-only analysis.
+- Prefer the Grep tool over shell `grep`, and quote glob arguments (zsh errors with `no matches found` on unquoted globs).
