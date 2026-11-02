@@ -42,10 +42,6 @@ export const SIDEBAR_ROUTE = {
     title: 'Language Learning',
     path: '/language-learning',
   },
-  CAREER: {
-    title: 'Career',
-    path: '/career',
-  },
   CAREER2: {
     title: 'Career 2',
     path: '/career2',
