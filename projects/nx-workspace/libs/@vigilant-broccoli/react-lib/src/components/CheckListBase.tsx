@@ -27,14 +27,14 @@ const EDITOR = {
 
 const DEFAULT_COMPLETED_SECTION_ID = 'completed';
 
-const COMPLETION_DURATION = 150;
+const COMPLETION_DURATION = 400;
 const COMPLETION_STYLES = `
-  .checklist-transition { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 150ms ease, opacity 150ms ease; }
+  .checklist-transition { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 400ms ease, opacity 400ms ease; }
   .checklist-transition-content { min-height: 0; }
   .checklist-transition:last-child .checklist-dense-row { border-bottom: 0; }
   .checklist-departing { grid-template-rows: 0fr; opacity: 0; }
   .checklist-departing > .checklist-transition-content, .checklist-arriving > .checklist-transition-content { overflow: hidden; }
-  .checklist-arriving { animation: checklist-arrive 150ms ease-out; }
+  .checklist-arriving { animation: checklist-arrive 400ms ease-out; }
   @keyframes checklist-arrive { from { grid-template-rows: 0fr; opacity: 0; translate: 0 -4px; } to { grid-template-rows: 1fr; opacity: 1; translate: 0 0; } }
   .checklist-populating { animation: checklist-populate 200ms ease-out backwards; }
   @keyframes checklist-populate { from { opacity: 0; translate: 0 -6px; } to { opacity: 1; translate: 0 0; } }
