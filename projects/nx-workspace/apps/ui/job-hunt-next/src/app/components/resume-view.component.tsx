@@ -9,6 +9,36 @@ const HEADING_COLOR_CLASS = 'text-[#3d85c6]';
 const BOLD_PATTERN = /\*\*(.+?)\*\*/g;
 const SKILL_SEPARATOR = ' · ';
 
+const SAFE_LINK_PROTOCOLS = ['http:', 'https:'];
+const EMAIL_PATTERN = /^[^\s@<>"]+@[^\s@<>"]+$/;
+
+// The resume is editable JSON, so a `javascript:` URL must not become a link.
+const toSafeHref = (url: string) => {
+  try {
+    return SAFE_LINK_PROTOCOLS.includes(new URL(url).protocol) ? url : null;
+  } catch {
+    return null;
+  }
+};
+
+const toMailtoHref = (email: string) =>
+  EMAIL_PATTERN.test(email) ? `mailto:${email}` : null;
+
+const ResumeLink = ({
+  href,
+  children,
+}: {
+  href: string | null;
+  children: ReactNode;
+}) =>
+  href ? (
+    <a href={href} className={`underline ${LINK_COLOR_CLASS}`}>
+      {children}
+    </a>
+  ) : (
+    <span>{children}</span>
+  );
+
 const renderInlineBold = (text: string): ReactNode => {
   const parts = text.split(BOLD_PATTERN);
   return parts.map((part, index) =>
@@ -59,13 +89,9 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
       <div className="grid grid-cols-3 items-start mb-2">
         <div className="flex flex-col gap-0.5">
           {basics.links.map(link => (
-            <a
-              key={link.url}
-              href={link.url}
-              className={`underline ${LINK_COLOR_CLASS}`}
-            >
+            <ResumeLink key={link.url} href={toSafeHref(link.url)}>
               {link.label}
-            </a>
+            </ResumeLink>
           ))}
         </div>
         <div className="text-center">
@@ -73,12 +99,9 @@ export const ResumeViewComponent = ({ resume }: { resume: ResumeData }) => {
           <p className="font-bold text-[13px]">{basics.title}</p>
         </div>
         <div className="flex flex-col items-end gap-0.5">
-          <a
-            href={`mailto:${basics.email}`}
-            className={`underline ${LINK_COLOR_CLASS}`}
-          >
+          <ResumeLink href={toMailtoHref(basics.email)}>
             {basics.email}
-          </a>
+          </ResumeLink>
           <span>{basics.phone}</span>
         </div>
       </div>
