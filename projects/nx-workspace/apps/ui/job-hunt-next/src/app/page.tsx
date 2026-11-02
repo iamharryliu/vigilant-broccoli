@@ -2,10 +2,11 @@
 
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { CareerExperienceEditor } from './components/career-editor.component';
 import {
-  CareerExperienceEditor,
-  ResumeEditor,
-} from './components/career-editor.component';
+  MASTER_RESUME_SOURCE,
+  ResumeTab,
+} from './components/resume-tab.component';
 import { JobApplicationList } from './components/job-application-list.component';
 import { RunList } from './components/run-list.component';
 import { APP_TAB, TAB_PARAM, toTab } from './app.const';
@@ -15,7 +16,9 @@ import { usePageTitle } from './use-page-title';
 const TAB_CONTENT = {
   [APP_TAB.APPLICATIONS.value]: JobApplicationList,
   [APP_TAB.CAREER_EXPERIENCE.value]: CareerExperienceEditor,
-  [APP_TAB.RESUME.value]: ResumeEditor,
+  [APP_TAB.RESUME.value]: () => (
+    <ResumeTab source={MASTER_RESUME_SOURCE} resettable />
+  ),
   [APP_TAB.RUNS.value]: RunList,
 };
 

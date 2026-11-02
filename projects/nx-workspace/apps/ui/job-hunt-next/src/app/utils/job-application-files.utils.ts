@@ -6,6 +6,7 @@ const MARKDOWN_BOLD = /\*\*/g;
 export const APPLICATION_FILE = {
   POSTING: { marker: '-job-posting-', extension: '.txt' },
   RESUME: { marker: '-resume-', extension: '.pdf' },
+  RESUME_SOURCE: { marker: '-resume-', extension: '.json' },
   GAPS: { marker: '-gaps-', extension: '.txt' },
   COVER_LETTER_PDF: { marker: '-cover-letter-', extension: '.pdf' },
   COVER_LETTER_TEXT: { marker: '-cover-letter-', extension: '.txt' },

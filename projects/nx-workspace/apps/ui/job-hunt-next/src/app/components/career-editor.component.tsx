@@ -196,5 +196,3 @@ export const CareerExperienceEditor = () => (
     preview
   />
 );
-
-export const ResumeEditor = () => <FileEditor kind={CAREER_FILE_KIND.RESUME} />;

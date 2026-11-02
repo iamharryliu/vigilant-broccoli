@@ -14,6 +14,7 @@
     "LOAD_FAILED": "Failed to load job applications",
     "DETAILS_FAILED": "Failed to load",
     "TAB_POSTING": "Posting",
+    "TAB_RESUME": "Resume",
     "TAB_GAPS": "Gaps",
     "ABOUT_JOB": "About the job",
     "ABOUT_COMPANY": "About the company",
@@ -73,6 +74,20 @@
       "SUCCEEDED": "Succeeded",
       "FAILED": "Failed"
     }
+  },
+  "RESUME": {
+    "VIEW": "Resume",
+    "EDIT_JSON": "Edit JSON",
+    "HISTORY": "History",
+    "MODE": "Resume view",
+    "INVALID": "The saved resume is invalid: {error}",
+    "FROM": "From",
+    "TO": "To",
+    "VERSION": "v{number} · {date}",
+    "NO_CHANGES": "No differences between these versions.",
+    "PDF_FAILED": "Saved, but the resume PDF could not be regenerated",
+    "NONE": "This application has no editable resume. Applications generated from now on keep one.",
+    "NEED_TWO": "Save a change to start comparing versions."
   },
   "CAREER": {
     "EDIT": "Edit",

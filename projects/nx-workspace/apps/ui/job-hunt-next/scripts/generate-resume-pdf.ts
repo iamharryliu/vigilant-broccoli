@@ -1,19 +1,25 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { generateResumePdfBuffer } from '@vigilant-broccoli/resume/server';
+import { RESUME_PATH } from '../src/lib/paths.server';
 import { readResume } from './skill-resume';
 
-const outputPath = process.argv[2];
+const [, , outputPath, inputPath] = process.argv;
+const SOURCE_EXTENSION = /\.pdf$/i;
 
 if (!outputPath) {
-  console.error('Usage: generate-resume-pdf.cjs <output.pdf>');
+  console.error('Usage: generate-resume-pdf.cjs <output.pdf> [resume.json]');
   process.exit(1);
 }
 
-generateResumePdfBuffer(readResume())
+generateResumePdfBuffer(readResume(inputPath))
   .then(buffer => {
     mkdirSync(dirname(outputPath), { recursive: true });
     writeFileSync(outputPath, buffer);
+    // The app edits an application's resume from this copy and re-renders the
+    // PDF with it, so a run keeps the tailored resume beside its PDF.
+    if (!inputPath)
+      copyFileSync(RESUME_PATH, outputPath.replace(SOURCE_EXTENSION, '.json'));
     console.log(`Resume PDF written to ${outputPath}`);
   })
   .catch(err => {
