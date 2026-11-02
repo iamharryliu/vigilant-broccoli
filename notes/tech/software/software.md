@@ -15,6 +15,7 @@
 - [Software Business](./general/software-business.md)
 - [Software Architecture](./general/software-architecture.md)
   - [Software Design Patterns](./general/software-design-patterns.md)
+  - [SOLID Principles](./general/solid-principles.md)
   - [Software Architecture Patterns](./software-architecture-patterns.md)
 - [Tools](./tools/software-tools.md)
 - [Software Services](./software-services.md)

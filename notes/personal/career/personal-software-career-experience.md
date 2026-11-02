@@ -26,6 +26,7 @@
 | Accessibility (WCAG) | Capco |
 | Agentic AI development | Tillmobil; vigilant-broccoli |
 | Agile | Capco |
+| Agile refinement | Capco |
 | AI guardrails | vigilant-broccoli |
 | Angular | Capco |
 | Ansible | vigilant-broccoli |
@@ -116,6 +117,7 @@
 | Radix UI | ELVA11; Tillmobil; vigilant-broccoli |
 | React | Capco; vigilant-broccoli |
 | Redux | Capco |
+| Remote teamwork | Capco |
 | Resend | Strandbadens Vägförening; Tillmobil; vigilant-broccoli |
 | REST API design | Capco; Tillmobil; vigilant-broccoli |
 | Rollup | vigilant-broccoli |
@@ -150,7 +152,7 @@
 
 | Company | Role | Dates | Context |
 | --- | --- | --- | --- |
-| Capco | Banking Fullstack Developer; Backend Developer; Frontend Developer; Fullstack Developer; Software Engineer | September 2019 - July 2024 | Worked in Agile teams to define and implement user stories and tasks across client engagements; Used Java, Spring and Spring Boot to build backend service APIs; Maintained and migrated legacy Spring services with Express endpoints; Onboarded developers to projects; Viewed Figma design specifications for UI development; Developed Python microservices with Flask for the bank |
+| Capco | Banking Fullstack Developer; Backend Developer; Frontend Developer; Fullstack Developer; Software Engineer | September 2019 - July 2024 | Worked in Agile teams to define and implement user stories and tasks across client engagements; Groomed backlogs for sprints with Agile teams at the bank; Used Java, Spring and Spring Boot to build backend service APIs; Maintained and migrated legacy Spring services with Express endpoints; Onboarded developers to projects; Viewed Figma design specifications for UI development; Developed Python microservices with Flask for the bank; Worked with remote banking teams for 2 years during COVID |
 | ELVA11 | DevOps Engineer; Backend Developer; Cloud Engineer; Frontend Developer; Fullstack Developer; Platform Engineer; Software Engineer; Staff Engineer; UI/UX Designer | March 2025 - August 2026 | Designed and implemented internal services and self-hosted solutions supporting engineering and operational workflows; Built internal developer tools and reusable services to standardize workflows, automate tasks, and improve productivity; Developed internal AI tools and products, integrating LLMs and automated workflows into business and engineering use cases; Contributed to proprietary AI IP, exploring and productizing AI capabilities into reusable solutions and internal platforms; Deployed and operated on-premise and self-hosted services, handling configuration, networking, monitoring, and maintenance; Built and managed AWS resources (EC2, S3, IAM) to host internal services and support engineering workflows; Collaborated with engineering teams to turn infrastructure, tooling, and AI opportunities into maintainable solutions; Built microservices for internal applications and AI tools; Used health checks and email alerts for observability; Participated in technical knowledge-sharing initiatives such as Code With Me and Show and Tell; Promoted culture-building activities such as internal employee AMAs; Managed GCP resources; Separated the social media AI tool into local, staging and production environments and added cloud OIDC sign-in for CLI access to non-production environments |
 | Strandbadens Vägförening | Backend Developer; DevOps Engineer; Frontend Developer; Fullstack Developer; Software Engineer | 2025-2026 | Migrated the association's WordPress site to a headless setup, keeping WordPress as the CMS with a Lovable-built UI application; Connected the application to Resend for email handling, sending notification emails to subscribers; Managed WordPress hosting, form notifications and backups |
 | Tillmobil | Fullstack Developer; Backend Developer; Cloud Engineer; DevOps Engineer; Frontend Developer; Platform Engineer; Site Reliability Engineer; Software Engineer; Staff Engineer; UI/UX Designer | March 2025 - March 2026 | Adopted AI-driven development workflows with tools like Claude Code to accelerate feature delivery and code review; Managed cloud services on GCP with Terraform and CI/CD pipelines, including automated testing and monitoring; Onboarded developers to projects; Managed the team and project costs, coordinated client communications, tracked tasks and issues, and delegated work; Used health checks and email alerts for observability; Viewed Figma design specifications for UI development; Led the two production systems from architecture and development through deployment and day-to-day operation; Owned cloud infrastructure for the call analysis SaaS platform and trading card marketplace API using GCP and Terraform ; Communicated with the client on deliverables, building business requirements and preparing solutions for the client; Separated both production systems into local, staging and production environments and added cloud OIDC sign-in for CLI access to non-production environments |
