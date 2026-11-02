@@ -7,15 +7,9 @@ import {
   TabsTrigger,
   TabsContent,
 } from '@vigilant-broccoli/react-lib';
-import { DockerStatusComponent } from '../../components/docker-status.component';
 import { GithubRepoActionStatusBadges } from '../../components/github-actions-status.component';
 import { GithubTeamManager } from '../../components/github-manager.component';
-import { PM2StatusComponent } from '../../components/pm2-status.component';
-import { PublicIpComponent } from '../../components/public-ip.component';
-import { TailscaleMachinesComponent } from '../../components/tailscale-machines.component';
-import { WireguardStatusComponent } from '../../components/wireguard-status.component';
 import { LocalServicesComponent } from '../../components/local-services.component';
-import { LocalCredentialsComponent } from '../../components/local-credentials.component';
 import { LanDevicesComponent } from '../../components/lan-devices.component';
 import { OutboundConnectionsComponent } from '../../components/outbound-connections.component';
 import { NetworkMapComponent } from '../../components/network-map/network-map.component';
@@ -41,6 +35,9 @@ const TAB = {
 type Tab = (typeof TAB)[keyof typeof TAB];
 
 const TAB_STORAGE_KEY = 'dev-dashboard-tab';
+
+// Served by local-services-next through the rewrite in next.config.js.
+const LOCAL_SERVICES_PATH = '/dev-dashboard/local';
 
 // Served by cloud-services-next through the rewrite in next.config.js.
 const CLOUD_SERVICES_PATH = '/dev-dashboard/cloud';
@@ -86,21 +83,11 @@ export default function Page() {
         <TabsTrigger value={TAB.FEATURE_SANDBOX}>Feature Sandbox</TabsTrigger>
       </TabsList>
       <TabsContent value={TAB.LOCAL} className="pt-4 flex-1 min-h-0">
-        <div className="grid grid-cols-3 gap-4">
-          <div className="flex flex-col gap-4">
-            <PublicIpComponent />
-            <WireguardStatusComponent />
-            <TailscaleMachinesComponent />
-          </div>
-          <div className="flex flex-col gap-4">
-            <LocalServicesComponent />
-            <LocalCredentialsComponent />
-          </div>
-          <div className="flex flex-col gap-4">
-            <DockerStatusComponent />
-            <PM2StatusComponent />
-          </div>
-        </div>
+        <iframe
+          src={LOCAL_SERVICES_PATH}
+          title="Local Service"
+          className="block h-full min-h-[40rem] w-full border-0"
+        />
       </TabsContent>
       <TabsContent value={TAB.CLOUD} className="pt-4 flex-1 min-h-0">
         <iframe

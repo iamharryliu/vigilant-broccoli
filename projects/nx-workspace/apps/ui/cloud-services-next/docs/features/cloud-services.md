@@ -9,9 +9,10 @@
 ## Render Services
 
 - The card lists Render services alphabetically, with service type, suspension status, and links to the service dashboard and public app URL when available. Not suspended does not imply a healthy deployment or an awake free instance.
-- `GET /api/render/services` uses a server-only `RENDER_API_KEY` injected from Vault by `.env.local.example`. It follows the [Render service API](https://api-docs.render.com/reference/list-services) cursor pagination and returns only display fields.
+- `GET /api/render/services` runs `render services --output json --confirm` through `RenderCliService` in `devops-cli` and returns only display fields; no token reaches the app. The [Render CLI](https://render.com/docs/cli) is not in `mise.toml` (no registry package), so install it separately (`brew install render`). When a fresh login leaves the CLI config without a workspace, the service selects the first workspace and retries.
+- An unauthenticated CLI returns 401 with `authRequired`; the card then shows a not-logged-in state with a Login to Render button that calls `POST /api/render/auth/login` (`render login`, browser sign-in, token stored in `~/.render/cli.yaml`), mirroring the Fly.io card.
 - The card refreshes every minute while visible, with loading, empty and error states. Provider failures do not appear as an empty account.
 
 ## Free Tier
 
-- The Render card creates no Render resources and polls the management API rather than the service URL. Render free web services share 750 instance-hours per workspace per calendar month and spin down after 15 minutes without inbound traffic ([Render free instance limits](https://render.com/docs/free)).
+- The Render card creates no Render resources and polls the Render CLI rather than the service URL. Render free web services share 750 instance-hours per workspace per calendar month and spin down after 15 minutes without inbound traffic ([Render free instance limits](https://render.com/docs/free)).

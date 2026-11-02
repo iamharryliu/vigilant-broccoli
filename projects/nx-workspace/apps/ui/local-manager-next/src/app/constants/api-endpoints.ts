@@ -1,27 +1,9 @@
 export const API_ENDPOINTS = {
-  DOCKER_CONTAINERS: '/api/docker/containers',
-  DOCKER_START: '/api/docker/start',
-  DOCKER_STOP: '/api/docker/stop',
-  DOCKER_REMOVE: '/api/docker/remove',
-
-  PM2_PROCESSES: '/api/pm2/processes',
-  PM2_START: '/api/pm2/start',
-  PM2_STOP: '/api/pm2/stop',
-  PM2_RESTART: '/api/pm2/restart',
-  PM2_DELETE: '/api/pm2/delete',
-
   SHELL_EXECUTE: '/api/shell/execute',
 
   SECURITY_NEWS: '/api/security-news',
 
-  WIREGUARD_STATUS: '/api/wireguard/status',
-
-  TAILSCALE_MACHINES: '/api/tailscale/machines',
-
-  PUBLIC_IP: '/api/public-ip',
-  LOCAL_IP: '/api/local-ip',
   LOCAL_SERVICES: '/api/local-services',
-  LOCAL_CREDENTIALS: '/api/local-credentials',
   NETWORK_MONITOR_LAN_DEVICES: '/api/network-monitor/lan-devices',
   NETWORK_MONITOR_OUTBOUND_CONNECTIONS:
     '/api/network-monitor/outbound-connections',
@@ -31,8 +13,6 @@ export const API_ENDPOINTS = {
   API_KEYS: '/api/api-keys',
 
   LOCAL_MACHINE: '/api/local-machine',
-  DISK_SPACE: '/api/disk-space',
-  SPEED_TEST: '/api/speed-test',
 
   GOOGLE_TOKEN: '/api/auth/google-token',
 
@@ -57,10 +37,6 @@ export const API_ENDPOINTS = {
   SPEECH_TO_TEXT: '/api/speech-to-text',
   TEXT_TO_SPEECH: '/api/text-to-speech',
   VOICE_LIST: '/api/voice-list',
-
-  SSH_KEY: '/api/ssh-key',
-
-  GENERATE_SECRET: '/api/generate-secret',
 
   RECIPE_SCRAPE: '/api/recipe/scrape',
   RECIPE_SCRAPE_PREVIEW: '/api/recipe/scrape-preview',
