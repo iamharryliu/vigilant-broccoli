@@ -1,19 +1,16 @@
 # Agent Context — resume
 
-Resume data, PDF rendering and validation shared with the manager's career editor.
+Resume data, PDF rendering and validation shared with job-hunt-next.
 
 ## Table of Contents
 
 - [Editing](#editing)
-- [Job Application Workflow](#job-application-workflow)
 - [Cover Letter Template](#cover-letter-template)
 
 ## Editing
 
-- Before resume edits, read `apps/ui/local-manager-next/src/app/api/resume/chat/resume-chat.prompt.ts` (`buildSystemPrompt`) and `src/lib/resume-chat.protection.ts` in that app. Follow their factual, editing and conversation rules; waive a rule only on explicit user instruction and identify the waiver.
-- CLI edits go directly to `resume.json`, without the chat's ledger or Apply step. Use confirmed facts for the draft; ask about unsupported claims before adding them.
-- After editing, run `npx tsx apps/ui/local-manager-next/scripts/check-resume.ts` from `projects/nx-workspace` (optional git ref; default `HEAD`). Fix protected-field, page overflow, fill-band and line-wrap failures. The PDF must fit exactly one US Letter page.
-- `notes/personal/career/personal-software-career-experience.md` is read live by the editor. Preserve `## Skills` (`Skill | Used In`), `## Job Experience` (`Company | Role | Dates | Context`), `## Languages` (`Language | Proficiency`), `## Education` (`Institution | Program | Dates`), and `## Project Contributions` with `### Company — Project — Dates` headings and `Contribution | Description` tables.
+- Use confirmed facts for resume drafts; ask about unsupported claims before adding them. The PDF must fit exactly one US Letter page.
+- `notes/personal/career/personal-software-career-experience.md` is read by job-hunt-next. Preserve `## Skills` (`Skill | Used In`), `## Job Experience` (`Company | Role | Dates | Context`), `## Languages` (`Language | Proficiency`), `## Education` (`Institution | Program | Dates`), and `## Project Contributions` with `### Company — Project — Dates` headings and `Contribution | Description` tables.
 - Skills require a Skills row or explicit Project Contributions evidence; record newly confirmed facts before using them. Update `Used In` when a skill is used somewhere new. Do not infer experience from reference links or copy References lists into resume bullets. Figures must already be in the resume or confirmed records.
 - Career-record table conventions:
   - One skill per row, except user-kept pairs (`MySQL / MariaDB`, `TypeScript / JavaScript`). Alphabetize rows case-insensitively.
@@ -23,22 +20,8 @@ Resume data, PDF rendering and validation shared with the manager's career edito
   - Project sections run newest first; contribution rows are alphabetical. Git activity ranges and `Dates unconfirmed` are not resume dates or durations. Record only user-confirmed claims; keep guesses in the conversation.
 - Do not repeat a theme across roles (testing, CI/CD, AI-assisted development, reusable libraries or tools, code review, the same UI or outcome). Give each theme one bullet in the role where it is strongest and drop it from the others; keep every bullet distinct in outcome or skill. Scan the bullets across roles for overlap before running the check.
 - `OSS Projects` and legacy `Open Source` aliases map to the existing `vigilant-broccoli` experience; preserve its label, role and dates instead of adding a duplicate.
-- Keep the summary's single opening role-and-years sentence consistent with the chat editor and work dates; do not repeat years later.
+- Keep the summary's single opening role-and-years sentence consistent with the work dates; do not repeat years later.
 - After the opener, the summary is one general sentence starting `Expertise in` that names three to six target-relevant confirmed skill areas (bold keywords). No specific projects, employers, integrations or implementation details; those belong in bullets.
-
-## Job Application Workflow
-
-When the user pastes a job posting and asks for a tailored resume via the agent CLI:
-
-1. Edit `resume.json` per [Editing](#editing). Report posting requirements the career records do not support (e.g. a missing technology or years of experience) instead of adding them.
-2. Run `check-resume.ts` until it passes.
-3. Create one folder per application: `$HOME/Desktop/Job Applications/<YYYY-MM-DD>-<Company>-<Job-Title>/`. Use today's date, the company from the posting, and the posting's job title with hyphens (e.g. `2026-10-22-Capgemini-Senior-Backend-Developer`), even where the resume's own title differs (titles are limited to the career note's allowed list).
-4. Save the pasted posting as plain text in `<folder>/<YYYY-MM-DD>-job-posting-<Company>-<Job-Title>.txt`, with a `Posting URL: <url>` first line when one was given, copying the URL character for character (keep every query parameter; never shorten or canonicalize it). Keep the posting's own words and drop only page chrome; the manager's Sample page reads this file by its `-job-posting-` name.
-5. Save the gaps between the posting and the candidate as plain text in `<folder>/<YYYY-MM-DD>-gaps-<Company>-<Job-Title>.txt`: one `- ` bullet per posting requirement the career records do not support (a missing technology, too few years, a missing certification or language), as `<requirement> - <what the records lack>`, most important first, using only the facts the records confirm. When nothing is unsupported write a single `- None` bullet. No Markdown styling and no heading; the manager's Sample page lists these bullets and finds the file by its `-gaps-` name. Report the same gaps to the user.
-6. Generate the resume PDF from `projects/nx-workspace` into that folder: `npx tsx apps/ui/local-manager-next/scripts/generate-resume-pdf.ts "<folder>/<YYYY-MM-DD>-resume-<Company>-<Job-Title>.pdf"`. The script creates missing folders.
-7. Write the cover letter as plain text in `<folder>/<YYYY-MM-DD>-cover-letter-<Company>-<Job-Title>.txt` (no `.md` file; no Markdown styling such as `**bold**`), following the [cover letter template](#cover-letter-template). Follow the same factual rules as the resume: only confirmed facts from `resume.json`, the career note and what the user states, no unsupported posting requirements, no invented figures or motivations.
-8. Generate the cover letter PDF next to its source: `npx tsx apps/ui/local-manager-next/scripts/generate-cover-letter-pdf.ts "<folder>/<...>.txt" "<folder>/<YYYY-MM-DD>-cover-letter-<Company>-<Job-Title>.pdf"`. The header title defaults to `resume.json`'s title; pass a title as an optional third argument when regenerating a letter after `resume.json` has changed. It fails when the letter exceeds one page.
-9. `resume.json` stays the single working copy and is not committed unless the user asks; tell the user it now holds the tailored version.
 
 ## Cover Letter Template
 
