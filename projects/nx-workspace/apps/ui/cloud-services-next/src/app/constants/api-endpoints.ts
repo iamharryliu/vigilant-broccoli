@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
   GCLOUD_VAULT_TOKEN: withBasePath('/api/gcloud/vault-token'),
 
   RENDER_SERVICES: withBasePath('/api/render/services'),
+  RENDER_AUTH_LOGIN: withBasePath('/api/render/auth/login'),
 
   VERCEL_PROJECTS: withBasePath('/api/vercel/projects'),
 

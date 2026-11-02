@@ -4,7 +4,12 @@
   },
   "RENDER": {
     "TITLE": "Render Services",
-    "FETCH_ERROR": "Unable to load Render services. Check RENDER_API_KEY in Vault and redeploy cloud-services-next.",
+    "FETCH_ERROR": "Unable to load Render services.",
+    "NOT_LOGGED_IN": "Not logged in to Render.",
+    "LOGIN": "Login to Render",
+    "LOGIN_PENDING": "Finish the sign-in in the browser tab that just opened.",
+    "LOGIN_ERROR": "Render login failed",
+    "OPEN_SIGN_IN": "Open sign-in page",
     "SUSPENDED": "Suspended",
     "NOT_SUSPENDED": "Not suspended",
     "SERVICE": "Service",
