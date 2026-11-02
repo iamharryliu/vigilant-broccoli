@@ -11,7 +11,8 @@ export type SecurityNewsItem = {
 };
 
 const MS_PER_HOUR = 60 * 60 * 1000;
-export const LOOKBACK_MS = 7 * 24 * MS_PER_HOUR;
+export const LOOKBACK_DAYS = 7;
+const LOOKBACK_MS = LOOKBACK_DAYS * 24 * MS_PER_HOUR;
 const CLOCK_SKEW_MS = 60_000;
 const MAX_ITEMS = 50;
 const CRITICAL_CVSS = 9;

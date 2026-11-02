@@ -190,6 +190,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [@vigilant-broccoli/react-music-lib](./projects/nx-workspace/libs/@vigilant-broccoli/react-music-lib) | Metronome component. | `type:higher-level` |
 | [@vigilant-broccoli/react-sandbox](./projects/nx-workspace/libs/@vigilant-broccoli/react-sandbox) | Component sandbox and demos for the component library. | `type:higher-level` |
 | [@vigilant-broccoli/react-utility](./projects/nx-workspace/libs/@vigilant-broccoli/react-utility) | QR code, audio, clock and weather display utilities for React. | `type:higher-level` |
+| [@vigilant-broccoli/security-news](./projects/nx-workspace/libs/@vigilant-broccoli/security-news) | Filters vulnerability and incident feeds to exploitable issues affecting stack products. | `type:util` |
 | [@vigilant-broccoli/resume](./projects/nx-workspace/libs/@vigilant-broccoli/resume) | Resume schema, experience data and PDF generation. | `type:util` |
 | [@vigilant-broccoli/storage](./projects/nx-workspace/libs/@vigilant-broccoli/storage) | Multi-provider object storage bucket service. | `type:util` |
 | [@vigilant-broccoli/vercel-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/vercel-workspace) | Vercel API types and utilities. | `type:util` |

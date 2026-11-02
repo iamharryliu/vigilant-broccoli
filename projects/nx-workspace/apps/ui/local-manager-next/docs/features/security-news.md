@@ -8,7 +8,8 @@
 
 ## Sources and filtering
 
-- Feeds and the product keyword list live in `src/app/api/security-news/_lib/security-news.feeds.ts`; add a feed or product there.
+- Feeds and the product keyword list live in `libs/@vigilant-broccoli/security-news/src/lib/security-news.feeds.ts`; add a feed or product there.
 - An item needs a stack-product keyword match and a severity signal: CISA KEV listing, critical GitHub advisory (severity `critical` or CVSS 9+), or a keyword signal (actively exploited, zero-day, RCE, supply-chain compromise, breach, major outage).
-- `GET /api/security-news` fetches all feeds in parallel and caches the result in memory for 30 minutes; a failing feed is listed on the page and does not block the rest.
+- The `@vigilant-broccoli/security-news` lib owns the feeds, parsing and filtering, shared with mobile-manager-next; `SecurityNewsList` in `react-lib-higher-level` renders the list for both apps.
+- `GET /api/security-news` (`getSecurityNews`) fetches all feeds in parallel and caches the result in memory for 30 minutes; a failing feed is listed on the page and does not block the rest.
 - Matching is rule-based, so a novel phrasing can be missed.

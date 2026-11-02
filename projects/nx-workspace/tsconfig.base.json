@@ -90,6 +90,9 @@
       "@vigilant-broccoli/llm-schemas": [
         "./libs/@vigilant-broccoli/llm-schemas/src/index.ts"
       ],
+      "@vigilant-broccoli/security-news": [
+        "./libs/@vigilant-broccoli/security-news/src/index.ts"
+      ],
       "@vigilant-broccoli/react-music-lib": [
         "./libs/@vigilant-broccoli/react-music-lib/src/index.ts"
       ],

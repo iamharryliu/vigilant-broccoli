@@ -7,6 +7,7 @@ import {
   CalendarDays,
   CalendarPlus,
   CloudSun,
+  ShieldAlert,
   Link2,
   ListTodo,
   Rows3,
@@ -56,6 +57,11 @@ import {
 // fetches once and switching to Weather is instant.
 const WeatherView = dynamic(
   () => import('./weather-view').then(module => module.WeatherView),
+  { ssr: false },
+);
+
+const SecurityNewsView = dynamic(
+  () => import('./security-news-view').then(module => module.SecurityNewsView),
   { ssr: false },
 );
 
@@ -392,6 +398,12 @@ export const HomeView = () => {
       // Force-mounted so the weather loads once on page load, not per visit.
       forceMount: true,
       content: <WeatherView />,
+    },
+    {
+      value: CALENDAR_TAB.SECURITY_NEWS,
+      label: CALENDAR_TAB.SECURITY_NEWS,
+      icon: <ShieldAlert size={TAB_ICON_SIZE} />,
+      content: <SecurityNewsView />,
     },
   ];
 
