@@ -37,7 +37,7 @@ const FIELDS = {
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const INPUT_CLASSES =
-  'w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300 dark:bg-gray-800';
+  'w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none dark:bg-gray-800';
 const INPUT_BORDER_CLASSES = 'dark:border-gray-700';
 const INPUT_ERROR_BORDER_CLASSES = 'border-red-500 dark:border-red-500';
 

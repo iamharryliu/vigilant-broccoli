@@ -285,7 +285,7 @@ const MockCalendarInput = () => {
         onChange={e => setText(e.target.value)}
         placeholder="Paste event text, email, or image here..."
         rows={4}
-        className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 dark:border-gray-700 dark:bg-gray-900"
+        className="w-full resize-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm focus:outline-none dark:border-gray-700 dark:bg-gray-900"
       />
       <div className="flex gap-2">
         <button type="button" className={VOICE_BUTTON_CLASS}>

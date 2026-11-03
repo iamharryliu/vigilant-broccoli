@@ -21,9 +21,7 @@ export const InputDemo = () => {
           'aria-describedby': invalid ? errorId : undefined,
           placeholder: t('FOUNDATION_DEMO.PLACEHOLDER'),
           defaultValue: value,
-          className: invalid
-            ? 'border-destructive focus-visible:ring-destructive'
-            : undefined,
+          className: invalid ? 'border-destructive' : undefined,
         };
         return (
           <DemoSection key={state} title={t(`FOUNDATION_DEMO.${state}`)}>

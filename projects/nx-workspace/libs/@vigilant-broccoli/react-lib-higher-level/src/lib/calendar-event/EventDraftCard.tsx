@@ -118,7 +118,7 @@ export const EventDraftCard = ({
           setEditable(prev => ({ ...prev, summary: e.target.value }))
         }
         disabled={isReadOnly}
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 disabled:text-gray-400 dark:border-gray-700 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none disabled:bg-gray-50 disabled:text-gray-400 dark:border-gray-700 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
       />
 
       <div className="flex items-center gap-3">
@@ -135,7 +135,7 @@ export const EventDraftCard = ({
             }))
           }
           disabled={isReadOnly}
-          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 dark:border-gray-700 dark:disabled:bg-gray-800"
+          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none disabled:bg-gray-50 dark:border-gray-700 dark:disabled:bg-gray-800"
         />
       </div>
 
@@ -153,7 +153,7 @@ export const EventDraftCard = ({
             }))
           }
           disabled={isReadOnly}
-          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 dark:border-gray-700 dark:disabled:bg-gray-800"
+          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none disabled:bg-gray-50 dark:border-gray-700 dark:disabled:bg-gray-800"
         />
       </div>
 
@@ -189,7 +189,7 @@ export const EventDraftCard = ({
             }))
           }
           disabled={isReadOnly}
-          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 dark:border-gray-700 dark:disabled:bg-gray-800"
+          className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none disabled:bg-gray-50 dark:border-gray-700 dark:disabled:bg-gray-800"
         >
           {buildRecurrencePresets(editable.start, t).map(preset => (
             <option key={preset.value} value={preset.value}>
@@ -216,7 +216,7 @@ export const EventDraftCard = ({
           setEditable(prev => ({ ...prev, location: e.target.value }))
         }
         disabled={isReadOnly}
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 disabled:text-gray-400 dark:border-gray-700 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none disabled:bg-gray-50 disabled:text-gray-400 dark:border-gray-700 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
       />
 
       <textarea
@@ -228,7 +228,7 @@ export const EventDraftCard = ({
         }
         disabled={isReadOnly}
         rows={2}
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:bg-gray-50 disabled:text-gray-400 resize-none dark:border-gray-700 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none disabled:bg-gray-50 disabled:text-gray-400 resize-none dark:border-gray-700 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
       />
 
       {status === 'error' && errorMessage && (
