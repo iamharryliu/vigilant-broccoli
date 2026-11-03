@@ -12,7 +12,7 @@
 
 ## Application resume
 
-- An expanded card's Resume tab shows the application's tailored resume, with a toolbar in the tab row to switch between the rendered resume, Edit JSON and History. History diffs any two saved versions (From and To)
+- An expanded card's Resume tab shows the application's tailored resume, with a toolbar in the tab row to switch between the rendered resume, Edit JSON and History. History diffs any two saved versions (From and To). Version v0 is the master resume the run started from, so the default diff shows exactly what tailoring changed
 - The skill saves the tailored resume as a `.json` twin of the resume PDF. Applications generated before that have none, and their tab says so
 - Saving an edit overwrites the twin, rewrites the PDF from it and records a version in `STATE_DIR/application-resume-versions/<hash of the folder name>/`; a failed PDF render still keeps the JSON and the version
 - `GET`/`PUT /api/job-applications/resume?path=<folder>` read and save it; `PUT` validates the resume first. The master Resume section keeps its own versions through `GET /api/career/versions`, which also snapshots out-of-band edits

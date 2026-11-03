@@ -10,6 +10,8 @@ export type ResumeVersion = {
   id: string;
   createdAt: string;
   content: string;
+  // The master resume an application started from (v0).
+  base?: boolean;
 };
 
 // Ids are zero-padded timestamps so a plain sort is chronological.
@@ -33,6 +35,7 @@ const listVersions = async (dir: string): Promise<ResumeVersion[]> => {
 export const syncVersions = async (
   dir: string,
   content: string,
+  base?: boolean,
 ): Promise<ResumeVersion[]> => {
   const versions = await listVersions(dir);
   if (versions.at(-1)?.content === content) return versions;
@@ -40,6 +43,7 @@ export const syncVersions = async (
     id: newVersionId(),
     createdAt: new Date().toISOString(),
     content,
+    ...(base && { base }),
   };
   await writeFile(
     join(dir, `${version.id}${VERSION_EXTENSION}`),
@@ -47,6 +51,14 @@ export const syncVersions = async (
     FILE_ENCODING,
   );
   return [...versions, version];
+};
+
+// Ids are millisecond timestamps, so the base must be written a tick before
+// the tailored version that follows it.
+export const seedBaseVersion = async (dir: string, content: string) => {
+  if ((await listVersions(dir)).length) return;
+  await syncVersions(dir, content, true);
+  await new Promise(resolve => setTimeout(resolve, 2));
 };
 
 export const syncResumeVersions = async () =>
