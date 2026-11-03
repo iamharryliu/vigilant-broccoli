@@ -38,7 +38,12 @@ const MODE = {
 
 type Mode = (typeof MODE)[keyof typeof MODE];
 
-type Version = { id: string; createdAt: string; content: string };
+type Version = {
+  id: string;
+  createdAt: string;
+  content: string;
+  base?: boolean;
+};
 
 type VersionOption = { id: string; label: string };
 
@@ -135,7 +140,10 @@ export const ResumeTab = ({
         setVersions(loadedVersions);
         setFromId(
           current =>
-            current ?? loadedVersions.at(-2)?.id ?? loadedVersions.at(-1)?.id,
+            current ??
+            loadedVersions.find(version => version.base)?.id ??
+            loadedVersions.at(-2)?.id ??
+            loadedVersions.at(-1)?.id,
         );
         setToId(loadedVersions.at(-1)?.id);
         setSaved(loaded);
@@ -220,8 +228,8 @@ export const ResumeTab = ({
     () =>
       versions.map((version, index) => ({
         id: version.id,
-        label: t('RESUME.VERSION', {
-          number: index + 1,
+        label: t(version.base ? 'RESUME.BASE_VERSION' : 'RESUME.VERSION', {
+          number: versions[0]?.base ? index : index + 1,
           date: new Date(version.createdAt).toLocaleString(),
         }),
       })),

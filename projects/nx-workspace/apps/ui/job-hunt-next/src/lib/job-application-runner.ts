@@ -1,6 +1,7 @@
-import { copyFile, mkdir, rm } from 'fs/promises';
+import { copyFile, mkdir, readFile, rm } from 'fs/promises';
 import { dirname } from 'path';
 import { JobApplicationRun, RUN_KIND } from '../app/constants/runs';
+import { seedApplicationBaseVersions } from './application-resume.server';
 import { ensureCareerFiles } from './career-files.server';
 import { startClaudeRun } from './claude-run.server';
 import {
@@ -70,6 +71,7 @@ export const startJobApplicationRun = async (
 ): Promise<JobApplicationRun> => {
   await ensureCareerFiles();
   await snapshotResume();
+  const startedAt = Date.now();
   await mkdir(JOB_APPLICATIONS_ROOT, { recursive: true });
   return startClaudeRun({
     kind: RUN_KIND.JOB_APPLICATION,
@@ -82,6 +84,12 @@ export const startJobApplicationRun = async (
       JOB_APPLICATIONS_ROOT,
     ],
     allowedTools: ALLOWED_TOOLS,
-    cleanup: () => rm(RESUME_WORKING_PATH, { force: true }),
+    cleanup: async () => {
+      await rm(RESUME_WORKING_PATH, { force: true });
+      await seedApplicationBaseVersions(
+        await readFile(RESUME_BASELINE_PATH, 'utf-8'),
+        startedAt,
+      );
+    },
   });
 };

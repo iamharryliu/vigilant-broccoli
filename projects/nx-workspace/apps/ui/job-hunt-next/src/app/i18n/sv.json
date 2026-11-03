@@ -94,6 +94,7 @@
     "FROM": "Från",
     "TO": "Till",
     "VERSION": "v{number} · {date}",
+    "BASE_VERSION": "v0 basresumé · {date}",
     "NO_CHANGES": "Inga skillnader mellan dessa versioner.",
     "PDF_FAILED": "Sparat, men det gick inte att skapa CV:t som PDF igen",
     "NONE": "Den här ansökan har inget redigerbart CV. Ansökningar som skapas framöver sparas med ett.",

@@ -20,7 +20,7 @@ The arguments are either a pasted job posting (optionally with notes such as tar
    - Keep `basics.name`, `email`, `phone`, `location` and `links` exactly as they are.
    - `basics.title` must be one of the titles in the career experience's Job Experience `Role` cells (separated by `; `).
    - Keep every work and project entry's company, role and dates. When the resume has no work experience yet, build it from the career experience's Job Experience rows.
-   - Tailor the summary and bullets to the posting with confirmed facts. Wrap key skills in `**bold**`.
+   - Update the base resume subtly: keep its wording, bullet order and structure, and change only what the posting needs. Rewrite the summary, then reword or reorder at most a few bullets and swap in confirmed keywords; leave every other bullet exactly as written. Use confirmed facts only, and wrap key skills in `**bold**`.
    - Do not repeat a theme across roles (testing, CI/CD, AI-assisted development, reusable libraries or tools, code review, the same UI or outcome). Give each theme one bullet in the role where it is strongest and drop it from the others; keep every bullet distinct in outcome or skill. Before running the check, scan the bullets across roles for overlap and merge or replace the repeats.
    - The summary is one sentence giving the title and years of experience, then one sentence starting `Expertise in` naming three to six confirmed skill areas relevant to the posting.
 3. Run `node skill-scripts/check-resume.cjs "<working resume path>"` until it passes. It fails on protected-field changes and when the PDF does not fill exactly one US Letter page; shorten or extend bullets to fix it.
