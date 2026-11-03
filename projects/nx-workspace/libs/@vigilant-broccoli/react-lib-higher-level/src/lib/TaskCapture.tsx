@@ -217,7 +217,7 @@ export const TaskCapture = ({
             onPaste={handlePaste}
             placeholder={'Add a list, extra context for an image, or notes...'}
             rows={5}
-            className="w-full border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none bg-background"
+            className="w-full border border-border rounded-xl px-4 py-3 text-sm focus:outline-none resize-none bg-background"
           />
 
           {images.length > 0 && (
@@ -352,7 +352,7 @@ export const TaskCapture = ({
             <select
               value={selectedListId}
               onChange={e => setSelectedListId(e.target.value)}
-              className="w-full border border-border rounded-xl px-4 py-2.5 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full border border-border rounded-xl px-4 py-2.5 text-sm bg-background focus:outline-none"
             >
               {taskLists.map(l => (
                 <option key={l.id} value={l.id ?? ''}>
@@ -378,7 +378,7 @@ export const TaskCapture = ({
                       prev.map((v, j) => (j === i ? e.target.value : v)),
                     )
                   }
-                  className="flex-1 border border-border rounded-lg px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none"
+                  className="flex-1 border border-border rounded-lg px-3 py-2 text-sm bg-background focus:outline-none resize-none"
                 />
                 <button
                   onClick={() =>
@@ -417,7 +417,7 @@ export const TaskCapture = ({
                 }
               }}
               placeholder="Add another item..."
-              className="flex-1 border border-border rounded-lg px-3 py-2 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none"
+              className="flex-1 border border-border rounded-lg px-3 py-2 text-sm bg-background focus:outline-none resize-none"
             />
             <button
               onClick={() => {

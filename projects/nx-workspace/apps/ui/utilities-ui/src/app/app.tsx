@@ -25,7 +25,7 @@ export const App = () => {
           placeholder={SEARCH_PLACEHOLDER}
           aria-label={SEARCH_PLACEHOLDER}
           autoFocus
-          className="mb-4 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:border-blue-500"
+          className="mb-4 w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none"
         />
         {filteredItems.length ? (
           <CollapsibleList

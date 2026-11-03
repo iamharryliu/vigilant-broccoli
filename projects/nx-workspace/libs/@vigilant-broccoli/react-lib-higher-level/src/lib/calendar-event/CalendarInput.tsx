@@ -216,7 +216,7 @@ export const CalendarInput = ({
           aria-label={t('INPUT')}
           placeholder={t('INPUT')}
           rows={4}
-          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 resize-none bg-white dark:border-gray-700 dark:bg-gray-900"
+          className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none resize-none bg-white dark:border-gray-700 dark:bg-gray-900"
         />
 
         {images.length > 0 && (
