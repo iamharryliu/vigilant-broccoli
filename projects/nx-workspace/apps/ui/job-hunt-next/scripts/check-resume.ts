@@ -100,7 +100,7 @@ const findIssues = (
 };
 
 const main = async (): Promise<void> => {
-  const candidate = readResume();
+  const candidate = readResume(process.argv[2]);
   const baseline = readResume(RESUME_BASELINE_PATH);
   const issues = findIssues(
     baseline,

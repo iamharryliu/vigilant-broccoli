@@ -15,7 +15,7 @@ import {
 import { syncVersions } from './resume-versions.server';
 
 const FILE_ENCODING = 'utf-8';
-const PDF_SCRIPT = join('skill-scripts', 'generate-resume-pdf.cjs');
+export const PDF_SCRIPT = join('skill-scripts', 'generate-resume-pdf.cjs');
 
 const execFileAsync = promisify(execFile);
 
