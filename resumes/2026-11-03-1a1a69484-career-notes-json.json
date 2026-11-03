@@ -1,0 +1,103 @@
+{
+  "basics": {
+    "name": "Harry Liu",
+    "title": "Software Engineer",
+    "email": "harryliu1995@gmail.com",
+    "phone": "+46 76 008 72 96",
+    "links": [
+      {
+        "label": "projects.harryliu.dev",
+        "url": "https://projects.harryliu.dev"
+      },
+      {
+        "label": "github.com/iamharryliu",
+        "url": "https://github.com/iamharryliu"
+      },
+      {
+        "label": "linkedin.com/in/iamharryliu",
+        "url": "https://linkedin.com/in/iamharryliu"
+      }
+    ]
+  },
+  "summary": "Software developer with over 7 years of experience building end-to-end web applications. Expertise in AI-driven web development, Node, TypeScript, cloud infrastructure, and CI/CD pipelines.",
+  "workExperience": [
+    {
+      "company": "ELVA11",
+      "role": "Infrastructure Engineer",
+      "startDate": "March 2025",
+      "endDate": "August 2026",
+      "bullets": [
+        "Built and managed **AWS infrastructure** for internal projects, implementing resource provisioning, networking, observability, secret management and secure sign-in for short-lived CLI credentials.",
+        "Developed internal AI tools and products, integrating **LLMs** and automated workflows into business and engineering use cases, and productizing proprietary AI IP into reusable solutions.",
+        "Implemented **LLM** data ingestion pipelines for AI products, including document processing and summarization and an AI content generation workflow."
+      ]
+    },
+    {
+      "company": "Tillmobil",
+      "role": "Fullstack Developer",
+      "startDate": "March 2025",
+      "endDate": "March 2026",
+      "bullets": [
+        "Led two **end-to-end production systems**—a call analysis SaaS platform and a trading card marketplace API—owning architecture, backend, and cloud infrastructure from design through deployment and day-to-day operation, communicating directly with the client.",
+        "Built **AI-driven transcription and insight pipelines** for call centers, adding recording-event context to **LLM** prompts.",
+        "Set up **Elasticsearch** mappings, bulk indexing and search services, refining card search with tokenized queries and indexed fields.",
+        "Cut dashboard load times from over 2 seconds to about 200 ms by fixing N+1 queries and adding indexes (**performance optimization**).",
+        "Designed automated ingestion pipelines and cron-based synchronization of card data and prices, with retries.",
+        "Provisioned GCP resources with **Terraform**, including compute, MySQL, storage and messaging.",
+        "Wrote end-to-end tests to prevent UI regressions; monitored production with health checks and Slack alerts.",
+        "Used **RabbitMQ** and asynchronous workers for event-driven call processing; built REST APIs aggregating pricing data.",
+        "Adopted **AI-driven development** with **Claude Code**; managed **GCP** with **Terraform** and **CI/CD pipelines**."
+      ]
+    },
+    {
+      "company": "Tretton37",
+      "role": "Fullstack Developer",
+      "startDate": "June 2024",
+      "endDate": "March 2025",
+      "bullets": [
+        "Collaborated with leadership to design and automate the HR system infrastructure, eliminating tens of hours of weekly reporting.",
+        "Managed GitLab repositories and **CI/CD pipelines** for internal employee services.",
+        "Developed reusable **internal tools** and libraries with standardized interfaces, streamlining development and reducing boilerplate."
+      ]
+    },
+    {
+      "company": "Capco",
+      "role": "Banking Fullstack Developer",
+      "startDate": "September 2019",
+      "endDate": "July 2024",
+      "bullets": [
+        "Built backend service APIs with **Java**, **Spring Boot** and **Spring**; developed **Python** microservices with **Flask** for the bank.",
+        "Rebuilt legacy banking **REST API** services and modernized legacy banking applications using **Angular** and **Express**.",
+        "Built secure login for a cross-platform mobile banking app—challenge authentication, OTP login, and **session management**.",
+        "Established test environments and wrote **unit** and **end-to-end** tests to meet the banking client's **90% test coverage** requirement.",
+        "Provided **technical leadership** through training and developer support; led UI architecture for a **React** proof of concept.",
+        "**Saved QA teams hundreds of hours weekly** with **Python** scripts that parse phone IVR banking logs, replacing manual searches.",
+        "Worked in **Agile** teams to define and implement user stories and tasks across client engagements."
+      ]
+    }
+  ],
+  "projectExperience": [
+    {
+      "company": "vigilant-broccoli",
+      "role": "Open Source Maintainer",
+      "startDate": "July 2023",
+      "endDate": "present",
+      "bullets": [
+        "Open source maintainer of **24 applications**, **6 API services**, **12 Docker images** and **4 npm packages**.",
+        "Design and run **agentic coding workflows** with **Claude Code**, with custom skills and **AI guardrails** for unattended agent runs.",
+        "Integrated multiple **LLM** providers with streaming chat; built guardrails validating AI-generated resume edits.",
+        "Built microservices with **OpenAPI** docs and async email delivery over **RabbitMQ**.",
+        "Provision and operate **cloud infrastructure** with **Terraform**; build **CI/CD pipelines** with **GitHub Actions**."
+      ]
+    }
+  ],
+  "skills": {
+    "technical": [
+      "AI-Driven Web Development",
+      "Node",
+      "TypeScript",
+      "Cloud Infrastructure",
+      "CI/CD"
+    ]
+  }
+}
