@@ -67,5 +67,5 @@ The run's `--add-dir` covers the directories of both paths.
 
 ## Nuances
 
-- No personal data is baked in: the build replaces the owner's `notes/personal/career/resume.json` with `templates/resume.json` in both bundles and excludes it from file tracing, and the Dockerfile copies only build output and `templates/`. The user's files arrive through the mounts.
+- No personal data is baked in: the `resume` lib never imports the owner's `notes/personal/career/resume.json`, and the Dockerfile copies only build output and `templates/`. The user's files arrive through the mounts.
 - The app has no login; publish the port on `127.0.0.1` or put an authenticating proxy in front of it.

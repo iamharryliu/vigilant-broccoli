@@ -18,24 +18,6 @@ const SCRIPTS = [
   'generate-resume-pdf.ts',
   'validate-career-file.ts',
 ];
-const LIB_RESUME_JSON = resolve(
-  APP_DIR,
-  '../../../../../notes/personal/career/resume.json',
-);
-const TEMPLATE_RESUME_JSON = join(APP_DIR, 'templates/resume.json');
-
-// Same swap as next.config.js: the lib's barrel must not pull the owner's
-// resume into the image.
-const blankResumePlugin = {
-  name: 'blank-resume',
-  setup(pluginBuild) {
-    pluginBuild.onResolve({ filter: /resume\.json$/ }, args =>
-      resolve(args.resolveDir, args.path) === LIB_RESUME_JSON
-        ? { path: TEMPLATE_RESUME_JSON }
-        : undefined,
-    );
-  },
-};
 
 await build({
   entryPoints: SCRIPTS.map(script => join(APP_DIR, 'scripts', script)),
@@ -47,7 +29,6 @@ await build({
   target: 'node24',
   tsconfig: join(APP_DIR, 'tsconfig.json'),
   external: ['@playwright/test', 'playwright', 'playwright-core'],
-  plugins: [blankResumePlugin],
   logLevel: 'warning',
 });
 
