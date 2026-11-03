@@ -8,6 +8,7 @@
 - [Web Rendering](#web-rendering)
 - [Testing](#testing)
 - [Development Approaches](#development-approaches)
+- [Software Roles](#software-roles)
 - [Tooling](#tooling)
 - [Platform Engineering](#platform-engineering)
 - [AI and LLMs](#ai-and-llms)
@@ -39,6 +40,7 @@
 | Low-level language | A programming language that is closer to machine code, with less abstraction from hardware. Provides more control but is harder to use (e.g., C). |
 | Machine code | Binary instructions executed directly by a specific CPU architecture (e.g. x86-64, ARM64); the lowest level of software. |
 | Object-oriented programming | A paradigm that organizes code into objects bundling data with the behaviour that operates on it, using encapsulation, inheritance and polymorphism (e.g. Java, C#). Also OOP. |
+| Open source | Software whose source code is publicly available to view, modify and redistribute under a license (e.g. MIT, Apache, GPL); see FOSS. |
 | Procedural programming | A paradigm that structures a program as an ordered sequence of steps grouped into reusable procedures or functions that operate on shared data (e.g. C, Bash). |
 | Soft delete | Marking a record deleted (a `deleted_at` timestamp or flag) instead of removing the row, so it stays recoverable. A hard delete removes the row. |
 | Statically Typed | Variable types are known at compile time. |
@@ -118,6 +120,19 @@
 | BDD | Behavior-Driven Development. Requirements are written as plain-language Given-When-Then scenarios and automated as tests. See [BDD](./general/bdd.md). |
 | CI/CD | Continuous Integration/Continuous Deployment (or Delivery). CI automatically builds and tests every merged change; CD automatically ships passing changes to staging or production. |
 | TDD | Test-Driven Development. You write the test first and then the code that makes it pass. |
+
+## Software Roles
+
+| Term | Definition |
+| :-- | :-- |
+| Backend developer | Builds the server side of an application: APIs, business logic, databases, authentication and integrations with other services. |
+| DevOps engineer | Bridges development and operations by automating build, test and deployment (CI/CD), provisioning infrastructure as code and monitoring running systems so teams ship reliably. |
+| Frontend developer | Builds what users see and interact with in the browser or app: UI components, layout, state, accessibility and performance, consuming backend APIs. |
+| Fullstack developer | Works across the frontend, backend and database to deliver a feature end to end, trading depth in any one layer for breadth. |
+| Infrastructure engineer | Designs, provisions and maintains the underlying compute, networking, storage and cloud resources that applications run on, typically through infrastructure as code. |
+| Platform engineer | Builds an internal developer platform of self-service tooling and paved paths so product teams can ship and run software without managing the infrastructure themselves. |
+| Site reliability engineer | Often shortened to SRE. Applies software engineering to operations: sets reliability targets (SLOs), builds monitoring and automation, and leads incident response. |
+| Systems engineer | Designs and integrates the components of a larger system (hardware, software, networks and the interfaces between them), defining requirements and making sure the whole works together. |
 
 ## Tooling
 
