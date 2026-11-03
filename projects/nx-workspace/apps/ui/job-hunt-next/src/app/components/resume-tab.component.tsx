@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Eye, History, Pencil, RotateCcw, Save } from 'lucide-react';
+import { Eye, FileText, History, Pencil, RotateCcw, Save } from 'lucide-react';
 import {
   Button,
   Callout,
@@ -29,7 +29,12 @@ import { CareerResetDialog } from './career-reset-dialog.component';
 import { ResumeDiffComponent } from './resume-diff.component';
 import { ResumeViewComponent } from './resume-view.component';
 
-const MODE = { VIEW: 'view', EDIT: 'edit', HISTORY: 'history' } as const;
+const MODE = {
+  VIEW: 'view',
+  PDF: 'pdf',
+  EDIT: 'edit',
+  HISTORY: 'history',
+} as const;
 
 type Mode = (typeof MODE)[keyof typeof MODE];
 
@@ -116,6 +121,8 @@ export const ResumeTab = ({
   const [serverErrors, setServerErrors] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfError, setPdfError] = useState<string | null>(null);
 
   const load = useCallback(() => {
     const failed = (error: unknown) =>
@@ -157,6 +164,37 @@ export const ResumeTab = ({
     () => (errors.length ? null : parseResume(content)),
     [errors, content],
   );
+
+  // Renders the editor's current text, so unsaved edits preview too.
+  useEffect(() => {
+    if (mode !== MODE.PDF || errors.length) return;
+    let objectUrl: string | null = null;
+    let cancelled = false;
+    setPdfUrl(null);
+    setPdfError(null);
+    fetch(API_ENDPOINTS.CAREER_PREVIEW, {
+      method: HTTP_METHOD.POST,
+      headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
+      body: JSON.stringify({ content }),
+    })
+      .then(async response => {
+        if (!response.ok) throw new Error((await response.json()).error);
+        return response.blob();
+      })
+      .then(blob => {
+        if (cancelled) return;
+        objectUrl = URL.createObjectURL(blob);
+        setPdfUrl(objectUrl);
+      })
+      .catch(error => {
+        if (!cancelled)
+          setPdfError(error instanceof Error ? error.message : String(error));
+      });
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [mode, content, errors]);
 
   const save = async () => {
     setSaving(true);
@@ -256,6 +294,15 @@ export const ResumeTab = ({
             label: t('RESUME.VIEW'),
             icon: <Eye size={ICON_SIZE} />,
           },
+          ...(IS_DEMO
+            ? []
+            : [
+                {
+                  value: MODE.PDF,
+                  label: t('RESUME.PDF'),
+                  icon: <FileText size={ICON_SIZE} />,
+                },
+              ]),
           {
             value: MODE.EDIT,
             label: t('RESUME.EDIT_JSON'),
@@ -290,6 +337,30 @@ export const ResumeTab = ({
             <span>{t('RESUME.INVALID', { error: shownErrors[0] })}</span>
           </Callout>
         ))}
+
+      {mode === MODE.PDF && (
+        <div className={`flex min-h-0 flex-1 flex-col gap-3 ${padTop}`}>
+          {errors.length > 0 || pdfError ? (
+            <Callout color="red" className="flex-col">
+              <span>
+                {t('RESUME.PDF_PREVIEW_FAILED', {
+                  error: pdfError ?? errors[0],
+                })}
+              </span>
+            </Callout>
+          ) : pdfUrl ? (
+            <iframe
+              src={pdfUrl}
+              title={t('RESUME.PDF')}
+              className="min-h-0 flex-1 rounded-lg border"
+            />
+          ) : (
+            <p className="text-sm text-muted-foreground">
+              {t('RESUME.PDF_RENDERING')}
+            </p>
+          )}
+        </div>
+      )}
 
       {mode === MODE.EDIT && (
         <div className={`flex min-h-0 flex-1 flex-col gap-3 ${padTop}`}>

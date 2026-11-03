@@ -1,5 +1,5 @@
 import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import { generateResumePdfBuffer } from '@vigilant-broccoli/resume/server';
 import { RESUME_PATH } from '../src/lib/paths.server';
 import { readResume } from './skill-resume';
@@ -17,9 +17,12 @@ generateResumePdfBuffer(readResume(inputPath))
     mkdirSync(dirname(outputPath), { recursive: true });
     writeFileSync(outputPath, buffer);
     // The app edits an application's resume from this copy and re-renders the
-    // PDF with it, so a run keeps the tailored resume beside its PDF.
-    if (!inputPath)
-      copyFileSync(RESUME_PATH, outputPath.replace(SOURCE_EXTENSION, '.json'));
+    // PDF with it, so a run keeps the tailored resume beside its PDF. A source
+    // already at the twin path (an edit or a preview) needs no copy.
+    const twinPath = outputPath.replace(SOURCE_EXTENSION, '.json');
+    const sourcePath = inputPath ?? RESUME_PATH;
+    if (resolve(sourcePath) !== resolve(twinPath))
+      copyFileSync(sourcePath, twinPath);
     console.log(`Resume PDF written to ${outputPath}`);
   })
   .catch(err => {
