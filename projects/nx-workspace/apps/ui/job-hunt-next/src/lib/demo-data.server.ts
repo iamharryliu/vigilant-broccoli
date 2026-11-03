@@ -16,6 +16,10 @@ import {
   type JobApplicationRun,
 } from '../app/constants/runs';
 import en from '../app/i18n/en.json';
+import {
+  APPLICATION_FILE,
+  findApplicationFile,
+} from '../app/utils/job-application-files.utils';
 
 interface DemoFile {
   content?: string;
@@ -318,6 +322,20 @@ const fileResponse = (path: string, url: string) => {
   return sampleNotFound();
 };
 
+const coverLetterResponse = (path: string) => {
+  const application = findApplication(path);
+  const names = Object.keys(application?.files ?? {}).map(name => ({ name }));
+  const letter = findApplicationFile(names, APPLICATION_FILE.COVER_LETTER_TEXT);
+  const pdf = findApplicationFile(names, APPLICATION_FILE.COVER_LETTER_PDF);
+  if (!application || !letter) return sampleNotFound();
+  const content = application.files[letter.name].content ?? '';
+  return NextResponse.json({
+    content,
+    versions: [{ id: 'demo', createdAt: application.date, content }],
+    pdf: pdf ? `${application.folder}/${pdf.name}` : null,
+  });
+};
+
 // Every API request is answered here in demo builds, before a filesystem,
 // SQLite or Claude handler can run. Unknown paths fail closed as well.
 export const demoResponse = (request: NextRequest): NextResponse => {
@@ -351,6 +369,8 @@ export const demoResponse = (request: NextRequest): NextResponse => {
         ],
       });
     }
+    case API_ENDPOINTS.JOB_APPLICATIONS_COVER_LETTER:
+      return coverLetterResponse(path);
     case API_ENDPOINTS.JOB_APPLICATIONS_RUNS:
       return NextResponse.json({ runs: RUNS });
     case API_ENDPOINTS.JOB_APPLICATIONS_APPLIED:

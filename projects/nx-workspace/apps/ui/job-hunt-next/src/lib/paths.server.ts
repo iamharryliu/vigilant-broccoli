@@ -55,6 +55,11 @@ export const APPLICATION_RESUME_VERSIONS_DIR = join(
   'application-resume-versions',
 );
 
+export const APPLICATION_COVER_LETTER_VERSIONS_DIR = join(
+  STATE_DIR,
+  'application-cover-letter-versions',
+);
+
 // Outside the Job Applications folder so the application list never shows it.
 export const RUNS_DB_PATH = join(STATE_DIR, 'job-applications.db');
 
