@@ -8,7 +8,6 @@ import {
   EXPAND_PARAM,
   ROOT_PATH,
   RUNS_TAB_URL,
-  TAB_PARAM,
   toTab,
 } from '../app.const';
 import {
@@ -56,7 +55,7 @@ export const RunNotifications = () => {
       toast.success(t('RUNS.IMPORTED', { label }), {
         action: {
           label: t('RUNS.VIEW'),
-          onClick: () => router.push(`${ROOT_PATH}?${TAB_PARAM}=${kind}`),
+          onClick: () => router.push(toTab(kind).path),
         },
       });
     },

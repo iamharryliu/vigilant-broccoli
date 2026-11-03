@@ -1,6 +1,5 @@
 'use client';
 
-import { Suspense } from 'react';
 import { useEffect } from 'react';
 import './global.css';
 import { ThemeProvider } from '@vigilant-broccoli/react-lib';
@@ -38,9 +37,7 @@ export default function RootLayout({
           <I18nProvider>
             <DocumentLanguage />
             <div className="flex h-screen">
-              <Suspense>
-                <AppSidebar />
-              </Suspense>
+              <AppSidebar />
               <main className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
                 <DemoNotice />
                 {children}
