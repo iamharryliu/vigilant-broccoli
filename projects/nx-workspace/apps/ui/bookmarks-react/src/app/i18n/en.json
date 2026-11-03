@@ -6,7 +6,7 @@
   "EMPTY": "No bookmarks. Open Manage to add one or import a list.",
   "LABEL": "Label",
   "URL": "URL",
-  "SUBGROUP": "Subgroup (optional)",
+  "SUBGROUP": "Subsection",
   "UNGROUPED": "Ungrouped",
   "ADD": "Add bookmark",
   "SAVE": "Save changes",
@@ -23,5 +23,8 @@
   "IMPORT_READY": "Choose how to import {count} bookmarks. Merge skips exact duplicates; replace removes the current list.",
   "INVALID": "Use a non-empty label and an http:// or https:// URL.",
   "INVALID_IMPORT": "Invalid file. Expected an array of browser bookmarks with labels and HTTP(S) targets, optional subgroups, and no embed or shell options.",
-  "STORAGE_ERROR": "Browser storage is unavailable. Changes last only until you reload; export to keep a copy."
+  "STORAGE_ERROR": "Browser storage is unavailable. Changes last only until you reload; export to keep a copy.",
+  "NO_SUBGROUP": "No subsection",
+  "NEW_SUBGROUP": "New subsection…",
+  "NEW_SUBGROUP_NAME": "New subsection name"
 }
