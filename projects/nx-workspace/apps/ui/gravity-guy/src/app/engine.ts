@@ -72,6 +72,20 @@ const DOG_BARK_DURATION = 0.55;
 const PLATFORM_HEIGHT = 18;
 const GRAVITY_ACCELERATION = 2400;
 const FLIP_SPEED = 220;
+const BOOST_MULTIPLIER = 1.3;
+// At 0.4 a forced patch drags the runner back 1.5x its width, so slow strips stay short enough for narrow views.
+const SLOW_MULTIPLIER = 0.4;
+const SLOW_STRIP_WIDTH = 150;
+type SurfaceEffect = 'boost' | 'slow' | undefined;
+const speedMultiplierOf = (effect: SurfaceEffect) =>
+  effect === 'boost'
+    ? BOOST_MULTIPLIER
+    : effect === 'slow'
+      ? SLOW_MULTIPLIER
+      : 1;
+// The Shiba treats slow strips as boost strips.
+const dogEffectOf = (effect: SurfaceEffect): SurfaceEffect =>
+  effect === 'slow' ? 'boost' : effect;
 const CHUNK_LENGTH = 1600;
 const SAFE_DISTANCE = 6400;
 const randomSource = (seed: number) => () => {
@@ -214,7 +228,7 @@ const areaRail = (
 const slowGauntletPlatforms = (start: number, mirror: boolean): Platform[] => {
   const patches = [0, 1, 2].map(step => ({
     x: 200 + step * 420,
-    width: 360,
+    width: SLOW_STRIP_WIDTH,
     effect: 'slow' as const,
   }));
   return [1, -1].flatMap(side =>
@@ -395,7 +409,7 @@ export const platformsNear = (
           : plan.gap
             ? plan.gap.x - 300
             : obstacleEnd + 110;
-      const effectWidth = effect === 'slow' ? 200 : 220;
+      const effectWidth = effect === 'slow' ? SLOW_STRIP_WIDTH : 220;
       const addRail = (x: number, width: number) => {
         const end = x + width;
         if (effect && effectX >= x && effectX + effectWidth <= end) {
@@ -461,7 +475,7 @@ export const flip = (run: Run, playerNumber = 1) => {
 const advancePlayer = (run: Run, player: Player, movement: number) => {
   const effect = supportingPlatform(run, player)?.effect;
   player.surfaceEffect = effect ?? null;
-  const targetSpeed = effect === 'boost' ? 1.3 : effect === 'slow' ? 0.65 : 1;
+  const targetSpeed = speedMultiplierOf(effect);
   player.speedMultiplier +=
     (targetSpeed - player.speedMultiplier) * (1 - Math.exp(-6 * WORLD.step));
   const previousRight = player.distance + WORLD.playerX + WORLD.playerSize;
@@ -528,7 +542,8 @@ export const advance = (run: Run) => {
   const multiplier = run.mapSpeedMultiplier ?? 1;
   run.mapSpeedMultiplier =
     multiplier +
-    ((boostActive ? 1.3 : 1) - multiplier) * (1 - Math.exp(-4 * WORLD.step));
+    ((boostActive ? BOOST_MULTIPLIER : 1) - multiplier) *
+      (1 - Math.exp(-4 * WORLD.step));
   const movement = speedOf(run) * WORLD.step;
   for (const player of players) {
     if (!player.out) advancePlayer(run, player, movement);
@@ -651,8 +666,8 @@ const bestDogFlip = (run: Run, target: Player, hunting: boolean) => {
           candidate.gravity = candidate.gravity === 1 ? -1 : 1;
           candidate.velocity = candidate.gravity * FLIP_SPEED;
         }
-        const effect = flipNow ? undefined : support?.effect;
-        const speed = effect === 'boost' ? 1.3 : effect === 'slow' ? 0.65 : 1;
+        const effect = flipNow ? undefined : dogEffectOf(support?.effect);
+        const speed = speedMultiplierOf(effect);
         candidate.speedMultiplier +=
           (speed - candidate.speedMultiplier) * (1 - Math.exp(-6 * step));
         moveDogBody(
@@ -676,11 +691,7 @@ const bestDogFlip = (run: Run, target: Player, hunting: boolean) => {
           continue;
         const cost =
           route.cost +
-          (effect === 'slow'
-            ? 50 * step
-            : effect === 'boost'
-              ? -45 * step
-              : 0) +
+          (effect === 'boost' ? -45 * step : 0) +
           (flipNow ? 0.3 : 0);
         next.push({
           body: candidate,
@@ -768,8 +779,7 @@ const advanceDog = (run: Run, movement: number) => {
               : dog.y === platform.y + platform.height),
         )
       : undefined;
-  const effectSpeed =
-    support?.effect === 'boost' ? 1.3 : support?.effect === 'slow' ? 0.65 : 1;
+  const effectSpeed = speedMultiplierOf(dogEffectOf(support?.effect));
   const dogSpeed = dog.speedMultiplier ?? 1;
   dog.speedMultiplier =
     dogSpeed + (effectSpeed - dogSpeed) * (1 - Math.exp(-6 * WORLD.step));
