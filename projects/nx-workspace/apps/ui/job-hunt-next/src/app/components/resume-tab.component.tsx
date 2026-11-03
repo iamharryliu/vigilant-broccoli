@@ -230,7 +230,6 @@ export const ResumeTab = ({
         id: version.id,
         label: t(version.base ? 'RESUME.BASE_VERSION' : 'RESUME.VERSION', {
           number: versions[0]?.base ? index : index + 1,
-          date: new Date(version.createdAt).toLocaleString(),
         }),
       })),
     [versions, t],
