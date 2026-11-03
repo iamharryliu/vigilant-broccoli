@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
   LayoutList,
   List,
@@ -141,14 +141,17 @@ const searchGroups = (groups: SearchableListGroup[], query: string) => {
     .sort((a, b) => b.scored[0].score - a.scored[0].score);
 };
 
-const SearchableListRow = ({
+export const SearchableListRow = ({
   entry,
   onActivate,
   onKeyDown,
+  actions,
 }: {
   entry: SearchableListItem;
   onActivate: () => void;
-  onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLElement>) => void;
+  /** Replaces the default favorite, open and copy buttons. */
+  actions?: ReactNode;
 }) => (
   <li className="flex min-h-11 items-center bg-card text-card-foreground [&_button]:min-h-11 [&_button]:shrink-0 [&_button]:focus-visible:outline-none [&_button]:focus-visible:ring-2 [&_button]:focus-visible:ring-inset [&_button]:focus-visible:ring-ring [&_button]:active:bg-muted">
     <button
@@ -169,11 +172,19 @@ const SearchableListRow = ({
       </span>
     </button>
     <div className="flex shrink-0 items-center pr-1 [&_button]:min-w-11">
-      {entry.onFavoriteToggle && <FavoriteButton entry={entry} />}
-      {(entry.onOpen || isUrl(entry.value)) && (
-        <IconButton variant="ghost" icon="external-link" onClick={onActivate} />
+      {actions ?? (
+        <>
+          {entry.onFavoriteToggle && <FavoriteButton entry={entry} />}
+          {(entry.onOpen || isUrl(entry.value)) && (
+            <IconButton
+              variant="ghost"
+              icon="external-link"
+              onClick={onActivate}
+            />
+          )}
+          <CopyButton text={entry.value} />
+        </>
       )}
-      <CopyButton text={entry.value} />
     </div>
   </li>
 );
