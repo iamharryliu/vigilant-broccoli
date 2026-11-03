@@ -13,8 +13,8 @@ export const SettingsPage = () => {
 
   return (
     <CardContainer title={t('NAV.SETTINGS')}>
-      <div className="grid max-w-xl gap-4 sm:grid-cols-2">
-        <label className="flex flex-col gap-2 text-sm font-medium">
+      <div className="flex max-w-xl flex-wrap items-center gap-x-8 gap-y-4">
+        <label className="flex items-center gap-2 text-sm font-medium">
           {t('SETTINGS.THEME')}
           <Select
             aria-label={t('SETTINGS.THEME')}
@@ -28,7 +28,7 @@ export const SettingsPage = () => {
             }}
           />
         </label>
-        <label className="flex flex-col gap-2 text-sm font-medium">
+        <label className="flex items-center gap-2 text-sm font-medium">
           {t('SETTINGS.LANGUAGE')}
           <Select
             aria-label={t('SETTINGS.LANGUAGE')}
