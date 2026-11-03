@@ -38,11 +38,10 @@
       "startDate": "March 2025",
       "endDate": "March 2026",
       "bullets": [
-        "Led two **end-to-end production systems**—a call analysis SaaS platform and a trading card marketplace API—owning architecture, backend, and cloud infrastructure from design through deployment and day-to-day operation, communicating directly with the client.",
         "Built **AI call analysis tools** that turn call center recordings into structured data, such as call events and **LLM**-assigned tags.",
         "Cut dashboard load times from 2s+ to ~200 ms via cached pre-computed tables, query fixes and indexes (**performance optimization**).",
         "Built REST APIs and robust automated ingestion of third-party pricing data.",
-        "Provisioned GCP resources with **Terraform**, including compute, storage and messaging.",
+        "Migrated manual GCP infrastructure management to **infrastructure as code** with **Terraform**, covering compute, storage and messaging, and implemented automated **deployment** and **test pipelines**.",
         "Managed local development, staging and production environments, including per-environment secrets.",
         "Wrote end-to-end tests to prevent UI regressions; monitored production with health checks and Slack alerts.",
         "Used **RabbitMQ** and asynchronous workers for event-driven call processing.",
