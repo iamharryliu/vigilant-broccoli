@@ -34,7 +34,8 @@ const NEW_SUBGROUP = '__new__';
 
 function BookmarksPage() {
   const { t } = useTranslation();
-  const { bookmarks, tab, setBookmarks, setTab, storageError } = useBookmarks();
+  const { bookmarks, tab, setBookmarks, resetBookmarks, setTab, storageError } =
+    useBookmarks();
   const [form, setForm] = useState(EMPTY_FORM);
   const [isNewSubgroup, setIsNewSubgroup] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -269,6 +270,16 @@ function BookmarksPage() {
                 }}
               >
                 {t('CLEAR_ALL')}
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  if (window.confirm(t('CONFIRM_RESET_TO_DEFAULT'))) {
+                    resetBookmarks();
+                  }
+                }}
+              >
+                {t('RESET_TO_DEFAULT')}
               </Button>
               {pendingImport && (
                 <div className="space-y-2">

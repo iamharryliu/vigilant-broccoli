@@ -74,6 +74,7 @@ export function useBookmarks() {
     ...state,
     storageError,
     setBookmarks: (bookmarks: QuickLink[]) => save({ ...state, bookmarks }),
+    resetBookmarks: () => save({ ...state, bookmarks: DEFAULT_BOOKMARKS }),
     setTab: (tab: string) =>
       save({ ...state, tab: tab === TAB.MANAGE ? TAB.MANAGE : TAB.BOOKMARKS }),
   };
