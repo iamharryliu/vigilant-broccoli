@@ -1,7 +1,7 @@
-// Fails the image build if the owner's email or phone from the resume lib's
-// resume.json made it into the build output the Dockerfile copies. The build
-// swaps that file for templates/resume.json (see CONTEXT.md); this catches a
-// new import or tracing change that brings it back before the image is pushed.
+// Fails the image build if the owner's email or phone from their resume.json
+// made it into the build output the Dockerfile copies (see CONTEXT.md); this
+// catches a new import or tracing change that brings it in before the image is
+// pushed.
 import { readdir, readFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';

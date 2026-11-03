@@ -120,7 +120,7 @@
     "immich:docker:restart": "docker compose -f infrastructure/immich/docker-compose.yml restart",
     "immich:docker:reload": "docker compose -f infrastructure/immich/docker-compose.yml down && docker compose -f infrastructure/immich/docker-compose.yml up -d",
     "immich:docker:logs": "docker compose -f infrastructure/immich/docker-compose.yml logs -f",
-    "job-hunt:serve": "cd projects/nx-workspace && CAREER_DIR=\"$PWD/../../notes/personal/career\"JOB_APPLICATIONS_DIR=\"$HOME/Desktop/Job Applications\" nx run job-hunt-next:serve",
+    "job-hunt:serve": "cd projects/nx-workspace && CAREER_DIR=\"$PWD/../../notes/personal/career\" JOB_APPLICATIONS_DIR=\"$HOME/Desktop/Job Applications\" nx run job-hunt-next:serve",
     "job-hunt:docker:up": "bash scripts/shell/job-hunt-docker-up.sh",
     "job-hunt:docker:down": "cd projects/nx-workspace && nx run job-hunt-next:docker:down",
     "job-hunt:docker:logs": "cd projects/nx-workspace && nx run job-hunt-next:docker:logs",

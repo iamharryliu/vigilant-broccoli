@@ -39,14 +39,14 @@
       "endDate": "March 2026",
       "bullets": [
         "Led two **end-to-end production systems**—a call analysis SaaS platform and a trading card marketplace API—owning architecture, backend, and cloud infrastructure from design through deployment and day-to-day operation, communicating directly with the client.",
-        "Built **AI call analysis tools** that turn call center recordings into structured data, such as call events and **LLM**-assigned tags (e.g. the caller named their company).",
-        "Cut dashboard load times from over 2 seconds to about 200 ms using pre-computed tables in a cache layer, plus query fixes and indexes (**performance optimization**).",
+        "Built **AI call analysis tools** that turn call center recordings into structured data, such as call events and **LLM**-assigned tags.",
+        "Cut dashboard load times from 2s+ to ~200 ms via cached pre-computed tables, query fixes and indexes (**performance optimization**).",
         "Built REST APIs and robust automated ingestion of third-party pricing data.",
         "Provisioned GCP resources with **Terraform**, including compute, storage and messaging.",
         "Managed local development, staging and production environments, including per-environment secrets.",
         "Wrote end-to-end tests to prevent UI regressions; monitored production with health checks and Slack alerts.",
         "Used **RabbitMQ** and asynchronous workers for event-driven call processing.",
-        "Adopted **AI-driven development** with **Claude Code**."
+        "Implemented **AI-driven development** patterns with **Claude Code**, including context management, custom skills and guardrails."
       ]
     },
     {
@@ -72,8 +72,8 @@
         "Established test environments and wrote extensive **unit** tests to meet the banking client's **90% test coverage** requirement.",
         "Provided **technical leadership** through training and developer support; led UI architecture for a **React** proof of concept.",
         "**Saved QA teams hundreds of hours weekly** with **Python** scripts that scrape and parse application logs, replacing manual searches.",
-        "Worked in **Agile** teams, grooming sprints (selecting tasks and estimating effort) and implementing user stories across client engagements.",
-        "Worked with product owners to shape data flows for new requirements and to review the current application for possible UI/UX enhancements, then implemented them."
+        "Worked in **Agile** teams, grooming sprints and implementing user stories across client engagements.",
+        "Worked with product owners to shape data flows for new requirements and review the application for UI/UX enhancements, then implemented them."
       ]
     }
   ],
@@ -98,12 +98,12 @@
       "React",
       "Next.js",
       "Express",
+      "Java",
       "Cloud Infrastructure",
       "AWS",
       "GCP",
       "Terraform",
-      "CI/CD",
-      "Python"
+      "CI/CD"
     ]
   }
 }
