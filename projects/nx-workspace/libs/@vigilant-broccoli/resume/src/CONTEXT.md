@@ -10,7 +10,7 @@ Resume data, PDF rendering and validation shared with job-hunt-next.
 ## Editing
 
 - Use confirmed facts for resume drafts; ask about unsupported claims before adding them. The PDF must fit exactly one US Letter page.
-- `notes/personal/career/personal-software-career-experience.md` is read by job-hunt-next. Preserve `## Skills` (`Skill | Used In`), `## Job Experience` (`Company | Role | Dates | Context`), `## Languages` (`Language | Proficiency`), `## Education` (`Institution | Program | Dates`), and `## Project Contributions` with `### Company — Project — Dates` headings and `Contribution | Description` tables.
+- `notes/personal/career/career-experience.md` is read by job-hunt-next. Preserve `## Skills` (`Skill | Used In`), `## Job Experience` (`Company | Role | Dates | Context`), `## Languages` (`Language | Proficiency`), `## Education` (`Institution | Program | Dates`), and `## Project Contributions` with `### Company — Project — Dates` headings and `Contribution | Description` tables.
 - Skills require a Skills row or explicit Project Contributions evidence; record newly confirmed facts before using them. Update `Used In` when a skill is used somewhere new. Do not infer experience from reference links or copy References lists into resume bullets. Figures must already be in the resume or confirmed records.
 - Career-record table conventions:
   - One skill per row, except user-kept pairs (`MySQL / MariaDB`, `TypeScript / JavaScript`). Alphabetize rows case-insensitively.
