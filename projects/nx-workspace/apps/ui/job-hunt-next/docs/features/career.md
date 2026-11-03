@@ -2,7 +2,7 @@
 
 ## Overview
 
-- The Career experience (`/?tab=career-experience`) and Resume (`/?tab=resume`) sidebar sections edit the two files every run reads:
+- The Career experience (`/career-experience`) and Resume (`/resume`) sidebar sections edit the two files every run reads:
   - Career experience: Markdown with an Edit/Preview toggle. Saving requires the `## Skills` (`Skill | Used In`), `## Job Experience` (`Company | Role | Dates | Context`), `## Project Contributions` (`### Company — Project — Dates` blocks whose table starts with `Contribution`), `## Languages` (`Language | Proficiency`) and `## Education` (`Institution | Program | Dates`) sections. Problems are listed while typing and checked again on save
   - Resume: `resume.json` as text, validated against the `@vigilant-broccoli/resume` schema on save. `basics.location` is shown in the PDF headers
 - The Resume section's PDF mode renders the editor's current text, saved or not, through the application PDF script and shows it in a frame, so you can check the one-page fit before saving. It posts to `POST /api/career/preview` and is hidden in the demo; a resume that overflows one page shows the render error instead

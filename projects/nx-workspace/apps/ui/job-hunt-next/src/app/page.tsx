@@ -1,42 +1,10 @@
 'use client';
 
-import { Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { CareerExperienceEditor } from './components/career-editor.component';
-import {
-  MASTER_RESUME_SOURCE,
-  ResumeTab,
-} from './components/resume-tab.component';
+import { APP_TAB } from './app.const';
 import { JobApplicationList } from './components/job-application-list.component';
-import { RunList } from './components/run-list.component';
-import { SettingsPage } from './components/settings-page.component';
-import { APP_TAB, TAB_PARAM, toTab } from './app.const';
-import { useTranslation } from './i18n';
-import { usePageTitle } from './use-page-title';
-
-const TAB_CONTENT = {
-  [APP_TAB.APPLICATIONS.value]: JobApplicationList,
-  [APP_TAB.CAREER_EXPERIENCE.value]: CareerExperienceEditor,
-  [APP_TAB.RESUME.value]: () => (
-    <ResumeTab source={MASTER_RESUME_SOURCE} resettable />
-  ),
-  [APP_TAB.RUNS.value]: RunList,
-  [APP_TAB.SETTINGS.value]: SettingsPage,
-};
-
-// The active tab lives in the URL so the sidebar and run toasts can link to it.
-const ActiveTab = () => {
-  const { t } = useTranslation();
-  const tab = toTab(useSearchParams().get(TAB_PARAM));
-  usePageTitle(t(tab.titleKey));
-  const Content = TAB_CONTENT[tab.value];
-  return <Content />;
-};
+import { useTabTitle } from './use-page-title';
 
 export default function Page() {
-  return (
-    <Suspense>
-      <ActiveTab />
-    </Suspense>
-  );
+  useTabTitle(APP_TAB.APPLICATIONS);
+  return <JobApplicationList />;
 }
