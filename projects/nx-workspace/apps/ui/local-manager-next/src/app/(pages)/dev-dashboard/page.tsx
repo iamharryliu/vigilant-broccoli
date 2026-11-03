@@ -9,10 +9,6 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { GithubRepoActionStatusBadges } from '../../components/github-actions-status.component';
 import { GithubTeamManager } from '../../components/github-manager.component';
-import { LocalServicesComponent } from '../../components/local-services.component';
-import { LanDevicesComponent } from '../../components/lan-devices.component';
-import { OutboundConnectionsComponent } from '../../components/outbound-connections.component';
-import { NetworkMapComponent } from '../../components/network-map/network-map.component';
 import { FeatureSandboxPage } from '../../components/pages/FeatureSandboxPage';
 import { ApiKeysComponent } from '../../components/api-keys.component';
 import { TodoListComponent } from '../../components/todo-list.component';
@@ -25,7 +21,6 @@ const TAB = {
   CLOUD: 'cloud',
   TEAM_MANAGEMENT: 'team-management',
   CI_MANAGEMENT: 'ci-management',
-  NETWORK: 'network',
   TEXT_TOOLS: 'text-tools',
   API_KEYS: 'api-keys',
   TODO: 'todo',
@@ -72,11 +67,10 @@ export default function Page() {
       className="h-full flex flex-col"
     >
       <TabsList>
-        <TabsTrigger value={TAB.LOCAL}>Local Service</TabsTrigger>
+        <TabsTrigger value={TAB.LOCAL}>Local</TabsTrigger>
         <TabsTrigger value={TAB.CLOUD}>Cloud Services</TabsTrigger>
         <TabsTrigger value={TAB.TEAM_MANAGEMENT}>Team Management</TabsTrigger>
         <TabsTrigger value={TAB.CI_MANAGEMENT}>CI Management</TabsTrigger>
-        <TabsTrigger value={TAB.NETWORK}>Network Tools</TabsTrigger>
         <TabsTrigger value={TAB.TEXT_TOOLS}>Text Tools</TabsTrigger>
         <TabsTrigger value={TAB.API_KEYS}>API Keys</TabsTrigger>
         <TabsTrigger value={TAB.TODO}>Todo</TabsTrigger>
@@ -85,7 +79,7 @@ export default function Page() {
       <TabsContent value={TAB.LOCAL} className="pt-4 flex-1 min-h-0">
         <iframe
           src={LOCAL_SERVICES_PATH}
-          title="Local Service"
+          title="Local"
           className="block h-full min-h-[40rem] w-full border-0"
         />
       </TabsContent>
@@ -104,23 +98,6 @@ export default function Page() {
       <TabsContent value={TAB.CI_MANAGEMENT} className="pt-4 flex-1 min-h-0">
         <div className="grid grid-cols-3 gap-4">
           <GithubRepoActionStatusBadges repoUrl={REPO_URL} />
-        </div>
-      </TabsContent>
-      <TabsContent
-        value={TAB.NETWORK}
-        className="pt-4 flex-1 min-h-0 overflow-y-auto space-y-4"
-      >
-        <NetworkMapComponent />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="flex flex-col gap-4">
-            <LanDevicesComponent />
-          </div>
-          <div className="flex flex-col gap-4">
-            <OutboundConnectionsComponent />
-          </div>
-          <div className="flex flex-col gap-4">
-            <LocalServicesComponent />
-          </div>
         </div>
       </TabsContent>
       <TabsContent value={TAB.TEXT_TOOLS} className="pt-4 flex-1 min-h-0">

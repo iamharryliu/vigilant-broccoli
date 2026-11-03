@@ -4,11 +4,6 @@ export const API_ENDPOINTS = {
   SECURITY_NEWS: '/api/security-news',
 
   LOCAL_SERVICES: '/api/local-services',
-  NETWORK_MONITOR_LAN_DEVICES: '/api/network-monitor/lan-devices',
-  NETWORK_MONITOR_OUTBOUND_CONNECTIONS:
-    '/api/network-monitor/outbound-connections',
-  NETWORK_MONITOR_CONNECTION_MAP: '/api/network-monitor/connection-map',
-  NETWORK_MONITOR_SCAN_DEVICE: '/api/network-monitor/scan-device',
 
   API_KEYS: '/api/api-keys',
 
