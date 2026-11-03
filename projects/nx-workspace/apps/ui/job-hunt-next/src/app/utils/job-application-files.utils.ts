@@ -8,6 +8,7 @@ export const APPLICATION_FILE = {
   RESUME: { marker: '-resume-', extension: '.pdf' },
   RESUME_SOURCE: { marker: '-resume-', extension: '.json' },
   GAPS: { marker: '-gaps-', extension: '.txt' },
+  BRIEF: { marker: '-brief-', extension: '.json' },
   COVER_LETTER_PDF: { marker: '-cover-letter-', extension: '.pdf' },
   COVER_LETTER_TEXT: { marker: '-cover-letter-', extension: '.txt' },
 } as const;
@@ -79,3 +80,54 @@ export const parseGaps = (text: string) =>
     .filter(
       (gap): gap is string => gap !== undefined && !NO_GAPS_BULLET.test(gap),
     );
+
+export type Brief = {
+  summary: string;
+  roleDetails: {
+    level: string;
+    location: string;
+    workMode: string;
+    compensation: string;
+  };
+  responsibilities: string[];
+  required: string[];
+  niceToHave: string[];
+  stack: string[];
+  gaps: string[];
+  redFlags: string[];
+  questions: string[];
+};
+
+const text = (value: unknown) =>
+  typeof value === 'string' ? value.trim() : '';
+
+const list = (value: unknown) =>
+  Array.isArray(value) ? value.map(text).filter(Boolean) : [];
+
+// The brief file is JSON written by the skill; fields it could not fill are
+// empty. Null when the file is not a JSON object.
+export const parseBrief = (source: string): Brief | null => {
+  try {
+    const data = JSON.parse(source);
+    if (typeof data !== 'object' || data === null) return null;
+    const details = data.roleDetails ?? {};
+    return {
+      summary: text(data.summary),
+      roleDetails: {
+        level: text(details.level),
+        location: text(details.location),
+        workMode: text(details.workMode),
+        compensation: text(details.compensation),
+      },
+      responsibilities: list(data.responsibilities),
+      required: list(data.required),
+      niceToHave: list(data.niceToHave),
+      stack: list(data.stack),
+      gaps: list(data.gaps),
+      redFlags: list(data.redFlags),
+      questions: list(data.questions),
+    };
+  } catch {
+    return null;
+  }
+};
