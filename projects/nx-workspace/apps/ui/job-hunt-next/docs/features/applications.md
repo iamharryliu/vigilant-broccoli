@@ -3,9 +3,9 @@
 ## Overview
 
 - A left sidebar switches `/` between the Applications, Career experience, Resume, Runs and Settings sections, kept in the `tab` query param. Applications lists the folders in the Job Applications folder as expandable cards, newest date first and, within a date, most recently created first.
-- Open posting (first card action, also in the ellipsis menu) opens the posting's original page from the `Posting URL:` line the run saves, in a new tab with no opener; a posting saved without a URL reports that instead. The tab opens inside the click and is pointed at the URL once the posting file is read, so popup blockers allow it
-- The card's ellipsis menu has Delete, which asks for confirmation and then removes the whole application folder; it is left out of the expanded card's action buttons, which run without a confirm step. Switching between the Posting and Gaps tabs eases the card to the new height
-- Mark as applied (ellipsis menu and expanded card actions, toggling to Mark as not applied) records the status in a hidden `.applied` file in the application folder. Applied cards show an Applied badge. Demo mode shows two applied cards and hides the action
+- Open posting is a button in the expanded card's Posting tab (hidden in demo mode). It opens the original page from the `Posting URL:` line the run saves, in a new tab with no opener; a posting saved without a URL has no button
+- The expanded card has no action sidebar; its tabs are Posting, Gaps, Resume and Cover letter. The card's ellipsis menu has Mark as applied and Delete, which asks for confirmation and then removes the whole application folder. Switching tabs eases the card to the new height
+- Mark as applied (ellipsis menu, toggling to Mark as not applied) records the status in a hidden `.applied` file in the application folder. Applied cards show an Applied badge. Demo mode shows two applied cards and hides the action
 - There is no Open in Finder action: the server may run in a container with no access to the user's desktop
 - `/?expand=latest` expands the newest card; the finished-run toast links to it. The list reads the param only on mount; when a run finishes it re-fetches without changing which cards are expanded
 - A missing Job Applications folder lists as empty; the first run creates it
@@ -16,6 +16,12 @@
 - The skill saves the tailored resume as a `.json` twin of the resume PDF. Applications generated before that have none, and their tab says so
 - Saving an edit overwrites the twin, rewrites the PDF from it and records a version in `STATE_DIR/application-resume-versions/<hash of the folder name>/`; a failed PDF render still keeps the JSON and the version
 - `GET`/`PUT /api/job-applications/resume?path=<folder>` read and save it; `PUT` validates the resume first. The master Resume section keeps its own versions through `GET /api/career/versions`, which also snapshots out-of-band edits
+
+## Application cover letter
+
+- An expanded card's Cover letter tab shows the plain-text letter, with a toolbar in the tab row to copy it and switch between the text, its PDF, Edit and History. History diffs any two saved versions (From and To); unlike the resume there is no v0 base, so versions start at v1
+- Saving an edit overwrites the `.txt`, regenerates the PDF with the application's tailored resume title and records a version in `STATE_DIR/application-cover-letter-versions/<hash of the folder name>/`. A failed render (such as a letter over one page) still keeps the text and the version
+- `GET`/`PUT /api/job-applications/cover-letter?path=<folder>` read and save it. Applications without a letter file say so in the tab
 
 ## New job application
 

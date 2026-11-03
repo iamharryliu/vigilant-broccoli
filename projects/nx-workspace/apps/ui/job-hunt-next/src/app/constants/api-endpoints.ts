@@ -6,6 +6,7 @@ export const API_ENDPOINTS = {
   RESUME_VERSIONS: '/api/career/versions',
   JOB_APPLICATIONS: '/api/job-applications',
   JOB_APPLICATIONS_APPLIED: '/api/job-applications/applied',
+  JOB_APPLICATIONS_COVER_LETTER: '/api/job-applications/cover-letter',
   JOB_APPLICATIONS_FILE: '/api/job-applications/file',
   JOB_APPLICATIONS_RESUME: '/api/job-applications/resume',
   JOB_APPLICATIONS_RUN: '/api/job-applications/run',
