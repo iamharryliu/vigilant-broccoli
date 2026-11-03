@@ -4,11 +4,16 @@
 
 - A left sidebar switches `/` between the Applications, Career experience, Resume, Runs and Settings sections, kept in the `tab` query param. Applications lists the folders in the Job Applications folder as expandable cards, newest date first and, within a date, most recently created first.
 - Open posting is a button in the expanded card's Posting tab (hidden in demo mode). It opens the original page from the `Posting URL:` line the run saves, in a new tab with no opener; a posting saved without a URL has no button
-- The expanded card has no action sidebar; its tabs are Posting, Gaps, Resume and Cover letter. The card's ellipsis menu has Mark as applied and Delete, which asks for confirmation and then removes the whole application folder. Switching tabs eases the card to the new height
+- The expanded card has no action sidebar; its tabs are Posting, Brief, Resume and Cover letter. The card's ellipsis menu has Mark as applied and Delete, which asks for confirmation and then removes the whole application folder. Switching tabs eases the card to the new height
 - Mark as applied (ellipsis menu, toggling to Mark as not applied) records the status in a hidden `.applied` file in the application folder. Applied cards show an Applied badge. Demo mode shows two applied cards and hides the action
 - There is no Open in Finder action: the server may run in a container with no access to the user's desktop
 - `/?expand=latest` expands the newest card; the finished-run toast links to it. The list reads the param only on mount; when a run finishes it re-fetches without changing which cards are expanded
 - A missing Job Applications folder lists as empty; the first run creates it
+
+## Application brief
+
+- The Brief tab renders the `-brief-` JSON the skill saves from the posting: summary, role details (level, location, work mode, compensation), responsibilities, required skills, nice to have, stack, gaps against the resume, red flags and questions to ask. Sections the posting does not cover are left out; Gaps always shows, with a no-gaps message when empty
+- Applications made before the brief existed fall back to their `-gaps-` text file (the tab says so when neither exists)
 
 ## Application resume
 

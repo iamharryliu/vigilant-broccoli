@@ -99,9 +99,33 @@ const APPLICATIONS: DemoApplication[] = [
           'Build accessible web products with TypeScript, React, Next.js, Node.js and PostgreSQL. Own features from database to UI, improve performance and mentor other engineers. Experience with event-driven systems is useful. Go is a plus.',
         ),
       },
-      'jordan-gaps-maple-labs.txt': {
-        content:
-          '- Go is a preferred skill in the posting but is not recorded in the sample career profile.\n',
+      'jordan-brief-maple-labs.json': {
+        content: JSON.stringify({
+          summary:
+            'Maple Labs builds accessible web products. The role owns features from the database to the UI, improves performance and mentors other engineers.',
+          roleDetails: {
+            level: 'Senior',
+            location: '',
+            workMode: '',
+            compensation: '',
+          },
+          responsibilities: [
+            'Own features from database to UI',
+            'Improve performance',
+            'Mentor other engineers',
+          ],
+          required: ['TypeScript', 'React', 'Next.js', 'Node.js', 'PostgreSQL'],
+          niceToHave: ['Event-driven systems', 'Go'],
+          stack: ['TypeScript', 'React', 'Next.js', 'Node.js', 'PostgreSQL'],
+          gaps: [
+            'Go - a preferred skill that is not recorded in the sample career profile',
+          ],
+          redFlags: [],
+          questions: [
+            'How are accessibility standards enforced in review?',
+            'Where is event-driven design used today?',
+          ],
+        }),
       },
       'jordan-cover-letter-maple-labs.txt': { content: MAPLE_LETTER },
       'jordan-cover-letter-maple-labs.pdf': {

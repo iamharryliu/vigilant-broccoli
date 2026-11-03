@@ -30,6 +30,10 @@ import {
   TabsTrigger,
 } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
+import {
+  BriefView,
+  SECTION_HEADING_CLASS,
+} from './application-brief.component';
 import { CoverLetterTab } from './cover-letter-tab.component';
 import { applicationResumeSource, ResumeTab } from './resume-tab.component';
 import {
@@ -43,8 +47,10 @@ import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { useTranslation } from '../i18n';
 import {
   APPLICATION_FILE,
+  Brief,
   findApplicationFile,
   parseApplicationFolder,
+  parseBrief,
   parseGaps,
   readJobApplicationText,
 } from '../utils/job-application-files.utils';
@@ -57,13 +63,11 @@ const POSTING_URL_LINE = /^Posting URL:\s*(\S+)\s*\n?/;
 const HTTP_URL = /^https?:\/\//i;
 const POSTING_TAB = {
   TEXT: 'text',
-  GAPS: 'gaps',
+  BRIEF: 'brief',
   RESUME: 'resume',
   COVER_LETTER: 'cover-letter',
 } as const;
 const TITLE_SEPARATOR = ' · ';
-const SECTION_HEADING_CLASS =
-  'text-xs font-medium uppercase tracking-wide text-muted-foreground';
 
 type ApplicationFileKind = Parameters<typeof findApplicationFile>[1];
 
@@ -82,7 +86,10 @@ type ApplicationDetails = {
   description: JobDescription;
   // Null when the posting was pasted without a URL.
   postingUrl: string | null;
-  // Null when the application has no gaps file (made before it existed).
+  // Null when the application has no brief file (made before it existed).
+  brief: Brief | null;
+  // The gaps file older applications have instead of a brief; null when
+  // missing too.
   gaps: string[] | null;
 };
 
@@ -154,7 +161,7 @@ const GapsList = ({ gaps }: { gaps: string[] | null }) => {
   if (gaps === null) {
     return (
       <p className="text-sm text-muted-foreground">
-        {t('APPLICATIONS.NO_GAPS_FILE')}
+        {t('APPLICATIONS.NO_BRIEF')}
       </p>
     );
   }
@@ -250,8 +257,8 @@ const ExpandedDetails = ({ item }: { item: ApplicationItem }) => {
                 <TabsTrigger value={POSTING_TAB.TEXT}>
                   {t('APPLICATIONS.TAB_POSTING')}
                 </TabsTrigger>
-                <TabsTrigger value={POSTING_TAB.GAPS}>
-                  {t('APPLICATIONS.TAB_GAPS')}
+                <TabsTrigger value={POSTING_TAB.BRIEF}>
+                  {t('APPLICATIONS.TAB_BRIEF')}
                 </TabsTrigger>
                 <TabsTrigger value={POSTING_TAB.RESUME}>
                   {t('APPLICATIONS.TAB_RESUME')}
@@ -269,8 +276,12 @@ const ExpandedDetails = ({ item }: { item: ApplicationItem }) => {
                   postingUrl={IS_DEMO ? null : details.postingUrl}
                 />
               </TabsContent>
-              <TabsContent value={POSTING_TAB.GAPS} className="pt-3">
-                <GapsList gaps={details.gaps} />
+              <TabsContent value={POSTING_TAB.BRIEF} className="pt-3">
+                {details.brief ? (
+                  <BriefView brief={details.brief} />
+                ) : (
+                  <GapsList gaps={details.gaps} />
+                )}
               </TabsContent>
               <TabsContent value={POSTING_TAB.RESUME} className="pt-3">
                 {details.hasResumeSource ? (
@@ -420,14 +431,17 @@ export const JobApplicationList = () => {
         t('APPLICATIONS.NO_POSTING'),
       );
       const gapsFile = findApplicationFile(files, APPLICATION_FILE.GAPS);
-      const [postingText, gapsText] = await Promise.all([
+      const briefFile = findApplicationFile(files, APPLICATION_FILE.BRIEF);
+      const [postingText, gapsText, briefText] = await Promise.all([
         readJobApplicationText(posting.path),
         gapsFile ? readJobApplicationText(gapsFile.path) : null,
+        briefFile ? readJobApplicationText(briefFile.path) : null,
       ]);
       const { url, body } = splitPosting(postingText);
       return {
         description: parseJobDescription(body),
         postingUrl: url,
+        brief: briefText === null ? null : parseBrief(briefText),
         gaps: gapsText === null ? null : parseGaps(gapsText),
         hasResumeSource: !!findApplicationFile(
           files,
