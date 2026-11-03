@@ -2,14 +2,6 @@
 const { join } = require('path');
 const { composePlugins, withNx } = require('@nx/next');
 
-// The resume lib's barrel imports the owner's resume.json. The image must not
-// ship personal data, so the bundle gets the blank template instead; the app
-// reads the user's resume from RESUME_PATH at runtime.
-const LIB_RESUME_JSON = join(
-  __dirname,
-  '../../../../../notes/personal/career/resume.json',
-);
-const TEMPLATE_RESUME_JSON = join(__dirname, 'templates/resume.json');
 // Newer than the builtin list webpack knows, so it must be marked external.
 const SERVER_ONLY_EXTERNALS = ['node:sqlite'];
 
@@ -25,13 +17,8 @@ const nextConfig = {
   distDir: '../../../dist/apps/ui/job-hunt-next/.next',
   agentRules: false,
   output: 'standalone',
-  // Tracing follows the lib's source imports and would copy the real
-  // resume.json into the standalone output despite the alias.
   outputFileTracingExcludes: {
-    '*': [
-      '../../../../../notes/personal/career/resume.json',
-      '../../../../../package.json',
-    ],
+    '*': ['../../../../../package.json'],
   },
   webpack: (config, { isServer }) => {
     config.module.rules.push({
@@ -39,10 +26,6 @@ const nextConfig = {
       include: join(__dirname, 'templates/sample'),
       type: 'asset/source',
     });
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      [LIB_RESUME_JSON]: TEMPLATE_RESUME_JSON,
-    };
     if (isServer) {
       config.externals = [
         ...(Array.isArray(config.externals)

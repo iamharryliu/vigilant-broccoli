@@ -1,7 +1,6 @@
 import { chromium } from '@playwright/test';
 import type { Browser } from '@playwright/test';
 import { PDFDocument } from 'pdf-lib';
-import { resumeData } from './index';
 import {
   RESUME_PDF_FILL_TARGET,
   RESUME_PDF_MAX_PAGES,
@@ -364,7 +363,7 @@ export async function renderResumePdf(
 }
 
 export async function generateResumePdfBuffer(
-  resume: ResumeData = resumeData,
+  resume: ResumeData,
 ): Promise<Buffer> {
   const { pdf, layout } = await renderResumePdf(resume);
   if (!layout.fits) throw new ResumePdfOverflowError(layout);
