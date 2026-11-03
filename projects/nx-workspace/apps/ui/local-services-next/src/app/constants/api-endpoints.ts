@@ -23,6 +23,15 @@ export const API_ENDPOINTS = {
   LOCAL_SERVICES: withBasePath('/api/local-services'),
   LOCAL_CREDENTIALS: withBasePath('/api/local-credentials'),
 
+  NETWORK_MONITOR_LAN_DEVICES: withBasePath('/api/network-monitor/lan-devices'),
+  NETWORK_MONITOR_OUTBOUND_CONNECTIONS: withBasePath(
+    '/api/network-monitor/outbound-connections',
+  ),
+  NETWORK_MONITOR_CONNECTION_MAP: withBasePath(
+    '/api/network-monitor/connection-map',
+  ),
+  NETWORK_MONITOR_SCAN_DEVICE: withBasePath('/api/network-monitor/scan-device'),
+
   DISK_SPACE: withBasePath('/api/disk-space'),
   SPEED_TEST: withBasePath('/api/speed-test'),
 

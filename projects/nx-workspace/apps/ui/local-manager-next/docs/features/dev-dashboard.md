@@ -1,8 +1,8 @@
 # Dev Dashboard
 
-## Local Service
+## Local
 
-- The Local Service tab iframes `local-services-next` at `/dev-dashboard/local`, which this app rewrites to the PM2 process on `127.0.0.1:1339` (`LOCAL_SERVICES_ORIGIN` overrides the target). See [local-services.md](../../../local-services-next/docs/features/local-services.md).
+- The Local tab iframes `local-services-next` at `/dev-dashboard/local`, which this app rewrites to the PM2 process on `127.0.0.1:1339` (`LOCAL_SERVICES_ORIGIN` overrides the target). It holds the host cards plus the Connection Map, LAN devices and outbound connections. See [local-services.md](../../../local-services-next/docs/features/local-services.md).
 
 ## Cloud Services
 
@@ -11,17 +11,6 @@
 ## Text Tools
 
 - The Text Tools tab iframes the static `text-tools-ui` site (`VB_APP_URL.TEXT_TOOLS.URL`, `text-tools.harryliu.dev`). The site's `_headers` allows framing only from `https://manager.vigilant-broccoli.app`, so the tab does not render from other origins. See [text-tools.md](../../../text-tools-ui/docs/features/text-tools.md).
-
-## Connection Map
-
-- The Network Tools tab's Connection Map draws great-circle arcs from this machine's public-IP location to every external TCP/UDP peer, coloured by direction, with a filterable flow list beside it. Clicking a flow highlights its arc.
-- An always-on collector (`_lib/connection-collector.ts`) samples `lsof` every second from server boot, started by `src/instrumentation.ts` and kept on `globalThis` so instrumentation and routes share one loop. A socket is inbound when its local port is one this host is listening on. Loopback, private, CGNAT and link-local peers are dropped.
-- Flows are upserted into SQLite (`node:sqlite`) at `~/.local/share/vigilant-broccoli/network-flows.sqlite` and pruned after 7 days, so history survives PM2 reloads. `GET /api/network-monitor/connection-map?window=15m|1h|24h|7d` reads flows seen in that window (newest 2,000) and marks those open in the latest sample.
-- Each sample also reads per-socket cumulative byte counters from `nettop` (`_lib/nettop.ts`), joined to `lsof` sockets by PID, protocol and endpoints. The difference from the previous sample gives each flow's live bytes/s and is added to its `bytes_in`/`bytes_out` totals. The first sample after boot only sets the baseline, and bytes sent between a socket's last sample and its close are not counted, so totals run low.
-- Open connections animate dashes along their arc: outward for upload, homeward for download, faster in five tiers from under 1 KB/s to over 1 MB/s. An open but idle connection trickles slowly in the direction it was opened. Arc width scales with the destination's total bytes.
-- Connections that open and close within one second can still be missed, and `lsof` runs as the PM2 user, so other users' and root-owned processes' sockets are not visible.
-- The basemap is OpenStreetMap's standard tiles, inverted by a CSS filter on Leaflet's tile pane: CARTO's dark basemap now serves "API KEY REQUIRED" placeholder tiles with a 200 status.
-- Geolocation is a local lookup against DB-IP Lite City (`_lib/mmdb.ts` is a minimal MaxMind DB reader). The first request downloads the ~60MB gzip into `~/.cache/vigilant-broccoli/dbip-city-lite.mmdb`, refreshed after 35 days. The map lists flows without locations until the download finishes. The ~120MB file is held in memory. DB-IP Lite is CC BY 4.0, so the map keeps the DB-IP attribution.
 
 ## TODO
 
