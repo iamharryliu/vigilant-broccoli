@@ -7,7 +7,7 @@ Use the current vigilant-broccoli Git root and run `pnpm` from it. Outside this 
 
 Run only on explicit `local-docker-create-pr-claude` invocation; it authorizes one background solve, which publishes a PR from a throwaway clone. Make no local file edits.
 
-1. Follow `gh-create-pr` steps 1-5: take the request, research read-only, stop when it should not be built or an existing TODO row covers it, ask only blocking questions and write a self-contained prompt. For a request that only drops TODO rows, start one solve per ID with the prompt exactly `Remove TODO.md row <id>. Reason: <reason>`.
+1. Follow the [dispatch contract](../../../../docs/agent-support.md#dispatch-contract) (request, research, stop, ask, prompt). For a request that only drops TODO rows, start one solve per ID.
 2. Start the solve in the background with the Bash tool's `run_in_background`, once no questions were asked or after the user confirms the final prompt. Add `--model opus` or another Claude model only when the user asks:
 
    ```sh
