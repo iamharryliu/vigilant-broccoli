@@ -16,7 +16,7 @@ For each selected dispatch, inspect the exact session's panes, bounded recent ou
 Require all of these before sending:
 
 - The original Codex/Claude interactive agent is still present in the exact pane, with a completed turn explaining a credential-related push/PR blocker.
-- Its current UI clearly shows an idle, empty composer accepting a new instruction. A shell prompt is not an idle agent; process names, a clean tree or an old error alone are insufficient evidence.
+- Its current UI clearly shows an idle, empty composer accepting a new instruction. Claude Code renders a prompt suggestion after a finished turn as dim ghost text in the composer (e.g. `❯ retry the push and PR`), which plain `capture-pane -p` shows identically to typed input. Capture the composer line with `tmux capture-pane -p -e -t <pane-id> -S -8` and treat text wrapped in SGR dim (`ESC[2m ... ESC[0m`) as an empty composer; non-dim text after the prompt is real input, so do not send. Sending into an empty composer replaces the ghost suggestion. A shell prompt is not an idle agent; process names, a clean tree or an old error alone are insufficient evidence.
 - No running turn, queued input, approval dialog, question, editor, shell interaction or uncertain UI state is present. Check pane mode as well; do not type into tmux copy mode.
 
 Otherwise report the blocker and a safely quoted `tmux attach -t '=session-name'` command. Missing sessions retain their worktrees: report the retained path/branch, never restart or spawn a replacement. Do not approve requests, refresh/install credentials, expose secrets, bypass sandbox controls, force-push or expand the original task.
