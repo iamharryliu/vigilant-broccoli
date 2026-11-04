@@ -11,7 +11,7 @@ import {
   JSON_CONTENT_TYPE,
   QUEUE,
 } from '@vigilant-broccoli/common-js';
-import { SUPABASE_URL } from '@vigilant-broccoli/infrastructure';
+import { getSupabaseUrl } from '@vigilant-broccoli/infrastructure';
 import { Email } from '@vigilant-broccoli/messaging';
 import { SENDER_EMAIL_ADDRESS } from '@harry/personal';
 import {
@@ -32,7 +32,11 @@ const RABBITMQ_CONNECTION_STRING = process.env.RABBITMQ_CONNECTION_STRING;
 const RABBITMQ_CA_CERT = process.env.RABBITMQ_CA_CERT;
 const EMAIL_SERVICE_URL = process.env.EMAIL_SERVICE_URL;
 const SHARED_APP_TOKEN = process.env.SHARED_APP_TOKEN;
-const EMAIL_FROM = `Vigilant Broccoli <${SENDER_EMAIL_ADDRESS}>`;
+const DEFAULT_EMAIL_FROM_NAME = 'Vigilant Broccoli';
+const EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME || DEFAULT_EMAIL_FROM_NAME;
+const EMAIL_FROM_ADDRESS =
+  process.env.EMAIL_FROM_ADDRESS || SENDER_EMAIL_ADDRESS;
+const EMAIL_FROM = `${EMAIL_FROM_NAME} <${EMAIL_FROM_ADDRESS}>`;
 const RECONNECT_DELAY_MS = 5000;
 const SEND_EMAIL_TIMEOUT_MS = 30000;
 const MAX_DELIVERY_ATTEMPTS = 5;
@@ -58,7 +62,7 @@ const RABBITMQ_SOCKET_OPTIONS = RABBITMQ_CA_CERT
   : undefined;
 
 const supabase = createClient(
-  SUPABASE_URL,
+  getSupabaseUrl(),
   process.env.SUPABASE_SECRET_KEY as string,
 );
 
