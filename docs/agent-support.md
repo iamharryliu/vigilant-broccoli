@@ -30,7 +30,7 @@ Edit canonical sources, not adapters. Skills reference owning docs rather than c
 
 ## Agentic commands
 
-Operations use `agentic-<resource>-<verb>[-<variant>]` for the root pnpm script; their skill and command use the same name with a `local-` prefix (`local-pr-create`) because they run in a local session. Skills that dispatch Actions use `gh-`. Claude invokes `/name`; Codex invokes `$name`. Actions adds `manual-`/`cron-` or routes related operations through a selector: `manual-agentic-pr-update` selects `change`, `fix-ci` or `resolve-conflicts`.
+Operations use `agentic-<resource>-<verb>[-<variant>]` for the root pnpm script; their skill and command use `local-<verb>-<resource>[-<variant>]` because they run in a local session (`agentic-pr-create-audit` → `local-create-pr-audit`, `agentic-pr-update` → `local-update-pr`). Skills that dispatch Actions use `gh-`. Claude invokes `/name`; Codex invokes `$name`. Actions adds `manual-`/`cron-` or routes related operations through a selector: `manual-agentic-pr-update` selects `change`, `fix-ci` or `resolve-conflicts`.
 
 Task policy belongs in the canonical `SKILL.md`. Runners load it before PR checkout (older branches may lack it) and embed it in prompts. Runners own checkout setup, credentials, merge preparation, metadata, validation and publishing; skills state preparation needed only in local sessions. Local invocation alone does not authorize publishing. Agentic workflows use the [shared run summary](./ci/workflow-conventions.md#agentic-run-summaries).
 

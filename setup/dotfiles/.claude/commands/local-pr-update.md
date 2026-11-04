@@ -1,1 +1,0 @@
-../../agent-skills/local-pr-update/SKILL.md
