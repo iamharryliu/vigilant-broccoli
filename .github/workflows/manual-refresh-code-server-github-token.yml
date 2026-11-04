@@ -4,11 +4,13 @@ name: manual-refresh-code-server-github-token
 # and drops it on the code-server VM -- the CI twin of
 # `pnpm agentic:dev-sandbox:refresh-github-token`. The App's private key never
 # leaves this job: the VM only ever holds the short-lived token, which the
-# container's gh wrapper reads from /run/secrets/gh-token.json. Re-run it
-# whenever `git push` / `gh` in code-server report the token has expired.
+# container's gh wrapper reads from /run/secrets/gh-token.json.
+# cron-refresh-code-server-github-token calls this every 20 minutes; dispatch
+# it directly if `git push` / `gh` in code-server still report an expired token.
 
 on:
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read

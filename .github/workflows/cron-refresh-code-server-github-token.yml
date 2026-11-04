@@ -1,0 +1,20 @@
+name: cron-refresh-code-server-github-token
+
+# The code-server VM's GitHub App token lasts 1 hour, so a manual-only refresh
+# left agent sessions that outlive it unable to push or open PRs. Re-deliver
+# every 20 minutes (scheduled runs are best-effort and can slip) so the file
+# never expires.
+
+on:
+  schedule:
+    - cron: '5,25,45 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  refresh-token:
+    uses: ./.github/workflows/manual-refresh-code-server-github-token.yml
+    secrets: inherit
