@@ -31,6 +31,7 @@ Routes, all `POST` under `/api` and sent with `x-api-key: <token>`: `/subscribe`
 | Variable | Required | Description |
 | --- | --- | --- |
 | `EMAIL_FROM_ADDRESS` | No | Sender address for confirmation and notification emails; defaults to the maintainer's address, which your email-service provider must be allowed to use if left unset. |
+| `EMAIL_FROM_NAME` | No | Sender display name for confirmation and notification emails; defaults to `Vigilant Broccoli`. |
 | `EMAIL_SERVICE_URL` | Yes | Base URL of an email-service instance that sends the queued emails. |
 | `HOST`, `PORT` | No | Listen address; the image sets `0.0.0.0` and `3000`. |
 | `RABBITMQ_CA_CERT` | No | Base64-encoded CA certificate that verifies a broker using a private CA. |
