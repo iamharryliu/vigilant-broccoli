@@ -6,6 +6,7 @@ Shared context, skills and execution contracts for repository agents.
 
 - [Sources and adapters](#sources-and-adapters)
 - [Agentic commands](#agentic-commands)
+  - [Dispatch contract](#dispatch-contract)
 - [Entry-point parity](#entry-point-parity)
   - [Task contract](#task-contract)
   - [Execution adapters](#execution-adapters)
@@ -39,6 +40,19 @@ Maintenance scopes differ: inventory audit fixes rows of the fork identity and s
 `local-session-status` (`$local-session-status` in Codex, `/local-session-status` in Claude) gives one brief, read-only status snapshot of dispatches known in the invoking conversation. Explicit session names, branches/worktrees, PRs, Actions run identifiers or Docker launch log paths can select jobs when conversation history is unavailable. It does not enumerate unrelated sessions or control jobs, and has no Actions/Docker runner equivalent. The [canonical skill](../setup/dotfiles/agent-skills/local-session-status/SKILL.md) defines evidence and reporting rules.
 
 `local-session-retry-publish` (`$local-session-retry-publish` in Codex, `/local-session-retry-publish` in Claude) notifies selected existing idle agents to retry already authorized publishing after a reported credential refresh. It shares status provenance boundaries and has no Actions/Docker equivalent. See the [canonical skill](../setup/dotfiles/agent-skills/local-session-retry-publish/SKILL.md) for selection, safe submission and limitations.
+
+### Dispatch contract
+
+Every dispatcher (`gh-`, `local-docker-`, `remote-` and the tmux `local-` create/update skills) shares this front end; each skill adds only its medium's dispatch.
+
+1. **Request:** take it from the arguments; without arguments use the change the conversation most recently identified as worth building, and ask if none stands out.
+2. **Research (read-only):** the affected code and existing patterns, applicable `CONTEXT.md` files and [Doc Map](../CONTEXT.md#doc-map) docs, and overlapping `TODO.md` rows and open PRs (`gh pr list`).
+3. **Stop:** when the request should not be built (already done, out of scope or wrong for the repo), do not dispatch; give the reason per the [no-change decisions](#task-contract). If an existing TODO row covers it, name the row ID and suggest dispatching it by ID. If the request only drops existing TODO rows without resolving them, dispatch one run per ID with the prompt exactly `Remove TODO.md row <id>. Reason: <reason>` ([TODO references](#pull-request-scope)); free text that deletes rows fails the runner's undeclared-removal check. Together they count as the one authorized dispatch.
+4. **Ask:** only questions whose answer materially changes scope or outcome (which app/lib owns it, public vs private lib, new app vs pages-index page, a new public URL, a breaking change), through the harness's structured question tool: at most 4, each with the recommended option first. Record anything with a sensible default as a stated assumption. Ask nothing when nothing blocks.
+5. **Write a self-contained prompt:** the agent sees only the repo, not the conversation. Include the problem and why it matters, the desired behavior, cited paths and quoted snippets or symbols (never line numbers, except in the update variant below), existing patterns to follow, user decisions and constraints, ruled-out options and acceptance checks. Describe large tasks as ordered mergeable increments per [pull request scope](#pull-request-scope).
+6. **Dispatch:** directly when no questions were asked; otherwise show the final prompt with the answers and dispatch on the user's confirmation. Optional model or agent flags are added only when the user asks.
+
+**Update variant** (`*-update-pr-*`): the target is an existing PR (number or URL; else the current branch's via `gh pr view`, else the conversation's most recent PR; ask if ambiguous). Research also reads the PR, its files, checks, mergeability and open review comments. Do not dispatch when the PR is closed or merged, or the request is unrelated to the PR's purpose, since existing PRs keep their purpose; suggest `gh-create-pr` for a follow-up. The written text is an instruction, not a prompt: the hosted agent sees the repo and the PR, so it may cite PR file lines. Number several review items in priority order.
 
 ## Entry-point parity
 
