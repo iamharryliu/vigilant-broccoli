@@ -18,7 +18,6 @@ Email subscription management and broadcast.
 - Internal libs
   - `common-js`
   - `fastify`
-  - `infrastructure`
   - `messaging`
 - Cloud services
   - Email Service
