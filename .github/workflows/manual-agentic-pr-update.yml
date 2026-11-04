@@ -25,6 +25,10 @@ on:
         description: "Feed the PR's failing checks and failed-step logs to the agent (always on for fix-ci)."
         type: boolean
         default: false
+      ready:
+        description: 'Mark a draft PR ready for review after the update is pushed, without waiting for checks.'
+        type: boolean
+        default: false
       model:
         description: 'Claude model to run the agent with.'
         type: choice
@@ -154,10 +158,12 @@ jobs:
           OPERATION: ${{ inputs.operation }}
           INSTRUCTION: ${{ inputs.instruction }}
           WITH_CI_LOGS: ${{ inputs.with_ci_logs }}
+          READY: ${{ inputs.ready }}
         run: |
           set -euo pipefail
           ARGS=(--model "$MODEL" --operation "$OPERATION")
           [ "$WITH_CI_LOGS" != true ] || ARGS+=(--with-ci-logs)
+          [ "$READY" != true ] || ARGS+=(--ready)
           if [ "$OPERATION" = change ] || [ -n "$INSTRUCTION" ]; then
             bash infrastructure/agent-sandbox/update-pr.sh "${ARGS[@]}" "$PR" "$INSTRUCTION"
           else
