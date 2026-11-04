@@ -9,6 +9,7 @@ import {
 import resume from '../../templates/sample/resume.json';
 import careerExperience from '../../templates/sample/career-experience.md';
 import { API_ENDPOINTS } from '../app/constants/api-endpoints';
+import { APPLICATION_STATUS } from '../app/constants/applications';
 import { CAREER_FILE_KIND } from '../app/constants/career';
 import {
   RUN_KIND,
@@ -397,9 +398,12 @@ export const demoResponse = (request: NextRequest): NextResponse => {
       return coverLetterResponse(path);
     case API_ENDPOINTS.JOB_APPLICATIONS_RUNS:
       return NextResponse.json({ runs: RUNS });
-    case API_ENDPOINTS.JOB_APPLICATIONS_APPLIED:
+    case API_ENDPOINTS.JOB_APPLICATIONS_STATUS:
       return NextResponse.json({
-        applied: APPLICATIONS.slice(1, 3).map(({ folder }) => folder),
+        statuses: {
+          [APPLICATIONS[1].folder]: APPLICATION_STATUS.APPLIED,
+          [APPLICATIONS[2].folder]: APPLICATION_STATUS.INTERVIEWING,
+        },
       });
     case API_ENDPOINTS.JOB_APPLICATIONS:
       return applicationsResponse(path);

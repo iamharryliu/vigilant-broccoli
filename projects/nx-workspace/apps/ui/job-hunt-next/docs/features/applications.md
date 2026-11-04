@@ -5,7 +5,8 @@
 - A left sidebar switches `/` between the Applications, Career experience, Resume, Runs and Settings sections, kept in the `tab` query param. Applications lists the folders in the Job Applications folder as expandable cards, newest date first and, within a date, most recently created first.
 - Open posting is a button in the expanded card's Posting tab (hidden in demo mode). It opens the original page from the `Posting URL:` line the run saves, in a new tab with no opener; a posting saved without a URL has no button
 - The expanded card has no action sidebar; its tabs are Posting, Brief, Resume and Cover letter. The card's ellipsis menu has Mark as applied and Delete, which asks for confirmation and then removes the whole application folder. Switching tabs eases the card to the new height
-- Mark as applied (ellipsis menu, toggling to Mark as not applied) records the status in a hidden `.applied` file in the application folder. Applied cards show an Applied badge. Demo mode shows two applied cards and hides the action
+- A search box above the list filters cards by title, date or status label as you type; it is hidden until there is at least one application
+- The ellipsis menu sets a status (Applied, Interviewing, Offer, Rejected) or clears it, and the card shows it as a badge. Statuses live in the `job_applications` table of the SQLite file in `STATE_DIR` (shared with run history), keyed by folder name; a folder with no row has no status. Statuses are not in the application folder, so moving or renaming a folder outside the app drops its status. Demo mode shows two cards with a status and hides the menu
 - There is no Open in Finder action: the server may run in a container with no access to the user's desktop
 - `/?expand=latest` expands the newest card; the finished-run toast links to it. The list reads the param only on mount; when a run finishes it re-fetches without changing which cards are expanded
 - A missing Job Applications folder lists as empty; the first run creates it
@@ -37,5 +38,5 @@
 ## API
 
 - `GET /api/job-applications?path=` lists a folder, `GET /api/job-applications/file?path=` serves a file; both are confined to the Job Applications folder
-- `GET /api/job-applications/applied` lists the applied folder names; `PUT /api/job-applications/applied?path=<folder>[&applied=false]` marks or clears one (same direct-child rule as delete)
+- `GET /api/job-applications/status` maps folder names to their status; `PUT /api/job-applications/status?path=<folder>&status=<status|none>` sets or clears one (same direct-child rule as delete). Deleting an application also deletes its row
 - `DELETE /api/job-applications?path=<folder>` deletes one application folder recursively; only a direct child of the Job Applications folder is accepted (400 otherwise, 404 if missing)

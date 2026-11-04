@@ -24,6 +24,7 @@ import {
 } from '@vigilant-broccoli/common-js';
 import {
   Button,
+  Input,
   Tabs,
   TabsContent,
   TabsList,
@@ -41,6 +42,12 @@ import {
   EllipsisAction,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import { EXPAND_LATEST, EXPAND_PARAM } from '../app.const';
+import {
+  APPLICATION_STATUS,
+  APPLICATION_STATUSES,
+  ApplicationStatus,
+  CLEAR_STATUS,
+} from '../constants/applications';
 import { JOB_APPLICATIONS_CHANGED_EVENT } from '../constants/career';
 import { IS_DEMO } from '../constants/demo';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
@@ -68,6 +75,21 @@ const POSTING_TAB = {
   COVER_LETTER: 'cover-letter',
 } as const;
 const TITLE_SEPARATOR = ' · ';
+const STATUS_LABEL_KEYS = {
+  [APPLICATION_STATUS.APPLIED]: 'APPLICATIONS.STATUS_APPLIED',
+  [APPLICATION_STATUS.INTERVIEWING]: 'APPLICATIONS.STATUS_INTERVIEWING',
+  [APPLICATION_STATUS.OFFER]: 'APPLICATIONS.STATUS_OFFER',
+  [APPLICATION_STATUS.REJECTED]: 'APPLICATIONS.STATUS_REJECTED',
+} as const;
+const STATUS_BADGE_CLASSES = {
+  [APPLICATION_STATUS.APPLIED]:
+    'bg-green-500/20 text-green-700 dark:text-green-400',
+  [APPLICATION_STATUS.INTERVIEWING]:
+    'bg-blue-500/20 text-blue-700 dark:text-blue-400',
+  [APPLICATION_STATUS.OFFER]:
+    'bg-amber-500/20 text-amber-700 dark:text-amber-400',
+  [APPLICATION_STATUS.REJECTED]: 'bg-red-500/20 text-red-700 dark:text-red-400',
+} as const;
 
 type ApplicationFileKind = Parameters<typeof findApplicationFile>[1];
 
@@ -77,7 +99,7 @@ type ApplicationItem = {
   label: string;
   date: string;
   created: string;
-  applied: boolean;
+  status: ApplicationStatus | null;
 };
 
 type ApplicationDetails = {
@@ -108,11 +130,13 @@ const listFolder = async (path: string): Promise<FileEntry[]> => {
   return data.entries;
 };
 
-const listApplied = async (): Promise<Set<string>> => {
-  const response = await fetch(API_ENDPOINTS.JOB_APPLICATIONS_APPLIED);
+const listStatuses = async (): Promise<
+  Record<string, ApplicationStatus | undefined>
+> => {
+  const response = await fetch(API_ENDPOINTS.JOB_APPLICATIONS_STATUS);
   const data = await response.json();
   if (!response.ok) throw new Error(data.error);
-  return new Set<string>(data.applied);
+  return data.statuses;
 };
 
 const listFiles = async (folder: string) =>
@@ -353,9 +377,11 @@ const ApplicationRow = ({ item }: { item: ApplicationItem }) => {
       <span className="block min-w-0 truncate text-sm font-medium">
         {item.title}
       </span>
-      {item.applied && (
-        <span className="shrink-0 rounded-full bg-green-500/20 px-2 py-0.5 text-xs font-medium text-green-700 dark:text-green-400">
-          {t('APPLICATIONS.APPLIED')}
+      {item.status && (
+        <span
+          className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE_CLASSES[item.status]}`}
+        >
+          {t(STATUS_LABEL_KEYS[item.status])}
         </span>
       )}
     </span>
@@ -367,13 +393,14 @@ export const JobApplicationList = () => {
   const [items, setItems] = useState<ApplicationItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [defaultExpandedIds, setDefaultExpandedIds] = useState<string[]>([]);
+  const [search, setSearch] = useState('');
 
   const load = useCallback(
     async (expandLatest: boolean) => {
       try {
-        const [entries, applied] = await Promise.all([
+        const [entries, statuses] = await Promise.all([
           listFolder(''),
-          listApplied(),
+          listStatuses(),
         ]);
         const folders = entries.filter(
           entry => entry.kind === FILE_ENTRY_KIND.FOLDER,
@@ -382,7 +409,7 @@ export const JobApplicationList = () => {
           .map(folder => ({
             id: folder.path,
             created: folder.created,
-            applied: applied.has(folder.path),
+            status: statuses[folder.path] ?? null,
             ...parseApplicationFolder(
               folder.name,
               folder.modified,
@@ -457,13 +484,24 @@ export const JobApplicationList = () => {
   );
 
   const itemActions = (item: ApplicationItem): ItemAction[] => [
-    {
-      label: item.applied
-        ? t('APPLICATIONS.MARK_NOT_APPLIED')
-        : t('APPLICATIONS.MARK_APPLIED'),
-      icon: item.applied ? Undo2 : CircleCheck,
-      onSelect: () => setApplied(item, !item.applied),
-    },
+    ...APPLICATION_STATUSES.filter(status => status !== item.status).map(
+      (status): ItemAction => ({
+        label: t('APPLICATIONS.MARK_STATUS', {
+          status: t(STATUS_LABEL_KEYS[status]).toLowerCase(),
+        }),
+        icon: CircleCheck,
+        onSelect: () => setStatus(item, status),
+      }),
+    ),
+    ...(item.status
+      ? [
+          {
+            label: t('APPLICATIONS.CLEAR_STATUS'),
+            icon: Undo2,
+            onSelect: () => setStatus(item, null),
+          },
+        ]
+      : []),
     {
       label: t('APPLICATIONS.DELETE'),
       icon: Trash2,
@@ -480,35 +518,32 @@ export const JobApplicationList = () => {
   ];
 
   const visibleItemActions = (item: ApplicationItem) =>
-    itemActions(item).filter(
-      action =>
-        !IS_DEMO ||
-        (action.icon !== Trash2 &&
-          action.icon !== CircleCheck &&
-          action.icon !== Undo2),
-    );
+    IS_DEMO ? [] : itemActions(item);
 
-  const setApplied = async (item: ApplicationItem, applied: boolean) => {
+  const setStatus = async (
+    item: ApplicationItem,
+    status: ApplicationStatus | null,
+  ) => {
     try {
       const response = await fetch(
-        `${API_ENDPOINTS.JOB_APPLICATIONS_APPLIED}?path=${encodeURIComponent(item.id)}&applied=${applied}`,
+        `${API_ENDPOINTS.JOB_APPLICATIONS_STATUS}?path=${encodeURIComponent(item.id)}&status=${status ?? CLEAR_STATUS}`,
         { method: HTTP_METHOD.PUT },
       );
       if (!response.ok) throw new Error((await response.json()).error);
       setItems(previous =>
         previous.map(entry =>
-          entry.id === item.id ? { ...entry, applied } : entry,
+          entry.id === item.id ? { ...entry, status } : entry,
         ),
       );
       toast.success(
         t(
-          applied
-            ? 'APPLICATIONS.MARKED_APPLIED'
-            : 'APPLICATIONS.MARKED_NOT_APPLIED',
+          status
+            ? 'APPLICATIONS.STATUS_UPDATED'
+            : 'APPLICATIONS.STATUS_CLEARED',
         ),
       );
     } catch (error) {
-      toast.error(errorMessage(error, t('APPLICATIONS.APPLIED_FAILED')));
+      toast.error(errorMessage(error, t('APPLICATIONS.STATUS_FAILED')));
     }
   };
 
@@ -526,24 +561,49 @@ export const JobApplicationList = () => {
     }
   };
 
+  const query = search.trim().toLowerCase();
+  const visibleItems = useMemo(
+    () =>
+      query
+        ? items.filter(item =>
+            [item.title, item.status && t(STATUS_LABEL_KEYS[item.status])]
+              .join(' ')
+              .toLowerCase()
+              .includes(query),
+          )
+        : items,
+    [items, query, t],
+  );
+
   const copy = useMemo(
     () => ({
       LIST: {
         TITLE: '',
-        EMPTY_MESSAGE: loaded ? t('APPLICATIONS.EMPTY') : '',
+        EMPTY_MESSAGE: loaded
+          ? t(query ? 'APPLICATIONS.NO_MATCHES' : 'APPLICATIONS.EMPTY')
+          : '',
       },
       CREATE: { TITLE: '', DESCRIPTION: '' },
       UPDATE: { TITLE: '', DESCRIPTION: '' },
     }),
-    [loaded, t],
+    [loaded, query, t],
   );
 
   return (
     <>
       <ExpansionContext.Provider value={{ loadDetails }}>
+        {loaded && items.length > 0 && (
+          <Input
+            type="search"
+            value={search}
+            onChange={event => setSearch(event.target.value)}
+            placeholder={t('APPLICATIONS.SEARCH_PLACEHOLDER')}
+            className="mb-2"
+          />
+        )}
         {loaded && (
           <CRUDItemList
-            items={items}
+            items={visibleItems}
             defaultExpandedIds={defaultExpandedIds}
             setItems={setItems}
             ListItemComponent={ApplicationRow}
