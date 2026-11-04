@@ -23,6 +23,15 @@ RUN curl -fsSL https://mise.run | MISE_VERSION="$MISE_VERSION" MISE_INSTALL_PATH
 # bash stays the login shell: the runners exec bash scripts, and the entrypoint wires both rc files.
 RUN useradd -m -s /bin/bash agent
 
+# The resume-pdf-fit pre-commit hook renders the resume with Playwright's headless Chromium. Browsers
+# download at build time (outside the egress firewall) into the agent's cache; keep the version on
+# the workspace lockfile's playwright, since each release expects its own browser revision.
+ARG PLAYWRIGHT_VERSION=1.61.1
+RUN npm exec --yes --package="playwright@$PLAYWRIGHT_VERSION" -- playwright install-deps chromium \
+    && HOME=/home/agent runuser -u agent -- npm exec --yes --package="playwright@$PLAYWRIGHT_VERSION" -- playwright install --only-shell chromium \
+    && npm cache clean --force \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY init-firewall.sh entrypoint.sh solve-todo-runner.sh pr-increments.sh pr-screenshots.py commit-subject.sh no-changes.sh /usr/local/bin/
 RUN chmod 755 /usr/local/bin/init-firewall.sh /usr/local/bin/entrypoint.sh /usr/local/bin/solve-todo-runner.sh /usr/local/bin/pr-increments.sh /usr/local/bin/pr-screenshots.py /usr/local/bin/commit-subject.sh /usr/local/bin/no-changes.sh
 
