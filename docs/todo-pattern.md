@@ -1,6 +1,6 @@
 # TODO.md Pattern
 
-Source of truth for the shape of the repo root `TODO.md`. `/local-pr-create-todo`, `infrastructure/agent-sandbox/create-todo-runner.sh`, `audit-todo-runner.sh`, and the `solve-todo*.sh` parsers all follow this file — change the format here first, then the consumers.
+Source of truth for the shape of the repo root `TODO.md`. `/local-create-pr-todo`, `infrastructure/agent-sandbox/create-todo-runner.sh`, `audit-todo-runner.sh`, and the `solve-todo*.sh` parsers all follow this file — change the format here first, then the consumers.
 
 ## Table of Contents
 

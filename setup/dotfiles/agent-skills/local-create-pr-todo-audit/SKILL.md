@@ -1,5 +1,5 @@
 ---
-name: local-pr-create-todo-audit
+name: local-create-pr-todo-audit
 description: In vigilant-broccoli, verify every TODO.md row against the current tree, remove resolved entries, and correct drifted references without adding tasks.
 ---
 

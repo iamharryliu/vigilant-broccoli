@@ -1,5 +1,5 @@
 ---
-name: local-pr-create-free-tier-audit
+name: local-create-pr-free-tier-audit
 description: In vigilant-broccoli, verify every cloud service in use has a Free Tier section in its notes/docs and a row in free-tier-infrastructure.md, adding or correcting entries only from verifiable sources.
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: local-pr-update-fix-ci
+name: local-update-pr-fix-ci
 description: In vigilant-broccoli, diagnose a PR's failing CI checks from their logs and fix the branch so the checks pass.
 ---
 

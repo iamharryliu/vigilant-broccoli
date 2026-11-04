@@ -1,5 +1,5 @@
 ---
-name: local-pr-create-context-audit
+name: local-create-pr-context-audit
 description: In vigilant-broccoli, slim agent guidance by removing duplicated rules and incident narrative without losing any rule, workaround, recovery step or exact error string.
 ---
 
@@ -31,7 +31,7 @@ Exclude `notes/` (including `notes/CONTEXT.md`), `docs/learning-timeline.md`, `T
 - Exact error messages and symptom strings in nuances: agents find a nuance by searching for the error text, so a paraphrase hides it.
 - The reason behind a non-obvious rule when it aids diagnosis, e.g. why a `"*"` dependency pin drifts and surfaces as duplicate `FastifyInstance` types in root `CONTEXT.md`.
 - Concrete examples that steer agent behavior, e.g. the comment-rule examples in `docs/refactor-code-cleanup.md`.
-- Search heuristics in skills, such as `local-pr-create-audit`'s candidate phrases.
+- Search heuristics in skills, such as `local-create-pr-audit`'s candidate phrases.
 - Live pending-work pointers (TODO IDs, follow-ups, pending migrations).
 
 Ownership repairs may relocate facts only between existing in-scope files, with a required reading link retaining discoverability from the original guidance. Do not change an obligation while relocating it. An out-of-scope caller README is not an authorized destination; retain and report the candidate when a safe move cannot fit the scope or cap.

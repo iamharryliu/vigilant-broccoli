@@ -1,5 +1,5 @@
 ---
-name: local-pr-create
+name: local-create-pr
 description: In vigilant-broccoli, implement TODO items or a free-text task using repo conventions and verify the result.
 ---
 

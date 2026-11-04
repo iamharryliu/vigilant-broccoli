@@ -1,5 +1,5 @@
 ---
-name: local-pr-create-audit
+name: local-create-pr-audit
 description: In vigilant-broccoli, remove or rewrite documentation that describes legacy implementations or makes claims the current codebase no longer backs.
 ---
 

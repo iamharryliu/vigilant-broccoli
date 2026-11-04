@@ -15,7 +15,7 @@ Run only on explicit `local-create-pr-claude` invocation; it authorizes one tmux
    git worktree add -b <branch> .claude/worktrees/<slug> origin/main
    ```
 
-3. Append to the prompt: work only in this worktree, follow its `CONTEXT.md` files, run the existing checks, then publish with the `ship-pr` skill, which this request authorizes.
+3. Append to the prompt: work only in this worktree, follow its `CONTEXT.md` files, implement and verify per the `local-create-pr` skill, then publish with the `ship-pr` skill, which this request authorizes.
 4. Write the prompt to `/tmp/vb-local-pr-<slug>.prompt` and start the session once no questions were asked or after the user confirms it. Add `--model opus` or another Claude model only when the user asks:
 
    ```sh

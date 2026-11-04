@@ -1,5 +1,5 @@
 ---
-name: local-pr-create-comment-audit
+name: local-create-pr-comment-audit
 description: In vigilant-broccoli, enforce the Coding Conventions comment rule repo-wide by removing redundant comments and generator scaffolding while keeping comments that explain non-obvious reasons.
 ---
 

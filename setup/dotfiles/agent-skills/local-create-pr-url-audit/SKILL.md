@@ -1,5 +1,5 @@
 ---
-name: local-pr-create-url-audit
+name: local-create-pr-url-audit
 description: In vigilant-broccoli, verify every public URL has synchronized Upptime entries, pages-index cards and browser quick links for every environment and demo, and every published Docker image its pages-index card and README Containers row, and fix drift.
 ---
 

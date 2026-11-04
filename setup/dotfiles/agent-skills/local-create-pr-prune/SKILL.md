@@ -1,5 +1,5 @@
 ---
-name: local-pr-create-prune
+name: local-create-pr-prune
 description: In vigilant-broccoli, find dead code, unused dependencies and stale or broken documentation repo-wide and remove only what has verifiably zero references.
 ---
 

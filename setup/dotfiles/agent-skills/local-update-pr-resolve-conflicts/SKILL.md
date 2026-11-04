@@ -1,5 +1,5 @@
 ---
-name: local-pr-update-resolve-conflicts
+name: local-update-pr-resolve-conflicts
 description: In vigilant-broccoli, merge origin/main into a PR branch and resolve conflicts while preserving both sides.
 ---
 

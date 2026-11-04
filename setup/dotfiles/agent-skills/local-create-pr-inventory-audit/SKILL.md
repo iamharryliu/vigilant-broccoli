@@ -1,5 +1,5 @@
 ---
-name: local-pr-create-inventory-audit
+name: local-create-pr-inventory-audit
 description: In vigilant-broccoli, find missing or stale rows in the fork identity inventory and the secret inventory and fix them without touching secret values.
 ---
 

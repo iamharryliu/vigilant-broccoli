@@ -1,5 +1,5 @@
 ---
-name: local-pr-create-todo
+name: local-create-pr-todo
 description: In vigilant-broccoli, refine an initial request using repo research into an actionable task prompt and add one well-cited row to the repo root TODO.md.
 ---
 

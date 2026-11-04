@@ -1,5 +1,5 @@
 ---
-name: local-pr-update
+name: local-update-pr
 description: In vigilant-broccoli, apply a requested change to an existing PR branch and verify its cumulative result.
 ---
 
