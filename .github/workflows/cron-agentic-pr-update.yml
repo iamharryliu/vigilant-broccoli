@@ -24,6 +24,8 @@ concurrency:
 env:
   ATTEMPT_LABEL_PREFIX: agent-maintain-attempt-
   MAX_ATTEMPTS: '2'
+  MERGEABLE_RETRIES: '5'
+  MERGEABLE_RETRY_DELAY: '10'
 
 jobs:
   overview:
@@ -63,8 +65,20 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          PRS=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 200 \
-            --json number,isDraft,isCrossRepository,mergeable,labels,statusCheckRollup)
+          # The first listing after a quiet period returns UNKNOWN for most PRs
+          # while GitHub computes mergeability in the background; re-list until
+          # it settles so conflicting PRs are not skipped for a whole day.
+          for TRY in $(seq 1 "$MERGEABLE_RETRIES"); do
+            PRS=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 200 \
+              --json number,isDraft,isCrossRepository,mergeable,labels,statusCheckRollup)
+            UNKNOWN=$(jq '[.[] | select(.mergeable == "UNKNOWN")] | length' <<<"$PRS")
+            echo "Listing $TRY: $UNKNOWN PR(s) with UNKNOWN mergeability."
+            if [ "$UNKNOWN" -eq 0 ] || [ "$TRY" -eq "$MERGEABLE_RETRIES" ]; then
+              break
+            fi
+            sleep "$MERGEABLE_RETRY_DELAY"
+          done
+          jq -r '.[] | "PR #\(.number): mergeable=\(.mergeable) draft=\(.isDraft) fork=\(.isCrossRepository) checks=\([.statusCheckRollup[]? | [.conclusion, .state, .status] | map(select(. != null and . != "")) | first] | group_by(.) | map("\(.[0])x\(length)") | join(",")) labels=\([.labels[].name] | join(","))"' <<<"$PRS"
           SELECTED=$(jq -c --argjson max_attempts "$MAX_ATTEMPTS" \
             -f .github/scripts/select-broken-prs.jq <<<"$PRS")
           COUNT=$(jq length <<<"$SELECTED")
