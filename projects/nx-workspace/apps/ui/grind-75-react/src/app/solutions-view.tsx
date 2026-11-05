@@ -1,3 +1,10 @@
+import { useEffect, useState } from 'react';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@vigilant-broccoli/react-lib';
 import hljs from 'highlight.js/lib/core';
 import go from 'highlight.js/lib/languages/go';
 import python from 'highlight.js/lib/languages/python';
@@ -31,8 +38,34 @@ const parsePayloads = (content: string): ProblemPayload[] =>
     }
   });
 
-const SolutionColumn = ({ solution }: { solution: LanguageSolution }) => (
-  <section className="flex flex-col min-w-[28rem] w-[28rem] max-w-[90vw] shrink-0 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+// Matches DocsExplorer's own md breakpoint, where its sidebar layout switches.
+const DESKTOP_QUERY = '(min-width: 768px)';
+
+const useIsDesktop = () => {
+  const [isDesktop, setIsDesktop] = useState(
+    () => window.matchMedia(DESKTOP_QUERY).matches,
+  );
+
+  useEffect(() => {
+    const mql = window.matchMedia(DESKTOP_QUERY);
+    const update = () => setIsDesktop(mql.matches);
+    mql.addEventListener('change', update);
+    return () => mql.removeEventListener('change', update);
+  }, []);
+
+  return isDesktop;
+};
+
+const SolutionPanel = ({
+  solution,
+  className,
+}: {
+  solution: LanguageSolution;
+  className: string;
+}) => (
+  <section
+    className={`flex flex-col rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden ${className}`}
+  >
     <header className="px-3 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
       <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
         {solution.label}
@@ -53,23 +86,88 @@ const SolutionColumn = ({ solution }: { solution: LanguageSolution }) => (
   </section>
 );
 
-const ProblemSolutions = ({ problem }: { problem: ProblemPayload }) => (
-  <article className="flex flex-col h-full min-h-0">
-    <h2 className="px-4 sm:px-6 pt-4 pb-2 pr-12 text-lg font-semibold text-gray-900 dark:text-gray-100">
-      {problem.name}
-    </h2>
-    <div className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden touch-pan-x flex gap-4 px-4 sm:px-6 pb-4">
-      {problem.languages.map(solution => (
-        <SolutionColumn key={solution.language} solution={solution} />
+const COLUMN_CLASS = 'min-w-[28rem] w-[28rem] max-w-[90vw] shrink-0';
+const TAB_PANEL_CLASS = 'h-full';
+
+const ProblemSolutions = ({
+  problem,
+  isDesktop,
+  preferredLanguage,
+  onSelectLanguage,
+}: {
+  problem: ProblemPayload;
+  isDesktop: boolean;
+  preferredLanguage: string | null;
+  onSelectLanguage: (language: string) => void;
+}) => {
+  const selectedLanguage =
+    problem.languages.find(({ language }) => language === preferredLanguage)
+      ?.language ?? problem.languages[0]?.language;
+
+  return (
+    <article className="flex flex-col h-full min-h-0">
+      <h2 className="px-4 sm:px-6 pt-4 pb-2 pr-12 text-lg font-semibold text-gray-900 dark:text-gray-100">
+        {problem.name}
+      </h2>
+      {isDesktop ? (
+        <div className="flex-1 min-h-0 overflow-x-auto overflow-y-hidden touch-pan-x flex gap-4 px-4 sm:px-6 pb-4">
+          {problem.languages.map(solution => (
+            <SolutionPanel
+              key={solution.language}
+              solution={solution}
+              className={COLUMN_CLASS}
+            />
+          ))}
+        </div>
+      ) : (
+        <Tabs
+          value={selectedLanguage}
+          onValueChange={onSelectLanguage}
+          className="flex-1 min-h-0 flex flex-col px-4 pb-4"
+        >
+          <TabsList className="shrink-0 self-start">
+            {problem.languages.map(({ language, label }) => (
+              <TabsTrigger key={language} value={language} className="px-3">
+                {label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {problem.languages.map(solution => (
+            <TabsContent
+              key={solution.language}
+              value={solution.language}
+              className="flex-1 min-h-0 mt-2"
+            >
+              <SolutionPanel solution={solution} className={TAB_PANEL_CLASS} />
+            </TabsContent>
+          ))}
+        </Tabs>
+      )}
+    </article>
+  );
+};
+
+const SolutionsView = ({ content }: { content: string }) => {
+  const isDesktop = useIsDesktop();
+  const [preferredLanguage, setPreferredLanguage] = useState<string | null>(
+    null,
+  );
+
+  return (
+    <div className="flex flex-col h-full">
+      {parsePayloads(content).map(problem => (
+        <ProblemSolutions
+          key={problem.name}
+          problem={problem}
+          isDesktop={isDesktop}
+          preferredLanguage={preferredLanguage}
+          onSelectLanguage={setPreferredLanguage}
+        />
       ))}
     </div>
-  </article>
-);
+  );
+};
 
 export const renderSolutions = (content: string) => (
-  <div className="flex flex-col h-full">
-    {parsePayloads(content).map(problem => (
-      <ProblemSolutions key={problem.name} problem={problem} />
-    ))}
-  </div>
+  <SolutionsView content={content} />
 );
