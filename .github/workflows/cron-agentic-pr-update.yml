@@ -1,0 +1,105 @@
+name: cron-agentic-pr-update
+
+# Dispatches `manual-agentic-pr-update` (`resolve-conflicts` or `fix-ci`) for open,
+# non-draft, same-repo PRs that conflict with their base or have settled failing
+# checks. Nothing here edits a branch or merges: the dispatched run pushes the
+# fix and a human reviews and merges. Policy and label contract:
+# docs/ci/agentic-pr-maintenance.md.
+
+on:
+  schedule:
+    - cron: '20 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: write
+
+# Static group: two overlapping sweeps would count the same attempt twice.
+concurrency:
+  group: cron-agentic-pr-update
+  cancel-in-progress: false
+
+env:
+  ATTEMPT_LABEL_PREFIX: agent-maintain-attempt-
+  MAX_ATTEMPTS: '2'
+
+jobs:
+  overview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout summary helper
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Publish overview
+        continue-on-error: true
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: overview
+          title: Fix conflicts and failing CI on open pull requests
+          agent: claude
+          model: sonnet
+          firewall: 'on'
+          operation: Resolve conflicts or fix CI
+          description: Dispatch manual-agentic-pr-update (resolve-conflicts, or fix-ci when checks have settled failing) for every open, non-draft, same-repo pull requests that have used fewer than ${{ env.MAX_ATTEMPTS }} attempts. Nothing is merged.
+
+  dispatch:
+    needs: overview
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout filter and summary helper
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Dispatch pull request updates
+        id: dispatch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          PRS=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 200 \
+            --json number,isDraft,isCrossRepository,mergeable,labels,statusCheckRollup)
+          SELECTED=$(jq -c --argjson max_attempts "$MAX_ATTEMPTS" \
+            -f .github/scripts/select-broken-prs.jq <<<"$PRS")
+          COUNT=$(jq length <<<"$SELECTED")
+          echo "Open PRs: $(jq length <<<"$PRS"); selected for update: $COUNT."
+          if [ "$COUNT" -eq 0 ]; then
+            echo "dispatched=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          for N in $(seq 1 "$MAX_ATTEMPTS"); do
+            gh label create "${ATTEMPT_LABEL_PREFIX}${N}" --repo "$GITHUB_REPOSITORY" --force \
+              --color FBCA04 --description "Automated PR update attempt $N of $MAX_ATTEMPTS"
+          done
+
+          DISPATCHED=0
+          while read -r row; do
+            PR=$(jq -r .number <<<"$row")
+            OPERATION=$(jq -r .operation <<<"$row")
+            ATTEMPT=$(( $(jq -r .attempts <<<"$row") + 1 ))
+            # Label first: a failed dispatch still consumes the attempt, so a
+            # persistently failing PR cannot be retried forever.
+            gh pr edit "$PR" --repo "$GITHUB_REPOSITORY" --add-label "${ATTEMPT_LABEL_PREFIX}${ATTEMPT}"
+            gh workflow run manual-agentic-pr-update.yml \
+              --repo "$GITHUB_REPOSITORY" --ref "$GITHUB_REF_NAME" \
+              -f pr="$PR" -f operation="$OPERATION"
+            echo "Dispatched $OPERATION for PR #$PR (attempt $ATTEMPT of $MAX_ATTEMPTS)."
+            DISPATCHED=$((DISPATCHED + 1))
+          done < <(jq -c '.[]' <<<"$SELECTED")
+          echo "dispatched=$DISPATCHED" >> "$GITHUB_OUTPUT"
+          echo "Watch them at https://github.com/$GITHUB_REPOSITORY/actions/workflows/manual-agentic-pr-update.yml"
+
+      - name: Report result
+        if: always()
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: result
+          outcome: ${{ (steps.dispatch.outcome == 'success' && steps.dispatch.outputs.dispatched != '0' && 'dispatched') || (steps.dispatch.outcome == 'success' && 'no-pr') || (job.status == 'cancelled' && 'cancelled') || 'failed' }}
+          note: ${{ steps.dispatch.outcome == 'success' && format('{0} pull request(s) dispatched.', steps.dispatch.outputs.dispatched) || '' }}

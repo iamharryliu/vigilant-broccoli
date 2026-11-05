@@ -100,7 +100,7 @@ Checks include the task's existing validation, the cleanup checklist when requir
 | `agentic-pr-create-todo-audit` | Weekly/manual Actions plus Docker/Local; Claude. Only TODO changes; new IDs or undeclared vanished IDs fail. |
 | `agentic-pr-update` | Actions selector `change`; Claude by default. `--vm [--agent codex] [--codex-model <m>] [--codex-signed-in]` uses the shared VM SSH/token/session adapter and updates the existing PR branch; `remote-update-pr-codex` researches locally and dispatches without waiting. Codex options require `--vm --agent codex`. `--operation` takes `change` (default), `fix-ci` or `resolve-conflicts`; `--with-ci-logs` (Actions input `with_ci_logs`). A failed run publishes nothing. The `gh-update-pr` skill dispatches the Actions run from a local session after research and blocking questions. |
 | `agentic-pr-update-fix-ci` | `agentic-pr-update --operation fix-ci` and Actions selector `fix-ci`; runners supply failed logs; local sessions collect them. |
-| `agentic-pr-update-resolve-conflicts` | `agentic-pr-update --operation resolve-conflicts` and Actions selector `resolve-conflicts`; accepts no instruction. Runners start the merge; local sessions start it themselves. |
+| `agentic-pr-update-resolve-conflicts` | `agentic-pr-update --operation resolve-conflicts` and Actions selector `resolve-conflicts`; accepts no instruction. Runners start the merge; local sessions start it themselves. The daily `cron-agentic-pr-update` only selects and dispatches the `resolve-conflicts` or `fix-ci` Actions selector for open PRs ([policy](./ci/agentic-pr-maintenance.md)); it adds no separate task, skill or local entry point. |
 
 ### Maintenance rule
 
