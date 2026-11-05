@@ -16,7 +16,8 @@ import {
 } from './where-is-form';
 import { uploadPreviewImages } from './upload-images';
 import { WhereIsDetailPanel } from './where-is-detail-panel';
-import { useMobileRedirect } from '../../lib/use-mobile-redirect';
+import { useMobileReady } from '../../lib/use-mobile-view';
+import { WhereIsDetailPageContent } from './WhereIsDetailPageContent';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
 const WHERE_IS_ENDPOINT = '/api/where-is';
@@ -260,10 +261,10 @@ function WhereIsPageContent() {
 
 function WhereIsMobileGate() {
   const itemId = useSearchParams().get(WHERE_IS_ITEM_PARAM);
-  const { shouldRender } = useMobileRedirect(
-    itemId ? ROUTES.WHERE_IS_DETAIL(itemId) : null,
-  );
-  return shouldRender ? <WhereIsPageContent /> : null;
+  const { ready, isMobile } = useMobileReady();
+  if (!ready) return null;
+  if (isMobile && itemId) return <WhereIsDetailPageContent id={itemId} />;
+  return <WhereIsPageContent />;
 }
 
 export default function WhereIsPage() {

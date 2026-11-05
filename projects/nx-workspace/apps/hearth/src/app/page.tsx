@@ -20,10 +20,7 @@ import {
 import { WhiteboardEditor } from './whiteboard/components/WhiteboardEditor';
 import { PAGE_TITLES, usePageTitle } from '../lib/page-title';
 import { PAGE_BODY_HEIGHT_CLASS, PAGE_PADDING_CLASS } from '../lib/page-layout';
-import {
-  getFirstMobileChildHref,
-  useMobileRedirect,
-} from '../lib/use-mobile-redirect';
+import { useMobileView } from '../lib/use-mobile-view';
 import { ROUTES } from '../lib/routes';
 import { useAuthHeader, useJsonAuthHeaders } from './hooks/use-auth-headers';
 
@@ -199,8 +196,7 @@ function HomeDashboard() {
 }
 
 export default function HomePage() {
-  const { shouldRender } = useMobileRedirect(
-    getFirstMobileChildHref(ROUTES.HOME),
-  );
-  return shouldRender ? <HomeDashboard /> : null;
+  const { ready, MobileView } = useMobileView(ROUTES.HOME);
+  if (!ready) return null;
+  return MobileView ? <MobileView /> : <HomeDashboard />;
 }
