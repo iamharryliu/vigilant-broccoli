@@ -19,7 +19,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: vb-manager-next
+                name: local-manager-next
                 port:
                   number: 1337
 ---
@@ -118,3 +118,27 @@ spec:
                 name: headlamp
                 port:
                   number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: job-hunt
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: local-platform-redirect-https@kubernetescrd
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        - job-hunt.vigilant-broccoli.app
+      secretName: local-tls
+  rules:
+    - host: job-hunt.vigilant-broccoli.app
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: job-hunt-next
+                port:
+                  number: 4300

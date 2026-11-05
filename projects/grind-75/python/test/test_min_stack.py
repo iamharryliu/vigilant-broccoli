@@ -1,5 +1,5 @@
 import unittest
-from array.min_stack import MinStack
+from arrays.min_stack import MinStack
 
 
 class TestSolution(unittest.TestCase):

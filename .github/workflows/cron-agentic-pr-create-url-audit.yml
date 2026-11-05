@@ -1,8 +1,9 @@
 name: cron-agentic-pr-create-url-audit
 
 # Checks that every public URL has synchronized Upptime entries, pages-index
-# cards and browser quick links for every environment and demo, and opens one
-# conservative PR fixing drift. Same container and credentials as
+# cards and browser quick links for every environment and demo, and every
+# published Docker image its pages-index registry entry and README Containers
+# row, and opens one conservative PR fixing drift. Same container and credentials as
 # `cron-agentic-pr-create-prune`; the local equivalent is
 # `pnpm agentic-pr-create-url-audit`. Registration is a manual checklist per
 # new app, so drift from a missed entry is never revisited without this.

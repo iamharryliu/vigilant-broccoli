@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
-    "@playwright/test": "*",
+    "@playwright/test": "^1.61.1",
     "pdf-lib": "^1.17.1",
     "zod": "^3.25.76"
   }

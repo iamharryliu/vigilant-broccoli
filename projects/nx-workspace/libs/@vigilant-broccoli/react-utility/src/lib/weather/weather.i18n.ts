@@ -7,7 +7,6 @@ const DEFAULT_LOCALE = 'en';
 const en = {
   STATUS: {
     LOADING_WEATHER: 'Checking the sky…',
-    LOADING_PREPARATION: 'Checking what to wear or bring…',
   },
   LOCATION: {
     FALLBACK: 'Your location',

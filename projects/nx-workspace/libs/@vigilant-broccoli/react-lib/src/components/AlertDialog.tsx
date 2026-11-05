@@ -46,20 +46,25 @@ const AlertDialogContent = React.forwardRef<
       <>
         <span hidden ref={theme.anchorRef} />
         <AlertDialogPortal>
-          <AlertDialogOverlay />
-          <AlertDialogPrimitive.Content
-            ref={ref}
-            className={cn(
-              'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-border bg-background p-6 text-foreground shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg',
-              theme.className,
-              fullScreenOnMobile && FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
-              className,
-            )}
-            {...props}
-            style={{ ...theme.style, ...style }}
-          >
-            {children}
-          </AlertDialogPrimitive.Content>
+          {/* The copied theme includes Tailwind's own --tw-* variables (e.g.
+              --tw-translate-x: 0), so it goes on a wrapper the content
+              inherits from. Inline on the content it would override the
+              content's classes and undo the centering translate. */}
+          <div className={theme.className} style={theme.style}>
+            <AlertDialogOverlay />
+            <AlertDialogPrimitive.Content
+              ref={ref}
+              className={cn(
+                'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-border bg-background p-6 text-foreground shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg',
+                fullScreenOnMobile && FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
+                className,
+              )}
+              {...props}
+              style={style}
+            >
+              {children}
+            </AlertDialogPrimitive.Content>
+          </div>
         </AlertDialogPortal>
       </>
     );

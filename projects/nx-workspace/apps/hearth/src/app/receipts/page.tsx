@@ -66,7 +66,7 @@ const ReceiptRow = ({
     </Text>
     <button
       onClick={onDelete}
-      className="shrink-0 h-8 w-8 flex items-center justify-center rounded border border-gray-200 dark:border-gray-700 bg-transparent text-gray-500 hover:text-red-500 cursor-pointer"
+      className="shrink-0 h-8 w-8 flex items-center justify-center rounded border border-border dark:border-gray-700 bg-transparent text-muted-foreground hover:text-red-500 cursor-pointer"
       aria-label={`Delete receipt from ${receipt.merchantName ?? 'unknown company'}`}
     >
       <Trash2 size={15} />
@@ -204,7 +204,7 @@ export default function ReceiptsPage() {
             className={`px-3 py-2 text-sm bg-transparent border-none cursor-pointer border-b-2 ${
               tab === t.id
                 ? 'border-b-blue-500 text-blue-600 font-medium'
-                : 'border-b-transparent text-gray-500'
+                : 'border-b-transparent text-muted-foreground'
             }`}
           >
             {t.label}

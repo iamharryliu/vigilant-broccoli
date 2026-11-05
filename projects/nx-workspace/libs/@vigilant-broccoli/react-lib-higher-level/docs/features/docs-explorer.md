@@ -2,7 +2,7 @@
 
 `libs/@vigilant-broccoli/react-lib-higher-level` — file-tree + search shell for browsing markdown docs. Markdown/checklist rendering and edit mode are layered on top by `DocsViewer`.
 
-The `component-library` sandbox has a Utilities > Docs Explorer page that links to docs.harryliu.dev, shows screenshots of it, and renders this file — it doesn't mount the component, which needs a notes tree to browse.
+The `component-library` sandbox has a Utilities > Docs Explorer page that links to docs.harryliu.dev and renders this file — it doesn't mount the component, which needs a notes tree to browse.
 
 ## Exports
 
@@ -30,12 +30,15 @@ The `component-library` sandbox has a Utilities > Docs Explorer page that links 
 
 ## Behaviour
 
+- When a graph renderer is available, the initial desktop view (768px and wider, matching `md:`) opens the graph unless `urlSync` supplies a selected file. Mobile starts in the file browser. This default is applied after mount for SSR compatibility; resizing and subsequent renders preserve the user’s selection.
+
 - View mode (`markdown` / `checklist`) persists in `localStorage` (`docs-md:view-mode`) independent of which file is open; defaults to markdown
 - Checklist view renders the full document exactly like markdown view — only top-level lists become checkboxes; tables, prose, code, headings pass through unchanged
 - Checkbox state persists per file (`localStorage`, key `docs-checklist:<path>`), keyed by structural position (`list<N>.<itemIndex>`, nested via `.l.`) — not content, so state can go stale if list ordering changes; in aggregate mode (below) the key is a composite of every selected path joined with `|`, so the same set of files always shares one saved state
 - All rendered HTML (both view modes) is sanitized with DOMPurify before injection
 - Fenced ` ```mermaid ` blocks render as diagrams in both view modes (`mermaid-diagrams.ts`): `mermaid` is lazy-loaded on first use, runs with `securityLevel: 'strict'` after DOMPurify, picks its `dark`/`default` theme from the painted background and re-renders when the theme toggles; a syntax error leaves the original code block in place. `docs-md` and `context-md` both get this through `DocsViewer`
 - Relative markdown links are intercepted and routed through `urlSync`/`onNavigate` instead of a real browser navigation — no consuming app has a per-file route, so a plain `<a href>` navigation would 404 or reload the whole app. In-page anchors and cross-file `#heading` targets read and write `window.location.hash`
+- External `http(s)` links open in a new tab when the viewer runs inside an iframe (local-manager's `/embed`): loading them in the frame fails for sites that send `X-Frame-Options`/CSP `frame-ancestors`. Unframed, they navigate normally
 - Headings get GitHub-style slug `id`s (`markdown-config.ts`'s `createHeadingRenderer`, via `github-slugger`) so `[Section](#section)`-style TOC/cross-file anchors resolve — `marked` v5+ no longer assigns heading ids on its own
 - `createHeadingRenderer()` builds a fresh renderer+slugger per parse call rather than a shared/global one — `marked`'s own heading-id extensions track dedup state in module scope, which breaks under React Strict Mode's double-invoked effects/memos (two overlapping parses for the same content stomp on each other's dedup reset) and under any real overlapping parse (e.g. switching files before the previous parse settles)
 - Both apps' `urlSync.set()` must preserve `window.location.hash` when rebuilding the URL — it's easy to accidentally drop the hash (e.g. rebuilding the URL from just the query params) since `DocsExplorer` calls `urlSync.set()` on initial mount too, even when just echoing back the file it already read from the URL

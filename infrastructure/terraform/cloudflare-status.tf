@@ -1,8 +1,8 @@
-# status.harryliu.dev, career.harryliu.dev and deployments.harryliu.dev: a
+# status, career, deployments and games hostnames share a
 # Cloudflare Worker that reverse-proxies the pages-index GitHub Pages
 # deployment at projects.harryliu.dev. The app renders StatusPage (status
 # host), CareerPage (career host) or DeploymentsPage (deployments host) at the
-# root when it runs on that hostname; the Worker only
+# root (GamesPage on the games host); the Worker only
 # carries the HTML and static assets, preserving upstream status codes and
 # content types.
 # Upptime's generated history site is separate, at uptime.harryliu.dev.
@@ -64,5 +64,12 @@ resource "cloudflare_workers_custom_domain" "deployments" {
   account_id = var.cloudflare_account_id
   zone_id    = var.cloudflare_zone_id
   hostname   = var.deployments_domain
+  service    = cloudflare_workers_script.status_proxy.script_name
+}
+
+resource "cloudflare_workers_custom_domain" "games" {
+  account_id = var.cloudflare_account_id
+  zone_id    = var.cloudflare_zone_id
+  hostname   = var.games_domain
   service    = cloudflare_workers_script.status_proxy.script_name
 }

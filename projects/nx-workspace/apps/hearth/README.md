@@ -22,6 +22,7 @@ Shared life for homes, communes, and communities.
 - Internal libs
   - `common-js`
   - `common-node`
+  - `llm-schemas`
   - `react-lib`
   - `react-lib-auth`
   - `react-lib-calendar`

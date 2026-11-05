@@ -1,10 +1,16 @@
 import { PROJECT_LINK } from '@harry/personal';
 
 export const VB_APP_URL = {
+  GAMES: { NAME: 'Games', URL: 'https://games.harryliu.dev/' },
   COMPONENT_LIBRARY: {
     NAME: 'Component Library',
     URL: 'https://components.harryliu.dev/',
     STAGING_URL: 'https://staging-component-library.pages.dev/',
+  },
+  TEXT_TOOLS: {
+    NAME: 'Text Tools',
+    URL: 'https://text-tools.harryliu.dev/',
+    STAGING_URL: 'https://staging-text-tools-ui.pages.dev/',
   },
   UTILITIES: {
     NAME: 'Utilities',
@@ -51,10 +57,20 @@ export const VB_APP_URL = {
     URL: 'https://balloono.harryliu.dev/',
     STAGING_URL: 'https://staging-balloono.vercel.app/',
   },
+  GRAVITY_GUY: {
+    NAME: 'Gravity Guy',
+    URL: 'https://gravity-guy.harryliu.dev/',
+    STAGING_URL: 'https://staging-gravity-guy.vercel.app/',
+  },
   DOCS: {
     NAME: 'Docs',
     URL: 'https://docs.harryliu.dev/',
     STAGING_URL: 'https://staging-docs-md.pages.dev/',
+  },
+  GRIND_75: {
+    NAME: 'Grind 75',
+    URL: 'https://grind-75.harryliu.dev/',
+    STAGING_URL: 'https://staging-grind-75-react.pages.dev/',
   },
   CONTEXT: {
     NAME: 'Agent Context',
@@ -89,6 +105,10 @@ export const VB_APP_URL = {
   EMPLOYEE_HANDLER_DEMO: {
     NAME: 'Employee Handler Demo',
     URL: 'https://demo-employee-handler-ui.vercel.app/',
+  },
+  JOB_HUNT_DEMO: {
+    NAME: 'Job Hunt Demo',
+    URL: 'https://demo-job-hunt-next.vercel.app/',
   },
   OFFICE_PRESENCE_DEMO: {
     NAME: 'Office Presence Demo',

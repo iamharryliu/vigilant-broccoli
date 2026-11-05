@@ -81,6 +81,7 @@ export function NavbarSection() {
                 loading="eager"
                 fetchPriority="high"
                 decoding="sync"
+                // eslint-disable-next-line vigilant-broccoli/require-dark-variant -- white disc keeps the logo legible on the pink header in both themes
                 className="inline-block object-contain h-12 bg-white rounded-full p-1 border-4 border-pink-400"
               />
             </Link>

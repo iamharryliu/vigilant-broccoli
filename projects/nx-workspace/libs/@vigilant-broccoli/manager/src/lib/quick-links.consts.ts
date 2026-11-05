@@ -8,19 +8,21 @@ import {
   LINK_GROUP_SUBGROUP,
   MAC_OS_APP,
   OPENAI_LINK,
+  PERSONAL_SITE_LINK,
   PROTON_LINK,
   UI_APP_LINKS,
   UTILITY_URL,
   VB_LINKS,
   toQuickLinks,
 } from '@vigilant-broccoli/public-links';
-import { VB_GITHUB_WORKFLOWS_URL } from '@vigilant-broccoli/infrastructure';
+import { EMAIL_LINK, PROJECT_LINK, SOCIAL_LINK } from '@harry/personal';
 import {
   CLOUDFLARE_ACCOUNT_LINK,
   FLYIO_ACCOUNT_LINK,
   GCP_PROJECT_LINK,
   LOCAL_HOST_URL,
   NPM_USER_LINK,
+  RENDER_ACCOUNT_LINK,
   ROBOFLOW_WORKSPACE_LINK,
   SANITY_ORG_LINK,
   SLACK_WORKSPACE_LINK,
@@ -30,6 +32,11 @@ import {
 import { ACCESS_GATED_URL } from './access-gated.consts';
 import { PERSONAL_ACCOUNT_LINK, PERSONAL_URL } from './personal-account.consts';
 import { JOURNAL_PATH, VB_REPO_PATH } from '@harry/private';
+import { VB_GITHUB_WORKFLOWS_URL } from '@vigilant-broccoli/infrastructure';
+import {
+  AGENTIC_PHASES,
+  DISPATCHABLE_WORKFLOW_NAMES,
+} from './agentic-workflows';
 
 const DEV_LINKS: QuickLink[] = [
   ...toQuickLinks(LINK_GROUP_SUBGROUP.DEV, [
@@ -39,6 +46,8 @@ const DEV_LINKS: QuickLink[] = [
     NPM_USER_LINK.TOKENS,
     FLYIO_ACCOUNT_LINK.USAGE,
     FLYIO_ACCOUNT_LINK.STATUS,
+    RENDER_ACCOUNT_LINK.BILLING,
+    RENDER_ACCOUNT_LINK.SETTINGS,
     CLOUDFLARE_ACCOUNT_LINK.DASHBOARD,
     CLOUDFLARE_ACCOUNT_LINK.BILLING,
     CLOUDFLARE_ACCOUNT_LINK.USAGE,
@@ -58,10 +67,13 @@ const DEV_LINKS: QuickLink[] = [
   ]),
   ...toQuickLinks(LINK_GROUP_SUBGROUP.UTILITY, Object.values(LOCAL_HOST_URL)),
   ...toQuickLinks(LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI, [
-    ...Object.values(ACCESS_GATED_URL),
+    ...Object.values({
+      ...ACCESS_GATED_URL,
+      WEB_TERMINAL: { ...ACCESS_GATED_URL.WEB_TERMINAL, EMBED: true },
+    }),
     {
-      NAME: `${ACCESS_GATED_URL.VB_MANAGER_NEXT_MOBILE.NAME} (Staging)`,
-      URL: ACCESS_GATED_URL.VB_MANAGER_NEXT_MOBILE.STAGING_URL,
+      NAME: `${ACCESS_GATED_URL.MOBILE_MANAGER_NEXT.NAME} (Staging)`,
+      URL: ACCESS_GATED_URL.MOBILE_MANAGER_NEXT.STAGING_URL,
     },
   ]),
 ];
@@ -166,8 +178,26 @@ const UTILITY_LINKS: QuickLink[] = [
   ]),
 ];
 
+const PERSONAL_LINKS: QuickLink[] = [
+  ...toQuickLinks(LINK_GROUP_SUBGROUP.PERSONAL, [
+    { NAME: 'Personal Website', URL: PERSONAL_SITE_LINK.INDEX.URL },
+    PERSONAL_SITE_LINK.LINKS,
+    PERSONAL_SITE_LINK.CONTACT,
+    {
+      NAME: 'Email Signature',
+      URL: `${PERSONAL_SITE_LINK.INDEX.URL}assets/email-signature/index.html`,
+    },
+    EMAIL_LINK,
+    SOCIAL_LINK.GITHUB,
+    { ...PROJECT_LINK.SOFTWARE_PROJECTS, EMBED: true },
+    SOCIAL_LINK.INSTAGRAM_PRETTYDAMNTIRED,
+  ]),
+];
+
 const CAREER_LINKS: QuickLink[] = [
   ...toQuickLinks(LINK_GROUP_SUBGROUP.CAREER, [
+    { NAME: 'LinkedIn Profile', URL: SOCIAL_LINK.LINKEDIN.URL },
+    { ...PERSONAL_SITE_LINK.RESUME, EMBED: true },
     { NAME: 'LinkedIn', URL: 'https://www.linkedin.com' },
   ]),
 ];
@@ -246,39 +276,25 @@ const HOME_LINKS: QuickLink[] = [
   ...toQuickLinks(LINK_GROUP_SUBGROUP.HOME, [PERSONAL_URL.GROCERIES]),
 ];
 
-const AGENTIC_WORKFLOW = {
-  PR_CREATE: {
-    NAME: 'VB - Manual Agentic PR Create',
-    FILE: 'manual-agentic-pr-create.yml',
-  },
-  PR_UPDATE: {
-    NAME: 'VB - Manual Agentic PR Update',
-    FILE: 'manual-agentic-pr-update.yml',
-  },
-  PR_CREATE_AUDIT: {
-    NAME: 'VB - Cron Agentic PR Create Audit',
-    FILE: 'cron-agentic-pr-create-audit.yml',
-  },
-  PR_CREATE_RND: {
-    NAME: 'VB - Manual Agentic PR Create R&D',
-    FILE: 'manual-agentic-pr-create-rnd.yml',
-  },
-  PR_CREATE_TODO: {
-    NAME: 'VB - Manual Agentic PR Create TODO',
-    FILE: 'manual-agentic-pr-create-todo.yml',
-  },
-  PR_CREATE_SMOKE: {
-    NAME: 'VB - Manual Agentic PR Create Smoke',
-    FILE: 'manual-agentic-pr-create-smoke.yml',
-  },
-} as const;
+const AGENTIC_LINKS: QuickLink[] = AGENTIC_PHASES.flatMap(({ workflows }) =>
+  workflows.map(({ name, url }) => ({
+    label: name,
+    target: url,
+    type: OPEN_TYPE.BROWSER,
+    subgroup: LINK_GROUP_SUBGROUP.AGENTIC,
+  })),
+);
 
-const AGENTIC_LINKS = Object.values(AGENTIC_WORKFLOW).map(({ NAME, FILE }) => ({
-  label: NAME,
-  target: `${VB_GITHUB_WORKFLOWS_URL}/${FILE}`,
+const AGENTIC_URLS = new Set(
+  AGENTIC_PHASES.flatMap(({ workflows }) => workflows.map(({ url }) => url)),
+);
+
+const WORKFLOW_LINKS: QuickLink[] = DISPATCHABLE_WORKFLOW_NAMES.map(name => ({
+  label: name,
+  target: `${VB_GITHUB_WORKFLOWS_URL}/${name}.yml`,
   type: OPEN_TYPE.BROWSER,
-  subgroup: LINK_GROUP_SUBGROUP.AGENTIC,
-}));
+  subgroup: LINK_GROUP_SUBGROUP.WORKFLOWS,
+})).filter(({ target }) => !AGENTIC_URLS.has(target));
 
 export type { QuickLink };
 
@@ -286,9 +302,11 @@ export const EXTERNAL_QUICK_LINKS: QuickLink[] = [
   ...UI_APP_LINKS,
   ...VB_LINKS,
   ...AGENTIC_LINKS,
+  ...WORKFLOW_LINKS,
   ...GENERIC_DEV_LINKS,
   ...DEV_LINKS,
   ...UTILITY_LINKS,
+  ...PERSONAL_LINKS,
   ...CAREER_LINKS,
   ...MESSAGING_LINKS,
   ...LEISURE_LINKS,

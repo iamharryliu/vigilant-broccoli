@@ -12,8 +12,8 @@ export const ACCESS_GATED_URL = {
     NAME: 'Git',
     URL: 'https://git.harryliu.dev/',
   },
-  VB_MANAGER_NEXT_MOBILE: {
-    NAME: 'VB Manager Mobile',
+  MOBILE_MANAGER_NEXT: {
+    NAME: 'Mobile Manager Next',
     URL: 'https://manager.harryliu.dev/login',
     STAGING_URL: 'https://staging-vb-manager-next-mobile.vercel.app/login',
   },

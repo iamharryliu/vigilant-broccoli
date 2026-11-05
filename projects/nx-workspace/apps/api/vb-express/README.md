@@ -12,12 +12,13 @@
 - Build Tool - webpack
 - External libs
   - better-auth
-  - SQLite
+  - node-postgres
   - Supabase JS
 - Internal libs
   - `common-js`
   - `common-node`
   - `fastify`
+  - `infrastructure`
   - `@harry/personal`
   - `llm-schemas`
   - `messaging`

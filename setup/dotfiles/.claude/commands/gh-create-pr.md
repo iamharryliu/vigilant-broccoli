@@ -1,0 +1,1 @@
+../../agent-skills/gh-create-pr/SKILL.md

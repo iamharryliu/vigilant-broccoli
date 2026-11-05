@@ -28,7 +28,7 @@ export const ImageCarouselDemo = () => {
         />
       </DemoSection>
       <DemoSection title="Image Carousel Dialog">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted-foreground">
           Click a filmstrip thumbnail to open the carousel at that image.
         </p>
         <ImageCarouselDialog

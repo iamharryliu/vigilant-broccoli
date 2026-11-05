@@ -130,7 +130,7 @@ export function HomeProjectList({
               data-title={project.title}
               data-description={project.description ?? ''}
               data-category={project.category}
-              className={`flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-white transition-colors ${onItemClick ? 'cursor-pointer hover:bg-gray-50' : 'cursor-grab active:cursor-grabbing hover:border-gray-300'}`}
+              className={`flex items-center justify-between p-3 rounded-lg border border-border bg-card transition-colors ${onItemClick ? 'cursor-pointer hover:bg-muted' : 'cursor-grab active:cursor-grabbing hover:border-muted-foreground'}`}
               onClick={onItemClick ? () => onItemClick(project) : undefined}
             >
               <div className="flex items-center gap-2 min-w-0">

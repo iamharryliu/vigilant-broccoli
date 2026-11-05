@@ -16,6 +16,7 @@ CODEX_MODEL=""
 PROMPT=""
 LOCAL=0
 VM=0
+VM_CODEX_SIGNED_IN=0
 PUBLISH=0
 OLLAMA_MODEL=${OLLAMA_MODEL:-qwen3-coder:30b}
 OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
@@ -28,6 +29,10 @@ while [ $# -gt 0 ]; do
       ;;
     --vm)
       VM=1
+      shift
+      ;;
+    --codex-signed-in)
+      VM_CODEX_SIGNED_IN=1
       shift
       ;;
     --foreground)
@@ -66,8 +71,12 @@ while [ $# -gt 0 ]; do
 done
 
 [ "$AGENT_RUNNER" != ollama ] || LOCAL=1
-if [ "$VM" = 1 ] && { [ "$LOCAL" = 1 ] || [ "$AGENT_RUNNER" != claude ]; }; then
-  echo "ERROR: --vm runs Claude only; it cannot be combined with --local or --agent codex|ollama." >&2
+if [ "$VM" = 1 ] && { [ "$LOCAL" = 1 ] || [ "$AGENT_RUNNER" = ollama ]; }; then
+  echo "ERROR: --vm runs Claude or Codex only; it cannot be combined with --local or --agent ollama." >&2
+  exit 1
+fi
+if [ "$VM_CODEX_SIGNED_IN" = 1 ] && { [ "$VM" != 1 ] || [ "$AGENT_RUNNER" != codex ]; }; then
+  echo "ERROR: --codex-signed-in requires --vm --agent codex; the dev sandbox already uses its own Codex login." >&2
   exit 1
 fi
 if [ "$LOCAL" = 1 ]; then
@@ -93,25 +102,24 @@ if [ -n "$PROMPT" ] && [ ${#IDS[@]} -gt 0 ]; then
   exit 1
 fi
 if [ -z "$PROMPT" ] && [ ${#IDS[@]} -eq 0 ]; then
-  echo "Usage: pnpm agentic-pr-create [--vm | --local [--publish] [--ollama-model <model>]] [--foreground] [--agent claude|codex|ollama] [--model <claude-model>] [--codex-model <codex-model>] (<TODO_ID> [TODO_ID...] | --prompt \"<task description>\")" >&2
+  echo "Usage: pnpm agentic-pr-create [--vm [--codex-signed-in] | --local [--publish] [--ollama-model <model>]] [--foreground] [--agent claude|codex|ollama] [--model <claude-model>] [--codex-model <codex-model>] (<TODO_ID> [TODO_ID...] | --prompt \"<task description>\")" >&2
   exit 1
 fi
 
 if [ "$VM" = 1 ]; then
-  exec bash "$SCRIPT_DIR/solve-vm.sh" "$MODEL" "$PROMPT" ${IDS[@]+"${IDS[@]}"}
+  VM_CODEX_SIGNED_IN="$VM_CODEX_SIGNED_IN" exec bash "$SCRIPT_DIR/solve-vm.sh" "$AGENT_RUNNER" "$MODEL" "$CODEX_MODEL" "$PROMPT" ${IDS[@]+"${IDS[@]}"}
 fi
 if [ "$LOCAL" = 1 ]; then
   exec bash "$SCRIPT_DIR/solve-local.sh" "$PUBLISH" "$OLLAMA_MODEL" "$OLLAMA_BASE_URL" "$PROMPT" ${IDS[@]+"${IDS[@]}"}
 fi
 
-# Splits a runner log into one record per pull request (each starts at its
-# PR_TITLE:: marker) and appends one JSON record per PR to $2, plus one per
-# increment that was planned but not published, which the CI email step renders
-# into styled diffs. JSON Lines keeps each diff intact — it carries newlines,
+# Reads the runner log's pull request record (it starts at the PR_TITLE::
+# marker) and appends one JSON record per PR to $2, which the CI email step
+# renders into styled diffs. JSON Lines keeps each diff intact — it carries newlines,
 # markdown and HTML metacharacters that no flat text format survives.
 write_pr_details() {
   local log_file=$1 out_file=$2 label=${3:-}
-  local split_dir record title url state base depends summary diff
+  local split_dir record title url state summary diff
   split_dir=$(mktemp -d)
   awk -v dir="$split_dir" '/^PR_TITLE::/ { n++ } n { print > sprintf("%s/%03d.rec", dir, n) }' "$log_file"
   for record in "$split_dir"/*.rec; do
@@ -119,8 +127,6 @@ write_pr_details() {
     title=$(grep -m1 '^PR_TITLE::' "$record" | sed 's/^PR_TITLE:://' || true)
     url=$(grep -m1 '^PR_URL::' "$record" | sed 's/^PR_URL:://' || true)
     state=$(grep -m1 '^PR_STATE::' "$record" | sed 's/^PR_STATE:://' || true)
-    base=$(grep -m1 '^PR_BASE::' "$record" | sed 's/^PR_BASE:://' || true)
-    depends=$(grep -m1 '^PR_DEPENDS_ON::' "$record" | sed 's/^PR_DEPENDS_ON:://' || true)
     summary=$(awk '/^PR_SUMMARY_BEGIN$/{f=1;next} /^PR_SUMMARY_END$/{f=0} f' "$record")
     diff=$(awk '/^PR_DIFF_BEGIN$/{f=1;next} /^PR_DIFF_END$/{f=0} f' "$record")
     # --rawfile, not --arg: Linux caps a single argv string at 128 KiB and a large
@@ -130,15 +136,11 @@ write_pr_details() {
       --arg title "$title" \
       --arg url "$url" \
       --arg state "${state:-created}" \
-      --arg base "$base" \
-      --arg dependsOn "$depends" \
       --rawfile summary <(printf '%s' "$summary") \
       --rawfile diff <(printf '%s' "$diff") \
-      '{kind: "pr", "label": $runlabel, title: $title, url: $url, state: $state, base: $base, dependsOn: $dependsOn, summary: $summary, diff: $diff}' >> "$out_file"
+      '{kind: "pr", "label": $runlabel, title: $title, url: $url, state: $state, summary: $summary, diff: $diff}' >> "$out_file"
   done
   rm -rf "$split_dir"
-  { grep '^INCREMENT_UNPUBLISHED::' "$log_file" 2>/dev/null || true; } | sed 's/^INCREMENT_UNPUBLISHED:://' \
-    | jq -c --arg runlabel "$label" '. + {kind: "unpublished", "label": $runlabel}' >> "$out_file"
 }
 
 # A workstation Codex solve runs in the long-lived dev sandbox, where Codex is
@@ -241,7 +243,7 @@ fi
 DEV_SANDBOX_SCRIPT='set -euo pipefail
 WORK=$(mktemp -d /tmp/vb-solve.XXXXXX)
 trap '"'"'rm -rf "$WORK"'"'"' EXIT
-export META_FILE="$WORK/solve-meta.json" INC_PLAN_FILE="$WORK/increment-plan.json" CODEX_LAST_MESSAGE_FILE="$WORK/codex-last-message.txt"
+export META_FILE="$WORK/solve-meta.json" CODEX_LAST_MESSAGE_FILE="$WORK/codex-last-message.txt"
 mkdir "$WORK/bin"
 tar --warning=no-unknown-keyword -xf - -C "$WORK/bin"
 git clone --quiet "$(git -C "$HOME/vigilant-broccoli" remote get-url origin)" "$WORK/repo"
@@ -251,7 +253,7 @@ REPO_DIR="$WORK/repo" bash "$WORK/bin/solve-todo-runner.sh" "$@"'
 run_solver() {
   local name=$1 flag=$2 value=$3
   if [ "$DEV_SANDBOX" = 1 ]; then
-    tar -C "$SCRIPT_DIR" -cf - solve-todo-runner.sh pr-increments.sh commit-subject.sh no-changes.sh \
+    tar -C "$SCRIPT_DIR" -cf - solve-todo-runner.sh publish-pr.sh commit-subject.sh no-changes.sh \
       | docker exec -i -u agent "${DOCKER_ENV_ARGS[@]}" "$DEV_SANDBOX_CONTAINER" \
         bash -c "$DEV_SANDBOX_SCRIPT" _ "$flag" "$value"
   else
@@ -317,13 +319,8 @@ for i in "${!PIDS[@]}"; do
   # diff too, and a solve that adds a PR link to a note would otherwise look like
   # a PR this run opened.
   PR_URLS=$(grep '^PR_URL::' "$LOG_DIR/solve-${id}.log" 2>/dev/null | sed 's/^PR_URL:://' || true)
-  UNPUBLISHED=$(grep -c '^INCREMENT_UNPUBLISHED::' "$LOG_DIR/solve-${id}.log" 2>/dev/null || true)
   if [ -n "$PR_URLS" ]; then
     while IFS= read -r pr_url; do echo "✓ TODO ${id}: $pr_url"; done <<<"$PR_URLS"
-    if [ "${UNPUBLISHED:-0}" -gt 0 ]; then
-      FAILED=1
-      echo "✗ TODO ${id}: ${UNPUBLISHED} planned increment(s) were not published (see $LOG_DIR/solve-${id}.log)" >&2
-    fi
   elif grep -qx "$NO_CHANGES_MARKER" "$LOG_DIR/solve-${id}.log"; then
     echo "– TODO ${id}: no changes made — $(no_changes_reason_in_log "$LOG_DIR/solve-${id}.log")"
   else

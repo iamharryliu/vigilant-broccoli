@@ -14,7 +14,7 @@ PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
 FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 
 cd "$REPO_DIR"
-SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create-todo-audit/SKILL.md")
+SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/local-create-pr-todo-audit/SKILL.md")
 # shellcheck source=no-changes.sh
 . "$REPO_DIR/infrastructure/agent-sandbox/no-changes.sh"
 
@@ -49,8 +49,15 @@ $NO_CHANGES_FIELD
 EOF
 )
 
-claude -p "$PROMPT" --dangerously-skip-permissions --model "$MODEL" \
+permission_args=(--permission-mode auto)
+if [ "${SOLVE_PERMISSION_MODE:-auto}" = bypass ]; then
+  permission_args=(--dangerously-skip-permissions)
+fi
+
+claude -p "$PROMPT" "${permission_args[@]}" --model "$MODEL" \
   --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
+
+normalize_meta "$META_FILE"
 
 git checkout "$BRANCH"
 [ "$(git rev-parse HEAD)" = "$BASE_SHA" ] || git reset --soft "$BASE_SHA"
@@ -117,7 +124,7 @@ echo "$TRAILER" | grep -Eqi '^co-authored-by: .+ <.+>$' || TRAILER="$FALLBACK_TR
 bash "$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh"
 
 git add TODO.md
-git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
+SKIP=$SKIP_COMMIT_HOOKS git commit -m "$COMMIT_SUBJECT" -m "$TRAILER"
 git push -u origin "$BRANCH"
 
 if [ -n "${GITHUB_ACTIONS:-}" ]; then

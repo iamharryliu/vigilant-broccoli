@@ -118,7 +118,7 @@ export default function HomeCalendarPage({
       <div className="flex items-center gap-4">
         <button
           onClick={() => router.push(`${ROUTES.HOMES}/${id}`)}
-          className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
+          className="text-muted-foreground hover:text-foreground text-sm cursor-pointer"
         >
           ← Home
         </button>

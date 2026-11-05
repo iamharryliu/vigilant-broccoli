@@ -1,4 +1,3 @@
-# Definition for a binary tree node.
 from typing import Optional
 
 

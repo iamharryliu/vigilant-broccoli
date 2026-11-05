@@ -45,7 +45,7 @@ export const CalendarListDemo = () => {
     <div className="flex flex-col gap-8">
       <DemoSection title="Calendar List View">
         <CalendarListView events={events} onEventClick={setClickedId} />
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted-foreground">
           {clickedId ? `Clicked ${clickedId}` : 'Click an event'}
         </p>
       </DemoSection>

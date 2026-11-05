@@ -305,15 +305,19 @@ export function GameBoard({
   match,
   localPlayerId,
   label,
+  playerOpacity,
 }: {
   match: MatchState;
   localPlayerId: string;
   label: string;
+  playerOpacity?: Record<string, number>;
 }) {
   const { appearance } = useTheme();
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const matchRef = useRef(match);
   matchRef.current = match;
+  const opacityRef = useRef(playerOpacity);
+  opacityRef.current = playerOpacity;
   const positionsRef = useRef(new Map<string, Position>());
 
   useEffect(() => {
@@ -359,6 +363,8 @@ export function GameBoard({
                 y: shown.y + (target.y - shown.y) * ease,
               };
           positionsRef.current.set(player.id, next);
+          context.save();
+          context.globalAlpha = opacityRef.current?.[player.id] ?? 1;
           drawPlayer(
             context,
             player,
@@ -367,6 +373,7 @@ export function GameBoard({
             palette,
             player.id === localPlayerId,
           );
+          context.restore();
         });
       // Balloons go over players so a freshly dropped one is visible under
       // the player who is still standing on it.

@@ -61,8 +61,3 @@ export const toLocalWeather = (
     })),
   };
 };
-
-export const omitForecast = ({
-  forecast: _forecast,
-  ...today
-}: LocalWeather): LocalWeather => today;

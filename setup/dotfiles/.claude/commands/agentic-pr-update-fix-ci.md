@@ -1,1 +1,0 @@
-../../agent-skills/agentic-pr-update-fix-ci/SKILL.md

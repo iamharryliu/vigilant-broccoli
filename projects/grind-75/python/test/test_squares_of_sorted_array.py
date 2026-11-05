@@ -1,5 +1,5 @@
 import unittest
-from array.squares_of_asorted_array import Solution
+from arrays.squares_of_asorted_array import Solution
 
 
 class TestSolution(unittest.TestCase):

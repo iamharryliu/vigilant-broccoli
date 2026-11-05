@@ -20,5 +20,4 @@ export type PublishErrorCode =
   (typeof PUBLISH_ERROR_CODES)[keyof typeof PUBLISH_ERROR_CODES];
 
 export type PublishAck =
-  | { ok: true }
-  | { ok: false; code: PublishErrorCode; issues?: unknown };
+  { ok: true } | { ok: false; code: PublishErrorCode; issues?: unknown };

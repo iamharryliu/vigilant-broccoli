@@ -46,12 +46,12 @@ interface MemberRowProps {
 function MemberRow({ username, lat, lng, isSelf }: MemberRowProps) {
   const { t } = useTranslation();
   return (
-    <div className="flex items-center justify-between rounded border border-gray-200 px-3 py-2 text-sm">
+    <div className="flex items-center justify-between rounded border border-border px-3 py-2 text-sm">
       <span className="font-medium truncate">
         {isSelf ? t('LOCATOR.YOU_LABEL') : username}
       </span>
       <span className="flex items-center gap-2 shrink-0">
-        <span className="text-gray-500">
+        <span className="text-muted-foreground">
           {lat.toFixed(COORD_PRECISION)}, {lng.toFixed(COORD_PRECISION)}
         </span>
         <a
@@ -70,9 +70,9 @@ function MemberRow({ username, lat, lng, isSelf }: MemberRowProps) {
 function ViewingRow({ username }: { username: string }) {
   const { t } = useTranslation();
   return (
-    <div className="flex items-center justify-between rounded border border-gray-200 px-3 py-2 text-sm">
+    <div className="flex items-center justify-between rounded border border-border px-3 py-2 text-sm">
       <span className="font-medium truncate">{username}</span>
-      <span className="text-gray-400 text-xs italic shrink-0">
+      <span className="text-muted-foreground text-xs italic shrink-0">
         {t('LOCATOR.VIEWING')}
       </span>
     </div>
@@ -107,7 +107,7 @@ function GeoErrorHelp({ error }: { error: string }) {
         <summary className="text-blue-600 cursor-pointer text-xs">
           {t('LOCATION.FIX_SETTINGS')}
         </summary>
-        <ul className="mt-2 list-disc pl-5 text-gray-600 text-xs space-y-1">
+        <ul className="mt-2 list-disc pl-5 text-muted-foreground text-xs space-y-1">
           {LOCATION_HELP_STEP_KEYS.map(key => (
             <li key={key}>{t(key)}</li>
           ))}
@@ -145,7 +145,7 @@ export function LocatorApp({ homeId, userId, email }: LocatorAppProps) {
         </div>
       )}
 
-      <div className="p-4 flex flex-col gap-3 border-t border-gray-200">
+      <div className="p-4 flex flex-col gap-3 border-t border-border">
         <ConnectionBanner status={connectionStatus} />
 
         <div className="flex items-center justify-end">
@@ -166,7 +166,7 @@ export function LocatorApp({ homeId, userId, email }: LocatorAppProps) {
 
         <div className="flex flex-col gap-2 max-h-48 overflow-y-auto">
           {liveUsers.length === 0 ? (
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-muted-foreground">
               {t('LOCATOR.MEMBERS_EMPTY')}
             </p>
           ) : (

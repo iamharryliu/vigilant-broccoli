@@ -108,3 +108,6 @@ setup/dotfiles/.claude/skills/*
 # .vercel/.env.production.local there carrying a live VERCEL_OIDC_TOKEN.
 # projects/nx-workspace/.gitignore doesn't cover it at this level.
 .vercel/
+
+# screenshot:themes output
+projects/nx-workspace/screenshots/

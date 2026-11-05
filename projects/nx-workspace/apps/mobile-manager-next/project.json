@@ -1,0 +1,125 @@
+{
+  "name": "mobile-manager-next",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/mobile-manager-next",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": [
+        "^build",
+        {
+          "target": "generate-agentic-workflows",
+          "projects": ["@vigilant-broccoli/manager"]
+        }
+      ],
+      "inputs": [
+        "default",
+        "^default",
+        {
+          "externalDependencies": ["next"]
+        },
+        {
+          "dependentTasksOutputFiles": "**/*.d.ts",
+          "transitive": true
+        },
+        {
+          "dependentTasksOutputFiles": "**/agentic-workflows.json"
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/apps/mobile-manager-next/.next/!(cache)/**/*",
+        "{workspaceRoot}/dist/apps/mobile-manager-next/.next/!(cache)"
+      ],
+      "options": {
+        "cwd": "apps/mobile-manager-next",
+        "tty": false,
+        "command": "next build --webpack"
+      },
+      "configurations": {
+        "development": {}
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/mobile-manager-next/.env.example 'cd apps/mobile-manager-next && next dev --webpack --port 3000'",
+        "env": {
+          "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev"
+        }
+      },
+      "dependsOn": [
+        {
+          "target": "generate-agentic-workflows",
+          "projects": ["@vigilant-broccoli/manager"]
+        }
+      ]
+    },
+    "serve:no-vault": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
+      "options": {
+        "cwd": "apps/mobile-manager-next",
+        "command": "next dev --webpack --port 3000"
+      },
+      "configurations": {
+        "development": {},
+        "production": {}
+      },
+      "dependsOn": [
+        {
+          "target": "generate-agentic-workflows",
+          "projects": ["@vigilant-broccoli/manager"]
+        }
+      ]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "dependsOn": [
+        {
+          "target": "generate-agentic-workflows",
+          "projects": ["@vigilant-broccoli/manager"]
+        }
+      ]
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "VERCEL_PROJECT_ID=staging-vb-manager-next-mobile VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts mobile-manager-next staging"
+      }
+    },
+    "deploy:production": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "VERCEL_PROJECT_ID=production-vb-manager-next-mobile VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts mobile-manager-next production"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": [
+        {
+          "target": "generate-agentic-workflows",
+          "projects": ["@vigilant-broccoli/manager"]
+        }
+      ],
+      "inputs": [
+        "default",
+        "^default",
+        {
+          "externalDependencies": ["typescript"]
+        },
+        {
+          "dependentTasksOutputFiles": "**/agentic-workflows.json"
+        }
+      ],
+      "options": {
+        "cwd": "apps/mobile-manager-next",
+        "command": "tsc --noEmit -p tsconfig.json"
+      }
+    }
+  }
+}

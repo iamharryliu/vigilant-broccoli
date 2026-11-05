@@ -297,6 +297,13 @@ export const FLYIO_LINK = {
   },
 } as const;
 
+export const RENDER_LINK = {
+  DASHBOARD: {
+    NAME: 'Render Dashboard',
+    URL: 'https://dashboard.render.com/',
+  },
+} as const;
+
 export const VERCEL_LINK = {
   DASHBOARD: {
     NAME: 'Vercel Dashboard',

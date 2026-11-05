@@ -1,0 +1,1 @@
+../../agent-skills/local-create-pr-prune/SKILL.md

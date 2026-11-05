@@ -159,8 +159,8 @@ export default function DocsPage() {
               onClick={() => setCategoryFilter(cat)}
               className={`px-3 py-1 rounded-full text-sm border transition-colors cursor-pointer ${
                 categoryFilter === cat
-                  ? 'bg-gray-900 text-white border-gray-900'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'
+                  ? 'bg-foreground text-background border-foreground'
+                  : 'bg-card text-muted-foreground border-border hover:border-muted-foreground'
               }`}
             >
               {cat}
@@ -179,7 +179,7 @@ export default function DocsPage() {
         {filtered.map(doc => (
           <div
             key={doc.id}
-            className="p-4 rounded-lg border border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer"
+            className="p-4 rounded-lg border border-border bg-card hover:border-muted-foreground hover:bg-muted transition-colors cursor-pointer"
             onClick={() => router.push(ROUTES.DOCS_DETAIL(doc.id))}
           >
             <div className="flex justify-between items-center gap-3">
@@ -210,11 +210,11 @@ export default function DocsPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={e => e.stopPropagation()}
-                        className="flex items-center gap-1 px-2 py-1 rounded border border-gray-200 hover:border-gray-400 text-sm text-gray-700 transition-colors"
+                        className="flex items-center gap-1 px-2 py-1 rounded border border-border hover:border-muted-foreground text-sm text-foreground transition-colors"
                       >
                         <span>{FILE_ICONS[f.mimeType] ?? '📎'}</span>
                         <span className="max-w-32 truncate">{f.name}</span>
-                        <span className="text-gray-400 text-xs">
+                        <span className="text-muted-foreground text-xs">
                           ({formatBytes(f.sizeBytes)})
                         </span>
                       </a>

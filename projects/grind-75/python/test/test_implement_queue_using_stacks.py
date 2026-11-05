@@ -1,5 +1,5 @@
 import unittest
-from array.implement_queue_using_stacks import MyQueue
+from arrays.implement_queue_using_stacks import MyQueue
 
 
 class TestSolution(unittest.TestCase):

@@ -1,0 +1,14 @@
+{
+  "basics": {
+    "name": "",
+    "title": "",
+    "email": "",
+    "phone": "",
+    "location": "",
+    "links": []
+  },
+  "summary": "",
+  "workExperience": [],
+  "projectExperience": [],
+  "skills": { "technical": [] }
+}

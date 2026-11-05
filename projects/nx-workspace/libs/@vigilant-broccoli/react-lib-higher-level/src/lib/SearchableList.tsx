@@ -1,9 +1,15 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { LayoutList, List, Rows3, type LucideIcon } from 'lucide-react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
-  Button,
+  LayoutList,
+  List,
+  Rows3,
+  Star,
+  X,
+  type LucideIcon,
+} from 'lucide-react';
+import {
   type ButtonConfig,
   ButtonList,
   CopyButton,
@@ -14,11 +20,11 @@ import {
   moveQuickLinkFocusByDirection,
   QUICK_LINK_ITEM_ATTR,
   Text,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
+  Tabs,
+  TabsList,
+  TabsTrigger,
   WINDOW_OPEN_FEATURES,
+  Button,
 } from '@vigilant-broccoli/react-lib';
 
 export const SEARCHABLE_LIST_VIEW = {
@@ -35,17 +41,21 @@ export type SearchableListItem = {
   value: string;
   onOpen?: () => void;
   isExternal?: boolean;
+  isFavorite?: boolean;
+  onFavoriteToggle?: () => void;
 };
 
 export type SearchableListGroup = {
   /** An empty name renders the entries without a heading. */
   name: string;
+  isFavorites?: boolean;
   entries: SearchableListItem[];
 };
 
 const SEARCH_PLACEHOLDER = 'Search...';
 const EMPTY_MESSAGE = 'No entries found.';
 const VIEW_TOGGLE_LABEL = 'View';
+const CLEAR_SEARCH_LABEL = 'Clear search';
 const WINDOW_TARGET_BLANK = '_blank';
 const URL_PREFIX = 'http';
 const ENTER_KEY = 'Enter';
@@ -77,6 +87,11 @@ const VIEW_OPTIONS: {
 ];
 
 const VIEW_ICON_SIZE = 16;
+const FAVORITES_LABEL = 'Favorites';
+const FAVORITE_BADGE_PREFIX = '★ ';
+const ADD_FAVORITE_LABEL = (label: string) => `Add ${label} to favorites`;
+const REMOVE_FAVORITE_LABEL = (label: string) =>
+  `Remove ${label} from favorites`;
 
 const ARROW_DIRECTION: Record<string, Direction> = {
   ArrowDown: 'down',
@@ -107,12 +122,14 @@ const searchGroups = (groups: SearchableListGroup[], query: string) => {
   if (!query) {
     return groups.map(group => ({
       name: group.name,
+      isFavorites: group.isFavorites,
       scored: group.entries.map<ScoredEntry>(entry => ({ entry, score: 0 })),
     }));
   }
   return groups
     .map(group => ({
       name: group.name,
+      isFavorites: group.isFavorites,
       scored: group.entries
         .flatMap<ScoredEntry>(entry => {
           const score = scoreEntry(entry, query);
@@ -124,41 +141,81 @@ const searchGroups = (groups: SearchableListGroup[], query: string) => {
     .sort((a, b) => b.scored[0].score - a.scored[0].score);
 };
 
-const SearchableListRow = ({
+export const SearchableListRow = ({
   entry,
   onActivate,
   onKeyDown,
+  actions,
 }: {
   entry: SearchableListItem;
   onActivate: () => void;
-  onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLElement>) => void;
+  /** Replaces the default favorite, open and copy buttons. */
+  actions?: ReactNode;
 }) => (
-  <div
-    tabIndex={0}
-    {...{ [QUICK_LINK_ITEM_ATTR]: 'true' }}
-    onKeyDown={onKeyDown}
-    className="flex items-center gap-2 rounded-md border border-border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring dark:border-border"
-  >
-    <div className="min-w-0 flex-1">
-      <Text as="div" size="2" weight="medium">
+  <li className="flex min-h-11 items-center bg-card text-card-foreground [&_button]:min-h-11 [&_button]:shrink-0 [&_button]:focus-visible:outline-none [&_button]:focus-visible:ring-2 [&_button]:focus-visible:ring-inset [&_button]:focus-visible:ring-ring [&_button]:active:bg-muted">
+    <button
+      type="button"
+      {...{ [QUICK_LINK_ITEM_ATTR]: 'true' }}
+      onClick={onActivate}
+      onKeyDown={onKeyDown}
+      className="flex min-w-0 flex-1 flex-col justify-center px-3 py-1.5 text-left transition-colors hover:bg-accent active:bg-muted"
+    >
+      <span className="w-full truncate text-sm font-medium" title={entry.label}>
         {entry.label}
-      </Text>
-      <Text
-        as="div"
-        size="1"
-        color="gray"
-        className="truncate font-mono"
+      </span>
+      <span
+        className="w-full truncate font-mono text-xs text-muted-foreground"
         title={entry.value}
       >
         {entry.value}
-      </Text>
+      </span>
+    </button>
+    <div className="flex shrink-0 items-center pr-1 [&_button]:min-w-11">
+      {actions ?? (
+        <>
+          {entry.onFavoriteToggle && <FavoriteButton entry={entry} />}
+          {(entry.onOpen || isUrl(entry.value)) && (
+            <IconButton
+              variant="ghost"
+              icon="external-link"
+              onClick={onActivate}
+            />
+          )}
+          <CopyButton text={entry.value} />
+        </>
+      )}
     </div>
-    {(entry.onOpen || isUrl(entry.value)) && (
-      <IconButton variant="ghost" icon="external-link" onClick={onActivate} />
-    )}
-    <CopyButton text={entry.value} />
-  </div>
+  </li>
 );
+
+const FavoriteButton = ({ entry }: { entry: SearchableListItem }) => {
+  const accessibleLabel = entry.isFavorite
+    ? REMOVE_FAVORITE_LABEL(entry.label)
+    : ADD_FAVORITE_LABEL(entry.label);
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      aria-label={accessibleLabel}
+      aria-pressed={entry.isFavorite ?? false}
+      title={accessibleLabel}
+      onClick={event => {
+        event.preventDefault();
+        event.stopPropagation();
+        entry.onFavoriteToggle?.();
+      }}
+      className="min-h-11 min-w-11 shrink-0"
+    >
+      <Star
+        size={16}
+        aria-hidden="true"
+        fill={entry.isFavorite ? 'currentColor' : 'none'}
+      />
+    </Button>
+  );
+};
 
 export const SearchableList = ({
   groups,
@@ -207,7 +264,10 @@ export const SearchableList = ({
   };
 
   const query = searchQuery.trim();
-  const searched = searchGroups(groups, query);
+  const searched = searchGroups(groups, query).sort((a, b) => {
+    if (a.isFavorites !== b.isFavorites) return a.isFavorites ? -1 : 1;
+    return query ? b.scored[0].score - a.scored[0].score : 0;
+  });
   const entries = searched.flatMap(group => group.scored.map(s => s.entry));
   const bestEntry = searched
     .flatMap(group => group.scored)
@@ -251,51 +311,65 @@ export const SearchableList = ({
     moveFocus(e);
   };
 
-  const handleRowKeyDown =
-    (entry: SearchableListItem) => (e: React.KeyboardEvent<HTMLElement>) => {
-      // Ignore keys bubbling from the row's inner copy/open buttons.
-      if (e.target !== e.currentTarget) return;
-      if (e.key === ENTER_KEY) {
-        e.preventDefault();
-        activate(entry);
-        return;
-      }
-      moveFocus(e);
-    };
+  const handleRowKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+    if (e.target !== e.currentTarget) return;
+    moveFocus(e);
+  };
 
   const toButtonConfig = (entry: SearchableListItem): ButtonConfig => ({
-    label: entry.label,
+    label: entry.isFavorite
+      ? `${FAVORITE_BADGE_PREFIX}${entry.label}`
+      : entry.label,
     onClick: () => activate(entry),
     isExternal: entry.isExternal ?? (!entry.onOpen && isUrl(entry.value)),
   });
 
   const renderButtons = (items: SearchableListItem[]) => (
-    <ButtonList
-      buttons={items.map(toButtonConfig)}
-      navigationRootRef={contentRef}
-      searchInputRef={searchInputRef}
-    />
+    <div className="flex flex-wrap gap-2">
+      {items.map((entry, index) => (
+        <ButtonList
+          key={`${entry.label}-${index}`}
+          buttons={[toButtonConfig(entry)]}
+          className="gap-0"
+          navigationRootRef={contentRef}
+          searchInputRef={searchInputRef}
+        />
+      ))}
+    </div>
   );
 
   const renderGroup = (group: (typeof searched)[number], index: number) => {
     const items = group.scored.map(({ entry }) => entry);
+    const isRows = view === SEARCHABLE_LIST_VIEW.ROWS;
     return (
-      <div key={`${group.name}-${index}`} className="flex flex-col gap-2">
-        {group.name && (
-          <Text size="3" weight="medium">
-            {group.name}
-          </Text>
-        )}
-        {view === SEARCHABLE_LIST_VIEW.ROWS
-          ? items.map((entry, entryIndex) => (
+      <div
+        key={`${group.name}-${index}`}
+        className={`flex flex-col ${isRows ? 'gap-1' : 'gap-2'}`}
+      >
+        {group.name &&
+          (isRows ? (
+            <h2 className="px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {group.name}
+            </h2>
+          ) : (
+            <Text size="3" weight="medium">
+              {group.name}
+            </Text>
+          ))}
+        {isRows ? (
+          <ul className="divide-y divide-border overflow-hidden rounded-lg border border-border">
+            {items.map((entry, entryIndex) => (
               <SearchableListRow
                 key={`${entry.label}-${entryIndex}`}
                 entry={entry}
                 onActivate={() => activate(entry)}
-                onKeyDown={handleRowKeyDown(entry)}
+                onKeyDown={handleRowKeyDown}
               />
-            ))
-          : renderButtons(items)}
+            ))}
+          </ul>
+        ) : (
+          renderButtons(items)
+        )}
       </div>
     );
   };
@@ -303,39 +377,48 @@ export const SearchableList = ({
   return (
     <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="flex items-center gap-2">
-        <Input
-          ref={searchInputRef}
-          placeholder={searchPlaceholder}
-          value={searchQuery}
-          onChange={event => setSearchQuery(event.target.value)}
-          onKeyDown={handleSearchKeyDown}
-          className="flex-1"
-        />
-        <TooltipProvider delayDuration={0}>
-          <div
-            role="group"
-            aria-label={VIEW_TOGGLE_LABEL}
-            className="flex gap-1"
-          >
+        <div className="relative flex-1">
+          <Input
+            ref={searchInputRef}
+            placeholder={searchPlaceholder}
+            value={searchQuery}
+            onChange={event => setSearchQuery(event.target.value)}
+            onKeyDown={handleSearchKeyDown}
+            className="w-full pr-10"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              aria-label={CLEAR_SEARCH_LABEL}
+              title={CLEAR_SEARCH_LABEL}
+              onClick={() => {
+                setSearchQuery('');
+                searchInputRef.current?.focus();
+              }}
+              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground hover:text-foreground"
+            >
+              <X size={16} aria-hidden="true" />
+            </button>
+          )}
+        </div>
+        <Tabs
+          value={view}
+          onValueChange={next => handleViewChange(next as SearchableListView)}
+        >
+          <TabsList aria-label={VIEW_TOGGLE_LABEL} className="h-11">
             {VIEW_OPTIONS.map(({ value, label, description, Icon }) => (
-              <Tooltip key={value}>
-                <TooltipTrigger asChild>
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant={view === value ? 'default' : 'outline'}
-                    aria-label={label}
-                    aria-pressed={view === value}
-                    onClick={() => handleViewChange(value)}
-                  >
-                    <Icon size={VIEW_ICON_SIZE} />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>{description}</TooltipContent>
-              </Tooltip>
+              <TabsTrigger
+                key={value}
+                value={value}
+                aria-label={label}
+                title={description}
+                className="px-2"
+              >
+                <Icon size={VIEW_ICON_SIZE} />
+              </TabsTrigger>
             ))}
-          </div>
-        </TooltipProvider>
+          </TabsList>
+        </Tabs>
       </div>
 
       {entries.length === 0 ? (
@@ -344,10 +427,26 @@ export const SearchableList = ({
         </Text>
       ) : (
         <div className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
-          <div ref={contentRef} className="flex flex-col gap-4 py-3">
-            {view === SEARCHABLE_LIST_VIEW.LIST
-              ? renderButtons(entries)
-              : searched.map(renderGroup)}
+          <div
+            ref={contentRef}
+            className={`flex flex-col py-3 ${view === SEARCHABLE_LIST_VIEW.ROWS ? 'gap-3' : 'gap-4'}`}
+          >
+            {view === SEARCHABLE_LIST_VIEW.LIST ? (
+              <>
+                {entries.some(entry => entry.isFavorite) && (
+                  <div className="flex flex-col gap-2">
+                    <Text size="3" weight="medium">
+                      {FAVORITES_LABEL}
+                    </Text>
+                    {renderButtons(entries.filter(entry => entry.isFavorite))}
+                  </div>
+                )}
+                {entries.some(entry => !entry.isFavorite) &&
+                  renderButtons(entries.filter(entry => !entry.isFavorite))}
+              </>
+            ) : (
+              searched.map(renderGroup)
+            )}
           </div>
         </div>
       )}

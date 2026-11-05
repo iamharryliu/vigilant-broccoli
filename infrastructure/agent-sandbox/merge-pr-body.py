@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 """Shared by every agentic-sandbox runner that opens or edits a PR
 (solve-todo-runner.sh, update-pr-runner.sh,
-create-todo-runner.sh, create-rnd-runner.sh,
+create-todo-runner.sh,
 audit-todo-runner.sh, audit-docs-runner.sh, audit-context-runner.sh,
 prune-runner.sh) to rewrite a PR body in place: replace the
-"## Summary" / "## Next steps" / "## Concerns" / "## Suggestions" sections with the agent's latest cumulative
-description, and append a row to an "## Agentic Change History" table —
-creating either if the PR body doesn't have them yet. Reads everything from
-the environment (see the CURRENT_BODY/PR_*/HISTORY_* vars below; PR_STACK is the
-"## Stack" section pr-increments.sh writes when one request is published as
-several pull requests) and prints
+"## Summary", "## Next steps", "## Concerns", "## Suggestions" and
+"## Screenshots" sections with the agent's latest cumulative description, and append a row to an "## Agentic Change History" table —
+creating either if the PR body doesn't have them yet. Screenshots are the last
+section, wrapped in <details><summary>Screenshots</summary> with blank lines
+around images, after the history table and before the attribution footer.
+Legacy screenshot sections are moved and wrapped even when PR_SCREENSHOTS is
+unset (preserve); nonempty replaces and explicitly empty removes the section.
+Reads everything from the environment (see the CURRENT_BODY/PR_*/HISTORY_* vars below) and prints
 the merged body to stdout; the caller passes it to `gh pr create --body` or
 `gh pr edit --body`.
 """
@@ -75,7 +77,7 @@ if pr_next_steps and not replace_section("Next steps", pr_next_steps):
 
 pr_concerns = os.environ.get("PR_CONCERNS", "").strip()
 pr_suggestions = os.environ.get("PR_SUGGESTIONS", "").strip()
-pr_stack = os.environ.get("PR_STACK", "").strip()
+pr_screenshots = os.environ.get("PR_SCREENSHOTS", "").strip()
 
 
 def insert_after(*anchors):
@@ -87,9 +89,7 @@ def insert_after(*anchors):
     return 0
 
 
-# Concerns and Suggestions describe what is still open, so an explicitly empty
-# variable (set but blank) drops the stale section; an unset variable leaves
-# it alone.
+# Explicitly empty variables drop their sections; unset variables preserve them.
 for name, env_name, value, anchors in (
     ("Concerns", "PR_CONCERNS", pr_concerns, ("Next steps", "Summary")),
     (
@@ -98,15 +98,17 @@ for name, env_name, value, anchors in (
         pr_suggestions,
         ("Concerns", "Next steps", "Summary"),
     ),
+    (
+        "Screenshots",
+        "PR_SCREENSHOTS",
+        pr_screenshots,
+        ("Suggestions", "Concerns", "Next steps", "Summary"),
+    ),
 ):
     if env_name in os.environ and not value:
         sections[:] = [(h, c) for h, c in sections if h != name]
     elif value and not replace_section(name, value):
         sections.insert(insert_after(*anchors), (name, value))
-
-if pr_stack and not replace_section("Stack", pr_stack):
-    insert_at = next((i for i, (h, _) in enumerate(sections) if h == "Summary"), -1) + 1
-    sections.insert(insert_at, ("Stack", pr_stack))
 
 history_source = os.environ.get("HISTORY_SOURCE", "").strip()
 history_command = os.environ.get("HISTORY_COMMAND", "").strip()
@@ -147,6 +149,25 @@ if history_source and history_command and history_summary and history_date:
             HISTORY_HEADING,
             "\n".join([HEADER_ROW, SEPARATOR_ROW] + data_rows),
         )
+
+# Normalize preserved legacy sections too, without nesting an existing wrapper.
+for name in ("Agentic Change History", "Screenshots"):
+    trailing = [(h, c) for h, c in sections if h == name]
+    sections[:] = [(h, c) for h, c in sections if h != name]
+    for heading, content in trailing:
+        if name == "Screenshots":
+            content = content.strip()
+            wrapped = re.fullmatch(
+                r"<details>\s*<summary>Screenshots</summary>\s*(.*?)\s*</details>",
+                content,
+                re.DOTALL,
+            )
+            if wrapped:
+                content = wrapped.group(1).strip()
+            content = (
+                f"<details><summary>Screenshots</summary>\n\n{content}\n\n</details>"
+            )
+        sections.append((heading, content))
 
 parts = []
 for heading, text in sections:

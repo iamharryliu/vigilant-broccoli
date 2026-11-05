@@ -30,6 +30,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        # A persisted GITHUB_TOKEN extraheader overrides the App token in the
+        # remote URL, so the push would be denied to github-actions[bot].
+        with:
+          persist-credentials: false
 
       - name: Setup Nx workspace
         uses: ./.github/actions/setup-nx-workspace

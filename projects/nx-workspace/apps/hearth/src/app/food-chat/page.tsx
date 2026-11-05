@@ -2,7 +2,7 @@
 
 import { Text, cn } from '@vigilant-broccoli/react-lib';
 import { I18nProvider } from '../i18n';
-import { FoodChat } from '../food-planner/FoodChat';
+import { FoodChat } from '../kitchen-planner/FoodChat';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 import {
   FULL_HEIGHT_PAGE_CLASS,

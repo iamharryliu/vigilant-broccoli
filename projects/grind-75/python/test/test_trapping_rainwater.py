@@ -1,5 +1,5 @@
 import unittest
-from array.trapping_rain_water import Solution
+from arrays.trapping_rain_water import Solution
 
 
 class TestSolution(unittest.TestCase):

@@ -36,9 +36,9 @@ export type WorkspaceCalendarAdd = {
 };
 
 export type WorkspaceCalendar = {
-  calendarOwnerEmail: string
-  name:string
-}
+  calendarOwnerEmail: string;
+  name: string;
+};
 
 export type WorkspaceCalendarEvent = {
   id: string;

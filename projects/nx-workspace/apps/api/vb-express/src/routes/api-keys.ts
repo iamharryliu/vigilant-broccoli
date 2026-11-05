@@ -70,11 +70,14 @@ const apiKeysRoutes: FastifyPluginAsync = async app => {
     const existingUser = await context.internalAdapter.findUserByEmail(email);
     const user =
       existingUser?.user ??
-      (await context.internalAdapter.createUser({
-        email,
-        name: email,
-        emailVerified: true,
-      }));
+      (await context.internalAdapter.createUser(
+        {
+          email,
+          name: email,
+          emailVerified: true,
+        },
+        { method: 'admin' },
+      ));
     const grantedServices = services ?? ALL_SERVICES;
     const createdKey = await auth.api.createApiKey({
       body: {

@@ -1,6 +1,6 @@
 # Refactor & Code Cleanup Checklist
 
-Review the current diff; used by `/refactor-code-cleanup` and `agentic-pr-create`.
+Review the current diff; used by `agentic-pr-create` and the audits.
 
 ## Checklist
 

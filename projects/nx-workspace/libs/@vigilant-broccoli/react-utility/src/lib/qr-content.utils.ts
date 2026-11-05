@@ -1,14 +1,7 @@
 import { toOpenableUrl } from './qr.utils';
 
 type QrContentKind =
-  | 'url'
-  | 'wifi'
-  | 'email'
-  | 'phone'
-  | 'sms'
-  | 'location'
-  | 'contact'
-  | 'text';
+  'url' | 'wifi' | 'email' | 'phone' | 'sms' | 'location' | 'contact' | 'text';
 
 type QrField = {
   label: string;

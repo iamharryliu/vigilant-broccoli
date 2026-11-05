@@ -84,7 +84,7 @@ const toConnection = (
     : undefined;
   const isActive = Boolean(
     tunnel?.flags.includes(INTERFACE_FLAG.UP) &&
-      tunnel?.flags.includes(INTERFACE_FLAG.RUNNING),
+    tunnel?.flags.includes(INTERFACE_FLAG.RUNNING),
   );
 
   return {

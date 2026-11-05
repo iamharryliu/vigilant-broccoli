@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: vb-manager-next
+  name: local-manager-next
 spec:
   type: ExternalName
   externalName: host.k3d.internal
@@ -21,3 +21,14 @@ spec:
   ports:
     - name: http
       port: 2283
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: job-hunt-next
+spec:
+  type: ExternalName
+  externalName: host.k3d.internal
+  ports:
+    - name: http
+      port: 4300

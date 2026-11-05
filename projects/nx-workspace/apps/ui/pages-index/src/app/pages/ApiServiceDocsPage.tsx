@@ -20,7 +20,7 @@ export function ApiServiceDocsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-card">
       <SwaggerDocs specUrl={toSpecUrl(service.slug)} />
     </main>
   );

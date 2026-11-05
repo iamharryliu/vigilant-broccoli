@@ -57,9 +57,9 @@ PRE_COMMIT_HELPER="$REPO_DIR/infrastructure/agent-sandbox/run-pre-commit.sh"
 MERGE_BODY_HELPER="$REPO_DIR/infrastructure/agent-sandbox/merge-pr-body.py"
 
 cd "$REPO_DIR"
-SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/agentic-pr-create/SKILL.md")
-# shellcheck source=pr-increments.sh
-. "$(dirname "${BASH_SOURCE[0]}")/pr-increments.sh"
+SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/local-create-pr/SKILL.md")
+# shellcheck source=publish-pr.sh
+. "$(dirname "${BASH_SOURCE[0]}")/publish-pr.sh"
 # shellcheck source=no-changes.sh
 . "$(dirname "${BASH_SOURCE[0]}")/no-changes.sh"
 
@@ -79,13 +79,13 @@ if [ "$MODE" = id ]; then
   fi
   BRANCH="agent/todo-${ID}"
   INTRO="Resolve this TODO item (already extracted from the repo root TODO.md):"
-  PLAN_REQUEST=$ID
-  SCOPE_RULE="- Do not run any git or gh commands and do not edit TODO.md — branching, TODO.md cleanup, committing, pushing, and opening the PR are all handled by the calling script. TODO ${ID} is removed by the one increment that fully resolves it (this one unless you assign it to a later increment in todo_ids)."
+  REQUEST_TEXT=$ID
+  SCOPE_RULE="- Do not run any git or gh commands and do not edit TODO.md — branching, TODO.md cleanup, committing, pushing, and opening the PR are all handled by the calling script. TODO ${ID} is removed by the calling script once this run fully resolves it."
 elif [ "$MODE" = prompt ]; then
   SLUG=$(echo "$TASK" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-*//;s/-*$//' | cut -c1-40)
   BRANCH="agent/task-${SLUG:-task}-$(date +%s)"
   INTRO="Accomplish this task:"
-  PLAN_REQUEST=$TASK
+  REQUEST_TEXT=$TASK
   SCOPE_RULE="- Do not run any git or gh commands and do not edit TODO.md — branching, TODO.md cleanup, committing, pushing, and opening the PR are all handled by the calling script."
   # A request in this exact form is the user's authorization for a TODO-only
   # PR, the one case the "no changes besides TODO.md" guard below must let
@@ -125,34 +125,25 @@ git checkout -b "$BRANCH"
 BASE_SHA=$(git rev-parse HEAD)
 rm -f "$META_FILE"
 
-INC_REQUEST=$TASK
-INC_SKILL_INSTRUCTIONS=$SKILL_INSTRUCTIONS
-INC_ORDER=("$INC_CURRENT")
-INC_BRANCH[$INC_CURRENT]=$BRANCH
 if [ -n "${GITHUB_ACTIONS:-}" ]; then
-  INC_HISTORY_SOURCE="GitHub Actions"
+  PR_HISTORY_SOURCE="GitHub Actions"
 elif [ -n "${SOLVE_ON_CODE_SERVER:-}" ]; then
-  INC_HISTORY_SOURCE="code-server VM"
+  PR_HISTORY_SOURCE="code-server VM"
 else
-  INC_HISTORY_SOURCE="Docker sandbox (local)"
+  PR_HISTORY_SOURCE="Docker sandbox (local)"
 fi
 if [ "$MODE" = id ]; then
-  INC_HISTORY_BASE_COMMAND="agentic-pr-create ${ID}"
+  PR_HISTORY_COMMAND="agentic-pr-create ${ID}"
   SALVAGE_TITLE="Resolve TODO ${ID}"
   FALLBACK_SUBJECT="chore: Resolve TODO ${ID}."
   FALLBACK_SUMMARY="- Resolve TODO ${ID}."
 else
-  INC_HISTORY_BASE_COMMAND="agentic-pr-create --prompt"
+  PR_HISTORY_COMMAND="agentic-pr-create --prompt"
   SALVAGE_TITLE=$TASK
   FALLBACK_SUBJECT="chore: Complete agent task."
   FALLBACK_SUMMARY="- ${TASK}"
 fi
-INC_HISTORY_COMMAND=$INC_HISTORY_BASE_COMMAND
-INC_TITLE[$INC_CURRENT]=$SALVAGE_TITLE
 
-# Only the first increment is rescued by this trap; once its PR is open, each
-# later increment salvages itself in inc_run_later and the PRs already published
-# stay as they are.
 SALVAGE_ENABLED=1
 [ "$PREVIEW" != 1 ] || SALVAGE_ENABLED=0
 salvage_on_failure() {
@@ -164,11 +155,7 @@ salvage_on_failure() {
   [ "$SALVAGE_ENABLED" = 1 ] || exit "$exit_code"
 
   echo "Runner exited with status $exit_code — checking for salvageable work on $BRANCH" >&2
-  inc_salvage "$BRANCH" "$INC_DEFAULT_BASE" "$BASE_SHA" "$SALVAGE_TITLE" "$REQUEST_BODY" "$exit_code" "$INC_CURRENT"
-  local id
-  for id in "${INC_ORDER[@]:1}"; do
-    inc_emit_unpublished "$id" "the first increment was not published"
-  done
+  pr_salvage "$BRANCH" "$BASE_SHA" "$SALVAGE_TITLE" "$REQUEST_BODY" "$exit_code"
   exit "$exit_code"
 }
 trap salvage_on_failure EXIT
@@ -191,19 +178,19 @@ Sandbox execution rules:
 - You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
 $SCOPE_RULE
 $PREVIEW_RULE
-$(inc_plan_instructions solve)
+- Produce exactly one pull request. If the task is too large or bundles independent changes that cannot be reviewed as one diff, make no changes and record the reason in no_changes_reason; a human re-scopes it.
 - When finished, write $META_FILE containing only a JSON object with these fields (strings unless noted):
-  - commit_type: one of feat, fix, ci, chore, docs, refactor, enhancement, security, infrastructure
+  - commit_type: one of ${COMMIT_TYPES// /, }
   - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
   - commit_message: capitalized, concise, focused on why not what, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit, or "$FALLBACK_TRAILER" when no such trailer is specified
   - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
-  - pr_summary: markdown bullet points for the PR "## Summary" section, describing only the increment you implemented
-  - pr_next_steps: markdown checklist for the PR "## Next steps" section — concrete remaining actions for the human (manual commands to run, UI/manual spot checks, watching CI to green, then one ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\` item per piece of work deliberately left out of every increment), or "- [ ] Merge once CI is green" when nothing else is left
+  - pr_summary: markdown bullet points for the PR "## Summary" section, describing the change
+  - pr_screenshots: array of repo-relative PNG paths captured for this change under projects/nx-workspace/screenshots/; omit or [] when none. The runner commits these images and embeds them in the PR body. Screenshots are required only when the changed page or component is reachable and renderable without authentication. If authentication or unavailable dependencies (a missing backend or secrets, or port conflicts) prevent exercising it in a browser, do not attempt or retry screenshots and do not mention missing screenshots as a PR concern or in PR_CONCERNS.
+  - pr_next_steps: markdown checklist for the PR "## Next steps" section — concrete remaining actions for the human (manual commands to run, UI/manual spot checks, watching CI to green, then one ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\` item per piece of work deliberately left out), or "- [ ] Merge once CI is green" when nothing else is left
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
   - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none. Keep these out of pr_suggestions, which is only for optional follow-up work
-  - todo_ids: array of the TODO.md ids this increment fully resolves (omit or [] when none)
-  - increments: the optional array of later increments described above
+  - todo_ids: array of the TODO.md ids this change fully resolves (omit or [] when none)
 $NO_CHANGES_FIELD
 EOF
 )
@@ -273,6 +260,7 @@ agent_invoke() {
 }
 
 agent_invoke "$PROMPT"
+normalize_meta "$META_FILE"
 
 if [ "$AGENT_RUNNER" = ollama ]; then
   jq -e 'type == "object"' "$META_FILE" >/dev/null || {
@@ -288,16 +276,13 @@ if [ -z "$REMOVAL_ID" ] && [ -z "$(git status --porcelain)" ]; then
   no_changes_exit "$META_FILE" "no changes produced — task was not completed."
 fi
 
-# The whole plan is checked before the first PR is opened, so a bad plan never
-# leaves a partial stack behind.
-inc_validate_plan "$META_FILE" "$BASE_SHA" "$PLAN_REQUEST" "${ID:-}"
-inc_load_plan "$META_FILE"
+pr_validate_todo_ids "$META_FILE" "$BASE_SHA" "$REQUEST_TEXT"
 
 RESOLVED_IDS=()
 while IFS= read -r resolved_id; do
   [ -z "$resolved_id" ] || RESOLVED_IDS+=("$resolved_id")
-done < <(inc_current_todo_ids "$META_FILE" "${ID:-}")
-inc_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
+done < <(pr_current_todo_ids "$META_FILE" "${ID:-}")
+pr_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
 if [ -n "$REMOVAL_ID" ]; then
   if [ "${RESOLVED_IDS[*]-}" != "$REMOVAL_ID" ] || [ -n "$(git status --porcelain -- ':(exclude)TODO.md')" ] || [ -z "$(git status --porcelain -- TODO.md)" ]; then
     no_changes_exit "$META_FILE" "TODO-only removal of ${REMOVAL_ID} must remove exactly that row and change nothing else."
@@ -309,14 +294,8 @@ fi
 if [ "$PREVIEW" = 1 ]; then
   bash "$PRE_COMMIT_HELPER"
   echo "LOCAL_PREVIEW::Changes retained in $REPO_DIR; metadata: $META_FILE"
-  echo "Planned follow-up increments are recorded in the metadata and were not executed."
   exit 0
 fi
 
-inc_publish "$INC_CURRENT" "$BRANCH" "$INC_DEFAULT_BASE" "$BASE_SHA" "$TASK" "$FALLBACK_SUBJECT" "$FALLBACK_SUMMARY" || exit 1
+pr_publish "$BRANCH" "$BASE_SHA" "$TASK" "$FALLBACK_SUBJECT" "$FALLBACK_SUMMARY" || exit 1
 SALVAGE_ENABLED=0
-
-LATER_STATUS=0
-inc_run_later || LATER_STATUS=1
-inc_refresh_stacks || true
-exit "$LATER_STATUS"

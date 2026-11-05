@@ -7,10 +7,14 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 IMAGE=vb-agent-sandbox
 
 MODEL=sonnet
+VM=0
+AGENT_RUNNER=claude
+CODEX_MODEL=""
+VM_CODEX_SIGNED_IN=0
 OPERATION=change
 ARGS=()
 usage() {
-  echo "Usage: pnpm agentic-pr-update [--model <model>] [--operation change|fix-ci|resolve-conflicts] [--with-ci-logs] <PR_NUMBER_OR_URL> [instruction]" >&2
+  echo "Usage: pnpm agentic-pr-update [--vm [--agent claude|codex] [--codex-model <m>] [--codex-signed-in]] [--model <model>] [--operation change|fix-ci|resolve-conflicts] [--with-ci-logs] <PR_NUMBER_OR_URL> [instruction]" >&2
   echo "  The instruction is required for change, optional extra guidance for fix-ci and not accepted for resolve-conflicts." >&2
   echo "  e.g. pnpm agentic-pr-update 149 \"add input validation to the new route\"" >&2
   echo "       pnpm agentic-pr-update --operation fix-ci 149" >&2
@@ -19,13 +23,20 @@ usage() {
 }
 while [ $# -gt 0 ]; do
   case "$1" in
+    --vm) VM=1; shift ;;
+    --codex-signed-in) VM_CODEX_SIGNED_IN=1; shift ;;
+    --agent | --codex-model)
+      if [ $# -lt 2 ] || [ -z "$2" ] || [[ "$2" = --* ]]; then usage; fi
+      if [ "$1" = --agent ]; then AGENT_RUNNER=$2; else CODEX_MODEL=$2; fi
+      shift 2
+      ;;
     --model)
-      [ $# -ge 2 ] && [ -n "$2" ] || usage
+      if [ $# -lt 2 ] || [ -z "$2" ] || [[ "$2" = --* ]]; then usage; fi
       MODEL=$2
       shift 2
       ;;
     --operation)
-      [ $# -ge 2 ] && [ -n "$2" ] || usage
+      if [ $# -lt 2 ] || [ -z "$2" ] || [[ "$2" = --* ]]; then usage; fi
       OPERATION=$2
       shift 2
       ;;
@@ -38,12 +49,21 @@ while [ $# -gt 0 ]; do
       export SANDBOX_CI_LOGS=1
       shift
       ;;
+    --*) usage ;;
     *)
       ARGS+=("$1")
       shift
       ;;
   esac
 done
+
+case "$AGENT_RUNNER" in claude | codex) ;; *) usage ;; esac
+if { [ "$AGENT_RUNNER" = codex ] && [ "$VM" != 1 ]; } ||
+  { [ -n "$CODEX_MODEL" ] && { [ "$VM" != 1 ] || [ "$AGENT_RUNNER" != codex ]; }; } ||
+  { [ "$VM_CODEX_SIGNED_IN" = 1 ] && { [ "$VM" != 1 ] || [ "$AGENT_RUNNER" != codex ]; }; }; then
+  echo "ERROR: Codex options require --vm --agent codex." >&2
+  usage
+fi
 
 PR="${ARGS[0]:-}"
 INSTRUCTION="${ARGS[*]:1}"
@@ -68,6 +88,10 @@ case "$OPERATION" in
     usage
     ;;
 esac
+
+if [ "$VM" = 1 ]; then
+  VM_CODEX_SIGNED_IN="$VM_CODEX_SIGNED_IN" exec bash "$SCRIPT_DIR/solve-vm.sh" "$AGENT_RUNNER" "$MODEL" "$CODEX_MODEL" "" --update "$PR" "$INSTRUCTION" "$OPERATION" "${SANDBOX_CI_LOGS:-}"
+fi
 
 if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
   docker compose -f "$SCRIPT_DIR/docker-compose.yml" build
@@ -111,16 +135,14 @@ docker run --rm --init --name "vb-update-pr-$(date +%s)" \
   -e SANDBOX_FIX_CI \
   -e SANDBOX_ALLOWED_DOMAINS \
   -e SOLVE_MODEL="$MODEL" \
+  -e SOLVE_PERMISSION_MODE \
   "$IMAGE" \
   bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/update-pr-runner.sh" "$1" "$2"' _ "$PR" "$INSTRUCTION" \
   2>&1 | tee "$LOG_FILE" || STATUS="${PIPESTATUS[0]}"
 
-# The target PR is reported by the caller; recovery and follow-up PRs are
-# reported from the runner's records. A deliberate no-change run is handed to
+# The caller reports the target PR. A deliberate no-change run is handed to
 # the caller as step outputs, since it reports the target PR's result itself.
-if grep -qE '^(PR_URL|INCREMENT_UNPUBLISHED)::' "$LOG_FILE"; then
-  bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_FILE" "$STATUS" "Recovery and follow-up pull requests"
-elif [ "$STATUS" = 0 ] && [ -n "${GITHUB_OUTPUT:-}" ] && grep -qx "$NO_CHANGES_MARKER" "$LOG_FILE"; then
+if [ "$STATUS" = 0 ] && [ -n "${GITHUB_OUTPUT:-}" ] && grep -qx "$NO_CHANGES_MARKER" "$LOG_FILE"; then
   DELIMITER="NO_CHANGES_REASON_$(date +%s)"
   {
     echo "outcome=no-changes"

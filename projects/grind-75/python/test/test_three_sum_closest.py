@@ -1,5 +1,5 @@
 import unittest
-from array.three_sum_closest import Solution
+from arrays.three_sum_closest import Solution
 
 
 class TestSolution(unittest.TestCase):

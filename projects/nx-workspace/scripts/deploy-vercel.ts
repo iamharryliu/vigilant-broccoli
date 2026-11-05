@@ -18,7 +18,10 @@ const BUILD_LOCK_DIR = `${VERCEL_ROOT_DIRECTORY}/dist/.vercel-deploy-lock`;
 
 // Standalone output can't be packaged from an Nx cache restore — see
 // docs/app-development/ui/deployment/vercel-deploy-pattern.md
-const STANDALONE_OUTPUT_PROJECTS = new Set(['employee-handler-ui']);
+const STANDALONE_OUTPUT_PROJECTS = new Set([
+  'employee-handler-ui',
+  'job-hunt-next',
+]);
 
 const BUILD_LOCK_TIMEOUT_MS = 20 * 60 * 1000;
 const BUILD_LOCK_POLL_MS = 500;
@@ -341,33 +344,52 @@ async function main() {
         'dist/apps/ui/employee-handler-ui/.next',
       ),
     },
+    'job-hunt-next': {
+      hardcodedSecrets: { NEXT_PUBLIC_JOB_HUNT_DEMO: 'true' },
+      settings: {
+        ...NX_VERCEL_SETTINGS(
+          'job-hunt-next',
+          'dist/apps/ui/job-hunt-next/.next',
+        ),
+        buildCommand:
+          'nx build job-hunt-next --skip-nx-cache && node apps/ui/job-hunt-next/scripts/check-personal-data.mjs',
+      },
+    },
     balloono: {
       hardcodedSecrets: { ...SUPABASE_PUBLIC_SECRETS },
       settings: NX_VERCEL_SETTINGS('balloono', 'dist/apps/ui/balloono/.next'),
     },
+    'gravity-guy': {
+      hardcodedSecrets: {},
+      settings: NX_VERCEL_SETTINGS(
+        'gravity-guy',
+        'dist/apps/ui/gravity-guy/.next',
+      ),
+    },
     'weather-next': {
-      hardcodedSecrets: {
-        VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
-      },
-      envExamplePath: 'apps/ui/weather-next/.env.example',
+      hardcodedSecrets: {},
       settings: NX_VERCEL_SETTINGS(
         'weather-next',
         'dist/apps/ui/weather-next/.next',
       ),
     },
-    'vb-manager-next-mobile': {
+    'mobile-manager-next': {
       hardcodedSecrets: {
         ...SUPABASE_PUBLIC_SECRETS,
         VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
       },
-      envExamplePath: 'apps/vb-manager-next-mobile/.env.example',
+      envExamplePath: 'apps/mobile-manager-next/.env.example',
       privateApp: true,
       settings: NX_VERCEL_SETTINGS(
-        'vb-manager-next-mobile',
-        'dist/apps/vb-manager-next-mobile/.next',
+        'mobile-manager-next',
+        'dist/apps/mobile-manager-next/.next',
       ),
     },
   };
+
+  if (projectName === 'job-hunt-next' && environment !== DEMO) {
+    throw new Error('Job Hunt uses Vercel only for its public demo.');
+  }
 
   const config = projectConfigs[projectName];
 

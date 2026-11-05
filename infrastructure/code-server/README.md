@@ -25,5 +25,6 @@ code-server image with the repo toolchain baked in, plus GitHub token handling, 
   - GitHub
 - Services
   - Claude Code
+  - Codex
   - code-server
   - web terminal

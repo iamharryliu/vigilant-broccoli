@@ -1,0 +1,23 @@
+{
+  "name": "@vigilant-broccoli/security-news",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@vigilant-broccoli/security-news/src",
+  "projectType": "library",
+  "tags": ["type:util"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/@vigilant-broccoli/security-news",
+        "tsConfig": "libs/@vigilant-broccoli/security-news/tsconfig.lib.json",
+        "packageJson": "libs/@vigilant-broccoli/security-news/package.json",
+        "main": "libs/@vigilant-broccoli/security-news/src/index.ts",
+        "assets": ["libs/@vigilant-broccoli/security-news/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

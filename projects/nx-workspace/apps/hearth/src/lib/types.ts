@@ -58,6 +58,7 @@ export interface LeisureActivity {
   title: string;
   description: string | null;
   category: LeisureCategory;
+  position: number;
   homeId: number;
   createdByEmail?: string | null;
   createdAt: string;

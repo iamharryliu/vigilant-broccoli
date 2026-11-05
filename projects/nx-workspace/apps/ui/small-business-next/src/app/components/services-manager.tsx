@@ -45,7 +45,7 @@ export const ServicesManager = ({
           value={newName}
           onChange={e => setNewName(e.target.value)}
           placeholder="New service name"
-          className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 border rounded-lg px-3 py-2 text-sm focus:outline-none"
         />
         <button
           type="submit"
@@ -68,7 +68,7 @@ export const ServicesManager = ({
                   <input
                     value={editName}
                     onChange={e => setEditName(e.target.value)}
-                    className="flex-1 border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 border rounded px-2 py-1 text-sm focus:outline-none"
                   />
                   <button
                     onClick={() => saveEdit(service)}

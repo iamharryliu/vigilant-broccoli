@@ -1,5 +1,5 @@
 import unittest
-from array.product_of_array_except_self import Solution
+from arrays.product_of_array_except_self import Solution
 
 
 class TestSolution(unittest.TestCase):

@@ -1,5 +1,5 @@
 import unittest
-from array.three_sum import Solution
+from arrays.three_sum import Solution
 
 
 class TestSolution(unittest.TestCase):

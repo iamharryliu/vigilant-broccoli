@@ -41,6 +41,15 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
   && apt-get install -y --no-install-recommends nodejs build-essential \
   && rm -rf /var/lib/apt/lists/*
 
+# Playwright's distro-aware dependency list, pinned to the workspace lockfile's
+# version (passed by the workflow). Browser binaries belong to the runtime
+# user's persistent cache.
+ARG PLAYWRIGHT_VERSION
+RUN test -n "$PLAYWRIGHT_VERSION" \
+  && npm exec --yes --package="playwright@$PLAYWRIGHT_VERSION" -- playwright install-deps chromium \
+  && npm cache clean --force \
+  && rm -rf /var/lib/apt/lists/*
+
 RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg \
     | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg \
   && echo 'deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main' \
@@ -57,8 +66,9 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg -o 
   && rm -rf /var/lib/apt/lists/*
 
 # pnpm and pre-commit (above) are what solve-todo-runner.sh needs for
-# `agentic-pr-create --vm` solves, matching the agent sandbox image's pins.
-RUN npm install -g @anthropic-ai/claude-code pnpm@11.9.0 \
+# `agentic-pr-create --vm` solves (Claude Code and Codex), matching the agent
+# sandbox image's pins.
+RUN npm install -g '@anthropic-ai/claude-code@>=2.1.277' @openai/codex pnpm@11.9.0 \
   && npm cache clean --force
 
 # GitHub access reuses the agent sandbox's GitHub App (Contents + Pull requests

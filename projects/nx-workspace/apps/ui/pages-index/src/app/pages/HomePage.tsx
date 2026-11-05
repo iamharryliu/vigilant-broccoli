@@ -1,4 +1,5 @@
 import {
+  Gamepad2,
   Activity,
   Bot,
   ChartColumn,
@@ -15,6 +16,7 @@ import { SectionHeading } from '../components/SectionHeading';
 import { DockerIcon, GithubIcon, NpmIcon } from '../components/BrandIcons';
 import { usePageTitle } from '../use-page-title';
 import { PAGE_CLASS } from '../consts/layout';
+import { GAMES_ROUTE } from '../consts/routes';
 
 const ICON_CLASS = 'h-5 w-5 shrink-0';
 
@@ -37,6 +39,15 @@ export function HomePage() {
               title={t('HOME.README.TITLE')}
               description={t('HOME.README.DESCRIPTION')}
               icon={<FileText className={ICON_CLASS} />}
+            />
+          </li>
+          <li>
+            <CardLink
+              route
+              href="/repo-timeline"
+              title={t('HOME.REPO_TIMELINE.TITLE')}
+              description={t('HOME.REPO_TIMELINE.DESCRIPTION')}
+              icon={<ChartColumn className={ICON_CLASS} />}
             />
           </li>
           <li>
@@ -69,15 +80,6 @@ export function HomePage() {
               title={t('HOME.DEPLOYMENTS.TITLE')}
               description={t('HOME.DEPLOYMENTS.DESCRIPTION')}
               icon={<GitPullRequestArrow className={ICON_CLASS} />}
-            />
-          </li>
-          <li>
-            <CardLink
-              route
-              href="/repo-timeline"
-              title={t('HOME.REPO_TIMELINE.TITLE')}
-              description={t('HOME.REPO_TIMELINE.DESCRIPTION')}
-              icon={<ChartColumn className={ICON_CLASS} />}
             />
           </li>
         </CardGrid>
@@ -120,6 +122,15 @@ export function HomePage() {
               title={t('HOME.WEB_APPLICATIONS.TITLE')}
               description={t('HOME.WEB_APPLICATIONS.DESCRIPTION')}
               icon={<Globe className={ICON_CLASS} />}
+            />
+          </li>
+          <li>
+            <CardLink
+              route
+              href={GAMES_ROUTE}
+              title={t('GAMES_PAGE.TITLE')}
+              description={t('GAMES_PAGE.DESCRIPTION')}
+              icon={<Gamepad2 className={ICON_CLASS} />}
             />
           </li>
           <li>

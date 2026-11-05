@@ -45,16 +45,25 @@ jobs:
             kv/data/secrets DOCKERHUB_TOKEN | DOCKERHUB_TOKEN ;
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4
         with:
           username: iamharryliu
           password: ${{ env.DOCKERHUB_TOKEN }}
+
+      # Lockfile bumps deliberately don't trigger this workflow; the version is
+      # read at build time, so the next image build picks up the current one.
+      - name: Read locked Playwright version
+        run: |
+          version=$(yq '.importers["."].dependencies.playwright.version' projects/nx-workspace/pnpm-lock.yaml)
+          test -n "$version" && [ "$version" != null ]
+          echo "PLAYWRIGHT_VERSION=$version" >> "$GITHUB_ENV"
 
       # Build context is the repo root so the Dockerfile can COPY
       # setup/linux/apt-packages.txt.
       - name: Build image
         run: |
           docker build \
+            --build-arg "PLAYWRIGHT_VERSION=$PLAYWRIGHT_VERSION" \
             --platform linux/arm64 \
             -f infrastructure/code-server/Dockerfile \
             -t "$IMAGE:latest" \

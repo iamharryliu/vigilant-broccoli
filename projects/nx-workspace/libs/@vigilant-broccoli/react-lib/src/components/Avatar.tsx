@@ -14,12 +14,7 @@ import { cn } from '../utils/cn';
 
 export type AvatarSize = 'xsmall' | 'small' | 'medium' | 'large';
 export type BoringAvatarVariant =
-  | 'beam'
-  | 'bauhaus'
-  | 'marble'
-  | 'ring'
-  | 'sunset'
-  | 'pixel';
+  'beam' | 'bauhaus' | 'marble' | 'ring' | 'sunset' | 'pixel';
 
 export const FALLBACK_TYPE = {
   CHARACTER: 'character',
@@ -44,8 +39,7 @@ interface BoringAvatarFallbackConfig {
 }
 
 type FallbackConfigObject =
-  | CharacterFallbackConfig
-  | BoringAvatarFallbackConfig;
+  CharacterFallbackConfig | BoringAvatarFallbackConfig;
 type FallbackConfig = FallbackConfigObject | ReactNode;
 
 export interface AvatarBadgeConfig {

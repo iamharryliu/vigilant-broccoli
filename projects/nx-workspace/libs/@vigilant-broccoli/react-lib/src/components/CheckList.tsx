@@ -11,7 +11,9 @@ import { DragHandleDots2Icon } from '@radix-ui/react-icons';
 import {
   CheckListBase,
   CheckListBaseItem,
+  CheckListEditor,
   CheckListRowFrameProps,
+  CheckListRowVariant,
 } from './CheckListBase';
 import { Text } from './Text';
 
@@ -29,6 +31,9 @@ const ANIMATION_STYLES = `
 
   .checklist-item-new {
     animation: slideInAndFadeIn 0.3s ease-out;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .checklist-item-new { animation: none; }
   }
 `;
 
@@ -66,10 +71,16 @@ export interface CheckListProps {
   onEditChange: (title: string) => void;
   onSaveEdit: () => void;
   onCancelEdit: () => void;
+  editor?: CheckListEditor;
+  rowVariant?: CheckListRowVariant;
+  size?: '1' | '2' | '3';
+  editCompleted?: boolean;
+  storageKeyPrefix?: string;
+  completedSectionId?: string;
   enableDragDrop?: boolean;
   listId?: string;
   dragOverItem?: CheckListDragOverItem | null;
-  emptyLabel?: string;
+  emptyLabel?: ReactNode;
   renderItemAccessory?: (item: CheckListItem) => ReactNode;
   renderItemMeta?: (item: CheckListItem) => ReactNode;
   itemClassName?: (item: CheckListItem) => string;
@@ -113,12 +124,12 @@ const SortableRowFrame = ({
   } = useSortable({
     id: item.id,
     // Kept as `type: 'task'` / `task` / `taskListId` (rather than a
-    // generic `item`/`listId`) on purpose: apps/ui/vb-manager-next's
+    // generic `item`/`listId`) on purpose: apps/ui/local-manager-next's
     // kanban.component.tsx reads this exact shape off the raw dnd-kit
     // drag payload to move tasks across lanes. See the Nuances entry in
     // that app's CONTEXT.md before renaming any of these keys.
     data: { type: 'task', task: item, taskListId: listId },
-    disabled: !draggable || isEditing,
+    disabled: !draggable || isEditing || item.isRemoving,
   });
 
   const style = {
@@ -134,7 +145,7 @@ const SortableRowFrame = ({
           {...listeners}
           {...attributes}
           aria-label={`${DRAG_HANDLE_LABEL_PREFIX}${item.title}`}
-          className="cursor-grab active:cursor-grabbing opacity-50 hover:opacity-100 transition-opacity"
+          className="cursor-grab touch-none active:cursor-grabbing opacity-50 hover:opacity-100 transition-opacity"
         >
           <DragHandleDots2Icon />
         </div>
@@ -190,6 +201,12 @@ export const CheckList = memo(
     onEditChange,
     onSaveEdit,
     onCancelEdit,
+    editor,
+    rowVariant,
+    size,
+    editCompleted,
+    storageKeyPrefix,
+    completedSectionId,
     enableDragDrop,
     listId,
     dragOverItem,
@@ -226,7 +243,7 @@ export const CheckList = memo(
       );
     }
 
-    if (error) {
+    if (error && items.length === 0) {
       return (
         <Text size="2" color="red">
           {error}
@@ -234,24 +251,29 @@ export const CheckList = memo(
       );
     }
 
-    const activeItems = items.filter(item => !item.checked || item.isRemoving);
+    const activeItems = items.filter(item => !item.checked);
 
     const showPlaceholder =
       dragOverItem && !activeItems.some(item => item.id === dragOverItem.id);
-
-    const sortableIds: string[] = activeItems.map(item => item.id);
-    if (showPlaceholder)
-      sortableIds.push(`${PLACEHOLDER_PREFIX}${dragOverItem.id}`);
 
     const highlightClass = isOver
       ? 'bg-blue-100 dark:bg-blue-900 ring-2 ring-blue-400 ring-inset'
       : '';
 
     const resolvedListId = listId ?? DEFAULT_LIST_ID;
+    const resolvedStorageKeyPrefix =
+      storageKeyPrefix ?? `checklist-${resolvedListId}`;
+    const resolvedCompletedSectionId =
+      completedSectionId ?? `${resolvedListId}-completed`;
 
     return (
       <>
         <style>{ANIMATION_STYLES}</style>
+        {error && (
+          <Text size="2" color="red" role="alert">
+            {error}
+          </Text>
+        )}
         <div
           ref={setNodeRef}
           className={`rounded-lg transition-all duration-150 min-h-[60px] ${highlightClass}`}
@@ -265,22 +287,33 @@ export const CheckList = memo(
             onEditChange={onEditChange}
             onSaveEdit={onSaveEdit}
             onCancelEdit={onCancelEdit}
-            editor="textarea"
-            storageKeyPrefix={`checklist-${resolvedListId}`}
-            completedSectionId={`${resolvedListId}-completed`}
+            editor={editor}
+            rowVariant={rowVariant}
+            size={size}
+            editCompleted={editCompleted}
+            storageKeyPrefix={resolvedStorageKeyPrefix}
+            completedSectionId={resolvedCompletedSectionId}
             emptyLabel={
-              <Text size="2" color="gray">
-                {emptyLabel}
-              </Text>
+              typeof emptyLabel === 'string' ? (
+                <Text size="2" color="gray">
+                  {emptyLabel}
+                </Text>
+              ) : (
+                emptyLabel
+              )
             }
             renderItemAccessory={renderItemAccessory}
             renderItemMeta={renderItemMeta}
             renderItemDetails={renderItemDetails}
             itemClassName={itemClassName}
             rowFrame={rowFrame}
-            wrapActiveItems={rows => (
+            wrapActiveItems={(rows, activeIds) => (
               <SortableContext
-                items={sortableIds}
+                items={
+                  showPlaceholder
+                    ? [...activeIds, `${PLACEHOLDER_PREFIX}${dragOverItem.id}`]
+                    : activeIds
+                }
                 strategy={verticalListSortingStrategy}
               >
                 {rows}

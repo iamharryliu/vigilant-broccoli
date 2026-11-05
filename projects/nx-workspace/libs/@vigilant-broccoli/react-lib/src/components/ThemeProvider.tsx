@@ -14,6 +14,7 @@ import {
   THEME_STORAGE_KEY,
   useThemePreference,
   type ThemeAppearance,
+  type ThemePreference,
 } from '../hooks/useThemePreference';
 import { useToggleThemeKeybind } from '../hooks/useThemeKeybind';
 
@@ -21,6 +22,8 @@ const USE_THEME_ERROR = 'useTheme must be used within a ThemeProvider';
 
 type ThemeContextType = {
   appearance: ThemeAppearance;
+  preference: ThemePreference;
+  setPreference: (preference: ThemePreference) => void;
   toggleTheme: () => void;
 };
 
@@ -50,7 +53,8 @@ export function ThemeProvider({
   /** Binds the global `d` toggle; disable it where `d` is taken and call `useThemeKeybind` where it is free. */
   keybind?: boolean;
 }) {
-  const { appearance, toggleTheme } = useThemePreference(storageKey);
+  const { appearance, preference, setPreference, toggleTheme } =
+    useThemePreference(storageKey);
   useToggleThemeKeybind(toggleTheme, keybind);
   const isServerRendered = useIsServerRendered();
 
@@ -62,7 +66,9 @@ export function ThemeProvider({
   }, [appearance]);
 
   return (
-    <ThemeContext.Provider value={{ appearance, toggleTheme }}>
+    <ThemeContext.Provider
+      value={{ appearance, preference, setPreference, toggleTheme }}
+    >
       {/* The restore script rewrites the server-rendered scope before hydration. */}
       <ThemeScope
         appearance={appearance}

@@ -47,11 +47,7 @@ export const EventCalendarsList = ({
     );
   if (calendars === null) return null;
   if (calendars.length === 0) {
-    return (
-      <p className="text-sm text-gray-500 dark:text-gray-400">
-        {EMPTY_MESSAGE}
-      </p>
-    );
+    return <p className="text-sm text-muted-foreground">{EMPTY_MESSAGE}</p>;
   }
 
   return (
@@ -63,7 +59,7 @@ export const EventCalendarsList = ({
         return (
           <li
             key={calendar.id}
-            className="flex items-center justify-between gap-3 rounded-lg border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-900"
+            className="flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3"
           >
             <a
               href={calendar.url}
@@ -80,7 +76,7 @@ export const EventCalendarsList = ({
                 aria-label={visibilityLabel}
                 aria-pressed={!hidden}
                 title={visibilityLabel}
-                className="rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
               >
                 <VisibilityIcon size={16} />
               </button>
@@ -92,7 +88,7 @@ export const EventCalendarsList = ({
                   rel="noreferrer"
                   title={label}
                   aria-label={`Open ${calendar.name} in ${label} view`}
-                  className="rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                  className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
                   <Icon size={16} />
                 </a>

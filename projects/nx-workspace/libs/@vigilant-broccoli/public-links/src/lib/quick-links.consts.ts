@@ -19,6 +19,7 @@ import {
   GROK_LINK,
   OPENAI_LINK,
   OPENWEATHER_LINK,
+  RENDER_LINK,
   RESEND_LINK,
   ROBOFLOW_LINK,
   STRIPE_LINK,
@@ -30,6 +31,7 @@ import {
 export const LINK_GROUP_SUBGROUP = {
   UTILITY: 'Utility',
   CAREER: 'Career',
+  PERSONAL: 'Personal',
   LEISURE: 'Leisure',
   LEARN: 'Learn',
   FOR_LATER: 'For Later',
@@ -39,6 +41,7 @@ export const LINK_GROUP_SUBGROUP = {
   MESSAGING: 'Messaging',
   UI_APPS: 'UI Apps',
   AGENTIC: 'Agentic',
+  WORKFLOWS: 'Workflows',
 } as const;
 
 type LinkGroupSubgroup =
@@ -46,12 +49,13 @@ type LinkGroupSubgroup =
 
 export const toQuickLinks = (
   subgroup: LinkGroupSubgroup,
-  links: readonly { NAME: string; URL: string }[],
+  links: readonly { NAME: string; URL: string; EMBED?: boolean }[],
 ): QuickLink[] =>
-  links.map(({ NAME, URL }) => ({
+  links.map(({ NAME, URL, EMBED }) => ({
     label: NAME,
     target: URL,
     type: OPEN_TYPE.BROWSER,
+    ...(EMBED && { embed: true }),
     subgroup,
   }));
 
@@ -77,6 +81,7 @@ export const GENERIC_DEV_LINKS: QuickLink[] = [
     FLYIO_LINK.DASHBOARD,
     FLYIO_LINK.BILLING,
     FLYIO_LINK.DOCS,
+    RENDER_LINK.DASHBOARD,
     { NAME: 'AWS Free Tier', URL: 'https://aws.amazon.com/free/' },
     CLOUDFLARE_LINK.STATUS,
     {
@@ -179,7 +184,12 @@ export const VB_LINKS: QuickLink[] = [
     { NAME: 'VB - GitHub Pull Requests', URL: `${VB_GITHUB_REPO_URL}/pulls` },
     { NAME: 'VB - GitHub Projects', URL: `${VB_GITHUB_REPO_URL}/projects` },
     VB_APP_URL.PERSONAL_WEBSITE,
-    VB_APP_URL.UTILITIES,
+    VB_APP_URL.TEXT_TOOLS,
+    {
+      NAME: `${VB_APP_URL.TEXT_TOOLS.NAME} (Staging)`,
+      URL: VB_APP_URL.TEXT_TOOLS.STAGING_URL,
+    },
+    { ...VB_APP_URL.UTILITIES, EMBED: true },
     {
       NAME: `${VB_APP_URL.UTILITIES.NAME} (Staging)`,
       URL: VB_APP_URL.UTILITIES.STAGING_URL,
@@ -219,18 +229,30 @@ export const VB_LINKS: QuickLink[] = [
       NAME: `${VB_APP_URL.WHITEBOARD.NAME} (Staging)`,
       URL: VB_APP_URL.WHITEBOARD.STAGING_URL,
     },
+    VB_APP_URL.GAMES,
     VB_APP_URL.BALLOONO,
     {
       NAME: `${VB_APP_URL.BALLOONO.NAME} (Staging)`,
       URL: VB_APP_URL.BALLOONO.STAGING_URL,
     },
+    VB_APP_URL.GRAVITY_GUY,
+    {
+      NAME: `${VB_APP_URL.GRAVITY_GUY.NAME} (Staging)`,
+      URL: VB_APP_URL.GRAVITY_GUY.STAGING_URL,
+    },
     VB_APP_URL.EMPLOYEE_HANDLER_DEMO,
+    VB_APP_URL.JOB_HUNT_DEMO,
     VB_APP_URL.OFFICE_PRESENCE_DEMO,
-    VB_APP_URL.DOCS,
-    VB_APP_URL.CONTEXT,
+    { ...VB_APP_URL.DOCS, EMBED: true },
+    { ...VB_APP_URL.CONTEXT, EMBED: true },
     {
       NAME: `${VB_APP_URL.DOCS.NAME} (Staging)`,
       URL: VB_APP_URL.DOCS.STAGING_URL,
+    },
+    VB_APP_URL.GRIND_75,
+    {
+      NAME: `${VB_APP_URL.GRIND_75.NAME} (Staging)`,
+      URL: VB_APP_URL.GRIND_75.STAGING_URL,
     },
     {
       NAME: `${VB_APP_URL.CONTEXT.NAME} (Staging)`,
@@ -240,7 +262,7 @@ export const VB_LINKS: QuickLink[] = [
       NAME: `${VB_APP_URL.PERSONAL_WEBSITE.NAME} (Staging)`,
       URL: VB_APP_URL.PERSONAL_WEBSITE.STAGING_URL,
     },
-    VB_APP_URL.RESUME,
+    { ...VB_APP_URL.RESUME, EMBED: true },
     {
       NAME: `${VB_APP_URL.RESUME.NAME} (Staging)`,
       URL: VB_APP_URL.RESUME.STAGING_URL,

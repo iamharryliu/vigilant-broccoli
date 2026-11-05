@@ -1,13 +1,8 @@
 import { DemoSection } from './DemoSection';
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
-import { ImageCarouselDialog } from '@vigilant-broccoli/react-lib-media';
-import { Text, buttonVariants } from '@vigilant-broccoli/react-lib';
+import { buttonVariants } from '@vigilant-broccoli/react-lib';
 import { MarkdownViewer } from '@vigilant-broccoli/react-lib-higher-level';
-import checklistScreenshot from '../assets/docs-explorer/checklist.webp';
-import graphScreenshot from '../assets/docs-explorer/graph.webp';
-import searchScreenshot from '../assets/docs-explorer/search.webp';
-import treeScreenshot from '../assets/docs-explorer/tree.webp';
 
 const DOCS_URL = 'https://docs.harryliu.dev/';
 const README_PATH =
@@ -18,38 +13,18 @@ const REPO_BLOB_URL =
 
 const COPY = {
   VISIT: 'Open docs.harryliu.dev',
-  SCREENSHOTS: 'Screenshots',
-  SCREENSHOTS_HINT:
-    'Captured from the live site - click one to open it full screen.',
   README: 'Feature doc',
   LOADING: 'Loading feature doc...',
   ERROR: 'Failed to load feature doc',
-  ALT: 'Docs explorer screenshot',
 } as const;
-
-const SCREENSHOTS = [
-  { src: treeScreenshot, caption: 'File tree with the selected note rendered' },
-  {
-    src: searchScreenshot,
-    caption: 'Debounced search across filenames and content',
-  },
-  {
-    src: checklistScreenshot,
-    caption: 'Checklist view with per-file checkbox state',
-  },
-  { src: graphScreenshot, caption: 'Note graph in global scope' },
-];
 
 const CARD_CLASS =
   'rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden';
-const THUMBNAIL_CLASS =
-  'block w-full overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 cursor-pointer hover:border-gray-400 dark:hover:border-gray-500 transition-colors';
 const STATUS_CLASS = 'px-4 sm:px-6 py-4 text-sm';
 
 export const DocsExplorerDemo = () => {
   const [content, setContent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [carouselIndex, setCarouselIndex] = useState<number | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -83,42 +58,6 @@ export const DocsExplorerDemo = () => {
         <ExternalLink className="h-4 w-4" />
       </a>
 
-      <DemoSection title={COPY.SCREENSHOTS} className="flex flex-col gap-3">
-        <Text size="2" color="gray">
-          {COPY.SCREENSHOTS_HINT}
-        </Text>
-        <div className="grid gap-4 sm:grid-cols-2">
-          {SCREENSHOTS.map((screenshot, index) => (
-            <figure key={screenshot.src} className="flex flex-col gap-2">
-              <button
-                type="button"
-                onClick={() => setCarouselIndex(index)}
-                className={THUMBNAIL_CLASS}
-              >
-                <img
-                  src={screenshot.src}
-                  alt={`${COPY.ALT} - ${screenshot.caption}`}
-                  className="w-full"
-                />
-              </button>
-              <figcaption>
-                <Text size="1" color="gray">
-                  {screenshot.caption}
-                </Text>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-      </DemoSection>
-
-      <ImageCarouselDialog
-        images={SCREENSHOTS.map(screenshot => screenshot.src)}
-        initialIndex={carouselIndex ?? 0}
-        open={carouselIndex !== null}
-        onOpenChange={open => setCarouselIndex(open ? carouselIndex : null)}
-        alt={COPY.ALT}
-      />
-
       <DemoSection title={COPY.README} className="flex flex-col gap-3">
         <div className={CARD_CLASS}>
           {error && (
@@ -127,7 +66,9 @@ export const DocsExplorerDemo = () => {
             </p>
           )}
           {!error && content === null && (
-            <p className={`${STATUS_CLASS} text-gray-400`}>{COPY.LOADING}</p>
+            <p className={`${STATUS_CLASS} text-muted-foreground`}>
+              {COPY.LOADING}
+            </p>
           )}
           {!error && content && (
             <MarkdownViewer

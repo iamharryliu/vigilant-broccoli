@@ -2,10 +2,12 @@ name: cron-cleanup-preview-deployments
 
 # Previews are keyed on the PR number, so a closed PR — not a deleted branch —
 # is what makes one stale. A pull_request trigger can't be used here: this job
-# uses the shared github-actions identity, whose WIF provider refuses
-# pull_request and whose Vault role is bound to refs/heads/main. The daily
-# sweep is what collects closed PRs' previews, so one can outlive its PR by up
-# to a day; dispatch the workflow to collect it sooner.
+# uses the shared github-actions identity, whose WIF provider allows only
+# refs/heads/main and refs/heads/production and whose Vault role is bound to
+# refs/heads/main. Its push and scheduled runs, and dispatches against main,
+# pass both checks. The daily sweep is what collects closed PRs' previews, so
+# one can outlive its PR by up to a day; dispatch it on main to collect it
+# sooner.
 on:
   push:
     branches: [main]

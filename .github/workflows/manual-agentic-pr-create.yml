@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       prompt:
-        description: 'Task to solve. Mention TODO ids (e.g. "solve a1b2c3 and d4e5f6") to have the agent resolve those TODO.md rows.'
+        description: 'Task to solve. Mention TODO ids (e.g. "solve a1b2c3 and d4e5f6") to have the agent resolve those TODO.md rows. The run opens exactly one PR; a task too large for one is reported as no changes.'
         type: string
         required: true
       agent:

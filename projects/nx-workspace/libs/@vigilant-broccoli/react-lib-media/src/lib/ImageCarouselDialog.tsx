@@ -120,6 +120,7 @@ export function ImageCarouselDialog({
                 aria-label={`${GO_TO_IMAGE_LABEL_PREFIX} ${i + 1}`}
                 className={cn(
                   'h-2 w-2 rounded-full transition-colors',
+                  // eslint-disable-next-line vigilant-broccoli/require-dark-variant -- indicator dots overlay the dark media backdrop
                   i === index ? 'bg-white' : 'bg-white/30',
                 )}
               />

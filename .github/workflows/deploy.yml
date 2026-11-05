@@ -36,9 +36,8 @@ concurrency:
   # push that happen to share a ref (e.g. production dispatched from `main`)
   # never land in the same group — one environment can never cancel the other.
   group: deploy-${{ github.ref }}-${{ inputs.environment || (github.ref_name == 'production' && 'production' || 'staging') }}
-  # Staging's next run redeploys everything affected anyway, so cancelling a
-  # superseded one loses nothing; production is never interrupted midway.
-  cancel-in-progress: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) != 'production' }}
+  # Render provisioning must finish before another run can reuse its service.
+  cancel-in-progress: ${{ (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) != 'production' && vars.RENDER_LLM_STAGING_ENABLED != 'true' }}
 
 env:
   DOCKERHUB_USERNAME: iamharryliu
@@ -146,6 +145,9 @@ jobs:
           echo "packages=${NAMES#,}" >> $GITHUB_OUTPUT
 
   deploy-apps:
+    concurrency:
+      group: ${{ vars.RENDER_LLM_STAGING_ENABLED == 'true' && (inputs.environment || (github.ref_name == 'production' && 'production' || 'staging')) == 'staging' && 'render-llm-staging' || format('deploy-apps-{0}', github.run_id) }}
+      cancel-in-progress: false
     needs: gitleaks
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -163,6 +165,8 @@ jobs:
       - name: Check if deployment needed
         id: check
         working-directory: ./projects/nx-workspace
+        env:
+          RENDER_LLM_STAGING_ENABLED: ${{ vars.RENDER_LLM_STAGING_ENABLED }}
         run: |
           CHANGED_FILES=$(git diff --name-only $NX_BASE $NX_HEAD 2>/dev/null || echo "")
           DEPLOY_YML_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^\.github/workflows/deploy\.yml$" || true)
@@ -172,17 +176,22 @@ jobs:
             DEPLOY_TARGET="deploy:production"
           fi
 
+          RUN_TARGETS="$DEPLOY_TARGET"
+          if [[ "$DEPLOY_ENVIRONMENT" == "staging" && "$RENDER_LLM_STAGING_ENABLED" == "true" ]]; then
+            RUN_TARGETS="deploy,deploy:render"
+          fi
+
           if [[ "${{ github.event_name }}" == "workflow_dispatch" || "$DEPLOY_ENVIRONMENT" == "production" || "$DEPLOY_YML_CHANGED" -gt 0 ]]; then
             ALL_COMMA=$(pnpm exec nx show projects --withTarget=$DEPLOY_TARGET | tr '\n' ',' | sed 's/,$//')
             echo "has_deployments=true" >> $GITHUB_OUTPUT
             echo "projects=$ALL_COMMA" >> $GITHUB_OUTPUT
-            echo "deploy_cmd=pnpm exec nx run-many -t $DEPLOY_TARGET" >> $GITHUB_OUTPUT
+            echo "deploy_cmd=pnpm exec nx run-many -t $RUN_TARGETS" >> $GITHUB_OUTPUT
           else
             AFFECTED_COMMA=$(pnpm exec nx show projects --affected --withTarget=$DEPLOY_TARGET --base=$NX_BASE --head=$NX_HEAD | tr '\n' ',' | sed 's/,$//')
             if [[ -n "$AFFECTED_COMMA" ]]; then
               echo "has_deployments=true" >> $GITHUB_OUTPUT
               echo "projects=$AFFECTED_COMMA" >> $GITHUB_OUTPUT
-              echo "deploy_cmd=pnpm exec nx run-many -t $DEPLOY_TARGET --projects=\"$AFFECTED_COMMA\"" >> $GITHUB_OUTPUT
+              echo "deploy_cmd=pnpm exec nx run-many -t $RUN_TARGETS --projects=\"$AFFECTED_COMMA\"" >> $GITHUB_OUTPUT
             else
               echo "has_deployments=false" >> $GITHUB_OUTPUT
             fi
@@ -224,7 +233,7 @@ jobs:
 
       - name: Log in to Docker Hub
         if: steps.check.outputs.has_deployments == 'true'
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4
         with:
           username: ${{ env.DOCKERHUB_USERNAME }}
           password: ${{ env.DOCKERHUB_TOKEN }}
@@ -263,7 +272,21 @@ jobs:
           CF_ACCESS_CLIENT_SECRET: ${{ steps.cf-access.outputs.CF_ACCESS_CLIENT_SECRET }}
           NX_SELF_HOSTED_REMOTE_CACHE_SERVER: https://nx-cache.harryliu.dev
           NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN: ${{ env.NX_SELF_HOSTED_REMOTE_CACHE_ACCESS_TOKEN }}
+          RENDER_OWNER_ID: ${{ vars.RENDER_OWNER_ID }}
         run: ${{ steps.check.outputs.deploy_cmd }}
+
+      # Every Docker Hub repo's description and overview come from the
+      # pages-index image registry; syncing all of them is a dozen idempotent
+      # API calls, so it does not need to track which images this run pushed.
+      # Not load-bearing for the deploy, hence continue-on-error.
+      - name: Sync Docker Hub descriptions
+        if: steps.check.outputs.has_deployments == 'true'
+        continue-on-error: true
+        working-directory: ./projects/nx-workspace
+        env:
+          DOCKERHUB_USERNAME: ${{ env.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ env.DOCKERHUB_TOKEN }}
+        run: pnpm exec tsx scripts/update-dockerhub-descriptions.ts
 
       # Cloudflare proxies api.harryliu.dev to the fly app, so fly needs a cert
       # for that hostname or the origin TLS handshake fails. `certs add` errors

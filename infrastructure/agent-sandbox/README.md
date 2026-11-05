@@ -8,7 +8,8 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 - [Local Ollama agent](#local-ollama-agent)
 - [Running on the code-server VM](#running-on-the-code-server-vm)
 - [Running in CI](#running-in-ci)
-- [Publishing several pull requests](#publishing-several-pull-requests)
+- [Publishing a pull request](#publishing-a-pull-request)
+- [PR screenshots](#pr-screenshots)
 - [Ending without changes](#ending-without-changes)
 - [Auditing the backlog](#auditing-the-backlog)
 - [Pruning dead code and stale docs](#pruning-dead-code-and-stale-docs)
@@ -27,9 +28,10 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
   - `pnpm agentic:dev-sandbox:codex:yolo`: Codex with approvals and its sandbox disabled.
 - `pnpm agentic:dev-sandbox:shell` opens Bash directly. Interactive shell and CLI launchers treat status 130 (Ctrl-C, including a subsequent bare `exit` in Bash) as a normal exit so pnpm does not print a lifecycle error. Other failure statuses are preserved, and Docker CLI hints are disabled for these launchers.
 - Each command creates or reattaches its own `<agent>-<mode>` tmux session in the sandbox checkout. CLI arguments apply when creating the session; Claude defaults to Sonnet and accepts `--model <model>` overrides. Existing `cli` and `codexyolo` sessions are left running; the new commands use separate sessions.
-- Container dev-server ports 3000, 4200 and 8080 are published on the Mac loopback as `127.0.0.1:13000`, `14200` and `18080`, so they never collide with app dev servers running on the host (e.g. `vb-manager-next-mobile` on 3000). Open `http://localhost:13000` for an app listening on 3000 inside the sandbox; bind the app to `0.0.0.0` in the container.
+- Container dev-server ports 3000, 4200 and 8080 are published on the Mac loopback as `127.0.0.1:13000`, `14200` and `18080`, so they never collide with app dev servers running on the host (e.g. `mobile-manager-next` on 3000). Open `http://localhost:13000` for an app listening on 3000 inside the sandbox; bind the app to `0.0.0.0` in the container.
 
 - The image installs `zsh` from apt and a pinned `mise` (`MISE_VERSION` build arg in the Dockerfile) at `/usr/local/bin/mise`. Both are fetched at build time, outside the egress firewall.
+- The image also bakes in Playwright's headless Chromium shell (`PLAYWRIGHT_VERSION` build arg, default matching the workspace lockfile) under `~agent/.cache/ms-playwright`, because the `resume-pdf-fit` pre-commit hook renders the resume PDF and the egress firewall blocks a runtime browser download. Bump the arg with the root `playwright` dependency.
 - `agent` keeps bash as its login shell because the runners and entrypoint are bash scripts. The entrypoint runs `setup/linux/install.sh -y`, which hooks `setup/dotfiles/bash/.rc.bash` into `~/.bashrc` and `setup/dotfiles/zsh/.rc.linux.zsh` into `~/.zshrc`; both activate mise. Run `zsh` for an interactive zsh session with the repo aliases.
 - Tool versions come from the root `mise.toml`. Run `mise install` in the checkout to fetch them; the default allowlist covers the hosts these tools download from: `mise.jdx.dev` and `mise-versions.jdx.dev` (version metadata), `releases.hashicorp.com` (Terraform, Packer), `nodejs.org` (Node) and the GitHub release asset hosts `objects.githubusercontent.com` and `release-assets.githubusercontent.com` (standalone Python). A newly pinned tool that downloads elsewhere needs its host added via `SANDBOX_ALLOWED_DOMAINS`, or run with the firewall off.
 
@@ -43,23 +45,27 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
   ```
 - Keep Ollama on its default `127.0.0.1` listener: Docker Desktop on macOS reaches it through its built-in `host.docker.internal`, and the LAN cannot. On Linux the adapter adds `--add-host host.docker.internal:host-gateway`, which only a non-loopback listener answers, so there set `OLLAMA_HOST=0.0.0.0:11434`; that exposes Ollama to the LAN, so restrict port 11434 with the host firewall (Ollama's API has no authentication). The sandbox keeps its egress firewall enabled and allows the host Ollama port.
 - Ollama uses the image's existing Claude Code tool harness through its [Anthropic-compatible API](https://docs.ollama.com/integrations/claude-code). Model inference is free and self hosted; no Claude subscription or model API credentials are needed. Local mode rejects cloud tags and cloud-backed models, strips model-provider credentials and disables the harness's nonessential traffic and hosted web tools. GitHub and package registries remain available for checkout and tooling; this is not an offline sandbox.
-- Preview runs do not fetch Vault credentials, commit, push or open PRs. Each run clones fresh remote main into a separate checkout under the printed `/tmp/vb-local-solve.*` directory, retaining code, `.git/solve-meta.json` and `run.log` after success or failure. Your current checkout and uncommitted edits are not inputs. Review with `git -C <printed-checkout> diff`; preview runs implement only the first increment and record follow-ups in metadata.
-- `--agent ollama --publish` explicitly enables the existing GitHub PR/increment pipeline, using an exported `GH_TOKEN` or the existing Vault GitHub credentials. It still uses only the local model. TODO jobs run sequentially in both modes to limit inference memory pressure.
+- Preview runs do not fetch Vault credentials, commit, push or open PRs. Each run clones fresh remote main into a separate checkout under the printed `/tmp/vb-local-solve.*` directory, retaining code, `.git/solve-meta.json` and `run.log` after success or failure. Your current checkout and uncommitted edits are not inputs. Review with `git -C <printed-checkout> diff`; preview runs implement the one change and record nothing else.
+- `--agent ollama --publish` explicitly enables the existing GitHub PR pipeline, using an exported `GH_TOKEN` or the existing Vault GitHub credentials. It still uses only the local model. TODO jobs run sequentially in both modes to limit inference memory pressure.
 - Override the model with `--ollama-model <local-tag>` or `OLLAMA_MODEL`; override the host port with `OLLAMA_BASE_URL=http://host.docker.internal:<port>`. The model must already be pulled and support tools. The adapter rebuilds the Docker image and checks model availability before every batch. `--local` is shorthand for `--agent ollama`; Actions retains its existing hosted agent choices.
 
 ## Running on the code-server VM
 
-- `pnpm agentic-pr-create --vm <id...>` or `--vm --prompt "<task>"` runs the solve in the code-server container on the OCI VM instead of a local Docker sandbox, so the Mac can sleep or disconnect while it runs. Claude only; `--model` still applies.
-- `solve-vm.sh` loads the GitHub App credentials from Vault, delivers a fresh 1-hour installation token to the VM (the same file `manual-refresh-code-server-github-token` writes), then streams `solve-vm-session.sh` into the container over `pnpm code-server:ssh`'s SSH path. Every request gets its own worktree of `/config/vigilant-broccoli` off fresh `origin/main` and a detached tmux session running `solve-todo-runner.sh`, which publishes PRs exactly as the sandbox does.
+- `pnpm agentic-pr-update --vm [--agent codex] [--codex-model <m>] [--codex-signed-in] [--operation change|fix-ci|resolve-conflicts] [--with-ci-logs] <pr> ["<instruction>"]` updates the PR's existing branch using the same SSH, Vault/GitHub App token delivery, signed-in Codex handling and detached session adapter as create. Codex flags require `--vm --agent codex`; local Docker updates remain Claude-only. `change` requires an instruction, `fix-ci` accepts extra guidance and implies CI logs, and `resolve-conflicts` accepts no instruction. `/remote-update-pr-codex [pr] [instruction]` researches locally and reports the run name and log without waiting.
+- VM updates stream the local `update-pr-runner.sh` and VM provider helper outside the worktree, preserving them across the runner's checkout of the existing PR branch. Canonical skills and other helpers come from fresh `origin/main` before PR checkout. Temporary helpers and CI logs live in each run directory; a per-PR lock rejects concurrent VM updates to the same branch. Successful updates remove the worktree, retaining the PR's local branch; failures retain the worktree and log for inspection.
+
+- `pnpm agentic-pr-create --vm <id...>` or `--vm --prompt "<task>"` runs the solve in the code-server container on the OCI VM instead of a local Docker sandbox, so the Mac can sleep or disconnect while it runs. Claude by default; `--agent codex [--codex-model <m>]` runs Codex instead, with either a Vault access token or the login made on the VM (below). `--model` still applies to Claude, and `--local`/`--agent ollama` are rejected.
+- `solve-vm.sh` loads the GitHub App credentials from Vault, delivers a fresh 1-hour installation token to the VM (the same file `manual-refresh-code-server-github-token` writes), then streams `solve-vm-session.sh` into the container over `pnpm code-server:ssh`'s SSH path. For `--agent codex` the Vault `AGENT_CODEX_ACCESS_TOKEN` is prepended to that same SSH stdin, so it is never in argv, Terraform state or cloud-init (unlike `CLAUDE_CODE_OAUTH_TOKEN`, which is baked in, so a Codex token rotation needs no VM replace). `solve-vm-session.sh` hands it to each run through a `0600` file in the run directory that `run_solve` deletes before the runner starts; the runner then logs Codex into a throwaway home outside `/tmp` and unsets the variable, so the agent cannot read it. Every request gets its own worktree of `/config/vigilant-broccoli` off fresh `origin/main` and a detached tmux session running `solve-todo-runner.sh`, which publishes PRs exactly as the sandbox does.
+- Signed-in Codex: when Vault has no `AGENT_CODEX_ACCESS_TOKEN`, or with `--vm --agent codex --codex-signed-in`, solves use the Codex login in the container's `/config/.codex` instead (the runner's `CODEX_SIGNED_IN=1` mode: no throwaway home, no token delivery). Sign in once from the VM: open the web terminal at `shell.harryliu.dev` (or `pnpm code-server:ssh`) and run `codex login --device-auth`, whose device-code flow works headless. `solve-vm.sh` checks for `/config/.codex/auth.json` before launching and fails with that instruction if neither a token nor a login exists. A Vault token still wins unless `--codex-signed-in` is passed, so token mode is unchanged. Tradeoffs: the login expires and needs a fresh `codex login` when it does; the agent runs as the same user and can read `auth.json`, unlike the throwaway-home token mode; and the VM has no egress firewall. `/config` is the `code_server_config` Docker volume, so the login survives the 15-minute image-update recreate but not a VM replace (`code-server:replace`/`reset`), after which sign in again.
 - Concurrent runs are isolated by worktree, run directory and tmux session; fetches are serialized with `flock`. All runs share one token file, so each launch extends earlier runs, but a run still has to push within an hour of the latest launch. The VM's 2 OCPUs and 14 GB, shared with code-server, are the practical limit: about two or three solves at once.
 - Logs live in `/config/agentic-runs/<run>/run.log` (ending with `RUN_EXIT::<status>`); in the code-server terminal, `tmux ls` lists running solves and `tmux attach -t <run>` follows one. A successful run removes its worktree and local `agent/*` branches; a failed one keeps the worktree for inspection.
-- Unlike the Docker sandbox there is no egress firewall: the agent runs as the container's `abc` user, alongside the code-server password and Claude token in its environment, so the runner's default auto permission mode (see [Running in CI](#running-in-ci)) is the main guard. Runner and skill updates take effect from `main`, since each worktree checks out `origin/main`.
+- Unlike the Docker sandbox there is no egress firewall: the agent runs as the container's `abc` user, alongside the code-server password and Claude token in its environment (the Codex token is not left there), so the runner's default auto permission mode (see [Running in CI](#running-in-ci)) is the main guard. Create runner and skill updates take effect from `main`, since create worktrees check out `origin/main`; updates stream their runner from the invoking checkout and load canonical skills from fresh `origin/main` before checking out the PR. Codex is in the VM image only after `deploy-code-server-image` publishes it and the 15-minute `code-server-update.timer` recreates the container.
 
 ## Running in CI
 
-Plan- and Develop-phase agents, backlog auditing, documentation and context auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`agentic-pr-create-todo-audit`, `agentic-pr-create-audit`, `agentic-pr-create-context-audit`, `agentic-pr-create-comment-audit`, `agentic-pr-create-free-tier-audit`, `agentic-pr-create-inventory-audit`, `agentic-pr-create-prune`, `agentic-pr-create-url-audit`, `update-readmes` (run by `agentic-pr-create-readmes`), `agentic-pr-create-todo`, `agentic-pr-create-rnd`, `agentic-pr-create`, `agentic-pr-update`, `agentic-pr-update-fix-ci`, `agentic-pr-update-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
+Plan- and Develop-phase agents, backlog auditing, documentation and context auditing and pruning load their task instructions from the canonical `setup/dotfiles/agent-skills/<name>/SKILL.md` files (`local-create-pr-todo-audit`, `local-create-pr-audit`, `local-create-pr-context-audit`, `local-create-pr-comment-audit`, `local-create-pr-free-tier-audit`, `local-create-pr-inventory-audit`, `local-create-pr-prune`, `local-create-pr-url-audit`, `update-readmes` (run by `agentic-pr-create-readmes`), `local-create-pr-todo`, `local-create-pr`, `local-update-pr`, `local-update-pr-fix-ci`, `local-update-pr-resolve-conflicts`) used by local agent sessions. The runners add sandbox execution rules and PR metadata requirements; they own branching, validation, commits, pushes and PR creation. Editing a shared skill updates both execution paths. The Actions, Docker Sandbox and Local entry points of one operation share one task contract; the differences that are intentional (Actions' prompt-only create input versus local per-id batching, Claude-only operations, hosted summaries and email) are listed in [entry-point parity](../../docs/agent-support.md#entry-point-parity).
 
-`agentic-pr-create` Claude solves run in auto permission mode (`--permission-mode auto`): a classifier approves routine edits and checks and blocks risky actions such as exfiltration, credential reads or running downloaded code. Headless runs have nobody to approve a blocked action, so the agent must work around it, and repeated blocks can end the run early. Export `SOLVE_PERMISSION_MODE=bypass` before a Docker sandbox run to restore `--dangerously-skip-permissions`; Ollama solves always bypass, since the classifier needs an Anthropic model.
+Unattended Claude runs (`agentic-pr-create` solves and every create, update, audit, prune and README runner) use auto permission mode (`--permission-mode auto`): a classifier approves routine edits and checks and blocks risky actions such as exfiltration, credential reads or running downloaded code. Headless runs have nobody to approve a blocked action, so the agent must work around it, and repeated blocks can end the run early. Export `SOLVE_PERMISSION_MODE=bypass` before a Docker sandbox run to restore `--dangerously-skip-permissions`; each wrapper forwards the variable into the container. Ollama solves always bypass, since the classifier needs an Anthropic model.
 
 `pnpm agentic-pr-create <ID...>` runs `solve-todo.sh` locally. The same solve runs in GitHub Actions via the
 `manual-agentic-pr-create` workflow (`workflow_dispatch`) — it builds and runs this container on the `ubuntu-24.04`
@@ -70,23 +76,15 @@ from Vault, the script skips the local Vault-over-SSH load and mints the install
 - Dispatch: `gh workflow run manual-agentic-pr-create.yml -f prompt="<task>"`, with optional `-f agent=claude|codex`,
   `-f model=` for Claude, `-f codex_model=` for Codex, and `-f firewall=off`. The workflow has no separate TODO id input:
   mention ids in the prompt (`-f prompt="solve a1b2c3"`) and the agent resolves those `TODO.md` rows and the runner removes the ones it fully resolved
-  once done. Use `pnpm agentic-pr-create <id...>` locally to solve several ids as parallel runs, one per id (each may itself publish more than one PR).
+  once done. Use `pnpm agentic-pr-create <id...>` locally to solve several ids as parallel runs, one per id (each publishes one PR).
+- From a Claude Code or Codex session, `/gh-create-pr [request]` researches the request locally, asks any blocking questions, then dispatches the workflow with a self-contained prompt (after your confirmation when it asked). `/local-docker-create-pr-claude [request]` and `/local-docker-create-pr-codex [request]` do the same research but start a background `pnpm agentic-pr-create --prompt` solve (`--agent codex` for Codex) instead. `/remote-create-pr-codex [request]` does the same research but runs `pnpm agentic-pr-create --vm --agent codex --prompt` on the code-server VM.
 - Smoke test: dispatch `manual-agentic-pr-create-smoke` (`gh workflow run manual-agentic-pr-create-smoke.yml`) to run the whole
   pipeline against a canned one-line prompt and check the notification email. Pass `-f agent=codex` to smoke-test the
   Codex path. It opens a disposable PR; close it after.
-- Notification: the workflow emails the outcome with each PR's title, summary, link, base and full diff, rendered as a
-  GitHub-style patch, and lists any planned increment that was not published. The runner prints one record per PR
-  (`PR_TITLE::`, `PR_URL::`, `PR_STATE::`, `PR_BASE::`, `PR_DEPENDS_ON::`, `PR_SUMMARY_*` and `PR_DIFF_BEGIN`/`PR_DIFF_END`),
+- Notification: the workflow emails the outcome with each PR's title, summary, link and full diff, rendered as a
+  GitHub-style patch. The runner prints one record per PR
+  (`PR_TITLE::`, `PR_URL::`, `PR_STATE::`, `PR_FILES::`, `PR_SUMMARY_*` and `PR_DIFF_BEGIN`/`PR_DIFF_END`),
   `solve-todo.sh` collects them into a JSON Lines file, and `.github/scripts/agentic-solve-email.mjs` renders and sends it.
-
-`pnpm agentic-pr-create-rnd "<question>"` runs `create-rnd.sh` locally. The `manual-agentic-pr-create-rnd` workflow runs the same command
-on a hosted runner using the existing Claude and GitHub App credentials from Vault. It researches the question,
-writes a new note under `docs/rnd/`, and opens a PR; changes outside `docs/rnd/` fail the run.
-
-- GitHub UI: **Actions → manual-agentic-pr-create-rnd → Run workflow** on `main`; enter a research question and optionally choose a model
-  (default `sonnet`) or disable the firewall.
-- CLI: `gh workflow run manual-agentic-pr-create-rnd.yml -f question="<question>"`, with optional `-f model=opus` or `-f firewall=off`.
-- Runs queue behind an active R&D run; the job has a 60-minute timeout. The PR link is written to the run's job summary.
 
 Codex uses a dedicated ChatGPT/Codex access token, not the app's `OPENAI_API_KEY`:
 
@@ -122,35 +120,38 @@ A `change` instruction can be TODO-only: naming a `TODO.md` row id and asking to
 
 `pnpm agentic-pr-update --operation resolve-conflicts <pr>` is also used by `manual-agentic-pr-update` with `operation=resolve-conflicts`. It accepts no instruction, enables the merge of `origin/main`, and selects the shared conflict-resolution skill in the existing PR-update runner.
 
-## Publishing several pull requests
+## Publishing a pull request
 
-`pnpm agentic-pr-create` (and its `manual-agentic-pr-create` workflow) and the change operation of `pnpm agentic-pr-update`
-(`manual-agentic-pr-update`) share `pr-increments.sh`, sourced by `solve-todo-runner.sh` and `update-pr-runner.sh`. A simple
-task is still one PR. When the first agent run judges the request too large or bundled, it implements the first increment and
-lists the rest in an `increments` array in its metadata file (contract in
-[agent support](../../docs/agent-support.md#increment-contract)). The runner then:
+`pnpm agentic-pr-create` (and its `manual-agentic-pr-create` workflow) and `pnpm agentic-pr-update` (`manual-agentic-pr-update`)
+always produce exactly one PR; nothing splits or stacks. A task too large for one PR is a no-change decision: the agent
+writes `no_changes_reason`, the runner prints `RESULT::no-changes` ([task contract](../../docs/agent-support.md#task-contract)),
+and a human or a `TODO.md` row re-scopes it.
 
-- validates the whole plan before publishing anything (at most 4 later increments, unique ids, one earlier prerequisite each,
-  TODO ids that exist, are named in the request and are assigned once) and fails the run on a bad plan, saving the first
-  increment's work as a draft PR;
-- publishes the first increment, then runs a fresh agent per later increment on its own branch: an independent one from
-  `origin/main` targeting `main`, a dependent one from its prerequisite's branch targeting that branch, so its diff is only its
-  own increment even where several increments edit the same file;
-- removes from `TODO.md` only the rows each increment declares in `todo_ids`, on that increment's branch, and fails an
-  increment that deleted any other row;
-- gives every PR its own title, summary, next steps, suggestions and history row, plus a `## Stack` section with the merge
-  order, refreshed on every PR once all are open;
-- stops at the first failing increment, saves its partial work as a draft PR, prints `INCREMENT_UNPUBLISHED::` for it and
-  every increment not attempted, and exits non-zero, leaving the PRs already opened in place. Later increments run
-  sequentially in the same container, so the workflow's 60-minute timeout covers the whole set.
+`publish-pr.sh`, sourced by `solve-todo-runner.sh` (and by `update-pr-runner.sh` for its TODO helpers), holds the shared steps:
 
-`update-pr-runner.sh` does the same for follow-ups an update surfaces, leaving the target PR to its own purpose; fix-CI and
-conflict-resolution updates never split. If the target update fails before its push, recovery uses a separate draft branch
-targeting the original PR branch. Recovery restores unresolved TODO rows and respects commit hooks; if hooks or GitHub
-publication fail, the log reports that recovery failed rather than claiming the work was saved. Git, pushes and PR creation stay in the runner with the credentials it already
-has; branches are only created and pushed, never force-pushed. Squash-merge implications of stacked PRs are in
-[Stacked pull requests](../../docs/git-workflow.md#stacked-pull-requests). The container copies `solve-todo-runner.sh`,
-`pr-increments.sh`, `commit-subject.sh` and `no-changes.sh` into the image, so rebuild it (`docker compose build`) after changing any of them when running locally. Every runner sources `commit-subject.sh` to capitalize commit messages and PR titles, end them with a period and strip trailing ellipses, so they pass the CI `commitlint` job.
+- validates the agent's `todo_ids` (6-hex ids that have a row and are named in the request) before publishing, and removes
+  from `TODO.md` only those rows, failing a run that deleted any other row;
+- commits, pushes and opens the PR with its title, summary, next steps, concerns, suggestions, screenshots and history row;
+- when a create run fails, saves its partial work as a draft PR and prints a `RESULT::` marker saying what became of it. A
+  failed update publishes nothing.
+
+Git, pushes and PR creation stay in the runner with the credentials it already has; branches are only created and pushed,
+never force-pushed. The container copies `solve-todo-runner.sh`, `publish-pr.sh`, `commit-subject.sh` and `no-changes.sh`
+into the image, so rebuild it (`docker compose build`) after changing any of them when running locally. Every runner sources `commit-subject.sh` to capitalize commit messages and PR titles, end them with a period, strip trailing ellipses, lower-case the scope and reject types outside `COMMIT_TYPES` (a mirror of `type-enum` in `commitlint.config.mjs`) in favor of the run's fallback subject, so they pass the CI `commitlint` job without a workspace install in the sandbox.
+
+## Metadata file
+
+Agents write a JSON metadata file (`/tmp/solve-meta.json` and the per-operation `/tmp/*-meta.json`). Raw newlines or tabs inside string values, typically in the multi-line markdown fields, make `jq` fail. Right after the agent finishes, every runner calls `normalize_meta` from `no-changes.sh`: a file `jq` already parses is untouched, otherwise it is re-parsed with Python's non-strict `json.loads` and rewritten as valid JSON in place, and a file that still does not parse is left for the runner's own error or salvage path.
+
+## PR screenshots
+
+Screenshots are required only when the changed page or component is reachable and renderable without authentication. If authentication or unavailable dependencies (a missing backend or secrets, or port conflicts) prevent exercising it in a browser, do not attempt or retry screenshots and do not mention missing screenshots as a PR concern or in `PR_CONCERNS`. For eligible UI work, the agent lists the current task's captured PNG paths in the `pr_screenshots` metadata array, relative to the repository root (for example, `projects/nx-workspace/screenshots/localhost-3100-phone-light.png`). Create and update runners copy only those selected files into `.github/pr-screenshots/<sha256>.png` before their normal checks and commit. Invalid paths and non-PNG files fail publishing. Identical captures reuse the same asset path.
+
+After committing, `pr-screenshots.py` verifies each asset's committed bytes and generates inline images for `merge-pr-body.py`'s `PR_SCREENSHOTS` input. Links use `../blob/<commit>/.github/pr-screenshots/<sha256>.png?raw=true`, following [GitHub's relative image syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#images). Captures remain available after VM cleanup and branch deletion, and become part of repository history. No upload service, extra credentials or Actions artifact download is needed.
+
+The `## Screenshots` section contains a collapsible `<details><summary>Screenshots</summary>` block with blank lines around the images. It is the last section, after Concerns, Suggestions and `## Agentic Change History`, followed only by the footer. The merger moves and wraps existing legacy screenshot sections even when preserving their contents.
+
+A new screenshot set replaces the PR's Screenshots section. Updates without captures preserve the existing section; an explicitly empty `PR_SCREENSHOTS` removes it. Local `ship-pr` uses the same helper with explicit paths, as described in the [UI task contract](../../docs/agent-support.md#task-contract).
 
 ## Ending without changes
 
@@ -169,14 +170,14 @@ optional `no_changes_reason` in its metadata file and handles it through `no-cha
 
 ## Auditing the backlog
 
-`pnpm agentic-pr-create-todo "<description>"` runs `create-todo.sh`. It refines the initial request using repo research, writes one actionable TODO entry, and includes the refined prompt in the PR summary. Use `/agentic-pr-create-todo <description>` locally. The `manual-agentic-pr-create-todo` workflow runs the same command on a hosted runner; runs queue behind an active one so rows do not conflict.
+`pnpm agentic-pr-create-todo "<description>"` runs `create-todo.sh`. It refines the initial request using repo research, writes one actionable TODO entry, and includes the refined prompt in the PR summary. Use `/local-create-pr-todo <description>` locally. The `manual-agentic-pr-create-todo` workflow runs the same command on a hosted runner; runs queue behind an active one so rows do not conflict.
 
 - CLI: `gh workflow run manual-agentic-pr-create-todo.yml -f description="<description>"`, with optional `-f model=opus` or `-f firewall=off`.
-- From a Claude Code or Codex session, `/create-todo [description]` writes a self-contained description from the request or, without one, the conversation's latest identified improvement, then dispatches it.
+- From a Claude Code or Codex session, `/gh-create-todo [description]` writes a self-contained description from the request or, without one, the conversation's latest identified improvement, then dispatches it.
 
 `pnpm agentic-pr-create-todo-audit` runs `audit-todo.sh`, the counterpart to `create-todo.sh`: instead of adding a row it
 re-verifies the ones already there against the current tree, deleting rows whose problem is genuinely fixed and correcting
-rows whose paths, line numbers, counts or scope have drifted. `cron-agentic-pr-create-todo-audit` runs the same script weekly.
+rows whose paths, quoted snippets, counts or scope have drifted. `cron-agentic-pr-create-todo-audit` runs the same script weekly.
 
 - Dispatch: `gh workflow run cron-agentic-pr-create-todo-audit.yml` (optional `-f model=`, `-f firewall=off`).
 - A clean audit opens no PR — `audit-todo-runner.sh` prints `AUDIT_CLEAN` and exits 0 rather than raising an empty PR.
@@ -242,7 +243,7 @@ weekly (Sunday 06:40 UTC) and on dispatch. Spec/route drift lives in code, so it
 
 - Dispatch: `gh workflow run cron-agentic-pr-create-audit.yml` (optional `-f model=`, `-f firewall=off`).
 - A clean run opens no PR — `audit-docs-runner.sh` prints `AUDIT_CLEAN` and exits 0.
-- The runner refuses to commit if any non-Markdown file changed, if `notes/`, `docs/rnd/`, `docs/learning-timeline.md`,
+- The runner refuses to commit if any non-Markdown file changed, if `notes/`, `docs/learning-timeline.md`,
   `TODO.md` or a changelog changed, or if more than 15 files changed. The skill fills the cap highest-value first and
   lists the rest as skipped in the PR body, so a re-run picks them up.
 
@@ -267,14 +268,15 @@ opens one PR citing where each removed fact is retained. It runs Opus by default
 
 - Dispatch: `gh workflow run cron-agentic-pr-create-context-audit.yml` (optional `-f model=`, `-f firewall=off`).
 - A clean run opens no PR — `audit-context-runner.sh` prints `AUDIT_CLEAN` and exits 0.
-- The runner refuses to commit if any file outside that scope changed (including `notes/`, `docs/rnd/`,
+- The runner refuses to commit if any file outside that scope changed (including `notes/`,
   `docs/learning-timeline.md` and `TODO.md`), if a file was created, deleted or changed type (an adapter symlink
   rewritten as a regular file), if a `SKILL.md` frontmatter block changed, or if more than 15 files changed.
 
 ## Auditing the public URL registry
 
 `pnpm agentic-pr-create-url-audit` runs `audit-urls.sh`, which checks that every public URL (each environment and demo) has
-an Upptime entry, a pages-index card and a browser quick link, then opens one PR fixing drift.
+an Upptime entry, a pages-index card and a browser quick link, and every published Docker image a pages-index registry
+entry and a README Containers row, then opens one PR fixing drift.
 `cron-agentic-pr-create-url-audit` runs the same script weekly (`55 6 * * 0`).
 
 - Dispatch: `gh workflow run cron-agentic-pr-create-url-audit.yml` (optional `-f model=`, `-f firewall=off`).

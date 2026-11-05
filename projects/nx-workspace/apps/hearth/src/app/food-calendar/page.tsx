@@ -1,7 +1,7 @@
 'use client';
 
 import { Text, cn } from '@vigilant-broccoli/react-lib';
-import { KitchenEvents } from '../food-planner/KitchenEvents';
+import { KitchenEvents } from '../kitchen-planner/KitchenEvents';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 import {
   FULL_HEIGHT_PAGE_CLASS,

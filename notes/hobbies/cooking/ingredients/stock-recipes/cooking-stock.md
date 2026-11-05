@@ -6,6 +6,7 @@
 - [Aromatics](#aromatics)
 - [Optional](#optional)
 - [Other Additions](#other-additions)
+- [Vegetable Scraps](#vegetable-scraps)
 - [Instructions](#instructions)
 - [Notes](#notes)
 - [References](#references)
@@ -48,6 +49,21 @@
 | Parsley Stems | Fresh herbal flavor |
 | Rosemary | Strong; use sparingly |
 | Thyme | Classic Western stock flavor |
+
+## Vegetable Scraps
+
+| Ingredient | Effect |
+| --- | --- |
+| Carrot Peels and Ends | Sweetness, color |
+| Celery Leaves and Butt | Vegetal backbone, mild bitterness |
+| Corn Cobs | Milky sweetness and a little starchy body |
+| Garlic Skins and Nubs | Savory depth without the harshness of cloves |
+| Ginger Peels | Bright, warming |
+| Herb Stems | Fresh herbal flavor; parsley and cilantro |
+| Leek and Scallion Tops | Fresh onion character |
+| Mushroom Stems | Major umami boost, especially shiitake |
+| Onion Skins and Ends | Sweetness, body, and a deep brown color |
+| Tomato Cores | Acidity and umami |
 
 ## Instructions
 

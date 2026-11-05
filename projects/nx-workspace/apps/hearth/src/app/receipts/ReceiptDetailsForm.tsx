@@ -71,7 +71,7 @@ export default function ReceiptDetailsForm({
           <Text size="1" weight="medium">
             Tax Rates
           </Text>
-          <label className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
+          <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
             <input
               type="checkbox"
               checked={draft.taxInclusive}

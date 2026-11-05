@@ -17,7 +17,6 @@ Email subscription management and broadcast.
   - `amqplib`
 - Internal libs
   - `common-js`
-  - `common-node`
   - `fastify`
   - `messaging`
 - Cloud services

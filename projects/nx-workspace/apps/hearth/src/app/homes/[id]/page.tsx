@@ -19,7 +19,7 @@ export default function HomeDetailPage({
     <div className="max-w-2xl mx-auto p-6 space-y-8">
       <button
         onClick={() => router.push(ROUTES.HOMES)}
-        className="text-gray-400 hover:text-gray-600 text-sm cursor-pointer"
+        className="text-muted-foreground hover:text-foreground text-sm cursor-pointer"
       >
         ← Homes
       </button>

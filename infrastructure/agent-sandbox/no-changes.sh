@@ -15,6 +15,20 @@ no_changes_reason() {
   jq -r '.no_changes_reason // empty | strings' "$1" 2>/dev/null | sed '/^[[:space:]]*$/d' || true
 }
 
+# Agents sometimes write raw newlines or tabs inside JSON strings, which jq
+# rejects. Rewrites such a file as valid JSON in place; a file jq already parses
+# or that is unparseable either way is left alone for the runner's own checks.
+#   $1 metadata file
+normalize_meta() {
+  [ -f "$1" ] && ! jq empty "$1" 2>/dev/null || return 0
+  python3 -I -c 'import json, sys
+path = sys.argv[1]
+with open(path) as f:
+    data = json.loads(f.read(), strict=False)
+with open(path, "w") as f:
+    json.dump(data, f, indent=2, ensure_ascii=False)' "$1" 2>/dev/null || true
+}
+
 # Prints the markers and returns 0 when the agent recorded a reason, else 1.
 #   $1 metadata file
 no_changes_report() {

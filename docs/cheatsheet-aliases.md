@@ -11,6 +11,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   (on new shell)              Start `pnpm event-calendars:sync` in the background once a day, logging to ~/.vb-manager/event-calendars-sync.log (non-login failures retry hourly)
 
 🤖 CODING AGENTS
+  codexauto [args...]         Run Codex with workspace-write sandbox and automatic approval review
   codexotp                   Open the Codex device authentication page
   codexyolo [args...]         Run Codex with approvals and sandbox disabled
 
@@ -43,6 +44,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   pushfile <file> <msg>       Find, add, commit and push a single file
   pushreadme / pushignore     Push README.md / .gitignore with a standard message
   pushtodo / pushcron         Push TODO.md / crontab with a standard message
+  gitcleanup                  Sync main, then droplocalbranches and prune worktrees (confirms)
   droplocalbranches           Delete every local branch except main (+ worktrees)
   dropremotebranches          Delete every remote branch except origin/main (confirms)
   gtagls / rmgtag <tag>       List / delete tags
@@ -96,6 +98,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   dockeropen                  Open Docker Desktop
   killdockerdesktop           Quit Docker Desktop and its background processes
   dockercleanup               Run docker_cleanup.sh
+  localcleanup                Remove clean Claude worktrees, prune Docker images/build cache, clear npm/Yarn/Cypress/pip caches (confirms)
 
 ☁️  VB INFRA
   sshocivm [cmd]              SSH into the OCI VM (IP from terraform output)
@@ -122,6 +125,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   testgrind75                 Run grind-75 tests (py + ts + go)
   testgrind75py|ts|go         Run grind-75 tests for one language
   dldjmusic                   Download DJ music from Spotify playlists
+  syncbooks                   Copy Apple Books (iCloud) into Google Drive "Books" (rsync, never deletes)
 
 🍺 HOMEBREW & DEPS
   brewinit / brewup           Install from Brewfile / update + upgrade + cleanup

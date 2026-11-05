@@ -114,7 +114,7 @@ const RowMenu = ({
         onClick={() => setOpen(prev => !prev)}
         aria-label={label}
         aria-expanded={open}
-        className="h-8 w-8 flex items-center justify-center rounded border border-transparent bg-transparent text-gray-500 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer"
+        className="h-8 w-8 flex items-center justify-center rounded border border-transparent bg-transparent text-muted-foreground hover:text-black dark:hover:text-white hover:bg-muted cursor-pointer"
       >
         <EllipsisVertical size={16} />
       </button>
@@ -510,7 +510,7 @@ export default function ReceiptScanner({
             Items ({draft.items.length})
           </Text>
           {draft.items.some(item => item.normalizedName) && (
-            <label className="flex items-center gap-2 text-xs text-gray-500 cursor-pointer">
+            <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
               <input
                 type="checkbox"
                 checked={useNormalized}

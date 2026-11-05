@@ -1,0 +1,40 @@
+name: test-security-nx-cache
+
+on:
+  schedule:
+    - cron: '10 2 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'infrastructure/cloudflare-workers/nx-cache/**'
+      - 'infrastructure/terraform/cloudflare-nx-cache.tf'
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  security-check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets NX_CACHE_WRITE_TOKEN | NX_CACHE_WRITE_TOKEN ;
+      - name: Run security check
+        env:
+          NX_CACHE_WRITE_TOKEN: ${{ env.NX_CACHE_WRITE_TOKEN }}
+        run: |
+          chmod +x scripts/shell/test-nx-cache-security.sh
+          scripts/shell/test-nx-cache-security.sh https://nx-cache.harryliu.dev
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "nx-cache security check failed! The remote cache may accept unauthenticated requests or overwrite existing entries."
+          exit 1

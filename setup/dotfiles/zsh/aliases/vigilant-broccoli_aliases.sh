@@ -62,10 +62,50 @@ alias cpvaulttoken="gcloud secrets versions access latest --secret=VB_VM_VAULT_R
 alias vbbackup='$NX_DIR/scripts/shell/backup-secrets.sh && $NX_DIR/scripts/shell/backup-repo.sh'
 
 # Hobby Code
-alias dldjmusic="$NX_DIR/scripts/shell/run-spotify-to-mp3.sh --output '$HOME/My Drive/DJ Music Library' --filter mix --parallel 5"
+alias dldjmusic="$NX_DIR/scripts/shell/run-spotify-to-mp3.sh --output '$HOME/Library/CloudStorage/GoogleDrive-harryliu1995@gmail.com/My Drive/DJ Music Library' --filter mix --parallel 5"
+# One-way copy (no --delete) so removing a book in Apple Books keeps the Drive backup.
+alias syncbooks='rsync -a --progress "$HOME/Library/Mobile Documents/iCloud~com~apple~iBooks/Documents/" "$HOME/Library/CloudStorage/GoogleDrive-harryliu1995@gmail.com/My Drive/Books/"'
 
 # Docker
 alias dockercleanup="$REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh"
+
+# Reclaim disk: Claude worktrees, Docker build cache/images, package-manager caches. Docker volumes are left alone.
+localcleanup() {
+    local worktrees_dir="$REPO_DIR/.claude/worktrees" worktree
+    local -a worktrees=()
+    # Keep unmatched globs harmless in zsh without changing the caller's options.
+    if [ -n "${ZSH_VERSION:-}" ]; then
+        setopt local_options nonomatch
+    fi
+    for worktree in "$worktrees_dir"/*/; do
+        [ -d "$worktree" ] || continue
+        worktrees+=("${worktree%/}")
+    done
+
+    echo "Claude worktrees to remove (worktrees with uncommitted changes are skipped):"
+    printf '  %s\n' "${worktrees[@]}"
+    ask "Remove them, prune Docker, and clear npm/Yarn/Cypress/pip caches?" || {
+        echo "Cleanup canceled."
+        return 0
+    }
+
+    for worktree in "${worktrees[@]}"; do
+        git -C "$REPO_DIR" worktree remove "$worktree" || echo "  Skipped $worktree"
+    done
+    git -C "$REPO_DIR" worktree prune
+
+    if docker info &> /dev/null; then
+        docker builder prune -af
+        docker image prune -af
+        docker container prune -f
+    fi
+
+    npm cache clean --force
+    rm -rf ~/.npm/_npx ~/Library/Caches/{Yarn,Cypress,pip}
+    if [ -d /System/Volumes/Data ]; then
+        df -h /System/Volumes/Data
+    fi
+}
 
 # Cheatsheet
 cheatsheet() {

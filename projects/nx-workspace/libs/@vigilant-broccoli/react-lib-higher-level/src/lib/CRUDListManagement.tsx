@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { ChevronDown, Plus } from 'lucide-react';
 import {
   ComponentType,
   Dispatch,
@@ -92,6 +92,8 @@ export const CRUDItemList = <T extends CRUDItem>({
   HeaderComponent,
   FooterComponent,
   ListItemComponent,
+  ExpandedComponent,
+  defaultExpandedIds,
   FormComponent,
   createItem,
   createItemFormDefaultValues,
@@ -113,6 +115,8 @@ export const CRUDItemList = <T extends CRUDItem>({
   HeaderComponent?: ReactNode;
   FooterComponent?: ReactNode;
   ListItemComponent?: ListItemComponentProps<T>;
+  ExpandedComponent?: ComponentType<{ item: T }>;
+  defaultExpandedIds?: T['id'][];
   FormComponent?: CRUDFormComponent<T>;
   createItem?: CreateItem<T>;
   createItemFormDefaultValues?: T;
@@ -129,6 +133,27 @@ export const CRUDItemList = <T extends CRUDItem>({
   getItemTitle?: (item: T) => string;
   fullWidthImage?: boolean;
 }) => {
+  const [expandedIds, setExpandedIds] = useState<Set<T['id']>>(
+    () => new Set(defaultExpandedIds),
+  );
+  // Kept after collapsing so the panel can animate closed.
+  const [openedIds, setOpenedIds] = useState<Set<T['id']>>(
+    () => new Set(defaultExpandedIds),
+  );
+  const toggleExpanded = (id: T['id']) => {
+    setExpandedIds(prev => {
+      const next = new Set(prev);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
+    setOpenedIds(prev => new Set(prev).add(id));
+  };
+
+  const handleItemClick = (item: T) => {
+    onItemClick?.(item);
+    if (ExpandedComponent) toggleExpanded(item.id);
+  };
+
   async function submitHandler(item: T, formType: FormType) {
     if (formType === FORM_TYPE.CREATE && createItem) {
       const newItem = await createItem(item);
@@ -146,22 +171,24 @@ export const CRUDItemList = <T extends CRUDItem>({
   }
 
   const renderItem = (item: T) => {
-    const ellipsis =
-      showEllipsis &&
-      FormComponent &&
-      (canShowEllipsis ? canShowEllipsis(item) : true) ? (
-        <div onClick={e => e.stopPropagation()}>
-          <EllipsisOptions
-            item={item}
-            FormComponent={FormComponent}
-            deleteItem={handleDelete}
-            copy={copy}
-            submitHandler={submitHandler}
-            extraActions={itemActions?.(item)}
-            updateLabel={updateLabel}
-          />
-        </div>
-      ) : null;
+    const showItemEllipsis =
+      showEllipsis && (canShowEllipsis ? canShowEllipsis(item) : true);
+    // Without a form the list is read-only: the menu holds only `itemActions`.
+    const ellipsis = !showItemEllipsis ? null : FormComponent ? (
+      <div onClick={e => e.stopPropagation()}>
+        <EllipsisOptions
+          item={item}
+          FormComponent={FormComponent}
+          deleteItem={handleDelete}
+          copy={copy}
+          submitHandler={submitHandler}
+          extraActions={itemActions?.(item)}
+          updateLabel={updateLabel}
+        />
+      </div>
+    ) : itemActions ? (
+      <EllipsisCTA actions={itemActions(item)} />
+    ) : null;
 
     const imageUrls = getItemImages?.(item) ?? [];
     const title = getItemTitle?.(item);
@@ -172,32 +199,69 @@ export const CRUDItemList = <T extends CRUDItem>({
       JSON.stringify(item)
     );
 
+    const isExpanded = expandedIds.has(item.id);
     const contentWithEllipsis = (alignClass: string) => (
       <div
         className={`flex-1 min-w-0 flex justify-between gap-2 ${alignClass}`}
       >
         <div className="flex-1 min-w-0">{content}</div>
+        {ExpandedComponent && (
+          <ChevronDown
+            size={16}
+            className={cn(
+              'shrink-0 self-center transition-transform duration-300',
+              isExpanded && 'rotate-180',
+            )}
+          />
+        )}
         {ellipsis && <div className="shrink-0">{ellipsis}</div>}
       </div>
     );
 
-    if (fullWidthImage && imageUrls.length > 0) {
+    const row = (() => {
+      if (fullWidthImage && imageUrls.length > 0) {
+        return (
+          <div className="flex flex-col gap-2 p-2 rounded-lg hover:bg-muted transition-colors">
+            <img
+              src={imageUrls[0]}
+              alt={title}
+              className={FULL_WIDTH_IMAGE_CLASS}
+            />
+            {contentWithEllipsis('items-start')}
+          </div>
+        );
+      }
+
       return (
-        <div className="flex flex-col gap-2 p-2 rounded-lg hover:bg-muted transition-colors">
-          <img
-            src={imageUrls[0]}
-            alt={title}
-            className={FULL_WIDTH_IMAGE_CLASS}
-          />
-          {contentWithEllipsis('items-start')}
+        <div className="flex items-start sm:items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors">
+          {imageUrls.length > 0 && (
+            <StackedImages urls={imageUrls} alt={title} />
+          )}
+          {contentWithEllipsis('items-start sm:items-center')}
         </div>
       );
-    }
+    })();
 
+    if (!ExpandedComponent) return row;
     return (
-      <div className="flex items-start sm:items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors">
-        {imageUrls.length > 0 && <StackedImages urls={imageUrls} alt={title} />}
-        {contentWithEllipsis('items-start sm:items-center')}
+      <div>
+        {row}
+        <div
+          className={cn(
+            'grid transition-[grid-template-rows,opacity] duration-300 ease-in-out',
+            isExpanded
+              ? 'grid-rows-[1fr] opacity-100'
+              : 'grid-rows-[0fr] opacity-0',
+          )}
+        >
+          <div className="overflow-hidden">
+            {openedIds.has(item.id) && (
+              <div className="p-2" onClick={e => e.stopPropagation()}>
+                <ExpandedComponent item={item} />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     );
   };
@@ -223,16 +287,20 @@ export const CRUDItemList = <T extends CRUDItem>({
             isCards ? (
               <Card
                 key={item.id}
-                onClick={() => onItemClick?.(item)}
-                className={onItemClick ? 'cursor-pointer' : ''}
+                onClick={() => handleItemClick(item)}
+                className={
+                  onItemClick || ExpandedComponent ? 'cursor-pointer' : ''
+                }
               >
                 {renderItem(item)}
               </Card>
             ) : (
               <div
                 key={item.id}
-                className={onItemClick ? 'cursor-pointer' : ''}
-                onClick={() => onItemClick?.(item)}
+                className={
+                  onItemClick || ExpandedComponent ? 'cursor-pointer' : ''
+                }
+                onClick={() => handleItemClick(item)}
               >
                 {renderItem(item)}
               </div>

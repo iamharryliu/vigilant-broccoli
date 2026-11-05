@@ -1,0 +1,37 @@
+import './global.css';
+import AuthProvider from './providers/auth-provider';
+import { AppShell } from './components/app-shell';
+import { ThemeWrapper } from './components/theme-wrapper';
+import { APP_NAME, PAGE_TITLE } from './app.const';
+
+export const metadata = {
+  title: {
+    default: `${PAGE_TITLE.HOME} | ${APP_NAME}`,
+    template: `%s | ${APP_NAME}`,
+  },
+  description: 'Mobile Manager Next',
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body className="bg-muted">
+        <AuthProvider>
+          <ThemeWrapper>
+            <AppShell>{children}</AppShell>
+          </ThemeWrapper>
+        </AuthProvider>
+      </body>
+    </html>
+  );
+}

@@ -19,10 +19,7 @@ What every UI app in this workspace must have, and the shared building blocks to
 
 ## Where UI apps live
 
-- Static UIs → `apps/ui/*`, Vite + React → Cloudflare Pages.
-- Next.js static exports (`apps/findme`, `apps/whiteboard`) → Cloudflare Pages.
-- Next.js server apps → `apps/*` (`hearth`) or `apps/ui/*` (`employee-handler-ui`, `weather-next`, `balloono`) → Vercel; `employee-handler-ui`'s `deploy`/`deploy:production` only push the Docker image; its only Vercel deploy is `deploy:demo` (project `demo-employee-handler-ui`), run by `deploy-demo-apps`. `vb-manager-next` is the exception: PM2 on the VM, no nx `deploy` target.
-- GitHub Pages hosts only the `pages-index` landing site; `component-library` is a Cloudflare Pages site like the other static UIs.
+Per-type locations and deploy destinations, including the `employee-handler-ui`, `job-hunt-next` and `local-manager-next` exceptions, are in [Choosing a home](../app-development.md#choosing-a-home). Next.js apps live under `apps/*` (`hearth`, `findme`, `whiteboard`) or `apps/ui/*` (`employee-handler-ui`, `weather-next`, `balloono`). GitHub Pages hosts only the `pages-index` landing site; `component-library` is a Cloudflare Pages site like the other static UIs.
 
 ## Shared components (react-lib)
 
@@ -45,7 +42,7 @@ Every route-level page sets a document title of `Page Name | Site Name`, so brow
 
 - The shared primitive is `useDocumentTitle` from `@vigilant-broccoli/react-lib`; each app wraps it in a local `usePageTitle` that appends the app name (e.g. `apps/hearth/src/lib/page-title.ts`).
 - Titles come from the app's existing page-name source — i18n keys where the app has them (`employee-handler-ui`, `pages-index`), otherwise a `PAGE_TITLE`/`APP_ROUTE` const module.
-- Next.js server-component pages use `export const metadata` instead, with a `title.template` on the root layout (`vb-manager-next-mobile`).
+- Next.js server-component pages use `export const metadata` instead, with a `title.template` on the root layout (`mobile-manager-next`).
 - Home, login, callback, and error pages follow the same convention; initial HTML/root metadata defaults also include both names. Keep Open Graph and Twitter title tags consistent where present.
 - `DocsViewer` and `ComponentSandbox` accept `siteName` so their selected document/component titles retain the hosting app suffix. Pass it from the app; the viewer must not overwrite a formatted title with a bare document name.
 - Detail pages title themselves after the record they render (doc name, project title, org name), falling back to a generic label while loading.
@@ -89,6 +86,7 @@ Behavior (`useThemePreference`, shared by `ThemeProvider` and apps that own thei
 - Use the existing `light`/`dark` classes and `ThemeScope` tokens that `ThemeProvider` renders; do not add app-specific theme state or duplicate class toggling. An app that must put the class on `<html>` builds on `useThemePreference` (see `personal-website-react`'s `theme-context.tsx`).
 - Tailwind only emits classes it scans, so add the shared lib globs (`react-lib`, `react-utility`, ...) the app imports to its `content` — see the workspace [Nuances](../../../projects/nx-workspace/CONTEXT.md#a-react-lib-component-renders-unstyled-in-an-app-that-never-scanned-it).
 - Give `dark:` variants to every surface: page background, text, markdown and code blocks, and native controls (inputs, scrollbars, `color-scheme`).
+- Do not use raw light-only palette utilities (`bg-white`, `bg-gray-*`, `border-gray-*`, `text-gray-*`) on surfaces. Build surfaces from react-lib `Card`/`CardContainer` or from tokens that swap per theme: the `ThemeScope` variables (`var(--gray-3)`..`var(--gray-12)`, `--gray-a*`) and the semantic utilities from the react-lib Tailwind preset (`bg-card`, `bg-muted`, `border-border`, `text-foreground`, `text-muted-foreground`). A `dark:` twin is only a fallback. The `vigilant-broccoli/require-dark-variant` ESLint rule fails `nx lint` on a static `className` (or `cn`/`clsx` argument) with such a utility and no `dark:bg-*`/`dark:border-*`/`dark:text-*` of the same property; arbitrary token values (`bg-[var(--gray-2)]`) never trigger it. Exempt an intentionally light-only surface (printable page, overlay on media) with `// eslint-disable-next-line vigilant-broccoli/require-dark-variant -- <reason>`.
 - Overlays rendered through portals must use the shared primitives (`Dialog`, `Popover`, `Select`, `DropdownMenu`, `Tooltip`; see `usePortalTheme`), which copy the originating scope's variables and dark class.
 - Canvas and graph visuals must read the theme actually in effect, not assume `<html>` owns the class or guess from the media query, and must redraw when it changes. `react-utility`'s `graph-view.tsx` observes class/style changes on every ancestor of its container plus the media query.
 
@@ -103,6 +101,7 @@ Behavior (`useThemePreference`, shared by `ThemeProvider` and apps that own thei
 - Switch the OS preference while the app is open: the theme follows live and open dialogs, filters and scroll position are kept.
 - With a toggle: toggling saves an override that survives reloads; toggling back follows the system again.
 - Portals (dialogs, popovers, menus) and canvas/graph visuals redraw on a switch, and text and lines stay legible in both themes.
+- With the [local dev](#local-dev) server running, `pnpm screenshot:themes -- <url> [<url>...]` writes light and dark PNGs at phone and desktop widths to the gitignored `projects/nx-workspace/screenshots/` and prints their paths; open each changed page and check the dark shots for white or light-gray surfaces. It refuses non-local URLs. Run `pnpm screenshot:setup` (needs sudo for apt) as the non-root screenshot user, never as root, which would put the browser in root's cache. On the code-server image users run plain `playwright install chromium`, not `--with-deps`.
 
 ## pages-index card (required)
 

@@ -1,5 +1,5 @@
 import unittest
-from array.sort_colors import Solution
+from arrays.sort_colors import Solution
 
 
 class TestSolution(unittest.TestCase):

@@ -14,9 +14,8 @@ Shared repository guidance. Edit `CONTEXT.md`; `AGENTS.md` is a relative symlink
   - [API](#api)
   - [Documentation](#documentation)
 - [Git](#git)
+- [Responses](#responses)
 - [Coding Conventions](#coding-conventions)
-- [Nuances](#nuances)
-  - [`git status` shows a Markdown file modified while `git diff` is empty](#git-status-shows-a-markdown-file-modified-while-git-diff-is-empty)
 
 ## Doc Map
 
@@ -24,10 +23,11 @@ Read the relevant document before working on its subject. Before editing a direc
 
 | Doc | When to read / upkeep |
 | --- | --- |
-| [agent-support.md](./docs/agent-support.md) | Agentic operations, skills, adapters and entry-point parity. |
+| [agent-support.md](./docs/agent-support.md) | Agentic operations, skills, adapters, entry-point parity, and where a new rule or instruction belongs. |
+| [agentic-pr-maintenance.md](./docs/ci/agentic-pr-maintenance.md) | Scheduled conflict resolution and CI fixes on open PRs: selection and attempt cap. |
 | [app-development.md](./docs/app-development/app-development.md) | Adding apps/libs, deployment, public URLs or npm publishing. |
 | [app-readme-pattern.md](./docs/app-readme-pattern.md) | README edits and generated repo counts. |
-| [career experience](./notes/personal/personal-software-career-experience.md) | New skill or area (e.g. mobile development) absent from its Skills or contributions: add it. |
+| [career experience](./notes/personal/career/career-experience.md) | New skill or area (e.g. mobile development) absent from its Skills or contributions: add it. |
 | [code-quality-tools.md](./docs/code-quality-tools.md) | Quality tooling; update its inventory when adding/removing a tool. |
 | [database-migrations.md](./docs/ci/database-migrations.md) | Database migrations. |
 | [fork-identity-inventory.md](./docs/fork-identity-inventory.md) | Making the repo forkable; update when adding or removing a hardcoded account, domain or identity value. |
@@ -37,7 +37,7 @@ Read the relevant document before working on its subject. Before editing a direc
 | [jellyfin-pi.md](./docs/infrastructure/jellyfin-pi.md) | LAN hardware provisioning via Ansible. |
 | [learning-timeline.md](./docs/learning-timeline.md) | Extend the current month when work introduces a new topic. |
 | [network-management.md](./docs/infrastructure/network-management.md) | DNS, domains, proxies, tunnels or VPN. |
-| [nuance-pattern.md](./docs/nuance-pattern.md) | Directory context edits or recording a non-obvious trap. |
+| [nuance-pattern.md](./docs/nuance-pattern.md) | Any `CONTEXT.md` edit, including root, or recording a non-obvious trap. |
 | [refactor-code-cleanup.md](./docs/refactor-code-cleanup.md) | Diff cleanup checklist. |
 | [repo-operations.md](./docs/repo-operations.md) | Infrastructure inventory, persistence, backups, local stack and service auth. |
 | [secret-management.md](./docs/infrastructure/secret-management.md) | Secrets, local `.env`/`.tfvars` or Terraform GitHub tokens; update its secret inventory as secrets change. |
@@ -66,7 +66,7 @@ Never add GitHub Actions repo secrets; remove unused ones. Only `GCP_SERVICE_ACC
 - Prefer HTTP consts from `@vigilant-broccoli/common-js` (`HTTP_METHOD`, `HTTP_HEADERS`, `HTTP_STATUS_CODES`).
 - Link and personal data libs are split public/private, enforced by `visibility:public`/`visibility:private` tags in `@nx/enforce-module-boundaries`; tag every app with a publicly served client bundle `visibility:public`. Which lib a link belongs in: [Choosing a home](./docs/app-development/app-development.md#choosing-a-home).
 - Prefer `getEnvironmentVariable` from `@vigilant-broccoli/common-node` for server environment variables. Client-side Next.js variables require direct `process.env.NEXT_PUBLIC_*` access for build-time inlining.
-- App/lib dependencies already pinned in the workspace root must mirror its caret range; no `"*"` or divergent pins. pnpm re-resolves an importer only when its own specifier changes, so a stray copy drifts after root bumps and surfaces as confusing duplicate-type errors (e.g. incompatible `FastifyInstance` types). Do not force Fly service dependencies through `pnpm-workspace.yaml` overrides: pruned installs fail.
+- App/lib dependencies already pinned in the workspace root must mirror its caret range; no `"*"` or divergent pins. pnpm re-resolves an importer only when its own specifier changes, so a stray copy drifts after root bumps and surfaces as confusing duplicate-type errors (e.g. incompatible `FastifyInstance` types). Do not force Fly service dependencies through `pnpm-workspace.yaml` overrides: pruned installs fail. Published React libs (`nx-release-publish`) declare `react` only in `peerDependencies` with a major range (`^19`), never in `dependencies`: a root-mirrored exact pin there gives npm consumers a second React copy ("Invalid hook call"). Pin-drift alignment ignores `peerDependencies`, so never move `react` back to satisfy it.
 - New or changed public URLs require synchronized Upptime entries, pages-index cards and browser quick links for every environment and demo; follow [public URL registration](./docs/app-development/app-development.md#deployment).
 
 ### UI
@@ -93,15 +93,18 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 - Treat the checkout as shared unless provably exclusive; if not provable, use a separate worktree off fresh `origin/main` with only your changes. Establish ownership before branching, staging, committing, stashing or switching branches. Never stash in a shared or uncertain checkout. If others' work is staged, commit only your paths with `git commit -m "<message>" -- <your paths>`.
 - Read [git-workflow.md](./docs/git-workflow.md) before changing Git state or publishing PRs.
 
+## Responses
+
+- Be concise: no preamble, no restating the request, no closing recap of what was just said.
+- Do not apologize; state the correction and continue.
+- Read files with `grep -n` or line ranges before reading them whole; don't `cat` several files in one call.
+
 ## Coding Conventions
 
 - Prefer functional patterns over OOP and consts over string literals. Add error handling only when explicitly needed.
 - Do not write tests unless explicitly asked.
 - Never create import cycles; `import/no-cycle` fails lint. Inside a lib, import from the sibling module, never from the lib's own `index.ts`.
 - Comments should explain non-obvious reasons, constraints or traps. Remove redundant comments and generator scaffolding when touching a file. Preserve comments that are an empty block's sole body, and `TODO`/`FIXME`/lint directives.
-
-## Nuances
-
-### `git status` shows a Markdown file modified while `git diff` is empty
-
-Committed Markdown tables are unpadded and the working tree is re-aligned on checkout by the `mdtable` filter ([code-quality-tools.md](./docs/code-quality-tools.md)). Git treats a working file whose size differs from the size it recorded at `git add` or checkout as modified without running the filter, so re-padding alone (format-on-save on a file left compact on disk, Prettier after staging) reports ` M` with no diff. If that file is also staged, lint-staged aborts the commit with `Failed to restore unstaged changes!`. Run `git add <file>` to re-record it; the content is unchanged. Read committed rows with `git show HEAD:<file>`, not the working file.
+- Never prefix Bash commands with `cd <dir> &&` or `cd <dir>;`; compound commands trigger permission prompts. Use absolute paths, `git -C <dir>`, `pnpm nx run <project>:<target>` or `pnpm --filter`.
+- Change files with the Edit tool, not `python3 -` or `sed -i`; reserve Python for read-only analysis.
+- Prefer the Grep tool over shell `grep`, and quote glob arguments (zsh errors with `no matches found` on unquoted globs).

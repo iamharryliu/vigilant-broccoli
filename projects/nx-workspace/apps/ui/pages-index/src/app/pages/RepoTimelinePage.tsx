@@ -612,7 +612,7 @@ function ListView({
   return (
     <Suspense
       fallback={
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-muted-foreground">
           {t('REPO_TIMELINE_PAGE.LOADING')}
         </p>
       }
@@ -683,7 +683,7 @@ export function RepoTimelinePage() {
 
       {error && <p className="text-sm text-red-500">{error}</p>}
       {!error && !data && (
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-muted-foreground">
           {t('REPO_TIMELINE_PAGE.LOADING')}
         </p>
       )}

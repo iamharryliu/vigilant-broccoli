@@ -27,7 +27,7 @@ volumes:
     nodeFilters:
       - server:0
 options:
-  # Compose labels make Docker Desktop and the vb-manager-next Docker card
+  # Compose labels make Docker Desktop and the local-manager-next Docker card
   # group these containers as one `local-platform` project, matching the namespace.
   runtime:
     labels:

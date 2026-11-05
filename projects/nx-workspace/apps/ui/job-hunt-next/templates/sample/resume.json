@@ -1,0 +1,76 @@
+{
+  "basics": {
+    "name": "Jordan Rivera",
+    "title": "Senior Full Stack Developer",
+    "email": "jordan.rivera@example.com",
+    "phone": "+1 555-0142",
+    "location": "Toronto, Canada",
+    "links": [
+      {
+        "label": "jordanrivera.example.com",
+        "url": "https://jordanrivera.example.com"
+      },
+      {
+        "label": "code.example.com/jordanrivera",
+        "url": "https://code.example.com/jordanrivera"
+      }
+    ]
+  },
+  "summary": "Senior full stack developer with 9 years of experience building web products from database to UI. Expertise in **TypeScript**, **React**, **Node.js**, **PostgreSQL**, **AWS** and **event-driven systems**.",
+  "workExperience": [
+    {
+      "company": "Northwind Logistics",
+      "role": "Senior Full Stack Developer",
+      "startDate": "March 2022",
+      "endDate": "Present",
+      "bullets": [
+        "Replaced polling with Kafka carrier events and GraphQL subscriptions, cutting shipment status latency from minutes to under 5 seconds.",
+        "Led the rebuild of the customer tracking app in Next.js and TypeScript with a shared component library used by three teams.",
+        "Reduced p95 API response time from 900 ms to 180 ms with Redis caching and PostgreSQL index tuning.",
+        "Moved eight Node.js services to Amazon EKS with Docker and Terraform, and built GitHub Actions pipelines that took releases from weekly to several times a day.",
+        "Mentored two junior developers through weekly pairing and code review."
+      ]
+    },
+    {
+      "company": "Brightpath Health",
+      "role": "Full Stack Developer",
+      "startDate": "June 2019",
+      "endDate": "February 2022",
+      "bullets": [
+        "Built the React booking flow and Express APIs that grew online bookings to 60% of all appointments.",
+        "Integrated WebRTC video visits into the patient app, enabling 15,000+ virtual visits in the first year.",
+        "Led a WCAG 2.1 AA accessibility audit and fixed 120+ issues across the patient app."
+      ]
+    },
+    {
+      "company": "Pixelcraft Studio",
+      "role": "Junior Web Developer",
+      "startDate": "July 2017",
+      "endDate": "May 2019",
+      "bullets": [
+        "Delivered 20+ responsive marketing sites for retail and hospitality clients.",
+        "Built a reusable React reservation widget adopted by five restaurant clients."
+      ]
+    }
+  ],
+  "projectExperience": [],
+  "skills": {
+    "technical": [
+      "TypeScript",
+      "JavaScript",
+      "React",
+      "Next.js",
+      "Node.js",
+      "NestJS",
+      "GraphQL",
+      "PostgreSQL",
+      "Redis",
+      "Kafka",
+      "AWS",
+      "Docker",
+      "Kubernetes",
+      "Terraform",
+      "GitHub Actions"
+    ]
+  }
+}

@@ -1,5 +1,5 @@
 import unittest
-from array.subarray_sum_equals_k import Solution
+from arrays.subarray_sum_equals_k import Solution
 
 
 class TestSolution(unittest.TestCase):

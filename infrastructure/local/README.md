@@ -15,6 +15,7 @@ Local k3s cluster, run by k3d, for self-hosted services (photos, logs, dashboard
 - [loki.vigilant-broccoli.app](https://loki.vigilant-broccoli.app) - Log aggregation
 - [headlamp.vigilant-broccoli.app](https://headlamp.vigilant-broccoli.app) - Kubernetes dashboard
 - [argocd.vigilant-broccoli.app](https://argocd.vigilant-broccoli.app) - GitOps sync of the cluster manifests
+- [job-hunt.vigilant-broccoli.app](https://job-hunt.vigilant-broccoli.app) - Job Hunt app (proxied to the [job-hunt-next](../../projects/nx-workspace/apps/ui/job-hunt-next/) container via `host.k3d.internal:4300`)
 - [images.vigilant-broccoli.app](https://images.vigilant-broccoli.app) - Immich photo management (proxied to the standalone [immich stack](../immich/) via `host.k3d.internal:2283`)
 
 ## Observability
@@ -23,7 +24,7 @@ Local k3s cluster, run by k3d, for self-hosted services (photos, logs, dashboard
 
 **Sources:**
 
-- PM2 apps (vb-manager-next) → `~/.pm2/logs/`
+- PM2 apps (local-manager-next) → `~/.pm2/logs/`
 - Docker containers outside the cluster → Docker socket
 - Cluster pods → Kubernetes API
 - System logs → `/var/log/`

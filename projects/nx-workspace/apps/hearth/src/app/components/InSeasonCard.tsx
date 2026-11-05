@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  cn,
   Text,
   useGeolocation,
 } from '@vigilant-broccoli/react-lib';
@@ -40,14 +41,13 @@ const formatMonthName = (month: number) =>
 
 type Now = { month: number; timeZone: string };
 
-const LEGEND_STATUSES = [
-  SEASON_STATUS.JUST_IN,
-  SEASON_STATUS.LAST_CHANCE,
-] as const;
+type Props = {
+  onGroceryAdded?: () => void;
+  // Below md, drop the card chrome and title so only the contents show.
+  plainOnMobile?: boolean;
+};
 
-type Props = { onGroceryAdded?: () => void };
-
-export function InSeasonCard({ onGroceryAdded }: Props) {
+export function InSeasonCard({ onGroceryAdded, plainOnMobile }: Props) {
   const { t } = useTranslation();
   const { lat } = useGeolocation();
   // Read after mount: the server's clock and zone would mismatch hydration.
@@ -130,43 +130,48 @@ export function InSeasonCard({ onGroceryAdded }: Props) {
     },
   ];
 
-  return (
-    <CardContainer
-      title={t('IN_SEASON.TITLE')}
-      titleAction={
-        <button
-          type="button"
-          onClick={() => setLegendOpen(true)}
-          aria-label={t('IN_SEASON.LEGEND_LABEL')}
-          title={t('IN_SEASON.LEGEND_LABEL')}
-          className="shrink-0 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-        >
-          <CircleHelp className="h-4 w-4" />
-        </button>
-      }
+  const legendButton = (className?: string) => (
+    <button
+      type="button"
+      onClick={() => setLegendOpen(true)}
+      aria-label={t('IN_SEASON.LEGEND_LABEL')}
+      title={t('IN_SEASON.LEGEND_LABEL')}
+      className={cn(
+        'shrink-0 text-muted-foreground hover:text-foreground',
+        className,
+      )}
     >
-      <Dialog open={legendOpen} onOpenChange={setLegendOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('IN_SEASON.LEGEND_TITLE')}</DialogTitle>
-          </DialogHeader>
-          <ul className="space-y-3 text-sm">
-            {LEGEND_STATUSES.map(status => (
-              <li key={status} className="flex items-center gap-3">
-                <span aria-hidden>{SEASON_STATUS_EMOJI[status]}</span>
-                <span>{t(SEASON_STATUS_LABEL_KEY[status])}</span>
-              </li>
-            ))}
-          </ul>
-        </DialogContent>
-      </Dialog>
+      <CircleHelp className="h-4 w-4" />
+    </button>
+  );
+
+  const legendDialog = (
+    <Dialog open={legendOpen} onOpenChange={setLegendOpen}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{t('IN_SEASON.LEGEND_TITLE')}</DialogTitle>
+        </DialogHeader>
+        <ul className="space-y-3 text-sm">
+          <li className="flex items-center gap-3">
+            <span aria-hidden>
+              {SEASON_STATUS_EMOJI[SEASON_STATUS.LAST_CHANCE]}
+            </span>
+            <span>{t(SEASON_STATUS_LABEL_KEY[SEASON_STATUS.LAST_CHANCE])}</span>
+          </li>
+        </ul>
+      </DialogContent>
+    </Dialog>
+  );
+
+  const body = (
+    <>
       <div className="flex items-center justify-between gap-2">
         <button
           type="button"
           onClick={() => stepMonth(MONTH_STEP.PREVIOUS)}
           aria-label={t('IN_SEASON.PREVIOUS_MONTH')}
           title={t('IN_SEASON.PREVIOUS_MONTH')}
-          className="rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          className="rounded-full text-muted-foreground hover:text-foreground"
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
@@ -176,6 +181,7 @@ export function InSeasonCard({ onGroceryAdded }: Props) {
               {formatMonthName(month)}
             </Text>
           </span>
+          {plainOnMobile && legendButton('md:hidden')}
           {isBrowsing && (
             <button
               type="button"
@@ -191,7 +197,7 @@ export function InSeasonCard({ onGroceryAdded }: Props) {
           onClick={() => stepMonth(MONTH_STEP.NEXT)}
           aria-label={t('IN_SEASON.NEXT_MONTH')}
           title={t('IN_SEASON.NEXT_MONTH')}
-          className="rounded-full text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          className="rounded-full text-muted-foreground hover:text-foreground"
         >
           <ChevronRight className="h-5 w-5" />
         </button>
@@ -208,9 +214,9 @@ export function InSeasonCard({ onGroceryAdded }: Props) {
                 const status = getSeasonStatus(item, hemisphere, month);
                 const produceEmoji = getProduceEmoji(name);
                 const statusEmoji =
-                  status === SEASON_STATUS.REGULAR
-                    ? null
-                    : SEASON_STATUS_EMOJI[status];
+                  status === SEASON_STATUS.LAST_CHANCE
+                    ? SEASON_STATUS_EMOJI[status]
+                    : null;
                 const actionLabel = t(
                   onList(name)
                     ? 'IN_SEASON.ON_LIST_LABEL'
@@ -236,8 +242,8 @@ export function InSeasonCard({ onGroceryAdded }: Props) {
                       variant={onList(name) ? 'solid' : 'soft'}
                     >
                       {onList(name) ? '✓ ' : ''}
-                      {statusEmoji ? `${statusEmoji} ` : ''}
                       {produceEmoji ? `${produceEmoji} ${name}` : name}
+                      {statusEmoji ? ` ${statusEmoji}` : ''}
                     </Badge>
                   </button>
                 );
@@ -250,6 +256,29 @@ export function InSeasonCard({ onGroceryAdded }: Props) {
           </div>
         </div>
       ))}
+    </>
+  );
+
+  const card = (
+    <CardContainer title={t('IN_SEASON.TITLE')} titleAction={legendButton()}>
+      {body}
     </CardContainer>
+  );
+
+  if (!plainOnMobile) {
+    return (
+      <>
+        {legendDialog}
+        {card}
+      </>
+    );
+  }
+
+  return (
+    <>
+      {legendDialog}
+      <div className="space-y-4 md:hidden">{body}</div>
+      <div className="hidden md:block">{card}</div>
+    </>
   );
 }

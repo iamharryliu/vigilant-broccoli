@@ -17,16 +17,20 @@ export const PROJECT_HOSTING = {
     name: 'harryliu-dev-react',
   },
   'docs-md': { platform: 'pages', name: 'docs-md' },
+  'grind-75-react': { platform: 'pages', name: 'grind-75-react' },
   'context-md': { platform: 'pages', name: 'context-md' },
+  'text-tools-ui': { platform: 'pages', name: 'text-tools-ui' },
   'utilities-ui': { platform: 'pages', name: 'utilities-ui' },
   'bookmarks-react': { platform: 'pages', name: 'bookmarks-react' },
   'pomodoro-react': { platform: 'pages', name: 'pomodoro-react' },
   'waiting-games': { platform: 'pages', name: 'waiting-games' },
   'weather-next': { platform: 'vercel', name: 'weather-next' },
   balloono: { platform: 'vercel', name: 'balloono' },
+  'gravity-guy': { platform: 'vercel', name: 'gravity-guy' },
   calendars: { platform: 'pages', name: 'calendars' },
   whiteboard: { platform: 'pages', name: 'whiteboard' },
-  'vb-manager-next-mobile': {
+  // Keep the deployed Vercel identity so summaries link to the existing projects.
+  'mobile-manager-next': {
     platform: 'vercel',
     name: 'vb-manager-next-mobile',
   },

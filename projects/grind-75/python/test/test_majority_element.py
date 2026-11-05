@@ -1,5 +1,5 @@
 import unittest
-from array.majority_element import Solution
+from arrays.majority_element import Solution
 
 
 class TestSolution(unittest.TestCase):

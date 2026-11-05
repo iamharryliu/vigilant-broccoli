@@ -8,7 +8,6 @@ const runShellCommand = (
   timeout?: number,
 ): Promise<void | string> => {
   return new Promise((resolve, reject) => {
-
     const childProcess = spawn(cmd, {
       shell: true,
       env: env ? { ...process.env, ...env } : process.env,
