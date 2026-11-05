@@ -130,7 +130,6 @@ export const detectHemisphere = ({
     : hemisphereFromLatitude(latitude);
 
 export const SEASON_STATUS = {
-  JUST_IN: 'just-in',
   LAST_CHANCE: 'last-chance',
   REGULAR: 'regular',
 } as const;
@@ -138,12 +137,10 @@ export const SEASON_STATUS = {
 export type SeasonStatus = (typeof SEASON_STATUS)[keyof typeof SEASON_STATUS];
 
 export const SEASON_STATUS_EMOJI = {
-  [SEASON_STATUS.JUST_IN]: '🌱',
   [SEASON_STATUS.LAST_CHANCE]: '⏳',
 } as const;
 
 export const SEASON_STATUS_LABEL_KEY = {
-  [SEASON_STATUS.JUST_IN]: 'IN_SEASON.JUST_IN',
   [SEASON_STATUS.LAST_CHANCE]: 'IN_SEASON.LAST_CHANCE',
 } as const;
 
@@ -171,7 +168,7 @@ export const getInSeason = (
 ): string[] => getInSeasonItems(items, hemisphere, month).map(i => i.name);
 
 // A run is consecutive months and wraps across December. All-year items have
-// no start or end, so they stay regular; a one-month run counts as just in.
+// no start or end, so they stay regular; a one-month run counts as last chance.
 export const getSeasonStatus = (
   item: SeasonalItem,
   hemisphere: Hemisphere,
@@ -179,9 +176,7 @@ export const getSeasonStatus = (
 ): SeasonStatus => {
   const noteMonth = toNoteMonth(hemisphere, month);
   if (!item.months.includes(noteMonth)) return SEASON_STATUS.REGULAR;
-  const previous = ((noteMonth + MONTHS_IN_YEAR - 2) % MONTHS_IN_YEAR) + 1;
   const next = (noteMonth % MONTHS_IN_YEAR) + 1;
-  if (!item.months.includes(previous)) return SEASON_STATUS.JUST_IN;
   if (!item.months.includes(next)) return SEASON_STATUS.LAST_CHANCE;
   return SEASON_STATUS.REGULAR;
 };

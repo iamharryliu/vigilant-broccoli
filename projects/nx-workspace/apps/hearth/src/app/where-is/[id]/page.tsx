@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ROUTES } from '../../../lib/routes';
 import { useIsMobile } from '../../../lib/use-is-mobile';
-import { WhereIsDetail } from '../where-is-detail';
+import { WhereIsDetailPageContent } from '../WhereIsDetailPageContent';
 import { PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
 
 export default function WhereIsDetailPage() {
@@ -26,13 +26,5 @@ export default function WhereIsDetailPage() {
 
   if (!ready || !isMobile) return null;
 
-  return (
-    <div className="max-w-3xl mx-auto p-6">
-      <WhereIsDetail
-        id={id}
-        variant="page"
-        onDeleted={() => router.push(ROUTES.WHERE_IS)}
-      />
-    </div>
-  );
+  return <WhereIsDetailPageContent id={id} />;
 }

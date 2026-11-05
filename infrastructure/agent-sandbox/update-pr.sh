@@ -140,12 +140,9 @@ docker run --rm --init --name "vb-update-pr-$(date +%s)" \
   bash -c 'exec bash "$HOME/vigilant-broccoli/infrastructure/agent-sandbox/update-pr-runner.sh" "$1" "$2"' _ "$PR" "$INSTRUCTION" \
   2>&1 | tee "$LOG_FILE" || STATUS="${PIPESTATUS[0]}"
 
-# The target PR is reported by the caller; recovery and follow-up PRs are
-# reported from the runner's records. A deliberate no-change run is handed to
+# The caller reports the target PR. A deliberate no-change run is handed to
 # the caller as step outputs, since it reports the target PR's result itself.
-if grep -qE '^(PR_URL|INCREMENT_UNPUBLISHED)::' "$LOG_FILE"; then
-  bash "$SCRIPT_DIR/write-pr-step-summary.sh" "$LOG_FILE" "$STATUS" "Recovery and follow-up pull requests"
-elif [ "$STATUS" = 0 ] && [ -n "${GITHUB_OUTPUT:-}" ] && grep -qx "$NO_CHANGES_MARKER" "$LOG_FILE"; then
+if [ "$STATUS" = 0 ] && [ -n "${GITHUB_OUTPUT:-}" ] && grep -qx "$NO_CHANGES_MARKER" "$LOG_FILE"; then
   DELIMITER="NO_CHANGES_REASON_$(date +%s)"
   {
     echo "outcome=no-changes"

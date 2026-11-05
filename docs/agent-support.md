@@ -12,8 +12,6 @@ Shared context, skills and execution contracts for repository agents.
   - [Execution adapters](#execution-adapters)
   - [Intentional differences](#intentional-differences)
   - [Maintenance rule](#maintenance-rule)
-- [Pull request scope](#pull-request-scope)
-  - [Increment contract](#increment-contract)
 - [Adding a context source or skill](#adding-a-context-source-or-skill)
 - [Installing skills](#installing-skills)
 - [Context discovery](#context-discovery)
@@ -47,9 +45,9 @@ Every dispatcher (`gh-`, `local-docker-`, `remote-` and the tmux `local-` create
 
 1. **Request:** take it from the arguments; without arguments use the change the conversation most recently identified as worth building, and ask if none stands out.
 2. **Research (read-only):** the affected code and existing patterns, applicable `CONTEXT.md` files and [Doc Map](../CONTEXT.md#doc-map) docs, and overlapping `TODO.md` rows and open PRs (`gh pr list`).
-3. **Stop:** when the request should not be built (already done, out of scope or wrong for the repo), do not dispatch; give the reason per the [no-change decisions](#task-contract). If an existing TODO row covers it, name the row ID and suggest dispatching it by ID. If the request only drops existing TODO rows without resolving them, dispatch one run per ID with the prompt exactly `Remove TODO.md row <id>. Reason: <reason>` ([TODO references](#pull-request-scope)); free text that deletes rows fails the runner's undeclared-removal check. Together they count as the one authorized dispatch.
+3. **Stop:** when the request should not be built (already done, out of scope or wrong for the repo), do not dispatch; give the reason per the [no-change decisions](#task-contract). If an existing TODO row covers it, name the row ID and suggest dispatching it by ID. If the request only drops existing TODO rows without resolving them, dispatch one run per ID with the prompt exactly `Remove TODO.md row <id>. Reason: <reason>` ([TODO references](#task-contract)); free text that deletes rows fails the runner's undeclared-removal check. Together they count as the one authorized dispatch.
 4. **Ask:** only questions whose answer materially changes scope or outcome (which app/lib owns it, public vs private lib, new app vs pages-index page, a new public URL, a breaking change), through the harness's structured question tool: at most 4, each with the recommended option first. Record anything with a sensible default as a stated assumption. Ask nothing when nothing blocks.
-5. **Write a self-contained prompt:** the agent sees only the repo, not the conversation. Include the problem and why it matters, the desired behavior, cited paths and quoted snippets or symbols (never line numbers, except in the update variant below), existing patterns to follow, user decisions and constraints, ruled-out options and acceptance checks. Describe large tasks as ordered mergeable increments per [pull request scope](#pull-request-scope).
+5. **Write a self-contained prompt:** the agent sees only the repo, not the conversation. Include the problem and why it matters, the desired behavior, cited paths and quoted snippets or symbols (never line numbers, except in the update variant below), existing patterns to follow, user decisions and constraints, ruled-out options and acceptance checks. Scope the task to one pull request; describe a larger one as ordered increments in a `TODO.md` row ([todo-pattern.md](./todo-pattern.md)) for a human to dispatch one run at a time.
 6. **Dispatch:** directly when no questions were asked; otherwise show the final prompt with the answers and dispatch on the user's confirmation. Optional model or agent flags are added only when the user asks.
 
 **Update variant** (`*-update-pr-*`): the target is an existing PR (number or URL; else the current branch's via `gh pr view`, else the conversation's most recent PR; ask if ambiguous). Research also reads the PR, its files, checks, mergeability and open review comments. Do not dispatch when the PR is closed or merged, or the request is unrelated to the PR's purpose, since existing PRs keep their purpose; suggest `gh-create-pr` for a follow-up. The written text is an instruction, not a prompt: the hosted agent sees the repo and the PR, so it may cite PR file lines. Number several review items in priority order.
@@ -60,9 +58,13 @@ Each [README lifecycle row](../README.md#agentic) represents one operation acros
 
 ### Task contract
 
-Entry points must agree on canonical instructions, request/file scope, TODO handling, increment rules, required checks and reported results. Workflows, wrappers and runner prompts must not redefine task policy. Runners may enforce the skill's file/ID limits.
+Entry points must agree on canonical instructions, request/file scope, TODO handling, required checks and reported results. Workflows, wrappers and runner prompts must not redefine task policy. Runners may enforce the skill's file/ID limits.
 
-**No-change decisions:** when the request should not change anything (already done, out of scope, or wrong for the repo), the agent makes no edits and says why. A sandbox agent writes `no_changes_reason` in its metadata; the runner prints `RESULT::no-changes` and a JSON-encoded `NO_CHANGES_REASON::` line ([no-changes.sh](../infrastructure/agent-sandbox/no-changes.sh)) and exits 0, so the run reports _Completed with no changes_ with the reason. No changes and no reason still fails, so a crashed agent is never reported as a decision. Audits and prune keep their `*_CLEAN` markers and add the reason when given; `agentic-pr-update` also comments it on the PR. Local sessions report the reason.
+**One PR per run:** every create or update run produces exactly one pull request; nothing splits or stacks automatically. A task too large for one PR is a no-change decision whose reason says so; a human or a `TODO.md` row re-scopes it (ordered increments in a row are dispatched one run each). `agentic-pr-update` keeps its PR's purpose: unrelated work is a separate `agentic-pr-create` run.
+
+**TODO references:** resolve matching 6-hex IDs in free text against `TODO.md` using [todo-pattern.md](./todo-pattern.md), including Description and Recommended Fix. Report unknown IDs. Remove only fully resolved rows; partial/context-only references remain. Sandbox agents leave TODO edits to the runner and declare resolved `todo_ids`. `agentic-pr-update` accepts a TODO-only update (a stale row, or one never checked off) when the instruction names the ID; `agentic-pr-create` still requires real changes beyond `TODO.md`, except for a prompt of the exact form `Remove TODO.md row <id>. Reason: <reason>` (the dev-dashboard TODO view's Delete), which opens a PR removing only that row.
+
+**No-change decisions:** when the request should not change anything (already done, out of scope, too large for one PR, or wrong for the repo), the agent makes no edits and says why. A sandbox agent writes `no_changes_reason` in its metadata; the runner prints `RESULT::no-changes` and a JSON-encoded `NO_CHANGES_REASON::` line ([no-changes.sh](../infrastructure/agent-sandbox/no-changes.sh)) and exits 0, so the run reports _Completed with no changes_ with the reason. No changes and no reason still fails, so a crashed agent is never reported as a decision. Audits and prune keep their `*_CLEAN` markers and add the reason when given; `agentic-pr-update` also comments it on the PR. Local sessions report the reason.
 
 **UI-changing PRs:** Screenshots are required only when the changed page or component is reachable and renderable without authentication. If authentication or unavailable dependencies (a missing backend or secrets, or port conflicts) prevent exercising it in a browser, do not attempt or retry screenshots and do not mention missing screenshots as a PR concern or in `PR_CONCERNS`. For eligible pages, run `pnpm screenshot:themes -- <url>...` against the local dev server for each changed page ([manual verification](./app-development/ui/ui-app-pattern.md#manual-verification)) and preserve the captured PNGs with `python3 infrastructure/agent-sandbox/pr-screenshots.py --prepare <repo-relative paths...>` before committing. Include only captures from the current task. For eligible pages, when screenshot tooling cannot run (e.g. Chromium unavailable: `npx playwright install chromium`), state why in Concerns.
 
@@ -94,40 +96,17 @@ Checks include the task's existing validation, the cleanup checklist when requir
 | `agentic-pr-create-readmes` | Weekly/manual Actions plus Docker/Local; Claude. Runs the `update-readmes` skill and `pnpm repo-stats`; runner caps 20 files and allows only READMEs and repo-stats copies. A clean run opens no PR. |
 | `agentic-pr-create-smoke` | Actions-only dispatch check, with no separate local task. |
 | `agentic-pr-create-url-audit` | Weekly/manual Actions plus Docker/Local; Claude. Runner caps 15 files and protects TODO/migrations/state. A clean audit opens no PR. |
-| `agentic-pr-create-todo` | Manual Actions plus Docker/Local; Claude. The `gh-create-todo` skill dispatches the Actions run from a local session, condensing the conversation into a self-contained description. Large tasks become ordered increments in a row or independent rows. |
+| `agentic-pr-create-todo` | Manual Actions plus Docker/Local; Claude. The `gh-create-todo` skill dispatches the Actions run from a local session, condensing the conversation into a self-contained description. Large tasks become ordered increments in a row or independent rows, each dispatched as its own run. |
 | `agentic-pr-create-todo-audit` | Weekly/manual Actions plus Docker/Local; Claude. Only TODO changes; new IDs or undeclared vanished IDs fail. |
-| `agentic-pr-update` | Actions selector `change`; Claude by default. `--vm [--agent codex] [--codex-model <m>] [--codex-signed-in]` uses the shared VM SSH/token/session adapter and updates the existing PR branch; `remote-update-pr-codex` researches locally and dispatches without waiting. Codex options require `--vm --agent codex`. `--operation` takes `change` (default), `fix-ci` or `resolve-conflicts`; `--with-ci-logs` (Actions input `with_ci_logs`). Follow-ups may split; failure recovery uses a separate draft targeting the original PR, retaining unresolved TODOs and hooks. The `gh-update-pr` skill dispatches the Actions run from a local session after research and blocking questions. |
-| `agentic-pr-update-fix-ci` | `agentic-pr-update --operation fix-ci` and Actions selector `fix-ci`; never splits. Runners supply failed logs; local sessions collect them. |
-| `agentic-pr-update-resolve-conflicts` | `agentic-pr-update --operation resolve-conflicts` and Actions selector `resolve-conflicts`; never splits, accepts no instruction. Runners start the merge; local sessions start it themselves. The daily `cron-agentic-pr-update-resolve-conflicts` only selects and dispatches the Actions selector for opted-in PRs ([policy](./ci/agentic-pr-maintenance.md)); it adds no separate task, skill or local entry point. |
+| `agentic-pr-update` | Actions selector `change`; Claude by default. `--vm [--agent codex] [--codex-model <m>] [--codex-signed-in]` uses the shared VM SSH/token/session adapter and updates the existing PR branch; `remote-update-pr-codex` researches locally and dispatches without waiting. Codex options require `--vm --agent codex`. `--operation` takes `change` (default), `fix-ci` or `resolve-conflicts`; `--with-ci-logs` (Actions input `with_ci_logs`). A failed run publishes nothing. The `gh-update-pr` skill dispatches the Actions run from a local session after research and blocking questions. |
+| `agentic-pr-update-fix-ci` | `agentic-pr-update --operation fix-ci` and Actions selector `fix-ci`; runners supply failed logs; local sessions collect them. |
+| `agentic-pr-update-resolve-conflicts` | `agentic-pr-update --operation resolve-conflicts` and Actions selector `resolve-conflicts`; accepts no instruction. Runners start the merge; local sessions start it themselves. The daily `cron-agentic-pr-update-resolve-conflicts` only selects and dispatches the Actions selector for opted-in PRs ([policy](./ci/agentic-pr-maintenance.md)); it adds no separate task, skill or local entry point. |
 
 ### Maintenance rule
 
 When behavior changes, inspect every supported entry point: skill, pnpm script/wrapper, workflow inputs/forwarding, runner prompt/guards, result/summary consumers and README/cheatsheet rows. Rename adapters and installed links together. Do not invent an entry point to fill a table cell; unavailable ones stay `N/A`.
 
 Verify argument forwarding and canonical skill loading end to end, using stubbed commands or temporary repositories where needed. Do not dispatch workflows or open disposable PRs as routine checks.
-
-## Pull request scope
-
-- **TODO references:** resolve matching 6-hex IDs in free text against `TODO.md` using [todo-pattern.md](./todo-pattern.md), including Description and Recommended Fix. Report unknown IDs. Remove only fully resolved rows; partial/context-only references remain. Sandbox agents leave TODO edits to the runner and declare resolved `todo_ids`. `agentic-pr-update` accepts a TODO-only update (a stale row, or one never checked off) when the instruction names the ID; `agentic-pr-create` still requires real changes beyond `TODO.md`, except for a prompt of the exact form `Remove TODO.md row <id>. Reason: <reason>` (the dev-dashboard TODO view's Delete), which opens a PR removing only that row.
-- **One mergeable increment per PR:** keep simple tasks together. Split independent or oversized work by outcome, with each increment useful on its own. Sandbox agents implement the first and describe the rest in `increments`; local sessions list ready-to-run `pnpm agentic-pr-create --prompt "<task>"` follow-ups unless separately authorized to publish them.
-- **Existing PRs keep their purpose:** unrelated work becomes a follow-up; stack it only when it needs the target PR's changes.
-
-### Increment contract
-
-`infrastructure/agent-sandbox/pr-increments.sh` implements create/update splitting. The first agent run may supply:
-
-| Field | Meaning |
-| --- | --- |
-| `increments[].depends_on` | Empty for independent work, `current` for this increment, or one earlier increment's ID. |
-| `increments[].id` | Unique kebab-case ID, never `current`. |
-| `increments[].task` | Self-contained prompt for a fresh agent seeing only the request and plan. |
-| `increments[].title` | PR title. |
-| `increments[].todo_ids` | Requested 6-hex TODO IDs this increment fully resolves. |
-| `todo_ids` | IDs fully resolved by the current increment. |
-
-Before publishing, the runner validates at most four follow-ups, unique IDs, titles/tasks, one earlier prerequisite per increment, and TODO IDs present in both the request and backlog and unique across the plan.
-
-Each follow-up gets a fresh agent. Independent branches start from and target `origin/main`; dependent branches start from and target their prerequisite. Each PR has its own title, summary, next steps, suggestions, history row and `## Stack` merge order. Publishing stops at the first failure: save partial work as a draft, report later increments unpublished and leave prior PRs intact. The runner owns Git/publishing and never force-pushes. Separately authorized local publishing follows the same contract. See [stack maintenance](./git-workflow.md#stacked-pull-requests) after squash merges.
 
 ## Adding a context source or skill
 

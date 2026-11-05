@@ -3,6 +3,8 @@
 # set -e aborts before any reload when the pull fails, so a reload never serves stale code.
 # The zone apps go first: local-manager-next rewrites /dev-dashboard/cloud and /dev-dashboard/local to them.
 set -e
+# Nx's interactive TUI waits for `q` after multi-task runs (pm2:reload dependsOn build), stalling the sequence.
+export NX_TUI=false
 
 REPO_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 

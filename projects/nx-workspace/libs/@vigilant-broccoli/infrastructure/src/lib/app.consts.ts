@@ -67,6 +67,11 @@ export const VB_APP_URL = {
     URL: 'https://docs.harryliu.dev/',
     STAGING_URL: 'https://staging-docs-md.pages.dev/',
   },
+  GRIND_75: {
+    NAME: 'Grind 75',
+    URL: 'https://grind-75.harryliu.dev/',
+    STAGING_URL: 'https://staging-grind-75-react.pages.dev/',
+  },
   CONTEXT: {
     NAME: 'Agent Context',
     URL: 'https://context.harryliu.dev/',

@@ -12,6 +12,7 @@ import { TextToSpeechVoices } from '../llm/TextToSpeechVoices';
 import { LLMSimplePromptTester } from '../llm/LLMPromptTester';
 import { RecipeScraperDemo } from '../llm/RecipeScraperDemo';
 import { QRCodeGenerator } from '../demos/QRCodeGenerator';
+import { FileConverterDemo } from '../demos/FileConverterDemo';
 import { LiveLocationsDemo } from '../demos/LiveLocationsDemo';
 import { NotepadEditorDemo } from '../demos/NotepadEditorDemo';
 import { VoiceTranscriberDemo } from '../demos/VoiceTranscriberDemo';
@@ -32,6 +33,11 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
     id: 'notepad-editor',
     title: 'Notepad Editor (VSCode-style editing)',
     content: <NotepadEditorDemo />,
+  },
+  {
+    id: 'file-converter',
+    title: 'File Converter (Image / Audio / Video / Document)',
+    content: <FileConverterDemo />,
   },
   {
     id: 'qr-code-generator',
