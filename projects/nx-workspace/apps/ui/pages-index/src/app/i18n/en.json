@@ -201,7 +201,6 @@
     "UPTIME_RANGE_YEAR": "1Y",
     "ERROR_STATUS_UNAVAILABLE": "Status data unavailable (HTTP {status}).",
     "ERROR_STATUS_FAILED": "Failed to load status: {message}",
-    "UPDATED": "Updated {date}",
     "GROUP_PRODUCTION": "Production",
     "GROUP_STAGING": "Staging",
     "GROUP_DEMO": "Demo",
