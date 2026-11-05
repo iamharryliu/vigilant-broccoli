@@ -9,20 +9,44 @@ import {
 import { NAV_LINKS, NavLink } from '../app.consts';
 import { useIsMobile } from '../../lib/use-is-mobile';
 import { ROUTES } from '../../lib/routes';
+import { getFirstMobileChildHref } from '../../lib/use-mobile-view';
 
 export const SIDEBAR_POSITION = 'peer fixed top-0 left-0 bottom-0 z-30';
 
 const matchesHref = (href: string, pathname: string): boolean =>
   href === ROUTES.HOME ? pathname === ROUTES.HOME : pathname.startsWith(href);
 
-const isLinkActive = (link: NavLink, pathname: string): boolean =>
+const isMobileDefaultChild = (
+  link: NavLink,
+  parent: NavLink | undefined,
+  pathname: string,
+  isMobile: boolean,
+): boolean =>
+  isMobile &&
+  !!parent?.href &&
+  pathname === parent.href &&
+  link.href === getFirstMobileChildHref(parent.href);
+
+// On mobile the parent URL renders its default child in place, so that child
+// must read as active even though its own href is not the current path.
+const isLinkActive = (
+  link: NavLink,
+  pathname: string,
+  isMobile: boolean,
+  parent?: NavLink,
+): boolean =>
   (link.href ? matchesHref(link.href, pathname) : false) ||
-  (link.children?.some(child => isLinkActive(child, pathname)) ?? false);
+  isMobileDefaultChild(link, parent, pathname, isMobile) ||
+  (link.children?.some(child =>
+    isLinkActive(child, pathname, isMobile, link),
+  ) ??
+    false);
 
 const toSidebarCTA = (
   link: NavLink,
   pathname: string,
   isMobile: boolean,
+  parent?: NavLink,
 ): SidebarCTA => {
   const includeChildren =
     link.children && (isMobile || !link.mobileOnlyChildren);
@@ -30,9 +54,11 @@ const toSidebarCTA = (
     label: link.label,
     href: link.href,
     icon: link.icon,
-    isActive: isLinkActive(link, pathname),
+    isActive: isLinkActive(link, pathname, isMobile, parent),
     children: includeChildren
-      ? link.children?.map(child => toSidebarCTA(child, pathname, isMobile))
+      ? link.children?.map(child =>
+          toSidebarCTA(child, pathname, isMobile, link),
+        )
       : undefined,
   };
 };

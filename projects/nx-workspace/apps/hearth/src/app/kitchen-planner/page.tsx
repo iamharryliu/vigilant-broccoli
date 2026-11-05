@@ -23,10 +23,7 @@ import { KitchenEvents } from './KitchenEvents';
 import { KitchenEventCalendar } from './KitchenEventCalendar';
 import { FoodChatPanel } from './FoodChatPanel';
 import { RecipeList } from './RecipeList';
-import {
-  getFirstMobileChildHref,
-  useMobileRedirect,
-} from '../../lib/use-mobile-redirect';
+import { useMobileView } from '../../lib/use-mobile-view';
 import { ROUTES } from '../../lib/routes';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 
@@ -244,10 +241,9 @@ function KitchenPlannerContent() {
 
 export default function KitchenPlannerPage() {
   usePageTitle(PAGE_TITLES.KITCHEN_PLANNER);
-  const { shouldRender } = useMobileRedirect(
-    getFirstMobileChildHref(ROUTES.KITCHEN_PLANNER),
-  );
-  if (!shouldRender) return null;
+  const { ready, MobileView } = useMobileView(ROUTES.KITCHEN_PLANNER);
+  if (!ready) return null;
+  if (MobileView) return <MobileView />;
   return (
     <I18nProvider>
       <Suspense fallback={null}>
