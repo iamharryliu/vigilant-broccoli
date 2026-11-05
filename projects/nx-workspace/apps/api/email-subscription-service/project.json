@@ -60,7 +60,7 @@
       "dependsOn": ["build"],
       "executor": "nx:run-commands",
       "options": {
-        "command": "bash scripts/shell/smoke-dist.sh dist/apps/api/email-subscription-service"
+        "command": "SMOKE_EXTRA_ENV='SUPABASE_URL=https://smoke.supabase.co EMAIL_FROM_ADDRESS=smoke@example.com' bash scripts/shell/smoke-dist.sh dist/apps/api/email-subscription-service"
       }
     },
     "deploy-container": {

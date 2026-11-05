@@ -270,6 +270,23 @@ variable "docs_pages_subdomain" {
   default = "production-docs-md.pages.dev"
 }
 
+variable "grind_75_domain" {
+  type    = string
+  default = "grind-75.harryliu.dev"
+}
+
+variable "grind_75_pages_project" {
+  type    = string
+  default = "production-grind-75-react"
+}
+
+# Kept separate from the project name: Cloudflare appends a suffix when
+# <project>.pages.dev is taken globally.
+variable "grind_75_pages_subdomain" {
+  type    = string
+  default = "production-grind-75-react.pages.dev"
+}
+
 variable "context_domain" {
   type    = string
   default = "context.harryliu.dev"
@@ -283,6 +300,21 @@ variable "context_pages_project" {
 variable "context_pages_subdomain" {
   type    = string
   default = "production-context-md.pages.dev"
+}
+
+variable "text_tools_domain" {
+  type    = string
+  default = "text-tools.harryliu.dev"
+}
+
+variable "text_tools_pages_project" {
+  type    = string
+  default = "production-text-tools-ui"
+}
+
+variable "text_tools_pages_subdomain" {
+  type    = string
+  default = "production-text-tools-ui.pages.dev"
 }
 
 variable "utilities_domain" {
@@ -439,4 +471,9 @@ variable "rabbitmq_management_domain" {
 variable "rabbitmq_allowed_emails" {
   type    = list(string)
   default = ["harryliu1995@gmail.com"]
+}
+
+variable "games_domain" {
+  type    = string
+  default = "games.harryliu.dev"
 }

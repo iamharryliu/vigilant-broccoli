@@ -13,6 +13,7 @@ import {
   type SearchableListView,
 } from './SearchableList';
 import { WINDOW_OPEN_FEATURES } from '@vigilant-broccoli/react-lib';
+import { useQuickLinkFavorites } from './useQuickLinkFavorites';
 
 export {
   SEARCHABLE_LIST_VIEW as QUICK_LINKS_VIEW,
@@ -35,10 +36,14 @@ export type QuickLinksPanelProps = {
   autoFocusSearch?: boolean;
   onLinkOpen?: () => void;
   onEmbedOpen?: (link: QuickLink) => void;
+  /** Navigates app routes (OPEN_TYPE.INTERNAL) in the current tab instead of opening a new one. */
+  onInternalOpen?: (path: string) => void;
   canEmbed?: () => boolean;
   defaultView?: SearchableListView;
   /** Keeps the input order of links and subgroups instead of sorting them alphabetically. */
   preserveOrder?: boolean;
+  /** Adds browser-local favorite controls and a Favorites group. */
+  enableFavorites?: boolean;
 };
 
 const NON_BROWSER_TYPES = [
@@ -70,32 +75,65 @@ export function QuickLinksPanel({
   autoFocusSearch = false,
   onLinkOpen,
   onEmbedOpen,
+  onInternalOpen,
   canEmbed,
   defaultView = SEARCHABLE_LIST_VIEW.GROUPED,
   preserveOrder = false,
+  enableFavorites = false,
 }: QuickLinksPanelProps) {
-  const toEntry = (link: QuickLink): SearchableListItem => ({
-    label: link.label,
-    value: link.target,
-    isExternal: !isShellLink(link),
-    onOpen: () => {
-      if (isShellLink(link)) {
-        onShellExecute?.(link.type, link.target, link.args);
-      } else if (link.embed && onEmbedOpen && canEmbed?.()) {
-        onEmbedOpen(link);
-      } else {
-        window.open(link.target, WINDOW_TARGET_BLANK, WINDOW_OPEN_FEATURES);
-      }
-    },
-  });
+  const { favorites, toggleFavorite } = useQuickLinkFavorites(enableFavorites);
+  const toEntry = (link: QuickLink): SearchableListItem => {
+    const favoriteId = JSON.stringify([
+      link.label,
+      link.target,
+      link.type,
+      link.args ?? '',
+      link.subgroup ?? '',
+      link.embed ?? false,
+    ]);
+    return {
+      label: link.label,
+      value: link.target,
+      isExternal: !isShellLink(link),
+      isFavorite: favorites.has(favoriteId),
+      onFavoriteToggle: enableFavorites
+        ? () => toggleFavorite(favoriteId)
+        : undefined,
+      onOpen: () => {
+        if (isShellLink(link)) {
+          onShellExecute?.(link.type, link.target, link.args);
+        } else if (link.type === OPEN_TYPE.INTERNAL && onInternalOpen) {
+          onInternalOpen(link.target);
+        } else if (link.embed && onEmbedOpen && canEmbed?.()) {
+          onEmbedOpen(link);
+        } else {
+          window.open(link.target, WINDOW_TARGET_BLANK, WINDOW_OPEN_FEATURES);
+        }
+      },
+    };
+  };
 
   const orderedLinks = preserveOrder
     ? links
     : [...links].sort((a, b) => a.label.localeCompare(b.label));
-  const groups = toGroups(
+  const groupedLinks = toGroups(
     orderedLinks.map(link => ({ link, entry: toEntry(link) })),
     preserveOrder,
   );
+  const favoriteEntries = groupedLinks.flatMap(group =>
+    group.entries.filter(entry => entry.isFavorite),
+  );
+  const groups = [
+    ...(favoriteEntries.length > 0
+      ? [{ name: 'Favorites', isFavorites: true, entries: favoriteEntries }]
+      : []),
+    ...groupedLinks
+      .map(group => ({
+        ...group,
+        entries: group.entries.filter(entry => !entry.isFavorite),
+      }))
+      .filter(group => group.entries.length > 0),
+  ];
 
   return (
     <SearchableList

@@ -5,6 +5,7 @@
 - [Health](../life-skills/health/health.md)
 - [Travel](../travel/travel.md)
 - [Household Essentials](./household-essentials.md)
+- [Costco](./costco.md)
 
 - Hybrid Living
   - Campervan life and city life

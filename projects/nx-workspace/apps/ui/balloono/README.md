@@ -1,6 +1,6 @@
 # Balloono
 
-Bomberman-style water balloon battles on desktop: online rooms for four or more people with automatic countdowns and public rankings, or offline matches against CPU opponents at three difficulty levels.
+Bomberman-style water balloon battles on desktop, plus a landscape-only handheld mode on mobile: online rooms for four or more people with automatic countdowns and public rankings, or offline matches against CPU opponents at three difficulty levels.
 
 ## Table of Contents
 

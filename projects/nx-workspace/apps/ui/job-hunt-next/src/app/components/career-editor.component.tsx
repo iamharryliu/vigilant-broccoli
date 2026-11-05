@@ -25,6 +25,7 @@ import {
 } from '../constants/career';
 import { toTab } from '../app.const';
 import { CareerResetDialog } from './career-reset-dialog.component';
+import { PageContainer } from './page-container.component';
 import { useTranslation } from '../i18n';
 import { validateCareerExperience } from '../utils/career-experience.utils';
 
@@ -117,8 +118,9 @@ const FileEditor = ({ kind, validate, preview }: FileEditorProps) => {
   if (saved === null) return null;
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-3">
-      <div className="flex items-center justify-end gap-2">
+    <PageContainer
+      title={label}
+      actions={
         <div className="flex shrink-0 items-center gap-2">
           {preview && (
             <SegmentedControl<View>
@@ -154,7 +156,8 @@ const FileEditor = ({ kind, validate, preview }: FileEditorProps) => {
             <Save size={ICON_SIZE} /> {t('CAREER.SAVE')}
           </Button>
         </div>
-      </div>
+      }
+    >
       {errors.length > 0 && (
         <Callout color="red" className="flex-col">
           <span>{t('CAREER.PROBLEMS')}</span>
@@ -185,7 +188,7 @@ const FileEditor = ({ kind, validate, preview }: FileEditorProps) => {
         onOpenChange={setResetOpen}
         onReset={load}
       />
-    </div>
+    </PageContainer>
   );
 };
 
@@ -196,5 +199,3 @@ export const CareerExperienceEditor = () => (
     preview
   />
 );
-
-export const ResumeEditor = () => <FileEditor kind={CAREER_FILE_KIND.RESUME} />;

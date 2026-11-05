@@ -6,6 +6,7 @@ import {
   FileEntry,
   HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
+import { clearApplicationStatus } from '../../../lib/job-application-state.db';
 import {
   PATH_PARAM,
   resolveJobApplicationsPath,
@@ -96,5 +97,6 @@ export async function DELETE(req: NextRequest) {
     );
   }
   await rm(folder, { recursive: true });
+  clearApplicationStatus(relativePath);
   return NextResponse.json({ ok: true });
 }

@@ -1,9 +1,22 @@
 export const STAGING = 'staging';
 
-// Non-secret Render service ids (`srv-...`, shown in the service's dashboard
-// URL), keyed by nx project then environment. Pilot: llm-service staging only.
-export const renderServices: Record<string, Record<string, string>> = {
+interface RenderServiceConfig {
+  name: string;
+  region: string;
+  plan: 'free';
+  healthCheckPath: string;
+}
+
+export const renderServices: Record<
+  string,
+  Record<string, RenderServiceConfig>
+> = {
   'llm-service': {
-    [STAGING]: 'srv-REPLACE_WITH_RENDER_SERVICE_ID',
+    [STAGING]: {
+      name: 'staging-llm-service',
+      region: 'frankfurt',
+      plan: 'free',
+      healthCheckPath: '/',
+    },
   },
 };

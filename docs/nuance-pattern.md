@@ -28,7 +28,7 @@ README files describe the component; context records its constraints. Do not rep
 
 ## Harness portability
 
-Each source needs an adjacent committed `AGENTS.md` symlink pointing to `CONTEXT.md`. Add, move or delete it with the source. See [agent support](./agent-support.md#adding-a-context-source-or-skill) for adapter validation and [context discovery](./agent-support.md#context-discovery) for instruction limits.
+Each source needs an adjacent committed `AGENTS.md` symlink pointing to `CONTEXT.md`. Add, move or delete it with the source. See [agent support](./agent-support.md#adding-a-context-source-or-skill) for adapter validation and context-site coverage (new directory contexts need no manual config), and [context discovery](./agent-support.md#context-discovery) for instruction limits.
 
 ## Entry shape
 
@@ -39,5 +39,4 @@ Retain enough evidence to recognize the problem, not an incident transcript. Omi
 ## Upkeep
 
 - Retire entries when the upstream issue is fixed or the workaround disappears; remove empty Nuances sections and rebuild the ToC.
-- Repair incoming paths/anchors after moves or heading changes and verify adapter symlinks.
-- New directory contexts are discovered automatically by the context site's `snapshot.config.json`; no manual index/config update is needed.
+- Verify adapter symlinks after moves.

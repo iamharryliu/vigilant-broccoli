@@ -1,6 +1,7 @@
-import { copyFile, mkdir } from 'fs/promises';
+import { copyFile, mkdir, readFile, rm } from 'fs/promises';
 import { dirname } from 'path';
 import { JobApplicationRun, RUN_KIND } from '../app/constants/runs';
+import { seedApplicationBaseVersions } from './application-resume.server';
 import { ensureCareerFiles } from './career-files.server';
 import { startClaudeRun } from './claude-run.server';
 import {
@@ -8,6 +9,7 @@ import {
   JOB_APPLICATIONS_ROOT,
   RESUME_BASELINE_PATH,
   RESUME_PATH,
+  RESUME_WORKING_PATH,
 } from './paths.server';
 
 const SKILL_COMMAND = '/job-application';
@@ -35,7 +37,8 @@ const TITLE_LIMIT = 70;
 const RUNNER_NOTE = [
   'Runner note:',
   `- Career experience: ${CAREER_EXPERIENCE_PATH}`,
-  `- Resume: ${RESUME_PATH}`,
+  `- Master resume (read only, never edit): ${RESUME_PATH}`,
+  `- Working resume (edit this copy for the application): ${RESUME_WORKING_PATH}`,
   `- Resume baseline: ${RESUME_BASELINE_PATH}`,
   `- Job Applications folder: ${JOB_APPLICATIONS_ROOT}`,
   `- Run the scripts exactly as \`node ${SKILL_SCRIPTS_DIR}/<script>.cjs <args>\` from the working directory, without \`cd\`; other shell commands are blocked.`,
@@ -54,10 +57,12 @@ const buildTitle = (postingUrl: string, text: string) => {
 };
 
 // check-resume compares identity and links against the resume as it was
-// before the run, which the skill must not change.
+// before the run, which the skill must not change. The skill tailors a copy
+// so each application gets its own resume and the master stays as written.
 const snapshotResume = async () => {
   await mkdir(dirname(RESUME_BASELINE_PATH), { recursive: true });
   await copyFile(RESUME_PATH, RESUME_BASELINE_PATH);
+  await copyFile(RESUME_PATH, RESUME_WORKING_PATH);
 };
 
 export const startJobApplicationRun = async (
@@ -66,6 +71,7 @@ export const startJobApplicationRun = async (
 ): Promise<JobApplicationRun> => {
   await ensureCareerFiles();
   await snapshotResume();
+  const startedAt = Date.now();
   await mkdir(JOB_APPLICATIONS_ROOT, { recursive: true });
   return startClaudeRun({
     kind: RUN_KIND.JOB_APPLICATION,
@@ -78,5 +84,12 @@ export const startJobApplicationRun = async (
       JOB_APPLICATIONS_ROOT,
     ],
     allowedTools: ALLOWED_TOOLS,
+    cleanup: async () => {
+      await rm(RESUME_WORKING_PATH, { force: true });
+      await seedApplicationBaseVersions(
+        await readFile(RESUME_BASELINE_PATH, 'utf-8'),
+        startedAt,
+      );
+    },
   });
 };

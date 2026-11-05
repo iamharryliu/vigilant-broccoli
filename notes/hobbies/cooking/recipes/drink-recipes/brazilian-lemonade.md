@@ -12,3 +12,7 @@
 - Blend limes and water (do not blend so much that that the peel is blended in)
 - Strain out liquid twice
 - Blend again with condensed milk and ice
+
+## References
+
+- [How to make Brazilian Lemonade!](https://www.youtube.com/shorts/aMdLBocJCQQ)

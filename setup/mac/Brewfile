@@ -59,8 +59,6 @@ brew "libgit2"
 brew "mise"
 # Simple tool to make locally trusted development certificates
 brew "mkcert"
-# Open source relational database management system
-brew "mysql"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # No Nonsense Neovim Client in Rust
@@ -85,18 +83,10 @@ brew "pipx"
 brew "pnpm"
 # Cross-platform library for audio I/O
 brew "portaudio"
-# Object-relational database system
-brew "postgresql@15"
 # Theme for zsh
 brew "powerlevel10k"
 # Framework for managing multi-language pre-commit hooks
 brew "pre-commit"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.10"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.11"
-# Interpreted, interactive, object-oriented programming language
-brew "python@3.12"
 # Search tool like grep and The Silver Searcher
 brew "ripgrep"
 # Command-line interface for https://speedtest.net bandwidth tests
@@ -139,8 +129,6 @@ cask "bitwarden"
 cask "bruno"
 # Terminal-based AI coding assistant
 cask "claude-code"
-# Browser for SQLite databases
-cask "db-browser-for-sqlite"
 # Universal database tool and SQL client
 cask "dbeaver-community"
 # App to build and share containerised applications and microservices

@@ -44,6 +44,13 @@ const openDb = () => {
       output TEXT NOT NULL DEFAULT ''
     )
   `);
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS job_applications (
+      folder TEXT PRIMARY KEY,
+      status TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )
+  `);
   // Databases created before import runs existed lack the kind column.
   const columns = db
     .prepare(`PRAGMA table_info(${RUNS_TABLE})`)
@@ -69,6 +76,9 @@ const openDb = () => {
 };
 
 const getDb = () => (globalStore.jobApplicationRunsDb ??= openDb());
+
+// The same file also holds the application statuses.
+export const getJobHuntDb = getDb;
 
 const toRun = (row: RunRow): JobApplicationRun => ({
   id: row.id,

@@ -11,6 +11,7 @@
   - [Team Questions](#team-questions)
   - [Performance Questions](#performance-questions)
   - [Culture Questions](#culture-questions)
+  - [Flexibility Questions](#flexibility-questions)
   - [Stability Questions](#stability-questions)
   - [Interview End Questions](#interview-end-questions)
   - [Negotiation Questions](#negotiation-questions)
@@ -70,6 +71,7 @@
 | [Team](#team-questions) | Who you work with, how they operate and onboarding. |
 | [Performance](#performance-questions) | What success looks like and how it is measured. |
 | [Culture](#culture-questions) | How the company works day to day and how people are supported. |
+| [Flexibility](#flexibility-questions) | Remote, hybrid, office days and schedule flexibility. |
 | [Stability](#stability-questions) | Company risks and long-term outlook. |
 | [Interview End](#interview-end-questions) | Closing the interview and learning what happens next. |
 | [Negotiation](#negotiation-questions) | Pay, perks and tools once an offer is likely. |
@@ -100,6 +102,7 @@
 - Who would be the direct manager?
 - How is the onboarding process for a new hire?
 - How much time do you have available to develop versus being in meetings?
+- Which meetings are mandatory, such as team syncs, one-on-ones with the manager or all-hands, and how often?
 - Where do they see the team in a year?
 
 ### Performance Questions
@@ -114,6 +117,16 @@
 - Is there an active mentoring strategy?
 - What do you like most about working here?
 - What do you wish you could improve?
+
+### Flexibility Questions
+
+- Is the role remote, hybrid or in office?
+- How many days a week are expected in office, and which days?
+- Is the in-office policy likely to change, and has it changed recently?
+- Is there flexibility on location, such as working remotely for a stretch of time?
+- Are core hours expected, or can I set my own schedule?
+- How are time off and sick days handled?
+- How do remote and in-office team members collaborate?
 
 ### Stability Questions
 

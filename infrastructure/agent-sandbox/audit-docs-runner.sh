@@ -15,7 +15,7 @@ PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
 FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 
 cd "$REPO_DIR"
-SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/local-pr-create-audit/SKILL.md")
+SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/local-create-pr-audit/SKILL.md")
 # shellcheck source=no-changes.sh
 . "$REPO_DIR/infrastructure/agent-sandbox/no-changes.sh"
 
@@ -33,7 +33,7 @@ $SKILL_INSTRUCTIONS
 Sandbox execution rules:
 - You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
 - Branching, committing, pushing, and opening the PR are handled by the calling script. Do not run mutating git commands or any gh commands.
-- The calling script rejects the run if any file other than Markdown changed, if notes/, docs/rnd/, docs/learning-timeline.md, TODO.md or a CHANGELOG file changed, or if more than $MAX_CHANGED_FILES files changed.
+- The calling script rejects the run if any file other than Markdown changed, if notes/, docs/learning-timeline.md, TODO.md or a CHANGELOG file changed, or if more than $MAX_CHANGED_FILES files changed.
 - Check everything the skill covers before choosing what to edit; do not stop after one kind of check. Record anything in scope you did not check or edit as a skipped candidate with the reason.
 - The only exception to the skill's output scope is $META_FILE, outside the checkout. Even for a clean run, write the metadata with empty removed/skipped lists; the calling script exits without opening a PR.
 
@@ -75,11 +75,11 @@ fi
 git add -A
 
 # The skill's scope is re-checked here: these paths are historical records by
-# design (notes, R&D, the learning timeline, changelogs) or owned by another
+# design (notes, the learning timeline, changelogs) or owned by another
 # operation (TODO.md belongs to agentic-pr-create-todo-audit).
 FORBIDDEN=$({
   git diff --cached --name-only -- . ':(exclude,glob)**/*.md'
-  git diff --cached --name-only -- notes docs/rnd docs/learning-timeline.md TODO.md ':(glob,icase)**/CHANGELOG*'
+  git diff --cached --name-only -- notes docs/learning-timeline.md TODO.md ':(glob,icase)**/CHANGELOG*'
 } | sort -u)
 if [ -n "$FORBIDDEN" ]; then
   echo "ERROR: the audit touched paths it must never change:" >&2

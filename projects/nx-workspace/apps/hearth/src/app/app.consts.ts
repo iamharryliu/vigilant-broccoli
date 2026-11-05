@@ -81,8 +81,8 @@ export const NAV_LINKS: NavLink[] = [
   { label: 'Where Is', href: ROUTES.WHERE_IS, icon: PackageSearch },
   { label: 'Receipt Tracker', href: ROUTES.RECEIPTS, icon: Receipt },
   {
-    label: 'Food Planner',
-    href: ROUTES.FOOD_PLANNER,
+    label: 'Kitchen Planner',
+    href: ROUTES.KITCHEN_PLANNER,
     icon: UtensilsCrossed,
     mobileOnlyChildren: true,
     children: [

@@ -71,11 +71,6 @@
       "dependsOn": ["build"],
       "options": {
         "command": "docker compose -f apps/ui/job-hunt-next/docker-compose.yml up -d --build"
-      },
-      "configurations": {
-        "repo-files": {
-          "command": "docker compose -f apps/ui/job-hunt-next/docker-compose.yml -f apps/ui/job-hunt-next/docker-compose.repo-files.yml up -d --build"
-        }
       }
     },
     "docker:down": {

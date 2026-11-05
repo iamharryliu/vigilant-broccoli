@@ -1,5 +1,5 @@
 {
-  "FOOD_PLANNER": {
+  "KITCHEN_PLANNER": {
     "TABS": {
       "PLANNER": "Planner",
       "RECIPES": "Recipes",
@@ -178,7 +178,6 @@
     "NONE": "Nothing in season",
     "ADD_LABEL": "Add {name} to grocery list",
     "ON_LIST_LABEL": "{name} is on the grocery list",
-    "JUST_IN": "Just in season",
     "LAST_CHANCE": "Last chance, season ends this month",
     "LEGEND_LABEL": "Show season legend",
     "LEGEND_TITLE": "Season legend",

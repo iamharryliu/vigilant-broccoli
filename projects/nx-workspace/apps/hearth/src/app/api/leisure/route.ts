@@ -21,6 +21,7 @@ const toLeisureActivity = (
   title: row.title,
   description: row.description ?? null,
   category: row.category,
+  position: row.position,
   homeId: row.home_id,
   createdByEmail: row.user_id
     ? (emailMap[row.user_id as string] ?? null)
@@ -38,7 +39,7 @@ export async function GET(req: NextRequest) {
   let query = supabase
     .from('leisure_activities')
     .select('*')
-    .order('created_at', { ascending: false });
+    .order('position', { ascending: true });
 
   if (id) query = query.eq('id', id);
   else if (homeId) query = query.eq('home_id', homeId);
@@ -65,12 +66,27 @@ export async function POST(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const { data: lastActivity, error: positionError } = await supabase
+    .from('leisure_activities')
+    .select('position')
+    .eq('home_id', body.homeId)
+    .order('position', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (positionError)
+    return Response.json(
+      { error: positionError.message },
+      { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+    );
+
   const { data, error } = await supabase
     .from('leisure_activities')
     .insert({
       title: body.title,
       description: body.description || null,
       category: body.category,
+      position: (lastActivity?.position ?? -1) + 1,
       home_id: body.homeId,
       user_id: user?.id ?? null,
     })
@@ -89,7 +105,24 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   const supabase = getSupabase(req);
-  const { id, ...body } = await req.json();
+  const body = await req.json();
+
+  if (Array.isArray(body.order)) {
+    const results = await Promise.all(
+      body.order.map(({ id, position }: { id: string; position: number }) =>
+        supabase.from('leisure_activities').update({ position }).eq('id', id),
+      ),
+    );
+    const error = results.find(result => result.error)?.error;
+    if (error)
+      return Response.json(
+        { error: error.message },
+        { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
+      );
+    return Response.json({ success: true });
+  }
+
+  const { id } = body;
 
   if (!id)
     return Response.json(

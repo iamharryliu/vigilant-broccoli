@@ -11,11 +11,10 @@ import {
   type ReactNode,
 } from 'react';
 import {
-  Copy,
+  CircleCheck,
   ExternalLink,
-  FileText,
-  Mail,
   Trash2,
+  Undo2,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -25,11 +24,7 @@ import {
 } from '@vigilant-broccoli/common-js';
 import {
   Button,
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
+  Input,
   Tabs,
   TabsContent,
   TabsList,
@@ -37,18 +32,32 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import {
+  BriefView,
+  SECTION_HEADING_CLASS,
+} from './application-brief.component';
+import { CoverLetterTab } from './cover-letter-tab.component';
+import { applicationResumeSource, ResumeTab } from './resume-tab.component';
+import {
   CRUDItemList,
   EllipsisAction,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import { EXPAND_LATEST, EXPAND_PARAM } from '../app.const';
+import {
+  APPLICATION_STATUS,
+  APPLICATION_STATUSES,
+  ApplicationStatus,
+  CLEAR_STATUS,
+} from '../constants/applications';
+import { JOB_APPLICATIONS_CHANGED_EVENT } from '../constants/career';
 import { IS_DEMO } from '../constants/demo';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { useTranslation } from '../i18n';
 import {
   APPLICATION_FILE,
+  Brief,
   findApplicationFile,
-  jobApplicationFileUrl,
   parseApplicationFolder,
+  parseBrief,
   parseGaps,
   readJobApplicationText,
 } from '../utils/job-application-files.utils';
@@ -59,10 +68,28 @@ import {
 
 const POSTING_URL_LINE = /^Posting URL:\s*(\S+)\s*\n?/;
 const HTTP_URL = /^https?:\/\//i;
-const POSTING_TAB = { TEXT: 'text', GAPS: 'gaps' } as const;
+const POSTING_TAB = {
+  TEXT: 'text',
+  BRIEF: 'brief',
+  RESUME: 'resume',
+  COVER_LETTER: 'cover-letter',
+} as const;
 const TITLE_SEPARATOR = ' · ';
-const SECTION_HEADING_CLASS =
-  'text-xs font-medium uppercase tracking-wide text-muted-foreground';
+const STATUS_LABEL_KEYS = {
+  [APPLICATION_STATUS.APPLIED]: 'APPLICATIONS.STATUS_APPLIED',
+  [APPLICATION_STATUS.INTERVIEWING]: 'APPLICATIONS.STATUS_INTERVIEWING',
+  [APPLICATION_STATUS.OFFER]: 'APPLICATIONS.STATUS_OFFER',
+  [APPLICATION_STATUS.REJECTED]: 'APPLICATIONS.STATUS_REJECTED',
+} as const;
+const STATUS_BADGE_CLASSES = {
+  [APPLICATION_STATUS.APPLIED]:
+    'bg-green-500/20 text-green-700 dark:text-green-400',
+  [APPLICATION_STATUS.INTERVIEWING]:
+    'bg-blue-500/20 text-blue-700 dark:text-blue-400',
+  [APPLICATION_STATUS.OFFER]:
+    'bg-amber-500/20 text-amber-700 dark:text-amber-400',
+  [APPLICATION_STATUS.REJECTED]: 'bg-red-500/20 text-red-700 dark:text-red-400',
+} as const;
 
 type ApplicationFileKind = Parameters<typeof findApplicationFile>[1];
 
@@ -72,25 +99,25 @@ type ApplicationItem = {
   label: string;
   date: string;
   created: string;
-};
-
-type Viewer = {
-  title: string;
-  pdfUrl: string;
-  // Path of the plain-text cover letter, copied by the dialog's Copy button.
-  copyPath?: string;
+  status: ApplicationStatus | null;
 };
 
 type ApplicationDetails = {
+  hasResumeSource: boolean;
+  hasCoverLetter: boolean;
   description: JobDescription;
-  // Null when the application has no gaps file (made before it existed).
+  // Null when the posting was pasted without a URL.
+  postingUrl: string | null;
+  // Null when the application has no brief file (made before it existed).
+  brief: Brief | null;
+  // The gaps file older applications have instead of a brief; null when
+  // missing too.
   gaps: string[] | null;
 };
 
 type ItemAction = EllipsisAction & { icon: LucideIcon };
 
 type ExpansionContextValue = {
-  actionsFor: (item: ApplicationItem) => ItemAction[];
   loadDetails: (item: ApplicationItem) => Promise<ApplicationDetails>;
 };
 
@@ -101,6 +128,15 @@ const listFolder = async (path: string): Promise<FileEntry[]> => {
   const data = await response.json();
   if (!response.ok) throw new Error(data.error);
   return data.entries;
+};
+
+const listStatuses = async (): Promise<
+  Record<string, ApplicationStatus | undefined>
+> => {
+  const response = await fetch(API_ENDPOINTS.JOB_APPLICATIONS_STATUS);
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error);
+  return data.statuses;
 };
 
 const listFiles = async (folder: string) =>
@@ -149,7 +185,7 @@ const GapsList = ({ gaps }: { gaps: string[] | null }) => {
   if (gaps === null) {
     return (
       <p className="text-sm text-muted-foreground">
-        {t('APPLICATIONS.NO_GAPS_FILE')}
+        {t('APPLICATIONS.NO_BRIEF')}
       </p>
     );
   }
@@ -164,17 +200,31 @@ const GapsList = ({ gaps }: { gaps: string[] | null }) => {
   );
 };
 
-const DescriptionView = ({ description }: { description: JobDescription }) => {
+const DescriptionView = ({
+  description,
+  postingUrl,
+}: {
+  description: JobDescription;
+  postingUrl: string | null;
+}) => {
   const { t } = useTranslation();
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-4">
-      {(description.role || description.company) && (
+      <div className="flex items-start justify-between gap-2">
         <h2 className="text-lg font-semibold">
           {[description.role, description.company]
             .filter(Boolean)
             .join(TITLE_SEPARATOR)}
         </h2>
-      )}
+        {postingUrl && (
+          <Button
+            variant="outline"
+            onClick={() => window.open(postingUrl, '_blank', 'noopener')}
+          >
+            <ExternalLink size={14} /> {t('APPLICATIONS.OPEN_POSTING')}
+          </Button>
+        )}
+      </div>
       <DescriptionSection
         heading={t('APPLICATIONS.ABOUT_JOB')}
         text={description.description}
@@ -189,13 +239,23 @@ const DescriptionView = ({ description }: { description: JobDescription }) => {
 
 const ExpansionContext = createContext<ExpansionContextValue | null>(null);
 
+const ApplicationResume = ({
+  folder,
+  toolbarSlot,
+}: {
+  folder: string;
+  toolbarSlot: HTMLElement | null;
+}) => {
+  const source = useMemo(() => applicationResumeSource(folder), [folder]);
+  return <ResumeTab source={source} embedded toolbarSlot={toolbarSlot} />;
+};
+
 const ExpandedDetails = ({ item }: { item: ApplicationItem }) => {
   const { t } = useTranslation();
-  const { actionsFor, loadDetails } = useContext(
-    ExpansionContext,
-  ) as ExpansionContextValue;
+  const { loadDetails } = useContext(ExpansionContext) as ExpansionContextValue;
   const [details, setDetails] = useState<ApplicationDetails | null>(null);
   const [error, setError] = useState('');
+  const [toolbarSlot, setToolbarSlot] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -213,40 +273,60 @@ const ExpandedDetails = ({ item }: { item: ApplicationItem }) => {
 
   return (
     <div className="flex gap-4 border-t border-border pt-3">
-      <div className="flex w-36 shrink-0 flex-col gap-1 sm:w-44">
-        {/* Actions that need a confirm step stay in the card's ellipsis menu,
-            which shows it; these buttons run on click. */}
-        {actionsFor(item)
-          .filter(action => !action.confirm)
-          .map(({ label, icon: Icon, onSelect }) => (
-            <Button
-              key={label}
-              variant="ghost"
-              className="justify-start"
-              onClick={() => onSelect()}
-            >
-              <Icon size={14} />
-              {label}
-            </Button>
-          ))}
-      </div>
       {details ? (
         <div className="flex min-w-0 flex-1 flex-col gap-4">
           <Tabs defaultValue={POSTING_TAB.TEXT}>
-            <TabsList>
-              <TabsTrigger value={POSTING_TAB.TEXT}>
-                {t('APPLICATIONS.TAB_POSTING')}
-              </TabsTrigger>
-              <TabsTrigger value={POSTING_TAB.GAPS}>
-                {t('APPLICATIONS.TAB_GAPS')}
-              </TabsTrigger>
-            </TabsList>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <TabsList>
+                <TabsTrigger value={POSTING_TAB.TEXT}>
+                  {t('APPLICATIONS.TAB_POSTING')}
+                </TabsTrigger>
+                <TabsTrigger value={POSTING_TAB.BRIEF}>
+                  {t('APPLICATIONS.TAB_BRIEF')}
+                </TabsTrigger>
+                <TabsTrigger value={POSTING_TAB.RESUME}>
+                  {t('APPLICATIONS.TAB_RESUME')}
+                </TabsTrigger>
+                <TabsTrigger value={POSTING_TAB.COVER_LETTER}>
+                  {t('APPLICATIONS.TAB_COVER_LETTER')}
+                </TabsTrigger>
+              </TabsList>
+              <div ref={setToolbarSlot} />
+            </div>
             <AnimatedHeight>
               <TabsContent value={POSTING_TAB.TEXT} className="pt-3">
-                <DescriptionView description={details.description} />
+                <DescriptionView
+                  description={details.description}
+                  postingUrl={IS_DEMO ? null : details.postingUrl}
+                />
               </TabsContent>
-              <TabsContent value={POSTING_TAB.GAPS} className="pt-3">
-                <GapsList gaps={details.gaps} />
+              <TabsContent value={POSTING_TAB.BRIEF} className="pt-3">
+                {details.brief ? (
+                  <BriefView brief={details.brief} />
+                ) : (
+                  <GapsList gaps={details.gaps} />
+                )}
+              </TabsContent>
+              <TabsContent value={POSTING_TAB.RESUME} className="pt-3">
+                {details.hasResumeSource ? (
+                  <ApplicationResume
+                    folder={item.id}
+                    toolbarSlot={toolbarSlot}
+                  />
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {t('RESUME.NONE')}
+                  </p>
+                )}
+              </TabsContent>
+              <TabsContent value={POSTING_TAB.COVER_LETTER} className="pt-3">
+                {details.hasCoverLetter ? (
+                  <CoverLetterTab folder={item.id} toolbarSlot={toolbarSlot} />
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {t('COVER_LETTER.NONE')}
+                  </p>
+                )}
               </TabsContent>
             </AnimatedHeight>
           </Tabs>
@@ -290,50 +370,83 @@ const AnimatedHeight = ({ children }: { children: ReactNode }) => {
   );
 };
 
-const ApplicationRow = ({ item }: { item: ApplicationItem }) => (
-  <span className="block truncate text-sm font-medium">{item.title}</span>
-);
+const ApplicationRow = ({ item }: { item: ApplicationItem }) => {
+  const { t } = useTranslation();
+  return (
+    <span className="flex items-center gap-2">
+      <span className="block min-w-0 truncate text-sm font-medium">
+        {item.title}
+      </span>
+      {item.status && (
+        <span
+          className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_BADGE_CLASSES[item.status]}`}
+        >
+          {t(STATUS_LABEL_KEYS[item.status])}
+        </span>
+      )}
+    </span>
+  );
+};
 
 export const JobApplicationList = () => {
   const { t } = useTranslation();
   const [items, setItems] = useState<ApplicationItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [defaultExpandedIds, setDefaultExpandedIds] = useState<string[]>([]);
-  const [viewer, setViewer] = useState<Viewer | null>(null);
+  const [search, setSearch] = useState('');
 
-  const load = useCallback(async () => {
-    try {
-      const folders = (await listFolder('')).filter(
-        entry => entry.kind === FILE_ENTRY_KIND.FOLDER,
-      );
-      const sorted = folders
-        .map(folder => ({
-          id: folder.path,
-          created: folder.created,
-          ...parseApplicationFolder(
-            folder.name,
-            folder.modified,
-            folder.created,
-          ),
-        }))
-        .sort(
-          (a, b) =>
-            b.date.localeCompare(a.date) || b.created.localeCompare(a.created),
+  const load = useCallback(
+    async (expandLatest: boolean) => {
+      try {
+        const [entries, statuses] = await Promise.all([
+          listFolder(''),
+          listStatuses(),
+        ]);
+        const folders = entries.filter(
+          entry => entry.kind === FILE_ENTRY_KIND.FOLDER,
         );
-      setItems(sorted);
-      const wantsLatest =
-        new URLSearchParams(window.location.search).get(EXPAND_PARAM) ===
-        EXPAND_LATEST;
-      if (wantsLatest && sorted.length) setDefaultExpandedIds([sorted[0].id]);
-    } catch (error) {
-      toast.error(errorMessage(error, t('APPLICATIONS.LOAD_FAILED')));
-    } finally {
-      setLoaded(true);
-    }
-  }, [t]);
+        const sorted = folders
+          .map(folder => ({
+            id: folder.path,
+            created: folder.created,
+            status: statuses[folder.path] ?? null,
+            ...parseApplicationFolder(
+              folder.name,
+              folder.modified,
+              folder.created,
+            ),
+          }))
+          .sort(
+            (a, b) =>
+              b.date.localeCompare(a.date) ||
+              b.created.localeCompare(a.created),
+          );
+        setItems(sorted);
+        const wantsLatest =
+          expandLatest &&
+          new URLSearchParams(window.location.search).get(EXPAND_PARAM) ===
+            EXPAND_LATEST;
+        if (wantsLatest && sorted.length) setDefaultExpandedIds([sorted[0].id]);
+      } catch (error) {
+        toast.error(errorMessage(error, t('APPLICATIONS.LOAD_FAILED')));
+      } finally {
+        setLoaded(true);
+      }
+    },
+    [t],
+  );
 
   useEffect(() => {
-    load();
+    load(true);
+  }, [load]);
+
+  useEffect(() => {
+    const reload = () => {
+      load(false);
+    };
+    window.addEventListener(JOB_APPLICATIONS_CHANGED_EVENT, reload);
+    return () =>
+      window.removeEventListener(JOB_APPLICATIONS_CHANGED_EVENT, reload);
   }, [load]);
 
   const loadDetails = useCallback(
@@ -345,98 +458,50 @@ export const JobApplicationList = () => {
         t('APPLICATIONS.NO_POSTING'),
       );
       const gapsFile = findApplicationFile(files, APPLICATION_FILE.GAPS);
-      const [postingText, gapsText] = await Promise.all([
+      const briefFile = findApplicationFile(files, APPLICATION_FILE.BRIEF);
+      const [postingText, gapsText, briefText] = await Promise.all([
         readJobApplicationText(posting.path),
         gapsFile ? readJobApplicationText(gapsFile.path) : null,
+        briefFile ? readJobApplicationText(briefFile.path) : null,
       ]);
+      const { url, body } = splitPosting(postingText);
       return {
-        description: parseJobDescription(splitPosting(postingText).body),
+        description: parseJobDescription(body),
+        postingUrl: url,
+        brief: briefText === null ? null : parseBrief(briefText),
         gaps: gapsText === null ? null : parseGaps(gapsText),
+        hasResumeSource: !!findApplicationFile(
+          files,
+          APPLICATION_FILE.RESUME_SOURCE,
+        ),
+        hasCoverLetter: !!findApplicationFile(
+          files,
+          APPLICATION_FILE.COVER_LETTER_TEXT,
+        ),
       };
     },
     [t],
   );
 
-  const viewPdf = async (
-    item: ApplicationItem,
-    kind: ApplicationFileKind,
-    label: string,
-    withCopy: boolean,
-  ) => {
-    const lowerLabel = label.toLowerCase();
-    try {
-      const files = await listFiles(item.id);
-      const pdf = findFileOrThrow(
-        files,
-        kind,
-        t('APPLICATIONS.NOT_SAVED', { label: lowerLabel }),
-      );
-      setViewer({
-        title: `${label} — ${item.label}`,
-        pdfUrl: jobApplicationFileUrl(pdf.path),
-        copyPath: withCopy
-          ? findApplicationFile(files, APPLICATION_FILE.COVER_LETTER_TEXT)?.path
-          : undefined,
-      });
-    } catch (error) {
-      toast.error(
-        errorMessage(
-          error,
-          t('APPLICATIONS.OPEN_FAILED', { label: lowerLabel }),
-        ),
-      );
-    }
-  };
-
-  // The URL is only known once the posting file is read, and a tab opened
-  // after that await would be popup-blocked, so a blank tab opens inside the
-  // click and is pointed at the posting, or closed when it has no URL. Its
-  // opener is cleared first so the job site cannot script this app's tab.
-  const openPosting = async (item: ApplicationItem) => {
-    const tab = window.open('', '_blank');
-    try {
-      const posting = findFileOrThrow(
-        await listFiles(item.id),
-        APPLICATION_FILE.POSTING,
-        t('APPLICATIONS.NO_POSTING'),
-      );
-      const { url } = splitPosting(await readJobApplicationText(posting.path));
-      if (!url) throw new Error(t('APPLICATIONS.NO_POSTING_URL'));
-      if (!tab) {
-        window.open(url, '_blank', 'noopener');
-        return;
-      }
-      tab.opener = null;
-      tab.location.href = url;
-    } catch (error) {
-      tab?.close();
-      toast.error(errorMessage(error, t('APPLICATIONS.OPEN_POSTING_FAILED')));
-    }
-  };
-
   const itemActions = (item: ApplicationItem): ItemAction[] => [
-    {
-      label: t('APPLICATIONS.OPEN_POSTING'),
-      icon: ExternalLink,
-      onSelect: () => openPosting(item),
-    },
-    {
-      label: t('APPLICATIONS.VIEW_RESUME'),
-      icon: FileText,
-      onSelect: () =>
-        viewPdf(item, APPLICATION_FILE.RESUME, t('APPLICATIONS.RESUME'), false),
-    },
-    {
-      label: t('APPLICATIONS.VIEW_COVER_LETTER'),
-      icon: Mail,
-      onSelect: () =>
-        viewPdf(
-          item,
-          APPLICATION_FILE.COVER_LETTER_PDF,
-          t('APPLICATIONS.COVER_LETTER'),
-          true,
-        ),
-    },
+    ...APPLICATION_STATUSES.filter(status => status !== item.status).map(
+      (status): ItemAction => ({
+        label: t('APPLICATIONS.MARK_STATUS', {
+          status: t(STATUS_LABEL_KEYS[status]).toLowerCase(),
+        }),
+        icon: CircleCheck,
+        onSelect: () => setStatus(item, status),
+      }),
+    ),
+    ...(item.status
+      ? [
+          {
+            label: t('APPLICATIONS.CLEAR_STATUS'),
+            icon: Undo2,
+            onSelect: () => setStatus(item, null),
+          },
+        ]
+      : []),
     {
       label: t('APPLICATIONS.DELETE'),
       icon: Trash2,
@@ -453,10 +518,34 @@ export const JobApplicationList = () => {
   ];
 
   const visibleItemActions = (item: ApplicationItem) =>
-    itemActions(item).filter(
-      action =>
-        !IS_DEMO || (action.icon !== Trash2 && action.icon !== ExternalLink),
-    );
+    IS_DEMO ? [] : itemActions(item);
+
+  const setStatus = async (
+    item: ApplicationItem,
+    status: ApplicationStatus | null,
+  ) => {
+    try {
+      const response = await fetch(
+        `${API_ENDPOINTS.JOB_APPLICATIONS_STATUS}?path=${encodeURIComponent(item.id)}&status=${status ?? CLEAR_STATUS}`,
+        { method: HTTP_METHOD.PUT },
+      );
+      if (!response.ok) throw new Error((await response.json()).error);
+      setItems(previous =>
+        previous.map(entry =>
+          entry.id === item.id ? { ...entry, status } : entry,
+        ),
+      );
+      toast.success(
+        t(
+          status
+            ? 'APPLICATIONS.STATUS_UPDATED'
+            : 'APPLICATIONS.STATUS_CLEARED',
+        ),
+      );
+    } catch (error) {
+      toast.error(errorMessage(error, t('APPLICATIONS.STATUS_FAILED')));
+    }
+  };
 
   const deleteApplication = async (item: ApplicationItem) => {
     try {
@@ -472,35 +561,49 @@ export const JobApplicationList = () => {
     }
   };
 
-  const copyCoverLetter = async (path: string) => {
-    try {
-      await navigator.clipboard.writeText(await readJobApplicationText(path));
-      toast.success(t('APPLICATIONS.COPIED'));
-    } catch (error) {
-      toast.error(errorMessage(error, t('APPLICATIONS.COPY_FAILED')));
-    }
-  };
+  const query = search.trim().toLowerCase();
+  const visibleItems = useMemo(
+    () =>
+      query
+        ? items.filter(item =>
+            [item.title, item.status && t(STATUS_LABEL_KEYS[item.status])]
+              .join(' ')
+              .toLowerCase()
+              .includes(query),
+          )
+        : items,
+    [items, query, t],
+  );
 
   const copy = useMemo(
     () => ({
       LIST: {
         TITLE: '',
-        EMPTY_MESSAGE: loaded ? t('APPLICATIONS.EMPTY') : '',
+        EMPTY_MESSAGE: loaded
+          ? t(query ? 'APPLICATIONS.NO_MATCHES' : 'APPLICATIONS.EMPTY')
+          : '',
       },
       CREATE: { TITLE: '', DESCRIPTION: '' },
       UPDATE: { TITLE: '', DESCRIPTION: '' },
     }),
-    [loaded, t],
+    [loaded, query, t],
   );
 
   return (
     <>
-      <ExpansionContext.Provider
-        value={{ actionsFor: visibleItemActions, loadDetails }}
-      >
+      <ExpansionContext.Provider value={{ loadDetails }}>
+        {loaded && items.length > 0 && (
+          <Input
+            type="search"
+            value={search}
+            onChange={event => setSearch(event.target.value)}
+            placeholder={t('APPLICATIONS.SEARCH_PLACEHOLDER')}
+            className="mb-2"
+          />
+        )}
         {loaded && (
           <CRUDItemList
-            items={items}
+            items={visibleItems}
             defaultExpandedIds={defaultExpandedIds}
             setItems={setItems}
             ListItemComponent={ApplicationRow}
@@ -511,40 +614,6 @@ export const JobApplicationList = () => {
           />
         )}
       </ExpansionContext.Provider>
-      <Dialog
-        open={viewer !== null}
-        onOpenChange={open => {
-          if (!open) setViewer(null);
-        }}
-      >
-        <DialogContent className="flex h-[95vh] w-[95vw] max-w-none flex-col">
-          <DialogHeader className="pr-8">
-            <div className="flex items-center justify-between gap-2">
-              <DialogTitle className="min-w-0 truncate">
-                {viewer?.title}
-              </DialogTitle>
-              {viewer?.copyPath && (
-                <Button
-                  variant="outline"
-                  onClick={() => copyCoverLetter(viewer.copyPath as string)}
-                >
-                  <Copy size={14} /> {t('APPLICATIONS.COPY')}
-                </Button>
-              )}
-            </div>
-            <DialogDescription className="sr-only">
-              {t('APPLICATIONS.FILE_DESCRIPTION')}
-            </DialogDescription>
-          </DialogHeader>
-          {viewer && (
-            <iframe
-              src={viewer.pdfUrl}
-              title={viewer.title}
-              className="min-h-0 w-full flex-1 rounded border border-border"
-            />
-          )}
-        </DialogContent>
-      </Dialog>
     </>
   );
 };

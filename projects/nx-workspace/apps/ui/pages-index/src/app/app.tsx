@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom';
 import { I18nProvider } from './i18n';
 import { ThemeProvider } from './theme';
+import { GamesPage } from './pages/GamesPage';
 import { HomePage } from './pages/HomePage';
 import { StatusPage } from './pages/StatusPage';
 import { RepoTimelinePage } from './pages/RepoTimelinePage';
@@ -23,8 +24,14 @@ import { ApiServiceDocsPage } from './pages/ApiServiceDocsPage';
 import { DeploymentsPage } from './pages/DeploymentsPage';
 import { CareerPage } from './pages/CareerPage';
 import { CareerExperiencePage } from './pages/CareerExperiencePage';
-import { isCareerHost, isDeploymentsHost, isStatusHost } from './consts/hosts';
 import {
+  isCareerHost,
+  isDeploymentsHost,
+  isGamesHost,
+  isStatusHost,
+} from './consts/hosts';
+import {
+  GAMES_ROUTE,
   CAREER_EXPERIENCE_ROUTE,
   DEPLOYMENTS_ROUTE,
   STATUS_ROUTE,
@@ -75,10 +82,29 @@ function CareerHostRoutes() {
   );
 }
 
+function GamesHostRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<GamesPage />} />
+      <Route path={GAMES_ROUTE} element={<GamesPage />} />
+      <Route
+        path={`${GAMES_ROUTE}/:app`}
+        element={<WebApplicationReadmePage />}
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+}
+
 function ProjectsRoutes() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path={GAMES_ROUTE} element={<GamesPage />} />
+      <Route
+        path={`${GAMES_ROUTE}/:app`}
+        element={<WebApplicationReadmePage />}
+      />
       <Route path={STATUS_ROUTE} element={<StatusPage />} />
       <Route path={DEPLOYMENTS_ROUTE} element={<DeploymentsPage />} />
       <Route path="/repo-timeline" element={<RepoTimelinePage />} />
@@ -109,7 +135,9 @@ export function App() {
       <ThemeProvider>
         <div className="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-dvh">
           <HashRouter>
-            {isStatusHost() ? (
+            {isGamesHost() ? (
+              <GamesHostRoutes />
+            ) : isStatusHost() ? (
               <StatusHostRoutes />
             ) : isDeploymentsHost() ? (
               <DeploymentsHostRoutes />

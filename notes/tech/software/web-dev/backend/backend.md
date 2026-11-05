@@ -1,5 +1,22 @@
 # Backend Developer
 
+## Table of Contents
+
+- [Links](#links)
+- [What is a backend](#what-is-a-backend)
+- [Session Management](#session-management)
+  - [Frontend Storage](#frontend-storage)
+  - [Session Cookies](#session-cookies)
+  - [JWT](#jwt)
+- [Dont's](#donts)
+- [API Development](#api-development)
+  - [Rest API Design](#rest-api-design)
+  - [GraphQL API Design](#graphql-api-design)
+- [Microservices](#microservices)
+- [Reference](#reference)
+
+## Links
+
 - [Node](./node/node.md)
 - **Frameworks**
   - **Javascript/Typescript**
@@ -113,6 +130,19 @@ HTTP methods return different response status codes depending on the outcome of 
 - **500 - Internal Server Error**
 
 ### GraphQL API Design
+
+## Microservices
+
+A microservice architecture splits a backend into small services that each own one capability and its data, deploy independently, and talk over HTTP, gRPC, or a message queue. Hosting model comparisons: [Deployment compute models](../devops/deployment/deployment.md#deployment-compute-models).
+
+| Runtime | Examples | Unit of Deploy | Scaling | Pros | Cons | Best Used For |
+| --- | --- | --- | --- | --- | --- | --- |
+| Edge functions | Cloudflare Workers, Deno Deploy, Vercel Edge Functions | Script running in a V8 isolate | Per request, globally, near-zero cold start | Lowest latency; cheapest per request; no regions to manage | Restricted runtime (no full Node APIs, tight CPU and memory); data often far from the edge | Auth, routing, rewrites, and light APIs in front of other services |
+| Managed Kubernetes | GKE, EKS, AKS | Container in a pod | Horizontal pod and node autoscaling | Full control of networking, service mesh, sidecars, and stateful sets; portable | Highest operational and cost floor; cluster upgrades and YAML sprawl | Many services with platform staff and needs for mesh, custom networking, or GPUs |
+| PaaS app hosting | Fly.io, Render, Heroku, App Engine | App or container per service | Instance counts, sometimes scale to zero | Simple deploys with long-running processes, WebSockets, and private networking | Less control than Kubernetes; pricing climbs with always-on instances | Small teams running a handful of always-on services |
+| Serverless containers | Cloud Run, AWS Fargate / App Runner, Azure Container Apps | Container image | Per request or concurrency, scale to zero | Any language or binary; local Docker parity; longer timeouts; many requests per instance | Cold starts of seconds; billed while handling requests or for minimum instances; no node access | HTTP APIs and workers needing their own dependencies without cluster management |
+| Serverless functions (FaaS) | AWS Lambda, Google Cloud Functions, Azure Functions | Single function handler | Per invocation, scale to zero | No servers; pay per invocation; native event triggers (queues, storage, schedules) | Cold starts; execution time and payload limits; vendor-specific handlers; hard to run locally | Event-driven glue, webhooks, scheduled jobs, and spiky low-traffic endpoints |
+| Virtual machines | EC2, Compute Engine, Droplets | Process or Docker Compose on a VM | Manual or autoscaling groups | Full control; predictable cost; stateful and long-lived workloads | You patch, monitor, and scale it; no scale to zero | Databases, legacy services, and steady workloads where a fixed cost beats per-request billing |
 
 ## Reference
 

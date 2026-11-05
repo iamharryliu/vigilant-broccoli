@@ -1,5 +1,6 @@
 import { ReactNode, useState } from 'react';
 import { CircleHelp } from 'lucide-react';
+import { Skeleton } from './Skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './Dialog';
 import {
   UPPTIME_SUMMARY_ERROR_TYPE,
@@ -77,6 +78,8 @@ const LEGEND_STATUS_ORDER: UpptimeStatus[] = [
 const LIST_CLASS =
   'rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm';
 
+const ROW_CLASS = 'flex items-center gap-4 px-4 py-2';
+
 const UPTIME_COLUMN_CLASS =
   'shrink-0 font-mono text-gray-400 items-baseline gap-1.5';
 
@@ -109,15 +112,26 @@ function UptimeCell({
   label,
   value,
   className = 'flex',
+  loading = false,
 }: {
   label: string;
   value?: string;
   className?: string;
+  loading?: boolean;
 }) {
   return (
     <span className={`${className} ${UPTIME_COLUMN_CLASS}`}>
       <span className="shrink-0 text-xs text-muted-foreground">{label}</span>
-      <span className="w-[7ch] shrink-0 text-right">{value || '—'}</span>
+      <span className="relative w-[7ch] shrink-0 text-right">
+        {loading ? (
+          <>
+            <span className="invisible">—</span>
+            <Skeleton className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-4 dark:bg-border motion-reduce:animate-none" />
+          </>
+        ) : (
+          value || '—'
+        )}
+      </span>
     </span>
   );
 }
@@ -126,27 +140,34 @@ function UptimeListItem({
   svc,
   days,
   labels,
+  loading = false,
 }: {
   svc: UpptimeService;
+  loading?: boolean;
   days: string[];
   labels: UpptimeStatusListLabels;
 }) {
   const status =
     svc.status in UPTIME_STATUS_DOT_CLASS ? svc.status : UPTIME_STATUS.UNKNOWN;
+  const Row = loading ? 'div' : 'a';
   return (
-    <li>
-      <a
-        href={svc.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-4 px-4 py-2 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition"
+    <li aria-hidden={loading || undefined}>
+      <Row
+        {...(loading
+          ? {}
+          : { href: svc.url, target: '_blank', rel: 'noopener noreferrer' })}
+        className={`${ROW_CLASS} ${loading ? '' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 transition'}`}
       >
         <span
-          className={`h-2 w-2 rounded-full ${UPTIME_STATUS_DOT_CLASS[status]} shrink-0`}
-          title={labels.status[status].label}
+          className={`h-2 w-2 rounded-full ${loading ? 'bg-muted dark:bg-border' : UPTIME_STATUS_DOT_CLASS[status]} shrink-0`}
+          title={loading ? undefined : labels.status[status].label}
         />
         <span className="flex-1 font-medium truncate">
-          {getUpptimeServiceDisplayText(svc)}
+          {loading ? (
+            <Skeleton className="h-4 w-3/4 dark:bg-border motion-reduce:animate-none" />
+          ) : (
+            getUpptimeServiceDisplayText(svc)
+          )}
         </span>
         <span className="hidden md:flex shrink-0 items-center gap-px">
           {days.map(day => {
@@ -154,32 +175,48 @@ function UptimeListItem({
             return (
               <span
                 key={day}
-                className={`h-4 w-1 ${getDowntimeBarClass(minutes)}`}
-                title={labels.downtimeBar(day, minutes)}
+                className={`h-4 w-1 ${loading ? 'bg-muted dark:bg-border' : getDowntimeBarClass(minutes)}`}
+                title={loading ? undefined : labels.downtimeBar(day, minutes)}
               />
             );
           })}
         </span>
         <UptimeCell
+          loading={loading}
           className="hidden sm:flex"
           label={labels.rangeDay}
           value={svc.uptimeDay}
         />
         <UptimeCell
+          loading={loading}
           className="hidden sm:flex"
           label={labels.rangeWeek}
           value={svc.uptimeWeek}
         />
-        <UptimeCell label={labels.rangeMonth} value={svc.uptimeMonth} />
         <UptimeCell
+          loading={loading}
+          label={labels.rangeMonth}
+          value={svc.uptimeMonth}
+        />
+        <UptimeCell
+          loading={loading}
           className="hidden sm:flex"
           label={labels.rangeYear}
           value={svc.uptimeYear}
         />
-        <span className="shrink-0 font-mono text-muted-foreground w-14 text-right">
-          {typeof svc.time === 'number' ? `${svc.time}ms` : '—'}
+        <span className="relative shrink-0 font-mono text-muted-foreground w-14 text-right">
+          {loading ? (
+            <>
+              <span className="invisible">—</span>
+              <Skeleton className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-4 dark:bg-border motion-reduce:animate-none" />
+            </>
+          ) : typeof svc.time === 'number' ? (
+            `${svc.time}ms`
+          ) : (
+            '—'
+          )}
         </span>
-      </a>
+      </Row>
     </li>
   );
 }
@@ -231,6 +268,7 @@ const toErrorMessage = (
 
 interface UpptimeStatusListProps {
   summary: UpptimeSummary;
+  loadingServices?: Pick<UpptimeService, 'name' | 'url'>[];
   // Omit for one flat, unheaded list.
   groups?: UpptimeServiceGroup[];
   labels?: Partial<UpptimeStatusListLabels>;
@@ -238,6 +276,7 @@ interface UpptimeStatusListProps {
 
 export function UpptimeStatusList({
   summary,
+  loadingServices,
   groups,
   labels: labelOverrides,
 }: UpptimeStatusListProps) {
@@ -254,9 +293,15 @@ export function UpptimeStatusList({
         </li>
       </ul>
     );
-  if (!services || services.length === 0)
+  const loading = services === null;
+  const items =
+    services ??
+    loadingServices?.map(svc => ({ ...svc, status: UPTIME_STATUS.UNKNOWN })) ??
+    [];
+
+  if (items.length === 0)
     return (
-      <ul className={LIST_CLASS}>
+      <ul className={LIST_CLASS} aria-busy={loading}>
         <li className="px-4 py-2 text-muted-foreground">
           {services && labels.empty}
         </li>
@@ -265,15 +310,22 @@ export function UpptimeStatusList({
 
   const renderList = (items: UpptimeService[]) => (
     <ul
+      aria-busy={loading}
       className={`${LIST_CLASS} divide-y divide-gray-100 dark:divide-gray-700`}
     >
       {items.map(svc => (
-        <UptimeListItem key={svc.url} svc={svc} days={days} labels={labels} />
+        <UptimeListItem
+          key={svc.url}
+          svc={svc}
+          days={days}
+          labels={labels}
+          loading={loading}
+        />
       ))}
     </ul>
   );
 
-  if (!groups) return renderList([...services].sort(byDisplayText));
+  if (!groups) return renderList([...items].sort(byDisplayText));
 
   return (
     <>
@@ -282,7 +334,7 @@ export function UpptimeStatusList({
         onOpenChange={setLegendOpen}
         labels={labels}
       />
-      {groupServices(services, groups).map(({ group, services: items }) => (
+      {groupServices(items, groups).map(({ group, services: items }) => (
         <section key={group.id} className="mb-4 last:mb-0">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">

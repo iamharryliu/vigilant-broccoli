@@ -8,13 +8,15 @@ Non-obvious routing and data-source details for pages-index. Routes live in `src
 - [Deployments, status and repo timeline](#deployments-status-and-repo-timeline)
 - [Open source](#open-source)
 - [Web applications and API services](#web-applications-and-api-services)
+- [Games](#games)
+  - [Activation](#activation)
 
 ## Hosts
 
 - `status.harryliu.dev` — the same `StatusPage` at the host root. `app.tsx` picks the status route table when `window.location.hostname` is `STATUS_HOST` (`src/app/consts/hosts.ts`); other hash routes redirect to `/`. The Home breadcrumb and any other pages-index link there are explicit `https://projects.harryliu.dev/#/…` URLs, built with `toProjectsUrl`.
 - `deployments.harryliu.dev` — `DeploymentsPage` at the host root. `app.tsx` picks the deployments route table when the hostname is `DEPLOYMENTS_HOST`; other hash routes redirect to `/`, and the Home breadcrumb is a `toProjectsUrl` link. Details: [deployments-page.md](./deployments-page.md).
 - `career.harryliu.dev` — `CareerPage` at the host root (cards: Resume → `harryliu.dev/resume`, Personal Software Career Experience, `projects.harryliu.dev`, `harryliu.dev`, GitHub, LinkedIn). `app.tsx` picks the career route table when the hostname is `CAREER_HOST`; other hash routes redirect to `/`.
-  - `/personal-software-career-experience` — renders `notes/personal/career/personal-software-career-experience.md` from `raw.githubusercontent.com`; its breadcrumb returns to the career root.
+  - `/personal-software-career-experience` — renders `notes/personal/career/career-experience.md` from `raw.githubusercontent.com`; its breadcrumb returns to the career root.
 
 ## Deployments, status and repo timeline
 
@@ -33,8 +35,24 @@ The home page's Software Projects section links straight to GitHub, Docker Hub a
 
 ## Web applications and API services
 
+- `/web-applications/gravity-guy` and `/web-applications/gravity-guy-staging` — production at `gravity-guy.harryliu.dev` and protected staging Vercel deployments of the browser-local runner; both details use Gravity Guy's README.
 - `/web-applications/bookmarks` — Bookmarks detail links to `bookmarks.harryliu.dev`, a browser-local bookmark manager.
 - `/web-applications/:app` — app or demo detail with an Open application card above its README, fetched from `raw.githubusercontent.com`; Career uses the pages-index README. Apps with `stagingHref` also show an Open staging application card to the gated custom hostname. Manager stays in the private manager quick links rather than this public registry. Only registered apps have cards and detail pages; removing a registry entry removes both.
 - `/api-services/:service` — Swagger UI rendered in-app against a spec published at build time to `public/openapi/<service>.json` by the `generate-openapi` target (`scripts/generate-openapi-specs.ts`). All five services (llm-service, bucket-service, email-service, email-subscription-service, employee-handler) are private-only (the first four are private Fly apps; employee-handler is a library-hosted contract with no public `/docs`), so this page is the only way to browse them. The employee-handler spec is generated from the zod contract in `libs/@vigilant-broccoli/employee-handler`, whose sources are `generate-openapi` inputs. Swagger UI itself loads from a pinned jsDelivr CDN rather than bundling `swagger-ui-dist`.
 
 The Job Hunt demo card opens the public, read-only sample deployment at `demo-job-hunt-next.vercel.app`; its detail page uses Job Hunt's README.
+
+## Games
+
+- `/games` shows production Balloono, Gravity Guy and Waiting Games, sorted by translated title, with direct play cards. `/games/:app` README pages remain available by route.
+- Membership is the `game: true` flag on entries in the shared applications registry; demos, staging duplicates and the Games portal itself are excluded. The full applications and demo lists retain their existing detail behavior.
+- Home links to Games; the Games breadcrumb returns to Home.
+- `games.harryliu.dev` serves Games at `/` and `#/games`; `#/games/:app` keeps README navigation on this host, with Games as its local breadcrumb parent and Home linking to the projects host. Unknown hash routes return to root.
+- The Games portal also appears in the full applications registry and shared browser quick links, with a production Upptime check.
+
+### Activation
+
+- After merge, wait for the main pages-index GitHub Pages deployment, then verify `https://projects.harryliu.dev/#/games`.
+- From an authenticated local checkout run `pnpm tf:plan`; review the plan for `cloudflare_workers_custom_domain.games` and exclude unrelated drift before running `pnpm tf:apply`. The custom domain provisions DNS/TLS on the existing Worker; no new app or Worker script is needed.
+- Verify HTTPS at `https://games.harryliu.dev/`, `#/games`, a game About page and its breadcrumbs; open all three production games. Confirm status, career and deployments roots still render correctly.
+- Confirm the Upptime configuration sync and production-games check after merge; no provider dashboard edits are needed.

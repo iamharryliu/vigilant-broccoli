@@ -7,7 +7,7 @@ Use the current vigilant-broccoli Git root. Outside this repo, ask which checkou
 
 Run only on explicit `local-create-pr-codex` invocation; it authorizes one tmux session whose agent implements the request and publishes a PR. Make no edits in this checkout.
 
-Follow `local-create-pr-claude` steps 1-3 (research, prompt, worktree and publishing instruction), then steps 4-5 with this session command, using the same prompt file. Codex's approval mode matches the dev sandbox's `auto`; add `--model <model>` only when the user asks:
+Follow the [dispatch contract](../../../../docs/agent-support.md#dispatch-contract) (request, research, stop, ask, prompt), then `local-create-pr-claude` for the worktree, the publishing instruction appended to the prompt, the prompt file and the report, with this session command. Codex's approval mode matches the dev sandbox's `auto`; add `--model <model>` only when the user asks:
 
 ```sh
 tmux new-session -d -s vb-pr-<slug> -c "$PWD/.claude/worktrees/<slug>" \

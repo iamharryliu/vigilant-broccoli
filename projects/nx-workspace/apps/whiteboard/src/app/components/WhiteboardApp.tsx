@@ -173,7 +173,7 @@ function Whiteboard() {
             value={username}
             placeholder={t('USER.USERNAME_PLACEHOLDER')}
             onChange={e => updateUsername(e.target.value)}
-            className="min-w-0 flex-1 rounded border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-800 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+            className="min-w-0 flex-1 rounded border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-800 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
           />
           <button
             type="button"
@@ -199,7 +199,7 @@ function Whiteboard() {
               if (e.key === 'Enter') joinRoom();
             }}
             disabled={Boolean(activeRoom)}
-            className="min-w-0 flex-1 rounded border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-800 focus:border-blue-500 focus:outline-none disabled:bg-gray-100 disabled:text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800 dark:disabled:text-gray-400"
+            className="min-w-0 flex-1 rounded border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-800 focus:outline-none disabled:bg-gray-100 disabled:text-gray-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800 dark:disabled:text-gray-400"
           />
           <button
             type="button"
@@ -275,7 +275,7 @@ function Whiteboard() {
               onBlur={handleTextBlur}
               placeholder={t('BOARD.PLACEHOLDER')}
               disabled={connectionStatus !== CONNECTION_STATUS.CONNECTED}
-              className="h-full w-full resize-none rounded border border-gray-300 bg-white p-3 font-mono text-sm leading-relaxed text-gray-800 focus:border-blue-500 focus:outline-none disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800"
+              className="h-full w-full resize-none rounded border border-gray-300 bg-white p-3 font-mono text-sm leading-relaxed text-gray-800 focus:outline-none disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:disabled:bg-gray-800"
             />
             <PeerCaretsOverlay
               cursors={cursors}

@@ -106,10 +106,11 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-render.ts secrets llm-service staging"
-      }
+      },
+      "dependsOn": ["lint", "deploy-container"]
     },
     "deploy:render": {
-      "dependsOn": ["lint", "deploy-container", "deploy:render:secrets"],
+      "dependsOn": ["lint", "deploy-container"],
       "executor": "nx:run-commands",
       "options": {
         "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/deploy-render.ts deploy llm-service staging"

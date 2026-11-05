@@ -98,5 +98,14 @@
       "command": "npx wrangler pages deploy dist/pages-index --project-name preview-pages-index --branch \"$PREVIEW_BRANCH\" --commit-hash \"${PREVIEW_COMMIT:-$(git rev-parse HEAD)}\"",
       "dependsOn": ["build", "ensure-cf-project:preview"]
     }
+  },
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*",
+      "sharedGlobals",
+      {
+        "runtime": "node -e \"console.log(require('node:crypto').createHash('sha256').update(require('node:fs').readFileSync('../../.upptimerc.yml')).digest('hex'))\""
+      }
+    ]
   }
 }

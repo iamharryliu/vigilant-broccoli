@@ -1,7 +1,7 @@
 {
   "basics": {
     "name": "Harry Liu",
-    "title": "DevOps Engineer",
+    "title": "Software Engineer",
     "email": "harryliu1995@gmail.com",
     "phone": "+46 76 008 72 96",
     "links": [
@@ -19,22 +19,17 @@
       }
     ]
   },
-  "summary": "DevOps engineer with 7 years of experience building and operating banking, SaaS, and AI products end to end, from architecture to day-to-day operation. Expertise in **CI/CD pipelines**, **Terraform**, **Docker**, **GitHub Actions**, **AWS and GCP**, and **automation**.",
+  "summary": "Software developer with over 7 years of experience building end-to-end web applications for enterprise organizations and startups. Expertise in AI-driven development, Node, TypeScript, cloud infrastructure, and CI/CD pipelines. Team player who encourages a collaborative environment with a strong focus on delivering quality products.",
   "workExperience": [
     {
       "company": "ELVA11",
-      "role": "DevOps Engineer",
+      "role": "Infrastructure Engineer",
       "startDate": "March 2025",
       "endDate": "August 2026",
       "bullets": [
-        "Ran **CI** on **AWS ECS** containers and separated a social media AI tool into local, staging and production environments.",
-        "Implemented cloud **OIDC** sign-in so developers get short-lived credentials from the CLI, avoiding shared long-lived keys.",
-        "Built **TypeScript** scripts and **GitHub Actions** workflows to automate GitHub and Vercel team membership.",
-        "Deployed internal applications with **Docker** and managed secrets with **HashiCorp Vault** and **AWS Secrets Manager**.",
-        "Developed **infrastructure as code** with security in mind, setting up DNS and communication between services.",
-        "Deployed and operated on-premise and self-hosted services, handling configuration, networking, monitoring, and maintenance.",
-        "Built and managed **AWS** resources (EC2, S3, IAM) and **GCP** resources to host internal services and engineering workflows.",
-        "Built internal developer tools and **AI tools** integrating **LLMs**, using health checks and email alerts for observability."
+        "Built and managed **AWS infrastructure** for internal projects, implementing resource provisioning, networking, observability, secret management and secure sign-in for short-lived CLI credentials.",
+        "Developed internal AI tools and products, integrating **LLMs** and automated workflows into business and engineering use cases, and productizing proprietary AI IP into reusable solutions.",
+        "Implemented **LLM** data ingestion pipelines for AI products, including document summarization and AI content generation."
       ]
     },
     {
@@ -43,14 +38,14 @@
       "startDate": "March 2025",
       "endDate": "March 2026",
       "bullets": [
-        "Led two **production systems**—a call analysis SaaS platform and a trading card marketplace API—owning architecture, backend, frontend, and cloud infrastructure from design through deployment and day-to-day operation, using **Claude Code**.",
-        "Managed **cloud services on GCP** with **Terraform** and **CI/CD pipelines**, including automated testing and monitoring.",
-        "Provisioned GCP resources (Cloud Run, MySQL, Pub/Sub, secrets) with **Terraform** and migrated CI pipelines to **IaC**.",
-        "Automated **Docker** builds and **GitHub Actions** deployment workflows, with secrets in **GCP Secret Manager**.",
-        "Monitored production with uptime and health checks, email and Slack alerts, and responded to incidents.",
-        "Separated both systems into local, staging and production environments with **OIDC** CLI sign-in for non-production access.",
-        "Built **AI-driven transcription and insight pipelines** with **LLM** prompts; acted as **product owner**.",
-        "Stored application secrets in **GCP Secret Manager** per environment and kept production healthy with Docker-based deployments."
+        "Built **AI call analysis tools** that turn call center recordings into structured data, such as call events and **LLM**-assigned tags.",
+        "Cut dashboard load times from 2s+ to ~200 ms via cached pre-computed tables, query fixes and indexes (**performance optimization**).",
+        "Built REST APIs and robust automated ingestion of third-party pricing data.",
+        "Migrated manual GCP infrastructure management to **infrastructure as code** with **Terraform**, covering compute, storage and messaging, and implemented automated **deployment** and **test pipelines**.",
+        "Managed local development, staging and production environments, including per-environment secrets.",
+        "Wrote end-to-end tests to prevent UI regressions; monitored production with health checks and Slack alerts.",
+        "Used **RabbitMQ** and asynchronous workers for event-driven call processing.",
+        "Implemented **AI-driven development** patterns with **Claude Code**, including context management, custom skills and guardrails."
       ]
     },
     {
@@ -59,8 +54,7 @@
       "startDate": "June 2024",
       "endDate": "March 2025",
       "bullets": [
-        "Managed **GitLab** repositories and **CI/CD pipelines** for internal tools.",
-        "Collaborated with leadership to design and automate the HR system infrastructure, eliminating tens of hours of weekly reporting.",
+        "Developed solutions for internal management and admin needs: worked with leadership to automate the HR system, reducing manual reporting work, and managed GitLab repositories and **CI/CD pipelines** for employee services.",
         "Developed reusable **internal tools** and libraries with standardized interfaces, streamlining development and reducing boilerplate."
       ]
     },
@@ -70,12 +64,15 @@
       "startDate": "September 2019",
       "endDate": "July 2024",
       "bullets": [
+        "Modernized legacy banking web and mobile apps with **Angular** and **Express**; rebuilt **REST API** services spanning 200+ endpoints.",
         "Built secure login for a cross-platform mobile banking app—challenge authentication, OTP login, and **session management**.",
-        "Rebuilt legacy banking **REST API** services and modernized legacy browser and mobile banking apps with **Angular/Ionic** and **Express**.",
-        "Established test environments and wrote **unit** and **end-to-end** tests to meet the banking client's **90% test coverage** requirement.",
-        "**Saved QA teams hundreds of hours weekly** with **Python** scripts that parse phone IVR banking logs, replacing manual searches.",
-        "Built a **reusable global component library** in **Storybook** with UI designers, improving consistency across banking applications.",
-        "Provided **technical leadership** through training and developer support, working in **Agile** teams across client engagements."
+        "Built a reusable component library with UI designers for consistency across client applications.",
+        "Reworked backend API endpoints with **Java** and **Spring Boot**; built **Python** microservices with **Flask** and microfrontends.",
+        "Established test environments and wrote extensive **unit** tests to meet the banking client's **90% test coverage** requirement.",
+        "Provided **technical leadership** through training and developer support; led UI architecture for a **React** proof of concept.",
+        "**Saved QA teams hundreds of hours weekly** with **Python** scripts that scrape and parse application logs, replacing manual searches.",
+        "Worked in **Agile** teams, grooming sprints and implementing user stories across client engagements.",
+        "Worked with product owners to shape data flows for new requirements and review the application for UI/UX enhancements, then implemented them."
       ]
     }
   ],
@@ -86,23 +83,26 @@
       "startDate": "July 2023",
       "endDate": "present",
       "bullets": [
-        "Open source maintainer of **20 applications**, **6 API services**, **12 Docker images** and **4 npm packages**.",
-        "Build and maintain **GitHub Actions** **CI/CD pipelines** for PR checks, deployments, npm publishing, backups and secret rotation.",
-        "Provision multi-cloud infrastructure (AWS, GCP, Cloudflare) with **Terraform**, **Ansible** and **Bash**, with daily drift detection.",
-        "Maintain operational checks in CI: health checks, cron jobs, and smoke, end-to-end, and security tests.",
-        "Run nightly backups with weekly restore tests, and hourly uptime checks with a public status page.",
-        "Self-host **Gitea**, **RabbitMQ**, Grafana and Loki on **Linux** hosts, with **Cloudflare** Tunnels and Access."
+        "Open source maintainer of **25 applications**, **6 API services**, **12 Docker images** and **4 npm packages**.",
+        "Design and run **agentic coding workflows** with **Claude Code**, with custom skills and **AI guardrails** for unattended agent runs.",
+        "Provision and operate **multi-cloud infrastructure** with **Terraform**; build local environments and automated deployment and testing **CI/CD pipelines** with **GitHub Actions**."
       ]
     }
   ],
   "skills": {
     "technical": [
-      "CI/CD",
-      "IaC",
-      "Docker",
-      "Cloud (AWS/GCP)",
-      "Automation",
-      "Testing"
+      "AI-Driven Development",
+      "Node",
+      "TypeScript",
+      "React",
+      "Next.js",
+      "Express",
+      "Java",
+      "Cloud Infrastructure",
+      "AWS",
+      "GCP",
+      "Terraform",
+      "CI/CD"
     ]
   }
 }

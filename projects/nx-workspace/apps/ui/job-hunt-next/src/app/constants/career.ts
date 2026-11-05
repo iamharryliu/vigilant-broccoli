@@ -18,3 +18,9 @@ export const CAREER_IMPORT_EXTENSIONS = ['.txt', '.md', '.json', '.pdf'];
 // Sent by RunNotifications when an import run rewrites a career file, so an
 // open editor reloads it.
 export const CAREER_FILE_CHANGED_EVENT = 'career-file-changed';
+
+// Sent by RunNotifications when a non-import run finishes, so the open
+// applications list reloads and shows the folder the run created.
+export const JOB_APPLICATIONS_CHANGED_EVENT = 'job-applications-changed';
+// Lets the applications header open the help dialog the sidebar owns.
+export const OPEN_HELP_EVENT = 'open-help';

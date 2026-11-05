@@ -19,10 +19,7 @@ What every UI app in this workspace must have, and the shared building blocks to
 
 ## Where UI apps live
 
-- Static UIs → `apps/ui/*`, Vite + React → Cloudflare Pages.
-- Next.js static exports (`apps/findme`, `apps/whiteboard`) → Cloudflare Pages.
-- Next.js server apps → `apps/*` (`hearth`) or `apps/ui/*` (`employee-handler-ui`, `weather-next`, `balloono`) → Vercel; `employee-handler-ui`'s `deploy`/`deploy:production` only push the Docker image; its only Vercel deploy is `deploy:demo` (project `demo-employee-handler-ui`), run by `deploy-demo-apps`. `local-manager-next` is the exception: PM2 on the VM, no nx `deploy` target.
-- GitHub Pages hosts only the `pages-index` landing site; `component-library` is a Cloudflare Pages site like the other static UIs.
+Per-type locations and deploy destinations, including the `employee-handler-ui`, `job-hunt-next` and `local-manager-next` exceptions, are in [Choosing a home](../app-development.md#choosing-a-home). Next.js apps live under `apps/*` (`hearth`, `findme`, `whiteboard`) or `apps/ui/*` (`employee-handler-ui`, `weather-next`, `balloono`). GitHub Pages hosts only the `pages-index` landing site; `component-library` is a Cloudflare Pages site like the other static UIs.
 
 ## Shared components (react-lib)
 
@@ -104,7 +101,7 @@ Behavior (`useThemePreference`, shared by `ThemeProvider` and apps that own thei
 - Switch the OS preference while the app is open: the theme follows live and open dialogs, filters and scroll position are kept.
 - With a toggle: toggling saves an override that survives reloads; toggling back follows the system again.
 - Portals (dialogs, popovers, menus) and canvas/graph visuals redraw on a switch, and text and lines stay legible in both themes.
-- With the [local dev](#local-dev) server running, `pnpm screenshot:themes -- <url> [<url>...]` writes light and dark PNGs at phone and desktop widths to the gitignored `projects/nx-workspace/screenshots/` and prints their paths; open each changed page and check the dark shots for white or light-gray surfaces. It refuses non-local URLs; if Chromium is missing run `npx playwright install chromium` in `projects/nx-workspace`.
+- With the [local dev](#local-dev) server running, `pnpm screenshot:themes -- <url> [<url>...]` writes light and dark PNGs at phone and desktop widths to the gitignored `projects/nx-workspace/screenshots/` and prints their paths; open each changed page and check the dark shots for white or light-gray surfaces. It refuses non-local URLs. Run `pnpm screenshot:setup` (needs sudo for apt) as the non-root screenshot user, never as root, which would put the browser in root's cache. On the code-server image users run plain `playwright install chromium`, not `--with-deps`.
 
 ## pages-index card (required)
 

@@ -266,19 +266,14 @@ resource "google_iam_workload_identity_pool_provider" "github" {
 
   # This SA still holds real privilege (compute.instanceAdmin.v1,
   # storage.objectAdmin on the backup bucket, secretAccessor on a handful of
-  # secrets). pull_request runs execute their workflow YAML from the PR
-  # branch, so a PR that could mint a token through this provider could edit
-  # its own workflow to impersonate this SA and reach that access — so
-  # pull_request tokens are refused here and must use a narrow, per-workflow
-  # provider instead (github-pr-check in github-actions-pr-check.tf,
-  # github-deploy-preview in github-actions-deploy-preview.tf). Verified safe:
-  # ci-pr-check.yml and deploy-preview.yml are the only pull_request-triggered
-  # workflows and both use their own provider, and no
-  # push/dispatch/workflow_call/workflow_run flow that legitimately uses this
-  # provider ever carries event_name == "pull_request" (workflow_call tokens
-  # keep the originating event's name, and deploy.yml's only caller is the
-  # dispatch-triggered ci-rotate-secrets.yml).
-  attribute_condition = "assertion.repository == '${var.github_owner}/${var.github_repo}' && assertion.event_name != 'pull_request'"
+  # secrets). Any branch can run workflow YAML it adds or edits, so allowing
+  # every non-PR event would let branch pushes or dispatches impersonate this
+  # SA and reach that access. Only workflow code merged to main or production
+  # may present it; PR merge refs and all other refs are refused. PR workflows
+  # use narrow, per-workflow providers instead (github-pr-check in
+  # github-actions-pr-check.tf, github-deploy-preview in
+  # github-actions-deploy-preview.tf).
+  attribute_condition = "assertion.repository == '${var.github_owner}/${var.github_repo}' && assertion.ref in ['refs/heads/main', 'refs/heads/production']"
 
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
@@ -641,7 +636,21 @@ resource "cloudflare_r2_bucket_lifecycle" "home_docs" {
   account_id  = var.cloudflare_account_id
   bucket_name = cloudflare_r2_bucket.home_docs.name
 
+  # The API returns rules sorted by id; any other order replans forever.
   rules = [
+    {
+      id      = "expire-abandoned-doc-staging"
+      enabled = true
+      conditions = {
+        prefix = "staging/docs/"
+      }
+      delete_objects_transition = {
+        condition = {
+          type    = "Age"
+          max_age = local.r2_staging_expiry_seconds
+        }
+      }
+    },
     {
       id      = "expire-abandoned-receipt-staging"
       enabled = true

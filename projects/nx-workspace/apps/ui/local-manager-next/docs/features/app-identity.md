@@ -2,7 +2,7 @@
 
 The local Next.js management dashboard uses `local-manager-next` for its Nx project, app directory, build and coverage output, PM2 process and local monitoring resources.
 
-- Root commands are `local-manager-next:start`, `local-manager-next:delete`, `local-manager-next:logs`, `local-manager-next:status` and `deploy:local-manager`. `deploy:vb-manager` remains a compatibility alias for `deploy:local-manager`.
+- Root commands are `local-manager-next:start`, `local-manager-next:delete`, `local-manager-next:logs`, `local-manager-next:status` and `deploy:local-manager`.
 - The theme key `vb-manager-next-theme`, chat and notification storage keys, MongoDB database name and scraper data directory remain unchanged so existing preferences and data survive.
 - The local host URL, OAuth callbacks and port 1337 remain unchanged. `vb-manager-next-mobile` is a separate application.
 - On the host after merging, build with `pnpm nx run local-manager-next:build` before stopping the old process. Delete the old process with `pm2 delete vb-manager-next`, then run `pnpm local-manager-next:start` (including migrations and `pm2 save`). Do not run both process names on port 1337. If startup fails, repair and start the renamed process before saving the process list; do not resurrect a saved old process beside it.

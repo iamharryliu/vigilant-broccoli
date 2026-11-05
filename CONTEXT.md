@@ -14,6 +14,7 @@ Shared repository guidance. Edit `CONTEXT.md`; `AGENTS.md` is a relative symlink
   - [API](#api)
   - [Documentation](#documentation)
 - [Git](#git)
+- [Responses](#responses)
 - [Coding Conventions](#coding-conventions)
 
 ## Doc Map
@@ -23,9 +24,10 @@ Read the relevant document before working on its subject. Before editing a direc
 | Doc | When to read / upkeep |
 | --- | --- |
 | [agent-support.md](./docs/agent-support.md) | Agentic operations, skills, adapters, entry-point parity, and where a new rule or instruction belongs. |
+| [agentic-pr-maintenance.md](./docs/ci/agentic-pr-maintenance.md) | Scheduled conflict resolution and CI fixes on open PRs: selection and attempt cap. |
 | [app-development.md](./docs/app-development/app-development.md) | Adding apps/libs, deployment, public URLs or npm publishing. |
 | [app-readme-pattern.md](./docs/app-readme-pattern.md) | README edits and generated repo counts. |
-| [career experience](./notes/personal/career/personal-software-career-experience.md) | New skill or area (e.g. mobile development) absent from its Skills or contributions: add it. |
+| [career experience](./notes/personal/career/career-experience.md) | New skill or area (e.g. mobile development) absent from its Skills or contributions: add it. |
 | [code-quality-tools.md](./docs/code-quality-tools.md) | Quality tooling; update its inventory when adding/removing a tool. |
 | [database-migrations.md](./docs/ci/database-migrations.md) | Database migrations. |
 | [fork-identity-inventory.md](./docs/fork-identity-inventory.md) | Making the repo forkable; update when adding or removing a hardcoded account, domain or identity value. |
@@ -91,9 +93,18 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 - Treat the checkout as shared unless provably exclusive; if not provable, use a separate worktree off fresh `origin/main` with only your changes. Establish ownership before branching, staging, committing, stashing or switching branches. Never stash in a shared or uncertain checkout. If others' work is staged, commit only your paths with `git commit -m "<message>" -- <your paths>`.
 - Read [git-workflow.md](./docs/git-workflow.md) before changing Git state or publishing PRs.
 
+## Responses
+
+- Be concise: no preamble, no restating the request, no closing recap of what was just said.
+- Do not apologize; state the correction and continue.
+- Read files with `grep -n` or line ranges before reading them whole; don't `cat` several files in one call.
+
 ## Coding Conventions
 
 - Prefer functional patterns over OOP and consts over string literals. Add error handling only when explicitly needed.
 - Do not write tests unless explicitly asked.
 - Never create import cycles; `import/no-cycle` fails lint. Inside a lib, import from the sibling module, never from the lib's own `index.ts`.
 - Comments should explain non-obvious reasons, constraints or traps. Remove redundant comments and generator scaffolding when touching a file. Preserve comments that are an empty block's sole body, and `TODO`/`FIXME`/lint directives.
+- Never prefix Bash commands with `cd <dir> &&` or `cd <dir>;`; compound commands trigger permission prompts. Use absolute paths, `git -C <dir>`, `pnpm nx run <project>:<target>` or `pnpm --filter`.
+- Change files with the Edit tool, not `python3 -` or `sed -i`; reserve Python for read-only analysis.
+- Prefer the Grep tool over shell `grep`, and quote glob arguments (zsh errors with `no matches found` on unquoted globs).

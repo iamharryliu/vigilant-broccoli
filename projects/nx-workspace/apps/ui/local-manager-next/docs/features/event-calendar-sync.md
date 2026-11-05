@@ -6,6 +6,13 @@
 - Results are recorded with `recordSyncResult`. The CLI exits non-zero when any calendar fails; a Facebook login redirect stops the run, prints a sign-in message and exits `3`.
 - The CLI owns a PID lockfile (`event-calendars-sync.pid`) in `${VB_MANAGER_DATA_DIR:-$HOME/.vb-manager}` and removes it on exit, and refuses to start (exit 1) while the PID in an existing lockfile is alive.
 
+## Source Types
+
+- `facebook_group` / `facebook_page`: driven in Chrome with the copied login profile. The only types that need a Facebook session.
+- `ical_feed`: any `.ics` / `webcal:` URL, detected from the URL (the bookmarklet can also save a feed whose URL does not end in `.ics`, marked explicitly). Fetched and parsed in-process (no Chrome), cancelled events skipped, `TZID`/UTC times converted to the calendar zone. Recurrence rules are not expanded: a recurring event yields its first occurrence only.
+- `web_page`: any non-Facebook `http(s)` URL; the Source URLs field marks unrecognized URLs this way. The page's linked `.ics` files are fetched first: if any hold exactly one event (per-event files) those alone are the page's events, because a master feed can lag the page; otherwise the largest linked feed is used. With no feed, `ld+json` Event markup is read, then the page text (first 30000 chars) goes to the LLM (GPT-4o mini through vb-express), which can miss or misread events.
+- Non-Facebook events get a hashed id and a calendar event id prefixed `ical` (Facebook's is `fbevent`); stale deletion covers both prefixes. They carry explicit `start`/`end` instead of Facebook's display text.
+
 ## Run Records
 
 - Every CLI run and UI-started sync writes an `event_calendar_sync_runs` row: `trigger` (`cli`/`ui`), `status` (`running`/`success`/`partial`/`failed`), `results` (`[{calendar_id, ok, message}]`), `current_calendar_id` and an `updated_at` heartbeat bumped every 5 minutes and per calendar.
@@ -27,4 +34,4 @@
 ## Stale Event Protection
 
 - Only events that have not ended yet (`timeMin` is now) can be deleted as stale. Facebook drops past events from the scrape, so past events stay on the calendar.
-- Stale Facebook events are not deleted when the scrape returned zero events or fewer than half of the events already synced to the calendar. The sync message reports the skip instead.
+- Stale events are not deleted when the scrape returned zero events or fewer than half of the events already synced to the calendar. The sync message reports the skip instead.

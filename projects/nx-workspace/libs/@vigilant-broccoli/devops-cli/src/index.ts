@@ -9,6 +9,8 @@ export * from './lib/gcloud/gcloud.consts';
 export * from './lib/gcloud/gcloud.service';
 export * from './lib/pm2/pm2.consts';
 export * from './lib/pm2/pm2.service';
+export * from './lib/render/render.consts';
+export * from './lib/render/render.service';
 export * from './lib/tailscale/tailscale.service';
 export * from './lib/vercel/vercel.consts';
 export * from './lib/vercel/vercel.service';

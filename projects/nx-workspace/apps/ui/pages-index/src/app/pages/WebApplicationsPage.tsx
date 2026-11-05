@@ -6,6 +6,7 @@ import {
   Briefcase,
   CalendarDays,
   CloudSun,
+  Code,
   Gamepad2,
   Globe,
   Hourglass,
@@ -29,7 +30,7 @@ import { PAGE_CLASS } from '../consts/layout';
 import { toWebApplicationRoute } from '../consts/routes';
 import WEB_APPLICATIONS from '../consts/webApplications.json';
 
-type WebApplicationEntry = {
+export type WebApplicationEntry = {
   id: string;
   href: string;
   titleKey: string;
@@ -44,6 +45,7 @@ const FALLBACK_ICON: LucideIcon = Globe;
 
 const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
   balloono: Gamepad2,
+  games: Gamepad2,
   bookmarks: Bookmark,
   calendars: CalendarDays,
   career: Briefcase,
@@ -51,7 +53,10 @@ const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
   'cloud-8-skate': Bike,
   'component-library': LayoutGrid,
   'docs-md': BookOpen,
+  'grind-75-react': Code,
   'find-me': MapPin,
+  'gravity-guy': Gamepad2,
+  'gravity-guy-staging': Gamepad2,
   'harry-liu': User,
   hearth: Home,
   pomodoro: Timer,
@@ -64,27 +69,39 @@ const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
   'job-hunt': Briefcase,
 };
 
+export function ApplicationCards({
+  entries,
+  directLinks = false,
+}: {
+  entries: readonly WebApplicationEntry[];
+  directLinks?: boolean;
+}) {
+  const { t } = useTranslation();
+  return (
+    <>
+      {entries
+        .map(({ id, href, titleKey, descriptionKey }) => {
+          const Icon = CARD_ICONS[id] ?? FALLBACK_ICON;
+          return {
+            id,
+            href: directLinks ? href : toWebApplicationRoute(id),
+            title: t(titleKey as TranslationKey),
+            description: t(descriptionKey as TranslationKey),
+            icon: <Icon className={ICON_CLASS} aria-hidden="true" />,
+          };
+        })
+        .sort((a, b) => a.title.localeCompare(b.title))
+        .map(card => (
+          <li key={card.href}>
+            <CardLink {...card} route={!directLinks} />
+          </li>
+        ))}
+    </>
+  );
+}
+
 export function WebApplicationsPage() {
   const { t } = useTranslation();
-
-  const renderSortedCards = (entries: readonly WebApplicationEntry[]) =>
-    entries
-      .map(({ id, titleKey, descriptionKey }) => {
-        const Icon = CARD_ICONS[id] ?? FALLBACK_ICON;
-        return {
-          href: toWebApplicationRoute(id),
-          title: t(titleKey as TranslationKey),
-          description: t(descriptionKey as TranslationKey),
-          icon: <Icon className={ICON_CLASS} aria-hidden="true" />,
-        };
-      })
-      .sort((a, b) => a.title.localeCompare(b.title))
-      .map(card => (
-        <li key={card.href}>
-          <CardLink {...card} route />
-        </li>
-      ));
-
   return (
     <main className={PAGE_CLASS}>
       <PageHeader title={t('WEB_APPLICATIONS_PAGE.TITLE')} />
@@ -93,14 +110,18 @@ export function WebApplicationsPage() {
         <SectionHeading>
           {t('WEB_APPLICATIONS_PAGE.SECTION_APPS')}
         </SectionHeading>
-        <CardGrid>{renderSortedCards(WEB_APPLICATIONS.applications)}</CardGrid>
+        <CardGrid>
+          <ApplicationCards entries={WEB_APPLICATIONS.applications} />
+        </CardGrid>
       </section>
 
       <section>
         <SectionHeading>
           {t('WEB_APPLICATIONS_PAGE.SECTION_DEMO')}
         </SectionHeading>
-        <CardGrid>{renderSortedCards(WEB_APPLICATIONS.demos)}</CardGrid>
+        <CardGrid>
+          <ApplicationCards entries={WEB_APPLICATIONS.demos} />
+        </CardGrid>
       </section>
     </main>
   );

@@ -2,14 +2,14 @@ import {
   getEnvironmentVariable,
   ShellUtils,
 } from '@vigilant-broccoli/common-node';
-import { VB_REPO_PATH } from '@harry/private';
+import { GOOGLE_DRIVE_PATH, VB_REPO_PATH } from '@harry/private';
 
 export interface SpotifyPlaylist {
   name: string;
   url: string;
 }
 
-const OUTPUT_PATH = '~/My Drive/DJ Music Library';
+const OUTPUT_PATH = GOOGLE_DRIVE_PATH.DJ_MUSIC_LIBRARY;
 
 function runPythonScript(
   scriptName: string,

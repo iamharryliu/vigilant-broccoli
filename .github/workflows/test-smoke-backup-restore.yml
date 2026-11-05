@@ -121,8 +121,11 @@ jobs:
           exit $FAIL
 
   verify-mongodb-backup:
-    runs-on: ubuntu-24.04
+    # Keep MongoDB pinned to 8.0.34 and this job on ubuntu-22.04: MongoDB 8.x refuses kernels >= 6.19, and its 7.0.14 exemption misreads Ubuntu's uname -r (SERVER-136848). Return to ubuntu-24.04 once fixed.
+    runs-on: ubuntu-22.04
     timeout-minutes: 20
+    env:
+      MONGO_IMAGE: mongo:8.0.34
     steps:
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3
@@ -150,11 +153,25 @@ jobs:
           MONGODB_DB: vb-manager
         run: |
           set -euo pipefail
-          docker run -d --name mongo-restore-test -p 27017:27017 mongo:8 > /dev/null
+          grep -m1 -o avx /proc/cpuinfo || echo "avx not present"
+          docker pull "$MONGO_IMAGE"
+          docker image inspect --format "$MONGO_IMAGE digest: {{index .RepoDigests 0}}" "$MONGO_IMAGE"
+          docker run -d --name mongo-restore-test -p 27017:27017 "$MONGO_IMAGE" > /dev/null
+          MONGO_READY=false
           for _ in $(seq 1 30); do
-            docker exec mongo-restore-test mongosh --quiet --eval 'db.runCommand({ ping: 1 })' > /dev/null 2>&1 && break
+            if docker exec mongo-restore-test mongosh --quiet --eval 'db.runCommand({ ping: 1 })' > /dev/null 2>&1; then
+              MONGO_READY=true
+              break
+            fi
             sleep 2
           done
+          if [ "$MONGO_READY" != true ]; then
+            uname -r
+            docker logs mongo-restore-test || true
+            docker inspect --format 'status={{.State.Status}} exit_code={{.State.ExitCode}} OOMKilled={{.State.OOMKilled}}' mongo-restore-test
+            echo "::error::MongoDB did not become ready within 60 seconds"
+            exit 1
+          fi
 
           LATEST=$(gcloud storage ls "${BACKUP_BUCKET}/mongodb-backup-*.gz" | sort | tail -1)
           gcloud storage cp "$LATEST" mongodb-backup.gz

@@ -9,6 +9,7 @@ import {
 import resume from '../../templates/sample/resume.json';
 import careerExperience from '../../templates/sample/career-experience.md';
 import { API_ENDPOINTS } from '../app/constants/api-endpoints';
+import { APPLICATION_STATUS } from '../app/constants/applications';
 import { CAREER_FILE_KIND } from '../app/constants/career';
 import {
   RUN_KIND,
@@ -16,6 +17,10 @@ import {
   type JobApplicationRun,
 } from '../app/constants/runs';
 import en from '../app/i18n/en.json';
+import {
+  APPLICATION_FILE,
+  findApplicationFile,
+} from '../app/utils/job-application-files.utils';
 
 interface DemoFile {
   content?: string;
@@ -95,9 +100,33 @@ const APPLICATIONS: DemoApplication[] = [
           'Build accessible web products with TypeScript, React, Next.js, Node.js and PostgreSQL. Own features from database to UI, improve performance and mentor other engineers. Experience with event-driven systems is useful. Go is a plus.',
         ),
       },
-      'jordan-gaps-maple-labs.txt': {
-        content:
-          '- Go is a preferred skill in the posting but is not recorded in the sample career profile.\n',
+      'jordan-brief-maple-labs.json': {
+        content: JSON.stringify({
+          summary:
+            'Maple Labs builds accessible web products. The role owns features from the database to the UI, improves performance and mentors other engineers.',
+          roleDetails: {
+            level: 'Senior',
+            location: '',
+            workMode: '',
+            compensation: '',
+          },
+          responsibilities: [
+            'Own features from database to UI',
+            'Improve performance',
+            'Mentor other engineers',
+          ],
+          required: ['TypeScript', 'React', 'Next.js', 'Node.js', 'PostgreSQL'],
+          niceToHave: ['Event-driven systems', 'Go'],
+          stack: ['TypeScript', 'React', 'Next.js', 'Node.js', 'PostgreSQL'],
+          gaps: [
+            'Go - a preferred skill that is not recorded in the sample career profile',
+          ],
+          redFlags: [],
+          questions: [
+            'How are accessibility standards enforced in review?',
+            'Where is event-driven design used today?',
+          ],
+        }),
       },
       'jordan-cover-letter-maple-labs.txt': { content: MAPLE_LETTER },
       'jordan-cover-letter-maple-labs.pdf': {
@@ -318,6 +347,20 @@ const fileResponse = (path: string, url: string) => {
   return sampleNotFound();
 };
 
+const coverLetterResponse = (path: string) => {
+  const application = findApplication(path);
+  const names = Object.keys(application?.files ?? {}).map(name => ({ name }));
+  const letter = findApplicationFile(names, APPLICATION_FILE.COVER_LETTER_TEXT);
+  const pdf = findApplicationFile(names, APPLICATION_FILE.COVER_LETTER_PDF);
+  if (!application || !letter) return sampleNotFound();
+  const content = application.files[letter.name].content ?? '';
+  return NextResponse.json({
+    content,
+    versions: [{ id: 'demo', createdAt: application.date, content }],
+    pdf: pdf ? `${application.folder}/${pdf.name}` : null,
+  });
+};
+
 // Every API request is answered here in demo builds, before a filesystem,
 // SQLite or Claude handler can run. Unknown paths fail closed as well.
 export const demoResponse = (request: NextRequest): NextResponse => {
@@ -332,8 +375,36 @@ export const demoResponse = (request: NextRequest): NextResponse => {
   switch (pathname) {
     case API_ENDPOINTS.CAREER:
       return careerResponse(searchParams.get('kind'));
+    case API_ENDPOINTS.RESUME_VERSIONS:
+      return NextResponse.json({
+        versions: [
+          {
+            id: 'demo',
+            createdAt: new Date().toISOString(),
+            content: JSON.stringify(resume, null, 2),
+          },
+        ],
+      });
+    case API_ENDPOINTS.JOB_APPLICATIONS_RESUME: {
+      const content = JSON.stringify(resume, null, 2);
+      return NextResponse.json({
+        content,
+        versions: [
+          { id: 'demo', createdAt: new Date().toISOString(), content },
+        ],
+      });
+    }
+    case API_ENDPOINTS.JOB_APPLICATIONS_COVER_LETTER:
+      return coverLetterResponse(path);
     case API_ENDPOINTS.JOB_APPLICATIONS_RUNS:
       return NextResponse.json({ runs: RUNS });
+    case API_ENDPOINTS.JOB_APPLICATIONS_STATUS:
+      return NextResponse.json({
+        statuses: {
+          [APPLICATIONS[1].folder]: APPLICATION_STATUS.APPLIED,
+          [APPLICATIONS[2].folder]: APPLICATION_STATUS.INTERVIEWING,
+        },
+      });
     case API_ENDPOINTS.JOB_APPLICATIONS:
       return applicationsResponse(path);
     case API_ENDPOINTS.JOB_APPLICATIONS_FILE:

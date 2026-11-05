@@ -47,11 +47,21 @@ export const createChecklistHandlers = (table: string) => {
     const supabase = getSupabase(req);
     const body = await req.json();
 
+    const { data: lastItem, error: positionError } = await supabase
+      .from(table)
+      .select('position')
+      .eq('home_id', body.homeId)
+      .order('position', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (positionError) return serverError(positionError.message);
+
     const { data, error } = await supabase
       .from(table)
       .insert({
         name: body.name,
-        position: body.position ?? 0,
+        position: (lastItem?.position ?? -1) + 1,
         home_id: body.homeId,
       })
       .select()
@@ -64,7 +74,20 @@ export const createChecklistHandlers = (table: string) => {
 
   const PATCH = async (req: NextRequest) => {
     const supabase = getSupabase(req);
-    const { id, ...body } = await req.json();
+    const body = await req.json();
+
+    if (Array.isArray(body.order)) {
+      const results = await Promise.all(
+        body.order.map(({ id, position }: { id: string; position: number }) =>
+          supabase.from(table).update({ position }).eq('id', id),
+        ),
+      );
+      const error = results.find(result => result.error)?.error;
+      if (error) return serverError(error.message);
+      return Response.json({ success: true });
+    }
+
+    const { id } = body;
 
     if (!id)
       return Response.json(

@@ -19,3 +19,7 @@ export const isDeploymentsHost = (
 ) => hostname === DEPLOYMENTS_HOST;
 
 export const toProjectsUrl = (route: string) => `${PROJECTS_URL}#${route}`;
+
+export const GAMES_HOST = 'games.harryliu.dev';
+export const isGamesHost = (hostname: string = window.location.hostname) =>
+  hostname === GAMES_HOST;

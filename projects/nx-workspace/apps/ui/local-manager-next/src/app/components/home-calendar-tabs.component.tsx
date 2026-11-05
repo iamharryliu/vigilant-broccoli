@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { CalendarDays, Link2, Rows3, StickyNote } from 'lucide-react';
 import {
   QuickLinksPanel,
@@ -10,6 +11,9 @@ import {
 import { PersonalCalendarComponent } from './personal-calendar.component';
 import { EventCalendarsComponent } from './event-calendars.component';
 import { NotepadEditorComponent } from './notepad-editor.component';
+import { CreateCalendarEventDialogTrigger } from './create-calendar-event-dialog.component';
+import { toEmbedRoute } from '@vigilant-broccoli/common-js';
+import { isDesktopEmbedEnvironment } from '../utils/embed.utils';
 import { handleShellExecute } from '../utils/quick-links.utils';
 import { QUICK_LINKS } from '../constants/quick-links';
 import { useTranslation } from '../i18n';
@@ -42,6 +46,7 @@ const replaceTabQueryParam = (value: Tab) => {
 export const HomeCalendarTabs = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<Tab>(TAB.CALENDAR_VIEW);
+  const router = useRouter();
 
   useEffect(() => {
     const queryTab = new URLSearchParams(window.location.search).get(
@@ -100,13 +105,22 @@ export const HomeCalendarTabs = () => {
       content: (
         <QuickLinksPanel
           links={QUICK_LINKS}
+          enableFavorites
           onShellExecute={handleShellExecute}
+          onEmbedOpen={link => router.push(toEmbedRoute(link))}
+          onInternalOpen={router.push}
+          canEmbed={isDesktopEmbedEnvironment}
         />
       ),
     },
   ];
 
   return (
-    <TabbedView tabs={tabs} value={activeTab} onValueChange={handleTabChange} />
+    <TabbedView
+      tabs={tabs}
+      value={activeTab}
+      onValueChange={handleTabChange}
+      actions={<CreateCalendarEventDialogTrigger />}
+    />
   );
 };

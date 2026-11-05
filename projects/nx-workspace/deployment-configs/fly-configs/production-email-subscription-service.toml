@@ -8,6 +8,9 @@ primary_region = 'yyz'
   PORT = '3000'
   HOST = '0.0.0.0'
   EMAIL_SERVICE_URL = 'http://production-vb-email-service.flycast'
+  SUPABASE_URL = 'https://jrdosjjgmsoodpjmjqxx.supabase.co'
+  EMAIL_FROM_ADDRESS = 'contact@harryliu.dev'
+  EMAIL_FROM_NAME = 'Vigilant Broccoli'
 
 [http_service]
   internal_port = 3000

@@ -1,6 +1,7 @@
 import type { MouseEvent } from 'react';
 
 const EXTERNAL_OR_HASH_HREF_RE = /^([a-z][a-z0-9+.-]*:|#)/i;
+const EXTERNAL_HREF_RE = /^(https?:)?\/\//i;
 const PATH_SEP = '/';
 const CURRENT_SEGMENT = '.';
 const PARENT_SEGMENT = '..';
@@ -112,6 +113,14 @@ export const createNoteLinkClickHandler =
       // HashRouter consumer (no onNavigate, e.g. pages-index's ReadmePage) uses the
       // fragment as its route, so touching it there would still be wrong.
       if (onNavigate) setWindowHash(id);
+      return;
+    }
+
+    // Inside an embed (local-manager's /embed iframe) an external link would load in the
+    // frame, and most sites refuse framing via X-Frame-Options/CSP, so it looks dead.
+    if (EXTERNAL_HREF_RE.test(href) && window.self !== window.top) {
+      event.preventDefault();
+      window.open(href, '_blank', 'noopener,noreferrer');
       return;
     }
 

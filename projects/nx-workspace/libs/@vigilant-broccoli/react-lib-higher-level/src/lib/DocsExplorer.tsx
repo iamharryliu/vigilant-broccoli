@@ -207,6 +207,17 @@ export const DocsExplorer = ({
   renderGraph,
 }: DocsExplorerProps) => {
   const [showGraph, setShowGraph] = useState(false);
+  const hasInitializedGraph = useRef(false);
+
+  useEffect(() => {
+    if (hasInitializedGraph.current) return;
+    hasInitializedGraph.current = true;
+    setShowGraph(
+      Boolean(renderGraph) &&
+        !urlSync?.get() &&
+        window.matchMedia('(min-width: 768px)').matches,
+    );
+  }, [renderGraph, urlSync]);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [content, setContent] = useState('');
   const [isLoadingContent, setIsLoadingContent] = useState(false);

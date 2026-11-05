@@ -106,6 +106,10 @@
       "TITLE": "Docs (Markdown)",
       "DESCRIPTION": "Browse markdown notes from the repo."
     },
+    "GRIND_75_REACT": {
+      "TITLE": "Grind 75",
+      "DESCRIPTION": "Browse Grind 75 solutions in Go, Python and TypeScript side by side."
+    },
     "FIND_ME": {
       "TITLE": "FindMe",
       "DESCRIPTION": "Live location sharing app deployed on Vercel."
@@ -133,6 +137,10 @@
     "BALLOONO": {
       "TITLE": "Balloono",
       "DESCRIPTION": "Bomberman-style water balloon battles in online rooms or against CPUs, deployed on Vercel."
+    },
+    "TEXT_TOOLS": {
+      "TITLE": "Text Tools",
+      "DESCRIPTION": "Convert and inspect text: JSON, environment variables, Base64, URL encoding and word counts."
     },
     "UTILITIES": {
       "TITLE": "Utilities",
@@ -167,6 +175,14 @@
     "JOB_HUNT": {
       "TITLE": "Job Hunt",
       "DESCRIPTION": "Explore fictional career files, a tailored resume, cover letter and application run history."
+    },
+    "GRAVITY_GUY": {
+      "TITLE": "Gravity Guy",
+      "DESCRIPTION": "Gravity-flipping arcade runner with local two-player play. Game state stays in your browser."
+    },
+    "GRAVITY_GUY_STAGING": {
+      "TITLE": "Gravity Guy (Staging)",
+      "DESCRIPTION": "Protected staging build of Gravity Guy for deployment verification. Vercel team sign-in required."
     }
   },
   "DEPLOYMENTS_PAGE": {
@@ -325,5 +341,9 @@
   },
   "API_SERVICE_DOCS_PAGE": {
     "ERROR": "Failed to load Swagger UI from {message}"
+  },
+  "GAMES_PAGE": {
+    "TITLE": "Games",
+    "DESCRIPTION": "Pick a game and play in your browser."
   }
 }

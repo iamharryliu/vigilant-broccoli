@@ -44,6 +44,7 @@ Management dashboard with calendar, notepad and quick links home tabs.
   - `react-music-lib`
   - `react-utility`
   - `resume`
+  - `security-news`
 - Cloud services
   - GitHub REST API
   - Google OAuth

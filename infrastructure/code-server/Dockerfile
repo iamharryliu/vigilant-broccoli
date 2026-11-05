@@ -41,6 +41,15 @@ RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
   && apt-get install -y --no-install-recommends nodejs build-essential \
   && rm -rf /var/lib/apt/lists/*
 
+# Playwright's distro-aware dependency list, pinned to the workspace lockfile's
+# version (passed by the workflow). Browser binaries belong to the runtime
+# user's persistent cache.
+ARG PLAYWRIGHT_VERSION
+RUN test -n "$PLAYWRIGHT_VERSION" \
+  && npm exec --yes --package="playwright@$PLAYWRIGHT_VERSION" -- playwright install-deps chromium \
+  && npm cache clean --force \
+  && rm -rf /var/lib/apt/lists/*
+
 RUN curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg \
     | gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg \
   && echo 'deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main' \
