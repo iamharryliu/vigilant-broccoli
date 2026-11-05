@@ -2,11 +2,16 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import {
+  CardContainer,
   Text,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   Dialog,
   DialogContent,
   DialogTitle,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
   cn,
 } from '@vigilant-broccoli/react-lib';
 import { useAuth } from './providers/auth-provider';
@@ -18,6 +23,8 @@ import {
   CalendarEventFormData,
 } from './calendar/components/CalendarEventForm';
 import { WhiteboardEditor } from './whiteboard/components/WhiteboardEditor';
+import { ListTodo, PenLine } from 'lucide-react';
+import { TaskList } from './components/TaskList';
 import { PAGE_TITLES, usePageTitle } from '../lib/page-title';
 import { PAGE_BODY_HEIGHT_CLASS, PAGE_PADDING_CLASS } from '../lib/page-layout';
 import { useMobileView } from '../lib/use-mobile-view';
@@ -31,6 +38,11 @@ type ModalState =
 
 const EVENTS_ENDPOINT = '/api/calendar/events';
 
+const WHITEBOARD_TAB = 'whiteboard';
+const TASKS_TAB = 'tasks';
+const TABS = [WHITEBOARD_TAB, TASKS_TAB];
+const TAB_STORAGE_KEY = 'home:active-tab';
+
 function HomeDashboard() {
   usePageTitle(PAGE_TITLES.HOME);
   const session = useAuth();
@@ -40,6 +52,18 @@ function HomeDashboard() {
   const [range, setRange] = useState<{ start: string; end: string } | null>(
     null,
   );
+
+  const [activeTab, setActiveTab] = useState(WHITEBOARD_TAB);
+
+  useEffect(() => {
+    const stored = localStorage.getItem(TAB_STORAGE_KEY);
+    if (stored && TABS.includes(stored)) setActiveTab(stored);
+  }, []);
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    localStorage.setItem(TAB_STORAGE_KEY, value);
+  };
 
   const token = session?.access_token ?? '';
   const authHeader = useAuthHeader();
@@ -111,16 +135,45 @@ function HomeDashboard() {
   return (
     <div className={PAGE_PADDING_CLASS}>
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className={cn('flex flex-col', PAGE_BODY_HEIGHT_CLASS)}>
-          {homeId && session?.user.id && (
-            <WhiteboardEditor
-              homeId={homeId}
-              token={token}
-              userId={session.user.id}
-              username={session.user.email ?? session.user.id}
-            />
-          )}
-        </div>
+        <Tabs
+          value={activeTab}
+          onValueChange={handleTabChange}
+          className={cn('flex min-h-0 flex-col', PAGE_BODY_HEIGHT_CLASS)}
+        >
+          <TabsList className="self-start">
+            <TabsTrigger value={WHITEBOARD_TAB} className="gap-2">
+              <PenLine size={16} />
+              Whiteboard
+            </TabsTrigger>
+            <TabsTrigger value={TASKS_TAB} className="gap-2">
+              <ListTodo size={16} />
+              Tasks
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent
+            value={WHITEBOARD_TAB}
+            className="mt-3 min-h-0 flex-1 flex-col data-[state=active]:flex"
+          >
+            {homeId && session?.user.id && (
+              <WhiteboardEditor
+                homeId={homeId}
+                token={token}
+                userId={session.user.id}
+                username={session.user.email ?? session.user.id}
+              />
+            )}
+          </TabsContent>
+
+          <TabsContent
+            value={TASKS_TAB}
+            className="mt-3 min-h-0 flex-1 overflow-y-auto"
+          >
+            <CardContainer title="Tasks">
+              <TaskList />
+            </CardContainer>
+          </TabsContent>
+        </Tabs>
 
         <div>
           <CalendarView
