@@ -635,12 +635,13 @@ resource "cloudflare_r2_bucket_lifecycle" "home_docs" {
   account_id  = var.cloudflare_account_id
   bucket_name = cloudflare_r2_bucket.home_docs.name
 
+  # The API returns rules sorted by id; any other order replans forever.
   rules = [
     {
-      id      = "expire-abandoned-receipt-staging"
+      id      = "expire-abandoned-doc-staging"
       enabled = true
       conditions = {
-        prefix = "receipts/staging/"
+        prefix = "staging/docs/"
       }
       delete_objects_transition = {
         condition = {
@@ -650,10 +651,10 @@ resource "cloudflare_r2_bucket_lifecycle" "home_docs" {
       }
     },
     {
-      id      = "expire-abandoned-doc-staging"
+      id      = "expire-abandoned-receipt-staging"
       enabled = true
       conditions = {
-        prefix = "staging/docs/"
+        prefix = "receipts/staging/"
       }
       delete_objects_transition = {
         condition = {

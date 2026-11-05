@@ -270,6 +270,23 @@ variable "docs_pages_subdomain" {
   default = "production-docs-md.pages.dev"
 }
 
+variable "grind_75_domain" {
+  type    = string
+  default = "grind-75.harryliu.dev"
+}
+
+variable "grind_75_pages_project" {
+  type    = string
+  default = "production-grind-75-react"
+}
+
+# Kept separate from the project name: Cloudflare appends a suffix when
+# <project>.pages.dev is taken globally.
+variable "grind_75_pages_subdomain" {
+  type    = string
+  default = "production-grind-75-react.pages.dev"
+}
+
 variable "context_domain" {
   type    = string
   default = "context.harryliu.dev"

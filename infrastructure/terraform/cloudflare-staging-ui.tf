@@ -7,6 +7,7 @@ locals {
     "staging-context-md",
     "staging-docs-md",
     "staging-findme",
+    "staging-grind-75-react",
     "staging-harryliu-dev-react",
     "staging-pomodoro-react",
     "staging-text-tools-ui",

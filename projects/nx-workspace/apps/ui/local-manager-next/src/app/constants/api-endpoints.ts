@@ -38,6 +38,8 @@ export const API_ENDPOINTS = {
 
   CHAT_PUBLISH: '/api/chat/publish',
 
+  FILE_CONVERT: '/api/file-convert',
+
   LANGUAGE_LEARNING_WORDS: '/api/language-learning/words',
   LANGUAGE_LEARNING_HISTORY: '/api/language-learning/history',
   LANGUAGE_LEARNING_MASTERED: '/api/language-learning/mastered',

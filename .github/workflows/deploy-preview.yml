@@ -16,13 +16,14 @@ on:
       - '.github/scripts/deploy-preview-summary.mjs'
       - '.github/scripts/preview-deployments.mjs'
       - '.github/scripts/record-preview-deployments.mjs'
-      # Snapshot sources rendered by context-md (agent context) and docs-md (notes)
+      # Snapshot sources rendered by context-md (agent context), docs-md (notes) and grind-75-react (solutions)
       - 'CONTEXT.md'
       - 'TODO.md'
       - 'docs/**'
       - 'setup/dotfiles/agent-skills/**'
       - '**/CONTEXT.md'
       - 'notes/**'
+      - 'projects/grind-75/**'
   # Re-deploy a PR's previews without pushing to it — the paths filter above
   # means an unrelated commit won't do it.
   workflow_dispatch:
@@ -75,6 +76,7 @@ jobs:
           # Snapshot sources live outside the nx workspace, so nx affected can't see them
           AGENT_CONTEXT_CHANGED=$(echo "$CHANGED_FILES" | grep -cE "^(CONTEXT\.md|TODO\.md|docs/|setup/dotfiles/agent-skills/)|/CONTEXT\.md$" || true)
           NOTES_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^notes/" || true)
+          GRIND_75_CHANGED=$(echo "$CHANGED_FILES" | grep -c "^projects/grind-75/" || true)
 
           if [[ "$WORKFLOW_CHANGED" -gt 0 ]]; then
             PROJECTS_JSON=$(pnpm exec nx show projects --withTarget=deploy:preview --json)
@@ -85,6 +87,9 @@ jobs:
             fi
             if [[ "$NOTES_CHANGED" -gt 0 ]]; then
               PROJECTS_JSON=$(echo "$PROJECTS_JSON" | jq -c '. + ["docs-md"]')
+            fi
+            if [[ "$GRIND_75_CHANGED" -gt 0 ]]; then
+              PROJECTS_JSON=$(echo "$PROJECTS_JSON" | jq -c '. + ["grind-75-react"]')
             fi
           fi
 
