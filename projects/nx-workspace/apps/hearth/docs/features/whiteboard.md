@@ -13,7 +13,7 @@ Shared real-time notes per home and board, with an AI document editing assistant
 
 ## Boards
 
-- `WhiteboardEditor` is shared by the home page (`family`), food planner `KitchenNotes` (`kitchen`), activity planner `ActivityNotes` (`activity`) and the standalone whiteboard page
+- `WhiteboardEditor` is shared by the home page (`family`), kitchen planner `KitchenNotes` (`kitchen`), activity planner `ActivityNotes` (`activity`) and the standalone whiteboard page
 - Each `homeId` + `boardKey` pair is a separate document, synced through `useWhiteboard` (Supabase broadcast room, debounced autosave, undo/redo)
 - `WhiteboardEditor` flex-fills its flex-column parent. Hosts size it with `FULL_HEIGHT_PAGE_CLASS` or `PAGE_BODY_HEIGHT_CLASS` (`src/lib/page-layout.ts`), which are based on `--page-h`: the visible viewport minus the topbar and the bottom safe area. `AppLayout`'s `useVisualViewportHeight` sets that viewport height from `window.visualViewport`, so the inline editor and preview shrink above the on-screen keyboard (falling back to `100dvh`). While the keyboard is open and the page fits the visible height, it also resets the scroll iOS applies to reveal the caret, which would otherwise leave the shrunk board above the visible area, and centers the focused textarea's caret line (`src/lib/center-textarea-caret.ts`) so a tapped spot stays visible as the board shrinks. Below `lg`, the activity planner's stacked notes take one page-body height
 
@@ -60,4 +60,4 @@ where home_id = 2 and board_key = 'kitchen';
 
 - `GET /api/whiteboard?homeId=&boardKey=` — returns `{ content, homeId, boardKey, updatedAt }` (`updatedAt` is `null` when the board has no row yet)
 - `POST /api/whiteboard?homeId=&boardKey=` — body `{ content, baseUpdatedAt, allowEmpty }`; updates only when `baseUpdatedAt` matches the row, otherwise returns `409` with the current row. An empty `content` is refused with `409` when the row has text unless both `allowEmpty` and `baseUpdatedAt` are sent
-- `POST /api/whiteboard/assistant` — body `{ homeId, boardKey, document, messages }`; requires a bearer token and an accepted membership of the home (`401`/`403` otherwise); returns `{ reply, updatedDocument }` where `updatedDocument` is `null` when no edit is proposed; `502` when the LLM gateway is unavailable. Uses the vb-express LLM gateway like `/api/food-planner/chat`, which is unchanged
+- `POST /api/whiteboard/assistant` — body `{ homeId, boardKey, document, messages }`; requires a bearer token and an accepted membership of the home (`401`/`403` otherwise); returns `{ reply, updatedDocument }` where `updatedDocument` is `null` when no edit is proposed; `502` when the LLM gateway is unavailable. Uses the vb-express LLM gateway like `/api/kitchen-planner/chat`, which is unchanged

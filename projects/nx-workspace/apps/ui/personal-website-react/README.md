@@ -15,6 +15,7 @@
   - Tailwind CSS
 - Internal libs
   - `common-browser`
+  - `common-js`
   - `@harry/personal`
   - `react-lib`
   - `react-lib-higher-level`

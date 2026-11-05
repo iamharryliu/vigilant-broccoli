@@ -1,7 +1,24 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Draggable } from '@fullcalendar/interaction';
+import {
+  DndContext,
+  PointerSensor,
+  TouchSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  arrayMove,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { DragHandleDots2Icon } from '@radix-ui/react-icons';
 import {
   Badge,
   Button,
@@ -49,6 +66,7 @@ const EVENT_DEFAULT_DURATION_MS = 60 * 60 * 1000;
 const ADDED_BY_PREFIX = 'Added by';
 const SCHEDULED_SUFFIX = 'scheduled';
 const EMPTY_TEXT = 'No activities yet. Add one to get started.';
+const REORDER_LABEL = 'Reorder';
 
 type ModalState =
   { type: 'create' } | { type: 'edit'; activity: LeisureActivity } | null;
@@ -59,6 +77,7 @@ interface Props {
   onAdd: (data: LeisureActivityFormData) => Promise<void>;
   onEdit: (id: string, data: LeisureActivityFormData) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  onReorder?: (activities: LeisureActivity[]) => Promise<void>;
   onAddToCalendar?: (
     activityId: string,
     data: CalendarEventFormData,
@@ -75,6 +94,7 @@ export function LeisureList({
   onAdd,
   onEdit,
   onDelete,
+  onReorder,
   onAddToCalendar,
   hideDragHint,
   hideTitle,
@@ -90,6 +110,12 @@ export function LeisureList({
   );
   const [calendarActivity, setCalendarActivity] =
     useState<LeisureActivity | null>(null);
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 150, tolerance: 8 },
+    }),
+  );
 
   useEffect(() => {
     if (addSignal) setModal({ type: 'create' });
@@ -133,6 +159,15 @@ export function LeisureList({
     if (!calendarActivity || !onAddToCalendar) return;
     await onAddToCalendar(calendarActivity.id, data);
     setCalendarActivity(null);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = activities.findIndex(item => item.id === active.id);
+    const newIndex = activities.findIndex(item => item.id === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+    onReorder?.(arrayMove(activities, oldIndex, newIndex));
   };
 
   const rowActions = (activity: LeisureActivity): EllipsisAction[] =>
@@ -180,58 +215,73 @@ export function LeisureList({
         </Text>
       )}
 
-      <div ref={listRef} className="flex flex-col">
-        {activities.length === 0 && (
-          <div className="py-4">
-            <Text align="center" color="gray" size="3">
-              {EMPTY_TEXT}
-            </Text>
-          </div>
-        )}
-        {activities.map(activity => {
-          const count = linkedEventCount(activity.id);
-          return (
-            <div
-              key={activity.id}
-              data-leisure-id={activity.id}
-              data-title={activity.title}
-              data-description={activity.description ?? ''}
-              data-category={activity.category}
-              className={`flex items-center gap-3 py-1.5 border-b border-[var(--gray-a4)] last:border-b-0 ${
-                onItemClick
-                  ? 'cursor-pointer'
-                  : 'cursor-grab active:cursor-grabbing'
-              }`}
-              onClick={onItemClick ? () => onItemClick(activity) : undefined}
-            >
-              <Badge
-                color={CATEGORY_COLORS[activity.category] as never}
-                variant="soft"
-                size="1"
-                className="shrink-0"
-              >
-                {activity.category}
-              </Badge>
-              <Text size="3" weight="medium" className="grow truncate">
-                {activity.title}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <div ref={listRef} className="flex flex-col">
+          {activities.length === 0 && (
+            <div className="py-4">
+              <Text align="center" color="gray" size="3">
+                {EMPTY_TEXT}
               </Text>
-              {count > 0 && (
-                <Badge
-                  color="gray"
-                  variant="surface"
-                  size="1"
-                  className="shrink-0"
-                >
-                  {count} {SCHEDULED_SUFFIX}
-                </Badge>
-              )}
-              <div onClick={e => e.stopPropagation()}>
-                <EllipsisCTA actions={rowActions(activity)} />
-              </div>
             </div>
-          );
-        })}
-      </div>
+          )}
+          <SortableContext
+            items={activities.map(activity => activity.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            {activities.map(activity => {
+              const count = linkedEventCount(activity.id);
+              return (
+                <SortableActivityRow
+                  key={activity.id}
+                  id={activity.id}
+                  title={activity.title}
+                  reorderEnabled={!!onReorder}
+                  onItemClick={
+                    onItemClick ? () => onItemClick(activity) : undefined
+                  }
+                >
+                  <div
+                    data-leisure-id={activity.id}
+                    data-title={activity.title}
+                    data-description={activity.description ?? ''}
+                    data-category={activity.category}
+                    className={`flex min-w-0 grow items-center gap-3 ${onItemClick ? 'cursor-pointer' : ''}`}
+                  >
+                    <Badge
+                      color={CATEGORY_COLORS[activity.category] as never}
+                      variant="soft"
+                      size="1"
+                      className="shrink-0"
+                    >
+                      {activity.category}
+                    </Badge>
+                    <Text size="3" weight="medium" className="grow truncate">
+                      {activity.title}
+                    </Text>
+                    {count > 0 && (
+                      <Badge
+                        color="gray"
+                        variant="surface"
+                        size="1"
+                        className="shrink-0"
+                      >
+                        {count} {SCHEDULED_SUFFIX}
+                      </Badge>
+                    )}
+                  </div>
+                  <div onClick={e => e.stopPropagation()}>
+                    <EllipsisCTA actions={rowActions(activity)} />
+                  </div>
+                </SortableActivityRow>
+              );
+            })}
+          </SortableContext>
+        </div>
+      </DndContext>
 
       <Dialog
         open={modal !== null}
@@ -354,6 +404,57 @@ export function LeisureList({
           )}
         </DialogContent>
       </Dialog>
+    </div>
+  );
+}
+
+function SortableActivityRow({
+  id,
+  title,
+  reorderEnabled,
+  onItemClick,
+  children,
+}: {
+  id: string;
+  title: string;
+  reorderEnabled: boolean;
+  onItemClick?: () => void;
+  children: ReactNode;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id, disabled: !reorderEnabled });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+      }}
+      className="flex items-center gap-2 py-1.5 border-b border-[var(--gray-a4)] last:border-b-0"
+      onClick={onItemClick}
+    >
+      {reorderEnabled && (
+        <button
+          type="button"
+          {...attributes}
+          {...listeners}
+          aria-label={`${REORDER_LABEL} ${title}`}
+          className="shrink-0 cursor-grab touch-none opacity-50 hover:opacity-100 active:cursor-grabbing"
+          onPointerDown={event => event.stopPropagation()}
+          onClick={event => event.stopPropagation()}
+        >
+          <DragHandleDots2Icon />
+        </button>
+      )}
+      {children}
     </div>
   );
 }

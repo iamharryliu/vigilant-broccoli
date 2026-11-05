@@ -7,6 +7,11 @@ export const VB_APP_URL = {
     URL: 'https://components.harryliu.dev/',
     STAGING_URL: 'https://staging-component-library.pages.dev/',
   },
+  TEXT_TOOLS: {
+    NAME: 'Text Tools',
+    URL: 'https://text-tools.harryliu.dev/',
+    STAGING_URL: 'https://staging-text-tools-ui.pages.dev/',
+  },
   UTILITIES: {
     NAME: 'Utilities',
     URL: 'https://utilities.harryliu.dev/',
@@ -61,6 +66,11 @@ export const VB_APP_URL = {
     NAME: 'Docs',
     URL: 'https://docs.harryliu.dev/',
     STAGING_URL: 'https://staging-docs-md.pages.dev/',
+  },
+  GRIND_75: {
+    NAME: 'Grind 75',
+    URL: 'https://grind-75.harryliu.dev/',
+    STAGING_URL: 'https://staging-grind-75-react.pages.dev/',
   },
   CONTEXT: {
     NAME: 'Agent Context',

@@ -17,3 +17,4 @@ export * from './utils/resizeImage';
 export * from './utils/text-diff.utils';
 export * from './utils/upptime.utils';
 export * from './utils/keyboard-accessory.utils';
+export * from './utils/keyboard-shortcut.utils';

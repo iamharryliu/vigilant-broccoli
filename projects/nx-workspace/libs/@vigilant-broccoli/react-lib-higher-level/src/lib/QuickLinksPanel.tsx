@@ -36,6 +36,8 @@ export type QuickLinksPanelProps = {
   autoFocusSearch?: boolean;
   onLinkOpen?: () => void;
   onEmbedOpen?: (link: QuickLink) => void;
+  /** Navigates app routes (OPEN_TYPE.INTERNAL) in the current tab instead of opening a new one. */
+  onInternalOpen?: (path: string) => void;
   canEmbed?: () => boolean;
   defaultView?: SearchableListView;
   /** Keeps the input order of links and subgroups instead of sorting them alphabetically. */
@@ -73,6 +75,7 @@ export function QuickLinksPanel({
   autoFocusSearch = false,
   onLinkOpen,
   onEmbedOpen,
+  onInternalOpen,
   canEmbed,
   defaultView = SEARCHABLE_LIST_VIEW.GROUPED,
   preserveOrder = false,
@@ -99,6 +102,8 @@ export function QuickLinksPanel({
       onOpen: () => {
         if (isShellLink(link)) {
           onShellExecute?.(link.type, link.target, link.args);
+        } else if (link.type === OPEN_TYPE.INTERNAL && onInternalOpen) {
+          onInternalOpen(link.target);
         } else if (link.embed && onEmbedOpen && canEmbed?.()) {
           onEmbedOpen(link);
         } else {

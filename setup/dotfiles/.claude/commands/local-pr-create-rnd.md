@@ -1,1 +1,0 @@
-../../agent-skills/local-pr-create-rnd/SKILL.md

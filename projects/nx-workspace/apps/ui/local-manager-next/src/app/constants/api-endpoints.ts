@@ -1,55 +1,13 @@
 export const API_ENDPOINTS = {
-  DOCKER_CONTAINERS: '/api/docker/containers',
-  DOCKER_START: '/api/docker/start',
-  DOCKER_STOP: '/api/docker/stop',
-  DOCKER_REMOVE: '/api/docker/remove',
-
-  PM2_PROCESSES: '/api/pm2/processes',
-  PM2_START: '/api/pm2/start',
-  PM2_STOP: '/api/pm2/stop',
-  PM2_RESTART: '/api/pm2/restart',
-  PM2_DELETE: '/api/pm2/delete',
-
   SHELL_EXECUTE: '/api/shell/execute',
 
-  GCLOUD_AUTH_STATUS: '/api/gcloud/auth-status',
-  GCLOUD_PROJECTS: '/api/gcloud/projects',
-  GCLOUD_SET_PROJECT: '/api/gcloud/set-project',
-  GCLOUD_SET_ACCOUNT: '/api/gcloud/set-account',
-  GCLOUD_VAULT_TOKEN: '/api/gcloud/vault-token',
+  SECURITY_NEWS: '/api/security-news',
 
-  RENDER_SERVICES: '/api/render/services',
-
-  VERCEL_PROJECTS: '/api/vercel/projects',
-
-  FLYIO_APPS: '/api/flyio/apps',
-  FLYIO_AUTH_LOGIN: '/api/flyio/auth/login',
-
-  WRANGLER_PAGES: '/api/wrangler/pages',
-  WRANGLER_LOGIN: '/api/wrangler/login',
-
-  TERRAFORM_STATUS: '/api/terraform/status',
-
-  GITHUB_PAGES: '/api/github/pages',
-
-  WIREGUARD_STATUS: '/api/wireguard/status',
-
-  TAILSCALE_MACHINES: '/api/tailscale/machines',
-
-  PUBLIC_IP: '/api/public-ip',
-  LOCAL_IP: '/api/local-ip',
   LOCAL_SERVICES: '/api/local-services',
-  LOCAL_CREDENTIALS: '/api/local-credentials',
-  NETWORK_MONITOR_LAN_DEVICES: '/api/network-monitor/lan-devices',
-  NETWORK_MONITOR_OUTBOUND_CONNECTIONS:
-    '/api/network-monitor/outbound-connections',
-  NETWORK_MONITOR_SCAN_DEVICE: '/api/network-monitor/scan-device',
 
   API_KEYS: '/api/api-keys',
 
   LOCAL_MACHINE: '/api/local-machine',
-  DISK_SPACE: '/api/disk-space',
-  SPEED_TEST: '/api/speed-test',
 
   GOOGLE_TOKEN: '/api/auth/google-token',
 
@@ -75,16 +33,12 @@ export const API_ENDPOINTS = {
   TEXT_TO_SPEECH: '/api/text-to-speech',
   VOICE_LIST: '/api/voice-list',
 
-  AWS_PROFILES: '/api/aws/profiles',
-
-  SSH_KEY: '/api/ssh-key',
-
-  GENERATE_SECRET: '/api/generate-secret',
-
   RECIPE_SCRAPE: '/api/recipe/scrape',
   RECIPE_SCRAPE_PREVIEW: '/api/recipe/scrape-preview',
 
   CHAT_PUBLISH: '/api/chat/publish',
+
+  FILE_CONVERT: '/api/file-convert',
 
   LANGUAGE_LEARNING_WORDS: '/api/language-learning/words',
   LANGUAGE_LEARNING_HISTORY: '/api/language-learning/history',

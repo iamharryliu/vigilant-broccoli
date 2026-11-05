@@ -1,6 +1,6 @@
 # Recipe Tags
 
-Optional, additive AI tagging of Food Planner recipes by flavour, serving temperature, cooking method and texture.
+Optional, additive AI tagging of Kitchen Planner recipes by flavour, serving temperature, cooking method and texture.
 
 ## Table of Contents
 
@@ -21,11 +21,11 @@ Optional, additive AI tagging of Food Planner recipes by flavour, serving temper
 
 - Supabase — `recipes.tags*` columns and the `merge_recipe_tags` function (`20261008000038_add_recipe_tags.sql`)
 - VB Express `POST /api/llm` with a JSON schema, model `ANTHROPIC_MODEL.CLAUDE_4_HAIKU` — the same path as `extract-ingredients`; no provider SDK, key or service is added
-- Vocabulary and types: `src/app/food-planner/recipe-tags.consts.ts`
+- Vocabulary and types: `src/app/kitchen-planner/recipe-tags.consts.ts`
 
 ## Categories
 
-Machine values are stable snake_case strings; labels live under `FOOD_PLANNER.RECIPES.TAGS` in `i18n/en.json`.
+Machine values are stable snake_case strings; labels live under `KITCHEN_PLANNER.RECIPES.TAGS` in `i18n/en.json`.
 
 | Category (`key`) | Values |
 | --- | --- |
@@ -46,9 +46,9 @@ Each category holds any number of values. Generated values are appended in vocab
 
 ## Routes
 
-- `POST /api/food-planner/recipes` batch import now also returns `recipeIds` (input order). Saving never calls the classifier; the 200-recipe limit is unchanged.
-- `POST /api/food-planner/recipes/{id}/generate-tags` — one recipe, initial generation and additive regeneration. Order: authenticate → read the recipe through RLS (home access check; 404 otherwise) → call VB Express → validate → `merge_recipe_tags` → return the persisted recipe.
-- `PATCH /api/food-planner/recipes` accepts `tags` plus `tagsRevision`. Tags are validated against the vocabulary; a `tagsRevision` mismatch returns 409 `TAGS_CONFLICT` and the client reloads.
+- `POST /api/kitchen-planner/recipes` batch import now also returns `recipeIds` (input order). Saving never calls the classifier; the 200-recipe limit is unchanged.
+- `POST /api/kitchen-planner/recipes/{id}/generate-tags` — one recipe, initial generation and additive regeneration. Order: authenticate → read the recipe through RLS (home access check; 404 otherwise) → call VB Express → validate → `merge_recipe_tags` → return the persisted recipe.
+- `PATCH /api/kitchen-planner/recipes` accepts `tags` plus `tagsRevision`. Tags are validated against the vocabulary; a `tagsRevision` mismatch returns 409 `TAGS_CONFLICT` and the client reloads.
 
 Errors carry a `code` (`TAGGING_NOT_CONFIGURED`, `TAGGING_FAILED`, `RECIPE_STALE`, `TAGS_CONFLICT`) and a generic message; provider details and secrets are never returned.
 

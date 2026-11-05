@@ -2,17 +2,19 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   CalendarDays,
   CalendarPlus,
   CloudSun,
+  ShieldAlert,
   Link2,
   ListTodo,
   Rows3,
   StickyNote,
 } from 'lucide-react';
 import { isMobileUserAgent } from '@vigilant-broccoli/common-browser';
+import { toEmbedRoute } from '@vigilant-broccoli/common-js';
 import {
   buildEventCalendarEmbedUrl,
   getEventCalendarColor,
@@ -25,6 +27,7 @@ import {
 } from '@harry/private';
 import {
   CreateCalendarEventDialog,
+  useCalendarEventBookmarklet,
   CalendarAgenda,
   CalendarEvent,
   CalendarEventDetails,
@@ -57,6 +60,11 @@ const WeatherView = dynamic(
   { ssr: false },
 );
 
+const SecurityNewsView = dynamic(
+  () => import('./security-news-view').then(module => module.SecurityNewsView),
+  { ssr: false },
+);
+
 const CALENDAR_TITLE = BASE_CALENDAR_CONFIG.title;
 
 const BASE_CALENDAR_COLOR_BY_ID = new Map(
@@ -85,6 +93,8 @@ const NOTEPAD_HEIGHT = 'calc(100dvh - var(--topbar-h) - 8rem)';
 // so panels that need the default scrolling and safe-area padding wrap in this.
 const SCROLL_PANEL =
   'min-h-0 flex-1 overflow-y-auto pb-[env(safe-area-inset-bottom)]';
+
+const canEmbed = () => true;
 
 const CALENDAR_TABS = Object.values(CALENDAR_TAB);
 
@@ -143,6 +153,9 @@ const useIsMobileBrowser = () => {
 
 export const HomeView = () => {
   const [createOpen, setCreateOpen] = useState(false);
+  const { prefill, clearPrefill } = useCalendarEventBookmarklet(() =>
+    setCreateOpen(true),
+  );
   const [events, setEvents] = useState<CalendarEvent[] | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
     null,
@@ -156,6 +169,7 @@ export const HomeView = () => {
   const [eventCalendarsLoaded, setEventCalendarsLoaded] = useState(false);
   const [eventCalendarsError, setEventCalendarsError] = useState(false);
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [tab, setTab] = useState<CalendarTab>(
     () =>
       findTab(searchParams.get(CALENDAR_TAB_QUERY_PARAM)) ??
@@ -283,7 +297,10 @@ export const HomeView = () => {
 
   const handleCreateOpenChange = (open: boolean) => {
     setCreateOpen(open);
-    if (!open) setRefreshKey(key => key + 1);
+    if (!open) {
+      clearPrefill();
+      setRefreshKey(key => key + 1);
+    }
   };
 
   const handleTabChange = (next: CalendarTab) => {
@@ -365,7 +382,14 @@ export const HomeView = () => {
       value: CALENDAR_TAB.QUICK_LINKS,
       label: CALENDAR_TAB.QUICK_LINKS,
       icon: <Link2 size={TAB_ICON_SIZE} />,
-      content: <QuickLinksPanel links={QUICK_LINKS} enableFavorites />,
+      content: (
+        <QuickLinksPanel
+          links={QUICK_LINKS}
+          enableFavorites
+          canEmbed={canEmbed}
+          onEmbedOpen={link => router.push(toEmbedRoute(link))}
+        />
+      ),
     },
     {
       value: CALENDAR_TAB.WEATHER,
@@ -374,6 +398,12 @@ export const HomeView = () => {
       // Force-mounted so the weather loads once on page load, not per visit.
       forceMount: true,
       content: <WeatherView />,
+    },
+    {
+      value: CALENDAR_TAB.SECURITY_NEWS,
+      label: CALENDAR_TAB.SECURITY_NEWS,
+      icon: <ShieldAlert size={TAB_ICON_SIZE} />,
+      content: <SecurityNewsView />,
     },
   ];
 
@@ -406,6 +436,8 @@ export const HomeView = () => {
       <CreateCalendarEventDialog
         open={createOpen}
         onOpenChange={handleCreateOpenChange}
+        initialText={prefill}
+        autoParse={!!prefill}
         authFetch={authFetch}
         onUnauthorized={reconnectGoogle}
         renderVoiceAction={onTranscript => (

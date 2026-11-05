@@ -33,6 +33,9 @@ export type QuickLinksDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onShellExecute?: ShellExecuteHandler;
+  /** Replaces the built-in embed dialog, e.g. to navigate to an app page instead. */
+  onEmbedOpen?: (link: QuickLink) => void;
+  onInternalOpen?: (path: string) => void;
   canEmbed?: () => boolean;
   enableFavorites?: boolean;
 };
@@ -42,6 +45,8 @@ export function QuickLinksDialog({
   open,
   onOpenChange,
   onShellExecute,
+  onEmbedOpen,
+  onInternalOpen,
   canEmbed,
   enableFavorites = false,
 }: QuickLinksDialogProps) {
@@ -104,7 +109,8 @@ export function QuickLinksDialog({
                 onShellExecute={onShellExecute}
                 autoFocusSearch={open}
                 onLinkOpen={() => onOpenChange(false)}
-                onEmbedOpen={setEmbedLink}
+                onEmbedOpen={onEmbedOpen ?? setEmbedLink}
+                onInternalOpen={onInternalOpen}
                 canEmbed={canEmbed}
               />
             </div>

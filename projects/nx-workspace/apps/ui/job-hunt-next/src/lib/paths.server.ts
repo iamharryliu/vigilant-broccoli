@@ -43,6 +43,23 @@ export const RESUME_PATH = fromEnv(
 
 export const RESUME_BASELINE_PATH = join(STATE_DIR, 'resume.baseline.json');
 
+// Runs are serialized, so one copy is enough: the skill tailors it and the
+// master resume stays untouched.
+export const RESUME_WORKING_PATH = join(STATE_DIR, 'resume.working.json');
+
+export const RESUME_VERSIONS_DIR = join(STATE_DIR, 'resume-versions');
+
+// One subfolder per application, named by a hash of its folder name.
+export const APPLICATION_RESUME_VERSIONS_DIR = join(
+  STATE_DIR,
+  'application-resume-versions',
+);
+
+export const APPLICATION_COVER_LETTER_VERSIONS_DIR = join(
+  STATE_DIR,
+  'application-cover-letter-versions',
+);
+
 // Outside the Job Applications folder so the application list never shows it.
 export const RUNS_DB_PATH = join(STATE_DIR, 'job-applications.db');
 

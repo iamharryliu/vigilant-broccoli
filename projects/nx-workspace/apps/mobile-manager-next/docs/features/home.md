@@ -1,6 +1,6 @@
 # Home Tabs
 
-- The home page uses the `@vigilant-broccoli/react-lib` `Tabs` pattern (as `HomeCalendarTabs` in `local-manager-next`) with icon-only Calendar, Event Calendars, Tasks, Notepad, Quick Links and Weather tabs (each has an `aria-label` and `title`), sized for touch.
+- The home page uses the `@vigilant-broccoli/react-lib` `Tabs` pattern (as `HomeCalendarTabs` in `local-manager-next`) with icon-only Calendar, Event Calendars, Tasks, Notepad, Quick Links, Weather and Security tabs (each has an `aria-label` and `title`), sized for touch.
 - `TabbedView` (from `@vigilant-broccoli/react-lib-higher-level`) is the generic tab shell: a tab list with an optional actions slot, and per-tab `forceMount`. `HomeView` supplies the tabs.
 - The active tab is mirrored in the `?tab=` query param (omitted for Calendar), so `/?tab=Tasks` deep-links, and saved in `localStorage` (`vb-manager-mobile-tab`). On load a valid `?tab=` wins; otherwise the stored tab is restored after mount (avoiding a hydration mismatch) and mirrored into `?tab=`, falling back to Calendar. `/task-list` redirects there.
 - Tasks renders `GoogleTasksView` with drag and drop disabled, as this is a touch view. It is force-mounted so tasks load with the page, and refetches each time the tab is reopened; refetching the list already shown keeps it on screen (the skeleton appears only on a list's first load). The create-event button is shown on this tab too, alongside its own Create tasks button.
@@ -33,3 +33,4 @@
 - Upptime names, slugs and archived `history/` retain the legacy identity to preserve monitoring continuity. Historical SQL migrations also retain their original comments.
 - Auth configuration, Google token storage, theme and saved preference keys remain unchanged, so existing sessions and preferences survive on the same origins.
 - The local `local-manager-next` dashboard is a separate app.
+- Security lists exploitable or large-scale issues affecting the stack ([security-news](../../../ui/local-manager-next/docs/features/security-news.md)) from the auth-guarded `/api/security-news` route. `SecurityNewsView` is loaded with `next/dynamic` (`ssr: false`) and fetches when first opened.

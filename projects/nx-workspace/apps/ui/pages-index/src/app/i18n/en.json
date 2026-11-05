@@ -106,6 +106,10 @@
       "TITLE": "Docs (Markdown)",
       "DESCRIPTION": "Browse markdown notes from the repo."
     },
+    "GRIND_75_REACT": {
+      "TITLE": "Grind 75",
+      "DESCRIPTION": "Browse Grind 75 solutions in Go, Python and TypeScript side by side."
+    },
     "FIND_ME": {
       "TITLE": "FindMe",
       "DESCRIPTION": "Live location sharing app deployed on Vercel."
@@ -133,6 +137,10 @@
     "BALLOONO": {
       "TITLE": "Balloono",
       "DESCRIPTION": "Bomberman-style water balloon battles in online rooms or against CPUs, deployed on Vercel."
+    },
+    "TEXT_TOOLS": {
+      "TITLE": "Text Tools",
+      "DESCRIPTION": "Convert and inspect text: JSON, environment variables, Base64, URL encoding and word counts."
     },
     "UTILITIES": {
       "TITLE": "Utilities",
@@ -342,8 +350,6 @@
   },
   "GAMES_PAGE": {
     "TITLE": "Games",
-    "DESCRIPTION": "Pick a game and play in your browser.",
-    "ABOUT": "About {title}",
-    "ALL_APPLICATIONS": "Browse all applications"
+    "DESCRIPTION": "Pick a game and play in your browser."
   }
 }

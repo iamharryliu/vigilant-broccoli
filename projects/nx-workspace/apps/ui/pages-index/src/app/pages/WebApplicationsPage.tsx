@@ -6,6 +6,7 @@ import {
   Briefcase,
   CalendarDays,
   CloudSun,
+  Code,
   Gamepad2,
   Globe,
   Hourglass,
@@ -26,7 +27,7 @@ import { SectionHeading } from '../components/SectionHeading';
 import { CardLink } from '../components/CardLink';
 import { CardGrid } from '../components/CardGrid';
 import { PAGE_CLASS } from '../consts/layout';
-import { GAMES_ROUTE, toWebApplicationRoute } from '../consts/routes';
+import { toWebApplicationRoute } from '../consts/routes';
 import WEB_APPLICATIONS from '../consts/webApplications.json';
 
 export type WebApplicationEntry = {
@@ -52,6 +53,7 @@ const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
   'cloud-8-skate': Bike,
   'component-library': LayoutGrid,
   'docs-md': BookOpen,
+  'grind-75-react': Code,
   'find-me': MapPin,
   'gravity-guy': Gamepad2,
   'gravity-guy-staging': Gamepad2,
@@ -69,10 +71,10 @@ const CARD_ICONS: Partial<Record<string, LucideIcon>> = {
 
 export function ApplicationCards({
   entries,
-  games = false,
+  directLinks = false,
 }: {
   entries: readonly WebApplicationEntry[];
-  games?: boolean;
+  directLinks?: boolean;
 }) {
   const { t } = useTranslation();
   return (
@@ -82,7 +84,7 @@ export function ApplicationCards({
           const Icon = CARD_ICONS[id] ?? FALLBACK_ICON;
           return {
             id,
-            href: games ? href : toWebApplicationRoute(id),
+            href: directLinks ? href : toWebApplicationRoute(id),
             title: t(titleKey as TranslationKey),
             description: t(descriptionKey as TranslationKey),
             icon: <Icon className={ICON_CLASS} aria-hidden="true" />,
@@ -91,15 +93,7 @@ export function ApplicationCards({
         .sort((a, b) => a.title.localeCompare(b.title))
         .map(card => (
           <li key={card.href}>
-            <CardLink {...card} route={!games} />
-            {games && (
-              <a
-                className="inline-block mt-2 text-sm underline underline-offset-4"
-                href={`#${GAMES_ROUTE}/${card.id}`}
-              >
-                {t('GAMES_PAGE.ABOUT', { title: card.title })}
-              </a>
-            )}
+            <CardLink {...card} route={!directLinks} />
           </li>
         ))}
     </>

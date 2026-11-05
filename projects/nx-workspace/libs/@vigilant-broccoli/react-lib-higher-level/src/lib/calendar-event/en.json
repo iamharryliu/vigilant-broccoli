@@ -28,5 +28,7 @@
   "OPEN": "Open in Google Calendar",
   "CREATED": "Event created.",
   "CREATING": "Creating...",
-  "CREATE": "Create event"
+  "CREATE": "Create event",
+  "BOOKMARKLET": "Bookmarklet",
+  "BOOKMARKLET_HELP": "Drag to your bookmarks bar; click it on a page with an event."
 }

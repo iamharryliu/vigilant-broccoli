@@ -1,9 +1,12 @@
 'use client';
 
 import { useState, type MouseEvent } from 'react';
+import { useRouter } from 'next/navigation';
+import { toEmbedRoute } from '@vigilant-broccoli/common-js';
 import { SearchInput } from '@vigilant-broccoli/react-lib';
 import { I18nProvider, useTranslation } from '../i18n';
 import { APP_SECTIONS, type AppEntry } from '../constants/apps';
+import { findEmbedLink } from '../constants/quick-links';
 import { openApp } from '../utils/open-app';
 
 const LIST =
@@ -15,6 +18,7 @@ const HEADING =
 
 const AppsContent = () => {
   const { t } = useTranslation();
+  const router = useRouter();
   const [search, setSearch] = useState('');
   const query = search.trim().toLowerCase();
   const sections = APP_SECTIONS.map(section => ({
@@ -24,6 +28,11 @@ const AppsContent = () => {
 
   const handleClick = (event: MouseEvent, app: AppEntry) => {
     event.preventDefault();
+    const embedLink = findEmbedLink(app.webUrl);
+    if (embedLink) {
+      router.push(toEmbedRoute(embedLink));
+      return;
+    }
     openApp(app);
   };
 

@@ -13,7 +13,7 @@ Gameplay constraints and obstacle-area catalog for Gravity Guy.
 - Keep this catalog synchronized with `src/app/engine.ts`; user-facing behavior and operating instructions live in [gravity-runner.md](./docs/features/gravity-runner.md).
 - Preserve the forgiving opening: no gaps or dedicated challenge areas before 6,400 world units. All platform surfaces remain horizontal.
 - Flips require actual supporting contact. Check area entry, internal transfers and exit at the 440 starting pace, 720 base cap and 936 boosted pace; a missing landing must remain a real fall risk in short-platform areas.
-- Speed strips stay separate from solid blocks. A runner's boost accelerates the map, while each actor's own contact determines its movement multiplier; never copy the camera's boost onto the Shiba.
+- Speed strips stay separate from solid blocks. A runner's boost accelerates the map, while each actor's own contact determines its movement multiplier; never copy the camera's boost onto the Shiba. Slow strips slow the runner to 40% of map pace but boost the Shiba (130%); the map speed ignores the Shiba. At 40% a forced patch drags the runner back 1.5x its width, so keep slow strips near 150 units for narrow views.
 - Keep the Shiba's route prediction and real movement on the same collision integrator. Preserve delayed, collision-free respawning when it falls or remains stranded.
 - Keep full-height approach/exit space where specified so independently generated neighboring chunks connect. The seed must produce identical collision and drawing geometry.
 
@@ -42,7 +42,7 @@ Gameplay constraints and obstacle-area catalog for Gravity Guy.
 | Narrow descending corridor | Five 240-unit corridor steps descend from top toward bottom, with alternating baffles. | Time alternating flips without getting trapped on a riser. | 6,400 units | `narrowPlatforms`, variant 1 |
 | Narrow zigzag corridor | A continuous narrow corridor rapidly shifts up and down, with alternating baffles. | Reverse gravity repeatedly; hesitation loses ground to the Shiba. | 6,400 units | `narrowPlatforms`, variant 2 |
 | Short-platform zigzag | Five 220-unit ledges alternate vertically, with 30-unit gaps and no continuous safety rail. The first ledge is flush with the entry block. | Launch while touching each ledge and catch the next; missed timing causes a fall. | 12,800 units | `shortZigzagPlatforms` |
-| Slow gauntlet | Three successive 360-unit purple patches alternate between floor and ceiling; both rails remain solid. | Flip back and forth into the clear windows to avoid prolonged slowing. | 6,400 units | `slowGauntletPlatforms` |
-| Slow interlude | A separate 200-unit purple strip between block patterns, 60 units beyond a cluster. | Change surfaces to avoid drifting toward the Shiba; blocks remain normal. | 1,600 units | `platformsNear` |
+| Slow gauntlet | Three successive 150-unit purple patches alternate between floor and ceiling; both rails remain solid. | Flip back and forth into the clear windows to avoid prolonged slowing. | 6,400 units | `slowGauntletPlatforms` |
+| Slow interlude | A separate 150-unit purple strip between block patterns, 60 units beyond a cluster. | Change surfaces to avoid drifting toward the Shiba; blocks remain normal. | 1,600 units | `platformsNear` |
 | Staircase blocks | Three or four blocks rise, descend or alternate heights on one side. | Flip around the shape rather than waiting against a step. | 1,600 units | `chunkPlan` |
 | Warm-up runway | Continuous floor and ceiling with a clear initial approach. | Learn contact-only flips without falling off. | Start | `chunkPlan` |

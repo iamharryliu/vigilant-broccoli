@@ -7,7 +7,7 @@ Use the current vigilant-broccoli Git root and run `pnpm` from it. Outside this 
 
 Run only on explicit `remote-create-pr-codex` invocation; it authorizes one solve on the code-server VM, which publishes a PR from a fresh worktree off `origin/main`. Make no local file edits.
 
-1. Follow `local-docker-create-pr-claude` step 1 (research, questions and prompt). The VM solves from `origin/main`, so unpushed local changes are not visible to it; say so when the request depends on them.
+1. Follow the [dispatch contract](../../../../docs/agent-support.md#dispatch-contract) (request, research, stop, ask, prompt). For a request that only drops TODO rows, start one solve per ID. The VM solves from `origin/main`, so unpushed local changes are not visible to it; say so when the request depends on them.
 2. Start the solve once no questions were asked or after the user confirms the final prompt. It streams over SSH and detaches into a VM tmux session, so the Mac may sleep afterwards. Add `--codex-model <model>` only when the user asks, and `--codex-signed-in` only when the user asks or the command reports no Vault token:
 
    ```sh

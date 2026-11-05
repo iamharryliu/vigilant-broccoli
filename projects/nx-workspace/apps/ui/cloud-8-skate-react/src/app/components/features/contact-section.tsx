@@ -19,7 +19,7 @@ const FIELD_ID = {
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const INPUT_CLASSES =
-  'w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring focus:border-blue-300 dark:border-gray-700 dark:bg-gray-900';
+  'w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none dark:border-gray-700 dark:bg-gray-900';
 
 const SOCIAL_LINKS = [
   { href: EXTERNAL_URL.CLOUD_8_SKATE_IG, labelKey: 'LINKS.CLOUD_8_SKATE_IG' },

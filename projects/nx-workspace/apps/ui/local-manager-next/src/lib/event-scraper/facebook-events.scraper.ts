@@ -3,6 +3,7 @@ import { existsSync } from 'fs';
 import { mkdir, copyFile, rm } from 'fs/promises';
 import os from 'os';
 import path from 'path';
+import { ScrapedEvent } from './scraped-event.types';
 
 // Reuses the local Chrome login by copying that profile's session cookies
 // into a separate profile dir,
@@ -74,17 +75,6 @@ export const NO_CHROME_COOKIES_ERROR =
   'No Chrome cookies found — sign in to Facebook in Chrome and retry';
 export const FACEBOOK_LOGIN_REQUIRED_ERROR =
   'Facebook redirected to the login page — sign in to Facebook in Chrome and retry';
-
-export interface ScrapedEvent {
-  id: string;
-  title: string;
-  dateTime?: string;
-  location?: string;
-  description?: string;
-  sharedBy?: string;
-  section: string;
-  url: string;
-}
 
 interface ListedEvent {
   id: string;

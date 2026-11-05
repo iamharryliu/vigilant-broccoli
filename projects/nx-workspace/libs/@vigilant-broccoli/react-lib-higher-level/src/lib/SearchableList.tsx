@@ -1,7 +1,14 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { LayoutList, List, Rows3, Star, type LucideIcon } from 'lucide-react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import {
+  LayoutList,
+  List,
+  Rows3,
+  Star,
+  X,
+  type LucideIcon,
+} from 'lucide-react';
 import {
   type ButtonConfig,
   ButtonList,
@@ -48,6 +55,7 @@ export type SearchableListGroup = {
 const SEARCH_PLACEHOLDER = 'Search...';
 const EMPTY_MESSAGE = 'No entries found.';
 const VIEW_TOGGLE_LABEL = 'View';
+const CLEAR_SEARCH_LABEL = 'Clear search';
 const WINDOW_TARGET_BLANK = '_blank';
 const URL_PREFIX = 'http';
 const ENTER_KEY = 'Enter';
@@ -80,6 +88,7 @@ const VIEW_OPTIONS: {
 
 const VIEW_ICON_SIZE = 16;
 const FAVORITES_LABEL = 'Favorites';
+const FAVORITE_BADGE_PREFIX = '★ ';
 const ADD_FAVORITE_LABEL = (label: string) => `Add ${label} to favorites`;
 const REMOVE_FAVORITE_LABEL = (label: string) =>
   `Remove ${label} from favorites`;
@@ -132,14 +141,17 @@ const searchGroups = (groups: SearchableListGroup[], query: string) => {
     .sort((a, b) => b.scored[0].score - a.scored[0].score);
 };
 
-const SearchableListRow = ({
+export const SearchableListRow = ({
   entry,
   onActivate,
   onKeyDown,
+  actions,
 }: {
   entry: SearchableListItem;
   onActivate: () => void;
-  onKeyDown: (e: React.KeyboardEvent<HTMLElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLElement>) => void;
+  /** Replaces the default favorite, open and copy buttons. */
+  actions?: ReactNode;
 }) => (
   <li className="flex min-h-11 items-center bg-card text-card-foreground [&_button]:min-h-11 [&_button]:shrink-0 [&_button]:focus-visible:outline-none [&_button]:focus-visible:ring-2 [&_button]:focus-visible:ring-inset [&_button]:focus-visible:ring-ring [&_button]:active:bg-muted">
     <button
@@ -160,29 +172,31 @@ const SearchableListRow = ({
       </span>
     </button>
     <div className="flex shrink-0 items-center pr-1 [&_button]:min-w-11">
-      {entry.onFavoriteToggle && <FavoriteButton entry={entry} />}
-      {(entry.onOpen || isUrl(entry.value)) && (
-        <IconButton variant="ghost" icon="external-link" onClick={onActivate} />
+      {actions ?? (
+        <>
+          {entry.onFavoriteToggle && <FavoriteButton entry={entry} />}
+          {(entry.onOpen || isUrl(entry.value)) && (
+            <IconButton
+              variant="ghost"
+              icon="external-link"
+              onClick={onActivate}
+            />
+          )}
+          <CopyButton text={entry.value} />
+        </>
       )}
-      <CopyButton text={entry.value} />
     </div>
   </li>
 );
 
-const FavoriteButton = ({
-  entry,
-  compact = false,
-}: {
-  entry: SearchableListItem;
-  compact?: boolean;
-}) => {
+const FavoriteButton = ({ entry }: { entry: SearchableListItem }) => {
   const accessibleLabel = entry.isFavorite
     ? REMOVE_FAVORITE_LABEL(entry.label)
     : ADD_FAVORITE_LABEL(entry.label);
   return (
     <Button
       type="button"
-      variant={compact ? 'secondary' : 'ghost'}
+      variant="ghost"
       size="icon"
       aria-label={accessibleLabel}
       aria-pressed={entry.isFavorite ?? false}
@@ -192,11 +206,7 @@ const FavoriteButton = ({
         event.stopPropagation();
         entry.onFavoriteToggle?.();
       }}
-      className={
-        compact
-          ? 'h-6 w-6 shrink-0 rounded-l-none border-l border-secondary-foreground/20 px-1'
-          : 'min-h-11 min-w-11 shrink-0'
-      }
+      className="min-h-11 min-w-11 shrink-0"
     >
       <Star
         size={16}
@@ -307,29 +317,23 @@ export const SearchableList = ({
   };
 
   const toButtonConfig = (entry: SearchableListItem): ButtonConfig => ({
-    label: entry.label,
+    label: entry.isFavorite
+      ? `${FAVORITE_BADGE_PREFIX}${entry.label}`
+      : entry.label,
     onClick: () => activate(entry),
     isExternal: entry.isExternal ?? (!entry.onOpen && isUrl(entry.value)),
-    ...(entry.onFavoriteToggle && {
-      buttonProps: { className: 'rounded-r-none' },
-    }),
   });
 
   const renderButtons = (items: SearchableListItem[]) => (
     <div className="flex flex-wrap gap-2">
       {items.map((entry, index) => (
-        <div
-          className="inline-flex items-center"
+        <ButtonList
           key={`${entry.label}-${index}`}
-        >
-          <ButtonList
-            buttons={[toButtonConfig(entry)]}
-            className="gap-0"
-            navigationRootRef={contentRef}
-            searchInputRef={searchInputRef}
-          />
-          {entry.onFavoriteToggle && <FavoriteButton entry={entry} compact />}
-        </div>
+          buttons={[toButtonConfig(entry)]}
+          className="gap-0"
+          navigationRootRef={contentRef}
+          searchInputRef={searchInputRef}
+        />
       ))}
     </div>
   );
@@ -373,14 +377,30 @@ export const SearchableList = ({
   return (
     <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="flex items-center gap-2">
-        <Input
-          ref={searchInputRef}
-          placeholder={searchPlaceholder}
-          value={searchQuery}
-          onChange={event => setSearchQuery(event.target.value)}
-          onKeyDown={handleSearchKeyDown}
-          className="flex-1"
-        />
+        <div className="relative flex-1">
+          <Input
+            ref={searchInputRef}
+            placeholder={searchPlaceholder}
+            value={searchQuery}
+            onChange={event => setSearchQuery(event.target.value)}
+            onKeyDown={handleSearchKeyDown}
+            className="w-full pr-10"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              aria-label={CLEAR_SEARCH_LABEL}
+              title={CLEAR_SEARCH_LABEL}
+              onClick={() => {
+                setSearchQuery('');
+                searchInputRef.current?.focus();
+              }}
+              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground hover:text-foreground"
+            >
+              <X size={16} aria-hidden="true" />
+            </button>
+          )}
+        </div>
         <Tabs
           value={view}
           onValueChange={next => handleViewChange(next as SearchableListView)}

@@ -42,10 +42,6 @@ export const SIDEBAR_ROUTE = {
     title: 'Language Learning',
     path: '/language-learning',
   },
-  CAREER: {
-    title: 'Career',
-    path: '/career',
-  },
   CAREER2: {
     title: 'Career 2',
     path: '/career2',
@@ -61,6 +57,10 @@ export const SIDEBAR_ROUTE = {
   STATUS: {
     title: en.STATUS.TITLE,
     path: '/status',
+  },
+  SECURITY_NEWS: {
+    title: 'Security News',
+    path: '/security-news',
   },
   BACKGROUND_TASKS: {
     title: 'Background Tasks',

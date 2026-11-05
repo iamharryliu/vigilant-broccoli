@@ -60,7 +60,7 @@ export const SubscriptionsManager = ({
                       type="email"
                       value={editEmail}
                       onChange={e => setEditEmail(e.target.value)}
-                      className="border rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+                      className="border rounded px-2 py-1 text-sm focus:outline-none w-full"
                     />
                   ) : (
                     <span className="text-foreground">{sub.email}</span>

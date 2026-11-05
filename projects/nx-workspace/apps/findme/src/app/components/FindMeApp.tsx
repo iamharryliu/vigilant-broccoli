@@ -229,7 +229,7 @@ function FindMe() {
               value={username}
               placeholder={t('USER.USERNAME_PLACEHOLDER')}
               onChange={e => updateUsername(e.target.value)}
-              className="min-w-0 flex-1 rounded border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-800 focus:border-blue-500 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+              className="min-w-0 flex-1 rounded border border-gray-300 bg-white px-2 py-1 text-sm font-medium text-gray-800 focus:outline-none dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
             />
             <button
               type="button"

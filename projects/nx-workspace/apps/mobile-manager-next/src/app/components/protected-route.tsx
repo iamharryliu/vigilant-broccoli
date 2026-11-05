@@ -4,7 +4,13 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useAuth } from '../providers/auth-provider';
 
-export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+export const ProtectedRoute = ({
+  children,
+  fallback = null,
+}: {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+}) => {
   const router = useRouter();
   const session = useAuth();
 
@@ -14,5 +20,5 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     }
   }, [router, session]);
 
-  return session ? <>{children}</> : null;
+  return session ? <>{children}</> : <>{fallback}</>;
 };

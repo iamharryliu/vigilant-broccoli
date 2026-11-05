@@ -7,7 +7,7 @@ Use the current vigilant-broccoli Git root. Outside this repo, ask which checkou
 
 Run only on explicit `local-create-pr-claude` invocation; it authorizes one tmux session whose agent implements the request and publishes a PR. Make no edits in this checkout.
 
-1. Follow `gh-create-pr` steps 1-5: take the request, research read-only, stop when it should not be built or an existing TODO row covers it, ask only blocking questions and write a self-contained prompt.
+1. Follow the [dispatch contract](../../../../docs/agent-support.md#dispatch-contract) (request, research, stop, ask, prompt).
 2. Choose a branch `<committype>/<short-kebab-case-description>` per `docs/git-workflow.md` and create its worktree off freshly fetched `origin/main` under `.claude/worktrees/` so it survives session restarts:
 
    ```sh
@@ -15,7 +15,7 @@ Run only on explicit `local-create-pr-claude` invocation; it authorizes one tmux
    git worktree add -b <branch> .claude/worktrees/<slug> origin/main
    ```
 
-3. Append to the prompt: work only in this worktree, follow its `CONTEXT.md` files, run the existing checks, then publish with the `ship-pr` skill, which this request authorizes.
+3. Append to the prompt: work only in this worktree, follow its `CONTEXT.md` files, implement and verify per the `local-create-pr` skill, then publish with the `ship-pr` skill, which this request authorizes.
 4. Write the prompt to `/tmp/vb-local-pr-<slug>.prompt` and start the session once no questions were asked or after the user confirms it. Add `--model opus` or another Claude model only when the user asks:
 
    ```sh

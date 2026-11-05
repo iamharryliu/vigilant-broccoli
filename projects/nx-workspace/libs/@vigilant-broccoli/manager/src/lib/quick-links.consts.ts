@@ -67,7 +67,10 @@ const DEV_LINKS: QuickLink[] = [
   ]),
   ...toQuickLinks(LINK_GROUP_SUBGROUP.UTILITY, Object.values(LOCAL_HOST_URL)),
   ...toQuickLinks(LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI, [
-    ...Object.values(ACCESS_GATED_URL),
+    ...Object.values({
+      ...ACCESS_GATED_URL,
+      WEB_TERMINAL: { ...ACCESS_GATED_URL.WEB_TERMINAL, EMBED: true },
+    }),
     {
       NAME: `${ACCESS_GATED_URL.MOBILE_MANAGER_NEXT.NAME} (Staging)`,
       URL: ACCESS_GATED_URL.MOBILE_MANAGER_NEXT.STAGING_URL,
@@ -180,6 +183,10 @@ const PERSONAL_LINKS: QuickLink[] = [
     { NAME: 'Personal Website', URL: PERSONAL_SITE_LINK.INDEX.URL },
     PERSONAL_SITE_LINK.LINKS,
     PERSONAL_SITE_LINK.CONTACT,
+    {
+      NAME: 'Email Signature',
+      URL: `${PERSONAL_SITE_LINK.INDEX.URL}assets/email-signature/index.html`,
+    },
     EMAIL_LINK,
     SOCIAL_LINK.GITHUB,
     { ...PROJECT_LINK.SOFTWARE_PROJECTS, EMBED: true },

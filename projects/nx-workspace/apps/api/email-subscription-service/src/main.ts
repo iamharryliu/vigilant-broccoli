@@ -11,9 +11,7 @@ import {
   JSON_CONTENT_TYPE,
   QUEUE,
 } from '@vigilant-broccoli/common-js';
-import { SUPABASE_URL } from '@vigilant-broccoli/infrastructure';
 import { Email } from '@vigilant-broccoli/messaging';
-import { SENDER_EMAIL_ADDRESS } from '@harry/personal';
 import {
   createApiKeyPlugin,
   createDocsPlugin,
@@ -32,7 +30,9 @@ const RABBITMQ_CONNECTION_STRING = process.env.RABBITMQ_CONNECTION_STRING;
 const RABBITMQ_CA_CERT = process.env.RABBITMQ_CA_CERT;
 const EMAIL_SERVICE_URL = process.env.EMAIL_SERVICE_URL;
 const SHARED_APP_TOKEN = process.env.SHARED_APP_TOKEN;
-const EMAIL_FROM = `Vigilant Broccoli <${SENDER_EMAIL_ADDRESS}>`;
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const EMAIL_FROM_ADDRESS = process.env.EMAIL_FROM_ADDRESS;
+const EMAIL_FROM_NAME = process.env.EMAIL_FROM_NAME;
 const RECONNECT_DELAY_MS = 5000;
 const SEND_EMAIL_TIMEOUT_MS = 30000;
 const MAX_DELIVERY_ATTEMPTS = 5;
@@ -56,6 +56,14 @@ const RABBITMQ_SOCKET_OPTIONS = RABBITMQ_CA_CERT
         checkServerIdentity(RABBITMQ_TLS_SERVER_NAME, cert),
     }
   : undefined;
+
+// Fail closed at boot: there is deliberately no default project or sender.
+if (!SUPABASE_URL) throw new Error('SUPABASE_URL is required');
+if (!EMAIL_FROM_ADDRESS) throw new Error('EMAIL_FROM_ADDRESS is required');
+
+const EMAIL_FROM = EMAIL_FROM_NAME
+  ? `${EMAIL_FROM_NAME} <${EMAIL_FROM_ADDRESS}>`
+  : EMAIL_FROM_ADDRESS;
 
 const supabase = createClient(
   SUPABASE_URL,

@@ -175,7 +175,6 @@ const pullRequestLine = pull => {
   const title = text(pull.title);
   const notes = [
     pull.state === 'salvaged' && 'draft with partial work, do not merge',
-    text(pull.base) && `base \`${text(pull.base).replace(/`/g, '')}\``,
   ].filter(Boolean);
   return [
     urlOrText(text(pull.url)),
@@ -186,28 +185,8 @@ const pullRequestLine = pull => {
     .join(' ');
 };
 
-const renderPullRequests = pulls => {
-  if (pulls.length === 0) return '';
-  if (pulls.length === 1)
-    return label('Pull request', pullRequestLine(pulls[0]));
-  const items = pulls.map(
-    (pull, index) => `${index + 1}. ${pullRequestLine(pull)}`,
-  );
-  return [
-    label('Pull requests, in merge order', '').trimEnd(),
-    '',
-    ...items,
-  ].join('\n');
-};
-
-const renderUnpublished = unpublished => {
-  if (unpublished.length === 0) return '';
-  const items = unpublished.map(
-    item =>
-      `- ${escapeInline(text(item.title) || text(item.id))} — ${escapeInline(text(item.reason))}`,
-  );
-  return [label('Not published', '').trimEnd(), '', ...items].join('\n');
-};
+const renderPullRequests = pulls =>
+  pulls.length === 0 ? '' : label('Pull request', pullRequestLine(pulls[0]));
 
 const cell = value => escapeInline(value).replace(/\n/g, ' ');
 
@@ -226,16 +205,13 @@ const renderChangedFiles = pulls => {
 
 const headlineFor = (outcome, pulls) => {
   if (outcome === 'failed' && pulls.length) {
-    const published = pulls.filter(
-      pull => pull.state === 'created' || pull.state === 'updated',
-    ).length;
-    if (published)
-      return `Failed — ${published} pull request${published === 1 ? '' : 's'} published before the failure`;
+    if (
+      pulls.some(pull => pull.state === 'created' || pull.state === 'updated')
+    )
+      return 'Failed — pull request published before the failure';
     if (pulls.some(pull => pull.state === 'salvaged')) return FAILED_WITH_PR;
     return OUTCOME.failed;
   }
-  if (outcome === 'pr-created' && pulls.length > 1)
-    return `${pulls.length} pull requests created`;
   return OUTCOME[outcome] ?? escapeInline(outcome);
 };
 
@@ -248,13 +224,11 @@ const renderResult = () => {
   const listed = readJsonList('AGENTIC_PULL_REQUESTS');
   const single = env('AGENTIC_PR_URL');
   const pulls = listed.length ? listed : single ? [{ url: single }] : [];
-  const unpublished = readJsonList('AGENTIC_UNPUBLISHED');
   const reason = renderProse(process.env.AGENTIC_REASON ?? '');
 
   const lines = [
     label('Outcome', headlineFor(outcome, pulls)),
     renderPullRequests(pulls),
-    renderUnpublished(unpublished),
     renderChangedFiles(pulls),
     childRun && label('Child run', urlOrText(childRun)),
     exitCode && exitCode !== '0' && label('Exit code', escapeInline(exitCode)),

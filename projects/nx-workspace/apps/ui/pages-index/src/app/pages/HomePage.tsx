@@ -43,6 +43,15 @@ export function HomePage() {
           </li>
           <li>
             <CardLink
+              route
+              href="/repo-timeline"
+              title={t('HOME.REPO_TIMELINE.TITLE')}
+              description={t('HOME.REPO_TIMELINE.DESCRIPTION')}
+              icon={<ChartColumn className={ICON_CLASS} />}
+            />
+          </li>
+          <li>
+            <CardLink
               href="https://context.harryliu.dev/"
               title={t('HOME.CLAUDE_CONTEXT.TITLE')}
               description={t('HOME.CLAUDE_CONTEXT.DESCRIPTION')}
@@ -73,30 +82,12 @@ export function HomePage() {
               icon={<GitPullRequestArrow className={ICON_CLASS} />}
             />
           </li>
-          <li>
-            <CardLink
-              route
-              href="/repo-timeline"
-              title={t('HOME.REPO_TIMELINE.TITLE')}
-              description={t('HOME.REPO_TIMELINE.DESCRIPTION')}
-              icon={<ChartColumn className={ICON_CLASS} />}
-            />
-          </li>
         </CardGrid>
       </section>
 
       <section>
         <SectionHeading>{t('HOME.SECTION_SOFTWARE_PROJECTS')}</SectionHeading>
         <CardGrid>
-          <li>
-            <CardLink
-              route
-              href={GAMES_ROUTE}
-              title={t('GAMES_PAGE.TITLE')}
-              description={t('GAMES_PAGE.DESCRIPTION')}
-              icon={<Gamepad2 className={ICON_CLASS} />}
-            />
-          </li>
           <li>
             <CardLink
               route
@@ -131,6 +122,15 @@ export function HomePage() {
               title={t('HOME.WEB_APPLICATIONS.TITLE')}
               description={t('HOME.WEB_APPLICATIONS.DESCRIPTION')}
               icon={<Globe className={ICON_CLASS} />}
+            />
+          </li>
+          <li>
+            <CardLink
+              route
+              href={GAMES_ROUTE}
+              title={t('GAMES_PAGE.TITLE')}
+              description={t('GAMES_PAGE.DESCRIPTION')}
+              icon={<Gamepad2 className={ICON_CLASS} />}
             />
           </li>
           <li>

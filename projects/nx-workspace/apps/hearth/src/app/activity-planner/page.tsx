@@ -85,6 +85,20 @@ function ActivityPlannerContent() {
     fetchActivities();
   };
 
+  const handleReorder = async (orderedActivities: LeisureActivity[]) => {
+    setActivities(orderedActivities);
+    await fetch(LEISURE_ENDPOINT, {
+      method: 'PATCH',
+      headers: await jsonHeaders(),
+      body: JSON.stringify({
+        order: orderedActivities.map((activity, position) => ({
+          id: activity.id,
+          position,
+        })),
+      }),
+    });
+  };
+
   const handleAddToCalendar = async (
     activityId: string,
     data: CalendarEventFormData,
@@ -127,6 +141,7 @@ function ActivityPlannerContent() {
               onAdd={handleAdd}
               onEdit={handleEdit}
               onDelete={handleDelete}
+              onReorder={handleReorder}
               onAddToCalendar={handleAddToCalendar}
             />
           </CardContainer>

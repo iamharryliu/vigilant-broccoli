@@ -168,7 +168,10 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   job-hunt:docker:logs  Tail the job-hunt-next container logs
   local-manager-next:start       Start local-manager-next via PM2 and save the process list
   event-calendars:sync        Sync every event calendar with sources from Facebook to Google Calendar (exits non-zero on failure, 3 when Facebook login is required; logs to ~/.vb-manager/event-calendars-sync.log)
+  deploy:local                Pull latest (ff-only), then reload cloud-services-next, local-services-next and local-manager-next via PM2 and save the process list, then rebuild the job-hunt-next container
   deploy:local-manager        Pull latest (ff-only), then reload local-manager-next via PM2 and save the process list
+  cloud-services-next:logs    Tail cloud-services-next PM2 logs
+  local-services-next:logs    Tail local-services-next PM2 logs
   local-manager-next:delete      Delete local-manager-next PM2 process
   local-manager-next:logs        Tail local-manager-next PM2 logs
   local-manager-next:status      Show PM2 process status
@@ -194,7 +197,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
                                errors after ~1h
 
 🚀 AGENTIC — TASKS (unattended; ephemeral containers, no human in the loop)
-  agentic-pr-create <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers, one run per id; each opens a PR, or several when the request splits into increments (sonnet; --model <m> to override, or --agent codex [--codex-model <m>])
+  agentic-pr-create <id...>  Headlessly solve TODO.md item(s) in parallel ephemeral sandbox containers, one run per id; each opens one PR (sonnet; --model <m> to override, or --agent codex [--codex-model <m>])
                                (or --prompt "<task>" to solve a free-text task instead of TODO ids, e.g. "add a /health route to vb-express"; TODO ids named in the task are resolved the same way)
   agentic-pr-create --agent ollama --prompt "<task>"  Use native host Ollama/Qwen in Docker; retain a preview checkout without publishing (--local shorthand, --ollama-model <tag>, --publish to open PRs)
   agentic-pr-create --vm (<id...> | --prompt "<task>")  Solve in detached tmux sessions, one worktree each, in the code-server container on the OCI VM instead of local Docker; add `--agent codex [--codex-model <m>] [--codex-signed-in]` for Codex (default Claude); without a Vault token it uses the `codex login` made on the VM
@@ -208,9 +211,8 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   agentic-pr-create-prune  Headlessly sweep the repo for dead code, unused dependencies, broken doc links/anchors, orphaned docs/scripts/workflows and cheatsheet drift in an ephemeral sandbox container, remove only items grep shows have zero references, then open one capped PR listing the evidence and skipped candidates; opens none if nothing is provably dead (sonnet; --model <m> to override)
   agentic-pr-create-readmes  Headlessly refresh every README.md against docs/app-readme-pattern.md and the current code, plus the generated repo counts, in an ephemeral sandbox container, then open one PR of at most 20 files listing the evidence and skipped candidates; opens none if nothing drifted (sonnet; --model <m> to override)
   agentic-pr-create-url-audit  Headlessly verify every public URL has synchronized Upptime entries, pages-index cards and browser quick links per environment and demo in an ephemeral sandbox container, fix drift, then open one capped PR (15 files) listing the evidence and skipped candidates; opens none if consistent (sonnet; --model <m> to override)
-  agentic-pr-create-rnd "<question>"    Headlessly research a concise R&D note (alternatives table + recommendation + sample) under docs/rnd/ in an ephemeral sandbox container, then open a PR (sonnet; --model <m> to override)
   GitHub Actions: manual-agentic-pr-update selects operation=change|fix-ci|resolve-conflicts; instruction is required for change, optional for fix-ci, blank for resolve-conflicts
-  agentic-pr-update [--vm [--agent codex] [--codex-model <m>] [--codex-signed-in]] [--operation <op>] <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container or detached code-server VM session (checks out the branch, runs the agent on your instruction, runs pre-commit, pushes the update, and opens separate follow-up PRs for independent work it surfaces); accepts a PR number or URL (sonnet; --model <m> to override)
+  agentic-pr-update [--vm [--agent codex] [--codex-model <m>] [--codex-signed-in]] [--operation <op>] <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container or detached code-server VM session (checks out the branch, runs the agent on your instruction, runs pre-commit, and pushes the update); accepts a PR number or URL (sonnet; --model <m> to override)
                                 (--operation fix-ci [<instruction>] fixes a PR's failing CI from its check logs; --operation resolve-conflicts merges origin/main and resolves conflicts, taking no instruction)
                                 (--with-ci-logs, or the Actions with_ci_logs input, waits up to 10 minutes for running checks, then feeds the PR's failing check summary and failed-step logs to the agent; a plain change still lists non-passing check names, e.g. agentic-pr-update --with-ci-logs 149 "fix the failing checks")
 

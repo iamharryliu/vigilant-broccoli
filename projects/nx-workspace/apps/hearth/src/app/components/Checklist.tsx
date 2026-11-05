@@ -8,10 +8,20 @@ import {
   KeyboardEvent,
 } from 'react';
 import {
+  DndContext,
+  PointerSensor,
+  TouchSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
+import {
   Button,
   DropdownMenu,
-  CheckListBase,
-  CheckListBaseItem,
+  CheckList,
+  CheckListItem as BaseChecklistItem,
   FULL_SCREEN_ON_MOBILE_DIALOG_CLASS,
   IconButton,
   Input,
@@ -37,7 +47,7 @@ const EVENT_DIALOG_TITLE = 'Add to calendar';
 const CALENDAR_EVENTS_ENDPOINT = '/api/calendar/events';
 const EVENT_DEFAULT_DURATION_MS = 60 * 60 * 1000;
 
-const toBaseItem = (item: ChecklistItem): CheckListBaseItem => ({
+const toBaseItem = (item: ChecklistItem): BaseChecklistItem => ({
   id: item.id,
   title: item.name,
   checked: item.completed,
@@ -73,6 +83,12 @@ export function Checklist({
   const token = session?.access_token ?? '';
   const authHeader = useAuthHeader();
   const jsonHeaders = useJsonAuthHeaders();
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 150, tolerance: 8 },
+    }),
+  );
 
   const fetchItems = useCallback(async () => {
     if (!homeId || !token) return;
@@ -97,7 +113,7 @@ export function Checklist({
       body: JSON.stringify({ name, homeId }),
     });
     const created = await res.json();
-    if (created?.id) setItems(prev => [created, ...prev]);
+    if (created?.id) setItems(prev => [...prev, created]);
   };
 
   const handleToggle = async (id: string, completed: boolean) => {
@@ -126,6 +142,34 @@ export function Checklist({
       headers: await jsonHeaders(),
       body: JSON.stringify({ id }),
     });
+  };
+
+  const persistOrder = async (orderedItems: ChecklistItem[]) => {
+    await fetch(endpoint, {
+      method: 'PATCH',
+      headers: await jsonHeaders(),
+      body: JSON.stringify({
+        order: orderedItems.map((item, position) => ({
+          id: item.id,
+          position,
+        })),
+      }),
+    });
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const activeItems = items.filter(item => !item.completed);
+    const oldIndex = activeItems.findIndex(item => item.id === active.id);
+    const newIndex = activeItems.findIndex(item => item.id === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+    const reorderedItems = [
+      ...arrayMove(activeItems, oldIndex, newIndex),
+      ...items.filter(item => item.completed),
+    ].map((item, position) => ({ ...item, position }));
+    setItems(reorderedItems);
+    persistOrder(reorderedItems);
   };
 
   const handleCreateEvent = async (data: CalendarEventFormData) => {
@@ -168,7 +212,7 @@ export function Checklist({
 
   if (!homeId) return null;
 
-  const startEditById = (item: CheckListBaseItem) => {
+  const startEditById = (item: BaseChecklistItem) => {
     const source = items.find(candidate => candidate.id === item.id);
     if (source) startEdit(source);
   };
@@ -178,7 +222,7 @@ export function Checklist({
     setEditingName('');
   };
 
-  const renderItemAccessory = (item: CheckListBaseItem) => (
+  const renderItemAccessory = (item: BaseChecklistItem) => (
     <div onClick={e => e.stopPropagation()}>
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
@@ -218,30 +262,38 @@ export function Checklist({
         </Button>
       </div>
 
-      <CheckListBase
-        items={baseItems}
-        editingItemId={editingId}
-        editingItemTitle={editingName}
-        onToggleCheck={item => handleToggle(item.id, !item.checked)}
-        onStartEdit={startEditById}
-        onEditChange={setEditingName}
-        onSaveEdit={saveEdit}
-        onCancelEdit={cancelEdit}
-        editor="input"
-        rowVariant="dense"
-        size="3"
-        editCompleted={false}
-        storageKeyPrefix={storageKeyPrefix}
-        completedSectionId={`${storageKeyPrefix}-completed`}
-        emptyLabel={
-          <div className="py-4">
-            <Text align="center" color="gray" size="3">
-              {emptyText}
-            </Text>
-          </div>
-        }
-        renderItemAccessory={renderItemAccessory}
-      />
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <CheckList
+          items={baseItems}
+          editingItemId={editingId}
+          editingItemTitle={editingName}
+          onToggleCheck={item => handleToggle(item.id, !item.checked)}
+          onStartEdit={startEditById}
+          onEditChange={setEditingName}
+          onSaveEdit={saveEdit}
+          onCancelEdit={cancelEdit}
+          editor="input"
+          rowVariant="dense"
+          size="3"
+          editCompleted={false}
+          enableDragDrop
+          listId={storageKeyPrefix}
+          storageKeyPrefix={storageKeyPrefix}
+          completedSectionId={`${storageKeyPrefix}-completed`}
+          emptyLabel={
+            <div className="py-4">
+              <Text align="center" color="gray" size="3">
+                {emptyText}
+              </Text>
+            </div>
+          }
+          renderItemAccessory={renderItemAccessory}
+        />
+      </DndContext>
 
       <DeleteItemConfirmationDialog
         open={pendingDeleteId !== null}

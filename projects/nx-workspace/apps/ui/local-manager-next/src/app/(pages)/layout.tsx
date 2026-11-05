@@ -1,8 +1,10 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
+import { EMBED_ROUTE_PATH } from '@vigilant-broccoli/common-js';
 import { SIDEBAR_ROUTE } from '../app.const';
 import { ReactNode, useState, useEffect, useCallback } from 'react';
+import { shouldIgnoreShortcutKeystroke } from '@vigilant-broccoli/react-lib';
 import { useAuth } from '../../../libs/auth';
 import { FloatingIslandComponent } from '../components/floating-island.component';
 import { RightSidebar } from '../components/right-sidebar.component';
@@ -14,16 +16,7 @@ import { useBackgroundTaskNotifications } from '../hooks/useBackgroundTaskNotifi
 import { useUnreadDocumentTitle } from '../hooks/useUnreadDocumentTitle';
 import { NotificationContext } from '../context/NotificationContext';
 
-const IGNORED_TAGS = ['INPUT', 'TEXTAREA', 'SELECT'];
 const SHORTCUTS_OVERLAY_KEY_CODE = 'Slash';
-
-const isIgnoredInputElement = (target: EventTarget | null): boolean => {
-  return target instanceof Element && IGNORED_TAGS.includes(target.tagName);
-};
-
-const shouldIgnoreKeystroke = (e: KeyboardEvent): boolean => {
-  return isIgnoredInputElement(e.target) || e.ctrlKey || e.metaKey || e.altKey;
-};
 
 type KeyboardHandlers = {
   setSearchDialogOpen: (open: boolean) => void;
@@ -71,7 +64,7 @@ const handleKeyboardShortcut = (
   e: KeyboardEvent,
   handlers: KeyboardHandlers,
 ): void => {
-  if (shouldIgnoreKeystroke(e)) {
+  if (shouldIgnoreShortcutKeystroke(e)) {
     return;
   }
 
@@ -82,7 +75,9 @@ const handleKeyboardShortcut = (
 
 export default function Layout({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const isStatusPage = usePathname() === SIDEBAR_ROUTE.STATUS.path;
+  const pathname = usePathname();
+  const isStatusPage =
+    pathname === SIDEBAR_ROUTE.STATUS.path || pathname === EMBED_ROUTE_PATH;
   const _session = useAuth();
   const { notifications, unreadCount, add, markAllRead, clear } =
     useNotificationHistory();
@@ -117,7 +112,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       if (
         e.code === SHORTCUTS_OVERLAY_KEY_CODE &&
         e.shiftKey &&
-        !shouldIgnoreKeystroke(e)
+        !shouldIgnoreShortcutKeystroke(e)
       ) {
         e.preventDefault();
         setShortcutsOverlayOpen(true);

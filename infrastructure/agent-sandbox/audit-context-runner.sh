@@ -15,7 +15,7 @@ PR_FOOTER='🤖 Generated with [Claude Code](https://claude.com/claude-code)'
 FALLBACK_TRAILER='Co-authored-by: Claude <noreply@anthropic.com>'
 
 cd "$REPO_DIR"
-SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/local-pr-create-context-audit/SKILL.md")
+SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/local-create-pr-context-audit/SKILL.md")
 # shellcheck source=no-changes.sh
 . "$REPO_DIR/infrastructure/agent-sandbox/no-changes.sh"
 
@@ -33,7 +33,7 @@ $SKILL_INSTRUCTIONS
 Sandbox execution rules:
 - You are already inside the unattended sandbox mentioned in the skill; complete the task here without launching another sandbox.
 - Branching, committing, pushing, and opening the PR are handled by the calling script. Do not run mutating git commands or any gh commands.
-- The calling script rejects the run if any file outside the skill's scope changed (only CONTEXT.md files, shared SKILL.md files and root CONTEXT.md Doc Map and required-reading documents, minus notes/, docs/rnd/, docs/learning-timeline.md and TODO.md), if a file was created, deleted, renamed or changed type (including an AGENTS.md or command adapter symlink), if a SKILL.md frontmatter block changed, or if more than $MAX_CHANGED_FILES files changed.
+- The calling script rejects the run if any file outside the skill's scope changed (only CONTEXT.md files, shared SKILL.md files and root CONTEXT.md Doc Map and required-reading documents, minus notes/, docs/learning-timeline.md and TODO.md), if a file was created, deleted, renamed or changed type (including an AGENTS.md or command adapter symlink), if a SKILL.md frontmatter block changed, or if more than $MAX_CHANGED_FILES files changed.
 - Check everything the skill covers before choosing what to edit; do not stop after one kind of check. Record anything in scope you did not check or edit as a skipped candidate with the reason.
 - The only exception to the skill's output scope is $META_FILE, outside the checkout. Even for a clean run, write the metadata with empty cuts/skipped lists; the calling script exits without opening a PR.
 
@@ -78,7 +78,7 @@ fi
 git add -A
 
 # The skill's scope is re-checked here. The Doc Map and required-reading links are read from the
-# base commit so an edit to root CONTEXT.md cannot widen the run's own scope. notes/, R&D and the learning
+# base commit so an edit to root CONTEXT.md cannot widen the run's own scope. notes and the learning
 # timeline are records by design (the timeline is in the Doc Map), and TODO.md
 # belongs to agentic-pr-create-todo-audit.
 DOC_MAP=$(git show "$BASE_SHA:CONTEXT.md" | awk '/^## Doc Map/ { in_map = 1; next } /^## / { in_map = 0 } in_map' |
@@ -90,7 +90,7 @@ REQUIRED_READING=$(git show "$BASE_SHA:CONTEXT.md" |
   sed -n 's/^Read \[[^]]*\](\.\/\([^)#]*\.md\).*/\1/p')
 in_scope() {
   case "$1" in
-    notes/* | docs/rnd/* | docs/learning-timeline.md | TODO.md) return 1 ;;
+    notes/* | docs/learning-timeline.md | TODO.md) return 1 ;;
     CONTEXT.md | */CONTEXT.md) return 0 ;;
   esac
   [[ $1 == setup/dotfiles/agent-skills/*/SKILL.md && $1 != setup/dotfiles/agent-skills/*/*/SKILL.md ]] && return 0
