@@ -106,6 +106,10 @@
       "TITLE": "Docs (Markdown)",
       "DESCRIPTION": "Browse markdown notes from the repo."
     },
+    "GRIND_75_REACT": {
+      "TITLE": "Grind 75",
+      "DESCRIPTION": "Browse Grind 75 solutions in Go, Python and TypeScript side by side."
+    },
     "FIND_ME": {
       "TITLE": "FindMe",
       "DESCRIPTION": "Live location sharing app deployed on Vercel."
