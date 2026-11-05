@@ -1,4 +1,7 @@
 {
   "root": "../../../../grind-75",
-  "outDir": "public"
+  "outDir": "public",
+  "rootNotes": [
+    "notes/tech/software/general/coding-challenges/grind-75-complexities.md"
+  ]
 }
