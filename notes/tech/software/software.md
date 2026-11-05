@@ -7,6 +7,7 @@
 - [Software Breakdown](./general/software-breakdown.md)
 - [Software Lifecycle](./general/software-lifecycle.md)
   - [Environment Strategies](./general/environment-strategies.md)
+- [File Formats](./general/file-formats.md)
 - [Software Roadmap](./software-roadmap.md)
 - [Software Languages](./languages/software-languages.md)
 - [Web Dev](./web-dev/web-dev.md)

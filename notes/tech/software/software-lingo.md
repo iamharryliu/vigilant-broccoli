@@ -8,6 +8,7 @@
 - [Web Rendering](#web-rendering)
 - [Testing](#testing)
 - [Development Approaches](#development-approaches)
+- [SDLC Models](#sdlc-models)
 - [Software Roles](#software-roles)
 - [Tooling](#tooling)
 - [Platform Engineering](#platform-engineering)
@@ -119,7 +120,22 @@
 | --- | --- |
 | BDD | Behavior-Driven Development. Requirements are written as plain-language Given-When-Then scenarios and automated as tests. See [BDD](./general/bdd.md). |
 | CI/CD | Continuous Integration/Continuous Deployment (or Delivery). CI automatically builds and tests every merged change; CD automatically ships passing changes to staging or production. |
+| SDLC | Software Development Life Cycle. The end-to-end stages software moves through: planning, requirements, design, implementation, testing, deployment and maintenance. Models like waterfall and agile arrange those stages differently. |
 | TDD | Test-Driven Development. You write the test first and then the code that makes it pass. |
+
+## SDLC Models
+
+| Term | Definition |
+| --- | --- |
+| Agile | Iterative approach that delivers working software in short cycles and adapts to changing requirements through continuous feedback, favoring working software and collaboration over exhaustive upfront documentation. |
+| DevOps | Culture and practice of merging development and operations so teams build, ship and run software together, relying on automation (CI/CD, infrastructure as code, monitoring) for fast, reliable releases. |
+| Kanban | Agile method that visualizes work on a board, limits work in progress per stage and pulls new items as capacity frees up, with no fixed iterations. |
+| Lean | Approach borrowed from manufacturing that cuts waste, delivers in small increments and optimizes the flow of value to users. |
+| Scrum | Agile framework that works in fixed-length sprints (1-4 weeks) with defined roles (product owner, scrum master, team) and events (planning, daily standup, review, retrospective). |
+| Spiral | Risk-driven model that repeats planning, risk analysis, building and evaluation in loops, growing the product with each pass. |
+| V-Model | Waterfall variant in which each development phase is paired with a matching testing phase (e.g. requirements with acceptance tests, design with integration tests). |
+| Waterfall | Linear model where each phase (requirements, design, implementation, testing, deployment, maintenance) must finish before the next begins. Predictable and well documented, but changes late in the project are costly. |
+| XP | Extreme Programming. Agile method built on engineering practices such as pair programming, TDD, continuous integration, small frequent releases and constant refactoring. |
 
 ## Software Roles
 
