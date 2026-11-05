@@ -3,9 +3,8 @@
 // from the inbox without opening the PR.
 //
 // Input is the JSON Lines file written by infrastructure/agent-sandbox/solve-todo.sh:
-// one kind "pr" record per pull request a run opened (label, title, url, state,
-// base, dependsOn, summary, diff, in merge order) and one kind "unpublished"
-// record per planned increment that was not published (title, reason).
+// one record per pull request a run opened (label, title, url, state, summary,
+// diff).
 
 import { readFileSync } from 'node:fs';
 
@@ -309,7 +308,6 @@ const renderSummary = summary => {
   );
 };
 
-const UNPUBLISHED_KIND = 'unpublished';
 const SALVAGED_STATE = 'salvaged';
 
 const headingFor = entry => {
@@ -319,26 +317,7 @@ const headingFor = entry => {
     : base;
 };
 
-const renderStackFacts = entry => {
-  const facts = [
-    entry.base &&
-      `Base: <code class="vb-code" style="font-family:${MONO_FONT};">${escapeHtml(entry.base)}</code>`,
-    entry.dependsOn &&
-      `Merge after: <a href="${escapeHtml(entry.dependsOn)}" style="color:${COLOR.link};">${escapeHtml(entry.dependsOn)}</a>`,
-  ].filter(Boolean);
-  return facts.length
-    ? `<p class="vb-note" style="font-family:${SANS_FONT};font-size:13px;color:${COLOR.muted};margin:0 0 12px 0;">${facts.join(' · ')}</p>`
-    : '';
-};
-
-const renderUnpublished = entry =>
-  `<div style="margin:0 0 24px 0;">` +
-  `<h2 style="margin:0 0 8px 0;font-family:${SANS_FONT};font-size:17px;color:${COLOR.failure};">Not published: ${escapeHtml(entry.title)}</h2>` +
-  `<p class="vb-note" style="font-family:${SANS_FONT};font-size:13px;color:${COLOR.muted};margin:0;">${escapeHtml(entry.reason ?? '')}</p>` +
-  `</div>`;
-
 const renderEntry = (entry, budget) => {
-  if (entry.kind === UNPUBLISHED_KIND) return renderUnpublished(entry);
   const link = entry.url
     ? `<p style="margin:0 0 12px 0;font-family:${SANS_FONT};font-size:14px;"><a href="${escapeHtml(entry.url)}" style="color:${COLOR.link};">${escapeHtml(entry.url)}</a></p>`
     : '';
@@ -347,7 +326,6 @@ const renderEntry = (entry, budget) => {
     `<div style="margin:0 0 32px 0;">` +
     `<h2 style="margin:0 0 8px 0;font-family:${SANS_FONT};font-size:17px;color:${COLOR.text};">${escapeHtml(headingFor(entry))}</h2>` +
     link +
-    renderStackFacts(entry) +
     renderSummary(entry.summary ?? '') +
     renderDiff(entry.diff ?? '', budget) +
     `</div>`
@@ -375,22 +353,13 @@ const renderHtml = entries => {
 const renderText = entries => {
   let remaining = MAX_TEXT_DIFF_CHARS;
   const blocks = entries.map(entry => {
-    if (entry.kind === UNPUBLISHED_KIND)
-      return `Not published: ${entry.title} — ${entry.reason ?? ''}`;
     const diff = entry.diff ?? '';
     const shown = diff.slice(0, Math.max(remaining, 0));
     remaining -= shown.length;
     const clipped = shown.length < diff.length ? '\n… diff truncated …' : '';
-    const stack = [
-      entry.base && `Base: ${entry.base}`,
-      entry.dependsOn && `Merge after: ${entry.dependsOn}`,
-    ]
-      .filter(Boolean)
-      .join(' · ');
     return [
       headingFor(entry),
       entry.url,
-      stack,
       '',
       entry.summary,
       '',
@@ -409,11 +378,8 @@ const renderText = entries => {
 };
 
 const entries = readEntries();
-const pullRequestCount = entries.filter(
-  entry => entry.kind !== UNPUBLISHED_KIND,
-).length;
 const subjectSuffix =
-  pullRequestCount > 1 ? ` (${pullRequestCount} pull requests)` : '';
+  entries.length > 1 ? ` (${entries.length} pull requests)` : '';
 const response = await fetch(EMAIL_URL, {
   method: 'POST',
   headers: {

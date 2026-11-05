@@ -25,9 +25,13 @@ The `InSeasonCard` lists the fruits and vegetables in season as badges, on the k
 
 ## Season status
 
-- `getSeasonStatus` in `src/lib/in-season.ts` uses the same hemisphere month shift as `getInSeason`. A month is "just in" when the previous month is not in the item's months and "last chance" when the next month is not, wrapping across December (Nov-Feb works). All-year items and mid-run months are regular, with no marker; a one-month run counts as just in.
-- The badge is prefixed with 🌱 (just in) or ⏳ (last chance); the aria-label and title append the status text.
-- A help icon beside the card title opens a legend dialog listing each emoji and its meaning.
+- `getSeasonStatus` in `src/lib/in-season.ts` uses the same hemisphere month shift as `getInSeason`. A month is "last chance" when the next month is not in the item's months, wrapping across December (Nov-Feb works). All-year items and earlier months of a run are regular, with no marker; a one-month run counts as last chance.
+- A last-chance badge ends with ⏳ after the produce emoji and name; the aria-label and title append the status text. There is no marker for the first month of a season.
+- A help icon opens a legend dialog explaining the hourglass: beside the card title, or beside the month name on mobile.
+
+## Mobile
+
+On the `/in-season` page, `InSeasonCard` gets `plainOnMobile`: below `md` the page header, card border, background and title are dropped so only the month navigation and badge groups show. `md` and up, and the kitchen planner, keep the card.
 
 ## Month browsing
 

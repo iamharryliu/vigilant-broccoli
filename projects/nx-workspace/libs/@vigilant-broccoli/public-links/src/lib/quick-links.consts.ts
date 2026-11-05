@@ -249,6 +249,11 @@ export const VB_LINKS: QuickLink[] = [
       NAME: `${VB_APP_URL.DOCS.NAME} (Staging)`,
       URL: VB_APP_URL.DOCS.STAGING_URL,
     },
+    VB_APP_URL.GRIND_75,
+    {
+      NAME: `${VB_APP_URL.GRIND_75.NAME} (Staging)`,
+      URL: VB_APP_URL.GRIND_75.STAGING_URL,
+    },
     {
       NAME: `${VB_APP_URL.CONTEXT.NAME} (Staging)`,
       URL: VB_APP_URL.CONTEXT.STAGING_URL,

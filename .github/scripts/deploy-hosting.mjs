@@ -17,6 +17,7 @@ export const PROJECT_HOSTING = {
     name: 'harryliu-dev-react',
   },
   'docs-md': { platform: 'pages', name: 'docs-md' },
+  'grind-75-react': { platform: 'pages', name: 'grind-75-react' },
   'context-md': { platform: 'pages', name: 'context-md' },
   'text-tools-ui': { platform: 'pages', name: 'text-tools-ui' },
   'utilities-ui': { platform: 'pages', name: 'utilities-ui' },

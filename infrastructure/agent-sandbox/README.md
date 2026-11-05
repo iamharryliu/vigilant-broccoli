@@ -8,7 +8,7 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
 - [Local Ollama agent](#local-ollama-agent)
 - [Running on the code-server VM](#running-on-the-code-server-vm)
 - [Running in CI](#running-in-ci)
-- [Publishing several pull requests](#publishing-several-pull-requests)
+- [Publishing a pull request](#publishing-a-pull-request)
 - [PR screenshots](#pr-screenshots)
 - [Ending without changes](#ending-without-changes)
 - [Auditing the backlog](#auditing-the-backlog)
@@ -45,8 +45,8 @@ Dockerised Node.js sandbox that runs an autonomous Claude Code or Codex agent be
   ```
 - Keep Ollama on its default `127.0.0.1` listener: Docker Desktop on macOS reaches it through its built-in `host.docker.internal`, and the LAN cannot. On Linux the adapter adds `--add-host host.docker.internal:host-gateway`, which only a non-loopback listener answers, so there set `OLLAMA_HOST=0.0.0.0:11434`; that exposes Ollama to the LAN, so restrict port 11434 with the host firewall (Ollama's API has no authentication). The sandbox keeps its egress firewall enabled and allows the host Ollama port.
 - Ollama uses the image's existing Claude Code tool harness through its [Anthropic-compatible API](https://docs.ollama.com/integrations/claude-code). Model inference is free and self hosted; no Claude subscription or model API credentials are needed. Local mode rejects cloud tags and cloud-backed models, strips model-provider credentials and disables the harness's nonessential traffic and hosted web tools. GitHub and package registries remain available for checkout and tooling; this is not an offline sandbox.
-- Preview runs do not fetch Vault credentials, commit, push or open PRs. Each run clones fresh remote main into a separate checkout under the printed `/tmp/vb-local-solve.*` directory, retaining code, `.git/solve-meta.json` and `run.log` after success or failure. Your current checkout and uncommitted edits are not inputs. Review with `git -C <printed-checkout> diff`; preview runs implement only the first increment and record follow-ups in metadata.
-- `--agent ollama --publish` explicitly enables the existing GitHub PR/increment pipeline, using an exported `GH_TOKEN` or the existing Vault GitHub credentials. It still uses only the local model. TODO jobs run sequentially in both modes to limit inference memory pressure.
+- Preview runs do not fetch Vault credentials, commit, push or open PRs. Each run clones fresh remote main into a separate checkout under the printed `/tmp/vb-local-solve.*` directory, retaining code, `.git/solve-meta.json` and `run.log` after success or failure. Your current checkout and uncommitted edits are not inputs. Review with `git -C <printed-checkout> diff`; preview runs implement the one change and record nothing else.
+- `--agent ollama --publish` explicitly enables the existing GitHub PR pipeline, using an exported `GH_TOKEN` or the existing Vault GitHub credentials. It still uses only the local model. TODO jobs run sequentially in both modes to limit inference memory pressure.
 - Override the model with `--ollama-model <local-tag>` or `OLLAMA_MODEL`; override the host port with `OLLAMA_BASE_URL=http://host.docker.internal:<port>`. The model must already be pulled and support tools. The adapter rebuilds the Docker image and checks model availability before every batch. `--local` is shorthand for `--agent ollama`; Actions retains its existing hosted agent choices.
 
 ## Running on the code-server VM
@@ -76,14 +76,14 @@ from Vault, the script skips the local Vault-over-SSH load and mints the install
 - Dispatch: `gh workflow run manual-agentic-pr-create.yml -f prompt="<task>"`, with optional `-f agent=claude|codex`,
   `-f model=` for Claude, `-f codex_model=` for Codex, and `-f firewall=off`. The workflow has no separate TODO id input:
   mention ids in the prompt (`-f prompt="solve a1b2c3"`) and the agent resolves those `TODO.md` rows and the runner removes the ones it fully resolved
-  once done. Use `pnpm agentic-pr-create <id...>` locally to solve several ids as parallel runs, one per id (each may itself publish more than one PR).
+  once done. Use `pnpm agentic-pr-create <id...>` locally to solve several ids as parallel runs, one per id (each publishes one PR).
 - From a Claude Code or Codex session, `/gh-create-pr [request]` researches the request locally, asks any blocking questions, then dispatches the workflow with a self-contained prompt (after your confirmation when it asked). `/local-docker-create-pr-claude [request]` and `/local-docker-create-pr-codex [request]` do the same research but start a background `pnpm agentic-pr-create --prompt` solve (`--agent codex` for Codex) instead. `/remote-create-pr-codex [request]` does the same research but runs `pnpm agentic-pr-create --vm --agent codex --prompt` on the code-server VM.
 - Smoke test: dispatch `manual-agentic-pr-create-smoke` (`gh workflow run manual-agentic-pr-create-smoke.yml`) to run the whole
   pipeline against a canned one-line prompt and check the notification email. Pass `-f agent=codex` to smoke-test the
   Codex path. It opens a disposable PR; close it after.
-- Notification: the workflow emails the outcome with each PR's title, summary, link, base and full diff, rendered as a
-  GitHub-style patch, and lists any planned increment that was not published. The runner prints one record per PR
-  (`PR_TITLE::`, `PR_URL::`, `PR_STATE::`, `PR_BASE::`, `PR_DEPENDS_ON::`, `PR_SUMMARY_*` and `PR_DIFF_BEGIN`/`PR_DIFF_END`),
+- Notification: the workflow emails the outcome with each PR's title, summary, link and full diff, rendered as a
+  GitHub-style patch. The runner prints one record per PR
+  (`PR_TITLE::`, `PR_URL::`, `PR_STATE::`, `PR_FILES::`, `PR_SUMMARY_*` and `PR_DIFF_BEGIN`/`PR_DIFF_END`),
   `solve-todo.sh` collects them into a JSON Lines file, and `.github/scripts/agentic-solve-email.mjs` renders and sends it.
 
 Codex uses a dedicated ChatGPT/Codex access token, not the app's `OPENAI_API_KEY`:
@@ -122,35 +122,24 @@ A `change` instruction can be TODO-only: naming a `TODO.md` row id and asking to
 
 `pnpm agentic-pr-update --operation resolve-conflicts <pr>` is also used by `manual-agentic-pr-update` with `operation=resolve-conflicts`. It accepts no instruction, enables the merge of `origin/main`, and selects the shared conflict-resolution skill in the existing PR-update runner.
 
-## Publishing several pull requests
+## Publishing a pull request
 
-`pnpm agentic-pr-create` (and its `manual-agentic-pr-create` workflow) and the change operation of `pnpm agentic-pr-update`
-(`manual-agentic-pr-update`) share `pr-increments.sh`, sourced by `solve-todo-runner.sh` and `update-pr-runner.sh`. A simple
-task is still one PR. When the first agent run judges the request too large or bundled, it implements the first increment and
-lists the rest in an `increments` array in its metadata file (contract in
-[agent support](../../docs/agent-support.md#increment-contract)). The runner then:
+`pnpm agentic-pr-create` (and its `manual-agentic-pr-create` workflow) and `pnpm agentic-pr-update` (`manual-agentic-pr-update`)
+always produce exactly one PR; nothing splits or stacks. A task too large for one PR is a no-change decision: the agent
+writes `no_changes_reason`, the runner prints `RESULT::no-changes` ([task contract](../../docs/agent-support.md#task-contract)),
+and a human or a `TODO.md` row re-scopes it.
 
-- validates the whole plan before publishing anything (at most 4 later increments, unique ids, one earlier prerequisite each,
-  TODO ids that exist, are named in the request and are assigned once) and fails the run on a bad plan, saving the first
-  increment's work as a draft PR;
-- publishes the first increment, then runs a fresh agent per later increment on its own branch: an independent one from
-  `origin/main` targeting `main`, a dependent one from its prerequisite's branch targeting that branch, so its diff is only its
-  own increment even where several increments edit the same file;
-- removes from `TODO.md` only the rows each increment declares in `todo_ids`, on that increment's branch, and fails an
-  increment that deleted any other row;
-- gives every PR its own title, summary, next steps, suggestions and history row, plus a `## Stack` section with the merge
-  order, refreshed on every PR once all are open;
-- stops at the first failing increment, saves its partial work as a draft PR, prints `INCREMENT_UNPUBLISHED::` for it and
-  every increment not attempted, and exits non-zero, leaving the PRs already opened in place. Later increments run
-  sequentially in the same container, so the workflow's 60-minute timeout covers the whole set.
+`publish-pr.sh`, sourced by `solve-todo-runner.sh` (and by `update-pr-runner.sh` for its TODO helpers), holds the shared steps:
 
-`update-pr-runner.sh` does the same for follow-ups an update surfaces, leaving the target PR to its own purpose; fix-CI and
-conflict-resolution updates never split. If the target update fails before its push, recovery uses a separate draft branch
-targeting the original PR branch. Recovery restores unresolved TODO rows and respects commit hooks; if hooks or GitHub
-publication fail, the log reports that recovery failed rather than claiming the work was saved. Git, pushes and PR creation stay in the runner with the credentials it already
-has; branches are only created and pushed, never force-pushed. Squash-merge implications of stacked PRs are in
-[Stacked pull requests](../../docs/git-workflow.md#stacked-pull-requests). The container copies `solve-todo-runner.sh`,
-`pr-increments.sh`, `commit-subject.sh` and `no-changes.sh` into the image, so rebuild it (`docker compose build`) after changing any of them when running locally. Every runner sources `commit-subject.sh` to capitalize commit messages and PR titles, end them with a period, strip trailing ellipses, lower-case the scope and reject types outside `COMMIT_TYPES` (a mirror of `type-enum` in `commitlint.config.mjs`) in favor of the run's fallback subject, so they pass the CI `commitlint` job without a workspace install in the sandbox.
+- validates the agent's `todo_ids` (6-hex ids that have a row and are named in the request) before publishing, and removes
+  from `TODO.md` only those rows, failing a run that deleted any other row;
+- commits, pushes and opens the PR with its title, summary, next steps, concerns, suggestions, screenshots and history row;
+- when a create run fails, saves its partial work as a draft PR and prints a `RESULT::` marker saying what became of it. A
+  failed update publishes nothing.
+
+Git, pushes and PR creation stay in the runner with the credentials it already has; branches are only created and pushed,
+never force-pushed. The container copies `solve-todo-runner.sh`, `publish-pr.sh`, `commit-subject.sh` and `no-changes.sh`
+into the image, so rebuild it (`docker compose build`) after changing any of them when running locally. Every runner sources `commit-subject.sh` to capitalize commit messages and PR titles, end them with a period, strip trailing ellipses, lower-case the scope and reject types outside `COMMIT_TYPES` (a mirror of `type-enum` in `commitlint.config.mjs`) in favor of the run's fallback subject, so they pass the CI `commitlint` job without a workspace install in the sandbox.
 
 ## Metadata file
 
@@ -158,7 +147,7 @@ Agents write a JSON metadata file (`/tmp/solve-meta.json` and the per-operation 
 
 ## PR screenshots
 
-Screenshots are required only when the changed page or component is reachable and renderable without authentication. If authentication or unavailable dependencies (a missing backend or secrets, or port conflicts) prevent exercising it in a browser, do not attempt or retry screenshots and do not mention missing screenshots as a PR concern or in `PR_CONCERNS`. For eligible UI work, the agent lists the current task's captured PNG paths in the `pr_screenshots` metadata array, relative to the repository root (for example, `projects/nx-workspace/screenshots/localhost-3100-phone-light.png`). Create, update and follow-up increment runners copy only those selected files into `.github/pr-screenshots/<sha256>.png` before their normal checks and commit. Invalid paths and non-PNG files fail publishing. Identical captures reuse the same asset path.
+Screenshots are required only when the changed page or component is reachable and renderable without authentication. If authentication or unavailable dependencies (a missing backend or secrets, or port conflicts) prevent exercising it in a browser, do not attempt or retry screenshots and do not mention missing screenshots as a PR concern or in `PR_CONCERNS`. For eligible UI work, the agent lists the current task's captured PNG paths in the `pr_screenshots` metadata array, relative to the repository root (for example, `projects/nx-workspace/screenshots/localhost-3100-phone-light.png`). Create and update runners copy only those selected files into `.github/pr-screenshots/<sha256>.png` before their normal checks and commit. Invalid paths and non-PNG files fail publishing. Identical captures reuse the same asset path.
 
 After committing, `pr-screenshots.py` verifies each asset's committed bytes and generates inline images for `merge-pr-body.py`'s `PR_SCREENSHOTS` input. Links use `../blob/<commit>/.github/pr-screenshots/<sha256>.png?raw=true`, following [GitHub's relative image syntax](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax#images). Captures remain available after VM cleanup and branch deletion, and become part of repository history. No upload service, extra credentials or Actions artifact download is needed.
 

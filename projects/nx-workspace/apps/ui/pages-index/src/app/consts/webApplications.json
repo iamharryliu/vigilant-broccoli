@@ -51,6 +51,13 @@
       "readmePath": "projects/nx-workspace/apps/findme/README.md"
     },
     {
+      "id": "grind-75-react",
+      "href": "https://grind-75.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.GRIND_75_REACT.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.GRIND_75_REACT.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/grind-75-react/README.md"
+    },
+    {
       "id": "gravity-guy",
       "href": "https://gravity-guy.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.GRAVITY_GUY.TITLE",

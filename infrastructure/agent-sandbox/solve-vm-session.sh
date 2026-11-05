@@ -40,11 +40,11 @@ run_solve() {
       fix-ci) export SANDBOX_FIX_CI=1 ;;
       resolve-conflicts) export SANDBOX_MERGE_MAIN=1 ;;
     esac
-    REPO_DIR=$worktree META_FILE="$run_dir/update-meta.json" INC_PLAN_FILE="$run_dir/increment-plan.json" \
+    REPO_DIR=$worktree META_FILE="$run_dir/update-meta.json" \
       SOLVE_AGENT=$agent SOLVE_MODEL=$model CODEX_MODEL=$codex_model CODEX_SIGNED_IN=$signed_in SOLVE_ON_CODE_SERVER=1 \
       bash "$run_dir/update-pr-runner.sh" "$value" "$(<"$run_dir/instruction")" 2>&1 | tee "$run_dir/run.log" || status=$?
   else
-    REPO_DIR=$worktree META_FILE="$run_dir/solve-meta.json" INC_PLAN_FILE="$run_dir/increment-plan.json" \
+    REPO_DIR=$worktree META_FILE="$run_dir/solve-meta.json" \
       SOLVE_AGENT=$agent SOLVE_MODEL=$model CODEX_MODEL=$codex_model CODEX_SIGNED_IN=$signed_in SOLVE_ON_CODE_SERVER=1 \
       bash infrastructure/agent-sandbox/solve-todo-runner.sh "$flag" "$value" 2>&1 | tee "$run_dir/run.log" || status=$?
   fi
@@ -91,7 +91,7 @@ while [ $# -gt 0 ]; do
     printf '%s\n' "$VM_UPDATE_RUNNER" > "$run_dir/update-pr-runner.sh"
     printf '%s\n' "$VM_UPDATE_HELPER" > "$run_dir/update-pr-vm-agent.sh"
     # The streamed runner sources these before checking out the PR's branch.
-    cp "$REPO/infrastructure/agent-sandbox/"{pr-increments,no-changes,commit-subject}.sh "$run_dir/"
+    cp "$REPO/infrastructure/agent-sandbox/"{publish-pr,no-changes,commit-subject}.sh "$run_dir/"
     printf '%s' "$instruction" > "$run_dir/instruction"
     printf '%s' "$operation" > "$run_dir/operation"
     printf '%s' "$ci_logs" > "$run_dir/ci-logs"
