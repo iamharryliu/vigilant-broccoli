@@ -215,13 +215,14 @@ agent_invoke() {
     --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
 }
 
-# The reason is also left on the PR, where the requester looks for the update.
 # The push already succeeded, so a failure here only needs a log line. Checks are
 # deliberately not awaited: CI runs once the PR is ready and branch protection gates merge.
-mark_ready_if_requested() {
-  [ -n "${SANDBOX_READY:-}" ] || return 0
+mark_ready_if_draft() {
   local is_draft
-  is_draft=$(gh pr view "$PR" --json isDraft -q .isDraft 2>/dev/null || true)
+  if ! is_draft=$(gh pr view "$PR" --json isDraft -q .isDraft 2>/dev/null); then
+    echo "WARNING: could not read whether PR #${PR} is a draft; run: gh pr ready ${PR} if needed" >&2
+    return 0
+  fi
   [ "$is_draft" = true ] || return 0
   if gh pr ready "$PR"; then
     echo "PR #${PR} marked ready for review."
@@ -230,6 +231,7 @@ mark_ready_if_requested() {
   fi
 }
 
+# The reason is also left on the PR, where the requester looks for the update.
 finish_without_changes() {
   local reason
   reason=$(no_changes_reason "$META_FILE")
@@ -306,7 +308,7 @@ if [ -z "$(git status --porcelain)" ]; then
   if [ -n "$NEW_PR_TITLE" ]; then
     gh pr edit "$PR" --title "$NEW_PR_TITLE"
     echo "PR #${PR} title updated to: ${NEW_PR_TITLE}"
-    mark_ready_if_requested
+    mark_ready_if_draft
     exit 0
   fi
   finish_without_changes "no changes produced — PR #${PR} was not updated."
@@ -354,4 +356,4 @@ NEW_BODY=$(CURRENT_BODY="$CURRENT_BODY" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="
   python3 "$MERGE_BODY_HELPER")
 gh pr edit "$PR" --body "$NEW_BODY"
 [ -z "$NEW_PR_TITLE" ] || gh pr edit "$PR" --title "$NEW_PR_TITLE"
-mark_ready_if_requested
+mark_ready_if_draft

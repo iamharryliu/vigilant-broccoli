@@ -14,7 +14,7 @@ VM_CODEX_SIGNED_IN=0
 OPERATION=change
 ARGS=()
 usage() {
-  echo "Usage: pnpm agentic-pr-update [--vm [--agent claude|codex] [--codex-model <m>] [--codex-signed-in]] [--model <model>] [--operation change|fix-ci|resolve-conflicts] [--with-ci-logs] [--ready] <PR_NUMBER_OR_URL> [instruction]" >&2
+  echo "Usage: pnpm agentic-pr-update [--vm [--agent claude|codex] [--codex-model <m>] [--codex-signed-in]] [--model <model>] [--operation change|fix-ci|resolve-conflicts] [--with-ci-logs] <PR_NUMBER_OR_URL> [instruction]" >&2
   echo "  The instruction is required for change, optional extra guidance for fix-ci and not accepted for resolve-conflicts." >&2
   echo "  e.g. pnpm agentic-pr-update 149 \"add input validation to the new route\"" >&2
   echo "       pnpm agentic-pr-update --operation fix-ci 149" >&2
@@ -47,10 +47,6 @@ while [ $# -gt 0 ]; do
       ;;
     --with-ci-logs)
       export SANDBOX_CI_LOGS=1
-      shift
-      ;;
-    --ready)
-      export SANDBOX_READY=1
       shift
       ;;
     --*) usage ;;
@@ -94,7 +90,7 @@ case "$OPERATION" in
 esac
 
 if [ "$VM" = 1 ]; then
-  VM_CODEX_SIGNED_IN="$VM_CODEX_SIGNED_IN" exec bash "$SCRIPT_DIR/solve-vm.sh" "$AGENT_RUNNER" "$MODEL" "$CODEX_MODEL" "" --update "$PR" "$INSTRUCTION" "$OPERATION" "${SANDBOX_CI_LOGS:-}" "${SANDBOX_READY:-}"
+  VM_CODEX_SIGNED_IN="$VM_CODEX_SIGNED_IN" exec bash "$SCRIPT_DIR/solve-vm.sh" "$AGENT_RUNNER" "$MODEL" "$CODEX_MODEL" "" --update "$PR" "$INSTRUCTION" "$OPERATION" "${SANDBOX_CI_LOGS:-}"
 fi
 
 if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
@@ -136,7 +132,6 @@ docker run --rm --init --name "vb-update-pr-$(date +%s)" \
   -e SANDBOX_FIREWALL \
   -e SANDBOX_MERGE_MAIN \
   -e SANDBOX_CI_LOGS \
-  -e SANDBOX_READY \
   -e SANDBOX_FIX_CI \
   -e SANDBOX_ALLOWED_DOMAINS \
   -e SOLVE_MODEL="$MODEL" \

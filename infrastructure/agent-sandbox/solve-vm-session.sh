@@ -34,8 +34,6 @@ run_solve() {
     export UPDATE_PR_VM_HELPER="$run_dir/update-pr-vm-agent.sh"
     SANDBOX_CI_LOGS=$(<"$run_dir/ci-logs")
     export SANDBOX_CI_LOGS
-    SANDBOX_READY=$(<"$run_dir/ready")
-    export SANDBOX_READY
     case "$(<"$run_dir/operation")" in
       fix-ci) export SANDBOX_FIX_CI=1 ;;
       resolve-conflicts) export SANDBOX_MERGE_MAIN=1 ;;
@@ -74,8 +72,8 @@ while [ $# -gt 0 ]; do
   value=$2
   shift 2
   if [ "$flag" = --update ]; then
-    instruction=$1 operation=$2 ci_logs=$3 ready=$4
-    shift 4
+    instruction=$1 operation=$2 ci_logs=$3
+    shift 3
     label="update-pr-${value##*/}"
   elif [ "$flag" = --id ]; then
     label="todo-$value"
@@ -95,7 +93,6 @@ while [ $# -gt 0 ]; do
     printf '%s' "$instruction" > "$run_dir/instruction"
     printf '%s' "$operation" > "$run_dir/operation"
     printf '%s' "$ci_logs" > "$run_dir/ci-logs"
-    printf '%s' "$ready" > "$run_dir/ready"
   fi
   git -C "$REPO" worktree add --quiet --detach "$run_dir/repo" origin/main
   printf -v body '%s; run_solve %q %q %q %q %q %q %q %q' "$(declare -f run_solve)" "$REPO" "$run_dir" "$flag" "$value" "$AGENT" "$MODEL" "$CODEX_MODEL" "$CODEX_SIGNED_IN"
