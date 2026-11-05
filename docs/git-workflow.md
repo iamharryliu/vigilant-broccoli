@@ -8,7 +8,6 @@ Branching, publishing and synchronization conventions for this repository.
 - [Commit message enforcement](#commit-message-enforcement)
 - [Concurrent Agent Sessions](#concurrent-agent-sessions)
 - [Staying Current With `main`](#staying-current-with-main)
-- [Stacked Pull Requests](#stacked-pull-requests)
 
 ## Conventions
 
@@ -20,7 +19,7 @@ Branching, publishing and synchronization conventions for this repository.
 - **PR body:** keep `## Summary` bullets and `## Next steps` checkboxes current for the full PR. Next steps are remaining manual commands, UI checks, CI and merge; if only merging remains, say so. For UI checks, name apps/routes/components, affected shared consumers and expected behavior. Check off only completed work and record blockers. Use the environment's attribution when provided. Update an existing branch PR instead of opening another.
 - **Screenshots:** eligibility, capture, wrapping and section placement follow the [UI task contract](./agent-support.md#task-contract). `pr-screenshots.py --prepare` copies selected captures into tracked assets before the normal commit; its rendering mode verifies the committed bytes and supplies `PR_SCREENSHOTS` to `merge-pr-body.py`. A nonempty value replaces `## Screenshots`; unset preserves the existing section, and an explicitly empty value removes it.
 - **Concerns, suggestions and history:** all publishing flows use `infrastructure/agent-sandbox/merge-pr-body.py` for optional `## Concerns` (risks, limitations, unverified behavior, open questions the reviewer must weigh), `## Suggestions` (optional follow-up work only) and appended `## Agentic Change History` rows (`Date | Source | Command | Prompt | Summary`). Sources are `Local agent (Claude Code)`, `Local agent (Codex)`, `GitHub Actions` or `Docker sandbox (local)`.
-- **Publishing parity:** changes to body sections, `pr_title`/`pr_summary`/`pr_next_steps`/`pr_concerns`/`pr_suggestions`/`pr_screenshots`, fallbacks or history fields must be mirrored across `ship-pr`, sandbox runners, `pr-increments.sh`, `commit-subject.sh` and `merge-pr-body.py`. Search consumers before changing the contract; follow [entry-point parity](./agent-support.md#entry-point-parity).
+- **Publishing parity:** changes to body sections, `pr_title`/`pr_summary`/`pr_next_steps`/`pr_concerns`/`pr_suggestions`/`pr_screenshots`, fallbacks or history fields must be mirrored across `ship-pr`, sandbox runners, `publish-pr.sh`, `commit-subject.sh` and `merge-pr-body.py`. Search consumers before changing the contract; follow [entry-point parity](./agent-support.md#entry-point-parity).
 
 ## Commit message enforcement
 
@@ -45,15 +44,3 @@ Sync when starting work, before pushing and when main moves while a branch is op
 - On a feature branch, merge with `git merge --no-edit origin/main`. A branch whose Markdown tables are still padded (cut before [table compaction](./code-quality-tools.md)) merges with `git merge --no-edit -X renormalize origin/main`, which compacts both sides before comparing them. Never rebase: publishing a rewritten branch would require a forbidden force-push. PRs squash-merge, so these integration commits do not enter main's history.
 - On main, use `git pull --ff-only origin main`; report divergence instead of merging over it.
 - Enable `git rerere` (`git config rerere.enabled true`) to reuse conflict resolutions.
-
-## Stacked Pull Requests
-
-Follow the [increment contract](./agent-support.md#increment-contract). Independent PRs target main; dependent PRs target their prerequisite and carry a `## Stack` merge order.
-
-Squash merges do not preserve commit identity: retargeting a dependent PR to main alone can show the prerequisite's changes again. Advance each dependent in order:
-
-1. After its prerequisite merges, merge `origin/main` into the dependent branch and push normally. Preserve the dependent's changes while incorporating the prerequisite's final content.
-2. Confirm `git diff origin/main HEAD` contains only this increment, then retarget to main if necessary.
-3. Keep the prerequisite's branch until the dependent is advanced, or retarget explicitly before deleting it. Repeat for the next PR.
-
-Never rebase or force-push stack branches. A failed increment is saved as a draft and blocks unpublished dependents; finish it with `pnpm agentic-pr-update <pr> "finish the task"` before merging subsequent work.

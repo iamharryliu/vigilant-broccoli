@@ -11,6 +11,6 @@ Fix a PR number/URL's failing checks. Optional guidance may narrow the failures 
 2. Diagnose from logs and applicable context. Fix causes without weakening checks or unrelated cleanup. Run pre-commit for formatting failures locally; the sandbox runner handles them. Report flakes, outages or missing credentials instead of inventing code changes; with no file change needed, give the reason per [no-change decisions](../../../../docs/agent-support.md#task-contract). A commitlint failure on the PR title needs no file change: locally run `gh pr edit --title`; sandbox runners apply the `pr_title` metadata field.
 3. Re-run affected checks where possible. Report each cause, fix and verification, plus the PR's cumulative result.
 
-Stay on this PR; no increments or follow-up PRs. Local invocation does not authorize publishing; sandbox runners own commits, pushes and PR metadata.
+Stay on this PR; no follow-up PRs. Local invocation does not authorize publishing; sandbox runners own commits, pushes and PR metadata.
 
 Unattended entry point: `pnpm agentic-pr-update --operation fix-ci <pr> ["<instruction>"]`.
