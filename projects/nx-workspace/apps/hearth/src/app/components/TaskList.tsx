@@ -1,7 +1,16 @@
 'use client';
 
 import { KeyboardEvent, useEffect, useState } from 'react';
-import { DndContext } from '@dnd-kit/core';
+import {
+  DndContext,
+  DragEndEvent,
+  PointerSensor,
+  TouchSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import { arrayMove } from '@dnd-kit/sortable';
 import { Settings, Trash2 } from 'lucide-react';
 import {
   Button,
@@ -39,6 +48,13 @@ export function TaskList() {
     setOneOffTasks(loadOneOffTasks());
     setDone(loadDone());
   }, []);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 150, tolerance: 8 },
+    }),
+  );
 
   const isOneOff = (id: string) => oneOffTasks.some(task => task.id === id);
 
@@ -112,6 +128,24 @@ export function TaskList() {
     handleCancelEdit();
   };
 
+  // The list mixes both kinds, so a drop only reorders when both rows belong
+  // to the same one; the moved index is taken from the full array so recurring
+  // tasks not due today keep their place.
+  const handleDragEnd = ({ active, over }: DragEndEvent) => {
+    if (!over || active.id === over.id) return;
+    const move = <T extends { id: string }>(list: T[]) =>
+      arrayMove(
+        list,
+        list.findIndex(task => task.id === active.id),
+        list.findIndex(task => task.id === over.id),
+      );
+    if (isOneOff(String(active.id)) && isOneOff(String(over.id))) {
+      updateOneOff(move(oneOffTasks));
+    } else if (!isOneOff(String(active.id)) && !isOneOff(String(over.id))) {
+      handleTasksChange(move(tasks));
+    }
+  };
+
   const handleTasksChange = (next: RecurringTask[]) => {
     setTasks(next);
     saveTasks(next);
@@ -164,9 +198,15 @@ export function TaskList() {
           <Settings size={16} />
         </Button>
       </div>
-      <DndContext>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
         <CheckList
           items={items}
+          enableDragDrop
+          listId="recurring-tasks"
           editingItemId={editingId}
           editingItemTitle={editingTitle}
           onToggleCheck={handleToggle}
