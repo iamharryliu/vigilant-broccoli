@@ -26,16 +26,17 @@ const fit = new FitAddon.FitAddon();
 term.loadAddon(fit);
 term.open(document.getElementById('terminal'));
 
+const keysSheet = document.getElementById('keys-sheet');
+const keysList = document.getElementById('keys-list');
+const KEYS_ACTION = { OPEN: 'keys', CLOSE: 'close', PASTE: 'paste' };
+
 const modifiers = { ctrl: false, alt: false };
-const toggleButtons = Object.fromEntries(
-  [...toolbar.querySelectorAll('[data-toggle]')].map(button => [
-    button.dataset.toggle,
-    button,
-  ]),
-);
+// Also matches the copies in the keys list, so both show the same state.
 const setModifier = (name, active) => {
   modifiers[name] = active;
-  toggleButtons[name].setAttribute('aria-pressed', String(active));
+  app
+    .querySelectorAll(`[data-toggle="${name}"]`)
+    .forEach(button => button.setAttribute('aria-pressed', String(active)));
 };
 const clearModifiers = () => {
   setModifier('ctrl', false);
@@ -115,11 +116,22 @@ toolbar.addEventListener('pointerdown', event => {
 toolbar.addEventListener('contextmenu', event => event.preventDefault());
 document.addEventListener('visibilitychange', stopRepeat);
 
-toolbar.addEventListener('click', async event => {
-  const button = event.target.closest('button');
-  if (!button) return;
+// Built from the toolbar buttons so the two cannot drift apart.
+keysList.replaceChildren(
+  ...[...toolbar.querySelectorAll('button')]
+    .filter(button => button.dataset.action !== KEYS_ACTION.OPEN)
+    .map(button => button.cloneNode(true)),
+);
+
+const setKeysSheetOpen = open => {
+  keysSheet.hidden = !open;
+};
+
+const handleButton = async button => {
   const { key, toggle, ctrl, action } = button.dataset;
-  if (toggle) {
+  if (action === KEYS_ACTION.OPEN) {
+    setKeysSheetOpen(true);
+  } else if (toggle) {
     setModifier(toggle, !modifiers[toggle]);
   } else if (key) {
     if (!repeated) sendKey(key);
@@ -128,7 +140,7 @@ toolbar.addEventListener('click', async event => {
   } else if (ctrl) {
     sendInput(CTRL_SHORTCUT[ctrl.toUpperCase()]);
     clearModifiers();
-  } else if (action === 'paste') {
+  } else if (action === KEYS_ACTION.PASTE) {
     try {
       term.paste(await navigator.clipboard.readText());
     } catch {
@@ -138,7 +150,47 @@ toolbar.addEventListener('click', async event => {
   }
   if (DISMISS_KEYBOARD_KEYS.has(key)) term.blur();
   else if (terminalWasFocused) term.focus();
+};
+
+toolbar.addEventListener('click', event => {
+  const button = event.target.closest('button');
+  if (button) handleButton(button);
 });
+
+// Same pointerdown handling as the toolbar, without hold-to-repeat.
+keysSheet.addEventListener('pointerdown', event => {
+  terminalWasFocused = document.activeElement === term.textarea;
+  event.preventDefault();
+});
+keysSheet.addEventListener('contextmenu', event => event.preventDefault());
+
+keysSheet.addEventListener('click', event => {
+  const button = event.target.closest('button');
+  if (
+    event.target === keysSheet ||
+    button?.dataset.action === KEYS_ACTION.CLOSE
+  ) {
+    setKeysSheetOpen(false);
+    if (terminalWasFocused) term.focus();
+    return;
+  }
+  if (!button) return;
+  handleButton(button);
+  // Ctrl and Alt stay open so a modifier can be chosen before the key.
+  if (!button.dataset.toggle) setKeysSheetOpen(false);
+});
+
+// Capture phase so the terminal does not also receive the Escape.
+document.addEventListener(
+  'keydown',
+  event => {
+    if (event.key !== 'Escape' || keysSheet.hidden) return;
+    event.preventDefault();
+    event.stopPropagation();
+    setKeysSheetOpen(false);
+  },
+  true,
+);
 
 const showStatus = text => {
   status.textContent = text ?? '';
