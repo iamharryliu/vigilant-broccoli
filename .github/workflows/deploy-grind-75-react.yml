@@ -6,6 +6,7 @@ on:
     branches: [main, production]
     paths:
       - projects/grind-75/**
+      - notes/tech/software/general/coding-challenges/grind-75-complexities.md
       - .github/workflows/deploy-grind-75-react.yml
   workflow_dispatch:
     inputs:
