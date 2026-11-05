@@ -215,6 +215,7 @@ Useful infra-level CLI commands, runnable via `pnpm run <script>`.
   agentic-pr-update [--vm [--agent codex] [--codex-model <m>] [--codex-signed-in]] [--operation <op>] <pr> <instruction>  Headlessly apply a free-text change to an existing PR's branch in an ephemeral sandbox container or detached code-server VM session (checks out the branch, runs the agent on your instruction, runs pre-commit, and pushes the update); accepts a PR number or URL (sonnet; --model <m> to override)
                                 (--operation fix-ci [<instruction>] fixes a PR's failing CI from its check logs; --operation resolve-conflicts merges origin/main and resolves conflicts, taking no instruction)
                                 (--with-ci-logs, or the Actions with_ci_logs input, waits up to 10 minutes for running checks, then feeds the PR's failing check summary and failed-step logs to the agent; a plain change still lists non-passing check names, e.g. agentic-pr-update --with-ci-logs 149 "fix the failing checks")
+                                (every run that pushes marks a still-draft PR ready afterwards, without waiting for checks; no-change runs do not, and a gh pr ready failure is logged, not fatal)
 
 🐙 GITHUB
   gh:actions:deploy           Trigger deploy workflow

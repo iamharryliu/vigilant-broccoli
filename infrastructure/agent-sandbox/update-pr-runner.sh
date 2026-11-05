@@ -193,7 +193,7 @@ ${TODO_RULES}
 - When finished, write $META_FILE containing only a JSON object with these fields (strings unless noted):
   - commit_type: one of ${COMMIT_TYPES// /, }
   - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
-  - pr_title: only when a failing check is about the PR title itself (e.g. commitlint), the corrected title in the form "<committype>(<scope>): <Message>." — otherwise omit it; the calling script applies it, so make no file changes for a title-only failure
+  - pr_title: only when a failing check is about the PR title itself (e.g. commitlint) or the instruction explicitly asks for a new title, the corrected title in the form "<committype>(<scope>): <Message>." — otherwise omit it; the calling script applies it, so make no file changes for a title-only failure
   - commit_message: capitalized, concise, focused on why not what, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
   - pr_summary: markdown bullet points replacing the PR's "## Summary" section — rewrite it to describe the PR's full, cumulative state (prior work plus this change), not just this change
@@ -213,6 +213,22 @@ fi
 agent_invoke() {
   claude -p "$1" "${permission_args[@]}" --model "$MODEL" \
     --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
+}
+
+# The push already succeeded, so a failure here only needs a log line. Checks are
+# deliberately not awaited: CI runs once the PR is ready and branch protection gates merge.
+mark_ready_if_draft() {
+  local is_draft
+  if ! is_draft=$(gh pr view "$PR" --json isDraft -q .isDraft 2>/dev/null); then
+    echo "WARNING: could not read whether PR #${PR} is a draft; run: gh pr ready ${PR} if needed" >&2
+    return 0
+  fi
+  [ "$is_draft" = true ] || return 0
+  if gh pr ready "$PR"; then
+    echo "PR #${PR} marked ready for review."
+  else
+    echo "WARNING: could not mark PR #${PR} ready for review; run: gh pr ready ${PR}" >&2
+  fi
 }
 
 # The reason is also left on the PR, where the requester looks for the update.
@@ -292,6 +308,7 @@ if [ -z "$(git status --porcelain)" ]; then
   if [ -n "$NEW_PR_TITLE" ]; then
     gh pr edit "$PR" --title "$NEW_PR_TITLE"
     echo "PR #${PR} title updated to: ${NEW_PR_TITLE}"
+    mark_ready_if_draft
     exit 0
   fi
   finish_without_changes "no changes produced — PR #${PR} was not updated."
@@ -339,3 +356,4 @@ NEW_BODY=$(CURRENT_BODY="$CURRENT_BODY" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="
   python3 "$MERGE_BODY_HELPER")
 gh pr edit "$PR" --body "$NEW_BODY"
 [ -z "$NEW_PR_TITLE" ] || gh pr edit "$PR" --title "$NEW_PR_TITLE"
+mark_ready_if_draft
