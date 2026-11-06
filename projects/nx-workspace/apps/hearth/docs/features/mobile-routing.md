@@ -7,7 +7,7 @@ Desktop-only dashboards render their mobile default child in place on mobile (`u
 - `/` — mobile renders the Whiteboard body (first mobile child of the Home nav link); desktop renders the dashboard
 - `/kitchen-planner` — mobile renders the Grocery body (first mobile child of the Kitchen Planner nav link); desktop renders the dashboard
 - `/where-is?item=<id>` — mobile renders the detail body in place; the desktop redirect in `where-is/[id]/page.tsx` to this URL stays
-- Other mobile children (In Season, Kitchen Chores, Kitchen Notes, Kitchen Projects, Kitchen Events, Food Assistant, Calendar) are real routes reached by the sidebar's `Link`s
+- Other mobile children (In Season, Kitchen Chores, Kitchen Notes, Kitchen Projects, Kitchen Events, Food Assistant, Tasks, Calendar) are real routes reached by the sidebar's `Link`s
 
 ## Architecture
 

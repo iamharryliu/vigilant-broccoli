@@ -2,7 +2,7 @@
 
 ## Overview
 
-The home page's Tasks tab (`src/app/components/TaskList.tsx`) lists the selected home's recurring tasks due today followed by its one-off tasks, shared by every accepted member.
+The home page's Tasks tab (`src/app/components/TaskList.tsx`) lists the selected home's recurring tasks due today followed by its one-off tasks, shared by every accepted member. On mobile the same list is the `/tasks` page, reached from the Home group in the sidebar.
 
 - Recurring tasks repeat on chosen weekdays and are managed in `TaskManagerDialog`; a check-off counts for the member's local day only, so the task reappears unchecked the next day it is due.
 - One-off tasks are added inline, renamed by clicking them and deleted from the row's ellipsis menu.
