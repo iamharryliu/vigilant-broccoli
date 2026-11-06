@@ -38,6 +38,11 @@ const HOMES_COPY = {
   },
 };
 
+const DELETE_HOME_CONFIRMATION = {
+  title: 'Delete Home',
+  description: 'Delete this home? Everything stored under it is removed too.',
+};
+
 const HomeListItem = ({ home }: { home: Home }) => {
   const { selectedHomeId } = useHome();
   const isSelected = home.id === selectedHomeId;
@@ -250,6 +255,7 @@ export default function UserSettingsPage() {
           canShowEllipsis={home => Boolean(home.isOwner)}
           onItemClick={home => setSelectedHomeId(home.id)}
           copy={HOMES_COPY}
+          deleteConfirmation={DELETE_HOME_CONFIRMATION}
           isCards
         />
       </section>
