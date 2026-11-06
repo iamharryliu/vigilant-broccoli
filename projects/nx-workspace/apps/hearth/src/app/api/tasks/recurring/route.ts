@@ -5,9 +5,7 @@ import {
 } from '../../../../../libs/supabase-server';
 import {
   RECURRING_TASKS_TABLE,
-  RECURRING_TASK_SEEDS_TABLE,
   badRequest,
-  insertDefaultTasks,
   serverError,
   toRecurringTask,
 } from '../../../../lib/tasks-route';
@@ -20,25 +18,7 @@ const getSupabase = (req: NextRequest) =>
 export const GET = async (req: NextRequest) => {
   const homeId = new URL(req.url).searchParams.get('homeId');
   if (!homeId) return badRequest('Missing homeId');
-  const supabase = getSupabase(req);
-
-  // Only the request whose insert wins the primary key gets a row back, so
-  // defaults are seeded once per home, even when every task is later deleted.
-  const { data: seeded, error: seedError } = await supabase
-    .from(RECURRING_TASK_SEEDS_TABLE)
-    .upsert(
-      { home_id: homeId },
-      { onConflict: 'home_id', ignoreDuplicates: true },
-    )
-    .select();
-  if (seedError) return serverError(seedError.message);
-
-  if (seeded?.length) {
-    const { error } = await insertDefaultTasks(supabase, homeId);
-    if (error) return serverError(error.message);
-  }
-
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase(req)
     .from(RECURRING_TASKS_TABLE)
     .select('*')
     .eq('home_id', homeId)

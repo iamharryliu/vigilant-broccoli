@@ -111,8 +111,19 @@ export function TaskList() {
     })),
   ];
 
-  const completedCount = items.filter(item => item.checked).length;
-  const progress = items.length ? (completedCount / items.length) * 100 : 0;
+  // One-off tasks completed on an earlier day stay listed but are left out of
+  // today's progress.
+  const todayYmd = toYmd(today);
+  const progressItems = items.filter(item => {
+    const oneOff = oneOffTasks.find(task => task.id === item.id);
+    return (
+      !oneOff?.completedAt || toYmd(new Date(oneOff.completedAt)) === todayYmd
+    );
+  });
+  const completedCount = progressItems.filter(item => item.checked).length;
+  const progress = progressItems.length
+    ? (completedCount / progressItems.length) * 100
+    : 0;
 
   const updateOneOff = (id: string, changes: Partial<ChecklistItem>) =>
     setOneOffTasks(prev =>
@@ -263,7 +274,7 @@ export function TaskList() {
       <div className="flex items-center gap-3">
         <Progress value={progress} aria-label="Tasks completed" />
         <Text size="1" color="gray" className="shrink-0">
-          {completedCount}/{items.length}
+          {completedCount}/{progressItems.length}
         </Text>
       </div>
       {IS_DEV && (

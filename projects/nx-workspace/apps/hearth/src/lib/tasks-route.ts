@@ -5,7 +5,6 @@ import { DEFAULT_TASKS } from '../app/components/tasks.utils';
 export const RECURRING_TASKS_TABLE = 'home_recurring_tasks';
 export const RECURRING_TASK_COMPLETIONS_TABLE =
   'home_recurring_task_completions';
-export const RECURRING_TASK_SEEDS_TABLE = 'home_recurring_task_seeds';
 export const ONE_OFF_TASKS_TABLE = 'home_one_off_tasks';
 
 export const toRecurringTask = (row: Record<string, unknown>) => ({

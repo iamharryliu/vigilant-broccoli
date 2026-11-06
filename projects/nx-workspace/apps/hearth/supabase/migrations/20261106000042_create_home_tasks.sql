@@ -30,21 +30,12 @@ create table home_one_off_tasks (
   updated_at timestamptz not null default now()
 );
 
--- One row per home once the default recurring tasks were seeded, so deleting
--- every recurring task does not re-seed them and concurrent first loads seed
--- only once (the insert that wins the primary key seeds).
-create table home_recurring_task_seeds (
-  home_id bigint primary key references homes(id) on delete cascade,
-  seeded_at timestamptz not null default now()
-);
-
 create index home_recurring_task_completions_home_date_idx
   on home_recurring_task_completions (home_id, date);
 
 alter table home_recurring_tasks enable row level security;
 alter table home_recurring_task_completions enable row level security;
 alter table home_one_off_tasks enable row level security;
-alter table home_recurring_task_seeds enable row level security;
 
 create policy "Users can manage recurring tasks for their homes"
   on home_recurring_tasks
@@ -70,17 +61,6 @@ create policy "Users can manage recurring task completions for their homes"
 
 create policy "Users can manage one-off tasks for their homes"
   on home_one_off_tasks
-  for all
-  using (
-    home_id in (
-      select id from homes where user_id = auth.uid()
-      union
-      select home_id from home_members where user_id = auth.uid() and status = 'accepted'
-    )
-  );
-
-create policy "Users can manage recurring task seeds for their homes"
-  on home_recurring_task_seeds
   for all
   using (
     home_id in (

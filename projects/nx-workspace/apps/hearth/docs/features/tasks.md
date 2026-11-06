@@ -7,7 +7,7 @@ The home page's Tasks tab (`src/app/components/TaskList.tsx`) lists the selected
 - Recurring tasks repeat on chosen weekdays and are managed in `TaskManagerDialog`; a check-off counts for the member's local day only, so the task reappears unchecked the next day it is due.
 - One-off tasks are added inline, renamed by clicking them and deleted from the row.
 - Drag-to-reorder works within the same kind; recurring tasks not due today keep their place.
-- A home's first load seeds `DEFAULT_TASKS` from `tasks.utils.ts`; deleting every task does not re-seed. The dev-only "Reset recurring tasks to default" button replaces the home's recurring tasks with the defaults.
+- A new home starts with no tasks. Only the dev-only "Reset recurring tasks to default" button loads `DEFAULT_TASKS` from `tasks.utils.ts`, replacing the home's recurring tasks.
 - The former localStorage keys (`home:recurring-tasks`, `home:recurring-tasks-done`, `home:one-off-tasks`) are not imported; the component removes them from the browser.
 
 ## Data
@@ -15,13 +15,12 @@ The home page's Tasks tab (`src/app/components/TaskList.tsx`) lists the selected
 - `home_recurring_tasks`: `id`, `home_id`, `title`, `days` (`smallint[]`, 0 = Sunday as `Date.getDay`), `position`
 - `home_recurring_task_completions`: `id`, `task_id` (cascade delete), `home_id`, `date` (client-local `YYYY-MM-DD`), unique (`task_id`, `date`)
 - `home_one_off_tasks`: checklist shape (`name`, `completed`, `completed_at`, `position`, `home_id`)
-- `home_recurring_task_seeds`: `home_id` primary key, marks homes whose defaults were seeded
 
-Every table but the seeds marker is exported under the Tasks option of [Export Data](./export-data.md).
+Every table is exported under the Tasks option of [Export Data](./export-data.md).
 
 ## Routes
 
-- `GET /api/tasks/recurring?homeId=` — seed defaults once, then list by `position`
+- `GET /api/tasks/recurring?homeId=` — list by `position`
 - `POST /api/tasks/recurring` — create (`homeId`, `title`, `days`), appended last
 - `PATCH /api/tasks/recurring` — update `title`/`days` by `id`, or reorder with `order: [{ id, position }]`
 - `DELETE /api/tasks/recurring` — delete by `id`
