@@ -20,6 +20,7 @@ import {
   Progress,
   Text,
 } from '@vigilant-broccoli/react-lib';
+import { IS_DEV } from '../app.consts';
 import { TaskManagerDialog } from './TaskManagerDialog';
 import {
   DEFAULT_TASKS,
@@ -76,6 +77,11 @@ export function TaskList() {
   const updateOneOff = (next: OneOffTask[]) => {
     setOneOffTasks(next);
     saveOneOffTasks(next);
+  };
+
+  const resetToDefaultTasks = () => {
+    setTasks(DEFAULT_TASKS);
+    saveTasks(DEFAULT_TASKS);
   };
 
   const handleAdd = () => {
@@ -178,6 +184,16 @@ export function TaskList() {
           {completedCount}/{items.length}
         </Text>
       </div>
+      {IS_DEV && (
+        <Button
+          variant="outline"
+          size="sm"
+          className="self-start"
+          onClick={resetToDefaultTasks}
+        >
+          Reset recurring tasks to default
+        </Button>
+      )}
       <div className="flex gap-2">
         <Input
           className="grow"
