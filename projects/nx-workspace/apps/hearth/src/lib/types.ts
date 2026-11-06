@@ -121,6 +121,8 @@ export interface ChecklistItem {
   homeId: number;
   createdAt: string;
   updatedAt: string;
+  /** Only returned by assignable checklists (one-off tasks). */
+  assignedUserId?: string | null;
 }
 
 export const KITCHEN_PROJECT_KINDS = [

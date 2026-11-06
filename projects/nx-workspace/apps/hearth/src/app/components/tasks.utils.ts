@@ -3,9 +3,20 @@ export type RecurringTask = {
   title: string;
   /** Weekdays the task shows on, 0 = Sunday (Date.getDay). */
   days: number[];
+  assignedUserId?: string | null;
 };
 
-export type DefaultTask = Omit<RecurringTask, 'id'>;
+export type DefaultTask = Omit<RecurringTask, 'id' | 'assignedUserId'>;
+
+/** An accepted home member (owner included) a task can be assigned to. */
+export type TaskAssignee = {
+  userId: string;
+  email: string;
+  displayName: string | null;
+};
+
+export const getAssigneeLabel = ({ displayName, email }: TaskAssignee) =>
+  displayName || email;
 
 export const ALL_DAYS = [0, 1, 2, 3, 4, 5, 6];
 
