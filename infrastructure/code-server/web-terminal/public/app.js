@@ -119,7 +119,11 @@ document.addEventListener('visibilitychange', stopRepeat);
 // Built from the toolbar buttons so the two cannot drift apart.
 keysList.replaceChildren(
   ...[...toolbar.querySelectorAll('button')]
-    .filter(button => button.dataset.action !== KEYS_ACTION.OPEN)
+    .filter(
+      button =>
+        button.dataset.action !== KEYS_ACTION.OPEN &&
+        !('barOnly' in button.dataset),
+    )
     .map(button => button.cloneNode(true)),
 );
 
