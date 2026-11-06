@@ -64,6 +64,12 @@ body {
   display: none;
 }
 
+#keys-list button[data-text] {
+  grid-column: 1 / -1;
+  min-height: 44px;
+  font-size: 15px;
+}
+
 #toolbar button:active,
 #toolbar button[aria-pressed='true'],
 #keys-list button:active,

@@ -128,7 +128,7 @@ const setKeysSheetOpen = open => {
 };
 
 const handleButton = async button => {
-  const { key, toggle, ctrl, action } = button.dataset;
+  const { key, toggle, ctrl, text, action } = button.dataset;
   if (action === KEYS_ACTION.OPEN) {
     setKeysSheetOpen(true);
   } else if (toggle) {
@@ -139,6 +139,10 @@ const handleButton = async button => {
     clearModifiers();
   } else if (ctrl) {
     sendInput(CTRL_SHORTCUT[ctrl.toUpperCase()]);
+    clearModifiers();
+  } else if (text) {
+    // No Enter, so arguments can be added before running.
+    sendInput(text);
     clearModifiers();
   } else if (action === KEYS_ACTION.PASTE) {
     try {
