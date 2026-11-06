@@ -1,6 +1,6 @@
 'use client';
 
-import { KeyboardEvent, useEffect, useState } from 'react';
+import { KeyboardEvent, useCallback, useEffect, useState } from 'react';
 import {
   DndContext,
   DragEndEvent,
@@ -20,24 +20,33 @@ import {
   Progress,
   Text,
 } from '@vigilant-broccoli/react-lib';
+import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { IS_DEV } from '../app.consts';
-import { TaskManagerDialog } from './TaskManagerDialog';
+import { useAuth } from '../providers/auth-provider';
+import { useHome } from '../providers/home-provider';
+import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
+import { ChecklistItem } from '../../lib/types';
+import { toYmd } from '../../lib/date-utils';
+import { TaskDraft, TaskManagerDialog } from './TaskManagerDialog';
 import {
-  DEFAULT_TASKS,
-  OneOffTask,
+  LEGACY_TASK_STORAGE_KEYS,
   RecurringTask,
+  TASKS_API,
   isDueOn,
-  loadDone,
-  loadOneOffTasks,
-  loadTasks,
-  saveDone,
-  saveOneOffTasks,
-  saveTasks,
 } from './tasks.utils';
 
+const toPositions = (list: { id: string }[]) =>
+  list.map(({ id }, position) => ({ id, position }));
+
 export function TaskList() {
-  const [tasks, setTasks] = useState<RecurringTask[]>(DEFAULT_TASKS);
-  const [oneOffTasks, setOneOffTasks] = useState<OneOffTask[]>([]);
+  const session = useAuth();
+  const { selectedHomeId: homeId } = useHome();
+  const authHeader = useAuthHeader();
+  const jsonHeaders = useJsonAuthHeaders();
+  const token = session?.access_token ?? '';
+
+  const [tasks, setTasks] = useState<RecurringTask[]>([]);
+  const [oneOffTasks, setOneOffTasks] = useState<ChecklistItem[]>([]);
   const [done, setDone] = useState<string[]>([]);
   const [managerOpen, setManagerOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -45,10 +54,30 @@ export function TaskList() {
   const [editingTitle, setEditingTitle] = useState('');
 
   useEffect(() => {
-    setTasks(loadTasks());
-    setOneOffTasks(loadOneOffTasks());
-    setDone(loadDone());
+    LEGACY_TASK_STORAGE_KEYS.forEach(key => localStorage.removeItem(key));
   }, []);
+
+  const fetchTasks = useCallback(async () => {
+    if (!homeId || !token) return;
+    const headers = await authHeader();
+    const [recurring, oneOff, completions] = await Promise.all(
+      [
+        `${TASKS_API.RECURRING}?homeId=${homeId}`,
+        `${TASKS_API.ONE_OFF}?homeId=${homeId}`,
+        `${TASKS_API.COMPLETIONS}?homeId=${homeId}&date=${toYmd(new Date())}`,
+      ].map(async url => (await fetch(url, { headers })).json()),
+    );
+    setTasks(Array.isArray(recurring) ? recurring : []);
+    setOneOffTasks(Array.isArray(oneOff) ? oneOff : []);
+    setDone(Array.isArray(completions) ? completions : []);
+  }, [homeId, token, authHeader]);
+
+  useEffect(() => {
+    setTasks([]);
+    setOneOffTasks([]);
+    setDone([]);
+    fetchTasks();
+  }, [fetchTasks]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
@@ -56,6 +85,13 @@ export function TaskList() {
       activationConstraint: { delay: 150, tolerance: 8 },
     }),
   );
+
+  const send = async (url: string, method: string, body: unknown) =>
+    fetch(url, {
+      method,
+      headers: await jsonHeaders(),
+      body: JSON.stringify(body),
+    });
 
   const isOneOff = (id: string) => oneOffTasks.some(task => task.id === id);
 
@@ -68,46 +104,79 @@ export function TaskList() {
         title: task.title,
         checked: done.includes(task.id),
       })),
-    ...oneOffTasks,
+    ...oneOffTasks.map(task => ({
+      id: task.id,
+      title: task.name,
+      checked: task.completed,
+    })),
   ];
 
-  const completedCount = items.filter(item => item.checked).length;
-  const progress = items.length ? (completedCount / items.length) * 100 : 0;
+  // One-off tasks completed on an earlier day stay listed but are left out of
+  // today's progress.
+  const todayYmd = toYmd(today);
+  const progressItems = items.filter(item => {
+    const oneOff = oneOffTasks.find(task => task.id === item.id);
+    return (
+      !oneOff?.completedAt || toYmd(new Date(oneOff.completedAt)) === todayYmd
+    );
+  });
+  const completedCount = progressItems.filter(item => item.checked).length;
+  const progress = progressItems.length
+    ? (completedCount / progressItems.length) * 100
+    : 0;
 
-  const updateOneOff = (next: OneOffTask[]) => {
-    setOneOffTasks(next);
-    saveOneOffTasks(next);
+  const updateOneOff = (id: string, changes: Partial<ChecklistItem>) =>
+    setOneOffTasks(prev =>
+      prev.map(task => (task.id === id ? { ...task, ...changes } : task)),
+    );
+
+  const resetToDefaultTasks = async () => {
+    if (!homeId) return;
+    const res = await send(TASKS_API.RECURRING_RESET, HTTP_METHOD.POST, {
+      homeId,
+    });
+    const reset = await res.json();
+    if (Array.isArray(reset)) {
+      setTasks(reset);
+      setDone([]);
+    }
   };
 
-  const resetToDefaultTasks = () => {
-    setTasks(DEFAULT_TASKS);
-    saveTasks(DEFAULT_TASKS);
-  };
-
-  const handleAdd = () => {
-    const title = newTitle.trim();
-    if (!title) return;
-    updateOneOff([
-      ...oneOffTasks,
-      { id: crypto.randomUUID(), title, checked: false },
-    ]);
+  const handleAdd = async () => {
+    const name = newTitle.trim();
+    if (!name || !homeId) return;
     setNewTitle('');
+    const res = await send(TASKS_API.ONE_OFF, HTTP_METHOD.POST, {
+      name,
+      homeId,
+    });
+    const created = await res.json();
+    if (created?.id) setOneOffTasks(prev => [...prev, created]);
   };
 
   const handleToggle = (item: CheckListItem) => {
+    const completed = !item.checked;
     if (isOneOff(item.id)) {
-      updateOneOff(
-        oneOffTasks.map(task =>
-          task.id === item.id ? { ...task, checked: !item.checked } : task,
-        ),
-      );
+      updateOneOff(item.id, {
+        completed,
+        completedAt: completed ? new Date().toISOString() : null,
+      });
+      send(TASKS_API.ONE_OFF, HTTP_METHOD.PATCH, { id: item.id, completed });
       return;
     }
-    const next = item.checked
-      ? done.filter(id => id !== item.id)
-      : [...done, item.id];
-    setDone(next);
-    saveDone(next);
+    setDone(prev =>
+      completed ? [...prev, item.id] : prev.filter(id => id !== item.id),
+    );
+    send(TASKS_API.COMPLETIONS, HTTP_METHOD.POST, {
+      taskId: item.id,
+      date: toYmd(new Date()),
+      completed,
+    });
+  };
+
+  const handleDeleteOneOff = (id: string) => {
+    setOneOffTasks(prev => prev.filter(task => task.id !== id));
+    send(TASKS_API.ONE_OFF, HTTP_METHOD.DELETE, { id });
   };
 
   const handleStartEdit = (item: CheckListItem) => {
@@ -123,13 +192,10 @@ export function TaskList() {
   };
 
   const handleSaveEdit = () => {
-    const title = editingTitle.trim();
-    if (editingId && title) {
-      updateOneOff(
-        oneOffTasks.map(task =>
-          task.id === editingId ? { ...task, title } : task,
-        ),
-      );
+    const name = editingTitle.trim();
+    if (editingId && name) {
+      updateOneOff(editingId, { name });
+      send(TASKS_API.ONE_OFF, HTTP_METHOD.PATCH, { id: editingId, name });
     }
     handleCancelEdit();
   };
@@ -146,15 +212,40 @@ export function TaskList() {
         list.findIndex(task => task.id === over.id),
       );
     if (isOneOff(String(active.id)) && isOneOff(String(over.id))) {
-      updateOneOff(move(oneOffTasks));
+      const next = move(oneOffTasks);
+      setOneOffTasks(next);
+      send(TASKS_API.ONE_OFF, HTTP_METHOD.PATCH, { order: toPositions(next) });
     } else if (!isOneOff(String(active.id)) && !isOneOff(String(over.id))) {
-      handleTasksChange(move(tasks));
+      const next = move(tasks);
+      setTasks(next);
+      send(TASKS_API.RECURRING, HTTP_METHOD.PATCH, {
+        order: toPositions(next),
+      });
     }
   };
 
-  const handleTasksChange = (next: RecurringTask[]) => {
-    setTasks(next);
-    saveTasks(next);
+  const handleSaveTask = async ({ id, title, days }: TaskDraft) => {
+    if (id) {
+      setTasks(prev =>
+        prev.map(task => (task.id === id ? { ...task, title, days } : task)),
+      );
+      send(TASKS_API.RECURRING, HTTP_METHOD.PATCH, { id, title, days });
+      return;
+    }
+    if (!homeId) return;
+    const res = await send(TASKS_API.RECURRING, HTTP_METHOD.POST, {
+      homeId,
+      title,
+      days,
+    });
+    const created = await res.json();
+    if (created?.id) setTasks(prev => [...prev, created]);
+  };
+
+  const handleDeleteTask = (id: string) => {
+    setTasks(prev => prev.filter(task => task.id !== id));
+    setDone(prev => prev.filter(doneId => doneId !== id));
+    send(TASKS_API.RECURRING, HTTP_METHOD.DELETE, { id });
   };
 
   const onNewKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -169,19 +260,21 @@ export function TaskList() {
         aria-label={`Delete ${item.title}`}
         onClick={e => {
           e.stopPropagation();
-          updateOneOff(oneOffTasks.filter(task => task.id !== item.id));
+          handleDeleteOneOff(item.id);
         }}
       >
         <Trash2 size={14} />
       </Button>
     ) : null;
 
+  if (!homeId) return null;
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-3">
         <Progress value={progress} aria-label="Tasks completed" />
         <Text size="1" color="gray" className="shrink-0">
-          {completedCount}/{items.length}
+          {completedCount}/{progressItems.length}
         </Text>
       </div>
       {IS_DEV && (
@@ -243,7 +336,8 @@ export function TaskList() {
         open={managerOpen}
         onOpenChange={setManagerOpen}
         tasks={tasks}
-        onChange={handleTasksChange}
+        onSave={handleSaveTask}
+        onDelete={handleDeleteTask}
       />
     </div>
   );

@@ -1,11 +1,11 @@
-import { toYmd } from '../../lib/date-utils';
-
 export type RecurringTask = {
   id: string;
   title: string;
   /** Weekdays the task shows on, 0 = Sunday (Date.getDay). */
   days: number[];
 };
+
+export type DefaultTask = Omit<RecurringTask, 'id'>;
 
 export const ALL_DAYS = [0, 1, 2, 3, 4, 5, 6];
 
@@ -23,11 +23,7 @@ export const WEEKDAYS = [
 export const isEveryDay = (days: number[]) =>
   ALL_DAYS.every(day => days.includes(day));
 
-const TASKS_STORAGE_KEY = 'home:recurring-tasks';
-const DONE_STORAGE_KEY = 'home:recurring-tasks-done';
-
-const task = (title: string, days: number[] = ALL_DAYS): RecurringTask => ({
-  id: title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+const task = (title: string, days: number[] = ALL_DAYS): DefaultTask => ({
   title,
   days,
 });
@@ -36,7 +32,7 @@ const MONDAY = 1;
 const WEDNESDAY = 3;
 const FRIDAY = 5;
 
-export const DEFAULT_TASKS: RecurringTask[] = [
+export const DEFAULT_TASKS: DefaultTask[] = [
   task('Clear out dishwasher'),
   task('Morning dog walk'),
   task('Feed Niko breakfast'),
@@ -60,49 +56,17 @@ export const describeDays = (days: number[]) =>
         .map(({ label }) => label)
         .join(', ');
 
-const readJson = <T>(key: string): T | null => {
-  try {
-    return JSON.parse(localStorage.getItem(key) ?? 'null');
-  } catch {
-    return null;
-  }
+export const TASKS_API = {
+  RECURRING: '/api/tasks/recurring',
+  RECURRING_RESET: '/api/tasks/recurring/reset',
+  COMPLETIONS: '/api/tasks/completions',
+  ONE_OFF: '/api/tasks/one-off',
 };
 
-// Tasks saved before recurrence became a day list carry `recurrence: 'daily'`
-// with no days.
-export const loadTasks = (): RecurringTask[] =>
-  readJson<(Omit<RecurringTask, 'days'> & { days?: number[] })[]>(
-    TASKS_STORAGE_KEY,
-  )?.map(task => ({
-    ...task,
-    days:
-      (task as { recurrence?: string }).recurrence === 'daily'
-        ? ALL_DAYS
-        : (task.days ?? ALL_DAYS),
-  })) ?? DEFAULT_TASKS;
-
-export const saveTasks = (tasks: RecurringTask[]) =>
-  localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
-
-// Only today's completions are kept, so every task reappears unchecked the
-// next day it is due.
-export const loadDone = (): string[] => {
-  const stored = readJson<{ date: string; done: string[] }>(DONE_STORAGE_KEY);
-  return stored?.date === toYmd(new Date()) ? stored.done : [];
-};
-
-export const saveDone = (done: string[]) =>
-  localStorage.setItem(
-    DONE_STORAGE_KEY,
-    JSON.stringify({ date: toYmd(new Date()), done }),
-  );
-
-export type OneOffTask = { id: string; title: string; checked: boolean };
-
-const ONE_OFF_STORAGE_KEY = 'home:one-off-tasks';
-
-export const loadOneOffTasks = (): OneOffTask[] =>
-  readJson<OneOffTask[]>(ONE_OFF_STORAGE_KEY) ?? [];
-
-export const saveOneOffTasks = (tasks: OneOffTask[]) =>
-  localStorage.setItem(ONE_OFF_STORAGE_KEY, JSON.stringify(tasks));
+// Tasks lived in localStorage before they moved to Supabase; the keys are
+// removed once so stale copies do not linger in the browser.
+export const LEGACY_TASK_STORAGE_KEYS = [
+  'home:recurring-tasks',
+  'home:recurring-tasks-done',
+  'home:one-off-tasks',
+];
