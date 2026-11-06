@@ -9,10 +9,10 @@ Run only on explicit `gh-create-todo` invocation; it authorizes one workflow dis
 
 1. Take the request from the arguments. Without arguments, use the change or improvement this conversation most recently identified as worth doing; if none stands out, ask.
 2. The hosted agent sees only the repo, not this conversation, so write a self-contained description: the problem and why it matters, the desired behavior, the concrete paths and quoted snippets or symbols already found here (never line numbers), decisions or constraints the user stated, and anything ruled out. Do not repeat what `agentic-pr-create-todo` research would find on its own.
-3. Dispatch it, adding `-f model=opus` only when the user asks:
+3. Choose the Claude model per the [dispatch contract's model step](../../../../docs/agent-support.md#dispatch-contract), judging the request's research scope rather than the one-row edit, and dispatch it:
 
    ```sh
-   gh workflow run manual-agentic-pr-create-todo.yml -f description="<description>"
+   gh workflow run manual-agentic-pr-create-todo.yml -f model=<model> -f description="<description>"
    ```
 
-4. Find the run with `gh run list --workflow manual-agentic-pr-create-todo.yml --limit 1 --json url,createdAt` and report its URL with the dispatched description. Do not wait for the run; it opens the PR, or reports why no row was added, in its job summary.
+4. Find the run with `gh run list --workflow manual-agentic-pr-create-todo.yml --limit 1 --json url,createdAt` and report its URL with the dispatched description and the model with its reason. Do not wait for the run; it opens the PR, or reports why no row was added, in its job summary.
