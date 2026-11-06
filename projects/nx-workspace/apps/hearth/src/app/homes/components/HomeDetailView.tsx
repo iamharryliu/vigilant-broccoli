@@ -1,32 +1,27 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { Trash2 } from 'lucide-react';
-import { Button } from '@vigilant-broccoli/react-lib';
 import { supabase } from '../../../../libs/supabase';
 import { useAuth } from '../../providers/auth-provider';
-import { useHome } from '../../providers/home-provider';
 import { HOME_ROLE, HomeMember, HomeRole } from '../../../lib/types';
+import { HomeDetailSkeleton } from './HomeDetailSkeleton';
 import { HomeForm, SaveStatus } from './HomeForm';
 import { MemberList } from './MemberList';
 
 type Props = {
   homeId: string;
-  onDeleted?: () => void;
 };
 
 const SAVE_DEBOUNCE_MS = 700;
 const SAVED_VISIBLE_MS = 1500;
-const CONFIRM_DELETE_HOME =
-  'Delete this home? Everything stored under it is removed too.';
 
-export const HomeDetailView = ({ homeId, onDeleted }: Props) => {
+export const HomeDetailView = ({ homeId }: Props) => {
   const session = useAuth();
-  const { refreshHomes } = useHome();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<SaveStatus>('idle');
   const [members, setMembers] = useState<HomeMember[]>([]);
+  const [membersLoaded, setMembersLoaded] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -87,6 +82,7 @@ export const HomeDetailView = ({ homeId, onDeleted }: Props) => {
           );
           setIsAdmin(currentMember?.role === HOME_ROLE.ADMIN);
         }
+        setMembersLoaded(true);
       });
   }, [homeId, session?.access_token]);
 
@@ -139,14 +135,7 @@ export const HomeDetailView = ({ homeId, onDeleted }: Props) => {
     });
   };
 
-  const handleDeleteHome = async () => {
-    if (!window.confirm(CONFIRM_DELETE_HOME)) return;
-    await supabase.from('homes').delete().eq('id', homeId);
-    await refreshHomes();
-    onDeleted?.();
-  };
-
-  if (!loaded) return null;
+  if (!loaded) return <HomeDetailSkeleton />;
 
   return (
     <div className="space-y-5">
@@ -161,6 +150,7 @@ export const HomeDetailView = ({ homeId, onDeleted }: Props) => {
         />
       </div>
       <MemberList
+        loading={!membersLoaded}
         members={members}
         setMembers={setMembers}
         isOwner={isOwner || isAdmin}
@@ -169,11 +159,6 @@ export const HomeDetailView = ({ homeId, onDeleted }: Props) => {
         onDelete={deleteMember}
         onRoleChange={updateMemberRole}
       />
-      {isOwner && (
-        <Button variant="destructive" onClick={handleDeleteHome}>
-          <Trash2 size={14} /> Delete home
-        </Button>
-      )}
     </div>
   );
 };

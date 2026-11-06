@@ -3,11 +3,12 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Popover } from '@vigilant-broccoli/react-lib';
-import { Home, Menu, Moon, Sun, User } from 'lucide-react';
+import { Home, Menu, User } from 'lucide-react';
 import { supabase } from '../../../libs/supabase';
 import { useHome } from '../providers/home-provider';
 import { useAuth } from '../providers/auth-provider';
 import { useTopbarSlotNode } from '../providers/topbar-slot-provider';
+import { CreateHomeDialog } from '../homes/components/CreateHomeDialog';
 import { ROUTES } from '../../lib/routes';
 import {
   Button,
@@ -16,13 +17,11 @@ import {
   Select,
   Text,
   UserAvatar,
-  useTheme,
 } from '@vigilant-broccoli/react-lib';
 
-const LIGHT_MODE_LABEL = 'Light mode';
-const DARK_MODE_LABEL = 'Dark mode';
-const DARK = 'dark';
 const ACCEPT_INVITES_ENDPOINT = '/api/auth/accept-invites';
+// Sentinel entry in the home picker; selecting it opens the create dialog.
+const ADD_HOME_OPTION = { id: -1, name: '+ Add new home' };
 
 type PendingInvite = {
   id: string;
@@ -37,9 +36,9 @@ type TopbarProps = {
 export default function Topbar({ onMenuClick }: TopbarProps) {
   const { homes, selectedHomeId, setSelectedHomeId } = useHome();
   const session = useAuth();
-  const { appearance, toggleTheme } = useTheme();
   const setSlotNode = useTopbarSlotNode();
   const [invites, setInvites] = useState<PendingInvite[]>([]);
+  const [createHomeOpen, setCreateHomeOpen] = useState(false);
 
   useEffect(() => {
     if (!session?.access_token) return;
@@ -54,8 +53,6 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
 
   if (!session?.user.email) return null;
   const email = session.user.email;
-  const isDark = appearance === DARK;
-  const ThemeIcon = isDark ? Sun : Moon;
 
   const acceptInvite = async (invite: PendingInvite) => {
     await fetch(ACCEPT_INVITES_ENDPOINT, {
@@ -135,13 +132,22 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             <Home size={14} />
             <Select
               value={homes.find(h => h.id === selectedHomeId)}
-              onValueChange={home => setSelectedHomeId(home.id)}
-              options={homes}
+              onValueChange={home =>
+                home.id === ADD_HOME_OPTION.id
+                  ? setCreateHomeOpen(true)
+                  : setSelectedHomeId(home.id)
+              }
+              options={[...homes, ADD_HOME_OPTION]}
               optionIdentifier="id"
               optionDisplayKey="name"
             />
           </div>
         )}
+
+        <CreateHomeDialog
+          open={createHomeOpen}
+          onOpenChange={setCreateHomeOpen}
+        />
 
         <DropdownMenu.Root>
           <DropdownMenu.Trigger>
@@ -162,19 +168,8 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
                 className="flex items-center gap-2"
               >
                 <User size={14} />
-                User
+                Account
               </Link>
-            </DropdownMenu.Item>
-            <DropdownMenu.Separator />
-            <DropdownMenu.Item
-              className="cursor-pointer flex items-center gap-2"
-              onSelect={event => {
-                event.preventDefault();
-                toggleTheme();
-              }}
-            >
-              <ThemeIcon size={14} />
-              {isDark ? LIGHT_MODE_LABEL : DARK_MODE_LABEL}
             </DropdownMenu.Item>
             <DropdownMenu.Separator />
             <DropdownMenu.Item

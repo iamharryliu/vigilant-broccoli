@@ -1,9 +1,16 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy, Monitor, Moon, Sun } from 'lucide-react';
 
-import { Input, Text } from '@vigilant-broccoli/react-lib';
+import {
+  Input,
+  SegmentedControl,
+  SegmentedControlOption,
+  Text,
+  ThemePreference,
+  useTheme,
+} from '@vigilant-broccoli/react-lib';
 import {
   CONTENT_TYPE_HEADER,
   HTTP_METHOD,
@@ -16,10 +23,18 @@ import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 const USER_API = '/api/user';
 const FEEDBACK_RESET_MS = 1500;
 const DISPLAY_NAME_DEBOUNCE_MS = 800;
+const THEME_OPTIONS: SegmentedControlOption<ThemePreference>[] = [
+  { value: 'system', label: 'System', icon: <Monitor size={14} /> },
+  { value: 'light', label: 'Light', icon: <Sun size={14} /> },
+  { value: 'dark', label: 'Dark', icon: <Moon size={14} /> },
+];
+// Fixed height keeps text rows the same as the row holding the taller input.
+const ACCOUNT_ROW_CLASS = 'flex items-center justify-between gap-4 px-4 h-14';
 
 export default function UserPage() {
   usePageTitle(PAGE_TITLES.USER);
   const session = useAuth();
+  const { preference, setPreference } = useTheme();
   const initialDisplayName =
     (session?.user.user_metadata?.display_name as string) ?? '';
   const [displayName, setDisplayName] = useState(initialDisplayName);
@@ -63,22 +78,12 @@ export default function UserPage() {
 
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-8">
-      <Text size="6" weight="bold">
-        User
-      </Text>
-
       <section className="space-y-3">
         <Text size="3" weight="medium">
           Account
         </Text>
         <div className="border border-border rounded-lg divide-y divide-border">
-          <div className="flex items-center justify-between px-4 py-3">
-            <Text size="2" color="gray">
-              Email
-            </Text>
-            <Text size="2">{session?.user.email ?? '—'}</Text>
-          </div>
-          <div className="flex items-center justify-between px-4 py-3">
+          <div className={ACCOUNT_ROW_CLASS}>
             <Text size="2" color="gray">
               User ID
             </Text>
@@ -97,28 +102,40 @@ export default function UserPage() {
               <Text size="2">—</Text>
             )}
           </div>
-        </div>
-      </section>
-
-      <section className="space-y-3">
-        <Text size="3" weight="medium">
-          Profile
-        </Text>
-        <div className="flex items-center justify-between gap-4">
-          <Text size="2" color="gray" className="shrink-0">
-            Display Name
-          </Text>
-          <div className="flex items-center gap-2">
+          <div className={ACCOUNT_ROW_CLASS}>
+            <Text size="2" color="gray">
+              Email
+            </Text>
+            <Text size="2">{session?.user.email ?? '—'}</Text>
+          </div>
+          <div className={ACCOUNT_ROW_CLASS}>
+            <div className="flex items-center gap-2 shrink-0">
+              <Text size="2" color="gray">
+                Display Name
+              </Text>
+              <Text size="1" color="gray">
+                {saving ? 'Saving…' : saved ? 'Saved' : ''}
+              </Text>
+            </div>
             <Input
               value={displayName}
               onChange={e => setDisplayName(e.target.value)}
               placeholder="Enter display name"
             />
-            <Text size="1" color="gray" className="w-12">
-              {saving ? 'Saving…' : saved ? 'Saved' : ''}
-            </Text>
           </div>
         </div>
+      </section>
+
+      <section className="space-y-3">
+        <Text size="3" weight="medium">
+          Appearance
+        </Text>
+        <SegmentedControl
+          label="Theme"
+          value={preference}
+          options={THEME_OPTIONS}
+          onChange={setPreference}
+        />
       </section>
     </div>
   );
