@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../../../libs/supabase';
 import { useAuth } from '../../providers/auth-provider';
 import { HOME_ROLE, HomeMember, HomeRole } from '../../../lib/types';
+import { HomeDetailSkeleton } from './HomeDetailSkeleton';
 import { HomeForm, SaveStatus } from './HomeForm';
 import { MemberList } from './MemberList';
 
@@ -20,6 +21,7 @@ export const HomeDetailView = ({ homeId }: Props) => {
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<SaveStatus>('idle');
   const [members, setMembers] = useState<HomeMember[]>([]);
+  const [membersLoaded, setMembersLoaded] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -80,6 +82,7 @@ export const HomeDetailView = ({ homeId }: Props) => {
           );
           setIsAdmin(currentMember?.role === HOME_ROLE.ADMIN);
         }
+        setMembersLoaded(true);
       });
   }, [homeId, session?.access_token]);
 
@@ -132,7 +135,7 @@ export const HomeDetailView = ({ homeId }: Props) => {
     });
   };
 
-  if (!loaded) return null;
+  if (!loaded) return <HomeDetailSkeleton />;
 
   return (
     <div className="space-y-5">
@@ -147,6 +150,7 @@ export const HomeDetailView = ({ homeId }: Props) => {
         />
       </div>
       <MemberList
+        loading={!membersLoaded}
         members={members}
         setMembers={setMembers}
         isOwner={isOwner || isAdmin}

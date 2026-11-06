@@ -17,6 +17,7 @@ type Props = {
   onDescriptionChange: (v: string) => void;
   status?: SaveStatus;
   onSave?: () => void;
+  saveLabel?: string;
   saving?: boolean;
   disabled?: boolean;
 };
@@ -28,6 +29,7 @@ export const HomeForm = ({
   onDescriptionChange,
   status,
   onSave,
+  saveLabel = 'Save',
   saving = false,
   disabled = false,
 }: Props) => (
@@ -73,7 +75,7 @@ export const HomeForm = ({
         disabled={saving || !name.trim()}
         className="cursor-pointer"
       >
-        Save
+        {saveLabel}
       </Button>
     )}
   </div>

@@ -18,10 +18,13 @@ type HomeContextValue = {
   selectedHomeId: number | null;
   setSelectedHomeId: (id: number) => void;
   refreshHomes: () => Promise<void>;
+  /** False until the first fetch settles, so empty `homes` isn't read as "no homes". */
+  homesLoaded: boolean;
 };
 
 const HomeContext = createContext<HomeContextValue>({
   homes: [],
+  homesLoaded: false,
   selectedHomeId: null,
   setSelectedHomeId: (_id: number) => undefined,
   refreshHomes: async () => undefined,
@@ -41,6 +44,7 @@ export default function HomeProvider({
 }) {
   const session = useAuth();
   const [homes, setHomes] = useState<Home[]>([]);
+  const [homesLoaded, setHomesLoaded] = useState(false);
   const [selectedHomeId, setSelectedHomeIdState] = useState<number | null>(
     null,
   );
@@ -78,6 +82,7 @@ export default function HomeProvider({
 
     const all = [...ownedHomes, ...memberHomes];
     setHomes(all);
+    setHomesLoaded(true);
 
     // Keeps the active home across reloads and session refreshes. Falls back to
     // the first home only when the stored one is gone (deleted, or access
@@ -96,7 +101,13 @@ export default function HomeProvider({
 
   return (
     <HomeContext.Provider
-      value={{ homes, selectedHomeId, setSelectedHomeId, refreshHomes }}
+      value={{
+        homes,
+        homesLoaded,
+        selectedHomeId,
+        setSelectedHomeId,
+        refreshHomes,
+      }}
     >
       {children}
     </HomeContext.Provider>

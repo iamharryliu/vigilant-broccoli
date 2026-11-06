@@ -4,9 +4,10 @@ import { useState } from 'react';
 import { Button, Text } from '@vigilant-broccoli/react-lib';
 import {
   Badge,
+  Heading,
   Input,
   Select,
-  USER_AVATAR_VARIANT,
+  Skeleton,
   UserAvatar,
 } from '@vigilant-broccoli/react-lib';
 import {
@@ -100,7 +101,7 @@ const MemberListItem = ({ item }: { item: HomeMember }) => {
   const isItemOwner = item.role === HOME_ROLE.OWNER;
   return (
     <div className="flex items-center gap-2 w-full">
-      <UserAvatar name={item.email} variant={USER_AVATAR_VARIANT.INITIALS} />
+      <UserAvatar name={item.email} />
       <Text size="2" className="flex-1 min-w-0 truncate">
         {item.email}
       </Text>
@@ -116,7 +117,26 @@ const MemberListItem = ({ item }: { item: HomeMember }) => {
   );
 };
 
+const SKELETON_ROW_COUNT = 3;
+
+export const MemberListSkeleton = () => (
+  <div className="space-y-4" aria-busy="true" aria-label="Loading members">
+    <div className="flex justify-between items-center">
+      <Heading>{MEMBER_COPY.LIST.TITLE}</Heading>
+      <Skeleton className="h-8 w-8" />
+    </div>
+    {Array.from({ length: SKELETON_ROW_COUNT }).map((_, i) => (
+      <div key={i} className="flex items-center gap-3 p-2">
+        <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+        <Skeleton className="h-4 flex-1 max-w-56" />
+        <Skeleton className="h-5 w-16 rounded-full ml-auto" />
+      </div>
+    ))}
+  </div>
+);
+
 type Props = {
+  loading?: boolean;
   members: HomeMember[];
   setMembers: React.Dispatch<React.SetStateAction<HomeMember[]>>;
   isOwner: boolean;
@@ -127,6 +147,7 @@ type Props = {
 };
 
 export const MemberList = ({
+  loading,
   members,
   setMembers,
   isOwner,
@@ -134,24 +155,27 @@ export const MemberList = ({
   onInvite,
   onDelete,
   onRoleChange,
-}: Props) => (
-  <CRUDItemList
-    items={members}
-    setItems={setMembers}
-    createItem={isOwner ? onInvite : undefined}
-    createItemFormDefaultValues={DEFAULT_MEMBER}
-    updateItem={
-      isOwner
-        ? async (member: HomeMember) => {
-            await onRoleChange(member.id, member.role);
-          }
-        : undefined
-    }
-    deleteItem={isOwner ? onDelete : undefined}
-    FormComponent={MemberFormComponent}
-    ListItemComponent={({ item }) => <MemberListItem item={item} />}
-    copy={MEMBER_COPY}
-    showEllipsis={isOwner}
-    canShowEllipsis={(item: HomeMember) => item.role !== HOME_ROLE.OWNER}
-  />
-);
+}: Props) =>
+  loading ? (
+    <MemberListSkeleton />
+  ) : (
+    <CRUDItemList
+      items={members}
+      setItems={setMembers}
+      createItem={isOwner ? onInvite : undefined}
+      createItemFormDefaultValues={DEFAULT_MEMBER}
+      updateItem={
+        isOwner
+          ? async (member: HomeMember) => {
+              await onRoleChange(member.id, member.role);
+            }
+          : undefined
+      }
+      deleteItem={isOwner ? onDelete : undefined}
+      FormComponent={MemberFormComponent}
+      ListItemComponent={({ item }) => <MemberListItem item={item} />}
+      copy={MEMBER_COPY}
+      showEllipsis={isOwner}
+      canShowEllipsis={(item: HomeMember) => item.role !== HOME_ROLE.OWNER}
+    />
+  );

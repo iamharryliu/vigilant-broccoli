@@ -11,7 +11,9 @@ import {
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { HomeDetailView } from '../homes/components/HomeDetailView';
+import { DeleteHomeCard } from '../homes/components/DeleteHomeCard';
 import { HomeCreateForm } from '../homes/components/HomeCreateForm';
+import { HomeDetailSkeleton } from '../homes/components/HomeDetailSkeleton';
 import { supabase } from '../../../libs/supabase';
 import { HOME_DATA_EXPORT_GROUPS } from '../../lib/export-groups';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
@@ -59,7 +61,7 @@ const downloadJson = (data: unknown, filename: string) => {
 export default function SettingsPage() {
   usePageTitle(PAGE_TITLES.SETTINGS);
   const session = useAuth();
-  const { homes, selectedHomeId, refreshHomes } = useHome();
+  const { homes, homesLoaded, selectedHomeId, refreshHomes } = useHome();
   const selectedHome = homes.find(h => h.id === selectedHomeId);
 
   const [selected, setSelected] = useState<Set<ExportKey>>(new Set());
@@ -93,6 +95,12 @@ export default function SettingsPage() {
       else next.add(key);
       return next;
     });
+
+  const allSelected = EXPORT_OPTIONS.every(({ key }) => selected.has(key));
+  const toggleAll = () =>
+    setSelected(
+      allSelected ? new Set() : new Set(EXPORT_OPTIONS.map(({ key }) => key)),
+    );
 
   const handleExport = async () => {
     if (!selectedHomeId || !session?.access_token) return;
@@ -157,7 +165,9 @@ export default function SettingsPage() {
       </Text>
 
       <section className="space-y-3">
-        {selectedHome ? (
+        {!homesLoaded ? (
+          <HomeDetailSkeleton />
+        ) : selectedHome ? (
           <HomeDetailView homeId={String(selectedHome.id)} />
         ) : (
           <HomeCreateForm onSubmit={handleCreateHome} />
@@ -217,6 +227,12 @@ export default function SettingsPage() {
           Export Data
         </Text>
         <div className="border border-border rounded-lg divide-y divide-border">
+          <label className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-50">
+            <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
+            <Text size="2" weight="medium">
+              Select All
+            </Text>
+          </label>
           {EXPORT_OPTIONS.map(({ key, label }) => (
             <label
               key={key}
@@ -249,6 +265,8 @@ export default function SettingsPage() {
           />
         </div>
       </section>
+
+      {selectedHome?.isOwner && <DeleteHomeCard homeId={selectedHome.id} />}
     </div>
   );
 }
