@@ -13,8 +13,9 @@ import { useHome } from '../providers/home-provider';
 import { HomeDetailView } from '../homes/components/HomeDetailView';
 import { HomeCreateForm } from '../homes/components/HomeCreateForm';
 import { supabase } from '../../../libs/supabase';
-import { IS_DEV } from '../app.consts';
+import { HOME_DATA_EXPORT_GROUPS } from '../../lib/export-groups';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
+import { loadOneOffTasks, loadTasks } from '../components/tasks.utils';
 import {
   DEFAULT_RENAME_LANGUAGE,
   RENAME_ENABLED_KEY,
@@ -24,28 +25,36 @@ import {
 
 const USER_API = '/api/user';
 
+const TASKS_EXPORT_KEY = 'tasks';
+
+// Only these have an /api/<key>/import route.
+const IMPORTABLE_KEYS: string[] = ['where-is', 'kitchen-planner'];
+
 const EXPORT_OPTIONS = [
-  { key: 'where-is', label: 'Where Is' },
   { key: 'kitchen-planner', label: 'Kitchen Planner' },
-] as const;
-
-type ExportKey = (typeof EXPORT_OPTIONS)[number]['key'];
-
-const CLEAR_OPTIONS = [
-  { key: 'calendar-events', label: 'Calendar Events' },
-  { key: 'household-rules', label: 'Household Rules' },
-  { key: 'home-members', label: 'Home Members' },
-  { key: 'home-resources', label: 'Resources' },
-  { key: 'resource-bookings', label: 'Resource Bookings' },
-  { key: 'home-projects', label: 'Projects' },
-  { key: 'leisure-activities', label: 'Leisure Activities' },
-  { key: 'meals', label: 'Meals' },
-  { key: 'docs', label: 'Documents' },
+  { key: TASKS_EXPORT_KEY, label: 'Tasks' },
   { key: 'where-is', label: 'Where Is' },
-  { key: 'price-tracker', label: 'Price Tracker' },
-] as const;
+  ...HOME_DATA_EXPORT_GROUPS,
+]
+  .map(({ key, label }) => ({ key, label }))
+  .sort((a, b) => a.label.localeCompare(b.label));
 
-type ClearKey = (typeof CLEAR_OPTIONS)[number]['key'];
+const HOME_DATA_KEYS = HOME_DATA_EXPORT_GROUPS.map(({ key }) => key);
+
+type ExportKey = string;
+
+const downloadJson = (data: unknown, filename: string) => {
+  const url = URL.createObjectURL(
+    new Blob([typeof data === 'string' ? data : JSON.stringify(data)], {
+      type: JSON_CONTENT_TYPE,
+    }),
+  );
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+};
 
 export default function SettingsPage() {
   usePageTitle(PAGE_TITLES.SETTINGS);
@@ -55,18 +64,6 @@ export default function SettingsPage() {
 
   const [selected, setSelected] = useState<Set<ExportKey>>(new Set());
   const importFileRef = useRef<HTMLInputElement>(null);
-
-  const [clearSelected, setClearSelected] = useState<Set<ClearKey>>(new Set());
-  const [clearing, setClearing] = useState(false);
-  const [clearResults, setClearResults] = useState<Record<
-    string,
-    string
-  > | null>(null);
-
-  const [seeding, setSeeding] = useState(false);
-  const [seedResults, setSeedResults] = useState<Record<string, string> | null>(
-    null,
-  );
 
   const metadata = session?.user.user_metadata ?? {};
   const [renameEnabled, setRenameEnabled] = useState(
@@ -97,32 +94,29 @@ export default function SettingsPage() {
       return next;
     });
 
-  const toggleClear = (key: ClearKey) =>
-    setClearSelected(prev => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-
-  const allClearKeys = CLEAR_OPTIONS.map(o => o.key);
-  const allClearSelected = allClearKeys.every(k => clearSelected.has(k));
-  const toggleAllClear = () =>
-    setClearSelected(allClearSelected ? new Set() : new Set(allClearKeys));
-
   const handleExport = async () => {
     if (!selectedHomeId || !session?.access_token) return;
     for (const key of selected) {
-      const res = await fetch(`/api/${key}/export?homeId=${selectedHomeId}`, {
+      const filename = `${key}-export-${selectedHomeId}-${Date.now()}.json`;
+      if (key === TASKS_EXPORT_KEY) {
+        downloadJson(
+          {
+            version: 1,
+            exportedAt: new Date().toISOString(),
+            recurringTasks: loadTasks(),
+            oneOffTasks: loadOneOffTasks(),
+          },
+          filename,
+        );
+        continue;
+      }
+      const url = HOME_DATA_KEYS.includes(key)
+        ? `/api/home-data/export?group=${key}&homeId=${selectedHomeId}`
+        : `/api/${key}/export?homeId=${selectedHomeId}`;
+      const res = await fetch(url, {
         headers: { Authorization: `Bearer ${session.access_token}` },
       });
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${key}-export-${selectedHomeId}-${Date.now()}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
+      downloadJson(await res.text(), filename);
     }
   };
 
@@ -132,6 +126,7 @@ export default function SettingsPage() {
     const text = await file.text();
     const importData = JSON.parse(text);
     for (const key of selected) {
+      if (!IMPORTABLE_KEYS.includes(key)) continue;
       await fetch(`/api/${key}/import`, {
         method: 'POST',
         headers: {
@@ -146,44 +141,6 @@ export default function SettingsPage() {
       });
     }
     if (importFileRef.current) importFileRef.current.value = '';
-  };
-
-  const handleSeed = async () => {
-    if (!selectedHomeId || !session?.access_token) return;
-    setSeeding(true);
-    setSeedResults(null);
-    const res = await fetch('/api/dev/seed', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${session.access_token}`,
-      },
-      body: JSON.stringify({ homeId: selectedHomeId }),
-    });
-    const { results } = await res.json();
-    setSeedResults(results);
-    setSeeding(false);
-  };
-
-  const handleClear = async () => {
-    if (!selectedHomeId || !session?.access_token || clearSelected.size === 0)
-      return;
-    setClearing(true);
-    setClearResults(null);
-    const res = await fetch('/api/dev/clear', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${session.access_token}`,
-      },
-      body: JSON.stringify({
-        homeId: selectedHomeId,
-        keys: [...clearSelected],
-      }),
-    });
-    const { results } = await res.json();
-    setClearResults(results);
-    setClearing(false);
   };
 
   const handleCreateHome = async (name: string, description: string) => {
@@ -279,7 +236,7 @@ export default function SettingsPage() {
           </Button>
           <Button
             onClick={() => importFileRef.current?.click()}
-            disabled={selected.size === 0}
+            disabled={![...selected].some(key => IMPORTABLE_KEYS.includes(key))}
           >
             Import
           </Button>
@@ -292,106 +249,6 @@ export default function SettingsPage() {
           />
         </div>
       </section>
-
-      {IS_DEV && (
-        <section className="space-y-3">
-          <div className="flex items-center gap-2">
-            <Text size="3" weight="medium">
-              Dev
-            </Text>
-            <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-100 text-yellow-700 font-medium">
-              danger
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              onClick={handleSeed}
-              disabled={seeding || !selectedHomeId}
-            >
-              Seed Mock Data
-            </Button>
-            <Text size="1" color="gray">
-              Inserts sample rules, meals, projects, events and more.
-            </Text>
-          </div>
-          {seedResults && (
-            <div className="border border-border rounded-lg divide-y divide-border">
-              {Object.entries(seedResults).map(([key, status]) => (
-                <div
-                  key={key}
-                  className="flex items-center justify-between px-4 py-2"
-                >
-                  <Text size="2" color="gray">
-                    {key}
-                  </Text>
-                  <Text size="2" color={status === 'ok' ? 'green' : 'red'}>
-                    {status}
-                  </Text>
-                </div>
-              ))}
-            </div>
-          )}
-
-          <Text size="2" color="gray">
-            Clear all records for the selected home. This is irreversible.
-          </Text>
-          <div className="border border-red-100 rounded-lg divide-y divide-red-50">
-            <label className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-red-50">
-              <Checkbox
-                checked={allClearSelected}
-                onCheckedChange={toggleAllClear}
-              />
-              <Text size="2" weight="medium">
-                Select All
-              </Text>
-            </label>
-            {CLEAR_OPTIONS.map(({ key, label }) => (
-              <label
-                key={key}
-                className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-red-50"
-              >
-                <Checkbox
-                  checked={clearSelected.has(key)}
-                  onCheckedChange={() => toggleClear(key)}
-                />
-                <Text size="2">{label}</Text>
-              </label>
-            ))}
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="destructive"
-              onClick={handleClear}
-              disabled={clearSelected.size === 0 || clearing || !selectedHomeId}
-            >
-              Clear Selected
-            </Button>
-            {clearSelected.size > 0 && (
-              <Text size="1" color="gray">
-                {clearSelected.size} selected
-              </Text>
-            )}
-          </div>
-          {clearResults && (
-            <div className="border border-border rounded-lg divide-y divide-border mt-2">
-              {Object.entries(clearResults).map(([key, status]) => (
-                <div
-                  key={key}
-                  className="flex items-center justify-between px-4 py-2"
-                >
-                  <Text size="2" color="gray">
-                    {key}
-                  </Text>
-                  <Text size="2" color={status === 'ok' ? 'green' : 'red'}>
-                    {status}
-                  </Text>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-      )}
     </div>
   );
 }
