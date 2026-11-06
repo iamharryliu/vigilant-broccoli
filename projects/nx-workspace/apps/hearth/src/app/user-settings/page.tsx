@@ -121,6 +121,7 @@ export default function UserPage() {
               value={displayName}
               onChange={e => setDisplayName(e.target.value)}
               placeholder="Enter display name"
+              className="min-w-0"
             />
           </div>
         </div>
@@ -135,6 +136,7 @@ export default function UserPage() {
           value={preference}
           options={THEME_OPTIONS}
           onChange={setPreference}
+          fullWidth
         />
       </section>
     </div>

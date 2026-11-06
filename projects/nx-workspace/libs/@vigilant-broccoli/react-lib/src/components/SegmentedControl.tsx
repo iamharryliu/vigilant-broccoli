@@ -15,7 +15,10 @@ const SIZE_CLASS = {
 
 export type SegmentedControlSize = keyof typeof SIZE_CLASS;
 
-const ROOT_CLASS = 'flex w-fit rounded-lg border border-border bg-card p-0.5';
+const FULL_WIDTH_SIZE_CLASS =
+  'gap-2 px-3 py-2.5 text-sm min-h-10 sm:py-2 sm:min-h-0';
+
+const ROOT_CLASS = 'flex rounded-lg border border-border bg-card p-0.5';
 const ITEM_CLASS =
   'flex items-center whitespace-nowrap rounded-md transition cursor-pointer';
 const ITEM_ACTIVE_CLASS = 'bg-primary text-primary-foreground';
@@ -27,6 +30,7 @@ export function SegmentedControl<T extends string>({
   options,
   onChange,
   size = 'md',
+  fullWidth = false,
   className,
 }: {
   label: string;
@@ -34,19 +38,23 @@ export function SegmentedControl<T extends string>({
   options: SegmentedControlOption<T>[];
   onChange: (value: T) => void;
   size?: SegmentedControlSize;
+  // Spans the container with equal-width segments and keeps every label
+  // visible beside its icon, which `md` hides below `sm`.
+  fullWidth?: boolean;
   className?: string;
 }) {
   return (
     <div
       role="radiogroup"
       aria-label={label}
-      className={cn(ROOT_CLASS, className)}
+      className={cn(ROOT_CLASS, fullWidth ? 'w-full' : 'w-fit', className)}
     >
       {options.map(option => {
         const isActive = option.value === value;
         // The visible label is dropped on mobile once an icon or short label
         // stands in for it, so aria-label carries the full name regardless.
-        const isLabelResponsive = Boolean(option.icon || option.shortLabel);
+        const isLabelResponsive =
+          !fullWidth && Boolean(option.icon || option.shortLabel);
         return (
           <button
             key={option.value}
@@ -57,7 +65,8 @@ export function SegmentedControl<T extends string>({
             onClick={() => onChange(option.value)}
             className={cn(
               ITEM_CLASS,
-              SIZE_CLASS[size],
+              fullWidth ? FULL_WIDTH_SIZE_CLASS : SIZE_CLASS[size],
+              fullWidth && 'flex-1 justify-center',
               isActive ? ITEM_ACTIVE_CLASS : ITEM_INACTIVE_CLASS,
             )}
           >
