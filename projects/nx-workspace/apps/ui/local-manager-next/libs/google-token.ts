@@ -89,7 +89,14 @@ export const getGoogleAccessTokenForRequest = async (
     const needsReconnect =
       isRefreshTokenRevokedError(error) ||
       (error instanceof Error && error.message === GOOGLE_NOT_CONNECTED);
-    if (needsReconnect) throw unauthorizedError();
+    if (needsReconnect) {
+      // Logged to tell a Google-side revocation apart from a Supabase session
+      // 401 (src/proxy.ts); both render the same "Reconnect Google" card.
+      console.warn(
+        `Google reconnect required: ${(error as Error).message} at ${new Date().toISOString()}`,
+      );
+      throw unauthorizedError();
+    }
     throw error;
   }
 };
