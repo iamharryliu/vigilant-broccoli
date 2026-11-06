@@ -59,6 +59,7 @@ export function AssignTaskDialog({
     >
       <DialogContent
         aria-describedby={undefined}
+        fullScreenOnMobile
         className="block max-h-[calc(100dvh-2rem)] max-w-sm overflow-y-auto"
       >
         <DialogTitle className="mb-3 truncate text-xl font-bold">

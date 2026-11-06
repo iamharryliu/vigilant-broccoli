@@ -64,6 +64,7 @@ export function TaskManagerDialog({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent
           aria-describedby={undefined}
+          fullScreenOnMobile
           className="block max-h-[calc(100dvh-2rem)] max-w-lg overflow-y-auto"
         >
           <DialogTitle className="mb-3 text-xl font-bold">
@@ -119,7 +120,11 @@ export function TaskManagerDialog({
       </Dialog>
 
       <Dialog open={!!draft} onOpenChange={open => !open && setDraft(null)}>
-        <DialogContent aria-describedby={undefined} className="block max-w-md">
+        <DialogContent
+          aria-describedby={undefined}
+          fullScreenOnMobile
+          className="block max-h-[calc(100dvh-2rem)] max-w-md overflow-y-auto"
+        >
           {draft && (
             <>
               <DialogTitle className="mb-3 text-xl font-bold">
