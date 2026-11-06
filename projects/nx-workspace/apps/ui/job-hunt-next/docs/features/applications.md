@@ -32,7 +32,7 @@
 ## New job application
 
 - The Help item at the end of the sidebar opens a dialog explaining the bookmarklet, with a Paste manually button that opens the near full-screen form dialog. The bookmarklet opens `/` and opens that form prefilled from the posting's page. A page that frames the app can pass its own URL as `?bookmarklet=`; while framed by that URL's origin (`location.ancestorOrigins`, else the referrer) the bookmarklet opens it instead and posts to its origin, and the page relays the posting into the frame (local-manager-next's [Job Hunt](../../../local-manager-next/docs/features/job-hunt.md)). The accepted URL is kept in `sessionStorage` for the tab, since in-app links drop the param; unframed, the param is ignored
-- `POST /api/job-applications/run` refuses to start while another run is in progress, and until the resume has a name and email (see [Career](./career.md))
+- `POST /api/job-applications/run` refuses to start until the resume has a name and email (see [Career](./career.md)); beyond the concurrency cap it queues the run (see [Runner](./runner.md))
 - The run itself is described in [Runner](./runner.md)
 
 ## API

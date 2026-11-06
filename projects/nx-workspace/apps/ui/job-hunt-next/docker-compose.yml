@@ -12,6 +12,7 @@ services:
     environment:
       - CLAUDE_CODE_OAUTH_TOKEN
       - JOB_HUNT_MODEL
+      - JOB_HUNT_MAX_CONCURRENT_RUNS
       - JOB_HUNT_FRAME_ANCESTORS
     ports:
       - '127.0.0.1:${JOB_HUNT_PORT:-4300}:3000'

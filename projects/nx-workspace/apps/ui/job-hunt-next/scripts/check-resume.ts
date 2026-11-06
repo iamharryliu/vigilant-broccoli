@@ -7,10 +7,7 @@ import {
 } from '@vigilant-broccoli/resume';
 import { renderResumePdf } from '@vigilant-broccoli/resume/server';
 import { parseJobExperience } from '../src/app/utils/career-experience.utils';
-import {
-  CAREER_EXPERIENCE_PATH,
-  RESUME_BASELINE_PATH,
-} from '../src/lib/paths.server';
+import { CAREER_EXPERIENCE_PATH } from '../src/lib/paths.server';
 import { readResume } from './skill-resume';
 
 const FAILURE_EXIT_CODE = 1;
@@ -100,8 +97,13 @@ const findIssues = (
 };
 
 const main = async (): Promise<void> => {
-  const candidate = readResume(process.argv[2]);
-  const baseline = readResume(RESUME_BASELINE_PATH);
+  const [, , candidatePath, baselinePath] = process.argv;
+  if (!candidatePath || !baselinePath) {
+    console.error('Usage: check-resume.cjs <resume.json> <baseline.json>');
+    process.exit(FAILURE_EXIT_CODE);
+  }
+  const candidate = readResume(candidatePath);
+  const baseline = readResume(baselinePath);
   const issues = findIssues(
     baseline,
     candidate,

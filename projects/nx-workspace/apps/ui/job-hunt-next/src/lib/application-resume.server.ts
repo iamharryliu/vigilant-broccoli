@@ -1,6 +1,6 @@
 import { execFile } from 'child_process';
 import { createHash } from 'crypto';
-import { readdir, readFile, stat, writeFile } from 'fs/promises';
+import { readdir, readFile, writeFile } from 'fs/promises';
 import { join } from 'path';
 import { promisify } from 'util';
 import {
@@ -9,7 +9,6 @@ import {
 } from '../app/utils/job-application-files.utils';
 import {
   APPLICATION_RESUME_VERSIONS_DIR,
-  JOB_APPLICATIONS_ROOT,
   resolveJobApplicationsPath,
   SKILL_WORKDIR,
 } from './paths.server';
@@ -57,14 +56,11 @@ export const readApplicationResume = async (resume: ApplicationResume) => {
 // application it produced, so History can diff the tailoring against it.
 export const seedApplicationBaseVersions = async (
   baseContent: string,
-  runStartedAt: number,
+  folders: string[],
 ) => {
-  const folders = await readdir(JOB_APPLICATIONS_ROOT).catch(() => []);
   for (const folder of folders) {
     const resume = await findApplicationResume(folder);
     if (!resume) continue;
-    const { mtimeMs } = await stat(resume.sourcePath);
-    if (mtimeMs < runStartedAt) continue;
     await seedBaseVersion(resume.versionsDir, baseContent);
     await readApplicationResume(resume);
   }

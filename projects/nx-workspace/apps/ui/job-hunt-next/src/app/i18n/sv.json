@@ -63,6 +63,7 @@
     "TEXT_PLACEHOLDER": "Jobbannons eller fråga från ansökan, med valfria anteckningar",
     "RUN": "Kör",
     "STARTED": "Jobbansökan har startats",
+    "QUEUED": "Jobbansökan står i kö och startar när en körning är klar",
     "VIEW_PROGRESS": "Visa förlopp",
     "RUN_FAILED": "Körningen misslyckades"
   },
@@ -79,6 +80,7 @@
     "EMPTY": "Inga körningar ännu.",
     "LOAD_FAILED": "Det gick inte att läsa in körningarna",
     "STARTED_AT": "Startade {time}",
+    "QUEUED_AT": "Köad {time}",
     "FINISHED": "Jobbansökan är klar",
     "FAILED": "Jobbansökan misslyckades",
     "VIEW_APPLICATION": "Visa ansökan",
@@ -86,6 +88,7 @@
     "IMPORT_FAILED": "Importen av {label} misslyckades",
     "VIEW": "Visa",
     "STATUS": {
+      "QUEUED": "I kö",
       "RUNNING": "Pågår",
       "SUCCEEDED": "Klar",
       "FAILED": "Misslyckades"

@@ -1,10 +1,19 @@
 export const RUN_STATUS = {
+  QUEUED: 'queued',
   RUNNING: 'running',
   SUCCEEDED: 'succeeded',
   FAILED: 'failed',
 } as const;
 
 export type RunStatus = (typeof RUN_STATUS)[keyof typeof RUN_STATUS];
+
+export const ACTIVE_RUN_STATUSES: readonly RunStatus[] = [
+  RUN_STATUS.QUEUED,
+  RUN_STATUS.RUNNING,
+];
+
+export const isActiveRunStatus = (status: RunStatus) =>
+  ACTIVE_RUN_STATUSES.includes(status);
 
 export const RUN_KIND = {
   JOB_APPLICATION: 'job-application',

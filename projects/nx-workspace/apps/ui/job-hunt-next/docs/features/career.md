@@ -11,7 +11,7 @@
   - Upload: pasted text and an optional `.txt`, `.md`, `.json` or `.pdf` file (up to 10 MB) start an import run. Claude formats them into the file's shape using only their facts, checks the result with `validate-career-file`, and the app validates it again before saving. The editor reloads when the run's toast reports it finished
   - Clear: the blank template in `templates/`, keeping the required headings, table columns and resume fields with no entries
   - Sample: the sample profile
-- Reset and import refuse while any run is in progress, since runs read and rewrite these files
+- Saving, reset and import refuse while any run is running or queued, since runs read and rewrite these files
 
 ## API
 

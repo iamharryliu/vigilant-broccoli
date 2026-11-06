@@ -16,7 +16,12 @@ import {
   CareerFileKind,
   JOB_APPLICATIONS_CHANGED_EVENT,
 } from '../constants/career';
-import { JobApplicationRun, RUN_KIND, RUN_STATUS } from '../constants/runs';
+import {
+  isActiveRunStatus,
+  JobApplicationRun,
+  RUN_KIND,
+  RUN_STATUS,
+} from '../constants/runs';
 import { useRuns } from '../hooks/use-runs';
 import { useTranslation } from '../i18n';
 
@@ -29,7 +34,7 @@ const IMPORTED_FILE: Partial<
   [RUN_KIND.RESUME_IMPORT]: CAREER_FILE_KIND.RESUME,
 };
 
-// Toasts when a run this browser tab saw running finishes, so a run started
+// Toasts when a run this browser tab saw running or queued finishes, so a run started
 // from any section reports back without the Runs section open.
 export const RunNotifications = () => {
   const { t } = useTranslation();
@@ -64,7 +69,7 @@ export const RunNotifications = () => {
 
   useEffect(() => {
     runs?.forEach(run => {
-      if (run.status === RUN_STATUS.RUNNING) {
+      if (isActiveRunStatus(run.status)) {
         runningIds.current.add(run.id);
         return;
       }

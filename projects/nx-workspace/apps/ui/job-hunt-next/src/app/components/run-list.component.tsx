@@ -6,6 +6,7 @@ import { useRuns } from '../hooks/use-runs';
 import { useTranslation } from '../i18n';
 
 const STATUS_BADGE = {
+  [RUN_STATUS.QUEUED]: { color: 'gray', key: 'RUNS.STATUS.QUEUED' },
   [RUN_STATUS.RUNNING]: { color: 'blue', key: 'RUNS.STATUS.RUNNING' },
   [RUN_STATUS.SUCCEEDED]: { color: 'green', key: 'RUNS.STATUS.SUCCEEDED' },
   [RUN_STATUS.FAILED]: { color: 'red', key: 'RUNS.STATUS.FAILED' },
@@ -29,9 +30,14 @@ const RunCard = ({ run }: { run: JobApplicationRun }) => {
         </div>
       </div>
       <span className="text-xs text-muted-foreground">
-        {t('RUNS.STARTED_AT', {
-          time: new Date(run.startedAt).toLocaleString(),
-        })}
+        {t(
+          run.status === RUN_STATUS.QUEUED
+            ? 'RUNS.QUEUED_AT'
+            : 'RUNS.STARTED_AT',
+          {
+            time: new Date(run.startedAt).toLocaleString(),
+          },
+        )}
       </span>
       {run.output && (
         <pre className="max-h-80 overflow-auto whitespace-pre-wrap rounded bg-muted p-2 text-xs">

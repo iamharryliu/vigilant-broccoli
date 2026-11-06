@@ -22,9 +22,10 @@ export const invalidKind = () =>
     { status: HTTP_STATUS_CODES.BAD_REQUEST },
   );
 
-// Runs read and rewrite the career files, so changing them mid-run would race.
+// Runs read and rewrite the career files, so changing them while a run is
+// running or queued would race.
 export const runInProgress = () =>
   NextResponse.json(
-    { error: 'Wait for the current run to finish' },
+    { error: 'Wait for the running and queued runs to finish' },
     { status: HTTP_STATUS_CODES.CONFLICT },
   );

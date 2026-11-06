@@ -2,6 +2,7 @@ import { mkdirSync } from 'fs';
 import { dirname } from 'path';
 import { DatabaseSync } from 'node:sqlite';
 import {
+  ACTIVE_RUN_STATUSES,
   JobApplicationRun,
   RUN_KIND,
   RUN_STATUS,
@@ -14,6 +15,7 @@ const RUNS_TABLE = 'job_application_runs';
 const KIND_COLUMN = 'kind';
 const INTERRUPTED_NOTE =
   '\nInterrupted: the server restarted during this run\n';
+const ACTIVE_PLACEHOLDERS = ACTIVE_RUN_STATUSES.map(() => '?').join(', ');
 
 interface RunRow {
   id: string;
@@ -62,15 +64,16 @@ const openDb = () => {
   }
   // The db is opened once per server process, before any run of this process
   // starts, so a row still running belongs to a process that no longer exists.
+  // Queued rows fail too: their prompts lived only in the old process's queue.
   db.prepare(
     `UPDATE ${RUNS_TABLE}
      SET status = ?, finished_at = ?, output = output || ?
-     WHERE status = ?`,
+     WHERE status IN (${ACTIVE_PLACEHOLDERS})`,
   ).run(
     RUN_STATUS.FAILED,
     new Date().toISOString(),
     INTERRUPTED_NOTE,
-    RUN_STATUS.RUNNING,
+    ...ACTIVE_RUN_STATUSES,
   );
   return db;
 };
@@ -134,23 +137,32 @@ export const listJobApplicationRuns = (): JobApplicationRun[] =>
       .all() as unknown as RunRow[]
   ).map(toRun);
 
-export const hasRunningJobApplicationRun = () =>
-  !!getDb()
-    .prepare(`SELECT 1 FROM ${RUNS_TABLE} WHERE status = ? LIMIT 1`)
-    .get(RUN_STATUS.RUNNING);
+export const markJobApplicationRunStarted = (task: JobApplicationRun) => {
+  getDb()
+    .prepare(`UPDATE ${RUNS_TABLE} SET status = ?, started_at = ? WHERE id = ?`)
+    .run(task.status, task.startedAt, task.id);
+};
 
-// Keeps the newest `keep` finished runs; a running row is never pruned.
+export const hasActiveJobApplicationRun = () =>
+  !!getDb()
+    .prepare(
+      `SELECT 1 FROM ${RUNS_TABLE} WHERE status IN (${ACTIVE_PLACEHOLDERS}) LIMIT 1`,
+    )
+    .get(...ACTIVE_RUN_STATUSES);
+
+// Keeps the newest `keep` finished runs; a running or queued row is never
+// pruned.
 export const pruneJobApplicationRuns = (keep: number) => {
   getDb()
     .prepare(
       `DELETE FROM ${RUNS_TABLE}
-       WHERE status != ?
+       WHERE status NOT IN (${ACTIVE_PLACEHOLDERS})
          AND id NOT IN (
            SELECT id FROM ${RUNS_TABLE}
-           WHERE status != ?
+           WHERE status NOT IN (${ACTIVE_PLACEHOLDERS})
            ORDER BY started_at DESC
            LIMIT ?
          )`,
     )
-    .run(RUN_STATUS.RUNNING, RUN_STATUS.RUNNING, keep);
+    .run(...ACTIVE_RUN_STATUSES, ...ACTIVE_RUN_STATUSES, keep);
 };
