@@ -22,7 +22,14 @@ export async function proxy(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY as string,
   );
   const { data, error } = await supabase.auth.getUser(token);
-  if (error || !data.user) return unauthorized();
+  if (error || !data.user) {
+    // A revoked Supabase session (e.g. a global sign-out from another app on
+    // the same project) surfaces client-side as "Reconnect Google".
+    console.warn(
+      `Supabase session rejected for ${request.nextUrl.pathname}: ${error?.message ?? 'no user'} at ${new Date().toISOString()}`,
+    );
+    return unauthorized();
+  }
 
   return NextResponse.next();
 }
