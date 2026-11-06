@@ -40,6 +40,7 @@ export const PAGE_TITLES = {
   RESOURCES: 'Resources',
   RESOURCE_DETAIL: 'Resource',
   SETTINGS: 'Settings',
+  TASKS: 'Tasks',
   USER: 'User',
   WHERE_IS: 'Where Is',
   WHERE_IS_DETAIL: 'Storage Area',

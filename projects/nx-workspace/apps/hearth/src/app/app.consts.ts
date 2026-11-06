@@ -4,6 +4,7 @@ import {
   Wrench,
   Settings,
   LayoutList,
+  ListChecks,
   PenLine,
   MapPin,
   UtensilsCrossed,
@@ -73,6 +74,7 @@ export const NAV_LINKS: NavLink[] = [
     mobileOnlyChildren: true,
     children: [
       { label: 'Whiteboard', href: ROUTES.WHITEBOARD, icon: PenLine },
+      { label: 'Tasks', href: ROUTES.TASKS, icon: ListChecks },
       { label: 'Calendar', href: ROUTES.OVERALL_CALENDAR, icon: Calendar },
     ],
   },
