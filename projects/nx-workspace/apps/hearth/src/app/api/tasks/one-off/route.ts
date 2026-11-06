@@ -3,7 +3,9 @@ import { ONE_OFF_TASKS_TABLE } from '../../../../lib/tasks-route';
 
 export const runtime = 'nodejs';
 
-const handlers = createChecklistHandlers(ONE_OFF_TASKS_TABLE);
+const handlers = createChecklistHandlers(ONE_OFF_TASKS_TABLE, {
+  assignable: true,
+});
 
 export const GET = handlers.GET;
 export const POST = handlers.POST;

@@ -11,11 +11,14 @@ import {
   useSensors,
 } from '@dnd-kit/core';
 import { arrayMove } from '@dnd-kit/sortable';
-import { Settings, Trash2 } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import {
+  Badge,
   Button,
   CheckList,
   CheckListItem,
+  DropdownMenu,
+  IconButton,
   Input,
   Progress,
   Text,
@@ -28,15 +31,37 @@ import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
 import { ChecklistItem } from '../../lib/types';
 import { toYmd } from '../../lib/date-utils';
 import { TaskDraft, TaskManagerDialog } from './TaskManagerDialog';
+import { AssignTaskDialog } from './AssignTaskDialog';
 import {
   LEGACY_TASK_STORAGE_KEYS,
   RecurringTask,
   TASKS_API,
+  TaskAssignee,
+  getAssigneeLabel,
   isDueOn,
 } from './tasks.utils';
 
+const ASSIGN_LABEL = 'Assign';
+const DELETE_LABEL = 'Delete';
+const ACCEPTED_STATUS = 'accepted';
+
 const toPositions = (list: { id: string }[]) =>
   list.map(({ id }, position) => ({ id, position }));
+
+// Pending invites have no user yet, so only accepted members are assignable.
+const toAssignees = (members: unknown): TaskAssignee[] =>
+  Array.isArray(members)
+    ? members
+        .filter(
+          (member: Record<string, string | null>) =>
+            member.status === ACCEPTED_STATUS && member.user_id,
+        )
+        .map((member: Record<string, string>) => ({
+          userId: member.user_id,
+          email: member.email,
+          displayName: member.display_name ?? null,
+        }))
+    : [];
 
 export function TaskList() {
   const session = useAuth();
@@ -52,6 +77,10 @@ export function TaskList() {
   const [newTitle, setNewTitle] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState('');
+  const [members, setMembers] = useState<TaskAssignee[]>([]);
+  const [assigningItem, setAssigningItem] = useState<CheckListItem | null>(
+    null,
+  );
 
   useEffect(() => {
     LEGACY_TASK_STORAGE_KEYS.forEach(key => localStorage.removeItem(key));
@@ -60,22 +89,25 @@ export function TaskList() {
   const fetchTasks = useCallback(async () => {
     if (!homeId || !token) return;
     const headers = await authHeader();
-    const [recurring, oneOff, completions] = await Promise.all(
+    const [recurring, oneOff, completions, homeMembers] = await Promise.all(
       [
         `${TASKS_API.RECURRING}?homeId=${homeId}`,
         `${TASKS_API.ONE_OFF}?homeId=${homeId}`,
         `${TASKS_API.COMPLETIONS}?homeId=${homeId}&date=${toYmd(new Date())}`,
+        `/api/homes/${homeId}/members`,
       ].map(async url => (await fetch(url, { headers })).json()),
     );
     setTasks(Array.isArray(recurring) ? recurring : []);
     setOneOffTasks(Array.isArray(oneOff) ? oneOff : []);
     setDone(Array.isArray(completions) ? completions : []);
+    setMembers(toAssignees(homeMembers));
   }, [homeId, token, authHeader]);
 
   useEffect(() => {
     setTasks([]);
     setOneOffTasks([]);
     setDone([]);
+    setMembers([]);
     fetchTasks();
   }, [fetchTasks]);
 
@@ -252,20 +284,61 @@ export function TaskList() {
     if (e.key === 'Enter') handleAdd();
   };
 
-  const renderItemAccessory = (item: CheckListItem) =>
-    isOneOff(item.id) ? (
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label={`Delete ${item.title}`}
-        onClick={e => {
-          e.stopPropagation();
-          handleDeleteOneOff(item.id);
-        }}
+  const getAssignedUserId = (id: string) =>
+    (oneOffTasks.find(task => task.id === id) ?? tasks.find(t => t.id === id))
+      ?.assignedUserId ?? null;
+
+  const handleAssign = (assignedUserId: string | null) => {
+    if (!assigningItem) return;
+    const { id } = assigningItem;
+    setAssigningItem(null);
+    if (isOneOff(id)) {
+      updateOneOff(id, { assignedUserId });
+      send(TASKS_API.ONE_OFF, HTTP_METHOD.PATCH, { id, assignedUserId });
+      return;
+    }
+    setTasks(prev =>
+      prev.map(task => (task.id === id ? { ...task, assignedUserId } : task)),
+    );
+    send(TASKS_API.RECURRING, HTTP_METHOD.PATCH, { id, assignedUserId });
+  };
+
+  // An assignee who has since left the home is missing from members, so the
+  // badge is omitted rather than shown with a bare id.
+  const renderItemAccessory = (item: CheckListItem) => {
+    const assignedUserId = getAssignedUserId(item.id);
+    const assignee = members.find(member => member.userId === assignedUserId);
+    return (
+      <div
+        className="flex shrink-0 items-center gap-2"
+        onClick={e => e.stopPropagation()}
       >
-        <Trash2 size={14} />
-      </Button>
-    ) : null;
+        {assignee && (
+          <Badge variant="soft" size="1" className="max-w-32 truncate">
+            {getAssigneeLabel(assignee)}
+          </Badge>
+        )}
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger>
+            <IconButton icon="ellipsis-vertical" variant="ghost" />
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content>
+            <DropdownMenu.Item onSelect={() => setAssigningItem(item)}>
+              {ASSIGN_LABEL}
+            </DropdownMenu.Item>
+            {isOneOff(item.id) && (
+              <DropdownMenu.Item
+                color="red"
+                onSelect={() => handleDeleteOneOff(item.id)}
+              >
+                {DELETE_LABEL}
+              </DropdownMenu.Item>
+            )}
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+      </div>
+    );
+  };
 
   if (!homeId) return null;
 
@@ -338,6 +411,15 @@ export function TaskList() {
         tasks={tasks}
         onSave={handleSaveTask}
         onDelete={handleDeleteTask}
+      />
+      <AssignTaskDialog
+        taskTitle={assigningItem?.title ?? null}
+        assignedUserId={
+          assigningItem ? getAssignedUserId(assigningItem.id) : null
+        }
+        members={members}
+        onAssign={handleAssign}
+        onClose={() => setAssigningItem(null)}
       />
     </div>
   );

@@ -80,6 +80,8 @@ export const PATCH = async (req: NextRequest) => {
   };
   if (body.title !== undefined) updates.title = body.title;
   if (body.days !== undefined) updates.days = body.days;
+  if (body.assignedUserId !== undefined)
+    updates.assigned_user_id = body.assignedUserId;
 
   const { data, error } = await supabase
     .from(RECURRING_TASKS_TABLE)

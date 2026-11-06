@@ -14,6 +14,7 @@ Homes are shared spaces owned by one user. Members can be invited and assigned r
 - `/home` — primary nav entry; create form if no home, detail view if owned or accepted member home exists
 - `/homes` — list owned homes + member homes
 - `/homes/[id]` — home detail (shared `HomeDetailView` component)
+- `GET /api/homes/[id]/members` — owner entry plus `home_members` rows, each with `user_id` and `display_name` (auth `user_metadata`, read with the admin client; null for pending invites); owner or accepted members only
 
 ## Roles
 

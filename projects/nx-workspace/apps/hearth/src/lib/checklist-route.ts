@@ -7,7 +7,7 @@ const getSupabase = (req: NextRequest) => {
   return createServerClient(accessToken);
 };
 
-const toItem = (row: Record<string, unknown>) => ({
+const toBaseItem = (row: Record<string, unknown>) => ({
   id: row.id,
   name: row.name,
   completed: row.completed,
@@ -24,7 +24,29 @@ const serverError = (message: string) =>
     { status: HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR },
   );
 
-export const createChecklistHandlers = (table: string) => {
+type ChecklistHandlerOptions = {
+  /** The table has an `assigned_user_id` column (grocery and kitchen chores don't). */
+  assignable?: boolean;
+};
+
+export const createChecklistHandlers = (
+  table: string,
+  { assignable = false }: ChecklistHandlerOptions = {},
+) => {
+  const toItem = (row: Record<string, unknown>) =>
+    assignable
+      ? { ...toBaseItem(row), assignedUserId: row.assigned_user_id ?? null }
+      : toBaseItem(row);
+
+  const toAssignmentUpdate = ({
+    assignedUserId,
+  }: {
+    assignedUserId?: string | null;
+  }) =>
+    assignable && assignedUserId !== undefined
+      ? { assigned_user_id: assignedUserId }
+      : {};
+
   const GET = async (req: NextRequest) => {
     const { searchParams } = new URL(req.url);
     const homeId = searchParams.get('homeId');
@@ -97,6 +119,7 @@ export const createChecklistHandlers = (table: string) => {
 
     const updates: Record<string, unknown> = {
       updated_at: new Date().toISOString(),
+      ...toAssignmentUpdate(body),
     };
     if (body.name !== undefined) updates.name = body.name;
     if (body.position !== undefined) updates.position = body.position;
