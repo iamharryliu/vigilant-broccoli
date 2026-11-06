@@ -1,9 +1,15 @@
 import { spawn } from 'child_process';
 import { randomUUID } from 'crypto';
-import { JobApplicationRun, RUN_STATUS, RunKind } from '../app/constants/runs';
+import {
+  JobApplicationRun,
+  RUN_KIND,
+  RUN_STATUS,
+  RunKind,
+} from '../app/constants/runs';
 import {
   finishJobApplicationRun,
   insertJobApplicationRun,
+  markJobApplicationRunStarted,
   pruneJobApplicationRuns,
   updateJobApplicationRunOutput,
 } from './job-application-runs.db';
@@ -11,6 +17,10 @@ import { SKILL_WORKDIR } from './paths.server';
 
 // Any `claude --model` value: an alias such as `opus` or a full model ID.
 const MODEL = process.env.JOB_HUNT_MODEL || 'sonnet';
+const DEFAULT_MAX_CONCURRENT_RUNS = 2;
+const MAX_CONCURRENT_RUNS =
+  Number(process.env.JOB_HUNT_MAX_CONCURRENT_RUNS) ||
+  DEFAULT_MAX_CONCURRENT_RUNS;
 const PERSIST_THROTTLE_MS = 2000;
 const OUTPUT_LIMIT = 20000;
 const HISTORY_LIMIT = 20;
@@ -39,6 +49,7 @@ const describeStreamLine = (line: string): string => {
 };
 
 type ClaudeRunOptions = {
+  id?: string;
   kind: RunKind;
   title: string;
   prompt: string;
@@ -48,29 +59,67 @@ type ClaudeRunOptions = {
   // Headless runs cannot answer permission prompts, so anything not listed is
   // denied.
   allowedTools: string[];
+  // Runs when the run leaves the queue, before `claude` starts, so it sees
+  // the career files as an earlier import left them; a throw fails the run.
+  prepare?: () => Promise<void>;
   // Runs after a clean exit; a returned message fails the run.
   finalize?: () => Promise<string | null>;
   // Runs once the run has ended, however it ended.
   cleanup?: () => Promise<void>;
 };
 
-// Starts `claude -p` in the skill workdir and records it as a run. Callers
-// check hasRunningJobApplicationRun first, since runs edit the shared career
-// files.
+type RunQueue = {
+  running: Map<string, RunKind>;
+  queued: { kind: RunKind; launch: () => void }[];
+};
+
+// Next bundles each route separately, so module-level state would give every
+// route its own queue and cap.
+const globalStore = globalThis as typeof globalThis & {
+  jobHuntRunQueue?: RunQueue;
+};
+
+const getQueue = (): RunQueue =>
+  (globalStore.jobHuntRunQueue ??= { running: new Map(), queued: [] });
+
+const isImport = (kind: RunKind) => kind !== RUN_KIND.JOB_APPLICATION;
+
+// Imports rewrite the career files every run reads, so an import runs alone.
+const canStart = (kind: RunKind) => {
+  const { running } = getQueue();
+  if (running.size >= MAX_CONCURRENT_RUNS) return false;
+  if (isImport(kind)) return running.size === 0;
+  return ![...running.values()].some(isImport);
+};
+
+// Oldest first: a waiting import also holds back the job applications behind
+// it, so it is never starved.
+const startQueuedRuns = () => {
+  const { queued } = getQueue();
+  while (queued.length && canStart(queued[0].kind)) {
+    queued.shift()?.launch();
+  }
+};
+
+// Records a run and starts `claude -p` in the skill workdir, or queues it
+// while the concurrency cap or an import holds it back. Callers refuse career
+// imports while any run is active.
 export const startClaudeRun = ({
+  id = randomUUID(),
   kind,
   title,
   prompt,
   addedDirs,
   allowedTools,
+  prepare,
   finalize,
   cleanup,
 }: ClaudeRunOptions): JobApplicationRun => {
   const run: JobApplicationRun = {
-    id: randomUUID(),
+    id,
     kind,
     title,
-    status: RUN_STATUS.RUNNING,
+    status: RUN_STATUS.QUEUED,
     startedAt: new Date().toISOString(),
     output: '',
   };
@@ -88,45 +137,62 @@ export const startClaudeRun = ({
     run.finishedAt = new Date().toISOString();
     finishJobApplicationRun(run);
     pruneJobApplicationRuns(HISTORY_LIMIT);
+    getQueue().running.delete(run.id);
+    startQueuedRuns();
     cleanup?.().catch(() => undefined);
   };
 
-  const child = spawn(
-    'claude',
-    [
-      '-p',
-      prompt,
-      '--output-format',
-      'stream-json',
-      '--verbose',
-      '--model',
-      MODEL,
-      '--add-dir',
-      ...new Set(addedDirs),
-      '--allowedTools',
-      ...allowedTools,
-    ],
-    { cwd: SKILL_WORKDIR, stdio: ['ignore', 'pipe', 'pipe'] },
-  );
+  const spawnClaude = () => {
+    const child = spawn(
+      'claude',
+      [
+        '-p',
+        prompt,
+        '--output-format',
+        'stream-json',
+        '--verbose',
+        '--model',
+        MODEL,
+        '--add-dir',
+        ...new Set(addedDirs),
+        '--allowedTools',
+        ...allowedTools,
+      ],
+      { cwd: SKILL_WORKDIR, stdio: ['ignore', 'pipe', 'pipe'] },
+    );
 
-  let buffered = '';
-  child.stdout.on('data', chunk => {
-    const lines = (buffered + chunk).split('\n');
-    buffered = lines.pop() ?? '';
-    lines.forEach(line => append(describeStreamLine(line)));
-  });
-  child.stderr.on('data', chunk => append(String(chunk)));
-  child.on('error', error => {
-    append(`Failed to start claude: ${error.message}\n`);
-    finish(RUN_STATUS.FAILED);
-  });
-  child.on('close', async code => {
-    append(`\nExited with code ${code}\n`);
-    if (code !== 0) return finish(RUN_STATUS.FAILED);
-    const error = await finalize?.().catch((err: Error) => err.message);
-    if (error) append(`${error}\n`);
-    finish(error ? RUN_STATUS.FAILED : RUN_STATUS.SUCCEEDED);
-  });
+    let buffered = '';
+    child.stdout.on('data', chunk => {
+      const lines = (buffered + chunk).split('\n');
+      buffered = lines.pop() ?? '';
+      lines.forEach(line => append(describeStreamLine(line)));
+    });
+    child.stderr.on('data', chunk => append(String(chunk)));
+    child.on('error', error => {
+      append(`Failed to start claude: ${error.message}\n`);
+      finish(RUN_STATUS.FAILED);
+    });
+    child.on('close', async code => {
+      append(`\nExited with code ${code}\n`);
+      if (code !== 0) return finish(RUN_STATUS.FAILED);
+      const error = await finalize?.().catch((err: Error) => err.message);
+      if (error) append(`${error}\n`);
+      finish(error ? RUN_STATUS.FAILED : RUN_STATUS.SUCCEEDED);
+    });
+  };
 
+  const launch = () => {
+    getQueue().running.set(run.id, kind);
+    run.status = RUN_STATUS.RUNNING;
+    run.startedAt = new Date().toISOString();
+    markJobApplicationRunStarted(run);
+    (prepare?.() ?? Promise.resolve()).then(spawnClaude, (error: Error) => {
+      append(`Failed to prepare the run: ${error.message}\n`);
+      finish(RUN_STATUS.FAILED);
+    });
+  };
+
+  getQueue().queued.push({ kind, launch });
+  startQueuedRuns();
   return run;
 };

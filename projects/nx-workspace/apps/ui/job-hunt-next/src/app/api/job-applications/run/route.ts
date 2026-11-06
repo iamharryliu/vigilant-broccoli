@@ -6,7 +6,6 @@ import {
   CAREER_FILE,
   readCareerFile,
 } from '../../../../lib/career-files.server';
-import { hasRunningJobApplicationRun } from '../../../../lib/job-application-runs.db';
 import { startJobApplicationRun } from '../../../../lib/job-application-runner';
 
 export const runtime = 'nodejs';
@@ -60,13 +59,6 @@ export async function POST(req: NextRequest) {
       { status: HTTP_STATUS_CODES.BAD_REQUEST },
     );
   }
-  if (hasRunningJobApplicationRun()) {
-    return NextResponse.json(
-      { error: 'Another run is already in progress' },
-      { status: HTTP_STATUS_CODES.CONFLICT },
-    );
-  }
-
-  const run = await startJobApplicationRun(postingUrl, postingText);
-  return NextResponse.json({ id: run.id });
+  const run = startJobApplicationRun(postingUrl, postingText);
+  return NextResponse.json({ id: run.id, status: run.status });
 }

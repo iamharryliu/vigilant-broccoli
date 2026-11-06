@@ -6,7 +6,7 @@ import {
   CareerImportSource,
   startCareerImportRun,
 } from '../../../../lib/career-import-runner';
-import { hasRunningJobApplicationRun } from '../../../../lib/job-application-runs.db';
+import { hasActiveJobApplicationRun } from '../../../../lib/job-application-runs.db';
 import { invalidKind, parseKind, runInProgress } from '../career-request';
 
 export const runtime = 'nodejs';
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
   if (!source.text && !source.upload) {
     return badRequest('Paste text or upload a file');
   }
-  if (hasRunningJobApplicationRun()) return runInProgress();
+  if (hasActiveJobApplicationRun()) return runInProgress();
 
   const run = await startCareerImportRun(kind, source);
   return NextResponse.json({ id: run.id });
