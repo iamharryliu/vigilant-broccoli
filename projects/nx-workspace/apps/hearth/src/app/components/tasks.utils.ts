@@ -26,23 +26,29 @@ export const isEveryDay = (days: number[]) =>
 const TASKS_STORAGE_KEY = 'home:recurring-tasks';
 const DONE_STORAGE_KEY = 'home:recurring-tasks-done';
 
-const dailyTask = (title: string): RecurringTask => ({
+const task = (title: string, days: number[] = ALL_DAYS): RecurringTask => ({
   id: title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
   title,
-  days: ALL_DAYS,
+  days,
 });
 
+const MONDAY = 1;
+const WEDNESDAY = 3;
+const FRIDAY = 5;
+
 export const DEFAULT_TASKS: RecurringTask[] = [
-  'Clear out dishwasher',
-  'Morning dog walk',
-  'Feed Niko breakfast',
-  'Plan for dinner',
-  'Prepare dinner',
-  'Night dog walk',
-  'Feed Niko dinner',
-  'Kitchen cleanup (night)',
-  'Run dishwasher (night)',
-].map(dailyTask);
+  task('Clear out dishwasher'),
+  task('Morning dog walk'),
+  task('Feed Niko breakfast'),
+  task('Plan for dinner'),
+  task('Prepare dinner'),
+  task('Night dog walk'),
+  task('Feed Niko dinner'),
+  task('Kitchen cleanup (night)'),
+  task('Run dishwasher (night)'),
+  task('Run robot vacuum', [MONDAY, WEDNESDAY, FRIDAY]),
+  task('Take out trash', [FRIDAY]),
+];
 
 export const isDueOn = (task: RecurringTask, date: Date) =>
   task.days.includes(date.getDay());

@@ -2,7 +2,6 @@ import { ComponentType } from 'react';
 import {
   Calendar,
   Wrench,
-  ListTodo,
   Settings,
   LayoutList,
   PenLine,
@@ -36,7 +35,6 @@ const DEV_FEATURES_LINK: NavLink = {
   label: 'Dev Features',
   icon: FlaskConical,
   children: [
-    { label: 'Chores', href: ROUTES.CHORES, icon: ListTodo },
     {
       label: 'Lists',
       href: ROUTES.MASTER_LIST,

@@ -1,11 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import { Check, Plus, Trash2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Check, Copy } from 'lucide-react';
 
 import { Button, Input, Text } from '@vigilant-broccoli/react-lib';
 import {
+  CRUDFormProps,
+  CRUDItemList,
+} from '@vigilant-broccoli/react-lib-higher-level';
+import {
   CONTENT_TYPE_HEADER,
+  FORM_TYPE,
   HTTP_METHOD,
   JSON_CONTENT_TYPE,
 } from '@vigilant-broccoli/common-js';
@@ -16,97 +21,89 @@ import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
 import { Home } from '../../lib/types';
 
 const USER_API = '/api/user';
+const FEEDBACK_RESET_MS = 1500;
+const DISPLAY_NAME_DEBOUNCE_MS = 800;
 
-const CONFIRM_DELETE =
-  'Delete this home? Everything stored under it is removed too.';
+const DEFAULT_HOME_FORM: Home = { id: 0, name: '', description: '' };
 
-const HomeRow = ({
-  home,
-  isSelected,
-  onSelect,
-  onSave,
-  onDelete,
-}: {
-  home: Home;
-  isSelected: boolean;
-  onSelect: () => void;
-  onSave: (name: string, description: string) => Promise<void>;
-  onDelete: () => Promise<void>;
-}) => {
-  const [name, setName] = useState(home.name);
-  const [description, setDescription] = useState(home.description ?? '');
-  const [saving, setSaving] = useState(false);
+const HOMES_COPY = {
+  LIST: { TITLE: 'Homes', EMPTY_MESSAGE: 'No homes yet. Create one.' },
+  [FORM_TYPE.CREATE]: {
+    TITLE: 'Add Home',
+    DESCRIPTION: 'Create a new home.',
+  },
+  [FORM_TYPE.UPDATE]: {
+    TITLE: 'Update Home',
+    DESCRIPTION: 'Edit the home name and description.',
+  },
+};
 
-  const dirty = name !== home.name || description !== (home.description ?? '');
+const DELETE_HOME_CONFIRMATION = {
+  title: 'Delete Home',
+  description: 'Delete this home? Everything stored under it is removed too.',
+};
+
+const HomeListItem = ({ home }: { home: Home }) => {
+  const { selectedHomeId } = useHome();
+  const isSelected = home.id === selectedHomeId;
 
   return (
-    <div className="px-4 py-3 space-y-2">
+    <div className="flex-1 min-w-0">
       <div className="flex items-center gap-2 flex-wrap">
-        <button
-          onClick={onSelect}
-          disabled={isSelected}
-          className={`flex items-center gap-1 px-2 py-0.5 rounded-full border text-xs cursor-pointer disabled:cursor-default ${
-            isSelected
-              ? 'border-blue-400 bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300'
-              : 'border-gray-200 dark:border-gray-700 bg-transparent text-gray-500'
-          }`}
-        >
-          {isSelected && <Check size={11} />}
-          {isSelected ? 'Active' : 'Make active'}
-        </button>
+        <Text weight="bold" size="2">
+          {home.name}
+        </Text>
+        {isSelected && (
+          <span className="flex items-center gap-1 px-2 py-0.5 rounded-full border border-blue-400 bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 text-xs">
+            <Check size={11} /> Active
+          </span>
+        )}
         {!home.isOwner && (
           <span className="px-2 py-0.5 rounded-full border border-border dark:border-gray-700 text-xs text-muted-foreground">
             member
           </span>
         )}
       </div>
+      <Text size="1" color="gray" as="p">
+        {home.description || 'No description'}
+      </Text>
+    </div>
+  );
+};
 
-      {home.isOwner ? (
-        <>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Input
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="Home name"
-            />
-            <Input
-              value={description}
-              onChange={e => setDescription(e.target.value)}
-              placeholder="Description"
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              onClick={async () => {
-                setSaving(true);
-                await onSave(name, description);
-                setSaving(false);
-              }}
-              disabled={!dirty || saving || !name.trim()}
-            >
-              {saving ? 'Saving…' : 'Save'}
-            </Button>
-            <button
-              onClick={async () => {
-                if (window.confirm(CONFIRM_DELETE)) await onDelete();
-              }}
-              className="h-8 w-8 flex items-center justify-center rounded border border-border dark:border-gray-700 bg-transparent text-muted-foreground hover:text-red-500 cursor-pointer"
-              aria-label={`Delete ${home.name}`}
-            >
-              <Trash2 size={15} />
-            </button>
-          </div>
-        </>
-      ) : (
-        <div>
-          <Text size="2" as="p">
-            {home.name}
-          </Text>
-          <Text size="1" color="gray">
-            {home.description || 'No description'}
-          </Text>
-        </div>
-      )}
+const HomeForm = ({
+  formType,
+  initialFormValues,
+  submitHandler,
+}: CRUDFormProps<Home>) => {
+  const [name, setName] = useState(initialFormValues.name);
+  const [description, setDescription] = useState(
+    initialFormValues.description ?? '',
+  );
+
+  return (
+    <div className="flex flex-col gap-3 mt-3">
+      <Input
+        value={name}
+        onChange={e => setName(e.target.value)}
+        placeholder="Home name"
+      />
+      <Input
+        value={description}
+        onChange={e => setDescription(e.target.value)}
+        placeholder="Description"
+      />
+      <Button
+        onClick={async () =>
+          submitHandler(
+            { ...initialFormValues, name: name.trim(), description },
+            formType,
+          )
+        }
+        disabled={!name.trim()}
+      >
+        {formType === FORM_TYPE.UPDATE ? 'Save' : 'Add Home'}
+      </Button>
     </div>
   );
 };
@@ -114,59 +111,72 @@ const HomeRow = ({
 export default function UserSettingsPage() {
   usePageTitle(PAGE_TITLES.USER_SETTINGS);
   const session = useAuth();
-  const { homes, selectedHomeId, setSelectedHomeId, refreshHomes } = useHome();
-  const [displayName, setDisplayName] = useState(
-    (session?.user.user_metadata?.display_name as string) ?? '',
-  );
+  const { homes, setSelectedHomeId, refreshHomes } = useHome();
+  const initialDisplayName =
+    (session?.user.user_metadata?.display_name as string) ?? '';
+  const [displayName, setDisplayName] = useState(initialDisplayName);
+  const lastSavedName = useRef(initialDisplayName.trim());
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [newHomeName, setNewHomeName] = useState('');
-  const [creating, setCreating] = useState(false);
+  const [userIdCopied, setUserIdCopied] = useState(false);
 
-  const handleSave = async () => {
-    if (!session?.access_token) return;
-    setSaving(true);
-    await fetch(USER_API, {
-      method: HTTP_METHOD.PATCH,
-      headers: {
-        [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE,
-        Authorization: `Bearer ${session.access_token}`,
-      },
-      body: JSON.stringify({ displayName }),
-    });
-    await supabase.auth.refreshSession();
-    setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+  const handleCopyUserId = async () => {
+    if (!session?.user.id) return;
+    await navigator.clipboard.writeText(session.user.id);
+    setUserIdCopied(true);
+    setTimeout(() => setUserIdCopied(false), FEEDBACK_RESET_MS);
   };
 
-  const createHome = async () => {
-    if (!newHomeName.trim() || !session?.user.id) return;
-    setCreating(true);
+  const accessToken = session?.access_token;
+
+  useEffect(() => {
+    const trimmed = displayName.trim();
+    if (!accessToken || !trimmed || trimmed === lastSavedName.current) return;
+    const timeout = setTimeout(async () => {
+      setSaving(true);
+      await fetch(USER_API, {
+        method: HTTP_METHOD.PATCH,
+        headers: {
+          [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE,
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify({ displayName: trimmed }),
+      });
+      lastSavedName.current = trimmed;
+      // Refreshing swaps the access token, which would re-run this effect; the
+      // lastSavedName guard above makes that re-run a no-op.
+      await supabase.auth.refreshSession();
+      setSaving(false);
+      setSaved(true);
+      setTimeout(() => setSaved(false), FEEDBACK_RESET_MS);
+    }, DISPLAY_NAME_DEBOUNCE_MS);
+    return () => clearTimeout(timeout);
+  }, [displayName, accessToken]);
+
+  const createHome = async (home: Home) => {
     const { data } = await supabase
       .from('homes')
       .insert({
-        name: newHomeName.trim(),
-        description: '',
-        user_id: session.user.id,
+        name: home.name,
+        description: home.description,
+        user_id: session?.user.id,
       })
       .select('id')
       .single();
-    setNewHomeName('');
     await refreshHomes();
     if (data?.id) setSelectedHomeId(data.id);
-    setCreating(false);
+    return { ...home, id: data?.id ?? home.id };
   };
 
-  const saveHome = async (id: number, name: string, description: string) => {
+  const updateHome = async (home: Home) => {
     await supabase
       .from('homes')
-      .update({ name: name.trim(), description })
-      .eq('id', id);
+      .update({ name: home.name, description: home.description })
+      .eq('id', home.id);
     await refreshHomes();
   };
 
-  const deleteHome = async (id: number) => {
+  const deleteHome = async (id: string | number) => {
     await supabase.from('homes').delete().eq('id', id);
     await refreshHomes();
   };
@@ -192,9 +202,20 @@ export default function UserSettingsPage() {
             <Text size="2" color="gray">
               User ID
             </Text>
-            <Text size="2" className="font-mono text-xs">
-              {session?.user.id ?? '—'}
-            </Text>
+            {session?.user.id ? (
+              <button
+                onClick={handleCopyUserId}
+                className="flex items-center gap-2 bg-transparent border-none cursor-pointer text-inherit p-0"
+                aria-label="Copy user ID"
+              >
+                <Text size="2" className="font-mono text-xs">
+                  {session.user.id}
+                </Text>
+                {userIdCopied ? <Check size={14} /> : <Copy size={14} />}
+              </button>
+            ) : (
+              <Text size="2">—</Text>
+            )}
           </div>
         </div>
       </section>
@@ -203,77 +224,40 @@ export default function UserSettingsPage() {
         <Text size="3" weight="medium">
           Profile
         </Text>
-        <div className="border border-border rounded-lg divide-y divide-border">
-          <div className="flex items-center justify-between px-4 py-3 gap-4">
-            <Text size="2" color="gray" className="shrink-0">
-              Display Name
+        <div className="flex items-center justify-between gap-4">
+          <Text size="2" color="gray" className="shrink-0">
+            Display Name
+          </Text>
+          <div className="flex items-center gap-2">
+            <Input
+              value={displayName}
+              onChange={e => setDisplayName(e.target.value)}
+              placeholder="Enter display name"
+            />
+            <Text size="1" color="gray" className="w-12">
+              {saving ? 'Saving…' : saved ? 'Saved' : ''}
             </Text>
-            <div className="flex items-center gap-2">
-              <Input
-                value={displayName}
-                onChange={e => setDisplayName(e.target.value)}
-                placeholder="Enter display name"
-              />
-              <Button
-                onClick={handleSave}
-                disabled={saving || !displayName.trim()}
-                className="cursor-pointer"
-              >
-                {saved ? 'Saved' : saving ? 'Saving…' : 'Save'}
-              </Button>
-            </div>
           </div>
         </div>
       </section>
 
       <section className="space-y-3">
-        <div>
-          <Text size="3" weight="medium" as="p">
-            Homes
-          </Text>
-          <Text size="1" color="gray">
-            The active home drives every page and the sidebar. You can also
-            switch it from the home picker in the top bar.
-          </Text>
-        </div>
-
-        <div className="border border-border rounded-lg divide-y divide-border">
-          {homes.length === 0 ? (
-            <div className="px-4 py-3">
-              <Text size="2" color="gray">
-                No homes yet. Create one below.
-              </Text>
-            </div>
-          ) : (
-            homes.map(home => (
-              <HomeRow
-                key={home.id}
-                home={home}
-                isSelected={home.id === selectedHomeId}
-                onSelect={() => setSelectedHomeId(home.id)}
-                onSave={(name, description) =>
-                  saveHome(home.id, name, description)
-                }
-                onDelete={() => deleteHome(home.id)}
-              />
-            ))
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Input
-            value={newHomeName}
-            onChange={e => setNewHomeName(e.target.value)}
-            placeholder="New home name"
-          />
-          <Button
-            onClick={createHome}
-            disabled={creating || !newHomeName.trim()}
-            className="shrink-0"
-          >
-            <Plus size={14} /> {creating ? 'Adding…' : 'Add Home'}
-          </Button>
-        </div>
+        <CRUDItemList
+          items={homes}
+          // Homes live in HomeProvider; the handlers below refresh it.
+          setItems={() => undefined}
+          FormComponent={HomeForm}
+          ListItemComponent={({ item }) => <HomeListItem home={item} />}
+          createItem={createHome}
+          createItemFormDefaultValues={DEFAULT_HOME_FORM}
+          updateItem={updateHome}
+          deleteItem={deleteHome}
+          canShowEllipsis={home => Boolean(home.isOwner)}
+          onItemClick={home => setSelectedHomeId(home.id)}
+          copy={HOMES_COPY}
+          deleteConfirmation={DELETE_HOME_CONFIRMATION}
+          isCards
+        />
       </section>
     </div>
   );

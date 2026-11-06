@@ -26,7 +26,6 @@ export const ROUTES = {
   PRICE_TRACKER_DETAIL: (id: string) => `/price-tracker/${id}`,
   RECEIPTS: '/receipts',
   RECEIPTS_DETAIL: (id: string) => `/receipts/${id}`,
-  CHORES: '/chores',
   GROCERY: '/grocery',
   IN_SEASON: '/in-season',
   KITCHEN_CHORES: '/kitchen-chores',
