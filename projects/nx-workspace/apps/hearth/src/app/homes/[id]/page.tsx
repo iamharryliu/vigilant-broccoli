@@ -23,7 +23,7 @@ export default function HomeDetailPage({
       >
         ← Homes
       </button>
-      <HomeDetailView homeId={id} />
+      <HomeDetailView homeId={id} onDeleted={() => router.push(ROUTES.HOMES)} />
     </div>
   );
 }

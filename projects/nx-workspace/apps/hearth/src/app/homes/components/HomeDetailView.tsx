@@ -1,21 +1,28 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { Trash2 } from 'lucide-react';
+import { Button } from '@vigilant-broccoli/react-lib';
 import { supabase } from '../../../../libs/supabase';
 import { useAuth } from '../../providers/auth-provider';
+import { useHome } from '../../providers/home-provider';
 import { HOME_ROLE, HomeMember, HomeRole } from '../../../lib/types';
 import { HomeForm, SaveStatus } from './HomeForm';
 import { MemberList } from './MemberList';
 
 type Props = {
   homeId: string;
+  onDeleted?: () => void;
 };
 
 const SAVE_DEBOUNCE_MS = 700;
 const SAVED_VISIBLE_MS = 1500;
+const CONFIRM_DELETE_HOME =
+  'Delete this home? Everything stored under it is removed too.';
 
-export const HomeDetailView = ({ homeId }: Props) => {
+export const HomeDetailView = ({ homeId, onDeleted }: Props) => {
   const session = useAuth();
+  const { refreshHomes } = useHome();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<SaveStatus>('idle');
@@ -132,6 +139,13 @@ export const HomeDetailView = ({ homeId }: Props) => {
     });
   };
 
+  const handleDeleteHome = async () => {
+    if (!window.confirm(CONFIRM_DELETE_HOME)) return;
+    await supabase.from('homes').delete().eq('id', homeId);
+    await refreshHomes();
+    onDeleted?.();
+  };
+
   if (!loaded) return null;
 
   return (
@@ -155,6 +169,11 @@ export const HomeDetailView = ({ homeId }: Props) => {
         onDelete={deleteMember}
         onRoleChange={updateMemberRole}
       />
+      {isOwner && (
+        <Button variant="destructive" onClick={handleDeleteHome}>
+          <Trash2 size={14} /> Delete home
+        </Button>
+      )}
     </div>
   );
 };

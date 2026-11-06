@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { Popover } from '@vigilant-broccoli/react-lib';
-import { Home, Menu, Moon, Sun } from 'lucide-react';
+import { Home, Menu, Moon, Sun, User } from 'lucide-react';
 import { supabase } from '../../../libs/supabase';
 import { useHome } from '../providers/home-provider';
 import { useAuth } from '../providers/auth-provider';
@@ -157,7 +157,13 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             </div>
             <DropdownMenu.Separator />
             <DropdownMenu.Item asChild>
-              <Link href={ROUTES.USER_SETTINGS}>User Settings</Link>
+              <Link
+                href={ROUTES.USER_SETTINGS}
+                className="flex items-center gap-2"
+              >
+                <User size={14} />
+                User
+              </Link>
             </DropdownMenu.Item>
             <DropdownMenu.Separator />
             <DropdownMenu.Item
