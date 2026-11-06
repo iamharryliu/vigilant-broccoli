@@ -26,6 +26,7 @@ Composed React components built on `react-lib`: CRUD list management, leaderboar
 - Framework - React
 - External libs
   - `@dnd-kit/core`
+  - `@supabase/supabase-js`
   - `d3-force`
   - `dompurify`
   - Framer Motion
