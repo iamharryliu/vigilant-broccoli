@@ -58,6 +58,9 @@
       "@vigilant-broccoli/react-lib-higher-level/live-location-map": [
         "./libs/@vigilant-broccoli/react-lib-higher-level/src/lib/live-location/LiveUserMap.tsx"
       ],
+      "@vigilant-broccoli/react-lib-higher-level/notepad-server": [
+        "./libs/@vigilant-broccoli/react-lib-higher-level/src/lib/notepad-store.server.ts"
+      ],
       "@harry/personal": ["./libs/@harry/personal/src/index.ts"],
       "@harry/private": ["./libs/@harry/private/src/index.ts"],
       "@vigilant-broccoli/slack-workspace": [

@@ -107,7 +107,12 @@ export const HOME_DATA_EXPORT_GROUPS: ExportGroup[] = [
     key: 'whiteboards',
     label: 'Whiteboards',
     tables: [
-      { name: 'whiteboards', table: 'whiteboards' },
+      {
+        name: 'whiteboards',
+        table: 'whiteboards',
+        // yjs_state is sync bookkeeping that can be rebuilt from content.
+        select: 'id, home_id, board_key, content, updated_at',
+      },
       { name: 'history', table: 'whiteboard_history' },
     ],
   },
