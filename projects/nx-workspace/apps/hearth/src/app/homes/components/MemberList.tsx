@@ -2,13 +2,7 @@
 
 import { useState } from 'react';
 import { Button, Text } from '@vigilant-broccoli/react-lib';
-import {
-  Badge,
-  Input,
-  Select,
-  USER_AVATAR_VARIANT,
-  UserAvatar,
-} from '@vigilant-broccoli/react-lib';
+import { Badge, Input, Select, UserAvatar } from '@vigilant-broccoli/react-lib';
 import {
   CRUDFormProps,
   CRUDItemList,
@@ -100,7 +94,7 @@ const MemberListItem = ({ item }: { item: HomeMember }) => {
   const isItemOwner = item.role === HOME_ROLE.OWNER;
   return (
     <div className="flex items-center gap-2 w-full">
-      <UserAvatar name={item.email} variant={USER_AVATAR_VARIANT.INITIALS} />
+      <UserAvatar name={item.email} />
       <Text size="2" className="flex-1 min-w-0 truncate">
         {item.email}
       </Text>

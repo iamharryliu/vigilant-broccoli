@@ -94,6 +94,12 @@ export default function SettingsPage() {
       return next;
     });
 
+  const allSelected = EXPORT_OPTIONS.every(({ key }) => selected.has(key));
+  const toggleAll = () =>
+    setSelected(
+      allSelected ? new Set() : new Set(EXPORT_OPTIONS.map(({ key }) => key)),
+    );
+
   const handleExport = async () => {
     if (!selectedHomeId || !session?.access_token) return;
     for (const key of selected) {
@@ -217,6 +223,12 @@ export default function SettingsPage() {
           Export Data
         </Text>
         <div className="border border-border rounded-lg divide-y divide-border">
+          <label className="flex items-center gap-3 px-4 py-2 cursor-pointer hover:bg-gray-50">
+            <Checkbox checked={allSelected} onCheckedChange={toggleAll} />
+            <Text size="2" weight="medium">
+              Select All
+            </Text>
+          </label>
           {EXPORT_OPTIONS.map(({ key, label }) => (
             <label
               key={key}

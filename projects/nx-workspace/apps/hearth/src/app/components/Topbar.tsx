@@ -16,7 +16,6 @@ import {
   Select,
   Text,
   UserAvatar,
-  USER_AVATAR_VARIANT,
   useTheme,
 } from '@vigilant-broccoli/react-lib';
 
@@ -147,7 +146,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
         <DropdownMenu.Root>
           <DropdownMenu.Trigger>
             <button className="cursor-pointer rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-400">
-              <UserAvatar name={email} variant={USER_AVATAR_VARIANT.INITIALS} />
+              <UserAvatar name={email} />
             </button>
           </DropdownMenu.Trigger>
           <DropdownMenu.Content align="end" size="1">
