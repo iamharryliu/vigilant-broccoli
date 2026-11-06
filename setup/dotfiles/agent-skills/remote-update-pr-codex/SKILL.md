@@ -14,7 +14,7 @@ Run only on explicit `remote-update-pr-codex` invocation; it authorizes one upda
    pnpm agentic-pr-update --vm --agent codex <PR> "<instruction>"
    ```
 
-   Add `--operation fix-ci` for failing checks (instruction optional), or `--operation resolve-conflicts` for conflicts (omit the instruction). Add `--with-ci-logs` when requested or needed; `fix-ci` implies it. Add `--codex-model <model>` only when requested, and `--codex-signed-in` only when requested or the command reports no Vault token.
+   Add `--operation fix-ci` for failing checks (instruction optional), or `--operation resolve-conflicts` for conflicts (omit the instruction). Add `--with-ci-logs` when requested or needed; `fix-ci` implies it. This runner cannot set reasoning effort, so add `--codex-model <model>` only when the user names a model, and `--codex-signed-in` only when requested or the command reports no Vault token.
 
 3. Report the run name, `/config/agentic-runs/<run>/run.log` path, operation and dispatched instruction. Do not wait or retry a successful dispatch. Report preflight failures verbatim with the fix, including `codex login --device-auth` in the VM terminal for a missing login.
 4. Follow the log through `pnpm code-server:ssh` only when asked; report `RUN_EXIT::<status>` and any recovery or follow-up `PR_URL::` lines. The target remains the existing PR.
