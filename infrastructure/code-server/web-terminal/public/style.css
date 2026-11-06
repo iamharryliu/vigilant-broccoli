@@ -59,15 +59,9 @@ body {
   user-select: none;
 }
 
-/* Text shortcuts form a second group after the keys. */
-#toolbar button:not([data-text]) + button[data-text] {
-  margin-left: 10px;
-}
-
-#keys-list button[data-text] {
-  grid-column: 1 / -1;
-  min-height: 44px;
-  font-size: 15px;
+/* Reachable only from the All keys sheet, which clones the toolbar buttons. */
+#toolbar button[data-sheet-only] {
+  display: none;
 }
 
 #toolbar button:active,
