@@ -8,10 +8,10 @@ Use the current vigilant-broccoli Git root and run `gh` from it. Outside this re
 Run only on explicit `gh-create-pr` invocation; it authorizes one workflow dispatch. Make no local file edits.
 
 1. Follow the [dispatch contract](../../../../docs/agent-support.md#dispatch-contract) (request, research, stop, ask, prompt) to the final prompt.
-2. Dispatch per the contract. Add `-f agent=codex` or `-f model=opus` only when the user asks:
+2. Dispatch per the contract with its chosen Claude model. Add `-f agent=codex` only when the user asks; Codex then takes `-f codex_model=<model>` only when the user names one, in place of `-f model`:
 
    ```sh
-   gh workflow run manual-agentic-pr-create.yml -f prompt="<prompt>"
+   gh workflow run manual-agentic-pr-create.yml -f model=<model> -f prompt="<prompt>"
    ```
 
-3. Find the run with `gh run list --workflow manual-agentic-pr-create.yml --limit 1 --json url,createdAt` and report its URL with the dispatched prompt. Do not wait for the run.
+3. Find the run with `gh run list --workflow manual-agentic-pr-create.yml --limit 1 --json url,createdAt` and report its URL with the dispatched prompt and the model with its reason. Do not wait for the run.

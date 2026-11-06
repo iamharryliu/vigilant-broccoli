@@ -8,7 +8,7 @@ Use the current vigilant-broccoli Git root and run `pnpm` from it. Outside this 
 Run only on explicit `local-docker-create-pr-codex` invocation; it authorizes one background solve, which publishes a PR from a throwaway clone. Make no local file edits.
 
 1. Follow the [dispatch contract](../../../../docs/agent-support.md#dispatch-contract) (request, research, stop, ask, prompt). For a request that only drops TODO rows, start one solve per ID.
-2. Start the solve once no questions were asked or after the user confirms the final prompt. Codex runs in the running dev sandbox with its signed-in Codex login (`pnpm agentic:dev-sandbox:up`, then `pnpm agentic:dev-sandbox:codex:auto`), and the command detaches itself after preflight. Add `--codex-model <model>` only when the user asks:
+2. Start the solve once no questions were asked or after the user confirms the final prompt. Codex runs in the running dev sandbox with its signed-in Codex login (`pnpm agentic:dev-sandbox:up`, then `pnpm agentic:dev-sandbox:codex:auto`), and the command detaches itself after preflight. This runner cannot set reasoning effort, so add `--codex-model <model>` only when the user names a model:
 
    ```sh
    pnpm agentic-pr-create --agent codex --prompt "<prompt>"
