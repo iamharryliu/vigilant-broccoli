@@ -14,7 +14,6 @@ export const PAGE_TITLES = {
   HOME_CALENDAR: 'Home Calendar',
   CALENDAR: 'Calendar',
   OVERALL_CALENDAR: 'Overall Calendar',
-  CHORES: 'Chores',
   DOCS: 'Docs',
   DOC_DETAIL: 'Doc',
   MASTER_LIST: 'Master List',
