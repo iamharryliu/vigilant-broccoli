@@ -11,7 +11,7 @@ type ExportGroup = {
 };
 
 // Binary files (receipt images, doc files) stay in R2; only their metadata rows
-// are exported. Where Is, Kitchen Planner and Tasks have their own exports.
+// are exported. Where Is and Kitchen Planner have their own exports.
 export const HOME_DATA_EXPORT_GROUPS: ExportGroup[] = [
   {
     key: 'calendar-events',
@@ -89,6 +89,18 @@ export const HOME_DATA_EXPORT_GROUPS: ExportGroup[] = [
     tables: [
       { name: 'resources', table: 'resources' },
       { name: 'bookings', table: 'resource_bookings' },
+    ],
+  },
+  {
+    key: 'tasks',
+    label: 'Tasks',
+    tables: [
+      { name: 'recurringTasks', table: 'home_recurring_tasks' },
+      {
+        name: 'recurringTaskCompletions',
+        table: 'home_recurring_task_completions',
+      },
+      { name: 'oneOffTasks', table: 'home_one_off_tasks' },
     ],
   },
   {

@@ -19,26 +19,28 @@ import {
   isEveryDay,
 } from './tasks.utils';
 
-type Draft = Omit<RecurringTask, 'id'> & { id: string | null };
+export type TaskDraft = Omit<RecurringTask, 'id'> & { id: string | null };
 
-const EMPTY_DRAFT: Draft = { id: null, title: '', days: ALL_DAYS };
+const EMPTY_DRAFT: TaskDraft = { id: null, title: '', days: ALL_DAYS };
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   tasks: RecurringTask[];
-  onChange: (tasks: RecurringTask[]) => void;
+  onSave: (task: TaskDraft) => void;
+  onDelete: (id: string) => void;
 };
 
 export function TaskManagerDialog({
   open,
   onOpenChange,
   tasks,
-  onChange,
+  onSave,
+  onDelete,
 }: Props) {
-  const [draft, setDraft] = useState<Draft | null>(null);
+  const [draft, setDraft] = useState<TaskDraft | null>(null);
 
-  const updateDraft = (update: (prev: Draft) => Draft) =>
+  const updateDraft = (update: (prev: TaskDraft) => TaskDraft) =>
     setDraft(prev => (prev ? update(prev) : prev));
 
   const canSave = !!draft && draft.title.trim() !== '' && draft.days.length > 0;
@@ -53,20 +55,9 @@ export function TaskManagerDialog({
 
   const handleSave = () => {
     if (!draft) return;
-    const task: RecurringTask = {
-      id: draft.id ?? crypto.randomUUID(),
-      title: draft.title.trim(),
-      days: draft.days,
-    };
-    onChange(
-      draft.id
-        ? tasks.map(t => (t.id === draft.id ? task : t))
-        : [...tasks, task],
-    );
+    onSave({ ...draft, title: draft.title.trim() });
     setDraft(null);
   };
-
-  const handleDelete = (id: string) => onChange(tasks.filter(t => t.id !== id));
 
   return (
     <>
@@ -117,7 +108,7 @@ export function TaskManagerDialog({
                   variant="ghost"
                   size="icon"
                   aria-label={`Delete ${task.title}`}
-                  onClick={() => handleDelete(task.id)}
+                  onClick={() => onDelete(task.id)}
                 >
                   <Trash2 size={14} />
                 </Button>

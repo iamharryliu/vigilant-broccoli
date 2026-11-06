@@ -17,7 +17,6 @@ import { HomeDetailSkeleton } from '../homes/components/HomeDetailSkeleton';
 import { supabase } from '../../../libs/supabase';
 import { HOME_DATA_EXPORT_GROUPS } from '../../lib/export-groups';
 import { PAGE_TITLES, usePageTitle } from '../../lib/page-title';
-import { loadOneOffTasks, loadTasks } from '../components/tasks.utils';
 import {
   DEFAULT_RENAME_LANGUAGE,
   RENAME_ENABLED_KEY,
@@ -27,14 +26,11 @@ import {
 
 const USER_API = '/api/user';
 
-const TASKS_EXPORT_KEY = 'tasks';
-
 // Only these have an /api/<key>/import route.
 const IMPORTABLE_KEYS: string[] = ['where-is', 'kitchen-planner'];
 
 const EXPORT_OPTIONS = [
   { key: 'kitchen-planner', label: 'Kitchen Planner' },
-  { key: TASKS_EXPORT_KEY, label: 'Tasks' },
   { key: 'where-is', label: 'Where Is' },
   ...HOME_DATA_EXPORT_GROUPS,
 ]
@@ -106,18 +102,6 @@ export default function SettingsPage() {
     if (!selectedHomeId || !session?.access_token) return;
     for (const key of selected) {
       const filename = `${key}-export-${selectedHomeId}-${Date.now()}.json`;
-      if (key === TASKS_EXPORT_KEY) {
-        downloadJson(
-          {
-            version: 1,
-            exportedAt: new Date().toISOString(),
-            recurringTasks: loadTasks(),
-            oneOffTasks: loadOneOffTasks(),
-          },
-          filename,
-        );
-        continue;
-      }
       const url = HOME_DATA_KEYS.includes(key)
         ? `/api/home-data/export?group=${key}&homeId=${selectedHomeId}`
         : `/api/${key}/export?homeId=${selectedHomeId}`;
