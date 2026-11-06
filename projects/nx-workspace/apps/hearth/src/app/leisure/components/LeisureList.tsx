@@ -332,6 +332,7 @@ export function LeisureList({
         }}
       >
         <DialogContent
+          fullScreenOnMobile
           className="block w-[calc(100%-2rem)] max-w-[600px] max-h-[calc(100dvh-2rem)] gap-0 overflow-y-auto"
           aria-describedby={undefined}
           showCloseButton={false}

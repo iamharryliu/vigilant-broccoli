@@ -46,7 +46,7 @@ export const CreateHomeDialog = ({ open, onOpenChange }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent fullScreenOnMobile>
         <DialogTitle className="mb-3 text-xl font-bold leading-7 tracking-normal">
           Add Home
         </DialogTitle>
