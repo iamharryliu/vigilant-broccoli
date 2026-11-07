@@ -3,7 +3,7 @@
 import { CSSProperties } from 'react';
 import { SyncedTextEditor } from '@vigilant-broccoli/react-lib';
 import { NotepadLoadError } from '@vigilant-broccoli/react-lib-higher-level';
-import { useNotepad } from '../hooks/useNotepad';
+import { useNotepad } from '../context/NotepadContext';
 
 interface NotepadEditorProps {
   style?: CSSProperties;
