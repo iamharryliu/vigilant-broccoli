@@ -33,12 +33,16 @@ import {
   DIRECTION,
   MATCH_STATUS,
   MAX_PLAYERS,
+  POWER_UP,
+  STARTING_BALLOONS,
+  STARTING_RANGE,
 } from '../engine/game.consts';
 import {
   Contender,
   Difficulty,
   Direction,
   MatchState,
+  PowerUpType,
 } from '../engine/game.types';
 import { cpuContenders } from '../engine/runner';
 import { Controls, useControls } from '../hooks/useControls';
@@ -53,6 +57,7 @@ import { useTranslation } from '../i18n';
 import { usePageTitle } from '../use-page-title';
 import { DIFFICULTY_LABEL_KEY } from '../app.consts';
 import { GameBoard } from './GameBoard';
+import { POWER_UP_COLORS, POWER_UP_ICONS } from './game-visuals.consts';
 
 const PLAYER_ID = 'mobile-player';
 // Touch has no key bindings, so the shared controls hook gets an empty map.
@@ -289,6 +294,43 @@ function MobileMatch() {
   );
 }
 
+const POWER_UP_INDICATORS = [
+  { type: POWER_UP.BALLOON, labelKey: 'MOBILE.BALLOONS_LEVEL' },
+  { type: POWER_UP.SPEED, labelKey: 'MOBILE.SPEED_LEVEL' },
+  { type: POWER_UP.RANGE, labelKey: 'MOBILE.RANGE_LEVEL' },
+] as const;
+
+function PowerUpIndicators({
+  levels,
+}: {
+  levels: Record<PowerUpType, number>;
+}) {
+  const { t } = useTranslation();
+  return (
+    // Sits just left of the settings gear (h-9 w-9) at the same top offset.
+    <div className="pointer-events-none absolute right-[calc(max(0.5rem,env(safe-area-inset-right))+2.5rem)] top-1 z-10 flex h-9 items-center gap-2 rounded-full bg-slate-900/70 px-2 text-xs font-bold text-white">
+      {POWER_UP_INDICATORS.map(({ type, labelKey }) => {
+        const Icon = POWER_UP_ICONS[type];
+        return (
+          <span
+            key={type}
+            className="flex items-center gap-0.5"
+            role="img"
+            aria-label={t(labelKey, { level: levels[type] })}
+          >
+            <Icon
+              className="h-4 w-4"
+              style={{ color: POWER_UP_COLORS[type] }}
+              aria-hidden="true"
+            />
+            <span aria-hidden="true">x{levels[type]}</span>
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
 function MobileScreen({
   match,
   restart,
@@ -329,6 +371,13 @@ function MobileScreen({
           }}
         />
       </div>
+      <PowerUpIndicators
+        levels={{
+          [POWER_UP.BALLOON]: self?.maxBalloons ?? STARTING_BALLOONS,
+          [POWER_UP.SPEED]: (self?.speedLevel ?? 0) + 1,
+          [POWER_UP.RANGE]: self?.range ?? STARTING_RANGE,
+        }}
+      />
       <SettingsMenu
         muted={muted}
         toggleMuted={toggleMuted}
