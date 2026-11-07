@@ -33,6 +33,10 @@ jobs:
     name: ${{ matrix.environment }} ${{ matrix.provider }}
     env:
       SERVICE_URL: http://127.0.0.1:3000
+      # Bounds each request so a hung curl fails its step with time left for cleanup
+      # instead of hitting timeout-minutes; 180s covers the 20 MB stream transfers.
+      CURL_MAX_TIME: 60
+      CURL_STREAM_MAX_TIME: 180
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -79,7 +83,7 @@ jobs:
         env:
           API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
-          STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
+          STATUS=$(curl -s --max-time "${CURL_MAX_TIME}" -o /tmp/response.json -w '%{http_code}' \
             -X POST "${{ env.SERVICE_URL }}/api/bucket?provider=${{ matrix.provider }}" \
             -H "x-api-key: ${API_KEY}" \
             -F "files=@${{ steps.fixture.outputs.file_path }}")
@@ -99,7 +103,7 @@ jobs:
         env:
           API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
-          STATUS=$(curl -s -o /tmp/list.json -w '%{http_code}' \
+          STATUS=$(curl -s --max-time "${CURL_MAX_TIME}" -o /tmp/list.json -w '%{http_code}' \
             -X GET "${{ env.SERVICE_URL }}/api/bucket?provider=${{ matrix.provider }}" \
             -H "x-api-key: ${API_KEY}")
           echo "Response status: $STATUS"
@@ -119,7 +123,7 @@ jobs:
         env:
           API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
-          STATUS=$(curl -s -o /tmp/download.bin -w '%{http_code}' \
+          STATUS=$(curl -s --max-time "${CURL_MAX_TIME}" -o /tmp/download.bin -w '%{http_code}' \
             -X GET "${{ env.SERVICE_URL }}/api/bucket/${{ steps.fixture.outputs.file_name }}?provider=${{ matrix.provider }}" \
             -H "x-api-key: ${API_KEY}")
           echo "Response status: $STATUS"
@@ -142,7 +146,7 @@ jobs:
         env:
           API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
-          STATUS=$(curl -s -o /tmp/response.json -w '%{http_code}' \
+          STATUS=$(curl -s --max-time "${CURL_MAX_TIME}" -o /tmp/response.json -w '%{http_code}' \
             -X DELETE "${{ env.SERVICE_URL }}/api/bucket/${{ steps.fixture.outputs.file_name }}?provider=${{ matrix.provider }}" \
             -H "x-api-key: ${API_KEY}")
           echo "Response status: $STATUS"
@@ -157,7 +161,7 @@ jobs:
         env:
           API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
-          STATUS=$(curl -s -o /tmp/list.json -w '%{http_code}' \
+          STATUS=$(curl -s --max-time "${CURL_MAX_TIME}" -o /tmp/list.json -w '%{http_code}' \
             -X GET "${{ env.SERVICE_URL }}/api/bucket?provider=${{ matrix.provider }}" \
             -H "x-api-key: ${API_KEY}")
           if [ "$STATUS" != "200" ]; then
@@ -175,7 +179,7 @@ jobs:
         env:
           API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
-          STATUS=$(curl -s -o /tmp/stream-response.json -w '%{http_code}' \
+          STATUS=$(curl -s --max-time "${CURL_STREAM_MAX_TIME}" -o /tmp/stream-response.json -w '%{http_code}' \
             -X POST "${{ env.SERVICE_URL }}/api/bucket/stream?provider=${{ matrix.provider }}" \
             -H "x-api-key: ${API_KEY}" \
             -F "files=@${{ steps.stream_fixture.outputs.file_path }}")
@@ -195,7 +199,7 @@ jobs:
         env:
           API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
-          STATUS=$(curl -s -o /tmp/stream-list.json -w '%{http_code}' \
+          STATUS=$(curl -s --max-time "${CURL_MAX_TIME}" -o /tmp/stream-list.json -w '%{http_code}' \
             -X GET "${{ env.SERVICE_URL }}/api/bucket?provider=${{ matrix.provider }}" \
             -H "x-api-key: ${API_KEY}")
           echo "Response status: $STATUS"
@@ -215,7 +219,7 @@ jobs:
         env:
           API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
-          STATUS=$(curl -s -o /tmp/stream-download.bin -w '%{http_code}' \
+          STATUS=$(curl -s --max-time "${CURL_STREAM_MAX_TIME}" -o /tmp/stream-download.bin -w '%{http_code}' \
             -X GET "${{ env.SERVICE_URL }}/api/bucket/${{ steps.stream_fixture.outputs.file_name }}?provider=${{ matrix.provider }}" \
             -H "x-api-key: ${API_KEY}")
           echo "Response status: $STATUS"
@@ -238,7 +242,7 @@ jobs:
         env:
           API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
-          STATUS=$(curl -s -o /tmp/stream-response.json -w '%{http_code}' \
+          STATUS=$(curl -s --max-time "${CURL_MAX_TIME}" -o /tmp/stream-response.json -w '%{http_code}' \
             -X DELETE "${{ env.SERVICE_URL }}/api/bucket/${{ steps.stream_fixture.outputs.file_name }}?provider=${{ matrix.provider }}" \
             -H "x-api-key: ${API_KEY}")
           echo "Response status: $STATUS"
@@ -253,7 +257,7 @@ jobs:
         env:
           API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
-          STATUS=$(curl -s -o /tmp/stream-list.json -w '%{http_code}' \
+          STATUS=$(curl -s --max-time "${CURL_MAX_TIME}" -o /tmp/stream-list.json -w '%{http_code}' \
             -X GET "${{ env.SERVICE_URL }}/api/bucket?provider=${{ matrix.provider }}" \
             -H "x-api-key: ${API_KEY}")
           if [ "$STATUS" != "200" ]; then
@@ -267,14 +271,15 @@ jobs:
           fi
           echo "✓ Post-delete verification passed"
 
-      - name: Cleanup on failure
-        if: failure()
+      # A job timeout or cancellation is `cancelled`, not `failure`, and can still leave an uploaded fixture behind.
+      - name: Cleanup on failure or cancellation
+        if: failure() || cancelled()
         env:
           API_KEY: ${{ env.SHARED_APP_TOKEN }}
         run: |
-          curl -s -o /dev/null -w 'cleanup status: %{http_code}\n' \
+          curl -s --max-time "${CURL_MAX_TIME}" -o /dev/null -w 'cleanup status: %{http_code}\n' \
             -X DELETE "${{ env.SERVICE_URL }}/api/bucket/${{ steps.fixture.outputs.file_name }}?provider=${{ matrix.provider }}" \
             -H "x-api-key: ${API_KEY}" || true
-          curl -s -o /dev/null -w 'stream cleanup status: %{http_code}\n' \
+          curl -s --max-time "${CURL_MAX_TIME}" -o /dev/null -w 'stream cleanup status: %{http_code}\n' \
             -X DELETE "${{ env.SERVICE_URL }}/api/bucket/${{ steps.stream_fixture.outputs.file_name }}?provider=${{ matrix.provider }}" \
             -H "x-api-key: ${API_KEY}" || true
