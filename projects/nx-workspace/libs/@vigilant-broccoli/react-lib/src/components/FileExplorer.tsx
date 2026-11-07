@@ -1,7 +1,10 @@
 'use client';
 
 import {
+  MouseEvent,
+  ReactElement,
   ReactNode,
+  SyntheticEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -34,9 +37,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from './AlertDialog';
 import { Button } from './Button';
+import { ContextMenu } from './ContextMenu';
 import { Skeleton } from './Skeleton';
 
 const VIEW_MODE = { LIST: 'list', GRID: 'grid' } as const;
@@ -150,9 +153,10 @@ const EntryIcon = ({ entry, size }: { entry: FileEntry; size: number }) => {
   return <FileIcon size={size} />;
 };
 
+const isFile = (entry: FileEntry) => entry.kind === FILE_ENTRY_KIND.FILE;
+
 const isImageFile = (entry: FileEntry) =>
-  entry.kind === FILE_ENTRY_KIND.FILE &&
-  IMAGE_EXTENSIONS.includes(getExtension(entry.name));
+  isFile(entry) && IMAGE_EXTENSIONS.includes(getExtension(entry.name));
 
 type FetchFileBlob = (path: string) => Promise<Blob>;
 
@@ -404,35 +408,35 @@ const UploadButton = ({
   );
 };
 
-// Only files are deletable; the button stays disabled for a folder or no selection.
-const DeleteFileButton = ({
-  selectedEntry,
-  disabled,
+const fileCountLabel = (count: number) =>
+  `${count} file${count === 1 ? '' : 's'}`;
+
+// Shared by the toolbar button and the context menu so both confirm the same way.
+const DeleteFilesDialog = ({
+  files,
+  onClose,
   onConfirm,
 }: {
-  selectedEntry: FileEntry | undefined;
-  disabled: boolean;
-  onConfirm: (entry: FileEntry) => void;
+  files: FileEntry[] | null;
+  onClose: () => void;
+  onConfirm: (files: FileEntry[]) => void;
 }) => {
-  const entry =
-    selectedEntry?.kind === FILE_ENTRY_KIND.FILE ? selectedEntry : null;
+  const single = files?.length === 1 ? files[0] : null;
+  const countLabel = fileCountLabel(files?.length ?? 0);
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <button
-          type="button"
-          aria-label="Delete file"
-          disabled={disabled || !entry}
-          className={iconButtonClassName()}
-        >
-          <Trash2 size={14} />
-        </button>
-      </AlertDialogTrigger>
+    <AlertDialog
+      open={files !== null}
+      onOpenChange={open => {
+        if (!open) onClose();
+      }}
+    >
       <AlertDialogContent className="max-w-[400px]">
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete file</AlertDialogTitle>
+          <AlertDialogTitle>
+            {single ? 'Delete file' : `Delete ${countLabel}`}
+          </AlertDialogTitle>
           <AlertDialogDescription>
-            Delete {entry?.name}? This cannot be undone.
+            Delete {single ? single.name : countLabel}? This cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -442,7 +446,7 @@ const DeleteFileButton = ({
           <AlertDialogAction asChild>
             <Button
               variant="destructive"
-              onClick={() => entry && onConfirm(entry)}
+              onClick={() => files && onConfirm(files)}
             >
               Delete
             </Button>
@@ -452,6 +456,19 @@ const DeleteFileButton = ({
     </AlertDialog>
   );
 };
+
+// The menu content is portalled but nested inside the item in the React tree,
+// so its events would otherwise bubble to the item's selection and open handlers.
+const stopPropagation = (event: SyntheticEvent) => event.stopPropagation();
+
+type Selection = { paths: ReadonlySet<string>; anchor: string | null };
+
+const EMPTY_SELECTION: Selection = { paths: new Set(), anchor: null };
+
+const selectOnly = (path: string): Selection => ({
+  paths: new Set([path]),
+  anchor: path,
+});
 
 type FileExplorerProps = {
   rootLabel: string;
@@ -468,8 +485,9 @@ type FileExplorerProps = {
   // Shows an upload button that sends the picked files into the current folder
   // ('' at the root). Hidden when omitted.
   onUpload?: (folderPath: string, files: File[]) => Promise<void>;
-  // Shows a delete button for the selected file, behind a confirmation.
-  // Hidden when omitted; folders are never offered.
+  // Shows a delete button and context menu item for the selected files, behind
+  // a confirmation; called once per file. Hidden when omitted; folders are
+  // never offered.
   onDelete?: (entry: FileEntry) => Promise<void>;
 };
 
@@ -498,7 +516,9 @@ export const FileExplorer = ({
   const [query, setQuery] = useState('');
   const [viewMode, setViewMode] = useState<ViewMode>(VIEW_MODE.LIST);
   const [sort, setSort] = useState<SortState>(defaultSort);
-  const [selectedPath, setSelectedPath] = useState<string | null>(null);
+  const [selection, setSelection] = useState<Selection>(EMPTY_SELECTION);
+  const [menuPath, setMenuPath] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<FileEntry[] | null>(null);
   const [mutating, setMutating] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(true);
 
@@ -525,7 +545,7 @@ export const FileExplorer = ({
 
   useEffect(() => {
     const syncPathFromUrl = () => {
-      setSelectedPath(null);
+      setSelection(EMPTY_SELECTION);
       setQuery('');
       setCurrentPath(readPathFromUrl());
     };
@@ -540,7 +560,7 @@ export const FileExplorer = ({
 
   const navigate = (path: string) => {
     if (path === currentPath) return;
-    setSelectedPath(null);
+    setSelection(EMPTY_SELECTION);
     setQuery('');
     setCurrentPath(path);
     writePathToUrl(path);
@@ -591,12 +611,24 @@ export const FileExplorer = ({
     );
   };
 
-  const deleteEntry = (entry: FileEntry) => {
+  // One mutation so the listing reloads once; a failed file doesn't stop the rest.
+  const deleteFiles = (files: FileEntry[]) => {
     if (!onDelete) return;
     runMutation(async () => {
-      await onDelete(entry);
-      setSelectedPath(null);
-    }, 'Failed to delete file');
+      const results = await Promise.allSettled(
+        files.map(file => onDelete(file)),
+      );
+      results.forEach(result => {
+        if (result.status === 'rejected') {
+          onError?.(
+            result.reason instanceof Error
+              ? result.reason.message
+              : 'Failed to delete file',
+          );
+        }
+      });
+      setSelection(EMPTY_SELECTION);
+    }, 'Failed to delete files');
   };
 
   const openEntry = (entry: FileEntry) =>
@@ -630,9 +662,115 @@ export const FileExplorer = ({
       }))
     : [];
   const parentPath = segments[segments.length - 2]?.path ?? '';
-  const selectedEntry = entries.find(entry => entry.path === selectedPath);
+  // Derived from what is on screen so a search never acts on hidden items.
+  const selectedEntries = visibleEntries.filter(entry =>
+    selection.paths.has(entry.path),
+  );
+  const selectedFiles = selectedEntries.filter(isFile);
+  const selectedEntry =
+    selectedEntries.length === 1 ? selectedEntries[0] : null;
   const previewEntry =
-    selectedEntry?.kind === FILE_ENTRY_KIND.FILE ? selectedEntry : null;
+    selectedEntry && isFile(selectedEntry) ? selectedEntry : null;
+
+  const selectEntry = (entry: FileEntry, event: MouseEvent) => {
+    const anchorIndex = visibleEntries.findIndex(
+      item => item.path === selection.anchor,
+    );
+    if (event.shiftKey && anchorIndex !== -1) {
+      const index = visibleEntries.indexOf(entry);
+      const range = visibleEntries.slice(
+        Math.min(anchorIndex, index),
+        Math.max(anchorIndex, index) + 1,
+      );
+      setSelection({
+        paths: new Set(range.map(item => item.path)),
+        anchor: selection.anchor,
+      });
+      return;
+    }
+    if (event.metaKey || event.ctrlKey) {
+      const paths = new Set(selection.paths);
+      if (paths.has(entry.path)) paths.delete(entry.path);
+      else paths.add(entry.path);
+      setSelection({ paths, anchor: entry.path });
+      return;
+    }
+    setSelection(selectOnly(entry.path));
+  };
+
+  // A right-click outside the selection retargets it; inside, it keeps a multi-selection.
+  const menuTargets = (entry: FileEntry) =>
+    selection.paths.has(entry.path) ? selectedEntries : [entry];
+
+  const menuDeletableFiles = (targets: FileEntry[]) =>
+    onDelete ? targets.filter(isFile) : [];
+
+  const hasMenuItems = (targets: FileEntry[]) =>
+    targets.length === 1 || menuDeletableFiles(targets).length > 0;
+
+  const changeMenuOpen = (entry: FileEntry, open: boolean) => {
+    if (!open) {
+      setMenuPath(null);
+      return;
+    }
+    if (!selection.paths.has(entry.path)) setSelection(selectOnly(entry.path));
+    if (hasMenuItems(menuTargets(entry))) setMenuPath(entry.path);
+  };
+
+  const renderMenu = (entry: FileEntry) => {
+    if (menuPath !== entry.path) return null;
+    const targets = menuTargets(entry);
+    const files = menuDeletableFiles(targets);
+    const single = targets.length === 1 ? targets[0] : null;
+    return (
+      <ContextMenu.Content
+        onClick={stopPropagation}
+        onDoubleClick={stopPropagation}
+        onPointerDown={stopPropagation}
+        onContextMenu={event => {
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+        // Items aren't focusable, and returning focus would fight the delete dialog.
+        onCloseAutoFocus={event => event.preventDefault()}
+      >
+        {single && (
+          <ContextMenu.Item onSelect={() => openEntry(single)}>
+            Open
+          </ContextMenu.Item>
+        )}
+        {files.length > 0 && (
+          <ContextMenu.Item
+            color="red"
+            disabled={mutating}
+            onSelect={() => setPendingDelete(files)}
+          >
+            <Trash2 size={14} />
+            {single ? 'Delete' : `Delete ${fileCountLabel(files.length)}`}
+          </ContextMenu.Item>
+        )}
+      </ContextMenu.Content>
+    );
+  };
+
+  // Each item gets its own menu root so right-clicks on empty space or the
+  // toolbar keep the browser's native menu.
+  const withMenu = (entry: FileEntry, item: ReactElement) => (
+    <ContextMenu.Root
+      key={entry.path}
+      modal={false}
+      open={menuPath === entry.path}
+      onOpenChange={open => changeMenuOpen(entry, open)}
+    >
+      <ContextMenu.Trigger>{item}</ContextMenu.Trigger>
+    </ContextMenu.Root>
+  );
+
+  const itemProps = (entry: FileEntry) => ({
+    'aria-selected': selection.paths.has(entry.path),
+    onClick: (event: MouseEvent) => selectEntry(entry, event),
+    onDoubleClick: () => openEntry(entry),
+  });
   const emptyText =
     error ?? (query ? 'No matching files' : 'This folder is empty');
   const showEmpty = !loading && visibleEntries.length === 0;
@@ -687,11 +825,17 @@ export const FileExplorer = ({
             />
           )}
           {onDelete && (
-            <DeleteFileButton
-              selectedEntry={selectedEntry}
-              disabled={mutating}
-              onConfirm={deleteEntry}
-            />
+            <button
+              type="button"
+              aria-label={
+                selectedFiles.length > 1 ? 'Delete files' : 'Delete file'
+              }
+              disabled={mutating || selectedFiles.length === 0}
+              onClick={() => setPendingDelete(selectedFiles)}
+              className={iconButtonClassName()}
+            >
+              <Trash2 size={14} />
+            </button>
           )}
           <div className="relative w-[180px]">
             <Search
@@ -745,7 +889,8 @@ export const FileExplorer = ({
         <div
           className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto"
           onClick={event => {
-            if (event.target === event.currentTarget) setSelectedPath(null);
+            if (event.target === event.currentTarget)
+              setSelection(EMPTY_SELECTION);
           }}
         >
           {viewMode === VIEW_MODE.LIST ? (
@@ -778,30 +923,31 @@ export const FileExplorer = ({
                 </tr>
               </thead>
               <tbody>
-                {visibleEntries.map(entry => (
-                  <tr
-                    key={entry.path}
-                    aria-selected={selectedPath === entry.path}
-                    onClick={() => setSelectedPath(entry.path)}
-                    onDoubleClick={() => openEntry(entry)}
-                    className={`cursor-pointer border-b border-gray-100 transition-colors dark:border-gray-800 ${itemClassName(selectedPath === entry.path)}`}
-                  >
-                    <td className="w-14 px-4 py-2">
-                      <div className="flex h-9 w-9 items-center justify-center text-gray-400 dark:text-gray-500">
-                        <EntryIcon entry={entry} size={20} />
-                      </div>
-                    </td>
-                    <td className="max-w-[360px] truncate px-4 py-2 font-medium text-gray-800 dark:text-gray-100">
-                      {entry.name}
-                    </td>
-                    <td className="hidden px-4 py-2 text-gray-500 dark:text-gray-400 sm:table-cell">
-                      {entrySizeLabel(entry)}
-                    </td>
-                    <td className="hidden px-4 py-2 text-gray-500 dark:text-gray-400 md:table-cell">
-                      {formatDate(entry.modified)}
-                    </td>
-                  </tr>
-                ))}
+                {visibleEntries.map(entry =>
+                  withMenu(
+                    entry,
+                    <tr
+                      {...itemProps(entry)}
+                      className={`cursor-pointer border-b border-gray-100 transition-colors dark:border-gray-800 ${itemClassName(selection.paths.has(entry.path))}`}
+                    >
+                      <td className="w-14 px-4 py-2">
+                        <div className="flex h-9 w-9 items-center justify-center text-gray-400 dark:text-gray-500">
+                          <EntryIcon entry={entry} size={20} />
+                        </div>
+                        {renderMenu(entry)}
+                      </td>
+                      <td className="max-w-[360px] truncate px-4 py-2 font-medium text-gray-800 dark:text-gray-100">
+                        {entry.name}
+                      </td>
+                      <td className="hidden px-4 py-2 text-gray-500 dark:text-gray-400 sm:table-cell">
+                        {entrySizeLabel(entry)}
+                      </td>
+                      <td className="hidden px-4 py-2 text-gray-500 dark:text-gray-400 md:table-cell">
+                        {formatDate(entry.modified)}
+                      </td>
+                    </tr>,
+                  ),
+                )}
               </tbody>
             </table>
           ) : (
@@ -811,36 +957,37 @@ export const FileExplorer = ({
                 gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
               }}
             >
-              {visibleEntries.map(entry => (
-                <div
-                  key={entry.path}
-                  aria-selected={selectedPath === entry.path}
-                  onClick={() => setSelectedPath(entry.path)}
-                  onDoubleClick={() => openEntry(entry)}
-                  className={`flex cursor-pointer flex-col items-center gap-1.5 rounded-md p-2 text-center transition-colors ${itemClassName(selectedPath === entry.path)}`}
-                >
-                  {isImageFile(entry) ? (
-                    <GridThumbnail
-                      entry={entry}
-                      fetchFileBlob={fetchFileBlob}
-                    />
-                  ) : (
-                    <div className="flex h-16 w-16 items-center justify-center text-gray-400 dark:text-gray-500">
-                      <EntryIcon entry={entry} size={48} />
-                    </div>
-                  )}
-                  <div className="w-full">
-                    <div className="line-clamp-2 break-words text-xs font-medium text-gray-800 dark:text-gray-100">
-                      {entry.name}
-                    </div>
-                    {entry.kind === FILE_ENTRY_KIND.FOLDER && (
-                      <div className="text-[10px] text-gray-400 dark:text-gray-500">
-                        {itemCountLabel(entry.itemCount)}
+              {visibleEntries.map(entry =>
+                withMenu(
+                  entry,
+                  <div
+                    {...itemProps(entry)}
+                    className={`flex cursor-pointer flex-col items-center gap-1.5 rounded-md p-2 text-center transition-colors ${itemClassName(selection.paths.has(entry.path))}`}
+                  >
+                    {isImageFile(entry) ? (
+                      <GridThumbnail
+                        entry={entry}
+                        fetchFileBlob={fetchFileBlob}
+                      />
+                    ) : (
+                      <div className="flex h-16 w-16 items-center justify-center text-gray-400 dark:text-gray-500">
+                        <EntryIcon entry={entry} size={48} />
                       </div>
                     )}
-                  </div>
-                </div>
-              ))}
+                    <div className="w-full">
+                      <div className="line-clamp-2 break-words text-xs font-medium text-gray-800 dark:text-gray-100">
+                        {entry.name}
+                      </div>
+                      {entry.kind === FILE_ENTRY_KIND.FOLDER && (
+                        <div className="text-[10px] text-gray-400 dark:text-gray-500">
+                          {itemCountLabel(entry.itemCount)}
+                        </div>
+                      )}
+                    </div>
+                    {renderMenu(entry)}
+                  </div>,
+                ),
+              )}
             </div>
           )}
 
@@ -873,9 +1020,17 @@ export const FileExplorer = ({
         className="flex flex-shrink-0 items-center gap-1.5 border-t border-gray-100 bg-gray-50 px-4 py-1.5 text-xs text-gray-500 dark:text-gray-400 dark:border-gray-800 dark:bg-gray-900"
       >
         {itemCountLabel(visibleEntries.length)}
-        {selectedEntry &&
-          ` · ${selectedEntry.name} · ${entrySizeLabel(selectedEntry)}`}
+        {selectedEntries.length > 1
+          ? ` · ${selectedEntries.length} selected`
+          : selectedEntry &&
+            ` · ${selectedEntry.name} · ${entrySizeLabel(selectedEntry)}`}
       </div>
+
+      <DeleteFilesDialog
+        files={pendingDelete}
+        onClose={() => setPendingDelete(null)}
+        onConfirm={deleteFiles}
+      />
     </div>
   );
 };

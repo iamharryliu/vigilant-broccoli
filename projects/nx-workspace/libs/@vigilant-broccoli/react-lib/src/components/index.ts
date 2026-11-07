@@ -13,6 +13,7 @@ export * from './TeamAvatar';
 export * from './MultiSelect';
 export * from './CopyButton';
 export * from './DownloadButton';
+export * from './ContextMenu';
 export * from './DropdownMenu';
 export * from './CopyPastable';
 export * from './Select';
