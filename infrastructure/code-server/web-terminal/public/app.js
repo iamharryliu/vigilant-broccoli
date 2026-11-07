@@ -134,7 +134,10 @@ const setKeysSheetOpen = open => {
 const handleButton = async button => {
   const { key, toggle, ctrl, text, action } = button.dataset;
   if (action === KEYS_ACTION.OPEN) {
+    // Blurred to dismiss the soft keyboard; terminalWasFocused (set by the
+    // toolbar pointerdown) is kept so closing the sheet can restore it.
     setKeysSheetOpen(true);
+    term.blur();
   } else if (toggle) {
     setModifier(toggle, !modifiers[toggle]);
   } else if (key) {
@@ -157,7 +160,7 @@ const handleButton = async button => {
     }
   }
   if (DISMISS_KEYBOARD_KEYS.has(key)) term.blur();
-  else if (terminalWasFocused) term.focus();
+  else if (terminalWasFocused && keysSheet.hidden) term.focus();
 };
 
 toolbar.addEventListener('click', event => {
@@ -166,26 +169,24 @@ toolbar.addEventListener('click', event => {
 });
 
 // Same pointerdown handling as the toolbar, without hold-to-repeat.
-keysSheet.addEventListener('pointerdown', event => {
-  terminalWasFocused = document.activeElement === term.textarea;
-  event.preventDefault();
-});
+keysSheet.addEventListener('pointerdown', event => event.preventDefault());
+
+const closeKeysSheet = () => {
+  setKeysSheetOpen(false);
+  if (terminalWasFocused) term.focus();
+};
 keysSheet.addEventListener('contextmenu', event => event.preventDefault());
 
 keysSheet.addEventListener('click', event => {
   const button = event.target.closest('button');
-  if (
-    event.target === keysSheet ||
-    button?.dataset.action === KEYS_ACTION.CLOSE
-  ) {
-    setKeysSheetOpen(false);
-    if (terminalWasFocused) term.focus();
+  if (button?.dataset.action === KEYS_ACTION.CLOSE) {
+    closeKeysSheet();
     return;
   }
   if (!button) return;
   handleButton(button);
   // Ctrl and Alt stay open so a modifier can be chosen before the key.
-  if (!button.dataset.toggle) setKeysSheetOpen(false);
+  if (!button.dataset.toggle) closeKeysSheet();
 });
 
 // Capture phase so the terminal does not also receive the Escape.
@@ -195,7 +196,7 @@ document.addEventListener(
     if (event.key !== 'Escape' || keysSheet.hidden) return;
     event.preventDefault();
     event.stopPropagation();
-    setKeysSheetOpen(false);
+    closeKeysSheet();
   },
   true,
 );
