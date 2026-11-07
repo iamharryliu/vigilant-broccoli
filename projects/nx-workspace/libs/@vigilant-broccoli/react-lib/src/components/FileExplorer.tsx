@@ -1,6 +1,13 @@
 'use client';
 
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   ArrowUp,
   ChevronDown,
@@ -14,8 +21,22 @@ import {
   Loader2,
   RefreshCw,
   Search,
+  Trash2,
+  Upload,
 } from 'lucide-react';
 import { FILE_ENTRY_KIND, FileEntry } from '@vigilant-broccoli/common-js';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from './AlertDialog';
+import { Button } from './Button';
 
 const VIEW_MODE = { LIST: 'list', GRID: 'grid' } as const;
 type ViewMode = (typeof VIEW_MODE)[keyof typeof VIEW_MODE];
@@ -128,6 +149,88 @@ const itemClassName = (selected: boolean) =>
     ? 'bg-blue-50 dark:bg-blue-950'
     : 'hover:bg-gray-50 dark:hover:bg-gray-900';
 
+const UploadButton = ({
+  disabled,
+  onFiles,
+}: {
+  disabled: boolean;
+  onFiles: (files: File[]) => void;
+}) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  return (
+    <>
+      <input
+        ref={inputRef}
+        type="file"
+        multiple
+        hidden
+        onChange={event => {
+          onFiles(Array.from(event.target.files ?? []));
+          event.target.value = '';
+        }}
+      />
+      <button
+        type="button"
+        aria-label="Upload files"
+        disabled={disabled}
+        onClick={() => inputRef.current?.click()}
+        className={iconButtonClassName()}
+      >
+        <Upload size={14} />
+      </button>
+    </>
+  );
+};
+
+// Only files are deletable; the button stays disabled for a folder or no selection.
+const DeleteFileButton = ({
+  selectedEntry,
+  disabled,
+  onConfirm,
+}: {
+  selectedEntry: FileEntry | undefined;
+  disabled: boolean;
+  onConfirm: (entry: FileEntry) => void;
+}) => {
+  const entry =
+    selectedEntry?.kind === FILE_ENTRY_KIND.FILE ? selectedEntry : null;
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <button
+          type="button"
+          aria-label="Delete file"
+          disabled={disabled || !entry}
+          className={iconButtonClassName()}
+        >
+          <Trash2 size={14} />
+        </button>
+      </AlertDialogTrigger>
+      <AlertDialogContent className="max-w-[400px]">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete file</AlertDialogTitle>
+          <AlertDialogDescription>
+            Delete {entry?.name}? This cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel asChild>
+            <Button variant="secondary">Cancel</Button>
+          </AlertDialogCancel>
+          <AlertDialogAction asChild>
+            <Button
+              variant="destructive"
+              onClick={() => entry && onConfirm(entry)}
+            >
+              Delete
+            </Button>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+};
+
 type FileExplorerProps = {
   rootLabel: string;
   // GET `?path=<relative>` -> `{ entries: FileEntry[] }`, or `{ error }` on failure.
@@ -140,6 +243,12 @@ type FileExplorerProps = {
   onError?: (message: string) => void;
   defaultSort?: SortState;
   toolbarAction?: ReactNode;
+  // Shows an upload button that sends the picked files into the current folder
+  // ('' at the root). Hidden when omitted.
+  onUpload?: (folderPath: string, files: File[]) => Promise<void>;
+  // Shows a delete button for the selected file, behind a confirmation.
+  // Hidden when omitted; folders are never offered.
+  onDelete?: (entry: FileEntry) => Promise<void>;
 };
 
 const DEFAULT_SORT: SortState = {
@@ -155,6 +264,8 @@ export const FileExplorer = ({
   onError,
   defaultSort = DEFAULT_SORT,
   toolbarAction,
+  onUpload,
+  onDelete,
 }: FileExplorerProps) => {
   // null until mounted: the folder lives in `?path=` so a page reload or the
   // browser's back/forward keeps it, and `window` is unavailable during SSR.
@@ -166,6 +277,7 @@ export const FileExplorer = ({
   const [viewMode, setViewMode] = useState<ViewMode>(VIEW_MODE.LIST);
   const [sort, setSort] = useState<SortState>(defaultSort);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
+  const [mutating, setMutating] = useState(false);
 
   const loadEntries = useCallback(
     async (path: string) => {
@@ -227,6 +339,34 @@ export const FileExplorer = ({
       preview?.close();
       onError?.(err instanceof Error ? err.message : 'Failed to open file');
     }
+  };
+
+  const runMutation = async (action: () => Promise<void>, fallback: string) => {
+    setMutating(true);
+    try {
+      await action();
+      await loadEntries(currentPath ?? '');
+    } catch (err) {
+      onError?.(err instanceof Error ? err.message : fallback);
+    } finally {
+      setMutating(false);
+    }
+  };
+
+  const uploadFiles = (files: File[]) => {
+    if (!onUpload || files.length === 0) return;
+    runMutation(
+      () => onUpload(currentPath ?? '', files),
+      'Failed to upload files',
+    );
+  };
+
+  const deleteEntry = (entry: FileEntry) => {
+    if (!onDelete) return;
+    runMutation(async () => {
+      await onDelete(entry);
+      setSelectedPath(null);
+    }, 'Failed to delete file');
   };
 
   const openEntry = (entry: FileEntry) =>
@@ -308,6 +448,19 @@ export const FileExplorer = ({
 
         <div className="ml-auto flex items-center gap-2">
           {toolbarAction}
+          {onUpload && (
+            <UploadButton
+              disabled={mutating || currentPath === null}
+              onFiles={uploadFiles}
+            />
+          )}
+          {onDelete && (
+            <DeleteFileButton
+              selectedEntry={selectedEntry}
+              disabled={mutating}
+              onConfirm={deleteEntry}
+            />
+          )}
           <div className="relative w-[180px]">
             <Search
               size={12}
@@ -347,7 +500,7 @@ export const FileExplorer = ({
             onClick={() => loadEntries(currentPath ?? '')}
             className={iconButtonClassName()}
           >
-            {loading ? (
+            {loading || mutating ? (
               <Loader2 size={14} className="animate-spin" />
             ) : (
               <RefreshCw size={14} />
