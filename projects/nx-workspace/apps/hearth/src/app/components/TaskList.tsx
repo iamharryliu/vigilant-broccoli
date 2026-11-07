@@ -32,6 +32,7 @@ import { ChecklistItem } from '../../lib/types';
 import { toYmd } from '../../lib/date-utils';
 import { TaskDraft, TaskManagerDialog } from './TaskManagerDialog';
 import { AssignTaskDialog } from './AssignTaskDialog';
+import { TaskListSkeleton } from './TaskListSkeleton';
 import {
   LEGACY_TASK_STORAGE_KEYS,
   RecurringTask,
@@ -75,6 +76,7 @@ export function TaskList() {
   const [tasks, setTasks] = useState<RecurringTask[]>([]);
   const [oneOffTasks, setOneOffTasks] = useState<ChecklistItem[]>([]);
   const [completions, setCompletions] = useState<TaskCompletion[]>([]);
+  const [loading, setLoading] = useState(true);
   const [managerOpen, setManagerOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -110,7 +112,8 @@ export function TaskList() {
     setOneOffTasks([]);
     setCompletions([]);
     setMembers([]);
-    fetchTasks();
+    setLoading(true);
+    fetchTasks().finally(() => setLoading(false));
   }, [fetchTasks]);
 
   const sensors = useSensors(
@@ -441,25 +444,29 @@ export function TaskList() {
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <CheckList
-          items={items}
-          enableDragDrop
-          listId="recurring-tasks"
-          editingItemId={editingId}
-          editingItemTitle={editingTitle}
-          onToggleCheck={handleToggle}
-          onStartEdit={handleStartEdit}
-          onEditChange={setEditingTitle}
-          onSaveEdit={handleSaveEdit}
-          onCancelEdit={handleCancelEdit}
-          editor="input"
-          rowVariant="dense"
-          size="3"
-          editCompleted={false}
-          storageKeyPrefix="recurring-tasks"
-          emptyLabel="No tasks due today"
-          renderItemAccessory={renderItemAccessory}
-        />
+        {loading ? (
+          <TaskListSkeleton />
+        ) : (
+          <CheckList
+            items={items}
+            enableDragDrop
+            listId="recurring-tasks"
+            editingItemId={editingId}
+            editingItemTitle={editingTitle}
+            onToggleCheck={handleToggle}
+            onStartEdit={handleStartEdit}
+            onEditChange={setEditingTitle}
+            onSaveEdit={handleSaveEdit}
+            onCancelEdit={handleCancelEdit}
+            editor="input"
+            rowVariant="dense"
+            size="3"
+            editCompleted={false}
+            storageKeyPrefix="recurring-tasks"
+            emptyLabel="No tasks due today"
+            renderItemAccessory={renderItemAccessory}
+          />
+        )}
       </DndContext>
       <TaskManagerDialog
         open={managerOpen}
