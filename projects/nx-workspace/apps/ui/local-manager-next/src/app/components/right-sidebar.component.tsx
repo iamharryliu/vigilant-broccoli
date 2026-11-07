@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Languages,
   FolderOpen,
+  Cloud,
   Music,
   ListChecks,
 } from 'lucide-react';
@@ -31,6 +32,7 @@ const SIDEBAR_ROUTE_ITEMS = [
   { route: SIDEBAR_ROUTE.CHATBOT, icon: MessageSquare },
   { route: SIDEBAR_ROUTE.LANGUAGE_LEARNING, icon: Languages },
   { route: SIDEBAR_ROUTE.CAREER2, icon: FolderOpen },
+  { route: SIDEBAR_ROUTE.CMS, icon: Cloud },
   { route: SIDEBAR_ROUTE.MUSIC, icon: Music },
   { route: SIDEBAR_ROUTE.BACKGROUND_TASKS, icon: ListChecks },
 ];

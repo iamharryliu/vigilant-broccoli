@@ -57,6 +57,11 @@ const STORAGE_PROVIDER_PARAM = {
 };
 const STORAGE_BUCKET_NAME_PARAM = queryParam('bucketName', false);
 const STORAGE_FILE_NAME_PARAM = queryParam('fileName');
+const STORAGE_FOLDER_PARAM = {
+  ...queryParam('folder', false),
+  description:
+    'Folder the uploaded files are stored under (keys become <folder>/<basename>); no leading slash, empty or ".." segments.',
+};
 const STORAGE_EXPIRES_IN_SECONDS_PARAM = queryParam('expiresInSeconds');
 const STORAGE_ERROR_RESPONSE = {
   description: 'storage-service error (message includes its status)',
@@ -357,7 +362,11 @@ export const swaggerSpec = createSwaggerSpec({
       },
       post: {
         summary: 'Upload files to a storage-service bucket',
-        parameters: [STORAGE_PROVIDER_PARAM, STORAGE_BUCKET_NAME_PARAM],
+        parameters: [
+          STORAGE_PROVIDER_PARAM,
+          STORAGE_BUCKET_NAME_PARAM,
+          STORAGE_FOLDER_PARAM,
+        ],
         requestBody: {
           required: true,
           content: {

@@ -45,7 +45,9 @@ Management dashboard with calendar, notepad and quick links home tabs.
   - `react-utility`
   - `resume`
   - `security-news`
+  - `storage`
 - Cloud services
+  - Cloudflare R2
   - GitHub REST API
   - Google OAuth
   - Google Tasks & Calendar

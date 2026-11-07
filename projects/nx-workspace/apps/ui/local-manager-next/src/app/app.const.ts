@@ -46,6 +46,10 @@ export const SIDEBAR_ROUTE = {
     title: 'Career 2',
     path: '/career2',
   },
+  CMS: {
+    title: 'CMS',
+    path: '/cms',
+  },
   MUSIC: {
     title: 'Music',
     path: '/music',
