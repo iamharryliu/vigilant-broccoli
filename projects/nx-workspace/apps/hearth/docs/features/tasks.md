@@ -2,12 +2,12 @@
 
 ## Overview
 
-The home page's Tasks tab (`src/app/components/TaskList.tsx`) lists the selected home's recurring tasks due today followed by its one-off tasks, shared by every accepted member. On mobile the same list is the `/tasks` page, reached from the Home group in the sidebar.
+The home page's Tasks tab (`src/app/components/TaskList.tsx`) lists the selected home's pending recurring instances followed by its one-off tasks and completed instances, shared by every accepted member. On mobile the same list is the `/tasks` page, reached from the Home group in the sidebar.
 
-- Recurring tasks repeat on chosen weekdays and are managed in `TaskManagerDialog`; a check-off counts for the member's local day only, so the task reappears unchecked the next day it is due.
+- Recurring tasks repeat on chosen weekdays and are managed in `TaskManagerDialog`; each occurrence is its own instance. A task has at most one pending instance: it appears on a due weekday after the latest completion (or its creation date), stays listed, labelled `(due <date>)`, until completed even on non-due days, and after completion the next one appears on the next due weekday. A completed instance (`Title (Nov 5)`) stays in Completed indefinitely, like completed one-off tasks, and unchecking it removes that completion; instances completed on an earlier day are left out of today's progress. Deleting a recurring task deletes its completed instances.
 - One-off tasks are added inline, renamed by clicking them and deleted from the row's ellipsis menu.
 - Every row's ellipsis menu has Assign, which opens `AssignTaskDialog` listing the home's accepted members (owner included) plus Unassigned. Any member can assign any task to one member; the row then shows a badge with the assignee's `display_name`, falling back to email. An assignee no longer in the home gets no badge.
-- Drag-to-reorder works within the same kind; recurring tasks not due today keep their place.
+- Drag-to-reorder works within the same kind; recurring tasks without a pending instance keep their place. Completed instances show their task's assignee.
 - A new home starts with no tasks. Only the dev-only "Reset recurring tasks to default" button loads `DEFAULT_TASKS` from `tasks.utils.ts`, replacing the home's recurring tasks.
 - The former localStorage keys (`home:recurring-tasks`, `home:recurring-tasks-done`, `home:one-off-tasks`) are not imported; the component removes them from the browser.
 
@@ -28,8 +28,8 @@ Every table is exported under the Tasks option of [Export Data](./export-data.md
 - `PATCH /api/tasks/recurring` — update `title`/`days`/`assignedUserId` (null clears) by `id`, or reorder with `order: [{ id, position }]`
 - `DELETE /api/tasks/recurring` — delete by `id`
 - `POST /api/tasks/recurring/reset` — replace a home's recurring tasks with the defaults
-- `GET /api/tasks/completions?homeId=&date=` — ids of recurring tasks completed on `date`
-- `POST /api/tasks/completions` — set (`completed: true`) or clear a completion for `taskId` on `date`
+- `GET /api/tasks/completions?homeId=` — every completion of the home as `{ id, taskId, date }`, oldest first
+- `POST /api/tasks/completions` — set (`completed: true`, returns the `{ id, taskId, date }` row) or clear a completion for `taskId` on `date`
 - `/api/tasks/one-off` — `createChecklistHandlers` with `assignable: true` (`GET`, `POST`, `PATCH`, `DELETE`), so items carry `assignedUserId` and `PATCH` accepts it
 - `GET /api/homes/[id]/members` — assignee choices: accepted rows with a `user_id`, labelled by `display_name`
 

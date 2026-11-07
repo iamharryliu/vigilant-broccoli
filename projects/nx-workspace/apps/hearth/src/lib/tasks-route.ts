@@ -13,6 +13,7 @@ export const toRecurringTask = (row: Record<string, unknown>) => ({
   days: row.days,
   position: row.position,
   homeId: row.home_id,
+  createdAt: row.created_at,
   assignedUserId: row.assigned_user_id ?? null,
 });
 
