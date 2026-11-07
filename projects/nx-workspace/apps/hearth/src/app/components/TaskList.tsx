@@ -28,11 +28,12 @@ import { IS_DEV } from '../app.consts';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
+import { assertOk, usePendingWrites } from '../hooks/use-pending-writes';
 import { ChecklistItem } from '../../lib/types';
 import { toYmd } from '../../lib/date-utils';
 import { TaskDraft, TaskManagerDialog } from './TaskManagerDialog';
 import { AssignTaskDialog } from './AssignTaskDialog';
-import { TaskListSkeleton } from './TaskListSkeleton';
+import { ChecklistSkeleton } from './ChecklistSkeleton';
 import {
   LEGACY_TASK_STORAGE_KEYS,
   RecurringTask,
@@ -47,6 +48,7 @@ import {
 const ASSIGN_LABEL = 'Assign';
 const DELETE_LABEL = 'Delete';
 const ACCEPTED_STATUS = 'accepted';
+const LOADING_LABEL = 'Loading tasks';
 
 const toPositions = (list: { id: string }[]) =>
   list.map(({ id }, position) => ({ id, position }));
@@ -85,6 +87,15 @@ export function TaskList() {
   const [assigningItem, setAssigningItem] = useState<CheckListItem | null>(
     null,
   );
+  // Recurring instances change id when completed or reopened; each new id maps
+  // to the row it replaces so CheckList plays the completion transition.
+  const [transitionFrom, setTransitionFrom] = useState<Record<string, string>>(
+    {},
+  );
+  const { pendingIds, isPending, write } = usePendingWrites();
+
+  const continueRow = (id: string, fromId: string) =>
+    setTransitionFrom(prev => ({ ...prev, [id]: fromId }));
 
   useEffect(() => {
     LEGACY_TASK_STORAGE_KEYS.forEach(key => localStorage.removeItem(key));
@@ -165,7 +176,11 @@ export function TaskList() {
       title: task.name,
       checked: task.completed,
     })),
-  ];
+  ].map(item => ({
+    ...item,
+    transitionFromId: transitionFrom[item.id],
+    isRemoving: pendingIds.has(item.id),
+  }));
 
   // Instances completed on an earlier day stay listed but are left out of
   // today's progress.
@@ -212,44 +227,90 @@ export function TaskList() {
   };
 
   const handleToggle = (item: CheckListItem) => {
-    const completed = !item.checked;
-    if (isOneOff(item.id)) {
-      updateOneOff(item.id, {
-        completed,
-        completedAt: completed ? new Date().toISOString() : null,
-      });
-      send(TASKS_API.ONE_OFF, HTTP_METHOD.PATCH, { id: item.id, completed });
+    if (isPending(item.id)) return;
+    const oneOff = oneOffTasks.find(task => task.id === item.id);
+    if (oneOff) {
+      toggleOneOff(oneOff);
       return;
     }
     const completion = completions.find(({ id }) => id === item.id);
-    if (completion) {
-      setCompletions(prev => prev.filter(({ id }) => id !== completion.id));
-      send(TASKS_API.COMPLETIONS, HTTP_METHOD.POST, {
-        taskId: completion.taskId,
-        date: completion.date,
-        completed: false,
-      });
-      return;
-    }
-    completeTask(item.id);
+    if (completion) reopenInstance(completion);
+    else completeInstance(item.id);
+  };
+
+  const toggleOneOff = (task: ChecklistItem) => {
+    const completed = !task.completed;
+    updateOneOff(task.id, {
+      completed,
+      completedAt: completed ? new Date().toISOString() : null,
+    });
+    write(
+      task.id,
+      async () =>
+        assertOk(
+          await send(TASKS_API.ONE_OFF, HTTP_METHOD.PATCH, {
+            id: task.id,
+            completed,
+          }),
+        ),
+      () =>
+        updateOneOff(task.id, {
+          completed: task.completed,
+          completedAt: task.completedAt,
+        }),
+    );
   };
 
   // The temporary id is swapped for the stored completion's id once known, so
   // the instance never shares a key with the pending row.
-  const completeTask = async (taskId: string) => {
+  const completeInstance = (taskId: string) => {
     const date = toYmd(new Date());
     const tempId = `pending-${taskId}-${date}`;
+    continueRow(tempId, taskId);
     setCompletions(prev => [...prev, { id: tempId, taskId, date }]);
-    const res = await send(TASKS_API.COMPLETIONS, HTTP_METHOD.POST, {
-      taskId,
-      date,
-      completed: true,
-    });
-    const saved = await res.json();
-    if (saved?.id)
-      setCompletions(prev =>
-        prev.map(entry => (entry.id === tempId ? saved : entry)),
-      );
+    write(
+      tempId,
+      async () => {
+        const res = assertOk(
+          await send(TASKS_API.COMPLETIONS, HTTP_METHOD.POST, {
+            taskId,
+            date,
+            completed: true,
+          }),
+        );
+        const saved: TaskCompletion = await res.json();
+        if (!saved?.id) return;
+        continueRow(saved.id, tempId);
+        setCompletions(prev =>
+          prev.map(entry => (entry.id === tempId ? saved : entry)),
+        );
+      },
+      () => {
+        continueRow(taskId, tempId);
+        setCompletions(prev => prev.filter(({ id }) => id !== tempId));
+      },
+    );
+  };
+
+  // Reopening brings back the task's pending row under the task id.
+  const reopenInstance = (completion: TaskCompletion) => {
+    continueRow(completion.taskId, completion.id);
+    setCompletions(prev => prev.filter(({ id }) => id !== completion.id));
+    write(
+      completion.taskId,
+      async () =>
+        assertOk(
+          await send(TASKS_API.COMPLETIONS, HTTP_METHOD.POST, {
+            taskId: completion.taskId,
+            date: completion.date,
+            completed: false,
+          }),
+        ),
+      () => {
+        continueRow(completion.id, completion.taskId);
+        setCompletions(prev => [...prev, completion]);
+      },
+    );
   };
 
   const handleDeleteOneOff = (id: string) => {
@@ -445,7 +506,7 @@ export function TaskList() {
         onDragEnd={handleDragEnd}
       >
         {loading ? (
-          <TaskListSkeleton />
+          <ChecklistSkeleton label={LOADING_LABEL} showBadges />
         ) : (
           <CheckList
             items={items}

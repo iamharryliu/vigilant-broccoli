@@ -4,12 +4,12 @@ Layered checklist components in `libs/@vigilant-broccoli/react-lib`.
 
 ## Layers
 
-- `CheckListBase` — purely presentational: no dnd-kit. Splits items into active rows and a collapsible `Completed (n)` section (`CollapsibleList`, open state persisted under `storageKeyPrefix` + `completedSectionId`). Completed rows sort by `completedAt ?? updatedAt`, newest first.
-- `CheckList` — `CheckListBase` plus dnd-kit sorting, the `taskList` droppable, a drag-over placeholder, the slide-in animation, and per-item `notes`/`due`.
+- `CheckListBase` — purely presentational: no dnd-kit. Splits items into active rows and a collapsible `Completed (n)` section (`CollapsibleList`, open state persisted under `storageKeyPrefix` + `completedSectionId`). Completed rows sort by `completedAt ?? updatedAt`, newest first. Owns the slide-in and completion transitions; see [checklist-completion.md](./checklist-completion.md) for their consumer contract.
+- `CheckList` — `CheckListBase` plus dnd-kit sorting, the `taskList` droppable, a drag-over placeholder, and per-item `notes`/`due`.
 
 ## CheckListBase
 
-- Generic over `CheckListBaseItem` (`id`, `title`, `checked`, optional `completedAt`, `updatedAt`, `isNew`, `isRemoving`); all state is controlled by the caller (`editingItemId`, `editingItemTitle`, `onToggleCheck`, `onStartEdit`, `onEditChange`, `onSaveEdit`, `onCancelEdit`).
+- Generic over `CheckListBaseItem` (`id`, `title`, `checked`, optional `completedAt`, `updatedAt`, `isNew`, `isRemoving`, `transitionFromId`); all state is controlled by the caller (`editingItemId`, `editingItemTitle`, `onToggleCheck`, `onStartEdit`, `onEditChange`, `onSaveEdit`, `onCancelEdit`).
 - `editor` — `'textarea'` (default, Enter saves, Shift+Enter newline) or `'input'`; Escape cancels, blur saves.
 - Editable titles render as buttons so keyboard users can start editing; each checkbox is labeled with its item's title.
 - `rowVariant` — `'card'` (default, hover highlight) or `'dense'` (centered rows with divider lines); `size` sets the title's text size; `editCompleted={false}` makes completed titles read-only.
@@ -19,4 +19,4 @@ Layered checklist components in `libs/@vigilant-broccoli/react-lib`.
 ## Compatibility
 
 - `CheckList` keeps its props, `CheckListItem` type, localStorage keys and the dnd payload (`type: 'task'`, `task`, `taskListId`; droppable `type: 'taskList'`) read by `apps/ui/local-manager-next`'s kanban handlers. See that app's `CONTEXT.md` before changing them.
-- Consumers: `TaskChecklist`, `GoogleTasks`, the component-library `CheckListDemo`, `react-lib-higher-level`'s checklist viewer and hearth (`CheckListBase`).
+- Consumers: `TaskChecklist`, `GoogleTasks`, the component-library `CheckListDemo`, `react-lib-higher-level`'s checklist viewer and hearth's tasks and checklists (`CheckList`).
