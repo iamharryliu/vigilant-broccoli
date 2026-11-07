@@ -149,6 +149,9 @@
     "ROTATE_COPY": "Balloono on mobile plays in landscape. Turn your phone sideways to start.",
     "DIRECTION_PAD": "Direction pad",
     "DROP": "Drop balloon",
+    "BALLOONS_LEVEL": "Balloons: {level}",
+    "SPEED_LEVEL": "Speed: {level}",
+    "RANGE_LEVEL": "Range: {level}",
     "MUTE": "Mute",
     "UNMUTE": "Unmute",
     "RESTART": "Restart"
