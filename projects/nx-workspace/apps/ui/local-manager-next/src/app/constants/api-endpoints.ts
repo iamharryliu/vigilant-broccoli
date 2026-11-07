@@ -55,6 +55,9 @@ export const API_ENDPOINTS = {
   JOB_APPLICATIONS: '/api/job-applications',
   JOB_APPLICATIONS_FILE: '/api/job-applications/file',
 
+  CMS: '/api/cms',
+  CMS_FILE: '/api/cms/file',
+
   // Spotify
   SPOTIFY_AUTH_LOGIN: '/api/spotify/auth/login',
   SPOTIFY_GRAPH: '/api/spotify/graph',
