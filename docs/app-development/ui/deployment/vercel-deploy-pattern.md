@@ -55,7 +55,6 @@ Existing projects pick the protection up on their next staging deploy.
 
 ## Gotchas
 
-- `sharp` must remain in the workspace root `dependencies` — required for Vercel serverless bundling of the `hearth` `/api/where-is` route.
 - Apps with Supabase sign-in need their real deployed domains in `uri_allow_list` — follow [supabase-auth-pattern.md](../auth/supabase-auth-pattern.md); a missing entry silently redirects to `site_url`.
 - `vercel deploy` must keep `--archive=tgz`: per-file uploads across all apps exhaust the free plan's 5000 uploads/24h and fail with `Too many requests - try again in 24 hours (more than 5000, code: "api-upload-free")`. The limit resets after 24 hours, so re-runs fail until then.
 

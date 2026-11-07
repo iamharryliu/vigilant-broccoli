@@ -5,6 +5,7 @@ import { swaggerSpec as bucketServiceSpec } from '../apps/api/bucket-service/src
 import { swaggerSpec as emailServiceSpec } from '../apps/api/email-service/src/swagger';
 import { swaggerSpec as emailSubscriptionServiceSpec } from '../apps/api/email-subscription-service/src/swagger';
 import { swaggerSpec as llmServiceSpec } from '../apps/api/llm-service/src/libs/swagger';
+import { swaggerSpec as mediaServiceSpec } from '../apps/api/media-service/src/libs/swagger';
 
 const OUTPUT_DIR = 'apps/ui/pages-index/public/openapi';
 
@@ -22,6 +23,11 @@ const SPECS: SpecEntry[] = [
   { slug: 'email-subscription-service', spec: emailSubscriptionServiceSpec },
   { slug: 'llm-service', spec: llmServiceSpec },
   { slug: 'bucket-service', spec: bucketServiceSpec },
+  {
+    slug: 'media-service',
+    spec: mediaServiceSpec,
+    publicUrl: 'https://staging-media-service.fly.dev',
+  },
   { slug: 'employee-handler', spec: createEmployeeHandlerOpenApiSpec() },
 ];
 

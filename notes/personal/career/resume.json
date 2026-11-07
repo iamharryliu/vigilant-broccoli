@@ -83,7 +83,7 @@
       "startDate": "July 2023",
       "endDate": "present",
       "bullets": [
-        "Open source maintainer of **25 applications**, **6 API services**, **12 Docker images** and **4 npm packages**.",
+        "Open source maintainer of **25 applications**, **7 API services**, **13 Docker images** and **4 npm packages**.",
         "Design and run **agentic coding workflows** with **Claude Code**, with custom skills and **AI guardrails** for unattended agent runs.",
         "Provision and operate **multi-cloud infrastructure** with **Terraform**; build local environments and automated deployment and testing **CI/CD pipelines** with **GitHub Actions**."
       ]

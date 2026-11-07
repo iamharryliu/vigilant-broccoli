@@ -1,5 +1,6 @@
-import sharp from 'sharp';
-import { MAX_IMAGE_SIZE_BYTES, MAX_IMAGES_PER_UPLOAD } from './limits';
+import { MEDIA_SERVICE_ENDPOINT } from '@vigilant-broccoli/common-js';
+import { callMediaService } from '../../../lib/media-service';
+import { MAX_IMAGES_PER_UPLOAD } from './limits';
 
 export const ALLOWED_MIME_TYPES = new Set([
   'image/jpeg',
@@ -8,10 +9,6 @@ export const ALLOWED_MIME_TYPES = new Set([
   'image/heic',
   'image/heif',
 ]);
-const MAX_DIMENSION = 1920;
-const JPEG_QUALITY = 85;
-const LLM_MAX_DIMENSION = 512;
-const LLM_JPEG_QUALITY = 60;
 
 export interface ProcessedImage {
   buffer: Buffer;
@@ -30,6 +27,9 @@ export class ImageValidationError extends Error {
   }
 }
 
+const toValidationError = (message: string) =>
+  new ImageValidationError(message);
+
 export const validateImageCount = <T>(images: T[]) => {
   if (images.length === 0)
     throw new ImageValidationError('At least one image is required.');
@@ -44,55 +44,24 @@ export const compressForLlm = async (
 ): Promise<{ base64: string; mimeType: 'image/jpeg' }> => {
   const buffer =
     typeof input === 'string' ? Buffer.from(input, 'base64') : input;
-  const compressed = await sharp(buffer)
-    .resize({
-      width: LLM_MAX_DIMENSION,
-      height: LLM_MAX_DIMENSION,
-      fit: 'inside',
-      withoutEnlargement: true,
-    })
-    .jpeg({ quality: LLM_JPEG_QUALITY })
-    .toBuffer();
-  return { base64: compressed.toString('base64'), mimeType: 'image/jpeg' };
+  const res = await callMediaService(
+    MEDIA_SERVICE_ENDPOINT.WHERE_IS_LLM_IMAGE,
+    { buffer },
+    toValidationError,
+  );
+  return res.json();
 };
 
 export const processImage = async (
   image: StagedImage,
 ): Promise<ProcessedImage> => {
-  if (!ALLOWED_MIME_TYPES.has(image.mimeType)) {
-    throw new ImageValidationError(
-      `Unsupported image type: ${image.mimeType}. Allowed: jpeg, png, webp, heic.`,
-    );
-  }
-
-  const buffer = image.buffer;
-
-  if (buffer.byteLength > MAX_IMAGE_SIZE_BYTES) {
-    throw new ImageValidationError(
-      `Image exceeds maximum size of ${MAX_IMAGE_SIZE_BYTES / 1024 / 1024}MB.`,
-    );
-  }
-
-  // Validate it's a real image by reading metadata — rejects non-image buffers
-  const metadata = await sharp(buffer).metadata();
-  if (!metadata.width || !metadata.height) {
-    throw new ImageValidationError('Invalid image: could not read dimensions.');
-  }
-
-  const processed = await sharp(buffer)
-    .rotate() // auto-orient based on EXIF before stripping
-    .resize({
-      width: MAX_DIMENSION,
-      height: MAX_DIMENSION,
-      fit: 'inside',
-      withoutEnlargement: true,
-    })
-    .jpeg({ quality: JPEG_QUALITY, mozjpeg: true })
-    .withMetadata({ orientation: undefined }) // strip all EXIF
-    .toBuffer();
-
+  const res = await callMediaService(
+    MEDIA_SERVICE_ENDPOINT.WHERE_IS_IMAGE,
+    image,
+    toValidationError,
+  );
   return {
-    buffer: processed,
+    buffer: Buffer.from(await res.arrayBuffer()),
     mimeType: 'image/jpeg',
   };
 };
