@@ -37,8 +37,10 @@ import {
   RecurringTask,
   TASKS_API,
   TaskAssignee,
+  TaskCompletion,
+  formatInstanceDate,
   getAssigneeLabel,
-  isDueOn,
+  getPendingDueDate,
 } from './tasks.utils';
 
 const ASSIGN_LABEL = 'Assign';
@@ -72,7 +74,7 @@ export function TaskList() {
 
   const [tasks, setTasks] = useState<RecurringTask[]>([]);
   const [oneOffTasks, setOneOffTasks] = useState<ChecklistItem[]>([]);
-  const [done, setDone] = useState<string[]>([]);
+  const [completions, setCompletions] = useState<TaskCompletion[]>([]);
   const [managerOpen, setManagerOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -93,20 +95,20 @@ export function TaskList() {
       [
         `${TASKS_API.RECURRING}?homeId=${homeId}`,
         `${TASKS_API.ONE_OFF}?homeId=${homeId}`,
-        `${TASKS_API.COMPLETIONS}?homeId=${homeId}&date=${toYmd(new Date())}`,
+        `${TASKS_API.COMPLETIONS}?homeId=${homeId}`,
         `/api/homes/${homeId}/members`,
       ].map(async url => (await fetch(url, { headers })).json()),
     );
     setTasks(Array.isArray(recurring) ? recurring : []);
     setOneOffTasks(Array.isArray(oneOff) ? oneOff : []);
-    setDone(Array.isArray(completions) ? completions : []);
+    setCompletions(Array.isArray(completions) ? completions : []);
     setMembers(toAssignees(homeMembers));
   }, [homeId, token, authHeader]);
 
   useEffect(() => {
     setTasks([]);
     setOneOffTasks([]);
-    setDone([]);
+    setCompletions([]);
     setMembers([]);
     fetchTasks();
   }, [fetchTasks]);
@@ -126,16 +128,35 @@ export function TaskList() {
     });
 
   const isOneOff = (id: string) => oneOffTasks.some(task => task.id === id);
+  const isTask = (id: string) => tasks.some(task => task.id === id);
 
   const today = new Date();
+  const todayYmd = toYmd(today);
+
+  // Each recurring task has at most one pending instance (keyed by task id) and
+  // one completed instance per completion (keyed by completion id).
+  const pendingItems = tasks.flatMap(task => {
+    const dueDate = getPendingDueDate(task, completions, today);
+    if (!dueDate) return [];
+    const overdue =
+      dueDate === todayYmd ? '' : ` (due ${formatInstanceDate(dueDate)})`;
+    return [{ id: task.id, title: `${task.title}${overdue}`, checked: false }];
+  });
+  const completedItems = completions.flatMap(({ id, taskId, date }) => {
+    const task = tasks.find(({ id: candidate }) => candidate === taskId);
+    return task
+      ? [
+          {
+            id,
+            title: `${task.title} (${formatInstanceDate(date)})`,
+            checked: true,
+          },
+        ]
+      : [];
+  });
   const items: CheckListItem[] = [
-    ...tasks
-      .filter(task => isDueOn(task, today))
-      .map(task => ({
-        id: task.id,
-        title: task.title,
-        checked: done.includes(task.id),
-      })),
+    ...pendingItems,
+    ...completedItems,
     ...oneOffTasks.map(task => ({
       id: task.id,
       title: task.name,
@@ -143,10 +164,11 @@ export function TaskList() {
     })),
   ];
 
-  // One-off tasks completed on an earlier day stay listed but are left out of
+  // Instances completed on an earlier day stay listed but are left out of
   // today's progress.
-  const todayYmd = toYmd(today);
   const progressItems = items.filter(item => {
+    const completion = completions.find(({ id }) => id === item.id);
+    if (completion) return completion.date === todayYmd;
     const oneOff = oneOffTasks.find(task => task.id === item.id);
     return (
       !oneOff?.completedAt || toYmd(new Date(oneOff.completedAt)) === todayYmd
@@ -170,7 +192,7 @@ export function TaskList() {
     const reset = await res.json();
     if (Array.isArray(reset)) {
       setTasks(reset);
-      setDone([]);
+      setCompletions([]);
     }
   };
 
@@ -196,14 +218,35 @@ export function TaskList() {
       send(TASKS_API.ONE_OFF, HTTP_METHOD.PATCH, { id: item.id, completed });
       return;
     }
-    setDone(prev =>
-      completed ? [...prev, item.id] : prev.filter(id => id !== item.id),
-    );
-    send(TASKS_API.COMPLETIONS, HTTP_METHOD.POST, {
-      taskId: item.id,
-      date: toYmd(new Date()),
-      completed,
+    const completion = completions.find(({ id }) => id === item.id);
+    if (completion) {
+      setCompletions(prev => prev.filter(({ id }) => id !== completion.id));
+      send(TASKS_API.COMPLETIONS, HTTP_METHOD.POST, {
+        taskId: completion.taskId,
+        date: completion.date,
+        completed: false,
+      });
+      return;
+    }
+    completeTask(item.id);
+  };
+
+  // The temporary id is swapped for the stored completion's id once known, so
+  // the instance never shares a key with the pending row.
+  const completeTask = async (taskId: string) => {
+    const date = toYmd(new Date());
+    const tempId = `pending-${taskId}-${date}`;
+    setCompletions(prev => [...prev, { id: tempId, taskId, date }]);
+    const res = await send(TASKS_API.COMPLETIONS, HTTP_METHOD.POST, {
+      taskId,
+      date,
+      completed: true,
     });
+    const saved = await res.json();
+    if (saved?.id)
+      setCompletions(prev =>
+        prev.map(entry => (entry.id === tempId ? saved : entry)),
+      );
   };
 
   const handleDeleteOneOff = (id: string) => {
@@ -234,7 +277,8 @@ export function TaskList() {
 
   // The list mixes both kinds, so a drop only reorders when both rows belong
   // to the same one; the moved index is taken from the full array so recurring
-  // tasks not due today keep their place.
+  // tasks without a pending instance keep their place. Completed instances
+  // match neither kind.
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return;
     const move = <T extends { id: string }>(list: T[]) =>
@@ -247,7 +291,7 @@ export function TaskList() {
       const next = move(oneOffTasks);
       setOneOffTasks(next);
       send(TASKS_API.ONE_OFF, HTTP_METHOD.PATCH, { order: toPositions(next) });
-    } else if (!isOneOff(String(active.id)) && !isOneOff(String(over.id))) {
+    } else if (isTask(String(active.id)) && isTask(String(over.id))) {
       const next = move(tasks);
       setTasks(next);
       send(TASKS_API.RECURRING, HTTP_METHOD.PATCH, {
@@ -276,7 +320,7 @@ export function TaskList() {
 
   const handleDeleteTask = (id: string) => {
     setTasks(prev => prev.filter(task => task.id !== id));
-    setDone(prev => prev.filter(doneId => doneId !== id));
+    setCompletions(prev => prev.filter(({ taskId }) => taskId !== id));
     send(TASKS_API.RECURRING, HTTP_METHOD.DELETE, { id });
   };
 
@@ -284,9 +328,15 @@ export function TaskList() {
     if (e.key === 'Enter') handleAdd();
   };
 
-  const getAssignedUserId = (id: string) =>
-    (oneOffTasks.find(task => task.id === id) ?? tasks.find(t => t.id === id))
-      ?.assignedUserId ?? null;
+  const getAssignedUserId = (id: string) => {
+    const taskId = completions.find(entry => entry.id === id)?.taskId ?? id;
+    return (
+      (
+        oneOffTasks.find(task => task.id === taskId) ??
+        tasks.find(t => t.id === taskId)
+      )?.assignedUserId ?? null
+    );
+  };
 
   const handleAssign = (assignedUserId: string | null) => {
     if (!assigningItem) return;
@@ -297,10 +347,16 @@ export function TaskList() {
       send(TASKS_API.ONE_OFF, HTTP_METHOD.PATCH, { id, assignedUserId });
       return;
     }
+    const taskId = completions.find(entry => entry.id === id)?.taskId ?? id;
     setTasks(prev =>
-      prev.map(task => (task.id === id ? { ...task, assignedUserId } : task)),
+      prev.map(task =>
+        task.id === taskId ? { ...task, assignedUserId } : task,
+      ),
     );
-    send(TASKS_API.RECURRING, HTTP_METHOD.PATCH, { id, assignedUserId });
+    send(TASKS_API.RECURRING, HTTP_METHOD.PATCH, {
+      id: taskId,
+      assignedUserId,
+    });
   };
 
   // An assignee who has since left the home is missing from members, so the

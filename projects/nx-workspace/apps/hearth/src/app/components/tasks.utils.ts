@@ -1,12 +1,27 @@
+import { toYmd } from '../../lib/date-utils';
+
 export type RecurringTask = {
   id: string;
   title: string;
   /** Weekdays the task shows on, 0 = Sunday (Date.getDay). */
   days: number[];
+  /** ISO timestamp; its local date bounds the first pending instance. */
+  createdAt?: string;
   assignedUserId?: string | null;
 };
 
-export type DefaultTask = Omit<RecurringTask, 'id' | 'assignedUserId'>;
+/** One completed occurrence of a recurring task. */
+export type TaskCompletion = {
+  id: string;
+  taskId: string;
+  /** Client-local YYYY-MM-DD the occurrence was completed on. */
+  date: string;
+};
+
+export type DefaultTask = Omit<
+  RecurringTask,
+  'id' | 'assignedUserId' | 'createdAt'
+>;
 
 /** An accepted home member (owner included) a task can be assigned to. */
 export type TaskAssignee = {
@@ -57,8 +72,52 @@ export const DEFAULT_TASKS: DefaultTask[] = [
   task('Take out trash', [FRIDAY]),
 ];
 
-export const isDueOn = (task: RecurringTask, date: Date) =>
+export const isDueOn = (task: Pick<RecurringTask, 'days'>, date: Date) =>
   task.days.includes(date.getDay());
+
+const DAYS_PER_WEEK = 7;
+
+const fromYmd = (ymd: string) => {
+  const [year, month, day] = ymd.split('-').map(Number);
+  return new Date(year, month - 1, day);
+};
+
+/**
+ * Due date (YYYY-MM-DD) of the task's single pending instance on `today`, or
+ * null. A pending instance exists when a due weekday falls after the latest
+ * completion (or on/after the creation date with none) and on/before today;
+ * the earliest such day is returned so a missed occurrence carries over.
+ */
+export const getPendingDueDate = (
+  task: RecurringTask,
+  completions: TaskCompletion[],
+  today: Date,
+): string | null => {
+  const latest = completions
+    .filter(({ taskId }) => taskId === task.id)
+    .reduce<string | null>(
+      (max, { date }) => (max === null || date > max ? date : max),
+      null,
+    );
+  const cursor = latest
+    ? fromYmd(latest)
+    : task.createdAt
+      ? new Date(new Date(task.createdAt).setHours(0, 0, 0, 0))
+      : null;
+  if (!cursor) return isDueOn(task, today) ? toYmd(today) : null;
+  if (latest) cursor.setDate(cursor.getDate() + 1);
+
+  const end = fromYmd(toYmd(today));
+  for (let i = 0; i < DAYS_PER_WEEK && cursor <= end; i++) {
+    if (isDueOn(task, cursor)) return toYmd(cursor);
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return null;
+};
+
+/** Short label such as "Nov 5" for a completed instance's date. */
+export const formatInstanceDate = (ymd: string) =>
+  fromYmd(ymd).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
 export const describeDays = (days: number[]) =>
   isEveryDay(days)

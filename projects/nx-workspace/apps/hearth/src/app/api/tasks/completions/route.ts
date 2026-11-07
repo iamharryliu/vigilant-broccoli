@@ -15,21 +15,25 @@ export const runtime = 'nodejs';
 const getSupabase = (req: NextRequest) =>
   createServerClient(getBearerToken(req));
 
-// `date` is the client's local YYYY-MM-DD, since "today" is the member's day.
+const toCompletion = ({ id, task_id, date }: Record<string, string>) => ({
+  id,
+  taskId: task_id,
+  date,
+});
+
+// Every completed occurrence stays listed, so the whole history is returned.
 export const GET = async (req: NextRequest) => {
-  const { searchParams } = new URL(req.url);
-  const homeId = searchParams.get('homeId');
-  const date = searchParams.get('date');
-  if (!homeId || !date) return badRequest('homeId and date are required');
+  const homeId = new URL(req.url).searchParams.get('homeId');
+  if (!homeId) return badRequest('homeId is required');
 
   const { data, error } = await getSupabase(req)
     .from(RECURRING_TASK_COMPLETIONS_TABLE)
-    .select('task_id')
+    .select('id, task_id, date')
     .eq('home_id', homeId)
-    .eq('date', date);
+    .order('date');
   if (error) return serverError(error.message);
 
-  return Response.json((data ?? []).map(({ task_id }) => task_id));
+  return Response.json((data ?? []).map(toCompletion));
 };
 
 export const POST = async (req: NextRequest) => {
@@ -57,13 +61,15 @@ export const POST = async (req: NextRequest) => {
     .single();
   if (taskError) return serverError(taskError.message);
 
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from(RECURRING_TASK_COMPLETIONS_TABLE)
     .upsert(
       { task_id: taskId, home_id: task.home_id, date },
-      { onConflict: 'task_id,date', ignoreDuplicates: true },
-    );
+      { onConflict: 'task_id,date' },
+    )
+    .select('id, task_id, date')
+    .single();
   if (error) return serverError(error.message);
 
-  return Response.json({ success: true });
+  return Response.json(toCompletion(data));
 };
