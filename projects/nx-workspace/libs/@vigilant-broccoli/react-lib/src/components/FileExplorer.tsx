@@ -37,6 +37,7 @@ import {
   AlertDialogTrigger,
 } from './AlertDialog';
 import { Button } from './Button';
+import { Skeleton } from './Skeleton';
 
 const VIEW_MODE = { LIST: 'list', GRID: 'grid' } as const;
 type ViewMode = (typeof VIEW_MODE)[keyof typeof VIEW_MODE];
@@ -68,12 +69,22 @@ const COLUMNS: { column: SortColumn; label: string; className: string }[] = [
 ];
 
 const IMAGE_EXTENSIONS = ['png', 'jpg', 'jpeg', 'gif', 'webp', 'svg'];
-const TEXT_EXTENSIONS = ['pdf', 'txt', 'md', 'doc', 'docx', 'json', 'html'];
+const PDF_EXTENSION = 'pdf';
+const TEXT_EXTENSIONS = [
+  PDF_EXTENSION,
+  'txt',
+  'md',
+  'doc',
+  'docx',
+  'json',
+  'html',
+];
 const FILE_SIZE_UNITS = ['B', 'KB', 'MB', 'GB'];
 const BYTES_PER_UNIT = 1024;
 const OBJECT_URL_REVOKE_DELAY_MS = 60_000;
 const PATH_SEPARATOR = '/';
 const PATH_QUERY_PARAM = 'path';
+const THUMBNAIL_ROOT_MARGIN = '200px';
 
 const readPathFromUrl = () =>
   new URLSearchParams(window.location.search).get(PATH_QUERY_PARAM) ?? '';
@@ -138,6 +149,217 @@ const EntryIcon = ({ entry, size }: { entry: FileEntry; size: number }) => {
   if (TEXT_EXTENSIONS.includes(extension)) return <FileText size={size} />;
   return <FileIcon size={size} />;
 };
+
+const isImageFile = (entry: FileEntry) =>
+  entry.kind === FILE_ENTRY_KIND.FILE &&
+  IMAGE_EXTENSIONS.includes(getExtension(entry.name));
+
+type FetchFileBlob = (path: string) => Promise<Blob>;
+
+type ObjectUrlState = {
+  url: string | null;
+  loading: boolean;
+  error: string | null;
+};
+
+const IDLE_OBJECT_URL: ObjectUrlState = {
+  url: null,
+  loading: false,
+  error: null,
+};
+
+// The file route needs the bearer token, so `<img src>`/`<iframe src>` can't
+// load it directly. Each change of `path` (or `version`, so a re-upload under
+// the same name refreshes) revokes the previous URL, and responses for a path
+// that is no longer current are dropped.
+const useFileObjectUrl = (
+  fetchFileBlob: FetchFileBlob,
+  path: string | null,
+  version?: string,
+) => {
+  const [state, setState] = useState<ObjectUrlState>(IDLE_OBJECT_URL);
+
+  useEffect(() => {
+    if (!path) {
+      setState(IDLE_OBJECT_URL);
+      return;
+    }
+    let current = true;
+    let url: string | null = null;
+    setState({ url: null, loading: true, error: null });
+    fetchFileBlob(path)
+      .then(blob => {
+        if (!current) return;
+        url = URL.createObjectURL(blob);
+        setState({ url, loading: false, error: null });
+      })
+      .catch(err => {
+        if (!current) return;
+        setState({
+          url: null,
+          loading: false,
+          error: err instanceof Error ? err.message : 'Failed to load file',
+        });
+      });
+    return () => {
+      current = false;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [fetchFileBlob, path, version]);
+
+  return state;
+};
+
+// Fetches only once the tile scrolls into view; the icon shows until then and
+// on failure.
+const GridThumbnail = ({
+  entry,
+  fetchFileBlob,
+}: {
+  entry: FileEntry;
+  fetchFileBlob: FetchFileBlob;
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element || visible) return;
+    const observer = new IntersectionObserver(
+      observed => {
+        if (observed.some(item => item.isIntersecting)) setVisible(true);
+      },
+      { rootMargin: THUMBNAIL_ROOT_MARGIN },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [visible]);
+
+  const { url } = useFileObjectUrl(
+    fetchFileBlob,
+    visible ? entry.path : null,
+    entry.modified,
+  );
+
+  return (
+    <div
+      ref={ref}
+      className="flex h-16 w-16 items-center justify-center text-gray-400 dark:text-gray-500"
+    >
+      {url ? (
+        <img
+          src={url}
+          alt={entry.name}
+          className="h-full w-full rounded object-cover"
+        />
+      ) : (
+        <EntryIcon entry={entry} size={48} />
+      )}
+    </div>
+  );
+};
+
+const FilePreview = ({
+  entry,
+  fetchFileBlob,
+}: {
+  entry: FileEntry;
+  fetchFileBlob: FetchFileBlob;
+}) => {
+  const extension = getExtension(entry.name);
+  const embeddable =
+    IMAGE_EXTENSIONS.includes(extension) || extension === PDF_EXTENSION;
+  const { url, loading, error } = useFileObjectUrl(
+    fetchFileBlob,
+    embeddable ? entry.path : null,
+    entry.modified,
+  );
+
+  if (!embeddable) {
+    return (
+      <div className="flex flex-col items-center gap-2 text-gray-400 dark:text-gray-500">
+        <EntryIcon entry={entry} size={64} />
+        {extension && (
+          <span className="text-xs font-medium">{extension.toUpperCase()}</span>
+        )}
+      </div>
+    );
+  }
+  if (loading) return <Skeleton className="h-full w-full" />;
+  if (error || !url) {
+    return (
+      <div className="px-4 text-center text-xs text-red-500">
+        {error ?? 'Failed to load file'}
+      </div>
+    );
+  }
+  if (extension === PDF_EXTENSION) {
+    return (
+      <iframe src={url} title={entry.name} className="h-full w-full border-0" />
+    );
+  }
+  return (
+    <img
+      src={url}
+      alt={entry.name}
+      className="max-h-full max-w-full object-contain"
+    />
+  );
+};
+
+const PreviewSidebar = ({
+  entry,
+  open,
+  onToggle,
+  onOpen,
+  fetchFileBlob,
+}: {
+  entry: FileEntry;
+  open: boolean;
+  onToggle: () => void;
+  onOpen: () => void;
+  fetchFileBlob: FetchFileBlob;
+}) => (
+  <aside
+    aria-label="File preview"
+    className={`relative flex-shrink-0 border-l border-gray-100 transition-all dark:border-gray-800 ${open ? 'w-72' : 'w-0'}`}
+  >
+    <button
+      type="button"
+      aria-label={open ? 'Collapse preview' : 'Expand preview'}
+      aria-expanded={open}
+      onClick={onToggle}
+      className="absolute -left-4 top-1/2 z-20 flex h-10 w-4 -translate-y-1/2 items-center justify-center rounded-l-md border border-r-0 border-gray-200 bg-white text-xs text-gray-500 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800"
+    >
+      {open ? '›' : '‹'}
+    </button>
+    <div className="h-full overflow-hidden">
+      <div className="flex h-full w-72 flex-col gap-4 overflow-y-auto p-4">
+        <div className="flex h-64 flex-shrink-0 items-center justify-center overflow-hidden rounded-md bg-gray-50 dark:bg-gray-900">
+          <FilePreview
+            key={entry.path}
+            entry={entry}
+            fetchFileBlob={fetchFileBlob}
+          />
+        </div>
+        <div className="flex flex-col gap-1 text-sm">
+          <div className="break-all font-medium text-gray-800 dark:text-gray-100">
+            {entry.name}
+          </div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            {entrySizeLabel(entry)}
+          </div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">
+            {formatDate(entry.modified)}
+          </div>
+        </div>
+        <Button variant="secondary" size="sm" onClick={onOpen}>
+          Open
+        </Button>
+      </div>
+    </div>
+  </aside>
+);
 
 const iconButtonClassName = (active = false) =>
   `inline-flex h-7 w-7 items-center justify-center rounded-md text-gray-600 transition-colors hover:bg-gray-100 disabled:pointer-events-none disabled:opacity-40 dark:text-gray-300 dark:hover:bg-gray-800 ${
@@ -278,6 +500,7 @@ export const FileExplorer = ({
   const [sort, setSort] = useState<SortState>(defaultSort);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
   const [mutating, setMutating] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(true);
 
   const loadEntries = useCallback(
     async (path: string) => {
@@ -325,14 +548,21 @@ export const FileExplorer = ({
 
   // The file route needs the bearer token, so a plain link can't open it;
   // fetch the blob and hand the browser an object URL instead.
+  const fetchFileBlob = useCallback(
+    async (path: string) => {
+      const response = await fetcher(
+        `${fileEndpoint}?path=${encodeURIComponent(path)}`,
+      );
+      if (!response.ok) throw new Error((await response.json()).error);
+      return response.blob();
+    },
+    [fileEndpoint, fetcher],
+  );
+
   const openFile = async (entry: FileEntry) => {
     const preview = window.open('', '_blank');
     try {
-      const response = await fetcher(
-        `${fileEndpoint}?path=${encodeURIComponent(entry.path)}`,
-      );
-      if (!response.ok) throw new Error((await response.json()).error);
-      const url = URL.createObjectURL(await response.blob());
+      const url = URL.createObjectURL(await fetchFileBlob(entry.path));
       if (preview) preview.location.href = url;
       setTimeout(() => URL.revokeObjectURL(url), OBJECT_URL_REVOKE_DELAY_MS);
     } catch (err) {
@@ -401,6 +631,8 @@ export const FileExplorer = ({
     : [];
   const parentPath = segments[segments.length - 2]?.path ?? '';
   const selectedEntry = entries.find(entry => entry.path === selectedPath);
+  const previewEntry =
+    selectedEntry?.kind === FILE_ENTRY_KIND.FILE ? selectedEntry : null;
   const emptyText =
     error ?? (query ? 'No matching files' : 'This folder is empty');
   const showEmpty = !loading && visibleEntries.length === 0;
@@ -509,112 +741,130 @@ export const FileExplorer = ({
         </div>
       </div>
 
-      <div
-        className="flex min-h-0 flex-1 flex-col overflow-y-auto"
-        onClick={event => {
-          if (event.target === event.currentTarget) setSelectedPath(null);
-        }}
-      >
-        {viewMode === VIEW_MODE.LIST ? (
-          <table className="w-full select-none text-sm">
-            <thead className="sticky top-0 z-10 border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
-              <tr>
-                <th className="w-14 px-4 py-2" />
-                {COLUMNS.map(({ column, label, className }) => {
-                  const active = sort.column === column;
-                  const Chevron =
-                    sort.direction === SORT_DIRECTION.ASC
-                      ? ChevronUp
-                      : ChevronDown;
-                  return (
-                    <th
-                      key={column}
-                      className={`px-4 py-2 text-left font-medium text-gray-500 dark:text-gray-400 ${className}`}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => toggleSort(column)}
-                        className="flex items-center gap-1 hover:text-gray-800 dark:hover:text-gray-200"
+      <div className="flex min-h-0 flex-1">
+        <div
+          className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto"
+          onClick={event => {
+            if (event.target === event.currentTarget) setSelectedPath(null);
+          }}
+        >
+          {viewMode === VIEW_MODE.LIST ? (
+            <table className="w-full select-none text-sm">
+              <thead className="sticky top-0 z-10 border-b border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
+                <tr>
+                  <th className="w-14 px-4 py-2" />
+                  {COLUMNS.map(({ column, label, className }) => {
+                    const active = sort.column === column;
+                    const Chevron =
+                      sort.direction === SORT_DIRECTION.ASC
+                        ? ChevronUp
+                        : ChevronDown;
+                    return (
+                      <th
+                        key={column}
+                        className={`px-4 py-2 text-left font-medium text-gray-500 dark:text-gray-400 ${className}`}
                       >
-                        {label}
-                        {active && <Chevron size={12} aria-hidden="true" />}
-                      </button>
-                    </th>
-                  );
-                })}
-              </tr>
-            </thead>
-            <tbody>
+                        <button
+                          type="button"
+                          onClick={() => toggleSort(column)}
+                          className="flex items-center gap-1 hover:text-gray-800 dark:hover:text-gray-200"
+                        >
+                          {label}
+                          {active && <Chevron size={12} aria-hidden="true" />}
+                        </button>
+                      </th>
+                    );
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {visibleEntries.map(entry => (
+                  <tr
+                    key={entry.path}
+                    aria-selected={selectedPath === entry.path}
+                    onClick={() => setSelectedPath(entry.path)}
+                    onDoubleClick={() => openEntry(entry)}
+                    className={`cursor-pointer border-b border-gray-100 transition-colors dark:border-gray-800 ${itemClassName(selectedPath === entry.path)}`}
+                  >
+                    <td className="w-14 px-4 py-2">
+                      <div className="flex h-9 w-9 items-center justify-center text-gray-400 dark:text-gray-500">
+                        <EntryIcon entry={entry} size={20} />
+                      </div>
+                    </td>
+                    <td className="max-w-[360px] truncate px-4 py-2 font-medium text-gray-800 dark:text-gray-100">
+                      {entry.name}
+                    </td>
+                    <td className="hidden px-4 py-2 text-gray-500 dark:text-gray-400 sm:table-cell">
+                      {entrySizeLabel(entry)}
+                    </td>
+                    <td className="hidden px-4 py-2 text-gray-500 dark:text-gray-400 md:table-cell">
+                      {formatDate(entry.modified)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div
+              className="grid select-none gap-3 p-4"
+              style={{
+                gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+              }}
+            >
               {visibleEntries.map(entry => (
-                <tr
+                <div
                   key={entry.path}
                   aria-selected={selectedPath === entry.path}
                   onClick={() => setSelectedPath(entry.path)}
                   onDoubleClick={() => openEntry(entry)}
-                  className={`cursor-pointer border-b border-gray-100 transition-colors dark:border-gray-800 ${itemClassName(selectedPath === entry.path)}`}
+                  className={`flex cursor-pointer flex-col items-center gap-1.5 rounded-md p-2 text-center transition-colors ${itemClassName(selectedPath === entry.path)}`}
                 >
-                  <td className="w-14 px-4 py-2">
-                    <div className="flex h-9 w-9 items-center justify-center text-gray-400 dark:text-gray-500">
-                      <EntryIcon entry={entry} size={20} />
-                    </div>
-                  </td>
-                  <td className="max-w-[360px] truncate px-4 py-2 font-medium text-gray-800 dark:text-gray-100">
-                    {entry.name}
-                  </td>
-                  <td className="hidden px-4 py-2 text-gray-500 dark:text-gray-400 sm:table-cell">
-                    {entrySizeLabel(entry)}
-                  </td>
-                  <td className="hidden px-4 py-2 text-gray-500 dark:text-gray-400 md:table-cell">
-                    {formatDate(entry.modified)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div
-            className="grid select-none gap-3 p-4"
-            style={{
-              gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
-            }}
-          >
-            {visibleEntries.map(entry => (
-              <div
-                key={entry.path}
-                aria-selected={selectedPath === entry.path}
-                onClick={() => setSelectedPath(entry.path)}
-                onDoubleClick={() => openEntry(entry)}
-                className={`flex cursor-pointer flex-col items-center gap-1.5 rounded-md p-2 text-center transition-colors ${itemClassName(selectedPath === entry.path)}`}
-              >
-                <div className="flex h-16 w-16 items-center justify-center text-gray-400 dark:text-gray-500">
-                  <EntryIcon entry={entry} size={48} />
-                </div>
-                <div className="w-full">
-                  <div className="line-clamp-2 break-words text-xs font-medium text-gray-800 dark:text-gray-100">
-                    {entry.name}
-                  </div>
-                  {entry.kind === FILE_ENTRY_KIND.FOLDER && (
-                    <div className="text-[10px] text-gray-400 dark:text-gray-500">
-                      {itemCountLabel(entry.itemCount)}
+                  {isImageFile(entry) ? (
+                    <GridThumbnail
+                      entry={entry}
+                      fetchFileBlob={fetchFileBlob}
+                    />
+                  ) : (
+                    <div className="flex h-16 w-16 items-center justify-center text-gray-400 dark:text-gray-500">
+                      <EntryIcon entry={entry} size={48} />
                     </div>
                   )}
+                  <div className="w-full">
+                    <div className="line-clamp-2 break-words text-xs font-medium text-gray-800 dark:text-gray-100">
+                      {entry.name}
+                    </div>
+                    {entry.kind === FILE_ENTRY_KIND.FOLDER && (
+                      <div className="text-[10px] text-gray-400 dark:text-gray-500">
+                        {itemCountLabel(entry.itemCount)}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
 
-        {loading && entries.length === 0 && (
-          <div className="px-4 py-8 text-center text-sm text-gray-400 dark:text-gray-500">
-            Loading...
-          </div>
-        )}
-        {showEmpty && (
-          <div
-            className={`px-4 py-16 text-center text-sm ${error ? 'text-red-500' : 'text-gray-400 dark:text-gray-500'}`}
-          >
-            {emptyText}
-          </div>
+          {loading && entries.length === 0 && (
+            <div className="px-4 py-8 text-center text-sm text-gray-400 dark:text-gray-500">
+              Loading...
+            </div>
+          )}
+          {showEmpty && (
+            <div
+              className={`px-4 py-16 text-center text-sm ${error ? 'text-red-500' : 'text-gray-400 dark:text-gray-500'}`}
+            >
+              {emptyText}
+            </div>
+          )}
+        </div>
+        {previewEntry && (
+          <PreviewSidebar
+            entry={previewEntry}
+            open={previewOpen}
+            onToggle={() => setPreviewOpen(open => !open)}
+            onOpen={() => openFile(previewEntry)}
+            fetchFileBlob={fetchFileBlob}
+          />
         )}
       </div>
 
