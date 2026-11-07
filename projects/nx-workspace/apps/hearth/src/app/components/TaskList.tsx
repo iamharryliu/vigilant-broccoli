@@ -21,6 +21,7 @@ import {
   IconButton,
   Input,
   Progress,
+  Skeleton,
   Text,
 } from '@vigilant-broccoli/react-lib';
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
@@ -465,10 +466,19 @@ export function TaskList() {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-3">
-        <Progress value={progress} aria-label="Tasks completed" />
-        <Text size="1" color="gray" className="shrink-0">
-          {completedCount}/{progressItems.length}
-        </Text>
+        {loading ? (
+          <>
+            <Skeleton className="h-2 w-full rounded-full" />
+            <Skeleton className="h-4 w-8 shrink-0 rounded-full" />
+          </>
+        ) : (
+          <>
+            <Progress value={progress} aria-label="Tasks completed" />
+            <Text size="1" color="gray" className="shrink-0">
+              {completedCount}/{progressItems.length}
+            </Text>
+          </>
+        )}
       </div>
       {IS_DEV && (
         <Button
