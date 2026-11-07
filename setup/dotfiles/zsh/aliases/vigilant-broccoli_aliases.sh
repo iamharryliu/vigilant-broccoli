@@ -71,10 +71,21 @@ alias dockercleanup="$REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh"
 
 # Reclaim disk: Claude worktrees, Docker build cache/images, package-manager caches. Docker volumes are left alone.
 localcleanup() {
-    local worktrees_dir="$REPO_DIR/.claude/worktrees" worktree
-    local -a worktrees=() skipped=()
+    local worktrees_dir="$REPO_DIR/.claude/worktrees" worktree header
+    local -a worktrees=() skipped=() remove_args=()
     local removed=0 worktree_kb=0 kb out size label cache_path
     local summary="" docker_note="" free_before="" free_after="" width=0 line
+    case "${1:-}" in
+        "") ;;
+        --force|-f)
+            [ "$#" -eq 1 ] || { echo "Usage: localcleanup [--force|-f]" >&2; return 1; }
+            remove_args=(--force)
+            ;;
+        *)
+            echo "Usage: localcleanup [--force|-f]" >&2
+            return 1
+            ;;
+    esac
     # Keep unmatched globs harmless in zsh without changing the caller's options.
     if [ -n "${ZSH_VERSION:-}" ]; then
         setopt local_options nonomatch
@@ -84,9 +95,14 @@ localcleanup() {
         worktrees+=("${worktree%/}")
     done
 
-    echo "Claude worktrees to remove (worktrees with uncommitted changes are skipped):"
+    if [ "${#remove_args[@]}" -gt 0 ]; then
+        header="Claude worktrees to remove (including ones with uncommitted changes):"
+    else
+        header="Claude worktrees to remove (worktrees with uncommitted changes are skipped):"
+    fi
+    echo "$header"
     printf '  %s\n' "${worktrees[@]}"
-    ask "Remove them, prune Docker, and clear npm/Yarn/Cypress/pip caches?" || {
+    ask "Remove them${remove_args[*]:+ (uncommitted changes will be lost)}, prune Docker, and clear npm/Yarn/Cypress/pip caches?" || {
         echo "Cleanup canceled."
         return 0
     }
@@ -97,7 +113,7 @@ localcleanup() {
 
     for worktree in "${worktrees[@]}"; do
         kb=$(du -sk "$worktree" 2> /dev/null | cut -f1)
-        if git -C "$REPO_DIR" worktree remove "$worktree"; then
+        if git -C "$REPO_DIR" worktree remove "${remove_args[@]}" "$worktree"; then
             removed=$((removed + 1))
             worktree_kb=$((worktree_kb + ${kb:-0}))
         else
