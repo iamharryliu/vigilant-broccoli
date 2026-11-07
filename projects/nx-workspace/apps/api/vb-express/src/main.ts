@@ -50,6 +50,7 @@ const ALLOWED_ORIGINS = [
   'http://127.0.0.1:4200',
   'http://127.0.0.1:5173',
   'https://harryliu.dev',
+  'https://staging.harryliu.dev',
   'https://www.harryliu.dev',
   'https://cloud8skate.com',
   'https://www.cloud8skate.com',
@@ -61,6 +62,7 @@ const QUERY_SEPARATOR = '?';
 
 const PUBLIC_CLIENT_ORIGINS = [
   'https://calendar.harryliu.dev',
+  'https://staging-calendar.harryliu.dev',
   'https://staging-calendars.pages.dev',
   'https://production-calendars.pages.dev',
 ];
