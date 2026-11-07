@@ -6,6 +6,7 @@ Source of truth for the shape of the repo root `TODO.md`. `/local-create-pr-todo
 
 - [Structure](#structure)
 - [Row Rules](#row-rules)
+- [QA Rows](#qa-rows)
 - [Machine-Read Contract](#machine-read-contract)
 - [Staleness](#staleness)
 
@@ -19,8 +20,8 @@ Source of truth for the shape of the repo root `TODO.md`. `/local-create-pr-todo
 
 - **Bar for a row**: a row has to be worth a session of someone's time. A micro-optimization whose whole payoff is a few kB of bundle, a few forked processes per shell, or seconds on a manual operator command does not clear it, and neither does a warning with no demonstrated build, deploy, or runtime defect behind it — those are accepted, not deferred. Do not file a grab-bag row collecting several such nits under one id; each would be declined on its own, and bundling them only makes the row harder to decline. A real defect stays a row no matter how small the diff that fixes it.
 - `ID`: a unique, bare 6-hex id (no link). Generate with `python3 -c "import random; print(format(random.randint(0, 0xffffff), '06x'))"` and confirm it does not already appear in the file.
-- `Type`: one of `Security`, `Performance`, `Maintenance`, `Chore` (operational upkeep with no code defect behind it; `cron-prune-orphaned-services` keeps its orphaned-services row up to date), `Refactor`, `Feature Enhancements`, `UI Cleanup`, `Not so serious`.
-- `Priority`: `P1`/`P2`/`P3` for Security, Performance, Maintenance, Chore, Refactor, and UI Cleanup items; `NA` for Feature Enhancements and Not so serious items (nice-to-have or deliberately-accepted risk).
+- `Type`: one of `QA` (manual checks of what agentic solves shipped; see [QA Rows](#qa-rows)), `Security`, `Performance`, `Maintenance`, `Chore` (operational upkeep with no code defect behind it; `cron-prune-orphaned-services` keeps its orphaned-services row up to date), `Refactor`, `Feature Enhancements`, `UI Cleanup`, `Not so serious`.
+- `Priority`: `NA` for QA rows; `P1`/`P2`/`P3` for Security, Performance, Maintenance, Chore, Refactor, and UI Cleanup items; `NA` for Feature Enhancements and Not so serious items (nice-to-have or deliberately-accepted risk).
 - `Agent`: who can carry the fix to done. `auto` when an agent can implement and verify it entirely in a PR; `assisted` when an agent can write the change but a person must finish it outside the PR (a local `pnpm tf:apply`, secret rotation, npm publish, console setting); `human` when the work is mostly hands-on (hardware, third-party account setup) and an agent can at most update docs afterwards.
 - `Effort`: `S` (one file or config block, under an hour), `M` (several files or one service, about a session), `L` (spans services or needs ordered increments).
 - `Model`: the Claude model "Run agentic solve" dispatches `manual-agentic-pr-create` with. `haiku` for a mechanical edit that copies an existing pattern; `sonnet` (default) for ordinary implementation; `opus` for security-sensitive design, subtle correctness (SSRF guards, auth, IAM), or `L` work that needs judgment across services; `NA` when `Agent` is `human`.
@@ -29,11 +30,27 @@ Source of truth for the shape of the repo root `TODO.md`. `/local-create-pr-todo
 - `Recommended Fix`: the desired end state and remediation, naming an existing repo pattern to follow when one exists. Multi-step fixes are written `1. …<br>2. …<br>3. …` (a table cell cannot hold a real newline) and include the reference-update/cleanup steps (docs, workflows, links, status checks) so nothing dangles.
 - Escape a literal `|` inside a cell as `\|` and keep the whole row on one physical line. Rows are stored unpadded (`| a | b |`, separator cells `---`) in commits and the working tree ([Markdown table compaction](./code-quality-tools.md)), so editing a row changes only that line instead of re-padding the table and colliding with parallel agent PRs.
 
+## QA Rows
+
+`QA` rows are the manual-check backlog for what agents shipped: a person tries each check, then deletes the row (dashboard **Delete** or by hand). They are not work for an agent.
+
+- **Who writes them**: the solving agent, inside its own PR, for behavior-changing solves only: an `agentic-pr-create` or `agentic-pr-update` (`change`) run, or a local `local-create-pr`/`local-update-pr` session, whose `feat`/`fix`/`refactor` change touches app or lib code. Docs-only and TODO-only changes, `fix-ci`, `resolve-conflicts`, and every audit or maintenance run (`agentic-pr-create-*-audit`, prune, readmes, `agentic-pr-create-todo`) add none.
+- **One row per app or lib**: the project name the change's commit scope uses (e.g. `hearth`, `web-terminal`). When a QA row for that project already exists, fold into it: append the new checks and PR link, and update its Brief. Otherwise add a row with a fresh ID at the top of the table. A change spanning several projects writes or folds one row per project.
+- **Cells**: `Type` `QA`, `Priority` `NA`, `Agent` `human`, `Effort` `S` (`M` once the checks take about a session), `Model` `NA`.
+  - `Brief`: starts with `<project>:` and says in one or two sentences what to try and which PRs it covers.
+  - `Description`: one `<br>`-separated entry per PR, `PR: <url> — <what changed, with the entry point to open (page, route, command)>`.
+  - `Recommended Fix`: numbered checks continuing the row's numbering, `1. <action and expected result> (PR: <url>)<br>2. …`.
+- **PR link placeholder**: a create run does not know its PR number while editing, so it writes the literal `PR: pending` wherever the link goes. After `gh pr create`, the runner (`pr_publish` in `infrastructure/agent-sandbox/publish-pr.sh`) or the local `ship-pr` session replaces it, on the rows this PR added or changed only, with `PR: <PR URL>` and pushes a follow-up commit. An update run already knows its PR and writes the URL directly; the update runner still fills a stray placeholder before committing.
+- **Removal**: only a person removes checks or rows. Agents never drop a QA check while folding, and the TODO audit leaves QA rows byte-identical; a QA row is not "resolved" because the code it checks exists.
+- **Parallel PRs** folding into the same row conflict on that one line. Conflict resolution keeps both sides' checks and links; open PRs are handled by the scheduled `resolve-conflicts` maintenance ([agentic-pr-maintenance.md](./ci/agentic-pr-maintenance.md)).
+
 ## Machine-Read Contract
 
 `infrastructure/agent-sandbox/solve-todo.sh` and `solve-todo-runner.sh` locate, extract, and remove an item by matching `^| <id> |` at the start of its row (`<br>` is expanded to newlines and `\|` unescaped on extraction). Keep the id in the leading cell and the row on one line, or `pnpm agentic-pr-create <id>` cannot find it.
 
-`audit-todo-runner.sh` diffs the same `^| <id> |` match before and after its run and aborts rather than committing if an id vanished without being reported resolved, or if one was added or renumbered. An id is a permanent handle: correct a row in place, never reissue it.
+`solve-todo-runner.sh` and `update-pr-runner.sh` (`change`) let the agent add or edit `QA` rows only (`pr_validate_todo_edits` in `publish-pr.sh`); any other TODO.md line the agent changed fails the run, and resolved rows are still removed by the runner from `todo_ids`. Apart from a `Remove TODO.md row <id>` request, a create run whose only change is TODO.md publishes nothing.
+
+`audit-todo-runner.sh` diffs the same `^| <id> |` match before and after its run and aborts rather than committing if an id vanished without being reported resolved, if one was added or renumbered, or if any `QA` row changed. An id is a permanent handle: correct a row in place, never reissue it.
 
 ## Staleness
 

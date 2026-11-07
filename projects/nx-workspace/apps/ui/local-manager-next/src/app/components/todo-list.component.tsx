@@ -27,6 +27,7 @@ import { API_ENDPOINTS } from '../constants/api-endpoints';
 import {
   MAX_TODO_REMOVAL_REASON_LENGTH,
   TODO_DISPATCH_MODELS,
+  TODO_QA_TYPE,
   TODO_SORT_RANKS,
   TODO_STATUS_LEGEND,
   TODO_TYPE_ORDER,
@@ -453,7 +454,14 @@ export const TodoListComponent = () => {
                     <Table.Cell>
                       <EllipsisCTA
                         actions={[
-                          { label: RUN_TITLE, onSelect: () => runTodo(row) },
+                          ...(row.type === TODO_QA_TYPE
+                            ? []
+                            : [
+                                {
+                                  label: RUN_TITLE,
+                                  onSelect: () => runTodo(row),
+                                },
+                              ]),
                           {
                             label: REMOVE_TITLE,
                             color: 'red',

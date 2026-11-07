@@ -110,6 +110,14 @@ if [ -n "$NEW_IDS" ]; then
   exit 1
 fi
 
+# QA rows are manual checks a person deletes after trying them; the code they
+# check existing is not evidence they were checked (docs/todo-pattern.md#qa-rows).
+QA_ROW_RE='^[|][[:space:]]*[0-9a-f]{6}[[:space:]]*[|][[:space:]]*QA[[:space:]]*[|]'
+if ! diff <(git show "$BASE_SHA:TODO.md" | grep -E "$QA_ROW_RE" || true) <(grep -E "$QA_ROW_RE" TODO.md || true) >&2; then
+  echo "ERROR: the audit changed QA rows, which it must leave byte-identical." >&2
+  exit 1
+fi
+
 if [ -n "$COMMIT_MESSAGE" ]; then
   COMMIT_SUBJECT="docs: ${COMMIT_MESSAGE}"
 else
