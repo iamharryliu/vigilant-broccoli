@@ -13,6 +13,7 @@ What every UI app in this workspace must have, and the shared building blocks to
   - [Consistency requirements](#consistency-requirements)
   - [Avoiding a wrong-theme flash](#avoiding-a-wrong-theme-flash)
   - [Manual verification](#manual-verification)
+- [Loading states](#loading-states)
 - [pages-index card (required)](#pages-index-card-required)
 - [Local dev](#local-dev)
 - [New UI app checklist (app-side)](#new-ui-app-checklist-app-side)
@@ -104,6 +105,12 @@ Behavior (`useThemePreference`, shared by `ThemeProvider` and apps that own thei
 - With a toggle: toggling saves an override that survives reloads; toggling back follows the system again.
 - Portals (dialogs, popovers, menus) and canvas/graph visuals redraw on a switch, and text and lines stay legible in both themes.
 - With the [local dev](#local-dev) server running, `pnpm screenshot:themes -- <url> [<url>...]` writes light and dark PNGs at phone and desktop widths to the gitignored `projects/nx-workspace/screenshots/` and prints their paths; open each changed page and check the dark shots for white or light-gray surfaces. It refuses non-local URLs. Run `pnpm screenshot:setup` (needs sudo for apt) as the non-root screenshot user, never as root, which would put the browser in root's cache. On the code-server image users run plain `playwright install chromium`, not `--with-deps`.
+
+## Loading states
+
+- While data loads, render a skeleton instead of an empty state; show the empty state only after the data has arrived.
+- Build skeletons to look as close as possible to the loaded UI: match the heights, widths, paddings and gaps of rows, and include placeholders matching the size and position of inputs, buttons, checkboxes and icons, so nothing shifts when content arrives.
+- Reuse `Skeleton` from `@vigilant-broccoli/react-lib`.
 
 ## pages-index card (required)
 
