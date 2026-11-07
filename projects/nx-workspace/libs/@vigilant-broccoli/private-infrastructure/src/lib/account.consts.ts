@@ -1,91 +1,93 @@
+import { VB_LINK_PREFIX } from '@vigilant-broccoli/infrastructure';
+
 // URLs that embed an account, org, project or workspace id, so they stay out
 // of the public link libs.
 export const CLOUDFLARE_ACCOUNT_LINK = {
   DASHBOARD: {
-    NAME: 'Cloudflare Dashboard',
+    NAME: `${VB_LINK_PREFIX}Cloudflare Dashboard`,
     URL: 'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/home/domains',
   },
   BILLING: {
-    NAME: 'Cloudflare Billing',
+    NAME: `${VB_LINK_PREFIX}Cloudflare Billing`,
     URL: 'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/billing',
   },
   USAGE: {
-    NAME: 'Cloudflare Usage',
+    NAME: `${VB_LINK_PREFIX}Cloudflare Usage`,
     URL: 'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/billing/billable-usage',
   },
   DOMAINS: {
-    NAME: 'VB - Cloudflare Domains',
+    NAME: `${VB_LINK_PREFIX}Cloudflare Domains`,
     URL: 'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/registrar/domains',
   },
   WORKERS_AND_PAGES: {
-    NAME: 'VB - Cloudflare Workers and Pages',
+    NAME: `${VB_LINK_PREFIX}Cloudflare Workers and Pages`,
     URL: 'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/workers-and-pages',
   },
   R2_BUCKETS: {
-    NAME: 'VB - Cloudflare R2 Buckets',
+    NAME: `${VB_LINK_PREFIX}Cloudflare R2 Buckets`,
     URL: 'https://dash.cloudflare.com/26d066ec62c4d27b8da5e9aebac17293/r2/overview',
   },
 } as const;
 
 export const FLYIO_ACCOUNT_LINK = {
   USAGE: {
-    NAME: 'Fly.io Usage',
+    NAME: `${VB_LINK_PREFIX}Fly.io Usage`,
     URL: 'https://fly.io/dashboard/harry-560/billing/cost-explorer',
   },
   STATUS: {
-    NAME: 'Fly.io Status',
+    NAME: `${VB_LINK_PREFIX}Fly.io Status`,
     URL: 'https://fly.io/dashboard/harry-560/status',
   },
 } as const;
 
 export const RENDER_ACCOUNT_LINK = {
   BILLING: {
-    NAME: 'Render Billing',
+    NAME: `${VB_LINK_PREFIX}Render Billing`,
     URL: 'https://dashboard.render.com/w/tea-d98nviecjfls73evpnmg/billing',
   },
   SETTINGS: {
-    NAME: 'Render Account Settings',
+    NAME: `${VB_LINK_PREFIX}Render Account Settings`,
     URL: 'https://dashboard.render.com/u/usr-d98nviecjfls73evpnog/settings',
   },
 } as const;
 
 export const GCP_PROJECT_LINK = {
   DASHBOARD: {
-    NAME: 'GCP Dashboard',
+    NAME: `${VB_LINK_PREFIX}GCP Dashboard`,
     URL: 'https://console.cloud.google.com/home/dashboard?project=vigilant-broccoli',
   },
   BILLING: {
-    NAME: 'VB - GCP Billing',
+    NAME: `${VB_LINK_PREFIX}GCP Billing`,
     URL: 'https://console.cloud.google.com/billing/017A09-73DEB3-7A8E42/reports?inv=1&invt=Ab2jMQ&project=vigilant-broccoli',
   },
   COMPUTE_INSTANCES: {
-    NAME: 'VB - GCE Instances',
+    NAME: `${VB_LINK_PREFIX}GCE Instances`,
     URL: 'https://console.cloud.google.com/compute/instances?inv=1&invt=Ab2jIQ&project=vigilant-broccoli',
   },
 } as const;
 
 export const TERRAFORM_ORG_LINK = {
   DASHBOARD: {
-    NAME: 'Terraform Dashboard',
+    NAME: `${VB_LINK_PREFIX}Terraform Dashboard`,
     URL: 'https://app.terraform.io/app/vigilant-broccoli/workspaces',
   },
   BILLING: {
-    NAME: 'Terraform Billing',
+    NAME: `${VB_LINK_PREFIX}Terraform Billing`,
     URL: 'https://app.terraform.io/app/vigilant-broccoli/settings/billing',
   },
   USAGE: {
-    NAME: 'Terraform Usage',
+    NAME: `${VB_LINK_PREFIX}Terraform Usage`,
     URL: 'https://app.terraform.io/app/vigilant-broccoli/usage',
   },
 } as const;
 
 export const ROBOFLOW_WORKSPACE_LINK = {
   BILLING: {
-    NAME: 'Roboflow Billing',
+    NAME: `${VB_LINK_PREFIX}Roboflow Billing`,
     URL: 'https://app.roboflow.com/vigilantbroccoli/settings/plan',
   },
   USAGE: {
-    NAME: 'Roboflow Usage',
+    NAME: `${VB_LINK_PREFIX}Roboflow Usage`,
     URL: 'https://app.roboflow.com/vigilantbroccoli/settings/usage',
   },
 } as const;
@@ -99,33 +101,33 @@ export const SLACK_WORKSPACE_LINK = {
 
 export const NPM_USER_LINK = {
   PACKAGES: {
-    NAME: 'VB - NPM Packages (prettydamntired)',
+    NAME: `${VB_LINK_PREFIX}NPM Packages (prettydamntired)`,
     URL: 'https://www.npmjs.com/settings/prettydamntired/packages',
   },
   TOKENS: {
-    NAME: 'VB - NPM Tokens (prettydamntired)',
+    NAME: `${VB_LINK_PREFIX}NPM Tokens (prettydamntired)`,
     URL: 'https://www.npmjs.com/settings/prettydamntired/tokens',
   },
 } as const;
 
 export const SUPABASE_PROJECT_LINK = {
   ORGANIZATION: {
-    NAME: 'Supabase Organization (vigilant-broccoli)',
+    NAME: `${VB_LINK_PREFIX}Supabase Organization`,
     URL: 'https://supabase.com/dashboard/org/jqyyytkbstihvvbalofm',
   },
   PROJECT: {
-    NAME: 'Supabase Project (vigilant-broccoli)',
+    NAME: `${VB_LINK_PREFIX}Supabase Project`,
     URL: 'https://supabase.com/dashboard/project/jrdosjjgmsoodpjmjqxx',
   },
   AUTH_URL_CONFIGURATION: {
-    NAME: 'Supabase Auth URL Configuration (vigilant-broccoli)',
+    NAME: `${VB_LINK_PREFIX}Supabase Auth URL Configuration`,
     URL: 'https://supabase.com/dashboard/project/jrdosjjgmsoodpjmjqxx/auth/url-configuration',
   },
 } as const;
 
 export const SANITY_ORG_LINK = {
   APPLICATIONS: {
-    NAME: 'Sanity Applications',
+    NAME: `${VB_LINK_PREFIX}Sanity Applications`,
     URL: 'https://www.sanity.io/@ogjQYJiGp/applications',
   },
 } as const;
