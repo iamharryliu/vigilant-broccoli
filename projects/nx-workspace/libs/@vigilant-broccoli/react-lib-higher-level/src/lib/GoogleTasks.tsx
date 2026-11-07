@@ -42,7 +42,6 @@ interface Task {
   due?: string;
   updated?: string;
   status: 'needsAction' | 'completed';
-  isNew?: boolean;
   isRemoving?: boolean;
 }
 
@@ -130,16 +129,8 @@ const useTasks = (
         due: taskData.due,
         updated: taskData.updated,
         status: taskData.status || 'needsAction',
-        isNew: true,
       };
       setTasks(prevTasks => [newTask, ...prevTasks]);
-      setTimeout(() => {
-        setTasks(prevTasks =>
-          prevTasks.map(t =>
-            t.id === newTask.id ? { ...t, isNew: false } : t,
-          ),
-        );
-      }, 300);
     } catch (err) {
       setError(handleApiError(err, 'Failed to create task'));
     }
@@ -783,7 +774,6 @@ export const GoogleTasksComponent = ({
         notes: t.notes,
         due: t.due,
         updatedAt: t.updated,
-        isNew: t.isNew,
         isRemoving: t.isRemoving,
       })),
     [tasks],

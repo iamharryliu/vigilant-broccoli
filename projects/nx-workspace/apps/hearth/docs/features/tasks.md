@@ -8,7 +8,8 @@ The home page's Tasks tab (`src/app/components/TaskList.tsx`) lists the selected
 - One-off tasks are added inline, renamed by clicking them and deleted from the row's ellipsis menu.
 - Every row's ellipsis menu has Assign, which opens `AssignTaskDialog` listing the home's accepted members (owner included) plus Unassigned. Any member can assign any task to one member; the row then shows a badge with the assignee's `display_name`, falling back to email. An assignee no longer in the home gets no badge.
 - Drag-to-reorder works within the same kind; recurring tasks without a pending instance keep their place. Completed instances show their task's assignee.
-- On first load and on a home switch the list shows `TaskListSkeleton` (shaped like a dense row) instead of "No tasks due today", which appears only once the fetch has resolved.
+- On first load and on a home switch the list shows `ChecklistSkeleton` (shaped like a dense row, with assignee badges) instead of "No tasks due today", which appears only once the fetch has resolved.
+- Adding, completing and reopening animate like mobile-manager's tasks through `CheckList`'s [completion contract](../../../../libs/@vigilant-broccoli/react-lib/docs/features/checklist-completion.md). A recurring instance changes id when completed (task id → temporary id → saved completion id) or reopened, so `TaskList` records each replacement in `transitionFrom` and passes it as `transitionFromId`. Each toggle is optimistic, its row is `isRemoving` while the write is pending (`usePendingWrites`), and a failed write restores the previous state.
 - A new home starts with no tasks. Only the dev-only "Reset recurring tasks to default" button loads `DEFAULT_TASKS` from `tasks.utils.ts`, replacing the home's recurring tasks.
 - The former localStorage keys (`home:recurring-tasks`, `home:recurring-tasks-done`, `home:one-off-tasks`) are not imported; the component removes them from the browser.
 
