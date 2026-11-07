@@ -75,7 +75,7 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `ANTHROPIC_API_KEY` | Vault `kv/data/secrets` → Fly | Claude API key for `llm-service`. |
 | `BETTER_AUTH_SECRET` | Vault `kv/data/secrets` → Fly | Signs `vb-express` Better Auth sessions and encrypts its stored Google OAuth tokens; rotating it signs every user out and makes them sign in with Google again. |
 | `BITWARDEN_PASSWORD` | GCP Secret Manager (Tier 0) | Unlocks the Bitwarden vault holding the Vault secrets backup. |
-| `CLAUDE_CODE_OAUTH_TOKEN` | Vault `kv/data/secrets` | Long-lived `claude setup-token` login for agent containers, the code-server VM and the job-hunt-next container. |
+| `CLAUDE_CODE_OAUTH_TOKEN` | Vault `kv/data/secrets` | Long-lived `claude setup-token` login for agent containers, the `cron-agentic-pr-create-fix-failing-actions` triage job, the code-server VM and the job-hunt-next container. |
 | `CLOUDFLARE_ACCOUNT_ID` | Vault `kv/data/secrets` | Cloudflare account id for Pages deploys and preview cleanup; `deploy-demo-apps` and `manual-deploy-app` also export it as `CLOUDFLARE_ID`. |
 | `CLOUDFLARE_API_TOKEN` | Vault `kv/data/secrets`; Bitwarden backup (local Terraform env) | Cloudflare provider token for Terraform. |
 | `CLOUDFLARE_API_TOKEN_VB_DEPLOY_NX_APPS` | Vault `kv/data/secrets`, mirrored to `kv/data/deploy-preview` | Publishes Cloudflare Pages deploys, including PR previews. Account-level `Pages:Edit`. |

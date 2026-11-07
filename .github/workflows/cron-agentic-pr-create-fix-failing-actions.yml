@@ -1,0 +1,172 @@
+name: cron-agentic-pr-create-fix-failing-actions
+
+# Finds workflows whose latest settled run on main failed, has a read-only agent
+# triage each failure, and dispatches `manual-agentic-pr-create` only for the
+# repo-fixable ones. External outages and failures that need a person are listed
+# in the run summary and not dispatched. Nothing is merged. Policy, dedupe and
+# attempt cap: docs/ci/agentic-pr-maintenance.md.
+
+on:
+  schedule:
+    - cron: '45 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Static group: two overlapping sweeps would dispatch the same fix twice.
+concurrency:
+  group: cron-agentic-pr-create-fix-failing-actions
+  cancel-in-progress: false
+
+env:
+  BRANCH: main
+  MARKER: fix-failing-actions
+  MAX_ATTEMPTS: '2'
+  MAX_TRIAGE: '5'
+  MODEL: sonnet
+  FIREWALL: 'on'
+
+jobs:
+  overview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout summary helper
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Publish overview
+        continue-on-error: true
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: overview
+          title: Fix failing workflows on main
+          agent: claude
+          model: ${{ env.MODEL }}
+          firewall: ${{ env.FIREWALL }}
+          operation: Triage and fix failing workflows
+          description: Select workflows whose latest settled run on main failed, triage up to ${{ env.MAX_TRIAGE }} with a read-only agent, and dispatch manual-agentic-pr-create for each repo-fixable one with fewer than ${{ env.MAX_ATTEMPTS }} attempts since its last success. External outages and failures that need a person are reported, not dispatched. Nothing is merged.
+
+  select:
+    needs: overview
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: read
+    outputs:
+      selected: ${{ steps.select.outputs.selected }}
+      skipped: ${{ steps.select.outputs.skipped }}
+      count: ${{ steps.select.outputs.count }}
+    steps:
+      - name: Checkout selection scripts
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Select failing workflows
+        id: select
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FIX_FAILING_MARKER: ${{ env.MARKER }}
+        run: |
+          set -euo pipefail
+          bash .github/scripts/collect-failing-workflows.sh "$GITHUB_REPOSITORY" "$BRANCH" > input.json
+          jq -c --argjson max_attempts "$MAX_ATTEMPTS" --arg marker "$MARKER" \
+            -f .github/scripts/select-failing-workflows.jq input.json > selection.json
+          # Workflows over the per-run triage cap wait for the next run.
+          jq -c --argjson cap "$MAX_TRIAGE" '{
+              selected: .selected[:$cap],
+              skipped: (.skipped + [.selected[$cap:][] | {workflow, run_url, skip: "over the per-run triage cap; next run"}])
+            }' selection.json > capped.json
+          jq -r '.selected[] | "Selected \(.workflow): \(.conclusion) at \(.run_url) (\(.attempts) attempt(s) since the last success)"' capped.json
+          jq -r '.skipped[] | "Skipped \(.workflow): \(.skip) (\(.run_url))"' capped.json
+          {
+            echo "selected=$(jq -c .selected capped.json)"
+            echo "skipped=$(jq -c .skipped capped.json)"
+            echo "count=$(jq '.selected | length' capped.json)"
+          } >> "$GITHUB_OUTPUT"
+
+  triage:
+    needs: select
+    if: needs.select.outputs.count != '0'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    outputs:
+      results: ${{ steps.triage.outputs.results }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Claude Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | CLAUDE_CODE_OAUTH_TOKEN ;
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+
+      # Same version floor as the agent sandbox image.
+      - name: Install Claude Code
+        run: npm install -g '@anthropic-ai/claude-code@>=2.1.277'
+
+      - name: Triage failures
+        id: triage
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
+          SELECTED: ${{ needs.select.outputs.selected }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$SELECTED" > "$RUNNER_TEMP/selected.json"
+          bash .github/scripts/triage-failing-workflows.sh "$RUNNER_TEMP/selected.json" "$RUNNER_TEMP/results.json"
+          echo "results=$(jq -c . "$RUNNER_TEMP/results.json")" >> "$GITHUB_OUTPUT"
+
+  dispatch:
+    needs: [select, triage]
+    if: always() && needs.select.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Checkout dispatch script and summary helper
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Dispatch repo-fixable failures
+        id: dispatch
+        if: needs.select.outputs.count == '0' || needs.triage.result == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          REF: ${{ env.BRANCH }}
+          RESULTS: ${{ needs.triage.outputs.results || '[]' }}
+          SKIPPED: ${{ needs.select.outputs.skipped }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$RESULTS" > "$RUNNER_TEMP/results.json"
+          printf '%s' "$SKIPPED" > "$RUNNER_TEMP/skipped.json"
+          bash .github/scripts/dispatch-failing-workflow-fixes.sh "$RUNNER_TEMP/results.json" "$RUNNER_TEMP/skipped.json"
+
+      - name: Report result
+        if: always()
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: result
+          outcome: ${{ (steps.dispatch.outcome == 'success' && steps.dispatch.outputs.dispatched != '0' && 'dispatched') || (steps.dispatch.outcome == 'success' && 'no-pr') || (job.status == 'cancelled' && 'cancelled') || 'failed' }}
+          note: ${{ (steps.dispatch.outcome == 'success' && format('{0} of {1} selected workflow(s) dispatched.', steps.dispatch.outputs.dispatched, needs.select.outputs.count)) || (steps.dispatch.outcome == 'skipped' && 'Triage failed, so nothing was dispatched; see the triage job log.') || '' }}
