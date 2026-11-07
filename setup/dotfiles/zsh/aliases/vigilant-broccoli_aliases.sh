@@ -72,7 +72,9 @@ alias dockercleanup="$REPO_DIR/setup/dotfiles/zsh/scripts/docker_cleanup.sh"
 # Reclaim disk: Claude worktrees, Docker build cache/images, package-manager caches. Docker volumes are left alone.
 localcleanup() {
     local worktrees_dir="$REPO_DIR/.claude/worktrees" worktree
-    local -a worktrees=()
+    local -a worktrees=() skipped=()
+    local removed=0 worktree_kb=0 kb out size label cache_path
+    local summary="" docker_note="" free_before="" free_after="" width=0 line
     # Keep unmatched globs harmless in zsh without changing the caller's options.
     if [ -n "${ZSH_VERSION:-}" ]; then
         setopt local_options nonomatch
@@ -89,21 +91,80 @@ localcleanup() {
         return 0
     }
 
+    if [ -d /System/Volumes/Data ]; then
+        free_before=$(df -h /System/Volumes/Data | awk 'NR==2 {print $4}')
+    fi
+
     for worktree in "${worktrees[@]}"; do
-        git -C "$REPO_DIR" worktree remove "$worktree" || echo "  Skipped $worktree"
+        kb=$(du -sk "$worktree" 2> /dev/null | cut -f1)
+        if git -C "$REPO_DIR" worktree remove "$worktree"; then
+            removed=$((removed + 1))
+            worktree_kb=$((worktree_kb + ${kb:-0}))
+        else
+            skipped+=("$(basename "$worktree")")
+        fi
     done
     git -C "$REPO_DIR" worktree prune
+    size=$(awk -v kb="$worktree_kb" 'BEGIN {
+        if (kb >= 1048576) printf "%.1fG", kb / 1048576
+        else if (kb >= 1024) printf "%.0fM", kb / 1024
+        else printf "%dK", kb
+    }')
+    summary="Claude worktrees ($removed removed, ${#skipped[@]} skipped)	$size"
 
     if docker info &> /dev/null; then
-        docker builder prune -af
-        docker image prune -af
-        docker container prune -f
+        out=$(docker builder prune -af)
+        size=$(printf '%s\n' "$out" | sed -n 's/^Total:[[:space:]]*//p' | tail -1)
+        summary="$summary
+Docker build cache	${size:-0B}"
+        out=$(docker image prune -af)
+        size=$(printf '%s\n' "$out" | sed -n 's/^Total reclaimed space:[[:space:]]*//p' | tail -1)
+        summary="$summary
+Docker unused images	${size:-0B}"
+        out=$(docker container prune -f)
+        size=$(printf '%s\n' "$out" | sed -n 's/^Total reclaimed space:[[:space:]]*//p' | tail -1)
+        summary="$summary
+Docker stopped containers	${size:-0B}"
+    else
+        docker_note="skipped (Docker not running)"
+        summary="$summary
+Docker build cache	$docker_note
+Docker unused images	$docker_note
+Docker stopped containers	$docker_note"
     fi
+
+    for line in "npm cache|$HOME/.npm/_cacache" "npx cache|$HOME/.npm/_npx" "Yarn cache|$HOME/Library/Caches/Yarn" "Cypress cache|$HOME/Library/Caches/Cypress" "pip cache|$HOME/Library/Caches/pip"; do
+        label="${line%%|*}"
+        cache_path="${line#*|}"
+        size="-"
+        if [ -e "$cache_path" ]; then
+            size=$(du -sh "$cache_path" 2> /dev/null | cut -f1)
+        fi
+        summary="$summary
+$label	${size:--}"
+    done
 
     npm cache clean --force
     rm -rf ~/.npm/_npx ~/Library/Caches/{Yarn,Cypress,pip}
+
     if [ -d /System/Volumes/Data ]; then
-        df -h /System/Volumes/Data
+        free_after=$(df -h /System/Volumes/Data | awk 'NR==2 {print $4}')
+    fi
+
+    while IFS=$'\t' read -r label size; do
+        [ "${#label}" -gt "$width" ] && width=${#label}
+    done <<< "$summary"
+    echo
+    echo "Reclaimed:"
+    while IFS=$'\t' read -r label size; do
+        printf '  %-*s  %s\n' "$width" "$label" "$size"
+    done <<< "$summary"
+    for worktree in "${skipped[@]}"; do
+        echo "  Skipped worktree: $worktree (uncommitted changes)"
+    done
+    if [ -n "$free_before" ]; then
+        echo "Disk free: $free_before before -> $free_after after"
+        echo "Note: freed Docker space lives in Docker Desktop's VM disk, so macOS free space may grow by less until that disk shrinks."
     fi
 }
 
