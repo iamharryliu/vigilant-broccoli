@@ -6,7 +6,10 @@ export const TODO_DISPATCH_MODELS = ['haiku', 'sonnet', 'opus'];
 
 // Mirrors the Type order in docs/todo-pattern.md; types missing here are listed
 // after these, alphabetically.
+export const TODO_QA_TYPE = 'QA';
+
 export const TODO_TYPE_ORDER = [
+  TODO_QA_TYPE,
   'Security',
   'Performance',
   'Maintenance',

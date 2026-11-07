@@ -16,6 +16,7 @@ Run only on explicit `ship-pr` invocation. Read `docs/git-workflow.md` for conve
    - Set `HISTORY_SOURCE` to the authoring CLI's `Local agent (Claude Code)` or `Local agent (Codex)`, `HISTORY_COMMAND=ship-pr`, `HISTORY_PROMPT` to a one-sentence request summary, `HISTORY_SUMMARY` to the commit message, and `HISTORY_DATE` to the UTC date.
    - For an existing PR, fetch its body into `CURRENT_BODY`; write the helper output to a temporary file and use `gh pr edit --body-file`.
    - For a new PR, `CURRENT_BODY` contains the environment's attribution when provided. Use `gh pr create --title "<PR_TITLE>" --body-file`; the title defaults to the commit subject and must satisfy commitlint, including the final period and no truncation.
+   - If this session's `TODO.md` QA rows contain `PR: pending` ([QA rows](../../../../docs/todo-pattern.md#qa-rows)), replace it on those rows only with `PR: <PR URL>`. For an existing PR, do so before committing; for a new PR, after `gh pr create`, then commit `docs: Link the QA checks in TODO.md to their pull request.` and push it to the same branch.
    - If the helper is absent on an older branch, use `## Summary` / `## Next steps` instead.
 5. Restore the original branch only if this workflow switched it in an exclusive checkout. After publishing from a separate worktree, remove the shipped changes from the source only where they contain no mixed user/peer edits; leave mixed files dirty and report them. Verify unrelated changes remain intact.
 6. Return the PR URL and any remaining work.
