@@ -6,6 +6,7 @@
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "dependencies": {
+    "@vigilant-broccoli/infrastructure": "workspace:*",
     "tslib": "^2.8.1"
   }
 }
