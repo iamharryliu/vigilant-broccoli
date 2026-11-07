@@ -1,6 +1,10 @@
 # Agentic PR Maintenance
 
-How `cron-agentic-pr-update` picks pull requests and bounds its retries.
+How `cron-agentic-pr-update` and `cron-agentic-pr-create-fix-failing-actions` pick their work and bound their retries.
+
+## Open pull requests
+
+`cron-agentic-pr-update` (daily):
 
 - **Every open PR is considered**, except drafts and fork PRs (`isCrossRepository`), which the dispatched run cannot push to.
 - **Operation per PR.** `mergeable` of `CONFLICTING` dispatches `resolve-conflicts` (a conflict wins over failing CI). Otherwise a PR with a settled failing check (`FAILURE`, `TIMED_OUT`, `STARTUP_FAILURE` or a failing/errored commit status) and no pending checks dispatches `fix-ci`. GitHub computes mergeability lazily, so the first listing after a quiet period returns `UNKNOWN` for many PRs; the workflow re-lists up to `MERGEABLE_RETRIES` (5) times, `MERGEABLE_RETRY_DELAY` (10) seconds apart, until none are `UNKNOWN`. PRs still `UNKNOWN` after that, and PRs with in-progress checks, are skipped until a later run.
@@ -10,3 +14,20 @@ How `cron-agentic-pr-update` picks pull requests and bounds its retries.
 - **Nothing is merged.** The dispatched run pushes the fix to the PR branch; a human reviews and merges.
 - **Auth is `GITHUB_TOKEN`** (`actions: write`, `pull-requests: write`), so no repo secret or Vault read is needed; the dispatched run does its own Vault and GitHub App auth.
 - **Selection logic** lives in `.github/scripts/select-broken-prs.jq`. Check it offline with `gh pr list --state open --json number,isDraft,isCrossRepository,mergeable,labels,statusCheckRollup | jq -c --argjson max_attempts 2 -f .github/scripts/select-broken-prs.jq`.
+
+## Failing workflows on main
+
+`cron-agentic-pr-create-fix-failing-actions` (daily, `45 8 * * *`, plus manual) covers what the PR sweep cannot: workflows that fail on `main` or on their schedule (crons, deploys, smoke, security and health checks). Its jobs run in order `overview` → `select` → `triage` → `dispatch`.
+
+- **Selection.** Every active workflow under `.github/workflows/` contributes its latest settled `main` run: `push`, `schedule`, `workflow_dispatch` and `repository_dispatch` (`deploy-fanout` followers) events only; PR-event, cancelled, skipped and neutral runs are ignored. The workflow is a candidate when that conclusion is `failure`, `timed_out` or `startup_failure`.
+- **Exclusions.** `manual-agentic-*` and `cron-agentic-*` (including this workflow) are never selected, since fixing them would dispatch the dispatcher. GitHub's dynamic workflows (CodeQL, Dependency Graph) have no file in the repo and are skipped.
+- **Marker.** Every dispatched prompt starts with `[fix-failing-actions:<workflow-file>@<sha7>]`. It reaches the child run's title (`manual-agentic-pr-create (claude) <prompt>`) and the PR body's `## Agentic Change History`, so the dispatch history doubles as the attempt record and needs no labels or state file.
+- **Dedupe.** A workflow is skipped while an open PR body carries `[fix-failing-actions:<workflow-file>@`, and when a `manual-agentic-pr-create` run already carries its marker for the failing head SHA, so one SHA is dispatched at most once even when a cron keeps failing on it daily.
+- **Attempt cap of 2.** Marker runs created after the workflow's last successful `main` run count as attempts; at 2 the workflow is skipped until a run succeeds again. Only successful dispatches count, so triage verdicts that dispatch nothing never consume an attempt. To reset a workflow early, delete its marker runs (`gh run list --workflow manual-agentic-pr-create.yml --json databaseId,displayTitle -q '.[] | select(.displayTitle | contains("[fix-failing-actions:<file>@")) | .databaseId' | xargs -n1 gh run delete`); `cron-cleanup-workflow-runs` also deletes runs after 14 days, so attempts older than that no longer count.
+- **Per-run triage cap of 5** (`MAX_TRIAGE`), alphabetical by workflow file; the rest are listed as skipped and wait for the next run.
+- **Triage.** For each selected workflow the `triage` job collects the failed jobs and steps (`gh api .../runs/<id>/jobs`) and an 8,000-byte failed-step log excerpt (`gh run view <id> --log-failed`, first third and last two thirds, ANSI codes stripped) with its own `GITHUB_TOKEN` (`actions: read`): the sandboxed solve agent cannot call `gh`, so logs must be collected outside it. GitHub masks registered secrets in stored logs, so the excerpt exposes nothing a reader of the run cannot already see. A read-only Claude (`sonnet`, Read/Grep/Glob; shell, edit, web and subagent tools disallowed; no GitHub token) reads the workflow file and the code it runs and returns `repo-fixable`, `external-outage` or `needs-person` with a short root-cause analysis. It runs on the hosted runner, outside the sandbox egress firewall, which the disallowed tools make moot. An unparseable verdict becomes `triage-failed` and is not dispatched.
+- **Outage skip.** Only `repo-fixable` failures are dispatched. `external-outage` (third-party API, registry, DNS or OAuth provider down; external 5xx or timeouts; transient runner or network errors) and `needs-person` (expired credentials, missing secrets, quota) appear in the run summary with the analysis and are triaged again on the next run if the failure persists.
+- **Dispatch.** Each repo-fixable failure dispatches `manual-agentic-pr-create` (`claude`, `sonnet`, firewall `on`) with a self-contained prompt: marker, workflow path, failing run URL and ID, failed jobs/steps, the triage analysis and a 4,000-character log excerpt (shorter because the prompt is copied into the PR body). The solve still makes a [no-change decision](../agent-support.md#task-contract) if it finds the cause is external.
+- **Run summary.** The dispatch job writes one result per triaged or skipped workflow with its classification, analysis or skip reason, then the overall result.
+- **Auth is `GITHUB_TOKEN`** per job (`actions: read`/`pull-requests: read` to select, `actions: read` to triage, `actions: write` to dispatch), plus the Vault-backed `CLAUDE_CODE_OAUTH_TOKEN` for triage; no repo secret is added.
+- **Selection logic** lives in `.github/scripts/select-failing-workflows.jq`, fed by `.github/scripts/collect-failing-workflows.sh`. Check it offline with `bash .github/scripts/collect-failing-workflows.sh "$(gh repo view --json nameWithOwner -q .nameWithOwner)" > input.json && jq --argjson max_attempts 2 --arg marker fix-failing-actions -f .github/scripts/select-failing-workflows.jq input.json`; the output is `{selected, skipped}`.
