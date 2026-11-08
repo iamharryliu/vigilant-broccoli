@@ -71,7 +71,9 @@ const runStep = async <T>(
   } catch (e) {
     if (e instanceof ImageValidationError) throw e;
     const timedOut = isTimeout(e);
+    // A constant format string keeps `%` sequences in the user-provided key literal.
     console.error(
+      '%s %s',
       `[where-is] step=${step} key=${key} ${timedOut ? 'timeout' : 'failed'} durationMs=${Date.now() - startedAt}`,
       (e as Error).message,
     );
