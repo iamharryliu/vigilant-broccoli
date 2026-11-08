@@ -125,6 +125,7 @@
     "@radix-ui/react-tooltip": "^1.2.16",
     "@slack/bolt": "^4.7.3",
     "@slack/web-api": "^7.19.0",
+    "@smithy/node-http-handler": "^4.9.4",
     "@supabase/supabase-js": "^2.110.1",
     "@tailwindcss/typography": "^0.5.20",
     "@types/amqplib": "^0.10.8",
