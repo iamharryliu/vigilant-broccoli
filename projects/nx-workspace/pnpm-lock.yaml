@@ -790,6 +790,9 @@ importers:
       '@vigilant-broccoli/react-lib-media':
         specifier: workspace:*
         version: link:../../libs/@vigilant-broccoli/react-lib-media
+      framer-motion:
+        specifier: ^12.23.12
+        version: 12.40.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       leaflet:
         specifier: ^1.9.4
         version: 1.9.4

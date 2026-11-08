@@ -15,6 +15,7 @@ import {
   PreviewImage,
 } from './where-is-form';
 import { uploadPreviewImages } from './upload-images';
+import { sortTags } from './where-is-tags';
 import { WhereIsDetailPanel } from './where-is-detail-panel';
 import { useMobileReady } from '../../lib/use-mobile-view';
 import { WhereIsDetailPageContent } from './WhereIsDetailPageContent';
@@ -60,7 +61,7 @@ const WhereIsListItem = ({ item }: { item: WhereIsFormValues }) => (
       {item.description}
     </Text>
     <div className="flex flex-wrap gap-1 mt-1">
-      {item.tags.map(tag => (
+      {sortTags(item.tags).map(tag => (
         <Badge key={tag} variant="soft" size="1">
           {tag}
         </Badge>

@@ -28,6 +28,7 @@ import { ROUTES } from '../../lib/routes';
 import { WhereIsFormComponent, WhereIsFormValues } from './where-is-form';
 import { WhereIsLabel } from './where-is-label';
 import { uploadPreviewImages } from './upload-images';
+import { sortTags } from './where-is-tags';
 
 const WHERE_IS_ENDPOINT = '/api/where-is';
 
@@ -195,7 +196,7 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
 
         {item.tags.length > 0 && (
           <div className="flex gap-2 flex-wrap">
-            {item.tags.map(tag => (
+            {sortTags(item.tags).map(tag => (
               <Badge key={tag} variant="soft" size="2">
                 {tag}
               </Badge>

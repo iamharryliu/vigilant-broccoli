@@ -21,6 +21,7 @@ Household storage inventory — upload photos of storage areas, AI identifies co
 - Image processing — resize to 1920px max, convert to JPEG, strip EXIF
 - AI generates description + tags from images
 - Fuzzy search across title, description, tags
+- Tags display alphabetically and animate when added or removed in the form
 - Update title, description, and tags inline
 - Delete removes DB rows + R2 objects
 - Export all items to JSON (includes base64 images)
