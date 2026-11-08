@@ -16,6 +16,7 @@
   - [Cache](./general/cache.md)
 - [Software Business](./general/software-business.md)
 - [Software Architecture](./general/software-architecture.md)
+  - [CQRS and Event-Driven Architecture](./general/cqrs-and-event-driven-architecture.md)
   - [Software Design Patterns](./general/software-design-patterns.md)
   - [SOLID Principles](./general/solid-principles.md)
   - [Software Architecture Patterns](./software-architecture-patterns.md)

@@ -42,7 +42,7 @@
 | Bash | ELVA11; Tillmobil; vigilant-broccoli |
 | Branch management | Capco; ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
 | CI/CD pipelines | ELVA11; Tillmobil; Tretton37 |
-| Client relations / communication | ELVA11; Tillmobil; Tretton37 |
+| Client relations / communication | Tillmobil |
 | Cloud infrastructure | Tillmobil |
 | Cloud services | ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
 | Cloudflare | ELVA11; Tillmobil; vigilant-broccoli |
@@ -62,7 +62,7 @@
 | End-to-end development | Tillmobil |
 | End-to-end testing | Tillmobil |
 | Environment management | Tillmobil |
-| Event-driven development | Tillmobil; vigilant-broccoli |
+| Event-driven development | Tillmobil |
 | Express | Capco; vigilant-broccoli |
 | Fastify | vigilant-broccoli |
 | Figma | Capco; Tillmobil |
@@ -165,7 +165,6 @@
 | Contribution | Role | Description |
 | --- | --- | --- |
 | Administer Linux hosts | Platform Engineer | Provisioned and operated Linux hosts over SSH: a Debian-based Raspberry Pi running Jellyfin configured with Ansible, cloud-init-provisioned OCI Linux VMs, and a Linux agent-sandbox container bootstrapped by a Linux install script. |
-| Apply event-driven design | Backend Developer | Applied event-driven design across the monorepo, using queues to decouple HTTP request handling from background work such as asynchronous email delivery. |
 | Authenticate users and persist data | Fullstack Developer | Used Supabase authentication for UI applications and Supabase data storage for Hearth. |
 | Automate music downloads | Software Engineer | Automated Spotify-to-MP3 downloads with Python. |
 | Automate operations with Bash | Platform Engineer | Wrote Bash scripts for infrastructure and operations automation, including machine setup, VM and service management, and the agent-sandbox entrypoint and task runner. |

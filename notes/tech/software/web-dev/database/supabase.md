@@ -23,3 +23,4 @@ Applies to the Free plan; limits are per-organization unless noted and can chang
 
 - [Pricing](https://supabase.com/pricing)
 - [Usage-based billing docs](https://supabase.com/docs/guides/platform/manage-your-usage)
+- [OAuth App Testing vs Production](../oauth-app-testing-vs-production.md)
