@@ -1,12 +1,6 @@
 'use client';
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import type { GoogleTasksAuthAdapter } from '@vigilant-broccoli/react-lib-higher-level';
 import { supabase } from '../../../libs/supabase';
@@ -15,11 +9,14 @@ import {
   AUTHORIZATION_HEADER,
   BEARER_PREFIX,
   CONTENT_TYPE_HEADER,
-  GOOGLE_TOKEN_HEADER,
   JSON_CONTENT_TYPE,
 } from '@vigilant-broccoli/common-js';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
 
-const GOOGLE_TOKEN_KEY = 'google_provider_token';
+const OFFLINE_ACCESS_PARAMS = {
+  access_type: 'offline',
+  prompt: 'consent',
+};
 const GOOGLE_CALENDAR_TASKS_SCOPES =
   'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/tasks';
 
@@ -27,17 +24,12 @@ const AuthContext = createContext<Session | null>(null);
 
 export const useAuth = () => useContext(AuthContext);
 
-export const getGoogleToken = () => localStorage.getItem(GOOGLE_TOKEN_KEY);
-
-export const clearGoogleToken = () => localStorage.removeItem(GOOGLE_TOKEN_KEY);
-
 export const getSupabaseAccessToken = async () => {
   const { data } = await supabase.auth.getSession();
   return data.session?.access_token ?? null;
 };
 
 export const buildAuthHeaders = async (options?: {
-  includeGoogleToken?: boolean;
   json?: boolean;
 }): Promise<HeadersInit> => {
   const headers: Record<string, string> = {};
@@ -45,16 +37,11 @@ export const buildAuthHeaders = async (options?: {
   if (supabaseToken) {
     headers[AUTHORIZATION_HEADER] = `${BEARER_PREFIX}${supabaseToken}`;
   }
-  if (options?.includeGoogleToken) {
-    const googleToken = getGoogleToken();
-    if (googleToken) headers[GOOGLE_TOKEN_HEADER] = googleToken;
-  }
   if (options?.json) headers[CONTENT_TYPE_HEADER] = JSON_CONTENT_TYPE;
   return headers;
 };
 
 export const signOut = async () => {
-  clearGoogleToken();
   await supabase.auth.signOut();
 };
 
@@ -64,24 +51,19 @@ export const signInWithGoogle = async () => {
     options: {
       redirectTo: `${window.location.origin}/auth/callback`,
       scopes: GOOGLE_CALENDAR_TASKS_SCOPES,
+      queryParams: OFFLINE_ACCESS_PARAMS,
     },
   });
 };
 
-export const reconnectGoogle = async () => {
-  clearGoogleToken();
-  await signInWithGoogle();
-};
+export const reconnectGoogle = signInWithGoogle;
 
 export const authFetch = async (
   input: RequestInfo | URL,
   init: RequestInit = {},
 ): Promise<Response> => {
   const hasJsonBody = typeof init.body === 'string';
-  const headers = await buildAuthHeaders({
-    includeGoogleToken: true,
-    json: hasJsonBody,
-  });
+  const headers = await buildAuthHeaders({ json: hasJsonBody });
   return fetch(input, { ...init, headers: { ...headers, ...init.headers } });
 };
 
@@ -91,20 +73,24 @@ export const useAuthStatus = ():
   return session ? 'authenticated' : 'unauthenticated';
 };
 
-export const useGoogleToken = () => {
-  const [googleToken, setGoogleToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    setGoogleToken(getGoogleToken());
-  }, []);
-
-  const clear = useCallback(() => {
-    clearGoogleToken();
-    setGoogleToken(null);
-  }, []);
-
-  return { googleToken, clearGoogleToken: clear };
+// Google access is resolved server-side from the stored refresh token, so the
+// client holds no Google token; react-lib's adapter still expects this hook.
+const SERVER_SIDE_GOOGLE_TOKEN = {
+  googleToken: null,
+  clearGoogleToken: () => undefined,
 };
+
+export const useGoogleToken = () => SERVER_SIDE_GOOGLE_TOKEN;
+
+const persistGoogleRefreshToken = (session: Session) =>
+  fetch(API_ENDPOINTS.GOOGLE_TOKEN, {
+    method: 'POST',
+    headers: {
+      [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE,
+      [AUTHORIZATION_HEADER]: `${BEARER_PREFIX}${session.access_token}`,
+    },
+    body: JSON.stringify({ refreshToken: session.provider_refresh_token }),
+  });
 
 export const googleTasksAuth: GoogleTasksAuthAdapter = {
   authFetch,
@@ -123,7 +109,6 @@ export default function AuthProvider({
   useEffect(() => {
     const applySession = (next: Session | null) => {
       if (next && !isAllowedEmail(next.user.email)) {
-        clearGoogleToken();
         supabase.auth.signOut();
         setSession(null);
         return;
@@ -136,8 +121,12 @@ export default function AuthProvider({
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.provider_token) {
-        localStorage.setItem(GOOGLE_TOKEN_KEY, session.provider_token);
+      // Not awaited: the callback must not block Supabase's auth state machine.
+      if (
+        session?.provider_refresh_token &&
+        isAllowedEmail(session.user.email)
+      ) {
+        void persistGoogleRefreshToken(session);
       }
       applySession(session);
     });
