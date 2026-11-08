@@ -4,14 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import { Button } from '@vigilant-broccoli/react-lib';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
+import { CHAT_APP, CHAT_ROOM } from '../../constants/chat';
 import {
-  CHAT_APP,
-  CHAT_ROOM,
-  CHAT_STATUS,
-  ChatStatus,
-  SOCKET_EVENTS,
-} from '../../constants/chat';
-import { useSocketWithCertTrustPrompt } from '../../hooks/useSocketWithCertTrustPrompt';
+  EVENT_STREAM_STATUS,
+  useEventStream,
+} from '../../hooks/useEventStream';
 import { authFetch } from '../../../../libs/auth';
 
 const LOG_PREFIX = '[ChatDemo]';
@@ -26,12 +23,6 @@ interface ChatPayload {
   ts: number;
 }
 
-interface ChatMessage {
-  app: string;
-  receiverId: string;
-  payload: ChatPayload;
-}
-
 const randomSender = () =>
   `${SENDER_PREFIX}${Math.random()
     .toString(36)
@@ -41,7 +32,6 @@ export function ChatDemo() {
   const [messages, setMessages] = useState<ChatPayload[]>([]);
   const [draft, setDraft] = useState('');
   const [sender, setSender] = useState('');
-  const [status, setStatus] = useState<ChatStatus>(CHAT_STATUS.CONNECTING);
   const [sending, setSending] = useState(false);
   const listRef = useRef<HTMLDivElement | null>(null);
 
@@ -49,36 +39,12 @@ export function ChatDemo() {
     setSender(randomSender());
   }, []);
 
-  const url = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL;
-  const socket = useSocketWithCertTrustPrompt(url, { reconnection: true });
-
-  useEffect(() => {
-    if (!url) {
-      setStatus(CHAT_STATUS.CLOSED);
-      return;
-    }
-    if (!socket) return;
-    socket.on(SOCKET_EVENTS.CONNECT, () => {
-      setStatus(CHAT_STATUS.OPEN);
-      socket.emit(SOCKET_EVENTS.SUBSCRIBE, {
-        app: CHAT_APP,
-        receiverId: CHAT_ROOM,
-      });
-    });
-    socket.on(SOCKET_EVENTS.DISCONNECT, () => setStatus(CHAT_STATUS.CLOSED));
-    socket.on(SOCKET_EVENTS.CONNECT_ERROR, err => {
-      console.error(`${LOG_PREFIX} connect_error`, err.message, err);
-    });
-    socket.on(SOCKET_EVENTS.MESSAGE, (msg: ChatMessage) => {
-      setMessages(prev => [...prev, msg.payload]);
-    });
-    return () => {
-      socket.off(SOCKET_EVENTS.CONNECT);
-      socket.off(SOCKET_EVENTS.DISCONNECT);
-      socket.off(SOCKET_EVENTS.CONNECT_ERROR);
-      socket.off(SOCKET_EVENTS.MESSAGE);
-    };
-  }, [url, socket]);
+  const status = useEventStream<ChatPayload>(
+    process.env.NEXT_PUBLIC_SOCKET_SERVER_URL,
+    CHAT_APP,
+    CHAT_ROOM,
+    ({ payload }) => setMessages(prev => [...prev, payload]),
+  );
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
@@ -104,7 +70,7 @@ export function ChatDemo() {
     }
   };
 
-  const canSend = status === CHAT_STATUS.OPEN && !sending;
+  const canSend = status === EVENT_STREAM_STATUS.OPEN && !sending;
 
   return (
     <div className="flex flex-col gap-3">

@@ -195,7 +195,7 @@
 | Persist personal management data | Backend Developer | Persisted per-user Kanban boards and language-learning data in MongoDB. |
 | Publish versioned npm packages | DevOps Engineer | Published npm packages with Git-tag version resolution and npm provenance. |
 | Run agentic development workflows | Platform Engineer | Design and run agentic coding workflows with Claude Code, building custom skills and slash commands for code review, refactor cleanup, documentation upkeep, and automated PR authoring that run consistently across Claude Code and Codex. Ran sandboxed agents for repository tasks using shared Claude Code and Codex skills. |
-| Serve HTTP and real-time connections | Backend Developer | Ran Express HTTP handling with Socket.IO in socket-server-socketio. |
+| Serve HTTP and real-time connections | Backend Developer | Ran Express HTTP handling with Socket.IO and Server-Sent Events in socket-server-socketio, fanning out authenticated HTTP publishes to both transports. |
 | Share theme design tokens | Frontend Developer | Shared semantic light/dark design tokens for colors, radii and shadows through ThemeScope and a Tailwind preset, mapping tokens into utility classes for UI apps. |
 | Store documents and images | Backend Developer | Stored Hearth documents and images in R2. |
 | Validate AI-generated resume edits | Fullstack Developer | Built guardrails around the AI resume editor in local-manager-next: a rule-based system prompt, mechanical checks that reject figures not found in the resume, career note or user messages, protected-field checks that block unrequested changes to links, employers, roles and dates, and a CLI check that renders the PDF and enforces the one-page limit. |

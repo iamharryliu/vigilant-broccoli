@@ -67,7 +67,7 @@ const nextConfig = {
   env: SUPABASE_NEXT_ENV,
   distDir: '../../../dist/apps/ui/local-manager-next/.next',
   agentRules: false,
-  serverExternalPackages: ['socket.io-client', 'better-sqlite3'],
+  serverExternalPackages: ['better-sqlite3'],
   async rewrites() {
     return [
       {
