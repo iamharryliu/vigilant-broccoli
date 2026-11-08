@@ -4,7 +4,6 @@ import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { signInWithGoogle, signOut, useAuth } from '../../../libs/auth';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  Search,
   LogOut,
   LogIn,
   Bell,
@@ -59,7 +58,6 @@ const BellIconWithBadge = ({ unreadCount }: { unreadCount: number }) => (
 );
 
 type Props = {
-  setSearchDialogOpen: (open: boolean) => void;
   notificationsOpen: boolean;
   setNotificationsOpen: (open: boolean) => void;
   unreadCount: number;
@@ -68,7 +66,6 @@ type Props = {
 };
 
 export const RightSidebar = ({
-  setSearchDialogOpen,
   notificationsOpen,
   setNotificationsOpen,
   unreadCount,
@@ -96,12 +93,6 @@ export const RightSidebar = ({
       onClick: () => router.push(route.path),
       isActive: pathname === route.path,
     })),
-    {
-      label: 'Search',
-      icon: Search,
-      title: 'Search (/)',
-      onClick: () => setSearchDialogOpen(true),
-    },
     {
       label: 'Settings',
       icon: Settings,
