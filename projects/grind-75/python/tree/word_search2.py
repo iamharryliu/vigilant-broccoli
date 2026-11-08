@@ -51,7 +51,6 @@ class Solution:
             # remove cell from visited
             visited.remove((r, c))
 
-        # Loop through all squares and dfs
         for r in range(len(board)):
             for c in range(len(board[0])):
                 dfs(r, c, root, "")
