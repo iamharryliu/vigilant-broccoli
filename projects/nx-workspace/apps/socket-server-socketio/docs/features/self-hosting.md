@@ -1,6 +1,6 @@
 # Self-Hosting
 
-Run the Socket.IO publish/subscribe server from the `iamharryliu/socket-server-socketio` image.
+Run the Socket.IO and Server-Sent Events publish/subscribe server from the `iamharryliu/socket-server-socketio` image.
 
 ## Table of Contents
 
@@ -26,7 +26,7 @@ docker run -p 3000:3000 \
 | Variable | Required | Description |
 | --- | --- | --- |
 | `HOST`, `PORT` | No | Listen address; the image sets `0.0.0.0` and `3000`. |
-| `SENDER_TOKEN` | No | Token a client sends as `auth.token` in the Socket.IO handshake to become a sender. Unset, nobody can publish. |
+| `SENDER_TOKEN` | No | Token a client sends as `auth.token` in the Socket.IO handshake, or as `Authorization: Bearer <token>` on `POST /publish`, to publish. Unset, nobody can publish. |
 | `TLS_CERT_PATH`, `TLS_KEY_PATH` | No | PEM certificate and key paths, readable by the container's user. The server speaks HTTPS only when both are set. |
 
 ## Protocol
@@ -37,6 +37,13 @@ docker run -p 3000:3000 \
 | `publish` | Sender to server | `{ app, receiverId, payload }`; an acknowledgement returns `{ ok: true }`, or `{ ok: false, code }` with `forbidden` for a non-sender or `invalid` for a bad shape. |
 | `subscribe` | Client to server | `{ app, receiverId }` joins the room `app:receiverId`. |
 | `unsubscribe` | Client to server | `{ app, receiverId }` leaves the room. |
+
+The same rooms are also reachable over HTTP; see [SSE transport](./sse-transport.md).
+
+| Endpoint | Description |
+| --- | --- |
+| `GET /events?app=<app>&receiverId=<id>` | Server-Sent Events stream of the room's `message` events. |
+| `POST /publish` | Bearer-authenticated JSON `{ app, receiverId, payload }`, delivered to Socket.IO and SSE subscribers. |
 
 ## Nuances
 
