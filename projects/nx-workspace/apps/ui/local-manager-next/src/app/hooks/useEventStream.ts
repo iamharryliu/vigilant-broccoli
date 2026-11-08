@@ -1,19 +1,13 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import {
   SOCKET_EVENTS,
   SOCKET_SERVER_PATHS,
   SOCKET_SUBSCRIPTION_PARAMS,
 } from '@vigilant-broccoli/common-js';
+import { dismissCertTrustToast, showCertTrustToast } from './certTrustToast';
 
-const TOAST_ID = 'socket-cert-trust';
-const TOAST_TITLE = 'Cannot reach realtime server';
-const TOAST_DESCRIPTION =
-  'The server uses a self-signed certificate your browser does not trust. Open it in a new tab, accept the warning, then return here.';
-const TOAST_ACTION_LABEL = 'Trust certificate';
-const WINDOW_TARGET_BLANK = '_blank';
 // EventSource errors carry no detail, so a run of failures without an open is the only cert-trust signal.
 const ERRORS_BEFORE_CERT_PROMPT = 3;
 
@@ -64,7 +58,7 @@ export function useEventStream<T>(
       errorsWithoutOpen = 0;
       setStatus(EVENT_STREAM_STATUS.OPEN);
       if (certPromptShown) {
-        toast.dismiss(TOAST_ID);
+        dismissCertTrustToast();
         certPromptShown = false;
       }
     };
@@ -76,15 +70,7 @@ export function useEventStream<T>(
         return;
       }
       certPromptShown = true;
-      toast.error(TOAST_TITLE, {
-        id: TOAST_ID,
-        description: TOAST_DESCRIPTION,
-        duration: Infinity,
-        action: {
-          label: TOAST_ACTION_LABEL,
-          onClick: () => window.open(url, WINDOW_TARGET_BLANK),
-        },
-      });
+      showCertTrustToast(url);
     };
 
     source.addEventListener(SOCKET_EVENTS.MESSAGE, event =>
@@ -93,7 +79,7 @@ export function useEventStream<T>(
 
     return () => {
       source.close();
-      if (certPromptShown) toast.dismiss(TOAST_ID);
+      if (certPromptShown) dismissCertTrustToast();
     };
   }, [url, app, receiverId]);
 
