@@ -2,14 +2,14 @@ import {
   getEnvironmentVariable,
   ShellUtils,
 } from '@vigilant-broccoli/common-node';
-import { GOOGLE_DRIVE_PATH, VB_REPO_PATH } from '@harry/private';
+import { RESILIO_SYNC_PATH, VB_REPO_PATH } from '@harry/private';
 
 export interface SpotifyPlaylist {
   name: string;
   url: string;
 }
 
-const OUTPUT_PATH = GOOGLE_DRIVE_PATH.DJ_MUSIC_LIBRARY;
+const OUTPUT_PATH = RESILIO_SYNC_PATH.DJ_MUSIC_LIBRARY;
 
 function runPythonScript(
   scriptName: string,

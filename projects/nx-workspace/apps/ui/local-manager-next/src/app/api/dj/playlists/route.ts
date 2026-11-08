@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { FileSystemUtils } from '@vigilant-broccoli/common-node';
-import { GOOGLE_DRIVE_PATH } from '@harry/private';
+import { RESILIO_SYNC_PATH } from '@harry/private';
 import { readdir, stat } from 'fs/promises';
 import { join } from 'path';
 
@@ -23,7 +23,7 @@ function formatBytes(bytes: number): string {
 export async function GET() {
   try {
     const djMusicPath = FileSystemUtils.expandHomePath(
-      GOOGLE_DRIVE_PATH.DJ_MUSIC_LIBRARY,
+      RESILIO_SYNC_PATH.DJ_MUSIC_LIBRARY,
     );
 
     const entries = await readdir(djMusicPath, { withFileTypes: true });
