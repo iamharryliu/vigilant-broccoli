@@ -1,6 +1,6 @@
 # Where Is
 
-Household storage inventory — upload photos of storage areas, AI identifies contents, search by item.
+Household storage inventory — record storage areas by hand or from photos, AI suggests item tags, search by item.
 
 ## Stack
 
@@ -17,9 +17,10 @@ Household storage inventory — upload photos of storage areas, AI identifies co
 
 - Tied to a home — dropdown selector always shown, home persisted in `?home=` query param, defaults to first home, redirects to `/homes` if none
 - Shared with accepted home members — full CRUD access
-- Upload up to 10 images per item (max 10MB each, max 50MB total)
+- Only a title is required; photos are optional, up to 10 per item (max 10MB each, max 50MB total)
+- Save and Analyze are separate form actions; Cancel closes the create or update dialog without saving
 - Image processing — resize to 1920px max, convert to JPEG, strip EXIF
-- AI generates description + tags from images
+- AI suggests tags from images on demand, via a separate action from saving; it merges into existing tags and never touches the user-entered description
 - Fuzzy search across title, description, tags
 - Tags display alphabetically and animate when added or removed in the form
 - Update title, description, and tags inline
@@ -38,7 +39,8 @@ Household storage inventory — upload photos of storage areas, AI identifies co
 - `POST /api/where-is` — create item + upload images
 - `PATCH /api/where-is` — update title, description, tags
 - `DELETE /api/where-is` — delete item + R2 images
-- `POST /api/where-is/analyze` — AI analysis of images
+- `POST /api/where-is/analyze` — AI tag suggestions from images
+- `POST /api/where-is/reanalyze` — AI tag suggestions from an item's stored images plus any newly added ones
 - `GET /api/where-is/export?homeId=` — export all items + images as JSON (base64-embedded)
 - `POST /api/where-is/import` — import items + images from export JSON
 

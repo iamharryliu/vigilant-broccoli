@@ -17,9 +17,8 @@ const ERROR_MISSING_IMAGES = 'images is required';
 
 const SYSTEM_PROMPT = `You are a household item identifier. Given one or more images of a storage area (drawer, shelf, cabinet, box, etc.), identify all visible items across all images.
 
-Respond with valid JSON in this exact format:
+Respond with valid JSON containing only the tags, in this exact format:
 {
-  "description": "Brief description of the storage area and its contents",
   "tags": ["item1", "item2", "item3"]
 }
 

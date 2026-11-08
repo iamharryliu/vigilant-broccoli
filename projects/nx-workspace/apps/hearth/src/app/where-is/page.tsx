@@ -35,7 +35,8 @@ const COPY = {
   LIST: { TITLE: 'Storage Areas', EMPTY_MESSAGE: 'No storage areas yet.' },
   [FORM_TYPE.CREATE]: {
     TITLE: 'Add Storage Area',
-    DESCRIPTION: 'Upload photos of a storage area to identify its contents.',
+    DESCRIPTION:
+      'Add details manually, or upload photos and analyze them to suggest tags.',
   },
   [FORM_TYPE.UPDATE]: {
     TITLE: 'Update Storage Area',

@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     .eq('item_id', id)
     .order('sort_order');
 
-  if (!imageRows?.length) {
+  if (!imageRows?.length && !additionalImages?.length) {
     return Response.json(
       { error: 'No images found for item.' },
       { status: HTTP_STATUS_CODES.BAD_REQUEST },
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
   }
 
   const storedImages = await Promise.all(
-    imageRows.map(async row => {
+    (imageRows ?? []).map(async row => {
       const res = await fetch(await getImageUrl(row.r2_key));
       const buffer = Buffer.from(await res.arrayBuffer());
       const compressed = await compressForLlm(buffer);
@@ -99,12 +99,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { description, tags: newTags } = await res.json();
+  const { tags: newTags } = await res.json();
   const mergedTags = existingTags
     ? [
         ...existingTags,
         ...newTags.filter((t: string) => !existingTags.includes(t)),
       ]
     : newTags;
-  return Response.json({ description, tags: mergedTags });
+  return Response.json({ tags: mergedTags });
 }
