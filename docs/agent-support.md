@@ -41,7 +41,7 @@ Maintenance scopes differ: inventory audit fixes rows of the fork identity and s
 
 ### Dispatch contract
 
-Every dispatcher (`gh-`, `local-docker-`, `remote-` and the tmux `local-` create/update skills) shares this front end; each skill adds only its medium's dispatch.
+Every dispatcher (`gh-`, `local-docker-`, `remote-` and the tmux `local-` create/update skills) shares these pre-dispatch steps; each skill adds only its medium's dispatch.
 
 1. **Request:** take it from the arguments; without arguments use the change the conversation most recently identified as worth building, and ask if none stands out.
 2. **Research (read-only):** the affected code and existing patterns, applicable `CONTEXT.md` files and [Doc Map](../CONTEXT.md#doc-map) docs, and overlapping `TODO.md` rows and open PRs (`gh pr list`).
