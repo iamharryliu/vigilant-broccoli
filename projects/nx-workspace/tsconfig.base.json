@@ -46,6 +46,9 @@
       "@vigilant-broccoli/react-lib-auth": [
         "./libs/@vigilant-broccoli/react-lib-auth/src/index.ts"
       ],
+      "@vigilant-broccoli/react-lib-auth/google-token-server": [
+        "./libs/@vigilant-broccoli/react-lib-auth/src/lib/google-token-store.server.ts"
+      ],
       "@vigilant-broccoli/react-lib-calendar": [
         "./libs/@vigilant-broccoli/react-lib-calendar/src/index.ts"
       ],

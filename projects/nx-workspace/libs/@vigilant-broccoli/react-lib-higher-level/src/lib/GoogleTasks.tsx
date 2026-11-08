@@ -56,10 +56,6 @@ export interface GoogleTasksAuthAdapter {
     init?: RequestInit,
   ) => Promise<Response>;
   useAuthStatus: () => 'loading' | 'authenticated' | 'unauthenticated';
-  useGoogleToken: () => {
-    googleToken: string | null;
-    clearGoogleToken: () => void;
-  };
   signInWithGoogle: () => Promise<void>;
 }
 
@@ -594,9 +590,8 @@ export const GoogleTasksComponent = ({
   wrapInCard?: boolean;
   addTaskActions?: ReactNode;
 }) => {
-  const { authFetch, useAuthStatus, useGoogleToken, signInWithGoogle } = auth;
+  const { authFetch, useAuthStatus, signInWithGoogle } = auth;
   const status = useAuthStatus();
-  const { clearGoogleToken } = useGoogleToken();
   const { taskLists, authError: titleAuthError } = useTaskLists(
     status,
     authFetch,
@@ -671,10 +666,6 @@ export const GoogleTasksComponent = ({
     titleAuthError ||
     !!error?.includes('Unauthorized') ||
     !!error?.includes('authentication');
-
-  useEffect(() => {
-    if (hasGoogleAuthError) clearGoogleToken();
-  }, [hasGoogleAuthError, clearGoogleToken]);
 
   const handleCreateTask = useCallback(async () => {
     if (isCreatingTask) return;

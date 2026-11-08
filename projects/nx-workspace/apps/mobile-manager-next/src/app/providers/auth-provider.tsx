@@ -73,15 +73,6 @@ export const useAuthStatus = ():
   return session ? 'authenticated' : 'unauthenticated';
 };
 
-// Google access is resolved server-side from the stored refresh token, so the
-// client holds no Google token; react-lib's adapter still expects this hook.
-const SERVER_SIDE_GOOGLE_TOKEN = {
-  googleToken: null,
-  clearGoogleToken: () => undefined,
-};
-
-export const useGoogleToken = () => SERVER_SIDE_GOOGLE_TOKEN;
-
 const persistGoogleRefreshToken = (session: Session) =>
   fetch(API_ENDPOINTS.GOOGLE_TOKEN, {
     method: 'POST',
@@ -95,7 +86,6 @@ const persistGoogleRefreshToken = (session: Session) =>
 export const googleTasksAuth: GoogleTasksAuthAdapter = {
   authFetch,
   useAuthStatus,
-  useGoogleToken,
   signInWithGoogle,
 };
 

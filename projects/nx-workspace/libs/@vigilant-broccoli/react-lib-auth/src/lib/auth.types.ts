@@ -23,6 +23,5 @@ export interface CreateSupabaseAuthOptions {
 }
 
 export interface BuildAuthHeadersOptions {
-  includeGoogleToken?: boolean;
   json?: boolean;
 }
