@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
   authorizeUrl.searchParams.set('response_type', RESPONSE_TYPE_CODE);
   authorizeUrl.searchParams.set(
     'redirect_uri',
-    spotifyRedirectUri(request.nextUrl.origin),
+    spotifyRedirectUri(request),
   );
   authorizeUrl.searchParams.set('scope', SPOTIFY_AUTH_SCOPE);
   authorizeUrl.searchParams.set('state', createSpotifyOAuthState(userEmail));

@@ -3,8 +3,8 @@
 import { Button, Text, Badge } from '@vigilant-broccoli/react-lib';
 import { useState, useEffect } from 'react';
 import { ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
-import { API_ENDPOINTS } from '../../constants/api-endpoints';
-import { authFetch } from '../../../../libs/auth';
+import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { authFetch } from '../../../libs/auth';
 
 interface PlaylistInfo {
   name: string;
@@ -13,7 +13,7 @@ interface PlaylistInfo {
   formattedSize: string;
 }
 
-export const DjMusicUtilityContent = () => {
+export const DjMusicComponent = () => {
   const [djLoading, setDjLoading] = useState(false);
   const [djMessage, setDjMessage] = useState<string | null>(null);
   const [djError, setDjError] = useState<string | null>(null);

@@ -4,6 +4,8 @@ import {
   HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
+import { NextRequest } from 'next/server';
+import { withBasePath } from '../src/app/app.const';
 import { supabaseAdmin } from '../src/lib/supabase-admin';
 
 const SPOTIFY_OAUTH_TOKENS_TABLE = 'spotify_oauth_tokens';
@@ -11,7 +13,8 @@ const USER_EMAIL_COLUMN = 'user_email';
 const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
 const SPOTIFY_CLIENT_ID_ENV = 'SPOTIFY_CLIENT_ID';
 const SPOTIFY_CLIENT_SECRET_ENV = 'SPOTIFY_CLIENT_SECRET';
-const SPOTIFY_CALLBACK_PATH = '/api/spotify/auth/callback';
+const SPOTIFY_CALLBACK_PATH = withBasePath('/api/spotify/auth/callback');
+const FORWARDED_HOST_HEADER = 'x-forwarded-host';
 const SPOTIFY_NOT_CONNECTED = 'spotify_not_connected';
 // PostgREST's code for .single() matching zero rows — the expected shape for
 // a user who hasn't connected Spotify yet, distinct from a real query error
@@ -40,19 +43,24 @@ const basicAuthHeader = (): string =>
     `${getEnvironmentVariable(SPOTIFY_CLIENT_ID_ENV)}:${getEnvironmentVariable(SPOTIFY_CLIENT_SECRET_ENV)}`,
   ).toString('base64')}`;
 
-// PM2 fronts this app behind a reverse proxy that doesn't forward a Host
-// header Next can trust, so request.nextUrl.origin resolves to the internal
-// bind address (e.g. localhost:1337), not the public domain Spotify's
-// dashboard has registered as the redirect URI. SPOTIFY_REDIRECT_BASE_URL is
-// set in ecosystem.config.js (a plain, non-secret deploy-time constant, same
-// as VB_EXPRESS_URL/NEXT_PUBLIC_SUPABASE_URL there) for the one real
-// deployment; unset locally, where request.nextUrl.origin is trustworthy
-// since next dev has no reverse proxy in front of it.
-export const spotifyAppOrigin = (requestOrigin: string): string =>
-  process.env.SPOTIFY_REDIRECT_BASE_URL || requestOrigin;
+// Requests reach this zone through local-manager-next's rewrite, which points
+// Host at the zone's bind address (127.0.0.1:1340) and passes the manager's
+// Host as x-forwarded-host. In production even that is the manager's own bind
+// address, because the reverse proxy in front of it does not forward a Host
+// Next can trust, so SPOTIFY_REDIRECT_BASE_URL (a plain non-secret constant in
+// ecosystem.config.js) pins the origin Spotify's dashboard has registered.
+export const spotifyAppOrigin = (request: NextRequest): string => {
+  if (process.env.SPOTIFY_REDIRECT_BASE_URL) {
+    return process.env.SPOTIFY_REDIRECT_BASE_URL;
+  }
+  const forwardedHost = request.headers.get(FORWARDED_HOST_HEADER);
+  return forwardedHost
+    ? `${request.nextUrl.protocol}//${forwardedHost}`
+    : request.nextUrl.origin;
+};
 
-export const spotifyRedirectUri = (requestOrigin: string): string =>
-  `${spotifyAppOrigin(requestOrigin)}${SPOTIFY_CALLBACK_PATH}`;
+export const spotifyRedirectUri = (request: NextRequest): string =>
+  `${spotifyAppOrigin(request)}${SPOTIFY_CALLBACK_PATH}`;
 
 export const storeSpotifyRefreshToken = async (
   userEmail: string,

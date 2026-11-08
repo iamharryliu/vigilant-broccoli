@@ -2,19 +2,20 @@
 
 ## Overview
 
-- Force-directed graph of a user's Spotify playlists, shown as a card under the metronome on the Music page (`/music`), reusing the same `GraphView` (`@vigilant-broccoli/react-lib-higher-level`) the `docs-md` note viewer uses
+- Force-directed graph of a user's Spotify playlists, shown as a card under the metronome on the [Music](./music.md) page, reusing the same `GraphView` (`@vigilant-broccoli/react-lib-higher-level`) the `docs-md` note viewer uses
 - Edges = shared songs between playlists; a song matches across releases (single, album, remaster) by normalized title plus primary artist, not only by identical Spotify track id
 - Spotify's Web API doesn't expose playlist-folder structure, so folders aren't represented
 
 ## Auth
 
-- Separate, per-user Spotify connection independent of the app's Google sign-in (`/api/spotify/auth/login`, `/api/spotify/auth/callback`)
+- Separate, per-user Spotify connection independent of `local-manager-next`'s Google sign-in (`/api/spotify/auth/login`, `/api/spotify/auth/callback`, both under the `/music/app` basePath)
 - Standard OAuth authorization-code flow, scope `playlist-read-private playlist-read-collaborative`
 - Identity crosses the callback redirect via a signed `state` param (HMAC'd with `SPOTIFY_CLIENT_SECRET`), not a bearer header — Spotify's redirect is a plain browser GET
-- `redirect_uri` prefers `SPOTIFY_REDIRECT_BASE_URL` over `request.nextUrl.origin` (`libs/spotify-token.ts`) — PM2 sits behind a reverse proxy that doesn't forward a trustworthy `Host`, so the request's own origin resolves to the internal bind address, not the public domain. Falls back to `request.nextUrl.origin` when unset, which is correct for local dev (no proxy in front of `next dev`)
+- `redirect_uri` is the manager's origin plus `/music/app/api/spotify/auth/callback` (`libs/spotify-token.ts`). The origin is `SPOTIFY_REDIRECT_BASE_URL`, else the `x-forwarded-host` that `local-manager-next`'s rewrite sends, else `request.nextUrl.origin`: behind the rewrite the request's own origin is the zone's bind address (`127.0.0.1:1340`), and in production the manager's reverse proxy doesn't forward a trustworthy `Host` either
+- Connect navigates the top window to Spotify; the callback redirects it back to the manager's `/music`, and the graph reads its `spotifyError` param from `window.top.location`
 - Refresh/access tokens stored in Supabase `spotify_oauth_tokens`, keyed by user email (service-role only, RLS enabled with no policies)
 - Not-connected state renders a "Connect Spotify" CTA instead of an error
-- `pm2:start`/`pm2:reload` run this app's pending Supabase migrations before starting/reloading (mirroring `serve`) — this app has no CI deploy pipeline to apply them otherwise
+- The `spotify_oauth_tokens` migration stays in `local-manager-next/supabase/migrations`, whose `pm2:start`/`pm2:reload` apply that shared Supabase project's migrations
 
 ## Graph Data
 
@@ -36,5 +37,5 @@
 
 ## Manual setup
 
-- Spotify Developer Dashboard app (same one `dldjmusic`'s Python script uses) needs `https://manager.vigilant-broccoli.app/api/spotify/auth/callback` added as a Redirect URI
-- `SPOTIFY_REDIRECT_BASE_URL` is a plain non-secret constant in `ecosystem.config.js` (like `VB_EXPRESS_URL`), not Vault — testing this flow against local dev works automatically via the `request.nextUrl.origin` fallback, no override needed
+- Spotify Developer Dashboard app (same one `dldjmusic`'s Python script uses) needs `https://manager.vigilant-broccoli.app/music/app/api/spotify/auth/callback` added as a Redirect URI
+- `SPOTIFY_REDIRECT_BASE_URL` is a plain non-secret constant in `ecosystem.config.js`, not Vault. Under `serve` it is unset and the `x-forwarded-host` fallback gives the manager's dev origin, which must also be registered as a Redirect URI to test the flow locally
