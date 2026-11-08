@@ -674,7 +674,7 @@ export const swaggerSpec = createSwaggerSpec({
           },
         }),
         responses: {
-          '200': { description: '{ description, tags }' },
+          '200': { description: '{ tags }' },
           '400': { description: 'images is required' },
           '401': UNAUTHORIZED_RESPONSE,
         },
