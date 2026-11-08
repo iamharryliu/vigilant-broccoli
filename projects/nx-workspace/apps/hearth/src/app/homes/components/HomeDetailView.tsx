@@ -7,6 +7,7 @@ import { HOME_ROLE, HomeMember, HomeRole } from '../../../lib/types';
 import { HomeDetailSkeleton } from './HomeDetailSkeleton';
 import { HomeForm, SaveStatus } from './HomeForm';
 import { MemberList } from './MemberList';
+import { InviteLinkControls } from './InviteLinkControls';
 
 type Props = {
   homeId: string;
@@ -159,6 +160,9 @@ export const HomeDetailView = ({ homeId }: Props) => {
         onDelete={deleteMember}
         onRoleChange={updateMemberRole}
       />
+      {membersLoaded && (isOwner || isAdmin) && (
+        <InviteLinkControls homeId={homeId} />
+      )}
     </div>
   );
 };

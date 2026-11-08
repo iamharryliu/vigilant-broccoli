@@ -184,5 +184,32 @@
     "PREVIOUS_MONTH": "Show previous month",
     "NEXT_MONTH": "Show next month",
     "CURRENT_MONTH": "Back to this month"
+  },
+  "INVITE_LINKS": {
+    "TITLE": "Invite links",
+    "DESCRIPTION": "Anyone with a link can join as a member. Links expire after 7 days or 10 uses.",
+    "COPY": "Copy invite link",
+    "CREATING": "Creating link…",
+    "COPIED": "Link copied",
+    "COPY_FAILED": "Copy this link now; it won't be shown again:",
+    "CREATE_FAILED": "Couldn't create an invite link.",
+    "NONE_ACTIVE": "No active links.",
+    "USAGE": "{used} of {max} uses · expires {expires}",
+    "REVOKE": "Revoke",
+    "REVOKING": "Revoking…"
+  },
+  "JOIN": {
+    "TITLE": "Join a home",
+    "LOADING": "Checking invite link…",
+    "INVITED": "{inviter} invited you to join {home}.",
+    "CONFIRM": "Join home",
+    "JOINING": "Joining…",
+    "ALREADY_MEMBER": "You're already a member of {home}.",
+    "OPEN_HOME": "Open home",
+    "INVALID": "This invite link isn't valid. Ask for a new one.",
+    "REVOKED": "This invite link has been revoked. Ask for a new one.",
+    "EXPIRED": "This invite link has expired. Ask for a new one.",
+    "EXHAUSTED": "This invite link has already been used the maximum number of times. Ask for a new one.",
+    "FAILED": "Couldn't join the home. Try again."
   }
 }

@@ -20,4 +20,5 @@ See also: [Homes](./homes.md)
 ## API
 
 - `PATCH /api/homes/[id]/members` — update role
+- Invite links (`/api/homes/[id]/invite-links`) are owner or `HOME_ADMIN` only and always grant `HOME_MEMBER`
 - Admin actions (home PATCH, member invite/delete/role) use admin client server-side when requester is `HOME_ADMIN`
