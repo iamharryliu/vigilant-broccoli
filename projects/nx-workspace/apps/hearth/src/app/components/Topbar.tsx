@@ -156,12 +156,6 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
             </button>
           </DropdownMenu.Trigger>
           <DropdownMenu.Content align="end" size="1">
-            <div className="px-2 py-1.5">
-              <p className="text-xs text-gray-500 truncate max-w-[180px] dark:text-gray-400">
-                {email}
-              </p>
-            </div>
-            <DropdownMenu.Separator />
             <DropdownMenu.Item asChild>
               <Link
                 href={ROUTES.USER_SETTINGS}
