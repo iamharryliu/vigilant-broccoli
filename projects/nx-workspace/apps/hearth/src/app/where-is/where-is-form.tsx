@@ -14,6 +14,8 @@ import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
 import { useAuth } from '../providers/auth-provider';
 import { sortTags } from './where-is-tags';
 
+const ERROR_SAVE_FALLBACK = 'Saving failed. Please try again.';
+
 const TAG_TRANSITION = { duration: 0.18, ease: 'easeOut' } as const;
 
 const API = {
@@ -152,6 +154,7 @@ export const WhereIsFormComponent = ({
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzed, setAnalyzed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const isUpdate = formType === FORM_TYPE.UPDATE;
 
@@ -243,6 +246,7 @@ export const WhereIsFormComponent = ({
       return;
     }
     setSubmitting(true);
+    setError('');
     try {
       await submitHandler(
         {
@@ -256,6 +260,8 @@ export const WhereIsFormComponent = ({
         },
         formType,
       );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : ERROR_SAVE_FALLBACK);
     } finally {
       setSubmitting(false);
     }
@@ -384,6 +390,12 @@ export const WhereIsFormComponent = ({
         >
           {analyzing ? LABEL.ANALYZING : LABEL.REANALYZE}
         </Button>
+      )}
+
+      {error && (
+        <Text size="1" color="red" as="p" role="alert">
+          {error}
+        </Text>
       )}
 
       <Button onClick={handleSubmit} disabled={analyzing || submitting}>

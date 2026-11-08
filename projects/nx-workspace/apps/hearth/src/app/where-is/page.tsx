@@ -14,7 +14,7 @@ import {
   WhereIsFormValues,
   PreviewImage,
 } from './where-is-form';
-import { uploadPreviewImages } from './upload-images';
+import { throwIfNotOk, uploadPreviewImages } from './upload-images';
 import { sortTags } from './where-is-tags';
 import { WhereIsDetailPanel } from './where-is-detail-panel';
 import { useMobileReady } from '../../lib/use-mobile-view';
@@ -102,7 +102,7 @@ function WhereIsPageContent() {
     const accessToken = session?.access_token ?? '';
     const images = await uploadPreviewImages(form.images, accessToken);
 
-    await fetch(WHERE_IS_ENDPOINT, {
+    const saveRes = await fetch(WHERE_IS_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -117,10 +117,12 @@ function WhereIsPageContent() {
         images,
       }),
     });
+    await throwIfNotOk(saveRes);
 
     const res = await fetch(`${WHERE_IS_ENDPOINT}?homeId=${selectedHomeId}`, {
       headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
     });
+    await throwIfNotOk(res);
     const updated: WhereIsItem[] = await res.json();
     const newItem = updated[0];
 
@@ -143,7 +145,7 @@ function WhereIsPageContent() {
     const accessToken = session?.access_token ?? '';
     const newImages = await uploadPreviewImages(form.images, accessToken);
 
-    await fetch(WHERE_IS_ENDPOINT, {
+    const saveRes = await fetch(WHERE_IS_ENDPOINT, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -158,6 +160,7 @@ function WhereIsPageContent() {
         newImages,
       }),
     });
+    await throwIfNotOk(saveRes);
   };
 
   const deleteItem = async (id: string | number) => {

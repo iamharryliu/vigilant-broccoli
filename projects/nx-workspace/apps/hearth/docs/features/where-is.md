@@ -27,6 +27,16 @@ Household storage inventory — upload photos of storage areas, AI identifies co
 - Export all items to JSON (includes base64 images)
 - Import from export JSON into any home
 
+## Save Path Timeouts and Errors
+
+- Client uploads images to R2 staging via presigned URLs, then `POST`/`PATCH /api/where-is` reads each staged object, processes it, deletes the staged object (best effort) and uploads the final image (`read`, `process`, `delete-staged`, `upload-final`)
+- Every fetch in `api/where-is/r2.ts` has an `AbortSignal.timeout`: 10s for vb-express presign and delete calls, 20s for R2 transfers (the read signal also covers the body)
+- `processImage` is raced against a 20s timeout in `route.ts`; the race stops the wait, not the underlying work
+- A failed or timed-out step returns JSON `{ error, step }` with 504 (timeout) or 500; `ImageValidationError` stays 400
+- `POST` deletes the just-inserted `where_is_items` row (images cascade) when a final upload or image insert fails, so a retry does not duplicate it; `PATCH` applies title and tags first but still returns the error
+- Each step logs `step`, R2 key and duration (`console.info` on success, `console.error` on failure or timeout) to Vercel runtime logs; presigned URLs, tokens and image data are never logged
+- The client checks `.ok` on upload-url, R2 PUTs, save and refetch; the form shows the error and stays open with previews intact
+
 ## RLS
 
 - Owner: full CRUD via `auth.uid() = user_id`
@@ -35,6 +45,7 @@ Household storage inventory — upload photos of storage areas, AI identifies co
 ## Routes
 
 - `GET /api/where-is?homeId=` — list items for a home
+- `POST /api/where-is/upload-url` — mint presigned staging upload URLs for the browser
 - `POST /api/where-is` — create item + upload images
 - `PATCH /api/where-is` — update title, description, tags
 - `DELETE /api/where-is` — delete item + R2 images
