@@ -22,10 +22,12 @@ Both publish paths (`POST /publish` and the Socket.IO `publish` event) go throug
 | Consumer | Transport |
 | --- | --- |
 | `.github/scripts/deploy-notify.mjs` (deploy-notify action) | `POST /publish` with Node's global `fetch` |
-| `local-manager-next` chat demo and deploy toasts | `useEventStream` (`EventSource`) |
 | `local-manager-next` `/api/chat/publish` | `POST /publish` with a 5s `AbortSignal.timeout` |
+| `local-manager-next` SSE chat demo and deploy toasts | `useEventStream` (`EventSource`) |
 
 ## Nuances
+
+- `local-manager-next` also keeps a Socket.IO chat demo (`SocketIOChatDemo`, publishing through `/api/chat/publish/socket-io`). It shares the `chat-demo` app and `lobby` room with the SSE demo, so each demo receives the other's messages.
 
 - `EventSource.onerror` carries no detail, so `useEventStream` shows the self-signed-certificate trust toast after 3 consecutive errors without an `open`, and dismisses it on the next `open`.
 - Server-side `fetch` rejects untrusted certificates exactly as `socket.io-client` did. `serve` maps the Vault `SOCKET_SERVER_URL` (publicly trusted) to both URLs; pointing `SOCKET_SERVER_URL` at a self-signed `https://localhost:3443` needs `NODE_EXTRA_CA_CERTS=<that cert>` for `/api/chat/publish`.

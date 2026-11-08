@@ -18,6 +18,7 @@ Management dashboard with calendar, notepad and quick links home tabs.
   - Leaflet / react-leaflet
   - lucide-react
   - react-markdown
+  - Socket.IO client
   - Tailwind CSS
 - Internal libs
   - `@harry/personal`
