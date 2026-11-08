@@ -4,10 +4,11 @@
 
 The home page's Tasks tab (`src/app/components/TaskList.tsx`) lists the selected home's pending recurring instances followed by its one-off tasks and completed instances, shared by every accepted member. On mobile the same list is the `/tasks` page, reached from the Home group in the sidebar.
 
-- Recurring tasks repeat on chosen weekdays and are managed in `TaskManagerDialog`; each occurrence is its own instance. A task has at most one pending instance: it appears on a due weekday after the latest completion (or its creation date), stays listed, labelled `(due <date>)`, until completed even on non-due days, and after completion the next one appears on the next due weekday. A completed instance (`Title (Nov 5)`) stays in Completed indefinitely, like completed one-off tasks, and unchecking it removes that completion; instances completed on an earlier day are left out of today's progress. Deleting a recurring task deletes its completed instances.
+- Recurring tasks repeat on chosen weekdays and are managed in `TaskManagerDialog`; each occurrence is its own instance. A task has at most one pending instance: it appears on a due weekday after the latest completion (or its creation date), stays listed, labelled `(due <date>)`, until completed even on non-due days, and after completion the next one appears on the next due weekday. A completed instance stays in Completed indefinitely, like completed one-off tasks, and unchecking it removes that completion. Completed rows (instances and one-off tasks) are grouped under `CheckList`'s day headers by when they were completed (the completion's `created_at` or the task's `completed_at`), newest first, not by the instance's due date; instances completed on an earlier day are left out of today's progress. Deleting a recurring task deletes its completed instances.
 - One-off tasks are added inline, renamed by clicking them and deleted from the row's ellipsis menu.
 - Every row's ellipsis menu has Assign, which opens `AssignTaskDialog` listing the home's accepted members (owner included) plus Unassigned. Any member can assign any task to one member; the row then shows a badge with the assignee's `display_name`, falling back to email. An assignee no longer in the home gets no badge.
-- Drag-to-reorder works within the same kind; recurring tasks without a pending instance keep their place. Completed instances show their task's assignee.
+- Recurring assignment is per occurrence: the task's `assigned_user_id` belongs to its pending instance. Completing it copies the assignee onto the completion row and clears the task, so the next occurrence starts unassigned. Assigning a completed instance changes only that completion; unchecking one deletes it without restoring its assignee onto the task.
+- Drag-to-reorder works within the same kind; recurring tasks without a pending instance keep their place.
 - On first load and on a home switch the list shows `ChecklistSkeleton` (shaped like a dense row, with assignee badges) instead of "No tasks due today", which appears only once the fetch has resolved.
 - Adding, completing and reopening animate like mobile-manager's tasks through `CheckList`'s [completion contract](../../../../libs/@vigilant-broccoli/react-lib/docs/features/checklist-completion.md). A recurring instance changes id when completed (task id → temporary id → saved completion id) or reopened, so `TaskList` records each replacement in `transitionFrom` and passes it as `transitionFromId`. Each toggle is optimistic, its row is `isRemoving` while the write is pending (`usePendingWrites`), and a failed write restores the previous state.
 - A new home starts with no tasks. Only the dev-only "Reset recurring tasks to default" button loads `DEFAULT_TASKS` from `tasks.utils.ts`, replacing the home's recurring tasks.
@@ -16,10 +17,10 @@ The home page's Tasks tab (`src/app/components/TaskList.tsx`) lists the selected
 ## Data
 
 - `home_recurring_tasks`: `id`, `home_id`, `title`, `days` (`smallint[]`, 0 = Sunday as `Date.getDay`), `position`, `assigned_user_id`
-- `home_recurring_task_completions`: `id`, `task_id` (cascade delete), `home_id`, `date` (client-local `YYYY-MM-DD`), unique (`task_id`, `date`)
+- `home_recurring_task_completions`: `id`, `task_id` (cascade delete), `home_id`, `date` (client-local `YYYY-MM-DD`), `created_at`, `assigned_user_id`, unique (`task_id`, `date`)
 - `home_one_off_tasks`: checklist shape (`name`, `completed`, `completed_at`, `position`, `home_id`) plus `assigned_user_id`
 
-`assigned_user_id` is a nullable `auth.users` reference that is set null when the user is deleted.
+Every `assigned_user_id` is a nullable `auth.users` reference that is set null when the user is deleted.
 
 Every table is exported under the Tasks option of [Export Data](./export-data.md).
 
@@ -30,8 +31,9 @@ Every table is exported under the Tasks option of [Export Data](./export-data.md
 - `PATCH /api/tasks/recurring` — update `title`/`days`/`assignedUserId` (null clears) by `id`, or reorder with `order: [{ id, position }]`
 - `DELETE /api/tasks/recurring` — delete by `id`
 - `POST /api/tasks/recurring/reset` — replace a home's recurring tasks with the defaults
-- `GET /api/tasks/completions?homeId=` — every completion of the home as `{ id, taskId, date }`, oldest first
-- `POST /api/tasks/completions` — set (`completed: true`, returns the `{ id, taskId, date }` row) or clear a completion for `taskId` on `date`
+- `GET /api/tasks/completions?homeId=` — every completion of the home as `{ id, taskId, date, completedAt, assignedUserId }` (`completedAt` is `created_at`), by `date`
+- `POST /api/tasks/completions` — set (`completed: true`: copies the task's assignee onto the completion, clears it on the task, returns the completion) or clear a completion for `taskId` on `date`
+- `PATCH /api/tasks/completions` — set one completion's `assignedUserId` (null clears) by `id`
 - `/api/tasks/one-off` — `createChecklistHandlers` with `assignable: true` (`GET`, `POST`, `PATCH`, `DELETE`), so items carry `assignedUserId` and `PATCH` accepts it
 - `GET /api/homes/[id]/members` — assignee choices: accepted rows with a `user_id`, labelled by `display_name`
 
