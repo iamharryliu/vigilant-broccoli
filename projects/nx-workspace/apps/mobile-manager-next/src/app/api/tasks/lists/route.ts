@@ -4,16 +4,16 @@ import {
   isExpiredError,
   GOOGLE_TOKEN_EXPIRED,
 } from '@vigilant-broccoli/google-workspace';
-import { requireAuth } from '../../../../../libs/api-auth';
+import { requireGoogleAuth } from '../../../../../libs/api-auth';
 
 export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
-  const auth = await requireAuth(request, { requireGoogleToken: true });
+  const auth = await requireGoogleAuth(request);
   if (auth instanceof NextResponse) return auth;
 
   try {
-    const taskLists = await listTaskLists(auth.googleToken as string);
+    const taskLists = await listTaskLists(auth.googleToken);
     return NextResponse.json({ taskLists });
   } catch (error) {
     if (isExpiredError(error)) {

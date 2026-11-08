@@ -4,12 +4,12 @@ import {
   isExpiredError,
   GOOGLE_TOKEN_EXPIRED,
 } from '@vigilant-broccoli/google-workspace';
-import { requireAuth } from '../../../../../libs/api-auth';
+import { requireGoogleAuth } from '../../../../../libs/api-auth';
 
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
-  const auth = await requireAuth(req, { requireGoogleToken: true });
+  const auth = await requireGoogleAuth(req);
   if (auth instanceof NextResponse) return auth;
 
   const body = await req.json();
@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const task = await moveTask(
-      auth.googleToken as string,
+      auth.googleToken,
       taskListId,
       taskId,
       previous ?? null,

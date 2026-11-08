@@ -3,13 +3,14 @@ import { createClient } from '@supabase/supabase-js';
 import {
   AUTHORIZATION_HEADER,
   BEARER_PREFIX,
-  GOOGLE_TOKEN_HEADER,
+  HTTP_STATUS_CODES,
 } from '@vigilant-broccoli/common-js';
 import { isAllowedEmail } from './auth-policy';
+import { GOOGLE_TOKEN_EXPIRED } from './api-errors';
+import { getStoredGoogleAccessToken } from './google-token';
 
 const ERROR_MISSING_BEARER = 'Missing bearer token';
 const ERROR_INVALID_SESSION = 'Invalid session';
-const ERROR_MISSING_GOOGLE_TOKEN = 'Missing google token';
 const ERROR_FORBIDDEN = 'Forbidden';
 
 const supabase = createClient(
@@ -18,15 +19,20 @@ const supabase = createClient(
 );
 
 const unauthorized = (message: string) =>
-  NextResponse.json({ error: message }, { status: 401 });
+  NextResponse.json(
+    { error: message },
+    { status: HTTP_STATUS_CODES.UNAUTHORIZED },
+  );
 
 const forbidden = (message: string) =>
-  NextResponse.json({ error: message }, { status: 403 });
+  NextResponse.json(
+    { error: message },
+    { status: HTTP_STATUS_CODES.FORBIDDEN },
+  );
 
 export const requireAuth = async (
   request: NextRequest,
-  options?: { requireGoogleToken?: boolean },
-): Promise<{ googleToken: string | null } | NextResponse> => {
+): Promise<{ userEmail: string } | NextResponse> => {
   const authHeader = request.headers.get(AUTHORIZATION_HEADER) ?? '';
   if (!authHeader.startsWith(BEARER_PREFIX)) {
     return unauthorized(ERROR_MISSING_BEARER);
@@ -37,13 +43,23 @@ export const requireAuth = async (
     error,
   } = await supabase.auth.getUser(authHeader.slice(BEARER_PREFIX.length));
 
-  if (error || !user) return unauthorized(ERROR_INVALID_SESSION);
+  if (error || !user?.email) return unauthorized(ERROR_INVALID_SESSION);
   if (!isAllowedEmail(user.email)) return forbidden(ERROR_FORBIDDEN);
 
-  const googleToken = request.headers.get(GOOGLE_TOKEN_HEADER);
-  if (options?.requireGoogleToken && !googleToken) {
-    return unauthorized(ERROR_MISSING_GOOGLE_TOKEN);
-  }
+  return { userEmail: user.email };
+};
 
-  return { googleToken };
+// The Google access token comes from the refresh token stored at sign-in, so
+// Google access outlives the ~1 hour provider_token; a missing or revoked one
+// returns GOOGLE_TOKEN_EXPIRED for the client's reconnect flow.
+export const requireGoogleAuth = async (
+  request: NextRequest,
+): Promise<{ userEmail: string; googleToken: string } | NextResponse> => {
+  const auth = await requireAuth(request);
+  if (auth instanceof NextResponse) return auth;
+
+  const googleToken = await getStoredGoogleAccessToken(auth.userEmail);
+  if (!googleToken) return unauthorized(GOOGLE_TOKEN_EXPIRED);
+
+  return { ...auth, googleToken };
 };
