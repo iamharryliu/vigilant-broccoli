@@ -92,7 +92,7 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `GITEA_CF_ACCESS_CLIENT_ID` / `GITEA_CF_ACCESS_CLIENT_SECRET` | Vault `kv/data/secrets` (synced by `tf:post-apply`) | Cloudflare Access service token that `ci-health-check` and `test-smoke-api-keys` present to reach the Gitea hostname. |
 | `GITEA_TOKEN` | Vault `kv/data/secrets` | Gitea API access. |
 | `GITEA_VM_IP` | Vault `kv/data/secrets` (synced by `tf:post-apply`) | Origin IP of the Gitea VM; SSH target for the `cron-backup` Gitea dump and origin-bypass check in `test-security-cloudflare-access`. |
-| `GOOGLE_AUTH_PROVIDER_CLIENT_SECRET` | Vault `kv/data/secrets` → Fly; Terraform as `TF_VAR_supabase_google_client_secret` | Google OAuth client secret for sign-in (`vb-express`, Supabase auth). |
+| `GOOGLE_AUTH_PROVIDER_CLIENT_SECRET` | Vault `kv/data/secrets` → Fly; Terraform as `TF_VAR_supabase_google_client_secret` | Google OAuth client secret for sign-in (`vb-express`, Supabase auth) and, with `GOOGLE_AUTH_PROVIDER_CLIENT_ID`, for refreshing stored Google refresh tokens in `local-manager-next` and `mobile-manager-next` (Vercel, from its `.env.example`). |
 | `GOOGLE_CALENDAR_SA_CREDENTIALS` | Vault `kv/data/secrets` | Base64 service-account key owning the scraped event calendars; used by `local-manager-next`. |
 | `GOOGLE_GCS_SA_CREDENTIALS` | Vault `kv/data/secrets` → Fly | Service-account key for Google Cloud Storage in `bucket-service`. |
 | `GROK_API_KEY` | Vault `kv/data/secrets` → Fly | xAI Grok API key for `llm-service`. |

@@ -268,7 +268,7 @@ export const HomeView = () => {
     setError(null);
 
     const load = async () => {
-      const headers = await buildAuthHeaders({ includeGoogleToken: true });
+      const headers = await buildAuthHeaders();
       const res = await fetch(
         eventsApiUrl(eventCalendars.map(calendar => calendar.googleCalendarId)),
         { headers },
