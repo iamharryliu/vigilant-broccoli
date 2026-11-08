@@ -10,7 +10,11 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { CRUDFormProps } from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
+import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
 import { useAuth } from '../providers/auth-provider';
+import { sortTags } from './where-is-tags';
+
+const TAG_TRANSITION = { duration: 0.18, ease: 'easeOut' } as const;
 
 const API = {
   ANALYZE: '/api/where-is/analyze',
@@ -303,17 +307,30 @@ export const WhereIsFormComponent = ({
           <Button onClick={addTag}>Add</Button>
         </div>
         <div className="flex gap-2 mt-2 flex-wrap">
-          {tags.map(tag => (
-            <Badge
-              key={tag}
-              variant="soft"
-              size="1"
-              className="cursor-pointer"
-              onClick={() => setTags(prev => prev.filter(t => t !== tag))}
-            >
-              {tag} ✕
-            </Badge>
-          ))}
+          <MotionConfig reducedMotion="user">
+            <AnimatePresence initial={false} mode="popLayout">
+              {sortTags(tags).map(tag => (
+                <motion.span
+                  key={tag}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={TAG_TRANSITION}
+                  className="inline-flex"
+                >
+                  <Badge
+                    variant="soft"
+                    size="1"
+                    className="cursor-pointer"
+                    onClick={() => setTags(prev => prev.filter(t => t !== tag))}
+                  >
+                    {tag} ✕
+                  </Badge>
+                </motion.span>
+              ))}
+            </AnimatePresence>
+          </MotionConfig>
         </div>
       </div>
 
