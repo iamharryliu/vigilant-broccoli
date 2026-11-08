@@ -134,7 +134,6 @@
     "archiver": "^7.0.1",
     "better-auth": "^1.7.15",
     "better-sqlite3": "^12.11.1",
-    "bootstrap": "^5.3.8",
     "boring-avatars": "^2.0.4",
     "class-variance-authority": "^0.7.1",
     "d3-force": "^3.0.0",
