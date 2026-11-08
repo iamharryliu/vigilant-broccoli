@@ -52,9 +52,6 @@ export const API_ENDPOINTS = {
 
   BACKGROUND_TASKS: '/api/background-tasks',
 
-  JOB_APPLICATIONS: '/api/job-applications',
-  JOB_APPLICATIONS_FILE: '/api/job-applications/file',
-
   CMS: '/api/cms',
   CMS_FILE: '/api/cms/file',
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-- `/cms` page (sidebar entry `SIDEBAR_ROUTE.CMS` with a `Cloud` icon, below Career 2) browses the default Cloudflare R2 bucket in the shared `FileExplorer` ([docs](../../../../../libs/@vigilant-broccoli/react-lib/docs/features/file-explorer.md)), with upload into the open folder and delete of the selected files behind one confirmation
+- `/cms` page (sidebar entry `SIDEBAR_ROUTE.CMS` with a `Cloud` icon, below Language Learning) browses the default Cloudflare R2 bucket in the shared `FileExplorer` ([docs](../../../../../libs/@vigilant-broccoli/react-lib/docs/features/file-explorer.md)), with upload into the open folder and delete of the selected files behind one confirmation
 - Shift+click and Cmd/Ctrl+click select several items in list or grid view. Right-clicking an item opens Open and Delete (files only), or `Delete N files` for a multi-selection; the explorer calls `deleteFile` once per file, so each deleted file gets its own toast
 - Folders are derived from key prefixes, since R2 keys are flat. Folder deletion is not offered
 
