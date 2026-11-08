@@ -78,6 +78,7 @@ export type CRUDFormProps<T> = {
   formType: FormType;
   initialFormValues: T;
   submitHandler: CRUDFormSubmitHandler<T>;
+  onCancel?: () => void;
 };
 type CRUDFormComponent<T> = ComponentType<CRUDFormProps<T>>;
 
@@ -609,6 +610,7 @@ export const CRUDItemFormDialog = <T,>({
           formType={formType}
           initialFormValues={initialFormValues}
           submitHandler={dialogSubmitHandler}
+          onCancel={() => setOpen?.(false)}
         />
       </DialogContent>
     </Dialog>
