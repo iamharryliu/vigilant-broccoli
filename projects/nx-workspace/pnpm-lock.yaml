@@ -1188,6 +1188,9 @@ importers:
       '@vigilant-broccoli/common-js':
         specifier: workspace:*
         version: link:../common-js
+      '@vigilant-broccoli/google-workspace':
+        specifier: workspace:*
+        version: link:../google-workspace
       '@vigilant-broccoli/react-lib':
         specifier: workspace:*
         version: link:../react-lib

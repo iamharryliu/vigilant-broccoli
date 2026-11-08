@@ -6,6 +6,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.110.1",
     "@vigilant-broccoli/common-js": "workspace:*",
+    "@vigilant-broccoli/google-workspace": "workspace:*",
     "@vigilant-broccoli/react-lib": "workspace:*",
     "react": "19.2.7"
   }

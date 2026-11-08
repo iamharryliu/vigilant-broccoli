@@ -34,7 +34,6 @@ export const {
   AuthCallbackPage,
   useAuth,
   useAuthStatus,
-  useGoogleToken,
   signInWithGoogle,
   signOut,
   getSupabaseAccessToken,
@@ -56,6 +55,5 @@ export const {
 export const googleTasksAuth: GoogleTasksAuthAdapter = {
   authFetch,
   useAuthStatus,
-  useGoogleToken,
   signInWithGoogle,
 };
