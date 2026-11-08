@@ -11,6 +11,7 @@ import {
 } from 'react';
 import { cn } from '../utils/cn';
 import { Checkbox } from './Checkbox';
+import { groupCompletedByDay } from './checklist-groups.utils';
 import { CollapsibleList } from './CollapsibleList';
 import { Input } from './Input';
 import { Text } from './Text';
@@ -127,14 +128,14 @@ const DefaultRowFrame = ({
 const getActiveItems = <T extends CheckListBaseItem>(items: T[]) =>
   items.filter(item => !item.checked);
 
-const getCompletedItems = <T extends CheckListBaseItem>(items: T[]) =>
-  items
-    .filter(item => item.checked)
-    .sort((a, b) =>
-      (b.completedAt ?? b.updatedAt ?? '').localeCompare(
-        a.completedAt ?? a.updatedAt ?? '',
-      ),
-    );
+const getCompletedStamp = ({ completedAt, updatedAt }: CheckListBaseItem) =>
+  completedAt ?? updatedAt;
+
+const MAX_POPULATE_STAGGER = 8;
+const POPULATE_STAGGER_MS = 30;
+
+const populateDelay = (index: number) =>
+  `${Math.min(index, MAX_POPULATE_STAGGER) * POPULATE_STAGGER_MS}ms`;
 
 const toIdentityKeys = <T extends CheckListBaseItem>(items: T[]) =>
   new Map(items.map(({ id }) => [id, id]));
@@ -243,6 +244,16 @@ export const CheckListBase = <T extends CheckListBaseItem>({
   // Transition state is keyed by row key (see assignRowKeys), not item id.
   const committedKeys = useRef(toIdentityKeys(items));
   const previous = useRef(new Map(items.map(item => [item.id, item.checked])));
+  // Last completion timestamp per row key, so a row leaving Completed stays
+  // in its day group while it collapses even if the item dropped the stamp.
+  const completedStamps = useRef(
+    new Map(
+      items.flatMap(item => {
+        const stamp = item.checked ? getCompletedStamp(item) : undefined;
+        return stamp ? [[item.id, stamp] as const] : [];
+      }),
+    ),
+  );
   const timers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
   const [departing, setDeparting] = useState(new Map<string, boolean>());
   const [arriving, setArriving] = useState(new Set<string>());
@@ -323,6 +334,15 @@ export const CheckListBase = <T extends CheckListBaseItem>({
     previous.current = new Map(
       items.map(item => [rowKeys.get(item.id) ?? item.id, item.checked]),
     );
+    completedStamps.current = new Map(
+      items.flatMap(item => {
+        const key = rowKeys.get(item.id) ?? item.id;
+        const stamp = item.checked
+          ? getCompletedStamp(item)
+          : completedStamps.current.get(key);
+        return stamp ? [[key, stamp] as const] : [];
+      }),
+    );
     committedKeys.current = rowKeys;
   }, [items, rowKeys]);
 
@@ -348,15 +368,24 @@ export const CheckListBase = <T extends CheckListBaseItem>({
     focusedItem.current = null;
   }, [departing, arriving]);
 
-  const presentationItems = items.map(item => ({
-    ...item,
-    checked:
-      departing.get(keyOf(item)) ??
-      previous.current.get(keyOf(item)) ??
-      item.checked,
-  }));
+  const presentationItems = items.map(item => {
+    const key = keyOf(item);
+    const checked =
+      departing.get(key) ?? previous.current.get(key) ?? item.checked;
+    const leavingCompleted = checked && !item.checked;
+    return {
+      ...item,
+      checked,
+      ...(leavingCompleted &&
+        completedStamps.current.has(key) && {
+          completedAt: completedStamps.current.get(key),
+        }),
+    };
+  });
   const activeItems = getActiveItems(presentationItems);
-  const completedItems = getCompletedItems(presentationItems);
+  const completedGroups = groupCompletedByDay(
+    presentationItems.filter(item => item.checked),
+  );
   const completedCount = items.filter(item => item.checked).length;
 
   const handleEditKeyDown = (e: KeyboardEvent) => {
@@ -410,7 +439,7 @@ export const CheckListBase = <T extends CheckListBaseItem>({
         )}
         style={
           populateIndex !== undefined
-            ? { animationDelay: `${Math.min(populateIndex, 8) * 30}ms` }
+            ? { animationDelay: populateDelay(populateIndex) }
             : undefined
         }
       >
@@ -473,6 +502,16 @@ export const CheckListBase = <T extends CheckListBaseItem>({
     );
   };
 
+  // Rows keep one stagger sequence across day groups.
+  const populateOffsets = new Map(
+    completedGroups.map(({ key }, index) => [
+      key,
+      completedGroups
+        .slice(0, index)
+        .reduce((total, group) => total + group.items.length, 0),
+    ]),
+  );
+
   const activeRows = (
     <div className={LIST_CLASS[rowVariant]}>
       {activeItems.length === 0 && !activeFooter && emptyLabel}
@@ -490,7 +529,7 @@ export const CheckListBase = <T extends CheckListBaseItem>({
             activeItems.map(item => item.id),
           )
         : activeRows}
-      {completedItems.length > 0 && (
+      {completedGroups.length > 0 && (
         <CollapsibleList
           storageKeyPrefix={storageKeyPrefix}
           onOpenChange={(_, open) => setPopulating(open)}
@@ -499,10 +538,39 @@ export const CheckListBase = <T extends CheckListBaseItem>({
               id: completedSectionId,
               title: `Completed (${completedCount})`,
               content: (
-                <div className={LIST_CLASS[rowVariant]}>
-                  {completedItems.map((item, index) =>
-                    renderRow(item, false, populating ? index : undefined),
-                  )}
+                <div className="flex flex-col gap-3">
+                  {completedGroups.map(({ key, label, items: groupItems }) => {
+                    const offset = populateOffsets.get(key) ?? 0;
+                    return (
+                      <div key={key} className="flex flex-col gap-1">
+                        {label && (
+                          <Text
+                            as="div"
+                            size="1"
+                            weight="medium"
+                            color="gray"
+                            className={cn(populating && 'checklist-populating')}
+                            style={
+                              populating
+                                ? { animationDelay: populateDelay(offset) }
+                                : undefined
+                            }
+                          >
+                            {label}
+                          </Text>
+                        )}
+                        <div className={LIST_CLASS[rowVariant]}>
+                          {groupItems.map((item, index) =>
+                            renderRow(
+                              item,
+                              false,
+                              populating ? offset + index : undefined,
+                            ),
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               ),
             },

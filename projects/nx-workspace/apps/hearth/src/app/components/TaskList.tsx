@@ -157,17 +157,9 @@ export function TaskList() {
       dueDate === todayYmd ? '' : ` (due ${formatInstanceDate(dueDate)})`;
     return [{ id: task.id, title: `${task.title}${overdue}`, checked: false }];
   });
-  const completedItems = completions.flatMap(({ id, taskId, date }) => {
+  const completedItems = completions.flatMap(({ id, taskId, completedAt }) => {
     const task = tasks.find(({ id: candidate }) => candidate === taskId);
-    return task
-      ? [
-          {
-            id,
-            title: `${task.title} (${formatInstanceDate(date)})`,
-            checked: true,
-          },
-        ]
-      : [];
+    return task ? [{ id, title: task.title, checked: true, completedAt }] : [];
   });
   const items: CheckListItem[] = [
     ...pendingItems,
@@ -176,6 +168,7 @@ export function TaskList() {
       id: task.id,
       title: task.name,
       checked: task.completed,
+      completedAt: task.completedAt,
     })),
   ].map(item => ({
     ...item,
@@ -262,13 +255,34 @@ export function TaskList() {
     );
   };
 
+  const setTaskAssignee = (taskId: string, assignedUserId: string | null) =>
+    setTasks(prev =>
+      prev.map(task =>
+        task.id === taskId ? { ...task, assignedUserId } : task,
+      ),
+    );
+
   // The temporary id is swapped for the stored completion's id once known, so
-  // the instance never shares a key with the pending row.
+  // the instance never shares a key with the pending row. The task's assignee
+  // moves onto the completion, so the next occurrence starts unassigned.
   const completeInstance = (taskId: string) => {
-    const date = toYmd(new Date());
+    const now = new Date();
+    const date = toYmd(now);
     const tempId = `pending-${taskId}-${date}`;
+    const assignedUserId =
+      tasks.find(task => task.id === taskId)?.assignedUserId ?? null;
     continueRow(tempId, taskId);
-    setCompletions(prev => [...prev, { id: tempId, taskId, date }]);
+    setTaskAssignee(taskId, null);
+    setCompletions(prev => [
+      ...prev,
+      {
+        id: tempId,
+        taskId,
+        date,
+        completedAt: now.toISOString(),
+        assignedUserId,
+      },
+    ]);
     write(
       tempId,
       async () => {
@@ -288,12 +302,14 @@ export function TaskList() {
       },
       () => {
         continueRow(taskId, tempId);
+        setTaskAssignee(taskId, assignedUserId);
         setCompletions(prev => prev.filter(({ id }) => id !== tempId));
       },
     );
   };
 
-  // Reopening brings back the task's pending row under the task id.
+  // Reopening brings back the task's pending row under the task id; the
+  // removed completion's assignee is not restored onto it.
   const reopenInstance = (completion: TaskCompletion) => {
     continueRow(completion.taskId, completion.id);
     setCompletions(prev => prev.filter(({ id }) => id !== completion.id));
@@ -393,15 +409,13 @@ export function TaskList() {
     if (e.key === 'Enter') handleAdd();
   };
 
-  const getAssignedUserId = (id: string) => {
-    const taskId = completions.find(entry => entry.id === id)?.taskId ?? id;
-    return (
-      (
-        oneOffTasks.find(task => task.id === taskId) ??
-        tasks.find(t => t.id === taskId)
-      )?.assignedUserId ?? null
-    );
-  };
+  // A completed instance carries its own assignee; a pending one uses its task.
+  const getAssignedUserId = (id: string) =>
+    (
+      completions.find(entry => entry.id === id) ??
+      oneOffTasks.find(task => task.id === id) ??
+      tasks.find(task => task.id === id)
+    )?.assignedUserId ?? null;
 
   const handleAssign = (assignedUserId: string | null) => {
     if (!assigningItem) return;
@@ -412,16 +426,17 @@ export function TaskList() {
       send(TASKS_API.ONE_OFF, HTTP_METHOD.PATCH, { id, assignedUserId });
       return;
     }
-    const taskId = completions.find(entry => entry.id === id)?.taskId ?? id;
-    setTasks(prev =>
-      prev.map(task =>
-        task.id === taskId ? { ...task, assignedUserId } : task,
-      ),
-    );
-    send(TASKS_API.RECURRING, HTTP_METHOD.PATCH, {
-      id: taskId,
-      assignedUserId,
-    });
+    if (completions.some(entry => entry.id === id)) {
+      setCompletions(prev =>
+        prev.map(entry =>
+          entry.id === id ? { ...entry, assignedUserId } : entry,
+        ),
+      );
+      send(TASKS_API.COMPLETIONS, HTTP_METHOD.PATCH, { id, assignedUserId });
+      return;
+    }
+    setTaskAssignee(id, assignedUserId);
+    send(TASKS_API.RECURRING, HTTP_METHOD.PATCH, { id, assignedUserId });
   };
 
   // An assignee who has since left the home is missing from members, so the

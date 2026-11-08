@@ -7,6 +7,7 @@ export type RecurringTask = {
   days: number[];
   /** ISO timestamp; its local date bounds the first pending instance. */
   createdAt?: string;
+  /** Assignee of the pending occurrence only; cleared when it is completed. */
   assignedUserId?: string | null;
 };
 
@@ -16,6 +17,10 @@ export type TaskCompletion = {
   taskId: string;
   /** Client-local YYYY-MM-DD the occurrence was completed on. */
   date: string;
+  /** ISO timestamp the completion was recorded; groups it in Completed. */
+  completedAt: string;
+  /** This occurrence's assignee, copied from the task on completion. */
+  assignedUserId: string | null;
 };
 
 export type DefaultTask = Omit<
@@ -115,7 +120,7 @@ export const getPendingDueDate = (
   return null;
 };
 
-/** Short label such as "Nov 5" for a completed instance's date. */
+/** Short label such as "Nov 5" for an overdue instance's due date. */
 export const formatInstanceDate = (ymd: string) =>
   fromYmd(ymd).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 

@@ -10,4 +10,4 @@ Shared checklist behind the grocery list and kitchen chores pages (`src/app/comp
 - Toggles mark the row `isRemoving` while the write is pending (`usePendingWrites`), ignore repeat taps and roll back on failure, per the [completion contract](../../../../libs/@vigilant-broccoli/react-lib/docs/features/checklist-completion.md).
 - Active grocery and kitchen chore items can be reordered by their drag handles; order persists per home and new items are appended.
 - Each row's `⋮` menu (passed via `renderItemAccessory`) offers Add to calendar (opens `CalendarEventForm` in a dialog, posts a kitchen event) and Delete (confirmation dialog).
-- Completed items sort by `completedAt`, newest first.
+- Completed items sort by `completedAt`, newest first, under `CheckListBase`'s day headers.
