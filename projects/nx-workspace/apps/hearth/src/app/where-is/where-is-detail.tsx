@@ -27,7 +27,7 @@ import { WhereIsItem } from '../../lib/types';
 import { ROUTES } from '../../lib/routes';
 import { WhereIsFormComponent, WhereIsFormValues } from './where-is-form';
 import { WhereIsLabel } from './where-is-label';
-import { uploadPreviewImages } from './upload-images';
+import { throwIfNotOk, uploadPreviewImages } from './upload-images';
 import { sortTags } from './where-is-tags';
 
 const WHERE_IS_ENDPOINT = '/api/where-is';
@@ -72,7 +72,7 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
     const accessToken = session?.access_token ?? '';
     const newImages = await uploadPreviewImages(form.images, accessToken);
 
-    await fetch(WHERE_IS_ENDPOINT, {
+    const saveRes = await fetch(WHERE_IS_ENDPOINT, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -87,10 +87,12 @@ export const WhereIsDetail = ({ id, variant, onUpdated, onDeleted }: Props) => {
         newImages,
       }),
     });
+    await throwIfNotOk(saveRes);
 
     const res = await fetch(`${WHERE_IS_ENDPOINT}?id=${form.id}`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     });
+    await throwIfNotOk(res);
     const updated: WhereIsItem = await res.json();
     setItem(updated);
     onUpdated?.(updated);

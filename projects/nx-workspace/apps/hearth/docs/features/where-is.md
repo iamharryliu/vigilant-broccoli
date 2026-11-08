@@ -1,6 +1,6 @@
 # Where Is
 
-Household storage inventory — upload photos of storage areas, AI identifies contents, search by item.
+Household storage inventory — record storage areas by hand or from photos, AI suggests item tags, search by item.
 
 ## Stack
 
@@ -17,15 +17,26 @@ Household storage inventory — upload photos of storage areas, AI identifies co
 
 - Tied to a home — dropdown selector always shown, home persisted in `?home=` query param, defaults to first home, redirects to `/homes` if none
 - Shared with accepted home members — full CRUD access
-- Upload up to 10 images per item (max 10MB each, max 50MB total)
+- Only a title is required; photos are optional, up to 10 per item (max 10MB each, max 50MB total)
+- Save and Analyze are separate form actions; Cancel closes the create or update dialog without saving
 - Image processing — resize to 1920px max, convert to JPEG, strip EXIF
-- AI generates description + tags from images
+- AI suggests tags from images on demand, via a separate action from saving; it merges into existing tags and never touches the user-entered description
 - Fuzzy search across title, description, tags
 - Tags display alphabetically and animate when added or removed in the form
 - Update title, description, and tags inline
 - Delete removes DB rows + R2 objects
 - Export all items to JSON (includes base64 images)
 - Import from export JSON into any home
+
+## Save Path Timeouts and Errors
+
+- Client uploads images to R2 staging via presigned URLs, then `POST`/`PATCH /api/where-is` reads each staged object, processes it, deletes the staged object (best effort) and uploads the final image (`read`, `process`, `delete-staged`, `upload-final`)
+- Every fetch in `api/where-is/r2.ts` has an `AbortSignal.timeout`: 10s for vb-express presign and delete calls, 20s for R2 transfers (the read signal also covers the body)
+- `processImage` is raced against a 20s timeout in `route.ts`; the race stops the wait, not the underlying work
+- A failed or timed-out step returns JSON `{ error, step }` with 504 (timeout) or 500; `ImageValidationError` stays 400
+- `POST` deletes the just-inserted `where_is_items` row (images cascade) when a final upload or image insert fails, so a retry does not duplicate it; `PATCH` applies title and tags first but still returns the error
+- Each step logs `step`, R2 key and duration (`console.info` on success, `console.error` on failure or timeout) to Vercel runtime logs; presigned URLs, tokens and image data are never logged
+- The client checks `.ok` on upload-url, R2 PUTs, save and refetch; the form shows the error and stays open with previews intact
 
 ## RLS
 
@@ -35,10 +46,12 @@ Household storage inventory — upload photos of storage areas, AI identifies co
 ## Routes
 
 - `GET /api/where-is?homeId=` — list items for a home
+- `POST /api/where-is/upload-url` — mint presigned staging upload URLs for the browser
 - `POST /api/where-is` — create item + upload images
 - `PATCH /api/where-is` — update title, description, tags
 - `DELETE /api/where-is` — delete item + R2 images
-- `POST /api/where-is/analyze` — AI analysis of images
+- `POST /api/where-is/analyze` — AI tag suggestions from images
+- `POST /api/where-is/reanalyze` — AI tag suggestions from an item's stored images plus any newly added ones
 - `GET /api/where-is/export?homeId=` — export all items + images as JSON (base64-embedded)
 - `POST /api/where-is/import` — import items + images from export JSON
 
