@@ -5,6 +5,7 @@ import express, { Request, Response } from 'express';
 import { Server, Socket } from 'socket.io';
 import { z } from 'zod';
 import {
+  AUTHORIZATION_HEADER,
   BEARER_PREFIX,
   HTTP_STATUS_CODES,
   PUBLISH_ERROR_CODES,
@@ -14,11 +15,22 @@ import {
   SSE_CONTENT_TYPE,
 } from '@vigilant-broccoli/common-js';
 import { isTimingSafeEqual } from '@vigilant-broccoli/common-node';
+import {
+  getSupabaseUrl,
+  SUPABASE_PUBLISHABLE_KEY,
+} from '@vigilant-broccoli/infrastructure';
 
 const DEFAULT_PORT = '3000';
 const DEFAULT_HOST = '0.0.0.0';
 const STATUS_OK = 'ok';
 const PUBLISH_BODY_LIMIT = '64kb';
+const PUBLISH_MAX_BYTES = 64 * 1024;
+const DEFAULT_USER_PUBLISH_APPS = 'chat-demo';
+const USER_PUBLISH_APPS_SEPARATOR = ',';
+const SUPABASE_USER_PATH = '/auth/v1/user';
+const SUPABASE_VERIFY_TIMEOUT_MS = 3000;
+const JWT_PAYLOAD_INDEX = 1;
+const MS_PER_SECOND = 1000;
 // Below Cloudflare's 100s and typical proxy idle timeouts so idle streams stay open.
 const SSE_KEEPALIVE_INTERVAL_MS = 25000;
 const SSE_KEEPALIVE_FRAME = ':keepalive\n\n';
@@ -42,6 +54,11 @@ const HOST = process.env.HOST ?? DEFAULT_HOST;
 const SENDER_TOKEN = process.env.SENDER_TOKEN;
 const TLS_CERT_PATH = process.env.TLS_CERT_PATH;
 const TLS_KEY_PATH = process.env.TLS_KEY_PATH;
+const SUPABASE_KEY =
+  process.env.SUPABASE_PUBLISHABLE_KEY ?? SUPABASE_PUBLISHABLE_KEY;
+const USER_PUBLISH_APPS = (
+  process.env.USER_PUBLISH_APPS ?? DEFAULT_USER_PUBLISH_APPS
+).split(USER_PUBLISH_APPS_SEPARATOR);
 
 const LOG = {
   LISTENING: 'listening',
@@ -57,9 +74,11 @@ const LOG = {
   SSE_DISCONNECT: 'sse_disconnect',
   SSE_SUBSCRIBE_INVALID: 'sse_subscribe_invalid',
   HTTP_PUBLISH: 'http_publish',
+  USER_VERIFY_FAILED: 'user_verify_failed',
 } as const;
 
 const ROLE_SENDER = 'sender';
+const ROLE_USER = 'user';
 const ROLE_RECEIVER = 'receiver';
 
 const subscriptionSchema = z.object({
@@ -111,6 +130,34 @@ const isSender = (token: unknown) =>
     typeof token === 'string' &&
     isTimingSafeEqual(token, SENDER_TOKEN),
   );
+
+const isSupabaseUser = async (token: string) => {
+  try {
+    const res = await fetch(`${getSupabaseUrl()}${SUPABASE_USER_PATH}`, {
+      headers: {
+        apikey: SUPABASE_KEY,
+        [AUTHORIZATION_HEADER]: `${BEARER_PREFIX}${token}`,
+      },
+      signal: AbortSignal.timeout(SUPABASE_VERIFY_TIMEOUT_MS),
+    });
+    return res.ok;
+  } catch (err) {
+    log(LOG.USER_VERIFY_FAILED, { error: String(err) });
+    return false;
+  }
+};
+
+// Only call after Supabase has verified the token, since this does not check its signature.
+const tokenExpiryMs = (token: string) =>
+  JSON.parse(
+    Buffer.from(token.split('.')[JWT_PAYLOAD_INDEX], 'base64url').toString(),
+  ).exp * MS_PER_SECOND;
+
+const canPublishTo = (socket: Socket, app: string) =>
+  socket.data.role === ROLE_SENDER ||
+  (socket.data.role === ROLE_USER &&
+    USER_PUBLISH_APPS.includes(app) &&
+    Date.now() < socket.data.userExpiresAt);
 
 const bearerToken = (req: Request) => {
   const header = req.headers.authorization;
@@ -194,12 +241,22 @@ const buildServer = () => {
 
 const tlsEnabled = Boolean(TLS_CERT_PATH && TLS_KEY_PATH);
 const httpServer = buildServer();
-const io = new Server(httpServer, { cors: { origin: '*' } });
+const io = new Server(httpServer, {
+  cors: { origin: '*' },
+  maxHttpBufferSize: PUBLISH_MAX_BYTES,
+});
 
-io.use((socket, next) => {
-  socket.data.role = isSender(socket.handshake.auth?.token)
-    ? ROLE_SENDER
-    : ROLE_RECEIVER;
+// A bad token still connects as a receiver, because subscribing needs no auth.
+io.use(async (socket, next) => {
+  const token = socket.handshake.auth?.token;
+  if (isSender(token)) {
+    socket.data.role = ROLE_SENDER;
+  } else if (typeof token === 'string' && (await isSupabaseUser(token))) {
+    socket.data.role = ROLE_USER;
+    socket.data.userExpiresAt = tokenExpiryMs(token);
+  } else {
+    socket.data.role = ROLE_RECEIVER;
+  }
   next();
 });
 
@@ -262,9 +319,13 @@ io.on(SOCKET_EVENTS.CONNECTION, socket => {
       if (typeof ack === 'function') ack(result);
     };
 
-    if (socket.data.role !== ROLE_SENDER) {
+    const forbid = () => {
       log(LOG.PUBLISH_FORBIDDEN, { socketId: socket.id });
       reply({ ok: false, code: PUBLISH_ERROR_CODES.FORBIDDEN });
+    };
+
+    if (socket.data.role === ROLE_RECEIVER) {
+      forbid();
       return;
     }
     const parsed = publishSchema.safeParse(raw);
@@ -278,6 +339,10 @@ io.on(SOCKET_EVENTS.CONNECTION, socket => {
         code: PUBLISH_ERROR_CODES.INVALID,
         issues: parsed.error.issues,
       });
+      return;
+    }
+    if (!canPublishTo(socket, parsed.data.app)) {
+      forbid();
       return;
     }
     const receivers = fanOut(parsed.data, TRANSPORT.SOCKET_IO);

@@ -1,7 +1,6 @@
 'use client';
 
-import { SocketIOChatDemo } from '../demos/SocketIOChatDemo';
-import { SSEChatDemo } from '../demos/SSEChatDemo';
+import { ChatDemo } from '../demos/ChatDemo';
 import { NotificationsDemo } from '../demos/NotificationsDemo';
 import { StorageDemo } from '../demos/StorageDemo';
 import { StripeDemo } from '../demos/StripeDemo';
@@ -104,12 +103,7 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
   {
     id: 'chat',
     title: 'Chat Demo (Socket.IO)',
-    content: <SocketIOChatDemo />,
-  },
-  {
-    id: 'chat-sse',
-    title: 'Chat Demo (SSE)',
-    content: <SSEChatDemo />,
+    content: <ChatDemo />,
   },
   {
     id: 'notifications-demo',

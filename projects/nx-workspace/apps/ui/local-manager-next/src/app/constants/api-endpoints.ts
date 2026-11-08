@@ -36,8 +36,7 @@ export const API_ENDPOINTS = {
   RECIPE_SCRAPE: '/api/recipe/scrape',
   RECIPE_SCRAPE_PREVIEW: '/api/recipe/scrape-preview',
 
-  CHAT_PUBLISH: '/api/chat/publish',
-  CHAT_PUBLISH_SOCKET_IO: '/api/chat/publish/socket-io',
+  NOTIFICATIONS_TEST: '/api/notifications/test',
 
   FILE_CONVERT: '/api/file-convert',
 
