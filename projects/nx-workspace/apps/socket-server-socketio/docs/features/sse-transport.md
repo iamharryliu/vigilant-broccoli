@@ -22,7 +22,7 @@ Both publish paths (`POST /publish` and the Socket.IO `publish` event) go throug
 | Consumer | Transport |
 | --- | --- |
 | `.github/scripts/deploy-notify.mjs` (deploy-notify action) | `POST /publish` with Node's global `fetch` |
-| `local-manager-next` `/api/notifications/test` | `POST /publish` with a 5s `AbortSignal.timeout` |
+| `local-manager-next` `/api/chat/publish` and `/api/notifications/test` | `POST /publish` with a 5s `AbortSignal.timeout` |
 | `local-manager-next` deploy toasts | `useEventStream` (`EventSource`) |
 
 ## Nuances

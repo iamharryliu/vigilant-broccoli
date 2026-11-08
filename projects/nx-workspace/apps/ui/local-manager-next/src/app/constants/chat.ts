@@ -9,3 +9,9 @@ export const CHAT_STATUS = {
 } as const;
 
 export type ChatStatus = (typeof CHAT_STATUS)[keyof typeof CHAT_STATUS];
+
+export interface ChatPayload {
+  text: string;
+  sender: string;
+  ts: number;
+}

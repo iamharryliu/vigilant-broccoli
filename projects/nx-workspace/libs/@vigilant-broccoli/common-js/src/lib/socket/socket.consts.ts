@@ -27,6 +27,7 @@ export const SSE_CONTENT_TYPE = 'text/event-stream';
 export const PUBLISH_ERROR_CODES = {
   FORBIDDEN: 'forbidden',
   INVALID: 'invalid',
+  RATE_LIMITED: 'rate_limited',
 } as const;
 
 export type PublishErrorCode =

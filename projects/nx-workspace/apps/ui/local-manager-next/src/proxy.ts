@@ -39,6 +39,8 @@ export async function proxy(request: NextRequest) {
 // the signed `state` param instead (see libs/spotify-oauth-state.ts). The
 // /login route under the same prefix re-checks the bearer token itself,
 // mirroring how /api/auth/google-token does its own getUserEmail check.
+// /api/chat/token is exempt so guests can get a room-limited chat token; the
+// route rate limits itself.
 export const config = {
-  matcher: ['/api/((?!auth|spotify/auth).*)'],
+  matcher: ['/api/((?!auth|spotify/auth|chat/token).*)'],
 };

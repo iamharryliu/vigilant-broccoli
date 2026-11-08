@@ -14,7 +14,10 @@ import {
   SOCKET_SERVER_PATHS,
   SSE_CONTENT_TYPE,
 } from '@vigilant-broccoli/common-js';
-import { isTimingSafeEqual } from '@vigilant-broccoli/common-node';
+import {
+  isTimingSafeEqual,
+  verifyRoomToken,
+} from '@vigilant-broccoli/common-node';
 import {
   getSupabaseUrl,
   SUPABASE_PUBLISHABLE_KEY,
@@ -31,6 +34,8 @@ const SUPABASE_USER_PATH = '/auth/v1/user';
 const SUPABASE_VERIFY_TIMEOUT_MS = 3000;
 const JWT_PAYLOAD_INDEX = 1;
 const MS_PER_SECOND = 1000;
+const CLIENT_PUBLISH_MAX_PER_WINDOW = 20;
+const CLIENT_PUBLISH_WINDOW_MS = 10000;
 // Below Cloudflare's 100s and typical proxy idle timeouts so idle streams stay open.
 const SSE_KEEPALIVE_INTERVAL_MS = 25000;
 const SSE_KEEPALIVE_FRAME = ':keepalive\n\n';
@@ -74,10 +79,12 @@ const LOG = {
   SSE_DISCONNECT: 'sse_disconnect',
   SSE_SUBSCRIBE_INVALID: 'sse_subscribe_invalid',
   HTTP_PUBLISH: 'http_publish',
+  PUBLISH_RATE_LIMITED: 'publish_rate_limited',
   USER_VERIFY_FAILED: 'user_verify_failed',
 } as const;
 
 const ROLE_SENDER = 'sender';
+const ROLE_ROOM_TOKEN = 'room_token';
 const ROLE_USER = 'user';
 const ROLE_RECEIVER = 'receiver';
 
@@ -155,9 +162,19 @@ const tokenExpiryMs = (token: string) =>
 
 const canPublishTo = (socket: Socket, app: string) =>
   socket.data.role === ROLE_SENDER ||
-  (socket.data.role === ROLE_USER &&
-    USER_PUBLISH_APPS.includes(app) &&
-    Date.now() < socket.data.userExpiresAt);
+  (socket.data.publishApps?.includes(app) &&
+    Date.now() < socket.data.publishExpiresAt);
+
+const isClientRateLimited = (socket: Socket) => {
+  if (socket.data.role === ROLE_SENDER) return false;
+  const now = Date.now();
+  if (!(now < socket.data.rateWindowEndsAt)) {
+    socket.data.rateWindowEndsAt = now + CLIENT_PUBLISH_WINDOW_MS;
+    socket.data.rateWindowCount = 0;
+  }
+  socket.data.rateWindowCount += 1;
+  return socket.data.rateWindowCount > CLIENT_PUBLISH_MAX_PER_WINDOW;
+};
 
 const bearerToken = (req: Request) => {
   const header = req.headers.authorization;
@@ -249,13 +266,25 @@ const io = new Server(httpServer, {
 // A bad token still connects as a receiver, because subscribing needs no auth.
 io.use(async (socket, next) => {
   const token = socket.handshake.auth?.token;
+  socket.data.role = ROLE_RECEIVER;
   if (isSender(token)) {
     socket.data.role = ROLE_SENDER;
-  } else if (typeof token === 'string' && (await isSupabaseUser(token))) {
+    next();
+    return;
+  }
+  if (typeof token !== 'string') {
+    next();
+    return;
+  }
+  const roomClaims = SENDER_TOKEN ? verifyRoomToken(token, SENDER_TOKEN) : null;
+  if (roomClaims) {
+    socket.data.role = ROLE_ROOM_TOKEN;
+    socket.data.publishApps = [roomClaims.app];
+    socket.data.publishExpiresAt = roomClaims.expiresAt;
+  } else if (await isSupabaseUser(token)) {
     socket.data.role = ROLE_USER;
-    socket.data.userExpiresAt = tokenExpiryMs(token);
-  } else {
-    socket.data.role = ROLE_RECEIVER;
+    socket.data.publishApps = USER_PUBLISH_APPS;
+    socket.data.publishExpiresAt = tokenExpiryMs(token);
   }
   next();
 });
@@ -343,6 +372,11 @@ io.on(SOCKET_EVENTS.CONNECTION, socket => {
     }
     if (!canPublishTo(socket, parsed.data.app)) {
       forbid();
+      return;
+    }
+    if (isClientRateLimited(socket)) {
+      log(LOG.PUBLISH_RATE_LIMITED, { socketId: socket.id });
+      reply({ ok: false, code: PUBLISH_ERROR_CODES.RATE_LIMITED });
       return;
     }
     const receivers = fanOut(parsed.data, TRANSPORT.SOCKET_IO);

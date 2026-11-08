@@ -26,7 +26,7 @@ docker run -p 3000:3000 \
 | Variable | Required | Description |
 | --- | --- | --- |
 | `HOST`, `PORT` | No | Listen address; the image sets `0.0.0.0` and `3000`. |
-| `SENDER_TOKEN` | No | Token a client sends as `auth.token` in the Socket.IO handshake, or as `Authorization: Bearer <token>` on `POST /publish`, to publish. Unset, only verified users can publish, and only to `USER_PUBLISH_APPS`. |
+| `SENDER_TOKEN` | No | Token a client sends as `auth.token` in the Socket.IO handshake, or as `Authorization: Bearer <token>` on `POST /publish`, to publish. It also signs room tokens. Unset, only verified users can publish, and only to `USER_PUBLISH_APPS`. |
 | `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY` | No | Supabase project that verifies user tokens from the Socket.IO handshake. Defaults to this repository's public project values, so set both when self-hosting. |
 | `TLS_CERT_PATH`, `TLS_KEY_PATH` | No | PEM certificate and key paths, readable by the container's user. The server speaks HTTPS only when both are set. |
 | `USER_PUBLISH_APPS` | No | Comma-separated `app` values that verified users can publish to. Defaults to `chat-demo`. |
@@ -36,7 +36,7 @@ docker run -p 3000:3000 \
 | Event | Direction | Payload |
 | --- | --- | --- |
 | `message` | Server to subscribers | `{ app, receiverId, payload }` |
-| `publish` | Sender or verified user to server | `{ app, receiverId, payload }`; an acknowledgement returns `{ ok: true }`, or `{ ok: false, code }` with `invalid` for a bad shape or `forbidden` for a client without publish rights, an app outside `USER_PUBLISH_APPS` or an expired user token. Reconnect with a fresh token after an expiry. |
+| `publish` | Sender, verified user or room-token holder to server | `{ app, receiverId, payload }`; an acknowledgement returns `{ ok: true }`, or `{ ok: false, code }` with `invalid` for a bad shape, `forbidden` for a client without publish rights, an app its credential doesn't allow or an expired token, or `rate_limited` above 20 publishes per 10s for a non-sender. Reconnect with a fresh token after an expiry. |
 | `subscribe` | Client to server | `{ app, receiverId }` joins the room `app:receiverId`. |
 | `unsubscribe` | Client to server | `{ app, receiverId }` leaves the room. |
 
@@ -51,6 +51,7 @@ The same rooms are also reachable over HTTP; see [SSE transport](./sse-transport
 
 - Subscribing needs no token: anyone who can reach the server and knows an `app` and `receiverId` can receive its messages. Keep `payload` free of secrets or restrict network access.
 - CORS allows every origin.
-- Verified users are any account the Supabase project accepts, and publishing has no rate limit, so keep `USER_PUBLISH_APPS` to rooms where that is acceptable.
+- Verified users are any account the Supabase project accepts, so keep `USER_PUBLISH_APPS` to rooms where that is acceptable.
+- A backend holding `SENDER_TOKEN` can issue room tokens with `signRoomToken` from `common-node`: the holder can publish to that token's `app` until it expires, signed in or not. Rotating `SENDER_TOKEN` invalidates them. The publish rate limit is per connection, so reconnecting resets it; the token route needs its own limit.
 - Socket.IO messages are limited to 64kb, like `POST /publish`; a larger one disconnects the client.
 - Rooms and subscriptions live in memory, so a restart drops them and clients must resubscribe. Run a single replica; there is no adapter to share rooms between instances.
