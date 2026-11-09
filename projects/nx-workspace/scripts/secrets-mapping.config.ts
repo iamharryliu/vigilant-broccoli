@@ -34,6 +34,12 @@ export const secretsMapping: SecretsMapping = {
     excludeEnvVars: COMMON_EXCLUDED_VARS,
     privateOnly: true,
   },
+  'media-service': {
+    flyAppBaseName: 'media-service',
+    appPath: './apps/api/media-service',
+    vaultPath: COMMON_VAULT_PATH,
+    excludeEnvVars: COMMON_EXCLUDED_VARS,
+  },
   'email-service': {
     flyAppBaseName: 'vb-email-service',
     appPath: './apps/api/email-service',
