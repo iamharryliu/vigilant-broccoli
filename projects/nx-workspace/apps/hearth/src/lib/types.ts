@@ -13,10 +13,26 @@ export const HOME_ROLE = {
 
 export type HomeRole = (typeof HOME_ROLE)[keyof typeof HOME_ROLE];
 
+export const MEMBER_STATUS = {
+  PENDING: 'pending',
+  ACCEPTED: 'accepted',
+} as const;
+
+// `requested` rows came from a join link that needs approval; only an
+// owner/admin may accept them, never the requester.
+export const MEMBER_ORIGIN = {
+  INVITED: 'invited',
+  REQUESTED: 'requested',
+} as const;
+
+export type MemberStatus = (typeof MEMBER_STATUS)[keyof typeof MEMBER_STATUS];
+export type MemberOrigin = (typeof MEMBER_ORIGIN)[keyof typeof MEMBER_ORIGIN];
+
 export type HomeMember = {
   id: string;
   email: string;
-  status: 'pending' | 'accepted';
+  status: MemberStatus;
+  origin?: MemberOrigin;
   role: HomeRole;
   createdAt: string;
 };

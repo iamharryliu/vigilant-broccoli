@@ -6,14 +6,30 @@ import { useAuth } from '../providers/auth-provider';
 import { TopbarSlotProvider } from '../providers/topbar-slot-provider';
 import { ROUTES } from '../../lib/routes';
 import {
+  AUTH_ROUTES,
+  clearPendingNext,
+  getPathname,
+  getPendingNext,
+  getSafeNextPath,
+  resolvePostAuthPath,
+  withNextParam,
+} from '../../lib/auth-redirect';
+import {
   APP_CONTENT_ATTRIBUTE,
   useVisualViewportHeight,
 } from '../../lib/use-visual-viewport-height';
 import Topbar from './Topbar';
 import Sidebar, { SIDEBAR_POSITION } from './Sidebar';
 
-const PUBLIC_ROUTES = [ROUTES.LOGIN, ROUTES.SIGNUP, ROUTES.AUTH_CALLBACK];
 const SPINNER_DELAY_MS = 300;
+
+const getSignedOutLoginPath = (pathname: string) =>
+  withNextParam(
+    ROUTES.LOGIN,
+    pathname === ROUTES.HOME
+      ? null
+      : getSafeNextPath(`${pathname}${window.location.search}`),
+  );
 
 /**
  * Frame-only stand-in for Topbar and Sidebar while auth resolves. It mirrors
@@ -59,21 +75,33 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const isPublic = PUBLIC_ROUTES.some(r => pathname.startsWith(r));
+  const isPublic = AUTH_ROUTES.some(r => pathname.startsWith(r));
   const isLoading = session === undefined;
 
   useEffect(() => {
     if (isLoading) return;
 
     if (!session && !isPublic) {
-      router.replace(ROUTES.LOGIN);
+      router.replace(getSignedOutLoginPath(pathname));
       return;
     }
 
     if (session && isPublic) {
-      router.replace(ROUTES.HOME);
+      router.replace(resolvePostAuthPath(window.location.search));
+      return;
     }
-  }, [session, isPublic, isLoading, router]);
+
+    // A sign-in whose callback URL Supabase rejected lands on site_url (home)
+    // instead, so the stored target is replayed from there and cleared only
+    // on arrival, which keeps it intact while the callback page also reads it.
+    const pendingNext = session && getPendingNext();
+    if (!pendingNext) return;
+    if (getPathname(pendingNext) === pathname) {
+      clearPendingNext();
+    } else if (pathname === ROUTES.HOME) {
+      router.replace(pendingNext);
+    }
+  }, [session, isPublic, isLoading, router, pathname]);
 
   if (isPublic) {
     return <>{children}</>;
