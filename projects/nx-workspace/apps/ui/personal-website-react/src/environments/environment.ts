@@ -4,7 +4,7 @@ export const ENVIRONMENT = {
   ANALYTICS_ID: import.meta.env.DEV ? '' : 'G-GW4BER2BMZ',
   APP_URL: import.meta.env.DEV
     ? 'http://localhost:3000'
-    : 'https://harryliu.dev',
+    : 'https://staging.harryliu.dev',
   API_URL: import.meta.env.DEV
     ? 'http://localhost:3001'
     : 'https://staging-vb-express.fly.dev',

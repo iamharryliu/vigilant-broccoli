@@ -42,6 +42,7 @@ resource "supabase_settings" "vb_auth" {
     # Management API's wire format (not a JSON array).
     uri_allow_list = join(",", [
       "http://localhost:4200/*",                                            # hearth local dev
+      "https://staging-hearth.harryliu.dev/auth/callback",                  # hearth staging (custom domain)
       "https://staging-hearth.vercel.app/*",                                # hearth staging
       "https://production-hearth.vercel.app/*",                             # hearth prod
       "https://hearth.harryliu.dev/*",                                      # hearth prod (custom domain)
@@ -50,9 +51,11 @@ resource "supabase_settings" "vb_auth" {
       "http://localhost:3000/*",                                            # local-manager-next local dev
       "http://127.0.0.1:3000/*",                                            # local-manager-next local dev (127.0.0.1 form)
       "https://manager.vigilant-broccoli.app/*",                            # local-manager-next prod (PM2)
+      "https://staging-balloono.harryliu.dev/auth/callback",                # balloono staging (custom domain)
       "https://staging-balloono.vercel.app/*",                              # balloono staging
       "https://production-balloono.vercel.app/*",                           # balloono prod
       "https://balloono.harryliu.dev/*",                                    # balloono prod (custom domain)
+      "https://staging-manager.harryliu.dev/auth/callback",                 # mobile manager staging (custom domain)
       "https://staging-vb-manager-next-mobile.vercel.app/auth/callback",    # vb-manager-next mobile staging
       "https://production-vb-manager-next-mobile.vercel.app/auth/callback", # vb-manager-next mobile prod
       "https://manager.harryliu.dev/auth/callback",                         # vb-manager-next mobile prod (custom domain)
