@@ -25,7 +25,7 @@ import { Readable } from 'stream';
 // socketTimeout is an idle timeout, so healthy large transfers still finish;
 // requestTimeout is wall-clock in @smithy/node-http-handler 4.x and stays unset.
 const R2_CONNECTION_TIMEOUT_MS = 5_000;
-const R2_SOCKET_IDLE_TIMEOUT_MS = 15_000;
+const R2_SOCKET_IDLE_TIMEOUT_MS = 5_000;
 
 export class CloudflareBucketProvider implements IBucketProvider {
   private client: S3Client;
