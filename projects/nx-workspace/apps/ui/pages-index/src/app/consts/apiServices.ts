@@ -8,6 +8,7 @@ export const API_SERVICES: ApiServiceInfo[] = [
   { slug: 'email-subscription-service', private: true },
   { slug: 'llm-service', private: true },
   { slug: 'bucket-service', private: true },
+  { slug: 'media-service', private: false },
   { slug: 'employee-handler', private: true },
 ];
 

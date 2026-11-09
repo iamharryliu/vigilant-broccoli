@@ -32,6 +32,7 @@ on:
           - cloud8skate-sanity
           - vb-express
           - llm-service
+          - media-service
           - email-service
           - bucket-service
           - email-subscription-service

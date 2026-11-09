@@ -106,6 +106,7 @@ jobs:
 
           echo "[Fly.io Apps]"
           http_check "staging-vb-express" "https://staging-vb-express.fly.dev"
+          http_check "staging-media-service" "https://staging-media-service.fly.dev"
 
           echo ""
           echo "[Websites]"

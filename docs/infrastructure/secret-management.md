@@ -114,7 +114,7 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `RENDER_API_KEY` | Vault `kv/data/secrets` | Render API key for `deploy-render.ts` (llm-service staging pilot; the cloud-services-next Render card uses `render login` instead): discovers workspaces, provisions the service/registry credential, syncs env vars and triggers image deploys. Not a GitHub Actions secret; the script reads it from Vault, or from the `RENDER_API_KEY` env var for local runs. |
 | `RESEND_API_KEY` | Vault `kv/data/secrets` → Fly | Resend email API key for `email-service`. |
 | `SANITY_AUTH_TOKEN` | Vault `kv/data/secrets` | Sanity CMS project API token. |
-| `SHARED_APP_TOKEN` | Vault `kv/data/secrets` → Fly | Shared bearer token for service-to-service calls between Fly APIs. Also the key material for chat room tokens, so rotating it invalidates them. |
+| `SHARED_APP_TOKEN` | Vault `kv/data/secrets` → Fly | Shared bearer token for service-to-service calls between Fly APIs; `hearth` (Vercel, via `.env.local.example`) also sends it to the public `media-service`. Also the key material for chat room tokens, so rotating it invalidates them. |
 | `SLACK_APP_TOKEN` | Vault `kv/data/secrets` (local/self-hosted) | Slack app-level token (`xapp-`) for Socket Mode; not used by the HTTP-mode demo service. |
 | `SLACK_BOT_TOKEN` | Vault `kv/data/secrets` → Fly | Slack bot token (`xoxb-`) for the Office Presence app, in both Socket and HTTP mode. |
 | `SLACK_SIGNING_SECRET` | Vault `kv/data/secrets` → Fly | Slack app signing secret; `office-presence-service` verifies every HTTP-mode request with it. |
