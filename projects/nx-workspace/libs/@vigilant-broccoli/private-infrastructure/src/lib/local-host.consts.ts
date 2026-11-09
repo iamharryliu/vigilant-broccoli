@@ -1,3 +1,5 @@
+import { LOCAL_MANAGER_URL } from '@vigilant-broccoli/infrastructure';
+
 // Hosts reachable only on the private Tailscale network.
 export const LOCAL_HOST_URL = {
   IMMICH: {
@@ -22,6 +24,6 @@ export const LOCAL_HOST_URL = {
   },
   LOCAL_MANAGER_NEXT: {
     NAME: 'local-manager-next (Local)',
-    URL: 'https://manager.vigilant-broccoli.app',
+    URL: LOCAL_MANAGER_URL,
   },
 } as const;

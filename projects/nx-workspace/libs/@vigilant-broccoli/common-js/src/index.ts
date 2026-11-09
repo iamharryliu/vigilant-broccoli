@@ -66,3 +66,4 @@ export const DATE_CONST = {
 };
 export * from './lib/file-explorer/file-explorer.types';
 export * from './lib/weather/preparation';
+export * from './lib/weather/weather-embed.consts';

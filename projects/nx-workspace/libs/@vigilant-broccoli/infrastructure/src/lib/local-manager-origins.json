@@ -1,0 +1,8 @@
+{
+  "url": "https://manager.vigilant-broccoli.app",
+  "loopbackOrigins": [
+    "http://127.0.0.1:1337",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000"
+  ]
+}
