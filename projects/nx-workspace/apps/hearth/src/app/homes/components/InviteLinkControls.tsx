@@ -1,7 +1,14 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Button, Heading, Input, Text } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  Checkbox,
+  Heading,
+  Input,
+  Select,
+  Text,
+} from '@vigilant-broccoli/react-lib';
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import {
   useAuthHeader,
@@ -10,9 +17,15 @@ import {
 import { useTranslation } from '../../i18n';
 import {
   CreatedInviteLink,
+  INVITE_LINK_DEFAULTS,
+  INVITE_LINK_EXPIRY_DAY_OPTIONS,
+  INVITE_LINK_LIMITS,
   INVITE_LINKS_ENDPOINT,
   InviteLink,
+  InviteLinkOptions,
 } from '../../../lib/invite-links';
+
+const EXPIRY_VALUES = INVITE_LINK_EXPIRY_DAY_OPTIONS.map(String);
 
 const COPIED_VISIBLE_MS = 2000;
 const TEXT_MIME_TYPE = 'text/plain';
@@ -49,6 +62,23 @@ export const InviteLinkControls = ({ homeId }: Props) => {
   // Shown when the clipboard write fails: the raw URL is never retrievable again.
   const [uncopiedUrl, setUncopiedUrl] = useState<string | null>(null);
   const [revokingId, setRevokingId] = useState<string | null>(null);
+  const [expiresInDays, setExpiresInDays] = useState(
+    String(INVITE_LINK_DEFAULTS.EXPIRES_IN_DAYS),
+  );
+  const [maxUses, setMaxUses] = useState(String(INVITE_LINK_DEFAULTS.MAX_USES));
+  const [requiresApproval, setRequiresApproval] = useState(false);
+
+  const maxUsesValue = Number(maxUses);
+  const maxUsesValid =
+    Number.isInteger(maxUsesValue) &&
+    maxUsesValue >= 1 &&
+    maxUsesValue <= INVITE_LINK_LIMITS.MAX_USES;
+  const expiryLabels = Object.fromEntries(
+    EXPIRY_VALUES.map(days => [
+      days,
+      t('INVITE_LINKS.EXPIRY_DAYS', { count: days }),
+    ]),
+  );
 
   const fetchLinks = useCallback(async () => {
     const res = await fetch(INVITE_LINKS_ENDPOINT(homeId), {
@@ -62,9 +92,15 @@ export const InviteLinkControls = ({ homeId }: Props) => {
   }, [fetchLinks]);
 
   const createLink = async (): Promise<CreatedInviteLink> => {
+    const options: InviteLinkOptions = {
+      expiresInDays: Number(expiresInDays),
+      maxUses: maxUsesValue,
+      requiresApproval,
+    };
     const res = await fetch(INVITE_LINKS_ENDPOINT(homeId), {
       method: HTTP_METHOD.POST,
-      headers: await authHeader(),
+      headers: await jsonHeaders(),
+      body: JSON.stringify(options),
     });
     if (!res.ok) throw new Error(t('INVITE_LINKS.CREATE_FAILED'));
     return res.json();
@@ -111,9 +147,44 @@ export const InviteLinkControls = ({ homeId }: Props) => {
       <Text size="2" color="gray" as="p">
         {t('INVITE_LINKS.DESCRIPTION')}
       </Text>
+      <div className="flex flex-wrap items-end gap-3">
+        <div>
+          <Text size="1" weight="medium" as="p" mb="1">
+            {t('INVITE_LINKS.EXPIRES_LABEL')}
+          </Text>
+          <Select
+            value={expiresInDays}
+            onValueChange={setExpiresInDays}
+            options={EXPIRY_VALUES}
+            displayMapper={expiryLabels}
+            aria-label={t('INVITE_LINKS.EXPIRES_LABEL')}
+          />
+        </div>
+        <div>
+          <Text size="1" weight="medium" as="p" mb="1">
+            {t('INVITE_LINKS.MAX_USES_LABEL')}
+          </Text>
+          <Input
+            type="number"
+            min={1}
+            max={INVITE_LINK_LIMITS.MAX_USES}
+            value={maxUses}
+            onChange={e => setMaxUses(e.target.value)}
+            className="w-24"
+            aria-label={t('INVITE_LINKS.MAX_USES_LABEL')}
+          />
+        </div>
+      </div>
+      <label className="flex items-center gap-2 cursor-pointer">
+        <Checkbox
+          checked={requiresApproval}
+          onCheckedChange={checked => setRequiresApproval(checked === true)}
+        />
+        <Text size="2">{t('INVITE_LINKS.REQUIRE_APPROVAL')}</Text>
+      </label>
       <Button
         onClick={handleCopy}
-        disabled={creating}
+        disabled={creating || !maxUsesValid}
         className="cursor-pointer"
       >
         {creating
@@ -148,11 +219,16 @@ export const InviteLinkControls = ({ homeId }: Props) => {
           {links.map(link => (
             <li key={link.id} className="flex items-center gap-2">
               <Text size="2" className="flex-1">
-                {t('INVITE_LINKS.USAGE', {
-                  used: link.use_count,
-                  max: link.max_uses,
-                  expires: formatExpiry(link.expires_at),
-                })}
+                {t(
+                  link.requires_approval
+                    ? 'INVITE_LINKS.USAGE_APPROVAL'
+                    : 'INVITE_LINKS.USAGE',
+                  {
+                    used: link.use_count,
+                    max: link.max_uses,
+                    expires: formatExpiry(link.expires_at),
+                  },
+                )}
               </Text>
               <Button
                 variant="outline"

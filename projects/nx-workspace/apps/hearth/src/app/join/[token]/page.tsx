@@ -76,6 +76,11 @@ export default function JoinHomePage({
     const result: Partial<InviteLinkPreview> = await res
       .json()
       .catch(() => ({}));
+    if (res.ok && result.status === INVITE_LINK_STATUS.REQUESTED) {
+      setJoining(false);
+      setPreview(prev => ({ ...prev, status: INVITE_LINK_STATUS.REQUESTED }));
+      return;
+    }
     if (res.ok && result.homeId) {
       await openHome(result.homeId);
       return;
@@ -108,11 +113,20 @@ export default function JoinHomePage({
       );
     }
 
+    if (preview.status === INVITE_LINK_STATUS.REQUESTED) {
+      return (
+        <Text as="p">
+          {t('JOIN.REQUEST_SENT', { home: preview.homeName ?? '' })}
+        </Text>
+      );
+    }
+
     if (preview.status === INVITE_LINK_STATUS.VALID) {
+      const needsApproval = Boolean(preview.requiresApproval);
       return (
         <>
           <Text as="p">
-            {t('JOIN.INVITED', {
+            {t(needsApproval ? 'JOIN.REQUESTED_INVITED' : 'JOIN.INVITED', {
               inviter: preview.inviterName ?? '',
               home: preview.homeName ?? '',
             })}
@@ -127,7 +141,9 @@ export default function JoinHomePage({
             disabled={joining}
             className="cursor-pointer"
           >
-            {joining ? t('JOIN.JOINING') : t('JOIN.CONFIRM')}
+            {joining
+              ? t(needsApproval ? 'JOIN.REQUESTING' : 'JOIN.JOINING')
+              : t(needsApproval ? 'JOIN.REQUEST' : 'JOIN.CONFIRM')}
           </Button>
         </>
       );

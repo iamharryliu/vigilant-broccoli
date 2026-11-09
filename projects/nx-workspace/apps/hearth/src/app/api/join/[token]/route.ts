@@ -7,6 +7,7 @@ import {
 } from '../../../../../libs/supabase-server';
 import { hashInviteToken } from '../../../../../libs/invite-link-token';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { MEMBER_ORIGIN, MEMBER_STATUS } from '../../../../lib/types';
 import {
   INVITE_LINK_STATUS,
   InviteLinkPreview,
@@ -21,6 +22,7 @@ type LinkRow = {
   expires_at: string;
   max_uses: number;
   use_count: number;
+  requires_approval: boolean;
   revoked_at: string | null;
 };
 
@@ -68,10 +70,40 @@ const isMemberOrOwner = async (
   return Boolean(ownedHome || membership);
 };
 
+// Requested rows always carry the requester's user_id (set by the redeem function).
+const hasPendingRequest = async (
+  homeId: number,
+  userId: string,
+): Promise<boolean> => {
+  const { data } = await createAdminClient()
+    .from('home_members')
+    .select('id')
+    .eq('home_id', homeId)
+    .eq('user_id', userId)
+    .eq('status', MEMBER_STATUS.PENDING)
+    .eq('origin', MEMBER_ORIGIN.REQUESTED)
+    .limit(1);
+  return Boolean(data?.length);
+};
+
 const STATUSES_WITH_HOME_DETAILS: InviteLinkStatus[] = [
   INVITE_LINK_STATUS.VALID,
   INVITE_LINK_STATUS.ALREADY_MEMBER,
+  INVITE_LINK_STATUS.REQUESTED,
 ];
+
+const getPreviewStatus = async (
+  link: LinkRow,
+  user: User,
+): Promise<InviteLinkStatus> => {
+  if (await isMemberOrOwner(link.home_id, user.id)) {
+    return INVITE_LINK_STATUS.ALREADY_MEMBER;
+  }
+  if (await hasPendingRequest(link.home_id, user.id)) {
+    return INVITE_LINK_STATUS.REQUESTED;
+  }
+  return getLinkStatus(link);
+};
 
 const getInviterName = (inviter: User | null) =>
   inviter?.user_metadata?.display_name ?? inviter?.email;
@@ -86,6 +118,7 @@ const getHomeDetails = async (link: LinkRow) => {
     homeId: link.home_id,
     homeName: home?.name,
     inviterName: getInviterName(inviter.user),
+    requiresApproval: link.requires_approval,
   };
 };
 
@@ -99,7 +132,9 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   const admin = createAdminClient();
   const { data: link } = await admin
     .from('home_invite_links')
-    .select('home_id, created_by, expires_at, max_uses, use_count, revoked_at')
+    .select(
+      'home_id, created_by, expires_at, max_uses, use_count, requires_approval, revoked_at',
+    )
     .eq('token_hash', hashInviteToken(token))
     .maybeSingle<LinkRow>();
   if (!link) {
@@ -108,9 +143,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
     } satisfies InviteLinkPreview);
   }
 
-  const status = (await isMemberOrOwner(link.home_id, user.id))
-    ? INVITE_LINK_STATUS.ALREADY_MEMBER
-    : getLinkStatus(link);
+  const status = await getPreviewStatus(link, user);
   // Home details are shown only for links that still lead somewhere.
   if (!STATUSES_WITH_HOME_DETAILS.includes(status)) {
     return Response.json({ status } satisfies InviteLinkPreview);
@@ -144,6 +177,7 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
   };
   const succeeded =
     status === INVITE_LINK_STATUS.JOINED ||
+    status === INVITE_LINK_STATUS.REQUESTED ||
     status === INVITE_LINK_STATUS.ALREADY_MEMBER;
   return Response.json(
     { status, homeId: home_id } satisfies InviteLinkPreview,
