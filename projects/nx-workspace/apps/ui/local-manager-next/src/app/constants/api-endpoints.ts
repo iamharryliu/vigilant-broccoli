@@ -22,7 +22,6 @@ export const API_ENDPOINTS = {
   EVENT_CALENDARS: '/api/event-calendars',
 
   WEATHER: '/api/weather',
-  WEATHER_CITY: '/api/weather/city',
 
   LLM_TEST: '/api/llm-test',
   SPEECH_TO_TEXT: '/api/speech-to-text',

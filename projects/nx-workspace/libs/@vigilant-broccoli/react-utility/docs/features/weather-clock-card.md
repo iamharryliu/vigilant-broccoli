@@ -1,7 +1,7 @@
 # Weather Clock Card
 
 - One card for the clock, the current weather with its details, an optional forecast carousel, the next sunrise/sunset and the moon phase.
-- Single weather UI consumed by `weather-next` (weather.harryliu.dev), `local-manager-next`'s dashboard and `mobile-manager-next`'s Weather tab; production and staging of each app share one codebase.
+- Single weather UI consumed by `weather-next` (weather.harryliu.dev, also iframed by `local-manager-next`'s dashboard; see [Weather Embed](../../../../../docs/features/weather-embed.md)) and `mobile-manager-next`'s Weather tab; production and staging of each app share one codebase.
 
 ## Usage
 
@@ -23,7 +23,7 @@
 ## Weather data
 
 - `WeatherClockCardWeather` is `LocalWeather` (from `common-js`) plus `preparation`. Fields shown: temperature with feels-like in brackets (the word "Feels" is dropped when the card itself is narrower than 420px) and high/low as small stacked text beside it in the weather tile, then humidity, wind (max in the label) and precipitation (day sum in the label) as a row of icon stat tiles like the summary tiles, and the Preparation badges built from `PREPARATION_BADGES` (`react-lib`).
-- `toLocalWeather(snapshot, city)` in `common-js` is the single snapshot-to-`LocalWeather` mapper used by the `weather-next` route and by `local-manager-next`'s `fetchLocalWeather`. It returns `null` when the snapshot has no daily entry and fills `forecast` from every daily entry, today first.
+- `toLocalWeather(snapshot, city)` in `common-js` is the single snapshot-to-`LocalWeather` mapper behind `getLocalWeather` in `common-node`. It returns `null` when the snapshot has no daily entry and fills `forecast` from every daily entry, today first.
 - Each app's `/api/weather` requests `OPEN_METEO_MAX_FORECAST_DAYS` (16, the Open-Meteo `forecast_days` maximum; `fetchOpenMeteoSnapshot` clamps to it). The OpenWeather provider folds days out of its 5-day / 3-hour list, so it returns fewer days; the carousel shows whatever the provider returns, with no padding.
 
 ## Forecast carousel
@@ -41,5 +41,5 @@ The card is styled with Tailwind classes and the Radix Themes variables the apps
 
 - `weather-next`: `/api/weather` uses `getLocalWeather` from `common-node` (Open-Meteo plus Nominatim city).
 - `mobile-manager-next`: `WeatherView` uses auth-guarded `/api/weather` with `getLocalWeather` from `common-node`.
-- `local-manager-next`: `fetchLocalWeather` uses auth-guarded `/api/weather` plus `/api/weather/city`; city names use `reverseGeocodeCity` from `common-node` with the app's Nominatim User-Agent.
-- All three use the same local preparation calculator; no `/api/preparation` route is needed.
+- `local-manager-next`: no fetching of its own; the iframed `weather-next` embed fetches.
+- Both use the same local preparation calculator; no `/api/preparation` route is needed.

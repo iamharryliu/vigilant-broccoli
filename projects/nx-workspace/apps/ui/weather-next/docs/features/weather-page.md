@@ -3,3 +3,5 @@
 Current weather for the browser's location: city, temperature, condition, today's high and low, feels-like, humidity, wind and precipitation, a swipeable forecast of every day the provider returns (up to 16; click the weather tile), the clock, sun times and moon phase, plus what-to-wear-or-bring badges (see [Preparation Badges](./preparation-badges/README.md)). The UI is the shared `WeatherClockCardUtilityContent` from `react-utility` (see [Dashboard Info Card](../../../../../libs/@vigilant-broccoli/react-utility/docs/features/weather-clock-card.md)); this app supplies `/api/weather` data fetching; the shared card calculates preparation locally.
 
 Appearance follows `prefers-color-scheme` until `d` toggles light/dark; the choice persists under `weather-next-theme` (see [Theme](../../../../../libs/@vigilant-broccoli/react-lib/docs/features/theme.md)).
+
+`/embed` renders the same card without the page chrome for local-manager-next's iframe, which sets its appearance; see [Weather Embed](../../../../../docs/features/weather-embed.md).
