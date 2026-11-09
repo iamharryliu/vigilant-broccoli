@@ -6,6 +6,7 @@
 - [Storage Locations](#storage-locations)
 - [Digital Assets](#digital-assets)
 - [Media Flow](#media-flow)
+- [Resilio Sync](#resilio-sync)
 
 ## 3-2-1 Rule
 
@@ -36,15 +37,15 @@
 | Asset | Primary Location | Backup Drive | Cloud Location |
 | --- | --- | --- | --- |
 | Apple Photos | ![Mobile Device](https://img.shields.io/badge/Mobile%20Device-000000?logo=apple&logoColor=white) ![Local Machine](https://img.shields.io/badge/Local%20Machine-000000?logo=macos&logoColor=white) |  | ![Apple Photos](https://img.shields.io/badge/Apple%20Photos-000000?logo=apple&logoColor=white) |
-| Books | ![Local Machine](https://img.shields.io/badge/Local%20Machine-000000?logo=macos&logoColor=white) | ![Backup Drive](https://img.shields.io/badge/Backup%20Drive-555555?logo=files&logoColor=white) | ![Google Drive](https://img.shields.io/badge/Google%20Drive-4285F4?logo=googledrive&logoColor=white) ![Seafile](https://img.shields.io/badge/Seafile-FF9800) |
-| DJ Music Library | ![Local Machine](https://img.shields.io/badge/Local%20Machine-000000?logo=macos&logoColor=white) | ![Backup Drive](https://img.shields.io/badge/Backup%20Drive-555555?logo=files&logoColor=white) | ![Google Drive](https://img.shields.io/badge/Google%20Drive-4285F4?logo=googledrive&logoColor=white) ![Seafile](https://img.shields.io/badge/Seafile-FF9800) |
+| Books | ![Local Machine](https://img.shields.io/badge/Local%20Machine-000000?logo=macos&logoColor=white) | ![Backup Drive](https://img.shields.io/badge/Backup%20Drive-555555?logo=files&logoColor=white) | ![Seafile](https://img.shields.io/badge/Seafile-FF9800) |
+| DJ Music Library | ![Local Machine](https://img.shields.io/badge/Local%20Machine-000000?logo=macos&logoColor=white) | ![Backup Drive](https://img.shields.io/badge/Backup%20Drive-555555?logo=files&logoColor=white) | ![Seafile](https://img.shields.io/badge/Seafile-FF9800) |
 | Docs |  |  |  |
 | Images and Videos |  | ![Media Backup Drive](https://img.shields.io/badge/Media%20Backup%20Drive-555555?logo=files&logoColor=white) |  |
 | Journal | ![Local Machine](https://img.shields.io/badge/Local%20Machine-000000?logo=macos&logoColor=white) |  | ![Gitea](https://img.shields.io/badge/Gitea-609926?logo=gitea&logoColor=white) |
 | Movies | ![Local Machine](https://img.shields.io/badge/Local%20Machine-000000?logo=macos&logoColor=white) | ![Backup Drive](https://img.shields.io/badge/Backup%20Drive-555555?logo=files&logoColor=white) |  |
 | Presentations | ![Local Machine](https://img.shields.io/badge/Local%20Machine-000000?logo=macos&logoColor=white) |  | ![Google Drive](https://img.shields.io/badge/Google%20Drive-4285F4?logo=googledrive&logoColor=white) |
 | Profile Images and Phone Wallpapers | ![Local Machine](https://img.shields.io/badge/Local%20Machine-000000?logo=macos&logoColor=white) |  | ![Google Drive](https://img.shields.io/badge/Google%20Drive-4285F4?logo=googledrive&logoColor=white) |
-| SNES Roms | ![Local Machine](https://img.shields.io/badge/Local%20Machine-000000?logo=macos&logoColor=white) | ![Backup Drive](https://img.shields.io/badge/Backup%20Drive-555555?logo=files&logoColor=white) | ![Google Drive](https://img.shields.io/badge/Google%20Drive-4285F4?logo=googledrive&logoColor=white) ![Seafile](https://img.shields.io/badge/Seafile-FF9800) |
+| SNES Roms | ![Local Machine](https://img.shields.io/badge/Local%20Machine-000000?logo=macos&logoColor=white) | ![Backup Drive](https://img.shields.io/badge/Backup%20Drive-555555?logo=files&logoColor=white) | ![Seafile](https://img.shields.io/badge/Seafile-FF9800) |
 | vigilant-broccoli | ![Local Machine](https://img.shields.io/badge/Local%20Machine-000000?logo=macos&logoColor=white) |  | ![GitHub](https://img.shields.io/badge/GitHub-181717?logo=github&logoColor=white) |
 
 ## Media Flow
@@ -54,4 +55,15 @@ flowchart LR
     A["Apple<br/>Photos"] --> B["Images and<br/>Videos"] --> C["Media Backup<br/>Drive"]
     D["Ricoh<br/>GR IIIx"] --> B
     E["Insta360"] --> B
+```
+
+## Resilio Sync
+
+```mermaid
+flowchart LR
+    subgraph MEDIA["resilio-sync/media"]
+        BOOKS["Books"]
+        DJ_MUSIC_LIBRARY["DJ Music<br/>Library"]
+        SNES_ROMS["SNES Roms"]
+    end
 ```

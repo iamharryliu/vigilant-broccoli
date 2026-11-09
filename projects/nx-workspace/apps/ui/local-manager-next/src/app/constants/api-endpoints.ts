@@ -33,6 +33,8 @@ export const API_ENDPOINTS = {
   RECIPE_SCRAPE_PREVIEW: '/api/recipe/scrape-preview',
 
   CHAT_PUBLISH: '/api/chat/publish',
+  CHAT_TOKEN: '/api/chat/token',
+  NOTIFICATIONS_TEST: '/api/notifications/test',
 
   FILE_CONVERT: '/api/file-convert',
 
@@ -47,9 +49,6 @@ export const API_ENDPOINTS = {
   TODO_REMOVE: '/api/todo/remove',
 
   BACKGROUND_TASKS: '/api/background-tasks',
-
-  JOB_APPLICATIONS: '/api/job-applications',
-  JOB_APPLICATIONS_FILE: '/api/job-applications/file',
 
   CMS: '/api/cms',
   CMS_FILE: '/api/cms/file',

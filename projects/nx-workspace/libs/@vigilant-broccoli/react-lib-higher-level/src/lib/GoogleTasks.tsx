@@ -140,9 +140,17 @@ const useTasks = (
       originalStatus === 'completed' ? 'needsAction' : 'completed';
 
     // The shared checklist owns visual timing; this flag only guards persistence.
+    // `updated` moves to now so the row lands in Completed's Today group at once.
     setTasks(prevTasks =>
       prevTasks.map(t =>
-        t.id === task.id ? { ...t, status: nextStatus, isRemoving: true } : t,
+        t.id === task.id
+          ? {
+              ...t,
+              status: nextStatus,
+              isRemoving: true,
+              updated: new Date().toISOString(),
+            }
+          : t,
       ),
     );
 
@@ -174,7 +182,12 @@ const useTasks = (
       setTasks(prevTasks =>
         prevTasks.map(t =>
           t.id === task.id
-            ? { ...t, status: originalStatus, isRemoving: false }
+            ? {
+                ...t,
+                status: originalStatus,
+                isRemoving: false,
+                updated: task.updated,
+              }
             : t,
         ),
       );

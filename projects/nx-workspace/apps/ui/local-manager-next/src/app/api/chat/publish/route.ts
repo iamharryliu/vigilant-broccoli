@@ -1,20 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { HTTP_STATUS_CODES, PublishAck } from '@vigilant-broccoli/common-js';
-import { io } from 'socket.io-client';
+import {
+  HTTP_HEADERS,
+  HTTP_METHOD,
+  HTTP_STATUS_CODES,
+  PublishAck,
+  SOCKET_SERVER_PATHS,
+} from '@vigilant-broccoli/common-js';
 import {
   CHAT_APP,
-  CHAT_CONNECT_TIMEOUT_MS,
+  CHAT_PUBLISH_TIMEOUT_MS,
   CHAT_ROOM,
-  SOCKET_EVENTS,
 } from '../../../constants/chat';
 
 const LOG_PREFIX = '[chat/publish]';
 const ERR_NOT_CONFIGURED = 'Socket server not configured';
 const ERR_BAD_BODY = 'Expected { text: string, sender: string }';
-const ERR_CONNECT_TIMEOUT = 'Socket connect timeout';
-const ERR_PUBLISH_TIMEOUT = 'Publish ack timeout';
 const ERR_PUBLISH_FAILED = 'Publish failed';
-const CHAT_PUBLISH_ACK_TIMEOUT_MS = 5000;
 
 export async function POST(req: NextRequest) {
   const url = process.env.SOCKET_SERVER_URL;
@@ -38,54 +39,27 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const socket = io(url, {
-    auth: { token },
-    transports: ['websocket'],
-    reconnection: false,
-  });
-
   try {
-    await new Promise<void>((resolve, reject) => {
-      const t = setTimeout(
-        () => reject(new Error(ERR_CONNECT_TIMEOUT)),
-        CHAT_CONNECT_TIMEOUT_MS,
-      );
-      socket.once(SOCKET_EVENTS.CONNECT, () => {
-        clearTimeout(t);
-        resolve();
-      });
-      socket.once(SOCKET_EVENTS.CONNECT_ERROR, err => {
-        clearTimeout(t);
-        reject(err);
-      });
+    const res = await fetch(`${url}${SOCKET_SERVER_PATHS.PUBLISH}`, {
+      method: HTTP_METHOD.POST,
+      headers: {
+        ...HTTP_HEADERS.CONTENT_TYPE.JSON,
+        ...HTTP_HEADERS.AUTHORIZATION(token),
+      },
+      body: JSON.stringify({
+        app: CHAT_APP,
+        receiverId: CHAT_ROOM,
+        payload: { text: body.text, sender: body.sender, ts: Date.now() },
+      }),
+      signal: AbortSignal.timeout(CHAT_PUBLISH_TIMEOUT_MS),
     });
-
-    const ack = await new Promise<PublishAck>((resolve, reject) => {
-      const t = setTimeout(
-        () => reject(new Error(ERR_PUBLISH_TIMEOUT)),
-        CHAT_PUBLISH_ACK_TIMEOUT_MS,
-      );
-      socket.emit(
-        SOCKET_EVENTS.PUBLISH,
-        {
-          app: CHAT_APP,
-          receiverId: CHAT_ROOM,
-          payload: { text: body.text, sender: body.sender, ts: Date.now() },
-        },
-        (res: PublishAck) => {
-          clearTimeout(t);
-          resolve(res);
-        },
-      );
-    });
-
+    const ack: PublishAck | null = await res.json().catch(() => null);
     if (!ack?.ok) {
       return NextResponse.json(
         { error: ERR_PUBLISH_FAILED, code: ack?.code },
         { status: HTTP_STATUS_CODES.BAD_GATEWAY },
       );
     }
-
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error(`${LOG_PREFIX} failed:`, err);
@@ -93,7 +67,5 @@ export async function POST(req: NextRequest) {
       { error: err instanceof Error ? err.message : ERR_PUBLISH_FAILED },
       { status: HTTP_STATUS_CODES.BAD_GATEWAY },
     );
-  } finally {
-    socket.close();
   }
 }

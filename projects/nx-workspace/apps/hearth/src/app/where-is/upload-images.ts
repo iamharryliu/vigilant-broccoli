@@ -12,6 +12,21 @@ interface UploadTarget {
   mimeType: string;
 }
 
+const ERROR_SAVE = 'Saving failed. Please try again.';
+const ERROR_UPLOAD = 'Image upload failed. Please try again.';
+
+// A Vercel 504 body is HTML, so the JSON parse must not throw.
+export const throwIfNotOk = async (
+  res: Response,
+  fallback: string = ERROR_SAVE,
+) => {
+  if (res.ok) return;
+  const body = (await res.json().catch(() => null)) as {
+    error?: string;
+  } | null;
+  throw new Error(body?.error ?? fallback);
+};
+
 export const uploadPreviewImages = async (
   previews: PreviewImage[],
   accessToken: string,
@@ -35,16 +50,18 @@ export const uploadPreviewImages = async (
       images: previews.map(p => ({ mimeType: p.mimeType, size: p.blob.size })),
     }),
   });
+  await throwIfNotOk(mintRes, ERROR_UPLOAD);
   const { targets } = (await mintRes.json()) as { targets: UploadTarget[] };
 
   await Promise.all(
-    targets.map((target, i) =>
-      fetch(target.uploadUrl, {
+    targets.map(async (target, i) => {
+      const put = await fetch(target.uploadUrl, {
         method: 'PUT',
         headers: { 'Content-Type': target.mimeType },
         body: previews[i].blob,
-      }),
-    ),
+      });
+      if (!put.ok) throw new Error(ERROR_UPLOAD);
+    }),
   );
 
   return targets.map(({ key, mimeType }) => ({ key, mimeType }));

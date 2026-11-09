@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  KeyboardEvent,
   MouseEvent,
   ReactElement,
   ReactNode,
@@ -88,6 +89,22 @@ const OBJECT_URL_REVOKE_DELAY_MS = 60_000;
 const PATH_SEPARATOR = '/';
 const PATH_QUERY_PARAM = 'path';
 const THUMBNAIL_ROOT_MARGIN = '200px';
+const GRID_TEMPLATE_COLUMNS = 'repeat(auto-fill, minmax(120px, 1fr))';
+
+const NAVIGATION_KEY = {
+  UP: 'ArrowUp',
+  DOWN: 'ArrowDown',
+  LEFT: 'ArrowLeft',
+  RIGHT: 'ArrowRight',
+  ENTER: 'Enter',
+} as const;
+
+// The grid auto-fills its columns, so the count is only known from layout.
+const gridColumnCount = (element: HTMLElement | null) =>
+  element ? getComputedStyle(element).gridTemplateColumns.split(' ').length : 1;
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
 
 const readPathFromUrl = () =>
   new URLSearchParams(window.location.search).get(PATH_QUERY_PARAM) ?? '';
@@ -461,14 +478,32 @@ const DeleteFilesDialog = ({
 // so its events would otherwise bubble to the item's selection and open handlers.
 const stopPropagation = (event: SyntheticEvent) => event.stopPropagation();
 
-type Selection = { paths: ReadonlySet<string>; anchor: string | null };
+// `cursor` is the focused item that arrow keys move from; `anchor` is where a
+// Shift range starts.
+type Selection = {
+  paths: ReadonlySet<string>;
+  anchor: string | null;
+  cursor: string | null;
+};
 
-const EMPTY_SELECTION: Selection = { paths: new Set(), anchor: null };
+const EMPTY_SELECTION: Selection = {
+  paths: new Set(),
+  anchor: null,
+  cursor: null,
+};
 
 const selectOnly = (path: string): Selection => ({
   paths: new Set([path]),
   anchor: path,
+  cursor: path,
 });
+
+const rangePaths = (entries: FileEntry[], fromIndex: number, toIndex: number) =>
+  new Set(
+    entries
+      .slice(Math.min(fromIndex, toIndex), Math.max(fromIndex, toIndex) + 1)
+      .map(entry => entry.path),
+  );
 
 type FileExplorerProps = {
   rootLabel: string;
@@ -521,6 +556,8 @@ export const FileExplorer = ({
   const [pendingDelete, setPendingDelete] = useState<FileEntry[] | null>(null);
   const [mutating, setMutating] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(true);
+  const itemsRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const loadEntries = useCallback(
     async (path: string) => {
@@ -672,30 +709,86 @@ export const FileExplorer = ({
   const previewEntry =
     selectedEntry && isFile(selectedEntry) ? selectedEntry : null;
 
-  const selectEntry = (entry: FileEntry, event: MouseEvent) => {
-    const anchorIndex = visibleEntries.findIndex(
-      item => item.path === selection.anchor,
+  const visibleIndexOf = (path: string | null) =>
+    visibleEntries.findIndex(item => item.path === path);
+
+  // Keeps the anchor and moves the cursor; without a visible anchor it falls
+  // back to selecting only the target.
+  const extendSelectionTo = (index: number) => {
+    const anchorIndex = visibleIndexOf(selection.anchor);
+    const path = visibleEntries[index].path;
+    setSelection(
+      anchorIndex === -1
+        ? selectOnly(path)
+        : {
+            paths: rangePaths(visibleEntries, anchorIndex, index),
+            anchor: selection.anchor,
+            cursor: path,
+          },
     );
-    if (event.shiftKey && anchorIndex !== -1) {
-      const index = visibleEntries.indexOf(entry);
-      const range = visibleEntries.slice(
-        Math.min(anchorIndex, index),
-        Math.max(anchorIndex, index) + 1,
-      );
-      setSelection({
-        paths: new Set(range.map(item => item.path)),
-        anchor: selection.anchor,
-      });
+  };
+
+  const selectEntry = (entry: FileEntry, event: MouseEvent) => {
+    if (event.shiftKey) {
+      extendSelectionTo(visibleEntries.indexOf(entry));
       return;
     }
     if (event.metaKey || event.ctrlKey) {
       const paths = new Set(selection.paths);
       if (paths.has(entry.path)) paths.delete(entry.path);
       else paths.add(entry.path);
-      setSelection({ paths, anchor: entry.path });
+      setSelection({ paths, anchor: entry.path, cursor: entry.path });
       return;
     }
     setSelection(selectOnly(entry.path));
+  };
+
+  const keyStep = (key: string) => {
+    if (viewMode === VIEW_MODE.LIST) {
+      if (key === NAVIGATION_KEY.UP) return -1;
+      if (key === NAVIGATION_KEY.DOWN) return 1;
+      return null;
+    }
+    if (key === NAVIGATION_KEY.LEFT) return -1;
+    if (key === NAVIGATION_KEY.RIGHT) return 1;
+    if (key === NAVIGATION_KEY.UP) return -gridColumnCount(gridRef.current);
+    if (key === NAVIGATION_KEY.DOWN) return gridColumnCount(gridRef.current);
+    return null;
+  };
+
+  const handleItemsKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    // Only the container itself: this skips inputs and the sort header buttons
+    // (Enter must still activate them), and the context menu, which is
+    // portalled but bubbles here through the React tree.
+    if (
+      event.target !== event.currentTarget ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.altKey ||
+      menuPath !== null ||
+      pendingDelete !== null
+    )
+      return;
+    if (event.key === NAVIGATION_KEY.ENTER) {
+      if (!selectedEntry) return;
+      event.preventDefault();
+      openEntry(selectedEntry);
+      return;
+    }
+    const step = keyStep(event.key);
+    if (step === null) return;
+    event.preventDefault();
+    if (visibleEntries.length === 0) return;
+    const cursorIndex = visibleIndexOf(selection.cursor);
+    const index =
+      cursorIndex === -1
+        ? 0
+        : clamp(cursorIndex + step, 0, visibleEntries.length - 1);
+    if (event.shiftKey && cursorIndex !== -1) extendSelectionTo(index);
+    else setSelection(selectOnly(visibleEntries[index].path));
+    itemsRef.current
+      ?.querySelector(`[data-path="${CSS.escape(visibleEntries[index].path)}"]`)
+      ?.scrollIntoView({ block: 'nearest' });
   };
 
   // A right-click outside the selection retargets it; inside, it keeps a multi-selection.
@@ -768,7 +861,11 @@ export const FileExplorer = ({
 
   const itemProps = (entry: FileEntry) => ({
     'aria-selected': selection.paths.has(entry.path),
-    onClick: (event: MouseEvent) => selectEntry(entry, event),
+    'data-path': entry.path,
+    onClick: (event: MouseEvent) => {
+      selectEntry(entry, event);
+      itemsRef.current?.focus({ preventScroll: true });
+    },
     onDoubleClick: () => openEntry(entry),
   });
   const emptyText =
@@ -887,7 +984,11 @@ export const FileExplorer = ({
 
       <div className="flex min-h-0 flex-1">
         <div
-          className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto"
+          ref={itemsRef}
+          tabIndex={0}
+          aria-label="Files"
+          onKeyDown={handleItemsKeyDown}
+          className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-400 dark:focus-visible:ring-gray-600"
           onClick={event => {
             if (event.target === event.currentTarget)
               setSelection(EMPTY_SELECTION);
@@ -952,10 +1053,9 @@ export const FileExplorer = ({
             </table>
           ) : (
             <div
+              ref={gridRef}
               className="grid select-none gap-3 p-4"
-              style={{
-                gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
-              }}
+              style={{ gridTemplateColumns: GRID_TEMPLATE_COLUMNS }}
             >
               {visibleEntries.map(entry =>
                 withMenu(

@@ -31,19 +31,138 @@ const assertStagedKey = (key: string) => {
     throw new ImageValidationError('Invalid staged image reference.');
 };
 
+const PROCESS_TIMEOUT_MS = 20_000;
+const TIMEOUT_ERROR_NAME = 'TimeoutError';
+
+const SAVE_STEP = {
+  READ: 'read',
+  PROCESS: 'process',
+  DELETE_STAGED: 'delete-staged',
+  UPLOAD_FINAL: 'upload-final',
+} as const;
+type SaveStep = (typeof SAVE_STEP)[keyof typeof SAVE_STEP];
+
+class SaveStepError extends Error {
+  constructor(
+    readonly step: SaveStep,
+    readonly timedOut: boolean,
+    message: string,
+  ) {
+    super(message);
+  }
+}
+
+const isTimeout = (e: unknown) =>
+  e instanceof Error && e.name === TIMEOUT_ERROR_NAME;
+
+// Only the key is logged: presigned URLs are bearer credentials.
+const runStep = async <T>(
+  step: SaveStep,
+  key: string,
+  fn: () => Promise<T>,
+): Promise<T> => {
+  const startedAt = Date.now();
+  try {
+    const result = await fn();
+    console.info(
+      `[where-is] step=${step} key=${key} ok durationMs=${Date.now() - startedAt}`,
+    );
+    return result;
+  } catch (e) {
+    if (e instanceof ImageValidationError) throw e;
+    const timedOut = isTimeout(e);
+    // A constant format string keeps `%` sequences in the user-provided key literal.
+    console.error(
+      '%s %s',
+      `[where-is] step=${step} key=${key} ${timedOut ? 'timeout' : 'failed'} durationMs=${Date.now() - startedAt}`,
+      (e as Error).message,
+    );
+    throw new SaveStepError(step, timedOut, (e as Error).message);
+  }
+};
+
+// The race stops the wait, not the underlying work, which keeps running until it settles.
+const withTimeout = <T>(promise: Promise<T>, ms: number): Promise<T> => {
+  let timer: ReturnType<typeof setTimeout>;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => {
+      const error = new Error(`Timed out after ${ms}ms`);
+      error.name = TIMEOUT_ERROR_NAME;
+      reject(error);
+    }, ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+};
+
+const saveErrorResponse = (e: unknown) => {
+  if (e instanceof ImageValidationError) {
+    return Response.json(
+      { error: e.message },
+      { status: HTTP_STATUS_CODES.BAD_REQUEST },
+    );
+  }
+  if (e instanceof SaveStepError) {
+    return Response.json(
+      {
+        error: e.timedOut
+          ? `Saving timed out during the ${e.step} step. Please try again.`
+          : `Saving failed during the ${e.step} step. Please try again.`,
+        step: e.step,
+      },
+      {
+        status: e.timedOut
+          ? HTTP_STATUS_CODES.GATEWAY_TIMEOUT
+          : HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR,
+      },
+    );
+  }
+  throw e;
+};
+
 const readAndProcessStagedImages = async (images: StagedImageRef[]) => {
   images.forEach(img => assertStagedKey(img.key));
   return Promise.all(
     images.map(async img => {
       try {
-        const buffer = await readImage(img.key, MAX_IMAGE_SIZE_BYTES);
-        return await processImage({ buffer, mimeType: img.mimeType });
+        const buffer = await runStep(SAVE_STEP.READ, img.key, () =>
+          readImage(img.key, MAX_IMAGE_SIZE_BYTES),
+        );
+        return await runStep(SAVE_STEP.PROCESS, img.key, () =>
+          withTimeout(
+            processImage({ buffer, mimeType: img.mimeType }),
+            PROCESS_TIMEOUT_MS,
+          ),
+        );
       } finally {
-        await deleteImage(img.key).catch(() => undefined);
+        await runStep(SAVE_STEP.DELETE_STAGED, img.key, () =>
+          deleteImage(img.key),
+        ).catch(() => undefined);
       }
     }),
   );
 };
+
+const saveFinalImages = (
+  supabase: ReturnType<typeof createServerClient>,
+  itemId: string,
+  processedImages: Awaited<ReturnType<typeof processImage>>[],
+  firstSortOrder: number,
+) =>
+  Promise.all(
+    processedImages.map((img, index) => {
+      const r2Key = makeR2Key(itemId);
+      return runStep(SAVE_STEP.UPLOAD_FINAL, r2Key, async () => {
+        await uploadImage(r2Key, img.buffer, img.mimeType);
+        const { error } = await supabase.from('where_is_images').insert({
+          item_id: itemId,
+          r2_key: r2Key,
+          mime_type: img.mimeType,
+          sort_order: firstSortOrder + index,
+        });
+        if (error) throw new Error(error.message);
+      });
+    }),
+  );
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -125,13 +244,7 @@ export async function POST(request: NextRequest) {
   try {
     processedImages = await readAndProcessStagedImages(images);
   } catch (e) {
-    if (e instanceof ImageValidationError) {
-      return Response.json(
-        { error: e.message },
-        { status: HTTP_STATUS_CODES.BAD_REQUEST },
-      );
-    }
-    throw e;
+    return saveErrorResponse(e);
   }
 
   const { data: item, error: insertError } = await supabase
@@ -147,18 +260,17 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  await Promise.all(
-    processedImages.map(async (img, index) => {
-      const r2Key = makeR2Key(item.id);
-      await uploadImage(r2Key, img.buffer, img.mimeType);
-      await supabase.from('where_is_images').insert({
-        item_id: item.id,
-        r2_key: r2Key,
-        mime_type: img.mimeType,
-        sort_order: index,
-      });
-    }),
-  );
+  try {
+    await saveFinalImages(supabase, item.id, processedImages, 0);
+  } catch (e) {
+    // where_is_images cascades on item delete; removing the row keeps a retry from duplicating it.
+    await supabase
+      .from('where_is_items')
+      .delete()
+      .eq('id', item.id)
+      .then(undefined, () => undefined);
+    return saveErrorResponse(e);
+  }
 
   return Response.json({ success: true });
 }
@@ -222,13 +334,7 @@ export async function PATCH(request: NextRequest) {
       validateImageCount(newImages);
       processedImages = await readAndProcessStagedImages(newImages);
     } catch (e) {
-      if (e instanceof ImageValidationError) {
-        return Response.json(
-          { error: (e as Error).message },
-          { status: HTTP_STATUS_CODES.BAD_REQUEST },
-        );
-      }
-      throw e;
+      return saveErrorResponse(e);
     }
 
     const { data: existingImages } = await supabase
@@ -241,18 +347,11 @@ export async function PATCH(request: NextRequest) {
     const nextSortOrder =
       ((existingImages?.[0]?.sort_order ?? -1) as number) + 1;
 
-    await Promise.all(
-      processedImages.map(async (img, index) => {
-        const r2Key = makeR2Key(id);
-        await uploadImage(r2Key, img.buffer, img.mimeType);
-        await supabase.from('where_is_images').insert({
-          item_id: id,
-          r2_key: r2Key,
-          mime_type: img.mimeType,
-          sort_order: nextSortOrder + index,
-        });
-      }),
-    );
+    try {
+      await saveFinalImages(supabase, id, processedImages, nextSortOrder);
+    } catch (e) {
+      return saveErrorResponse(e);
+    }
   }
 
   return Response.json({ success: true });

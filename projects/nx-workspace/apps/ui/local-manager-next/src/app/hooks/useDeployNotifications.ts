@@ -1,8 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
-import { SOCKET_EVENTS } from '@vigilant-broccoli/common-js';
 import {
   DEPLOY_APP,
   DEPLOY_RECEIVER_ID,
@@ -12,7 +10,7 @@ import {
   formatDuration,
   DeployPayload,
 } from '@vigilant-broccoli/deployment';
-import { useSocketWithCertTrustPrompt } from './useSocketWithCertTrustPrompt';
+import { useEventStream } from './useEventStream';
 
 const TOAST_DURATION_MS = 8000;
 const VIEW_RUN_LABEL = 'View run';
@@ -61,30 +59,14 @@ const DEPLOY_TOAST = {
 export function useDeployNotifications(
   onNotification?: (payload: DeployPayload) => void,
 ) {
-  const url = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL;
-  const socket = useSocketWithCertTrustPrompt(url, { reconnection: true });
-
-  useEffect(() => {
-    if (!socket) return;
-
-    socket.on(SOCKET_EVENTS.CONNECT, () => {
-      socket.emit(SOCKET_EVENTS.SUBSCRIBE, {
-        app: DEPLOY_APP,
-        receiverId: DEPLOY_RECEIVER_ID,
-      });
-    });
-
-    socket.on(SOCKET_EVENTS.MESSAGE, (msg: { payload: DeployPayload }) => {
-      const payload = msg.payload;
+  useEventStream<DeployPayload>(
+    process.env.NEXT_PUBLIC_SOCKET_SERVER_URL,
+    DEPLOY_APP,
+    DEPLOY_RECEIVER_ID,
+    ({ payload }) => {
       if (!payload) return;
-      const handler = DEPLOY_TOAST[payload.status];
-      if (handler) handler(payload);
+      DEPLOY_TOAST[payload.status]?.(payload);
       onNotification?.(payload);
-    });
-
-    return () => {
-      socket.off(SOCKET_EVENTS.CONNECT);
-      socket.off(SOCKET_EVENTS.MESSAGE);
-    };
-  }, [socket, onNotification]);
+    },
+  );
 }

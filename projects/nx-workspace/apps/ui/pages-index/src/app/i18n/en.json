@@ -280,7 +280,7 @@
       "DESCRIPTION": "Slack bot for sharing office presence status via Socket Mode or the HTTP Events API."
     },
     "SOCKET_SERVER_SOCKETIO": {
-      "DESCRIPTION": "WebSocket server for real-time bidirectional communication."
+      "DESCRIPTION": "Publish/subscribe server over Socket.IO and Server-Sent Events."
     },
     "UTILITIES_UI": {
       "DESCRIPTION": "Searchable page of everyday utilities, served by nginx."

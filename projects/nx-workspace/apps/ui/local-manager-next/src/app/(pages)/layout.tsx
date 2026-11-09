@@ -166,7 +166,6 @@ export default function Layout({ children }: { children: ReactNode }) {
             </main>
             <div className="print:hidden">
               <RightSidebar
-                setSearchDialogOpen={setSearchDialogOpen}
                 notificationsOpen={notificationsOpen}
                 setNotificationsOpen={handleSetNotificationsOpen}
                 unreadCount={unreadCount}

@@ -34,6 +34,8 @@ export async function proxy(request: NextRequest) {
   return NextResponse.next();
 }
 
+// /api/chat/token is exempt so guests can get a room-limited chat token; the
+// route rate limits itself.
 export const config = {
-  matcher: ['/api/((?!auth).*)'],
+  matcher: ['/api/((?!auth|chat/token).*)'],
 };

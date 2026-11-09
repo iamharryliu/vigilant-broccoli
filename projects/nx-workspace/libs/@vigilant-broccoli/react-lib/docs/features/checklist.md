@@ -4,7 +4,7 @@ Layered checklist components in `libs/@vigilant-broccoli/react-lib`.
 
 ## Layers
 
-- `CheckListBase` — purely presentational: no dnd-kit. Splits items into active rows and a collapsible `Completed (n)` section (`CollapsibleList`, open state persisted under `storageKeyPrefix` + `completedSectionId`). Completed rows sort by `completedAt ?? updatedAt`, newest first. Owns the slide-in and completion transitions; see [checklist-completion.md](./checklist-completion.md) for their consumer contract.
+- `CheckListBase` — purely presentational: no dnd-kit. Splits items into active rows and a collapsible `Completed (n)` section (`CollapsibleList`, open state persisted under `storageKeyPrefix` + `completedSectionId`). Completed rows sort by `completedAt ?? updatedAt`, newest first, grouped inside that section under headers for the timestamp's local day ("Today", "Yesterday", else e.g. "Mon, Nov 3", with the year outside the current one; `groupCompletedByDay` in `checklist-groups.utils.ts`). Rows without a timestamp follow in a final unlabelled group, so a consumer passing neither field gets no headers. A row leaving Completed keeps its day group while it collapses. Owns the slide-in and completion transitions; see [checklist-completion.md](./checklist-completion.md) for their consumer contract.
 - `CheckList` — `CheckListBase` plus dnd-kit sorting, the `taskList` droppable, a drag-over placeholder, and per-item `notes`/`due`.
 
 ## CheckListBase

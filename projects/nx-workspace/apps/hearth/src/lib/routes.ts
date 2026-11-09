@@ -5,6 +5,8 @@ export const ROUTES = {
   LOGIN: '/login',
   SIGNUP: '/signup',
   HOMES: '/homes',
+  HOME_DETAIL: (id: string | number) => `/homes/${id}`,
+  JOIN: (token: string) => `/join/${encodeURIComponent(token)}`,
   WHERE_IS: '/where-is',
   WHERE_IS_DETAIL: (id: string) => `/where-is/${id}`,
   WHERE_IS_DASHBOARD_ITEM: (id: string) =>

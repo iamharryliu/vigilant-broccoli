@@ -114,14 +114,16 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `RENDER_API_KEY` | Vault `kv/data/secrets` | Render API key for `deploy-render.ts` (llm-service staging pilot; the cloud-services-next Render card uses `render login` instead): discovers workspaces, provisions the service/registry credential, syncs env vars and triggers image deploys. Not a GitHub Actions secret; the script reads it from Vault, or from the `RENDER_API_KEY` env var for local runs. |
 | `RESEND_API_KEY` | Vault `kv/data/secrets` → Fly | Resend email API key for `email-service`. |
 | `SANITY_AUTH_TOKEN` | Vault `kv/data/secrets` | Sanity CMS project API token. |
-| `SHARED_APP_TOKEN` | Vault `kv/data/secrets` → Fly | Shared bearer token for service-to-service calls between Fly APIs. |
+| `SHARED_APP_TOKEN` | Vault `kv/data/secrets` → Fly | Shared bearer token for service-to-service calls between Fly APIs. Also the key material for chat room tokens, so rotating it invalidates them. |
 | `SLACK_APP_TOKEN` | Vault `kv/data/secrets` (local/self-hosted) | Slack app-level token (`xapp-`) for Socket Mode; not used by the HTTP-mode demo service. |
 | `SLACK_BOT_TOKEN` | Vault `kv/data/secrets` → Fly | Slack bot token (`xoxb-`) for the Office Presence app, in both Socket and HTTP mode. |
 | `SLACK_SIGNING_SECRET` | Vault `kv/data/secrets` → Fly | Slack app signing secret; `office-presence-service` verifies every HTTP-mode request with it. |
 | `SOCKET_SERVER_URL` | Vault `kv/data/secrets` (synced by `tf:post-apply`) | Socket server URL that `deploy-notify` (via `notify-complete`) and `ci-health-check` post to. |
 | `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` | Vault `kv/data/secrets` (local-only) | Spotify API credentials for the `dldjmusic` script and `music-next` (DJ downloads, playlist-graph OAuth); never deployed to Fly. |
+| `STRIPE_API_KEY` | Vault `kv/data/secrets` (local-only) | Stripe API key for `StripeService` checkout sessions in `local-manager-next`; pulled in by its Vault-wrapped `fetch-secrets.ts` run via `.env.local.example`. |
 | `SUPABASE_ACCESS_TOKEN` | Vault `kv/data/secrets`; Bitwarden backup (local Terraform env) | Supabase Management API token for the `supabase` Terraform provider. |
 | `SUPABASE_DB_PASSWORD` / `SUPABASE_SECRET_KEY` | Vault `kv/data/secrets` → Fly | Supabase database password and server-side secret key (`vb-express` auth and event calendars, `email-subscription-service`); the password also backs the catalog checks in `test-security-supabase-rls`. The non-secret `SUPABASE_URL`, `EMAIL_FROM_ADDRESS` and `EMAIL_FROM_NAME` of `email-subscription-service` live in its Fly `[env]` (`deployment-configs/fly-configs/*-email-subscription-service.toml`), not Vault. |
+| `TAILSCALE_API_KEY` | Vault `kv/data/secrets` (local-only) | Tailscale API key for the machines route in `local-services-next`; pulled in by its Vault-wrapped `fetch-secrets.ts` run via `.env.local.example`. |
 | `TAILSCALE_AUTH_KEY` | Vault `kv/data/secrets` | Pre-approved Tailscale auth key used when Ansible provisions the homelab Pi. |
 | `TF_AWS_ACCESS_KEY_ID` / `TF_AWS_SECRET_ACCESS_KEY` | Vault `kv/data/secrets`; Bitwarden backup | Access key of the `terraform-testing` IAM user (AdministratorAccess) used by Terraform. |
 | `TF_CLOUD_TOKEN` | Vault `kv/data/secrets` | HCP Terraform user token (`vb-ci-*`), exported as `TF_TOKEN_app_terraform_io` for remote state. |

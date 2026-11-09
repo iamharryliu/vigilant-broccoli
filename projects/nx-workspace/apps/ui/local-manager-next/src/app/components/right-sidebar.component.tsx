@@ -4,7 +4,6 @@ import { Sidebar, SidebarCTA } from '@vigilant-broccoli/react-lib-higher-level';
 import { signInWithGoogle, signOut, useAuth } from '../../../libs/auth';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  Search,
   LogOut,
   LogIn,
   Bell,
@@ -14,7 +13,6 @@ import {
   LayoutDashboard,
   MessageSquare,
   Languages,
-  FolderOpen,
   Cloud,
   Music,
   ListChecks,
@@ -31,7 +29,6 @@ const SIDEBAR_ROUTE_ITEMS = [
   { route: SIDEBAR_ROUTE.DEV_DASHBOARD, icon: LayoutDashboard },
   { route: SIDEBAR_ROUTE.CHATBOT, icon: MessageSquare },
   { route: SIDEBAR_ROUTE.LANGUAGE_LEARNING, icon: Languages },
-  { route: SIDEBAR_ROUTE.CAREER2, icon: FolderOpen },
   { route: SIDEBAR_ROUTE.CMS, icon: Cloud },
   { route: SIDEBAR_ROUTE.MUSIC, icon: Music },
   { route: SIDEBAR_ROUTE.BACKGROUND_TASKS, icon: ListChecks },
@@ -61,7 +58,6 @@ const BellIconWithBadge = ({ unreadCount }: { unreadCount: number }) => (
 );
 
 type Props = {
-  setSearchDialogOpen: (open: boolean) => void;
   notificationsOpen: boolean;
   setNotificationsOpen: (open: boolean) => void;
   unreadCount: number;
@@ -70,7 +66,6 @@ type Props = {
 };
 
 export const RightSidebar = ({
-  setSearchDialogOpen,
   notificationsOpen,
   setNotificationsOpen,
   unreadCount,
@@ -98,12 +93,6 @@ export const RightSidebar = ({
       onClick: () => router.push(route.path),
       isActive: pathname === route.path,
     })),
-    {
-      label: 'Search',
-      icon: Search,
-      title: 'Search (/)',
-      onClick: () => setSearchDialogOpen(true),
-    },
     {
       label: 'Settings',
       icon: Settings,

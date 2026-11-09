@@ -13,9 +13,11 @@
 - [Moves](#moves)
   - [Body Moves](#body-moves)
   - [Hand Moves](#hand-moves)
+  - [Hand Change Types](#hand-change-types)
+  - [Hand Releases](#hand-releases)
   - [Power Entries](#power-entries)
-- [Types of Turns](#types-of-turns)
-- [Dips](#dips)
+  - [Dips](#dips)
+  - [Turns](#turns)
 - [Positions](#positions)
 - [Position Transitions](#position-transitions)
 - [Variations](#variations)
@@ -25,11 +27,13 @@
 
 ### Good Dancing
 
-- Being on time.
-- Not feeling rushed between steps.
-- Listening to the music.
-- Musicality.
-- Having a lead to follow connection, i.e. good frame and eye engagement.
+| Quality | Explanation |
+| --- | --- |
+| Being on time | Steps land on the beat. |
+| Connection | Having a lead to follow connection, i.e. good frame and eye engagement. |
+| Listening to the music | Hearing the song's structure and accents and dancing to them. |
+| Musicality | Expressing the music through timing, dynamics and styling. |
+| Not feeling rushed between steps | Leaving enough time to complete each step and transition calmly. |
 
 ### Embellishments
 
@@ -80,6 +84,24 @@
 | Palm flourish | Open-palm gestures and wrist rolls used as a styling accent. |
 | Tracing | Dragging a hand lightly along the partner's arm, shoulder or back as a connection-based accent. |
 
+### Hand Change Types
+
+| Type | Description |
+| --- | --- |
+| Behind the back | Hand is passed around the follow's or lead's back to the other hand, often into hammerlock or a wrap. |
+| Offered hand | Lead presents an open palm, and the follow places their free hand in it to take over the connection. |
+| Over the head | Joined hand is carried over the follow's head during a turn and handed to the other hand. |
+| Palm slide | Palms slide against each other and the connection transfers smoothly to the other hand without a break. |
+
+### Hand Releases
+
+| Type | Description |
+| --- | --- |
+| Comb | Hand slides out through the partner's hair as it lets go, usually during a turn. |
+| Flick | Hand is flicked off with a quick whip and the connection is re-caught on the next beat. |
+| Release | Hand is let go briefly mid-turn and re-caught as the follow comes back around. |
+| Toss | Lead throws the follow's hand away on release, and the hand is caught again as they return. |
+
 ### Power Entries
 
 | Entry |
@@ -88,11 +110,7 @@
 | Crossbody push |
 | Wrap exit |
 
-## Types of Turns
-
-- Hook turns
-
-## Dips
+### Dips
 
 | Name | Description |
 | --- | --- |
@@ -102,6 +120,10 @@
 | Side dip | Lead steps out to the side and lowers the follow sideways, supporting the follow's back and hand. |
 | Spin-and-catch dip | Follow finishes a turn into the lead's arm, and the lead uses that momentum to lower them into a dip. |
 | Sweetheart dip | From wrap/sweetheart, lead folds the follow backward over the lead's arm while keeping the wrapped arms across the front. |
+
+### Turns
+
+- Hook turns
 
 ## Positions
 

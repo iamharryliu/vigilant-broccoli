@@ -1,84 +1,43 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Button } from '@vigilant-broccoli/react-lib';
-import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
-import { API_ENDPOINTS } from '../../constants/api-endpoints';
-import {
-  CHAT_APP,
-  CHAT_ROOM,
-  CHAT_STATUS,
-  ChatStatus,
-  SOCKET_EVENTS,
-} from '../../constants/chat';
-import { useSocketWithCertTrustPrompt } from '../../hooks/useSocketWithCertTrustPrompt';
-import { authFetch } from '../../../../libs/auth';
+import { Button, Text } from '@vigilant-broccoli/react-lib';
+import { toast } from '@vigilant-broccoli/react-lib/toaster';
+import { CHAT_STATUS, ChatPayload, ChatStatus } from '../../constants/chat';
 
 const LOG_PREFIX = '[ChatDemo]';
 const SENDER_PREFIX = 'user-';
 const SENDER_ID_LENGTH = 4;
 const ENTER_KEY = 'Enter';
 const PLACEHOLDER_SENDER = '…';
-
-interface ChatPayload {
-  text: string;
-  sender: string;
-  ts: number;
-}
-
-interface ChatMessage {
-  app: string;
-  receiverId: string;
-  payload: ChatPayload;
-}
+const SEND_FAILED_TOAST = 'Message not sent';
 
 const randomSender = () =>
   `${SENDER_PREFIX}${Math.random()
     .toString(36)
     .slice(2, 2 + SENDER_ID_LENGTH)}`;
 
-export function ChatDemo() {
-  const [messages, setMessages] = useState<ChatPayload[]>([]);
+interface ChatDemoPanelProps {
+  description: string;
+  status: ChatStatus;
+  messages: ChatPayload[];
+  onSend: (payload: ChatPayload) => Promise<void>;
+}
+
+export function ChatDemoPanel({
+  description,
+  status,
+  messages,
+  onSend,
+}: ChatDemoPanelProps) {
   const [draft, setDraft] = useState('');
   const [sender, setSender] = useState('');
-  const [status, setStatus] = useState<ChatStatus>(CHAT_STATUS.CONNECTING);
   const [sending, setSending] = useState(false);
   const listRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setSender(randomSender());
   }, []);
-
-  const url = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL;
-  const socket = useSocketWithCertTrustPrompt(url, { reconnection: true });
-
-  useEffect(() => {
-    if (!url) {
-      setStatus(CHAT_STATUS.CLOSED);
-      return;
-    }
-    if (!socket) return;
-    socket.on(SOCKET_EVENTS.CONNECT, () => {
-      setStatus(CHAT_STATUS.OPEN);
-      socket.emit(SOCKET_EVENTS.SUBSCRIBE, {
-        app: CHAT_APP,
-        receiverId: CHAT_ROOM,
-      });
-    });
-    socket.on(SOCKET_EVENTS.DISCONNECT, () => setStatus(CHAT_STATUS.CLOSED));
-    socket.on(SOCKET_EVENTS.CONNECT_ERROR, err => {
-      console.error(`${LOG_PREFIX} connect_error`, err.message, err);
-    });
-    socket.on(SOCKET_EVENTS.MESSAGE, (msg: ChatMessage) => {
-      setMessages(prev => [...prev, msg.payload]);
-    });
-    return () => {
-      socket.off(SOCKET_EVENTS.CONNECT);
-      socket.off(SOCKET_EVENTS.DISCONNECT);
-      socket.off(SOCKET_EVENTS.CONNECT_ERROR);
-      socket.off(SOCKET_EVENTS.MESSAGE);
-    };
-  }, [url, socket]);
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight });
@@ -90,15 +49,11 @@ export function ChatDemo() {
     setSending(true);
     setDraft('');
     try {
-      const res = await authFetch(API_ENDPOINTS.CHAT_PUBLISH, {
-        method: HTTP_METHOD.POST,
-        headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
-        body: JSON.stringify({ text, sender }),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        console.error(`${LOG_PREFIX} publish failed`, err);
-      }
+      await onSend({ text, sender, ts: Date.now() });
+    } catch (err) {
+      console.error(`${LOG_PREFIX} publish failed`, err);
+      setDraft(text);
+      toast.error(SEND_FAILED_TOAST);
     } finally {
       setSending(false);
     }
@@ -108,6 +63,9 @@ export function ChatDemo() {
 
   return (
     <div className="flex flex-col gap-3">
+      <Text size="2" color="gray">
+        {description}
+      </Text>
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <span>
           You: <strong>{sender || PLACEHOLDER_SENDER}</strong>
