@@ -15,7 +15,14 @@ import {
   CRUDItemList,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
-import { HOME_ROLE, HomeMember, HomeRole } from '../../../lib/types';
+import {
+  HOME_ROLE,
+  HomeMember,
+  HomeRole,
+  MEMBER_ORIGIN,
+  MEMBER_STATUS,
+} from '../../../lib/types';
+import { useTranslation } from '../../i18n';
 
 const ROLE_LABEL: Record<string, string> = {
   [HOME_ROLE.OWNER]: 'Owner',
@@ -37,7 +44,7 @@ const MEMBER_COPY = {
 const DEFAULT_MEMBER: HomeMember = {
   id: '',
   email: '',
-  status: 'pending',
+  status: MEMBER_STATUS.PENDING,
   role: HOME_ROLE.MEMBER,
   createdAt: '',
 };
@@ -97,17 +104,89 @@ const MemberFormComponent = ({
   );
 };
 
-const MemberListItem = ({ item }: { item: HomeMember }) => {
+const JoinRequestActions = ({
+  item,
+  onApprove,
+  onReject,
+}: {
+  item: HomeMember;
+  onApprove: (memberId: string) => Promise<boolean>;
+  onReject: (memberId: string) => Promise<boolean>;
+}) => {
+  const { t } = useTranslation();
+  const [resolving, setResolving] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  const resolve = async (action: (memberId: string) => Promise<boolean>) => {
+    setResolving(true);
+    setFailed(false);
+    const ok = await action(item.id);
+    // On success the row changes or leaves the list, so only a failure re-enables.
+    if (!ok) {
+      setFailed(true);
+      setResolving(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-1">
+      {failed && (
+        <Text size="1" color="red">
+          {t('MEMBERS.RESOLVE_FAILED')}
+        </Text>
+      )}
+      <Button
+        size="xs"
+        onClick={() => resolve(onApprove)}
+        disabled={resolving}
+        className="cursor-pointer"
+      >
+        {resolving ? t('MEMBERS.RESOLVING') : t('MEMBERS.APPROVE')}
+      </Button>
+      <Button
+        size="xs"
+        variant="outline"
+        onClick={() => resolve(onReject)}
+        disabled={resolving}
+        className="cursor-pointer"
+      >
+        {t('MEMBERS.REJECT')}
+      </Button>
+    </div>
+  );
+};
+
+const MemberListItem = ({
+  item,
+  canManage,
+  onApprove,
+  onReject,
+}: {
+  item: HomeMember;
+  canManage: boolean;
+  onApprove: (memberId: string) => Promise<boolean>;
+  onReject: (memberId: string) => Promise<boolean>;
+}) => {
+  const { t } = useTranslation();
   const isItemOwner = item.role === HOME_ROLE.OWNER;
+  const isPending = !isItemOwner && item.status === MEMBER_STATUS.PENDING;
+  const isJoinRequest = isPending && item.origin === MEMBER_ORIGIN.REQUESTED;
   return (
     <div className="flex items-center gap-2 w-full">
       <UserAvatar name={item.email} />
       <Text size="2" className="flex-1 min-w-0 truncate">
         {item.email}
       </Text>
-      {!isItemOwner && item.status === 'pending' && (
+      {isJoinRequest && canManage && (
+        <JoinRequestActions
+          item={item}
+          onApprove={onApprove}
+          onReject={onReject}
+        />
+      )}
+      {isPending && (
         <Badge variant="soft" color="orange" size="1">
-          pending
+          {isJoinRequest ? t('MEMBERS.REQUESTED') : 'pending'}
         </Badge>
       )}
       <Badge variant="soft" color={isItemOwner ? 'blue' : 'gray'} size="1">
@@ -144,6 +223,8 @@ type Props = {
   onInvite: (member: HomeMember) => Promise<HomeMember>;
   onDelete: (memberId: string | number) => Promise<void>;
   onRoleChange: (memberId: string, role: HomeRole) => Promise<void>;
+  onApproveRequest: (memberId: string) => Promise<boolean>;
+  onRejectRequest: (memberId: string) => Promise<boolean>;
 };
 
 export const MemberList = ({
@@ -155,6 +236,8 @@ export const MemberList = ({
   onInvite,
   onDelete,
   onRoleChange,
+  onApproveRequest,
+  onRejectRequest,
 }: Props) =>
   loading ? (
     <MemberListSkeleton />
@@ -173,7 +256,14 @@ export const MemberList = ({
       }
       deleteItem={isOwner ? onDelete : undefined}
       FormComponent={MemberFormComponent}
-      ListItemComponent={({ item }) => <MemberListItem item={item} />}
+      ListItemComponent={({ item }) => (
+        <MemberListItem
+          item={item}
+          canManage={isOwner}
+          onApprove={onApproveRequest}
+          onReject={onRejectRequest}
+        />
+      )}
       copy={MEMBER_COPY}
       showEllipsis={isOwner}
       canShowEllipsis={(item: HomeMember) => item.role !== HOME_ROLE.OWNER}

@@ -66,6 +66,7 @@ const FRIDAY = 5;
 export const DEFAULT_TASKS: DefaultTask[] = [
   task('Clear out dishwasher'),
   task('Morning dog walk'),
+  task('Clean Niko’s bowls'),
   task('Feed Niko breakfast'),
   task('Plan for dinner'),
   task('Prepare dinner'),
