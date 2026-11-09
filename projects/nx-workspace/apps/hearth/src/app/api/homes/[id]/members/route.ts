@@ -11,6 +11,7 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { getVbExpressApiKey } from '../../../../../lib/vb-express';
+import { MEMBER_ORIGIN } from '../../../../../lib/types';
 
 const SENDER_EMAIL = 'home.management@harryliu.dev';
 
@@ -137,7 +138,7 @@ export async function GET(
       .maybeSingle(),
     supabase
       .from('home_members')
-      .select('id, email, status, role, created_at, user_id')
+      .select('id, email, status, origin, role, created_at, user_id')
       .eq('home_id', id)
       .order('created_at', { ascending: true }),
   ]);
@@ -181,6 +182,8 @@ export async function POST(
     {
       home_id: Number(id),
       email: normalizedEmail,
+      // An explicit invite supersedes a pending join request from the same email.
+      origin: MEMBER_ORIGIN.INVITED,
       invited_by: user?.id,
       invited_by_email: user?.email,
     },

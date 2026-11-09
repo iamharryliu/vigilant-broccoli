@@ -18,6 +18,7 @@ export const PAGE_TITLES = {
   DOC_DETAIL: 'Doc',
   MASTER_LIST: 'Master List',
   HOUSEHOLD_RULES: 'Household Rules',
+  JOIN_HOME: 'Join Home',
   HOUSEHOLD_RULE_DETAIL: 'Household Rule',
   KITCHEN_PLANNER: 'Kitchen Planner',
   FOOD_CHAT: 'Food Assistant',
