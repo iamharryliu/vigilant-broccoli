@@ -76,8 +76,6 @@ const ERROR_MESSAGE = {
   UNKNOWN_ROUTE: 'No mock handler for this route',
 };
 
-const MOCK_ACCESS_TOKEN = 'mock-access-token';
-
 const MOCK_TRANSCRIPT =
   'feat: add sandbox demo > fix: flaky drag handle > chore: prune deps';
 
@@ -361,10 +359,6 @@ export const useMockTasksAuth = (
     () => ({
       authFetch,
       useAuthStatus: () => SCENARIO_AUTH_STATUS[scenario],
-      useGoogleToken: () => ({
-        googleToken: scenario === SCENARIO.SIGNED_IN ? MOCK_ACCESS_TOKEN : null,
-        clearGoogleToken: () => undefined,
-      }),
       signInWithGoogle: async () => onSignIn(),
     }),
     [authFetch, scenario, onSignIn],

@@ -4,6 +4,7 @@ import {
   createDocsSnapshotSource,
   DocsExplorer,
   FILE_PARAM,
+  MarkdownViewer,
   type DocsNode,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import { useEffect, useState } from 'react';
@@ -28,6 +29,22 @@ const setFileParam = (path: string) => {
   );
 };
 
+// Problems live under a category folder; root-level files are markdown notes.
+const renderContent = (
+  content: string,
+  navigate: (path: string) => void,
+  sourcePaths: string[],
+) =>
+  sourcePaths.length === 1 && !sourcePaths[0].includes('/') ? (
+    <MarkdownViewer
+      content={content}
+      filePath={sourcePaths[0]}
+      onNavigate={navigate}
+    />
+  ) : (
+    renderSolutions(content)
+  );
+
 export function App() {
   useDocumentTitle(`${PAGE_TITLE} | ${SITE_NAME}`);
   const urlSync = useMemo(() => ({ get: getFileParam, set: setFileParam }), []);
@@ -44,7 +61,7 @@ export function App() {
           <DocsExplorer
             nodes={nodes}
             getContent={fetchContent}
-            renderContent={renderSolutions}
+            renderContent={renderContent}
             search={searchDocs}
             urlSync={urlSync}
             sidebarTitle={SITE_NAME}

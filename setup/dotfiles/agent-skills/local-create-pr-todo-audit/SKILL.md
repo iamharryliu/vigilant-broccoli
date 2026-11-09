@@ -7,7 +7,7 @@ Use the current vigilant-broccoli Git root. Outside this repo, ask which checkou
 
 Verify every row in root `TODO.md` against current source, following `docs/todo-pattern.md`. Only `TODO.md` may change; do not implement tasks or publish.
 
-For each row:
+Skip `QA` rows ([QA rows](../../../../docs/todo-pattern.md#qa-rows)) and leave them byte-identical: they are manual checks a person deletes after trying them, so never resolve or correct one because the code it checks exists or moved. For every other row:
 
 - **RESOLVED:** positively confirm the condition was fixed or removed, then delete the row.
 - **DRIFTED:** the issue remains; correct only inaccurate Description/Recommended Fix claims, paths, quoted snippets or counts, and update the Brief when its summary no longer holds. Partly resolved rows retain their remaining claims.

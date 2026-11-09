@@ -22,6 +22,7 @@ import { extractJobPosting } from '../utils/job-posting.utils';
 import { RUNS_TAB_URL } from '../app.const';
 import { IS_DEMO } from '../constants/demo';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { RUN_STATUS } from '../constants/runs';
 import { useTranslation } from '../i18n';
 
 const INPUT_CLASS_NAME =
@@ -65,11 +66,13 @@ export const JobApplicationDialog = ({
         headers: { [CONTENT_TYPE_HEADER]: JSON_CONTENT_TYPE },
         body: JSON.stringify({ url, text }),
       });
-      if (!response.ok) throw new Error((await response.json()).error);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
       setUrl('');
       setText('');
       onOpenChange(false);
-      toast.success(t('DIALOG.STARTED'), {
+      const queued = data.status === RUN_STATUS.QUEUED;
+      toast.success(t(queued ? 'DIALOG.QUEUED' : 'DIALOG.STARTED'), {
         action: {
           label: t('DIALOG.VIEW_PROGRESS'),
           onClick: () => router.push(RUNS_TAB_URL),

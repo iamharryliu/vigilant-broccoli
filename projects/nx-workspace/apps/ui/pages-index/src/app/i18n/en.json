@@ -202,7 +202,6 @@
     "UPTIME_RANGE_YEAR": "1Y",
     "ERROR_STATUS_UNAVAILABLE": "Status data unavailable (HTTP {status}).",
     "ERROR_STATUS_FAILED": "Failed to load status: {message}",
-    "UPDATED": "Updated {date}",
     "GROUP_PRODUCTION": "Production",
     "GROUP_STAGING": "Staging",
     "GROUP_DEMO": "Demo",
@@ -282,7 +281,7 @@
       "DESCRIPTION": "Slack bot for sharing office presence status via Socket Mode or the HTTP Events API."
     },
     "SOCKET_SERVER_SOCKETIO": {
-      "DESCRIPTION": "WebSocket server for real-time bidirectional communication."
+      "DESCRIPTION": "Publish/subscribe server over Socket.IO and Server-Sent Events."
     },
     "UTILITIES_UI": {
       "DESCRIPTION": "Searchable page of everyday utilities, served by nginx."

@@ -5,7 +5,6 @@ import {
   createContext,
   createElement,
   ReactNode,
-  useCallback,
   useContext,
   useEffect,
   useState,
@@ -14,15 +13,12 @@ import {
   AUTHORIZATION_HEADER,
   BEARER_PREFIX,
   CONTENT_TYPE_HEADER,
-  GOOGLE_TOKEN_HEADER,
   JSON_CONTENT_TYPE,
 } from '@vigilant-broccoli/common-js';
 import {
   BuildAuthHeadersOptions,
   CreateSupabaseAuthOptions,
 } from './auth.types';
-
-const GOOGLE_TOKEN_STORAGE_KEY = 'google_provider_token';
 
 const MISSING_PROVIDER_ERROR =
   'useAuth must be used within its matching AuthProvider';
@@ -49,10 +45,6 @@ export interface SupabaseAuth {
   AuthCallbackPage: (props: { loadingLabel?: string }) => ReactNode;
   useAuth: () => Session | null;
   useAuthStatus: () => 'loading' | 'authenticated' | 'unauthenticated';
-  useGoogleToken: () => {
-    googleToken: string | null;
-    clearGoogleToken: () => void;
-  };
   signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
   getSupabaseAccessToken: () => Promise<string | null>;
@@ -83,9 +75,6 @@ export function createSupabaseAuth(
   const captureProviderTokens = async (
     session: Session | null,
   ): Promise<void> => {
-    if (session?.provider_token) {
-      localStorage.setItem(GOOGLE_TOKEN_STORAGE_KEY, session.provider_token);
-    }
     if (session?.provider_refresh_token && onProviderRefreshToken) {
       await onProviderRefreshToken({
         refreshToken: session.provider_refresh_token,
@@ -119,7 +108,6 @@ export function createSupabaseAuth(
   };
 
   const signOut = async () => {
-    localStorage.removeItem(GOOGLE_TOKEN_STORAGE_KEY);
     await supabase.auth.signOut();
   };
 
@@ -135,10 +123,6 @@ export function createSupabaseAuth(
     const accessToken = await getSupabaseAccessToken();
     if (accessToken)
       headers[AUTHORIZATION_HEADER] = `${BEARER_PREFIX}${accessToken}`;
-    if (headerOptions?.includeGoogleToken) {
-      const googleToken = localStorage.getItem(GOOGLE_TOKEN_STORAGE_KEY);
-      if (googleToken) headers[GOOGLE_TOKEN_HEADER] = googleToken;
-    }
     if (headerOptions?.json) headers[CONTENT_TYPE_HEADER] = JSON_CONTENT_TYPE;
     return headers;
   };
@@ -148,10 +132,7 @@ export function createSupabaseAuth(
     init: RequestInit = {},
   ): Promise<Response> => {
     const hasJsonBody = typeof init.body === 'string';
-    const authHeaders = await buildAuthHeaders({
-      includeGoogleToken: true,
-      json: hasJsonBody,
-    });
+    const authHeaders = await buildAuthHeaders({ json: hasJsonBody });
     return fetch(input, {
       ...init,
       headers: { ...authHeaders, ...init.headers },
@@ -193,21 +174,6 @@ export function createSupabaseAuth(
     return ctx ? 'authenticated' : 'unauthenticated';
   };
 
-  const useGoogleToken = () => {
-    const [googleToken, setGoogleToken] = useState<string | null>(null);
-
-    useEffect(() => {
-      setGoogleToken(localStorage.getItem(GOOGLE_TOKEN_STORAGE_KEY));
-    }, []);
-
-    const clearGoogleToken = useCallback(() => {
-      localStorage.removeItem(GOOGLE_TOKEN_STORAGE_KEY);
-      setGoogleToken(null);
-    }, []);
-
-    return { googleToken, clearGoogleToken };
-  };
-
   const AuthCallbackPage = ({ loadingLabel }: { loadingLabel?: string }) => {
     useEffect(() => {
       const {
@@ -232,7 +198,6 @@ export function createSupabaseAuth(
     AuthCallbackPage,
     useAuth,
     useAuthStatus,
-    useGoogleToken,
     signInWithGoogle,
     signOut,
     getSupabaseAccessToken,

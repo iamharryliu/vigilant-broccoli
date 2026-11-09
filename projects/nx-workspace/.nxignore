@@ -5,3 +5,8 @@
 # during Vercel builds, where dist/ from the prior fly step is still present).
 dist
 tmp
+# Prettier refuses an explicitly passed symbolic link, and `nx format` skips
+# paths in .nxignore as well as .gitignore. The AGENTS.md agent adapters are
+# tracked symlinks, so they are ignored here, not in .gitignore, where
+# `git add -A` would skip a new one and fail the agent-adapter check.
+AGENTS.md

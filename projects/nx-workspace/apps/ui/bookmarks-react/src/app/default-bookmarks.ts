@@ -5,9 +5,9 @@ import { PUBLIC_QUICK_LINKS } from '@vigilant-broccoli/public-links';
 // staging hosts and private apps that must never ship as defaults for public visitors.
 const DEFAULT_BOOKMARK_LABELS = new Set([
   'Component Library',
-  'VB - GitHub Repo',
-  'VB - GitHub Actions',
-  'VB - GitHub Pull Requests',
+  'vb - GitHub Repo',
+  'vb - GitHub Actions',
+  'vb - GitHub Pull Requests',
   'harryliu.dev',
   'Text Tools',
   'Utilities',

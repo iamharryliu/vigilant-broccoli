@@ -10,7 +10,13 @@ import {
 } from '@vigilant-broccoli/react-lib';
 import { CRUDFormProps } from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE } from '@vigilant-broccoli/common-js';
+import { AnimatePresence, MotionConfig, motion } from 'framer-motion';
 import { useAuth } from '../providers/auth-provider';
+import { sortTags } from './where-is-tags';
+
+const ERROR_SAVE_FALLBACK = 'Saving failed. Please try again.';
+
+const TAG_TRANSITION = { duration: 0.18, ease: 'easeOut' } as const;
 
 const API = {
   ANALYZE: '/api/where-is/analyze',
@@ -18,7 +24,9 @@ const API = {
 } as const;
 
 const LABEL = {
+  ANALYZE: 'Analyze',
   ANALYZING: 'Analyzing...',
+  CANCEL: 'Cancel',
   SAVE: 'Save',
   SAVING: 'Saving...',
   REANALYZE: 'Re-analyze',
@@ -128,6 +136,7 @@ export const WhereIsFormComponent = ({
   formType,
   initialFormValues,
   submitHandler,
+  onCancel,
 }: CRUDFormProps<WhereIsFormValues>) => {
   const session = useAuth();
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -146,8 +155,8 @@ export const WhereIsFormComponent = ({
     initialFormValues.imageKeys ?? [],
   );
   const [analyzing, setAnalyzing] = useState(false);
-  const [analyzed, setAnalyzed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
   const isUpdate = formType === FORM_TYPE.UPDATE;
 
@@ -176,7 +185,7 @@ export const WhereIsFormComponent = ({
   const fetchAnalysis = async (
     url: string,
     body: object,
-  ): Promise<{ description: string; tags: string[] } | null> => {
+  ): Promise<{ tags: string[] } | null> => {
     const res = await fetch(url, {
       method: 'POST',
       headers: {
@@ -189,25 +198,18 @@ export const WhereIsFormComponent = ({
     return res.json();
   };
 
-  const applyAnalysisResult = (result: {
-    description: string;
-    tags: string[];
-  }) => {
-    setDescription(result.description);
+  const applyAnalysisResult = (result: { tags: string[] }) => {
     setTags(prev => [...new Set([...prev, ...result.tags])]);
   };
 
   const handleAnalyze = async () => {
-    if (!title.trim() || !previews.length) return;
+    if (!previews.length) return;
     setAnalyzing(true);
     try {
       const result = await fetchAnalysis(API.ANALYZE, {
         images: previews.map(p => ({ base64: p.base64, mimeType: p.mimeType })),
       });
-      if (result) {
-        applyAnalysisResult(result);
-        setAnalyzed(true);
-      }
+      if (result) applyAnalysisResult(result);
     } finally {
       setAnalyzing(false);
     }
@@ -233,12 +235,8 @@ export const WhereIsFormComponent = ({
 
   const handleSubmit = async () => {
     if (!title.trim()) return;
-    if (!isUpdate && !previews.length) return;
-    if (!isUpdate && !analyzed) {
-      await handleAnalyze();
-      return;
-    }
     setSubmitting(true);
+    setError('');
     try {
       await submitHandler(
         {
@@ -252,18 +250,14 @@ export const WhereIsFormComponent = ({
         },
         formType,
       );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : ERROR_SAVE_FALLBACK);
     } finally {
       setSubmitting(false);
     }
   };
 
-  const submitLabel = analyzing
-    ? LABEL.ANALYZING
-    : submitting
-      ? LABEL.SAVING
-      : isUpdate || analyzed
-        ? LABEL.SAVE
-        : `Analyze${previews.length > 1 ? ` (${previews.length} images)` : ''}`;
+  const hasPhotos = imageUrls.length + previews.length > 0;
 
   return (
     <div className="flex flex-col gap-3 mt-3">
@@ -303,17 +297,30 @@ export const WhereIsFormComponent = ({
           <Button onClick={addTag}>Add</Button>
         </div>
         <div className="flex gap-2 mt-2 flex-wrap">
-          {tags.map(tag => (
-            <Badge
-              key={tag}
-              variant="soft"
-              size="1"
-              className="cursor-pointer"
-              onClick={() => setTags(prev => prev.filter(t => t !== tag))}
-            >
-              {tag} ✕
-            </Badge>
-          ))}
+          <MotionConfig reducedMotion="user">
+            <AnimatePresence initial={false} mode="popLayout">
+              {sortTags(tags).map(tag => (
+                <motion.span
+                  key={tag}
+                  layout
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={TAG_TRANSITION}
+                  className="inline-flex"
+                >
+                  <Badge
+                    variant="soft"
+                    size="1"
+                    className="cursor-pointer"
+                    onClick={() => setTags(prev => prev.filter(t => t !== tag))}
+                  >
+                    {tag} ✕
+                  </Badge>
+                </motion.span>
+              ))}
+            </AnimatePresence>
+          </MotionConfig>
         </div>
       </div>
 
@@ -359,19 +366,43 @@ export const WhereIsFormComponent = ({
         className="hidden"
       />
 
-      {isUpdate && (
-        <Button
-          variant="secondary"
-          onClick={handleReanalyze}
-          disabled={analyzing}
-        >
-          {analyzing ? LABEL.ANALYZING : LABEL.REANALYZE}
-        </Button>
+      <Button
+        variant="secondary"
+        onClick={isUpdate ? handleReanalyze : handleAnalyze}
+        disabled={analyzing || submitting || !hasPhotos}
+      >
+        {analyzing
+          ? LABEL.ANALYZING
+          : isUpdate
+            ? LABEL.REANALYZE
+            : LABEL.ANALYZE}
+      </Button>
+
+      {error && (
+        <Text size="1" color="red" as="p" role="alert">
+          {error}
+        </Text>
       )}
 
-      <Button onClick={handleSubmit} disabled={analyzing || submitting}>
-        {submitLabel}
-      </Button>
+      <div className="flex gap-2">
+        {onCancel && (
+          <Button
+            variant="outline"
+            onClick={onCancel}
+            disabled={submitting}
+            className="flex-1"
+          >
+            {LABEL.CANCEL}
+          </Button>
+        )}
+        <Button
+          onClick={handleSubmit}
+          disabled={analyzing || submitting}
+          className="flex-1"
+        >
+          {submitting ? LABEL.SAVING : LABEL.SAVE}
+        </Button>
+      </div>
     </div>
   );
 };

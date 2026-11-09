@@ -52,8 +52,15 @@ const selectFirstWorkspace = async (): Promise<void> => {
     await runCli(RENDER_CLI, RenderCommand.setWorkspace(workspace.id));
 };
 
-const fetchServices = (): Promise<RenderServiceJson[]> =>
-  runCliJson<RenderServiceJson[]>(RENDER_CLI, RenderCommand.listServices);
+// `render services` wraps each entry by resource kind, e.g. `{ service: {...} }`;
+// only `service` entries are services.
+const fetchServices = async (): Promise<RenderServiceJson[]> => {
+  const entries = await runCliJson<{ service?: RenderServiceJson }[]>(
+    RENDER_CLI,
+    RenderCommand.listServices,
+  );
+  return entries.flatMap(({ service }) => (service ? [service] : []));
+};
 
 const listServices = async (): Promise<RenderService[]> => {
   const services = await fetchServices().catch(async error => {

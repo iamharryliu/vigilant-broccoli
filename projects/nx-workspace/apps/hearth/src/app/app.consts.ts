@@ -2,9 +2,9 @@ import { ComponentType } from 'react';
 import {
   Calendar,
   Wrench,
-  ListTodo,
   Settings,
   LayoutList,
+  ListChecks,
   PenLine,
   MapPin,
   UtensilsCrossed,
@@ -36,7 +36,6 @@ const DEV_FEATURES_LINK: NavLink = {
   label: 'Dev Features',
   icon: FlaskConical,
   children: [
-    { label: 'Chores', href: ROUTES.CHORES, icon: ListTodo },
     {
       label: 'Lists',
       href: ROUTES.MASTER_LIST,
@@ -75,6 +74,7 @@ export const NAV_LINKS: NavLink[] = [
     mobileOnlyChildren: true,
     children: [
       { label: 'Whiteboard', href: ROUTES.WHITEBOARD, icon: PenLine },
+      { label: 'Tasks', href: ROUTES.TASKS, icon: ListChecks },
       { label: 'Calendar', href: ROUTES.OVERALL_CALENDAR, icon: Calendar },
     ],
   },

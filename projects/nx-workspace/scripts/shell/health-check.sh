@@ -74,7 +74,7 @@ queue_http_check "staging-hearth" "https://staging-hearth.harryliu.dev/login" 30
 queue_http_check "staging-findme" "https://staging-findme.harryliu.dev/" 302
 queue_http_check "staging-weather-next" "https://staging-weather.harryliu.dev/" 302
 queue_http_check "staging-calendars" "https://staging-calendar.harryliu.dev/" 302
-queue_http_check "staging-gravity-guy" "https://staging-gravity-guy.vercel.app/" 302
+queue_http_check "staging-gravity-guy" "https://staging-gravity-guy.harryliu.dev/" 302
 queue_http_check "production-gravity-guy" "https://gravity-guy.harryliu.dev/"
 queue_http_check "git.harryliu.dev" "https://git.harryliu.dev"
 

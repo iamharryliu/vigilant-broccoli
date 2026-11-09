@@ -19,9 +19,15 @@ Shared real-time notes per home and board, with an AI document editing assistant
 
 ## Sync Safety
 
-- Undo/redo only covers this client's own typing and applied AI edits. The loaded snapshot and 409 conflict snapshots are applied with `replaceContent` (a non-tracked Yjs origin), so undo in a fresh tab cannot delete the seeded document
+- Each row stores `content` (the canonical text that history, export, the AI assistant and the kitchen-planner export read) and `yjs_state`, the base64 `Y.encodeStateAsUpdate` saved with it. Every client therefore loads the same Yjs items, so a load, a peer's state and a conflict merge join one document instead of inserting the same text twice
+- Load: `useNotepad` applies `yjsState` as soon as `GET /api/whiteboard` returns. Applying a state twice, or after a peer already sent it, is a no-op, so there is no seeding race. A row with `yjs_state` null (saved before the column existed, or written by an old client, the kitchen-planner import or a restore) is seeded from `content` only after the room reaches `SUBSCRIBED` plus a 700 ms grace period, and only if no peer sent its state. The seed's Yjs client id is derived from the text, so two clients that both seed identical text produce identical items that merge as one. The next save gives the row its state
+- Rejoin: on every `SUBSCRIBED` (first join and reconnects) the room broadcasts this client's full state and requests peers' states, so edits made offline reach peers as CRDT ops, not just as persisted text
+- Conflicts: every connected client saves every change, so concurrent saves are common. A `409` returns the current row; the client merges its `yjsState` (keeping both sides' edits, nothing reverted or duplicated) and, if the merged text differs from the row, saves again against the returned `updatedAt`. Only when the row has no state does the client fall back to adopting its text with `replaceContent`
+- Rebuilds: when the room's Y.Doc is rebuilt (board switch, or the private channel joining once the token arrives) it bumps `docGeneration`, and the load runs again for the new, empty doc. Saves stay off until that load finishes, so a rebuilt or empty room never overwrites saved text
+- Undo/redo only covers this client's own typing and applied AI edits. Loaded state, text seeds and conflict merges use a non-tracked Yjs origin, so undo in a fresh tab cannot delete the loaded document
 - `isLoading` stays true until `GET /api/whiteboard` succeeds; a failed load sets `loadError`, keeps the editor disabled (showing this browser's cached copy, if any) and shows a Retry button that calls `retryLoad`. Nothing is saved before a successful load
-- Autosave only runs when the text differs from the last saved or loaded snapshot, so re-renders and token refreshes never re-save. A save still waiting on the autosave debounce is sent on `pagehide` with `fetch` `keepalive`, so closing the tab right after an edit keeps it. An empty board is saved, with `allowEmpty: true`, only when an edit emptied it: this client's typing or undo/redo, or a peer's update. Any loaded client can therefore save a clear, so it persists even if the clearing device closes first. An empty doc from a replaced snapshot or a rebuilt room is never saved. local-manager-next's `/api/notepad` (web and mobile) applies the same empty-write rule
+- Autosave only runs when the text differs from the last saved or loaded snapshot, so re-renders and token refreshes never re-save. A save still waiting on the autosave debounce is sent on `pagehide` with `fetch` `keepalive`, so closing the tab right after an edit keeps it; a body over the browser's 64 KiB keepalive limit is sent without `yjsState`, so the row falls back to a text seed. An empty board is saved, with `allowEmpty: true`, only when an edit emptied it: this client's typing or undo/redo, or a peer's update. Any loaded client can therefore save a clear, so it persists even if the clearing device closes first. An empty doc from a replaced snapshot or a rebuilt room is never saved. local-manager-next's `/api/notepad` (web and mobile) shares this route logic through `@vigilant-broccoli/react-lib-higher-level/notepad-server`
+- `yjs_state` keeps deletion tombstones, so it grows with editing history; that is accepted for notes-sized boards and there is no compaction
 - `SyncedTextEditor` keeps the focused textarea's selection and scroll position when the text changes from elsewhere (a peer, conflict merge, undo or AI edit), shifting the caret by the length of an edit made before it
 
 ## Version History
@@ -37,11 +43,12 @@ order by id desc;
 
 update whiteboards
 set content = (select content from whiteboard_history where id = <id>),
+    yjs_state = null,
     updated_at = now()
 where home_id = 2 and board_key = 'kitchen';
 ```
 
-- Open tabs keep their live document, so reload them after a restore; otherwise their next save gets a 409 and they adopt the restored text
+- Clearing `yjs_state` makes the next load seed from the restored text. Open tabs keep their live document, so reload them after a restore; otherwise their next save gets a 409 and they adopt the restored text over their own
 
 ## Markdown Preview
 
@@ -58,6 +65,6 @@ where home_id = 2 and board_key = 'kitchen';
 
 ## Routes
 
-- `GET /api/whiteboard?homeId=&boardKey=` — returns `{ content, homeId, boardKey, updatedAt }` (`updatedAt` is `null` when the board has no row yet)
-- `POST /api/whiteboard?homeId=&boardKey=` — body `{ content, baseUpdatedAt, allowEmpty }`; updates only when `baseUpdatedAt` matches the row, otherwise returns `409` with the current row. An empty `content` is refused with `409` when the row has text unless both `allowEmpty` and `baseUpdatedAt` are sent
+- `GET /api/whiteboard?homeId=&boardKey=` — returns `{ content, yjsState, updatedAt }` (`updatedAt` is `null` when the board has no row yet, `yjsState` is `null` when the row has no state)
+- `POST /api/whiteboard?homeId=&boardKey=` — body `{ content, yjsState, baseUpdatedAt, allowEmpty }`; stores both columns and returns the saved `{ content, yjsState, updatedAt }`. Without `baseUpdatedAt` it upserts the row; otherwise it updates only when `baseUpdatedAt` matches the row and returns `409` with the current row (including `yjsState`) if not. A body without `yjsState` stores `yjs_state = null`. An empty `content` is refused with `409` when the row has text unless both `allowEmpty` and `baseUpdatedAt` are sent
 - `POST /api/whiteboard/assistant` — body `{ homeId, boardKey, document, messages }`; requires a bearer token and an accepted membership of the home (`401`/`403` otherwise); returns `{ reply, updatedDocument }` where `updatedDocument` is `null` when no edit is proposed; `502` when the LLM gateway is unavailable. Uses the vb-express LLM gateway like `/api/kitchen-planner/chat`, which is unchanged

@@ -60,7 +60,8 @@
       "href": "https://grind-75.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.GRIND_75_REACT.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.GRIND_75_REACT.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/grind-75-react/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/grind-75-react/README.md",
+      "stagingHref": "https://staging-grind-75.harryliu.dev/"
     },
     {
       "id": "gravity-guy",
@@ -72,7 +73,7 @@
     },
     {
       "id": "gravity-guy-staging",
-      "href": "https://staging-gravity-guy.vercel.app/",
+      "href": "https://staging-gravity-guy.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.GRAVITY_GUY_STAGING.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.GRAVITY_GUY_STAGING.DESCRIPTION",
       "readmePath": "projects/nx-workspace/apps/ui/gravity-guy/README.md"
@@ -106,7 +107,8 @@
       "href": "https://text-tools.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.TEXT_TOOLS.TITLE",
       "descriptionKey": "WEB_APPLICATIONS_PAGE.TEXT_TOOLS.DESCRIPTION",
-      "readmePath": "projects/nx-workspace/apps/ui/text-tools-ui/README.md"
+      "readmePath": "projects/nx-workspace/apps/ui/text-tools-ui/README.md",
+      "stagingHref": "https://staging-text-tools.harryliu.dev/"
     },
     {
       "id": "utilities",

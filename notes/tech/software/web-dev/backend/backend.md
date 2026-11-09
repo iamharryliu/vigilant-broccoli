@@ -28,6 +28,7 @@
     - [Dotnet](./frameworks/dotnet.md)
 - **APIs**
   - [GraphQL](./graphql.md)
+  - [Service Communication](../service-communication.md)
 
 ## What is a backend
 

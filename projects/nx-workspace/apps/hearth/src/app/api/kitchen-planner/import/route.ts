@@ -114,6 +114,9 @@ export async function POST(request: NextRequest) {
         home_id: homeId,
         board_key: KITCHEN_BOARD_KEY,
         content: kitchenNotes,
+        // Any stored Yjs state describes the replaced text; clients reseed
+        // from content when it is null.
+        yjs_state: null,
         updated_at: new Date().toISOString(),
       },
       { onConflict: HOME_BOARD_CONFLICT },

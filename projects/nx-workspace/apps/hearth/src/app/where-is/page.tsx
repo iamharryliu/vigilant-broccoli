@@ -14,7 +14,8 @@ import {
   WhereIsFormValues,
   PreviewImage,
 } from './where-is-form';
-import { uploadPreviewImages } from './upload-images';
+import { throwIfNotOk, uploadPreviewImages } from './upload-images';
+import { sortTags } from './where-is-tags';
 import { WhereIsDetailPanel } from './where-is-detail-panel';
 import { useMobileReady } from '../../lib/use-mobile-view';
 import { WhereIsDetailPageContent } from './WhereIsDetailPageContent';
@@ -34,7 +35,8 @@ const COPY = {
   LIST: { TITLE: 'Storage Areas', EMPTY_MESSAGE: 'No storage areas yet.' },
   [FORM_TYPE.CREATE]: {
     TITLE: 'Add Storage Area',
-    DESCRIPTION: 'Upload photos of a storage area to identify its contents.',
+    DESCRIPTION:
+      'Add details manually, or upload photos and analyze them to suggest tags.',
   },
   [FORM_TYPE.UPDATE]: {
     TITLE: 'Update Storage Area',
@@ -60,7 +62,7 @@ const WhereIsListItem = ({ item }: { item: WhereIsFormValues }) => (
       {item.description}
     </Text>
     <div className="flex flex-wrap gap-1 mt-1">
-      {item.tags.map(tag => (
+      {sortTags(item.tags).map(tag => (
         <Badge key={tag} variant="soft" size="1">
           {tag}
         </Badge>
@@ -101,7 +103,7 @@ function WhereIsPageContent() {
     const accessToken = session?.access_token ?? '';
     const images = await uploadPreviewImages(form.images, accessToken);
 
-    await fetch(WHERE_IS_ENDPOINT, {
+    const saveRes = await fetch(WHERE_IS_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -116,10 +118,12 @@ function WhereIsPageContent() {
         images,
       }),
     });
+    await throwIfNotOk(saveRes);
 
     const res = await fetch(`${WHERE_IS_ENDPOINT}?homeId=${selectedHomeId}`, {
       headers: { Authorization: `Bearer ${session?.access_token ?? ''}` },
     });
+    await throwIfNotOk(res);
     const updated: WhereIsItem[] = await res.json();
     const newItem = updated[0];
 
@@ -142,7 +146,7 @@ function WhereIsPageContent() {
     const accessToken = session?.access_token ?? '';
     const newImages = await uploadPreviewImages(form.images, accessToken);
 
-    await fetch(WHERE_IS_ENDPOINT, {
+    const saveRes = await fetch(WHERE_IS_ENDPOINT, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -157,6 +161,7 @@ function WhereIsPageContent() {
         newImages,
       }),
     });
+    await throwIfNotOk(saveRes);
   };
 
   const deleteItem = async (id: string | number) => {

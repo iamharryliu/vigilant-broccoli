@@ -102,10 +102,13 @@ github.io                                 GitHub Pages (custom domain projects.h
 | context.harryliu.dev | staging-context.harryliu.dev | `staging-context-md` | Pages |
 | docs.harryliu.dev | staging-docs.harryliu.dev | `staging-docs-md` | Pages |
 | findme.harryliu.dev | staging-findme.harryliu.dev | `staging-findme` | Pages |
+| gravity-guy.harryliu.dev | staging-gravity-guy.harryliu.dev | `staging-gravity-guy` | Vercel |
+| grind-75.harryliu.dev | staging-grind-75.harryliu.dev | `staging-grind-75-react` | Pages |
 | harryliu.dev | staging.harryliu.dev | `staging-harryliu-dev-react` | Pages |
 | hearth.harryliu.dev | staging-hearth.harryliu.dev | `staging-hearth` | Vercel |
 | manager.harryliu.dev | staging-manager.harryliu.dev | `staging-vb-manager-next-mobile` | Vercel |
 | pomodoro.harryliu.dev | staging-pomodoro.harryliu.dev | `staging-pomodoro-react` | Pages |
+| text-tools.harryliu.dev | staging-text-tools.harryliu.dev | `staging-text-tools-ui` | Pages |
 | utilities.harryliu.dev | staging-utilities.harryliu.dev | `staging-utilities-ui` | Pages |
 | waiting.harryliu.dev | staging-waiting.harryliu.dev | `staging-waiting-games` | Pages |
 | weather.harryliu.dev | staging-weather.harryliu.dev | `staging-weather-next` | Vercel |
@@ -156,7 +159,7 @@ staging-email-subscription-service.flycast     Email Subscription Service (stagi
 production-email-subscription-service.flycast  Email Subscription Service (production) — no in-fly caller; CI + local dev only
 ```
 
-CI e2e/security suites reach these from GitHub-hosted Ubuntu runners via the `.github/actions/fly-private-tunnel` composite action, which installs flyctl and opens a `flyctl proxy 3000:80 <app>.flycast -a <app>` WireGuard tunnel; the job then hits `http://127.0.0.1:3000`. Used by `test-e2e-llm.yml`, `test-security-llm.yml`, `test-e2e-storage-service.yml`, `test-security-storage-service.yml`, `test-smoke-email-service.yml`, `test-e2e-email-subscription-service.yml`, `test-security-email.yml`, `test-security-email-subscription-service.yml`. The job must also import `FLY_API_TOKEN` from Vault for flyctl to authenticate.
+CI e2e/security suites reach these from GitHub-hosted Ubuntu runners via the `.github/actions/fly-private-tunnel` composite action, which installs flyctl and opens a `flyctl proxy 3000:80 <app>.flycast -a <app>` WireGuard tunnel; the job then hits `http://127.0.0.1:3000`. Used by `test-e2e-llm.yml`, `test-security-llm.yml`, `test-e2e-storage-service.yml`, `cron-cleanup-ci-test-fixtures.yml`, `test-security-storage-service.yml`, `test-smoke-email-service.yml`, `test-e2e-email-subscription-service.yml`, `test-security-email.yml`, `test-security-email-subscription-service.yml`. The job must also import `FLY_API_TOKEN` from Vault for flyctl to authenticate.
 
 `local-manager-next` (pm2, not deployed) needs no tunnel: its storage and email demos call public vb-express (`/api/storage/*`, `/api/messaging/send-email`), which forwards over 6PN. `small-business-next` (also local-only) still calls email-service directly, so it needs `flyctl proxy 3002:80 staging-vb-email-service.flycast -a staging-vb-email-service` with `EMAIL_SERVICE_URL=http://127.0.0.1:3002`.
 

@@ -25,7 +25,6 @@ module.exports = {
     '../../../libs/@vigilant-broccoli/manager/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/deployment/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/resume/src/**/*.{tsx,ts,jsx,js,html}',
-    '../../../libs/@vigilant-broccoli/react-music-lib/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@harry/personal/src/**/*.{tsx,ts,jsx,js,html}',
   ],
   theme: {

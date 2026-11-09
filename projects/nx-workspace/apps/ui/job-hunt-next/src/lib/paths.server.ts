@@ -41,11 +41,27 @@ export const RESUME_PATH = fromEnv(
   join(CAREER_DIR, RESUME_FILE),
 );
 
-export const RESUME_BASELINE_PATH = join(STATE_DIR, 'resume.baseline.json');
+// One folder per job application run: the skill tailors the working copy, so
+// the master resume stays untouched and concurrent runs never share a file.
+const RUNS_DIR = join(STATE_DIR, 'runs');
 
-// Runs are serialized, so one copy is enough: the skill tailors it and the
-// master resume stays untouched.
-export const RESUME_WORKING_PATH = join(STATE_DIR, 'resume.working.json');
+export const RUN_FILE = {
+  WORKING_RESUME: 'resume.working.json',
+  BASELINE_RESUME: 'resume.baseline.json',
+  // Application resume twins generate-resume-pdf wrote from this run's working
+  // copy, one path per line.
+  OUTPUTS: 'outputs.txt',
+} as const;
+
+export const getRunPaths = (id: string) => {
+  const dir = join(RUNS_DIR, id);
+  return {
+    dir,
+    workingResume: join(dir, RUN_FILE.WORKING_RESUME),
+    baselineResume: join(dir, RUN_FILE.BASELINE_RESUME),
+    outputs: join(dir, RUN_FILE.OUTPUTS),
+  };
+};
 
 export const RESUME_VERSIONS_DIR = join(STATE_DIR, 'resume-versions');
 

@@ -10,7 +10,7 @@ export const VB_APP_URL = {
   TEXT_TOOLS: {
     NAME: 'Text Tools',
     URL: 'https://text-tools.harryliu.dev/',
-    STAGING_URL: 'https://staging-text-tools-ui.pages.dev/',
+    STAGING_URL: 'https://staging-text-tools.harryliu.dev/',
   },
   UTILITIES: {
     NAME: 'Utilities',
@@ -60,7 +60,7 @@ export const VB_APP_URL = {
   GRAVITY_GUY: {
     NAME: 'Gravity Guy',
     URL: 'https://gravity-guy.harryliu.dev/',
-    STAGING_URL: 'https://staging-gravity-guy.vercel.app/',
+    STAGING_URL: 'https://staging-gravity-guy.harryliu.dev/',
   },
   DOCS: {
     NAME: 'Docs',
@@ -70,7 +70,7 @@ export const VB_APP_URL = {
   GRIND_75: {
     NAME: 'Grind 75',
     URL: 'https://grind-75.harryliu.dev/',
-    STAGING_URL: 'https://staging-grind-75-react.pages.dev/',
+    STAGING_URL: 'https://staging-grind-75.harryliu.dev/',
   },
   CONTEXT: {
     NAME: 'Agent Context',

@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server';
+import { User } from '@supabase/supabase-js';
 import {
   createServerClient,
   createAdminClient,
@@ -10,6 +11,7 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { getVbExpressApiKey } from '../../../../../lib/vb-express';
+import { MEMBER_ORIGIN } from '../../../../../lib/types';
 
 const SENDER_EMAIL = 'home.management@harryliu.dev';
 
@@ -67,6 +69,43 @@ async function isHomeMemberOrOwner(
   return Boolean(ownedHome || membership);
 }
 
+const ACCEPTED_STATUS = 'accepted';
+
+// Display names live in auth user metadata, readable only with the admin client.
+const getAuthUser = async (userId: string) =>
+  (await createAdminClient().auth.admin.getUserById(userId)).data?.user ?? null;
+
+const getDisplayName = (user: User | null): string | null =>
+  user?.user_metadata?.display_name ?? null;
+
+// Pending invites have no user yet and keep a null display_name.
+const withDisplayNames = (
+  members: { status: string; user_id: string | null }[],
+) =>
+  Promise.all(
+    members.map(async member => ({
+      ...member,
+      display_name:
+        member.status === ACCEPTED_STATUS && member.user_id
+          ? getDisplayName(await getAuthUser(member.user_id))
+          : null,
+    })),
+  );
+
+const getOwnerEntry = async (home: { user_id: string; created_at: string }) => {
+  const ownerUser = await getAuthUser(home.user_id);
+  if (!ownerUser) return null;
+  return {
+    id: `owner-${home.user_id}`,
+    email: ownerUser.email ?? '',
+    status: ACCEPTED_STATUS,
+    role: 'HOME_OWNER',
+    created_at: home.created_at,
+    user_id: home.user_id,
+    display_name: getDisplayName(ownerUser),
+  };
+};
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -99,7 +138,7 @@ export async function GET(
       .maybeSingle(),
     supabase
       .from('home_members')
-      .select('id, email, status, role, created_at')
+      .select('id, email, status, origin, role, created_at, user_id')
       .eq('home_id', id)
       .order('created_at', { ascending: true }),
   ]);
@@ -111,23 +150,14 @@ export async function GET(
     );
   }
 
-  let ownerEntry = null;
-  if (home?.user_id) {
-    const { data: ownerUser } = await admin.auth.admin.getUserById(
-      home.user_id,
-    );
-    if (ownerUser?.user) {
-      ownerEntry = {
-        id: `owner-${home.user_id}`,
-        email: ownerUser.user.email ?? '',
-        status: 'accepted',
-        role: 'HOME_OWNER',
-        created_at: home.created_at,
-      };
-    }
-  }
+  const [ownerEntry, membersWithNames] = await Promise.all([
+    home?.user_id ? getOwnerEntry(home) : null,
+    withDisplayNames(members ?? []),
+  ]);
 
-  const list = ownerEntry ? [ownerEntry, ...(members ?? [])] : (members ?? []);
+  const list = ownerEntry
+    ? [ownerEntry, ...membersWithNames]
+    : membersWithNames;
   return Response.json(list);
 }
 
@@ -152,6 +182,8 @@ export async function POST(
     {
       home_id: Number(id),
       email: normalizedEmail,
+      // An explicit invite supersedes a pending join request from the same email.
+      origin: MEMBER_ORIGIN.INVITED,
       invited_by: user?.id,
       invited_by_email: user?.email,
     },

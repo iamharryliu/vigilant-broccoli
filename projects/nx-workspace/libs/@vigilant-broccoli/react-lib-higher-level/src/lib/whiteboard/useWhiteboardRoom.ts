@@ -13,6 +13,7 @@ import {
 } from './supabase-broadcast.types';
 import { useCursorPresence } from './useCursorPresence';
 import { WhiteboardMember, WhiteboardRoomState } from './whiteboard-room.types';
+import { YJS_TEXT_NAME, decodeUpdate, encodeUpdate } from './yjs-state';
 
 const PRESENCE_EVENT = 'presence';
 const SYNC_EVENT = 'sync';
@@ -21,11 +22,10 @@ const PAGEHIDE_EVENT = 'pagehide';
 
 const YJS_UPDATE_EVENT = 'yjs-update';
 const REQUEST_STATE_EVENT = 'request-state';
-const YJS_TEXT_NAME = 'content';
 const REMOTE_UPDATE_ORIGIN = 'remote';
-// Server snapshots (bootstrap seed, conflict merge) are applied with this
-// origin so the UndoManager, which only tracks `null`, never reverts them —
-// otherwise undo in a fresh tab deletes the whole seeded document.
+// Server snapshots (loaded state, legacy text seed, conflict merge) are
+// applied with this origin so the UndoManager, which only tracks `null`, never
+// reverts them — otherwise undo in a fresh tab deletes the loaded document.
 const REPLACE_ORIGIN = 'replace';
 const CURSOR_CHANNEL_SUFFIX = ':cursors';
 const STACK_ITEM_ADDED_EVENT = 'stack-item-added';
@@ -45,23 +45,6 @@ interface PresencePayload {
 interface YjsUpdatePayload {
   update: string;
 }
-
-const encodeUpdate = (update: Uint8Array): string => {
-  let binary = '';
-  update.forEach(byte => {
-    binary += String.fromCharCode(byte);
-  });
-  return btoa(binary);
-};
-
-const decodeUpdate = (encoded: string): Uint8Array => {
-  const binary = atob(encoded);
-  const bytes = new Uint8Array(binary.length);
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
-  }
-  return bytes;
-};
 
 // Textareas only report the final string on change, so we diff it against
 // the CRDT's current text to recover the minimal insert/delete op — this is
@@ -106,6 +89,7 @@ export function useWhiteboardRoom(
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [lastChangeIsEdit, setLastChangeIsEdit] = useState(false);
+  const [docGeneration, setDocGeneration] = useState(0);
   const channelRef = useRef<BroadcastPresenceChannel | null>(null);
   const usernameRef = useRef<string>(username);
   const docRef = useRef<Y.Doc | null>(null);
@@ -195,18 +179,23 @@ export function useWhiteboardRoom(
       Y.applyUpdate(doc, decodeUpdate(payload.update), REMOTE_UPDATE_ORIGIN);
     });
 
-    channel.on(BROADCAST_EVENT, { event: REQUEST_STATE_EVENT }, () => {
+    const sendFullState = () =>
       channel.send({
         type: BROADCAST_EVENT,
         event: YJS_UPDATE_EVENT,
         payload: { update: encodeUpdate(Y.encodeStateAsUpdate(doc)) },
       });
-    });
+
+    channel.on(BROADCAST_EVENT, { event: REQUEST_STATE_EVENT }, sendFullState);
 
     channel.subscribe(status => {
       if (status === SUBSCRIBE_STATUS.SUBSCRIBED) {
         setConnectionStatus(CONNECTION_STATUS.CONNECTED);
         channel.track({ username: usernameRef.current });
+        // Fires again on every rejoin. Edits made while disconnected were
+        // never broadcast, so peers only get them as CRDT ops from this full
+        // state; otherwise they'd see them later as persisted text only.
+        sendFullState();
         channel.send({
           type: BROADCAST_EVENT,
           event: REQUEST_STATE_EVENT,
@@ -223,6 +212,7 @@ export function useWhiteboardRoom(
     });
 
     channelRef.current = channel;
+    setDocGeneration(generation => generation + 1);
 
     const handlePageHide = () => {
       channel.untrack();
@@ -246,6 +236,7 @@ export function useWhiteboardRoom(
       setLastChangeIsEdit(false);
       setCanUndo(false);
       setCanRedo(false);
+      setConnectionStatus(CONNECTION_STATUS.CONNECTING);
     };
     // token intentionally excluded: read via tokenRef and refreshed by the
     // setAuth effect above, so a rotation re-auths without resetting the doc.
@@ -263,6 +254,22 @@ export function useWhiteboardRoom(
     applyTextDiff(doc.getText(YJS_TEXT_NAME), next, REPLACE_ORIGIN);
   }, []);
 
+  const applyState = useCallback((state: string) => {
+    const doc = docRef.current;
+    if (!doc) return;
+    Y.applyUpdate(doc, decodeUpdate(state), REPLACE_ORIGIN);
+  }, []);
+
+  const encodeState = useCallback((): string | null => {
+    const doc = docRef.current;
+    return doc ? encodeUpdate(Y.encodeStateAsUpdate(doc)) : null;
+  }, []);
+
+  const getContent = useCallback(
+    () => docRef.current?.getText(YJS_TEXT_NAME).toString() ?? '',
+    [],
+  );
+
   const undo = useCallback(() => {
     undoManagerRef.current?.undo();
   }, []);
@@ -275,6 +282,10 @@ export function useWhiteboardRoom(
     content,
     setContent,
     replaceContent,
+    applyState,
+    encodeState,
+    getContent,
+    docGeneration,
     lastChangeIsEdit,
     members,
     cursors,

@@ -21,11 +21,6 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 1337,
         VB_EXPRESS_URL: 'https://api.harryliu.dev',
-        // Not derived from request.nextUrl.origin: the reverse proxy fronting
-        // this PM2 process doesn't forward a Host header Next can trust, so
-        // that resolves to the internal bind address (127.0.0.1:1337)
-        // instead. Used to build the Spotify OAuth redirect_uri.
-        SPOTIFY_REDIRECT_BASE_URL: 'https://manager.vigilant-broccoli.app',
         ...scrubbedEnv,
       },
       instances: 1,

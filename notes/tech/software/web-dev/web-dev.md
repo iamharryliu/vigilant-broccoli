@@ -7,5 +7,5 @@
 - [Devops](./devops/devops.md)
 - [Networking](./networking/networking.md)
 - [Authentication](./authentication.md)
-- [Service Communication](./service-communication.md)
+- [OAuth App Testing vs Production](./oauth-app-testing-vs-production.md)
 - [Web Dev Tools](./tools/web-dev-tools.md)

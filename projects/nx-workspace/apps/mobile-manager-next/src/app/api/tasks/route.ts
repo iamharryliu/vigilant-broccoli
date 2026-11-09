@@ -6,18 +6,18 @@ import {
   isExpiredError,
   GOOGLE_TOKEN_EXPIRED,
 } from '@vigilant-broccoli/google-workspace';
-import { requireAuth } from '../../../../libs/api-auth';
+import { requireGoogleAuth } from '../../../../libs/api-auth';
 
 export const runtime = 'nodejs';
 
 export async function GET(req: NextRequest) {
-  const auth = await requireAuth(req, { requireGoogleToken: true });
+  const auth = await requireGoogleAuth(req);
   if (auth instanceof NextResponse) return auth;
 
   const taskListId = req.nextUrl.searchParams.get('taskListId') ?? '@default';
 
   try {
-    const tasks = await listTasks(auth.googleToken as string, taskListId, true);
+    const tasks = await listTasks(auth.googleToken, taskListId, true);
     return NextResponse.json({ tasks });
   } catch (error) {
     if (isExpiredError(error)) {
@@ -34,14 +34,14 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await requireAuth(req, { requireGoogleToken: true });
+  const auth = await requireGoogleAuth(req);
   if (auth instanceof NextResponse) return auth;
 
   const body = await req.json();
 
   try {
     const task = await createTask(
-      auth.googleToken as string,
+      auth.googleToken,
       body.taskListId ?? '@default',
       body.title,
     );
@@ -61,14 +61,14 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const auth = await requireAuth(req, { requireGoogleToken: true });
+  const auth = await requireGoogleAuth(req);
   if (auth instanceof NextResponse) return auth;
 
   const body = await req.json();
 
   try {
     const task = await updateTask(
-      auth.googleToken as string,
+      auth.googleToken,
       body.taskListId ?? '@default',
       body.taskId,
       {

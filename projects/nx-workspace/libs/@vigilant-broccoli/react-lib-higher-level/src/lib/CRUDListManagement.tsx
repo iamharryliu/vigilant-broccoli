@@ -78,6 +78,7 @@ export type CRUDFormProps<T> = {
   formType: FormType;
   initialFormValues: T;
   submitHandler: CRUDFormSubmitHandler<T>;
+  onCancel?: () => void;
 };
 type CRUDFormComponent<T> = ComponentType<CRUDFormProps<T>>;
 
@@ -106,6 +107,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   canShowEllipsis,
   itemActions,
   updateLabel,
+  deleteConfirmation,
   getItemImages,
   getItemTitle,
   fullWidthImage = false,
@@ -129,6 +131,7 @@ export const CRUDItemList = <T extends CRUDItem>({
   canShowEllipsis?: (item: T) => boolean;
   itemActions?: (item: T) => EllipsisAction[];
   updateLabel?: string;
+  deleteConfirmation?: { title?: string; description?: string };
   getItemImages?: (item: T) => string[] | undefined;
   getItemTitle?: (item: T) => string;
   fullWidthImage?: boolean;
@@ -184,6 +187,7 @@ export const CRUDItemList = <T extends CRUDItem>({
           submitHandler={submitHandler}
           extraActions={itemActions?.(item)}
           updateLabel={updateLabel}
+          deleteConfirmation={deleteConfirmation}
         />
       </div>
     ) : itemActions ? (
@@ -323,6 +327,7 @@ const EllipsisOptions = <T extends CRUDItem>({
   copy,
   extraActions,
   updateLabel = DEFAULT_UPDATE_LABEL,
+  deleteConfirmation,
 }: {
   item: T;
   FormComponent: CRUDFormComponent<T>;
@@ -331,6 +336,7 @@ const EllipsisOptions = <T extends CRUDItem>({
   copy: ListManagementCopy;
   extraActions?: EllipsisAction[];
   updateLabel?: string;
+  deleteConfirmation?: { title?: string; description?: string };
 }) => {
   const [updateOpen, setUpdateOpen] = useState(false);
   const hasExtraActions = Boolean(extraActions?.length);
@@ -343,13 +349,18 @@ const EllipsisOptions = <T extends CRUDItem>({
             label: DEFAULT_DELETE_LABEL,
             color: 'red' as const,
             onSelect: () => deleteItem(item.id),
-            confirm: { confirmLabel: DEFAULT_DELETE_LABEL },
+            confirm: {
+              ...deleteConfirmation,
+              confirmLabel: DEFAULT_DELETE_LABEL,
+            },
           },
         ],
       }
     : {
         onUpdate: () => setUpdateOpen(true),
         onDelete: () => deleteItem(item.id),
+        confirmTitle: deleteConfirmation?.title,
+        confirmDescription: deleteConfirmation?.description,
       };
   return (
     <>
@@ -599,6 +610,7 @@ export const CRUDItemFormDialog = <T,>({
           formType={formType}
           initialFormValues={initialFormValues}
           submitHandler={dialogSubmitHandler}
+          onCancel={() => setOpen?.(false)}
         />
       </DialogContent>
     </Dialog>

@@ -16,6 +16,7 @@
     "@vigilant-broccoli/react-lib-auth": "workspace:*",
     "@vigilant-broccoli/react-lib-calendar": "workspace:*",
     "@vigilant-broccoli/react-lib-media": "workspace:*",
+    "framer-motion": "^12.23.12",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.513.0",
     "next": "16.4.2",

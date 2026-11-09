@@ -11,6 +11,10 @@ const API_HEADERS = {
   [API_KEY_HEADER]: getEnvironmentVariable('VB_EXPRESS_API_KEY'),
 };
 
+// Fly machines may need ~1.5s to wake from suspend, so the vb-express budget is generous.
+const BUCKET_API_TIMEOUT_MS = 10_000;
+const R2_TRANSFER_TIMEOUT_MS = 20_000;
+
 const PROVIDER = 'cloudflare-r2';
 // Dedicated private bucket (never given a public r2.dev hostname), so these
 // presigned URLs are the only way to reach an item's photos.
@@ -45,6 +49,7 @@ const presignedUrl = async (
 
   const response = await fetch(`${BUCKET_API}/${path}?${params}`, {
     headers: API_HEADERS,
+    signal: AbortSignal.timeout(BUCKET_API_TIMEOUT_MS),
   });
   if (!response.ok) {
     throw new Error(`Bucket service error: ${response.status}`);
@@ -68,6 +73,7 @@ export const uploadImage = async (
     method: HTTP_METHOD.PUT,
     body: new Uint8Array(buffer),
     headers: { [CONTENT_TYPE_HEADER]: mimeType },
+    signal: AbortSignal.timeout(R2_TRANSFER_TIMEOUT_MS),
   });
   if (!response.ok) {
     throw new Error(`R2 upload failed: ${response.status}`);
@@ -86,7 +92,9 @@ export const readImage = async (
     key,
     PRESIGNED_DOWNLOAD_EXPIRY_SECONDS,
   );
-  const response = await fetch(downloadUrl);
+  // One signal covers both headers and body so a stalled body read also aborts.
+  const signal = AbortSignal.timeout(R2_TRANSFER_TIMEOUT_MS);
+  const response = await fetch(downloadUrl, { signal });
   if (!response.ok) {
     throw new Error(`Staged image ${key} not found`);
   }
@@ -109,6 +117,7 @@ export const deleteImage = async (key: string) => {
   const response = await fetch(`${BUCKET_API}/${DELETE_PATH}?${params}`, {
     method: HTTP_METHOD.DELETE,
     headers: API_HEADERS,
+    signal: AbortSignal.timeout(BUCKET_API_TIMEOUT_MS),
   });
   if (!response.ok) {
     throw new Error(`R2 delete failed: ${response.status}`);

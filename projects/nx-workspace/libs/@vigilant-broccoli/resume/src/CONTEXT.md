@@ -29,11 +29,15 @@ The PDF script adds the resume-style three-column header (resume links left; nam
 
 1. `Dear <Company> hiring manager,`
 2. One intro paragraph: `I am a <resume title, lowercase> from Malmö writing with interest in the <Job Title> position at <Company>`, then one short sentence (at most about 20 words) in the candidate's own words saying why the company's product, mission or work appeals, drawn from what the posting says but paraphrased: do not copy posting phrases, team names, lists or responsibilities, and make no claims about the candidate beyond the records, then, verbatim in every letter, `I believe my career experience makes me a strong candidate for this position. If you are interested in learning more you can checkout the links above.`
-3. `My experiences and reasons to consider me for the position include:` followed by four to six bullets matching the posting's top requirements, most relevant first. The first bullet gives the years of experience as `More than N years` from `calculateWorkExperience`, never `nearly`. For every bullet:
+3. `My experiences and reasons to consider me for the position include:` followed by four to six bullets matching the posting's top requirements, most relevant first. The first bullet gives the years of experience as `More than N years` from `calculateWorkExperience`, never `nearly`, and may use the posting's phrase (e.g. `More than 7 years of backend development experience, from ...`). Every other bullet uses the `Requirement: evidence` form. For every bullet:
    - Draw evidence from the career note's Job Experience and Project Contributions, not only `resume.json`; the resume is a one-page selection of that note, so use a recorded fact the resume omits when the posting asks for it (e.g. headless CMS work).
-   - Name a confirmed skill with the employer or project that evidences it, and include one concrete outcome or figure when the note or resume already records one (never add or inflate figures).
-   - Use the posting's key terms (e.g. `event consumers`, `design systems`) as single words or short phrases when the records support them; never lift whole sentences or clauses from the posting.
-   - Include one collaboration bullet when the posting asks for teamwork, communication or knowledge sharing, citing recorded evidence (technical leadership, client communication, knowledge-sharing sessions).
-   - Include a bullet bridging your closest domain experience to the company's field when it matches (e.g. Capco banking for a financial company).
+   - Open with a short requirement phrase taken from the posting's own wording (a noun phrase such as `Event-driven architecture` or `Ownership of production systems`, not the whole requirement sentence), then a colon, then the evidence: the employer or project that evidences it plus one concrete outcome or figure when the note or resume already records one (never add or inflate figures).
+   - Copy requirement phrases, never full requirement sentences or clauses, and do not open bullets with a repeated lead word such as `Demonstrated`.
+   - Use a requirement only when the career records support it; skip unsupported requirements rather than stretching evidence.
+   - Include one collaboration bullet in the same form when the posting asks for teamwork, communication or knowledge sharing, citing recorded evidence (technical leadership, client communication, knowledge-sharing sessions).
+   - Include a bullet in the same form bridging your closest domain experience to the company's field when it matches (e.g. Capco banking for a financial company).
+   - Examples:
+     - `Event-driven architecture: RabbitMQ at Tillmobil and in vigilant-broccoli, with durable queues, bounded retries and dead-letter queues.`
+     - `Ownership of production systems: two systems end to end at Tillmobil, from Terraform-managed GCP infrastructure through monitoring and incident response.`
 4. One closing sentence: `I hope to hear from you soon, feel free to contact me anytime, and thank you for your time reading my application.`
 5. `Regards,` then `Harry Liu`.

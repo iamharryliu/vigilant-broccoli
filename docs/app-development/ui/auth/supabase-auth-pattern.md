@@ -24,24 +24,31 @@ A sign-in whose `redirectTo` is **not** matched by `uri_allow_list` does not err
 ## Client side
 
 - Instantiate `createSupabaseAuth` from `@vigilant-broccoli/react-lib-auth` (`libs/@vigilant-broccoli/react-lib-auth/src/lib/createSupabaseAuth.tsx`) once per app — see `apps/ui/local-manager-next/libs/auth.ts`. Config: Supabase env vars, optional extra Google scopes (e.g. Tasks/Calendar), and the app's home/login/callback routes.
-- The factory returns `AuthProvider`, `useAuth`, `useAuthStatus` (`'loading' | 'authenticated' | 'unauthenticated'`), `useGoogleToken`, `signInWithGoogle`, `signOut`, `getSupabaseAccessToken`, `buildAuthHeaders`, `authFetch`, and `AuthCallbackPage`.
+- The factory returns `AuthProvider`, `useAuth`, `useAuthStatus` (`'loading' | 'authenticated' | 'unauthenticated'`), `signInWithGoogle`, `signOut`, `getSupabaseAccessToken`, `buildAuthHeaders`, `authFetch`, and `AuthCallbackPage`.
 - Wrap the root layout in `AuthProvider`; for a Google-only login page, render `GoogleSignInPage` from `react-lib-auth` (`appName`, optional `tagline`, `onSignIn`) — it wraps `GoogleSigninButton` in the shared page layout, used by `local-manager-next`, `mobile-manager-next`, `hearth`, `employee-handler-ui`, and `small-business-next`. Apps with additional sign-in methods (e.g. hearth's email/password signup) compose `GoogleSigninButton` directly instead. The `/auth/callback` page renders `AuthCallbackPage`.
-- The session lives in the Supabase JS client (localStorage), **not** an httpOnly cookie — the server never sees it implicitly. Every same-origin `/api/*` request must go through `authFetch`, which attaches `Authorization: Bearer <supabase access token>` and `x-google-token` headers. A plain `fetch()` to `/api/*` gets a 401 from middleware.
-- The Google `provider_token` is captured once at sign-in (`onAuthStateChange`) into localStorage under `google_provider_token`. There is no refresh — it expires after ~1 hour, well before the Supabase session does. Keep it in localStorage, not sessionStorage: a tab-scoped Google token expires on every app restart while the Supabase session survives, which reads as two unrelated logins.
-- **Google-token expiry must not end the Supabase session.** The two lifetimes are independent: the Supabase session refreshes for as long as the refresh token stays valid, while the Google token dies hourly. On a 401 from a Google-backed route, clear only `google_provider_token` and prompt re-consent via `signInWithGoogle` (see `GoogleReconnectView` in `GoogleTasks.tsx`, and `reconnectGoogle` in `mobile-manager-next`'s hand-rolled provider) — never call `signOut`. Calling `signOut` here is what made sessions look ~1 hour long after the NextAuth migration.
+- The session lives in the Supabase JS client (localStorage), **not** an httpOnly cookie — the server never sees it implicitly. Every same-origin `/api/*` request must go through `authFetch`, which attaches `Authorization: Bearer <supabase access token>` and no Google token. A plain `fetch()` to `/api/*` gets a 401 from middleware.
+- Google access is kept alive **server-side** from a stored Google refresh token, in both `local-manager-next` and `mobile-manager-next`. The Google `provider_token` itself expires after ~1 hour and Supabase never refreshes it, so apps must not call Google with it:
+  1. Sign-in requests offline access (`access_type: 'offline'`, `prompt: 'consent'` in `signInWithOAuth` `queryParams`; `offlineAccess: true` in `createSupabaseAuth`), so the post-redirect session carries `provider_refresh_token`.
+  2. `onAuthStateChange` POSTs `{ refreshToken }` with the Supabase bearer to the app's `/api/auth/google-token` (`onProviderRefreshToken` in `createSupabaseAuth`; `persistGoogleRefreshToken` in `mobile-manager-next`'s provider), which upserts it into the `google_oauth_tokens` table keyed by `user_email`.
+  3. Google-backed routes read that row and call `resolveGoogleAccessToken` / `refreshGoogleAccessToken` from `@vigilant-broccoli/google-workspace`, caching the access token and its expiry in the same row (see [Server side](#server-side)).
+- Neither `react-lib-auth` nor `mobile-manager-next`'s provider stores `provider_token` client-side; react-lib's `GoogleTasksAuthAdapter` needs only `authFetch`, `useAuthStatus` and `signInWithGoogle`.
+- **Google reconnect must not end the Supabase session.** The two lifetimes are independent. A missing row or a refresh token Google revoked (`isRefreshTokenRevokedError`) makes Google-backed routes return 401; prompt re-consent via `signInWithGoogle` (see `GoogleReconnectView` in `GoogleTasks.tsx`, and `reconnectGoogle` in `mobile-manager-next`'s hand-rolled provider), which stores a fresh refresh token — never call `signOut`. Calling `signOut` here is what made sessions look ~1 hour long after the NextAuth migration.
 - Only one Supabase client per browser context may own the stored session. Secondary clients (realtime, stateless server-side `getUser`) must be constructed with `persistSession: false`, `autoRefreshToken: false`, `detectSessionInUrl: false` — otherwise two auto-refresh tickers race on a rotating refresh token. See `apps/ui/local-manager-next/src/lib/supabase.ts`.
 
 ## Server side
 
 - `src/proxy.ts` gates all `/api/*` routes by verifying the bearer token with `supabase.auth.getUser(token)` (see `local-manager-next`; `employee-handler-ui`'s is the same check plus an `ALLOWED_EMAILS` / `ALLOWED_EMAIL_DOMAINS` allowlist).
-- Per-route helpers (`apps/ui/local-manager-next/libs/server-auth.ts`):
-  - `getGoogleAccessToken(req)` — reads `x-google-token` for Google API calls (Tasks, Calendar).
-  - `getUserEmail(req)` — re-verifies the bearer token and returns the email used as the per-user data key.
+- Per-route helpers in `local-manager-next`:
+  - `getUserEmail(req)` (`libs/server-auth.ts`) — re-verifies the bearer token and returns the email used as the per-user data key.
+  - `getGoogleAccessTokenForRequest(req)` (`libs/google-token.ts`) — resolves the Google access token from the stored refresh token for Google API calls (Tasks, Calendar); a missing row or revoked refresh token throws a 401.
+- `mobile-manager-next` (no `src/proxy.ts`) checks per route in `libs/api-auth.ts`: `requireAuth(req)` verifies the bearer and the `ALLOWED_EMAIL` check from `libs/auth-policy.ts`; `requireGoogleAuth(req)` adds the access token from `libs/google-token.ts` and returns 401 `{ error: 'google_token_expired' }` when Google must be reconnected.
+- Both apps' `libs/google-token.ts` are thin wrappers over the server-only `@vigilant-broccoli/react-lib-auth/google-token-server` entry (`google-token-store.server.ts`, not exported from the lib's index so it stays out of client bundles). Its `storeGoogleRefreshToken` and `getStoredGoogleAccessToken` take the caller's Supabase admin client, the user email and (for resolving) the Google client ID and secret; the latter returns `null` when Google must be reconnected, and each app maps that to its own 401.
+- The `google_oauth_tokens` table is created by `apps/ui/local-manager-next/supabase/migrations/20260722000000_create_google_oauth_tokens.sql` (RLS on, no policies: service-role only). Both apps share the Supabase project, so they read and overwrite the same row per email; whichever app signed in last owns the stored refresh token.
 - `hearth` variant: per-route Supabase server client scoped to the caller's token plus Postgres RLS (`apps/hearth/libs/supabase-server.ts`) instead of email-keyed lookups.
 
 ## Env vars
 
-`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (client + token verification), `SUPABASE_SECRET_KEY` (admin client, server-only).
+`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (client + token verification), `SUPABASE_SECRET_KEY` (admin client, server-only). Apps that refresh Google access server-side also need `GOOGLE_AUTH_PROVIDER_CLIENT_ID` and `GOOGLE_AUTH_PROVIDER_CLIENT_SECRET` (server-only; the same OAuth client as the Supabase Google provider).
 
 ## New app checklist
 
@@ -54,6 +61,6 @@ A sign-in whose `redirectTo` is **not** matched by `uri_allow_list` does not err
 ## Migration status
 
 - `local-manager-next` — on the shared `react-lib-auth` module.
-- `cloud-services-next`, `local-services-next` — use only `authFetch` from the shared module; they never sign in and read `local-manager-next`'s stored session.
+- `cloud-services-next`, `local-services-next`, `music-next` — use only `authFetch` from the shared module; they never sign in and read `local-manager-next`'s stored session.
 - `hearth`, `employee-handler-ui`, `small-business-next`, `mobile-manager-next` — same pattern, but hand-rolled per-app copies predating the shared module; consolidation pending.
 - `vb-express` (Fastify) — still on better-auth + API-key plugin; not part of this pattern yet.

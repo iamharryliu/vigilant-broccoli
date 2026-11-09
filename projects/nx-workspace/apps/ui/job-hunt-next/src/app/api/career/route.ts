@@ -7,7 +7,13 @@ import {
 } from '../../../lib/career-files.server';
 import { CAREER_FILE_KIND } from '../../constants/career';
 import { syncResumeVersions } from '../../../lib/resume-versions.server';
-import { FILE_BY_KIND, invalidKind, parseKind } from './career-request';
+import { hasActiveJobApplicationRun } from '../../../lib/job-application-runs.db';
+import {
+  FILE_BY_KIND,
+  invalidKind,
+  parseKind,
+  runInProgress,
+} from './career-request';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -39,6 +45,7 @@ export async function PUT(req: NextRequest) {
       { status: HTTP_STATUS_CODES.BAD_REQUEST },
     );
   }
+  if (hasActiveJobApplicationRun()) return runInProgress();
   const isResume = kind === CAREER_FILE_KIND.RESUME;
   if (isResume) await syncResumeVersions();
   await writeCareerFile(FILE_BY_KIND[kind], content);

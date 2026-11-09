@@ -8,7 +8,7 @@ import {
   parseKind,
   runInProgress,
 } from '../career-request';
-import { hasRunningJobApplicationRun } from '../../../../lib/job-application-runs.db';
+import { hasActiveJobApplicationRun } from '../../../../lib/job-application-runs.db';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
       { status: HTTP_STATUS_CODES.BAD_REQUEST },
     );
   }
-  if (hasRunningJobApplicationRun()) return runInProgress();
+  if (hasActiveJobApplicationRun()) return runInProgress();
   await resetCareerFile(FILE_BY_KIND[kind], preset);
   return NextResponse.json({ ok: true });
 }

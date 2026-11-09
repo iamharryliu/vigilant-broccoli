@@ -63,6 +63,7 @@
     "TEXT_PLACEHOLDER": "Job posting or application question, with optional notes",
     "RUN": "Run",
     "STARTED": "Job application started",
+    "QUEUED": "Job application queued; it starts when a run finishes",
     "VIEW_PROGRESS": "View progress",
     "RUN_FAILED": "Run failed"
   },
@@ -79,6 +80,7 @@
     "EMPTY": "No runs yet.",
     "LOAD_FAILED": "Failed to load runs",
     "STARTED_AT": "Started {time}",
+    "QUEUED_AT": "Queued {time}",
     "FINISHED": "Job application finished",
     "FAILED": "Job application failed",
     "VIEW_APPLICATION": "View application",
@@ -86,6 +88,7 @@
     "IMPORT_FAILED": "{label} import failed",
     "VIEW": "View",
     "STATUS": {
+      "QUEUED": "Queued",
       "RUNNING": "Running",
       "SUCCEEDED": "Succeeded",
       "FAILED": "Failed"

@@ -1,6 +1,6 @@
 # Socket Server (Socket.IO)
 
-WebSocket server for real-time bidirectional communication.
+Publish/subscribe server over Socket.IO and Server-Sent Events.
 
 ## Table of Contents
 

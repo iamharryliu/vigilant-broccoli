@@ -1,0 +1,97 @@
+name: cron-cleanup-ci-test-fixtures
+
+# Sweeps the ci-test-* fixtures test-e2e-storage-service leaves when a runner
+# crashes before its cleanup step can run. The 24h age threshold keeps a
+# concurrently running e2e job's fresh fixtures out of reach.
+on:
+  schedule:
+    - cron: '50 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: cron-cleanup-ci-test-fixtures
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [staging, production]
+        provider: [gcs, cloudflare-r2]
+    name: ${{ matrix.environment }} ${{ matrix.provider }}
+    env:
+      SERVICE_URL: http://127.0.0.1:3000
+      CURL_MAX_TIME: 60
+      FIXTURE_PREFIX: ci-test-
+      MAX_AGE_SECONDS: 86400
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets SHARED_APP_TOKEN | SHARED_APP_TOKEN ;
+            kv/data/secrets FLY_API_TOKEN | FLY_API_TOKEN ;
+
+      - uses: ./.github/actions/fly-private-tunnel
+        with:
+          app: ${{ matrix.environment }}-storage-service
+
+      - name: Delete stale ci-test-* fixtures
+        env:
+          API_KEY: ${{ env.SHARED_APP_TOKEN }}
+          PROVIDER: ${{ matrix.provider }}
+        run: |
+          set -euo pipefail
+
+          STATUS=$(curl -s --max-time "${CURL_MAX_TIME}" -o /tmp/list.json -w '%{http_code}' \
+            -X GET "${SERVICE_URL}/api/bucket?provider=${PROVIDER}" \
+            -H "x-api-key: ${API_KEY}")
+          echo "List status: $STATUS"
+          if [ "$STATUS" != "200" ]; then
+            cat /tmp/list.json; echo
+            echo "✗ List failed"
+            exit 1
+          fi
+
+          CUTOFF=$(( $(date -u +%s) - MAX_AGE_SECONDS ))
+          # fromdateiso8601 rejects fractional seconds, which Date serialization adds.
+          # Objects without updatedAt are skipped rather than assumed stale.
+          jq -r --arg prefix "${FIXTURE_PREFIX}" --argjson cutoff "${CUTOFF}" '
+            .[]
+            | select(.name | startswith($prefix))
+            | select(.updatedAt != null)
+            | select((.updatedAt | sub("\\.[0-9]+"; "") | fromdateiso8601) < $cutoff)
+            | [.name, (.name | @uri)]
+            | @tsv
+          ' /tmp/list.json > /tmp/stale.tsv
+
+          DELETED=0
+          while IFS=$'\t' read -r NAME ENCODED; do
+            case "$NAME" in
+              "${FIXTURE_PREFIX}"*) ;;
+              *) echo "✗ Refusing to delete ${NAME}: missing ${FIXTURE_PREFIX} prefix"; exit 1 ;;
+            esac
+            STATUS=$(curl -s --max-time "${CURL_MAX_TIME}" -o /tmp/delete.json -w '%{http_code}' \
+              -X DELETE "${SERVICE_URL}/api/bucket/${ENCODED}?provider=${PROVIDER}" \
+              -H "x-api-key: ${API_KEY}")
+            if [[ "$STATUS" != 2?? ]]; then
+              cat /tmp/delete.json; echo
+              echo "✗ Delete of ${NAME} failed with status ${STATUS}"
+              exit 1
+            fi
+            echo "Deleted ${NAME}"
+            DELETED=$((DELETED + 1))
+          done < /tmp/stale.tsv
+
+          echo "✓ Deleted ${DELETED} stale ${FIXTURE_PREFIX}* fixture(s) from ${{ matrix.environment }} ${PROVIDER}"

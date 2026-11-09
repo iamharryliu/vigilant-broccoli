@@ -17,26 +17,6 @@ import {
 } from './CheckListBase';
 import { Text } from './Text';
 
-const ANIMATION_STYLES = `
-  @keyframes slideInAndFadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .checklist-item-new {
-    animation: slideInAndFadeIn 0.3s ease-out;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .checklist-item-new { animation: none; }
-  }
-`;
-
 const DRAG_OPACITY = {
   DRAGGING: 0.5,
   DEFAULT: 1,
@@ -268,7 +248,6 @@ export const CheckList = memo(
 
     return (
       <>
-        <style>{ANIMATION_STYLES}</style>
         {error && (
           <Text size="2" color="red" role="alert">
             {error}

@@ -5,11 +5,13 @@ import {
   ReactNode,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import { cn } from '../utils/cn';
 import { Checkbox } from './Checkbox';
+import { groupCompletedByDay } from './checklist-groups.utils';
 import { CollapsibleList } from './CollapsibleList';
 import { Input } from './Input';
 import { Text } from './Text';
@@ -28,7 +30,10 @@ const EDITOR = {
 const DEFAULT_COMPLETED_SECTION_ID = 'completed';
 
 const COMPLETION_DURATION = 400;
+const ENTER_DURATION = 300;
 const COMPLETION_STYLES = `
+  .checklist-item-new { animation: checklist-enter 300ms ease-out; }
+  @keyframes checklist-enter { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
   .checklist-transition { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 400ms ease, opacity 400ms ease; }
   .checklist-transition-content { min-height: 0; }
   .checklist-transition:last-child .checklist-dense-row { border-bottom: 0; }
@@ -40,7 +45,7 @@ const COMPLETION_STYLES = `
   @keyframes checklist-populate { from { opacity: 0; translate: 0 -6px; } to { opacity: 1; translate: 0 0; } }
   @media (prefers-reduced-motion: reduce) {
     .checklist-transition { transition: none; }
-    .checklist-arriving, .checklist-populating { animation: none; }
+    .checklist-arriving, .checklist-populating, .checklist-item-new { animation: none; }
   }
 `;
 
@@ -50,9 +55,16 @@ export interface CheckListBaseItem {
   checked: boolean;
   completedAt?: string | null;
   updatedAt?: string;
+  /** Forces the slide-in; rows added after mount slide in without it. */
   isNew?: boolean;
   /** Prevents repeated toggles while persistence is pending. */
   isRemoving?: boolean;
+  /**
+   * Id of the row this item replaces in the same update, e.g. a temporary id
+   * swapped for a saved one. The row keeps its transition instead of sliding
+   * in as new, and plays the completion transition if `checked` differs.
+   */
+  transitionFromId?: string;
 }
 
 export type CheckListRowVariant =
@@ -116,14 +128,60 @@ const DefaultRowFrame = ({
 const getActiveItems = <T extends CheckListBaseItem>(items: T[]) =>
   items.filter(item => !item.checked);
 
-const getCompletedItems = <T extends CheckListBaseItem>(items: T[]) =>
-  items
-    .filter(item => item.checked)
-    .sort((a, b) =>
-      (b.completedAt ?? b.updatedAt ?? '').localeCompare(
-        a.completedAt ?? a.updatedAt ?? '',
-      ),
-    );
+const getCompletedStamp = ({ completedAt, updatedAt }: CheckListBaseItem) =>
+  completedAt ?? updatedAt;
+
+const MAX_POPULATE_STAGGER = 8;
+const POPULATE_STAGGER_MS = 30;
+
+const populateDelay = (index: number) =>
+  `${Math.min(index, MAX_POPULATE_STAGGER) * POPULATE_STAGGER_MS}ms`;
+
+const toIdentityKeys = <T extends CheckListBaseItem>(items: T[]) =>
+  new Map(items.map(({ id }) => [id, id]));
+
+const freeKey = (id: string, used: Set<string>) => {
+  let suffix = 1;
+  while (used.has(`${id}:${suffix}`)) suffix++;
+  return `${id}:${suffix}`;
+};
+
+/**
+ * Row keys outlive item ids: an item continuing a removed row (via
+ * `transitionFromId`) inherits that row's key, so its DOM node and pending
+ * transition survive the re-key. Existing rows claim their keys first, and a
+ * new id that collides with a key still in use gets a suffixed one.
+ */
+const assignRowKeys = <T extends CheckListBaseItem>(
+  items: T[],
+  committed: Map<string, string>,
+) => {
+  const ids = new Set(items.map(({ id }) => id));
+  const keys = new Map<string, string>();
+  const used = new Set<string>();
+  items.forEach(({ id }) => {
+    const key = committed.get(id);
+    if (key === undefined) return;
+    keys.set(id, key);
+    used.add(key);
+  });
+  items.forEach(({ id, transitionFromId }) => {
+    if (keys.has(id)) return;
+    const inherited =
+      transitionFromId !== undefined && !ids.has(transitionFromId)
+        ? committed.get(transitionFromId)
+        : undefined;
+    const key =
+      inherited !== undefined && !used.has(inherited)
+        ? inherited
+        : used.has(id)
+          ? freeKey(id, used)
+          : id;
+    keys.set(id, key);
+    used.add(key);
+  });
+  return keys;
+};
 
 const ROW_CLASS = {
   [ROW_VARIANT.CARD]:
@@ -183,11 +241,30 @@ export const CheckListBase = <T extends CheckListBaseItem>({
 
   const container = useRef<HTMLDivElement>(null);
   const focusedItem = useRef<string | null>(null);
+  // Transition state is keyed by row key (see assignRowKeys), not item id.
+  const committedKeys = useRef(toIdentityKeys(items));
   const previous = useRef(new Map(items.map(item => [item.id, item.checked])));
+  // Last completion timestamp per row key, so a row leaving Completed stays
+  // in its day group while it collapses even if the item dropped the stamp.
+  const completedStamps = useRef(
+    new Map(
+      items.flatMap(item => {
+        const stamp = item.checked ? getCompletedStamp(item) : undefined;
+        return stamp ? [[item.id, stamp] as const] : [];
+      }),
+    ),
+  );
   const timers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
   const [departing, setDeparting] = useState(new Map<string, boolean>());
   const [arriving, setArriving] = useState(new Set<string>());
+  const [entering, setEntering] = useState(new Set<string>());
   const [populating, setPopulating] = useState(false);
+
+  const rowKeys = useMemo(
+    () => assignRowKeys(items, committedKeys.current),
+    [items],
+  );
+  const keyOf = (item: T) => rowKeys.get(item.id) ?? item.id;
 
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
 
@@ -195,46 +272,58 @@ export const CheckListBase = <T extends CheckListBaseItem>({
     const reducedMotion = window.matchMedia(
       '(prefers-reduced-motion: reduce)',
     ).matches;
+    const without = (key: string) => (current: Set<string>) => {
+      const next = new Set(current);
+      next.delete(key);
+      return next;
+    };
     items.forEach(item => {
-      const wasChecked = previous.current.get(item.id);
-      if (wasChecked === undefined || wasChecked === item.checked) return;
+      const key = rowKeys.get(item.id) ?? item.id;
+      const wasChecked = previous.current.get(key);
+      // Rows present at mount are in `previous`, so only later additions
+      // slide in.
+      if (wasChecked === undefined) {
+        setEntering(current => new Set(current).add(key));
+        timers.current.set(
+          key,
+          setTimeout(() => {
+            setEntering(without(key));
+            timers.current.delete(key);
+          }, ENTER_DURATION),
+        );
+        return;
+      }
+      if (wasChecked === item.checked) return;
       const focusedRow = document.activeElement?.closest<HTMLElement>(
         '[data-checklist-id]',
       );
       if (
         focusedRow &&
         container.current?.contains(focusedRow) &&
-        focusedRow.dataset.checklistId === item.id
+        focusedRow.dataset.checklistId === key
       )
-        focusedItem.current = item.id;
-      clearTimeout(timers.current.get(item.id));
-      setArriving(current => {
-        const next = new Set(current);
-        next.delete(item.id);
-        return next;
-      });
+        focusedItem.current = key;
+      clearTimeout(timers.current.get(key));
+      setEntering(without(key));
+      setArriving(without(key));
       setDeparting(current =>
-        new Map(current).set(item.id, current.get(item.id) ?? wasChecked),
+        new Map(current).set(key, current.get(key) ?? wasChecked),
       );
       timers.current.set(
-        item.id,
+        key,
         setTimeout(
           () => {
             setDeparting(current => {
               const next = new Map(current);
-              next.delete(item.id);
+              next.delete(key);
               return next;
             });
-            setArriving(current => new Set(current).add(item.id));
+            setArriving(current => new Set(current).add(key));
             timers.current.set(
-              item.id,
+              key,
               setTimeout(() => {
-                setArriving(current => {
-                  const next = new Set(current);
-                  next.delete(item.id);
-                  return next;
-                });
-                timers.current.delete(item.id);
+                setArriving(without(key));
+                timers.current.delete(key);
               }, COMPLETION_DURATION),
             );
           },
@@ -242,16 +331,28 @@ export const CheckListBase = <T extends CheckListBaseItem>({
         ),
       );
     });
-    previous.current = new Map(items.map(item => [item.id, item.checked]));
-  }, [items]);
+    previous.current = new Map(
+      items.map(item => [rowKeys.get(item.id) ?? item.id, item.checked]),
+    );
+    completedStamps.current = new Map(
+      items.flatMap(item => {
+        const key = rowKeys.get(item.id) ?? item.id;
+        const stamp = item.checked
+          ? getCompletedStamp(item)
+          : completedStamps.current.get(key);
+        return stamp ? [[key, stamp] as const] : [];
+      }),
+    );
+    committedKeys.current = rowKeys;
+  }, [items, rowKeys]);
 
   useLayoutEffect(() => {
-    const id = focusedItem.current;
-    if (!id || departing.has(id) || !arriving.has(id)) return;
+    const key = focusedItem.current;
+    if (!key || departing.has(key) || !arriving.has(key)) return;
     const row = Array.from(
       container.current?.querySelectorAll<HTMLElement>('[data-checklist-id]') ??
         [],
-    ).find(element => element.dataset.checklistId === id);
+    ).find(element => element.dataset.checklistId === key);
     const target =
       row?.querySelector<HTMLElement>(
         'button[role="checkbox"]:not(:disabled), button:not(:disabled)',
@@ -267,13 +368,24 @@ export const CheckListBase = <T extends CheckListBaseItem>({
     focusedItem.current = null;
   }, [departing, arriving]);
 
-  const presentationItems = items.map(item => ({
-    ...item,
-    checked:
-      departing.get(item.id) ?? previous.current.get(item.id) ?? item.checked,
-  }));
+  const presentationItems = items.map(item => {
+    const key = keyOf(item);
+    const checked =
+      departing.get(key) ?? previous.current.get(key) ?? item.checked;
+    const leavingCompleted = checked && !item.checked;
+    return {
+      ...item,
+      checked,
+      ...(leavingCompleted &&
+        completedStamps.current.has(key) && {
+          completedAt: completedStamps.current.get(key),
+        }),
+    };
+  });
   const activeItems = getActiveItems(presentationItems);
-  const completedItems = getCompletedItems(presentationItems);
+  const completedGroups = groupCompletedByDay(
+    presentationItems.filter(item => item.checked),
+  );
   const completedCount = items.filter(item => item.checked).length;
 
   const handleEditKeyDown = (e: KeyboardEvent) => {
@@ -312,21 +424,22 @@ export const CheckListBase = <T extends CheckListBaseItem>({
     const item =
       items.find(current => current.id === presentationItem.id) ??
       presentationItem;
+    const key = keyOf(item);
     const isEditing = editingItemId === item.id;
     const canEdit = editCompleted || !item.checked;
     return (
       <div
-        key={item.id}
-        data-checklist-id={item.id}
+        key={key}
+        data-checklist-id={key}
         className={cn(
           'checklist-transition',
-          departing.has(item.id) && 'checklist-departing',
-          arriving.has(item.id) && 'checklist-arriving',
+          departing.has(key) && 'checklist-departing',
+          arriving.has(key) && 'checklist-arriving',
           populateIndex !== undefined && 'checklist-populating',
         )}
         style={
           populateIndex !== undefined
-            ? { animationDelay: `${Math.min(populateIndex, 8) * 30}ms` }
+            ? { animationDelay: populateDelay(populateIndex) }
             : undefined
         }
       >
@@ -339,14 +452,14 @@ export const CheckListBase = <T extends CheckListBaseItem>({
               ROW_CLASS[rowVariant],
               rowVariant === ROW_VARIANT.DENSE && 'checklist-dense-row',
               itemClassName?.(item),
-              item.isNew && 'checklist-item-new',
+              (item.isNew || entering.has(key)) && 'checklist-item-new',
             )}
           >
             <Checkbox
               checked={item.checked}
               onCheckedChange={() => {
                 if (container.current?.contains(document.activeElement))
-                  focusedItem.current = item.id;
+                  focusedItem.current = key;
                 onToggleCheck(item);
               }}
               disabled={item.isRemoving}
@@ -389,6 +502,16 @@ export const CheckListBase = <T extends CheckListBaseItem>({
     );
   };
 
+  // Rows keep one stagger sequence across day groups.
+  const populateOffsets = new Map(
+    completedGroups.map(({ key }, index) => [
+      key,
+      completedGroups
+        .slice(0, index)
+        .reduce((total, group) => total + group.items.length, 0),
+    ]),
+  );
+
   const activeRows = (
     <div className={LIST_CLASS[rowVariant]}>
       {activeItems.length === 0 && !activeFooter && emptyLabel}
@@ -406,7 +529,7 @@ export const CheckListBase = <T extends CheckListBaseItem>({
             activeItems.map(item => item.id),
           )
         : activeRows}
-      {completedItems.length > 0 && (
+      {completedGroups.length > 0 && (
         <CollapsibleList
           storageKeyPrefix={storageKeyPrefix}
           onOpenChange={(_, open) => setPopulating(open)}
@@ -415,10 +538,39 @@ export const CheckListBase = <T extends CheckListBaseItem>({
               id: completedSectionId,
               title: `Completed (${completedCount})`,
               content: (
-                <div className={LIST_CLASS[rowVariant]}>
-                  {completedItems.map((item, index) =>
-                    renderRow(item, false, populating ? index : undefined),
-                  )}
+                <div className="flex flex-col gap-3">
+                  {completedGroups.map(({ key, label, items: groupItems }) => {
+                    const offset = populateOffsets.get(key) ?? 0;
+                    return (
+                      <div key={key} className="flex flex-col gap-1">
+                        {label && (
+                          <Text
+                            as="div"
+                            size="1"
+                            weight="medium"
+                            color="gray"
+                            className={cn(populating && 'checklist-populating')}
+                            style={
+                              populating
+                                ? { animationDelay: populateDelay(offset) }
+                                : undefined
+                            }
+                          >
+                            {label}
+                          </Text>
+                        )}
+                        <div className={LIST_CLASS[rowVariant]}>
+                          {groupItems.map((item, index) =>
+                            renderRow(
+                              item,
+                              false,
+                              populating ? offset + index : undefined,
+                            ),
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               ),
             },

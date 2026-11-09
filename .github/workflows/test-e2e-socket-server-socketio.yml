@@ -19,7 +19,8 @@ jobs:
   test-socket-server:
     if: ${{ github.event_name != 'repository_dispatch' || (github.event.client_payload.conclusion == 'success' && github.event.client_payload.deployed == 'true') }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    # Covers wait-socket-server-publish.sh's 10-minute Watchtower rollout window.
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
 
@@ -109,3 +110,14 @@ jobs:
           }
           EOF
           node "$GITHUB_WORKSPACE/round-trip.mjs"
+
+      - name: Wait for the SSE transport
+        env:
+          SOCKET_SERVER_URL: ${{ env.SOCKET_SERVER_URL }}
+        run: .github/scripts/wait-socket-server-publish.sh
+
+      - name: SSE round-trip and cross-transport test
+        env:
+          SOCKET_SERVER_URL: ${{ env.SOCKET_SERVER_URL }}
+          SHARED_APP_TOKEN: ${{ env.SHARED_APP_TOKEN }}
+        run: node scripts/node/test-socket-server-sse.mjs

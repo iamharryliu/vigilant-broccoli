@@ -234,6 +234,13 @@ const repoRoot = path.resolve(root, '..', '..');
 const { problems, conflicts } = buildProblems(root, repoRoot);
 for (const conflict of conflicts) console.log(`category conflict: ${conflict}`);
 
+// Markdown notes shown at the explorer root, as raw markdown rather than the
+// JSON payload problems use; config paths are repo-relative.
+const rootNotes = (config.rootNotes ?? []).map(notePath => ({
+  name: toWords(slugify(path.basename(notePath))),
+  content: fs.readFileSync(path.join(repoRoot, notePath), 'utf8'),
+}));
+
 const notesOut = path.join(outDir, NOTES_DIR);
 fs.rmSync(notesOut, { recursive: true, force: true });
 for (const problem of problems) {
@@ -245,20 +252,41 @@ for (const problem of problems) {
   );
 }
 
+for (const note of rootNotes) {
+  fs.mkdirSync(notesOut, { recursive: true });
+  fs.writeFileSync(path.join(notesOut, note.name), note.content);
+}
+
 fs.mkdirSync(outDir, { recursive: true });
 fs.writeFileSync(
   path.join(outDir, STRUCTURE_FILE),
-  JSON.stringify(buildTree(problems), null, 2),
+  JSON.stringify(
+    sortNodes([
+      ...buildTree(problems),
+      ...rootNotes.map(note => ({
+        name: note.name,
+        path: note.name,
+        type: NODE_TYPE_FILE,
+      })),
+    ]),
+    null,
+    2,
+  ),
 );
 fs.writeFileSync(
   path.join(outDir, SEARCH_INDEX_FILE),
-  JSON.stringify(
-    problems.map(problem => ({
+  JSON.stringify([
+    ...problems.map(problem => ({
       name: problem.name,
       path: `${problem.category}${PATH_SEP}${problem.name}`,
       content: problem.languages.map(l => l.code).join('\n\n'),
     })),
-  ),
+    ...rootNotes.map(note => ({
+      name: note.name,
+      path: note.name,
+      content: note.content,
+    })),
+  ]),
 );
 
 console.log(`Wrote snapshot: ${problems.length} problems -> ${outDir}`);

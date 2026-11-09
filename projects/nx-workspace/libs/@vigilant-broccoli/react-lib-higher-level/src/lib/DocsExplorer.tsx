@@ -88,6 +88,12 @@ const flattenFilePaths = (nodes: DocsNode[]): string[] =>
       : [node.path],
   );
 
+const isDirectory = (node: DocsNode) => node.type === NODE_TYPE_DIRECTORY;
+
+// Stable, so each group keeps the order the structure provided.
+const directoriesFirst = (nodes: DocsNode[]) =>
+  [...nodes].sort((a, b) => Number(isDirectory(b)) - Number(isDirectory(a)));
+
 export interface DocsSearchResult {
   name: string;
   path: string;
@@ -759,7 +765,7 @@ const FileTree = ({
   multiSelectMode: boolean;
 }) => (
   <div className="w-full">
-    {nodes.map(node => (
+    {directoriesFirst(nodes).map(node => (
       <FileTreeNode
         key={node.path}
         node={node}
@@ -859,7 +865,7 @@ const FileTreeNode = ({
         >
           <div className="overflow-hidden">
             {hasExpanded &&
-              node.children.map(child => (
+              directoriesFirst(node.children).map(child => (
                 <FileTreeNode
                   key={child.path}
                   node={child}

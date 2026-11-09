@@ -4,6 +4,7 @@ import {
   getBearerToken,
 } from '../../../../../libs/supabase-server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { MEMBER_ORIGIN } from '../../../../lib/types';
 
 export async function GET(request: NextRequest) {
   const accessToken = getBearerToken(request);
@@ -18,7 +19,8 @@ export async function GET(request: NextRequest) {
     .from('home_members')
     .select('id, home_id, invited_by_email')
     .eq('email', user.email)
-    .eq('status', 'pending');
+    .eq('status', 'pending')
+    .eq('origin', MEMBER_ORIGIN.INVITED);
 
   return Response.json(data ?? []);
 }
@@ -41,7 +43,8 @@ export async function POST(request: NextRequest) {
     .update({ user_id: user.id, status: 'accepted' })
     .eq('home_id', homeId)
     .eq('email', user.email)
-    .eq('status', 'pending');
+    .eq('status', 'pending')
+    .eq('origin', MEMBER_ORIGIN.INVITED);
 
   if (error) {
     return Response.json(

@@ -5,7 +5,7 @@ import {
   isExpiredError,
   GoogleCalendarEvent,
 } from '@vigilant-broccoli/google-workspace';
-import { requireAuth } from '../../../../../libs/api-auth';
+import { requireGoogleAuth } from '../../../../../libs/api-auth';
 import { GOOGLE_TOKEN_EXPIRED } from '../../../../../libs/api-errors';
 
 export const runtime = 'nodejs';
@@ -13,7 +13,7 @@ export const runtime = 'nodejs';
 const AGENDA_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
 
 export async function GET(req: NextRequest) {
-  const auth = await requireAuth(req, { requireGoogleToken: true });
+  const auth = await requireGoogleAuth(req);
   if (auth instanceof NextResponse) return auth;
 
   const calendarIds = req.nextUrl.searchParams.getAll('calendarId');
@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
 
   const results = await Promise.allSettled(
     calendarIds.map(calendarId =>
-      listCalendarEvents(auth.googleToken as string, calendarId, {
+      listCalendarEvents(auth.googleToken, calendarId, {
         timeMin,
         timeMax,
       }),
@@ -46,12 +46,12 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const auth = await requireAuth(req, { requireGoogleToken: true });
+  const auth = await requireGoogleAuth(req);
   if (auth instanceof NextResponse) return auth;
 
   try {
     const oauth2Client = new google.auth.OAuth2();
-    oauth2Client.setCredentials({ access_token: auth.googleToken as string });
+    oauth2Client.setCredentials({ access_token: auth.googleToken });
     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
 
     const body = await req.json();
