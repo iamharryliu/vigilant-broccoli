@@ -4,6 +4,7 @@ import AuthProvider from './providers/auth-provider';
 import HomeProvider from './providers/home-provider';
 import AppLayout from './components/AppLayout';
 import { RootThemeWrapper } from './components/RootThemeWrapper';
+import { I18nProvider } from './i18n';
 
 export const metadata = {
   title: 'Home | Hearth',
@@ -25,7 +26,9 @@ export default function RootLayout({
         <RootThemeWrapper>
           <AuthProvider>
             <HomeProvider>
-              <AppLayout>{children}</AppLayout>
+              <I18nProvider>
+                <AppLayout>{children}</AppLayout>
+              </I18nProvider>
             </HomeProvider>
           </AuthProvider>
         </RootThemeWrapper>
