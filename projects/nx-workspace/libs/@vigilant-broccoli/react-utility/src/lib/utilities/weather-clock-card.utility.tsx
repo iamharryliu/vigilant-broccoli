@@ -64,9 +64,9 @@ const FAILURE_STATUSES: string[] = [
 ];
 
 const CARD_CLASS =
-  'flex w-full flex-col gap-4 rounded-xl border border-[var(--gray-6)] bg-[color-mix(in_srgb,var(--color-background)_50%,transparent)] p-4 shadow-lg';
+  'flex w-full flex-col gap-4 rounded-xl border border-[var(--gray-6)] bg-[color-mix(in_srgb,var(--color-background)_50%,transparent)] p-4 shadow-lg transition-[opacity,border-color] duration-300';
 const CARD_TOGGLE_CLASS =
-  'cursor-pointer transition-opacity hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gray-8)]';
+  'cursor-pointer hover:opacity-80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--gray-8)]';
 const INTERACTIVE_SELECTOR = 'button, a, input, select, textarea';
 const SUMMARY_CLASS =
   'flex flex-wrap items-center justify-center gap-x-6 gap-y-4';

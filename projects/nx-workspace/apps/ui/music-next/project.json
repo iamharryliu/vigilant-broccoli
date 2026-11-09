@@ -1,0 +1,102 @@
+{
+  "name": "music-next",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/music-next",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": false,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "default",
+        "^default",
+        {
+          "externalDependencies": ["next"]
+        },
+        {
+          "dependentTasksOutputFiles": "**/*.d.ts",
+          "transitive": true
+        },
+        {
+          "env": "NEXT_PUBLIC_SUPABASE_URL"
+        },
+        {
+          "env": "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY"
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/apps/ui/music-next/.next/!(cache)/**/*",
+        "{workspaceRoot}/dist/apps/ui/music-next/.next/!(cache)"
+      ],
+      "options": {
+        "cwd": "apps/ui/music-next",
+        "tty": false,
+        "command": "next build --webpack"
+      },
+      "configurations": {
+        "development": {}
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "defaultConfiguration": "development",
+      "options": {
+        "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/music-next/.env.local.example 'cd apps/ui/music-next && next dev --webpack --hostname 127.0.0.1 --port 1340'"
+      }
+    },
+    "serve:no-vault": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/ui/music-next",
+        "command": "env -u GITHUB_TOKEN next dev --webpack --hostname 127.0.0.1 --port 1340"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "pm2:start": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "parallel": false,
+        "commands": [
+          {
+            "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/ui/music-next/.env.local.example 'pm2 start apps/ui/music-next/ecosystem.config.js'"
+          },
+          {
+            "command": "pm2 save"
+          }
+        ]
+      }
+    },
+    "pm2:reload": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "parallel": false,
+        "commands": [
+          {
+            "command": "env -u GITHUB_TOKEN NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt tsx scripts/fetch-secrets.ts --env-file apps/ui/music-next/.env.local.example 'pm2 startOrReload apps/ui/music-next/ecosystem.config.js'"
+          },
+          {
+            "command": "pm2 save"
+          }
+        ]
+      }
+    },
+    "pm2:delete": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pm2 delete music-next"
+      }
+    },
+    "pm2:logs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pm2 logs music-next"
+      }
+    }
+  }
+}

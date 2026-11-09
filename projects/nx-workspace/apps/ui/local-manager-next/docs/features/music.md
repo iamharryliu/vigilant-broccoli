@@ -1,5 +1,3 @@
 # Music
 
-## Overview
-
-- `/music` page (sidebar entry, `SIDEBAR_ROUTE.MUSIC`) hosts the Metronome from `@vigilant-broccoli/react-music-lib` and the DJ Music utility (`src/app/components/utilities/dj-music.utility.tsx`) each in its own card, side by side (DJ Music left, Metronome right) in one row at every width (`grid-cols-2`, `min-w-0` cells that scroll horizontally if a card's content is too wide)
+- The `/music` page (`SIDEBAR_ROUTE.MUSIC`) iframes `music-next` at `/music/app`, which this app rewrites to the PM2 process on `127.0.0.1:1340` (`MUSIC_ORIGIN` overrides the target). It holds DJ Music, the Metronome and Spotify Playlists. See [music.md](../../../music-next/docs/features/music.md).

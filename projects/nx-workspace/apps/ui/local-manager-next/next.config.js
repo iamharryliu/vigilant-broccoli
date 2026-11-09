@@ -23,15 +23,17 @@ const SERVER_ONLY_EXTERNALS = [
   'playwright-core',
   'chromium-bidi',
 ];
-// cloud-services-next (PM2, port 1338) and local-services-next (PM2, port
-// 1339) are Next.js zones: each basePath equals its prefix, and the matching
-// dashboard tab iframes it.
+// cloud-services-next (PM2, port 1338), local-services-next (PM2, port 1339)
+// and music-next (PM2, port 1340) are Next.js zones: each basePath equals its
+// prefix, and the matching dashboard tab or page iframes it.
 const CLOUD_SERVICES_PATH = '/dev-dashboard/cloud';
 const CLOUD_SERVICES_ORIGIN =
   process.env.CLOUD_SERVICES_ORIGIN || 'http://127.0.0.1:1338';
 const LOCAL_SERVICES_PATH = '/dev-dashboard/local';
 const LOCAL_SERVICES_ORIGIN =
   process.env.LOCAL_SERVICES_ORIGIN || 'http://127.0.0.1:1339';
+const MUSIC_PATH = '/music/app';
+const MUSIC_ORIGIN = process.env.MUSIC_ORIGIN || 'http://127.0.0.1:1340';
 const LIBS_DIR = join(__dirname, '../../../libs/@vigilant-broccoli');
 const LIB_SOURCE_PATTERN = /\.(tsx?|jsx?|html)$/;
 // Tailwind scans lib sources by glob, but webpack's cache does not reliably
@@ -68,6 +70,9 @@ const nextConfig = {
   distDir: '../../../dist/apps/ui/local-manager-next/.next',
   agentRules: false,
   serverExternalPackages: ['better-sqlite3'],
+  // Rewrites proxy with a 30s default that resets the socket; music-next's
+  // /api/spotify/graph walks every playlist and can run longer.
+  experimental: { proxyTimeout: 120_000 },
   async rewrites() {
     return [
       {
@@ -77,6 +82,10 @@ const nextConfig = {
       {
         source: `${LOCAL_SERVICES_PATH}/:path*`,
         destination: `${LOCAL_SERVICES_ORIGIN}${LOCAL_SERVICES_PATH}/:path*`,
+      },
+      {
+        source: `${MUSIC_PATH}/:path*`,
+        destination: `${MUSIC_ORIGIN}${MUSIC_PATH}/:path*`,
       },
     ];
   },

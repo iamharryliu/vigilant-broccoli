@@ -14,7 +14,8 @@ A sign-in whose `redirectTo` is **not** matched by `uri_allow_list` does not err
 
 ### Adding / changing redirect URLs
 
-1. Get the app's real deployed domains from [`network-management.md`](../../../infrastructure/network-management.md) — the source of truth. **Every deployed app follows the `staging-<name>` / `production-<name>` prefix pattern** (e.g. `staging-hearth.vercel.app`, `production-hearth.vercel.app`). Do **not** guess a bare `<name>.vercel.app` — that domain usually does not exist, so its sign-in silently falls through to `site_url`. This exact mistake was live for hearth and employee-handler-ui.
+1. Get the app's real deployed domains from [`network-management.md`](../../../infrastructure/network-management.md) — the source of truth. **Provider projects follow the `staging-<name>` / `production-<name>` prefix pattern** (e.g. `staging-hearth.vercel.app`, `production-hearth.vercel.app`). Do **not** guess a bare `<name>.vercel.app` — that domain usually does not exist, so its sign-in silently falls through to `site_url`. This exact mistake was live for hearth and employee-handler-ui.
+   Custom staging hosts for Hearth, Balloono and Manager have exact `/auth/callback` entries alongside their provider aliases; browser-origin callbacks work on either host.
 2. Add one entry per app **per environment** to `uri_allow_list` in `supabase-auth.tf`: the local dev URL(s) plus each real staging and production URL. Use the `https://<domain>/*` wildcard form for Vercel/PM2 apps (matches any callback path); use the exact `.../auth/callback` path form for fly.io mobile shells. Keep entries grouped and commented by app, matching the existing style.
 3. Only add apps that actually use Supabase sign-in (`signInWithOAuth` / `createSupabaseAuth`). Apps without Supabase auth (e.g. `findme`, `whiteboard`) do **not** belong here. Apps not yet deployed (not in `network-management.md`) get added when they ship.
 4. `pnpm tf:plan` — confirm the **only** change is the `auth` attribute (the other blocks must show as unchanged; see the resource's own comment about why `api`/`database`/`network`/`storage` are pinned). Then `pnpm tf:apply`.
@@ -36,7 +37,7 @@ A sign-in whose `redirectTo` is **not** matched by `uri_allow_list` does not err
 
 ## Server side
 
-- `src/proxy.ts` gates all `/api/*` routes by verifying the bearer token with `supabase.auth.getUser(token)` (see `local-manager-next`; `employee-handler-ui`'s is the same check plus an `ALLOWED_EMAILS` / `ALLOWED_EMAIL_DOMAINS` allowlist).
+- `src/proxy.ts` gates all `/api/*` routes by verifying the bearer token with `supabase.auth.getUser(token)` (`employee-handler-ui` adds an `ALLOWED_EMAILS` / `ALLOWED_EMAIL_DOMAINS` allowlist). `local-manager-next` has no proxy: it is localhost-only, so its routes authenticate only where they need the user's identity.
 - Per-route helpers in `local-manager-next`:
   - `getUserEmail(req)` (`libs/server-auth.ts`) — re-verifies the bearer token and returns the email used as the per-user data key.
   - `getGoogleAccessTokenForRequest(req)` (`libs/google-token.ts`) — resolves the Google access token from the stored refresh token for Google API calls (Tasks, Calendar); a missing row or revoked refresh token throws a 401.
@@ -60,6 +61,6 @@ A sign-in whose `redirectTo` is **not** matched by `uri_allow_list` does not err
 ## Migration status
 
 - `local-manager-next` — on the shared `react-lib-auth` module.
-- `cloud-services-next`, `local-services-next` — use only `authFetch` from the shared module; they never sign in and read `local-manager-next`'s stored session.
+- `cloud-services-next`, `local-services-next`, `music-next` — use only `authFetch` from the shared module; they never sign in and read `local-manager-next`'s stored session.
 - `hearth`, `employee-handler-ui`, `small-business-next`, `mobile-manager-next` — same pattern, but hand-rolled per-app copies predating the shared module; consolidation pending.
 - `vb-express` (Fastify) — still on better-auth + API-key plugin; not part of this pattern yet.

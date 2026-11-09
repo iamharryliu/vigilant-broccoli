@@ -83,6 +83,7 @@ locals {
     "http://localhost:3000",
     "http://localhost:4200",
     "https://staging-hearth.vercel.app",
+    "https://staging-hearth.harryliu.dev",
     "https://production-hearth.vercel.app",
     "https://hearth.harryliu.dev",
   ]

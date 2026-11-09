@@ -20,7 +20,7 @@
 - Hidden event calendar ids are saved in browser local storage under `calendar-view-hidden-event-calendars`, so the choice is per browser and new calendars appear by default.
 - The Shift+C calendar dialog remains available.
 
-- The dashboard Weather card calculates preparation badges locally using the shared `common-js` calculator; see [thresholds](../../../weather-next/docs/features/preparation-badges/README.md). No preparation API request is made.
+- The dashboard Weather card is weather-next's embed in an iframe; see [Weather Embed](../../../../../docs/features/weather-embed.md).
 
 ## Calendar event bookmarklet
 

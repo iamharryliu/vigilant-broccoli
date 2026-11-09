@@ -154,6 +154,7 @@
     "deploy:local-manager": "./scripts/shell/local-manager-next-deploy.sh",
     "cloud-services-next:logs": "cd projects/nx-workspace && nx run cloud-services-next:pm2:logs",
     "local-services-next:logs": "cd projects/nx-workspace && nx run local-services-next:pm2:logs",
+    "music-next:logs": "cd projects/nx-workspace && nx run music-next:pm2:logs",
     "local-manager-next:delete": "cd projects/nx-workspace && nx run local-manager-next:pm2:delete",
     "local-manager-next:logs": "cd projects/nx-workspace && nx run local-manager-next:pm2:logs",
     "local-manager-next:status": "cd projects/nx-workspace && nx run local-manager-next:pm2:status",

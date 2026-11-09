@@ -84,7 +84,7 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 - Keep requested Markdown-table content in the table; add no surrounding prose unless requested. That includes a lead-in sentence under the heading that restates, introduces or summarizes what the table shows; keep only prose that adds facts the table cannot hold.
 - Alphabetize unordered tables by their first column. Preserve meaningful order for steps, progressions, diagram labels and fixed side-by-side comparisons whose heading names the order.
 - Check relative links and section anchors after moving files or renaming headings.
-- This file and Doc Map documents with at least three `##` sections need a `## Table of Contents` after the one-line purpose. Derive it from headings in document order, nesting `###` entries and ignoring fenced examples; rebuild it when headings change and add a missing one when touching a listed doc. READMEs follow `app-readme-pattern.md` and stay deployment-agnostic (no hosted URLs or deploy targets; Stack groups ordered, items sorted, no parentheticals, optional ` - description` only when the name is ambiguous); notes follow [notes/CONTEXT.md](./notes/CONTEXT.md). Do not add ToCs to unrelated files.
+- This file and Doc Map documents with at least three `##` sections need a `## Table of Contents` after the one-line purpose. Derive it from headings in document order, nesting `###` entries and ignoring fenced examples; rebuild it when headings change and add a missing one when touching a listed doc. READMEs follow [app-readme-pattern.md](./docs/app-readme-pattern.md); notes follow [notes/CONTEXT.md](./notes/CONTEXT.md). Do not add ToCs to unrelated files.
 - Feature docs belong in `docs/features/<feature>.md` (a `<feature>/` folder only when it needs several files) under the owning app/lib. Only features spanning apps belong in `projects/nx-workspace/docs/features/`.
 - When changing a cloud service or its usage, update its notes/docs `## Free Tier` section with the limits.
 
@@ -93,7 +93,6 @@ Read [fly-service-pattern.md](./docs/app-development/api/deployment/fly-service-
 - Never commit or push unless explicitly instructed. Never force-push, skip hooks or amend existing commits.
 - Stage only files created or edited in this session; never `git add -A`, `git add .`, or files already modified/untracked before the session.
 - Treat the checkout as shared unless provably exclusive; if not provable, use a separate worktree off fresh `origin/main` with only your changes. Establish ownership before branching, staging, committing, stashing or switching branches. Never stash in a shared or uncertain checkout. If others' work is staged, commit only your paths with `git commit -m "<message>" -- <your paths>`.
-- Read [git-workflow.md](./docs/git-workflow.md) before changing Git state or publishing PRs.
 
 ## Responses
 
