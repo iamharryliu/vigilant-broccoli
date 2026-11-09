@@ -17,8 +17,7 @@ const GRAPH_CACHE_TTL_MS = 30 * 60 * 1000;
 const FORCE_QUERY_PARAM = 'force';
 
 // One TTL cache per signed-in user; the route runs in a single long-lived
-// PM2 process, so this survives across requests the way ttl-cache.utils.ts
-// is used elsewhere in this app. The fetcher resolves the access token on
+// PM2 process, so this survives across requests. The fetcher resolves the access token on
 // every cache miss (rather than closing over one) so a token refreshed
 // since the cache was created is always used.
 const graphCacheByUser = new Map<

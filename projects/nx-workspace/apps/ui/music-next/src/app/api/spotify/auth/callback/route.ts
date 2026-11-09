@@ -6,7 +6,7 @@ import {
   spotifyRedirectUri,
   storeSpotifyRefreshToken,
 } from '../../../../../../libs/spotify-token';
-import { SIDEBAR_ROUTE } from '../../../../app.const';
+import { MANAGER_MUSIC_PAGE_PATH } from '../../../../app.const';
 import {
   SPOTIFY_ERROR_QUERY_PARAM,
   SPOTIFY_OAUTH_ERROR,
@@ -15,10 +15,7 @@ import {
 export const runtime = 'nodejs';
 
 const redirectWithError = (request: NextRequest, error: string) => {
-  const url = new URL(
-    SIDEBAR_ROUTE.MUSIC.path,
-    spotifyAppOrigin(request.nextUrl.origin),
-  );
+  const url = new URL(MANAGER_MUSIC_PAGE_PATH, spotifyAppOrigin(request));
   url.searchParams.set(SPOTIFY_ERROR_QUERY_PARAM, error);
   return NextResponse.redirect(url);
 };
@@ -38,7 +35,7 @@ export async function GET(request: NextRequest) {
   try {
     const { refreshToken } = await exchangeSpotifyAuthorizationCode(
       code,
-      spotifyRedirectUri(request.nextUrl.origin),
+      spotifyRedirectUri(request),
     );
     await storeSpotifyRefreshToken(userEmail, refreshToken);
   } catch {
@@ -49,6 +46,6 @@ export async function GET(request: NextRequest) {
   }
 
   return NextResponse.redirect(
-    new URL(SIDEBAR_ROUTE.MUSIC.path, spotifyAppOrigin(request.nextUrl.origin)),
+    new URL(MANAGER_MUSIC_PAGE_PATH, spotifyAppOrigin(request)),
   );
 }

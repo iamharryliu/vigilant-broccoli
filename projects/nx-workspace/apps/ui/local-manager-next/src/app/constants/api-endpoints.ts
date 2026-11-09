@@ -23,10 +23,6 @@ export const API_ENDPOINTS = {
 
   WEATHER: '/api/weather',
 
-  DJ_PLAYLISTS: '/api/dj/playlists',
-  DJ_DOWNLOAD: '/api/dj/download',
-  DJ_OPEN_REKORDBOX: '/api/dj/open-rekordbox',
-
   LLM_TEST: '/api/llm-test',
   SPEECH_TO_TEXT: '/api/speech-to-text',
   TEXT_TO_SPEECH: '/api/text-to-speech',
@@ -55,8 +51,4 @@ export const API_ENDPOINTS = {
 
   CMS: '/api/cms',
   CMS_FILE: '/api/cms/file',
-
-  // Spotify
-  SPOTIFY_AUTH_LOGIN: '/api/spotify/auth/login',
-  SPOTIFY_GRAPH: '/api/spotify/graph',
 } as const;

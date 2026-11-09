@@ -53,8 +53,11 @@ export function SpotifyPlaylistGraphComponent() {
   const [refreshing, setRefreshing] = useState(false);
   const [connectError, setConnectError] = useState<string | null>(null);
 
+  // The OAuth round trip runs in the top window (local-manager-next's /music,
+  // which iframes this app on the same origin), so the callback's error param
+  // lands on its URL, not this frame's. Standalone, top is this window.
   useEffect(() => {
-    const code = new URLSearchParams(window.location.search).get(
+    const code = new URLSearchParams(window.top?.location.search).get(
       SPOTIFY_ERROR_QUERY_PARAM,
     );
     if (code) setConnectError(errorMessage(code));
@@ -80,7 +83,9 @@ export function SpotifyPlaylistGraphComponent() {
   const handleConnect = async () => {
     const response = await authFetch(API_ENDPOINTS.SPOTIFY_AUTH_LOGIN);
     const { authorizeUrl } = await response.json();
-    window.location.href = authorizeUrl;
+    // Navigate the top window: the callback redirects to the manager's /music
+    // page, which inside this frame would nest the whole manager shell.
+    (window.top ?? window).location.href = authorizeUrl;
   };
 
   const handleRefresh = async () => {
