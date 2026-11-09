@@ -80,7 +80,7 @@ export const VB_APP_URL = {
   CLOUD_8_SKATE: {
     NAME: 'Cloud 8 Skate',
     URL: 'https://cloud8skate.com/',
-    STAGING_URL: 'https://staging-cloud-8-skate-react.pages.dev/',
+    STAGING_URL: 'https://staging.cloud8skate.com/',
   },
   PERSONAL_WEBSITE: {
     NAME: 'harryliu.dev',

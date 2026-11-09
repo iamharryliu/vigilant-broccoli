@@ -54,6 +54,7 @@ const ALLOWED_ORIGINS = [
   'https://www.harryliu.dev',
   'https://cloud8skate.com',
   'https://www.cloud8skate.com',
+  'https://staging.cloud8skate.com',
 ];
 
 const PUBLIC_API_PREFIX = '/api/public/';

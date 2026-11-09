@@ -64,6 +64,8 @@ resource "cloudflare_zero_trust_access_application" "staging_pages" {
     { type = "public", uri = "*.${each.value}.pages.dev" },
     ], contains(keys(local.staging_pages_domains), each.key) ? [
     { type = "public", uri = local.staging_pages_domains[each.key] },
+    ] : [], each.key == local.staging_cloud8skate_project ? [
+    { type = "public", uri = local.staging_cloud8skate_domain },
   ] : [])
   policies = [
     { id = cloudflare_zero_trust_access_policy.staging_ui_owner.id, precedence = 1 },

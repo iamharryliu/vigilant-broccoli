@@ -84,7 +84,7 @@ pages.dev                                 Cloudflare Pages provider aliases (ret
 ├── production-findme.pages.dev              FindMe (production)
 ├── staging-whiteboard.pages.dev                 Whiteboard (staging)
 ├── production-whiteboard.pages.dev              Whiteboard (production)
-├── staging-cloud-8-skate-react.pages.dev      Cloud 8 Skate (staging — cloud8skate.com is on production, the exception)
+├── staging-cloud-8-skate-react.pages.dev      Cloud 8 Skate (staging — staging.cloud8skate.com; cloud8skate.com is on production)
 └── staging-harryliu-dev-react.pages.dev       Personal website React (staging — harryliu.dev is on production)
 
 github.io                                 GitHub Pages (custom domain projects.harryliu.dev)
@@ -98,6 +98,7 @@ github.io                                 GitHub Pages (custom domain projects.h
 | balloono.harryliu.dev | staging-balloono.harryliu.dev | `staging-balloono` | Vercel |
 | bookmarks.harryliu.dev | staging-bookmarks.harryliu.dev | `staging-bookmarks-react` | Pages |
 | calendar.harryliu.dev | staging-calendar.harryliu.dev | `staging-calendars` | Pages |
+| cloud8skate.com | staging.cloud8skate.com | `staging-cloud-8-skate-react` | Pages |
 | components.harryliu.dev | staging-components.harryliu.dev | `staging-component-library` | Pages |
 | context.harryliu.dev | staging-context.harryliu.dev | `staging-context-md` | Pages |
 | docs.harryliu.dev | staging-docs.harryliu.dev | `staging-docs-md` | Pages |
@@ -114,7 +115,7 @@ github.io                                 GitHub Pages (custom domain projects.h
 | weather.harryliu.dev | staging-weather.harryliu.dev | `staging-weather-next` | Vercel |
 | whiteboard.harryliu.dev | staging-whiteboard.harryliu.dev | `staging-whiteboard` | Pages |
 
-These are configured destinations, requiring the post-merge activation below; this inventory does not assert live DNS or certificate readiness. Provider aliases remain available and protected. `cloud8skate.com`, infrastructure/API hosts, demos and dedicated previews have no new staging domain. Pages Index has no separate staging deployment.
+These are configured destinations, requiring the post-merge activation below; this inventory does not assert live DNS or certificate readiness. Provider aliases remain available and protected. `staging.cloud8skate.com` lives in the separate `cloud8skate.com` zone (`cloudflare-cloud8skate.tf`) and its Sanity CORS origin and reCAPTCHA domain are dashboard settings outside this repo. Infrastructure/API hosts, demos and dedicated previews have no new staging domain. Pages Index has no separate staging deployment.
 
 After merging, run from the updated repository:
 
