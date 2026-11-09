@@ -6,7 +6,7 @@ import {
   WEATHER_EMBED,
   WeatherEmbedMessage,
 } from '@vigilant-broccoli/common-js';
-import { LOCAL_MANAGER_ORIGINS } from '@vigilant-broccoli/infrastructure';
+import { WEATHER_EMBED_PARENT_ORIGINS } from '@vigilant-broccoli/infrastructure';
 import { useTheme } from '@vigilant-broccoli/react-lib';
 import { WeatherClockCardUtilityContent } from '@vigilant-broccoli/react-utility';
 import { fetchWeather } from '../../lib/fetch-weather';
@@ -17,7 +17,9 @@ const getParentOrigin = (): string | null => {
   const origin =
     window.location.ancestorOrigins?.[0] ??
     (document.referrer ? new URL(document.referrer).origin : null);
-  return origin && LOCAL_MANAGER_ORIGINS.includes(origin) ? origin : null;
+  return origin && WEATHER_EMBED_PARENT_ORIGINS.includes(origin)
+    ? origin
+    : null;
 };
 
 export function WeatherEmbed() {

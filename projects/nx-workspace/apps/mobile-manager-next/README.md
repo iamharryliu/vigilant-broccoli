@@ -28,7 +28,6 @@ Mobile dashboard with calendar, tasks, notepad, weather and quick links includin
   - `react-lib`
   - `react-lib-auth`
   - `react-lib-higher-level`
-  - `react-utility`
   - `security-news`
 - Cloud services
   - Google Workspace APIs
