@@ -37,7 +37,7 @@ A sign-in whose `redirectTo` is **not** matched by `uri_allow_list` does not err
 
 ## Server side
 
-- `src/proxy.ts` gates all `/api/*` routes by verifying the bearer token with `supabase.auth.getUser(token)` (see `local-manager-next`; `employee-handler-ui`'s is the same check plus an `ALLOWED_EMAILS` / `ALLOWED_EMAIL_DOMAINS` allowlist).
+- `src/proxy.ts` gates all `/api/*` routes by verifying the bearer token with `supabase.auth.getUser(token)` (`employee-handler-ui` adds an `ALLOWED_EMAILS` / `ALLOWED_EMAIL_DOMAINS` allowlist). `local-manager-next` has no proxy: it is localhost-only, so its routes authenticate only where they need the user's identity.
 - Per-route helpers in `local-manager-next`:
   - `getUserEmail(req)` (`libs/server-auth.ts`) — re-verifies the bearer token and returns the email used as the per-user data key.
   - `getGoogleAccessTokenForRequest(req)` (`libs/google-token.ts`) — resolves the Google access token from the stored refresh token for Google API calls (Tasks, Calendar); a missing row or revoked refresh token throws a 401.

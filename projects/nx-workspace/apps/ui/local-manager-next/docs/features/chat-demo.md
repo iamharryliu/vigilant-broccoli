@@ -13,5 +13,5 @@ Feature Sandbox demos of three ways to authorize chat publishing against `socket
 ## Nuances
 
 - All three share the `chat-demo` app and `lobby` room, so each demo receives messages from the others, and every demo receives over an unauthenticated subscription.
-- `/api/chat/token` is exempt from `proxy.ts` so guests can use it, and allows 10 requests per minute per `x-forwarded-for` value in process memory. That header is client-supplied unless a trusted proxy sets it, so add a stronger limit before exposing the route publicly.
+- `/api/chat/token` needs no bearer token so guests can use it, and allows 10 requests per minute per `x-forwarded-for` value in process memory. That header is client-supplied unless a trusted proxy sets it, so add a stronger limit before exposing the route publicly.
 - A socket retry after an expired token must wait for `connect`: Socket.IO flushes buffered emits before firing it, so a buffered publish beats the resubscribe and the sender misses its own message. `chat-socket-publish.ts` handles this.

@@ -34,7 +34,7 @@ export const getGoogleAccessTokenForRequest = async (
     clientId: getEnvironmentVariable(GOOGLE_CLIENT_ID_ENV),
     clientSecret: getEnvironmentVariable(GOOGLE_CLIENT_SECRET_ENV),
   });
-  // Same 401 as a Supabase session failure (src/proxy.ts); both render the
+  // Same 401 as a Supabase session failure (`getUserEmail`); both render the
   // "Reconnect Google" card.
   if (!accessToken) throw unauthorizedError();
   return accessToken;
