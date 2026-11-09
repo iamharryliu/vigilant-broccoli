@@ -19,6 +19,13 @@ import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { promises as fs } from 'fs';
 import { Readable } from 'stream';
 
+// A Fly machine resumed from suspend can reuse a keep-alive socket R2 already
+// closed, which hangs without these bounds instead of letting the SDK retry.
+// socketTimeout is an idle timeout, so healthy large transfers still finish;
+// requestTimeout is wall-clock in the SDK's Node handler and stays unset.
+const R2_CONNECTION_TIMEOUT_MS = 5_000;
+const R2_SOCKET_IDLE_TIMEOUT_MS = 5_000;
+
 export class CloudflareBucketProvider implements IBucketProvider {
   private client: S3Client;
   private bucketName: string;
@@ -48,6 +55,10 @@ export class CloudflareBucketProvider implements IBucketProvider {
       credentials: {
         accessKeyId,
         secretAccessKey,
+      },
+      requestHandler: {
+        connectionTimeout: R2_CONNECTION_TIMEOUT_MS,
+        socketTimeout: R2_SOCKET_IDLE_TIMEOUT_MS,
       },
     });
   }
