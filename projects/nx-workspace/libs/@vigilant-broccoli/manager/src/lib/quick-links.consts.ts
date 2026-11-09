@@ -32,7 +32,10 @@ import {
 import { ACCESS_GATED_URL } from './access-gated.consts';
 import { PERSONAL_ACCOUNT_LINK, PERSONAL_URL } from './personal-account.consts';
 import { JOURNAL_PATH, VB_REPO_PATH } from '@harry/private';
-import { VB_GITHUB_WORKFLOWS_URL } from '@vigilant-broccoli/infrastructure';
+import {
+  VB_GITHUB_WORKFLOWS_URL,
+  VB_LINK_PREFIX,
+} from '@vigilant-broccoli/infrastructure';
 import {
   AGENTIC_PHASES,
   DISPATCHABLE_WORKFLOW_NAMES,
@@ -278,7 +281,7 @@ const HOME_LINKS: QuickLink[] = [
 
 const AGENTIC_LINKS: QuickLink[] = AGENTIC_PHASES.flatMap(({ workflows }) =>
   workflows.map(({ name, url }) => ({
-    label: name,
+    label: `${VB_LINK_PREFIX}${name}`,
     target: url,
     type: OPEN_TYPE.BROWSER,
     subgroup: LINK_GROUP_SUBGROUP.AGENTIC,
@@ -290,7 +293,7 @@ const AGENTIC_URLS = new Set(
 );
 
 const WORKFLOW_LINKS: QuickLink[] = DISPATCHABLE_WORKFLOW_NAMES.map(name => ({
-  label: name,
+  label: `${VB_LINK_PREFIX}${name}`,
   target: `${VB_GITHUB_WORKFLOWS_URL}/${name}.yml`,
   type: OPEN_TYPE.BROWSER,
   subgroup: LINK_GROUP_SUBGROUP.WORKFLOWS,

@@ -31,8 +31,6 @@ const toValidationError = (message: string) =>
   new ImageValidationError(message);
 
 export const validateImageCount = <T>(images: T[]) => {
-  if (images.length === 0)
-    throw new ImageValidationError('At least one image is required.');
   if (images.length > MAX_IMAGES_PER_UPLOAD)
     throw new ImageValidationError(
       `Maximum ${MAX_IMAGES_PER_UPLOAD} images per upload.`,

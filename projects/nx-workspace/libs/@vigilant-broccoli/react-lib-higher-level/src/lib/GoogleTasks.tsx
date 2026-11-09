@@ -42,7 +42,6 @@ interface Task {
   due?: string;
   updated?: string;
   status: 'needsAction' | 'completed';
-  isNew?: boolean;
   isRemoving?: boolean;
 }
 
@@ -57,10 +56,6 @@ export interface GoogleTasksAuthAdapter {
     init?: RequestInit,
   ) => Promise<Response>;
   useAuthStatus: () => 'loading' | 'authenticated' | 'unauthenticated';
-  useGoogleToken: () => {
-    googleToken: string | null;
-    clearGoogleToken: () => void;
-  };
   signInWithGoogle: () => Promise<void>;
 }
 
@@ -130,16 +125,8 @@ const useTasks = (
         due: taskData.due,
         updated: taskData.updated,
         status: taskData.status || 'needsAction',
-        isNew: true,
       };
       setTasks(prevTasks => [newTask, ...prevTasks]);
-      setTimeout(() => {
-        setTasks(prevTasks =>
-          prevTasks.map(t =>
-            t.id === newTask.id ? { ...t, isNew: false } : t,
-          ),
-        );
-      }, 300);
     } catch (err) {
       setError(handleApiError(err, 'Failed to create task'));
     }
@@ -153,9 +140,17 @@ const useTasks = (
       originalStatus === 'completed' ? 'needsAction' : 'completed';
 
     // The shared checklist owns visual timing; this flag only guards persistence.
+    // `updated` moves to now so the row lands in Completed's Today group at once.
     setTasks(prevTasks =>
       prevTasks.map(t =>
-        t.id === task.id ? { ...t, status: nextStatus, isRemoving: true } : t,
+        t.id === task.id
+          ? {
+              ...t,
+              status: nextStatus,
+              isRemoving: true,
+              updated: new Date().toISOString(),
+            }
+          : t,
       ),
     );
 
@@ -187,7 +182,12 @@ const useTasks = (
       setTasks(prevTasks =>
         prevTasks.map(t =>
           t.id === task.id
-            ? { ...t, status: originalStatus, isRemoving: false }
+            ? {
+                ...t,
+                status: originalStatus,
+                isRemoving: false,
+                updated: task.updated,
+              }
             : t,
         ),
       );
@@ -603,9 +603,8 @@ export const GoogleTasksComponent = ({
   wrapInCard?: boolean;
   addTaskActions?: ReactNode;
 }) => {
-  const { authFetch, useAuthStatus, useGoogleToken, signInWithGoogle } = auth;
+  const { authFetch, useAuthStatus, signInWithGoogle } = auth;
   const status = useAuthStatus();
-  const { clearGoogleToken } = useGoogleToken();
   const { taskLists, authError: titleAuthError } = useTaskLists(
     status,
     authFetch,
@@ -680,10 +679,6 @@ export const GoogleTasksComponent = ({
     titleAuthError ||
     !!error?.includes('Unauthorized') ||
     !!error?.includes('authentication');
-
-  useEffect(() => {
-    if (hasGoogleAuthError) clearGoogleToken();
-  }, [hasGoogleAuthError, clearGoogleToken]);
 
   const handleCreateTask = useCallback(async () => {
     if (isCreatingTask) return;
@@ -783,7 +778,6 @@ export const GoogleTasksComponent = ({
         notes: t.notes,
         due: t.due,
         updatedAt: t.updated,
-        isNew: t.isNew,
         isRemoving: t.isRemoving,
       })),
     [tasks],

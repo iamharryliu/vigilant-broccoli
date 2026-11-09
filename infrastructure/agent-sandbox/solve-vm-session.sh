@@ -88,13 +88,16 @@ while [ $# -gt 0 ]; do
   if [ "$flag" = --update ]; then
     printf '%s\n' "$VM_UPDATE_RUNNER" > "$run_dir/update-pr-runner.sh"
     printf '%s\n' "$VM_UPDATE_HELPER" > "$run_dir/update-pr-vm-agent.sh"
-    # The streamed runner sources these before checking out the PR's branch.
-    cp "$REPO/infrastructure/agent-sandbox/"{publish-pr,no-changes,commit-subject}.sh "$run_dir/"
     printf '%s' "$instruction" > "$run_dir/instruction"
     printf '%s' "$operation" > "$run_dir/operation"
     printf '%s' "$ci_logs" > "$run_dir/ci-logs"
   fi
   git -C "$REPO" worktree add --quiet --detach "$run_dir/repo" origin/main
+  if [ "$flag" = --update ]; then
+    # The streamed runner sources these before checking out the PR's branch.
+    # Copied from the fresh worktree: fetch does not advance $REPO's own tree.
+    cp "$run_dir/repo/infrastructure/agent-sandbox/"{publish-pr,no-changes,commit-subject}.sh "$run_dir/"
+  fi
   printf -v body '%s; run_solve %q %q %q %q %q %q %q %q' "$(declare -f run_solve)" "$REPO" "$run_dir" "$flag" "$value" "$AGENT" "$MODEL" "$CODEX_MODEL" "$CODEX_SIGNED_IN"
   tmux new-session -d -s "$session" bash -c "$body"
   if [ "$AGENT" = codex ]; then

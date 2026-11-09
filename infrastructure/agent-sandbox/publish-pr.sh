@@ -45,6 +45,66 @@ pr_changed_files() {
 
 pr_todo_ids_in() { grep -oE '^\|[[:space:]]*[0-9a-f]{6}[[:space:]]*\|' | grep -oE '[0-9a-f]{6}' | sort -u; }
 
+# QA rows (docs/todo-pattern.md#qa-rows) are the one part of TODO.md a solving
+# agent edits itself; a create run writes this placeholder until its PR exists.
+PR_QA_ROW_RE='^[|][[:space:]]*[0-9a-f]{6}[[:space:]]*[|][[:space:]]*QA[[:space:]]*[|]'
+PR_QA_PLACEHOLDER='PR: pending'
+
+# Refuses TODO.md edits other than added or folded QA rows and removals of the
+# declared resolved rows, so the agent cannot rewrite unrelated backlog rows.
+#   $1 base ref/sha  $2... resolved ids
+pr_validate_todo_edits() {
+  local base=$1 line id bad=""
+  shift
+  git cat-file -e "$base:TODO.md" 2>/dev/null || return 0
+  while IFS= read -r line; do
+    case $line in '+++ '* | '--- '*) continue ;; esac
+    printf '%s\n' "${line:1}" | grep -qE "$PR_QA_ROW_RE" && continue
+    if [ "${line:0:1}" = - ]; then
+      id=$(printf '%s\n' "${line:1}" | pr_todo_ids_in || true)
+      [ -n "$id" ] && printf '%s\n' "$@" | grep -qx "$id" && continue
+    fi
+    bad+="  ${line}"$'\n'
+  done < <(git diff --no-color --no-ext-diff -U0 "$base" -- TODO.md | grep -E '^[+-]' || true)
+  if [ -n "$bad" ]; then
+    echo "ERROR: TODO.md lines changed outside QA rows; the runner owns every other row:" >&2
+    printf '%s' "$bad" >&2
+    return 1
+  fi
+}
+
+# Replaces the PR link placeholder on the QA rows this branch added or changed
+# (lines absent from the base), so a placeholder left on main by another PR is
+# not claimed. Returns 1 when nothing was replaced.
+#   $1 PR URL  $2 base ref/sha
+pr_fill_qa_placeholder() {
+  local url=$1 base=$2 base_file tmp
+  [ -f TODO.md ] && grep -qF "$PR_QA_PLACEHOLDER" TODO.md || return 1
+  base_file=$(mktemp)
+  tmp=$(mktemp)
+  git show "$base:TODO.md" >"$base_file" 2>/dev/null || true
+  # index/substr rather than gsub: the URL must not be read as a regex replacement.
+  awk -v link="PR: $url" -v token="$PR_QA_PLACEHOLDER" '
+    FILENAME == ARGV[1] { base[$0] = 1; next }
+    !($0 in base) && split($0, cells, "|") > 2 && cells[3] ~ /^[[:space:]]*QA[[:space:]]*$/ {
+      out = ""; rest = $0
+      while ((i = index(rest, token)) > 0) {
+        out = out substr(rest, 1, i - 1) link
+        rest = substr(rest, i + length(token))
+      }
+      $0 = out rest
+    }
+    { print }
+  ' "$base_file" TODO.md >"$tmp"
+  rm -f "$base_file"
+  if cmp -s "$tmp" TODO.md; then
+    rm -f "$tmp"
+    return 1
+  fi
+  cat "$tmp" >TODO.md
+  rm -f "$tmp"
+}
+
 # Validates the todo_ids the agent declared before anything is published.
 # Prints every problem to stderr and returns 1 when one is unusable; absent or
 # empty todo_ids are valid.
@@ -149,6 +209,14 @@ pr_publish() {
     HISTORY_SUMMARY="$subject" HISTORY_DATE="$(date -u +%Y-%m-%d)" \
     python3 "$MERGE_BODY_HELPER") || return 1
   url=$(gh pr create --base main --head "$branch" --title "$pr_title" --body "$body") || return 1
+  # The PR already exists, so a failed backfill only warns: returning 1 here
+  # would salvage the branch into a second, draft PR.
+  if pr_fill_qa_placeholder "$url" "$base_sha"; then
+    { git add TODO.md \
+      && SKIP=$SKIP_COMMIT_HOOKS git commit -m "docs: Link the QA checks in TODO.md to their pull request." -m "$trailer" \
+      && git push origin "$branch"; } >&2 \
+      || echo "WARNING: could not push the QA PR link; replace '$PR_QA_PLACEHOLDER' in TODO.md on $branch with $url." >&2
+  fi
   echo "$url"
   pr_emit_record created "$pr_title" "$url" "$pr_summary" "$base_sha"
 }

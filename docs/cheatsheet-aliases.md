@@ -98,7 +98,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   dockeropen                  Open Docker Desktop
   killdockerdesktop           Quit Docker Desktop and its background processes
   dockercleanup               Run docker_cleanup.sh
-  localcleanup                Remove clean Claude worktrees, prune Docker images/build cache, clear npm/Yarn/Cypress/pip caches (confirms)
+  localcleanup                Remove clean Claude worktrees (`--force` removes dirty ones too), prune Docker images/build cache, clear npm/Yarn/Cypress/pip caches, then print per-item reclaimed sizes and free disk before/after (confirms)
 
 ☁️  VB INFRA
   sshocivm [cmd]              SSH into the OCI VM (IP from terraform output)
@@ -125,7 +125,7 @@ Shell aliases and functions from `setup/dotfiles/`, available in any shell. Prin
   testgrind75                 Run grind-75 tests (py + ts + go)
   testgrind75py|ts|go         Run grind-75 tests for one language
   dldjmusic                   Download DJ music from Spotify playlists
-  syncbooks                   Copy Apple Books (iCloud) into Google Drive "Books" (rsync, never deletes)
+  syncbooks                   Copy Apple Books (iCloud) into Resilio media/books (rsync, never deletes)
 
 🍺 HOMEBREW & DEPS
   brewinit / brewup           Install from Brewfile / update + upgrade + cleanup

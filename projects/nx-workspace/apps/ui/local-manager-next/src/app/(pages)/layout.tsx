@@ -15,6 +15,7 @@ import { useBrowserNotifications } from '../hooks/useBrowserNotifications';
 import { useBackgroundTaskNotifications } from '../hooks/useBackgroundTaskNotifications';
 import { useUnreadDocumentTitle } from '../hooks/useUnreadDocumentTitle';
 import { NotificationContext } from '../context/NotificationContext';
+import { NotepadProvider } from '../context/NotepadContext';
 
 const SHORTCUTS_OVERLAY_KEY_CODE = 'Slash';
 
@@ -155,40 +156,41 @@ export default function Layout({ children }: { children: ReactNode }) {
 
   return (
     <NotificationContext.Provider value={add}>
-      <div className="w-full h-screen flex flex-col overflow-hidden print:h-auto print:overflow-visible print:block">
-        <div className="flex flex-1 overflow-hidden print:h-auto print:overflow-visible print:block">
-          <main
-            className={`flex-1 min-w-0 min-h-0 ${isStatusPage ? 'flex overflow-hidden' : 'p-4 overflow-y-auto'} print:h-auto print:overflow-visible print:p-0 print:w-full`}
-          >
-            {children}
-          </main>
-          <div className="print:hidden">
-            <RightSidebar
+      <NotepadProvider>
+        <div className="w-full h-screen flex flex-col overflow-hidden print:h-auto print:overflow-visible print:block">
+          <div className="flex flex-1 overflow-hidden print:h-auto print:overflow-visible print:block">
+            <main
+              className={`flex-1 min-w-0 min-h-0 ${isStatusPage ? 'flex overflow-hidden' : 'p-4 overflow-y-auto'} print:h-auto print:overflow-visible print:p-0 print:w-full`}
+            >
+              {children}
+            </main>
+            <div className="print:hidden">
+              <RightSidebar
+                notificationsOpen={notificationsOpen}
+                setNotificationsOpen={handleSetNotificationsOpen}
+                unreadCount={unreadCount}
+                notifications={notifications}
+                onClearNotifications={clear}
+              />
+            </div>
+          </div>
+          <ShortcutsOverlay open={shortcutsOverlayOpen} />
+          <div style={{ display: 'none' }} aria-hidden="true">
+            <FloatingIslandComponent
+              searchDialogOpen={searchDialogOpen}
               setSearchDialogOpen={setSearchDialogOpen}
-              notificationsOpen={notificationsOpen}
-              setNotificationsOpen={handleSetNotificationsOpen}
-              unreadCount={unreadCount}
-              notifications={notifications}
-              onClearNotifications={clear}
+              emailDialogOpen={emailDialogOpen}
+              setEmailDialogOpen={setEmailDialogOpen}
+              calendarDialogOpen={calendarDialogOpen}
+              setCalendarDialogOpen={setCalendarDialogOpen}
+              notepadDialogOpen={notepadDialogOpen}
+              setNotepadDialogOpen={setNotepadDialogOpen}
+              utilitiesDialogOpen={utilitiesDialogOpen}
+              setUtilitiesDialogOpen={setUtilitiesDialogOpen}
             />
           </div>
         </div>
-        <ShortcutsOverlay open={shortcutsOverlayOpen} />
-        <div style={{ display: 'none' }} aria-hidden="true">
-          <FloatingIslandComponent
-            searchDialogOpen={searchDialogOpen}
-            setSearchDialogOpen={setSearchDialogOpen}
-            emailDialogOpen={emailDialogOpen}
-            setEmailDialogOpen={setEmailDialogOpen}
-            calendarDialogOpen={calendarDialogOpen}
-            setCalendarDialogOpen={setCalendarDialogOpen}
-            notepadDialogOpen={notepadDialogOpen}
-            setNotepadDialogOpen={setNotepadDialogOpen}
-            utilitiesDialogOpen={utilitiesDialogOpen}
-            setUtilitiesDialogOpen={setUtilitiesDialogOpen}
-          />
-        </div>
-      </div>
+      </NotepadProvider>
     </NotificationContext.Provider>
   );
 }

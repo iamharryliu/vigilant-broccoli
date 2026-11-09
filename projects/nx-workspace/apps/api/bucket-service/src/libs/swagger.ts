@@ -20,6 +20,19 @@ const BUCKET_NAME_QUERY_PARAM = {
   description: "Bucket to use, overriding the provider's default bucket.",
 };
 
+const FOLDER_QUERY_PARAM = {
+  in: 'query',
+  name: 'folder',
+  required: false,
+  schema: { type: 'string' },
+  description:
+    'Folder to upload into; keys become <folder>/<basename>. Rejects a leading slash and empty or ".." segments.',
+};
+
+const UPLOAD_BAD_REQUEST_RESPONSE = {
+  description: 'Missing provider or files, or an invalid folder',
+};
+
 const FILE_NAME_QUERY_PARAM = {
   in: 'query',
   name: 'fileName',
@@ -60,7 +73,11 @@ export const swaggerSpec = createSwaggerSpec({
       },
       post: {
         summary: 'Upload one or more files',
-        parameters: [PROVIDER_QUERY_PARAM, BUCKET_NAME_QUERY_PARAM],
+        parameters: [
+          PROVIDER_QUERY_PARAM,
+          BUCKET_NAME_QUERY_PARAM,
+          FOLDER_QUERY_PARAM,
+        ],
         requestBody: {
           required: true,
           content: {
@@ -79,7 +96,7 @@ export const swaggerSpec = createSwaggerSpec({
         },
         responses: {
           '200': { description: 'Upload result with file names' },
-          '400': { description: 'Missing provider or files' },
+          '400': UPLOAD_BAD_REQUEST_RESPONSE,
           '401': { description: 'Unauthorized' },
         },
       },
@@ -148,7 +165,11 @@ export const swaggerSpec = createSwaggerSpec({
       post: {
         summary:
           'Upload one or more files by streaming each part to the provider',
-        parameters: [PROVIDER_QUERY_PARAM, BUCKET_NAME_QUERY_PARAM],
+        parameters: [
+          PROVIDER_QUERY_PARAM,
+          BUCKET_NAME_QUERY_PARAM,
+          FOLDER_QUERY_PARAM,
+        ],
         requestBody: {
           required: true,
           content: {
@@ -167,7 +188,7 @@ export const swaggerSpec = createSwaggerSpec({
         },
         responses: {
           '200': { description: 'Upload result with file names' },
-          '400': { description: 'Missing provider or files' },
+          '400': UPLOAD_BAD_REQUEST_RESPONSE,
           '401': { description: 'Unauthorized' },
         },
       },

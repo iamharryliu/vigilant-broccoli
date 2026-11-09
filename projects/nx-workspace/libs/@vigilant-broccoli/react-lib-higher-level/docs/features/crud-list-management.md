@@ -23,6 +23,7 @@
 - `showEllipsis` — defaults `true`; hides ellipsis when `false`
 - `itemActions` — extra ellipsis entries; without `FormComponent` the menu holds only these (read-only list)
 - `copy` — override titles/labels
+- `deleteConfirmation` — `{ title, description }` override for the delete confirmation dialog
 - `HeaderComponent`, `FooterComponent` — optional slots
 
 ## EllipsisCTA Props

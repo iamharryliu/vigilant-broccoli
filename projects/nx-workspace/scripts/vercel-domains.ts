@@ -26,6 +26,24 @@ async function addDomain(
   domain: string,
   token: string,
 ): Promise<void> {
+  // Attach only after protection succeeds, including projects deployed with --prod.
+  if (projectName.startsWith('staging-')) {
+    const protection = await fetch(
+      `https://api.vercel.com/v9/projects/${projectName}?teamId=${VERCEL_ORG_ID}`,
+      {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ssoProtection: { deploymentType: 'all' } }),
+      },
+    );
+    if (!protection.ok) {
+      throw new Error(`Failed to protect ${projectName}: ${protection.status}`);
+    }
+  }
+
   const res = await fetch(
     `https://api.vercel.com/v9/projects/${projectName}/domains?teamId=${VERCEL_ORG_ID}`,
     {
@@ -50,8 +68,8 @@ async function addDomain(
     return;
   }
 
-  console.warn(
-    `⚠ Failed to attach ${domain} to ${projectName}: ${res.status} ${JSON.stringify(body)}`,
+  throw new Error(
+    `Failed to attach ${domain} to ${projectName}: ${res.status} ${JSON.stringify(body)}`,
   );
 }
 

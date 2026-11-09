@@ -115,6 +115,7 @@
     "SEGMENTED_SMALL": "Small",
     "SEGMENTED_DEFAULT": "Default size",
     "SEGMENTED_RESPONSIVE": "Icons and short labels",
+    "SEGMENTED_FULL_WIDTH": "Full width with icons and labels",
     "VIEW": {
       "LIST": "List view",
       "GRID": "Grid view",

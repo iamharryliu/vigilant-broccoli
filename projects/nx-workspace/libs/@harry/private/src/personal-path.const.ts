@@ -2,9 +2,7 @@ const JOURNAL_BASE_PATH = '~/journal';
 
 const VB_REPO_BASE_PATH = '~/vigilant-broccoli';
 
-// The Drive for Desktop mount; a plain ~/My Drive folder is not synced.
-const GOOGLE_DRIVE_BASE_PATH =
-  '~/Library/CloudStorage/GoogleDrive-harryliu1995@gmail.com/My Drive';
+const RESILIO_SYNC_BASE_PATH = '~/resilio-sync';
 
 export const JOURNAL_PATH = {
   TODO: `${JOURNAL_BASE_PATH}/productivity/TODO.md`,
@@ -17,6 +15,6 @@ export const VB_REPO_PATH = {
   SPOTIFY_TO_MP3_SCRIPT: `${VB_REPO_BASE_PATH}/scripts/python/dj-scripts/spotify-to-mp3`,
 } as const;
 
-export const GOOGLE_DRIVE_PATH = {
-  DJ_MUSIC_LIBRARY: `${GOOGLE_DRIVE_BASE_PATH}/DJ Music Library`,
+export const RESILIO_SYNC_PATH = {
+  DJ_MUSIC_LIBRARY: `${RESILIO_SYNC_BASE_PATH}/media/dj-music-library`,
 } as const;

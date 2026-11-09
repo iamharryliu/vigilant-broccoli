@@ -16,11 +16,11 @@ Run only on explicit `local-create-pr-claude` invocation; it authorizes one tmux
    ```
 
 3. Append to the prompt: work only in this worktree, follow its `CONTEXT.md` files, implement and verify per the `local-create-pr` skill, then publish with the `ship-pr` skill, which this request authorizes.
-4. Write the prompt to `/tmp/vb-local-pr-<slug>.prompt` and start the session once no questions were asked or after the user confirms it. Add `--model opus` or another Claude model only when the user asks:
+4. Write the prompt to `/tmp/vb-local-pr-<slug>.prompt` and start the session once no questions were asked or after the user confirms it, with the contract's chosen Claude model as `<model>`:
 
    ```sh
    tmux new-session -d -s vb-pr-<slug> -c "$PWD/.claude/worktrees/<slug>" \
-     'claude --model sonnet --permission-mode auto "$(cat /tmp/vb-local-pr-<slug>.prompt)"'
+     'claude --model <model> --permission-mode auto "$(cat /tmp/vb-local-pr-<slug>.prompt)"'
    ```
 
-5. Report the branch, worktree, prompt and `tmux attach -t vb-pr-<slug>`. Do not wait; the session ends with the agent's PR URL or a failure visible on attach.
+5. Report the branch, worktree, prompt, model with its reason and `tmux attach -t vb-pr-<slug>`. Do not wait; the session ends with the agent's PR URL or a failure visible on attach.

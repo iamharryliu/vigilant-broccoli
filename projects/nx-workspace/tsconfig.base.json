@@ -46,6 +46,9 @@
       "@vigilant-broccoli/react-lib-auth": [
         "./libs/@vigilant-broccoli/react-lib-auth/src/index.ts"
       ],
+      "@vigilant-broccoli/react-lib-auth/google-token-server": [
+        "./libs/@vigilant-broccoli/react-lib-auth/src/lib/google-token-store.server.ts"
+      ],
       "@vigilant-broccoli/react-lib-calendar": [
         "./libs/@vigilant-broccoli/react-lib-calendar/src/index.ts"
       ],
@@ -57,6 +60,9 @@
       ],
       "@vigilant-broccoli/react-lib-higher-level/live-location-map": [
         "./libs/@vigilant-broccoli/react-lib-higher-level/src/lib/live-location/LiveUserMap.tsx"
+      ],
+      "@vigilant-broccoli/react-lib-higher-level/notepad-server": [
+        "./libs/@vigilant-broccoli/react-lib-higher-level/src/lib/notepad-store.server.ts"
       ],
       "@harry/personal": ["./libs/@harry/personal/src/index.ts"],
       "@harry/private": ["./libs/@harry/private/src/index.ts"],

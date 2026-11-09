@@ -78,6 +78,7 @@ if [ -n "${SANDBOX_MERGE_MAIN:-}" ]; then
 fi
 
 PR_TITLE=$(gh pr view "$PR" --json title -q .title 2>/dev/null || true)
+PR_URL=$(gh pr view "$PR" --json url -q .url)
 CURRENT_BODY=$(gh pr view "$PR" --json body -q .body 2>/dev/null || true)
 
 # A failure's cause usually sits where its step starts and the summary where it ends, so
@@ -165,7 +166,7 @@ TODO_RULES="- Update only this pull request. If the change is too large or bundl
 TODO_FIELDS=""
 if [ "$TODO_ENABLED" = 1 ]; then
   TODO_RULES="$TODO_RULES
-- Do not edit TODO.md: the runner removes exactly the rows you declare in todo_ids."
+- Do not edit TODO.md beyond the QA row the skill asks for: the runner removes exactly the rows you declare in todo_ids. This PR already exists, so link a QA row to it as \"PR: ${PR_URL}\"."
   TODO_FIELDS="
   - todo_ids: array of the TODO.md ids named in the instruction that this update fully resolves (omit or [] when none)"
 fi
@@ -193,12 +194,12 @@ ${TODO_RULES}
 - When finished, write $META_FILE containing only a JSON object with these fields (strings unless noted):
   - commit_type: one of ${COMMIT_TYPES// /, }
   - commit_scope: the affected app/service/lib name, or "" when the change is not scoped to one
-  - pr_title: only when a failing check is about the PR title itself (e.g. commitlint), the corrected title in the form "<committype>(<scope>): <Message>." — otherwise omit it; the calling script applies it, so make no file changes for a title-only failure
+  - pr_title: only when a failing check is about the PR title itself (e.g. commitlint) or the instruction explicitly asks for a new title, the corrected title in the form "<committype>(<scope>): <Message>." — otherwise omit it; the calling script applies it, so make no file changes for a title-only failure
   - commit_message: capitalized, concise, focused on why not what, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit
-  - pr_summary: markdown bullet points replacing the PR's "## Summary" section — rewrite it to describe the PR's full, cumulative state (prior work plus this change), not just this change
+  - pr_summary: brief markdown (about 80 words in total) replacing the PR's "## Summary" section — rewrite it to describe the PR's full, cumulative state (prior work plus this change), not just this change, in two subsections: "### Why" (one or two bullets on the problem or request motivating the PR) and "### Changes" (at most four bullets on what changed, naming the key paths, no per-file inventory)
   - pr_screenshots: array of repo-relative PNG paths captured for this change under projects/nx-workspace/screenshots/; omit or [] when none. The runner commits these images and embeds them in the PR body. Screenshots are required only when the changed page or component is reachable and renderable without authentication. If authentication or unavailable dependencies (a missing backend or secrets, or port conflicts) prevent exercising it in a browser, do not attempt or retry screenshots and do not mention missing screenshots as a PR concern or in PR_CONCERNS.
-  - pr_next_steps: markdown checklist replacing the PR's "## Next steps" section — same rule, cover the whole PR as it now stands: remaining manual commands, spot checks, CI status, merging, and one ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\` item per piece of work deliberately left out, or "- [ ] Merge once CI is green" when nothing else is left
+  - pr_next_steps: markdown checklist replacing the PR's "## Next steps" section — same rule, cover the whole PR as it now stands: remaining manual commands, spot checks, CI status, merging, and one item per piece of work deliberately left out, written as a brief step in words, followed by its TODO.md id when a row covers it, e.g. "- [ ] Migrate the remaining routes to the new client (TODO \`abc123\`)", or when no row exists a ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\`; never list a bare id, or "- [ ] Merge once CI is green" when nothing else is left
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none — rewrite it to cover the whole PR as it now stands. Keep every suggestion already in the PR body that this change did not implement and the instruction did not reject, and name any you drop in your report; omit the field to leave the section untouched${TODO_FIELDS}
   - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none; keep these out of pr_suggestions, which is only optional follow-up work. Rewrite it to cover the whole PR as it now stands, drop missing-screenshot concerns for pages blocked by authentication or unavailable dependencies, keep every other concern already in the PR body that this change did not resolve, and name any you drop in your report; omit the field to leave the section untouched
 $NO_CHANGES_FIELD
@@ -213,6 +214,22 @@ fi
 agent_invoke() {
   claude -p "$1" "${permission_args[@]}" --model "$MODEL" \
     --disallowedTools "Bash(git commit:*)" "Bash(git push:*)" "Bash(git checkout:*)" "Bash(git switch:*)" "Bash(gh:*)"
+}
+
+# The push already succeeded, so a failure here only needs a log line. Checks are
+# deliberately not awaited: CI runs once the PR is ready and branch protection gates merge.
+mark_ready_if_draft() {
+  local is_draft
+  if ! is_draft=$(gh pr view "$PR" --json isDraft -q .isDraft 2>/dev/null); then
+    echo "WARNING: could not read whether PR #${PR} is a draft; run: gh pr ready ${PR} if needed" >&2
+    return 0
+  fi
+  [ "$is_draft" = true ] || return 0
+  if gh pr ready "$PR"; then
+    echo "PR #${PR} marked ready for review."
+  else
+    echo "WARNING: could not mark PR #${PR} ready for review; run: gh pr ready ${PR}" >&2
+  fi
 }
 
 # The reason is also left on the PR, where the requester looks for the update.
@@ -275,7 +292,9 @@ fi
 if [ "$TODO_ENABLED" = 1 ] && { [ -n "$(git status --porcelain)" ] || [ "${#RESOLVED_IDS[@]}" -gt 0 ]; }; then
   # Checked before anything is pushed.
   pr_validate_todo_ids "$META_FILE" "$BASE_SHA" "$INSTRUCTION"
+  pr_validate_todo_edits "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
   pr_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
+  pr_fill_qa_placeholder "$PR_URL" "$BASE_SHA" || true
 fi
 
 python3 "$SCREENSHOTS_HELPER" --metadata "$META_FILE" --prepare
@@ -292,6 +311,7 @@ if [ -z "$(git status --porcelain)" ]; then
   if [ -n "$NEW_PR_TITLE" ]; then
     gh pr edit "$PR" --title "$NEW_PR_TITLE"
     echo "PR #${PR} title updated to: ${NEW_PR_TITLE}"
+    mark_ready_if_draft
     exit 0
   fi
   finish_without_changes "no changes produced — PR #${PR} was not updated."
@@ -339,3 +359,4 @@ NEW_BODY=$(CURRENT_BODY="$CURRENT_BODY" PR_SUMMARY="$PR_SUMMARY" PR_NEXT_STEPS="
   python3 "$MERGE_BODY_HELPER")
 gh pr edit "$PR" --body "$NEW_BODY"
 [ -z "$NEW_PR_TITLE" ] || gh pr edit "$PR" --title "$NEW_PR_TITLE"
+mark_ready_if_draft

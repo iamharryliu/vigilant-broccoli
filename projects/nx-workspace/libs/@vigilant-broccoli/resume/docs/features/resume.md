@@ -26,4 +26,4 @@
 ## Constraints
 
 - The PDF template loads Roboto from Google Fonts. Loading is bounded (5 s); if it does not arrive the stylesheet is dropped and a fallback font is measured, which is reported as `fontsLoaded: false` and can change whether a resume fits.
-- `apps/ui/personal-website-react` declares no `implicitDependencies` on local-manager-next. The lib no longer imports `resume.json`, so the lib's source is the only link; the file itself is read at run time.
+- `apps/ui/personal-website-react` declares no `implicitDependencies` on local-manager-next. The lib does not import `resume.json`, so the lib's source is the only link; the file itself is read at run time.

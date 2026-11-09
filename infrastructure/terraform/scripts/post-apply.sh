@@ -305,23 +305,27 @@ sync_socket_server() {
 # Unrelated to the GCP VM this script otherwise targets — runs regardless of
 # whether its IP changed. Reads the map straight from Terraform state rather
 # than hardcoding the app list here, so a new entry in
-# cloudflare-vercel-apps.tf's vercel_app_subdomains needs no matching edit to
-# this script.
+# cloudflare-vercel-apps.tf's production or staging map needs no matching
+# edit to this script.
 sync_vercel_domains() {
   echo "Syncing Vercel domains..."
 
-  local subdomains_json
-  subdomains_json=$(cd "$TERRAFORM_DIR" && terraform output -json vercel_app_subdomains 2>/dev/null || echo "")
-
-  if [ -z "$subdomains_json" ] || [ "$subdomains_json" = "null" ]; then
-    return
-  fi
-
+  local environment subdomains_json output_name
   local nx_workspace_dir="${SCRIPT_DIR}/../../../projects/nx-workspace"
-  while IFS=$'\t' read -r key domain; do
-    [ -z "$key" ] && continue
-    (cd "$nx_workspace_dir" && NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/vercel-domains.ts add "production-${key}" "${domain}")
-  done < <(echo "$subdomains_json" | jq -r 'to_entries[] | "\(.key)\t\(.value)"')
+  for environment in production staging; do
+    output_name="vercel_app_subdomains"
+    if [ "$environment" = "staging" ]; then
+      output_name="staging_vercel_app_subdomains"
+    fi
+    subdomains_json=$(cd "$TERRAFORM_DIR" && terraform output -json "$output_name" 2>/dev/null || echo "")
+    if [ -z "$subdomains_json" ] || [ "$subdomains_json" = "null" ]; then
+      continue
+    fi
+    while IFS=$'\t' read -r key domain; do
+      [ -z "$key" ] && continue
+      (cd "$nx_workspace_dir" && NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt npx tsx scripts/vercel-domains.ts add "${environment}-${key}" "${domain}")
+    done < <(echo "$subdomains_json" | jq -r 'to_entries[] | "\(.key)\t\(.value)"')
+  done
 }
 
 sync_vercel_domains

@@ -3,6 +3,7 @@ import {
   VB_APP_URL,
   VB_GITHUB_ACTIONS_URL,
   VB_GITHUB_REPO_URL,
+  VB_LINK_PREFIX,
   VB_MONITORING_URL,
 } from '@vigilant-broccoli/infrastructure';
 import {
@@ -176,13 +177,19 @@ export const GENERIC_DEV_LINKS: QuickLink[] = [
 export const VB_LINKS: QuickLink[] = [
   ...toQuickLinks(LINK_GROUP_SUBGROUP.VIGILANT_BROCCOLI, [
     {
-      NAME: 'VB - NPM Packages',
+      NAME: `${VB_LINK_PREFIX}NPM Packages`,
       URL: 'https://www.npmjs.com/settings/vigilant-broccoli/packages',
     },
-    { NAME: 'VB - GitHub Repo', URL: VB_GITHUB_REPO_URL },
-    { NAME: 'VB - GitHub Actions', URL: VB_GITHUB_ACTIONS_URL },
-    { NAME: 'VB - GitHub Pull Requests', URL: `${VB_GITHUB_REPO_URL}/pulls` },
-    { NAME: 'VB - GitHub Projects', URL: `${VB_GITHUB_REPO_URL}/projects` },
+    { NAME: `${VB_LINK_PREFIX}GitHub Repo`, URL: VB_GITHUB_REPO_URL },
+    { NAME: `${VB_LINK_PREFIX}GitHub Actions`, URL: VB_GITHUB_ACTIONS_URL },
+    {
+      NAME: `${VB_LINK_PREFIX}GitHub Pull Requests`,
+      URL: `${VB_GITHUB_REPO_URL}/pulls`,
+    },
+    {
+      NAME: `${VB_LINK_PREFIX}GitHub Projects`,
+      URL: `${VB_GITHUB_REPO_URL}/projects`,
+    },
     VB_APP_URL.PERSONAL_WEBSITE,
     VB_APP_URL.TEXT_TOOLS,
     {

@@ -6,4 +6,5 @@
 - [Jamaican Dominoes](./jamaican-dominoes.md)
 - [Mahjong](./mahjong.md)
 - [Nimmt 6](./nimmt-6.md)
+- [Parks](./parks.md)
 - [Root](./root.md)

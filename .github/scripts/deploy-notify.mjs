@@ -1,10 +1,9 @@
-import { io } from 'socket.io-client';
-
 const URL = process.env.SOCKET_SERVER_URL;
 const TOKEN = process.env.SHARED_APP_TOKEN;
 
 const DEPLOY_APP = 'local-manager-next';
 const DEPLOY_RECEIVER_ID = 'deploy';
+const PUBLISH_PATH = '/publish';
 const TIMEOUT_MS = 10000;
 
 const startedAtRaw = process.env.DEPLOY_STARTED_AT;
@@ -25,38 +24,28 @@ const payload = {
   affected_projects: process.env.DEPLOY_AFFECTED_PROJECTS || undefined,
 };
 
-const socket = io(URL, {
-  auth: { token: TOKEN },
-  transports: ['websocket'],
-  reconnection: false,
-});
-
 try {
-  await new Promise((resolve, reject) => {
-    const t = setTimeout(
-      () => reject(new Error('connect timeout')),
-      TIMEOUT_MS,
-    );
-    socket.once('connect', () => {
-      clearTimeout(t);
-      resolve();
-    });
-    socket.once('connect_error', err => {
-      clearTimeout(t);
-      reject(err);
-    });
+  const res = await fetch(`${URL}${PUBLISH_PATH}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${TOKEN}`,
+    },
+    body: JSON.stringify({
+      app: DEPLOY_APP,
+      receiverId: DEPLOY_RECEIVER_ID,
+      payload,
+    }),
+    signal: AbortSignal.timeout(TIMEOUT_MS),
   });
-
-  socket.emit('publish', {
-    app: DEPLOY_APP,
-    receiverId: DEPLOY_RECEIVER_ID,
-    payload,
-  });
-  await new Promise(r => setTimeout(r, 300));
-  console.log(`deploy-notify: ${payload.status} sent`);
+  const ack = await res.json().catch(() => null);
+  if (!res.ok || !ack?.ok) {
+    throw new Error(`publish rejected (${res.status} ${ack?.code ?? ''})`);
+  }
+  console.log(
+    `deploy-notify: ${payload.status} sent to ${ack.receivers} receiver(s)`,
+  );
 } catch (err) {
   console.error('deploy-notify failed:', err.message);
   process.exit(1);
-} finally {
-  socket.close();
 }

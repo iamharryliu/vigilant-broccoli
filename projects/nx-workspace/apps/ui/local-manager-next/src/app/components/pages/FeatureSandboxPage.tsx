@@ -1,6 +1,8 @@
 'use client';
 
-import { ChatDemo } from '../demos/ChatDemo';
+import { BackendRelayChatDemo } from '../demos/BackendRelayChatDemo';
+import { IdentityProviderChatDemo } from '../demos/IdentityProviderChatDemo';
+import { RoomTokenChatDemo } from '../demos/RoomTokenChatDemo';
 import { NotificationsDemo } from '../demos/NotificationsDemo';
 import { StorageDemo } from '../demos/StorageDemo';
 import { StripeDemo } from '../demos/StripeDemo';
@@ -101,9 +103,19 @@ const FEATURE_SECTIONS: CollapsibleListItemConfig[] = [
     content: <TextMessageForm />,
   },
   {
+    id: 'chat-backend-relay',
+    title: 'Chat Demo (Backend relay)',
+    content: <BackendRelayChatDemo />,
+  },
+  {
     id: 'chat',
-    title: 'Chat Demo (Socket.IO)',
-    content: <ChatDemo />,
+    title: 'Chat Demo (Identity provider JWT)',
+    content: <IdentityProviderChatDemo />,
+  },
+  {
+    id: 'chat-room-token',
+    title: 'Chat Demo (Room tokens)',
+    content: <RoomTokenChatDemo />,
   },
   {
     id: 'notifications-demo',

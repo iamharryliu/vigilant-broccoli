@@ -114,6 +114,8 @@ pushing and opening the PR stay with the runner for both agents.
 
 `pnpm agentic-pr-update --with-ci-logs <pr> "<instruction>"` makes `update-pr-runner.sh` collect `gh pr checks` and the failed-step logs (`gh run view --log-failed`) of the branch's recent failing runs, add them to the prompt within a 20 KB budget split across the failing runs (an over-budget run keeps the first third and the rest from its end). The agent cannot run `gh` itself, so this is how it sees why CI failed. Checks still running are waited on for up to 10 minutes (`CI_WAIT_SECONDS`) first. `manual-agentic-pr-update` exposes this as the `with_ci_logs` input. Without it, a `change` run still lists the PR's failing, cancelled and pending check names in the prompt (no logs), so the agent reports a branch that already fails CI instead of building on it silently.
 
+Every successful `pnpm agentic-pr-update` run (and `manual-agentic-pr-update`) makes `update-pr-runner.sh` run `gh pr ready` after the final push and metadata edits, or after a title-only fix, when the PR is still a draft; the agent cannot call `gh` itself. No-change runs do not, it does not wait for checks (CI runs once the PR is ready and branch protection still gates merge), and a `gh pr ready` failure is logged without failing the run.
+
 `pnpm agentic-pr-update --operation fix-ci <pr> ["<instruction>"]` is also used by `manual-agentic-pr-update` with `operation=fix-ci`. It implies `--with-ci-logs`, uses a fixed CI-fix instruction with the optional instruction appended as extra guidance, and selects the shared CI-fix skill. A failing PR-title check (commitlint) is fixed through the optional `pr_title` metadata field, which the runner normalizes and applies with `gh pr edit --title`; a title-only fix exits successfully without a commit.
 
 A `change` instruction can be TODO-only: naming a `TODO.md` row id and asking to drop it (a stale row, or one that was never checked off) is valid with no other file change. The agent declares the id in `todo_ids`, and the runner validates that the request names it and that the row exists, removes it and commits the removal. `agentic-pr-create` still requires real changes beyond `TODO.md`, except for a prompt matching `TODO_REMOVAL_REQUEST_RE` in `solve-todo-runner.sh` (`Remove TODO.md row <id>. Reason: <reason>`, sent by the dev-dashboard TODO view's Delete): that run must remove exactly the named row and change nothing else.
@@ -130,8 +132,10 @@ and a human or a `TODO.md` row re-scopes it.
 `publish-pr.sh`, sourced by `solve-todo-runner.sh` (and by `update-pr-runner.sh` for its TODO helpers), holds the shared steps:
 
 - validates the agent's `todo_ids` (6-hex ids that have a row and are named in the request) before publishing, and removes
-  from `TODO.md` only those rows, failing a run that deleted any other row;
-- commits, pushes and opens the PR with its title, summary, next steps, concerns, suggestions, screenshots and history row;
+  from `TODO.md` only those rows, failing a run that deleted any other row or edited anything but
+  [QA rows](../../docs/todo-pattern.md#qa-rows);
+- commits, pushes and opens the PR with its title, summary, next steps, concerns, suggestions, screenshots and history row,
+  then replaces the `PR: pending` placeholder on this PR's QA rows with the PR URL in a follow-up commit;
 - when a create run fails, saves its partial work as a draft PR and prints a `RESULT::` marker saying what became of it. A
   failed update publishes nothing.
 

@@ -4,6 +4,7 @@ import { Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '../../../../libs/supabase';
 import { ROUTES } from '../../../lib/routes';
+import { resolvePostAuthPath } from '../../../lib/auth-redirect';
 import { GOOGLE_TOKEN_STORAGE_KEY } from '../../hooks/use-google-token';
 import { PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
 
@@ -18,8 +19,11 @@ function AuthCallbackContent() {
       if (session?.provider_token) {
         localStorage.setItem(GOOGLE_TOKEN_STORAGE_KEY, session.provider_token);
       }
-      const next = searchParams.get('next');
-      router.push(session ? next || ROUTES.HOME : ROUTES.LOGIN);
+      router.push(
+        session
+          ? resolvePostAuthPath(`?${searchParams.toString()}`)
+          : ROUTES.LOGIN,
+      );
     });
     return () => subscription.unsubscribe();
   }, [router, searchParams]);

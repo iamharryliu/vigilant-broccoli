@@ -48,8 +48,7 @@ export const TaskCapture = ({
   taskListId: lockedTaskListId,
   renderVoiceAction,
 }: TaskCaptureProps) => {
-  const { authFetch, useGoogleToken, signInWithGoogle } = auth;
-  const { clearGoogleToken } = useGoogleToken();
+  const { authFetch, signInWithGoogle } = auth;
 
   const [phase, setPhase] = useState<Phase>('input');
   const [textInput, setTextInput] = useState('');
@@ -87,10 +86,6 @@ export const TaskCapture = ({
       cancelled = true;
     };
   }, [authFetch, lockedTaskListId, googleAuthError]);
-
-  useEffect(() => {
-    if (googleAuthError) clearGoogleToken();
-  }, [googleAuthError, clearGoogleToken]);
 
   const addImageFile = async (file: File) => {
     const { base64, mimeType, previewUrl } = await resizeImage(file);

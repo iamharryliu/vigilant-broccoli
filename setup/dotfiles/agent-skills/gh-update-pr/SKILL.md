@@ -8,10 +8,10 @@ Use the current vigilant-broccoli Git root and run `gh` from it. Outside this re
 Run only on explicit `gh-update-pr` invocation; it authorizes one workflow dispatch. Make no local file edits.
 
 1. Follow the [dispatch contract](../../../../docs/agent-support.md#dispatch-contract), update variant (PR selection, research, open-state and scope check, ask, instruction). Infer the operation: failing checks mean `fix-ci`, merge conflicts mean `resolve-conflicts` (no instruction; leave it blank), otherwise `change` (instruction required).
-2. Dispatch per the contract. Add `-f with_ci_logs=true` or `-f model=opus` only when the user asks or the task needs it:
+2. Dispatch per the contract with its chosen Claude model. Add `-f with_ci_logs=true` only when the user asks or the task needs it:
 
    ```sh
-   gh workflow run manual-agentic-pr-update.yml -f pr=<n> -f operation=<op> -f instruction="<instruction>"
+   gh workflow run manual-agentic-pr-update.yml -f pr=<n> -f operation=<op> -f model=<model> -f instruction="<instruction>"
    ```
 
-3. Find the run with `gh run list --workflow manual-agentic-pr-update.yml --limit 1 --json url,createdAt` and report its URL with the dispatched instruction. Do not wait for the run.
+3. Find the run with `gh run list --workflow manual-agentic-pr-update.yml --limit 1 --json url,createdAt` and report its URL with the dispatched instruction and the model with its reason. Do not wait for the run.

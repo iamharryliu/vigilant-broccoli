@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
   KeyboardEvent,
 } from 'react';
@@ -32,6 +33,7 @@ import {
   cn,
 } from '@vigilant-broccoli/react-lib';
 import { DeleteItemConfirmationDialog } from '@vigilant-broccoli/react-lib-higher-level';
+import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { ChecklistItem } from '../../lib/types';
@@ -40,18 +42,25 @@ import {
   CalendarEventFormData,
 } from '../calendar/components/CalendarEventForm';
 import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
+import { assertOk, usePendingWrites } from '../hooks/use-pending-writes';
+import { ChecklistSkeleton } from './ChecklistSkeleton';
 
 const DELETE_LABEL = 'Delete';
+const LOADING_LABEL = 'Loading items';
 const ADD_TO_CALENDAR_LABEL = 'Add to calendar';
 const EVENT_DIALOG_TITLE = 'Add to calendar';
 const CALENDAR_EVENTS_ENDPOINT = '/api/calendar/events';
 const EVENT_DEFAULT_DURATION_MS = 60 * 60 * 1000;
 
-const toBaseItem = (item: ChecklistItem): BaseChecklistItem => ({
+const toBaseItem = (
+  item: ChecklistItem,
+  pendingIds: ReadonlySet<string>,
+): BaseChecklistItem => ({
   id: item.id,
   title: item.name,
   checked: item.completed,
   completedAt: item.completedAt,
+  isRemoving: pendingIds.has(item.id),
 });
 
 type ChecklistProps = {
@@ -74,6 +83,7 @@ export function Checklist({
   const session = useAuth();
   const { selectedHomeId: homeId } = useHome();
   const [items, setItems] = useState<ChecklistItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [newItem, setNewItem] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
@@ -83,6 +93,8 @@ export function Checklist({
   const token = session?.access_token ?? '';
   const authHeader = useAuthHeader();
   const jsonHeaders = useJsonAuthHeaders();
+  const { pendingIds, isPending, write } = usePendingWrites();
+  const loadedFetch = useRef<(() => Promise<void>) | null>(null);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
     useSensor(TouchSensor, {
@@ -99,8 +111,16 @@ export function Checklist({
     setItems(Array.isArray(data) ? data : []);
   }, [endpoint, homeId, token, authHeader]);
 
+  // CheckList slides in rows added after it mounts, so it mounts behind the
+  // skeleton once the first fetch for a home resolves; a refreshSignal refetch
+  // keeps it mounted.
   useEffect(() => {
-    fetchItems();
+    if (loadedFetch.current !== fetchItems) {
+      loadedFetch.current = fetchItems;
+      setItems([]);
+      setLoading(true);
+    }
+    fetchItems().finally(() => setLoading(false));
   }, [fetchItems, refreshSignal]);
 
   const handleAdd = async () => {
@@ -108,7 +128,7 @@ export function Checklist({
     if (!name || !homeId) return;
     setNewItem('');
     const res = await fetch(endpoint, {
-      method: 'POST',
+      method: HTTP_METHOD.POST,
       headers: await jsonHeaders(),
       body: JSON.stringify({ name, homeId }),
     });
@@ -116,29 +136,44 @@ export function Checklist({
     if (created?.id) setItems(prev => [...prev, created]);
   };
 
-  const handleToggle = async (id: string, completed: boolean) => {
+  const setCompleted = (
+    id: string,
+    changes: Pick<ChecklistItem, 'completed' | 'completedAt'>,
+  ) =>
     setItems(prev =>
-      prev.map(item =>
-        item.id === id
-          ? {
-              ...item,
-              completed,
-              completedAt: completed ? new Date().toISOString() : null,
-            }
-          : item,
-      ),
+      prev.map(item => (item.id === id ? { ...item, ...changes } : item)),
     );
-    await fetch(endpoint, {
-      method: 'PATCH',
-      headers: await jsonHeaders(),
-      body: JSON.stringify({ id, completed }),
+
+  const handleToggle = (id: string) => {
+    const original = items.find(item => item.id === id);
+    if (!original || isPending(id)) return;
+    const completed = !original.completed;
+    setCompleted(id, {
+      completed,
+      completedAt: completed ? new Date().toISOString() : null,
     });
+    write(
+      id,
+      async () =>
+        assertOk(
+          await fetch(endpoint, {
+            method: HTTP_METHOD.PATCH,
+            headers: await jsonHeaders(),
+            body: JSON.stringify({ id, completed }),
+          }),
+        ),
+      () =>
+        setCompleted(id, {
+          completed: original.completed,
+          completedAt: original.completedAt,
+        }),
+    );
   };
 
   const handleDelete = async (id: string) => {
     setItems(prev => prev.filter(item => item.id !== id));
     await fetch(endpoint, {
-      method: 'DELETE',
+      method: HTTP_METHOD.DELETE,
       headers: await jsonHeaders(),
       body: JSON.stringify({ id }),
     });
@@ -146,7 +181,7 @@ export function Checklist({
 
   const persistOrder = async (orderedItems: ChecklistItem[]) => {
     await fetch(endpoint, {
-      method: 'PATCH',
+      method: HTTP_METHOD.PATCH,
       headers: await jsonHeaders(),
       body: JSON.stringify({
         order: orderedItems.map((item, position) => ({
@@ -176,7 +211,7 @@ export function Checklist({
     setCalendarItem(null);
     if (!homeId) return;
     await fetch(CALENDAR_EVENTS_ENDPOINT, {
-      method: 'POST',
+      method: HTTP_METHOD.POST,
       headers: await jsonHeaders(),
       body: JSON.stringify({ ...data, homeId, kitchenEvent: true }),
     });
@@ -198,7 +233,7 @@ export function Checklist({
       prev.map(item => (item.id === id ? { ...item, name } : item)),
     );
     await fetch(endpoint, {
-      method: 'PATCH',
+      method: HTTP_METHOD.PATCH,
       headers: await jsonHeaders(),
       body: JSON.stringify({ id, name }),
     });
@@ -208,7 +243,10 @@ export function Checklist({
     if (e.key === 'Enter') handleAdd();
   };
 
-  const baseItems = useMemo(() => items.map(toBaseItem), [items]);
+  const baseItems = useMemo(
+    () => items.map(item => toBaseItem(item, pendingIds)),
+    [items, pendingIds],
+  );
 
   if (!homeId) return null;
 
@@ -267,32 +305,36 @@ export function Checklist({
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <CheckList
-          items={baseItems}
-          editingItemId={editingId}
-          editingItemTitle={editingName}
-          onToggleCheck={item => handleToggle(item.id, !item.checked)}
-          onStartEdit={startEditById}
-          onEditChange={setEditingName}
-          onSaveEdit={saveEdit}
-          onCancelEdit={cancelEdit}
-          editor="input"
-          rowVariant="dense"
-          size="3"
-          editCompleted={false}
-          enableDragDrop
-          listId={storageKeyPrefix}
-          storageKeyPrefix={storageKeyPrefix}
-          completedSectionId={`${storageKeyPrefix}-completed`}
-          emptyLabel={
-            <div className="py-4">
-              <Text align="center" color="gray" size="3">
-                {emptyText}
-              </Text>
-            </div>
-          }
-          renderItemAccessory={renderItemAccessory}
-        />
+        {loading ? (
+          <ChecklistSkeleton label={LOADING_LABEL} />
+        ) : (
+          <CheckList
+            items={baseItems}
+            editingItemId={editingId}
+            editingItemTitle={editingName}
+            onToggleCheck={item => handleToggle(item.id)}
+            onStartEdit={startEditById}
+            onEditChange={setEditingName}
+            onSaveEdit={saveEdit}
+            onCancelEdit={cancelEdit}
+            editor="input"
+            rowVariant="dense"
+            size="3"
+            editCompleted={false}
+            enableDragDrop
+            listId={storageKeyPrefix}
+            storageKeyPrefix={storageKeyPrefix}
+            completedSectionId={`${storageKeyPrefix}-completed`}
+            emptyLabel={
+              <div className="py-4">
+                <Text align="center" color="gray" size="3">
+                  {emptyText}
+                </Text>
+              </div>
+            }
+            renderItemAccessory={renderItemAccessory}
+          />
+        )}
       </DndContext>
 
       <DeleteItemConfirmationDialog

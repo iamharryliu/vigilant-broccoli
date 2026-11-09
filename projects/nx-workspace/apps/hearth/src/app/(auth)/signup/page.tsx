@@ -1,8 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../../../../libs/supabase';
 import { ROUTES } from '../../../lib/routes';
+import {
+  buildAuthCallbackUrl,
+  getNextFromSearch,
+  storePendingNext,
+  withNextParam,
+} from '../../../lib/auth-redirect';
 import { PAGE_TITLES, usePageTitle } from '../../../lib/page-title';
 
 export default function SignUpPage() {
@@ -12,18 +18,24 @@ export default function SignUpPage() {
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [next, setNext] = useState<string | null>(null);
+
+  useEffect(() => {
+    setNext(getNextFromSearch(window.location.search));
+  }, []);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
     setMessage('');
+    storePendingNext(next);
 
     const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}${ROUTES.HOME}`,
+        emailRedirectTo: buildAuthCallbackUrl(next),
       },
     });
 
@@ -36,10 +48,11 @@ export default function SignUpPage() {
   };
 
   const handleGoogleSignIn = async () => {
+    storePendingNext(next);
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}${ROUTES.AUTH_CALLBACK}`,
+        redirectTo: buildAuthCallbackUrl(next),
         scopes: 'https://www.googleapis.com/auth/tasks',
       },
     });
@@ -84,7 +97,10 @@ export default function SignUpPage() {
         </button>
         <p className="text-center text-sm">
           Already have an account?{' '}
-          <a href={ROUTES.LOGIN} className="text-blue-600 hover:underline">
+          <a
+            href={withNextParam(ROUTES.LOGIN, next)}
+            className="text-blue-600 hover:underline"
+          >
             Sign in
           </a>
         </p>

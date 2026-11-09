@@ -8,17 +8,23 @@ const VIEW = { LIST: 'list', GRID: 'grid', TIMELINE: 'timeline' } as const;
 type View = (typeof VIEW)[keyof typeof VIEW];
 const VIEW_KEYS = { list: 'LIST', grid: 'GRID', timeline: 'TIMELINE' } as const;
 const VIEW_ICONS = { list: List, grid: Grid2X2, timeline: Rows3 } as const;
-const EXAMPLES = ['small', 'default', 'responsive'] as const;
+const EXAMPLES = ['small', 'default', 'responsive', 'fullWidth'] as const;
 const EXAMPLE_KEYS = {
   small: 'SEGMENTED_SMALL',
   default: 'SEGMENTED_DEFAULT',
   responsive: 'SEGMENTED_RESPONSIVE',
+  fullWidth: 'SEGMENTED_FULL_WIDTH',
 } as const;
 
 export const SegmentedControlDemo = () => {
   const { t } = useTranslation();
   const [values, setValues] = useState<Record<(typeof EXAMPLES)[number], View>>(
-    { small: VIEW.LIST, default: VIEW.LIST, responsive: VIEW.LIST },
+    {
+      small: VIEW.LIST,
+      default: VIEW.LIST,
+      responsive: VIEW.LIST,
+      fullWidth: VIEW.LIST,
+    },
   );
   return (
     <div className="flex flex-col gap-6">
@@ -37,6 +43,7 @@ export const SegmentedControlDemo = () => {
                   ),
                 }
               : {}),
+            ...(example === 'fullWidth' ? { icon: <Icon size={14} /> } : {}),
           };
         });
         return (
@@ -47,6 +54,7 @@ export const SegmentedControlDemo = () => {
                 value={values[example]}
                 options={options}
                 size={example === 'small' ? 'sm' : 'md'}
+                fullWidth={example === 'fullWidth'}
                 onChange={value =>
                   setValues(previous => ({ ...previous, [example]: value }))
                 }

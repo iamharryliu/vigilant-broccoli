@@ -1,7 +1,12 @@
-import { copyFileSync, mkdirSync, writeFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import {
+  appendFileSync,
+  copyFileSync,
+  mkdirSync,
+  writeFileSync,
+} from 'node:fs';
+import { basename, dirname, join, resolve } from 'node:path';
 import { generateResumePdfBuffer } from '@vigilant-broccoli/resume/server';
-import { RESUME_PATH } from '../src/lib/paths.server';
+import { RESUME_PATH, RUN_FILE } from '../src/lib/paths.server';
 import { readResume } from './skill-resume';
 
 const [, , outputPath, inputPath] = process.argv;
@@ -23,6 +28,14 @@ generateResumePdfBuffer(readResume(inputPath))
     const sourcePath = inputPath ?? RESUME_PATH;
     if (resolve(sourcePath) !== resolve(twinPath))
       copyFileSync(sourcePath, twinPath);
+    // Tells the run which application folders are its own, for seeding their
+    // base resume version when it ends.
+    if (basename(sourcePath) === RUN_FILE.WORKING_RESUME) {
+      appendFileSync(
+        join(dirname(sourcePath), RUN_FILE.OUTPUTS),
+        `${resolve(twinPath)}\n`,
+      );
+    }
     console.log(`Resume PDF written to ${outputPath}`);
   })
   .catch(err => {

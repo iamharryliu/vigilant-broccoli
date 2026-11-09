@@ -16,6 +16,7 @@ const EVENT_CONNECT_ERROR = 'connect_error';
 const EVENT_MESSAGE = 'message';
 const EVENT_SUBSCRIBE = 'subscribe';
 const EVENT_PUBLISH = 'publish';
+const PUBLISH_PATH = '/publish';
 
 if (!URL) {
   console.error('FAIL: missing SOCKET_SERVER_URL');
@@ -89,7 +90,10 @@ console.log('Test 1: publish without auth token is silently dropped');
   const sender = await attemptPublishAs(undefined, receiverId, PAYLOAD);
   const ok = await runCheck('no message delivered to receiver', async () => {
     const msg = await expectNoMessage(receiver, SILENT_DROP_WINDOW_MS);
-    if (msg) throw new Error(`unauthorized publish delivered: ${JSON.stringify(msg.payload)}`);
+    if (msg)
+      throw new Error(
+        `unauthorized publish delivered: ${JSON.stringify(msg.payload)}`,
+      );
   });
   if (!ok) failed++;
   sender.close();
@@ -101,16 +105,66 @@ console.log('Test 2: publish with invalid auth token is silently dropped');
 {
   const receiverId = nextReceiverId();
   const receiver = await setupReceiver(receiverId);
-  const sender = await attemptPublishAs({ token: 'totally-not-the-real-token' }, receiverId, PAYLOAD);
+  const sender = await attemptPublishAs(
+    { token: 'totally-not-the-real-token' },
+    receiverId,
+    PAYLOAD,
+  );
   const ok = await runCheck('no message delivered to receiver', async () => {
     const msg = await expectNoMessage(receiver, SILENT_DROP_WINDOW_MS);
-    if (msg) throw new Error(`invalid-token publish delivered: ${JSON.stringify(msg.payload)}`);
+    if (msg)
+      throw new Error(
+        `invalid-token publish delivered: ${JSON.stringify(msg.payload)}`,
+      );
   });
   if (!ok) failed++;
   sender.close();
   receiver.close();
 }
 console.log('');
+
+const httpPublishAs = (token, receiverId, payload) =>
+  fetch(`${URL}${PUBLISH_PATH}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ app: APP, receiverId, payload }),
+  });
+
+const HTTP_PUBLISH_CASES = [
+  ['Test 3: HTTP publish without auth token is rejected', undefined, 401],
+  [
+    'Test 4: HTTP publish with invalid auth token is rejected',
+    'totally-not-the-real-token',
+    403,
+  ],
+];
+
+for (const [title, token, expectedStatus] of HTTP_PUBLISH_CASES) {
+  console.log(title);
+  const receiverId = nextReceiverId();
+  const receiver = await setupReceiver(receiverId);
+  const res = await httpPublishAs(token, receiverId, PAYLOAD);
+  const statusOk = await runCheck(`responds ${expectedStatus}`, async () => {
+    if (res.status !== expectedStatus) throw new Error(`got ${res.status}`);
+  });
+  const deliveryOk = await runCheck(
+    'no message delivered to receiver',
+    async () => {
+      const msg = await expectNoMessage(receiver, SILENT_DROP_WINDOW_MS);
+      if (msg)
+        throw new Error(
+          `unauthorized HTTP publish delivered: ${JSON.stringify(msg.payload)}`,
+        );
+    },
+  );
+  if (!statusOk) failed++;
+  if (!deliveryOk) failed++;
+  receiver.close();
+  console.log('');
+}
 
 if (failed > 0) {
   console.log(`✗ ${failed} security check(s) failed`);

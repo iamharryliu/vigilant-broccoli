@@ -17,6 +17,11 @@ const BUCKET_NAME_PARAM = 'bucketName';
 const FILE_NAME_PARAM = 'fileName';
 const CONTENT_TYPE_PARAM = 'contentType';
 const EXPIRES_IN_SECONDS_PARAM = 'expiresInSeconds';
+const FOLDER_PARAM = 'folder';
+const KEY_SEPARATOR = '/';
+const PARENT_SEGMENT = '..';
+const ERROR_FOLDER =
+  'folder must be slash-separated segments without empty or ".." segments';
 const ERROR_PROVIDER_REQUIRED = 'provider query parameter is required';
 const ERROR_FILE_NAME_REQUIRED = 'fileName query parameter is required';
 const ERROR_CONTENT_TYPE_REQUIRED = 'contentType query parameter is required';
@@ -67,6 +72,30 @@ function resolveBucketName(req: FastifyRequest): string | undefined {
   return (query[BUCKET_NAME_PARAM] ??
     (body?.[BUCKET_NAME_PARAM] as string | undefined)) as string | undefined;
 }
+
+// Optional folder for uploads; part filenames are basenamed, so without it
+// every upload lands at the bucket root.
+function resolveFolder(
+  req: FastifyRequest,
+  reply: FastifyReply,
+): { folder: string } | null {
+  const folder =
+    (req.query as Record<string, string | undefined>)[FOLDER_PARAM] ?? '';
+  const segments = folder.split(KEY_SEPARATOR);
+  if (
+    folder &&
+    segments.some(segment => !segment || segment === PARENT_SEGMENT)
+  ) {
+    reply.code(HTTP_STATUS_CODES.BAD_REQUEST).send({ error: ERROR_FOLDER });
+    return null;
+  }
+  return { folder };
+}
+
+const toObjectKey = (folder: string, filename: string) => {
+  const name = path.basename(filename);
+  return folder ? `${folder}${KEY_SEPARATOR}${name}` : name;
+};
 
 function resolveFileName(
   req: FastifyRequest,
@@ -157,11 +186,13 @@ const bucketRoutes: FastifyPluginAsync = async app => {
   app.post('/', async (req, reply) => {
     const provider = resolveProvider(req, reply);
     if (!provider) return;
+    const resolved = resolveFolder(req, reply);
+    if (!resolved) return;
     const parts = req.files();
     const collected: { filename: string; buffer: Buffer }[] = [];
     for await (const part of parts) {
       collected.push({
-        filename: path.basename(part.filename),
+        filename: toObjectKey(resolved.folder, part.filename),
         buffer: await part.toBuffer(),
       });
     }
@@ -189,6 +220,8 @@ const bucketRoutes: FastifyPluginAsync = async app => {
     async (req, reply) => {
       const provider = resolveProvider(req, reply);
       if (!provider) return;
+      const resolved = resolveFolder(req, reply);
+      if (!resolved) return;
       const bucket = getBucketService(provider, resolveBucketName(req));
       const parts = req.files({
         throwFileSizeLimit: true,
@@ -196,7 +229,7 @@ const bucketRoutes: FastifyPluginAsync = async app => {
       });
       const uploaded: string[] = [];
       for await (const part of parts) {
-        const filename = path.basename(part.filename);
+        const filename = toObjectKey(resolved.folder, part.filename);
         await bucket.uploadStream(filename, part.file);
         uploaded.push(filename);
       }

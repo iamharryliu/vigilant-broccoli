@@ -13,11 +13,14 @@ Shared life for homes, communes, and communities.
 - Framework - Next.js
 - Build Tool - Next.js
 - External libs
-  - AWS SDK
+  - dnd-kit
+  - Framer Motion
   - FullCalendar
-  - Leaflet / react-leaflet
   - lucide-react
+  - react-day-picker
+  - react-markdown
   - recharts
+  - Sharp
   - Zod
 - Internal libs
   - `common-js`

@@ -1,24 +1,14 @@
 'use client';
 
-import { LocalWeather, Location } from '@vigilant-broccoli/common-js';
-import { WeatherClockCardUtilityContent } from '@vigilant-broccoli/react-utility';
-import { WEATHER_QUERY_PARAM } from '../app.const';
-import { authFetch } from '../providers/auth-provider';
+import { VB_APP_URL } from '@vigilant-broccoli/infrastructure';
+import { WeatherEmbedCard } from '@vigilant-broccoli/react-lib-higher-level';
 
-const WEATHER_API = '/api/weather';
-
-const fetchWeather = ({ latitude, longitude }: Location) =>
-  authFetch(
-    `${WEATHER_API}?${new URLSearchParams({
-      [WEATHER_QUERY_PARAM.LAT]: String(latitude),
-      [WEATHER_QUERY_PARAM.LON]: String(longitude),
-    })}`,
-  ).then(response =>
-    response.ok ? (response.json() as Promise<LocalWeather>) : null,
-  );
+// NEXT_PUBLIC_* must be read directly here for build-time inlining.
+const WEATHER_URL =
+  process.env.NEXT_PUBLIC_WEATHER_URL || VB_APP_URL.WEATHER.URL;
 
 export const WeatherView = () => (
   <div className="mx-auto w-full max-w-xl">
-    <WeatherClockCardUtilityContent fetchWeather={fetchWeather} />
+    <WeatherEmbedCard weatherUrl={WEATHER_URL} />
   </div>
 );

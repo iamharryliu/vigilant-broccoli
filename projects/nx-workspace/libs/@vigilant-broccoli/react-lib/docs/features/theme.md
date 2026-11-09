@@ -17,7 +17,7 @@
 - Pages-index's embedded ScrollTimeline explicitly maps its scope to the page's `:root.dark`-driven `--pages-background`, `--pages-primary` and `--pages-border` tokens so the page's custom palette survives scoped defaults.
 - The scope also supplies legacy color, radius and shadow tokens consumed by shared utilities. Its text and panel colors reference the semantic foreground and card colors.
 - Explicit light scopes reset semantic colors even inside a dark parent. Set CSS variables through `ThemeScope` or `ThemeProvider`'s `style` prop to customize a scope; these values take precedence over defaults. Palette variables defined only on an ancestor are superseded by the scope defaults.
-- Dialog, AlertDialog, Popover, Select, Tooltip and DropdownMenu copy the originating scope's variables and dark class so open overlays follow theme changes. Caller styles take precedence where the content exposes a style prop.
+- Dialog, AlertDialog, Popover, Select, Tooltip, DropdownMenu and ContextMenu copy the originating scope's variables and dark class so open overlays follow theme changes. Caller styles take precedence where the content exposes a style prop.
 
 ## Popover and Switch
 

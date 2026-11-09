@@ -9,8 +9,11 @@ import {
   formatDuration,
   DeployPayload,
 } from '@vigilant-broccoli/deployment';
+import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
+import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { useAddNotification } from '../../context/NotificationContext';
 import { useBrowserNotifications } from '../../hooks/useBrowserNotifications';
+import { authFetch } from '../../../../libs/auth';
 
 const TOAST_DURATION_MS = 8000;
 const VIEW_RUN_LABEL = 'View run';
@@ -25,6 +28,11 @@ const BROWSER_NOTIFICATIONS_LABEL = 'Browser notifications';
 const STARTED_LABEL = 'Started';
 const SUCCESS_LABEL = 'Success';
 const FAILURE_LABEL = 'Failure';
+const SSE_HEADING = 'Server-Sent Events';
+const SSE_DESCRIPTION =
+  'Publish a test deploy notification through the socket server. It reaches every open session over SSE.';
+const SEND_VIA_SERVER_LABEL = 'Send via server';
+const SEND_VIA_SERVER_FAILED = 'Test notification not sent';
 
 const MOCK_PAYLOAD: DeployPayload = {
   status: DEPLOY_STATUS.STARTED,
@@ -89,6 +97,13 @@ export function NotificationsDemo() {
   const triggerHello = () =>
     toast(HELLO_WORLD_LABEL, { duration: TOAST_DURATION_MS });
 
+  const sendViaServer = async () => {
+    const res = await authFetch(API_ENDPOINTS.NOTIFICATIONS_TEST, {
+      method: HTTP_METHOD.POST,
+    }).catch(() => null);
+    if (!res?.ok) toast.error(SEND_VIA_SERVER_FAILED);
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-2">
@@ -120,6 +135,17 @@ export function NotificationsDemo() {
           </Button>
           <Button variant="destructive" onClick={triggerFailure}>
             {FAILURE_LABEL}
+          </Button>
+        </div>
+      </div>
+      <div className="flex flex-col gap-2">
+        <Heading size="2">{SSE_HEADING}</Heading>
+        <Text size="2" color="gray">
+          {SSE_DESCRIPTION}
+        </Text>
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="secondary" onClick={sendViaServer}>
+            {SEND_VIA_SERVER_LABEL}
           </Button>
         </div>
       </div>

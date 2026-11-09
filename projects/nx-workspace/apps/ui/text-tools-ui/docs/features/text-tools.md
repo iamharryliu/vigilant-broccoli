@@ -9,4 +9,4 @@
 ## Embedding
 
 - `public/_headers` sets `Content-Security-Policy: frame-ancestors 'self' https://manager.vigilant-broccoli.app`, so only the manager's Dev Dashboard Text Tools tab can iframe the site. There is no staging manager host.
-- Staging (`staging-text-tools-ui.pages.dev`) is behind Cloudflare Access and carries the same header.
+- Staging (`staging-text-tools.harryliu.dev`) is behind Cloudflare Access and carries the same header.

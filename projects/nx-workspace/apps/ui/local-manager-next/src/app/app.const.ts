@@ -42,9 +42,9 @@ export const SIDEBAR_ROUTE = {
     title: 'Language Learning',
     path: '/language-learning',
   },
-  CAREER2: {
-    title: 'Career 2',
-    path: '/career2',
+  CMS: {
+    title: 'CMS',
+    path: '/cms',
   },
   MUSIC: {
     title: 'Music',

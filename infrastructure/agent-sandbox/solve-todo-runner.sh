@@ -63,6 +63,9 @@ SKILL_INSTRUCTIONS=$(cat "$REPO_DIR/setup/dotfiles/agent-skills/local-create-pr/
 # shellcheck source=no-changes.sh
 . "$(dirname "${BASH_SOURCE[0]}")/no-changes.sh"
 
+QA_RULE="
+- The PR does not exist yet: write the literal \"${PR_QA_PLACEHOLDER}\" wherever a QA row needs this PR's link; the calling script replaces it with the PR URL after opening the PR."
+
 if [ "$MODE" = id ]; then
   # TODO items live as rows of one markdown table (ID | Type | Priority |
   # Agent | Effort | Model | Brief | Description | Recommended Fix). Extract the table
@@ -80,13 +83,13 @@ if [ "$MODE" = id ]; then
   BRANCH="agent/todo-${ID}"
   INTRO="Resolve this TODO item (already extracted from the repo root TODO.md):"
   REQUEST_TEXT=$ID
-  SCOPE_RULE="- Do not run any git or gh commands and do not edit TODO.md — branching, TODO.md cleanup, committing, pushing, and opening the PR are all handled by the calling script. TODO ${ID} is removed by the calling script once this run fully resolves it."
+  SCOPE_RULE="- Do not run any git or gh commands and do not edit TODO.md beyond the QA row the skill asks for — branching, TODO.md cleanup, committing, pushing, and opening the PR are all handled by the calling script. TODO ${ID} is removed by the calling script once this run fully resolves it.${QA_RULE}"
 elif [ "$MODE" = prompt ]; then
   SLUG=$(echo "$TASK" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-*//;s/-*$//' | cut -c1-40)
   BRANCH="agent/task-${SLUG:-task}-$(date +%s)"
   INTRO="Accomplish this task:"
   REQUEST_TEXT=$TASK
-  SCOPE_RULE="- Do not run any git or gh commands and do not edit TODO.md — branching, TODO.md cleanup, committing, pushing, and opening the PR are all handled by the calling script."
+  SCOPE_RULE="- Do not run any git or gh commands and do not edit TODO.md beyond the QA row the skill asks for — branching, TODO.md cleanup, committing, pushing, and opening the PR are all handled by the calling script.${QA_RULE}"
   # A request in this exact form is the user's authorization for a TODO-only
   # PR, the one case the "no changes besides TODO.md" guard below must let
   # through. Matching the request, not trusting the agent, keeps an agent from
@@ -185,9 +188,9 @@ $PREVIEW_RULE
   - commit_message: capitalized, concise, focused on why not what, ending with a period
   - co_authored_by: the Co-Authored-By trailer line specified by your environment for the model authoring the commit, or "$FALLBACK_TRAILER" when no such trailer is specified
   - pr_title: the pull request title in the form "<committype>(<scope>): <Message>." (scope omitted when unscoped)
-  - pr_summary: markdown bullet points for the PR "## Summary" section, describing the change
+  - pr_summary: brief markdown (about 80 words in total) for the PR "## Summary" section, in two subsections: "### Why" (one or two bullets on the problem or request motivating the PR) and "### Changes" (at most four bullets on what changed, naming the key paths, no per-file inventory)
   - pr_screenshots: array of repo-relative PNG paths captured for this change under projects/nx-workspace/screenshots/; omit or [] when none. The runner commits these images and embeds them in the PR body. Screenshots are required only when the changed page or component is reachable and renderable without authentication. If authentication or unavailable dependencies (a missing backend or secrets, or port conflicts) prevent exercising it in a browser, do not attempt or retry screenshots and do not mention missing screenshots as a PR concern or in PR_CONCERNS.
-  - pr_next_steps: markdown checklist for the PR "## Next steps" section — concrete remaining actions for the human (manual commands to run, UI/manual spot checks, watching CI to green, then one ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\` item per piece of work deliberately left out), or "- [ ] Merge once CI is green" when nothing else is left
+  - pr_next_steps: markdown checklist for the PR "## Next steps" section — concrete remaining actions for the human (manual commands to run, UI/manual spot checks, watching CI to green, then one item per piece of work deliberately left out, written as a brief step in words, followed by its TODO.md id when a row covers it, e.g. "- [ ] Migrate the remaining routes to the new client (TODO \`abc123\`)", or when no row exists a ready-to-run \`pnpm agentic-pr-create --prompt "<task>"\`; never list a bare id), or "- [ ] Merge once CI is green" when nothing else is left
   - pr_suggestions: markdown bullet points for the PR "## Suggestions" section — follow-up recommendations for the reviewer (gaps, risks, related cleanups worth a separate PR), or "" when there are none
   - pr_concerns: markdown bullet points for the PR "## Concerns" section — problems the reviewer must weigh before merging (risks, known limitations, unverified behavior, unresolved questions, assumptions that may be wrong), or "" when there are none. Keep these out of pr_suggestions, which is only for optional follow-up work
   - todo_ids: array of the TODO.md ids this change fully resolves (omit or [] when none)
@@ -282,13 +285,15 @@ RESOLVED_IDS=()
 while IFS= read -r resolved_id; do
   [ -z "$resolved_id" ] || RESOLVED_IDS+=("$resolved_id")
 done < <(pr_current_todo_ids "$META_FILE" "${ID:-}")
+pr_validate_todo_edits "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
 pr_apply_todo_cleanup "$BASE_SHA" ${RESOLVED_IDS[@]+"${RESOLVED_IDS[@]}"}
 if [ -n "$REMOVAL_ID" ]; then
   if [ "${RESOLVED_IDS[*]-}" != "$REMOVAL_ID" ] || [ -n "$(git status --porcelain -- ':(exclude)TODO.md')" ] || [ -z "$(git status --porcelain -- TODO.md)" ]; then
     no_changes_exit "$META_FILE" "TODO-only removal of ${REMOVAL_ID} must remove exactly that row and change nothing else."
   fi
-elif [ "${#RESOLVED_IDS[@]}" -gt 0 ] && [ -z "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
-  no_changes_exit "$META_FILE" "no changes besides TODO.md — ${RESOLVED_IDS[*]} not resolved."
+elif [ -z "$(git status --porcelain -- ':(exclude)TODO.md')" ]; then
+  # Also stops a run whose only edit is a QA row: there is nothing to check.
+  no_changes_exit "$META_FILE" "no changes besides TODO.md${RESOLVED_IDS[*]:+ — ${RESOLVED_IDS[*]} not resolved}."
 fi
 
 if [ "$PREVIEW" = 1 ]; then

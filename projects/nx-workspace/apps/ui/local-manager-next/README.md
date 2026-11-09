@@ -41,11 +41,12 @@ Management dashboard with calendar, notepad and quick links home tabs.
   - `react-lib-auth`
   - `react-lib-higher-level`
   - `react-lib-media`
-  - `react-music-lib`
   - `react-utility`
   - `resume`
   - `security-news`
+  - `storage`
 - Cloud services
+  - Cloudflare R2
   - GitHub REST API
   - Google OAuth
   - Google Tasks & Calendar
@@ -53,7 +54,6 @@ Management dashboard with calendar, notepad and quick links home tabs.
   - Open-Meteo
   - OpenAI API
   - OpenWeatherMap
-  - Spotify Web API
   - Stripe
   - Supabase
 

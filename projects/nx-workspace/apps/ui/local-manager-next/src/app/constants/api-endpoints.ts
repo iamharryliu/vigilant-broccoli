@@ -22,11 +22,6 @@ export const API_ENDPOINTS = {
   EVENT_CALENDARS: '/api/event-calendars',
 
   WEATHER: '/api/weather',
-  WEATHER_CITY: '/api/weather/city',
-
-  DJ_PLAYLISTS: '/api/dj/playlists',
-  DJ_DOWNLOAD: '/api/dj/download',
-  DJ_OPEN_REKORDBOX: '/api/dj/open-rekordbox',
 
   LLM_TEST: '/api/llm-test',
   SPEECH_TO_TEXT: '/api/speech-to-text',
@@ -37,6 +32,8 @@ export const API_ENDPOINTS = {
   RECIPE_SCRAPE_PREVIEW: '/api/recipe/scrape-preview',
 
   CHAT_PUBLISH: '/api/chat/publish',
+  CHAT_TOKEN: '/api/chat/token',
+  NOTIFICATIONS_TEST: '/api/notifications/test',
 
   FILE_CONVERT: '/api/file-convert',
 
@@ -52,10 +49,6 @@ export const API_ENDPOINTS = {
 
   BACKGROUND_TASKS: '/api/background-tasks',
 
-  JOB_APPLICATIONS: '/api/job-applications',
-  JOB_APPLICATIONS_FILE: '/api/job-applications/file',
-
-  // Spotify
-  SPOTIFY_AUTH_LOGIN: '/api/spotify/auth/login',
-  SPOTIFY_GRAPH: '/api/spotify/graph',
+  CMS: '/api/cms',
+  CMS_FILE: '/api/cms/file',
 } as const;

@@ -28,7 +28,7 @@ The production build includes TypeScript checking. The application is deployed o
 | Environment | Nx command from repository root | Vercel project | URL | Access |
 | --- | --- | --- | --- | --- |
 | Production | `pnpm nx run gravity-guy:deploy:production` | `production-gravity-guy` | <https://gravity-guy.harryliu.dev/> | Public |
-| Staging | `pnpm nx deploy gravity-guy` | `staging-gravity-guy` | <https://staging-gravity-guy.vercel.app/> | Vercel team authentication |
+| Staging | `pnpm nx deploy gravity-guy` | `staging-gravity-guy` | <https://staging-gravity-guy.harryliu.dev/> | Vercel team authentication |
 
 The build target explicitly sets `NODE_ENV=production` so Nx task environment defaults cannot make the prerender use a development React runtime. Targets use `scripts/deploy-vercel.ts`, which creates the project on first deploy, applies the shared Next.js build settings and uploads prebuilt output. The common workflow deploys staging on affected `main` pushes and production on `production` branch pushes; the manual app workflow can deploy either environment. Staging monitoring expects an anonymous HTTP 302 without following redirects; production expects HTTP 200.
 
