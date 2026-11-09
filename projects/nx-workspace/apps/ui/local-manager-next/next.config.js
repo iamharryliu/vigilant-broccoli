@@ -70,6 +70,9 @@ const nextConfig = {
   distDir: '../../../dist/apps/ui/local-manager-next/.next',
   agentRules: false,
   serverExternalPackages: ['better-sqlite3'],
+  // Rewrites proxy with a 30s default that resets the socket; music-next's
+  // /api/spotify/graph walks every playlist and can run longer.
+  experimental: { proxyTimeout: 120_000 },
   async rewrites() {
     return [
       {
