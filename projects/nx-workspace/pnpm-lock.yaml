@@ -256,7 +256,7 @@ importers:
         version: 4.8.4(supports-color@8.1.1)
       socket.io-client:
         specifier: ^4.8.3
-        version: 4.8.4
+        version: 4.8.4(supports-color@8.1.1)
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -690,9 +690,6 @@ importers:
       better-auth:
         specifier: ^1.7.15
         version: 1.7.15(mongodb@7.5.0(socks@2.8.9))(next@16.4.2(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@26.1.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0))(pg@8.22.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(vitest@5.0.4)
-      ejs:
-        specifier: ^6.0.1
-        version: 6.0.1
       fastify:
         specifier: ^5.12.8
         version: 5.12.8
@@ -11079,11 +11076,6 @@ packages:
 
   ejs@5.0.1:
     resolution: {integrity: sha512-COqBPFMxuPTPspXl2DkVYaDS3HtrD1GpzOGkNTJ1IYkifq/r9h8SVEFrjA3D9/VJGOEoMQcrlhpntcSUrM8k6A==}
-    engines: {node: '>=0.12.18'}
-    hasBin: true
-
-  ejs@6.0.1:
-    resolution: {integrity: sha512-UaaM14yby8U3k02ihS1Bmj5Kz2d7CCQM1scxpgs4Mhkq8F1wR2gl3+Ts4h5Ne4Mnt7M9m4Dw7jsuMr3+xO4vZA==}
     engines: {node: '>=0.12.18'}
     hasBin: true
 
@@ -28831,8 +28823,6 @@ snapshots:
 
   ejs@5.0.1: {}
 
-  ejs@6.0.1: {}
-
   electron-to-chromium@1.5.472: {}
 
   emittery@0.13.1: {}
@@ -28862,7 +28852,7 @@ snapshots:
     dependencies:
       once: 1.4.0
 
-  engine.io-client@6.6.7:
+  engine.io-client@6.6.7(supports-color@8.1.1):
     dependencies:
       '@socket.io/component-emitter': 3.1.2
       debug: 4.4.3(supports-color@8.1.1)
@@ -35784,11 +35774,11 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  socket.io-client@4.8.4:
+  socket.io-client@4.8.4(supports-color@8.1.1):
     dependencies:
       '@socket.io/component-emitter': 3.1.2
       debug: 4.4.3(supports-color@8.1.1)
-      engine.io-client: 6.6.7
+      engine.io-client: 6.6.7(supports-color@8.1.1)
       socket.io-parser: 4.2.7
     transitivePeerDependencies:
       - bufferutil
