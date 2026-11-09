@@ -16,7 +16,7 @@ The Weather cards in local-manager-next and mobile-manager-next are weather-next
 
 ## Framing
 
-- weather-next sends `Content-Security-Policy: frame-ancestors 'self'` plus the parent origins on every path: local-manager-next (proxied `manager.` host, PM2's `127.0.0.1:1337`, `next dev` on `localhost`/`127.0.0.1:3000`) from `local-manager-origins.json` and mobile-manager-next (`manager.harryliu.dev` and its production and staging `vercel.app` hosts) from `mobile-manager-origins.json`, JSON so `next.config.js` can require them. Standalone visits are unaffected.
+- weather-next sends no framing restriction (no `frame-ancestors` or `X-Frame-Options`), so any site may frame it. Messaging stays limited to `WEATHER_EMBED_PARENT_ORIGINS`: local-manager-next (proxied `manager.` host, PM2's `127.0.0.1:1337`, `next dev` on `localhost`/`127.0.0.1:3000`) and mobile-manager-next (`manager.harryliu.dev` and its production and staging `vercel.app` hosts). Other embedders get the card without theme sync or auto-height.
 - Neither embedding app sets a CSP or Permissions-Policy header, so `frame-src` and geolocation delegation are not blocked.
 
 ## Parent states
