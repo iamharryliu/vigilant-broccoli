@@ -43,7 +43,7 @@ import {
   TaskCompletion,
   formatInstanceDate,
   getAssigneeLabel,
-  getPendingDueDate,
+  getPendingOccurrenceDate,
 } from './tasks.utils';
 
 const ASSIGN_LABEL = 'Assign';
@@ -151,11 +151,13 @@ export function TaskList() {
   // Each recurring task has at most one pending instance (keyed by task id) and
   // one completed instance per completion (keyed by completion id).
   const pendingItems = tasks.flatMap(task => {
-    const dueDate = getPendingDueDate(task, completions, today);
-    if (!dueDate) return [];
-    const overdue =
-      dueDate === todayYmd ? '' : ` (due ${formatInstanceDate(dueDate)})`;
-    return [{ id: task.id, title: `${task.title}${overdue}`, checked: false }];
+    const occurrenceDate = getPendingOccurrenceDate(task, completions, today);
+    if (!occurrenceDate) return [];
+    const missed =
+      occurrenceDate === todayYmd
+        ? ''
+        : ` (missed ${formatInstanceDate(occurrenceDate)})`;
+    return [{ id: task.id, title: `${task.title}${missed}`, checked: false }];
   });
   const completedItems = completions.flatMap(({ id, taskId, completedAt }) => {
     const task = tasks.find(({ id: candidate }) => candidate === taskId);
