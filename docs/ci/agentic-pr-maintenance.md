@@ -1,6 +1,12 @@
 # Agentic PR Maintenance
 
-How `cron-agentic-pr-update` and `cron-agentic-pr-create-fix-failing-actions` pick their work and bound their retries.
+How `cron-agentic-pr-update`, `cron-agentic-pr-create-fix-failing-actions` and `cron-agentic-pr-create-codeql-alerts` pick their work and bound their retries.
+
+## Table of Contents
+
+- [Open pull requests](#open-pull-requests)
+- [Failing workflows on main](#failing-workflows-on-main)
+- [Open CodeQL alerts](#open-codeql-alerts)
 
 ## Open pull requests
 
@@ -32,3 +38,16 @@ How `cron-agentic-pr-update` and `cron-agentic-pr-create-fix-failing-actions` pi
 - **Run summary.** The dispatch job writes one result per triaged or skipped workflow with its classification, analysis or skip reason, then the overall result.
 - **Auth is `GITHUB_TOKEN`** per job (`actions: read`/`pull-requests: read` to select, `actions: read` to triage, `actions: write` to dispatch), plus the Vault-backed `CLAUDE_CODE_OAUTH_TOKEN` for triage; no repo secret is added.
 - **Selection logic** lives in `.github/scripts/select-failing-workflows.jq`, fed by `.github/scripts/collect-failing-workflows.sh`. Check it offline with `bash .github/scripts/collect-failing-workflows.sh "$(gh repo view --json nameWithOwner -q .nameWithOwner)" > input.json && jq --argjson max_attempts 2 --arg marker fix-failing-actions -f .github/scripts/select-failing-workflows.jq input.json`; the output is `{selected, skipped}`.
+
+## Open CodeQL alerts
+
+`cron-agentic-pr-create-codeql-alerts` (weekly, `55 7 * * 0`, plus manual) triages the alerts from CodeQL's GitHub default setup, which has no workflow file in the repo. Its jobs run in order `overview` → `collect` → `dispatch`.
+
+- **Selection.** Every open alert from `gh api --paginate "repos/<repo>/code-scanning/alerts?state=open&tool_name=CodeQL"`, reduced to number, rule id, severity (`security_severity_level`, else `rule.severity`), rule description, path, start line, a one-line message of at most 300 characters and `html_url`.
+- **Cap of 25** (`MAX_ALERTS`), highest severity first (critical/error, high, medium/warning, low/note), then by alert number. The prompt is copied into the PR body, so the rest are counted as deferred and wait for a later run.
+- **Marker and dedupe.** The dispatched prompt starts with `[codeql-alerts]`, which reaches the child run's title and the PR body. Nothing is dispatched while an open PR body carries the marker, so weekly runs never stack competing PRs; merging or closing it re-enables the next run. A second rule covers the all-dismissal case, where no PR opens: dispatch is also skipped when the most recent `manual-agentic-pr-create` run whose title contains `[codeql-alerts]` concluded `success`, logged `RESULT::no-changes` (printed by `infrastructure/agent-sandbox/no-changes.sh`) and no currently open alert has a `created_at` after that run's `createdAt`; any new alert re-enables dispatch. The collect job needs `actions: read` for this and exposes the matched run's URL as an output, named in the result note. `cron-cleanup-workflow-runs` deletes runs after 14 days, so an unapplied all-dismissal set is re-dispatched about every two to three weeks as a reminder; that is intentional. With zero open alerts nothing is dispatched and the run reports _Completed with no changes_.
+- **Dispatch.** One `manual-agentic-pr-create` run (`claude`, `sonnet`, firewall `on`, ref `main`) whose prompt wraps the alert list in a `<codeql-alerts>` block marked as untrusted data. The solve reads each flagged location and fixes only genuine defects with minimal local changes (no refactors, no tests).
+- **Dismissal handoff.** Each alert the solve judges a false positive, won't-fix or test-only becomes a `pr_next_steps` item with the alert URL, the GitHub dismissal reason (`false positive`, `won't fix` or `used in tests`), a justification citing the guarding code, and a ready-to-run `gh api -X PATCH repos/<repo>/code-scanning/alerts/<n> -f state=dismissed -f dismissed_reason='<reason>' -f dismissed_comment='<why>'`. Neither CI nor the agent dismisses anything; a human runs the commands. When every alert is a dismissal, the solve makes a [no-change decision](../agent-support.md#task-contract) with the full list as its reason, shown in the child run's summary; those alerts stay open until a human dismisses them.
+- **Run summary.** The dispatch job reports the open and deferred counts and whether it dispatched, was skipped by the dedupe (naming the open PR), or found no alerts.
+- **Auth is `GITHUB_TOKEN`** per job (`security-events: read`/`pull-requests: read` to collect, `actions: write` to dispatch); no repo secret and no Vault read. The sandboxed solve cannot call `gh` and the agent GitHub App has no code-scanning permission ([permissions](../infrastructure/secret-management.md#other)), so alerts reach it only through the prompt.
+- **Selection logic** lives in `.github/scripts/select-codeql-alerts.jq` and the prompt in `.github/scripts/dispatch-codeql-alert-fixes.sh`. Check the selection offline with `gh api "repos/$(gh repo view --json nameWithOwner -q .nameWithOwner)/code-scanning/alerts?state=open" | jq -s --argjson max 25 -f .github/scripts/select-codeql-alerts.jq`; the output is `{total, deferred, alerts}`.

@@ -10,6 +10,8 @@
 ## Chat
 
 - Streaming responses with typing indicator; stop mid-stream supported
+- Assistant replies render as GitHub-flavored Markdown (tables, lists) while streaming; fenced code blocks are syntax-highlighted (highlight.js common languages) with a language label and a copy button
+- Each message has a copy button; the last chat-model reply has Regenerate (Retry after a failed response), and plain user messages have Edit, which truncates the conversation at that message and resends the edited text. Replies from `/calendar`, `/tasks`, draft cards and the help command are not regenerable, and `/calendar`, `/tasks` and suggestion messages are not editable
 - User messages render as bubbles; assistant responses render as plain text without a card container
 - Conversation history compacted after 20 messages (oldest dropped)
 - Model selector uses the 17 models listed in the account’s complimentary-token allowance; the chat API rejects other model IDs
