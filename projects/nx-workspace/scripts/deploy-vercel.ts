@@ -317,6 +317,9 @@ async function main() {
 
   const NX_VERCEL_SETTINGS = (nxProject: string, outputDirectory: string) => ({
     framework: 'nextjs',
+    // New projects default to a Node version Vercel's own build rejects as
+    // discontinued ("26.x"); match .nvmrc.
+    nodeVersion: '24.x',
     rootDirectory: 'projects/nx-workspace',
     buildCommand: `nx build ${nxProject}${
       STANDALONE_OUTPUT_PROJECTS.has(nxProject) ? ' --skip-nx-cache' : ''
