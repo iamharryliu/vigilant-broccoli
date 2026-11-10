@@ -533,6 +533,8 @@ type FileExplorerProps = {
   // a confirmation; called once per file. Hidden when omitted; folders are
   // never offered.
   onDelete?: (entry: FileEntry) => Promise<void>;
+  // Small inline marker after an entry's name, such as a processing status.
+  renderEntryBadge?: (entry: FileEntry) => ReactNode;
 };
 
 const DEFAULT_SORT: SortState = {
@@ -550,6 +552,7 @@ export const FileExplorer = ({
   toolbarAction,
   onUpload,
   onDelete,
+  renderEntryBadge,
 }: FileExplorerProps) => {
   // null until mounted: the folder lives in `?path=` so a page reload or the
   // browser's back/forward keeps it, and `window` is unavailable during SSR.
@@ -1085,8 +1088,11 @@ export const FileExplorer = ({
                         </div>
                         {renderMenu(entry)}
                       </td>
-                      <td className="max-w-[360px] truncate px-4 py-2 font-medium text-gray-800 dark:text-gray-100">
-                        {entry.name}
+                      <td className="max-w-[360px] px-4 py-2 font-medium text-gray-800 dark:text-gray-100">
+                        <div className="flex items-center gap-2">
+                          <span className="truncate">{entry.name}</span>
+                          {renderEntryBadge?.(entry)}
+                        </div>
                       </td>
                       <td className="hidden px-4 py-2 text-gray-500 dark:text-gray-400 sm:table-cell">
                         {entrySizeLabel(entry)}
@@ -1126,6 +1132,11 @@ export const FileExplorer = ({
                       <div className="line-clamp-2 break-words text-xs font-medium text-gray-800 dark:text-gray-100">
                         {entry.name}
                       </div>
+                      {renderEntryBadge && (
+                        <div className="flex justify-center">
+                          {renderEntryBadge(entry)}
+                        </div>
+                      )}
                       {entry.kind === FILE_ENTRY_KIND.FOLDER && (
                         <div className="text-[10px] text-gray-400 dark:text-gray-500">
                           {itemCountLabel(entry.itemCount)}
