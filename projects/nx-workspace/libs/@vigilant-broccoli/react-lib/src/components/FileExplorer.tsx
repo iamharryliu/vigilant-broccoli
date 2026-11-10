@@ -42,6 +42,12 @@ import {
 } from './AlertDialog';
 import { Button } from './Button';
 import { ContextMenu } from './ContextMenu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from './Dialog';
 import { Skeleton } from './Skeleton';
 import {
   groupByDirectory,
@@ -182,6 +188,9 @@ const isFile = (entry: FileEntry) => entry.kind === FILE_ENTRY_KIND.FILE;
 const isImageFile = (entry: FileEntry) =>
   isFile(entry) && IMAGE_EXTENSIONS.includes(getExtension(entry.name));
 
+const isEmbeddable = (entry: FileEntry) =>
+  isImageFile(entry) || getExtension(entry.name) === PDF_EXTENSION;
+
 type FetchFileBlob = (path: string) => Promise<Blob>;
 
 type ObjectUrlState = {
@@ -295,8 +304,7 @@ const FilePreview = ({
   fetchFileBlob: FetchFileBlob;
 }) => {
   const extension = getExtension(entry.name);
-  const embeddable =
-    IMAGE_EXTENSIONS.includes(extension) || extension === PDF_EXTENSION;
+  const embeddable = isEmbeddable(entry);
   const { url, loading, error } = useFileObjectUrl(
     fetchFileBlob,
     embeddable ? entry.path : null,
@@ -334,6 +342,35 @@ const FilePreview = ({
     />
   );
 };
+
+// Embeddable files open in-page: a popup opened after an await is blocked by
+// browsers, and a revoked blob URL can break a slow-loading PDF viewer.
+const FileViewerDialog = ({
+  entry,
+  onClose,
+  fetchFileBlob,
+}: {
+  entry: FileEntry | null;
+  onClose: () => void;
+  fetchFileBlob: FetchFileBlob;
+}) => (
+  <Dialog
+    open={entry !== null}
+    onOpenChange={open => {
+      if (!open) onClose();
+    }}
+  >
+    <DialogContent className="flex h-[90vh] max-w-5xl flex-col gap-3">
+      <DialogTitle className="truncate pr-6">{entry?.name}</DialogTitle>
+      <DialogDescription className="sr-only">
+        Preview of {entry?.name}
+      </DialogDescription>
+      <div className="flex min-h-0 flex-1 items-center justify-center">
+        {entry && <FilePreview entry={entry} fetchFileBlob={fetchFileBlob} />}
+      </div>
+    </DialogContent>
+  </Dialog>
+);
 
 const PreviewSidebar = ({
   entry,
@@ -568,6 +605,7 @@ export const FileExplorer = ({
   const [pendingDelete, setPendingDelete] = useState<FileEntry[] | null>(null);
   const [mutating, setMutating] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(true);
+  const [viewerEntry, setViewerEntry] = useState<FileEntry | null>(null);
   const [dragging, setDragging] = useState(false);
   const itemsRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -630,6 +668,10 @@ export const FileExplorer = ({
   );
 
   const openFile = async (entry: FileEntry) => {
+    if (isEmbeddable(entry)) {
+      setViewerEntry(entry);
+      return;
+    }
     const preview = window.open('', '_blank');
     try {
       const url = URL.createObjectURL(await fetchFileBlob(entry.path));
@@ -1163,6 +1205,11 @@ export const FileExplorer = ({
             </div>
           )}
         </div>
+        <FileViewerDialog
+          entry={viewerEntry}
+          onClose={() => setViewerEntry(null)}
+          fetchFileBlob={fetchFileBlob}
+        />
         {previewEntry && (
           <PreviewSidebar
             entry={previewEntry}
