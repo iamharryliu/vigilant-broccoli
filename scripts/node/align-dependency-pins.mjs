@@ -116,7 +116,7 @@ if (!checkOnly) {
     for (const { section, name, from, to } of fileEdits) {
       const block = new RegExp(`"${section}"\\s*:\\s*\\{[^}]*\\}`);
       const entry = new RegExp(
-        `("${name.replace(/[/@.]/g, '\\$&')}"\\s*:\\s*)"${from.replace(/[.^~*]/g, '\\$&')}"`,
+        `("${RegExp.escape(name)}"\\s*:\\s*)"${RegExp.escape(from)}"`,
       );
       text = text.replace(block, match => match.replace(entry, `$1"${to}"`));
     }

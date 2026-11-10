@@ -162,7 +162,7 @@ export const saveSession = async (
 ): Promise<SessionWithWords> => {
   const collection = await getCollection();
   const createdAt = new Date().toISOString();
-  const sessionId = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  const sessionId = `${Date.now()}-${crypto.randomUUID()}`;
 
   const sessionWords: WordRow[] = words.map((w, i) => ({
     id: `${sessionId}-${i}`,
