@@ -4,23 +4,12 @@ import {
   Button,
   ChatSendButton,
   IconButton,
-  Select,
   SpeechToTextToggleButton,
-  Switch,
   Textarea,
   Text,
 } from '@vigilant-broccoli/react-lib';
-import type { LLMModel } from '@vigilant-broccoli/common-js';
 import { SLASH_PREFIX } from '../../constants/chatbot.consts';
 import type { ChatCommand, Message, MessageImage } from './chatbot.types';
-
-const KNOWLEDGE_BASE_TOGGLE_LABEL = 'Knowledge base';
-
-const formatModelLabel = (model: string) =>
-  model
-    .split('-')
-    .map(part => part.toUpperCase())
-    .join(' ');
 
 const ImagePreview = ({
   img,
@@ -198,12 +187,7 @@ const InputControls = ({
   isRecording,
   isProcessing,
   uploadedImages,
-  selectedModel,
-  modelOptions,
-  useKnowledgeBase,
   onImageUpload,
-  onModelChange,
-  onUseKnowledgeBaseChange,
   onToggleRecording,
   onInputChange,
   onKeyDown,
@@ -217,12 +201,7 @@ const InputControls = ({
   isRecording: boolean;
   isProcessing: boolean;
   uploadedImages: MessageImage[];
-  selectedModel: LLMModel;
-  modelOptions: LLMModel[];
-  useKnowledgeBase: boolean;
   onImageUpload: (files: FileList | null) => void;
-  onModelChange: (model: LLMModel) => void;
-  onUseKnowledgeBaseChange: (value: boolean) => void;
   onToggleRecording: () => void;
   onInputChange: (value: string) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
@@ -240,12 +219,13 @@ const InputControls = ({
     />
     <IconButton
       icon="image"
-      variant="outline"
+      variant="ghost"
       onClick={() => fileInputRef.current?.click()}
       disabled={isStreaming || isRecording}
       aria-label="Upload image"
     />
     <SpeechToTextToggleButton
+      variant="ghost"
       isRecording={isRecording}
       isDisabled={isStreaming || isProcessing}
       onToggle={onToggleRecording}
@@ -260,25 +240,8 @@ const InputControls = ({
       rows={1}
       className="flex-1 min-h-[2.25rem] max-h-48"
     />
-    <label className="flex items-center gap-2 self-center">
-      <Text size="1" color="gray">
-        {KNOWLEDGE_BASE_TOGGLE_LABEL}
-      </Text>
-      <Switch
-        checked={useKnowledgeBase}
-        onCheckedChange={onUseKnowledgeBaseChange}
-        disabled={isStreaming}
-      />
-    </label>
-    <Select
-      value={selectedModel}
-      onValueChange={value => onModelChange(value as LLMModel)}
-      options={modelOptions}
-      disabled={isStreaming}
-      triggerClassName="min-w-40"
-      renderItem={formatModelLabel}
-    />
     <ChatSendButton
+      variant="ghost"
       isStreaming={isStreaming}
       isDisabled={isSendDisabled(false, input, uploadedImages.length)}
       onSend={onSend}
@@ -296,16 +259,11 @@ export const InputArea = ({
   uploadedImages,
   input,
   isStreaming,
-  selectedModel,
-  modelOptions,
-  useKnowledgeBase,
   fileInputRef,
   textInputRef,
   onCommandRun,
   onImageRemove,
   onImageUpload,
-  onModelChange,
-  onUseKnowledgeBaseChange,
   onInputChange,
   onKeyDown,
   onSend,
@@ -323,16 +281,11 @@ export const InputArea = ({
   uploadedImages: MessageImage[];
   input: string;
   isStreaming: boolean;
-  selectedModel: LLMModel;
-  modelOptions: LLMModel[];
-  useKnowledgeBase: boolean;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   textInputRef: React.RefObject<HTMLTextAreaElement | null>;
   onCommandRun: (name: string) => void;
   onImageRemove: (index: number) => void;
   onImageUpload: (files: FileList | null) => void;
-  onModelChange: (model: LLMModel) => void;
-  onUseKnowledgeBaseChange: (value: boolean) => void;
   onInputChange: (value: string) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   onSend: () => void;
@@ -367,12 +320,7 @@ export const InputArea = ({
       isRecording={isRecording}
       isProcessing={isProcessing}
       uploadedImages={uploadedImages}
-      selectedModel={selectedModel}
-      modelOptions={modelOptions}
-      useKnowledgeBase={useKnowledgeBase}
       onImageUpload={onImageUpload}
-      onModelChange={onModelChange}
-      onUseKnowledgeBaseChange={onUseKnowledgeBaseChange}
       onToggleRecording={onToggleRecording}
       onInputChange={onInputChange}
       onKeyDown={onKeyDown}
