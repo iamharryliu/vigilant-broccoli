@@ -47,13 +47,14 @@ jobs:
           model: ${{ env.MODEL }}
           firewall: ${{ env.FIREWALL }}
           operation: Triage CodeQL code-scanning alerts
-          description: Collect open CodeQL alerts, highest severity first and capped at ${{ env.MAX_ALERTS }}, and dispatch one manual-agentic-pr-create run that fixes the genuine ones and lists recommended dismissals for a human to apply. Skipped while an open PR carries the [${{ env.MARKER }}] marker or when no alert is open. Nothing is dismissed or merged.
+          description: Collect open CodeQL alerts, highest severity first and capped at ${{ env.MAX_ALERTS }}, and dispatch one manual-agentic-pr-create run that fixes the genuine ones and lists recommended dismissals for a human to apply. Skipped while an open PR carries the [${{ env.MARKER }}] marker, when the latest marker run ended with no changes and no alert is newer, or when no alert is open. Nothing is dismissed or merged.
 
   collect:
     needs: overview
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
+      actions: read
       contents: read
       pull-requests: read
       security-events: read
@@ -62,6 +63,7 @@ jobs:
       total: ${{ steps.collect.outputs.total }}
       deferred: ${{ steps.collect.outputs.deferred }}
       open_pr: ${{ steps.collect.outputs.open_pr }}
+      no_change_run_url: ${{ steps.collect.outputs.no_change_run_url }}
     steps:
       - name: Checkout selection script
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -74,17 +76,39 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          gh api --paginate "repos/$GITHUB_REPOSITORY/code-scanning/alerts?state=open&tool_name=CodeQL&per_page=100" \
-            | jq -s -c --argjson max "$MAX_ALERTS" -f .github/scripts/select-codeql-alerts.jq > selection.json
+          gh api --paginate "repos/$GITHUB_REPOSITORY/code-scanning/alerts?state=open&tool_name=CodeQL&per_page=100" > pages.json
+          jq -s -c --argjson max "$MAX_ALERTS" -f .github/scripts/select-codeql-alerts.jq pages.json > selection.json
           jq -r '.alerts[] | "#\(.number) \(.rule) (\(.severity)) \(.path):\(.start_line)"' selection.json
           OPEN_PR=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 200 --json number,body \
             --jq "[.[] | select(.body // \"\" | contains(\"[$MARKER]\")) | .number][0] // \"\"")
           echo "$(jq .total selection.json) open alert(s), $(jq .deferred selection.json) deferred; open marker PR: ${OPEN_PR:-none}"
+
+          # A solve that judges every alert a dismissal opens no PR, so the open-PR
+          # dedupe never fires; skip while the latest marker run ended with no changes
+          # and no alert has appeared since. The newest alert is read from the raw
+          # pages because the selection drops deferred alerts.
+          NO_CHANGE_RUN_URL=""
+          LATEST_RUN=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow manual-agentic-pr-create.yml --limit 100 \
+            --json databaseId,displayTitle,conclusion,createdAt,url \
+            --jq "[.[] | select(.displayTitle | contains(\"[$MARKER]\"))][0] // empty")
+          if [ -n "$LATEST_RUN" ] && [ "$(jq -r .conclusion <<< "$LATEST_RUN")" = success ]; then
+            RUN_ID=$(jq -r .databaseId <<< "$LATEST_RUN")
+            gh run view "$RUN_ID" --repo "$GITHUB_REPOSITORY" --log > run.log || true
+            if grep -q 'RESULT::no-changes' run.log; then
+              NEWER_ALERTS=$(jq -s --arg since "$(jq -r .createdAt <<< "$LATEST_RUN")" \
+                '[.[][] | select(.created_at > $since)] | length' pages.json)
+              echo "latest $MARKER run $RUN_ID ended with no changes; $NEWER_ALERTS alert(s) newer than it"
+              if [ "$NEWER_ALERTS" = 0 ]; then
+                NO_CHANGE_RUN_URL=$(jq -r .url <<< "$LATEST_RUN")
+              fi
+            fi
+          fi
           {
             echo "selection=$(cat selection.json)"
             echo "total=$(jq .total selection.json)"
             echo "deferred=$(jq .deferred selection.json)"
             echo "open_pr=$OPEN_PR"
+            echo "no_change_run_url=$NO_CHANGE_RUN_URL"
           } >> "$GITHUB_OUTPUT"
 
   dispatch:
@@ -103,7 +127,7 @@ jobs:
 
       - name: Dispatch alert fixes
         id: dispatch
-        if: needs.collect.result == 'success' && needs.collect.outputs.total != '0' && needs.collect.outputs.open_pr == ''
+        if: needs.collect.result == 'success' && needs.collect.outputs.total != '0' && needs.collect.outputs.open_pr == '' && needs.collect.outputs.no_change_run_url == ''
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
@@ -121,4 +145,4 @@ jobs:
           mode: result
           outcome: ${{ (steps.dispatch.outcome == 'success' && 'dispatched') || (needs.collect.result == 'success' && needs.collect.outputs.total == '0' && 'no-changes') || (needs.collect.result == 'success' && steps.dispatch.outcome == 'skipped' && 'no-pr') || (job.status == 'cancelled' && 'cancelled') || 'failed' }}
           note: >-
-            ${{ (needs.collect.result != 'success' && 'Alert collection failed, so nothing was dispatched; see the collect job log.') || (needs.collect.outputs.total == '0' && 'No open CodeQL alerts; nothing to dispatch.') || format('{0} open CodeQL alert(s), {1} deferred over the cap of {2}. {3}', needs.collect.outputs.total, needs.collect.outputs.deferred, env.MAX_ALERTS, (needs.collect.outputs.open_pr != '' && format('Skipped: open PR #{0} already carries [{1}].', needs.collect.outputs.open_pr, env.MARKER)) || (steps.dispatch.outcome == 'success' && 'Dispatched manual-agentic-pr-create.') || 'Dispatch failed.') }}
+            ${{ (needs.collect.result != 'success' && 'Alert collection failed, so nothing was dispatched; see the collect job log.') || (needs.collect.outputs.total == '0' && 'No open CodeQL alerts; nothing to dispatch.') || format('{0} open CodeQL alert(s), {1} deferred over the cap of {2}. {3}', needs.collect.outputs.total, needs.collect.outputs.deferred, env.MAX_ALERTS, (needs.collect.outputs.open_pr != '' && format('Skipped: open PR #{0} already carries [{1}].', needs.collect.outputs.open_pr, env.MARKER)) || (needs.collect.outputs.no_change_run_url != '' && format('Skipped: no new alerts since no-change run {0}; apply its dismissals.', needs.collect.outputs.no_change_run_url)) || (steps.dispatch.outcome == 'success' && 'Dispatched manual-agentic-pr-create.') || 'Dispatch failed.') }}
