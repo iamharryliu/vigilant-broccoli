@@ -1,9 +1,5 @@
 'use client';
-import {
-  Button,
-  SpeechToTextToggleButton,
-  Text,
-} from '@vigilant-broccoli/react-lib';
+import { Button, Text } from '@vigilant-broccoli/react-lib';
 import {
   ChatInputArea,
   type ChatInputAreaProps,
@@ -104,15 +100,6 @@ const SlashMenu = ({
   </div>
 );
 
-const getInputPlaceholder = (
-  isRecording: boolean,
-  isProcessing: boolean,
-): string => {
-  if (isRecording) return 'Recording...';
-  if (isProcessing) return 'Processing...';
-  return 'Type your message...';
-};
-
 export const InputArea = ({
   messages,
   suggestionCommands,
@@ -125,15 +112,7 @@ export const InputArea = ({
   speechError,
   onToggleRecording,
   ...inputProps
-}: Omit<
-  ChatInputAreaProps,
-  | 'aboveInput'
-  | 'leadingControls'
-  | 'footer'
-  | 'placeholder'
-  | 'isInputDisabled'
-  | 'isUploadDisabled'
-> & {
+}: Omit<ChatInputAreaProps, 'aboveInput' | 'speech'> & {
   messages: Message[];
   suggestionCommands: ChatCommand[];
   slashMenuCommands: ChatCommand[] | null;
@@ -147,9 +126,12 @@ export const InputArea = ({
 }) => (
   <ChatInputArea
     {...inputProps}
-    placeholder={getInputPlaceholder(isRecording, isProcessing)}
-    isInputDisabled={isRecording || isProcessing}
-    isUploadDisabled={inputProps.isStreaming || isRecording}
+    speech={{
+      isRecording,
+      isProcessing,
+      error: speechError,
+      onToggleRecording,
+    }}
     aboveInput={
       <>
         {messages.length === 0 && suggestionCommands.length > 0 && (
@@ -166,21 +148,6 @@ export const InputArea = ({
           />
         )}
       </>
-    }
-    leadingControls={
-      <SpeechToTextToggleButton
-        variant="ghost"
-        isRecording={isRecording}
-        isDisabled={inputProps.isStreaming || isProcessing}
-        onToggle={onToggleRecording}
-      />
-    }
-    footer={
-      speechError && (
-        <Text size="2" color="red">
-          {speechError}
-        </Text>
-      )
     }
   />
 );

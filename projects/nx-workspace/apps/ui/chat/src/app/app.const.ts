@@ -4,7 +4,14 @@ export const APP_NAME = 'Chat';
 export const APP_DESCRIPTION = 'A private chatbot.';
 export const PAGE_TITLE = { HOME: 'Chatbot' } as const;
 
-export const API_ROUTE = { CHAT: '/api/chat' } as const;
+// No speech-to-text entry: react-lib's useSpeechToText always posts to
+// /api/speech-to-text, so that route must keep its path.
+export const API_ROUTE = {
+  CHAT: '/api/chat',
+  TEXT_TO_SPEECH: '/api/text-to-speech',
+} as const;
+
+export const TEXT_TO_SPEECH_MAX_CHARS = 5000;
 
 // Model eligibility supplied from the account's complimentary-token allowance;
 // mirrors local-manager-next's chatbot.
@@ -35,6 +42,7 @@ export const STORAGE_KEY = {
   SIDEBAR_OPEN: 'chat-sidebar-open',
   MODEL: 'chat-model',
   USE_KNOWLEDGE_BASE: 'chat-use-knowledge-base',
+  SPEAK_REPLIES: 'chat-speak-replies',
 } as const;
 
 export const KEY = {

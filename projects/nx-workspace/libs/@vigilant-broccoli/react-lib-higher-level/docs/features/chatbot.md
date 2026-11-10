@@ -8,7 +8,7 @@ Streaming chatbot UI and history shared by local-manager-next's `/chatbot` page 
 | --- | --- |
 | `ChatbotMessage`, `ChatbotImage`, `SetChatbotMessages` | Base message types; apps extend `ChatbotMessage` (local-manager-next adds draft cards). |
 | `ChatHistorySidebar` | Search, new chat, rename, pin, delete with confirmation. The `settings` prop fills its Chat settings view. |
-| `ChatInputArea` | Textarea, image attach and send/stop. Slots: `aboveInput`, `leadingControls`, `footer`. |
+| `ChatInputArea` | Textarea, image attach and send/stop. Slots: `aboveInput`, `leadingControls`, `footer`. The optional `speech` prop (`isRecording`, `isProcessing`, `error`, `onToggleRecording`, e.g. from react-lib's `useSpeechToText`) adds a microphone toggle, recording placeholders and the error line; omitted, the input is text-only. |
 | `ChatMarkdown` | GitHub-flavored Markdown with highlighted code blocks and a copy button. |
 | `ChatMessagesArea` | Message list with copy, regenerate and edit-and-resend. `renderMessageExtras`, `hasActions` and `isEditable` let an app render cards and opt messages out. |
 | `useChatHistory(storageKeys)` | Chats in local storage under the caller's keys, capped at 50 with pinned chats dropped last. |
@@ -17,6 +17,7 @@ Streaming chatbot UI and history shared by local-manager-next's `/chatbot` page 
 
 ## Nuances
 
+- Both apps speak each finished reply by passing react-lib's `useTextToSpeech` `speak` and `stop` as `onReplyComplete` and `onInterrupt`. `runChat` keeps the `onReplyComplete` it started with, so a mute toggled mid-stream must be read through a ref (as `chat` does).
 - The server route stays in each app: the models, system prompt and knowledge base search differ, and the two routes still share a copy of the OpenAI stream wrapper.
 - Styling is Tailwind; an app's `tailwind.config.js` must include `libs/@vigilant-broccoli/react-lib-higher-level/src/lib/chatbot` in `content`.
 - Each app passes its own `storageKeys` so histories stay separate; local-manager-next keeps its original `vb-manager-chats` keys.

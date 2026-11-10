@@ -8,6 +8,7 @@ export const useChatSettings = () => {
   const [selectedModel, setSelectedModel] =
     useState<LLMModel>(DEFAULT_CHAT_MODEL);
   const [useKnowledgeBase, setUseKnowledgeBase] = useState(true);
+  const [speakReplies, setSpeakReplies] = useState(true);
 
   useEffect(() => {
     try {
@@ -15,6 +16,9 @@ export const useChatSettings = () => {
       if (stored && CHAT_MODELS.includes(stored)) setSelectedModel(stored);
       setUseKnowledgeBase(
         localStorage.getItem(STORAGE_KEY.USE_KNOWLEDGE_BASE) !== 'false',
+      );
+      setSpeakReplies(
+        localStorage.getItem(STORAGE_KEY.SPEAK_REPLIES) !== 'false',
       );
     } catch {
       // Storage unavailable; keep the defaults.
@@ -39,10 +43,21 @@ export const useChatSettings = () => {
     }
   };
 
+  const changeSpeakReplies = (value: boolean) => {
+    setSpeakReplies(value);
+    try {
+      localStorage.setItem(STORAGE_KEY.SPEAK_REPLIES, String(value));
+    } catch {
+      // Preference just won't persist.
+    }
+  };
+
   return {
     selectedModel,
     setSelectedModel: changeModel,
     useKnowledgeBase,
     setUseKnowledgeBase: changeUseKnowledgeBase,
+    speakReplies,
+    setSpeakReplies: changeSpeakReplies,
   };
 };

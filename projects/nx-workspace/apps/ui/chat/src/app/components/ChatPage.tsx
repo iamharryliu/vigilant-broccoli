@@ -29,6 +29,8 @@ export function ChatPage() {
     setSelectedModel,
     useKnowledgeBase,
     setUseKnowledgeBase,
+    speakReplies,
+    setSpeakReplies,
   } = useChatSettings();
   const {
     chats,
@@ -91,6 +93,8 @@ export function ChatPage() {
               onModelChange={setSelectedModel}
               useKnowledgeBase={useKnowledgeBase}
               onUseKnowledgeBaseChange={setUseKnowledgeBase}
+              speakReplies={speakReplies}
+              onSpeakRepliesChange={setSpeakReplies}
             />
           }
         />
@@ -117,6 +121,7 @@ export function ChatPage() {
           selectedModel={selectedModel}
           onModelChange={setSelectedModel}
           useKnowledgeBase={useKnowledgeBase}
+          speakReplies={speakReplies}
         />
       </div>
     </main>

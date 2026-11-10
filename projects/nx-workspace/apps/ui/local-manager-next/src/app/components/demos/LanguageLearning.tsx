@@ -15,6 +15,7 @@ import {
   TabsList,
   TabsTrigger,
   Text,
+  useTextToSpeech,
 } from '@vigilant-broccoli/react-lib';
 import {
   GraduationCap,
@@ -24,7 +25,6 @@ import {
 } from 'lucide-react';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
-import { useTextToSpeech } from '../../hooks/useTextToSpeech';
 import type { LanguageLearningResult } from '@vigilant-broccoli/llm-schemas';
 import { authFetch } from '../../../../libs/auth';
 
@@ -572,7 +572,10 @@ export function LanguageLearning() {
   const [historyPage, setHistoryPage] = useState(1);
   const [masteredPage, setMasteredPage] = useState(1);
   const [activeAudioId, setActiveAudioId] = useState<string | null>(null);
-  const { speak, isLoading: isSpeaking } = useTextToSpeech();
+  const { speak, isLoading: isSpeaking } = useTextToSpeech({
+    authFetch,
+    endpoint: API_ENDPOINTS.TEXT_TO_SPEECH,
+  });
 
   const masteredWords = new Set(
     standaloneMastered.map(r => r.word.toLowerCase()),
