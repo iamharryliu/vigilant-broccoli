@@ -31,7 +31,7 @@ function getEnvironmentVariablesFromJSON(text: string): string {
       .map(([key, value]) => {
         const needsQuotes = /[\s"'`$\\]/.test(value);
         const safeValue = needsQuotes
-          ? `"${value.replace(/"/g, '\\"')}"`
+          ? `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`
           : value;
         return `${key}=${safeValue}`;
       })

@@ -25,9 +25,10 @@ const NO_LIVE_USERS_MSG =
   'No live users yet. Open this page in another browser and share location.';
 
 const randomUserId = () =>
-  `${USER_PREFIX}${Math.random()
-    .toString(36)
-    .slice(2, 2 + USER_ID_LENGTH)}`;
+  `${USER_PREFIX}${crypto
+    .randomUUID()
+    .replace(/-/g, '')
+    .slice(0, USER_ID_LENGTH)}`;
 
 export function LiveLocationsDemo() {
   const [userId, setUserId] = useState('');
