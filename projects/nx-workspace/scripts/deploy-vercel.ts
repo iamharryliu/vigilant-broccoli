@@ -3,6 +3,7 @@ import { readFileSync, existsSync, mkdirSync, rmSync } from 'fs';
 import { dirname, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { createVaultClient, VAULT_SECRET_PATH } from './vault-client';
+import { CLOUDFLARE_ACCESS_GATED_VERCEL_APPS } from './vercel-access-gated.consts';
 import SUPABASE_PUBLIC from '../libs/@vigilant-broccoli/infrastructure/src/lib/supabase-public.json' with { type: 'json' };
 
 const STAGING = 'staging';
@@ -10,6 +11,9 @@ const PRODUCTION = 'production';
 const DEMO = 'demo';
 const ENVIRONMENTS = [STAGING, PRODUCTION, DEMO];
 const VERCEL_ENV = PRODUCTION;
+
+const SOCKET_SERVER_URL = 'https://socket.harryliu.dev';
+const CLOUDFLARE_ACCESS_TEAM_DOMAIN = 'vigilant-broccoli.cloudflareaccess.com';
 
 const VERCEL_ROOT_DIRECTORY = 'projects/nx-workspace';
 const VERCEL_DIR = '.vercel';
@@ -296,6 +300,8 @@ async function main() {
     settings?: Record<string, unknown>;
     // Gates every environment behind Vercel Authentication, not just staging.
     privateApp?: boolean;
+    // Env var name -> Vault key, for values Vault stores per environment.
+    vaultKeys?: Record<string, string>;
   }
 
   const SUPABASE_PUBLIC_SECRETS = {
@@ -389,6 +395,20 @@ async function main() {
         'dist/apps/mobile-manager-next/.next',
       ),
     },
+    chat: {
+      hardcodedSecrets: {
+        SOCKET_SERVER_URL,
+        NEXT_PUBLIC_SOCKET_SERVER_URL: SOCKET_SERVER_URL,
+        CF_ACCESS_TEAM_DOMAIN: CLOUDFLARE_ACCESS_TEAM_DOMAIN,
+        NEXT_PUBLIC_CHAT_ROOM: environment,
+      },
+      envExamplePath: 'apps/ui/chat/.env.example',
+      // Terraform-computed per Access application; post-apply writes both.
+      vaultKeys: {
+        CF_ACCESS_AUD: `CHAT_${environment.toUpperCase()}_CF_ACCESS_AUD`,
+      },
+      settings: NX_VERCEL_SETTINGS('chat', 'dist/apps/ui/chat/.next'),
+    },
   };
 
   if (projectName === 'job-hunt-next' && environment !== DEMO) {
@@ -402,7 +422,8 @@ async function main() {
     process.exit(1);
   }
 
-  const { hardcodedSecrets, envExamplePath, settings, privateApp } = config;
+  const { hardcodedSecrets, envExamplePath, settings, privateApp, vaultKeys } =
+    config;
   const envKeys = envExamplePath ? parseEnvKeys(resolve(envExamplePath)) : [];
   const allKeys = envKeys.map(({ key }) => key);
   const entriesFromVault = envKeys.filter(
@@ -426,13 +447,14 @@ async function main() {
 
     const missingRequired: string[] = [];
     for (const { key, optional } of entriesFromVault) {
-      const value = vaultSecrets[key];
+      const vaultKey = vaultKeys?.[key] ?? key;
+      const value = vaultSecrets[vaultKey];
       if (value) {
         allSecrets[key] = value;
       } else if (optional) {
-        console.warn(`⚠ ${key}: optional, not found in vault, skipping`);
+        console.warn(`⚠ ${vaultKey}: optional, not found in vault, skipping`);
       } else {
-        missingRequired.push(key);
+        missingRequired.push(vaultKey);
       }
     }
 
@@ -459,7 +481,11 @@ async function main() {
     );
   }
 
-  if (environment === STAGING || privateApp) {
+  if (
+    (environment === STAGING &&
+      !CLOUDFLARE_ACCESS_GATED_VERCEL_APPS.has(projectName)) ||
+    privateApp
+  ) {
     await enableVercelAuthentication(
       vercelEnv.VERCEL_PROJECT_ID,
       vercelEnv.VERCEL_ORG_ID,

@@ -1,11 +1,13 @@
 'use client';
 
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
+import {
+  ChatPanel,
+  ChatPayload,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
-import { ChatPayload } from '../../constants/chat';
-import { useChatRoom } from '../../hooks/useChatRoom';
+import { useDemoChatRoom } from '../../hooks/useDemoChatRoom';
 import { authFetch } from '../../../../libs/auth';
-import { ChatDemoPanel } from './ChatDemoPanel';
 
 const DESCRIPTION =
   'Receives over an unauthenticated socket. Sends through a backend route that holds the publisher credential, so sending requires sign-in.';
@@ -21,9 +23,9 @@ const publishThroughBackend = async ({ text, sender }: ChatPayload) => {
 };
 
 export function BackendRelayChatDemo() {
-  const { status, messages } = useChatRoom(SOCKET_OPTIONS);
+  const { status, messages } = useDemoChatRoom(SOCKET_OPTIONS);
   return (
-    <ChatDemoPanel
+    <ChatPanel
       description={DESCRIPTION}
       status={status}
       messages={messages}

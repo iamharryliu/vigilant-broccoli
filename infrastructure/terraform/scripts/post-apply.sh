@@ -61,6 +61,10 @@ sync_secrets_to_vault() {
   nx_cache_write_token=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "nx_cache_write_token") | .instances[0].attributes.result' 2>/dev/null || echo "")
   nx_cache_read_token=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "nx_cache_read_token") | .instances[0].attributes.result' 2>/dev/null || echo "")
   loki_push_password=$(echo "$state_json" | jq -r '.resources[] | select(.type == "random_password" and .name == "loki_push_password") | .instances[0].attributes.result' 2>/dev/null || echo "")
+  local chat_access_aud_json chat_staging_aud chat_production_aud
+  chat_access_aud_json=$(terraform output -json chat_access_aud 2>/dev/null || echo "{}")
+  chat_staging_aud=$(echo "$chat_access_aud_json" | jq -r '.staging // empty' 2>/dev/null || echo "")
+  chat_production_aud=$(echo "$chat_access_aud_json" | jq -r '.production // empty' 2>/dev/null || echo "")
 
   if [ -z "$ca_cert" ] || [ -z "$rabbitmq_ip" ] || [ -z "$rabbitmq_user" ] || [ -z "$rabbitmq_password" ] || [ -z "$email_api_key" ] || [ -z "$gcs_sa_credentials" ] || [ -z "$google_calendar_sa_credentials" ] || [ -z "$code_server_password" ] || [ -z "$ci_ssh_private_key" ] || [ -z "$gitea_cf_access_client_id" ] || [ -z "$gitea_cf_access_client_secret" ] || [ -z "$gitea_ip" ] || [ -z "$code_server_cf_access_client_id" ] || [ -z "$code_server_cf_access_client_secret" ] || [ -z "$code_server_ip" ]; then
     echo "Warning: Some secrets not found in Terraform state. Skipping Vault sync."
@@ -144,6 +148,15 @@ sync_secrets_to_vault() {
     loki_push_patch_arg='LOKI_PUSH_PASSWORD="$LOKI_PUSH_PASSWORD"'
   fi
 
+  # Non-secret Access audiences, absent until cloudflare-chat.tf is applied.
+  # deploy-vercel.ts reads them as the chat app's CF_ACCESS_AUD per environment.
+  local chat_aud_patch_arg=""
+  local chat_aud_secret_args=()
+  if [ -n "$chat_staging_aud" ] && [ -n "$chat_production_aud" ]; then
+    chat_aud_patch_arg='CHAT_STAGING_CF_ACCESS_AUD="$CHAT_STAGING_CF_ACCESS_AUD" CHAT_PRODUCTION_CF_ACCESS_AUD="$CHAT_PRODUCTION_CF_ACCESS_AUD"'
+    chat_aud_secret_args+=(CHAT_STAGING_CF_ACCESS_AUD "$chat_staging_aud" CHAT_PRODUCTION_CF_ACCESS_AUD "$chat_production_aud")
+  fi
+
   local nx_cache_read_put_cmd=""
   if [ -n "$nx_cache_read_token" ]; then
     nx_cache_read_put_cmd='vault kv put kv/ci-pr-check NX_CACHE_READ_TOKEN="$NX_CACHE_READ_TOKEN"'
@@ -179,7 +192,8 @@ if vault kv get kv/secrets >/dev/null 2>&1; then
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
     CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
     '"${nx_cache_write_patch_arg}"' \
-    '"${loki_push_patch_arg}"'
+    '"${loki_push_patch_arg}"' \
+    '"${chat_aud_patch_arg}"'
 else
   vault kv put kv/secrets \
     RABBITMQ_CA_CERT="$CA_CERT_B64" \
@@ -197,7 +211,8 @@ else
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET="$CODE_SERVER_CF_ACCESS_CLIENT_SECRET" \
     CODE_SERVER_VM_IP="$CODE_SERVER_IP" \
     '"${nx_cache_write_patch_arg}"' \
-    '"${loki_push_patch_arg}"'
+    '"${loki_push_patch_arg}"' \
+    '"${chat_aud_patch_arg}"'
 fi
 
 '"${nx_cache_read_put_cmd}"'
@@ -254,7 +269,8 @@ echo "Secrets synced to Vault"
     CODE_SERVER_CF_ACCESS_CLIENT_SECRET "$code_server_cf_access_client_secret" \
     CODE_SERVER_IP "$code_server_ip" \
     "${nx_cache_secret_args[@]}" \
-    "${loki_push_secret_args[@]}"
+    "${loki_push_secret_args[@]}" \
+    "${chat_aud_secret_args[@]}"
   echo "✓ Synced RABBITMQ_CA_CERT, EMAIL_SERVICE_API_KEY, GOOGLE_GCS_SA_CREDENTIALS, GOOGLE_CALENDAR_SA_CREDENTIALS, CODE_SERVER_PASSWORD, SOCKET_SERVER_URL, OCI_VM_SSH_KEY, GITEA_CF_ACCESS_CLIENT_ID, GITEA_CF_ACCESS_CLIENT_SECRET, GITEA_VM_IP, CODE_SERVER_CF_ACCESS_CLIENT_ID, CODE_SERVER_CF_ACCESS_CLIENT_SECRET, CODE_SERVER_VM_IP to kv/data/secrets (RABBITMQ_CONNECTION_STRING synced only when broker holds the Terraform password — see above; SHARED_APP_TOKEN is Vault-owned via rotate-secrets)"
   if [ -n "$nx_cache_write_token" ]; then
     echo "✓ Synced NX_CACHE_WRITE_TOKEN to kv/data/secrets"
@@ -265,6 +281,11 @@ echo "Secrets synced to Vault"
     echo "✓ Synced LOKI_PUSH_PASSWORD to kv/data/secrets"
   else
     echo "Warning: LOKI_PUSH_PASSWORD not found in Terraform state — apply aws-grafana.tf, then rerun pnpm tf:post-apply."
+  fi
+  if [ -n "$chat_aud_patch_arg" ]; then
+    echo "✓ Synced CHAT_STAGING_CF_ACCESS_AUD, CHAT_PRODUCTION_CF_ACCESS_AUD to kv/data/secrets"
+  else
+    echo "Warning: chat_access_aud output not found — apply cloudflare-chat.tf, then rerun pnpm tf:post-apply."
   fi
   if [ -n "$nx_cache_read_token" ]; then
     echo "✓ Synced NX_CACHE_READ_TOKEN to kv/data/ci-pr-check (isolated path for github-actions-pr-check-role)"

@@ -1,5 +1,10 @@
 // Apps gated by Cloudflare Access or Vercel Authentication live here, not in infrastructure, so editing them does not redeploy the Fly APIs.
 export const ACCESS_GATED_URL = {
+  CHAT: {
+    NAME: 'Chat',
+    URL: 'https://chat.harryliu.dev/',
+    STAGING_URL: 'https://staging-chat.harryliu.dev/',
+  },
   CODE_SERVER: {
     NAME: 'Code Server',
     URL: 'https://code.harryliu.dev/',

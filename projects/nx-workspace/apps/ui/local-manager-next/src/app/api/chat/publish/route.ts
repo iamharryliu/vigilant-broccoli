@@ -7,10 +7,10 @@ import {
   SOCKET_SERVER_PATHS,
 } from '@vigilant-broccoli/common-js';
 import {
-  CHAT_APP,
+  CHAT_DEMO_APP,
+  CHAT_DEMO_ROOM,
   CHAT_PUBLISH_TIMEOUT_MS,
-  CHAT_ROOM,
-} from '../../../constants/chat';
+} from '@vigilant-broccoli/react-lib-higher-level/chat-room-consts';
 
 const LOG_PREFIX = '[chat/publish]';
 const ERR_NOT_CONFIGURED = 'Socket server not configured';
@@ -47,8 +47,8 @@ export async function POST(req: NextRequest) {
         ...HTTP_HEADERS.AUTHORIZATION(token),
       },
       body: JSON.stringify({
-        app: CHAT_APP,
-        receiverId: CHAT_ROOM,
+        app: CHAT_DEMO_APP,
+        receiverId: CHAT_DEMO_ROOM,
         payload: { text: body.text, sender: body.sender, ts: Date.now() },
       }),
       signal: AbortSignal.timeout(CHAT_PUBLISH_TIMEOUT_MS),

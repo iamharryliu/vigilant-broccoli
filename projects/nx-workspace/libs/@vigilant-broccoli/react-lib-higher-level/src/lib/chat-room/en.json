@@ -1,0 +1,11 @@
+{
+  "YOU": "You:",
+  "STATUS": "Status:",
+  "STATUS_CONNECTING": "connecting",
+  "STATUS_OPEN": "open",
+  "STATUS_CLOSED": "closed",
+  "EMPTY": "No messages yet. Open this page in two browsers and say hi.",
+  "PLACEHOLDER": "Type a message…",
+  "SEND": "Send",
+  "SEND_FAILED": "Message not sent"
+}

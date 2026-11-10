@@ -56,6 +56,7 @@ Two mechanisms produce the 302:
 
 - The fourteen staging Pages projects are gated by Cloudflare Access in `cloudflare-staging-ui.tf` on the root, immutable/branch aliases and mapped custom staging hosts. Browser access is limited to `staging_ui_allowed_emails` (default: the existing owner identity).
 - The five staging Vercel projects are gated by Vercel Authentication, which `deploy-vercel.ts` enables on each staging deploy ([details](../app-development/ui/deployment/vercel-deploy-pattern.md#staging-access)). A project's 302 check fails until its first staging deploy enables it. `production-vb-manager-next-mobile` is gated the same way on every production deploy and expects the same 302.
+- `staging-chat` and `production-chat` skip Vercel Authentication; Cloudflare Access gates their proxied hosts (`cloudflare-chat.tf`, `staging_ui_allowed_emails`), so both checks expect the Access login 302. They fail until `pnpm tf:apply` creates the Access applications and records.
 
 The in-scope staging UI checks use the custom hosts listed in [network management](./network-management.md#staging-ui-custom-domains); provider aliases remain gated. Apply and attach domains before manually resyncing probes. Site names and inferred history slugs remain unchanged.
 

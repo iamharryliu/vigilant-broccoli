@@ -5,19 +5,19 @@ import {
   SOCKET_EVENTS,
 } from '@vigilant-broccoli/common-js';
 import {
-  CHAT_APP,
+  CHAT_DEMO_APP,
+  CHAT_DEMO_ROOM,
   CHAT_PUBLISH_TIMEOUT_MS,
-  CHAT_ROOM,
   ChatPayload,
-} from '../../constants/chat';
+} from '@vigilant-broccoli/react-lib-higher-level/chat-room-consts';
 
 const ERR_NOT_CONNECTED = 'Socket not connected';
 const ERR_RECONNECT_TIMEOUT = 'Reconnect timeout';
 
 const publish = (socket: Socket, payload: ChatPayload): Promise<PublishAck> =>
   socket.timeout(CHAT_PUBLISH_TIMEOUT_MS).emitWithAck(SOCKET_EVENTS.PUBLISH, {
-    app: CHAT_APP,
-    receiverId: CHAT_ROOM,
+    app: CHAT_DEMO_APP,
+    receiverId: CHAT_DEMO_ROOM,
     payload,
   });
 

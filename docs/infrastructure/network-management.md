@@ -30,6 +30,8 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── balloono.harryliu.dev                 Balloono — Vercel `production-balloono` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; online rooms run over public Supabase Realtime channels, no backend of its own)
 ├── gravity-guy.harryliu.dev              Gravity Guy — Vercel `production-gravity-guy` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; stateless, browser-local settings and scores)
 ├── manager.harryliu.dev                  Mobile Manager Next — Vercel `production-vb-manager-next-mobile` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; gated by Vercel Authentication)
+├── chat.harryliu.dev                     Chat — Vercel `production-chat` (CNAME to cname.vercel-dns.com, **proxied** + Cloudflare Access owner-email only: Terraform `cloudflare-chat.tf`; domain attached to the Vercel project by post-apply; no Vercel Authentication; a bypass Access application leaves `/.well-known/acme-challenge` and `/.well-known/vercel` open for Vercel's HTTP-01 certificate renewal; zone SSL must be Full (strict); the app re-verifies the Access JWT, which also gates its `*.vercel.app` aliases)
+├── staging-chat.harryliu.dev             Chat (staging) — same as `chat.harryliu.dev` on `staging-chat`
 ├── hearth.harryliu.dev                   Hearth — Vercel `production-hearth` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; public, sign-in via Supabase)
 ├── bookmarks.harryliu.dev                Bookmarks — Cloudflare Pages `production-bookmarks-react` (domain + CNAME: Terraform `cloudflare-bookmarks.tf`; browser-local data, no backend or auth)
 ├── pomodoro.harryliu.dev                 Pomodoro — Cloudflare Pages `production-pomodoro-react` (domain + CNAME: Terraform `cloudflare-pomodoro.tf`; browser-local settings, no backend or auth)
@@ -70,7 +72,9 @@ vercel.app                                Vercel (production projects created on
 ├── staging-balloono.vercel.app               Balloono (staging)
 ├── production-balloono.vercel.app            Balloono (production)
 ├── staging-gravity-guy.vercel.app            Gravity Guy (staging)
-└── production-gravity-guy.vercel.app         Gravity Guy (production origin)
+├── production-gravity-guy.vercel.app         Gravity Guy (production origin)
+├── staging-chat.vercel.app                   Chat (staging origin; the app returns 403 without a valid Access JWT)
+└── production-chat.vercel.app                Chat (production origin; same 403)
 
 pages.dev                                 Cloudflare Pages provider aliases (retained alongside custom domains)
 ├── staging-bookmarks-react.pages.dev         Bookmarks (staging, Cloudflare Access)
@@ -98,6 +102,7 @@ github.io                                 GitHub Pages (custom domain projects.h
 | balloono.harryliu.dev | staging-balloono.harryliu.dev | `staging-balloono` | Vercel |
 | bookmarks.harryliu.dev | staging-bookmarks.harryliu.dev | `staging-bookmarks-react` | Pages |
 | calendar.harryliu.dev | staging-calendar.harryliu.dev | `staging-calendars` | Pages |
+| chat.harryliu.dev | staging-chat.harryliu.dev | `staging-chat` | Vercel, Cloudflare Access |
 | cloud8skate.com | staging.cloud8skate.com | `staging-cloud-8-skate-react` | Pages |
 | components.harryliu.dev | staging-components.harryliu.dev | `staging-component-library` | Pages |
 | context.harryliu.dev | staging-context.harryliu.dev | `staging-context-md` | Pages |
