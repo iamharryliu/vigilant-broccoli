@@ -78,7 +78,7 @@ export const DEFAULT_TASKS: DefaultTask[] = [
   task('Take out trash', [FRIDAY]),
 ];
 
-export const isDueOn = (task: Pick<RecurringTask, 'days'>, date: Date) =>
+export const occursOn = (task: Pick<RecurringTask, 'days'>, date: Date) =>
   task.days.includes(date.getDay());
 
 const DAYS_PER_WEEK = 7;
@@ -89,12 +89,13 @@ const fromYmd = (ymd: string) => {
 };
 
 /**
- * Due date (YYYY-MM-DD) of the task's single pending instance on `today`, or
- * null. A pending instance exists when a due weekday falls after the latest
- * completion (or on/after the creation date with none) and on/before today;
- * the earliest such day is returned so a missed occurrence carries over.
+ * Occurrence date (YYYY-MM-DD) of the task's single pending instance on
+ * `today`, or null. A pending instance exists when a scheduled weekday falls
+ * after the latest completion (or on/after the creation date with none) and
+ * on/before today; the earliest such day is returned so a missed occurrence
+ * carries over.
  */
-export const getPendingDueDate = (
+export const getPendingOccurrenceDate = (
   task: RecurringTask,
   completions: TaskCompletion[],
   today: Date,
@@ -110,12 +111,12 @@ export const getPendingDueDate = (
     : task.createdAt
       ? new Date(new Date(task.createdAt).setHours(0, 0, 0, 0))
       : null;
-  if (!cursor) return isDueOn(task, today) ? toYmd(today) : null;
+  if (!cursor) return occursOn(task, today) ? toYmd(today) : null;
   if (latest) cursor.setDate(cursor.getDate() + 1);
 
   const end = fromYmd(toYmd(today));
   for (let i = 0; i < DAYS_PER_WEEK && cursor <= end; i++) {
-    if (isDueOn(task, cursor)) return toYmd(cursor);
+    if (occursOn(task, cursor)) return toYmd(cursor);
     cursor.setDate(cursor.getDate() + 1);
   }
   return null;
