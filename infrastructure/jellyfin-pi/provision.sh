@@ -33,4 +33,13 @@ if [ -z "${TS_AUTHKEY:-}" ]; then
 fi
 export TS_AUTHKEY="${TS_AUTHKEY:-}"
 
+# Same deal for the Samba share: the playbook only reads this when the SMB
+# account does not exist yet, so a converge run works without Vault.
+if [ -z "${SMB_PASSWORD:-}" ]; then
+  if ! SMB_PASSWORD=$(./load-vault-secret.sh SAMBA_PASSWORD); then
+    echo "Continuing without SMB_PASSWORD — fine unless the media share still needs its account created." >&2
+  fi
+fi
+export SMB_PASSWORD="${SMB_PASSWORD:-}"
+
 exec ansible-playbook playbook.yml "$@"

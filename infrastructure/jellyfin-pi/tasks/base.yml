@@ -60,20 +60,15 @@
   # matter (storage, docker, the stack itself).
   ignore_errors: '{{ ansible_check_mode }}'
 
-- name: Read the configured WLAN country
-  ansible.builtin.command: raspi-config nonint get_wifi_country
-  register: pi_wifi_country_current
-  changed_when: false
-  failed_when: false
-  check_mode: false
-  when: pi_wifi_country | length > 0
-
-# Without this the radio stays rfkill soft-blocked: wlan0 reports state
-# "unavailable", nmcli shows WIFI disabled, and a scan returns nothing on
-# hardware whose driver loaded perfectly.
-- name: Set the WLAN regulatory domain
-  ansible.builtin.command: raspi-config nonint do_wifi_country {{ pi_wifi_country }}
-  when:
-    - pi_wifi_country | length > 0
-    - (pi_wifi_country_current.stdout | default('') | trim) != pi_wifi_country
-  changed_when: true
+# The Pi is wired-only, so the radio is switched off in firmware rather than
+# left idle. Appended under its own [all] because config.txt ends in whatever
+# conditional section ([cm4], [pi5]...) the image last declared, which would
+# otherwise scope the overlay to other boards. Takes effect on the next reboot;
+# the playbook does not reboot.
+- name: Disable the Wi-Fi radio
+  ansible.builtin.blockinfile:
+    path: /boot/firmware/config.txt
+    marker: '# {mark} jellyfin-pi: Ethernet only'
+    block: |
+      [all]
+      dtoverlay=disable-wifi
