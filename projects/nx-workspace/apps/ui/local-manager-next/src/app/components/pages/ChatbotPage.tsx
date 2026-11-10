@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Button } from '@vigilant-broccoli/react-lib';
-import { ChatbotPanel } from '../chatbot-panel.component';
+import { ChatbotPanel } from '../chatbot/chatbot-panel.component';
 import { ChatHistorySidebar } from '../chat-history-sidebar.component';
 import { useChatSuggestions } from '../../hooks/useChatSuggestions';
 import { useChatHistory } from '../../hooks/useChatHistory';

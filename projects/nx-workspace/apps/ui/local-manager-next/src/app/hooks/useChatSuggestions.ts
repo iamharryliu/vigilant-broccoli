@@ -2,7 +2,7 @@
 
 import { useAuthStatus } from '../../../libs/auth';
 import { fetchDayAnalysisData } from '../utils/day-analysis-data';
-import type { ChatSuggestion } from '../components/chatbot-panel.component';
+import type { ChatSuggestion } from '../components/chatbot/chatbot.types';
 
 const isWeekPlanningVisible = (): boolean => {
   const today = new Date();

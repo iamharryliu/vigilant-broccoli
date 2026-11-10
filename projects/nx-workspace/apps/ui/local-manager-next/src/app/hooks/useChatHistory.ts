@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { Message } from '../components/chatbot-panel.component';
+import type { Message } from '../components/chatbot/chatbot.types';
 
 export interface Chat {
   id: string;
