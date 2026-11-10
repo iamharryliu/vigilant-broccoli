@@ -5,6 +5,7 @@
 - The assistant lives on the full chatbot page (`/chatbot`), opened through the Chatbot sidebar entry or `C` shortcut
 - Streams responses directly from OpenAI through `/api/chat`; default model `gpt-4o-mini`
 - Calendar and tasks actions require Google OAuth session
+- Answers from uploaded files: every message searches the [knowledge base](./knowledge-base.md) with the last 2 user messages, and chunks with similarity of at least 0.3 are added to the system prompt (up to 5) so the model can answer questions about uploaded PDFs, Markdown and text files and name the file it used. A failed search is skipped silently and the chat answers without excerpts
 
 ## Chat
 

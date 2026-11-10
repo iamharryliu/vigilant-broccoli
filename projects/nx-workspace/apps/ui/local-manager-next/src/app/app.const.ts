@@ -46,6 +46,10 @@ export const SIDEBAR_ROUTE = {
     title: 'CMS',
     path: '/cms',
   },
+  KNOWLEDGE_BASE: {
+    title: 'Knowledge Base',
+    path: '/knowledge-base',
+  },
   MUSIC: {
     title: 'Music',
     path: '/music',
