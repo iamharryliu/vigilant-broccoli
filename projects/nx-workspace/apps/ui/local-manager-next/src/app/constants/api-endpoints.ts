@@ -54,4 +54,5 @@ export const API_ENDPOINTS = {
   KNOWLEDGE_BASE: '/api/knowledge-base',
   KNOWLEDGE_BASE_FILE: '/api/knowledge-base/file',
   KNOWLEDGE_BASE_SEARCH: '/api/knowledge-base/search',
+  KNOWLEDGE_BASE_STATUS: '/api/knowledge-base/status',
 } as const;

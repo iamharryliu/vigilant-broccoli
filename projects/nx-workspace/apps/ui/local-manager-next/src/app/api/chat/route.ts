@@ -223,11 +223,18 @@ const tryCalendarToolCall = async (
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { messages, systemPrompt, model, timeZone } = body as {
+  const {
+    messages,
+    systemPrompt,
+    model,
+    timeZone,
+    useKnowledgeBase = true,
+  } = body as {
     messages: Message[];
     systemPrompt?: string;
     model?: LLMModel;
     timeZone?: string;
+    useKnowledgeBase?: boolean;
   };
 
   if (!messages || messages.length === 0) {
@@ -252,7 +259,7 @@ export async function POST(request: NextRequest) {
     `\n\nCurrent date: ${currentDate}\nCurrent time: ${currentTime}` +
     (timeZone ? `\nUser timezone: ${timeZone}` : '') +
     SYSTEM_PROMPT_SUFFIX +
-    (await buildKnowledgeContext(messages));
+    (useKnowledgeBase ? await buildKnowledgeContext(messages) : '');
 
   if (hasCalendarIntent(messages)) {
     const toolCallResponse = await tryCalendarToolCall(
