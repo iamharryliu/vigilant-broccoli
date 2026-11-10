@@ -24,7 +24,7 @@ Read the relevant document before working on its subject. Before editing a direc
 | Doc | When to read / upkeep |
 | --- | --- |
 | [agent-support.md](./docs/agent-support.md) | Agentic operations, skills, adapters, entry-point parity, and where a new rule or instruction belongs. |
-| [agentic-pr-maintenance.md](./docs/ci/agentic-pr-maintenance.md) | Scheduled conflict resolution and CI fixes on open PRs, and triaged fixes for failing workflows on `main`: selection, dedupe and attempt caps. |
+| [agentic-pr-maintenance.md](./docs/ci/agentic-pr-maintenance.md) | Scheduled conflict resolution and CI fixes on open PRs, triaged fixes for failing workflows on `main`, and CodeQL alert fixes with recommended dismissals: selection, dedupe and attempt caps. |
 | [app-development.md](./docs/app-development/app-development.md) | Adding apps/libs, deployment, public URLs or npm publishing. |
 | [app-readme-pattern.md](./docs/app-readme-pattern.md) | README edits and generated repo counts. |
 | [career experience](./notes/personal/career/career-experience.md) | New skill or area (e.g. mobile development) absent from its Skills or contributions: add it. |

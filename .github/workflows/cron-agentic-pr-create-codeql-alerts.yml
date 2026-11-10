@@ -1,0 +1,124 @@
+name: cron-agentic-pr-create-codeql-alerts
+
+# Collects open CodeQL code-scanning alerts (GitHub default setup, so no workflow
+# file in the repo) and dispatches one `manual-agentic-pr-create` run that fixes
+# the genuine ones and lists the rest as recommended dismissals in the PR's next
+# steps. Alerts are collected here with the job's GITHUB_TOKEN: the sandboxed
+# solve cannot call gh, and the agent GitHub App has no code-scanning access.
+# Nothing is dismissed or merged. Policy: docs/ci/agentic-pr-maintenance.md.
+
+on:
+  schedule:
+    - cron: '55 7 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Static group: two overlapping runs would dispatch competing PRs for the same alerts.
+concurrency:
+  group: cron-agentic-pr-create-codeql-alerts
+  cancel-in-progress: false
+
+env:
+  BRANCH: main
+  MARKER: codeql-alerts
+  MAX_ALERTS: '25'
+  MODEL: sonnet
+  FIREWALL: 'on'
+
+jobs:
+  overview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout summary helper
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Publish overview
+        continue-on-error: true
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: overview
+          title: Fix open CodeQL alerts
+          agent: claude
+          model: ${{ env.MODEL }}
+          firewall: ${{ env.FIREWALL }}
+          operation: Triage CodeQL code-scanning alerts
+          description: Collect open CodeQL alerts, highest severity first and capped at ${{ env.MAX_ALERTS }}, and dispatch one manual-agentic-pr-create run that fixes the genuine ones and lists recommended dismissals for a human to apply. Skipped while an open PR carries the [${{ env.MARKER }}] marker or when no alert is open. Nothing is dismissed or merged.
+
+  collect:
+    needs: overview
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+      security-events: read
+    outputs:
+      selection: ${{ steps.collect.outputs.selection }}
+      total: ${{ steps.collect.outputs.total }}
+      deferred: ${{ steps.collect.outputs.deferred }}
+      open_pr: ${{ steps.collect.outputs.open_pr }}
+    steps:
+      - name: Checkout selection script
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Collect open CodeQL alerts
+        id: collect
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api --paginate "repos/$GITHUB_REPOSITORY/code-scanning/alerts?state=open&tool_name=CodeQL&per_page=100" \
+            | jq -s -c --argjson max "$MAX_ALERTS" -f .github/scripts/select-codeql-alerts.jq > selection.json
+          jq -r '.alerts[] | "#\(.number) \(.rule) (\(.severity)) \(.path):\(.start_line)"' selection.json
+          OPEN_PR=$(gh pr list --repo "$GITHUB_REPOSITORY" --state open --limit 200 --json number,body \
+            --jq "[.[] | select(.body // \"\" | contains(\"[$MARKER]\")) | .number][0] // \"\"")
+          echo "$(jq .total selection.json) open alert(s), $(jq .deferred selection.json) deferred; open marker PR: ${OPEN_PR:-none}"
+          {
+            echo "selection=$(cat selection.json)"
+            echo "total=$(jq .total selection.json)"
+            echo "deferred=$(jq .deferred selection.json)"
+            echo "open_pr=$OPEN_PR"
+          } >> "$GITHUB_OUTPUT"
+
+  dispatch:
+    needs: collect
+    if: always() && needs.collect.result != 'skipped'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Checkout dispatch script and summary helper
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Dispatch alert fixes
+        id: dispatch
+        if: needs.collect.result == 'success' && needs.collect.outputs.total != '0' && needs.collect.outputs.open_pr == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          REF: ${{ env.BRANCH }}
+          SELECTION: ${{ needs.collect.outputs.selection }}
+        run: |
+          set -euo pipefail
+          printf '%s' "$SELECTION" > "$RUNNER_TEMP/selection.json"
+          bash .github/scripts/dispatch-codeql-alert-fixes.sh "$RUNNER_TEMP/selection.json"
+
+      - name: Report result
+        if: always()
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: result
+          outcome: ${{ (steps.dispatch.outcome == 'success' && 'dispatched') || (needs.collect.result == 'success' && needs.collect.outputs.total == '0' && 'no-changes') || (needs.collect.result == 'success' && steps.dispatch.outcome == 'skipped' && 'no-pr') || (job.status == 'cancelled' && 'cancelled') || 'failed' }}
+          note: >-
+            ${{ (needs.collect.result != 'success' && 'Alert collection failed, so nothing was dispatched; see the collect job log.') || (needs.collect.outputs.total == '0' && 'No open CodeQL alerts; nothing to dispatch.') || format('{0} open CodeQL alert(s), {1} deferred over the cap of {2}. {3}', needs.collect.outputs.total, needs.collect.outputs.deferred, env.MAX_ALERTS, (needs.collect.outputs.open_pr != '' && format('Skipped: open PR #{0} already carries [{1}].', needs.collect.outputs.open_pr, env.MARKER)) || (steps.dispatch.outcome == 'success' && 'Dispatched manual-agentic-pr-create.') || 'Dispatch failed.') }}
