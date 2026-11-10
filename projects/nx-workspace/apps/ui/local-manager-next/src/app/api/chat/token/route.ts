@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { signRoomToken } from '@vigilant-broccoli/common-node';
-import { CHAT_APP } from '../../../constants/chat';
+import { CHAT_DEMO_APP } from '@vigilant-broccoli/react-lib-higher-level/chat-room-consts';
 
 const ERR_NOT_CONFIGURED = 'Socket server not configured';
 const ERR_RATE_LIMITED = 'Too many token requests';
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   }
   return NextResponse.json({
     token: signRoomToken(
-      { app: CHAT_APP, expiresAt: Date.now() + TOKEN_TTL_MS },
+      { app: CHAT_DEMO_APP, expiresAt: Date.now() + TOKEN_TTL_MS },
       secret,
     ),
   });

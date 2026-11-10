@@ -1,6 +1,6 @@
 # React Lib Higher Level
 
-Composed React components built on `react-lib`: CRUD list management, leaderboards, docs explorer, tasks and quick links.
+Composed React components built on `react-lib`: CRUD list management, leaderboards, docs explorer, tasks, quick links and the chat room.
 
 ## Table of Contents
 
@@ -34,6 +34,7 @@ Composed React components built on `react-lib`: CRUD list management, leaderboar
   - `lucide-react`
   - `marked`
   - `react-leaflet`
+  - `socket.io-client`
   - `yjs`
 - Internal libs
   - `common-js`

@@ -86,6 +86,10 @@ sites:
     url: https://staging-manager.harryliu.dev/login
     maxRedirects: 0
     expectedStatusCodes: [302]
+  - name: staging-chat
+    url: https://staging-chat.harryliu.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [302]
   - name: production-cloud-8-skate
     url: https://cloud8skate.com/
   - name: production-harryliu-dev
@@ -136,6 +140,10 @@ sites:
     url: https://calendar.harryliu.dev/
   - name: production-vb-manager-next-mobile
     url: https://manager.harryliu.dev/login
+    maxRedirects: 0
+    expectedStatusCodes: [302]
+  - name: production-chat
+    url: https://chat.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
   - name: production-games

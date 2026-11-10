@@ -21,6 +21,7 @@ export const PROJECT_HOSTING = {
   'weather-next': { platform: 'vercel', name: 'weather-next' },
   balloono: { platform: 'vercel', name: 'balloono' },
   'gravity-guy': { platform: 'vercel', name: 'gravity-guy' },
+  chat: { platform: 'vercel', name: 'chat' },
   calendars: { platform: 'pages', name: 'calendars' },
   whiteboard: { platform: 'pages', name: 'whiteboard' },
   // Keep the deployed Vercel identity so summaries link to the existing projects.
@@ -71,6 +72,7 @@ const STAGING_HOSTS = {
   'mobile-manager-next': 'staging-manager.harryliu.dev',
   findme: 'staging-findme.harryliu.dev',
   hearth: 'staging-hearth.harryliu.dev',
+  chat: 'staging-chat.harryliu.dev',
   'component-library': 'staging-components.harryliu.dev',
 };
 

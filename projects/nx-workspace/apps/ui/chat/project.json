@@ -1,0 +1,84 @@
+{
+  "name": "chat",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/chat",
+  "projectType": "application",
+  "tags": ["visibility:public"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "default",
+        "^default",
+        {
+          "externalDependencies": ["next"]
+        },
+        {
+          "dependentTasksOutputFiles": "**/*.d.ts",
+          "transitive": true
+        },
+        {
+          "env": "NEXT_PUBLIC_SOCKET_SERVER_URL"
+        },
+        {
+          "env": "NEXT_PUBLIC_CHAT_ROOM"
+        }
+      ],
+      "outputs": [
+        "{workspaceRoot}/dist/apps/ui/chat/.next/!(cache)/**/*",
+        "{workspaceRoot}/dist/apps/ui/chat/.next/!(cache)"
+      ],
+      "options": {
+        "cwd": "apps/ui/chat",
+        "tty": false,
+        "command": "NODE_ENV=production next build --webpack"
+      },
+      "configurations": {
+        "development": {}
+      }
+    },
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/chat/.env.example --map SOCKET_SERVER_URL:NEXT_PUBLIC_SOCKET_SERVER_URL 'cd apps/ui/chat && next dev --webpack'",
+        "env": {
+          "CHAT_DEV_SENDER": "local-dev"
+        }
+      }
+    },
+    "serve:no-vault": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/ui/chat",
+        "command": "next dev --webpack",
+        "env": {
+          "CHAT_DEV_SENDER": "local-dev"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/ui/chat",
+        "command": "tsc --noEmit -p tsconfig.json"
+      }
+    },
+    "deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "VERCEL_PROJECT_ID=staging-chat VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts chat staging"
+      }
+    },
+    "deploy:production": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "VERCEL_PROJECT_ID=production-chat VERCEL_ORG_ID=team_K8XGLgKfYA0WKlMX80jaVSvg NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/deploy-vercel.ts chat production"
+      }
+    }
+  }
+}

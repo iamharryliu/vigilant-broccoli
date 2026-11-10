@@ -58,6 +58,9 @@
       "@vigilant-broccoli/react-lib-higher-level": [
         "./libs/@vigilant-broccoli/react-lib-higher-level/src/index.ts"
       ],
+      "@vigilant-broccoli/react-lib-higher-level/chat-room-consts": [
+        "./libs/@vigilant-broccoli/react-lib-higher-level/src/lib/chat-room/chat-room.consts.ts"
+      ],
       "@vigilant-broccoli/react-lib-higher-level/live-location-map": [
         "./libs/@vigilant-broccoli/react-lib-higher-level/src/lib/live-location/LiveUserMap.tsx"
       ],

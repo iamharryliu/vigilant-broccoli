@@ -21,6 +21,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          # Vercel origin; its *.vercel.app aliases skip Cloudflare and rely on the app's own JWT check.
+          - name: chat
+            hostname: chat.harryliu.dev,staging-chat.harryliu.dev
+            origin_ip_secret: ''
           - name: gitea
             hostname: git.harryliu.dev
             origin_ip_secret: GITEA_VM_IP

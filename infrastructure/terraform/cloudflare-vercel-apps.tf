@@ -2,6 +2,7 @@
 # apps (projects and deploys owned by the nx deploy targets). Terraform owns
 # only the DNS; post-apply attaches domains to existing production and staging
 # Vercel projects. DNS-only so Vercel can issue and renew its own certificate.
+# Chat is the exception, proxied behind Cloudflare Access (cloudflare-chat.tf).
 
 locals {
   vercel_app_subdomains = {
@@ -27,9 +28,10 @@ resource "cloudflare_dns_record" "vercel_app" {
 # Read by post-apply.sh, which attaches each domain to its production
 # Vercel project via the API — so a new entry here only needs the matching
 # `production-<key>` project to already exist (ensureProjectExists in
-# deploy-vercel.ts creates it on first deploy).
+# deploy-vercel.ts creates it on first deploy). Chat's proxied records live in
+# cloudflare-chat.tf; only its domain attachment joins this output.
 output "vercel_app_subdomains" {
-  value = local.vercel_app_subdomains
+  value = merge(local.vercel_app_subdomains, { chat = local.chat_domains.production })
 }
 
 locals {
@@ -49,5 +51,5 @@ resource "cloudflare_dns_record" "staging_vercel_app" {
 }
 
 output "staging_vercel_app_subdomains" {
-  value = local.staging_vercel_app_subdomains
+  value = merge(local.staging_vercel_app_subdomains, { chat = local.chat_domains.staging })
 }

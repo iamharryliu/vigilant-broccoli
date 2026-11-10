@@ -1,11 +1,13 @@
 'use client';
 
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
+import {
+  ChatPanel,
+  ChatPayload,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
-import { ChatPayload } from '../../constants/chat';
-import { useChatRoom } from '../../hooks/useChatRoom';
+import { useDemoChatRoom } from '../../hooks/useDemoChatRoom';
 import { publishOverSocket } from './chat-socket-publish';
-import { ChatDemoPanel } from './ChatDemoPanel';
 
 const DESCRIPTION =
   'Connects with a short-lived token for this room only, then sends over the socket. Works without signing in.';
@@ -18,7 +20,7 @@ const fetchRoomToken = async (): Promise<string | undefined> => {
   return body.token;
 };
 
-const SOCKET_OPTIONS: Parameters<typeof useChatRoom>[0] = {
+const SOCKET_OPTIONS: Parameters<typeof useDemoChatRoom>[0] = {
   reconnection: true,
   // A function so every reconnect requests a new token, since tokens expire.
   auth: callback => {
@@ -29,9 +31,9 @@ const SOCKET_OPTIONS: Parameters<typeof useChatRoom>[0] = {
 };
 
 export function RoomTokenChatDemo() {
-  const { socket, status, messages } = useChatRoom(SOCKET_OPTIONS);
+  const { socket, status, messages } = useDemoChatRoom(SOCKET_OPTIONS);
   return (
-    <ChatDemoPanel
+    <ChatPanel
       description={DESCRIPTION}
       status={status}
       messages={messages}
