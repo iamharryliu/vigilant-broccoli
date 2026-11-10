@@ -1,15 +1,28 @@
 'use client';
 
 import { useState } from 'react';
-import { Pencil, Pin, PinOff, Plus, Search, Trash } from 'lucide-react';
+import {
+  ArrowLeft,
+  Pencil,
+  Pin,
+  PinOff,
+  SquarePen,
+  Search,
+  Settings,
+  Trash,
+} from 'lucide-react';
 import {
   Button,
   DropdownMenu,
   IconButton,
   Input,
   ScrollArea,
+  Select,
+  Switch,
   Text,
 } from '@vigilant-broccoli/react-lib';
+import type { LLMModel } from '@vigilant-broccoli/common-js';
+import { CHAT_MODELS } from '../constants/chatbot.consts';
 import type { Chat } from '../hooks/useChatHistory';
 import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 
@@ -21,12 +34,21 @@ interface ChatHistorySidebarProps {
   onDeleteChat: (id: string) => void;
   onRenameChat: (id: string, title: string) => void;
   onTogglePinChat: (id: string) => void;
+  selectedModel: LLMModel;
+  onModelChange: (model: LLMModel) => void;
+  useKnowledgeBase: boolean;
+  onUseKnowledgeBaseChange: (value: boolean) => void;
 }
 
 const EMPTY_HISTORY_LABEL = 'No previous chats';
 const NO_MATCHES_LABEL = 'No matching chats';
 const SEARCH_PLACEHOLDER = 'Search chats';
 const NEW_CHAT_LABEL = 'New chat';
+const CHAT_SETTINGS_LABEL = 'Chat settings';
+const BACK_TO_CHATS_LABEL = 'Back to chats';
+const RECENTS_LABEL = 'Recents';
+const MODEL_LABEL = 'Model';
+const KNOWLEDGE_BASE_LABEL = 'Knowledge base';
 const CHAT_OPTIONS_LABEL = 'Chat options';
 const RENAME_LABEL = 'Rename';
 const PIN_LABEL = 'Pin';
@@ -188,6 +210,12 @@ const ChatRow = ({
   );
 };
 
+const formatModelLabel = (model: string) =>
+  model
+    .split('-')
+    .map(part => part.toUpperCase())
+    .join(' ');
+
 const matchesQuery = (chat: Chat, query: string): boolean =>
   chat.title.toLowerCase().includes(query) ||
   chat.messages.some(m =>
@@ -208,7 +236,12 @@ export const ChatHistorySidebar = ({
   onDeleteChat,
   onRenameChat,
   onTogglePinChat,
+  selectedModel,
+  onModelChange,
+  useKnowledgeBase,
+  onUseKnowledgeBaseChange,
 }: ChatHistorySidebarProps) => {
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [pendingDeleteChat, setPendingDeleteChat] = useState<Chat | null>(null);
   const normalizedQuery = query.trim().toLowerCase();
@@ -227,58 +260,118 @@ export const ChatHistorySidebar = ({
         backgroundColor: 'var(--color-panel-solid)',
       }}
     >
-      <div style={{ padding: '1rem 0.75rem 0.5rem 0.75rem' }}>
-        <div className="relative">
-          <Search
-            size={14}
-            className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
-          />
-          <Input
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            onKeyDown={e => {
-              if (e.key === KEY_ESCAPE) setQuery('');
-            }}
-            placeholder={SEARCH_PLACEHOLDER}
-            aria-label={SEARCH_PLACEHOLDER}
-            className="h-8 pl-8"
-          />
-        </div>
-      </div>
-      <div style={{ padding: '0 0.75rem 0.5rem 0.75rem' }}>
-        <Button
-          onClick={onNewChat}
-          variant="secondary"
-          className="w-full justify-start"
-        >
-          <Plus size={16} />
-          {NEW_CHAT_LABEL}
-        </Button>
-      </div>
-      <ScrollArea className="flex-1 min-h-0 [&_[data-radix-scroll-area-viewport]>div]:!block">
+      {isSettingsOpen ? (
         <div
-          className="flex flex-col gap-1"
-          style={{ padding: '0.25rem 0.5rem 0.75rem 0.5rem' }}
+          className="flex flex-col gap-4"
+          style={{ padding: '1rem 0.75rem' }}
         >
-          {visibleChats.length === 0 ? (
-            <Text size="1" color="gray" style={{ padding: '0.5rem 0.625rem' }}>
-              {chats.length === 0 ? EMPTY_HISTORY_LABEL : NO_MATCHES_LABEL}
+          <Button
+            onClick={() => setIsSettingsOpen(false)}
+            variant="ghost"
+            className="w-full justify-start"
+          >
+            <ArrowLeft size={16} />
+            {BACK_TO_CHATS_LABEL}
+          </Button>
+          <div className="flex flex-col gap-1.5">
+            <Text size="1" color="gray">
+              {MODEL_LABEL}
             </Text>
-          ) : (
-            visibleChats.map(chat => (
-              <ChatRow
-                key={chat.id}
-                chat={chat}
-                isActive={chat.id === currentChatId}
-                onSelect={() => onSelectChat(chat.id)}
-                onDelete={() => setPendingDeleteChat(chat)}
-                onRename={title => onRenameChat(chat.id, title)}
-                onTogglePin={() => onTogglePinChat(chat.id)}
-              />
-            ))
-          )}
+            <Select
+              value={selectedModel}
+              onValueChange={value => onModelChange(value as LLMModel)}
+              options={CHAT_MODELS}
+              triggerClassName="w-full"
+              renderItem={formatModelLabel}
+            />
+          </div>
+          <label className="flex items-center justify-between gap-2">
+            <Text size="2">{KNOWLEDGE_BASE_LABEL}</Text>
+            <Switch
+              checked={useKnowledgeBase}
+              onCheckedChange={onUseKnowledgeBaseChange}
+            />
+          </label>
         </div>
-      </ScrollArea>
+      ) : (
+        <>
+          <div style={{ padding: '1rem 0.75rem 0.5rem 0.75rem' }}>
+            <div className="relative">
+              <Search
+                size={14}
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+              />
+              <Input
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === KEY_ESCAPE) setQuery('');
+                }}
+                placeholder={SEARCH_PLACEHOLDER}
+                aria-label={SEARCH_PLACEHOLDER}
+                className="h-8 pl-8"
+              />
+            </div>
+          </div>
+          <div
+            className="flex flex-col gap-1"
+            style={{ padding: '0 0.75rem 0.5rem 0.75rem' }}
+          >
+            <Button
+              onClick={onNewChat}
+              variant="ghost"
+              className="w-full justify-start"
+            >
+              <SquarePen size={16} />
+              {NEW_CHAT_LABEL}
+            </Button>
+            <Button
+              onClick={() => setIsSettingsOpen(true)}
+              variant="ghost"
+              className="w-full justify-start"
+            >
+              <Settings size={16} />
+              {CHAT_SETTINGS_LABEL}
+            </Button>
+          </div>
+          <Text
+            size="1"
+            color="gray"
+            weight="medium"
+            style={{ padding: '0.5rem 1.25rem 0.25rem 1.25rem' }}
+          >
+            {RECENTS_LABEL}
+          </Text>
+          <ScrollArea className="flex-1 min-h-0 [&_[data-radix-scroll-area-viewport]>div]:!block">
+            <div
+              className="flex flex-col gap-1"
+              style={{ padding: '0.25rem 0.5rem 0.75rem 0.5rem' }}
+            >
+              {visibleChats.length === 0 ? (
+                <Text
+                  size="1"
+                  color="gray"
+                  style={{ padding: '0.5rem 0.625rem' }}
+                >
+                  {chats.length === 0 ? EMPTY_HISTORY_LABEL : NO_MATCHES_LABEL}
+                </Text>
+              ) : (
+                visibleChats.map(chat => (
+                  <ChatRow
+                    key={chat.id}
+                    chat={chat}
+                    isActive={chat.id === currentChatId}
+                    onSelect={() => onSelectChat(chat.id)}
+                    onDelete={() => setPendingDeleteChat(chat)}
+                    onRename={title => onRenameChat(chat.id, title)}
+                    onTogglePin={() => onTogglePinChat(chat.id)}
+                  />
+                ))
+              )}
+            </div>
+          </ScrollArea>
+        </>
+      )}
       <ConfirmDeleteDialog
         open={pendingDeleteChat !== null}
         onOpenChange={open => {

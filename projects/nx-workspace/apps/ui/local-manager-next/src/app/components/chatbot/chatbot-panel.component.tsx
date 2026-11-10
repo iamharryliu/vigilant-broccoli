@@ -18,7 +18,6 @@ import {
   DEFAULT_CHAT_MODEL,
   HELP_HEADING,
   KEY,
-  STORAGE_KEY_USE_KNOWLEDGE_BASE,
 } from '../../constants/chatbot.consts';
 import {
   findRecentLink,
@@ -43,6 +42,9 @@ interface ChatbotPanelProps {
   suggestions?: ChatSuggestion[];
   initialMessages?: Message[];
   onMessagesChange?: (messages: Message[]) => void;
+  selectedModel: LLMModel;
+  onModelChange: (model: LLMModel) => void;
+  useKnowledgeBase: boolean;
 }
 
 const fileToBase64 = (file: File): Promise<string> =>
@@ -59,6 +61,9 @@ export const ChatbotPanel = ({
   suggestions = [],
   initialMessages,
   onMessagesChange,
+  selectedModel,
+  onModelChange,
+  useKnowledgeBase,
 }: ChatbotPanelProps) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages ?? []);
   const onMessagesChangeRef = useRef(onMessagesChange);
@@ -76,10 +81,7 @@ export const ChatbotPanel = ({
   const [input, setInput] = useState('');
   const [uploadedImages, setUploadedImages] = useState<MessageImage[]>([]);
   const [isDragging, setIsDragging] = useState(false);
-  const [selectedModel, setSelectedModel] =
-    useState<LLMModel>(DEFAULT_CHAT_MODEL);
   const [slashMenuHighlightedIndex, setSlashMenuHighlightedIndex] = useState(0);
-  const [useKnowledgeBase, setUseKnowledgeBase] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textInputRef = useRef<HTMLTextAreaElement>(null);
@@ -123,25 +125,6 @@ export const ChatbotPanel = ({
   }, [initialPrompt]);
 
   useEffect(() => {
-    try {
-      setUseKnowledgeBase(
-        localStorage.getItem(STORAGE_KEY_USE_KNOWLEDGE_BASE) !== 'false',
-      );
-    } catch {
-      // Storage unavailable; keep the knowledge base on.
-    }
-  }, []);
-
-  const handleUseKnowledgeBaseChange = (value: boolean) => {
-    setUseKnowledgeBase(value);
-    try {
-      localStorage.setItem(STORAGE_KEY_USE_KNOWLEDGE_BASE, String(value));
-    } catch {
-      // Preference just won't persist.
-    }
-  };
-
-  useEffect(() => {
     const timeout = setTimeout(() => textInputRef.current?.focus(), 150);
     return () => clearTimeout(timeout);
   }, []);
@@ -160,8 +143,8 @@ export const ChatbotPanel = ({
   useEffect(() => {
     if (availableModels.includes(selectedModel)) return;
 
-    setSelectedModel(availableModels[0] || DEFAULT_CHAT_MODEL);
-  }, [availableModels, selectedModel]);
+    onModelChange(availableModels[0] || DEFAULT_CHAT_MODEL);
+  }, [availableModels, selectedModel, onModelChange]);
 
   const handleImageUpload = async (files: FileList | null) => {
     if (!files) return;
@@ -405,10 +388,6 @@ export const ChatbotPanel = ({
           uploadedImages={uploadedImages}
           input={input}
           isStreaming={isStreaming}
-          selectedModel={selectedModel}
-          modelOptions={availableModels}
-          useKnowledgeBase={useKnowledgeBase}
-          onUseKnowledgeBaseChange={handleUseKnowledgeBaseChange}
           fileInputRef={fileInputRef}
           textInputRef={textInputRef}
           onCommandRun={runCommand}
@@ -416,7 +395,6 @@ export const ChatbotPanel = ({
             setUploadedImages(prev => prev.filter((_, i) => i !== index))
           }
           onImageUpload={handleImageUpload}
-          onModelChange={setSelectedModel}
           onInputChange={setInput}
           onKeyDown={handleKeyDown}
           onSend={() => handleSend()}

@@ -1,3 +1,4 @@
+import type { ComponentProps } from 'react';
 import { IconButton } from './IconButton';
 
 const ARIA_SEND = 'Send message';
@@ -8,6 +9,7 @@ interface ChatSendButtonProps {
   isDisabled?: boolean;
   onSend: () => void;
   onStop: () => void;
+  variant?: ComponentProps<typeof IconButton>['variant'];
 }
 
 export const ChatSendButton = ({
@@ -15,18 +17,19 @@ export const ChatSendButton = ({
   isDisabled = false,
   onSend,
   onStop,
+  variant = 'outline',
 }: ChatSendButtonProps) =>
   isStreaming ? (
     <IconButton
       icon="stop"
-      variant="outline"
+      variant={variant}
       onClick={onStop}
       aria-label={ARIA_STOP}
     />
   ) : (
     <IconButton
       icon="send-horizontal"
-      variant="outline"
+      variant={variant}
       onClick={onSend}
       disabled={isDisabled}
       aria-label={ARIA_SEND}
