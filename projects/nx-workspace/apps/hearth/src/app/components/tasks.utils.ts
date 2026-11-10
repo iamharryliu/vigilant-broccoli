@@ -121,7 +121,7 @@ export const getPendingDueDate = (
   return null;
 };
 
-/** Short label such as "Nov 5" for an overdue instance's due date. */
+/** Short label such as "Nov 5" for a missed instance's scheduled date. */
 export const formatInstanceDate = (ymd: string) =>
   fromYmd(ymd).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 

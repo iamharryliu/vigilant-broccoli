@@ -153,9 +153,9 @@ export function TaskList() {
   const pendingItems = tasks.flatMap(task => {
     const dueDate = getPendingDueDate(task, completions, today);
     if (!dueDate) return [];
-    const overdue =
-      dueDate === todayYmd ? '' : ` (due ${formatInstanceDate(dueDate)})`;
-    return [{ id: task.id, title: `${task.title}${overdue}`, checked: false }];
+    const missed =
+      dueDate === todayYmd ? '' : ` (missed ${formatInstanceDate(dueDate)})`;
+    return [{ id: task.id, title: `${task.title}${missed}`, checked: false }];
   });
   const completedItems = completions.flatMap(({ id, taskId, completedAt }) => {
     const task = tasks.find(({ id: candidate }) => candidate === taskId);
