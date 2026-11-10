@@ -119,6 +119,7 @@
 | Redux | Capco |
 | Remote teamwork | Capco |
 | Resend | Strandbadens Vägförening; Tillmobil; vigilant-broccoli |
+| Retrieval-augmented generation (RAG) | vigilant-broccoli |
 | REST API design | Capco; Tillmobil; vigilant-broccoli |
 | Rollup | vigilant-broccoli |
 | SCSS | Capco |
@@ -169,6 +170,7 @@
 | Automate music downloads | Software Engineer | Automated Spotify-to-MP3 downloads with Python. |
 | Automate operations with Bash | Platform Engineer | Wrote Bash scripts for infrastructure and operations automation, including machine setup, VM and service management, and the agent-sandbox entrypoint and task runner. |
 | Back up and restore-test persistent stores | Site Reliability Engineer | Ran nightly backups of each persistent store to cloud storage with retention, and a weekly workflow that restores every dump into a throwaway container so stale or unrestorable backups fail visibly. |
+| Build a retrieval-augmented knowledge base | Fullstack Developer | Added a drag-and-drop file manager in local-manager-next that stores uploads in R2, extracts text (OCR for scanned PDFs), embeds chunks with OpenAI into a Supabase pgvector table and feeds the matching excerpts into the chatbot so it can answer questions about uploaded documents. |
 | Build fullstack document management | Fullstack Developer | Built Hearth with Next.js React pages and server-side API routes. |
 | Build fullstack management tools | Fullstack Developer | Built local-manager-next with Next.js React pages and server-side API routes. |
 | Build mobile dashboard | Fullstack Developer | Built mobile-manager-next, a phone-first Next.js dashboard with a schedule agenda, event calendars, Google Tasks, a notepad, quick links and voice input, authenticated through Supabase and deployed to Vercel. |

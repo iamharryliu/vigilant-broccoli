@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  DragEvent,
   KeyboardEvent,
   MouseEvent,
   ReactElement,
@@ -42,6 +43,12 @@ import {
 import { Button } from './Button';
 import { ContextMenu } from './ContextMenu';
 import { Skeleton } from './Skeleton';
+import {
+  groupByDirectory,
+  isFileDrag,
+  joinPath,
+  readDroppedFiles,
+} from './file-explorer-drop.utils';
 
 const VIEW_MODE = { LIST: 'list', GRID: 'grid' } as const;
 type ViewMode = (typeof VIEW_MODE)[keyof typeof VIEW_MODE];
@@ -518,12 +525,16 @@ type FileExplorerProps = {
   defaultSort?: SortState;
   toolbarAction?: ReactNode;
   // Shows an upload button that sends the picked files into the current folder
-  // ('' at the root). Hidden when omitted.
+  // ('' at the root), and accepts files and folders dropped on the listing; a
+  // dropped folder calls it once per subfolder with that subfolder's path.
+  // Hidden when omitted.
   onUpload?: (folderPath: string, files: File[]) => Promise<void>;
   // Shows a delete button and context menu item for the selected files, behind
   // a confirmation; called once per file. Hidden when omitted; folders are
   // never offered.
   onDelete?: (entry: FileEntry) => Promise<void>;
+  // Small inline marker after an entry's name, such as a processing status.
+  renderEntryBadge?: (entry: FileEntry) => ReactNode;
 };
 
 const DEFAULT_SORT: SortState = {
@@ -541,6 +552,7 @@ export const FileExplorer = ({
   toolbarAction,
   onUpload,
   onDelete,
+  renderEntryBadge,
 }: FileExplorerProps) => {
   // null until mounted: the folder lives in `?path=` so a page reload or the
   // browser's back/forward keeps it, and `window` is unavailable during SSR.
@@ -556,6 +568,7 @@ export const FileExplorer = ({
   const [pendingDelete, setPendingDelete] = useState<FileEntry[] | null>(null);
   const [mutating, setMutating] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(true);
+  const [dragging, setDragging] = useState(false);
   const itemsRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -640,12 +653,46 @@ export const FileExplorer = ({
     }
   };
 
-  const uploadFiles = (files: File[]) => {
-    if (!onUpload || files.length === 0) return;
-    runMutation(
-      () => onUpload(currentPath ?? '', files),
-      'Failed to upload files',
-    );
+  // Keyed by folder relative to the open one ('' for the open folder itself).
+  const uploadGroups = (groups: Map<string, File[]>) => {
+    if (!onUpload || groups.size === 0) return;
+    runMutation(async () => {
+      for (const [directory, files] of groups) {
+        await onUpload(joinPath(currentPath ?? '', directory), files);
+      }
+    }, 'Failed to upload files');
+  };
+
+  const uploadFiles = (files: File[]) =>
+    uploadGroups(files.length > 0 ? new Map([['', files]]) : new Map());
+
+  const canDrop = !!onUpload && !mutating && currentPath !== null;
+
+  const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
+    if (!canDrop || !isFileDrag(event.dataTransfer)) return;
+    event.preventDefault();
+    setDragging(true);
+  };
+
+  const handleDragLeave = (event: DragEvent<HTMLDivElement>) => {
+    // Moving onto a child fires dragleave on the container too.
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+      setDragging(false);
+  };
+
+  const handleDrop = async (event: DragEvent<HTMLDivElement>) => {
+    if (!canDrop || !isFileDrag(event.dataTransfer)) return;
+    event.preventDefault();
+    setDragging(false);
+    try {
+      uploadGroups(
+        groupByDirectory(await readDroppedFiles(event.dataTransfer)),
+      );
+    } catch (err) {
+      onError?.(
+        err instanceof Error ? err.message : 'Failed to read dropped files',
+      );
+    }
   };
 
   // One mutation so the listing reloads once; a failed file doesn't stop the rest.
@@ -988,7 +1035,11 @@ export const FileExplorer = ({
           tabIndex={0}
           aria-label="Files"
           onKeyDown={handleItemsKeyDown}
-          className="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-400 dark:focus-visible:ring-gray-600"
+          onDragEnter={handleDragOver}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gray-400 dark:focus-visible:ring-gray-600 ${dragging ? 'bg-blue-50 ring-2 ring-inset ring-blue-400 dark:bg-blue-950/30 dark:ring-blue-500' : ''}`}
           onClick={event => {
             if (event.target === event.currentTarget)
               setSelection(EMPTY_SELECTION);
@@ -1037,8 +1088,11 @@ export const FileExplorer = ({
                         </div>
                         {renderMenu(entry)}
                       </td>
-                      <td className="max-w-[360px] truncate px-4 py-2 font-medium text-gray-800 dark:text-gray-100">
-                        {entry.name}
+                      <td className="max-w-[360px] px-4 py-2 font-medium text-gray-800 dark:text-gray-100">
+                        <div className="flex items-center gap-2">
+                          <span className="truncate">{entry.name}</span>
+                          {renderEntryBadge?.(entry)}
+                        </div>
                       </td>
                       <td className="hidden px-4 py-2 text-gray-500 dark:text-gray-400 sm:table-cell">
                         {entrySizeLabel(entry)}
@@ -1078,6 +1132,11 @@ export const FileExplorer = ({
                       <div className="line-clamp-2 break-words text-xs font-medium text-gray-800 dark:text-gray-100">
                         {entry.name}
                       </div>
+                      {renderEntryBadge && (
+                        <div className="flex justify-center">
+                          {renderEntryBadge(entry)}
+                        </div>
+                      )}
                       {entry.kind === FILE_ENTRY_KIND.FOLDER && (
                         <div className="text-[10px] text-gray-400 dark:text-gray-500">
                           {itemCountLabel(entry.itemCount)}

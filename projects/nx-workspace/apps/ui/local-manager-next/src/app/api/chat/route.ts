@@ -9,6 +9,10 @@ import {
   CHAT_RESPONSE_TYPE,
   CHAT_TOOL_NAME,
 } from '../../constants/chatbot.consts';
+import {
+  KNOWLEDGE_BASE_PREFIX,
+  searchKnowledgeBase,
+} from '../../../lib/knowledge-base';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -39,6 +43,15 @@ const TIME_OPTIONS: Intl.DateTimeFormatOptions = {
 const DEFAULT_SYSTEM_PROMPT = 'You are a helpful assistant.';
 const SYSTEM_PROMPT_SUFFIX =
   '\n\nWhen providing day or week plans, keep them short and concise. Use bullet points and avoid lengthy explanations.';
+
+// text-embedding-3-small scores related text around 0.4-0.7 and unrelated text
+// below 0.25, so weaker matches are left out of the prompt.
+const KNOWLEDGE_MIN_SIMILARITY = 0.3;
+// Recent user turns are searched together so a short follow-up still carries
+// its topic.
+const KNOWLEDGE_QUERY_MESSAGES = 2;
+const KNOWLEDGE_PROMPT_INTRO =
+  "\n\nExcerpts from the user's uploaded knowledge base files are below. Use them when they help answer the question, name the file you used, and ignore them when they are unrelated.";
 
 const CALENDAR_INTENT_KEYWORDS = [
   'add to calendar',
@@ -124,6 +137,30 @@ const hasCalendarIntent = (messages: Message[]): boolean => {
   );
 };
 
+// Retrieval is best-effort: a failed search must not stop the chat answering.
+const buildKnowledgeContext = async (messages: Message[]) => {
+  const query = messages
+    .filter(m => m.role === 'user')
+    .slice(-KNOWLEDGE_QUERY_MESSAGES)
+    .map(m => m.content)
+    .join('\n')
+    .trim();
+  if (!query) return '';
+  try {
+    const excerpts = (await searchKnowledgeBase(query))
+      .filter(match => match.similarity >= KNOWLEDGE_MIN_SIMILARITY)
+      .map(
+        match =>
+          `[${match.file_key.slice(KNOWLEDGE_BASE_PREFIX.length + 1)}]\n${match.content}`,
+      );
+    return excerpts.length > 0
+      ? `${KNOWLEDGE_PROMPT_INTRO}\n\n${excerpts.join('\n\n')}`
+      : '';
+  } catch {
+    return '';
+  }
+};
+
 const buildOpenAIMessages = (
   messages: Message[],
   systemPrompt: string,
@@ -186,11 +223,18 @@ const tryCalendarToolCall = async (
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { messages, systemPrompt, model, timeZone } = body as {
+  const {
+    messages,
+    systemPrompt,
+    model,
+    timeZone,
+    useKnowledgeBase = true,
+  } = body as {
     messages: Message[];
     systemPrompt?: string;
     model?: LLMModel;
     timeZone?: string;
+    useKnowledgeBase?: boolean;
   };
 
   if (!messages || messages.length === 0) {
@@ -214,7 +258,8 @@ export async function POST(request: NextRequest) {
     (systemPrompt || DEFAULT_SYSTEM_PROMPT) +
     `\n\nCurrent date: ${currentDate}\nCurrent time: ${currentTime}` +
     (timeZone ? `\nUser timezone: ${timeZone}` : '') +
-    SYSTEM_PROMPT_SUFFIX;
+    SYSTEM_PROMPT_SUFFIX +
+    (useKnowledgeBase ? await buildKnowledgeContext(messages) : '');
 
   if (hasCalendarIntent(messages)) {
     const toolCallResponse = await tryCalendarToolCall(

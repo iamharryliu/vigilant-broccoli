@@ -10,6 +10,7 @@ import {
   ScrollArea,
   Select,
   SpeechToTextToggleButton,
+  Switch,
   Textarea,
   Text,
   useSpeechToText,
@@ -95,6 +96,8 @@ interface ChatbotPanelProps {
 }
 
 const MAX_MESSAGES = 20;
+const STORAGE_KEY_USE_KNOWLEDGE_BASE = 'vb-manager-chat-use-knowledge-base';
+const KNOWLEDGE_BASE_TOGGLE_LABEL = 'Knowledge base';
 
 const CONST_ERROR_MESSAGE = 'Error: Failed to get response';
 const CONST_STREAM_UPDATE_INTERVAL = 50;
@@ -519,8 +522,10 @@ const InputControls = ({
   uploadedImages,
   selectedModel,
   modelOptions,
+  useKnowledgeBase,
   onImageUpload,
   onModelChange,
+  onUseKnowledgeBaseChange,
   onToggleRecording,
   onInputChange,
   onKeyDown,
@@ -536,8 +541,10 @@ const InputControls = ({
   uploadedImages: MessageImage[];
   selectedModel: LLMModel;
   modelOptions: LLMModel[];
+  useKnowledgeBase: boolean;
   onImageUpload: (files: FileList | null) => void;
   onModelChange: (model: LLMModel) => void;
+  onUseKnowledgeBaseChange: (value: boolean) => void;
   onToggleRecording: () => void;
   onInputChange: (value: string) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
@@ -575,6 +582,16 @@ const InputControls = ({
       rows={1}
       className="flex-1 min-h-[2.25rem] max-h-48"
     />
+    <label className="flex items-center gap-2 self-center">
+      <Text size="1" color="gray">
+        {KNOWLEDGE_BASE_TOGGLE_LABEL}
+      </Text>
+      <Switch
+        checked={useKnowledgeBase}
+        onCheckedChange={onUseKnowledgeBaseChange}
+        disabled={isStreaming}
+      />
+    </label>
     <Select
       value={selectedModel}
       onValueChange={value => onModelChange(value as LLMModel)}
@@ -603,12 +620,14 @@ const InputArea = ({
   isStreaming,
   selectedModel,
   modelOptions,
+  useKnowledgeBase,
   fileInputRef,
   textInputRef,
   onCommandRun,
   onImageRemove,
   onImageUpload,
   onModelChange,
+  onUseKnowledgeBaseChange,
   onInputChange,
   onKeyDown,
   onSend,
@@ -628,12 +647,14 @@ const InputArea = ({
   isStreaming: boolean;
   selectedModel: LLMModel;
   modelOptions: LLMModel[];
+  useKnowledgeBase: boolean;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   textInputRef: React.RefObject<HTMLTextAreaElement | null>;
   onCommandRun: (name: string) => void;
   onImageRemove: (index: number) => void;
   onImageUpload: (files: FileList | null) => void;
   onModelChange: (model: LLMModel) => void;
+  onUseKnowledgeBaseChange: (value: boolean) => void;
   onInputChange: (value: string) => void;
   onKeyDown: (e: React.KeyboardEvent) => void;
   onSend: () => void;
@@ -670,8 +691,10 @@ const InputArea = ({
       uploadedImages={uploadedImages}
       selectedModel={selectedModel}
       modelOptions={modelOptions}
+      useKnowledgeBase={useKnowledgeBase}
       onImageUpload={onImageUpload}
       onModelChange={onModelChange}
+      onUseKnowledgeBaseChange={onUseKnowledgeBaseChange}
       onToggleRecording={onToggleRecording}
       onInputChange={onInputChange}
       onKeyDown={onKeyDown}
@@ -774,6 +797,7 @@ export const ChatbotPanel = ({
   const [selectedModel, setSelectedModel] =
     useState<LLMModel>(DEFAULT_CHAT_MODEL);
   const [slashMenuHighlightedIndex, setSlashMenuHighlightedIndex] = useState(0);
+  const [useKnowledgeBase, setUseKnowledgeBase] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -801,6 +825,25 @@ export const ChatbotPanel = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialPrompt]);
+
+  useEffect(() => {
+    try {
+      setUseKnowledgeBase(
+        localStorage.getItem(STORAGE_KEY_USE_KNOWLEDGE_BASE) !== 'false',
+      );
+    } catch {
+      // Storage unavailable; keep the knowledge base on.
+    }
+  }, []);
+
+  const handleUseKnowledgeBaseChange = (value: boolean) => {
+    setUseKnowledgeBase(value);
+    try {
+      localStorage.setItem(STORAGE_KEY_USE_KNOWLEDGE_BASE, String(value));
+    } catch {
+      // Preference just won't persist.
+    }
+  };
 
   useEffect(() => {
     const timeout = setTimeout(() => textInputRef.current?.focus(), 150);
@@ -954,6 +997,7 @@ export const ChatbotPanel = ({
           systemPrompt,
           model,
           timeZone: getLocalTimeZone(),
+          useKnowledgeBase,
         }),
         signal: abortControllerRef.current?.signal,
       });
@@ -1613,6 +1657,8 @@ export const ChatbotPanel = ({
           isStreaming={isStreaming}
           selectedModel={selectedModel}
           modelOptions={availableModels}
+          useKnowledgeBase={useKnowledgeBase}
+          onUseKnowledgeBaseChange={handleUseKnowledgeBaseChange}
           fileInputRef={fileInputRef}
           textInputRef={textInputRef}
           onCommandRun={runCommand}
