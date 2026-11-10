@@ -14,7 +14,7 @@
 - Conversation history compacted after 20 messages (oldest dropped)
 - Model selector uses the 17 models listed in the account’s complimentary-token allowance; the chat API rejects other model IDs
 - Automatically switches to an eligible vision model when images are attached; `o3-mini` is text-only
-- Saved conversations in browser local storage, with new and select controls in the history sidebar; each chat's ellipsis menu offers rename, pin/unpin and delete
+- Saved conversations in browser local storage, with new and select controls in the history sidebar; each chat's ellipsis menu offers rename, pin/unpin and delete (delete asks for confirmation)
 - Search box at the top of the history sidebar, above New chat, filters chats by title or message text (Escape clears it)
 - Pinned chats list first and are the last to be dropped when the 50-chat cap is reached
 - History sidebar toggles open and closed with a button at the top-left of the chat area; the choice persists in local storage
