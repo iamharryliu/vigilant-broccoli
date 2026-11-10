@@ -1,6 +1,12 @@
 # Free Tier Infrastructure
 
-Every cloud service this repo uses, its free-tier allowance, and how much of that allowance the repo's own config accounts for. Usage numbers are derived from `infrastructure/terraform/`, `.github/workflows/`, `projects/nx-workspace/deployment-configs/fly-configs/`, and per-app `project.json` deploy targets — not from provider dashboards, so anything volume-based (bytes stored, requests served, DB size) is marked _not measurable from repo_. Free-tier limits are copied from the `## Free Tier` sections of the notes linked in each row; verify against the provider before relying on one.
+## Table of
+
+- [Free tier](#free-tier)
+- [Not free tier](#not-free-tier)
+- [What to watch](#what-to-watch)
+
+## Free tier
 
 | Cloud service | Apps / components using it | Free tier | Repo-measured usage |
 | --- | --- | --- | --- |
@@ -51,9 +57,11 @@ These are in active use but are billed or have no perpetual free allowance — l
 
 ## What to watch
 
-1. **OCI is completely full** — 4/4 OCPU, 24/24 GB RAM, 200/200 GB storage. Any new always-free VM requires shrinking `code-server` (currently 2 OCPU / 14 GB, the largest of the three). The 2 always-free AMD micro VMs are still unused if a tiny box is all that's needed.
-2. **GCP's always-free VM slot is taken** by `vb-free-vm` (Vault + WireGuard), so the next persistent VM lands on OCI (full, see above) or is billed on AWS.
-3. **Secret Manager is 1.5× over** its 6-version free allowance at 9 secrets. It's pennies, but it's the only always-free line the repo has crossed on purpose.
-4. **The real monthly spend is AWS**, not any of the free-tier services: 3 non-micro EC2 instances plus 3 Elastic IPs is roughly $30–35/month. `immich` and `seafile` are the candidates if that needs to come down — `grafana-vm` is load-bearing for observability and Upptime's `observability-vm` check.
-5. **Volume-based limits can't be checked from the repo** — Supabase DB size (500 MB), R2 bytes (10 GB), GCS bytes (5 GB), Vercel bandwidth (100 GB), and Resend's 100/day cap all need a dashboard look. Supabase and Resend are the two where a limit bites hardest: a full Supabase DB breaks every app sharing it, and Resend silently caps at 100 sends/day.
-6. **Supabase pauses after 7 days of inactivity** on the free plan. Staging UI checks stop at Cloudflare Access, so they do not reach Supabase and must not be relied on to keep it active.
+| Watch item | Detail |
+| --- | --- |
+| **AWS spend** | The real monthly spend is AWS, not any of the free-tier services: 3 non-micro EC2 instances plus 3 Elastic IPs is roughly $30–35/month. `immich` and `seafile` are the candidates if that needs to come down — `grafana-vm` is load-bearing for observability and Upptime's `observability-vm` check. |
+| **GCP VM slot** | The always-free VM slot is taken by `vb-free-vm` (Vault + WireGuard), so the next persistent VM lands on OCI (full, see OCI capacity) or is billed on AWS. |
+| **OCI capacity** | Completely full — 4/4 OCPU, 24/24 GB RAM, 200/200 GB storage. Any new always-free VM requires shrinking `code-server` (currently 2 OCPU / 14 GB, the largest of the three). The 2 always-free AMD micro VMs are still unused if a tiny box is all that's needed. |
+| **Secret Manager** | 1.5× over its 6-version free allowance at 9 secrets. It's pennies, but it's the only always-free line the repo has crossed on purpose. |
+| **Supabase inactivity pause** | Pauses after 7 days of inactivity on the free plan. Staging UI checks stop at Cloudflare Access, so they do not reach Supabase and must not be relied on to keep it active. |
+| **Volume-based limits** | Can't be checked from the repo — Supabase DB size (500 MB), R2 bytes (10 GB), GCS bytes (5 GB), Vercel bandwidth (100 GB), and Resend's 100/day cap all need a dashboard look. Supabase and Resend are the two where a limit bites hardest: a full Supabase DB breaks every app sharing it, and Resend silently caps at 100 sends/day. |

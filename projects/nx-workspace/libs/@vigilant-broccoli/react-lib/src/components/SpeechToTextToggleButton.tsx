@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import type { ComponentProps } from 'react';
 import { SpeechToTextButton as BaseSpeechToTextButton } from './SpeechToTextButton';
 
 interface SpeechToTextToggleButtonProps {
@@ -9,6 +10,7 @@ interface SpeechToTextToggleButtonProps {
   isProcessing?: boolean;
   onToggle: () => void;
   onStopComplete?: () => Promise<void>;
+  variant?: ComponentProps<typeof BaseSpeechToTextButton>['variant'];
 }
 
 export const SpeechToTextToggleButton = ({
@@ -17,6 +19,7 @@ export const SpeechToTextToggleButton = ({
   isProcessing: externalProcessing = false,
   onToggle,
   onStopComplete,
+  variant,
 }: SpeechToTextToggleButtonProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [localRecording, setLocalRecording] = useState(false);
@@ -43,6 +46,7 @@ export const SpeechToTextToggleButton = ({
       isDisabled={isDisabled}
       isProcessing={externalProcessing || isProcessing}
       onToggle={handleToggle}
+      variant={variant}
     />
   );
 };

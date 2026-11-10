@@ -7,6 +7,7 @@ import { ChatbotPanel } from '../chatbot/chatbot-panel.component';
 import { ChatHistorySidebar } from '../chat-history-sidebar.component';
 import { useChatSuggestions } from '../../hooks/useChatSuggestions';
 import { useChatHistory } from '../../hooks/useChatHistory';
+import { useChatSettings } from '../../hooks/useChatSettings';
 
 const STORAGE_KEY_SIDEBAR_OPEN = 'vb-manager-chat-sidebar-open';
 const HIDE_SIDEBAR_LABEL = 'Hide chat history';
@@ -18,6 +19,12 @@ const SIDEBAR_TRANSITION_MS = 250;
 export function ChatbotPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const suggestions = useChatSuggestions();
+  const {
+    selectedModel,
+    setSelectedModel,
+    useKnowledgeBase,
+    setUseKnowledgeBase,
+  } = useChatSettings();
   const {
     chats,
     currentChatId,
@@ -77,6 +84,10 @@ export function ChatbotPage() {
           onDeleteChat={deleteChat}
           onRenameChat={renameChat}
           onTogglePinChat={togglePinChat}
+          selectedModel={selectedModel}
+          onModelChange={setSelectedModel}
+          useKnowledgeBase={useKnowledgeBase}
+          onUseKnowledgeBaseChange={setUseKnowledgeBase}
         />
       </div>
       <div
@@ -106,6 +117,9 @@ export function ChatbotPage() {
           suggestions={suggestions}
           initialMessages={currentMessages}
           onMessagesChange={updateCurrentMessages}
+          selectedModel={selectedModel}
+          onModelChange={setSelectedModel}
+          useKnowledgeBase={useKnowledgeBase}
         />
       </div>
     </div>
