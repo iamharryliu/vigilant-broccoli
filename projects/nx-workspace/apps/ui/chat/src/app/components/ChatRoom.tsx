@@ -15,11 +15,11 @@ const SOCKET_OPTIONS = { reconnection: true };
 const ERR_PUBLISH_FAILED = 'Publish failed';
 const LIST_CLASS = 'h-[60vh]';
 
-const publish = async ({ text }: ChatPayload) => {
+const publish = async ({ text, sender }: ChatPayload) => {
   const res = await fetch(API_ROUTE.PUBLISH, {
     method: HTTP_METHOD.POST,
     headers: HTTP_HEADERS.CONTENT_TYPE.JSON,
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ text, sender }),
   });
   if (!res.ok) throw new Error(ERR_PUBLISH_FAILED);
 };
@@ -38,7 +38,7 @@ const useSocket = (url: string | undefined) => {
   return socket;
 };
 
-export function ChatRoom({ sender }: { sender: string }) {
+export function ChatRoom() {
   const { t } = useTranslation();
   const url = process.env.NEXT_PUBLIC_SOCKET_SERVER_URL;
   const socket = useSocket(url);
@@ -54,7 +54,6 @@ export function ChatRoom({ sender }: { sender: string }) {
       <h1 className="text-2xl font-semibold">{t('HOME.TITLE')}</h1>
       <ChatPanel
         description={t('HOME.DESCRIPTION')}
-        sender={sender}
         status={status}
         messages={messages}
         onSend={publish}

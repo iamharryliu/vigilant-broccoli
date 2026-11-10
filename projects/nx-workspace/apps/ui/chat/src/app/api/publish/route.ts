@@ -8,13 +8,17 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { CHAT_PUBLISH_TIMEOUT_MS } from '@vigilant-broccoli/react-lib-higher-level/chat-room-consts';
-import { CHAT_APP, CHAT_ROOM, MAX_MESSAGE_LENGTH } from '../../app.const';
-import { getAccessEmail } from '../../../lib/access-identity.server';
+import {
+  CHAT_APP,
+  CHAT_ROOM,
+  MAX_MESSAGE_LENGTH,
+  MAX_SENDER_LENGTH,
+} from '../../app.const';
 
 const LOG_PREFIX = '[chat/publish]';
 const ERR_FORBIDDEN = 'Forbidden';
 const ERR_NOT_CONFIGURED = 'Socket server not configured';
-const ERR_BAD_BODY = `Expected { text: string } of 1-${MAX_MESSAGE_LENGTH} characters`;
+const ERR_BAD_BODY = `Expected { text, sender } strings of 1-${MAX_MESSAGE_LENGTH} and 1-${MAX_SENDER_LENGTH} characters`;
 const ERR_PUBLISH_FAILED = 'Publish failed';
 const SEC_FETCH_SITE_HEADER = 'sec-fetch-site';
 const SAME_ORIGIN = 'same-origin';
@@ -22,23 +26,31 @@ const SAME_ORIGIN = 'same-origin';
 const json = (body: object, status: number) =>
   NextResponse.json(body, { status });
 
-// The Access cookie rides cross-site requests too, so only same-origin
-// browser requests may publish as the signed-in user.
+// The Vercel Authentication cookie rides cross-site requests too, so only
+// same-origin browser requests may publish.
 const isCrossSite = (req: NextRequest) => {
   const site = req.headers.get(SEC_FETCH_SITE_HEADER);
   return Boolean(site) && site !== SAME_ORIGIN;
 };
 
-const readText = async (req: NextRequest): Promise<string | null> => {
+const readMessage = async (
+  req: NextRequest,
+): Promise<{ text: string; sender: string } | null> => {
   const body = await req.json().catch(() => null);
   const text = typeof body?.text === 'string' ? body.text.trim() : '';
-  return text && text.length <= MAX_MESSAGE_LENGTH ? text : null;
+  const sender = typeof body?.sender === 'string' ? body.sender.trim() : '';
+  const valid =
+    text &&
+    text.length <= MAX_MESSAGE_LENGTH &&
+    sender &&
+    sender.length <= MAX_SENDER_LENGTH;
+  return valid ? { text, sender } : null;
 };
 
+// Vercel Authentication gates every path, including this route, so only the
+// signed-in owner reaches it.
 export async function POST(req: NextRequest) {
-  // The sender comes from the verified Access assertion, never the body.
-  const sender = await getAccessEmail(req.headers);
-  if (!sender || isCrossSite(req)) {
+  if (isCrossSite(req)) {
     return json({ error: ERR_FORBIDDEN }, HTTP_STATUS_CODES.FORBIDDEN);
   }
 
@@ -51,8 +63,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const text = await readText(req);
-  if (!text) {
+  const message = await readMessage(req);
+  if (!message) {
     return json({ error: ERR_BAD_BODY }, HTTP_STATUS_CODES.BAD_REQUEST);
   }
 
@@ -66,7 +78,7 @@ export async function POST(req: NextRequest) {
       body: JSON.stringify({
         app: CHAT_APP,
         receiverId: CHAT_ROOM,
-        payload: { text, sender, ts: Date.now() },
+        payload: { ...message, ts: Date.now() },
       }),
       signal: AbortSignal.timeout(CHAT_PUBLISH_TIMEOUT_MS),
     });

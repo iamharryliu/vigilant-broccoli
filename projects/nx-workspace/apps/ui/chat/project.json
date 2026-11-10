@@ -42,20 +42,14 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/chat/.env.example --map SOCKET_SERVER_URL:NEXT_PUBLIC_SOCKET_SERVER_URL 'cd apps/ui/chat && next dev --webpack'",
-        "env": {
-          "CHAT_DEV_SENDER": "local-dev"
-        }
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/chat/.env.example --map SOCKET_SERVER_URL:NEXT_PUBLIC_SOCKET_SERVER_URL 'cd apps/ui/chat && next dev --webpack'"
       }
     },
     "serve:no-vault": {
       "executor": "nx:run-commands",
       "options": {
         "cwd": "apps/ui/chat",
-        "command": "next dev --webpack",
-        "env": {
-          "CHAT_DEV_SENDER": "local-dev"
-        }
+        "command": "next dev --webpack"
       }
     },
     "lint": {

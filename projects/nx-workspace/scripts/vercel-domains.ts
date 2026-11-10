@@ -1,5 +1,4 @@
 import { createVaultClient, VAULT_SECRET_PATH } from './vault-client';
-import { isCloudflareAccessGatedVercelProject } from './vercel-access-gated.consts';
 
 // Matches VERCEL_ORG_ID in every app's deploy / deploy:production target
 // (project.json) — a non-secret team id, hardcoded the same way there.
@@ -28,10 +27,7 @@ async function addDomain(
   token: string,
 ): Promise<void> {
   // Attach only after protection succeeds, including projects deployed with --prod.
-  if (
-    projectName.startsWith('staging-') &&
-    !isCloudflareAccessGatedVercelProject(projectName)
-  ) {
+  if (projectName.startsWith('staging-')) {
     const protection = await fetch(
       `https://api.vercel.com/v9/projects/${projectName}?teamId=${VERCEL_ORG_ID}`,
       {
