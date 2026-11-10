@@ -9,5 +9,6 @@ export const CHAT_APP = 'chat';
 // its own room. Direct access so Next.js inlines it into the client bundle.
 export const CHAT_ROOM = process.env.NEXT_PUBLIC_CHAT_ROOM || 'local';
 export const MAX_MESSAGE_LENGTH = 2000;
+export const MAX_SENDER_LENGTH = 64;
 
 export const API_ROUTE = { PUBLISH: '/api/publish' } as const;

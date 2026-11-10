@@ -75,7 +75,6 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `ANTHROPIC_API_KEY` | Vault `kv/data/secrets` → Fly | Claude API key for `llm-service`. |
 | `BETTER_AUTH_SECRET` | Vault `kv/data/secrets` → Fly | Signs `vb-express` Better Auth sessions and encrypts its stored Google OAuth tokens; rotating it signs every user out and makes them sign in with Google again. |
 | `BITWARDEN_PASSWORD` | GCP Secret Manager (Tier 0) | Unlocks the Bitwarden vault holding the Vault secrets backup. |
-| `CHAT_STAGING_CF_ACCESS_AUD` / `CHAT_PRODUCTION_CF_ACCESS_AUD` | Vault `kv/data/secrets` (synced by `tf:post-apply` from the `chat_access_aud` output) → Vercel | Not secret: the Cloudflare Access application audiences the `chat` app checks in each Access JWT, deployed as `CF_ACCESS_AUD` per environment through `deploy-vercel.ts` `vaultKeys`. |
 | `CLAUDE_CODE_OAUTH_TOKEN` | Vault `kv/data/secrets` | Long-lived `claude setup-token` login for agent containers, the `cron-agentic-pr-create-fix-failing-actions` triage job, the code-server VM and the job-hunt-next container. |
 | `CLOUDFLARE_ACCOUNT_ID` | Vault `kv/data/secrets` | Cloudflare account id for Pages deploys and preview cleanup; `deploy-demo-apps` and `manual-deploy-app` also export it as `CLOUDFLARE_ID`. |
 | `CLOUDFLARE_API_TOKEN` | Vault `kv/data/secrets`; Bitwarden backup (local Terraform env) | Cloudflare provider token for Terraform. |
@@ -139,8 +138,6 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `VERCEL_TOKEN` | Vault `kv/data/secrets` | Deploys the Vercel apps (e.g. hearth) from CI. |
 
 The web terminal at `shell.harryliu.dev` adds no secret: Terraform passes its Access team domain and application AUD, which appear in every Access JWT, to the code-server container as `CF_ACCESS_TEAM_DOMAIN` and `CF_ACCESS_AUD` through cloud-init. Its authentication is the signed `Cf-Access-Jwt-Assertion` header, verified against the team JWKS.
-
-The `chat` app verifies the same header in its Next.js proxy and publish route. Its team domain is hardcoded in `deploy-vercel.ts`; its per-environment audiences reach Vercel through Vault (see `CHAT_*_CF_ACCESS_AUD` above) because Vercel deploys cannot read Terraform state.
 
 ## Secret Rotation
 

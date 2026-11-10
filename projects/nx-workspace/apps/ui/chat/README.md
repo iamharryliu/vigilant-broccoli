@@ -1,6 +1,6 @@
 # Chat
 
-Private live chat room for the owner's Cloudflare Access identities.
+Private live chat room for the owner, gated by Vercel Authentication.
 
 ## Table of Contents
 
@@ -13,7 +13,6 @@ Private live chat room for the owner's Cloudflare Access identities.
 - Framework - Next.js
 - Build Tool - Next.js
 - External libs
-  - `jose`
   - Socket.IO
   - Tailwind CSS
 - Internal libs
@@ -22,9 +21,8 @@ Private live chat room for the owner's Cloudflare Access identities.
   - `react-lib`
   - `react-lib-higher-level`
 - Cloud services
-  - Cloudflare Access
   - Socket Server - called over HTTP and Socket.IO
-  - Vercel
+  - Vercel - Vercel Authentication
 
 ## Environment
 
