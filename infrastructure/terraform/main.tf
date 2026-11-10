@@ -335,13 +335,6 @@ resource "google_secret_manager_secret_iam_member" "github_actions_secret_access
   member    = "serviceAccount:${google_service_account.github_actions.email}"
 }
 
-# test-smoke-gcp-secret-manager.yml's daily canary for Secret Manager access.
-resource "google_secret_manager_secret_iam_member" "github_actions_secret_accessor_test_secret" {
-  secret_id = "TEST_SECRET"
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.github_actions.email}"
-}
-
 resource "google_project_iam_member" "vm_default_sa_secret_accessor" {
   project = data.google_project.project.project_id
   role    = "roles/secretmanager.secretAccessor"

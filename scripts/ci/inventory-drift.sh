@@ -47,8 +47,6 @@ while IFS= read -r name; do
       *) [ "$name" = "$entry" ] && covered=true ;;
     esac
   done <<<"$INVENTORY_NAMES"
-  # TEST_SECRET only backs the GCP Secret Manager smoke workflow.
-  [ "$name" = TEST_SECRET ] && covered=true
   $covered || report MISSING_SECRET "$name"
 done <<<"$REFERENCED_NAMES"
 
