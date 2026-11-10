@@ -1,6 +1,5 @@
-import { ChatRoom } from './components/ChatRoom';
+import { ChatPage } from './components/ChatPage';
 
-// The root layout's default title ("Room | Chat") names this page.
 export default function HomePage() {
-  return <ChatRoom />;
+  return <ChatPage />;
 }

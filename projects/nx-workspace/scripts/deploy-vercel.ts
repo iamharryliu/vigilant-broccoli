@@ -11,8 +11,6 @@ const DEMO = 'demo';
 const ENVIRONMENTS = [STAGING, PRODUCTION, DEMO];
 const VERCEL_ENV = PRODUCTION;
 
-const SOCKET_SERVER_URL = 'https://socket.harryliu.dev';
-
 const VERCEL_ROOT_DIRECTORY = 'projects/nx-workspace';
 const VERCEL_DIR = '.vercel';
 const VERCEL_OUTPUT_DIR = `${VERCEL_DIR}/output`;
@@ -395,11 +393,7 @@ async function main() {
       ),
     },
     chat: {
-      hardcodedSecrets: {
-        SOCKET_SERVER_URL,
-        NEXT_PUBLIC_SOCKET_SERVER_URL: SOCKET_SERVER_URL,
-        NEXT_PUBLIC_CHAT_ROOM: environment,
-      },
+      hardcodedSecrets: {},
       envExamplePath: 'apps/ui/chat/.env.example',
       privateApp: true,
       settings: NX_VERCEL_SETTINGS('chat', 'dist/apps/ui/chat/.next'),
