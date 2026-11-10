@@ -20,10 +20,10 @@ import type {
   SetMessages,
 } from '../components/chatbot/chatbot.types';
 import {
-  buildEventDraftMessages,
   patchLastMessage,
   patchMessageAt,
-} from '../utils/chat-messages.utils';
+} from '@vigilant-broccoli/react-lib-higher-level';
+import { buildEventDraftMessages } from '../utils/chat-messages.utils';
 
 export const useCalendarDrafts = (setMessages: SetMessages) => {
   const parseEvent = async (text: string, images: MessageImage[]) => {

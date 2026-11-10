@@ -7,20 +7,15 @@ import type {
   TaskListDraftStatus,
 } from '../task-list-draft-card.component';
 
-export interface MessageImage {
-  data: string;
-  mimeType: string;
-}
+import type {
+  ChatbotImage,
+  ChatbotMessage,
+  SetChatbotMessages,
+} from '@vigilant-broccoli/react-lib-higher-level';
 
-export interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-  isStreaming?: boolean;
-  // Set on assistant messages produced by the chat model, the only ones that
-  // can be regenerated; command results and drafts are not chat replies.
-  isChatReply?: boolean;
-  displayContent?: string;
-  images?: MessageImage[];
+export type MessageImage = ChatbotImage;
+
+export interface Message extends ChatbotMessage {
   eventDraft?: EventDraft;
   eventStatus?: EventDraftStatus;
   eventError?: string;
@@ -31,7 +26,7 @@ export interface Message {
   taskCreatedSummary?: string;
 }
 
-export type SetMessages = React.Dispatch<React.SetStateAction<Message[]>>;
+export type SetMessages = SetChatbotMessages<Message>;
 
 export interface ChatCommand {
   name: string;

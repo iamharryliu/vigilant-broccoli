@@ -1,14 +1,42 @@
+import { LLM_MODEL, type LLMModel } from '@vigilant-broccoli/common-js';
+
 export const APP_NAME = 'Chat';
-export const APP_DESCRIPTION = 'A private chat room.';
-export const PAGE_TITLE = { HOME: 'Room' } as const;
+export const APP_DESCRIPTION = 'A private chatbot.';
+export const PAGE_TITLE = { HOME: 'Chatbot' } as const;
 
-// Not shared with local-manager-next's `chat-demo` app, which guests can
-// publish to with room tokens.
-export const CHAT_APP = 'chat';
-// Staging and production share one socket server, so each environment gets
-// its own room. Direct access so Next.js inlines it into the client bundle.
-export const CHAT_ROOM = process.env.NEXT_PUBLIC_CHAT_ROOM || 'local';
-export const MAX_MESSAGE_LENGTH = 2000;
-export const MAX_SENDER_LENGTH = 64;
+export const API_ROUTE = { CHAT: '/api/chat' } as const;
 
-export const API_ROUTE = { PUBLISH: '/api/publish' } as const;
+// Model eligibility supplied from the account's complimentary-token allowance;
+// mirrors local-manager-next's chatbot.
+export const CHAT_MODELS: LLMModel[] = [
+  LLM_MODEL.GPT_5_4,
+  LLM_MODEL.GPT_5_2,
+  LLM_MODEL.GPT_5_1,
+  LLM_MODEL.GPT_5,
+  LLM_MODEL.GPT_4_1,
+  LLM_MODEL.GPT_4O,
+  LLM_MODEL.O1,
+  LLM_MODEL.O3,
+  LLM_MODEL.GPT_5_4_MINI,
+  LLM_MODEL.GPT_5_4_NANO,
+  LLM_MODEL.GPT_5_MINI,
+  LLM_MODEL.GPT_5_NANO,
+  LLM_MODEL.GPT_4_1_MINI,
+  LLM_MODEL.GPT_4_1_NANO,
+  LLM_MODEL.GPT_4O_MINI,
+  LLM_MODEL.O3_MINI,
+  LLM_MODEL.O4_MINI,
+];
+export const DEFAULT_CHAT_MODEL = LLM_MODEL.GPT_4O_MINI;
+
+export const STORAGE_KEY = {
+  CHATS: 'chat-chats',
+  CURRENT_CHAT: 'chat-current',
+  SIDEBAR_OPEN: 'chat-sidebar-open',
+  MODEL: 'chat-model',
+  USE_KNOWLEDGE_BASE: 'chat-use-knowledge-base',
+} as const;
+
+export const KEY = {
+  ENTER: 'Enter',
+} as const;

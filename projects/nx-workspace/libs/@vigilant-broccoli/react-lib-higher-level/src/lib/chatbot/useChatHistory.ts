@@ -1,19 +1,22 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import type { Message } from '../components/chatbot/chatbot.types';
+import type { ChatbotMessage } from './chatbot.types';
 
-export interface Chat {
+export interface Chat<M extends ChatbotMessage = ChatbotMessage> {
   id: string;
   title: string;
-  messages: Message[];
+  messages: M[];
   updatedAt: number;
   createdAt: number;
   pinned?: boolean;
 }
 
-const STORAGE_KEY_CHATS = 'vb-manager-chats';
-const STORAGE_KEY_CURRENT = 'vb-manager-chat-current';
+export interface ChatHistoryStorageKeys {
+  chats: string;
+  currentChat: string;
+}
+
 const MAX_CHATS = 50;
 const MAX_TITLE_LENGTH = 60;
 const NEW_CHAT_TITLE = 'New chat';
@@ -21,46 +24,21 @@ const SAVE_DEBOUNCE_MS = 400;
 
 const generateId = () => `${Date.now()}-${crypto.randomUUID().slice(0, 8)}`;
 
-const stripDisplayContent = (msg: Message): string =>
-  (msg.displayContent || msg.content || '').trim();
-
-const deriveTitle = (messages: Message[]): string => {
+const deriveTitle = (messages: ChatbotMessage[]): string => {
   const firstUser = messages.find(m => m.role === 'user');
   if (!firstUser) return NEW_CHAT_TITLE;
-  const text = stripDisplayContent(firstUser);
+  const text = (firstUser.displayContent || firstUser.content || '').trim();
   if (!text) return NEW_CHAT_TITLE;
   return text.length > MAX_TITLE_LENGTH
     ? `${text.slice(0, MAX_TITLE_LENGTH)}...`
     : text;
 };
 
-const loadChats = (): Chat[] => {
-  try {
-    const parsed = JSON.parse(
-      localStorage.getItem(STORAGE_KEY_CHATS) ?? '[]',
-    ) as Chat[];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-};
-
-const loadCurrentId = (): string | null =>
-  localStorage.getItem(STORAGE_KEY_CURRENT);
-
-const saveChats = (chats: Chat[]) =>
-  localStorage.setItem(STORAGE_KEY_CHATS, JSON.stringify(chats));
-
-const saveCurrentId = (id: string | null) =>
-  id
-    ? localStorage.setItem(STORAGE_KEY_CURRENT, id)
-    : localStorage.removeItem(STORAGE_KEY_CURRENT);
-
-const sortByUpdated = (chats: Chat[]): Chat[] =>
+const sortByUpdated = <C extends Chat>(chats: C[]): C[] =>
   [...chats].sort((a, b) => b.updatedAt - a.updatedAt);
 
 // Drops the oldest unpinned chats first so pinning protects against the cap.
-const capChats = (chats: Chat[]): Chat[] => {
+const capChats = <C extends Chat>(chats: C[]): C[] => {
   let excess = chats.length - MAX_CHATS;
   if (excess <= 0) return chats;
   const dropped = new Set<string>();
@@ -73,35 +51,49 @@ const capChats = (chats: Chat[]): Chat[] => {
   return chats.filter(c => !dropped.has(c.id));
 };
 
-const countUserMessages = (messages: Message[]): number =>
+const countUserMessages = (messages: ChatbotMessage[]): number =>
   messages.reduce((count, m) => (m.role === 'user' ? count + 1 : count), 0);
 
-export interface UseChatHistoryResult {
-  chats: Chat[];
+export interface UseChatHistoryResult<M extends ChatbotMessage> {
+  chats: Chat<M>[];
   currentChatId: string | null;
-  currentMessages: Message[];
+  currentMessages: M[];
   sessionKey: string;
   selectChat: (id: string) => void;
   newChat: () => void;
   deleteChat: (id: string) => void;
   renameChat: (id: string, title: string) => void;
   togglePinChat: (id: string) => void;
-  updateCurrentMessages: (messages: Message[]) => void;
+  updateCurrentMessages: (messages: M[]) => void;
   isHydrated: boolean;
 }
 
-export function useChatHistory(): UseChatHistoryResult {
-  const [chats, setChats] = useState<Chat[]>([]);
+// Chats live in browser local storage under the caller's keys, so each app
+// keeps its own history.
+export function useChatHistory<M extends ChatbotMessage>(
+  storageKeys: ChatHistoryStorageKeys,
+): UseChatHistoryResult<M> {
+  const [chats, setChats] = useState<Chat<M>[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [sessionKey, setSessionKey] = useState<string>(() => generateId());
   const [isHydrated, setIsHydrated] = useState(false);
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pendingChats = useRef<Chat[] | null>(null);
+  const pendingChats = useRef<Chat<M>[] | null>(null);
+  const keysRef = useRef(storageKeys);
 
   useEffect(() => {
-    const loaded = sortByUpdated(loadChats());
+    const { chats: chatsKey, currentChat } = keysRef.current;
+    let loaded: Chat<M>[] = [];
+    try {
+      const parsed = JSON.parse(
+        localStorage.getItem(chatsKey) ?? '[]',
+      ) as Chat<M>[];
+      loaded = Array.isArray(parsed) ? sortByUpdated(parsed) : [];
+    } catch {
+      // Unreadable history starts empty.
+    }
     setChats(loaded);
-    const savedCurrent = loadCurrentId();
+    const savedCurrent = localStorage.getItem(currentChat);
     const initialCurrent =
       savedCurrent && loaded.some(c => c.id === savedCurrent)
         ? savedCurrent
@@ -113,14 +105,18 @@ export function useChatHistory(): UseChatHistoryResult {
 
   useEffect(() => {
     if (!isHydrated) return;
-    saveCurrentId(activeChatId);
+    const { currentChat } = keysRef.current;
+    if (activeChatId) localStorage.setItem(currentChat, activeChatId);
+    else localStorage.removeItem(currentChat);
   }, [activeChatId, isHydrated]);
 
   useEffect(() => {
     if (!isHydrated) return;
+    const saveChats = () =>
+      localStorage.setItem(keysRef.current.chats, JSON.stringify(chats));
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
     pendingChats.current = chats;
-    saveTimeout.current = setTimeout(() => saveChats(chats), SAVE_DEBOUNCE_MS);
+    saveTimeout.current = setTimeout(saveChats, SAVE_DEBOUNCE_MS);
     return () => {
       if (saveTimeout.current) clearTimeout(saveTimeout.current);
     };
@@ -128,7 +124,12 @@ export function useChatHistory(): UseChatHistoryResult {
 
   useEffect(() => {
     return () => {
-      if (pendingChats.current) saveChats(pendingChats.current);
+      if (pendingChats.current) {
+        localStorage.setItem(
+          keysRef.current.chats,
+          JSON.stringify(pendingChats.current),
+        );
+      }
     };
   }, []);
 
@@ -168,7 +169,7 @@ export function useChatHistory(): UseChatHistoryResult {
   }, []);
 
   const updateCurrentMessages = useCallback(
-    (messages: Message[]) => {
+    (messages: M[]) => {
       if (!isHydrated) return;
 
       if (messages.length === 0) {
@@ -178,36 +179,30 @@ export function useChatHistory(): UseChatHistoryResult {
         return;
       }
 
-      if (activeChatId === null) {
-        const id = generateId();
+      const createChat = (id: string): Chat<M> => {
         const now = Date.now();
-        const chat: Chat = {
+        return {
           id,
           title: deriveTitle(messages),
           messages,
           updatedAt: now,
           createdAt: now,
         };
+      };
+
+      if (activeChatId === null) {
+        const chat = createChat(generateId());
         setChats(prev => capChats([chat, ...prev]));
-        setActiveChatId(id);
+        setActiveChatId(chat.id);
         return;
       }
 
       setChats(prev => {
         const existing = prev.find(c => c.id === activeChatId);
-        const now = Date.now();
-        if (!existing) {
-          const chat: Chat = {
-            id: activeChatId,
-            title: deriveTitle(messages),
-            messages,
-            updatedAt: now,
-            createdAt: now,
-          };
-          return capChats([chat, ...prev]);
-        }
+        if (!existing) return capChats([createChat(activeChatId), ...prev]);
         const userCountChanged =
           countUserMessages(messages) !== countUserMessages(existing.messages);
+        const now = Date.now();
         const next = prev.map(c =>
           c.id === activeChatId
             ? {
@@ -230,12 +225,11 @@ export function useChatHistory(): UseChatHistoryResult {
   const currentChat = activeChatId
     ? chats.find(c => c.id === activeChatId)
     : null;
-  const currentMessages = currentChat ? currentChat.messages : [];
 
   return {
     chats,
     currentChatId: activeChatId,
-    currentMessages,
+    currentMessages: currentChat ? currentChat.messages : [],
     sessionKey,
     selectChat,
     newChat,

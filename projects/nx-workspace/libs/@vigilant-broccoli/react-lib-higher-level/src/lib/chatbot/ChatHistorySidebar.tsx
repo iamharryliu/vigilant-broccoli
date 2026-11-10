@@ -1,14 +1,14 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   ArrowLeft,
   Pencil,
   Pin,
   PinOff,
-  SquarePen,
   Search,
   Settings,
+  SquarePen,
   Trash,
 } from 'lucide-react';
 import {
@@ -17,27 +17,22 @@ import {
   IconButton,
   Input,
   ScrollArea,
-  Select,
-  Switch,
   Text,
 } from '@vigilant-broccoli/react-lib';
-import type { LLMModel } from '@vigilant-broccoli/common-js';
-import { CHAT_MODELS } from '../constants/chatbot.consts';
-import type { Chat } from '../hooks/useChatHistory';
-import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
+import type { ChatbotMessage } from './chatbot.types';
+import type { Chat } from './useChatHistory';
+import { ConfirmDeleteDialog } from './ConfirmDeleteDialog';
 
-interface ChatHistorySidebarProps {
-  chats: Chat[];
+export interface ChatHistorySidebarProps {
+  chats: Chat<ChatbotMessage>[];
   currentChatId: string | null;
   onSelectChat: (id: string) => void;
   onNewChat: () => void;
   onDeleteChat: (id: string) => void;
   onRenameChat: (id: string, title: string) => void;
   onTogglePinChat: (id: string) => void;
-  selectedModel: LLMModel;
-  onModelChange: (model: LLMModel) => void;
-  useKnowledgeBase: boolean;
-  onUseKnowledgeBaseChange: (value: boolean) => void;
+  // The controls shown in the Chat settings view, e.g. model and toggles.
+  settings: ReactNode;
 }
 
 const EMPTY_HISTORY_LABEL = 'No previous chats';
@@ -47,20 +42,13 @@ const NEW_CHAT_LABEL = 'New chat';
 const CHAT_SETTINGS_LABEL = 'Chat settings';
 const BACK_TO_CHATS_LABEL = 'Back to chats';
 const RECENTS_LABEL = 'Recents';
-const MODEL_LABEL = 'Model';
-const KNOWLEDGE_BASE_LABEL = 'Knowledge base';
 const CHAT_OPTIONS_LABEL = 'Chat options';
-const RENAME_LABEL = 'Rename';
-const PIN_LABEL = 'Pin';
-const UNPIN_LABEL = 'Unpin';
-const DELETE_LABEL = 'Delete';
 const DELETE_CHAT_TITLE = 'Delete Chat';
 const DELETE_CHAT_WARNING =
   'Chats are stored only in this browser, so this cannot be undone.';
 const MENU_ICON_SIZE = 14;
-const KEY_ESCAPE = 'Escape';
-
 const KEY_ENTER = 'Enter';
+const KEY_ESCAPE = 'Escape';
 const KEY_SPACE = ' ';
 
 const TIME_FORMAT: Intl.DateTimeFormatOptions = {
@@ -119,24 +107,11 @@ const ChatRow = ({
           onSelect();
         }
       }}
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem',
-        padding: '0.5rem 0.625rem',
-        borderRadius: '0.5rem',
-        cursor: 'pointer',
-        backgroundColor: isActive ? 'var(--accent-3)' : 'transparent',
-        transition: 'background-color 0.15s ease',
-      }}
-      onMouseEnter={e => {
-        if (!isActive) e.currentTarget.style.backgroundColor = 'var(--gray-3)';
-      }}
-      onMouseLeave={e => {
-        if (!isActive) e.currentTarget.style.backgroundColor = 'transparent';
-      }}
+      className={`flex cursor-pointer items-center gap-2 rounded-lg px-2.5 py-2 transition-colors ${
+        isActive ? 'bg-accent' : 'hover:bg-muted'
+      }`}
     >
-      <div className="flex flex-col" style={{ flex: 1, minWidth: 0 }}>
+      <div className="flex min-w-0 flex-1 flex-col">
         {isRenaming ? (
           <Input
             autoFocus
@@ -154,13 +129,9 @@ const ChatRow = ({
           <Text
             size="2"
             weight={isActive ? 'medium' : 'regular'}
-            style={{
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-            }}
+            className="truncate"
           >
-            {chat.pinned && <Pin size={12} className="inline mr-1" />}
+            {chat.pinned && <Pin size={12} className="mr-1 inline" />}
             {chat.title}
           </Text>
         )}
@@ -189,7 +160,7 @@ const ChatRow = ({
             }}
           >
             <Pencil size={MENU_ICON_SIZE} />
-            {RENAME_LABEL}
+            Rename
           </DropdownMenu.Item>
           <DropdownMenu.Item onSelect={onTogglePin}>
             {chat.pinned ? (
@@ -197,24 +168,18 @@ const ChatRow = ({
             ) : (
               <Pin size={MENU_ICON_SIZE} />
             )}
-            {chat.pinned ? UNPIN_LABEL : PIN_LABEL}
+            {chat.pinned ? 'Unpin' : 'Pin'}
           </DropdownMenu.Item>
           <DropdownMenu.Separator />
           <DropdownMenu.Item color="red" onSelect={onDelete}>
             <Trash size={MENU_ICON_SIZE} />
-            {DELETE_LABEL}
+            Delete
           </DropdownMenu.Item>
         </DropdownMenu.Content>
       </DropdownMenu.Root>
     </div>
   );
 };
-
-const formatModelLabel = (model: string) =>
-  model
-    .split('-')
-    .map(part => part.toUpperCase())
-    .join(' ');
 
 const matchesQuery = (chat: Chat, query: string): boolean =>
   chat.title.toLowerCase().includes(query) ||
@@ -236,10 +201,7 @@ export const ChatHistorySidebar = ({
   onDeleteChat,
   onRenameChat,
   onTogglePinChat,
-  selectedModel,
-  onModelChange,
-  useKnowledgeBase,
-  onUseKnowledgeBaseChange,
+  settings,
 }: ChatHistorySidebarProps) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -250,21 +212,9 @@ export const ChatHistorySidebar = ({
   );
 
   return (
-    <div
-      className="flex flex-col"
-      style={{
-        width: '16rem',
-        flexShrink: 0,
-        height: '100%',
-        borderRight: '1px solid var(--gray-5)',
-        backgroundColor: 'var(--color-panel-solid)',
-      }}
-    >
+    <div className="flex h-full w-64 shrink-0 flex-col border-r border-border bg-background">
       {isSettingsOpen ? (
-        <div
-          className="flex flex-col gap-4"
-          style={{ padding: '1rem 0.75rem' }}
-        >
+        <div className="flex flex-col gap-4 px-3 py-4">
           <Button
             onClick={() => setIsSettingsOpen(false)}
             variant="ghost"
@@ -273,33 +223,15 @@ export const ChatHistorySidebar = ({
             <ArrowLeft size={16} />
             {BACK_TO_CHATS_LABEL}
           </Button>
-          <div className="flex flex-col gap-1.5">
-            <Text size="1" color="gray">
-              {MODEL_LABEL}
-            </Text>
-            <Select
-              value={selectedModel}
-              onValueChange={value => onModelChange(value as LLMModel)}
-              options={CHAT_MODELS}
-              triggerClassName="w-full"
-              renderItem={formatModelLabel}
-            />
-          </div>
-          <label className="flex items-center justify-between gap-2">
-            <Text size="2">{KNOWLEDGE_BASE_LABEL}</Text>
-            <Switch
-              checked={useKnowledgeBase}
-              onCheckedChange={onUseKnowledgeBaseChange}
-            />
-          </label>
+          {settings}
         </div>
       ) : (
         <>
-          <div style={{ padding: '1rem 0.75rem 0.5rem 0.75rem' }}>
+          <div className="px-3 pb-2 pt-4">
             <div className="relative">
               <Search
                 size={14}
-                className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none"
+                className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
               />
               <Input
                 value={query}
@@ -313,10 +245,7 @@ export const ChatHistorySidebar = ({
               />
             </div>
           </div>
-          <div
-            className="flex flex-col gap-1"
-            style={{ padding: '0 0.75rem 0.5rem 0.75rem' }}
-          >
+          <div className="flex flex-col gap-1 px-3 pb-2">
             <Button
               onClick={onNewChat}
               variant="ghost"
@@ -338,21 +267,14 @@ export const ChatHistorySidebar = ({
             size="1"
             color="gray"
             weight="medium"
-            style={{ padding: '0.5rem 1.25rem 0.25rem 1.25rem' }}
+            className="px-5 pb-1 pt-2"
           >
             {RECENTS_LABEL}
           </Text>
-          <ScrollArea className="flex-1 min-h-0 [&_[data-radix-scroll-area-viewport]>div]:!block">
-            <div
-              className="flex flex-col gap-1"
-              style={{ padding: '0.25rem 0.5rem 0.75rem 0.5rem' }}
-            >
+          <ScrollArea className="min-h-0 flex-1 [&_[data-radix-scroll-area-viewport]>div]:!block">
+            <div className="flex flex-col gap-1 px-2 pb-3 pt-1">
               {visibleChats.length === 0 ? (
-                <Text
-                  size="1"
-                  color="gray"
-                  style={{ padding: '0.5rem 0.625rem' }}
-                >
+                <Text size="1" color="gray" className="px-2.5 py-2">
                   {chats.length === 0 ? EMPTY_HISTORY_LABEL : NO_MATCHES_LABEL}
                 </Text>
               ) : (

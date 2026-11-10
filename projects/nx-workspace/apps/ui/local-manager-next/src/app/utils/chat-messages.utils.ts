@@ -1,9 +1,6 @@
-import {
-  CALENDAR_DRAFT_MARKER,
-  MAX_MESSAGES,
-} from '../constants/chatbot.consts';
+import { CALENDAR_DRAFT_MARKER } from '../constants/chatbot.consts';
 import type { EventDraft } from '../components/event-draft-card.component';
-import type { Message, SetMessages } from '../components/chatbot/chatbot.types';
+import type { Message } from '../components/chatbot/chatbot.types';
 
 const LINK_PATTERN = /https?:\/\/\S+/i;
 const CALENDAR_WORDS_PATTERN =
@@ -43,19 +40,6 @@ export const findRecentLink = (
   return null;
 };
 
-export const compactConversation = (messages: Message[]): Message[] => {
-  if (messages.length <= MAX_MESSAGES) return messages;
-
-  const summary: Message = {
-    role: 'assistant',
-    content: `[Previous conversation summarized: ${Math.floor(
-      messages.length / 2,
-    )} exchanges]`,
-  };
-
-  return [summary, ...messages.slice(-MAX_MESSAGES + 1)];
-};
-
 const serializeEventDraft = (event: EventDraft): string => {
   const parts = [
     `Title: ${event.summary}`,
@@ -86,36 +70,6 @@ export const buildEventDraftMessages = (events: EventDraft[]): Message[] => {
     })),
   ];
 };
-
-// Updates return new message objects: mutating the previous state's objects
-// in place breaks memoized rows and double-applies under StrictMode.
-export const patchMessageAt = (
-  setMessages: SetMessages,
-  index: number,
-  patch: Partial<Message>,
-) =>
-  setMessages(prev =>
-    prev.map((message, i) =>
-      i === index ? { ...message, ...patch } : message,
-    ),
-  );
-
-export const patchLastMessage = (
-  setMessages: SetMessages,
-  patch: Partial<Message>,
-) =>
-  setMessages(prev =>
-    prev.length === 0
-      ? prev
-      : prev.map((message, i) =>
-          i === prev.length - 1 ? { ...message, ...patch } : message,
-        ),
-  );
-
-export const finalizeLastMessage = (
-  setMessages: SetMessages,
-  content: string,
-) => patchLastMessage(setMessages, { content, isStreaming: false });
 
 export const isCommandMessage = (message: Message): boolean =>
   message.displayContent !== undefined;

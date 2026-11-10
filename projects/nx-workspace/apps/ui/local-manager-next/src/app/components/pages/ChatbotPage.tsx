@@ -3,11 +3,20 @@
 import { useEffect, useState } from 'react';
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Button } from '@vigilant-broccoli/react-lib';
+import {
+  ChatHistorySidebar,
+  useChatHistory,
+} from '@vigilant-broccoli/react-lib-higher-level';
 import { ChatbotPanel } from '../chatbot/chatbot-panel.component';
-import { ChatHistorySidebar } from '../chat-history-sidebar.component';
+import { ChatSettings } from '../chatbot/chat-settings.component';
+import type { Message } from '../chatbot/chatbot.types';
 import { useChatSuggestions } from '../../hooks/useChatSuggestions';
-import { useChatHistory } from '../../hooks/useChatHistory';
 import { useChatSettings } from '../../hooks/useChatSettings';
+
+const HISTORY_STORAGE_KEYS = {
+  chats: 'vb-manager-chats',
+  currentChat: 'vb-manager-chat-current',
+};
 
 const STORAGE_KEY_SIDEBAR_OPEN = 'vb-manager-chat-sidebar-open';
 const HIDE_SIDEBAR_LABEL = 'Hide chat history';
@@ -37,7 +46,7 @@ export function ChatbotPage() {
     togglePinChat,
     updateCurrentMessages,
     isHydrated,
-  } = useChatHistory();
+  } = useChatHistory<Message>(HISTORY_STORAGE_KEYS);
 
   useEffect(() => {
     try {
@@ -84,10 +93,14 @@ export function ChatbotPage() {
           onDeleteChat={deleteChat}
           onRenameChat={renameChat}
           onTogglePinChat={togglePinChat}
-          selectedModel={selectedModel}
-          onModelChange={setSelectedModel}
-          useKnowledgeBase={useKnowledgeBase}
-          onUseKnowledgeBaseChange={setUseKnowledgeBase}
+          settings={
+            <ChatSettings
+              selectedModel={selectedModel}
+              onModelChange={setSelectedModel}
+              useKnowledgeBase={useKnowledgeBase}
+              onUseKnowledgeBaseChange={setUseKnowledgeBase}
+            />
+          }
         />
       </div>
       <div

@@ -55,10 +55,6 @@ export const COMMAND_DESCRIPTION = {
 
 export const HELP_HEADING = '**Available commands**';
 
-export const MAX_MESSAGES = 20;
-export const STREAM_UPDATE_INTERVAL_MS = 50;
-
-export const CHAT_ERROR_MESSAGE = 'Error: Failed to get response';
 export const TASKS_PARSING_MESSAGE = 'Parsing tasks...';
 export const TASKS_PARSE_ERROR_MESSAGE = 'Failed to parse tasks';
 export const TASKS_CREATE_ERROR_MESSAGE = 'Failed to create tasks';
