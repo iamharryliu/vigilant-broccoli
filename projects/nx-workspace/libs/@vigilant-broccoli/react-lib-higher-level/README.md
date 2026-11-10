@@ -1,6 +1,6 @@
 # React Lib Higher Level
 
-Composed React components built on `react-lib`: CRUD list management, leaderboards, docs explorer, tasks, quick links and the chat room.
+Composed React components built on `react-lib`: CRUD list management, leaderboards, docs explorer, tasks, quick links, the chat room and the chatbot.
 
 ## Table of Contents
 

@@ -29,10 +29,6 @@ export const CHAT_MODELS: LLMModel[] = [
 ];
 export const DEFAULT_CHAT_MODEL = LLM_MODEL.GPT_4O_MINI;
 
-export const MAX_MESSAGES = 20;
-export const STREAM_UPDATE_INTERVAL_MS = 50;
-export const CHAT_ERROR_MESSAGE = 'Error: Failed to get response';
-
 export const STORAGE_KEY = {
   CHATS: 'chat-chats',
   CURRENT_CHAT: 'chat-current',
@@ -43,6 +39,4 @@ export const STORAGE_KEY = {
 
 export const KEY = {
   ENTER: 'Enter',
-  ESCAPE: 'Escape',
-  SPACE: ' ',
 } as const;

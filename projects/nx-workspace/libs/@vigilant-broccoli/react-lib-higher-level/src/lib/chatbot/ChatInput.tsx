@@ -1,4 +1,5 @@
 'use client';
+import type { ReactNode } from 'react';
 import { Trash2 } from 'lucide-react';
 import {
   Button,
@@ -7,15 +8,15 @@ import {
   Text,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
-import type { MessageImage } from '../chat.types';
+import type { ChatbotImage } from './chatbot.types';
 
-const PLACEHOLDER = 'Type your message...';
+const DEFAULT_PLACEHOLDER = 'Type your message...';
 
 const ImagePreviewList = ({
   images,
   onRemove,
 }: {
-  images: MessageImage[];
+  images: ChatbotImage[];
   onRemove: (index: number) => void;
 }) => (
   <div className="flex flex-wrap items-center gap-2">
@@ -40,7 +41,30 @@ const ImagePreviewList = ({
   </div>
 );
 
-export const InputArea = ({
+export interface ChatInputAreaProps {
+  uploadedImages: ChatbotImage[];
+  input: string;
+  isStreaming: boolean;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+  textInputRef: React.RefObject<HTMLTextAreaElement | null>;
+  onImageRemove: (index: number) => void;
+  onImageUpload: (files: FileList | null) => void;
+  onInputChange: (value: string) => void;
+  onKeyDown: (e: React.KeyboardEvent) => void;
+  onSend: () => void;
+  onStop: () => void;
+  placeholder?: string;
+  isInputDisabled?: boolean;
+  isUploadDisabled?: boolean;
+  // Rendered above the image previews, e.g. suggestions or a command menu.
+  aboveInput?: ReactNode;
+  // Rendered before the text box, e.g. a microphone toggle.
+  leadingControls?: ReactNode;
+  // Rendered below the controls, e.g. a hint or an error.
+  footer?: ReactNode;
+}
+
+export const ChatInputArea = ({
   uploadedImages,
   input,
   isStreaming,
@@ -52,20 +76,15 @@ export const InputArea = ({
   onKeyDown,
   onSend,
   onStop,
-}: {
-  uploadedImages: MessageImage[];
-  input: string;
-  isStreaming: boolean;
-  fileInputRef: React.RefObject<HTMLInputElement | null>;
-  textInputRef: React.RefObject<HTMLTextAreaElement | null>;
-  onImageRemove: (index: number) => void;
-  onImageUpload: (files: FileList | null) => void;
-  onInputChange: (value: string) => void;
-  onKeyDown: (e: React.KeyboardEvent) => void;
-  onSend: () => void;
-  onStop: () => void;
-}) => (
+  placeholder = DEFAULT_PLACEHOLDER,
+  isInputDisabled = false,
+  isUploadDisabled = isStreaming,
+  aboveInput,
+  leadingControls,
+  footer,
+}: ChatInputAreaProps) => (
   <div className="flex shrink-0 flex-col gap-2">
+    {aboveInput}
     {uploadedImages.length > 0 && (
       <ImagePreviewList images={uploadedImages} onRemove={onImageRemove} />
     )}
@@ -82,15 +101,17 @@ export const InputArea = ({
         icon="image"
         variant="ghost"
         onClick={() => fileInputRef.current?.click()}
-        disabled={isStreaming}
+        disabled={isUploadDisabled}
         aria-label="Upload image"
       />
+      {leadingControls}
       <Textarea
         ref={textInputRef}
-        placeholder={PLACEHOLDER}
+        placeholder={placeholder}
         value={input}
         onChange={e => onInputChange(e.target.value)}
         onKeyDown={onKeyDown}
+        disabled={isInputDisabled}
         rows={1}
         className="max-h-48 min-h-[2.25rem] flex-1"
       />
@@ -102,8 +123,12 @@ export const InputArea = ({
         onStop={onStop}
       />
     </div>
-    <Text size="1" color="gray">
-      Enter to send, Shift+Enter for a new line.
-    </Text>
+    {footer}
   </div>
+);
+
+export const ChatInputHint = ({ children }: { children: ReactNode }) => (
+  <Text size="1" color="gray">
+    {children}
+  </Text>
 );

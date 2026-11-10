@@ -21,7 +21,10 @@ import type {
   SetMessages,
   TasksCreateParams,
 } from '../components/chatbot/chatbot.types';
-import { patchLastMessage, patchMessageAt } from '../utils/chat-messages.utils';
+import {
+  patchLastMessage,
+  patchMessageAt,
+} from '@vigilant-broccoli/react-lib-higher-level';
 
 const pluralizeTasks = (count: number) => `task${count === 1 ? '' : 's'}`;
 

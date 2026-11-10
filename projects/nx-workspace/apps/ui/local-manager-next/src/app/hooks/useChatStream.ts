@@ -1,19 +1,19 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback } from 'react';
 import {
   HTTP_HEADERS,
   HTTP_METHOD,
   type LLMModel,
 } from '@vigilant-broccoli/common-js';
 import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
-import { authFetch } from '../../../libs/auth';
 import {
-  CHAT_API_PATH,
-  CHAT_ERROR_MESSAGE,
-  CHAT_RESPONSE_TYPE,
-  STREAM_UPDATE_INTERVAL_MS,
-} from '../constants/chatbot.consts';
+  compactConversation,
+  finalizeLastMessage,
+  useChatStream as useBaseChatStream,
+} from '@vigilant-broccoli/react-lib-higher-level';
+import { authFetch } from '../../../libs/auth';
+import { CHAT_API_PATH, CHAT_RESPONSE_TYPE } from '../constants/chatbot.consts';
 import type { EventDraft } from '../components/event-draft-card.component';
 import type {
   ChatSuggestion,
@@ -21,15 +21,7 @@ import type {
   SetMessages,
 } from '../components/chatbot/chatbot.types';
 import { PLANNING_DATA_ERROR } from '../utils/day-analysis-data';
-import {
-  buildEventDraftMessages,
-  compactConversation,
-  finalizeLastMessage,
-  patchLastMessage,
-} from '../utils/chat-messages.utils';
-
-const isAbortError = (err: unknown): boolean =>
-  err instanceof DOMException && err.name === 'AbortError';
+import { buildEventDraftMessages } from '../utils/chat-messages.utils';
 
 const STREAMING_REPLY: Message = {
   role: 'assistant',
@@ -53,125 +45,51 @@ export const useChatStream = ({
   speak: (text: string) => Promise<void>;
   stopSpeaking: () => void;
 }) => {
-  const [isStreaming, setIsStreaming] = useState(false);
-  const abortControllerRef = useRef<AbortController | null>(null);
-
-  useEffect(
-    () => () => {
-      abortControllerRef.current?.abort();
-      stopSpeaking();
+  // The calendar intent path answers with a JSON tool call instead of a stream.
+  const handleToolCallResponse = useCallback(
+    async (response: Response) => {
+      const contentType = response.headers.get('Content-Type') ?? '';
+      if (!contentType.includes('application/json')) return false;
+      const payload = await response.json();
+      if (payload.type !== CHAT_RESPONSE_TYPE.TOOL_CALL) return false;
+      const events: EventDraft[] = payload.events;
+      setMessages(prev => [
+        ...prev
+          .slice(0, -1)
+          .filter(m => !m.eventDraft || m.eventStatus !== 'draft'),
+        ...buildEventDraftMessages(events),
+      ]);
+      return true;
     },
-    [stopSpeaking],
+    [setMessages],
   );
 
-  const processStreamResponse = async (
-    responseBody: ReadableStream<Uint8Array>,
-  ) => {
-    const reader = responseBody.getReader();
-    const decoder = new TextDecoder();
-    let accumulatedContent = '';
-    let lastUpdate = Date.now();
-    let aborted = false;
-
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        accumulatedContent += decoder.decode(value, { stream: true });
-
-        const now = Date.now();
-        if (now - lastUpdate > STREAM_UPDATE_INTERVAL_MS) {
-          patchLastMessage(setMessages, { content: accumulatedContent });
-          lastUpdate = now;
-        }
-      }
-    } catch (err) {
-      if (!isAbortError(err)) throw err;
-      aborted = true;
-    }
-
-    finalizeLastMessage(setMessages, accumulatedContent);
-    setIsStreaming(false);
-    if (!aborted) await speak(accumulatedContent);
-  };
-
-  const handleToolCallResponse = (events: EventDraft[]) => {
-    setMessages(prev => [
-      ...prev
-        .slice(0, -1)
-        .filter(m => !m.eventDraft || m.eventStatus !== 'draft'),
-      ...buildEventDraftMessages(events),
-    ]);
-    setIsStreaming(false);
-  };
-
-  const failStream = () => {
-    patchLastMessage(setMessages, {
-      content: CHAT_ERROR_MESSAGE,
-      isStreaming: false,
-    });
-    setIsStreaming(false);
-  };
-
-  const sendChatRequest = async (history: Message[]) => {
-    try {
-      const response = await authFetch(CHAT_API_PATH, {
-        method: HTTP_METHOD.POST,
-        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
-        body: JSON.stringify({
-          messages: history,
-          systemPrompt,
-          model: selectedModel,
-          timeZone: getLocalTimeZone(),
-          useKnowledgeBase,
+  const { isStreaming, runChat, stopStreaming, beginRun, sendRequest, endRun } =
+    useBaseChatStream<Message>({
+      setMessages,
+      request: (history, signal) =>
+        authFetch(CHAT_API_PATH, {
+          method: HTTP_METHOD.POST,
+          headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
+          body: JSON.stringify({
+            messages: history,
+            systemPrompt,
+            model: selectedModel,
+            timeZone: getLocalTimeZone(),
+            useKnowledgeBase,
+          }),
+          signal,
         }),
-        signal: abortControllerRef.current?.signal,
-      });
-
-      if (!response.ok || !response.body) {
-        failStream();
-        return;
-      }
-
-      const contentType = response.headers.get('Content-Type') ?? '';
-      if (contentType.includes('application/json')) {
-        const payload = await response.json();
-        if (payload.type === CHAT_RESPONSE_TYPE.TOOL_CALL) {
-          handleToolCallResponse(payload.events);
-          return;
-        }
-      }
-
-      await processStreamResponse(response.body);
-    } catch (err) {
-      if (isAbortError(err)) {
-        setIsStreaming(false);
-        return;
-      }
-      failStream();
-    }
-  };
-
-  // `base` ends with the user message to answer; the reply streams in after it.
-  const runChat = async (base: Message[]) => {
-    setIsStreaming(true);
-    stopSpeaking();
-    abortControllerRef.current = new AbortController();
-
-    const history = compactConversation(base);
-    setMessages([...history, STREAMING_REPLY]);
-    await sendChatRequest(history);
-  };
+      onResponse: handleToolCallResponse,
+      onReplyComplete: speak,
+      onInterrupt: stopSpeaking,
+    });
 
   const runSuggestion = async (
     messages: Message[],
     suggestion: ChatSuggestion,
   ) => {
-    setIsStreaming(true);
-    stopSpeaking();
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
+    const controller = beginRun();
     const userMessage: Message = {
       role: 'user',
       content: suggestion.prompt || suggestion.title,
@@ -185,7 +103,7 @@ export const useChatStream = ({
       const promptToUse = result?.prompt || suggestion.prompt;
       if (!promptToUse) {
         setMessages(messages);
-        setIsStreaming(false);
+        endRun();
         return;
       }
       const history = compactConversation([
@@ -193,24 +111,13 @@ export const useChatStream = ({
         { ...userMessage, content: promptToUse },
       ]);
       setMessages([...history, STREAMING_REPLY]);
-      await sendChatRequest(history);
+      await sendRequest(history, controller.signal);
     } catch {
       if (controller.signal.aborted) return;
       finalizeLastMessage(setMessages, PLANNING_DATA_ERROR);
-      setIsStreaming(false);
+      endRun();
     }
   };
-
-  const stopStreaming = useCallback(() => {
-    abortControllerRef.current?.abort();
-    stopSpeaking();
-    setMessages(prev => {
-      const last = prev[prev.length - 1];
-      if (last?.role !== 'assistant' || !last.isStreaming) return prev;
-      return [...prev.slice(0, -1), { ...last, isStreaming: false }];
-    });
-    setIsStreaming(false);
-  }, [setMessages, stopSpeaking]);
 
   return { isStreaming, runChat, runSuggestion, stopStreaming };
 };

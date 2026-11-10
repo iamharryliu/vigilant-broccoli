@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Loader2 } from 'lucide-react';
 import {
   Button,
@@ -9,8 +9,8 @@ import {
   Text,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
-import { CHAT_ERROR_MESSAGE } from '../app.const';
-import type { Message } from '../chat.types';
+import { CHAT_ERROR_MESSAGE } from './chatbot.consts';
+import type { ChatbotMessage } from './chatbot.types';
 import { ChatMarkdown } from './ChatMarkdown';
 
 const TYPING_LABEL = 'Thinking';
@@ -24,11 +24,11 @@ const TypingIndicator = () => (
   </div>
 );
 
-const MessageContent = ({ message }: { message: Message }) => {
+const MessageContent = ({ message }: { message: ChatbotMessage }) => {
   if (message.role === 'user') {
     return (
       <Text size="2" className="whitespace-pre-wrap">
-        {message.content}
+        {message.displayContent || message.content}
       </Text>
     );
   }
@@ -39,7 +39,7 @@ const MessageContent = ({ message }: { message: Message }) => {
 const MessageImages = ({
   images,
 }: {
-  images: NonNullable<Message['images']>;
+  images: NonNullable<ChatbotMessage['images']>;
 }) => (
   <div className="mb-2 flex flex-wrap gap-2">
     {images.map((img, index) => (
@@ -90,7 +90,7 @@ const MessageActions = ({
   onRegenerate,
   onEdit,
 }: {
-  message: Message;
+  message: ChatbotMessage;
   canRegenerate: boolean;
   canEdit: boolean;
   onRegenerate: () => void;
@@ -119,31 +119,40 @@ const MessageActions = ({
   </div>
 );
 
-interface MessageRowProps {
-  message: Message;
+const hasPlainActions = (message: ChatbotMessage): boolean =>
+  !!message.content && !message.isStreaming;
+
+const isEditableByDefault = (message: ChatbotMessage): boolean =>
+  message.role === 'user';
+
+interface MessageRowProps<M extends ChatbotMessage> {
+  message: M;
   index: number;
-  isBusy: boolean;
   isEditing: boolean;
   canRegenerate: boolean;
+  canEdit: boolean;
+  showActions: boolean;
+  extras: ReactNode;
   onRegenerate: () => void;
   onEditStart: (messageIndex: number) => void;
   onEditCancel: () => void;
   onEditSave: (messageIndex: number, text: string) => void;
 }
 
-const MessageRow = ({
+const MessageRow = <M extends ChatbotMessage>({
   message,
   index,
-  isBusy,
   isEditing,
   canRegenerate,
+  canEdit,
+  showActions,
+  extras,
   onRegenerate,
   onEditStart,
   onEditCancel,
   onEditSave,
-}: MessageRowProps) => {
+}: MessageRowProps<M>) => {
   const isUser = message.role === 'user';
-  const showActions = !isEditing && !!message.content && !message.isStreaming;
 
   return (
     <div
@@ -166,13 +175,14 @@ const MessageRow = ({
             <MessageContent message={message} />
           </div>
         )}
+        {extras}
       </div>
-      {showActions && (
+      {!isEditing && showActions && (
         <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
           <MessageActions
             message={message}
             canRegenerate={canRegenerate}
-            canEdit={isUser && !isBusy}
+            canEdit={canEdit}
             onRegenerate={onRegenerate}
             onEdit={() => onEditStart(index)}
           />
@@ -182,7 +192,26 @@ const MessageRow = ({
   );
 };
 
-export const MessagesArea = ({
+export interface ChatMessagesAreaProps<M extends ChatbotMessage> {
+  messages: M[];
+  isStreaming: boolean;
+  isDragging: boolean;
+  scrollRef: React.RefObject<HTMLDivElement | null>;
+  onDragOver: (e: React.DragEvent) => void;
+  onDragLeave: (e: React.DragEvent) => void;
+  onDrop: (e: React.DragEvent) => void;
+  onRegenerate: () => void;
+  onEditSave: (messageIndex: number, text: string) => void;
+  // Rendered inside a message bubble, e.g. a draft card.
+  renderMessageExtras?: (message: M, index: number) => ReactNode;
+  // Defaults to any message with finished text, so cards with their own
+  // controls can opt out.
+  hasActions?: (message: M) => boolean;
+  // Defaults to user messages.
+  isEditable?: (message: M) => boolean;
+}
+
+export const ChatMessagesArea = <M extends ChatbotMessage>({
   messages,
   isStreaming,
   isDragging,
@@ -192,17 +221,10 @@ export const MessagesArea = ({
   onDrop,
   onRegenerate,
   onEditSave,
-}: {
-  messages: Message[];
-  isStreaming: boolean;
-  isDragging: boolean;
-  scrollRef: React.RefObject<HTMLDivElement | null>;
-  onDragOver: (e: React.DragEvent) => void;
-  onDragLeave: (e: React.DragEvent) => void;
-  onDrop: (e: React.DragEvent) => void;
-  onRegenerate: () => void;
-  onEditSave: (messageIndex: number, text: string) => void;
-}) => {
+  renderMessageExtras,
+  hasActions = hasPlainActions,
+  isEditable = isEditableByDefault,
+}: ChatMessagesAreaProps<M>) => {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const lastIndex = messages.length - 1;
 
@@ -229,11 +251,13 @@ export const MessagesArea = ({
               key={index}
               message={message}
               index={index}
-              isBusy={isStreaming}
               isEditing={editingIndex === index}
               canRegenerate={
                 index === lastIndex && !isStreaming && !!message.isChatReply
               }
+              canEdit={!isStreaming && isEditable(message)}
+              showActions={hasActions(message)}
+              extras={renderMessageExtras?.(message, index)}
               onRegenerate={onRegenerate}
               onEditStart={setEditingIndex}
               onEditCancel={() => setEditingIndex(null)}

@@ -31,3 +31,4 @@ export * from './lib/calendar-event/useCalendarEventBookmarklet';
 export { buildCalendarEventBookmarklet } from './lib/calendar-event/calendar-event-bookmarklet.utils';
 export * from './lib/SecurityNewsList';
 export * from './lib/WeatherEmbedCard';
+export * from './lib/chatbot';

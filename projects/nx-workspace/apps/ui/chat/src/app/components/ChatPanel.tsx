@@ -4,15 +4,21 @@ import {
   modelSupportsImageInput,
   type LLMModel,
 } from '@vigilant-broccoli/common-js';
-import { CHAT_MODELS, DEFAULT_CHAT_MODEL, KEY } from '../app.const';
-import type { Message, MessageImage } from '../chat.types';
-import { useChatStream } from '../hooks/useChatStream';
-import { InputArea } from './ChatInput';
-import { MessagesArea } from './ChatMessages';
+import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
+import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
+import {
+  ChatInputArea,
+  ChatInputHint,
+  ChatMessagesArea,
+  useChatStream,
+  type ChatbotImage,
+  type ChatbotMessage,
+} from '@vigilant-broccoli/react-lib-higher-level';
+import { API_ROUTE, CHAT_MODELS, DEFAULT_CHAT_MODEL, KEY } from '../app.const';
 
 interface ChatPanelProps {
-  initialMessages: Message[];
-  onMessagesChange: (messages: Message[]) => void;
+  initialMessages: ChatbotMessage[];
+  onMessagesChange: (messages: ChatbotMessage[]) => void;
   selectedModel: LLMModel;
   onModelChange: (model: LLMModel) => void;
   useKnowledgeBase: boolean;
@@ -33,9 +39,9 @@ export const ChatPanel = ({
   onModelChange,
   useKnowledgeBase,
 }: ChatPanelProps) => {
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [messages, setMessages] = useState<ChatbotMessage[]>(initialMessages);
   const [input, setInput] = useState('');
-  const [uploadedImages, setUploadedImages] = useState<MessageImage[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<ChatbotImage[]>([]);
   const [isDragging, setIsDragging] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -45,8 +51,18 @@ export const ChatPanel = ({
 
   const { isStreaming, runChat, stopStreaming } = useChatStream({
     setMessages,
-    selectedModel,
-    useKnowledgeBase,
+    request: (history, signal) =>
+      fetch(API_ROUTE.CHAT, {
+        method: HTTP_METHOD.POST,
+        headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
+        body: JSON.stringify({
+          messages: history,
+          model: selectedModel,
+          timeZone: getLocalTimeZone(),
+          useKnowledgeBase,
+        }),
+        signal,
+      }),
   });
 
   useEffect(() => {
@@ -97,7 +113,7 @@ export const ChatPanel = ({
 
   const handleSend = async () => {
     if ((!input.trim() && uploadedImages.length === 0) || isStreaming) return;
-    const userMessage: Message = {
+    const userMessage: ChatbotMessage = {
       role: 'user',
       content: input,
       images: uploadedImages.length > 0 ? uploadedImages : undefined,
@@ -129,7 +145,7 @@ export const ChatPanel = ({
 
   return (
     <div className="flex h-full w-full flex-col gap-3 overflow-hidden p-6">
-      <MessagesArea
+      <ChatMessagesArea
         messages={messages}
         isStreaming={isStreaming}
         isDragging={isDragging}
@@ -150,7 +166,7 @@ export const ChatPanel = ({
         onRegenerate={handleRegenerate}
         onEditSave={handleEditResend}
       />
-      <InputArea
+      <ChatInputArea
         uploadedImages={uploadedImages}
         input={input}
         isStreaming={isStreaming}
@@ -164,6 +180,11 @@ export const ChatPanel = ({
         onKeyDown={handleKeyDown}
         onSend={handleSend}
         onStop={stopStreaming}
+        footer={
+          <ChatInputHint>
+            Enter to send, Shift+Enter for a new line.
+          </ChatInputHint>
+        }
       />
     </div>
   );

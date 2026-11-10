@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import {
   ArrowLeft,
   Pencil,
@@ -17,30 +17,24 @@ import {
   IconButton,
   Input,
   ScrollArea,
-  Select,
-  Switch,
   Text,
 } from '@vigilant-broccoli/react-lib';
-import type { LLMModel } from '@vigilant-broccoli/common-js';
-import { CHAT_MODELS, KEY } from '../app.const';
-import type { Chat } from '../hooks/useChatHistory';
+import type { ChatbotMessage } from './chatbot.types';
+import type { Chat } from './useChatHistory';
 import { ConfirmDeleteDialog } from './ConfirmDeleteDialog';
 
-interface ChatHistorySidebarProps {
-  chats: Chat[];
+export interface ChatHistorySidebarProps {
+  chats: Chat<ChatbotMessage>[];
   currentChatId: string | null;
   onSelectChat: (id: string) => void;
   onNewChat: () => void;
   onDeleteChat: (id: string) => void;
   onRenameChat: (id: string, title: string) => void;
   onTogglePinChat: (id: string) => void;
-  selectedModel: LLMModel;
-  onModelChange: (model: LLMModel) => void;
-  useKnowledgeBase: boolean;
-  onUseKnowledgeBaseChange: (value: boolean) => void;
+  // The controls shown in the Chat settings view, e.g. model and toggles.
+  settings: ReactNode;
 }
 
-const KNOWLEDGE_BASE_LABEL = 'Knowledge base';
 const EMPTY_HISTORY_LABEL = 'No previous chats';
 const NO_MATCHES_LABEL = 'No matching chats';
 const SEARCH_PLACEHOLDER = 'Search chats';
@@ -48,12 +42,14 @@ const NEW_CHAT_LABEL = 'New chat';
 const CHAT_SETTINGS_LABEL = 'Chat settings';
 const BACK_TO_CHATS_LABEL = 'Back to chats';
 const RECENTS_LABEL = 'Recents';
-const MODEL_LABEL = 'Model';
 const CHAT_OPTIONS_LABEL = 'Chat options';
 const DELETE_CHAT_TITLE = 'Delete Chat';
 const DELETE_CHAT_WARNING =
   'Chats are stored only in this browser, so this cannot be undone.';
 const MENU_ICON_SIZE = 14;
+const KEY_ENTER = 'Enter';
+const KEY_ESCAPE = 'Escape';
+const KEY_SPACE = ' ';
 
 const TIME_FORMAT: Intl.DateTimeFormatOptions = {
   hour: 'numeric',
@@ -106,7 +102,7 @@ const ChatRow = ({
       onClick={isRenaming ? undefined : onSelect}
       onKeyDown={e => {
         if (isRenaming || e.target !== e.currentTarget) return;
-        if (e.key === KEY.ENTER || e.key === KEY.SPACE) {
+        if (e.key === KEY_ENTER || e.key === KEY_SPACE) {
           e.preventDefault();
           onSelect();
         }
@@ -125,8 +121,8 @@ const ChatRow = ({
             onBlur={commitRename}
             onKeyDown={e => {
               e.stopPropagation();
-              if (e.key === KEY.ENTER) commitRename();
-              if (e.key === KEY.ESCAPE) setIsRenaming(false);
+              if (e.key === KEY_ENTER) commitRename();
+              if (e.key === KEY_ESCAPE) setIsRenaming(false);
             }}
           />
         ) : (
@@ -185,15 +181,11 @@ const ChatRow = ({
   );
 };
 
-const formatModelLabel = (model: string) =>
-  model
-    .split('-')
-    .map(part => part.toUpperCase())
-    .join(' ');
-
 const matchesQuery = (chat: Chat, query: string): boolean =>
   chat.title.toLowerCase().includes(query) ||
-  chat.messages.some(m => m.content.toLowerCase().includes(query));
+  chat.messages.some(m =>
+    (m.displayContent || m.content || '').toLowerCase().includes(query),
+  );
 
 // Stable sort keeps the recency order within the pinned and unpinned groups.
 const pinnedFirst = (chats: Chat[]): Chat[] => [
@@ -209,10 +201,7 @@ export const ChatHistorySidebar = ({
   onDeleteChat,
   onRenameChat,
   onTogglePinChat,
-  selectedModel,
-  onModelChange,
-  useKnowledgeBase,
-  onUseKnowledgeBaseChange,
+  settings,
 }: ChatHistorySidebarProps) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -234,25 +223,7 @@ export const ChatHistorySidebar = ({
             <ArrowLeft size={16} />
             {BACK_TO_CHATS_LABEL}
           </Button>
-          <div className="flex flex-col gap-1.5">
-            <Text size="1" color="gray">
-              {MODEL_LABEL}
-            </Text>
-            <Select
-              value={selectedModel}
-              onValueChange={value => onModelChange(value as LLMModel)}
-              options={CHAT_MODELS}
-              triggerClassName="w-full"
-              renderItem={formatModelLabel}
-            />
-          </div>
-          <label className="flex items-center justify-between gap-2">
-            <Text size="2">{KNOWLEDGE_BASE_LABEL}</Text>
-            <Switch
-              checked={useKnowledgeBase}
-              onCheckedChange={onUseKnowledgeBaseChange}
-            />
-          </label>
+          {settings}
         </div>
       ) : (
         <>
@@ -266,7 +237,7 @@ export const ChatHistorySidebar = ({
                 value={query}
                 onChange={e => setQuery(e.target.value)}
                 onKeyDown={e => {
-                  if (e.key === KEY.ESCAPE) setQuery('');
+                  if (e.key === KEY_ESCAPE) setQuery('');
                 }}
                 placeholder={SEARCH_PLACEHOLDER}
                 aria-label={SEARCH_PLACEHOLDER}

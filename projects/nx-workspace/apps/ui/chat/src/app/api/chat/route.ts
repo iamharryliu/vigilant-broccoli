@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import { HTTP_STATUS_CODES, type LLMModel } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { CHAT_MODELS, DEFAULT_CHAT_MODEL } from '../../app.const';
-import type { Message } from '../../chat.types';
+import type { ChatbotMessage } from '@vigilant-broccoli/react-lib-higher-level';
 import {
   KNOWLEDGE_BASE_PREFIX,
   searchKnowledgeBase,
@@ -37,7 +37,7 @@ const KNOWLEDGE_PROMPT_INTRO =
   "\n\nExcerpts from the user's uploaded knowledge base files are below. Use them when they help answer the question, name the file you used, and ignore them when they are unrelated.";
 
 // Retrieval is best-effort: a failed search must not stop the chat answering.
-const buildKnowledgeContext = async (messages: Message[]) => {
+const buildKnowledgeContext = async (messages: ChatbotMessage[]) => {
   const query = messages
     .filter(m => m.role === 'user')
     .slice(-KNOWLEDGE_QUERY_MESSAGES)
@@ -61,7 +61,7 @@ const buildKnowledgeContext = async (messages: Message[]) => {
 };
 
 const buildOpenAIMessages = (
-  messages: Message[],
+  messages: ChatbotMessage[],
   systemPrompt: string,
 ): OpenAI.Chat.Completions.ChatCompletionMessageParam[] => [
   { role: 'system', content: systemPrompt },
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     timeZone,
     useKnowledgeBase = true,
   } = (await request.json()) as {
-    messages?: Message[];
+    messages?: ChatbotMessage[];
     model?: LLMModel;
     timeZone?: string;
     useKnowledgeBase?: boolean;

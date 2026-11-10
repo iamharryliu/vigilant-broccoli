@@ -1,6 +1,6 @@
 # Chatbot
 
-Private OpenAI chatbot for the owner, a trimmed port of local-manager-next's [chatbot](../../../local-manager-next/docs/features/chatbot.md), gated by Vercel Authentication.
+Private OpenAI chatbot for the owner, a trimmed port of local-manager-next's [chatbot](../../../local-manager-next/docs/features/chatbot.md), gated by Vercel Authentication. The UI, history and streaming hooks come from the shared [chatbot](../../../../libs/@vigilant-broccoli/react-lib-higher-level/docs/features/chatbot.md) in `react-lib-higher-level`.
 
 ## Table of Contents
 
