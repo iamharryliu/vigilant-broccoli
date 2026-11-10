@@ -383,12 +383,24 @@ export function TaskList() {
     }
   };
 
-  const handleSaveTask = async ({ id, title, days }: TaskDraft) => {
+  const handleSaveTask = async ({
+    id,
+    title,
+    days,
+    monthlyNth = null,
+  }: TaskDraft) => {
     if (id) {
       setTasks(prev =>
-        prev.map(task => (task.id === id ? { ...task, title, days } : task)),
+        prev.map(task =>
+          task.id === id ? { ...task, title, days, monthlyNth } : task,
+        ),
       );
-      send(TASKS_API.RECURRING, HTTP_METHOD.PATCH, { id, title, days });
+      send(TASKS_API.RECURRING, HTTP_METHOD.PATCH, {
+        id,
+        title,
+        days,
+        monthlyNth,
+      });
       return;
     }
     if (!homeId) return;
@@ -396,6 +408,7 @@ export function TaskList() {
       homeId,
       title,
       days,
+      monthlyNth,
     });
     const created = await res.json();
     if (created?.id) setTasks(prev => [...prev, created]);

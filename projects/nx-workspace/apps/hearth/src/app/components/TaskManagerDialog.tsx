@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Pencil, Plus, Repeat, RotateCcw, Trash2 } from 'lucide-react';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import {
   Badge,
   Button,
@@ -11,17 +11,20 @@ import {
   Input,
   Text,
 } from '@vigilant-broccoli/react-lib';
-import {
-  ALL_DAYS,
-  RecurringTask,
-  WEEKDAYS,
-  describeDays,
-  isEveryDay,
-} from './tasks.utils';
+import { TaskScheduleFields } from './TaskScheduleFields';
+import { ALL_DAYS, RecurringTask, describeDays, isDaily } from './tasks.utils';
 
 export type TaskDraft = Omit<RecurringTask, 'id'> & { id: string | null };
 
-const EMPTY_DRAFT: TaskDraft = { id: null, title: '', days: ALL_DAYS };
+const EMPTY_DRAFT: TaskDraft = {
+  id: null,
+  title: '',
+  days: ALL_DAYS,
+  monthlyNth: null,
+};
+
+const isValidSchedule = ({ days, monthlyNth }: TaskDraft) =>
+  days.length > 0 && (!monthlyNth || monthlyNth.length > 0);
 
 type Props = {
   open: boolean;
@@ -43,15 +46,8 @@ export function TaskManagerDialog({
   const updateDraft = (update: (prev: TaskDraft) => TaskDraft) =>
     setDraft(prev => (prev ? update(prev) : prev));
 
-  const canSave = !!draft && draft.title.trim() !== '' && draft.days.length > 0;
-
-  const toggleDay = (day: number) =>
-    updateDraft(prev => ({
-      ...prev,
-      days: prev.days.includes(day)
-        ? prev.days.filter(d => d !== day)
-        : [...prev.days, day],
-    }));
+  const canSave =
+    !!draft && draft.title.trim() !== '' && isValidSchedule(draft);
 
   const handleSave = () => {
     if (!draft) return;
@@ -90,11 +86,8 @@ export function TaskManagerDialog({
                   <Text size="2" className="max-w-full truncate">
                     {task.title}
                   </Text>
-                  <Badge
-                    size="1"
-                    color={isEveryDay(task.days) ? 'blue' : 'purple'}
-                  >
-                    {describeDays(task.days)}
+                  <Badge size="1" color={isDaily(task) ? 'blue' : 'purple'}>
+                    {describeDays(task)}
                   </Badge>
                 </div>
                 <Button
@@ -139,40 +132,12 @@ export function TaskManagerDialog({
                   }
                   autoFocus
                 />
-                <div className="flex gap-2">
-                  <Button
-                    size="sm"
-                    variant={isEveryDay(draft.days) ? 'default' : 'outline'}
-                    onClick={() =>
-                      updateDraft(prev => ({ ...prev, days: ALL_DAYS }))
-                    }
-                  >
-                    <Repeat size={14} />
-                    Daily
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={draft.days.length === 0}
-                    onClick={() => updateDraft(prev => ({ ...prev, days: [] }))}
-                  >
-                    <RotateCcw size={14} />
-                    Reset
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {WEEKDAYS.map(({ day, label }) => (
-                    <Button
-                      key={day}
-                      size="sm"
-                      variant={draft.days.includes(day) ? 'default' : 'outline'}
-                      className="w-12"
-                      onClick={() => toggleDay(day)}
-                    >
-                      {label}
-                    </Button>
-                  ))}
-                </div>
+                <TaskScheduleFields
+                  schedule={draft}
+                  onChange={update =>
+                    updateDraft(prev => ({ ...prev, ...update(prev) }))
+                  }
+                />
                 <div className="flex justify-end gap-2">
                   <Button variant="outline" onClick={() => setDraft(null)}>
                     Cancel
