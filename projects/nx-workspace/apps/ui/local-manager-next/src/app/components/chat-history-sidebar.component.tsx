@@ -11,6 +11,7 @@ import {
   Text,
 } from '@vigilant-broccoli/react-lib';
 import type { Chat } from '../hooks/useChatHistory';
+import { ConfirmDeleteDialog } from './confirm-delete-dialog.component';
 
 interface ChatHistorySidebarProps {
   chats: Chat[];
@@ -31,6 +32,9 @@ const RENAME_LABEL = 'Rename';
 const PIN_LABEL = 'Pin';
 const UNPIN_LABEL = 'Unpin';
 const DELETE_LABEL = 'Delete';
+const DELETE_CHAT_TITLE = 'Delete Chat';
+const DELETE_CHAT_WARNING =
+  'Chats are stored only in this browser, so this cannot be undone.';
 const MENU_ICON_SIZE = 14;
 const KEY_ESCAPE = 'Escape';
 
@@ -206,6 +210,7 @@ export const ChatHistorySidebar = ({
   onTogglePinChat,
 }: ChatHistorySidebarProps) => {
   const [query, setQuery] = useState('');
+  const [pendingDeleteChat, setPendingDeleteChat] = useState<Chat | null>(null);
   const normalizedQuery = query.trim().toLowerCase();
   const visibleChats = pinnedFirst(chats).filter(
     c => !normalizedQuery || matchesQuery(c, normalizedQuery),
@@ -266,7 +271,7 @@ export const ChatHistorySidebar = ({
                 chat={chat}
                 isActive={chat.id === currentChatId}
                 onSelect={() => onSelectChat(chat.id)}
-                onDelete={() => onDeleteChat(chat.id)}
+                onDelete={() => setPendingDeleteChat(chat)}
                 onRename={title => onRenameChat(chat.id, title)}
                 onTogglePin={() => onTogglePinChat(chat.id)}
               />
@@ -274,6 +279,18 @@ export const ChatHistorySidebar = ({
           )}
         </div>
       </ScrollArea>
+      <ConfirmDeleteDialog
+        open={pendingDeleteChat !== null}
+        onOpenChange={open => {
+          if (!open) setPendingDeleteChat(null);
+        }}
+        title={DELETE_CHAT_TITLE}
+        description={`Delete "${pendingDeleteChat?.title ?? ''}"? ${DELETE_CHAT_WARNING}`}
+        onConfirm={() => {
+          if (pendingDeleteChat) onDeleteChat(pendingDeleteChat.id);
+          setPendingDeleteChat(null);
+        }}
+      />
     </div>
   );
 };
