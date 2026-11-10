@@ -6,11 +6,22 @@ import {
 import {
   RECURRING_TASKS_TABLE,
   badRequest,
+  isValidMonthlyNth,
   serverError,
   toRecurringTask,
 } from '../../../../lib/tasks-route';
 
 export const runtime = 'nodejs';
+
+const INVALID_MONTHLY_NTH =
+  'monthlyNth must be null or a non-empty array of 1-4 or -1';
+
+const UPDATABLE_COLUMNS = {
+  title: 'title',
+  days: 'days',
+  monthlyNth: 'monthly_nth',
+  assignedUserId: 'assigned_user_id',
+};
 
 const getSupabase = (req: NextRequest) =>
   createServerClient(getBearerToken(req));
@@ -30,9 +41,10 @@ export const GET = async (req: NextRequest) => {
 
 export const POST = async (req: NextRequest) => {
   const supabase = getSupabase(req);
-  const { homeId, title, days } = await req.json();
+  const { homeId, title, days, monthlyNth = null } = await req.json();
   if (!homeId || !title || !Array.isArray(days))
     return badRequest('homeId, title and days are required');
+  if (!isValidMonthlyNth(monthlyNth)) return badRequest(INVALID_MONTHLY_NTH);
 
   const { data: lastTask, error: positionError } = await supabase
     .from(RECURRING_TASKS_TABLE)
@@ -49,6 +61,7 @@ export const POST = async (req: NextRequest) => {
       home_id: homeId,
       title,
       days,
+      monthly_nth: monthlyNth,
       position: (lastTask?.position ?? -1) + 1,
     })
     .select()
@@ -74,14 +87,17 @@ export const PATCH = async (req: NextRequest) => {
   }
 
   if (!body.id) return badRequest('Missing id');
+  if (body.monthlyNth !== undefined && !isValidMonthlyNth(body.monthlyNth))
+    return badRequest(INVALID_MONTHLY_NTH);
 
-  const updates: Record<string, unknown> = {
+  const updates = {
     updated_at: new Date().toISOString(),
+    ...Object.fromEntries(
+      Object.entries(UPDATABLE_COLUMNS)
+        .filter(([field]) => body[field] !== undefined)
+        .map(([field, column]) => [column, body[field]]),
+    ),
   };
-  if (body.title !== undefined) updates.title = body.title;
-  if (body.days !== undefined) updates.days = body.days;
-  if (body.assignedUserId !== undefined)
-    updates.assigned_user_id = body.assignedUserId;
 
   const { data, error } = await supabase
     .from(RECURRING_TASKS_TABLE)
