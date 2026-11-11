@@ -82,5 +82,9 @@ export const KEY = {
   ESCAPE: 'Escape',
 } as const;
 
-export const STORAGE_KEY_USE_KNOWLEDGE_BASE =
-  'vb-manager-chat-use-knowledge-base';
+export const CHAT_SETTINGS_STORAGE_KEYS = {
+  model: 'vb-manager-chat-model',
+  useKnowledgeBase: 'vb-manager-chat-use-knowledge-base',
+  speakReplies: 'vb-manager-chat-speak-replies',
+  voiceId: 'vb-manager-chat-voice-id',
+};

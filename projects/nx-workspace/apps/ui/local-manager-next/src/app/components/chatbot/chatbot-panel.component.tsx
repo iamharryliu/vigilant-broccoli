@@ -5,6 +5,7 @@ import {
   modelSupportsImageInput,
 } from '@vigilant-broccoli/common-js';
 import { useSpeechToText, useTextToSpeech } from '@vigilant-broccoli/react-lib';
+import { useReplySpeech } from '@vigilant-broccoli/react-lib-higher-level';
 import { authFetch } from '../../../../libs/auth';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { useChatStream } from '../../hooks/useChatStream';
@@ -45,6 +46,8 @@ interface ChatbotPanelProps {
   selectedModel: LLMModel;
   onModelChange: (model: LLMModel) => void;
   useKnowledgeBase: boolean;
+  speakReplies: boolean;
+  voiceId: string;
 }
 
 const fileToBase64 = (file: File): Promise<string> =>
@@ -64,6 +67,8 @@ export const ChatbotPanel = ({
   selectedModel,
   onModelChange,
   useKnowledgeBase,
+  speakReplies,
+  voiceId,
 }: ChatbotPanelProps) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages ?? []);
   const onMessagesChangeRef = useRef(onMessagesChange);
@@ -104,14 +109,20 @@ export const ChatbotPanel = ({
     speak,
     stop: stopSpeaking,
   } = useTextToSpeech({ authFetch, endpoint: API_ENDPOINTS.TEXT_TO_SPEECH });
+  const replySpeech = useReplySpeech({
+    speakReplies,
+    voiceId,
+    speak,
+    stop: stopSpeaking,
+  });
 
   const { isStreaming, runChat, runSuggestion, stopStreaming } = useChatStream({
     setMessages,
     systemPrompt,
     selectedModel,
     useKnowledgeBase,
-    speak,
-    stopSpeaking,
+    speak: replySpeech.onReplyComplete,
+    stopSpeaking: replySpeech.onInterrupt,
   });
   const { parseEvent, createEvent, cancelEvent } =
     useCalendarDrafts(setMessages);

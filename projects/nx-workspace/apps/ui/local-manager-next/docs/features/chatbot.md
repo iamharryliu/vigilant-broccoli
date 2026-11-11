@@ -7,7 +7,7 @@
 - The assistant lives on the full chatbot page (`/chatbot`), opened through the Chatbot sidebar entry or `C` shortcut
 - Streams responses directly from OpenAI through `/api/chat`; default model `gpt-4o-mini`
 - Calendar and tasks actions require Google OAuth session
-- Answers from uploaded files: a "Knowledge base" switch in the sidebar's Chat settings view (on by default, remembered in local storage) controls whether each message searches the knowledge base; with it off, `/api/chat` skips retrieval. When on, every message searches the [knowledge base](./knowledge-base.md) with the last 2 user messages, and chunks with similarity of at least 0.3 are added to the system prompt (up to 5) so the model can answer questions about uploaded PDFs, Markdown and text files and name the file it used. A failed search is skipped silently and the chat answers without excerpts
+- Answers from uploaded files: a "Knowledge base" switch in the in-page Chat settings (on by default, remembered in local storage) controls whether each message searches the knowledge base; with it off, `/api/chat` skips retrieval. When on, every message searches the [knowledge base](./knowledge-base.md) with the last 2 user messages, and chunks with similarity of at least 0.3 are added to the system prompt (up to 5) so the model can answer questions about uploaded PDFs, Markdown and text files and name the file it used. A failed search is skipped silently and the chat answers without excerpts
 
 ## Chat
 
@@ -16,7 +16,8 @@
 - Each message has a copy button; the last chat-model reply has Regenerate (Retry after a failed response), and plain user messages have Edit, which truncates the conversation at that message and resends the edited text. Replies from `/calendar`, `/tasks`, draft cards and the help command are not regenerable, and `/calendar`, `/tasks` and suggestion messages are not editable
 - User messages render as bubbles; assistant responses render as plain text without a card container
 - Conversation history compacted after 20 messages (oldest dropped)
-- Model selector (Chat settings view in the history sidebar) uses the 17 models listed in the account’s complimentary-token allowance; the chat API rejects other model IDs
+- Voice agent settings (Speak replies on by default, and a voice picker from the free ElevenLabs voices) sit beside the model selector and are remembered in local storage.
+- Model selector (in-page Chat settings) uses the 17 models listed in the account’s complimentary-token allowance; the chat API rejects other model IDs
 - Automatically switches to an eligible vision model when images are attached; `o3-mini` is text-only
 - Saved conversations in browser local storage, with new and select controls in the history sidebar; each chat's ellipsis menu offers rename, pin/unpin and delete (delete asks for confirmation)
 - Search box at the top of the history sidebar, above New chat, filters chats by title or message text (Escape clears it)
