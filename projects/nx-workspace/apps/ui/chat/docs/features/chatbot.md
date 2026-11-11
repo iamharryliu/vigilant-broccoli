@@ -39,7 +39,7 @@ Private OpenAI chatbot for the owner, a trimmed port of local-manager-next's [ch
 
 ## Nuances
 
-- Not carried over from vb-manager: Google Calendar/Tasks slash commands, plan suggestions.
+- Not carried over from local-manager-next: Google Calendar/Tasks slash commands, plan suggestions.
 - The speech routes proxy vb-express with its shared API key, as local-manager-next does, so chat holds no ElevenLabs key; vb-express has no per-user identity and Vercel Authentication is the only per-user gate. The 5,000-character text-to-speech cap is enforced here, not in vb-express. `useSpeechToText` has no endpoint option and always posts to `/api/speech-to-text`, so that route must keep its path.
-- The knowledge base is read-only here: upload and index files in vb-manager. `src/lib/knowledge-base.ts` duplicates only the search half of local-manager-next's `src/lib/knowledge-base.ts`; embedding model and dimensions must stay in sync with it and the `vector(512)` column.
-- History is capped at 20 messages sent per request and 50 saved chats, as in vb-manager; it is never synced between browsers.
+- The knowledge base is read-only here: upload and index files in local-manager-next. `src/lib/knowledge-base.ts` duplicates only the search half of local-manager-next's `src/lib/knowledge-base.ts`; embedding model and dimensions must stay in sync with it and the `vector(512)` column.
+- History is capped at 20 messages sent per request and 50 saved chats, as in local-manager-next; it is never synced between browsers.
