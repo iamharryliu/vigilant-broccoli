@@ -62,10 +62,8 @@ const SettingsField = ({
   label: string;
   children: ReactNode;
 }) => (
-  <div className="flex flex-col gap-2">
-    <Text size="2" weight="medium" color="gray">
-      {label}
-    </Text>
+  <div className="flex items-center justify-between gap-4">
+    <Text size="3">{label}</Text>
     {children}
   </div>
 );
@@ -88,7 +86,7 @@ export const ChatSettings = ({
           value={selectedModel}
           onValueChange={value => onModelChange(value as LLMModel)}
           options={[...models]}
-          triggerClassName="w-full"
+          triggerClassName="w-64"
           renderItem={formatModelLabel}
         />
       </SettingsField>
@@ -110,7 +108,7 @@ export const ChatSettings = ({
           value={voiceId}
           onValueChange={onVoiceIdChange}
           options={VOICE_IDS}
-          triggerClassName="w-full"
+          triggerClassName="w-64"
           renderItem={formatVoiceLabel}
         />
       </SettingsField>
