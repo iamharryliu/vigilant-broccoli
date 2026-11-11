@@ -36,6 +36,40 @@ const formatModelLabel = (model: string) =>
 const formatVoiceLabel = (id: string) =>
   ELEVENLABS_FREE_VOICE_OPTIONS.find(v => v.value === id)?.label ?? id;
 
+const SettingsSection = ({
+  heading,
+  hasDivider = false,
+  children,
+}: {
+  heading: string;
+  hasDivider?: boolean;
+  children: ReactNode;
+}) => (
+  <section
+    className={`flex flex-col gap-5 ${hasDivider ? 'border-t border-border pt-10' : ''}`}
+  >
+    <Text size="5" weight="bold">
+      {heading}
+    </Text>
+    {children}
+  </section>
+);
+
+const SettingsField = ({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) => (
+  <div className="flex flex-col gap-2">
+    <Text size="2" weight="medium" color="gray">
+      {label}
+    </Text>
+    {children}
+  </div>
+);
+
 export const ChatSettings = ({
   models,
   selectedModel,
@@ -48,14 +82,8 @@ export const ChatSettings = ({
   onVoiceIdChange,
 }: ChatSettingsProps) => (
   <>
-    <section className="flex flex-col gap-4">
-      <Text size="2" weight="medium">
-        {ASSISTANT_HEADING}
-      </Text>
-      <div className="flex flex-col gap-1.5">
-        <Text size="1" color="gray">
-          {MODEL_LABEL}
-        </Text>
+    <SettingsSection heading={ASSISTANT_HEADING}>
+      <SettingsField label={MODEL_LABEL}>
         <Select
           value={selectedModel}
           onValueChange={value => onModelChange(value as LLMModel)}
@@ -63,27 +91,21 @@ export const ChatSettings = ({
           triggerClassName="w-full"
           renderItem={formatModelLabel}
         />
-      </div>
-      <label className="flex items-center justify-between gap-2">
-        <Text size="2">{KNOWLEDGE_BASE_LABEL}</Text>
+      </SettingsField>
+      <label className="flex items-center justify-between gap-4">
+        <Text size="3">{KNOWLEDGE_BASE_LABEL}</Text>
         <Switch
           checked={useKnowledgeBase}
           onCheckedChange={onUseKnowledgeBaseChange}
         />
       </label>
-    </section>
-    <section className="flex flex-col gap-4 border-t border-border pt-4">
-      <Text size="2" weight="medium">
-        {VOICE_AGENT_HEADING}
-      </Text>
-      <label className="flex items-center justify-between gap-2">
-        <Text size="2">{SPEAK_REPLIES_LABEL}</Text>
+    </SettingsSection>
+    <SettingsSection heading={VOICE_AGENT_HEADING} hasDivider>
+      <label className="flex items-center justify-between gap-4">
+        <Text size="3">{SPEAK_REPLIES_LABEL}</Text>
         <Switch checked={speakReplies} onCheckedChange={onSpeakRepliesChange} />
       </label>
-      <div className="flex flex-col gap-1.5">
-        <Text size="1" color="gray">
-          {VOICE_LABEL}
-        </Text>
+      <SettingsField label={VOICE_LABEL}>
         <Select
           value={voiceId}
           onValueChange={onVoiceIdChange}
@@ -91,14 +113,14 @@ export const ChatSettings = ({
           triggerClassName="w-full"
           renderItem={formatVoiceLabel}
         />
-      </div>
-    </section>
+      </SettingsField>
+    </SettingsSection>
   </>
 );
 
 // Covers the chat panel without unmounting it, so an in-flight stream and draft survive.
 export const ChatSettingsPage = ({ children }: { children: ReactNode }) => (
-  <div className="absolute inset-0 z-[5] overflow-y-auto bg-background px-4 pb-8 pt-14">
-    <div className="flex flex-col gap-4">{children}</div>
+  <div className="absolute inset-0 z-[5] overflow-y-auto bg-background px-6 pb-12 pt-16">
+    <div className="flex flex-col gap-10">{children}</div>
   </div>
 );
