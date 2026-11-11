@@ -23,9 +23,9 @@ Private OpenAI chatbot for the owner, gated by Vercel Authentication.
   - `infrastructure`
   - `react-lib`
 - Cloud services
-  - ElevenLabs - text-to-speech of replies and speech-to-text fallback
   - OpenAI - chat completions and embeddings
   - Supabase - knowledge base vector search
+  - VB Express - text-to-speech of replies and speech-to-text fallback
   - Vercel - Vercel Authentication
 
 ## Environment
