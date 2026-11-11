@@ -13,7 +13,7 @@
 # already sit in Terraform Cloud state, which this workflow reads anyway via
 # TF_CLOUD_TOKEN). Tier 0 secrets that Terraform only creates as empty
 # containers (VB_VM_VAULT_ROOT_TOKEN, VB_VM_VAULT_UNSEAL_KEYS,
-# BITWARDEN_PASSWORD, VB_VM_WG_SERVER_PRIVATE_KEY) are not granted.
+# VB_VM_WG_SERVER_PRIVATE_KEY) are not granted.
 
 locals {
   tf_drift_readable_secret_ids = {

@@ -339,12 +339,6 @@ resource "google_project_iam_member" "vm_default_sa_secret_accessor" {
   project = data.google_project.project.project_id
   role    = "roles/secretmanager.secretAccessor"
   member  = "serviceAccount:${data.google_project.project.number}-compute@developer.gserviceaccount.com"
-
-  condition {
-    title       = "exclude_bitwarden_password"
-    description = "Bitwarden is the offline backup-of-last-resort for every other secret here; no VM should be able to read it."
-    expression  = "!resource.name.startsWith(\"projects/${data.google_project.project.number}/secrets/${google_secret_manager_secret.bitwarden_password.secret_id}\")"
-  }
 }
 
 resource "google_secret_manager_secret" "wg_server_private_key" {
@@ -394,16 +388,6 @@ resource "google_secret_manager_secret" "vault_unseal_keys" {
 
 resource "google_secret_manager_secret" "vault_root_token" {
   secret_id = "VB_VM_VAULT_ROOT_TOKEN"
-
-  replication {
-    auto {}
-  }
-
-  depends_on = [google_project_service.secretmanager]
-}
-
-resource "google_secret_manager_secret" "bitwarden_password" {
-  secret_id = "BITWARDEN_PASSWORD"
 
   replication {
     auto {}

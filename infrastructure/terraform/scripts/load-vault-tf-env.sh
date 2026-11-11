@@ -45,12 +45,7 @@ load_secrets_from_bitwarden() {
     exit 1
   fi
 
-  export BITWARDEN_PASSWORD
-  BITWARDEN_PASSWORD=$(gcloud secrets versions access latest \
-    --secret=BITWARDEN_PASSWORD \
-    --project="${GCP_PROJECT}")
-
-  BW_SESSION=$(bw unlock --passwordenv BITWARDEN_PASSWORD --raw)
+  BW_SESSION=$(bw unlock --raw)
   export BW_SESSION
 
   FOLDER_ID=$(bw list folders --session "$BW_SESSION" | jq -r ".[] | select(.name == \"$BW_FOLDER\") | .id")
