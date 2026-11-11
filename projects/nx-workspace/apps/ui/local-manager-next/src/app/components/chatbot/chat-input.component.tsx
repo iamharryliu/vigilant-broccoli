@@ -34,6 +34,14 @@ export const parseSlashQuery = (input: string): string | null => {
   return input.slice(SLASH_PREFIX.length);
 };
 
+export const parseInlineSlashCommand = (
+  input: string,
+): { name: string; text: string } | null => {
+  if (!input.startsWith(SLASH_PREFIX)) return null;
+  const match = input.slice(SLASH_PREFIX.length).match(/^(\S+)\s+([\s\S]+)$/);
+  return match ? { name: match[1], text: match[2].trim() } : null;
+};
+
 export const filterCommandsByQuery = (
   commands: ChatCommand[],
   query: string,
