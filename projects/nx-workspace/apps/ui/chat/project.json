@@ -36,14 +36,20 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/chat/.env.example 'cd apps/ui/chat && next dev --webpack'"
+        "command": "NODE_EXTRA_CA_CERTS=./scripts/vault-ca.crt node --import tsx scripts/fetch-secrets.ts --env-file apps/ui/chat/.env.example 'cd apps/ui/chat && next dev --webpack'",
+        "env": {
+          "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev"
+        }
       }
     },
     "serve:no-vault": {
       "executor": "nx:run-commands",
       "options": {
         "cwd": "apps/ui/chat",
-        "command": "next dev --webpack"
+        "command": "next dev --webpack",
+        "env": {
+          "VB_EXPRESS_URL": "https://staging-vb-express.fly.dev"
+        }
       }
     },
     "lint": {

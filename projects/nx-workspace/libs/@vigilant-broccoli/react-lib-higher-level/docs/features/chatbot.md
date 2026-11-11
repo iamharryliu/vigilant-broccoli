@@ -7,7 +7,10 @@ Streaming chatbot UI and history shared by local-manager-next's `/chatbot` page 
 | Export | Purpose |
 | --- | --- |
 | `ChatbotMessage`, `ChatbotImage`, `SetChatbotMessages` | Base message types; apps extend `ChatbotMessage` (local-manager-next adds draft cards). |
-| `ChatHistorySidebar` | Search, new chat, rename, pin, delete with confirmation. The `settings` prop fills its Chat settings view. |
+| `ChatHistorySidebar` | Search, new chat, rename, pin, delete with confirmation. The `settings` prop fills its inline Chat settings view; `onOpenSettings` replaces that view so the app can render settings in the page (both apps do). |
+| `ChatSettings`, `ChatSettingsPage` | Assistant (model, knowledge base) and Voice agent (speak replies, ElevenLabs free voice) sections; `ChatSettingsPage` is the in-page overlay that covers the chat panel without unmounting it. |
+| `useChatSettings({ models, defaultModel, storageKeys })` | The settings state persisted in local storage under the app's own keys. |
+| `useReplySpeech({ speakReplies, voiceId, speak, stop })` | `onReplyComplete` and `onInterrupt` for `useChatStream` that honour the mute and voice settings. |
 | `ChatInputArea` | Textarea, image attach and send/stop. Slots: `aboveInput`, `leadingControls`, `footer`. The optional `speech` prop (`isRecording`, `isProcessing`, `error`, `onToggleRecording`, e.g. from react-lib's `useSpeechToText`) adds a microphone toggle, recording placeholders and the error line; omitted, the input is text-only. |
 | `ChatMarkdown` | GitHub-flavored Markdown with highlighted code blocks and a copy button. |
 | `ChatMessagesArea` | Message list with copy, regenerate and edit-and-resend. `renderMessageExtras`, `hasActions` and `isEditable` let an app render cards and opt messages out. |
@@ -17,7 +20,7 @@ Streaming chatbot UI and history shared by local-manager-next's `/chatbot` page 
 
 ## Nuances
 
-- Both apps speak each finished reply by passing react-lib's `useTextToSpeech` `speak` and `stop` as `onReplyComplete` and `onInterrupt`. `runChat` keeps the `onReplyComplete` it started with, so a mute toggled mid-stream must be read through a ref (as `chat` does).
+- Both apps speak each finished reply through `useReplySpeech`, passing react-lib's `useTextToSpeech` `speak` and `stop`. `runChat` keeps the `onReplyComplete` it started with, so the hook reads the mute and voice settings through refs.
 - The server route stays in each app: the models, system prompt and knowledge base search differ, and the two routes still share a copy of the OpenAI stream wrapper.
 - Styling is Tailwind; an app's `tailwind.config.js` must include `libs/@vigilant-broccoli/react-lib-higher-level/src/lib/chatbot` in `content`.
 - Each app passes its own `storageKeys` so histories stay separate; local-manager-next keeps its original `vb-manager-chats` keys.

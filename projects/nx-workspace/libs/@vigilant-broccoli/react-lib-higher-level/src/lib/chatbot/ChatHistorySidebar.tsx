@@ -31,8 +31,10 @@ export interface ChatHistorySidebarProps {
   onDeleteChat: (id: string) => void;
   onRenameChat: (id: string, title: string) => void;
   onTogglePinChat: (id: string) => void;
-  // The controls shown in the Chat settings view, e.g. model and toggles.
-  settings: ReactNode;
+  // The controls shown in the sidebar's Chat settings view, e.g. model and toggles.
+  settings?: ReactNode;
+  // Replaces the sidebar settings view so the app can show settings elsewhere.
+  onOpenSettings?: () => void;
 }
 
 const EMPTY_HISTORY_LABEL = 'No previous chats';
@@ -202,6 +204,7 @@ export const ChatHistorySidebar = ({
   onRenameChat,
   onTogglePinChat,
   settings,
+  onOpenSettings,
 }: ChatHistorySidebarProps) => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -255,7 +258,7 @@ export const ChatHistorySidebar = ({
               {NEW_CHAT_LABEL}
             </Button>
             <Button
-              onClick={() => setIsSettingsOpen(true)}
+              onClick={onOpenSettings ?? (() => setIsSettingsOpen(true))}
               variant="ghost"
               className="w-full justify-start"
             >

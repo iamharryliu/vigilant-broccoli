@@ -5,13 +5,19 @@ import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Button } from '@vigilant-broccoli/react-lib';
 import {
   ChatHistorySidebar,
+  ChatSettings,
+  ChatSettingsPage,
   useChatHistory,
+  useChatSettings,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import { ChatbotPanel } from '../chatbot/chatbot-panel.component';
-import { ChatSettings } from '../chatbot/chat-settings.component';
 import type { Message } from '../chatbot/chatbot.types';
 import { useChatSuggestions } from '../../hooks/useChatSuggestions';
-import { useChatSettings } from '../../hooks/useChatSettings';
+import {
+  CHAT_MODELS,
+  CHAT_SETTINGS_STORAGE_KEYS,
+  DEFAULT_CHAT_MODEL,
+} from '../../constants/chatbot.consts';
 
 const HISTORY_STORAGE_KEYS = {
   chats: 'vb-manager-chats',
@@ -27,13 +33,22 @@ const SIDEBAR_TRANSITION_MS = 250;
 
 export function ChatbotPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const suggestions = useChatSuggestions();
   const {
     selectedModel,
     setSelectedModel,
     useKnowledgeBase,
     setUseKnowledgeBase,
-  } = useChatSettings();
+    speakReplies,
+    setSpeakReplies,
+    voiceId,
+    setVoiceId,
+  } = useChatSettings({
+    models: CHAT_MODELS,
+    defaultModel: DEFAULT_CHAT_MODEL,
+    storageKeys: CHAT_SETTINGS_STORAGE_KEYS,
+  });
   const {
     chats,
     currentChatId,
@@ -88,19 +103,18 @@ export function ChatbotPage() {
         <ChatHistorySidebar
           chats={chats}
           currentChatId={currentChatId}
-          onSelectChat={selectChat}
-          onNewChat={newChat}
+          onSelectChat={id => {
+            setIsSettingsOpen(false);
+            selectChat(id);
+          }}
+          onNewChat={() => {
+            setIsSettingsOpen(false);
+            newChat();
+          }}
           onDeleteChat={deleteChat}
           onRenameChat={renameChat}
           onTogglePinChat={togglePinChat}
-          settings={
-            <ChatSettings
-              selectedModel={selectedModel}
-              onModelChange={setSelectedModel}
-              useKnowledgeBase={useKnowledgeBase}
-              onUseKnowledgeBaseChange={setUseKnowledgeBase}
-            />
-          }
+          onOpenSettings={() => setIsSettingsOpen(true)}
         />
       </div>
       <div
@@ -125,6 +139,21 @@ export function ChatbotPage() {
             <PanelLeftOpen size={TOGGLE_ICON_SIZE} />
           )}
         </Button>
+        {isSettingsOpen && (
+          <ChatSettingsPage>
+            <ChatSettings
+              models={CHAT_MODELS}
+              selectedModel={selectedModel}
+              onModelChange={setSelectedModel}
+              useKnowledgeBase={useKnowledgeBase}
+              onUseKnowledgeBaseChange={setUseKnowledgeBase}
+              speakReplies={speakReplies}
+              onSpeakRepliesChange={setSpeakReplies}
+              voiceId={voiceId}
+              onVoiceIdChange={setVoiceId}
+            />
+          </ChatSettingsPage>
+        )}
         <ChatbotPanel
           key={sessionKey}
           suggestions={suggestions}
@@ -133,6 +162,8 @@ export function ChatbotPage() {
           selectedModel={selectedModel}
           onModelChange={setSelectedModel}
           useKnowledgeBase={useKnowledgeBase}
+          speakReplies={speakReplies}
+          voiceId={voiceId}
         />
       </div>
     </div>

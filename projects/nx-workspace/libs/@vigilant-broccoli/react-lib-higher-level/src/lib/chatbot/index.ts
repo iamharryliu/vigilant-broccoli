@@ -7,3 +7,6 @@ export * from './ChatMarkdown';
 export * from './ChatMessages';
 export * from './useChatHistory';
 export * from './useChatStream';
+export * from './ChatSettings';
+export * from './useChatSettings';
+export * from './useReplySpeech';

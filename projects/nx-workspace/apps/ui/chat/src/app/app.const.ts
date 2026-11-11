@@ -43,6 +43,7 @@ export const STORAGE_KEY = {
   MODEL: 'chat-model',
   USE_KNOWLEDGE_BASE: 'chat-use-knowledge-base',
   SPEAK_REPLIES: 'chat-speak-replies',
+  VOICE_ID: 'chat-voice-id',
 } as const;
 
 export const KEY = {

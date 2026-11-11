@@ -5,13 +5,21 @@ import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Button } from '@vigilant-broccoli/react-lib';
 import {
   ChatHistorySidebar,
+  ChatSettings,
+  ChatSettingsPage,
   useChatHistory,
+  useChatSettings,
   type ChatbotMessage,
 } from '@vigilant-broccoli/react-lib-higher-level';
-import { STORAGE_KEY } from '../app.const';
-import { useChatSettings } from '../hooks/useChatSettings';
+import { CHAT_MODELS, DEFAULT_CHAT_MODEL, STORAGE_KEY } from '../app.const';
 import { ChatPanel } from './ChatPanel';
-import { ChatSettings } from './ChatSettings';
+
+const SETTINGS_STORAGE_KEYS = {
+  model: STORAGE_KEY.MODEL,
+  useKnowledgeBase: STORAGE_KEY.USE_KNOWLEDGE_BASE,
+  speakReplies: STORAGE_KEY.SPEAK_REPLIES,
+  voiceId: STORAGE_KEY.VOICE_ID,
+};
 
 const HISTORY_STORAGE_KEYS = {
   chats: STORAGE_KEY.CHATS,
@@ -24,6 +32,8 @@ const TOGGLE_ICON_SIZE = 18;
 
 export function ChatPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  // Overlays rather than replaces ChatPanel so an in-flight stream and draft survive.
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const {
     selectedModel,
     setSelectedModel,
@@ -31,7 +41,13 @@ export function ChatPage() {
     setUseKnowledgeBase,
     speakReplies,
     setSpeakReplies,
-  } = useChatSettings();
+    voiceId,
+    setVoiceId,
+  } = useChatSettings({
+    models: CHAT_MODELS,
+    defaultModel: DEFAULT_CHAT_MODEL,
+    storageKeys: SETTINGS_STORAGE_KEYS,
+  });
   const {
     chats,
     currentChatId,
@@ -82,21 +98,18 @@ export function ChatPage() {
         <ChatHistorySidebar
           chats={chats}
           currentChatId={currentChatId}
-          onSelectChat={selectChat}
-          onNewChat={newChat}
+          onSelectChat={id => {
+            setIsSettingsOpen(false);
+            selectChat(id);
+          }}
+          onNewChat={() => {
+            setIsSettingsOpen(false);
+            newChat();
+          }}
           onDeleteChat={deleteChat}
           onRenameChat={renameChat}
           onTogglePinChat={togglePinChat}
-          settings={
-            <ChatSettings
-              selectedModel={selectedModel}
-              onModelChange={setSelectedModel}
-              useKnowledgeBase={useKnowledgeBase}
-              onUseKnowledgeBaseChange={setUseKnowledgeBase}
-              speakReplies={speakReplies}
-              onSpeakRepliesChange={setSpeakReplies}
-            />
-          }
+          onOpenSettings={() => setIsSettingsOpen(true)}
         />
       </div>
       <div className="relative h-full min-w-0 flex-1">
@@ -114,6 +127,21 @@ export function ChatPage() {
             <PanelLeftOpen size={TOGGLE_ICON_SIZE} />
           )}
         </Button>
+        {isSettingsOpen && (
+          <ChatSettingsPage>
+            <ChatSettings
+              models={CHAT_MODELS}
+              selectedModel={selectedModel}
+              onModelChange={setSelectedModel}
+              useKnowledgeBase={useKnowledgeBase}
+              onUseKnowledgeBaseChange={setUseKnowledgeBase}
+              speakReplies={speakReplies}
+              onSpeakRepliesChange={setSpeakReplies}
+              voiceId={voiceId}
+              onVoiceIdChange={setVoiceId}
+            />
+          </ChatSettingsPage>
+        )}
         <ChatPanel
           key={sessionKey}
           initialMessages={currentMessages}
@@ -122,6 +150,7 @@ export function ChatPage() {
           onModelChange={setSelectedModel}
           useKnowledgeBase={useKnowledgeBase}
           speakReplies={speakReplies}
+          voiceId={voiceId}
         />
       </div>
     </main>
