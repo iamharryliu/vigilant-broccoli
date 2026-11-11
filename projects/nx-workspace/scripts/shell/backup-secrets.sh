@@ -25,7 +25,9 @@ fi
 TIMESTAMP=$(date -u +%Y-%m-%d)
 VAULT_FOLDER_NAME="vb-vault-secrets"
 
-export BITWARDEN_PASSWORD=$(gcloud secrets versions access latest --secret="BITWARDEN_PASSWORD")
+read -rsp "Bitwarden master password: " BITWARDEN_PASSWORD </dev/tty
+echo >&2
+export BITWARDEN_PASSWORD
 export BW_SESSION=$(bw unlock --passwordenv BITWARDEN_PASSWORD --raw)
 bw sync > /dev/null
 
