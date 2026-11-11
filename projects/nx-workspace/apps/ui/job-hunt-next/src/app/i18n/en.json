@@ -7,7 +7,10 @@
     "CAREER_EXPERIENCE": "Career experience",
     "RESUME": "Resume",
     "RUNS": "Runs",
-    "SETTINGS": "Settings"
+    "SETTINGS": "Settings",
+    "NOTES": "Notes",
+    "TASKS": "Tasks",
+    "OPEN_MENU": "Open menu"
   },
   "APPLICATIONS": {
     "EMPTY": "No job applications yet.",
@@ -163,5 +166,21 @@
     "DARK": "Dark",
     "ENGLISH": "English",
     "SWEDISH": "Svenska"
+  },
+  "TASKS": {
+    "PLACEHOLDER": "Add a task",
+    "ADD": "Add",
+    "EMPTY": "No tasks yet.",
+    "LOADING": "Loading…",
+    "LOAD_FAILED": "Failed to load tasks",
+    "WRITE_FAILED": "Failed to update task",
+    "DELETE": "Delete task"
+  },
+  "NOTES": {
+    "PLACEHOLDER": "Write notes here…",
+    "SAVING": "Saving…",
+    "SAVED": "Saved",
+    "SAVE_FAILED": "Failed to save notes",
+    "LOAD_FAILED": "Failed to load notes"
   }
 }

@@ -1,13 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import './global.css';
+import { Menu } from 'lucide-react';
 import { ThemeProvider } from '@vigilant-broccoli/react-lib';
 import { Toaster } from '@vigilant-broccoli/react-lib/toaster';
 import { DemoNotice } from './components/demo-notice.component';
 import { AppSidebar } from './components/app-sidebar.component';
 import { RunNotifications } from './components/run-notifications.component';
-import { I18nProvider, useI18n } from './i18n';
+import { I18nProvider, useI18n, useTranslation } from './i18n';
 import en from './i18n/en.json';
 
 const THEME_STORAGE_KEY = 'job-hunt-next-theme';
@@ -20,6 +21,37 @@ const DocumentLanguage = () => {
   }, [locale]);
 
   return null;
+};
+
+const AppShell = ({ children }: { children: React.ReactNode }) => {
+  const { t } = useTranslation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  return (
+    <div className="flex h-screen">
+      <AppSidebar
+        mobileOpen={sidebarOpen}
+        onMobileClose={() => setSidebarOpen(false)}
+      />
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-3 md:hidden">
+          <button
+            type="button"
+            aria-label={t('NAV.OPEN_MENU')}
+            onClick={() => setSidebarOpen(open => !open)}
+            className="cursor-pointer rounded-md p-1 hover:bg-muted"
+          >
+            <Menu size={20} />
+          </button>
+          <span className="font-semibold">{t('APP.LABEL')}</span>
+        </header>
+        <main className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
+          <DemoNotice />
+          {children}
+        </main>
+      </div>
+    </div>
+  );
 };
 
 export default function RootLayout({
@@ -36,13 +68,7 @@ export default function RootLayout({
         <ThemeProvider storageKey={THEME_STORAGE_KEY}>
           <I18nProvider>
             <DocumentLanguage />
-            <div className="flex h-screen">
-              <AppSidebar />
-              <main className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto p-4">
-                <DemoNotice />
-                {children}
-              </main>
-            </div>
+            <AppShell>{children}</AppShell>
             <RunNotifications />
             <Toaster richColors closeButton position="bottom-right" />
           </I18nProvider>

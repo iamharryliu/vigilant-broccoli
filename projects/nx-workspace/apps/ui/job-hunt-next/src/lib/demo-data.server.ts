@@ -396,6 +396,10 @@ export const demoResponse = (request: NextRequest): NextResponse => {
     }
     case API_ENDPOINTS.JOB_APPLICATIONS_COVER_LETTER:
       return coverLetterResponse(path);
+    case API_ENDPOINTS.TASKS:
+      return NextResponse.json({ tasks: [] });
+    case API_ENDPOINTS.NOTES:
+      return NextResponse.json({ content: '', updatedAt: null });
     case API_ENDPOINTS.JOB_APPLICATIONS_RUNS:
       return NextResponse.json({ runs: RUNS });
     case API_ENDPOINTS.JOB_APPLICATIONS_STATUS:

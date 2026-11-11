@@ -7,7 +7,10 @@
     "CAREER_EXPERIENCE": "Karriärerfarenhet",
     "RESUME": "CV",
     "RUNS": "Körningar",
-    "SETTINGS": "Inställningar"
+    "SETTINGS": "Inställningar",
+    "NOTES": "Anteckningar",
+    "TASKS": "Uppgifter",
+    "OPEN_MENU": "Öppna menyn"
   },
   "APPLICATIONS": {
     "EMPTY": "Inga jobbansökningar ännu.",
@@ -163,5 +166,21 @@
     "DARK": "Mörkt",
     "ENGLISH": "English",
     "SWEDISH": "Svenska"
+  },
+  "TASKS": {
+    "PLACEHOLDER": "Lägg till en uppgift",
+    "ADD": "Lägg till",
+    "EMPTY": "Inga uppgifter ännu.",
+    "LOADING": "Läser in…",
+    "LOAD_FAILED": "Det gick inte att läsa in uppgifterna",
+    "WRITE_FAILED": "Det gick inte att uppdatera uppgiften",
+    "DELETE": "Ta bort uppgiften"
+  },
+  "NOTES": {
+    "PLACEHOLDER": "Skriv anteckningar här…",
+    "SAVING": "Sparar…",
+    "SAVED": "Sparat",
+    "SAVE_FAILED": "Det gick inte att spara anteckningarna",
+    "LOAD_FAILED": "Det gick inte att läsa in anteckningarna"
   }
 }

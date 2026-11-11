@@ -7,6 +7,8 @@ import {
   Activity,
   ClipboardList,
   FileUser,
+  ListChecks,
+  NotebookPen,
   ScrollText,
   Settings,
   type LucideIcon,
@@ -23,13 +25,20 @@ const TAB_ICON: Record<AppTab, LucideIcon> = {
   [APP_TAB.APPLICATIONS.value]: ClipboardList,
   [APP_TAB.CAREER_EXPERIENCE.value]: ScrollText,
   [APP_TAB.RESUME.value]: FileUser,
+  [APP_TAB.NOTES.value]: NotebookPen,
+  [APP_TAB.TASKS.value]: ListChecks,
   [APP_TAB.RUNS.value]: Activity,
   [APP_TAB.SETTINGS.value]: Settings,
 };
 
 // Owns the dialogs so the form's bookmarklet listener stays mounted on every
 // tab.
-export const AppSidebar = () => {
+type AppSidebarProps = {
+  mobileOpen: boolean;
+  onMobileClose: () => void;
+};
+
+export const AppSidebar = ({ mobileOpen, onMobileClose }: AppSidebarProps) => {
   const { t } = useTranslation();
   const activeTab = toTabFromPath(usePathname());
   const [helpOpen, setHelpOpen] = useState(false);
@@ -50,6 +59,9 @@ export const AppSidebar = () => {
     <>
       <Sidebar
         LinkComponent={Link}
+        className="max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-30"
+        mobileOpen={mobileOpen}
+        onMobileClose={onMobileClose}
         items={[
           ...Object.values(APP_TAB).map(({ value, path, titleKey }) => ({
             id: value,
