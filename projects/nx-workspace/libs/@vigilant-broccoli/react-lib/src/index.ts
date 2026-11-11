@@ -4,6 +4,7 @@ export * from './hooks/useDocumentThemeClass';
 export * from './hooks/useAnimatedNumber';
 export * from './hooks/useGeolocation';
 export * from './hooks/useSpeechToText';
+export * from './hooks/useTextToSpeech';
 export * from './hooks/useThemeKeybind';
 export * from './hooks/useThemePreference';
 export * from './hooks/useUpptimeSummary';

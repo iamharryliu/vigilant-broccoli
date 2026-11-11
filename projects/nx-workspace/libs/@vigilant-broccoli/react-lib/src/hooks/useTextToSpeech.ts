@@ -2,10 +2,18 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
-import { API_ENDPOINTS } from '../constants/api-endpoints';
-import { authFetch } from '../../../libs/auth';
+
+const TEXT_TO_SPEECH_ENDPOINT = '/api/text-to-speech';
+const ERROR_EMPTY_TEXT = 'Please enter text to convert';
+const ERROR_SPEECH = 'Failed to generate speech';
 
 type UseTextToSpeechOptions = {
+  authFetch: (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ) => Promise<Response>;
+  // The route must answer `{ text, voiceId?, languageCode? }` with audio.
+  endpoint?: string;
   autoPlay?: boolean;
   voiceId?: string;
 };
@@ -24,10 +32,12 @@ export type UseTextToSpeechResult = {
   stop: () => void;
 };
 
-export const useTextToSpeech = (
-  options: UseTextToSpeechOptions = {},
-): UseTextToSpeechResult => {
-  const { autoPlay = true, voiceId } = options;
+export const useTextToSpeech = ({
+  authFetch,
+  endpoint = TEXT_TO_SPEECH_ENDPOINT,
+  autoPlay = true,
+  voiceId,
+}: UseTextToSpeechOptions): UseTextToSpeechResult => {
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -64,7 +74,7 @@ export const useTextToSpeech = (
     async (text: string, speakOptions?: SpeakOptions) => {
       const trimmedText = text.trim();
       if (!trimmedText) {
-        setError('Please enter text to convert');
+        setError(ERROR_EMPTY_TEXT);
         return;
       }
 
@@ -78,7 +88,7 @@ export const useTextToSpeech = (
       requestAbortRef.current = abortController;
 
       try {
-        const response = await authFetch(API_ENDPOINTS.TEXT_TO_SPEECH, {
+        const response = await authFetch(endpoint, {
           method: HTTP_METHOD.POST,
           headers: { ...HTTP_HEADERS.CONTENT_TYPE.JSON },
           body: JSON.stringify({
@@ -94,8 +104,8 @@ export const useTextToSpeech = (
         if (!response.ok) {
           const errorData = await response
             .json()
-            .catch(() => ({ error: 'Failed to generate speech' }));
-          setError(errorData.error || 'Failed to generate speech');
+            .catch(() => ({ error: ERROR_SPEECH }));
+          setError(errorData.error || ERROR_SPEECH);
           return;
         }
 
@@ -115,7 +125,7 @@ export const useTextToSpeech = (
           return;
         }
 
-        setError('Failed to generate speech');
+        setError(ERROR_SPEECH);
       } finally {
         if (requestAbortRef.current === abortController) {
           requestAbortRef.current = null;
@@ -123,7 +133,7 @@ export const useTextToSpeech = (
         setIsLoading(false);
       }
     },
-    [autoPlay, releaseAudioUrl, stop, voiceId],
+    [authFetch, autoPlay, endpoint, releaseAudioUrl, stop, voiceId],
   );
 
   return {

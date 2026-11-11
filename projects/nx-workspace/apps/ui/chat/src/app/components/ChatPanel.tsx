@@ -6,6 +6,7 @@ import {
 } from '@vigilant-broccoli/common-js';
 import { HTTP_HEADERS, HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { getLocalTimeZone } from '@vigilant-broccoli/common-browser';
+import { useSpeechToText, useTextToSpeech } from '@vigilant-broccoli/react-lib';
 import {
   ChatInputArea,
   ChatInputHint,
@@ -22,6 +23,7 @@ interface ChatPanelProps {
   selectedModel: LLMModel;
   onModelChange: (model: LLMModel) => void;
   useKnowledgeBase: boolean;
+  speakReplies: boolean;
 }
 
 const fileToBase64 = (file: File): Promise<string> =>
@@ -38,6 +40,7 @@ export const ChatPanel = ({
   selectedModel,
   onModelChange,
   useKnowledgeBase,
+  speakReplies,
 }: ChatPanelProps) => {
   const [messages, setMessages] = useState<ChatbotMessage[]>(initialMessages);
   const [input, setInput] = useState('');
@@ -48,9 +51,35 @@ export const ChatPanel = ({
   const textInputRef = useRef<HTMLTextAreaElement>(null);
   const onMessagesChangeRef = useRef(onMessagesChange);
   const hasMountedRef = useRef(false);
+  // runChat keeps the onReplyComplete it started with, so a mute during a
+  // stream must be read through a ref.
+  const speakRepliesRef = useRef(speakReplies);
+
+  const {
+    isRecording,
+    isProcessing,
+    error: speechToTextError,
+    toggleRecording,
+  } = useSpeechToText({
+    authFetch: fetch,
+    streaming: true,
+    onTranscriptUpdate: setInput,
+  });
+  const {
+    error: textToSpeechError,
+    speak,
+    stop: stopSpeaking,
+  } = useTextToSpeech({
+    authFetch: fetch,
+    endpoint: API_ROUTE.TEXT_TO_SPEECH,
+  });
 
   const { isStreaming, runChat, stopStreaming } = useChatStream({
     setMessages,
+    onReplyComplete: content => {
+      if (speakRepliesRef.current) return speak(content);
+    },
+    onInterrupt: stopSpeaking,
     request: (history, signal) =>
       fetch(API_ROUTE.CHAT, {
         method: HTTP_METHOD.POST,
@@ -68,6 +97,11 @@ export const ChatPanel = ({
   useEffect(() => {
     onMessagesChangeRef.current = onMessagesChange;
   }, [onMessagesChange]);
+
+  useEffect(() => {
+    speakRepliesRef.current = speakReplies;
+    if (!speakReplies) stopSpeaking();
+  }, [speakReplies, stopSpeaking]);
 
   // Skip the mount run: it would re-save the history just loaded.
   useEffect(() => {
@@ -180,6 +214,12 @@ export const ChatPanel = ({
         onKeyDown={handleKeyDown}
         onSend={handleSend}
         onStop={stopStreaming}
+        speech={{
+          isRecording,
+          isProcessing,
+          error: speechToTextError || textToSpeechError,
+          onToggleRecording: toggleRecording,
+        }}
         footer={
           <ChatInputHint>
             Enter to send, Shift+Enter for a new line.

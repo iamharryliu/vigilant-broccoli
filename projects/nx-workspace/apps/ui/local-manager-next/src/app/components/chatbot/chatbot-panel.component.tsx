@@ -4,9 +4,9 @@ import {
   LLMModel,
   modelSupportsImageInput,
 } from '@vigilant-broccoli/common-js';
-import { useSpeechToText } from '@vigilant-broccoli/react-lib';
+import { useSpeechToText, useTextToSpeech } from '@vigilant-broccoli/react-lib';
 import { authFetch } from '../../../../libs/auth';
-import { useTextToSpeech } from '../../hooks/useTextToSpeech';
+import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { useChatStream } from '../../hooks/useChatStream';
 import { useCalendarDrafts } from '../../hooks/useCalendarDrafts';
 import { useTaskDrafts } from '../../hooks/useTaskDrafts';
@@ -103,7 +103,7 @@ export const ChatbotPanel = ({
     error: textToSpeechError,
     speak,
     stop: stopSpeaking,
-  } = useTextToSpeech();
+  } = useTextToSpeech({ authFetch, endpoint: API_ENDPOINTS.TEXT_TO_SPEECH });
 
   const { isStreaming, runChat, runSuggestion, stopStreaming } = useChatStream({
     setMessages,

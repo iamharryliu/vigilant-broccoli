@@ -84,7 +84,7 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `CODE_SERVER_VM_IP` | Vault `kv/data/secrets` (synced by `tf:post-apply`) | Origin IP of the code-server VM; SSH target for `manual-refresh-code-server-github-token` and origin-bypass check in `test-security-cloudflare-access`. |
 | `DEEPSEEK_API_KEY` | Vault `kv/data/secrets` → Fly | DeepSeek API key for `llm-service`. |
 | `DOCKERHUB_TOKEN` | Vault `kv/data/secrets` | Pushes images to Docker Hub from CI, supplies Render's programmatically created registry credential, and updates each repository's description and overview (`scripts/update-dockerhub-descriptions.ts`), which needs repository write access. |
-| `ELEVENLABS_API_KEY` | Vault `kv/data/secrets` → Fly | ElevenLabs text-to-speech for `vb-express`. |
+| `ELEVENLABS_API_KEY` | Vault `kv/data/secrets` → Fly | ElevenLabs text-to-speech and speech-to-text for `vb-express`. |
 | `FLY_API_TOKEN` | Vault `kv/data/secrets` | Fly.io org token for deploys and `deploy-flyio-secrets.ts`. |
 | `FLY_LOG_SHIPPER_ACCESS_TOKEN` | Vault `kv/data/secrets` → Fly (`ACCESS_TOKEN`) | Read-only Fly org token; `vb-log-shipper` subscribes to the org NATS log stream. |
 | `GCP_SERVICE_ACCOUNT` / `GCP_WORKLOAD_IDENTITY_PROVIDER` | GitHub Actions repo secrets (Terraform-managed) | Workload Identity Federation bootstrap: how CI authenticates to GCP and then reaches Vault. |
@@ -131,7 +131,7 @@ Upptime configuration sync uses a separate `kv/upptime-sync` path containing onl
 | `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` | Vault `kv/data/secrets` → Fly | Twilio SMS credentials for `vb-express`. |
 | `UPPTIME_SYNC_GH_APP_PRIVATE_KEY` | Vault `kv/upptime-sync` | Private key of the GitHub App that syncs Upptime configuration to the `uptime` repo. |
 | `VAULT_CF_ACCESS_CLIENT_ID` / `VAULT_CF_ACCESS_CLIENT_SECRET` | GCP Secret Manager (Terraform-written) | Cloudflare Access service token gating the Vault tunnel for CI. |
-| `VB_EXPRESS_API_KEY` | Vault `kv/data/secrets` → Fly | API key clients use to call `vb-express`. |
+| `VB_EXPRESS_API_KEY` | Vault `kv/data/secrets` → Fly; → Vercel (`chat`, via `.env.example`) | API key clients use to call `vb-express`. |
 | `VB_VM_CLOUDFLARED_TUNNEL_TOKEN` | GCP Secret Manager (Terraform-managed) | Cloudflared tunnel token exposing Vault at `vault.harryliu.dev`. |
 | `VB_VM_VAULT_ROOT_TOKEN` / `VB_VM_VAULT_UNSEAL_KEYS` | GCP Secret Manager (Tier 0) | Vault root token and unseal keys; root of trust for everything below. |
 | `VB_VM_WG_*` | GCP Secret Manager (Tier 0) | WireGuard keys for laptop access to Vault at `10.0.1.1:8200`. |

@@ -393,7 +393,9 @@ async function main() {
       ),
     },
     chat: {
-      hardcodedSecrets: {},
+      hardcodedSecrets: {
+        VB_EXPRESS_URL: `https://${environment}-vb-express.fly.dev`,
+      },
       envExamplePath: 'apps/ui/chat/.env.example',
       privateApp: true,
       settings: NX_VERCEL_SETTINGS('chat', 'dist/apps/ui/chat/.next'),

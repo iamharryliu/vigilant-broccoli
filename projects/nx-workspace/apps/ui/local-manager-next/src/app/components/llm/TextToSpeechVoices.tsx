@@ -1,13 +1,20 @@
 'use client';
 
-import { Button, Select, Textarea, Text } from '@vigilant-broccoli/react-lib';
+import {
+  Button,
+  Select,
+  Textarea,
+  Text,
+  useTextToSpeech,
+} from '@vigilant-broccoli/react-lib';
 import {
   ELEVENLABS_FREE_VOICE_OPTIONS,
   DEFAULT_VOICE_ID,
 } from '@vigilant-broccoli/common-js';
 import { useState } from 'react';
 import { Volume2 } from 'lucide-react';
-import { useTextToSpeech } from '../../hooks/useTextToSpeech';
+import { API_ENDPOINTS } from '../../constants/api-endpoints';
+import { authFetch } from '../../../../libs/auth';
 
 const DEFAULT_TEXT =
   'Hello! This is a text to speech demo. How does my voice sound?';
@@ -26,7 +33,10 @@ const DEFAULT_VOICE =
 export const TextToSpeechVoices = () => {
   const [text, setText] = useState(DEFAULT_TEXT);
   const [voice, setVoice] = useState<VoiceOption>(DEFAULT_VOICE);
-  const { audioUrl, error, isLoading, speak } = useTextToSpeech();
+  const { audioUrl, error, isLoading, speak } = useTextToSpeech({
+    authFetch,
+    endpoint: API_ENDPOINTS.TEXT_TO_SPEECH,
+  });
 
   return (
     <div className="flex flex-col gap-4">

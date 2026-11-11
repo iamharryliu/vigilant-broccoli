@@ -5,12 +5,15 @@ import {
   Button,
   ChatSendButton,
   IconButton,
+  SpeechToTextToggleButton,
   Text,
   Textarea,
 } from '@vigilant-broccoli/react-lib';
 import type { ChatbotImage } from './chatbot.types';
 
 const DEFAULT_PLACEHOLDER = 'Type your message...';
+const RECORDING_PLACEHOLDER = 'Recording...';
+const PROCESSING_PLACEHOLDER = 'Processing...';
 
 const ImagePreviewList = ({
   images,
@@ -41,6 +44,53 @@ const ImagePreviewList = ({
   </div>
 );
 
+// Voice input state, e.g. from react-lib's useSpeechToText.
+export interface ChatInputSpeechProps {
+  isRecording: boolean;
+  isProcessing: boolean;
+  error?: string | null;
+  onToggleRecording: () => void;
+}
+
+const getPlaceholder = (
+  placeholder: string,
+  speech: ChatInputSpeechProps | undefined,
+) => {
+  if (speech?.isRecording) return RECORDING_PLACEHOLDER;
+  if (speech?.isProcessing) return PROCESSING_PLACEHOLDER;
+  return placeholder;
+};
+
+const isSpeechBusy = (speech: ChatInputSpeechProps | undefined) =>
+  Boolean(speech?.isRecording || speech?.isProcessing);
+
+const getDefaultUploadDisabled = (
+  isStreaming: boolean,
+  speech: ChatInputSpeechProps | undefined,
+) => isStreaming || Boolean(speech?.isRecording);
+
+const SpeechToggle = ({
+  speech,
+  isStreaming,
+}: {
+  speech: ChatInputSpeechProps;
+  isStreaming: boolean;
+}) => (
+  <SpeechToTextToggleButton
+    variant="ghost"
+    isRecording={speech.isRecording}
+    isDisabled={isStreaming || speech.isProcessing}
+    onToggle={speech.onToggleRecording}
+  />
+);
+
+const SpeechError = ({ error }: { error?: string | null }) =>
+  error ? (
+    <Text size="2" color="red">
+      {error}
+    </Text>
+  ) : null;
+
 export interface ChatInputAreaProps {
   uploadedImages: ChatbotImage[];
   input: string;
@@ -62,6 +112,8 @@ export interface ChatInputAreaProps {
   leadingControls?: ReactNode;
   // Rendered below the controls, e.g. a hint or an error.
   footer?: ReactNode;
+  // Adds a microphone toggle and its error; omit for text-only input.
+  speech?: ChatInputSpeechProps;
 }
 
 export const ChatInputArea = ({
@@ -77,8 +129,9 @@ export const ChatInputArea = ({
   onSend,
   onStop,
   placeholder = DEFAULT_PLACEHOLDER,
+  speech,
   isInputDisabled = false,
-  isUploadDisabled = isStreaming,
+  isUploadDisabled,
   aboveInput,
   leadingControls,
   footer,
@@ -101,17 +154,20 @@ export const ChatInputArea = ({
         icon="image"
         variant="ghost"
         onClick={() => fileInputRef.current?.click()}
-        disabled={isUploadDisabled}
+        disabled={
+          isUploadDisabled ?? getDefaultUploadDisabled(isStreaming, speech)
+        }
         aria-label="Upload image"
       />
+      {speech && <SpeechToggle speech={speech} isStreaming={isStreaming} />}
       {leadingControls}
       <Textarea
         ref={textInputRef}
-        placeholder={placeholder}
+        placeholder={getPlaceholder(placeholder, speech)}
         value={input}
         onChange={e => onInputChange(e.target.value)}
         onKeyDown={onKeyDown}
-        disabled={isInputDisabled}
+        disabled={isInputDisabled || isSpeechBusy(speech)}
         rows={1}
         className="max-h-48 min-h-[2.25rem] flex-1"
       />
@@ -123,6 +179,7 @@ export const ChatInputArea = ({
         onStop={onStop}
       />
     </div>
+    <SpeechError error={speech?.error} />
     {footer}
   </div>
 );
