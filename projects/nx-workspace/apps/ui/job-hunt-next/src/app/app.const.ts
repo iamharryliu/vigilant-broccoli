@@ -16,6 +16,8 @@ export const APP_TAB = {
     path: `/${CAREER_FILE_KIND.RESUME}`,
     titleKey: 'NAV.RESUME',
   },
+  NOTES: { value: 'notes', path: '/notes', titleKey: 'NAV.NOTES' },
+  TASKS: { value: 'tasks', path: '/tasks', titleKey: 'NAV.TASKS' },
   RUNS: { value: 'runs', path: '/runs', titleKey: 'NAV.RUNS' },
   SETTINGS: { value: 'settings', path: '/settings', titleKey: 'NAV.SETTINGS' },
 } as const;
