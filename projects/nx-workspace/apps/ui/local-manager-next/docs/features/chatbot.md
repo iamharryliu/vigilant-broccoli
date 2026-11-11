@@ -33,7 +33,7 @@
 
 ## Slash Commands
 
-Type `/` to open command menu (arrow keys, Enter/Tab to select, Escape to dismiss).
+Type `/` to open command menu (arrow keys, Enter/Tab to select, Escape to dismiss). `/calendar` and `/tasks` also accept their text inline (`/tasks buy milk, call dad`) and run on Enter.
 
 - `/calendar` — parse text/images into a Google Calendar event draft; http(s) links in the text (up to 3) are fetched by vb-express and parsed too, using page JSON-LD, meta tags, embedded start/end fields and visible text; the pasted links are appended to each draft event's description
 - `/tasks` — extract task list from text/images into a Google Tasks draft

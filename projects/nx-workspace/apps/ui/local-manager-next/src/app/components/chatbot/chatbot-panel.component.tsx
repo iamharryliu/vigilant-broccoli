@@ -27,6 +27,7 @@ import {
 import {
   filterCommandsByQuery,
   InputArea,
+  parseInlineSlashCommand,
   parseSlashQuery,
 } from './chat-input.component';
 import { MessagesArea } from './chat-messages.component';
@@ -210,16 +211,30 @@ export const ChatbotPanel = ({
     if (command) await parseEvent(command.text, command.images);
   };
 
-  const handleParseTasks = async () => {
-    const command = takeCommandInput();
+  const handleParseTasks = async (textOverride?: unknown) => {
+    const command = takeCommandInput(textOverride);
     if (command) await parseTasks(command.text, command.images);
   };
+
+  const inlineCommandHandlers: Record<string, (text: string) => Promise<void>> =
+    {
+      [COMMAND_NAME.CALENDAR]: handleParseEvent,
+      [COMMAND_NAME.TASKS]: handleParseTasks,
+    };
 
   const handleSend = async (messageText?: string) => {
     const textToSend = messageText || input;
     if ((!textToSend.trim() && uploadedImages.length === 0) || isStreaming)
       return;
     if (!messageText && parseSlashQuery(input) !== null) return;
+    const inlineCommand = messageText ? null : parseInlineSlashCommand(input);
+    const inlineHandler = inlineCommand
+      ? inlineCommandHandlers[inlineCommand.name]
+      : undefined;
+    if (inlineCommand && inlineHandler) {
+      await inlineHandler(inlineCommand.text);
+      return;
+    }
     if (!messageText && isCalendarLinkMessage(input)) {
       await handleParseEvent();
       return;
