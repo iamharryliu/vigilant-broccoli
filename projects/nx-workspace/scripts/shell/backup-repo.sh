@@ -2,7 +2,7 @@
 set -euo pipefail
 
 TIMESTAMP=$(date -u +%Y-%m-%d)
-BACKUP_DIR="$HOME/resilio-sync/backup/vb-repo"
+BACKUP_DIR="$HOME/resilio-sync/backup/vigilant-broccoli"
 FILENAME="vb-repo-$TIMESTAMP.zip"
 
 mkdir -p "$BACKUP_DIR"
