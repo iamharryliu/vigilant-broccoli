@@ -21,6 +21,7 @@ import { WebApplicationReadmePage } from './pages/WebApplicationReadmePage';
 import { WebApplicationsPage } from './pages/WebApplicationsPage';
 import { ApiServicesPage } from './pages/ApiServicesPage';
 import { ApiServiceDocsPage } from './pages/ApiServiceDocsPage';
+import { ChangelogPage } from './pages/ChangelogPage';
 import { DeploymentsPage } from './pages/DeploymentsPage';
 import { CareerPage } from './pages/CareerPage';
 import { CareerExperiencePage } from './pages/CareerExperiencePage';
@@ -33,6 +34,7 @@ import {
 import {
   GAMES_ROUTE,
   CAREER_EXPERIENCE_ROUTE,
+  CHANGELOG_ROUTE,
   DEPLOYMENTS_ROUTE,
   STATUS_ROUTE,
   WEB_APPLICATIONS_ROUTE,
@@ -107,6 +109,7 @@ function ProjectsRoutes() {
       />
       <Route path={STATUS_ROUTE} element={<StatusPage />} />
       <Route path={DEPLOYMENTS_ROUTE} element={<DeploymentsPage />} />
+      <Route path={CHANGELOG_ROUTE} element={<ChangelogPage />} />
       <Route path="/repo-timeline" element={<RepoTimelinePage />} />
       <Route
         path={`${LEGACY_OPEN_SOURCE_PREFIX}/*`}

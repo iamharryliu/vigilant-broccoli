@@ -3,6 +3,7 @@ import en from '../i18n/en.json';
 import {
   GAMES_ROUTE,
   CAREER_EXPERIENCE_ROUTE,
+  CHANGELOG_ROUTE,
   DEPLOYMENTS_ROUTE,
   STATUS_ROUTE,
 } from './routes';
@@ -24,6 +25,7 @@ const BREADCRUMB_TREE: Record<string, BreadcrumbNode> = {
   '/': { labelKey: 'HOME.TITLE', parent: null },
   [STATUS_ROUTE]: { labelKey: 'STATUS_PAGE.TITLE', parent: '/' },
   [DEPLOYMENTS_ROUTE]: { labelKey: 'DEPLOYMENTS_PAGE.TITLE', parent: '/' },
+  [CHANGELOG_ROUTE]: { labelKey: 'CHANGELOG_PAGE.TITLE', parent: '/' },
   [CAREER_EXPERIENCE_ROUTE]: {
     labelKey: 'CAREER_EXPERIENCE_PAGE.TITLE',
     parent: '/',

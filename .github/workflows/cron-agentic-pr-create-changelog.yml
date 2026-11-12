@@ -1,0 +1,115 @@
+name: cron-agentic-pr-create-changelog
+
+# Summarizes the pull requests merged to main since the last entry into
+# CHANGELOG.md (served at projects.harryliu.dev/#/changelog), opening one PR
+# only when there is something user-facing to report. Same container and
+# credentials as `cron-agentic-pr-create-readmes`; the local equivalent is
+# `pnpm agentic-pr-create-changelog`.
+#
+# A clean run opens no PR and still succeeds: the runner prints CHANGELOG_CLEAN
+# and exits 0.
+
+on:
+  schedule:
+    - cron: '40 6 * * 0'
+  workflow_dispatch:
+    inputs:
+      model:
+        description: 'Claude model to run the agent with.'
+        type: choice
+        default: haiku
+        options:
+          - haiku
+          - sonnet
+          - opus
+      firewall:
+        description: 'In-container egress firewall (turn off if iptables/ipset fails on the runner).'
+        type: choice
+        default: 'on'
+        options:
+          - 'on'
+          - 'off'
+
+permissions:
+  contents: read
+  id-token: write
+
+# Static group: the changelog-through marker makes a second overlapping run
+# summarize the same pull requests and open a competing PR.
+concurrency:
+  group: cron-agentic-pr-create-changelog
+  cancel-in-progress: false
+
+jobs:
+  overview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      model: ${{ steps.config.outputs.model }}
+      firewall: ${{ steps.config.outputs.firewall }}
+    steps:
+      # Scheduled runs carry no inputs, so the defaults are resolved once here
+      # and both the overview and the changelog job read the same values.
+      - name: Resolve effective configuration
+        id: config
+        env:
+          MODEL: ${{ inputs.model || 'haiku' }}
+          FIREWALL: ${{ inputs.firewall || 'on' }}
+        run: |
+          set -euo pipefail
+          echo "model=$MODEL" >> "$GITHUB_OUTPUT"
+          echo "firewall=$FIREWALL" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout summary helper
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: .github
+
+      - name: Publish overview
+        continue-on-error: true
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: overview
+          title: Summarize merged pull requests into the changelog
+          agent: claude
+          model: ${{ steps.config.outputs.model }}
+          firewall: ${{ steps.config.outputs.firewall }}
+          description: Summarize the pull requests merged to main since the last changelog-through marker into a new CHANGELOG.md entry. Opens a pull request only when something user-facing shipped.
+
+  changelog:
+    needs: overview
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+
+      - name: Import Secrets from Vault
+        uses: ./.github/actions/vault-secrets
+        with:
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          secrets: |
+            kv/data/secrets CLAUDE_CODE_OAUTH_TOKEN | CLAUDE_CODE_OAUTH_TOKEN ;
+            kv/data/secrets AGENT_GH_APP_ID | AGENT_GH_APP_ID ;
+            kv/data/secrets AGENT_GH_APP_PRIVATE_KEY | AGENT_GH_APP_PRIVATE_KEY ;
+
+      - name: Write changelog entry
+        id: changelog
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ env.CLAUDE_CODE_OAUTH_TOKEN }}
+          AGENT_GH_APP_ID: ${{ env.AGENT_GH_APP_ID }}
+          AGENT_GH_APP_PRIVATE_KEY: ${{ env.AGENT_GH_APP_PRIVATE_KEY }}
+          SANDBOX_FIREWALL: ${{ needs.overview.outputs.firewall }}
+          MODEL: ${{ needs.overview.outputs.model }}
+        run: |
+          set -euo pipefail
+          bash infrastructure/agent-sandbox/changelog.sh --model "$MODEL"
+
+      - name: Report result when the changelog run could not
+        if: ${{ always() && steps.changelog.outcome != 'success' && steps.changelog.outputs.result_reported != 'true' }}
+        uses: ./.github/actions/agentic-summary
+        with:
+          mode: result
+          outcome: ${{ job.status == 'cancelled' && 'cancelled' || 'failed' }}
+          note: ${{ steps.changelog.outcome == 'skipped' && 'A step before the changelog run failed, so the agent never started.' || 'The changelog run stopped before it could report a result; see its step log.' }}

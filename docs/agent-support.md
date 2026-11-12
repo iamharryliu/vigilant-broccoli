@@ -105,6 +105,7 @@ Checks include the task's existing validation, the cleanup checklist when requir
 | `agentic-pr-create-free-tier-audit` | Weekly/manual Actions plus Docker/Local; Claude. Runner caps 10 files, edits Markdown only and protects TODO. A clean audit opens no PR. |
 | `agentic-pr-create-inventory-audit` | Weekly/manual Actions plus Docker/Local; Claude. Candidates come from `scripts/ci/inventory-drift.sh`; skill edits at most 10 rows, runner allows only the two inventory docs. A clean audit opens no PR. |
 | `agentic-pr-create-prune` | Weekly/manual Actions plus Docker/Local; Claude. Skill targets about 40 files, runner caps 50 and protects TODO/migrations/state. A clean sweep opens no PR. |
+| `agentic-pr-create-changelog` | Weekly/manual Actions plus Docker/Local; Claude. Runs the `update-changelog` skill over the PRs merged since the `changelog-through` marker; runner edits only `CHANGELOG.md` as plain Markdown (no raw HTML, which projects.harryliu.dev does not render) and advances the marker itself. A clean run opens no PR. |
 | `agentic-pr-create-readmes` | Weekly/manual Actions plus Docker/Local; Claude. Runs the `update-readmes` skill and `pnpm repo-stats`; runner caps 20 files and allows only READMEs and repo-stats copies. A clean run opens no PR. |
 | `agentic-pr-create-smoke` | Actions-only dispatch check, with no separate local task. |
 | `agentic-pr-create-url-audit` | Weekly/manual Actions plus Docker/Local; Claude. Runner caps 15 files and protects TODO/migrations/state. A clean audit opens no PR. |
