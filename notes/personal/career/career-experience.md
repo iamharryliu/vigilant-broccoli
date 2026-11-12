@@ -42,6 +42,7 @@
 | Bash | ELVA11; Tillmobil; vigilant-broccoli |
 | Branch management | Capco; ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
 | CI/CD pipelines | ELVA11; Tillmobil; Tretton37 |
+| Claude Code | vigilant-broccoli |
 | Client relations / communication | Tillmobil |
 | Cloud infrastructure | Tillmobil |
 | Cloud services | ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
@@ -50,6 +51,7 @@
 | Cloudflare Workers | ELVA11; vigilant-broccoli |
 | CMS integration | Strandbadens Vägförening |
 | Code reviews | Capco; ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
+| Codex | vigilant-broccoli |
 | Component API design | Capco; vigilant-broccoli |
 | Component library management | Capco; vigilant-broccoli |
 | CSS | Capco |
@@ -71,6 +73,7 @@
 | Frontend performance optimization | Tillmobil |
 | GCP | ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
 | GCP Secret Manager | Tillmobil |
+| Gemini | vigilant-broccoli |
 | Git | Capco; ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
 | GitHub Actions | Tillmobil |
 | GitLab | Tretton37 |
@@ -100,6 +103,7 @@
 | Node.js | Capco; ELVA11; Tillmobil; Tretton37; vigilant-broccoli |
 | npm publishing / semantic versioning | vigilant-broccoli |
 | Nx | ELVA11; Tretton37; vigilant-broccoli |
+| Object-oriented programming | Capco |
 | Observability | Tillmobil |
 | OIDC / SSO authentication | Tillmobil |
 | OpenAPI / Swagger | vigilant-broccoli |
