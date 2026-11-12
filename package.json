@@ -138,6 +138,7 @@
     "screenshot:themes": "cd projects/nx-workspace && npx tsx scripts/screenshot-themes.ts",
     "agentic-pr-create": "./infrastructure/agent-sandbox/solve-todo.sh",
     "agentic-pr-create-audit": "./infrastructure/agent-sandbox/audit-docs.sh",
+    "agentic-pr-create-changelog": "./infrastructure/agent-sandbox/changelog.sh",
     "agentic-pr-create-comment-audit": "./infrastructure/agent-sandbox/comment-audit.sh",
     "agentic-pr-create-context-audit": "./infrastructure/agent-sandbox/audit-context.sh",
     "agentic-pr-create-todo": "./infrastructure/agent-sandbox/create-todo.sh",

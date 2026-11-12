@@ -7,6 +7,7 @@ import {
   GitPullRequestArrow,
   Globe,
   LayoutGrid,
+  ScrollText,
   Server,
 } from 'lucide-react';
 import { useTranslation } from '../i18n';
@@ -16,7 +17,7 @@ import { SectionHeading } from '../components/SectionHeading';
 import { DockerIcon, GithubIcon, NpmIcon } from '../components/BrandIcons';
 import { usePageTitle } from '../use-page-title';
 import { PAGE_CLASS } from '../consts/layout';
-import { GAMES_ROUTE } from '../consts/routes';
+import { CHANGELOG_ROUTE, GAMES_ROUTE } from '../consts/routes';
 
 const ICON_CLASS = 'h-5 w-5 shrink-0';
 
@@ -39,6 +40,15 @@ export function HomePage() {
               title={t('HOME.README.TITLE')}
               description={t('HOME.README.DESCRIPTION')}
               icon={<FileText className={ICON_CLASS} />}
+            />
+          </li>
+          <li>
+            <CardLink
+              route
+              href={CHANGELOG_ROUTE}
+              title={t('HOME.CHANGELOG.TITLE')}
+              description={t('HOME.CHANGELOG.DESCRIPTION')}
+              icon={<ScrollText className={ICON_CLASS} />}
             />
           </li>
           <li>

@@ -5,7 +5,7 @@ set -euo pipefail
 # the shared renderer, so the run page links straight to the PR it opened (one
 # PR_URL:: record, with PR_TITLE:: and PR_STATE::). Reads the runner's markers, never a loose
 # pull-URL match, since the log can carry diffs and notes that cite PRs. A *_CLEAN:: marker (AUDIT_CLEAN,
-# COMMENT_CLEAN, PRUNE_CLEAN, README_CLEAN, URL_AUDIT_CLEAN) means the run found nothing to change, which is not a failure, and
+# CHANGELOG_CLEAN, COMMENT_CLEAN, PRUNE_CLEAN, README_CLEAN, URL_AUDIT_CLEAN) means the run found nothing to change, which is not a failure, and
 # so does RESULT::no-changes, which a runner prints only with the agent's reason.
 # A failed solve run also prints a RESULT:: marker (salvaged, salvage-nothing,
 # salvage-push-failed, salvage-pr-failed) saying what became of its partial work.

@@ -44,6 +44,10 @@
       "TITLE": "README",
       "DESCRIPTION": "Browse the repository README."
     },
+    "CHANGELOG": {
+      "TITLE": "Changelog",
+      "DESCRIPTION": "See what shipped in recently merged pull requests."
+    },
     "CLAUDE_CONTEXT": {
       "TITLE": "Agent Context",
       "DESCRIPTION": "How repository context, docs, and shared skills link together."
@@ -187,6 +191,9 @@
   },
   "DEPLOYMENTS_PAGE": {
     "TITLE": "Deployments"
+  },
+  "CHANGELOG_PAGE": {
+    "TITLE": "Changelog"
   },
   "STATUS_PAGE": {
     "TITLE": "Status",
