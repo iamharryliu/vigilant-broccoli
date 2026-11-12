@@ -74,7 +74,16 @@ localcleanup() {
     local worktrees_dir="$REPO_DIR/.claude/worktrees" worktree header
     local -a worktrees=() skipped=() remove_args=()
     local removed=0 worktree_kb=0 kb out size label cache_path
-    local summary="" docker_note="" free_before="" free_after="" width=0 line
+    local summary="" docker_note="" free_before="" free_after="" width=0 line disk_path
+    local -a cache_entries=()
+    # Cache directories and the volume holding user data differ between macOS and Linux.
+    if [ -d /System/Volumes/Data ]; then
+        disk_path=/System/Volumes/Data
+        cache_entries=("Yarn cache|$HOME/Library/Caches/Yarn" "Cypress cache|$HOME/Library/Caches/Cypress" "pip cache|$HOME/Library/Caches/pip")
+    else
+        disk_path=/
+        cache_entries=("Yarn cache|$HOME/.cache/yarn" "Cypress cache|$HOME/.cache/Cypress" "pip cache|$HOME/.cache/pip" "pnpm store|$HOME/.local/share/pnpm/store" "pnpm cache|$HOME/.cache/pnpm")
+    fi
     case "${1:-}" in
         "") ;;
         --force|-f)
@@ -107,9 +116,7 @@ localcleanup() {
         return 0
     }
 
-    if [ -d /System/Volumes/Data ]; then
-        free_before=$(df -h /System/Volumes/Data | awk 'NR==2 {print $4}')
-    fi
+    free_before=$(df -h "$disk_path" | awk 'NR==2 {print $4}')
 
     for worktree in "${worktrees[@]}"; do
         kb=$(du -sk "$worktree" 2> /dev/null | cut -f1)
@@ -142,14 +149,14 @@ Docker unused images	${size:-0B}"
         summary="$summary
 Docker stopped containers	${size:-0B}"
     else
-        docker_note="skipped (Docker not running)"
+        docker_note="skipped (Docker not available)"
         summary="$summary
 Docker build cache	$docker_note
 Docker unused images	$docker_note
 Docker stopped containers	$docker_note"
     fi
 
-    for line in "npm cache|$HOME/.npm/_cacache" "npx cache|$HOME/.npm/_npx" "Yarn cache|$HOME/Library/Caches/Yarn" "Cypress cache|$HOME/Library/Caches/Cypress" "pip cache|$HOME/Library/Caches/pip"; do
+    for line in "npm cache|$HOME/.npm/_cacache" "npx cache|$HOME/.npm/_npx" "${cache_entries[@]}"; do
         label="${line%%|*}"
         cache_path="${line#*|}"
         size="-"
@@ -161,11 +168,12 @@ $label	${size:--}"
     done
 
     npm cache clean --force
-    rm -rf ~/.npm/_npx ~/Library/Caches/{Yarn,Cypress,pip}
+    rm -rf ~/.npm/_npx
+    for line in "${cache_entries[@]}"; do
+        rm -rf "${line#*|}"
+    done
 
-    if [ -d /System/Volumes/Data ]; then
-        free_after=$(df -h /System/Volumes/Data | awk 'NR==2 {print $4}')
-    fi
+    free_after=$(df -h "$disk_path" | awk 'NR==2 {print $4}')
 
     while IFS=$'\t' read -r label size; do
         [ "${#label}" -gt "$width" ] && width=${#label}
@@ -178,8 +186,8 @@ $label	${size:--}"
     for worktree in "${skipped[@]}"; do
         echo "  Skipped worktree: $worktree (uncommitted changes)"
     done
-    if [ -n "$free_before" ]; then
-        echo "Disk free: $free_before before -> $free_after after"
+    echo "Disk free: $free_before before -> $free_after after"
+    if [ "$disk_path" = /System/Volumes/Data ]; then
         echo "Note: freed Docker space lives in Docker Desktop's VM disk, so macOS free space may grow by less until that disk shrinks."
     fi
 }
