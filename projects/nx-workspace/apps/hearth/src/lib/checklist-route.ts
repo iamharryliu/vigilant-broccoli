@@ -69,11 +69,12 @@ export const createChecklistHandlers = (
     const supabase = getSupabase(req);
     const body = await req.json();
 
-    const { data: lastItem, error: positionError } = await supabase
+    // New items land above every existing one.
+    const { data: firstItem, error: positionError } = await supabase
       .from(table)
       .select('position')
       .eq('home_id', body.homeId)
-      .order('position', { ascending: false })
+      .order('position', { ascending: true })
       .limit(1)
       .maybeSingle();
 
@@ -83,7 +84,7 @@ export const createChecklistHandlers = (
       .from(table)
       .insert({
         name: body.name,
-        position: (lastItem?.position ?? -1) + 1,
+        position: (firstItem?.position ?? 1) - 1,
         home_id: body.homeId,
       })
       .select()

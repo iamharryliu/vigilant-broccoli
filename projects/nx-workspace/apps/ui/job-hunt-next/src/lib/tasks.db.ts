@@ -27,9 +27,21 @@ const ensureTable = () => {
       title TEXT NOT NULL,
       checked INTEGER NOT NULL DEFAULT 0,
       completed_at TEXT,
-      created_at TEXT NOT NULL
+      created_at TEXT NOT NULL,
+      position INTEGER NOT NULL DEFAULT 0
     )
   `);
+  // Databases created before manual ordering lack the column; rows backfill to
+  // newest-first, matching where new tasks land.
+  const columns = (
+    db.prepare(`PRAGMA table_info(${TASKS_TABLE})`).all() as { name: string }[]
+  ).map(column => column.name);
+  if (!columns.includes('position')) {
+    db.exec(
+      `ALTER TABLE ${TASKS_TABLE} ADD COLUMN position INTEGER NOT NULL DEFAULT 0`,
+    );
+    db.exec(`UPDATE ${TASKS_TABLE} SET position = -rowid`);
+  }
   return db;
 };
 
@@ -44,7 +56,7 @@ const toRecord = (row: TaskRow): TaskRecord => ({
 export const listTasks = (): TaskRecord[] =>
   (
     ensureTable()
-      .prepare(`SELECT * FROM ${TASKS_TABLE} ORDER BY created_at, rowid`)
+      .prepare(`SELECT * FROM ${TASKS_TABLE} ORDER BY position, rowid`)
       .all() as unknown as TaskRow[]
   ).map(toRecord);
 
@@ -56,12 +68,21 @@ export const createTask = (title: string): TaskRecord => {
     completedAt: null,
     createdAt: new Date().toISOString(),
   };
+  // Below every existing position, so the task lists first.
   ensureTable()
     .prepare(
-      `INSERT INTO ${TASKS_TABLE} (id, title, checked, completed_at, created_at) VALUES (?, ?, 0, NULL, ?)`,
+      `INSERT INTO ${TASKS_TABLE} (id, title, checked, completed_at, created_at, position)
+       VALUES (?, ?, 0, NULL, ?, (SELECT COALESCE(MIN(position), 1) - 1 FROM ${TASKS_TABLE}))`,
     )
     .run(task.id, task.title, task.createdAt);
   return task;
+};
+
+export const reorderTasks = (ids: string[]) => {
+  const update = ensureTable().prepare(
+    `UPDATE ${TASKS_TABLE} SET position = ? WHERE id = ?`,
+  );
+  ids.forEach((id, index) => update.run(index, id));
 };
 
 export const updateTask = (

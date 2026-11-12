@@ -219,7 +219,7 @@ export function TaskList() {
       homeId,
     });
     const created = await res.json();
-    if (created?.id) setOneOffTasks(prev => [...prev, created]);
+    if (created?.id) setOneOffTasks(prev => [created, ...prev]);
   };
 
   const handleToggle = (item: CheckListItem) => {
@@ -411,7 +411,7 @@ export function TaskList() {
       monthlyNth,
     });
     const created = await res.json();
-    if (created?.id) setTasks(prev => [...prev, created]);
+    if (created?.id) setTasks(prev => [created, ...prev]);
   };
 
   const handleDeleteTask = (id: string) => {

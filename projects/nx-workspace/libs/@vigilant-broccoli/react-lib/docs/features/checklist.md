@@ -20,3 +20,9 @@ Layered checklist components in `libs/@vigilant-broccoli/react-lib`.
 
 - `CheckList` keeps its props, `CheckListItem` type, localStorage keys and the dnd payload (`type: 'task'`, `task`, `taskListId`; droppable `type: 'taskList'`) read by `apps/ui/local-manager-next`'s kanban handlers. See that app's `CONTEXT.md` before changing them.
 - Consumers: `TaskChecklist`, `GoogleTasks`, the component-library `CheckListDemo`, `react-lib-higher-level`'s checklist viewer and hearth's tasks and checklists (`CheckList`).
+
+## Standard behavior
+
+- New items render at the top of the active list: prepend optimistic and saved rows, and store a position below the current minimum so a reload keeps them first.
+- Every list is reorderable. Standalone consumers pass `onReorder` (receives the active ids in their new order; `CheckList` supplies its own `DndContext` and drag handles) and persist it, rolling back on failure. Consumers that already own a `DndContext` (kanban, hearth) pass `enableDragDrop` and handle `onDragEnd` instead.
+- Adopted by job-hunt's Tasks page and hearth's `TaskList`/`Checklist` (their POST routes insert at the minimum position minus one; they reorder via their own `DndContext`). Not yet adopted: `TaskChecklist` and the mobile Google Tasks view.

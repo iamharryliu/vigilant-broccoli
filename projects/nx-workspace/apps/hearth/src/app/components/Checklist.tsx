@@ -133,7 +133,7 @@ export function Checklist({
       body: JSON.stringify({ name, homeId }),
     });
     const created = await res.json();
-    if (created?.id) setItems(prev => [...prev, created]);
+    if (created?.id) setItems(prev => [created, ...prev]);
   };
 
   const setCompleted = (

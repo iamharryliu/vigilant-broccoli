@@ -46,11 +46,12 @@ export const POST = async (req: NextRequest) => {
     return badRequest('homeId, title and days are required');
   if (!isValidMonthlyNth(monthlyNth)) return badRequest(INVALID_MONTHLY_NTH);
 
-  const { data: lastTask, error: positionError } = await supabase
+  // New tasks land above every existing one.
+  const { data: firstTask, error: positionError } = await supabase
     .from(RECURRING_TASKS_TABLE)
     .select('position')
     .eq('home_id', homeId)
-    .order('position', { ascending: false })
+    .order('position', { ascending: true })
     .limit(1)
     .maybeSingle();
   if (positionError) return serverError(positionError.message);
@@ -62,7 +63,7 @@ export const POST = async (req: NextRequest) => {
       title,
       days,
       monthly_nth: monthlyNth,
-      position: (lastTask?.position ?? -1) + 1,
+      position: (firstTask?.position ?? 1) - 1,
     })
     .select()
     .single();

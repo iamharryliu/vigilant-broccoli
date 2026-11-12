@@ -4,6 +4,7 @@ import {
   createTask,
   deleteTask,
   listTasks,
+  reorderTasks,
   updateTask,
 } from '../../../lib/tasks.db';
 
@@ -29,10 +30,18 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ task: createTask(title) });
 }
 
-// Updates the title and/or checked state of the task named by `id`.
+// Without `id`, `order` lists task ids in their new display order. With one,
+// updates the title and/or checked state of that task.
 export async function PATCH(req: NextRequest) {
   const id = req.nextUrl.searchParams.get(ID_PARAM);
   const body = await req.json().catch(() => null);
+  if (!id && Array.isArray(body?.order)) {
+    if (!body.order.every((value: unknown) => typeof value === 'string')) {
+      return badRequest();
+    }
+    reorderTasks(body.order);
+    return NextResponse.json({ ok: true });
+  }
   const title = body?.title === undefined ? undefined : readTitle(body.title);
   const checked = body?.checked;
   if (
