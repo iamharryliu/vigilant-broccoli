@@ -66,11 +66,12 @@ export async function POST(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: lastActivity, error: positionError } = await supabase
+  // New activities land above every existing one.
+  const { data: firstActivity, error: positionError } = await supabase
     .from('leisure_activities')
     .select('position')
     .eq('home_id', body.homeId)
-    .order('position', { ascending: false })
+    .order('position', { ascending: true })
     .limit(1)
     .maybeSingle();
 
@@ -86,7 +87,7 @@ export async function POST(req: NextRequest) {
       title: body.title,
       description: body.description || null,
       category: body.category,
-      position: (lastActivity?.position ?? -1) + 1,
+      position: (firstActivity?.position ?? 1) - 1,
       home_id: body.homeId,
       user_id: user?.id ?? null,
     })

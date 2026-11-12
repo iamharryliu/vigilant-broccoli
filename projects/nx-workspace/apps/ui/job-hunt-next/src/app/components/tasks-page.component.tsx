@@ -109,6 +109,19 @@ export const TasksPage = () => {
       });
   };
 
+  const reorder = (orderedIds: string[]) => {
+    const previous = tasks;
+    const byId = new Map(tasks.map(task => [task.id, task]));
+    const active = orderedIds.flatMap(id => byId.get(id) ?? []);
+    setTasks([...active, ...tasks.filter(task => task.checked)]);
+    write(API_ENDPOINTS.TASKS, HTTP_METHOD.PATCH, { order: orderedIds }).catch(
+      () => {
+        setTasks(previous);
+        toast.error(t('TASKS.WRITE_FAILED'));
+      },
+    );
+  };
+
   const add = (event: FormEvent) => {
     event.preventDefault();
     const title = draft.trim();
@@ -116,7 +129,7 @@ export const TasksPage = () => {
     setDraft('');
     write(API_ENDPOINTS.TASKS, HTTP_METHOD.POST, { title })
       .then(res => res.json())
-      .then(data => setTasks(current => [...current, data.task]))
+      .then(data => setTasks(current => [data.task, ...current]))
       .catch(() => {
         setDraft(title);
         toast.error(t('TASKS.WRITE_FAILED'));
@@ -151,6 +164,7 @@ export const TasksPage = () => {
           onEditChange={setEditingTitle}
           onSaveEdit={saveEdit}
           onCancelEdit={() => setEditingId(null)}
+          onReorder={IS_DEMO ? undefined : reorder}
           editor="input"
           rowVariant="dense"
           size="3"

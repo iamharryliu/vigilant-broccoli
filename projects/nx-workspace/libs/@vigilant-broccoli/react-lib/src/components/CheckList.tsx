@@ -1,8 +1,14 @@
 'use client';
 import { ReactNode, memo, useCallback } from 'react';
-import { useDroppable } from '@dnd-kit/core';
+import {
+  DndContext,
+  DragEndEvent,
+  closestCenter,
+  useDroppable,
+} from '@dnd-kit/core';
 import {
   SortableContext,
+  arrayMove,
   useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
@@ -58,6 +64,12 @@ export interface CheckListProps {
   storageKeyPrefix?: string;
   completedSectionId?: string;
   enableDragDrop?: boolean;
+  /**
+   * Standalone reordering: enables the drag handles, wraps the list in its own
+   * `DndContext` and reports the new order of the active rows. Omit it when the
+   * consumer supplies a `DndContext` (kanban, hearth) and handles `onDragEnd`.
+   */
+  onReorder?: (orderedActiveIds: string[]) => void;
   listId?: string;
   dragOverItem?: CheckListDragOverItem | null;
   emptyLabel?: ReactNode;
@@ -188,6 +200,7 @@ export const CheckList = memo(
     storageKeyPrefix,
     completedSectionId,
     enableDragDrop,
+    onReorder,
     listId,
     dragOverItem,
     emptyLabel = DEFAULT_EMPTY_LABEL,
@@ -206,11 +219,11 @@ export const CheckList = memo(
       (props: CheckListRowFrameProps<CheckListItem>) => (
         <SortableRowFrame
           {...props}
-          enableDragDrop={!!enableDragDrop}
+          enableDragDrop={!!enableDragDrop || !!onReorder}
           listId={listId}
         />
       ),
-      [enableDragDrop, listId],
+      [enableDragDrop, onReorder, listId],
     );
 
     if (loading) {
@@ -246,6 +259,27 @@ export const CheckList = memo(
     const resolvedCompletedSectionId =
       completedSectionId ?? `${resolvedListId}-completed`;
 
+    const handleDragEnd = ({ active, over }: DragEndEvent) => {
+      if (!over || active.id === over.id) return;
+      const ids = activeItems.map(item => item.id);
+      const from = ids.indexOf(String(active.id));
+      const to = ids.indexOf(String(over.id));
+      if (from < 0 || to < 0) return;
+      onReorder?.(arrayMove(ids, from, to));
+    };
+
+    const withReorder = (list: ReactNode) =>
+      onReorder ? (
+        <DndContext
+          onDragEnd={handleDragEnd}
+          collisionDetection={closestCenter}
+        >
+          {list}
+        </DndContext>
+      ) : (
+        list
+      );
+
     return (
       <>
         {error && (
@@ -253,62 +287,67 @@ export const CheckList = memo(
             {error}
           </Text>
         )}
-        <div
-          ref={setNodeRef}
-          className={`rounded-lg transition-all duration-150 min-h-[60px] ${highlightClass}`}
-        >
-          <CheckListBase
-            items={items}
-            editingItemId={editingItemId}
-            editingItemTitle={editingItemTitle}
-            onToggleCheck={onToggleCheck}
-            onStartEdit={onStartEdit}
-            onEditChange={onEditChange}
-            onSaveEdit={onSaveEdit}
-            onCancelEdit={onCancelEdit}
-            editor={editor}
-            rowVariant={rowVariant}
-            size={size}
-            editCompleted={editCompleted}
-            storageKeyPrefix={resolvedStorageKeyPrefix}
-            completedSectionId={resolvedCompletedSectionId}
-            emptyLabel={
-              typeof emptyLabel === 'string' ? (
-                <Text size="2" color="gray">
-                  {emptyLabel}
-                </Text>
-              ) : (
-                emptyLabel
-              )
-            }
-            renderItemAccessory={renderItemAccessory}
-            renderItemMeta={renderItemMeta}
-            renderItemDetails={renderItemDetails}
-            itemClassName={itemClassName}
-            rowFrame={rowFrame}
-            wrapActiveItems={(rows, activeIds) => (
-              <SortableContext
-                items={
-                  showPlaceholder
-                    ? [...activeIds, `${PLACEHOLDER_PREFIX}${dragOverItem.id}`]
-                    : activeIds
-                }
-                strategy={verticalListSortingStrategy}
-              >
-                {rows}
-              </SortableContext>
-            )}
-            activeFooter={
-              showPlaceholder ? (
-                <CheckListPlaceholder
-                  id={dragOverItem.id}
-                  title={dragOverItem.title}
-                  listId={listId}
-                />
-              ) : undefined
-            }
-          />
-        </div>
+        {withReorder(
+          <div
+            ref={setNodeRef}
+            className={`rounded-lg transition-all duration-150 min-h-[60px] ${highlightClass}`}
+          >
+            <CheckListBase
+              items={items}
+              editingItemId={editingItemId}
+              editingItemTitle={editingItemTitle}
+              onToggleCheck={onToggleCheck}
+              onStartEdit={onStartEdit}
+              onEditChange={onEditChange}
+              onSaveEdit={onSaveEdit}
+              onCancelEdit={onCancelEdit}
+              editor={editor}
+              rowVariant={rowVariant}
+              size={size}
+              editCompleted={editCompleted}
+              storageKeyPrefix={resolvedStorageKeyPrefix}
+              completedSectionId={resolvedCompletedSectionId}
+              emptyLabel={
+                typeof emptyLabel === 'string' ? (
+                  <Text size="2" color="gray">
+                    {emptyLabel}
+                  </Text>
+                ) : (
+                  emptyLabel
+                )
+              }
+              renderItemAccessory={renderItemAccessory}
+              renderItemMeta={renderItemMeta}
+              renderItemDetails={renderItemDetails}
+              itemClassName={itemClassName}
+              rowFrame={rowFrame}
+              wrapActiveItems={(rows, activeIds) => (
+                <SortableContext
+                  items={
+                    showPlaceholder
+                      ? [
+                          ...activeIds,
+                          `${PLACEHOLDER_PREFIX}${dragOverItem.id}`,
+                        ]
+                      : activeIds
+                  }
+                  strategy={verticalListSortingStrategy}
+                >
+                  {rows}
+                </SortableContext>
+              )}
+              activeFooter={
+                showPlaceholder ? (
+                  <CheckListPlaceholder
+                    id={dragOverItem.id}
+                    title={dragOverItem.title}
+                    listId={listId}
+                  />
+                ) : undefined
+              }
+            />
+          </div>,
+        )}
       </>
     );
   },
