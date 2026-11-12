@@ -17,6 +17,7 @@ import {
   JOB_APPLICATION_BOOKMARKLET,
   JSON_CONTENT_TYPE,
   isJobApplicationBookmarkletMessage,
+  isJobMatchesBookmarkletMessage,
 } from '@vigilant-broccoli/common-js';
 import { extractJobPosting } from '../utils/job-posting.utils';
 import { RUNS_TAB_URL } from '../app.const';
@@ -45,7 +46,11 @@ export const JobApplicationDialog = ({
 
   useEffect(() => {
     const prefill = (event: MessageEvent) => {
-      if (!isJobApplicationBookmarkletMessage(event.data)) return;
+      if (
+        !isJobApplicationBookmarkletMessage(event.data) ||
+        isJobMatchesBookmarkletMessage(event.data)
+      )
+        return;
       (event.source as Window | null)?.postMessage(
         JOB_APPLICATION_BOOKMARKLET.ACK,
         event.origin,

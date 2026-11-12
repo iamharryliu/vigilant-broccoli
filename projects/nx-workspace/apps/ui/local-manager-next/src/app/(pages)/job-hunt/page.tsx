@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   JOB_APPLICATION_BOOKMARKLET,
   isJobApplicationBookmarkletMessage,
@@ -13,7 +13,18 @@ const JOB_HUNT_ORIGIN = new URL(LOCAL_HOST_URL.JOB_HUNT.URL).origin;
 // The embedded app builds its bookmarklet from this, so the bookmarklet opens
 // this page and the relay below hands the posting to the frame.
 const JOB_HUNT_PAGE_URL = `${LOCAL_HOST_URL.LOCAL_MANAGER_NEXT.URL}${SIDEBAR_ROUTE.JOB_HUNT.path}`;
-const FRAME_SRC = `${LOCAL_HOST_URL.JOB_HUNT.URL}/?${JOB_APPLICATION_BOOKMARKLET.TARGET_PARAM}=${encodeURIComponent(JOB_HUNT_PAGE_URL)}`;
+const FRAME_QUERY = `?${JOB_APPLICATION_BOOKMARKLET.TARGET_PARAM}=${encodeURIComponent(JOB_HUNT_PAGE_URL)}`;
+const frameSrc = (path: string) =>
+  `${LOCAL_HOST_URL.JOB_HUNT.URL}${path}${FRAME_QUERY}`;
+
+// A bookmarklet opens this page with the app path to show; only a path on the
+// app itself is honoured, never another site.
+const readFramePath = () => {
+  const path = new URLSearchParams(window.location.search).get(
+    JOB_APPLICATION_BOOKMARKLET.PATH_PARAM,
+  );
+  return path && /^\/(?!\/)/.test(path) ? path : '/';
+};
 
 type PostingTab = { window: MessageEventSource; origin: string };
 
@@ -22,6 +33,10 @@ type PostingTab = { window: MessageEventSource; origin: string };
 export default function Page() {
   usePageTitle(SIDEBAR_ROUTE.JOB_HUNT.title);
   const frameRef = useRef<HTMLIFrameElement>(null);
+  // Set after mount: the query string is unknown while rendering on the server.
+  const [src, setSrc] = useState<string | null>(null);
+
+  useEffect(() => setSrc(frameSrc(readFramePath())), []);
 
   // The bookmarklet posts to this tab, its opener; the frame acks to its
   // parent. Forward the posting in and the ack back out, so the bookmarklet
@@ -53,7 +68,7 @@ export default function Page() {
     <div className="-m-4 h-[calc(100%+2rem)]">
       <iframe
         ref={frameRef}
-        src={FRAME_SRC}
+        src={src ?? undefined}
         title={SIDEBAR_ROUTE.JOB_HUNT.title}
         allow="clipboard-write"
         className="block h-full w-full border-0"

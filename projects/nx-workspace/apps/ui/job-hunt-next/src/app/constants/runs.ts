@@ -19,6 +19,7 @@ export const RUN_KIND = {
   JOB_APPLICATION: 'job-application',
   CAREER_EXPERIENCE_IMPORT: 'career-experience-import',
   RESUME_IMPORT: 'resume-import',
+  SKILL_SUGGESTIONS: 'skill-suggestions',
 } as const;
 
 export type RunKind = (typeof RUN_KIND)[keyof typeof RUN_KIND];
