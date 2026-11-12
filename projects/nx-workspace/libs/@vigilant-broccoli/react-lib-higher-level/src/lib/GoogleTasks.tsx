@@ -60,6 +60,8 @@ export interface GoogleTasksAuthAdapter {
 }
 
 const STORAGE_KEY_SELECTED_TASK_LIST = 'google-tasks-selected-list-id';
+// visibilitychange and focus often fire together; collapse them into one fetch.
+const FOCUS_REFETCH_MIN_INTERVAL_MS = 5000;
 
 const TASKS_TITLE = 'Tasks';
 const SIGN_IN_GOOGLE_LABEL = 'Sign in with Google';
@@ -674,6 +676,33 @@ export const GoogleTasksComponent = ({
     if (status === 'authenticated') fetchTasks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, taskListId, refreshTrigger]);
+
+  // Pick up changes made on another device when this tab regains attention.
+  // Skipped while an optimistic update or edit is pending so a refetch can't
+  // overwrite local state that hasn't reached the server yet.
+  const isBusyRef = useRef(false);
+  isBusyRef.current =
+    isCreatingTask || !!editingTaskId || tasks.some(t => t.isRemoving);
+  const lastFocusRefetchRef = useRef(0);
+  useEffect(() => {
+    if (status !== 'authenticated') return;
+    const refetchIfStale = () => {
+      if (document.visibilityState !== 'visible' || isBusyRef.current) return;
+      const now = Date.now();
+      if (now - lastFocusRefetchRef.current < FOCUS_REFETCH_MIN_INTERVAL_MS) {
+        return;
+      }
+      lastFocusRefetchRef.current = now;
+      fetchTasks();
+    };
+    document.addEventListener('visibilitychange', refetchIfStale);
+    window.addEventListener('focus', refetchIfStale);
+    return () => {
+      document.removeEventListener('visibilitychange', refetchIfStale);
+      window.removeEventListener('focus', refetchIfStale);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status, taskListId]);
 
   const hasGoogleAuthError =
     titleAuthError ||
