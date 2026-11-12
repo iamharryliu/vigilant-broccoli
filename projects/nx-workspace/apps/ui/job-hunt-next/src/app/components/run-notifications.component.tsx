@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import {
+  APP_TAB,
   EXPAND_LATEST,
   EXPAND_PARAM,
   ROOT_PATH,
@@ -16,6 +17,7 @@ import {
   CareerFileKind,
   JOB_APPLICATIONS_CHANGED_EVENT,
 } from '../constants/career';
+import { JOB_MATCH_SKILLS_CHANGED_EVENT } from '../constants/matches';
 import {
   isActiveRunStatus,
   JobApplicationRun,
@@ -77,6 +79,26 @@ export const RunNotifications = () => {
       const importedFile = IMPORTED_FILE[run.kind];
       if (importedFile) {
         notifyImport(run, importedFile);
+        return;
+      }
+      if (run.kind === RUN_KIND.SKILL_SUGGESTIONS) {
+        window.dispatchEvent(new CustomEvent(JOB_MATCH_SKILLS_CHANGED_EVENT));
+        if (run.status === RUN_STATUS.FAILED) {
+          toast.error(t('RUNS.FAILED'), {
+            description: run.title,
+            action: {
+              label: t('DIALOG.VIEW_PROGRESS'),
+              onClick: () => router.push(RUNS_TAB_URL),
+            },
+          });
+          return;
+        }
+        toast.success(t('MATCHES.SUGGESTIONS_READY'), {
+          action: {
+            label: t('RUNS.VIEW'),
+            onClick: () => router.push(APP_TAB.MATCHES.path),
+          },
+        });
         return;
       }
       // A failed run can leave a partial folder, so refresh either way.

@@ -82,7 +82,9 @@ const globalStore = globalThis as typeof globalThis & {
 const getQueue = (): RunQueue =>
   (globalStore.jobHuntRunQueue ??= { running: new Map(), queued: [] });
 
-const isImport = (kind: RunKind) => kind !== RUN_KIND.JOB_APPLICATION;
+// Suggestions only read stored postings, so they run beside applications.
+const isImport = (kind: RunKind) =>
+  kind === RUN_KIND.CAREER_EXPERIENCE_IMPORT || kind === RUN_KIND.RESUME_IMPORT;
 
 // Imports rewrite the career files every run reads, so an import runs alone.
 const canStart = (kind: RunKind) => {
