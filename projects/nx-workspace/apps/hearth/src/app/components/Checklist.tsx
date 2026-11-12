@@ -31,6 +31,7 @@ import {
   DialogContent,
   DialogTitle,
   cn,
+  useRefetchOnFocus,
 } from '@vigilant-broccoli/react-lib';
 import { DeleteItemConfirmationDialog } from '@vigilant-broccoli/react-lib-higher-level';
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
@@ -110,6 +111,10 @@ export function Checklist({
     const data = await res.json();
     setItems(Array.isArray(data) ? data : []);
   }, [endpoint, homeId, token, authHeader]);
+
+  useRefetchOnFocus(fetchItems, {
+    busy: pendingIds.size > 0 || !!editingId,
+  });
 
   // CheckList slides in rows added after it mounts, so it mounts behind the
   // skeleton once the first fetch for a home resolves; a refreshSignal refetch

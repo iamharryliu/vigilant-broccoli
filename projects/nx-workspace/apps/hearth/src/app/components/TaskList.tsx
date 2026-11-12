@@ -23,6 +23,7 @@ import {
   Progress,
   Skeleton,
   Text,
+  useRefetchOnFocus,
 } from '@vigilant-broccoli/react-lib';
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
 import { IS_DEV } from '../app.consts';
@@ -118,6 +119,10 @@ export function TaskList() {
     setCompletions(Array.isArray(completions) ? completions : []);
     setMembers(toAssignees(homeMembers));
   }, [homeId, token, authHeader]);
+
+  useRefetchOnFocus(fetchTasks, {
+    busy: pendingIds.size > 0 || !!editingId,
+  });
 
   useEffect(() => {
     setTasks([]);

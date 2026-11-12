@@ -7,6 +7,7 @@ import {
   CheckListItem,
   IconButton,
   Input,
+  useRefetchOnFocus,
 } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import {
@@ -55,6 +56,10 @@ export const TasksPage = () => {
   }, [t]);
 
   useEffect(load, [load]);
+
+  useRefetchOnFocus(load, {
+    busy: !!editingId || tasks.some(task => task.isRemoving),
+  });
 
   const patchTask = (id: string, patch: Partial<Task>) =>
     setTasks(current =>
@@ -129,7 +134,13 @@ export const TasksPage = () => {
     setDraft('');
     write(API_ENDPOINTS.TASKS, HTTP_METHOD.POST, { title })
       .then(res => res.json())
-      .then(data => setTasks(current => [data.task, ...current]))
+      // A focus refetch may already have picked the new task up.
+      .then(data =>
+        setTasks(current => [
+          data.task,
+          ...current.filter(task => task.id !== data.task.id),
+        ]),
+      )
       .catch(() => {
         setDraft(title);
         toast.error(t('TASKS.WRITE_FAILED'));
