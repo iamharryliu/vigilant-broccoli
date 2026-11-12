@@ -2,9 +2,20 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Loader2, Sparkles, X } from 'lucide-react';
+import { ArrowUpDown, Filter, Loader2, Sparkles, X } from 'lucide-react';
 import type { StoredJobMatchesPosting } from '@vigilant-broccoli/common-js';
-import { Badge, Button, Card, Select } from '@vigilant-broccoli/react-lib';
+import {
+  Badge,
+  Button,
+  Card,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Select,
+} from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { RUNS_TAB_URL } from '../app.const';
@@ -147,6 +158,7 @@ export const JobMatchesPage = () => {
   const [easyApplyOnly, setEasyApplyOnly] = useState(false);
   const [skills, setSkills] = useState<MatchSkill[]>([]);
   const [suggesting, setSuggesting] = useState(false);
+  const [confirmingClear, setConfirmingClear] = useState(false);
   const router = useRouter();
   const [sortOption, setSortOption] = useState<SortOption>(
     SORT_OPTION.BEST_MATCH,
@@ -232,6 +244,15 @@ export const JobMatchesPage = () => {
       .then(setPostings)
       .catch(() => toast.error(t('MATCHES.SAVE_FAILED')));
 
+  // Clearing also drops the suggested skills, which the postings produced.
+  const clearAll = () => {
+    setConfirmingClear(false);
+    return remove()
+      .then(fetchMatchSkills)
+      .then(setSkills)
+      .catch(() => undefined);
+  };
+
   const customTerms = useMemo(
     () => skills.filter(skill => skill.status === MATCH_SKILL_STATUS.ACCEPTED),
     [skills],
@@ -269,7 +290,7 @@ export const JobMatchesPage = () => {
         </div>
       )}
       {allMatches.length > 0 && (
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <span className="text-sm">
             {matches.length === allMatches.length
               ? t('MATCHES.COUNT', { count: String(allMatches.length) })
@@ -278,7 +299,8 @@ export const JobMatchesPage = () => {
                   count: String(allMatches.length),
                 })}
           </span>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <ArrowUpDown aria-hidden className="size-4 text-muted-foreground" />
             <Select
               aria-label={t('MATCHES.SORT')}
               options={Object.values(SORT_OPTION)}
@@ -292,6 +314,29 @@ export const JobMatchesPage = () => {
                 [SORT_OPTION.NEWEST]: t('MATCHES.SORT_NEWEST'),
               }}
             />
+            <Filter aria-hidden className="size-4 text-muted-foreground" />
+            <Select
+              aria-label={t('MATCHES.FILTER_LEVEL')}
+              options={[LEVEL_FILTER_ALL, ...Object.values(MATCH_LEVEL)]}
+              value={levelFilter}
+              onValueChange={setLevelFilter}
+              displayMapper={{
+                [LEVEL_FILTER_ALL]: t('MATCHES.FILTER_ALL_LEVELS'),
+                ...Object.fromEntries(
+                  Object.entries(LEVEL_BADGE).map(([level, { key }]) => [
+                    level,
+                    t(key),
+                  ]),
+                ),
+              }}
+            />
+            <Button
+              variant={easyApplyOnly ? 'default' : 'outline'}
+              aria-pressed={easyApplyOnly}
+              onClick={() => setEasyApplyOnly(!easyApplyOnly)}
+            >
+              {t('MATCHES.EASY_APPLY')}
+            </Button>
             <Button
               variant="outline"
               loading={suggesting}
@@ -301,36 +346,10 @@ export const JobMatchesPage = () => {
               <Sparkles />
               {t('MATCHES.SUGGEST')}
             </Button>
-            <Button variant="outline" onClick={() => remove()}>
+            <Button variant="outline" onClick={() => setConfirmingClear(true)}>
               {t('MATCHES.CLEAR')}
             </Button>
           </div>
-        </div>
-      )}
-      {allMatches.length > 0 && (
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <Select
-            aria-label={t('MATCHES.FILTER_LEVEL')}
-            options={[LEVEL_FILTER_ALL, ...Object.values(MATCH_LEVEL)]}
-            value={levelFilter}
-            onValueChange={setLevelFilter}
-            displayMapper={{
-              [LEVEL_FILTER_ALL]: t('MATCHES.FILTER_ALL_LEVELS'),
-              ...Object.fromEntries(
-                Object.entries(LEVEL_BADGE).map(([level, { key }]) => [
-                  level,
-                  t(key),
-                ]),
-              ),
-            }}
-          />
-          <Button
-            variant={easyApplyOnly ? 'default' : 'outline'}
-            aria-pressed={easyApplyOnly}
-            onClick={() => setEasyApplyOnly(!easyApplyOnly)}
-          >
-            {t('MATCHES.EASY_APPLY')}
-          </Button>
         </div>
       )}
       {loadFailed && (
@@ -371,6 +390,26 @@ export const JobMatchesPage = () => {
           {t('MATCHES.NO_FILTER_MATCHES')}
         </p>
       )}
+      <Dialog open={confirmingClear} onOpenChange={setConfirmingClear}>
+        <DialogContent className="max-w-[480px]">
+          <DialogHeader>
+            <DialogTitle>{t('MATCHES.CLEAR_TITLE')}</DialogTitle>
+            <DialogDescription>
+              {t('MATCHES.CLEAR_DESCRIPTION', {
+                count: String(allMatches.length),
+              })}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmingClear(false)}>
+              {t('MATCHES.CANCEL')}
+            </Button>
+            <Button variant="destructive" onClick={clearAll}>
+              {t('MATCHES.CLEAR')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       {matches.map(match => (
         <MatchCard
           key={match.url}

@@ -78,10 +78,23 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
   { name: 'Terraform' },
   { name: 'Ansible' },
   { name: 'Helm' },
+  { name: 'GitOps' },
+  { name: 'Infrastructure as Code', aliases: ['IaC'] },
+  { name: 'HashiCorp Vault' },
   { name: 'CI/CD', aliases: ['CI CD', 'continuous integration'] },
   { name: 'GitHub Actions' },
   { name: 'Jenkins' },
   { name: 'Linux' },
+  { name: 'PowerShell' },
+  { name: 'ETL' },
+  { name: 'Claude Code' },
+  { name: 'Databricks' },
+  { name: 'Power BI' },
+  {
+    name: 'Object-Oriented Programming',
+    aliases: ['OOP', 'object oriented programming'],
+  },
+  { name: 'AI Agents', aliases: ['AI agent', 'agentic AI'] },
   { name: 'Git' },
   { name: 'Jest' },
   { name: 'Vitest' },
@@ -100,6 +113,14 @@ export const SKILL_VOCABULARY: SkillTerm[] = [
   { name: 'WebSockets', aliases: ['WebSocket'] },
   { name: 'Machine Learning' },
   { name: 'LLM', aliases: ['LLMs', 'generative AI', 'GenAI'] },
+  { name: 'Vector databases', aliases: ['vector database', 'vector DB'] },
+  {
+    name: 'RAG',
+    aliases: [
+      'retrieval-augmented generation',
+      'retrieval augmented generation',
+    ],
+  },
   { name: 'Agile', aliases: ['Scrum'] },
 ];
 

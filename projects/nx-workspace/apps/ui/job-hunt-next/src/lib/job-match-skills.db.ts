@@ -59,6 +59,14 @@ export const setMatchSkillStatus = (name: string, status: MatchSkillStatus) =>
       .run(status, name).changes,
   ) > 0;
 
+// Accepted and dismissed skills stay: accepted ones are part of the user's
+// vocabulary, and dismissed ones keep a later run from suggesting them again.
+export const deleteSuggestedMatchSkills = () => {
+  ensureTable()
+    .prepare(`DELETE FROM ${SKILLS_TABLE} WHERE status = ?`)
+    .run(MATCH_SKILL_STATUS.SUGGESTED);
+};
+
 export const deleteMatchSkill = (name: string) => {
   ensureTable().prepare(`DELETE FROM ${SKILLS_TABLE} WHERE name = ?`).run(name);
 };

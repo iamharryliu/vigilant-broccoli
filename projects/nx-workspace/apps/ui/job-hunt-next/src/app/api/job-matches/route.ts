@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
+import { deleteSuggestedMatchSkills } from '../../../lib/job-match-skills.db';
 import {
   clearMatchPostings,
   deleteMatchPosting,
@@ -61,10 +62,14 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ postings: listMatchPostings() });
 }
 
-// Removes the posting named by `url`, or every stored posting without it.
+// Removes the posting named by `url`, or every stored posting and suggested
+// skill without it.
 export async function DELETE(req: NextRequest) {
   const url = req.nextUrl.searchParams.get(URL_PARAM);
   if (url) deleteMatchPosting(url);
-  else clearMatchPostings();
+  else {
+    clearMatchPostings();
+    deleteSuggestedMatchSkills();
+  }
   return NextResponse.json({ postings: listMatchPostings() });
 }
