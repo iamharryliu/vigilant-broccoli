@@ -141,6 +141,8 @@ export type JobMatch = {
   // Estimated from LinkedIn's relative age and the capture time; null when the
   // page showed no age.
   postedAt: number | null;
+  // Unset for postings captured before Easy Apply was recorded.
+  easyApply?: boolean;
   role: string;
   company: string;
   matched: string[];
@@ -216,6 +218,7 @@ export const matchPosting = (
   return {
     url: posting.url,
     postedAt: estimatePostedAt(posting.posted, posting.capturedAt),
+    easyApply: posting.easyApply,
     role: role || posting.title,
     company,
     matched: matchedNames,
@@ -238,8 +241,6 @@ export const SORT_OPTION = {
   MOST_MATCHED: 'most-matched',
   NEWEST: 'newest',
   POSTED: 'posted',
-  ROLE: 'role',
-  COMPANY: 'company',
 } as const;
 
 export type SortOption = (typeof SORT_OPTION)[keyof typeof SORT_OPTION];
@@ -249,11 +250,24 @@ const bestMatch = (a: JobMatch, b: JobMatch) =>
   b.ratio - a.ratio ||
   b.matched.length - a.matched.length;
 
-const byText = (a: string, b: string) =>
-  a.localeCompare(b, undefined, { sensitivity: 'base' });
-
 // `matches` arrives in capture order, which `NEWEST` reverses and every other
 // option keeps for ties, since the sort is stable.
+export const LEVEL_FILTER_ALL = 'all';
+
+export type LevelFilter = typeof LEVEL_FILTER_ALL | MatchLevel;
+
+export type MatchFilters = { level: LevelFilter; easyApplyOnly: boolean };
+
+export const filterMatches = (
+  matches: JobMatch[],
+  { level, easyApplyOnly }: MatchFilters,
+) =>
+  matches.filter(
+    match =>
+      (level === LEVEL_FILTER_ALL || match.level === level) &&
+      (!easyApplyOnly || match.easyApply === true),
+  );
+
 export const sortMatches = (matches: JobMatch[], option: SortOption) => {
   const sorted = [...matches];
   switch (option) {
@@ -273,12 +287,6 @@ export const sortMatches = (matches: JobMatch[], option: SortOption) => {
     case SORT_OPTION.MOST_MATCHED:
       return sorted.sort(
         (a, b) => b.matched.length - a.matched.length || bestMatch(a, b),
-      );
-    case SORT_OPTION.ROLE:
-      return sorted.sort((a, b) => byText(a.role, b.role));
-    case SORT_OPTION.COMPANY:
-      return sorted.sort(
-        (a, b) => byText(a.company, b.company) || byText(a.role, b.role),
       );
     default:
       return sorted.sort(bestMatch);

@@ -28,12 +28,15 @@ import {
   startSkillSuggestions,
 } from '../utils/job-matches-storage.utils';
 import {
+  LEVEL_FILTER_ALL,
   MATCH_LEVEL,
   SORT_OPTION,
   type JobMatch,
+  type LevelFilter,
   type MatchLevel,
   type SortOption,
   countGaps,
+  filterMatches,
   matchPosting,
   parseOwnedSkills,
   sortMatches,
@@ -90,6 +93,11 @@ const MatchCard = ({
           )}
         </div>
         <div className="flex shrink-0 items-center gap-1">
+          {match.easyApply && (
+            <Badge color="blue" variant="soft" size="1">
+              {t('MATCHES.EASY_APPLY')}
+            </Badge>
+          )}
           <Badge color={badge.color} variant="soft" size="1">
             {t(badge.key)}
             {match.level !== MATCH_LEVEL.UNKNOWN &&
@@ -135,6 +143,8 @@ export const JobMatchesPage = () => {
   const [ownedSkills, setOwnedSkills] = useState<string[] | null>(null);
   const [loadFailed, setLoadFailed] = useState(false);
   const [progress, setProgress] = useState(getMatchesProgress);
+  const [levelFilter, setLevelFilter] = useState<LevelFilter>(LEVEL_FILTER_ALL);
+  const [easyApplyOnly, setEasyApplyOnly] = useState(false);
   const [skills, setSkills] = useState<MatchSkill[]>([]);
   const [suggesting, setSuggesting] = useState(false);
   const router = useRouter();
@@ -226,7 +236,7 @@ export const JobMatchesPage = () => {
     () => skills.filter(skill => skill.status === MATCH_SKILL_STATUS.ACCEPTED),
     [skills],
   );
-  const matches = useMemo(
+  const allMatches = useMemo(
     () =>
       ownedSkills
         ? sortMatches(
@@ -237,6 +247,10 @@ export const JobMatchesPage = () => {
           )
         : [],
     [postings, ownedSkills, customTerms, sortOption],
+  );
+  const matches = useMemo(
+    () => filterMatches(allMatches, { level: levelFilter, easyApplyOnly }),
+    [allMatches, levelFilter, easyApplyOnly],
   );
   const topGaps = useMemo(
     () => countGaps(matches).slice(0, TOP_GAP_COUNT),
@@ -254,10 +268,15 @@ export const JobMatchesPage = () => {
           })}
         </div>
       )}
-      {matches.length > 0 && (
+      {allMatches.length > 0 && (
         <div className="flex items-center justify-between gap-2">
           <span className="text-sm">
-            {t('MATCHES.COUNT', { count: String(matches.length) })}
+            {matches.length === allMatches.length
+              ? t('MATCHES.COUNT', { count: String(allMatches.length) })
+              : t('MATCHES.COUNT_FILTERED', {
+                  shown: String(matches.length),
+                  count: String(allMatches.length),
+                })}
           </span>
           <div className="flex items-center gap-2">
             <Select
@@ -271,8 +290,6 @@ export const JobMatchesPage = () => {
                 [SORT_OPTION.MOST_MATCHED]: t('MATCHES.SORT_MOST_MATCHED'),
                 [SORT_OPTION.POSTED]: t('MATCHES.SORT_POSTED'),
                 [SORT_OPTION.NEWEST]: t('MATCHES.SORT_NEWEST'),
-                [SORT_OPTION.ROLE]: t('MATCHES.SORT_ROLE'),
-                [SORT_OPTION.COMPANY]: t('MATCHES.SORT_COMPANY'),
               }}
             />
             <Button
@@ -290,6 +307,32 @@ export const JobMatchesPage = () => {
           </div>
         </div>
       )}
+      {allMatches.length > 0 && (
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+          <Select
+            aria-label={t('MATCHES.FILTER_LEVEL')}
+            options={[LEVEL_FILTER_ALL, ...Object.values(MATCH_LEVEL)]}
+            value={levelFilter}
+            onValueChange={setLevelFilter}
+            displayMapper={{
+              [LEVEL_FILTER_ALL]: t('MATCHES.FILTER_ALL_LEVELS'),
+              ...Object.fromEntries(
+                Object.entries(LEVEL_BADGE).map(([level, { key }]) => [
+                  level,
+                  t(key),
+                ]),
+              ),
+            }}
+          />
+          <Button
+            variant={easyApplyOnly ? 'default' : 'outline'}
+            aria-pressed={easyApplyOnly}
+            onClick={() => setEasyApplyOnly(!easyApplyOnly)}
+          >
+            {t('MATCHES.EASY_APPLY')}
+          </Button>
+        </div>
+      )}
       {loadFailed && (
         <p className="text-sm text-destructive">{t('MATCHES.LOAD_FAILED')}</p>
       )}
@@ -298,7 +341,7 @@ export const JobMatchesPage = () => {
           {t('MATCHES.NO_SKILLS')}
         </p>
       )}
-      {matches.length === 0 && !loadFailed && !progress && (
+      {allMatches.length === 0 && !loadFailed && !progress && (
         <p className="text-sm text-muted-foreground">{t('MATCHES.EMPTY')}</p>
       )}
       <JobMatchSkillsPanel
@@ -322,6 +365,11 @@ export const JobMatchesPage = () => {
             ))}
           </div>
         </section>
+      )}
+      {allMatches.length > 0 && matches.length === 0 && (
+        <p className="text-sm text-muted-foreground">
+          {t('MATCHES.NO_FILTER_MATCHES')}
+        </p>
       )}
       {matches.map(match => (
         <MatchCard

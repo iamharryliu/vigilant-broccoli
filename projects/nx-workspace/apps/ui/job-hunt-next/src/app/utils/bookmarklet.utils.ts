@@ -101,6 +101,8 @@ const MATCHES_BACK_POLL_MS = 300;
 const MATCHES_HELLO_GIVE_UP_MS = 300000;
 // How far above "About the job" to look for the posting's age.
 const MATCHES_AGE_LOOKBACK = 1500;
+// How far above "About the job" the detail pane's Easy Apply button sits.
+const MATCHES_EASY_APPLY_LOOKBACK = 800;
 const MATCHES_DESCRIPTION_LIMIT = 20000;
 const MATCHES_DESCRIPTION_MARKER = 'About the job';
 
@@ -164,10 +166,12 @@ export const buildMatchesBookmarklet = (appTarget: string) => {
     `await sleep(${MATCHES_EXPAND_WAIT_MS});`,
     'var t=document.body.innerText;',
     `var at=t.indexOf(${escapeUnsafeJsChars(JSON.stringify(MATCHES_DESCRIPTION_MARKER))});`,
+    // Easy Apply shows as a label on the card and as the detail pane's button.
+    `var easy=/Easy Apply/i.test(lines.join(' '))||/Easy Apply/i.test(t.slice(Math.max(0,at-${MATCHES_EASY_APPLY_LOOKBACK}),at));`,
     // LinkedIn shows the age ("Reposted 2 days ago") above the description.
     `var ages=t.slice(Math.max(0,at-${MATCHES_AGE_LOOKBACK}),at).match(/\\d+\\s+(?:minute|hour|day|week|month)s?\\s+ago/gi);`,
     'if(at<0)continue;',
-    `var url=c.id?location.origin+'/jobs/view/'+c.id+'/':(location.href.match(/(?:currentJobId=|\\/jobs\\/view\\/)(\\d+)/)?location.origin+'/jobs/view/'+RegExp.$1+'/':location.href+'#'+c.key);if(postings.some(function(p){return p.url===url}))continue;postings.push({url:url,title:[name,company].filter(Boolean).join(' | '),posted:ages?ages[ages.length-1]:'',text:t.slice(at,at+${MATCHES_DESCRIPTION_LIMIT})});send(msg([postings[postings.length-1]],'${JOB_MATCHES_PROGRESS_STATE.RUNNING}'))}`,
+    `var url=c.id?location.origin+'/jobs/view/'+c.id+'/':(location.href.match(/(?:currentJobId=|\\/jobs\\/view\\/)(\\d+)/)?location.origin+'/jobs/view/'+RegExp.$1+'/':location.href+'#'+c.key);if(postings.some(function(p){return p.url===url}))continue;postings.push({url:url,title:[name,company].filter(Boolean).join(' | '),posted:ages?ages[ages.length-1]:'',easyApply:easy,text:t.slice(at,at+${MATCHES_DESCRIPTION_LIMIT})});send(msg([postings[postings.length-1]],'${JOB_MATCHES_PROGRESS_STATE.RUNNING}'))}`,
     'await ensureList();',
     `send(msg([],'${JOB_MATCHES_PROGRESS_STATE.DONE}'));`,
   ].join('');

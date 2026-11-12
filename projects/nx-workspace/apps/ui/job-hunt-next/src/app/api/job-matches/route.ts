@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
         title?: unknown;
         text: string;
         posted?: unknown;
+        easyApply?: unknown;
       }) => ({
         url: posting.url,
         title: typeof posting.title === 'string' ? posting.title : '',
@@ -50,6 +51,10 @@ export async function POST(req: NextRequest) {
           typeof posting.posted === 'string'
             ? posting.posted.slice(0, MAX_POSTED_LENGTH)
             : '',
+        easyApply:
+          typeof posting.easyApply === 'boolean'
+            ? posting.easyApply
+            : undefined,
       }),
     ),
   );

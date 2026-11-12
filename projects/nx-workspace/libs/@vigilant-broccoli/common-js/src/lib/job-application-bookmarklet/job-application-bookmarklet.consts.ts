@@ -33,6 +33,9 @@ export type JobMatchesBookmarkletPosting = {
   // LinkedIn's relative age at capture, such as "2 days ago"; empty when the
   // page did not show one.
   posted?: string;
+  // Whether LinkedIn offered Easy Apply; unset for postings captured before
+  // it was recorded.
+  easyApply?: boolean;
 };
 
 // A posting as the app stores it: the capture time is added on save.
