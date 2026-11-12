@@ -1,8 +1,6 @@
 import { useTranslation } from '../i18n';
 import { DemoSection } from './DemoSection';
 import { useCallback, useState } from 'react';
-import { DndContext, DragEndEvent, closestCenter } from '@dnd-kit/core';
-import { arrayMove } from '@dnd-kit/sortable';
 import {
   Button,
   CheckList,
@@ -148,19 +146,13 @@ export const CheckListDemo = () => {
     setEditingItemTitle('');
   }, []);
 
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
+  const handleReorder = useCallback((orderedIds: string[]) => {
     setItems(prev => {
-      const activeItems = prev.filter(i => !i.checked);
-      const oldIndex = activeItems.findIndex(i => i.id === active.id);
-      const newIndex = activeItems.findIndex(i => i.id === over.id);
-      if (oldIndex === -1 || newIndex === -1) return prev;
-
-      const reordered = arrayMove(activeItems, oldIndex, newIndex);
+      const byId = new Map(prev.map(i => [i.id, i]));
       let cursor = 0;
-      return prev.map(i => (i.checked ? i : reordered[cursor++]));
+      return prev.map(i =>
+        i.checked ? i : (byId.get(orderedIds[cursor++]) ?? i),
+      );
     });
   }, []);
 
@@ -263,24 +255,22 @@ export const CheckListDemo = () => {
         </Button>
       </div>
 
-      <DndContext onDragEnd={handleDragEnd} collisionDetection={closestCenter}>
-        <CheckList
-          items={items}
-          editingItemId={editingItemId}
-          editingItemTitle={editingItemTitle}
-          onToggleCheck={handleToggleCheck}
-          onStartEdit={handleStartEdit}
-          onEditChange={setEditingItemTitle}
-          onSaveEdit={handleSaveEdit}
-          onCancelEdit={handleCancelEdit}
-          enableDragDrop={enableDragDrop}
-          listId={LIST_ID}
-          emptyLabel={EMPTY_LABEL}
-          renderItemAccessory={renderItemAccessory}
-          renderItemMeta={renderItemMeta}
-          itemClassName={itemClassName}
-        />
-      </DndContext>
+      <CheckList
+        items={items}
+        editingItemId={editingItemId}
+        editingItemTitle={editingItemTitle}
+        onToggleCheck={handleToggleCheck}
+        onStartEdit={handleStartEdit}
+        onEditChange={setEditingItemTitle}
+        onSaveEdit={handleSaveEdit}
+        onCancelEdit={handleCancelEdit}
+        onReorder={enableDragDrop ? handleReorder : undefined}
+        listId={LIST_ID}
+        emptyLabel={EMPTY_LABEL}
+        renderItemAccessory={renderItemAccessory}
+        renderItemMeta={renderItemMeta}
+        itemClassName={itemClassName}
+      />
 
       <DemoSection
         title={t('DEMO_SECTION.CHECK_LIST.PRESENTATIONAL_CHECKLIST')}
