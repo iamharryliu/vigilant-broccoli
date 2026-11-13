@@ -116,11 +116,14 @@ export const DELETE = async (req: NextRequest) => {
   const { id } = await req.json();
   if (!id) return badRequest('Missing id');
 
+  // Archived rather than deleted: completions cascade from the task row, and
+  // the completed history must outlive the task.
+  const now = new Date().toISOString();
   const { error } = await supabase
     .from(RECURRING_TASKS_TABLE)
-    .delete()
+    .update({ archived_at: now, assigned_user_id: null, updated_at: now })
     .eq('id', id);
   if (error) return serverError(error.message);
 
-  return Response.json({ success: true });
+  return Response.json({ success: true, archivedAt: now });
 };

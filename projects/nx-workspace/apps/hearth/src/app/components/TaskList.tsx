@@ -51,6 +51,14 @@ const DELETE_LABEL = 'Delete';
 const ACCEPTED_STATUS = 'accepted';
 const LOADING_LABEL = 'Loading tasks';
 
+const splitArchived = (list: unknown): [RecurringTask[], RecurringTask[]] => {
+  const tasks: RecurringTask[] = Array.isArray(list) ? list : [];
+  return [
+    tasks.filter(({ archivedAt }) => !archivedAt),
+    tasks.filter(({ archivedAt }) => archivedAt),
+  ];
+};
+
 const toPositions = (list: { id: string }[]) =>
   list.map(({ id }, position) => ({ id, position }));
 
@@ -77,6 +85,8 @@ export function TaskList() {
   const token = session?.access_token ?? '';
 
   const [tasks, setTasks] = useState<RecurringTask[]>([]);
+  // Removed tasks are kept only to title their completed history.
+  const [archivedTasks, setArchivedTasks] = useState<RecurringTask[]>([]);
   const [oneOffTasks, setOneOffTasks] = useState<ChecklistItem[]>([]);
   const [completions, setCompletions] = useState<TaskCompletion[]>([]);
   const [loading, setLoading] = useState(true);
@@ -113,7 +123,9 @@ export function TaskList() {
         `/api/homes/${homeId}/members`,
       ].map(async url => (await fetch(url, { headers })).json()),
     );
-    setTasks(Array.isArray(recurring) ? recurring : []);
+    const [active, archived] = splitArchived(recurring);
+    setTasks(active);
+    setArchivedTasks(archived);
     setOneOffTasks(Array.isArray(oneOff) ? oneOff : []);
     setCompletions(Array.isArray(completions) ? completions : []);
     setMembers(toAssignees(homeMembers));
@@ -125,6 +137,7 @@ export function TaskList() {
 
   useEffect(() => {
     setTasks([]);
+    setArchivedTasks([]);
     setOneOffTasks([]);
     setCompletions([]);
     setMembers([]);
@@ -164,7 +177,9 @@ export function TaskList() {
     return [{ id: task.id, title: `${task.title}${missed}`, checked: false }];
   });
   const completedItems = completions.flatMap(({ id, taskId, completedAt }) => {
-    const task = tasks.find(({ id: candidate }) => candidate === taskId);
+    const task = [...tasks, ...archivedTasks].find(
+      ({ id: candidate }) => candidate === taskId,
+    );
     return task ? [{ id, title: task.title, checked: true, completedAt }] : [];
   });
   const items: CheckListItem[] = [
@@ -209,7 +224,10 @@ export function TaskList() {
       tasks: imported,
     });
     const result = await res.json();
-    if (Array.isArray(result)) setTasks(result);
+    if (!Array.isArray(result)) return;
+    const [active, archived] = splitArchived(result);
+    setTasks(active);
+    setArchivedTasks(archived);
   };
 
   const handleAdd = async () => {
@@ -417,8 +435,13 @@ export function TaskList() {
   };
 
   const handleDeleteTask = (id: string) => {
+    const removed = tasks.find(task => task.id === id);
     setTasks(prev => prev.filter(task => task.id !== id));
-    setCompletions(prev => prev.filter(({ taskId }) => taskId !== id));
+    if (removed)
+      setArchivedTasks(prev => [
+        ...prev,
+        { ...removed, archivedAt: new Date().toISOString() },
+      ]);
     send(TASKS_API.RECURRING, HTTP_METHOD.DELETE, { id });
   };
 

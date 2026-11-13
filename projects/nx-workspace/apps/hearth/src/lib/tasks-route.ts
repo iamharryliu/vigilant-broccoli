@@ -16,6 +16,7 @@ export const toRecurringTask = (row: Record<string, unknown>) => ({
   homeId: row.home_id,
   createdAt: row.created_at,
   assignedUserId: row.assigned_user_id ?? null,
+  archivedAt: row.archived_at ?? null,
 });
 
 export const isValidMonthlyNth = (value: unknown) =>
@@ -69,7 +70,12 @@ export const importRecurringTasks = async (
   const imported = tasks.map(({ title, days, monthlyNth }, position) => ({
     id: idByTitle.get(title),
     title,
-    row: { days, monthly_nth: monthlyNth ?? null, position },
+    row: {
+      days,
+      monthly_nth: monthlyNth ?? null,
+      position,
+      archived_at: null,
+    },
   }));
   const omitted = existing
     .filter(({ title }) => !importedTitles.has(title))

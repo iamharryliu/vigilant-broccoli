@@ -14,6 +14,8 @@ export type RecurringTask = {
   createdAt?: string;
   /** Assignee of the pending occurrence only; cleared when it is completed. */
   assignedUserId?: string | null;
+  /** Set once the task is removed; its completions stay in Completed. */
+  archivedAt?: string | null;
 };
 
 /** One completed occurrence of a recurring task. */
@@ -30,7 +32,7 @@ export type TaskCompletion = {
 
 export type DefaultTask = Omit<
   RecurringTask,
-  'id' | 'assignedUserId' | 'createdAt'
+  'id' | 'assignedUserId' | 'createdAt' | 'archivedAt'
 >;
 
 /** An accepted home member (owner included) a task can be assigned to. */
