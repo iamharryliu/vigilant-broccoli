@@ -1,0 +1,22 @@
+{
+  "SITE": {
+    "NAME": "Photography"
+  },
+  "ALBUMS": {
+    "TITLE": "Albums",
+    "EMPTY": "No albums yet.",
+    "PHOTO_COUNT_ONE": "1 photo",
+    "PHOTO_COUNT_OTHER": "{count} photos",
+    "OPEN_ALBUM": "Open album {name}"
+  },
+  "ALBUM": {
+    "NOT_FOUND": "This album doesn't exist.",
+    "OPEN_PHOTO": "Open photo {number} of {name}"
+  },
+  "STATUS": {
+    "ERROR": "Failed to load albums. Please try again in a moment."
+  },
+  "ACTIONS": {
+    "BACK": "All albums"
+  }
+}

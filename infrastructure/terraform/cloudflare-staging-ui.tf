@@ -9,6 +9,7 @@ locals {
     "staging-findme",
     "staging-grind-75-react",
     "staging-harryliu-dev-react",
+    "staging-photography-react",
     "staging-pomodoro-react",
     "staging-text-tools-ui",
     "staging-utilities-ui",
@@ -25,6 +26,7 @@ locals {
     staging-findme             = "staging-findme.harryliu.dev"
     staging-grind-75-react     = "staging-grind-75.harryliu.dev"
     staging-harryliu-dev-react = "staging.harryliu.dev"
+    staging-photography-react  = "staging-photography.harryliu.dev"
     staging-pomodoro-react     = "staging-pomodoro.harryliu.dev"
     staging-text-tools-ui      = "staging-text-tools.harryliu.dev"
     staging-utilities-ui       = "staging-utilities.harryliu.dev"

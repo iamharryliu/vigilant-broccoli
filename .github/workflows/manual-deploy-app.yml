@@ -20,6 +20,7 @@ on:
           - chat
           - bookmarks-react
           - pomodoro-react
+          - photography-react
           - calendars
           - hearth
           - cloud-8-skate-react

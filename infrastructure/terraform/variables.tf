@@ -362,6 +362,21 @@ variable "calendars_pages_subdomain" {
   default = "production-calendars.pages.dev"
 }
 
+variable "photography_domain" {
+  type    = string
+  default = "photography.harryliu.dev"
+}
+
+variable "photography_pages_project" {
+  type    = string
+  default = "production-photography-react"
+}
+
+variable "photography_pages_subdomain" {
+  type    = string
+  default = "production-photography-react.pages.dev"
+}
+
 variable "projects_domain" {
   type    = string
   default = "projects.harryliu.dev"
