@@ -434,6 +434,7 @@ const AddTaskForm = memo(
     onCancel,
     onShowForm,
     isLoading = false,
+    showVoiceInput,
     voiceRecording,
     voiceProcessing,
     voiceError,
@@ -447,6 +448,7 @@ const AddTaskForm = memo(
     onCancel: () => void;
     onShowForm: () => void;
     isLoading?: boolean;
+    showVoiceInput: boolean;
     voiceRecording: boolean;
     voiceProcessing: boolean;
     voiceError: string | null;
@@ -459,12 +461,14 @@ const AddTaskForm = memo(
           <Button onClick={onShowForm} variant="secondary" className="flex-1">
             + Add Task
           </Button>
-          <SpeechToTextToggleButton
-            isRecording={voiceRecording}
-            isProcessing={voiceProcessing}
-            isDisabled={isLoading}
-            onToggle={onVoiceToggle}
-          />
+          {showVoiceInput && (
+            <SpeechToTextToggleButton
+              isRecording={voiceRecording}
+              isProcessing={voiceProcessing}
+              isDisabled={isLoading}
+              onToggle={onVoiceToggle}
+            />
+          )}
           {extraActions}
           {voiceError && (
             <Text size="1" color="red">
@@ -500,12 +504,14 @@ const AddTaskForm = memo(
             className="flex gap-2 items-center"
             onMouseDown={e => e.preventDefault()}
           >
-            <SpeechToTextToggleButton
-              isRecording={voiceRecording}
-              isProcessing={voiceProcessing}
-              isDisabled={isLoading}
-              onToggle={onVoiceToggle}
-            />
+            {showVoiceInput && (
+              <SpeechToTextToggleButton
+                isRecording={voiceRecording}
+                isProcessing={voiceProcessing}
+                isDisabled={isLoading}
+                onToggle={onVoiceToggle}
+              />
+            )}
             {extraActions}
           </div>
         </div>
@@ -591,6 +597,7 @@ export const GoogleTasksComponent = ({
   onSortModeChange,
   wrapInCard = true,
   addTaskActions,
+  enableVoiceInput = true,
 }: {
   auth: GoogleTasksAuthAdapter;
   taskListId?: string;
@@ -603,6 +610,8 @@ export const GoogleTasksComponent = ({
   onSortModeChange?: (taskListId: string, sortMode: SortMode) => void;
   wrapInCard?: boolean;
   addTaskActions?: ReactNode;
+  // Voice input needs the app's /api/speech-to-text and /api/tasks/parse-text.
+  enableVoiceInput?: boolean;
 }) => {
   const { authFetch, useAuthStatus, signInWithGoogle } = auth;
   const status = useAuthStatus();
@@ -860,6 +869,7 @@ export const GoogleTasksComponent = ({
         onCancel={handleCancelAddTask}
         onShowForm={() => setShowAddTask(true)}
         isLoading={isCreatingTask}
+        showVoiceInput={enableVoiceInput}
         voiceRecording={voiceRecording}
         voiceProcessing={voiceProcessing}
         voiceError={voiceError}

@@ -1,6 +1,6 @@
 'use client';
 
-import { TaskListSelectorComponent } from '../components/task-list-selector.component';
+import { TasksCard } from '../components/tasks-embed-card.component';
 import { WeatherClockCard } from '../components/weather-clock-card.component';
 import { HomeCalendarTabs } from '../components/home-calendar-tabs.component';
 import { SIDEBAR_ROUTE } from '../app.const';
@@ -14,7 +14,7 @@ export default function Page() {
       <div className="flex flex-col h-full gap-4 min-h-0">
         <WeatherClockCard />
         <div className="flex-1 min-h-0">
-          <TaskListSelectorComponent />
+          <TasksCard />
         </div>
       </div>
       <div className="h-full min-h-0 min-w-0">

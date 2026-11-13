@@ -27,6 +27,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── findme.harryliu.dev                   FindMe — Cloudflare Pages `production-findme` (domain + CNAME: Terraform, infrastructure/terraform/)
 ├── whiteboard.harryliu.dev               Whiteboard — Cloudflare Pages `production-whiteboard` (domain + CNAME: Terraform, infrastructure/terraform/)
 ├── weather.harryliu.dev           Weather — Vercel `production-weather-next` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project)
+├── tasks.harryliu.dev                    Tasks — Vercel `production-tasks-next` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; `/embed` may be framed by any site)
 ├── balloono.harryliu.dev                 Balloono — Vercel `production-balloono` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; online rooms run over public Supabase Realtime channels, no backend of its own)
 ├── gravity-guy.harryliu.dev              Gravity Guy — Vercel `production-gravity-guy` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; stateless, browser-local settings and scores)
 ├── manager.harryliu.dev                  Mobile Manager Next — Vercel `production-vb-manager-next-mobile` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; gated by Vercel Authentication)
@@ -70,6 +71,8 @@ vercel.app                                Vercel (production projects created on
 ├── demo-employee-handler-ui.vercel.app       Employee Handler UI (demo — its only Vercel deploy)
 ├── staging-weather-next.vercel.app    Weather (staging)
 ├── production-weather-next.vercel.app Weather (production)
+├── staging-tasks-next.vercel.app      Tasks (staging)
+├── production-tasks-next.vercel.app   Tasks (production)
 ├── staging-balloono.vercel.app               Balloono (staging)
 ├── production-balloono.vercel.app            Balloono (production)
 ├── staging-gravity-guy.vercel.app            Gravity Guy (staging)
@@ -118,6 +121,7 @@ github.io                                 GitHub Pages (custom domain projects.h
 | manager.harryliu.dev | staging-manager.harryliu.dev | `staging-vb-manager-next-mobile` | Vercel |
 | photography.harryliu.dev | staging-photography.harryliu.dev | `staging-photography-react` | Pages |
 | pomodoro.harryliu.dev | staging-pomodoro.harryliu.dev | `staging-pomodoro-react` | Pages |
+| tasks.harryliu.dev | staging-tasks.harryliu.dev | `staging-tasks-next` | Vercel |
 | text-tools.harryliu.dev | staging-text-tools.harryliu.dev | `staging-text-tools-ui` | Pages |
 | utilities.harryliu.dev | staging-utilities.harryliu.dev | `staging-utilities-ui` | Pages |
 | waiting.harryliu.dev | staging-waiting.harryliu.dev | `staging-waiting-games` | Pages |

@@ -47,6 +47,11 @@ export const VB_APP_URL = {
     URL: 'https://weather.harryliu.dev/',
     STAGING_URL: 'https://staging-weather.harryliu.dev/',
   },
+  TASKS: {
+    NAME: 'Tasks',
+    URL: 'https://tasks.harryliu.dev/',
+    STAGING_URL: 'https://staging-tasks.harryliu.dev/',
+  },
   FIND_ME: {
     NAME: 'Find Me',
     URL: 'https://findme.harryliu.dev/',

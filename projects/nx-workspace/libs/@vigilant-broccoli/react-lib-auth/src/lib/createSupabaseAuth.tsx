@@ -42,7 +42,7 @@ const safeNextPath = (next: string | null, fallback: string): string => {
 
 export interface SupabaseAuth {
   AuthProvider: (props: { children: ReactNode }) => ReactNode;
-  AuthCallbackPage: (props: { loadingLabel?: string }) => ReactNode;
+  AuthCallbackPage: (props: AuthCallbackPageProps) => ReactNode;
   useAuth: () => Session | null;
   useAuthStatus: () => 'loading' | 'authenticated' | 'unauthenticated';
   signInWithGoogle: () => Promise<void>;
@@ -53,6 +53,17 @@ export interface SupabaseAuth {
     input: RequestInfo | URL,
     init?: RequestInit,
   ) => Promise<Response>;
+  // Adopts a session signed in elsewhere, e.g. handed over from a popup.
+  setSession: (tokens: {
+    access_token: string;
+    refresh_token: string;
+  }) => Promise<void>;
+}
+
+export interface AuthCallbackPageProps {
+  loadingLabel?: string;
+  // Return true to take over from the default redirect (home or login).
+  onSession?: (session: Session | null) => boolean;
 }
 
 export function createSupabaseAuth(
@@ -63,6 +74,8 @@ export function createSupabaseAuth(
     supabaseKey,
     googleScopes,
     offlineAccess,
+    googleQueryParams,
+    storageKey,
     onProviderRefreshToken,
     routes,
   } = options;
@@ -85,7 +98,13 @@ export function createSupabaseAuth(
 
   let _supabase: SupabaseClient | null = null;
   const getSupabase = (): SupabaseClient => {
-    if (!_supabase) _supabase = createClient(supabaseUrl, supabaseKey);
+    if (!_supabase) {
+      _supabase = createClient(
+        supabaseUrl,
+        supabaseKey,
+        storageKey ? { auth: { storageKey } } : undefined,
+      );
+    }
     return _supabase;
   };
   const supabase = new Proxy({} as SupabaseClient, {
@@ -96,15 +115,27 @@ export function createSupabaseAuth(
 
   const AuthContext = createContext<Session | null | undefined>(undefined);
 
+  const queryParams = {
+    ...(offlineAccess ? OFFLINE_ACCESS_PARAMS : {}),
+    ...googleQueryParams,
+  };
+
   const signInWithGoogle = async () => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}${routes.callback}`,
         ...(googleScopes ? { scopes: googleScopes } : {}),
-        ...(offlineAccess ? { queryParams: OFFLINE_ACCESS_PARAMS } : {}),
+        ...(Object.keys(queryParams).length ? { queryParams } : {}),
       },
     });
+  };
+
+  const setSession = async (tokens: {
+    access_token: string;
+    refresh_token: string;
+  }) => {
+    await supabase.auth.setSession(tokens);
   };
 
   const signOut = async () => {
@@ -174,7 +205,10 @@ export function createSupabaseAuth(
     return ctx ? 'authenticated' : 'unauthenticated';
   };
 
-  const AuthCallbackPage = ({ loadingLabel }: { loadingLabel?: string }) => {
+  const AuthCallbackPage = ({
+    loadingLabel,
+    onSession,
+  }: AuthCallbackPageProps) => {
     useEffect(() => {
       const {
         data: { subscription },
@@ -184,11 +218,12 @@ export function createSupabaseAuth(
         // Persist the refresh token before navigating away — otherwise the
         // redirect cancels the in-flight POST and the token is never stored.
         void captureProviderTokens(session).finally(() => {
+          if (onSession?.(session)) return;
           window.location.replace(session ? next : routes.login);
         });
       });
       return () => subscription.unsubscribe();
-    }, []);
+    }, [onSession]);
 
     return createElement('p', null, loadingLabel ?? 'Signing you in...');
   };
@@ -203,5 +238,6 @@ export function createSupabaseAuth(
     getSupabaseAccessToken,
     buildAuthHeaders,
     authFetch,
+    setSession,
   };
 }

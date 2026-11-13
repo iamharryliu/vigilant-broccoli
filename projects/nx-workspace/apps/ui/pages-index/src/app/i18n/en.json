@@ -142,6 +142,10 @@
       "TITLE": "Weather",
       "DESCRIPTION": "Current weather for your location, deployed on Vercel."
     },
+    "TASKS": {
+      "TITLE": "Tasks",
+      "DESCRIPTION": "Google Tasks as a standalone page or an embeddable widget, deployed on Vercel."
+    },
     "BALLOONO": {
       "TITLE": "Balloono",
       "DESCRIPTION": "Bomberman-style water balloon battles in online rooms or against CPUs, deployed on Vercel."

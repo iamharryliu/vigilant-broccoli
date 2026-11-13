@@ -1,0 +1,11 @@
+{
+  "APP": {
+    "NAME": "Tasks",
+    "TAGLINE": "Sign in to manage your Google Tasks"
+  },
+  "AUTH": {
+    "SIGN_OUT": "Sign out",
+    "SIGNING_IN": "Signing you in...",
+    "REDIRECTING": "Redirecting to Google..."
+  }
+}
