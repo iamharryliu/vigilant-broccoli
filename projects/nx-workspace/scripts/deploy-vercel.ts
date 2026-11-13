@@ -84,6 +84,10 @@ async function ensureProjectExists(
   );
   if (getRes.ok) return;
 
+  // The create endpoint rejects `nodeVersion` ("should NOT have additional
+  // property"); applyProjectSettings patches it right after.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { nodeVersion, ...createSettings } = settings;
   const createRes = await fetch(
     `https://api.vercel.com/v11/projects?teamId=${teamId}`,
     {
@@ -92,7 +96,7 @@ async function ensureProjectExists(
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name: projectName, ...settings }),
+      body: JSON.stringify({ name: projectName, ...createSettings }),
     },
   );
   if (createRes.ok) {

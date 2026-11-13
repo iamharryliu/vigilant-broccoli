@@ -6,6 +6,7 @@ import { AuthCallbackPage, signInWithGoogle } from '../../../libs/auth';
 import {
   handOffPopupSession,
   isSignInPopup,
+  rememberPopupHandoff,
 } from '../../../libs/sign-in-popup';
 import { ROUTE } from '../app.const';
 import { useTranslation } from '../i18n';
@@ -38,6 +39,7 @@ export function SignInPopupView() {
   const { t } = useTranslation();
 
   useEffect(() => {
+    rememberPopupHandoff();
     if (isSignInPopup()) void signInWithGoogle();
     else window.location.replace(ROUTE.LOGIN);
   }, []);
