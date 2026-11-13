@@ -128,13 +128,16 @@ const toEntries = (files: BucketFileJson[], folder: string): FileEntry[] => {
   return [...folderEntries, ...fileEntries];
 };
 
-export const listCmsEntries = async (folder: string) => {
+const listBucket = async () => {
   const response = await fetch(storageUrl(STORAGE_PATH.FILES), {
     headers: apiHeaders(),
   });
   if (!response.ok) throw await errorFrom(response, 'Failed to list bucket');
-  return toEntries((await response.json()) as BucketFileJson[], folder);
+  return (await response.json()) as BucketFileJson[];
 };
+
+export const listCmsEntries = async (folder: string) =>
+  toEntries(await listBucket(), folder);
 
 export const readCmsFile = async (key: string) => {
   const response = await fetch(
@@ -162,4 +165,37 @@ export const deleteCmsFile = async (key: string) => {
     { method: HTTP_METHOD.DELETE, headers: apiHeaders() },
   );
   if (!response.ok) throw await errorFrom(response, 'Failed to delete file');
+};
+
+// Its subfolders are the public albums on photography.harryliu.dev, so the
+// whole folder is never deleted in one action.
+const PROTECTED_FOLDERS = ['photography'];
+
+export const isDeletableCmsFolder = (folder: string) =>
+  folder !== '' &&
+  isValidCmsPath(folder) &&
+  !PROTECTED_FOLDERS.includes(folder);
+
+// Folders are key prefixes, so deleting one deletes every key under it,
+// including nested subfolders and the folder's own `name/` placeholder.
+// Every key is attempted; the first failure is thrown after the rest settle.
+export const deleteCmsFolder = async (folder: string) => {
+  const prefix = `${folder}${KEY_SEPARATOR}`;
+  const keys = (await listBucket())
+    .map(file => file.name)
+    .filter(name => name.startsWith(prefix));
+  const results = await Promise.allSettled(keys.map(deleteCmsFile));
+  const failed = results.filter(
+    (result): result is PromiseRejectedResult => result.status === 'rejected',
+  );
+  if (failed.length > 0) {
+    throw new Error(
+      `Failed to delete ${failed.length} of ${keys.length} files: ${
+        failed[0].reason instanceof Error
+          ? failed[0].reason.message
+          : failed[0].reason
+      }`,
+    );
+  }
+  return keys.length;
 };

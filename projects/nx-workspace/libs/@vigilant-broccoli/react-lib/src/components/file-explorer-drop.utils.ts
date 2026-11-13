@@ -64,6 +64,19 @@ export const readDroppedFiles = async (
   return (await Promise.all(entries.map(entry => readEntry(entry, '')))).flat();
 };
 
+// A folder picked with `webkitdirectory` arrives flat; `webkitRelativePath`
+// ('album/sub/1.jpg') starts with the picked folder's own name.
+export const readPickedFiles = (files: File[]): DroppedFile[] =>
+  files
+    .filter(file => !IGNORED_FILE_NAMES.includes(file.name))
+    .map(file => ({
+      directory: file.webkitRelativePath
+        .split(PATH_SEPARATOR)
+        .slice(0, -1)
+        .join(PATH_SEPARATOR),
+      file,
+    }));
+
 export const groupByDirectory = (dropped: DroppedFile[]) =>
   dropped.reduce(
     (groups, { directory, file }) =>

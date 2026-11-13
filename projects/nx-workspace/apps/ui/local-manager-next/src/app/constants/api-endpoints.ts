@@ -51,6 +51,7 @@ export const API_ENDPOINTS = {
 
   CMS: '/api/cms',
   CMS_FILE: '/api/cms/file',
+  CMS_FOLDER: '/api/cms/folder',
   KNOWLEDGE_BASE: '/api/knowledge-base',
   KNOWLEDGE_BASE_FILE: '/api/knowledge-base/file',
   KNOWLEDGE_BASE_SEARCH: '/api/knowledge-base/search',
