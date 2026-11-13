@@ -6,6 +6,7 @@
   - [Browser UI Approaches](#browser-ui-approaches)
   - [Embedding and Composition](#embedding-and-composition)
 - [Micro-frontends](#micro-frontends)
+  - [Common Use Cases](#common-use-cases)
   - [Multi-zone vs Iframe](#multi-zone-vs-iframe)
 - [Styling and UI Components](#styling-and-ui-components)
   - [Styling Languages and Utilities](#styling-languages-and-utilities)
@@ -84,6 +85,19 @@ A micro-frontend splits one user-facing app into pieces that separate teams buil
 | Runtime orchestrator (single-spa, import maps) | A root config mounts and unmounts framework apps by route; import maps resolve URLs. | Yes. | None by default. | Mixes frameworks on one page; incremental migration between frameworks. | Lifecycle boilerplate per app; memory leaks and global CSS clashes are on you. | Migrating a legacy SPA piece by piece to a new framework. |
 | Server-side or edge composition | The server, CDN, or ESI/SSI stitches HTML fragments from each team before sending. | Yes. | None in the browser. | Fast first paint; SEO friendly; the browser sees one page. | Client interactivity still needs a hydration or JS integration strategy; fragment latency adds up. | Content-heavy, SEO-sensitive pages such as e-commerce. |
 | Web Components | Each team ships custom elements that the shell renders as tags. | Yes, when loaded from a URL at runtime. | Style and DOM via Shadow DOM; shared JS realm. | Framework-agnostic contract (attributes, properties, events). | SSR, forms, and theming across shadow roots need planning; each element may bundle its own framework. | Widgets reused across stacks with a stable, browser-native API. |
+
+### Common Use Cases
+
+| Use Case | Why Micro-frontends Fit | Typical Approach |
+| --- | --- | --- |
+| Acquisitions and merged products | Products built on different stacks appear under one navigation and login without a rewrite. | Iframes or route-based / multi-zone. |
+| Embedding third-party or untrusted apps | Hard isolation keeps outside code away from the shell's DOM, cookies, and JS. | Iframes. |
+| Embeddable widgets for other sites | One widget ships to hosts on any stack with a stable contract. | Web Components or iframes. |
+| Incremental framework migration | The legacy app keeps running while pieces move one route or feature at a time to the new framework. | Runtime orchestrator (single-spa), route-based, or Module Federation. |
+| Large sites split by section | Marketing, docs, and the app each own their stack and release pipeline under one domain. | Route-based / multi-zone. |
+| Multiple teams in one product | Teams own a vertical slice and release without coordinating a shared deploy. | Module Federation or route-based / multi-zone. |
+| Plugin or extension platforms | Third parties or internal teams add features to a host app without rebuilding it. | Module Federation, Web Components, or iframes. |
+| SEO-sensitive composite pages | Teams own fragments such as product, cart, and recommendations, while the browser receives one rendered page. | Server-side or edge composition. |
 
 ### Multi-zone vs Iframe
 
