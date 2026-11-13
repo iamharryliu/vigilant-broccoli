@@ -18,17 +18,18 @@ import {
 } from 'react';
 import {
   Card,
+  ClearableInput,
   DropdownMenu,
   HighlightMatch,
   IconButton,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupInput,
 } from '@vigilant-broccoli/react-lib';
 import { DeleteItemConfirmationDialog } from './CRUDListManagement';
 
 const MOBILE_NO_CARD_CLS =
   '!p-0 [&::before]:!hidden [&::after]:!hidden md:!p-3 md:[&::before]:![display:revert] md:[&::after]:![display:revert]';
+
+// Matches Tailwind's `md:` breakpoint.
+export const DESKTOP_MEDIA_QUERY = '(min-width: 768px)';
 
 const KEY_ARROW_DOWN = 'ArrowDown';
 const KEY_ARROW_UP = 'ArrowUp';
@@ -124,6 +125,11 @@ export interface NoteGraph {
 export interface DocsExplorerUrlSync {
   get: () => string | null;
   set: (path: string) => void;
+  // Called when navigating back to the root (no file selected).
+  clear?: () => void;
+  // Notifies when the URL changes outside the explorer (browser back/forward);
+  // returns an unsubscribe function.
+  subscribe?: (onChange: () => void) => () => void;
 }
 
 export interface ViewModeOption {
@@ -153,6 +159,7 @@ interface DocsExplorerProps {
   onCreate?: () => void;
   extraActions?: (path: string) => DocsExplorerAction[];
   sidebarActions?: DocsExplorerAction[];
+  enableMultiSelect?: boolean;
   onDeleteSelected?: (paths: string[]) => Promise<void>;
   viewModes?: ViewModeOption[];
   onViewModeChange?: (mode: string | undefined) => void;
@@ -171,6 +178,7 @@ const COPY = {
   EDIT: 'Edit',
   DOCUMENT_ACTIONS: 'Document actions',
   BACK_TO_FILES: 'Back to files',
+  BACK_TO_PREVIOUS: 'Back to previous file',
   SELECTED_SUFFIX: 'selected',
   CLEAR_SELECTION: 'Clear',
   SELECT_ALL: 'Select all',
@@ -206,6 +214,7 @@ export const DocsExplorer = ({
   onCreate,
   extraActions,
   sidebarActions,
+  enableMultiSelect = false,
   onDeleteSelected,
   viewModes,
   onViewModeChange,
@@ -221,10 +230,15 @@ export const DocsExplorer = ({
     setShowGraph(
       Boolean(renderGraph) &&
         !urlSync?.get() &&
-        window.matchMedia('(min-width: 768px)').matches,
+        window.matchMedia(DESKTOP_MEDIA_QUERY).matches,
     );
   }, [renderGraph, urlSync]);
   const [selectedPath, setSelectedPath] = useState<string | null>(null);
+  // Mirrors selectedPath so openFile can read it without changing identity.
+  const selectedPathRef = useRef<string | null>(null);
+  const contentRequestIdRef = useRef(0);
+  // null entries are the root view (no file open).
+  const [history, setHistory] = useState<(string | null)[]>([]);
   const [content, setContent] = useState('');
   const [isLoadingContent, setIsLoadingContent] = useState(false);
   const [contentError, setContentError] = useState<string | null>(null);
@@ -240,6 +254,7 @@ export const DocsExplorer = ({
   const [aggregateMode, setAggregateMode] = useState<AggregateMode>(
     AGGREGATE_MODE.NONE,
   );
+  const hasSidebarActions = Boolean(sidebarActions?.length);
   const hasSelection = selectedPaths.length > 0;
   const isAggregate = selectedPaths.length > 1;
   const aggregateContent = buildAggregateContent(
@@ -257,6 +272,56 @@ export const DocsExplorer = ({
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const resultsContainerRef = useRef<HTMLDivElement>(null);
+  const contentScrollRef = useRef<HTMLDivElement>(null);
+  const contentBarRef = useRef<HTMLDivElement>(null);
+  const contentBodyRef = useRef<HTMLDivElement>(null);
+  const stickyHeadingRef = useRef<HTMLSpanElement>(null);
+
+  // Styles the bar heading directly per animation frame: routing scroll
+  // progress through React state re-renders the whole explorer on every
+  // scroll event, which made the fade stutter.
+  useEffect(() => {
+    const scroller = contentScrollRef.current;
+    const bar = contentBarRef.current;
+    const body = contentBodyRef.current;
+    const label = stickyHeadingRef.current;
+    if (!scroller || !bar || !body || !label) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const heading = body.querySelector('h1');
+      const text = heading?.textContent ?? '';
+      if (label.textContent !== text) label.textContent = text;
+      if (!heading) {
+        label.style.opacity = '0';
+        return;
+      }
+      const { top, height } = heading.getBoundingClientRect();
+      const hidden = bar.getBoundingClientRect().bottom - top;
+      const progress = Math.min(Math.max(hidden / height, 0), 1);
+      label.style.opacity = String(progress);
+      label.style.transform = `translateY(${(1 - progress) * 0.5}rem)`;
+    };
+    const scheduleUpdate = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    // Viewers render their HTML after mount, so re-check once it lands.
+    const observer = new MutationObserver(scheduleUpdate);
+    observer.observe(body, { childList: true, subtree: true });
+    scroller.addEventListener('scroll', scheduleUpdate, { passive: true });
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      scroller.removeEventListener('scroll', scheduleUpdate);
+    };
+  }, [
+    showGraph,
+    selectedPath,
+    selectedPaths,
+    isLoadingContent,
+    isLoadingAggregate,
+  ]);
 
   const toggleSelectPath = useCallback((path: string) => {
     setSelectedPaths(prev =>
@@ -304,10 +369,18 @@ export const DocsExplorer = ({
     };
   }, [selectedPaths, hasSelection, getContent]);
 
-  const selectFile = useCallback(
-    async (pathWithHash: string) => {
+  const openFile = useCallback(
+    async (
+      pathWithHash: string,
+      { recordHistory = true, syncUrl = true } = {},
+    ) => {
       setShowGraph(false);
       const [path, hash] = pathWithHash.split(HASH_SEP);
+      const previous = selectedPathRef.current;
+      if (recordHistory && previous !== path) {
+        setHistory(prev => [...prev, previous]);
+      }
+      selectedPathRef.current = path;
       // Only touch the hash when the caller supplied one (a resolved cross-file
       // link) — plain path selections (tree, search, initial URL sync) leave
       // whatever's already in the URL alone, so a direct load of `?file=...#foo`
@@ -316,31 +389,94 @@ export const DocsExplorer = ({
       setSelectedPaths([]);
       setSelectedPath(path);
       setMobilePanel('content');
-      urlSync?.set(path);
+      if (syncUrl) urlSync?.set(path);
       setIsLoadingContent(true);
       setContentError(null);
+      // Rapid navigation can resolve loads out of order; only the latest
+      // request may write, or an earlier file's content lands under a later
+      // selection.
+      const requestId = ++contentRequestIdRef.current;
+      const isStale = () => requestId !== contentRequestIdRef.current;
       try {
         const next = await getContent(path);
+        if (isStale()) return;
         setContent(next);
       } catch (err) {
+        if (isStale()) return;
         setContentError(
           err instanceof Error ? err.message : COPY.LOAD_CONTENT_ERROR,
         );
         setContent('');
       } finally {
-        setIsLoadingContent(false);
+        if (!isStale()) setIsLoadingContent(false);
       }
     },
     [getContent, urlSync],
   );
 
+  const selectFile = useCallback(
+    (pathWithHash: string) => openFile(pathWithHash),
+    [openFile],
+  );
+
+  const showRoot = ({ syncUrl = true } = {}) => {
+    contentRequestIdRef.current++;
+    setIsLoadingContent(false);
+    selectedPathRef.current = null;
+    setSelectedPaths([]);
+    setSelectedPath(null);
+    setContent('');
+    setContentError(null);
+    setShowGraph(
+      Boolean(renderGraph) && window.matchMedia(DESKTOP_MEDIA_QUERY).matches,
+    );
+    setMobilePanel('sidebar');
+    if (syncUrl) urlSync?.clear?.();
+  };
+
+  const goBack = () => {
+    if (history.length === 0) return;
+    const previous = history[history.length - 1];
+    setHistory(prev => prev.slice(0, -1));
+    if (previous === null) showRoot();
+    else openFile(previous, { recordHistory: false });
+  };
+
+  // Browser back/forward already moved the URL, so reopen what it names
+  // without writing it back. A move to the file on top of the in-page stack
+  // counts as going back; anything else is recorded like a normal navigation.
+  const handleUrlChange = () => {
+    const path = urlSync?.get() ?? null;
+    const current = selectedPathRef.current;
+    if (path === current) return;
+    setHistory(prev =>
+      prev.length > 0 && prev[prev.length - 1] === path
+        ? prev.slice(0, -1)
+        : [...prev, current],
+    );
+    if (path) openFile(path, { recordHistory: false, syncUrl: false });
+    else showRoot({ syncUrl: false });
+  };
+  const handleUrlChangeRef = useRef(handleUrlChange);
+  handleUrlChangeRef.current = handleUrlChange;
+
+  useEffect(
+    () => urlSync?.subscribe?.(() => handleUrlChangeRef.current()),
+    [urlSync],
+  );
+
+  // Runs once: re-reading the URL after going back to the root would reopen
+  // the file when the consumer's urlSync has no clear().
+  const hasSyncedInitialUrl = useRef(false);
   useEffect(() => {
+    if (hasSyncedInitialUrl.current) return;
+    hasSyncedInitialUrl.current = true;
     const initial = urlSync?.get();
-    if (initial && !selectedPath) {
+    if (initial) {
       selectFile(initial);
       setMobilePanel('content');
     }
-  }, [urlSync, selectedPath, selectFile]);
+  }, [urlSync, selectFile]);
 
   const showSidebarOnMobile = () => setMobilePanel('sidebar');
 
@@ -456,52 +592,50 @@ export const DocsExplorer = ({
                     onClick={onCreate}
                   />
                 )}
-                <DropdownMenu.Root>
-                  <DropdownMenu.Trigger>
-                    <IconButton
-                      variant="ghost"
-                      icon="ellipsis-horizontal"
-                      aria-label={COPY.SIDEBAR_ACTIONS}
-                    />
-                  </DropdownMenu.Trigger>
-                  <DropdownMenu.Content>
-                    <DropdownMenu.Item onSelect={toggleMultiSelectMode}>
-                      {multiSelectMode
-                        ? COPY.TURN_OFF_MULTI_SELECT
-                        : COPY.SELECT_MULTIPLE}
-                    </DropdownMenu.Item>
-                    {sidebarActions && sidebarActions.length > 0 && (
-                      <>
+                {(enableMultiSelect || hasSidebarActions) && (
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger>
+                      <IconButton
+                        variant="ghost"
+                        icon="ellipsis-horizontal"
+                        aria-label={COPY.SIDEBAR_ACTIONS}
+                      />
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content>
+                      {enableMultiSelect && (
+                        <DropdownMenu.Item onSelect={toggleMultiSelectMode}>
+                          {multiSelectMode
+                            ? COPY.TURN_OFF_MULTI_SELECT
+                            : COPY.SELECT_MULTIPLE}
+                        </DropdownMenu.Item>
+                      )}
+                      {enableMultiSelect && hasSidebarActions && (
                         <DropdownMenu.Separator />
-                        {sidebarActions.map(action => (
-                          <DropdownMenu.Item
-                            key={action.label}
-                            onSelect={action.onSelect}
-                          >
-                            {action.label}
-                          </DropdownMenu.Item>
-                        ))}
-                      </>
-                    )}
-                  </DropdownMenu.Content>
-                </DropdownMenu.Root>
+                      )}
+                      {sidebarActions?.map(action => (
+                        <DropdownMenu.Item
+                          key={action.label}
+                          onSelect={action.onSelect}
+                        >
+                          {action.label}
+                        </DropdownMenu.Item>
+                      ))}
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Root>
+                )}
               </div>
             </div>
             {search && (
               <>
-                <InputGroup>
-                  <InputGroupAddon align="inline-start">
-                    <SearchIcon className="w-4 h-4" />
-                  </InputGroupAddon>
-                  <InputGroupInput
-                    ref={searchInputRef}
-                    hasStartAddon
-                    placeholder={searchPlaceholder}
-                    value={searchQuery}
-                    onChange={e => setSearchQuery(e.target.value)}
-                    onKeyDown={handleSearchInputKeyDown}
-                  />
-                </InputGroup>
+                <ClearableInput
+                  ref={searchInputRef}
+                  startAddon={<SearchIcon className="w-4 h-4" />}
+                  placeholder={searchPlaceholder}
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  onClear={clearSearch}
+                  onKeyDown={handleSearchInputKeyDown}
+                />
                 {isSearchMode && !isSearching && (
                   <div className="text-xs text-muted-foreground mt-1.5">
                     {searchResults.length === 0
@@ -617,8 +751,29 @@ export const DocsExplorer = ({
               {hasSelection ? aggregateError : contentError}
             </CenteredMessage>
           ) : (
-            <div className="relative w-full h-full overflow-auto">
-              <div className="absolute top-2 right-2 z-10">
+            <div
+              ref={contentScrollRef}
+              className="w-full h-full overflow-auto flex flex-col"
+            >
+              <div
+                ref={contentBarRef}
+                className="sticky top-0 z-10 flex items-center justify-between gap-2 px-2 py-1 border-b border-border bg-background/80 backdrop-blur-sm"
+              >
+                <div className="flex min-w-0 items-center gap-1">
+                  {history.length > 0 && (
+                    <IconButton
+                      variant="ghost"
+                      icon="arrow-left"
+                      onClick={goBack}
+                      aria-label={COPY.BACK_TO_PREVIOUS}
+                    />
+                  )}
+                  <span
+                    ref={stickyHeadingRef}
+                    className="min-w-0 truncate pl-2 text-sm font-semibold opacity-0 will-change-[opacity,transform]"
+                    aria-hidden
+                  />
+                </div>
                 <DropdownMenu.Root>
                   <DropdownMenu.Trigger>
                     <IconButton
@@ -700,21 +855,23 @@ export const DocsExplorer = ({
                   </DropdownMenu.Content>
                 </DropdownMenu.Root>
               </div>
-              {renderContent ? (
-                renderContent(
-                  hasSelection ? aggregateContent : content,
-                  selectFile,
-                  hasSelection
-                    ? selectedPaths
-                    : selectedPath
-                      ? [selectedPath]
-                      : [],
-                )
-              ) : (
-                <pre className="whitespace-pre-wrap px-4 sm:px-6 py-4 text-sm">
-                  {hasSelection ? aggregateContent : content}
-                </pre>
-              )}
+              <div ref={contentBodyRef} className="flex-1 min-h-0">
+                {renderContent ? (
+                  renderContent(
+                    hasSelection ? aggregateContent : content,
+                    selectFile,
+                    hasSelection
+                      ? selectedPaths
+                      : selectedPath
+                        ? [selectedPath]
+                        : [],
+                  )
+                ) : (
+                  <pre className="whitespace-pre-wrap px-4 sm:px-6 py-4 text-sm">
+                    {hasSelection ? aggregateContent : content}
+                  </pre>
+                )}
+              </div>
             </div>
           )}
         </Card>

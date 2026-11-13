@@ -26,6 +26,7 @@ import {
   Search,
   Send,
   SendHorizontal,
+  Settings,
   Share2,
   Square,
   Sun,
@@ -71,6 +72,7 @@ export const ICON_BUTTON_ICONS = {
   bell: Bell,
   bot: Bot,
   help: CircleHelp,
+  settings: Settings,
 } as const satisfies Record<string, LucideIcon>;
 
 export type IconButtonIcon = keyof typeof ICON_BUTTON_ICONS;
@@ -111,6 +113,7 @@ const ICON_BUTTON_DEFAULT_LABELS = {
   bell: 'Notifications',
   bot: 'Assistant',
   help: 'Help',
+  settings: 'Settings',
 } as const satisfies Record<IconButtonIcon, string>;
 
 const DEFAULT_ICON_SIZE = 16;

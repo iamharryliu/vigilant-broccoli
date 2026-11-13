@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { cn } from '../utils/cn';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
+
+const CLEAR_INPUT_LABEL = 'Clear search';
 
 export const Input = React.forwardRef<
   HTMLInputElement,
@@ -77,6 +79,62 @@ export const InputGroupText = ({
   children: React.ReactNode;
   className?: string;
 }) => <span className={cn('text-sm', className)}>{children}</span>;
+
+export const ClearableInput = React.forwardRef<
+  HTMLInputElement,
+  React.ComponentProps<'input'> & {
+    onClear: () => void;
+    startAddon?: React.ReactNode;
+    clearLabel?: string;
+  }
+>(
+  (
+    {
+      onClear,
+      startAddon,
+      clearLabel = CLEAR_INPUT_LABEL,
+      value,
+      className,
+      ...props
+    },
+    ref,
+  ) => {
+    const inputRef = React.useRef<HTMLInputElement>(null);
+    React.useImperativeHandle(ref, () => inputRef.current as HTMLInputElement);
+    const hasValue = String(value ?? '').length > 0;
+
+    return (
+      <InputGroup>
+        {startAddon && (
+          <InputGroupAddon align="inline-start">{startAddon}</InputGroupAddon>
+        )}
+        <InputGroupInput
+          ref={inputRef}
+          value={value}
+          hasStartAddon={Boolean(startAddon)}
+          hasEndAddon
+          className={className}
+          {...props}
+        />
+        {hasValue && (
+          <button
+            type="button"
+            aria-label={clearLabel}
+            title={clearLabel}
+            onClick={() => {
+              onClear();
+              inputRef.current?.focus();
+            }}
+            className="absolute inset-y-0 right-0 flex w-8 items-center justify-center text-muted-foreground hover:text-foreground"
+          >
+            <X size={16} aria-hidden="true" />
+          </button>
+        )}
+      </InputGroup>
+    );
+  },
+);
+ClearableInput.displayName = 'ClearableInput';
 
 export const SearchInput = React.forwardRef<
   HTMLInputElement,

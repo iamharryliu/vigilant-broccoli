@@ -1,9 +1,8 @@
-import { useMemo } from 'react';
 import { ThemeProvider, useDocumentTitle } from '@vigilant-broccoli/react-lib';
 import {
   createDocsSnapshotSource,
+  createSearchParamUrlSync,
   DocsExplorer,
-  FILE_PARAM,
   MarkdownViewer,
   type DocsNode,
 } from '@vigilant-broccoli/react-lib-higher-level';
@@ -16,18 +15,7 @@ const PAGE_TITLE = 'Solutions';
 
 const { fetchStructure, fetchContent, searchDocs } = createDocsSnapshotSource();
 
-const getFileParam = () =>
-  new URLSearchParams(window.location.search).get(FILE_PARAM);
-
-const setFileParam = (path: string) => {
-  const params = new URLSearchParams(window.location.search);
-  params.set(FILE_PARAM, path);
-  window.history.pushState(
-    null,
-    '',
-    `?${params.toString()}${window.location.hash}`,
-  );
-};
+const urlSync = createSearchParamUrlSync();
 
 // Problems live under a category folder; root-level files are markdown notes.
 const renderContent = (
@@ -47,7 +35,6 @@ const renderContent = (
 
 export function App() {
   useDocumentTitle(`${PAGE_TITLE} | ${SITE_NAME}`);
-  const urlSync = useMemo(() => ({ get: getFileParam, set: setFileParam }), []);
   const [nodes, setNodes] = useState<DocsNode[] | null>(null);
 
   useEffect(() => {
