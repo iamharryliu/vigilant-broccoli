@@ -14,6 +14,8 @@ export type RecurringTask = {
   createdAt?: string;
   /** Assignee of the pending occurrence only; cleared when it is completed. */
   assignedUserId?: string | null;
+  /** Set once the task is removed; its completions stay in Completed. */
+  archivedAt?: string | null;
 };
 
 /** One completed occurrence of a recurring task. */
@@ -30,7 +32,7 @@ export type TaskCompletion = {
 
 export type DefaultTask = Omit<
   RecurringTask,
-  'id' | 'assignedUserId' | 'createdAt'
+  'id' | 'assignedUserId' | 'createdAt' | 'archivedAt'
 >;
 
 /** An accepted home member (owner included) a task can be assigned to. */
@@ -75,29 +77,12 @@ export const isDaily = ({
 }: Pick<RecurringTask, 'days' | 'monthlyNth'>) =>
   !monthlyNth && isEveryDay(days);
 
-const task = (title: string, days: number[] = ALL_DAYS): DefaultTask => ({
+export const toDefaultTask = ({
   title,
   days,
-});
-
-const MONDAY = 1;
-const WEDNESDAY = 3;
-const FRIDAY = 5;
-
-export const DEFAULT_TASKS: DefaultTask[] = [
-  task('Clear out dishwasher'),
-  task('Morning dog walk'),
-  task('Clean Niko’s bowls'),
-  task('Feed Niko breakfast'),
-  task('Plan for dinner'),
-  task('Prepare dinner'),
-  task('Night dog walk'),
-  task('Feed Niko dinner'),
-  task('Kitchen cleanup (night)'),
-  task('Run dishwasher (night)'),
-  task('Run robot vacuum', [MONDAY, WEDNESDAY, FRIDAY]),
-  task('Take out trash', [FRIDAY]),
-];
+  monthlyNth,
+}: RecurringTask): DefaultTask =>
+  monthlyNth ? { title, days, monthlyNth } : { title, days };
 
 const DAYS_PER_WEEK = 7;
 // Consecutive occurrences of one ordinal weekday are 28 or 35 days apart.
@@ -185,7 +170,7 @@ export const describeDays = ({
 
 export const TASKS_API = {
   RECURRING: '/api/tasks/recurring',
-  RECURRING_RESET: '/api/tasks/recurring/reset',
+  RECURRING_IMPORT: '/api/tasks/recurring/import',
   COMPLETIONS: '/api/tasks/completions',
   ONE_OFF: '/api/tasks/one-off',
 };
