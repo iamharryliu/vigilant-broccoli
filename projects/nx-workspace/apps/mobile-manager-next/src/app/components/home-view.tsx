@@ -359,11 +359,11 @@ export const HomeView = () => {
       value: CALENDAR_TAB.TASKS,
       label: CALENDAR_TAB.TASKS,
       icon: <ListTodo size={TAB_ICON_SIZE} />,
-      // Force-mounted so tasks load with the page; refetched on each visit.
+      // Force-mounted so the tasks frame loads with the page.
       forceMount: true,
       content: (
         <div className={SCROLL_PANEL}>
-          <GoogleTasksView active={tab === CALENDAR_TAB.TASKS} />
+          <GoogleTasksView />
         </div>
       ),
     },

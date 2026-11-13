@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import type { GoogleTasksAuthAdapter } from '@vigilant-broccoli/react-lib-higher-level';
 import { supabase } from '../../../libs/supabase';
 import { isAllowedEmail } from '../../../libs/auth-policy';
 import {
@@ -82,12 +81,6 @@ const persistGoogleRefreshToken = (session: Session) =>
     },
     body: JSON.stringify({ refreshToken: session.provider_refresh_token }),
   });
-
-export const googleTasksAuth: GoogleTasksAuthAdapter = {
-  authFetch,
-  useAuthStatus,
-  signInWithGoogle,
-};
 
 export default function AuthProvider({
   children,
