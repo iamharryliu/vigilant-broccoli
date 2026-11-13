@@ -50,7 +50,7 @@ fi
 
 if ask "Change wallpaper?"; then
     chmod +x "$MAC_SETUP_DIR/change_wallpaper.sh"
-    . $MAC_SETUP_DIR/change_wallpaper.sh
+    "$MAC_SETUP_DIR/change_wallpaper.sh"
 fi
 
 if ask "Setup Dock Stacks?"; then
