@@ -6,28 +6,29 @@ import {
 import {
   RECURRING_TASKS_TABLE,
   badRequest,
-  insertDefaultTasks,
+  importRecurringTasks,
+  isValidImportedTask,
   serverError,
   toRecurringTask,
 } from '../../../../../lib/tasks-route';
 
 export const runtime = 'nodejs';
 
-// Backs the dev-only "Reset recurring tasks to default" button; deleting the
-// tasks cascades to their completions.
 export const POST = async (req: NextRequest) => {
   const supabase = createServerClient(getBearerToken(req));
-  const { homeId } = await req.json();
+  const { homeId, tasks } = await req.json();
   if (!homeId) return badRequest('Missing homeId');
+  if (!Array.isArray(tasks) || !tasks.every(isValidImportedTask))
+    return badRequest(
+      'tasks must be an array of { title, days, monthlyNth? } with weekdays 0-6',
+    );
 
-  const { error: deleteError } = await supabase
-    .from(RECURRING_TASKS_TABLE)
-    .delete()
-    .eq('home_id', homeId);
-  if (deleteError) return serverError(deleteError.message);
-
-  const { error: insertError } = await insertDefaultTasks(supabase, homeId);
-  if (insertError) return serverError(insertError.message);
+  const { error: importError } = await importRecurringTasks(
+    supabase,
+    homeId,
+    tasks,
+  );
+  if (importError) return serverError(importError.message);
 
   const { data, error } = await supabase
     .from(RECURRING_TASKS_TABLE)

@@ -26,7 +26,6 @@ import {
   useRefetchOnFocus,
 } from '@vigilant-broccoli/react-lib';
 import { HTTP_METHOD } from '@vigilant-broccoli/common-js';
-import { IS_DEV } from '../app.consts';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { useAuthHeader, useJsonAuthHeaders } from '../hooks/use-auth-headers';
@@ -203,16 +202,14 @@ export function TaskList() {
       prev.map(task => (task.id === id ? { ...task, ...changes } : task)),
     );
 
-  const resetToDefaultTasks = async () => {
+  const importTasks = async (imported: unknown) => {
     if (!homeId) return;
-    const res = await send(TASKS_API.RECURRING_RESET, HTTP_METHOD.POST, {
+    const res = await send(TASKS_API.RECURRING_IMPORT, HTTP_METHOD.POST, {
       homeId,
+      tasks: imported,
     });
-    const reset = await res.json();
-    if (Array.isArray(reset)) {
-      setTasks(reset);
-      setCompletions([]);
-    }
+    const result = await res.json();
+    if (Array.isArray(result)) setTasks(result);
   };
 
   const handleAdd = async () => {
@@ -515,16 +512,6 @@ export function TaskList() {
           </>
         )}
       </div>
-      {IS_DEV && (
-        <Button
-          variant="outline"
-          size="sm"
-          className="self-start"
-          onClick={resetToDefaultTasks}
-        >
-          Reset recurring tasks to default
-        </Button>
-      )}
       <div className="flex gap-2">
         <Input
           className="grow"
@@ -580,6 +567,7 @@ export function TaskList() {
         tasks={tasks}
         onSave={handleSaveTask}
         onDelete={handleDeleteTask}
+        onImport={importTasks}
       />
       <AssignTaskDialog
         taskTitle={assigningItem?.title ?? null}

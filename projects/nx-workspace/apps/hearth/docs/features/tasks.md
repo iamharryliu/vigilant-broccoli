@@ -11,7 +11,7 @@ The home page's Tasks tab (`src/app/components/TaskList.tsx`) lists the selected
 - Drag-to-reorder works within the same kind; recurring tasks without a pending instance keep their place.
 - On first load and on a home switch the list shows `ChecklistSkeleton` (shaped like a dense row, with assignee badges) instead of "No tasks due today", which appears only once the fetch has resolved.
 - Adding, completing and reopening animate like mobile-manager's tasks through `CheckList`'s [completion contract](../../../../libs/@vigilant-broccoli/react-lib/docs/features/checklist-completion.md). A recurring instance changes id when completed (task id → temporary id → saved completion id) or reopened, so `TaskList` records each replacement in `transitionFrom` and passes it as `transitionFromId`. Each toggle is optimistic, its row is `isRemoving` while the write is pending (`usePendingWrites`), and a failed write restores the previous state.
-- A new home starts with no tasks. Only the dev-only "Reset recurring tasks to default" button loads `DEFAULT_TASKS` from `tasks.utils.ts`, replacing the home's recurring tasks.
+- A new home starts with no tasks. The Manage tasks dialog has Export and Import: Export downloads the home's tasks as `recurring-tasks.json`, a list of `{ title, days, monthlyNth? }` (`toDefaultTask`), and Import accepts such a file or pasted JSON. The default set is tracked in `src/app/components/default-recurring-tasks.json`, in the same shape; import it to seed a home, and replace it with an export to promote a home's tasks to the defaults. Import matches by title: it updates an existing task's schedule, adds the rest and orders the list like the file, with tasks the file omits kept after them. It never deletes, because deleting a task cascades to its completions.
 - The former localStorage keys (`home:recurring-tasks`, `home:recurring-tasks-done`, `home:one-off-tasks`) are not imported; the component removes them from the browser.
 
 ## Data
@@ -30,7 +30,7 @@ Every table is exported under the Tasks option of [Export Data](./export-data.md
 - `POST /api/tasks/recurring` — create (`homeId`, `title`, `days`, optional `monthlyNth`), appended last; tasks return `monthlyNth` (null when weekly)
 - `PATCH /api/tasks/recurring` — update `title`/`days`/`monthlyNth`/`assignedUserId` (null clears) by `id`, or reorder with `order: [{ id, position }]`
 - `DELETE /api/tasks/recurring` — delete by `id`
-- `POST /api/tasks/recurring/reset` — replace a home's recurring tasks with the defaults
+- `POST /api/tasks/recurring/import` — `homeId`, `tasks: [{ title, days, monthlyNth? }]`; update-by-title or add, ordered like `tasks`; returns the list
 - `GET /api/tasks/completions?homeId=` — every completion of the home as `{ id, taskId, date, completedAt, assignedUserId }` (`completedAt` is `created_at`), by `date`
 - `POST /api/tasks/completions` — set (`completed: true`: copies the task's assignee onto the completion, clears it on the task, returns the completion) or clear a completion for `taskId` on `date`
 - `PATCH /api/tasks/completions` — set one completion's `assignedUserId` (null clears) by `id`

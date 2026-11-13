@@ -1,0 +1,14 @@
+[
+  { "title": "Clear out dishwasher", "days": [0, 1, 2, 3, 4, 5, 6] },
+  { "title": "Morning dog walk", "days": [0, 1, 2, 3, 4, 5, 6] },
+  { "title": "Clean Niko’s bowls", "days": [0, 1, 2, 3, 4, 5, 6] },
+  { "title": "Feed Niko breakfast", "days": [0, 1, 2, 3, 4, 5, 6] },
+  { "title": "Plan for dinner", "days": [0, 1, 2, 3, 4, 5, 6] },
+  { "title": "Prepare dinner", "days": [0, 1, 2, 3, 4, 5, 6] },
+  { "title": "Night dog walk", "days": [0, 1, 2, 3, 4, 5, 6] },
+  { "title": "Feed Niko dinner", "days": [0, 1, 2, 3, 4, 5, 6] },
+  { "title": "Kitchen cleanup (night)", "days": [0, 1, 2, 3, 4, 5, 6] },
+  { "title": "Run dishwasher (night)", "days": [0, 1, 2, 3, 4, 5, 6] },
+  { "title": "Run robot vacuum", "days": [1, 3, 5] },
+  { "title": "Take out trash", "days": [5] }
+]
