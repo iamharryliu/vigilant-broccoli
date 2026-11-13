@@ -1,6 +1,6 @@
 # Embed
 
-`/embed` is the task list for iframes on any site; `/` is the standalone page. Both render `GoogleTasksComponent` against this app's `/api/tasks/**` (the shared `google-tasks-server` handlers) with voice input off, since the app has no speech-to-text or AI parse routes.
+`/embed` is the task list for iframes in the manager apps; `/` is the standalone page. Both render `GoogleTasksComponent` against this app's `/api/tasks/**` (the shared `google-tasks-server` handlers) with voice input off, since the app has no speech-to-text or AI parse routes.
 
 ## Sign-in
 
@@ -14,7 +14,9 @@
 
 ## Framing
 
-- No `frame-ancestors` or `X-Frame-Options`: any site may frame the app.
+- `next.config.js` sends `Content-Security-Policy: frame-ancestors` with `'self'` and the manager origins from `infrastructure`'s `local-manager-origins.json` and `mobile-manager-origins.json`, so other sites cannot frame a (possibly signed-in) task list to clickjack it. A new embedder needs its origin added there; same-site `*.harryliu.dev` pages are not trusted by default.
+- The same header carries the rest of the CSP: scripts, styles and requests stay on this origin plus Supabase (sessions live in `localStorage`). Next's App Router inlines hydration scripts, so `script-src` keeps `'unsafe-inline'`; a nonce would force dynamic rendering. Dev adds `'unsafe-eval'` and the HMR socket. A new third-party script, image host or API call needs its origin added in `next.config.js`.
+- Embedders should sandbox the frame without `allow-top-navigation`, so a compromised tasks-next cannot redirect them: `allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox` (the sign-in popup needs the last two).
 - Staging is behind Vercel Authentication and cannot be framed.
 - The frame does not report its height or sync its theme; embedders give it a fixed size.
 

@@ -1,6 +1,7 @@
 {
   "origins": [
     "https://manager.harryliu.dev",
+    "https://staging-manager.harryliu.dev",
     "https://production-vb-manager-next-mobile.vercel.app",
     "https://staging-vb-manager-next-mobile.vercel.app"
   ]
