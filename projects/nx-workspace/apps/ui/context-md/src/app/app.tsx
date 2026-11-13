@@ -1,9 +1,8 @@
-import { useMemo } from 'react';
 import { ThemeProvider, useDocumentTitle } from '@vigilant-broccoli/react-lib';
 import {
   createDocsSnapshotSource,
+  createSearchParamUrlSync,
   DocsViewer,
-  FILE_PARAM,
 } from '@vigilant-broccoli/react-lib-higher-level';
 
 const THEME_STORAGE_KEY = 'context-md-theme';
@@ -13,22 +12,10 @@ const PAGE_TITLE = 'Browse';
 const { fetchStructure, fetchContent, fetchGraph, searchDocs } =
   createDocsSnapshotSource();
 
-const getFileParam = () =>
-  new URLSearchParams(window.location.search).get(FILE_PARAM);
-
-const setFileParam = (path: string) => {
-  const params = new URLSearchParams(window.location.search);
-  params.set(FILE_PARAM, path);
-  window.history.pushState(
-    null,
-    '',
-    `?${params.toString()}${window.location.hash}`,
-  );
-};
+const urlSync = createSearchParamUrlSync();
 
 export function App() {
   useDocumentTitle(`${PAGE_TITLE} | ${SITE_NAME}`);
-  const urlSync = useMemo(() => ({ get: getFileParam, set: setFileParam }), []);
 
   return (
     <ThemeProvider storageKey={THEME_STORAGE_KEY}>

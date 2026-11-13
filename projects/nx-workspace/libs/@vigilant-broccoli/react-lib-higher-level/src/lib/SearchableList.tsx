@@ -1,22 +1,15 @@
 'use client';
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import {
-  LayoutList,
-  List,
-  Rows3,
-  Star,
-  X,
-  type LucideIcon,
-} from 'lucide-react';
+import { LayoutList, List, Rows3, Star, type LucideIcon } from 'lucide-react';
 import {
   type ButtonConfig,
   ButtonList,
+  ClearableInput,
   CopyButton,
   type Direction,
   fuzzyMatch,
   IconButton,
-  Input,
   moveQuickLinkFocusByDirection,
   QUICK_LINK_ITEM_ATTR,
   Text,
@@ -55,7 +48,6 @@ export type SearchableListGroup = {
 const SEARCH_PLACEHOLDER = 'Search...';
 const EMPTY_MESSAGE = 'No entries found.';
 const VIEW_TOGGLE_LABEL = 'View';
-const CLEAR_SEARCH_LABEL = 'Clear search';
 const WINDOW_TARGET_BLANK = '_blank';
 const URL_PREFIX = 'http';
 const ENTER_KEY = 'Enter';
@@ -377,29 +369,15 @@ export const SearchableList = ({
   return (
     <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <Input
+        <div className="flex-1">
+          <ClearableInput
             ref={searchInputRef}
             placeholder={searchPlaceholder}
             value={searchQuery}
             onChange={event => setSearchQuery(event.target.value)}
+            onClear={() => setSearchQuery('')}
             onKeyDown={handleSearchKeyDown}
-            className="w-full pr-10"
           />
-          {searchQuery && (
-            <button
-              type="button"
-              aria-label={CLEAR_SEARCH_LABEL}
-              title={CLEAR_SEARCH_LABEL}
-              onClick={() => {
-                setSearchQuery('');
-                searchInputRef.current?.focus();
-              }}
-              className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground hover:text-foreground"
-            >
-              <X size={16} aria-hidden="true" />
-            </button>
-          )}
         </div>
         <Tabs
           value={view}

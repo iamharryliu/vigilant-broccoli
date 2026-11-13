@@ -8,7 +8,7 @@ import {
   MouseEvent,
 } from 'react';
 import { ChevronDown, ChevronRight, Search } from 'lucide-react';
-import { cn } from '@vigilant-broccoli/react-lib';
+import { cn, useMediaQuery } from '@vigilant-broccoli/react-lib';
 
 export type SidebarCTA = {
   id?: string;
@@ -104,20 +104,6 @@ const LABEL_HIDDEN = 'hidden';
 
 const labelClassFor = (expandable: boolean) =>
   expandable ? LABEL_COLLAPSIBLE : LABEL_HIDDEN;
-
-const useIsNarrowViewport = (query: string) => {
-  const [isNarrow, setIsNarrow] = useState(false);
-
-  useEffect(() => {
-    const mql = window.matchMedia(query);
-    const update = () => setIsNarrow(mql.matches);
-    update();
-    mql.addEventListener('change', update);
-    return () => mql.removeEventListener('change', update);
-  }, [query]);
-
-  return isNarrow;
-};
 
 const flattenItems = (items: SidebarCTA[]): SidebarCTA[] =>
   items.flatMap(item =>
@@ -284,7 +270,7 @@ export const Sidebar = ({
       ? flat.filter(p => p.label.toLowerCase().includes(query.toLowerCase()))
       : null;
 
-  const isNarrowViewport = useIsNarrowViewport(breakpoint.narrowViewportQuery);
+  const isNarrowViewport = useMediaQuery(breakpoint.narrowViewportQuery);
   const widthClass = isMobileAware
     ? cn(
         breakpoint.mobileWidth,

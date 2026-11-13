@@ -1,10 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  IconButton,
+  Popover,
+  Select,
   useDocumentTitle,
+  useMediaQuery,
   SegmentedControl,
 } from '@vigilant-broccoli/react-lib';
 import {
+  DESKTOP_MEDIA_QUERY,
   DocsExplorer,
   type DocsExplorerUrlSync,
   type DocsNode,
@@ -22,6 +31,39 @@ import {
 } from './graph-view';
 
 const FILE_PARAM = 'file';
+
+// Keeps the open file in a query param. set() must carry the hash over:
+// DocsExplorer echoes the initial file back through set() on mount, and
+// rebuilding from the params alone would drop a `#section` from a direct link.
+export const createSearchParamUrlSync = (
+  param = FILE_PARAM,
+): DocsExplorerUrlSync => ({
+  get: () => new URLSearchParams(window.location.search).get(param),
+  set: path => {
+    const params = new URLSearchParams(window.location.search);
+    params.set(param, path);
+    window.history.pushState(
+      null,
+      '',
+      `?${params.toString()}${window.location.hash}`,
+    );
+  },
+  clear: () => {
+    const params = new URLSearchParams(window.location.search);
+    params.delete(param);
+    const query = params.toString();
+    window.history.pushState(
+      null,
+      '',
+      query ? `?${query}` : window.location.pathname,
+    );
+  },
+  subscribe: onChange => {
+    window.addEventListener('popstate', onChange);
+    return () => window.removeEventListener('popstate', onChange);
+  },
+});
+
 const VIEW_MODE_STORAGE_KEY = 'docs-md:view-mode';
 const GRAPH_SCOPE_STORAGE_KEY = 'docs-md:graph-scope';
 const GRAPH_DEPTH_STORAGE_KEY = 'docs-md:graph-depth';
@@ -49,7 +91,11 @@ const GRAPH_SCOPE_LABEL: Record<GraphScope, string> = {
 };
 
 const DEFAULT_GRAPH_DEPTH = 1;
-const GRAPH_DEPTH_OPTIONS = [1, 2] as const;
+const MAX_GRAPH_DEPTH = 10;
+const GRAPH_DEPTH_OPTIONS = Array.from(
+  { length: MAX_GRAPH_DEPTH },
+  (_, index) => index + 1,
+);
 
 const GRAPH_FORCE_STORAGE_PREFIX = 'docs-md:graph-force-';
 const FORCE_ORDER: (keyof GraphForces)[] = [
@@ -77,9 +123,11 @@ const COPY = {
   GRAPH_ERROR: 'Failed to load graph',
   ORPHAN_NOTE: 'This note has no links',
   FORCES: 'Forces',
-  RESET: 'Reset',
+  RESET: 'Reset forces',
+  SETTINGS: 'Graph settings',
   SCOPE_LABEL: 'Graph scope',
   DEPTH_LABEL: 'Graph depth',
+  DEPTH_PLACEHOLDER: 'Hops',
 } as const;
 
 const depthLabel = (value: number) => `${value} hop${value > 1 ? 's' : ''}`;
@@ -112,36 +160,37 @@ export interface DocsViewerProps {
   search?: (query: string) => Promise<DocsSearchResult[]>;
   getGraph?: () => Promise<NoteGraph>;
   urlSync?: DocsExplorerUrlSync;
+  enableMultiSelect?: boolean;
 }
+
+const persistGraphScope = (scope: GraphScope) =>
+  window.localStorage.setItem(GRAPH_SCOPE_STORAGE_KEY, scope);
 
 function GraphPanel({
   getGraph,
   activePath,
   onSelect,
+  scope,
+  onScopeChange: updateScope,
 }: {
   getGraph: () => Promise<NoteGraph>;
   activePath?: string;
   onSelect: (path: string) => void;
+  scope: GraphScope;
+  onScopeChange: (scope: GraphScope) => void;
 }) {
   const [graph, setGraph] = useState<NoteGraph | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [scope, setScope] = useState<GraphScope>(GRAPH_SCOPE.LOCAL);
   const [depth, setDepth] = useState<number>(DEFAULT_GRAPH_DEPTH);
   const [forces, setForces] = useState<GraphForces>(DEFAULT_FORCES);
-  const [showForces, setShowForces] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const isDesktop = useMediaQuery(DESKTOP_MEDIA_QUERY);
 
   useEffect(() => {
-    const storedScope = window.localStorage.getItem(GRAPH_SCOPE_STORAGE_KEY);
-    if (
-      storedScope === GRAPH_SCOPE.GLOBAL ||
-      storedScope === GRAPH_SCOPE.LOCAL
-    ) {
-      setScope(storedScope);
-    }
     const storedDepth = Number(
       window.localStorage.getItem(GRAPH_DEPTH_STORAGE_KEY),
     );
-    if ((GRAPH_DEPTH_OPTIONS as readonly number[]).includes(storedDepth)) {
+    if (GRAPH_DEPTH_OPTIONS.includes(storedDepth)) {
       setDepth(storedDepth);
     }
     setForces(prev => {
@@ -168,11 +217,6 @@ function GraphPanel({
       cancelled = true;
     };
   }, [getGraph]);
-
-  const updateScope = (next: GraphScope) => {
-    setScope(next);
-    window.localStorage.setItem(GRAPH_SCOPE_STORAGE_KEY, next);
-  };
 
   const updateDepth = (next: number) => {
     setDepth(next);
@@ -203,9 +247,9 @@ function GraphPanel({
 
   const isOrphan = isLocal && (displayGraph?.nodes.length ?? 0) <= 1;
 
-  return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-center flex-wrap gap-2 px-12 pt-2 pb-1 flex-shrink-0">
+  const settingsBody = (
+    <>
+      <div className="flex flex-wrap items-center gap-2">
         <SegmentedControl
           label={COPY.SCOPE_LABEL}
           size="sm"
@@ -216,60 +260,92 @@ function GraphPanel({
             label: GRAPH_SCOPE_LABEL[value],
           }))}
         />
-        {scope === GRAPH_SCOPE.LOCAL && (
-          <SegmentedControl
-            label={COPY.DEPTH_LABEL}
-            size="sm"
-            value={String(depth)}
-            onChange={value => updateDepth(Number(value))}
-            options={GRAPH_DEPTH_OPTIONS.map(value => ({
-              value: String(value),
-              label: depthLabel(value),
-            }))}
-          />
-        )}
+        {/* Always shown; empty in global scope, and picking a depth switches
+            back to local. */}
+        <Select
+          aria-label={COPY.DEPTH_LABEL}
+          placeholder={COPY.DEPTH_PLACEHOLDER}
+          className="h-7 text-xs"
+          value={scope === GRAPH_SCOPE.LOCAL ? depth : undefined}
+          onValueChange={value => {
+            updateDepth(value);
+            updateScope(GRAPH_SCOPE.LOCAL);
+          }}
+          options={GRAPH_DEPTH_OPTIONS}
+          renderItem={depthLabel}
+        />
+      </div>
+      <div className="flex flex-col gap-3">
+        <span className="text-sm font-medium">{COPY.FORCES}</span>
+        {FORCE_ORDER.map(key => {
+          const lim = FORCE_LIMITS[key];
+          return (
+            <label key={key} className="flex flex-col gap-1">
+              <span className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>{FORCE_LABEL[key]}</span>
+                <span className="tabular-nums">{forces[key]}</span>
+              </span>
+              <input
+                type="range"
+                className="h-1.5 w-full cursor-pointer accent-blue-500"
+                min={lim.min}
+                max={lim.max}
+                step={lim.step}
+                value={forces[key]}
+                onChange={e => updateForce(key, e.target.valueAsNumber)}
+              />
+            </label>
+          );
+        })}
         <Button
           size="sm"
-          variant={showForces ? 'default' : 'secondary'}
-          onClick={() => setShowForces(prev => !prev)}
+          variant="ghost"
+          className="self-end"
+          onClick={resetForces}
         >
-          {COPY.FORCES}
+          {COPY.RESET}
         </Button>
       </div>
-      <div className="relative flex-1 min-h-0">
-        {showForces && (
-          <div className="absolute top-2 right-2 z-10 flex w-56 flex-col gap-3 rounded-lg border border-gray-200 bg-white/95 p-3 shadow-lg backdrop-blur dark:border-gray-700 dark:bg-gray-900/95">
-            {FORCE_ORDER.map(key => {
-              const lim = FORCE_LIMITS[key];
-              return (
-                <label key={key} className="flex flex-col gap-1">
-                  <span className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-300">
-                    <span>{FORCE_LABEL[key]}</span>
-                    <span className="tabular-nums text-muted-foreground">
-                      {forces[key]}
-                    </span>
-                  </span>
-                  <input
-                    type="range"
-                    className="h-1.5 w-full cursor-pointer accent-blue-500"
-                    min={lim.min}
-                    max={lim.max}
-                    step={lim.step}
-                    value={forces[key]}
-                    onChange={e => updateForce(key, e.target.valueAsNumber)}
-                  />
-                </label>
-              );
-            })}
-            <button
-              type="button"
-              onClick={resetForces}
-              className="self-end text-xs text-muted-foreground hover:text-foreground"
-            >
-              {COPY.RESET}
-            </button>
-          </div>
+    </>
+  );
+
+  return (
+    <div className="flex flex-col h-full">
+      {/* Sits left of DocsExplorer's top-right close button. */}
+      <div className="absolute top-2 right-12 z-10">
+        {isDesktop ? (
+          <Popover.Root open={showSettings} onOpenChange={setShowSettings}>
+            <Popover.Trigger>
+              <IconButton
+                variant="ghost"
+                icon="settings"
+                aria-label={COPY.SETTINGS}
+              />
+            </Popover.Trigger>
+            <Popover.Content align="end" className="flex w-72 flex-col gap-4">
+              {settingsBody}
+            </Popover.Content>
+          </Popover.Root>
+        ) : (
+          <IconButton
+            variant="ghost"
+            icon="settings"
+            aria-label={COPY.SETTINGS}
+            onClick={() => setShowSettings(true)}
+          />
         )}
+      </div>
+      {!isDesktop && (
+        <Dialog open={showSettings} onOpenChange={setShowSettings}>
+          <DialogContent className="max-w-sm">
+            <DialogHeader>
+              <DialogTitle>{COPY.SETTINGS}</DialogTitle>
+            </DialogHeader>
+            {settingsBody}
+          </DialogContent>
+        </Dialog>
+      )}
+      <div className="relative flex-1 min-h-0">
         {displayGraph && (
           <GraphView
             graph={displayGraph}
@@ -296,6 +372,7 @@ export function DocsViewer({
   search,
   getGraph,
   urlSync,
+  enableMultiSelect,
 }: DocsViewerProps) {
   const [nodes, setNodes] = useState<DocsNode[]>([]);
   const [treeError, setTreeError] = useState<string | null>(null);
@@ -303,6 +380,19 @@ export function DocsViewer({
   const [viewMode, setViewMode] = useState<ViewMode>(VIEW_MODE.MARKDOWN);
   const [activeFile, setActiveFile] = useState<string>(urlSync?.get() ?? '');
   const [editTrigger, setEditTrigger] = useState(0);
+  const [graphScope, setGraphScope] = useState<GraphScope>(GRAPH_SCOPE.LOCAL);
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem(GRAPH_SCOPE_STORAGE_KEY);
+    if (stored === GRAPH_SCOPE.GLOBAL || stored === GRAPH_SCOPE.LOCAL) {
+      setGraphScope(stored);
+    }
+  }, []);
+
+  const updateGraphScope = (scope: GraphScope) => {
+    setGraphScope(scope);
+    persistGraphScope(scope);
+  };
 
   useEffect(() => {
     getStructure()
@@ -331,7 +421,26 @@ export function DocsViewer({
             set: (path: string) => {
               urlSync.set(path);
               setActiveFile(path);
+              // Opening a file centres the next graph view on it.
+              setGraphScope(GRAPH_SCOPE.LOCAL);
+              persistGraphScope(GRAPH_SCOPE.LOCAL);
             },
+            clear: () => {
+              urlSync.clear?.();
+              setActiveFile('');
+            },
+            subscribe: urlSync.subscribe
+              ? onChange =>
+                  urlSync.subscribe?.(() => {
+                    const path = urlSync.get() ?? '';
+                    setActiveFile(path);
+                    if (path) {
+                      setGraphScope(GRAPH_SCOPE.LOCAL);
+                      persistGraphScope(GRAPH_SCOPE.LOCAL);
+                    }
+                    onChange();
+                  }) ?? (() => undefined)
+              : undefined,
           }
         : undefined,
     [urlSync],
@@ -396,6 +505,7 @@ export function DocsViewer({
       renderContent={renderContent}
       search={search}
       urlSync={wrappedUrlSync}
+      enableMultiSelect={enableMultiSelect}
       emptyMessage={COPY.EMPTY}
       onEdit={canEdit ? () => setEditTrigger(t => t + 1) : undefined}
       viewModes={viewModeOptions}
@@ -408,6 +518,8 @@ export function DocsViewer({
                 getGraph={getGraph}
                 activePath={activeFile}
                 onSelect={navigate}
+                scope={graphScope}
+                onScopeChange={updateGraphScope}
               />
             )
           : undefined

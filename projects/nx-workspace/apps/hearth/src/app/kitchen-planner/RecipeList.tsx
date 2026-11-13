@@ -19,6 +19,7 @@ import {
   CRUDItemList,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import {
+  createSearchParamUrlSync,
   DocsExplorer,
   type DocsExplorerAction,
   type DocsNode,
@@ -70,14 +71,7 @@ const parseImportedFile = (filename: string, markdown: string) => ({
 // supported for letting the OS picker select a whole folder (incl. subfolders).
 const DIRECTORY_INPUT_PROPS = { webkitdirectory: '', directory: '' };
 
-const getRecipeParam = () =>
-  new URLSearchParams(window.location.search).get(RECIPE_PARAM);
-
-const setRecipeParam = (path: string) => {
-  const params = new URLSearchParams(window.location.search);
-  params.set(RECIPE_PARAM, path);
-  window.history.pushState(null, '', `?${params.toString()}`);
-};
+const urlSync = createSearchParamUrlSync(RECIPE_PARAM);
 
 const DEFAULT_FORM: Recipe = {
   id: '',
@@ -171,10 +165,6 @@ export function RecipeList({ onGroceryAdded, onCalendarEventAdded }: Props) {
   const [errorPath, setErrorPath] = useState<string | null>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
   const importFolderInputRef = useRef<HTMLInputElement>(null);
-  const urlSync = useMemo(
-    () => ({ get: getRecipeParam, set: setRecipeParam }),
-    [],
-  );
 
   useEffect(() => {
     setRecipesLoaded(false);
