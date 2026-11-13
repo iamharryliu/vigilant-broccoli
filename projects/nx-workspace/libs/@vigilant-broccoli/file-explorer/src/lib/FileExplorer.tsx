@@ -41,17 +41,15 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from './AlertDialog';
-import { Button } from './Button';
-import { ContextMenu } from './ContextMenu';
-import {
+  Button,
+  ContextMenu,
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
-} from './Dialog';
-import { DropdownMenu } from './DropdownMenu';
-import { Skeleton } from './Skeleton';
+  DropdownMenu,
+  Skeleton,
+} from '@vigilant-broccoli/react-lib';
 import {
   DroppedFile,
   groupByDirectory,
