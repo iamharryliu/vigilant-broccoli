@@ -1,53 +1,19 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { IconButton } from '@vigilant-broccoli/react-lib';
-import {
-  GoogleTasksComponent,
-  CreateTasksDialog,
-} from '@vigilant-broccoli/react-lib-higher-level';
-import { googleTasksAuth } from '../providers/auth-provider';
-import { TaskVoiceButton } from './task-voice-button';
+import { VB_APP_URL } from '@vigilant-broccoli/infrastructure';
 
-const CREATE_TASKS_LABEL = 'Create tasks';
+// NEXT_PUBLIC_* must be read directly here for build-time inlining; set it to
+// point at a local tasks-next.
+const TASKS_URL = process.env.NEXT_PUBLIC_TASKS_URL || VB_APP_URL.TASKS.URL;
+const TASKS_EMBED_PATH = 'embed';
+const TASKS_FRAME_TITLE = 'Tasks';
 
-interface GoogleTasksViewProps {
-  active: boolean;
-}
-
-export const GoogleTasksView = ({ active }: GoogleTasksViewProps) => {
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const wasActive = useRef(active);
-
-  // The tab stays mounted so tasks load with the page; refetch each time it
-  // is reopened. The mount itself already fetches, so only re-activation counts.
-  useEffect(() => {
-    if (active && !wasActive.current) setRefreshTrigger(n => n + 1);
-    wasActive.current = active;
-  }, [active]);
-
-  return (
-    <GoogleTasksComponent
-      auth={googleTasksAuth}
-      showSelector
-      wrapInCard={false}
-      refreshTrigger={refreshTrigger}
-      addTaskActions={
-        <CreateTasksDialog
-          trigger={
-            <IconButton
-              icon="bot"
-              variant="outline"
-              aria-label={CREATE_TASKS_LABEL}
-            />
-          }
-          auth={googleTasksAuth}
-          onCreated={() => setRefreshTrigger(n => n + 1)}
-          renderVoiceAction={onTranscript => (
-            <TaskVoiceButton onTranscript={onTranscript} />
-          )}
-        />
-      }
-    />
-  );
-};
+// tasks-next on the same site (harryliu.dev), so the frame shares its
+// first-party session: signing in at tasks.harryliu.dev signs this tab in too.
+export const GoogleTasksView = () => (
+  <iframe
+    src={new URL(TASKS_EMBED_PATH, TASKS_URL).toString()}
+    title={TASKS_FRAME_TITLE}
+    className="h-full w-full border-0"
+  />
+);
