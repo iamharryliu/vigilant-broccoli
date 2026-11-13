@@ -13,8 +13,8 @@ import {
   DialogContent,
   DialogTitle,
   cn,
+  DeleteItemConfirmationDialog,
 } from '@vigilant-broccoli/react-lib';
-import { DeleteItemConfirmationDialog } from '@vigilant-broccoli/react-lib-higher-level';
 import { useAuth } from '../providers/auth-provider';
 import { useHome } from '../providers/home-provider';
 import { KitchenProjectItem } from '../../lib/types';

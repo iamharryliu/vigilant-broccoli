@@ -41,6 +41,7 @@ Management dashboard with calendar, notepad and quick links home tabs.
   - `public-links`
   - `react-lib`
   - `react-lib-auth`
+  - `react-lib-calendar`
   - `react-lib-higher-level`
   - `react-lib-media`
   - `react-utility`

@@ -35,9 +35,11 @@ import {
 import {
   CalendarAgenda,
   EventCalendarsList,
-  TabbedView,
   type CalendarEvent,
   type EventCalendarLink,
+} from '@vigilant-broccoli/react-lib-calendar';
+import {
+  TabbedView,
   type TabbedViewTab,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import { NotepadDemo } from './NotepadDemo';

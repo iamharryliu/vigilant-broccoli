@@ -1,6 +1,3 @@
-export * from './lib/CalendarAgenda';
-export * from './lib/CalendarEventDetails';
-export * from './lib/EventCalendarsList';
 export * from './lib/TabbedView';
 export * from './lib/CreateTasksDialog';
 export * from './lib/GoogleTasks';
@@ -16,8 +13,5 @@ export * from './lib/useNotepad';
 export type * from './lib/notepad.types';
 export * from './lib/NotepadLoadError';
 export * from './lib/chat-room';
-export * from './lib/calendar-event/CreateCalendarEventDialog';
-export * from './lib/calendar-event/useCalendarEventBookmarklet';
-export { buildCalendarEventBookmarklet } from './lib/calendar-event/calendar-event-bookmarklet.utils';
 export * from './lib/SecurityNewsList';
 export * from './lib/WeatherEmbedCard';

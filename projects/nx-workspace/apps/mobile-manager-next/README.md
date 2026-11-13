@@ -27,6 +27,7 @@ Mobile dashboard with calendar, tasks, notepad, weather and quick links includin
   - `public-links`
   - `react-lib`
   - `react-lib-auth`
+  - `react-lib-calendar`
   - `react-lib-higher-level`
   - `realtime`
   - `security-news`

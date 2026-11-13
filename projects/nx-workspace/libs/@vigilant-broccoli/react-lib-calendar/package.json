@@ -4,6 +4,8 @@
   "private": true,
   "sideEffects": false,
   "dependencies": {
+    "@vigilant-broccoli/common-browser": "workspace:*",
+    "@vigilant-broccoli/common-js": "workspace:*",
     "@vigilant-broccoli/react-lib": "workspace:*",
     "lucide-react": "^0.513.0",
     "react": "19.2.7"

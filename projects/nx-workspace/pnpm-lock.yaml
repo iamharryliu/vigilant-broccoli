@@ -1329,6 +1329,12 @@ importers:
 
   libs/@vigilant-broccoli/react-lib-calendar:
     dependencies:
+      '@vigilant-broccoli/common-browser':
+        specifier: workspace:*
+        version: link:../common-browser
+      '@vigilant-broccoli/common-js':
+        specifier: workspace:*
+        version: link:../common-js
       '@vigilant-broccoli/react-lib':
         specifier: workspace:*
         version: link:../react-lib

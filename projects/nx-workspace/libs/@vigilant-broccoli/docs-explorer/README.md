@@ -31,4 +31,3 @@ Markdown docs browser with a file tree, search, Markdown and checklist rendering
   - `mermaid`
 - Internal libs
   - `react-lib`
-  - `react-lib-higher-level`

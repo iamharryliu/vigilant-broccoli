@@ -1,4 +1,5 @@
 export * from './AlertDialog';
+export * from './DeleteItemConfirmationDialog';
 export * from './Avatar';
 export * from './AvatarBadge';
 export * from './Badge';

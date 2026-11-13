@@ -179,7 +179,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [@vigilant-broccoli/common-node](./projects/nx-workspace/libs/@vigilant-broccoli/common-node) | Node environment variable, HTTP, date, encryption and audio utilities. | `type:util` |
 | [@vigilant-broccoli/deployment](./projects/nx-workspace/libs/@vigilant-broccoli/deployment) | Deploy notification constants for local-manager-next. | `type:util` |
 | [@vigilant-broccoli/devops-cli](./projects/nx-workspace/libs/@vigilant-broccoli/devops-cli) | Typed wrappers for the aws, gcloud, docker, pm2, flyctl, vercel, wrangler and tailscale CLIs. | `type:util` |
-| [@vigilant-broccoli/docs-explorer](./projects/nx-workspace/libs/@vigilant-broccoli/docs-explorer) | Markdown docs browser with file tree, search, Mermaid diagrams and a note graph. | `type:higher-level` |
+| [@vigilant-broccoli/docs-explorer](./projects/nx-workspace/libs/@vigilant-broccoli/docs-explorer) | Markdown docs browser with file tree, search, Mermaid diagrams and a note graph. | `type:domain` |
 | [@vigilant-broccoli/fastify](./projects/nx-workspace/libs/@vigilant-broccoli/fastify) | Fastify docs, API key, reCAPTCHA, honeypot, request logging and ping plugins. | `type:util` |
 | [@vigilant-broccoli/file-explorer](./projects/nx-workspace/libs/@vigilant-broccoli/file-explorer) | File browser with previews, upload and delete over any list/file endpoint pair. | `type:domain` |
 | [@vigilant-broccoli/github-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/github-workspace) | GitHub CLI commands and models for Node. | `type:util` |
@@ -195,8 +195,8 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [@vigilant-broccoli/private-infrastructure](./projects/nx-workspace/libs/@vigilant-broccoli/private-infrastructure) | URLs embedding an account, org, project or workspace id, and private-network hosts. | `type:util`, `visibility:private` |
 | [@vigilant-broccoli/public-links](./projects/nx-workspace/libs/@vigilant-broccoli/public-links) | Generic vendor links, public quick links and the pastebin. | `type:util`, `visibility:public` |
 | [@vigilant-broccoli/react-lib-auth](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-auth) | Supabase auth provider factory and Google sign-in page for React apps. | `type:domain` |
-| [@vigilant-broccoli/react-lib-calendar](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-calendar) | Month-paged calendar list view and date grouping helpers. | `type:domain` |
-| [@vigilant-broccoli/react-lib-higher-level](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-higher-level) | Composite React components such as Sidebar, Pastebin, the calendar agenda, the notepad and the chat room. | `type:higher-level` |
+| [@vigilant-broccoli/react-lib-calendar](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-calendar) | Calendar list view, phone agenda, event details, Create calendar event dialog and date grouping helpers. | `type:domain` |
+| [@vigilant-broccoli/react-lib-higher-level](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-higher-level) | Composite React components such as Sidebar, Pastebin, the notepad and the chat room. | `type:higher-level` |
 | [@vigilant-broccoli/react-lib-media](./projects/nx-workspace/libs/@vigilant-broccoli/react-lib-media) | Audio, image and GitHub Actions badge display components. | `type:domain` |
 | [@vigilant-broccoli/react-music-lib](./projects/nx-workspace/libs/@vigilant-broccoli/react-music-lib) | Metronome component. | `type:higher-level` |
 | [@vigilant-broccoli/react-sandbox](./projects/nx-workspace/libs/@vigilant-broccoli/react-sandbox) | Component sandbox and demos for the component library. | `type:higher-level` |

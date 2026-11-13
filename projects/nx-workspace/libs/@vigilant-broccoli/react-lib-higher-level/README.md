@@ -1,6 +1,6 @@
 # React Lib Higher Level
 
-Composed React components built on `react-lib`: CRUD list management, tasks, quick links, the calendar agenda, the notepad and the chat room.
+Composed React components built on `react-lib`: CRUD list management, tasks, quick links, the notepad and the chat room.
 
 ## Table of Contents
 
@@ -26,7 +26,6 @@ Composed React components built on `react-lib`: CRUD list management, tasks, qui
   - `lucide-react`
   - `socket.io-client`
 - Internal libs
-  - `common-browser`
   - `common-js`
   - `github-workspace-js`
   - `react-lib`

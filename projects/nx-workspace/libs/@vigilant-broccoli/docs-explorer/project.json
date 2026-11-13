@@ -3,7 +3,7 @@
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/@vigilant-broccoli/docs-explorer/src",
   "projectType": "library",
-  "tags": ["type:higher-level"],
+  "tags": ["type:domain"],
   "targets": {
     "lint": {
       "executor": "@nx/eslint:lint"
