@@ -19,6 +19,7 @@ import priceTrackerRoutes from './routes/price-tracker';
 import recipeRoutes from './routes/recipe';
 import bucketRoutes from './routes/bucket';
 import publicEventCalendarsRoutes from './routes/public-event-calendars';
+import publicPhotographyRoutes from './routes/public-photography';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { HTTP_METHOD, VB_EXPRESS_SERVICE } from '@vigilant-broccoli/common-js';
 import {
@@ -59,6 +60,7 @@ const ALLOWED_ORIGINS = [
 
 const PUBLIC_API_PREFIX = '/api/public/';
 const PUBLIC_EVENT_CALENDARS_PREFIX = `${PUBLIC_API_PREFIX}event-calendars`;
+const PUBLIC_PHOTOGRAPHY_PREFIX = `${PUBLIC_API_PREFIX}photography`;
 const QUERY_SEPARATOR = '?';
 
 const PUBLIC_CLIENT_ORIGINS = [
@@ -66,6 +68,10 @@ const PUBLIC_CLIENT_ORIGINS = [
   'https://staging-calendar.harryliu.dev',
   'https://staging-calendars.pages.dev',
   'https://production-calendars.pages.dev',
+  'https://photography.harryliu.dev',
+  'https://staging-photography.harryliu.dev',
+  'https://staging-photography-react.pages.dev',
+  'https://production-photography-react.pages.dev',
 ];
 
 const CALENDAR_PREVIEW_ORIGIN =
@@ -184,6 +190,9 @@ const buildApp = async () => {
   ]);
   await app.register(publicEventCalendarsRoutes, {
     prefix: PUBLIC_EVENT_CALENDARS_PREFIX,
+  });
+  await app.register(publicPhotographyRoutes, {
+    prefix: PUBLIC_PHOTOGRAPHY_PREFIX,
   });
   await app.register(
     async scope => {

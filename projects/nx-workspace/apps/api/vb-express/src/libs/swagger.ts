@@ -6,7 +6,7 @@ import { createSwaggerSpec } from '@vigilant-broccoli/fastify';
 
 const SERVICE_TITLE = 'vb-express';
 const SERVICE_DESCRIPTION =
-  'Personal API gateway: better-auth sessions, API key admin, Google Tasks, LLM-backed parsing (calendar, tasks, receipts, recipes, storage), messaging, and audio. /api routes require an x-api-key header with the matching service permission, except the read-only GET /api/public/event-calendars, which needs no key and returns only public event calendars.';
+  "Personal API gateway: better-auth sessions, API key admin, Google Tasks, LLM-backed parsing (calendar, tasks, receipts, recipes, storage), messaging, and audio. /api routes require an x-api-key header with the matching service permission, except the read-only GET /api/public/event-calendars, which needs no key and returns only public event calendars, and the read-only GET /api/public/photography/albums and /photos/{path}, which need no key and serve only images under the bucket's photography/ folder.";
 
 const JSON_CONTENT = 'application/json';
 const MULTIPART_CONTENT = 'multipart/form-data';
@@ -113,6 +113,59 @@ const PUBLIC_EVENT_CALENDARS_OK_RESPONSE = {
     },
   },
 };
+const PUBLIC_PHOTOGRAPHY_ALBUMS_PATH = '/api/public/photography/albums';
+const PUBLIC_PHOTOGRAPHY_PHOTO_PATH = '/api/public/photography/photos/{path}';
+const PUBLIC_PHOTOGRAPHY_ERROR_RESPONSE = {
+  description: 'Photography could not be loaded (generic message)',
+  content: {
+    [JSON_CONTENT]: {
+      schema: {
+        type: 'object',
+        required: ['error'],
+        properties: { error: { type: 'string' } },
+      },
+    },
+  },
+};
+const PUBLIC_PHOTOGRAPHY_ALBUMS_OK_RESPONSE = {
+  description:
+    'Albums built from photography/<album>/<image> keys in the default R2 bucket, newest upload first. Sent with Cache-Control: public, max-age=60.',
+  content: {
+    [JSON_CONTENT]: {
+      schema: {
+        type: 'object',
+        required: ['albums'],
+        properties: {
+          albums: {
+            type: 'array',
+            items: {
+              type: 'object',
+              required: ['slug', 'title', 'photos'],
+              properties: {
+                slug: { type: 'string' },
+                title: { type: 'string' },
+                photos: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: ['path'],
+                    properties: {
+                      path: {
+                        type: 'string',
+                        description:
+                          '<album>/<file>, appended to /api/public/photography/photos/',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
 const TASKS_INTERNAL_RESPONSE = {
   description: 'Not authenticated or unexpected error',
 };
@@ -141,6 +194,49 @@ export const swaggerSpec = createSwaggerSpec({
           },
           [HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR]:
             PUBLIC_EVENT_CALENDARS_ERROR_RESPONSE,
+        },
+      },
+    },
+    [PUBLIC_PHOTOGRAPHY_ALBUMS_PATH]: {
+      get: {
+        summary:
+          'Public photo albums (no API key; read-only, photography/ folder only)',
+        security: [],
+        responses: {
+          [HTTP_STATUS_CODES.OK]: PUBLIC_PHOTOGRAPHY_ALBUMS_OK_RESPONSE,
+          [HTTP_STATUS_CODES.TOO_MANY_REQUESTS]: {
+            description: 'Rate limit exceeded',
+          },
+          [HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR]:
+            PUBLIC_PHOTOGRAPHY_ERROR_RESPONSE,
+        },
+      },
+    },
+    [PUBLIC_PHOTOGRAPHY_PHOTO_PATH]: {
+      get: {
+        summary:
+          'Public photo bytes for <album>/<file> under photography/ (no API key; images only)',
+        security: [],
+        parameters: [
+          {
+            name: 'path',
+            in: 'path',
+            required: true,
+            schema: { type: 'string' },
+          },
+        ],
+        responses: {
+          [HTTP_STATUS_CODES.OK]: {
+            description:
+              'Image bytes with an image Content-Type and Cache-Control: public, max-age=86400',
+          },
+          [HTTP_STATUS_CODES.INVALID_PATH]: {
+            description:
+              'Path is not <album>/<image>, or the object does not exist',
+          },
+          [HTTP_STATUS_CODES.TOO_MANY_REQUESTS]: {
+            description: 'Rate limit exceeded',
+          },
         },
       },
     },

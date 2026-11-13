@@ -32,6 +32,11 @@ export const VB_APP_URL = {
     URL: 'https://pomodoro.harryliu.dev/',
     STAGING_URL: 'https://staging-pomodoro.harryliu.dev/',
   },
+  PHOTOGRAPHY: {
+    NAME: 'Photography',
+    URL: 'https://photography.harryliu.dev/',
+    STAGING_URL: 'https://staging-photography.harryliu.dev/',
+  },
   CALENDARS: {
     NAME: 'Calendars',
     URL: PROJECT_LINK.CALENDAR.URL,

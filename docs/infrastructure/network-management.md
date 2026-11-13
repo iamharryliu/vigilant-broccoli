@@ -34,6 +34,7 @@ harryliu.dev                              Cloudflare zone (Terraform: infrastruc
 ├── staging-chat.harryliu.dev             Chat (staging) — same as `chat.harryliu.dev` on `staging-chat`
 ├── hearth.harryliu.dev                   Hearth — Vercel `production-hearth` (CNAME to cname.vercel-dns.com, DNS-only: Terraform, infrastructure/terraform/; domain also added on the Vercel project; public, sign-in via Supabase)
 ├── bookmarks.harryliu.dev                Bookmarks — Cloudflare Pages `production-bookmarks-react` (domain + CNAME: Terraform `cloudflare-bookmarks.tf`; browser-local data, no backend or auth)
+├── photography.harryliu.dev              Photography — Cloudflare Pages `production-photography-react` (domain + CNAME: Terraform `cloudflare-photography.tf`; public, no Access gating; albums and photo bytes come from VB Express `GET /api/public/photography/*` at `api.harryliu.dev` (staging Pages → `staging-vb-express.fly.dev`), allowed by the same narrowly scoped public-prefix CORS rule as Calendars; content is the `photography/` folder of the default R2 bucket, managed in local-manager `/cms`)
 ├── pomodoro.harryliu.dev                 Pomodoro — Cloudflare Pages `production-pomodoro-react` (domain + CNAME: Terraform `cloudflare-pomodoro.tf`; browser-local settings, no backend or auth)
 ├── docs.harryliu.dev                     Docs MD — Cloudflare Pages `production-docs-md` (domain + CNAME: Terraform, infrastructure/terraform/; deployed by deploy-docs-md.yml, which mirrors `deploy.yml`'s environment selection because the notes snapshot lives outside the nx graph; public, no Access gating)
 ├── grind-75.harryliu.dev                 Grind 75 — Cloudflare Pages `production-grind-75-react` (domain + CNAME: Terraform `cloudflare-grind-75.tf`; deployed by deploy-grind-75-react.yml because the solutions snapshot lives outside the nx graph; public, no Access gating)
@@ -80,6 +81,8 @@ pages.dev                                 Cloudflare Pages provider aliases (ret
 ├── staging-bookmarks-react.pages.dev         Bookmarks (staging, Cloudflare Access)
 ├── production-bookmarks-react.pages.dev      Bookmarks (production origin)
 ├── preview-bookmarks-react.pages.dev         Bookmarks (PR previews)
+├── staging-photography-react.pages.dev       Photography (staging, Cloudflare Access)
+├── production-photography-react.pages.dev    Photography (production origin)
 ├── staging-pomodoro-react.pages.dev          Pomodoro (staging, Cloudflare Access)
 ├── production-pomodoro-react.pages.dev       Pomodoro (production origin)
 ├── preview-pomodoro-react.pages.dev          Pomodoro (PR previews)
@@ -113,6 +116,7 @@ github.io                                 GitHub Pages (custom domain projects.h
 | harryliu.dev | staging.harryliu.dev | `staging-harryliu-dev-react` | Pages |
 | hearth.harryliu.dev | staging-hearth.harryliu.dev | `staging-hearth` | Vercel |
 | manager.harryliu.dev | staging-manager.harryliu.dev | `staging-vb-manager-next-mobile` | Vercel |
+| photography.harryliu.dev | staging-photography.harryliu.dev | `staging-photography-react` | Pages |
 | pomodoro.harryliu.dev | staging-pomodoro.harryliu.dev | `staging-pomodoro-react` | Pages |
 | text-tools.harryliu.dev | staging-text-tools.harryliu.dev | `staging-text-tools-ui` | Pages |
 | utilities.harryliu.dev | staging-utilities.harryliu.dev | `staging-utilities-ui` | Pages |

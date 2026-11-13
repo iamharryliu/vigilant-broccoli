@@ -1,0 +1,69 @@
+{
+  "name": "photography-react",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/ui/photography-react/src",
+  "projectType": "application",
+  "tags": ["visibility:public"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "build": {
+      "outputs": [
+        "{projectRoot}/{options.outDir}",
+        "{workspaceRoot}/dist/apps/ui/photography-react"
+      ],
+      "defaultConfiguration": "production",
+      "options": {
+        "outDir": "../../../dist/apps/ui/photography-react"
+      },
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        },
+        "production-env": {
+          "mode": "production-env"
+        }
+      }
+    },
+    "serve": {
+      "defaultConfiguration": "development",
+      "configurations": {
+        "development": {},
+        "production": {}
+      }
+    },
+    "ensure-cf-project": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw staging-photography-react || npx wrangler pages project create staging-photography-react --production-branch main"
+    },
+    "prune-deployments": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts staging-photography-react 10",
+      "dependsOn": ["ensure-cf-project"]
+    },
+    "deploy": {
+      "command": "npx wrangler pages deploy dist/apps/ui/photography-react --project-name staging-photography-react --branch main",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    },
+    "manual-deploy": {
+      "command": "npx wrangler pages deploy dist/apps/ui/photography-react --project-name staging-photography-react --branch main",
+      "dependsOn": ["build", "ensure-cf-project", "prune-deployments"]
+    },
+    "ensure-cf-project:production": {
+      "command": "npx wrangler pages project list 2>&1 | grep -qw production-photography-react || npx wrangler pages project create production-photography-react --production-branch production"
+    },
+    "prune-deployments:production": {
+      "command": "npx tsx scripts/prune-wrangler-deployments.ts production-photography-react 10",
+      "dependsOn": ["ensure-cf-project:production"]
+    },
+    "deploy:production": {
+      "command": "npx nx build photography-react --configuration=production-env && npx wrangler pages deploy dist/apps/ui/photography-react --project-name production-photography-react --branch production",
+      "dependsOn": [
+        "ensure-cf-project:production",
+        "prune-deployments:production"
+      ]
+    }
+  }
+}

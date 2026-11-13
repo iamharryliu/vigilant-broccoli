@@ -130,6 +130,10 @@
       "TITLE": "Calendars",
       "DESCRIPTION": "Public personal and event calendar directory, deployed on Vercel."
     },
+    "PHOTOGRAPHY": {
+      "TITLE": "Photography",
+      "DESCRIPTION": "Public photo albums with a lightbox viewer, served from the CMS photography folder."
+    },
     "WEB_TERMINAL": {
       "TITLE": "Web Terminal",
       "DESCRIPTION": "Phone-friendly browser shell with an on-screen key toolbar, behind owner-only access."

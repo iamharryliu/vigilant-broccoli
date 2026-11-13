@@ -167,6 +167,14 @@
       "stagingHref": "https://staging-pomodoro.harryliu.dev/"
     },
     {
+      "id": "photography",
+      "href": "https://photography.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.PHOTOGRAPHY.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.PHOTOGRAPHY.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/photography-react/README.md",
+      "stagingHref": "https://staging-photography.harryliu.dev/"
+    },
+    {
       "id": "games",
       "href": "https://games.harryliu.dev/",
       "titleKey": "GAMES_PAGE.TITLE",
