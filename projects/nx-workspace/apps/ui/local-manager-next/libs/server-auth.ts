@@ -1,4 +1,3 @@
-import { NextRequest } from 'next/server';
 import {
   AUTHORIZATION_HEADER,
   BEARER_PREFIX,
@@ -6,7 +5,7 @@ import {
 import { supabase } from '../src/lib/supabase';
 
 export const getUserEmail = async (
-  request: NextRequest,
+  request: Request,
 ): Promise<string | null> => {
   const auth = request.headers.get(AUTHORIZATION_HEADER);
   if (!auth?.startsWith(BEARER_PREFIX)) return null;
