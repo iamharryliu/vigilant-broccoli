@@ -3,6 +3,7 @@ import {
   Blocks,
   CalendarDays,
   Eye,
+  FileText,
   Image as ImageIcon,
   KeyRound,
   Layers,
@@ -11,6 +12,7 @@ import {
   Music,
   Settings as SettingsIcon,
   Sun,
+  Trophy,
   Wrench,
 } from 'lucide-react';
 import {
@@ -105,9 +107,11 @@ const PACKAGE_SCOPE = '@vigilant-broccoli/';
 const LIB = {
   REACT_LIB: 'react-lib',
   HIGHER_LEVEL: 'react-lib-higher-level',
+  DOCS_EXPLORER: 'docs-explorer',
   CALENDAR: 'react-lib-calendar',
   AUTH: 'react-lib-auth',
   MEDIA: 'react-lib-media',
+  LEADERBOARD: 'leaderboard',
   MUSIC: 'react-music-lib',
   UTILITY: 'react-utility',
 } as const;
@@ -115,9 +119,11 @@ type Lib = (typeof LIB)[keyof typeof LIB];
 const LIB_ICON = {
   [LIB.REACT_LIB]: Blocks,
   [LIB.HIGHER_LEVEL]: Layers,
+  [LIB.DOCS_EXPLORER]: FileText,
   [LIB.CALENDAR]: CalendarDays,
   [LIB.AUTH]: KeyRound,
   [LIB.MEDIA]: ImageIcon,
+  [LIB.LEADERBOARD]: Trophy,
   [LIB.MUSIC]: Music,
   [LIB.UTILITY]: Wrench,
 } as const;
@@ -270,7 +276,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     label: 'Empty Leaderboard',
     description:
       'The leaderboard in its loading and empty states, before any rows hydrate.',
-    lib: LIB.HIGHER_LEVEL,
+    lib: LIB.LEADERBOARD,
     content: <EmptyLeaderboardDemo />,
   },
   {
@@ -294,7 +300,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     label: 'Group Leaderboard',
     description:
       'Team leaderboard with period switching, sortable metrics and polled refreshes against mock data.',
-    lib: LIB.HIGHER_LEVEL,
+    lib: LIB.LEADERBOARD,
     content: <GroupLeaderboardDemo />,
   },
   {
@@ -398,7 +404,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     label: 'User Leaderboard',
     description:
       'User leaderboard with sortable metrics, column toggles, paging and live rank changes.',
-    lib: LIB.HIGHER_LEVEL,
+    lib: LIB.LEADERBOARD,
     content: <UserLeaderboardDemo />,
   },
   {
@@ -458,7 +464,7 @@ const ALL_ENTRIES: SandboxEntry[] = [
     label: 'Docs Explorer',
     description:
       'The docs explorer is the file-tree + search shell behind docs.harryliu.dev. It is not mounted here - it needs a notes tree to browse - so this page links to the live site and shows what it looks like there.',
-    lib: LIB.HIGHER_LEVEL,
+    lib: LIB.DOCS_EXPLORER,
     content: <DocsExplorerDemo />,
   },
   {

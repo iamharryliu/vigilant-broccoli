@@ -2,7 +2,7 @@ import { DemoSection } from './DemoSection';
 import { useEffect, useState } from 'react';
 import { ExternalLink } from 'lucide-react';
 import { buttonVariants } from '@vigilant-broccoli/react-lib';
-import { MarkdownViewer } from '@vigilant-broccoli/react-lib-higher-level';
+import { MarkdownViewer } from '@vigilant-broccoli/docs-explorer';
 
 const DOCS_URL = 'https://docs.harryliu.dev/';
 const README_PATH =

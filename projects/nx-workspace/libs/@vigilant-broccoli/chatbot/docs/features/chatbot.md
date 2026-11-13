@@ -22,6 +22,6 @@ Streaming chatbot UI and history shared by local-manager-next's `/chatbot` page 
 
 - Both apps speak each finished reply through `useReplySpeech`, passing react-lib's `useTextToSpeech` `speak` and `stop`. `runChat` keeps the `onReplyComplete` it started with, so the hook reads the mute and voice settings through refs.
 - The server route stays in each app: the models, system prompt and knowledge base search differ, and the two routes still share a copy of the OpenAI stream wrapper.
-- Styling is Tailwind; an app's `tailwind.config.js` must include `libs/@vigilant-broccoli/react-lib-higher-level/src/lib/chatbot` in `content`.
+- Styling is Tailwind; an app's `tailwind.config.js` must include `libs/@vigilant-broccoli/chatbot/src` in `content`.
 - Each app passes its own `storageKeys` so histories stay separate; local-manager-next keeps its original `vb-manager-chats` keys.
 - `ChatPanel` is the chat room's component; the chatbot's panel is composed in each app from these parts.

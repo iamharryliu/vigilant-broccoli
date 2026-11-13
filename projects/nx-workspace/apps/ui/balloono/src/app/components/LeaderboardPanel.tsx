@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { RefreshCw } from 'lucide-react';
 import { CardContainer, Button } from '@vigilant-broccoli/react-lib';
-import { Placement } from '@vigilant-broccoli/react-lib-higher-level';
+import { Placement } from '@vigilant-broccoli/leaderboard';
 import { fetchLeaderboard, LeaderboardEntry } from '../../lib/stats';
 import { ONLINE_AVAILABLE } from '../app.consts';
 import { useTranslation } from '../i18n';

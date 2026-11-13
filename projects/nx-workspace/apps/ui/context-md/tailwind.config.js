@@ -16,7 +16,7 @@ module.exports = {
     ),
     join(
       __dirname,
-      '../../../libs/@vigilant-broccoli/react-lib-higher-level/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+      '../../../libs/@vigilant-broccoli/docs-explorer/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
     ),
     join(
       __dirname,

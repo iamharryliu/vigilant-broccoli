@@ -9,7 +9,7 @@ import {
   isSharingUser,
   useLiveLocations,
   SupabaseLike,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/realtime';
 import { supabase } from '../../../../libs/supabase';
 import { useTranslation } from '../../i18n';
 

@@ -4,8 +4,8 @@ import { ReactNode, createContext, useContext } from 'react';
 import {
   useNotepad as useSyncedNotepad,
   NotepadState,
-  SupabaseBroadcastLike,
 } from '@vigilant-broccoli/react-lib-higher-level';
+import { SupabaseBroadcastLike } from '@vigilant-broccoli/realtime';
 import { supabase } from '../../lib/supabase';
 import { authFetch, useAuth } from '../../../libs/auth';
 

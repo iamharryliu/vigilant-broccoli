@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { Text } from '@vigilant-broccoli/react-lib';
 import { CALENDAR_EVENT_BOOKMARKLET } from '@vigilant-broccoli/common-js';
-import { buildCalendarEventBookmarklet } from '@vigilant-broccoli/react-lib-higher-level';
+import { buildCalendarEventBookmarklet } from '@vigilant-broccoli/react-lib-calendar';
 
 // The managed-calendar twin of the Create calendar event dialog's bookmarklet:
 // that one imports events once, this one tracks the page as a calendar source.

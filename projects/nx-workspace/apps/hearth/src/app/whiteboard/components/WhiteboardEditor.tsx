@@ -3,12 +3,12 @@
 import { CSSProperties, ReactNode, useRef, useState, RefObject } from 'react';
 import { MessageSquare, Eye, Pencil } from 'lucide-react';
 import { Button, SyncedTextEditor } from '@vigilant-broccoli/react-lib';
+import { NotepadLoadError } from '@vigilant-broccoli/react-lib-higher-level';
+import { MarkdownViewer } from '@vigilant-broccoli/docs-explorer';
 import {
-  NotepadLoadError,
   PeerCaretsOverlay,
   PeerCursorsOverlay,
-} from '@vigilant-broccoli/react-lib-higher-level';
-import { MarkdownViewer } from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/realtime';
 import { useWhiteboard } from '../../hooks/use-whiteboard';
 import { WhiteboardAssistantDialog } from './WhiteboardAssistantDialog';
 

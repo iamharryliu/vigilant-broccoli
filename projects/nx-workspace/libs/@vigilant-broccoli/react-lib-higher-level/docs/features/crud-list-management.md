@@ -5,8 +5,7 @@
 ## Exports
 
 - `CRUDItemList` — main list component
-- `EllipsisCTA` — reusable ellipsis popover with Update + Delete (with confirmation)
-- `DeleteItemConfirmationDialog` — standalone "are you sure" dialog
+- `EllipsisCTA` — reusable ellipsis popover with Update + Delete (confirmed through react-lib's `DeleteItemConfirmationDialog`)
 - `CRUDFormProps<T>` — form component prop type
 
 ## CRUDItemList Props

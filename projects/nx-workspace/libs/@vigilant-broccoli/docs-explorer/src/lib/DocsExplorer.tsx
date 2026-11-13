@@ -19,11 +19,11 @@ import {
 import {
   Card,
   ClearableInput,
+  DeleteItemConfirmationDialog,
   DropdownMenu,
   HighlightMatch,
   IconButton,
 } from '@vigilant-broccoli/react-lib';
-import { DeleteItemConfirmationDialog } from './CRUDListManagement';
 
 const MOBILE_NO_CARD_CLS =
   '!p-0 [&::before]:!hidden [&::after]:!hidden md:!p-3 md:[&::before]:![display:revert] md:[&::after]:![display:revert]';

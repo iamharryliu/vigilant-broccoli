@@ -33,6 +33,8 @@ import {
   CalendarEventDetails,
   EventCalendarLink,
   EventCalendarsList,
+} from '@vigilant-broccoli/react-lib-calendar';
+import {
   TabbedView,
   TabbedViewTab,
 } from '@vigilant-broccoli/react-lib-higher-level';

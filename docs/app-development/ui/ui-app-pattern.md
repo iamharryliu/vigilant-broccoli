@@ -24,7 +24,7 @@ Per-type locations and deploy destinations, including the `employee-handler-ui`,
 
 ## Shared components (react-lib)
 
-Check the `libs/@vigilant-broccoli/react-lib/src/components` barrel (atoms), the `react-lib-auth`, `react-lib-calendar`, `react-lib-media` and `file-explorer` domain libs, and the `react-lib-higher-level` lib (composites) before building new UI — prefer existing shared components over hand-rolled equivalents, unless told otherwise. Frequently needed: `CardContainer`, `Button`, `IconButton`, `Dialog`, `Tabs`, `Select`, `Input`, `ThemeProvider` from `react-lib`; `CRUDItemList` (CRUD list management, exported from `CRUDListManagement.tsx`) and `Sidebar` from `react-lib-higher-level`.
+Check the `libs/@vigilant-broccoli/react-lib/src/components` barrel (atoms), the `react-lib-auth`, `react-lib-calendar`, `react-lib-media`, `file-explorer`, `docs-explorer`, `chatbot`, `leaderboard` and `realtime` domain libs, and the `react-lib-higher-level` lib (composites) before building new UI — prefer existing shared components over hand-rolled equivalents, unless told otherwise. Frequently needed: `CardContainer`, `Button`, `IconButton`, `Dialog`, `Tabs`, `Select`, `Input`, `ThemeProvider` from `react-lib`; `CRUDItemList` (CRUD list management, exported from `CRUDListManagement.tsx`) and `Sidebar` from `react-lib-higher-level`.
 
 Dialogs with forms, lists or other content needing height (e.g. create/manage task dialogs) pass `fullScreenOnMobile` to `DialogContent`/`AlertDialogContent` (or `FULL_SCREEN_ON_MOBILE_DIALOG_CLASS` when composing classes) so they fill the screen below `sm`; short dialogs such as confirmations stay small centered modals.
 

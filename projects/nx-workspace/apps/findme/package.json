@@ -7,6 +7,7 @@
     "@vigilant-broccoli/common-browser": "workspace:*",
     "@vigilant-broccoli/common-js": "workspace:*",
     "@vigilant-broccoli/react-lib": "workspace:*",
+    "@vigilant-broccoli/realtime": "workspace:*",
     "leaflet": "^1.9.4",
     "next": "16.4.2",
     "react": "19.2.7",

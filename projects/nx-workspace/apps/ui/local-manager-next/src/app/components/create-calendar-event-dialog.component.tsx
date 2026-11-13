@@ -7,7 +7,7 @@ import { CALENDAR_EVENT_BOOKMARKLET } from '@vigilant-broccoli/common-js';
 import {
   CreateCalendarEventDialog,
   useCalendarEventBookmarklet,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/react-lib-calendar';
 import { authFetch } from '../../../libs/auth';
 import {
   AddEventSourceDialog,

@@ -1,0 +1,12 @@
+{
+  "name": "@vigilant-broccoli/leaderboard",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@vigilant-broccoli/leaderboard/src",
+  "projectType": "library",
+  "tags": ["type:domain"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

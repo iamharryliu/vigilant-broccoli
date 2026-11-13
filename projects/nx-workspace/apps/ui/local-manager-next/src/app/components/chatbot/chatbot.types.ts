@@ -11,7 +11,7 @@ import type {
   ChatbotImage,
   ChatbotMessage,
   SetChatbotMessages,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/chatbot';
 
 export type MessageImage = ChatbotImage;
 

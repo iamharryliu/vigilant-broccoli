@@ -7,9 +7,9 @@ import {
 } from '@vigilant-broccoli/common-js';
 import {
   NotepadState,
-  SupabaseBroadcastLike,
   useNotepad,
 } from '@vigilant-broccoli/react-lib-higher-level';
+import { SupabaseBroadcastLike } from '@vigilant-broccoli/realtime';
 import { supabase } from '../../../libs/supabase';
 
 const WHITEBOARD_API = '/api/whiteboard';

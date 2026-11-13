@@ -15,6 +15,7 @@ import {
   CalloutText,
   Card,
   CopyButton,
+  DeleteItemConfirmationDialog,
   Input,
   Select,
   Switch,
@@ -27,7 +28,6 @@ import {
 import {
   CRUDFormProps,
   CRUDItemList,
-  DeleteItemConfirmationDialog,
 } from '@vigilant-broccoli/react-lib-higher-level';
 import { FORM_TYPE, HTTP_STATUS_CODES } from '@vigilant-broccoli/common-js';
 import { useCallback, useEffect, useRef, useState } from 'react';

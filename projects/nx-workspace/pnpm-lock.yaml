@@ -769,6 +769,9 @@ importers:
       '@vigilant-broccoli/react-lib':
         specifier: workspace:*
         version: link:../../libs/@vigilant-broccoli/react-lib
+      '@vigilant-broccoli/realtime':
+        specifier: workspace:*
+        version: link:../../libs/@vigilant-broccoli/realtime
       leaflet:
         specifier: ^1.9.4
         version: 1.9.4
@@ -808,6 +811,9 @@ importers:
       '@vigilant-broccoli/common-node':
         specifier: workspace:*
         version: link:../../libs/@vigilant-broccoli/common-node
+      '@vigilant-broccoli/docs-explorer':
+        specifier: workspace:*
+        version: link:../../libs/@vigilant-broccoli/docs-explorer
       '@vigilant-broccoli/llm-schemas':
         specifier: workspace:*
         version: link:../../libs/@vigilant-broccoli/llm-schemas
@@ -823,6 +829,9 @@ importers:
       '@vigilant-broccoli/react-lib-media':
         specifier: workspace:*
         version: link:../../libs/@vigilant-broccoli/react-lib-media
+      '@vigilant-broccoli/realtime':
+        specifier: workspace:*
+        version: link:../../libs/@vigilant-broccoli/realtime
       framer-motion:
         specifier: ^12.23.12
         version: 12.40.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -865,6 +874,9 @@ importers:
       '@vigilant-broccoli/react-lib':
         specifier: workspace:*
         version: link:../../libs/@vigilant-broccoli/react-lib
+      '@vigilant-broccoli/realtime':
+        specifier: workspace:*
+        version: link:../../libs/@vigilant-broccoli/realtime
       next:
         specifier: 16.4.2
         version: 16.4.2(@babel/core@7.29.7(supports-color@8.1.1))(@playwright/test@1.61.1)(@types/node@24.13.3)(babel-plugin-macros@3.1.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(sass@1.101.0)
@@ -892,6 +904,30 @@ importers:
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
+
+  libs/@vigilant-broccoli/chatbot:
+    dependencies:
+      '@vigilant-broccoli/common-js':
+        specifier: workspace:*
+        version: link:../common-js
+      '@vigilant-broccoli/react-lib':
+        specifier: workspace:*
+        version: link:../react-lib
+      highlight.js:
+        specifier: ^11.12.0
+        version: 11.12.0
+      lucide-react:
+        specifier: ^0.513.0
+        version: 0.513.0(react@19.2.7)
+      react:
+        specifier: 19.2.7
+        version: 19.2.7
+      react-markdown:
+        specifier: ^10.1.0
+        version: 10.1.0(@types/react@19.2.17)(react@19.2.7)
+      remark-gfm:
+        specifier: ^4.0.1
+        version: 4.0.1
 
   libs/@vigilant-broccoli/common-browser:
     dependencies:
@@ -930,6 +966,30 @@ importers:
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
+
+  libs/@vigilant-broccoli/docs-explorer:
+    dependencies:
+      '@vigilant-broccoli/react-lib':
+        specifier: workspace:*
+        version: link:../react-lib
+      d3-force:
+        specifier: ^3.0.0
+        version: 3.0.0
+      dompurify:
+        specifier: ^3.4.17
+        version: 3.4.17
+      lucide-react:
+        specifier: ^0.513.0
+        version: 0.513.0(react@19.2.7)
+      marked:
+        specifier: ^12.0.2
+        version: 12.0.2
+      mermaid:
+        specifier: ^11.4.0
+        version: 11.17.2
+      react:
+        specifier: 19.2.7
+        version: 19.2.7
 
   libs/@vigilant-broccoli/employee-handler:
     dependencies:
@@ -1041,6 +1101,24 @@ importers:
       tslib:
         specifier: ^2.8.1
         version: 2.8.1
+
+  libs/@vigilant-broccoli/leaderboard:
+    dependencies:
+      '@vigilant-broccoli/react-lib':
+        specifier: workspace:*
+        version: link:../react-lib
+      framer-motion:
+        specifier: ^12.23.12
+        version: 12.40.0(@emotion/is-prop-valid@1.4.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      lucide-react:
+        specifier: ^0.513.0
+        version: 0.513.0(react@19.2.7)
+      react:
+        specifier: 19.2.7
+        version: 19.2.7
+      react-dom:
+        specifier: 19.2.7
+        version: 19.2.7(react@19.2.7)
 
   libs/@vigilant-broccoli/llm-schemas:
     dependencies:
@@ -1251,6 +1329,12 @@ importers:
 
   libs/@vigilant-broccoli/react-lib-calendar:
     dependencies:
+      '@vigilant-broccoli/common-browser':
+        specifier: workspace:*
+        version: link:../common-browser
+      '@vigilant-broccoli/common-js':
+        specifier: workspace:*
+        version: link:../common-js
       '@vigilant-broccoli/react-lib':
         specifier: workspace:*
         version: link:../react-lib
@@ -1278,6 +1362,24 @@ importers:
       react:
         specifier: ^19
         version: 19.2.7
+
+  libs/@vigilant-broccoli/realtime:
+    dependencies:
+      '@vigilant-broccoli/react-lib':
+        specifier: workspace:*
+        version: link:../react-lib
+      leaflet:
+        specifier: ^1.9.4
+        version: 1.9.4
+      react:
+        specifier: 19.2.7
+        version: 19.2.7
+      react-leaflet:
+        specifier: ^5.0.0
+        version: 5.0.0(leaflet@1.9.4)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      yjs:
+        specifier: ^13.6.31
+        version: 13.6.31
 
   libs/@vigilant-broccoli/resume:
     dependencies:
@@ -16859,6 +16961,7 @@ packages:
 
   tldts-core@7.4.20:
     resolution: {integrity: sha512-C630TWXZCZmLq0F2bW4QqwnaaxCQ/svpAqvJwnC4JvgEM5ohhBnGsEzTLSOXcN+xjz+kEaHS5uoWIw2klnqd0A==}
+    deprecated: Partial release, see https://github.com/remusao/tldts/issues/2735. Use >=7.4.22.
 
   tldts@6.1.86:
     resolution: {integrity: sha512-WMi/OQ2axVTf/ykqCQgXiIct+mSQDFdH2fkwhPwgEwvJ1kSzZRiinb0zF2Xb8u4+OqPChmyI6MEu4EezNJz+FQ==}

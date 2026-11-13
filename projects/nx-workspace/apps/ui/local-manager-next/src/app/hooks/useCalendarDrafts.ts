@@ -19,10 +19,7 @@ import type {
   MessageImage,
   SetMessages,
 } from '../components/chatbot/chatbot.types';
-import {
-  patchLastMessage,
-  patchMessageAt,
-} from '@vigilant-broccoli/react-lib-higher-level';
+import { patchLastMessage, patchMessageAt } from '@vigilant-broccoli/chatbot';
 import { buildEventDraftMessages } from '../utils/chat-messages.utils';
 
 export const useCalendarDrafts = (setMessages: SetMessages) => {

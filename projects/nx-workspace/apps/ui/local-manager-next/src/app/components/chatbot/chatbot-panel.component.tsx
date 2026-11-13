@@ -5,7 +5,7 @@ import {
   modelSupportsImageInput,
 } from '@vigilant-broccoli/common-js';
 import { useSpeechToText, useTextToSpeech } from '@vigilant-broccoli/react-lib';
-import { useReplySpeech } from '@vigilant-broccoli/react-lib-higher-level';
+import { useReplySpeech } from '@vigilant-broccoli/chatbot';
 import { authFetch } from '../../../../libs/auth';
 import { API_ENDPOINTS } from '../../constants/api-endpoints';
 import { useChatStream } from '../../hooks/useChatStream';

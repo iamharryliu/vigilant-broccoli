@@ -3,8 +3,8 @@
 import {
   useNotepad as useSyncedNotepad,
   NotepadState,
-  SupabaseBroadcastLike,
 } from '@vigilant-broccoli/react-lib-higher-level';
+import { SupabaseBroadcastLike } from '@vigilant-broccoli/realtime';
 import { supabase } from '../../../libs/supabase';
 import { buildAuthHeaders, useAuth } from '../providers/auth-provider';
 

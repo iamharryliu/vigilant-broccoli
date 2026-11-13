@@ -24,7 +24,7 @@ import {
   type DocsExplorerAction,
   type DocsNode,
   type DocsSearchResult,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/docs-explorer';
 import {
   FORM_TYPE,
   HTTP_METHOD,

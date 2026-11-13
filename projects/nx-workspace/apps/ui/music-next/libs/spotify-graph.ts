@@ -6,7 +6,7 @@ import type {
   NoteGraph,
   NoteGraphLink,
   NoteGraphNode,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/docs-explorer';
 
 const SPOTIFY_API_BASE = 'https://api.spotify.com/v1';
 const PLAYLISTS_PAGE_LIMIT = 50;

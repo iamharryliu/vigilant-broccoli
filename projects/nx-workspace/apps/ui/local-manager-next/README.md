@@ -23,6 +23,7 @@ Management dashboard with calendar, notepad and quick links home tabs.
 - Internal libs
   - `@harry/personal`
   - `@harry/private`
+  - `chatbot`
   - `common-browser`
   - `common-js`
   - `common-node`
@@ -40,9 +41,11 @@ Management dashboard with calendar, notepad and quick links home tabs.
   - `public-links`
   - `react-lib`
   - `react-lib-auth`
+  - `react-lib-calendar`
   - `react-lib-higher-level`
   - `react-lib-media`
   - `react-utility`
+  - `realtime`
   - `resume`
   - `security-news`
   - `storage`

@@ -3,7 +3,7 @@ import OpenAI from 'openai';
 import { HTTP_STATUS_CODES, type LLMModel } from '@vigilant-broccoli/common-js';
 import { getEnvironmentVariable } from '@vigilant-broccoli/common-node';
 import { CHAT_MODELS, DEFAULT_CHAT_MODEL } from '../../app.const';
-import type { ChatbotMessage } from '@vigilant-broccoli/react-lib-higher-level';
+import type { ChatbotMessage } from '@vigilant-broccoli/chatbot';
 import {
   KNOWLEDGE_BASE_PREFIX,
   searchKnowledgeBase,
