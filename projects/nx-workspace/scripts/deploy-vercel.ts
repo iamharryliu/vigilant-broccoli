@@ -380,6 +380,14 @@ async function main() {
         'dist/apps/ui/weather-next/.next',
       ),
     },
+    'tasks-next': {
+      hardcodedSecrets: SUPABASE_PUBLIC_SECRETS,
+      envExamplePath: 'apps/ui/tasks-next/.env.example',
+      settings: NX_VERCEL_SETTINGS(
+        'tasks-next',
+        'dist/apps/ui/tasks-next/.next',
+      ),
+    },
     'mobile-manager-next': {
       hardcodedSecrets: {
         ...SUPABASE_PUBLIC_SECRETS,

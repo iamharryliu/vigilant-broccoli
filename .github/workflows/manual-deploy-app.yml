@@ -15,6 +15,7 @@ on:
           - findme
           - whiteboard
           - weather-next
+          - tasks-next
           - balloono
           - gravity-guy
           - chat

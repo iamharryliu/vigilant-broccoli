@@ -11,6 +11,7 @@ locals {
     hearth                 = "hearth.harryliu.dev"
     gravity-guy            = "gravity-guy.harryliu.dev"
     chat                   = "chat.harryliu.dev"
+    tasks-next             = "tasks.harryliu.dev"
   }
 }
 

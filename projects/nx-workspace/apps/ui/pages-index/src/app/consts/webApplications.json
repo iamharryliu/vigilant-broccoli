@@ -103,6 +103,14 @@
       "stagingHref": "https://staging-calendar.harryliu.dev/"
     },
     {
+      "id": "tasks",
+      "href": "https://tasks.harryliu.dev/",
+      "titleKey": "WEB_APPLICATIONS_PAGE.TASKS.TITLE",
+      "descriptionKey": "WEB_APPLICATIONS_PAGE.TASKS.DESCRIPTION",
+      "readmePath": "projects/nx-workspace/apps/ui/tasks-next/README.md",
+      "stagingHref": "https://staging-tasks.harryliu.dev/"
+    },
+    {
       "id": "text-tools",
       "href": "https://text-tools.harryliu.dev/",
       "titleKey": "WEB_APPLICATIONS_PAGE.TEXT_TOOLS.TITLE",

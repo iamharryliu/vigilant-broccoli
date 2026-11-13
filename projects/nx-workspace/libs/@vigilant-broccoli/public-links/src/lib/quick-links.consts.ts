@@ -231,6 +231,11 @@ export const VB_LINKS: QuickLink[] = [
       NAME: `${VB_APP_URL.WEATHER.NAME} (Staging)`,
       URL: VB_APP_URL.WEATHER.STAGING_URL,
     },
+    VB_APP_URL.TASKS,
+    {
+      NAME: `${VB_APP_URL.TASKS.NAME} (Staging)`,
+      URL: VB_APP_URL.TASKS.STAGING_URL,
+    },
     VB_APP_URL.FIND_ME,
     {
       NAME: `${VB_APP_URL.FIND_ME.NAME} (Staging)`,

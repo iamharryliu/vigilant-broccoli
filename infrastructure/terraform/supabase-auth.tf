@@ -59,6 +59,10 @@ resource "supabase_settings" "vb_auth" {
       "https://staging-vb-manager-next-mobile.vercel.app/auth/callback",    # vb-manager-next mobile staging
       "https://production-vb-manager-next-mobile.vercel.app/auth/callback", # vb-manager-next mobile prod
       "https://manager.harryliu.dev/auth/callback",                         # vb-manager-next mobile prod (custom domain)
+      "https://staging-tasks.harryliu.dev/auth/callback",                   # tasks-next staging (custom domain)
+      "https://staging-tasks-next.vercel.app/*",                            # tasks-next staging
+      "https://production-tasks-next.vercel.app/*",                         # tasks-next prod
+      "https://tasks.harryliu.dev/*",                                       # tasks-next prod (custom domain)
     ])
 
     external_google_enabled          = true

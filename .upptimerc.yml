@@ -74,6 +74,10 @@ sites:
     url: https://staging-weather.harryliu.dev/
     maxRedirects: 0
     expectedStatusCodes: [302]
+  - name: staging-tasks
+    url: https://staging-tasks.harryliu.dev/
+    maxRedirects: 0
+    expectedStatusCodes: [302]
   - name: staging-balloono
     url: https://staging-balloono.harryliu.dev/
     maxRedirects: 0
@@ -136,6 +140,8 @@ sites:
     url: https://whiteboard.harryliu.dev/
   - name: production-weather
     url: https://weather.harryliu.dev/
+  - name: production-tasks
+    url: https://tasks.harryliu.dev/
   - name: production-balloono
     url: https://balloono.harryliu.dev/
   - name: production-gravity-guy
