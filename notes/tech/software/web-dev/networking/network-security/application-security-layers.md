@@ -1,7 +1,5 @@
 # Application Security Layers
 
-Part of [Network Security](./network-security.md).
-
 ## Table of Contents
 
 - [Principles](#principles)

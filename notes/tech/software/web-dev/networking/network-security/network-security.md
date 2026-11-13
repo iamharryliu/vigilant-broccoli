@@ -1,7 +1,5 @@
 # Network Security
 
-Part of [Networking](../networking.md).
-
 ## Table of Contents
 
 - [Lingo](./network-security-lingo.md)
