@@ -1,7 +1,9 @@
 'use client';
 
 import {
+  ChangeEvent,
   DragEvent,
+  InputHTMLAttributes,
   KeyboardEvent,
   MouseEvent,
   ReactElement,
@@ -48,12 +50,15 @@ import {
   DialogDescription,
   DialogTitle,
 } from './Dialog';
+import { DropdownMenu } from './DropdownMenu';
 import { Skeleton } from './Skeleton';
 import {
+  DroppedFile,
   groupByDirectory,
   isFileDrag,
   joinPath,
   readDroppedFiles,
+  readPickedFiles,
 } from './file-explorer-drop.utils';
 
 const VIEW_MODE = { LIST: 'list', GRID: 'grid' } as const;
@@ -436,41 +441,107 @@ const itemClassName = (selected: boolean) =>
     ? 'bg-blue-50 dark:bg-blue-950'
     : 'hover:bg-gray-50 dark:hover:bg-gray-900';
 
+// Not in React's input typings; a picker is either files-only or folders-only,
+// so folders need their own input.
+const FOLDER_PICKER_PROPS = {
+  webkitdirectory: '',
+} as InputHTMLAttributes<HTMLInputElement>;
+
 const UploadButton = ({
   disabled,
   onFiles,
 }: {
   disabled: boolean;
-  onFiles: (files: File[]) => void;
+  onFiles: (files: DroppedFile[]) => void;
 }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const filesInputRef = useRef<HTMLInputElement>(null);
+  const folderInputRef = useRef<HTMLInputElement>(null);
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    onFiles(readPickedFiles(Array.from(event.target.files ?? [])));
+    event.target.value = '';
+  };
   return (
     <>
       <input
-        ref={inputRef}
+        ref={filesInputRef}
         type="file"
         multiple
         hidden
-        onChange={event => {
-          onFiles(Array.from(event.target.files ?? []));
-          event.target.value = '';
-        }}
+        onChange={handleChange}
       />
-      <button
-        type="button"
-        aria-label="Upload files"
-        disabled={disabled}
-        onClick={() => inputRef.current?.click()}
-        className={iconButtonClassName()}
-      >
-        <Upload size={14} />
-      </button>
+      <input
+        ref={folderInputRef}
+        type="file"
+        hidden
+        {...FOLDER_PICKER_PROPS}
+        onChange={handleChange}
+      />
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger asChild>
+          <button
+            type="button"
+            aria-label="Upload"
+            disabled={disabled}
+            className={iconButtonClassName()}
+          >
+            <Upload size={14} />
+          </button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content align="end" size="1">
+          <DropdownMenu.Item onSelect={() => filesInputRef.current?.click()}>
+            Upload files
+          </DropdownMenu.Item>
+          <DropdownMenu.Item onSelect={() => folderInputRef.current?.click()}>
+            Upload folder
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
     </>
   );
 };
 
 const fileCountLabel = (count: number) =>
   `${count} file${count === 1 ? '' : 's'}`;
+
+const ConfirmDeleteDialog = ({
+  open,
+  title,
+  description,
+  onClose,
+  onConfirm,
+}: {
+  open: boolean;
+  title: string;
+  description: string;
+  onClose: () => void;
+  onConfirm: () => void;
+}) => (
+  <AlertDialog
+    open={open}
+    onOpenChange={isOpen => {
+      if (!isOpen) onClose();
+    }}
+  >
+    <AlertDialogContent className="max-w-[400px]">
+      <AlertDialogHeader>
+        <AlertDialogTitle>{title}</AlertDialogTitle>
+        <AlertDialogDescription>
+          {description} This cannot be undone.
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel asChild>
+          <Button variant="secondary">Cancel</Button>
+        </AlertDialogCancel>
+        <AlertDialogAction asChild>
+          <Button variant="destructive" onClick={onConfirm}>
+            Delete
+          </Button>
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+);
 
 // Shared by the toolbar button and the context menu so both confirm the same way.
 const DeleteFilesDialog = ({
@@ -485,36 +556,13 @@ const DeleteFilesDialog = ({
   const single = files?.length === 1 ? files[0] : null;
   const countLabel = fileCountLabel(files?.length ?? 0);
   return (
-    <AlertDialog
+    <ConfirmDeleteDialog
       open={files !== null}
-      onOpenChange={open => {
-        if (!open) onClose();
-      }}
-    >
-      <AlertDialogContent className="max-w-[400px]">
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            {single ? 'Delete file' : `Delete ${countLabel}`}
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            Delete {single ? single.name : countLabel}? This cannot be undone.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel asChild>
-            <Button variant="secondary">Cancel</Button>
-          </AlertDialogCancel>
-          <AlertDialogAction asChild>
-            <Button
-              variant="destructive"
-              onClick={() => files && onConfirm(files)}
-            >
-              Delete
-            </Button>
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+      title={single ? 'Delete file' : `Delete ${countLabel}`}
+      description={`Delete ${single ? single.name : countLabel}?`}
+      onClose={onClose}
+      onConfirm={() => files && onConfirm(files)}
+    />
   );
 };
 
@@ -567,9 +615,12 @@ type FileExplorerProps = {
   // Hidden when omitted.
   onUpload?: (folderPath: string, files: File[]) => Promise<void>;
   // Shows a delete button and context menu item for the selected files, behind
-  // a confirmation; called once per file. Hidden when omitted; folders are
-  // never offered.
+  // a confirmation; called once per file. Hidden when omitted; never receives
+  // folders (see `onDeleteFolder`).
   onDelete?: (entry: FileEntry) => Promise<void>;
+  // Shows a context menu item on a single right-clicked folder that deletes it
+  // and everything inside it, behind a confirmation. Hidden when omitted.
+  onDeleteFolder?: (entry: FileEntry) => Promise<void>;
   // Small inline marker after an entry's name, such as a processing status.
   renderEntryBadge?: (entry: FileEntry) => ReactNode;
 };
@@ -589,6 +640,7 @@ export const FileExplorer = ({
   toolbarAction,
   onUpload,
   onDelete,
+  onDeleteFolder,
   renderEntryBadge,
 }: FileExplorerProps) => {
   // null until mounted: the folder lives in `?path=` so a page reload or the
@@ -603,6 +655,8 @@ export const FileExplorer = ({
   const [selection, setSelection] = useState<Selection>(EMPTY_SELECTION);
   const [menuPath, setMenuPath] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<FileEntry[] | null>(null);
+  const [pendingFolderDelete, setPendingFolderDelete] =
+    useState<FileEntry | null>(null);
   const [mutating, setMutating] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(true);
   const [viewerEntry, setViewerEntry] = useState<FileEntry | null>(null);
@@ -705,9 +759,6 @@ export const FileExplorer = ({
     }, 'Failed to upload files');
   };
 
-  const uploadFiles = (files: File[]) =>
-    uploadGroups(files.length > 0 ? new Map([['', files]]) : new Map());
-
   const canDrop = !!onUpload && !mutating && currentPath !== null;
 
   const handleDragOver = (event: DragEvent<HTMLDivElement>) => {
@@ -755,6 +806,14 @@ export const FileExplorer = ({
       });
       setSelection(EMPTY_SELECTION);
     }, 'Failed to delete files');
+  };
+
+  const deleteFolder = (folder: FileEntry) => {
+    if (!onDeleteFolder) return;
+    runMutation(async () => {
+      setSelection(EMPTY_SELECTION);
+      await onDeleteFolder(folder);
+    }, 'Failed to delete folder');
   };
 
   const openEntry = (entry: FileEntry) =>
@@ -887,6 +946,13 @@ export const FileExplorer = ({
   const menuDeletableFiles = (targets: FileEntry[]) =>
     onDelete ? targets.filter(isFile) : [];
 
+  const menuDeletableFolder = (targets: FileEntry[]) =>
+    onDeleteFolder &&
+    targets.length === 1 &&
+    targets[0].kind === FILE_ENTRY_KIND.FOLDER
+      ? targets[0]
+      : null;
+
   const hasMenuItems = (targets: FileEntry[]) =>
     targets.length === 1 || menuDeletableFiles(targets).length > 0;
 
@@ -903,6 +969,7 @@ export const FileExplorer = ({
     if (menuPath !== entry.path) return null;
     const targets = menuTargets(entry);
     const files = menuDeletableFiles(targets);
+    const folder = menuDeletableFolder(targets);
     const single = targets.length === 1 ? targets[0] : null;
     return (
       <ContextMenu.Content
@@ -929,6 +996,16 @@ export const FileExplorer = ({
           >
             <Trash2 size={14} />
             {single ? 'Delete' : `Delete ${fileCountLabel(files.length)}`}
+          </ContextMenu.Item>
+        )}
+        {folder && (
+          <ContextMenu.Item
+            color="red"
+            disabled={mutating}
+            onSelect={() => setPendingFolderDelete(folder)}
+          >
+            <Trash2 size={14} />
+            Delete folder
           </ContextMenu.Item>
         )}
       </ContextMenu.Content>
@@ -1007,7 +1084,7 @@ export const FileExplorer = ({
           {onUpload && (
             <UploadButton
               disabled={mutating || currentPath === null}
-              onFiles={uploadFiles}
+              onFiles={files => uploadGroups(groupByDirectory(files))}
             />
           )}
           {onDelete && (
@@ -1236,6 +1313,15 @@ export const FileExplorer = ({
         files={pendingDelete}
         onClose={() => setPendingDelete(null)}
         onConfirm={deleteFiles}
+      />
+      <ConfirmDeleteDialog
+        open={pendingFolderDelete !== null}
+        title="Delete folder"
+        description={`Delete ${pendingFolderDelete?.name} and everything inside it, including subfolders?`}
+        onClose={() => setPendingFolderDelete(null)}
+        onConfirm={() =>
+          pendingFolderDelete && deleteFolder(pendingFolderDelete)
+        }
       />
     </div>
   );

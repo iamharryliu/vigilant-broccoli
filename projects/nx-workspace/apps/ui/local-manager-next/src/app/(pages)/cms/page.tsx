@@ -34,6 +34,16 @@ const deleteFile = async (entry: FileEntry) => {
   toast.success(`Deleted ${entry.name}`);
 };
 
+const deleteFolder = async (entry: FileEntry) => {
+  const response = await authFetch(
+    `${API_ENDPOINTS.CMS_FOLDER}?path=${encodeURIComponent(entry.path)}`,
+    { method: HTTP_METHOD.DELETE },
+  );
+  await assertOk(response);
+  const { deleted } = (await response.json()) as { deleted: number };
+  toast.success(`Deleted ${entry.name} (${deleted} file(s))`);
+};
+
 export default function Page() {
   usePageTitle(SIDEBAR_ROUTE.CMS.title);
   return (
@@ -47,6 +57,7 @@ export default function Page() {
         onError={toast.error}
         onUpload={uploadFiles}
         onDelete={deleteFile}
+        onDeleteFolder={deleteFolder}
       />
     </div>
   );
