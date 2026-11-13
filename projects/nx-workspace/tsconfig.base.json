@@ -52,6 +52,9 @@
       "@vigilant-broccoli/react-lib-calendar": [
         "./libs/@vigilant-broccoli/react-lib-calendar/src/index.ts"
       ],
+      "@vigilant-broccoli/file-explorer": [
+        "./libs/@vigilant-broccoli/file-explorer/src/index.ts"
+      ],
       "@vigilant-broccoli/react-lib-media": [
         "./libs/@vigilant-broccoli/react-lib-media/src/index.ts"
       ],

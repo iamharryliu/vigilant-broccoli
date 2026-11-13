@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { AlertCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { FileEntry, HTTP_METHOD } from '@vigilant-broccoli/common-js';
-import { FileExplorer, Text } from '@vigilant-broccoli/react-lib';
+import { FileExplorer } from '@vigilant-broccoli/file-explorer';
+import { Text } from '@vigilant-broccoli/react-lib';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { authFetch } from '../../../../libs/auth';
 import { SIDEBAR_ROUTE } from '../../app.const';

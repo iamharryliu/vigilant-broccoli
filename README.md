@@ -179,6 +179,7 @@ _Command notation: `/name` for Claude; `$name` for Codex._
 | [@vigilant-broccoli/deployment](./projects/nx-workspace/libs/@vigilant-broccoli/deployment) | Deploy notification constants for local-manager-next. | `type:util` |
 | [@vigilant-broccoli/devops-cli](./projects/nx-workspace/libs/@vigilant-broccoli/devops-cli) | Typed wrappers for the aws, gcloud, docker, pm2, flyctl, vercel, wrangler and tailscale CLIs. | `type:util` |
 | [@vigilant-broccoli/fastify](./projects/nx-workspace/libs/@vigilant-broccoli/fastify) | Fastify docs, API key, reCAPTCHA, honeypot, request logging and ping plugins. | `type:util` |
+| [@vigilant-broccoli/file-explorer](./projects/nx-workspace/libs/@vigilant-broccoli/file-explorer) | File browser with previews, upload and delete over any list/file endpoint pair. | `type:domain` |
 | [@vigilant-broccoli/github-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/github-workspace) | GitHub CLI commands and models for Node. | `type:util` |
 | [@vigilant-broccoli/github-workspace-js](./projects/nx-workspace/libs/@vigilant-broccoli/github-workspace-js) | GitHub constants and types for browser and Node. | `type:util` |
 | [@vigilant-broccoli/google-workspace](./projects/nx-workspace/libs/@vigilant-broccoli/google-workspace) | Google OAuth, Tasks, Calendar and GAM services. | `type:util` |

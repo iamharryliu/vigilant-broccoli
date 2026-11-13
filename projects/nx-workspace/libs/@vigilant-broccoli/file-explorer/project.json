@@ -1,0 +1,12 @@
+{
+  "name": "@vigilant-broccoli/file-explorer",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/@vigilant-broccoli/file-explorer/src",
+  "projectType": "library",
+  "tags": ["type:domain"],
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
+}

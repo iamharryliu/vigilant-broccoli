@@ -28,6 +28,7 @@ Management dashboard with calendar, notepad and quick links home tabs.
   - `common-node`
   - `deployment`
   - `devops-cli`
+  - `file-explorer`
   - `github-workspace`
   - `github-workspace-js`
   - `google-workspace`

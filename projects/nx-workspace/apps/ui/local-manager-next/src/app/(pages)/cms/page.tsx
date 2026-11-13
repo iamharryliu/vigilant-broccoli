@@ -1,7 +1,7 @@
 'use client';
 
 import { FileEntry, HTTP_METHOD } from '@vigilant-broccoli/common-js';
-import { FileExplorer } from '@vigilant-broccoli/react-lib';
+import { FileExplorer } from '@vigilant-broccoli/file-explorer';
 import { toast } from '@vigilant-broccoli/react-lib/toaster';
 import { authFetch } from '../../../../libs/auth';
 import { SIDEBAR_ROUTE } from '../../app.const';
