@@ -9,7 +9,7 @@ import {
   ChatSettingsPage,
   useChatHistory,
   useChatSettings,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/chatbot';
 import { ChatbotPanel } from '../chatbot/chatbot-panel.component';
 import type { Message } from '../chatbot/chatbot.types';
 import { useChatSuggestions } from '../../hooks/useChatSuggestions';

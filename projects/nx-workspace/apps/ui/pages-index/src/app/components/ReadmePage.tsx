@@ -3,7 +3,7 @@ import { ExternalLink } from 'lucide-react';
 import {
   MarkdownViewer,
   type RepoLinkBase,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/docs-explorer';
 import { useTranslation } from '../i18n';
 import { PageHeader } from './PageHeader';
 import { PAGE_CLASS } from '../consts/layout';

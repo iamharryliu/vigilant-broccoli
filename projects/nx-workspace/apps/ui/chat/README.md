@@ -17,6 +17,7 @@ Private OpenAI chatbot for the owner, gated by Vercel Authentication.
   - Supabase JS
   - Tailwind CSS
 - Internal libs
+  - `chatbot`
   - `common-browser`
   - `common-js`
   - `common-node`

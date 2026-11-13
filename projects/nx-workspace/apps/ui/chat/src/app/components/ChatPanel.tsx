@@ -14,7 +14,7 @@ import {
   useReplySpeech,
   type ChatbotImage,
   type ChatbotMessage,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/chatbot';
 import { API_ROUTE, CHAT_MODELS, DEFAULT_CHAT_MODEL, KEY } from '../app.const';
 
 interface ChatPanelProps {

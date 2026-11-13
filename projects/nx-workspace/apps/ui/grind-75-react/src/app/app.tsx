@@ -5,7 +5,7 @@ import {
   DocsExplorer,
   MarkdownViewer,
   type DocsNode,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/docs-explorer';
 import { useEffect, useState } from 'react';
 import { renderSolutions } from './solutions-view';
 

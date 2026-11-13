@@ -3,7 +3,7 @@ import {
   createDocsSnapshotSource,
   createSearchParamUrlSync,
   DocsViewer,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/docs-explorer';
 
 const THEME_STORAGE_KEY = 'context-md-theme';
 const SITE_NAME = 'Agent Context';

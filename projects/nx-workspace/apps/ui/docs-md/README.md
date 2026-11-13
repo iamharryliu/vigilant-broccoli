@@ -15,5 +15,5 @@ Renders repo markdown docs fetched at build/runtime.
   - Mermaid
   - Tailwind CSS
 - Internal libs
+  - `docs-explorer`
   - `react-lib`
-  - `react-lib-higher-level`

@@ -11,7 +11,7 @@ import {
   compactConversation,
   finalizeLastMessage,
   useChatStream as useBaseChatStream,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/chatbot';
 import { authFetch } from '../../../libs/auth';
 import { CHAT_API_PATH, CHAT_RESPONSE_TYPE } from '../constants/chatbot.consts';
 import type { EventDraft } from '../components/event-draft-card.component';

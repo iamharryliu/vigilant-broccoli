@@ -1,4 +1,3 @@
-/// <reference types='vitest' />
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -7,17 +6,4 @@ export default defineConfig({
     '../../../node_modules/.vite/libs/@vigilant-broccoli/react-lib-higher-level',
 
   resolve: { tsconfigPaths: true },
-
-  test: {
-    watch: false,
-    globals: true,
-    environment: 'jsdom',
-    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    reporters: ['default'],
-    coverage: {
-      reportsDirectory:
-        '../../../coverage/libs/@vigilant-broccoli/react-lib-higher-level',
-      provider: 'v8',
-    },
-  },
 });

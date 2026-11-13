@@ -2,7 +2,7 @@
 
 ## Overview
 
-- The message list, input, Markdown, history sidebar, history storage and streaming hook come from the shared [chatbot](../../../../libs/@vigilant-broccoli/react-lib-higher-level/docs/features/chatbot.md) in `react-lib-higher-level`, also used by the `chat` app; this app adds the slash commands, draft cards, voice and suggestions through its slots
+- The message list, input, Markdown, history sidebar, history storage and streaming hook come from the shared [chatbot](../../../../libs/@vigilant-broccoli/chatbot/docs/features/chatbot.md) lib, also used by the `chat` app; this app adds the slash commands, draft cards, voice and suggestions through its slots
 
 - The assistant lives on the full chatbot page (`/chatbot`), opened through the Chatbot sidebar entry or `C` shortcut
 - Streams responses directly from OpenAI through `/api/chat`; default model `gpt-4o-mini`

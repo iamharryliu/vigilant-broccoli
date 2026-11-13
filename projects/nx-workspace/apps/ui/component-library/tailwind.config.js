@@ -23,6 +23,14 @@ module.exports = {
     ),
     join(
       __dirname,
+      '../../../libs/@vigilant-broccoli/docs-explorer/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+    ),
+    join(
+      __dirname,
+      '../../../libs/@vigilant-broccoli/leaderboard/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
+    ),
+    join(
+      __dirname,
       '../../../libs/@vigilant-broccoli/react-lib/src/**/!(*.stories|*.spec).{tsx,ts,jsx,js,html}',
     ),
     join(

@@ -6,7 +6,7 @@ import {
   cursorColor,
   PeerCaretsOverlay,
   PeerCursorsOverlay,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/realtime';
 import {
   CONNECTION_STATUS,
   useWhiteboardRoom,

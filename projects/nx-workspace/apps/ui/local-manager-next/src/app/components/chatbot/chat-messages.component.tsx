@@ -2,7 +2,7 @@
 import {
   ChatMessagesArea,
   type ChatMessagesAreaProps,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/chatbot';
 import { isCommandMessage } from '../../utils/chat-messages.utils';
 import { EventDraft, EventDraftCard } from '../event-draft-card.component';
 import { TaskListDraftCard } from '../task-list-draft-card.component';

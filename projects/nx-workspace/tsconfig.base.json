@@ -64,11 +64,23 @@
       "@vigilant-broccoli/react-lib-higher-level/chat-room-consts": [
         "./libs/@vigilant-broccoli/react-lib-higher-level/src/lib/chat-room/chat-room.consts.ts"
       ],
-      "@vigilant-broccoli/react-lib-higher-level/live-location-map": [
-        "./libs/@vigilant-broccoli/react-lib-higher-level/src/lib/live-location/LiveUserMap.tsx"
-      ],
       "@vigilant-broccoli/react-lib-higher-level/notepad-server": [
         "./libs/@vigilant-broccoli/react-lib-higher-level/src/lib/notepad-store.server.ts"
+      ],
+      "@vigilant-broccoli/chatbot": [
+        "./libs/@vigilant-broccoli/chatbot/src/index.ts"
+      ],
+      "@vigilant-broccoli/docs-explorer": [
+        "./libs/@vigilant-broccoli/docs-explorer/src/index.ts"
+      ],
+      "@vigilant-broccoli/leaderboard": [
+        "./libs/@vigilant-broccoli/leaderboard/src/index.ts"
+      ],
+      "@vigilant-broccoli/realtime": [
+        "./libs/@vigilant-broccoli/realtime/src/index.ts"
+      ],
+      "@vigilant-broccoli/realtime/live-location-map": [
+        "./libs/@vigilant-broccoli/realtime/src/lib/live-location/LiveUserMap.tsx"
       ],
       "@harry/personal": ["./libs/@harry/personal/src/index.ts"],
       "@harry/private": ["./libs/@harry/private/src/index.ts"],

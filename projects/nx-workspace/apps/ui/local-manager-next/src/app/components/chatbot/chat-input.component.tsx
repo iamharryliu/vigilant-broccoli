@@ -3,7 +3,7 @@ import { Button, Text } from '@vigilant-broccoli/react-lib';
 import {
   ChatInputArea,
   type ChatInputAreaProps,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/chatbot';
 import { SLASH_PREFIX } from '../../constants/chatbot.consts';
 import type { ChatCommand, Message } from './chatbot.types';
 

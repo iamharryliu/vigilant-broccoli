@@ -10,7 +10,7 @@ import {
   useChatHistory,
   useChatSettings,
   type ChatbotMessage,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/chatbot';
 import { CHAT_MODELS, DEFAULT_CHAT_MODEL, STORAGE_KEY } from '../app.const';
 import { ChatPanel } from './ChatPanel';
 

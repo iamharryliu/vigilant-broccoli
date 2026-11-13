@@ -5,12 +5,14 @@ import {
   HTTP_STATUS_CODES,
   JSON_CONTENT_TYPE,
 } from '@vigilant-broccoli/common-js';
-import { CONNECTION_STATUS } from './live-location/live-location.types';
+import {
+  CONNECTION_STATUS,
+  createTextSeedState,
+  useWhiteboardRoom,
+  type SupabaseBroadcastLike,
+  type WhiteboardCursor,
+} from '@vigilant-broccoli/realtime';
 import type { NotepadDocument, NotepadSaveRequest } from './notepad.types';
-import { useWhiteboardRoom } from './whiteboard/useWhiteboardRoom';
-import { createTextSeedState } from './whiteboard/yjs-state';
-import type { SupabaseBroadcastLike } from './whiteboard/supabase-broadcast.types';
-import type { WhiteboardCursor } from './whiteboard/whiteboard-room.types';
 
 const SAVE_DEBOUNCE_MS = 1000;
 // Legacy rows only: time after SUBSCRIBED for an already-connected peer to

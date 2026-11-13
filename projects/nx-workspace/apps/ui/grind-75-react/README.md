@@ -15,5 +15,5 @@ Browse Grind 75 solutions with every available language side by side.
   - highlight.js
   - Tailwind CSS
 - Internal libs
+  - `docs-explorer`
   - `react-lib`
-  - `react-lib-higher-level`

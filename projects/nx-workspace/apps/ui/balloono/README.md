@@ -17,8 +17,8 @@ Bomberman-style water balloon battles on desktop, plus a landscape-only handheld
   - Tailwind CSS
 - Internal libs
   - `common-js`
+  - `leaderboard`
   - `react-lib`
   - `react-lib-auth`
-  - `react-lib-higher-level`
 - Cloud services
   - Supabase

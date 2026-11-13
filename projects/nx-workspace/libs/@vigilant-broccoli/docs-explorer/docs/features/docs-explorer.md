@@ -1,6 +1,6 @@
 # DocsExplorer
 
-`libs/@vigilant-broccoli/react-lib-higher-level` — file-tree + search shell for browsing markdown docs. Markdown/checklist rendering and edit mode are layered on top by `DocsViewer`.
+`libs/@vigilant-broccoli/docs-explorer` — file-tree + search shell for browsing markdown docs. Markdown/checklist rendering and edit mode are layered on top by `DocsViewer`.
 
 The `component-library` sandbox has a Utilities > Docs Explorer page that links to docs.harryliu.dev and renders this file — it doesn't mount the component, which needs a notes tree to browse.
 

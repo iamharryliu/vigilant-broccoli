@@ -19,10 +19,10 @@ DJ music downloads and Rekordbox launcher, metronome and Spotify playlist relati
   - `@harry/private`
   - `common-js`
   - `common-node`
+  - `docs-explorer`
   - `infrastructure`
   - `react-lib`
   - `react-lib-auth`
-  - `react-lib-higher-level`
   - `react-music-lib`
 - Cloud services
   - Spotify Web API

@@ -1,6 +1,6 @@
 # Note Graph
 
-`GraphView` + `DocsExplorer` (both `react-lib-higher-level`) — Obsidian-style force-directed graph of the note link-graph, layered onto the [DocsExplorer](./docs-explorer.md) note viewer.
+`GraphView` + `DocsExplorer` (both `docs-explorer`) — Obsidian-style force-directed graph of the note link-graph, layered onto the [DocsExplorer](./docs-explorer.md) note viewer.
 
 ## Enabling
 

@@ -8,7 +8,7 @@ module.exports = {
     './{src,pages,components,app}/**/*.{ts,tsx,js,jsx,html}',
     '!./{src,pages,components,app}/**/*.{stories,spec}.{ts,tsx,js,jsx,html}',
     '../../../libs/@vigilant-broccoli/react-lib/src/**/*.{tsx,ts,jsx,js,html}',
-    '../../../libs/@vigilant-broccoli/react-lib-higher-level/src/lib/chatbot/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/chatbot/src/**/*.{tsx,ts,jsx,js,html}',
   ],
   theme: { extend: {} },
   plugins: [require('@tailwindcss/typography')],

@@ -14,5 +14,5 @@ Renders the agent context (`CONTEXT.md` files, `docs/`, `TODO.md` and shared age
 - External libs
   - Tailwind CSS
 - Internal libs
+  - `docs-explorer`
   - `react-lib`
-  - `react-lib-higher-level`

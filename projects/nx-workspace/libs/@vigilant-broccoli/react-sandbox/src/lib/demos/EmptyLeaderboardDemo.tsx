@@ -1,7 +1,7 @@
 import {
   UserLeaderboard,
   LeaderBoardUser,
-} from '@vigilant-broccoli/react-lib-higher-level';
+} from '@vigilant-broccoli/leaderboard';
 import { MouseEvent as ReactMouseEvent, useEffect, useState } from 'react';
 import { USER_METRICS } from './UserLeaderboardDemo';
 

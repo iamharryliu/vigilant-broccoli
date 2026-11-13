@@ -10,6 +10,7 @@ module.exports = {
     '../../../libs/@vigilant-broccoli/react-lib-auth/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/react-lib-media/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/file-explorer/src/**/*.{tsx,ts,jsx,js,html}',
+    '../../../libs/@vigilant-broccoli/chatbot/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/react-lib-higher-level/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/common-js/src/**/*.{tsx,ts,jsx,js,html}',
     '../../../libs/@vigilant-broccoli/common-browser/src/**/*.{tsx,ts,jsx,js,html}',

@@ -6,3 +6,4 @@ export * from './cursor-color';
 export * from './caret-position';
 export * from './PeerCursorsOverlay';
 export * from './PeerCaretsOverlay';
+export { createTextSeedState } from './yjs-state';
