@@ -5,9 +5,11 @@
 ## Sign-in
 
 - A frame cannot sign in itself: Google refuses to be framed, and a cross-site frame's storage is partitioned away from the first-party session.
-- The frame's sign-in (and Reconnect Google) opens `/auth/popup` in a named popup, which runs Google sign-in first-party. `/auth/callback` in the popup posts the session to `window.opener` (same origin) and closes; the frame adopts it with `setSession`. Logic: `libs/sign-in-popup.ts`.
+- The frame's sign-in (and Reconnect Google) opens `/auth/popup` in a named popup, which runs Google sign-in first-party. `/auth/callback` in the popup hands the session over and closes; the frame adopts it with `setSession`. Logic: `libs/sign-in-popup.ts`.
+- The handoff is only `postMessage` to `window.opener` with this app's origin as the target, so a popup that another site opened cannot deliver the session to it. Any site can open `/auth/popup` and stand by for its result, so never add a delivery channel the popup cannot tie to its opener: a Realtime broadcast keyed by values in the popup URL was removed because it handed sessions to whoever supplied them. Without an opener the popup stays open with a retry message. The popup marker lives in `sessionStorage` as well as `window.name`.
+- The handoff only runs on `/auth/callback`, so its Supabase allow-list entries must be the exact `/auth/callback` path: a `/*` entry does not match it, and Supabase falls back to the `Referer` root, where the popup signs itself in and stays open.
 - The popup keeps its session under its own storage key and deletes it after the handoff, without a server sign-out (which would revoke the handed-off session). It therefore never shares a rotating refresh token with a first-party tab.
-- Google's and Supabase's sign-in hops send COOP only as report-only, so `window.opener` survives the redirects. Do not add a `Cross-Origin-Opener-Policy` header to this app.
+- Google's and Supabase's sign-in hops send COOP only as report-only. Do not add a `Cross-Origin-Opener-Policy` header to this app.
 - Sign-in requests only the Tasks scope with `include_granted_scopes`, because the stored Google refresh token is shared per email with the manager apps, which also need Calendar.
 
 ## Framing
@@ -18,5 +20,5 @@
 
 ## Consumers
 
-- `local-manager-next`'s home page frames `${NEXT_PUBLIC_TASKS_URL}/embed` when that build-time variable is set, and keeps its native task list otherwise.
+- `local-manager-next`'s home page frames `tasks.harryliu.dev/embed`; the build-time `NEXT_PUBLIC_TASKS_URL` points it at another instance.
 - Local testing: `localhost:4000/auth/callback` and `localhost:3000` are on the Supabase redirect allow-list, so run this app on port 4000 when the manager holds 3000.

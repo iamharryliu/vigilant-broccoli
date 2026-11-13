@@ -6,6 +6,7 @@
   "AUTH": {
     "SIGN_OUT": "Sign out",
     "SIGNING_IN": "Signing you in...",
-    "REDIRECTING": "Redirecting to Google..."
+    "REDIRECTING": "Redirecting to Google...",
+    "HANDOFF_FAILED": "Sign-in couldn't return to the page. Close this window and try again."
   }
 }

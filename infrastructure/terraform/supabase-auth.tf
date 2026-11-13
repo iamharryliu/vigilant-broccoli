@@ -60,9 +60,9 @@ resource "supabase_settings" "vb_auth" {
       "https://production-vb-manager-next-mobile.vercel.app/auth/callback", # vb-manager-next mobile prod
       "https://manager.harryliu.dev/auth/callback",                         # vb-manager-next mobile prod (custom domain)
       "https://staging-tasks.harryliu.dev/auth/callback",                   # tasks-next staging (custom domain)
-      "https://staging-tasks-next.vercel.app/*",                            # tasks-next staging
-      "https://production-tasks-next.vercel.app/*",                         # tasks-next prod
-      "https://tasks.harryliu.dev/*",                                       # tasks-next prod (custom domain)
+      "https://staging-tasks-next.vercel.app/auth/callback",                # tasks-next staging
+      "https://production-tasks-next.vercel.app/auth/callback",             # tasks-next prod
+      "https://tasks.harryliu.dev/auth/callback",                           # tasks-next prod (custom domain); exact, since `/*` does not match the two-segment path and the popup's handoff only runs there
     ])
 
     external_google_enabled          = true

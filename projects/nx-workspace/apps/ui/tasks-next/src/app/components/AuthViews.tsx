@@ -1,11 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import type { Session } from '@supabase/supabase-js';
 import { GoogleSignInPage } from '@vigilant-broccoli/react-lib-auth';
 import { AuthCallbackPage, signInWithGoogle } from '../../../libs/auth';
 import {
+  HANDOFF_RESULT,
   handOffPopupSession,
   isSignInPopup,
+  markSignInPopup,
 } from '../../../libs/sign-in-popup';
 import { ROUTE } from '../app.const';
 import { useTranslation } from '../i18n';
@@ -23,11 +26,23 @@ export function LoginView() {
 
 export function AuthCallbackView() {
   const { t } = useTranslation();
+  const [handoffFailed, setHandoffFailed] = useState(false);
+
+  const handleSession = useCallback((session: Session | null) => {
+    const result = handOffPopupSession(session);
+    if (result === HANDOFF_RESULT.NO_OPENER) setHandoffFailed(true);
+    return result !== HANDOFF_RESULT.NOT_POPUP;
+  }, []);
+
+  if (handoffFailed) {
+    return <p className="p-4">{t('AUTH.HANDOFF_FAILED')}</p>;
+  }
+
   return (
     <div className="p-4">
       <AuthCallbackPage
         loadingLabel={t('AUTH.SIGNING_IN')}
-        onSession={handOffPopupSession}
+        onSession={handleSession}
       />
     </div>
   );
@@ -38,6 +53,7 @@ export function SignInPopupView() {
   const { t } = useTranslation();
 
   useEffect(() => {
+    markSignInPopup();
     if (isSignInPopup()) void signInWithGoogle();
     else window.location.replace(ROUTE.LOGIN);
   }, []);
